@@ -856,10 +856,12 @@ macro(process_options)
       )
     endif()
   else()
-    message(
-      ${HIGHLIGHTED_STATUS}
-      "Python: an incompatible version of Python was found, python bindings will be disabled"
-    )
+    if(${NS3_PYTHON_BINDINGS})
+      message(
+        ${HIGHLIGHTED_STATUS}
+        "Python: an incompatible version of Python was found, python bindings will be disabled"
+      )
+    endif()
   endif()
 
   set(ENABLE_PYTHON_BINDINGS OFF)
