@@ -1632,7 +1632,8 @@ CtrlTriggerHeader::CtrlTriggerHeader()
       m_ulBandwidth(0),
       m_giAndLtfType(0),
       m_apTxPower(0),
-      m_ulSpatialReuse(0)
+      m_ulSpatialReuse(0),
+      m_padding(0)
 {
 }
 
@@ -1699,6 +1700,7 @@ CtrlTriggerHeader::operator=(const CtrlTriggerHeader& trigger)
     m_giAndLtfType = trigger.m_giAndLtfType;
     m_apTxPower = trigger.m_apTxPower;
     m_ulSpatialReuse = trigger.m_ulSpatialReuse;
+    m_padding = trigger.m_padding;
     m_userInfoFields.clear();
     m_userInfoFields = trigger.m_userInfoFields;
     return *this;
@@ -1763,7 +1765,7 @@ CtrlTriggerHeader::GetSerializedSize() const
         size += ui.GetSerializedSize();
     }
 
-    size += 2; // Padding field
+    size += m_padding;
 
     return size;
 }
@@ -1802,7 +1804,10 @@ CtrlTriggerHeader::Serialize(Buffer::Iterator start) const
         i = ui.Serialize(i);
     }
 
-    i.WriteHtolsbU16(0xffff); // Padding field, used as delimiter
+    for (std::size_t count = 0; count < m_padding; count++)
+    {
+        i.WriteU8(0xff); // Padding field
+    }
 }
 
 uint32_t
@@ -1823,6 +1828,7 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
     uint8_t bit54and55 = (commonInfo >> 54) & 0x03;
     m_variant = bit54and55 == 3 ? TriggerFrameVariant::HE : TriggerFrameVariant::EHT;
     m_userInfoFields.clear();
+    m_padding = 0;
 
     NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::BFRP_TRIGGER,
                     "BFRP Trigger frame is not supported");
@@ -1831,15 +1837,12 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
     NS_ABORT_MSG_IF(m_triggerType == TriggerFrameType::NFRP_TRIGGER,
                     "NFRP Trigger frame is not supported");
 
-    bool isPadding = false;
-
-    // We always add a Padding field (of two octets of all 1s) as delimiter
-    while (!isPadding)
+    while (i.GetRemainingSize() >= 2)
     {
         // read the first 2 bytes to check if we encountered the Padding field
         if (i.ReadU16() == 0xffff)
         {
-            isPadding = true;
+            m_padding = i.GetRemainingSize() + 2;
         }
         else
         {
@@ -2111,6 +2114,19 @@ uint16_t
 CtrlTriggerHeader::GetUlSpatialReuse() const
 {
     return m_ulSpatialReuse;
+}
+
+void
+CtrlTriggerHeader::SetPaddingSize(std::size_t size)
+{
+    NS_ABORT_MSG_IF(size == 1, "The Padding field, if present, shall be at least two octets");
+    m_padding = size;
+}
+
+std::size_t
+CtrlTriggerHeader::GetPaddingSize() const
+{
+    return m_padding;
 }
 
 CtrlTriggerHeader

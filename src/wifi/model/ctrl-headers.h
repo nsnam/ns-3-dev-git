@@ -936,10 +936,7 @@ class CtrlTriggerUserInfoField
  *
  * The Padding field is optional, given that other techniques (post-EOF A-MPDU
  * padding, aggregating other MPDUs in the A-MPDU) are available to satisfy the
- * minimum time requirement. Currently, however, a Padding field of the minimum
- * length (2 octets) is appended to every Trigger frame that is transmitted. In
- * such a way, deserialization stops when a User Info field with the AID12 subfield
- * set to 4095 (which indicates the start of a Padding field) is encountered.
+ * minimum time requirement. The size in bytes of the Padding field is configurable.
  */
 class CtrlTriggerHeader : public Header
 {
@@ -1187,6 +1184,17 @@ class CtrlTriggerHeader : public Header
      */
     uint16_t GetUlSpatialReuse() const;
     /**
+     * Set the size in bytes of the Padding field. The Padding field, if present,
+     * shall be at least two octets in length.
+     *
+     * \param size the size in bytes of the Padding field
+     */
+    void SetPaddingSize(std::size_t size);
+    /**
+     * \return the size in bytes of the Padding field
+     */
+    std::size_t GetPaddingSize() const;
+    /**
      * Get a copy of the Common Info field of this Trigger frame.
      * Note that the User Info fields are excluded.
      *
@@ -1329,6 +1337,7 @@ class CtrlTriggerHeader : public Header
     uint8_t m_giAndLtfType;         //!< GI And LTF Type subfield
     uint8_t m_apTxPower;            //!< Tx Power used by AP to transmit the Trigger Frame
     uint16_t m_ulSpatialReuse;      //!< Value for the Spatial Reuse field in HE-SIG-A
+    std::size_t m_padding;          //!< the size in bytes of the Padding field
 
     /**
      * List of User Info fields
