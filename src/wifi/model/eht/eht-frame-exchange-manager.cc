@@ -412,4 +412,23 @@ EhtFrameExchangeManager::GetEmlsrSwitchToListening(Ptr<const WifiPsdu> psdu,
     return true;
 }
 
+void
+EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
+{
+    NS_LOG_FUNCTION(this << txop);
+
+    // the channel has been released; all EMLSR clients will switch back to listening
+    // operation after a timeout interval of aSIFSTime + aSlotTime + aRxPHYStartDelay
+    auto delay = m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(20);
+    for (const auto& address : m_protectedStas)
+    {
+        if (GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
+        {
+            EmlsrSwitchToListening(address, delay);
+        }
+    }
+
+    HeFrameExchangeManager::NotifyChannelReleased(txop);
+}
+
 } // namespace ns3
