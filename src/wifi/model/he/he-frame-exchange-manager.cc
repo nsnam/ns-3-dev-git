@@ -54,6 +54,14 @@ IsTrigger(const WifiPsduMap& psduMap)
            psduMap.cbegin()->second->GetHeader(0).IsTrigger();
 }
 
+bool
+IsTrigger(const WifiConstPsduMap& psduMap)
+{
+    return psduMap.size() == 1 && psduMap.cbegin()->first == SU_STA_ID &&
+           psduMap.cbegin()->second->GetNMpdus() == 1 &&
+           psduMap.cbegin()->second->GetHeader(0).IsTrigger();
+}
+
 TypeId
 HeFrameExchangeManager::GetTypeId()
 {
