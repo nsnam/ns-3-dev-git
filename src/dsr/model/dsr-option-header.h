@@ -1335,7 +1335,7 @@ class DsrOptionAckHeader : public DsrOptionHeader
     Ipv4Address m_realDstAddress;
 };
 
-static inline std::ostream&
+[[maybe_unused]] static inline std::ostream&
 operator<<(std::ostream& os, const DsrOptionSRHeader& sr)
 {
     sr.Print(os);
