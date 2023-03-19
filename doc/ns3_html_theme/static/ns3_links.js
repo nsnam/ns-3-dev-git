@@ -44,6 +44,7 @@ var ns3_man  = ns3_rel  + "manual/"         + ns3_index;
 var ns3_mod  = ns3_rel  + "models/"         + ns3_index;
 var ns3_tut  = ns3_rel  + "tutorial/"       + ns3_index;
 var ns3_con  = ns3_rel  + "contributing/"   + ns3_index;
+var ns3_con  = ns3_rel  + "installation/"   + ns3_index;
 
 function ns3_write_links() {
   document.getElementById("ns3_home1").href = ns3_home;
@@ -52,6 +53,7 @@ function ns3_write_links() {
   document.getElementById("ns3_man"  ).href = ns3_man;
   document.getElementById("ns3_mod"  ).href = ns3_mod;
   document.getElementById("ns3_con"  ).href = ns3_con;
+  document.getElementById("ns3_ins"  ).href = ns3_ins;
   document.getElementById("ns3_wiki" ).href = ns3_wiki;
   document.getElementById("ns3_api"  ).href = ns3_api;
   document.getElementById("ns3_bugs" ).href = ns3_bugs;
