@@ -317,12 +317,16 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * \param startingSeq the BA agreement starting sequence number
      * \param timeout timeout value.
      * \param immediateBAck flag to indicate whether immediate BlockAck is used.
+     * \param availableTime the amount of time allowed for the frame exchange. Equals
+     *                      Time::Min() in case the TXOP limit is null
+     * \return true if ADDBA Request frame is transmitted, false otherwise
      */
-    void SendAddBaRequest(Mac48Address recipient,
+    bool SendAddBaRequest(Mac48Address recipient,
                           uint8_t tid,
                           uint16_t startingSeq,
                           uint16_t timeout,
-                          bool immediateBAck);
+                          bool immediateBAck,
+                          Time availableTime);
 
     /**
      * Create a BlockAck frame with header equal to <i>blockAck</i> and start its transmission.

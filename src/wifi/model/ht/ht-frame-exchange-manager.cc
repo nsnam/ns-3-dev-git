@@ -133,14 +133,16 @@ HtFrameExchangeManager::NeedSetupBlockAck(Mac48Address recipient, uint8_t tid)
     return establish;
 }
 
-void
+bool
 HtFrameExchangeManager::SendAddBaRequest(Mac48Address dest,
                                          uint8_t tid,
                                          uint16_t startingSeq,
                                          uint16_t timeout,
-                                         bool immediateBAck)
+                                         bool immediateBAck,
+                                         Time availableTime)
 {
-    NS_LOG_FUNCTION(this << dest << +tid << startingSeq << timeout << immediateBAck);
+    NS_LOG_FUNCTION(this << dest << +tid << startingSeq << timeout << immediateBAck
+                         << availableTime);
     NS_LOG_DEBUG("Send ADDBA request to " << dest);
 
     WifiMacHeader hdr;
@@ -193,12 +195,16 @@ HtFrameExchangeManager::SendAddBaRequest(Mac48Address dest,
     WifiTxParameters txParams;
     txParams.m_txVector =
         GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
-    txParams.m_protection = std::unique_ptr<WifiProtection>(new WifiNoProtection);
-    txParams.m_acknowledgment = GetAckManager()->TryAddMpdu(mpdu, txParams);
+    if (!TryAddMpdu(mpdu, txParams, availableTime))
+    {
+        NS_LOG_DEBUG("Not enough time to send the ADDBA Request frame");
+        return false;
+    }
 
     // Wifi MAC queue scheduler is expected to prioritize management frames
     m_mac->GetQosTxop(tid)->GetWifiMacQueue()->Enqueue(mpdu);
     SendMpduWithProtection(mpdu, txParams);
+    return true;
 }
 
 void
@@ -381,12 +387,12 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
             (hdr.IsRetry()
                  ? hdr.GetSequenceNumber()
                  : m_txMiddle->GetNextSeqNumberByTidAndAddress(hdr.GetQosTid(), hdr.GetAddr1()));
-        SendAddBaRequest(hdr.GetAddr1(),
-                         hdr.GetQosTid(),
-                         startingSeq,
-                         edca->GetBlockAckInactivityTimeout(),
-                         true);
-        return true;
+        return SendAddBaRequest(hdr.GetAddr1(),
+                                hdr.GetQosTid(),
+                                startingSeq,
+                                edca->GetBlockAckInactivityTimeout(),
+                                true,
+                                availableTime);
     }
 
     // Use SendDataFrame if we can try aggregation
@@ -570,25 +576,8 @@ HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
     WifiTxParameters txParams;
     txParams.m_txVector =
         GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
-    txParams.m_protection = std::unique_ptr<WifiProtection>(new WifiNoProtection);
-    txParams.m_acknowledgment = GetAckManager()->TryAddMpdu(mpdu, txParams);
 
-    NS_ABORT_IF(txParams.m_acknowledgment->method != WifiAcknowledgment::BLOCK_ACK);
-
-    WifiBlockAck* blockAcknowledgment = static_cast<WifiBlockAck*>(txParams.m_acknowledgment.get());
-    CalculateAcknowledgmentTime(blockAcknowledgment);
-    // the BlockAckReq frame is sent using the same TXVECTOR as the BlockAck frame
-    txParams.m_txVector = blockAcknowledgment->blockAckTxVector;
-
-    Time barTxDuration = m_phy->CalculateTxDuration(mpdu->GetSize(),
-                                                    blockAcknowledgment->blockAckTxVector,
-                                                    m_phy->GetPhyBand());
-
-    // if the available time is limited and we are not transmitting the initial
-    // frame of the TXOP, we have to check that this frame and its response fit
-    // within the given time limits
-    if (availableTime != Time::Min() && !initialFrame &&
-        barTxDuration + m_phy->GetSifs() + blockAcknowledgment->acknowledgmentTime > availableTime)
+    if (!TryAddMpdu(mpdu, txParams, availableTime))
     {
         NS_LOG_DEBUG("Not enough time to send the BAR frame returned by the Block Ack Manager");
         return false;
