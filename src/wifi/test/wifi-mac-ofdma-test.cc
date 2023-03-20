@@ -545,6 +545,8 @@ OfdmaAckSequenceTest::OfdmaAckSequenceTest(uint16_t width,
     default:
         NS_ABORT_MSG("Unhandled channel width (" << m_channelWidth << " MHz)");
     }
+
+    m_txPsdus.reserve(35);
 }
 
 OfdmaAckSequenceTest::~OfdmaAckSequenceTest()
@@ -1009,27 +1011,6 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
     NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, qosNullNavEnd, "Duration/ID in QoS Null is too short");
     NS_TEST_EXPECT_MSG_LT(qosNullNavEnd, navEnd + tolerance, "Duration/ID in QoS Null is too long");
 
-    // the AP sends another MU-RTS Trigger Frame to protect the Basic TF
-    NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 15, "Expected at least 15 transmitted packet");
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[10].psduMap.size() == 1 &&
-                           m_txPsdus[10].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger() &&
-                           m_txPsdus[10].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
-                          true,
-                          "Expected a Trigger Frame");
-    m_txPsdus[10].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(trigger);
-    NS_TEST_EXPECT_MSG_EQ(trigger.IsMuRts(), true, "Expected an MU-RTS Trigger Frame");
-    NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
-                          4,
-                          "Expected one User Info field per station");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[10].txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Expected the MU-RTS to occupy the entire channel width");
-    for (const auto& userInfo : trigger)
-    {
-        NS_TEST_EXPECT_MSG_EQ(+userInfo.GetMuRtsRuAllocation(),
-                              +m_muRtsRuAllocation,
-                              "Unexpected RU Allocation value in MU-RTS");
-    }
     tEnd = m_txPsdus[9].endTx;
     tStart = m_txPsdus[10].startTx;
     NS_TEST_EXPECT_MSG_LT(tEnd + ifs, tStart, "Basic Trigger Frame sent too early");
@@ -1043,89 +1024,136 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
         NS_TEST_EXPECT_MSG_LT(muRtsNavEnd, navEnd + tolerance, "Duration/ID in MU-RTS is too long");
     }
 
-    // NAV end is now set by the Duration/ID of the second MU-RTS TF
-    tEnd = m_txPsdus[10].endTx;
-    navEnd = tEnd + m_txPsdus[10].psduMap[SU_STA_ID]->GetDuration();
+    // if the TXOP limit is not null, MU-RTS protection is not used because the next transmission
+    // is protected by the previous MU-RTS Trigger Frame
+    if (m_txopLimit == 0)
+    {
+        // the AP sends another MU-RTS Trigger Frame to protect the Basic TF
+        NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(),
+                                    15,
+                                    "Expected at least 15 transmitted packet");
+        NS_TEST_EXPECT_MSG_EQ(
+            (m_txPsdus[10].psduMap.size() == 1 &&
+             m_txPsdus[10].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger() &&
+             m_txPsdus[10].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
+            true,
+            "Expected a Trigger Frame");
+        m_txPsdus[10].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(trigger);
+        NS_TEST_EXPECT_MSG_EQ(trigger.IsMuRts(), true, "Expected an MU-RTS Trigger Frame");
+        NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
+                              4,
+                              "Expected one User Info field per station");
+        NS_TEST_EXPECT_MSG_EQ(m_txPsdus[10].txVector.GetChannelWidth(),
+                              m_channelWidth,
+                              "Expected the MU-RTS to occupy the entire channel width");
+        for (const auto& userInfo : trigger)
+        {
+            NS_TEST_EXPECT_MSG_EQ(+userInfo.GetMuRtsRuAllocation(),
+                                  +m_muRtsRuAllocation,
+                                  "Unexpected RU Allocation value in MU-RTS");
+        }
 
-    // A first STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
-    NS_TEST_EXPECT_MSG_EQ(
-        (m_txPsdus[11].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
-         m_txPsdus[11].psduMap.size() == 1 &&
-         m_txPsdus[11].psduMap.begin()->second->GetNMpdus() == 1 &&
-         m_txPsdus[11].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
-        true,
-        "Expected a CTS frame");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[11].txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Expected the CTS to occupy the entire channel width");
+        // NAV end is now set by the Duration/ID of the second MU-RTS TF
+        tEnd = m_txPsdus[10].endTx;
+        navEnd = tEnd + m_txPsdus[10].psduMap[SU_STA_ID]->GetDuration();
 
-    tStart = m_txPsdus[11].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
-    ctsNavEnd = m_txPsdus[11].endTx + m_txPsdus[11].psduMap[SU_STA_ID]->GetDuration();
-    // navEnd <= ctsNavEnd < navEnd + tolerance
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
-    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+        // A first STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+        NS_TEST_EXPECT_MSG_EQ(
+            (m_txPsdus[11].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+             m_txPsdus[11].psduMap.size() == 1 &&
+             m_txPsdus[11].psduMap.begin()->second->GetNMpdus() == 1 &&
+             m_txPsdus[11].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+            true,
+            "Expected a CTS frame");
+        NS_TEST_EXPECT_MSG_EQ(m_txPsdus[11].txVector.GetChannelWidth(),
+                              m_channelWidth,
+                              "Expected the CTS to occupy the entire channel width");
 
-    // A second STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
-    NS_TEST_EXPECT_MSG_EQ(
-        (m_txPsdus[12].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
-         m_txPsdus[12].psduMap.size() == 1 &&
-         m_txPsdus[12].psduMap.begin()->second->GetNMpdus() == 1 &&
-         m_txPsdus[12].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
-        true,
-        "Expected a CTS frame");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[12].txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Expected the CTS to occupy the entire channel width");
+        tStart = m_txPsdus[11].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+        ctsNavEnd = m_txPsdus[11].endTx + m_txPsdus[11].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= ctsNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+        NS_TEST_EXPECT_MSG_LT(ctsNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in CTS frame is too long");
 
-    tStart = m_txPsdus[12].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
-    ctsNavEnd = m_txPsdus[12].endTx + m_txPsdus[12].psduMap[SU_STA_ID]->GetDuration();
-    // navEnd <= ctsNavEnd < navEnd + tolerance
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
-    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+        // A second STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+        NS_TEST_EXPECT_MSG_EQ(
+            (m_txPsdus[12].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+             m_txPsdus[12].psduMap.size() == 1 &&
+             m_txPsdus[12].psduMap.begin()->second->GetNMpdus() == 1 &&
+             m_txPsdus[12].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+            true,
+            "Expected a CTS frame");
+        NS_TEST_EXPECT_MSG_EQ(m_txPsdus[12].txVector.GetChannelWidth(),
+                              m_channelWidth,
+                              "Expected the CTS to occupy the entire channel width");
 
-    // A third STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
-    NS_TEST_EXPECT_MSG_EQ(
-        (m_txPsdus[13].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
-         m_txPsdus[13].psduMap.size() == 1 &&
-         m_txPsdus[13].psduMap.begin()->second->GetNMpdus() == 1 &&
-         m_txPsdus[13].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
-        true,
-        "Expected a CTS frame");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[13].txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Expected the CTS to occupy the entire channel width");
+        tStart = m_txPsdus[12].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+        ctsNavEnd = m_txPsdus[12].endTx + m_txPsdus[12].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= ctsNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+        NS_TEST_EXPECT_MSG_LT(ctsNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in CTS frame is too long");
 
-    tStart = m_txPsdus[13].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
-    ctsNavEnd = m_txPsdus[13].endTx + m_txPsdus[13].psduMap[SU_STA_ID]->GetDuration();
-    // navEnd <= ctsNavEnd < navEnd + tolerance
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
-    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+        // A third STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+        NS_TEST_EXPECT_MSG_EQ(
+            (m_txPsdus[13].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+             m_txPsdus[13].psduMap.size() == 1 &&
+             m_txPsdus[13].psduMap.begin()->second->GetNMpdus() == 1 &&
+             m_txPsdus[13].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+            true,
+            "Expected a CTS frame");
+        NS_TEST_EXPECT_MSG_EQ(m_txPsdus[13].txVector.GetChannelWidth(),
+                              m_channelWidth,
+                              "Expected the CTS to occupy the entire channel width");
 
-    // A fourth STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
-    NS_TEST_EXPECT_MSG_EQ(
-        (m_txPsdus[14].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
-         m_txPsdus[14].psduMap.size() == 1 &&
-         m_txPsdus[14].psduMap.begin()->second->GetNMpdus() == 1 &&
-         m_txPsdus[14].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
-        true,
-        "Expected a CTS frame");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[14].txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Expected the CTS to occupy the entire channel width");
+        tStart = m_txPsdus[13].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+        ctsNavEnd = m_txPsdus[13].endTx + m_txPsdus[13].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= ctsNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+        NS_TEST_EXPECT_MSG_LT(ctsNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in CTS frame is too long");
 
-    tStart = m_txPsdus[14].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
-    ctsNavEnd = m_txPsdus[14].endTx + m_txPsdus[14].psduMap[SU_STA_ID]->GetDuration();
-    // navEnd <= ctsNavEnd < navEnd + tolerance
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
-    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+        // A fourth STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+        NS_TEST_EXPECT_MSG_EQ(
+            (m_txPsdus[14].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+             m_txPsdus[14].psduMap.size() == 1 &&
+             m_txPsdus[14].psduMap.begin()->second->GetNMpdus() == 1 &&
+             m_txPsdus[14].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+            true,
+            "Expected a CTS frame");
+        NS_TEST_EXPECT_MSG_EQ(m_txPsdus[14].txVector.GetChannelWidth(),
+                              m_channelWidth,
+                              "Expected the CTS to occupy the entire channel width");
+
+        tStart = m_txPsdus[14].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+        ctsNavEnd = m_txPsdus[14].endTx + m_txPsdus[14].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= ctsNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+        NS_TEST_EXPECT_MSG_LT(ctsNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in CTS frame is too long");
+
+        tEnd = m_txPsdus[14].endTx;
+    }
+    else
+    {
+        // insert 5 elements in m_txPsdus to align the index of the following frames in the
+        // two cases (TXOP limit null and not null)
+        m_txPsdus.insert(std::next(m_txPsdus.begin(), 10), 5, {});
+        tEnd = m_txPsdus[9].endTx;
+    }
 
     // the AP sends a Basic Trigger Frame to solicit QoS data frames
     NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 21, "Expected at least 21 transmitted packets");
@@ -1139,7 +1167,6 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
     NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
                           4,
                           "Expected one User Info field per station");
-    tEnd = m_txPsdus[14].endTx;
     tStart = m_txPsdus[15].startTx;
     NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "Basic Trigger Frame sent too early");
     NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "Basic Trigger Frame sent too late");
@@ -1250,112 +1277,137 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
                           navEnd + tolerance,
                           "Duration/ID in Multi-STA BlockAck is too long");
 
-    // the AP sends an MU-RTS Trigger Frame to protect the DL MU PPDU
-    NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 26, "Expected at least 26 transmitted packet");
-    NS_TEST_EXPECT_MSG_EQ((m_txPsdus[21].psduMap.size() == 1 &&
-                           m_txPsdus[21].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger() &&
-                           m_txPsdus[21].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
-                          true,
-                          "Expected a Trigger Frame");
-    m_txPsdus[21].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(trigger);
-    NS_TEST_EXPECT_MSG_EQ(trigger.IsMuRts(), true, "Expected an MU-RTS Trigger Frame");
-    NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
-                          4,
-                          "Expected one User Info field per station");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[21].txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Expected the MU-RTS to occupy the entire channel width");
-    for (const auto& userInfo : trigger)
+    // if the TXOP limit is not null, MU-RTS protection is not used because the next transmission
+    // is protected by the previous MU-RTS Trigger Frame
+    if (m_txopLimit == 0)
     {
-        NS_TEST_EXPECT_MSG_EQ(+userInfo.GetMuRtsRuAllocation(),
-                              +m_muRtsRuAllocation,
-                              "Unexpected RU Allocation value in MU-RTS");
+        // the AP sends an MU-RTS Trigger Frame to protect the DL MU PPDU
+        NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(),
+                                    26,
+                                    "Expected at least 26 transmitted packet");
+        NS_TEST_EXPECT_MSG_EQ(
+            (m_txPsdus[21].psduMap.size() == 1 &&
+             m_txPsdus[21].psduMap[SU_STA_ID]->GetHeader(0).IsTrigger() &&
+             m_txPsdus[21].psduMap[SU_STA_ID]->GetHeader(0).GetAddr1().IsBroadcast()),
+            true,
+            "Expected a Trigger Frame");
+        m_txPsdus[21].psduMap[SU_STA_ID]->GetPayload(0)->PeekHeader(trigger);
+        NS_TEST_EXPECT_MSG_EQ(trigger.IsMuRts(), true, "Expected an MU-RTS Trigger Frame");
+        NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
+                              4,
+                              "Expected one User Info field per station");
+        NS_TEST_EXPECT_MSG_EQ(m_txPsdus[21].txVector.GetChannelWidth(),
+                              m_channelWidth,
+                              "Expected the MU-RTS to occupy the entire channel width");
+        for (const auto& userInfo : trigger)
+        {
+            NS_TEST_EXPECT_MSG_EQ(+userInfo.GetMuRtsRuAllocation(),
+                                  +m_muRtsRuAllocation,
+                                  "Unexpected RU Allocation value in MU-RTS");
+        }
+        tEnd = m_txPsdus[20].endTx;
+        tStart = m_txPsdus[21].startTx;
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(tEnd + ifs, tStart, "MU-RTS Trigger Frame sent too early");
+        tEnd = m_txPsdus[21].endTx;
+        navEnd = tEnd + m_txPsdus[21].psduMap[SU_STA_ID]->GetDuration();
+
+        // A first STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+        NS_TEST_EXPECT_MSG_EQ(
+            (m_txPsdus[22].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+             m_txPsdus[22].psduMap.size() == 1 &&
+             m_txPsdus[22].psduMap.begin()->second->GetNMpdus() == 1 &&
+             m_txPsdus[22].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+            true,
+            "Expected a CTS frame");
+        NS_TEST_EXPECT_MSG_EQ(m_txPsdus[22].txVector.GetChannelWidth(),
+                              m_channelWidth,
+                              "Expected the CTS to occupy the entire channel width");
+
+        tStart = m_txPsdus[22].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+        ctsNavEnd = m_txPsdus[22].endTx + m_txPsdus[22].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= ctsNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+        NS_TEST_EXPECT_MSG_LT(ctsNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in CTS frame is too long");
+
+        // A second STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+        NS_TEST_EXPECT_MSG_EQ(
+            (m_txPsdus[23].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+             m_txPsdus[23].psduMap.size() == 1 &&
+             m_txPsdus[23].psduMap.begin()->second->GetNMpdus() == 1 &&
+             m_txPsdus[23].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+            true,
+            "Expected a CTS frame");
+        NS_TEST_EXPECT_MSG_EQ(m_txPsdus[23].txVector.GetChannelWidth(),
+                              m_channelWidth,
+                              "Expected the CTS to occupy the entire channel width");
+
+        tStart = m_txPsdus[23].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+        ctsNavEnd = m_txPsdus[23].endTx + m_txPsdus[23].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= ctsNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+        NS_TEST_EXPECT_MSG_LT(ctsNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in CTS frame is too long");
+
+        // A third STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+        NS_TEST_EXPECT_MSG_EQ(
+            (m_txPsdus[24].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+             m_txPsdus[24].psduMap.size() == 1 &&
+             m_txPsdus[24].psduMap.begin()->second->GetNMpdus() == 1 &&
+             m_txPsdus[24].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+            true,
+            "Expected a CTS frame");
+        NS_TEST_EXPECT_MSG_EQ(m_txPsdus[24].txVector.GetChannelWidth(),
+                              m_channelWidth,
+                              "Expected the CTS to occupy the entire channel width");
+
+        tStart = m_txPsdus[24].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+        ctsNavEnd = m_txPsdus[24].endTx + m_txPsdus[24].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= ctsNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+        NS_TEST_EXPECT_MSG_LT(ctsNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in CTS frame is too long");
+
+        // A fourth STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
+        NS_TEST_EXPECT_MSG_EQ(
+            (m_txPsdus[25].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
+             m_txPsdus[25].psduMap.size() == 1 &&
+             m_txPsdus[25].psduMap.begin()->second->GetNMpdus() == 1 &&
+             m_txPsdus[25].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
+            true,
+            "Expected a CTS frame");
+        NS_TEST_EXPECT_MSG_EQ(m_txPsdus[25].txVector.GetChannelWidth(),
+                              m_channelWidth,
+                              "Expected the CTS to occupy the entire channel width");
+
+        tStart = m_txPsdus[25].startTx;
+        NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
+        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
+        ctsNavEnd = m_txPsdus[25].endTx + m_txPsdus[25].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= ctsNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
+        NS_TEST_EXPECT_MSG_LT(ctsNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in CTS frame is too long");
+
+        tEnd = m_txPsdus[25].endTx;
     }
-    tEnd = m_txPsdus[20].endTx;
-    tStart = m_txPsdus[21].startTx;
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(tEnd + ifs, tStart, "MU-RTS Trigger Frame sent too early");
-    tEnd = m_txPsdus[21].endTx;
-    navEnd = tEnd + m_txPsdus[21].psduMap[SU_STA_ID]->GetDuration();
-
-    // A first STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
-    NS_TEST_EXPECT_MSG_EQ(
-        (m_txPsdus[22].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
-         m_txPsdus[22].psduMap.size() == 1 &&
-         m_txPsdus[22].psduMap.begin()->second->GetNMpdus() == 1 &&
-         m_txPsdus[22].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
-        true,
-        "Expected a CTS frame");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[22].txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Expected the CTS to occupy the entire channel width");
-
-    tStart = m_txPsdus[22].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
-    ctsNavEnd = m_txPsdus[22].endTx + m_txPsdus[22].psduMap[SU_STA_ID]->GetDuration();
-    // navEnd <= ctsNavEnd < navEnd + tolerance
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
-    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
-
-    // A second STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
-    NS_TEST_EXPECT_MSG_EQ(
-        (m_txPsdus[23].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
-         m_txPsdus[23].psduMap.size() == 1 &&
-         m_txPsdus[23].psduMap.begin()->second->GetNMpdus() == 1 &&
-         m_txPsdus[23].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
-        true,
-        "Expected a CTS frame");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[23].txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Expected the CTS to occupy the entire channel width");
-
-    tStart = m_txPsdus[23].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
-    ctsNavEnd = m_txPsdus[23].endTx + m_txPsdus[23].psduMap[SU_STA_ID]->GetDuration();
-    // navEnd <= ctsNavEnd < navEnd + tolerance
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
-    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
-
-    // A third STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
-    NS_TEST_EXPECT_MSG_EQ(
-        (m_txPsdus[24].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
-         m_txPsdus[24].psduMap.size() == 1 &&
-         m_txPsdus[24].psduMap.begin()->second->GetNMpdus() == 1 &&
-         m_txPsdus[24].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
-        true,
-        "Expected a CTS frame");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[24].txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Expected the CTS to occupy the entire channel width");
-
-    tStart = m_txPsdus[24].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
-    ctsNavEnd = m_txPsdus[24].endTx + m_txPsdus[24].psduMap[SU_STA_ID]->GetDuration();
-    // navEnd <= ctsNavEnd < navEnd + tolerance
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
-    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
-
-    // A fourth STA sends a CTS frame a SIFS after the reception of the MU-RTS TF
-    NS_TEST_EXPECT_MSG_EQ(
-        (m_txPsdus[25].txVector.GetPreambleType() != WIFI_PREAMBLE_HE_TB &&
-         m_txPsdus[25].psduMap.size() == 1 &&
-         m_txPsdus[25].psduMap.begin()->second->GetNMpdus() == 1 &&
-         m_txPsdus[25].psduMap.begin()->second->GetHeader(0).GetType() == WIFI_MAC_CTL_CTS),
-        true,
-        "Expected a CTS frame");
-    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[25].txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Expected the CTS to occupy the entire channel width");
-
-    tStart = m_txPsdus[25].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "CTS frame sent too early");
-    NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "CTS frame sent too late");
-    ctsNavEnd = m_txPsdus[25].endTx + m_txPsdus[25].psduMap[SU_STA_ID]->GetDuration();
-    // navEnd <= ctsNavEnd < navEnd + tolerance
-    NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, ctsNavEnd, "Duration/ID in CTS frame is too short");
-    NS_TEST_EXPECT_MSG_LT(ctsNavEnd, navEnd + tolerance, "Duration/ID in CTS frame is too long");
+    else
+    {
+        // insert 5 elements in m_txPsdus to align the index of the following frames in the
+        // two cases (TXOP limit null and not null)
+        m_txPsdus.insert(std::next(m_txPsdus.begin(), 21), 5, {});
+        tEnd = m_txPsdus[20].endTx;
+    }
 
     // the AP sends a DL MU PPDU
     NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(), 27, "Expected at least 27 transmitted packet");
@@ -1375,9 +1427,8 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
                                     m_maxAmpduSize,
                                     "Max A-MPDU size exceeded");
     }
-    tEnd = m_txPsdus[25].endTx;
     tStart = m_txPsdus[26].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "DL MU PPDU sent too early");
+    NS_TEST_EXPECT_MSG_LT_OR_EQ(tEnd + sifs, tStart, "DL MU PPDU sent too early");
     NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "DL MU PPDU sent too late");
 
     // The Duration/ID field is the same for all the PSDUs

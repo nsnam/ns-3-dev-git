@@ -20,6 +20,7 @@
 #include "wifi-default-protection-manager.h"
 
 #include "ap-wifi-mac.h"
+#include "frame-exchange-manager.h"
 #include "wifi-mpdu.h"
 #include "wifi-tx-parameters.h"
 
@@ -173,6 +174,12 @@ WifiDefaultProtectionManager::GetPsduProtection(const WifiMacHeader& hdr,
         return std::unique_ptr<WifiProtection>(new WifiNoProtection());
     }
 
+    // no need to use protection if destination already received an RTS in this TXOP
+    if (m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas().count(hdr.GetAddr1()) == 1)
+    {
+        return std::unique_ptr<WifiProtection>(new WifiNoProtection());
+    }
+
     // check if RTS/CTS is needed
     if (GetWifiRemoteStationManager()->NeedRts(hdr, size))
     {
@@ -203,9 +210,13 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
     NS_LOG_FUNCTION(this << *mpdu << &txParams);
     NS_ASSERT(txParams.m_txVector.IsDlMu());
 
-    if (!m_sendMuRts)
+    auto receiver = mpdu->GetHeader().GetAddr1();
+    auto isProtected =
+        m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas().count(receiver) == 1;
+
+    if (!m_sendMuRts || isProtected)
     {
-        // No protection because sending MU-RTS is disabled
+        // No protection needed
         if (txParams.m_protection && txParams.m_protection->method == WifiProtection::NONE)
         {
             return nullptr;
@@ -218,8 +229,6 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
     {
         protection = static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
     }
-
-    auto receiver = mpdu->GetHeader().GetAddr1();
 
     if (txParams.GetPsduInfo(receiver) == nullptr)
     {
@@ -311,6 +320,8 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     const auto& staList = StaticCast<ApWifiMac>(m_mac)->GetStaList(m_linkId);
     std::remove_reference_t<decltype(staList)>::const_iterator staIt;
 
+    bool allProtected = true;
+
     for (const auto& userInfo : trigger)
     {
         // Add a User Info field to the MU-RTS for this solicited station
@@ -319,6 +330,15 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
         staIt = staList.find(userInfo.GetAid12());
         NS_ASSERT(staIt != staList.cend());
         AddUserInfoToMuRts(protection->muRts, txWidth, staIt->second);
+        allProtected =
+            allProtected &&
+            m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas().count(staIt->second) == 1;
+    }
+
+    if (allProtected)
+    {
+        // No protection needed
+        return std::unique_ptr<WifiProtection>(new WifiNoProtection());
     }
 
     // compute the TXVECTOR to use to send the MU-RTS Trigger Frame
