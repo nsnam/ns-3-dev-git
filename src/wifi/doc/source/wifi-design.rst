@@ -1058,6 +1058,52 @@ optionally (depending on the value of the ``EnableBsrp`` attribute) precede the 
 of a Basic Trigger Frame in order for the AP to collect information about the buffer status
 of the stations.
 
+Enhanced multi-link single radio operation (EMLSR)
+##################################################
+
+The IEEE 802.11be amendment introduced EMLSR operating mode to allow a non-AP MLD to alternate
+frame exchanges over a subset of setup links identified as EMLSR links. |ns3| supports EMLSR
+operations as described in the following.
+
+Non-AP MLD side
+---------------
+
+A non-AP MLD supports EMLSR operating mode if the ``EmlsrActivated`` attribute of the EHT
+configuration is set to true. In such a case, the WifiMacHelper will install an EMLSR Manager
+by using the type and attribute values configured through the ``SetEmlsrManager`` method. The
+EMLSR Manager is a base class providing the ``EmlsrLinkSet`` attribute, which can be used to
+enable or disable EMLSR mode (after multi-link setup, EMLSR mode is disabled by default). Setting
+the ``EmlsrLinkSet`` attribute triggers the transmission of an EML Operating Mode Notification
+frame to the AP to communicate the new set of EMLSR links, if ML setup has been completed.
+Otherwise, the set of EMLSR links is stored and the EML Operating Mode Notification frame is
+sent as soon as the ML setup is completed. The selection of the link used to transmit
+the EML Operating Mode Notification frame is done by the EMLSR Manager subclass. The default
+EMLSR Manager subclass, ``DefaultEmlsrManager``, selects the link that was used to perform
+ML setup. When the non-AP MLD receives the acknowledgment for the EML Operating Mode Notification
+frame, it starts a timer whose duration is the transition timeout advertised by the AP MLD.
+When the timer expires, or the non-AP MLD receives an EML Operating Mode Notification frame
+from the AP MLD, the EMLSR mode is assumed to be enabled (or disabled).
+
+AP MLD side
+-----------
+An AP MLD supports EMLSR operating mode if the ``EmlsrActivated`` attribute of the EHT
+configuration is set to true. When an AP MLD that supports EMLSR operating mode has to initiate a
+frame exchange with a non-AP MLD that is operating in EMLSR mode, it sends an MU-RTS Trigger Frame
+soliciting a response from the non-AP MLD (and possibly others) as the initial Control frame for
+that exchange. The MU-RTS Trigger Frame includes a Padding field whose transmission duration is the
+maximum among the padding delays advertised by all the EMLSR clients solicited by the MU-RTS
+Trigger Frame. Also, the MU-RTS Trigger Frame is carried in a non-HT (duplicate) PPDU transmitted
+at a rate of 6 Mbps, 12 Mbps or 24 Mbps. When the transmission of an initial Control frame starts,
+the AP MLD blocks transmissions to the solicited EMLSR clients on the EMLSR links other than the
+link used to transmit the initial Control frame, so that the AP MLD does not initiate another
+frame exchange on such links. The frame exchange with an EMLSR client is assumed to terminate
+when the AP MLD does not start a frame transmission a SIFS after the response to the last frame
+transmitted by the AP MLD or the AP MLD transmits a frame that is not addressed to the EMLSR
+client. When a frame exchange with an EMLSR client terminates, the AP MLD blocks transmissions on
+all the EMLSR links and starts a timer whose duration is the transition delay advertised by the
+EMLSR client. When the timer expires, the EMLSR client is assumed to be back to the listening
+operations and transmissions on all the EMLSR links are unblocked.
+
 Ack manager
 ###########
 
