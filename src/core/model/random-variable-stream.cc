@@ -802,6 +802,7 @@ LogNormalRandomVariable::GetTypeId()
 }
 
 LogNormalRandomVariable::LogNormalRandomVariable()
+    : m_nextValid(false)
 {
     // m_mu and m_sigma are initialized after constructor by
     // attributes
@@ -851,6 +852,14 @@ LogNormalRandomVariable::GetSigma() const
 double
 LogNormalRandomVariable::GetValue(double mu, double sigma)
 {
+    if (m_nextValid)
+    { // use previously generated
+        m_nextValid = false;
+        double normal = m_v2 * m_normal;
+
+        return std::exp(sigma * normal + mu);
+    }
+
     double v1;
     double v2;
     double r2;
@@ -878,7 +887,10 @@ LogNormalRandomVariable::GetValue(double mu, double sigma)
         r2 = v1 * v1 + v2 * v2;
     } while (r2 > 1.0 || r2 == 0);
 
-    normal = v1 * std::sqrt(-2.0 * std::log(r2) / r2);
+    m_normal = std::sqrt(-2.0 * std::log(r2) / r2);
+    normal = v1 * m_normal;
+    m_nextValid = true;
+    m_v2 = v2;
 
     x = std::exp(sigma * normal + mu);
 

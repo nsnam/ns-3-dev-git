@@ -1175,6 +1175,15 @@ class LogNormalRandomVariable : public RandomVariableStream
     /** The sigma value for the log-normal distribution returned by this RNG stream. */
     double m_sigma;
 
+    /** True if m_normal is valid. */
+    bool m_nextValid;
+
+    /** The algorithm produces two values at a time. Cache parameters for possible reuse.*/
+    double m_v2;
+
+    /** The algorithm produces two values at a time. Cache parameters for possible reuse.*/
+    double m_normal;
+
 }; // class LogNormalRandomVariable
 
 /**
