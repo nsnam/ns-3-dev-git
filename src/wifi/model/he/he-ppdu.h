@@ -163,16 +163,14 @@ class HePpdu : public OfdmPpdu
      *
      * \param psdu the PHY payload (PSDU)
      * \param txVector the TXVECTOR that was used for this PPDU
-     * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
+     * \param channel the operating channel of the PHY used to transmit this PPDU
      * \param ppduDuration the transmission duration of this PPDU
-     * \param band the WifiPhyBand used for the transmission of this PPDU
      * \param uid the unique ID of this PPDU
      */
     HePpdu(Ptr<const WifiPsdu> psdu,
            const WifiTxVector& txVector,
-           uint16_t txCenterFreq,
+           const WifiPhyOperatingChannel& channel,
            Time ppduDuration,
-           WifiPhyBand band,
            uint64_t uid);
     /**
      * Create an MU HE PPDU, storing a map of PSDUs.
@@ -181,17 +179,15 @@ class HePpdu : public OfdmPpdu
      *
      * \param psdus the PHY payloads (PSDUs)
      * \param txVector the TXVECTOR that was used for this PPDU
-     * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
+     * \param channel the operating channel of the PHY used to transmit this PPDU
      * \param ppduDuration the transmission duration of this PPDU
-     * \param band the WifiPhyBand used for the transmission of this PPDU
      * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
      * \param flag the flag indicating the type of Tx PSD to build
      */
     HePpdu(const WifiConstPsduMap& psdus,
            const WifiTxVector& txVector,
-           uint16_t txCenterFreq,
+           const WifiPhyOperatingChannel& channel,
            Time ppduDuration,
-           WifiPhyBand band,
            uint64_t uid,
            TxPsdFlag flag);
 

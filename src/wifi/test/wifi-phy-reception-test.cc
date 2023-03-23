@@ -149,7 +149,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::SendPacket(double rxPowerDbm)
     Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
 
     Ptr<WifiPpdu> ppdu =
-        Create<HePpdu>(psdu, txVector, FREQUENCY, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
+        Create<HePpdu>(psdu, txVector, m_phy->GetOperatingChannel(), txDuration, m_uid++);
 
     Ptr<SpectrumValue> txPowerSpectrum =
         WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(FREQUENCY,
@@ -823,7 +823,7 @@ TestThresholdPreambleDetectionWithFrameCapture::SendPacket(double rxPowerDbm)
     Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
 
     Ptr<WifiPpdu> ppdu =
-        Create<HePpdu>(psdu, txVector, FREQUENCY, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
+        Create<HePpdu>(psdu, txVector, m_phy->GetOperatingChannel(), txDuration, m_uid++);
 
     Ptr<SpectrumValue> txPowerSpectrum =
         WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(FREQUENCY,
@@ -1871,7 +1871,7 @@ TestSimpleFrameCaptureModel::SendPacket(double rxPowerDbm, uint32_t packetSize)
     Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
 
     Ptr<WifiPpdu> ppdu =
-        Create<HePpdu>(psdu, txVector, FREQUENCY, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
+        Create<HePpdu>(psdu, txVector, m_phy->GetOperatingChannel(), txDuration, m_uid++);
 
     Ptr<SpectrumValue> txPowerSpectrum =
         WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(FREQUENCY,
@@ -2136,7 +2136,7 @@ TestPhyHeadersReception::SendPacket(double rxPowerDbm)
     Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
 
     Ptr<WifiPpdu> ppdu =
-        Create<HePpdu>(psdu, txVector, FREQUENCY, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
+        Create<HePpdu>(psdu, txVector, m_phy->GetOperatingChannel(), txDuration, m_uid++);
 
     Ptr<SpectrumValue> txPowerSpectrum =
         WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(FREQUENCY,
@@ -2860,7 +2860,7 @@ TestAmpduReception::SendAmpduWithThreeMpdus(double rxPowerDbm, uint32_t referenc
     Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
 
     Ptr<WifiPpdu> ppdu =
-        Create<HePpdu>(psdu, txVector, FREQUENCY, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
+        Create<HePpdu>(psdu, txVector, m_phy->GetOperatingChannel(), txDuration, m_uid++);
 
     Ptr<SpectrumValue> txPowerSpectrum =
         WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(FREQUENCY,
@@ -4317,11 +4317,10 @@ class TestUnsupportedBandwidthReception : public TestCase
     /**
      * Function to create a PPDU
      *
-     * \param band the PHY band to use
      * \param centerFreqMhz the center frequency used for the transmission of the PPDU (in MHz)
      * \param bandwidthMhz the bandwidth used for the transmission of the PPDU (in MHz)
      */
-    void SendPpdu(WifiPhyBand band, uint16_t centerFreqMhz, uint16_t bandwidthMhz);
+    void SendPpdu(uint16_t centerFreqMhz, uint16_t bandwidthMhz);
 
     /**
      * Function called upon a PSDU received successfully
@@ -4374,7 +4373,8 @@ class TestUnsupportedBandwidthReception : public TestCase
     std::optional<Time> m_lastRxFailed;    ///< time of last RX failure, if any
     std::optional<Time> m_lastRxDropped;   ///< time of last RX drop, if any
 
-    Ptr<SpectrumWifiPhy> m_phy; ///< PHY
+    Ptr<SpectrumWifiPhy> m_rxPhy; ///< RX PHY
+    Ptr<SpectrumWifiPhy> m_txPhy; ///< TX PHY
 };
 
 TestUnsupportedBandwidthReception::TestUnsupportedBandwidthReception()
@@ -4390,9 +4390,7 @@ TestUnsupportedBandwidthReception::TestUnsupportedBandwidthReception()
 }
 
 void
-TestUnsupportedBandwidthReception::SendPpdu(WifiPhyBand band,
-                                            uint16_t centerFreqMhz,
-                                            uint16_t bandwidthMhz)
+TestUnsupportedBandwidthReception::SendPpdu(uint16_t centerFreqMhz, uint16_t bandwidthMhz)
 {
     auto txVector =
         WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, bandwidthMhz, false);
@@ -4404,9 +4402,10 @@ TestUnsupportedBandwidthReception::SendPpdu(WifiPhyBand band,
     hdr.SetQosTid(0);
 
     Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
-    Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
+    Time txDuration =
+        m_rxPhy->CalculateTxDuration(psdu->GetSize(), txVector, m_rxPhy->GetPhyBand());
 
-    auto ppdu = Create<HePpdu>(psdu, txVector, centerFreqMhz, txDuration, WIFI_PHY_BAND_5GHZ, 0);
+    auto ppdu = Create<HePpdu>(psdu, txVector, m_txPhy->GetOperatingChannel(), txDuration, 0);
 
     auto txPowerSpectrum =
         WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(centerFreqMhz,
@@ -4421,7 +4420,7 @@ TestUnsupportedBandwidthReception::SendPpdu(WifiPhyBand band,
     txParams->ppdu = ppdu;
     txParams->txWidth = bandwidthMhz;
 
-    m_phy->StartRx(txParams);
+    m_rxPhy->StartRx(txParams);
 }
 
 void
@@ -4503,26 +4502,37 @@ TestUnsupportedBandwidthReception::CheckRx(uint32_t expectedCountRxSuccess,
 void
 TestUnsupportedBandwidthReception::DoSetup()
 {
-    m_phy = CreateObject<SpectrumWifiPhy>();
-    m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
-    auto interferenceHelper = CreateObject<InterferenceHelper>();
-    m_phy->SetInterferenceHelper(interferenceHelper);
-    auto error = CreateObject<NistErrorRateModel>();
-    m_phy->SetErrorRateModel(error);
+    m_rxPhy = CreateObject<SpectrumWifiPhy>();
+    m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
+    auto rxInterferenceHelper = CreateObject<InterferenceHelper>();
+    m_rxPhy->SetInterferenceHelper(rxInterferenceHelper);
+    auto rxErrorRateModel = CreateObject<NistErrorRateModel>();
+    m_rxPhy->SetErrorRateModel(rxErrorRateModel);
 
-    m_phy->SetReceiveOkCallback(MakeCallback(&TestUnsupportedBandwidthReception::RxSuccess, this));
-    m_phy->SetReceiveErrorCallback(
+    m_rxPhy->SetReceiveOkCallback(
+        MakeCallback(&TestUnsupportedBandwidthReception::RxSuccess, this));
+    m_rxPhy->SetReceiveErrorCallback(
         MakeCallback(&TestUnsupportedBandwidthReception::RxFailure, this));
-    m_phy->TraceConnectWithoutContext(
+    m_rxPhy->TraceConnectWithoutContext(
         "PhyRxDrop",
         MakeCallback(&TestUnsupportedBandwidthReception::RxDropped, this));
+
+    m_txPhy = CreateObject<SpectrumWifiPhy>();
+    m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
+    auto txInterferenceHelper = CreateObject<InterferenceHelper>();
+    m_txPhy->SetInterferenceHelper(txInterferenceHelper);
+    auto txErrorRateModel = CreateObject<NistErrorRateModel>();
+    m_txPhy->SetErrorRateModel(txErrorRateModel);
 }
 
 void
 TestUnsupportedBandwidthReception::DoTeardown()
 {
-    m_phy->Dispose();
-    m_phy = nullptr;
+    m_rxPhy->Dispose();
+    m_rxPhy = nullptr;
+
+    m_txPhy->Dispose();
+    m_txPhy = nullptr;
 }
 
 void
@@ -4532,20 +4542,16 @@ TestUnsupportedBandwidthReception::DoRun()
     RngSeedManager::SetRun(1);
 
     int64_t streamNumber = 0;
-    m_phy->AssignStreams(streamNumber);
+    m_rxPhy->AssignStreams(streamNumber);
 
     // Case 1: the PHY is operating on channel 36 (20 MHz) and receives a 40 MHz PPDU (channel 38).
     // The PPDU should be dropped once HE-SIG-A is successfully received, since it contains
     // indication about the BW used for the transmission and the PHY shall detect it is larger than
     // its operating BW.
-    m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{36, 20, WIFI_PHY_BAND_5GHZ, 0});
+    m_txPhy->SetOperatingChannel(WifiPhy::ChannelTuple{38, 40, WIFI_PHY_BAND_5GHZ, 0});
+    m_rxPhy->SetOperatingChannel(WifiPhy::ChannelTuple{36, 20, WIFI_PHY_BAND_5GHZ, 0});
 
-    Simulator::Schedule(Seconds(1.0),
-                        &TestUnsupportedBandwidthReception::SendPpdu,
-                        this,
-                        WIFI_PHY_BAND_5GHZ,
-                        5190,
-                        40);
+    Simulator::Schedule(Seconds(1.0), &TestUnsupportedBandwidthReception::SendPpdu, this, 5190, 40);
 
     auto heSigAExpectedRxTime = Seconds(1.0) + MicroSeconds(32);
     Simulator::Schedule(Seconds(1.5),
@@ -4585,11 +4591,10 @@ class TestPrimary20CoveredByPpdu : public TestCase
     /**
      * Function to create a PPDU
      *
-     * \param band the PHY band to use
      * \param ppduCenterFreqMhz the center frequency used for the transmission of the PPDU (in MHz)
      * \return the created PPDU
      */
-    Ptr<HePpdu> CreatePpdu(WifiPhyBand band, uint16_t ppduCenterFreqMhz);
+    Ptr<HePpdu> CreatePpdu(uint16_t ppduCenterFreqMhz);
 
     /**
      * Run one function
@@ -4610,7 +4615,8 @@ class TestPrimary20CoveredByPpdu : public TestCase
                 bool expectedP20Overlap,
                 bool expectedP20Covered);
 
-    Ptr<SpectrumWifiPhy> m_phy; ///< PHY
+    Ptr<SpectrumWifiPhy> m_rxPhy; ///< RX PHY
+    Ptr<SpectrumWifiPhy> m_txPhy; ///< TX PHY
 };
 
 TestPrimary20CoveredByPpdu::TestPrimary20CoveredByPpdu()
@@ -4620,11 +4626,15 @@ TestPrimary20CoveredByPpdu::TestPrimary20CoveredByPpdu()
 }
 
 Ptr<HePpdu>
-TestPrimary20CoveredByPpdu::CreatePpdu(WifiPhyBand band, uint16_t ppduCenterFreqMhz)
+TestPrimary20CoveredByPpdu::CreatePpdu(uint16_t ppduCenterFreqMhz)
 {
     [[maybe_unused]] auto [channelNumber, centerFreq, channelWidth, type, phyBand] =
-        (*WifiPhyOperatingChannel::FindFirst(0, ppduCenterFreqMhz, 0, WIFI_STANDARD_80211ax, band));
-
+        (*WifiPhyOperatingChannel::FindFirst(0,
+                                             ppduCenterFreqMhz,
+                                             0,
+                                             WIFI_STANDARD_80211ax,
+                                             m_rxPhy->GetPhyBand()));
+    m_txPhy->SetOperatingChannel(WifiPhy::ChannelTuple{channelNumber, channelWidth, phyBand, 0});
     auto txVector =
         WifiTxVector(HePhy::GetHeMcs7(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, channelWidth, false);
 
@@ -4632,27 +4642,36 @@ TestPrimary20CoveredByPpdu::CreatePpdu(WifiPhyBand band, uint16_t ppduCenterFreq
     WifiMacHeader hdr(WIFI_MAC_QOSDATA);
 
     auto psdu = Create<WifiPsdu>(pkt, hdr);
-    auto txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, band);
+    auto txDuration = m_txPhy->CalculateTxDuration(psdu->GetSize(), txVector, phyBand);
 
-    return Create<HePpdu>(psdu, txVector, ppduCenterFreqMhz, txDuration, band, 0);
+    return Create<HePpdu>(psdu, txVector, m_txPhy->GetOperatingChannel(), txDuration, 0);
 }
 
 void
 TestPrimary20CoveredByPpdu::DoSetup()
 {
-    m_phy = CreateObject<SpectrumWifiPhy>();
-    m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
-    auto interferenceHelper = CreateObject<InterferenceHelper>();
-    m_phy->SetInterferenceHelper(interferenceHelper);
-    auto error = CreateObject<NistErrorRateModel>();
-    m_phy->SetErrorRateModel(error);
+    m_rxPhy = CreateObject<SpectrumWifiPhy>();
+    m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
+    auto rxInterferenceHelper = CreateObject<InterferenceHelper>();
+    m_rxPhy->SetInterferenceHelper(rxInterferenceHelper);
+    auto rxErrorRateModel = CreateObject<NistErrorRateModel>();
+    m_rxPhy->SetErrorRateModel(rxErrorRateModel);
+
+    m_txPhy = CreateObject<SpectrumWifiPhy>();
+    m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
+    auto txInterferenceHelper = CreateObject<InterferenceHelper>();
+    m_txPhy->SetInterferenceHelper(txInterferenceHelper);
+    auto txErrorRateModel = CreateObject<NistErrorRateModel>();
+    m_txPhy->SetErrorRateModel(txErrorRateModel);
 }
 
 void
 TestPrimary20CoveredByPpdu::DoTeardown()
 {
-    m_phy->Dispose();
-    m_phy = nullptr;
+    m_rxPhy->Dispose();
+    m_rxPhy = nullptr;
+    m_txPhy->Dispose();
+    m_txPhy = nullptr;
 }
 
 void
@@ -4666,12 +4685,13 @@ TestPrimary20CoveredByPpdu::RunOne(WifiPhyBand band,
     [[maybe_unused]] const auto [channelNumber, centerFreq, channelWidth, type, phyBand] =
         (*WifiPhyOperatingChannel::FindFirst(0, phyCenterFreqMhz, 0, WIFI_STANDARD_80211ax, band));
 
-    m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{channelNumber, channelWidth, band, p20Index});
-    auto p20CenterFreq = m_phy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(20);
+    m_rxPhy->SetOperatingChannel(
+        WifiPhy::ChannelTuple{channelNumber, channelWidth, band, p20Index});
+    auto p20CenterFreq = m_rxPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(20);
     auto p20MinFreq = p20CenterFreq - 10;
     auto p20MaxFreq = p20CenterFreq + 10;
 
-    auto ppdu = CreatePpdu(band, ppduCenterFreqMhz);
+    auto ppdu = CreatePpdu(ppduCenterFreqMhz);
 
     auto p20Overlap = ppdu->DoesOverlapChannel(p20MinFreq, p20MaxFreq);
     NS_TEST_ASSERT_MSG_EQ(p20Overlap,
@@ -4680,7 +4700,7 @@ TestPrimary20CoveredByPpdu::RunOne(WifiPhyBand band,
                                      << " to overlap with the P20");
 
     auto p20Covered =
-        m_phy->GetPhyEntity(WIFI_STANDARD_80211ax)
+        m_rxPhy->GetPhyEntity(WIFI_STANDARD_80211ax)
             ->CanStartRx(
                 ppdu,
                 ppdu->GetTxVector()
@@ -4704,7 +4724,7 @@ TestPrimary20CoveredByPpdu::DoRun()
 
     /*
      * Receiver PHY Operating Channel: 2.4 GHz Channel 4 (2417 MHz – 2437 MHz)
-     * Transmitted 40 MHz PPDU: 2.4 GHz Channel 6 (2427 MHz – 2447 MHz)
+     * Transmitted 20 MHz PPDU: 2.4 GHz Channel 6 (2427 MHz – 2447 MHz)
      * Overlap with primary 20 MHz: yes
      * Primary 20 MHz fully covered: no
      */

@@ -200,8 +200,7 @@ DsssPhy::BuildPpdu(const WifiConstPsduMap& psdus, const WifiTxVector& txVector, 
     NS_LOG_FUNCTION(this << psdus << txVector << ppduDuration);
     return Create<DsssPpdu>(psdus.begin()->second,
                             txVector,
-                            m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(
-                                txVector.GetChannelWidth()),
+                            m_wifiPhy->GetOperatingChannel(),
                             ppduDuration,
                             ObtainNextUid(txVector));
 }

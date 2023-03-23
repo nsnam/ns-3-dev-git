@@ -23,6 +23,7 @@
 
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "ns3/wifi-phy-operating-channel.h"
 
 namespace ns3
 {
@@ -31,33 +32,39 @@ NS_LOG_COMPONENT_DEFINE("WifiPpdu");
 
 WifiPpdu::WifiPpdu(Ptr<const WifiPsdu> psdu,
                    const WifiTxVector& txVector,
-                   uint16_t txCenterFreq,
+                   const WifiPhyOperatingChannel& channel,
                    uint64_t uid /* = UINT64_MAX */)
     : m_preamble(txVector.GetPreambleType()),
       m_modulation(txVector.IsValid() ? txVector.GetModulationClass() : WIFI_MOD_CLASS_UNKNOWN),
-      m_txCenterFreq(txCenterFreq),
+      m_txCenterFreq(channel.IsSet()
+                         ? channel.GetPrimaryChannelCenterFrequency(txVector.GetChannelWidth())
+                         : 0),
       m_uid(uid),
       m_txVector(txVector),
+      m_operatingChannel(channel),
 #ifdef NS3_BUILD_PROFILE_DEBUG
       m_phyHeaders(Create<Packet>()),
 #endif
       m_truncatedTx(false),
       m_txPowerLevel(txVector.GetTxPowerLevel())
 {
-    NS_LOG_FUNCTION(this << *psdu << txVector << txCenterFreq << uid);
+    NS_LOG_FUNCTION(this << *psdu << txVector << channel << uid);
     m_psdus.insert(std::make_pair(SU_STA_ID, psdu));
 }
 
 WifiPpdu::WifiPpdu(const WifiConstPsduMap& psdus,
                    const WifiTxVector& txVector,
-                   uint16_t txCenterFreq,
+                   const WifiPhyOperatingChannel& channel,
                    uint64_t uid)
     : m_preamble(txVector.GetPreambleType()),
       m_modulation(txVector.IsValid() ? txVector.GetMode(psdus.begin()->first).GetModulationClass()
                                       : WIFI_MOD_CLASS_UNKNOWN),
-      m_txCenterFreq(txCenterFreq),
+      m_txCenterFreq(channel.IsSet()
+                         ? channel.GetPrimaryChannelCenterFrequency(txVector.GetChannelWidth())
+                         : 0),
       m_uid(uid),
       m_txVector(txVector),
+      m_operatingChannel(channel),
 #ifdef NS3_BUILD_PROFILE_DEBUG
       m_phyHeaders(Create<Packet>()),
 #endif
@@ -65,7 +72,7 @@ WifiPpdu::WifiPpdu(const WifiConstPsduMap& psdus,
       m_txPowerLevel(txVector.GetTxPowerLevel()),
       m_txAntennas(txVector.GetNTx())
 {
-    NS_LOG_FUNCTION(this << psdus << txVector << txCenterFreq << uid);
+    NS_LOG_FUNCTION(this << psdus << txVector << channel << uid);
     m_psdus = psdus;
 }
 

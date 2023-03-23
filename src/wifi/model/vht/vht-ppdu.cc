@@ -24,6 +24,7 @@
 #include "vht-phy.h"
 
 #include "ns3/log.h"
+#include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-psdu.h"
 
@@ -34,18 +35,16 @@ NS_LOG_COMPONENT_DEFINE("VhtPpdu");
 
 VhtPpdu::VhtPpdu(Ptr<const WifiPsdu> psdu,
                  const WifiTxVector& txVector,
-                 uint16_t txCenterFreq,
+                 const WifiPhyOperatingChannel& channel,
                  Time ppduDuration,
-                 WifiPhyBand band,
                  uint64_t uid)
     : OfdmPpdu(psdu,
                txVector,
-               txCenterFreq,
-               band,
+               channel,
                uid,
                false) // don't instantiate LSigHeader of OfdmPpdu
 {
-    NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << ppduDuration << band << uid);
+    NS_LOG_FUNCTION(this << psdu << txVector << channel << ppduDuration << uid);
     SetPhyHeaders(txVector, ppduDuration);
 }
 

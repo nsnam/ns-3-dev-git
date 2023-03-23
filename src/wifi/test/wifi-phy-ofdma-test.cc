@@ -2433,9 +2433,8 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
         m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand(), staId);
     Ptr<HePpdu> ppdu = Create<HePpdu>(psdus,
                                       txVector,
-                                      DEFAULT_FREQUENCY,
+                                      m_phy->GetOperatingChannel(),
                                       ppduDuration,
-                                      WIFI_PHY_BAND_5GHZ,
                                       uid,
                                       HePpdu::PSD_NON_HE_PORTION);
 

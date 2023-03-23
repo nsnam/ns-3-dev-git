@@ -24,6 +24,7 @@
 #include "ofdm-phy.h"
 
 #include "ns3/log.h"
+#include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-psdu.h"
 
@@ -34,15 +35,13 @@ NS_LOG_COMPONENT_DEFINE("OfdmPpdu");
 
 OfdmPpdu::OfdmPpdu(Ptr<const WifiPsdu> psdu,
                    const WifiTxVector& txVector,
-                   uint16_t txCenterFreq,
-                   WifiPhyBand band,
+                   const WifiPhyOperatingChannel& channel,
                    uint64_t uid,
                    bool instantiateLSig /* = true */)
-    : WifiPpdu(psdu, txVector, txCenterFreq, uid),
-      m_band(band),
+    : WifiPpdu(psdu, txVector, channel, uid),
       m_channelWidth(txVector.IsNonHtDuplicate() ? 20 : txVector.GetChannelWidth())
 {
-    NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << band << uid);
+    NS_LOG_FUNCTION(this << psdu << txVector << channel << uid);
     if (instantiateLSig)
     {
         SetPhyHeaders(txVector, psdu->GetSize());
@@ -112,7 +111,8 @@ OfdmPpdu::GetTxDuration() const
 #else
     length = m_lSig.GetLength();
 #endif
-    return WifiPhy::CalculateTxDuration(length, txVector, m_band);
+    NS_ASSERT(m_operatingChannel.IsSet());
+    return WifiPhy::CalculateTxDuration(length, txVector, m_operatingChannel.GetPhyBand());
 }
 
 Ptr<WifiPpdu>

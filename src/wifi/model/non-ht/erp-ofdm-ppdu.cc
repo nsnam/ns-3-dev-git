@@ -23,6 +23,7 @@
 #include "erp-ofdm-phy.h"
 
 #include "ns3/log.h"
+#include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-psdu.h"
 
 namespace ns3
@@ -32,12 +33,11 @@ NS_LOG_COMPONENT_DEFINE("ErpOfdmPpdu");
 
 ErpOfdmPpdu::ErpOfdmPpdu(Ptr<const WifiPsdu> psdu,
                          const WifiTxVector& txVector,
-                         uint16_t txCenterFreq,
-                         WifiPhyBand band,
+                         const WifiPhyOperatingChannel& channel,
                          uint64_t uid)
-    : OfdmPpdu(psdu, txVector, txCenterFreq, band, uid, true) // add LSigHeader of OfdmPpdu
+    : OfdmPpdu(psdu, txVector, channel, uid, true) // add LSigHeader of OfdmPpdu
 {
-    NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << band << uid);
+    NS_LOG_FUNCTION(this << psdu << txVector << channel << uid);
 }
 
 void

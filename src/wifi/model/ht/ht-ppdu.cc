@@ -24,6 +24,7 @@
 #include "ht-phy.h"
 
 #include "ns3/log.h"
+#include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-utils.h"
@@ -35,18 +36,16 @@ NS_LOG_COMPONENT_DEFINE("HtPpdu");
 
 HtPpdu::HtPpdu(Ptr<const WifiPsdu> psdu,
                const WifiTxVector& txVector,
-               uint16_t txCenterFreq,
+               const WifiPhyOperatingChannel& channel,
                Time ppduDuration,
-               WifiPhyBand band,
                uint64_t uid)
     : OfdmPpdu(psdu,
                txVector,
-               txCenterFreq,
-               band,
+               channel,
                uid,
                false) // don't instantiate LSigHeader of OfdmPpdu
 {
-    NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << ppduDuration << band << uid);
+    NS_LOG_FUNCTION(this << psdu << txVector << channel << ppduDuration << uid);
     SetPhyHeaders(txVector, ppduDuration, psdu->GetSize());
 }
 
@@ -74,7 +73,8 @@ void
 HtPpdu::SetLSigHeader(LSigHeader& lSig, Time ppduDuration) const
 {
     uint8_t sigExtension = 0;
-    if (m_band == WIFI_PHY_BAND_2_4GHZ)
+    NS_ASSERT(m_operatingChannel.IsSet());
+    if (m_operatingChannel.GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
     {
         sigExtension = 6;
     }
@@ -158,7 +158,9 @@ HtPpdu::GetTxDuration() const
     htLength = m_htSig.GetHtLength();
 #endif
 
-    ppduDuration = WifiPhy::CalculateTxDuration(htLength, txVector, m_band);
+    NS_ASSERT(m_operatingChannel.IsSet());
+    ppduDuration =
+        WifiPhy::CalculateTxDuration(htLength, txVector, m_operatingChannel.GetPhyBand());
     return ppduDuration;
 }
 

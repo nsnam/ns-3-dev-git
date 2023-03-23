@@ -339,10 +339,8 @@ HePhy::BuildPpdu(const WifiConstPsduMap& psdus, const WifiTxVector& txVector, Ti
     NS_LOG_FUNCTION(this << psdus << txVector << ppduDuration);
     return Create<HePpdu>(psdus,
                           txVector,
-                          m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(
-                              txVector.GetChannelWidth()),
+                          m_wifiPhy->GetOperatingChannel(),
                           ppduDuration,
-                          m_wifiPhy->GetPhyBand(),
                           ObtainNextUid(txVector),
                           HePpdu::PSD_NON_HE_PORTION);
 }

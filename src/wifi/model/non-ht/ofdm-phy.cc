@@ -298,9 +298,7 @@ OfdmPhy::BuildPpdu(const WifiConstPsduMap& psdus,
     return Create<OfdmPpdu>(
         psdus.begin()->second,
         txVector,
-        m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(
-            txVector.GetChannelWidth()),
-        m_wifiPhy->GetPhyBand(),
+        m_wifiPhy->GetOperatingChannel(),
         m_wifiPhy->GetLatestPhyEntity()->ObtainNextUid(
             txVector)); // use latest PHY entity to handle MU-RTS sent with non-HT rate
 }

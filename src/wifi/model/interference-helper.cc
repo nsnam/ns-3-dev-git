@@ -28,6 +28,7 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
+#include "ns3/wifi-phy-operating-channel.h"
 
 #include <algorithm>
 #include <numeric>
@@ -232,8 +233,9 @@ InterferenceHelper::AddForeignSignal(Time duration, RxPowerWattPerChannelBand& r
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_QOSDATA);
     hdr.SetQosTid(0);
-    Ptr<WifiPpdu> fakePpdu =
-        Create<WifiPpdu>(Create<WifiPsdu>(Create<Packet>(0), hdr), WifiTxVector(), 0);
+    Ptr<WifiPpdu> fakePpdu = Create<WifiPpdu>(Create<WifiPsdu>(Create<Packet>(0), hdr),
+                                              WifiTxVector(),
+                                              WifiPhyOperatingChannel());
     Add(fakePpdu, WifiTxVector(), duration, rxPowerW);
 }
 

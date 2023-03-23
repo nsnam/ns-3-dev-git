@@ -105,16 +105,14 @@ class OfdmPpdu : public WifiPpdu
      *
      * \param psdu the PHY payload (PSDU)
      * \param txVector the TXVECTOR that was used for this PPDU
-     * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
-     * \param band the WifiPhyBand used for the transmission of this PPDU
+     * \param channel the operating channel of the PHY used to transmit this PPDU
      * \param uid the unique ID of this PPDU
      * \param instantiateLSig flag used to instantiate LSigHeader (set LSigHeader's
      *                        rate and length), should be disabled by child classes
      */
     OfdmPpdu(Ptr<const WifiPsdu> psdu,
              const WifiTxVector& txVector,
-             uint16_t txCenterFreq,
-             WifiPhyBand band,
+             const WifiPhyOperatingChannel& channel,
              uint64_t uid,
              bool instantiateLSig = true);
 
@@ -122,7 +120,6 @@ class OfdmPpdu : public WifiPpdu
     Ptr<WifiPpdu> Copy() const override;
 
   protected:
-    WifiPhyBand m_band; //!< the WifiPhyBand used to transmit that PPDU
 #ifndef NS3_BUILD_PROFILE_DEBUG
     LSigHeader m_lSig; //!< the L-SIG PHY header
 #endif

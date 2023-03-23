@@ -38,7 +38,6 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("SpectrumWifiPhyBasicTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
-static const uint32_t FREQUENCY = 5180;   // MHz
 static const uint16_t CHANNEL_WIDTH = 20; // MHz
 static const uint16_t GUARD_WIDTH =
     CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
@@ -75,9 +74,11 @@ class SpectrumWifiPhyBasicTest : public TestCase
     /**
      * Make signal function
      * \param txPowerWatts the transmit power in watts
+     * \param channel the operating channel of the PHY used for the transmission
      * \returns Ptr<SpectrumSignalParameters>
      */
-    Ptr<SpectrumSignalParameters> MakeSignal(double txPowerWatts);
+    Ptr<SpectrumSignalParameters> MakeSignal(double txPowerWatts,
+                                             const WifiPhyOperatingChannel& channel);
     /**
      * Send signal function
      * \param txPowerWatts the transmit power in watts
@@ -121,10 +122,17 @@ SpectrumWifiPhyBasicTest::SpectrumWifiPhyBasicTest(std::string name)
 
 // Make a Wi-Fi signal to inject directly to the StartRx() method
 Ptr<SpectrumSignalParameters>
-SpectrumWifiPhyBasicTest::MakeSignal(double txPowerWatts)
+SpectrumWifiPhyBasicTest::MakeSignal(double txPowerWatts, const WifiPhyOperatingChannel& channel)
 {
-    WifiTxVector txVector =
-        WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(), 0, WIFI_PREAMBLE_LONG, 800, 1, 1, 0, 20, false);
+    WifiTxVector txVector = WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
+                                         0,
+                                         WIFI_PREAMBLE_LONG,
+                                         800,
+                                         1,
+                                         1,
+                                         0,
+                                         CHANNEL_WIDTH,
+                                         false);
 
     Ptr<Packet> pkt = Create<Packet>(1000);
     WifiMacHeader hdr;
@@ -135,13 +143,13 @@ SpectrumWifiPhyBasicTest::MakeSignal(double txPowerWatts)
     Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
     Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
 
-    Ptr<WifiPpdu> ppdu = Create<OfdmPpdu>(psdu, txVector, FREQUENCY, WIFI_PHY_BAND_5GHZ, m_uid++);
+    Ptr<WifiPpdu> ppdu = Create<OfdmPpdu>(psdu, txVector, channel, m_uid++);
 
-    Ptr<SpectrumValue> txPowerSpectrum =
-        WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(FREQUENCY,
-                                                                  CHANNEL_WIDTH,
-                                                                  txPowerWatts,
-                                                                  GUARD_WIDTH);
+    Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(
+        channel.GetPrimaryChannelCenterFrequency(CHANNEL_WIDTH),
+        CHANNEL_WIDTH,
+        txPowerWatts,
+        GUARD_WIDTH);
     Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters>();
     txParams->psd = txPowerSpectrum;
     txParams->txPhy = nullptr;
@@ -156,7 +164,7 @@ SpectrumWifiPhyBasicTest::MakeSignal(double txPowerWatts)
 void
 SpectrumWifiPhyBasicTest::SendSignal(double txPowerWatts)
 {
-    m_phy->StartRx(MakeSignal(txPowerWatts));
+    m_phy->StartRx(MakeSignal(txPowerWatts, m_phy->GetOperatingChannel()));
 }
 
 void

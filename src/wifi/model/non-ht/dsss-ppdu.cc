@@ -24,6 +24,7 @@
 #include "dsss-phy.h"
 
 #include "ns3/log.h"
+#include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-psdu.h"
 
@@ -34,12 +35,12 @@ NS_LOG_COMPONENT_DEFINE("DsssPpdu");
 
 DsssPpdu::DsssPpdu(Ptr<const WifiPsdu> psdu,
                    const WifiTxVector& txVector,
-                   uint16_t txCenterFreq,
+                   const WifiPhyOperatingChannel& channel,
                    Time ppduDuration,
                    uint64_t uid)
-    : WifiPpdu(psdu, txVector, txCenterFreq, uid)
+    : WifiPpdu(psdu, txVector, channel, uid)
 {
-    NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << ppduDuration << uid);
+    NS_LOG_FUNCTION(this << psdu << txVector << channel << ppduDuration << uid);
     SetPhyHeaders(txVector, ppduDuration);
 }
 

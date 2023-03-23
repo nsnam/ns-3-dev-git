@@ -40,6 +40,7 @@ namespace ns3
 
 class Packet;
 class WifiPsdu;
+class WifiPhyOperatingChannel;
 
 /**
  * Map of const PSDUs indexed by STA-ID
@@ -60,24 +61,24 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
      *
      * \param psdu the PHY payload (PSDU)
      * \param txVector the TXVECTOR that was used for this PPDU
-     * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
+     * \param channel the operating channel of the PHY used to transmit this PPDU
      * \param uid the unique ID of this PPDU
      */
     WifiPpdu(Ptr<const WifiPsdu> psdu,
              const WifiTxVector& txVector,
-             uint16_t txCenterFreq,
+             const WifiPhyOperatingChannel& channel,
              uint64_t uid = UINT64_MAX);
     /**
      * Create a PPDU storing a map of PSDUs.
      *
      * \param psdus the PHY payloads (PSDUs)
      * \param txVector the TXVECTOR that was used for this PPDU
-     * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
+     * \param channel the operating channel of the PHY used to transmit this PPDU
      * \param uid the unique ID of this PPDU
      */
     WifiPpdu(const WifiConstPsduMap& psdus,
              const WifiTxVector& txVector,
-             uint16_t txCenterFreq,
+             const WifiPhyOperatingChannel& channel,
              uint64_t uid);
     /**
      * Destructor for WifiPpdu.
@@ -206,6 +207,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     mutable std::optional<WifiTxVector>
         m_txVector; //!< the TXVECTOR at TX PHY or the reconstructed TXVECTOR at RX PHY (or
                     //!< std::nullopt if TXVECTOR has not been reconstructed yet)
+    const WifiPhyOperatingChannel& m_operatingChannel; //!< the operating channel of the PHY
 
 #ifdef NS3_BUILD_PROFILE_DEBUG
     Ptr<Packet> m_phyHeaders; //!< the PHY headers contained in this PPDU

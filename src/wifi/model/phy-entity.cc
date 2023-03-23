@@ -246,8 +246,7 @@ PhyEntity::BuildPpdu(const WifiConstPsduMap& psdus, const WifiTxVector& txVector
                    "version in the amendment-specific subclasses instead!");
     return Create<WifiPpdu>(psdus.begin()->second,
                             txVector,
-                            m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(
-                                txVector.GetChannelWidth())); // should be overloaded
+                            m_wifiPhy->GetOperatingChannel()); // should be overloaded
 }
 
 Time

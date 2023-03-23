@@ -22,6 +22,7 @@
 #include "eht-phy.h"
 
 #include "ns3/log.h"
+#include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-psdu.h"
 
 namespace ns3
@@ -31,15 +32,13 @@ NS_LOG_COMPONENT_DEFINE("EhtPpdu");
 
 EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
                  const WifiTxVector& txVector,
-                 uint16_t txCenterFreq,
+                 const WifiPhyOperatingChannel& channel,
                  Time ppduDuration,
-                 WifiPhyBand band,
                  uint64_t uid,
                  TxPsdFlag flag)
-    : HePpdu(psdus, txVector, txCenterFreq, ppduDuration, band, uid, flag)
+    : HePpdu(psdus, txVector, channel, ppduDuration, uid, flag)
 {
-    NS_LOG_FUNCTION(this << psdus << txVector << txCenterFreq << ppduDuration << band << uid
-                         << flag);
+    NS_LOG_FUNCTION(this << psdus << txVector << channel << ppduDuration << uid << flag);
 
     // For EHT SU transmissions (carried in EHT MU PPDUs), we have to:
     // - store the EHT-SIG content channels

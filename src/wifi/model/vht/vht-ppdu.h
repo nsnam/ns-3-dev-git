@@ -23,6 +23,7 @@
 #define VHT_PPDU_H
 
 #include "ns3/ofdm-ppdu.h"
+#include "ns3/wifi-phy-operating-channel.h"
 
 /**
  * \file
@@ -153,16 +154,14 @@ class VhtPpdu : public OfdmPpdu
      *
      * \param psdu the PHY payload (PSDU)
      * \param txVector the TXVECTOR that was used for this PPDU
-     * \param txCenterFreq the center frequency (MHz) that was used for this PPDU
+     * \param channel the operating channel of the PHY used to transmit this PPDU
      * \param ppduDuration the transmission duration of this PPDU
-     * \param band the WifiPhyBand used for the transmission of this PPDU
      * \param uid the unique ID of this PPDU
      */
     VhtPpdu(Ptr<const WifiPsdu> psdu,
             const WifiTxVector& txVector,
-            uint16_t txCenterFreq,
+            const WifiPhyOperatingChannel& channel,
             Time ppduDuration,
-            WifiPhyBand band,
             uint64_t uid);
 
     Time GetTxDuration() const override;

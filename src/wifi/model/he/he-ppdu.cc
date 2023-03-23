@@ -24,6 +24,7 @@
 #include "he-phy.h"
 
 #include "ns3/log.h"
+#include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-utils.h"
@@ -50,20 +51,18 @@ operator<<(std::ostream& os, const HePpdu::TxPsdFlag& flag)
 
 HePpdu::HePpdu(const WifiConstPsduMap& psdus,
                const WifiTxVector& txVector,
-               uint16_t txCenterFreq,
+               const WifiPhyOperatingChannel& channel,
                Time ppduDuration,
-               WifiPhyBand band,
                uint64_t uid,
                TxPsdFlag flag)
     : OfdmPpdu(psdus.begin()->second,
                txVector,
-               txCenterFreq,
-               band,
+               channel,
                uid,
-               false) // don't instantiate LSigHeader of OfdmPpdu
+               false), // don't instantiate LSigHeader of OfdmPpdu
+      m_txPsdFlag(flag)
 {
-    NS_LOG_FUNCTION(this << psdus << txVector << txCenterFreq << ppduDuration << band << uid
-                         << flag);
+    NS_LOG_FUNCTION(this << psdus << txVector << channel << ppduDuration << uid << flag);
 
     // overwrite with map (since only first element used by OfdmPpdu)
     m_psdus.begin()->second = nullptr;
@@ -85,18 +84,16 @@ HePpdu::HePpdu(const WifiConstPsduMap& psdus,
 
 HePpdu::HePpdu(Ptr<const WifiPsdu> psdu,
                const WifiTxVector& txVector,
-               uint16_t txCenterFreq,
+               const WifiPhyOperatingChannel& channel,
                Time ppduDuration,
-               WifiPhyBand band,
                uint64_t uid)
     : OfdmPpdu(psdu,
                txVector,
-               txCenterFreq,
-               band,
+               channel,
                uid,
                false) // don't instantiate LSigHeader of OfdmPpdu
 {
-    NS_LOG_FUNCTION(this << psdu << txVector << txCenterFreq << ppduDuration << band << uid);
+    NS_LOG_FUNCTION(this << psdu << txVector << channel << ppduDuration << uid);
     NS_ASSERT(!IsMu());
     SetPhyHeaders(txVector, ppduDuration);
     SetTxPsdFlag(PSD_NON_HE_PORTION);
@@ -126,7 +123,8 @@ void
 HePpdu::SetLSigHeader(LSigHeader& lSig, Time ppduDuration) const
 {
     uint8_t sigExtension = 0;
-    if (m_band == WIFI_PHY_BAND_2_4GHZ)
+    NS_ASSERT(m_operatingChannel.IsSet());
+    if (m_operatingChannel.GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
     {
         sigExtension = 6;
     }
@@ -240,7 +238,8 @@ HePpdu::GetTxDuration() const
     Time tSymbol = NanoSeconds(12800 + txVector.GetGuardInterval());
     Time preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
     uint8_t sigExtension = 0;
-    if (m_band == WIFI_PHY_BAND_2_4GHZ)
+    NS_ASSERT(m_operatingChannel.IsSet());
+    if (m_operatingChannel.GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
     {
         sigExtension = 6;
     }
