@@ -191,6 +191,27 @@ MatrixArrayTestCase<T>::DoRun()
     NS_TEST_ASSERT_MSG_EQ(m6, m8, "These two matrices should be equal");
     NS_LOG_INFO("m8 = m5.Transpose ()" << m8);
 
+    // test transpose using initialization arrays
+    std::valarray<int> a{0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4};
+    std::valarray<int> b{0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4};
+    std::valarray<T> aCasted(a.size());
+    std::valarray<T> bCasted(b.size());
+    for (size_t i = 0; i < a.size(); ++i)
+    {
+        aCasted[i] = static_cast<T>(a[i]);
+    }
+    for (size_t i = 0; i < b.size(); ++i)
+    {
+        bCasted[i] = static_cast<T>(b[i]);
+    }
+    m5 = MatrixArray<T>(3, 5, 1, aCasted);
+    m6 = MatrixArray<T>(5, 3, 1, bCasted);
+    m8 = m5.Transpose();
+    NS_TEST_ASSERT_MSG_EQ(m6, m8, "These two matrices should be equal");
+    NS_LOG_INFO("m5 (3, 5, 1):" << m5);
+    NS_LOG_INFO("m6 (5, 3, 1):" << m6);
+    NS_LOG_INFO("m8 (5, 3, 1) = m5.Transpose ()" << m8);
+
     // test 1D array creation, i.e. vector and transposing it
     MatrixArray<T> m9 = MatrixArray<T>(std::vector<T>({0, 1, 2, 3, 4, 5, 6, 7}));
     NS_TEST_ASSERT_MSG_EQ((m9.GetNumRows() == 8) && (m9.GetNumCols() == 1) &&
@@ -219,12 +240,12 @@ MatrixArrayTestCase<T>::DoRun()
     // test multiplication by using an initialization matrixArray
     // matrix dimensions in each page are 2x3, 3x2, and the resulting matrix per page is a square
     // matrix 2x2
-    std::valarray<int> a{0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5};
-    std::valarray<int> b{0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
+    a = {0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5};
+    b = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
     std::valarray<int> c{2, 3, 4, 6, 2, 3, 4, 6};
-    std::valarray<T> aCasted(a.size());
-    std::valarray<T> bCasted(b.size());
-    std::valarray<T> cCasted(c.size());
+    aCasted = std::valarray<T>(a.size());
+    bCasted = std::valarray<T>(b.size());
+    std::valarray<T> cCasted = std::valarray<T>(c.size());
 
     for (size_t i = 0; i < a.size(); ++i)
     {
