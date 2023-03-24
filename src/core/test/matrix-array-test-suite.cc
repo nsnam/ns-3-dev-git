@@ -422,6 +422,83 @@ MatrixArrayTestCase<T>::DoRun()
 
 /**
  * \ingroup matrixArray-tests
+ *  Test for testing functions that apply to MatrixArrays that use complex numbers,
+ *  such as HermitianTranspose that is only defined for complex type
+ */
+class ComplexMatrixArrayTestCase : public TestCase
+{
+  public:
+    /** Constructor*/
+    ComplexMatrixArrayTestCase();
+    /**
+     * Constructor
+     *
+     * \param [in] name reference name
+     */
+    ComplexMatrixArrayTestCase(const std::string name);
+    /** Destructor*/
+    ~ComplexMatrixArrayTestCase() override;
+
+  private:
+    void DoRun() override;
+};
+
+ComplexMatrixArrayTestCase::ComplexMatrixArrayTestCase()
+    : TestCase("ComplexMatrixArrayTestCase")
+{
+}
+
+ComplexMatrixArrayTestCase::ComplexMatrixArrayTestCase(const std::string name)
+    : TestCase(name)
+{
+}
+
+ComplexMatrixArrayTestCase::~ComplexMatrixArrayTestCase()
+{
+}
+
+void
+ComplexMatrixArrayTestCase::DoRun()
+{
+    std::valarray<std::complex<double>> complexValarray1 = {
+        {1, 1},
+        {2, 2},
+        {3, 3},
+        {4, 4},
+        {5, 5},
+        {6, 6},
+        {-1, 1},
+        {-2, 2},
+        {-3, 3},
+        {-4, 4},
+        {-5, 5},
+        {-6, 6},
+    };
+    std::valarray<std::complex<double>> complexValarray2 = {
+        {1, -1},
+        {4, -4},
+        {2, -2},
+        {5, -5},
+        {3, -3},
+        {6, -6},
+        {-1, -1},
+        {-4, -4},
+        {-2, -2},
+        {-5, -5},
+        {-3, -3},
+        {-6, -6},
+    };
+    ComplexMatrixArray m1 = ComplexMatrixArray(3, 2, 2, complexValarray1);
+    ComplexMatrixArray m2 = ComplexMatrixArray(2, 3, 2, complexValarray2);
+    ComplexMatrixArray m3 = m1.HermitianTranspose();
+    NS_LOG_INFO("m1 (3, 2, 2):" << m1);
+    NS_LOG_INFO("m2 (2, 3, 2):" << m2);
+    NS_LOG_INFO("m3 (2, 3, 2):" << m3);
+    NS_TEST_ASSERT_MSG_EQ(m2, m3, "m2 and m3 matrices should be equal");
+}
+
+/**
+ * \ingroup matrixArray-tests
  * MatrixArray test suite
  */
 class MatrixArrayTestSuite : public TestSuite
@@ -438,6 +515,7 @@ MatrixArrayTestSuite::MatrixArrayTestSuite()
     AddTestCase(
         new MatrixArrayTestCase<std::complex<double>>("Test MatrixArray<std::complex<double>>"));
     AddTestCase(new MatrixArrayTestCase<int>("Test MatrixArray<int>"));
+    AddTestCase(new ComplexMatrixArrayTestCase("Test ComplexMatrixArray"));
 }
 
 /**
