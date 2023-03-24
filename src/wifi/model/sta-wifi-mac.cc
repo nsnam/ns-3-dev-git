@@ -289,6 +289,39 @@ StaWifiMac::GetCurrentChannel(uint8_t linkId) const
 }
 
 void
+StaWifiMac::NotifyEmlsrModeChanged(const std::set<uint8_t>& linkIds)
+{
+    NS_LOG_FUNCTION(this << linkIds.size());
+
+    for (const auto& [linkId, lnk] : GetLinks())
+    {
+        auto& link = GetStaLink(lnk);
+
+        if (linkIds.count(linkId) > 0)
+        {
+            // EMLSR mode enabled
+            link.emlsrEnabled = true;
+            link.pmMode = WIFI_PM_ACTIVE;
+        }
+        else
+        {
+            // EMLSR mode disabled
+            if (link.emlsrEnabled)
+            {
+                link.pmMode = WIFI_PM_POWERSAVE;
+            }
+            link.emlsrEnabled = false;
+        }
+    }
+}
+
+bool
+StaWifiMac::IsEmlsrLink(uint8_t linkId) const
+{
+    return GetLink(linkId).emlsrEnabled;
+}
+
+void
 StaWifiMac::SendProbeRequest(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);

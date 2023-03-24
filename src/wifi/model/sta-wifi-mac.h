@@ -295,6 +295,20 @@ class StaWifiMac : public WifiMac
     void NotifyChannelSwitching(uint8_t linkId) override;
 
     /**
+     * Notify the MAC that EMLSR mode has changed on the given set of links.
+     *
+     * \param linkIds the IDs of the links that are now EMLSR links (EMLSR mode is disabled
+     *                on other links)
+     */
+    void NotifyEmlsrModeChanged(const std::set<uint8_t>& linkIds);
+
+    /**
+     * \param linkId the ID of the given link
+     * \return whether the EMLSR mode is enabled on the given link
+     */
+    bool IsEmlsrLink(uint8_t linkId) const;
+
+    /**
      * Assign a fixed random variable stream number to the random variables
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
@@ -324,6 +338,7 @@ class StaWifiMac : public WifiMac
         WifiPowerManagementMode pmMode{WIFI_PM_ACTIVE}; /**< the current PM mode, if the STA is
                                                              associated, or the PM mode to switch
                                                              to upon association, otherwise */
+        bool emlsrEnabled{false}; //!< whether EMLSR mode is enabled on this link
     };
 
     /**

@@ -330,9 +330,9 @@ EmlsrManager::ChangeEmlsrMode()
     m_emlsrLinks.swap(*m_nextEmlsrLinks);
     m_nextEmlsrLinks.reset();
 
-    // TODO Make other non-AP STAs operating on the corresponding EMLSR links transition to
+    // Make other non-AP STAs operating on the corresponding EMLSR links transition to
     // active mode or passive mode (depending on whether EMLSR mode has been enabled or disabled)
-
+    m_staMac->NotifyEmlsrModeChanged(m_emlsrLinks);
     NotifyEmlsrModeChanged();
 }
 
