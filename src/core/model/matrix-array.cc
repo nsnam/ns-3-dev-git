@@ -224,7 +224,7 @@ MatrixArray<T>::HermitianTranspose() const
 
     for (size_t index = 0; index < this->GetSize(); ++index)
     {
-        retMatrix[index] = std::conj(m_values[index]);
+        retMatrix.m_values[index] = std::conj(retMatrix.m_values[index]);
     }
     return retMatrix;
 }
