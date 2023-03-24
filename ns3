@@ -610,6 +610,14 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
         if args.G is None:
             args.G = current_cmake_generator
 
+        # Get the current Python information to supply
+        # CMake with the respective installation
+        if args.enable_python_bindings is True:
+            import sysconfig
+            cmake_args.append(f"-DPython3_LIBRARY_DIRS={sysconfig.get_config_var('LIBDIR')}")
+            cmake_args.append(f"-DPython3_INCLUDE_DIRS={sysconfig.get_config_var('INCLUDEPY')}")
+            cmake_args.append(f"-DPython3_EXECUTABLE={sys.executable}")
+
     # C++ standard
     if args.cxx_standard is not None:
         cmake_args.append("-DCMAKE_CXX_STANDARD=%s" % args.cxx_standard)
