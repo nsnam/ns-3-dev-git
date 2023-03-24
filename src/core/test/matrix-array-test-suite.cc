@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE("MatrixArrayTest");
 
 /**
  * \ingroup matrixArray-tests
- *  MatrixArray test for testing constructors
+ *  MatrixArray test case for testing constructors, operators and other functions
  */
 template <class T>
 class MatrixArrayTestCase : public TestCase
@@ -100,9 +100,9 @@ MatrixArrayTestCase<T>::DoRun()
     // test multiplication of matrices (MatrixArray containing only 1 matrix)
     MatrixArray<T> m1 = MatrixArray<T>(2, 3);
     MatrixArray<T> m2 = MatrixArray<T>(m1.GetNumCols(), m1.GetNumRows());
-    for (auto i = 0; i < m1.GetNumRows(); ++i)
+    for (size_t i = 0; i < m1.GetNumRows(); ++i)
     {
-        for (auto j = 0; j < m1.GetNumCols(); ++j)
+        for (size_t j = 0; j < m1.GetNumCols(); ++j)
         {
             m1(i, j) = 1;
             m2(j, i) = 1;
@@ -121,9 +121,9 @@ MatrixArrayTestCase<T>::DoRun()
     NS_TEST_ASSERT_MSG_EQ(m3.GetNumRows(),
                           m3.GetNumCols(),
                           "The number of rows and cols should be equal");
-    for (auto i = 0; i < m3.GetNumCols(); ++i)
+    for (size_t i = 0; i < m3.GetNumCols(); ++i)
     {
-        for (auto j = 0; j < m3.GetNumRows(); ++j)
+        for (size_t j = 0; j < m3.GetNumRows(); ++j)
         {
             NS_TEST_ASSERT_MSG_EQ(std::real(m3(i, j)),
                                   m1.GetNumCols(),
@@ -133,9 +133,9 @@ MatrixArrayTestCase<T>::DoRun()
 
     // multiplication with a scalar value
     MatrixArray<T> m4 = m3 * (static_cast<T>(5.0));
-    for (auto i = 0; i < m4.GetNumCols(); ++i)
+    for (size_t i = 0; i < m4.GetNumCols(); ++i)
     {
-        for (auto j = 0; j < m4.GetNumRows(); ++j)
+        for (size_t j = 0; j < m4.GetNumRows(); ++j)
         {
             NS_TEST_ASSERT_MSG_EQ(m3(i, j) * (static_cast<T>(5.0)),
                                   m4(i, j),
@@ -147,11 +147,11 @@ MatrixArrayTestCase<T>::DoRun()
     // test multiplication of arrays of matrices
     MatrixArray<T> m5 = MatrixArray<T>(2, 3, 2);
     MatrixArray<T> m6 = MatrixArray<T>(m5.GetNumCols(), m5.GetNumRows(), m5.GetNumPages());
-    for (auto p = 0; p < m5.GetNumPages(); ++p)
+    for (size_t p = 0; p < m5.GetNumPages(); ++p)
     {
-        for (auto i = 0; i < m5.GetNumRows(); ++i)
+        for (size_t i = 0; i < m5.GetNumRows(); ++i)
         {
-            for (auto j = 0; j < m5.GetNumCols(); ++j)
+            for (size_t j = 0; j < m5.GetNumCols(); ++j)
             {
                 m5(i, j, p) = 1;
                 m6(j, i, p) = 1;
@@ -169,11 +169,11 @@ MatrixArrayTestCase<T>::DoRun()
                           m7.GetNumCols(),
                           "The number of rows and cols should be equal");
 
-    for (auto p = 0; p < m7.GetNumPages(); ++p)
+    for (size_t p = 0; p < m7.GetNumPages(); ++p)
     {
-        for (auto i = 0; i < m7.GetNumCols(); ++i)
+        for (size_t i = 0; i < m7.GetNumCols(); ++i)
         {
-            for (auto j = 0; j < m7.GetNumRows(); ++j)
+            for (size_t j = 0; j < m7.GetNumRows(); ++j)
             {
                 NS_TEST_ASSERT_MSG_EQ(std::real(m7(i, j, p)),
                                       m5.GetNumCols(),

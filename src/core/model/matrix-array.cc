@@ -34,7 +34,7 @@ using ConstEigenMatrix = Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, Eigen
 #endif
 
 template <class T>
-MatrixArray<T>::MatrixArray(uint16_t numRows, uint16_t numCols, uint16_t numPages)
+MatrixArray<T>::MatrixArray(size_t numRows, size_t numCols, size_t numPages)
     : ValArray<T>(numRows, numCols, numPages)
 {
 }
@@ -58,30 +58,30 @@ MatrixArray<T>::MatrixArray(const std::vector<T>& values)
 }
 
 template <class T>
-MatrixArray<T>::MatrixArray(uint16_t numRows, uint16_t numCols, const std::valarray<T>& values)
+MatrixArray<T>::MatrixArray(size_t numRows, size_t numCols, const std::valarray<T>& values)
     : ValArray<T>(numRows, numCols, values)
 {
 }
 
 template <class T>
-MatrixArray<T>::MatrixArray(uint16_t numRows, uint16_t numCols, std::valarray<T>&& values)
+MatrixArray<T>::MatrixArray(size_t numRows, size_t numCols, std::valarray<T>&& values)
     : ValArray<T>(numRows, numCols, std::move(values))
 {
 }
 
 template <class T>
-MatrixArray<T>::MatrixArray(uint16_t numRows,
-                            uint16_t numCols,
-                            uint16_t numPages,
+MatrixArray<T>::MatrixArray(size_t numRows,
+                            size_t numCols,
+                            size_t numPages,
                             const std::valarray<T>& values)
     : ValArray<T>(numRows, numCols, numPages, values)
 {
 }
 
 template <class T>
-MatrixArray<T>::MatrixArray(uint16_t numRows,
-                            uint16_t numCols,
-                            uint16_t numPages,
+MatrixArray<T>::MatrixArray(size_t numRows,
+                            size_t numCols,
+                            size_t numPages,
                             std::valarray<T>&& values)
     : ValArray<T>(numRows, numCols, numPages, std::move(values))
 {
@@ -96,7 +96,7 @@ MatrixArray<T>::operator*(const MatrixArray<T>& rhs) const
 
     MatrixArray<T> res{m_numRows, rhs.m_numCols, m_numPages};
 
-    for (uint16_t page = 0; page < res.m_numPages; ++page)
+    for (size_t page = 0; page < res.m_numPages; ++page)
     {
 #ifdef HAVE_EIGEN3 // Eigen found and enabled Eigen optimizations
 
@@ -109,9 +109,9 @@ MatrixArray<T>::operator*(const MatrixArray<T>& rhs) const
 
         size_t matrixOffset = page * m_numRows * m_numCols;
         size_t rhsMatrixOffset = page * rhs.m_numRows * rhs.m_numCols;
-        for (uint16_t i = 0; i < res.m_numRows; ++i)
+        for (size_t i = 0; i < res.m_numRows; ++i)
         {
-            for (uint16_t j = 0; j < res.m_numCols; ++j)
+            for (size_t j = 0; j < res.m_numCols; ++j)
             {
                 res(i, j, page) = (m_values[std::slice(matrixOffset + i, m_numCols, m_numRows)] *
                                    rhs.m_values[std::slice(rhsMatrixOffset + j * rhs.m_numRows,
@@ -134,7 +134,7 @@ MatrixArray<T>::Transpose() const
     // m_numPages = this.m_numPages
     MatrixArray<T> res{m_numCols, m_numRows, m_numPages};
 
-    for (uint16_t page = 0; page < m_numPages; ++page)
+    for (size_t page = 0; page < m_numPages; ++page)
     {
 #ifdef HAVE_EIGEN3 // Eigen found and Eigen optimizations enabled
 
@@ -145,7 +145,7 @@ MatrixArray<T>::Transpose() const
 #else // Eigen not found or Eigen optimizations not enabled
 
         size_t matrixIndex = page * m_numRows * m_numCols;
-        for (uint16_t i = 0; i < m_numRows; ++i)
+        for (size_t i = 0; i < m_numRows; ++i)
         {
             res.m_values[std::slice(matrixIndex + i * res.m_numRows, res.m_numRows, 1)] =
                 m_values[std::slice(matrixIndex + i, m_numCols, m_numRows)];
@@ -176,7 +176,7 @@ MatrixArray<T>::MultiplyByLeftAndRightMatrix(const MatrixArray<T>& lMatrix,
     ConstEigenMatrix<T> rMatrixEigen(rMatrix.GetPagePtr(0), rMatrix.m_numRows, rMatrix.m_numCols);
 #endif
 
-    for (uint16_t page = 0; page < m_numPages; ++page)
+    for (size_t page = 0; page < m_numPages; ++page)
     {
 #ifdef HAVE_EIGEN3 // Eigen found and Eigen optimizations enabled
 
@@ -188,14 +188,14 @@ MatrixArray<T>::MultiplyByLeftAndRightMatrix(const MatrixArray<T>& lMatrix,
 #else // Eigen not found or Eigen optimizations not enabled
 
         size_t matrixOffset = page * m_numRows * m_numCols;
-        for (uint16_t resRow = 0; resRow < res.m_numRows; ++resRow)
+        for (size_t resRow = 0; resRow < res.m_numRows; ++resRow)
         {
-            for (uint16_t resCol = 0; resCol < res.m_numCols; ++resCol)
+            for (size_t resCol = 0; resCol < res.m_numCols; ++resCol)
             {
                 // create intermediate row result, a multiply of resRow row of lMatrix and each
                 // column of this matrix
                 std::valarray<T> interRes(m_numCols);
-                for (uint16_t thisCol = 0; thisCol < m_numCols; ++thisCol)
+                for (size_t thisCol = 0; thisCol < m_numCols; ++thisCol)
                 {
                     interRes[thisCol] =
                         (lMatrix

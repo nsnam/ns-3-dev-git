@@ -89,7 +89,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param numCols the number of columns
      * \param numPages the number of pages
      */
-    ValArray<T>(uint16_t numRows, uint16_t numCols = 1, uint16_t numPages = 1);
+    ValArray<T>(size_t numRows, size_t numCols = 1, size_t numPages = 1);
     /**
      * \brief Constructor creates a single 1D array of values.size () elements and 1 column,
      * and uses std::valarray<T> values to initialize the elements.
@@ -115,7 +115,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param numCols the number of columns
      * \param values valarray<T> that will be used to initialize elements of 3D array
      */
-    ValArray<T>(uint16_t numRows, uint16_t numCols, const std::valarray<T>& values);
+    ValArray<T>(size_t numRows, size_t numCols, const std::valarray<T>& values);
     /**
      * \brief Constructor creates a single 2D array of numRows and numCols, and moves
      * std::valarray<T> values to initialize the elements.
@@ -123,7 +123,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param numCols the number of columns
      * \param values valarray<T> that will be used to initialize elements of 3D array
      */
-    ValArray<T>(uint16_t numRows, uint16_t numCols, std::valarray<T>&& values);
+    ValArray<T>(size_t numRows, size_t numCols, std::valarray<T>&& values);
     /**
      * \brief Constructor creates the 3D array of numRows x numCols x numPages dimensions,
      * and uses std::valarray<T> values to initialize all the 2D arrays, where first
@@ -133,10 +133,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param numPages the number of pages
      * \param values valarray<T> that will be used to initialize elements of 3D array
      */
-    ValArray<T>(uint16_t numRows,
-                uint16_t numCols,
-                uint16_t numPages,
-                const std::valarray<T>& values);
+    ValArray<T>(size_t numRows, size_t numCols, size_t numPages, const std::valarray<T>& values);
     /**
      * \brief Constructor creates the 3D array of numRows x numCols x numPages dimensions,
      * and moves std::valarray<T> values to initialize all the 2D arrays, where first
@@ -146,7 +143,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param numPages the number of pages
      * \param values valarray<T> that will be used to initialize elements of 3D array
      */
-    ValArray<T>(uint16_t numRows, uint16_t numCols, uint16_t numPages, std::valarray<T>&& values);
+    ValArray<T>(size_t numRows, size_t numCols, size_t numPages, std::valarray<T>&& values);
     /** instruct the compiler to generate the implicitly declared destructor*/
     virtual ~ValArray<T>() = default;
     /** instruct the compiler to generate the implicitly declared copy constructor*/
@@ -168,15 +165,15 @@ class ValArray : public SimpleRefCount<ValArray<T>>
     /**
      * \returns Number of rows
      */
-    uint16_t GetNumRows() const;
+    size_t GetNumRows() const;
     /**
      * \returns Number of columns
      */
-    uint16_t GetNumCols() const;
+    size_t GetNumCols() const;
     /**
      * \returns Number of pages, i.e., the number of 2D arrays
      */
-    uint16_t GetNumPages() const;
+    size_t GetNumPages() const;
     /**
      * \returns Total number of elements
      */
@@ -188,7 +185,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param pageIndex The index of the page
      * \returns A const reference to the element with with rowIndex, colIndex and pageIndex indices.
      */
-    T& operator()(uint16_t rowIndex, uint16_t colIndex, uint16_t pageIndex);
+    T& operator()(size_t rowIndex, size_t colIndex, size_t pageIndex);
     /**
      * \brief Const access operator, with bound-checking in debug profile
      * \param rowIndex The index of the row
@@ -196,7 +193,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param pageIndex The index of the page
      * \returns A const reference to the element with with rowIndex, colIndex and pageIndex indices.
      */
-    const T& operator()(uint16_t rowIndex, uint16_t colIndex, uint16_t pageIndex) const;
+    const T& operator()(size_t rowIndex, size_t colIndex, size_t pageIndex) const;
     /**
      * \brief Access operator for 2D ValArrays.
      * Assuming that the third dimension is equal to 1, e.g. ValArray contains
@@ -209,7 +206,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param colIndex The index of the column
      * \returns A reference to the element with the specified indices
      */
-    T& operator()(uint16_t rowIndex, uint16_t colIndex);
+    T& operator()(size_t rowIndex, size_t colIndex);
     /**
      * \brief Const access operator for 2D ValArrays.
      * Assuming that the third dimension is equal to 1, e.g. ValArray contains
@@ -218,7 +215,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param colIndex column index
      * \returns a Const reference to the value with the specified row and column index.
      */
-    const T& operator()(uint16_t rowIndex, uint16_t colIndex) const;
+    const T& operator()(size_t rowIndex, size_t colIndex) const;
     /**
      * \brief Single-element access operator() for 1D ValArrays.
      * Assuming that the number of columns and pages is equal to 1, e.g. ValArray
@@ -230,13 +227,13 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param index The index of the 1D ValArray.
      * \returns A reference to the value with the specified index.
      */
-    T& operator()(uint16_t index);
+    T& operator()(size_t index);
     /**
      * \brief Single-element access operator() for 1D ValArrays.
      * \param index The index of the 1D ValArray.
      * \returns The const reference to the values with the specified index.
      */
-    const T& operator()(uint16_t index) const;
+    const T& operator()(size_t index) const;
     /**
      * \brief Element-wise multiplication with a scalar value.
      * \param rhs A scalar value of type T
@@ -302,14 +299,14 @@ class ValArray : public SimpleRefCount<ValArray<T>>
      * \param pageIndex The index of the desired 2D array
      * \returns a pointer to the data elements of the 2D array
      */
-    T* GetPagePtr(uint16_t pageIndex);
+    T* GetPagePtr(size_t pageIndex);
     /**
      * \brief Get a data pointer to a specific 2D array for use in linear
      * algebra libraries
      * \param pageIndex An index of the desired 2D array
      * \returns a pointer to the data elements of the 2D array
      */
-    const T* GetPagePtr(uint16_t pageIndex) const;
+    const T* GetPagePtr(size_t pageIndex) const;
     /**
      * \brief Checks whether rhs and lhs ValArray objects have the same dimensions.
      * \param rhs The rhs ValArray
@@ -365,11 +362,11 @@ class ValArray : public SimpleRefCount<ValArray<T>>
     const T& Elem(size_t row, size_t col, size_t page) const;
 
   protected:
-    uint16_t m_numRows =
+    size_t m_numRows =
         0; //!< The size of the first dimension, i.e., the number of rows of each 2D array
-    uint16_t m_numCols =
+    size_t m_numCols =
         0; //!< The size of the second dimension, i.e., the number of columns of each 2D array
-    uint16_t m_numPages = 0;   //!< The size of the third dimension, i.e., the number of 2D arrays
+    size_t m_numPages = 0;     //!< The size of the third dimension, i.e., the number of 2D arrays
     std::valarray<T> m_values; //!< The data values
 };
 
@@ -378,21 +375,21 @@ class ValArray : public SimpleRefCount<ValArray<T>>
  ************************************************/
 
 template <class T>
-inline uint16_t
+inline size_t
 ValArray<T>::GetNumRows() const
 {
     return m_numRows;
 };
 
 template <class T>
-inline uint16_t
+inline size_t
 ValArray<T>::GetNumCols() const
 {
     return m_numCols;
 };
 
 template <class T>
-inline uint16_t
+inline size_t
 ValArray<T>::GetNumPages() const
 {
     return m_numPages;
@@ -407,7 +404,7 @@ ValArray<T>::GetSize() const
 
 template <class T>
 inline T&
-ValArray<T>::operator()(uint16_t rowIndex, uint16_t colIndex, uint16_t pageIndex)
+ValArray<T>::operator()(size_t rowIndex, size_t colIndex, size_t pageIndex)
 {
     NS_ASSERT_MSG(rowIndex < m_numRows, "Row index out of bounds");
     NS_ASSERT_MSG(colIndex < m_numCols, "Column index out of bounds");
@@ -418,7 +415,7 @@ ValArray<T>::operator()(uint16_t rowIndex, uint16_t colIndex, uint16_t pageIndex
 
 template <class T>
 inline const T&
-ValArray<T>::operator()(uint16_t rowIndex, uint16_t colIndex, uint16_t pageIndex) const
+ValArray<T>::operator()(size_t rowIndex, size_t colIndex, size_t pageIndex) const
 {
     NS_ASSERT_MSG(rowIndex < m_numRows, "Row index out of bounds");
     NS_ASSERT_MSG(colIndex < m_numCols, "Column index out of bounds");
@@ -429,7 +426,7 @@ ValArray<T>::operator()(uint16_t rowIndex, uint16_t colIndex, uint16_t pageIndex
 
 template <class T>
 inline T&
-ValArray<T>::operator()(uint16_t rowIndex, uint16_t colIndex)
+ValArray<T>::operator()(size_t rowIndex, size_t colIndex)
 {
     NS_ASSERT_MSG(m_numPages == 1, "Cannot use 2D access operator for 3D ValArray.");
     return (*this)(rowIndex, colIndex, 0);
@@ -437,7 +434,7 @@ ValArray<T>::operator()(uint16_t rowIndex, uint16_t colIndex)
 
 template <class T>
 inline const T&
-ValArray<T>::operator()(uint16_t rowIndex, uint16_t colIndex) const
+ValArray<T>::operator()(size_t rowIndex, size_t colIndex) const
 {
     NS_ASSERT_MSG(m_numPages == 1, "Cannot use 2D access operator for 3D ValArray.");
     return (*this)(rowIndex, colIndex, 0);
@@ -445,7 +442,7 @@ ValArray<T>::operator()(uint16_t rowIndex, uint16_t colIndex) const
 
 template <class T>
 inline T&
-ValArray<T>::operator()(uint16_t index)
+ValArray<T>::operator()(size_t index)
 {
     NS_ASSERT_MSG(index < m_values.size(),
                   "Invalid index to 1D ValArray. The size of the array should be set through "
@@ -458,7 +455,7 @@ ValArray<T>::operator()(uint16_t index)
 
 template <class T>
 inline const T&
-ValArray<T>::operator()(uint16_t index) const
+ValArray<T>::operator()(size_t index) const
 {
     NS_ASSERT_MSG(index < m_values.size(),
                   "Invalid index to 1D ValArray.The size of the array should be set through "
@@ -522,7 +519,7 @@ ValArray<T>::operator-=(const ValArray<T>& rhs)
 
 template <class T>
 inline T*
-ValArray<T>::GetPagePtr(uint16_t pageIndex)
+ValArray<T>::GetPagePtr(size_t pageIndex)
 {
     NS_ASSERT_MSG(pageIndex < m_numPages, "Invalid page index.");
     return &(m_values[m_numRows * m_numCols * pageIndex]);
@@ -530,7 +527,7 @@ ValArray<T>::GetPagePtr(uint16_t pageIndex)
 
 template <class T>
 inline const T*
-ValArray<T>::GetPagePtr(uint16_t pageIndex) const
+ValArray<T>::GetPagePtr(size_t pageIndex) const
 {
     NS_ASSERT_MSG(pageIndex < m_numPages, "Invalid page index.");
     return &(m_values[m_numRows * m_numCols * pageIndex]);
@@ -584,7 +581,7 @@ ValArray<T>::Elem(size_t row, size_t col, size_t page) const
  ************************************************/
 
 template <class T>
-ValArray<T>::ValArray(uint16_t numRows, uint16_t numCols, uint16_t numPages)
+ValArray<T>::ValArray(size_t numRows, size_t numCols, size_t numPages)
     : m_numRows{numRows},
       m_numCols{numCols},
       m_numPages{numPages}
@@ -594,7 +591,7 @@ ValArray<T>::ValArray(uint16_t numRows, uint16_t numCols, uint16_t numPages)
 
 template <class T>
 ValArray<T>::ValArray(const std::valarray<T>& values)
-    : m_numRows{(uint16_t)values.size()},
+    : m_numRows{values.size()},
       m_numCols{1},
       m_numPages{1},
       m_values{values}
@@ -603,7 +600,7 @@ ValArray<T>::ValArray(const std::valarray<T>& values)
 
 template <class T>
 ValArray<T>::ValArray(std::valarray<T>&& values)
-    : m_numRows{(uint16_t)values.size()},
+    : m_numRows{values.size()},
       m_numCols{1},
       m_numPages{1},
       m_values{std::move(values)}
@@ -612,7 +609,7 @@ ValArray<T>::ValArray(std::valarray<T>&& values)
 
 template <class T>
 ValArray<T>::ValArray(const std::vector<T>& values)
-    : m_numRows{(uint16_t)values.size()},
+    : m_numRows{values.size()},
       m_numCols{1},
       m_numPages{1}
 {
@@ -621,7 +618,7 @@ ValArray<T>::ValArray(const std::vector<T>& values)
 }
 
 template <class T>
-ValArray<T>::ValArray(uint16_t numRows, uint16_t numCols, const std::valarray<T>& values)
+ValArray<T>::ValArray(size_t numRows, size_t numCols, const std::valarray<T>& values)
     : m_numRows{numRows},
       m_numCols{numCols},
       m_numPages{1},
@@ -632,7 +629,7 @@ ValArray<T>::ValArray(uint16_t numRows, uint16_t numCols, const std::valarray<T>
 };
 
 template <class T>
-ValArray<T>::ValArray(uint16_t numRows, uint16_t numCols, std::valarray<T>&& values)
+ValArray<T>::ValArray(size_t numRows, size_t numCols, std::valarray<T>&& values)
     : m_numRows{numRows},
       m_numCols{numCols},
       m_numPages{1}
@@ -643,9 +640,9 @@ ValArray<T>::ValArray(uint16_t numRows, uint16_t numCols, std::valarray<T>&& val
 };
 
 template <class T>
-ValArray<T>::ValArray(uint16_t numRows,
-                      uint16_t numCols,
-                      uint16_t numPages,
+ValArray<T>::ValArray(size_t numRows,
+                      size_t numCols,
+                      size_t numPages,
                       const std::valarray<T>& values)
     : m_numRows{numRows},
       m_numCols{numCols},
@@ -657,10 +654,7 @@ ValArray<T>::ValArray(uint16_t numRows,
 };
 
 template <class T>
-ValArray<T>::ValArray(uint16_t numRows,
-                      uint16_t numCols,
-                      uint16_t numPages,
-                      std::valarray<T>&& values)
+ValArray<T>::ValArray(size_t numRows, size_t numCols, size_t numPages, std::valarray<T>&& values)
     : m_numRows{numRows},
       m_numCols{numCols},
       m_numPages{numPages}
@@ -723,12 +717,12 @@ std::ostream&
 operator<<(std::ostream& os, const ValArray<T>& a)
 {
     os << "\n";
-    for (auto p = 0; p != a.GetNumPages(); ++p)
+    for (size_t p = 0; p != a.GetNumPages(); ++p)
     {
         os << "Page " << p << ":\n";
-        for (auto i = 0; i != a.GetNumRows(); ++i)
+        for (size_t i = 0; i != a.GetNumRows(); ++i)
         {
-            for (auto j = 0; j != a.GetNumCols(); ++j)
+            for (size_t j = 0; j != a.GetNumCols(); ++j)
             {
                 os << "\t" << a(i, j, p);
             }
