@@ -108,14 +108,16 @@ MatrixArray<T>::operator*(const MatrixArray<T>& rhs) const
 #else // Eigen not found or Eigen optimizations not enabled
 
         size_t matrixOffset = page * m_numRows * m_numCols;
+        size_t rhsMatrixOffset = page * rhs.m_numRows * rhs.m_numCols;
         for (uint16_t i = 0; i < res.m_numRows; ++i)
         {
             for (uint16_t j = 0; j < res.m_numCols; ++j)
             {
-                res(i, j, page) =
-                    (m_values[std::slice(matrixOffset + i, m_numCols, m_numRows)] *
-                     rhs.m_values[std::slice(matrixOffset + j * rhs.m_numRows, rhs.m_numRows, 1)])
-                        .sum();
+                res(i, j, page) = (m_values[std::slice(matrixOffset + i, m_numCols, m_numRows)] *
+                                   rhs.m_values[std::slice(rhsMatrixOffset + j * rhs.m_numRows,
+                                                           rhs.m_numRows,
+                                                           1)])
+                                      .sum();
             }
         }
 
