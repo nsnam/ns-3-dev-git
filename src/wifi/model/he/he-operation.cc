@@ -48,6 +48,12 @@ HeOperation::ElementIdExt() const
     return IE_EXT_HE_OPERATION;
 }
 
+void
+HeOperation::Print(std::ostream& os) const
+{
+    os << "HE Operation=" << GetHeOperationParameters() << "|" << GetBasicHeMcsAndNssSet();
+}
+
 uint16_t
 HeOperation::GetInformationFieldSize() const
 {
@@ -150,13 +156,6 @@ HeOperation::DeserializeInformationField(Buffer::Iterator start, uint16_t length
     SetHeOperationParameters(heOperationParameters);
     // todo: VHT Operation Information (variable)
     return length;
-}
-
-std::ostream&
-operator<<(std::ostream& os, const HeOperation& HeOperation)
-{
-    os << HeOperation.GetHeOperationParameters() << "|" << HeOperation.GetBasicHeMcsAndNssSet();
-    return os;
 }
 
 } // namespace ns3

@@ -38,6 +38,7 @@ class VhtCapabilities : public WifiInformationElement
 
     // Implementations of pure virtual methods of WifiInformationElement
     WifiInformationElementId ElementId() const override;
+    void Print(std::ostream& os) const override;
 
     /**
      * Set the VHT Capabilities Info field in the VHT Capabilities information element.
@@ -240,16 +241,6 @@ class VhtCapabilities : public WifiInformationElement
     uint16_t m_txHighestSupportedLongGuardIntervalDataRate; ///< transmit highest supported long
                                                             ///< guard interval data rate
 };
-
-/**
- * output stream output operator
- *
- * \param os the output stream
- * \param vhtCapabilities the VHT capabilities
- *
- * \returns output stream
- */
-std::ostream& operator<<(std::ostream& os, const VhtCapabilities& vhtCapabilities);
 
 } // namespace ns3
 

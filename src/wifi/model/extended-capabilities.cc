@@ -92,6 +92,12 @@ ExtendedCapabilities::ElementId() const
 }
 
 void
+ExtendedCapabilities::Print(std::ostream& os) const
+{
+    os << "Extended Capabilities=" << +GetExtendedCapabilitiesByte1();
+}
+
+void
 ExtendedCapabilities::SetHtSupported(uint8_t htSupported)
 {
     m_htSupported = htSupported;
@@ -371,13 +377,6 @@ ExtendedCapabilities::DeserializeInformationField(Buffer::Iterator start, uint16
         SetExtendedCapabilitiesByte8(byte8);
     }
     return length;
-}
-
-std::ostream&
-operator<<(std::ostream& os, const ExtendedCapabilities& extendedCapabilities)
-{
-    os << +extendedCapabilities.GetExtendedCapabilitiesByte1();
-    return os;
 }
 
 } // namespace ns3

@@ -51,6 +51,12 @@ Ssid::Ssid(std::string s)
     }
 }
 
+void
+Ssid::Print(std::ostream& os) const
+{
+    os << "ssid=" << PeekString();
+}
+
 bool
 Ssid::IsEqual(const Ssid& o) const
 {
@@ -113,13 +119,6 @@ Ssid::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
 }
 
 ATTRIBUTE_HELPER_CPP(Ssid);
-
-std::ostream&
-operator<<(std::ostream& os, const Ssid& ssid)
-{
-    os << ssid.PeekString();
-    return os;
-}
 
 std::istream&
 operator>>(std::istream& is, Ssid& ssid)

@@ -98,6 +98,7 @@ class SupportedRates : public WifiInformationElement
 
     // Implementations of pure virtual methods of WifiInformationElement
     WifiInformationElementId ElementId() const override;
+    void Print(std::ostream& os) const override;
 
     /**
      * Assignment operator
@@ -197,16 +198,6 @@ class SupportedRates : public WifiInformationElement
     uint8_t m_nRates;                     //!< Number of supported rates
     uint8_t m_rates[MAX_SUPPORTED_RATES]; //!< List of supported bit rates (divided by 500000)
 };
-
-/**
- * Serialize SupportedRates to the given ostream.
- *
- * \param os output stream
- * \param rates the SupportedRates
- *
- * \return std::ostream
- */
-std::ostream& operator<<(std::ostream& os, const SupportedRates& rates);
 
 } // namespace ns3
 

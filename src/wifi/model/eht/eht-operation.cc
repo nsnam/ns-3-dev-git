@@ -28,6 +28,33 @@ namespace ns3
 {
 
 void
+EhtOperation::Print(std::ostream& os) const
+{
+    os << "EHT Operation=" << +m_params.opInfoPresent << "|" << +m_params.disabledSubchBmPresent
+       << "|" << +m_params.defaultPeDur << "|" << +m_params.grpBuIndLimit << "|"
+       << +m_params.grpBuExp << "|[";
+    for (const auto& maxRxNss : m_mcsNssSet.maxRxNss)
+    {
+        os << +maxRxNss << "|";
+    }
+    os << "]|[";
+    for (const auto& maxTxNss : m_mcsNssSet.maxTxNss)
+    {
+        os << +maxTxNss << "|";
+    }
+    os << "]";
+    if (m_opInfo.has_value())
+    {
+        os << "|" << +m_opInfo->control.channelWidth << "|" << +m_opInfo->ccfs0 << "|"
+           << +m_opInfo->ccfs1;
+        if (m_opInfo->disabledSubchBm.has_value())
+        {
+            os << "|" << m_opInfo->disabledSubchBm.value();
+        }
+    }
+}
+
+void
 EhtOperation::EhtOpParams::Serialize(Buffer::Iterator& start) const
 {
     uint8_t val = opInfoPresent | (disabledSubchBmPresent << 1) | (defaultPeDur << 2) |
@@ -260,34 +287,4 @@ EhtOperation::DeserializeInformationField(Buffer::Iterator start, uint16_t lengt
                                              << +count << ")");
     return length;
 }
-
-std::ostream&
-operator<<(std::ostream& os, const EhtOperation& ehtOperation)
-{
-    os << +ehtOperation.m_params.opInfoPresent << "|"
-       << +ehtOperation.m_params.disabledSubchBmPresent << "|"
-       << +ehtOperation.m_params.defaultPeDur << "|" << +ehtOperation.m_params.grpBuIndLimit << "|"
-       << +ehtOperation.m_params.grpBuExp << "|[";
-    for (const auto& maxRxNss : ehtOperation.m_mcsNssSet.maxRxNss)
-    {
-        os << +maxRxNss << "|";
-    }
-    os << "]|[";
-    for (const auto& maxTxNss : ehtOperation.m_mcsNssSet.maxTxNss)
-    {
-        os << +maxTxNss << "|";
-    }
-    os << "]";
-    if (ehtOperation.m_opInfo.has_value())
-    {
-        os << "|" << +ehtOperation.m_opInfo->control.channelWidth << "|"
-           << +ehtOperation.m_opInfo->ccfs0 << "|" << +ehtOperation.m_opInfo->ccfs1;
-        if (ehtOperation.m_opInfo->disabledSubchBm.has_value())
-        {
-            os << "|" << ehtOperation.m_opInfo->disabledSubchBm.value();
-        }
-    }
-    return os;
-}
-
 } // namespace ns3

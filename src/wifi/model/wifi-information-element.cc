@@ -261,4 +261,11 @@ WifiInformationElement::operator==(const WifiInformationElement& a) const
     return (memcmp(myIe.PeekData(), hisIe.PeekData(), ieSize) == 0);
 }
 
+std::ostream&
+operator<<(std::ostream& os, const WifiInformationElement& element)
+{
+    element.Print(os);
+    return os;
+}
+
 } // namespace ns3

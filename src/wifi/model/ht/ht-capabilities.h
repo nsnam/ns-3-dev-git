@@ -271,6 +271,7 @@ class HtCapabilities : public WifiInformationElement
     uint16_t GetInformationFieldSize() const override;
     void SerializeInformationField(Buffer::Iterator start) const override;
     uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
+    void Print(std::ostream& os) const override;
 
     // HT Capabilities Info field
     uint8_t m_ldpc;                  ///< LDPC
@@ -349,16 +350,6 @@ class HtCapabilities : public WifiInformationElement
     uint8_t m_txSoundingPpdusCapable;                   ///< sounding PPDUS capable
     uint8_t m_reservedASel;                             ///< reserved ASEL
 };
-
-/**
- * output stream output operator
- *
- * \param os output stream
- * \param htcapabilities the HT capabilities
- *
- * \returns output stream
- */
-std::ostream& operator<<(std::ostream& os, const HtCapabilities& htcapabilities);
 
 } // namespace ns3
 

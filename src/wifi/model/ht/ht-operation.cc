@@ -62,6 +62,23 @@ HtOperation::ElementId() const
     return IE_HT_OPERATION;
 }
 
+void
+HtOperation::Print(std::ostream& os) const
+{
+    os << "HT Operation=" << bool(GetPrimaryChannel()) << "|" << +GetSecondaryChannelOffset() << "|"
+       << bool(GetStaChannelWidth()) << "|" << bool(GetRifsMode()) << "|" << +GetHtProtection()
+       << "|" << bool(GetNonGfHtStasPresent()) << "|" << bool(GetObssNonHtStasPresent()) << "|"
+       << bool(GetDualBeacon()) << "|" << bool(GetDualCtsProtection()) << "|"
+       << bool(GetStbcBeacon()) << "|" << bool(GetLSigTxopProtectionFullSupport()) << "|"
+       << bool(GetPcoActive()) << "|" << bool(GetPhase()) << "|" << GetRxHighestSupportedDataRate()
+       << "|" << bool(GetTxMcsSetDefined()) << "|" << bool(GetTxRxMcsSetUnequal()) << "|"
+       << +GetTxMaxNSpatialStreams() << "|" << bool(GetTxUnequalModulation()) << "|";
+    for (uint8_t i = 0; i < MAX_SUPPORTED_MCS; i++)
+    {
+        os << IsSupportedMcs(i) << " ";
+    }
+}
+
 uint16_t
 HtOperation::GetInformationFieldSize() const
 {
@@ -454,28 +471,6 @@ HtOperation::DeserializeInformationField(Buffer::Iterator start, uint16_t length
     SetInformationSubset3(informationsubset3);
     SetBasicMcsSet(mcsset1, mcsset2);
     return length;
-}
-
-std::ostream&
-operator<<(std::ostream& os, const HtOperation& htOperation)
-{
-    os << bool(htOperation.GetPrimaryChannel()) << "|" << +htOperation.GetSecondaryChannelOffset()
-       << "|" << bool(htOperation.GetStaChannelWidth()) << "|" << bool(htOperation.GetRifsMode())
-       << "|" << +htOperation.GetHtProtection() << "|" << bool(htOperation.GetNonGfHtStasPresent())
-       << "|" << bool(htOperation.GetObssNonHtStasPresent()) << "|"
-       << bool(htOperation.GetDualBeacon()) << "|" << bool(htOperation.GetDualCtsProtection())
-       << "|" << bool(htOperation.GetStbcBeacon()) << "|"
-       << bool(htOperation.GetLSigTxopProtectionFullSupport()) << "|"
-       << bool(htOperation.GetPcoActive()) << "|" << bool(htOperation.GetPhase()) << "|"
-       << htOperation.GetRxHighestSupportedDataRate() << "|"
-       << bool(htOperation.GetTxMcsSetDefined()) << "|" << bool(htOperation.GetTxRxMcsSetUnequal())
-       << "|" << +htOperation.GetTxMaxNSpatialStreams() << "|"
-       << bool(htOperation.GetTxUnequalModulation()) << "|";
-    for (uint8_t i = 0; i < MAX_SUPPORTED_MCS; i++)
-    {
-        os << htOperation.IsSupportedMcs(i) << " ";
-    }
-    return os;
 }
 
 } // namespace ns3

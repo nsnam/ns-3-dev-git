@@ -39,6 +39,7 @@ class VhtOperation : public WifiInformationElement
 
     // Implementations of pure virtual methods of WifiInformationElement
     WifiInformationElementId ElementId() const override;
+    void Print(std::ostream& os) const override;
 
     /**
      * Set the Channel Width field in the VHT Operation information element.
@@ -114,16 +115,6 @@ class VhtOperation : public WifiInformationElement
     // Basic VHT-MCS and NSS Set
     uint16_t m_basicVhtMcsAndNssSet; ///< basic VHT MCS NSS set
 };
-
-/**
- * output stream output operator
- *
- * \param os the output stream
- * \param VhtOperation the VHT operation
- *
- * \returns output stream
- */
-std::ostream& operator<<(std::ostream& os, const VhtOperation& VhtOperation);
 
 } // namespace ns3
 

@@ -48,6 +48,7 @@ class Ssid : public WifiInformationElement
 
     // Implementations of pure virtual methods of WifiInformationElement
     WifiInformationElementId ElementId() const override;
+    void Print(std::ostream& os) const override;
 
     /**
      * Check if the two SSIDs are equal.
@@ -82,15 +83,6 @@ class Ssid : public WifiInformationElement
     uint8_t m_length;   //!< Length of the SSID
 };
 
-/**
- * Serialize SSID to the given ostream
- *
- * \param os the output stream
- * \param ssid the SSID
- *
- * \return std::ostream
- */
-std::ostream& operator<<(std::ostream& os, const Ssid& ssid);
 /**
  * Serialize from the given istream to this SSID.
  *

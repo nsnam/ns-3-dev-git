@@ -136,6 +136,14 @@ HeCapabilities::ElementIdExt() const
     return IE_EXT_HE_CAPABILITIES;
 }
 
+void
+HeCapabilities::Print(std::ostream& os) const
+{
+    os << "HE Capabilities=" << GetHeMacCapabilitiesInfo1() << "|" << +GetHeMacCapabilitiesInfo2()
+       << "|" << GetHePhyCapabilitiesInfo1() << "|" << GetHePhyCapabilitiesInfo2() << "|"
+       << +GetHePhyCapabilitiesInfo3() << "|" << GetSupportedMcsAndNss();
+}
+
 uint16_t
 HeCapabilities::GetInformationFieldSize() const
 {
@@ -607,18 +615,6 @@ uint32_t
 HeCapabilities::GetMaxAmpduLength() const
 {
     return std::min<uint32_t>((1UL << (20 + m_maxAmpduLengthExponent)) - 1, 6500631);
-}
-
-std::ostream&
-operator<<(std::ostream& os, const HeCapabilities& heCapabilities)
-{
-    os << heCapabilities.GetHeMacCapabilitiesInfo1() << "|"
-       << +heCapabilities.GetHeMacCapabilitiesInfo2() << "|"
-       << heCapabilities.GetHePhyCapabilitiesInfo1() << "|"
-       << heCapabilities.GetHePhyCapabilitiesInfo2() << "|"
-       << +heCapabilities.GetHePhyCapabilitiesInfo3() << "|"
-       << heCapabilities.GetSupportedMcsAndNss();
-    return os;
 }
 
 } // namespace ns3

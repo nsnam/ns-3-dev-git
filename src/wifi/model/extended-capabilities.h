@@ -41,6 +41,7 @@ class ExtendedCapabilities : public WifiInformationElement
     uint16_t GetInformationFieldSize() const override;
     void SerializeInformationField(Buffer::Iterator start) const override;
     uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
+    void Print(std::ostream& os) const override;
     /**
      * Set the HT Supported flag.
      *
@@ -225,16 +226,6 @@ class ExtendedCapabilities : public WifiInformationElement
     uint8_t m_vhtSupported; ///< Flag to indicate VHT is supported in order to decide whether this
                             ///< element should be added to the frame or not
 };
-
-/**
- * output stream output operator
- *
- * \param os output stream
- * \param extendedCapabilities the extended capabilities
- *
- * \returns output stream
- */
-std::ostream& operator<<(std::ostream& os, const ExtendedCapabilities& extendedCapabilities);
 
 } // namespace ns3
 

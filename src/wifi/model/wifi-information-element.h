@@ -423,6 +423,15 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
     virtual uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) = 0;
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the output stream
+ * \param element the Information Element
+ * \returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, const WifiInformationElement& element);
+
 } // namespace ns3
 
 /***************************************************************

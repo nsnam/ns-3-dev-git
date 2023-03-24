@@ -98,6 +98,17 @@ HtCapabilities::ElementId() const
 }
 
 void
+HtCapabilities::Print(std::ostream& os) const
+{
+    os << "HT Capabilities=" << bool(GetLdpc()) << "|" << bool(GetSupportedChannelWidth()) << "|"
+       << bool(GetShortGuardInterval20()) << "|";
+    for (uint8_t i = 0; i < MAX_SUPPORTED_MCS; i++)
+    {
+        os << IsSupportedMcs(i) << " ";
+    }
+}
+
+void
 HtCapabilities::SetLdpc(uint8_t ldpc)
 {
     m_ldpc = ldpc;
@@ -504,18 +515,6 @@ HtCapabilities::DeserializeInformationField(Buffer::Iterator start, uint16_t len
     SetTxBfCapabilities(txbfcapabilities);
     SetAntennaSelectionCapabilities(aselcapabilities);
     return length;
-}
-
-std::ostream&
-operator<<(std::ostream& os, const HtCapabilities& htcapabilities)
-{
-    os << bool(htcapabilities.GetLdpc()) << "|" << bool(htcapabilities.GetSupportedChannelWidth())
-       << "|" << bool(htcapabilities.GetShortGuardInterval20()) << "|";
-    for (uint8_t i = 0; i < MAX_SUPPORTED_MCS; i++)
-    {
-        os << htcapabilities.IsSupportedMcs(i) << " ";
-    }
-    return os;
 }
 
 } // namespace ns3

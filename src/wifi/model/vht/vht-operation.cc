@@ -36,6 +36,13 @@ VhtOperation::ElementId() const
     return IE_VHT_OPERATION;
 }
 
+void
+VhtOperation::Print(std::ostream& os) const
+{
+    os << "VHT Operation=" << +GetChannelWidth() << "|" << +GetChannelCenterFrequencySegment0()
+       << "|" << +GetChannelCenterFrequencySegment1() << "|" << GetBasicVhtMcsAndNssSet();
+}
+
 uint16_t
 VhtOperation::GetInformationFieldSize() const
 {
@@ -127,16 +134,6 @@ VhtOperation::DeserializeInformationField(Buffer::Iterator start, uint16_t lengt
     SetChannelCenterFrequencySegment1(channelCenterFrequencySegment1);
     SetBasicVhtMcsAndNssSet(basicVhtMcsAndNssSet);
     return length;
-}
-
-std::ostream&
-operator<<(std::ostream& os, const VhtOperation& VhtOperation)
-{
-    os << +VhtOperation.GetChannelWidth() << "|"
-       << +VhtOperation.GetChannelCenterFrequencySegment0() << "|"
-       << +VhtOperation.GetChannelCenterFrequencySegment1() << "|"
-       << VhtOperation.GetBasicVhtMcsAndNssSet();
-    return os;
 }
 
 } // namespace ns3

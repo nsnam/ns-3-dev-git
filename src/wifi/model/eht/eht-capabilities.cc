@@ -423,6 +423,12 @@ EhtCapabilities::ElementIdExt() const
     return IE_EXT_EHT_CAPABILITIES;
 }
 
+void
+EhtCapabilities::Print(std::ostream& os) const
+{
+    os << "EHT Capabilities="; // TODO
+}
+
 uint16_t
 EhtCapabilities::GetInformationFieldSize() const
 {
@@ -724,13 +730,6 @@ EhtCapabilities::DeserializeInformationField(Buffer::Iterator start, uint16_t le
     }
 
     return count;
-}
-
-std::ostream&
-operator<<(std::ostream& os, const EhtCapabilities& ehtCapabilities)
-{
-    // TODO
-    return os;
 }
 
 } // namespace ns3

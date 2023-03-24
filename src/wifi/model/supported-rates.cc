@@ -58,6 +58,26 @@ SupportedRates::operator=(const SupportedRates& rates)
 }
 
 void
+SupportedRates::Print(std::ostream& os) const
+{
+    os << "rates=[";
+    for (uint8_t i = 0; i < GetNRates(); i++)
+    {
+        uint32_t rate = GetRate(i);
+        if (IsBasicRate(rate))
+        {
+            os << "*";
+        }
+        os << rate / 1000000 << "mbs";
+        if (i < GetNRates() - 1)
+        {
+            os << " ";
+        }
+    }
+    os << "]";
+}
+
+void
 SupportedRates::AddSupportedRate(uint64_t bs)
 {
     NS_LOG_FUNCTION(this << bs);
@@ -256,27 +276,6 @@ ExtendedSupportedRatesIE::DeserializeInformationField(Buffer::Iterator start, ui
     start.Read(m_supportedRates->m_rates + m_supportedRates->m_nRates, length);
     m_supportedRates->m_nRates += length;
     return length;
-}
-
-std::ostream&
-operator<<(std::ostream& os, const SupportedRates& rates)
-{
-    os << "[";
-    for (uint8_t i = 0; i < rates.GetNRates(); i++)
-    {
-        uint32_t rate = rates.GetRate(i);
-        if (rates.IsBasicRate(rate))
-        {
-            os << "*";
-        }
-        os << rate / 1000000 << "mbs";
-        if (i < rates.GetNRates() - 1)
-        {
-            os << " ";
-        }
-    }
-    os << "]";
-    return os;
 }
 
 } // namespace ns3
