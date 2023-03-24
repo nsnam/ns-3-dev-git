@@ -903,6 +903,7 @@ macro(process_options)
         message(
           ${HIGHLIGHTED_STATUS}
           "NS3_BINDINGS_INSTALL_DIR was not set. The python bindings won't be installed with ./ns3 install."
+          "This setting is meant for packaging and redistribution."
         )
         message(
           ${HIGHLIGHTED_STATUS}
