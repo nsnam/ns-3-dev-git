@@ -22,7 +22,6 @@
 //
 // - UDP flows from n0 to n1
 
-#include "ns3/applications-module.h"
 #include "ns3/core-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/internet-module.h"

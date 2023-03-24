@@ -29,7 +29,6 @@
  */
 
 #include "ns3/applications-module.h"
-#include "ns3/config-store-module.h"
 #include "ns3/core-module.h"
 #include "ns3/dsdv-helper.h"
 #include "ns3/internet-module.h"
