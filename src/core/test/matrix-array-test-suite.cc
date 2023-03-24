@@ -217,6 +217,8 @@ MatrixArrayTestCase<T>::DoRun()
     NS_TEST_ASSERT_MSG_EQ(m10, m9, "m10 and m9 should be equal");
 
     // test multiplication by using an initialization matrixArray
+    // matrix dimensions in each page are 2x3, 3x2, and the resulting matrix per page is a square
+    // matrix 2x2
     std::valarray<int> a{0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5};
     std::valarray<int> b{0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
     std::valarray<int> c{2, 3, 4, 6, 2, 3, 4, 6};
@@ -247,9 +249,88 @@ MatrixArrayTestCase<T>::DoRun()
                           m14.GetNumRows(),
                           "The number of rows is not as expected.");
     NS_TEST_ASSERT_MSG_EQ(m13, m14, "The values are not equal.");
-    NS_LOG_INFO("m11:" << m11);
-    NS_LOG_INFO("m12:" << m12);
-    NS_LOG_INFO("m13 = matrixArrayA * matrixArrayB:" << m13);
+    NS_LOG_INFO("m11 (2,3,2):" << m11);
+    NS_LOG_INFO("m12 (3,2,2):" << m12);
+    NS_LOG_INFO("m13 = m11 * m12:" << m13);
+
+    // test multiplication by using an initialization matrixArray
+    // matrices have different number of elements per page
+    // matrix dimensions in each page are 4x3, 3x2, and the resulting matrix
+    // dimensions are 4x2
+    a = std::valarray<int>(
+        {0, 1, 0, 1, 2, 3, 2, 3, 4, 5, 4, 5, 0, 1, 0, 1, 2, 3, 2, 3, 4, 5, 4, 5});
+    b = std::valarray<int>({0, 1, 0, 1, 0, 1, 0, 10, 0, 10, 0, 10});
+    c = std::valarray<int>({2, 3, 2, 3, 4, 6, 4, 6, 20, 30, 20, 30, 40, 60, 40, 60});
+    aCasted = std::valarray<T>(a.size());
+    bCasted = std::valarray<T>(b.size());
+    cCasted = std::valarray<T>(c.size());
+
+    for (size_t i = 0; i < a.size(); ++i)
+    {
+        aCasted[i] = static_cast<T>(a[i]);
+    }
+    for (size_t i = 0; i < b.size(); ++i)
+    {
+        bCasted[i] = static_cast<T>(b[i]);
+    }
+    for (size_t i = 0; i < c.size(); ++i)
+    {
+        cCasted[i] = static_cast<T>(c[i]);
+    }
+
+    m11 = MatrixArray<T>(4, 3, 2, aCasted);
+    m12 = MatrixArray<T>(3, 2, 2, bCasted);
+    m13 = m11 * m12;
+    m14 = MatrixArray<T>(4, 2, 2, cCasted);
+    NS_TEST_ASSERT_MSG_EQ(m13.GetNumCols(),
+                          m14.GetNumCols(),
+                          "The number of columns is not as expected.");
+    NS_TEST_ASSERT_MSG_EQ(m13.GetNumRows(),
+                          m14.GetNumRows(),
+                          "The number of rows is not as expected.");
+    NS_TEST_ASSERT_MSG_EQ(m13, m14, "The values are not equal.");
+    NS_LOG_INFO("m11 (4,3,2):" << m11);
+    NS_LOG_INFO("m12 (3,2,2):" << m12);
+    NS_LOG_INFO("m13 = m11 * m12:" << m13);
+
+    // test multiplication by using an initialization matrixArray
+    // matrices have different number of elements per page
+    // matrix dimensions in each page are 1x3, 3x2, and the resulting matrix has
+    // dimensions 1x2
+    a = std::valarray<int>({5, 4, 5, 5, 4, 5});
+    b = std::valarray<int>({0, 1, 0, 1, 0, 1, 1, 2, 3, 10, 100, 1000});
+    c = std::valarray<int>({4, 10, 28, 5450});
+    aCasted = std::valarray<T>(a.size());
+    bCasted = std::valarray<T>(b.size());
+    cCasted = std::valarray<T>(c.size());
+
+    for (size_t i = 0; i < a.size(); ++i)
+    {
+        aCasted[i] = static_cast<T>(a[i]);
+    }
+    for (size_t i = 0; i < b.size(); ++i)
+    {
+        bCasted[i] = static_cast<T>(b[i]);
+    }
+    for (size_t i = 0; i < c.size(); ++i)
+    {
+        cCasted[i] = static_cast<T>(c[i]);
+    }
+
+    m11 = MatrixArray<T>(1, 3, 2, aCasted);
+    m12 = MatrixArray<T>(3, 2, 2, bCasted);
+    m13 = m11 * m12;
+    m14 = MatrixArray<T>(1, 2, 2, cCasted);
+    NS_TEST_ASSERT_MSG_EQ(m13.GetNumCols(),
+                          m14.GetNumCols(),
+                          "The number of columns is not as expected.");
+    NS_TEST_ASSERT_MSG_EQ(m13.GetNumRows(),
+                          m14.GetNumRows(),
+                          "The number of rows is not as expected.");
+    NS_TEST_ASSERT_MSG_EQ(m13, m14, "The values are not equal.");
+    NS_LOG_INFO("m11 (1,3,2):" << m11);
+    NS_LOG_INFO("m12 (3,2,2):" << m12);
+    NS_LOG_INFO("m13 = m11 * m12:" << m13);
 
     // test MultiplyByLeftAndRightMatrix
     std::valarray<int> d{1, 1, 1};
