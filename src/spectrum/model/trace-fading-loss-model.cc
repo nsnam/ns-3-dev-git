@@ -84,7 +84,7 @@ TraceFadingLossModel::GetTypeId()
                           "The number of RB the trace is made of (default 100)",
                           UintegerValue(100),
                           MakeUintegerAccessor(&TraceFadingLossModel::m_rbNum),
-                          MakeUintegerChecker<uint8_t>())
+                          MakeUintegerChecker<uint32_t>())
             .AddAttribute(
                 "RngStreamSetSize",
                 "The number of RNG streams reserved for the fading model. The maximum number of "
