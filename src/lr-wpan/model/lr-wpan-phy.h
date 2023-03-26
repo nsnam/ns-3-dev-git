@@ -156,7 +156,7 @@ enum LrWpanPibAttributeIdentifier
  *
  * IEEE802.15.4-2006 PHY PIB Attributes Table 23 in section 6.4.2
  */
-struct LrWpanPhyPibAttributes
+struct LrWpanPhyPibAttributes : public SimpleRefCount<LrWpanPhyPibAttributes>
 {
     uint8_t phyCurrentChannel;         //!< The RF channel to use
     uint32_t phyChannelsSupported[32]; //!< BitField representing the available channels supported
@@ -218,7 +218,10 @@ typedef Callback<void, LrWpanPhyEnumeration, uint8_t> PlmeEdConfirmCallback;
  * @param id the identifier of attribute
  * @param attribute the pointer to attribute struct
  */
-typedef Callback<void, LrWpanPhyEnumeration, LrWpanPibAttributeIdentifier, LrWpanPhyPibAttributes*>
+typedef Callback<void,
+                 LrWpanPhyEnumeration,
+                 LrWpanPibAttributeIdentifier,
+                 Ptr<LrWpanPhyPibAttributes>>
     PlmeGetAttributeConfirmCallback;
 
 /**
@@ -395,7 +398,7 @@ class LrWpanPhy : public SpectrumPhy
      * \param attribute the attribute value
      */
     void PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier id,
-                                 LrWpanPhyPibAttributes* attribute);
+                                 Ptr<LrWpanPhyPibAttributes> attribute);
 
     /**
      * set the callback for the end of a RX, as part of the

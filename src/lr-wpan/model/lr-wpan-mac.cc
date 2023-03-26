@@ -579,9 +579,9 @@ LrWpanMac::MlmeStartRequest(MlmeStartRequestParams params)
     m_pendPrimitive = MLME_START_REQ;
     m_startParams = params;
 
-    LrWpanPhyPibAttributes pibAttr;
-    pibAttr.phyCurrentPage = m_startParams.m_logChPage;
-    m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentPage, &pibAttr);
+    Ptr<LrWpanPhyPibAttributes> pibAttr = Create<LrWpanPhyPibAttributes>();
+    pibAttr->phyCurrentPage = m_startParams.m_logChPage;
+    m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentPage, pibAttr);
 }
 
 void
@@ -639,9 +639,9 @@ LrWpanMac::MlmeScanRequest(MlmeScanRequestParams params)
     m_scanParams = params;
     m_pendPrimitive = MLME_SCAN_REQ;
 
-    LrWpanPhyPibAttributes pibAttr;
-    pibAttr.phyCurrentPage = params.m_chPage;
-    m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentPage, &pibAttr);
+    Ptr<LrWpanPhyPibAttributes> pibAttr = Create<LrWpanPhyPibAttributes>();
+    pibAttr->phyCurrentPage = params.m_chPage;
+    m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentPage, pibAttr);
 }
 
 void
@@ -693,9 +693,9 @@ LrWpanMac::MlmeAssociateRequest(MlmeAssociateRequestParams params)
     }
     else
     {
-        LrWpanPhyPibAttributes pibAttr;
-        pibAttr.phyCurrentPage = params.m_chPage;
-        m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentPage, &pibAttr);
+        Ptr<LrWpanPhyPibAttributes> pibAttr = Create<LrWpanPhyPibAttributes>();
+        pibAttr->phyCurrentPage = params.m_chPage;
+        m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentPage, pibAttr);
     }
 }
 
@@ -849,9 +849,9 @@ LrWpanMac::MlmeSyncRequest(MlmeSyncRequestParams params)
 
     uint64_t symbolRate = (uint64_t)m_phy->GetDataOrSymbolRate(false); // symbols per second
     // change phy current logical channel
-    LrWpanPhyPibAttributes pibAttr;
-    pibAttr.phyCurrentChannel = params.m_logCh;
-    m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentChannel, &pibAttr);
+    Ptr<LrWpanPhyPibAttributes> pibAttr = Create<LrWpanPhyPibAttributes>();
+    pibAttr->phyCurrentChannel = params.m_logCh;
+    m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentChannel, pibAttr);
 
     // Enable Phy receiver
     m_phy->PlmeSetTRXStateRequest(IEEE_802_15_4_PHY_RX_ON);
@@ -917,6 +917,11 @@ LrWpanMac::MlmeSetRequest(LrWpanMacPibAttributeIdentifier id, Ptr<LrWpanMacPibAt
     case macBeaconPayloadLength:
         confirmParams.m_status = MLMESET_INVALID_PARAMETER;
         break;
+    case macShortAddress:
+        confirmParams.m_status = MLMESET_SUCCESS;
+        m_shortAddress = attribute->macShortAddress;
+    case macExtendedAddress:
+        confirmParams.m_status = MLMESET_READ_ONLY;
     default:
         // TODO: Add support for setting other attributes
         confirmParams.m_status = MLMESET_UNSUPPORTED_ATTRIBUTE;
@@ -927,6 +932,37 @@ LrWpanMac::MlmeSetRequest(LrWpanMacPibAttributeIdentifier id, Ptr<LrWpanMacPibAt
     {
         confirmParams.id = id;
         m_mlmeSetConfirmCallback(confirmParams);
+    }
+}
+
+void
+LrWpanMac::MlmeGetRequest(LrWpanMacPibAttributeIdentifier id)
+{
+    LrWpanMlmeGetConfirmStatus status = MLMEGET_SUCCESS;
+    Ptr<LrWpanMacPibAttributes> attributes = Create<LrWpanMacPibAttributes>();
+
+    switch (id)
+    {
+    case macBeaconPayload:
+        attributes->macBeaconPayload = m_macBeaconPayload;
+        break;
+    case macBeaconPayloadLength:
+        attributes->macBeaconPayloadLength = m_macBeaconPayloadLength;
+        break;
+    case macShortAddress:
+        attributes->macShortAddress = m_shortAddress;
+        break;
+    case macExtendedAddress:
+        attributes->macExtendedAddress = m_selfExt;
+        break;
+    default:
+        status = MLMEGET_UNSUPPORTED_ATTRIBUTE;
+        break;
+    }
+
+    if (!m_mlmeGetConfirmCallback.IsNull())
+    {
+        m_mlmeGetConfirmCallback(status, id, attributes);
     }
 }
 
@@ -1333,9 +1369,9 @@ LrWpanMac::EndChannelScan()
     if (channelFound)
     {
         // Switch to the next channel in the list and restart scan
-        LrWpanPhyPibAttributes pibAttr;
-        pibAttr.phyCurrentChannel = m_channelScanIndex;
-        m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentChannel, &pibAttr);
+        Ptr<LrWpanPhyPibAttributes> pibAttr = Create<LrWpanPhyPibAttributes>();
+        pibAttr->phyCurrentChannel = m_channelScanIndex;
+        m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentChannel, pibAttr);
     }
     else
     {
@@ -1428,9 +1464,9 @@ LrWpanMac::EndChannelEnergyScan()
     if (channelFound)
     {
         // switch to the next channel in the list and restart scan
-        LrWpanPhyPibAttributes pibAttr;
-        pibAttr.phyCurrentChannel = m_channelScanIndex;
-        m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentChannel, &pibAttr);
+        Ptr<LrWpanPhyPibAttributes> pibAttr = Create<LrWpanPhyPibAttributes>();
+        pibAttr->phyCurrentChannel = m_channelScanIndex;
+        m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentChannel, pibAttr);
     }
     else
     {
@@ -1801,6 +1837,12 @@ void
 LrWpanMac::SetMlmeSetConfirmCallback(MlmeSetConfirmCallback c)
 {
     m_mlmeSetConfirmCallback = c;
+}
+
+void
+LrWpanMac::SetMlmeGetConfirmCallback(MlmeGetConfirmCallback c)
+{
+    m_mlmeGetConfirmCallback = c;
 }
 
 void
@@ -3252,7 +3294,7 @@ LrWpanMac::PlmeEdConfirm(LrWpanPhyEnumeration status, uint8_t energyLevel)
 void
 LrWpanMac::PlmeGetAttributeConfirm(LrWpanPhyEnumeration status,
                                    LrWpanPibAttributeIdentifier id,
-                                   LrWpanPhyPibAttributes* attribute)
+                                   Ptr<LrWpanPhyPibAttributes> attribute)
 {
     NS_LOG_FUNCTION(this << status << id << attribute);
 }
@@ -3330,10 +3372,10 @@ LrWpanMac::PlmeSetAttributeConfirm(LrWpanPhyEnumeration status, LrWpanPibAttribu
 
             if (channelFound)
             {
-                LrWpanPhyPibAttributes pibAttr;
-                pibAttr.phyCurrentChannel = m_channelScanIndex;
+                Ptr<LrWpanPhyPibAttributes> pibAttr = Create<LrWpanPhyPibAttributes>();
+                pibAttr->phyCurrentChannel = m_channelScanIndex;
                 m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentChannel,
-                                               &pibAttr);
+                                               pibAttr);
             }
         }
         else
@@ -3425,10 +3467,10 @@ LrWpanMac::PlmeSetAttributeConfirm(LrWpanPhyEnumeration status, LrWpanPibAttribu
     {
         if (status == LrWpanPhyEnumeration::IEEE_802_15_4_PHY_SUCCESS)
         {
-            LrWpanPhyPibAttributes pibAttr;
-            pibAttr.phyCurrentChannel = m_startParams.m_logCh;
+            Ptr<LrWpanPhyPibAttributes> pibAttr = Create<LrWpanPhyPibAttributes>();
+            pibAttr->phyCurrentChannel = m_startParams.m_logCh;
             m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentChannel,
-                                           &pibAttr);
+                                           pibAttr);
         }
         else
         {
@@ -3464,10 +3506,10 @@ LrWpanMac::PlmeSetAttributeConfirm(LrWpanPhyEnumeration status, LrWpanPibAttribu
     {
         if (status == LrWpanPhyEnumeration::IEEE_802_15_4_PHY_SUCCESS)
         {
-            LrWpanPhyPibAttributes pibAttr;
-            pibAttr.phyCurrentChannel = m_associateParams.m_chNum;
+            Ptr<LrWpanPhyPibAttributes> pibAttr = Create<LrWpanPhyPibAttributes>();
+            pibAttr->phyCurrentChannel = m_associateParams.m_chNum;
             m_phy->PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier::phyCurrentChannel,
-                                           &pibAttr);
+                                           pibAttr);
         }
         else
         {

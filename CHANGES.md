@@ -20,6 +20,7 @@ Changes from ns-3.38 to ns-3-dev
 
 * (lr-wpan) Added support for orphan scans. Orphan scans can now be performed using the existing `LrWpanMac::MlmeScanRequest`; This orphan scan use the added orphan notification commands and coordinator realigment commands. Usage is shown in added `lr-wpan-orphan-scan.cc` example and in the `TestOrphanScan` included in `lr-wpan-mac-test.cc`.
 * (network) Added `Mac64Address::ConvertToInt`. Converts a Mac64Address object to a uint64_t.
+* (lr-wpan) Added `LrwpanMac::MlmeGetRequest` function and the corresponding confirm callbacks as well as `LrwpanMac::SetMlmeGetConfirm` function.
 
 ### Changes to existing API
 
@@ -44,6 +45,9 @@ Changes from ns-3.38 to ns-3-dev
 * (wifi) The spelling of the define `IE_BEAMLINK_MAINENANCE` from `wifi-information-element.h` was corrected to `IE_BEAMLINK_MAINTENANCE`; this will affect existing users who were using the define with the misspelling.
 * (wimax) The spelling of the attribute `m_nrRecivedFecBlocks` from `simple-ofdm-wimax-phy.h` was corrected to `m_nrReceivedFecBlocks`; this will affect existing users who were using the attribute with the misspelling.
 * (sixlowpan) The spelling of the function `SixLowPanNetDevice::Fragments::GetFraments` from `sixlowpan-net-device.cc` was corrected to `SixLowPanNetDevice::Fragments::GetFragments`; this will affect existing users who were using the function with the misspelling.
+* (lr-wpan) Updated `LrWpanPhy::PlmeSetAttribute` and `LrWpanPhy::PlmeGetAttribute` (Request and Confirm) to use smart pointers.
+* (lr-wpan) Modified `LrWpanPhy::PlmeGetAttributeRequest` to include support for a few attributes (none were supported before the change).
+* (lr-wpan) Added `macShortAddress` and `macExtendendAddress` to the attributes that can be use with MLME-GET and MLME-SET functions.
 
 ### Changes to build system
 

@@ -326,13 +326,27 @@ enum LrWpanMlmeSetConfirmStatus
 /**
  * \ingroup lr-wpan
  *
+ * Table 20 of IEEE 802.15.4-2011
+ */
+enum LrWpanMlmeGetConfirmStatus
+{
+    MLMEGET_SUCCESS = 0,
+    MLMEGET_UNSUPPORTED_ATTRIBUTE = 1
+};
+
+/**
+ * \ingroup lr-wpan
+ *
  * IEEE802.15.4-2011 MAC PIB Attribute Identifiers Table 52 in section 6.4.2
  *
  */
 enum LrWpanMacPibAttributeIdentifier
 {
     macBeaconPayload = 0,
-    macBeaconPayloadLength = 1
+    macBeaconPayloadLength = 1,
+    macShortAddress = 2,
+    macExtendedAddress = 3,
+    unsupported = 255
     // TODO: complete other MAC pib attributes
 };
 
@@ -345,6 +359,8 @@ struct LrWpanMacPibAttributes : public SimpleRefCount<LrWpanMacPibAttributes>
 {
     Ptr<Packet> macBeaconPayload;      //!< The contents of the beacon payload.
     uint8_t macBeaconPayloadLength{0}; //!< The length in octets of the beacon payload.
+    Mac16Address macShortAddress;      //!< The 16 bit mac short address
+    Mac64Address macExtendedAddress;   //!< The EUI-64 bit address
     // TODO: complete other MAC pib attributes
 };
 
@@ -673,9 +689,9 @@ struct MlmePollConfirmParams
  */
 struct MlmeSetConfirmParams
 {
-    LrWpanMlmeSetConfirmStatus m_status{
-        MLMESET_UNSUPPORTED_ATTRIBUTE}; //!< The result of the request to write
-                                        //!< the PIB attribute.
+    LrWpanMlmeSetConfirmStatus m_status{MLMESET_UNSUPPORTED_ATTRIBUTE}; //!< The result of
+                                                                        //!< the request to write
+                                                                        //!< the PIB attribute.
     LrWpanMacPibAttributeIdentifier id; //!< The id of the PIB attribute that was written.
 };
 
@@ -797,6 +813,19 @@ typedef Callback<void, MlmeOrphanIndicationParams> MlmeOrphanIndicationCallback;
  * write attempt.
  */
 typedef Callback<void, MlmeSetConfirmParams> MlmeSetConfirmCallback;
+
+/**
+ * \ingroup lr-wpan
+ *
+ * This callback is called after a MlmeGetRequest has been called from
+ * the higher layer to get a PIB. It returns a status of the outcome of the
+ * write attempt.
+ */
+typedef Callback<void,
+                 LrWpanMlmeGetConfirmStatus,
+                 LrWpanMacPibAttributeIdentifier,
+                 Ptr<LrWpanMacPibAttributes>>
+    MlmeGetConfirmCallback;
 
 /**
  * \ingroup lr-wpan
@@ -979,6 +1008,15 @@ class LrWpanMac : public Object
     void MlmeSetRequest(LrWpanMacPibAttributeIdentifier id, Ptr<LrWpanMacPibAttributes> attribute);
 
     /**
+     * IEEE 802.15.4-2011, section 6.2.5.1
+     * MLME-GET.request
+     * Request information about a given PIB attribute.
+     *
+     * \param id the attribute identifier
+     */
+    void MlmeGetRequest(LrWpanMacPibAttributeIdentifier id);
+
+    /**
      * Set the CSMA/CA implementation to be used by the MAC.
      *
      * \param csmaCa the CSMA/CA implementation
@@ -1107,6 +1145,15 @@ class LrWpanMac : public Object
      */
     void SetMlmeSetConfirmCallback(MlmeSetConfirmCallback c);
 
+    /**
+     * Set the callback for the confirmation of an attempt to read an attribute.
+     * The callback implements MLME-GET.confirm SAP of IEEE 802.15.4-2011,
+     * section 6.2.5.2
+     *
+     *\param c the callback
+     */
+    void SetMlmeGetConfirmCallback(MlmeGetConfirmCallback c);
+
     // interfaces between MAC and PHY
 
     /**
@@ -1152,7 +1199,7 @@ class LrWpanMac : public Object
      */
     void PlmeGetAttributeConfirm(LrWpanPhyEnumeration status,
                                  LrWpanPibAttributeIdentifier id,
-                                 LrWpanPhyPibAttributes* attribute);
+                                 Ptr<LrWpanPhyPibAttributes> attribute);
 
     /**
      * IEEE 802.15.4-2006 section 6.2.2.8
@@ -1965,6 +2012,13 @@ class LrWpanMac : public Object
      * See IEEE 802.15.4-2011, section 6.2.11.2.
      */
     MlmeSetConfirmCallback m_mlmeSetConfirmCallback;
+
+    /**
+     * This callback is used to report the result of an attribute read request
+     * to the upper layers.
+     * See IEEE 802.15.4-2011, section 6.2.5.2
+     */
+    MlmeGetConfirmCallback m_mlmeGetConfirmCallback;
 
     /**
      * This callback is used to notify incoming beacon packets to the upper layers.

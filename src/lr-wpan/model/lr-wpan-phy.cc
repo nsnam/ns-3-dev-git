@@ -230,7 +230,7 @@ LrWpanPhy::DoDispose()
     m_plmeGetAttributeConfirmCallback = MakeNullCallback<void,
                                                          LrWpanPhyEnumeration,
                                                          LrWpanPibAttributeIdentifier,
-                                                         LrWpanPhyPibAttributes*>();
+                                                         Ptr<LrWpanPhyPibAttributes>>();
     m_plmeSetTRXStateConfirmCallback = MakeNullCallback<void, LrWpanPhyEnumeration>();
     m_plmeSetAttributeConfirmCallback =
         MakeNullCallback<void, LrWpanPhyEnumeration, LrWpanPibAttributeIdentifier>();
@@ -737,31 +737,31 @@ void
 LrWpanPhy::PlmeGetAttributeRequest(LrWpanPibAttributeIdentifier id)
 {
     NS_LOG_FUNCTION(this << id);
-    LrWpanPhyEnumeration status;
+    LrWpanPhyEnumeration status = IEEE_802_15_4_PHY_SUCCESS;
+    Ptr<LrWpanPhyPibAttributes> attributes = Create<LrWpanPhyPibAttributes>();
 
     switch (id)
     {
     case phyCurrentChannel:
-    case phyChannelsSupported:
-    case phyTransmitPower:
-    case phyCCAMode:
-    case phyCurrentPage:
-    case phyMaxFrameDuration:
-    case phySHRDuration:
-    case phySymbolsPerOctet: {
-        status = IEEE_802_15_4_PHY_SUCCESS;
+        attributes->phyCurrentChannel = m_phyPIBAttributes.phyCurrentChannel;
         break;
-    }
-    default: {
+    case phyCurrentPage:
+        attributes->phyCurrentPage = m_phyPIBAttributes.phyCurrentPage;
+        break;
+    case phySHRDuration:
+        attributes->phySHRDuration = GetPhySHRDuration();
+        break;
+    case phySymbolsPerOctet:
+        attributes->phySymbolsPerOctet = GetPhySymbolsPerOctet();
+        break;
+    default:
         status = IEEE_802_15_4_PHY_UNSUPPORTED_ATTRIBUTE;
         break;
     }
-    }
+
     if (!m_plmeGetAttributeConfirmCallback.IsNull())
     {
-        LrWpanPhyPibAttributes retValue;
-        memcpy(&retValue, &m_phyPIBAttributes, sizeof(LrWpanPhyPibAttributes));
-        m_plmeGetAttributeConfirmCallback(status, id, &retValue);
+        m_plmeGetAttributeConfirmCallback(status, id, attributes);
     }
 }
 
@@ -996,7 +996,7 @@ LrWpanPhy::PageSupported(uint8_t page)
 
 void
 LrWpanPhy::PlmeSetAttributeRequest(LrWpanPibAttributeIdentifier id,
-                                   LrWpanPhyPibAttributes* attribute)
+                                   Ptr<LrWpanPhyPibAttributes> attribute)
 {
     NS_LOG_FUNCTION(this << id << attribute);
     NS_ASSERT(attribute);
