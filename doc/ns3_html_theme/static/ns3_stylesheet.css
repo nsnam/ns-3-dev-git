@@ -10,16 +10,21 @@ dl {
   font-size: 12px;
 }
 
-/* Dark mode is not supported in Doxygen versions earlier than 1.9.6
+/* Dark mode is not supported in Doxygen versions earlier than 1.9.6 */
 @media (prefers-color-scheme: dark) {
   body,
   table,
   div,
   p,
-  dl    {
+  dl,
+  div.body,
+  div.sphinxsidebar h3,
+  div.sphinxsidebar h4 ,
+  div.sphinxsidebar h3 a{
     color: ivory;
+    background:black;
   }
-} */
+}
 
 a {
   color: #91A501;
@@ -110,8 +115,8 @@ div.sphinxsidebar a {
 }
 
 #projecttext {
-  align: left;
-  font-color: white;
+  text-align: left;
+  color: white;
   padding-left: 2em;
   width: 250px;
 }
