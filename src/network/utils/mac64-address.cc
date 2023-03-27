@@ -147,6 +147,25 @@ Mac64Address::ConvertTo() const
     return Address(GetType(), m_address, 8);
 }
 
+uint64_t
+Mac64Address::ConvertToInt() const
+{
+    uint64_t addr = 0;
+    uint64_t shift = 0xFF;
+
+    addr = static_cast<uint64_t>(m_address[7]) & (shift);
+    addr |= (static_cast<uint64_t>(m_address[6]) << 8) & (shift << 8);
+    addr |= (static_cast<uint64_t>(m_address[5]) << 16) & (shift << 16);
+    addr |= (static_cast<uint64_t>(m_address[4]) << 24) & (shift << 24);
+
+    addr |= (static_cast<uint64_t>(m_address[3]) << 32) & (shift << 32);
+    addr |= (static_cast<uint64_t>(m_address[2]) << 40) & (shift << 40);
+    addr |= (static_cast<uint64_t>(m_address[1]) << 48) & (shift << 48);
+    addr |= (static_cast<uint64_t>(m_address[0]) << 56) & (shift << 56);
+
+    return addr;
+}
+
 Mac64Address
 Mac64Address::Allocate()
 {

@@ -88,6 +88,13 @@ class Mac64Address
     Address ConvertTo() const;
 
     /**
+     * \return the mac address in a 64 bit int
+     *
+     * Convert an instance of this class to a 64 bit int.
+     */
+    uint64_t ConvertToInt() const;
+
+    /**
      * \param address address to test
      * \returns true if the address matches, false otherwise.
      */

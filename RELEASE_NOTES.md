@@ -21,6 +21,7 @@ Release 3-dev
 ### New user-visible features
 
 - (lr-wpan) !1399 - Add orphan scan support.
+- (network) !1405 - Add ConvertToInt to Mac64Address
 
 ### Bugs fixed
 
