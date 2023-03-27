@@ -712,9 +712,7 @@ HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
             continue;
         }
 
-        std::size_t numRus = (ruType >= HeRu::RU_242_TONE)
-                                 ? 1
-                                 : HeRu::m_heRuSubcarrierGroups.at({MHz_t{20}, ruType}).size();
+        const auto numRus = HeRu::GetNRus(MHz_t{20}, ruType);
         auto ruIdx = ru.GetIndex();
         while (prevRuIndex < ruIndex - 1)
         {
