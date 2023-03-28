@@ -1842,24 +1842,6 @@ MgtAssocResponseHeader::GetAssociationId() const
 }
 
 void
-MgtAssocResponseHeader::SetErpInformation(const ErpInformation& erpInformation)
-{
-    m_erpInformation = erpInformation;
-}
-
-void
-MgtAssocResponseHeader::SetErpInformation(ErpInformation&& erpInformation)
-{
-    m_erpInformation = std::move(erpInformation);
-}
-
-const std::optional<ErpInformation>&
-MgtAssocResponseHeader::GetErpInformation() const
-{
-    return m_erpInformation;
-}
-
-void
 MgtAssocResponseHeader::SetEdcaParameterSet(const EdcaParameterSet& edcaparameters)
 {
     m_edcaParameterSet = edcaparameters;
@@ -1919,10 +1901,6 @@ MgtAssocResponseHeader::GetSerializedSize() const
     size += m_code.GetSerializedSize();
     size += 2; // aid
     size += m_rates.GetSerializedSize();
-    if (m_erpInformation.has_value())
-    {
-        size += m_erpInformation->GetSerializedSize();
-    }
     if (m_rates.GetNRates() > 8)
     {
         size += m_rates.extended->GetSerializedSize();
@@ -1984,10 +1962,6 @@ MgtAssocResponseHeader::Print(std::ostream& os) const
     os << "status code=" << m_code << ", "
        << "aid=" << m_aid << ", "
        << "rates=" << m_rates << ", ";
-    if (m_erpInformation.has_value())
-    {
-        os << "ERP information=" << *m_erpInformation << ", ";
-    }
     if (m_extendedCapability.has_value())
     {
         os << "Extended Capabilities=" << *m_extendedCapability << " , ";
@@ -2034,10 +2008,6 @@ MgtAssocResponseHeader::Serialize(Buffer::Iterator start) const
     i = m_code.Serialize(i);
     i.WriteHtolsbU16(m_aid);
     i = m_rates.Serialize(i);
-    if (m_erpInformation.has_value())
-    {
-        i = m_erpInformation->Serialize(i);
-    }
     if (m_rates.GetNRates() > 8)
     {
         i = m_rates.extended->Serialize(i);
@@ -2101,7 +2071,6 @@ MgtAssocResponseHeader::Deserialize(Buffer::Iterator start)
     i = m_code.Deserialize(i);
     m_aid = i.ReadLsbtohU16();
     i = m_rates.Deserialize(i);
-    i = WifiInformationElement::DeserializeIfPresent(m_erpInformation, i);
     i = WifiInformationElement::DeserializeIfPresent(m_rates.extended, i, &m_rates);
     i = WifiInformationElement::DeserializeIfPresent(m_edcaParameterSet, i);
     i = WifiInformationElement::DeserializeIfPresent(m_extendedCapability, i);

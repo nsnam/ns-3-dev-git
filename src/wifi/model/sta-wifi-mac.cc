@@ -1193,6 +1193,18 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
 {
     NS_LOG_FUNCTION(this << frame.index() << apAddr << bssid << +linkId);
 
+    // ERP Information is not present in Association Response frames
+    const std::optional<ErpInformation>* erpInformation = nullptr;
+
+    if (const auto* beacon = std::get_if<MgtBeaconHeader>(&frame))
+    {
+        erpInformation = &beacon->GetErpInformation();
+    }
+    else if (const auto* probe = std::get_if<MgtProbeResponseHeader>(&frame))
+    {
+        erpInformation = &probe->GetErpInformation();
+    }
+
     // lambda processing Information Elements included in all frame types
     auto commonOps = [&](auto&& frame) {
         const CapabilityInformation& capabilities = frame.GetCapabilities();
@@ -1210,11 +1222,10 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
         }
 
         bool isShortPreambleEnabled = capabilities.IsShortPreamble();
-        if (const auto& erpInformation = frame.GetErpInformation();
-            erpInformation.has_value() && GetErpSupported(linkId))
+        if (erpInformation && erpInformation->has_value() && GetErpSupported(linkId))
         {
-            isShortPreambleEnabled &= !erpInformation->GetBarkerPreambleMode();
-            if (erpInformation->GetUseProtection() != 0)
+            isShortPreambleEnabled &= !(*erpInformation)->GetBarkerPreambleMode();
+            if ((*erpInformation)->GetUseProtection() != 0)
             {
                 GetWifiRemoteStationManager(linkId)->SetUseNonErpProtection(true);
             }

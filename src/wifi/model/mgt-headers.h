@@ -534,12 +534,6 @@ class MgtAssocResponseHeader : public Header
      */
     uint16_t GetAssociationId() const;
     /**
-     * Return the ERP information, if present.
-     *
-     * \return the ERP information, if present
-     */
-    const std::optional<ErpInformation>& GetErpInformation() const;
-    /**
      * Return the EDCA Parameter Set, if present.
      *
      * \return the EDCA Parameter Set, if present
@@ -636,16 +630,6 @@ class MgtAssocResponseHeader : public Header
     void SetAssociationId(uint16_t aid);
 
     /**
-     * Set the ERP information.
-     *
-     * \param erpInformation the ERP information
-     */
-    void SetErpInformation(const ErpInformation& erpInformation);
-
-    /** \copydoc SetErpInformation */
-    void SetErpInformation(ErpInformation&& erpInformation);
-
-    /**
      * Set the EDCA Parameter Set.
      *
      * \param edcaParameterSet the EDCA Parameter Set
@@ -736,7 +720,6 @@ class MgtAssocResponseHeader : public Header
     std::optional<HtOperation> m_htOperation;                 //!< HT operation
     std::optional<VhtCapabilities> m_vhtCapability;           //!< VHT capabilities
     std::optional<VhtOperation> m_vhtOperation;               //!< VHT operation
-    std::optional<ErpInformation> m_erpInformation;           //!< ERP information
     std::optional<EdcaParameterSet> m_edcaParameterSet;       //!< EDCA Parameter Set
     std::optional<HeCapabilities> m_heCapability;             //!< HE capabilities
     std::optional<HeOperation> m_heOperation;                 //!< HE operation

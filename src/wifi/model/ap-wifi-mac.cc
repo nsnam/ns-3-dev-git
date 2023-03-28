@@ -1031,10 +1031,6 @@ ApWifiMac::GetAssocResp(Mac48Address to, uint8_t linkId)
     assoc.SetSupportedRates(GetSupportedRates(linkId));
     assoc.SetStatusCode(code);
     assoc.SetCapabilities(GetCapabilities(linkId));
-    if (GetErpSupported(linkId))
-    {
-        assoc.SetErpInformation(GetErpInformation(linkId));
-    }
     if (GetQosSupported())
     {
         assoc.SetEdcaParameterSet(GetEdcaParameterSet(linkId));
