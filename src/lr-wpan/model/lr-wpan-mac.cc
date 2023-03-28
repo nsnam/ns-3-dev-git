@@ -1393,14 +1393,14 @@ LrWpanMac::EndChannelScan()
             NS_LOG_ERROR(this << " Invalid scan type");
         }
 
+        m_pendPrimitive = MLME_NONE;
+        m_channelScanIndex = 0;
+        m_scanParams = {};
+
         if (!m_mlmeScanConfirmCallback.IsNull())
         {
             m_mlmeScanConfirmCallback(confirmParams);
         }
-
-        m_pendPrimitive = MLME_NONE;
-        m_channelScanIndex = 0;
-        m_scanParams = {};
     }
 }
 
@@ -1443,19 +1443,21 @@ LrWpanMac::EndChannelEnergyScan()
         // (i.e when a coordinator perform a scan and it was already transmitting beacons)
 
         // All channels scanned, report success
-        if (!m_mlmeScanConfirmCallback.IsNull())
-        {
-            MlmeScanConfirmParams confirmParams;
-            confirmParams.m_status = MLMESCAN_SUCCESS;
-            confirmParams.m_chPage = m_phy->GetCurrentPage();
-            confirmParams.m_scanType = m_scanParams.m_scanType;
-            confirmParams.m_energyDetList = m_energyDetectList;
-            confirmParams.m_resultListSize = m_energyDetectList.size();
-            m_mlmeScanConfirmCallback(confirmParams);
-        }
+        MlmeScanConfirmParams confirmParams;
+        confirmParams.m_status = MLMESCAN_SUCCESS;
+        confirmParams.m_chPage = m_phy->GetCurrentPage();
+        confirmParams.m_scanType = m_scanParams.m_scanType;
+        confirmParams.m_energyDetList = m_energyDetectList;
+        confirmParams.m_resultListSize = m_energyDetectList.size();
+
         m_pendPrimitive = MLME_NONE;
         m_channelScanIndex = 0;
         m_scanParams = {};
+
+        if (!m_mlmeScanConfirmCallback.IsNull())
+        {
+            m_mlmeScanConfirmCallback(confirmParams);
+        }
     }
 }
 
@@ -3361,10 +3363,10 @@ LrWpanMac::PlmeSetAttributeConfirm(LrWpanPhyEnumeration status, LrWpanPibAttribu
             }
             else
             {
-                uint64_t scanDuration =
-                    lrwpan::aBaseSuperframeDuration *
-                    ((static_cast<uint32_t>(1 << m_scanParams.m_scanDuration)) + 1);
-                nextScanTime = Seconds(static_cast<double>(scanDuration / symbolRate));
+                uint64_t scanDurationSym =
+                    lrwpan::aBaseSuperframeDuration * (pow(2, m_scanParams.m_scanDuration) + 1);
+
+                nextScanTime = Seconds(static_cast<double>(scanDurationSym) / symbolRate);
             }
 
             switch (m_scanParams.m_scanType)

@@ -510,8 +510,10 @@ struct MlmeScanRequestParams
     uint32_t m_scanChannels{0x7FFF800};              //!< The channel numbers to be scanned.
                                                      //!< Default: (0x7FFF800 = Ch11-Ch26)
                                                      //!< 27 LSB (b0,b1,...,b26) = channels
-    uint8_t m_scanDuration{14}; //!< A value used to calculate the length of time to spend scanning
-                                //!< [aBaseSuperframeDuration * (2^m_scanDuration +)].
+    uint8_t m_scanDuration{14}; //!< The factor (0-14) used to calculate the length of time
+                                //!< to spend scanning.
+                                //!< scanDurationSymbols =
+                                //!< [aBaseSuperframeDuration * (2^m_scanDuration + 1)].
     uint32_t m_chPage{0};       //!< The channel page on which to perform scan.
 };
 
