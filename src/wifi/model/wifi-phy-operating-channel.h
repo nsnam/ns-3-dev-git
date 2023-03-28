@@ -74,6 +74,23 @@ class WifiPhyOperatingChannel
     /// Typedef for a const iterator pointing to a channel in the set of available channels
     using ConstIterator = std::set<FrequencyChannelInfo>::const_iterator;
 
+    /// Comparison functor used to sort the segments by increasing frequencies
+    struct Compare
+    {
+        /**
+         * Functional operator for sorting the frequency segments.
+         *
+         * \param a const iterator pointing to the frequency channel for the first segment
+         * \param b const iterator pointing to the frequency channel for the second segment
+         * \return true if the center frequency of the first segment is lower than the center
+         * frequency of the second segment
+         */
+        bool operator()(const ConstIterator& a, const ConstIterator& b) const;
+    };
+
+    /// Typedef for a set of const iterator pointing to the segments of a channel
+    using ConstIteratorSet = std::set<ConstIterator, Compare>;
+
     /**
      * Create an uninitialized PHY operating channel.
      */
@@ -93,7 +110,7 @@ class WifiPhyOperatingChannel
      *
      * \param its the iterators pointing to frequency segments in the set of available channels
      */
-    WifiPhyOperatingChannel(const std::vector<ConstIterator>& its);
+    WifiPhyOperatingChannel(const ConstIteratorSet& its);
 
     virtual ~WifiPhyOperatingChannel();
 
@@ -374,15 +391,9 @@ class WifiPhyOperatingChannel
     std::size_t GetNSegments() const;
 
   private:
-    /**
-     * Sort the segments by increasing frequencies.
-     */
-    void SortSegments();
-
-    std::vector<ConstIterator>
-        m_channelIts;         //!< const iterators pointing to the configured frequency channel
-    uint8_t m_primary20Index; /**< index of the primary20 channel (0 indicates the 20 MHz
-                                   subchannel with the lowest center frequency) */
+    ConstIteratorSet m_channelIts; //!< const iterators pointing to the configured frequency channel
+    uint8_t m_primary20Index;      /**< index of the primary20 channel (0 indicates the 20 MHz
+                                        subchannel with the lowest center frequency) */
 };
 
 /**
