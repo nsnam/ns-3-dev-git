@@ -247,7 +247,7 @@ class MatrixArray : public ValArray<T>
                                                   EnableBool)>::type>
     MatrixArray<T> HermitianTranspose() const;
 
-  private:
+  protected:
     // To simplify functions in MatrixArray that are using members from the template base class
     using ValArray<T>::m_numRows;
     using ValArray<T>::m_numCols;
