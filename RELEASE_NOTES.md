@@ -24,6 +24,7 @@ Release 3-dev
 - (network) !1405 - Add ConvertToInt to Mac64Address
 - (lr-wpan) !1402 - Add attributes to MLME-SET and MLME-GET
 - (lr-wpan) !1410 - Add Mac16 and Mac64 functions
+- (applications) !1412 - Add Tx and TxWithAddresses trace sources in UdpClient
 
 ### Bugs fixed
 

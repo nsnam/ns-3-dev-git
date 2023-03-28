@@ -76,7 +76,15 @@ UdpClient::GetTypeId()
                           "the size of the header carrying the sequence number and the time stamp.",
                           UintegerValue(1024),
                           MakeUintegerAccessor(&UdpClient::m_size),
-                          MakeUintegerChecker<uint32_t>(12, 65507));
+                          MakeUintegerChecker<uint32_t>(12, 65507))
+            .AddTraceSource("Tx",
+                            "A new packet is created and sent",
+                            MakeTraceSourceAccessor(&UdpClient::m_txTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("TxWithAddresses",
+                            "A new packet is created and sent",
+                            MakeTraceSourceAccessor(&UdpClient::m_txTraceWithAddresses),
+                            "ns3::Packet::TwoAddressTracedCallback");
     return tid;
 }
 
@@ -203,9 +211,20 @@ UdpClient::Send()
 {
     NS_LOG_FUNCTION(this);
     NS_ASSERT(m_sendEvent.IsExpired());
+
+    Address from;
+    Address to;
+    m_socket->GetSockName(from);
+    m_socket->GetPeerName(to);
     SeqTsHeader seqTs;
     seqTs.SetSeq(m_sent);
-    Ptr<Packet> p = Create<Packet>(m_size - (8 + 4)); // 8+4 : the size of the seqTs header
+    NS_ABORT_IF(m_size < seqTs.GetSerializedSize());
+    Ptr<Packet> p = Create<Packet>(m_size - seqTs.GetSerializedSize());
+
+    // Trace before adding header, for consistency with PacketSink
+    m_txTrace(p);
+    m_txTraceWithAddresses(p, from, to);
+
     p->AddHeader(seqTs);
 
     if ((m_socket->Send(p)) >= 0)

@@ -23,6 +23,7 @@ Changes from ns-3.38 to ns-3-dev
 * (network) Added `Mac16Address::ConvertToInt`. Converts a Mac16Address object to a uint16_t.
 * (network) Added `Mac16Address::Mac16Address(uint16t addr)` and `Mac16Address::Mac64Address(uint64t addr)` constructors.
 * (lr-wpan) Added `LrwpanMac::MlmeGetRequest` function and the corresponding confirm callbacks as well as `LrwpanMac::SetMlmeGetConfirm` function.
+* (applications) Added `Tx` and `TxWithAddresses` trace sources in `UdpClient`.
 
 ### Changes to existing API
 
