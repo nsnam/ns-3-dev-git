@@ -140,13 +140,6 @@ class PhasedArrayModel : public Object
     uint32_t GetId() const;
 
   protected:
-    /**
-     * Utility method to compute the euclidean norm of a ComplexVector
-     * \param vector the ComplexVector
-     * \return the euclidean norm
-     */
-    static double ComputeNorm(const ComplexVector& vector);
-
     ComplexVector m_beamformingVector;  //!< the beamforming vector in use
     Ptr<AntennaModel> m_antennaElement; //!< the model of the antenna element in use
     bool m_isBfVectorValid;             //!< ensures the validity of the beamforming vector
