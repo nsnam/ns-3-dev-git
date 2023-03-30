@@ -51,9 +51,9 @@ class Mac16Address
     Mac16Address(const char* str);
 
     /**
-     * \param addr The 16 bit integer used to create a Mac16Address object.
+     * \param addr The 16 bit unsigned integer used to create a Mac16Address object.
      *
-     * Create a Mac16Address from an 16 bit integer.
+     * Create a Mac16Address from an 16 bit unsigned integer.
      */
     Mac16Address(uint16_t addr);
 
@@ -94,6 +94,13 @@ class Mac16Address
      * Convert an instance of this class to a polymorphic Address instance.
      */
     Address ConvertTo() const;
+
+    /**
+     * \return the mac address in a 16 bit unsigned integer
+     *
+     * Convert an instance of this class to a 16 bit unsigned integer.
+     */
+    uint16_t ConvertToInt() const;
 
     /**
      * \param address address to test

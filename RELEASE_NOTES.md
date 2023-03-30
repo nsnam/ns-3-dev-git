@@ -23,6 +23,7 @@ Release 3-dev
 - (lr-wpan) !1399 - Add orphan scan support.
 - (network) !1405 - Add ConvertToInt to Mac64Address
 - (lr-wpan) !1402 - Add attributes to MLME-SET and MLME-GET
+- (lr-wpan) 1410 - Add Mac16 and Mac64 functions
 
 ### Bugs fixed
 

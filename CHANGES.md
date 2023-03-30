@@ -20,6 +20,8 @@ Changes from ns-3.38 to ns-3-dev
 
 * (lr-wpan) Added support for orphan scans. Orphan scans can now be performed using the existing `LrWpanMac::MlmeScanRequest`; This orphan scan use the added orphan notification commands and coordinator realigment commands. Usage is shown in added `lr-wpan-orphan-scan.cc` example and in the `TestOrphanScan` included in `lr-wpan-mac-test.cc`.
 * (network) Added `Mac64Address::ConvertToInt`. Converts a Mac64Address object to a uint64_t.
+* (network) Added `Mac16Address::ConvertToInt`. Converts a Mac16Address object to a uint16_t.
+* (network) Added `Mac16Address::Mac16Address(uint16t addr)` and `Mac16Address::Mac64Address(uint64t addr)` constructors.
 * (lr-wpan) Added `LrwpanMac::MlmeGetRequest` function and the corresponding confirm callbacks as well as `LrwpanMac::SetMlmeGetConfirm` function.
 
 ### Changes to existing API

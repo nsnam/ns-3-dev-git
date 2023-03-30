@@ -49,9 +49,16 @@ class Mac64Address
     /**
      * \param str a string representing the new Mac64Address
      *
-     * The format of the string is "xx:xx:xx:xx:xx:xx"
+     * The format of the string is "xx:xx:xx:xx:xx:xx:xx:xx"
      */
     Mac64Address(const char* str);
+
+    /**
+     * \param addr The 64 bit unsigned integer used to create a Mac64Address object.
+     *
+     * Create a Mac64Address from an 64 bit unsigned integer.
+     */
+    Mac64Address(uint64_t addr);
 
     /**
      * \param buffer address in network order
@@ -88,9 +95,9 @@ class Mac64Address
     Address ConvertTo() const;
 
     /**
-     * \return the mac address in a 64 bit int
+     * \return the mac address in a 64 bit unsigned integer.
      *
-     * Convert an instance of this class to a 64 bit int.
+     * Convert an instance of this class to a 64 bit unsigned integer.
      */
     uint64_t ConvertToInt() const;
 

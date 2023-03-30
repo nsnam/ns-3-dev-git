@@ -104,6 +104,19 @@ Mac64Address::Mac64Address(const char* str)
     NS_ASSERT(i == 8);
 }
 
+Mac64Address::Mac64Address(uint64_t addr)
+{
+    NS_LOG_FUNCTION(this);
+    m_address[7] = addr & 0xFF;
+    m_address[6] = (addr >> 8) & 0xFF;
+    m_address[5] = (addr >> 16) & 0xFF;
+    m_address[4] = (addr >> 24) & 0xFF;
+    m_address[3] = (addr >> 32) & 0xFF;
+    m_address[2] = (addr >> 40) & 0xFF;
+    m_address[1] = (addr >> 48) & 0xFF;
+    m_address[0] = (addr >> 56) & 0xFF;
+}
+
 void
 Mac64Address::CopyFrom(const uint8_t buffer[8])
 {
@@ -150,10 +163,8 @@ Mac64Address::ConvertTo() const
 uint64_t
 Mac64Address::ConvertToInt() const
 {
-    uint64_t addr = 0;
     uint64_t shift = 0xFF;
-
-    addr = static_cast<uint64_t>(m_address[7]) & (shift);
+    uint64_t addr = static_cast<uint64_t>(m_address[7]) & (shift);
     addr |= (static_cast<uint64_t>(m_address[6]) << 8) & (shift << 8);
     addr |= (static_cast<uint64_t>(m_address[5]) << 16) & (shift << 16);
     addr |= (static_cast<uint64_t>(m_address[4]) << 24) & (shift << 24);
