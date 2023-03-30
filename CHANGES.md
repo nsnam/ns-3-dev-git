@@ -50,6 +50,7 @@ Changes from ns-3.38 to ns-3-dev
 * (lr-wpan) Updated `LrWpanPhy::PlmeSetAttribute` and `LrWpanPhy::PlmeGetAttribute` (Request and Confirm) to use smart pointers.
 * (lr-wpan) Modified `LrWpanPhy::PlmeGetAttributeRequest` to include support for a few attributes (none were supported before the change).
 * (lr-wpan) Added `macShortAddress`, `macExtendendAddress` and `macPanId` to the attributes that can be use with MLME-GET and MLME-SET functions.
+* (wifi) The QosBlockedDestinations class has been removed and its functionality is now provided via a new framework for blocking/unblocking packets that is based on the queue scheduler.
 
 ### Changes to build system
 
