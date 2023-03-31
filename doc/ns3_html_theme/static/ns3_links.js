@@ -44,7 +44,7 @@ var ns3_man  = ns3_rel  + "manual/"         + ns3_index;
 var ns3_mod  = ns3_rel  + "models/"         + ns3_index;
 var ns3_tut  = ns3_rel  + "tutorial/"       + ns3_index;
 var ns3_con  = ns3_rel  + "contributing/"   + ns3_index;
-var ns3_con  = ns3_rel  + "installation/"   + ns3_index;
+var ns3_ins  = ns3_rel  + "installation/"   + ns3_index;
 
 function ns3_write_links() {
   document.getElementById("ns3_home1").href = ns3_home;
