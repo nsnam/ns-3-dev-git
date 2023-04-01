@@ -144,6 +144,15 @@ function(build_lib)
   foreach(library ${BLIB_LIBRARIES_TO_LINK})
     remove_lib_prefix("${library}" module_name)
 
+    # Ignore the case where the library dependency name match the ns-3 module
+    # since it is most likely is due to brite, click and openflow collisions.
+    # All the ns-3 module targets should be prefixed with 'lib' to be
+    # differentiable.
+    if("${library}" STREQUAL "${BLIB_LIBNAME}")
+      list(APPEND non_ns_libraries_to_link ${library})
+      continue()
+    endif()
+
     # Check if the module exists in the ns-3 modules list or if it is a
     # 3rd-party library
     if(${module_name} IN_LIST ns3-all-enabled-modules)

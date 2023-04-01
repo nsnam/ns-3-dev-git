@@ -2320,6 +2320,24 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_program("test.py", "-p ./examples/wireless/mixed-wired-wireless", python=True)
         self.assertEqual(return_code, 0)
 
+    def test_13_FetchOptionalComponents(self):
+        """!
+        Test if we had regressions with brite, click and openflow modules
+        that depend on homonymous libraries
+        @return None
+        """
+        if shutil.which("git") is None:
+            self.skipTest("Missing git")
+
+        # First enable automatic components fetching
+        return_code, stdout, stderr = run_ns3("configure -- -DNS3_FETCH_OPTIONAL_COMPONENTS=ON")
+        self.assertEqual(return_code, 0)
+
+        # Build the optional components to check if their dependencies were fetched
+        # and there were no build regressions
+        return_code, stdout, stderr = run_ns3("build brite click openflow")
+        self.assertEqual(return_code, 0)
+
 
 class NS3ExpectedUseTestCase(NS3BaseTestCase):
     """!
