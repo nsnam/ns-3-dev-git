@@ -970,7 +970,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
             self.assertIn("ns3-lte", enabled_modules)
             self.assertTrue(get_test_enabled())
-            self.assertGreaterEqual(len(get_programs_list()), len(self.ns3_executables))
+            self.assertLessEqual(len(get_programs_list()), len(self.ns3_executables))
 
             # Replace the ns3rc file with the wifi module, enabling examples and disabling tests
             with open(ns3rc_script, "w") as f:
@@ -1838,6 +1838,21 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 container.execute("./ns3 configure")
             except DockerException as e:
                 self.assertTrue(False, "Precompiled headers should have been enabled")
+
+    def test_24_CheckTestSettings(self):
+        """!
+        Check for regressions in test object build.
+        @return None
+        """
+        return_code, stdout, stderr = run_ns3('configure')
+        self.assertEqual(return_code, 0)
+
+        test_module_cache = os.path.join(ns3_path, "cmake-cache", "src", "test")
+        self.assertFalse(os.path.exists(test_module_cache))
+
+        return_code, stdout, stderr = run_ns3('configure --enable-tests')
+        self.assertEqual(return_code, 0)
+        self.assertTrue(os.path.exists(test_module_cache))
 
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):

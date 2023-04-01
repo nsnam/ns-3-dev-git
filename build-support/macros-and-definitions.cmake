@@ -410,6 +410,8 @@ macro(process_options)
   if(${NS3_TESTS} OR ${ns3rc_tests_enabled})
     set(ENABLE_TESTS ON)
     enable_testing()
+  else()
+    list(REMOVE_ITEM libs_to_build test)
   endif()
 
   set(profiles_without_suffixes release)
@@ -1929,10 +1931,6 @@ macro(
       unset(dependencies)
       unset(contrib_dependencies)
     endforeach()
-
-    if(core IN_LIST ${libs_to_build})
-      list(APPEND ${libs_to_build} test) # include test module
-    endif()
   endif()
 
   if(${NS3_DISABLED_MODULES} OR ${ns3rc_disabled_modules})
