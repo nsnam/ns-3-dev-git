@@ -2338,6 +2338,40 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3("build brite click openflow")
         self.assertEqual(return_code, 0)
 
+    def test_14_LinkContribModuleToSrcModule(self):
+        """!
+        Test if we can link contrib modules to src modules
+        @return None
+        """
+        if shutil.which("git") is None:
+            self.skipTest("Missing git")
+
+        destination_contrib = os.path.join(ns3_path, "contrib/test-contrib-dependency")
+        destination_src = os.path.join(ns3_path, "src/test-src-dependant-on-contrib")
+        # Remove pre-existing directories
+        if os.path.exists(destination_contrib):
+            shutil.rmtree(destination_contrib)
+        if os.path.exists(destination_src):
+            shutil.rmtree(destination_src)
+
+        # Always use a fresh copy
+        shutil.copytree(os.path.join(ns3_path, "build-support/test-files/test-contrib-dependency"),
+                        destination_contrib)
+        shutil.copytree(os.path.join(ns3_path, "build-support/test-files/test-src-dependant-on-contrib"),
+                        destination_src)
+
+        # Then configure
+        return_code, stdout, stderr = run_ns3("configure --enable-examples")
+        self.assertEqual(return_code, 0)
+
+        # Build the src module that depend on a contrib module
+        return_code, stdout, stderr = run_ns3("run source-example")
+        self.assertEqual(return_code, 0)
+
+        # Remove module copies
+        shutil.rmtree(destination_contrib)
+        shutil.rmtree(destination_src)
+
 
 class NS3ExpectedUseTestCase(NS3BaseTestCase):
     """!
