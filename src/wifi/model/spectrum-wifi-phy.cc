@@ -205,13 +205,36 @@ SpectrumWifiPhy::AddChannel(const Ptr<SpectrumChannel> channel, const FrequencyR
 }
 
 void
-SpectrumWifiPhy::ResetSpectrumModel()
+SpectrumWifiPhy::ResetSpectrumModelIfNeeded()
 {
     NS_LOG_FUNCTION(this);
 
-    // Replace existing spectrum model with new one
+    // We have to reset the spectrum model because we changed RF channel. Consequently,
+    // we also have to add the spectrum interface to the spectrum channel again because
+    // MultiModelSpectrumChannel keeps spectrum interfaces in a map indexed by the RX
+    // spectrum model UID (which has changed after channel switching).
+    // Both SingleModelSpectrumChannel and MultiModelSpectrumChannel ensure not to keep
+    // duplicated spectrum interfaces (the latter removes the spectrum interface and adds
+    // it again in the entry associated with the new RX spectrum model UID)
+
     const auto channelWidth = GetChannelWidth();
-    m_currentSpectrumPhyInterface->SetRxSpectrumModel(GetFrequency(),
+    const auto centerFrequency = GetFrequency();
+    if (m_currentSpectrumPhyInterface->GetCenterFrequency() == centerFrequency)
+    {
+        // Center frequency has not changed for that interface, hence we do not need to
+        // reset the spectrum model nor update any band stored in the interference helper
+        if (!m_trackSignalsInactiveInterfaces)
+        {
+            // If we are not tracking signals from inactive interface,
+            // this means the spectrum interface has been disconnected
+            // from the spectrum channel and has to be connected back
+            m_currentSpectrumPhyInterface->GetChannel()->AddRx(m_currentSpectrumPhyInterface);
+        }
+        return;
+    }
+
+    // Replace existing spectrum model with new one
+    m_currentSpectrumPhyInterface->SetRxSpectrumModel(centerFrequency,
                                                       channelWidth,
                                                       GetSubcarrierSpacing(),
                                                       GetGuardBandwidth(channelWidth));
@@ -258,15 +281,8 @@ SpectrumWifiPhy::DoChannelSwitch()
         }
     }
 
-    // We have to reset the spectrum model because we changed RF channel. Consequently,
-    // we also have to add the spectrum interface to the spectrum channel again because
-    // MultiModelSpectrumChannel keeps spectrum interfaces in a map indexed by the RX
-    // spectrum model UID (which has changed after channel switching).
-    // Both SingleModelSpectrumChannel and MultiModelSpectrumChannel ensure not to keep
-    // duplicated spectrum interfaces (the latter removes the spectrum interface and adds
-    // it again in the entry associated with the new RX spectrum model UID)
     m_currentSpectrumPhyInterface = newSpectrumPhyInterface;
-    ResetSpectrumModel();
+    ResetSpectrumModelIfNeeded();
 
     if (IsInitialized())
     {

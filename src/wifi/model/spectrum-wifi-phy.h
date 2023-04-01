@@ -171,9 +171,10 @@ class SpectrumWifiPhy : public WifiPhy
 
   private:
     /**
-     * Perform run-time spectrum model change
+     * Perform run-time spectrum model change if the one used by the current Spectrum PHY interface
+     * has changed
      */
-    void ResetSpectrumModel();
+    void ResetSpectrumModelIfNeeded();
 
     /**
      * This function is called to update the bands handled by the InterferenceHelper.
