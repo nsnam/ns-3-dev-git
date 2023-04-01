@@ -302,7 +302,7 @@ class TestSimulator(unittest.TestCase):
         cmd = ns.core.CommandLine(__file__)
         cmd.AddValue("Test1", "this is a test option", test1)
         cmd.AddValue("Test2", "this is a test option", test2)
-        cmd.AddValue("Test3", "this is a test option", test3)
+        cmd.AddValue["double"]("Test3", "this is a test option", test3)
         cmd.AddValue("Test4", "this is a test option", test4, BUFFLEN)
 
         cmd.Parse(["python"])

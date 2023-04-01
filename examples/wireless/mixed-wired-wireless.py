@@ -91,7 +91,7 @@ def main(argv):
     cmd.AddValue("backboneNodes", "number of backbone nodes", backboneNodes)
     cmd.AddValue("infraNodes", "number of leaf nodes", infraNodes)
     cmd.AddValue("lanNodes", "number of LAN nodes", lanNodes)
-    cmd.AddValue("stopTime", "simulation stop time(seconds)", stopTime)
+    cmd.AddValue["double"]("stopTime", "simulation stop time(seconds)", stopTime)
 
     #
     #  The system global variables and the local values added to the argument
