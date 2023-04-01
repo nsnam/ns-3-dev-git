@@ -1,4 +1,14 @@
 if(${ENABLE_TESTS} AND (test IN_LIST libs_to_build))
+  # Create a list of imported directories to include during libtest build
+  set(test_imported_include_directories)
+  foreach(libname ${ns3-libs} ${ns3-contrib-libs})
+    list(APPEND test_imported_include_directories $<TARGET_PROPERTY:${libname},INTERFACE_INCLUDE_DIRECTORIES>)
+  endforeach()
+
+  # Import include directories of dependencies to build libtest
+  target_include_directories(${libtest} PUBLIC ${test_imported_include_directories})
+  unset(test_imported_include_directories)
+
   if(WIN32)
     # DLL linking shenanigans prevent loading symbols unused by a certain program,
     # so link the tests libraries (here built as objects) directly to the test runner
