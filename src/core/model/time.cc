@@ -91,6 +91,9 @@ Time::MarkedTimes* Time::g_markingTimes = nullptr;
 /// The static mutex for critical sections around modification of Time::g_markingTimes.
 static std::mutex g_markingMutex;
 
+// The resolution of the Time class
+Time::Resolution Time::m_resolution{SetDefaultNsResolution()};
+
 // Function called to force static initialization
 // static
 bool
