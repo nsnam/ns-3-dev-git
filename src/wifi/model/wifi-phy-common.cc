@@ -270,6 +270,35 @@ GetMaximumChannelWidth(WifiModulationClass modulation)
     }
 }
 
+ChannelWidthMhz
+GetChannelWidthInMhz(WifiChannelWidthType width)
+{
+    switch (width)
+    {
+    case WifiChannelWidthType::UNKNOWN:
+        return 0;
+    case WifiChannelWidthType::CW_20MHZ:
+        return 20;
+    case WifiChannelWidthType::CW_22MHZ:
+        return 22;
+    case WifiChannelWidthType::CW_5MHZ:
+        return 5;
+    case WifiChannelWidthType::CW_10MHZ:
+        return 10;
+    case WifiChannelWidthType::CW_40MHZ:
+        return 40;
+    case WifiChannelWidthType::CW_80MHZ:
+        return 80;
+    case WifiChannelWidthType::CW_160MHZ:
+        return 160;
+    case WifiChannelWidthType::CW_2160MHZ:
+        return 2160;
+    default:
+        NS_FATAL_ERROR("Unknown wifi channel width type " << width);
+        return 0;
+    }
+}
+
 bool
 IsEht(WifiPreamble preamble)
 {

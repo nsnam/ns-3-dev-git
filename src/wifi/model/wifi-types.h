@@ -29,6 +29,24 @@ using ChannelWidthMhz = uint16_t; //!< channel width expressed in MHz
 
 /**
  * \ingroup wifi
+ * Enumeration of the possible channel widths
+ */
+enum class WifiChannelWidthType : uint8_t
+{
+    UNKNOWN = 0,
+    CW_20MHZ,
+    CW_22MHZ,
+    CW_5MHZ,
+    CW_10MHZ,
+    CW_40MHZ,
+    CW_80MHZ,
+    CW_160MHZ,
+    CW_2160MHZ,
+    MAX,
+};
+
+/**
+ * \ingroup wifi
  * The type of an MPDU.
  */
 enum MpduType

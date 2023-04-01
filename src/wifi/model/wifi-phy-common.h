@@ -24,6 +24,7 @@
 
 #include "wifi-spectrum-value-helper.h"
 #include "wifi-standards.h"
+#include "wifi-types.h"
 
 #include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
@@ -539,6 +540,40 @@ operator<<(std::ostream& os, WifiChannelListType type)
 }
 
 /**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param width the wifi channel width type
+ * \returns a reference to the stream
+ */
+inline std::ostream&
+operator<<(std::ostream& os, WifiChannelWidthType width)
+{
+    switch (width)
+    {
+    case WifiChannelWidthType::CW_20MHZ:
+        return (os << "20MHz");
+    case WifiChannelWidthType::CW_22MHZ:
+        return (os << "22MHz");
+    case WifiChannelWidthType::CW_5MHZ:
+        return (os << "5MHz");
+    case WifiChannelWidthType::CW_10MHZ:
+        return (os << "10MHz");
+    case WifiChannelWidthType::CW_40MHZ:
+        return (os << "40MHz");
+    case WifiChannelWidthType::CW_80MHZ:
+        return (os << "80MHz");
+    case WifiChannelWidthType::CW_160MHZ:
+        return (os << "160MHz");
+    case WifiChannelWidthType::CW_2160MHZ:
+        return (os << "2160MHz");
+    default:
+    case WifiChannelWidthType::MAX:
+        return (os << "UNKNOWN");
+    }
+}
+
+/**
  * Convert the guard interval to nanoseconds based on the WifiMode.
  *
  * \param mode the WifiMode
@@ -643,6 +678,14 @@ WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
  * \return the maximum channel width in MHz allowed for the given modulation class
  */
 ChannelWidthMhz GetMaximumChannelWidth(WifiModulationClass modulation);
+
+/**
+ * Get the total channel width in MHz for the channel width type.
+ *
+ * \param width the channel width type
+ * \return the total channel width in MHz for the channel width type
+ */
+ChannelWidthMhz GetChannelWidthInMhz(WifiChannelWidthType width);
 
 /**
  * Return true if a preamble corresponds to an EHT transmission.
