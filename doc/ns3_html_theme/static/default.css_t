@@ -61,7 +61,7 @@ div.footer a {
 }
 
 div.related {
-    background-color: {{ theme_relbarbgcolor }};
+    background-image: linear-gradient(to bottom, white 0%, transparent 80%);
     line-height: 30px;
     color: {{ theme_relbartextcolor }};
 }
@@ -142,9 +142,16 @@ div.sphinxsidebar a {
 }
 
 div.sphinxsidebar input {
-    border: 1px solid {{ theme_sidebarlinkcolor }};
+    border: 2px solid {{ theme_sidebarlinkcolor }};
     font-family: sans-serif;
     font-size: 1em;
+    font-weight: bold;
+    background: #f0f1e8;
+}
+
+div.sphinxsidebar input[type="submit"] {
+    background: {{ theme_sidebarlinkcolor }};
+    color: {{theme_sidebartextcolor}};
 }
 
 {% if theme_collapsiblesidebar|tobool %}
@@ -196,12 +203,12 @@ div.body h4,
 div.body h5,
 div.body h6 {
     font-family: {{ theme_headfont }};
-    background-color: {{ theme_headbgcolor }};
-    font-weight: normal;
-    color: {{ theme_headtextcolor }};
+    background-color: transparent;
+    font-weight: bold;
     border-bottom: 1px solid #ccc;
     margin: 20px -20px 10px -20px;
-    padding: 3px 0 3px 10px;
+    padding: 10px 8px;
+    border-left: 6px solid #d7d4d2;
 }
 
 div.body h1 { margin-top: 0; font-size: 200%; }
@@ -273,7 +280,7 @@ p.admonition-title:after {
 
 pre {
     padding: 5px;
-    background-color: {{ theme_codebgcolor }};
+    background-color: transparent;
     color: {{ theme_codetextcolor }};
     line-height: 120%;
     border: 1px solid #ac9;

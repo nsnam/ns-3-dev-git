@@ -24,6 +24,12 @@ dl {
     color: ivory;
     background:black;
   }
+  div.sphinxsidebar input{
+    background: #2c2d24;
+  }
+  div.related{
+    background-image: linear-gradient(to bottom, #66696a 0%, transparent 80%);
+  }
 }
 
 a {
@@ -32,6 +38,7 @@ a {
 }
 
 /* Sphinx headings */
+/*
 div.body h1,
 div.body h2,
 div.body h3,
@@ -40,6 +47,7 @@ div.body h5,
 div.body h6 {
   background-image: url('nav_f.png');
 }
+*/
 
 /* Sphinx figure captions */
 p.caption {
@@ -56,9 +64,11 @@ p.caption {
 }
 
 /* Sphinx nav links bar (relbar) */
+/*
 div.related {
   background-image: url('tab_b.png')
 }
+*/
 
 div.related h3 {
   display: none;
