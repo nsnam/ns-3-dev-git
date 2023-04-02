@@ -358,15 +358,22 @@ WifiPhyOperatingChannel::Set(const std::vector<FrequencyChannelInfo>& segments,
     {
         const auto freq = (*it)->frequency;
         const auto width = (*it)->width;
+        const auto band = (*it)->band;
         const auto maxFreq = freq + (width / 2);
         ++it;
         const auto nextFreq = (*it)->frequency;
         const auto nextWidth = (*it)->width;
+        const auto nextBand = (*it)->band;
         const auto nextMinFreq = nextFreq - (nextWidth / 2);
         if (maxFreq >= nextMinFreq)
         {
             throw std::runtime_error(
                 "WifiPhyOperatingChannel is invalid: segments cannot be adjacent nor overlap");
+        }
+        if (band != nextBand)
+        {
+            throw std::runtime_error("WifiPhyOperatingChannel is invalid: all segments shall "
+                                     "belong to the same band");
         }
     }
 
