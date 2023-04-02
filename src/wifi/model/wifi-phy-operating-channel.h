@@ -372,6 +372,14 @@ class WifiPhyOperatingChannel
      */
     uint8_t GetSecondarySegmentIndex(ChannelWidthMhz secondaryChannelWidth) const;
 
+    /**
+     * Get the number of frequency segments in the operating channel.
+     * This is only more than one if a non-contiguous operating channel is used.
+     *
+     * \return the number of frequency segments
+     */
+    std::size_t GetNSegments() const;
+
   private:
     /**
      * Sort the segments by increasing frequencies.

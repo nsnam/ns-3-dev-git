@@ -788,6 +788,12 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, ChannelWidth
     return indices;
 }
 
+std::size_t
+WifiPhyOperatingChannel::GetNSegments() const
+{
+    return m_channelIts.size();
+}
+
 bool
 WifiPhyOperatingChannel::operator==(const WifiPhyOperatingChannel& other) const
 {
