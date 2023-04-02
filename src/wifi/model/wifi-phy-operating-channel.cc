@@ -370,6 +370,16 @@ WifiPhyOperatingChannel::Set(const std::vector<FrequencyChannelInfo>& segments,
         }
     }
 
+    if ((channelIts.size() > 2) ||
+        ((channelIts.size() == 2) &&
+         !std::all_of(channelIts.cbegin(), channelIts.cend(), [](const auto& channel) {
+             return channel->width == 80;
+         })))
+    {
+        throw std::runtime_error("WifiPhyOperatingChannel is invalid: only 80+80MHz is "
+                                 "expected as non-contiguous channel");
+    }
+
     m_channelIts = channelIts;
     m_primary20Index = 0;
 }
