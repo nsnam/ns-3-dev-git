@@ -56,13 +56,13 @@ MgtProbeRequestHeader::GetSsid() const
 }
 
 void
-MgtProbeRequestHeader::SetSupportedRates(const SupportedRates& rates)
+MgtProbeRequestHeader::SetSupportedRates(const AllSupportedRates& rates)
 {
     m_rates = rates;
 }
 
 void
-MgtProbeRequestHeader::SetSupportedRates(SupportedRates&& rates)
+MgtProbeRequestHeader::SetSupportedRates(AllSupportedRates&& rates)
 {
     m_rates = std::move(rates);
 }
@@ -157,7 +157,7 @@ MgtProbeRequestHeader::GetEhtCapabilities() const
     return m_ehtCapability;
 }
 
-const SupportedRates&
+const AllSupportedRates&
 MgtProbeRequestHeader::GetSupportedRates() const
 {
     return m_rates;
@@ -168,10 +168,10 @@ MgtProbeRequestHeader::GetSerializedSize() const
 {
     uint32_t size = 0;
     size += m_ssid.GetSerializedSize();
-    size += m_rates.GetSerializedSize();
-    if (m_rates.GetNRates() > 8)
+    size += m_rates.rates.GetSerializedSize();
+    if (m_rates.extendedRates)
     {
-        size += m_rates.extended->GetSerializedSize();
+        size += m_rates.extendedRates->GetSerializedSize();
     }
     if (m_extendedCapability.has_value())
     {
@@ -216,7 +216,11 @@ void
 MgtProbeRequestHeader::Print(std::ostream& os) const
 {
     os << "ssid=" << m_ssid << ", "
-       << "rates=" << m_rates << ", ";
+       << "rates=" << m_rates.rates << ", ";
+    if (m_rates.extendedRates.has_value())
+    {
+        os << "Extended rates=" << *m_rates.extendedRates << ", ";
+    }
     if (m_extendedCapability.has_value())
     {
         os << "Extended Capabilities=" << *m_extendedCapability << " , ";
@@ -244,10 +248,10 @@ MgtProbeRequestHeader::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
     i = m_ssid.Serialize(i);
-    i = m_rates.Serialize(i);
-    if (m_rates.GetNRates() > 8)
+    i = m_rates.rates.Serialize(i);
+    if (m_rates.extendedRates)
     {
-        i = m_rates.extended->Serialize(i);
+        i = m_rates.extendedRates->Serialize(i);
     }
     if (m_extendedCapability.has_value())
     {
@@ -276,8 +280,8 @@ MgtProbeRequestHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
     i = m_ssid.Deserialize(i);
-    i = m_rates.Deserialize(i);
-    i = WifiInformationElement::DeserializeIfPresent(m_rates.extended, i, &m_rates);
+    i = m_rates.rates.Deserialize(i);
+    i = WifiInformationElement::DeserializeIfPresent(m_rates.extendedRates, i);
     i = WifiInformationElement::DeserializeIfPresent(m_extendedCapability, i);
     i = WifiInformationElement::DeserializeIfPresent(m_htCapability, i);
     i = WifiInformationElement::DeserializeIfPresent(m_vhtCapability, i);
@@ -321,7 +325,7 @@ MgtProbeResponseHeader::GetBeaconIntervalUs() const
     return m_beaconInterval;
 }
 
-const SupportedRates&
+const AllSupportedRates&
 MgtProbeResponseHeader::GetSupportedRates() const
 {
     return m_rates;
@@ -526,13 +530,13 @@ MgtProbeResponseHeader::SetBeaconIntervalUs(uint64_t us)
 }
 
 void
-MgtProbeResponseHeader::SetSupportedRates(const SupportedRates& rates)
+MgtProbeResponseHeader::SetSupportedRates(const AllSupportedRates& rates)
 {
     m_rates = rates;
 }
 
 void
-MgtProbeResponseHeader::SetSupportedRates(SupportedRates&& rates)
+MgtProbeResponseHeader::SetSupportedRates(AllSupportedRates&& rates)
 {
     m_rates = std::move(rates);
 }
@@ -669,7 +673,7 @@ MgtProbeResponseHeader::GetSerializedSize() const
     size += 2; // beacon interval
     size += m_capability.GetSerializedSize();
     size += m_ssid.GetSerializedSize();
-    size += m_rates.GetSerializedSize();
+    size += m_rates.rates.GetSerializedSize();
     if (m_dsssParameterSet.has_value())
     {
         size += m_dsssParameterSet->GetSerializedSize();
@@ -678,9 +682,9 @@ MgtProbeResponseHeader::GetSerializedSize() const
     {
         size += m_erpInformation->GetSerializedSize();
     }
-    if (m_rates.GetNRates() > 8)
+    if (m_rates.extendedRates)
     {
-        size += m_rates.extended->GetSerializedSize();
+        size += m_rates.extendedRates->GetSerializedSize();
     }
     if (m_edcaParameterSet.has_value())
     {
@@ -741,7 +745,11 @@ void
 MgtProbeResponseHeader::Print(std::ostream& os) const
 {
     os << "ssid=" << m_ssid << ", "
-       << "rates=" << m_rates << ", ";
+       << "rates=" << m_rates.rates << ", ";
+    if (m_rates.extendedRates.has_value())
+    {
+        os << "Extended rates=" << *m_rates.extendedRates << ", ";
+    }
     if (m_erpInformation.has_value())
     {
         os << "ERP information=" << *m_erpInformation << ", ";
@@ -792,7 +800,7 @@ MgtProbeResponseHeader::Serialize(Buffer::Iterator start) const
     i.WriteHtolsbU16(static_cast<uint16_t>(m_beaconInterval / 1024));
     i = m_capability.Serialize(i);
     i = m_ssid.Serialize(i);
-    i = m_rates.Serialize(i);
+    i = m_rates.rates.Serialize(i);
     if (m_dsssParameterSet.has_value())
     {
         i = m_dsssParameterSet->Serialize(i);
@@ -801,9 +809,9 @@ MgtProbeResponseHeader::Serialize(Buffer::Iterator start) const
     {
         i = m_erpInformation->Serialize(i);
     }
-    if (m_rates.GetNRates() > 8)
+    if (m_rates.extendedRates)
     {
-        i = m_rates.extended->Serialize(i);
+        i = m_rates.extendedRates->Serialize(i);
     }
     if (m_edcaParameterSet.has_value())
     {
@@ -869,10 +877,10 @@ MgtProbeResponseHeader::Deserialize(Buffer::Iterator start)
     m_beaconInterval *= 1024;
     i = m_capability.Deserialize(i);
     i = m_ssid.Deserialize(i);
-    i = m_rates.Deserialize(i);
+    i = m_rates.rates.Deserialize(i);
     i = WifiInformationElement::DeserializeIfPresent(m_dsssParameterSet, i);
     i = WifiInformationElement::DeserializeIfPresent(m_erpInformation, i);
-    i = WifiInformationElement::DeserializeIfPresent(m_rates.extended, i, &m_rates);
+    i = WifiInformationElement::DeserializeIfPresent(m_rates.extendedRates, i);
     i = WifiInformationElement::DeserializeIfPresent(m_edcaParameterSet, i);
     i = WifiInformationElement::DeserializeIfPresent(m_extendedCapability, i);
     i = WifiInformationElement::DeserializeIfPresent(m_htCapability, i);
@@ -938,13 +946,13 @@ MgtAssocRequestHeader::SetSsid(Ssid&& ssid)
 }
 
 void
-MgtAssocRequestHeader::SetSupportedRates(const SupportedRates& rates)
+MgtAssocRequestHeader::SetSupportedRates(const AllSupportedRates& rates)
 {
     m_rates = rates;
 }
 
 void
-MgtAssocRequestHeader::SetSupportedRates(SupportedRates&& rates)
+MgtAssocRequestHeader::SetSupportedRates(AllSupportedRates&& rates)
 {
     m_rates = std::move(rates);
 }
@@ -1087,7 +1095,7 @@ MgtAssocRequestHeader::GetSsid() const
     return m_ssid;
 }
 
-const SupportedRates&
+const AllSupportedRates&
 MgtAssocRequestHeader::GetSupportedRates() const
 {
     return m_rates;
@@ -1122,10 +1130,10 @@ MgtAssocRequestHeader::GetSerializedSize() const
     size += m_capability.GetSerializedSize();
     size += 2;
     size += m_ssid.GetSerializedSize();
-    size += m_rates.GetSerializedSize();
-    if (m_rates.GetNRates() > 8)
+    size += m_rates.rates.GetSerializedSize();
+    if (m_rates.extendedRates)
     {
-        size += m_rates.extended->GetSerializedSize();
+        size += m_rates.extendedRates->GetSerializedSize();
     }
     if (m_extendedCapability.has_value())
     {
@@ -1158,7 +1166,11 @@ void
 MgtAssocRequestHeader::Print(std::ostream& os) const
 {
     os << "ssid=" << m_ssid << ", "
-       << "rates=" << m_rates << ", ";
+       << "rates=" << m_rates.rates << ", ";
+    if (m_rates.extendedRates.has_value())
+    {
+        os << "Extended rates=" << *m_rates.extendedRates << ", ";
+    }
     if (m_extendedCapability.has_value())
     {
         os << "Extended Capabilities=" << *m_extendedCapability << " , ";
@@ -1188,10 +1200,10 @@ MgtAssocRequestHeader::Serialize(Buffer::Iterator start) const
     i = m_capability.Serialize(i);
     i.WriteHtolsbU16(m_listenInterval);
     i = m_ssid.Serialize(i);
-    i = m_rates.Serialize(i);
-    if (m_rates.GetNRates() > 8)
+    i = m_rates.rates.Serialize(i);
+    if (m_rates.extendedRates)
     {
-        i = m_rates.extended->Serialize(i);
+        i = m_rates.extendedRates->Serialize(i);
     }
     if (m_extendedCapability.has_value())
     {
@@ -1227,8 +1239,8 @@ MgtAssocRequestHeader::Deserialize(Buffer::Iterator start)
     i = m_capability.Deserialize(i);
     m_listenInterval = i.ReadLsbtohU16();
     i = m_ssid.Deserialize(i);
-    i = m_rates.Deserialize(i);
-    i = WifiInformationElement::DeserializeIfPresent(m_rates.extended, i, &m_rates);
+    i = m_rates.rates.Deserialize(i);
+    i = WifiInformationElement::DeserializeIfPresent(m_rates.extendedRates, i);
     i = WifiInformationElement::DeserializeIfPresent(m_extendedCapability, i);
     i = WifiInformationElement::DeserializeIfPresent(m_htCapability, i);
     i = WifiInformationElement::DeserializeIfPresent(m_vhtCapability, i);
@@ -1271,13 +1283,13 @@ MgtReassocRequestHeader::SetSsid(Ssid&& ssid)
 }
 
 void
-MgtReassocRequestHeader::SetSupportedRates(const SupportedRates& rates)
+MgtReassocRequestHeader::SetSupportedRates(const AllSupportedRates& rates)
 {
     m_rates = rates;
 }
 
 void
-MgtReassocRequestHeader::SetSupportedRates(SupportedRates&& rates)
+MgtReassocRequestHeader::SetSupportedRates(AllSupportedRates&& rates)
 {
     m_rates = std::move(rates);
 }
@@ -1420,7 +1432,7 @@ MgtReassocRequestHeader::GetSsid() const
     return m_ssid;
 }
 
-const SupportedRates&
+const AllSupportedRates&
 MgtReassocRequestHeader::GetSupportedRates() const
 {
     return m_rates;
@@ -1462,10 +1474,10 @@ MgtReassocRequestHeader::GetSerializedSize() const
     size += 2; // listen interval
     size += 6; // current AP address
     size += m_ssid.GetSerializedSize();
-    size += m_rates.GetSerializedSize();
-    if (m_rates.GetNRates() > 8)
+    size += m_rates.rates.GetSerializedSize();
+    if (m_rates.extendedRates)
     {
-        size += m_rates.extended->GetSerializedSize();
+        size += m_rates.extendedRates->GetSerializedSize();
     }
     if (m_extendedCapability.has_value())
     {
@@ -1499,7 +1511,11 @@ MgtReassocRequestHeader::Print(std::ostream& os) const
 {
     os << "current AP address=" << m_currentApAddr << ", "
        << "ssid=" << m_ssid << ", "
-       << "rates=" << m_rates << ", ";
+       << "rates=" << m_rates.rates << ", ";
+    if (m_rates.extendedRates.has_value())
+    {
+        os << "Extended rates=" << *m_rates.extendedRates << ", ";
+    }
     if (m_extendedCapability.has_value())
     {
         os << "Extended Capabilities=" << *m_extendedCapability << " , ";
@@ -1530,10 +1546,10 @@ MgtReassocRequestHeader::Serialize(Buffer::Iterator start) const
     i.WriteHtolsbU16(m_listenInterval);
     WriteTo(i, m_currentApAddr);
     i = m_ssid.Serialize(i);
-    i = m_rates.Serialize(i);
-    if (m_rates.GetNRates() > 8)
+    i = m_rates.rates.Serialize(i);
+    if (m_rates.extendedRates)
     {
-        i = m_rates.extended->Serialize(i);
+        i = m_rates.extendedRates->Serialize(i);
     }
     if (m_extendedCapability.has_value())
     {
@@ -1570,8 +1586,8 @@ MgtReassocRequestHeader::Deserialize(Buffer::Iterator start)
     m_listenInterval = i.ReadLsbtohU16();
     ReadFrom(i, m_currentApAddr);
     i = m_ssid.Deserialize(i);
-    i = m_rates.Deserialize(i);
-    i = WifiInformationElement::DeserializeIfPresent(m_rates.extended, i, &m_rates);
+    i = m_rates.rates.Deserialize(i);
+    i = WifiInformationElement::DeserializeIfPresent(m_rates.extendedRates, i);
     i = WifiInformationElement::DeserializeIfPresent(m_extendedCapability, i);
     i = WifiInformationElement::DeserializeIfPresent(m_htCapability, i);
     i = WifiInformationElement::DeserializeIfPresent(m_vhtCapability, i);
@@ -1607,7 +1623,7 @@ MgtAssocResponseHeader::GetStatusCode()
     return m_code;
 }
 
-const SupportedRates&
+const AllSupportedRates&
 MgtAssocResponseHeader::GetSupportedRates() const
 {
     return m_rates;
@@ -1620,13 +1636,13 @@ MgtAssocResponseHeader::SetStatusCode(StatusCode code)
 }
 
 void
-MgtAssocResponseHeader::SetSupportedRates(const SupportedRates& rates)
+MgtAssocResponseHeader::SetSupportedRates(const AllSupportedRates& rates)
 {
     m_rates = rates;
 }
 
 void
-MgtAssocResponseHeader::SetSupportedRates(SupportedRates&& rates)
+MgtAssocResponseHeader::SetSupportedRates(AllSupportedRates&& rates)
 {
     m_rates = std::move(rates);
 }
@@ -1900,10 +1916,10 @@ MgtAssocResponseHeader::GetSerializedSize() const
     size += m_capability.GetSerializedSize();
     size += m_code.GetSerializedSize();
     size += 2; // aid
-    size += m_rates.GetSerializedSize();
-    if (m_rates.GetNRates() > 8)
+    size += m_rates.rates.GetSerializedSize();
+    if (m_rates.extendedRates)
     {
-        size += m_rates.extended->GetSerializedSize();
+        size += m_rates.extendedRates->GetSerializedSize();
     }
     if (m_edcaParameterSet.has_value())
     {
@@ -1961,7 +1977,11 @@ MgtAssocResponseHeader::Print(std::ostream& os) const
 {
     os << "status code=" << m_code << ", "
        << "aid=" << m_aid << ", "
-       << "rates=" << m_rates << ", ";
+       << "rates=" << m_rates.rates << ", ";
+    if (m_rates.extendedRates.has_value())
+    {
+        os << "Extended rates=" << *m_rates.extendedRates << ", ";
+    }
     if (m_extendedCapability.has_value())
     {
         os << "Extended Capabilities=" << *m_extendedCapability << " , ";
@@ -2007,10 +2027,10 @@ MgtAssocResponseHeader::Serialize(Buffer::Iterator start) const
     i = m_capability.Serialize(i);
     i = m_code.Serialize(i);
     i.WriteHtolsbU16(m_aid);
-    i = m_rates.Serialize(i);
-    if (m_rates.GetNRates() > 8)
+    i = m_rates.rates.Serialize(i);
+    if (m_rates.extendedRates)
     {
-        i = m_rates.extended->Serialize(i);
+        i = m_rates.extendedRates->Serialize(i);
     }
     if (m_edcaParameterSet.has_value())
     {
@@ -2070,8 +2090,8 @@ MgtAssocResponseHeader::Deserialize(Buffer::Iterator start)
     i = m_capability.Deserialize(i);
     i = m_code.Deserialize(i);
     m_aid = i.ReadLsbtohU16();
-    i = m_rates.Deserialize(i);
-    i = WifiInformationElement::DeserializeIfPresent(m_rates.extended, i, &m_rates);
+    i = m_rates.rates.Deserialize(i);
+    i = WifiInformationElement::DeserializeIfPresent(m_rates.extendedRates, i);
     i = WifiInformationElement::DeserializeIfPresent(m_edcaParameterSet, i);
     i = WifiInformationElement::DeserializeIfPresent(m_extendedCapability, i);
     i = WifiInformationElement::DeserializeIfPresent(m_htCapability, i);

@@ -34,6 +34,7 @@ NS_OBJECT_ENSURE_REGISTERED(PeerLinkOpenStart);
 PeerLinkOpenStart::PeerLinkOpenStart()
     : m_capability(0),
       m_rates(SupportedRates()),
+      m_extendedRates(ExtendedSupportedRatesIE()),
       m_meshId(),
       m_config(IeConfiguration())
 {
@@ -44,6 +45,7 @@ PeerLinkOpenStart::SetPlinkOpenStart(PeerLinkOpenStart::PlinkOpenStartFields fie
 {
     m_capability = fields.capability;
     m_rates = fields.rates;
+    m_extendedRates = fields.extendedRates;
     m_meshId = fields.meshId;
     m_config = fields.config;
 }
@@ -55,6 +57,7 @@ PeerLinkOpenStart::GetFields() const
     /// \todo protocol version:
     retval.capability = m_capability;
     retval.rates = m_rates;
+    retval.extendedRates = m_extendedRates;
     retval.meshId = m_meshId;
     retval.config = m_config;
 
@@ -93,9 +96,9 @@ PeerLinkOpenStart::GetSerializedSize() const
     uint32_t size = 0; // Peering protocol
     size += 2;         // capability
     size += m_rates.GetSerializedSize();
-    if (m_rates.GetNRates() > 8)
+    if (m_extendedRates)
     {
-        size += m_rates.extended->GetSerializedSize();
+        size += m_extendedRates->GetSerializedSize();
     }
     size += m_meshId.GetInformationFieldSize() + 2;
     size += m_config.GetInformationFieldSize() + 2;
@@ -109,9 +112,9 @@ PeerLinkOpenStart::Serialize(Buffer::Iterator start) const
 
     i.WriteHtolsbU16(m_capability);
     i = m_rates.Serialize(i);
-    if (m_rates.GetNRates() > 8)
+    if (m_extendedRates)
     {
-        i = m_rates.extended->Serialize(i);
+        i = m_extendedRates->Serialize(i);
     }
     i = m_meshId.Serialize(i);
     i = m_config.Serialize(i);
@@ -124,7 +127,7 @@ PeerLinkOpenStart::Deserialize(Buffer::Iterator start)
 
     m_capability = i.ReadLsbtohU16();
     i = m_rates.Deserialize(i);
-    i = WifiInformationElement::DeserializeIfPresent(m_rates.extended, i);
+    i = WifiInformationElement::DeserializeIfPresent(m_extendedRates, i);
     uint8_t id = i.ReadU8();
     uint8_t length = i.ReadU8();
     m_meshId.DeserializeInformationField(i, length);
@@ -300,9 +303,9 @@ PeerLinkConfirmStart::GetSerializedSize() const
     size += 2;         // capability
     size += 2;         // AID of remote peer
     size += m_rates.GetSerializedSize();
-    if (m_rates.GetNRates() > 8)
+    if (m_extendedRates)
     {
-        size += m_rates.extended->GetSerializedSize();
+        size += m_extendedRates->GetSerializedSize();
     }
     size += m_config.GetInformationFieldSize() + 2;
     return size;
@@ -316,9 +319,9 @@ PeerLinkConfirmStart::Serialize(Buffer::Iterator start) const
     i.WriteHtolsbU16(m_capability);
     i.WriteHtolsbU16(m_aid);
     i = m_rates.Serialize(i);
-    if (m_rates.GetNRates() > 8)
+    if (m_extendedRates)
     {
-        i = m_rates.extended->Serialize(i);
+        i = m_extendedRates->Serialize(i);
     }
     i = m_config.Serialize(i);
 }
@@ -331,7 +334,7 @@ PeerLinkConfirmStart::Deserialize(Buffer::Iterator start)
     m_capability = i.ReadLsbtohU16();
     m_aid = i.ReadLsbtohU16();
     i = m_rates.Deserialize(i);
-    i = WifiInformationElement::DeserializeIfPresent(m_rates.extended, i);
+    i = WifiInformationElement::DeserializeIfPresent(m_extendedRates, i);
     uint8_t id = i.ReadU8();
     uint8_t length = i.ReadU8();
     m_config.DeserializeInformationField(i, length);

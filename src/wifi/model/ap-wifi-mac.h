@@ -31,7 +31,7 @@
 namespace ns3
 {
 
-class SupportedRates;
+struct AllSupportedRates;
 class CapabilityInformation;
 class DsssParameterSet;
 class ErpInformation;
@@ -426,7 +426,7 @@ class ApWifiMac : public WifiMac
      * \param linkId the ID of the given link
      * \return all rates that we support
      */
-    SupportedRates GetSupportedRates(uint8_t linkId) const;
+    AllSupportedRates GetSupportedRates(uint8_t linkId) const;
     /**
      * Return the DSSS Parameter Set that we support on the given link
      *

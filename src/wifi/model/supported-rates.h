@@ -22,57 +22,11 @@
 
 #include "wifi-information-element.h"
 
+#include <optional>
+#include <vector>
+
 namespace ns3
 {
-
-class SupportedRates;
-
-/**
- * \brief The Extended Supported Rates Information Element
- * \ingroup wifi
- *
- * This class knows how to serialise and deserialise the Extended
- * Supported Rates Element that holds (non-HT) rates beyond the 8 that
- * the original Supported Rates element can carry.
- *
- * The \c SupportedRates class still records all the rates, and an
- * instance of \c ExtendedSupportedRatesIE lies within \c
- * SupportedRates.
- */
-class ExtendedSupportedRatesIE : public WifiInformationElement
-{
-  public:
-    ExtendedSupportedRatesIE();
-    /**
-     * Create an extended supported rates information element
-     * from the given rates.
-     *
-     * \param rates the extended supported rates
-     */
-    ExtendedSupportedRatesIE(SupportedRates* rates);
-
-    // Implementations of pure virtual methods of WifiInformationElement
-    WifiInformationElementId ElementId() const override;
-
-    /**
-     * Set supported rates.
-     *
-     * \param rates the supported rates
-     */
-    void SetSupportedRates(SupportedRates* rates);
-
-  private:
-    uint16_t GetInformationFieldSize() const override;
-    void SerializeInformationField(Buffer::Iterator start) const override;
-    uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
-
-    /**
-     * This member points to the SupportedRates object that contains the
-     * actual rate details. This class is a friend of that, so we have
-     * access to all the private data we need.
-     */
-    SupportedRates* m_supportedRates;
-};
 
 /**
  * \brief The Supported Rates Information Element
@@ -81,41 +35,57 @@ class ExtendedSupportedRatesIE : public WifiInformationElement
  * This class knows how to serialise and deserialise the Supported
  * Rates Element that holds the first 8 (non-HT) supported rates.
  *
- * The \c ExtendedSupportedRatesIE class (of which an instance exists
- * in objects of this class) deals with rates beyond the first 8.
+ * The \c ExtendedSupportedRatesIE class deals with rates beyond the first 8.
  */
 class SupportedRates : public WifiInformationElement
 {
+    friend struct AllSupportedRates;
+
   public:
     SupportedRates();
-
-    /**
-     * Type conversion operator
-     *
-     * \param rates the reference const SupportedRates
-     */
-    SupportedRates(const SupportedRates& rates);
 
     // Implementations of pure virtual methods of WifiInformationElement
     WifiInformationElementId ElementId() const override;
     void Print(std::ostream& os) const override;
 
     /**
-     * Assignment operator
+     * Return the rate (converted back to raw value) at the given index.
      *
-     * \param rates the rates to assign
-     * \returns the assigned value
+     * \param i the given index
+     * \return the rate in bps
      */
-    SupportedRates& operator=(const SupportedRates& rates);
+    uint32_t GetRate(uint8_t i) const;
 
-    /**
-     * This defines the maximum number of supported rates that a STA is
-     * allowed to have. Currently this number is set for IEEE 802.11b/g and SISO IEEE 802.11n
-     * stations which need 2 rates each from Clauses 15 and 18, and then 8
-     * from Clause 19.
-     */
-    static const uint8_t MAX_SUPPORTED_RATES = 32;
+  protected:
+    uint16_t GetInformationFieldSize() const override;
+    void SerializeInformationField(Buffer::Iterator start) const override;
+    uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
 
+    std::vector<uint8_t> m_rates; //!< List of supported bit rates (divided by 500000)
+};
+
+/**
+ * \brief The Extended Supported Rates Information Element
+ * \ingroup wifi
+ *
+ * This class knows how to serialise and deserialise the Extended
+ * Supported Rates Element that holds (non-HT) rates beyond the 8 that
+ * the original Supported Rates element can carry.
+ */
+class ExtendedSupportedRatesIE : public SupportedRates
+{
+  public:
+    // Implementations of pure virtual methods of WifiInformationElement
+    WifiInformationElementId ElementId() const override;
+};
+
+/**
+ * \brief Struct containing all supported rates.
+ * \ingroup wifi
+ *
+ */
+struct AllSupportedRates
+{
     /**
      * Add the given rate to the supported rates.
      *
@@ -171,32 +141,9 @@ class SupportedRates : public WifiInformationElement
      * \return the number of supported rates
      */
     uint8_t GetNRates() const;
-    /**
-     * Return the rate at the given index.
-     * Return the rate (converted back to raw value) at the given index.
-     *
-     * \param i the given index
-     * \return the rate in bps
-     */
-    uint32_t GetRate(uint8_t i) const;
 
-    /**
-     * We support the Extended Supported Rates Information Element
-     * through the ExtendedSupportedRatesIE object which is declared
-     * above. We allow this class to be a friend so that it can access
-     * our private data detailing the rates, and create an instance as
-     * extended.
-     */
-    friend class ExtendedSupportedRatesIE;
-    std::optional<ExtendedSupportedRatesIE> extended; //!< extended supported rates info element
-
-  private:
-    uint16_t GetInformationFieldSize() const override;
-    void SerializeInformationField(Buffer::Iterator start) const override;
-    uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
-
-    uint8_t m_nRates;                     //!< Number of supported rates
-    uint8_t m_rates[MAX_SUPPORTED_RATES]; //!< List of supported bit rates (divided by 500000)
+    SupportedRates rates;                                  //!< supported rates
+    std::optional<ExtendedSupportedRatesIE> extendedRates; //!< supported extended rates
 };
 
 } // namespace ns3

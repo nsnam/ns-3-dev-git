@@ -47,7 +47,7 @@ class MeshWifiBeacon
      * \param rates is a set of supported rates
      * \param us beacon interval in microseconds
      */
-    MeshWifiBeacon(Ssid ssid, SupportedRates rates, uint64_t us);
+    MeshWifiBeacon(Ssid ssid, AllSupportedRates rates, uint64_t us);
 
     /**
      * Read standard Wifi beacon header

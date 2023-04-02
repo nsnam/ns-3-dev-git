@@ -72,10 +72,10 @@ class MgtAssocRequestHeader : public Header
      *
      * \param rates the supported rates
      */
-    void SetSupportedRates(const SupportedRates& rates);
+    void SetSupportedRates(const AllSupportedRates& rates);
 
     /** \copydoc SetSupportedRates */
-    void SetSupportedRates(SupportedRates&& rates);
+    void SetSupportedRates(AllSupportedRates&& rates);
 
     /**
      * Set the listen interval.
@@ -201,7 +201,7 @@ class MgtAssocRequestHeader : public Header
      *
      * \return the supported rates
      */
-    const SupportedRates& GetSupportedRates() const;
+    const AllSupportedRates& GetSupportedRates() const;
     /**
      * Return the listen interval.
      *
@@ -229,7 +229,7 @@ class MgtAssocRequestHeader : public Header
 
   private:
     Ssid m_ssid;                                              //!< Service Set ID (SSID)
-    SupportedRates m_rates;                                   //!< List of supported rates
+    AllSupportedRates m_rates;                                //!< List of supported rates
     CapabilityInformation m_capability;                       //!< Capability information
     std::optional<ExtendedCapabilities> m_extendedCapability; //!< Extended capabilities
     std::optional<HtCapabilities> m_htCapability;             //!< HT capabilities
@@ -265,10 +265,10 @@ class MgtReassocRequestHeader : public Header
      *
      * \param rates the supported rates
      */
-    void SetSupportedRates(const SupportedRates& rates);
+    void SetSupportedRates(const AllSupportedRates& rates);
 
     /** \copydoc SetSupportedRates */
-    void SetSupportedRates(SupportedRates&& rates);
+    void SetSupportedRates(AllSupportedRates&& rates);
 
     /**
      * Set the listen interval.
@@ -394,7 +394,7 @@ class MgtReassocRequestHeader : public Header
      *
      * \return the supported rates
      */
-    const SupportedRates& GetSupportedRates() const;
+    const AllSupportedRates& GetSupportedRates() const;
     /**
      * Return the Multi-Link Element information element, if present.
      *
@@ -428,7 +428,7 @@ class MgtReassocRequestHeader : public Header
   private:
     Mac48Address m_currentApAddr;       //!< Address of the current access point
     Ssid m_ssid;                        //!< Service Set ID (SSID)
-    SupportedRates m_rates;             //!< List of supported rates
+    AllSupportedRates m_rates;          //!< List of supported rates
     CapabilityInformation m_capability; //!< Capability information
     std::optional<ExtendedCapabilities> m_extendedCapability; //!< Extended capabilities
     std::optional<HtCapabilities> m_htCapability;             //!< HT capabilities
@@ -460,7 +460,7 @@ class MgtAssocResponseHeader : public Header
      *
      * \return the supported rates
      */
-    const SupportedRates& GetSupportedRates() const;
+    const AllSupportedRates& GetSupportedRates() const;
     /**
      * Return the Capability information.
      *
@@ -610,10 +610,10 @@ class MgtAssocResponseHeader : public Header
      *
      * \param rates the supported rates
      */
-    void SetSupportedRates(const SupportedRates& rates);
+    void SetSupportedRates(const AllSupportedRates& rates);
 
     /** \copydoc SetSupportedRates */
-    void SetSupportedRates(SupportedRates&& rates);
+    void SetSupportedRates(AllSupportedRates&& rates);
 
     /**
      * Set the status code.
@@ -711,7 +711,7 @@ class MgtAssocResponseHeader : public Header
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
-    SupportedRates m_rates;                                   //!< List of supported rates
+    AllSupportedRates m_rates;                                //!< List of supported rates
     CapabilityInformation m_capability;                       //!< Capability information
     StatusCode m_code;                                        //!< Status code
     uint16_t m_aid;                                           //!< AID
@@ -753,10 +753,10 @@ class MgtProbeRequestHeader : public Header
      *
      * \param rates the supported rates
      */
-    void SetSupportedRates(const SupportedRates& rates);
+    void SetSupportedRates(const AllSupportedRates& rates);
 
     /** \copydoc SetSupportedRates */
-    void SetSupportedRates(SupportedRates&& rates);
+    void SetSupportedRates(AllSupportedRates&& rates);
 
     /**
      * Set the extended capabilities.
@@ -820,7 +820,7 @@ class MgtProbeRequestHeader : public Header
      *
      * \return the supported rates
      */
-    const SupportedRates& GetSupportedRates() const;
+    const AllSupportedRates& GetSupportedRates() const;
 
     /**
      * Return the extended capabilities, if present.
@@ -870,7 +870,7 @@ class MgtProbeRequestHeader : public Header
 
   private:
     Ssid m_ssid;                                              //!< Service Set ID (SSID)
-    SupportedRates m_rates;                                   //!< List of supported rates
+    AllSupportedRates m_rates;                                //!< List of supported rates
     std::optional<ExtendedCapabilities> m_extendedCapability; //!< extended capabilities
     std::optional<HtCapabilities> m_htCapability;             //!< HT capabilities
     std::optional<VhtCapabilities> m_vhtCapability;           //!< VHT capabilities
@@ -905,7 +905,7 @@ class MgtProbeResponseHeader : public Header
      *
      * \return the supported rates
      */
-    const SupportedRates& GetSupportedRates() const;
+    const AllSupportedRates& GetSupportedRates() const;
     /**
      * Return the Capability information.
      *
@@ -1125,10 +1125,10 @@ class MgtProbeResponseHeader : public Header
      *
      * \param rates the supported rates
      */
-    void SetSupportedRates(const SupportedRates& rates);
+    void SetSupportedRates(const AllSupportedRates& rates);
 
     /** \copydoc SetSupportedRates */
-    void SetSupportedRates(SupportedRates&& rates);
+    void SetSupportedRates(AllSupportedRates&& rates);
 
     /**
      * Set the DSSS Parameter Set.
@@ -1212,7 +1212,7 @@ class MgtProbeResponseHeader : public Header
     uint64_t m_timestamp;                                     //!< Timestamp
     Ssid m_ssid;                                              //!< Service set ID (SSID)
     uint64_t m_beaconInterval;                                //!< Beacon interval
-    SupportedRates m_rates;                                   //!< List of supported rates
+    AllSupportedRates m_rates;                                //!< List of supported rates
     CapabilityInformation m_capability;                       //!< Capability information
     std::optional<DsssParameterSet> m_dsssParameterSet;       //!< DSSS Parameter Set
     std::optional<ExtendedCapabilities> m_extendedCapability; //!< extended capabilities

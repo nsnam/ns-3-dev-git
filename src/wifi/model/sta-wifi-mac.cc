@@ -1169,7 +1169,7 @@ StaWifiMac::CheckSupportedRates(std::variant<MgtBeaconHeader, MgtProbeResponseHe
     // lambda to invoke on the current frame variant
     auto check = [&](auto&& mgtFrame) -> bool {
         // check supported rates
-        const SupportedRates& rates = mgtFrame.GetSupportedRates();
+        const auto& rates = mgtFrame.GetSupportedRates();
         for (const auto& selector : GetWifiPhy(linkId)->GetBssMembershipSelectorList())
         {
             if (!rates.IsBssMembershipSelectorRate(selector))
@@ -1208,7 +1208,7 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
     // lambda processing Information Elements included in all frame types
     auto commonOps = [&](auto&& frame) {
         const CapabilityInformation& capabilities = frame.GetCapabilities();
-        const SupportedRates& rates = frame.GetSupportedRates();
+        const auto& rates = frame.GetSupportedRates();
         for (const auto& mode : GetWifiPhy(linkId)->GetModeList())
         {
             if (rates.IsSupportedRate(mode.GetDataRate(GetWifiPhy(linkId)->GetChannelWidth())))
@@ -1389,10 +1389,10 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
     std::visit(commonOps, frame);
 }
 
-SupportedRates
+AllSupportedRates
 StaWifiMac::GetSupportedRates(uint8_t linkId) const
 {
-    SupportedRates rates;
+    AllSupportedRates rates;
     for (const auto& mode : GetWifiPhy(linkId)->GetModeList())
     {
         uint64_t modeDataRate = mode.GetDataRate(GetWifiPhy(linkId)->GetChannelWidth());

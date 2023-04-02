@@ -136,7 +136,7 @@ BasicMultiLinkElementTest::DoRun()
     // Adding Medium Sync Delay Information
     TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}), m_frameType);
 
-    SupportedRates rates;
+    AllSupportedRates rates;
     rates.AddSupportedRate(6);
     rates.AddSupportedRate(12);
     rates.AddSupportedRate(24);

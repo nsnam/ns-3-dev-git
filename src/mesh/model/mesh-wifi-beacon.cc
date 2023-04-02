@@ -25,7 +25,7 @@
 namespace ns3
 {
 
-MeshWifiBeacon::MeshWifiBeacon(Ssid ssid, SupportedRates rates, uint64_t us)
+MeshWifiBeacon::MeshWifiBeacon(Ssid ssid, AllSupportedRates rates, uint64_t us)
 {
     m_header.SetSsid(ssid);
     m_header.SetSupportedRates(rates);

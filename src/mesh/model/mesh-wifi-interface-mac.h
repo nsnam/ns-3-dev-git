@@ -163,13 +163,13 @@ class MeshWifiInterfaceMac : public WifiMac
      * \param rates Rates.
      * \return true if rates are supported
      */
-    bool CheckSupportedRates(SupportedRates rates) const;
+    bool CheckSupportedRates(AllSupportedRates rates) const;
 
     /**
      * Get supported rates.
      * \return list of supported bitrates
      */
-    SupportedRates GetSupportedRates() const;
+    AllSupportedRates GetSupportedRates() const;
 
     /// \name Metric Calculation routines:
     ///@{

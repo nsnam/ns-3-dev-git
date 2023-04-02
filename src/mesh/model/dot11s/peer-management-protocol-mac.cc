@@ -139,7 +139,8 @@ PeerManagementProtocolMac::Receive(Ptr<Packet> const_packet, const WifiMacHeader
                 m_stats.brokenMgt++;
                 return false;
             }
-            if (!(m_parent->CheckSupportedRates(fields.rates)))
+            if (!(m_parent->CheckSupportedRates(
+                    AllSupportedRates{fields.rates, fields.extendedRates})))
             {
                 NS_LOG_DEBUG("PEER_LINK_OPEN:  configuration mismatch");
                 m_protocol->ConfigurationMismatch(m_ifIndex, peerAddress);
@@ -156,7 +157,8 @@ PeerManagementProtocolMac::Receive(Ptr<Packet> const_packet, const WifiMacHeader
             PeerLinkConfirmStart peerFrame;
             packet->RemoveHeader(peerFrame);
             fields = peerFrame.GetFields();
-            if (!(m_parent->CheckSupportedRates(fields.rates)))
+            if (!(m_parent->CheckSupportedRates(
+                    AllSupportedRates{fields.rates, fields.extendedRates})))
             {
                 NS_LOG_DEBUG("PEER_LINK_CONFIRM:  configuration mismatch");
                 m_protocol->ConfigurationMismatch(m_ifIndex, peerAddress);
@@ -290,7 +292,9 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame(Mac48Address peerAddress,
     if (peerElement.SubtypeIsOpen())
     {
         PeerLinkOpenStart::PlinkOpenStartFields fields;
-        fields.rates = m_parent->GetSupportedRates();
+        auto allSupportedRates = m_parent->GetSupportedRates();
+        fields.rates = allSupportedRates.rates;
+        fields.extendedRates = allSupportedRates.extendedRates;
         fields.capability = 0;
         fields.meshId = *(m_protocol->GetMeshId());
         fields.config = meshConfig;
@@ -307,7 +311,9 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame(Mac48Address peerAddress,
     if (peerElement.SubtypeIsConfirm())
     {
         PeerLinkConfirmStart::PlinkConfirmStartFields fields;
-        fields.rates = m_parent->GetSupportedRates();
+        auto allSupportedRates = m_parent->GetSupportedRates();
+        fields.rates = allSupportedRates.rates;
+        fields.extendedRates = allSupportedRates.extendedRates;
         fields.capability = 0;
         fields.config = meshConfig;
         PeerLinkConfirmStart plinkConfirm;

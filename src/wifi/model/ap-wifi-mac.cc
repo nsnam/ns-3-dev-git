@@ -423,11 +423,11 @@ ApWifiMac::SupportsSendFrom() const
     return true;
 }
 
-SupportedRates
+AllSupportedRates
 ApWifiMac::GetSupportedRates(uint8_t linkId) const
 {
     NS_LOG_FUNCTION(this << +linkId);
-    SupportedRates rates;
+    AllSupportedRates rates;
     // Send the set of supported rates and make sure that we indicate
     // the Basic Rate set in this set of supported rates.
     for (const auto& mode : GetWifiPhy(linkId)->GetModeList())
@@ -1695,7 +1695,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         // rate set is compatible with our Basic Rate set
         const CapabilityInformation& capabilities = frame.GetCapabilities();
         remoteStationManager->AddSupportedPhyPreamble(from, capabilities.IsShortPreamble());
-        const SupportedRates& rates = frame.GetSupportedRates();
+        const auto& rates = frame.GetSupportedRates();
 
         if (rates.GetNRates() == 0)
         {

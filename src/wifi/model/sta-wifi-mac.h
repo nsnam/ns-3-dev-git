@@ -413,7 +413,7 @@ class StaWifiMac : public WifiMac
      * \param linkId the ID of the link for which the request is made
      * \return SupportedRates all rates that we support
      */
-    SupportedRates GetSupportedRates(uint8_t linkId) const;
+    AllSupportedRates GetSupportedRates(uint8_t linkId) const;
     /**
      * Return the Multi-Link Element to include in the management frames transmitted
      * on the given link

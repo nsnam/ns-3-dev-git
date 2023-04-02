@@ -27,6 +27,8 @@
 #include "ns3/header.h"
 #include "ns3/supported-rates.h"
 
+#include <optional>
+
 namespace ns3
 {
 namespace dot11s
@@ -57,8 +59,9 @@ class PeerLinkOpenStart : public Header
         IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
         uint16_t capability;        ///< open and confirm
         SupportedRates rates;       ///< open and confirm
-        IeMeshId meshId;            ///< open and close
-        IeConfiguration config;     ///< open and confirm
+        std::optional<ExtendedSupportedRatesIE> extendedRates; ///< open and confirm
+        IeMeshId meshId;                                       ///< open and close
+        IeConfiguration config;                                ///< open and confirm
     };
 
     /**
@@ -85,10 +88,11 @@ class PeerLinkOpenStart : public Header
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
-    uint16_t m_capability;    ///< capability
-    SupportedRates m_rates;   ///< rates
-    IeMeshId m_meshId;        ///< mesh ID
-    IeConfiguration m_config; ///< config
+    uint16_t m_capability;                                   ///< capability
+    SupportedRates m_rates;                                  ///< rates
+    std::optional<ExtendedSupportedRatesIE> m_extendedRates; ///< extended rates
+    IeMeshId m_meshId;                                       ///< mesh ID
+    IeConfiguration m_config;                                ///< config
 
     /**
      * equality operator
@@ -190,7 +194,8 @@ class PeerLinkConfirmStart : public Header
         uint16_t capability;        ///< open and confirm
         uint16_t aid;               ///< confirm only
         SupportedRates rates;       ///< open and confirm
-        IeConfiguration config;     ///< open and confirm
+        std::optional<ExtendedSupportedRatesIE> extendedRates; ///< open and confirm
+        IeConfiguration config;                                ///< open and confirm
     };
 
     /**
@@ -217,10 +222,11 @@ class PeerLinkConfirmStart : public Header
     uint32_t Deserialize(Buffer::Iterator start) override;
 
   private:
-    uint16_t m_capability;    ///< capability
-    uint16_t m_aid;           ///< aid
-    SupportedRates m_rates;   ///< rates
-    IeConfiguration m_config; ///< config
+    uint16_t m_capability;                                   ///< capability
+    uint16_t m_aid;                                          ///< aid
+    SupportedRates m_rates;                                  ///< rates
+    std::optional<ExtendedSupportedRatesIE> m_extendedRates; ///< extended rates
+    IeConfiguration m_config;                                ///< config
 
     /**
      * equality operator
