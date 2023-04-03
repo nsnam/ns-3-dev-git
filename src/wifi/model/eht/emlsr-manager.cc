@@ -55,12 +55,31 @@ EmlsrManager::GetTypeId()
                           MakeTimeAccessor(&EmlsrManager::m_emlsrTransitionDelay),
                           MakeTimeChecker(MicroSeconds(0), MicroSeconds(256)))
             .AddAttribute(
+                "MainPhyId",
+                "The ID of the main PHY (position in the vector of PHYs held by "
+                "WifiNetDevice). This attribute cannot be set after initialization.",
+                UintegerValue(0),
+                MakeUintegerAccessor(&EmlsrManager::SetMainPhyId, &EmlsrManager::GetMainPhyId),
+                MakeUintegerChecker<uint8_t>())
+            .AddAttribute("AuxPhyChannelWidth",
+                          "The maximum channel width (MHz) supported by Aux PHYs",
+                          UintegerValue(20),
+                          MakeUintegerAccessor(&EmlsrManager::m_auxPhyMaxWidth),
+                          MakeUintegerChecker<uint16_t>(20, 160))
+            .AddAttribute(
                 "EmlsrLinkSet",
                 "IDs of the links on which EMLSR mode will be enabled. An empty set "
                 "indicates to disable EMLSR.",
                 AttributeContainerValue<UintegerValue>(),
                 MakeAttributeContainerAccessor<UintegerValue>(&EmlsrManager::SetEmlsrLinks),
-                MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint8_t>()));
+                MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint8_t>()))
+            .AddAttribute("ResetCamState",
+                          "Whether to reset the state of the ChannelAccessManager associated with "
+                          "the link on which the main PHY has just switched to.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&EmlsrManager::SetCamStateReset,
+                                              &EmlsrManager::GetCamStateReset),
+                          MakeBooleanChecker());
     return tid;
 }
 
@@ -101,6 +120,32 @@ EmlsrManager::SetWifiMac(Ptr<StaWifiMac> mac)
     m_staMac->TraceConnectWithoutContext("AckedMpdu", MakeCallback(&EmlsrManager::TxOk, this));
     m_staMac->TraceConnectWithoutContext("DroppedMpdu",
                                          MakeCallback(&EmlsrManager::TxDropped, this));
+}
+
+void
+EmlsrManager::SetMainPhyId(uint8_t mainPhyId)
+{
+    NS_LOG_FUNCTION(this << mainPhyId);
+    NS_ABORT_MSG_IF(IsInitialized(), "Cannot be called once this object has been initialized");
+    m_mainPhyId = mainPhyId;
+}
+
+uint8_t
+EmlsrManager::GetMainPhyId() const
+{
+    return m_mainPhyId;
+}
+
+void
+EmlsrManager::SetCamStateReset(bool enable)
+{
+    m_resetCamState = enable;
+}
+
+bool
+EmlsrManager::GetCamStateReset() const
+{
+    return m_resetCamState;
 }
 
 const std::set<uint8_t>&

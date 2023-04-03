@@ -71,6 +71,19 @@ class EmlsrManager : public Object
     std::optional<Time> GetTransitionTimeout() const;
 
     /**
+     * Set the ID of main PHY (position in the vector of PHYs held by WifiNetDevice). This
+     * method cannot be called during or after initialization.
+     *
+     * \param mainPhyId the ID of the main PHY
+     */
+    void SetMainPhyId(uint8_t mainPhyId);
+
+    /**
+     * \return the ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
+     */
+    uint8_t GetMainPhyId() const;
+
+    /**
      * Take actions to enable EMLSR mode on the given set of links, if non-empty, or
      * disable EMLSR mode, otherwise.
      *
@@ -83,6 +96,20 @@ class EmlsrManager : public Object
      * \return the set of links on which EMLSR mode is enabled
      */
     const std::set<uint8_t>& GetEmlsrLinks() const;
+
+    /**
+     * Set the member variable indicating whether the state of the CAM should be reset when
+     * the main PHY switches channel and operates on the link associated with the CAM.
+     *
+     * \param enable whether the CAM state should be reset
+     */
+    void SetCamStateReset(bool enable);
+
+    /**
+     * \return the value of the member variable indicating whether the state of the CAM should be
+     * reset when the main PHY switches channel and operates on the link associated with the CAM.
+     */
+    bool GetCamStateReset() const;
 
     /**
      * Notify the reception of a management frame addressed to us.
@@ -122,6 +149,8 @@ class EmlsrManager : public Object
 
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
+    uint8_t m_mainPhyId; //!< ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
+    uint16_t m_auxPhyMaxWidth; //!< max channel width (MHz) supported by aux PHYs
 
   private:
     /**
@@ -174,6 +203,7 @@ class EmlsrManager : public Object
     Time m_lastAdvTransitionDelay;                     //!< last advertised transition delay
     EventId m_transitionTimeoutEvent; /**< Timer started after the successful transmission of an
                                            EML Operating Mode Notification frame */
+    bool m_resetCamState; //!< whether to reset the state of CAM when main PHY switches channel
 };
 
 } // namespace ns3

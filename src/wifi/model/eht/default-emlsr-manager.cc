@@ -19,6 +19,7 @@
 
 #include "default-emlsr-manager.h"
 
+#include "ns3/boolean.h"
 #include "ns3/log.h"
 #include "ns3/wifi-mpdu.h"
 
@@ -32,10 +33,17 @@ NS_OBJECT_ENSURE_REGISTERED(DefaultEmlsrManager);
 TypeId
 DefaultEmlsrManager::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::DefaultEmlsrManager")
-                            .SetParent<EmlsrManager>()
-                            .SetGroupName("Wifi")
-                            .AddConstructor<DefaultEmlsrManager>();
+    static TypeId tid =
+        TypeId("ns3::DefaultEmlsrManager")
+            .SetParent<EmlsrManager>()
+            .SetGroupName("Wifi")
+            .AddConstructor<DefaultEmlsrManager>()
+            .AddAttribute("SwitchAuxPhy",
+                          "Whether Aux PHY should switch channel to operate on the link on which "
+                          "the Main PHY was operating before moving to the link of the Aux PHY.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&DefaultEmlsrManager::m_switchAuxPhy),
+                          MakeBooleanChecker());
     return tid;
 }
 

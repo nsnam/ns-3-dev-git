@@ -54,6 +54,8 @@ class DefaultEmlsrManager : public EmlsrManager
 
     std::optional<uint8_t> m_assocLinkId; /**< ID of the link on which Association Response
                                                was received */
+    bool m_switchAuxPhy; /**< whether Aux PHY should switch channel to operate on the link on which
+                              the Main PHY was operating before moving to the link of the Aux PHY */
 };
 
 } // namespace ns3
