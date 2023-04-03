@@ -49,7 +49,7 @@ Changes from ns-3.38 to ns-3-dev
 * (sixlowpan) The spelling of the function `SixLowPanNetDevice::Fragments::GetFraments` from `sixlowpan-net-device.cc` was corrected to `SixLowPanNetDevice::Fragments::GetFragments`; this will affect existing users who were using the function with the misspelling.
 * (lr-wpan) Updated `LrWpanPhy::PlmeSetAttribute` and `LrWpanPhy::PlmeGetAttribute` (Request and Confirm) to use smart pointers.
 * (lr-wpan) Modified `LrWpanPhy::PlmeGetAttributeRequest` to include support for a few attributes (none were supported before the change).
-* (lr-wpan) Added `macShortAddress` and `macExtendendAddress` to the attributes that can be use with MLME-GET and MLME-SET functions.
+* (lr-wpan) Added `macShortAddress`, `macExtendendAddress` and `macPanId` to the attributes that can be use with MLME-GET and MLME-SET functions.
 
 ### Changes to build system
 

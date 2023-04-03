@@ -900,6 +900,8 @@ void
 LrWpanMac::MlmeSetRequest(LrWpanMacPibAttributeIdentifier id, Ptr<LrWpanMacPibAttributes> attribute)
 {
     MlmeSetConfirmParams confirmParams;
+    confirmParams.m_status = MLMESET_SUCCESS;
+
     switch (id)
     {
     case macBeaconPayload:
@@ -909,7 +911,6 @@ LrWpanMac::MlmeSetRequest(LrWpanMacPibAttributeIdentifier id, Ptr<LrWpanMacPibAt
         }
         else
         {
-            confirmParams.m_status = MLMESET_SUCCESS;
             m_macBeaconPayload = attribute->macBeaconPayload;
             m_macBeaconPayloadLength = attribute->macBeaconPayload->GetSize();
         }
@@ -918,10 +919,14 @@ LrWpanMac::MlmeSetRequest(LrWpanMacPibAttributeIdentifier id, Ptr<LrWpanMacPibAt
         confirmParams.m_status = MLMESET_INVALID_PARAMETER;
         break;
     case macShortAddress:
-        confirmParams.m_status = MLMESET_SUCCESS;
         m_shortAddress = attribute->macShortAddress;
+        break;
     case macExtendedAddress:
         confirmParams.m_status = MLMESET_READ_ONLY;
+        break;
+    case macPanId:
+        m_macPanId = macPanId;
+        break;
     default:
         // TODO: Add support for setting other attributes
         confirmParams.m_status = MLMESET_UNSUPPORTED_ATTRIBUTE;
@@ -954,6 +959,9 @@ LrWpanMac::MlmeGetRequest(LrWpanMacPibAttributeIdentifier id)
         break;
     case macExtendedAddress:
         attributes->macExtendedAddress = m_selfExt;
+        break;
+    case macPanId:
+        attributes->macPanId = m_macPanId;
         break;
     default:
         status = MLMEGET_UNSUPPORTED_ATTRIBUTE;

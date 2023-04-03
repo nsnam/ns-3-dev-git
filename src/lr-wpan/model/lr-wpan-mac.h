@@ -346,6 +346,7 @@ enum LrWpanMacPibAttributeIdentifier
     macBeaconPayloadLength = 1,
     macShortAddress = 2,
     macExtendedAddress = 3,
+    macPanId = 4,
     unsupported = 255
     // TODO: complete other MAC pib attributes
 };
@@ -361,6 +362,7 @@ struct LrWpanMacPibAttributes : public SimpleRefCount<LrWpanMacPibAttributes>
     uint8_t macBeaconPayloadLength{0}; //!< The length in octets of the beacon payload.
     Mac16Address macShortAddress;      //!< The 16 bit mac short address
     Mac64Address macExtendedAddress;   //!< The EUI-64 bit address
+    uint16_t macPanId;                 //!< The identifier of the PAN
     // TODO: complete other MAC pib attributes
 };
 
