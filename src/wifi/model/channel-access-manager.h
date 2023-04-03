@@ -21,6 +21,7 @@
 #define CHANNEL_ACCESS_MANAGER_H
 
 #include "wifi-phy-common.h"
+#include "wifi-phy-operating-channel.h"
 
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
@@ -206,13 +207,14 @@ class ChannelAccessManager : public Object
                                WifiChannelListType channelType,
                                const std::vector<Time>& per20MhzDurations);
     /**
+     * \param phyListener the PHY listener that sent this notification
      * \param duration expected duration of channel switching period
      *
      * Notify the Txop that a channel switching period has just started.
      * During switching state, new packets can be enqueued in Txop/QosTxop
      * but they won't access to the medium until the end of the channel switching.
      */
-    void NotifySwitchingStartNow(Time duration);
+    void NotifySwitchingStartNow(PhyListener* phyListener, Time duration);
     /**
      * Notify the Txop that the device has been put in sleep mode.
      */
@@ -275,6 +277,19 @@ class ChannelAccessManager : public Object
      * Reset the state variables of this channel access manager.
      */
     void ResetState();
+
+    /**
+     * Notify that the given PHY is about to switch to the given operating channel, which is
+     * used by the given link. This notification is sent by the EMLSR Manager when a PHY object
+     * switches operating channel to operate on another link.
+     *
+     * \param phy the PHY object that is going to switch channel
+     * \param channel the new operating channel of the given PHY
+     * \param linkId the ID of the link on which the given PHY is going to operate
+     */
+    void NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy,
+                                  const WifiPhyOperatingChannel& channel,
+                                  uint8_t linkId);
 
   protected:
     void DoInitialize() override;
@@ -389,6 +404,16 @@ class ChannelAccessManager : public Object
     bool m_off;              //!< flag whether it is in off state
     Time m_eifsNoDifs;       //!< EIFS no DIFS time
     EventId m_accessTimeout; //!< the access timeout ID
+
+    /// Information associated with each PHY that is going to operate on another EMLSR link
+    struct EmlsrLinkSwitchInfo
+    {
+        WifiPhyOperatingChannel channel; //!< new operating channel
+        uint8_t linkId; //!< ID of the EMLSR link on which the PHY is going to operate
+    };
+
+    /// Store information about the PHY objects that are going to operate on another EMLSR link
+    std::unordered_map<Ptr<WifiPhy>, EmlsrLinkSwitchInfo> m_switchingEmlsrLinks;
 
     /// Maps each PHY listener to the associated PHY
     using PhyListenerMap = std::unordered_map<Ptr<WifiPhy>, std::unique_ptr<PhyListener>>;

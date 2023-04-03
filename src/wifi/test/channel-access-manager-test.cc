@@ -836,6 +836,7 @@ ChannelAccessManagerTest<TxopType>::AddSwitchingEvt(uint64_t at, uint64_t durati
     Simulator::Schedule(MicroSeconds(at) - Now(),
                         &ChannelAccessManager::NotifySwitchingStartNow,
                         m_ChannelAccessManager,
+                        nullptr,
                         MicroSeconds(duration));
 }
 

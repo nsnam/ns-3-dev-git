@@ -19,11 +19,11 @@
 
 #include "channel-access-manager.h"
 
-#include "frame-exchange-manager.h"
 #include "txop.h"
 #include "wifi-phy-listener.h"
 #include "wifi-phy.h"
 
+#include "ns3/eht-frame-exchange-manager.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
@@ -122,7 +122,7 @@ class PhyListener : public ns3::WifiPhyListener
 
     void NotifySwitchingStart(Time duration) override
     {
-        m_cam->NotifySwitchingStartNow(duration);
+        m_cam->NotifySwitchingStartNow(this, duration);
     }
 
     void NotifySleep() override
@@ -245,6 +245,12 @@ ChannelAccessManager::SetupPhyListener(Ptr<WifiPhy> phy)
     }
     m_phy = phy; // this is the new active PHY
     InitLastBusyStructs();
+    if (phy->IsStateSwitching())
+    {
+        auto duration = phy->GetDelayUntilIdle();
+        NS_LOG_DEBUG("switching start for " << duration);
+        m_lastSwitchingEnd = Simulator::Now() + duration;
+    }
 }
 
 void
@@ -275,6 +281,17 @@ ChannelAccessManager::DeactivatePhyListener(Ptr<WifiPhy> phy)
     {
         m_phy = nullptr;
     }
+}
+
+void
+ChannelAccessManager::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy,
+                                               const WifiPhyOperatingChannel& channel,
+                                               uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << phy << channel << linkId);
+    NS_ASSERT_MSG(m_switchingEmlsrLinks.count(phy) == 0,
+                  "The given PHY is already expected to switch channel");
+    m_switchingEmlsrLinks.emplace(phy, EmlsrLinkSwitchInfo{channel, linkId});
 }
 
 void
@@ -845,12 +862,39 @@ ChannelAccessManager::NotifyCcaBusyStartNow(Time duration,
 }
 
 void
-ChannelAccessManager::NotifySwitchingStartNow(Time duration)
+ChannelAccessManager::NotifySwitchingStartNow(PhyListener* phyListener, Time duration)
 {
-    NS_LOG_FUNCTION(this << duration);
+    NS_LOG_FUNCTION(this << phyListener << duration);
+
     Time now = Simulator::Now();
     NS_ASSERT(m_lastTxEnd <= now);
     NS_ASSERT(m_lastSwitchingEnd <= now);
+
+    if (phyListener) // to make tests happy
+    {
+        // check if the PHY switched channel to operate on another EMLSR link
+        decltype(m_switchingEmlsrLinks)::const_iterator emlsrInfoIt;
+
+        for (const auto& [phyRef, listener] : m_phyListeners)
+        {
+            Ptr<WifiPhy> phy = phyRef;
+            if (listener.get() == phyListener &&
+                (emlsrInfoIt = m_switchingEmlsrLinks.find(phy)) != m_switchingEmlsrLinks.cend() &&
+                phy->GetOperatingChannel() == emlsrInfoIt->second.channel)
+            {
+                // the PHY associated with the given PHY listener switched channel to
+                // operate on another EMLSR link as expected. We don't need this listener
+                // anymore. The MAC will connect a new listener to the ChannelAccessManager
+                // instance associated with the link the PHY is now operating on
+                RemovePhyListener(phy);
+                auto ehtFem = DynamicCast<EhtFrameExchangeManager>(m_feManager);
+                NS_ASSERT(ehtFem);
+                ehtFem->NotifySwitchingEmlsrLink(phy, emlsrInfoIt->second.linkId, duration);
+                m_switchingEmlsrLinks.erase(emlsrInfoIt);
+                return;
+            }
+        }
+    }
 
     ResetState();
 
