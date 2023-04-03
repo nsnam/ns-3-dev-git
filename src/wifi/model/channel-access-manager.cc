@@ -852,6 +852,21 @@ ChannelAccessManager::NotifySwitchingStartNow(Time duration)
     NS_ASSERT(m_lastTxEnd <= now);
     NS_ASSERT(m_lastSwitchingEnd <= now);
 
+    ResetState();
+
+    // Notify the FEM, which will in turn notify the MAC
+    m_feManager->NotifySwitchingStartNow(duration);
+
+    NS_LOG_DEBUG("switching start for " << duration);
+    m_lastSwitchingEnd = now + duration;
+}
+
+void
+ChannelAccessManager::ResetState()
+{
+    NS_LOG_FUNCTION(this);
+
+    Time now = Simulator::Now();
     m_lastRxReceivedOk = true;
     UpdateLastIdlePeriod();
     m_lastRx.end = std::min(m_lastRx.end, now);
@@ -859,7 +874,6 @@ ChannelAccessManager::NotifySwitchingStartNow(Time duration)
     m_lastAckTimeoutEnd = std::min(m_lastAckTimeoutEnd, now);
     m_lastCtsTimeoutEnd = std::min(m_lastCtsTimeoutEnd, now);
 
-    // the new operating channel may have a different width than the previous one
     InitLastBusyStructs();
 
     // Cancel timeout
@@ -867,9 +881,6 @@ ChannelAccessManager::NotifySwitchingStartNow(Time duration)
     {
         m_accessTimeout.Cancel();
     }
-
-    // Notify the FEM, which will in turn notify the MAC
-    m_feManager->NotifySwitchingStartNow(duration);
 
     // Reset backoffs
     for (auto txop : m_txops)
@@ -883,9 +894,6 @@ ChannelAccessManager::NotifySwitchingStartNow(Time duration)
         txop->ResetCw(m_linkId);
         txop->GetLink(m_linkId).access = Txop::NOT_REQUESTED;
     }
-
-    NS_LOG_DEBUG("switching start for " << duration);
-    m_lastSwitchingEnd = now + duration;
 }
 
 void

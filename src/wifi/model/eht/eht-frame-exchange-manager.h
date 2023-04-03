@@ -77,6 +77,16 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
                                    uint16_t aid,
                                    const Mac48Address& address) const;
 
+    /**
+     * Notify that the given PHY will switch channel to operate on another EMLSR link
+     * after the given delay.
+     *
+     * \param phy the given PHY
+     * \param linkId the ID of the EMLSR link on which the given PHY is operating
+     * \param delay the delay after which the channel switch will be completed
+     */
+    void NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time delay);
+
   protected:
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;

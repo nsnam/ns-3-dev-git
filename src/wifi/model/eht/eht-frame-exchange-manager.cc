@@ -24,6 +24,7 @@
 #include "ns3/abort.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/log.h"
+#include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
 
 #undef NS_LOG_APPEND_CONTEXT
@@ -235,6 +236,27 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
                                 });
         }
     }
+}
+
+void
+EhtFrameExchangeManager::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time delay)
+{
+    NS_LOG_FUNCTION(this << phy << linkId << delay.As(Time::US));
+
+    // TODO Shall we assert that there is no ongoing frame exchange sequence? Or is it possible
+    // that there is an ongoing frame exchange sequence (in such a case, we need to force a
+    // timeout, just like it is done in case of a normal channel switch
+
+    NS_ABORT_MSG_IF(!m_staMac, "This method can only be called on a STA");
+
+    // if we receive the notification from a PHY that is not connected to us, it means that
+    // we have been already connected to another PHY operating on this link, hence we do not
+    // have to reset the connected PHY
+    if (phy == m_phy)
+    {
+        ResetPhy();
+    }
+    m_staMac->NotifySwitchingEmlsrLink(phy, linkId);
 }
 
 void

@@ -271,6 +271,11 @@ class ChannelAccessManager : public Object
      */
     bool IsBusy() const;
 
+    /**
+     * Reset the state variables of this channel access manager.
+     */
+    void ResetState();
+
   protected:
     void DoInitialize() override;
     void DoDispose() override;

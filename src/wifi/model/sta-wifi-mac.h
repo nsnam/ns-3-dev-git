@@ -309,6 +309,14 @@ class StaWifiMac : public WifiMac
     bool IsEmlsrLink(uint8_t linkId) const;
 
     /**
+     * Notify that the given PHY switched channel to operate on another EMLSR link.
+     *
+     * \param phy the given PHY
+     * \param linkId the ID of the EMLSR link on which the given PHY is operating
+     */
+    void NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId);
+
+    /**
      * Assign a fixed random variable stream number to the random variables
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
