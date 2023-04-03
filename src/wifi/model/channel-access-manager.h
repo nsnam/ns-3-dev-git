@@ -28,6 +28,8 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace ns3
@@ -60,17 +62,26 @@ class ChannelAccessManager : public Object
     ~ChannelAccessManager() override;
 
     /**
-     * Set up listener for PHY events.
+     * Set up (or reactivate) listener for PHY events on the given PHY. The new (or reactivated)
+     * listener becomes the active listener and the previous active listener attached to another
+     * PHY, if any, is deactivated.
      *
      * \param phy the WifiPhy to listen to
      */
     void SetupPhyListener(Ptr<WifiPhy> phy);
     /**
-     * Remove current registered listener for PHY events.
+     * Remove current registered listener for PHY events on the given PHY.
      *
      * \param phy the WifiPhy to listen to
      */
     void RemovePhyListener(Ptr<WifiPhy> phy);
+    /**
+     * Deactivate current registered listener for PHY events on the given PHY. All notifications
+     * but channel switch notifications coming from an inactive listener are ignored.
+     *
+     * \param phy the WifiPhy to listen to
+     */
+    void DeactivatePhyListener(Ptr<WifiPhy> phy);
     /**
      * Set the ID of the link this Channel Access Manager is associated with.
      *
@@ -266,6 +277,13 @@ class ChannelAccessManager : public Object
 
   private:
     /**
+     * Get current registered listener for PHY events on the given PHY.
+     *
+     * \param phy the given PHY
+     * \return the current registered listener for PHY events on the given PHY
+     */
+    PhyListener* GetPhyListener(Ptr<WifiPhy> phy) const;
+    /**
      * Initialize the structures holding busy end times per channel type (primary,
      * secondary, etc.) and per 20 MHz channel.
      */
@@ -360,14 +378,18 @@ class ChannelAccessManager : public Object
     std::vector<Time> m_lastPer20MHzBusyEnd; /**< the last busy end time per 20 MHz channel
                                                   (HE stations and channel width > 20 MHz only) */
     std::map<WifiChannelListType, Timespan>
-        m_lastIdle;             //!< the last idle start and end time for each channel type
-    Time m_lastSwitchingEnd;    //!< the last switching end time
-    bool m_sleeping;            //!< flag whether it is in sleeping state
-    bool m_off;                 //!< flag whether it is in off state
-    Time m_eifsNoDifs;          //!< EIFS no DIFS time
-    EventId m_accessTimeout;    //!< the access timeout ID
-    PhyListener* m_phyListener; //!< the PHY listener
-    Ptr<WifiPhy> m_phy;         //!< pointer to the PHY
+        m_lastIdle;          //!< the last idle start and end time for each channel type
+    Time m_lastSwitchingEnd; //!< the last switching end time
+    bool m_sleeping;         //!< flag whether it is in sleeping state
+    bool m_off;              //!< flag whether it is in off state
+    Time m_eifsNoDifs;       //!< EIFS no DIFS time
+    EventId m_accessTimeout; //!< the access timeout ID
+
+    /// Maps each PHY listener to the associated PHY
+    using PhyListenerMap = std::unordered_map<Ptr<WifiPhy>, std::unique_ptr<PhyListener>>;
+
+    PhyListenerMap m_phyListeners;         //!< the PHY listeners
+    Ptr<WifiPhy> m_phy;                    //!< pointer to the unique active PHY
     Ptr<FrameExchangeManager> m_feManager; //!< pointer to the Frame Exchange Manager
     uint8_t m_linkId;                      //!< the ID of the link this object is associated with
 };

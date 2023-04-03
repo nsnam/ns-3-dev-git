@@ -36,7 +36,11 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("ChannelAccessManager");
 
 /**
- * Listener for PHY events. Forwards to ChannelAccessManager
+ * Listener for PHY events. Forwards to ChannelAccessManager.
+ * The ChannelAccessManager may handle multiple PHY listeners connected to distinct PHYs,
+ * but only one listener at a time can be active. Notifications from inactive listeners are
+ * ignored by the ChannelAccessManager, except for the channel switch notification.
+ * Inactive PHY listeners are typically configured by 11be EMLSR clients.
  */
 class PhyListener : public ns3::WifiPhyListener
 {
@@ -47,7 +51,8 @@ class PhyListener : public ns3::WifiPhyListener
      * \param cam the ChannelAccessManager
      */
     PhyListener(ns3::ChannelAccessManager* cam)
-        : m_cam(cam)
+        : m_cam(cam),
+          m_active(true)
     {
     }
 
@@ -55,31 +60,64 @@ class PhyListener : public ns3::WifiPhyListener
     {
     }
 
+    /**
+     * Set this listener to be active or not.
+     *
+     * \param active whether this listener is active or not
+     */
+    void SetActive(bool active)
+    {
+        m_active = active;
+    }
+
+    /**
+     * \return whether this listener is active or not
+     */
+    bool IsActive() const
+    {
+        return m_active;
+    }
+
     void NotifyRxStart(Time duration) override
     {
-        m_cam->NotifyRxStartNow(duration);
+        if (m_active)
+        {
+            m_cam->NotifyRxStartNow(duration);
+        }
     }
 
     void NotifyRxEndOk() override
     {
-        m_cam->NotifyRxEndOkNow();
+        if (m_active)
+        {
+            m_cam->NotifyRxEndOkNow();
+        }
     }
 
     void NotifyRxEndError() override
     {
-        m_cam->NotifyRxEndErrorNow();
+        if (m_active)
+        {
+            m_cam->NotifyRxEndErrorNow();
+        }
     }
 
     void NotifyTxStart(Time duration, double txPowerDbm) override
     {
-        m_cam->NotifyTxStartNow(duration);
+        if (m_active)
+        {
+            m_cam->NotifyTxStartNow(duration);
+        }
     }
 
     void NotifyCcaBusyStart(Time duration,
                             WifiChannelListType channelType,
                             const std::vector<Time>& per20MhzDurations) override
     {
-        m_cam->NotifyCcaBusyStartNow(duration, channelType, per20MhzDurations);
+        if (m_active)
+        {
+            m_cam->NotifyCcaBusyStartNow(duration, channelType, per20MhzDurations);
+        }
     }
 
     void NotifySwitchingStart(Time duration) override
@@ -89,26 +127,39 @@ class PhyListener : public ns3::WifiPhyListener
 
     void NotifySleep() override
     {
-        m_cam->NotifySleepNow();
+        if (m_active)
+        {
+            m_cam->NotifySleepNow();
+        }
     }
 
     void NotifyOff() override
     {
-        m_cam->NotifyOffNow();
+        if (m_active)
+        {
+            m_cam->NotifyOffNow();
+        }
     }
 
     void NotifyWakeup() override
     {
-        m_cam->NotifyWakeupNow();
+        if (m_active)
+        {
+            m_cam->NotifyWakeupNow();
+        }
     }
 
     void NotifyOn() override
     {
-        m_cam->NotifyOnNow();
+        if (m_active)
+        {
+            m_cam->NotifyOnNow();
+        }
     }
 
   private:
     ns3::ChannelAccessManager* m_cam; //!< ChannelAccessManager to forward events to
+    bool m_active;                    //!< whether this PHY listener is active
 };
 
 /****************************************************************
@@ -125,7 +176,6 @@ ChannelAccessManager::ChannelAccessManager()
       m_lastSwitchingEnd(MicroSeconds(0)),
       m_sleeping(false),
       m_off(false),
-      m_phyListener(nullptr),
       m_linkId(0)
 {
     NS_LOG_FUNCTION(this);
@@ -135,8 +185,6 @@ ChannelAccessManager::ChannelAccessManager()
 ChannelAccessManager::~ChannelAccessManager()
 {
     NS_LOG_FUNCTION(this);
-    delete m_phyListener;
-    m_phyListener = nullptr;
 }
 
 void
@@ -157,16 +205,45 @@ ChannelAccessManager::DoDispose()
     }
     m_phy = nullptr;
     m_feManager = nullptr;
+    m_phyListeners.clear();
+}
+
+PhyListener*
+ChannelAccessManager::GetPhyListener(Ptr<WifiPhy> phy) const
+{
+    if (auto listenerIt = m_phyListeners.find(phy); listenerIt != m_phyListeners.end())
+    {
+        return listenerIt->second.get();
+    }
+    return nullptr;
 }
 
 void
 ChannelAccessManager::SetupPhyListener(Ptr<WifiPhy> phy)
 {
     NS_LOG_FUNCTION(this << phy);
-    NS_ASSERT(m_phyListener == nullptr);
-    m_phyListener = new PhyListener(this);
-    phy->RegisterListener(m_phyListener);
-    m_phy = phy;
+
+    auto phyListener = GetPhyListener(phy);
+
+    if (phyListener)
+    {
+        // a PHY listener for the given PHY already exists, it must be inactive
+        NS_ASSERT_MSG(!phyListener->IsActive(),
+                      "There is already an active listener registered for given PHY");
+        NS_ASSERT_MSG(!m_phy, "Cannot reactivate a listener if another PHY is active");
+        phyListener->SetActive(true);
+    }
+    else
+    {
+        phyListener = new PhyListener(this);
+        m_phyListeners.emplace(phy, phyListener);
+        phy->RegisterListener(phyListener);
+    }
+    if (m_phy)
+    {
+        DeactivatePhyListener(m_phy);
+    }
+    m_phy = phy; // this is the new active PHY
     InitLastBusyStructs();
 }
 
@@ -174,11 +251,28 @@ void
 ChannelAccessManager::RemovePhyListener(Ptr<WifiPhy> phy)
 {
     NS_LOG_FUNCTION(this << phy);
-    if (m_phyListener != nullptr)
+    if (auto phyListener = GetPhyListener(phy))
     {
-        phy->UnregisterListener(m_phyListener);
-        delete m_phyListener;
-        m_phyListener = nullptr;
+        phy->UnregisterListener(phyListener);
+        m_phyListeners.erase(phy);
+        // reset m_phy if we are removing listener registered for the active PHY
+        if (m_phy == phy)
+        {
+            m_phy = nullptr;
+        }
+    }
+}
+
+void
+ChannelAccessManager::DeactivatePhyListener(Ptr<WifiPhy> phy)
+{
+    NS_LOG_FUNCTION(this << phy);
+    if (auto listener = GetPhyListener(phy))
+    {
+        listener->SetActive(false);
+    }
+    if (m_phy == phy)
+    {
         m_phy = nullptr;
     }
 }
