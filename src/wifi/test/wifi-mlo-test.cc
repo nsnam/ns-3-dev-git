@@ -756,7 +756,7 @@ MultiLinkSetupTest::CheckAssocRequest(Ptr<WifiMpdu> mpdu, uint8_t linkId)
         "TA of Assoc Request frame is not the address of the link it is transmitted on");
     MgtAssocRequestHeader assoc;
     mpdu->GetPacket()->PeekHeader(assoc);
-    const auto& mle = assoc.GetMultiLinkElement();
+    const auto& mle = assoc.Get<MultiLinkElement>();
 
     if (m_apMac->GetNLinks() == 1 || m_staMacs[0]->GetNLinks() == 1)
     {

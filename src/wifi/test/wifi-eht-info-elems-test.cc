@@ -147,9 +147,9 @@ BasicMultiLinkElementTest::DoRun()
     capabilities.SetEss();
 
     MgtAssocRequestHeader assoc;
-    assoc.SetSsid(Ssid("MySsid"));
-    assoc.SetSupportedRates(rates);
-    assoc.SetCapabilities(capabilities);
+    assoc.Get<Ssid>() = Ssid("MySsid");
+    assoc.Get<SupportedRates>() = rates.rates;
+    assoc.Capabilities() = capabilities;
     assoc.SetListenInterval(0);
 
     MultiLinkElement::PerStaProfileSubelement perStaProfile(MultiLinkElement::BASIC_VARIANT,

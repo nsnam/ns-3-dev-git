@@ -253,24 +253,26 @@ StaWifiMac::SendProbeRequest()
     hdr.SetDsNotTo();
     Ptr<Packet> packet = Create<Packet>();
     MgtProbeRequestHeader probe;
-    probe.SetSsid(GetSsid());
-    probe.SetSupportedRates(GetSupportedRates(SINGLE_LINK_OP_ID));
+    probe.Get<Ssid>() = GetSsid();
+    auto supportedRates = GetSupportedRates(SINGLE_LINK_OP_ID);
+    probe.Get<SupportedRates>() = supportedRates.rates;
+    probe.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
     if (GetHtSupported())
     {
-        probe.SetExtendedCapabilities(GetExtendedCapabilities());
-        probe.SetHtCapabilities(GetHtCapabilities(SINGLE_LINK_OP_ID));
+        probe.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
+        probe.Get<HtCapabilities>() = GetHtCapabilities(SINGLE_LINK_OP_ID);
     }
     if (GetVhtSupported(SINGLE_LINK_OP_ID))
     {
-        probe.SetVhtCapabilities(GetVhtCapabilities(SINGLE_LINK_OP_ID));
+        probe.Get<VhtCapabilities>() = GetVhtCapabilities(SINGLE_LINK_OP_ID);
     }
     if (GetHeSupported())
     {
-        probe.SetHeCapabilities(GetHeCapabilities(SINGLE_LINK_OP_ID));
+        probe.Get<HeCapabilities>() = GetHeCapabilities(SINGLE_LINK_OP_ID);
     }
     if (GetEhtSupported())
     {
-        probe.SetEhtCapabilities(GetEhtCapabilities(SINGLE_LINK_OP_ID));
+        probe.Get<EhtCapabilities>() = GetEhtCapabilities(SINGLE_LINK_OP_ID);
     }
     packet->AddHeader(probe);
 
@@ -311,26 +313,28 @@ StaWifiMac::GetAssociationRequest(bool isReassoc, uint8_t linkId) const
 
     // lambda to set the fields of the (Re)Association Request
     auto fill = [&](auto&& frame) {
-        frame.SetSsid(GetSsid());
-        frame.SetSupportedRates(GetSupportedRates(linkId));
-        frame.SetCapabilities(GetCapabilities(linkId));
+        frame.template Get<Ssid>() = GetSsid();
+        auto supportedRates = GetSupportedRates(linkId);
+        frame.template Get<SupportedRates>() = supportedRates.rates;
+        frame.template Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
+        frame.Capabilities() = GetCapabilities(linkId);
         frame.SetListenInterval(0);
         if (GetHtSupported())
         {
-            frame.SetExtendedCapabilities(GetExtendedCapabilities());
-            frame.SetHtCapabilities(GetHtCapabilities(linkId));
+            frame.template Get<ExtendedCapabilities>() = GetExtendedCapabilities();
+            frame.template Get<HtCapabilities>() = GetHtCapabilities(linkId);
         }
         if (GetVhtSupported(linkId))
         {
-            frame.SetVhtCapabilities(GetVhtCapabilities(linkId));
+            frame.template Get<VhtCapabilities>() = GetVhtCapabilities(linkId);
         }
         if (GetHeSupported())
         {
-            frame.SetHeCapabilities(GetHeCapabilities(linkId));
+            frame.template Get<HeCapabilities>() = GetHeCapabilities(linkId);
         }
         if (GetEhtSupported())
         {
-            frame.SetEhtCapabilities(GetEhtCapabilities(linkId));
+            frame.template Get<EhtCapabilities>() = GetEhtCapabilities(linkId);
         }
     };
 
@@ -421,7 +425,7 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
         GetWifiRemoteStationManager(linkId)->GetMldAddress(*link.bssid).has_value())
     {
         auto addMle = [&](auto&& frame) {
-            frame.SetMultiLinkElement(GetMultiLinkElement(isReassoc, linkId));
+            frame.template Get<MultiLinkElement>() = GetMultiLinkElement(isReassoc, linkId);
         };
         std::visit(addMle, frame);
     }

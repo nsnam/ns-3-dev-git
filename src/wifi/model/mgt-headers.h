@@ -48,6 +48,16 @@
 namespace ns3
 {
 
+/// List of Information Elements included in Probe Request frames
+using ProbeRequestElems = std::tuple<Ssid,
+                                     SupportedRates,
+                                     std::optional<ExtendedSupportedRatesIE>,
+                                     std::optional<HtCapabilities>,
+                                     std::optional<ExtendedCapabilities>,
+                                     std::optional<VhtCapabilities>,
+                                     std::optional<HeCapabilities>,
+                                     std::optional<EhtCapabilities>>;
+
 /// List of Information Elements included in Probe Response frames
 using ProbeResponseElems = std::tuple<Ssid,
                                       SupportedRates,
@@ -67,6 +77,17 @@ using ProbeResponseElems = std::tuple<Ssid,
                                       std::optional<MultiLinkElement>,
                                       std::optional<EhtCapabilities>,
                                       std::optional<EhtOperation>>;
+
+/// List of Information Elements included in Association Request frames
+using AssocRequestElems = std::tuple<Ssid,
+                                     SupportedRates,
+                                     std::optional<ExtendedSupportedRatesIE>,
+                                     std::optional<HtCapabilities>,
+                                     std::optional<ExtendedCapabilities>,
+                                     std::optional<VhtCapabilities>,
+                                     std::optional<HeCapabilities>,
+                                     std::optional<MultiLinkElement>,
+                                     std::optional<EhtCapabilities>>;
 
 /// List of Information Elements included in Association Response frames
 using AssocResponseElems = std::tuple<SupportedRates,
@@ -88,169 +109,12 @@ using AssocResponseElems = std::tuple<SupportedRates,
  * \ingroup wifi
  * Implement the header for management frames of type association request.
  */
-class MgtAssocRequestHeader : public Header
+class MgtAssocRequestHeader : public WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>
 {
+    friend class WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>;
+
   public:
-    MgtAssocRequestHeader();
-    ~MgtAssocRequestHeader() override;
-
-    /**
-     * Set the Service Set Identifier (SSID).
-     *
-     * \param ssid SSID
-     */
-    void SetSsid(const Ssid& ssid);
-
-    /** \copydoc SetSsid */
-    void SetSsid(Ssid&& ssid);
-
-    /**
-     * Set the supported rates.
-     *
-     * \param rates the supported rates
-     */
-    void SetSupportedRates(const AllSupportedRates& rates);
-
-    /** \copydoc SetSupportedRates */
-    void SetSupportedRates(AllSupportedRates&& rates);
-
-    /**
-     * Set the listen interval.
-     *
-     * \param interval the listen interval
-     */
-    void SetListenInterval(uint16_t interval);
-
-    /**
-     * Set the Capability information.
-     *
-     * \param capabilities Capability information
-     */
-    void SetCapabilities(const CapabilityInformation& capabilities);
-
-    /** \copydoc SetCapabilities */
-    void SetCapabilities(CapabilityInformation&& capabilities);
-
-    /**
-     * Set the Extended Capabilities.
-     *
-     * \param extendedCapabilities the Extended Capabilities
-     */
-    void SetExtendedCapabilities(const ExtendedCapabilities& extendedCapabilities);
-
-    /** \copydoc SetExtendedCapabilities */
-    void SetExtendedCapabilities(ExtendedCapabilities&& extendedCapabilities);
-
-    /**
-     * Set the HT capabilities.
-     *
-     * \param htCapabilities HT capabilities
-     */
-    void SetHtCapabilities(const HtCapabilities& htCapabilities);
-
-    /** \copydoc SetHtCapabilities */
-    void SetHtCapabilities(HtCapabilities&& htCapabilities);
-
-    /**
-     * Set the VHT capabilities.
-     *
-     * \param vhtCapabilities VHT capabilities
-     */
-    void SetVhtCapabilities(const VhtCapabilities& vhtCapabilities);
-
-    /** \copydoc SetVhtCapabilities */
-    void SetVhtCapabilities(VhtCapabilities&& vhtCapabilities);
-
-    /**
-     * Set the HE capabilities.
-     *
-     * \param heCapabilities HE capabilities
-     */
-    void SetHeCapabilities(const HeCapabilities& heCapabilities);
-
-    /** \copydoc SetHeCapabilities */
-    void SetHeCapabilities(HeCapabilities&& heCapabilities);
-
-    /**
-     * Set the EHT capabilities.
-     *
-     * \param ehtCapabilities EHT capabilities
-     */
-    void SetEhtCapabilities(const EhtCapabilities& ehtCapabilities);
-
-    /** \copydoc SetEhtCapabilities */
-    void SetEhtCapabilities(EhtCapabilities&& ehtCapabilities);
-
-    /**
-     * Set the Multi-Link Element information element
-     *
-     * \param multiLinkElement the Multi-Link Element information element
-     */
-    void SetMultiLinkElement(const MultiLinkElement& multiLinkElement);
-
-    /** \copydoc SetMultiLinkElement */
-    void SetMultiLinkElement(MultiLinkElement&& multiLinkElement);
-
-    /**
-     * Return the Capability information.
-     *
-     * \return Capability information
-     */
-    const CapabilityInformation& GetCapabilities() const;
-    /**
-     * Return the extended capabilities, if present.
-     *
-     * \return the extended capabilities, if present
-     */
-    const std::optional<ExtendedCapabilities>& GetExtendedCapabilities() const;
-    /**
-     * Return the HT capabilities, if present.
-     *
-     * \return HT capabilities, if present
-     */
-    const std::optional<HtCapabilities>& GetHtCapabilities() const;
-    /**
-     * Return the VHT capabilities, if present.
-     *
-     * \return VHT capabilities, if present
-     */
-    const std::optional<VhtCapabilities>& GetVhtCapabilities() const;
-    /**
-     * Return the HE capabilities, if present.
-     *
-     * \return HE capabilities, if present
-     */
-    const std::optional<HeCapabilities>& GetHeCapabilities() const;
-    /**
-     * Return the EHT capabilities, if present.
-     *
-     * \return EHT capabilities, if present
-     */
-    const std::optional<EhtCapabilities>& GetEhtCapabilities() const;
-    /**
-     * Return the Service Set Identifier (SSID).
-     *
-     * \return SSID
-     */
-    const Ssid& GetSsid() const;
-    /**
-     * Return the supported rates.
-     *
-     * \return the supported rates
-     */
-    const AllSupportedRates& GetSupportedRates() const;
-    /**
-     * Return the listen interval.
-     *
-     * \return the listen interval
-     */
-    uint16_t GetListenInterval() const;
-    /**
-     * Return the Multi-Link Element information element, if present.
-     *
-     * \return the Multi-Link Element information element, if present
-     */
-    const std::optional<MultiLinkElement>& GetMultiLinkElement() const;
+    ~MgtAssocRequestHeader() override = default;
 
     /**
      * Register this type.
@@ -258,54 +122,8 @@ class MgtAssocRequestHeader : public Header
      */
     static TypeId GetTypeId();
 
+    /** \copydoc Header::GetInstanceTypeId */
     TypeId GetInstanceTypeId() const override;
-    void Print(std::ostream& os) const override;
-    uint32_t GetSerializedSize() const override;
-    void Serialize(Buffer::Iterator start) const override;
-    uint32_t Deserialize(Buffer::Iterator start) override;
-
-  private:
-    Ssid m_ssid;                                              //!< Service Set ID (SSID)
-    AllSupportedRates m_rates;                                //!< List of supported rates
-    CapabilityInformation m_capability;                       //!< Capability information
-    std::optional<ExtendedCapabilities> m_extendedCapability; //!< Extended capabilities
-    std::optional<HtCapabilities> m_htCapability;             //!< HT capabilities
-    std::optional<VhtCapabilities> m_vhtCapability;           //!< VHT capabilities
-    std::optional<HeCapabilities> m_heCapability;             //!< HE capabilities
-    uint16_t m_listenInterval;                                //!< listen interval
-    std::optional<EhtCapabilities> m_ehtCapability;           //!< EHT capabilities
-    std::optional<MultiLinkElement> m_multiLinkElement;       //!< Multi-Link Element
-};
-
-/**
- * \ingroup wifi
- * Implement the header for management frames of type reassociation request.
- */
-class MgtReassocRequestHeader : public Header
-{
-  public:
-    MgtReassocRequestHeader();
-    ~MgtReassocRequestHeader() override;
-
-    /**
-     * Set the Service Set Identifier (SSID).
-     *
-     * \param ssid SSID
-     */
-    void SetSsid(const Ssid& ssid);
-
-    /** \copydoc SetSsid */
-    void SetSsid(Ssid&& ssid);
-
-    /**
-     * Set the supported rates.
-     *
-     * \param rates the supported rates
-     */
-    void SetSupportedRates(const AllSupportedRates& rates);
-
-    /** \copydoc SetSupportedRates */
-    void SetSupportedRates(AllSupportedRates&& rates);
 
     /**
      * Set the listen interval.
@@ -313,137 +131,82 @@ class MgtReassocRequestHeader : public Header
      * \param interval the listen interval
      */
     void SetListenInterval(uint16_t interval);
-
-    /**
-     * Set the Capability information.
-     *
-     * \param capabilities Capability information
-     */
-    void SetCapabilities(const CapabilityInformation& capabilities);
-
-    /** \copydoc SetCapabilities */
-    void SetCapabilities(CapabilityInformation&& capabilities);
-
-    /**
-     * Set the Extended Capabilities.
-     *
-     * \param extendedCapabilities the Extended Capabilities
-     */
-    void SetExtendedCapabilities(const ExtendedCapabilities& extendedCapabilities);
-
-    /** \copydoc SetExtendedCapabilities */
-    void SetExtendedCapabilities(ExtendedCapabilities&& extendedCapabilities);
-
-    /**
-     * Set the HT capabilities.
-     *
-     * \param htCapabilities HT capabilities
-     */
-    void SetHtCapabilities(const HtCapabilities& htCapabilities);
-
-    /** \copydoc SetHtCapabilities */
-    void SetHtCapabilities(HtCapabilities&& htCapabilities);
-
-    /**
-     * Set the VHT capabilities.
-     *
-     * \param vhtCapabilities VHT capabilities
-     */
-    void SetVhtCapabilities(const VhtCapabilities& vhtCapabilities);
-
-    /** \copydoc SetVhtCapabilities */
-    void SetVhtCapabilities(VhtCapabilities&& vhtCapabilities);
-
-    /**
-     * Set the HE capabilities.
-     *
-     * \param heCapabilities HE capabilities
-     */
-    void SetHeCapabilities(const HeCapabilities& heCapabilities);
-
-    /** \copydoc SetHeCapabilities */
-    void SetHeCapabilities(HeCapabilities&& heCapabilities);
-
-    /**
-     * Set the EHT capabilities.
-     *
-     * \param ehtCapabilities EHT capabilities
-     */
-    void SetEhtCapabilities(const EhtCapabilities& ehtCapabilities);
-
-    /** \copydoc SetEhtCapabilities */
-    void SetEhtCapabilities(EhtCapabilities&& ehtCapabilities);
-
-    /**
-     * Set the Multi-Link Element information element
-     *
-     * \param multiLinkElement the Multi-Link Element information element
-     */
-    void SetMultiLinkElement(const MultiLinkElement& multiLinkElement);
-
-    /** \copydoc SetMultiLinkElement */
-    void SetMultiLinkElement(MultiLinkElement&& multiLinkElement);
-
-    /**
-     * Return the Capability information.
-     *
-     * \return Capability information
-     */
-    const CapabilityInformation& GetCapabilities() const;
-    /**
-     * Return the extended capabilities, if present.
-     *
-     * \return the extended capabilities, if present
-     */
-    const std::optional<ExtendedCapabilities>& GetExtendedCapabilities() const;
-    /**
-     * Return the HT capabilities, if present.
-     *
-     * \return HT capabilities, if present
-     */
-    const std::optional<HtCapabilities>& GetHtCapabilities() const;
-    /**
-     * Return the VHT capabilities, if present.
-     *
-     * \return VHT capabilities, if present
-     */
-    const std::optional<VhtCapabilities>& GetVhtCapabilities() const;
-    /**
-     * Return the HE capabilities, if present.
-     *
-     * \return HE capabilities, if present
-     */
-    const std::optional<HeCapabilities>& GetHeCapabilities() const;
-    /**
-     * Return the EHT capabilities, if present.
-     *
-     * \return EHT capabilities, if present
-     */
-    const std::optional<EhtCapabilities>& GetEhtCapabilities() const;
-    /**
-     * Return the Service Set Identifier (SSID).
-     *
-     * \return SSID
-     */
-    const Ssid& GetSsid() const;
-    /**
-     * Return the supported rates.
-     *
-     * \return the supported rates
-     */
-    const AllSupportedRates& GetSupportedRates() const;
-    /**
-     * Return the Multi-Link Element information element, if present.
-     *
-     * \return the Multi-Link Element information element, if present
-     */
-    const std::optional<MultiLinkElement>& GetMultiLinkElement() const;
     /**
      * Return the listen interval.
      *
      * \return the listen interval
      */
     uint16_t GetListenInterval() const;
+    /**
+     * \return a reference to the Capability information
+     */
+    CapabilityInformation& Capabilities();
+    /**
+     * \return a const reference to the Capability information
+     */
+    const CapabilityInformation& Capabilities() const;
+
+  protected:
+    /** \copydoc Header::GetSerializedSize */
+    uint32_t GetSerializedSizeImpl() const;
+    /** \copydoc Header::Serialize */
+    void SerializeImpl(Buffer::Iterator start) const;
+    /** \copydoc Header::Deserialize */
+    uint32_t DeserializeImpl(Buffer::Iterator start);
+
+  private:
+    using WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>::InitForDeserialization;
+
+    /**
+     * \param optElem the MultiLinkElement object to initialize for deserializing the
+     *                information element into
+     */
+    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
+
+    CapabilityInformation m_capability; //!< Capability information
+    uint16_t m_listenInterval{0};       //!< listen interval
+};
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type reassociation request.
+ */
+class MgtReassocRequestHeader : public WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>
+{
+    friend class WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>;
+
+  public:
+    ~MgtReassocRequestHeader() override = default;
+
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId();
+
+    /** \copydoc Header::GetInstanceTypeId */
+    TypeId GetInstanceTypeId() const override;
+
+    /**
+     * Set the listen interval.
+     *
+     * \param interval the listen interval
+     */
+    void SetListenInterval(uint16_t interval);
+    /**
+     * Return the listen interval.
+     *
+     * \return the listen interval
+     */
+    uint16_t GetListenInterval() const;
+    /**
+     * \return a reference to the Capability information
+     */
+    CapabilityInformation& Capabilities();
+    /**
+     * \return a const reference to the Capability information
+     */
+    const CapabilityInformation& Capabilities() const;
     /**
      * Set the address of the current access point.
      *
@@ -451,29 +214,28 @@ class MgtReassocRequestHeader : public Header
      */
     void SetCurrentApAddress(Mac48Address currentApAddr);
 
-    /**
-     * Register this type.
-     * \return The TypeId.
-     */
-    static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
-    void Print(std::ostream& os) const override;
-    uint32_t GetSerializedSize() const override;
-    void Serialize(Buffer::Iterator start) const override;
-    uint32_t Deserialize(Buffer::Iterator start) override;
+  protected:
+    /** \copydoc Header::GetSerializedSize */
+    uint32_t GetSerializedSizeImpl() const;
+    /** \copydoc Header::Serialize */
+    void SerializeImpl(Buffer::Iterator start) const;
+    /** \copydoc Header::Deserialize */
+    uint32_t DeserializeImpl(Buffer::Iterator start);
+    /** \copydoc Header::Print */
+    void PrintImpl(std::ostream& os) const;
 
   private:
+    using WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>::InitForDeserialization;
+
+    /**
+     * \param optElem the MultiLinkElement object to initialize for deserializing the
+     *                information element into
+     */
+    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
+
     Mac48Address m_currentApAddr;       //!< Address of the current access point
-    Ssid m_ssid;                        //!< Service Set ID (SSID)
-    AllSupportedRates m_rates;          //!< List of supported rates
     CapabilityInformation m_capability; //!< Capability information
-    std::optional<ExtendedCapabilities> m_extendedCapability; //!< Extended capabilities
-    std::optional<HtCapabilities> m_htCapability;             //!< HT capabilities
-    std::optional<VhtCapabilities> m_vhtCapability;           //!< VHT capabilities
-    std::optional<HeCapabilities> m_heCapability;             //!< HE capabilities
-    uint16_t m_listenInterval;                                //!< listen interval
-    std::optional<EhtCapabilities> m_ehtCapability;           //!< EHT capabilities
-    std::optional<MultiLinkElement> m_multiLinkElement;       //!< Multi-Link Element
+    uint16_t m_listenInterval{0};       //!< listen interval
 };
 
 /**
@@ -557,149 +319,19 @@ class MgtAssocResponseHeader : public WifiMgtHeader<MgtAssocResponseHeader, Asso
  * \ingroup wifi
  * Implement the header for management frames of type probe request.
  */
-class MgtProbeRequestHeader : public Header
+class MgtProbeRequestHeader : public WifiMgtHeader<MgtProbeRequestHeader, ProbeRequestElems>
 {
   public:
-    ~MgtProbeRequestHeader() override;
-
-    /**
-     * Set the Service Set Identifier (SSID).
-     *
-     * \param ssid SSID
-     */
-    void SetSsid(const Ssid& ssid);
-
-    /** \copydoc SetSsid */
-    void SetSsid(Ssid&& ssid);
-
-    /**
-     * Set the supported rates.
-     *
-     * \param rates the supported rates
-     */
-    void SetSupportedRates(const AllSupportedRates& rates);
-
-    /** \copydoc SetSupportedRates */
-    void SetSupportedRates(AllSupportedRates&& rates);
-
-    /**
-     * Set the extended capabilities.
-     *
-     * \param extendedCapabilities the extended capabilities
-     */
-    void SetExtendedCapabilities(const ExtendedCapabilities& extendedCapabilities);
-
-    /** \copydoc SetExtendedCapabilities */
-    void SetExtendedCapabilities(ExtendedCapabilities&& extendedCapabilities);
-
-    /**
-     * Set the HT capabilities.
-     *
-     * \param htCapabilities HT capabilities
-     */
-    void SetHtCapabilities(const HtCapabilities& htCapabilities);
-
-    /** \copydoc SetHtCapabilities */
-    void SetHtCapabilities(HtCapabilities&& htCapabilities);
-
-    /**
-     * Set the VHT capabilities.
-     *
-     * \param vhtCapabilities VHT capabilities
-     */
-    void SetVhtCapabilities(const VhtCapabilities& vhtCapabilities);
-
-    /** \copydoc SetVhtCapabilities */
-    void SetVhtCapabilities(VhtCapabilities&& vhtCapabilities);
-
-    /**
-     * Set the HE capabilities.
-     *
-     * \param heCapabilities HE capabilities
-     */
-    void SetHeCapabilities(const HeCapabilities& heCapabilities);
-
-    /** \copydoc SetHeCapabilities */
-    void SetHeCapabilities(HeCapabilities&& heCapabilities);
-
-    /**
-     * Set the EHT capabilities.
-     *
-     * \param ehtCapabilities EHT capabilities
-     */
-    void SetEhtCapabilities(const EhtCapabilities& ehtCapabilities);
-
-    /** \copydoc SetEhtCapabilities */
-    void SetEhtCapabilities(EhtCapabilities&& ehtCapabilities);
-
-    /**
-     * Return the Service Set Identifier (SSID).
-     *
-     * \return SSID
-     */
-    const Ssid& GetSsid() const;
-
-    /**
-     * Return the supported rates.
-     *
-     * \return the supported rates
-     */
-    const AllSupportedRates& GetSupportedRates() const;
-
-    /**
-     * Return the extended capabilities, if present.
-     *
-     * \return the extended capabilities, if present
-     */
-    const std::optional<ExtendedCapabilities>& GetExtendedCapabilities() const;
-
-    /**
-     * Return the HT capabilities, if present.
-     *
-     * \return HT capabilities, if present
-     */
-    const std::optional<HtCapabilities>& GetHtCapabilities() const;
-
-    /**
-     * Return the VHT capabilities, if present.
-     *
-     * \return VHT capabilities, if present
-     */
-    const std::optional<VhtCapabilities>& GetVhtCapabilities() const;
-
-    /**
-     * Return the HE capabilities, if present.
-     *
-     * \return HE capabilities, if present
-     */
-    const std::optional<HeCapabilities>& GetHeCapabilities() const;
-
-    /**
-     * Return the EHT capabilities, if present.
-     *
-     * \return EHT capabilities, if present
-     */
-    const std::optional<EhtCapabilities>& GetEhtCapabilities() const;
+    ~MgtProbeRequestHeader() override = default;
 
     /**
      * Register this type.
      * \return The TypeId.
      */
     static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
-    void Print(std::ostream& os) const override;
-    uint32_t GetSerializedSize() const override;
-    void Serialize(Buffer::Iterator start) const override;
-    uint32_t Deserialize(Buffer::Iterator start) override;
 
-  private:
-    Ssid m_ssid;                                              //!< Service Set ID (SSID)
-    AllSupportedRates m_rates;                                //!< List of supported rates
-    std::optional<ExtendedCapabilities> m_extendedCapability; //!< extended capabilities
-    std::optional<HtCapabilities> m_htCapability;             //!< HT capabilities
-    std::optional<VhtCapabilities> m_vhtCapability;           //!< VHT capabilities
-    std::optional<HeCapabilities> m_heCapability;             //!< HE capabilities
-    std::optional<EhtCapabilities> m_ehtCapability;           //!< EHT capabilities
+    /** \copydoc Header::GetInstanceTypeId */
+    TypeId GetInstanceTypeId() const override;
 };
 
 /**

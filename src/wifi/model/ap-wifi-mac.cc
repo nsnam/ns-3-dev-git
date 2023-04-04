@@ -1607,8 +1607,8 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             }
             MgtProbeRequestHeader probeRequestHeader;
             packet->PeekHeader(probeRequestHeader);
-            const Ssid& ssid = probeRequestHeader.GetSsid();
-            if (ssid == GetSsid() || ssid.IsBroadcast())
+            const auto& ssid = probeRequestHeader.Get<Ssid>();
+            if (ssid == GetSsid() || ssid->IsBroadcast())
             {
                 NS_LOG_DEBUG("Probe request received from " << from << ": send probe response");
                 SendProbeResp(from, linkId);
@@ -1700,9 +1700,11 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
 
         // first, verify that the the station's supported
         // rate set is compatible with our Basic Rate set
-        const CapabilityInformation& capabilities = frame.GetCapabilities();
+        const CapabilityInformation& capabilities = frame.Capabilities();
         remoteStationManager->AddSupportedPhyPreamble(from, capabilities.IsShortPreamble());
-        const auto& rates = frame.GetSupportedRates();
+        NS_ASSERT(frame.template Get<SupportedRates>());
+        const auto rates = AllSupportedRates{*frame.template Get<SupportedRates>(),
+                                             frame.template Get<ExtendedSupportedRatesIE>()};
 
         if (rates.GetNRates() == 0)
         {
@@ -1712,7 +1714,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         if (GetHtSupported())
         {
             // check whether the HT STA supports all MCSs in Basic MCS Set
-            const auto& htCapabilities = frame.GetHtCapabilities();
+            const auto& htCapabilities = frame.template Get<HtCapabilities>();
             if (htCapabilities.has_value() && htCapabilities->IsSupportedMcs(0))
             {
                 for (uint8_t i = 0; i < remoteStationManager->GetNBasicMcs(); i++)
@@ -1728,7 +1730,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         if (GetVhtSupported(linkId))
         {
             // check whether the VHT STA supports all MCSs in Basic MCS Set
-            const auto& vhtCapabilities = frame.GetVhtCapabilities();
+            const auto& vhtCapabilities = frame.template Get<VhtCapabilities>();
             if (vhtCapabilities.has_value() && vhtCapabilities->GetVhtCapabilitiesInfo() != 0)
             {
                 for (uint8_t i = 0; i < remoteStationManager->GetNBasicMcs(); i++)
@@ -1744,7 +1746,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         if (GetHeSupported())
         {
             // check whether the HE STA supports all MCSs in Basic MCS Set
-            const auto& heCapabilities = frame.GetHeCapabilities();
+            const auto& heCapabilities = frame.template Get<HeCapabilities>();
             if (heCapabilities.has_value() && heCapabilities->GetSupportedMcsAndNss() != 0)
             {
                 for (uint8_t i = 0; i < remoteStationManager->GetNBasicMcs(); i++)
@@ -1782,7 +1784,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         }
         if (GetHtSupported())
         {
-            const auto& htCapabilities = frame.GetHtCapabilities();
+            const auto& htCapabilities = frame.template Get<HtCapabilities>();
             if (htCapabilities.has_value() && htCapabilities->IsSupportedMcs(0))
             {
                 remoteStationManager->AddStationHtCapabilities(from, *htCapabilities);
@@ -1792,7 +1794,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         }
         if (GetVhtSupported(linkId))
         {
-            const auto& vhtCapabilities = frame.GetVhtCapabilities();
+            const auto& vhtCapabilities = frame.template Get<VhtCapabilities>();
             // we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used
             // to check whether it supports VHT
             if (vhtCapabilities.has_value() &&
@@ -1811,7 +1813,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         }
         if (GetHeSupported())
         {
-            const auto& heCapabilities = frame.GetHeCapabilities();
+            const auto& heCapabilities = frame.template Get<HeCapabilities>();
             if (heCapabilities.has_value() && heCapabilities->GetSupportedMcsAndNss() != 0)
             {
                 remoteStationManager->AddStationHeCapabilities(from, *heCapabilities);
@@ -1827,7 +1829,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         }
         if (GetEhtSupported())
         {
-            if (const auto& ehtCapabilities = frame.GetEhtCapabilities())
+            if (const auto& ehtCapabilities = frame.template Get<EhtCapabilities>())
             {
                 remoteStationManager->AddStationEhtCapabilities(from, *ehtCapabilities);
             }
@@ -1855,7 +1857,7 @@ ApWifiMac::ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address fr
 
     // lambda to process received Multi-Link Element
     auto recvMle = [&](auto&& frame) {
-        const auto& mle = frame.get().GetMultiLinkElement();
+        const auto& mle = frame.get().template Get<MultiLinkElement>();
 
         if (!mle.has_value())
         {
