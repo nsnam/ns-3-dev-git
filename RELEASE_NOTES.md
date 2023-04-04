@@ -23,12 +23,13 @@ Release 3-dev
 - (lr-wpan) !1399 - Add orphan scan support.
 - (network) !1405 - Add ConvertToInt to Mac64Address
 - (lr-wpan) !1402 - Add attributes to MLME-SET and MLME-GET
-- (lr-wpan) 1410 - Add Mac16 and Mac64 functions
+- (lr-wpan) !1410 - Add Mac16 and Mac64 functions
 
 ### Bugs fixed
 
 - (lr-wpan) !1406 - Fixes issues during MAC scan
 - (wifi) #880 - Post-install change in WifiPhy::ChannelSettings does not completely reconfigure Wi-Fi
+- (energy) !1422 - Fix null harvester issue in EnergySource
 
 Release 3.38
 ------------
