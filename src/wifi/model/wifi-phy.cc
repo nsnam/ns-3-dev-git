@@ -67,6 +67,7 @@ WifiPhy::GetTypeId()
             .SetGroupName("Wifi")
             .AddAttribute("Channel",
                           "The channel attached to this PHY",
+                          TypeId::ATTR_GET,
                           PointerValue(),
                           MakePointerAccessor(&WifiPhy::GetChannel),
                           MakePointerChecker<Channel>())
@@ -103,17 +104,20 @@ WifiPhy::GetTypeId()
                     MakeUintegerChecker<uint8_t>(0, 7)))
             .AddAttribute("Frequency",
                           "The center frequency (MHz) of the current operating channel.",
+                          TypeId::ATTR_GET,
                           UintegerValue(0),
                           MakeUintegerAccessor(&WifiPhy::GetFrequency),
                           MakeUintegerChecker<uint16_t>())
             .AddAttribute("ChannelNumber",
                           "The channel number of the current operating channel.",
+                          TypeId::ATTR_GET,
                           UintegerValue(0),
                           MakeUintegerAccessor(&WifiPhy::GetChannelNumber),
                           MakeUintegerChecker<uint8_t>(0, 233))
             .AddAttribute(
                 "ChannelWidth",
                 "The width in MHz of the current operating channel (5, 10, 20, 22, 40, 80 or 160).",
+                TypeId::ATTR_GET,
                 UintegerValue(0),
                 MakeUintegerAccessor(&WifiPhy::GetChannelWidth),
                 MakeUintegerChecker<uint16_t>(5, 160))
