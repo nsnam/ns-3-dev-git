@@ -18,6 +18,7 @@
 import argparse
 import fnmatch
 import os
+import queue
 import shutil
 import signal
 import subprocess
@@ -45,10 +46,6 @@ class color_dict(object):
         return get_color(a)
 colors = color_dict()
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
 #
 # XXX This should really be part of a ns3 command to list the configuration
 # items relative to optional ns-3 pieces.
