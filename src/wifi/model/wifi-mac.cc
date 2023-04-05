@@ -363,6 +363,14 @@ WifiMac::DoInitialize()
     {
         it->second->Initialize();
     }
+
+    for (auto& link : m_links)
+    {
+        if (auto cam = link->channelAccessManager)
+        {
+            cam->Initialize();
+        }
+    }
 }
 
 void

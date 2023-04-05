@@ -261,6 +261,7 @@ class ChannelAccessManager : public Object
     bool IsBusy() const;
 
   protected:
+    void DoInitialize() override;
     void DoDispose() override;
 
   private:

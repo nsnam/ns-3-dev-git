@@ -28,6 +28,7 @@ Release 3-dev
 ### Bugs fixed
 
 - (lr-wpan) !1406 - Fixes issues during MAC scan
+- (wifi) #880 - Post-install change in WifiPhy::ChannelSettings does not completely reconfigure Wi-Fi
 
 Release 3.38
 ------------

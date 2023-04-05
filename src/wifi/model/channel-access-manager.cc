@@ -140,6 +140,13 @@ ChannelAccessManager::~ChannelAccessManager()
 }
 
 void
+ChannelAccessManager::DoInitialize()
+{
+    NS_LOG_FUNCTION(this);
+    InitLastBusyStructs();
+}
+
+void
 ChannelAccessManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
