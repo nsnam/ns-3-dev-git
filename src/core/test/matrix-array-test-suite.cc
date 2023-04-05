@@ -50,7 +50,7 @@ class MatrixArrayTestCase : public TestCase
      *
      * \param [in] name reference name
      */
-    MatrixArrayTestCase<T>(const std::string name);
+    MatrixArrayTestCase<T>(const std::string& name);
 
     /** Destructor. */
     ~MatrixArrayTestCase<T>() override;
@@ -83,7 +83,7 @@ class MatrixArrayTestCase : public TestCase
 };
 
 template <class T>
-MatrixArrayTestCase<T>::MatrixArrayTestCase(const std::string name)
+MatrixArrayTestCase<T>::MatrixArrayTestCase(const std::string& name)
     : TestCase(name)
 {
 }
@@ -456,7 +456,7 @@ class ComplexMatrixArrayTestCase : public TestCase
      *
      * \param [in] name reference name
      */
-    ComplexMatrixArrayTestCase(const std::string name);
+    ComplexMatrixArrayTestCase(const std::string& name);
     /** Destructor*/
     ~ComplexMatrixArrayTestCase() override;
 
@@ -469,7 +469,7 @@ ComplexMatrixArrayTestCase::ComplexMatrixArrayTestCase()
 {
 }
 
-ComplexMatrixArrayTestCase::ComplexMatrixArrayTestCase(const std::string name)
+ComplexMatrixArrayTestCase::ComplexMatrixArrayTestCase(const std::string& name)
     : TestCase(name)
 {
 }

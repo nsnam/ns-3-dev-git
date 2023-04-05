@@ -48,7 +48,7 @@ class ValArrayTestCase : public TestCase
      *
      * \param [in] name reference name
      */
-    ValArrayTestCase<T>(const std::string name);
+    ValArrayTestCase<T>(const std::string& name);
 
     /** Destructor. */
     ~ValArrayTestCase<T>() override;
@@ -80,7 +80,7 @@ class ValArrayTestCase : public TestCase
 };
 
 template <class T>
-ValArrayTestCase<T>::ValArrayTestCase(const std::string name)
+ValArrayTestCase<T>::ValArrayTestCase(const std::string& name)
     : TestCase(name)
 {
 }
