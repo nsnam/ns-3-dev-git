@@ -422,23 +422,23 @@ MatrixArrayTestCase<T>::DoRun()
     NS_LOG_INFO("m24 = m20 * m22 * m21" << m24);
 
     // test initialization with moving
+    size_t lCastedSize = lCasted.size();
     NS_LOG_INFO("size() of lCasted before move: " << lCasted.size());
     MatrixArray<T> m25 = MatrixArray<T>(2, 2, 2, std::move(lCasted));
-    NS_LOG_INFO("size() of lCasted after move: " << lCasted.size());
     NS_LOG_INFO("m25.GetSize ()" << m25.GetSize());
-    NS_TEST_ASSERT_MSG_EQ(lCasted.size(), 0, "The size of lCasted should be 0.");
+    NS_TEST_ASSERT_MSG_EQ(lCastedSize, m25.GetSize(), "The number of elements are not equal.");
 
+    size_t hCastedSize = hCasted.size();
     NS_LOG_INFO("size() of hCasted before move: " << hCasted.size());
     MatrixArray<T> m26 = MatrixArray<T>(2, 3, std::move(hCasted));
-    NS_LOG_INFO("size() of hCasted after move: " << hCasted.size());
     NS_LOG_INFO("m26.GetSize ()" << m26.GetSize());
-    NS_TEST_ASSERT_MSG_EQ(hCasted.size(), 0, "The size of hCasted should be 0.");
+    NS_TEST_ASSERT_MSG_EQ(hCastedSize, m26.GetSize(), "The number of elements are not equal.");
 
+    size_t jCastedSize = jCasted.size();
     NS_LOG_INFO("size() of jCasted before move: " << jCasted.size());
     MatrixArray<T> m27 = MatrixArray<T>(std::move(jCasted));
-    NS_LOG_INFO("size() of jCasted after move: " << jCasted.size());
     NS_LOG_INFO("m27.GetSize ()" << m27.GetSize());
-    NS_TEST_ASSERT_MSG_EQ(hCasted.size(), 0, "The size of jCasted should be 0.");
+    NS_TEST_ASSERT_MSG_EQ(jCastedSize, m27.GetSize(), "The number of elements are not equal.");
 }
 
 /**
