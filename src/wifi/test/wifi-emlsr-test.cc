@@ -290,6 +290,8 @@ EmlsrOperationsTestBase::Transmit(Ptr<WifiMac> mac,
 void
 EmlsrOperationsTestBase::DoSetup()
 {
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(Seconds(0)));
+
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(2);
     int64_t streamNumber = 100;
@@ -1037,11 +1039,11 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
      *
      * \param psduMap the PSDU carrying BlockAck frames
      * \param txVector the TXVECTOR used to send the PPDU
-     * \param linkId the ID of the given link
+     * \param phyId the ID of the PHY transmitting the PSDU(s)
      */
     void CheckBlockAck(const WifiConstPsduMap& psduMap,
                        const WifiTxVector& txVector,
-                       uint8_t linkId);
+                       uint8_t phyId);
 
   private:
     void StartTraffic() override;
@@ -1147,7 +1149,7 @@ EmlsrDlTxopTest::Transmit(Ptr<WifiMac> mac,
         break;
 
     case WIFI_MAC_CTL_BACKRESP:
-        CheckBlockAck(psduMap, txVector, linkId);
+        CheckBlockAck(psduMap, txVector, phyId);
         break;
 
     default:;
@@ -1226,7 +1228,7 @@ EmlsrDlTxopTest::StartTraffic()
 
         Simulator::Schedule(m_fe2to3delay + MilliSeconds(5 * (m_nEmlsrStations + 1)), [=]() {
             m_apMac->GetDevice()->GetNode()->AddApplication(
-                GetApplication(DOWNLINK, id, 8 / m_nEmlsrStations, 450));
+                GetApplication(DOWNLINK, id, 8 / m_nEmlsrStations, 650));
         });
     }
 }
@@ -1848,31 +1850,34 @@ EmlsrDlTxopTest::CheckResults()
     // (ICF protects the EML Notification response) and two frame exchanges with data frames
     for (std::size_t i = 0; i < m_nEmlsrStations; i++)
     {
-        // if the EML Notification frame disabling EMLSR mode is sent on an EMLSR link, it
-        // is protected by an ICF; otherwise, it is not protected. Given that the default
-        // EMLSR Manager sends EML Notification frames on the link used to establish association,
-        // ICF is sent to protect the EML Notification frame if the link used to establish
-        // association is an EMLSR link
-        if (m_emlsrLinks.count(m_mainPhyId) == 1)
-        {
-            auto firstExchangeIt = frameExchanges.at(i).begin();
+        // the default EMLSR Manager requests to send EML Notification frames on the link where
+        // the main PHY is operating, hence this link is an EMLSR link and the EML Notification
+        // frame is protected by an ICF
+        auto exchangeIt = frameExchanges.at(i).cbegin();
 
-            NS_TEST_EXPECT_MSG_EQ(IsTrigger(firstExchangeIt->front()->psduMap),
-                                  true,
-                                  "Expected an MU-RTS TF as ICF of first frame exchange sequence");
-            NS_TEST_EXPECT_MSG_EQ(firstExchangeIt->size(),
-                                  1,
-                                  "Expected no data frame in the first frame exchange sequence");
+        auto linkIdOpt = m_staMacs[i]->GetLinkForPhy(m_mainPhyId);
+        NS_TEST_ASSERT_MSG_EQ(linkIdOpt.has_value(),
+                              true,
+                              "Didn't find a link on which the main PHY is operating");
 
-            frameExchanges.at(i).pop_front();
-        }
+        NS_TEST_EXPECT_MSG_EQ(IsTrigger(exchangeIt->front()->psduMap),
+                              true,
+                              "Expected an MU-RTS TF as ICF of first frame exchange sequence");
+        NS_TEST_EXPECT_MSG_EQ(+exchangeIt->front()->linkId,
+                              +linkIdOpt.value(),
+                              "ICF was not sent on the expected link");
+        NS_TEST_EXPECT_MSG_EQ(exchangeIt->size(),
+                              1,
+                              "Expected no data frame in the first frame exchange sequence");
+
+        frameExchanges.at(i).pop_front();
 
         NS_TEST_EXPECT_MSG_GT_OR_EQ(frameExchanges.at(i).size(),
                                     2,
                                     "Expected at least 2 frame exchange sequences "
                                         << "involving EMLSR client " << i);
 
-        auto firstExchangeIt = frameExchanges.at(i).begin();
+        auto firstExchangeIt = frameExchanges.at(i).cbegin();
         auto secondExchangeIt = std::next(firstExchangeIt);
 
         const auto firstAmpduTxEnd =
@@ -1899,20 +1904,19 @@ EmlsrDlTxopTest::CheckResults()
                               1,
                               "Expected one frame only in the second frame exchange sequence");
 
-        if (m_staMacs[i]->GetNLinks() == m_emlsrLinks.size() ||
-            m_emlsrLinks.count(m_mainPhyId) == 0)
+        if (m_staMacs[i]->GetNLinks() == m_emlsrLinks.size())
         {
-            // all links are EMLSR links or the non-EMLSR link is the link used for association:
-            // the two QoS data frames are sent one after another on the link used for association
+            // all links are EMLSR links: the two QoS data frames are sent one after another on
+            // the link used for sending EML OMN
             NS_TEST_EXPECT_MSG_EQ(
                 +firstExchangeIt->front()->linkId,
-                +m_mainPhyId,
-                "First frame exchange expected to occur on link used for association");
+                +linkIdOpt.value(),
+                "First frame exchange expected to occur on link used to send EML OMN");
 
             NS_TEST_EXPECT_MSG_EQ(
                 +secondExchangeIt->front()->linkId,
-                +m_mainPhyId,
-                "Second frame exchange expected to occur on link used for association");
+                +linkIdOpt.value(),
+                "Second frame exchange expected to occur on link used to send EML OMN");
 
             NS_TEST_EXPECT_MSG_LT(firstAmpduTxEnd,
                                   secondAmpduTxStart,
@@ -2331,7 +2335,7 @@ EmlsrDlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
 void
 EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                const WifiTxVector& txVector,
-                               uint8_t linkId)
+                               uint8_t phyId)
 {
     if (m_nEmlsrStations != 2 || m_apMac->GetNLinks() != m_emlsrLinks.size() ||
         m_emlsrEnabledTime.IsZero() || Simulator::Now() < m_emlsrEnabledTime + m_fe2to3delay)
@@ -2353,6 +2357,15 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                               "Unexpected TA for BlockAck: " << taddr);
         clientId = 1;
     }
+
+    // find the link on which the main PHY is operating
+    auto currMainPhyLinkId = m_staMacs[clientId]->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(
+        currMainPhyLinkId.has_value(),
+        true,
+        "Didn't find the link on which the PHY sending the BlockAck is operating");
+    auto linkId = *currMainPhyLinkId;
+
     // we need the MLD address to check the status of the container queues
     auto addr = m_apMac->GetWifiRemoteStationManager(linkId)->GetMldAddress(taddr);
     NS_TEST_ASSERT_MSG_EQ(addr.has_value(), true, "MLD address not found for " << taddr);

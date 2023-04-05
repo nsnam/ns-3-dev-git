@@ -20,8 +20,10 @@
 #include "default-emlsr-manager.h"
 
 #include "ns3/boolean.h"
+#include "ns3/channel-access-manager.h"
 #include "ns3/log.h"
 #include "ns3/wifi-mpdu.h"
+#include "ns3/wifi-phy.h"
 
 namespace ns3
 {
@@ -85,6 +87,33 @@ void
 DefaultEmlsrManager::NotifyEmlsrModeChanged()
 {
     NS_LOG_FUNCTION(this);
+}
+
+void
+DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId)
+{
+    NS_LOG_FUNCTION(this << currLinkId << nextLinkId);
+
+    if (!m_switchAuxPhy)
+    {
+        return; // nothing to do
+    }
+
+    // switch channel on Aux PHY so that it operates on the link on which the main PHY was operating
+    auto mainPhy = GetStaMac()->GetWifiPhy(currLinkId);
+    auto auxPhy = GetStaMac()->GetWifiPhy(nextLinkId);
+
+    auto currMainPhyChannel = mainPhy->GetOperatingChannel();
+
+    NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") is about to switch to " << currMainPhyChannel
+                             << " to operate on link " << +currLinkId);
+
+    GetStaMac()
+        ->GetChannelAccessManager(nextLinkId)
+        ->NotifySwitchingEmlsrLink(auxPhy, currMainPhyChannel, currLinkId);
+
+    void (WifiPhy::*fp)(const WifiPhyOperatingChannel&) = &WifiPhy::SetOperatingChannel;
+    Simulator::ScheduleNow(fp, auxPhy, currMainPhyChannel);
 }
 
 } // namespace ns3

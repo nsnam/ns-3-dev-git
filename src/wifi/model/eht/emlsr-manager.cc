@@ -27,6 +27,7 @@
 #include "ns3/attribute-container.h"
 #include "ns3/log.h"
 #include "ns3/wifi-mpdu.h"
+#include "ns3/wifi-net-device.h"
 
 namespace ns3
 {
@@ -230,6 +231,58 @@ EmlsrManager::NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             }
         }
     }
+}
+
+void
+EmlsrManager::NotifyIcfReceived(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
+    auto auxPhy = m_staMac->GetWifiPhy(linkId);
+
+    if (m_staMac->GetWifiPhy(linkId) == mainPhy)
+    {
+        // nothing to do, we received an ICF from the main PHY
+        return;
+    }
+
+    SwitchMainPhy(linkId);
+
+    // aux PHY received the ICF but main PHY will send the response
+    auto uid = auxPhy->GetPreviouslyRxPpduUid();
+    mainPhy->SetPreviouslyRxPpduUid(uid);
+}
+
+void
+EmlsrManager::SwitchMainPhy(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
+    auto auxPhy = m_staMac->GetWifiPhy(linkId);
+
+    NS_ASSERT_MSG(mainPhy != auxPhy, "Main PHY is already operating on link " << +linkId);
+
+    // find the link on which the main PHY is operating
+    auto currMainPhyLinkId = m_staMac->GetLinkForPhy(mainPhy);
+    NS_ASSERT_MSG(currMainPhyLinkId, "Current link ID for main PHY not found");
+
+    auto currMainPhyChannel = mainPhy->GetOperatingChannel();
+    auto newMainPhyChannel = auxPhy->GetOperatingChannel();
+
+    NS_LOG_DEBUG("Main PHY (" << mainPhy << ") is about to switch to " << newMainPhyChannel
+                              << " to operate on link " << +linkId);
+
+    // notify the channel access manager of the upcoming channel switch(es)
+    m_staMac->GetChannelAccessManager(*currMainPhyLinkId)
+        ->NotifySwitchingEmlsrLink(mainPhy, newMainPhyChannel, linkId);
+
+    // request the main PHY to switch channel
+    void (WifiPhy::*fp)(const WifiPhyOperatingChannel&) = &WifiPhy::SetOperatingChannel;
+    Simulator::ScheduleNow(fp, mainPhy, newMainPhyChannel);
+
+    NotifyMainPhySwitch(*currMainPhyLinkId, linkId);
 }
 
 void

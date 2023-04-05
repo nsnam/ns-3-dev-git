@@ -23,6 +23,7 @@
 
 #include "ns3/abort.h"
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/emlsr-manager.h"
 #include "ns3/log.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
@@ -459,6 +460,48 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
     }
 
     HeFrameExchangeManager::NotifyChannelReleased(txop);
+}
+
+void
+EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
+                                     RxSignalInfo rxSignalInfo,
+                                     const WifiTxVector& txVector,
+                                     bool inAmpdu)
+{
+    // The received MPDU is either broadcast or addressed to this station
+    NS_ASSERT(mpdu->GetHeader().GetAddr1().IsGroup() || mpdu->GetHeader().GetAddr1() == m_self);
+
+    const auto& hdr = mpdu->GetHeader();
+
+    if (hdr.IsTrigger())
+    {
+        if (!m_staMac)
+        {
+            return; // Trigger Frames are only processed by STAs
+        }
+
+        CtrlTriggerHeader trigger;
+        mpdu->GetPacket()->PeekHeader(trigger);
+
+        if (hdr.GetAddr1() != m_self &&
+            (!hdr.GetAddr1().IsBroadcast() || !m_staMac->IsAssociated() ||
+             hdr.GetAddr2() != m_bssid // not sent by the AP this STA is associated with
+             || trigger.FindUserInfoWithAid(m_staMac->GetAssociationId()) == trigger.end()))
+        {
+            return; // not addressed to us
+        }
+
+        if (trigger.IsMuRts() && m_staMac->IsEmlsrLink(m_linkId))
+        {
+            // this is an initial Control frame
+            NS_ASSERT(m_staMac->GetEmlsrManager());
+            Simulator::ScheduleNow(&EmlsrManager::NotifyIcfReceived,
+                                   m_staMac->GetEmlsrManager(),
+                                   m_linkId);
+        }
+    }
+
+    HeFrameExchangeManager::ReceiveMpdu(mpdu, rxSignalInfo, txVector, inAmpdu);
 }
 
 } // namespace ns3

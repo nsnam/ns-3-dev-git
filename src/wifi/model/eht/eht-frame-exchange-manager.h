@@ -92,6 +92,10 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
     void SendMuRts(const WifiTxParameters& txParams) override;
     void NotifyChannelReleased(Ptr<Txop> txop) override;
+    void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
+                     RxSignalInfo rxSignalInfo,
+                     const WifiTxVector& txVector,
+                     bool inAmpdu) override;
 
     /**
      * This method is intended to be called when an AP MLD detects that an EMLSR client previously

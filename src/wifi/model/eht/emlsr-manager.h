@@ -20,6 +20,7 @@
 #ifndef EMLSR_MANAGER_H
 #define EMLSR_MANAGER_H
 
+#include "ns3/ctrl-headers.h"
 #include "ns3/mac48-address.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/object.h"
@@ -119,6 +120,13 @@ class EmlsrManager : public Object
      */
     void NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
 
+    /**
+     * Notify the reception of an initial Control frame on the given link.
+     *
+     * \param linkId the ID of the link on which the initial Control frame was received
+     */
+    void NotifyIcfReceived(uint8_t linkId);
+
   protected:
     void DoDispose() override;
 
@@ -188,9 +196,24 @@ class EmlsrManager : public Object
     void ChangeEmlsrMode();
 
     /**
+     * Switch channel on the Main PHY so that it operates on the given link.
+     *
+     * \param linkId the ID of the link on which the main PHY has to operate
+     */
+    void SwitchMainPhy(uint8_t linkId);
+
+    /**
      * Notify subclass that EMLSR mode changed.
      */
     virtual void NotifyEmlsrModeChanged() = 0;
+
+    /**
+     * Notify subclass that the main PHY is switching channel to operate on another link.
+     *
+     * \param currLinkId the ID of the link on which the main PHY is operating
+     * \param nextLinkId the ID of the link on which the main PHY will be operating
+     */
+    virtual void NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId) = 0;
 
     Ptr<StaWifiMac> m_staMac;                     //!< the MAC of the managed non-AP MLD
     std::optional<Time> m_emlsrTransitionTimeout; /**< Transition timeout advertised by APs with
