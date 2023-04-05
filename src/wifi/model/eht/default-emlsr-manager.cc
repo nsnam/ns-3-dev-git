@@ -61,27 +61,24 @@ void
 DefaultEmlsrManager::DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << linkId);
-
-    if (mpdu->GetHeader().IsAssocResp() && GetStaMac()->IsAssociated() && GetTransitionTimeout())
-    {
-        m_assocLinkId = linkId;
-    }
 }
 
 uint8_t
 DefaultEmlsrManager::GetLinkToSendEmlNotification()
 {
     NS_LOG_FUNCTION(this);
-    NS_ASSERT_MSG(m_assocLinkId, "No recorded link on which Assoc Response was received");
-    return *m_assocLinkId;
+    auto linkId = GetStaMac()->GetLinkForPhy(m_mainPhyId);
+    NS_ASSERT_MSG(linkId, "Link on which the main PHY is operating not found");
+    return *linkId;
 }
 
 std::optional<uint8_t>
 DefaultEmlsrManager::ResendNotification(Ptr<const WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this);
-    NS_ASSERT_MSG(m_assocLinkId, "No recorded link on which Assoc Response was received");
-    return *m_assocLinkId;
+    auto linkId = GetStaMac()->GetLinkForPhy(m_mainPhyId);
+    NS_ASSERT_MSG(linkId, "Link on which the main PHY is operating not found");
+    return *linkId;
 }
 
 void

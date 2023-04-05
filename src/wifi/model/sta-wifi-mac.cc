@@ -31,6 +31,7 @@
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 
+#include "ns3/attribute-container.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/emlsr-manager.h"
 #include "ns3/he-configuration.h"
@@ -162,6 +163,20 @@ void
 StaWifiMac::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
+    // an EMLSR client must perform ML setup by using its main PHY
+    if (m_assocManager && m_emlsrManager)
+    {
+        auto mainPhyId = m_emlsrManager->GetMainPhyId();
+        auto linkId = GetLinkForPhy(mainPhyId);
+        NS_ASSERT(linkId);
+        m_assocManager->SetAttribute(
+            "AllowedLinks",
+            AttributeContainerValue<UintegerValue>(std::list<uint8_t>{*linkId}));
+    }
+    if (m_emlsrManager)
+    {
+        m_emlsrManager->Initialize();
+    }
     StartScanning();
     NS_ABORT_IF(!TraceConnectWithoutContext("AckedMpdu", MakeCallback(&StaWifiMac::TxOk, this)));
     WifiMac::DoInitialize();

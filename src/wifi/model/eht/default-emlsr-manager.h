@@ -51,9 +51,6 @@ class DefaultEmlsrManager : public EmlsrManager
   private:
     void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     void NotifyEmlsrModeChanged() override;
-
-    std::optional<uint8_t> m_assocLinkId; /**< ID of the link on which Association Response
-                                               was received */
     bool m_switchAuxPhy; /**< whether Aux PHY should switch channel to operate on the link on which
                               the Main PHY was operating before moving to the link of the Aux PHY */
 };

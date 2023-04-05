@@ -196,6 +196,7 @@ class EmlsrOperationsTestBase : public TestCase
         uint8_t phyId;            ///< ID of the transmitting PHY
     };
 
+    uint8_t m_mainPhyId{0};                   //!< ID of the main PHY
     std::set<uint8_t> m_linksToEnableEmlsrOn; /**< IDs of the links on which EMLSR mode has to
                                                    be enabled */
     std::size_t m_nEmlsrStations{1};          ///< number of stations to create that activate EMLSR
@@ -336,7 +337,9 @@ EmlsrOperationsTestBase::DoSetup()
                 BooleanValue(false));
     mac.SetEmlsrManager("ns3::DefaultEmlsrManager",
                         "EmlsrLinkSet",
-                        AttributeContainerValue<UintegerValue>(m_linksToEnableEmlsrOn));
+                        AttributeContainerValue<UintegerValue>(m_linksToEnableEmlsrOn),
+                        "MainPhyId",
+                        UintegerValue(m_mainPhyId));
 
     NetDeviceContainer staDevices = wifi.Install(phyHelper, mac, wifiStaNodes);
 
@@ -611,7 +614,6 @@ class EmlNotificationExchangeTest : public EmlsrOperationsTestBase
     void CheckEmlsrLinks();
 
   private:
-    std::optional<uint8_t> m_assocLinkId;      //!< ID of the link used to establish association
     std::size_t m_checkEmlsrLinksCount;        /**< counter for the number of times CheckEmlsrLinks
                                                     is called (should be two: when the transition
                                                     timeout expires and when the EML Notification
@@ -671,7 +673,7 @@ EmlNotificationExchangeTest::Transmit(Ptr<WifiMac> mac,
     switch (psdu->GetHeader(0).GetType())
     {
     case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
-        m_assocLinkId = linkId;
+        NS_TEST_EXPECT_MSG_EQ(+linkId, +m_mainPhyId, "AssocReq not sent by the main PHY");
         CheckEmlCapabilitiesInAssocReq(*psdu->begin(), txVector, linkId);
         break;
 
@@ -816,10 +818,7 @@ EmlNotificationExchangeTest::CheckEmlNotification(Ptr<const WifiPsdu> psdu,
         Simulator::Schedule(delay, &EmlNotificationExchangeTest::CheckEmlsrLinks, this);
     }
 
-    NS_TEST_ASSERT_MSG_EQ(m_assocLinkId.has_value(),
-                          true,
-                          "No link ID indicating the link on which association was performed");
-    NS_TEST_EXPECT_MSG_EQ(+m_assocLinkId.value(),
+    NS_TEST_EXPECT_MSG_EQ(+m_mainPhyId,
                           +linkId,
                           "EML Notification received on unexpected link (frame sent by non-AP MLD: "
                               << std::boolalpha << sentbyNonApMld << ")");
@@ -1053,14 +1052,11 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
     void EnableEmlsrMode();
 
     std::set<uint8_t> m_emlsrLinks; /**< IDs of the links on which EMLSR mode has to be enabled */
-    std::vector<std::optional<uint8_t>>
-        m_assocLinkId; /**< ID of the link used to establish association (vector index is the node
-                          ID) */
-    Time m_emlsrEnabledTime;      //!< when EMLSR mode has been enabled on all EMLSR clients
-    const Time m_fe2to3delay;     /**< time interval between 2nd and 3rd frame exchange sequences
-                                       after the enablement of EMLSR mode */
-    std::size_t m_countQoSframes; //!< counter for QoS frames (transition delay test)
-    std::size_t m_countBlockAck;  //!< counter for BlockAck frames (transition delay test)
+    Time m_emlsrEnabledTime;        //!< when EMLSR mode has been enabled on all EMLSR clients
+    const Time m_fe2to3delay;       /**< time interval between 2nd and 3rd frame exchange sequences
+                                         after the enablement of EMLSR mode */
+    std::size_t m_countQoSframes;   //!< counter for QoS frames (transition delay test)
+    std::size_t m_countBlockAck;    //!< counter for BlockAck frames (transition delay test)
     Ptr<ListErrorModel> m_errorModel; ///< error rate model to corrupt BlockAck at AP MLD
 };
 
@@ -1073,7 +1069,6 @@ EmlsrDlTxopTest::EmlsrDlTxopTest(std::size_t nEmlsrStations,
     : EmlsrOperationsTestBase("Check EML DL TXOP transmissions (" + std::to_string(nEmlsrStations) +
                               "," + std::to_string(nNonEmlsrStations) + ")"),
       m_emlsrLinks(linksToEnableEmlsrOn),
-      m_assocLinkId(1 + nEmlsrStations + nNonEmlsrStations, std::nullopt),
       m_emlsrEnabledTime(0),
       m_fe2to3delay(MilliSeconds(20)),
       m_countQoSframes(0),
@@ -1082,6 +1077,7 @@ EmlsrDlTxopTest::EmlsrDlTxopTest(std::size_t nEmlsrStations,
     m_nEmlsrStations = nEmlsrStations;
     m_nNonEmlsrStations = nNonEmlsrStations;
     m_linksToEnableEmlsrOn = {}; // do not enable EMLSR right after association
+    m_mainPhyId = 1;
     m_paddingDelay = paddingDelay;
     m_transitionDelay = transitionDelay;
     m_transitionTimeout = transitionTimeout;
@@ -1109,9 +1105,9 @@ EmlsrDlTxopTest::Transmit(Ptr<WifiMac> mac,
     {
     case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
         NS_ASSERT_MSG(nodeId > 0, "APs do not send AssocReq frames");
-        m_assocLinkId.at(nodeId) = linkId;
         if (nodeId <= m_nEmlsrStations)
         {
+            NS_TEST_EXPECT_MSG_EQ(+linkId, +m_mainPhyId, "AssocReq not sent by the main PHY");
             // this AssocReq is being sent by an EMLSR client. The other EMLSR links should be
             // in powersave mode after association; we let the non-EMLSR links transition to
             // active mode (by sending data null frames) after association
@@ -1366,15 +1362,13 @@ EmlsrDlTxopTest::CheckResults()
         auto setupLinks = m_staMacs[i]->GetSetupLinkIds();
         if (i < m_nEmlsrStations &&
             std::none_of(setupLinks.begin(), setupLinks.end(), [&](auto&& linkId) {
-                return linkId != *m_assocLinkId[i + 1] && m_emlsrLinks.count(linkId) == 0;
+                return linkId != m_mainPhyId && m_emlsrLinks.count(linkId) == 0;
             }))
         {
             NS_TEST_EXPECT_MSG_EQ(linkIds.size(),
                                   1,
                                   "Expected both A-MPDUs to be sent on the same link");
-            NS_TEST_EXPECT_MSG_EQ(*linkIds.begin(),
-                                  *m_assocLinkId[i + 1],
-                                  "A-MPDUs sent on incorrect link");
+            NS_TEST_EXPECT_MSG_EQ(*linkIds.begin(), +m_mainPhyId, "A-MPDUs sent on incorrect link");
             NS_TEST_EXPECT_MSG_LT(firstAmpduTxEnd,
                                   secondAmpduTxStart,
                                   "A-MPDUs are not sent one after another");
@@ -1859,7 +1853,7 @@ EmlsrDlTxopTest::CheckResults()
         // EMLSR Manager sends EML Notification frames on the link used to establish association,
         // ICF is sent to protect the EML Notification frame if the link used to establish
         // association is an EMLSR link
-        if (m_emlsrLinks.count(*m_assocLinkId.at(i + 1)) == 1)
+        if (m_emlsrLinks.count(m_mainPhyId) == 1)
         {
             auto firstExchangeIt = frameExchanges.at(i).begin();
 
@@ -1906,18 +1900,18 @@ EmlsrDlTxopTest::CheckResults()
                               "Expected one frame only in the second frame exchange sequence");
 
         if (m_staMacs[i]->GetNLinks() == m_emlsrLinks.size() ||
-            m_emlsrLinks.count(*m_assocLinkId.at(i + 1)) == 0)
+            m_emlsrLinks.count(m_mainPhyId) == 0)
         {
             // all links are EMLSR links or the non-EMLSR link is the link used for association:
             // the two QoS data frames are sent one after another on the link used for association
             NS_TEST_EXPECT_MSG_EQ(
                 +firstExchangeIt->front()->linkId,
-                +(*m_assocLinkId.at(i + 1)),
+                +m_mainPhyId,
                 "First frame exchange expected to occur on link used for association");
 
             NS_TEST_EXPECT_MSG_EQ(
                 +secondExchangeIt->front()->linkId,
-                +(*m_assocLinkId.at(i + 1)),
+                +m_mainPhyId,
                 "Second frame exchange expected to occur on link used for association");
 
             NS_TEST_EXPECT_MSG_LT(firstAmpduTxEnd,
@@ -1957,8 +1951,8 @@ EmlsrDlTxopTest::CheckPmModeAfterAssociation(const Mac48Address& address)
     // transitioned to active mode instead
     for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
     {
-        bool psModeExpected = *staId < m_nEmlsrStations && linkId != m_assocLinkId.at(*staId + 1) &&
-                              m_emlsrLinks.count(linkId) == 1;
+        bool psModeExpected =
+            *staId < m_nEmlsrStations && linkId != m_mainPhyId && m_emlsrLinks.count(linkId) == 1;
         auto addr = m_staMacs.at(*staId)->GetAddress();
         auto psMode = m_apMac->GetWifiRemoteStationManager(linkId)->IsInPsMode(addr);
         NS_TEST_EXPECT_MSG_EQ(psMode,
@@ -2530,10 +2524,8 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     AddTestCase(new EmlNotificationExchangeTest({1, 2}, MicroSeconds(2048)), TestCase::QUICK);
     AddTestCase(new EmlNotificationExchangeTest({0, 1, 2, 3}, MicroSeconds(0)), TestCase::QUICK);
     AddTestCase(new EmlNotificationExchangeTest({0, 1, 2, 3}, MicroSeconds(2048)), TestCase::QUICK);
-    for (const auto& emlsrLinks : {std::set<uint8_t>{0, 1, 2},
-                                   std::set<uint8_t>{1, 2},
-                                   std::set<uint8_t>{0, 2},
-                                   std::set<uint8_t>{0, 1}})
+    for (const auto& emlsrLinks :
+         {std::set<uint8_t>{0, 1, 2}, std::set<uint8_t>{1, 2}, std::set<uint8_t>{0, 1}})
     {
         AddTestCase(new EmlsrDlTxopTest(1,
                                         0,
