@@ -56,6 +56,7 @@
 #include "ns3/boolean.h"
 #include "ns3/command-line.h"
 #include "ns3/config.h"
+#include "ns3/double.h"
 #include "ns3/gnuplot.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
@@ -251,6 +252,18 @@ main(int argc, char* argv[])
     }
     wifiPhy.Set("ChannelSettings",
                 StringValue("{0, " + std::to_string(chWidth) + ", " + frequencyBand + ", 0}"));
+
+    // By default, the CCA sensitivity is -82 dBm, meaning if the RSS is
+    // below this value, the receiver will reject the Wi-Fi frame.
+    // However, we want to allow the rate adaptation to work down to low
+    // SNR values.  To allow this, we need to do three things:  1) disable
+    // the noise figure (set it to 0 dB) so that the noise level in 20 MHz
+    // is around -101 dBm, 2) lower the CCA sensitivity to a value that
+    // disables it (e.g. -110 dBm), and 3) disable the Wi-Fi preamble
+    // detection model.
+    wifiPhy.Set("CcaSensitivity", DoubleValue(-110));
+    wifiPhy.Set("RxNoiseFigure", DoubleValue(0));
+    wifiPhy.DisablePreambleDetectionModel();
 
     NetDeviceContainer wifiApDevices;
     NetDeviceContainer wifiStaDevices;
