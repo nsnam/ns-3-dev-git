@@ -90,7 +90,6 @@ WimaxPhy::WimaxPhy()
       m_psPerFrame(0),
       m_symbolsPerFrame(0)
 {
-    m_mobility = nullptr;
     m_duplex = 0;
     m_txFrequency = 0;
     m_rxFrequency = 0;
@@ -423,18 +422,6 @@ uint32_t
 WimaxPhy::GetSymbolsPerFrame() const
 {
     return m_symbolsPerFrame;
-}
-
-Ptr<Object>
-WimaxPhy::GetMobility()
-{
-    return m_mobility;
-}
-
-void
-WimaxPhy::SetMobility(Ptr<Object> mobility)
-{
-    m_mobility = mobility;
 }
 
 } // namespace ns3

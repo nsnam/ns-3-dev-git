@@ -169,8 +169,6 @@ WimaxNetDevice::DoDispose()
     m_connectionManager = nullptr;
     m_burstProfileManager = nullptr;
     m_bandwidthManager = nullptr;
-    m_connectionManager = nullptr;
-    m_bandwidthManager = nullptr;
 
     NetDevice::DoDispose();
 }

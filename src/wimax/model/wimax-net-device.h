@@ -560,8 +560,6 @@ class WimaxNetDevice : public NetDevice
     Ptr<ConnectionManager> m_connectionManager;     ///< connection manager
     Ptr<BurstProfileManager> m_burstProfileManager; ///< burst profile manager
     Ptr<BandwidthManager> m_bandwidthManager;       ///< badnwidth manager
-
-    Ptr<Object> m_mobility; ///< modility model
 };
 
 } // namespace ns3
