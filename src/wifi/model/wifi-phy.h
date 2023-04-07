@@ -1123,6 +1123,18 @@ class WifiPhy : public Object
     uint64_t GetPreviouslyRxPpduUid() const;
 
     /**
+     * Set the UID of the previously received PPDU.
+     *
+     * \param uid the value for the UID of the previously received PPDU
+     *
+     * \note This method shall only be used in exceptional circumstances, such as when a PHY
+     * transmits a response to a Trigger Frame that was received by another PHY. This is the
+     * case, e.g., when an aux PHY of an EMLSR client receives an ICF but it is the main PHY
+     * that switches channel and transmits the response to the ICF.
+     */
+    void SetPreviouslyRxPpduUid(uint64_t uid);
+
+    /**
      * \param currentChannelWidth channel width of the current transmission (MHz)
      * \return the width of the guard band (MHz)
      *

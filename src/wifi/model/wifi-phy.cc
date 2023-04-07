@@ -1840,6 +1840,13 @@ WifiPhy::GetPreviouslyRxPpduUid() const
 }
 
 void
+WifiPhy::SetPreviouslyRxPpduUid(uint64_t uid)
+{
+    NS_ASSERT(m_standard >= WIFI_STANDARD_80211be);
+    m_previouslyRxPpduUid = uid;
+}
+
+void
 WifiPhy::Reset()
 {
     NS_LOG_FUNCTION(this);
