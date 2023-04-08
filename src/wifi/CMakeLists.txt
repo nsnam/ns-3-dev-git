@@ -118,7 +118,6 @@ set(source_files
     model/wifi-default-ack-manager.cc
     model/wifi-default-assoc-manager.cc
     model/wifi-default-protection-manager.cc
-    model/wifi-information-element-vector.cc
     model/wifi-information-element.cc
     model/wifi-mac-header.cc
     model/wifi-mac-queue-container.cc
@@ -267,7 +266,6 @@ set(header_files
     model/wifi-default-ack-manager.h
     model/wifi-default-assoc-manager.h
     model/wifi-default-protection-manager.h
-    model/wifi-information-element-vector.h
     model/wifi-information-element.h
     model/wifi-mac-header.h
     model/wifi-mac-queue-container.h
