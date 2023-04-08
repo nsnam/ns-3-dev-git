@@ -1210,7 +1210,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         test_files = ["scratch/main.cc",
                       "scratch/empty.cc",
                       "scratch/subdir1/main.cc",
-                      "scratch/subdir2/main.cc"]
+                      "scratch/subdir2/main.cc",
+                      "scratch/main.test.dots.in.name.cc"]
         backup_files = ["scratch/.main.cc"]  # hidden files should be ignored
 
         # Create test scratch files
@@ -1267,7 +1268,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                                    )[0]
 
             os.remove(os.path.join(executable_absolute_path, executable_name))
-            if path not in ["scratch/main.cc", "scratch/empty.cc"]:
+            if not os.listdir(os.path.dirname(path)):
                 os.rmdir(os.path.dirname(source_absolute_path))
 
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\"")

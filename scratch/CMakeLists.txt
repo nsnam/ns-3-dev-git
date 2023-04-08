@@ -30,7 +30,7 @@ function(create_scratch source_files)
   string(REPLACE "/" "_" scratch_dirname "${scratch_dirname}")
 
   # Get source name
-  get_filename_component(scratch_name ${scratch_src} NAME_WE)
+  get_filename_component(scratch_name ${scratch_src} NAME_WLE)
 
   set(target_prefix scratch_)
   if(scratch_dirname)
