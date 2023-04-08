@@ -77,6 +77,8 @@ class SpectrumWifiPhy : public WifiPhy
     std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
     WifiSpectrumBandInfo GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
     FrequencyRange GetCurrentFrequencyRange() const override;
+    WifiSpectrumBandFrequencies ConvertIndicesToFrequencies(
+        const WifiSpectrumBandIndices& indices) const override;
 
     /**
      * Attach a SpectrumChannel to use for a given frequency range.
@@ -183,6 +185,9 @@ class SpectrumWifiPhy : public WifiPhy
                                        //!< reasons)
 
   private:
+    WifiSpectrumBandFrequencies ConvertIndicesForInterface(const WifiSpectrumBandIndices& indices,
+                                                           const FrequencyRange& freqRange) const;
+
     /**
      * Perform run-time spectrum model change
      */

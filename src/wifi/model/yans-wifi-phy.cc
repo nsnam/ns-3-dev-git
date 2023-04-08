@@ -118,4 +118,10 @@ YansWifiPhy::GetCurrentFrequencyRange() const
     return WHOLE_WIFI_SPECTRUM;
 }
 
+WifiSpectrumBandFrequencies
+YansWifiPhy::ConvertIndicesToFrequencies(const WifiSpectrumBandIndices& /*indices*/) const
+{
+    return {0, 0};
+}
+
 } // namespace ns3

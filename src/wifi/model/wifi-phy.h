@@ -1054,6 +1054,15 @@ class WifiPhy : public Object
     void NotifyChannelAccessRequested();
 
     /**
+     * This is a helper function to convert start and stop indices to start and stop frequencies.
+     *
+     * \param indices the start/stop indices to convert
+     * \return the converted frequencies
+     */
+    virtual WifiSpectrumBandFrequencies ConvertIndicesToFrequencies(
+        const WifiSpectrumBandIndices& indices) const = 0;
+
+    /**
      * Add the PHY entity to the map of __implemented__ PHY entities for the
      * given modulation class.
      * Through this method, child classes can add their own PHY entities in

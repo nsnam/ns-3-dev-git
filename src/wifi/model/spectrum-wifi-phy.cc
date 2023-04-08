@@ -586,27 +586,50 @@ SpectrumWifiPhy::GetBandForInterface(uint16_t bandWidth,
                                      FrequencyRange freqRange,
                                      uint16_t channelWidth)
 {
-    uint32_t subcarrierSpacing = GetSubcarrierSpacing();
-    size_t numBandsInChannel = static_cast<size_t>(channelWidth * 1e6 / subcarrierSpacing);
-    size_t numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
+    auto subcarrierSpacing = GetSubcarrierSpacing();
+    auto numBandsInChannel = static_cast<size_t>(channelWidth * 1e6 / subcarrierSpacing);
+    auto numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
     if (numBandsInBand % 2 == 0)
     {
         numBandsInChannel += 1; // symmetry around center frequency
     }
-    size_t totalNumBands =
-        m_spectrumPhyInterfaces.at(freqRange)->GetRxSpectrumModel()->GetNumBands();
+    auto rxSpectrumModel = m_spectrumPhyInterfaces.at(freqRange)->GetRxSpectrumModel();
+    size_t totalNumBands = rxSpectrumModel->GetNumBands();
     NS_ASSERT_MSG((numBandsInChannel % 2 == 1) && (totalNumBands % 2 == 1),
                   "Should have odd number of bands");
     NS_ASSERT_MSG((bandIndex * bandWidth) < channelWidth, "Band index is out of bound");
     NS_ASSERT(totalNumBands >= numBandsInChannel);
     auto startIndex = ((totalNumBands - numBandsInChannel) / 2) + (bandIndex * numBandsInBand);
     auto stopIndex = startIndex + numBandsInBand - 1;
+    auto frequencies = ConvertIndicesForInterface({startIndex, stopIndex}, freqRange);
+    NS_ASSERT(frequencies.first >= (freqRange.minFrequency * 1e6));
+    NS_ASSERT(frequencies.second <= (freqRange.maxFrequency * 1e6));
+    NS_ASSERT((frequencies.second - frequencies.first) == (bandWidth * 1e6));
     if (startIndex >= totalNumBands / 2)
     {
         // step past DC
         startIndex += 1;
     }
-    return {{startIndex, stopIndex}, {0, 0}};
+    return {{startIndex, stopIndex}, frequencies};
+}
+
+WifiSpectrumBandFrequencies
+SpectrumWifiPhy::ConvertIndicesToFrequencies(const WifiSpectrumBandIndices& indices) const
+{
+    return ConvertIndicesForInterface(indices, GetCurrentFrequencyRange());
+}
+
+WifiSpectrumBandFrequencies
+SpectrumWifiPhy::ConvertIndicesForInterface(const WifiSpectrumBandIndices& indices,
+                                            const FrequencyRange& freqRange) const
+{
+    auto rxSpectrumModel = m_spectrumPhyInterfaces.at(freqRange)->GetRxSpectrumModel();
+    auto startGuardBand = rxSpectrumModel->Begin();
+    auto startChannel = std::next(startGuardBand, indices.first);
+    auto endChannel = std::next(startGuardBand, indices.second + 1);
+    auto lowFreq = static_cast<uint64_t>(startChannel->fc);
+    auto highFreq = static_cast<uint64_t>(endChannel->fc);
+    return {lowFreq, highFreq};
 }
 
 std::tuple<double, double, double>

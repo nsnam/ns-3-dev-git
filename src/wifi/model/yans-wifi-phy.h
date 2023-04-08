@@ -63,6 +63,8 @@ class YansWifiPhy : public WifiPhy
     std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
     WifiSpectrumBandInfo GetBand(uint16_t bandWidth, uint8_t bandIndex = 0) override;
     FrequencyRange GetCurrentFrequencyRange() const override;
+    WifiSpectrumBandFrequencies ConvertIndicesToFrequencies(
+        const WifiSpectrumBandIndices& indices) const override;
 
     /**
      * Set the YansWifiChannel this YansWifiPhy is to be connected to.
