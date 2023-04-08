@@ -127,7 +127,13 @@ PeerLinkOpenStart::Deserialize(Buffer::Iterator start)
 
     m_capability = i.ReadLsbtohU16();
     i = m_rates.Deserialize(i);
-    i = WifiInformationElement::DeserializeIfPresent(m_extendedRates, i);
+    m_extendedRates.emplace();
+    auto tmp = m_extendedRates->DeserializeIfPresent(i);
+    if (tmp.GetDistanceFrom(i) == 0)
+    {
+        m_extendedRates.reset();
+    }
+    i = tmp;
     uint8_t id = i.ReadU8();
     uint8_t length = i.ReadU8();
     m_meshId.DeserializeInformationField(i, length);
@@ -334,7 +340,13 @@ PeerLinkConfirmStart::Deserialize(Buffer::Iterator start)
     m_capability = i.ReadLsbtohU16();
     m_aid = i.ReadLsbtohU16();
     i = m_rates.Deserialize(i);
-    i = WifiInformationElement::DeserializeIfPresent(m_extendedRates, i);
+    m_extendedRates.emplace();
+    auto tmp = m_extendedRates->DeserializeIfPresent(i);
+    if (tmp.GetDistanceFrom(i) == 0)
+    {
+        m_extendedRates.reset();
+    }
+    i = tmp;
     uint8_t id = i.ReadU8();
     uint8_t length = i.ReadU8();
     m_config.DeserializeInformationField(i, length);
