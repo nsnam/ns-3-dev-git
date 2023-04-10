@@ -115,7 +115,7 @@ WifiSpectrumPhyInterface::SetRxSpectrumModel(uint16_t centerFrequency,
     NS_LOG_FUNCTION(this << centerFrequency << channelWidth << bandBandwidth << guardBandwidth);
     m_centerFrequency = centerFrequency;
     m_channelWidth = channelWidth;
-    m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel(centerFrequency,
+    m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel({centerFrequency},
                                                                   channelWidth,
                                                                   bandBandwidth,
                                                                   guardBandwidth);

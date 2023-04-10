@@ -57,15 +57,15 @@ class WifiSpectrumValueHelper
      * +/- the guard bands (i.e. the model will span (channelWidth +
      * 2 * guardBandwidth) MHz of bandwidth).
      *
-     * \param centerFrequency center frequency (MHz)
-     * \param channelWidth channel width (MHz)
+     * \param centerFrequencies center frequency (MHz) per segment
+     * \param channelWidth total allocated channel width (MHz) over all segments
      * \param carrierSpacing carrier spacing (Hz)
      * \param guardBandwidth width of the guard band (MHz)
      *
      * \return the static SpectrumModel instance corresponding to the
      * given carrier frequency and channel width configuration.
      */
-    static Ptr<SpectrumModel> GetSpectrumModel(uint16_t centerFrequency,
+    static Ptr<SpectrumModel> GetSpectrumModel(const std::vector<uint16_t>& centerFrequencies,
                                                ChannelWidthMhz channelWidth,
                                                uint32_t carrierSpacing,
                                                ChannelWidthMhz guardBandwidth);
