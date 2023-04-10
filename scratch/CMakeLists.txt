@@ -30,7 +30,17 @@ function(create_scratch source_files)
   string(REPLACE "/" "_" scratch_dirname "${scratch_dirname}")
 
   # Get source name
-  get_filename_component(scratch_name ${scratch_src} NAME_WLE)
+  if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14.0")
+    get_filename_component(scratch_name ${scratch_src} NAME_WLE)
+  else()
+    get_filename_component(scratch_name ${scratch_src} NAME)
+    string(FIND "${scratch_name}" "." ext_position REVERSE)
+    if(${ext_position} EQUAL -1)
+      message(FATAL_ERROR "Source file has no extension: ${scratch_src}")
+    else()
+      string(SUBSTRING "${scratch_name}" 0 ${ext_position} scratch_name)
+    endif()
+  endif()
 
   set(target_prefix scratch_)
   if(scratch_dirname)

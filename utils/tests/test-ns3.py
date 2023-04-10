@@ -1254,6 +1254,25 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             else:
                 self.assertEqual(return_code, 1)
 
+        # Now test them in CMake 3.10
+        run_ns3("clean")
+        with DockerContainerManager(self, "ubuntu:18.04") as container:
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 cmake g++-8 ninja-build")
+            try:
+                container.execute(
+                    "./ns3 configure --enable-modules=core,network,internet -- -DCMAKE_CXX_COMPILER=/usr/bin/g++-8")
+            except DockerException as e:
+                self.fail()
+            for path in test_files:
+                path = path.replace(".cc", "")
+                try:
+                    container.execute(f"./ns3 run {path}")
+                except DockerException as e:
+                    if "main" in path:
+                        self.fail()
+        run_ns3("clean")
+
         # Delete the test files and reconfigure to clean them up
         for path in test_files + backup_files:
             source_absolute_path = os.path.join(ns3_path, path)
