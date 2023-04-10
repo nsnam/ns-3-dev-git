@@ -164,7 +164,6 @@ DsrRouteCache::DsrRouteCache()
      */
     m_ntimer.SetDelay(m_delay);
     m_ntimer.SetFunction(&DsrRouteCache::PurgeMac, this);
-    m_txErrorCallback = MakeCallback(&DsrRouteCache::ProcessTxError, this);
 }
 
 DsrRouteCache::~DsrRouteCache()

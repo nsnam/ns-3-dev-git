@@ -579,8 +579,6 @@ DsrRouting::DoDispose()
                 Ptr<AdhocWifiMac> adhoc = mac->GetObject<AdhocWifiMac>();
                 if (adhoc)
                 {
-                    adhoc->TraceDisconnectWithoutContext("TxErrHeader",
-                                                         m_routeCache->GetTxErrorCallback());
                     m_routeCache->DelArpCache(m_ipv4->GetInterface(i)->GetArpCache());
                 }
             }
