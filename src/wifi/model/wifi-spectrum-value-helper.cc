@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE("WifiSpectrumValueHelper");
 ///< Wifi Spectrum Model structure
 struct WifiSpectrumModelId
 {
-    uint32_t m_centerFrequency;       ///< center frequency (in MHz)
+    uint16_t m_centerFrequency;       ///< center frequency (in MHz)
     ChannelWidthMhz m_channelWidth;   ///< channel width (in MHz)
     uint32_t m_carrierSpacing;        ///< carrier spacing (in Hz)
     ChannelWidthMhz m_guardBandwidth; ///< guard band width (in MHz)
@@ -69,7 +69,7 @@ static std::map<WifiSpectrumModelId, Ptr<SpectrumModel>>
     g_wifiSpectrumModelMap; ///< static initializer for the class
 
 Ptr<SpectrumModel>
-WifiSpectrumValueHelper::GetSpectrumModel(uint32_t centerFrequency,
+WifiSpectrumValueHelper::GetSpectrumModel(uint16_t centerFrequency,
                                           ChannelWidthMhz channelWidth,
                                           uint32_t carrierSpacing,
                                           ChannelWidthMhz guardBandwidth)
@@ -124,7 +124,7 @@ WifiSpectrumValueHelper::GetSpectrumModel(uint32_t centerFrequency,
 
 // Power allocated to 71 center subbands out of 135 total subbands in the band
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity(uint32_t centerFrequency,
+WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity(uint16_t centerFrequency,
                                                           double txPowerW,
                                                           ChannelWidthMhz guardBandwidth)
 {
@@ -151,7 +151,7 @@ WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity(uint32_t centerFrequen
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(uint32_t centerFrequency,
+WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(uint16_t centerFrequency,
                                                           ChannelWidthMhz channelWidth,
                                                           double txPowerW,
                                                           ChannelWidthMhz guardBandwidth,
@@ -223,7 +223,7 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(uint32_t centerFrequen
 
 Ptr<SpectrumValue>
 WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
-    uint32_t centerFrequency,
+    uint16_t centerFrequency,
     ChannelWidthMhz channelWidth,
     double txPowerW,
     ChannelWidthMhz guardBandwidth,
@@ -298,7 +298,7 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(uint32_t centerFrequency,
+WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(uint16_t centerFrequency,
                                                             ChannelWidthMhz channelWidth,
                                                             double txPowerW,
                                                             ChannelWidthMhz guardBandwidth,
@@ -364,7 +364,7 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(uint32_t centerFrequ
 
 Ptr<SpectrumValue>
 WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
-    uint32_t centerFrequency,
+    uint16_t centerFrequency,
     ChannelWidthMhz channelWidth,
     double txPowerW,
     ChannelWidthMhz guardBandwidth,
@@ -497,7 +497,7 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(uint32_t centerFrequency,
+WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(uint16_t centerFrequency,
                                                               ChannelWidthMhz channelWidth,
                                                               double txPowerW,
                                                               ChannelWidthMhz guardBandwidth,
@@ -530,7 +530,7 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(uint32_t centerFre
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity(uint32_t centerFrequency,
+WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity(uint16_t centerFrequency,
                                                          ChannelWidthMhz channelWidth,
                                                          uint32_t carrierSpacing,
                                                          double noiseFigure,

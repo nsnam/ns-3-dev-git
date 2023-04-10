@@ -63,7 +63,7 @@ class WifiSpectrumValueHelper
      * \return the static SpectrumModel instance corresponding to the
      * given carrier frequency and channel width configuration.
      */
-    static Ptr<SpectrumModel> GetSpectrumModel(uint32_t centerFrequency,
+    static Ptr<SpectrumModel> GetSpectrumModel(uint16_t centerFrequency,
                                                ChannelWidthMhz channelWidth,
                                                uint32_t carrierSpacing,
                                                ChannelWidthMhz guardBandwidth);
@@ -82,7 +82,7 @@ class WifiSpectrumValueHelper
      * \returns a pointer to a newly allocated SpectrumValue representing the DSSS Transmit Power
      * Spectral Density in W/Hz
      */
-    static Ptr<SpectrumValue> CreateDsssTxPowerSpectralDensity(uint32_t centerFrequency,
+    static Ptr<SpectrumValue> CreateDsssTxPowerSpectralDensity(uint16_t centerFrequency,
                                                                double txPowerW,
                                                                ChannelWidthMhz guardBandwidth);
 
@@ -102,7 +102,7 @@ class WifiSpectrumValueHelper
      * \return a pointer to a newly allocated SpectrumValue representing the OFDM Transmit Power
      * Spectral Density in W/Hz for each Band
      */
-    static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity(uint32_t centerFrequency,
+    static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity(uint16_t centerFrequency,
                                                                ChannelWidthMhz channelWidth,
                                                                double txPowerW,
                                                                ChannelWidthMhz guardBandwidth,
@@ -127,7 +127,7 @@ class WifiSpectrumValueHelper
      * Transmit Power Spectral Density in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateDuplicated20MhzTxPowerSpectralDensity(
-        uint32_t centerFrequency,
+        uint16_t centerFrequency,
         ChannelWidthMhz channelWidth,
         double txPowerW,
         ChannelWidthMhz guardBandwidth,
@@ -152,7 +152,7 @@ class WifiSpectrumValueHelper
      * \return a pointer to a newly allocated SpectrumValue representing the HT OFDM Transmit Power
      * Spectral Density in W/Hz for each Band
      */
-    static Ptr<SpectrumValue> CreateHtOfdmTxPowerSpectralDensity(uint32_t centerFrequency,
+    static Ptr<SpectrumValue> CreateHtOfdmTxPowerSpectralDensity(uint16_t centerFrequency,
                                                                  ChannelWidthMhz channelWidth,
                                                                  double txPowerW,
                                                                  ChannelWidthMhz guardBandwidth,
@@ -178,7 +178,7 @@ class WifiSpectrumValueHelper
      * Spectral Density in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity(
-        uint32_t centerFrequency,
+        uint16_t centerFrequency,
         ChannelWidthMhz channelWidth,
         double txPowerW,
         ChannelWidthMhz guardBandwidth,
@@ -201,7 +201,7 @@ class WifiSpectrumValueHelper
      * Spectral Density on the RU used by the STA in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateHeMuOfdmTxPowerSpectralDensity(
-        uint32_t centerFrequency,
+        uint16_t centerFrequency,
         ChannelWidthMhz channelWidth,
         double txPowerW,
         ChannelWidthMhz guardBandwidth,
@@ -218,7 +218,7 @@ class WifiSpectrumValueHelper
      * \return a pointer to a newly allocated SpectrumValue representing the noise Power Spectral
      * Density in W/Hz for each Band
      */
-    static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity(uint32_t centerFrequency,
+    static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity(uint16_t centerFrequency,
                                                               ChannelWidthMhz channelWidth,
                                                               uint32_t carrierSpacing,
                                                               double noiseFigure,

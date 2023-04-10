@@ -107,7 +107,7 @@ WifiSpectrumPhyInterface::SetChannel(const Ptr<SpectrumChannel> c)
 }
 
 void
-WifiSpectrumPhyInterface::SetRxSpectrumModel(uint32_t centerFrequency,
+WifiSpectrumPhyInterface::SetRxSpectrumModel(uint16_t centerFrequency,
                                              ChannelWidthMhz channelWidth,
                                              uint32_t bandBandwidth,
                                              ChannelWidthMhz guardBandwidth)

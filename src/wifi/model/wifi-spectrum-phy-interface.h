@@ -121,7 +121,7 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
      * \param bandBandwidth the width of each band in Hz
      * \param guardBandwidth the width of the guard band in MHz
      */
-    void SetRxSpectrumModel(uint32_t centerFrequency,
+    void SetRxSpectrumModel(uint16_t centerFrequency,
                             ChannelWidthMhz channelWidth,
                             uint32_t bandBandwidth,
                             ChannelWidthMhz guardBandwidth);
