@@ -223,7 +223,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
 
     case WIFI_STANDARD_80211ax:
         NS_ASSERT((m_band != WIFI_PHY_BAND_2_4GHZ) ||
-                  (m_channelWidth != 160)); // not enough space in 2.4 GHz bands
+                  (m_channelWidth < 80)); // not enough space in 2.4 GHz bands
         NS_ASSERT(m_channelWidth == 20 || m_channelWidth == 40 || m_channelWidth == 80 ||
                   m_channelWidth == 160);
         m_actualSpectrum =
@@ -837,43 +837,6 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                 TestCase::Duration::QUICK);
 
     // ============================================================================================
-    // 11ax 80MHz @ 2.4GHz
-    NS_LOG_FUNCTION("Check slopes for 11ax 80MHz @ 2.4GHz");
-    maskSlopes = {
-        std::make_pair(0, -45.000),    // Outer band left (start)
-        std::make_pair(511, -28.033),  // Outer band left (stop)
-        std::make_pair(512, -28.000),  // Middle band left (start)
-        std::make_pair(1017, -20.016), // Middle band left (stop)
-        std::make_pair(1018, -20.0),   // Flat junction band left (start)
-        std::make_pair(1022, -20.0),   // Flat junction band left (stop)
-        std::make_pair(1023, -20.0),   // Inner band left (start)
-        std::make_pair(1035, -1.538),  // Inner band left (stop)
-        std::make_pair(1036, 0.0),     // allocated band left (start)
-        std::make_pair(1533, 0.0),     // allocated band left (stop)
-        std::make_pair(1534, -20.0),   // DC band (start)
-        std::make_pair(1538, -20.0),   // DC band (stop)
-        std::make_pair(1539, 0.0),     // allocated band right (start)
-        std::make_pair(2036, 0.0),     // allocated band right (stop)
-        std::make_pair(2037, -1.538),  // Inner band right (start)
-        std::make_pair(2049, -20.0),   // Inner band right (stop)
-        std::make_pair(2050, -20.0),   // Flat junction band right (start)
-        std::make_pair(2054, -20.0),   // Flat junction band right (stop)
-        std::make_pair(2055, -20.016), // Middle band right (start)
-        std::make_pair(2560, -28.000), // Middle band right (stop)
-        std::make_pair(2561, -28.033), // Outer band right (start)
-        std::make_pair(3072, -45.000), // Outer band right (stop)
-    };
-
-    AddTestCase(new WifiOfdmMaskSlopesTestCase("11ax_2.4GHz 80MHz",
-                                               WIFI_STANDARD_80211ax,
-                                               WIFI_PHY_BAND_2_4GHZ,
-                                               80,
-                                               maskSlopes,
-                                               tol,
-                                               prec),
-                TestCase::Duration::QUICK);
-
-    // ============================================================================================
     // 11ax 80MHz @ 5GHz
     NS_LOG_FUNCTION("Check slopes for 11ax 80MHz @ 5GHz");
     maskSlopes = {
@@ -909,9 +872,6 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                                                tol,
                                                prec),
                 TestCase::Duration::QUICK);
-
-    // ============================================================================================
-    // 11ax 160MHz @ 2.4GHz -> not enough space so skip
 
     // ============================================================================================
     // 11ax 160MHz @ 5GHz
