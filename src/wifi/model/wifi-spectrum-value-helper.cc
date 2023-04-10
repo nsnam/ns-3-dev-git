@@ -27,6 +27,7 @@
 #include "ns3/fatal-error.h"
 #include "ns3/log.h"
 
+#include <algorithm>
 #include <cmath>
 #include <map>
 #include <sstream>
@@ -90,22 +91,32 @@ WifiSpectrumValueHelper::GetSpectrumModel(const std::vector<uint16_t>& centerFre
                                           uint32_t carrierSpacing,
                                           ChannelWidthMhz guardBandwidth)
 {
-    NS_ASSERT_MSG(centerFrequencies.size() == 1,
-                  "There is no support for HE OFDM PSD for non-contiguous channels");
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << carrierSpacing << guardBandwidth);
+    NS_ASSERT_MSG(centerFrequencies.size() <= 2,
+                  "Spectrum model does not support more than 2 segments");
+    if (centerFrequencies.size() != 1)
+    {
+        NS_ASSERT_MSG(centerFrequencies.front() != centerFrequencies.back(),
+                      "Center frequency of each segment shall be different");
+    }
     Ptr<SpectrumModel> ret;
     WifiSpectrumModelId key{centerFrequencies, channelWidth, carrierSpacing, guardBandwidth};
-    auto it = g_wifiSpectrumModelMap.find(key);
-    if (it != g_wifiSpectrumModelMap.end())
+    if (const auto it = g_wifiSpectrumModelMap.find(key); it != g_wifiSpectrumModelMap.cend())
     {
         ret = it->second;
     }
     else
     {
         Bands bands;
-        double centerFrequencyHz = centerFrequencies.front() * 1e6;
-        double bandwidth = (channelWidth + (2.0 * guardBandwidth)) * 1e6;
+        const auto [minCenterFrequency, maxCenterFrequency] =
+            std::minmax_element(centerFrequencies.cbegin(), centerFrequencies.cend());
+        const auto separationWidth =
+            (minCenterFrequency == maxCenterFrequency)
+                ? 0
+                : (*maxCenterFrequency - *minCenterFrequency - (channelWidth / 2));
+        NS_ASSERT(separationWidth == 0 || centerFrequencies.size() == 2);
+        double bandwidth = (channelWidth + (2 * guardBandwidth) + separationWidth) * 1e6;
         // For OFDM, the center subcarrier is null (at center frequency)
         auto numBands = static_cast<uint32_t>((bandwidth / carrierSpacing) + 0.5);
         NS_ASSERT(numBands > 0);
@@ -117,10 +128,16 @@ WifiSpectrumValueHelper::GetSpectrumModel(const std::vector<uint16_t>& centerFre
         }
         NS_ASSERT_MSG(numBands % 2 == 1, "Number of bands should be odd");
         NS_LOG_DEBUG("Num bands " << numBands << " band bandwidth " << carrierSpacing);
-        // lay down numBands/2 bands symmetrically around center frequency
-        // and place an additional band at center frequency
-        double startingFrequencyHz =
-            centerFrequencyHz - (numBands / 2 * carrierSpacing) - carrierSpacing / 2;
+
+        // The lowest frequency is obtained from the minimum center frequency among the segment(s).
+        // Then, we subtract half the channel width to retrieve the starting frequency of the
+        // operating channel. If the channel is made of 2 segments, since the channel width is the
+        // total width, only a quarter of the channel width has to be subtracted. Finally, we
+        // remove the guard band width to get the center frequency of the first band and half the
+        // carrier spacing to get the effective starting frequency of the first band.
+        const auto startingFrequencyHz = *minCenterFrequency * 1e6 -
+                                         ((channelWidth * 1e6) / (2 * centerFrequencies.size())) -
+                                         (guardBandwidth * 1e6) - (carrierSpacing / 2);
         for (size_t i = 0; i < numBands; i++)
         {
             BandInfo info;
@@ -303,7 +320,7 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
         (2e6 / carrierSpacing) +
         0.5); // size in number of subcarriers of the 0dBr<->20dBr slope (2MHz for HT/VHT)
     WifiSpectrumBandIndices maskBand(0, nAllocatedBands + nGuardBands);
-    uint32_t puncturedSlopeWidth =
+    const auto puncturedSlopeWidth =
         static_cast<uint32_t>((500e3 / carrierSpacing) +
                               0.5); // size in number of subcarriers of the punctured slope band
 
