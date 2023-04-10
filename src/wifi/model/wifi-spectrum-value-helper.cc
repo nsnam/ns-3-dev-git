@@ -218,7 +218,7 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(uint16_t centerFrequen
 
 Ptr<SpectrumValue>
 WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
-    uint16_t centerFrequency,
+    const std::vector<uint16_t>& centerFrequencies,
     ChannelWidthMhz channelWidth,
     double txPowerW,
     ChannelWidthMhz guardBandwidth,
@@ -227,11 +227,14 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
     double lowestPointDbr,
     const std::vector<bool>& puncturedSubchannels)
 {
-    NS_LOG_FUNCTION(centerFrequency << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr
-                                    << minOuterBandDbr << lowestPointDbr);
+    NS_ASSERT_MSG(centerFrequencies.size() == 1,
+                  "There is no support for HE OFDM PSD for non-contiguous channels");
+    NS_LOG_FUNCTION(centerFrequencies.front()
+                    << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr
+                    << minOuterBandDbr << lowestPointDbr);
     uint32_t carrierSpacing = 312500;
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
-        GetSpectrumModel(centerFrequency, channelWidth, carrierSpacing, guardBandwidth));
+        GetSpectrumModel(centerFrequencies.front(), channelWidth, carrierSpacing, guardBandwidth));
     auto nGuardBands = static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / carrierSpacing) + 0.5);
     auto nAllocatedBands = static_cast<uint32_t>(((channelWidth * 1e6) / carrierSpacing) + 0.5);
     NS_ASSERT_MSG(c->GetSpectrumModel()->GetNumBands() == (nAllocatedBands + nGuardBands + 1),
@@ -293,19 +296,23 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(uint16_t centerFrequency,
-                                                            ChannelWidthMhz channelWidth,
-                                                            double txPowerW,
-                                                            ChannelWidthMhz guardBandwidth,
-                                                            double minInnerBandDbr,
-                                                            double minOuterBandDbr,
-                                                            double lowestPointDbr)
+WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
+    const std::vector<uint16_t>& centerFrequencies,
+    ChannelWidthMhz channelWidth,
+    double txPowerW,
+    ChannelWidthMhz guardBandwidth,
+    double minInnerBandDbr,
+    double minOuterBandDbr,
+    double lowestPointDbr)
 {
-    NS_LOG_FUNCTION(centerFrequency << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr
-                                    << minOuterBandDbr << lowestPointDbr);
+    NS_ASSERT_MSG(centerFrequencies.size() == 1,
+                  "There is no support for HE OFDM PSD for non-contiguous channels");
+    NS_LOG_FUNCTION(centerFrequencies.front()
+                    << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr
+                    << minOuterBandDbr << lowestPointDbr);
     uint32_t carrierSpacing = 312500;
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
-        GetSpectrumModel(centerFrequency, channelWidth, carrierSpacing, guardBandwidth));
+        GetSpectrumModel(centerFrequencies.front(), channelWidth, carrierSpacing, guardBandwidth));
     auto nGuardBands = static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / carrierSpacing) + 0.5);
     auto nAllocatedBands = static_cast<uint32_t>(((channelWidth * 1e6) / carrierSpacing) + 0.5);
     NS_ASSERT_MSG(c->GetSpectrumModel()->GetNumBands() == (nAllocatedBands + nGuardBands + 1),
@@ -368,11 +375,35 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
     double lowestPointDbr,
     const std::vector<bool>& puncturedSubchannels)
 {
-    NS_LOG_FUNCTION(centerFrequency << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr
-                                    << minOuterBandDbr << lowestPointDbr);
+    return CreateHeOfdmTxPowerSpectralDensity(std::vector<uint16_t>{centerFrequency},
+                                              channelWidth,
+                                              txPowerW,
+                                              guardBandwidth,
+                                              minInnerBandDbr,
+                                              minOuterBandDbr,
+                                              lowestPointDbr,
+                                              puncturedSubchannels);
+}
+
+Ptr<SpectrumValue>
+WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
+    const std::vector<uint16_t>& centerFrequencies,
+    uint16_t channelWidth,
+    double txPowerW,
+    uint16_t guardBandwidth,
+    double minInnerBandDbr,
+    double minOuterBandDbr,
+    double lowestPointDbr,
+    const std::vector<bool>& puncturedSubchannels)
+{
+    NS_ASSERT_MSG(centerFrequencies.size() == 1,
+                  "There is no support for HE OFDM PSD for non-contiguous channels");
+    NS_LOG_FUNCTION(centerFrequencies.front()
+                    << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr
+                    << minOuterBandDbr << lowestPointDbr);
     uint32_t carrierSpacing = 78125;
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
-        GetSpectrumModel(centerFrequency, channelWidth, carrierSpacing, guardBandwidth));
+        GetSpectrumModel(centerFrequencies.front(), channelWidth, carrierSpacing, guardBandwidth));
     auto nGuardBands = static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / carrierSpacing) + 0.5);
     auto nAllocatedBands = static_cast<uint32_t>(((channelWidth * 1e6) / carrierSpacing) + 0.5);
     NS_ASSERT_MSG(c->GetSpectrumModel()->GetNumBands() == (nAllocatedBands + nGuardBands + 1),
@@ -492,17 +523,20 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(uint16_t centerFrequency,
-                                                              ChannelWidthMhz channelWidth,
-                                                              double txPowerW,
-                                                              ChannelWidthMhz guardBandwidth,
-                                                              const WifiSpectrumBandIndices& ru)
+WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
+    const std::vector<uint16_t>& centerFrequencies,
+    ChannelWidthMhz channelWidth,
+    double txPowerW,
+    ChannelWidthMhz guardBandwidth,
+    const WifiSpectrumBandIndices& ru)
 {
-    NS_LOG_FUNCTION(centerFrequency << channelWidth << txPowerW << guardBandwidth << ru.first
-                                    << ru.second);
+    NS_ASSERT_MSG(centerFrequencies.size() == 1,
+                  "There is no support for HE OFDM PSD for non-contiguous channels");
+    NS_LOG_FUNCTION(centerFrequencies.front()
+                    << channelWidth << txPowerW << guardBandwidth << ru.first << ru.second);
     uint32_t carrierSpacing = 78125;
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
-        GetSpectrumModel(centerFrequency, channelWidth, carrierSpacing, guardBandwidth));
+        GetSpectrumModel(centerFrequencies.front(), channelWidth, carrierSpacing, guardBandwidth));
 
     // Build spectrum mask
     auto vit = c->ValuesBegin();

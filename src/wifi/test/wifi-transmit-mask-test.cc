@@ -198,7 +198,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
     case WIFI_STANDARD_80211n:
         NS_ASSERT(m_channelWidth == 20 || m_channelWidth == 40);
         m_actualSpectrum =
-            WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(freq,
+            WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity({freq},
                                                                         m_channelWidth,
                                                                         refTxPowerW,
                                                                         m_channelWidth,
@@ -212,7 +212,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
         NS_ASSERT(m_channelWidth == 20 || m_channelWidth == 40 || m_channelWidth == 80 ||
                   m_channelWidth == 160);
         m_actualSpectrum =
-            WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(freq,
+            WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity({freq},
                                                                         m_channelWidth,
                                                                         refTxPowerW,
                                                                         m_channelWidth,

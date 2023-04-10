@@ -2465,7 +2465,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
     ppduOfdma->SetTxPsdFlag(HePpdu::PSD_HE_PORTION);
     const auto band = m_phy->GetHePhy()->GetRuBandForRx(txVector, staId);
     Ptr<SpectrumValue> rxPsdOfdma =
-        WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(DEFAULT_FREQUENCY,
+        WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity({DEFAULT_FREQUENCY},
                                                                       DEFAULT_CHANNEL_WIDTH,
                                                                       txPowerWatts,
                                                                       DEFAULT_GUARD_WIDTH,

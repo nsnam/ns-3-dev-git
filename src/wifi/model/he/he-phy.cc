@@ -1357,7 +1357,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
             const auto ruWidth = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
             channelWidth = (ruWidth < 20) ? 20 : ruWidth;
             return WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
-                GetCenterFrequenciesForNonHePart(ppdu, staId).front(),
+                GetCenterFrequenciesForNonHePart(ppdu, staId),
                 channelWidth,
                 txPowerW,
                 GetGuardBandwidth(channelWidth),
@@ -1370,7 +1370,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
         {
             const auto band = GetRuBandForTx(txVector, GetStaId(ppdu)).indices;
             return WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
-                centerFrequencies.front(),
+                centerFrequencies,
                 channelWidth,
                 txPowerW,
                 GetGuardBandwidth(channelWidth),
@@ -1381,7 +1381,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
         if (flag == HePpdu::PSD_NON_HE_PORTION)
         {
             return WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
-                centerFrequencies.front(),
+                centerFrequencies,
                 channelWidth,
                 txPowerW,
                 GetGuardBandwidth(channelWidth),
@@ -1393,7 +1393,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
         else
         {
             return WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
-                centerFrequencies.front(),
+                centerFrequencies,
                 channelWidth,
                 txPowerW,
                 GetGuardBandwidth(channelWidth),
@@ -1407,7 +1407,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
     default: {
         NS_ASSERT(puncturedSubchannels.empty());
         return WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
-            centerFrequencies.front(),
+            centerFrequencies,
             channelWidth,
             txPowerW,
             GetGuardBandwidth(channelWidth),

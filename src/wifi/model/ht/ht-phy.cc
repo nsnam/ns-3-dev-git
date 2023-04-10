@@ -469,7 +469,7 @@ HtPhy::GetTxPowerSpectralDensity(double txPowerW, Ptr<const WifiPpdu> ppdu) cons
     NS_LOG_FUNCTION(this << centerFrequencies.front() << channelWidth << txPowerW);
     const auto& txMaskRejectionParams = GetTxMaskRejectionParams();
     Ptr<SpectrumValue> v = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
-        centerFrequencies.front(),
+        centerFrequencies,
         channelWidth,
         txPowerW,
         GetGuardBandwidth(channelWidth),

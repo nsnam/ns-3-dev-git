@@ -377,7 +377,7 @@ OfdmPhy::GetTxPowerSpectralDensity(double txPowerW, Ptr<const WifiPpdu> ppdu) co
     if (txVector.IsNonHtDuplicate())
     {
         v = WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
-            centerFrequencies.front(),
+            centerFrequencies,
             channelWidth,
             txPowerW,
             GetGuardBandwidth(channelWidth),
