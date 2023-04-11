@@ -560,9 +560,12 @@ class MultiLinkElement : public WifiInformationElement
         WifiMacType m_frameType;      //!< type of the frame containing the Multi-Link Element
         uint16_t m_staControl;        //!< STA Control field
         Mac48Address m_staMacAddress; //!< STA MAC address
-        std::unique_ptr<Header> m_staProfile; /**< STA Profile field, containing the frame body of a
-                                                   frame of the same type as the frame containing
-                                                 the Multi-Link Element */
+        std::variant<std::monostate,
+                     std::unique_ptr<MgtAssocRequestHeader>,
+                     std::unique_ptr<MgtReassocRequestHeader>,
+                     std::unique_ptr<MgtAssocResponseHeader>>
+            m_staProfile; /**< STA Profile field, containing the frame body of a frame of the
+                               same type as the frame containing the Multi-Link Element */
     };
 
     /**

@@ -510,21 +510,19 @@ MultiLinkElement::PerStaProfileSubelement::PerStaProfileSubelement(
       m_staMacAddress(perStaProfile.m_staMacAddress)
 {
     // deep copy of the STA Profile field
-    if (perStaProfile.HasAssocRequest())
-    {
-        m_staProfile = std::make_unique<MgtAssocRequestHeader>(
-            *static_cast<MgtAssocRequestHeader*>(perStaProfile.m_staProfile.get()));
-    }
-    else if (perStaProfile.HasReassocRequest())
-    {
-        m_staProfile = std::make_unique<MgtReassocRequestHeader>(
-            *static_cast<MgtReassocRequestHeader*>(perStaProfile.m_staProfile.get()));
-    }
-    else if (perStaProfile.HasAssocResponse())
-    {
-        m_staProfile = std::make_unique<MgtAssocResponseHeader>(
-            *static_cast<MgtAssocResponseHeader*>(perStaProfile.m_staProfile.get()));
-    }
+    auto staProfileCopy = [&](auto&& frame) {
+        using Ptr = std::decay_t<decltype(frame)>;
+        if constexpr (std::is_same_v<Ptr, std::monostate>)
+        {
+            return;
+        }
+        else
+        {
+            using T = std::decay_t<decltype(*frame.get())>;
+            m_staProfile = std::make_unique<T>(*frame.get());
+        }
+    };
+    std::visit(staProfileCopy, perStaProfile.m_staProfile);
 }
 
 MultiLinkElement::PerStaProfileSubelement&
@@ -542,21 +540,19 @@ MultiLinkElement::PerStaProfileSubelement::operator=(const PerStaProfileSubeleme
     m_staMacAddress = perStaProfile.m_staMacAddress;
 
     // deep copy of the STA Profile field
-    if (perStaProfile.HasAssocRequest())
-    {
-        m_staProfile = std::make_unique<MgtAssocRequestHeader>(
-            *static_cast<MgtAssocRequestHeader*>(perStaProfile.m_staProfile.get()));
-    }
-    else if (perStaProfile.HasReassocRequest())
-    {
-        m_staProfile = std::make_unique<MgtReassocRequestHeader>(
-            *static_cast<MgtReassocRequestHeader*>(perStaProfile.m_staProfile.get()));
-    }
-    else if (perStaProfile.HasAssocResponse())
-    {
-        m_staProfile = std::make_unique<MgtAssocResponseHeader>(
-            *static_cast<MgtAssocResponseHeader*>(perStaProfile.m_staProfile.get()));
-    }
+    auto staProfileCopy = [&](auto&& frame) {
+        using Ptr = std::decay_t<decltype(frame)>;
+        if constexpr (std::is_same_v<Ptr, std::monostate>)
+        {
+            return;
+        }
+        else
+        {
+            using T = std::decay_t<decltype(*frame.get())>;
+            m_staProfile = std::make_unique<T>(*frame.get());
+        }
+    };
+    std::visit(staProfileCopy, perStaProfile.m_staProfile);
 
     return *this;
 }
@@ -648,13 +644,15 @@ MultiLinkElement::PerStaProfileSubelement::SetAssocRequest(
 bool
 MultiLinkElement::PerStaProfileSubelement::HasAssocRequest() const
 {
-    return m_staProfile && m_frameType == WIFI_MAC_MGT_ASSOCIATION_REQUEST;
+    return m_frameType == WIFI_MAC_MGT_ASSOCIATION_REQUEST &&
+           std::holds_alternative<std::unique_ptr<MgtAssocRequestHeader>>(m_staProfile);
 }
 
 bool
 MultiLinkElement::PerStaProfileSubelement::HasReassocRequest() const
 {
-    return m_staProfile && m_frameType == WIFI_MAC_MGT_REASSOCIATION_REQUEST;
+    return m_frameType == WIFI_MAC_MGT_REASSOCIATION_REQUEST &&
+           std::holds_alternative<std::unique_ptr<MgtReassocRequestHeader>>(m_staProfile);
 }
 
 AssocReqRefVariant
@@ -662,10 +660,10 @@ MultiLinkElement::PerStaProfileSubelement::GetAssocRequest() const
 {
     if (HasAssocRequest())
     {
-        return *static_cast<MgtAssocRequestHeader*>(m_staProfile.get());
+        return *std::get<std::unique_ptr<MgtAssocRequestHeader>>(m_staProfile);
     }
     NS_ABORT_UNLESS(HasReassocRequest());
-    return *static_cast<MgtReassocRequestHeader*>(m_staProfile.get());
+    return *std::get<std::unique_ptr<MgtReassocRequestHeader>>(m_staProfile);
 }
 
 void
@@ -687,15 +685,16 @@ MultiLinkElement::PerStaProfileSubelement::SetAssocResponse(MgtAssocResponseHead
 bool
 MultiLinkElement::PerStaProfileSubelement::HasAssocResponse() const
 {
-    return m_staProfile && (m_frameType == WIFI_MAC_MGT_ASSOCIATION_RESPONSE ||
-                            m_frameType == WIFI_MAC_MGT_REASSOCIATION_RESPONSE);
+    return (m_frameType == WIFI_MAC_MGT_ASSOCIATION_RESPONSE ||
+            m_frameType == WIFI_MAC_MGT_REASSOCIATION_RESPONSE) &&
+           std::holds_alternative<std::unique_ptr<MgtAssocResponseHeader>>(m_staProfile);
 }
 
 MgtAssocResponseHeader&
 MultiLinkElement::PerStaProfileSubelement::GetAssocResponse() const
 {
     NS_ABORT_IF(!HasAssocResponse());
-    return *static_cast<MgtAssocResponseHeader*>(m_staProfile.get());
+    return *std::get<std::unique_ptr<MgtAssocResponseHeader>>(m_staProfile);
 }
 
 uint8_t
@@ -724,10 +723,18 @@ MultiLinkElement::PerStaProfileSubelement::GetInformationFieldSize() const
 
     ret += GetStaInfoLength();
 
-    if (HasAssocRequest() || HasReassocRequest() || HasAssocResponse())
-    {
-        ret += m_staProfile->GetSerializedSize();
-    }
+    auto staProfileSize = [&](auto&& frame) {
+        using T = std::decay_t<decltype(frame)>;
+        if constexpr (std::is_same_v<T, std::monostate>)
+        {
+            return static_cast<uint32_t>(0);
+        }
+        else
+        {
+            return frame->GetSerializedSize();
+        }
+    };
+    ret += std::visit(staProfileSize, m_staProfile);
 
     return ret;
 }
@@ -743,10 +750,18 @@ MultiLinkElement::PerStaProfileSubelement::SerializeInformationField(Buffer::Ite
         WriteTo(start, m_staMacAddress);
     }
     // TODO add other subfields of the STA Info field
-    if (HasAssocRequest() || HasReassocRequest() || HasAssocResponse())
-    {
-        m_staProfile->Serialize(start);
-    }
+    auto staProfileSerialize = [&](auto&& frame) {
+        using T = std::decay_t<decltype(frame)>;
+        if constexpr (std::is_same_v<T, std::monostate>)
+        {
+            return;
+        }
+        else
+        {
+            frame->Serialize(start);
+        }
+    };
+    std::visit(staProfileSerialize, m_staProfile);
 }
 
 uint16_t
