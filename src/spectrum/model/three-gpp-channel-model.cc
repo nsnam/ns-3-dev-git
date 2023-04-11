@@ -2147,7 +2147,7 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
                     sqrt(kLinear / (1 + kLinear)) * ray /
                         pow(10,
                             channelParams->m_attenuation_dB[0] / 10.0); //(7.5-30) for tau = tau1
-                for (uint16_t nIndex = 1; nIndex < hUsn.GetNumPages(); nIndex++)
+                for (size_t nIndex = 1; nIndex < hUsn.GetNumPages(); nIndex++)
                 {
                     hUsn(uIndex, sIndex, nIndex) *=
                         sqrt(1.0 / (kLinear + 1)); //(7.5-30) for tau = tau2...tauN
@@ -2157,11 +2157,11 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
     }
 
     NS_LOG_DEBUG("Husn (sAntenna, uAntenna):" << sAntenna->GetId() << ", " << uAntenna->GetId());
-    for (uint16_t cIndex = 0; cIndex < hUsn.GetNumPages(); cIndex++)
+    for (size_t cIndex = 0; cIndex < hUsn.GetNumPages(); cIndex++)
     {
-        for (uint16_t rowIdx = 0; rowIdx < hUsn.GetNumRows(); rowIdx++)
+        for (size_t rowIdx = 0; rowIdx < hUsn.GetNumRows(); rowIdx++)
         {
-            for (uint16_t colIdx = 0; colIdx < hUsn.GetNumCols(); colIdx++)
+            for (size_t colIdx = 0; colIdx < hUsn.GetNumCols(); colIdx++)
             {
                 NS_LOG_DEBUG(" " << hUsn(rowIdx, colIdx, cIndex) << ",");
             }
