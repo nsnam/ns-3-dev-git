@@ -184,19 +184,27 @@ class MultiLinkElement : public WifiInformationElement
         PER_STA_PROFILE_SUBELEMENT_ID = 0
     };
 
+    /// Typedef for structure holding a reference to the containing frame
+    using ContainingFrame = std::variant<std::monostate,
+                                         std::reference_wrapper<const MgtAssocRequestHeader>,
+                                         std::reference_wrapper<const MgtReassocRequestHeader>,
+                                         std::reference_wrapper<const MgtAssocResponseHeader>>;
+
     /**
      * Construct a Multi-Link Element with no variant set.
      *
      * \param frameType the type of the frame containing the Multi-Link Element
+     * \param frame the management frame containing this Multi-Link Element
      */
-    MultiLinkElement(WifiMacType frameType);
+    MultiLinkElement(WifiMacType frameType, ContainingFrame frame = {});
     /**
      * Constructor
      *
      * \param variant the Multi-Link element variant (cannot be UNSET)
      * \param frameType the type of the frame containing the Multi-Link Element
+     * \param frame the management frame containing this Multi-Link Element
      */
-    MultiLinkElement(Variant variant, WifiMacType frameType);
+    MultiLinkElement(Variant variant, WifiMacType frameType, ContainingFrame frame = {});
 
     WifiInformationElementId ElementId() const override;
     WifiInformationElementId ElementIdExt() const override;
@@ -399,6 +407,8 @@ class MultiLinkElement : public WifiInformationElement
      * \return the Transition Timeout
      */
     Time GetTransitionTimeout() const;
+
+    mutable ContainingFrame m_containingFrame; //!< reference to the mgt frame containing this MLE
 
     /**
      * \ingroup wifi

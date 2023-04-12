@@ -222,14 +222,15 @@ CommonInfoBasicMle::DecodeEmlsrTransitionDelay(uint8_t value)
 /**
  * MultiLinkElement
  */
-MultiLinkElement::MultiLinkElement(WifiMacType frameType)
-    : m_frameType(frameType),
+MultiLinkElement::MultiLinkElement(WifiMacType frameType, ContainingFrame frame)
+    : m_containingFrame(frame),
+      m_frameType(frameType),
       m_commonInfo(std::in_place_type<std::monostate>) // initialize as UNSET
 {
 }
 
-MultiLinkElement::MultiLinkElement(Variant variant, WifiMacType frameType)
-    : MultiLinkElement(frameType)
+MultiLinkElement::MultiLinkElement(Variant variant, WifiMacType frameType, ContainingFrame frame)
+    : MultiLinkElement(frameType, frame)
 {
     NS_ASSERT(variant != UNSET);
     SetVariant(variant);

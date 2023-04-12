@@ -210,6 +210,11 @@ MgtAssocRequestHeader::Capabilities()
 uint32_t
 MgtAssocRequestHeader::GetSerializedSizeImpl() const
 {
+    if (auto& mle = Get<MultiLinkElement>())
+    {
+        mle->m_containingFrame = *this;
+    }
+
     uint32_t size = 0;
     size += m_capability.GetSerializedSize();
     size += 2; // listen interval
@@ -220,6 +225,11 @@ MgtAssocRequestHeader::GetSerializedSizeImpl() const
 void
 MgtAssocRequestHeader::SerializeImpl(Buffer::Iterator start) const
 {
+    if (auto& mle = Get<MultiLinkElement>())
+    {
+        mle->m_containingFrame = *this;
+    }
+
     Buffer::Iterator i = start;
     i = m_capability.Serialize(i);
     i.WriteHtolsbU16(m_listenInterval);
@@ -297,6 +307,11 @@ MgtReassocRequestHeader::SetCurrentApAddress(Mac48Address currentApAddr)
 uint32_t
 MgtReassocRequestHeader::GetSerializedSizeImpl() const
 {
+    if (auto& mle = Get<MultiLinkElement>())
+    {
+        mle->m_containingFrame = *this;
+    }
+
     uint32_t size = 0;
     size += m_capability.GetSerializedSize();
     size += 2; // listen interval
@@ -315,6 +330,11 @@ MgtReassocRequestHeader::PrintImpl(std::ostream& os) const
 void
 MgtReassocRequestHeader::SerializeImpl(Buffer::Iterator start) const
 {
+    if (auto& mle = Get<MultiLinkElement>())
+    {
+        mle->m_containingFrame = *this;
+    }
+
     Buffer::Iterator i = start;
     i = m_capability.Serialize(i);
     i.WriteHtolsbU16(m_listenInterval);
@@ -400,6 +420,11 @@ MgtAssocResponseHeader::GetAssociationId() const
 uint32_t
 MgtAssocResponseHeader::GetSerializedSizeImpl() const
 {
+    if (auto& mle = Get<MultiLinkElement>())
+    {
+        mle->m_containingFrame = *this;
+    }
+
     uint32_t size = 0;
     size += m_capability.GetSerializedSize();
     size += m_code.GetSerializedSize();
@@ -419,6 +444,11 @@ MgtAssocResponseHeader::PrintImpl(std::ostream& os) const
 void
 MgtAssocResponseHeader::SerializeImpl(Buffer::Iterator start) const
 {
+    if (auto& mle = Get<MultiLinkElement>())
+    {
+        mle->m_containingFrame = *this;
+    }
+
     Buffer::Iterator i = start;
     i = m_capability.Serialize(i);
     i = m_code.Serialize(i);
