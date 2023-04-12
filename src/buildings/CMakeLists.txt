@@ -33,11 +33,12 @@ build_lib(
   LIBRARIES_TO_LINK ${libmobility}
                     ${libpropagation}
   TEST_SOURCES
-    test/building-position-allocator-test.cc
+    test/buildings-channel-condition-model-test.cc
     test/buildings-helper-test.cc
     test/buildings-pathloss-test.cc
+    test/buildings-penetration-loss-pathloss-test.cc
+    test/building-position-allocator-test.cc
     test/buildings-shadowing-test.cc
-    test/buildings-channel-condition-model-test.cc
     test/outdoor-random-walk-test.cc
     test/three-gpp-v2v-channel-condition-model-test.cc
 )
