@@ -1189,7 +1189,7 @@ HePpdu::HeSigHeader::Deserialize(Buffer::Iterator start)
         }
         uint16_t nBytes = DeserializeSigBContentChannel(i, 1, userBlockFieldsContentChannel1);
         i.Next(nBytes);
-        m_contentChannels.push_back({});
+        m_contentChannels.emplace_back();
         for (auto userField : userBlockFieldsContentChannel1)
         {
             uint16_t staId = (userField & 0x07ff);
@@ -1201,7 +1201,7 @@ HePpdu::HeSigHeader::Deserialize(Buffer::Iterator start)
         {
             nBytes = DeserializeSigBContentChannel(i, 2, userBlockFieldsContentChannel2);
             i.Next(nBytes);
-            m_contentChannels.push_back({});
+            m_contentChannels.emplace_back();
             for (auto userField : userBlockFieldsContentChannel2)
             {
                 uint16_t staId = (userField & 0x07ff);
