@@ -44,8 +44,8 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import List, Tuple
 
+from typing import List, Tuple
 
 ###########################################################
 # PARAMETERS
@@ -327,23 +327,34 @@ def check_style(path: str,
 
     if enable_check_formatting:
         check_formatting_successful = check_formatting(
-            files_to_check_formatting, fix, n_jobs)
+            files_to_check_formatting,
+            fix,
+            n_jobs,
+        )
 
         print('')
 
     if enable_check_whitespace:
         check_whitespace_successful = check_trailing_whitespace(
-            files_to_check_whitespace, fix, n_jobs)
+            files_to_check_whitespace,
+            fix,
+            n_jobs,
+        )
 
         print('')
 
     if enable_check_tabs:
         check_tabs_successful = check_tabs(
-            files_to_check_tabs, fix, n_jobs)
+            files_to_check_tabs,
+            fix,
+            n_jobs,
+        )
 
-    if check_formatting_successful and \
-       check_whitespace_successful and \
-       check_tabs_successful:
+    if all([
+        check_formatting_successful,
+        check_whitespace_successful,
+        check_tabs_successful,
+    ]):
         sys.exit(0)
     else:
         sys.exit(1)
@@ -352,7 +363,10 @@ def check_style(path: str,
 ###########################################################
 # CHECK FORMATTING
 ###########################################################
-def check_formatting(filenames: List[str], fix: bool, n_jobs: int) -> bool:
+def check_formatting(filenames: List[str],
+                     fix: bool,
+                     n_jobs: int,
+                     ) -> bool:
     """
     Check / fix the coding style of a list of files with clang-format.
 
@@ -454,7 +468,10 @@ def check_formatting_file(filename: str,
 ###########################################################
 # CHECK TRAILING WHITESPACE
 ###########################################################
-def check_trailing_whitespace(filenames: List[str], fix: bool, n_jobs: int) -> bool:
+def check_trailing_whitespace(filenames: List[str],
+                              fix: bool,
+                              n_jobs: int,
+                              ) -> bool:
     """
     Check / fix trailing whitespace in a list of files.
 
@@ -504,7 +521,9 @@ def check_trailing_whitespace(filenames: List[str], fix: bool, n_jobs: int) -> b
         return fix
 
 
-def check_trailing_whitespace_file(filename: str, fix: bool) -> Tuple[str, bool]:
+def check_trailing_whitespace_file(filename: str,
+                                   fix: bool,
+                                   ) -> Tuple[str, bool]:
     """
     Check / fix trailing whitespace in a file.
 
@@ -543,7 +562,10 @@ def check_trailing_whitespace_file(filename: str, fix: bool) -> Tuple[str, bool]
 ###########################################################
 # CHECK TABS
 ###########################################################
-def check_tabs(filenames: List[str], fix: bool, n_jobs: int) -> bool:
+def check_tabs(filenames: List[str],
+               fix: bool,
+               n_jobs: int,
+               ) -> bool:
     """
     Check / fix tabs in a list of files.
 
@@ -592,7 +614,9 @@ def check_tabs(filenames: List[str], fix: bool, n_jobs: int) -> bool:
         return fix
 
 
-def check_tabs_file(filename: str, fix: bool) -> Tuple[str, bool]:
+def check_tabs_file(filename: str,
+                    fix: bool,
+                    ) -> Tuple[str, bool]:
     """
     Check / fix tabs in a file.
 
