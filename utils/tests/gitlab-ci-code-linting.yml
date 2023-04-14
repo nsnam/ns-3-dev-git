@@ -3,17 +3,32 @@
 # Contains jobs to check the ns-3 coding style and perform lint checking.
 
 # Clang-format
-check-style-clang-format:
+.check-style-clang-format:
   stage: .pre
-  image: ubuntu:latest
+  image: ubuntu:rolling
   before_script:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
       python3
-      clang-format-14
+      clang-format-$CLANG_FORMAT_VERSION
   script:
     - python3 utils/check-style-clang-format.py --verbose .
   timeout: 1h
+
+check-style-clang-format-14:
+  extends: .check-style-clang-format
+  variables:
+    CLANG_FORMAT_VERSION: 14
+
+check-style-clang-format-15:
+  extends: .check-style-clang-format
+  variables:
+    CLANG_FORMAT_VERSION: 15
+
+check-style-clang-format-16:
+  extends: .check-style-clang-format
+  variables:
+    CLANG_FORMAT_VERSION: 16
 
 # Clang-tidy
 clang-tidy:
