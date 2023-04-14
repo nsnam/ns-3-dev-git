@@ -396,19 +396,19 @@ def check_formatting(filenames: List[str],
 
     # Output results
     if not files_not_formatted:
-        print('All files are well formatted')
+        print('- All files are well formatted')
         return True
 
     else:
         n_non_formatted_files = len(files_not_formatted)
 
         if fix:
-            print(f'Fixed formatting of the files ({n_non_formatted_files}):')
+            print(f'- Fixed formatting of the files ({n_non_formatted_files}):')
         else:
-            print(f'Detected bad formatting in the files ({n_non_formatted_files}):')
+            print(f'- Detected bad formatting in the files ({n_non_formatted_files}):')
 
         for f in files_not_formatted:
-            print(f'- {f}')
+            print(f'    - {f}')
 
         # Return True if all files were fixed
         return fix
@@ -497,7 +497,7 @@ def check_trailing_whitespace(filenames: List[str],
 
     # Output results
     if not files_with_whitespace:
-        print('No files detected with trailing whitespace')
+        print('- No files detected with trailing whitespace')
         return True
 
     else:
@@ -505,13 +505,13 @@ def check_trailing_whitespace(filenames: List[str],
 
         if fix:
             print(
-                f'Fixed trailing whitespace in the files ({n_files_with_whitespace}):')
+                f'- Fixed trailing whitespace in the files ({n_files_with_whitespace}):')
         else:
             print(
-                f'Detected trailing whitespace in the files ({n_files_with_whitespace}):')
+                f'- Detected trailing whitespace in the files ({n_files_with_whitespace}):')
 
         for f in files_with_whitespace:
-            print(f'- {f}')
+            print(f'    - {f}')
 
         # If all files were fixed, there are no more trailing whitespace
         return fix
@@ -588,7 +588,7 @@ def check_tabs(filenames: List[str],
 
     # Output results
     if not files_with_tabs:
-        print('No files detected with tabs')
+        print('- No files detected with tabs')
         return True
 
     else:
@@ -596,13 +596,13 @@ def check_tabs(filenames: List[str],
 
         if fix:
             print(
-                f'Fixed tabs in the files ({n_files_with_tabs}):')
+                f'- Fixed tabs in the files ({n_files_with_tabs}):')
         else:
             print(
-                f'Detected tabs in the files ({n_files_with_tabs}):')
+                f'- Detected tabs in the files ({n_files_with_tabs}):')
 
         for f in files_with_tabs:
-            print(f'- {f}')
+            print(f'    - {f}')
 
         # If all files were fixed, there are no more trailing whitespace
         return fix
