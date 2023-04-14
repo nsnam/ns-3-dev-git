@@ -306,6 +306,18 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
      */
     Buffer::Iterator Deserialize(Buffer::Iterator i);
     /**
+     * Deserialize entire IE (which may possibly be fragmented into multiple
+     * elements) if it is present. The iterator passed in
+     * must be pointing at the Element ID of an information element. If
+     * the Element ID is not the one that the given class is interested
+     * in then it will return the same iterator.
+     *
+     * \param i an iterator which points to where the IE should be read.
+     *
+     * \return an iterator
+     */
+    Buffer::Iterator DeserializeIfPresent(Buffer::Iterator i);
+    /**
      * Deserialize an entire IE (which may possibly be fragmented into multiple
      * elements) that is optionally present. The iterator passed in
      * must be pointing at the Element ID of an information element. If
@@ -365,18 +377,6 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
     virtual bool operator==(const WifiInformationElement& a) const;
 
   private:
-    /**
-     * Deserialize entire IE (which may possibly be fragmented into multiple
-     * elements) if it is present. The iterator passed in
-     * must be pointing at the Element ID of an information element. If
-     * the Element ID is not the one that the given class is interested
-     * in then it will return the same iterator.
-     *
-     * \param i an iterator which points to where the IE should be read.
-     *
-     * \return an iterator
-     */
-    Buffer::Iterator DeserializeIfPresent(Buffer::Iterator i);
     /**
      * Serialize an IE that needs to be fragmented.
      *

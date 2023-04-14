@@ -277,6 +277,7 @@ set(header_files
     model/wifi-mac-queue.h
     model/wifi-mac-trailer.h
     model/wifi-mac.h
+    model/wifi-mgt-header.h
     model/wifi-mode.h
     model/wifi-mpdu-type.h
     model/wifi-mpdu.h
