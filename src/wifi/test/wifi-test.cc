@@ -1797,7 +1797,7 @@ Bug2831TestCase::RxCallback(std::string context,
     {
         MgtBeaconHeader beacon;
         packet->RemoveHeader(beacon);
-        const auto& htOperation = beacon.GetHtOperation();
+        const auto& htOperation = beacon.Get<HtOperation>();
         if (htOperation.has_value() && htOperation->GetStaChannelWidth() > 0)
         {
             m_countOperationalChannelWidth40++;

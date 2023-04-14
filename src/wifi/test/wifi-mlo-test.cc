@@ -697,8 +697,8 @@ MultiLinkSetupTest::CheckBeacon(Ptr<WifiMpdu> mpdu, uint8_t linkId)
                           "TA of Beacon frame is not the address of the link it is transmitted on");
     MgtBeaconHeader beacon;
     mpdu->GetPacket()->PeekHeader(beacon);
-    const auto& rnr = beacon.GetReducedNeighborReport();
-    const auto& mle = beacon.GetMultiLinkElement();
+    const auto& rnr = beacon.Get<ReducedNeighborReport>();
+    const auto& mle = beacon.Get<MultiLinkElement>();
 
     if (m_apMac->GetNLinks() == 1)
     {
@@ -818,7 +818,7 @@ MultiLinkSetupTest::CheckAssocResponse(Ptr<WifiMpdu> mpdu, uint8_t linkId)
         "TA of Assoc Response frame is not the address of the link it is transmitted on");
     MgtAssocResponseHeader assoc;
     mpdu->GetPacket()->PeekHeader(assoc);
-    const auto& mle = assoc.GetMultiLinkElement();
+    const auto& mle = assoc.Get<MultiLinkElement>();
 
     if (m_apMac->GetNLinks() == 1 || m_staMacs[0]->GetNLinks() == 1)
     {

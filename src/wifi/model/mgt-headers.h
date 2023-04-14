@@ -29,6 +29,7 @@
 #include "ssid.h"
 #include "status-code.h"
 #include "supported-rates.h"
+#include "wifi-mgt-header.h"
 
 #include "ns3/dsss-parameter-set.h"
 #include "ns3/eht-capabilities.h"
@@ -46,6 +47,42 @@
 
 namespace ns3
 {
+
+/// List of Information Elements included in Probe Response frames
+using ProbeResponseElems = std::tuple<Ssid,
+                                      SupportedRates,
+                                      std::optional<DsssParameterSet>,
+                                      std::optional<ErpInformation>,
+                                      std::optional<ExtendedSupportedRatesIE>,
+                                      std::optional<EdcaParameterSet>,
+                                      std::optional<HtCapabilities>,
+                                      std::optional<HtOperation>,
+                                      std::optional<ExtendedCapabilities>,
+                                      std::optional<VhtCapabilities>,
+                                      std::optional<VhtOperation>,
+                                      std::optional<ReducedNeighborReport>,
+                                      std::optional<HeCapabilities>,
+                                      std::optional<HeOperation>,
+                                      std::optional<MuEdcaParameterSet>,
+                                      std::optional<MultiLinkElement>,
+                                      std::optional<EhtCapabilities>,
+                                      std::optional<EhtOperation>>;
+
+/// List of Information Elements included in Association Response frames
+using AssocResponseElems = std::tuple<SupportedRates,
+                                      std::optional<ExtendedSupportedRatesIE>,
+                                      std::optional<EdcaParameterSet>,
+                                      std::optional<HtCapabilities>,
+                                      std::optional<HtOperation>,
+                                      std::optional<ExtendedCapabilities>,
+                                      std::optional<VhtCapabilities>,
+                                      std::optional<VhtOperation>,
+                                      std::optional<HeCapabilities>,
+                                      std::optional<HeOperation>,
+                                      std::optional<MuEdcaParameterSet>,
+                                      std::optional<MultiLinkElement>,
+                                      std::optional<EhtCapabilities>,
+                                      std::optional<EhtOperation>>;
 
 /**
  * \ingroup wifi
@@ -443,11 +480,21 @@ class MgtReassocRequestHeader : public Header
  * \ingroup wifi
  * Implement the header for management frames of type association and reassociation response.
  */
-class MgtAssocResponseHeader : public Header
+class MgtAssocResponseHeader : public WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>
 {
+    friend class WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>;
+
   public:
-    MgtAssocResponseHeader();
-    ~MgtAssocResponseHeader() override;
+    ~MgtAssocResponseHeader() override = default;
+
+    /**
+     * Register this type.
+     * \return The TypeId.
+     */
+    static TypeId GetTypeId();
+
+    /** \copydoc Header::GetInstanceTypeId */
+    TypeId GetInstanceTypeId() const override;
 
     /**
      * Return the status code.
@@ -456,77 +503,19 @@ class MgtAssocResponseHeader : public Header
      */
     StatusCode GetStatusCode();
     /**
-     * Return the supported rates.
+     * Set the status code.
      *
-     * \return the supported rates
+     * \param code the status code
      */
-    const AllSupportedRates& GetSupportedRates() const;
+    void SetStatusCode(StatusCode code);
     /**
-     * Return the Capability information.
-     *
-     * \return Capability information
+     * \return a reference to the Capability information
      */
-    const CapabilityInformation& GetCapabilities() const;
+    CapabilityInformation& Capabilities();
     /**
-     * Return the extended capabilities, if present.
-     *
-     * \return the extended capabilities, if present
+     * \return a const reference to the Capability information
      */
-    const std::optional<ExtendedCapabilities>& GetExtendedCapabilities() const;
-    /**
-     * Return the HT capabilities, if present.
-     *
-     * \return HT capabilities, if present
-     */
-    const std::optional<HtCapabilities>& GetHtCapabilities() const;
-    /**
-     * Return the HT operation, if present.
-     *
-     * \return HT operation, if present
-     */
-    const std::optional<HtOperation>& GetHtOperation() const;
-    /**
-     * Return the VHT capabilities, if present.
-     *
-     * \return VHT capabilities, if present
-     */
-    const std::optional<VhtCapabilities>& GetVhtCapabilities() const;
-    /**
-     * Return the VHT operation, if present.
-     *
-     * \return VHT operation, if present
-     */
-    const std::optional<VhtOperation>& GetVhtOperation() const;
-    /**
-     * Return the HE capabilities, if present.
-     *
-     * \return HE capabilities, if present
-     */
-    const std::optional<HeCapabilities>& GetHeCapabilities() const;
-    /**
-     * Return the HE operation, if present.
-     *
-     * \return HE operation, if present
-     */
-    const std::optional<HeOperation>& GetHeOperation() const;
-    /**
-     * Return the EHT capabilities, if present.
-     *
-     * \return EHT capabilities, if present
-     */
-    const std::optional<EhtCapabilities>& GetEhtCapabilities() const;
-    /**
-     * Return the EHT operation, if present.
-     *
-     * \return EHT operation, if present
-     */
-    const std::optional<EhtOperation>& GetEhtOperation() const;
-    /**
-     * Return the Multi-Link Element information element, if present.
-     *
-     * \return the Multi-Link Element information element, if present
-     */
-    const std::optional<MultiLinkElement>& GetMultiLinkElement() const;
+    const CapabilityInformation& Capabilities() const;
     /**
      * Return the association ID.
      *
@@ -534,199 +523,34 @@ class MgtAssocResponseHeader : public Header
      */
     uint16_t GetAssociationId() const;
     /**
-     * Return the EDCA Parameter Set, if present.
-     *
-     * \return the EDCA Parameter Set, if present
-     */
-    const std::optional<EdcaParameterSet>& GetEdcaParameterSet() const;
-    /**
-     * Return the MU EDCA Parameter Set, if present.
-     *
-     * \return the MU EDCA Parameter Set, if present
-     */
-    const std::optional<MuEdcaParameterSet>& GetMuEdcaParameterSet() const;
-    /**
-     * Set the Capability information.
-     *
-     * \param capabilities Capability information
-     */
-    void SetCapabilities(const CapabilityInformation& capabilities);
-
-    /** \copydoc SetCapabilities */
-    void SetCapabilities(CapabilityInformation&& capabilities);
-
-    /**
-     * Set the extended capabilities.
-     *
-     * \param extendedCapabilities the extended capabilities
-     */
-    void SetExtendedCapabilities(const ExtendedCapabilities& extendedCapabilities);
-
-    /** \copydoc SetExtendedCapabilities */
-    void SetExtendedCapabilities(ExtendedCapabilities&& extendedCapabilities);
-
-    /**
-     * Set the VHT operation.
-     *
-     * \param vhtOperation VHT operation
-     */
-    void SetVhtOperation(const VhtOperation& vhtOperation);
-
-    /** \copydoc SetVhtOperation */
-    void SetVhtOperation(VhtOperation&& vhtOperation);
-
-    /**
-     * Set the VHT capabilities.
-     *
-     * \param vhtCapabilities VHT capabilities
-     */
-    void SetVhtCapabilities(const VhtCapabilities& vhtCapabilities);
-
-    /** \copydoc SetVhtCapabilities */
-    void SetVhtCapabilities(VhtCapabilities&& vhtCapabilities);
-
-    /**
-     * Set the HT capabilities.
-     *
-     * \param htCapabilities HT capabilities
-     */
-    void SetHtCapabilities(const HtCapabilities& htCapabilities);
-
-    /** \copydoc SetHtCapabilities */
-    void SetHtCapabilities(HtCapabilities&& htCapabilities);
-
-    /**
-     * Set the HT operation.
-     *
-     * \param htOperation HT operation
-     */
-    void SetHtOperation(const HtOperation& htOperation);
-
-    /** \copydoc SetHtOperation */
-    void SetHtOperation(HtOperation&& htOperation);
-
-    /**
-     * Set the supported rates.
-     *
-     * \param rates the supported rates
-     */
-    void SetSupportedRates(const AllSupportedRates& rates);
-
-    /** \copydoc SetSupportedRates */
-    void SetSupportedRates(AllSupportedRates&& rates);
-
-    /**
-     * Set the status code.
-     *
-     * \param code the status code
-     */
-    void SetStatusCode(StatusCode code);
-
-    /**
      * Set the association ID.
      *
      * \param aid the association ID
      */
     void SetAssociationId(uint16_t aid);
 
-    /**
-     * Set the EDCA Parameter Set.
-     *
-     * \param edcaParameterSet the EDCA Parameter Set
-     */
-    void SetEdcaParameterSet(const EdcaParameterSet& edcaParameterSet);
-
-    /** \copydoc SetEdcaParameterSet */
-    void SetEdcaParameterSet(EdcaParameterSet&& edcaParameterSet);
-
-    /**
-     * Set the MU EDCA Parameter Set.
-     *
-     * \param muEdcaParameterSet the MU EDCA Parameter Set
-     */
-    void SetMuEdcaParameterSet(const MuEdcaParameterSet& muEdcaParameterSet);
-
-    /** \copydoc SetMuEdcaParameterSet */
-    void SetMuEdcaParameterSet(MuEdcaParameterSet&& muEdcaParameterSet);
-
-    /**
-     * Set the HE capabilities.
-     *
-     * \param heCapabilities HE capabilities
-     */
-    void SetHeCapabilities(const HeCapabilities& heCapabilities);
-
-    /** \copydoc SetHeCapabilities */
-    void SetHeCapabilities(HeCapabilities&& heCapabilities);
-
-    /**
-     * Set the HE operation.
-     *
-     * \param heOperation HE operation
-     */
-    void SetHeOperation(const HeOperation& heOperation);
-
-    /** \copydoc SetHeOperation */
-    void SetHeOperation(HeOperation&& heOperation);
-
-    /**
-     * Set the EHT capabilities.
-     *
-     * \param ehtCapabilities EHT capabilities
-     */
-    void SetEhtCapabilities(const EhtCapabilities& ehtCapabilities);
-
-    /** \copydoc SetEhtCapabilities */
-    void SetEhtCapabilities(EhtCapabilities&& ehtCapabilities);
-
-    /**
-     * Set the EHT operation.
-     *
-     * \param ehtOperation HE operation
-     */
-    void SetEhtOperation(const EhtOperation& ehtOperation);
-
-    /** \copydoc SetEhtOperation */
-    void SetEhtOperation(EhtOperation&& ehtOperation);
-
-    /**
-     * Set the Multi-Link Element information element
-     *
-     * \param multiLinkElement the Multi-Link Element information element
-     */
-    void SetMultiLinkElement(const MultiLinkElement& multiLinkElement);
-
-    /** \copydoc SetMultiLinkElement */
-    void SetMultiLinkElement(MultiLinkElement&& multiLinkElement);
-
-    /**
-     * Register this type.
-     * \return The TypeId.
-     */
-    static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
-    void Print(std::ostream& os) const override;
-    uint32_t GetSerializedSize() const override;
-    void Serialize(Buffer::Iterator start) const override;
-    uint32_t Deserialize(Buffer::Iterator start) override;
+  protected:
+    /** \copydoc Header::GetSerializedSize */
+    uint32_t GetSerializedSizeImpl() const;
+    /** \copydoc Header::Serialize */
+    void SerializeImpl(Buffer::Iterator start) const;
+    /** \copydoc Header::Deserialize */
+    uint32_t DeserializeImpl(Buffer::Iterator start);
+    /** \copydoc Header::Print */
+    void PrintImpl(std::ostream& os) const;
 
   private:
-    AllSupportedRates m_rates;                                //!< List of supported rates
-    CapabilityInformation m_capability;                       //!< Capability information
-    StatusCode m_code;                                        //!< Status code
-    uint16_t m_aid;                                           //!< AID
-    std::optional<ExtendedCapabilities> m_extendedCapability; //!< extended capabilities
-    std::optional<HtCapabilities> m_htCapability;             //!< HT capabilities
-    std::optional<HtOperation> m_htOperation;                 //!< HT operation
-    std::optional<VhtCapabilities> m_vhtCapability;           //!< VHT capabilities
-    std::optional<VhtOperation> m_vhtOperation;               //!< VHT operation
-    std::optional<EdcaParameterSet> m_edcaParameterSet;       //!< EDCA Parameter Set
-    std::optional<HeCapabilities> m_heCapability;             //!< HE capabilities
-    std::optional<HeOperation> m_heOperation;                 //!< HE operation
-    std::optional<MuEdcaParameterSet> m_muEdcaParameterSet;   //!< MU EDCA Parameter Set
-    std::optional<EhtCapabilities> m_ehtCapability;           //!< EHT capabilities
-    std::optional<EhtOperation> m_ehtOperation;               //!< EHT Operation
-    std::optional<MultiLinkElement> m_multiLinkElement;       //!< Multi-Link Element
+    using WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::InitForDeserialization;
+
+    /**
+     * \param optElem the MultiLinkElement object to initialize for deserializing the
+     *                information element into
+     */
+    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
+
+    CapabilityInformation m_capability; //!< Capability information
+    StatusCode m_code;                  //!< Status code
+    uint16_t m_aid{0};                  //!< AID
 };
 
 /**
@@ -882,18 +706,22 @@ class MgtProbeRequestHeader : public Header
  * \ingroup wifi
  * Implement the header for management frames of type probe response.
  */
-class MgtProbeResponseHeader : public Header
+class MgtProbeResponseHeader : public WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>
 {
+    friend class WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>;
+
   public:
-    MgtProbeResponseHeader();
-    ~MgtProbeResponseHeader() override;
+    ~MgtProbeResponseHeader() override = default;
 
     /**
-     * Return the Service Set Identifier (SSID).
-     *
-     * \return SSID
+     * Register this type.
+     * \return The TypeId.
      */
-    const Ssid& GetSsid() const;
+    static TypeId GetTypeId();
+
+    /** \copydoc Header::GetInstanceTypeId */
+    TypeId GetInstanceTypeId() const override;
+
     /**
      * Return the beacon interval in microseconds unit.
      *
@@ -901,295 +729,19 @@ class MgtProbeResponseHeader : public Header
      */
     uint64_t GetBeaconIntervalUs() const;
     /**
-     * Return the supported rates.
-     *
-     * \return the supported rates
-     */
-    const AllSupportedRates& GetSupportedRates() const;
-    /**
-     * Return the Capability information.
-     *
-     * \return Capability information
-     */
-    const CapabilityInformation& GetCapabilities() const;
-    /**
-     * Return the DSSS Parameter Set, if present.
-     *
-     * \return the DSSS Parameter Set, if present
-     */
-    const std::optional<DsssParameterSet>& GetDsssParameterSet() const;
-    /**
-     * Return the extended capabilities, if present.
-     *
-     * \return the extended capabilities, if present
-     */
-    const std::optional<ExtendedCapabilities>& GetExtendedCapabilities() const;
-    /**
-     * Return the HT capabilities, if present.
-     *
-     * \return HT capabilities, if present
-     */
-    const std::optional<HtCapabilities>& GetHtCapabilities() const;
-    /**
-     * Return the HT operation, if present.
-     *
-     * \return HT operation, if present
-     */
-    const std::optional<HtOperation>& GetHtOperation() const;
-    /**
-     * Return the VHT capabilities, if present.
-     *
-     * \return VHT capabilities, if present
-     */
-    const std::optional<VhtCapabilities>& GetVhtCapabilities() const;
-    /**
-     * Return the VHT operation, if present.
-     *
-     * \return VHT operation, if present
-     */
-    const std::optional<VhtOperation>& GetVhtOperation() const;
-    /**
-     * Return the HE capabilities, if present.
-     *
-     * \return HE capabilities, if present
-     */
-    const std::optional<HeCapabilities>& GetHeCapabilities() const;
-    /**
-     * Return the HE operation, if present.
-     *
-     * \return HE operation, if present
-     */
-    const std::optional<HeOperation>& GetHeOperation() const;
-    /**
-     * Return the EHT capabilities, if present.
-     *
-     * \return EHT capabilities, if present
-     */
-    const std::optional<EhtCapabilities>& GetEhtCapabilities() const;
-    /**
-     * Return the EHT operation, if present.
-     *
-     * \return EHT operation, if present
-     */
-    const std::optional<EhtOperation>& GetEhtOperation() const;
-    /**
-     * Return the ERP information, if present.
-     *
-     * \return the ERP information, if present
-     */
-    const std::optional<ErpInformation>& GetErpInformation() const;
-    /**
-     * Return the EDCA Parameter Set, if present.
-     *
-     * \return the EDCA Parameter Set, if present
-     */
-    const std::optional<EdcaParameterSet>& GetEdcaParameterSet() const;
-    /**
-     * Return the MU EDCA Parameter Set, if present.
-     *
-     * \return the MU EDCA Parameter Set, if present
-     */
-    const std::optional<MuEdcaParameterSet>& GetMuEdcaParameterSet() const;
-
-    /**
-     * Return the Reduced Neighbor Report information element, if present.
-     *
-     * \return the Reduced Neighbor Report information element, if present
-     */
-    const std::optional<ReducedNeighborReport>& GetReducedNeighborReport() const;
-    /**
-     * Return the Multi-Link Element information element, if present.
-     *
-     * \return the Multi-Link Element information element, if present
-     */
-    const std::optional<MultiLinkElement>& GetMultiLinkElement() const;
-    /**
-     * Set the Capability information.
-     *
-     * \param capabilities Capability information
-     */
-    void SetCapabilities(const CapabilityInformation& capabilities);
-
-    /** \copydoc SetCapabilities */
-    void SetCapabilities(CapabilityInformation&& capabilities);
-
-    /**
-     * Set the extended capabilities.
-     *
-     * \param extendedCapabilities the extended capabilities
-     */
-    void SetExtendedCapabilities(const ExtendedCapabilities& extendedCapabilities);
-
-    /** \copydoc SetExtendedCapabilities */
-    void SetExtendedCapabilities(ExtendedCapabilities&& extendedCapabilities);
-
-    /**
-     * Set the HT capabilities.
-     *
-     * \param htCapabilities HT capabilities
-     */
-    void SetHtCapabilities(const HtCapabilities& htCapabilities);
-
-    /** \copydoc SetHtCapabilities */
-    void SetHtCapabilities(HtCapabilities&& htCapabilities);
-
-    /**
-     * Set the HT operation.
-     *
-     * \param htOperation HT operation
-     */
-    void SetHtOperation(const HtOperation& htOperation);
-
-    /** \copydoc SetHtOperation */
-    void SetHtOperation(HtOperation&& htOperation);
-
-    /**
-     * Set the VHT capabilities.
-     *
-     * \param vhtCapabilities VHT capabilities
-     */
-    void SetVhtCapabilities(const VhtCapabilities& vhtCapabilities);
-
-    /** \copydoc SetVhtCapabilities */
-    void SetVhtCapabilities(VhtCapabilities&& vhtCapabilities);
-
-    /**
-     * Set the VHT operation.
-     *
-     * \param vhtOperation VHT operation
-     */
-    void SetVhtOperation(const VhtOperation& vhtOperation);
-
-    /** \copydoc SetVhtOperation */
-    void SetVhtOperation(VhtOperation&& vhtOperation);
-
-    /**
-     * Set the HE capabilities.
-     *
-     * \param heCapabilities HE capabilities
-     */
-    void SetHeCapabilities(const HeCapabilities& heCapabilities);
-
-    /** \copydoc SetHeCapabilities */
-    void SetHeCapabilities(HeCapabilities&& heCapabilities);
-
-    /**
-     * Set the HE operation.
-     *
-     * \param heOperation HE operation
-     */
-    void SetHeOperation(const HeOperation& heOperation);
-
-    /** \copydoc SetHeOperation */
-    void SetHeOperation(HeOperation&& heOperation);
-
-    /**
-     * Set the EHT capabilities.
-     *
-     * \param ehtCapabilities EHT capabilities
-     */
-    void SetEhtCapabilities(const EhtCapabilities& ehtCapabilities);
-
-    /** \copydoc SetEhtCapabilities */
-    void SetEhtCapabilities(EhtCapabilities&& ehtCapabilities);
-
-    /**
-     * Set the EHT operation.
-     *
-     * \param ehtOperation HE operation
-     */
-    void SetEhtOperation(const EhtOperation& ehtOperation);
-
-    /** \copydoc SetEhtOperation */
-    void SetEhtOperation(EhtOperation&& ehtOperation);
-
-    /**
-     * Set the Service Set Identifier (SSID).
-     *
-     * \param ssid SSID
-     */
-    void SetSsid(const Ssid& ssid);
-
-    /** \copydoc SetSsid */
-    void SetSsid(Ssid&& ssid);
-
-    /**
      * Set the beacon interval in microseconds unit.
      *
      * \param us beacon interval in microseconds unit
      */
     void SetBeaconIntervalUs(uint64_t us);
-
     /**
-     * Set the supported rates.
-     *
-     * \param rates the supported rates
+     * \return a reference to the Capability information
      */
-    void SetSupportedRates(const AllSupportedRates& rates);
-
-    /** \copydoc SetSupportedRates */
-    void SetSupportedRates(AllSupportedRates&& rates);
-
+    CapabilityInformation& Capabilities();
     /**
-     * Set the DSSS Parameter Set.
-     *
-     * \param dsssParameterSet the DSSS Parameter Set
+     * \return a const reference to the Capability information
      */
-    void SetDsssParameterSet(const DsssParameterSet& dsssParameterSet);
-
-    /** \copydoc SetDsssParameterSet */
-    void SetDsssParameterSet(DsssParameterSet&& dsssParameterSet);
-
-    /**
-     * Set the ERP information.
-     *
-     * \param erpInformation the ERP information
-     */
-    void SetErpInformation(const ErpInformation& erpInformation);
-
-    /** \copydoc SetErpInformation */
-    void SetErpInformation(ErpInformation&& erpInformation);
-
-    /**
-     * Set the EDCA Parameter Set.
-     *
-     * \param edcaParameterSet the EDCA Parameter Set
-     */
-    void SetEdcaParameterSet(const EdcaParameterSet& edcaParameterSet);
-
-    /** \copydoc SetEdcaParameterSet */
-    void SetEdcaParameterSet(EdcaParameterSet&& edcaParameterSet);
-
-    /**
-     * Set the MU EDCA Parameter Set.
-     *
-     * \param muEdcaParameterSet the MU EDCA Parameter Set
-     */
-    void SetMuEdcaParameterSet(const MuEdcaParameterSet& muEdcaParameterSet);
-
-    /** \copydoc SetMuEdcaParameterSet */
-    void SetMuEdcaParameterSet(MuEdcaParameterSet&& muEdcaParameterSet);
-
-    /**
-     * Set the Reduced Neighbor Report information element
-     *
-     * \param reducedNeighborReport the Reduced Neighbor Report information element
-     */
-    void SetReducedNeighborReport(const ReducedNeighborReport& reducedNeighborReport);
-
-    /** \copydoc SetReducedNeighborReport */
-    void SetReducedNeighborReport(ReducedNeighborReport&& reducedNeighborReport);
-
-    /**
-     * Set the Multi-Link Element information element
-     *
-     * \param multiLinkElement the Multi-Link Element information element
-     */
-    void SetMultiLinkElement(const MultiLinkElement& multiLinkElement);
-
-    /** \copydoc SetMultiLinkElement */
-    void SetMultiLinkElement(MultiLinkElement&& multiLinkElement);
-
+    const CapabilityInformation& Capabilities() const;
     /**
      * Return the time stamp.
      *
@@ -1197,39 +749,26 @@ class MgtProbeResponseHeader : public Header
      */
     uint64_t GetTimestamp() const;
 
-    /**
-     * Register this type.
-     * \return The TypeId.
-     */
-    static TypeId GetTypeId();
-    TypeId GetInstanceTypeId() const override;
-    void Print(std::ostream& os) const override;
-    uint32_t GetSerializedSize() const override;
-    void Serialize(Buffer::Iterator start) const override;
-    uint32_t Deserialize(Buffer::Iterator start) override;
+  protected:
+    /** \copydoc Header::GetSerializedSize */
+    uint32_t GetSerializedSizeImpl() const;
+    /** \copydoc Header::Serialize*/
+    void SerializeImpl(Buffer::Iterator start) const;
+    /** \copydoc Header::Deserialize */
+    uint32_t DeserializeImpl(Buffer::Iterator start);
 
   private:
-    uint64_t m_timestamp;                                     //!< Timestamp
-    Ssid m_ssid;                                              //!< Service set ID (SSID)
-    uint64_t m_beaconInterval;                                //!< Beacon interval
-    AllSupportedRates m_rates;                                //!< List of supported rates
-    CapabilityInformation m_capability;                       //!< Capability information
-    std::optional<DsssParameterSet> m_dsssParameterSet;       //!< DSSS Parameter Set
-    std::optional<ExtendedCapabilities> m_extendedCapability; //!< extended capabilities
-    std::optional<HtCapabilities> m_htCapability;             //!< HT capabilities
-    std::optional<HtOperation> m_htOperation;                 //!< HT operation
-    std::optional<VhtCapabilities> m_vhtCapability;           //!< VHT capabilities
-    std::optional<VhtOperation> m_vhtOperation;               //!< VHT operation
-    std::optional<HeCapabilities> m_heCapability;             //!< HE capabilities
-    std::optional<HeOperation> m_heOperation;                 //!< HE operation
-    std::optional<ErpInformation> m_erpInformation;           //!< ERP information
-    std::optional<EdcaParameterSet> m_edcaParameterSet;       //!< EDCA Parameter Set
-    std::optional<MuEdcaParameterSet> m_muEdcaParameterSet;   //!< MU EDCA Parameter Set
-    std::optional<EhtCapabilities> m_ehtCapability;           //!< EHT capabilities
-    std::optional<EhtOperation> m_ehtOperation;               //!< EHT Operation
-    std::optional<ReducedNeighborReport>
-        m_reducedNeighborReport;                        //!< Reduced Neighbor Report information
-    std::optional<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
+    using WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>::InitForDeserialization;
+
+    /**
+     * \param optElem the MultiLinkElement object to initialize for deserializing the
+     *                information element into
+     */
+    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
+
+    uint64_t m_timestamp;               //!< Timestamp
+    uint64_t m_beaconInterval;          //!< Beacon interval
+    CapabilityInformation m_capability; //!< Capability information
 };
 
 /**
@@ -1239,12 +778,22 @@ class MgtProbeResponseHeader : public Header
 class MgtBeaconHeader : public MgtProbeResponseHeader
 {
   public:
-    /** Register this type. */
+    ~MgtBeaconHeader() override = default;
+
     /**
      * Register this type.
      * \return The TypeId.
      */
     static TypeId GetTypeId();
+
+  private:
+    // using WifiMgtHeader<MgtBeaconHeader, ProbeResponseElems>::InitForDeserialization;
+
+    /**
+     * \param optElem the MultiLinkElement object to initialize for deserializing the
+     *                information element into
+     */
+    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
 };
 
 /****************************

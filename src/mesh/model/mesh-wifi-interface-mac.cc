@@ -459,9 +459,11 @@ MeshWifiInterfaceMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                                              << " microseconds");
 
         // update supported rates
-        if (beacon_hdr.GetSsid().IsEqual(GetSsid()))
+        if (beacon_hdr.Get<Ssid>()->IsEqual(GetSsid()))
         {
-            auto rates = beacon_hdr.GetSupportedRates();
+            NS_ASSERT(beacon_hdr.Get<SupportedRates>());
+            auto rates = AllSupportedRates{*beacon_hdr.Get<SupportedRates>(),
+                                           beacon_hdr.Get<ExtendedSupportedRatesIE>()};
 
             for (const auto& mode : GetWifiPhy()->GetModeList())
             {
