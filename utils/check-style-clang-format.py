@@ -394,8 +394,6 @@ def check_formatting(filenames: List[str],
             if not formatted:
                 files_not_formatted.append(filename)
 
-    files_not_formatted.sort()
-
     # Output results
     if not files_not_formatted:
         print('All files are well formatted')
@@ -497,8 +495,6 @@ def check_trailing_whitespace(filenames: List[str],
             if has_whitespace:
                 files_with_whitespace.append(filename)
 
-    files_with_whitespace.sort()
-
     # Output results
     if not files_with_whitespace:
         print('No files detected with trailing whitespace')
@@ -589,8 +585,6 @@ def check_tabs(filenames: List[str],
         for (filename, has_tabs) in files_with_tabs_results:
             if has_tabs:
                 files_with_tabs.append(filename)
-
-    files_with_tabs.sort()
 
     # Output results
     if not files_with_tabs:
