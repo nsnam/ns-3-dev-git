@@ -202,12 +202,19 @@ if(CLANG)
 endif()
 
 set(GCC FALSE)
+set(GCC8 FALSE)
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${GNU_MinVersion})
     message(
       FATAL_ERROR
         "GNU ${CMAKE_CXX_COMPILER_VERSION} ${below_minimum_msg} ${GNU_MinVersion}"
     )
+  endif()
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0.0")
+    # This block is used to identify if GCC8 is being used. In this case, we
+    # want to explicitly link stdc++fs, which is done in
+    # ns3-module-macros.cmake.
+    set(GCC8 TRUE)
   endif()
   set(GCC TRUE)
   add_definitions(-fno-semantic-interposition)
