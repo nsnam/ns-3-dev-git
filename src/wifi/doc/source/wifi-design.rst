@@ -736,6 +736,35 @@ in the reception chain.   After this point, valid Wi-Fi signals cause
 ``WifiPhy::StartReceivePreamble`` to be called, and the processing continues
 as described above.
 
+Furthermore, in order to support more flexible channel switching,
+the ``SpectrumWifiPhy`` can hold multiple instances of ``WifiSpectrumPhyInterface``
+(:ref:`fig-spectrum-wifi-phy-multiple-interfaces`).
+Each of these instances handles a given frequency range of the spectrum, identified by
+a start and a stop frequency expressed in MHz, and there can be no overlap in spectrum between them.
+Only one of these ``WifiSpectrumPhyInterface`` instances corresponds to the active RF interface of the ``SpectrumWifiPhy``,
+the other ones are referred to as inactive RF interfaces and might be disconnected from the spectrum channel.
+
+.. _fig-spectrum-wifi-phy-multiple-interfaces:
+
+.. figure:: figures/spectrum-wifi-phy-multiple-interfaces.*
+   :align: center
+
+   Multiple RF interfaces concept
+
+If the ``SpectrumWifiPhy::TrackSignalsFromInactiveInterfaces`` attribute is set to true,
+inactive RF interfaces are connected to their respective spectrum channels and the ``SpectrumWifiPhy``
+forwards received signals from these inactive RF interfaces to the ``InterferenceHelper`` without processing them.
+The benefit of the latter is that more accurate PHY-CCA.indication can be generated upon channel switching
+if one or more signals started to be transmitted on the new channel before the switch occurs,
+which would be ignored otherwise. This is illustrated in Figure :ref:`fig-cca-channel-switching-multiple-interfaces`, where the parts in red are only generated when ``SpectrumWifiPhy::TrackSignalsFromInactiveInterfaces`` is set to true.
+
+.. _fig-cca-channel-switching-multiple-interfaces:
+
+.. figure:: figures/cca-channel-switching-multiple-interfaces.*
+   :align: center
+
+   Illustration of signals tracking upon channel switching
+
 The MAC model
 =============
 
