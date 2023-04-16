@@ -1163,7 +1163,7 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetUtAndBsHeights(double za, double
         // We cannot know who is the BS and who is the UT, we assume that the
         // tallest node is the BS and the smallest is the UT
         hBs = std::max(za, zb);
-        hUt = std::min(za, za);
+        hUt = std::min(za, zb);
     }
 
     return std::pair<double, double>(hUt, hBs);
