@@ -96,6 +96,7 @@ the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the 
 - (wifi) Added support for 802.11ax MU-RTS/CTS protection
 - (wifi) !1119 - Added, by default, a WifiBandwidthFilter to spectrum channels created by the SpectrumWifiHelper, so as to filter out-of-band signals from the receiver.
 - (internet) InternetStackHelper can be now used on nodes with an InternetStack already installed (it will not install IPv[4,6] twice).
+- (wifi) Added support to attach multiple spectrum channels to a same PHY and the possibility to track signals from multiple RF interfaces
 
 ### Bugs fixed
 
