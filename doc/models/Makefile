@@ -162,6 +162,8 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/error-models-comparison.eps \
 	$(SRC)/wifi/doc/source/figures/spectrum-wifi-phy-multiple-interfaces.pdf \
 	$(SRC)/wifi/doc/source/figures/spectrum-wifi-phy-multiple-interfaces.png \
+	$(SRC)/wifi/doc/source/figures/cca-channel-switching-multiple-interfaces.pdf \
+	$(SRC)/wifi/doc/source/figures/cca-channel-switching-multiple-interfaces.png \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
