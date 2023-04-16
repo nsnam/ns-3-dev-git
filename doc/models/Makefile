@@ -160,6 +160,8 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.eps \
 	$(SRC)/wifi/doc/source/figures/default-table-based-error-model-validation.eps \
 	$(SRC)/wifi/doc/source/figures/error-models-comparison.eps \
+	$(SRC)/wifi/doc/source/figures/spectrum-wifi-phy-multiple-interfaces.pdf \
+	$(SRC)/wifi/doc/source/figures/spectrum-wifi-phy-multiple-interfaces.png \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
