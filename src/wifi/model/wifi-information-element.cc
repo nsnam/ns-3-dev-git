@@ -238,25 +238,25 @@ WifiInformationElement::operator==(const WifiInformationElement& a) const
         return false;
     }
 
-    if (GetInformationFieldSize() != a.GetInformationFieldSize())
-    {
-        return false;
-    }
-
     if (ElementIdExt() != a.ElementIdExt())
     {
         return false;
     }
 
-    uint32_t ieSize = GetInformationFieldSize();
+    uint32_t ieSize = GetSerializedSize();
+
+    if (ieSize != a.GetSerializedSize())
+    {
+        return false;
+    }
 
     Buffer myIe;
     Buffer hisIe;
     myIe.AddAtEnd(ieSize);
     hisIe.AddAtEnd(ieSize);
 
-    SerializeInformationField(myIe.Begin());
-    a.SerializeInformationField(hisIe.Begin());
+    Serialize(myIe.Begin());
+    a.Serialize(hisIe.Begin());
 
     return (memcmp(myIe.PeekData(), hisIe.PeekData(), ieSize) == 0);
 }
