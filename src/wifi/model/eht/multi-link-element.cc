@@ -728,11 +728,18 @@ MultiLinkElement::PerStaProfileSubelement::GetInformationFieldSize() const
         using T = std::decay_t<decltype(frame)>;
         if constexpr (std::is_same_v<T, std::monostate>)
         {
+            NS_ASSERT_MSG(std::holds_alternative<std::monostate>(m_containingFrame),
+                          "Missing management frame for Per-STA Profile subelement");
             return static_cast<uint32_t>(0);
         }
         else
         {
-            return frame->GetSerializedSize();
+            using U = std::decay_t<decltype(*frame)>;
+            NS_ASSERT_MSG(
+                std::holds_alternative<std::reference_wrapper<const U>>(m_containingFrame),
+                "Containing frame type and frame type in Per-STA Profile do not match");
+            const auto& containing = std::get<std::reference_wrapper<const U>>(m_containingFrame);
+            return frame->GetSerializedSizeInPerStaProfile(containing);
         }
     };
     ret += std::visit(staProfileSize, m_staProfile);
@@ -755,11 +762,18 @@ MultiLinkElement::PerStaProfileSubelement::SerializeInformationField(Buffer::Ite
         using T = std::decay_t<decltype(frame)>;
         if constexpr (std::is_same_v<T, std::monostate>)
         {
+            NS_ASSERT_MSG(std::holds_alternative<std::monostate>(m_containingFrame),
+                          "Missing management frame for Per-STA Profile subelement");
             return;
         }
         else
         {
-            frame->Serialize(start);
+            using U = std::decay_t<decltype(*frame)>;
+            NS_ASSERT_MSG(
+                std::holds_alternative<std::reference_wrapper<const U>>(m_containingFrame),
+                "Containing frame type and frame type in Per-STA Profile do not match");
+            const auto& containing = std::get<std::reference_wrapper<const U>>(m_containingFrame);
+            frame->SerializeInPerStaProfile(start, containing);
         }
     };
     std::visit(staProfileSerialize, m_staProfile);
@@ -770,46 +784,37 @@ MultiLinkElement::PerStaProfileSubelement::DeserializeInformationField(Buffer::I
                                                                        uint16_t length)
 {
     Buffer::Iterator i = start;
-    uint16_t count = 0;
 
     m_staControl = i.ReadLsbtohU16();
-    count += 2;
-
     i.ReadU8(); // STA Info Length
-    count++;
 
     if (HasStaMacAddress())
     {
         ReadFrom(i, m_staMacAddress);
-        count += 6;
     }
 
     // TODO add other subfields of the STA Info field
+    uint16_t count = i.GetDistanceFrom(start);
 
-    if (count >= length)
+    NS_ASSERT_MSG(count <= length,
+                  "Bytes read (" << count << ") exceed expected number (" << length << ")");
+
+    if (count == length)
     {
         return count;
     }
 
-    if (m_frameType == WIFI_MAC_MGT_ASSOCIATION_REQUEST)
-    {
-        MgtAssocRequestHeader assoc;
-        count += assoc.Deserialize(i);
-        SetAssocRequest(std::move(assoc));
-    }
-    else if (m_frameType == WIFI_MAC_MGT_REASSOCIATION_REQUEST)
-    {
-        MgtReassocRequestHeader reassoc;
-        count += reassoc.Deserialize(i);
-        SetAssocRequest(std::move(reassoc));
-    }
-    else if (m_frameType == WIFI_MAC_MGT_ASSOCIATION_RESPONSE ||
-             m_frameType == WIFI_MAC_MGT_REASSOCIATION_RESPONSE)
-    {
-        MgtAssocResponseHeader assoc;
-        count += assoc.Deserialize(i);
-        SetAssocResponse(assoc);
-    }
+    auto staProfileDeserialize = [&](auto&& frame) {
+        using T = std::decay_t<decltype(frame)>;
+        if constexpr (!std::is_same_v<T, std::monostate>)
+        {
+            using U = std::decay_t<decltype(frame.get())>;
+            U assoc;
+            count += assoc.DeserializeFromPerStaProfile(i, length - count, frame.get());
+            m_staProfile = std::make_unique<U>(std::move(assoc));
+        }
+    };
+    std::visit(staProfileDeserialize, m_containingFrame);
 
     return count;
 }
@@ -864,6 +869,7 @@ MultiLinkElement::GetInformationFieldSize() const
 
     for (const auto& subelement : m_perStaProfileSubelements)
     {
+        subelement.m_containingFrame = m_containingFrame;
         ret += subelement.GetSerializedSize();
     }
 
@@ -930,11 +936,14 @@ MultiLinkElement::DeserializeInformationField(Buffer::Iterator start, uint16_t l
     {
         switch (static_cast<SubElementId>(i.PeekU8()))
         {
-        case PER_STA_PROFILE_SUBELEMENT_ID:
+        case PER_STA_PROFILE_SUBELEMENT_ID: {
             AddPerStaProfileSubelement();
-            i = GetPerStaProfile(GetNPerStaProfileSubelements() - 1).Deserialize(i);
+            auto& perStaProfile = GetPerStaProfile(GetNPerStaProfileSubelements() - 1);
+            perStaProfile.m_containingFrame = m_containingFrame;
+            i = perStaProfile.Deserialize(i);
             count = i.GetDistanceFrom(start);
-            break;
+        }
+        break;
         default:
             NS_ABORT_MSG("Unsupported Subelement ID: " << +i.PeekU8());
         }

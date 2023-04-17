@@ -42,11 +42,51 @@
 #include "ns3/mac48-address.h"
 #include "ns3/mu-edca-parameter-set.h"
 #include "ns3/multi-link-element.h"
+#include "ns3/tid-to-link-mapping-element.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
 
 namespace ns3
 {
+
+/**
+ * Indicate which Information Elements cannot be included in a Per-STA Profile subelement of
+ * a Basic Multi-Link Element (see Sec. 35.3.3.4 of 802.11be D3.1):
+ *
+ * An AP affiliated with an AP MLD shall not include a Timestamp field, a Beacon Interval field,
+ * an AID field, a BSS Max Idle Period element, a Neighbor Report element, a Reduced Neighbor
+ * Report element, a Multiple BSSID element, TIM element, Multiple BSSID-Index element, Multiple
+ * BSSID Configuration element, TID-to-Link Mapping element, Multi-Link Traffic Indication element
+ * or another Multi- Link element in the STA Profile field of the Basic Multi-Link element.
+ *
+ * A non-AP STA affiliated with a non-AP MLD shall not include a Listen Interval field, a Current
+ * AP Address field, an SSID element, BSS Max Idle Period element or another Multi-Link element in
+ * the STA Profile field of the Basic Multi-Link element.
+ */
+
+/** \copydoc CanBeInPerStaProfile */
+template <>
+struct CanBeInPerStaProfile<ReducedNeighborReport> : std::false_type
+{
+};
+
+/** \copydoc CanBeInPerStaProfile */
+template <>
+struct CanBeInPerStaProfile<TidToLinkMapping> : std::false_type
+{
+};
+
+/** \copydoc CanBeInPerStaProfile */
+template <>
+struct CanBeInPerStaProfile<MultiLinkElement> : std::false_type
+{
+};
+
+/** \copydoc CanBeInPerStaProfile */
+template <>
+struct CanBeInPerStaProfile<Ssid> : std::false_type
+{
+};
 
 /// List of Information Elements included in Probe Request frames
 using ProbeRequestElems = std::tuple<Ssid,
@@ -109,9 +149,11 @@ using AssocResponseElems = std::tuple<SupportedRates,
  * \ingroup wifi
  * Implement the header for management frames of type association request.
  */
-class MgtAssocRequestHeader : public WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>
+class MgtAssocRequestHeader
+    : public MgtHeaderInPerStaProfile<MgtAssocRequestHeader, AssocRequestElems>
 {
     friend class WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>;
+    friend class MgtHeaderInPerStaProfile<MgtAssocRequestHeader, AssocRequestElems>;
 
   public:
     ~MgtAssocRequestHeader() override = default;
@@ -154,6 +196,34 @@ class MgtAssocRequestHeader : public WifiMgtHeader<MgtAssocRequestHeader, AssocR
     /** \copydoc Header::Deserialize */
     uint32_t DeserializeImpl(Buffer::Iterator start);
 
+    /**
+     * \param frame the frame containing the Multi-Link Element
+     * \return the number of bytes that are needed to serialize this header into a Per-STA Profile
+     *         subelement of the Multi-Link Element
+     */
+    uint32_t GetSerializedSizeInPerStaProfileImpl(const MgtAssocRequestHeader& frame) const;
+
+    /**
+     * Serialize this header into a Per-STA Profile subelement of a Multi-Link Element
+     *
+     * \param start an iterator which points to where the header should be written
+     * \param frame the frame containing the Multi-Link Element
+     */
+    void SerializeInPerStaProfileImpl(Buffer::Iterator start,
+                                      const MgtAssocRequestHeader& frame) const;
+
+    /**
+     * Deserialize this header from a Per-STA Profile subelement of a Multi-Link Element.
+     *
+     * \param start an iterator which points to where the header should be read from
+     * \param length the expected number of bytes to read
+     * \param frame the frame containing the Multi-Link Element
+     * \return the number of bytes read
+     */
+    uint32_t DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
+                                              uint16_t length,
+                                              const MgtAssocRequestHeader& frame);
+
   private:
     using WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>::InitForDeserialization;
 
@@ -171,9 +241,11 @@ class MgtAssocRequestHeader : public WifiMgtHeader<MgtAssocRequestHeader, AssocR
  * \ingroup wifi
  * Implement the header for management frames of type reassociation request.
  */
-class MgtReassocRequestHeader : public WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>
+class MgtReassocRequestHeader
+    : public MgtHeaderInPerStaProfile<MgtReassocRequestHeader, AssocRequestElems>
 {
     friend class WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>;
+    friend class MgtHeaderInPerStaProfile<MgtReassocRequestHeader, AssocRequestElems>;
 
   public:
     ~MgtReassocRequestHeader() override = default;
@@ -224,6 +296,34 @@ class MgtReassocRequestHeader : public WifiMgtHeader<MgtReassocRequestHeader, As
     /** \copydoc Header::Print */
     void PrintImpl(std::ostream& os) const;
 
+    /**
+     * \param frame the frame containing the Multi-Link Element
+     * \return the number of bytes that are needed to serialize this header into a Per-STA Profile
+     *         subelement of the Multi-Link Element
+     */
+    uint32_t GetSerializedSizeInPerStaProfileImpl(const MgtReassocRequestHeader& frame) const;
+
+    /**
+     * Serialize this header into a Per-STA Profile subelement of a Multi-Link Element
+     *
+     * \param start an iterator which points to where the header should be written
+     * \param frame the frame containing the Multi-Link Element
+     */
+    void SerializeInPerStaProfileImpl(Buffer::Iterator start,
+                                      const MgtReassocRequestHeader& frame) const;
+
+    /**
+     * Deserialize this header from a Per-STA Profile subelement of a Multi-Link Element.
+     *
+     * \param start an iterator which points to where the header should be read from
+     * \param length the expected number of bytes to read
+     * \param frame the frame containing the Multi-Link Element
+     * \return the number of bytes read
+     */
+    uint32_t DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
+                                              uint16_t length,
+                                              const MgtReassocRequestHeader& frame);
+
   private:
     using WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>::InitForDeserialization;
 
@@ -242,9 +342,11 @@ class MgtReassocRequestHeader : public WifiMgtHeader<MgtReassocRequestHeader, As
  * \ingroup wifi
  * Implement the header for management frames of type association and reassociation response.
  */
-class MgtAssocResponseHeader : public WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>
+class MgtAssocResponseHeader
+    : public MgtHeaderInPerStaProfile<MgtAssocResponseHeader, AssocResponseElems>
 {
     friend class WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>;
+    friend class MgtHeaderInPerStaProfile<MgtAssocResponseHeader, AssocResponseElems>;
 
   public:
     ~MgtAssocResponseHeader() override = default;
@@ -300,6 +402,34 @@ class MgtAssocResponseHeader : public WifiMgtHeader<MgtAssocResponseHeader, Asso
     uint32_t DeserializeImpl(Buffer::Iterator start);
     /** \copydoc Header::Print */
     void PrintImpl(std::ostream& os) const;
+
+    /**
+     * \param frame the frame containing the Multi-Link Element
+     * \return the number of bytes that are needed to serialize this header into a Per-STA Profile
+     *         subelement of the Multi-Link Element
+     */
+    uint32_t GetSerializedSizeInPerStaProfileImpl(const MgtAssocResponseHeader& frame) const;
+
+    /**
+     * Serialize this header into a Per-STA Profile subelement of a Multi-Link Element
+     *
+     * \param start an iterator which points to where the header should be written
+     * \param frame the frame containing the Multi-Link Element
+     */
+    void SerializeInPerStaProfileImpl(Buffer::Iterator start,
+                                      const MgtAssocResponseHeader& frame) const;
+
+    /**
+     * Deserialize this header from a Per-STA Profile subelement of a Multi-Link Element.
+     *
+     * \param start an iterator which points to where the header should be read from
+     * \param length the expected number of bytes to read
+     * \param frame the frame containing the Multi-Link Element
+     * \return the number of bytes read
+     */
+    uint32_t DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
+                                              uint16_t length,
+                                              const MgtAssocResponseHeader& frame);
 
   private:
     using WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::InitForDeserialization;

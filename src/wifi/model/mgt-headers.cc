@@ -210,10 +210,7 @@ MgtAssocRequestHeader::Capabilities()
 uint32_t
 MgtAssocRequestHeader::GetSerializedSizeImpl() const
 {
-    if (auto& mle = Get<MultiLinkElement>())
-    {
-        mle->m_containingFrame = *this;
-    }
+    SetMleContainingFrame();
 
     uint32_t size = 0;
     size += m_capability.GetSerializedSize();
@@ -222,18 +219,37 @@ MgtAssocRequestHeader::GetSerializedSizeImpl() const
     return size;
 }
 
+uint32_t
+MgtAssocRequestHeader::GetSerializedSizeInPerStaProfileImpl(
+    const MgtAssocRequestHeader& frame) const
+{
+    uint32_t size = 0;
+    size += m_capability.GetSerializedSize();
+    size +=
+        MgtHeaderInPerStaProfile<MgtAssocRequestHeader,
+                                 AssocRequestElems>::GetSerializedSizeInPerStaProfileImpl(frame);
+    return size;
+}
+
 void
 MgtAssocRequestHeader::SerializeImpl(Buffer::Iterator start) const
 {
-    if (auto& mle = Get<MultiLinkElement>())
-    {
-        mle->m_containingFrame = *this;
-    }
+    SetMleContainingFrame();
 
     Buffer::Iterator i = start;
     i = m_capability.Serialize(i);
     i.WriteHtolsbU16(m_listenInterval);
     WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>::SerializeImpl(i);
+}
+
+void
+MgtAssocRequestHeader::SerializeInPerStaProfileImpl(Buffer::Iterator start,
+                                                    const MgtAssocRequestHeader& frame) const
+{
+    Buffer::Iterator i = start;
+    i = m_capability.Serialize(i);
+    MgtHeaderInPerStaProfile<MgtAssocRequestHeader,
+                             AssocRequestElems>::SerializeInPerStaProfileImpl(i, frame);
 }
 
 uint32_t
@@ -242,14 +258,46 @@ MgtAssocRequestHeader::DeserializeImpl(Buffer::Iterator start)
     Buffer::Iterator i = start;
     i = m_capability.Deserialize(i);
     m_listenInterval = i.ReadLsbtohU16();
+    auto distance = i.GetDistanceFrom(start) +
+                    WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>::DeserializeImpl(i);
+    if (auto& mle = Get<MultiLinkElement>())
+    {
+        for (std::size_t id = 0; id < mle->GetNPerStaProfileSubelements(); id++)
+        {
+            auto& perStaProfile = mle->GetPerStaProfile(id);
+            if (perStaProfile.HasAssocRequest())
+            {
+                auto& frameInPerStaProfile =
+                    std::get<std::reference_wrapper<MgtAssocRequestHeader>>(
+                        perStaProfile.GetAssocRequest())
+                        .get();
+                frameInPerStaProfile.CopyIesFromContainingFrame(*this);
+            }
+        }
+    }
+    return distance;
+}
+
+uint32_t
+MgtAssocRequestHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
+                                                        uint16_t length,
+                                                        const MgtAssocRequestHeader& frame)
+{
+    Buffer::Iterator i = start;
+    i = m_capability.Deserialize(i);
+    m_listenInterval = frame.m_listenInterval;
     auto distance = i.GetDistanceFrom(start);
-    return distance + WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>::DeserializeImpl(i);
+    NS_ASSERT_MSG(distance <= length,
+                  "Bytes read (" << distance << ") exceed expected number (" << length << ")");
+    return distance + MgtHeaderInPerStaProfile<MgtAssocRequestHeader, AssocRequestElems>::
+                          DeserializeFromPerStaProfileImpl(i, length - distance, frame);
 }
 
 void
 MgtAssocRequestHeader::InitForDeserialization(std::optional<MultiLinkElement>& optElem)
 {
     optElem.emplace(WIFI_MAC_MGT_ASSOCIATION_REQUEST);
+    optElem->m_containingFrame = *this;
 }
 
 /***********************************************************
@@ -307,16 +355,25 @@ MgtReassocRequestHeader::SetCurrentApAddress(Mac48Address currentApAddr)
 uint32_t
 MgtReassocRequestHeader::GetSerializedSizeImpl() const
 {
-    if (auto& mle = Get<MultiLinkElement>())
-    {
-        mle->m_containingFrame = *this;
-    }
+    SetMleContainingFrame();
 
     uint32_t size = 0;
     size += m_capability.GetSerializedSize();
     size += 2; // listen interval
     size += 6; // current AP address
     size += WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>::GetSerializedSizeImpl();
+    return size;
+}
+
+uint32_t
+MgtReassocRequestHeader::GetSerializedSizeInPerStaProfileImpl(
+    const MgtReassocRequestHeader& frame) const
+{
+    uint32_t size = 0;
+    size += m_capability.GetSerializedSize();
+    size +=
+        MgtHeaderInPerStaProfile<MgtReassocRequestHeader,
+                                 AssocRequestElems>::GetSerializedSizeInPerStaProfileImpl(frame);
     return size;
 }
 
@@ -330,16 +387,23 @@ MgtReassocRequestHeader::PrintImpl(std::ostream& os) const
 void
 MgtReassocRequestHeader::SerializeImpl(Buffer::Iterator start) const
 {
-    if (auto& mle = Get<MultiLinkElement>())
-    {
-        mle->m_containingFrame = *this;
-    }
+    SetMleContainingFrame();
 
     Buffer::Iterator i = start;
     i = m_capability.Serialize(i);
     i.WriteHtolsbU16(m_listenInterval);
     WriteTo(i, m_currentApAddr);
     WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>::SerializeImpl(i);
+}
+
+void
+MgtReassocRequestHeader::SerializeInPerStaProfileImpl(Buffer::Iterator start,
+                                                      const MgtReassocRequestHeader& frame) const
+{
+    Buffer::Iterator i = start;
+    i = m_capability.Serialize(i);
+    MgtHeaderInPerStaProfile<MgtReassocRequestHeader,
+                             AssocRequestElems>::SerializeInPerStaProfileImpl(i, frame);
 }
 
 uint32_t
@@ -349,14 +413,47 @@ MgtReassocRequestHeader::DeserializeImpl(Buffer::Iterator start)
     i = m_capability.Deserialize(i);
     m_listenInterval = i.ReadLsbtohU16();
     ReadFrom(i, m_currentApAddr);
+    auto distance = i.GetDistanceFrom(start) +
+                    WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>::DeserializeImpl(i);
+    if (auto& mle = Get<MultiLinkElement>())
+    {
+        for (std::size_t id = 0; id < mle->GetNPerStaProfileSubelements(); id++)
+        {
+            auto& perStaProfile = mle->GetPerStaProfile(id);
+            if (perStaProfile.HasReassocRequest())
+            {
+                auto& frameInPerStaProfile =
+                    std::get<std::reference_wrapper<MgtReassocRequestHeader>>(
+                        perStaProfile.GetAssocRequest())
+                        .get();
+                frameInPerStaProfile.CopyIesFromContainingFrame(*this);
+            }
+        }
+    }
+    return distance;
+}
+
+uint32_t
+MgtReassocRequestHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
+                                                          uint16_t length,
+                                                          const MgtReassocRequestHeader& frame)
+{
+    Buffer::Iterator i = start;
+    i = m_capability.Deserialize(i);
+    m_listenInterval = frame.m_listenInterval;
+    m_currentApAddr = frame.m_currentApAddr;
     auto distance = i.GetDistanceFrom(start);
-    return distance + WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>::DeserializeImpl(i);
+    NS_ASSERT_MSG(distance <= length,
+                  "Bytes read (" << distance << ") exceed expected number (" << length << ")");
+    return distance + MgtHeaderInPerStaProfile<MgtReassocRequestHeader, AssocRequestElems>::
+                          DeserializeFromPerStaProfileImpl(i, length - distance, frame);
 }
 
 void
 MgtReassocRequestHeader::InitForDeserialization(std::optional<MultiLinkElement>& optElem)
 {
     optElem.emplace(WIFI_MAC_MGT_REASSOCIATION_REQUEST);
+    optElem->m_containingFrame = *this;
 }
 
 /***********************************************************
@@ -420,16 +517,26 @@ MgtAssocResponseHeader::GetAssociationId() const
 uint32_t
 MgtAssocResponseHeader::GetSerializedSizeImpl() const
 {
-    if (auto& mle = Get<MultiLinkElement>())
-    {
-        mle->m_containingFrame = *this;
-    }
+    SetMleContainingFrame();
 
     uint32_t size = 0;
     size += m_capability.GetSerializedSize();
     size += m_code.GetSerializedSize();
     size += 2; // aid
     size += WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::GetSerializedSizeImpl();
+    return size;
+}
+
+uint32_t
+MgtAssocResponseHeader::GetSerializedSizeInPerStaProfileImpl(
+    const MgtAssocResponseHeader& frame) const
+{
+    uint32_t size = 0;
+    size += m_capability.GetSerializedSize();
+    size += m_code.GetSerializedSize();
+    size +=
+        MgtHeaderInPerStaProfile<MgtAssocResponseHeader,
+                                 AssocResponseElems>::GetSerializedSizeInPerStaProfileImpl(frame);
     return size;
 }
 
@@ -444,16 +551,24 @@ MgtAssocResponseHeader::PrintImpl(std::ostream& os) const
 void
 MgtAssocResponseHeader::SerializeImpl(Buffer::Iterator start) const
 {
-    if (auto& mle = Get<MultiLinkElement>())
-    {
-        mle->m_containingFrame = *this;
-    }
+    SetMleContainingFrame();
 
     Buffer::Iterator i = start;
     i = m_capability.Serialize(i);
     i = m_code.Serialize(i);
     i.WriteHtolsbU16(m_aid);
     WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::SerializeImpl(i);
+}
+
+void
+MgtAssocResponseHeader::SerializeInPerStaProfileImpl(Buffer::Iterator start,
+                                                     const MgtAssocResponseHeader& frame) const
+{
+    Buffer::Iterator i = start;
+    i = m_capability.Serialize(i);
+    i = m_code.Serialize(i);
+    MgtHeaderInPerStaProfile<MgtAssocResponseHeader,
+                             AssocResponseElems>::SerializeInPerStaProfileImpl(i, frame);
 }
 
 uint32_t
@@ -463,14 +578,44 @@ MgtAssocResponseHeader::DeserializeImpl(Buffer::Iterator start)
     i = m_capability.Deserialize(i);
     i = m_code.Deserialize(i);
     m_aid = i.ReadLsbtohU16();
+    auto distance = i.GetDistanceFrom(start) +
+                    WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::DeserializeImpl(i);
+    if (auto& mle = Get<MultiLinkElement>())
+    {
+        for (std::size_t id = 0; id < mle->GetNPerStaProfileSubelements(); id++)
+        {
+            auto& perStaProfile = mle->GetPerStaProfile(id);
+            if (perStaProfile.HasAssocResponse())
+            {
+                auto& frameInPerStaProfile = perStaProfile.GetAssocResponse();
+                frameInPerStaProfile.CopyIesFromContainingFrame(*this);
+            }
+        }
+    }
+    return distance;
+}
+
+uint32_t
+MgtAssocResponseHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
+                                                         uint16_t length,
+                                                         const MgtAssocResponseHeader& frame)
+{
+    Buffer::Iterator i = start;
+    i = m_capability.Deserialize(i);
+    i = m_code.Deserialize(i);
+    m_aid = frame.m_aid;
     auto distance = i.GetDistanceFrom(start);
-    return distance + WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::DeserializeImpl(i);
+    NS_ASSERT_MSG(distance <= length,
+                  "Bytes read (" << distance << ") exceed expected number (" << length << ")");
+    return distance + MgtHeaderInPerStaProfile<MgtAssocResponseHeader, AssocResponseElems>::
+                          DeserializeFromPerStaProfileImpl(i, length - distance, frame);
 }
 
 void
 MgtAssocResponseHeader::InitForDeserialization(std::optional<MultiLinkElement>& optElem)
 {
     optElem.emplace(WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
+    optElem->m_containingFrame = *this;
 }
 
 /**********************************************************

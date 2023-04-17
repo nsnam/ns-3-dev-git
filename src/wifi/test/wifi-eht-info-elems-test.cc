@@ -62,7 +62,8 @@ class BasicMultiLinkElementTest : public HeaderSerializationTestCase
   private:
     void DoRun() override;
 
-    WifiMacType m_frameType; //!< the type of frame possibly included in the MLE
+    WifiMacType m_frameType;            //!< the type of frame possibly included in the MLE
+    MgtAssocRequestHeader m_outerAssoc; //!< the frame containing the MLE
 };
 
 BasicMultiLinkElementTest::BasicMultiLinkElementTest()
@@ -114,6 +115,12 @@ BasicMultiLinkElementTest::GetMultiLinkElement(
         mle.AddPerStaProfileSubelement();
         mle.GetPerStaProfile(i) = std::move(subelements[i]);
     }
+
+    if (!subelements.empty())
+    {
+        mle.m_containingFrame = m_outerAssoc;
+    }
+
     return mle;
 }
 
@@ -177,11 +184,14 @@ BasicMultiLinkElementTest::DoRun()
     perStaProfile.SetAssocRequest(assoc);
 
     // Adding Per-STA Profile Subelement
-    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {perStaProfile}), m_frameType);
+    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {perStaProfile}),
+                            m_frameType,
+                            m_outerAssoc);
 
     // Adding two Per-STA Profile Subelements
     TestHeaderSerialization(GetMultiLinkElement(commonInfo, {perStaProfile, perStaProfile}),
-                            m_frameType);
+                            m_frameType,
+                            m_outerAssoc);
 }
 
 /**

@@ -561,6 +561,9 @@ class MultiLinkElement : public WifiInformationElement
          */
         uint8_t GetStaInfoLength() const;
 
+        mutable ContainingFrame
+            m_containingFrame; //!< the mgt frame containing this Per-STA Profile
+
       private:
         uint16_t GetInformationFieldSize() const override;
         void SerializeInformationField(Buffer::Iterator start) const override;

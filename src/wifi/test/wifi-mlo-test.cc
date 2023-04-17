@@ -452,7 +452,7 @@ MultiLinkOperationsTestBase::DoSetup()
 {
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(2);
-    int64_t streamNumber = 100;
+    int64_t streamNumber = 30;
 
     NodeContainer wifiApNode;
     wifiApNode.Create(1);
@@ -1493,7 +1493,7 @@ MultiLinkTxTest::StartTraffic()
         client2->SetRemote(socket);
         m_sourceMac->GetDevice()->GetNode()->AddApplication(client2);
         // start during transmission of first A-MPDU, if multiple links are setup
-        client2->SetStartTime(MilliSeconds(3));
+        client2->SetStartTime(MilliSeconds(4));
         client2->SetStopTime(duration);
     }
 
