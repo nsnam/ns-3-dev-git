@@ -193,18 +193,16 @@ class MultiLinkElement : public WifiInformationElement
     /**
      * Construct a Multi-Link Element with no variant set.
      *
-     * \param frameType the type of the frame containing the Multi-Link Element
      * \param frame the management frame containing this Multi-Link Element
      */
-    MultiLinkElement(WifiMacType frameType, ContainingFrame frame = {});
+    MultiLinkElement(ContainingFrame frame = {});
     /**
      * Constructor
      *
      * \param variant the Multi-Link element variant (cannot be UNSET)
-     * \param frameType the type of the frame containing the Multi-Link Element
      * \param frame the management frame containing this Multi-Link Element
      */
-    MultiLinkElement(Variant variant, WifiMacType frameType, ContainingFrame frame = {});
+    MultiLinkElement(Variant variant, ContainingFrame frame = {});
 
     WifiInformationElementId ElementId() const override;
     WifiInformationElementId ElementIdExt() const override;
@@ -429,9 +427,8 @@ class MultiLinkElement : public WifiInformationElement
          * Constructor
          *
          * \param variant the Multi-Link element variant
-         * \param frameType the type of the frame containing the Multi-Link Element
          */
-        PerStaProfileSubelement(Variant variant, WifiMacType frameType);
+        PerStaProfileSubelement(Variant variant);
 
         /**
          * Copy constructor performing a deep copy of the object
@@ -570,7 +567,6 @@ class MultiLinkElement : public WifiInformationElement
         uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
 
         Variant m_variant;            //!< Multi-Link element variant
-        WifiMacType m_frameType;      //!< type of the frame containing the Multi-Link Element
         uint16_t m_staControl;        //!< STA Control field
         Mac48Address m_staMacAddress; //!< STA MAC address
         std::variant<std::monostate,
@@ -613,8 +609,6 @@ class MultiLinkElement : public WifiInformationElement
      * \param variant the variant of this Multi-Link Element
      */
     void SetVariant(Variant variant);
-
-    WifiMacType m_frameType; //!< type of the frame containing the Multi-Link Element
 
     /// Typedef for structure holding a Common Info field
     using CommonInfo = std::variant<CommonInfoBasicMle,

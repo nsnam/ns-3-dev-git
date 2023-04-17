@@ -132,12 +132,6 @@ MgtProbeResponseHeader::DeserializeImpl(Buffer::Iterator start)
     return distance + WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>::DeserializeImpl(i);
 }
 
-void
-MgtProbeResponseHeader::InitForDeserialization(std::optional<MultiLinkElement>& optElem)
-{
-    optElem.emplace(WIFI_MAC_MGT_PROBE_RESPONSE);
-}
-
 /***********************************************************
  *          Beacons
  ***********************************************************/
@@ -153,12 +147,6 @@ MgtBeaconHeader::GetTypeId()
                             .SetGroupName("Wifi")
                             .AddConstructor<MgtBeaconHeader>();
     return tid;
-}
-
-void
-MgtBeaconHeader::InitForDeserialization(std::optional<MultiLinkElement>& optElem)
-{
-    optElem.emplace(WIFI_MAC_MGT_BEACON);
 }
 
 /***********************************************************
@@ -291,13 +279,6 @@ MgtAssocRequestHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
                   "Bytes read (" << distance << ") exceed expected number (" << length << ")");
     return distance + MgtHeaderInPerStaProfile<MgtAssocRequestHeader, AssocRequestElems>::
                           DeserializeFromPerStaProfileImpl(i, length - distance, frame);
-}
-
-void
-MgtAssocRequestHeader::InitForDeserialization(std::optional<MultiLinkElement>& optElem)
-{
-    optElem.emplace(WIFI_MAC_MGT_ASSOCIATION_REQUEST);
-    optElem->m_containingFrame = *this;
 }
 
 /***********************************************************
@@ -447,13 +428,6 @@ MgtReassocRequestHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start
                   "Bytes read (" << distance << ") exceed expected number (" << length << ")");
     return distance + MgtHeaderInPerStaProfile<MgtReassocRequestHeader, AssocRequestElems>::
                           DeserializeFromPerStaProfileImpl(i, length - distance, frame);
-}
-
-void
-MgtReassocRequestHeader::InitForDeserialization(std::optional<MultiLinkElement>& optElem)
-{
-    optElem.emplace(WIFI_MAC_MGT_REASSOCIATION_REQUEST);
-    optElem->m_containingFrame = *this;
 }
 
 /***********************************************************
@@ -609,13 +583,6 @@ MgtAssocResponseHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
                   "Bytes read (" << distance << ") exceed expected number (" << length << ")");
     return distance + MgtHeaderInPerStaProfile<MgtAssocResponseHeader, AssocResponseElems>::
                           DeserializeFromPerStaProfileImpl(i, length - distance, frame);
-}
-
-void
-MgtAssocResponseHeader::InitForDeserialization(std::optional<MultiLinkElement>& optElem)
-{
-    optElem.emplace(WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
-    optElem->m_containingFrame = *this;
 }
 
 /**********************************************************

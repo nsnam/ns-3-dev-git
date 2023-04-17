@@ -228,14 +228,6 @@ class MgtAssocRequestHeader
                                               const MgtAssocRequestHeader& frame);
 
   private:
-    using WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>::InitForDeserialization;
-
-    /**
-     * \param optElem the MultiLinkElement object to initialize for deserializing the
-     *                information element into
-     */
-    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
-
     CapabilityInformation m_capability; //!< Capability information
     uint16_t m_listenInterval{0};       //!< listen interval
 };
@@ -328,14 +320,6 @@ class MgtReassocRequestHeader
                                               const MgtReassocRequestHeader& frame);
 
   private:
-    using WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>::InitForDeserialization;
-
-    /**
-     * \param optElem the MultiLinkElement object to initialize for deserializing the
-     *                information element into
-     */
-    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
-
     Mac48Address m_currentApAddr;       //!< Address of the current access point
     CapabilityInformation m_capability; //!< Capability information
     uint16_t m_listenInterval{0};       //!< listen interval
@@ -435,14 +419,6 @@ class MgtAssocResponseHeader
                                               const MgtAssocResponseHeader& frame);
 
   private:
-    using WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::InitForDeserialization;
-
-    /**
-     * \param optElem the MultiLinkElement object to initialize for deserializing the
-     *                information element into
-     */
-    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
-
     CapabilityInformation m_capability; //!< Capability information
     StatusCode m_code;                  //!< Status code
     uint16_t m_aid{0};                  //!< AID
@@ -523,14 +499,6 @@ class MgtProbeResponseHeader : public WifiMgtHeader<MgtProbeResponseHeader, Prob
     uint32_t DeserializeImpl(Buffer::Iterator start);
 
   private:
-    using WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>::InitForDeserialization;
-
-    /**
-     * \param optElem the MultiLinkElement object to initialize for deserializing the
-     *                information element into
-     */
-    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
-
     uint64_t m_timestamp;               //!< Timestamp
     uint64_t m_beaconInterval;          //!< Beacon interval
     CapabilityInformation m_capability; //!< Capability information
@@ -550,15 +518,6 @@ class MgtBeaconHeader : public MgtProbeResponseHeader
      * \return The TypeId.
      */
     static TypeId GetTypeId();
-
-  private:
-    // using WifiMgtHeader<MgtBeaconHeader, ProbeResponseElems>::InitForDeserialization;
-
-    /**
-     * \param optElem the MultiLinkElement object to initialize for deserializing the
-     *                information element into
-     */
-    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
 };
 
 /****************************

@@ -277,6 +277,8 @@ class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
     void CopyIesFromContainingFrame(const Derived& frame);
 
   protected:
+    using WifiMgtHeader<Derived, std::tuple<Elems...>>::InitForDeserialization;
+
     /**
      * \param frame the frame containing the Multi-Link Element
      * \return the number of bytes that are needed to serialize this header into a Per-STA Profile
@@ -308,6 +310,12 @@ class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
      * Pass a pointer to this frame to the Multi-Link Element (if any) included in this frame.
      */
     void SetMleContainingFrame() const;
+
+    /**
+     * \param optElem the MultiLinkElement object to initialize for deserializing the
+     *                information element into
+     */
+    void InitForDeserialization(std::optional<MultiLinkElement>& optElem);
 
   private:
     using WifiMgtHeader<Derived, std::tuple<Elems...>>::DoDeserialize;
@@ -380,6 +388,14 @@ WifiMgtHeader<Derived, std::tuple<Elems...>>::InitForDeserialization(
     {
         optElem.emplace();
     }
+}
+
+template <typename Derived, typename... Elems>
+void
+MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>::InitForDeserialization(
+    std::optional<MultiLinkElement>& optElem)
+{
+    optElem.emplace(*static_cast<const Derived*>(this));
 }
 
 namespace internal

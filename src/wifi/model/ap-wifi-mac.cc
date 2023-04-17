@@ -662,7 +662,7 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac4
     NS_LOG_FUNCTION(this << +linkId << frameType << to);
     NS_ABORT_IF(GetNLinks() == 1);
 
-    MultiLinkElement mle(MultiLinkElement::BASIC_VARIANT, frameType);
+    MultiLinkElement mle(MultiLinkElement::BASIC_VARIANT);
     mle.SetMldMacAddress(GetAddress());
     mle.SetLinkIdInfo(linkId);
     mle.SetBssParamsChangeCount(0);

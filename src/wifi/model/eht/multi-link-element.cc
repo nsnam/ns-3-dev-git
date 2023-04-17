@@ -222,15 +222,14 @@ CommonInfoBasicMle::DecodeEmlsrTransitionDelay(uint8_t value)
 /**
  * MultiLinkElement
  */
-MultiLinkElement::MultiLinkElement(WifiMacType frameType, ContainingFrame frame)
+MultiLinkElement::MultiLinkElement(ContainingFrame frame)
     : m_containingFrame(frame),
-      m_frameType(frameType),
       m_commonInfo(std::in_place_type<std::monostate>) // initialize as UNSET
 {
 }
 
-MultiLinkElement::MultiLinkElement(Variant variant, WifiMacType frameType, ContainingFrame frame)
-    : MultiLinkElement(frameType, frame)
+MultiLinkElement::MultiLinkElement(Variant variant, ContainingFrame frame)
+    : MultiLinkElement(frame)
 {
     NS_ASSERT(variant != UNSET);
     SetVariant(variant);
@@ -495,10 +494,8 @@ MultiLinkElement::GetTransitionTimeout() const
     return MicroSeconds(1 << (6 + emlCapabilities->transitionTimeout));
 }
 
-MultiLinkElement::PerStaProfileSubelement::PerStaProfileSubelement(Variant variant,
-                                                                   WifiMacType frameType)
+MultiLinkElement::PerStaProfileSubelement::PerStaProfileSubelement(Variant variant)
     : m_variant(variant),
-      m_frameType(frameType),
       m_staControl(0)
 {
 }
@@ -506,7 +503,6 @@ MultiLinkElement::PerStaProfileSubelement::PerStaProfileSubelement(Variant varia
 MultiLinkElement::PerStaProfileSubelement::PerStaProfileSubelement(
     const PerStaProfileSubelement& perStaProfile)
     : m_variant(perStaProfile.m_variant),
-      m_frameType(perStaProfile.m_frameType),
       m_staControl(perStaProfile.m_staControl),
       m_staMacAddress(perStaProfile.m_staMacAddress)
 {
@@ -536,7 +532,6 @@ MultiLinkElement::PerStaProfileSubelement::operator=(const PerStaProfileSubeleme
     }
 
     m_variant = perStaProfile.m_variant;
-    m_frameType = perStaProfile.m_frameType;
     m_staControl = perStaProfile.m_staControl;
     m_staMacAddress = perStaProfile.m_staMacAddress;
 
@@ -608,52 +603,35 @@ void
 MultiLinkElement::PerStaProfileSubelement::SetAssocRequest(
     const std::variant<MgtAssocRequestHeader, MgtReassocRequestHeader>& assoc)
 {
-    switch (m_frameType)
-    {
-    case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
-        m_staProfile =
-            std::make_unique<MgtAssocRequestHeader>(std::get<MgtAssocRequestHeader>(assoc));
-        break;
-    case WIFI_MAC_MGT_REASSOCIATION_REQUEST:
-        m_staProfile =
-            std::make_unique<MgtReassocRequestHeader>(std::get<MgtReassocRequestHeader>(assoc));
-        break;
-    default:
-        NS_ABORT_MSG("Invalid frame type: " << m_frameType);
-    }
+    std::visit(
+        [&](auto&& frame) {
+            m_staProfile = std::make_unique<std::decay_t<decltype(frame)>>(frame);
+        },
+        assoc);
 }
 
 void
 MultiLinkElement::PerStaProfileSubelement::SetAssocRequest(
     std::variant<MgtAssocRequestHeader, MgtReassocRequestHeader>&& assoc)
 {
-    switch (m_frameType)
-    {
-    case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
-        m_staProfile = std::make_unique<MgtAssocRequestHeader>(
-            std::move(std::get<MgtAssocRequestHeader>(assoc)));
-        break;
-    case WIFI_MAC_MGT_REASSOCIATION_REQUEST:
-        m_staProfile = std::make_unique<MgtReassocRequestHeader>(
-            std::move(std::get<MgtReassocRequestHeader>(assoc)));
-        break;
-    default:
-        NS_ABORT_MSG("Invalid frame type: " << m_frameType);
-    }
+    std::visit(
+        [&](auto&& frame) {
+            using T = std::decay_t<decltype(frame)>;
+            m_staProfile = std::make_unique<T>(std::forward<T>(frame));
+        },
+        assoc);
 }
 
 bool
 MultiLinkElement::PerStaProfileSubelement::HasAssocRequest() const
 {
-    return m_frameType == WIFI_MAC_MGT_ASSOCIATION_REQUEST &&
-           std::holds_alternative<std::unique_ptr<MgtAssocRequestHeader>>(m_staProfile);
+    return std::holds_alternative<std::unique_ptr<MgtAssocRequestHeader>>(m_staProfile);
 }
 
 bool
 MultiLinkElement::PerStaProfileSubelement::HasReassocRequest() const
 {
-    return m_frameType == WIFI_MAC_MGT_REASSOCIATION_REQUEST &&
-           std::holds_alternative<std::unique_ptr<MgtReassocRequestHeader>>(m_staProfile);
+    return std::holds_alternative<std::unique_ptr<MgtReassocRequestHeader>>(m_staProfile);
 }
 
 AssocReqRefVariant
@@ -670,25 +648,19 @@ MultiLinkElement::PerStaProfileSubelement::GetAssocRequest() const
 void
 MultiLinkElement::PerStaProfileSubelement::SetAssocResponse(const MgtAssocResponseHeader& assoc)
 {
-    NS_ABORT_IF(m_frameType != WIFI_MAC_MGT_ASSOCIATION_RESPONSE &&
-                m_frameType != WIFI_MAC_MGT_REASSOCIATION_RESPONSE);
     m_staProfile = std::make_unique<MgtAssocResponseHeader>(assoc);
 }
 
 void
 MultiLinkElement::PerStaProfileSubelement::SetAssocResponse(MgtAssocResponseHeader&& assoc)
 {
-    NS_ABORT_IF(m_frameType != WIFI_MAC_MGT_ASSOCIATION_RESPONSE &&
-                m_frameType != WIFI_MAC_MGT_REASSOCIATION_RESPONSE);
     m_staProfile = std::make_unique<MgtAssocResponseHeader>(std::move(assoc));
 }
 
 bool
 MultiLinkElement::PerStaProfileSubelement::HasAssocResponse() const
 {
-    return (m_frameType == WIFI_MAC_MGT_ASSOCIATION_RESPONSE ||
-            m_frameType == WIFI_MAC_MGT_REASSOCIATION_RESPONSE) &&
-           std::holds_alternative<std::unique_ptr<MgtAssocResponseHeader>>(m_staProfile);
+    return std::holds_alternative<std::unique_ptr<MgtAssocResponseHeader>>(m_staProfile);
 }
 
 MgtAssocResponseHeader&
@@ -824,8 +796,7 @@ MultiLinkElement::AddPerStaProfileSubelement()
 {
     auto variant = GetVariant();
     NS_ABORT_IF(variant == UNSET);
-    NS_ABORT_IF(m_frameType == WIFI_MAC_DATA);
-    m_perStaProfileSubelements.emplace_back(variant, m_frameType);
+    m_perStaProfileSubelements.emplace_back(variant);
 }
 
 std::size_t

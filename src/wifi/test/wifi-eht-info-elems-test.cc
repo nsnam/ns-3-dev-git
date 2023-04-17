@@ -63,14 +63,12 @@ class BasicMultiLinkElementTest : public HeaderSerializationTestCase
   private:
     void DoRun() override;
 
-    WifiMacType m_frameType;            //!< the type of frame possibly included in the MLE
     MgtAssocRequestHeader m_outerAssoc; //!< the frame containing the MLE
 };
 
 BasicMultiLinkElementTest::BasicMultiLinkElementTest()
     : HeaderSerializationTestCase(
-          "Check serialization and deserialization of Basic variant Multi-Link elements"),
-      m_frameType(WIFI_MAC_MGT_ASSOCIATION_REQUEST)
+          "Check serialization and deserialization of Basic variant Multi-Link elements")
 {
 }
 
@@ -83,7 +81,7 @@ BasicMultiLinkElementTest::GetMultiLinkElement(
     const CommonInfoBasicMle& commonInfo,
     std::vector<MultiLinkElement::PerStaProfileSubelement> subelements)
 {
-    MultiLinkElement mle(MultiLinkElement::BASIC_VARIANT, m_frameType);
+    MultiLinkElement mle(MultiLinkElement::BASIC_VARIANT);
     mle.SetMldMacAddress(commonInfo.m_mldMacAddress);
     if (commonInfo.m_linkIdInfo.has_value())
     {
@@ -128,17 +126,17 @@ BasicMultiLinkElementTest::DoRun()
     };
 
     // Common Info with MLD MAC address
-    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}), m_frameType);
+    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}));
 
     commonInfo.m_linkIdInfo = 3;
 
     // Adding Link ID Info
-    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}), m_frameType);
+    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}));
 
     commonInfo.m_bssParamsChangeCount = 1;
 
     // Adding BSS Parameters Change Count
-    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}), m_frameType);
+    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}));
 
     commonInfo.m_mediumSyncDelayInfo =
         CommonInfoBasicMle::MediumSyncDelayInfo{.mediumSyncDuration = 1,
@@ -146,7 +144,7 @@ BasicMultiLinkElementTest::DoRun()
                                                 .mediumSyncMaxNTxops = 5};
 
     // Adding Medium Sync Delay Information
-    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}), m_frameType);
+    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}));
 
     commonInfo.m_emlCapabilities = CommonInfoBasicMle::EmlCapabilities{.emlsrSupport = 1,
                                                                        .emlsrPaddingDelay = 4,
@@ -154,7 +152,7 @@ BasicMultiLinkElementTest::DoRun()
                                                                        .transitionTimeout = 10};
 
     // Adding Medium Sync Delay Information
-    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}), m_frameType);
+    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}));
 
     /**
      * To test the serialization/deserialization of Per-STA Profile subelements, we include
@@ -204,8 +202,7 @@ BasicMultiLinkElementTest::DoRun()
     // to the containing frame, so that all the IEs are inherited and the Per-STA Profile
     // does not contain any Information Element.
 
-    MultiLinkElement::PerStaProfileSubelement perStaProfile1(MultiLinkElement::BASIC_VARIANT,
-                                                             m_frameType);
+    MultiLinkElement::PerStaProfileSubelement perStaProfile1(MultiLinkElement::BASIC_VARIANT);
     perStaProfile1.SetLinkId(3);
     perStaProfile1.SetCompleteProfile();
     perStaProfile1.SetAssocRequest(m_outerAssoc);
@@ -233,8 +230,7 @@ BasicMultiLinkElementTest::DoRun()
     // EhtCapabilities IE is present in the containing frame but not in the Per-STA Profile
     //  subelement, hence it is listed in a Non-Inheritance element
 
-    MultiLinkElement::PerStaProfileSubelement perStaProfile2(MultiLinkElement::BASIC_VARIANT,
-                                                             m_frameType);
+    MultiLinkElement::PerStaProfileSubelement perStaProfile2(MultiLinkElement::BASIC_VARIANT);
     perStaProfile2.SetLinkId(0);
     perStaProfile2.SetCompleteProfile();
     perStaProfile2.SetStaMacAddress(Mac48Address("ba:98:76:54:32:10"));

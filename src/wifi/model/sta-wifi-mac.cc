@@ -347,9 +347,7 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
 {
     NS_LOG_FUNCTION(this << isReassoc << +linkId);
 
-    MultiLinkElement multiLinkElement(MultiLinkElement::BASIC_VARIANT,
-                                      isReassoc ? WIFI_MAC_MGT_REASSOCIATION_REQUEST
-                                                : WIFI_MAC_MGT_ASSOCIATION_REQUEST);
+    MultiLinkElement multiLinkElement(MultiLinkElement::BASIC_VARIANT);
     // The Common info field of the Basic Multi-Link element carried in the (Re)Association
     // Request frame shall include the MLD MAC address, the MLD Capabilities and Operations,
     // and the EML Capabilities subfields, and shall not include the Link ID Info, the BSS
