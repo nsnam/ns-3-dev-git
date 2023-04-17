@@ -27,27 +27,28 @@ Changes from ns-3.38 to ns-3-dev
 
 ### Changes to existing API
 
-* (dsr) The spelling of the class `DsrOptionRerrUnsupportHeader` from `dsr-option-header.h` was corrected to `DsrOptionRerrUnsupportedHeader`; this will affect existing users who were using the class with the misspelling.
-* (internet) The spelling of the enumerated value `IPV6_EXT_AUTHENTIFICATION` from `ipv6-header.h` was corrected to `IPV6_EXT_AUTHENTICATION`; this will affect existing users who were using the enumerated value with the misspelling.
-* (mesh) The spelling of the function `PeerManagementProtocolMac::SetPeerManagerProtcol` from `peer-management-protocol-mac.h` was corrected to `PeerManagementProtocolMac::SetPeerManagerProtocol`; this will affect existing users who were using the function with the misspelling.
-* (lr-wpan) The spelling of the constant `aMaxBeaconPayloadLenght` from `lr-wpan-constants.h` was corrected to `aMaxBeaconPayloadLength`; this will affect existing users who were using the constant value with the misspelling.
-* (lte) The spelling of the enumeration `ControPduType_t` from `lte-rlc-am-header.h` was corrected to `ControlPduType_t`; this will affect existing users who were using the enumeration with the misspelling.
-* (lte) The spelling of the function `LteUeCphySapProvider::StartInSnycDetection()` from `lte-ue-cphy-sap.h` was corrected to `LteUeCphySapProvider::StartInSyncDetection()`; this will affect existing users who were using the function with the misspelling.
-* (lte) The spelling of the function `MemberLteUeCphySapProvider::StartInSnycDetection()` from `lte-ue-cphy-sap.h` was corrected to `MemberLteUeCphySapProvider::StartInSyncDetection()`; this will affect existing users who were using the function with the misspelling.
-* (lte) The spelling of the function `LteUePhy::StartInSnycDetection()` from `lte-ue-phy.h` was corrected to `LteUePhy::StartInSyncDetection()`; this will affect existing users who were using the function with the misspelling.
-* (lte) The spelling of the function `DoUlInfoListElementHarqFeeback` from `lte-enb-phy-sap.h` and `lte-enb-mac.h` was corrected to `DoUlInfoListElementHarqFeedback`; this will affect existing users who were using the function with the mispelling.
-* (lte) The spelling of the function `DoDlInfoListElementHarqFeeback` from `lte-enb-phy-sap.h` and `lte-enb-mac.h` was corrected to `DoDlInfoListElementHarqFeedback`; this will affect existing users who were using the function with the mispelling.
-* (network) The spelling of the file `lollipop-comparisions.cc` was corrected to `lollipop-comparisons.cc`.
-* (network) The spelling of the attribute `currentTrimedFromStart` from `packet-metadata.h` was corrected to `currentTrimmedFromStart`; this will affect existing users who were using the attribute with the misspelling.
-* (network) The spelling of the attribute `currentTrimedFromEnd` from `packet-metadata.h` was corrected to `currentTrimmedFromEnd`; this will affect existing users who were using the attribute with the misspelling.
-* (wave) The spelling of the function `OcbWifiMac::CancleTx()` from `ocb-wifi-mac.h` was corrected to `OcbWifiMac::CancelTx()`; this will affect existing users who were using the function with the misspelling.
-* (wifi) The spelling of the attribute `m_succesMax1` from `aparf-wifi-manager.h` was corrected to `m_successMax1`; this will affect existing users who were using the attribute with the misspelling.
-* (wifi) The spelling of the attribute `m_succesMax2` from `aparf-wifi-manager.h` was corrected to `m_successMax2`; this will affect existing users who were using the attribute with the misspelling.
-* (wifi) The spelling of the enumerated value `MDAOP_ADVERTISMENT_REQUEST` from `mgmt-headers.h` was corrected to `MDAOP_ADVERTISEMENT_REQUEST`; this will affect existing users who were using the enumerated value with the misspelling.
-* (wifi) The spelling of the enumerated value `MDAOP_ADVERTISMENTS` from `mgmt-headers.h` was corrected to `MDAOP_ADVERTISEMENTS`; this will affect existing users who were using the enumerated value with the misspelling.
-* (wifi) The spelling of the define `IE_BEAMLINK_MAINENANCE` from `wifi-information-element.h` was corrected to `IE_BEAMLINK_MAINTENANCE`; this will affect existing users who were using the define with the misspelling.
-* (wimax) The spelling of the attribute `m_nrRecivedFecBlocks` from `simple-ofdm-wimax-phy.h` was corrected to `m_nrReceivedFecBlocks`; this will affect existing users who were using the attribute with the misspelling.
-* (sixlowpan) The spelling of the function `SixLowPanNetDevice::Fragments::GetFraments` from `sixlowpan-net-device.cc` was corrected to `SixLowPanNetDevice::Fragments::GetFragments`; this will affect existing users who were using the function with the misspelling.
+* The spelling of the following files, classes, functions, constants, defines and enumerated values was corrected; this will affect existing users who were using them with the misspelling.
+  * (dsr) Class `DsrOptionRerrUnsupportHeader` from `dsr-option-header.h` was renamed `DsrOptionRerrUnsupportedHeader`.
+  * (internet) Enumerated value `IPV6_EXT_AUTHENTIFICATION` from `ipv6-header.h` was renamed `IPV6_EXT_AUTHENTICATION`.
+  * (lr-wpan) Constant `aMaxBeaconPayloadLenght` from `lr-wpan-constants.h` was renamed `aMaxBeaconPayloadLength`.
+  * (lte) Enumeration `ControPduType_t` from `lte-rlc-am-header.h` was renamed `ControlPduType_t`.
+  * (lte) Function `LteUeCphySapProvider::StartInSnycDetection()` from `lte-ue-cphy-sap.h` was renamed `LteUeCphySapProvider::StartInSyncDetection()`.
+  * (lte) Function `MemberLteUeCphySapProvider::StartInSnycDetection()` from `lte-ue-cphy-sap.h` was renamed `MemberLteUeCphySapProvider::StartInSyncDetection()`.
+  * (lte) Function `LteUePhy::StartInSnycDetection()` from `lte-ue-phy.h` was renamed `LteUePhy::StartInSyncDetection()`.
+  * (lte) Function `DoUlInfoListElementHarqFeeback` from `lte-enb-phy-sap.h` and `lte-enb-mac.h` was renamed `DoUlInfoListElementHarqFeedback`.
+  * (lte) Function `DoDlInfoListElementHarqFeeback` from `lte-enb-phy-sap.h` and `lte-enb-mac.h` was renamed `DoDlInfoListElementHarqFeedback`.
+  * (mesh) Function `PeerManagementProtocolMac::SetPeerManagerProtcol` from `peer-management-protocol-mac.h` was renamed `PeerManagementProtocolMac::SetPeerManagerProtocol`.
+  * (network) File `lollipop-comparisions.cc` was renamed `lollipop-comparisons.cc`.
+  * (network) Attribute `currentTrimedFromStart` from `packet-metadata.h` was renamed `currentTrimmedFromStart`.
+  * (network) Attribute `currentTrimedFromEnd` from `packet-metadata.h` was renamed `currentTrimmedFromEnd`.
+  * (sixlowpan) Function `SixLowPanNetDevice::Fragments::GetFraments` from `sixlowpan-net-device.cc` was renamed `SixLowPanNetDevice::Fragments::GetFragments`.
+  * (wave) Function `OcbWifiMac::CancleTx()` from `ocb-wifi-mac.h` was renamed `OcbWifiMac::CancelTx()`.
+  * (wifi) Attribute `m_succesMax1` from `aparf-wifi-manager.h` was renamed `m_successMax1`.
+  * (wifi) Attribute `m_succesMax2` from `aparf-wifi-manager.h` was renamed `m_successMax2`.
+  * (wifi) Enumerated value `MDAOP_ADVERTISMENT_REQUEST` from `mgmt-headers.h` was renamed `MDAOP_ADVERTISEMENT_REQUEST`.
+  * (wifi) Enumerated value `MDAOP_ADVERTISMENTS` from `mgmt-headers.h` was renamed `MDAOP_ADVERTISEMENTS`.
+  * (wifi) Define `IE_BEAMLINK_MAINENANCE` from `wifi-information-element.h` was renamed `IE_BEAMLINK_MAINTENANCE`.
+  * (wimax) Attribute `m_nrRecivedFecBlocks` from `simple-ofdm-wimax-phy.h` was renamed `m_nrReceivedFecBlocks`.
 * (lr-wpan) Updated `LrWpanPhy::PlmeSetAttribute` and `LrWpanPhy::PlmeGetAttribute` (Request and Confirm) to use smart pointers.
 * (lr-wpan) Modified `LrWpanPhy::PlmeGetAttributeRequest` to include support for a few attributes (none were supported before the change).
 * (lr-wpan) Added `macShortAddress`, `macExtendendAddress` and `macPanId` to the attributes that can be use with MLME-GET and MLME-SET functions.
