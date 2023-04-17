@@ -17,6 +17,7 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
+#include "ns3/address-utils.h"
 #include "ns3/header-serialization-test.h"
 #include "ns3/log.h"
 #include "ns3/mgt-headers.h"
@@ -116,11 +117,6 @@ BasicMultiLinkElementTest::GetMultiLinkElement(
         mle.GetPerStaProfile(i) = std::move(subelements[i]);
     }
 
-    if (!subelements.empty())
-    {
-        mle.m_containingFrame = m_outerAssoc;
-    }
-
     return mle;
 }
 
@@ -160,38 +156,440 @@ BasicMultiLinkElementTest::DoRun()
     // Adding Medium Sync Delay Information
     TestHeaderSerialization(GetMultiLinkElement(commonInfo, {}), m_frameType);
 
-    AllSupportedRates rates;
-    rates.AddSupportedRate(6);
-    rates.AddSupportedRate(12);
-    rates.AddSupportedRate(24);
+    /**
+     * To test the serialization/deserialization of Per-STA Profile subelements, we include
+     * the Multi-Link Element in an Association Request frame
+     */
 
     CapabilityInformation capabilities;
     capabilities.SetShortPreamble(true);
     capabilities.SetShortSlotTime(true);
     capabilities.SetEss();
 
+    m_outerAssoc.SetListenInterval(0);
+    m_outerAssoc.Capabilities() = capabilities;
+    m_outerAssoc.Get<Ssid>() = Ssid("MySsid");
+
+    AllSupportedRates rates;
+    rates.AddSupportedRate(6e6);
+    rates.AddSupportedRate(9e6);
+    rates.AddSupportedRate(12e6);
+    rates.AddSupportedRate(18e6);
+    rates.AddSupportedRate(24e6);
+    rates.AddSupportedRate(36e6);
+    rates.AddSupportedRate(48e6);
+    rates.AddSupportedRate(54e6);
+    // extended rates
+    rates.AddSupportedRate(1e6);
+    rates.AddSupportedRate(2e6);
+
+    m_outerAssoc.Get<SupportedRates>() = rates.rates;
+    m_outerAssoc.Get<ExtendedSupportedRatesIE>() = rates.extendedRates;
+
+    EhtCapabilities ehtCapabilities;
+    for (auto maxMcs : {7, 9, 11, 13})
+    {
+        ehtCapabilities.SetSupportedRxEhtMcsAndNss(EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY,
+                                                   maxMcs,
+                                                   1);
+        ehtCapabilities.SetSupportedTxEhtMcsAndNss(EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_20_MHZ_ONLY,
+                                                   maxMcs,
+                                                   1);
+    }
+
+    m_outerAssoc.Get<HeCapabilities>().emplace();
+    m_outerAssoc.Get<EhtCapabilities>() = ehtCapabilities;
+
+    // The Association Request included in the first Per-STA Profile subelement is identical
+    // to the containing frame, so that all the IEs are inherited and the Per-STA Profile
+    // does not contain any Information Element.
+
+    MultiLinkElement::PerStaProfileSubelement perStaProfile1(MultiLinkElement::BASIC_VARIANT,
+                                                             m_frameType);
+    perStaProfile1.SetLinkId(3);
+    perStaProfile1.SetCompleteProfile();
+    perStaProfile1.SetAssocRequest(m_outerAssoc);
+
+    /* Association Request included in the second Per-STA Profile subelement */
     MgtAssocRequestHeader assoc;
-    assoc.Get<Ssid>() = Ssid("MySsid");
-    assoc.Get<SupportedRates>() = rates.rates;
     assoc.Capabilities() = capabilities;
-    assoc.SetListenInterval(0);
+    // we simulate a "mistake" by adding an Ssid IE, which cannot be included in the
+    // Per-STA Profile subelement. We will check that this Ssid is not serialized
+    assoc.Get<Ssid>() = Ssid("OtherSsid");
+    // another "mistake" of the same type, except that a TID-To-Link Mapping element
+    // is not included in the containing frame
+    assoc.Get<TidToLinkMapping>().emplace();
+    // the SupportedRates IE is the same (hence not serialized) as in the containing frame,
+    // while the ExtendedSupportedRatesIE is different (hence serialized)
+    rates.AddSupportedRate(5.5e6);
+    rates.AddSupportedRate(11e6);
+    assoc.Get<SupportedRates>() = rates.rates;
+    assoc.Get<ExtendedSupportedRatesIE>() = rates.extendedRates;
+    // a VhtCapabilities IE is not present in the containing frame, hence it is serialized
+    assoc.Get<VhtCapabilities>().emplace();
+    // HeCapabilities IE is present in the containing frame and in the Per-STA Profile subelement,
+    // hence it is not serialized
+    assoc.Get<HeCapabilities>().emplace();
+    // EhtCapabilities IE is present in the containing frame but not in the Per-STA Profile
+    //  subelement, hence it is listed in a Non-Inheritance element
 
-    MultiLinkElement::PerStaProfileSubelement perStaProfile(MultiLinkElement::BASIC_VARIANT,
-                                                            m_frameType);
-    perStaProfile.SetLinkId(5);
-    perStaProfile.SetCompleteProfile();
-    perStaProfile.SetStaMacAddress(Mac48Address("ba:98:76:54:32:10"));
-    perStaProfile.SetAssocRequest(assoc);
+    MultiLinkElement::PerStaProfileSubelement perStaProfile2(MultiLinkElement::BASIC_VARIANT,
+                                                             m_frameType);
+    perStaProfile2.SetLinkId(0);
+    perStaProfile2.SetCompleteProfile();
+    perStaProfile2.SetStaMacAddress(Mac48Address("ba:98:76:54:32:10"));
+    perStaProfile2.SetAssocRequest(assoc);
 
-    // Adding Per-STA Profile Subelement
-    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {perStaProfile}),
-                            m_frameType,
-                            m_outerAssoc);
+    // The Association Request included in the third Per-STA Profile subelement has the
+    // EHT Capabilities element (which is inherited and not serialized) but it does not have the
+    // Ssid element, which is not listed in the Non-Inheritance element because it shall not
+    // appear in a Per-STA Profile subelement.
+    assoc.Get<Ssid>().reset();
+    assoc.Get<EhtCapabilities>() = ehtCapabilities;
 
-    // Adding two Per-STA Profile Subelements
-    TestHeaderSerialization(GetMultiLinkElement(commonInfo, {perStaProfile, perStaProfile}),
-                            m_frameType,
-                            m_outerAssoc);
+    auto perStaProfile3 = perStaProfile2;
+    perStaProfile3.SetAssocRequest(assoc);
+
+    // Adding MLE with two Per-STA Profile Subelements
+    m_outerAssoc.Get<MultiLinkElement>() =
+        GetMultiLinkElement(commonInfo, {perStaProfile1, perStaProfile2, perStaProfile3});
+
+    // first, check that serialization/deserialization of the whole Association Request works
+    TestHeaderSerialization(m_outerAssoc);
+
+    // now, "manually" serialize and deserialize the header to check that the expected elements
+    // have been serialized
+    Buffer buffer;
+    buffer.AddAtStart(m_outerAssoc.GetSerializedSize());
+    m_outerAssoc.Serialize(buffer.Begin());
+
+    auto i = buffer.Begin();
+    i = CapabilityInformation().Deserialize(i);
+    i.ReadLsbtohU16(); // Listen interval
+
+    auto tmp = i;
+    i = Ssid().DeserializeIfPresent(tmp);
+    NS_TEST_EXPECT_MSG_GT(i.GetDistanceFrom(tmp), 0, "Ssid element not present");
+
+    i = SupportedRates().DeserializeIfPresent(tmp = i);
+    NS_TEST_EXPECT_MSG_GT(i.GetDistanceFrom(tmp), 0, "SupportedRates element not present");
+
+    i = ExtendedSupportedRatesIE().DeserializeIfPresent(tmp = i);
+    NS_TEST_EXPECT_MSG_GT(i.GetDistanceFrom(tmp),
+                          0,
+                          "ExtendedSupportedRatesIE element not present");
+
+    i = HeCapabilities().DeserializeIfPresent(tmp = i);
+    NS_TEST_EXPECT_MSG_GT(i.GetDistanceFrom(tmp), 0, "HeCapabilities element not present");
+
+    // deserialize Multi-Link Element
+    NS_TEST_EXPECT_MSG_EQ(i.ReadU8(), IE_EXTENSION, "IE_EXTENSION expected at the begin of MLE");
+    i.ReadU8(); // length
+    NS_TEST_EXPECT_MSG_EQ(i.ReadU8(),
+                          IE_EXT_MULTI_LINK_ELEMENT,
+                          "IE_EXT_MULTI_LINK_ELEMENT expected");
+
+    uint16_t mlControl = i.ReadLsbtohU16();
+    auto nBytes = CommonInfoBasicMle().Deserialize(i, mlControl >> 4);
+    i.Next(nBytes);
+
+    // first Per-STA Profile subelement
+    NS_TEST_EXPECT_MSG_EQ(i.ReadU8(),
+                          MultiLinkElement::PER_STA_PROFILE_SUBELEMENT_ID,
+                          "PER_STA_PROFILE_SUBELEMENT_ID expected");
+    i.ReadU8();        // length
+    i.ReadLsbtohU16(); // STA Control field
+    i.ReadU8();        // STA Info Length
+    // no STA address
+    i = CapabilityInformation().Deserialize(i);
+    // no Information Element
+
+    // second Per-STA Profile subelement
+    NS_TEST_EXPECT_MSG_EQ(i.ReadU8(),
+                          MultiLinkElement::PER_STA_PROFILE_SUBELEMENT_ID,
+                          "PER_STA_PROFILE_SUBELEMENT_ID expected");
+    i.ReadU8();        // length
+    i.ReadLsbtohU16(); // STA Control field
+    i.ReadU8();        // STA Info Length
+    Mac48Address address;
+    ReadFrom(i, address);
+    i = CapabilityInformation().Deserialize(i);
+    // no Listen interval
+    // Ssid element not present (as mandated by specs)
+    // SupportedRates not present because it is inherited
+
+    i = ExtendedSupportedRatesIE().DeserializeIfPresent(tmp = i);
+    NS_TEST_EXPECT_MSG_GT(i.GetDistanceFrom(tmp),
+                          0,
+                          "ExtendedSupportedRatesIE element not present");
+
+    i = VhtCapabilities().DeserializeIfPresent(tmp = i);
+    NS_TEST_EXPECT_MSG_GT(i.GetDistanceFrom(tmp), 0, "VhtCapabilities element not present");
+
+    // HeCapabilities not present because it is inherited
+    NonInheritance nonInheritance;
+    i = nonInheritance.DeserializeIfPresent(tmp = i);
+    NS_TEST_EXPECT_MSG_GT(i.GetDistanceFrom(tmp), 0, "Non-Inheritance element not present");
+    NS_TEST_EXPECT_MSG_EQ(nonInheritance.IsPresent(IE_EXTENSION, IE_EXT_EHT_CAPABILITIES),
+                          true,
+                          "Non-Inheritance does not indicate EhtCapabilities");
+    NS_TEST_EXPECT_MSG_EQ(nonInheritance.m_elemIdList.size(),
+                          0,
+                          "Unexpected size for Elem ID list of Non-Inheritance element");
+    NS_TEST_EXPECT_MSG_EQ(nonInheritance.m_elemIdExtList.size(),
+                          1,
+                          "Unexpected size for Elem ID list of Non-Inheritance element");
+
+    // third Per-STA Profile subelement
+    NS_TEST_EXPECT_MSG_EQ(i.ReadU8(),
+                          MultiLinkElement::PER_STA_PROFILE_SUBELEMENT_ID,
+                          "PER_STA_PROFILE_SUBELEMENT_ID expected");
+    i.ReadU8();        // length
+    i.ReadLsbtohU16(); // STA Control field
+    i.ReadU8();        // STA Info Length
+    ReadFrom(i, address);
+    i = CapabilityInformation().Deserialize(i);
+    // no Listen interval
+    // Ssid element not present (as mandated by specs)
+    // SupportedRates not present because it is inherited
+
+    i = ExtendedSupportedRatesIE().DeserializeIfPresent(tmp = i);
+    NS_TEST_EXPECT_MSG_GT(i.GetDistanceFrom(tmp),
+                          0,
+                          "ExtendedSupportedRatesIE element not present");
+
+    i = VhtCapabilities().DeserializeIfPresent(tmp = i);
+    NS_TEST_EXPECT_MSG_GT(i.GetDistanceFrom(tmp), 0, "VhtCapabilities element not present");
+
+    // HeCapabilities not present because it is inherited
+    // EhtCapabilities not present because it is inherited
+
+    // the Multi-Link Element is done, we shall now find the EHT Capabilities of the
+    // containing Association Request frame
+    ehtCapabilities = EhtCapabilities(true, m_outerAssoc.Get<HeCapabilities>().value());
+    i = ehtCapabilities.DeserializeIfPresent(tmp = i);
+    NS_TEST_EXPECT_MSG_GT(i.GetDistanceFrom(tmp), 0, "EhtCapabilities element not present");
+
+    /**
+     * Yet another test: use the Deserialize method of the management frame and check that
+     * inherited Information Elements have been copied
+     */
+    MgtAssocRequestHeader frame;
+    auto count = frame.Deserialize(buffer.Begin());
+
+    NS_TEST_EXPECT_MSG_EQ(count, buffer.GetSize(), "Unexpected number of deserialized bytes");
+
+    // containing frame
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<Ssid>().has_value(),
+                          true,
+                          "Containing frame should have SSID IE");
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<SupportedRates>().has_value(),
+                          true,
+                          "Containing frame should have Supported Rates IE");
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<ExtendedSupportedRatesIE>().has_value(),
+                          true,
+                          "Containing frame should have Extended Supported Rates IE");
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<HtCapabilities>().has_value(),
+                          false,
+                          "Containing frame should not have HT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<ExtendedCapabilities>().has_value(),
+                          false,
+                          "Containing frame should not have Extended Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<VhtCapabilities>().has_value(),
+                          false,
+                          "Containing frame should not have VHT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<HeCapabilities>().has_value(),
+                          true,
+                          "Containing frame should have HE Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<MultiLinkElement>().has_value(),
+                          true,
+                          "Containing frame should have Multi-Link Element IE");
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<EhtCapabilities>().has_value(),
+                          true,
+                          "Containing frame should have EHT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<TidToLinkMapping>().has_value(),
+                          false,
+                          "Containing frame should not have TID-to-Link Mapping IE");
+
+    auto& mle = frame.Get<MultiLinkElement>().value();
+
+    NS_TEST_EXPECT_MSG_EQ(mle.GetNPerStaProfileSubelements(),
+                          3,
+                          "Unexpected number of Per-STA Profile subelements");
+
+    // frame in first Per-STA Profile subelement has inherited all the IEs but SSID and
+    // Multi-Link Element IEs
+    auto& perSta1 = mle.GetPerStaProfile(0);
+    NS_TEST_EXPECT_MSG_EQ(perSta1.HasAssocRequest(),
+                          true,
+                          "First Per-STA Profile should contain an Association Request frame");
+    auto& perSta1Frame =
+        std::get<std::reference_wrapper<MgtAssocRequestHeader>>(perSta1.GetAssocRequest()).get();
+
+    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<Ssid>().has_value(),
+                          false,
+                          "Frame in first Per-STA Profile should not have SSID IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<SupportedRates>().has_value(),
+                          true,
+                          "Frame in first Per-STA Profile should have Supported Rates IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta1Frame.Get<SupportedRates>() == frame.Get<SupportedRates>()),
+        true,
+        "Supported Rates IE not correctly inherited by frame in first Per-STA Profile");
+    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<ExtendedSupportedRatesIE>().has_value(),
+                          true,
+                          "Frame in first Per-STA Profile should have Extended Supported Rates IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta1Frame.Get<ExtendedSupportedRatesIE>() == frame.Get<ExtendedSupportedRatesIE>()),
+        true,
+        "Extended Supported Rates IE not correctly inherited by frame in first Per-STA Profile");
+    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<HtCapabilities>().has_value(),
+                          false,
+                          "Frame in first Per-STA Profile should not have HT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        perSta1Frame.Get<ExtendedCapabilities>().has_value(),
+        false,
+        "Frame in first Per-STA Profile should not have Extended Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<VhtCapabilities>().has_value(),
+                          false,
+                          "Frame in first Per-STA Profile should not have VHT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<HeCapabilities>().has_value(),
+                          true,
+                          "Frame in first Per-STA Profile should have HE Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta1Frame.Get<HeCapabilities>() == frame.Get<HeCapabilities>()),
+        true,
+        "HE Capabilities IE not correctly inherited by frame in first Per-STA Profile");
+    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<MultiLinkElement>().has_value(),
+                          false,
+                          "Frame in first Per-STA Profile should not have Multi-Link Element IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<EhtCapabilities>().has_value(),
+                          true,
+                          "Frame in first Per-STA Profile should have EHT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta1Frame.Get<EhtCapabilities>() == frame.Get<EhtCapabilities>()),
+        true,
+        "EHT Capabilities IE not correctly inherited by frame in first Per-STA Profile");
+    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<TidToLinkMapping>().has_value(),
+                          false,
+                          "Frame in first Per-STA Profile should not have TID-to-Link Mapping IE");
+
+    // frame in second Per-STA Profile subelement includes VHT Capabilities IE and has inherited
+    //  all the IEs but SSID IE, Multi-Link Element IE, Extended Supported Rates IE (different
+    // than in containing frame) and EHT Capabilities IE (listed in Non-Inheritance IE).
+    auto& perSta2 = mle.GetPerStaProfile(1);
+    NS_TEST_EXPECT_MSG_EQ(perSta2.HasAssocRequest(),
+                          true,
+                          "Second Per-STA Profile should contain an Association Request frame");
+    auto& perSta2Frame =
+        std::get<std::reference_wrapper<MgtAssocRequestHeader>>(perSta2.GetAssocRequest()).get();
+
+    NS_TEST_EXPECT_MSG_EQ(perSta2Frame.Get<Ssid>().has_value(),
+                          false,
+                          "Frame in second Per-STA Profile should not have SSID IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta2Frame.Get<SupportedRates>().has_value(),
+                          true,
+                          "Frame in second Per-STA Profile should have Supported Rates IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta2Frame.Get<SupportedRates>() == frame.Get<SupportedRates>()),
+        true,
+        "Supported Rates IE not correctly inherited by frame in second Per-STA Profile");
+    NS_TEST_EXPECT_MSG_EQ(
+        perSta2Frame.Get<ExtendedSupportedRatesIE>().has_value(),
+        true,
+        "Frame in second Per-STA Profile should have Extended Supported Rates IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta2Frame.Get<ExtendedSupportedRatesIE>() == frame.Get<ExtendedSupportedRatesIE>()),
+        false,
+        "Extended Supported Rates IE should have not been inherited by frame in second Per-STA "
+        "Profile");
+    NS_TEST_EXPECT_MSG_EQ(perSta2Frame.Get<HtCapabilities>().has_value(),
+                          false,
+                          "Frame in second Per-STA Profile should not have HT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        perSta2Frame.Get<ExtendedCapabilities>().has_value(),
+        false,
+        "Frame in second Per-STA Profile should not have Extended Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta2Frame.Get<VhtCapabilities>().has_value(),
+                          true,
+                          "Frame in second Per-STA Profile should have VHT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta2Frame.Get<HeCapabilities>().has_value(),
+                          true,
+                          "Frame in second Per-STA Profile should have HE Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta2Frame.Get<HeCapabilities>() == frame.Get<HeCapabilities>()),
+        true,
+        "HE Capabilities IE not correctly inherited by frame in second Per-STA Profile");
+    NS_TEST_EXPECT_MSG_EQ(perSta2Frame.Get<MultiLinkElement>().has_value(),
+                          false,
+                          "Frame in second Per-STA Profile should not have Multi-Link Element IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        perSta2Frame.Get<EhtCapabilities>().has_value(),
+        false,
+        "Frame in second Per-STA Profile should have not inherited EHT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta2Frame.Get<TidToLinkMapping>().has_value(),
+                          false,
+                          "Frame in second Per-STA Profile should not have TID-to-Link Mapping IE");
+
+    // frame in third Per-STA Profile subelement includes VHT Capabilities IE and has inherited
+    //  all the IEs but SSID IE, Multi-Link Element IE and Extended Supported Rates IE (different
+    // than in containing frame).
+    auto& perSta3 = mle.GetPerStaProfile(2);
+    NS_TEST_EXPECT_MSG_EQ(perSta3.HasAssocRequest(),
+                          true,
+                          "Third Per-STA Profile should contain an Association Request frame");
+    auto& perSta3Frame =
+        std::get<std::reference_wrapper<MgtAssocRequestHeader>>(perSta3.GetAssocRequest()).get();
+
+    NS_TEST_EXPECT_MSG_EQ(perSta3Frame.Get<Ssid>().has_value(),
+                          false,
+                          "Frame in third Per-STA Profile should not have SSID IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta3Frame.Get<SupportedRates>().has_value(),
+                          true,
+                          "Frame in third Per-STA Profile should have Supported Rates IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta3Frame.Get<SupportedRates>() == frame.Get<SupportedRates>()),
+        true,
+        "Supported Rates IE not correctly inherited by frame in third Per-STA Profile");
+    NS_TEST_EXPECT_MSG_EQ(perSta3Frame.Get<ExtendedSupportedRatesIE>().has_value(),
+                          true,
+                          "Frame in third Per-STA Profile should have Extended Supported Rates IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta3Frame.Get<ExtendedSupportedRatesIE>() == frame.Get<ExtendedSupportedRatesIE>()),
+        false,
+        "Extended Supported Rates IE should have not been inherited by frame in third Per-STA "
+        "Profile");
+    NS_TEST_EXPECT_MSG_EQ(perSta3Frame.Get<HtCapabilities>().has_value(),
+                          false,
+                          "Frame in third Per-STA Profile should not have HT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        perSta3Frame.Get<ExtendedCapabilities>().has_value(),
+        false,
+        "Frame in third Per-STA Profile should not have Extended Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta3Frame.Get<VhtCapabilities>().has_value(),
+                          true,
+                          "Frame in third Per-STA Profile should have VHT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(perSta3Frame.Get<HeCapabilities>().has_value(),
+                          true,
+                          "Frame in third Per-STA Profile should have HE Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta3Frame.Get<HeCapabilities>() == frame.Get<HeCapabilities>()),
+        true,
+        "HE Capabilities IE not correctly inherited by frame in third Per-STA Profile");
+    NS_TEST_EXPECT_MSG_EQ(perSta3Frame.Get<MultiLinkElement>().has_value(),
+                          false,
+                          "Frame in third Per-STA Profile should not have Multi-Link Element IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        perSta3Frame.Get<EhtCapabilities>().has_value(),
+        true,
+        "Frame in third Per-STA Profile should have inherited EHT Capabilities IE");
+    NS_TEST_EXPECT_MSG_EQ(
+        (perSta3Frame.Get<EhtCapabilities>() == frame.Get<EhtCapabilities>()),
+        true,
+        "EHT Capabilities IE not correctly inherited by frame in third Per-STA Profile");
+    NS_TEST_EXPECT_MSG_EQ(perSta3Frame.Get<TidToLinkMapping>().has_value(),
+                          false,
+                          "Frame in third Per-STA Profile should not have TID-to-Link Mapping IE");
 }
 
 /**
