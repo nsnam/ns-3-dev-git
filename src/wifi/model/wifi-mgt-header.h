@@ -20,14 +20,18 @@
 #ifndef WIFI_MGT_HEADER_H
 #define WIFI_MGT_HEADER_H
 
+#include "non-inheritance.h"
+
 #include "ns3/eht-capabilities.h"
 #include "ns3/header.h"
+#include "ns3/multi-link-element.h"
 #include "ns3/supported-rates.h"
 
 #include <algorithm>
 #include <iterator>
 #include <numeric>
 #include <optional>
+#include <utility>
 #include <vector>
 
 namespace ns3
@@ -172,7 +176,6 @@ class WifiMgtHeader<Derived, std::tuple<Elems...>> : public Header
     /** \copydoc ns3::Header::Deserialize */
     uint32_t DeserializeImpl(Buffer::Iterator start);
 
-  private:
     /**
      * \tparam T \deduced the type of the Information Element
      * \param elem the optional Information Element
@@ -195,6 +198,123 @@ class WifiMgtHeader<Derived, std::tuple<Elems...>> : public Header
     using Elements = std::tuple<internal::GetStoredIeT<Elems>...>;
 
     Elements m_elements; //!< Information Elements contained by this frame
+};
+
+/**
+ * \ingroup wifi
+ *  Inspect a type to deduce whether it is an Information Element that can be included in a
+ *  Per-STA Profile subelement of a Multi-Link Element.
+ *  \tparam T \explicit The type to inspect.
+ */
+template <class T>
+struct CanBeInPerStaProfile : std::true_type
+{
+};
+
+/** \copydoc CanBeInPerStaProfile */
+template <class T>
+inline constexpr bool CanBeInPerStaProfileV = CanBeInPerStaProfile<T>::value;
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames that can be included in a Per-STA Profile
+ * subelement of a Multi-Link Element.
+ * \tparam Derived \explicit the type of derived management frame
+ * \tparam Tuple \explicit A tuple of the types of Information Elements included in the mgt frame
+ */
+template <typename Derived, typename Tuple>
+class MgtHeaderInPerStaProfile;
+
+/**
+ * \ingroup wifi
+ *
+ * Add methods needed to serialize/deserialize a management header into a Per-STA Profile
+ * subelement of a Multi-Link Element.
+ *
+ * \tparam Derived \explicit the type of derived management frame
+ * \tparam Elems \explicit sorted list of Information Elements that can be included in mgt frame
+ */
+template <typename Derived, typename... Elems>
+class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
+    : public WifiMgtHeader<Derived, std::tuple<Elems...>>
+{
+  public:
+    /**
+     * \param frame the frame containing the Multi-Link Element
+     * \return the number of bytes that are needed to serialize this header into a Per-STA Profile
+     *         subelement of the Multi-Link Element
+     */
+    uint32_t GetSerializedSizeInPerStaProfile(const Derived& frame) const;
+
+    /**
+     * Serialize this header into a Per-STA Profile subelement of a Multi-Link Element
+     *
+     * \param start an iterator which points to where the header should be written
+     * \param frame the frame containing the Multi-Link Element
+     */
+    void SerializeInPerStaProfile(Buffer::Iterator start, const Derived& frame) const;
+
+    /**
+     * Deserialize this header from a Per-STA Profile subelement of a Multi-Link Element.
+     *
+     * \param start an iterator which points to where the header should be read from
+     * \param length the expected number of bytes to read
+     * \param frame the frame containing the Multi-Link Element
+     * \return the number of bytes read
+     */
+    uint32_t DeserializeFromPerStaProfile(Buffer::Iterator start,
+                                          uint16_t length,
+                                          const Derived& frame);
+
+    /**
+     * Copy Information Elements inherited from the management frame containing the Multi-Link
+     * Element into this header (which is stored in a Per-STA Profile subelement). This method
+     * shall be invoked when the deserialization has been completed (i.e., the Non-Inheritance
+     * element, if present, has been deserialized).
+     *
+     * \param frame the frame containing the Multi-Link Element
+     */
+    void CopyIesFromContainingFrame(const Derived& frame);
+
+  protected:
+    /**
+     * \param frame the frame containing the Multi-Link Element
+     * \return the number of bytes that are needed to serialize this header into a Per-STA Profile
+     *         subelement of the Multi-Link Element
+     */
+    uint32_t GetSerializedSizeInPerStaProfileImpl(const Derived& frame) const;
+
+    /**
+     * Serialize this header into a Per-STA Profile subelement of a Multi-Link Element
+     *
+     * \param start an iterator which points to where the header should be written
+     * \param frame the frame containing the Multi-Link Element
+     */
+    void SerializeInPerStaProfileImpl(Buffer::Iterator start, const Derived& frame) const;
+
+    /**
+     * Deserialize this header from a Per-STA Profile subelement of a Multi-Link Element.
+     *
+     * \param start an iterator which points to where the header should be read from
+     * \param length the expected number of bytes to read
+     * \param frame the frame containing the Multi-Link Element
+     * \return the number of bytes read
+     */
+    uint32_t DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
+                                              uint16_t length,
+                                              const Derived& frame);
+
+    /**
+     * Pass a pointer to this frame to the Multi-Link Element (if any) included in this frame.
+     */
+    void SetMleContainingFrame() const;
+
+  private:
+    using WifiMgtHeader<Derived, std::tuple<Elems...>>::DoDeserialize;
+    using WifiMgtHeader<Derived, std::tuple<Elems...>>::m_elements;
+
+    std::optional<NonInheritance> m_nonInheritance; /**< the Non-Inheritance IE possibly appended
+                                                         to the Per-STA Profile subelement */
 };
 
 /**
@@ -477,6 +597,377 @@ void
 WifiMgtHeader<Derived, std::tuple<Elems...>>::PrintImpl(std::ostream& os) const
 {
     std::apply([&](auto&... elems) { ((internal::DoPrint(elems, os)), ...); }, m_elements);
+}
+
+namespace internal
+{
+
+/**
+ * \tparam T \deduced the type of the given Information Element
+ * \tparam Derived \deduced the type of the containing management frame
+ * \param elem the given Information Element
+ * \param frame the containing management frame
+ * \return whether the given Information Element shall be serialized in a Per-STA Profile
+ *         subelement of the Multi-Link Element included in the containing management frame
+ */
+template <typename T, typename Derived>
+bool
+MustBeSerializedInPerStaProfile(const std::optional<T>& elem, const Derived& frame)
+{
+    if (!CanBeInPerStaProfileV<T>)
+    {
+        return false;
+    }
+
+    if (auto& outsideIe = frame.template Get<T>();
+        outsideIe.has_value() && elem.has_value() && !(outsideIe.value() == elem.value()))
+    {
+        // the IE is present both outside the Multi-Link Element and in the Per-STA Profile,
+        // but they are different, hence the IE must be serialized in the Per-STA Profile
+        return true;
+    }
+
+    if (!frame.template Get<T>().has_value() && elem.has_value())
+    {
+        // the IE is not present outside the Multi-Link Element and is present in the Per-STA
+        // Profile, hence the IE must be serialized in the Per-STA Profile
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * \tparam T \deduced the type of the given vector of Information Elements
+ * \tparam Derived \deduced the type of the containing management frame
+ * \param elems the given vector of Information Elements
+ * \param frame the containing management frame
+ * \return whether the given Information Elements shall be serialized in a Per-STA Profile
+ *         subelement of the Multi-Link Element included in the containing management frame
+ */
+template <typename T, typename Derived>
+bool
+MustBeSerializedInPerStaProfile(const std::vector<T>& elems, const Derived& frame)
+{
+    if (!CanBeInPerStaProfileV<T>)
+    {
+        return false;
+    }
+
+    if (auto& outsideIe = frame.template Get<T>();
+        !outsideIe.empty() && !elems.empty() && !(outsideIe == elems))
+    {
+        // the IEs are present both outside the Multi-Link Element and in the Per-STA Profile,
+        // but they are different, hence the IEs must be serialized in the Per-STA Profile
+        return true;
+    }
+
+    if (frame.template Get<T>().empty() && !elems.empty())
+    {
+        // the IEs are not present outside the Multi-Link Element and is present in the Per-STA
+        // Profile, hence the IEs must be serialized in the Per-STA Profile
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * \tparam T \deduced the type of the given Information Element
+ * \tparam Derived \deduced the type of the containing management frame
+ * \param elem the given Information Element
+ * \param frame the containing management frame
+ * \return a pair (Element ID, Element ID Extension) if the given Information Element shall be
+ *         listed in the Non-Inheritance IE of the Per-STA Profile subelement of the Multi-Link
+ *         Element included in the containing management frame
+ */
+template <typename T, typename Derived>
+std::optional<std::pair<uint8_t, uint8_t>>
+MustBeListedInNonInheritance(const std::optional<T>& elem, const Derived& frame)
+{
+    if (auto& outsideIe = frame.template Get<T>();
+        CanBeInPerStaProfileV<T> && outsideIe.has_value() && !elem.has_value())
+    {
+        return {{outsideIe->ElementId(), outsideIe->ElementIdExt()}};
+    }
+    return std::nullopt;
+}
+
+/**
+ * \tparam T \deduced the type of the given vector of Information Elements
+ * \tparam Derived \deduced the type of the containing management frame
+ * \param elems the given Information Elements
+ * \param frame the containing management frame
+ * \return a pair (Element ID, Element ID Extension) if the given Information Element shall be
+ *         listed in the Non-Inheritance IE of the Per-STA Profile subelement of the Multi-Link
+ *         Element included in the containing management frame
+ */
+template <typename T, typename Derived>
+std::optional<std::pair<uint8_t, uint8_t>>
+MustBeListedInNonInheritance(const std::vector<T>& elems, const Derived& frame)
+{
+    if (auto& outsideIe = frame.template Get<T>();
+        CanBeInPerStaProfileV<T> && !outsideIe.empty() && elems.empty())
+    {
+        return {{outsideIe.front().ElementId(), outsideIe.front().ElementIdExt()}};
+    }
+    return std::nullopt;
+}
+
+} // namespace internal
+
+template <typename Derived, typename... Elems>
+uint32_t
+MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>::GetSerializedSizeInPerStaProfile(
+    const Derived& frame) const
+{
+    return static_cast<const Derived*>(this)->GetSerializedSizeInPerStaProfileImpl(frame);
+}
+
+template <typename Derived, typename... Elems>
+uint32_t
+MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>::GetSerializedSizeInPerStaProfileImpl(
+    const Derived& frame) const
+{
+    uint32_t size = 0;
+    std::optional<NonInheritance> nonInheritance;
+
+    std::apply(
+        [&](auto&... elems) {
+            (
+                [&] {
+                    if (internal::MustBeSerializedInPerStaProfile(elems, frame))
+                    {
+                        size += internal::DoGetSerializedSize(elems);
+                    }
+                    else if (auto idPair = internal::MustBeListedInNonInheritance(elems, frame))
+                    {
+                        if (!nonInheritance)
+                        {
+                            nonInheritance.emplace();
+                        }
+                        nonInheritance->Add(idPair->first, idPair->second);
+                    }
+                }(),
+                ...);
+        },
+        m_elements);
+
+    if (nonInheritance)
+    {
+        size += nonInheritance->GetSerializedSize();
+    }
+    return size;
+}
+
+template <typename Derived, typename... Elems>
+void
+MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>::SerializeInPerStaProfile(
+    Buffer::Iterator start,
+    const Derived& frame) const
+{
+    static_cast<const Derived*>(this)->SerializeInPerStaProfileImpl(start, frame);
+}
+
+template <typename Derived, typename... Elems>
+void
+MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>::SerializeInPerStaProfileImpl(
+    Buffer::Iterator start,
+    const Derived& frame) const
+{
+    auto i = start;
+    std::optional<NonInheritance> nonInheritance;
+
+    std::apply(
+        [&](auto&... elems) {
+            (
+                [&] {
+                    if (internal::MustBeSerializedInPerStaProfile(elems, frame))
+                    {
+                        i = internal::DoSerialize(elems, i);
+                    }
+                    else if (auto idPair = internal::MustBeListedInNonInheritance(elems, frame))
+                    {
+                        if (!nonInheritance)
+                        {
+                            nonInheritance.emplace();
+                        }
+                        nonInheritance->Add(idPair->first, idPair->second);
+                    }
+                }(),
+                ...);
+        },
+        m_elements);
+
+    if (nonInheritance)
+    {
+        nonInheritance->Serialize(i);
+    }
+}
+
+namespace internal
+{
+
+/**
+ * \tparam T \deduced the type of the given Information Element
+ * \tparam Derived \deduced the type of the containing management frame
+ * \param elem the given Information Element
+ * \param frame the containing management frame
+ *
+ * Copy the given Information Element from the containing frame to the Per-STA Profile subelement
+ * of the Multi-Link Element, if the Information Element has been inherited (i.e., it is present
+ * outside the Multi-Link Element and not present in the Per-STA Profile subelement)
+ */
+template <typename T, typename Derived>
+void
+DoCopyIeFromContainingFrame(std::optional<T>& elem, const Derived& frame)
+{
+    if (auto& outsideIe = frame.template Get<T>();
+        CanBeInPerStaProfileV<T> && outsideIe.has_value() && !elem.has_value())
+    {
+        elem = outsideIe.value();
+    }
+}
+
+/**
+ * \tparam T \deduced the type of the given vector of Information Elements
+ * \tparam Derived \deduced the type of the containing management frame
+ * \param elems the given vector of Information Elements
+ * \param frame the containing management frame
+ *
+ * Copy the given Information Element from the containing frame to the Per-STA Profile subelement
+ * of the Multi-Link Element, if the Information Element has been inherited (i.e., it is present
+ * outside the Multi-Link Element and not present in the Per-STA Profile subelement)
+ */
+template <typename T, typename Derived>
+void
+DoCopyIeFromContainingFrame(std::vector<T>& elems, const Derived& frame)
+{
+    if (auto& outsideIe = frame.template Get<T>();
+        CanBeInPerStaProfileV<T> && !outsideIe.empty() && elems.empty())
+    {
+        elems = outsideIe;
+    }
+}
+
+} // namespace internal
+
+template <typename Derived, typename... Elems>
+uint32_t
+MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>::DeserializeFromPerStaProfile(
+    Buffer::Iterator start,
+    uint16_t length,
+    const Derived& frame)
+{
+    return static_cast<Derived*>(this)->DeserializeFromPerStaProfileImpl(start, length, frame);
+}
+
+template <typename Derived, typename... Elems>
+uint32_t
+MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>::DeserializeFromPerStaProfileImpl(
+    Buffer::Iterator start,
+    uint16_t length,
+    const Derived& frame)
+{
+    auto i = start;
+
+    // deserialize the IEs in the Per-STA Profile subelement
+    std::apply(
+        [&](auto&... elems) {
+            (
+                [&] {
+                    if (i.GetDistanceFrom(start) < length)
+                    {
+                        i = static_cast<Derived*>(this)->DoDeserialize(elems, i);
+                        internal::DoCopyIeFromContainingFrame(elems, frame);
+                    }
+                }(),
+                ...);
+        },
+        m_elements);
+
+    // deserialize the Non-Inheritance IE, if present
+    m_nonInheritance.reset();
+    i = DoDeserialize(m_nonInheritance, i);
+
+    auto distance = i.GetDistanceFrom(start);
+    NS_ASSERT_MSG(distance == length,
+                  "Bytes read (" << distance << ") not matching expected number (" << length
+                                 << ")");
+    return distance;
+}
+
+namespace internal
+{
+
+/**
+ * \tparam T \deduced the type of the given Information Element
+ * \param elem the given Information Element
+ * \param nonInheritance the Non-Inheritance information element
+ *
+ * Remove the given Information Element from this header, if it is present and is listed in
+ * the given Non-Inheritance element.
+ */
+template <typename T>
+void
+RemoveIfNotInherited(std::optional<T>& elem, const NonInheritance& nonInheritance)
+{
+    if (elem.has_value() && nonInheritance.IsPresent(elem->ElementId(), elem->ElementIdExt()))
+    {
+        elem.reset();
+    }
+}
+
+/**
+ * \tparam T \deduced the type of the given vector of Information Elements
+ * \param elem the given Information Elements
+ * \param nonInheritance the Non-Inheritance information element
+ *
+ * Remove the given Information Elements from this header, if they are present and are listed in
+ * the given Non-Inheritance element.
+ */
+template <typename T>
+void
+RemoveIfNotInherited(std::vector<T>& elem, const NonInheritance& nonInheritance)
+{
+    if (!elem.empty() && nonInheritance.IsPresent(elem->ElementId(), elem->ElementIdExt()))
+    {
+        elem.clear();
+    }
+}
+
+} // namespace internal
+
+template <typename Derived, typename... Elems>
+void
+MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>::CopyIesFromContainingFrame(
+    const Derived& frame)
+{
+    // copy inherited Information Elements that appear in the containing frame after the
+    // MLE (those appearing before have been copied by DeserializeFromPerStaProfileImpl)
+    std::apply(
+        [&](auto&... elems) { ((internal::DoCopyIeFromContainingFrame(elems, frame)), ...); },
+        m_elements);
+
+    // we have possibly deserialized a Non-Inheritance element; remove IEs listed therein
+    if (m_nonInheritance)
+    {
+        std::apply(
+            [&](auto&... elems) {
+                ((internal::RemoveIfNotInherited(elems, *m_nonInheritance)), ...);
+            },
+            m_elements);
+    }
+}
+
+template <typename Derived, typename... Elems>
+void
+MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>::SetMleContainingFrame() const
+{
+    if (auto& mle = WifiMgtHeader<Derived, std::tuple<Elems...>>::template Get<MultiLinkElement>())
+    {
+        mle->m_containingFrame = *static_cast<const Derived*>(this);
+    }
 }
 
 } // namespace ns3
