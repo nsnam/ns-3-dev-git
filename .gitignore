@@ -24,6 +24,8 @@ testpy-output
 
 bindings/python/pybindgen/
 
+venv/
+
 ms_print.*
 massif.*
 coverity
