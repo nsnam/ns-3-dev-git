@@ -43,57 +43,6 @@ weekly-fedora:
   script:
     - echo "Starting Fedora jobs"
 
-# Fedora 35 build
-weekly-build-fedora-35-debug:
-  extends: .weekly-build-fedora
-  needs: ["weekly-fedora"]
-  image: fedora:35
-  stage: build
-  variables:
-    MODE: debug
-    PHASE: build
-
-weekly-build-fedora-35-default:
-  extends: .weekly-build-fedora
-  needs: ["weekly-fedora"]
-  image: fedora:35
-  stage: build
-  variables:
-    MODE: default
-
-weekly-build-fedora-35-optimized:
-  extends: .weekly-build-fedora
-  needs: ["weekly-fedora"]
-  image: fedora:35
-  stage: build
-  variables:
-    MODE: optimized
-
-# Fedora 35 test
-weekly-test-fedora-35-default:
-  extends: .weekly-build-fedora
-  image: fedora:35
-  stage: test
-  needs: ["weekly-build-fedora-35-default"]
-  cache:
-    key: "ccache-weekly-build-fedora-35-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
-  variables:
-    MODE: default
-
-weekly-test-fedora-35-optimized:
-  extends: .weekly-build-fedora
-  image: fedora:35
-  stage: test
-  needs: ["weekly-build-fedora-35-optimized"]
-  cache:
-    key: "ccache-weekly-build-fedora-35-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
-  variables:
-    MODE: optimized
-
 
 # Fedora 36
 weekly-build-fedora-36-debug:
@@ -140,6 +89,57 @@ weekly-test-fedora-36-optimized:
   needs: ["weekly-build-fedora-36-optimized"]
   cache:
     key: "ccache-weekly-build-fedora-36-optimized"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: optimized
+
+
+# Fedora 37
+weekly-build-fedora-37-debug:
+  extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
+  image: fedora:37
+  stage: build
+  variables:
+    MODE: debug
+
+weekly-build-fedora-37-default:
+  extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
+  image: fedora:37
+  stage: build
+  variables:
+    MODE: default
+
+weekly-build-fedora-37-optimized:
+  extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
+  image: fedora:37
+  stage: build
+  variables:
+    MODE: optimized
+
+# Fedora 37 test
+weekly-test-fedora-37-default:
+  extends: .weekly-build-fedora
+  image: fedora:37
+  stage: test
+  needs: ["weekly-build-fedora-37-default"]
+  cache:
+    key: "ccache-weekly-build-fedora-37-default"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    MODE: default
+
+weekly-test-fedora-37-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:37
+  stage: test
+  needs: ["weekly-build-fedora-37-optimized"]
+  cache:
+    key: "ccache-weekly-build-fedora-37-optimized"
     paths:
       - $CCACHE_BASEDIR_VALUE/
   variables:

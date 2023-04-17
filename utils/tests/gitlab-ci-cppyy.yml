@@ -3,7 +3,7 @@ cppyy-22.04:
   rules:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      when: manual
+  needs: ["weekly-slow-jobs"]
   tags:
     - nsnam
     - linux
