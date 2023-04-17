@@ -148,6 +148,7 @@ SpectrumWifiPhy::GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
 {
     HeRuBands heRuBands{};
     const auto channelWidth = spectrumPhyInterface->GetChannelWidth();
+    const auto p20Index = GetOperatingChannel().GetPrimaryChannelIndex(MHz_t{20});
     for (auto bw = channelWidth; bw >= MHz_t{20}; bw = bw / 2)
     {
         if (bw >= MHz_t{320})
@@ -185,7 +186,6 @@ SpectrumWifiPhy::GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
                     }
                     std::size_t index =
                         (bw == MHz_t{160} && phyIndex > nRus / 2 ? phyIndex - nRus / 2 : phyIndex);
-                    const auto p20Index = GetOperatingChannel().GetPrimaryChannelIndex(MHz_t{20});
                     bool primary80IsLower80 = (p20Index < bw / MHz_t{40});
                     bool primary80 = (bw < MHz_t{160} || ruType == HeRu::RU_2x996_TONE ||
                                       (primary80IsLower80 && phyIndex <= nRus / 2) ||
