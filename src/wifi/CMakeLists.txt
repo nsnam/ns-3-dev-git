@@ -73,6 +73,7 @@ set(source_files
     model/non-ht/erp-ofdm-ppdu.cc
     model/non-ht/ofdm-phy.cc
     model/non-ht/ofdm-ppdu.cc
+    model/non-inheritance.cc
     model/originator-block-ack-agreement.cc
     model/phy-entity.cc
     model/preamble-detection-model.cc
@@ -220,6 +221,7 @@ set(header_files
     model/non-ht/erp-ofdm-ppdu.h
     model/non-ht/ofdm-phy.h
     model/non-ht/ofdm-ppdu.h
+    model/non-inheritance.h
     model/originator-block-ack-agreement.h
     model/phy-entity.h
     model/preamble-detection-model.h
