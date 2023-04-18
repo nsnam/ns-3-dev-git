@@ -505,6 +505,17 @@ The API for this helper closely tracks the API of the YansWifiPhyHelper,
 with the exception that a channel of type ``ns3::SpectrumChannel`` instead
 of type ``ns3::YansWifiChannel`` must be used with it.
 
+Its API has been extended for 802.11be multi-link and EMLSR in order to
+attach multiple spectrum channels to a same PHY. For that purpose, a user
+may use the following command to attach a spectrum channel to the PHY objects
+that will be created upon a call to ``ns3::WifiHelper::Install``::
+
+  SpectrumWifiPhyHelper::SetPcapDataLinkType(const Ptr<SpectrumChannel> channel,
+                                             const FrequencyRange& freqRange)
+
+where FrequencyRange is a structure that contains the start and stop frequencies
+expressed in MHz which corresponds to the spectrum portion that is covered by the channel.
+
 WifiMacHelper
 =============
 
@@ -852,7 +863,7 @@ Finally, we manually place them by using the ``ns3::ListPositionAllocator``::
   WifiHelper wifi;
   wifi.SetStandard(WIFI_STANDARD_80211a);
 
-  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default();
+  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default();
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11
   wifiPhy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
 
@@ -893,8 +904,8 @@ Each node is equipped with 802.11b Wi-Fi device::
 
   NodeContainer ap;
   ap.Create(1);
-  NodeContainer sta;
-  sta.Create(2);
+  NodeContainer stas;
+  stas.Create(2);
 
   WifiHelper wifi;
   wifi.SetStandard(WIFI_STANDARD_80211b);
@@ -919,18 +930,19 @@ Each node is equipped with 802.11b Wi-Fi device::
 
   // Setup the rest of the upper mac
   Ssid ssid = Ssid("wifi-default");
-  // setup ap.
+
+  // setup AP.
   wifiMac.SetType("ns3::ApWifiMac",
                   "Ssid", SsidValue(ssid));
   NetDeviceContainer apDevice = wifi.Install(wifiPhy, wifiMac, ap);
   NetDeviceContainer devices = apDevice;
 
-  // setup sta.
+  // setup STAs.
   wifiMac.SetType("ns3::StaWifiMac",
                   "Ssid", SsidValue(ssid),
                   "ActiveProbing", BooleanValue(false));
-  NetDeviceContainer staDevice = wifi.Install(wifiPhy, wifiMac, sta);
-  devices.Add(staDevice);
+  NetDeviceContainer staDevices = wifi.Install(wifiPhy, wifiMac, stas);
+  devices.Add(staDevices);
 
   // Configure mobility
   MobilityHelper mobility;
@@ -942,5 +954,76 @@ Each node is equipped with 802.11b Wi-Fi device::
   mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
   mobility.Install(ap);
   mobility.Install(sta);
+
+  // other set up (e.g. InternetStack, Application)
+
+Multiple RF interfaces configuration
+++++++++++++++++++++++++++++++++++++
+
+  NodeContainer ap;
+  ap.Create(1);
+  NodeContainer sta;
+  sta.Create(1);
+
+  WifiHelper wifi;
+  wifi.SetStandard(WIFI_STANDARD_80211be);
+
+  // Create multiple spectrum channels
+  Ptr<MultiModelSpectrumChannel> spectrumChannel2_4Ghz =
+      CreateObject<MultiModelSpectrumChannel>();
+  Ptr<MultiModelSpectrumChannel> spectrumChannel5Ghz =
+      CreateObject<MultiModelSpectrumChannel>();
+  Ptr<MultiModelSpectrumChannel> spectrumChannel6Ghz =
+      CreateObject<MultiModelSpectrumChannel>();
+
+  // optional: set up propagation loss model separately for each spectrum channel
+
+  // SpectrumWifiPhyHelper (3 links)
+  SpectrumWifiPhyHelper phy(3);
+  phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+  phy.AddChannel(spectrumChannel2_4Ghz, WIFI_SPECTRUM_2_4_GHZ);
+  phy.AddChannel(spectrumChannel5Ghz, WIFI_SPECTRUM_5_GHZ);
+  phy.AddChannel(spectrumChannel6Ghz, WIFI_SPECTRUM_6_GHZ);
+
+  // configure operating channel for each link
+  phy.Set(0, "ChannelSettings", StringValue("{42, 0, BAND_2_4GHZ, 0}"));
+  phy.Set(1, "ChannelSettings", StringValue("{42, 0, BAND_5GHZ, 0}"));
+  phy.Set(2, "ChannelSettings", StringValue("{215, 0, BAND_6GHZ, 0}"));
+
+  // configure rate manager for each link
+  wifi.SetRemoteStationManager(0,
+                               "ns3::ConstantRateWifiManager",
+                               "DataMode", StringValue("EhtMcs11"),
+                               "ControlMode", StringValue("ErpOfdmRate24Mbps"));
+  wifi.SetRemoteStationManager(1,
+                               "ns3::ConstantRateWifiManager",
+                               "DataMode", StringValue("EhtMcs9"),
+                               "ControlMode", StringValue("OfdmRate24Mbps"));
+  wifi.SetRemoteStationManager(2,
+                               "ns3::ConstantRateWifiManager",
+                               "DataMode", StringValue("EhtMcs7"),
+                               "ControlMode", StringValue("HeMcs4"));
+
+  // setup AP.
+  wifiMac.SetType("ns3::ApWifiMac",
+                  "Ssid", SsidValue(ssid));
+  NetDeviceContainer apDevice = wifi.Install(wifiPhy, wifiMac, ap);
+  NetDeviceContainer devices = apDevice;
+
+  // setup STA.
+  wifiMac.SetType("ns3::StaWifiMac",
+                  "Ssid", SsidValue(ssid),
+                  "ActiveProbing", BooleanValue(false));
+  NetDeviceContainer staDevice = wifi.Install(wifiPhy, wifiMac, sta);
+  devices.Add(staDevice);
+
+  // Configure mobility
+  MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
+  positionAlloc->Add(Vector(0.0, 0.0, 0.0));
+  positionAlloc->Add(Vector(5.0, 0.0, 0.0));
+  mobility.SetPositionAllocator(positionAlloc);
+  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+  mobility.Install(c);
 
   // other set up (e.g. InternetStack, Application)
