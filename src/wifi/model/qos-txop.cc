@@ -116,7 +116,7 @@ QosTxop::QosTxop(AcIndex ac)
                                                        m_ac,
                                                        {WIFI_QOSDATA_QUEUE},
                                                        recipient,
-                                                       m_mac->GetAddress(),
+                                                       m_mac->GetLocalAddress(recipient),
                                                        {tid});
         }));
     m_baManager->SetUnblockDestinationCallback(
@@ -125,7 +125,7 @@ QosTxop::QosTxop(AcIndex ac)
                                                          m_ac,
                                                          {WIFI_QOSDATA_QUEUE},
                                                          recipient,
-                                                         m_mac->GetAddress(),
+                                                         m_mac->GetLocalAddress(recipient),
                                                          {tid});
         }));
     m_queue->TraceConnectWithoutContext(
