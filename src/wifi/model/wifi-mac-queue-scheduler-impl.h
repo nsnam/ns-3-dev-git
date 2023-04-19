@@ -342,44 +342,59 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
     // insert queueId in the queue info map if not present yet
     auto [queueInfoIt, ret] = m_perAcInfo[ac].queueInfoMap.insert({queueId, QueueInfo()});
 
-    if (ret)
+    // Initialize/update the set of link IDs depending on the container queue type
+    if (GetMac() && GetMac()->GetNLinks() > 1 &&
+        mpdu->GetHeader().GetAddr2() == GetMac()->GetAddress())
     {
-        // The given queueid has just been inserted in the queue info map.
-        // Initialize the set of link IDs depending on the container queue type
+        // this is an MLD and the TA field of the frame contains the MLD address,
+        // which means that the frame can be sent on multiple links
+        const auto rxAddr = mpdu->GetHeader().GetAddr1();
 
-        if (GetMac() && GetMac()->GetNLinks() > 1 &&
-            mpdu->GetHeader().GetAddr2() == GetMac()->GetAddress())
+        // this assert checks that the RA field also contain an MLD address, unless
+        // it contains the broadcast address
+        NS_ASSERT_MSG(rxAddr.IsGroup() || GetMac()->GetMldAddress(rxAddr),
+                      "Address 1 (" << rxAddr << ") is not an MLD address");
+
+        // this assert checks that association (ML setup) has been established
+        // between sender and receiver (unless the receiver is the broadcast address)
+        NS_ASSERT_MSG(GetMac()->CanForwardPacketsTo(rxAddr), "Cannot forward frame to " << rxAddr);
+
+        // we have to include all the links in case of broadcast frame (we are an AP)
+        // and the links that have been setup with the receiver in case of unicast frame
+        for (uint8_t linkId = 0; linkId < GetMac()->GetNLinks(); linkId++)
         {
-            // this is an MLD and the TA field of the frame contains the MLD address,
-            // which means that the frame can be sent on multiple links
-
-            // this assert checks that association (ML setup) has been established
-            // between sender and receiver (unless the receiver is the broadcast address)
-            const auto rxAddr = mpdu->GetHeader().GetAddr1();
-            NS_ASSERT_MSG(GetMac()->CanForwardPacketsTo(rxAddr),
-                          "Cannot forward frame to " << rxAddr);
-
-            // we have to include all the links in case of broadcast frame (we are an AP)
-            // and the links that have been setup with the receiver in case of unicast frame
-            for (uint8_t linkId = 0; linkId < GetMac()->GetNLinks(); linkId++)
+            if (rxAddr.IsGroup() ||
+                GetMac()->GetWifiRemoteStationManager(linkId)->GetAffiliatedStaAddress(rxAddr))
             {
-                if (rxAddr.IsGroup() ||
-                    GetMac()->GetWifiRemoteStationManager(linkId)->GetAffiliatedStaAddress(rxAddr))
-                {
-                    queueInfoIt->second.linkIds.emplace(linkId, Mask{});
-                }
+                // the mask is not modified if linkId is already in the map
+                queueInfoIt->second.linkIds.emplace(linkId, Mask{});
+            }
+            else
+            {
+                // this link is no (longer) setup
+                queueInfoIt->second.linkIds.erase(linkId);
             }
         }
-        else
+    }
+    else
+    {
+        // the TA field of the frame contains a link address, which means that the
+        // frame can only be sent on the corresponding link
+        auto linkId = GetMac() ? GetMac()->GetLinkIdByAddress(mpdu->GetHeader().GetAddr2())
+                               : SINGLE_LINK_OP_ID; // make unit test happy
+        NS_ASSERT(linkId.has_value());
+        auto& linkIdsMap = queueInfoIt->second.linkIds;
+        NS_ASSERT_MSG(linkIdsMap.size() <= 1,
+                      "At most one link can be associated with this container queue");
+        // set the link map to contain one entry corresponding to the computed link ID;
+        // unless the link map already contained such an entry (in which case the mask
+        // is preserved)
+        if (linkIdsMap.empty() || linkIdsMap.cbegin()->first != *linkId)
         {
-            // the TA field of the frame contains a link address, which means that the
-            // frame can only be sent on the corresponding link
-            auto linkId = GetMac() ? GetMac()->GetLinkIdByAddress(mpdu->GetHeader().GetAddr2())
-                                   : SINGLE_LINK_OP_ID; // make unit test happy
-            NS_ASSERT(linkId.has_value());
-            queueInfoIt->second.linkIds = {{*linkId, Mask{}}};
+            linkIdsMap = {{*linkId, Mask{}}};
         }
     }
+
     return queueInfoIt;
 }
 
