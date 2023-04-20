@@ -32,6 +32,8 @@ Release 3-dev
 - (wifi) #880 - Post-install change in WifiPhy::ChannelSettings does not completely reconfigure Wi-Fi
 - (energy) !1422 - Fix null harvester issue in EnergySource
 - (wifi) #862 - sta-wifi-mac.cc cond="!link.bssid.has_value()", High occurrence at higher numbers of STAs per AP in indoor deployment.
+- (wifi) Fix the equality operator of WifiInformationElement
+- (wifi) Make the implementation of the Multi-Link Element compliant with the 11be specs by adding support of inheritance
 
 Release 3.38
 ------------
