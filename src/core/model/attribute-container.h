@@ -45,9 +45,10 @@ class AttributeChecker;
  * can return the items in a container specified by \p C.
  *
  * @tparam A AttributeValue type to be contained.
+ * @tparam Sep Character separator between elements for parsing.
  * @tparam C Possibly templated container class returned by Get.
  */
-template <class A, template <class...> class C = std::list>
+template <class A, char Sep = ',', template <class...> class C = std::list>
 class AttributeContainerValue : public AttributeValue
 {
   public:
@@ -74,9 +75,8 @@ class AttributeContainerValue : public AttributeValue
 
     /**
      * Default constructor.
-     * \param[in] sep Character separator between elements for parsing.
      */
-    AttributeContainerValue(char sep = ',');
+    AttributeContainerValue();
 
     /**
      * Construct from another container.
@@ -186,9 +186,8 @@ class AttributeContainerValue : public AttributeValue
      * \return This object with items copied.
      */
     template <class ITER>
-    Ptr<AttributeContainerValue<A, C>> CopyFrom(const ITER begin, const ITER end);
+    Ptr<AttributeContainerValue<A, Sep, C>> CopyFrom(const ITER begin, const ITER end);
 
-    char m_sep;                 //!< Item separator
     container_type m_container; //!< Internal container
 };
 
@@ -210,35 +209,40 @@ class AttributeContainerChecker : public AttributeChecker
 /**
  * Make AttributeContainerChecker from AttributeContainerValue.
  * @tparam A \deduced AttributeValue type in container.
+ * @tparam Sep \deduced Character separator between elements for parsing.
  * @tparam C \deduced Container type returned by Get.
  * \param[in] value AttributeContainerValue from which to deduce types.
  * \return AttributeContainerChecker for value.
  */
-template <class A, template <class...> class C>
-Ptr<AttributeChecker> MakeAttributeContainerChecker(const AttributeContainerValue<A, C>& value);
+template <class A, char Sep, template <class...> class C>
+Ptr<AttributeChecker> MakeAttributeContainerChecker(
+    const AttributeContainerValue<A, Sep, C>& value);
 
 /**
  * Make AttributeContainerChecker using explicit types, initialize item checker.
  * @tparam A AttributeValue type in container.
+ * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
  * \param[in] itemchecker AttributeChecker used for each item in the container.
  * \return AttributeContainerChecker.
  */
-template <class A, template <class...> class C = std::list>
+template <class A, char Sep = ',', template <class...> class C = std::list>
 Ptr<const AttributeChecker> MakeAttributeContainerChecker(Ptr<const AttributeChecker> itemchecker);
 
 /**
  * Make uninitialized AttributeContainerChecker using explicit types.
  * @tparam A AttributeValue type in container.
+ * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
  * \return AttributeContainerChecker.
  */
-template <class A, template <class...> class C = std::list>
+template <class A, char Sep = ',', template <class...> class C = std::list>
 Ptr<AttributeChecker> MakeAttributeContainerChecker();
 
 /**
  * Make AttributeContainerAccessor  using explicit types.
  * @tparam A AttributeValue type in container.
+ * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
  * \tparam T1 \deduced The type of the class data member,
  *            or the type of the class get functor or set method.
@@ -246,12 +250,13 @@ Ptr<AttributeChecker> MakeAttributeContainerChecker();
  *            or the get or set method.
  * \return AttributeContainerAccessor.
  */
-template <typename A, template <typename...> class C = std::list, typename T1>
+template <typename A, char Sep = ',', template <typename...> class C = std::list, typename T1>
 Ptr<const AttributeAccessor> MakeAttributeContainerAccessor(T1 a1);
 
 /**
  * Make AttributeContainerAccessor  using explicit types.
  * @tparam A AttributeValue type in container.
+ * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
  * \tparam T1 \deduced The type of the class data member,
  *            or the type of the class get functor or set method.
@@ -262,7 +267,11 @@ Ptr<const AttributeAccessor> MakeAttributeContainerAccessor(T1 a1);
  *            or the get or set method.
  * \return AttributeContainerAccessor.
  */
-template <typename A, template <typename...> class C = std::list, typename T1, typename T2>
+template <typename A,
+          char Sep = ',',
+          template <typename...> class C = std::list,
+          typename T1,
+          typename T2>
 Ptr<const AttributeAccessor> MakeAttributeContainerAccessor(T1 a1, T2 a2);
 
 } // namespace ns3
@@ -283,7 +292,7 @@ namespace internal
  * in MakeAttributeContainerChecker. The non-templated base ns3::AttributeContainerChecker
  * is returned from that function. This is the same pattern as ObjectPtrContainer.
  */
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 class AttributeContainerChecker : public ns3::AttributeContainerChecker
 {
   public:
@@ -300,58 +309,59 @@ class AttributeContainerChecker : public ns3::AttributeContainerChecker
     Ptr<const AttributeChecker> m_itemchecker; //!< The AttributeChecker
 };
 
-template <class A, template <class...> class C>
-AttributeContainerChecker<A, C>::AttributeContainerChecker()
+template <class A, char Sep, template <class...> class C>
+AttributeContainerChecker<A, Sep, C>::AttributeContainerChecker()
     : m_itemchecker(nullptr)
 {
 }
 
-template <class A, template <class...> class C>
-AttributeContainerChecker<A, C>::AttributeContainerChecker(Ptr<const AttributeChecker> itemchecker)
+template <class A, char Sep, template <class...> class C>
+AttributeContainerChecker<A, Sep, C>::AttributeContainerChecker(
+    Ptr<const AttributeChecker> itemchecker)
     : m_itemchecker(itemchecker)
 {
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 void
-AttributeContainerChecker<A, C>::SetItemChecker(Ptr<const AttributeChecker> itemchecker)
+AttributeContainerChecker<A, Sep, C>::SetItemChecker(Ptr<const AttributeChecker> itemchecker)
 {
     m_itemchecker = itemchecker;
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 Ptr<const AttributeChecker>
-AttributeContainerChecker<A, C>::GetItemChecker() const
+AttributeContainerChecker<A, Sep, C>::GetItemChecker() const
 {
     return m_itemchecker;
 }
 
 } // namespace internal
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 Ptr<AttributeChecker>
-MakeAttributeContainerChecker(const AttributeContainerValue<A, C>& value)
+MakeAttributeContainerChecker(const AttributeContainerValue<A, Sep, C>& value)
 {
-    return MakeAttributeContainerChecker<A, C>();
+    return MakeAttributeContainerChecker<A, Sep, C>();
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 Ptr<const AttributeChecker>
 MakeAttributeContainerChecker(Ptr<const AttributeChecker> itemchecker)
 {
-    auto checker = MakeAttributeContainerChecker<A, C>();
+    auto checker = MakeAttributeContainerChecker<A, Sep, C>();
     auto acchecker = DynamicCast<AttributeContainerChecker>(checker);
     acchecker->SetItemChecker(itemchecker);
     return checker;
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 Ptr<AttributeChecker>
 MakeAttributeContainerChecker()
 {
     std::string containerType;
     std::string underlyingType;
-    typedef AttributeContainerValue<A, C> T;
+    typedef AttributeContainerValue<A, Sep, C> T;
     {
         std::ostringstream oss;
         oss << "ns3::AttributeContainerValue<" << typeid(typename T::attribute_type).name() << ", "
@@ -365,51 +375,50 @@ MakeAttributeContainerChecker()
         underlyingType = oss.str();
     }
 
-    return MakeSimpleAttributeChecker<T, internal::AttributeContainerChecker<A, C>>(containerType,
-                                                                                    underlyingType);
+    return MakeSimpleAttributeChecker<T, internal::AttributeContainerChecker<A, Sep, C>>(
+        containerType,
+        underlyingType);
 }
 
-template <class A, template <class...> class C>
-AttributeContainerValue<A, C>::AttributeContainerValue(char sep)
-    : m_sep(sep)
+template <class A, char Sep, template <class...> class C>
+AttributeContainerValue<A, Sep, C>::AttributeContainerValue()
 {
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 template <class CONTAINER>
-AttributeContainerValue<A, C>::AttributeContainerValue(const CONTAINER& c)
-    : AttributeContainerValue<A, C>(c.begin(), c.end())
+AttributeContainerValue<A, Sep, C>::AttributeContainerValue(const CONTAINER& c)
+    : AttributeContainerValue<A, Sep, C>(c.begin(), c.end())
 {
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 template <class ITER>
-AttributeContainerValue<A, C>::AttributeContainerValue(const ITER begin, const ITER end)
+AttributeContainerValue<A, Sep, C>::AttributeContainerValue(const ITER begin, const ITER end)
     : AttributeContainerValue()
 {
     CopyFrom(begin, end);
 }
 
-template <class A, template <class...> class C>
-AttributeContainerValue<A, C>::~AttributeContainerValue()
+template <class A, char Sep, template <class...> class C>
+AttributeContainerValue<A, Sep, C>::~AttributeContainerValue()
 {
     m_container.clear();
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 Ptr<AttributeValue>
-AttributeContainerValue<A, C>::Copy() const
+AttributeContainerValue<A, Sep, C>::Copy() const
 {
-    auto c = Create<AttributeContainerValue<A, C>>();
-    c->m_sep = m_sep;
+    auto c = Create<AttributeContainerValue<A, Sep, C>>();
     c->m_container = m_container;
     return c;
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 bool
-AttributeContainerValue<A, C>::DeserializeFromString(std::string value,
-                                                     Ptr<const AttributeChecker> checker)
+AttributeContainerValue<A, Sep, C>::DeserializeFromString(std::string value,
+                                                          Ptr<const AttributeChecker> checker)
 {
     auto acchecker = DynamicCast<const AttributeContainerChecker>(checker);
     if (!acchecker)
@@ -418,7 +427,7 @@ AttributeContainerValue<A, C>::DeserializeFromString(std::string value,
     }
 
     std::istringstream iss(value); // copies value
-    while (std::getline(iss, value, m_sep))
+    while (std::getline(iss, value, Sep))
     {
         auto avalue = acchecker->GetItemChecker()->CreateValidValue(StringValue(value));
         if (!avalue)
@@ -438,9 +447,9 @@ AttributeContainerValue<A, C>::DeserializeFromString(std::string value,
     return true;
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 std::string
-AttributeContainerValue<A, C>::SerializeToString(Ptr<const AttributeChecker> checker) const
+AttributeContainerValue<A, Sep, C>::SerializeToString(Ptr<const AttributeChecker> checker) const
 {
     std::ostringstream oss;
     bool first = true;
@@ -448,7 +457,7 @@ AttributeContainerValue<A, C>::SerializeToString(Ptr<const AttributeChecker> che
     {
         if (!first)
         {
-            oss << m_sep;
+            oss << Sep;
         }
         oss << attr->SerializeToString(checker);
         first = false;
@@ -456,9 +465,9 @@ AttributeContainerValue<A, C>::SerializeToString(Ptr<const AttributeChecker> che
     return oss.str();
 }
 
-template <class A, template <class...> class C>
-typename AttributeContainerValue<A, C>::result_type
-AttributeContainerValue<A, C>::Get() const
+template <class A, char Sep, template <class...> class C>
+typename AttributeContainerValue<A, Sep, C>::result_type
+AttributeContainerValue<A, Sep, C>::Get() const
 {
     result_type c;
     for (const value_type& a : *this)
@@ -468,10 +477,10 @@ AttributeContainerValue<A, C>::Get() const
     return c;
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 template <typename T>
 bool
-AttributeContainerValue<A, C>::GetAccessor(T& value) const
+AttributeContainerValue<A, Sep, C>::GetAccessor(T& value) const
 {
     result_type src = Get();
     value.clear();
@@ -479,75 +488,75 @@ AttributeContainerValue<A, C>::GetAccessor(T& value) const
     return true;
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 template <class T>
 void
-AttributeContainerValue<A, C>::Set(const T& c)
+AttributeContainerValue<A, Sep, C>::Set(const T& c)
 {
     m_container.clear();
     CopyFrom(c.begin(), c.end());
 }
 
-template <class A, template <class...> class C>
-typename AttributeContainerValue<A, C>::size_type
-AttributeContainerValue<A, C>::GetN() const
+template <class A, char Sep, template <class...> class C>
+typename AttributeContainerValue<A, Sep, C>::size_type
+AttributeContainerValue<A, Sep, C>::GetN() const
 {
     return size();
 }
 
-template <class A, template <class...> class C>
-typename AttributeContainerValue<A, C>::Iterator
-AttributeContainerValue<A, C>::Begin()
+template <class A, char Sep, template <class...> class C>
+typename AttributeContainerValue<A, Sep, C>::Iterator
+AttributeContainerValue<A, Sep, C>::Begin()
 {
     return begin();
 }
 
-template <class A, template <class...> class C>
-typename AttributeContainerValue<A, C>::Iterator
-AttributeContainerValue<A, C>::End()
+template <class A, char Sep, template <class...> class C>
+typename AttributeContainerValue<A, Sep, C>::Iterator
+AttributeContainerValue<A, Sep, C>::End()
 {
     return end();
 }
 
-template <class A, template <class...> class C>
-typename AttributeContainerValue<A, C>::size_type
-AttributeContainerValue<A, C>::size() const
+template <class A, char Sep, template <class...> class C>
+typename AttributeContainerValue<A, Sep, C>::size_type
+AttributeContainerValue<A, Sep, C>::size() const
 {
     return m_container.size();
 }
 
-template <class A, template <class...> class C>
-typename AttributeContainerValue<A, C>::iterator
-AttributeContainerValue<A, C>::begin()
+template <class A, char Sep, template <class...> class C>
+typename AttributeContainerValue<A, Sep, C>::iterator
+AttributeContainerValue<A, Sep, C>::begin()
 {
     return m_container.begin();
 }
 
-template <class A, template <class...> class C>
-typename AttributeContainerValue<A, C>::iterator
-AttributeContainerValue<A, C>::end()
+template <class A, char Sep, template <class...> class C>
+typename AttributeContainerValue<A, Sep, C>::iterator
+AttributeContainerValue<A, Sep, C>::end()
 {
     return m_container.end();
 }
 
-template <class A, template <class...> class C>
-typename AttributeContainerValue<A, C>::const_iterator
-AttributeContainerValue<A, C>::begin() const
+template <class A, char Sep, template <class...> class C>
+typename AttributeContainerValue<A, Sep, C>::const_iterator
+AttributeContainerValue<A, Sep, C>::begin() const
 {
     return m_container.cbegin();
 }
 
-template <class A, template <class...> class C>
-typename AttributeContainerValue<A, C>::const_iterator
-AttributeContainerValue<A, C>::end() const
+template <class A, char Sep, template <class...> class C>
+typename AttributeContainerValue<A, Sep, C>::const_iterator
+AttributeContainerValue<A, Sep, C>::end() const
 {
     return m_container.cend();
 }
 
-template <class A, template <class...> class C>
+template <class A, char Sep, template <class...> class C>
 template <class ITER>
-Ptr<AttributeContainerValue<A, C>>
-AttributeContainerValue<A, C>::CopyFrom(const ITER begin, const ITER end)
+Ptr<AttributeContainerValue<A, Sep, C>>
+AttributeContainerValue<A, Sep, C>::CopyFrom(const ITER begin, const ITER end)
 {
     for (ITER iter = begin; iter != end; ++iter)
     {
@@ -556,18 +565,18 @@ AttributeContainerValue<A, C>::CopyFrom(const ITER begin, const ITER end)
     return this;
 }
 
-template <typename A, template <typename...> class C, typename T1>
+template <typename A, char Sep, template <typename...> class C, typename T1>
 Ptr<const AttributeAccessor>
 MakeAttributeContainerAccessor(T1 a1)
 {
-    return MakeAccessorHelper<AttributeContainerValue<A, C>>(a1);
+    return MakeAccessorHelper<AttributeContainerValue<A, Sep, C>>(a1);
 }
 
-template <typename A, template <typename...> class C, typename T1, typename T2>
+template <typename A, char Sep, template <typename...> class C, typename T1, typename T2>
 Ptr<const AttributeAccessor>
 MakeAttributeContainerAccessor(T1 a1, T2 a2)
 {
-    return MakeAccessorHelper<AttributeContainerValue<A, C>>(a1, a2);
+    return MakeAccessorHelper<AttributeContainerValue<A, Sep, C>>(a1, a2);
 }
 
 } // namespace ns3

@@ -93,7 +93,8 @@ class AttributeContainerObject : public Object
     std::list<double> m_doublelist; //!< List of doubles.
     std::vector<int> m_intvec;      //!< Vector of ints.
     // TODO(jared): need PairValue attributevalue to handle std::pair elements
-    std::map<std::string, int> m_map; //!< Map of <std::string, int>.
+    std::map<std::string, int> m_map;                         //!< Map of <std::string, int>.
+    std::map<int64_t, std::list<int64_t>> m_intVecIntMapping; //!< Mapping integers to vectors
 };
 
 AttributeContainerObject::AttributeContainerObject()
@@ -107,6 +108,8 @@ AttributeContainerObject::~AttributeContainerObject()
 TypeId
 AttributeContainerObject::GetTypeId()
 {
+    using IntVecMapValue = PairValue<IntegerValue, AttributeContainerValue<IntegerValue>>;
+
     static TypeId tid =
         TypeId("ns3::AttributeContainerObject")
             .SetParent<Object>()
@@ -118,15 +121,16 @@ AttributeContainerObject::GetTypeId()
                           MakeAttributeContainerAccessor<DoubleValue>(
                               &AttributeContainerObject::m_doublelist),
                           MakeAttributeContainerChecker<DoubleValue>(MakeDoubleChecker<double>()))
-            .AddAttribute("IntegerVector",
-                          "Vector of integers",
-                          // the container value container differs from the underlying object
-                          AttributeContainerValue<IntegerValue>(),
-                          // the type of the underlying container cannot be deduced
-                          MakeAttributeContainerAccessor<IntegerValue, std::list>(
-                              &AttributeContainerObject::SetIntVec,
-                              &AttributeContainerObject::GetIntVec),
-                          MakeAttributeContainerChecker<IntegerValue>(MakeIntegerChecker<int>()))
+            .AddAttribute(
+                "IntegerVector",
+                "Vector of integers",
+                // the container value container differs from the underlying object
+                AttributeContainerValue<IntegerValue>(),
+                // the type of the underlying container cannot be deduced
+                MakeAttributeContainerAccessor<IntegerValue, ';', std::list>(
+                    &AttributeContainerObject::SetIntVec,
+                    &AttributeContainerObject::GetIntVec),
+                MakeAttributeContainerChecker<IntegerValue, ';'>(MakeIntegerChecker<int>()))
             .AddAttribute(
                 "MapStringInt",
                 "Map of strings to ints",
@@ -136,7 +140,23 @@ AttributeContainerObject::GetTypeId()
                     &AttributeContainerObject::m_map),
                 MakeAttributeContainerChecker<PairValue<StringValue, IntegerValue>>(
                     MakePairChecker<StringValue, IntegerValue>(MakeStringChecker(),
-                                                               MakeIntegerChecker<int>())));
+                                                               MakeIntegerChecker<int>())))
+            .AddAttribute(
+                "IntVecPairVec",
+                "An example of complex attribute that is defined by a vector of pairs consisting "
+                "of an integer value and a vector of integers. In case a string is used to set "
+                "this attribute, the string shall contain the pairs separated by a semicolon (;); "
+                "in every pair, the integer value and the vector of integers are separated by a "
+                "blank space, and the elements of the vectors are separated by a comma (,) "
+                "without spaces. E.g. \"0 1,2,3; 1 0; 2 0,1\" consists of three pairs containing "
+                "vectors of 3, 1 and 2 elements, respectively.",
+                StringValue(""),
+                MakeAttributeContainerAccessor<IntVecMapValue, ';'>(
+                    &AttributeContainerObject::m_intVecIntMapping),
+                MakeAttributeContainerChecker<IntVecMapValue, ';'>(
+                    MakePairChecker<IntegerValue, AttributeContainerValue<IntegerValue>>(
+                        MakeIntegerChecker<int>(),
+                        MakeAttributeContainerChecker<IntegerValue>(MakeIntegerChecker<int>()))));
     return tid;
 }
 
@@ -269,7 +289,7 @@ AttributeContainerTestCase::DoRun()
 
     {
         auto ref = {"one", "two", "three"};
-        AttributeContainerValue<StringValue, std::vector> ac(ref);
+        AttributeContainerValue<StringValue, ',', std::vector> ac(ref);
 
         NS_TEST_ASSERT_MSG_EQ(3, ac.GetN(), "Container size mismatch");
         auto aciter = ac.Begin();
@@ -366,7 +386,7 @@ AttributeContainerSerializationTestCase::DoRun()
     {
         std::string strings = "this is a sentence with words";
 
-        AttributeContainerValue<StringValue> attr(' ');
+        AttributeContainerValue<StringValue, ' '> attr;
         auto checker = MakeAttributeContainerChecker(attr);
         auto acchecker = DynamicCast<AttributeContainerChecker>(checker);
         acchecker->SetItemChecker(MakeStringChecker());
@@ -467,11 +487,11 @@ AttributeContainerSetGetTestCase::DoRun()
 
     std::vector<int> ints = {-1, 0, 1, 2, 3};
     // NOTE: here the underlying attribute container type differs from the actual container
-    obj->SetAttribute("IntegerVector", AttributeContainerValue<IntegerValue>(ints));
+    obj->SetAttribute("IntegerVector", AttributeContainerValue<IntegerValue, ';'>(ints));
 
     {
         // NOTE: changing the container here too!
-        AttributeContainerValue<IntegerValue> value;
+        AttributeContainerValue<IntegerValue, ';'> value;
         obj->GetAttribute("IntegerVector", value);
         NS_TEST_ASSERT_MSG_EQ(ints.size(), value.GetN(), "AttributeContainerValue wrong size");
 
@@ -483,6 +503,37 @@ AttributeContainerSetGetTestCase::DoRun()
             NS_TEST_ASSERT_MSG_EQ(d, *iter, "Incorrect value in intvec");
             ++iter;
         }
+    }
+
+    std::string intVecPairString("0 1,2,3; 1 0; 2 0,1");
+    // NOTE: here the underlying attribute container type differs from the actual container
+    obj->SetAttribute("IntVecPairVec", StringValue(intVecPairString));
+
+    {
+        using IntVecMapValue = PairValue<IntegerValue, AttributeContainerValue<IntegerValue>>;
+
+        // NOTE: changing the container here too!
+        AttributeContainerValue<IntVecMapValue, ';'> value;
+        obj->GetAttribute("IntVecPairVec", value);
+        NS_TEST_ASSERT_MSG_EQ(3, value.GetN(), "AttributeContainerValue wrong size"); // 3 pairs
+
+        AttributeContainerValue<IntVecMapValue>::result_type reslist = value.Get();
+        NS_TEST_ASSERT_MSG_EQ(3, reslist.size(), "IntVecMapValue wrong size");
+        auto reslistIt = reslist.begin();
+        NS_TEST_ASSERT_MSG_EQ(reslistIt->first, 0, "Incorrect integer value in first pair");
+        NS_TEST_ASSERT_MSG_EQ(reslistIt->second.size(),
+                              3,
+                              "Incorrect number of integer values in first pair");
+        ++reslistIt;
+        NS_TEST_ASSERT_MSG_EQ(reslistIt->first, 1, "Incorrect integer value in second pair");
+        NS_TEST_ASSERT_MSG_EQ(reslistIt->second.size(),
+                              1,
+                              "Incorrect number of integer values in second pair");
+        ++reslistIt;
+        NS_TEST_ASSERT_MSG_EQ(reslistIt->first, 2, "Incorrect integer value in third pair");
+        NS_TEST_ASSERT_MSG_EQ(reslistIt->second.size(),
+                              2,
+                              "Incorrect number of integer values in third pair");
     }
 
     std::map<std::string, int> map = {{"one", 1}, {"two", 2}, {"three", 3}};
