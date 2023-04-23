@@ -67,6 +67,7 @@ clang-tidy:
     paths:
       - $CLANG_TIDY_OUTPUT
     when: on_failure
+  interruptible: true
   timeout: 3h
 
 # Emacs line
