@@ -233,7 +233,9 @@ class WifiAssocManager : public Object
      */
     bool CanSetupMultiLink(OptMleConstRef& mle, OptRnrConstRef& rnr);
 
-    Ptr<StaWifiMac> m_mac; ///< pointer to the STA wifi MAC
+    Ptr<StaWifiMac> m_mac;            ///< pointer to the STA wifi MAC
+    std::set<uint8_t> m_allowedLinks; /**< "Only Beacon and Probe Response frames received on a
+                                            link belonging to the this set are processed */
 
   private:
     /**

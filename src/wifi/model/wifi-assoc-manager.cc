@@ -22,6 +22,7 @@
 
 #include "sta-wifi-mac.h"
 
+#include "ns3/attribute-container.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/enum.h"
 #include "ns3/log.h"
@@ -67,7 +68,17 @@ WifiAssocManager::ApInfoCompare::operator()(const StaWifiMac::ApInfo& lhs,
 TypeId
 WifiAssocManager::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::WifiAssocManager").SetParent<Object>().SetGroupName("Wifi");
+    static TypeId tid =
+        TypeId("ns3::WifiAssocManager")
+            .SetParent<Object>()
+            .SetGroupName("Wifi")
+            .AddAttribute(
+                "AllowedLinks",
+                "Only Beacon and Probe Response frames received on a link belonging to the given "
+                "set are processed. An empty set is equivalent to the set of all links.",
+                AttributeContainerValue<UintegerValue>(),
+                MakeAttributeContainerAccessor<UintegerValue>(&WifiAssocManager::m_allowedLinks),
+                MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint8_t>()));
     return tid;
 }
 
@@ -166,10 +177,12 @@ WifiAssocManager::StartScanning(WifiScanParams&& scanParams)
     NS_LOG_FUNCTION(this);
     m_scanParams = std::move(scanParams);
 
-    // remove stored AP information not matching the scanning parameters
+    // remove stored AP information not matching the scanning parameters or related to APs
+    // that are not reachable on an allowed link
     for (auto ap = m_apList.begin(); ap != m_apList.end();)
     {
-        if (!MatchScanParams(*ap))
+        if (!MatchScanParams(*ap) ||
+            (!m_allowedLinks.empty() && m_allowedLinks.count(ap->m_linkId) == 0))
         {
             // remove AP info from list
             m_apListIt.erase(ap->m_bssid);
@@ -189,7 +202,8 @@ WifiAssocManager::NotifyApInfo(const StaWifiMac::ApInfo&& apInfo)
 {
     NS_LOG_FUNCTION(this << apInfo);
 
-    if (!CanBeInserted(apInfo) || !MatchScanParams(apInfo))
+    if (!CanBeInserted(apInfo) || !MatchScanParams(apInfo) ||
+        (!m_allowedLinks.empty() && m_allowedLinks.count(apInfo.m_linkId) == 0))
     {
         return;
     }
