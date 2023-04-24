@@ -523,13 +523,13 @@ StaWifiMac::StartScanning()
     }
     if (m_activeProbing)
     {
-        scanParams.type = WifiScanParams::ACTIVE;
+        scanParams.type = WifiScanType::ACTIVE;
         scanParams.probeDelay = MicroSeconds(m_probeDelay->GetValue());
         scanParams.minChannelTime = scanParams.maxChannelTime = m_probeRequestTimeout;
     }
     else
     {
-        scanParams.type = WifiScanParams::PASSIVE;
+        scanParams.type = WifiScanType::PASSIVE;
         scanParams.maxChannelTime = m_waitBeaconTimeout;
     }
 

@@ -94,7 +94,7 @@ WifiDefaultAssocManager::DoStartScanning()
     m_probeRequestEvent.Cancel();
     m_waitBeaconEvent.Cancel();
 
-    if (GetScanParams().type == WifiScanParams::ACTIVE)
+    if (GetScanParams().type == WifiScanType::ACTIVE)
     {
         for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
         {

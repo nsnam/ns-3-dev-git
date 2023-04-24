@@ -44,6 +44,17 @@ class WifiAssocManager;
 /**
  * \ingroup wifi
  *
+ * Scan type (active or passive)
+ */
+enum class WifiScanType : uint8_t
+{
+    ACTIVE = 0,
+    PASSIVE
+};
+
+/**
+ * \ingroup wifi
+ *
  * Structure holding scan parameters
  */
 struct WifiScanParams
@@ -63,12 +74,7 @@ struct WifiScanParams
     /// typedef for a list of channels
     using ChannelList = std::list<Channel>;
 
-    enum : uint8_t
-    {
-        ACTIVE = 0,
-        PASSIVE
-    } type; ///< indicates either active or passive scanning
-
+    WifiScanType type;                    ///< indicates either active or passive scanning
     Ssid ssid;                            ///< desired SSID or wildcard SSID
     std::vector<ChannelList> channelList; ///< list of channels to scan, for each link
     Time probeDelay;                      ///< delay prior to transmitting a Probe Request
