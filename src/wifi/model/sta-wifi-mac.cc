@@ -241,38 +241,38 @@ StaWifiMac::GetCurrentChannel(uint8_t linkId) const
 }
 
 void
-StaWifiMac::SendProbeRequest()
+StaWifiMac::SendProbeRequest(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << linkId);
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_MGT_PROBE_REQUEST);
     hdr.SetAddr1(Mac48Address::GetBroadcast());
-    hdr.SetAddr2(GetAddress());
+    hdr.SetAddr2(GetFrameExchangeManager(linkId)->GetAddress());
     hdr.SetAddr3(Mac48Address::GetBroadcast());
     hdr.SetDsNotFrom();
     hdr.SetDsNotTo();
     Ptr<Packet> packet = Create<Packet>();
     MgtProbeRequestHeader probe;
     probe.Get<Ssid>() = GetSsid();
-    auto supportedRates = GetSupportedRates(SINGLE_LINK_OP_ID);
+    auto supportedRates = GetSupportedRates(linkId);
     probe.Get<SupportedRates>() = supportedRates.rates;
     probe.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
     if (GetHtSupported())
     {
         probe.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
-        probe.Get<HtCapabilities>() = GetHtCapabilities(SINGLE_LINK_OP_ID);
+        probe.Get<HtCapabilities>() = GetHtCapabilities(linkId);
     }
-    if (GetVhtSupported(SINGLE_LINK_OP_ID))
+    if (GetVhtSupported(linkId))
     {
-        probe.Get<VhtCapabilities>() = GetVhtCapabilities(SINGLE_LINK_OP_ID);
+        probe.Get<VhtCapabilities>() = GetVhtCapabilities(linkId);
     }
     if (GetHeSupported())
     {
-        probe.Get<HeCapabilities>() = GetHeCapabilities(SINGLE_LINK_OP_ID);
+        probe.Get<HeCapabilities>() = GetHeCapabilities(linkId);
     }
     if (GetEhtSupported())
     {
-        probe.Get<EhtCapabilities>() = GetEhtCapabilities(SINGLE_LINK_OP_ID);
+        probe.Get<EhtCapabilities>() = GetEhtCapabilities(linkId);
     }
     packet->AddHeader(probe);
 

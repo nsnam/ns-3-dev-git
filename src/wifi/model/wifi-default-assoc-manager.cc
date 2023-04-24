@@ -96,7 +96,13 @@ WifiDefaultAssocManager::DoStartScanning()
 
     if (GetScanParams().type == WifiScanParams::ACTIVE)
     {
-        Simulator::Schedule(GetScanParams().probeDelay, &StaWifiMac::SendProbeRequest, m_mac);
+        for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
+        {
+            Simulator::Schedule(GetScanParams().probeDelay,
+                                &StaWifiMac::SendProbeRequest,
+                                m_mac,
+                                linkId);
+        }
         m_probeRequestEvent =
             Simulator::Schedule(GetScanParams().probeDelay + GetScanParams().maxChannelTime,
                                 &WifiDefaultAssocManager::EndScanning,

@@ -947,7 +947,7 @@ ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
         probe.Get<HtCapabilities>() = GetHtCapabilities(linkId);
         probe.Get<HtOperation>() = GetHtOperation(linkId);
     }
-    if (GetVhtSupported(SINGLE_LINK_OP_ID))
+    if (GetVhtSupported(linkId))
     {
         probe.Get<VhtCapabilities>() = GetVhtCapabilities(linkId);
         probe.Get<VhtOperation>() = GetVhtOperation(linkId);

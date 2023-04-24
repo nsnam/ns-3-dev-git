@@ -185,10 +185,11 @@ class StaWifiMac : public WifiMac
     void SetAssocManager(Ptr<WifiAssocManager> assocManager);
 
     /**
-     * Forward a probe request packet to the DCF. The standard is not clear on the correct
-     * queue for management frames if QoS is supported. We always use the DCF.
+     * Enqueue a probe request packet for transmission on the given link.
+     *
+     * \param linkId the ID of the given link
      */
-    void SendProbeRequest();
+    void SendProbeRequest(uint8_t linkId);
 
     /**
      * This method is called after wait beacon timeout or wait probe request timeout has
