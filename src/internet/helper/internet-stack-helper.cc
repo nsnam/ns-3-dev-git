@@ -129,7 +129,6 @@ InternetStackHelper::InternetStackHelper()
 void
 InternetStackHelper::Initialize()
 {
-    SetTcp("ns3::TcpL4Protocol");
     Ipv4StaticRoutingHelper staticRouting;
     Ipv4GlobalRoutingHelper globalRouting;
     Ipv4ListRoutingHelper listRouting;
@@ -152,7 +151,6 @@ InternetStackHelper::InternetStackHelper(const InternetStackHelper& o)
     m_routingv6 = o.m_routingv6->Copy();
     m_ipv4Enabled = o.m_ipv4Enabled;
     m_ipv6Enabled = o.m_ipv6Enabled;
-    m_tcpFactory = o.m_tcpFactory;
     m_ipv4ArpJitterEnabled = o.m_ipv4ArpJitterEnabled;
     m_ipv6NsRsJitterEnabled = o.m_ipv6NsRsJitterEnabled;
 }
@@ -267,12 +265,6 @@ InternetStackHelper::AssignStreams(NodeContainer c, int64_t stream)
 }
 
 void
-InternetStackHelper::SetTcp(const std::string tid)
-{
-    m_tcpFactory.SetTypeId(tid);
-}
-
-void
 InternetStackHelper::Install(NodeContainer c) const
 {
     for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
@@ -356,12 +348,7 @@ InternetStackHelper::Install(Ptr<Node> node) const
     {
         CreateAndAggregateObjectFromTypeId(node, "ns3::TrafficControlLayer");
         CreateAndAggregateObjectFromTypeId(node, "ns3::UdpL4Protocol");
-        // note: the following could be changed to
-        // CreateAndAggregateObjectFromTypeId(node, "ns3::TcpL4Protocol");
-        if (!node->GetObject<TcpL4Protocol>())
-        {
-            node->AggregateObject(m_tcpFactory.Create<Object>());
-        }
+        CreateAndAggregateObjectFromTypeId(node, "ns3::TcpL4Protocol");
         if (!node->GetObject<PacketSocketFactory>())
         {
             Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory>();

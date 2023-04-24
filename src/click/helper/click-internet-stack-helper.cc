@@ -70,7 +70,6 @@ ClickInternetStackHelper::ClickInternetStackHelper()
 void
 ClickInternetStackHelper::Initialize()
 {
-    SetTcp("ns3::TcpL4Protocol");
 }
 
 ClickInternetStackHelper::~ClickInternetStackHelper()
@@ -80,7 +79,6 @@ ClickInternetStackHelper::~ClickInternetStackHelper()
 ClickInternetStackHelper::ClickInternetStackHelper(const ClickInternetStackHelper& o)
 {
     m_ipv4Enabled = o.m_ipv4Enabled;
-    m_tcpFactory = o.m_tcpFactory;
 }
 
 ClickInternetStackHelper&
@@ -98,19 +96,6 @@ ClickInternetStackHelper::Reset()
 {
     m_ipv4Enabled = true;
     Initialize();
-}
-
-void
-ClickInternetStackHelper::SetTcp(const std::string tid)
-{
-    m_tcpFactory.SetTypeId(tid);
-}
-
-void
-ClickInternetStackHelper::SetTcp(std::string tid, std::string n0, const AttributeValue& v0)
-{
-    m_tcpFactory.SetTypeId(tid);
-    m_tcpFactory.Set(n0, v0);
 }
 
 void
@@ -199,7 +184,7 @@ ClickInternetStackHelper::Install(Ptr<Node> node) const
         CreateAndAggregateObjectFromTypeId(node, "ns3::Ipv4L3ClickProtocol");
         CreateAndAggregateObjectFromTypeId(node, "ns3::Icmpv4L4Protocol");
         CreateAndAggregateObjectFromTypeId(node, "ns3::UdpL4Protocol");
-        node->AggregateObject(m_tcpFactory.Create<Object>());
+        CreateAndAggregateObjectFromTypeId(node, "ns3::TcpL4Protocol");
         Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory>();
         node->AggregateObject(factory);
         // Set routing

@@ -176,19 +176,6 @@ class InternetStackHelper : public PcapHelperForIpv4,
     void InstallAll() const;
 
     /**
-     * \brief set the Tcp stack which will not need any other parameter.
-     *
-     * This function sets up the tcp stack to the given TypeId. It should not be
-     * used for NSC stack setup because the nsc stack needs the Library attribute
-     * to be setup, please use instead the version that requires an attribute
-     * and a value. If you choose to use this function anyways to set nsc stack
-     * the default value for the linux library will be used: "liblinux2.6.26.so".
-     *
-     * \param tid the type id, typically it is set to  "ns3::TcpL4Protocol"
-     */
-    void SetTcp(std::string tid);
-
-    /**
      * \brief Enable/disable IPv4 stack install.
      * \param enable enable state
      */
@@ -288,11 +275,6 @@ class InternetStackHelper : public PcapHelperForIpv4,
      * \brief Initialize the helper to its default values
      */
     void Initialize();
-
-    /**
-     * \brief TCP objects factory
-     */
-    ObjectFactory m_tcpFactory;
 
     /**
      * \brief IPv4 routing helper.

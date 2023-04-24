@@ -102,34 +102,6 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
     void InstallAll() const;
 
     /**
-     * \brief set the Tcp stack which will not need any other parameter.
-     *
-     * This function sets up the tcp stack to the given TypeId. It should not be
-     * used for NSC stack setup because the nsc stack needs the Library attribute
-     * to be setup, please use instead the version that requires an attribute
-     * and a value. If you choose to use this function anyways to set nsc stack
-     * the default value for the linux library will be used: "liblinux2.6.26.so".
-     *
-     * \param tid the type id, typically it is set to  "ns3::TcpL4Protocol"
-     */
-    void SetTcp(std::string tid);
-
-    /**
-     * \brief This function is used to setup the Network Simulation Cradle stack with library value.
-     *
-     * Give the NSC stack a shared library file name to use when creating the
-     * stack implementation.  The attr string is actually the attribute name to
-     * be setup and val is its value. The attribute is the stack implementation
-     * to be used and the value is the shared library name.
-     *
-     * \param tid The type id, for the case of nsc it would be "ns3::NscTcpL4Protocol"
-     * \param attr The attribute name that must be setup, for example "Library"
-     * \param val The attribute value, which will be in fact the shared library name
-     * (example:"liblinux2.6.26.so")
-     */
-    void SetTcp(std::string tid, std::string attr, const AttributeValue& val);
-
-    /**
      * \brief Set a Click file to be used for a group of nodes.
      * \param c NodeContainer of nodes
      * \param clickfile Click file to be used
@@ -200,7 +172,6 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
                                  bool explicitFilename) override;
 
     void Initialize();
-    ObjectFactory m_tcpFactory;
 
     static void CreateAndAggregateObjectFromTypeId(Ptr<Node> node, const std::string typeId);
 
