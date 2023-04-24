@@ -688,20 +688,35 @@ WifiTxVector::GetContentChannels(uint8_t p20Index) const
             continue;
         }
 
-        size_t numRus{1};
-        if (ruType < HeRu::RU_242_TONE)
-        {
-            numRus = HeRu::m_heRuSubcarrierGroups.at({20, ruType}).size();
-        }
-
+        std::size_t numRus = (ruType >= HeRu::RU_242_TONE)
+                                 ? 1
+                                 : HeRu::m_heRuSubcarrierGroups.at({20, ruType}).size();
         if (((ruIdx - 1) / numRus) % 2 == 0)
         {
-            contentChannels[0].push_back({staId, userInfo.nss, userInfo.mcs});
+            contentChannels.at(0).push_back({staId, userInfo.nss, userInfo.mcs});
         }
         else
         {
-            contentChannels[1].push_back({staId, userInfo.nss, userInfo.mcs});
+            contentChannels.at(1).push_back({staId, userInfo.nss, userInfo.mcs});
         }
+    }
+
+    // Add unassigned RUs
+    auto numNumRusPerHeSigBContentChannel =
+        HePpdu::GetNumRusPerHeSigBContentChannel(m_channelWidth, GetRuAllocation(p20Index));
+    std::size_t contentChannelIndex = 1;
+    for (auto& contentChannel : contentChannels)
+    {
+        const auto totalUsersInContentChannel = (contentChannelIndex == 1)
+                                                    ? numNumRusPerHeSigBContentChannel.first
+                                                    : numNumRusPerHeSigBContentChannel.second;
+        NS_ASSERT(contentChannel.size() <= totalUsersInContentChannel);
+        std::size_t unallocatedRus = totalUsersInContentChannel - contentChannel.size();
+        for (std::size_t i = 0; i < unallocatedRus; i++)
+        {
+            contentChannel.push_back({NO_USER_STA_ID, 0, 0});
+        }
+        contentChannelIndex++;
     }
 
     return contentChannels;

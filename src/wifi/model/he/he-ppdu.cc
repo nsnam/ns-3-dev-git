@@ -217,6 +217,10 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
         auto ruAllocIndex = contentChannelIndex;
         for (const auto& userInfo : contentChannel)
         {
+            if (userInfo.staId == NO_USER_STA_ID)
+            {
+                continue;
+            }
             auto ruSpecs = HeRu::GetRuSpecs(ruAllocation.at(ruAllocIndex));
             if (ruSpecs.empty())
             {
