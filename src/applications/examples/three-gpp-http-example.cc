@@ -93,6 +93,17 @@ ClientEmbeddedObjectReceived(Ptr<const ThreeGppHttpClient>, Ptr<const Packet> pa
     }
 }
 
+void
+ClientPageReceived(Ptr<const ThreeGppHttpClient> client,
+                   const Time& time,
+                   uint32_t numObjects,
+                   uint32_t numBytes)
+{
+    NS_LOG_INFO("Client " << client << " has received a page that took " << time.As(Time::MS)
+                          << " ms to load with " << numObjects << " objects and " << numBytes
+                          << " bytes.");
+}
+
 int
 main(int argc, char* argv[])
 {
@@ -163,6 +174,7 @@ main(int argc, char* argv[])
     httpClient->TraceConnectWithoutContext("RxEmbeddedObject",
                                            MakeCallback(&ClientEmbeddedObjectReceived));
     httpClient->TraceConnectWithoutContext("Rx", MakeCallback(&ClientRx));
+    httpClient->TraceConnectWithoutContext("RxPage", MakeCallback(&ClientPageReceived));
 
     // Stop browsing after 30 minutes
     clientApps.Stop(Seconds(simTimeSec));

@@ -172,6 +172,20 @@ class ThreeGppHttpClient : public Application
      */
     typedef void (*TracedCallback)(Ptr<const ThreeGppHttpClient> httpClient);
 
+    /**
+     * Callback signature for `RxPage` trace sources.
+     * \param httpClient Pointer to this instance of ThreeGppHttpClient,
+     *                               which is where the trace originated.
+     * \param time Elapsed time from the start to the end of the request.
+     * \param numObjects Number of objects downloaded, including main and
+     *                                                  embedded objects.
+     * \param numBytes Total number of bytes included in the page.
+     */
+    typedef void (*RxPageTracedCallback)(Ptr<const ThreeGppHttpClient> httpClient,
+                                         const Time& time,
+                                         uint32_t numObjects,
+                                         uint32_t numBytes);
+
   protected:
     // Inherited from Object base class.
     void DoDispose() override;
@@ -343,6 +357,12 @@ class ThreeGppHttpClient : public Application
      */
     void SwitchToState(State_t state);
 
+    /**
+     * Finish receiving a page. This function should be called when a full-page
+     * finishes loading, including the main object and all embedded objects.
+     */
+    void FinishReceivingPage();
+
     /// The current state of the client application. Begins with NOT_STARTED.
     State_t m_state;
     /// The socket for sending and receiving packets to/from the web server.
@@ -357,6 +377,12 @@ class ThreeGppHttpClient : public Application
     Time m_objectServerTs;
     /// Determined after parsing the main object.
     uint32_t m_embeddedObjectsToBeRequested;
+    /// The time stamp when the page started loading.
+    Time m_pageLoadStartTs;
+    /// Number of embedded objects to requested in the current page.
+    uint32_t m_numberEmbeddedObjectsRequested;
+    /// Number of bytes received for the current page.
+    uint32_t m_numberBytesPage;
 
     // ATTRIBUTES
 
@@ -369,6 +395,9 @@ class ThreeGppHttpClient : public Application
 
     // TRACE SOURCES
 
+    /// The `RxPage` trace source.
+    ns3::TracedCallback<Ptr<const ThreeGppHttpClient>, const Time&, uint32_t, uint32_t>
+        m_rxPageTrace;
     /// The `ConnectionEstablished` trace source.
     ns3::TracedCallback<Ptr<const ThreeGppHttpClient>> m_connectionEstablishedTrace;
     /// The `ConnectionClosed` trace source.
