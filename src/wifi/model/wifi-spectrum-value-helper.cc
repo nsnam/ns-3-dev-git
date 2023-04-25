@@ -276,26 +276,26 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
         subBands; // list of data/pilot-containing subBands (sent at 0dBr)
     subBands.resize(num20MhzBands *
                     2); // the center subcarrier is skipped, hence 2 subbands per 20 MHz subchannel
+    std::vector<WifiSpectrumBandIndices> puncturedBands;
     uint32_t start = (nGuardBands / 2) + (numUnallocatedSubcarriersPer20MHz / 2);
     uint32_t stop;
     uint8_t index = 0;
     for (auto it = subBands.begin(); it != subBands.end();)
     {
-        if (!puncturedSubchannels.empty() && puncturedSubchannels.at(index++))
-        {
-            // if subchannel is punctured, skip it and go the next one
-            NS_LOG_DEBUG("20 MHz subchannel " << +index << " is punctured");
-            it += 2;
-            continue;
-        }
         stop = start + (numAllocatedSubcarriersPer20MHz / 2) - 1;
         *it = std::make_pair(start, stop);
         ++it;
+        uint32_t puncturedStart = start;
         start = stop + 2; // skip center subcarrier
         stop = start + (numAllocatedSubcarriersPer20MHz / 2) - 1;
         *it = std::make_pair(start, stop);
         ++it;
         start = stop + numUnallocatedSubcarriersPer20MHz;
+        uint32_t puncturedStop = stop;
+        if (!puncturedSubchannels.empty() && puncturedSubchannels.at(index++))
+        {
+            puncturedBands.emplace_back(puncturedStart, puncturedStop);
+        }
     }
 
     // Prepare spectrum mask specific variables
@@ -303,6 +303,9 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
         (2e6 / carrierSpacing) +
         0.5); // size in number of subcarriers of the 0dBr<->20dBr slope (2MHz for HT/VHT)
     WifiSpectrumBandIndices maskBand(0, nAllocatedBands + nGuardBands);
+    uint32_t puncturedSlopeWidth =
+        static_cast<uint32_t>((500e3 / carrierSpacing) +
+                              0.5); // size in number of subcarriers of the punctured slope band
 
     // Build transmit spectrum mask
     CreateSpectrumMaskForOfdm(c,
@@ -313,7 +316,9 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
                               innerSlopeWidth,
                               minInnerBandDbr,
                               minOuterBandDbr,
-                              lowestPointDbr);
+                              lowestPointDbr,
+                              puncturedBands,
+                              puncturedSlopeWidth);
     NormalizeSpectrumMask(c, txPowerW);
     NS_ASSERT_MSG(std::abs(txPowerW - Integral(*c)) < 1e-6, "Power allocation failed");
     return c;
