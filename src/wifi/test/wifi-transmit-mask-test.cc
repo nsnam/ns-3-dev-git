@@ -704,6 +704,66 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                 TestCase::Duration::QUICK);
 
     // ============================================================================================
+    // 11ac 80+80MHz
+    NS_LOG_FUNCTION("Check slopes for 11ac 80+80MHz");
+    maskSlopes = {
+        std::make_pair(0, -40.0),     // Outer band left (start)
+        std::make_pair(127, -28.094), // Outer band left (stop)
+        std::make_pair(128, -28.000), // Middle band left (start)
+        std::make_pair(252, -20.064), // Middle band left (stop)
+        std::make_pair(253, -20.0),   // Flat junction band left (start)
+        std::make_pair(253, -20.0),   // Flat junction band left (stop)
+        std::make_pair(254, -20.0),   // Inner band left for first segment (start)
+        std::make_pair(259, -3.333),  // Inner band left for first segment (stop)
+        std::make_pair(509, -3.333),  // Inner band right for first segment (start)
+        std::make_pair(514, -20.0),   // Inner band right for first segment (stop)
+        std::make_pair(515, -20.0),   // Flat junction band right for first segment (start)
+        std::make_pair(515, -20.0),   // Flat junction band right for first segment (stop)
+        std::make_pair(516, -20.01),  // start linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(516, -20.01),  // start linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(639, -24.99),  // stop linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(639, -24.99),  // stop linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(640, -25.0),   // middle linear sum region (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(640, -25.0),   // middle linear sum region (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(641, -24.99), // start linear sum region right (no interpolation possible, so
+                                     // provide 2 times the same point)
+        std::make_pair(641, -24.99), // start linear sum region right (no interpolation possible, so
+                                     // provide 2 times the same point)
+        std::make_pair(764, -20.01), // stop linear sum region right (no interpolation possible, so
+                                     // provide 2 times the same point)
+        std::make_pair(764, -20.01), // stop linear sum region right (no interpolation possible, so
+                                     // provide 2 times the same point)
+        std::make_pair(765, -20.0),  // Flat junction band left (start)
+        std::make_pair(765, -20.0),  // Flat junction band left (stop)
+        std::make_pair(766, -20.0),  // Inner band left for second segment (start)
+        std::make_pair(771, -3.333), // Inner band left for second segment (stop)
+        std::make_pair(1021, -3.333),  // Inner band right for second segment (start)
+        std::make_pair(1026, -20.0),   // Inner band right for second segment (stop)
+        std::make_pair(1027, -20.0),   // Flat junction band right (start)
+        std::make_pair(1027, -20.0),   // Flat junction band right (stop)
+        std::make_pair(1028, -20.016), // Middle band right (start)
+        std::make_pair(1152, -28.000), // Middle band right (stop)
+        std::make_pair(1153, -28.023), // Outer band right (start)
+        std::make_pair(1280, -40.0),   // Outer band right (stop)
+    };
+
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11ac 80+80MHz",
+                                               WIFI_STANDARD_80211ac,
+                                               WIFI_PHY_BAND_5GHZ,
+                                               160,
+                                               {5530, 5690},
+                                               maskSlopes,
+                                               tol,
+                                               prec),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
     // 11ax 20MHz @ 2.4GHz
     NS_LOG_FUNCTION("Check slopes for 11ax 20MHz @ 2.4GHz");
     maskSlopes = {
@@ -934,6 +994,151 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                                                WIFI_PHY_BAND_5GHZ,
                                                160,
                                                {5250},
+                                               maskSlopes,
+                                               tol,
+                                               prec),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11ax 80+80MHz @ 5GHz
+    NS_LOG_FUNCTION("Check slopes for 11ax 80+80MHz @ 5GHz");
+    maskSlopes = {
+        std::make_pair(0, -40.0),      // Outer band left (start)
+        std::make_pair(511, -28.023),  // Outer band left (stop)
+        std::make_pair(512, -28.000),  // Middle band left (start)
+        std::make_pair(1017, -20.016), // Middle band left (stop)
+        std::make_pair(1018, -20.0),   // Flat junction band left (start)
+        std::make_pair(1022, -20.0),   // Flat junction band left (stop)
+        std::make_pair(1023, -20.0),   // Inner band left for first segment (start)
+        std::make_pair(1035, -1.538),  // Inner band left for first segment (stop)
+        std::make_pair(1036, 0.0),     // allocated band left for first segment (start)
+        std::make_pair(1533, 0.0),     // allocated band left for first segment (stop)
+        std::make_pair(1534, -20.0),   // DC band for first segment (start)
+        std::make_pair(1538, -20.0),   // DC band for first segment (stop)
+        std::make_pair(1539, 0.0),     // allocated band right for first segment (start)
+        std::make_pair(2036, 0.0),     // allocated band right for first segment (stop)
+        std::make_pair(2037, -1.538),  // Inner band right for first segment (start)
+        std::make_pair(2049, -20.0),   // Inner band right for first segment (stop)
+        std::make_pair(2050, -20.0),   // Flat junction band right for first segment (start)
+        std::make_pair(2054, -20.0),   // Flat junction band right for first segment (stop)
+        std::make_pair(2055, -20.01), // start linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(2055, -20.01), // start linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(2559, -24.99), // stop linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(2559, -24.99), // stop linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(2560, -25.0),  // middle linear sum region (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(2560, -25.0),  // middle linear sum region (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(2561, -24.99), // start linear sum region right (no interpolation possible,
+                                      // so provide 2 times the same point)
+        std::make_pair(2561, -24.99), // start linear sum region right (no interpolation possible,
+                                      // so provide 2 times the same point)
+        std::make_pair(3065, -20.01), // stop linear sum region right (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(3065, -20.01), // stop linear sum region right (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(3066, -20.0),  // Flat junction band left (start)
+        std::make_pair(3070, -20.0),  // Flat junction band left (stop)
+        std::make_pair(3071, -20.0),  // Inner band left for second segment (start)
+        std::make_pair(3083, -1.538), // Inner band left for second segment (stop)
+        std::make_pair(3084, 0.0),    // allocated band left for second segment (start)
+        std::make_pair(3581, 0.0),    // allocated band left for second segment (stop)
+        std::make_pair(3582, -20.0),  // DC band for second segment (start)
+        std::make_pair(3586, -20.0),  // DC band for second segment (stop)
+        std::make_pair(3587, 0.0),    // allocated band right for second segment (start)
+        std::make_pair(4084, 0.0),    // allocated band right for second segment (stop)
+        std::make_pair(4085, -1.538), // Inner band right for second segment (start)
+        std::make_pair(4097, -20.0),  // Inner band right for second segment (stop)
+        std::make_pair(4098, -20.0),  // Flat junction band right (start)
+        std::make_pair(4102, -20.0),  // Flat junction band right (stop)
+        std::make_pair(4103, -20.016), // Middle band right (start)
+        std::make_pair(4608, -28.000), // Middle band right (stop)
+        std::make_pair(4609, -28.023), // Outer band right (start)
+        std::make_pair(5120, -40.0),   // Outer band right (stop)
+    };
+
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11ax_5GHz 80+80MHz",
+                                               WIFI_STANDARD_80211ax,
+                                               WIFI_PHY_BAND_5GHZ,
+                                               160,
+                                               {5530, 5690},
+                                               maskSlopes,
+                                               tol,
+                                               prec),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11ax 80+80MHz @ 5GHz
+    NS_LOG_FUNCTION("Check slopes for 11ax 80+80MHz @ 5GHz with larger frequency separation "
+                    "between the two PSDs");
+    maskSlopes = {
+        std::make_pair(0, -40.0),      // Outer band left (start)
+        std::make_pair(511, -28.023),  // Outer band left (stop)
+        std::make_pair(512, -28.000),  // Middle band left (start)
+        std::make_pair(1017, -20.016), // Middle band left (stop)
+        std::make_pair(1018, -20.0),   // Flat junction band left (start)
+        std::make_pair(1022, -20.0),   // Flat junction band left (stop)
+        std::make_pair(1023, -20.0),   // Inner band left for first segment (start)
+        std::make_pair(1035, -1.538),  // Inner band left for first segment (stop)
+        std::make_pair(1036, 0.0),     // allocated band left for first segment (start)
+        std::make_pair(1533, 0.0),     // allocated band left for first segment (stop)
+        std::make_pair(1534, -20.0),   // DC band for first segment (start)
+        std::make_pair(1538, -20.0),   // DC band for first segment (stop)
+        std::make_pair(1539, 0.0),     // allocated band right for first segment (start)
+        std::make_pair(2036, 0.0),     // allocated band right for first segment (stop)
+        std::make_pair(2037, -1.538),  // Inner band right for first segment (start)
+        std::make_pair(2049, -20.0),   // Inner band right for first segment (stop)
+        std::make_pair(2050, -20.0),   // Flat junction band right for first segment (start)
+        std::make_pair(2054, -20.0),   // Flat junction band right for first segment (stop)
+        std::make_pair(2055, -20.01), // start linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(2055, -20.01), // start linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(3583, -24.99), // stop linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(3583, -24.99), // stop linear sum region left (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(3584, -25.0),  // middle linear sum region (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(3584, -25.0),  // middle linear sum region (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(3585, -24.99), // start linear sum region right (no interpolation possible,
+                                      // so provide 2 times the same point)
+        std::make_pair(3585, -24.99), // start linear sum region right (no interpolation possible,
+                                      // so provide 2 times the same point)
+        std::make_pair(5113, -20.01), // stop linear sum region right (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(5113, -20.01), // stop linear sum region right (no interpolation possible, so
+                                      // provide 2 times the same point)
+        std::make_pair(5114, -20.0),  // Flat junction band left (start)
+        std::make_pair(5118, -20.0),  // Flat junction band left (stop)
+        std::make_pair(5119, -20.0),  // Inner band left for second segment (start)
+        std::make_pair(5131, -1.538), // Inner band left for second segment (stop)
+        std::make_pair(5132, 0.0),    // allocated band left for second segment (start)
+        std::make_pair(5629, 0.0),    // allocated band left for second segment (stop)
+        std::make_pair(5630, -20.0),  // DC band for second segment (start)
+        std::make_pair(5634, -20.0),  // DC band for second segment (stop)
+        std::make_pair(5635, 0.0),    // allocated band right for second segment (start)
+        std::make_pair(6132, 0.0),    // allocated band right for second segment (stop)
+        std::make_pair(6133, -1.538), // Inner band right for second segment (start)
+        std::make_pair(6145, -20.0),  // Inner band right for second segment (stop)
+        std::make_pair(6146, -20.0),  // Flat junction band right (start)
+        std::make_pair(6150, -20.0),  // Flat junction band right (stop)
+        std::make_pair(6151, -20.016), // Middle band right (start)
+        std::make_pair(6656, -28.000), // Middle band right (stop)
+        std::make_pair(6657, -28.023), // Outer band right (start)
+        std::make_pair(7168, -40.0),   // Outer band right (stop)
+    };
+
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11ax_5GHz 80+80MHz large separation",
+                                               WIFI_STANDARD_80211ax,
+                                               WIFI_PHY_BAND_5GHZ,
+                                               160,
+                                               {5210, 5530},
                                                maskSlopes,
                                                tol,
                                                prec),
