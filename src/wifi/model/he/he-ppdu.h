@@ -50,7 +50,7 @@ class HePpdu : public OfdmPpdu
     /**
      * HE-SIG PHY header (HE-SIG-A1/A2/B)
      */
-    class HeSigHeader : public Header
+    class HeSigHeader
     {
       public:
         HeSigHeader();
@@ -60,18 +60,6 @@ class HePpdu : public OfdmPpdu
          * \param heSigBPresent the flag indicating whether HE-SIG-B fields should be present or not
          */
         HeSigHeader(bool heSigBPresent);
-
-        /**
-         * \brief Get the type ID.
-         * \return the object TypeId
-         */
-        static TypeId GetTypeId();
-
-        TypeId GetInstanceTypeId() const override;
-        void Print(std::ostream& os) const override;
-        uint32_t GetSerializedSize() const override;
-        void Serialize(Buffer::Iterator start) const override;
-        uint32_t Deserialize(Buffer::Iterator start) override;
 
         /**
          * Set whether HE-SIG-B fields are present or not.
@@ -208,32 +196,6 @@ class HePpdu : public OfdmPpdu
          * \return the size of HE-SIG-B in bytes
          */
         uint32_t GetSigBSize() const;
-        /**
-         * Serialize one user field content channel.
-         *
-         * \param start an iterator which points to where the user field content channel should be
-         * written
-         * \param contentChannelId the ID of the content channel (either 1 or 2)
-         * \param userBlockFieldsContentChannel the user block fields contained in the content
-         * channel to write
-         */
-        void SerializeSigBContentChannel(
-            Buffer::Iterator& start,
-            uint8_t contentChannelId,
-            const std::vector<uint32_t>& userBlockFieldsContentChannel) const;
-        /**
-         * Deserialize one user field content channel.
-         *
-         * \param start an iterator which points to where the user field
-         * content channel should be read
-         * \param contentChannelId the ID of the content channel (either 1 or 2)
-         * \param userBlockFieldsContentChannel the user block fields to fill in
-         * \return the number of bytes read
-         */
-        uint16_t DeserializeSigBContentChannel(
-            Buffer::Iterator start,
-            uint8_t contentChannelId,
-            std::vector<uint32_t>& userBlockFieldsContentChannel);
 
         // HE-SIG-A1 fields
         uint8_t m_format;      ///< Format bit
@@ -378,7 +340,7 @@ class HePpdu : public OfdmPpdu
      */
     void SetHeMuUserInfos(WifiTxVector& txVector, const HeSigHeader& heSig) const;
 
-    HeSigHeader m_heSig; //!< the HE-SIG PHY header
+    HeSigHeader m_heSig;           //!< the HE-SIG PHY header
     mutable TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
 
   private:

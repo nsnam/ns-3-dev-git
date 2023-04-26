@@ -48,22 +48,10 @@ class HtPpdu : public OfdmPpdu
      * HT PHY header (HT-SIG1/2).
      * See section 19.3.9 in IEEE 802.11-2016.
      */
-    class HtSigHeader : public Header
+    class HtSigHeader
     {
       public:
         HtSigHeader();
-
-        /**
-         * \brief Get the type ID.
-         * \return the object TypeId
-         */
-        static TypeId GetTypeId();
-
-        TypeId GetInstanceTypeId() const override;
-        void Print(std::ostream& os) const override;
-        uint32_t GetSerializedSize() const override;
-        void Serialize(Buffer::Iterator start) const override;
-        uint32_t Deserialize(Buffer::Iterator start) override;
 
         /**
          * Fill the MCS field of HT-SIG.
@@ -195,7 +183,7 @@ class HtPpdu : public OfdmPpdu
                                    const HtSigHeader& htSig) const;
 
     HtSigHeader m_htSig; //!< the HT-SIG PHY header
-}; // class HtPpdu
+};                       // class HtPpdu
 
 } // namespace ns3
 

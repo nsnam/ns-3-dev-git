@@ -49,22 +49,10 @@ class VhtPpdu : public OfdmPpdu
      * VHT PHY header (VHT-SIG-A1/A2/B).
      * See section 21.3.8 in IEEE 802.11-2016.
      */
-    class VhtSigHeader : public Header
+    class VhtSigHeader
     {
       public:
         VhtSigHeader();
-
-        /**
-         * \brief Get the type ID.
-         * \return the object TypeId
-         */
-        static TypeId GetTypeId();
-
-        TypeId GetInstanceTypeId() const override;
-        void Print(std::ostream& os) const override;
-        uint32_t GetSerializedSize() const override;
-        void Serialize(Buffer::Iterator start) const override;
-        uint32_t Deserialize(Buffer::Iterator start) override;
 
         /**
          * Set the Multi-User (MU) flag.
@@ -210,7 +198,7 @@ class VhtPpdu : public OfdmPpdu
                                    const VhtSigHeader& vhtSig) const;
 
     VhtSigHeader m_vhtSig; //!< the VHT-SIG PHY header
-}; // class VhtPpdu
+};                         // class VhtPpdu
 
 } // namespace ns3
 

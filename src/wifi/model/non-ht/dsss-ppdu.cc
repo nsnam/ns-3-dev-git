@@ -97,34 +97,6 @@ DsssPpdu::DsssSigHeader::DsssSigHeader()
 {
 }
 
-TypeId
-DsssPpdu::DsssSigHeader::GetTypeId()
-{
-    static TypeId tid = TypeId("ns3::DsssSigHeader")
-                            .SetParent<Header>()
-                            .SetGroupName("Wifi")
-                            .AddConstructor<DsssSigHeader>();
-    return tid;
-}
-
-TypeId
-DsssPpdu::DsssSigHeader::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
-void
-DsssPpdu::DsssSigHeader::Print(std::ostream& os) const
-{
-    os << "SIGNAL=" << GetRate() << " LENGTH=" << m_length;
-}
-
-uint32_t
-DsssPpdu::DsssSigHeader::GetSerializedSize() const
-{
-    return 6;
-}
-
 void
 DsssPpdu::DsssSigHeader::SetRate(uint64_t rate)
 {
@@ -189,26 +161,6 @@ uint16_t
 DsssPpdu::DsssSigHeader::GetLength() const
 {
     return m_length;
-}
-
-void
-DsssPpdu::DsssSigHeader::Serialize(Buffer::Iterator start) const
-{
-    start.WriteU8(m_rate);
-    start.WriteU8(0); /* SERVICE */
-    start.WriteU16(m_length);
-    start.WriteU16(0); /* CRC */
-}
-
-uint32_t
-DsssPpdu::DsssSigHeader::Deserialize(Buffer::Iterator start)
-{
-    Buffer::Iterator i = start;
-    m_rate = i.ReadU8();
-    i.ReadU8(); /* SERVICE */
-    m_length = i.ReadU16();
-    i.ReadU16(); /* CRC */
-    return i.GetDistanceFrom(start);
 }
 
 } // namespace ns3

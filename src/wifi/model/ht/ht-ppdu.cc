@@ -130,35 +130,6 @@ HtPpdu::HtSigHeader::HtSigHeader()
 {
 }
 
-TypeId
-HtPpdu::HtSigHeader::GetTypeId()
-{
-    static TypeId tid = TypeId("ns3::HtSigHeader")
-                            .SetParent<Header>()
-                            .SetGroupName("Wifi")
-                            .AddConstructor<HtSigHeader>();
-    return tid;
-}
-
-TypeId
-HtPpdu::HtSigHeader::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
-void
-HtPpdu::HtSigHeader::Print(std::ostream& os) const
-{
-    os << "MCS=" << +m_mcs << " HT_LENGTH=" << m_htLength << " CHANNEL_WIDTH=" << GetChannelWidth()
-       << " SGI=" << +m_sgi << " AGGREGATION=" << +m_aggregation;
-}
-
-uint32_t
-HtPpdu::HtSigHeader::GetSerializedSize() const
-{
-    return 6;
-}
-
 void
 HtPpdu::HtSigHeader::SetMcs(uint8_t mcs)
 {
@@ -218,35 +189,6 @@ bool
 HtPpdu::HtSigHeader::GetShortGuardInterval() const
 {
     return m_sgi;
-}
-
-void
-HtPpdu::HtSigHeader::Serialize(Buffer::Iterator start) const
-{
-    uint8_t byte = m_mcs;
-    byte |= ((m_cbw20_40 & 0x01) << 7);
-    start.WriteU8(byte);
-    start.WriteU16(m_htLength);
-    byte = (0x01 << 2); // Set Reserved bit #2 to 1
-    byte |= ((m_aggregation & 0x01) << 3);
-    byte |= ((m_sgi & 0x01) << 7);
-    start.WriteU8(byte);
-    start.WriteU16(0);
-}
-
-uint32_t
-HtPpdu::HtSigHeader::Deserialize(Buffer::Iterator start)
-{
-    Buffer::Iterator i = start;
-    uint8_t byte = i.ReadU8();
-    m_mcs = byte & 0x7f;
-    m_cbw20_40 = ((byte >> 7) & 0x01);
-    m_htLength = i.ReadU16();
-    byte = i.ReadU8();
-    m_aggregation = ((byte >> 3) & 0x01);
-    m_sgi = ((byte >> 7) & 0x01);
-    i.ReadU16();
-    return i.GetDistanceFrom(start);
 }
 
 } // namespace ns3

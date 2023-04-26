@@ -22,7 +22,6 @@
 #ifndef DSSS_PPDU_H
 #define DSSS_PPDU_H
 
-#include "ns3/header.h"
 #include "ns3/wifi-ppdu.h"
 
 /**
@@ -49,22 +48,10 @@ class DsssPpdu : public WifiPpdu
      * DSSS SIG PHY header.
      * See section 16.2.2 in IEEE 802.11-2016.
      */
-    class DsssSigHeader : public Header
+    class DsssSigHeader
     {
       public:
         DsssSigHeader();
-
-        /**
-         * \brief Get the type ID.
-         * \return the object TypeId
-         */
-        static TypeId GetTypeId();
-
-        TypeId GetInstanceTypeId() const override;
-        void Print(std::ostream& os) const override;
-        uint32_t GetSerializedSize() const override;
-        void Serialize(Buffer::Iterator start) const override;
-        uint32_t Deserialize(Buffer::Iterator start) override;
 
         /**
          * Fill the RATE field of L-SIG (in bit/s).
@@ -146,7 +133,7 @@ class DsssPpdu : public WifiPpdu
                                            const DsssSigHeader& dsssSig) const;
 
     DsssSigHeader m_dsssSig; //!< the DSSS SIG PHY header
-}; // class DsssPpdu
+};                           // class DsssPpdu
 
 } // namespace ns3
 

@@ -101,34 +101,6 @@ OfdmPpdu::LSigHeader::LSigHeader()
 {
 }
 
-TypeId
-OfdmPpdu::LSigHeader::GetTypeId()
-{
-    static TypeId tid = TypeId("ns3::LSigHeader")
-                            .SetParent<Header>()
-                            .SetGroupName("Wifi")
-                            .AddConstructor<LSigHeader>();
-    return tid;
-}
-
-TypeId
-OfdmPpdu::LSigHeader::GetInstanceTypeId() const
-{
-    return GetTypeId();
-}
-
-void
-OfdmPpdu::LSigHeader::Print(std::ostream& os) const
-{
-    os << "SIGNAL=" << GetRate() << " LENGTH=" << m_length;
-}
-
-uint32_t
-OfdmPpdu::LSigHeader::GetSerializedSize() const
-{
-    return 3;
-}
-
 void
 OfdmPpdu::LSigHeader::SetRate(uint64_t rate, uint16_t channelWidth)
 {
@@ -238,35 +210,6 @@ uint16_t
 OfdmPpdu::LSigHeader::GetLength() const
 {
     return m_length;
-}
-
-void
-OfdmPpdu::LSigHeader::Serialize(Buffer::Iterator start) const
-{
-    uint8_t byte = 0;
-    uint16_t bytes = 0;
-
-    byte |= m_rate;
-    byte |= (m_length & 0x07) << 5;
-    start.WriteU8(byte);
-
-    bytes |= (m_length & 0x0ff8) >> 3;
-    start.WriteU16(bytes);
-}
-
-uint32_t
-OfdmPpdu::LSigHeader::Deserialize(Buffer::Iterator start)
-{
-    Buffer::Iterator i = start;
-
-    uint8_t byte = i.ReadU8();
-    m_rate = byte & 0x0f;
-    m_length = (byte >> 5) & 0x07;
-
-    uint16_t bytes = i.ReadU16();
-    m_length |= (bytes << 3) & 0x0ff8;
-
-    return i.GetDistanceFrom(start);
 }
 
 } // namespace ns3
