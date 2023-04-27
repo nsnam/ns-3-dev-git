@@ -24,6 +24,8 @@
 
 #include "ns3/ofdm-ppdu.h"
 
+#include <variant>
+
 /**
  * \file
  * \ingroup wifi
@@ -48,173 +50,49 @@ class HePpdu : public OfdmPpdu
 {
   public:
     /**
-     * HE-SIG PHY header (HE-SIG-A1/A2/B)
+     * HE-SIG PHY header for HE SU PPDUs (HE-SIG-A1/A2)
      */
-    class HeSigHeader
+    struct HeSuSigHeader
     {
-      public:
-        HeSigHeader();
-        /**
-         * Constructor.
-         *
-         * \param heSigBPresent the flag indicating whether HE-SIG-B fields should be present or not
-         */
-        HeSigHeader(bool heSigBPresent);
+        uint8_t m_format{1};    ///< Format bit
+        uint8_t m_bssColor{0};  ///< BSS color field
+        uint8_t m_mcs{0};       ///< MCS field
+        uint8_t m_bandwidth{0}; ///< Bandwidth field
+        uint8_t m_giLtfSize{0}; ///< GI+LTF Size field
+        uint8_t m_nsts{0};      ///< NSTS
+    };                          // struct HeSuSigHeader
 
-        /**
-         * Set whether HE-SIG-B fields are present or not.
-         *
-         * \param heSigBPresent the flag indicating whether HE-SIG-B fields should be present or not
-         */
-        void SetHeSigBPresent(bool heSigBPresent);
+    /**
+     * HE-SIG PHY header for HE TB PPDUs (HE-SIG-A1/A2)
+     */
+    struct HeTbSigHeader
+    {
+        uint8_t m_format{0};    ///< Format bit
+        uint8_t m_bssColor{0};  ///< BSS color field
+        uint8_t m_bandwidth{0}; ///< Bandwidth field
+    };                          // struct HeTbSigHeader
 
-        /**
-         * Fill the FORMAT field of HE-SIG-A1 for HE SU, HE ER SU and HE TB PPDUs.
-         *
-         * \param preamble the preamble from which the FORMAT field is deduced
-         */
-        void SetFormat(WifiPreamble preamble);
+    /**
+     * HE-SIG PHY header for HE MU PPDUs (HE-SIG-A1/A2/B)
+     */
+    struct HeMuSigHeader
+    {
+        // HE-SIG-A fields
+        uint8_t m_bssColor{0};  ///< BSS color field
+        uint8_t m_bandwidth{0}; ///< Bandwidth field
+        uint8_t m_sigBMcs{0};   ///< HE-SIG-B MCS
+        uint8_t m_giLtfSize{0}; ///< GI+LTF Size field
 
-        /**
-         * Fill the MCS field of HE-SIG-A1.
-         *
-         * \param mcs the MCS field of HE-SIG-A1
-         */
-        void SetMcs(uint8_t mcs);
-        /**
-         * Return the MCS field of HE-SIG-A1.
-         *
-         * \return the MCS field of HE-SIG-A1
-         */
-        uint8_t GetMcs() const;
-        /**
-         * Fill the BSS Color field of HE-SIG-A1.
-         *
-         * \param bssColor the BSS Color value
-         */
-        void SetBssColor(uint8_t bssColor);
-        /**
-         * Return the BSS Color field in the HE-SIG-A1.
-         *
-         * \return the BSS Color field in the HE-SIG-A1
-         */
-        uint8_t GetBssColor() const;
-        /**
-         * Fill the channel width field of HE-SIG-A1 (in MHz).
-         *
-         * \param channelWidth the channel width (in MHz)
-         */
-        void SetChannelWidth(uint16_t channelWidth);
-        /**
-         * Return the channel width (in MHz).
-         *
-         * \return the channel width (in MHz)
-         */
-        uint16_t GetChannelWidth() const;
-        /**
-         * Fill the GI + LTF size field of HE-SIG-A1.
-         *
-         * \param gi the guard interval (in nanoseconds)
-         * \param ltf the sequence of HE-LTF
-         */
-        void SetGuardIntervalAndLtfSize(uint16_t gi, uint8_t ltf);
-        /**
-         * Return the guard interval (in nanoseconds).
-         *
-         * \return the guard interval (in nanoseconds)
-         */
-        uint16_t GetGuardInterval() const;
-        /**
-         * Fill the number of streams field of HE-SIG-A1.
-         *
-         * \param nStreams the number of streams
-         */
-        void SetNStreams(uint8_t nStreams);
-        /**
-         * Return the number of streams.
-         *
-         * \return the number of streams
-         */
-        uint8_t GetNStreams() const;
-
-        /**
-         * Fill the HE-SIG-B MCS field of HE-SIG-A1.
-         *
-         * \param mcs the HE-SIG-B MCS field of HE-SIG-A1
-         */
-        void SetSigBMcs(uint8_t mcs);
-        /**
-         * Return the HE-SIG-B MCS field of HE-SIG-A1.
-         *
-         * \return the HE-SIG-B MCS field of HE-SIG-A1
-         */
-        uint8_t GetSigBMcs() const;
-
-        /**
-         * Set RU Allocation of SIG-B common field
-         * \param ruAlloc 8 bit RU_ALLOCATION per 20 MHz
-         */
-        void SetRuAllocation(const RuAllocation& ruAlloc);
-
-        /**
-         * Get RU Allocation of SIG-B
-         * \return 8 bit RU_ALLOCATION per 20 MHz
-         */
-        const RuAllocation& GetRuAllocation() const;
-
-        /**
-         * Set the HE SIG-B content channels
-         * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
-         * \param contentChannels HE-SIG-B content channels
-         */
-        void SetHeSigBContentChannels(const HeSigBContentChannels& contentChannels);
-
-        /**
-         * Get the HE SIG-B content channels
-         * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
-         * \return HE-SIG-B content channels
-         */
-        const HeSigBContentChannels& GetHeSigBContentChannels() const;
-
-        /**
-         * Set the HE-SIG-B CENTER_26_TONE_RU field
-         * \param center26ToneRuIndication the CENTER_26_TONE_RU field
-         */
-        void SetCenter26ToneRuIndication(
-            std::optional<Center26ToneRuIndication> center26ToneRuIndication);
-
-        /**
-         * Get the HE-SIG-B CENTER_26_TONE_RU field
-         * \return the CENTER_26_TONE_RU field
-         */
-        std::optional<Center26ToneRuIndication> GetCenter26ToneRuIndication() const;
-
-      private:
-        /**
-         * Return the size of HE-SIG-B in bytes
-         *
-         * \return the size of HE-SIG-B in bytes
-         */
-        uint32_t GetSigBSize() const;
-
-        // HE-SIG-A1 fields
-        uint8_t m_format;      ///< Format bit
-        uint8_t m_bssColor;    ///< BSS color field
-        uint8_t m_mcs;         ///< MCS field
-        uint8_t m_bandwidth;   ///< Bandwidth field
-        uint8_t m_gi_ltf_size; ///< GI+LTF Size field
-        uint8_t m_nsts;        ///< NSTS
-        uint8_t m_sigBMcs;     ///< HE-SIG-B MCS
-
-        bool
-            m_heSigBPresent; //!< flag used to decide whether HE-SIG-B fields should be added or not
-
+        // HE-SIG-B fields
         RuAllocation m_ruAllocation; //!< RU allocations that are going to be carried in SIG-B
                                      //!< common subfields
         HeSigBContentChannels m_contentChannels; //!< HE SIG-B Content Channels
         std::optional<Center26ToneRuIndication>
             m_center26ToneRuIndication; //!< center 26 tone RU indication in SIG-B common subfields
-    };                                  // class HeSigHeader
+    };                                  // struct HeMuSigHeader
+
+    /// type of the HE-SIG PHY header
+    using HeSigHeader = std::variant<std::monostate, HeSuSigHeader, HeTbSigHeader, HeMuSigHeader>;
 
     /**
      * The transmit power spectral density flag, namely used
@@ -331,8 +209,61 @@ class HePpdu : public OfdmPpdu
      * Reconstruct HeMuUserInfoMap from HE-SIG-B header.
      *
      * \param txVector the TXVECTOR to set its HeMuUserInfoMap
+     * \param ruAllocation the RU_ALLOCATION per 20 MHz
+     * \param contentChannels the HE-SIG-B content channels
      */
-    void SetHeMuUserInfos(WifiTxVector& txVector) const;
+    void SetHeMuUserInfos(WifiTxVector& txVector,
+                          const RuAllocation& ruAllocation,
+                          const HeSigBContentChannels& contentChannels) const;
+
+    /**
+     * Convert channel width expressed in MHz to bandwidth field encoding in HE-SIG-A.
+     *
+     * \param channelWidth the channel width in MHz
+     * \return the value used to encode the bandwidth field in HE-SIG-A
+     */
+    static uint8_t GetChannelWidthEncodingFromMhz(uint16_t channelWidth);
+
+    /**
+     * Convert number of spatial streams to NSTS field encoding in HE-SIG-A.
+     *
+     * \param nss the number of spatial streams
+     * \return the value used to encode the NSTS field in HE-SIG-A
+     */
+    static uint8_t GetNstsEncodingFromNss(uint8_t nss);
+
+    /**
+     * Convert guard interval (in ns) and NLTF to its encoding in HE-SIG-A.
+     *
+     * \param gi the guard interval in nanoseconds
+     * \param nltf the the number of long training symbols
+     * \return the value used to encode the NSTS field in HE-SIG-A
+     */
+    static uint8_t GetGuardIntervalAndNltfEncoding(uint16_t gi, uint8_t nltf);
+
+    /**
+     * Convert number of spatial streams from NSTS field encoding in HE-SIG-A.
+     *
+     * \param nsts the value of the NSTS field in HE-SIG-A
+     * \return the number of spatial streams
+     */
+    static uint8_t GetNssFromNstsEncoding(uint8_t nsts);
+
+    /**
+     * Convert channel width expressed in MHz from bandwidth field encoding in HE-SIG-A.
+     *
+     * \param bandwidth the value of the bandwidth field in HE-SIG-A
+     * \return the channel width in MHz
+     */
+    static uint16_t GetChannelWidthMhzFromEncoding(uint8_t bandwidth);
+
+    /**
+     * Convert guard interval (in ns) from its encoding in HE-SIG-A.
+     *
+     * \param giAndNltfSize the value used to encode the guard interval and NLTF field in HE-SIG-A
+     * \return the guard interval in nanoseconds
+     */
+    static uint16_t GetGuardIntervalFromEncoding(uint8_t giAndNltfSize);
 
     HeSigHeader m_heSig;           //!< the HE-SIG PHY header
     mutable TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag

@@ -118,40 +118,41 @@ HePpdu::SetLSigHeader(Time ppduDuration)
 void
 HePpdu::SetHeSigHeader(const WifiTxVector& txVector)
 {
-    m_heSig.SetFormat(m_preamble);
-    m_heSig.SetChannelWidth(txVector.GetChannelWidth());
-    // TODO: EHT PHY headers not implemented yet, hence we do not fill in HE-SIG-B for EHT SU
-    /* See section 36.3.12.8.2 of IEEE 802.11be D3.0 (EHT-SIG content channels):
-     * In non-OFDMA transmission, the Common field of the EHT-SIG content channel does not contain
-     * the RU Allocation subfield. For non-OFDMA transmission except for EHT sounding NDP, the
-     * Common field of the EHT-SIG content channel is encoded together with the first User field and
-     * this encoding block contains a CRC and Tail, referred to as a common encoding block. */
-    if (txVector.IsDlMu())
+    const auto bssColor = txVector.GetBssColor();
+    NS_ASSERT(bssColor < 64);
+    if (ns3::IsUlMu(m_preamble))
+    {
+        m_heSig.emplace<HeTbSigHeader>(HeTbSigHeader{
+            .m_bssColor = bssColor,
+            .m_bandwidth = GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth())});
+    }
+    else if (ns3::IsDlMu(m_preamble))
     {
         const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
-        m_heSig.SetHeSigBPresent(true);
-        m_heSig.SetSigBMcs(txVector.GetSigBMode().GetMcsValue());
-        m_heSig.SetRuAllocation(txVector.GetRuAllocation(p20Index));
-        m_heSig.SetHeSigBContentChannels(txVector.GetContentChannels(p20Index));
-        if (txVector.GetChannelWidth() >= 80)
-        {
-            m_heSig.SetCenter26ToneRuIndication(txVector.GetCenter26ToneRuIndication());
-        }
+        m_heSig.emplace<HeMuSigHeader>(HeMuSigHeader{
+            .m_bssColor = bssColor,
+            .m_bandwidth = GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth()),
+            .m_sigBMcs = txVector.GetSigBMode().GetMcsValue(),
+            .m_giLtfSize = GetGuardIntervalAndNltfEncoding(txVector.GetGuardInterval(),
+                                                           2 /*NLTF currently unused*/),
+            .m_ruAllocation = txVector.GetRuAllocation(p20Index),
+            .m_contentChannels = txVector.GetContentChannels(p20Index),
+            .m_center26ToneRuIndication =
+                (txVector.GetChannelWidth() >= 80)
+                    ? std::optional{txVector.GetCenter26ToneRuIndication()}
+                    : std::nullopt});
     }
     else
     {
-        m_heSig.SetHeSigBPresent(false);
-        if (!ns3::IsUlMu(m_preamble))
-        {
-            m_heSig.SetMcs(txVector.GetMode().GetMcsValue());
-            m_heSig.SetNStreams(txVector.GetNss());
-        }
-    }
-    m_heSig.SetBssColor(txVector.GetBssColor());
-    if (!txVector.IsUlMu())
-    {
-        m_heSig.SetGuardIntervalAndLtfSize(txVector.GetGuardInterval(),
-                                           2 /*NLTF currently unused*/);
+        const auto mcs = txVector.GetMode().GetMcsValue();
+        // NS_ASSERT (mcs <= 11); // TODO: reactivate once EHT PHY headers are implemented
+        m_heSig.emplace<HeSuSigHeader>(HeSuSigHeader{
+            .m_bssColor = bssColor,
+            .m_mcs = mcs,
+            .m_bandwidth = GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth()),
+            .m_giLtfSize = GetGuardIntervalAndNltfEncoding(txVector.GetGuardInterval(),
+                                                           2 /*NLTF currently unused*/),
+            .m_nsts = GetNstsEncodingFromNss(txVector.GetNss())});
     }
 }
 
@@ -167,42 +168,50 @@ HePpdu::DoGetTxVector() const
 void
 HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
 {
-    txVector.SetChannelWidth(m_heSig.GetChannelWidth());
-    txVector.SetBssColor(m_heSig.GetBssColor());
     txVector.SetLength(m_lSig.GetLength());
     txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
     if (!IsMu())
     {
-        txVector.SetMode(HePhy::GetHeMcs(m_heSig.GetMcs()));
-        txVector.SetNss(m_heSig.GetNStreams());
+        auto heSigHeader = std::get_if<HeSuSigHeader>(&m_heSig);
+        NS_ASSERT(heSigHeader && (heSigHeader->m_format == 1));
+        txVector.SetMode(HePhy::GetHeMcs(heSigHeader->m_mcs));
+        txVector.SetNss(GetNssFromNstsEncoding(heSigHeader->m_nsts));
+        txVector.SetChannelWidth(GetChannelWidthMhzFromEncoding(heSigHeader->m_bandwidth));
+        txVector.SetGuardInterval(GetGuardIntervalFromEncoding(heSigHeader->m_giLtfSize));
+        txVector.SetBssColor(heSigHeader->m_bssColor);
     }
-    if (!IsUlMu())
+    else if (IsUlMu())
     {
-        txVector.SetGuardInterval(m_heSig.GetGuardInterval());
+        auto heSigHeader = std::get_if<HeTbSigHeader>(&m_heSig);
+        NS_ASSERT(heSigHeader && (heSigHeader->m_format == 0));
+        txVector.SetChannelWidth(GetChannelWidthMhzFromEncoding(heSigHeader->m_bandwidth));
+        txVector.SetBssColor(heSigHeader->m_bssColor);
     }
-    if (IsDlMu())
+    else if (IsDlMu())
     {
-        SetHeMuUserInfos(txVector);
-    }
-    if (txVector.IsDlMu())
-    {
-        txVector.SetSigBMode(HePhy::GetVhtMcs(m_heSig.GetSigBMcs()));
+        auto heSigHeader = std::get_if<HeMuSigHeader>(&m_heSig);
+        NS_ASSERT(heSigHeader);
+        txVector.SetChannelWidth(GetChannelWidthMhzFromEncoding(heSigHeader->m_bandwidth));
+        txVector.SetGuardInterval(GetGuardIntervalFromEncoding(heSigHeader->m_giLtfSize));
+        txVector.SetBssColor(heSigHeader->m_bssColor);
+        SetHeMuUserInfos(txVector, heSigHeader->m_ruAllocation, heSigHeader->m_contentChannels);
+        txVector.SetSigBMode(HePhy::GetVhtMcs(heSigHeader->m_sigBMcs));
         const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
-        txVector.SetRuAllocation(m_heSig.GetRuAllocation(), p20Index);
-        auto center26ToneRuIndication = m_heSig.GetCenter26ToneRuIndication();
-        if (center26ToneRuIndication.has_value())
+        txVector.SetRuAllocation(heSigHeader->m_ruAllocation, p20Index);
+        if (heSigHeader->m_center26ToneRuIndication.has_value())
         {
-            txVector.SetCenter26ToneRuIndication(center26ToneRuIndication.value());
+            txVector.SetCenter26ToneRuIndication(heSigHeader->m_center26ToneRuIndication.value());
         }
     }
 }
 
 void
-HePpdu::SetHeMuUserInfos(WifiTxVector& txVector) const
+HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
+                         const RuAllocation& ruAllocation,
+                         const HeSigBContentChannels& contentChannels) const
 {
-    const auto& ruAllocation = m_heSig.GetRuAllocation();
     auto contentChannelIndex = 0;
-    for (const auto& contentChannel : m_heSig.GetHeSigBContentChannels())
+    for (const auto& contentChannel : contentChannels)
     {
         auto numRusLeft = 0;
         auto ruAllocIndex = contentChannelIndex;
@@ -329,18 +338,23 @@ HePpdu::GetPsdu(uint8_t bssColor, uint16_t staId /* = SU_STA_ID */) const
         return m_psdus.at(SU_STA_ID);
     }
 
-    const auto ppduBssColor = m_heSig.GetBssColor();
     if (IsUlMu())
     {
+        auto heSigHeader = std::get_if<HeTbSigHeader>(&m_heSig);
+        NS_ASSERT(heSigHeader);
         NS_ASSERT(m_psdus.size() == 1);
-        if (bssColor == 0 || ppduBssColor == 0 || (bssColor == ppduBssColor))
+        if ((bssColor == 0) || (heSigHeader->m_bssColor == 0) ||
+            (bssColor == heSigHeader->m_bssColor))
         {
             return m_psdus.cbegin()->second;
         }
     }
     else
     {
-        if (bssColor == 0 || ppduBssColor == 0 || (bssColor == ppduBssColor))
+        auto heSigHeader = std::get_if<HeMuSigHeader>(&m_heSig);
+        NS_ASSERT(heSigHeader);
+        if ((bssColor == 0) || (heSigHeader->m_bssColor == 0) ||
+            (bssColor == heSigHeader->m_bssColor))
         {
             const auto it = m_psdus.find(staId);
             if (it != m_psdus.cend())
@@ -523,100 +537,39 @@ HePpdu::PrintPayload() const
     return ss.str();
 }
 
-HePpdu::HeSigHeader::HeSigHeader()
-    : HeSigHeader(false)
-{
-}
-
-HePpdu::HeSigHeader::HeSigHeader(bool heSigBPresent)
-    : m_format(0),
-      m_bssColor(0),
-      m_mcs(0),
-      m_bandwidth(0),
-      m_gi_ltf_size(0),
-      m_nsts(0),
-      m_sigBMcs(0),
-      m_heSigBPresent(heSigBPresent)
-{
-}
-
-void
-HePpdu::HeSigHeader::SetHeSigBPresent(bool heSigBPresent)
-{
-    m_heSigBPresent = heSigBPresent;
-}
-
-uint32_t
-HePpdu::HeSigHeader::GetSigBSize() const
-{
-    return HePpdu::GetSigBFieldSize(GetChannelWidth(), m_ruAllocation);
-}
-
-void
-HePpdu::HeSigHeader::SetFormat(WifiPreamble preamble)
-{
-    m_format = preamble == WIFI_PREAMBLE_HE_TB ? 0 : 1;
-}
-
-void
-HePpdu::HeSigHeader::SetMcs(uint8_t mcs)
-{
-    // NS_ASSERT (mcs <= 11); // TODO: reactivate once EHT PHY headers are implemented
-    m_mcs = mcs;
-}
-
 uint8_t
-HePpdu::HeSigHeader::GetMcs() const
-{
-    return m_mcs;
-}
-
-void
-HePpdu::HeSigHeader::SetBssColor(uint8_t bssColor)
-{
-    NS_ASSERT(bssColor < 64);
-    m_bssColor = bssColor;
-}
-
-uint8_t
-HePpdu::HeSigHeader::GetBssColor() const
-{
-    return m_bssColor;
-}
-
-void
-HePpdu::HeSigHeader::SetChannelWidth(uint16_t channelWidth)
+HePpdu::GetChannelWidthEncodingFromMhz(uint16_t channelWidth)
 {
     if (channelWidth == 160)
     {
-        m_bandwidth = 3;
+        return 3;
     }
     else if (channelWidth == 80)
     {
-        m_bandwidth = 2;
+        return 2;
     }
     else if (channelWidth == 40)
     {
-        m_bandwidth = 1;
+        return 1;
     }
     else
     {
-        m_bandwidth = 0;
+        return 0;
     }
 }
 
 uint16_t
-HePpdu::HeSigHeader::GetChannelWidth() const
+HePpdu::GetChannelWidthMhzFromEncoding(uint8_t bandwidth)
 {
-    if (m_bandwidth == 3)
+    if (bandwidth == 3)
     {
         return 160;
     }
-    else if (m_bandwidth == 2)
+    else if (bandwidth == 2)
     {
         return 80;
     }
-    else if (m_bandwidth == 1)
+    else if (bandwidth == 1)
     {
         return 40;
     }
@@ -626,36 +579,36 @@ HePpdu::HeSigHeader::GetChannelWidth() const
     }
 }
 
-void
-HePpdu::HeSigHeader::SetGuardIntervalAndLtfSize(uint16_t gi, uint8_t ltf)
+uint8_t
+HePpdu::GetGuardIntervalAndNltfEncoding(uint16_t gi, uint8_t nltf)
 {
-    if (gi == 800 && ltf == 1)
+    if (gi == 800 && nltf == 1)
     {
-        m_gi_ltf_size = 0;
+        return 0;
     }
-    else if (gi == 800 && ltf == 2)
+    else if (gi == 800 && nltf == 2)
     {
-        m_gi_ltf_size = 1;
+        return 1;
     }
-    else if (gi == 1600 && ltf == 2)
+    else if (gi == 1600 && nltf == 2)
     {
-        m_gi_ltf_size = 2;
+        return 2;
     }
     else
     {
-        m_gi_ltf_size = 3;
+        return 3;
     }
 }
 
 uint16_t
-HePpdu::HeSigHeader::GetGuardInterval() const
+HePpdu::GetGuardIntervalFromEncoding(uint8_t giAndNltfSize)
 {
-    if (m_gi_ltf_size == 3)
+    if (giAndNltfSize == 3)
     {
         // we currently do not consider DCM nor STBC fields
         return 3200;
     }
-    else if (m_gi_ltf_size == 2)
+    else if (giAndNltfSize == 2)
     {
         return 1600;
     }
@@ -665,71 +618,17 @@ HePpdu::HeSigHeader::GetGuardInterval() const
     }
 }
 
-void
-HePpdu::HeSigHeader::SetNStreams(uint8_t nStreams)
+uint8_t
+HePpdu::GetNstsEncodingFromNss(uint8_t nss)
 {
-    NS_ASSERT(nStreams <= 8);
-    m_nsts = (nStreams - 1);
+    NS_ASSERT(nss <= 8);
+    return nss - 1;
 }
 
 uint8_t
-HePpdu::HeSigHeader::GetNStreams() const
+HePpdu::GetNssFromNstsEncoding(uint8_t nsts)
 {
-    return (m_nsts + 1);
-}
-
-void
-HePpdu::HeSigHeader::SetSigBMcs(uint8_t mcs)
-{
-    NS_ASSERT(mcs <= 5);
-    NS_ASSERT(m_heSigBPresent);
-    m_sigBMcs = mcs;
-}
-
-uint8_t
-HePpdu::HeSigHeader::GetSigBMcs() const
-{
-    return m_sigBMcs;
-}
-
-void
-HePpdu::HeSigHeader::SetRuAllocation(const RuAllocation& ruAlloc)
-{
-    NS_ASSERT(m_heSigBPresent);
-    m_ruAllocation = ruAlloc;
-}
-
-const RuAllocation&
-HePpdu::HeSigHeader::GetRuAllocation() const
-{
-    return m_ruAllocation;
-}
-
-void
-HePpdu::HeSigHeader::SetHeSigBContentChannels(const HeSigBContentChannels& contentChannels)
-{
-    NS_ASSERT(m_heSigBPresent);
-    m_contentChannels = contentChannels;
-}
-
-const HeSigBContentChannels&
-HePpdu::HeSigHeader::GetHeSigBContentChannels() const
-{
-    return m_contentChannels;
-}
-
-void
-HePpdu::HeSigHeader::SetCenter26ToneRuIndication(
-    std::optional<Center26ToneRuIndication> center26ToneRuIndication)
-{
-    NS_ASSERT(m_heSigBPresent);
-    m_center26ToneRuIndication = center26ToneRuIndication;
-}
-
-std::optional<Center26ToneRuIndication>
-HePpdu::HeSigHeader::GetCenter26ToneRuIndication() const
-{
-    return m_center26ToneRuIndication;
+    return nsts + 1;
 }
 
 } // namespace ns3
