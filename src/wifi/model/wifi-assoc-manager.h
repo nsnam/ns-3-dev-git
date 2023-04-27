@@ -177,7 +177,7 @@ class WifiAssocManager : public Object
      * \param apInfo the info about the given AP
      * \return a reference to the list of the links to setup with the given AP
      */
-    std::list<std::pair<std::uint8_t, uint8_t>>& GetSetupLinks(const StaWifiMac::ApInfo& apInfo);
+    std::list<std::pair<uint8_t, uint8_t>>& GetSetupLinks(const StaWifiMac::ApInfo& apInfo);
 
     /**
      * \return the scanning parameters.

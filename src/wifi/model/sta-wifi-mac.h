@@ -149,7 +149,7 @@ class StaWifiMac : public WifiMac
         WifiScanParams::Channel m_channel; ///< The channel the management frame was received on
         uint8_t m_linkId;                  ///< ID of the link used to communicate with the AP
         /// list of (local link ID, AP link ID) pairs identifying the links to setup between MLDs
-        std::list<std::pair<std::uint8_t, uint8_t>> m_setupLinks;
+        std::list<std::pair<uint8_t, uint8_t>> m_setupLinks;
     };
 
     /**

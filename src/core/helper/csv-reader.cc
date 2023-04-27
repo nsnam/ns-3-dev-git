@@ -180,7 +180,7 @@ CsvReader::GetValueAs(std::string input, signed char& value) const
 
     std::istringstream tempStream(input);
 
-    std::int16_t tempOutput = 0;
+    int16_t tempOutput = 0;
     tempStream >> tempOutput;
 
     if (tempOutput >= std::numeric_limits<byte_type>::min() &&
@@ -247,7 +247,7 @@ CsvReader::GetValueAs(std::string input, unsigned char& value) const
 
     std::istringstream tempStream(input);
 
-    std::uint16_t tempOutput = 0;
+    uint16_t tempOutput = 0;
     tempStream >> tempOutput;
 
     if (tempOutput >= std::numeric_limits<byte_type>::min() &&
