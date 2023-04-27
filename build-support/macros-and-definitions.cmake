@@ -1590,8 +1590,11 @@ function(build_exec)
   )
 
   # Resolve nested scratch prefixes without user intervention
-  if("${CMAKE_CURRENT_SOURCE_DIR}" MATCHES "scratch"
-     AND "${BEXEC_EXECNAME_PREFIX}" STREQUAL ""
+  string(REPLACE "${PROJECT_SOURCE_DIR}" "" relative_path
+                 "${CMAKE_CURRENT_SOURCE_DIR}"
+  )
+  if("${relative_path}" MATCHES "scratch" AND "${BEXEC_EXECNAME_PREFIX}"
+                                              STREQUAL ""
   )
     get_scratch_prefix(BEXEC_EXECNAME_PREFIX)
   endif()
