@@ -42,21 +42,21 @@ class ValArrayTestCase : public TestCase
 {
   public:
     /** Default constructor*/
-    ValArrayTestCase<T>() = default;
+    ValArrayTestCase() = default;
     /**
      * Constructor
      *
      * \param [in] name reference name
      */
-    ValArrayTestCase<T>(const std::string& name);
+    ValArrayTestCase(const std::string& name);
 
     /** Destructor. */
-    ~ValArrayTestCase<T>() override;
+    ~ValArrayTestCase() override;
     /**
      * \brief Copy constructor.
      * Instruct the compiler to generate the implicitly declared copy constructor
      */
-    ValArrayTestCase<T>(const ValArrayTestCase<T>&) = default;
+    ValArrayTestCase(const ValArrayTestCase<T>&) = default;
     /**
      * \brief Copy assignment operator.
      * Instruct the compiler to generate the implicitly declared copy assignment operator.
@@ -67,7 +67,7 @@ class ValArrayTestCase : public TestCase
      * \brief Move constructor.
      * Instruct the compiler to generate the implicitly declared move constructor
      */
-    ValArrayTestCase<T>(ValArrayTestCase<T>&&) = default;
+    ValArrayTestCase(ValArrayTestCase<T>&&) = default;
     /**
      * \brief Move assignment operator.
      * Instruct the compiler to generate the implicitly declared copy constructor
@@ -86,7 +86,7 @@ ValArrayTestCase<T>::ValArrayTestCase(const std::string& name)
 }
 
 template <class T>
-ValArrayTestCase<T>::~ValArrayTestCase<T>()
+ValArrayTestCase<T>::~ValArrayTestCase()
 {
 }
 

@@ -44,21 +44,21 @@ template <class T>
 class MatrixArrayTestCase : public TestCase
 {
   public:
-    MatrixArrayTestCase<T>() = default;
+    MatrixArrayTestCase() = default;
     /**
      * Constructor
      *
      * \param [in] name reference name
      */
-    MatrixArrayTestCase<T>(const std::string& name);
+    MatrixArrayTestCase(const std::string& name);
 
     /** Destructor. */
-    ~MatrixArrayTestCase<T>() override;
+    ~MatrixArrayTestCase() override;
     /**
      * \brief Copy constructor.
      * Instruct the compiler to generate the implicitly declared copy constructor
      */
-    MatrixArrayTestCase<T>(const MatrixArrayTestCase<T>&) = default;
+    MatrixArrayTestCase(const MatrixArrayTestCase<T>&) = default;
     /**
      * \brief Copy assignment operator.
      * Instruct the compiler to generate the implicitly declared copy assignment operator.
@@ -69,7 +69,7 @@ class MatrixArrayTestCase : public TestCase
      * \brief Move constructor.
      * Instruct the compiler to generate the implicitly declared move constructor
      */
-    MatrixArrayTestCase<T>(MatrixArrayTestCase<T>&&) = default;
+    MatrixArrayTestCase(MatrixArrayTestCase<T>&&) = default;
     /**
      * \brief Move assignment operator.
      * Instruct the compiler to generate the implicitly declared copy constructor
@@ -89,7 +89,7 @@ MatrixArrayTestCase<T>::MatrixArrayTestCase(const std::string& name)
 }
 
 template <class T>
-MatrixArrayTestCase<T>::~MatrixArrayTestCase<T>()
+MatrixArrayTestCase<T>::~MatrixArrayTestCase()
 {
 }
 

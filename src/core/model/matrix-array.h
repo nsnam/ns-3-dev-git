@@ -83,7 +83,7 @@ class MatrixArray : public ValArray<T>
 {
   public:
     // instruct the compiler to generate the default constructor
-    MatrixArray<T>() = default;
+    MatrixArray() = default;
     /**
      * \brief Constructor "pages" number of matrices that are of size "numRows"x"numCols",
      * and are initialized with all-zero elements.
@@ -92,25 +92,25 @@ class MatrixArray : public ValArray<T>
      * \param numCols the number of columns
      * \param numPages the number of pages
      */
-    MatrixArray<T>(size_t numRows, size_t numCols = 1, size_t numPages = 1);
+    MatrixArray(size_t numRows, size_t numCols = 1, size_t numPages = 1);
     /**
      * \brief Constructor creates a single array of values.size () elements and 1 column,
      * and uses std::valarray<T> values to initialize the elements.
      * \param values std::valarray<T> that will be used to initialize elements of 1D array
      */
-    explicit MatrixArray<T>(const std::valarray<T>& values);
+    explicit MatrixArray(const std::valarray<T>& values);
     /**
      * \brief Constructor creates a single array of values.size () elements and 1 column,
      * and moves std::valarray<T> values to initialize the elements.
      * \param values std::valarray<T> that will be moved to initialize elements of 1D array
      */
-    MatrixArray<T>(std::valarray<T>&& values);
+    MatrixArray(std::valarray<T>&& values);
     /**
      * \brief Constructor creates a single array of values.size () elements and 1 column,
      * and uses std::vector<T> values to initialize the elements.
      * \param values std::vector<T> that will be used to initialize elements of 1D array
      */
-    explicit MatrixArray<T>(const std::vector<T>& values);
+    explicit MatrixArray(const std::vector<T>& values);
     /**
      * \brief Constructor creates a single matrix of numRows and numCols, and uses
      * std::valarray<T> values to initialize the elements.
@@ -118,7 +118,7 @@ class MatrixArray : public ValArray<T>
      * \param numCols the number of columns
      * \param values std::valarray<T> that will be used to initialize elements of 3D array
      */
-    MatrixArray<T>(size_t numRows, size_t numCols, const std::valarray<T>& values);
+    MatrixArray(size_t numRows, size_t numCols, const std::valarray<T>& values);
     /**
      * \brief Constructor creates a single matrix of numRows and numCols, and moves
      * std::valarray<T> values to initialize the elements.
@@ -126,7 +126,7 @@ class MatrixArray : public ValArray<T>
      * \param numCols the number of columns
      * \param values std::valarray<T> that will be moved to initialize elements of 3D array
      */
-    MatrixArray<T>(size_t numRows, size_t numCols, std::valarray<T>&& values);
+    MatrixArray(size_t numRows, size_t numCols, std::valarray<T>&& values);
     /**
      * \brief Constructor creates the array of numPages matrices of numRows x numCols dimensions,
      * and uses std::valarray<T> values to initialize all the elements.
@@ -135,7 +135,7 @@ class MatrixArray : public ValArray<T>
      * \param numPages the number of pages
      * \param values std::valarray<T> that will be used to initialize elements of 3D array
      */
-    MatrixArray<T>(size_t numRows, size_t numCols, size_t numPages, const std::valarray<T>& values);
+    MatrixArray(size_t numRows, size_t numCols, size_t numPages, const std::valarray<T>& values);
     /**
      * \brief Constructor creates the array of numPages matrices of numRows x numCols dimensions,
      * and moves std::valarray<T> values to initialize all the elements.
@@ -144,11 +144,11 @@ class MatrixArray : public ValArray<T>
      * \param numPages the number of pages
      * \param values std::valarray<T> that will be used to initialize elements of 3D array
      */
-    MatrixArray<T>(size_t numRows, size_t numCols, size_t numPages, std::valarray<T>&& values);
+    MatrixArray(size_t numRows, size_t numCols, size_t numPages, std::valarray<T>&& values);
     /** instruct the compiler to generate the implicitly declared destructor*/
-    ~MatrixArray<T>() override = default;
+    ~MatrixArray() override = default;
     /** instruct the compiler to generate the implicitly declared copy constructor*/
-    MatrixArray<T>(const MatrixArray<T>&) = default;
+    MatrixArray(const MatrixArray<T>&) = default;
     /**
      * \brief Copy assignment operator.
      * Instruct the compiler to generate the implicitly declared copy assignment operator.
@@ -156,7 +156,7 @@ class MatrixArray : public ValArray<T>
      */
     MatrixArray<T>& operator=(const MatrixArray<T>&) = default;
     /** instruct the compiler to generate the implicitly declared move constructor*/
-    MatrixArray<T>(MatrixArray<T>&&) = default;
+    MatrixArray(MatrixArray<T>&&) = default;
     /**
      * \brief Move assignment operator.
      * Instruct the compiler to generate the implicitly declared move assignment operator.
@@ -169,24 +169,24 @@ class MatrixArray : public ValArray<T>
      * \returns The matrix in which each element has been multiplied by the given
      * scalar value.
      */
-    MatrixArray<T> operator*(const T& rhs) const;
+    MatrixArray operator*(const T& rhs) const;
     /**
      * \brief operator+ definition for MatrixArray<T>.
      * \param rhs The rhs MatrixArray object
      * \returns The result of operator+ of this MatrixArray and rhs MatrixArray
      */
-    MatrixArray<T> operator+(const MatrixArray<T>& rhs) const;
+    MatrixArray operator+(const MatrixArray<T>& rhs) const;
     /**
      * \brief binary operator- definition for MatrixArray<T>.
      * \param rhs The rhs MatrixArray object
      * \returns The result of operator- of this MatrixArray and rhs MatrixArray
      */
-    MatrixArray<T> operator-(const MatrixArray<T>& rhs) const;
+    MatrixArray operator-(const MatrixArray<T>& rhs) const;
     /**
      * \brief unary operator- definition for MatrixArray<T>.
      * \return the result of the operator-
      */
-    MatrixArray<T> operator-() const;
+    MatrixArray operator-() const;
     /**
      * \brief Page-wise matrix multiplication.
      * This operator interprets the 3D array as an array of matrices,
@@ -198,14 +198,14 @@ class MatrixArray : public ValArray<T>
      * \param rhs is another MatrixArray instance
      * \returns The array of results of matrix multiplications.
      */
-    MatrixArray<T> operator*(const MatrixArray<T>& rhs) const;
+    MatrixArray operator*(const MatrixArray<T>& rhs) const;
     /**
      * \brief This operator interprets the 3D array as an array of matrices,
      * and performs a linear algebra operation on each of the matrices (pages),
      * i.e., transposes the matrix or array of matrices definition for MatrixArray<T>.
      * \return The resulting MatrixArray composed of the array of transposed matrices.
      */
-    MatrixArray<T> Transpose() const;
+    MatrixArray Transpose() const;
     /**
      *\brief Multiply each matrix in the array by the left and the right matrix.
      * For each page of this MatrixArray the operation performed is
@@ -228,8 +228,8 @@ class MatrixArray : public ValArray<T>
      * \returns Returns the result of the multiplication which is a 3D MatrixArray
      * with dimensions J x K x P as explained previously.
      */
-    MatrixArray<T> MultiplyByLeftAndRightMatrix(const MatrixArray<T>& lMatrix,
-                                                const MatrixArray<T>& rMatrix) const;
+    MatrixArray MultiplyByLeftAndRightMatrix(const MatrixArray<T>& lMatrix,
+                                             const MatrixArray<T>& rMatrix) const;
 
     using ValArray<T>::GetPagePtr;
     using ValArray<T>::EqualDims;
