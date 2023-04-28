@@ -26,6 +26,8 @@
 #include "ns3/application.h"
 #include "ns3/socket.h"
 
+#include <map>
+
 namespace ns3
 {
 

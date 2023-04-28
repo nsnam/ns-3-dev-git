@@ -22,6 +22,8 @@
 #include "ns3/epc-gtpc-header.h"
 #include "ns3/log.h"
 
+#include <map>
+
 namespace ns3
 {
 

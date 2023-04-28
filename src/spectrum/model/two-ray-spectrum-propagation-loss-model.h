@@ -23,6 +23,8 @@
 #include "ns3/phased-array-spectrum-propagation-loss-model.h"
 #include "ns3/spectrum-signal-parameters.h"
 
+#include <map>
+
 class FtrFadingModelAverageTest;
 class ArrayResponseTest;
 class OverallGainAverageTest;

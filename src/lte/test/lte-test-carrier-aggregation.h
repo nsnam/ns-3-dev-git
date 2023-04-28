@@ -27,6 +27,8 @@
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 
+#include <map>
+
 using namespace ns3;
 
 /**

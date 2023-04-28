@@ -89,6 +89,8 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 
+#include <map>
+
 using namespace ns3;
 
 namespace

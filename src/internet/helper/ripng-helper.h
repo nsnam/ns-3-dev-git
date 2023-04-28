@@ -25,6 +25,8 @@
 #include "ns3/node.h"
 #include "ns3/object-factory.h"
 
+#include <map>
+
 namespace ns3
 {
 
