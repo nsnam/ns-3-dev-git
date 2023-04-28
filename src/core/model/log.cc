@@ -168,15 +168,12 @@ LogComponent::LogComponent(const std::string& name,
     EnvVarCheck();
 
     LogComponent::ComponentList* components = GetComponentList();
-    for (LogComponent::ComponentList::const_iterator i = components->begin();
-         i != components->end();
-         i++)
+
+    if (components->find(name) != components->end())
     {
-        if (i->first == name)
-        {
-            NS_FATAL_ERROR("Log component \"" << name << "\" has already been registered once.");
-        }
+        NS_FATAL_ERROR("Log component \"" << name << "\" has already been registered once.");
     }
+
     components->insert(std::make_pair(name, this));
 }
 
@@ -305,24 +302,18 @@ void
 LogComponentEnable(const std::string& name, LogLevel level)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
-    LogComponent::ComponentList::const_iterator i;
-    for (i = components->begin(); i != components->end(); i++)
+    auto logComponent = components->find(name);
+
+    if (logComponent == components->end())
     {
-        if (i->first == name)
-        {
-            i->second->Enable(level);
-            return;
-        }
-    }
-    if (i == components->end())
-    {
-        // nothing matched
         NS_LOG_UNCOND("Logging component \"" << name << "\" not found.");
         LogComponentPrintList();
         NS_FATAL_ERROR("Logging component \""
                        << name << "\" not found."
                        << " See above for a list of available log components");
     }
+
+    logComponent->second->Enable(level);
 }
 
 void
@@ -341,15 +332,11 @@ void
 LogComponentDisable(const std::string& name, LogLevel level)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
-    for (LogComponent::ComponentList::const_iterator i = components->begin();
-         i != components->end();
-         i++)
+    auto logComponent = components->find(name);
+
+    if (logComponent != components->end())
     {
-        if (i->first == name)
-        {
-            i->second->Disable(level);
-            break;
-        }
+        logComponent->second->Disable(level);
     }
 }
 
@@ -449,17 +436,8 @@ static bool
 ComponentExists(std::string componentName)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
-    LogComponent::ComponentList::const_iterator i;
-    for (i = components->begin(); i != components->end(); i++)
-    {
-        if (i->first == componentName)
-        {
-            return true;
-        }
-    }
-    NS_ASSERT(i == components->end());
-    // nothing matched
-    return false;
+
+    return components->find(componentName) != components->end();
 }
 
 /**
