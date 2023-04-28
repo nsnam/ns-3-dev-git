@@ -364,7 +364,7 @@ NetDeviceQueue::PacketDequeued(QueueType* queue, Ptr<const typename QueueType::I
     NS_LOG_FUNCTION(this << queue << item);
     NS_ASSERT_MSG(m_device, "Aggregated NetDevice not set");
 
-    Simulator::ScheduleNow([=]() {
+    Simulator::ScheduleNow([=, this]() {
         // Inform BQL
         NotifyTransmittedBytes(item->GetSize());
 

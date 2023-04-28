@@ -1466,7 +1466,7 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
             // request channel access if needed (schedule now because multiple invocations
             // of this method may be done in a loop at the caller)
             auto qosTxop = GetQosTxop(acIndex);
-            Simulator::ScheduleNow([=]() {
+            Simulator::ScheduleNow([=, this]() {
                 if (qosTxop->GetAccessStatus(linkId) == Txop::NOT_REQUESTED &&
                     qosTxop->HasFramesToTransmit(linkId))
                 {

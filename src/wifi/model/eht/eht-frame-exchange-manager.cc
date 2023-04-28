@@ -163,7 +163,7 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
             edca->NotifyChannelReleased(m_linkId);
             NS_LOG_DEBUG("No new TXOP attempts allowed while MediumSyncDelay is running");
             // request channel access if needed when the MediumSyncDelay timer expires
-            Simulator::Schedule(emlsrManager->GetMediumSyncDuration() - *elapsed, [=]() {
+            Simulator::Schedule(emlsrManager->GetMediumSyncDuration() - *elapsed, [=, this]() {
                 if (edca->GetAccessStatus(m_linkId) == Txop::NOT_REQUESTED &&
                     edca->HasFramesToTransmit(m_linkId))
                 {
@@ -278,7 +278,7 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
     {
         if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
         {
-            Simulator::Schedule(delay, [=]() {
+            Simulator::Schedule(delay, [=, this]() {
                 if (linkId != m_linkId)
                 {
                     // the reason for blocking the other EMLSR links has changed now
@@ -296,7 +296,7 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
             // unblock all EMLSR links when the transition delay elapses
             Simulator::Schedule(delay + CommonInfoBasicMle::DecodeEmlsrTransitionDelay(
                                             emlCapabilities->get().emlsrTransitionDelay),
-                                [=]() {
+                                [=, this]() {
                                     m_mac->UnblockUnicastTxOnLinks(
                                         WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
                                         *mldAddress,

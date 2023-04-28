@@ -1476,7 +1476,7 @@ StaWifiMac::SetPmModeAfterAssociation(uint8_t linkId)
     // acknowledgement of the Association Response. For this purpose, we connect a callback to
     // the PHY TX begin trace to catch the Ack transmitted after the Association Response.
     CallbackBase cb = Callback<void, WifiConstPsduMap, WifiTxVector, double>(
-        [=](WifiConstPsduMap psduMap, WifiTxVector txVector, double /* txPowerW */) {
+        [=, this](WifiConstPsduMap psduMap, WifiTxVector txVector, double /* txPowerW */) {
             NS_ASSERT_MSG(psduMap.size() == 1 && psduMap.begin()->second->GetNMpdus() == 1 &&
                               psduMap.begin()->second->GetHeader(0).IsAck(),
                           "Expected a Normal Ack after Association Response frame");

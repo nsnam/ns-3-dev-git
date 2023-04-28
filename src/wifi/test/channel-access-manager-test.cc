@@ -1397,7 +1397,7 @@ LargestIdlePrimaryChannelTest::RunOne(uint16_t chWidth, WifiChannelListType busy
                              : ((1 << (busyChannel - 1)) * 20);
 
     Time checkTime1 = start + ccaBusyStartDelay + ccaBusyDuration / 2;
-    Simulator::Schedule(checkTime1 - start, [=]() {
+    Simulator::Schedule(checkTime1 - start, [=, this]() {
         Time interval1 = (ccaBusyStartDelay + ccaBusyDuration) / 2;
         NS_TEST_EXPECT_MSG_EQ(m_cam->GetLargestIdlePrimaryChannel(interval1, checkTime1),
                               idleWidth,
@@ -1410,7 +1410,7 @@ LargestIdlePrimaryChannelTest::RunOne(uint16_t chWidth, WifiChannelListType busy
     // same as the previous case
     Time ccaBusyRxInterval = MilliSeconds(1);
     Time checkTime2 = start + ccaBusyStartDelay + ccaBusyDuration + ccaBusyRxInterval / 2;
-    Simulator::Schedule(checkTime2 - start, [=]() {
+    Simulator::Schedule(checkTime2 - start, [=, this]() {
         Time interval2 = (ccaBusyDuration + ccaBusyRxInterval) / 2;
         NS_TEST_EXPECT_MSG_EQ(m_cam->GetLargestIdlePrimaryChannel(interval2, checkTime2),
                               idleWidth,
@@ -1429,7 +1429,7 @@ LargestIdlePrimaryChannelTest::RunOne(uint16_t chWidth, WifiChannelListType busy
     // At RX end, we check the status of the channel during an interval immediately
     // preceding RX start and overlapping the CCA_BUSY period.
     Time checkTime3 = start + ccaBusyStartDelay + ccaBusyDuration + ccaBusyRxInterval + rxDuration;
-    Simulator::Schedule(checkTime3 - start, [=]() {
+    Simulator::Schedule(checkTime3 - start, [=, this]() {
         Time interval3 = ccaBusyDuration / 2 + ccaBusyRxInterval;
         Time end3 = checkTime3 - rxDuration;
         NS_TEST_EXPECT_MSG_EQ(m_cam->GetLargestIdlePrimaryChannel(interval3, end3),
@@ -1443,7 +1443,7 @@ LargestIdlePrimaryChannelTest::RunOne(uint16_t chWidth, WifiChannelListType busy
     // At RX end, we check the status of the channel during the interval following
     // the CCA_BUSY period and preceding RX start. The entire operating channel is idle.
     const Time& checkTime4 = checkTime3;
-    Simulator::Schedule(checkTime4 - start, [=]() {
+    Simulator::Schedule(checkTime4 - start, [=, this]() {
         const Time& interval4 = ccaBusyRxInterval;
         Time end4 = checkTime4 - rxDuration;
         NS_TEST_EXPECT_MSG_EQ(m_cam->GetLargestIdlePrimaryChannel(interval4, end4),
@@ -1458,7 +1458,7 @@ LargestIdlePrimaryChannelTest::RunOne(uint16_t chWidth, WifiChannelListType busy
     // overlap the RX period
     Time interval5 = MilliSeconds(1);
     Time checkTime5 = checkTime4 + interval5;
-    Simulator::Schedule(checkTime5 - start, [=]() {
+    Simulator::Schedule(checkTime5 - start, [=, this]() {
         NS_TEST_EXPECT_MSG_EQ(m_cam->GetLargestIdlePrimaryChannel(interval5, checkTime5),
                               chWidth,
                               "Incorrect width of the idle channel in an interval "
@@ -1468,7 +1468,7 @@ LargestIdlePrimaryChannelTest::RunOne(uint16_t chWidth, WifiChannelListType busy
 
     // After RX end, no channel is idle if the interval overlaps the RX period
     const Time& checkTime6 = checkTime5;
-    Simulator::Schedule(checkTime6 - start, [=]() {
+    Simulator::Schedule(checkTime6 - start, [=, this]() {
         Time interval6 = interval5 + rxDuration / 2;
         NS_TEST_EXPECT_MSG_EQ(m_cam->GetLargestIdlePrimaryChannel(interval6, checkTime6),
                               0,
@@ -1492,7 +1492,7 @@ LargestIdlePrimaryChannelTest::DoRun()
 
         for (const auto busyChannel : busyChannels)
         {
-            Simulator::Schedule(Seconds(delay), [this, chWidth, busyChannel]() {
+            Simulator::Schedule(Seconds(delay), [=, this]() {
                 // reset PHY
                 if (m_phy)
                 {

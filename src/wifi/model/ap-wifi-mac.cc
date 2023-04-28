@@ -2211,7 +2211,7 @@ ApWifiMac::ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t l
     // completed. For this purpose, we connect a callback to the PHY TX begin trace to catch
     // the Ack transmitted after the EML Notification frame.
     CallbackBase cb = Callback<void, WifiConstPsduMap, WifiTxVector, double>(
-        [=](WifiConstPsduMap psduMap, WifiTxVector txVector, double /* txPowerW */) {
+        [=, this](WifiConstPsduMap psduMap, WifiTxVector txVector, double /* txPowerW */) {
             NS_ASSERT_MSG(psduMap.size() == 1 && psduMap.begin()->second->GetNMpdus() == 1 &&
                               psduMap.begin()->second->GetHeader(0).IsAck(),
                           "Expected a Normal Ack after EML Notification frame");
@@ -2223,7 +2223,7 @@ ApWifiMac::ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t l
             ehtConfiguration->GetAttribute("TransitionTimeout", transitionTimeout);
 
             m_transitionTimeoutEvents[sender] =
-                Simulator::Schedule(ackDuration + transitionTimeout.Get(), [=]() {
+                Simulator::Schedule(ackDuration + transitionTimeout.Get(), [=, this]() {
                     for (uint8_t id = 0; id < GetNLinks(); id++)
                     {
                         auto linkAddress =
