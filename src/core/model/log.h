@@ -26,10 +26,10 @@
 #include "time-printer.h"
 
 #include <iostream>
-#include <map>
 #include <stdint.h>
 #include <string>
 #include <type_traits>
+#include <unordered_map>
 #include <vector>
 
 /**
@@ -395,7 +395,7 @@ class LogComponent
      * It is exposed here to allow print-introspected-doxygen.cc
      * to generate a list of all LogComponents.
      */
-    typedef std::map<std::string, LogComponent*> ComponentList;
+    using ComponentList = std::unordered_map<std::string, LogComponent*>;
 
     /**
      * Get the list of LogComponents.
