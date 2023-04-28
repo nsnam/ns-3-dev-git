@@ -107,16 +107,11 @@ class LteRlcHeader : public Header
         E_LI_FIELDS_FOLLOWS = 1
     };
 
-    /// FramingInfoFirstByte_t typedef
-    enum FramingInfoFirstByte_t
+    /// FramingInfoByte_t typedef
+    enum FramingInfoByte_t
     {
         FIRST_BYTE = 0x00,
-        NO_FIRST_BYTE = 0x02
-    };
-
-    /// FramingInfoLastByte_t tyedef
-    enum FramingInfoLastByte_t
-    {
+        NO_FIRST_BYTE = 0x02,
         LAST_BYTE = 0x00,
         NO_LAST_BYTE = 0x01
     };

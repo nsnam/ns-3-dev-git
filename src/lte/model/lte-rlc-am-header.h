@@ -107,16 +107,11 @@ class LteRlcAmHeader : public Header
      */
     uint8_t GetFramingInfo() const;
 
-    /// FramingInfoFirstByte_t enumeration
-    enum FramingInfoFirstByte_t
+    /// FramingInfoByte_t enumeration
+    enum FramingInfoByte_t
     {
         FIRST_BYTE = 0x00,
-        NO_FIRST_BYTE = 0x02
-    };
-
-    /// FramingInfoLastByte_t enumeration
-    enum FramingInfoLastByte_t
-    {
+        NO_FIRST_BYTE = 0x02,
         LAST_BYTE = 0x00,
         NO_LAST_BYTE = 0x01
     };
