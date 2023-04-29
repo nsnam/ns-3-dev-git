@@ -90,11 +90,8 @@ main(int argc, char* argv[])
         Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue("0"));
     }
 
-    double prevThroughput[8];
-    for (uint32_t l = 0; l < 8; l++)
-    {
-        prevThroughput[l] = 0;
-    }
+    double prevThroughput[8] = {0};
+
     std::cout << "MCS value"
               << "\t\t"
               << "Channel width"

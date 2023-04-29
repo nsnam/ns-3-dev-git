@@ -167,11 +167,8 @@ main(int argc, char* argv[])
         phyModel = "Spectrum";
     }
 
-    double prevThroughput[12];
-    for (uint32_t l = 0; l < 12; l++)
-    {
-        prevThroughput[l] = 0;
-    }
+    double prevThroughput[12] = {0};
+
     std::cout << "MCS value"
               << "\t\t"
               << "Channel width"
