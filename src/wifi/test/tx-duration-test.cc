@@ -1358,10 +1358,12 @@ HeSigBDurationTest::DoRun()
     userInfos.push_back({{HeRu::RU_106_TONE, 2, true}, 10, 4});
     WifiTxVector txVector = BuildTxVector(20, userInfos);
     txVector.SetSigBMode(VhtPhy::GetVhtMcs5());
-    txVector.SetRuAllocation({96}, 0);
     NS_TEST_EXPECT_MSG_EQ(hePhy->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
                           VhtPhy::GetVhtMcs5(),
                           "HE-SIG-B should be sent at MCS 5");
+    NS_TEST_EXPECT_MSG_EQ((txVector.GetRuAllocation(0) == std::vector<uint8_t>{96}),
+                          true,
+                          "Incorrect RU_ALLOCATION");
     std::pair<std::size_t, std::size_t> numUsersPerCc =
         HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
                                                  txVector.GetRuAllocation(0));
@@ -1382,10 +1384,12 @@ HeSigBDurationTest::DoRun()
     userInfos.push_back({{HeRu::RU_52_TONE, 8, true}, 6, 2});
     txVector = BuildTxVector(40, userInfos);
     txVector.SetSigBMode(VhtPhy::GetVhtMcs4());
-    txVector.SetRuAllocation({96, 112}, 0);
     NS_TEST_EXPECT_MSG_EQ(hePhy->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
                           VhtPhy::GetVhtMcs4(),
                           "HE-SIG-B should be sent at MCS 4");
+    NS_TEST_EXPECT_MSG_EQ((txVector.GetRuAllocation(0) == std::vector<uint8_t>{96, 112}),
+                          true,
+                          "Incorrect RU_ALLOCATION");
     numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
                                                              txVector.GetRuAllocation(0));
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
@@ -1402,10 +1406,12 @@ HeSigBDurationTest::DoRun()
     userInfos.push_back({{HeRu::RU_26_TONE, 14, true}, 3, 1});
     txVector = BuildTxVector(40, userInfos);
     txVector.SetSigBMode(VhtPhy::GetVhtMcs3());
-    txVector.SetRuAllocation({96, 15}, 0);
     NS_TEST_EXPECT_MSG_EQ(hePhy->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
                           VhtPhy::GetVhtMcs3(),
                           "HE-SIG-B should be sent at MCS 3");
+    NS_TEST_EXPECT_MSG_EQ((txVector.GetRuAllocation(0) == std::vector<uint8_t>{96, 15}),
+                          true,
+                          "Incorrect RU_ALLOCATION");
     numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
                                                              txVector.GetRuAllocation(0));
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
@@ -1423,10 +1429,12 @@ HeSigBDurationTest::DoRun()
     userInfos.push_back({{HeRu::RU_242_TONE, 4, true}, 4, 1});
     txVector = BuildTxVector(80, userInfos);
     txVector.SetSigBMode(VhtPhy::GetVhtMcs1());
-    txVector.SetRuAllocation({96, 15, 192, 192}, 0);
     NS_TEST_EXPECT_MSG_EQ(hePhy->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
                           VhtPhy::GetVhtMcs1(),
                           "HE-SIG-B should be sent at MCS 1");
+    NS_TEST_EXPECT_MSG_EQ((txVector.GetRuAllocation(0) == std::vector<uint8_t>{96, 15, 192, 192}),
+                          true,
+                          "Incorrect RU_ALLOCATION");
     numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
                                                              txVector.GetRuAllocation(0));
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
@@ -1443,10 +1451,13 @@ HeSigBDurationTest::DoRun()
     userInfos.push_back({{HeRu::RU_996_TONE, 1, false}, 1, 1});
     txVector = BuildTxVector(160, userInfos);
     txVector.SetSigBMode(VhtPhy::GetVhtMcs1());
-    txVector.SetRuAllocation({96, 15, 192, 192, 208, 208, 208, 208}, 0);
     NS_TEST_EXPECT_MSG_EQ(hePhy->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector),
                           VhtPhy::GetVhtMcs1(),
                           "HE-SIG-B should be sent at MCS 1");
+    NS_TEST_EXPECT_MSG_EQ(
+        (txVector.GetRuAllocation(0) == std::vector<uint8_t>{96, 15, 192, 192, 208, 208, 208, 208}),
+        true,
+        "Incorrect RU_ALLOCATION");
     numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
                                                              txVector.GetRuAllocation(0));
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
