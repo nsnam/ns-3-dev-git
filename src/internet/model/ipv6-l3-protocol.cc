@@ -1164,29 +1164,37 @@ Ipv6L3Protocol::Receive(Ptr<NetDevice> device,
 
     for (uint32_t j = 0; j < GetNInterfaces(); j++)
     {
-        if (j == interface || !m_strongEndSystemModel)
+        for (uint32_t i = 0; i < GetNAddresses(j); i++)
         {
-            for (uint32_t i = 0; i < GetNAddresses(j); i++)
+            Ipv6InterfaceAddress iaddr = GetAddress(j, i);
+            Ipv6Address addr = iaddr.GetAddress();
+            if (addr == hdr.GetDestination())
             {
-                Ipv6InterfaceAddress iaddr = GetAddress(j, i);
-                Ipv6Address addr = iaddr.GetAddress();
-                if (addr == hdr.GetDestination())
+                if (j == interface)
                 {
-                    if (j == interface)
-                    {
-                        NS_LOG_LOGIC("For me (destination " << addr << " match)");
-                    }
-                    else
-                    {
-                        NS_LOG_LOGIC("For me (destination " << addr
-                                                            << " match) on another interface "
-                                                            << hdr.GetDestination());
-                    }
+                    NS_LOG_LOGIC("For me (destination " << addr << " match)");
                     LocalDeliver(packet, hdr, interface);
                     return;
                 }
-                NS_LOG_LOGIC("Address " << addr << " not a match");
+                else if (!m_strongEndSystemModel)
+                {
+                    NS_LOG_LOGIC("For me (destination "
+                                 << addr << " match) on another interface with Weak ES Model"
+                                 << hdr.GetDestination());
+                    LocalDeliver(packet, hdr, interface);
+                    return;
+                }
+                else
+                {
+                    NS_LOG_LOGIC("For me (destination "
+                                 << addr
+                                 << " match) on another interface with Strong ES Model - discarding"
+                                 << hdr.GetDestination());
+                    m_dropTrace(hdr, packet, DROP_NO_ROUTE, this, interface);
+                    return;
+                }
             }
+            NS_LOG_LOGIC("Address " << addr << " not a match");
         }
     }
 
