@@ -88,14 +88,14 @@ Ipv4RawSocketImpl::DoDispose()
     Socket::DoDispose();
 }
 
-enum Socket::SocketErrno
+Socket::SocketErrno
 Ipv4RawSocketImpl::GetErrno() const
 {
     NS_LOG_FUNCTION(this);
     return m_err;
 }
 
-enum Socket::SocketType
+Socket::SocketType
 Ipv4RawSocketImpl::GetSocketType() const
 {
     NS_LOG_FUNCTION(this);

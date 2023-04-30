@@ -113,7 +113,7 @@ OrganizationIdentifier::SetType(OrganizationIdentifierType type)
     m_type = type;
 }
 
-enum OrganizationIdentifier::OrganizationIdentifierType
+OrganizationIdentifier::OrganizationIdentifierType
 OrganizationIdentifier::GetType() const
 {
     NS_LOG_FUNCTION(this);

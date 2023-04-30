@@ -289,7 +289,7 @@ Icmpv4L4Protocol::HandleTimeExceeded(Ptr<Packet> p,
     Forward(source, icmp, 0, ipHeader, payload);
 }
 
-enum IpL4Protocol::RxStatus
+IpL4Protocol::RxStatus
 Icmpv4L4Protocol::Receive(Ptr<Packet> p,
                           const Ipv4Header& header,
                           Ptr<Ipv4Interface> incomingInterface)
@@ -342,7 +342,7 @@ Icmpv4L4Protocol::Receive(Ptr<Packet> p,
     return IpL4Protocol::RX_OK;
 }
 
-enum IpL4Protocol::RxStatus
+IpL4Protocol::RxStatus
 Icmpv4L4Protocol::Receive(Ptr<Packet> p,
                           const Ipv6Header& header,
                           Ptr<Ipv6Interface> incomingInterface)

@@ -527,7 +527,7 @@ LteX2HandoverMeasuresTestCase::DoRun()
             Ptr<NetDevice> ueDev = ueDevices.Get(u);
             for (uint32_t b = 0; b < m_nDedicatedBearers; ++b)
             {
-                enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
+                EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
                 EpsBearer bearer(q);
                 m_lteHelper->ActivateDataRadioBearer(ueDev, bearer);
             }

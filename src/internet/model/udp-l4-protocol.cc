@@ -328,7 +328,7 @@ UdpL4Protocol::ReceiveIcmp(Ipv6Address icmpSource,
     }
 }
 
-enum IpL4Protocol::RxStatus
+IpL4Protocol::RxStatus
 UdpL4Protocol::Receive(Ptr<Packet> packet, const Ipv4Header& header, Ptr<Ipv4Interface> interface)
 {
     NS_LOG_FUNCTION(this << packet << header);
@@ -387,7 +387,7 @@ UdpL4Protocol::Receive(Ptr<Packet> packet, const Ipv4Header& header, Ptr<Ipv4Int
     return IpL4Protocol::RX_OK;
 }
 
-enum IpL4Protocol::RxStatus
+IpL4Protocol::RxStatus
 UdpL4Protocol::Receive(Ptr<Packet> packet, const Ipv6Header& header, Ptr<Ipv6Interface> interface)
 {
     NS_LOG_FUNCTION(this << packet << header.GetSource() << header.GetDestination());

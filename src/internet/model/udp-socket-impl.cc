@@ -153,14 +153,14 @@ UdpSocketImpl::SetUdp(Ptr<UdpL4Protocol> udp)
     m_udp = udp;
 }
 
-enum Socket::SocketErrno
+Socket::SocketErrno
 UdpSocketImpl::GetErrno() const
 {
     NS_LOG_FUNCTION(this);
     return m_errno;
 }
 
-enum Socket::SocketType
+Socket::SocketType
 UdpSocketImpl::GetSocketType() const
 {
     return NS3_SOCK_DGRAM;

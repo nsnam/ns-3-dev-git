@@ -73,7 +73,7 @@ class UlJob : public Object
      * Get scheduling type
      * \returns the scheduling type
      */
-    enum ServiceFlow::SchedulingType GetSchedulingType();
+    ServiceFlow::SchedulingType GetSchedulingType();
     /**
      * Set scheduling type
      * \param schedulingType the scheduling type
@@ -149,11 +149,11 @@ class UlJob : public Object
     /// equality operator
     friend bool operator==(const UlJob& a, const UlJob& b);
 
-    Time m_releaseTime; ///< The time after which the job can be processed
-    Time m_period;      ///< For periodic jobs
-    Time m_deadline;    ///< Request should be satisfied by this time
-    uint32_t m_size;    ///< Number of minislots requested
-    enum ServiceFlow::SchedulingType m_schedulingType; ///< Scheduling type of flow
+    Time m_releaseTime;                           ///< The time after which the job can be processed
+    Time m_period;                                ///< For periodic jobs
+    Time m_deadline;                              ///< Request should be satisfied by this time
+    uint32_t m_size;                              ///< Number of minislots requested
+    ServiceFlow::SchedulingType m_schedulingType; ///< Scheduling type of flow
 
     SSRecord* m_ssRecord; ///< Pointer to SSRecord
 

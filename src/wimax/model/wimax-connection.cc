@@ -67,7 +67,7 @@ WimaxConnection::GetTypeId()
     return tid;
 }
 
-WimaxConnection::WimaxConnection(Cid cid, enum Cid::Type type)
+WimaxConnection::WimaxConnection(Cid cid, Cid::Type type)
     : m_cid(cid),
       m_cidType(type),
       m_queue(CreateObject<WimaxMacQueue>(1024)),
@@ -92,7 +92,7 @@ WimaxConnection::GetCid() const
     return m_cid;
 }
 
-enum Cid::Type
+Cid::Type
 WimaxConnection::GetType() const
 {
     return m_cidType;

@@ -389,7 +389,7 @@ LteRrcConnectionEstablishmentTestCase::Connect(Ptr<NetDevice> ueDevice, Ptr<NetD
 
     for (uint32_t b = 0; b < m_nBearers; ++b)
     {
-        enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
+        EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
         EpsBearer bearer(q);
         m_lteHelper->ActivateDataRadioBearer(ueDevice, bearer);
     }

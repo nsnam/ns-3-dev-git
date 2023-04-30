@@ -406,7 +406,7 @@ Time::ConvertTimes(const Unit unit)
 } // Time::ConvertTimes ()
 
 // static
-enum Time::Unit
+Time::Unit
 Time::GetResolution()
 {
     // No function log b/c it interferes with operator<<

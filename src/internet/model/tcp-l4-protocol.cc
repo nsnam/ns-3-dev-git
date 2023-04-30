@@ -380,7 +380,7 @@ TcpL4Protocol::ReceiveIcmp(Ipv6Address icmpSource,
     }
 }
 
-enum IpL4Protocol::RxStatus
+IpL4Protocol::RxStatus
 TcpL4Protocol::PacketReceived(Ptr<Packet> packet,
                               TcpHeader& incomingTcpHeader,
                               const Address& source,
@@ -448,7 +448,7 @@ TcpL4Protocol::NoEndPointsFound(const TcpHeader& incomingHeader,
     }
 }
 
-enum IpL4Protocol::RxStatus
+IpL4Protocol::RxStatus
 TcpL4Protocol::Receive(Ptr<Packet> packet,
                        const Ipv4Header& incomingIpHeader,
                        Ptr<Ipv4Interface> incomingInterface)
@@ -519,7 +519,7 @@ TcpL4Protocol::Receive(Ptr<Packet> packet,
     return IpL4Protocol::RX_OK;
 }
 
-enum IpL4Protocol::RxStatus
+IpL4Protocol::RxStatus
 TcpL4Protocol::Receive(Ptr<Packet> packet,
                        const Ipv6Header& incomingIpHeader,
                        Ptr<Ipv6Interface> interface)

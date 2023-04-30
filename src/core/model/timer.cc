@@ -143,7 +143,7 @@ Timer::IsSuspended() const
     return (m_flags & TIMER_SUSPENDED) == TIMER_SUSPENDED;
 }
 
-enum Timer::State
+Timer::State
 Timer::GetState() const
 {
     NS_LOG_FUNCTION(this);

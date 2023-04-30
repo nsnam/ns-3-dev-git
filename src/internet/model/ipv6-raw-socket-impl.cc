@@ -100,14 +100,14 @@ Ipv6RawSocketImpl::GetNode() const
     return m_node;
 }
 
-enum Socket::SocketErrno
+Socket::SocketErrno
 Ipv6RawSocketImpl::GetErrno() const
 {
     NS_LOG_FUNCTION(this);
     return m_err;
 }
 
-enum Socket::SocketType
+Socket::SocketType
 Ipv6RawSocketImpl::GetSocketType() const
 {
     return NS3_SOCK_RAW;

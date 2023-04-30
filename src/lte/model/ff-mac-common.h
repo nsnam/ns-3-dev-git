@@ -269,7 +269,7 @@ struct BuildDataListElement_s
 {
     uint16_t m_rnti{UINT16_MAX};                                       ///< RNTI
     struct DlDciListElement_s m_dci;                                   ///< DCI
-    std::vector<enum CeBitmap_e> m_ceBitmap;                           ///< CE bitmap
+    std::vector<CeBitmap_e> m_ceBitmap;                                ///< CE bitmap
     std::vector<std::vector<struct RlcPduListElement_s>> m_rlcPduList; ///< RLC PDU list
 };
 
@@ -474,7 +474,8 @@ struct DlInfoListElement_s
         NACK,
         DTX
     };
-    std::vector<enum HarqStatus_e> m_harqStatus; ///< HARQ status
+
+    std::vector<HarqStatus_e> m_harqStatus; ///< HARQ status
 };
 
 /**

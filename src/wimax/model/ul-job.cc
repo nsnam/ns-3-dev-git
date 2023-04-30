@@ -47,7 +47,7 @@ UlJob::SetSsRecord(SSRecord* ssRecord)
     m_ssRecord = ssRecord;
 }
 
-enum ServiceFlow::SchedulingType
+ServiceFlow::SchedulingType
 UlJob::GetSchedulingType()
 {
     return m_schedulingType;

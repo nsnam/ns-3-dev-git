@@ -135,7 +135,7 @@ DefaultChannelScheduler::SetWaveNetDevice(Ptr<WaveNetDevice> device)
     m_coordinator->RegisterListener(m_coordinationListener);
 }
 
-enum ChannelAccess
+ChannelAccess
 DefaultChannelScheduler::GetAssignedAccessType(uint32_t channelNumber) const
 {
     NS_LOG_FUNCTION(this << channelNumber);

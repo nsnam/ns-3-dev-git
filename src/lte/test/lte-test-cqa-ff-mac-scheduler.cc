@@ -431,7 +431,7 @@ LenaCqaFfMacSchedulerTestCase1::DoRun()
         qos.mbrDl = 0;
         qos.mbrUl = 0;
 
-        enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+        EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
         EpsBearer bearer(q, qos);
         lteHelper->ActivateDedicatedEpsBearer(ueDevice, bearer, EpcTft::Default());
     }
@@ -690,7 +690,7 @@ LenaCqaFfMacSchedulerTestCase2::DoRun()
         qos.mbrDl = qos.gbrDl;
         qos.mbrUl = qos.gbrUl;
 
-        enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+        EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
         EpsBearer bearer(q, qos);
         lteHelper->ActivateDedicatedEpsBearer(ueDevice, bearer, EpcTft::Default());
     }

@@ -58,7 +58,7 @@ LrWpanMacHeader::~LrWpanMacHeader()
 {
 }
 
-enum LrWpanMacHeader::LrWpanMacType
+LrWpanMacHeader::LrWpanMacType
 LrWpanMacHeader::GetType() const
 {
     switch (m_fctrlFrmType)

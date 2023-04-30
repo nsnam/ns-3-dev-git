@@ -87,14 +87,14 @@ PacketSocket::DoDispose()
     m_device = 0;
 }
 
-enum Socket::SocketErrno
+Socket::SocketErrno
 PacketSocket::GetErrno() const
 {
     NS_LOG_FUNCTION(this);
     return m_errno;
 }
 
-enum Socket::SocketType
+Socket::SocketType
 PacketSocket::GetSocketType() const
 {
     NS_LOG_FUNCTION(this);

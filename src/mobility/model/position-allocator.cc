@@ -267,7 +267,7 @@ GridPositionAllocator::GetN() const
     return m_n;
 }
 
-enum GridPositionAllocator::LayoutType
+GridPositionAllocator::LayoutType
 GridPositionAllocator::GetLayoutType() const
 {
     return m_layoutType;

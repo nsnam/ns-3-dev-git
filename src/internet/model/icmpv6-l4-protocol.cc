@@ -284,7 +284,7 @@ Icmpv6L4Protocol::DoDAD(Ipv6Address target, Ptr<Ipv6Interface> interface)
                         Ipv6Address::MakeSolicitedAddress(target));
 }
 
-enum IpL4Protocol::RxStatus
+IpL4Protocol::RxStatus
 Icmpv6L4Protocol::Receive(Ptr<Packet> packet,
                           const Ipv4Header& header,
                           Ptr<Ipv4Interface> interface)
@@ -293,7 +293,7 @@ Icmpv6L4Protocol::Receive(Ptr<Packet> packet,
     return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 
-enum IpL4Protocol::RxStatus
+IpL4Protocol::RxStatus
 Icmpv6L4Protocol::Receive(Ptr<Packet> packet,
                           const Ipv6Header& header,
                           Ptr<Ipv6Interface> interface)

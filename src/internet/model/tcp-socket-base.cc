@@ -513,14 +513,14 @@ TcpSocketBase::SetRtt(Ptr<RttEstimator> rtt)
 }
 
 /* Inherit from Socket class: Returns error code */
-enum Socket::SocketErrno
+Socket::SocketErrno
 TcpSocketBase::GetErrno() const
 {
     return m_errno;
 }
 
 /* Inherit from Socket class: Returns socket type, NS3_SOCK_STREAM */
-enum Socket::SocketType
+Socket::SocketType
 TcpSocketBase::GetSocketType() const
 {
     return NS3_SOCK_STREAM;
