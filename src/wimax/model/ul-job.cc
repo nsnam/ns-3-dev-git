@@ -36,7 +36,7 @@ UlJob::~UlJob()
 }
 
 SSRecord*
-UlJob::GetSsRecord()
+UlJob::GetSsRecord() const
 {
     return m_ssRecord;
 }
@@ -48,7 +48,7 @@ UlJob::SetSsRecord(SSRecord* ssRecord)
 }
 
 ServiceFlow::SchedulingType
-UlJob::GetSchedulingType()
+UlJob::GetSchedulingType() const
 {
     return m_schedulingType;
 }
@@ -60,7 +60,7 @@ UlJob::SetSchedulingType(ServiceFlow::SchedulingType schedulingType)
 }
 
 ReqType
-UlJob::GetType()
+UlJob::GetType() const
 {
     return m_type;
 }
@@ -72,7 +72,7 @@ UlJob::SetType(ReqType type)
 }
 
 ServiceFlow*
-UlJob::GetServiceFlow()
+UlJob::GetServiceFlow() const
 {
     return m_serviceFlow;
 }
@@ -84,7 +84,7 @@ UlJob::SetServiceFlow(ServiceFlow* serviceFlow)
 }
 
 Time
-UlJob::GetReleaseTime()
+UlJob::GetReleaseTime() const
 {
     return m_releaseTime;
 }
@@ -96,7 +96,7 @@ UlJob::SetReleaseTime(Time releaseTime)
 }
 
 Time
-UlJob::GetPeriod()
+UlJob::GetPeriod() const
 {
     return m_period;
 }
@@ -108,7 +108,7 @@ UlJob::SetPeriod(Time period)
 }
 
 Time
-UlJob::GetDeadline()
+UlJob::GetDeadline() const
 {
     return m_deadline;
 }
@@ -140,14 +140,7 @@ UlJob::SetSize(uint32_t size)
 bool
 operator==(const UlJob& a, const UlJob& b)
 {
-    UlJob A = a;
-    UlJob B = b;
-
-    if ((A.GetServiceFlow() == B.GetServiceFlow()) && (A.GetSsRecord() == B.GetSsRecord()))
-    {
-        return true;
-    }
-    return false;
+    return a.GetServiceFlow() == b.GetServiceFlow() && a.GetSsRecord() == b.GetSsRecord();
 }
 
 PriorityUlJob::PriorityUlJob()
@@ -167,7 +160,7 @@ PriorityUlJob::SetPriority(int priority)
 }
 
 Ptr<UlJob>
-PriorityUlJob::GetUlJob()
+PriorityUlJob::GetUlJob() const
 {
     return m_job;
 }
