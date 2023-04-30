@@ -32,13 +32,6 @@
 #include <map>
 #include <vector>
 
-// value for SINR outside the range defined by FF-API, used to indicate that there
-// is no CQI for this element
-#define NO_SINR -5000
-
-#define HARQ_PROC_NUM 8
-#define HARQ_DL_TIMEOUT 11
-
 namespace ns3
 {
 

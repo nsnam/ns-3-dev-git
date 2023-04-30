@@ -61,6 +61,16 @@ using UlHarqProcessesDciBuffer_t = std::vector<UlDciListElement_s>;
 /// UL HARQ process status vector
 using UlHarqProcessesStatus_t = std::vector<uint8_t>;
 
+/// Value for SINR outside the range defined by FF-API, used to indicate that there is
+/// no CQI for this element
+constexpr double NO_SINR = -5000;
+
+/// Number of HARQ processes
+constexpr uint32_t HARQ_PROC_NUM = 8;
+
+/// HARQ DL timeout
+constexpr uint32_t HARQ_DL_TIMEOUT = 11;
+
 /**
  * \ingroup ff-api
  *
