@@ -31,6 +31,7 @@ Release 3-dev
 - (lr-wpan) !1406 - Fixes issues during MAC scan
 - (wifi) #880 - Post-install change in WifiPhy::ChannelSettings does not completely reconfigure Wi-Fi
 - (energy) !1422 - Fix null harvester issue in EnergySource
+- (wifi) #862 - sta-wifi-mac.cc cond="!link.bssid.has_value()", High occurrence at higher numbers of STAs per AP in indoor deployment.
 
 Release 3.38
 ------------

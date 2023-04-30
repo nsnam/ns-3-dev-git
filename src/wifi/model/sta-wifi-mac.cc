@@ -674,6 +674,8 @@ StaWifiMac::Disassociated(uint8_t linkId)
 
     NS_LOG_DEBUG("Set state to UNASSOCIATED and start scanning");
     SetState(UNASSOCIATED);
+    // cancel the association request timer (see issue #862)
+    m_assocRequestEvent.Cancel();
     auto mldAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(GetBssid(linkId));
     if (GetNLinks() > 1 && mldAddress.has_value())
     {
