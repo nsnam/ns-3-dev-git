@@ -21,6 +21,8 @@
 #ifndef FF_MAC_SCHEDULER_H
 #define FF_MAC_SCHEDULER_H
 
+#include "ff-mac-common.h"
+
 #include <ns3/object.h>
 
 namespace ns3
@@ -37,6 +39,27 @@ class LteFfrSapUser;
  * \ingroup lte
  * \defgroup ff-api FF MAC Schedulers
  */
+
+/// DL HARQ process status vector
+using DlHarqProcessesStatus_t = std::vector<uint8_t>;
+
+/// DL HARQ process timer vector
+using DlHarqProcessesTimer_t = std::vector<uint8_t>;
+
+/// DL HARQ process DCI buffer vector
+using DlHarqProcessesDciBuffer_t = std::vector<DlDciListElement_s>;
+
+/// Vector of the LCs and layers per UE
+using RlcPduList_t = std::vector<std::vector<RlcPduListElement_s>>;
+
+/// Vector of the 8 HARQ processes per UE
+using DlHarqRlcPduListBuffer_t = std::vector<RlcPduList_t>;
+
+/// UL HARQ process DCI buffer vector
+using UlHarqProcessesDciBuffer_t = std::vector<UlDciListElement_s>;
+
+/// UL HARQ process status vector
+using UlHarqProcessesStatus_t = std::vector<uint8_t>;
 
 /**
  * \ingroup ff-api

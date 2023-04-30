@@ -47,17 +47,6 @@
 namespace ns3
 {
 
-typedef std::vector<uint8_t> DlHarqProcessesStatus_t;
-typedef std::vector<uint8_t> DlHarqProcessesTimer_t;
-typedef std::vector<DlDciListElement_s> DlHarqProcessesDciBuffer_t;
-typedef std::vector<std::vector<RlcPduListElement_s>>
-    RlcPduList_t; ///< vector of the LCs and layers per UE
-typedef std::vector<RlcPduList_t>
-    DlHarqRlcPduListBuffer_t; ///< vector of the 8 HARQ processes per UE
-
-typedef std::vector<UlDciListElement_s> UlHarqProcessesDciBuffer_t;
-typedef std::vector<uint8_t> UlHarqProcessesStatus_t;
-
 /**
  * \ingroup ff-api
  * \brief Implements the SCHED SAP and CSCHED SAP for a Frequency Domain Maximize Throughput
