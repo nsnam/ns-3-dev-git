@@ -1182,7 +1182,8 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
 
         UEtoHOL.insert(std::pair<LteFlowId_t, int>(itLogicalChannels->first, delay));
 
-        if (itLogicalChannels->second.m_qosBearerType == itLogicalChannels->second.QBT_NON_GBR)
+        if (itLogicalChannels->second.m_qosBearerType ==
+            LogicalChannelConfigListElement_s::QBT_NON_GBR)
         {
             if (map_nonGBRHOLgroupToUE.count(group) == 0)
             {
@@ -1195,7 +1196,8 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
                 map_nonGBRHOLgroupToUE.find(group)->second.insert(itRlcBufferReq->first);
             }
         }
-        else if (itLogicalChannels->second.m_qosBearerType == itLogicalChannels->second.QBT_GBR)
+        else if (itLogicalChannels->second.m_qosBearerType ==
+                 LogicalChannelConfigListElement_s::QBT_GBR)
         {
             if (map_GBRHOLgroupToUE.count(group) == 0)
             {
