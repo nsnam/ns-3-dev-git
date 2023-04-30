@@ -91,7 +91,7 @@ Ipv6L3Protocol::GetTypeId()
                           MakeBooleanChecker())
             .AddAttribute("StrongEndSystemModel",
                           "Reject packets for an address not configured on the interface they're "
-                          "coming from (RFC1222).",
+                          "coming from (RFC1122, section 3.3.4.2).",
                           BooleanValue(true),
                           MakeBooleanAccessor(&Ipv6L3Protocol::m_strongEndSystemModel),
                           MakeBooleanChecker())
