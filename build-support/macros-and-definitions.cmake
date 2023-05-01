@@ -71,6 +71,10 @@ if(WIN32)
   set(NS3_PRECOMPILE_HEADERS OFF
       CACHE BOOL "Precompile module headers to speed up compilation" FORCE
   )
+
+  # For whatever reason getting M_PI and other math.h definitions from cmath requires this definition
+  # https://docs.microsoft.com/en-us/cpp/c-runtime-library/math-constants?view=vs-2019
+  add_definitions(/D_USE_MATH_DEFINES)
 endif()
 
 set(cat_command cat)
