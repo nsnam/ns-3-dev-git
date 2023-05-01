@@ -151,6 +151,22 @@ class WifiMac : public Object
     virtual std::optional<uint8_t> GetLinkIdByAddress(const Mac48Address& address) const;
 
     /**
+     * Get the ID of the link (if any) on which the given PHY is operating.
+     *
+     * \param phy the given PHY
+     * \return the ID of the link (if any) on which the given PHY is operating
+     */
+    std::optional<uint8_t> GetLinkForPhy(Ptr<const WifiPhy> phy) const;
+
+    /**
+     * Get the ID of the link (if any) on which the given PHY is operating.
+     *
+     * \param phyId the index of the given PHY in the vector of PHYs held by WifiNetDevice
+     * \return the ID of the link (if any) on which the given PHY is operating
+     */
+    std::optional<uint8_t> GetLinkForPhy(std::size_t phyId) const;
+
+    /**
      * \param remoteAddr the (MLD or link) address of a remote device
      * \return the MLD address of the remote device having the given (MLD or link) address, if
      *         the remote device is an MLD.

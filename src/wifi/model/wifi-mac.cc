@@ -963,6 +963,27 @@ WifiMac::GetLinkIdByAddress(const Mac48Address& address) const
     return std::nullopt;
 }
 
+std::optional<uint8_t>
+WifiMac::GetLinkForPhy(Ptr<const WifiPhy> phy) const
+{
+    for (const auto& [id, link] : m_links)
+    {
+        if (link->phy == phy)
+        {
+            return id;
+        }
+    }
+    return std::nullopt;
+}
+
+std::optional<uint8_t>
+WifiMac::GetLinkForPhy(std::size_t phyId) const
+{
+    NS_ABORT_UNLESS(phyId < m_device->GetNPhys());
+    auto phy = m_device->GetPhy(phyId);
+    return GetLinkForPhy(phy);
+}
+
 void
 WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
 {
