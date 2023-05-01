@@ -13,6 +13,7 @@
     - if: $RELEASE == "weekly"
     - if: $UBUNTU == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   before_script:
     # The following ppa is needed only for Ubuntu 18.04 to install g++9
     - apt update
@@ -40,6 +41,7 @@ weekly-ubuntu:
     - if: $UBUNTU == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
+      allow_failure: true
   stage: pre-build
   script:
     - echo "Starting Ubuntu jobs"

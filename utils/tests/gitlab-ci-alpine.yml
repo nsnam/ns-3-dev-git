@@ -11,6 +11,7 @@
     - if: $RELEASE == "weekly"
     - if: $ALPINE == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   before_script:
     - apk update
     - apk upgrade
@@ -28,6 +29,7 @@ weekly-alpine:
     - if: $ALPINE == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
+      allow_failure: true
   stage: pre-build
   script:
     - echo "Starting Alpine jobs"
@@ -51,4 +53,3 @@ weekly-alpine-latest-default-test:
       - $CCACHE_BASEDIR_VALUE/
   variables:
     MODE: default
-

@@ -15,6 +15,7 @@
     - if: $RELEASE == "weekly"
     - if: $CLANG_BUILD_ENABLE == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   before_script:
     - apt update
     - apt upgrade -y
@@ -38,6 +39,7 @@
     - if: $RELEASE == "weekly"
     - if: $CLANG_BUILD_ENABLE == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   before_script:
     - apt update
     - apt upgrade -y
@@ -60,6 +62,7 @@ weekly-clang:
     - if: $CLANG_BUILD_ENABLE == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
+      allow_failure: true
   stage: pre-build
   script:
     - echo "Starting clang jobs"

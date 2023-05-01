@@ -24,6 +24,13 @@ stages:
   - code-linting
   - documentation
 
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
 ###################### BUILD STAGE #############################################
 
 # Defines the steps to run the tests
@@ -65,7 +72,6 @@ stages:
   timeout: 12h
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
-
 
 # Weekly jobs for other distribution and compilers
 include:

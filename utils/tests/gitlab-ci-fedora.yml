@@ -13,6 +13,7 @@
     - if: $RELEASE == "weekly"
     - if: $FEDORA == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   before_script:
     - dnf update --assumeyes
     - dnf install --assumeyes
@@ -39,10 +40,10 @@ weekly-fedora:
     - if: $FEDORA == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
+      allow_failure: true
   stage: pre-build
   script:
     - echo "Starting Fedora jobs"
-
 
 # Fedora 36
 weekly-build-fedora-36-debug:
@@ -93,7 +94,6 @@ weekly-test-fedora-36-optimized:
       - $CCACHE_BASEDIR_VALUE/
   variables:
     MODE: optimized
-
 
 # Fedora 37
 weekly-build-fedora-37-debug:

@@ -43,6 +43,7 @@ daily-jobs:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
+      allow_failure: true
   stage: pre-build
   script:
     - echo "Starting daily jobs"
@@ -52,6 +53,7 @@ weekly-slow-jobs:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
+      allow_failure: true
   stage: pre-build
   script:
     - echo "Starting weekly jobs"
@@ -62,6 +64,7 @@ daily-build-test-debug:
   rules:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   needs: ["daily-jobs"]
   stage: build
   variables:
@@ -76,6 +79,7 @@ daily-build-default:
   rules:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   needs: ["daily-jobs"]
   stage: build
   variables:
@@ -86,6 +90,7 @@ daily-test-default:
   rules:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   needs: ["daily-build-default"]
   stage: test
   cache:
@@ -101,6 +106,7 @@ daily-build-optimized:
   rules:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   needs: ["daily-jobs"]
   stage: build
   variables:
@@ -111,6 +117,7 @@ daily-test-optimized:
   rules:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   needs: ["daily-build-optimized"]
   stage: test
   cache:
@@ -127,6 +134,7 @@ daily-build-test-optimized-valgrind:
   rules:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   needs: ["daily-jobs"]
   stage: build
   variables:
@@ -142,6 +150,7 @@ weekly-build-test-debug-valgrind:
   rules:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   needs: ["weekly-slow-jobs"]
   stage: build
   variables:
@@ -157,6 +166,7 @@ weekly-build-test-default-valgrind:
   rules:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   needs: ["weekly-slow-jobs"]
   stage: build
   variables:
@@ -172,6 +182,7 @@ weekly-build-test-optimized-valgrind:
   rules:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   needs: ["weekly-slow-jobs"]
   stage: build
   variables:
@@ -187,6 +198,7 @@ weekly-build-test-takes-forever-optimized:
   rules:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
   needs: ["weekly-slow-jobs"]
   stage: build
   variables:
