@@ -14,7 +14,7 @@ cppyy-22.04:
       python3 python3-pip
       libboost-dev libgsl-dev libgtk-3-dev
       git wget
-    - pip install cppyy matplotlib numpy
+    - pip install cppyy==2.4.2 matplotlib numpy
   script:
     - ./ns3 configure -G Ninja --enable-python-bindings
     - ./ns3 build
@@ -48,7 +48,7 @@ cppyy-20.04:
       python3 python3-pip
       libboost-dev libgsl-dev libgtk-3-dev
       git wget
-    - pip install cppyy
+    - pip install cppyy==2.4.2
   script:
     - ./ns3 configure -G Ninja --enable-python-bindings
     - ./ns3 build
