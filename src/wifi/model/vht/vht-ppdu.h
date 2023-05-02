@@ -209,9 +209,7 @@ class VhtPpdu : public OfdmPpdu
                                    const LSigHeader& lSig,
                                    const VhtSigHeader& vhtSig) const;
 
-#ifndef NS3_BUILD_PROFILE_DEBUG
     VhtSigHeader m_vhtSig; //!< the VHT-SIG PHY header
-#endif
 }; // class VhtPpdu
 
 } // namespace ns3

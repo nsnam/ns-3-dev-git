@@ -22,7 +22,6 @@
 #include "wifi-psdu.h"
 
 #include "ns3/log.h"
-#include "ns3/packet.h"
 #include "ns3/wifi-phy-operating-channel.h"
 
 namespace ns3
@@ -42,9 +41,6 @@ WifiPpdu::WifiPpdu(Ptr<const WifiPsdu> psdu,
       m_uid(uid),
       m_txVector(txVector),
       m_operatingChannel(channel),
-#ifdef NS3_BUILD_PROFILE_DEBUG
-      m_phyHeaders(Create<Packet>()),
-#endif
       m_truncatedTx(false),
       m_txPowerLevel(txVector.GetTxPowerLevel())
 {
@@ -65,9 +61,6 @@ WifiPpdu::WifiPpdu(const WifiConstPsduMap& psdus,
       m_uid(uid),
       m_txVector(txVector),
       m_operatingChannel(channel),
-#ifdef NS3_BUILD_PROFILE_DEBUG
-      m_phyHeaders(Create<Packet>()),
-#endif
       m_truncatedTx(false),
       m_txPowerLevel(txVector.GetTxPowerLevel()),
       m_txAntennas(txVector.GetNTx())

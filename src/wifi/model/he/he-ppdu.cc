@@ -92,20 +92,8 @@ void
 HePpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
 {
     NS_LOG_FUNCTION(this << txVector << ppduDuration);
-
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    LSigHeader lSig;
-    SetLSigHeader(lSig, ppduDuration);
-
-    HeSigHeader heSig;
-    SetHeSigHeader(heSig, txVector);
-
-    m_phyHeaders->AddHeader(heSig);
-    m_phyHeaders->AddHeader(lSig);
-#else
     SetLSigHeader(m_lSig, ppduDuration);
     SetHeSigHeader(m_heSig, txVector);
-#endif
 }
 
 void
@@ -171,27 +159,7 @@ HePpdu::DoGetTxVector() const
 {
     WifiTxVector txVector;
     txVector.SetPreambleType(m_preamble);
-
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    auto phyHeaders = m_phyHeaders->Copy();
-
-    LSigHeader lSig;
-    if (phyHeaders->RemoveHeader(lSig) == 0)
-    {
-        NS_FATAL_ERROR("Missing L-SIG header in HE PPDU");
-    }
-
-    HeSigHeader heSig(IsDlMu());
-    if (phyHeaders->PeekHeader(heSig) == 0)
-    {
-        NS_FATAL_ERROR("Missing HE-SIG header in HE PPDU");
-    }
-
-    SetTxVectorFromPhyHeaders(txVector, lSig, heSig);
-#else
     SetTxVectorFromPhyHeaders(txVector, m_lSig, m_heSig);
-#endif
-
     return txVector;
 }
 
@@ -300,35 +268,21 @@ HePpdu::GetTxDuration() const
 {
     Time ppduDuration = Seconds(0);
     const WifiTxVector& txVector = GetTxVector();
-
-    uint16_t length = 0;
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    LSigHeader lSig;
-    m_phyHeaders->PeekHeader(lSig);
-    length = lSig.GetLength();
-#else
-    length = m_lSig.GetLength();
-#endif
-
-    Time tSymbol = NanoSeconds(12800 + txVector.GetGuardInterval());
-    Time preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
-    uint8_t sigExtension = 0;
+    const auto length = m_lSig.GetLength();
+    const auto tSymbol = NanoSeconds(12800 + txVector.GetGuardInterval());
+    const auto preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
     NS_ASSERT(m_operatingChannel.IsSet());
-    if (m_operatingChannel.GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
-    {
-        sigExtension = 6;
-    }
+    uint8_t sigExtension = (m_operatingChannel.GetPhyBand() == WIFI_PHY_BAND_2_4GHZ) ? 6 : 0;
     uint8_t m = IsDlMu() ? 1 : 2;
     // Equation 27-11 of IEEE P802.11ax/D4.0
-    Time calculatedDuration =
+    const auto calculatedDuration =
         MicroSeconds(((ceil(static_cast<double>(length + 3 + m) / 3)) * 4) + 20 + sigExtension);
     NS_ASSERT(calculatedDuration > preambleDuration);
     uint32_t nSymbols =
         floor(static_cast<double>((calculatedDuration - preambleDuration).GetNanoSeconds() -
                                   (sigExtension * 1000)) /
               tSymbol.GetNanoSeconds());
-    ppduDuration = preambleDuration + (nSymbols * tSymbol) + MicroSeconds(sigExtension);
-    return ppduDuration;
+    return (preambleDuration + (nSymbols * tSymbol) + MicroSeconds(sigExtension));
 }
 
 Ptr<WifiPpdu>
@@ -378,18 +332,7 @@ HePpdu::GetPsdu(uint8_t bssColor, uint16_t staId /* = SU_STA_ID */) const
         return m_psdus.at(SU_STA_ID);
     }
 
-    uint8_t ppduBssColor = 0;
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    auto phyHeaders = m_phyHeaders->Copy();
-    LSigHeader lSig;
-    phyHeaders->RemoveHeader(lSig);
-    HeSigHeader heSig(IsDlMu());
-    phyHeaders->RemoveHeader(heSig);
-    ppduBssColor = heSig.GetBssColor();
-#else
-    ppduBssColor = m_heSig.GetBssColor();
-#endif
-
+    const auto ppduBssColor = m_heSig.GetBssColor();
     if (IsUlMu())
     {
         NS_ASSERT(m_psdus.size() == 1);

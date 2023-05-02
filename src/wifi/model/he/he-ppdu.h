@@ -378,9 +378,7 @@ class HePpdu : public OfdmPpdu
      */
     void SetHeMuUserInfos(WifiTxVector& txVector, const HeSigHeader& heSig) const;
 
-#ifndef NS3_BUILD_PROFILE_DEBUG
     HeSigHeader m_heSig; //!< the HE-SIG PHY header
-#endif
     mutable TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
 
   private:

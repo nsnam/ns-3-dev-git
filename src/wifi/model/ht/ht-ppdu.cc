@@ -53,20 +53,8 @@ void
 HtPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration, std::size_t psduSize)
 {
     NS_LOG_FUNCTION(this << txVector << ppduDuration << psduSize);
-
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    LSigHeader lSig;
-    SetLSigHeader(lSig, ppduDuration);
-
-    HtSigHeader htSig;
-    SetHtSigHeader(htSig, txVector, psduSize);
-
-    m_phyHeaders->AddHeader(htSig);
-    m_phyHeaders->AddHeader(lSig);
-#else
     SetLSigHeader(m_lSig, ppduDuration);
     SetHtSigHeader(m_htSig, txVector, psduSize);
-#endif
 }
 
 void
@@ -102,27 +90,7 @@ HtPpdu::DoGetTxVector() const
 {
     WifiTxVector txVector;
     txVector.SetPreambleType(m_preamble);
-
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    auto phyHeaders = m_phyHeaders->Copy();
-
-    LSigHeader lSig;
-    if (phyHeaders->RemoveHeader(lSig) == 0)
-    {
-        NS_FATAL_ERROR("Missing L-SIG header in HT PPDU");
-    }
-
-    HtSigHeader htSig;
-    if (phyHeaders->RemoveHeader(htSig) == 0)
-    {
-        NS_FATAL_ERROR("Missing HT-SIG header in HT PPDU");
-    }
-
-    SetTxVectorFromPhyHeaders(txVector, lSig, htSig);
-#else
     SetTxVectorFromPhyHeaders(txVector, m_lSig, m_htSig);
-#endif
-
     return txVector;
 }
 
@@ -141,27 +109,10 @@ HtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
 Time
 HtPpdu::GetTxDuration() const
 {
-    Time ppduDuration = Seconds(0);
     const WifiTxVector& txVector = GetTxVector();
-
-    uint16_t htLength = 0;
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    auto phyHeaders = m_phyHeaders->Copy();
-
-    LSigHeader lSig;
-    phyHeaders->RemoveHeader(lSig);
-    HtSigHeader htSig;
-    phyHeaders->RemoveHeader(htSig);
-
-    htLength = htSig.GetHtLength();
-#else
-    htLength = m_htSig.GetHtLength();
-#endif
-
+    const auto htLength = m_htSig.GetHtLength();
     NS_ASSERT(m_operatingChannel.IsSet());
-    ppduDuration =
-        WifiPhy::CalculateTxDuration(htLength, txVector, m_operatingChannel.GetPhyBand());
-    return ppduDuration;
+    return WifiPhy::CalculateTxDuration(htLength, txVector, m_operatingChannel.GetPhyBand());
 }
 
 Ptr<WifiPpdu>

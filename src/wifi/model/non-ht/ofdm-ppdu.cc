@@ -52,14 +52,7 @@ void
 OfdmPpdu::SetPhyHeaders(const WifiTxVector& txVector, std::size_t psduSize)
 {
     NS_LOG_FUNCTION(this << txVector << psduSize);
-
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    LSigHeader lSig;
-    SetLSigHeader(lSig, txVector, psduSize);
-    m_phyHeaders->AddHeader(lSig);
-#else
     SetLSigHeader(m_lSig, txVector, psduSize);
-#endif
 }
 
 void
@@ -74,19 +67,7 @@ OfdmPpdu::DoGetTxVector() const
 {
     WifiTxVector txVector;
     txVector.SetPreambleType(m_preamble);
-
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    LSigHeader lSig;
-    if (m_phyHeaders->PeekHeader(lSig) == 0)
-    {
-        NS_FATAL_ERROR("Missing L-SIG in PPDU");
-    }
-
-    SetTxVectorFromLSigHeader(txVector, lSig);
-#else
     SetTxVectorFromLSigHeader(txVector, m_lSig);
-#endif
-
     return txVector;
 }
 
@@ -103,14 +84,7 @@ Time
 OfdmPpdu::GetTxDuration() const
 {
     const WifiTxVector& txVector = GetTxVector();
-    uint16_t length = 0;
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    LSigHeader lSig;
-    m_phyHeaders->PeekHeader(lSig);
-    length = lSig.GetLength();
-#else
-    length = m_lSig.GetLength();
-#endif
+    const auto length = m_lSig.GetLength();
     NS_ASSERT(m_operatingChannel.IsSet());
     return WifiPhy::CalculateTxDuration(length, txVector, m_operatingChannel.GetPhyBand());
 }

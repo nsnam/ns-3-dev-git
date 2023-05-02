@@ -209,10 +209,6 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
                     //!< std::nullopt if TXVECTOR has not been reconstructed yet)
     const WifiPhyOperatingChannel& m_operatingChannel; //!< the operating channel of the PHY
 
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    Ptr<Packet> m_phyHeaders; //!< the PHY headers contained in this PPDU
-#endif
-
   private:
     /**
      * Get the TXVECTOR used to send the PPDU.

@@ -194,9 +194,7 @@ class HtPpdu : public OfdmPpdu
                                    const LSigHeader& lSig,
                                    const HtSigHeader& htSig) const;
 
-#ifndef NS3_BUILD_PROFILE_DEBUG
     HtSigHeader m_htSig; //!< the HT-SIG PHY header
-#endif
 }; // class HtPpdu
 
 } // namespace ns3

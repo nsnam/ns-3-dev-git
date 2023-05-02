@@ -145,9 +145,7 @@ class DsssPpdu : public WifiPpdu
     virtual void SetTxVectorFromDsssHeader(WifiTxVector& txVector,
                                            const DsssSigHeader& dsssSig) const;
 
-#ifndef NS3_BUILD_PROFILE_DEBUG
     DsssSigHeader m_dsssSig; //!< the DSSS SIG PHY header
-#endif
 }; // class DsssPpdu
 
 } // namespace ns3

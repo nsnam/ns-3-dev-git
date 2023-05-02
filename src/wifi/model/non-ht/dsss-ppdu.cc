@@ -48,14 +48,7 @@ void
 DsssPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
 {
     NS_LOG_FUNCTION(this << txVector);
-
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    DsssSigHeader dsssSig;
-    SetDsssHeader(dsssSig, txVector, ppduDuration);
-    m_phyHeaders->AddHeader(dsssSig);
-#else
     SetDsssHeader(m_dsssSig, txVector, ppduDuration);
-#endif
 }
 
 void
@@ -74,19 +67,7 @@ DsssPpdu::DoGetTxVector() const
     WifiTxVector txVector;
     txVector.SetPreambleType(m_preamble);
     txVector.SetChannelWidth(22);
-
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    DsssSigHeader dsssSig;
-    if (m_phyHeaders->PeekHeader(dsssSig) == 0)
-    {
-        NS_FATAL_ERROR("Missing DSSS SIG PHY header in DSSS PPDU");
-    }
-
-    SetTxVectorFromDsssHeader(txVector, dsssSig);
-#else
     SetTxVectorFromDsssHeader(txVector, m_dsssSig);
-#endif
-
     return txVector;
 }
 
@@ -99,18 +80,9 @@ DsssPpdu::SetTxVectorFromDsssHeader(WifiTxVector& txVector, const DsssSigHeader&
 Time
 DsssPpdu::GetTxDuration() const
 {
-    Time ppduDuration = Seconds(0);
     const WifiTxVector& txVector = GetTxVector();
-    uint16_t length = 0;
-#ifdef NS3_BUILD_PROFILE_DEBUG
-    DsssSigHeader dsssSig;
-    m_phyHeaders->PeekHeader(dsssSig);
-    length = dsssSig.GetLength();
-#else
-    length = m_dsssSig.GetLength();
-#endif
-    ppduDuration = MicroSeconds(length) + WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
-    return ppduDuration;
+    const auto length = m_dsssSig.GetLength();
+    return (MicroSeconds(length) + WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector));
 }
 
 Ptr<WifiPpdu>

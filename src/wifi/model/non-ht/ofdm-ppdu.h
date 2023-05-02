@@ -120,9 +120,7 @@ class OfdmPpdu : public WifiPpdu
     Ptr<WifiPpdu> Copy() const override;
 
   protected:
-#ifndef NS3_BUILD_PROFILE_DEBUG
     LSigHeader m_lSig; //!< the L-SIG PHY header
-#endif
 
   private:
     WifiTxVector DoGetTxVector() const override;
