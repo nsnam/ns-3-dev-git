@@ -409,7 +409,9 @@ WifiMgtHeader<Derived, std::tuple<Elems...>>::DeserializeImpl(Buffer::Iterator s
     auto i = start;
 
     std::apply(
-        [&](auto&... elems) {
+        // auto cannot be used until gcc 10.4 due to gcc bug 97938
+        // (see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=97938)
+        [&](internal::GetStoredIeT<Elems>&... elems) {
             (
                 [&] {
                     if constexpr (std::is_same_v<std::remove_reference_t<decltype(elems)>, Elems>)
