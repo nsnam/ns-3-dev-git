@@ -429,8 +429,7 @@ HePpdu::UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) con
 }
 
 std::pair<std::size_t, std::size_t>
-HePpdu::GetNumRusPerHeSigBContentChannel(uint16_t channelWidth,
-                                         const std::vector<uint8_t>& ruAllocation)
+HePpdu::GetNumRusPerHeSigBContentChannel(uint16_t channelWidth, const RuAllocation& ruAllocation)
 {
     // MU-MIMO is not handled for now, i.e. one station per RU
     NS_ASSERT_MSG(!ruAllocation.empty(), "RU allocation is not set");

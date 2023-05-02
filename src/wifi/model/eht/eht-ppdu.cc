@@ -112,7 +112,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
 std::pair<std::size_t, std::size_t>
 EhtPpdu::GetNumRusPerEhtSigBContentChannel(uint16_t channelWidth,
                                            uint8_t ehtPpduType,
-                                           const std::vector<uint8_t>& ruAllocation)
+                                           const RuAllocation& ruAllocation)
 {
     if (ehtPpduType == 1)
     {
