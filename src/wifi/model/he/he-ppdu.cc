@@ -201,7 +201,6 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
 void
 HePpdu::SetHeMuUserInfos(WifiTxVector& txVector, const HeSigHeader& heSig) const
 {
-    WifiTxVector::HeMuUserInfoMap userInfos{};
     const auto& ruAllocation = heSig.GetRuAllocation();
     auto contentChannelIndex = 0;
     for (const auto& contentChannel : heSig.GetHeSigBContentChannels())
