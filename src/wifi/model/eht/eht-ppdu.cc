@@ -45,7 +45,7 @@ EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
     // - store the MCS and the number of streams for the data field
     // because this is not done by the parent class.
     // This is a workaround needed until we properly implement 11be PHY headers.
-    if (ns3::IsDlMu(m_preamble) && !txVector.IsDlMu())
+    if (!txVector.IsMu())
     {
         m_ehtSuMcs = txVector.GetMode().GetMcsValue();
         m_ehtSuNStreams = txVector.GetNss();
