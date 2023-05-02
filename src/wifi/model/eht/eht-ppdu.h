@@ -91,9 +91,7 @@ class EhtPpdu : public HePpdu
   private:
     bool IsDlMu() const override;
     bool IsUlMu() const override;
-    void SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
-                                   const LSigHeader& lSig,
-                                   const HeSigHeader& heSig) const override;
+    void SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const override;
 
     uint8_t m_ehtSuMcs{0};      //!< EHT-MCS for EHT SU transmissions
     uint8_t m_ehtSuNStreams{1}; //!< Number of streams for EHT SU transmissions

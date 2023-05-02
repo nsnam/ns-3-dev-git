@@ -85,27 +85,25 @@ EhtPpdu::IsUlMu() const
 }
 
 void
-EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
-                                   const LSigHeader& lSig,
-                                   const HeSigHeader& heSig) const
+EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
 {
     txVector.SetMode(EhtPhy::GetEhtMcs(m_ehtSuMcs));
-    txVector.SetChannelWidth(heSig.GetChannelWidth());
+    txVector.SetChannelWidth(m_heSig.GetChannelWidth());
     txVector.SetNss(m_ehtSuNStreams);
-    txVector.SetGuardInterval(heSig.GetGuardInterval());
-    txVector.SetBssColor(heSig.GetBssColor());
-    txVector.SetLength(lSig.GetLength());
+    txVector.SetGuardInterval(m_heSig.GetGuardInterval());
+    txVector.SetBssColor(m_heSig.GetBssColor());
+    txVector.SetLength(m_lSig.GetLength());
     txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
     txVector.SetEhtPpduType(m_ehtPpduType); // FIXME: PPDU type should be read from U-SIG
     if (txVector.IsDlMu())
     {
-        SetHeMuUserInfos(txVector, heSig);
+        SetHeMuUserInfos(txVector);
     }
     if (ns3::IsDlMu(m_preamble))
     {
         const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
-        txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetSigBMcs()));
-        txVector.SetRuAllocation(heSig.GetRuAllocation(), p20Index);
+        txVector.SetSigBMode(HePhy::GetVhtMcs(m_heSig.GetSigBMcs()));
+        txVector.SetRuAllocation(m_heSig.GetRuAllocation(), p20Index);
     }
 }
 

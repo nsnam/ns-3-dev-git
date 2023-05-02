@@ -324,20 +324,15 @@ class HePpdu : public OfdmPpdu
      * Fill in the TXVECTOR from PHY headers.
      *
      * \param txVector the TXVECTOR to fill in
-     * \param lSig the L-SIG header
-     * \param heSig the HE-SIG header
      */
-    virtual void SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
-                                           const LSigHeader& lSig,
-                                           const HeSigHeader& heSig) const;
+    virtual void SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const;
 
     /**
      * Reconstruct HeMuUserInfoMap from HE-SIG-B header.
      *
      * \param txVector the TXVECTOR to set its HeMuUserInfoMap
-     * \param heSig the HE-SIG-B to use to reconstruct HeMuUserInfoMap
      */
-    void SetHeMuUserInfos(WifiTxVector& txVector, const HeSigHeader& heSig) const;
+    void SetHeMuUserInfos(WifiTxVector& txVector) const;
 
     HeSigHeader m_heSig;           //!< the HE-SIG PHY header
     mutable TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
@@ -375,18 +370,16 @@ class HePpdu : public OfdmPpdu
     /**
      * Fill in the L-SIG header.
      *
-     * \param lSig the L-SIG header to fill in
      * \param ppduDuration the transmission duration of this PPDU
      */
-    virtual void SetLSigHeader(LSigHeader& lSig, Time ppduDuration) const;
+    virtual void SetLSigHeader(Time ppduDuration);
 
     /**
      * Fill in the HE-SIG header.
      *
-     * \param heSig the HE-SIG header to fill in
      * \param txVector the TXVECTOR that was used for this PPDU
      */
-    void SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const;
+    void SetHeSigHeader(const WifiTxVector& txVector);
 }; // class HePpdu
 
 /**

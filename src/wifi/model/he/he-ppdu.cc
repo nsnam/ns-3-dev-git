@@ -92,12 +92,12 @@ void
 HePpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
 {
     NS_LOG_FUNCTION(this << txVector << ppduDuration);
-    SetLSigHeader(m_lSig, ppduDuration);
-    SetHeSigHeader(m_heSig, txVector);
+    SetLSigHeader(ppduDuration);
+    SetHeSigHeader(txVector);
 }
 
 void
-HePpdu::SetLSigHeader(LSigHeader& lSig, Time ppduDuration) const
+HePpdu::SetLSigHeader(Time ppduDuration)
 {
     uint8_t sigExtension = 0;
     NS_ASSERT(m_operatingChannel.IsSet());
@@ -112,14 +112,14 @@ HePpdu::SetLSigHeader(LSigHeader& lSig, Time ppduDuration) const
                              4.0) *
                         3) -
                        3 - m);
-    lSig.SetLength(length);
+    m_lSig.SetLength(length);
 }
 
 void
-HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
+HePpdu::SetHeSigHeader(const WifiTxVector& txVector)
 {
-    heSig.SetFormat(m_preamble);
-    heSig.SetChannelWidth(txVector.GetChannelWidth());
+    m_heSig.SetFormat(m_preamble);
+    m_heSig.SetChannelWidth(txVector.GetChannelWidth());
     // TODO: EHT PHY headers not implemented yet, hence we do not fill in HE-SIG-B for EHT SU
     /* See section 36.3.12.8.2 of IEEE 802.11be D3.0 (EHT-SIG content channels):
      * In non-OFDMA transmission, the Common field of the EHT-SIG content channel does not contain
@@ -129,28 +129,29 @@ HePpdu::SetHeSigHeader(HeSigHeader& heSig, const WifiTxVector& txVector) const
     if (txVector.IsDlMu())
     {
         const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
-        heSig.SetHeSigBPresent(true);
-        heSig.SetSigBMcs(txVector.GetSigBMode().GetMcsValue());
-        heSig.SetRuAllocation(txVector.GetRuAllocation(p20Index));
-        heSig.SetHeSigBContentChannels(txVector.GetContentChannels(p20Index));
+        m_heSig.SetHeSigBPresent(true);
+        m_heSig.SetSigBMcs(txVector.GetSigBMode().GetMcsValue());
+        m_heSig.SetRuAllocation(txVector.GetRuAllocation(p20Index));
+        m_heSig.SetHeSigBContentChannels(txVector.GetContentChannels(p20Index));
         if (txVector.GetChannelWidth() >= 80)
         {
-            heSig.SetCenter26ToneRuIndication(txVector.GetCenter26ToneRuIndication());
+            m_heSig.SetCenter26ToneRuIndication(txVector.GetCenter26ToneRuIndication());
         }
     }
     else
     {
-        heSig.SetHeSigBPresent(false);
+        m_heSig.SetHeSigBPresent(false);
         if (!ns3::IsUlMu(m_preamble))
         {
-            heSig.SetMcs(txVector.GetMode().GetMcsValue());
-            heSig.SetNStreams(txVector.GetNss());
+            m_heSig.SetMcs(txVector.GetMode().GetMcsValue());
+            m_heSig.SetNStreams(txVector.GetNss());
         }
     }
-    heSig.SetBssColor(txVector.GetBssColor());
+    m_heSig.SetBssColor(txVector.GetBssColor());
     if (!txVector.IsUlMu())
     {
-        heSig.SetGuardIntervalAndLtfSize(txVector.GetGuardInterval(), 2 /*NLTF currently unused*/);
+        m_heSig.SetGuardIntervalAndLtfSize(txVector.GetGuardInterval(),
+                                           2 /*NLTF currently unused*/);
     }
 }
 
@@ -159,38 +160,36 @@ HePpdu::DoGetTxVector() const
 {
     WifiTxVector txVector;
     txVector.SetPreambleType(m_preamble);
-    SetTxVectorFromPhyHeaders(txVector, m_lSig, m_heSig);
+    SetTxVectorFromPhyHeaders(txVector);
     return txVector;
 }
 
 void
-HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
-                                  const LSigHeader& lSig,
-                                  const HeSigHeader& heSig) const
+HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
 {
-    txVector.SetChannelWidth(heSig.GetChannelWidth());
-    txVector.SetBssColor(heSig.GetBssColor());
-    txVector.SetLength(lSig.GetLength());
+    txVector.SetChannelWidth(m_heSig.GetChannelWidth());
+    txVector.SetBssColor(m_heSig.GetBssColor());
+    txVector.SetLength(m_lSig.GetLength());
     txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
     if (!IsMu())
     {
-        txVector.SetMode(HePhy::GetHeMcs(heSig.GetMcs()));
-        txVector.SetNss(heSig.GetNStreams());
+        txVector.SetMode(HePhy::GetHeMcs(m_heSig.GetMcs()));
+        txVector.SetNss(m_heSig.GetNStreams());
     }
     if (!IsUlMu())
     {
-        txVector.SetGuardInterval(heSig.GetGuardInterval());
+        txVector.SetGuardInterval(m_heSig.GetGuardInterval());
     }
     if (IsDlMu())
     {
-        SetHeMuUserInfos(txVector, heSig);
+        SetHeMuUserInfos(txVector);
     }
     if (txVector.IsDlMu())
     {
-        txVector.SetSigBMode(HePhy::GetVhtMcs(heSig.GetSigBMcs()));
+        txVector.SetSigBMode(HePhy::GetVhtMcs(m_heSig.GetSigBMcs()));
         const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
-        txVector.SetRuAllocation(heSig.GetRuAllocation(), p20Index);
-        auto center26ToneRuIndication = heSig.GetCenter26ToneRuIndication();
+        txVector.SetRuAllocation(m_heSig.GetRuAllocation(), p20Index);
+        auto center26ToneRuIndication = m_heSig.GetCenter26ToneRuIndication();
         if (center26ToneRuIndication.has_value())
         {
             txVector.SetCenter26ToneRuIndication(center26ToneRuIndication.value());
@@ -199,11 +198,11 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
 }
 
 void
-HePpdu::SetHeMuUserInfos(WifiTxVector& txVector, const HeSigHeader& heSig) const
+HePpdu::SetHeMuUserInfos(WifiTxVector& txVector) const
 {
-    const auto& ruAllocation = heSig.GetRuAllocation();
+    const auto& ruAllocation = m_heSig.GetRuAllocation();
     auto contentChannelIndex = 0;
-    for (const auto& contentChannel : heSig.GetHeSigBContentChannels())
+    for (const auto& contentChannel : m_heSig.GetHeSigBContentChannels())
     {
         auto numRusLeft = 0;
         auto ruAllocIndex = contentChannelIndex;
