@@ -96,7 +96,7 @@ spell-check:
       fi
     - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream https://gitlab.com/nsnam/ns-3-dev.git
 
-    - git log --pretty=%B HEAD...upstream/master ^upstream/master > git_messages.txt
+    - git log --pretty=%B HEAD...upstream/$CI_DEFAULT_BRANCH ^upstream/$CI_DEFAULT_BRANCH > git_messages.txt
     # Check source code and commit messages
     - codespell -f -C0 ./
   timeout: 1h
