@@ -39,11 +39,9 @@ clang-tidy:
       --enable-mpi --enable-python-bindings
   script:
     - if (git remote | grep -qw upstream) ; then
-      git remote set-url upstream https://gitlab.com/nsnam/ns-3-dev.git ;
-      else
-      git remote add upstream https://gitlab.com/nsnam/ns-3-dev.git ;
+      git remote remove upstream ;
       fi
-    - git fetch upstream $CI_DEFAULT_BRANCH
+    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream https://gitlab.com/nsnam/ns-3-dev.git
     - git diff --name-only upstream/$CI_DEFAULT_BRANCH > $FILES_CHANGED
 
     # Run clang-tidy-diff in the opposite cases of the if-else below.
@@ -94,11 +92,10 @@ spell-check:
   script:
     # Get commit messages
     - if (git remote | grep -qw upstream) ; then
-      git remote set-url upstream https://gitlab.com/nsnam/ns-3-dev.git ;
-      else
-      git remote add upstream https://gitlab.com/nsnam/ns-3-dev.git ;
+      git remote remove upstream ;
       fi
-    - git fetch upstream master
+    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream https://gitlab.com/nsnam/ns-3-dev.git
+
     - git log --pretty=%B HEAD...upstream/master ^upstream/master > git_messages.txt
     # Check source code and commit messages
     - codespell -f -C0 ./
