@@ -1566,6 +1566,12 @@ HeFrameExchangeManager::SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
 {
     NS_LOG_FUNCTION(this << muRtsHdr << trigger << muRtsSnr);
 
+    if (!UlMuCsMediumIdle(trigger))
+    {
+        NS_LOG_DEBUG("UL MU CS indicated medium busy, cannot send CTS");
+        return;
+    }
+
     NS_ASSERT(m_staMac != nullptr && m_staMac->IsAssociated());
     WifiTxVector ctsTxVector = GetCtsTxVectorAfterMuRts(trigger, m_staMac->GetAssociationId());
     ctsTxVector.SetTriggerResponding(true);
@@ -2525,20 +2531,13 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 //   the non-AP STA (this is guaranteed if we get here)
                 // - The UL MU CS condition indicates that the medium is idle
                 // (Sec. 26.2.6.3 of 802.11ax-2021)
-                if (UlMuCsMediumIdle(trigger))
-                {
-                    NS_LOG_DEBUG("Schedule CTS");
-                    Simulator::Schedule(m_phy->GetSifs(),
-                                        &HeFrameExchangeManager::SendCtsAfterMuRts,
-                                        this,
-                                        hdr,
-                                        trigger,
-                                        rxSignalInfo.snr);
-                }
-                else
-                {
-                    NS_LOG_DEBUG("Cannot schedule CTS");
-                }
+                NS_LOG_DEBUG("Schedule CTS");
+                Simulator::Schedule(m_phy->GetSifs(),
+                                    &HeFrameExchangeManager::SendCtsAfterMuRts,
+                                    this,
+                                    hdr,
+                                    trigger,
+                                    rxSignalInfo.snr);
             }
             else if (trigger.IsMuBar())
             {
