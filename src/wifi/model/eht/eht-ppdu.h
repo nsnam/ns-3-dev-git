@@ -41,6 +41,45 @@ class EhtPpdu : public HePpdu
 {
   public:
     /**
+     * PHY header for EHT TB PPDUs
+     */
+    struct EhtTbPhyHeader
+    {
+        // U-SIG fields
+        uint8_t m_phyVersionId{0}; ///< PHY Version Identifier field
+        uint8_t m_bandwidth{0};    ///< Bandwidth field
+        uint8_t m_bssColor{0};     ///< BSS color field
+        uint8_t m_ppduType{0};     ///< PPDU Type And Compressed Mode field
+
+    }; // struct EhtTbPhyHeader
+
+    /**
+     * PHY header for EHT MU PPDUs
+     */
+    struct EhtMuPhyHeader
+    {
+        // U-SIG fields
+        uint8_t m_phyVersionId{0}; ///< PHY Version Identifier field
+        uint8_t m_bandwidth{0};    ///< Bandwidth field
+        uint8_t m_bssColor{0};     ///< BSS color field
+        uint8_t m_ppduType{0};     ///< PPDU Type And Compressed Mode field
+        uint8_t m_sigBMcs{0};      ///< EHT-SIG-B MCS
+
+        // EHT-SIG fields
+        uint8_t m_giLtfSize{0}; ///< GI+LTF Size field
+
+        RuAllocation m_ruAllocationA; //!< RU Allocation-A that are going to be carried in EHT-SIG
+                                      //!< common subfields
+        RuAllocation m_ruAllocationB; //!< RU Allocation-B that are going to be carried in EHT-SIG
+                                      //!< common subfields
+
+        HeSigBContentChannels m_contentChannels; //!< EHT-SIG Content Channels
+    };                                           // struct EhtMuPhyHeader
+
+    /// type of the EHT PHY header
+    using EhtPhyHeader = std::variant<std::monostate, EhtTbPhyHeader, EhtMuPhyHeader>;
+
+    /**
      * Create an EHT PPDU, storing a map of PSDUs.
      *
      * This PPDU can either be UL or DL.
@@ -93,9 +132,10 @@ class EhtPpdu : public HePpdu
     bool IsUlMu() const override;
     void SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const override;
 
-    uint8_t m_ehtPpduType{1}; /**< EHT_PPDU_TYPE per Table 36-1 IEEE 802.11be D2.3.
-                                   To be removed once EHT PHY headers are supported. */
-};                            // class EhtPpdu
+    uint8_t m_ehtPpduType{1};    /**< EHT_PPDU_TYPE per Table 36-1 IEEE 802.11be D2.3.
+                                      To be removed once EHT PHY headers are supported. */
+    EhtPhyHeader m_ehtPhyHeader; //!< the EHT PHY header
+};                               // class EhtPpdu
 
 } // namespace ns3
 
