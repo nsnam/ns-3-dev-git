@@ -272,7 +272,10 @@ SpectrumWifiPhy::DoChannelSwitch()
     if ((frequencyBefore == frequencyAfter) && (widthBefore == widthAfter))
     {
         NS_LOG_DEBUG("Same RF channel as before, do nothing");
-        SwitchMaybeToCcaBusy(nullptr);
+        if (IsInitialized())
+        {
+            SwitchMaybeToCcaBusy(nullptr);
+        }
         return;
     }
 
@@ -304,7 +307,10 @@ SpectrumWifiPhy::DoChannelSwitch()
     m_currentSpectrumPhyInterface = newSpectrumPhyInterface;
     ResetSpectrumModel();
 
-    SwitchMaybeToCcaBusy(nullptr);
+    if (IsInitialized())
+    {
+        SwitchMaybeToCcaBusy(nullptr);
+    }
 }
 
 bool
