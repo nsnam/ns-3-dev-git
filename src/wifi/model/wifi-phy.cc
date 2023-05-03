@@ -89,7 +89,7 @@ WifiPhy::GetTypeId()
                 "number uniquely identify a frequency channel for the given standard and band.",
                 StringValue("{0, 0, BAND_UNSPECIFIED, 0}"),
                 MakeTupleAccessor<UintegerValue, UintegerValue, EnumValue, UintegerValue>(
-                    &WifiPhy::SetOperatingChannel),
+                    (void(WifiPhy::*)(const ChannelTuple&)) & WifiPhy::SetOperatingChannel),
                 MakeTupleChecker<UintegerValue, UintegerValue, EnumValue, UintegerValue>(
                     MakeUintegerChecker<uint8_t>(0, 233),
                     MakeUintegerChecker<uint16_t>(0, 160),
@@ -1068,6 +1068,17 @@ WifiPhy::GetTxBandwidth(WifiMode mode, uint16_t maxAllowedWidth) const
 }
 
 void
+WifiPhy::SetOperatingChannel(const WifiPhyOperatingChannel& channel)
+{
+    NS_LOG_FUNCTION(this << channel);
+    WifiPhy::ChannelTuple tuple(channel.GetNumber(),
+                                channel.GetWidth(),
+                                channel.GetPhyBand(),
+                                channel.GetPrimaryChannelIndex(20));
+    SetOperatingChannel(tuple);
+}
+
+void
 WifiPhy::SetOperatingChannel(const ChannelTuple& channelTuple)
 {
     // the generic operator<< for tuples does not give a pretty result
@@ -1098,7 +1109,8 @@ WifiPhy::SetOperatingChannel(const ChannelTuple& channelTuple)
     if (delay.IsStrictlyPositive())
     {
         // switching channel has been postponed
-        Simulator::Schedule(delay, &WifiPhy::SetOperatingChannel, this, channelTuple);
+        void (WifiPhy::*fp)(const ChannelTuple&) = &WifiPhy::SetOperatingChannel;
+        Simulator::Schedule(delay, fp, this, channelTuple);
         return;
     }
 

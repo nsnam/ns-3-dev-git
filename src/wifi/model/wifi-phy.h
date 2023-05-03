@@ -886,6 +886,20 @@ class WifiPhy : public Object
      */
     void SetOperatingChannel(const ChannelTuple& channelTuple);
     /**
+     * If the standard for this object has not been set yet, store the channel settings
+     * corresponding to the given operating channel. Otherwise, check if a channel switch
+     * can be performed now. If not, schedule another call to this method when channel switch
+     * can be performed. Otherwise, set the given operating channel and call ConfigureStandard
+     * if the PHY band has changed.
+     *
+     * Note that, in case a Spectrum PHY is used, a spectrum channel covering the
+     * operating channel bandwidth must have been already added when actually setting
+     * the operating channel.
+     *
+     * \param channel the given operating channel
+     */
+    void SetOperatingChannel(const WifiPhyOperatingChannel& channel);
+    /**
      * Configure whether it is prohibited to change PHY band after initialization.
      *
      * \param enable true to prohibit changing PHY band after initialization,
