@@ -100,20 +100,19 @@ DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId)
     }
 
     // switch channel on Aux PHY so that it operates on the link on which the main PHY was operating
-    auto mainPhy = GetStaMac()->GetWifiPhy(currLinkId);
     auto auxPhy = GetStaMac()->GetWifiPhy(nextLinkId);
 
-    auto currMainPhyChannel = mainPhy->GetOperatingChannel();
+    auto newAuxPhyChannel = GetChannelForAuxPhy(currLinkId);
 
-    NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") is about to switch to " << currMainPhyChannel
+    NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") is about to switch to " << newAuxPhyChannel
                              << " to operate on link " << +currLinkId);
 
     GetStaMac()
         ->GetChannelAccessManager(nextLinkId)
-        ->NotifySwitchingEmlsrLink(auxPhy, currMainPhyChannel, currLinkId);
+        ->NotifySwitchingEmlsrLink(auxPhy, newAuxPhyChannel, currLinkId);
 
     void (WifiPhy::*fp)(const WifiPhyOperatingChannel&) = &WifiPhy::SetOperatingChannel;
-    Simulator::ScheduleNow(fp, auxPhy, currMainPhyChannel);
+    Simulator::ScheduleNow(fp, auxPhy, newAuxPhyChannel);
 }
 
 } // namespace ns3

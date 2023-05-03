@@ -25,7 +25,9 @@
 #include "ns3/mgt-headers.h"
 #include "ns3/object.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/wifi-phy-operating-channel.h"
 
+#include <map>
 #include <optional>
 #include <set>
 
@@ -155,12 +157,34 @@ class EmlsrManager : public Object
      */
     virtual std::optional<uint8_t> ResendNotification(Ptr<const WifiMpdu> mpdu) = 0;
 
+    /**
+     * \param linkId the ID of the given link
+     * \return the operating channel the main PHY must switch to in order to operate
+     *         on the given link
+     */
+    const WifiPhyOperatingChannel& GetChannelForMainPhy(uint8_t linkId) const;
+
+    /**
+     * \param linkId the ID of the given link
+     * \return the operating channel an aux PHY must switch to in order to operate
+     *         on the given link
+     */
+    const WifiPhyOperatingChannel& GetChannelForAuxPhy(uint8_t linkId) const;
+
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
     uint8_t m_mainPhyId; //!< ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
     uint16_t m_auxPhyMaxWidth; //!< max channel width (MHz) supported by aux PHYs
 
   private:
+    /**
+     * Compute the operating channels that the main PHY and the aux PHY(s) must switch to in order
+     * to operate on each of the setup links. The operating channels may be different due to
+     * limited channel width capabilities of the aux PHY(s). This method shall be called upon
+     * completion of ML setup.
+     */
+    void ComputeOperatingChannels();
+
     /**
      * Send an EML Operating Mode Notification frame.
      */
@@ -203,6 +227,12 @@ class EmlsrManager : public Object
     void SwitchMainPhy(uint8_t linkId);
 
     /**
+     * Adjust the operating channel of all the aux PHYs to meet the constraint on the maximum
+     * channel width supported by aux PHYs.
+     */
+    void ApplyMaxChannelWidthOnAuxPhys();
+
+    /**
      * Notify subclass that EMLSR mode changed.
      */
     virtual void NotifyEmlsrModeChanged() = 0;
@@ -227,6 +257,10 @@ class EmlsrManager : public Object
     EventId m_transitionTimeoutEvent; /**< Timer started after the successful transmission of an
                                            EML Operating Mode Notification frame */
     bool m_resetCamState; //!< whether to reset the state of CAM when main PHY switches channel
+    std::map<uint8_t, WifiPhyOperatingChannel>
+        m_mainPhyChannels; //!< link ID-indexed map of operating channels for the main PHY
+    std::map<uint8_t, WifiPhyOperatingChannel>
+        m_auxPhyChannels; //!< link ID-indexed map of operating channels for the aux PHYs
 };
 
 } // namespace ns3

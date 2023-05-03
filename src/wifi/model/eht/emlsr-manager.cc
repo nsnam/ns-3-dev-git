@@ -207,12 +207,17 @@ EmlsrManager::NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 
     DoNotifyMgtFrameReceived(mpdu, linkId);
 
-    if (hdr.IsAssocResp() && GetStaMac()->IsAssociated() && GetTransitionTimeout() &&
-        m_nextEmlsrLinks && !m_nextEmlsrLinks->empty())
+    if (hdr.IsAssocResp() && GetStaMac()->IsAssociated() && GetTransitionTimeout())
     {
-        // we just completed ML setup with an AP MLD that supports EMLSR and a non-empty
-        // set of EMLSR links have been configured, hence enable EMLSR mode on those links
-        SendEmlOperatingModeNotification();
+        // we just completed ML setup with an AP MLD that supports EMLSR
+        ComputeOperatingChannels();
+
+        if (m_nextEmlsrLinks && !m_nextEmlsrLinks->empty())
+        {
+            // a non-empty set of EMLSR links have been configured, hence enable EMLSR mode
+            // on those links
+            SendEmlOperatingModeNotification();
+        }
     }
 
     if (hdr.IsAction() && hdr.GetAddr2() == m_staMac->GetBssid(linkId))
@@ -260,16 +265,15 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId)
     NS_LOG_FUNCTION(this << linkId);
 
     auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
-    auto auxPhy = m_staMac->GetWifiPhy(linkId);
 
-    NS_ASSERT_MSG(mainPhy != auxPhy, "Main PHY is already operating on link " << +linkId);
+    NS_ASSERT_MSG(mainPhy != m_staMac->GetWifiPhy(linkId),
+                  "Main PHY is already operating on link " << +linkId);
 
     // find the link on which the main PHY is operating
     auto currMainPhyLinkId = m_staMac->GetLinkForPhy(mainPhy);
     NS_ASSERT_MSG(currMainPhyLinkId, "Current link ID for main PHY not found");
 
-    auto currMainPhyChannel = mainPhy->GetOperatingChannel();
-    auto newMainPhyChannel = auxPhy->GetOperatingChannel();
+    auto newMainPhyChannel = GetChannelForMainPhy(linkId);
 
     NS_LOG_DEBUG("Main PHY (" << mainPhy << ") is about to switch to " << newMainPhyChannel
                               << " to operate on link " << +linkId);
@@ -431,7 +435,105 @@ EmlsrManager::ChangeEmlsrMode()
     // Make other non-AP STAs operating on the corresponding EMLSR links transition to
     // active mode or passive mode (depending on whether EMLSR mode has been enabled or disabled)
     m_staMac->NotifyEmlsrModeChanged(m_emlsrLinks);
+    // Enforce the limit on the max channel width supported by aux PHYs
+    ApplyMaxChannelWidthOnAuxPhys();
+
     NotifyEmlsrModeChanged();
+}
+
+void
+EmlsrManager::ApplyMaxChannelWidthOnAuxPhys()
+{
+    NS_LOG_FUNCTION(this);
+    auto currMainPhyLinkId = m_staMac->GetLinkForPhy(m_mainPhyId);
+    NS_ASSERT(currMainPhyLinkId);
+
+    for (const auto linkId : m_staMac->GetLinkIds())
+    {
+        auto auxPhy = m_staMac->GetWifiPhy(linkId);
+        auto channel = GetChannelForAuxPhy(linkId);
+
+        if (linkId == currMainPhyLinkId || !m_staMac->IsEmlsrLink(linkId) ||
+            auxPhy->GetOperatingChannel() == channel)
+        {
+            continue;
+        }
+
+        NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") is about to switch to " << channel
+                                 << " to operate on link " << +linkId);
+        // We cannot simply set the new channel, because otherwise the MAC will disable
+        // the setup link. We need to inform the MAC (via the Channel Access Manager) that
+        // this channel switch must not have such a consequence. We already have a method
+        // for doing so, i.e., inform the MAC that the PHY is switching channel to operate
+        // on the "same" link.
+        m_staMac->GetChannelAccessManager(linkId)->NotifySwitchingEmlsrLink(auxPhy,
+                                                                            channel,
+                                                                            linkId);
+
+        void (WifiPhy::*fp)(const WifiPhyOperatingChannel&) = &WifiPhy::SetOperatingChannel;
+        Simulator::ScheduleNow(fp, auxPhy, channel);
+    }
+}
+
+void
+EmlsrManager::ComputeOperatingChannels()
+{
+    NS_LOG_FUNCTION(this);
+
+    m_mainPhyChannels.clear();
+    m_auxPhyChannels.clear();
+
+    auto linkIds = m_staMac->GetSetupLinkIds();
+
+    for (auto linkId : linkIds)
+    {
+        const auto& channel = m_staMac->GetWifiPhy(linkId)->GetOperatingChannel();
+        m_mainPhyChannels.emplace(linkId, channel);
+
+        auto mainPhyChWidth = channel.GetWidth();
+        if (m_auxPhyMaxWidth >= mainPhyChWidth)
+        {
+            // same channel can be used by aux PHYs
+            m_auxPhyChannels.emplace(linkId, channel);
+            continue;
+        }
+        // aux PHYs will operate on a primary subchannel
+        auto freq = channel.GetPrimaryChannelCenterFrequency(m_auxPhyMaxWidth);
+        auto chIt = WifiPhyOperatingChannel::FindFirst(0,
+                                                       freq,
+                                                       m_auxPhyMaxWidth,
+                                                       WIFI_STANDARD_UNSPECIFIED,
+                                                       channel.GetPhyBand());
+        NS_ASSERT_MSG(chIt != WifiPhyOperatingChannel::m_frequencyChannels.end(),
+                      "Primary" << m_auxPhyMaxWidth << " channel not found");
+        m_auxPhyChannels.emplace(linkId, chIt);
+        // find the P20 index for the channel used by the aux PHYs
+        auto p20Index = channel.GetPrimaryChannelIndex(20);
+        while (mainPhyChWidth > m_auxPhyMaxWidth)
+        {
+            mainPhyChWidth /= 2;
+            p20Index /= 2;
+        }
+        m_auxPhyChannels[linkId].SetPrimary20Index(p20Index);
+    }
+}
+
+const WifiPhyOperatingChannel&
+EmlsrManager::GetChannelForMainPhy(uint8_t linkId) const
+{
+    auto it = m_mainPhyChannels.find(linkId);
+    NS_ASSERT_MSG(it != m_mainPhyChannels.end(),
+                  "Channel for main PHY on link ID " << +linkId << " not found");
+    return it->second;
+}
+
+const WifiPhyOperatingChannel&
+EmlsrManager::GetChannelForAuxPhy(uint8_t linkId) const
+{
+    auto it = m_auxPhyChannels.find(linkId);
+    NS_ASSERT_MSG(it != m_auxPhyChannels.end(),
+                  "Channel for aux PHY on link ID " << +linkId << " not found");
+    return it->second;
 }
 
 } // namespace ns3
