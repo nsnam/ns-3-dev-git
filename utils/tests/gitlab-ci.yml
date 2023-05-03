@@ -46,12 +46,12 @@ workflow:
     - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts $ENABLE_MPI
     - ccache -z
     - ./ns3 build
-    - if [ "$CI_JOB_STAGE" == "build" ] && [ "`./utils/ccache-miss-rate.py`" != "0" ];
+    - if [[ "$CI_JOB_STAGE" == "build" ]] && [[ "`./utils/ccache-miss-rate.py`" != "0" ]];
       then `touch $CCACHE_BASEDIR_VALUE/tests-$CI_COMMIT_REF_SLUG.txt`;
       fi
-    - if [ "$CI_JOB_STAGE" == "test" ] && [ "$MODE" != "debug" ] && [[ -f $CCACHE_BASEDIR_VALUE/tests-$CI_COMMIT_REF_SLUG.txt ]];
+    - if [[ "$CI_JOB_STAGE" == "test" ]] && [[ "$MODE" != "debug" ]] && [[ -f $CCACHE_BASEDIR_VALUE/tests-$CI_COMMIT_REF_SLUG.txt ]];
       then ./test.py -n;
-      if [ $? == 0 ];
+      if [[ $? == 0 ]];
       then `rm $CCACHE_BASEDIR_VALUE/tests-$CI_COMMIT_REF_SLUG.txt` || true;
       fi;
       fi
