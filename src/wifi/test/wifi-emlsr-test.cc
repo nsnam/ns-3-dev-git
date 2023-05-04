@@ -83,7 +83,7 @@ EmlOperatingModeNotificationTest::EmlOperatingModeNotificationTest()
 void
 EmlOperatingModeNotificationTest::DoRun()
 {
-    MgtEmlOperatingModeNotification frame;
+    MgtEmlOmn frame;
 
     // Both EMLSR Mode and EMLMR Mode subfields set to 0 (no link bitmap);
     TestHeaderSerialization(frame);
@@ -104,7 +104,7 @@ EmlOperatingModeNotificationTest::DoRun()
     auto transition = MicroSeconds(128);
 
     frame.m_emlControl.emlsrParamUpdateCtrl = 1;
-    frame.m_emlsrParamUpdate = MgtEmlOperatingModeNotification::EmlsrParamUpdate{};
+    frame.m_emlsrParamUpdate = MgtEmlOmn::EmlsrParamUpdate{};
     frame.m_emlsrParamUpdate->paddingDelay = CommonInfoBasicMle::EncodeEmlsrPaddingDelay(padding);
     frame.m_emlsrParamUpdate->transitionDelay =
         CommonInfoBasicMle::EncodeEmlsrTransitionDelay(transition);
@@ -542,7 +542,7 @@ EmlsrOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
  *   timeout expires and when an EML Notification response is received from the AP MLD (thus,
  *   the correct EMLSR link set is stored after whichever of the two events occur first)
  */
-class EmlNotificationExchangeTest : public EmlsrOperationsTestBase
+class EmlOmnExchangeTest : public EmlsrOperationsTestBase
 {
   public:
     /**
@@ -551,9 +551,8 @@ class EmlNotificationExchangeTest : public EmlsrOperationsTestBase
      * \param linksToEnableEmlsrOn IDs of links on which EMLSR mode should be enabled
      * \param transitionTimeout the Transition Timeout advertised by the AP MLD
      */
-    EmlNotificationExchangeTest(const std::set<uint8_t>& linksToEnableEmlsrOn,
-                                Time transitionTimeout);
-    ~EmlNotificationExchangeTest() override = default;
+    EmlOmnExchangeTest(const std::set<uint8_t>& linksToEnableEmlsrOn, Time transitionTimeout);
+    ~EmlOmnExchangeTest() override = default;
 
   protected:
     void DoSetup() override;
@@ -627,9 +626,8 @@ class EmlNotificationExchangeTest : public EmlsrOperationsTestBase
     std::list<uint64_t> m_uidList;             ///< list of UIDs of packets to corrupt
 };
 
-EmlNotificationExchangeTest::EmlNotificationExchangeTest(
-    const std::set<uint8_t>& linksToEnableEmlsrOn,
-    Time transitionTimeout)
+EmlOmnExchangeTest::EmlOmnExchangeTest(const std::set<uint8_t>& linksToEnableEmlsrOn,
+                                       Time transitionTimeout)
     : EmlsrOperationsTestBase("Check EML Notification exchange"),
       m_checkEmlsrLinksCount(0),
       m_emlNotificationDroppedCount(0)
@@ -642,7 +640,7 @@ EmlNotificationExchangeTest::EmlNotificationExchangeTest(
 }
 
 void
-EmlNotificationExchangeTest::DoSetup()
+EmlOmnExchangeTest::DoSetup()
 {
     EmlsrOperationsTestBase::DoSetup();
 
@@ -652,20 +650,18 @@ EmlNotificationExchangeTest::DoSetup()
         m_apMac->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
     }
 
-    m_staMacs[0]->TraceConnectWithoutContext(
-        "AckedMpdu",
-        MakeCallback(&EmlNotificationExchangeTest::TxOk, this));
-    m_staMacs[0]->TraceConnectWithoutContext(
-        "DroppedMpdu",
-        MakeCallback(&EmlNotificationExchangeTest::TxDropped, this));
+    m_staMacs[0]->TraceConnectWithoutContext("AckedMpdu",
+                                             MakeCallback(&EmlOmnExchangeTest::TxOk, this));
+    m_staMacs[0]->TraceConnectWithoutContext("DroppedMpdu",
+                                             MakeCallback(&EmlOmnExchangeTest::TxDropped, this));
 }
 
 void
-EmlNotificationExchangeTest::Transmit(Ptr<WifiMac> mac,
-                                      uint8_t phyId,
-                                      WifiConstPsduMap psduMap,
-                                      WifiTxVector txVector,
-                                      double txPowerW)
+EmlOmnExchangeTest::Transmit(Ptr<WifiMac> mac,
+                             uint8_t phyId,
+                             WifiConstPsduMap psduMap,
+                             WifiTxVector txVector,
+                             double txPowerW)
 {
     EmlsrOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
     auto linkId = m_txPsdus.back().linkId;
@@ -706,9 +702,9 @@ EmlNotificationExchangeTest::Transmit(Ptr<WifiMac> mac,
 }
 
 void
-EmlNotificationExchangeTest::CheckEmlCapabilitiesInAssocReq(Ptr<const WifiMpdu> mpdu,
-                                                            const WifiTxVector& txVector,
-                                                            uint8_t linkId)
+EmlOmnExchangeTest::CheckEmlCapabilitiesInAssocReq(Ptr<const WifiMpdu> mpdu,
+                                                   const WifiTxVector& txVector,
+                                                   uint8_t linkId)
 {
     MgtAssocRequestHeader frame;
     mpdu->GetPacket()->PeekHeader(frame);
@@ -731,9 +727,9 @@ EmlNotificationExchangeTest::CheckEmlCapabilitiesInAssocReq(Ptr<const WifiMpdu> 
 }
 
 void
-EmlNotificationExchangeTest::CheckEmlCapabilitiesInAssocResp(Ptr<const WifiMpdu> mpdu,
-                                                             const WifiTxVector& txVector,
-                                                             uint8_t linkId)
+EmlOmnExchangeTest::CheckEmlCapabilitiesInAssocResp(Ptr<const WifiMpdu> mpdu,
+                                                    const WifiTxVector& txVector,
+                                                    uint8_t linkId)
 {
     bool sentToEmlsrClient =
         (m_staMacs[0]->GetLinkIdByAddress(mpdu->GetHeader().GetAddr1()) == linkId);
@@ -763,11 +759,11 @@ EmlNotificationExchangeTest::CheckEmlCapabilitiesInAssocResp(Ptr<const WifiMpdu>
 }
 
 void
-EmlNotificationExchangeTest::CheckEmlNotification(Ptr<const WifiPsdu> psdu,
-                                                  const WifiTxVector& txVector,
-                                                  uint8_t linkId)
+EmlOmnExchangeTest::CheckEmlNotification(Ptr<const WifiPsdu> psdu,
+                                         const WifiTxVector& txVector,
+                                         uint8_t linkId)
 {
-    MgtEmlOperatingModeNotification frame;
+    MgtEmlOmn frame;
     auto mpdu = *psdu->begin();
     auto pkt = mpdu->GetPacket()->Copy();
     WifiActionHeader::Remove(pkt);
@@ -817,7 +813,7 @@ EmlNotificationExchangeTest::CheckEmlNotification(Ptr<const WifiPsdu> psdu,
                                                   txVector,
                                                   m_staMacs[0]->GetWifiPhy(linkId)->GetPhyBand()) +
                      MicroSeconds(1); // to account for propagation delay
-        Simulator::Schedule(delay, &EmlNotificationExchangeTest::CheckEmlsrLinks, this);
+        Simulator::Schedule(delay, &EmlOmnExchangeTest::CheckEmlsrLinks, this);
     }
 
     NS_TEST_EXPECT_MSG_EQ(+m_mainPhyId,
@@ -827,7 +823,7 @@ EmlNotificationExchangeTest::CheckEmlNotification(Ptr<const WifiPsdu> psdu,
 }
 
 void
-EmlNotificationExchangeTest::TxOk(Ptr<const WifiMpdu> mpdu)
+EmlOmnExchangeTest::TxOk(Ptr<const WifiMpdu> mpdu)
 {
     const auto& hdr = mpdu->GetHeader();
 
@@ -841,14 +837,14 @@ EmlNotificationExchangeTest::TxOk(Ptr<const WifiMpdu> mpdu)
             // the EML Operating Mode Notification frame that the non-AP MLD sent has been
             // acknowledged; after the transition timeout, the EMLSR links have been set
             Simulator::Schedule(m_transitionTimeout + NanoSeconds(1),
-                                &EmlNotificationExchangeTest::CheckEmlsrLinks,
+                                &EmlOmnExchangeTest::CheckEmlsrLinks,
                                 this);
         }
     }
 }
 
 void
-EmlNotificationExchangeTest::TxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu)
+EmlOmnExchangeTest::TxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu)
 {
     const auto& hdr = mpdu->GetHeader();
 
@@ -867,7 +863,7 @@ EmlNotificationExchangeTest::TxDropped(WifiMacDropReason reason, Ptr<const WifiM
 }
 
 void
-EmlNotificationExchangeTest::CheckEmlsrLinks()
+EmlOmnExchangeTest::CheckEmlsrLinks()
 {
     m_checkEmlsrLinksCount++;
 
@@ -885,7 +881,7 @@ EmlNotificationExchangeTest::CheckEmlsrLinks()
 }
 
 void
-EmlNotificationExchangeTest::DoRun()
+EmlOmnExchangeTest::DoRun()
 {
     Simulator::Stop(m_duration);
     Simulator::Run();
@@ -1989,7 +1985,7 @@ EmlsrDlTxopTest::CheckEmlNotificationFrame(Ptr<const WifiMpdu> mpdu,
     auto pkt = mpdu->GetPacket()->Copy();
     const auto& hdr = mpdu->GetHeader();
     WifiActionHeader::Remove(pkt);
-    MgtEmlOperatingModeNotification frame;
+    MgtEmlOmn frame;
     pkt->RemoveHeader(frame);
 
     std::optional<std::size_t> staId;
@@ -2974,10 +2970,10 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     : TestSuite("wifi-emlsr", UNIT)
 {
     AddTestCase(new EmlOperatingModeNotificationTest(), TestCase::QUICK);
-    AddTestCase(new EmlNotificationExchangeTest({1, 2}, MicroSeconds(0)), TestCase::QUICK);
-    AddTestCase(new EmlNotificationExchangeTest({1, 2}, MicroSeconds(2048)), TestCase::QUICK);
-    AddTestCase(new EmlNotificationExchangeTest({0, 1, 2, 3}, MicroSeconds(0)), TestCase::QUICK);
-    AddTestCase(new EmlNotificationExchangeTest({0, 1, 2, 3}, MicroSeconds(2048)), TestCase::QUICK);
+    AddTestCase(new EmlOmnExchangeTest({1, 2}, MicroSeconds(0)), TestCase::QUICK);
+    AddTestCase(new EmlOmnExchangeTest({1, 2}, MicroSeconds(2048)), TestCase::QUICK);
+    AddTestCase(new EmlOmnExchangeTest({0, 1, 2, 3}, MicroSeconds(0)), TestCase::QUICK);
+    AddTestCase(new EmlOmnExchangeTest({0, 1, 2, 3}, MicroSeconds(2048)), TestCase::QUICK);
     for (const auto& emlsrLinks :
          {std::set<uint8_t>{0, 1, 2}, std::set<uint8_t>{1, 2}, std::set<uint8_t>{0, 1}})
     {

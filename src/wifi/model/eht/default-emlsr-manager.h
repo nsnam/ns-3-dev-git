@@ -45,7 +45,7 @@ class DefaultEmlsrManager : public EmlsrManager
     ~DefaultEmlsrManager() override;
 
   protected:
-    uint8_t GetLinkToSendEmlNotification() override;
+    uint8_t GetLinkToSendEmlOmn() override;
     std::optional<uint8_t> ResendNotification(Ptr<const WifiMpdu> mpdu) override;
 
   private:

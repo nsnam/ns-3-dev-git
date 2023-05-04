@@ -194,7 +194,7 @@ EmlsrManager::SetEmlsrLinks(const std::set<uint8_t>& linkIds)
     if (GetStaMac() && GetStaMac()->IsAssociated() && GetTransitionTimeout() && m_nextEmlsrLinks)
     {
         // Request to enable EMLSR mode on the given links, provided that they have been setup
-        SendEmlOperatingModeNotification();
+        SendEmlOmn();
     }
 }
 
@@ -216,7 +216,7 @@ EmlsrManager::NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         {
             // a non-empty set of EMLSR links have been configured, hence enable EMLSR mode
             // on those links
-            SendEmlOperatingModeNotification();
+            SendEmlOmn();
         }
     }
 
@@ -290,7 +290,7 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId)
 }
 
 void
-EmlsrManager::SendEmlOperatingModeNotification()
+EmlsrManager::SendEmlOmn()
 {
     NS_LOG_FUNCTION(this);
 
@@ -298,7 +298,7 @@ EmlsrManager::SendEmlOperatingModeNotification()
                     "AP did not advertise a Transition Timeout, cannot send EML notification");
     NS_ASSERT_MSG(m_nextEmlsrLinks, "Need to set EMLSR links before calling this method");
 
-    MgtEmlOperatingModeNotification frame;
+    MgtEmlOmn frame;
 
     // Add the EMLSR Parameter Update field if needed
     if (m_lastAdvPaddingDelay != m_emlsrPaddingDelay ||
@@ -307,7 +307,7 @@ EmlsrManager::SendEmlOperatingModeNotification()
         m_lastAdvPaddingDelay = m_emlsrPaddingDelay;
         m_lastAdvTransitionDelay = m_emlsrTransitionDelay;
         frame.m_emlControl.emlsrParamUpdateCtrl = 1;
-        frame.m_emlsrParamUpdate = MgtEmlOperatingModeNotification::EmlsrParamUpdate{};
+        frame.m_emlsrParamUpdate = MgtEmlOmn::EmlsrParamUpdate{};
         frame.m_emlsrParamUpdate->paddingDelay =
             CommonInfoBasicMle::EncodeEmlsrPaddingDelay(m_lastAdvPaddingDelay);
         frame.m_emlsrParamUpdate->transitionDelay =
@@ -344,8 +344,8 @@ EmlsrManager::SendEmlOperatingModeNotification()
     // non-AP STA affiliated with the non-AP MLD that operates on one of the EMLSR links is
     // in awake state. (Sec. 35.3.17 of 802.11be D3.0)
 
-    auto linkId = GetLinkToSendEmlNotification();
-    GetEhtFem(linkId)->SendEmlOperatingModeNotification(m_staMac->GetBssid(linkId), frame);
+    auto linkId = GetLinkToSendEmlOmn();
+    GetEhtFem(linkId)->SendEmlOmn(m_staMac->GetBssid(linkId), frame);
 }
 
 void
@@ -403,10 +403,9 @@ EmlsrManager::TxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu)
             auto linkId = ResendNotification(mpdu);
             if (linkId)
             {
-                MgtEmlOperatingModeNotification frame;
+                MgtEmlOmn frame;
                 pkt->RemoveHeader(frame);
-                GetEhtFem(*linkId)->SendEmlOperatingModeNotification(m_staMac->GetBssid(*linkId),
-                                                                     frame);
+                GetEhtFem(*linkId)->SendEmlOmn(m_staMac->GetBssid(*linkId), frame);
             }
             else
             {

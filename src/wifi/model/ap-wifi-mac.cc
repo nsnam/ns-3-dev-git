@@ -1816,9 +1816,9 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                     IsAssociated(hdr->GetAddr2()))
                 {
                     // received an EML Operating Mode Notification frame from an associated station
-                    MgtEmlOperatingModeNotification frame;
+                    MgtEmlOmn frame;
                     pkt->RemoveHeader(frame);
-                    ReceiveEmlNotification(frame, hdr->GetAddr2(), linkId);
+                    ReceiveEmlOmn(frame, hdr->GetAddr2(), linkId);
                     return;
                 }
                 break;
@@ -2152,9 +2152,7 @@ ApWifiMac::ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address fr
 }
 
 void
-ApWifiMac::ReceiveEmlNotification(MgtEmlOperatingModeNotification& frame,
-                                  const Mac48Address& sender,
-                                  uint8_t linkId)
+ApWifiMac::ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << frame << sender << linkId);
 
@@ -2288,7 +2286,7 @@ ApWifiMac::ReceiveEmlNotification(MgtEmlOperatingModeNotification& frame,
     frame.m_emlsrParamUpdate.reset();
 
     auto ehtFem = StaticCast<EhtFrameExchangeManager>(GetFrameExchangeManager(linkId));
-    ehtFem->SendEmlOperatingModeNotification(sender, frame);
+    ehtFem->SendEmlOmn(sender, frame);
 }
 
 void

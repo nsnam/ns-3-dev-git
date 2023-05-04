@@ -261,9 +261,7 @@ EhtFrameExchangeManager::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t link
 }
 
 void
-EhtFrameExchangeManager::SendEmlOperatingModeNotification(
-    const Mac48Address& dest,
-    const MgtEmlOperatingModeNotification& frame)
+EhtFrameExchangeManager::SendEmlOmn(const Mac48Address& dest, const MgtEmlOmn& frame)
 {
     NS_LOG_FUNCTION(this << dest << frame);
 

@@ -146,7 +146,7 @@ class EmlsrManager : public Object
     /**
      * \return the ID of the link on which the EML Operating Mode Notification frame has to be sent
      */
-    virtual uint8_t GetLinkToSendEmlNotification() = 0;
+    virtual uint8_t GetLinkToSendEmlOmn() = 0;
 
     /**
      * A previous EML Operating Mode Notification frame was dropped. Ask the subclass whether
@@ -188,7 +188,7 @@ class EmlsrManager : public Object
     /**
      * Send an EML Operating Mode Notification frame.
      */
-    void SendEmlOperatingModeNotification();
+    void SendEmlOmn();
 
     /**
      * Notify the subclass of the reception of a management frame addressed to us.

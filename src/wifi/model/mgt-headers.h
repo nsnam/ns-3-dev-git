@@ -1109,10 +1109,10 @@ class MgtDelBaHeader : public Header
  * \ingroup wifi
  * Implement the header for Action frames of type EML Operating Mode Notification.
  */
-class MgtEmlOperatingModeNotification : public Header
+class MgtEmlOmn : public Header
 {
   public:
-    MgtEmlOperatingModeNotification() = default;
+    MgtEmlOmn() = default;
 
     /**
      * Register this type.

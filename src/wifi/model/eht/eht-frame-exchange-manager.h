@@ -52,8 +52,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      * \param dest the MAC address of the receiver
      * \param frame the EML Operating Mode Notification frame to send
      */
-    void SendEmlOperatingModeNotification(const Mac48Address& dest,
-                                          const MgtEmlOperatingModeNotification& frame);
+    void SendEmlOmn(const Mac48Address& dest, const MgtEmlOmn& frame);
 
     /**
      * Get the RSSI (in dBm) of the most recent packet received from the station having

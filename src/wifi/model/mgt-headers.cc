@@ -1731,26 +1731,26 @@ MgtDelBaHeader::SetParameterSet(uint16_t params)
  *     EMLSR Operating Mode Notification
  ****************************************************/
 
-NS_OBJECT_ENSURE_REGISTERED(MgtEmlOperatingModeNotification);
+NS_OBJECT_ENSURE_REGISTERED(MgtEmlOmn);
 
 TypeId
-MgtEmlOperatingModeNotification::GetTypeId()
+MgtEmlOmn::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::MgtEmlOperatingModeNotification")
                             .SetParent<Header>()
                             .SetGroupName("Wifi")
-                            .AddConstructor<MgtEmlOperatingModeNotification>();
+                            .AddConstructor<MgtEmlOmn>();
     return tid;
 }
 
 TypeId
-MgtEmlOperatingModeNotification::GetInstanceTypeId() const
+MgtEmlOmn::GetInstanceTypeId() const
 {
     return GetTypeId();
 }
 
 void
-MgtEmlOperatingModeNotification::Print(std::ostream& os) const
+MgtEmlOmn::Print(std::ostream& os) const
 {
     os << "EMLSR Mode=" << +m_emlControl.emlsrMode << " EMLMR Mode=" << +m_emlControl.emlmrMode
        << " EMLSR Parameter Update Control=" << +m_emlControl.emlsrParamUpdateCtrl;
@@ -1770,7 +1770,7 @@ MgtEmlOperatingModeNotification::Print(std::ostream& os) const
 }
 
 uint32_t
-MgtEmlOperatingModeNotification::GetSerializedSize() const
+MgtEmlOmn::GetSerializedSize() const
 {
     uint32_t size = 2; // Dialog Token (1) + first byte of EML Control
     if (m_emlControl.linkBitmap)
@@ -1790,7 +1790,7 @@ MgtEmlOperatingModeNotification::GetSerializedSize() const
 }
 
 void
-MgtEmlOperatingModeNotification::Serialize(Buffer::Iterator start) const
+MgtEmlOmn::Serialize(Buffer::Iterator start) const
 {
     start.WriteU8(m_dialogToken);
 
@@ -1825,7 +1825,7 @@ MgtEmlOperatingModeNotification::Serialize(Buffer::Iterator start) const
 }
 
 uint32_t
-MgtEmlOperatingModeNotification::Deserialize(Buffer::Iterator start)
+MgtEmlOmn::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
 
@@ -1858,7 +1858,7 @@ MgtEmlOperatingModeNotification::Deserialize(Buffer::Iterator start)
 }
 
 void
-MgtEmlOperatingModeNotification::SetLinkIdInBitmap(uint8_t linkId)
+MgtEmlOmn::SetLinkIdInBitmap(uint8_t linkId)
 {
     NS_ABORT_MSG_IF(linkId > 15, "Link ID must not exceed 15");
     if (!m_emlControl.linkBitmap)
@@ -1869,7 +1869,7 @@ MgtEmlOperatingModeNotification::SetLinkIdInBitmap(uint8_t linkId)
 }
 
 std::list<uint8_t>
-MgtEmlOperatingModeNotification::GetLinkBitmap() const
+MgtEmlOmn::GetLinkBitmap() const
 {
     std::list<uint8_t> list;
     NS_ASSERT_MSG(m_emlControl.linkBitmap.has_value(), "No link bitmap");

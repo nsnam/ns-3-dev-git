@@ -66,7 +66,7 @@ DefaultEmlsrManager::DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t 
 }
 
 uint8_t
-DefaultEmlsrManager::GetLinkToSendEmlNotification()
+DefaultEmlsrManager::GetLinkToSendEmlOmn()
 {
     NS_LOG_FUNCTION(this);
     auto linkId = GetStaMac()->GetLinkForPhy(m_mainPhyId);
