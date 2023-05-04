@@ -18,6 +18,7 @@
 #ifndef TAP_ENCODE_DECODE_H
 #define TAP_ENCODE_DECODE_H
 
+#include <cstdint>
 #include <string>
 
 namespace ns3

@@ -18,6 +18,7 @@
 #ifndef ENCODE_DECODE_H
 #define ENCODE_DECODE_H
 
+#include <cstdint>
 #include <string>
 
 namespace ns3
