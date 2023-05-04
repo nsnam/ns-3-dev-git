@@ -1989,6 +1989,17 @@ HeFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& 
     Time duration = psdu->GetDuration();
     NS_LOG_DEBUG("Duration/ID=" << duration);
 
+    if (psdu->GetHeader(0).IsCfEnd())
+    {
+        // An HE STA that maintains two NAVs (see 26.2.4) and receives a CF-End frame should reset
+        // the basic NAV if the received CF-End frame is carried in an inter-BSS PPDU and reset the
+        // intra-BSS NAV if the received CF-End frame is carried in an intra-BSS PPDU. (Sec. 26.2.5
+        // of 802.11ax-2021)
+        NS_LOG_DEBUG("Received CF-End, resetting the intra-BSS NAV");
+        IntraBssNavResetTimeout();
+        return;
+    }
+
     // For all other received frames the STA shall update its NAV when the received
     // Duration is greater than the STA’s current NAV value (IEEE 802.11-2020 sec. 10.3.2.4)
     auto intraBssNavEnd = Simulator::Now() + duration;

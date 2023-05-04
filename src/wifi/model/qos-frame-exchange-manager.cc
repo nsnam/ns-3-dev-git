@@ -713,6 +713,20 @@ QosFrameExchangeManager::ClearTxopHolderIfNeeded()
 }
 
 void
+QosFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+    if (psdu->GetHeader(0).IsCfEnd())
+    {
+        NS_LOG_DEBUG("Received CF-End, resetting NAV");
+        NavResetTimeout();
+        return;
+    }
+
+    FrameExchangeManager::UpdateNav(psdu, txVector);
+}
+
+void
 QosFrameExchangeManager::NavResetTimeout()
 {
     NS_LOG_FUNCTION(this);
@@ -731,13 +745,6 @@ QosFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
     double rxSnr = rxSignalInfo.snr;
     const WifiMacHeader& hdr = mpdu->GetHeader();
-
-    if (hdr.IsCfEnd())
-    {
-        // reset NAV
-        NavResetTimeout();
-        return;
-    }
 
     if (hdr.IsRts())
     {
