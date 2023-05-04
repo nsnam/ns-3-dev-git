@@ -171,6 +171,11 @@ class EmlsrManager : public Object
      */
     const WifiPhyOperatingChannel& GetChannelForAuxPhy(uint8_t linkId) const;
 
+    /**
+     * \return the EML Operating Mode Notification to send
+     */
+    MgtEmlOmn GetEmlOmn();
+
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
     uint8_t m_mainPhyId; //!< ID of main PHY (position in the vector of PHYs held by WifiNetDevice)

@@ -289,15 +289,9 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId)
     NotifyMainPhySwitch(*currMainPhyLinkId, linkId);
 }
 
-void
-EmlsrManager::SendEmlOmn()
+MgtEmlOmn
+EmlsrManager::GetEmlOmn()
 {
-    NS_LOG_FUNCTION(this);
-
-    NS_ABORT_MSG_IF(!m_emlsrTransitionTimeout,
-                    "AP did not advertise a Transition Timeout, cannot send EML notification");
-    NS_ASSERT_MSG(m_nextEmlsrLinks, "Need to set EMLSR links before calling this method");
-
     MgtEmlOmn frame;
 
     // Add the EMLSR Parameter Update field if needed
@@ -335,6 +329,18 @@ EmlsrManager::SendEmlOmn()
     // EMLSR Mode is enabled if and only if the set of EMLSR links is not empty
     frame.m_emlControl.emlsrMode = m_nextEmlsrLinks->empty() ? 0 : 1;
 
+    return frame;
+}
+
+void
+EmlsrManager::SendEmlOmn()
+{
+    NS_LOG_FUNCTION(this);
+
+    NS_ABORT_MSG_IF(!m_emlsrTransitionTimeout,
+                    "AP did not advertise a Transition Timeout, cannot send EML notification");
+    NS_ASSERT_MSG(m_nextEmlsrLinks, "Need to set EMLSR links before calling this method");
+
     // TODO if this is a single radio non-AP MLD and not all setup links are in the EMLSR link
     // set, we have to put setup links that are not included in the given EMLSR link set (i.e.,
     // those remaining in setupLinkIds, if m_nextEmlsrLinks is not empty) in the sleep mode:
@@ -344,6 +350,7 @@ EmlsrManager::SendEmlOmn()
     // non-AP STA affiliated with the non-AP MLD that operates on one of the EMLSR links is
     // in awake state. (Sec. 35.3.17 of 802.11be D3.0)
 
+    auto frame = GetEmlOmn();
     auto linkId = GetLinkToSendEmlOmn();
     GetEhtFem(linkId)->SendEmlOmn(m_staMac->GetBssid(linkId), frame);
 }
