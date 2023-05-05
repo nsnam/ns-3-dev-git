@@ -53,7 +53,7 @@ clang-tidy:
       2> /dev/null
 
     # Run full clang-tidy in the following cases: 1) default branch, 2) ".clang-tidy" file changed, 3) clang-tidy-diff had an error
-    - if [ $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ] || (git diff -U0 --name-only upstream/$CI_DEFAULT_BRANCH | grep -q ".clang-tidy") || (egrep -q -A 3 "file not found \[clang-diagnostic-error\]" $CLANG_TIDY_OUTPUT) ; then
+    - if [[ $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ]] || (echo $(git diff --name-only upstream/$CI_DEFAULT_BRANCH) | grep -q ".clang-tidy") || (egrep -q -A 3 "file not found \[clang-diagnostic-error\]" $CLANG_TIDY_OUTPUT) ; then
       echo "Running full clang-tidy" ;
       run-clang-tidy-14 -p cmake-cache/ -quiet
       1> $CLANG_TIDY_OUTPUT
