@@ -153,11 +153,17 @@ TestMultiUserScheduler::SelectTxFormat()
                                  ? GetMaxSizeOfQosNullAmpdu(m_trigger)
                                  : 3500; // allows aggregation of 2 MPDUs in TB PPDUs
 
-        Time duration =
-            WifiPhy::CalculateTxDuration(ampduSize,
-                                         txVector,
-                                         m_apMac->GetWifiPhy()->GetPhyBand(),
-                                         m_apMac->GetStaList(SINGLE_LINK_OP_ID).begin()->first);
+        auto staList = m_apMac->GetStaList(SINGLE_LINK_OP_ID);
+        // ignore non-HE stations
+        for (auto it = staList.begin(); it != staList.end();)
+        {
+            it = m_apMac->GetHeSupported(it->second) ? std::next(it) : staList.erase(it);
+        }
+
+        Time duration = WifiPhy::CalculateTxDuration(ampduSize,
+                                                     txVector,
+                                                     m_apMac->GetWifiPhy()->GetPhyBand(),
+                                                     staList.begin()->first);
 
         uint16_t length;
         std::tie(length, duration) = HePhy::ConvertHeTbPpduDurationToLSigLength(
@@ -200,7 +206,12 @@ TestMultiUserScheduler::SelectTxFormat()
     {
         // try to send a DL MU PPDU
         m_psduMap.clear();
-        const std::map<uint16_t, Mac48Address>& staList = m_apMac->GetStaList(SINGLE_LINK_OP_ID);
+        auto staList = m_apMac->GetStaList(SINGLE_LINK_OP_ID);
+        // ignore non-HE stations
+        for (auto it = staList.cbegin(); it != staList.cend();)
+        {
+            it = m_apMac->GetHeSupported(it->second) ? std::next(it) : staList.erase(it);
+        }
         NS_ABORT_MSG_IF(staList.size() != 4, "There must be 4 associated stations");
 
         /* Initialize TX params */
@@ -292,7 +303,12 @@ TestMultiUserScheduler::ComputeWifiTxVector()
     m_txVector.SetTxPowerLevel(
         GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)->GetDefaultTxPowerLevel());
 
-    const std::map<uint16_t, Mac48Address>& staList = m_apMac->GetStaList(SINGLE_LINK_OP_ID);
+    auto staList = m_apMac->GetStaList(SINGLE_LINK_OP_ID);
+    // ignore non-HE stations
+    for (auto it = staList.cbegin(); it != staList.cend();)
+    {
+        it = m_apMac->GetHeSupported(it->second) ? std::next(it) : staList.erase(it);
+    }
     NS_ABORT_MSG_IF(staList.size() != 4, "There must be 4 associated stations");
 
     HeRu::RuType ruType;
@@ -2052,6 +2068,13 @@ OfdmaAckSequenceTest::DoRun()
     wifi.SetStandard(m_scenario == WifiOfdmaScenario::HE ? WIFI_STANDARD_80211ax
                                                          : WIFI_STANDARD_80211be);
     m_staDevices = NetDeviceContainer(m_staDevices, wifi.Install(phy, mac, wifiNewStaNodes));
+
+    // create a listening VHT station
+    wifi.SetStandard(WIFI_STANDARD_80211ac);
+    wifi.Install(phy, mac, Create<Node>());
+
+    wifi.SetStandard(m_scenario == WifiOfdmaScenario::HE ? WIFI_STANDARD_80211ax
+                                                         : WIFI_STANDARD_80211be);
 
     mac.SetType("ns3::ApWifiMac", "BeaconGeneration", BooleanValue(true));
     mac.SetMultiUserScheduler(
