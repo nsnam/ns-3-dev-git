@@ -34,6 +34,9 @@ Release 3-dev
 - (wifi) #862 - sta-wifi-mac.cc cond="!link.bssid.has_value()", High occurrence at higher numbers of STAs per AP in indoor deployment.
 - (wifi) Fix the equality operator of WifiInformationElement
 - (wifi) Make the implementation of the Multi-Link Element compliant with the 11be specs by adding support of inheritance
+- (wifi) Reset intra-BSS NAV when CF-End is an intra-BSS PPDU
+- (wifi) UL MU CS shall be evaluated a SIFS after end of MU-RTS
+- (wifi) Fix crash when changing operating channel after configuration but before initialization
 
 Release 3.38
 ------------
