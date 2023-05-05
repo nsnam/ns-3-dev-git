@@ -548,6 +548,15 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      */
     virtual uint64_t ObtainNextUid(const WifiTxVector& txVector);
 
+    /**
+     * Obtain the maximum time between two PPDUs with the same UID to consider they are identical
+     * and their power can be added construtively.
+     *
+     * \param txVector the TXVECTOR used for the transmission of the PPDUs
+     * \return the maximum time between two PPDUs with the same UID to decode them
+     */
+    virtual Time GetMaxDelayPpduSameUid(const WifiTxVector& txVector);
+
   protected:
     /**
      * A map of PPDU field elements per preamble type.

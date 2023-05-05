@@ -377,7 +377,7 @@ enum WifiPhyRxfailureReason
     PREAMBLE_DETECTION_PACKET_SWITCH,
     FRAME_CAPTURE_PACKET_SWITCH,
     OBSS_PD_CCA_RESET,
-    HE_TB_PPDU_TOO_LATE,
+    PPDU_TOO_LATE,
     FILTERED,
     DMG_HEADER_FAILURE,
     DMG_ALLOCATION_ENDED
@@ -433,8 +433,8 @@ operator<<(std::ostream& os, const WifiPhyRxfailureReason& reason)
         return (os << "FRAME_CAPTURE_PACKET_SWITCH");
     case OBSS_PD_CCA_RESET:
         return (os << "OBSS_PD_CCA_RESET");
-    case HE_TB_PPDU_TOO_LATE:
-        return (os << "HE_TB_PPDU_TOO_LATE");
+    case PPDU_TOO_LATE:
+        return (os << "PPDU_TOO_LATE");
     case FILTERED:
         return (os << "FILTERED");
     case DMG_HEADER_FAILURE:

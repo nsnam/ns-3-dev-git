@@ -459,24 +459,19 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
     // detection window. If a preamble is received after the preamble detection window, it is stored
     // anyway because this is needed for HE TB PPDUs in order to properly update the received power
     // in InterferenceHelper. The map is cleaned anyway at the end of the current reception.
-    auto uidPreamblePair = std::make_pair(ppdu->GetUid(), ppdu->GetPreamble());
+    const auto uidPreamblePair = std::make_pair(ppdu->GetUid(), ppdu->GetPreamble());
     const auto& currentPreambleEvents = GetCurrentPreambleEvents();
-    auto it = currentPreambleEvents.find(uidPreamblePair);
-    bool isResponseToTrigger = (m_previouslyTxPpduUid == ppdu->GetUid());
+    const auto it = currentPreambleEvents.find(uidPreamblePair);
+    const auto isResponseToTrigger = (m_previouslyTxPpduUid == ppdu->GetUid());
     if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU || isResponseToTrigger)
     {
         const auto& txVector = ppdu->GetTxVector();
-        Time rxDuration;
-        if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
-        {
-            rxDuration = CalculateNonOfdmaDurationForHeTb(
-                txVector); // the OFDMA part of the transmission will be added later on
-        }
-        else
-        {
-            rxDuration = ppdu->GetTxDuration();
-        }
-        if (it != currentPreambleEvents.end())
+        const auto rxDuration =
+            (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
+                ? CalculateNonOfdmaDurationForHeTb(
+                      txVector) // the OFDMA part of the transmission will be added later on
+                : ppdu->GetTxDuration();
+        if (it != currentPreambleEvents.cend())
         {
             if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU)
             {
@@ -490,27 +485,13 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
             }
             event = it->second;
 
-            auto heConfiguration = m_wifiPhy->GetDevice()->GetHeConfiguration();
-            NS_ASSERT(heConfiguration);
-            // DoStartReceivePayload(), which is called when we start receiving the Data field,
-            // computes the max offset among TB PPDUs based on the begin OFDMA payload RX events,
-            // which are scheduled by StartReceivePreamble() when starting the reception of the
-            // OFDMA portion. Therefore, the maximum delay cannot exceed the duration of the
-            // training fields that are between the start of the OFDMA portion and the start
-            // of the Data field.
-            Time maxDelay = GetDuration(WIFI_PPDU_FIELD_TRAINING, txVector);
-            if (heConfiguration->GetMaxTbPpduDelay().IsStrictlyPositive())
-            {
-                maxDelay = Min(maxDelay, heConfiguration->GetMaxTbPpduDelay());
-            }
-
-            if (Simulator::Now() - event->GetStartTime() > maxDelay)
+            if (Simulator::Now() - event->GetStartTime() > GetMaxDelayPpduSameUid(txVector))
             {
                 // This HE TB PPDU arrived too late to be decoded properly. The HE TB PPDU
                 // is dropped and added as interference
                 event = CreateInterferenceEvent(ppdu, rxDuration, rxPowersW);
                 NS_LOG_DEBUG("Drop HE TB PPDU that arrived too late");
-                m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), HE_TB_PPDU_TOO_LATE);
+                m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), PPDU_TOO_LATE);
             }
             else
             {
@@ -559,19 +540,7 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
     }
     else
     {
-        if (it == currentPreambleEvents.end())
-        {
-            event = PhyEntity::DoGetEvent(ppdu, rxPowersW);
-        }
-        else
-        {
-            NS_LOG_DEBUG(
-                "Update received power of the event associated to these UL transmissions with UID "
-                << ppdu->GetUid());
-            event = it->second;
-            UpdateInterferenceEvent(event, rxPowersW);
-            return nullptr;
-        }
+        event = PhyEntity::DoGetEvent(ppdu, rxPowersW);
     }
     return event;
 }
@@ -1323,6 +1292,25 @@ HePhy::ObtainNextUid(const WifiTxVector& txVector)
     }
     m_previouslyTxPpduUid = uid; // to be able to identify solicited HE TB PPDUs
     return uid;
+}
+
+Time
+HePhy::GetMaxDelayPpduSameUid(const WifiTxVector& txVector)
+{
+    auto heConfiguration = m_wifiPhy->GetDevice()->GetHeConfiguration();
+    NS_ASSERT(heConfiguration);
+    // DoStartReceivePayload(), which is called when we start receiving the Data field,
+    // computes the max offset among TB PPDUs based on the begin OFDMA payload RX events,
+    // which are scheduled by StartReceivePreamble() when starting the reception of the
+    // OFDMA portion. Therefore, the maximum delay cannot exceed the duration of the
+    // training fields that are between the start of the OFDMA portion and the start
+    // of the Data field.
+    auto maxDelay = GetDuration(WIFI_PPDU_FIELD_TRAINING, txVector);
+    if (heConfiguration->GetMaxTbPpduDelay().IsStrictlyPositive())
+    {
+        maxDelay = Min(maxDelay, heConfiguration->GetMaxTbPpduDelay());
+    }
+    return maxDelay;
 }
 
 Ptr<SpectrumValue>
