@@ -574,8 +574,8 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
 void
 SpectrumWifiPhyFilterTest::DoSetup()
 {
-    // WifiHelper::EnableLogComponents ();
-    // LogComponentEnable ("SpectrumWifiPhyTest", LOG_LEVEL_ALL);
+    // WifiHelper::EnableLogComponents();
+    // LogComponentEnable("SpectrumWifiPhyTest", LOG_LEVEL_ALL);
 
     Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
     Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel>();
