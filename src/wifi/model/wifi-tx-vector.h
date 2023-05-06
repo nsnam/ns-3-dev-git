@@ -434,6 +434,17 @@ class WifiTxVector
      */
     HeMuUserInfoMap& GetHeMuUserInfoMap();
 
+    /// Ordered RUs per increasing frequency
+    using OrderedRus = std::map<HeRu::RuSpec, uint16_t, HeRu::RuSpecCompare>;
+
+    /**
+     * Get the ordered RUs with their associated STA-IDs per increasing frequency.
+     *
+     * \param p20Index the index of the primary20 channel
+     * \return the ordered RUs with their associated STA-IDs
+     */
+    OrderedRus GetOrderedRus(uint8_t p20Index) const;
+
     /**
      * Set the 20 MHz subchannels that are punctured.
      *
@@ -530,17 +541,6 @@ class WifiTxVector
      * \return the CENTER_26_TONE_RU field
      */
     Center26ToneRuIndication DeriveCenter26ToneRuIndication() const;
-
-    /// Ordered RUs per increasing frequency
-    using OrderedRus = std::map<HeRu::RuSpec, uint16_t, HeRu::RuSpecCompare>;
-
-    /**
-     * Get the ordered RUs with their associated STA-IDs per increasing frequency.
-     *
-     * \param p20Index the index of the primary20 channel
-     * \return the ordered RUs with their associated STA-IDs
-     */
-    OrderedRus GetOrderedRus(uint8_t p20Index) const;
 
     WifiMode m_mode;          /**< The DATARATE parameter in Table 15-4.
                               It is the value that will be passed
