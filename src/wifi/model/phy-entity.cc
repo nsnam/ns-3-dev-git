@@ -854,7 +854,7 @@ Ptr<Event>
 PhyEntity::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW)
 {
     Ptr<Event> event =
-        CreateInterferenceEvent(ppdu, ppdu->GetTxVector(), ppdu->GetTxDuration(), rxPowersW);
+        CreateInterferenceEvent(ppdu, ppdu->GetTxDuration(), rxPowersW);
 
     // We store all incoming preamble events, and a decision is made at the end of the preamble
     // detection window.
@@ -867,13 +867,12 @@ PhyEntity::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPow
 
 Ptr<Event>
 PhyEntity::CreateInterferenceEvent(Ptr<const WifiPpdu> ppdu,
-                                   const WifiTxVector& txVector,
                                    Time duration,
                                    RxPowerWattPerChannelBand& rxPower,
                                    bool isStartOfdmaRxing /* = false */)
 {
     return m_wifiPhy->m_interference->Add(ppdu,
-                                          txVector,
+                                          ppdu->GetTxVector(),
                                           duration,
                                           rxPower,
                                           m_wifiPhy->GetCurrentFrequencyRange(),

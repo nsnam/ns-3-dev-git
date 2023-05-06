@@ -378,8 +378,7 @@ HePhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
                         << (ofdmaStarted ? "Y" : "N") << ") "
                         << "and schedule OFDMA payload reception in "
                         << GetDuration(WIFI_PPDU_FIELD_TRAINING, txVector).As(Time::NS));
-            Ptr<Event> event =
-                CreateInterferenceEvent(ppdu, txVector, rxDuration, rxPowersW, !ofdmaStarted);
+            auto event = CreateInterferenceEvent(ppdu, rxDuration, rxPowersW, !ofdmaStarted);
             uint16_t staId = GetStaId(ppdu);
             NS_ASSERT(m_beginOfdmaPayloadRxEvents.find(staId) == m_beginOfdmaPayloadRxEvents.end());
             m_beginOfdmaPayloadRxEvents[staId] =
@@ -393,7 +392,7 @@ HePhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
             // PHY receives the OFDMA payload while having dropped the preamble
             NS_LOG_INFO("Consider OFDMA part of the PPDU as interference since device dropped the "
                         "preamble");
-            CreateInterferenceEvent(ppdu, txVector, rxDuration, rxPowersW);
+            CreateInterferenceEvent(ppdu, rxDuration, rxPowersW);
             // the OFDMA part of the PPDU will be noise _after_ the completion of the current event
             ErasePreambleEvent(ppdu, rxDuration);
         }
@@ -509,7 +508,7 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
             {
                 // This HE TB PPDU arrived too late to be decoded properly. The HE TB PPDU
                 // is dropped and added as interference
-                event = CreateInterferenceEvent(ppdu, txVector, rxDuration, rxPowersW);
+                event = CreateInterferenceEvent(ppdu, rxDuration, rxPowersW);
                 NS_LOG_DEBUG("Drop HE TB PPDU that arrived too late");
                 m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), HE_TB_PPDU_TOO_LATE);
             }
@@ -546,7 +545,7 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
             {
                 NS_LOG_DEBUG("Received response to a trigger frame for UID " << ppdu->GetUid());
             }
-            event = CreateInterferenceEvent(ppdu, txVector, rxDuration, rxPowersW);
+            event = CreateInterferenceEvent(ppdu, rxDuration, rxPowersW);
             AddPreambleEvent(event);
         }
     }
@@ -555,7 +554,7 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
         const auto& txVector = ppdu->GetTxVector();
         Time rxDuration = CalculateNonOfdmaDurationForHeMu(
             txVector); // the OFDMA part of the transmission will be added later on
-        event = CreateInterferenceEvent(ppdu, ppdu->GetTxVector(), rxDuration, rxPowersW);
+        event = CreateInterferenceEvent(ppdu, rxDuration, rxPowersW);
         AddPreambleEvent(event);
     }
     else

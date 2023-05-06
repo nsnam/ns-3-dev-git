@@ -828,7 +828,6 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * Wrapper used by child classes.
      *
      * \param ppdu the PPDU
-     * \param txVector the TXVECTOR
      * \param duration the PPDU duration
      * \param rxPower received power per band (W)
      * \param isStartOfdmaRxing flag whether the event corresponds to the start of the OFDMA payload
@@ -836,7 +835,6 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \return the created event
      */
     Ptr<Event> CreateInterferenceEvent(Ptr<const WifiPpdu> ppdu,
-                                       const WifiTxVector& txVector,
                                        Time duration,
                                        RxPowerWattPerChannelBand& rxPower,
                                        bool isStartOfdmaRxing = false);
