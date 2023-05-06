@@ -136,7 +136,7 @@ HePpdu::SetHeSigHeader(const WifiTxVector& txVector)
             .m_giLtfSize = GetGuardIntervalAndNltfEncoding(txVector.GetGuardInterval(),
                                                            2 /*NLTF currently unused*/),
             .m_ruAllocation = txVector.GetRuAllocation(p20Index),
-            .m_contentChannels = txVector.GetContentChannels(p20Index),
+            .m_contentChannels = GetContentChannels(txVector, p20Index),
             .m_center26ToneRuIndication =
                 (txVector.GetChannelWidth() >= 80)
                     ? std::optional{txVector.GetCenter26ToneRuIndication()}
@@ -491,6 +491,69 @@ HePpdu::GetNumRusPerHeSigBContentChannel(uint16_t channelWidth, const RuAllocati
         break;
     }
     return chSize;
+}
+
+HePpdu::HeSigBContentChannels
+HePpdu::GetContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
+{
+    HeSigBContentChannels contentChannels{{}};
+
+    const auto channelWidth = txVector.GetChannelWidth();
+    if (channelWidth > 20)
+    {
+        contentChannels.emplace_back();
+    }
+
+    const auto& orderedRus = txVector.GetOrderedRus(p20Index);
+    for (const auto& [ru, staId] : orderedRus)
+    {
+        auto ruType = ru.GetRuType();
+        auto ruIdx = ru.GetIndex();
+        const auto& userInfo = txVector.GetHeMuUserInfo(staId);
+        NS_ASSERT(ru == userInfo.ru);
+
+        if (ruType > HeRu::RU_242_TONE)
+        {
+            for (auto i = 0; i < ((ruType == HeRu::RU_2x996_TONE) ? 2 : 1); ++i)
+            {
+                contentChannels[0].push_back({staId, userInfo.nss, userInfo.mcs});
+                contentChannels[1].push_back({staId, userInfo.nss, userInfo.mcs});
+            }
+            continue;
+        }
+
+        std::size_t numRus = (ruType >= HeRu::RU_242_TONE)
+                                 ? 1
+                                 : HeRu::m_heRuSubcarrierGroups.at({20, ruType}).size();
+        if (((ruIdx - 1) / numRus) % 2 == 0)
+        {
+            contentChannels.at(0).push_back({staId, userInfo.nss, userInfo.mcs});
+        }
+        else
+        {
+            contentChannels.at(1).push_back({staId, userInfo.nss, userInfo.mcs});
+        }
+    }
+
+    // Add unassigned RUs
+    auto numNumRusPerHeSigBContentChannel =
+        GetNumRusPerHeSigBContentChannel(channelWidth, txVector.GetRuAllocation(p20Index));
+    std::size_t contentChannelIndex = 1;
+    for (auto& contentChannel : contentChannels)
+    {
+        const auto totalUsersInContentChannel = (contentChannelIndex == 1)
+                                                    ? numNumRusPerHeSigBContentChannel.first
+                                                    : numNumRusPerHeSigBContentChannel.second;
+        NS_ASSERT(contentChannel.size() <= totalUsersInContentChannel);
+        std::size_t unallocatedRus = totalUsersInContentChannel - contentChannel.size();
+        for (std::size_t i = 0; i < unallocatedRus; i++)
+        {
+            contentChannel.push_back({NO_USER_STA_ID, 0, 0});
+        }
+        contentChannelIndex++;
+    }
+
+    return contentChannels;
 }
 
 uint32_t

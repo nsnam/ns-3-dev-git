@@ -49,6 +49,17 @@ class WifiPsdu;
 class HePpdu : public OfdmPpdu
 {
   public:
+    /// User Specific Fields in HE-SIG-Bs.
+    struct HeSigBUserSpecificField
+    {
+        uint16_t staId : 11; ///< STA-ID
+        uint8_t nss : 4;     ///< number of spatial streams
+        uint8_t mcs : 4;     ///< MCS index
+    };
+
+    /// HE SIG-B Content Channels
+    using HeSigBContentChannels = std::vector<std::vector<HeSigBUserSpecificField>>;
+
     /**
      * HE-SIG PHY header for HE SU PPDUs (HE-SIG-A1/A2)
      */
@@ -188,6 +199,16 @@ class HePpdu : public OfdmPpdu
     static std::pair<std::size_t, std::size_t> GetNumRusPerHeSigBContentChannel(
         uint16_t channelWidth,
         const RuAllocation& ruAllocation);
+
+    /**
+     * Get the HE SIG-B content channels for a given PPDU
+     * IEEE 802.11ax-2021 27.3.11.8.2 HE-SIG-B content channels
+     *
+     * \param txVector the TXVECTOR used for the PPDU
+     * \param p20Index the index of the primary20 channel
+     * \return HE-SIG-B content channels
+     */
+    static HeSigBContentChannels GetContentChannels(const WifiTxVector& txVector, uint8_t p20Index);
 
     /**
      * Get variable length HE SIG-B field size
