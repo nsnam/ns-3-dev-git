@@ -338,11 +338,13 @@ TracedCallbackTypedefTestCase::TracedCallbackTypedefTestCase()
         std::cout << #U << " matches " << #T1 << std::endl;                                        \
     }                                                                                              \
     else                                                                                           \
+    {                                                                                              \
         NS_TEST_ASSERT_MSG_EQ(TypeName<U>(0),                                                      \
                               TypeName<T1>(0),                                                     \
                               "the typedef "                                                       \
                                   << #U << " used to match the typedef " << #T1                    \
-                                  << " but no longer does.  Please add a new CHECK call.")
+                                  << " but no longer does.  Please add a new CHECK call.");        \
+    }
 
 /**
  * \ingroup system-tests-traced
