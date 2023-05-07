@@ -319,14 +319,7 @@ SimpleOfdmWimaxPhy::StartSendDummyFecBlock(bool isFirstBlock,
         dynamic_cast<SimpleOfdmWimaxChannel*>(PeekPointer(GetChannel()));
     NS_ASSERT(channel != nullptr);
 
-    if (m_nrRemainingBlocksToSend == 1)
-    {
-        isLastFecBlock = true;
-    }
-    else
-    {
-        isLastFecBlock = false;
-    }
+    isLastFecBlock = (m_nrRemainingBlocksToSend == 1);
     channel->Send(m_blockTime,
                   m_currentBurstSize,
                   this,
@@ -471,7 +464,7 @@ SimpleOfdmWimaxPhy::EndReceiveFecBlock(uint32_t burstSize,
     SetState(PHY_STATE_IDLE);
     m_nrReceivedFecBlocks++;
 
-    if (drop == true)
+    if (drop)
     {
         m_nbErroneousBlock++;
     }

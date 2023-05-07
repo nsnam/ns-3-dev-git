@@ -125,7 +125,7 @@ main(int argc, char* argv[])
     Address anyAddress;
     std::string probeType;
     std::string tracePath;
-    if (useV6 == false)
+    if (!useV6)
     {
         Ipv4AddressHelper address;
         address.SetBase("10.1.1.0", "255.255.255.0");

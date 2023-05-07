@@ -75,7 +75,7 @@ DhcpHeader::~DhcpHeader()
 void
 DhcpHeader::SetType(uint8_t type)
 {
-    if (m_opt[OP_MSGTYPE] == false)
+    if (!m_opt[OP_MSGTYPE])
     {
         m_len += 3;
         m_opt[OP_MSGTYPE] = true;
@@ -154,7 +154,7 @@ DhcpHeader::GetYiaddr() const
 void
 DhcpHeader::SetDhcps(Ipv4Address addr)
 {
-    if (m_opt[OP_SERVID] == false)
+    if (!m_opt[OP_SERVID])
     {
         m_len += 6;
         m_opt[OP_SERVID] = true;
@@ -171,7 +171,7 @@ DhcpHeader::GetDhcps() const
 void
 DhcpHeader::SetReq(Ipv4Address addr)
 {
-    if (m_opt[OP_ADDREQ] == false)
+    if (!m_opt[OP_ADDREQ])
     {
         m_len += 6;
         m_opt[OP_ADDREQ] = true;
@@ -188,7 +188,7 @@ DhcpHeader::GetReq() const
 void
 DhcpHeader::SetMask(uint32_t addr)
 {
-    if (m_opt[OP_MASK] == false)
+    if (!m_opt[OP_MASK])
     {
         m_len += 6;
         m_opt[OP_MASK] = true;
@@ -205,7 +205,7 @@ DhcpHeader::GetMask() const
 void
 DhcpHeader::SetRouter(Ipv4Address addr)
 {
-    if (m_opt[OP_ROUTE] == false)
+    if (!m_opt[OP_ROUTE])
     {
         m_len += 6;
         m_opt[OP_ROUTE] = true;
@@ -222,7 +222,7 @@ DhcpHeader::GetRouter() const
 void
 DhcpHeader::SetLease(uint32_t time)
 {
-    if (m_opt[OP_LEASE] == false)
+    if (!m_opt[OP_LEASE])
     {
         m_len += 6;
         m_opt[OP_LEASE] = true;
@@ -239,7 +239,7 @@ DhcpHeader::GetLease() const
 void
 DhcpHeader::SetRenew(uint32_t time)
 {
-    if (m_opt[OP_RENEW] == false)
+    if (!m_opt[OP_RENEW])
     {
         m_len += 6;
         m_opt[OP_RENEW] = true;
@@ -256,7 +256,7 @@ DhcpHeader::GetRenew() const
 void
 DhcpHeader::SetRebind(uint32_t time)
 {
-    if (m_opt[OP_REBIND] == false)
+    if (!m_opt[OP_REBIND])
     {
         m_len += 6;
         m_opt[OP_REBIND] = true;

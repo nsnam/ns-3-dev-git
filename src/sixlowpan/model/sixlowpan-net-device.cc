@@ -1095,7 +1095,6 @@ SixLowPanNetDevice::CompressLowPanIphc(Ptr<Packet> packet, const Address& src, c
         uint8_t addressBuf[16];
 
         // This is just to limit the scope of some variables.
-        if (true)
         {
             Ipv6Address srcAddr = ipHeader.GetSource();
             uint8_t srcContextId;
@@ -1197,7 +1196,6 @@ SixLowPanNetDevice::CompressLowPanIphc(Ptr<Packet> packet, const Address& src, c
         }
 
         // This is just to limit the scope of some variables.
-        if (true)
         {
             Ipv6Address dstAddr = ipHeader.GetDestination();
             dstAddr.GetBytes(addressBuf);
@@ -1528,7 +1526,7 @@ SixLowPanNetDevice::DecompressLowPanIphc(Ptr<Packet> packet, const Address& src,
         m_contextTable[contextId].contextPrefix.GetBytes(contextPrefix);
         uint8_t contextLength = m_contextTable[contextId].contextPrefix.GetPrefixLength();
 
-        if (encoding.GetM() == false)
+        if (!encoding.GetM())
         {
             // unicast
             uint8_t dstAddress[16] = {};
@@ -1580,7 +1578,7 @@ SixLowPanNetDevice::DecompressLowPanIphc(Ptr<Packet> packet, const Address& src,
     else
     {
         // Destination address compression uses stateless compression.
-        if (encoding.GetM() == false)
+        if (!encoding.GetM())
         {
             // unicast
             if (encoding.GetDam() == SixLowPanIphc::HC_INLINE)
@@ -1697,7 +1695,7 @@ SixLowPanNetDevice::DecompressLowPanIphc(Ptr<Packet> packet, const Address& src,
                                                                   dst,
                                                                   ipHeader.GetSource(),
                                                                   ipHeader.GetDestination());
-            if (retval.second == true)
+            if (retval.second)
             {
                 return true;
             }
@@ -2612,11 +2610,7 @@ SixLowPanNetDevice::Fragments::IsEntire() const
         }
     }
 
-    if (ret && (lastEndOffset == m_packetSize))
-    {
-        return true;
-    }
-    return false;
+    return ret && lastEndOffset == m_packetSize;
 }
 
 Ptr<Packet>
@@ -2873,7 +2867,7 @@ SixLowPanNetDevice::FindUnicastCompressionContext(Ipv6Address address, uint8_t& 
     {
         ContextEntry context = iter.second;
 
-        if ((context.compressionAllowed == true) && (context.validLifetime > Simulator::Now()))
+        if (context.compressionAllowed && context.validLifetime > Simulator::Now())
         {
             if (address.HasPrefix(context.contextPrefix))
             {
@@ -2902,7 +2896,7 @@ SixLowPanNetDevice::FindMulticastCompressionContext(Ipv6Address address, uint8_t
     {
         ContextEntry context = iter.second;
 
-        if ((context.compressionAllowed == true) && (context.validLifetime > Simulator::Now()))
+        if (context.compressionAllowed && context.validLifetime > Simulator::Now())
         {
             uint8_t contextLength = context.contextPrefix.GetPrefixLength();
 

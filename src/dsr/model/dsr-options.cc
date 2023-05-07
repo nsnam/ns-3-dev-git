@@ -171,11 +171,7 @@ DsrOptions::ReverseRoutes(std::vector<Ipv4Address>& vec)
         vec.push_back(*ri);
     }
 
-    if ((vec.size() == vec2.size()) && (vec.front() == vec2.back()))
-    {
-        return true;
-    }
-    return false;
+    return (vec.size() == vec2.size()) && (vec.front() == vec2.back());
 }
 
 Ipv4Address

@@ -371,14 +371,7 @@ PyViz::TransmissionSampleKey::operator<(const PyViz::TransmissionSampleKey& othe
     {
         return false;
     }
-    if (this->channel < other.channel)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return this->channel < other.channel;
 }
 
 bool
@@ -457,14 +450,7 @@ PyViz::FilterPacket(Ptr<const Packet> packet, const PacketCaptureOptions& option
                 missingHeaders.erase(missingIter);
             }
         }
-        if (missingHeaders.empty())
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return missingHeaders.empty();
     }
 
     default:

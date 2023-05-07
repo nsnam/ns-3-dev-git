@@ -220,14 +220,7 @@ struct SortProcess
                 left.GetUlJob()->GetServiceFlow()->GetRecord()->GetBacklogged();
             int32_t rightBacklogged =
                 left.GetUlJob()->GetServiceFlow()->GetRecord()->GetBacklogged();
-            if (leftBacklogged <= rightBacklogged)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return leftBacklogged <= rightBacklogged;
         }
         else
         {
@@ -257,14 +250,7 @@ struct SortProcessPtr
                 left->GetUlJob()->GetServiceFlow()->GetRecord()->GetBacklogged();
             int32_t rightBacklogged =
                 left->GetUlJob()->GetServiceFlow()->GetRecord()->GetBacklogged();
-            if (leftBacklogged <= rightBacklogged)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return leftBacklogged <= rightBacklogged;
         }
         else
         {

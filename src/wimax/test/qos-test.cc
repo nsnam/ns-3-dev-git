@@ -154,11 +154,11 @@ Ns3WimaxSchedulingTestCase::DoRunOnce(WimaxHelper::SchedulerType scheduler)
 void
 Ns3WimaxSchedulingTestCase::DoRun()
 {
-    if (DoRunOnce(WimaxHelper::SCHED_TYPE_SIMPLE) == true)
+    if (DoRunOnce(WimaxHelper::SCHED_TYPE_SIMPLE))
     {
         return;
     }
-    if (DoRunOnce(WimaxHelper::SCHED_TYPE_RTPS) == true)
+    if (DoRunOnce(WimaxHelper::SCHED_TYPE_RTPS))
     {
         return;
     }
@@ -284,15 +284,15 @@ Ns3WimaxSFTypeTestCase::DoRunOnce(ServiceFlow::SchedulingType schedulingType)
 void
 Ns3WimaxSFTypeTestCase::DoRun()
 {
-    if (DoRunOnce(ServiceFlow::SF_TYPE_UGS) == true)
+    if (DoRunOnce(ServiceFlow::SF_TYPE_UGS))
     {
         return;
     }
-    if (DoRunOnce(ServiceFlow::SF_TYPE_RTPS) == true)
+    if (DoRunOnce(ServiceFlow::SF_TYPE_RTPS))
     {
         return;
     }
-    if (DoRunOnce(ServiceFlow::SF_TYPE_BE) == true)
+    if (DoRunOnce(ServiceFlow::SF_TYPE_BE))
     {
         return;
     }

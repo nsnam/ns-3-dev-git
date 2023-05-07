@@ -570,7 +570,7 @@ FdNetDevice::SendFrom(Ptr<Packet> packet,
     NS_LOG_FUNCTION(this << packet << src << dest << protocolNumber);
     NS_LOG_LOGIC("packet: " << packet << " UID: " << packet->GetUid());
 
-    if (IsLinkUp() == false)
+    if (!IsLinkUp())
     {
         m_macTxDropTrace(packet);
         return false;

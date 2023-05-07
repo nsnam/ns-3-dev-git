@@ -1108,13 +1108,9 @@ QueueDisc::Transmit(Ptr<QueueDiscItem> item)
 
     // if the queue disc is empty or the device queue is now stopped, return false so
     // that the Run method does not attempt to dequeue other packets and exits
-    if (GetNPackets() == 0 ||
-        (m_devQueueIface && m_devQueueIface->GetTxQueue(item->GetTxQueueIndex())->IsStopped()))
-    {
-        return false;
-    }
-
-    return true;
+    return !(
+        GetNPackets() == 0 ||
+        (m_devQueueIface && m_devQueueIface->GetTxQueue(item->GetTxQueueIndex())->IsStopped()));
 }
 
 } // namespace ns3

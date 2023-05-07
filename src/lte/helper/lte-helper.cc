@@ -739,7 +739,7 @@ LteHelper::InstallSingleEnbDevice(Ptr<Node> n)
             it->first,
             DynamicCast<ComponentCarrierEnb>(it->second)->GetMac()->GetLteMacSapProvider());
 
-        if (ccmTest == false)
+        if (!ccmTest)
         {
             NS_FATAL_ERROR("Error in SetComponentCarrierMacSapProviders");
         }
@@ -987,7 +987,7 @@ LteHelper::InstallSingleUeDevice(Ptr<Node> n)
             ccmUe->SetComponentCarrierMacSapProviders(it->first,
                                                       it->second->GetMac()->GetLteMacSapProvider());
 
-        if (ccmTest == false)
+        if (!ccmTest)
         {
             NS_FATAL_ERROR("Error in SetComponentCarrierMacSapProviders");
         }
@@ -1572,7 +1572,7 @@ int64_t
 LteHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
 {
     int64_t currentStream = stream;
-    if (m_fadingModel && (m_fadingStreamsAssigned == false))
+    if (m_fadingModel && !m_fadingStreamsAssigned)
     {
         Ptr<TraceFadingLossModel> tflm = m_fadingModel->GetObject<TraceFadingLossModel>();
         if (tflm)

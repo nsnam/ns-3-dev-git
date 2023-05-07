@@ -736,7 +736,7 @@ LteEnbPhy::StartSubFrame()
                      it != rarMsg->RarListEnd();
                      ++it)
                 {
-                    if (it->rarPayload.m_grant.m_ulDelay == true)
+                    if (it->rarPayload.m_grant.m_ulDelay)
                     {
                         NS_FATAL_ERROR(" RAR delay is not yet implemented");
                     }

@@ -940,7 +940,7 @@ Ipv4DynamicGlobalRoutingTestCase::HandleRead(Ptr<Socket> socket)
 void
 Ipv4DynamicGlobalRoutingTestCase::SendData(uint8_t index)
 {
-    if (m_sendSocks[index].second == false)
+    if (!m_sendSocks[index].second)
     {
         return;
     }

@@ -1992,16 +1992,9 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                 else if (receivedMacHdr.GetShortDstAddr().IsBroadcast() ||
                          receivedMacHdr.GetShortDstAddr().IsMulticast())
                 {
-                    // broadcast or multicast
-                    if (receivedMacHdr.IsAckReq())
-                    {
-                        // discard broadcast/multicast with the ACK bit set
-                        acceptFrame = false;
-                    }
-                    else
-                    {
-                        acceptFrame = true;
-                    }
+                    // Broadcast or multicast.
+                    // Discard broadcast/multicast with the ACK bit set.
+                    acceptFrame = !receivedMacHdr.IsAckReq();
                 }
                 else
                 {
@@ -2045,7 +2038,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
 
                 if (receivedMacPayload.GetCommandFrameType() ==
                         CommandPayloadHeader::ASSOCIATION_REQ &&
-                    !(m_macAssociationPermit == true && m_panCoor == true))
+                    !(m_macAssociationPermit && m_panCoor))
                 {
                     acceptFrame = false;
                 }

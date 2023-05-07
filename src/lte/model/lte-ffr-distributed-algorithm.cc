@@ -465,7 +465,7 @@ LteFfrDistributedAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults
                         found = true;
                     }
                 }
-                if (found == false)
+                if (!found)
                 {
                     m_neighborCell.push_back(it->physCellId);
                 }

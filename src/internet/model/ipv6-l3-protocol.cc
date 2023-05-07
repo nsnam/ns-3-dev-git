@@ -1389,7 +1389,7 @@ Ipv6L3Protocol::IpForward(Ptr<const NetDevice> idev,
         NS_LOG_WARN("TTL exceeded.  Drop.");
         m_dropTrace(ipHeader, packet, DROP_TTL_EXPIRED, this, 0);
         // Do not reply to multicast IPv6 address
-        if (ipHeader.GetDestination().IsMulticast() == false)
+        if (!ipHeader.GetDestination().IsMulticast())
         {
             packet->AddHeader(ipHeader);
             GetIcmpv6()->SendErrorTimeExceeded(packet,
@@ -1791,11 +1791,7 @@ Ipv6L3Protocol::IsRegisteredMulticastAddress(Ipv6Address address, uint32_t inter
     Ipv6RegisteredMulticastAddressKey_t key = std::make_pair(address, interface);
     Ipv6RegisteredMulticastAddressCIter_t iter = m_multicastAddresses.find(key);
 
-    if (iter == m_multicastAddresses.end())
-    {
-        return false;
-    }
-    return true;
+    return iter != m_multicastAddresses.end();
 }
 
 bool
@@ -1806,11 +1802,7 @@ Ipv6L3Protocol::IsRegisteredMulticastAddress(Ipv6Address address) const
     Ipv6RegisteredMulticastAddressNoInterfaceCIter_t iter =
         m_multicastAddressesNoInterface.find(address);
 
-    if (iter == m_multicastAddressesNoInterface.end())
-    {
-        return false;
-    }
-    return true;
+    return iter != m_multicastAddressesNoInterface.end();
 }
 
 bool

@@ -374,7 +374,7 @@ AlohaNoackNetDevice::SendFrom(Ptr<Packet> packet,
         else
         {
             NS_LOG_LOGIC("enqueueing new packet");
-            if (m_queue->Enqueue(packet) == false)
+            if (!m_queue->Enqueue(packet))
             {
                 m_macTxDropTrace(packet);
                 sendOk = false;
@@ -385,7 +385,7 @@ AlohaNoackNetDevice::SendFrom(Ptr<Packet> packet,
     {
         NS_LOG_LOGIC("deferring TX, enqueueing new packet");
         NS_ASSERT(m_queue);
-        if (m_queue->Enqueue(packet) == false)
+        if (!m_queue->Enqueue(packet))
         {
             m_macTxDropTrace(packet);
             sendOk = false;
@@ -426,7 +426,7 @@ AlohaNoackNetDevice::NotifyTransmissionEnd(Ptr<const Packet>)
     NS_ASSERT_MSG(m_state == TX, "TX end notified while state != TX");
     m_state = IDLE;
     NS_ASSERT(m_queue);
-    if (m_queue->IsEmpty() == false)
+    if (!m_queue->IsEmpty())
     {
         Ptr<Packet> p = m_queue->Dequeue();
         NS_ASSERT(p);

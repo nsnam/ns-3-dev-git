@@ -520,11 +520,7 @@ bool
 PacketSocket::SetAllowBroadcast(bool allowBroadcast)
 {
     NS_LOG_FUNCTION(this << allowBroadcast);
-    if (allowBroadcast)
-    {
-        return false;
-    }
-    return true;
+    return !allowBroadcast;
 }
 
 bool

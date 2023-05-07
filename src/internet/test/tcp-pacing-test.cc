@@ -336,14 +336,7 @@ TcpPacingTest::Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who)
         // so add an additional m_segmentSize to bytesInFlight
         uint32_t soonBytesInFlight = m_bytesInFlight + m_segmentSize;
         bool canPacketBeSent = ((m_curCwnd - soonBytesInFlight) >= m_segmentSize);
-        if (!canPacketBeSent || (m_curCwnd == 0))
-        {
-            m_isFullCwndSent = true;
-        }
-        else
-        {
-            m_isFullCwndSent = false;
-        }
+        m_isFullCwndSent = (!canPacketBeSent || m_curCwnd == 0);
         m_nextPacketInterval = m_expectedInterval;
         NS_LOG_DEBUG("Next expected interval (s): " << m_nextPacketInterval.GetSeconds());
     }

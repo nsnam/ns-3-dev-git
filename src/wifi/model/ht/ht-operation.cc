@@ -280,11 +280,7 @@ HtOperation::GetPhase() const
 bool
 HtOperation::IsSupportedMcs(uint8_t mcs) const
 {
-    if (m_rxMcsBitmask[mcs] == 1)
-    {
-        return true;
-    }
-    return false;
+    return m_rxMcsBitmask[mcs] == 1;
 }
 
 uint16_t

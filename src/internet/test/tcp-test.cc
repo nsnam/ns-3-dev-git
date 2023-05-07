@@ -226,7 +226,7 @@ TcpTestCase::DoRun()
     memset(m_sourceRxPayload, 0, m_totalBytes);
     memset(m_serverRxPayload, 0, m_totalBytes);
 
-    if (m_useIpv6 == true)
+    if (m_useIpv6)
     {
         SetupDefaultSim6();
     }

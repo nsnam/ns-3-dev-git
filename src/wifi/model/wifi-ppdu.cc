@@ -186,11 +186,7 @@ WifiPpdu::DoesOverlapChannel(uint16_t minFreq, uint16_t maxFreq) const
      *                   │           Channel            │
      *                   └──────────────────────────────┘
      */
-    if (minTxFreq >= maxFreq || maxTxFreq <= minFreq)
-    {
-        return false;
-    }
-    return true;
+    return minTxFreq < maxFreq && maxTxFreq > minFreq;
 }
 
 uint64_t

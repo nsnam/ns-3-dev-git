@@ -142,7 +142,7 @@ TcpDctcp::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time&
     {
         m_ackedBytesEcn += segmentsAcked * tcb->m_segmentSize;
     }
-    if (m_nextSeqFlag == false)
+    if (!m_nextSeqFlag)
     {
         m_nextSeq = tcb->m_nextTxSequence;
         m_nextSeqFlag = true;
@@ -196,7 +196,7 @@ TcpDctcp::CeState0to1(Ptr<TcpSocketState> tcb)
         tcb->m_rxBuffer->SetNextRxSequence(tmpRcvNxt);
     }
 
-    if (m_priorRcvNxtFlag == false)
+    if (!m_priorRcvNxtFlag)
     {
         m_priorRcvNxtFlag = true;
     }
@@ -223,7 +223,7 @@ TcpDctcp::CeState1to0(Ptr<TcpSocketState> tcb)
         tcb->m_rxBuffer->SetNextRxSequence(tmpRcvNxt);
     }
 
-    if (m_priorRcvNxtFlag == false)
+    if (!m_priorRcvNxtFlag)
     {
         m_priorRcvNxtFlag = true;
     }

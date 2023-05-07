@@ -151,7 +151,7 @@ Ipv4ListRouting::RouteInput(Ptr<const Packet> p,
     uint32_t iif = m_ipv4->GetInterfaceForDevice(idev);
 
     retVal = m_ipv4->IsDestinationAddress(header.GetDestination(), iif);
-    if (retVal == true)
+    if (retVal)
     {
         NS_LOG_LOGIC("Address " << header.GetDestination() << " is a match for local delivery");
         if (header.GetDestination().IsMulticast())
@@ -168,7 +168,7 @@ Ipv4ListRouting::RouteInput(Ptr<const Packet> p,
         }
     }
     // Check if input device supports IP forwarding
-    if (m_ipv4->IsForwarding(iif) == false)
+    if (!m_ipv4->IsForwarding(iif))
     {
         NS_LOG_LOGIC("Forwarding disabled for this interface");
         ecb(p, header, Socket::ERROR_NOROUTETOHOST);
@@ -178,7 +178,7 @@ Ipv4ListRouting::RouteInput(Ptr<const Packet> p,
     // If we have already delivered a packet locally (e.g. multicast)
     // we suppress further downstream local delivery by nulling the callback
     LocalDeliverCallback downstreamLcb = lcb;
-    if (retVal == true)
+    if (retVal)
     {
         downstreamLcb = MakeNullCallback<void, Ptr<const Packet>, const Ipv4Header&, uint32_t>();
     }

@@ -79,12 +79,8 @@ bool
 SimpleFrameCaptureModel::CaptureNewFrame(Ptr<Event> currentEvent, Ptr<Event> newEvent) const
 {
     NS_LOG_FUNCTION(this);
-    if ((WToDbm(currentEvent->GetRxPowerW()) + GetMargin()) < WToDbm(newEvent->GetRxPowerW()) &&
-        (IsInCaptureWindow(currentEvent->GetStartTime())))
-    {
-        return true;
-    }
-    return false;
+    return WToDbm(currentEvent->GetRxPowerW()) + GetMargin() < WToDbm(newEvent->GetRxPowerW()) &&
+           IsInCaptureWindow(currentEvent->GetStartTime());
 }
 
 } // namespace ns3

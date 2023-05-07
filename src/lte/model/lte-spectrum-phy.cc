@@ -764,7 +764,7 @@ LteSpectrumPhy::StartRxDlCtrl(Ptr<LteSpectrumSignalParametersDlCtrlFrame> lteDlC
 
         // common code for the two states
         // check presence of PSS for UE measuerements
-        if (lteDlCtrlRxParams->pss == true)
+        if (lteDlCtrlRxParams->pss)
         {
             if (!m_ltePhyRxPssCallback.IsNull())
             {

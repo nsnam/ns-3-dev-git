@@ -192,7 +192,7 @@ Radvd::Send(Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
 {
     NS_LOG_FUNCTION(this << dst << reschedule);
 
-    if (reschedule == true)
+    if (reschedule)
     {
         config->SetLastRaTxTime(Simulator::Now());
     }

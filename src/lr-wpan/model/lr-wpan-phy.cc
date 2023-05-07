@@ -1484,7 +1484,7 @@ LrWpanPhy::EndTx()
     NS_ABORT_IF((m_trxState != IEEE_802_15_4_PHY_BUSY_TX) &&
                 (m_trxState != IEEE_802_15_4_PHY_TRX_OFF));
 
-    if (m_currentTxPacket.second == false)
+    if (!m_currentTxPacket.second)
     {
         NS_LOG_DEBUG("Packet successfully transmitted");
         m_phyTxEndTrace(m_currentTxPacket.first);

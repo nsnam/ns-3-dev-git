@@ -66,7 +66,7 @@ void
 LteInterference::StartRx(Ptr<const SpectrumValue> rxPsd)
 {
     NS_LOG_FUNCTION(this << *rxPsd);
-    if (m_receiving == false)
+    if (!m_receiving)
     {
         NS_LOG_LOGIC("first signal");
         m_rxSignal = rxPsd->Copy();
@@ -109,7 +109,7 @@ void
 LteInterference::EndRx()
 {
     NS_LOG_FUNCTION(this);
-    if (m_receiving != true)
+    if (!m_receiving)
     {
         NS_LOG_INFO("EndRx was already evaluated or RX was aborted");
     }
@@ -235,7 +235,7 @@ LteInterference::SetNoisePowerSpectralDensity(Ptr<const SpectrumValue> noisePsd)
     // reset m_allSignals (will reset if already set previously)
     // this is needed since this method can potentially change the SpectrumModel
     m_allSignals = Create<SpectrumValue>(noisePsd->GetSpectrumModel());
-    if (m_receiving == true)
+    if (m_receiving)
     {
         // abort rx
         m_receiving = false;

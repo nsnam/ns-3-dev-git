@@ -801,7 +801,7 @@ TapBridge::ForwardToBridgedDevice(uint8_t* buf, ssize_t len)
         //
         NS_ASSERT_MSG(Mac48Address::ConvertFrom(src) != Mac48Address("ff:ff:ff:ff:ff:ff"),
                       "TapBridge::ForwardToBridgedDevice:  Source addr is broadcast");
-        if (m_ns3AddressRewritten == false)
+        if (!m_ns3AddressRewritten)
         {
             //
             // Set the ns-3 device's mac address to the overlying container's

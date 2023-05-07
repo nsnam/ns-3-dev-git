@@ -174,7 +174,7 @@ LteAnr::DoReportUeMeas(LteRrcSap::MeasResults measResults)
                     // Update neighbour relation entry
                     NS_LOG_LOGIC(this << " updating NRT of cell " << m_servingCellId
                                       << " with entry of cell " << it->physCellId);
-                    if (itNrt->second.noX2 == false)
+                    if (!itNrt->second.noX2)
                     {
                         NS_LOG_LOGIC(this << " enabling handover"
                                           << " from cell " << m_servingCellId << " to cell "

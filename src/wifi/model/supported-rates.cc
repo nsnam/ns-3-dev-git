@@ -183,14 +183,10 @@ bool
 AllSupportedRates::IsBssMembershipSelectorRate(uint64_t bs) const
 {
     NS_LOG_FUNCTION(this << bs);
-    if ((bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HT_PHY ||
-        (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_VHT_PHY ||
-        (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HE_PHY ||
-        (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_EHT_PHY)
-    {
-        return true;
-    }
-    return false;
+    return (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HT_PHY ||
+           (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_VHT_PHY ||
+           (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HE_PHY ||
+           (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_EHT_PHY;
 }
 
 uint8_t

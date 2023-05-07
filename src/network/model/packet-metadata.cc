@@ -1079,14 +1079,7 @@ PacketMetadata::ItemIterator::Next()
     item.currentTrimmedFromStart = extraItem.fragmentStart;
     item.currentTrimmedFromEnd = extraItem.fragmentEnd - smallItem.size;
     item.currentSize = extraItem.fragmentEnd - extraItem.fragmentStart;
-    if (extraItem.fragmentStart != 0 || extraItem.fragmentEnd != smallItem.size)
-    {
-        item.isFragment = true;
-    }
-    else
-    {
-        item.isFragment = false;
-    }
+    item.isFragment = (extraItem.fragmentStart != 0 || extraItem.fragmentEnd != smallItem.size);
     TypeId tid;
     tid.SetUid(uid);
     if (uid == 0)

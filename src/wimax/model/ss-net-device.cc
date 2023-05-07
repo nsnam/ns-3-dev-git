@@ -819,7 +819,7 @@ SubscriberStationNetDevice::DoReceive(Ptr<Packet> packet)
 
     if (gnrcMacHdr.GetHt() == MacHeaderType::HEADER_TYPE_GENERIC)
     {
-        if (gnrcMacHdr.check_hcs() == false)
+        if (!gnrcMacHdr.check_hcs())
         {
             // The header is noisy
             NS_LOG_INFO("Header HCS ERROR");

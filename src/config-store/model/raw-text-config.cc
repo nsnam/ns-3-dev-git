@@ -105,8 +105,7 @@ RawTextConfigSave::Default()
                 NS_LOG_WARN("Global attribute " << m_typeId << "::" << name
                                                 << " was not saved because it is OBSOLETE");
             }
-            else if ((supportLevel == TypeId::SupportLevel::DEPRECATED) &&
-                     (m_saveDeprecated == false))
+            else if (supportLevel == TypeId::SupportLevel::DEPRECATED && !m_saveDeprecated)
             {
                 NS_LOG_WARN("Global attribute " << m_typeId << "::" << name
                                                 << " was not saved because it is DEPRECATED");
@@ -181,8 +180,7 @@ RawTextConfigSave::Attributes()
                 NS_LOG_WARN("Attribute " << GetCurrentPath()
                                          << " was not saved because it is OBSOLETE");
             }
-            else if ((supportLevel == TypeId::SupportLevel::DEPRECATED) &&
-                     (m_saveDeprecated == false))
+            else if (supportLevel == TypeId::SupportLevel::DEPRECATED && !m_saveDeprecated)
             {
                 NS_LOG_WARN("Attribute " << GetCurrentPath()
                                          << " was not saved because it is DEPRECATED");

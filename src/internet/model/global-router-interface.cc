@@ -791,7 +791,7 @@ GlobalRouter::ProcessSingleBroadcastLink(Ptr<NetDevice> nd,
     // is a transit network.
     //
     ClearBridgesVisited();
-    if (AnotherRouterOnLink(nd) == false)
+    if (!AnotherRouterOnLink(nd))
     {
         //
         // This is a net device connected to a stub network
@@ -1290,7 +1290,7 @@ GlobalRouter::FindAllNonBridgedDevicesOnLink(Ptr<Channel> ch) const
         Ptr<NetDevice> nd = ch->GetDevice(i);
         NS_LOG_LOGIC("checking to see if the device " << nd << " is bridged");
         Ptr<BridgeNetDevice> bnd = NetDeviceIsBridged(nd);
-        if (bnd && BridgeHasAlreadyBeenVisited(bnd) == false)
+        if (bnd && !BridgeHasAlreadyBeenVisited(bnd))
         {
             NS_LOG_LOGIC("Device is bridged by BridgeNetDevice "
                          << bnd << " with " << bnd->GetNBridgePorts() << " ports");

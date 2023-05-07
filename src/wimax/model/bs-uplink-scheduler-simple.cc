@@ -542,7 +542,7 @@ UplinkSchedulerSimple::SetupServiceFlow(SSRecord* ssRecord, ServiceFlow* service
     switch (serviceFlow->GetSchedulingType())
     {
     case ServiceFlow::SF_TYPE_UGS: {
-        if (serviceFlow->GetIsMulticast() == true)
+        if (serviceFlow->GetIsMulticast())
         {
             modulation = serviceFlow->GetModulation();
         }

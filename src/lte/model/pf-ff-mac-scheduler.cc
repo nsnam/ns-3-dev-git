@@ -392,14 +392,8 @@ PfFfMacScheduler::HarqProcessAvailability(uint16_t rnti)
     {
         i = (i + 1) % HARQ_PROC_NUM;
     } while (((*itStat).second.at(i) != 0) && (i != (*it).second));
-    if ((*itStat).second.at(i) == 0)
-    {
-        return (true);
-    }
-    else
-    {
-        return (false); // return a not valid harq proc id
-    }
+
+    return (*itStat).second.at(i) == 0;
 }
 
 uint8_t
@@ -407,7 +401,7 @@ PfFfMacScheduler::UpdateHarqProcessId(uint16_t rnti)
 {
     NS_LOG_FUNCTION(this << rnti);
 
-    if (m_harqOn == false)
+    if (!m_harqOn)
     {
         return (0);
     }
@@ -501,7 +495,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
     rbgMap = m_ffrSapProvider->GetAvailableDlRbg();
     for (std::vector<bool>::iterator it = rbgMap.begin(); it != rbgMap.end(); it++)
     {
-        if ((*it) == true)
+        if (*it)
         {
             rbgAllocatedNum++;
         }
@@ -529,7 +523,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
 
     for (std::vector<bool>::iterator it = ulRbMap.begin(); it != ulRbMap.end(); it++)
     {
-        if ((*it) == true)
+        if (*it)
         {
             if (tmpMinBandwidth > maxContinuousUlBandwidth)
             {
@@ -600,7 +594,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
             m_rachAllocationMap.at(i) = (*itRach).m_rnti;
         }
 
-        if (m_harqOn == true)
+        if (m_harqOn)
         {
             // generate UL-DCI for HARQ retransmissions
             UlDciListElement_s uldci;
@@ -665,7 +659,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
             m_dlInfoListBuffered = params.m_dlInfoList;
         }
     }
-    if (m_harqOn == false)
+    if (!m_harqOn)
     {
         // Ignore HARQ feedback
         m_dlInfoListBuffered.clear();
@@ -761,7 +755,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
             bool free = true;
             for (std::size_t j = 0; j < dciRbg.size(); j++)
             {
-                if (rbgMap.at(dciRbg.at(j)) == true)
+                if (rbgMap.at(dciRbg.at(j)))
                 {
                     free = false;
                     break;
@@ -789,7 +783,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
                 std::vector<bool> rbgMapCopy = rbgMap;
                 while ((j < dciRbg.size()) && (startRbg != rbgId))
                 {
-                    if (rbgMapCopy.at(rbgId) == false)
+                    if (!rbgMapCopy.at(rbgId))
                     {
                         rbgMapCopy.at(rbgId) = true;
                         dciRbg.at(j) = rbgId;
@@ -948,20 +942,20 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
     for (int i = 0; i < rbgNum; i++)
     {
         NS_LOG_INFO(this << " ALLOCATION for RBG " << i << " of " << rbgNum);
-        if (rbgMap.at(i) == false)
+        if (!rbgMap.at(i))
         {
             std::map<uint16_t, pfsFlowPerf_t>::iterator it;
             std::map<uint16_t, pfsFlowPerf_t>::iterator itMax = m_flowStatsDl.end();
             double rcqiMax = 0.0;
             for (it = m_flowStatsDl.begin(); it != m_flowStatsDl.end(); it++)
             {
-                if ((m_ffrSapProvider->IsDlRbgAvailableForUe(i, (*it).first)) == false)
+                if (!m_ffrSapProvider->IsDlRbgAvailableForUe(i, (*it).first))
                 {
                     continue;
                 }
 
                 std::set<uint16_t>::iterator itRnti = rntiAllocated.find((*it).first);
-                if ((itRnti != rntiAllocated.end()) || (!HarqProcessAvailability((*it).first)))
+                if (itRnti != rntiAllocated.end() || !HarqProcessAvailability((*it).first))
                 {
                     // UE already allocated for HARQ or without HARQ process available -> drop it
                     if (itRnti != rntiAllocated.end())
@@ -1206,7 +1200,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
                     UpdateDlRlcBufferInfo(newDci.m_rnti,
                                           newRlcEl.m_logicalChannelIdentity,
                                           newRlcEl.m_size);
-                    if (m_harqOn == true)
+                    if (m_harqOn)
                     {
                         // store RLC PDU list for HARQ
                         std::map<uint16_t, DlHarqRlcPduListBuffer_t>::iterator itRlcPdu =
@@ -1236,7 +1230,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
 
         newEl.m_dci = newDci;
 
-        if (m_harqOn == true)
+        if (m_harqOn)
         {
             // store DCI for HARQ
             std::map<uint16_t, DlHarqProcessesDciBuffer_t>::iterator itDci =
@@ -1426,7 +1420,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq(
 
     for (std::vector<bool>::iterator it = rbMap.begin(); it != rbMap.end(); it++)
     {
-        if ((*it) == true)
+        if (*it)
         {
             rbAllocatedNum++;
         }
@@ -1445,7 +1439,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq(
         }
     }
 
-    if (m_harqOn == true)
+    if (m_harqOn)
     {
         //   Process UL HARQ feedback
 
@@ -1486,7 +1480,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq(
                 bool free = true;
                 for (int j = dci.m_rbStart; j < dci.m_rbStart + dci.m_rbLen; j++)
                 {
-                    if (rbMap.at(j) == true)
+                    if (rbMap.at(j))
                     {
                         free = false;
                         NS_LOG_INFO(this << " BUSY " << j);
@@ -1627,12 +1621,12 @@ PfFfMacScheduler::DoSchedUlTriggerReq(
             bool free = true;
             for (int j = rbAllocated; j < rbAllocated + rbPerFlow; j++)
             {
-                if (rbMap.at(j) == true)
+                if (rbMap.at(j))
                 {
                     free = false;
                     break;
                 }
-                if ((m_ffrSapProvider->IsUlRbgAvailableForUe(j, (*it).first)) == false)
+                if (!m_ffrSapProvider->IsUlRbgAvailableForUe(j, (*it).first))
                 {
                     free = false;
                     break;
@@ -1749,7 +1743,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq(
         ret.m_dciList.push_back(uldci);
         // store DCI for HARQ_PERIOD
         uint8_t harqId = 0;
-        if (m_harqOn == true)
+        if (m_harqOn)
         {
             std::map<uint16_t, uint8_t>::iterator itProcId;
             itProcId = m_ulHarqCurrentProcessId.find(uldci.m_rnti);

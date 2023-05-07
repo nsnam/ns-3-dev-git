@@ -316,7 +316,7 @@ class TestCaseBase : public TestCase
      */
     void SetTestSuiteSeed()
     {
-        if (m_seedSet == false)
+        if (!m_seedSet)
         {
             uint32_t seed;
             if (RngSeedManager::GetRun() == 0)

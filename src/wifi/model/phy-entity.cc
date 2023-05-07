@@ -1366,11 +1366,7 @@ PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txChannelWidth) const
     const auto txCenterFreq = ppdu->GetTxCenterFreq();
     const auto minTxFreq = txCenterFreq - txChannelWidth / 2;
     const auto maxTxFreq = txCenterFreq + txChannelWidth / 2;
-    if (p20MinFreq < minTxFreq || p20MaxFreq > maxTxFreq)
-    {
-        return false;
-    }
-    return true;
+    return p20MinFreq >= minTxFreq && p20MaxFreq <= maxTxFreq;
 }
 
 Ptr<const WifiPpdu>

@@ -98,7 +98,7 @@ SNRToBlockErrorRateManager::LoadTraces()
         traceFilePath << m_traceFilePath << "/modulation" << i << ".txt";
 
         traceFile.open(traceFilePath.str(), std::ifstream::in);
-        if (traceFile.good() == false)
+        if (!traceFile.good())
         {
             NS_LOG_INFO("Unable to load " << traceFilePath.str() << "!! Loading default traces...");
             LoadDefaultTraces();
@@ -237,7 +237,7 @@ SNRToBlockErrorRateManager::ReLoadTraces()
         traceFilePath << m_traceFilePath << "/Modulation" << i << ".txt";
 
         traceFile.open(traceFilePath.str(), std::ifstream::in);
-        if (traceFile.good() == false)
+        if (!traceFile.good())
         {
             NS_LOG_INFO("Unable to load " << traceFilePath.str() << "!!Loading default traces...");
             LoadDefaultTraces();
@@ -275,7 +275,7 @@ SNRToBlockErrorRateManager::GetTraceFilePath()
 double
 SNRToBlockErrorRateManager::GetBlockErrorRate(double SNR, uint8_t modulation)
 {
-    if (m_activateLoss == false)
+    if (!m_activateLoss)
     {
         return 0;
     }
@@ -312,7 +312,7 @@ SNRToBlockErrorRateManager::GetBlockErrorRate(double SNR, uint8_t modulation)
 SNRToBlockErrorRateRecord*
 SNRToBlockErrorRateManager::GetSNRToBlockErrorRateRecord(double SNR, uint8_t modulation)
 {
-    if (m_activateLoss == false)
+    if (!m_activateLoss)
     {
         return new SNRToBlockErrorRateRecord(SNR, 0, 0, 0, 0, 0);
     }

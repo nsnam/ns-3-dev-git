@@ -3374,7 +3374,7 @@ TestUlOfdmaPhyTransmission::SetTrigVector(uint8_t bssColor, TrigVectorInfo error
     txVector.SetMode(HePhy::GetHeMcs7(), aid1);
     txVector.SetNss(1, aid1);
 
-    HeRu::RuSpec ru2(ruType, (channelWidth == 160 ? 1 : 2), (channelWidth == 160 ? false : true));
+    HeRu::RuSpec ru2(ruType, (channelWidth == 160 ? 1 : 2), (channelWidth != 160));
     txVector.SetRu(ru2, aid2);
     txVector.SetMode(HePhy::GetHeMcs7(), aid2);
     txVector.SetNss(1, aid2);

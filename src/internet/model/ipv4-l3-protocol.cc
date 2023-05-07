@@ -539,11 +539,10 @@ Ipv4L3Protocol::IsDestinationAddress(Ipv4Address address, uint32_t iif) const
 #ifdef NOTYET
         if (MulticastCheckGroup(iif, address))
 #endif
-            if (true)
-            {
-                NS_LOG_LOGIC("For me (Ipv4Addr multicast address)");
-                return true;
-            }
+        {
+            NS_LOG_LOGIC("For me (Ipv4Addr multicast address)");
+            return true;
+        }
     }
 
     if (address.IsBroadcast())
@@ -961,7 +960,7 @@ Ipv4L3Protocol::BuildHeader(Ipv4Address source,
     uint64_t srcDst = dst | (src << 32);
     std::pair<uint64_t, uint8_t> key = std::make_pair(srcDst, protocol);
 
-    if (mayFragment == true)
+    if (mayFragment)
     {
         ipHeader.SetMayFragment();
         ipHeader.SetIdentification(m_identification[key]);
@@ -1090,8 +1089,7 @@ Ipv4L3Protocol::IpForward(Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ipv
     if (ipHeader.GetTtl() == 0)
     {
         // Do not reply to multicast/broadcast IP address
-        if (ipHeader.GetDestination().IsBroadcast() == false &&
-            ipHeader.GetDestination().IsMulticast() == false)
+        if (!ipHeader.GetDestination().IsBroadcast() && !ipHeader.GetDestination().IsMulticast())
         {
             Ptr<Icmpv4L4Protocol> icmp = GetIcmp();
             icmp->SendTimeExceededTtl(ipHeader, packet, false);
@@ -1127,7 +1125,7 @@ Ipv4L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv4Header& ip, uin
         NS_LOG_LOGIC("Received a fragment, processing " << *p);
         bool isPacketComplete;
         isPacketComplete = ProcessFragment(p, ipHeader, iif);
-        if (isPacketComplete == false)
+        if (!isPacketComplete)
         {
             return;
         }
@@ -1154,8 +1152,7 @@ Ipv4L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv4Header& ip, uin
         case IpL4Protocol::RX_CSUM_FAILED:
             break;
         case IpL4Protocol::RX_ENDPOINT_UNREACH:
-            if (ipHeader.GetDestination().IsBroadcast() == true ||
-                ipHeader.GetDestination().IsMulticast() == true)
+            if (ipHeader.GetDestination().IsBroadcast() || ipHeader.GetDestination().IsMulticast())
             {
                 break; // Do not reply to broadcast or multicast
             }
@@ -1171,7 +1168,7 @@ Ipv4L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv4Header& ip, uin
                     subnetDirected = true;
                 }
             }
-            if (subnetDirected == false)
+            if (!subnetDirected)
             {
                 GetIcmp()->SendDestUnreachPort(ipHeader, copy);
             }
@@ -1266,7 +1263,7 @@ Ipv4L3Protocol::SourceAddressSelection(uint32_t interfaceIdx, Ipv4Address dest)
         Ipv4InterfaceAddress test = GetAddress(interfaceIdx, i);
         if (test.GetLocal().CombineMask(test.GetMask()) == dest.CombineMask(test.GetMask()))
         {
-            if (test.IsSecondary() == false)
+            if (!test.IsSecondary())
             {
                 return test.GetLocal();
             }

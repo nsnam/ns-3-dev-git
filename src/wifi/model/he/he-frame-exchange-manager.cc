@@ -1949,13 +1949,9 @@ HeFrameExchangeManager::IsIntraBssPpdu(Ptr<const WifiPsdu> psdu, const WifiTxVec
     // is disabled (see 26.17.3.3), then the RXVECTOR parameter BSS_COLOR of a PPDU shall not be
     // used to classify the PPDU")
     const auto bssColor = m_mac->GetHeConfiguration()->GetBssColor();
-    if (bssColor != 0 && bssColor == txVector.GetBssColor())
-    {
-        return true;
-    }
 
     // the other two conditions using the RXVECTOR parameter PARTIAL_AID are not implemented
-    return false;
+    return bssColor != 0 && bssColor == txVector.GetBssColor();
 }
 
 void

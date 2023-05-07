@@ -77,14 +77,7 @@ bool
 Ipv4Mask::IsMatch(Ipv4Address a, Ipv4Address b) const
 {
     NS_LOG_FUNCTION(this << a << b);
-    if ((a.Get() & m_mask) == (b.Get() & m_mask))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return (a.Get() & m_mask) == (b.Get() & m_mask);
 }
 
 uint32_t

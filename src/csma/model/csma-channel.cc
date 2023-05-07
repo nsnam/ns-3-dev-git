@@ -310,14 +310,7 @@ CsmaChannel::GetDeviceNum(Ptr<CsmaNetDevice> device)
 bool
 CsmaChannel::IsBusy()
 {
-    if (m_state == IDLE)
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
+    return m_state != IDLE;
 }
 
 DataRate

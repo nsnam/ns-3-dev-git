@@ -101,7 +101,7 @@ RoutingTable::LookupRoute(Ipv4Address id, RoutingTableEntry& rt, bool forRouteIn
     {
         return false;
     }
-    if (forRouteInput == true && id == i->second.GetInterface().GetBroadcast())
+    if (forRouteInput && id == i->second.GetInterface().GetBroadcast())
     {
         return false;
     }
@@ -112,12 +112,7 @@ RoutingTable::LookupRoute(Ipv4Address id, RoutingTableEntry& rt, bool forRouteIn
 bool
 RoutingTable::DeleteRoute(Ipv4Address dst)
 {
-    if (m_ipv4AddressEntry.erase(dst) != 0)
-    {
-        // NS_LOG_DEBUG("Route erased");
-        return true;
-    }
-    return false;
+    return m_ipv4AddressEntry.erase(dst) != 0;
 }
 
 uint32_t
@@ -329,14 +324,7 @@ RoutingTable::AnyRunningEvent(Ipv4Address address)
         return false;
     }
     event = i->second;
-    if (event.IsRunning())
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return event.IsRunning();
 }
 
 bool

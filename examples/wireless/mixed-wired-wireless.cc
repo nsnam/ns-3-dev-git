@@ -414,7 +414,7 @@ main(int argc, char* argv[])
     // pcap trace on the application data sink
     wifiPhy.EnablePcap("mixed-wireless", appSink->GetId(), 0);
 
-    if (useCourseChangeCallback == true)
+    if (useCourseChangeCallback)
     {
         Config::Connect("/NodeList/*/$ns3::MobilityModel/CourseChange",
                         MakeCallback(&CourseChangeCallback));

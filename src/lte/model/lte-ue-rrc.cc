@@ -1307,7 +1307,7 @@ LteUeRrc::EvaluateCellForSelection()
         uint32_t cellCsgId = m_lastSib1.cellAccessRelatedInfo.csgIdentity;
         bool cellCsgIndication = m_lastSib1.cellAccessRelatedInfo.csgIndication;
 
-        isSuitableCell = (cellCsgIndication == false) || (cellCsgId == m_csgWhiteList);
+        isSuitableCell = (!cellCsgIndication || cellCsgId == m_csgWhiteList);
 
         NS_LOG_LOGIC(this << " csg(ue/cell/indication)=" << m_csgWhiteList << "/" << cellCsgId
                           << "/" << cellCsgIndication);

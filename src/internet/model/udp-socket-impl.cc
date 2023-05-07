@@ -390,7 +390,7 @@ int
 UdpSocketImpl::Close()
 {
     NS_LOG_FUNCTION(this);
-    if (m_shutdownRecv == true && m_shutdownSend == true)
+    if (m_shutdownRecv && m_shutdownSend)
     {
         m_errno = Socket::ERROR_BADF;
         return -1;
@@ -406,7 +406,7 @@ int
 UdpSocketImpl::Connect(const Address& address)
 {
     NS_LOG_FUNCTION(this << address);
-    if (InetSocketAddress::IsMatchingType(address) == true)
+    if (InetSocketAddress::IsMatchingType(address))
     {
         InetSocketAddress transport = InetSocketAddress::ConvertFrom(address);
         m_defaultAddress = Address(transport.GetIpv4());
@@ -415,7 +415,7 @@ UdpSocketImpl::Connect(const Address& address)
         m_connected = true;
         NotifyConnectionSucceeded();
     }
-    else if (Inet6SocketAddress::IsMatchingType(address) == true)
+    else if (Inet6SocketAddress::IsMatchingType(address))
     {
         Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom(address);
         m_defaultAddress = Address(transport.GetIpv6());
@@ -457,7 +457,7 @@ int
 UdpSocketImpl::DoSend(Ptr<Packet> p)
 {
     NS_LOG_FUNCTION(this << p);
-    if ((m_endPoint == nullptr) && (Ipv4Address::IsMatchingType(m_defaultAddress) == true))
+    if (m_endPoint == nullptr && Ipv4Address::IsMatchingType(m_defaultAddress))
     {
         if (Bind() == -1)
         {
@@ -466,7 +466,7 @@ UdpSocketImpl::DoSend(Ptr<Packet> p)
         }
         NS_ASSERT(m_endPoint != nullptr);
     }
-    else if ((m_endPoint6 == nullptr) && (Ipv6Address::IsMatchingType(m_defaultAddress) == true))
+    else if (m_endPoint6 == nullptr && Ipv6Address::IsMatchingType(m_defaultAddress))
     {
         if (Bind6() == -1)
         {

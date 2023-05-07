@@ -558,7 +558,7 @@ Ipv4StaticRouting::RouteInput(Ptr<const Packet> p,
     }
 
     // Check if input device supports IP forwarding
-    if (m_ipv4->IsForwarding(iif) == false)
+    if (!m_ipv4->IsForwarding(iif))
     {
         NS_LOG_LOGIC("Forwarding disabled for this interface");
         ecb(p, ipHeader, Socket::ERROR_NOROUTETOHOST);

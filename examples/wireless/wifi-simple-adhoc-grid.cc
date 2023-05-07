@@ -255,7 +255,7 @@ main(int argc, char* argv[])
     InetSocketAddress remote = InetSocketAddress(i.GetAddress(sinkNode, 0), 80);
     source->Connect(remote);
 
-    if (tracing == true)
+    if (tracing)
     {
         AsciiTraceHelper ascii;
         wifiPhy.EnableAsciiAll(ascii.CreateFileStream("wifi-simple-adhoc-grid.tr"));

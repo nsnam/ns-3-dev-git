@@ -486,7 +486,7 @@ LteFfrEnhancedAlgorithm::DoGetAvailableDlRbg()
         for (uint32_t i = 0; i < rbgMap.size(); i++)
         {
             NS_LOG_INFO("\t rbgId: " << i << " available " << (int)rbgAvailableMap.at(i));
-            if (rbgAvailableMap.at(i) == true)
+            if (rbgAvailableMap.at(i))
             {
                 rbgMap.at(i) = false;
             }
@@ -546,7 +546,7 @@ LteFfrEnhancedAlgorithm::DoIsDlRbgAvailableForUe(int rbgId, uint16_t rnti)
         {
             NS_LOG_INFO("RNTI: " << rnti << "  rbgId: " << rbgId
                                  << "  available: " << it->second.at(rbgId));
-            if (it->second.at(rbgId) == true)
+            if (it->second.at(rbgId))
             {
                 return true;
             }
@@ -582,7 +582,7 @@ LteFfrEnhancedAlgorithm::DoGetAvailableUlRbg()
         for (uint32_t i = 0; i < rbgMap.size(); i++)
         {
             NS_LOG_INFO("\t rbgId: " << i << " available " << (int)rbAvailableMap.at(i));
-            if (rbAvailableMap.at(i) == true)
+            if (rbAvailableMap.at(i))
             {
                 rbgMap.at(i) = false;
             }
@@ -646,7 +646,7 @@ LteFfrEnhancedAlgorithm::DoIsUlRbgAvailableForUe(int rbgId, uint16_t rnti)
         {
             NS_LOG_INFO("RNTI: " << rnti << "  rbgId: " << rbgId
                                  << "  available: " << it->second.at(rbgId));
-            if (it->second.at(rbgId) == true)
+            if (it->second.at(rbgId))
             {
                 return true;
             }
@@ -732,7 +732,7 @@ LteFfrEnhancedAlgorithm::DoReportDlCqiInfo(
                 isSecondarySegmentRbg = m_dlSecondarySegmentRbgMap[i];
             }
 
-            rbgAvailable = (isSecondarySegmentRbg == true) ? rbgAvailable : false;
+            rbgAvailable = (isSecondarySegmentRbg ? rbgAvailable : false);
 
             rbgAvailableMap.push_back(rbgAvailable);
         }

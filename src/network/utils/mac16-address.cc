@@ -228,11 +228,7 @@ bool
 Mac16Address::IsBroadcast() const
 {
     NS_LOG_FUNCTION(this);
-    if (m_address[0] == 0xff && m_address[1] == 0xff)
-    {
-        return true;
-    }
-    return false;
+    return m_address[0] == 0xff && m_address[1] == 0xff;
 }
 
 bool
@@ -241,11 +237,7 @@ Mac16Address::IsMulticast() const
     NS_LOG_FUNCTION(this);
     uint8_t val = m_address[0];
     val >>= 5;
-    if (val == 0x4)
-    {
-        return true;
-    }
-    return false;
+    return val == 0x4;
 }
 
 std::ostream&

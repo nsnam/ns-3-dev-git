@@ -3688,8 +3688,7 @@ DsrRouting::Receive(Ptr<Packet> p, const Ipv4Header& ip, Ptr<Ipv4Interface> inco
                     case IpL4Protocol::RX_CSUM_FAILED:
                         break;
                     case IpL4Protocol::RX_ENDPOINT_UNREACH:
-                        if (ip.GetDestination().IsBroadcast() == true ||
-                            ip.GetDestination().IsMulticast() == true)
+                        if (ip.GetDestination().IsBroadcast() || ip.GetDestination().IsMulticast())
                         {
                             break; // Do not reply to broadcast or multicast
                         }

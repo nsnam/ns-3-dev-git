@@ -63,11 +63,7 @@ TestDoubleIsEqual(const double x1, const double x2, const double epsilon)
     delta = std::ldexp(epsilon, exponent);
     difference = x1 - x2;
 
-    if (difference > delta || difference < -delta)
-    {
-        return false;
-    }
-    return true;
+    return difference <= delta && difference >= -delta;
 }
 
 /**

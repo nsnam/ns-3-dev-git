@@ -511,20 +511,9 @@ MinstrelHtWifiManager::DoCreateStation() const
     station->m_ampduLen = 0;
     station->m_ampduPacketCount = 0;
 
-    // If the device supports HT
-    if (GetHtSupported())
-    {
-        /**
-         * Assume the station is HT.
-         * When correct information available it will be checked.
-         */
-        station->m_isHt = true;
-    }
-    // Use the variable in the station to indicate that the device do not support HT
-    else
-    {
-        station->m_isHt = false;
-    }
+    // Use the variable in the station to indicate whether the device supports HT.
+    // When correct information available it will be checked.
+    station->m_isHt = GetHtSupported();
 
     return station;
 }

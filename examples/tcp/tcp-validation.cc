@@ -746,7 +746,7 @@ main(int argc, char* argv[])
         firstTcpTypeId = TcpDctcp::GetTypeId();
         Config::SetDefault("ns3::CoDelQueueDisc::CeThreshold", TimeValue(ceThreshold));
         Config::SetDefault("ns3::FqCoDelQueueDisc::CeThreshold", TimeValue(ceThreshold));
-        if (queueUseEcn == false)
+        if (!queueUseEcn)
         {
             std::cout << "Warning: using DCTCP with queue ECN disabled" << std::endl;
         }

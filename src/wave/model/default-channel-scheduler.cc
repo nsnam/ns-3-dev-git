@@ -160,14 +160,7 @@ DefaultChannelScheduler::AssignAlternatingAccess(uint32_t channelNumber, bool im
 
     if (m_channelAccess == AlternatingAccess)
     {
-        if (m_channelNumber != sch)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return m_channelNumber == sch;
     }
 
     // if we need immediately switch to AlternatingAccess,
@@ -196,14 +189,7 @@ DefaultChannelScheduler::AssignContinuousAccess(uint32_t channelNumber, bool imm
 
     if (m_channelAccess == ContinuousAccess)
     {
-        if (m_channelNumber != sch)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return m_channelNumber == sch;
     }
 
     // if there is already an wait event for previous non-immediate request
@@ -269,14 +255,7 @@ DefaultChannelScheduler::AssignExtendedAccess(uint32_t channelNumber,
             // if current remain extends cannot fulfill the requirement for extends
             Time remainTime = Simulator::GetDelayLeft(m_extendEvent);
             uint32_t remainExtends = (remainTime / m_coordinator->GetSyncInterval()).GetHigh();
-            if (remainExtends > extends)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return remainExtends > extends;
         }
     }
 

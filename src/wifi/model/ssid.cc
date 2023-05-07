@@ -65,21 +65,13 @@ Ssid::IsEqual(const Ssid& o) const
     {
         i++;
     }
-    if (m_ssid[i] != o.m_ssid[i])
-    {
-        return false;
-    }
-    return true;
+    return m_ssid[i] == o.m_ssid[i];
 }
 
 bool
 Ssid::IsBroadcast() const
 {
-    if (m_ssid[0] == 0)
-    {
-        return true;
-    }
-    return false;
+    return m_ssid[0] == 0;
 }
 
 char*

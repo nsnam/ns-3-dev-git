@@ -225,7 +225,7 @@ PcapFile::WriteFileHeader()
     //
     PcapFileHeader* headerOut = nullptr;
 
-    if (m_swapMode == false)
+    if (!m_swapMode)
     {
         headerOut = &m_fileHeader;
     }

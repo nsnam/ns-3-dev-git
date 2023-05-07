@@ -176,7 +176,7 @@ main(int argc, char* argv[])
     // configuration.
 
     int64_t streamIndex = 1;
-    if (useHelper == false)
+    if (!useHelper)
     {
         // The reference (parent) mobility model starts at coordinate (10, 10, 0)
         // and performs a buildings-aware random walk.

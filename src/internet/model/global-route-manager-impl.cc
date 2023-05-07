@@ -1216,7 +1216,7 @@ GlobalRouteManagerImpl::SPFGetNextLink(SPFVertex* v,
             // skipped a previous link and moved forward to the next (which is then the
             // one we want).
             //
-            if (skip == false)
+            if (!skip)
             {
                 NS_LOG_LOGIC("Returning the found link");
                 return l;

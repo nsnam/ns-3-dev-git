@@ -227,7 +227,7 @@ WallClockSynchronizer::DoSynchronize(uint64_t nsCurrent, uint64_t nsDelay)
         // interrupted by a Signal.  In this case, we need to return and let the
         // simulator re-evaluate what to do.
         //
-        if (SleepWait((numberJiffies - 3) * m_jiffy) == false)
+        if (!SleepWait((numberJiffies - 3) * m_jiffy))
         {
             NS_LOG_INFO("SleepWait interrupted");
             return false;

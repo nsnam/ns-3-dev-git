@@ -446,7 +446,7 @@ Icmpv6L4Protocol::HandleRA(Ptr<Packet> packet,
         defaultRouter = src;
     }
 
-    while (next == true)
+    while (next)
     {
         uint8_t type = 0;
         p->CopyData(&type, sizeof(type));
@@ -688,7 +688,7 @@ Icmpv6L4Protocol::HandleNS(Ptr<Packet> packet,
     bool next = true;
     bool hasSllao = false;
 
-    while (next == true)
+    while (next)
     {
         uint8_t type;
         packet->CopyData(&type, sizeof(type));

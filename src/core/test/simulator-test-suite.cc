@@ -115,14 +115,7 @@ SimulatorEventsTestCase::EventA(int /* a */)
 void
 SimulatorEventsTestCase::EventB(int b)
 {
-    if (b != 2 || NowUs() != 11)
-    {
-        m_b = false;
-    }
-    else
-    {
-        m_b = true;
-    }
+    m_b = !(b != 2 || NowUs() != 11);
     Simulator::Remove(m_idC);
     Simulator::Schedule(MicroSeconds(10), &SimulatorEventsTestCase::EventD, this, 4);
 }
@@ -136,14 +129,7 @@ SimulatorEventsTestCase::EventC(int /* c */)
 void
 SimulatorEventsTestCase::EventD(int d)
 {
-    if (d != 4 || NowUs() != (11 + 10))
-    {
-        m_d = false;
-    }
-    else
-    {
-        m_d = true;
-    }
+    m_d = !(d != 4 || NowUs() != (11 + 10));
 }
 
 void

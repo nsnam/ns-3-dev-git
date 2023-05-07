@@ -246,7 +246,7 @@ Txop::SetMinCw(uint32_t minCw, uint8_t linkId)
     auto& link = GetLink(linkId);
     bool changed = (link.cwMin != minCw);
     link.cwMin = minCw;
-    if (changed == true)
+    if (changed)
     {
         ResetCw(linkId);
     }
@@ -275,7 +275,7 @@ Txop::SetMaxCw(uint32_t maxCw, uint8_t linkId)
     auto& link = GetLink(linkId);
     bool changed = (link.cwMax != maxCw);
     link.cwMax = maxCw;
-    if (changed == true)
+    if (changed)
     {
         ResetCw(linkId);
     }

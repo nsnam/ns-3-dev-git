@@ -371,7 +371,7 @@ OnoeWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     }
     UpdateMode(station);
     WifiMode mode;
-    if (GetUseNonErpProtection() == false)
+    if (!GetUseNonErpProtection())
     {
         mode = GetSupported(station, 0);
     }

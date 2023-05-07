@@ -78,11 +78,7 @@ WifiNoAck::CheckQosAckPolicy(Mac48Address receiver,
                              uint8_t tid,
                              WifiMacHeader::QosAckPolicy ackPolicy) const
 {
-    if (ackPolicy == WifiMacHeader::NO_ACK || ackPolicy == WifiMacHeader::BLOCK_ACK)
-    {
-        return true;
-    }
-    return false;
+    return ackPolicy == WifiMacHeader::NO_ACK || ackPolicy == WifiMacHeader::BLOCK_ACK;
 }
 
 void
@@ -111,11 +107,7 @@ WifiNormalAck::CheckQosAckPolicy(Mac48Address receiver,
                                  uint8_t tid,
                                  WifiMacHeader::QosAckPolicy ackPolicy) const
 {
-    if (ackPolicy == WifiMacHeader::NORMAL_ACK)
-    {
-        return true;
-    }
-    return false;
+    return ackPolicy == WifiMacHeader::NORMAL_ACK;
 }
 
 void
@@ -144,11 +136,7 @@ WifiBlockAck::CheckQosAckPolicy(Mac48Address receiver,
                                 uint8_t tid,
                                 WifiMacHeader::QosAckPolicy ackPolicy) const
 {
-    if (ackPolicy == WifiMacHeader::NORMAL_ACK)
-    {
-        return true;
-    }
-    return false;
+    return ackPolicy == WifiMacHeader::NORMAL_ACK;
 }
 
 void
@@ -177,11 +165,7 @@ WifiBarBlockAck::CheckQosAckPolicy(Mac48Address receiver,
                                    uint8_t tid,
                                    WifiMacHeader::QosAckPolicy ackPolicy) const
 {
-    if (ackPolicy == WifiMacHeader::BLOCK_ACK)
-    {
-        return true;
-    }
-    return false;
+    return ackPolicy == WifiMacHeader::BLOCK_ACK;
 }
 
 void
@@ -228,12 +212,7 @@ WifiDlMuBarBaSequence::CheckQosAckPolicy(Mac48Address receiver,
         return false;
     }
 
-    if (ackPolicy == WifiMacHeader::BLOCK_ACK)
-    {
-        return true;
-    }
-
-    return false;
+    return ackPolicy == WifiMacHeader::BLOCK_ACK;
 }
 
 void
@@ -277,12 +256,7 @@ WifiDlMuTfMuBar::CheckQosAckPolicy(Mac48Address receiver,
                                    WifiMacHeader::QosAckPolicy ackPolicy) const
 {
     // the only admitted ack policy is Block Ack because stations need to wait for a MU-BAR
-    if (ackPolicy == WifiMacHeader::BLOCK_ACK)
-    {
-        return true;
-    }
-
-    return false;
+    return ackPolicy == WifiMacHeader::BLOCK_ACK;
 }
 
 void
@@ -318,12 +292,7 @@ WifiDlMuAggregateTf::CheckQosAckPolicy(Mac48Address receiver,
                                        WifiMacHeader::QosAckPolicy ackPolicy) const
 {
     // the only admitted ack policy is No explicit acknowledgment or TB PPDU Ack policy
-    if (ackPolicy == WifiMacHeader::NO_EXPLICIT_ACK)
-    {
-        return true;
-    }
-
-    return false;
+    return ackPolicy == WifiMacHeader::NO_EXPLICIT_ACK;
 }
 
 void
@@ -393,12 +362,7 @@ WifiAckAfterTbPpdu::CheckQosAckPolicy(Mac48Address receiver,
                                       uint8_t tid,
                                       WifiMacHeader::QosAckPolicy ackPolicy) const
 {
-    if (ackPolicy == WifiMacHeader::NORMAL_ACK)
-    {
-        return true;
-    }
-
-    return false;
+    return ackPolicy == WifiMacHeader::NORMAL_ACK;
 }
 
 void

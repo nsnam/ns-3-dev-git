@@ -134,15 +134,8 @@ class OriginatorRxStatus
      */
     bool IsNextFragment(uint16_t sequenceControl) const
     {
-        if ((sequenceControl >> 4) == (m_lastSequenceControl >> 4) &&
-            (sequenceControl & 0x0f) == ((m_lastSequenceControl & 0x0f) + 1))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return (sequenceControl >> 4) == (m_lastSequenceControl >> 4) &&
+               (sequenceControl & 0x0f) == ((m_lastSequenceControl & 0x0f) + 1);
     }
 
     /**
@@ -230,11 +223,7 @@ bool
 MacRxMiddle::IsDuplicate(const WifiMacHeader* hdr, OriginatorRxStatus* originator) const
 {
     NS_LOG_FUNCTION(hdr << originator);
-    if (hdr->IsRetry() && originator->GetLastSequenceControl() == hdr->GetSequenceControl())
-    {
-        return true;
-    }
-    return false;
+    return hdr->IsRetry() && originator->GetLastSequenceControl() == hdr->GetSequenceControl();
 }
 
 Ptr<const Packet>

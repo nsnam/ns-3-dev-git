@@ -55,11 +55,7 @@ ObjectFactory::SetTypeId(std::string tid)
 bool
 ObjectFactory::IsTypeIdSet() const
 {
-    if (m_tid.GetUid() != 0)
-    {
-        return true;
-    }
-    return false;
+    return m_tid.GetUid() != 0;
 }
 
 void

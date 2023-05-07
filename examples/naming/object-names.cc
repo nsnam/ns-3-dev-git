@@ -214,7 +214,7 @@ main(int argc, char* argv[])
         outputValidated = false;
     }
 
-    if (outputValidated == false)
+    if (!outputValidated)
     {
         std::cerr << "Program internal checking failed; returning with error" << std::endl;
         return (1);

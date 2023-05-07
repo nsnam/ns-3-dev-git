@@ -459,7 +459,7 @@ CsmaNetDevice::TransmitStart()
     //
     // Only transmit if the send side of net device is enabled
     //
-    if (IsSendEnabled() == false)
+    if (!IsSendEnabled())
     {
         m_phyTxDropTrace(m_currentPkt);
         m_currentPkt = nullptr;
@@ -512,7 +512,7 @@ CsmaNetDevice::TransmitStart()
         // The channel is free, transmit the packet
         //
         m_phyTxBeginTrace(m_currentPkt);
-        if (m_channel->TransmitStart(m_currentPkt, m_deviceId) == false)
+        if (!m_channel->TransmitStart(m_currentPkt, m_deviceId))
         {
             NS_LOG_WARN("Channel TransmitStart returns an error");
             m_phyTxDropTrace(m_currentPkt);
@@ -718,7 +718,7 @@ CsmaNetDevice::Receive(Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
     //
     // Only receive if the send side of net device is enabled
     //
-    if (IsReceiveEnabled() == false)
+    if (!IsReceiveEnabled())
     {
         m_phyRxDropTrace(packet);
         return;
@@ -974,7 +974,7 @@ CsmaNetDevice::SendFrom(Ptr<Packet> packet,
     //
     // Only transmit if send side of net device is enabled
     //
-    if (IsSendEnabled() == false)
+    if (!IsSendEnabled())
     {
         m_macTxDropTrace(packet);
         return false;
@@ -990,7 +990,7 @@ CsmaNetDevice::SendFrom(Ptr<Packet> packet,
     // Place the packet to be sent on the send queue.  Note that the
     // queue may fire a drop trace, but we will too.
     //
-    if (m_queue->Enqueue(packet) == false)
+    if (!m_queue->Enqueue(packet))
     {
         m_macTxDropTrace(packet);
         return false;
@@ -1003,7 +1003,7 @@ CsmaNetDevice::SendFrom(Ptr<Packet> packet,
     //
     if (m_txMachineState == READY)
     {
-        if (m_queue->IsEmpty() == false)
+        if (!m_queue->IsEmpty())
         {
             Ptr<Packet> packet = m_queue->Dequeue();
             NS_ASSERT_MSG(packet,

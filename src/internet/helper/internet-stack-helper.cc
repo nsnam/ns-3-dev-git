@@ -303,7 +303,7 @@ InternetStackHelper::Install(Ptr<Node> node) const
         CreateAndAggregateObjectFromTypeId(node, "ns3::ArpL3Protocol");
         CreateAndAggregateObjectFromTypeId(node, "ns3::Ipv4L3Protocol");
         CreateAndAggregateObjectFromTypeId(node, "ns3::Icmpv4L4Protocol");
-        if (m_ipv4ArpJitterEnabled == false)
+        if (!m_ipv4ArpJitterEnabled)
         {
             Ptr<ArpL3Protocol> arp = node->GetObject<ArpL3Protocol>();
             NS_ASSERT(arp);
@@ -325,7 +325,7 @@ InternetStackHelper::Install(Ptr<Node> node) const
         /* IPv6 stack */
         CreateAndAggregateObjectFromTypeId(node, "ns3::Ipv6L3Protocol");
         CreateAndAggregateObjectFromTypeId(node, "ns3::Icmpv6L4Protocol");
-        if (m_ipv6NsRsJitterEnabled == false)
+        if (!m_ipv6NsRsJitterEnabled)
         {
             Ptr<Icmpv6L4Protocol> icmpv6l4 = node->GetObject<Icmpv6L4Protocol>();
             NS_ASSERT(icmpv6l4);

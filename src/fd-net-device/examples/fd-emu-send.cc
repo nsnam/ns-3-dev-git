@@ -99,7 +99,7 @@ Send(Ptr<NetDevice> dev, int level, std::string emuMode)
 
         if (level == 1)
         {
-            if (device->SendFrom(packet, sender, receiver, 0) == false)
+            if (!device->SendFrom(packet, sender, receiver, 0))
             {
                 failed++;
             }

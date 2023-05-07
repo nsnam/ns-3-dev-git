@@ -921,7 +921,7 @@ LteUeMac::DoSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
     m_frameNo = frameNo;
     m_subframeNo = subframeNo;
     RefreshHarqProcessesPacketBuffer();
-    if ((Simulator::Now() >= m_bsrLast + m_bsrPeriodicity) && (m_freshUlBsr == true))
+    if ((Simulator::Now() >= m_bsrLast + m_bsrPeriodicity) && m_freshUlBsr)
     {
         if (m_componentCarrierId == 0)
         {

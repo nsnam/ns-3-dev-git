@@ -150,7 +150,7 @@ main(int argc, char* argv[])
     // configuration.
 
     int64_t streamIndex = 1;
-    if (useHelper == false)
+    if (!useHelper)
     {
         // Assign random variable stream numbers on the parent and each child
         streamIndex += waypointMm->AssignStreams(streamIndex);

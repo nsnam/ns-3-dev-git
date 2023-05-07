@@ -81,7 +81,7 @@ main(int argc, char* argv[])
     // We've got the "hardware" in place.  Now we need to add IP addresses.
     //
     NS_LOG_INFO("Assign IP Addresses.");
-    if (useV6 == false)
+    if (!useV6)
     {
         Ipv4AddressHelper ipv4;
         ipv4.SetBase("10.1.1.0", "255.255.255.0");

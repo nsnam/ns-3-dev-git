@@ -277,7 +277,7 @@ main(int argc, char* argv[])
     std::cout << "Run 'wifi-manager-example --PrintHelp' to show program options." << std::endl
               << std::endl;
 
-    if (infrastructure == false)
+    if (!infrastructure)
     {
         NS_ABORT_MSG_IF(serverNss != clientNss,
                         "In ad hoc mode, we assume sender and receiver are similarly configured");

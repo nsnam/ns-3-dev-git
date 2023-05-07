@@ -182,11 +182,7 @@ class LollipopCounter
      */
     bool IsInit() const
     {
-        if (m_value > m_circularRegion)
-        {
-            return true;
-        }
-        return false;
+        return m_value > m_circularRegion;
     }
 
     /**
@@ -200,11 +196,7 @@ class LollipopCounter
         NS_ABORT_MSG_IF(lhs.m_sequenceWindow != rhs.m_sequenceWindow,
                         "Can not compare two Lollipop Counters with different sequence windows");
 
-        if (lhs.m_value == rhs.m_value)
-        {
-            return true;
-        }
-        return false;
+        return lhs.m_value == rhs.m_value;
     }
 
     /**
@@ -263,25 +255,11 @@ class LollipopCounter
                      1; // this is guaranteed to be positive and between [1...m_lollipopMaxValue].
         if (distance > lhs.m_sequenceWindow)
         {
-            if (lhsIsHigher)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return lhsIsHigher;
         }
         else
         {
-            if (lhsIsHigher)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return !lhsIsHigher;
         }
 
         // this should never be reached.

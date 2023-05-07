@@ -1175,8 +1175,8 @@ WifiPhy::DoChannelSwitch()
     NS_LOG_FUNCTION(this);
 
     // Update unspecified parameters with default values
-    if (auto& [number, width, band, primary20] = m_channelSettings; true)
     {
+        auto& [number, width, band, primary20] = m_channelSettings;
         if (band == static_cast<int>(WIFI_PHY_BAND_UNSPECIFIED))
         {
             band = static_cast<int>(GetDefaultPhyBand(m_standard));

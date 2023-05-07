@@ -276,7 +276,7 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device,
             break;
         }
     }
-    if (found == false)
+    if (!found)
     {
         NS_LOG_LOGIC("node=" << m_node->GetId() << ", got request from "
                              << arp.GetSourceIpv4Address() << " for unknown address "

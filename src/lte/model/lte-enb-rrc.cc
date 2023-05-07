@@ -679,7 +679,7 @@ UeManager::PrepareHandover(uint16_t cellId)
             uint16_t rnti = m_rrc->AddUe(UeManager::HANDOVER_JOINING, componentCarrierId);
             LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv =
                 m_rrc->m_cmacSapProvider.at(componentCarrierId)->AllocateNcRaPreamble(rnti);
-            if (anrcrv.valid == false)
+            if (!anrcrv.valid)
             {
                 NS_LOG_INFO(this << " failed to allocate a preamble for non-contention based RA => "
                                     "cannot perform HO");
@@ -1145,7 +1145,7 @@ UeManager::RecvRrcConnectionRequest(LteRrcSap::RrcConnectionRequest msg)
     case INITIAL_RANDOM_ACCESS: {
         m_connectionRequestTimeout.Cancel();
 
-        if (m_rrc->m_admitRrcConnectionRequest == true)
+        if (m_rrc->m_admitRrcConnectionRequest)
         {
             m_imsi = msg.ueIdentity;
 
@@ -1195,7 +1195,7 @@ UeManager::RecvRrcConnectionSetupCompleted(LteRrcSap::RrcConnectionSetupComplete
     {
     case CONNECTION_SETUP:
         m_connectionSetupTimeout.Cancel();
-        if (m_caSupportConfigured == false && m_rrc->m_numberOfComponentCarriers > 1)
+        if (!m_caSupportConfigured && m_rrc->m_numberOfComponentCarriers > 1)
         {
             m_pendingRrcConnectionReconfiguration = true; // Force Reconfiguration
             m_pendingStartDataRadioBearers = true;
@@ -1610,7 +1610,7 @@ UeManager::BuildRrcConnectionReconfiguration()
     msg.haveMobilityControlInfo = false;
     msg.haveMeasConfig = true;
     msg.measConfig = m_rrc->m_ueMeasConfig;
-    if (m_caSupportConfigured == false && m_rrc->m_numberOfComponentCarriers > 1)
+    if (!m_caSupportConfigured && m_rrc->m_numberOfComponentCarriers > 1)
     {
         m_caSupportConfigured = true;
         NS_LOG_FUNCTION(this << "CA not configured. Configure now!");
@@ -1733,11 +1733,11 @@ UeManager::SwitchToState(State newState)
         break;
 
     case CONNECTED_NORMALLY: {
-        if (m_pendingRrcConnectionReconfiguration == true)
+        if (m_pendingRrcConnectionReconfiguration)
         {
             ScheduleRrcConnectionReconfiguration();
         }
-        if (m_pendingStartDataRadioBearers == true && m_caSupportConfigured == true)
+        if (m_pendingStartDataRadioBearers && m_caSupportConfigured)
         {
             StartDataRadioBearers();
         }
@@ -2867,7 +2867,7 @@ LteEnbRrc::DoRecvHandoverRequest(EpcX2SapUser::HandoverRequestParams req)
     NS_LOG_LOGIC("mmeUeS1apId = " << req.mmeUeS1apId);
 
     // if no SRS index is available, then do not accept the handover
-    if (m_admitHandoverRequest == false || IsMaxSrsReached())
+    if (!m_admitHandoverRequest || IsMaxSrsReached())
     {
         NS_LOG_INFO("rejecting handover request from cellId " << req.sourceCellId);
         EpcX2Sap::HandoverPreparationFailureParams res;
@@ -2887,7 +2887,7 @@ LteEnbRrc::DoRecvHandoverRequest(EpcX2SapUser::HandoverRequestParams req)
     ueManager->SetImsi(req.mmeUeS1apId);
     LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv =
         m_cmacSapProvider.at(componentCarrierId)->AllocateNcRaPreamble(rnti);
-    if (anrcrv.valid == false)
+    if (!anrcrv.valid)
     {
         NS_LOG_INFO(
             this
@@ -3487,14 +3487,7 @@ LteEnbRrc::IsMaxSrsReached()
     NS_ASSERT(m_srsCurrentPeriodicityId < SRS_ENTRIES);
     NS_LOG_DEBUG(this << " SRS p " << g_srsPeriodicity[m_srsCurrentPeriodicityId] << " set "
                       << m_ueSrsConfigurationIndexSet.size());
-    if (m_ueSrsConfigurationIndexSet.size() >= g_srsPeriodicity[m_srsCurrentPeriodicityId])
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return m_ueSrsConfigurationIndexSet.size() >= g_srsPeriodicity[m_srsCurrentPeriodicityId];
 }
 
 uint8_t

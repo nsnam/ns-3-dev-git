@@ -357,12 +357,8 @@ QosTxop::IsQosOldPacket(Ptr<const WifiMpdu> mpdu)
         return false;
     }
 
-    if (QosUtilsIsOldPacket(GetBaStartingSequence(recipient, tid),
-                            mpdu->GetHeader().GetSequenceNumber()))
-    {
-        return true;
-    }
-    return false;
+    return QosUtilsIsOldPacket(GetBaStartingSequence(recipient, tid),
+                               mpdu->GetHeader().GetSequenceNumber());
 }
 
 Ptr<WifiMpdu>

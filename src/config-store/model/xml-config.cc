@@ -145,8 +145,7 @@ XmlConfigSave::Default()
                                                 << " was not saved because it is OBSOLETE");
                 return;
             }
-            else if ((supportLevel == TypeId::SupportLevel::DEPRECATED) &&
-                     (m_saveDeprecated == false))
+            else if (supportLevel == TypeId::SupportLevel::DEPRECATED && !m_saveDeprecated)
             {
                 NS_LOG_WARN("Global attribute " << m_typeid << "::" << name
                                                 << " was not saved because it is DEPRECATED");
@@ -225,8 +224,7 @@ XmlConfigSave::Attributes()
                                          << " was not saved because it is OBSOLETE");
                 return;
             }
-            else if ((supportLevel == TypeId::SupportLevel::DEPRECATED) &&
-                     (m_saveDeprecated == false))
+            else if (supportLevel == TypeId::SupportLevel::DEPRECATED && !m_saveDeprecated)
             {
                 NS_LOG_WARN("Attribute " << GetCurrentPath()
                                          << " was not saved because it is DEPRECATED");

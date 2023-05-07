@@ -153,7 +153,7 @@ Rip::DoInitialize()
         for (uint32_t j = 0; j < m_ipv4->GetNAddresses(i); j++)
         {
             Ipv4InterfaceAddress address = m_ipv4->GetAddress(i, j);
-            if (address.GetScope() != Ipv4InterfaceAddress::HOST && activeInterface == true)
+            if (address.GetScope() != Ipv4InterfaceAddress::HOST && activeInterface)
             {
                 NS_LOG_LOGIC("RIP: adding socket to " << address.GetLocal());
                 TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");
@@ -290,7 +290,7 @@ Rip::RouteInput(Ptr<const Packet> p,
     }
 
     // Check if input device supports IP forwarding
-    if (m_ipv4->IsForwarding(iif) == false)
+    if (!m_ipv4->IsForwarding(iif))
     {
         NS_LOG_LOGIC("Forwarding disabled for this interface");
         if (!ecb.IsNull())
@@ -365,8 +365,7 @@ Rip::NotifyInterfaceUp(uint32_t i)
     {
         Ipv4InterfaceAddress address = m_ipv4->GetAddress(i, j);
 
-        if (address.GetScope() != Ipv4InterfaceAddress::HOST && sendSocketFound == false &&
-            activeInterface == true)
+        if (address.GetScope() != Ipv4InterfaceAddress::HOST && !sendSocketFound && activeInterface)
         {
             NS_LOG_LOGIC("RIP: adding sending socket to " << address.GetLocal());
             TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");

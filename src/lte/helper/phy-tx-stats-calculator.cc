@@ -106,7 +106,7 @@ PhyTxStatsCalculator::DlPhyTransmission(PhyTransmissionStatParameters params)
                          << params.m_ndi);
     NS_LOG_INFO("Write DL Tx Phy Stats in " << GetDlTxOutputFilename());
 
-    if (m_dlTxFirstWrite == true)
+    if (m_dlTxFirstWrite)
     {
         m_dlTxOutFile.open(GetDlOutputFilename());
         if (!m_dlTxOutFile.is_open())
@@ -140,7 +140,7 @@ PhyTxStatsCalculator::UlPhyTransmission(PhyTransmissionStatParameters params)
                          << params.m_ndi);
     NS_LOG_INFO("Write UL Tx Phy Stats in " << GetUlTxOutputFilename());
 
-    if (m_ulTxFirstWrite == true)
+    if (m_ulTxFirstWrite)
     {
         m_ulTxOutFile.open(GetUlTxOutputFilename());
         if (!m_ulTxOutFile.is_open())
@@ -177,7 +177,7 @@ PhyTxStatsCalculator::DlPhyTransmissionCallback(Ptr<PhyTxStatsCalculator> phyTxS
     std::ostringstream pathAndRnti;
     std::string pathEnb = path.substr(0, path.find("/ComponentCarrierMap"));
     pathAndRnti << pathEnb << "/LteEnbRrc/UeMap/" << params.m_rnti;
-    if (phyTxStats->ExistsImsiPath(pathAndRnti.str()) == true)
+    if (phyTxStats->ExistsImsiPath(pathAndRnti.str()))
     {
         imsi = phyTxStats->GetImsiPath(pathAndRnti.str());
     }
@@ -201,7 +201,7 @@ PhyTxStatsCalculator::UlPhyTransmissionCallback(Ptr<PhyTxStatsCalculator> phyTxS
     std::ostringstream pathAndRnti;
     pathAndRnti << path << "/" << params.m_rnti;
     std::string pathUePhy = path.substr(0, path.find("/ComponentCarrierMapUe"));
-    if (phyTxStats->ExistsImsiPath(pathAndRnti.str()) == true)
+    if (phyTxStats->ExistsImsiPath(pathAndRnti.str()))
     {
         imsi = phyTxStats->GetImsiPath(pathAndRnti.str());
     }

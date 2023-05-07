@@ -187,7 +187,7 @@ BSSchedulerSimple::Schedule()
         else
         {
             burst = Create<PacketBurst>();
-            while (connection->HasPackets() == true)
+            while (connection->HasPackets())
             {
                 uint32_t FirstPacketSize = connection->GetQueue()->GetFirstPacketRequiredByte(
                     MacHeaderType::HEADER_TYPE_GENERIC);

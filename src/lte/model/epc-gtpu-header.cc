@@ -270,16 +270,12 @@ GtpuHeader::SetVersion(uint8_t m_version)
 bool
 GtpuHeader::operator==(const GtpuHeader& b) const
 {
-    if (m_version == b.m_version && m_protocolType == b.m_protocolType &&
-        m_extensionHeaderFlag == b.m_extensionHeaderFlag &&
-        m_sequenceNumberFlag == b.m_sequenceNumberFlag && m_nPduNumberFlag == b.m_nPduNumberFlag &&
-        m_messageType == b.m_messageType && m_length == b.m_length && m_teid == b.m_teid &&
-        m_sequenceNumber == b.m_sequenceNumber && m_nPduNumber == b.m_nPduNumber &&
-        m_nextExtensionType == b.m_nextExtensionType)
-    {
-        return true;
-    }
-    return false;
+    return m_version == b.m_version && m_protocolType == b.m_protocolType &&
+           m_extensionHeaderFlag == b.m_extensionHeaderFlag &&
+           m_sequenceNumberFlag == b.m_sequenceNumberFlag &&
+           m_nPduNumberFlag == b.m_nPduNumberFlag && m_messageType == b.m_messageType &&
+           m_length == b.m_length && m_teid == b.m_teid && m_sequenceNumber == b.m_sequenceNumber &&
+           m_nPduNumber == b.m_nPduNumber && m_nextExtensionType == b.m_nextExtensionType;
 }
 
 } // namespace ns3

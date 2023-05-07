@@ -184,12 +184,7 @@ class CallbackComponent : public CallbackComponentBase
         auto p = std::dynamic_pointer_cast<const CallbackComponent<T>>(other);
 
         // other must have the same type and value as ours
-        if (p == nullptr || p->m_comp != m_comp)
-        {
-            return false;
-        }
-
-        return true;
+        return !(p == nullptr || p->m_comp != m_comp);
     }
 
   private:

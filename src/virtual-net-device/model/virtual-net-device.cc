@@ -255,11 +255,7 @@ bool
 VirtualNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
     m_macTxTrace(packet);
-    if (m_sendCb(packet, GetAddress(), dest, protocolNumber))
-    {
-        return true;
-    }
-    return false;
+    return m_sendCb(packet, GetAddress(), dest, protocolNumber);
 }
 
 bool
@@ -270,11 +266,7 @@ VirtualNetDevice::SendFrom(Ptr<Packet> packet,
 {
     NS_ASSERT(m_supportsSendFrom);
     m_macTxTrace(packet);
-    if (m_sendCb(packet, source, dest, protocolNumber))
-    {
-        return true;
-    }
-    return false;
+    return m_sendCb(packet, source, dest, protocolNumber);
 }
 
 Ptr<Node>

@@ -274,7 +274,7 @@ ArfWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
         channelWidth = 20;
     }
     WifiMode mode;
-    if (GetUseNonErpProtection() == false)
+    if (!GetUseNonErpProtection())
     {
         mode = GetSupported(station, 0);
     }

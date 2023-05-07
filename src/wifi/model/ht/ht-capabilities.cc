@@ -233,11 +233,7 @@ HtCapabilities::GetMaxAmpduLength() const
 bool
 HtCapabilities::IsSupportedMcs(uint8_t mcs) const
 {
-    if (m_rxMcsBitmask[mcs] == 1)
-    {
-        return true;
-    }
-    return false;
+    return m_rxMcsBitmask[mcs] == 1;
 }
 
 uint8_t
@@ -249,7 +245,7 @@ HtCapabilities::GetRxHighestSupportedAntennas() const
 
         for (uint8_t mcs = (nRx - 1) * 8; mcs <= maxMcs; mcs++)
         {
-            if (IsSupportedMcs(mcs) == false)
+            if (!IsSupportedMcs(mcs))
             {
                 return (nRx - 1);
             }

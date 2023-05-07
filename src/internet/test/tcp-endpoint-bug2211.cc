@@ -119,7 +119,7 @@ TcpEndPointBug2211Test::DoRun()
 
     TypeId tid = TcpSocketFactory::GetTypeId();
     Ptr<Socket> sink = Socket::CreateSocket(node, tid);
-    if (m_v6 == false)
+    if (!m_v6)
     {
         sink->Bind(InetSocketAddress(Ipv4Address::GetAny(), 9));
     }
@@ -135,7 +135,7 @@ TcpEndPointBug2211Test::DoRun()
     source->Bind();
     source->SetConnectCallback(MakeCallback(&TcpEndPointBug2211Test::HandleConnect, this),
                                MakeNullCallback<void, Ptr<Socket>>());
-    if (m_v6 == false)
+    if (!m_v6)
     {
         source->Connect(InetSocketAddress(Ipv4Address::GetLoopback(), 9));
     }

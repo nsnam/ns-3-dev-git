@@ -73,11 +73,7 @@ RedQueueDiscTestItem::AddHeader()
 bool
 RedQueueDiscTestItem::Mark()
 {
-    if (m_ecnCapablePacket)
-    {
-        return true;
-    }
-    return false;
+    return m_ecnCapablePacket;
 }
 
 /**

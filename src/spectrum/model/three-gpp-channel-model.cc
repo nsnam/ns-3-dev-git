@@ -1083,14 +1083,7 @@ bool
 ThreeGppChannelModel::ChannelMatrixNeedsUpdate(Ptr<const ThreeGppChannelParams> channelParams,
                                                Ptr<const ChannelMatrix> channelMatrix)
 {
-    if (channelParams->m_generatedTime > channelMatrix->m_generatedTime)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return channelParams->m_generatedTime > channelMatrix->m_generatedTime;
 }
 
 Ptr<const MatrixBasedChannelModel::ChannelMatrix>

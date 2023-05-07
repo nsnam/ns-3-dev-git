@@ -361,7 +361,7 @@ LrWpanHelper::EnablePcapInternal(std::string prefix,
     Ptr<PcapFileWrapper> file =
         pcapHelper.CreateFile(filename, std::ios::out, PcapHelper::DLT_IEEE802_15_4);
 
-    if (promiscuous == true)
+    if (promiscuous)
     {
         device->GetMac()->TraceConnectWithoutContext("PromiscSniffer",
                                                      MakeBoundCallback(&PcapSniffLrWpan, file));

@@ -471,16 +471,8 @@ bool
 AnimationInterface::NodeHasMoved(Ptr<Node> n, Vector newLocation)
 {
     Vector oldLocation = GetPosition(n);
-    bool moved = true;
-    if ((ceil(oldLocation.x) == ceil(newLocation.x)) &&
-        (ceil(oldLocation.y) == ceil(newLocation.y)))
-    {
-        moved = false;
-    }
-    else
-    {
-        moved = true;
-    }
+    bool moved = !((ceil(oldLocation.x) == ceil(newLocation.x)) &&
+                   (ceil(oldLocation.y) == ceil(newLocation.y)));
     return moved;
 }
 
@@ -2153,14 +2145,7 @@ AnimationInterface::WriteNodeEnergies()
 bool
 AnimationInterface::IsInTimeWindow()
 {
-    if ((Simulator::Now() >= m_startTime) && (Simulator::Now() <= m_stopTime))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return Simulator::Now() >= m_startTime && Simulator::Now() <= m_stopTime;
 }
 
 void

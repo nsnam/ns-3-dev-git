@@ -67,21 +67,13 @@ IeMeshId::IsEqual(const IeMeshId& o) const
     {
         i++;
     }
-    if (m_meshId[i] != o.m_meshId[i])
-    {
-        return false;
-    }
-    return true;
+    return m_meshId[i] == o.m_meshId[i];
 }
 
 bool
 IeMeshId::IsBroadcast() const
 {
-    if (m_meshId[0] == 0)
-    {
-        return true;
-    }
-    return false;
+    return m_meshId[0] == 0;
 }
 
 char*

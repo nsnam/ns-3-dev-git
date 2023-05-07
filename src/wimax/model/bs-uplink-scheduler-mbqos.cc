@@ -1079,7 +1079,7 @@ UplinkSchedulerMBQoS::SetupServiceFlow(SSRecord* ssRecord, ServiceFlow* serviceF
     switch (serviceFlow->GetSchedulingType())
     {
     case ServiceFlow::SF_TYPE_UGS: {
-        if (serviceFlow->GetIsMulticast() == true)
+        if (serviceFlow->GetIsMulticast())
         {
             modulation = serviceFlow->GetModulation();
         }

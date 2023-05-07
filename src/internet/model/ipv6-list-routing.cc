@@ -120,7 +120,7 @@ Ipv6ListRouting::RouteInput(Ptr<const Packet> p,
 
     // Check if input device supports IP forwarding
     uint32_t iif = m_ipv6->GetInterfaceForDevice(idev);
-    if (m_ipv6->IsForwarding(iif) == false)
+    if (!m_ipv6->IsForwarding(iif))
     {
         NS_LOG_LOGIC("Forwarding disabled for this interface");
         ecb(p, header, Socket::ERROR_NOROUTETOHOST);

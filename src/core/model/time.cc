@@ -338,7 +338,7 @@ Time::Mark(Time* const time)
         ret = g_markingTimes->insert(time);
         NS_LOG_LOGIC("\t[" << g_markingTimes->size() << "] recording " << time);
 
-        if (ret.second == false)
+        if (!ret.second)
         {
             NS_LOG_WARN("already recorded " << time << "!");
         }
@@ -388,8 +388,8 @@ Time::ConvertTimes(const Unit unit)
     for (MarkedTimes::iterator it = g_markingTimes->begin(); it != g_markingTimes->end(); it++)
     {
         Time* const tp = *it;
-        if (!((tp->m_data == std::numeric_limits<int64_t>::min()) ||
-              (tp->m_data == std::numeric_limits<int64_t>::max())))
+        if (!(tp->m_data == std::numeric_limits<int64_t>::min() ||
+              tp->m_data == std::numeric_limits<int64_t>::max()))
         {
             tp->m_data = tp->ToInteger(unit);
         }

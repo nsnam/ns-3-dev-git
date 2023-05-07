@@ -709,7 +709,7 @@ TcpSocketBase::Connect(const Address& address)
         // a v4 address and re-call this function
         Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom(address);
         Ipv6Address v6Addr = transport.GetIpv6();
-        if (v6Addr.IsIpv4MappedAddress() == true)
+        if (v6Addr.IsIpv4MappedAddress())
         {
             Ipv4Address v4Addr = v6Addr.GetIpv4MappedAddress();
             return Connect(InetSocketAddress(v4Addr, transport.GetPort()));
@@ -786,7 +786,7 @@ TcpSocketBase::Close()
 
     if (m_txBuffer->SizeFromSequence(m_tcb->m_nextTxSequence) > 0)
     { // App close with pending data must wait until all data transmitted
-        if (m_closeOnEmpty == false)
+        if (!m_closeOnEmpty)
         {
             m_closeOnEmpty = true;
             NS_LOG_INFO("Socket " << this << " deferring close, state " << TcpStateName[m_state]);
@@ -3267,7 +3267,7 @@ TcpSocketBase::UpdateRttHistory(const SequenceNumber32& seq, uint32_t sz, bool i
     NS_LOG_FUNCTION(this);
 
     // update the history of sequence numbers used to calculate the RTT
-    if (isRetransmission == false)
+    if (!isRetransmission)
     { // This is the next expected one, just log at end
         m_history.emplace_back(seq, sz, Simulator::Now());
     }
@@ -4410,7 +4410,7 @@ TcpSocketBase::UpdateWindowSize(const TcpHeader& header)
         m_highRxMark = header.GetSequenceNumber();
         update = true;
     }
-    if (update == true)
+    if (update)
     {
         m_rWnd = receivedWindow;
         NS_LOG_LOGIC("updating rWnd to " << m_rWnd);

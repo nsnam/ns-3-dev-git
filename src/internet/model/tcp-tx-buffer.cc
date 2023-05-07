@@ -943,13 +943,13 @@ TcpTxBuffer::IsLost(const SequenceNumber32& seq) const
         // Search for the right iterator before calling IsLost()
         if (beginOfCurrentPacket >= seq)
         {
-            if ((*it)->m_lost == true)
+            if ((*it)->m_lost)
             {
                 NS_LOG_INFO("seq=" << seq << " is lost because of lost flag");
                 return true;
             }
 
-            if ((*it)->m_sacked == true)
+            if ((*it)->m_sacked)
             {
                 NS_LOG_INFO("seq=" << seq << " is not lost because of sacked flag");
                 return false;
@@ -991,7 +991,7 @@ TcpTxBuffer::NextSeg(SequenceNumber32* seq, SequenceNumber32* seqHigh, bool isRe
         item = *it;
 
         // Condition 1.a , 1.b , and 1.c
-        if (item->m_retrans == false && item->m_sacked == false)
+        if (!item->m_retrans && !item->m_sacked)
         {
             if (item->m_lost)
             {
@@ -1166,7 +1166,7 @@ TcpTxBuffer::IsLostRFC(const SequenceNumber32& seq, const PacketList::const_iter
     Ptr<const Packet> current;
     SequenceNumber32 beginOfCurrentPacket = seq;
 
-    if ((*segment)->m_sacked == true)
+    if ((*segment)->m_sacked)
     {
         return false;
     }

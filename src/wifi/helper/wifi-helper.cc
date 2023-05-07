@@ -377,7 +377,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         packet->RemoveHeader(hdr);
         extractedLength = hdr.GetLength();
         packet = packet->CreateFragment(0, static_cast<uint32_t>(extractedLength));
-        if (aMpdu.type == LAST_MPDU_IN_AGGREGATE || (hdr.GetEof() == true && hdr.GetLength() > 0))
+        if (aMpdu.type == LAST_MPDU_IN_AGGREGATE || (hdr.GetEof() && hdr.GetLength() > 0))
         {
             ampduStatusFlags |= RadiotapHeader::A_MPDU_STATUS_LAST;
         }

@@ -716,7 +716,7 @@ BaseStationNetDevice::DoReceive(Ptr<Packet> packet)
     packet->RemoveHeader(gnrcMacHdr);
     if (gnrcMacHdr.GetHt() == MacHeaderType::HEADER_TYPE_GENERIC)
     {
-        if (gnrcMacHdr.check_hcs() == false)
+        if (!gnrcMacHdr.check_hcs())
         {
             // The header is noisy
             m_bsRxDropTrace(packet);
@@ -882,7 +882,7 @@ BaseStationNetDevice::DoReceive(Ptr<Packet> packet)
         packet->RemoveHeader(bwRequestHdr);
         NS_ASSERT_MSG(bwRequestHdr.GetHt() == MacHeaderType::HEADER_TYPE_BANDWIDTH,
                       "A bandwidth request should be carried by a bandwidth header type");
-        if (bwRequestHdr.check_hcs() == false)
+        if (!bwRequestHdr.check_hcs())
         {
             // The header is noisy
             NS_LOG_INFO("BS:Header HCS ERROR");

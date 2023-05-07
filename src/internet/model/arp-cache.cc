@@ -551,11 +551,7 @@ ArpCache::Entry::IsExpired() const
     Time timeout = GetTimeout();
     Time delta = Simulator::Now() - m_lastSeen;
     NS_LOG_DEBUG("delta=" << delta.GetSeconds() << "s");
-    if (delta > timeout)
-    {
-        return true;
-    }
-    return false;
+    return delta > timeout;
 }
 
 ArpCache::Ipv4PayloadHeaderPair

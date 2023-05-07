@@ -264,7 +264,7 @@ main(int argc, char* argv[])
 
     Simulator::Stop(Seconds(10.0));
 
-    if (tracing == true)
+    if (tracing)
     {
         // Depending on the system Id (rank), the pcap information
         // traced will be different.  For example, the ethernet pcap

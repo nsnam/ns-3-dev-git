@@ -386,7 +386,7 @@ RocketfuelTopologyReader::Read()
         if (ftype == RF_MAPS)
         {
             ret = std::regex_match(line, matches, rocketfuel_maps_regex);
-            if (ret != true || matches.empty())
+            if (!ret || matches.empty())
             {
                 NS_LOG_WARN("match failed (maps file): %s" << line);
                 break;
@@ -395,7 +395,7 @@ RocketfuelTopologyReader::Read()
         else if (ftype == RF_WEIGHTS)
         {
             ret = std::regex_match(line, matches, rocketfuel_weights_regex);
-            if (ret != true || matches.empty())
+            if (!ret || matches.empty())
             {
                 NS_LOG_WARN("match failed (weights file): %s" << line);
                 break;

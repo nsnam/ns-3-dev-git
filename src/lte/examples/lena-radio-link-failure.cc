@@ -318,7 +318,7 @@ Throughput(bool firstWrite, Time binSize, std::string fileName)
 {
     std::ofstream output;
 
-    if (firstWrite == true)
+    if (firstWrite)
     {
         output.open(fileName, std::ofstream::out);
         firstWrite = false;

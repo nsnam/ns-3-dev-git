@@ -132,11 +132,7 @@ template <>
 bool
 SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const Time& value) const
 {
-    if (sqlite3_bind_double(stmt, pos, value.GetSeconds()) == SQLITE_OK)
-    {
-        return true;
-    }
-    return false;
+    return sqlite3_bind_double(stmt, pos, value.GetSeconds()) == SQLITE_OK;
 }
 
 //! \copydoc SQLiteOutput::Bind
@@ -144,11 +140,7 @@ template <>
 bool
 SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const double& value) const
 {
-    if (sqlite3_bind_double(stmt, pos, value) == SQLITE_OK)
-    {
-        return true;
-    }
-    return false;
+    return sqlite3_bind_double(stmt, pos, value) == SQLITE_OK;
 }
 
 //! \copydoc SQLiteOutput::Bind
@@ -156,11 +148,7 @@ template <>
 bool
 SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const uint32_t& value) const
 {
-    if (sqlite3_bind_int(stmt, pos, static_cast<int>(value)) == SQLITE_OK)
-    {
-        return true;
-    }
-    return false;
+    return sqlite3_bind_int(stmt, pos, static_cast<int>(value)) == SQLITE_OK;
 }
 
 //! \copydoc SQLiteOutput::Bind
@@ -168,11 +156,7 @@ template <>
 bool
 SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const long& value) const
 {
-    if (sqlite3_bind_int64(stmt, pos, value) == SQLITE_OK)
-    {
-        return true;
-    }
-    return false;
+    return sqlite3_bind_int64(stmt, pos, value) == SQLITE_OK;
 }
 
 //! \copydoc SQLiteOutput::Bind
@@ -180,11 +164,7 @@ template <>
 bool
 SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const long long& value) const
 {
-    if (sqlite3_bind_int64(stmt, pos, value) == SQLITE_OK)
-    {
-        return true;
-    }
-    return false;
+    return sqlite3_bind_int64(stmt, pos, value) == SQLITE_OK;
 }
 
 //! \copydoc SQLiteOutput::Bind
@@ -192,11 +172,7 @@ template <>
 bool
 SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const uint16_t& value) const
 {
-    if (sqlite3_bind_int(stmt, pos, static_cast<int>(value)) == SQLITE_OK)
-    {
-        return true;
-    }
-    return false;
+    return sqlite3_bind_int(stmt, pos, static_cast<int>(value)) == SQLITE_OK;
 }
 
 //! \copydoc SQLiteOutput::Bind
@@ -204,11 +180,7 @@ template <>
 bool
 SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const uint8_t& value) const
 {
-    if (sqlite3_bind_int(stmt, pos, static_cast<int>(value)) == SQLITE_OK)
-    {
-        return true;
-    }
-    return false;
+    return sqlite3_bind_int(stmt, pos, static_cast<int>(value)) == SQLITE_OK;
 }
 
 //! \copydoc SQLiteOutput::Bind
@@ -216,11 +188,7 @@ template <>
 bool
 SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const int& value) const
 {
-    if (sqlite3_bind_int(stmt, pos, value) == SQLITE_OK)
-    {
-        return true;
-    }
-    return false;
+    return sqlite3_bind_int(stmt, pos, value) == SQLITE_OK;
 }
 
 //! \copydoc SQLiteOutput::Bind
@@ -228,11 +196,7 @@ template <>
 bool
 SQLiteOutput::Bind(sqlite3_stmt* stmt, int pos, const std::string& value) const
 {
-    if (sqlite3_bind_text(stmt, pos, value.c_str(), -1, SQLITE_STATIC) == SQLITE_OK)
-    {
-        return true;
-    }
-    return false;
+    return sqlite3_bind_text(stmt, pos, value.c_str(), -1, SQLITE_STATIC) == SQLITE_OK;
 }
 
 int

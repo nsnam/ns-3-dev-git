@@ -189,7 +189,7 @@ MeshPointDevice::Forward(Ptr<NetDevice> inport,
                                                   packet,
                                                   protocol,
                                                   MakeCallback(&MeshPointDevice::DoSend, this));
-    if (result == false)
+    if (!result)
     {
         NS_LOG_DEBUG("Request to forward packet " << packet << " to destination " << dst
                                                   << " failed; dropping packet");

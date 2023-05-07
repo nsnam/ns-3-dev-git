@@ -96,7 +96,7 @@ Ns3WimaxSimpleOFDMTestCase::DoRunOnce(double FrameDuration)
     Simulator::Run();
     for (int i = 0; i < 3; i++)
     {
-        if (ssDevs.Get(i)->GetObject<SubscriberStationNetDevice>()->IsRegistered() == false)
+        if (!ssDevs.Get(i)->GetObject<SubscriberStationNetDevice>()->IsRegistered())
         {
             NS_LOG_DEBUG("SS[" << i << "] not registered");
             return true; // Test fail because SS[i] is not registered
@@ -113,7 +113,7 @@ Ns3WimaxSimpleOFDMTestCase::DoRun()
     for (int i = 0; i < 7; i++)
     {
         NS_LOG_DEBUG("Frame Duration = " << frameDuratioTab[i]);
-        if (DoRunOnce(frameDuratioTab[i]) != false)
+        if (DoRunOnce(frameDuratioTab[i]))
         {
             return;
         }

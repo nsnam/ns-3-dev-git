@@ -3004,7 +3004,7 @@ RoutingProtocol::RouteInput(Ptr<const Packet> p,
     Ipv4Address origin = header.GetSource();
 
     // Consume self-originated packets
-    if (IsMyOwnAddress(origin) == true)
+    if (IsMyOwnAddress(origin))
     {
         return true;
     }

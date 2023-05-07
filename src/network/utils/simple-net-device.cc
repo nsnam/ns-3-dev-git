@@ -373,11 +373,7 @@ bool
 SimpleNetDevice::IsBroadcast() const
 {
     NS_LOG_FUNCTION(this);
-    if (m_pointToPointMode)
-    {
-        return false;
-    }
-    return true;
+    return !m_pointToPointMode;
 }
 
 Address
@@ -391,11 +387,7 @@ bool
 SimpleNetDevice::IsMulticast() const
 {
     NS_LOG_FUNCTION(this);
-    if (m_pointToPointMode)
-    {
-        return false;
-    }
-    return true;
+    return !m_pointToPointMode;
 }
 
 Address
@@ -416,11 +408,7 @@ bool
 SimpleNetDevice::IsPointToPoint() const
 {
     NS_LOG_FUNCTION(this);
-    if (m_pointToPointMode)
-    {
-        return true;
-    }
-    return false;
+    return m_pointToPointMode;
 }
 
 bool
@@ -538,11 +526,7 @@ bool
 SimpleNetDevice::NeedsArp() const
 {
     NS_LOG_FUNCTION(this);
-    if (m_pointToPointMode)
-    {
-        return false;
-    }
-    return true;
+    return !m_pointToPointMode;
 }
 
 void

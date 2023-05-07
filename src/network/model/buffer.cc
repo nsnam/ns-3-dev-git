@@ -204,7 +204,7 @@ Buffer::Buffer(uint32_t dataSize)
 Buffer::Buffer(uint32_t dataSize, bool initialize)
 {
     NS_LOG_FUNCTION(this << dataSize << initialize);
-    if (initialize == true)
+    if (initialize)
     {
         Initialize(dataSize);
     }

@@ -558,7 +558,7 @@ RoutingProtocol::RouteInput(Ptr<const Packet> p,
                 }
                 UpdateRouteLifeTime(origin, m_activeRouteTimeout);
                 Ptr<Packet> packet = p->Copy();
-                if (lcb.IsNull() == false)
+                if (!lcb.IsNull())
                 {
                     NS_LOG_LOGIC("Broadcast local delivery to " << iface.GetLocal());
                     lcb(p, header, iif);
@@ -617,7 +617,7 @@ RoutingProtocol::RouteInput(Ptr<const Packet> p,
             UpdateRouteLifeTime(toOrigin.GetNextHop(), m_activeRouteTimeout);
             m_nb.Update(toOrigin.GetNextHop(), m_activeRouteTimeout);
         }
-        if (lcb.IsNull() == false)
+        if (!lcb.IsNull())
         {
             NS_LOG_LOGIC("Unicast local delivery to " << dst);
             lcb(p, header, iif);
@@ -632,7 +632,7 @@ RoutingProtocol::RouteInput(Ptr<const Packet> p,
     }
 
     // Check if input device supports IP forwarding
-    if (m_ipv4->IsForwarding(iif) == false)
+    if (!m_ipv4->IsForwarding(iif))
     {
         NS_LOG_LOGIC("Forwarding disabled for this interface");
         ecb(p, header, Socket::ERROR_NOROUTETOHOST);

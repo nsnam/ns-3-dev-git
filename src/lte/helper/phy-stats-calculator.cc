@@ -132,7 +132,7 @@ PhyStatsCalculator::ReportCurrentCellRsrpSinr(uint16_t cellId,
     NS_LOG_FUNCTION(this << cellId << imsi << rnti << rsrp << sinr);
     NS_LOG_INFO("Write RSRP/SINR Phy Stats in " << GetCurrentCellRsrpSinrFilename());
 
-    if (m_RsrpSinrFirstWrite == true)
+    if (m_RsrpSinrFirstWrite)
     {
         m_rsrpOutFile.open(GetCurrentCellRsrpSinrFilename());
         if (!m_rsrpOutFile.is_open())
@@ -164,7 +164,7 @@ PhyStatsCalculator::ReportUeSinr(uint16_t cellId,
     NS_LOG_FUNCTION(this << cellId << imsi << rnti << sinrLinear);
     NS_LOG_INFO("Write SINR Linear Phy Stats in " << GetUeSinrFilename());
 
-    if (m_UeSinrFirstWrite == true)
+    if (m_UeSinrFirstWrite)
     {
         m_ueSinrOutFile.open(GetUeSinrFilename());
         if (!m_ueSinrOutFile.is_open())
@@ -190,7 +190,7 @@ PhyStatsCalculator::ReportInterference(uint16_t cellId, Ptr<SpectrumValue> inter
     NS_LOG_FUNCTION(this << cellId << interference);
     NS_LOG_INFO("Write Interference Phy Stats in " << GetInterferenceFilename());
 
-    if (m_InterferenceFirstWrite == true)
+    if (m_InterferenceFirstWrite)
     {
         m_interferenceOutFile.open(GetInterferenceFilename());
         if (!m_interferenceOutFile.is_open())
@@ -220,7 +220,7 @@ PhyStatsCalculator::ReportCurrentCellRsrpSinrCallback(Ptr<PhyStatsCalculator> ph
     NS_LOG_FUNCTION(phyStats << path);
     uint64_t imsi = 0;
     std::string pathUePhy = path.substr(0, path.find("/ComponentCarrierMapUe"));
-    if (phyStats->ExistsImsiPath(pathUePhy) == true)
+    if (phyStats->ExistsImsiPath(pathUePhy))
     {
         imsi = phyStats->GetImsiPath(pathUePhy);
     }
@@ -248,7 +248,7 @@ PhyStatsCalculator::ReportUeSinr(Ptr<PhyStatsCalculator> phyStats,
     pathAndRnti << path << "/" << rnti;
     std::string pathEnbMac = path.substr(0, path.find("/ComponentCarrierMap"));
     pathEnbMac += "/LteEnbMac/DlScheduling";
-    if (phyStats->ExistsImsiPath(pathAndRnti.str()) == true)
+    if (phyStats->ExistsImsiPath(pathAndRnti.str()))
     {
         imsi = phyStats->GetImsiPath(pathAndRnti.str());
     }

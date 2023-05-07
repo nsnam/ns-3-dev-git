@@ -121,11 +121,7 @@ Ipv6RoutingTableEntry::~Ipv6RoutingTableEntry()
 bool
 Ipv6RoutingTableEntry::IsHost() const
 {
-    if (m_destNetworkPrefix == Ipv6Prefix::GetOnes())
-    {
-        return true;
-    }
-    return false;
+    return m_destNetworkPrefix == Ipv6Prefix::GetOnes();
 }
 
 Ipv6Address
@@ -155,11 +151,7 @@ Ipv6RoutingTableEntry::IsNetwork() const
 bool
 Ipv6RoutingTableEntry::IsDefault() const
 {
-    if (m_dest == Ipv6Address::GetZero())
-    {
-        return true;
-    }
-    return false;
+    return m_dest == Ipv6Address::GetZero();
 }
 
 Ipv6Address
@@ -177,11 +169,7 @@ Ipv6RoutingTableEntry::GetDestNetworkPrefix() const
 bool
 Ipv6RoutingTableEntry::IsGateway() const
 {
-    if (m_gateway == Ipv6Address::GetZero())
-    {
-        return false;
-    }
-    return true;
+    return m_gateway != Ipv6Address::GetZero();
 }
 
 Ipv6Address

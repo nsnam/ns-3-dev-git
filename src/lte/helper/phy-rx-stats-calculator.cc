@@ -106,7 +106,7 @@ PhyRxStatsCalculator::DlPhyReception(PhyReceptionStatParameters params)
                          << params.m_ndi << params.m_correctness);
     NS_LOG_INFO("Write DL Rx Phy Stats in " << GetDlRxOutputFilename());
 
-    if (m_dlRxFirstWrite == true)
+    if (m_dlRxFirstWrite)
     {
         m_dlRxOutFile.open(GetDlRxOutputFilename());
         if (!m_dlRxOutFile.is_open())
@@ -142,7 +142,7 @@ PhyRxStatsCalculator::UlPhyReception(PhyReceptionStatParameters params)
                          << params.m_ndi << params.m_correctness);
     NS_LOG_INFO("Write UL Rx Phy Stats in " << GetUlRxOutputFilename());
 
-    if (m_ulRxFirstWrite == true)
+    if (m_ulRxFirstWrite)
     {
         m_ulRxOutFile.open(GetUlRxOutputFilename());
         if (!m_ulRxOutFile.is_open())
@@ -178,7 +178,7 @@ PhyRxStatsCalculator::DlPhyReceptionCallback(Ptr<PhyRxStatsCalculator> phyRxStat
     std::ostringstream pathAndRnti;
     pathAndRnti << path << "/" << params.m_rnti;
     std::string pathUePhy = path.substr(0, path.find("/ComponentCarrierMapUe"));
-    if (phyRxStats->ExistsImsiPath(pathAndRnti.str()) == true)
+    if (phyRxStats->ExistsImsiPath(pathAndRnti.str()))
     {
         imsi = phyRxStats->GetImsiPath(pathAndRnti.str());
     }
@@ -202,7 +202,7 @@ PhyRxStatsCalculator::UlPhyReceptionCallback(Ptr<PhyRxStatsCalculator> phyRxStat
     std::ostringstream pathAndRnti;
     std::string pathEnb = path.substr(0, path.find("/ComponentCarrierMap"));
     pathAndRnti << pathEnb << "/LteEnbRrc/UeMap/" << params.m_rnti;
-    if (phyRxStats->ExistsImsiPath(pathAndRnti.str()) == true)
+    if (phyRxStats->ExistsImsiPath(pathAndRnti.str()))
     {
         imsi = phyRxStats->GetImsiPath(pathAndRnti.str());
     }

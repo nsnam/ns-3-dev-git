@@ -369,7 +369,7 @@ DhcpClient::OfferHandler(DhcpHeader header)
     NS_LOG_FUNCTION(this << header);
 
     m_offerList.push_back(header);
-    if (m_offered == false)
+    if (!m_offered)
     {
         m_discoverEvent.Cancel();
         m_offered = true;

@@ -552,22 +552,14 @@ bool
 Ipv6Address::IsMulticast() const
 {
     NS_LOG_FUNCTION(this);
-    if (m_address[0] == 0xff)
-    {
-        return true;
-    }
-    return false;
+    return m_address[0] == 0xff;
 }
 
 bool
 Ipv6Address::IsLinkLocalMulticast() const
 {
     NS_LOG_FUNCTION(this);
-    if (m_address[0] == 0xff && m_address[1] == 0x02)
-    {
-        return true;
-    }
-    return false;
+    return m_address[0] == 0xff && m_address[1] == 0x02;
 }
 
 bool
@@ -610,11 +602,7 @@ Ipv6Address::IsSolicitedMulticast() const
     NS_LOG_FUNCTION(this);
 
     static Ipv6Address documentation("ff02::1:ff00:0");
-    if (CombinePrefix(Ipv6Prefix(104)) == documentation)
-    {
-        return true;
-    }
-    return false;
+    return CombinePrefix(Ipv6Prefix(104)) == documentation;
 }
 
 bool
@@ -652,11 +640,7 @@ Ipv6Address::IsDocumentation() const
 {
     NS_LOG_FUNCTION(this);
     static Ipv6Address documentation("2001:db8::0");
-    if (CombinePrefix(Ipv6Prefix(32)) == documentation)
-    {
-        return true;
-    }
-    return false;
+    return CombinePrefix(Ipv6Prefix(32)) == documentation;
 }
 
 bool
@@ -777,11 +761,7 @@ Ipv6Address::IsLinkLocal() const
 {
     NS_LOG_FUNCTION(this);
     static Ipv6Address linkLocal("fe80::0");
-    if (CombinePrefix(Ipv6Prefix(64)) == linkLocal)
-    {
-        return true;
-    }
-    return false;
+    return CombinePrefix(Ipv6Prefix(64)) == linkLocal;
 }
 
 bool

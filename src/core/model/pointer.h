@@ -140,11 +140,7 @@ class PointerChecker : public ns3::PointerChecker
             return true;
         }
         T* ptr = dynamic_cast<T*>(PeekPointer(value->GetObject()));
-        if (ptr == nullptr)
-        {
-            return false;
-        }
-        return true;
+        return ptr;
     }
 
     std::string GetValueTypeName() const override

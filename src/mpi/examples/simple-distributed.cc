@@ -226,7 +226,7 @@ main(int argc, char* argv[])
         Ipv4GlobalRoutingHelper::PopulateRoutingTables();
     }
 
-    if (tracing == true)
+    if (tracing)
     {
         if (systemId == 0)
         {

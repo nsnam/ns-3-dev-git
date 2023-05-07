@@ -328,12 +328,7 @@ PieQueueDisc::DropEarly(Ptr<QueueDiscItem> item, uint32_t qSize)
     }
 
     double u = m_uv->GetValue();
-    if (u > p)
-    {
-        return false;
-    }
-
-    return true;
+    return u <= p;
 }
 
 void

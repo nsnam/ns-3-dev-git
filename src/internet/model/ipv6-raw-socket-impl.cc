@@ -510,11 +510,7 @@ Ipv6RawSocketImpl::ForwardUp(Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetDevice>
 bool
 Ipv6RawSocketImpl::SetAllowBroadcast(bool allowBroadcast)
 {
-    if (!allowBroadcast)
-    {
-        return false;
-    }
-    return true;
+    return allowBroadcast;
 }
 
 bool

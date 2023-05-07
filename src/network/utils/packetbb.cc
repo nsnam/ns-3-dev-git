@@ -2417,12 +2417,7 @@ PbbAddressBlock::operator==(const PbbAddressBlock& other) const
         }
     }
 
-    if (m_addressTlvList != other.m_addressTlvList)
-    {
-        return false;
-    }
-
-    return true;
+    return m_addressTlvList == other.m_addressTlvList;
 }
 
 bool

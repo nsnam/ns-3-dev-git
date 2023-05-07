@@ -220,12 +220,12 @@ TraceEveryDrop(std::string everyDropTrFileName)
 static void
 DroppingStateTracer(Ptr<OutputStreamWrapper> stream, bool oldVal, bool newVal)
 {
-    if (oldVal == false && newVal == true)
+    if (!oldVal && newVal)
     {
         NS_LOG_INFO("Entering the dropping state");
         *stream->GetStream() << Simulator::Now().GetSeconds() << " ";
     }
-    else if (oldVal == true && newVal == false)
+    else if (oldVal && !newVal)
     {
         NS_LOG_INFO("Leaving the dropping state");
         *stream->GetStream() << Simulator::Now().GetSeconds() << std::endl;

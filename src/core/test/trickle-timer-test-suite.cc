@@ -96,7 +96,7 @@ TrickleTimerTestCase::TrickleTimerTestCase()
 void
 TrickleTimerTestCase::ExpireTimer()
 {
-    if (m_enableDataCollection == false)
+    if (!m_enableDataCollection)
     {
         return;
     }
