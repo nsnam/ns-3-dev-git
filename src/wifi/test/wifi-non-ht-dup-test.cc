@@ -674,6 +674,7 @@ class TestMultipleCtsResponsesFromMuRts : public TestCase
 
     Ptr<MuRtsCtsSpectrumWifiPhy> m_phyAp;                ///< AP PHY
     std::vector<Ptr<MuRtsCtsSpectrumWifiPhy>> m_phyStas; ///< STAs PHYs
+    Ptr<SpectrumWifiPhy> m_nonHePhySta;                  ///< non-HE STA PHY
 
     std::vector<uint16_t> m_bwPerSta; ///< Bandwidth per STA in MHz
 
@@ -813,10 +814,10 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
         MakeCallback(&TestMultipleCtsResponsesFromMuRts::RxCtsFailure, this));
 
     const auto apBw = *std::max_element(m_bwPerSta.cbegin(), m_bwPerSta.cend());
-    auto channelNum = std::get<0>(
-        *WifiPhyOperatingChannel::FindFirst(0, 0, apBw, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ));
+    auto apChannelNum = std::get<0>(
+        *WifiPhyOperatingChannel::FindFirst(0, 0, apBw, WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ));
 
-    m_phyAp->SetOperatingChannel(WifiPhy::ChannelTuple{channelNum, apBw, WIFI_PHY_BAND_5GHZ, 0});
+    m_phyAp->SetOperatingChannel(WifiPhy::ChannelTuple{apChannelNum, apBw, WIFI_PHY_BAND_5GHZ, 0});
 
     auto apMobility = CreateObject<ConstantPositionMobilityModel>();
     m_phyAp->SetMobility(apMobility);
@@ -843,11 +844,11 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
         phySta->SetTxPowerStart(m_stasTxPowerDbm);
         phySta->SetTxPowerEnd(m_stasTxPowerDbm);
 
-        channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                     0,
-                                                                     m_bwPerSta.at(i),
-                                                                     WIFI_STANDARD_80211ax,
-                                                                     WIFI_PHY_BAND_5GHZ));
+        auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
+                                                                          0,
+                                                                          m_bwPerSta.at(i),
+                                                                          WIFI_STANDARD_80211ac,
+                                                                          WIFI_PHY_BAND_5GHZ));
 
         phySta->SetOperatingChannel(
             WifiPhy::ChannelTuple{channelNum, m_bwPerSta.at(i), WIFI_PHY_BAND_5GHZ, 0});
@@ -861,6 +862,27 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
         staNode->AddDevice(staDev);
         m_phyStas.push_back(phySta);
     }
+
+    // non-HE STA
+    auto nonHeStaNode = CreateObject<Node>();
+    auto nonHeStaDev = CreateObject<WifiNetDevice>();
+    m_nonHePhySta = CreateObject<SpectrumWifiPhy>();
+    auto nonHeStaInterferenceHelper = CreateObject<InterferenceHelper>();
+    m_nonHePhySta->SetInterferenceHelper(nonHeStaInterferenceHelper);
+    auto nonHeStaErrorModel = CreateObject<NistErrorRateModel>();
+    m_nonHePhySta->SetErrorRateModel(nonHeStaErrorModel);
+    m_nonHePhySta->SetDevice(nonHeStaDev);
+    m_nonHePhySta->AddChannel(spectrumChannel);
+    m_nonHePhySta->ConfigureStandard(WIFI_STANDARD_80211ac);
+    m_nonHePhySta->SetOperatingChannel(
+        WifiPhy::ChannelTuple{apChannelNum, apBw, WIFI_PHY_BAND_5GHZ, 0});
+    auto nonHeStaMobility = CreateObject<ConstantPositionMobilityModel>();
+    m_nonHePhySta->SetMobility(nonHeStaMobility);
+    nonHeStaDev->SetPhy(m_nonHePhySta);
+    nonHeStaDev->SetStandard(WIFI_STANDARD_80211ac);
+    m_nonHePhySta->AssignStreams(streamNumber);
+    nonHeStaNode->AggregateObject(nonHeStaMobility);
+    nonHeStaNode->AddDevice(nonHeStaDev);
 }
 
 void
