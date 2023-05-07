@@ -17,6 +17,9 @@
  * Author: Steven Smith <smith84@llnl.gov>
  */
 
+#ifndef MPI_TEST_FIXTURES_H
+#define MPI_TEST_FIXTURES_H
+
 #include <iomanip>
 #include <ios>
 #include <sstream>
@@ -156,3 +159,5 @@ class SinkTracer
 };
 
 } // namespace ns3
+
+#endif // MPI_TEST_FIXTURES_H
