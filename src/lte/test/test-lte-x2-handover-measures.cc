@@ -565,13 +565,12 @@ LteX2HandoverMeasuresTestCase::DoRun()
                                 ueDevices.Get(checkPointEventIt->ueDeviceIndex),
                                 enbDevices.Get(checkPointEventIt->enbDeviceIndex));
 
-            Time saveStatsTime = checkPointTime;
-            Simulator::Schedule(saveStatsTime,
+            Simulator::Schedule(checkPointTime,
                                 &LteX2HandoverMeasuresTestCase::SaveStats,
                                 this,
                                 checkPointEventIt->ueDeviceIndex);
 
-            Time checkStats = saveStatsTime + m_statsDuration;
+            Time checkStats = checkPointTime + m_statsDuration;
             Simulator::Schedule(checkStats,
                                 &LteX2HandoverMeasuresTestCase::CheckStats,
                                 this,

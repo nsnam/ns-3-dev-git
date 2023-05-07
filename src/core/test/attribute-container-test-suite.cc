@@ -376,8 +376,7 @@ AttributeContainerSerializationTestCase::DoRun()
         NS_TEST_ASSERT_MSG_EQ(attr.GetN(), 6, "Incorrect container size");
 
         std::string reserialized = attr.SerializeToString(checker);
-        std::string canonical = strings;
-        NS_TEST_ASSERT_MSG_EQ(reserialized, canonical, "Reserialization failed");
+        NS_TEST_ASSERT_MSG_EQ(reserialized, strings, "Reserialization failed");
     }
 
     {
@@ -394,8 +393,7 @@ AttributeContainerSerializationTestCase::DoRun()
         NS_TEST_ASSERT_MSG_EQ(attr.GetN(), 3, "Incorrect container size");
 
         std::string reserialized = attr.SerializeToString(checker);
-        std::string canonical = pairs;
-        NS_TEST_ASSERT_MSG_EQ(reserialized, canonical, "Reserealization failed");
+        NS_TEST_ASSERT_MSG_EQ(reserialized, pairs, "Reserealization failed");
     }
 }
 

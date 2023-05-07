@@ -605,9 +605,8 @@ Ipv6AddressGeneratorImpl::IsNetworkAllocated(const Ipv6Address address, const Ip
 {
     NS_LOG_FUNCTION(this << address << prefix);
 
-    Ipv6Address addr = address;
     NS_ABORT_MSG_UNLESS(
-        address == addr.CombinePrefix(prefix),
+        address == address.CombinePrefix(prefix),
         "Ipv6AddressGeneratorImpl::IsNetworkAllocated(): network address and mask don't match "
             << address << " " << prefix);
 

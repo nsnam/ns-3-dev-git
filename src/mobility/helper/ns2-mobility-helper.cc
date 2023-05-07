@@ -622,8 +622,7 @@ IsVal(const std::string& str, T& ret)
     }
     else if (IsNumber(str))
     {
-        std::string s2 = str;
-        std::istringstream s(s2);
+        std::istringstream s(str);
         s >> ret;
         return true;
     }

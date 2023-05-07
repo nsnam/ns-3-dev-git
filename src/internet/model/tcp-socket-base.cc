@@ -1596,13 +1596,9 @@ void
 TcpSocketBase::ReadOptions(const TcpHeader& tcpHeader, uint32_t* bytesSacked)
 {
     NS_LOG_FUNCTION(this << tcpHeader);
-    TcpHeader::TcpOptionList::const_iterator it;
-    const TcpHeader::TcpOptionList options = tcpHeader.GetOptionList();
 
-    for (it = options.begin(); it != options.end(); ++it)
+    for (const auto& option : tcpHeader.GetOptionList())
     {
-        const Ptr<const TcpOption> option = (*it);
-
         // Check only for ACK options here
         switch (option->GetKind())
         {

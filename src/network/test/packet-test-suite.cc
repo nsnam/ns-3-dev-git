@@ -1119,11 +1119,15 @@ PacketTagListTest::DoRun()
     { // Copy ctor, assignment
         std::cout << GetName() << "check copy and assignment" << std::endl;
         {
+            // Test copy constructor
+            // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
             PacketTagList ptl(ref);
             CheckRefList(ref, "copy ctor orig");
             CheckRefList(ptl, "copy ctor copy");
         }
         {
+            // Test copy constructor
+            // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
             PacketTagList ptl = ref;
             CheckRefList(ref, "assignment orig");
             CheckRefList(ptl, "assignment copy");

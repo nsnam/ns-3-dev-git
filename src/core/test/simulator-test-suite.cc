@@ -171,7 +171,11 @@ SimulatorEventsTestCase::DoRun()
     NS_TEST_EXPECT_MSG_EQ(m_d, true, "Event D did not run ?");
 
     EventId anId = Simulator::ScheduleNow(&SimulatorEventsTestCase::Eventfoo0, this);
+
+    // Test copy assignment operator
+    // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
     EventId anotherId = anId;
+
     NS_TEST_EXPECT_MSG_EQ(!(anId.IsExpired() || anotherId.IsExpired()),
                           true,
                           "Event should not have expired yet.");

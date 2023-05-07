@@ -407,11 +407,8 @@ Dcd::GetSerializedSize() const
 {
     uint32_t dlBurstProfilesSize = 0;
 
-    for (std::vector<OfdmDlBurstProfile>::const_iterator iter = m_dlBurstProfiles.begin();
-         iter != m_dlBurstProfiles.end();
-         ++iter)
+    for (const auto& burstProfile : m_dlBurstProfiles)
     {
-        OfdmDlBurstProfile burstProfile = *iter;
         dlBurstProfilesSize += burstProfile.GetSize();
     }
 
@@ -426,11 +423,8 @@ Dcd::Serialize(Buffer::Iterator start) const
     i.WriteU8(m_configurationChangeCount);
     i = m_channelEncodings.Write(i);
 
-    for (std::vector<OfdmDlBurstProfile>::const_iterator iter = m_dlBurstProfiles.begin();
-         iter != m_dlBurstProfiles.end();
-         ++iter)
+    for (const auto& burstProfile : m_dlBurstProfiles)
     {
-        OfdmDlBurstProfile burstProfile = *iter;
         i = burstProfile.Write(i);
     }
 }
@@ -625,11 +619,8 @@ DlMap::GetSerializedSize() const
 {
     uint32_t dlMapElementsSize = 0;
 
-    for (std::list<OfdmDlMapIe>::const_iterator iter = m_dlMapElements.begin();
-         iter != m_dlMapElements.end();
-         ++iter)
+    for (const auto& dlMapIe : m_dlMapElements)
     {
-        OfdmDlMapIe dlMapIe = *iter;
         dlMapElementsSize += dlMapIe.GetSize();
     }
 
@@ -643,11 +634,8 @@ DlMap::Serialize(Buffer::Iterator start) const
     i.WriteU8(m_dcdCount);
     WriteTo(i, m_baseStationId);
 
-    for (std::list<OfdmDlMapIe>::const_iterator iter = m_dlMapElements.begin();
-         iter != m_dlMapElements.end();
-         ++iter)
+    for (const auto& dlMapIe : m_dlMapElements)
     {
-        OfdmDlMapIe dlMapIe = *iter;
         i = dlMapIe.Write(i);
     }
 }

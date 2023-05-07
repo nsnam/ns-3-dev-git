@@ -1172,7 +1172,7 @@ UplinkSchedulerMBQoS::ProcessBandwidthRequest(const BandwidthRequestHeader& bwRe
 
     Time deadline = DetermineDeadline(serviceFlow);
     Time currentTime = Simulator::Now();
-    Time period = deadline; // So that deadline is properly updated..
+    const Time& period = deadline; // So that deadline is properly updated..
 
     NS_LOG_DEBUG("At " << Simulator::Now().As(Time::S)
                        << " at BS uplink scheduler, processing bandwidth request from."

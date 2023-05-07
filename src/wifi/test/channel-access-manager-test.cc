@@ -1440,9 +1440,9 @@ LargestIdlePrimaryChannelTest::RunOne(uint16_t chWidth, WifiChannelListType busy
 
     // At RX end, we check the status of the channel during the interval following
     // the CCA_BUSY period and preceding RX start. The entire operating channel is idle.
-    Time checkTime4 = checkTime3;
+    const Time& checkTime4 = checkTime3;
     Simulator::Schedule(checkTime4 - start, [=]() {
-        Time interval4 = ccaBusyRxInterval;
+        const Time& interval4 = ccaBusyRxInterval;
         Time end4 = checkTime4 - rxDuration;
         NS_TEST_EXPECT_MSG_EQ(m_cam->GetLargestIdlePrimaryChannel(interval4, end4),
                               chWidth,
@@ -1465,7 +1465,7 @@ LargestIdlePrimaryChannelTest::RunOne(uint16_t chWidth, WifiChannelListType busy
     });
 
     // After RX end, no channel is idle if the interval overlaps the RX period
-    Time checkTime6 = checkTime5;
+    const Time& checkTime6 = checkTime5;
     Simulator::Schedule(checkTime6 - start, [=]() {
         Time interval6 = interval5 + rxDuration / 2;
         NS_TEST_EXPECT_MSG_EQ(m_cam->GetLargestIdlePrimaryChannel(interval6, checkTime6),
