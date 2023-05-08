@@ -164,9 +164,7 @@ void
 AttributeContainerObject::ReverseList()
 {
     m_doublelist.reverse();
-    std::vector<int> tmp;
-    std::copy_backward(m_intvec.begin(), m_intvec.end(), tmp.begin());
-    m_intvec = tmp;
+    std::reverse(m_intvec.begin(), m_intvec.end());
 }
 
 void
