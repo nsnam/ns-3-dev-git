@@ -63,6 +63,7 @@ Changes from ns-3.38 to ns-3-dev
 * (lte) Add support for DC-GBR. The member `QosBearerType_e` of the structure `LogicalChannelConfigListElement_s` is extended to include DC-GBR resource type. Based on this change, the method **IsGbr** of `EpsBearer`, is renamed to **GetResourceType**. LTE code using this method, is updated according to this change.
 * (lte) The `EpsBearer` is extended to include 3GPP Release 18 5QIs.
 * (lte) Add PDCP discard timer. If enabled using the attribute `EnablePdcpDiscarding`, in case that the buffering time (head-of-line delay) of a packet is greater than the PDB or a value set by the user, it will perform discarding at the moment of passing the PDCP SDU to RLC.
+* (lte) Centralize the constants `MIN_NO_CC` and `MAX_NO_CC`, declared in multiple header files, into the header `lte-common.h`.
 
 ### Changes to build system
 

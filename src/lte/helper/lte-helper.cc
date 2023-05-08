@@ -35,6 +35,7 @@
 #include <ns3/log.h>
 #include <ns3/lte-anr.h>
 #include <ns3/lte-chunk-processor.h>
+#include <ns3/lte-common.h>
 #include <ns3/lte-enb-component-carrier-manager.h>
 #include <ns3/lte-enb-mac.h>
 #include <ns3/lte-enb-net-device.h>

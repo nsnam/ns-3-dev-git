@@ -27,6 +27,7 @@
 
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
+#include <ns3/lte-common.h>
 #include <ns3/lte-pdcp.h>
 #include <ns3/lte-radio-bearer-info.h>
 #include <ns3/lte-rlc-am.h>

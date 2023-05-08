@@ -29,9 +29,6 @@
 #include <map>
 #include <vector>
 
-#define MIN_NO_CC 1
-#define MAX_NO_CC 5 // this is the maximum number of carrier components allowed by 3GPP up to R13
-
 namespace ns3
 {
 

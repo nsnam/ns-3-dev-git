@@ -20,6 +20,8 @@
 
 #include "lte-ue-component-carrier-manager.h"
 
+#include "lte-common.h"
+
 #include <ns3/log.h>
 
 namespace ns3
