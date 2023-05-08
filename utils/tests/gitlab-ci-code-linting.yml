@@ -31,9 +31,9 @@ check-style-clang-format-16:
     CLANG_FORMAT_VERSION: 16
 
 # Clang-tidy
-clang-tidy:
+clang-tidy-16:
   stage: code-linting
-  image: ubuntu:latest
+  image: ubuntu:rolling
   variables:
     MPI_CI: 1
     CLANG_TIDY_OUTPUT: clang-tidy-output.log
@@ -42,12 +42,12 @@ clang-tidy:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
       clang cmake
-      clang-tidy clang-tidy-14
+      clang-tidy-16
       python3 python3-pip
       libboost-all-dev libeigen3-dev libgtk-3-dev libopenmpi-dev libsqlite3-dev
       gsl-bin libgsl-dev libgsl27
       git ssh
-    - pip3 install cppyy
+    - pip3 install --break-system-packages cppyy
     - ./ns3 configure -d debug
       --enable-clang-tidy
       --enable-examples --enable-tests --enable-asserts
@@ -64,7 +64,7 @@ clang-tidy:
     - if !([[ $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ]] || (grep -q ".clang-tidy" $FILES_CHANGED)) ; then
       echo "Running clang-tidy-diff" ;
       git diff -U0 upstream/$CI_DEFAULT_BRANCH |
-      clang-tidy-diff-14.py -path cmake-cache/ -p1 -quiet -use-color
+      clang-tidy-diff-16.py -path cmake-cache/ -p1 -quiet -use-color
       -iregex "(contrib|examples|src|scratch|utils)\/.+\.(cpp|cc|cxx|c|h|hpp)"
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null ;
@@ -73,7 +73,7 @@ clang-tidy:
     # Run full clang-tidy in the following cases: 1) default branch, 2) ".clang-tidy" file changed, 3) clang-tidy-diff had an error
     - if [[ $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ]] || (grep -q ".clang-tidy" $FILES_CHANGED) || (egrep -q -A 3 "file not found \[clang-diagnostic-error\]" $CLANG_TIDY_OUTPUT) ; then
       echo "Running full clang-tidy" ;
-      run-clang-tidy-14 -p cmake-cache/ -quiet
+      run-clang-tidy-16 -p cmake-cache/ -quiet
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null ;
       fi
