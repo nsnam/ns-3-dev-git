@@ -215,11 +215,7 @@ WifiDefaultAssocManager::EndScanning()
                 // switch this link to using the channel used by a reported AP
                 // TODO check if the STA only supports a narrower channel width
                 NS_LOG_DEBUG("Switch link " << +linkId << " to using " << apChannel);
-                WifiPhy::ChannelTuple chTuple{apChannel.GetNumber(),
-                                              apChannel.GetWidth(),
-                                              apChannel.GetPhyBand(),
-                                              apChannel.GetPrimaryChannelIndex(20)};
-                phy->SetOperatingChannel(chTuple);
+                phy->SetOperatingChannel(apChannel);
                 // actual channel switching may be delayed, thus setup a channel switch timer
                 m_channelSwitchInfo.resize(m_mac->GetNLinks());
                 m_channelSwitchInfo[linkId].timer.Cancel();
