@@ -22,8 +22,10 @@
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     # missing the flag --disable-python
     - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --disable-gtk
-    - ./ns3 build
-    - if [ "$CI_JOB_STAGE" == "test" ];
+    - if [[ "$CI_JOB_STAGE" == "build" ]];
+      then ./ns3 build;
+      fi
+    - if [[ "$CI_JOB_STAGE" == "test" ]] || [[ "$FORCE_TESTS" == "True" ]];
       then ./test.py -n $VALGRIND_FLAG $FULLNESS;
       fi
   cache:
@@ -140,6 +142,7 @@ daily-build-test-optimized-valgrind:
   variables:
     MODE: optimized
     VALGRIND_FLAG: -g
+    FORCE_TESTS: Force
   tags:
     - nsnam
     - linux
@@ -156,6 +159,7 @@ weekly-build-test-debug-valgrind:
   variables:
     MODE: debug
     VALGRIND_FLAG: -g
+    FORCE_TESTS: Force
   tags:
     - nsnam
     - linux
@@ -172,6 +176,7 @@ weekly-build-test-default-valgrind:
   variables:
     MODE: default
     VALGRIND_FLAG: -g
+    FORCE_TESTS: Force
   tags:
     - nsnam
     - linux
@@ -188,6 +193,7 @@ weekly-build-test-optimized-valgrind:
   variables:
     MODE: optimized
     VALGRIND_FLAG: -g
+    FORCE_TESTS: Force
   tags:
     - nsnam
     - linux
@@ -204,6 +210,7 @@ weekly-build-test-takes-forever-optimized:
   variables:
     MODE: optimized
     FULLNESS: "-f TAKES_FOREVER"
+    FORCE_TESTS: Force
   tags:
     - nsnam
     - linux
