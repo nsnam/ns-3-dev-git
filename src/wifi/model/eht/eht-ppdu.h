@@ -22,6 +22,8 @@
 
 #include "ns3/he-ppdu.h"
 
+#include <optional>
+
 /**
  * \file
  * \ingroup wifi
@@ -63,15 +65,15 @@ class EhtPpdu : public HePpdu
         uint8_t m_bandwidth{0};    ///< Bandwidth field
         uint8_t m_bssColor{0};     ///< BSS color field
         uint8_t m_ppduType{0};     ///< PPDU Type And Compressed Mode field
-        uint8_t m_sigBMcs{0};      ///< EHT-SIG-B MCS
+        uint8_t m_ehtSigMcs{0};    ///< EHT-SIG-B MCS
 
         // EHT-SIG fields
         uint8_t m_giLtfSize{0}; ///< GI+LTF Size field
 
-        RuAllocation m_ruAllocationA; //!< RU Allocation-A that are going to be carried in EHT-SIG
-                                      //!< common subfields
-        RuAllocation m_ruAllocationB; //!< RU Allocation-B that are going to be carried in EHT-SIG
-                                      //!< common subfields
+        std::optional<RuAllocation> m_ruAllocationA; //!< RU Allocation-A that are going to be
+                                                     //!< carried in EHT-SIG common subfields
+        std::optional<RuAllocation> m_ruAllocationB; //!< RU Allocation-B that are going to be
+                                                     //!< carried in EHT-SIG common subfields
 
         HeSigBContentChannels m_contentChannels; //!< EHT-SIG Content Channels
     };                                           // struct EhtMuPhyHeader
@@ -117,6 +119,17 @@ class EhtPpdu : public HePpdu
         const std::vector<uint8_t>& ruAllocation);
 
     /**
+     * Get the EHT-SIG content channels for a given PPDU
+     * IEEE 802.11be-D3.1 36.3.12.8.2 EHT-SIG content channels
+     *
+     * \param txVector the TXVECTOR used for the PPDU
+     * \param p20Index the index of the primary20 channel
+     * \return EHT-SIG content channels
+     */
+    static HeSigBContentChannels GetEhtSigContentChannels(const WifiTxVector& txVector,
+                                                          uint8_t p20Index);
+
+    /**
      * Get variable length EHT-SIG field size
      * \param channelWidth the channel width occupied by the PPDU (in MHz)
      * \param ruAllocation 8 bit RU_ALLOCATION per 20 MHz
@@ -132,8 +145,21 @@ class EhtPpdu : public HePpdu
     bool IsUlMu() const override;
     void SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const override;
 
-    uint8_t m_ehtPpduType{1};    /**< EHT_PPDU_TYPE per Table 36-1 IEEE 802.11be D2.3.
-                                      To be removed once EHT PHY headers are supported. */
+    /**
+     * Fill in the PHY headers.
+     *
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param ppduDuration the transmission duration of this PPDU
+     */
+    void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
+
+    /**
+     * Fill in the EHT PHY header.
+     *
+     * \param txVector the TXVECTOR that was used for this PPDU
+     */
+    void SetEhtPhyHeader(const WifiTxVector& txVector);
+
     EhtPhyHeader m_ehtPhyHeader; //!< the EHT PHY header
 };                               // class EhtPpdu
 

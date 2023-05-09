@@ -1396,7 +1396,7 @@ HeSigBDurationTest::DoRun()
     const auto& numUsersPerCc =
         HePpdu::GetNumRusPerHeSigBContentChannel(txVector.GetChannelWidth(),
                                                  txVector.GetRuAllocation(0));
-    const auto contentChannels = HePpdu::GetContentChannels(txVector, 0);
+    const auto contentChannels = HePpdu::GetHeSigBContentChannels(txVector, 0);
     NS_TEST_EXPECT_MSG_EQ(numUsersPerCc.first,
                           m_expectedNumUsersPerCc.first,
                           "Incorrect number of users in HE-SIG-B content channel 1");

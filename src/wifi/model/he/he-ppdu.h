@@ -208,7 +208,8 @@ class HePpdu : public OfdmPpdu
      * \param p20Index the index of the primary20 channel
      * \return HE-SIG-B content channels
      */
-    static HeSigBContentChannels GetContentChannels(const WifiTxVector& txVector, uint8_t p20Index);
+    static HeSigBContentChannels GetHeSigBContentChannels(const WifiTxVector& txVector,
+                                                          uint8_t p20Index);
 
     /**
      * Get variable length HE SIG-B field size
@@ -286,12 +287,33 @@ class HePpdu : public OfdmPpdu
      */
     static uint16_t GetGuardIntervalFromEncoding(uint8_t giAndNltfSize);
 
-    HeSigHeader m_heSig;           //!< the HE-SIG PHY header
     mutable TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
 
   private:
     std::string PrintPayload() const override;
     WifiTxVector DoGetTxVector() const override;
+
+    /**
+     * Fill in the PHY headers.
+     *
+     * \param txVector the TXVECTOR that was used for this PPDU
+     * \param ppduDuration the transmission duration of this PPDU
+     */
+    void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
+
+    /**
+     * Fill in the L-SIG header.
+     *
+     * \param ppduDuration the transmission duration of this PPDU
+     */
+    void SetLSigHeader(Time ppduDuration);
+
+    /**
+     * Fill in the HE-SIG header.
+     *
+     * \param txVector the TXVECTOR that was used for this PPDU
+     */
+    void SetHeSigHeader(const WifiTxVector& txVector);
 
     /**
      * Return true if the PPDU is a MU PPDU
@@ -311,28 +333,8 @@ class HePpdu : public OfdmPpdu
      */
     virtual bool IsUlMu() const;
 
-    /**
-     * Fill in the PHY headers.
-     *
-     * \param txVector the TXVECTOR that was used for this PPDU
-     * \param ppduDuration the transmission duration of this PPDU
-     */
-    virtual void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
-
-    /**
-     * Fill in the L-SIG header.
-     *
-     * \param ppduDuration the transmission duration of this PPDU
-     */
-    virtual void SetLSigHeader(Time ppduDuration);
-
-    /**
-     * Fill in the HE-SIG header.
-     *
-     * \param txVector the TXVECTOR that was used for this PPDU
-     */
-    void SetHeSigHeader(const WifiTxVector& txVector);
-}; // class HePpdu
+    HeSigHeader m_heSig; //!< the HE-SIG PHY header
+};                       // class HePpdu
 
 /**
  * \brief Stream insertion operator.

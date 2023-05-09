@@ -136,7 +136,7 @@ HePpdu::SetHeSigHeader(const WifiTxVector& txVector)
             .m_giLtfSize = GetGuardIntervalAndNltfEncoding(txVector.GetGuardInterval(),
                                                            2 /*NLTF currently unused*/),
             .m_ruAllocation = txVector.GetRuAllocation(p20Index),
-            .m_contentChannels = GetContentChannels(txVector, p20Index),
+            .m_contentChannels = GetHeSigBContentChannels(txVector, p20Index),
             .m_center26ToneRuIndication =
                 (txVector.GetChannelWidth() >= 80)
                     ? std::optional{txVector.GetCenter26ToneRuIndication()}
@@ -145,7 +145,7 @@ HePpdu::SetHeSigHeader(const WifiTxVector& txVector)
     else
     {
         const auto mcs = txVector.GetMode().GetMcsValue();
-        // NS_ASSERT (mcs <= 11); // TODO: reactivate once EHT PHY headers are implemented
+        NS_ASSERT(mcs <= 11);
         m_heSig.emplace<HeSuSigHeader>(HeSuSigHeader{
             .m_bssColor = bssColor,
             .m_mcs = mcs,
@@ -494,7 +494,7 @@ HePpdu::GetNumRusPerHeSigBContentChannel(uint16_t channelWidth, const RuAllocati
 }
 
 HePpdu::HeSigBContentChannels
-HePpdu::GetContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
+HePpdu::GetHeSigBContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
 {
     HeSigBContentChannels contentChannels{{}};
 

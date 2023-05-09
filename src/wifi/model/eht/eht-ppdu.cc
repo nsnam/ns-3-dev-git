@@ -39,21 +39,49 @@ EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
     : HePpdu(psdus, txVector, channel, ppduDuration, uid, flag)
 {
     NS_LOG_FUNCTION(this << psdus << txVector << channel << ppduDuration << uid << flag);
+    SetPhyHeaders(txVector, ppduDuration);
+}
 
-    // For EHT SU transmissions (carried in EHT MU PPDUs), we have to create a HE SU PHY header
-    // because this is not done by the parent class.
-    // This is a workaround needed until we properly implement 11be PHY headers.
-    if (!txVector.IsMu())
+void
+EhtPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
+{
+    NS_LOG_FUNCTION(this << txVector << ppduDuration);
+    SetEhtPhyHeader(txVector);
+}
+
+void
+EhtPpdu::SetEhtPhyHeader(const WifiTxVector& txVector)
+{
+    const auto bssColor = txVector.GetBssColor();
+    NS_ASSERT(bssColor < 64);
+    if (ns3::IsDlMu(m_preamble))
     {
-        m_heSig.emplace<HeSuSigHeader>(HeSuSigHeader{
-            .m_bssColor = txVector.GetBssColor(),
-            .m_mcs = txVector.GetMode().GetMcsValue(),
+        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
+        m_ehtPhyHeader.emplace<EhtMuPhyHeader>(EhtMuPhyHeader{
             .m_bandwidth = GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth()),
+            .m_bssColor = bssColor,
+            .m_ppduType = txVector.GetEhtPpduType(),
+            .m_ehtSigMcs = txVector.GetSigBMode().GetMcsValue(),
             .m_giLtfSize = GetGuardIntervalAndNltfEncoding(txVector.GetGuardInterval(),
                                                            2 /*NLTF currently unused*/),
-            .m_nsts = GetNstsEncodingFromNss(txVector.GetNss())});
+            /* See section 36.3.12.8.2 of IEEE 802.11be D3.0 (EHT-SIG content channels):
+             * In non-OFDMA transmission, the Common field of the EHT-SIG content channel does not
+             * contain the RU Allocation subfield. For non-OFDMA transmission except for EHT
+             * sounding NDP, the Common field of the EHT-SIG content channel is encoded together
+             * with the first User field and this encoding block contains a CRC and Tail, referred
+             * to as a common encoding block. */
+            .m_ruAllocationA =
+                txVector.IsMu() ? std::optional{txVector.GetRuAllocation(p20Index)} : std::nullopt,
+            // TODO: RU Allocation-B not supported yet
+            .m_contentChannels = GetEhtSigContentChannels(txVector, p20Index)});
     }
-    m_ehtPpduType = txVector.GetEhtPpduType();
+    else if (ns3::IsUlMu(m_preamble))
+    {
+        m_ehtPhyHeader.emplace<EhtTbPhyHeader>(EhtTbPhyHeader{
+            .m_bandwidth = GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth()),
+            .m_bssColor = bssColor,
+            .m_ppduType = txVector.GetEhtPpduType()});
+    }
 }
 
 WifiPpduType
@@ -92,40 +120,39 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
 {
     txVector.SetLength(m_lSig.GetLength());
     txVector.SetAggregation(m_psdus.size() > 1 || m_psdus.begin()->second->IsAggregate());
-    txVector.SetEhtPpduType(m_ehtPpduType); // FIXME: PPDU type should be read from U-SIG
-    if (!txVector.IsMu())
+    if (ns3::IsDlMu(m_preamble))
     {
-        auto heSigHeader = std::get_if<HeSuSigHeader>(&m_heSig);
-        NS_ASSERT(heSigHeader);
-        txVector.SetMode(EhtPhy::GetEhtMcs(heSigHeader->m_mcs));
-        txVector.SetNss(GetNssFromNstsEncoding(heSigHeader->m_nsts));
-        txVector.SetChannelWidth(GetChannelWidthMhzFromEncoding(heSigHeader->m_bandwidth));
-        txVector.SetGuardInterval(GetGuardIntervalFromEncoding(heSigHeader->m_giLtfSize));
-        txVector.SetBssColor(heSigHeader->m_bssColor);
+        auto ehtPhyHeader = std::get_if<EhtMuPhyHeader>(&m_ehtPhyHeader);
+        NS_ASSERT(ehtPhyHeader);
+        txVector.SetChannelWidth(GetChannelWidthMhzFromEncoding(ehtPhyHeader->m_bandwidth));
+        txVector.SetBssColor(ehtPhyHeader->m_bssColor);
+        txVector.SetEhtPpduType(ehtPhyHeader->m_ppduType);
+        txVector.SetSigBMode(HePhy::GetVhtMcs(ehtPhyHeader->m_ehtSigMcs));
+        txVector.SetGuardInterval(GetGuardIntervalFromEncoding(ehtPhyHeader->m_giLtfSize));
+        const auto ruAllocation = ehtPhyHeader->m_ruAllocationA; // RU Allocation-B not supported
+                                                                 // yet
+        if (const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
+            ruAllocation.has_value())
+        {
+            txVector.SetRuAllocation(ruAllocation.value(), p20Index);
+            SetHeMuUserInfos(txVector, ruAllocation.value(), ehtPhyHeader->m_contentChannels);
+        }
+        if (ehtPhyHeader->m_ppduType == 1) // EHT SU
+        {
+            NS_ASSERT(ehtPhyHeader->m_contentChannels.size() == 1 &&
+                      ehtPhyHeader->m_contentChannels.front().size() == 1);
+            txVector.SetMode(
+                EhtPhy::GetEhtMcs(ehtPhyHeader->m_contentChannels.front().front().mcs));
+            txVector.SetNss(ehtPhyHeader->m_contentChannels.front().front().nss);
+        }
     }
     else if (ns3::IsUlMu(m_preamble))
     {
-        auto heSigHeader = std::get_if<HeTbSigHeader>(&m_heSig);
-        NS_ASSERT(heSigHeader);
-        txVector.SetChannelWidth(GetChannelWidthMhzFromEncoding(heSigHeader->m_bandwidth));
-        txVector.SetBssColor(heSigHeader->m_bssColor);
-    }
-    else if (ns3::IsDlMu(m_preamble))
-    {
-        auto heSigHeader = std::get_if<HeMuSigHeader>(&m_heSig);
-        NS_ASSERT(heSigHeader);
-        txVector.SetChannelWidth(GetChannelWidthMhzFromEncoding(heSigHeader->m_bandwidth));
-        txVector.SetGuardInterval(GetGuardIntervalFromEncoding(heSigHeader->m_giLtfSize));
-        txVector.SetBssColor(heSigHeader->m_bssColor);
-        txVector.SetSigBMode(HePhy::GetVhtMcs(heSigHeader->m_sigBMcs));
-        const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
-        txVector.SetRuAllocation(heSigHeader->m_ruAllocation, p20Index);
-    }
-    if (txVector.IsDlMu())
-    {
-        auto heSigHeader = std::get_if<HeMuSigHeader>(&m_heSig);
-        NS_ASSERT(heSigHeader);
-        SetHeMuUserInfos(txVector, heSigHeader->m_ruAllocation, heSigHeader->m_contentChannels);
+        auto ehtPhyHeader = std::get_if<EhtTbPhyHeader>(&m_ehtPhyHeader);
+        NS_ASSERT(ehtPhyHeader);
+        txVector.SetChannelWidth(GetChannelWidthMhzFromEncoding(ehtPhyHeader->m_bandwidth));
+        txVector.SetBssColor(ehtPhyHeader->m_bssColor);
+        txVector.SetEhtPpduType(ehtPhyHeader->m_ppduType);
     }
 }
 
@@ -139,6 +166,18 @@ EhtPpdu::GetNumRusPerEhtSigBContentChannel(uint16_t channelWidth,
         return {1, 0};
     }
     return HePpdu::GetNumRusPerHeSigBContentChannel(channelWidth, ruAllocation);
+}
+
+HePpdu::HeSigBContentChannels
+EhtPpdu::GetEhtSigContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
+{
+    if (txVector.GetEhtPpduType() == 1)
+    {
+        // according to spec the TXVECTOR shall have a correct STA-ID even for SU transmission,
+        // but this is not set by the MAC for simplification, so set to 0 for now.
+        return HeSigBContentChannels{{{0, txVector.GetNss(), txVector.GetMode().GetMcsValue()}}};
+    }
+    return HePpdu::GetHeSigBContentChannels(txVector, p20Index);
 }
 
 uint32_t
