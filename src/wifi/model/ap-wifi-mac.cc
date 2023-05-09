@@ -1005,9 +1005,7 @@ ApWifiMac::GetVhtOperation(uint8_t linkId) const
     // indicates the channel center frequency index of the 80 MHz channel
     // segment that contains the primary channel.
     operation.SetChannelCenterFrequencySegment0(
-        (bssBandwidth == 160)
-            ? phy->GetOperatingChannel().GetPrimaryChannelNumber(80, phy->GetStandard())
-            : phy->GetChannelNumber());
+        (bssBandwidth == 160) ? phy->GetPrimaryChannelNumber(80) : phy->GetChannelNumber());
     // For a 20, 40, or 80 MHz BSS bandwidth, this subfield is set to 0.
     // For a 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
     // indicates the channel center frequency index of the 160 MHz channel on
