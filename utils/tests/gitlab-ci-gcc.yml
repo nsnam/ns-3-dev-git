@@ -80,10 +80,8 @@ weekly-test-gcc-8-default:
   image: ubuntu:20.04
   stage: test
   needs: ["weekly-build-gcc-8-default"]
-  cache:
-    key: "ccache-weekly-build-gcc-8-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-gcc-8-default
   variables:
     MODE: default
     COMPILER: g++-8
@@ -94,10 +92,8 @@ weekly-test-gcc-8-optimized:
   image: ubuntu:20.04
   stage: test
   needs: ["weekly-build-gcc-8-optimized"]
-  cache:
-    key: "ccache-weekly-build-gcc-8-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-gcc-8-optimized
   variables:
     MODE: optimized
     COMPILER: g++-8
@@ -139,10 +135,8 @@ weekly-test-gcc-9-default:
   image: ubuntu:20.04
   stage: test
   needs: ["weekly-build-gcc-9-default"]
-  cache:
-    key: "ccache-weekly-build-gcc-9-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-gcc-9-default
   variables:
     MODE: default
     COMPILER: g++-9
@@ -153,10 +147,8 @@ weekly-test-gcc-9-optimized:
   image: ubuntu:20.04
   stage: test
   needs: ["weekly-build-gcc-9-optimized"]
-  cache:
-    key: "ccache-weekly-build-gcc-9-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-gcc-9-optimized
   variables:
     MODE: optimized
     COMPILER: g++-9
@@ -198,10 +190,8 @@ weekly-test-gcc-10-default:
   image: ubuntu:20.04
   stage: test
   needs: ["weekly-build-gcc-10-default"]
-  cache:
-    key: "ccache-weekly-build-gcc-10-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-gcc-10-default
   variables:
     MODE: default
     COMPILER: g++-10
@@ -212,10 +202,8 @@ weekly-test-gcc-10-optimized:
   image: ubuntu:20.04
   stage: test
   needs: ["weekly-build-gcc-10-optimized"]
-  cache:
-    key: "ccache-weekly-build-gcc-10-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-gcc-10-optimized
   variables:
     MODE: optimized
     COMPILER: g++-10
@@ -257,10 +245,8 @@ weekly-test-gcc-11-default:
   image: ubuntu:22.04
   stage: test
   needs: ["weekly-build-gcc-11-default"]
-  cache:
-    key: "ccache-weekly-build-gcc-11-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-gcc-11-default
   variables:
     MODE: default
     COMPILER: g++-11
@@ -271,10 +257,8 @@ weekly-test-gcc-11-optimized:
   image: ubuntu:22.04
   stage: test
   needs: ["weekly-build-gcc-11-optimized"]
-  cache:
-    key: "ccache-weekly-build-gcc-11-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-gcc-11-optimized
   variables:
     MODE: optimized
     COMPILER: g++-11
@@ -316,10 +300,8 @@ weekly-test-gcc-12-default:
   image: ubuntu:22.04
   stage: test
   needs: ["weekly-build-gcc-12-default"]
-  cache:
-    key: "ccache-weekly-build-gcc-12-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-gcc-12-default
   variables:
     MODE: default
     COMPILER: g++-12
@@ -330,10 +312,8 @@ weekly-test-gcc-12-optimized:
   image: ubuntu:22.04
   stage: test
   needs: ["weekly-build-gcc-12-optimized"]
-  cache:
-    key: "ccache-weekly-build-gcc-12-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-gcc-12-optimized
   variables:
     MODE: optimized
     COMPILER: g++-12

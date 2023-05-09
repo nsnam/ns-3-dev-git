@@ -52,11 +52,8 @@ per-commit-gcc-default-test:
   extends: .base-per-commit-compile
   stage: test
   needs: ["per-commit-gcc-default"]
-  cache:
-    # Reuse the ccache from the per-commit-gcc-default job
-    key: "ccache-per-commit-gcc-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - per-commit-gcc-default
   variables:
     MODE: default
     COMPILER: g++
@@ -65,11 +62,8 @@ per-commit-gcc-optimized-test:
   extends: .base-per-commit-compile
   stage: test
   needs: ["per-commit-gcc-optimized"]
-  cache:
-    # Reuse the ccache from the per-commit-gcc-optimized job
-    key: "ccache-per-commit-gcc-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - per-commit-gcc-optimized
   variables:
     MODE: optimized
     COMPILER: g++

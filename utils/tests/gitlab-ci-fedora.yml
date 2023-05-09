@@ -76,10 +76,8 @@ weekly-test-fedora-36-default:
   image: fedora:36
   stage: test
   needs: ["weekly-build-fedora-36-default"]
-  cache:
-    key: "ccache-weekly-build-fedora-36-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-fedora-36-default
   variables:
     MODE: default
 
@@ -88,10 +86,8 @@ weekly-test-fedora-36-optimized:
   image: fedora:36
   stage: test
   needs: ["weekly-build-fedora-36-optimized"]
-  cache:
-    key: "ccache-weekly-build-fedora-36-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-fedora-36-optimized
   variables:
     MODE: optimized
 
@@ -126,10 +122,8 @@ weekly-test-fedora-37-default:
   image: fedora:37
   stage: test
   needs: ["weekly-build-fedora-37-default"]
-  cache:
-    key: "ccache-weekly-build-fedora-37-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-fedora-37-default
   variables:
     MODE: default
 
@@ -138,9 +132,7 @@ weekly-test-fedora-37-optimized:
   image: fedora:37
   stage: test
   needs: ["weekly-build-fedora-37-optimized"]
-  cache:
-    key: "ccache-weekly-build-fedora-37-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-fedora-37-optimized
   variables:
     MODE: optimized

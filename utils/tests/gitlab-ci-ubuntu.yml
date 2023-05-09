@@ -82,10 +82,8 @@ weekly-test-ubuntu-18.04-default:
   image: ubuntu:18.04
   stage: test
   needs: ["weekly-build-ubuntu-18.04-default"]
-  cache:
-    key: "ccache-weekly-build-ubuntu-18.04-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-ubuntu-18.04-default
   variables:
     MODE: default
     LIBGSL: libgsl23
@@ -96,10 +94,8 @@ weekly-test-ubuntu-18.04-optimized:
   image: ubuntu:18.04
   stage: test
   needs: ["weekly-build-ubuntu-18.04-optimized"]
-  cache:
-    key: "ccache-weekly-build-ubuntu-18.04-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-ubuntu-18.04-optimized
   variables:
     MODE: optimized
     LIBGSL: libgsl23
@@ -163,10 +159,8 @@ weekly-test-ubuntu-22.04-default:
   image: ubuntu:22.04
   stage: test
   needs: ["weekly-build-ubuntu-22.04-default"]
-  cache:
-    key: "ccache-weekly-build-ubuntu-22.04-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-ubuntu-22.04-default
   variables:
     MODE: default
     LIBGSL: libgsl27
@@ -177,10 +171,8 @@ weekly-test-ubuntu-22.04-optimized:
   image: ubuntu:22.04
   stage: test
   needs: ["weekly-build-ubuntu-22.04-optimized"]
-  cache:
-    key: "ccache-weekly-build-ubuntu-22.04-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-ubuntu-22.04-optimized
   variables:
     MODE: optimized
     LIBGSL: libgsl27
@@ -222,10 +214,8 @@ weekly-test-ubuntu-latest-default:
   image: ubuntu:latest
   stage: test
   needs: ["weekly-build-ubuntu-latest-default"]
-  cache:
-    key: "ccache-weekly-build-ubuntu-latest-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-ubuntu-latest-default
   variables:
     MODE: default
     LIBGSL: libgsl27
@@ -236,10 +226,8 @@ weekly-test-ubuntu-latest-optimized:
   image: ubuntu:latest
   stage: test
   needs: ["weekly-build-ubuntu-latest-optimized"]
-  cache:
-    key: "ccache-weekly-build-ubuntu-latest-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-ubuntu-latest-optimized
   variables:
     MODE: optimized
     LIBGSL: libgsl27

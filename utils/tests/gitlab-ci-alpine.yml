@@ -47,9 +47,7 @@ weekly-alpine-latest-default-test:
   image: alpine:latest
   stage: test
   needs: ["weekly-alpine-latest-default"]
-  cache:
-    key: "ccache-weekly-alpine-latest-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-alpine-latest-default
   variables:
     MODE: default

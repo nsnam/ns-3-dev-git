@@ -18,6 +18,7 @@
   image: archlinux
   timeout: 2h
   interruptible: true
+  dependencies: []
   # artifacts:
   #   paths:
   #     - public

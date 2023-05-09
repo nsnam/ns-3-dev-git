@@ -45,18 +45,20 @@ workflow:
     - export MPI_CI=1
     - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts $ENABLE_MPI
     - ccache -z
-    - ./ns3 build
-    - if [[ "$CI_JOB_STAGE" == "build" ]] && [[ "`./utils/ccache-miss-rate.py`" != "0" ]];
-      then `touch $CCACHE_BASEDIR_VALUE/tests-$CI_COMMIT_REF_SLUG.txt`;
+    - if [[ "$CI_JOB_STAGE" == "build" ]];
+      then ./ns3 build;
       fi
-    - if [[ "$CI_JOB_STAGE" == "test" ]] && [[ "$MODE" != "debug" ]] && [[ -f $CCACHE_BASEDIR_VALUE/tests-$CI_COMMIT_REF_SLUG.txt ]];
+    - if [[ "$CI_JOB_STAGE" == "build" ]] && [[ "`./utils/ccache-miss-rate.py`" != "0" ]];
+      then `touch build/tests-$CI_COMMIT_REF_SLUG.txt`;
+      fi
+    - if [[ "$CI_JOB_STAGE" == "test" ]] && [[ "$MODE" != "debug" ]] && [[ -f build/tests-$CI_COMMIT_REF_SLUG.txt ]];
       then ./test.py -n;
       if [[ $? == 0 ]];
-      then `rm $CCACHE_BASEDIR_VALUE/tests-$CI_COMMIT_REF_SLUG.txt` || true;
+      then `rm build/tests-$CI_COMMIT_REF_SLUG.txt` || true;
       fi;
       fi
     - ccache -s
-    - ./ns3 clean
+    # - ./ns3 clean
   cache:
     # Use separate key for each (debug/default/optimized) jobs because
     # they run in parallel and will otherwise overwrite each other
@@ -72,6 +74,11 @@ workflow:
   timeout: 12h
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
+  artifacts:
+    expire_in: 2 day
+    paths:
+      - build/
+      - .lock-*
 
 # Weekly jobs for other distribution and compilers
 include:

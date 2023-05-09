@@ -4,6 +4,7 @@ cppyy-22.04:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   needs: ["weekly-slow-jobs"]
+  dependencies: []
   tags:
     - nsnam
     - linux

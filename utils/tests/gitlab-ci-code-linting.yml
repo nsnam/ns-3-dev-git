@@ -66,6 +66,7 @@ clang-tidy:
     # Check job results
     - (! egrep -A 3 "error:|warning:|note:" $CLANG_TIDY_OUTPUT)
     - echo "No clang-tidy errors found"
+  dependencies: []
   artifacts:
     paths:
       - $CLANG_TIDY_OUTPUT

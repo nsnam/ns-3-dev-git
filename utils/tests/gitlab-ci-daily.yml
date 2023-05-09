@@ -68,6 +68,7 @@ daily-build-test-debug:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
   needs: ["daily-jobs"]
+  dependencies: []
   stage: build
   variables:
     MODE: debug
@@ -82,8 +83,8 @@ daily-build-default:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
-  needs: ["daily-jobs"]
   stage: build
+  needs: ["daily-jobs"]
   variables:
     MODE: default
 
@@ -93,12 +94,10 @@ daily-test-default:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
-  needs: ["daily-build-default"]
   stage: test
-  cache:
-    key: "ccache-daily-build-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  needs: ["daily-build-default"]
+  dependencies:
+    - daily-build-default
   variables:
     MODE: default
 
@@ -109,8 +108,8 @@ daily-build-optimized:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
-  needs: ["daily-jobs"]
   stage: build
+  needs: ["daily-jobs"]
   variables:
     MODE: optimized
 
@@ -120,12 +119,10 @@ daily-test-optimized:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
-  needs: ["daily-build-optimized"]
   stage: test
-  cache:
-    key: "ccache-daily-build-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  needs: ["daily-build-optimized"]
+  dependencies:
+    - daily-build-optimized
   variables:
     MODE: optimized
 
@@ -137,8 +134,9 @@ daily-build-test-optimized-valgrind:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
-  needs: ["daily-jobs"]
   stage: build
+  needs: ["daily-jobs"]
+  dependencies: []
   variables:
     MODE: optimized
     VALGRIND_FLAG: -g
@@ -154,8 +152,9 @@ weekly-build-test-debug-valgrind:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
-  needs: ["weekly-slow-jobs"]
   stage: build
+  needs: ["weekly-slow-jobs"]
+  dependencies: []
   variables:
     MODE: debug
     VALGRIND_FLAG: -g
@@ -171,8 +170,9 @@ weekly-build-test-default-valgrind:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
-  needs: ["weekly-slow-jobs"]
   stage: build
+  needs: ["weekly-slow-jobs"]
+  dependencies: []
   variables:
     MODE: default
     VALGRIND_FLAG: -g
@@ -188,8 +188,9 @@ weekly-build-test-optimized-valgrind:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
-  needs: ["weekly-slow-jobs"]
   stage: build
+  needs: ["weekly-slow-jobs"]
+  dependencies: []
   variables:
     MODE: optimized
     VALGRIND_FLAG: -g
@@ -205,8 +206,9 @@ weekly-build-test-takes-forever-optimized:
     - if: $RELEASE == "weekly"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
-  needs: ["weekly-slow-jobs"]
   stage: build
+  needs: ["weekly-slow-jobs"]
+  dependencies: []
   variables:
     MODE: optimized
     FULLNESS: "-f TAKES_FOREVER"

@@ -96,10 +96,8 @@ weekly-test-clang-6-default:
   extends: .weekly-clang-ubuntu18.04
   stage: test
   needs: ["weekly-build-clang-6-default"]
-  cache:
-    key: "ccache-weekly-build-clang-6-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-clang-6-default
   variables:
     CLANG: "6.0"
     MODE: default
@@ -108,10 +106,8 @@ weekly-test-clang-6-optimized:
   extends: .weekly-clang-ubuntu18.04
   stage: test
   needs: ["weekly-build-clang-6-optimized"]
-  cache:
-    key: "ccache-weekly-build-clang-6-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-clang-6-optimized
   variables:
     CLANG: "6.0"
     MODE: optimized
@@ -145,10 +141,8 @@ weekly-test-clang-10-default:
   extends: .weekly-clang-ubuntu18.04
   stage: test
   needs: ["weekly-build-clang-10-default"]
-  cache:
-    key: "ccache-weekly-build-clang-10-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-clang-10-default
   variables:
     CLANG: 10
     MODE: default
@@ -157,10 +151,8 @@ weekly-test-clang-10-optimized:
   extends: .weekly-clang-ubuntu18.04
   stage: test
   needs: ["weekly-build-clang-10-optimized"]
-  cache:
-    key: "ccache-weekly-build-clang-10-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-clang-10-optimized
   variables:
     CLANG: 10
     MODE: optimized
@@ -194,10 +186,8 @@ weekly-test-clang-11-default:
   extends: .weekly-clang-ubuntu22.04
   stage: test
   needs: ["weekly-build-clang-11-default"]
-  cache:
-    key: "ccache-weekly-build-clang-11-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-clang-11-default
   variables:
     CLANG: 11
     MODE: default
@@ -206,10 +196,8 @@ weekly-test-clang-11-optimized:
   extends: .weekly-clang-ubuntu22.04
   stage: test
   needs: ["weekly-build-clang-11-optimized"]
-  cache:
-    key: "ccache-weekly-build-clang-11-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-clang-11-optimized
   variables:
     CLANG: 11
     MODE: optimized
@@ -243,10 +231,8 @@ weekly-test-clang-14-default:
   extends: .weekly-clang-ubuntu22.04
   stage: test
   needs: ["weekly-build-clang-14-default"]
-  cache:
-    key: "ccache-weekly-build-clang-14-default"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-clang-14-default
   variables:
     CLANG: 14
     MODE: default
@@ -255,10 +241,8 @@ weekly-test-clang-14-optimized:
   extends: .weekly-clang-ubuntu22.04
   stage: test
   needs: ["weekly-build-clang-14-optimized"]
-  cache:
-    key: "ccache-weekly-build-clang-14-optimized"
-    paths:
-      - $CCACHE_BASEDIR_VALUE/
+  dependencies:
+    - weekly-build-clang-14-optimized
   variables:
     CLANG: 14
     MODE: optimized
