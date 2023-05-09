@@ -1869,6 +1869,52 @@ TxDurationTestSuite::TxDurationTestSuite()
                                                      // seven users in HE-SIG-B content channel 2
                                MicroSeconds(20)),    // five OFDM symbols
         TestCase::QUICK);
+
+    // 20 MHz band, one unallocated RU at the middle
+    AddTestCase(
+        new HeSigBDurationTest({{{HeRu::RU_26_TONE, 1, true}, 11, 1},
+                                {{HeRu::RU_26_TONE, 2, true}, 11, 1},
+                                {{HeRu::RU_26_TONE, 3, true}, 11, 1},
+                                {{HeRu::RU_26_TONE, 4, true}, 11, 1},
+                                {{HeRu::RU_26_TONE, 6, true}, 11, 1},
+                                {{HeRu::RU_26_TONE, 7, true}, 11, 1},
+                                {{HeRu::RU_26_TONE, 8, true}, 11, 1},
+                                {{HeRu::RU_26_TONE, 9, true}, 11, 1}},
+                               VhtPhy::GetVhtMcs5(),
+                               20,
+                               {0},
+                               std::make_pair(9, 0), // 9 users in HE-SIG-B content channel 1
+                               MicroSeconds(8)),     // two OFDM symbols;
+        TestCase::QUICK);
+
+    // 40 MHz band, unallocated RUs at the begin and at the end of the first 20 MHz subband and in
+    // the middle of the second 20 MHz subband
+    AddTestCase(
+        new HeSigBDurationTest({{{HeRu::RU_52_TONE, 2, true}, 10, 1},
+                                {{HeRu::RU_52_TONE, 3, true}, 10, 2},
+                                {{HeRu::RU_52_TONE, 5, true}, 11, 1},
+                                {{HeRu::RU_52_TONE, 8, true}, 11, 2}},
+                               VhtPhy::GetVhtMcs5(),
+                               40,
+                               {112, 112},
+                               std::make_pair(4, 4), // 4 users in both HE-SIG-B content channels
+                               MicroSeconds(4)),     // two OFDM symbols;
+        TestCase::QUICK);
+
+    // 40 MHz band, one unallocated RUs in the first 20 MHz subband and two unallocated RUs in
+    // second 20 MHz subband
+    AddTestCase(
+        new HeSigBDurationTest({{{HeRu::RU_52_TONE, 1, true}, 10, 1},
+                                {{HeRu::RU_52_TONE, 2, true}, 10, 2},
+                                {{HeRu::RU_52_TONE, 3, true}, 11, 1},
+                                {{HeRu::RU_52_TONE, 5, true}, 11, 2},
+                                {{HeRu::RU_52_TONE, 6, true}, 11, 3}},
+                               VhtPhy::GetVhtMcs5(),
+                               40,
+                               {112, 112},
+                               std::make_pair(4, 4), // 4 users in both HE-SIG-B content channels
+                               MicroSeconds(4)),     // two OFDM symbols;
+        TestCase::QUICK);
 }
 
 static TxDurationTestSuite g_txDurationTestSuite; ///< the test suite
