@@ -184,6 +184,27 @@ class EmlsrOperationsTestBase : public TestCase
                                            std::size_t count,
                                            std::size_t pktSize) const;
 
+    /**
+     * Check whether QoS data unicast transmissions addressed to the given destination on the
+     * given link are blocked or unblocked for the given reason on the given device.
+     *
+     * \param mac the MAC of the given device
+     * \param dest the MAC address of the given destination
+     * \param linkId the ID of the given link
+     * \param reason the reason for blocking transmissions to test
+     * \param blocked whether transmissions are blocked for the given reason
+     * \param description text indicating when this check is performed
+     * \param testUnblockedForOtherReasons whether to test if transmissions are unblocked for
+     *                                     all the reasons other than the one provided
+     */
+    void CheckBlockedLink(Ptr<WifiMac> mac,
+                          Mac48Address dest,
+                          uint8_t linkId,
+                          WifiQueueBlockedReason reason,
+                          bool blocked,
+                          std::string description,
+                          bool testUnblockedForOtherReasons = true);
+
     void DoSetup() override;
 
     /// Information about transmitted frames
@@ -518,6 +539,50 @@ EmlsrOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
         // all stations associated; start traffic if needed
         StartTraffic();
     });
+}
+
+void
+EmlsrOperationsTestBase::CheckBlockedLink(Ptr<WifiMac> mac,
+                                          Mac48Address dest,
+                                          uint8_t linkId,
+                                          WifiQueueBlockedReason reason,
+                                          bool blocked,
+                                          std::string description,
+                                          bool testUnblockedForOtherReasons)
+{
+    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, dest, 0);
+    auto mask = mac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
+    NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
+                          true,
+                          description << ": Expected to find a mask for EMLSR link " << +linkId);
+    if (blocked)
+    {
+        NS_TEST_EXPECT_MSG_EQ(mask->test(static_cast<std::size_t>(reason)),
+                              true,
+                              description << ": Expected EMLSR link " << +linkId
+                                          << " to be blocked for reason " << reason);
+        if (testUnblockedForOtherReasons)
+        {
+            NS_TEST_EXPECT_MSG_EQ(mask->count(),
+                                  1,
+                                  description << ": Expected EMLSR link " << +linkId
+                                              << " to be blocked for one reason only");
+        }
+    }
+    else if (testUnblockedForOtherReasons)
+    {
+        NS_TEST_EXPECT_MSG_EQ(mask->none(),
+                              true,
+                              description << ": Expected EMLSR link " << +linkId
+                                          << " to be unblocked");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_EQ(mask->test(static_cast<std::size_t>(reason)),
+                              false,
+                              description << ": Expected EMLSR link " << +linkId
+                                          << " to be unblocked for reason " << reason);
+    }
 }
 
 /**
@@ -1961,18 +2026,14 @@ EmlsrDlTxopTest::CheckPmModeAfterAssociation(const Mac48Address& address)
                                             << " not in " << (psModeExpected ? "PS" : "active")
                                             << " mode");
         // check that AP is blocking transmission of QoS data frames on this link
-        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, addr, 0);
-        auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
-        NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                              true,
-                              "Expected to find a mask for EMLSR link "
-                                  << +linkId << " of EMLSR client " << *staId);
-        auto reason = static_cast<std::size_t>(WifiQueueBlockedReason::POWER_SAVE_MODE);
-        NS_TEST_EXPECT_MSG_EQ(mask->test(reason),
-                              psModeExpected,
-                              "Expected EMLSR link " << +linkId << " of EMLSR client " << *staId
-                                                     << " to be "
-                                                     << (psModeExpected ? "blocked" : "unblocked"));
+        CheckBlockedLink(m_apMac,
+                         addr,
+                         linkId,
+                         WifiQueueBlockedReason::POWER_SAVE_MODE,
+                         psModeExpected,
+                         "Checking PM mode after association on AP MLD for EMLSR client " +
+                             std::to_string(*staId),
+                         false);
     }
 }
 
@@ -2028,18 +2089,15 @@ EmlsrDlTxopTest::CheckEmlNotificationFrame(Ptr<const WifiMpdu> mpdu,
                                       "EMLSR link " << +linkId << " of EMLSR client " << *staId
                                                     << " not in active mode");
                 // check that AP is not blocking transmission of QoS data frames on this link
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, addr, 0);
-                auto mask =
-                    m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
-                NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                      true,
-                                      "Expected to find a mask for EMLSR link "
-                                          << +linkId << " of EMLSR client " << *staId);
-                auto reason = static_cast<std::size_t>(WifiQueueBlockedReason::POWER_SAVE_MODE);
-                NS_TEST_EXPECT_MSG_EQ(mask->test(reason),
-                                      false,
-                                      "Expected EMLSR link " << +linkId << " of EMLSR client "
-                                                             << *staId << " to be unblocked");
+                CheckBlockedLink(
+                    m_apMac,
+                    addr,
+                    linkId,
+                    WifiQueueBlockedReason::POWER_SAVE_MODE,
+                    false,
+                    "Checking EMLSR links on AP MLD after EMLSR mode is enabled on EMLSR client " +
+                        std::to_string(*staId),
+                    false);
             }
         }
         else
@@ -2058,18 +2116,15 @@ EmlsrDlTxopTest::CheckEmlNotificationFrame(Ptr<const WifiMpdu> mpdu,
                                           << +id << " of EMLSR client " << *staId << " not in "
                                           << (psModeExpected ? "PS" : "active") << " mode");
                 // check that AP is blocking transmission of QoS data frames on this link
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, addr, 0);
-                auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, id);
-                NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                      true,
-                                      "Expected to find a mask for EMLSR link "
-                                          << +id << " of EMLSR client " << *staId);
-                auto reason = static_cast<std::size_t>(WifiQueueBlockedReason::POWER_SAVE_MODE);
-                NS_TEST_EXPECT_MSG_EQ(mask->test(reason),
-                                      psModeExpected,
-                                      "Expected EMLSR link "
-                                          << +id << " of EMLSR client " << *staId << " to be "
-                                          << (psModeExpected ? "blocked" : "unblocked"));
+                CheckBlockedLink(
+                    m_apMac,
+                    addr,
+                    id,
+                    WifiQueueBlockedReason::POWER_SAVE_MODE,
+                    psModeExpected,
+                    "Checking links on AP MLD after EMLSR mode is disabled on EMLSR client " +
+                        std::to_string(*staId),
+                    false);
             }
         }
     });
@@ -2130,53 +2185,28 @@ EmlsrDlTxopTest::CheckInitialControlFrame(Ptr<const WifiMpdu> mpdu,
                     continue;
                 }
 
-                if (id == linkId)
-                {
-                    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *addr, 0);
-                    auto mask =
-                        m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, id);
-                    NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                          true,
-                                          "Expected to find a mask for EMLSR link "
-                                              << +id << " of EMLSR client " << *addr);
-                    NS_TEST_EXPECT_MSG_EQ(mask->none(),
-                                          true,
-                                          "Expected EMLSR link " << +id << " of EMLSR client "
-                                                                 << *addr << " to be unblocked");
-                    continue;
-                }
-
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *addr, 0);
-                auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, id);
-                NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                      true,
-                                      "Expected to find a mask for EMLSR link "
-                                          << +id << " of EMLSR client " << *addr);
-                auto reason =
-                    static_cast<std::size_t>(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
-                NS_TEST_EXPECT_MSG_EQ(mask->test(reason),
-                                      true,
-                                      "Expected EMLSR link " << +id << " of EMLSR client " << *addr
-                                                             << " to be blocked");
-                NS_TEST_EXPECT_MSG_EQ(mask->count(),
-                                      1,
-                                      "Expected EMLSR link "
-                                          << +id << " of EMLSR client " << *addr
-                                          << " to be blocked for one reason only");
+                CheckBlockedLink(m_apMac,
+                                 *addr,
+                                 id,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 id != linkId,
+                                 "Checking that AP blocked transmissions on all other EMLSR "
+                                 "links after sending ICF to client with AID=" +
+                                     std::to_string(userInfo.GetAid12()));
             }
         }
     }
 
     NS_TEST_EXPECT_MSG_EQ(found, true, "Expected ICF to be addressed to at least an EMLSR client");
 
+    auto txDuration = WifiPhy::CalculateTxDuration(mpdu->GetSize(),
+                                                   txVector,
+                                                   m_apMac->GetWifiPhy(linkId)->GetPhyBand());
+
     if (maxPaddingDelay.IsStrictlyPositive())
     {
         // compare the TX duration of this Trigger Frame to that of the Trigger Frame with no
         // padding added
-        auto txDurationWith =
-            WifiPhy::CalculateTxDuration(mpdu->GetSize(),
-                                         txVector,
-                                         m_apMac->GetWifiPhy(linkId)->GetPhyBand());
         trigger.SetPaddingSize(0);
         auto pkt = Create<Packet>();
         pkt->AddHeader(trigger);
@@ -2185,10 +2215,39 @@ EmlsrDlTxopTest::CheckInitialControlFrame(Ptr<const WifiMpdu> mpdu,
                                          txVector,
                                          m_apMac->GetWifiPhy(linkId)->GetPhyBand());
 
-        NS_TEST_EXPECT_MSG_EQ(txDurationWith,
+        NS_TEST_EXPECT_MSG_EQ(txDuration,
                               txDurationWithout + maxPaddingDelay,
                               "Unexpected TX duration of the MU-RTS TF with padding "
                                   << maxPaddingDelay.As(Time::US));
+    }
+
+    // check that the EMLSR clients have blocked transmissions on other links after
+    // receiving this ICF
+    for (const auto& userInfo : trigger)
+    {
+        for (std::size_t i = 0; i < m_nEmlsrStations; i++)
+        {
+            if (m_staMacs[i]->GetAssociationId() != userInfo.GetAid12())
+            {
+                continue;
+            }
+
+            Simulator::Schedule(txDuration + NanoSeconds(5), [=]() {
+                for (uint8_t id = 0; id < m_staMacs[i]->GetNLinks(); id++)
+                {
+                    // non-EMLSR links or links on which ICF is received are not blocked
+                    CheckBlockedLink(m_staMacs[i],
+                                     m_apMac->GetAddress(),
+                                     id,
+                                     WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                     id != linkId && m_staMacs[i]->IsEmlsrLink(id),
+                                     "Checking EMLSR links on EMLSR client " + std::to_string(i) +
+                                         " after receiving ICF");
+                }
+            });
+
+            break;
+        }
     }
 }
 
@@ -2219,80 +2278,95 @@ EmlsrDlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
         // generate another small packet addressed to the first EMLSR client only
         m_apMac->GetDevice()->GetNode()->AddApplication(
             GetApplication(DOWNLINK, firstClientId, 1, 40));
+        // both EMLSR clients are about to receive a QoS data frame
+        for (std::size_t clientId : {firstClientId, secondClientId})
+        {
+            Simulator::Schedule(txDuration, [=]() {
+                for (uint8_t id = 0; id < m_staMacs[clientId]->GetNLinks(); id++)
+                {
+                    // link on which QoS data is received is not blocked
+                    CheckBlockedLink(m_staMacs[clientId],
+                                     m_apMac->GetAddress(),
+                                     id,
+                                     WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                     id != linkId,
+                                     "Checking EMLSR links on EMLSR client " +
+                                         std::to_string(clientId) +
+                                         " after receiving the first QoS data frame");
+                }
+            });
+        }
         break;
     case 2:
         // generate another small packet addressed to the second EMLSR client
         m_apMac->GetDevice()->GetNode()->AddApplication(
             GetApplication(DOWNLINK, secondClientId, 1, 40));
 
+        // when the transmission of the second QoS data frame starts, both EMLSR clients are
+        // still blocking all the links but the one used to receive the QoS data frame
+        for (std::size_t clientId : {firstClientId, secondClientId})
+        {
+            for (uint8_t id = 0; id < m_staMacs[clientId]->GetNLinks(); id++)
+            {
+                // link on which QoS data is received is not blocked
+                CheckBlockedLink(m_staMacs[clientId],
+                                 m_apMac->GetAddress(),
+                                 id,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 id != linkId,
+                                 "Checking EMLSR links on EMLSR client " +
+                                     std::to_string(clientId) +
+                                     " when starting the reception of the second QoS frame");
+            }
+        }
+
         // the EMLSR client that is not the recipient of the QoS frame being transmitted will
         // switch back to listening mode after a transition delay starting from the end of
         // the PPDU carrying this QoS data frame
 
-        // immediately before the end of the PPDU, this link is not blocked for the EMLSR client
-        Simulator::Schedule(txDuration - NanoSeconds(1), [=]() {
-            WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, addr, 0);
-            auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
-            NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                  true,
-                                  "Expected to find a mask for EMLSR link "
-                                      << +linkId << " of EMLSR client " << secondClientId);
-            NS_TEST_EXPECT_MSG_EQ(mask->none(),
-                                  true,
-                                  "Expected EMLSR link " << +linkId << " of EMLSR client "
-                                                         << secondClientId << " to be unblocked");
-        });
-        // immediately before the end of the PPDU, the other links are blocked for the EMLSR client
+        // immediately before the end of the PPDU, this link only is not blocked for the EMLSR
+        // client on the AP MLD
         Simulator::Schedule(txDuration - NanoSeconds(1), [=]() {
             for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
             {
-                if (id == linkId)
-                {
-                    continue;
-                }
-
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, addr, 0);
-                auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, id);
-                NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                      true,
-                                      "Expected to find a mask for EMLSR link "
-                                          << +id << " of EMLSR client " << secondClientId);
-                auto reason =
-                    static_cast<std::size_t>(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
-                NS_TEST_EXPECT_MSG_EQ(mask->test(reason),
-                                      true,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << secondClientId << " to be blocked");
-                NS_TEST_EXPECT_MSG_EQ(mask->count(),
-                                      1,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << secondClientId
-                                                             << " to be blocked "
-                                                                " for one reason only");
+                CheckBlockedLink(m_apMac,
+                                 addr,
+                                 id,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 id != linkId,
+                                 "Checking that links of EMLSR client " +
+                                     std::to_string(secondClientId) +
+                                     " are blocked on the AP MLD before the end of the PPDU");
+            }
+        });
+        // immediately before the end of the PPDU, all the links on the EMLSR client that is not
+        // the recipient of the second QoS frame are unblocked (they are unblocked when the
+        // PHY-RXSTART.indication is not received)
+        Simulator::Schedule(txDuration - NanoSeconds(1), [=]() {
+            for (uint8_t id = 0; id < m_staMacs[secondClientId]->GetNLinks(); id++)
+            {
+                CheckBlockedLink(m_staMacs[secondClientId],
+                                 m_apMac->GetAddress(),
+                                 id,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 false,
+                                 "Checking that links of EMLSR client " +
+                                     std::to_string(secondClientId) +
+                                     " are unblocked before the end of the second QoS frame");
             }
         });
         // immediately after the end of the PPDU, all links are blocked for the EMLSR client
         Simulator::Schedule(txDuration + NanoSeconds(1), [=]() {
             for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
             {
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, addr, 0);
-                auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, id);
-                NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                      true,
-                                      "Expected to find a mask for EMLSR link "
-                                          << +id << " of EMLSR client " << secondClientId);
-                auto reason = static_cast<std::size_t>(
-                    WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY);
-                NS_TEST_EXPECT_MSG_EQ(mask->test(reason),
-                                      true,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << secondClientId << " to be blocked");
-                NS_TEST_EXPECT_MSG_EQ(mask->count(),
-                                      1,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << secondClientId
-                                                             << " to be blocked "
-                                                                " for one reason only");
+                CheckBlockedLink(m_apMac,
+                                 addr,
+                                 id,
+                                 WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                                 true,
+                                 "Checking links of EMLSR client " +
+                                     std::to_string(secondClientId) +
+                                     " are all blocked on the AP MLD after the end of the PPDU");
             }
         });
         // immediately before the transition delay, all links are still blocked for the EMLSR client
@@ -2301,29 +2375,34 @@ EmlsrDlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
             [=]() {
                 for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
                 {
-                    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, addr, 0);
-                    auto mask =
-                        m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, id);
-                    NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                          true,
-                                          "Expected to find a mask for EMLSR link "
-                                              << +id << " of EMLSR client " << secondClientId);
-                    auto reason = static_cast<std::size_t>(
-                        WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY);
-                    NS_TEST_EXPECT_MSG_EQ(mask->test(reason),
-                                          true,
-                                          "Expected EMLSR link " << +id << " of EMLSR client "
-                                                                 << secondClientId
-                                                                 << " to be blocked");
-                    NS_TEST_EXPECT_MSG_EQ(mask->count(),
-                                          1,
-                                          "Expected EMLSR link " << +id << " of EMLSR client "
-                                                                 << secondClientId
-                                                                 << " to be blocked "
-                                                                    " for one reason only");
+                    CheckBlockedLink(
+                        m_apMac,
+                        addr,
+                        id,
+                        WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                        true,
+                        "Checking links of EMLSR client " + std::to_string(secondClientId) +
+                            " are all blocked on the AP MLD before the transition delay");
                 }
             });
 
+        break;
+    case 3:
+        // at the end of the third QoS frame, this link only is not blocked on the EMLSR
+        // client receiving the frame
+        Simulator::Schedule(txDuration, [=]() {
+            for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+            {
+                CheckBlockedLink(m_staMacs[secondClientId],
+                                 m_apMac->GetAddress(),
+                                 id,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 id != linkId,
+                                 "Checking EMLSR links on EMLSR client " +
+                                     std::to_string(secondClientId) +
+                                     " after receiving the third QoS data frame");
+            }
+        });
         break;
     }
 }
@@ -2380,116 +2459,87 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
         // not responded and assumes that the EMLSR client has started the transition to the
         // listening mode (such transition lasting the transition delay)
 
-        // at the end of the PPDU, this link is not blocked for the EMLSR client
-        Simulator::Schedule(txDuration, [=]() {
-            WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *addr, 0);
-            auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
-            NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                  true,
-                                  "Expected to find a mask for EMLSR link "
-                                      << +linkId << " of EMLSR client " << clientId);
-            NS_TEST_EXPECT_MSG_EQ(mask->none(),
-                                  true,
-                                  "Expected EMLSR link " << +linkId << " of EMLSR client "
-                                                         << clientId << " to be unblocked");
-        });
-        // at the end of the PPDU, the other links are blocked for the EMLSR client
+        // at the end of the PPDU, this link only is not blocked on the EMLSR client
         Simulator::Schedule(txDuration, [=]() {
             for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
             {
-                if (id == linkId)
-                {
-                    continue;
-                }
-
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *addr, 0);
-                auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, id);
-                NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                      true,
-                                      "Expected to find a mask for EMLSR link "
-                                          << +id << " of EMLSR client " << clientId);
-                auto reason =
-                    static_cast<std::size_t>(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
-                NS_TEST_EXPECT_MSG_EQ(mask->test(reason),
-                                      true,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << clientId << " to be blocked");
-                NS_TEST_EXPECT_MSG_EQ(mask->count(),
-                                      1,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << clientId
-                                                             << " to be blocked "
-                                                                " for one reason only");
+                CheckBlockedLink(m_staMacs[clientId],
+                                 m_apMac->GetAddress(),
+                                 id,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 id != linkId,
+                                 "Checking links on EMLSR client " + std::to_string(clientId) +
+                                     " at the end of fourth BlockAck");
+                CheckBlockedLink(m_apMac,
+                                 *addr,
+                                 id,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 id != linkId,
+                                 "Checking links of EMLSR client " + std::to_string(clientId) +
+                                     " on the AP MLD before the end of the PPDU plus timeout");
             }
         });
         // immediately after the end of the PPDU, all links are blocked for the EMLSR client
         Simulator::Schedule(txDuration + MicroSeconds(1), [=]() {
             for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
             {
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *addr, 0);
-                auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, id);
-                NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                      true,
-                                      "Expected to find a mask for EMLSR link "
-                                          << +id << " of EMLSR client " << clientId);
-                auto reason = static_cast<std::size_t>(
-                    WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY);
-                NS_TEST_EXPECT_MSG_EQ(mask->test(reason),
-                                      true,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << clientId << " to be blocked");
-                NS_TEST_EXPECT_MSG_EQ(mask->count(),
-                                      1,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << clientId
-                                                             << " to be blocked "
-                                                                " for one reason only");
+                CheckBlockedLink(
+                    m_apMac,
+                    *addr,
+                    id,
+                    WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                    true,
+                    "Checking links of EMLSR client " + std::to_string(clientId) +
+                        " are all blocked on the AP MLD after the end of the PPDU plus timeout");
             }
         });
         // immediately before the transition delay, all links are still blocked for the EMLSR client
         Simulator::Schedule(txDuration + m_transitionDelay.at(clientId), [=]() {
             for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
             {
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *addr, 0);
-                auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, id);
-                NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                      true,
-                                      "Expected to find a mask for EMLSR link "
-                                          << +id << " of EMLSR client " << clientId);
-                auto reason = static_cast<std::size_t>(
-                    WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY);
-                NS_TEST_EXPECT_MSG_EQ(mask->test(reason),
-                                      true,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << clientId << " to be blocked");
-                NS_TEST_EXPECT_MSG_EQ(mask->count(),
-                                      1,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << clientId
-                                                             << " to be blocked "
-                                                                " for one reason only");
+                CheckBlockedLink(m_apMac,
+                                 *addr,
+                                 id,
+                                 WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                                 true,
+                                 "Checking links of EMLSR client " + std::to_string(clientId) +
+                                     " are all blocked on the AP MLD before the transition delay");
             }
         });
         // immediately after the transition delay, all links are unblocked for the EMLSR client
         Simulator::Schedule(txDuration + m_transitionDelay.at(clientId) + MicroSeconds(1), [=]() {
             for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
             {
-                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *addr, 0);
-                auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, id);
-                NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
-                                      true,
-                                      "Expected to find a mask for EMLSR link "
-                                          << +id << " of EMLSR client " << clientId);
-                NS_TEST_EXPECT_MSG_EQ(mask->none(),
-                                      true,
-                                      "Expected EMLSR link " << +id << " of EMLSR client "
-                                                             << clientId << " to be unblocked");
+                CheckBlockedLink(m_apMac,
+                                 *addr,
+                                 id,
+                                 WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                                 false,
+                                 "Checking links of EMLSR client " + std::to_string(clientId) +
+                                     " are all unblocked on the AP MLD after the transition delay");
             }
         });
 
         // corrupt this BlockAck so that the AP MLD sends a BlockAckReq later on
-        auto uid = psduMap.cbegin()->second->GetPacket()->GetUid();
-        m_errorModel->SetList({uid});
+        {
+            auto uid = psduMap.cbegin()->second->GetPacket()->GetUid();
+            m_errorModel->SetList({uid});
+        }
+        break;
+    case 5:
+        // at the end of the PPDU, this link only is not blocked on the EMLSR client
+        Simulator::Schedule(txDuration, [=]() {
+            for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+            {
+                CheckBlockedLink(m_staMacs[clientId],
+                                 m_apMac->GetAddress(),
+                                 id,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 id != linkId,
+                                 "Checking links on EMLSR client " + std::to_string(clientId) +
+                                     " at the end of fifth BlockAck");
+            }
+        });
         break;
     }
 }
