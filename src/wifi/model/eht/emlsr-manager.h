@@ -129,6 +129,13 @@ class EmlsrManager : public Object
      */
     void NotifyIcfReceived(uint8_t linkId);
 
+    /**
+     * Notify the end of a TXOP on the given link.
+     *
+     * \param linkId the ID of the given link
+     */
+    void NotifyTxopEnd(uint8_t linkId);
+
   protected:
     void DoDispose() override;
 

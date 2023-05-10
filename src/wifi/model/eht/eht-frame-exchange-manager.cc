@@ -67,6 +67,7 @@ EhtFrameExchangeManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
     m_responseFromEmlsrClients.Cancel();
+    m_ongoingTxopEnd.Cancel();
     HeFrameExchangeManager::DoDispose();
 }
 
@@ -85,6 +86,7 @@ EhtFrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDurat
                                 &EhtFrameExchangeManager::HandleMissingResponses,
                                 this);
     }
+    UpdateTxopEndOnRxStartIndication(psduDuration);
 }
 
 void
@@ -159,13 +161,14 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
         txVector.SetSigBMode(sigBMode);
     }
 
+    auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
+
     if (!m_apMac)
     {
         HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
+        UpdateTxopEndOnTxStart(txDuration);
         return;
     }
-
-    auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
 
     // check if the EMLSR clients shall switch back to listening operation at the end of this PPDU
     for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
@@ -202,13 +205,14 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
 {
     NS_LOG_FUNCTION(this << psduMap << txVector);
 
+    auto txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, m_phy->GetPhyBand());
+
     if (!m_apMac)
     {
         HeFrameExchangeManager::ForwardPsduMapDown(psduMap, txVector);
+        UpdateTxopEndOnTxStart(txDuration);
         return;
     }
-
-    auto txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, m_phy->GetPhyBand());
 
     // check if the EMLSR clients shall switch back to listening operation at the end of this PPDU
     for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
@@ -508,6 +512,34 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
 }
 
 void
+EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+
+    HeFrameExchangeManager::PostProcessFrame(psdu, txVector);
+
+    if (!m_ongoingTxopEnd.IsRunning())
+    {
+        // nothing to do
+        return;
+    }
+
+    if (m_staMac)
+    {
+        if (GetEmlsrSwitchToListening(psdu, m_staMac->GetAssociationId(), m_self))
+        {
+            // we are no longer involved in the TXOP and switching to listening mode
+            m_ongoingTxopEnd.Cancel();
+            m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId);
+        }
+        else
+        {
+            UpdateTxopEndOnRxEnd();
+        }
+    }
+}
+
+void
 EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                      RxSignalInfo rxSignalInfo,
                                      const WifiTxVector& txVector,
@@ -543,6 +575,12 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             Simulator::ScheduleNow(&EmlsrManager::NotifyIcfReceived,
                                    m_staMac->GetEmlsrManager(),
                                    m_linkId);
+            // we just got involved in a DL TXOP. Check if we are still involved in the TXOP in a
+            // SIFS (we are expected to reply by sending a CTS frame)
+            NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + m_phy->GetSifs()).As(Time::S));
+            m_ongoingTxopEnd = Simulator::Schedule(m_phy->GetSifs() + NanoSeconds(1),
+                                                   &EhtFrameExchangeManager::TxopEnd,
+                                                   this);
         }
     }
 
@@ -566,6 +604,91 @@ EhtFrameExchangeManager::HandleMissingResponses()
             EmlsrSwitchToListening(address, Seconds(0));
         }
     }
+}
+
+void
+EhtFrameExchangeManager::TxopEnd()
+{
+    NS_LOG_FUNCTION(this);
+
+    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
+    {
+        m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId);
+    }
+}
+
+void
+EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration)
+{
+    NS_LOG_FUNCTION(this << txDuration.As(Time::MS));
+
+    if (!m_ongoingTxopEnd.IsRunning())
+    {
+        // nothing to do
+        return;
+    }
+
+    m_ongoingTxopEnd.Cancel();
+    Time delay;
+
+    if (m_txTimer.IsRunning())
+    {
+        // the TX timer is running, hence we are expecting a response. Postpone the TXOP end
+        // to match the TX timer (which is long enough to get the PHY-RXSTART.indication for
+        // the response)
+        delay = m_txTimer.GetDelayLeft();
+    }
+    else
+    {
+        // the TX Timer is not running, hence no response is expected (e.g., we are
+        // transmitting a CTS after ICS). The TXOP holder may transmit a frame a SIFS
+        // after the end of this PPDU, hence we need to postpone the TXOP end in order to
+        // get the PHY-RXSTART.indication
+        delay = txDuration + m_phy->GetSifs() + m_phy->GetSlot() +
+                MicroSeconds(RX_PHY_START_DELAY_USEC);
+    }
+
+    NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
+    m_ongoingTxopEnd = Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this);
+}
+
+void
+EhtFrameExchangeManager::UpdateTxopEndOnRxStartIndication(Time psduDuration)
+{
+    NS_LOG_FUNCTION(this << psduDuration.As(Time::MS));
+
+    if (!m_ongoingTxopEnd.IsRunning() || !psduDuration.IsStrictlyPositive())
+    {
+        // nothing to do
+        return;
+    }
+
+    // postpone the TXOP end until after the reception of the PSDU is completed
+    m_ongoingTxopEnd.Cancel();
+
+    NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + psduDuration).As(Time::S));
+    m_ongoingTxopEnd =
+        Simulator::Schedule(psduDuration + NanoSeconds(1), &EhtFrameExchangeManager::TxopEnd, this);
+}
+
+void
+EhtFrameExchangeManager::UpdateTxopEndOnRxEnd()
+{
+    NS_LOG_FUNCTION(this);
+
+    if (!m_ongoingTxopEnd.IsRunning())
+    {
+        // nothing to do
+        return;
+    }
+
+    m_ongoingTxopEnd.Cancel();
+
+    // we may send a response after a SIFS or we may receive another frame after a SIFS.
+    // Postpone the TXOP end by considering the latter (which takes longer)
+    auto delay = m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
+    NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
+    m_ongoingTxopEnd = Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this);
 }
 
 } // namespace ns3

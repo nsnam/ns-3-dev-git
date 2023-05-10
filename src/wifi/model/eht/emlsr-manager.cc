@@ -243,6 +243,17 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
 
+    NS_ASSERT(m_staMac->IsEmlsrLink(linkId));
+
+    // block transmissions on all other EMLSR links
+    for (auto id : m_staMac->GetLinkIds())
+    {
+        if (id != linkId && m_staMac->IsEmlsrLink(id))
+        {
+            m_staMac->BlockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+        }
+    }
+
     auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
     auto auxPhy = m_staMac->GetWifiPhy(linkId);
 
@@ -257,6 +268,27 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
     // aux PHY received the ICF but main PHY will send the response
     auto uid = auxPhy->GetPreviouslyRxPpduUid();
     mainPhy->SetPreviouslyRxPpduUid(uid);
+}
+
+void
+EmlsrManager::NotifyTxopEnd(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    if (!m_staMac->IsEmlsrLink(linkId))
+    {
+        NS_LOG_DEBUG("EMLSR is not enabled on link " << +linkId);
+        return;
+    }
+
+    // unblock transmissions on other EMLSR links
+    for (auto id : m_staMac->GetLinkIds())
+    {
+        if (id != linkId && m_staMac->IsEmlsrLink(id))
+        {
+            m_staMac->UnblockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+        }
+    }
 }
 
 void
