@@ -1051,6 +1051,50 @@ StaWifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
 }
 
 void
+StaWifiMac::BlockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
+{
+    NS_LOG_FUNCTION(this << linkId << reason);
+
+    auto bssid = GetBssid(linkId);
+    auto apAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(bssid).value_or(bssid);
+
+    BlockUnicastTxOnLinks(reason, apAddress, {linkId});
+    // the only type of broadcast frames that a non-AP STA can send are management frames
+    for (const auto [acIndex, ac] : wifiAcList)
+    {
+        GetMacQueueScheduler()->BlockQueues(reason,
+                                            acIndex,
+                                            {WIFI_MGT_QUEUE},
+                                            Mac48Address::GetBroadcast(),
+                                            GetFrameExchangeManager(linkId)->GetAddress(),
+                                            {},
+                                            {linkId});
+    }
+}
+
+void
+StaWifiMac::UnblockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
+{
+    NS_LOG_FUNCTION(this << linkId << reason);
+
+    auto bssid = GetBssid(linkId);
+    auto apAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(bssid).value_or(bssid);
+
+    UnblockUnicastTxOnLinks(reason, apAddress, {linkId});
+    // the only type of broadcast frames that a non-AP STA can send are management frames
+    for (const auto [acIndex, ac] : wifiAcList)
+    {
+        GetMacQueueScheduler()->UnblockQueues(reason,
+                                              acIndex,
+                                              {WIFI_MGT_QUEUE},
+                                              Mac48Address::GetBroadcast(),
+                                              GetFrameExchangeManager(linkId)->GetAddress(),
+                                              {},
+                                              {linkId});
+    }
+}
+
+void
 StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << +linkId);

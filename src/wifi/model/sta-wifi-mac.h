@@ -317,6 +317,22 @@ class StaWifiMac : public WifiMac
     void NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId);
 
     /**
+     * Block transmissions on the given link for the given reason.
+     *
+     * \param linkId the ID of the given link
+     * \param reason the reason for blocking transmissions on the given link
+     */
+    void BlockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason);
+
+    /**
+     * Unblock transmissions on the given link for the given reason.
+     *
+     * \param linkId the ID of the given link
+     * \param reason the reason for unblocking transmissions on the given link
+     */
+    void UnblockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason);
+
+    /**
      * Assign a fixed random variable stream number to the random variables
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
