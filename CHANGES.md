@@ -57,6 +57,8 @@ Changes from ns-3.38 to ns-3-dev
 * (wifi) The QosBlockedDestinations class has been removed and its functionality is now provided via a new framework for blocking/unblocking packets that is based on the queue scheduler.
 * (internet) The function signature of `Ipv4RoutingProtocol::RouteInput` and `Ipv6RoutingProtocol::RouteInput` have changed. The `UnicastForwardCallback` (ucb), `MulticastForwardCallback` (mcb), `LocalDeliverCallback` (lcb) and `ErrorCallback` (ecb) should now be passed as const references.
 * (olsr) The defines `OLSR_WILL_*` have been replaced by enum `Willingness`.
+* (olsr) The defines `OLSR_*_LINK` have been replaced by enum `LinkType`.
+* (olsr) The defines `OLSR_*_NEIGH` have been replaced by enum `NeighborType`.
 * (wifi) The `WifiCodeRate` typedef was converted to an enum.
 * (internet) `InternetStackHelper` can be now used on nodes with an `InternetStack` already installed (it will not install IPv[4,6] twice).
 * (lr-wpan) Block the reception of orphan notification commands to devices other than PAN coordinators or coordinators.

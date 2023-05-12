@@ -51,6 +51,7 @@
 #include "ns3/uinteger.h"
 
 #include <iomanip>
+#include <iostream>
 
 /********** Useful macros **********/
 
@@ -84,26 +85,6 @@
 /// HNA holding time.
 #define OLSR_HNA_HOLD_TIME Time(3 * m_hnaInterval)
 
-/********** Link types **********/
-
-/// Unspecified link type.
-#define OLSR_UNSPEC_LINK 0
-/// Asymmetric link type.
-#define OLSR_ASYM_LINK 1
-/// Symmetric link type.
-#define OLSR_SYM_LINK 2
-/// Lost link type.
-#define OLSR_LOST_LINK 3
-
-/********** Neighbor types **********/
-
-/// Not neighbor type.
-#define OLSR_NOT_NEIGH 0
-/// Symmetric neighbor type.
-#define OLSR_SYM_NEIGH 1
-/// Asymmetric neighbor type.
-#define OLSR_MPR_NEIGH 2
-
 /********** Miscellaneous constants **********/
 
 /// Maximum allowed jitter.
@@ -129,6 +110,81 @@ NS_LOG_COMPONENT_DEFINE("OlsrRoutingProtocol");
 
 namespace olsr
 {
+
+/**
+ * \ingroup olsr
+ *
+ * OLSR link types.
+ * See \RFC{3626} section 18.5.
+ */
+enum class LinkType : uint8_t
+{
+    UNSPEC_LINK = 0, //!< Unspecified link type
+    ASYM_LINK = 1,   //!< Asymmetric link type
+    SYM_LINK = 2,    //!< Symmetric link type
+    LOST_LINK = 3,   //!< Lost link type
+};
+
+/**
+ * Stream insertion operator for OLSR link type.
+ *
+ * \param os Output stream.
+ * \param linkType OLSR link type.
+ * \return A reference to the output stream.
+ */
+inline std::ostream&
+operator<<(std::ostream& os, LinkType linkType)
+{
+    switch (linkType)
+    {
+    case LinkType::UNSPEC_LINK:
+        return (os << "UNSPEC_LINK");
+    case LinkType::ASYM_LINK:
+        return (os << "ASYM_LINK");
+    case LinkType::SYM_LINK:
+        return (os << "SYM_LINK");
+    case LinkType::LOST_LINK:
+        return (os << "LOST_LINK");
+    default:
+        return (os << "Unknown link type");
+    }
+}
+
+/**
+ * \ingroup olsr
+ *
+ * OLSR neighbor types.
+ * See \RFC{3626} section 18.6.
+ */
+enum class NeighborType : uint8_t
+{
+    NOT_NEIGH = 0, //!< Not neighbor type
+    SYM_NEIGH = 1, //!< Symmetric neighbor type
+    MPR_NEIGH = 2, //!< Asymmetric neighbor type
+};
+
+/**
+ * Stream insertion operator for OLSR link type.
+ *
+ * \param os Output stream.
+ * \param neighborType OLSR neighbor type.
+ * \return A reference to the output stream.
+ */
+inline std::ostream&
+operator<<(std::ostream& os, NeighborType neighborType)
+{
+    switch (neighborType)
+    {
+    case NeighborType::NOT_NEIGH:
+        return (os << "NOT_NEIGH");
+    case NeighborType::SYM_NEIGH:
+        return (os << "SYM_NEIGH");
+    case NeighborType::MPR_NEIGH:
+        return (os << "MPR_NEIGH");
+    default:
+        return (os << "Unknown neighbor type");
+    }
+}
 
 /********** OLSR class **********/
 
@@ -1733,26 +1789,26 @@ RoutingProtocol::SendHello()
             continue;
         }
 
-        uint8_t link_type;
-        uint8_t nb_type = 0xff;
+        LinkType linkType;
+        NeighborType neighborType;
 
         // Establishes link type
         if (link_tuple->symTime >= now)
         {
-            link_type = OLSR_SYM_LINK;
+            linkType = LinkType::SYM_LINK;
         }
         else if (link_tuple->asymTime >= now)
         {
-            link_type = OLSR_ASYM_LINK;
+            linkType = LinkType::ASYM_LINK;
         }
         else
         {
-            link_type = OLSR_LOST_LINK;
+            linkType = LinkType::LOST_LINK;
         }
         // Establishes neighbor type.
         if (m_state.FindMprAddress(GetMainAddress(link_tuple->neighborIfaceAddr)))
         {
-            nb_type = OLSR_MPR_NEIGH;
+            neighborType = NeighborType::MPR_NEIGH;
             NS_LOG_DEBUG("I consider neighbor " << GetMainAddress(link_tuple->neighborIfaceAddr)
                                                 << " to be MPR_NEIGH.");
         }
@@ -1770,11 +1826,11 @@ RoutingProtocol::SendHello()
                         NS_LOG_DEBUG("I consider neighbor "
                                      << GetMainAddress(link_tuple->neighborIfaceAddr)
                                      << " to be SYM_NEIGH.");
-                        nb_type = OLSR_SYM_NEIGH;
+                        neighborType = NeighborType::SYM_NEIGH;
                     }
                     else if (nb_tuple->status == NeighborTuple::STATUS_NOT_SYM)
                     {
-                        nb_type = OLSR_NOT_NEIGH;
+                        neighborType = NeighborType::NOT_NEIGH;
                         NS_LOG_DEBUG("I consider neighbor "
                                      << GetMainAddress(link_tuple->neighborIfaceAddr)
                                      << " to be NOT_NEIGH.");
@@ -1796,7 +1852,8 @@ RoutingProtocol::SendHello()
         }
 
         olsr::MessageHeader::Hello::LinkMessage linkMessage;
-        linkMessage.linkCode = (link_type & 0x03) | ((nb_type << 2) & 0x0f);
+        linkMessage.linkCode = (static_cast<uint8_t>(linkType) & 0x03) |
+                               ((static_cast<uint8_t>(neighborType) << 2) & 0x0f);
         linkMessage.neighborInterfaceAddresses.push_back(link_tuple->neighborIfaceAddr);
 
         std::vector<Ipv4Address> interfaces =
@@ -2042,53 +2099,16 @@ RoutingProtocol::LinkSensing(const olsr::MessageHeader& msg,
          linkMessage != hello.linkMessages.end();
          linkMessage++)
     {
-        int lt = linkMessage->linkCode & 0x03;        // Link Type
-        int nt = (linkMessage->linkCode >> 2) & 0x03; // Neighbor Type
-
-#ifdef NS3_LOG_ENABLE
-        const char* linkTypeName;
-        switch (lt)
-        {
-        case OLSR_UNSPEC_LINK:
-            linkTypeName = "UNSPEC_LINK";
-            break;
-        case OLSR_ASYM_LINK:
-            linkTypeName = "ASYM_LINK";
-            break;
-        case OLSR_SYM_LINK:
-            linkTypeName = "SYM_LINK";
-            break;
-        case OLSR_LOST_LINK:
-            linkTypeName = "LOST_LINK";
-            break;
-        default:
-            linkTypeName = "(invalid value!)";
-        }
-
-        const char* neighborTypeName;
-        switch (nt)
-        {
-        case OLSR_NOT_NEIGH:
-            neighborTypeName = "NOT_NEIGH";
-            break;
-        case OLSR_SYM_NEIGH:
-            neighborTypeName = "SYM_NEIGH";
-            break;
-        case OLSR_MPR_NEIGH:
-            neighborTypeName = "MPR_NEIGH";
-            break;
-        default:
-            neighborTypeName = "(invalid value!)";
-        }
+        LinkType linkType = LinkType(linkMessage->linkCode & 0x03);
+        NeighborType neighborType = NeighborType((linkMessage->linkCode >> 2) & 0x03);
 
         NS_LOG_DEBUG("Looking at HELLO link messages with Link Type "
-                     << lt << " (" << linkTypeName << ") and Neighbor Type " << nt << " ("
-                     << neighborTypeName << ")");
-#endif // NS3_LOG_ENABLE
+                     << linkType << " and Neighbor Type " << neighborType);
 
         // We must not process invalid advertised links
-        if ((lt == OLSR_SYM_LINK && nt == OLSR_NOT_NEIGH) ||
-            (nt != OLSR_SYM_NEIGH && nt != OLSR_MPR_NEIGH && nt != OLSR_NOT_NEIGH))
+        if ((linkType == LinkType::SYM_LINK && neighborType == NeighborType::NOT_NEIGH) ||
+            (neighborType != NeighborType::SYM_NEIGH && neighborType != NeighborType::MPR_NEIGH &&
+             neighborType != NeighborType::NOT_NEIGH))
         {
             NS_LOG_LOGIC("HELLO link code is invalid => IGNORING");
             continue;
@@ -2102,13 +2122,13 @@ RoutingProtocol::LinkSensing(const olsr::MessageHeader& msg,
             NS_LOG_DEBUG("   -> Neighbor: " << *neighIfaceAddr);
             if (*neighIfaceAddr == receiverIface)
             {
-                if (lt == OLSR_LOST_LINK)
+                if (linkType == LinkType::LOST_LINK)
                 {
                     NS_LOG_LOGIC("link is LOST => expiring it");
                     link_tuple->symTime = now - Seconds(1);
                     updated = true;
                 }
-                else if (lt == OLSR_SYM_LINK || lt == OLSR_ASYM_LINK)
+                else if (linkType == LinkType::SYM_LINK || linkType == LinkType::ASYM_LINK)
                 {
                     NS_LOG_DEBUG(*link_tuple << ": link is SYM or ASYM => should become SYM now"
                                                 " (symTime being increased to "
@@ -2198,14 +2218,9 @@ RoutingProtocol::PopulateTwoHopNeighborSet(const olsr::MessageHeader& msg,
              linkMessage != hello.linkMessages.end();
              linkMessage++)
         {
-            int neighborType = (linkMessage->linkCode >> 2) & 0x3;
-#ifdef NS3_LOG_ENABLE
-            const char* neighborTypeNames[3] = {"NOT_NEIGH", "SYM_NEIGH", "MPR_NEIGH"};
-            const char* neighborTypeName =
-                ((neighborType < 3) ? neighborTypeNames[neighborType] : "(invalid value)");
-            NS_LOG_DEBUG("Looking at Link Message from HELLO message: neighborType="
-                         << neighborType << " (" << neighborTypeName << ")");
-#endif // NS3_LOG_ENABLE
+            NeighborType neighborType = NeighborType((linkMessage->linkCode >> 2) & 0x3);
+            NS_LOG_DEBUG(
+                "Looking at Link Message from HELLO message: neighborType=" << neighborType);
 
             for (std::vector<Ipv4Address>::const_iterator nb2hop_addr_iter =
                      linkMessage->neighborInterfaceAddresses.begin();
@@ -2215,7 +2230,8 @@ RoutingProtocol::PopulateTwoHopNeighborSet(const olsr::MessageHeader& msg,
                 Ipv4Address nb2hop_addr = GetMainAddress(*nb2hop_addr_iter);
                 NS_LOG_DEBUG("Looking at 2-hop neighbor address from HELLO message: "
                              << *nb2hop_addr_iter << " (main address is " << nb2hop_addr << ")");
-                if (neighborType == OLSR_SYM_NEIGH || neighborType == OLSR_MPR_NEIGH)
+                if (neighborType == NeighborType::SYM_NEIGH ||
+                    neighborType == NeighborType::MPR_NEIGH)
                 {
                     // If the main address of the 2-hop neighbor address == main address
                     // of the receiving node, silently discard the 2-hop
@@ -2250,7 +2266,7 @@ RoutingProtocol::PopulateTwoHopNeighborSet(const olsr::MessageHeader& msg,
                         nb2hop_tuple->expirationTime = now + msg.GetVTime();
                     }
                 }
-                else if (neighborType == OLSR_NOT_NEIGH)
+                else if (neighborType == NeighborType::NOT_NEIGH)
                 {
                     // For each 2-hop node listed in the HELLO message
                     // with Neighbor Type equal to NOT_NEIGH all 2-hop
@@ -2287,8 +2303,8 @@ RoutingProtocol::PopulateMprSelectorSet(const olsr::MessageHeader& msg,
          linkMessage != hello.linkMessages.end();
          linkMessage++)
     {
-        int nt = linkMessage->linkCode >> 2;
-        if (nt == OLSR_MPR_NEIGH)
+        NeighborType neighborType = NeighborType(linkMessage->linkCode >> 2);
+        if (neighborType == NeighborType::MPR_NEIGH)
         {
             NS_LOG_DEBUG("Processing a link message with neighbor type MPR_NEIGH");
 
