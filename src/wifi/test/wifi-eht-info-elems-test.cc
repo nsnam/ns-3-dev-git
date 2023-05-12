@@ -27,6 +27,7 @@
 #include "ns3/wifi-phy-operating-channel.h"
 
 #include <optional>
+#include <set>
 #include <sstream>
 #include <vector>
 
@@ -1224,7 +1225,7 @@ class TidToLinkMappingElementTest : public HeaderSerializationTestCase
      * \param args A sequence of TID-Link mapping pairs
      */
     template <typename... Args>
-    void SetLinkMapping(uint8_t tid, const std::list<uint8_t>& linkIds, Args&&... args);
+    void SetLinkMapping(uint8_t tid, const std::set<uint8_t>& linkIds, Args&&... args);
 
     /**
      * Base case to stop the recursion performed by the templated version of this method.
@@ -1251,7 +1252,7 @@ TidToLinkMappingElementTest::TidToLinkMappingElementTest(TidLinkMapDir direction
 template <typename... Args>
 void
 TidToLinkMappingElementTest::SetLinkMapping(uint8_t tid,
-                                            const std::list<uint8_t>& linkIds,
+                                            const std::set<uint8_t>& linkIds,
                                             Args&&... args)
 {
     m_tidToLinkMapping.m_control.defaultMapping = false;
@@ -1364,31 +1365,31 @@ WifiEhtInfoElemsTestSuite::WifiEhtInfoElemsTestSuite()
     AddTestCase(new WifiEhtCapabilitiesIeTest(false, 320), TestCase::QUICK);
     AddTestCase(new TidToLinkMappingElementTest(TidLinkMapDir::DOWNLINK), TestCase::QUICK);
     AddTestCase(
-        new TidToLinkMappingElementTest(TidLinkMapDir::UPLINK, 3, std::list<uint8_t>{0, 4, 6}),
+        new TidToLinkMappingElementTest(TidLinkMapDir::UPLINK, 3, std::set<uint8_t>{0, 4, 6}),
         TestCase::QUICK);
     AddTestCase(new TidToLinkMappingElementTest(TidLinkMapDir::BOTH_DIRECTIONS,
                                                 3,
-                                                std::list<uint8_t>{0, 4, 6},
+                                                std::set<uint8_t>{0, 4, 6},
                                                 6,
-                                                std::list<uint8_t>{3, 7, 11, 14}),
+                                                std::set<uint8_t>{3, 7, 11, 14}),
                 TestCase::QUICK);
     AddTestCase(new TidToLinkMappingElementTest(TidLinkMapDir::DOWNLINK,
                                                 0,
-                                                std::list<uint8_t>{0, 1, 2},
+                                                std::set<uint8_t>{0, 1, 2},
                                                 1,
-                                                std::list<uint8_t>{3, 4, 5},
+                                                std::set<uint8_t>{3, 4, 5},
                                                 2,
-                                                std::list<uint8_t>{6, 7},
+                                                std::set<uint8_t>{6, 7},
                                                 3,
-                                                std::list<uint8_t>{8, 9, 10},
+                                                std::set<uint8_t>{8, 9, 10},
                                                 4,
-                                                std::list<uint8_t>{11, 12, 13},
+                                                std::set<uint8_t>{11, 12, 13},
                                                 5,
-                                                std::list<uint8_t>{14},
+                                                std::set<uint8_t>{14},
                                                 6,
-                                                std::list<uint8_t>{1, 3, 6},
+                                                std::set<uint8_t>{1, 3, 6},
                                                 7,
-                                                std::list<uint8_t>{11, 14}),
+                                                std::set<uint8_t>{11, 14}),
                 TestCase::QUICK);
     AddTestCase(new EhtOperationElementTest({0, 0, 0, 0, 0}, 1, 2, 3, 4, 5, 6, 7, 8, std::nullopt),
                 TestCase::QUICK);
