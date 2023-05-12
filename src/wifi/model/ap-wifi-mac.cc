@@ -686,6 +686,25 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac4
         mle.SetTransitionTimeout(time.Get());
     }
 
+    // The MLD Capabilities And Operations subfield is present in the Common Info field of the
+    // Basic Multi-Link element carried in Beacon, Probe Response, (Re)Association Request, and
+    // (Re)Association Response frames. (Sec. 9.4.2.312.2.3 of 802.11be D3.1)
+    if (frameType == WIFI_MAC_MGT_BEACON || frameType == WIFI_MAC_MGT_PROBE_RESPONSE ||
+        frameType == WIFI_MAC_MGT_ASSOCIATION_REQUEST ||
+        frameType == WIFI_MAC_MGT_REASSOCIATION_REQUEST ||
+        frameType == WIFI_MAC_MGT_ASSOCIATION_RESPONSE)
+    {
+        auto& mldCapabilities = mle.GetCommonInfoBasic().m_mldCapabilities;
+        mldCapabilities.emplace();
+        mldCapabilities->maxNSimultaneousLinks = GetNLinks() - 1; // assuming STR for now
+        mldCapabilities->srsSupport = 0;
+        EnumValue negSupport;
+        ehtConfiguration->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
+        mldCapabilities->tidToLinkMappingSupport = negSupport.Get();
+        mldCapabilities->freqSepForStrApMld = 0; // not supported yet
+        mldCapabilities->aarSupport = 0;         // not supported yet
+    }
+
     // if the Multi-Link Element is being inserted in a (Re)Association Response frame
     // and the remote station is affiliated with an MLD, try multi-link setup
     if (auto staMldAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(to);

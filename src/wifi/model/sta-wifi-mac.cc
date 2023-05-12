@@ -417,6 +417,23 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
         // (Section 9.4.2.312.2.3 of 802.11be D2.3)
     }
 
+    // The MLD Capabilities And Operations subfield is present in the Common Info field of the
+    // Basic Multi-Link element carried in Beacon, Probe Response, (Re)Association Request, and
+    // (Re)Association Response frames. (Sec. 9.4.2.312.2.3 of 802.11be D3.1)
+    auto& mldCapabilities = multiLinkElement.GetCommonInfoBasic().m_mldCapabilities;
+    mldCapabilities.emplace();
+    mldCapabilities->maxNSimultaneousLinks = GetNLinks() - 1; // assuming STR for now
+    mldCapabilities->srsSupport = 0;
+
+    auto ehtConfiguration = GetEhtConfiguration();
+    NS_ASSERT(ehtConfiguration);
+    EnumValue negSupport;
+    ehtConfiguration->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
+
+    mldCapabilities->tidToLinkMappingSupport = negSupport.Get();
+    mldCapabilities->freqSepForStrApMld = 0; // not supported yet
+    mldCapabilities->aarSupport = 0;         // not supported yet
+
     // For each requested link in addition to the link on which the (Re)Association Request
     // frame is transmitted, the Link Info field of the Basic Multi-Link element carried
     // in the (Re)Association Request frame shall contain the corresponding Per-STA Profile
