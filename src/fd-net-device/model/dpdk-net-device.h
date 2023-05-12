@@ -61,7 +61,7 @@ class DpdkNetDevice : public FdNetDevice
     /**
      * Destructor for the DpdkNetDevice.
      */
-    ~DpdkNetDevice();
+    ~DpdkNetDevice() override;
 
     /**
      * Check the link status of all ports in up to 9s
@@ -114,20 +114,20 @@ class DpdkNetDevice : public FdNetDevice
      * Check the status of the link.
      * \return Status of the link - up/down as true/false.
      */
-    bool IsLinkUp() const;
+    bool IsLinkUp() const override;
 
     /**
      * Free the given packet buffer.
      * \param buf the pointer to the buffer to be freed
      */
-    virtual void FreeBuffer(uint8_t* buf);
+    void FreeBuffer(uint8_t* buf) override;
 
     /**
      * Allocate packet buffer.
      * \param len the length of the buffer
      * \return A pointer to the newly created buffer.
      */
-    virtual uint8_t* AllocateBuffer(size_t len);
+    uint8_t* AllocateBuffer(size_t len) override;
 
   protected:
     /**
@@ -136,7 +136,7 @@ class DpdkNetDevice : public FdNetDevice
      * \param length The data length.
      * \return The size of data written.
      */
-    ssize_t Write(uint8_t* buffer, size_t length);
+    ssize_t Write(uint8_t* buffer, size_t length) override;
 
     /**
      * The port number of the device to be used.
@@ -149,7 +149,7 @@ class DpdkNetDevice : public FdNetDevice
     std::string m_deviceName;
 
   private:
-    void DoFinishStoppingDevice();
+    void DoFinishStoppingDevice() override;
     /**
      * Condition variable for Dpdk to stop
      */
