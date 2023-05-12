@@ -121,7 +121,7 @@ using ProbeResponseElems = std::tuple<Ssid,
                                       std::optional<MultiLinkElement>,
                                       std::optional<EhtCapabilities>,
                                       std::optional<EhtOperation>,
-                                      std::optional<TidToLinkMapping>>;
+                                      std::vector<TidToLinkMapping>>;
 
 /// List of Information Elements included in Association Request frames
 using AssocRequestElems = std::tuple<Ssid,
@@ -133,7 +133,7 @@ using AssocRequestElems = std::tuple<Ssid,
                                      std::optional<HeCapabilities>,
                                      std::optional<MultiLinkElement>,
                                      std::optional<EhtCapabilities>,
-                                     std::optional<TidToLinkMapping>>;
+                                     std::vector<TidToLinkMapping>>;
 
 /// List of Information Elements included in Association Response frames
 using AssocResponseElems = std::tuple<SupportedRates,
@@ -150,7 +150,7 @@ using AssocResponseElems = std::tuple<SupportedRates,
                                       std::optional<MultiLinkElement>,
                                       std::optional<EhtCapabilities>,
                                       std::optional<EhtOperation>,
-                                      std::optional<TidToLinkMapping>>;
+                                      std::vector<TidToLinkMapping>>;
 
 /**
  * \ingroup wifi

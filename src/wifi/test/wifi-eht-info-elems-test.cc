@@ -218,7 +218,7 @@ BasicMultiLinkElementTest::DoRun()
     assoc.Get<Ssid>() = Ssid("OtherSsid");
     // another "mistake" of the same type, except that a TID-To-Link Mapping element
     // is not included in the containing frame
-    assoc.Get<TidToLinkMapping>().emplace();
+    assoc.Get<TidToLinkMapping>().emplace_back();
     // the SupportedRates IE is the same (hence not serialized) as in the containing frame,
     // while the ExtendedSupportedRatesIE is different (hence serialized)
     rates.AddSupportedRate(5.5e6);
@@ -406,8 +406,8 @@ BasicMultiLinkElementTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(frame.Get<EhtCapabilities>().has_value(),
                           true,
                           "Containing frame should have EHT Capabilities IE");
-    NS_TEST_EXPECT_MSG_EQ(frame.Get<TidToLinkMapping>().has_value(),
-                          false,
+    NS_TEST_EXPECT_MSG_EQ(frame.Get<TidToLinkMapping>().empty(),
+                          true,
                           "Containing frame should not have TID-to-Link Mapping IE");
 
     auto& mle = frame.Get<MultiLinkElement>().value();
@@ -469,8 +469,8 @@ BasicMultiLinkElementTest::DoRun()
         (perSta1Frame.Get<EhtCapabilities>() == frame.Get<EhtCapabilities>()),
         true,
         "EHT Capabilities IE not correctly inherited by frame in first Per-STA Profile");
-    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<TidToLinkMapping>().has_value(),
-                          false,
+    NS_TEST_EXPECT_MSG_EQ(perSta1Frame.Get<TidToLinkMapping>().empty(),
+                          true,
                           "Frame in first Per-STA Profile should not have TID-to-Link Mapping IE");
 
     // frame in second Per-STA Profile subelement includes VHT Capabilities IE and has inherited
@@ -526,8 +526,8 @@ BasicMultiLinkElementTest::DoRun()
         perSta2Frame.Get<EhtCapabilities>().has_value(),
         false,
         "Frame in second Per-STA Profile should have not inherited EHT Capabilities IE");
-    NS_TEST_EXPECT_MSG_EQ(perSta2Frame.Get<TidToLinkMapping>().has_value(),
-                          false,
+    NS_TEST_EXPECT_MSG_EQ(perSta2Frame.Get<TidToLinkMapping>().empty(),
+                          true,
                           "Frame in second Per-STA Profile should not have TID-to-Link Mapping IE");
 
     // frame in third Per-STA Profile subelement includes VHT Capabilities IE and has inherited
@@ -586,8 +586,8 @@ BasicMultiLinkElementTest::DoRun()
         (perSta3Frame.Get<EhtCapabilities>() == frame.Get<EhtCapabilities>()),
         true,
         "EHT Capabilities IE not correctly inherited by frame in third Per-STA Profile");
-    NS_TEST_EXPECT_MSG_EQ(perSta3Frame.Get<TidToLinkMapping>().has_value(),
-                          false,
+    NS_TEST_EXPECT_MSG_EQ(perSta3Frame.Get<TidToLinkMapping>().empty(),
+                          true,
                           "Frame in third Per-STA Profile should not have TID-to-Link Mapping IE");
 }
 
