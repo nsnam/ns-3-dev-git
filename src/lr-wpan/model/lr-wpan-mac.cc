@@ -189,6 +189,7 @@ LrWpanMac::LrWpanMac()
     m_macSIFSPeriod = 12;
 
     m_panCoor = false;
+    m_coor = false;
     m_macBeaconOrder = 15;
     m_macSuperframeOrder = 15;
     m_macTransactionPersistenceTime = 500; // 0x01F5
@@ -498,9 +499,8 @@ LrWpanMac::McpsDataRequest(McpsDataRequestParams params, Ptr<Packet> p)
         // A DEVICE must be tracking beacons (MLME-SYNC.request is running) before attempting
         // request data from the coordinator.
 
-        // TODO: Check if the current device is coordinator (not just pan coordinator)
         //  Indirect Transmission can only be done by PAN coordinator or coordinators.
-        NS_ASSERT(m_panCoor);
+        NS_ASSERT(m_coor);
         p->AddHeader(macHdr);
 
         LrWpanMacTrailer macTrailer;
@@ -1294,8 +1294,10 @@ LrWpanMac::EndStartRequest()
         if (m_startParams.m_panCoor)
         {
             m_panCoor = true;
-            m_macPanId = m_startParams.m_PanId;
         }
+
+        m_coor = true;
+        m_macPanId = m_startParams.m_PanId;
 
         NS_ASSERT(m_startParams.m_PanId != 0xffff);
 
@@ -1692,9 +1694,7 @@ LrWpanMac::CheckQueue()
     // Pull a packet from the queue and start sending if we are not already sending.
     if (m_lrWpanMacState == MAC_IDLE && !m_txQueue.empty() && !m_setMacState.IsRunning())
     {
-        // TODO: this should check if the node is a coordinator and using the outcoming superframe
-        // not just the PAN coordinator
-        if (m_csmaCa->IsUnSlottedCsmaCa() || (m_outSuperframeStatus == CAP && m_panCoor) ||
+        if (m_csmaCa->IsUnSlottedCsmaCa() || (m_outSuperframeStatus == CAP && m_coor) ||
             m_incSuperframeStatus == CAP)
         {
             // check MAC is not in a IFS
@@ -1963,11 +1963,11 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
 
             if (acceptFrame && (receivedMacHdr.GetDstAddrMode() > 1))
             {
-                // Accept frame if:
+                // Accept frame if one of the following is true:
 
                 // 1) Have the same macPanId
-                // 2) Or is Message to all PANs
-                // 3) Or Is a beacon and the macPanId is not present (bootstrap)
+                // 2) Is Message to all PANs
+                // 3) Is a beacon or command frame and the macPanId is not present (bootstrap)
                 acceptFrame = ((receivedMacHdr.GetDstPanId() == m_macPanId ||
                                 receivedMacHdr.GetDstPanId() == 0xffff) ||
                                (m_macPanId == 0xffff && receivedMacHdr.IsBeacon())) ||
@@ -1976,10 +1976,17 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
 
             if (acceptFrame && (receivedMacHdr.GetShortDstAddr() == Mac16Address("FF:FF")))
             {
-                // A broadcast message (e.g. beacons) should not be received by the device who
-                // issues it.
-                acceptFrame = (receivedMacHdr.GetShortSrcAddr() != GetShortAddress());
                 // TODO: shouldn't this be filtered by the PHY?
+                // A broadcast message (e.g. beacons, orphan notifications) should not be received
+                // by the device who issues it.
+                if (receivedMacHdr.GetSrcAddrMode() == EXT_ADDR)
+                {
+                    acceptFrame = (receivedMacHdr.GetExtSrcAddr() != GetExtendedAddress());
+                }
+                else
+                {
+                    acceptFrame = (receivedMacHdr.GetShortSrcAddr() != GetShortAddress());
+                }
             }
 
             if (acceptFrame && (receivedMacHdr.GetDstAddrMode() == SHORT_ADDR))
@@ -2038,7 +2045,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
 
                 if (receivedMacPayload.GetCommandFrameType() ==
                         CommandPayloadHeader::ASSOCIATION_REQ &&
-                    !(m_macAssociationPermit && m_panCoor))
+                    !(m_macAssociationPermit && m_coor))
                 {
                     acceptFrame = false;
                 }
@@ -2348,8 +2355,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                     switch (receivedMacPayload.GetCommandFrameType())
                     {
                     case CommandPayloadHeader::BEACON_REQ:
-                        // TODO: check that node is any coordinator not just pan coordinator
-                        if (m_csmaCa->IsUnSlottedCsmaCa() && m_panCoor)
+                        if (m_csmaCa->IsUnSlottedCsmaCa() && m_coor)
                         {
                             SendOneBeacon();
                         }
@@ -2361,9 +2367,12 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                     case CommandPayloadHeader::ORPHAN_NOTIF:
                         if (!m_mlmeOrphanIndicationCallback.IsNull())
                         {
-                            MlmeOrphanIndicationParams orphanParams;
-                            orphanParams.m_orphanAddr = receivedMacHdr.GetExtSrcAddr();
-                            m_mlmeOrphanIndicationCallback(orphanParams);
+                            if (m_coor)
+                            {
+                                MlmeOrphanIndicationParams orphanParams;
+                                orphanParams.m_orphanAddr = receivedMacHdr.GetExtSrcAddr();
+                                m_mlmeOrphanIndicationCallback(orphanParams);
+                            }
                         }
                         break;
                     case CommandPayloadHeader::COOR_REALIGN:
@@ -2496,6 +2505,24 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                                     m_mlmePollConfirmCallback(pollConfirmParams);
                                 }
                                 break;
+                            }
+
+                            case CommandPayloadHeader::COOR_REALIGN: {
+                                // ACK of coordinator realigment commands is not specified in the
+                                // standard, in here, we assume they are required as in other
+                                // commands.
+                                if (!m_mlmeCommStatusIndicationCallback.IsNull())
+                                {
+                                    MlmeCommStatusIndicationParams commStatusParams;
+                                    commStatusParams.m_panId = m_macPanId;
+                                    commStatusParams.m_srcAddrMode = LrWpanMacHeader::EXTADDR;
+                                    commStatusParams.m_srcExtAddr = macHdr.GetExtSrcAddr();
+                                    commStatusParams.m_dstAddrMode = LrWpanMacHeader::EXTADDR;
+                                    commStatusParams.m_dstExtAddr = macHdr.GetExtDstAddr();
+                                    commStatusParams.m_status =
+                                        LrWpanMlmeCommStatus::MLMECOMMSTATUS_SUCCESS;
+                                    m_mlmeCommStatusIndicationCallback(commStatusParams);
+                                }
                             }
 
                             default: {
@@ -3844,9 +3871,9 @@ LrWpanMac::isCoordDest()
     LrWpanMacHeader macHdr;
     m_txPkt->PeekHeader(macHdr);
 
-    if (m_panCoor)
+    if (m_coor)
     {
-        // The device is the PAN coordinator and the packet is not to itself
+        // The device is its coordinator and the packet is not to itself
         return false;
     }
     else if (m_macCoordShortAddress == macHdr.GetShortDstAddr() ||

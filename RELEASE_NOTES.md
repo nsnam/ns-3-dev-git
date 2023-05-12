@@ -38,6 +38,7 @@ Release 3-dev
 - (wifi) UL MU CS shall be evaluated a SIFS after end of MU-RTS
 - (wifi) Fix crash when changing operating channel after configuration but before initialization
 - (wifi) Fix assert when non-HE STAs receive CTS frames sent using non-HT duplicate following a MU-RTS frame
+- (lr-wpan) !1481 Small fixes in MAC orphan scan
 
 Release 3.38
 ------------

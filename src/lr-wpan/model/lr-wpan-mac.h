@@ -1469,6 +1469,11 @@ class LrWpanMac : public Object
     bool m_panCoor;
 
     /**
+     * Indicates if the current device is a coordinator type
+     */
+    bool m_coor;
+
+    /**
      * Indication of the Interval used by the coordinator to transmit beacon frames
      * expressed in symbols.
      */

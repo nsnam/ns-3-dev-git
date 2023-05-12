@@ -57,6 +57,9 @@ Changes from ns-3.38 to ns-3-dev
 * (olsr) The defines `OLSR_WILL_*` have been replaced by enum `Willingness`.
 * (wifi) The `WifiCodeRate` typedef was converted to an enum.
 * (internet) `InternetStackHelper` can be now used on nodes with an `InternetStack` already installed (it will not install IPv[4,6] twice).
+* (lr-wpan) Block the reception of orphan notification commands to devices other than PAN coordinators or coordinators.
+* (lr-wpan) Block the reception of broadcast messages in the same device that issues it. This is done in both cases when the src address is either short or extended address.
+* (lr-wpan) Adds a new variable flag `m_coor` to the MAC to differentiate between coordinators and PAN coordinators.
 
 ### Changes to build system
 
