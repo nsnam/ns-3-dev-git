@@ -111,7 +111,7 @@ BSSchedulerRtps::AddDownlinkBurst(Ptr<const WimaxConnection> connection,
     }
     NS_LOG_INFO(", modulation: " << modulationType << ", DIUC: " << (uint32_t)diuc);
 
-    m_downlinkBursts->push_back(std::make_pair(dlMapIe, burst));
+    m_downlinkBursts->emplace_back(dlMapIe, burst);
 }
 
 /**

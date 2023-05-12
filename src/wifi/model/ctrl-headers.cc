@@ -458,10 +458,12 @@ CtrlBAckResponseHeader::SetType(BlockAckType type)
 
     for (auto& bitmapLen : m_baType.m_bitmapLen)
     {
-        m_baInfo.push_back({.m_aidTidInfo = 0,
-                            .m_startingSeq = 0,
-                            .m_bitmap = std::vector<uint8_t>(bitmapLen, 0),
-                            .m_ra = Mac48Address()});
+        BaInfoInstance baInfoInstance{.m_aidTidInfo = 0,
+                                      .m_startingSeq = 0,
+                                      .m_bitmap = std::vector<uint8_t>(bitmapLen, 0),
+                                      .m_ra = Mac48Address()};
+
+        m_baInfo.emplace_back(baInfoInstance);
     }
 }
 
