@@ -217,6 +217,12 @@ class MultiLinkElement : public WifiInformationElement
      */
     Variant GetVariant() const;
 
+    /// \return a reference to the Common Info field (the MLE variant must be Basic)
+    CommonInfoBasicMle& GetCommonInfoBasic();
+
+    /// \return a const reference to the Common Info field (the MLE variant must be Basic)
+    const CommonInfoBasicMle& GetCommonInfoBasic() const;
+
     /**
      * Set the MLD MAC Address subfield in the Common Info field. Make sure that
      * this is a Basic Multi-Link Element.

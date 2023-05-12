@@ -269,6 +269,18 @@ MultiLinkElement::SetVariant(Variant variant)
     }
 }
 
+CommonInfoBasicMle&
+MultiLinkElement::GetCommonInfoBasic()
+{
+    return std::get<BASIC_VARIANT>(m_commonInfo);
+}
+
+const CommonInfoBasicMle&
+MultiLinkElement::GetCommonInfoBasic() const
+{
+    return std::get<BASIC_VARIANT>(m_commonInfo);
+}
+
 void
 MultiLinkElement::SetMldMacAddress(Mac48Address address)
 {
