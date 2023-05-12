@@ -56,7 +56,7 @@ namespace olsr
 /// functional description, please refer to the ns-3 manual.
 
 /// \ingroup olsr
-/// An %OLSR's routing table entry.
+/// An OLSR's routing table entry.
 struct RoutingTableEntry
 {
     Ipv4Address destAddr; //!< Address of the destination node.
@@ -240,12 +240,12 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * \brief Associates the specified Ipv4StaticRouting routing table
-     *         to the OLSR routing protocol. Entries from this associated
-     *         routing table that use non-olsr outgoing interfaces are added
-     *         to the list of local HNA associations so that they are included
-     *         in HNA messages sent by the node.
-     *         If this method is called more than once, entries from the old
-     *         association are deleted before entries from the new one are added.
+     *        to the OLSR routing protocol. Entries from this associated
+     *        routing table that use non-olsr outgoing interfaces are added
+     *        to the list of local HNA associations so that they are included
+     *        in HNA messages sent by the node.
+     *        If this method is called more than once, entries from the old
+     *        association are deleted before entries from the new one are added.
      * \param routingTable the Ipv4StaticRouting routing table to be associated.
      */
     void SetRoutingTableAssociation(Ptr<Ipv4StaticRouting> routingTable);
@@ -406,7 +406,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     void RecvOlsr(Ptr<Socket> socket);
 
     /**
-     * \brief Computates MPR set of a node following \RFC{3626} hints.
+     * \brief Computes MPR set of a node following \RFC{3626} hints.
      */
     void MprComputation();
 
@@ -562,7 +562,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
                         const Ipv4Address& senderAddress);
 
     /**
-     * \brief Enques an %OLSR message which will be sent with a delay of (0, delay].
+     * \brief Enqueues an %OLSR message which will be sent with a delay of (0, delay].
      *
      * This buffering system is used in order to piggyback several %OLSR messages in
      * a same %OLSR packet.
@@ -626,7 +626,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 
     /**
      * Adds a link tuple.
-     * \param tuple Thetuple to be added.
+     * \param tuple The tuple to be added.
      * \param willingness The tuple willingness.
      */
     void LinkTupleAdded(const LinkTuple& tuple, uint8_t willingness);
@@ -847,7 +847,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     /// Tx packet trace.
     TracedCallback<const PacketHeader&, const MessageList&> m_txPacketTrace;
 
-    /// Routing table chanes challback
+    /// Routing table changes callback
     TracedCallback<uint32_t> m_routingTableChanged;
 
     /// Provides uniform random variables.

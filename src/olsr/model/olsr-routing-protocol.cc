@@ -22,7 +22,7 @@
 ///
 /// \brief Implementation of OLSR agent and related classes.
 ///
-/// This is the main file of this software because %OLSR's behaviour is
+/// This is the main file of this software because OLSR's behaviour is
 /// implemented here.
 ///
 
