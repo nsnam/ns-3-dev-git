@@ -25,12 +25,17 @@
 #include "ns3/ptr.h"
 
 #include <list>
+#include <map>
+#include <set>
 
 namespace ns3
 {
 
 class WifiMacHeader;
 class Packet;
+
+/// @brief TID-indexed map of the link set to which the TID is mapped
+using WifiTidLinkMapping = std::map<uint8_t, std::set<uint8_t>>;
 
 /**
  * Convert from dBm to Watts.
