@@ -946,7 +946,8 @@ template <typename T>
 void
 RemoveIfNotInherited(std::vector<T>& elem, const NonInheritance& nonInheritance)
 {
-    if (!elem.empty() && nonInheritance.IsPresent(elem->ElementId(), elem->ElementIdExt()))
+    if (!elem.empty() &&
+        nonInheritance.IsPresent(elem.front().ElementId(), elem.front().ElementIdExt()))
     {
         elem.clear();
     }
