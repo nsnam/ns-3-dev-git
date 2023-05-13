@@ -309,18 +309,19 @@ WifiPhyOperatingChannel::IsSet() const
 }
 
 void
-WifiPhyOperatingChannel::Set(uint8_t number,
-                             uint16_t frequency,
-                             ChannelWidthMhz width,
-                             WifiStandard standard,
-                             WifiPhyBand band)
+WifiPhyOperatingChannel::Set(const FrequencyChannelInfo& info, WifiStandard standard)
 {
-    NS_LOG_FUNCTION(this << +number << frequency << width << standard << band);
+    NS_LOG_FUNCTION(this << +info.number << info.frequency << info.width << standard << info.band);
 
-    if (const auto channelIt = FindFirst(number, frequency, width, standard, band);
+    if (const auto channelIt =
+            FindFirst(info.number, info.frequency, info.width, standard, info.band);
         channelIt != m_frequencyChannels.cend() &&
-        FindFirst(number, frequency, width, standard, band, std::next(channelIt)) ==
-            m_frequencyChannels.cend())
+        FindFirst(info.number,
+                  info.frequency,
+                  info.width,
+                  standard,
+                  info.band,
+                  std::next(channelIt)) == m_frequencyChannels.cend())
     {
         // a unique channel matches the specified criteria
         m_channelIts.resize(1);
@@ -338,8 +339,7 @@ void
 WifiPhyOperatingChannel::SetDefault(ChannelWidthMhz width, WifiStandard standard, WifiPhyBand band)
 {
     NS_LOG_FUNCTION(this << width << standard << band);
-
-    Set(GetDefaultChannelNumber(width, standard, band), 0, width, standard, band);
+    Set({GetDefaultChannelNumber(width, standard, band), 0, width, band}, standard);
 }
 
 uint8_t

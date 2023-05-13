@@ -134,17 +134,10 @@ class WifiPhyOperatingChannel
      * If the channel width is a multiple of 20 MHz, the primary 20 MHz channel
      * is set to the 20 MHz subchannel with the lowest center frequency.
      *
-     * \param number the channel number (use 0 to leave it unspecified)
-     * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
-     * \param width the channel width in MHz (use 0 to leave it unspecified)
+     * \param info the frequency channel info
      * \param standard the standard
-     * \param band the PHY band
      */
-    void Set(uint8_t number,
-             uint16_t frequency,
-             ChannelWidthMhz width,
-             WifiStandard standard,
-             WifiPhyBand band);
+    void Set(const FrequencyChannelInfo& info, WifiStandard standard);
     /**
      * Set the default channel of the given width and for the given standard and band.
      * If the channel width is a multiple of 20 MHz, the primary 20 MHz channel

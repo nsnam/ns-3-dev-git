@@ -1276,8 +1276,9 @@ WifiPhy::DoChannelSwitch()
     }
 
     NS_LOG_DEBUG("switching channel");
-    m_operatingChannel.Set(std::get<0>(m_channelSettings.front()), 0, chWidth, m_standard, m_band);
-    m_operatingChannel.SetPrimary20Index(std::get<3>(m_channelSettings.front()));
+    const auto& segmentSettings = m_channelSettings.front();
+    m_operatingChannel.Set({std::get<0>(segmentSettings), 0, chWidth, m_band}, m_standard);
+    m_operatingChannel.SetPrimary20Index(std::get<3>(segmentSettings));
 
     if (changingPhyBand)
     {
