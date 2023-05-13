@@ -17,7 +17,8 @@ Prior to ns-3.36, channels, channel widths, and operating bands were set
 separately.  As of ns-3.36, a new tuple object that we call ChannelSettings has
 consolidated all of these settings.  Users should specify the channel number,
 channel width, frequency band, and primary channel index as a tuple (and
-continue to set the Wi-Fi standard separately).
+continue to set the Wi-Fi standard separately). Since ns-3.43, this attribute
+can contain multiple tuples to support 80+80MHz operating channels.
 
 For instance, where pre-ns-3.36 code may have said::
 
