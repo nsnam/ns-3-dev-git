@@ -145,7 +145,7 @@ class Ping : public Application
      *
      * \param [in] report The report information
      */
-    typedef void (*ReportTrace)(const struct PingReport& report);
+    typedef void (*ReportTrace)(const PingReport& report);
 
   private:
     /**
@@ -222,7 +222,7 @@ class Ping : public Application
     /// TracedCallback for drop events
     TracedCallback<uint16_t, DropReason> m_dropTrace;
     /// TracedCallback for final ping report
-    TracedCallback<const struct PingReport&> m_reportTrace;
+    TracedCallback<const PingReport&> m_reportTrace;
     /// Variable to stor verbose mode
     VerboseMode m_verbose{VerboseMode::VERBOSE};
     /// Received packets counter

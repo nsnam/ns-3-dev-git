@@ -199,7 +199,7 @@ Time::Time(const std::string& s)
 }
 
 // static
-struct Time::Resolution&
+Time::Resolution&
 Time::SetDefaultNsResolution()
 {
     NS_LOG_FUNCTION_NOARGS();
@@ -246,7 +246,7 @@ Time::SetResolution(Unit unit, Resolution* resolution, const bool convert /* = t
                                                << " has shift " << shift << " has quotient "
                                                << quotient);
 
-        struct Information* info = &resolution->info[i];
+        Information* info = &resolution->info[i];
         if ((std::pow(10, std::fabs(shift)) * quotient) >
             static_cast<double>(std::numeric_limits<int64_t>::max()))
         {

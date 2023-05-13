@@ -89,7 +89,7 @@ ByteTagIterator::ByteTagIterator(ByteTagList::Iterator i)
 {
 }
 
-PacketTagIterator::PacketTagIterator(const struct PacketTagList::TagData* head)
+PacketTagIterator::PacketTagIterator(const PacketTagList::TagData* head)
     : m_current(head)
 {
 }
@@ -104,12 +104,12 @@ PacketTagIterator::Item
 PacketTagIterator::Next()
 {
     NS_ASSERT(HasNext());
-    const struct PacketTagList::TagData* prev = m_current;
+    const PacketTagList::TagData* prev = m_current;
     m_current = m_current->next;
     return PacketTagIterator::Item(prev);
 }
 
-PacketTagIterator::Item::Item(const struct PacketTagList::TagData* data)
+PacketTagIterator::Item::Item(const PacketTagList::TagData* data)
     : m_data(data)
 {
 }

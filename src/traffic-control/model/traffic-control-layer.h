@@ -234,7 +234,7 @@ class TrafficControlLayer : public Object
     };
 
     /// Typedef for protocol handlers container
-    typedef std::vector<struct ProtocolHandlerEntry> ProtocolHandlerList;
+    typedef std::vector<ProtocolHandlerEntry> ProtocolHandlerList;
 
     /**
      * \brief Required by the object map accessor

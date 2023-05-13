@@ -111,7 +111,7 @@ class ByteTagList
          *
          * \returns the next Item in the ByteTagList
          */
-        struct ByteTagList::Iterator::Item Next();
+        ByteTagList::Iterator::Item Next();
 
         /**
          * \brief Returns the offset from the start of the virtual byte buffer to the ByteTagList
@@ -275,19 +275,19 @@ class ByteTagList
      * \param size the memory to allocate
      * \returns the ByteTagListData structure
      */
-    struct ByteTagListData* Allocate(uint32_t size);
+    ByteTagListData* Allocate(uint32_t size);
 
     /**
      * \brief Deallocates a ByteTagListData
      * \param data the ByteTagListData to deallocate
      */
-    void Deallocate(struct ByteTagListData* data);
+    void Deallocate(ByteTagListData* data);
 
-    int32_t m_minStart;             //!< minimal start offset
-    int32_t m_maxEnd;               //!< maximal end offset
-    int32_t m_adjustment;           //!< adjustment to byte tag offsets
-    uint32_t m_used;                //!< the number of used bytes in the buffer
-    struct ByteTagListData* m_data; //!< the ByteTagListData structure
+    int32_t m_minStart;      //!< minimal start offset
+    int32_t m_maxEnd;        //!< maximal end offset
+    int32_t m_adjustment;    //!< adjustment to byte tag offsets
+    uint32_t m_used;         //!< the number of used bytes in the buffer
+    ByteTagListData* m_data; //!< the ByteTagListData structure
 };
 
 void

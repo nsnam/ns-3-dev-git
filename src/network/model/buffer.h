@@ -732,26 +732,26 @@ class Buffer
      * \brief Recycle the buffer memory
      * \param data the buffer data storage
      */
-    static void Recycle(struct Buffer::Data* data);
+    static void Recycle(Buffer::Data* data);
     /**
      * \brief Create a buffer data storage
      * \param size the storage size to create
      * \returns a pointer to the created buffer storage
      */
-    static struct Buffer::Data* Create(uint32_t size);
+    static Buffer::Data* Create(uint32_t size);
     /**
      * \brief Allocate a buffer data storage
      * \param reqSize the storage size to create
      * \returns a pointer to the allocated buffer storage
      */
-    static struct Buffer::Data* Allocate(uint32_t reqSize);
+    static Buffer::Data* Allocate(uint32_t reqSize);
     /**
      * \brief Deallocate the buffer memory
      * \param data the buffer data storage
      */
-    static void Deallocate(struct Buffer::Data* data);
+    static void Deallocate(Buffer::Data* data);
 
-    struct Data* m_data; //!< the buffer data storage
+    Data* m_data; //!< the buffer data storage
 
     /**
      * keep track of the maximum value of m_zeroAreaStart across
@@ -794,7 +794,7 @@ class Buffer
 
 #ifdef BUFFER_FREE_LIST
     /// Container for buffer data
-    typedef std::vector<struct Buffer::Data*> FreeList;
+    typedef std::vector<Buffer::Data*> FreeList;
 
     /// Local static destructor structure
     struct LocalStaticDestructor

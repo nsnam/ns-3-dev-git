@@ -226,7 +226,7 @@ AttributeIterator::DoIterate(Ptr<Object> object)
         NS_LOG_DEBUG("store " << tid.GetName());
         for (uint32_t i = 0; i < tid.GetAttributeN(); ++i)
         {
-            struct TypeId::AttributeInformation info = tid.GetAttribute(i);
+            TypeId::AttributeInformation info = tid.GetAttribute(i);
             const PointerChecker* ptrChecker =
                 dynamic_cast<const PointerChecker*>(PeekPointer(info.checker));
             if (ptrChecker != nullptr)

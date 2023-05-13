@@ -297,9 +297,9 @@ struct Precalculated
  *
  * \returns The precalculated powers of the transition matrices.
  */
-struct Precalculated PowerOfTwoConstants ()
+Precalculated PowerOfTwoConstants ()
 {
-  struct Precalculated precalculated;
+  Precalculated precalculated;
   for (int i = 0; i < 190; i++)
     {
       int power = i + 1;
@@ -317,7 +317,7 @@ struct Precalculated PowerOfTwoConstants ()
  */
 void PowerOfTwoMatrix (int n, Matrix a1p, Matrix a2p)
 {
-  static struct Precalculated constants = PowerOfTwoConstants ();
+  static  Precalculated constants = PowerOfTwoConstants ();
   for (int i = 0; i < 3; i ++)
     {
       for (int j = 0; j < 3; j++)

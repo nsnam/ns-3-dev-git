@@ -104,7 +104,7 @@ class Ipv4RawSocketImpl : public Socket
     Ipv4Address m_src;                 //!< Source address.
     Ipv4Address m_dst;                 //!< Destination address.
     uint16_t m_protocol;               //!< Protocol.
-    std::list<struct Data> m_recv;     //!< Packet waiting to be processed.
+    std::list<Data> m_recv;            //!< Packet waiting to be processed.
     bool m_shutdownSend;               //!< Flag to shutdown send capability.
     bool m_shutdownRecv;               //!< Flag to shutdown receive capability.
     uint32_t m_icmpFilter;             //!< ICMPv4 filter specification

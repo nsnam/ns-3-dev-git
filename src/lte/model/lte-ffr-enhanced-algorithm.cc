@@ -659,7 +659,7 @@ LteFfrEnhancedAlgorithm::DoIsUlRbgAvailableForUe(int rbgId, uint16_t rnti)
 
 void
 LteFfrEnhancedAlgorithm::DoReportDlCqiInfo(
-    const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params)
+    const FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params)
 {
     NS_LOG_FUNCTION(this);
 
@@ -766,7 +766,7 @@ LteFfrEnhancedAlgorithm::DoReportDlCqiInfo(
 
 void
 LteFfrEnhancedAlgorithm::DoReportUlCqiInfo(
-    const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
+    const FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
     NS_LOG_FUNCTION(this);
     if (params.m_ulCqi.m_type == UlCqi_s::SRS)

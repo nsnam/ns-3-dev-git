@@ -689,7 +689,7 @@ InterferenceHelper::CalculatePhyHeaderPer(Ptr<const Event> event,
     return 1 - psr;
 }
 
-struct PhyEntity::SnrPer
+PhyEntity::SnrPer
 InterferenceHelper::CalculatePayloadSnrPer(Ptr<Event> event,
                                            uint16_t channelWidth,
                                            WifiSpectrumBand band,
@@ -728,7 +728,7 @@ InterferenceHelper::CalculateSnr(Ptr<Event> event,
     return snr;
 }
 
-struct PhyEntity::SnrPer
+PhyEntity::SnrPer
 InterferenceHelper::CalculatePhyHeaderSnrPer(Ptr<Event> event,
                                              uint16_t channelWidth,
                                              WifiSpectrumBand band,

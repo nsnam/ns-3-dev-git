@@ -105,7 +105,7 @@ TcpLedbat::TcpLedbat()
 };
 
 void
-TcpLedbat::InitCircBuf(struct OwdCircBuf& buffer)
+TcpLedbat::InitCircBuf(OwdCircBuf& buffer)
 {
     NS_LOG_FUNCTION(this);
     buffer.buffer.clear();
@@ -147,7 +147,7 @@ TcpLedbat::GetName() const
 }
 
 uint32_t
-TcpLedbat::MinCircBuf(struct OwdCircBuf& b)
+TcpLedbat::MinCircBuf(OwdCircBuf& b)
 {
     NS_LOG_FUNCTION_NOARGS();
     if (b.buffer.empty())
@@ -239,7 +239,7 @@ TcpLedbat::CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 }
 
 void
-TcpLedbat::AddDelay(struct OwdCircBuf& cb, uint32_t owd, uint32_t maxlen)
+TcpLedbat::AddDelay(OwdCircBuf& cb, uint32_t owd, uint32_t maxlen)
 {
     NS_LOG_FUNCTION(this << owd << maxlen << cb.buffer.size());
     if (cb.buffer.empty())

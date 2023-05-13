@@ -48,7 +48,7 @@ NS_OBJECT_ENSURE_REGISTERED(UdpTraceClient);
 /**
  * \brief Default trace to send
  */
-struct UdpTraceClient::TraceEntry UdpTraceClient::g_defaultEntries[] = {
+UdpTraceClient::TraceEntry UdpTraceClient::g_defaultEntries[] = {
     {0, 534, 'I'},
     {40, 1542, 'P'},
     {120, 134, 'B'},
@@ -362,7 +362,7 @@ UdpTraceClient::Send()
 
     bool cycled = false;
     Ptr<Packet> p;
-    struct TraceEntry* entry = &m_entries[m_currentEntry];
+    TraceEntry* entry = &m_entries[m_currentEntry];
     do
     {
         for (uint32_t i = 0; i < entry->packetSize / m_maxPacketSize; i++)

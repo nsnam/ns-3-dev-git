@@ -497,7 +497,7 @@ class Time
      */
     inline static Time FromInteger(uint64_t value, Unit unit)
     {
-        struct Information* info = PeekInformation(unit);
+        Information* info = PeekInformation(unit);
 
         NS_ASSERT_MSG(info->isValid, "Attempted a conversion from an unavailable unit.");
 
@@ -519,7 +519,7 @@ class Time
 
     inline static Time From(const int64x64_t& value, Unit unit)
     {
-        struct Information* info = PeekInformation(unit);
+        Information* info = PeekInformation(unit);
 
         NS_ASSERT_MSG(info->isValid, "Attempted a conversion from an unavailable unit.");
 
@@ -553,7 +553,7 @@ class Time
      */
     inline int64_t ToInteger(Unit unit) const
     {
-        struct Information* info = PeekInformation(unit);
+        Information* info = PeekInformation(unit);
 
         NS_ASSERT_MSG(info->isValid, "Attempted a conversion to an unavailable unit.");
 
@@ -576,7 +576,7 @@ class Time
 
     inline int64x64_t To(Unit unit) const
     {
-        struct Information* info = PeekInformation(unit);
+        Information* info = PeekInformation(unit);
 
         NS_ASSERT_MSG(info->isValid, "Attempted a conversion to an unavailable unit.");
 
@@ -651,9 +651,9 @@ class Time
      *
      *  \return A pointer to the current Resolution
      */
-    static inline struct Resolution* PeekResolution()
+    static inline Resolution* PeekResolution()
     {
-        static struct Time::Resolution& resolution{SetDefaultNsResolution()};
+        static Time::Resolution& resolution{SetDefaultNsResolution()};
         return &resolution;
     }
 
@@ -663,7 +663,7 @@ class Time
      *  \param [in] timeUnit The Unit to get Information for
      *  \return The Information for \pname{timeUnit}
      */
-    static inline struct Information* PeekInformation(Unit timeUnit)
+    static inline Information* PeekInformation(Unit timeUnit)
     {
         return &(PeekResolution()->info[timeUnit]);
     }
@@ -673,7 +673,7 @@ class Time
      *
      *  \return The Resolution object for the default resolution.
      */
-    static struct Resolution& SetDefaultNsResolution();
+    static Resolution& SetDefaultNsResolution();
     /**
      *  Set the current Resolution.
      *

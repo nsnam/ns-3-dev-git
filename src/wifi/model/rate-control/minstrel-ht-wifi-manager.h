@@ -161,7 +161,7 @@ struct GroupInfo
  * Data structure for a table of groups. Each group is of type GroupInfo.
  * A vector of a GroupInfo.
  */
-typedef std::vector<struct GroupInfo> McsGroupData;
+typedef std::vector<GroupInfo> McsGroupData;
 
 /**
  * Constants for maximum values.

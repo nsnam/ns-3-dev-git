@@ -489,8 +489,9 @@ class PortRangeTlvValue : public TlvValue
         uint16_t PortLow;  ///< low
         uint16_t PortHigh; ///< high
     };
+
     /// PortRange vector iterator typedef
-    typedef std::vector<struct PortRange>::const_iterator Iterator;
+    typedef std::vector<PortRange>::const_iterator Iterator;
     PortRangeTlvValue();
     ~PortRangeTlvValue() override;
     uint32_t GetSerializedSize() const override;
@@ -519,7 +520,7 @@ class PortRangeTlvValue : public TlvValue
     PortRangeTlvValue* Copy() const override;
 
   private:
-    std::vector<struct PortRange>* m_portRange; ///< port range
+    std::vector<PortRange>* m_portRange; ///< port range
 };
 
 // ==============================================================================

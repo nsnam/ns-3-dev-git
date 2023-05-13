@@ -224,15 +224,13 @@ LteFfrSimple::DoIsUlRbgAvailableForUe(int i, uint16_t rnti)
 }
 
 void
-LteFfrSimple::DoReportDlCqiInfo(
-    const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params)
+LteFfrSimple::DoReportDlCqiInfo(const FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params)
 {
     NS_LOG_FUNCTION(this);
 }
 
 void
-LteFfrSimple::DoReportUlCqiInfo(
-    const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
+LteFfrSimple::DoReportUlCqiInfo(const FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
     NS_LOG_FUNCTION(this);
 }

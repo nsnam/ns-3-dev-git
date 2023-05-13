@@ -372,7 +372,7 @@ PacketMetadataTest::CheckHistory(Ptr<Packet> p, uint32_t n, ...)
     std::list<int> got;
     while (k.HasNext())
     {
-        struct PacketMetadata::Item item = k.Next();
+        PacketMetadata::Item item = k.Next();
         if (item.isFragment || item.type == PacketMetadata::Item::PAYLOAD)
         {
             got.push_back(item.currentSize);

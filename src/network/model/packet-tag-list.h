@@ -141,11 +141,11 @@ class PacketTagList
      */
     struct TagData
     {
-        struct TagData* next; //!< Pointer to next in list
-        uint32_t count;       //!< Number of incoming links
-        TypeId tid;           //!< Type of the tag serialized into #data
-        uint32_t size;        //!< Size of the \c data buffer
-        uint8_t data[1];      //!< Serialization buffer
+        TagData* next;   //!< Pointer to next in list
+        uint32_t count;  //!< Number of incoming links
+        TypeId tid;      //!< Type of the tag serialized into #data
+        uint32_t size;   //!< Size of the \c data buffer
+        uint8_t data[1]; //!< Serialization buffer
     };
 
     /**
@@ -217,7 +217,7 @@ class PacketTagList
     /**
      * \returns pointer to head of tag list
      */
-    const struct PacketTagList::TagData* Head() const;
+    const PacketTagList::TagData* Head() const;
     /**
      * Returns number of bytes required for packet serialization.
      *
@@ -266,8 +266,8 @@ class PacketTagList
      */
     typedef bool (PacketTagList::*COWWriter)(Tag& tag,
                                              bool preMerge,
-                                             struct TagData* cur,
-                                             struct TagData** prevNext);
+                                             TagData* cur,
+                                             TagData** prevNext);
     /**
      * Traverse the list implementing copy-on-write, using \pname{Writer}.
      *
@@ -287,7 +287,7 @@ class PacketTagList
      *          pointing to \pname{cur}.
      * \returns True, since tag will definitely be removed.
      */
-    bool RemoveWriter(Tag& tag, bool preMerge, struct TagData* cur, struct TagData** prevNext);
+    bool RemoveWriter(Tag& tag, bool preMerge, TagData* cur, TagData** prevNext);
     /**
      * Copy-on-write implementing Replace
      *
@@ -299,12 +299,12 @@ class PacketTagList
      *          pointing to \pname{cur}.
      * \returns True, since tag value will definitely be replaced.
      */
-    bool ReplaceWriter(Tag& tag, bool preMerge, struct TagData* cur, struct TagData** prevNext);
+    bool ReplaceWriter(Tag& tag, bool preMerge, TagData* cur, TagData** prevNext);
 
     /**
      * Pointer to first \ref TagData on the list
      */
-    struct TagData* m_next;
+    TagData* m_next;
 };
 
 } // namespace ns3
@@ -355,8 +355,8 @@ PacketTagList::~PacketTagList()
 void
 PacketTagList::RemoveAll()
 {
-    struct TagData* prev = nullptr;
-    for (struct TagData* cur = m_next; cur != nullptr; cur = cur->next)
+    TagData* prev = nullptr;
+    for (TagData* cur = m_next; cur != nullptr; cur = cur->next)
     {
         cur->count--;
         if (cur->count > 0)

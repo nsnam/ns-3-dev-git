@@ -67,7 +67,7 @@ ObjectFactory::DoSet(const std::string& name, const AttributeValue& value)
         return;
     }
 
-    struct TypeId::AttributeInformation info;
+    TypeId::AttributeInformation info;
     if (!m_tid.LookupAttributeByName(name, &info))
     {
         NS_FATAL_ERROR("Invalid attribute set (" << name << ") on " << m_tid.GetName());
@@ -158,7 +158,7 @@ operator>>(std::istream& is, ObjectFactory& factory)
         else
         {
             std::string name = parameters.substr(cur, equal - cur);
-            struct TypeId::AttributeInformation info;
+            TypeId::AttributeInformation info;
             if (!factory.m_tid.LookupAttributeByName(name, &info))
             {
                 is.setstate(std::ios_base::failbit);

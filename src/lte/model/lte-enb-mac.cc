@@ -144,8 +144,8 @@ class EnbMacMemberFfMacSchedSapUser : public FfMacSchedSapUser
      */
     EnbMacMemberFfMacSchedSapUser(LteEnbMac* mac);
 
-    void SchedDlConfigInd(const struct SchedDlConfigIndParameters& params) override;
-    void SchedUlConfigInd(const struct SchedUlConfigIndParameters& params) override;
+    void SchedDlConfigInd(const SchedDlConfigIndParameters& params) override;
+    void SchedUlConfigInd(const SchedUlConfigIndParameters& params) override;
 
   private:
     LteEnbMac* m_mac; ///< the MAC
@@ -157,13 +157,13 @@ EnbMacMemberFfMacSchedSapUser::EnbMacMemberFfMacSchedSapUser(LteEnbMac* mac)
 }
 
 void
-EnbMacMemberFfMacSchedSapUser::SchedDlConfigInd(const struct SchedDlConfigIndParameters& params)
+EnbMacMemberFfMacSchedSapUser::SchedDlConfigInd(const SchedDlConfigIndParameters& params)
 {
     m_mac->DoSchedDlConfigInd(params);
 }
 
 void
-EnbMacMemberFfMacSchedSapUser::SchedUlConfigInd(const struct SchedUlConfigIndParameters& params)
+EnbMacMemberFfMacSchedSapUser::SchedUlConfigInd(const SchedUlConfigIndParameters& params)
 {
     m_mac->DoSchedUlConfigInd(params);
 }
@@ -179,14 +179,13 @@ class EnbMacMemberFfMacCschedSapUser : public FfMacCschedSapUser
      */
     EnbMacMemberFfMacCschedSapUser(LteEnbMac* mac);
 
-    void CschedCellConfigCnf(const struct CschedCellConfigCnfParameters& params) override;
-    void CschedUeConfigCnf(const struct CschedUeConfigCnfParameters& params) override;
-    void CschedLcConfigCnf(const struct CschedLcConfigCnfParameters& params) override;
-    void CschedLcReleaseCnf(const struct CschedLcReleaseCnfParameters& params) override;
-    void CschedUeReleaseCnf(const struct CschedUeReleaseCnfParameters& params) override;
-    void CschedUeConfigUpdateInd(const struct CschedUeConfigUpdateIndParameters& params) override;
-    void CschedCellConfigUpdateInd(
-        const struct CschedCellConfigUpdateIndParameters& params) override;
+    void CschedCellConfigCnf(const CschedCellConfigCnfParameters& params) override;
+    void CschedUeConfigCnf(const CschedUeConfigCnfParameters& params) override;
+    void CschedLcConfigCnf(const CschedLcConfigCnfParameters& params) override;
+    void CschedLcReleaseCnf(const CschedLcReleaseCnfParameters& params) override;
+    void CschedUeReleaseCnf(const CschedUeReleaseCnfParameters& params) override;
+    void CschedUeConfigUpdateInd(const CschedUeConfigUpdateIndParameters& params) override;
+    void CschedCellConfigUpdateInd(const CschedCellConfigUpdateIndParameters& params) override;
 
   private:
     LteEnbMac* m_mac; ///< the MAC
@@ -198,48 +197,45 @@ EnbMacMemberFfMacCschedSapUser::EnbMacMemberFfMacCschedSapUser(LteEnbMac* mac)
 }
 
 void
-EnbMacMemberFfMacCschedSapUser::CschedCellConfigCnf(
-    const struct CschedCellConfigCnfParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedCellConfigCnf(const CschedCellConfigCnfParameters& params)
 {
     m_mac->DoCschedCellConfigCnf(params);
 }
 
 void
-EnbMacMemberFfMacCschedSapUser::CschedUeConfigCnf(const struct CschedUeConfigCnfParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedUeConfigCnf(const CschedUeConfigCnfParameters& params)
 {
     m_mac->DoCschedUeConfigCnf(params);
 }
 
 void
-EnbMacMemberFfMacCschedSapUser::CschedLcConfigCnf(const struct CschedLcConfigCnfParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedLcConfigCnf(const CschedLcConfigCnfParameters& params)
 {
     m_mac->DoCschedLcConfigCnf(params);
 }
 
 void
-EnbMacMemberFfMacCschedSapUser::CschedLcReleaseCnf(
-    const struct CschedLcReleaseCnfParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedLcReleaseCnf(const CschedLcReleaseCnfParameters& params)
 {
     m_mac->DoCschedLcReleaseCnf(params);
 }
 
 void
-EnbMacMemberFfMacCschedSapUser::CschedUeReleaseCnf(
-    const struct CschedUeReleaseCnfParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedUeReleaseCnf(const CschedUeReleaseCnfParameters& params)
 {
     m_mac->DoCschedUeReleaseCnf(params);
 }
 
 void
 EnbMacMemberFfMacCschedSapUser::CschedUeConfigUpdateInd(
-    const struct CschedUeConfigUpdateIndParameters& params)
+    const CschedUeConfigUpdateIndParameters& params)
 {
     m_mac->DoCschedUeConfigUpdateInd(params);
 }
 
 void
 EnbMacMemberFfMacCschedSapUser::CschedCellConfigUpdateInd(
-    const struct CschedCellConfigUpdateIndParameters& params)
+    const CschedCellConfigUpdateIndParameters& params)
 {
     m_mac->DoCschedCellConfigUpdateInd(params);
 }
@@ -893,11 +889,11 @@ LteEnbMac::DoAddLc(LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu)
     // 4.3.4 logicalChannelConfigListElement
     if (lcinfo.lcId != 0)
     {
-        struct FfMacCschedSapProvider::CschedLcConfigReqParameters params;
+        FfMacCschedSapProvider::CschedLcConfigReqParameters params;
         params.m_rnti = lcinfo.rnti;
         params.m_reconfigureFlag = false;
 
-        struct LogicalChannelConfigListElement_s lccle;
+        LogicalChannelConfigListElement_s lccle;
         lccle.m_logicalChannelIdentity = lcinfo.lcId;
         lccle.m_logicalChannelGroup = lcinfo.lcGroup;
         lccle.m_direction = LogicalChannelConfigListElement_s::DIR_BOTH;
@@ -930,7 +926,7 @@ LteEnbMac::DoReleaseLc(uint16_t rnti, uint8_t lcid)
         m_rlcAttached.find(rnti);
     rntiIt->second.erase(lcid);
 
-    struct FfMacCschedSapProvider::CschedLcReleaseReqParameters params;
+    FfMacCschedSapProvider::CschedLcReleaseReqParameters params;
     params.m_rnti = rnti;
     params.m_logicalChannelIdentity.push_back(lcid);
     m_cschedSapProvider->CschedLcReleaseReq(params);
@@ -952,7 +948,7 @@ LteEnbMac::DoUeUpdateConfigurationReq(LteEnbCmacSapProvider::UeConfig params)
 LteEnbCmacSapProvider::RachConfig
 LteEnbMac::DoGetRachConfig() const
 {
-    struct LteEnbCmacSapProvider::RachConfig rc;
+    LteEnbCmacSapProvider::RachConfig rc;
     rc.numberOfRaPreambles = m_numberOfRaPreambles;
     rc.preambleTransMax = m_preambleTransMax;
     rc.raResponseWindowSize = m_raResponseWindowSize;

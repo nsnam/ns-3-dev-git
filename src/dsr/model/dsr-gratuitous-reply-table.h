@@ -132,7 +132,7 @@ class DsrGraReply : public Object
          * \param b GraReplyEntry entry
          * \return true if expired, false otherwise
          */
-        bool operator()(const struct GraReplyEntry& b) const
+        bool operator()(const GraReplyEntry& b) const
         {
             return (b.m_gratReplyHoldoff < Simulator::Now());
         }

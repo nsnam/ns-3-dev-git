@@ -225,7 +225,7 @@ FdReader::Run()
 
         if (FD_ISSET(m_fd, &readfds))
         {
-            struct FdReader::Data data = DoRead();
+            FdReader::Data data = DoRead();
             // reading stops when m_len is zero
             if (data.m_len == 0)
             {

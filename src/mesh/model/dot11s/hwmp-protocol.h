@@ -355,9 +355,9 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     /// Route discovery time:
     TracedCallback<Time> m_routeDiscoveryTimeCallback;
     /// RouteChangeTracedCallback typedef
-    typedef TracedCallback<struct RouteChange> RouteChangeTracedCallback;
+    typedef TracedCallback<RouteChange> RouteChangeTracedCallback;
     /// Route change trace source
-    TracedCallback<struct RouteChange> m_routeChangeTraceSource;
+    TracedCallback<RouteChange> m_routeChangeTraceSource;
 
     // /\name Methods related to Queue/Dequeue procedures
     ///@{

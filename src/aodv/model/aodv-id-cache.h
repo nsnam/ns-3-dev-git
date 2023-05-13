@@ -109,7 +109,7 @@ class IdCache
          * \param u UniqueId entry
          * \return true if expired, false otherwise
          */
-        bool operator()(const struct UniqueId& u) const
+        bool operator()(const UniqueId& u) const
         {
             return (u.m_expire < Simulator::Now());
         }

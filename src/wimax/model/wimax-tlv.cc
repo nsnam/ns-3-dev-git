@@ -870,7 +870,7 @@ TosTlvValue::Copy() const
 // ==============================================================================
 PortRangeTlvValue::PortRangeTlvValue()
 {
-    m_portRange = new std::vector<struct PortRange>;
+    m_portRange = new std::vector<PortRange>;
 }
 
 PortRangeTlvValue::~PortRangeTlvValue()
@@ -888,7 +888,7 @@ PortRangeTlvValue::GetSerializedSize() const
 void
 PortRangeTlvValue::Serialize(Buffer::Iterator i) const
 {
-    for (std::vector<struct PortRange>::const_iterator iter = m_portRange->begin();
+    for (std::vector<PortRange>::const_iterator iter = m_portRange->begin();
          iter != m_portRange->end();
          ++iter)
     {
@@ -936,7 +936,7 @@ PortRangeTlvValue*
 PortRangeTlvValue::Copy() const
 {
     PortRangeTlvValue* tmp = new PortRangeTlvValue();
-    for (std::vector<struct PortRange>::const_iterator iter = m_portRange->begin();
+    for (std::vector<PortRange>::const_iterator iter = m_portRange->begin();
          iter != m_portRange->end();
          ++iter)
     {

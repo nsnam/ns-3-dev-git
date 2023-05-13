@@ -253,13 +253,12 @@ class InterferenceHelper : public Object
      *
      * \return struct of SNR and PER (with PER being evaluated over the provided time window)
      */
-    struct PhyEntity::SnrPer CalculatePayloadSnrPer(
-        Ptr<Event> event,
-        uint16_t channelWidth,
-        WifiSpectrumBand band,
-        const FrequencyRange& range,
-        uint16_t staId,
-        std::pair<Time, Time> relativeMpduStartStop) const;
+    PhyEntity::SnrPer CalculatePayloadSnrPer(Ptr<Event> event,
+                                             uint16_t channelWidth,
+                                             WifiSpectrumBand band,
+                                             const FrequencyRange& range,
+                                             uint16_t staId,
+                                             std::pair<Time, Time> relativeMpduStartStop) const;
     /**
      * Calculate the SNIR for the event (starting from now until the event end).
      *
@@ -288,11 +287,11 @@ class InterferenceHelper : public Object
      *
      * \return struct of SNR and PER
      */
-    struct PhyEntity::SnrPer CalculatePhyHeaderSnrPer(Ptr<Event> event,
-                                                      uint16_t channelWidth,
-                                                      WifiSpectrumBand band,
-                                                      const FrequencyRange& range,
-                                                      WifiPpduField header) const;
+    PhyEntity::SnrPer CalculatePhyHeaderSnrPer(Ptr<Event> event,
+                                               uint16_t channelWidth,
+                                               WifiSpectrumBand band,
+                                               const FrequencyRange& range,
+                                               WifiPpduField header) const;
 
     /**
      * Notify that RX has started.

@@ -89,7 +89,7 @@ ObjectBase::ConstructSelf(const AttributeConstructionList& attributes)
         NS_LOG_DEBUG("construct tid=" << tid.GetName() << ", params=" << tid.GetAttributeN());
         for (uint32_t i = 0; i < tid.GetAttributeN(); i++)
         {
-            struct TypeId::AttributeInformation info = tid.GetAttribute(i);
+            TypeId::AttributeInformation info = tid.GetAttribute(i);
             NS_LOG_DEBUG("try to construct \"" << tid.GetName() << "::" << info.name << "\"");
             // is this attribute stored in this AttributeConstructionList instance ?
             Ptr<const AttributeValue> value = attributes.Find(info.checker);
@@ -200,7 +200,7 @@ void
 ObjectBase::SetAttribute(std::string name, const AttributeValue& value)
 {
     NS_LOG_FUNCTION(this << name << &value);
-    struct TypeId::AttributeInformation info;
+    TypeId::AttributeInformation info;
     TypeId tid = GetInstanceTypeId();
     if (!tid.LookupAttributeByName(name, &info))
     {
@@ -223,7 +223,7 @@ bool
 ObjectBase::SetAttributeFailSafe(std::string name, const AttributeValue& value)
 {
     NS_LOG_FUNCTION(this << name << &value);
-    struct TypeId::AttributeInformation info;
+    TypeId::AttributeInformation info;
     TypeId tid = GetInstanceTypeId();
     if (!tid.LookupAttributeByName(name, &info))
     {
@@ -240,7 +240,7 @@ void
 ObjectBase::GetAttribute(std::string name, AttributeValue& value) const
 {
     NS_LOG_FUNCTION(this << name << &value);
-    struct TypeId::AttributeInformation info;
+    TypeId::AttributeInformation info;
     TypeId tid = GetInstanceTypeId();
     if (!tid.LookupAttributeByName(name, &info))
     {
@@ -277,7 +277,7 @@ bool
 ObjectBase::GetAttributeFailSafe(std::string name, AttributeValue& value) const
 {
     NS_LOG_FUNCTION(this << name << &value);
-    struct TypeId::AttributeInformation info;
+    TypeId::AttributeInformation info;
     TypeId tid = GetInstanceTypeId();
     if (!tid.LookupAttributeByName(name, &info))
     {

@@ -404,7 +404,7 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      * \param [in,out] aggregates The list of aggregated Objects.
      * \param [in] i The most recently used entry in the list.
      */
-    void UpdateSortedArray(struct Aggregates* aggregates, uint32_t i) const;
+    void UpdateSortedArray(Aggregates* aggregates, uint32_t i) const;
     /**
      * Attempt to delete this Object.
      *
@@ -435,7 +435,7 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      * array.  The array is shared by all aggregated Objects
      * so the size of the array is indirectly a reference count.
      */
-    struct Aggregates* m_aggregates;
+    Aggregates* m_aggregates;
     /**
      * The number of times the Object was accessed with a
      * call to GetObject().

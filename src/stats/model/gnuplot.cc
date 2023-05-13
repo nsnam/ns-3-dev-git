@@ -109,7 +109,7 @@ GnuplotDataset::Data::~Data()
 
 std::string GnuplotDataset::m_defaultExtra = "";
 
-GnuplotDataset::GnuplotDataset(struct Data* data)
+GnuplotDataset::GnuplotDataset(Data* data)
     : m_data(data)
 {
 }

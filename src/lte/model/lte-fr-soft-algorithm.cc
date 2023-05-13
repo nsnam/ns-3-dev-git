@@ -428,7 +428,7 @@ LteFrSoftAlgorithm::DoIsUlRbgAvailableForUe(int rbgId, uint16_t rnti)
 
 void
 LteFrSoftAlgorithm::DoReportDlCqiInfo(
-    const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params)
+    const FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params)
 {
     NS_LOG_FUNCTION(this);
     NS_LOG_WARN("Method should not be called, because it is empty");
@@ -436,7 +436,7 @@ LteFrSoftAlgorithm::DoReportDlCqiInfo(
 
 void
 LteFrSoftAlgorithm::DoReportUlCqiInfo(
-    const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
+    const FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
     NS_LOG_FUNCTION(this);
     NS_LOG_WARN("Method should not be called, because it is empty");

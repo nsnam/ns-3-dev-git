@@ -408,7 +408,7 @@ class DsrRreqTable : public Object
          * \param b BlackList entry
          * \return true if expired, false otherwise
          */
-        bool operator()(const struct BlackList& b) const
+        bool operator()(const BlackList& b) const
         {
             return (b.m_expireTime < Simulator::Now());
         }

@@ -132,7 +132,7 @@ XmlConfigSave::Default()
             ns3::TypeId::SupportLevel supportLevel = TypeId::SupportLevel::SUPPORTED;
             for (std::size_t i = 0; i < tid.GetAttributeN(); i++)
             {
-                struct TypeId::AttributeInformation tmp = tid.GetAttribute(i);
+                TypeId::AttributeInformation tmp = tid.GetAttribute(i);
                 if (tmp.name == name)
                 {
                     supportLevel = tmp.supportLevel;
@@ -211,7 +211,7 @@ XmlConfigSave::Attributes()
             ns3::TypeId::SupportLevel supportLevel = TypeId::SupportLevel::SUPPORTED;
             for (std::size_t i = 0; i < tid.GetAttributeN(); i++)
             {
-                struct TypeId::AttributeInformation tmp = tid.GetAttribute(i);
+                TypeId::AttributeInformation tmp = tid.GetAttribute(i);
                 if (tmp.name == name)
                 {
                     supportLevel = tmp.supportLevel;

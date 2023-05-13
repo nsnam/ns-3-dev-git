@@ -96,7 +96,7 @@ Object::Object()
     : m_tid(Object::GetTypeId()),
       m_disposed(false),
       m_initialized(false),
-      m_aggregates((struct Aggregates*)std::malloc(sizeof(struct Aggregates))),
+      m_aggregates((Aggregates*)std::malloc(sizeof(Aggregates))),
       m_getObjectCount(0)
 {
     NS_LOG_FUNCTION(this);
@@ -133,7 +133,7 @@ Object::Object(const Object& o)
     : m_tid(o.m_tid),
       m_disposed(false),
       m_initialized(false),
-      m_aggregates((struct Aggregates*)std::malloc(sizeof(struct Aggregates))),
+      m_aggregates((Aggregates*)std::malloc(sizeof(Aggregates))),
       m_getObjectCount(0)
 {
     m_aggregates->n = 1;
@@ -242,7 +242,7 @@ restart:
 }
 
 void
-Object::UpdateSortedArray(struct Aggregates* aggregates, uint32_t j) const
+Object::UpdateSortedArray(Aggregates* aggregates, uint32_t j) const
 {
     NS_LOG_FUNCTION(this << aggregates << j);
     while (j > 0 &&
@@ -267,8 +267,8 @@ Object::AggregateObject(Ptr<Object> o)
     Object* other = PeekPointer(o);
     // first create the new aggregate buffer.
     uint32_t total = m_aggregates->n + other->m_aggregates->n;
-    struct Aggregates* aggregates =
-        (struct Aggregates*)std::malloc(sizeof(struct Aggregates) + (total - 1) * sizeof(Object*));
+    Aggregates* aggregates =
+        (Aggregates*)std::malloc(sizeof(Aggregates) + (total - 1) * sizeof(Object*));
     aggregates->n = total;
 
     // copy our buffer to the new buffer
@@ -292,8 +292,8 @@ Object::AggregateObject(Ptr<Object> o)
 
     // keep track of the old aggregate buffers for the iteration
     // of NotifyNewAggregates
-    struct Aggregates* a = m_aggregates;
-    struct Aggregates* b = other->m_aggregates;
+    Aggregates* a = m_aggregates;
+    Aggregates* b = other->m_aggregates;
 
     // Then, assign the new aggregation buffer to every object
     uint32_t n = aggregates->n;
@@ -424,7 +424,7 @@ Object::DoDelete()
     }
 
     // Now, actually delete all objects
-    struct Aggregates* aggregates = m_aggregates;
+    Aggregates* aggregates = m_aggregates;
     for (uint32_t i = 0; i < n; i++)
     {
         // There is a trick here: each time we call delete below,

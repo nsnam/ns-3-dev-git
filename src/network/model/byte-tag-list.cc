@@ -56,7 +56,7 @@ struct ByteTagListData
  *
  * Internal use only.
  */
-static class ByteTagListDataFreeList : public std::vector<struct ByteTagListData*>
+static class ByteTagListDataFreeList : public std::vector<ByteTagListData*>
 {
   public:
     ~ByteTagListDataFreeList();
@@ -88,7 +88,7 @@ ByteTagList::Iterator::HasNext() const
     return m_current < m_end;
 }
 
-struct ByteTagList::Iterator::Item
+ByteTagList::Iterator::Item
 ByteTagList::Iterator::Next()
 {
     NS_ASSERT(HasNext());
@@ -213,7 +213,7 @@ ByteTagList::Add(TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
     }
     else if (m_data->size < spaceNeeded || (m_data->count != 1 && m_data->dirty != m_used))
     {
-        struct ByteTagListData* newData = Allocate(spaceNeeded);
+        ByteTagListData* newData = Allocate(spaceNeeded);
         std::memcpy(&newData->data, &m_data->data, m_used);
         Deallocate(m_data);
         m_data = newData;
@@ -351,13 +351,13 @@ ByteTagList::AddAtStart(int32_t prependOffset)
 
 #ifdef USE_FREE_LIST
 
-struct ByteTagListData*
+ByteTagListData*
 ByteTagList::Allocate(uint32_t size)
 {
     NS_LOG_FUNCTION(this << size);
     while (!g_freeList.empty())
     {
-        struct ByteTagListData* data = g_freeList.back();
+        ByteTagListData* data = g_freeList.back();
         g_freeList.pop_back();
         NS_ASSERT(data != nullptr);
         if (data->size >= size)
@@ -369,8 +369,8 @@ ByteTagList::Allocate(uint32_t size)
         uint8_t* buffer = (uint8_t*)data;
         delete[] buffer;
     }
-    uint8_t* buffer = new uint8_t[std::max(size, g_maxSize) + sizeof(struct ByteTagListData) - 4];
-    struct ByteTagListData* data = (struct ByteTagListData*)buffer;
+    uint8_t* buffer = new uint8_t[std::max(size, g_maxSize) + sizeof(ByteTagListData) - 4];
+    ByteTagListData* data = (ByteTagListData*)buffer;
     data->count = 1;
     data->size = size;
     data->dirty = 0;
@@ -378,7 +378,7 @@ ByteTagList::Allocate(uint32_t size)
 }
 
 void
-ByteTagList::Deallocate(struct ByteTagListData* data)
+ByteTagList::Deallocate(ByteTagListData* data)
 {
     NS_LOG_FUNCTION(this << data);
     if (data == nullptr)
@@ -403,12 +403,12 @@ ByteTagList::Deallocate(struct ByteTagListData* data)
 
 #else /* USE_FREE_LIST */
 
-struct ByteTagListData*
+ByteTagListData*
 ByteTagList::Allocate(uint32_t size)
 {
     NS_LOG_FUNCTION(this << size);
-    uint8_t* buffer = new uint8_t[size + sizeof(struct ByteTagListData) - 4];
-    struct ByteTagListData* data = (struct ByteTagListData*)buffer;
+    uint8_t* buffer = new uint8_t[size + sizeof(ByteTagListData) - 4];
+    ByteTagListData* data = (ByteTagListData*)buffer;
     data->count = 1;
     data->size = size;
     data->dirty = 0;
@@ -416,7 +416,7 @@ ByteTagList::Allocate(uint32_t size)
 }
 
 void
-ByteTagList::Deallocate(struct ByteTagListData* data)
+ByteTagList::Deallocate(ByteTagListData* data)
 {
     NS_LOG_FUNCTION(this << data);
     if (data == 0)

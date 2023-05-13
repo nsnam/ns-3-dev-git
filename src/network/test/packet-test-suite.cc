@@ -548,7 +548,7 @@ PacketTest::PacketTest()
 void
 PacketTest::DoCheck(Ptr<const Packet> p, uint32_t n, ...)
 {
-    std::vector<struct Expected> expected;
+    std::vector<Expected> expected;
     va_list ap;
     va_start(ap, n);
     for (uint32_t k = 0; k < n; ++k)
@@ -585,7 +585,7 @@ PacketTest::DoCheck(Ptr<const Packet> p, uint32_t n, ...)
 void
 PacketTest::DoCheckData(Ptr<const Packet> p, uint32_t n, ...)
 {
-    std::vector<struct Expected> expected;
+    std::vector<Expected> expected;
     va_list ap;
     va_start(ap, n);
     for (uint32_t k = 0; k < n; ++k)

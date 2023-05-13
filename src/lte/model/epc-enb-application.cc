@@ -227,7 +227,7 @@ EpcEnbApplication::DoInitialContextSetupRequest(
          ++erabIt)
     {
         // request the RRC to setup a radio bearer
-        struct EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
+        EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
         params.rnti = rnti;
         params.bearer = erabIt->erabLevelQosParameters;
         params.bearerId = erabIt->erabId;
@@ -241,7 +241,7 @@ EpcEnbApplication::DoInitialContextSetupRequest(
     }
 
     // Send Initial Context Setup Request to RRC
-    struct EpcEnbS1SapUser::InitialContextSetupRequestParameters params;
+    EpcEnbS1SapUser::InitialContextSetupRequestParameters params;
     params.rnti = rnti;
     m_s1SapUser->InitialContextSetupRequest(params);
 }

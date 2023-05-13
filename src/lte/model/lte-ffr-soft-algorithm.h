@@ -75,9 +75,9 @@ class LteFfrSoftAlgorithm : public LteFfrAlgorithm
     std::vector<bool> DoGetAvailableUlRbg() override;
     bool DoIsUlRbgAvailableForUe(int i, uint16_t rnti) override;
     void DoReportDlCqiInfo(
-        const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params) override;
+        const FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params) override;
     void DoReportUlCqiInfo(
-        const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params) override;
+        const FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params) override;
     void DoReportUlCqiInfo(std::map<uint16_t, std::vector<double>> ulCqiMap) override;
     uint8_t DoGetTpc(uint16_t rnti) override;
     uint16_t DoGetMinContinuousUlBandwidth() override;

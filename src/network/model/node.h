@@ -293,7 +293,7 @@ class Node : public Object
     };
 
     /// Typedef for protocol handlers container
-    typedef std::vector<struct Node::ProtocolHandlerEntry> ProtocolHandlerList;
+    typedef std::vector<Node::ProtocolHandlerEntry> ProtocolHandlerList;
     /// Typedef for NetDevice addition listeners container
     typedef std::vector<DeviceAdditionListener> DeviceAdditionListenerList;
 

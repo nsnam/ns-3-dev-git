@@ -97,12 +97,12 @@ class GnuplotDataset
      * Called by constructors of derived classes.
      * \param data the reference counted data object representing this dataset.
      */
-    GnuplotDataset(struct Data* data);
+    GnuplotDataset(Data* data);
 
     /**
      * Reference counted data object.
      */
-    struct Data* m_data;
+    Data* m_data;
 };
 
 /**
@@ -223,7 +223,7 @@ class Gnuplot2dDataset : public GnuplotDataset
     };
 
     /// The set of points in the dataset
-    typedef std::vector<struct Point> PointSet;
+    typedef std::vector<Point> PointSet;
 
     static Style m_defaultStyle;         //!< default plot style
     static ErrorBars m_defaultErrorBars; //!< default error bars type
@@ -318,7 +318,7 @@ class Gnuplot3dDataset : public GnuplotDataset
     };
 
     /// The set of points in the dataset
-    typedef std::vector<struct Point> PointSet;
+    typedef std::vector<Point> PointSet;
 
     static std::string m_defaultStyle; //!< default plot style
 

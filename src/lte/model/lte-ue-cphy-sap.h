@@ -231,8 +231,8 @@ class LteUeCphySapUser
     /// UeMeasurementsParameters structure
     struct UeMeasurementsParameters
     {
-        std::vector<struct UeMeasurementsElement> m_ueMeasurementsList; ///< UE measurement list
-        uint8_t m_componentCarrierId;                                   ///< component carrier ID
+        std::vector<UeMeasurementsElement> m_ueMeasurementsList; ///< UE measurement list
+        uint8_t m_componentCarrierId;                            ///< component carrier ID
     };
 
     /**

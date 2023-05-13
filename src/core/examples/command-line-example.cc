@@ -101,7 +101,7 @@ main(int argc, char* argv[])
     const TypeId tid = TypeId::LookupByName(attrClass);
     std::string attrDef;
     {
-        struct TypeId::AttributeInformation info;
+        TypeId::AttributeInformation info;
         tid.LookupAttributeByName(attrName, &info);
         attrDef = info.originalInitialValue->SerializeToString(info.checker);
     }
@@ -144,7 +144,7 @@ main(int argc, char* argv[])
     // Look up new default value for attribute
     std::string antiArg;
     {
-        struct TypeId::AttributeInformation info;
+        TypeId::AttributeInformation info;
         tid.LookupAttributeByName(attrName, &info);
         antiArg = info.initialValue->SerializeToString(info.checker);
     }

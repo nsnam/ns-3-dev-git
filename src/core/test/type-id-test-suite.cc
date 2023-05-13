@@ -321,7 +321,7 @@ DeprecatedAttributeTestCase::DoRun()
     std::cerr << suite << "DeprecatedAttribute TypeId: " << tid.GetUid() << std::endl;
 
     //  Try the lookups
-    struct TypeId::AttributeInformation ainfo;
+    TypeId::AttributeInformation ainfo;
     NS_TEST_ASSERT_MSG_EQ(tid.LookupAttributeByName("attribute", &ainfo),
                           true,
                           "lookup new attribute");
@@ -334,7 +334,7 @@ DeprecatedAttributeTestCase::DoRun()
     std::cerr << suite << "lookup old attribute:"
               << (ainfo.supportLevel == TypeId::DEPRECATED ? "deprecated" : "error") << std::endl;
 
-    struct TypeId::TraceSourceInformation tinfo;
+    TypeId::TraceSourceInformation tinfo;
     Ptr<const TraceSourceAccessor> acc;
     acc = tid.LookupTraceSourceByName("trace", &tinfo);
     NS_TEST_ASSERT_MSG_NE(acc, nullptr, "lookup new trace source");

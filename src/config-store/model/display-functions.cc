@@ -240,7 +240,7 @@ cell_tooltip_callback(GtkWidget* widget,
         }
         else
         {
-            struct TypeId::AttributeInformation info = tid.GetAttribute(attrIndex);
+            TypeId::AttributeInformation info = tid.GetAttribute(attrIndex);
             Ptr<const AttributeChecker> checker = info.checker;
             std::string tip;
             tip = "This attribute is of type " + checker->GetValueTypeName();

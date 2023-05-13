@@ -45,7 +45,7 @@ AttributeDefaultIterator::Iterate()
         bool calledStart = false;
         for (uint32_t j = 0; j < tid.GetAttributeN(); j++)
         {
-            struct TypeId::AttributeInformation info = tid.GetAttribute(j);
+            TypeId::AttributeInformation info = tid.GetAttribute(j);
             if (!(info.flags & TypeId::ATTR_CONSTRUCT))
             {
                 // we can't construct the attribute, so, there is no

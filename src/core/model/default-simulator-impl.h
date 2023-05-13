@@ -96,8 +96,9 @@ class DefaultSimulatorImpl : public SimulatorImpl
         /** The event implementation. */
         EventImpl* event;
     };
+
     /** Container type for the events from a different context. */
-    typedef std::list<struct EventWithContext> EventsWithContext;
+    typedef std::list<EventWithContext> EventsWithContext;
     /** The container of events from a different context. */
     EventsWithContext m_eventsWithContext;
     /**

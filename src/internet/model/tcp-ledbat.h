@@ -139,10 +139,10 @@ class TcpLedbat : public TcpNewReno
      *
      * \param buffer The buffer to be initialised
      */
-    void InitCircBuf(struct OwdCircBuf& buffer);
+    void InitCircBuf(OwdCircBuf& buffer);
 
     /// Filter function used by LEDBAT for current delay
-    typedef uint32_t (*FilterFunction)(struct OwdCircBuf&);
+    typedef uint32_t (*FilterFunction)(OwdCircBuf&);
 
     /**
      * \brief Return the minimum delay of the buffer
@@ -150,7 +150,7 @@ class TcpLedbat : public TcpNewReno
      * \param b The buffer
      * \return The minimum delay
      */
-    static uint32_t MinCircBuf(struct OwdCircBuf& b);
+    static uint32_t MinCircBuf(OwdCircBuf& b);
 
     /**
      * \brief Return the value of current delay
@@ -174,7 +174,7 @@ class TcpLedbat : public TcpNewReno
      * \param owd The new delay
      * \param maxlen The maximum permitted length
      */
-    void AddDelay(struct OwdCircBuf& cb, uint32_t owd, uint32_t maxlen);
+    void AddDelay(OwdCircBuf& cb, uint32_t owd, uint32_t maxlen);
 
     /**
      * \brief Update the base delay buffer

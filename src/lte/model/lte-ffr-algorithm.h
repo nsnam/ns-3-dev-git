@@ -176,7 +176,7 @@ class LteFfrAlgorithm : public Object
      *
      */
     virtual void DoReportDlCqiInfo(
-        const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params) = 0;
+        const FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params) = 0;
 
     /**
      * \brief DoReportUlCqiInfo
@@ -184,7 +184,7 @@ class LteFfrAlgorithm : public Object
      *
      */
     virtual void DoReportUlCqiInfo(
-        const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params) = 0;
+        const FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params) = 0;
 
     /**
      * \brief DoReportUlCqiInfo

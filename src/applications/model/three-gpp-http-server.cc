@@ -197,7 +197,7 @@ ThreeGppHttpServer::StartApplication()
             const TypeId tcpSocketTid = TcpSocket::GetTypeId();
             for (uint32_t i = 0; i < tcpSocketTid.GetAttributeN(); i++)
             {
-                struct TypeId::AttributeInformation attrInfo = tcpSocketTid.GetAttribute(i);
+                TypeId::AttributeInformation attrInfo = tcpSocketTid.GetAttribute(i);
                 if (attrInfo.name == "SegmentSize")
                 {
                     previousSocketMtu = attrInfo.initialValue;

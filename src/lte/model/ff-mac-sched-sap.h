@@ -65,8 +65,7 @@ class FfMacSchedSapProvider
         uint16_t m_rlcRetransmissionHolDelay;    ///< RLC retransmission HOL delay
         uint16_t m_rlcStatusPduSize;             ///< RLC status PDU size
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -75,11 +74,10 @@ class FfMacSchedSapProvider
      */
     struct SchedDlPagingBufferReqParameters
     {
-        uint16_t m_rnti;                                              ///< RNTI
-        std::vector<struct PagingInfoListElement_s> m_pagingInfoList; ///< paging info list
+        uint16_t m_rnti;                                       ///< RNTI
+        std::vector<PagingInfoListElement_s> m_pagingInfoList; ///< paging info list
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -91,8 +89,7 @@ class FfMacSchedSapProvider
         uint16_t m_rnti;       ///< RNTI
         CeBitmap_e m_ceBitmap; ///< CE bitmap
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -101,11 +98,10 @@ class FfMacSchedSapProvider
      */
     struct SchedDlTriggerReqParameters
     {
-        uint16_t m_sfnSf;                                     ///< sfn SF
-        std::vector<struct DlInfoListElement_s> m_dlInfoList; ///< DL info list
+        uint16_t m_sfnSf;                              ///< sfn SF
+        std::vector<DlInfoListElement_s> m_dlInfoList; ///< DL info list
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -114,11 +110,10 @@ class FfMacSchedSapProvider
      */
     struct SchedDlRachInfoReqParameters
     {
-        uint16_t m_sfnSf;                                 ///< sfn SF
-        std::vector<struct RachListElement_s> m_rachList; ///< RACH list
+        uint16_t m_sfnSf;                          ///< sfn SF
+        std::vector<RachListElement_s> m_rachList; ///< RACH list
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -127,11 +122,10 @@ class FfMacSchedSapProvider
      */
     struct SchedDlCqiInfoReqParameters
     {
-        uint16_t m_sfnSf;                               ///< sfn SF
-        std::vector<struct CqiListElement_s> m_cqiList; ///< CQI list
+        uint16_t m_sfnSf;                        ///< sfn SF
+        std::vector<CqiListElement_s> m_cqiList; ///< CQI list
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -140,11 +134,10 @@ class FfMacSchedSapProvider
      */
     struct SchedUlTriggerReqParameters
     {
-        uint16_t m_sfnSf;                                     ///< sfn SF
-        std::vector<struct UlInfoListElement_s> m_ulInfoList; ///< UL info list
+        uint16_t m_sfnSf;                              ///< sfn SF
+        std::vector<UlInfoListElement_s> m_ulInfoList; ///< UL info list
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -157,8 +150,7 @@ class FfMacSchedSapProvider
         uint16_t m_rip;   ///< RIP
         uint16_t m_tnp;   ///< TNP
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -167,11 +159,10 @@ class FfMacSchedSapProvider
      */
     struct SchedUlSrInfoReqParameters
     {
-        uint16_t m_sfnSf;                             ///< sfn SF
-        std::vector<struct SrListElement_s> m_srList; ///< SR list
+        uint16_t m_sfnSf;                      ///< sfn SF
+        std::vector<SrListElement_s> m_srList; ///< SR list
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -180,11 +171,10 @@ class FfMacSchedSapProvider
      */
     struct SchedUlMacCtrlInfoReqParameters
     {
-        uint16_t m_sfnSf;                                   ///< sfn SF
-        std::vector<struct MacCeListElement_s> m_macCeList; ///< MAC CE list
+        uint16_t m_sfnSf;                            ///< sfn SF
+        std::vector<MacCeListElement_s> m_macCeList; ///< MAC CE list
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -193,11 +183,10 @@ class FfMacSchedSapProvider
      */
     struct SchedUlCqiInfoReqParameters
     {
-        uint16_t m_sfnSf;       ///< sfn SF
-        struct UlCqi_s m_ulCqi; ///< UL CQI
+        uint16_t m_sfnSf; ///< sfn SF
+        UlCqi_s m_ulCqi;  ///< UL CQI
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     //
@@ -210,49 +199,49 @@ class FfMacSchedSapProvider
      *
      * \param params SchedDlRlcBufferReqParameters
      */
-    virtual void SchedDlRlcBufferReq(const struct SchedDlRlcBufferReqParameters& params) = 0;
+    virtual void SchedDlRlcBufferReq(const SchedDlRlcBufferReqParameters& params) = 0;
 
     /**
      * \brief SCHED_DL_PAGING_BUFFER_REQ
      *
      * \param params SchedDlPagingBufferReqParameters
      */
-    virtual void SchedDlPagingBufferReq(const struct SchedDlPagingBufferReqParameters& params) = 0;
+    virtual void SchedDlPagingBufferReq(const SchedDlPagingBufferReqParameters& params) = 0;
 
     /**
      * \brief SCHED_DL_MAC_BUFFER_REQ
      *
      * \param params SchedDlMacBufferReqParameters
      */
-    virtual void SchedDlMacBufferReq(const struct SchedDlMacBufferReqParameters& params) = 0;
+    virtual void SchedDlMacBufferReq(const SchedDlMacBufferReqParameters& params) = 0;
 
     /**
      * \brief SCHED_DL_TRIGGER_REQ
      *
      * \param params SchedDlTriggerReqParameters
      */
-    virtual void SchedDlTriggerReq(const struct SchedDlTriggerReqParameters& params) = 0;
+    virtual void SchedDlTriggerReq(const SchedDlTriggerReqParameters& params) = 0;
 
     /**
      * \brief SCHED_DL_RACH_INFO_REQ
      *
      * \param params SchedDlRachInfoReqParameters
      */
-    virtual void SchedDlRachInfoReq(const struct SchedDlRachInfoReqParameters& params) = 0;
+    virtual void SchedDlRachInfoReq(const SchedDlRachInfoReqParameters& params) = 0;
 
     /**
      * \brief SCHED_DL_CQI_INFO_REQ
      *
      * \param params SchedDlCqiInfoReqParameters
      */
-    virtual void SchedDlCqiInfoReq(const struct SchedDlCqiInfoReqParameters& params) = 0;
+    virtual void SchedDlCqiInfoReq(const SchedDlCqiInfoReqParameters& params) = 0;
 
     /**
      * \brief SCHED_UL_TRIGGER_REQ
      *
      * \param params SchedUlTriggerReqParameters
      */
-    virtual void SchedUlTriggerReq(const struct SchedUlTriggerReqParameters& params) = 0;
+    virtual void SchedUlTriggerReq(const SchedUlTriggerReqParameters& params) = 0;
 
     /**
      * \brief SCHED_UL_NOISE_INTERFERENCE_REQ
@@ -260,28 +249,28 @@ class FfMacSchedSapProvider
      * \param params SchedUlNoiseInterferenceReqParameters
      */
     virtual void SchedUlNoiseInterferenceReq(
-        const struct SchedUlNoiseInterferenceReqParameters& params) = 0;
+        const SchedUlNoiseInterferenceReqParameters& params) = 0;
 
     /**
      * \brief SCHED_UL_SR_INFO_REQ
      *
      * \param params SchedUlSrInfoReqParameters
      */
-    virtual void SchedUlSrInfoReq(const struct SchedUlSrInfoReqParameters& params) = 0;
+    virtual void SchedUlSrInfoReq(const SchedUlSrInfoReqParameters& params) = 0;
 
     /**
      * \brief SCHED_UL_MAC_CTRL_INFO_REQ
      *
      * \param params SchedUlMacCtrlInfoReqParameters
      */
-    virtual void SchedUlMacCtrlInfoReq(const struct SchedUlMacCtrlInfoReqParameters& params) = 0;
+    virtual void SchedUlMacCtrlInfoReq(const SchedUlMacCtrlInfoReqParameters& params) = 0;
 
     /**
      * \brief SCHED_UL_CQI_INFO_REQ
      *
      * \param params SchedUlCqiInfoReqParameters
      */
-    virtual void SchedUlCqiInfoReq(const struct SchedUlCqiInfoReqParameters& params) = 0;
+    virtual void SchedUlCqiInfoReq(const SchedUlCqiInfoReqParameters& params) = 0;
 
   private:
 };
@@ -302,15 +291,13 @@ class FfMacSchedSapUser
      */
     struct SchedDlConfigIndParameters
     {
-        std::vector<struct BuildDataListElement_s> m_buildDataList; ///< build data list
-        std::vector<struct BuildRarListElement_s> m_buildRarList;   ///< build rar list
-        std::vector<struct BuildBroadcastListElement_s>
-            m_buildBroadcastList; ///< build broadcast list
+        std::vector<BuildDataListElement_s> m_buildDataList;           ///< build data list
+        std::vector<BuildRarListElement_s> m_buildRarList;             ///< build rar list
+        std::vector<BuildBroadcastListElement_s> m_buildBroadcastList; ///< build broadcast list
 
         uint8_t m_nrOfPdcchOfdmSymbols; ///< number of PDCCH OFDM symbols
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     /**
@@ -319,11 +306,10 @@ class FfMacSchedSapUser
      */
     struct SchedUlConfigIndParameters
     {
-        std::vector<struct UlDciListElement_s> m_dciList;   ///< DCI list
-        std::vector<struct PhichListElement_s> m_phichList; ///< PHICH list
+        std::vector<UlDciListElement_s> m_dciList;   ///< DCI list
+        std::vector<PhichListElement_s> m_phichList; ///< PHICH list
 
-        std::vector<struct VendorSpecificListElement_s>
-            m_vendorSpecificList; ///< vendor specific list
+        std::vector<VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
     };
 
     //
@@ -336,14 +322,14 @@ class FfMacSchedSapUser
      *
      * \param params SchedDlConfigIndParameters
      */
-    virtual void SchedDlConfigInd(const struct SchedDlConfigIndParameters& params) = 0;
+    virtual void SchedDlConfigInd(const SchedDlConfigIndParameters& params) = 0;
 
     /**
      * \brief SCHED_UL_CONFIG_IND
      *
      * \param params SchedUlConfigIndParameters
      */
-    virtual void SchedUlConfigInd(const struct SchedUlConfigIndParameters& params) = 0;
+    virtual void SchedUlConfigInd(const SchedUlConfigIndParameters& params) = 0;
 
   private:
 };
@@ -364,18 +350,17 @@ class MemberSchedSapProvider : public FfMacSchedSapProvider
     MemberSchedSapProvider() = delete;
 
     // inherited from FfMacSchedSapProvider
-    void SchedDlRlcBufferReq(const struct SchedDlRlcBufferReqParameters& params) override;
-    void SchedDlPagingBufferReq(const struct SchedDlPagingBufferReqParameters& params) override;
-    void SchedDlMacBufferReq(const struct SchedDlMacBufferReqParameters& params) override;
-    void SchedDlTriggerReq(const struct SchedDlTriggerReqParameters& params) override;
-    void SchedDlRachInfoReq(const struct SchedDlRachInfoReqParameters& params) override;
-    void SchedDlCqiInfoReq(const struct SchedDlCqiInfoReqParameters& params) override;
-    void SchedUlTriggerReq(const struct SchedUlTriggerReqParameters& params) override;
-    void SchedUlNoiseInterferenceReq(
-        const struct SchedUlNoiseInterferenceReqParameters& params) override;
-    void SchedUlSrInfoReq(const struct SchedUlSrInfoReqParameters& params) override;
-    void SchedUlMacCtrlInfoReq(const struct SchedUlMacCtrlInfoReqParameters& params) override;
-    void SchedUlCqiInfoReq(const struct SchedUlCqiInfoReqParameters& params) override;
+    void SchedDlRlcBufferReq(const SchedDlRlcBufferReqParameters& params) override;
+    void SchedDlPagingBufferReq(const SchedDlPagingBufferReqParameters& params) override;
+    void SchedDlMacBufferReq(const SchedDlMacBufferReqParameters& params) override;
+    void SchedDlTriggerReq(const SchedDlTriggerReqParameters& params) override;
+    void SchedDlRachInfoReq(const SchedDlRachInfoReqParameters& params) override;
+    void SchedDlCqiInfoReq(const SchedDlCqiInfoReqParameters& params) override;
+    void SchedUlTriggerReq(const SchedUlTriggerReqParameters& params) override;
+    void SchedUlNoiseInterferenceReq(const SchedUlNoiseInterferenceReqParameters& params) override;
+    void SchedUlSrInfoReq(const SchedUlSrInfoReqParameters& params) override;
+    void SchedUlMacCtrlInfoReq(const SchedUlMacCtrlInfoReqParameters& params) override;
+    void SchedUlCqiInfoReq(const SchedUlCqiInfoReqParameters& params) override;
 
   private:
     C* m_scheduler; ///< the scheduler class
@@ -389,50 +374,49 @@ MemberSchedSapProvider<C>::MemberSchedSapProvider(C* scheduler)
 
 template <class C>
 void
-MemberSchedSapProvider<C>::SchedDlRlcBufferReq(const struct SchedDlRlcBufferReqParameters& params)
+MemberSchedSapProvider<C>::SchedDlRlcBufferReq(const SchedDlRlcBufferReqParameters& params)
 {
     m_scheduler->DoSchedDlRlcBufferReq(params);
 }
 
 template <class C>
 void
-MemberSchedSapProvider<C>::SchedDlPagingBufferReq(
-    const struct SchedDlPagingBufferReqParameters& params)
+MemberSchedSapProvider<C>::SchedDlPagingBufferReq(const SchedDlPagingBufferReqParameters& params)
 {
     m_scheduler->DoSchedDlPagingBufferReq(params);
 }
 
 template <class C>
 void
-MemberSchedSapProvider<C>::SchedDlMacBufferReq(const struct SchedDlMacBufferReqParameters& params)
+MemberSchedSapProvider<C>::SchedDlMacBufferReq(const SchedDlMacBufferReqParameters& params)
 {
     m_scheduler->DoSchedDlMacBufferReq(params);
 }
 
 template <class C>
 void
-MemberSchedSapProvider<C>::SchedDlTriggerReq(const struct SchedDlTriggerReqParameters& params)
+MemberSchedSapProvider<C>::SchedDlTriggerReq(const SchedDlTriggerReqParameters& params)
 {
     m_scheduler->DoSchedDlTriggerReq(params);
 }
 
 template <class C>
 void
-MemberSchedSapProvider<C>::SchedDlRachInfoReq(const struct SchedDlRachInfoReqParameters& params)
+MemberSchedSapProvider<C>::SchedDlRachInfoReq(const SchedDlRachInfoReqParameters& params)
 {
     m_scheduler->DoSchedDlRachInfoReq(params);
 }
 
 template <class C>
 void
-MemberSchedSapProvider<C>::SchedDlCqiInfoReq(const struct SchedDlCqiInfoReqParameters& params)
+MemberSchedSapProvider<C>::SchedDlCqiInfoReq(const SchedDlCqiInfoReqParameters& params)
 {
     m_scheduler->DoSchedDlCqiInfoReq(params);
 }
 
 template <class C>
 void
-MemberSchedSapProvider<C>::SchedUlTriggerReq(const struct SchedUlTriggerReqParameters& params)
+MemberSchedSapProvider<C>::SchedUlTriggerReq(const SchedUlTriggerReqParameters& params)
 {
     m_scheduler->DoSchedUlTriggerReq(params);
 }
@@ -440,29 +424,28 @@ MemberSchedSapProvider<C>::SchedUlTriggerReq(const struct SchedUlTriggerReqParam
 template <class C>
 void
 MemberSchedSapProvider<C>::SchedUlNoiseInterferenceReq(
-    const struct SchedUlNoiseInterferenceReqParameters& params)
+    const SchedUlNoiseInterferenceReqParameters& params)
 {
     m_scheduler->DoSchedUlNoiseInterferenceReq(params);
 }
 
 template <class C>
 void
-MemberSchedSapProvider<C>::SchedUlSrInfoReq(const struct SchedUlSrInfoReqParameters& params)
+MemberSchedSapProvider<C>::SchedUlSrInfoReq(const SchedUlSrInfoReqParameters& params)
 {
     m_scheduler->DoSchedUlSrInfoReq(params);
 }
 
 template <class C>
 void
-MemberSchedSapProvider<C>::SchedUlMacCtrlInfoReq(
-    const struct SchedUlMacCtrlInfoReqParameters& params)
+MemberSchedSapProvider<C>::SchedUlMacCtrlInfoReq(const SchedUlMacCtrlInfoReqParameters& params)
 {
     m_scheduler->DoSchedUlMacCtrlInfoReq(params);
 }
 
 template <class C>
 void
-MemberSchedSapProvider<C>::SchedUlCqiInfoReq(const struct SchedUlCqiInfoReqParameters& params)
+MemberSchedSapProvider<C>::SchedUlCqiInfoReq(const SchedUlCqiInfoReqParameters& params)
 {
     m_scheduler->DoSchedUlCqiInfoReq(params);
 }

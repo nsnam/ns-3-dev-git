@@ -228,7 +228,7 @@ class IidManager : public Singleton<IidManager>
      * \param [in] i Index into attribute array
      * \returns The information associated to attribute whose index is \pname{i}.
      */
-    struct TypeId::AttributeInformation GetAttribute(uint16_t uid, std::size_t i) const;
+    TypeId::AttributeInformation GetAttribute(uint16_t uid, std::size_t i) const;
     /**
      * Record a new TraceSource.
      * \param [in] uid The id.
@@ -262,7 +262,7 @@ class IidManager : public Singleton<IidManager>
      * \param [in] i Index into trace source array.
      * \returns Detailed information about the requested trace source.
      */
-    struct TypeId::TraceSourceInformation GetTraceSource(uint16_t uid, std::size_t i) const;
+    TypeId::TraceSourceInformation GetTraceSource(uint16_t uid, std::size_t i) const;
     /**
      * Check if this TypeId should not be listed in documentation.
      * \param [in] uid The id.
@@ -312,26 +312,27 @@ class IidManager : public Singleton<IidManager>
         /** \c true if this type should be omitted from documentation. */
         bool mustHideFromDocumentation;
         /** The container of Attributes. */
-        std::vector<struct TypeId::AttributeInformation> attributes;
+        std::vector<TypeId::AttributeInformation> attributes;
         /** The container of TraceSources. */
-        std::vector<struct TypeId::TraceSourceInformation> traceSources;
+        std::vector<TypeId::TraceSourceInformation> traceSources;
         /** Support level/deprecation. */
         TypeId::SupportLevel supportLevel;
         /** Support message. */
         std::string supportMsg;
     };
+
     /** Iterator type. */
-    typedef std::vector<struct IidInformation>::const_iterator Iterator;
+    typedef std::vector<IidInformation>::const_iterator Iterator;
 
     /**
      * Retrieve the information record for a type.
      * \param [in] uid The id.
      * \returns The information record.
      */
-    struct IidManager::IidInformation* LookupInformation(uint16_t uid) const;
+    IidManager::IidInformation* LookupInformation(uint16_t uid) const;
 
     /** The container of all type id records. */
-    std::vector<struct IidInformation> m_information;
+    std::vector<IidInformation> m_information;
 
     /** Type of the by-name index. */
     typedef std::map<std::string, uint16_t> namemap_t;
@@ -413,7 +414,7 @@ IidManager::AllocateUid(std::string name)
         // into ns3.  -- Peter Barnes, LLNL
 
         // Alphabetize the two types, so it's deterministic
-        struct IidInformation* hinfo = LookupInformation(GetUid(hash));
+        IidInformation* hinfo = LookupInformation(GetUid(hash));
         if (name > hinfo->name)
         { // new type gets chained
             NS_LOG_LOGIC(IIDL << "New TypeId '" << name << "' getting chained.");
@@ -451,13 +452,13 @@ IidManager::AllocateUid(std::string name)
     return uid;
 }
 
-struct IidManager::IidInformation*
+IidManager::IidInformation*
 IidManager::LookupInformation(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
     NS_ASSERT(uid <= m_information.size() && uid != 0);
     NS_LOG_LOGIC(IIDL << m_information[uid - 1].name);
-    return const_cast<struct IidInformation*>(&m_information[uid - 1]);
+    return const_cast<IidInformation*>(&m_information[uid - 1]);
 }
 
 void
@@ -465,7 +466,7 @@ IidManager::SetParent(uint16_t uid, uint16_t parent)
 {
     NS_LOG_FUNCTION(IID << uid << parent);
     NS_ASSERT(parent <= m_information.size());
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     information->parent = parent;
 }
 
@@ -473,7 +474,7 @@ void
 IidManager::SetGroupName(uint16_t uid, std::string groupName)
 {
     NS_LOG_FUNCTION(IID << uid << groupName);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     information->groupName = groupName;
 }
 
@@ -481,7 +482,7 @@ void
 IidManager::SetSize(uint16_t uid, std::size_t size)
 {
     NS_LOG_FUNCTION(IID << uid << size);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     information->size = size;
 }
 
@@ -489,7 +490,7 @@ void
 IidManager::HideFromDocumentation(uint16_t uid)
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     information->mustHideFromDocumentation = true;
 }
 
@@ -497,7 +498,7 @@ void
 IidManager::AddConstructor(uint16_t uid, Callback<ObjectBase*> callback)
 {
     NS_LOG_FUNCTION(IID << uid << &callback);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     if (information->hasConstructor)
     {
         NS_FATAL_ERROR(information->name << " already has a constructor.");
@@ -538,7 +539,7 @@ std::string
 IidManager::GetName(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     NS_LOG_LOGIC(IIDL << information->name);
     return information->name;
 }
@@ -547,7 +548,7 @@ TypeId::hash_t
 IidManager::GetHash(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     TypeId::hash_t hash = information->hash;
     NS_LOG_LOGIC(IIDL << hash);
     return hash;
@@ -557,7 +558,7 @@ uint16_t
 IidManager::GetParent(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     uint16_t pid = information->parent;
     NS_LOG_LOGIC(IIDL << pid);
     return pid;
@@ -567,7 +568,7 @@ std::string
 IidManager::GetGroupName(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     NS_LOG_LOGIC(IIDL << information->groupName);
     return information->groupName;
 }
@@ -576,7 +577,7 @@ std::size_t
 IidManager::GetSize(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     std::size_t size = information->size;
     NS_LOG_LOGIC(IIDL << size);
     return size;
@@ -586,7 +587,7 @@ Callback<ObjectBase*>
 IidManager::GetConstructor(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     if (!information->hasConstructor)
     {
         NS_FATAL_ERROR("Requested constructor for " << information->name
@@ -599,7 +600,7 @@ bool
 IidManager::HasConstructor(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     bool hasC = information->hasConstructor;
     NS_LOG_LOGIC(IIDL << hasC);
     return hasC;
@@ -623,10 +624,10 @@ bool
 IidManager::HasAttribute(uint16_t uid, std::string name)
 {
     NS_LOG_FUNCTION(IID << uid << name);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     while (true)
     {
-        for (std::vector<struct TypeId::AttributeInformation>::const_iterator i =
+        for (std::vector<TypeId::AttributeInformation>::const_iterator i =
                  information->attributes.begin();
              i != information->attributes.end();
              ++i)
@@ -637,7 +638,7 @@ IidManager::HasAttribute(uint16_t uid, std::string name)
                 return true;
             }
         }
-        struct IidInformation* parent = LookupInformation(information->parent);
+        IidInformation* parent = LookupInformation(information->parent);
         if (parent == information)
         {
             // top of inheritance tree
@@ -664,7 +665,7 @@ IidManager::AddAttribute(uint16_t uid,
 {
     NS_LOG_FUNCTION(IID << uid << name << help << flags << initialValue << accessor << checker
                         << supportLevel << supportMsg);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     if (name.find(' ') != std::string::npos)
     {
         NS_FATAL_ERROR("Attribute name \"" << name << "\" may not contain spaces ' ', "
@@ -676,7 +677,7 @@ IidManager::AddAttribute(uint16_t uid,
         NS_FATAL_ERROR("Attribute \"" << name << "\" already registered on tid=\""
                                       << information->name << "\"");
     }
-    struct TypeId::AttributeInformation info;
+    TypeId::AttributeInformation info;
     info.name = name;
     info.help = help;
     info.flags = flags;
@@ -696,7 +697,7 @@ IidManager::SetAttributeInitialValue(uint16_t uid,
                                      Ptr<const AttributeValue> initialValue)
 {
     NS_LOG_FUNCTION(IID << uid << i << initialValue);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     NS_ASSERT(i < information->attributes.size());
     information->attributes[i].initialValue = initialValue;
 }
@@ -705,17 +706,17 @@ std::size_t
 IidManager::GetAttributeN(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     std::size_t size = information->attributes.size();
     NS_LOG_LOGIC(IIDL << size);
     return size;
 }
 
-struct TypeId::AttributeInformation
+TypeId::AttributeInformation
 IidManager::GetAttribute(uint16_t uid, std::size_t i) const
 {
     NS_LOG_FUNCTION(IID << uid << i);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     NS_ASSERT(i < information->attributes.size());
     NS_LOG_LOGIC(IIDL << information->name);
     return information->attributes[i];
@@ -725,10 +726,10 @@ bool
 IidManager::HasTraceSource(uint16_t uid, std::string name)
 {
     NS_LOG_FUNCTION(IID << uid << name);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     while (true)
     {
-        for (std::vector<struct TypeId::TraceSourceInformation>::const_iterator i =
+        for (std::vector<TypeId::TraceSourceInformation>::const_iterator i =
                  information->traceSources.begin();
              i != information->traceSources.end();
              ++i)
@@ -739,7 +740,7 @@ IidManager::HasTraceSource(uint16_t uid, std::string name)
                 return true;
             }
         }
-        struct IidInformation* parent = LookupInformation(information->parent);
+        IidInformation* parent = LookupInformation(information->parent);
         if (parent == information)
         {
             // top of inheritance tree
@@ -764,13 +765,13 @@ IidManager::AddTraceSource(uint16_t uid,
 {
     NS_LOG_FUNCTION(IID << uid << name << help << accessor << callback << supportLevel
                         << supportMsg);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     if (HasTraceSource(uid, name))
     {
         NS_FATAL_ERROR("Trace source \"" << name << "\" already registered on tid=\""
                                          << information->name << "\"");
     }
-    struct TypeId::TraceSourceInformation source;
+    TypeId::TraceSourceInformation source;
     source.name = name;
     source.help = help;
     source.accessor = accessor;
@@ -785,17 +786,17 @@ std::size_t
 IidManager::GetTraceSourceN(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     std::size_t size = information->traceSources.size();
     NS_LOG_LOGIC(IIDL << size);
     return size;
 }
 
-struct TypeId::TraceSourceInformation
+TypeId::TraceSourceInformation
 IidManager::GetTraceSource(uint16_t uid, std::size_t i) const
 {
     NS_LOG_FUNCTION(IID << uid << i);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     NS_ASSERT(i < information->traceSources.size());
     NS_LOG_LOGIC(IIDL << information->name);
     return information->traceSources[i];
@@ -805,7 +806,7 @@ bool
 IidManager::MustHideFromDocumentation(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    struct IidInformation* information = LookupInformation(uid);
+    IidInformation* information = LookupInformation(uid);
     bool hide = information->mustHideFromDocumentation;
     NS_LOG_LOGIC(IIDL << hide);
     return hide;
@@ -894,7 +895,7 @@ TypeId::GetRegistered(uint16_t i)
 }
 
 bool
-TypeId::LookupAttributeByName(std::string name, struct TypeId::AttributeInformation* info) const
+TypeId::LookupAttributeByName(std::string name, TypeId::AttributeInformation* info) const
 {
     NS_LOG_FUNCTION(this << name << info);
     TypeId tid;
@@ -904,7 +905,7 @@ TypeId::LookupAttributeByName(std::string name, struct TypeId::AttributeInformat
         tid = nextTid;
         for (std::size_t i = 0; i < tid.GetAttributeN(); i++)
         {
-            struct TypeId::AttributeInformation tmp = tid.GetAttribute(i);
+            TypeId::AttributeInformation tmp = tid.GetAttribute(i);
             if (tmp.name == name)
             {
                 if (tmp.supportLevel == TypeId::SUPPORTED)
@@ -1108,7 +1109,7 @@ TypeId::GetAttributeN() const
     return n;
 }
 
-struct TypeId::AttributeInformation
+TypeId::AttributeInformation
 TypeId::GetAttribute(std::size_t i) const
 {
     NS_LOG_FUNCTION(this << i);
@@ -1119,7 +1120,7 @@ std::string
 TypeId::GetAttributeFullName(std::size_t i) const
 {
     NS_LOG_FUNCTION(this << i);
-    struct TypeId::AttributeInformation info = GetAttribute(i);
+    TypeId::AttributeInformation info = GetAttribute(i);
     return GetName() + "::" + info.name;
 }
 
@@ -1130,7 +1131,7 @@ TypeId::GetTraceSourceN() const
     return IidManager::Get()->GetTraceSourceN(m_tid);
 }
 
-struct TypeId::TraceSourceInformation
+TypeId::TraceSourceInformation
 TypeId::GetTraceSource(std::size_t i) const
 {
     NS_LOG_FUNCTION(this << i);
@@ -1160,12 +1161,12 @@ TypeId::HideFromDocumentation()
 }
 
 Ptr<const TraceSourceAccessor>
-TypeId::LookupTraceSourceByName(std::string name, struct TraceSourceInformation* info) const
+TypeId::LookupTraceSourceByName(std::string name, TraceSourceInformation* info) const
 {
     NS_LOG_FUNCTION(this << name);
     TypeId tid;
     TypeId nextTid = *this;
-    struct TypeId::TraceSourceInformation tmp;
+    TypeId::TraceSourceInformation tmp;
     do
     {
         tid = nextTid;

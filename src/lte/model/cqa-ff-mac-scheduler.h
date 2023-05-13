@@ -52,7 +52,7 @@ typedef std::vector<uint8_t> DlHarqProcessesTimer_t;
 /// DL HARQ process DCI buffer vector typedef
 typedef std::vector<DlDciListElement_s> DlHarqProcessesDciBuffer_t;
 /// vector of the LCs and layers per UE
-typedef std::vector<std::vector<struct RlcPduListElement_s>> RlcPduList_t;
+typedef std::vector<std::vector<RlcPduListElement_s>> RlcPduList_t;
 /// vector of the 8 HARQ processes per UE
 typedef std::vector<RlcPduList_t> DlHarqRlcPduListBuffer_t;
 /// UL HARQ process DCI buffer vector
@@ -133,36 +133,31 @@ class CqaFfMacScheduler : public FfMacScheduler
      * Csched Cell Config Request
      * \param params CschedCellConfigReqParameters&
      */
-    void DoCschedCellConfigReq(
-        const struct FfMacCschedSapProvider::CschedCellConfigReqParameters& params);
+    void DoCschedCellConfigReq(const FfMacCschedSapProvider::CschedCellConfigReqParameters& params);
 
     /**
      * Csched UE Config Request
      * \param params CschedUeConfigReqParameters&
      */
-    void DoCschedUeConfigReq(
-        const struct FfMacCschedSapProvider::CschedUeConfigReqParameters& params);
+    void DoCschedUeConfigReq(const FfMacCschedSapProvider::CschedUeConfigReqParameters& params);
 
     /**
      * Csched LC Config Request
      * \param params CschedLcConfigReqParameters&
      */
-    void DoCschedLcConfigReq(
-        const struct FfMacCschedSapProvider::CschedLcConfigReqParameters& params);
+    void DoCschedLcConfigReq(const FfMacCschedSapProvider::CschedLcConfigReqParameters& params);
 
     /**
      * Csched LC Release Request
      * \param params CschedLcReleaseReqParameters&
      */
-    void DoCschedLcReleaseReq(
-        const struct FfMacCschedSapProvider::CschedLcReleaseReqParameters& params);
+    void DoCschedLcReleaseReq(const FfMacCschedSapProvider::CschedLcReleaseReqParameters& params);
 
     /**
      * Csched UE Release Request
      * \param params CschedUeReleaseReqParameters&
      */
-    void DoCschedUeReleaseReq(
-        const struct FfMacCschedSapProvider::CschedUeReleaseReqParameters& params);
+    void DoCschedUeReleaseReq(const FfMacCschedSapProvider::CschedUeReleaseReqParameters& params);
 
     //
     // Implementation of the SCHED API primitives
@@ -173,77 +168,70 @@ class CqaFfMacScheduler : public FfMacScheduler
      * Sched DL RLC Buffer Request
      * \param params SchedDlRlcBufferReqParameters&
      */
-    void DoSchedDlRlcBufferReq(
-        const struct FfMacSchedSapProvider::SchedDlRlcBufferReqParameters& params);
+    void DoSchedDlRlcBufferReq(const FfMacSchedSapProvider::SchedDlRlcBufferReqParameters& params);
 
     /**
      * Sched DL Paging Buffer Request
      * \param params SchedDlPagingBufferReqParameters&
      */
     void DoSchedDlPagingBufferReq(
-        const struct FfMacSchedSapProvider::SchedDlPagingBufferReqParameters& params);
+        const FfMacSchedSapProvider::SchedDlPagingBufferReqParameters& params);
 
     /**
      * Sched DL MAC Buffer Request
      * \param params SchedDlMacBufferReqParameters&
      */
-    void DoSchedDlMacBufferReq(
-        const struct FfMacSchedSapProvider::SchedDlMacBufferReqParameters& params);
+    void DoSchedDlMacBufferReq(const FfMacSchedSapProvider::SchedDlMacBufferReqParameters& params);
 
     /**
      * Sched DL RLC Buffer Request
      * \param params SchedDlTriggerReqParameters&
      */
-    void DoSchedDlTriggerReq(
-        const struct FfMacSchedSapProvider::SchedDlTriggerReqParameters& params);
+    void DoSchedDlTriggerReq(const FfMacSchedSapProvider::SchedDlTriggerReqParameters& params);
 
     /**
      * Sched DL RACH Info Request
      * \param params SchedDlRachInfoReqParameters&
      */
-    void DoSchedDlRachInfoReq(
-        const struct FfMacSchedSapProvider::SchedDlRachInfoReqParameters& params);
+    void DoSchedDlRachInfoReq(const FfMacSchedSapProvider::SchedDlRachInfoReqParameters& params);
 
     /**
      * Sched DL CGI Info Request
      * \param params SchedDlCqiInfoReqParameters&
      */
-    void DoSchedDlCqiInfoReq(
-        const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params);
+    void DoSchedDlCqiInfoReq(const FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params);
 
     /**
      * Sched UL Trigger Request
      * \param params SchedUlTriggerReqParameters&
      */
-    void DoSchedUlTriggerReq(
-        const struct FfMacSchedSapProvider::SchedUlTriggerReqParameters& params);
+    void DoSchedUlTriggerReq(const FfMacSchedSapProvider::SchedUlTriggerReqParameters& params);
 
     /**
      * Sched UL Noise InterferenceRequest
      * \param params SchedUlNoiseInterferenceReqParameters&
      */
     void DoSchedUlNoiseInterferenceReq(
-        const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params);
+        const FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params);
 
     /**
      * Sched UL Sr Info Request
      * \param params SchedUlSrInfoReqParameters&
      */
-    void DoSchedUlSrInfoReq(const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params);
+    void DoSchedUlSrInfoReq(const FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params);
 
     /**
      * Sched UL MAC Control Info Request
      * \param params SchedUlMacCtrlInfoReqParameters&
      */
     void DoSchedUlMacCtrlInfoReq(
-        const struct FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters& params);
+        const FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters& params);
 
     /**
      * Sched UL CGI Info Request
      * \param params SchedUlCqiInfoReqParameters&
      */
-    void DoSchedUlCqiInfoReq(
-        const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params);
+    void DoSchedUlCqiInfoReq(const FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params);
 
     /**
      * Get RGB Size
@@ -328,7 +316,7 @@ class CqaFfMacScheduler : public FfMacScheduler
     /**
      * Map of UE logical channel config list
      */
-    std::map<LteFlowId_t, struct LogicalChannelConfigListElement_s> m_ueLogicalChannelsConfigList;
+    std::map<LteFlowId_t, LogicalChannelConfigListElement_s> m_ueLogicalChannelsConfigList;
 
     /**
      * Map of UE's DL CQI P01 received
@@ -416,9 +404,9 @@ class CqaFfMacScheduler : public FfMacScheduler
         m_ulHarqProcessesDciBuffer; ///< UL HARQ process DCI buffer
 
     // RACH attributes
-    std::vector<struct RachListElement_s> m_rachList; ///< RACH list
-    std::vector<uint16_t> m_rachAllocationMap;        ///< RACH allocation map
-    uint8_t m_ulGrantMcs;                             ///< MCS for UL grant (default 0)
+    std::vector<RachListElement_s> m_rachList; ///< RACH list
+    std::vector<uint16_t> m_rachAllocationMap; ///< RACH allocation map
+    uint8_t m_ulGrantMcs;                      ///< MCS for UL grant (default 0)
 
     std::string m_CqaMetric; ///< CQA metric name
 };

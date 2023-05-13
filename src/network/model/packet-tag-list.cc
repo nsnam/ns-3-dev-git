@@ -67,9 +67,9 @@ PacketTagList::COWTraverse(Tag& tag, PacketTagList::COWWriter Writer)
 
     bool found = false;
 
-    struct TagData** prevNext = &m_next; // previous node's next pointer
-    struct TagData* cur = m_next;        // cursor to current node
-    struct TagData* it = nullptr;        // utility
+    TagData** prevNext = &m_next; // previous node's next pointer
+    TagData* cur = m_next;        // cursor to current node
+    TagData* it = nullptr;        // utility
 
     // Search from the head of the list until we find tid or a merge
     while (cur != nullptr)
@@ -151,7 +151,7 @@ PacketTagList::COWTraverse(Tag& tag, PacketTagList::COWWriter Writer)
         NS_ASSERT(cur != nullptr);
         NS_ASSERT(cur->count > 1);
         cur->count--; // unmerge cur
-        struct TagData* copy = CreateTagData(cur->size);
+        TagData* copy = CreateTagData(cur->size);
         copy->tid = cur->tid;
         copy->count = 1;
         copy->size = cur->size;
@@ -182,8 +182,8 @@ PacketTagList::Remove(Tag& tag)
 bool
 PacketTagList::RemoveWriter(Tag& tag,
                             bool preMerge,
-                            struct PacketTagList::TagData* cur,
-                            struct PacketTagList::TagData** prevNext)
+                            PacketTagList::TagData* cur,
+                            PacketTagList::TagData** prevNext)
 {
     NS_LOG_FUNCTION_NOARGS();
 
@@ -227,8 +227,8 @@ PacketTagList::Replace(Tag& tag)
 bool
 PacketTagList::ReplaceWriter(Tag& tag,
                              bool preMerge,
-                             struct PacketTagList::TagData* cur,
-                             struct PacketTagList::TagData** prevNext)
+                             PacketTagList::TagData* cur,
+                             PacketTagList::TagData** prevNext)
 {
     NS_LOG_FUNCTION_NOARGS();
 
@@ -244,7 +244,7 @@ PacketTagList::ReplaceWriter(Tag& tag,
         // cur is always a merge at this point
         // need to copy, replace, and link past cur
         cur->count--; // unmerge cur
-        struct TagData* copy = CreateTagData(tag.GetSerializedSize());
+        TagData* copy = CreateTagData(tag.GetSerializedSize());
         copy->tid = tag.GetInstanceTypeId();
         copy->count = 1;
         tag.Serialize(TagBuffer(copy->data, copy->data + copy->size));
@@ -263,12 +263,12 @@ PacketTagList::Add(const Tag& tag) const
 {
     NS_LOG_FUNCTION(this << tag.GetInstanceTypeId());
     // ensure this id was not yet added
-    for (struct TagData* cur = m_next; cur != nullptr; cur = cur->next)
+    for (TagData* cur = m_next; cur != nullptr; cur = cur->next)
     {
         NS_ASSERT_MSG(cur->tid != tag.GetInstanceTypeId(),
                       "Error: cannot add the same kind of tag twice.");
     }
-    struct TagData* head = CreateTagData(tag.GetSerializedSize());
+    TagData* head = CreateTagData(tag.GetSerializedSize());
     head->count = 1;
     head->next = nullptr;
     head->tid = tag.GetInstanceTypeId();
@@ -283,7 +283,7 @@ PacketTagList::Peek(Tag& tag) const
 {
     NS_LOG_FUNCTION(this << tag.GetInstanceTypeId());
     TypeId tid = tag.GetInstanceTypeId();
-    for (struct TagData* cur = m_next; cur != nullptr; cur = cur->next)
+    for (TagData* cur = m_next; cur != nullptr; cur = cur->next)
     {
         if (cur->tid == tid)
         {
@@ -296,7 +296,7 @@ PacketTagList::Peek(Tag& tag) const
     return false;
 }
 
-const struct PacketTagList::TagData*
+const PacketTagList::TagData*
 PacketTagList::Head() const
 {
     return m_next;
@@ -311,7 +311,7 @@ PacketTagList::GetSerializedSize() const
 
     size = 4; // numberOfTags
 
-    for (struct TagData* cur = m_next; cur != nullptr; cur = cur->next)
+    for (TagData* cur = m_next; cur != nullptr; cur = cur->next)
     {
         size += 4; // TagData -> size
 
@@ -348,7 +348,7 @@ PacketTagList::Serialize(uint32_t* buffer, uint32_t maxSize) const
         return 0;
     }
 
-    for (struct TagData* cur = m_next; cur != nullptr; cur = cur->next)
+    for (TagData* cur = m_next; cur != nullptr; cur = cur->next)
     {
         if (size + 4 <= maxSize)
         {
@@ -409,7 +409,7 @@ PacketTagList::Deserialize(const uint32_t* buffer, uint32_t size)
 
     NS_LOG_INFO("Deserializing number of tags " << numberOfTags);
 
-    struct TagData* prevTag = nullptr;
+    TagData* prevTag = nullptr;
     for (uint32_t i = 0; i < numberOfTags; ++i)
     {
         NS_ASSERT(sizeCheck >= 4);
@@ -427,7 +427,7 @@ PacketTagList::Deserialize(const uint32_t* buffer, uint32_t size)
 
         NS_LOG_INFO("Deserializing tag of type " << tid);
 
-        struct TagData* newTag = CreateTagData(tagSize);
+        TagData* newTag = CreateTagData(tagSize);
         newTag->count = 1;
         newTag->next = nullptr;
         newTag->tid = tid;

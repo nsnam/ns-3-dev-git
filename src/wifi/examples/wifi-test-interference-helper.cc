@@ -108,7 +108,7 @@ class InterferenceExperiment
      * Run function
      * \param input the interference experiment data
      */
-    void Run(struct InterferenceExperiment::Input input);
+    void Run(InterferenceExperiment::Input input);
 
   private:
     /**
@@ -213,7 +213,7 @@ InterferenceExperiment::Input::Input()
 }
 
 void
-InterferenceExperiment::Run(struct InterferenceExperiment::Input input)
+InterferenceExperiment::Run(InterferenceExperiment::Input input)
 {
     m_input = input;
 

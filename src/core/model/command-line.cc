@@ -572,7 +572,7 @@ CommandLine::PrintAttributeList(std::ostream& os, const TypeId tid, std::strings
     {
         std::stringstream ss;
         ss << "    --" << tid.GetAttributeFullName(i) << "=[";
-        struct TypeId::AttributeInformation info = tid.GetAttribute(i);
+        TypeId::AttributeInformation info = tid.GetAttribute(i);
         ss << info.initialValue->SerializeToString(info.checker) << "]\n"
            << "        " << info.help << "\n";
         attributes.push_back(ss.str());
@@ -790,7 +790,7 @@ CommandLine::AddValue(const std::string& name, const std::string& attributePath)
     }
 
     const std::string attrName = attributePath.substr(colon + 2);
-    struct TypeId::AttributeInformation info;
+    TypeId::AttributeInformation info;
     if (!tid.LookupAttributeByName(attrName, &info))
     {
         NS_FATAL_ERROR("Attribute not found: " << attributePath);

@@ -162,8 +162,8 @@ class PacketTagIterator
          * Constructor
          * \param data the data to copy.
          */
-        Item(const struct PacketTagList::TagData* data);
-        const struct PacketTagList::TagData* m_data; //!< the tag data
+        Item(const PacketTagList::TagData* data);
+        const PacketTagList::TagData* m_data; //!< the tag data
     };
 
     /**
@@ -182,9 +182,8 @@ class PacketTagIterator
      * Constructor
      * \param head head of the items
      */
-    PacketTagIterator(const struct PacketTagList::TagData* head);
-    const struct PacketTagList::TagData*
-        m_current; //!< actual position over the set of tags in a packet
+    PacketTagIterator(const PacketTagList::TagData* head);
+    const PacketTagList::TagData* m_current; //!< actual position over the set of tags in a packet
 };
 
 /**

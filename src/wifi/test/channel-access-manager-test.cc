@@ -86,7 +86,8 @@ class TxopTest : public TxopType
         uint64_t at;     //!< at
         uint32_t nSlots; //!< number of slots
     };
-    typedef std::list<struct ExpectedBackoff> ExpectedBackoffs; //!< expected backoffs typedef
+
+    typedef std::list<ExpectedBackoff> ExpectedBackoffs; //!< expected backoffs typedef
 
     ExpectedBackoffs m_expectedInternalCollision; //!< expected backoff due to an internal collision
     ExpectedBackoffs m_expectedBackoff; //!< expected backoff (not due to an internal collision)

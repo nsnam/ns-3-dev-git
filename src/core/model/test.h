@@ -1240,7 +1240,7 @@ class TestCase
     std::vector<TestCase*> m_children; //!< Vector of my children
     std::string m_dataDir;             //!< My data directory
     TestRunnerImpl* m_runner;          //!< Pointer to the TestRunner
-    struct Result* m_result;           //!< Results data
+    Result* m_result;                  //!< Results data
     std::string m_name;                //!< TestCase name
     TestDuration m_duration;           //!< TestCase duration
 };

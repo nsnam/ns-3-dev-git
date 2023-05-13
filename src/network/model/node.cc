@@ -245,7 +245,7 @@ Node::RegisterProtocolHandler(ProtocolHandler handler,
                               bool promiscuous)
 {
     NS_LOG_FUNCTION(this << &handler << protocolType << device << promiscuous);
-    struct Node::ProtocolHandlerEntry entry;
+    Node::ProtocolHandlerEntry entry;
     entry.handler = handler;
     entry.protocol = protocolType;
     entry.device = device;

@@ -50,8 +50,9 @@ class AttributeConstructionList
         /** The name of the Attribute. */
         std::string name;
     };
+
     /** Iterator type. */
-    typedef std::list<struct Item>::const_iterator CIterator;
+    typedef std::list<Item>::const_iterator CIterator;
 
     /** Constructor */
     AttributeConstructionList();
@@ -81,7 +82,7 @@ class AttributeConstructionList
 
   private:
     /** The list of Items */
-    std::list<struct Item> m_list;
+    std::list<Item> m_list;
 };
 
 } // namespace ns3

@@ -45,7 +45,7 @@ AttributeConstructionList::Add(std::string name,
     // vector of values.
     NS_LOG_FUNCTION(this << name << checker << value);
 
-    for (std::list<struct Item>::iterator k = m_list.begin(); k != m_list.end(); k++)
+    for (std::list<Item>::iterator k = m_list.begin(); k != m_list.end(); k++)
     {
         if (k->checker == checker)
         {
