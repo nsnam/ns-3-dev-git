@@ -77,7 +77,7 @@ class FfMacCschedSapProvider
             PHICH_R_TWO
         } m_phichResource; ///< PHICH resource
 
-        enum NormalExtended_e m_phichDuration; ///< PHICH duration
+        NormalExtended_e m_phichDuration; ///< PHICH duration
 
         uint8_t m_initialNrOfPdcchOfdmSymbols; ///< initial number of PDCCH OFDM symbols
 
@@ -86,8 +86,8 @@ class FfMacCschedSapProvider
         uint16_t m_ulBandwidth; ///< UL bandwidth
         uint16_t m_dlBandwidth; ///< DL bandwidth
 
-        enum NormalExtended_e m_ulCyclicPrefixLength; ///< UL cyclic prefix length
-        enum NormalExtended_e m_dlCyclicPrefixLength; ///< DL cyclic prefix length
+        NormalExtended_e m_ulCyclicPrefixLength; ///< UL cyclic prefix length
+        NormalExtended_e m_dlCyclicPrefixLength; ///< DL cyclic prefix length
 
         uint8_t m_antennaPortsCount; ///< antenna port count
 
@@ -305,7 +305,7 @@ class FfMacCschedSapUser
      */
     struct CschedCellConfigCnfParameters
     {
-        enum Result_e m_result; ///< result
+        Result_e m_result; ///< result
 
         std::vector<struct VendorSpecificListElement_s>
             m_vendorSpecificList; ///< vendorSpecificList
@@ -317,8 +317,8 @@ class FfMacCschedSapUser
      */
     struct CschedUeConfigCnfParameters
     {
-        uint16_t m_rnti;        ///< RNTI
-        enum Result_e m_result; ///< result
+        uint16_t m_rnti;   ///< RNTI
+        Result_e m_result; ///< result
 
         std::vector<struct VendorSpecificListElement_s>
             m_vendorSpecificList; ///< vendorSpecificList
@@ -330,8 +330,8 @@ class FfMacCschedSapUser
      */
     struct CschedLcConfigCnfParameters
     {
-        uint16_t m_rnti;        ///< RNTI
-        enum Result_e m_result; ///< result
+        uint16_t m_rnti;   ///< RNTI
+        Result_e m_result; ///< result
 
         std::vector<uint8_t> m_logicalChannelIdentity; ///< logical channel identity
 
@@ -345,8 +345,8 @@ class FfMacCschedSapUser
      */
     struct CschedLcReleaseCnfParameters
     {
-        uint16_t m_rnti;        ///< RNTI
-        enum Result_e m_result; ///< result
+        uint16_t m_rnti;   ///< RNTI
+        Result_e m_result; ///< result
 
         std::vector<uint8_t> m_logicalChannelIdentity; ///< logical channel identity
 
@@ -360,8 +360,8 @@ class FfMacCschedSapUser
      */
     struct CschedUeReleaseCnfParameters
     {
-        uint16_t m_rnti;        ///< RNTI
-        enum Result_e m_result; ///< result
+        uint16_t m_rnti;   ///< RNTI
+        Result_e m_result; ///< result
 
         std::vector<struct VendorSpecificListElement_s>
             m_vendorSpecificList; ///< vendor specific list

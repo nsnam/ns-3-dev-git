@@ -317,9 +317,9 @@ class WifiMacHeader : public Header
      */
     Mac48Address GetAddr4() const;
     /**
-     * Return the type (enum WifiMacType)
+     * Return the type (WifiMacType)
      *
-     * \return the type (enum WifiMacType)
+     * \return the type (WifiMacType)
      */
     WifiMacType GetType() const;
     /**

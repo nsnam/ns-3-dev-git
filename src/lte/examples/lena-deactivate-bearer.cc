@@ -153,7 +153,7 @@ main(int argc, char* argv[])
         qos.mbrDl = qos.gbrDl;
         qos.mbrUl = qos.gbrUl;
 
-        enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+        EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
         EpsBearer bearer(q, qos);
         bearer.arp.priorityLevel = 15 - (u + 1);
         bearer.arp.preemptionCapability = true;

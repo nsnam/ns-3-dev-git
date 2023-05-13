@@ -108,7 +108,7 @@ class BsServiceFlowManager : public ServiceFlowManager
      * \param sf the service flow
      * \param modulation the wimax phy modulation type
      */
-    void AddMulticastServiceFlow(ServiceFlow sf, enum WimaxPhy::ModulationType modulation);
+    void AddMulticastServiceFlow(ServiceFlow sf, WimaxPhy::ModulationType modulation);
     /**
      * \brief process a DSA-ACK message
      * \param dsaAck the message to process

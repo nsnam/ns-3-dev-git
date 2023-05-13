@@ -348,7 +348,7 @@ class NetDevice : public Object
                      uint16_t,
                      const Address&,
                      const Address&,
-                     enum PacketType>
+                     PacketType>
         PromiscReceiveCallback;
 
     /**

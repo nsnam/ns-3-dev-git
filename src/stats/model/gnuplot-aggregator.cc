@@ -274,14 +274,14 @@ GnuplotAggregator::Write2dDatasetEmptyLine(const std::string& dataset)
 }
 
 void
-GnuplotAggregator::Set2dDatasetDefaultStyle(enum Gnuplot2dDataset::Style style)
+GnuplotAggregator::Set2dDatasetDefaultStyle(Gnuplot2dDataset::Style style)
 {
     NS_LOG_FUNCTION(style);
     Gnuplot2dDataset::SetDefaultStyle(style);
 }
 
 void
-GnuplotAggregator::Set2dDatasetStyle(const std::string& dataset, enum Gnuplot2dDataset::Style style)
+GnuplotAggregator::Set2dDatasetStyle(const std::string& dataset, Gnuplot2dDataset::Style style)
 {
     NS_LOG_FUNCTION(this << dataset << style);
     if (m_2dDatasetMap.count(dataset) == 0)
@@ -294,7 +294,7 @@ GnuplotAggregator::Set2dDatasetStyle(const std::string& dataset, enum Gnuplot2dD
 }
 
 void
-GnuplotAggregator::Set2dDatasetDefaultErrorBars(enum Gnuplot2dDataset::ErrorBars errorBars)
+GnuplotAggregator::Set2dDatasetDefaultErrorBars(Gnuplot2dDataset::ErrorBars errorBars)
 {
     NS_LOG_FUNCTION(errorBars);
     Gnuplot2dDataset::SetDefaultErrorBars(errorBars);
@@ -302,7 +302,7 @@ GnuplotAggregator::Set2dDatasetDefaultErrorBars(enum Gnuplot2dDataset::ErrorBars
 
 void
 GnuplotAggregator::Set2dDatasetErrorBars(const std::string& dataset,
-                                         enum Gnuplot2dDataset::ErrorBars errorBars)
+                                         Gnuplot2dDataset::ErrorBars errorBars)
 {
     NS_LOG_FUNCTION(this << dataset << errorBars);
     if (m_2dDatasetMap.count(dataset) == 0)
@@ -315,7 +315,7 @@ GnuplotAggregator::Set2dDatasetErrorBars(const std::string& dataset,
 }
 
 void
-GnuplotAggregator::SetKeyLocation(enum GnuplotAggregator::KeyLocation keyLocation)
+GnuplotAggregator::SetKeyLocation(GnuplotAggregator::KeyLocation keyLocation)
 {
     NS_LOG_FUNCTION(this << keyLocation);
     // Set the specified key location.

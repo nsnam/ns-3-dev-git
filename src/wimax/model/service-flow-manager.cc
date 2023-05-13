@@ -142,7 +142,7 @@ ServiceFlowManager::GetServiceFlow(Cid cid) const
 }
 
 std::vector<ServiceFlow*>
-ServiceFlowManager::GetServiceFlows(enum ServiceFlow::SchedulingType schedulingType) const
+ServiceFlowManager::GetServiceFlows(ServiceFlow::SchedulingType schedulingType) const
 {
     std::vector<ServiceFlow*> tmpServiceFlows;
     for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();

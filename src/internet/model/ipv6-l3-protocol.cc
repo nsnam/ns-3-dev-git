@@ -1585,7 +1585,7 @@ Ipv6L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv6Header& ip, uin
 
                 m_localDeliverTrace(ip, p, iif);
 
-                enum IpL4Protocol::RxStatus status = protocol->Receive(p, ip, GetInterface(iif));
+                IpL4Protocol::RxStatus status = protocol->Receive(p, ip, GetInterface(iif));
 
                 switch (status)
                 {

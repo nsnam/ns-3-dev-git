@@ -598,7 +598,7 @@ LteHardFrTestCase::DoRun()
     qos.gbrUl = 1e4;
     qos.gbrDl = 1e4;
 
-    enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+    EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
     EpsBearer bearer(q, qos);
     lteHelper->ActivateDataRadioBearer(ueDevs, bearer);
 
@@ -736,7 +736,7 @@ LteStrictFrTestCase::DoRun()
     qos.gbrUl = 1e4;
     qos.gbrDl = 1e4;
 
-    enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+    EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
     EpsBearer bearer(q, qos);
     lteHelper->ActivateDataRadioBearer(ueDevs, bearer);
 
@@ -1066,7 +1066,7 @@ LteStrictFrAreaTestCase::DoRun()
     qos.gbrUl = 1e4;
     qos.gbrDl = 1e4;
 
-    enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+    EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
     EpsBearer bearer(q, qos);
 
     lteHelper->ActivateDataRadioBearer(ueDevs1, bearer);
@@ -1283,7 +1283,7 @@ LteSoftFrAreaTestCase::DoRun()
     qos.gbrUl = 1e4;
     qos.gbrDl = 1e4;
 
-    enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+    EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
     EpsBearer bearer(q, qos);
     lteHelper->ActivateDataRadioBearer(ueDevs1, bearer);
     lteHelper->ActivateDataRadioBearer(ueDevs2, bearer);
@@ -1512,7 +1512,7 @@ LteSoftFfrAreaTestCase::DoRun()
     qos.gbrUl = 1e4;
     qos.gbrDl = 1e4;
 
-    enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+    EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
     EpsBearer bearer(q, qos);
     lteHelper->ActivateDataRadioBearer(ueDevs1, bearer);
     lteHelper->ActivateDataRadioBearer(ueDevs2, bearer);
@@ -1783,7 +1783,7 @@ LteEnhancedFfrAreaTestCase::DoRun()
     qos.gbrUl = 1e4;
     qos.gbrDl = 1e4;
 
-    enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+    EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
     EpsBearer bearer(q, qos);
     lteHelper->ActivateDataRadioBearer(ueDevs1, bearer);
     lteHelper->ActivateDataRadioBearer(ueDevs2, bearer);
@@ -2159,7 +2159,7 @@ LteDistributedFfrAreaTestCase::DoRun()
             qos.gbrUl = 1e4;
             qos.gbrDl = 1e4;
 
-            enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+            EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
             EpsBearer bearer(q, qos);
             lteHelper->ActivateDedicatedEpsBearer(ueLteDevs.Get(u), bearer, tft);
 

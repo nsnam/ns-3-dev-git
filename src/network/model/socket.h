@@ -162,11 +162,11 @@ class Socket : public Object
      *         socket. Each socket's errno is initialized to zero
      *         when the socket is created.
      */
-    virtual enum Socket::SocketErrno GetErrno() const = 0;
+    virtual Socket::SocketErrno GetErrno() const = 0;
     /**
      * \return the socket type, analogous to getsockopt (SO_TYPE)
      */
-    virtual enum Socket::SocketType GetSocketType() const = 0;
+    virtual Socket::SocketType GetSocketType() const = 0;
     /**
      * \brief Return the node this socket is associated with.
      * \returns the node

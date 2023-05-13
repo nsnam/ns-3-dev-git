@@ -42,13 +42,13 @@ class Ipv4RawSocketImpl : public Socket
      */
     void SetNode(Ptr<Node> node);
 
-    enum Socket::SocketErrno GetErrno() const override;
+    Socket::SocketErrno GetErrno() const override;
 
     /**
      * \brief Get socket type (NS3_SOCK_RAW)
      * \return socket type
      */
-    enum Socket::SocketType GetSocketType() const override;
+    Socket::SocketType GetSocketType() const override;
 
     Ptr<Node> GetNode() const override;
     int Bind(const Address& address) override;
@@ -99,15 +99,15 @@ class Ipv4RawSocketImpl : public Socket
         uint16_t fromProtocol; /**< Protocol used */
     };
 
-    mutable enum Socket::SocketErrno m_err; //!< Last error number.
-    Ptr<Node> m_node;                       //!< Node
-    Ipv4Address m_src;                      //!< Source address.
-    Ipv4Address m_dst;                      //!< Destination address.
-    uint16_t m_protocol;                    //!< Protocol.
-    std::list<struct Data> m_recv;          //!< Packet waiting to be processed.
-    bool m_shutdownSend;                    //!< Flag to shutdown send capability.
-    bool m_shutdownRecv;                    //!< Flag to shutdown receive capability.
-    uint32_t m_icmpFilter;                  //!< ICMPv4 filter specification
+    mutable Socket::SocketErrno m_err; //!< Last error number.
+    Ptr<Node> m_node;                  //!< Node
+    Ipv4Address m_src;                 //!< Source address.
+    Ipv4Address m_dst;                 //!< Destination address.
+    uint16_t m_protocol;               //!< Protocol.
+    std::list<struct Data> m_recv;     //!< Packet waiting to be processed.
+    bool m_shutdownSend;               //!< Flag to shutdown send capability.
+    bool m_shutdownRecv;               //!< Flag to shutdown receive capability.
+    uint32_t m_icmpFilter;             //!< ICMPv4 filter specification
     bool m_iphdrincl; //!< Include IP Header information (a.k.a setsockopt (IP_HDRINCL))
 };
 

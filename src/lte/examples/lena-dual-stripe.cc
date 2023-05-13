@@ -948,7 +948,7 @@ main(int argc, char* argv[])
             Ptr<NetDevice> ueDev = ueDevs.Get(u);
             for (uint32_t b = 0; b < numBearersPerUe; ++b)
             {
-                enum EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
+                EpsBearer::Qci q = EpsBearer::NGBR_VIDEO_TCP_DEFAULT;
                 EpsBearer bearer(q);
                 lteHelper->ActivateDataRadioBearer(ueDev, bearer);
             }

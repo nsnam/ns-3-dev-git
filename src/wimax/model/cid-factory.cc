@@ -71,7 +71,7 @@ CidFactory::AllocateMulticast()
 }
 
 Cid
-CidFactory::Allocate(enum Cid::Type type)
+CidFactory::Allocate(Cid::Type type)
 {
     switch (type)
     {

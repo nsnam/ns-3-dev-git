@@ -107,7 +107,7 @@ GnuplotHelper::PlotProbe(const std::string& typeId,
                          const std::string& path,
                          const std::string& probeTraceSource,
                          const std::string& title,
-                         enum GnuplotAggregator::KeyLocation keyLocation)
+                         GnuplotAggregator::KeyLocation keyLocation)
 {
     NS_LOG_FUNCTION(this << typeId << path << probeTraceSource << title << keyLocation);
 

@@ -171,8 +171,7 @@ class SSRecord
      * \param schedulingType the scheduling type
      * \returns the service flow
      */
-    std::vector<ServiceFlow*> GetServiceFlows(
-        enum ServiceFlow::SchedulingType schedulingType) const;
+    std::vector<ServiceFlow*> GetServiceFlows(ServiceFlow::SchedulingType schedulingType) const;
     /**
      * Check if at least one flow has scheduling type SF_TYPE_UGS
      * \return true if at least one flow has scheduling type SF_TYPE_UGS

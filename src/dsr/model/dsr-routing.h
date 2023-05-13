@@ -644,9 +644,9 @@ class DsrRouting : public IpL4Protocol
      * Called from lower-level layers to send the packet up
      * in the stack.
      */
-    enum IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
-                                        const Ipv4Header& header,
-                                        Ptr<Ipv4Interface> incomingInterface) override;
+    IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
+                                   const Ipv4Header& header,
+                                   Ptr<Ipv4Interface> incomingInterface) override;
 
     /**
      * \param p packet to forward up
@@ -657,9 +657,9 @@ class DsrRouting : public IpL4Protocol
      * Called from lower-level layers to send the packet up
      * in the stack.  Not implemented (IPv6).
      */
-    enum IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
-                                        const Ipv6Header& header,
-                                        Ptr<Ipv6Interface> incomingInterface) override;
+    IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
+                                   const Ipv6Header& header,
+                                   Ptr<Ipv6Interface> incomingInterface) override;
 
     void SetDownTarget(IpL4Protocol::DownTargetCallback callback) override;
     void SetDownTarget6(IpL4Protocol::DownTargetCallback6 callback) override;

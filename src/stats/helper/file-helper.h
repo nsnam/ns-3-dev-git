@@ -56,7 +56,7 @@ class FileHelper
      * specified by fileType.  The default file type is space-separated.
      */
     FileHelper(const std::string& outputFileNameWithoutExtension,
-               enum FileAggregator::FileType fileType = FileAggregator::SPACE_SEPARATED);
+               FileAggregator::FileType fileType = FileAggregator::SPACE_SEPARATED);
 
     virtual ~FileHelper();
 
@@ -72,7 +72,7 @@ class FileHelper
      * is space-separated.
      */
     void ConfigureFile(const std::string& outputFileNameWithoutExtension,
-                       enum FileAggregator::FileType fileType = FileAggregator::SPACE_SEPARATED);
+                       FileAggregator::FileType fileType = FileAggregator::SPACE_SEPARATED);
 
     /**
      * \param typeId the type ID for the probe used when it is created.
@@ -298,7 +298,7 @@ class FileHelper
     uint32_t m_fileProbeCount;
 
     /// Determines the kind of file written by the aggregator.
-    enum FileAggregator::FileType m_fileType;
+    FileAggregator::FileType m_fileType;
 
     /// The name of the output file to created without its extension.
     std::string m_outputFileNameWithoutExtension;

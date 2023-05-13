@@ -325,7 +325,7 @@ main(int argc, char* argv[])
     lteHelper->AttachToClosestEnb(randomUeDevs, enbDevs);
 
     // Activate a data radio bearer
-    enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+    EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
     EpsBearer bearer(q);
     lteHelper->ActivateDataRadioBearer(edgeUeDevs, bearer);
     lteHelper->ActivateDataRadioBearer(centerUeDevs, bearer);

@@ -56,7 +56,7 @@ class WimaxConnection : public Object
      * \param cid connection ID
      * \param type CID type
      */
-    WimaxConnection(Cid cid, enum Cid::Type type);
+    WimaxConnection(Cid cid, Cid::Type type);
     ~WimaxConnection() override;
 
     /**
@@ -69,7 +69,7 @@ class WimaxConnection : public Object
      * Get type function
      * \returns the type
      */
-    enum Cid::Type GetType() const;
+    Cid::Type GetType() const;
     /**
      * \return the queue of the connection
      */
@@ -152,7 +152,7 @@ class WimaxConnection : public Object
     void DoDispose() override;
 
     Cid m_cid;                  ///< CID
-    enum Cid::Type m_cidType;   ///< CID type
+    Cid::Type m_cidType;        ///< CID type
     Ptr<WimaxMacQueue> m_queue; ///< queue
     ServiceFlow* m_serviceFlow; ///< service flow
 

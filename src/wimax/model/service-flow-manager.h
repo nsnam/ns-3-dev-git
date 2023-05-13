@@ -82,10 +82,9 @@ class ServiceFlowManager : public Object
     /**
      * Get service flows function
      * \param schedulingType the scheduling type
-     * \returns vector of pointers to service flows corresponding to the schedulin type
+     * \returns vector of pointers to service flows corresponding to the scheduling type
      */
-    std::vector<ServiceFlow*> GetServiceFlows(
-        enum ServiceFlow::SchedulingType schedulingType) const;
+    std::vector<ServiceFlow*> GetServiceFlows(ServiceFlow::SchedulingType schedulingType) const;
 
     /**
      * \return true if all service flows are allocated, false otherwise

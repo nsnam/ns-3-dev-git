@@ -844,7 +844,7 @@ Ipv4L3ClickProtocol::LocalDeliver(Ptr<const Packet> packet, const Ipv4Header& ip
         // we need to make a copy in the unlikely event we hit the
         // RX_ENDPOINT_UNREACH codepath
         Ptr<Packet> copy = p->Copy();
-        enum IpL4Protocol::RxStatus status = protocol->Receive(p, ip, GetInterface(iif));
+        IpL4Protocol::RxStatus status = protocol->Receive(p, ip, GetInterface(iif));
         switch (status)
         {
         case IpL4Protocol::RX_OK:

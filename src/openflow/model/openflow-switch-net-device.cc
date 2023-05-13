@@ -984,7 +984,7 @@ OpenFlowSwitchNetDevice::SendPortStatus(ofi::Port p, uint8_t status)
 }
 
 void
-OpenFlowSwitchNetDevice::SendFlowExpired(sw_flow* flow, enum ofp_flow_expired_reason reason)
+OpenFlowSwitchNetDevice::SendFlowExpired(sw_flow* flow, ofp_flow_expired_reason reason)
 {
     ofpbuf* buffer;
     ofp_flow_expired* ofe =

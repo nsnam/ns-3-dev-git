@@ -74,7 +74,7 @@ Ptr<Ipv6Route>
 Ipv6ListRouting::RouteOutput(Ptr<Packet> p,
                              const Ipv6Header& header,
                              Ptr<NetDevice> oif,
-                             enum Socket::SocketErrno& sockerr)
+                             Socket::SocketErrno& sockerr)
 {
     NS_LOG_FUNCTION(this << header.GetDestination() << header.GetSource() << oif);
     Ptr<Ipv6Route> route;

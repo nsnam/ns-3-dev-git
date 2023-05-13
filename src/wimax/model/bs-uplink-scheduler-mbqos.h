@@ -136,7 +136,7 @@ class UplinkSchedulerMBQoS : public UplinkScheduler
      * \param availableSymbols the available symbols
      */
     void ServiceUnsolicitedGrants(const SSRecord* ssRecord,
-                                  enum ServiceFlow::SchedulingType schedulingType,
+                                  ServiceFlow::SchedulingType schedulingType,
                                   OfdmUlMapIe& ulMapIe,
                                   const WimaxPhy::ModulationType modulationType,
                                   uint32_t& symbolsToAllocation,
@@ -151,7 +151,7 @@ class UplinkSchedulerMBQoS : public UplinkScheduler
      * \param availableSymbols the available symbols
      */
     void ServiceBandwidthRequests(const SSRecord* ssRecord,
-                                  enum ServiceFlow::SchedulingType schedulingType,
+                                  ServiceFlow::SchedulingType schedulingType,
                                   OfdmUlMapIe& ulMapIe,
                                   const WimaxPhy::ModulationType modulationType,
                                   uint32_t& symbolsToAllocation,
@@ -167,7 +167,7 @@ class UplinkSchedulerMBQoS : public UplinkScheduler
      * \returns true if successful
      */
     bool ServiceBandwidthRequests(ServiceFlow* serviceFlow,
-                                  enum ServiceFlow::SchedulingType schedulingType,
+                                  ServiceFlow::SchedulingType schedulingType,
                                   OfdmUlMapIe& ulMapIe,
                                   const WimaxPhy::ModulationType modulationType,
                                   uint32_t& symbolsToAllocation,
@@ -277,7 +277,7 @@ class UplinkSchedulerMBQoS : public UplinkScheduler
      * Create and fill information of a job.
      */
     Ptr<UlJob> CreateUlJob(SSRecord* ssRecord,
-                           enum ServiceFlow::SchedulingType schedType,
+                           ServiceFlow::SchedulingType schedType,
                            ReqType reqType);
 
     /**
@@ -300,7 +300,7 @@ class UplinkSchedulerMBQoS : public UplinkScheduler
      * \returns true if successful
      */
     bool ServiceBandwidthRequestsBytes(ServiceFlow* serviceFlow,
-                                       enum ServiceFlow::SchedulingType schedulingType,
+                                       ServiceFlow::SchedulingType schedulingType,
                                        OfdmUlMapIe& ulMapIe,
                                        const WimaxPhy::ModulationType modulationType,
                                        uint32_t& symbolsToAllocation,

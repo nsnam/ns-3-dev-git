@@ -198,7 +198,7 @@ class Timer
     /**
      * \returns The current state of the timer.
      */
-    enum Timer::State GetState() const;
+    Timer::State GetState() const;
     /**
      * Schedule a new event using the currently-configured delay, function,
      * and arguments.

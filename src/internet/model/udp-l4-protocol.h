@@ -242,12 +242,12 @@ class UdpL4Protocol : public IpL4Protocol
               Ptr<Ipv6Route> route);
 
     // inherited from Ipv4L4Protocol
-    enum IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
-                                        const Ipv4Header& header,
-                                        Ptr<Ipv4Interface> interface) override;
-    enum IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
-                                        const Ipv6Header& header,
-                                        Ptr<Ipv6Interface> interface) override;
+    IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
+                                   const Ipv4Header& header,
+                                   Ptr<Ipv4Interface> interface) override;
+    IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
+                                   const Ipv6Header& header,
+                                   Ptr<Ipv6Interface> interface) override;
 
     void ReceiveIcmp(Ipv4Address icmpSource,
                      uint8_t icmpTtl,

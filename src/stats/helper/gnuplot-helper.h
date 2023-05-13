@@ -124,7 +124,7 @@ class GnuplotHelper
                    const std::string& path,
                    const std::string& probeTraceSource,
                    const std::string& title,
-                   enum GnuplotAggregator::KeyLocation keyLocation = GnuplotAggregator::KEY_INSIDE);
+                   GnuplotAggregator::KeyLocation keyLocation = GnuplotAggregator::KEY_INSIDE);
 
     /**
      * \param adaptorName the timeSeriesAdaptor's name.

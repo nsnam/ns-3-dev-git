@@ -230,7 +230,7 @@ SSRecord::AddServiceFlow(ServiceFlow* serviceFlow)
 }
 
 std::vector<ServiceFlow*>
-SSRecord::GetServiceFlows(enum ServiceFlow::SchedulingType schedulingType) const
+SSRecord::GetServiceFlows(ServiceFlow::SchedulingType schedulingType) const
 {
     std::vector<ServiceFlow*> tmpServiceFlows;
     for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();

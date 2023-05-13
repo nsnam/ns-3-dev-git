@@ -210,7 +210,7 @@ class GnuplotAggregator : public DataCollectionObject
      *
      * \brief Change default style for all newly created objects.
      */
-    static void Set2dDatasetDefaultStyle(enum Gnuplot2dDataset::Style style);
+    static void Set2dDatasetDefaultStyle(Gnuplot2dDataset::Style style);
 
     /**
      * \param dataset the gnuplot 2D dataset to be plotted.
@@ -221,14 +221,14 @@ class GnuplotAggregator : public DataCollectionObject
      * The string in dataset should match the context for the Collector
      * it is connected to.
      */
-    void Set2dDatasetStyle(const std::string& dataset, enum Gnuplot2dDataset::Style style);
+    void Set2dDatasetStyle(const std::string& dataset, Gnuplot2dDataset::Style style);
 
     /**
      * \param errorBars the style of errorbars to use for newly created datasets.
      *
      * \brief Change default errorbars style for all newly created objects.
      */
-    static void Set2dDatasetDefaultErrorBars(enum Gnuplot2dDataset::ErrorBars errorBars);
+    static void Set2dDatasetDefaultErrorBars(Gnuplot2dDataset::ErrorBars errorBars);
 
     /**
      * \param dataset the gnuplot 2D dataset to be plotted.
@@ -244,8 +244,7 @@ class GnuplotAggregator : public DataCollectionObject
      * The string in dataset should match the context for the Collector
      * it is connected to.
      */
-    void Set2dDatasetErrorBars(const std::string& dataset,
-                               enum Gnuplot2dDataset::ErrorBars errorBars);
+    void Set2dDatasetErrorBars(const std::string& dataset, Gnuplot2dDataset::ErrorBars errorBars);
 
     /**
      * \param keyLocation the location of the key in the plot.

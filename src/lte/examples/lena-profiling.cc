@@ -184,7 +184,7 @@ main(int argc, char* argv[])
         NetDeviceContainer ueDev = lteHelper->InstallUeDevice(ueNodes.at(i));
         ueDevs.push_back(ueDev);
         lteHelper->Attach(ueDev, enbDevs.Get(i));
-        enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+        EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
         EpsBearer bearer(q);
         lteHelper->ActivateDataRadioBearer(ueDev, bearer);
     }

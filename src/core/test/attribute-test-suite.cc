@@ -477,8 +477,8 @@ class AttributeObjectTest : public Object
     int16_t m_int16SetGet;                   //!< 16-bit integer set-get.
     uint8_t m_uint8;                         //!< 8-bit integer.
     float m_float;                           //!< float.
-    enum Test_e m_enum;                      //!< Enum.
-    enum Test_e m_enumSetGet;                //!< Enum set-get.
+    Test_e m_enum;                           //!< Enum.
+    Test_e m_enumSetGet;                     //!< Enum set-get.
     Ptr<RandomVariableStream> m_random;      //!< Random number generator.
     std::vector<Ptr<Derived>> m_vector1;     //!< First vector of derived objects.
     std::vector<Ptr<Derived>> m_vector2;     //!< Second vector of derived objects.

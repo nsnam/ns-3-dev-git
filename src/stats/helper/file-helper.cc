@@ -47,7 +47,7 @@ FileHelper::FileHelper()
 }
 
 FileHelper::FileHelper(const std::string& outputFileNameWithoutExtension,
-                       enum FileAggregator::FileType fileType)
+                       FileAggregator::FileType fileType)
     : m_aggregator(nullptr),
       m_fileProbeCount(0),
       m_fileType(fileType),
@@ -67,7 +67,7 @@ FileHelper::~FileHelper()
 
 void
 FileHelper::ConfigureFile(const std::string& outputFileNameWithoutExtension,
-                          enum FileAggregator::FileType fileType)
+                          FileAggregator::FileType fileType)
 {
     NS_LOG_FUNCTION(this << outputFileNameWithoutExtension << fileType);
 

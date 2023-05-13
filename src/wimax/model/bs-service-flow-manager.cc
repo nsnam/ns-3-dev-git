@@ -221,8 +221,7 @@ BsServiceFlowManager::ProcessDsaReq(const DsaReq& dsaReq, Cid cid)
 }
 
 void
-BsServiceFlowManager::AddMulticastServiceFlow(ServiceFlow sf,
-                                              enum WimaxPhy::ModulationType modulation)
+BsServiceFlowManager::AddMulticastServiceFlow(ServiceFlow sf, WimaxPhy::ModulationType modulation)
 {
     ServiceFlow* serviceFlow = new ServiceFlow();
     serviceFlow->CopyParametersFrom(sf);

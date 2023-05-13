@@ -257,12 +257,12 @@ class TcpL4Protocol : public IpL4Protocol
     void DeAllocate(Ipv6EndPoint* endPoint);
 
     // From IpL4Protocol
-    enum IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
-                                        const Ipv4Header& incomingIpHeader,
-                                        Ptr<Ipv4Interface> incomingInterface) override;
-    enum IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
-                                        const Ipv6Header& incomingIpHeader,
-                                        Ptr<Ipv6Interface> incomingInterface) override;
+    IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
+                                   const Ipv4Header& incomingIpHeader,
+                                   Ptr<Ipv4Interface> incomingInterface) override;
+    IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
+                                   const Ipv6Header& incomingIpHeader,
+                                   Ptr<Ipv6Interface> incomingInterface) override;
 
     void ReceiveIcmp(Ipv4Address icmpSource,
                      uint8_t icmpTtl,
@@ -311,10 +311,10 @@ class TcpL4Protocol : public IpL4Protocol
      *
      * \return RX_CSUM_FAILED if the checksum check fails, RX_OK otherwise
      */
-    enum IpL4Protocol::RxStatus PacketReceived(Ptr<Packet> packet,
-                                               TcpHeader& incomingTcpHeader,
-                                               const Address& source,
-                                               const Address& destination);
+    IpL4Protocol::RxStatus PacketReceived(Ptr<Packet> packet,
+                                          TcpHeader& incomingTcpHeader,
+                                          const Address& source,
+                                          const Address& destination);
 
     /**
      * \brief Check if RST packet should be sent, and in case, send it

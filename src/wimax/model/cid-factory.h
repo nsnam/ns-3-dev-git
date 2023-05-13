@@ -74,7 +74,7 @@ class CidFactory
      * \param type CID type
      * \returns the next CID.
      */
-    Cid Allocate(enum Cid::Type type);
+    Cid Allocate(Cid::Type type);
 
     /**
      * \brief This function determines if the CID is a transport.

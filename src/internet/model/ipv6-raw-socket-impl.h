@@ -80,13 +80,13 @@ class Ipv6RawSocketImpl : public Socket
      */
     void SetNode(Ptr<Node> node);
 
-    enum Socket::SocketErrno GetErrno() const override;
+    Socket::SocketErrno GetErrno() const override;
 
     /**
      * \brief Get socket type (NS3_SOCK_RAW)
      * \return socket type
      */
-    enum Socket::SocketType GetSocketType() const override;
+    Socket::SocketType GetSocketType() const override;
 
     Ptr<Node> GetNode() const override;
 
@@ -185,7 +185,7 @@ class Ipv6RawSocketImpl : public Socket
     /**
      * \brief Last error number.
      */
-    mutable enum Socket::SocketErrno m_err;
+    mutable Socket::SocketErrno m_err;
 
     /**
      * \brief Node.

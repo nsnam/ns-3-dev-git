@@ -716,7 +716,7 @@ WaveNetDevice::ForwardUp(Ptr<const Packet> packet, Mac48Address from, Mac48Addre
     Ptr<Packet> copy = packet->Copy();
     LlcSnapHeader llc;
     copy->RemoveHeader(llc);
-    enum NetDevice::PacketType type;
+    NetDevice::PacketType type;
     if (to.IsBroadcast())
     {
         type = NetDevice::PACKET_BROADCAST;

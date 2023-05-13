@@ -81,9 +81,9 @@ class Icmpv4L4Protocol : public IpL4Protocol
      * \param incomingInterface the interface from which the packet is coming
      * \returns the receive status
      */
-    enum IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
-                                        const Ipv4Header& header,
-                                        Ptr<Ipv4Interface> incomingInterface) override;
+    IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
+                                   const Ipv4Header& header,
+                                   Ptr<Ipv4Interface> incomingInterface) override;
 
     /**
      * \brief Receive method.
@@ -92,9 +92,9 @@ class Icmpv4L4Protocol : public IpL4Protocol
      * \param incomingInterface the interface from which the packet is coming
      * \returns the receive status
      */
-    enum IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
-                                        const Ipv6Header& header,
-                                        Ptr<Ipv6Interface> incomingInterface) override;
+    IpL4Protocol::RxStatus Receive(Ptr<Packet> p,
+                                   const Ipv6Header& header,
+                                   Ptr<Ipv6Interface> incomingInterface) override;
 
     /**
      * \brief Send a Destination Unreachable - Fragmentation needed ICMP error

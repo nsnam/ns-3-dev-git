@@ -91,7 +91,7 @@ class UplinkSchedulerSimple : public UplinkScheduler
      * \param availableSymbols the available symbols
      */
     void ServiceUnsolicitedGrants(const SSRecord* ssRecord,
-                                  enum ServiceFlow::SchedulingType schedulingType,
+                                  ServiceFlow::SchedulingType schedulingType,
                                   OfdmUlMapIe& ulMapIe,
                                   const WimaxPhy::ModulationType modulationType,
                                   uint32_t& symbolsToAllocation,
@@ -106,7 +106,7 @@ class UplinkSchedulerSimple : public UplinkScheduler
      * \param availableSymbols the available symbols
      */
     void ServiceBandwidthRequests(const SSRecord* ssRecord,
-                                  enum ServiceFlow::SchedulingType schedulingType,
+                                  ServiceFlow::SchedulingType schedulingType,
                                   OfdmUlMapIe& ulMapIe,
                                   const WimaxPhy::ModulationType modulationType,
                                   uint32_t& symbolsToAllocation,
@@ -122,7 +122,7 @@ class UplinkSchedulerSimple : public UplinkScheduler
      * \returns true if successful
      */
     bool ServiceBandwidthRequests(ServiceFlow* serviceFlow,
-                                  enum ServiceFlow::SchedulingType schedulingType,
+                                  ServiceFlow::SchedulingType schedulingType,
                                   OfdmUlMapIe& ulMapIe,
                                   const WimaxPhy::ModulationType modulationType,
                                   uint32_t& symbolsToAllocation,

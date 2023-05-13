@@ -1637,7 +1637,7 @@ class LteEnbRrc : public Object
      * The `EpsBearerToRlcMapping` attribute. Specify which type of RLC will be
      * used for each type of EPS bearer.
      */
-    enum LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
+    LteEpsBearerToRlcMapping_t m_epsBearerToRlcMapping;
     /**
      * The `SystemInformationPeriodicity` attribute. The interval for sending
      * system information.

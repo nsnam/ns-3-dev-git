@@ -400,7 +400,7 @@ class OpenFlowSwitchNetDevice : public NetDevice
      * \param flow The flow that expired.
      * \param reason The reason for sending this expiration notification.
      */
-    void SendFlowExpired(sw_flow* flow, enum ofp_flow_expired_reason reason);
+    void SendFlowExpired(sw_flow* flow, ofp_flow_expired_reason reason);
 
     /**
      * Send a reply about a Port's status to the controller.

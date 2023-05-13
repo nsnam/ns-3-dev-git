@@ -402,7 +402,7 @@ UplinkSchedulerMBQoS::Schedule()
         Ptr<UlJob> job = m_uplinkJobs_high.front();
         OfdmUlMapIe ulMapIe;
         SSRecord* ssRecord = job->GetSsRecord();
-        enum ServiceFlow::SchedulingType schedulingType = job->GetSchedulingType();
+        ServiceFlow::SchedulingType schedulingType = job->GetSchedulingType();
 
         Cid cid = ssRecord->GetBasicCid();
         ulMapIe.SetCid(cid);
@@ -447,7 +447,7 @@ UplinkSchedulerMBQoS::Schedule()
         Ptr<UlJob> job = m_uplinkJobs_inter.front();
         OfdmUlMapIe ulMapIe;
         SSRecord* ssRecord = job->GetSsRecord();
-        enum ServiceFlow::SchedulingType schedulingType = job->GetSchedulingType();
+        ServiceFlow::SchedulingType schedulingType = job->GetSchedulingType();
 
         Cid cid = ssRecord->GetBasicCid();
         ulMapIe.SetCid(cid);
@@ -481,7 +481,7 @@ UplinkSchedulerMBQoS::Schedule()
         Ptr<UlJob> job = m_uplinkJobs_low.front();
         OfdmUlMapIe ulMapIe;
         SSRecord* ssRecord = job->GetSsRecord();
-        enum ServiceFlow::SchedulingType schedulingType = job->GetSchedulingType();
+        ServiceFlow::SchedulingType schedulingType = job->GetSchedulingType();
 
         Cid cid = ssRecord->GetBasicCid();
         ulMapIe.SetCid(cid);
@@ -522,7 +522,7 @@ UplinkSchedulerMBQoS::Schedule()
 
 bool
 UplinkSchedulerMBQoS::ServiceBandwidthRequestsBytes(ServiceFlow* serviceFlow,
-                                                    enum ServiceFlow::SchedulingType schedulingType,
+                                                    ServiceFlow::SchedulingType schedulingType,
                                                     OfdmUlMapIe& ulMapIe,
                                                     const WimaxPhy::ModulationType modulationType,
                                                     uint32_t& symbolsToAllocation,
@@ -587,7 +587,7 @@ UplinkSchedulerMBQoS::CountSymbolsQueue(std::list<Ptr<UlJob>> jobs)
 
 Ptr<UlJob>
 UplinkSchedulerMBQoS::CreateUlJob(SSRecord* ssRecord,
-                                  enum ServiceFlow::SchedulingType schedType,
+                                  ServiceFlow::SchedulingType schedType,
                                   ReqType reqType)
 {
     Ptr<UlJob> job = CreateObject<UlJob>();
@@ -869,7 +869,7 @@ UplinkSchedulerMBQoS::CheckMinimumBandwidth(uint32_t& availableSymbols)
 
 void
 UplinkSchedulerMBQoS::ServiceUnsolicitedGrants(const SSRecord* ssRecord,
-                                               enum ServiceFlow::SchedulingType schedulingType,
+                                               ServiceFlow::SchedulingType schedulingType,
                                                OfdmUlMapIe& ulMapIe,
                                                const WimaxPhy::ModulationType modulationType,
                                                uint32_t& symbolsToAllocation,
@@ -937,7 +937,7 @@ UplinkSchedulerMBQoS::ServiceUnsolicitedGrants(const SSRecord* ssRecord,
 
 void
 UplinkSchedulerMBQoS::ServiceBandwidthRequests(const SSRecord* ssRecord,
-                                               enum ServiceFlow::SchedulingType schedulingType,
+                                               ServiceFlow::SchedulingType schedulingType,
                                                OfdmUlMapIe& ulMapIe,
                                                const WimaxPhy::ModulationType modulationType,
                                                uint32_t& symbolsToAllocation,
@@ -963,7 +963,7 @@ UplinkSchedulerMBQoS::ServiceBandwidthRequests(const SSRecord* ssRecord,
 
 bool
 UplinkSchedulerMBQoS::ServiceBandwidthRequests(ServiceFlow* serviceFlow,
-                                               enum ServiceFlow::SchedulingType schedulingType,
+                                               ServiceFlow::SchedulingType schedulingType,
                                                OfdmUlMapIe& ulMapIe,
                                                const WimaxPhy::ModulationType modulationType,
                                                uint32_t& symbolsToAllocation,

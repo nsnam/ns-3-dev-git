@@ -105,7 +105,7 @@ Ptr<Ipv4Route>
 Ipv4ListRouting::RouteOutput(Ptr<Packet> p,
                              const Ipv4Header& header,
                              Ptr<NetDevice> oif,
-                             enum Socket::SocketErrno& sockerr)
+                             Socket::SocketErrno& sockerr)
 {
     NS_LOG_FUNCTION(this << p << header.GetDestination() << header.GetSource() << oif << sockerr);
     Ptr<Ipv4Route> route;

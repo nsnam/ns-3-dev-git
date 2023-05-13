@@ -88,8 +88,8 @@ class FfMacSchedSapProvider
      */
     struct SchedDlMacBufferReqParameters
     {
-        uint16_t m_rnti;            ///< RNTI
-        enum CeBitmap_e m_ceBitmap; ///< CE bitmap
+        uint16_t m_rnti;       ///< RNTI
+        CeBitmap_e m_ceBitmap; ///< CE bitmap
 
         std::vector<struct VendorSpecificListElement_s>
             m_vendorSpecificList; ///< vendor specific list
