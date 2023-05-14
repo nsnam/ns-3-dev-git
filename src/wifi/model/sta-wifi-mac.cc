@@ -617,22 +617,17 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
     GetLink(bestAp->m_linkId).sendAssocReq = true;
     GetLink(bestAp->m_linkId).bssid = bestAp->m_bssid;
     // update info on links to setup (11be MLDs only)
-    for (const auto& [localLinkId, apLinkId] : bestAp->m_setupLinks)
+    const auto& mle =
+        std::visit([](auto&& frame) { return frame.template Get<MultiLinkElement>(); },
+                   bestAp->m_frame);
+    for (const auto& [localLinkId, apLinkId, bssid] : bestAp->m_setupLinks)
     {
+        NS_ASSERT_MSG(mle, "We get here only for ML setup");
         NS_LOG_DEBUG("Setting up link (local ID=" << +localLinkId << ", AP ID=" << +apLinkId
                                                   << ")");
         GetLink(localLinkId).apLinkId = apLinkId;
-        if (localLinkId == bestAp->m_linkId)
-        {
-            continue;
-        }
-        auto mldAddress =
-            GetWifiRemoteStationManager(bestAp->m_linkId)->GetMldAddress(bestAp->m_bssid);
-        NS_ABORT_MSG_IF(!mldAddress.has_value(), "AP MLD address not set");
-        auto bssid = GetWifiRemoteStationManager(localLinkId)->GetAffiliatedStaAddress(*mldAddress);
-        NS_ABORT_MSG_IF(!mldAddress.has_value(),
-                        "AP link address not set for local link " << +localLinkId);
-        GetLink(localLinkId).bssid = *bssid;
+        GetLink(localLinkId).bssid = bssid;
+        GetWifiRemoteStationManager(localLinkId)->SetMldAddress(bssid, mle->GetMldMacAddress());
     }
     // lambda to get beacon interval from Beacon or Probe Response
     auto getBeaconInterval = [](auto&& frame) {

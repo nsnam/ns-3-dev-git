@@ -234,10 +234,10 @@ WifiAssocManager::ScanningTimeout()
     m_mac->ScanningTimeout(std::move(bestAp));
 }
 
-std::list<std::pair<uint8_t, uint8_t>>&
+std::list<StaWifiMac::ApInfo::SetupLinksInfo>&
 WifiAssocManager::GetSetupLinks(const StaWifiMac::ApInfo& apInfo)
 {
-    return const_cast<std::list<std::pair<uint8_t, uint8_t>>&>(apInfo.m_setupLinks);
+    return const_cast<std::list<StaWifiMac::ApInfo::SetupLinksInfo>&>(apInfo.m_setupLinks);
 }
 
 bool

@@ -162,14 +162,24 @@ class StaWifiMac : public WifiMac
      */
     struct ApInfo
     {
+        /**
+         * Information about links to setup
+         */
+        struct SetupLinksInfo
+        {
+            uint8_t localLinkId; ///< local link ID
+            uint8_t apLinkId;    ///< AP link ID
+            Mac48Address bssid;  ///< BSSID
+        };
+
         Mac48Address m_bssid;  ///< BSSID
         Mac48Address m_apAddr; ///< AP MAC address
         double m_snr;          ///< SNR in linear scale
         MgtFrameType m_frame;  ///< The body of the management frame used to update AP info
         WifiScanParams::Channel m_channel; ///< The channel the management frame was received on
         uint8_t m_linkId;                  ///< ID of the link used to communicate with the AP
-        /// list of (local link ID, AP link ID) pairs identifying the links to setup between MLDs
-        std::list<std::pair<uint8_t, uint8_t>> m_setupLinks;
+        std::list<SetupLinksInfo>
+            m_setupLinks; ///< information about the links to setup between MLDs
     };
 
     /**
