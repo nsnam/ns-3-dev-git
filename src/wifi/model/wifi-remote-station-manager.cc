@@ -1422,7 +1422,7 @@ WifiRemoteStationManager::LookupState(Mac48Address address) const
     state->m_vhtCapabilities = nullptr;
     state->m_heCapabilities = nullptr;
     state->m_ehtCapabilities = nullptr;
-    state->m_emlCapabilities = nullptr;
+    state->m_mleCommonInfo = nullptr;
     state->m_emlsrEnabled = false;
     state->m_channelWidth = m_wifiPhy->GetChannelWidth();
     state->m_guardInterval = GetGuardInterval();
@@ -1600,12 +1600,12 @@ WifiRemoteStationManager::AddStationEhtCapabilities(Mac48Address from,
 }
 
 void
-WifiRemoteStationManager::AddStationEmlCapabilities(
+WifiRemoteStationManager::AddStationMleCommonInfo(
     Mac48Address from,
-    const std::shared_ptr<CommonInfoBasicMle::EmlCapabilities>& emlCapabilities)
+    const std::shared_ptr<CommonInfoBasicMle>& mleCommonInfo)
 {
     NS_LOG_FUNCTION(this << from);
-    LookupState(from)->m_emlCapabilities = emlCapabilities;
+    LookupState(from)->m_mleCommonInfo = mleCommonInfo;
 }
 
 Ptr<const HtCapabilities>
@@ -1632,10 +1632,15 @@ WifiRemoteStationManager::GetStationEhtCapabilities(Mac48Address from)
     return LookupState(from)->m_ehtCapabilities;
 }
 
-std::shared_ptr<CommonInfoBasicMle::EmlCapabilities>
+std::optional<std::reference_wrapper<CommonInfoBasicMle::EmlCapabilities>>
 WifiRemoteStationManager::GetStationEmlCapabilities(const Mac48Address& from)
 {
-    return LookupState(from)->m_emlCapabilities;
+    if (auto state = LookupState(from);
+        state->m_mleCommonInfo && state->m_mleCommonInfo->m_emlCapabilities)
+    {
+        return state->m_mleCommonInfo->m_emlCapabilities.value();
+    }
+    return std::nullopt;
 }
 
 bool
@@ -2014,8 +2019,9 @@ WifiRemoteStationManager::GetEhtSupported(const WifiRemoteStation* station) cons
 bool
 WifiRemoteStationManager::GetEmlsrSupported(const WifiRemoteStation* station) const
 {
-    auto emlCapabilities = station->m_state->m_emlCapabilities;
-    return emlCapabilities && emlCapabilities->emlsrSupport == 1;
+    auto mleCommonInfo = station->m_state->m_mleCommonInfo;
+    return mleCommonInfo && mleCommonInfo->m_emlCapabilities &&
+           mleCommonInfo->m_emlCapabilities->emlsrSupport == 1;
 }
 
 bool
@@ -2128,8 +2134,9 @@ WifiRemoteStationManager::GetEhtSupported(Mac48Address address) const
 bool
 WifiRemoteStationManager::GetEmlsrSupported(const Mac48Address& address) const
 {
-    auto emlCapabilities = LookupState(address)->m_emlCapabilities;
-    return emlCapabilities && emlCapabilities->emlsrSupport == 1;
+    auto mleCommonInfo = LookupState(address)->m_mleCommonInfo;
+    return mleCommonInfo && mleCommonInfo->m_emlCapabilities &&
+           mleCommonInfo->m_emlCapabilities->emlsrSupport == 1;
 }
 
 bool

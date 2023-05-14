@@ -114,8 +114,8 @@ struct WifiRemoteStationState
     Ptr<const VhtCapabilities> m_vhtCapabilities; //!< remote station VHT capabilities
     Ptr<const HeCapabilities> m_heCapabilities;   //!< remote station HE capabilities
     Ptr<const EhtCapabilities> m_ehtCapabilities; //!< remote station EHT capabilities
-    /// remote station EML capabilities
-    std::shared_ptr<CommonInfoBasicMle::EmlCapabilities> m_emlCapabilities;
+    /// remote station Multi-Link Element Common Info
+    std::shared_ptr<CommonInfoBasicMle> m_mleCommonInfo;
     bool m_emlsrEnabled; //!< whether EMLSR mode is enabled on this link
 
     uint16_t m_channelWidth;  //!< Channel width (in MHz) supported by the remote station
@@ -270,14 +270,14 @@ class WifiRemoteStationManager : public Object
      */
     void AddStationEhtCapabilities(Mac48Address from, EhtCapabilities ehtCapabilities);
     /**
-     * Records EML capabilities of the remote station.
+     * Records the Common Info field advertised by the given remote station in a Multi-Link
+     * Element. It includes the MLD address of the remote station.
      *
      * \param from the address of the station being recorded
-     * \param emlCapabilities the EML capabilities of the station
+     * \param mleCommonInfo the MLE Common Info advertised by the station
      */
-    void AddStationEmlCapabilities(
-        Mac48Address from,
-        const std::shared_ptr<CommonInfoBasicMle::EmlCapabilities>& emlCapabilities);
+    void AddStationMleCommonInfo(Mac48Address from,
+                                 const std::shared_ptr<CommonInfoBasicMle>& mleCommonInfo);
     /**
      * Return the HT capabilities sent by the remote station.
      *
@@ -310,8 +310,8 @@ class WifiRemoteStationManager : public Object
      * \param from the (MLD or link) address of the remote non-AP MLD
      * \return the EML Capabilities advertised by the remote non-AP MLD
      */
-    std::shared_ptr<CommonInfoBasicMle::EmlCapabilities> GetStationEmlCapabilities(
-        const Mac48Address& from);
+    std::optional<std::reference_wrapper<CommonInfoBasicMle::EmlCapabilities>>
+    GetStationEmlCapabilities(const Mac48Address& from);
     /**
      * Return whether the device has HT capability support enabled.
      *

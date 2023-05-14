@@ -616,6 +616,7 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
     // send Association Request on the link where the Beacon/Probe Response was received
     GetLink(bestAp->m_linkId).sendAssocReq = true;
     GetLink(bestAp->m_linkId).bssid = bestAp->m_bssid;
+    std::shared_ptr<CommonInfoBasicMle> mleCommonInfo;
     // update info on links to setup (11be MLDs only)
     const auto& mle =
         std::visit([](auto&& frame) { return frame.template Get<MultiLinkElement>(); },
@@ -628,6 +629,11 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
         GetLink(localLinkId).apLinkId = apLinkId;
         GetLink(localLinkId).bssid = bssid;
         GetWifiRemoteStationManager(localLinkId)->SetMldAddress(bssid, mle->GetMldMacAddress());
+        if (!mleCommonInfo)
+        {
+            mleCommonInfo = std::make_shared<CommonInfoBasicMle>(mle->GetCommonInfoBasic());
+        }
+        GetWifiRemoteStationManager(localLinkId)->AddStationMleCommonInfo(bssid, mleCommonInfo);
     }
     // lambda to get beacon interval from Beacon or Probe Response
     auto getBeaconInterval = [](auto&& frame) {

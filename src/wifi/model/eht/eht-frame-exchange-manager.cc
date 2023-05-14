@@ -218,7 +218,7 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
 
             // unblock all EMLSR links when the transition delay elapses
             Simulator::Schedule(delay + CommonInfoBasicMle::DecodeEmlsrTransitionDelay(
-                                            emlCapabilities->emlsrTransitionDelay),
+                                            emlCapabilities->get().emlsrTransitionDelay),
                                 [=]() {
                                     m_mac->UnblockUnicastTxOnLinks(
                                         WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
@@ -311,7 +311,7 @@ EhtFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
 
         auto emlCapabilities = GetWifiRemoteStationManager()->GetStationEmlCapabilities(address);
         NS_ASSERT(emlCapabilities);
-        maxPaddingDelay = std::max(maxPaddingDelay, emlCapabilities->emlsrPaddingDelay);
+        maxPaddingDelay = std::max(maxPaddingDelay, emlCapabilities->get().emlsrPaddingDelay);
 
         auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
         NS_ASSERT(mldAddress);
