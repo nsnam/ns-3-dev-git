@@ -99,17 +99,15 @@ struct WifiRemoteStationState
      * WifiRemoteStationManager::GetNSupported() and
      * WifiRemoteStationManager::GetSupported().
      */
-    WifiModeList m_operationalRateSet;        //!< operational rate set
-    WifiModeList m_operationalMcsSet;         //!< operational MCS set
-    Mac48Address m_address;                   //!< Mac48Address of the remote station
-    uint16_t m_aid;                           /**< AID of the remote station (unused if this object
-                                                   is installed on a non-AP station) */
-    std::optional<Mac48Address> m_mldAddress; /**< MLD MAC address if the remote station is
-                                                   affiliated with an MLD */
-    WifiRemoteStationInfo m_info;             //!< remote station info
-    bool m_dsssSupported;                     //!< Flag if DSSS is supported by the remote station
-    bool m_erpOfdmSupported; //!< Flag if ERP OFDM is supported by the remote station
-    bool m_ofdmSupported;    //!< Flag if OFDM is supported by the remote station
+    WifiModeList m_operationalRateSet; //!< operational rate set
+    WifiModeList m_operationalMcsSet;  //!< operational MCS set
+    Mac48Address m_address;            //!< Mac48Address of the remote station
+    uint16_t m_aid;                    /**< AID of the remote station (unused if this object
+                                            is installed on a non-AP station) */
+    WifiRemoteStationInfo m_info;      //!< remote station info
+    bool m_dsssSupported;              //!< Flag if DSSS is supported by the remote station
+    bool m_erpOfdmSupported;           //!< Flag if ERP OFDM is supported by the remote station
+    bool m_ofdmSupported;              //!< Flag if OFDM is supported by the remote station
     Ptr<const HtCapabilities> m_htCapabilities;   //!< remote station HT capabilities
     Ptr<const VhtCapabilities> m_vhtCapabilities; //!< remote station VHT capabilities
     Ptr<const HeCapabilities> m_heCapabilities;   //!< remote station HE capabilities
@@ -784,14 +782,6 @@ class WifiRemoteStationManager : public Object
      */
     void SetPsMode(const Mac48Address& address, bool isInPsMode);
 
-    /**
-     * Set the address of the MLD the given station is affiliated with.
-     *
-     * \param address the MAC address of the remote station
-     * \param mldAddress the MAC address of the MLD the remote station is
-     *                   affiliated with
-     */
-    void SetMldAddress(const Mac48Address& address, const Mac48Address& mldAddress);
     /**
      * Get the address of the MLD the given station is affiliated with, if any.
      * Note that an MLD address is only present if an ML discovery/setup was performed

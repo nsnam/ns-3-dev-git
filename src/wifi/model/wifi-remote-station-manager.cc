@@ -565,21 +565,16 @@ WifiRemoteStationManager::SetPsMode(const Mac48Address& address, bool isInPsMode
     LookupState(address)->m_isInPsMode = isInPsMode;
 }
 
-void
-WifiRemoteStationManager::SetMldAddress(const Mac48Address& address, const Mac48Address& mldAddress)
-{
-    NS_LOG_FUNCTION(this << address << mldAddress);
-
-    auto state = LookupState(address);
-    state->m_mldAddress = mldAddress;
-    // insert another entry in m_states indexed by the MLD address and pointing to the same state
-    const_cast<WifiRemoteStationManager*>(this)->m_states.insert({mldAddress, state});
-}
-
 std::optional<Mac48Address>
 WifiRemoteStationManager::GetMldAddress(const Mac48Address& address) const
 {
-    return LookupState(address)->m_mldAddress;
+    if (auto stateIt = m_states.find(address);
+        stateIt != m_states.end() && stateIt->second->m_mleCommonInfo)
+    {
+        return stateIt->second->m_mleCommonInfo->m_mldMacAddress;
+    }
+
+    return std::nullopt;
 }
 
 std::optional<Mac48Address>
@@ -587,13 +582,13 @@ WifiRemoteStationManager::GetAffiliatedStaAddress(const Mac48Address& mldAddress
 {
     auto stateIt = m_states.find(mldAddress);
 
-    if (stateIt == m_states.end() || !stateIt->second->m_mldAddress)
+    if (stateIt == m_states.end() || !stateIt->second->m_mleCommonInfo)
     {
         // MLD address not found
         return std::nullopt;
     }
 
-    NS_ASSERT(*stateIt->second->m_mldAddress == mldAddress);
+    NS_ASSERT(stateIt->second->m_mleCommonInfo->m_mldMacAddress == mldAddress);
     return stateIt->second->m_address;
 }
 
@@ -1605,7 +1600,11 @@ WifiRemoteStationManager::AddStationMleCommonInfo(
     const std::shared_ptr<CommonInfoBasicMle>& mleCommonInfo)
 {
     NS_LOG_FUNCTION(this << from);
-    LookupState(from)->m_mleCommonInfo = mleCommonInfo;
+    auto state = LookupState(from);
+    state->m_mleCommonInfo = mleCommonInfo;
+    // insert another entry in m_states indexed by the MLD address and pointing to the same state
+    const_cast<WifiRemoteStationManager*>(this)->m_states.insert(
+        {mleCommonInfo->m_mldMacAddress, state});
 }
 
 Ptr<const HtCapabilities>

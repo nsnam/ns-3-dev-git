@@ -1995,7 +1995,6 @@ ApWifiMac::ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address fr
             return;
         }
 
-        GetWifiRemoteStationManager(linkId)->SetMldAddress(from, mle->GetMldMacAddress());
         auto mleCommonInfo = std::make_shared<CommonInfoBasicMle>(mle->GetCommonInfoBasic());
         GetWifiRemoteStationManager(linkId)->AddStationMleCommonInfo(from, mleCommonInfo);
 
@@ -2023,8 +2022,6 @@ ApWifiMac::ParseReportedStaInfo(const AssocReqRefVariant& assoc, Mac48Address fr
             ReceiveAssocRequest(perStaProfile.GetAssocRequest(),
                                 perStaProfile.GetStaMacAddress(),
                                 newLinkId);
-            GetWifiRemoteStationManager(newLinkId)->SetMldAddress(perStaProfile.GetStaMacAddress(),
-                                                                  mle->GetMldMacAddress());
             GetWifiRemoteStationManager(newLinkId)->AddStationMleCommonInfo(
                 perStaProfile.GetStaMacAddress(),
                 mleCommonInfo);

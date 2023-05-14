@@ -628,7 +628,6 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
                                                   << ")");
         GetLink(localLinkId).apLinkId = apLinkId;
         GetLink(localLinkId).bssid = bssid;
-        GetWifiRemoteStationManager(localLinkId)->SetMldAddress(bssid, mle->GetMldMacAddress());
         if (!mleCommonInfo)
         {
             mleCommonInfo = std::make_shared<CommonInfoBasicMle>(mle->GetCommonInfoBasic());
