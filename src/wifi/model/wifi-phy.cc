@@ -1123,11 +1123,15 @@ void
 WifiPhy::SetOperatingChannel(const WifiPhyOperatingChannel& channel)
 {
     NS_LOG_FUNCTION(this << channel);
-    WifiPhy::ChannelTuple tuple(channel.GetNumber(),
-                                channel.GetWidth(),
-                                channel.GetPhyBand(),
-                                channel.GetPrimaryChannelIndex(20));
-    SetOperatingChannel(tuple);
+    ChannelSegments segments{};
+    for (std::size_t segmentId = 0; segmentId < channel.GetNSegments(); ++segmentId)
+    {
+        segments.emplace_back(channel.GetNumber(segmentId),
+                              channel.GetWidth(segmentId),
+                              channel.GetPhyBand(),
+                              channel.GetPrimaryChannelIndex(20));
+    }
+    SetOperatingChannel(segments);
 }
 
 void
