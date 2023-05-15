@@ -11,7 +11,6 @@
   extends: .base-build
   rules:
     - if: $RELEASE == "weekly"
-    - if: $UBUNTU == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
   before_script:
@@ -38,7 +37,6 @@
 weekly-ubuntu:
   rules:
     - if: $RELEASE == "weekly"
-    - if: $UBUNTU == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
       allow_failure: true

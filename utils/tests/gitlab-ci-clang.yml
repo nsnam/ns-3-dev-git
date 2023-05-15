@@ -13,7 +13,6 @@
   extends: .base-build
   rules:
     - if: $RELEASE == "weekly"
-    - if: $CLANG_BUILD_ENABLE == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
   before_script:
@@ -37,7 +36,6 @@
   extends: .base-build
   rules:
     - if: $RELEASE == "weekly"
-    - if: $CLANG_BUILD_ENABLE == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
   before_script:
@@ -59,7 +57,6 @@
 weekly-clang:
   rules:
     - if: $RELEASE == "weekly"
-    - if: $CLANG_BUILD_ENABLE == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
       allow_failure: true

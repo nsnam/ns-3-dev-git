@@ -7,9 +7,9 @@
 # Alpine base
 .weekly-build-alpine:
   extends: .base-build
+  image: alpine:latest
   rules:
     - if: $RELEASE == "weekly"
-    - if: $ALPINE == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
   before_script:
@@ -26,7 +26,6 @@
 weekly-alpine:
   rules:
     - if: $RELEASE == "weekly"
-    - if: $ALPINE == "True"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
       allow_failure: true
@@ -37,16 +36,14 @@ weekly-alpine:
 weekly-alpine-latest-default:
   extends: .weekly-build-alpine
   needs: ["weekly-alpine"]
-  image: alpine:latest
   stage: build
   variables:
     MODE: default
 
 weekly-alpine-latest-default-test:
   extends: .weekly-build-alpine
-  image: alpine:latest
-  stage: test
   needs: ["weekly-alpine-latest-default"]
+  stage: test
   dependencies:
     - weekly-alpine-latest-default
   variables:
