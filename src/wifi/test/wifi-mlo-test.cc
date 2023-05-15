@@ -193,6 +193,121 @@ GetRnrLinkInfoTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * Test the WifiMac::SwapLinks() method.
+ */
+class MldSwapLinksTest : public TestCase
+{
+    /**
+     * Test WifiMac subclass used to access the SwapLinks method.
+     */
+    class TestWifiMac : public WifiMac
+    {
+      public:
+        ~TestWifiMac() override = default;
+
+        using WifiMac::GetLinks;
+        using WifiMac::SwapLinks;
+
+        bool CanForwardPacketsTo(Mac48Address to) const override
+        {
+            return true;
+        }
+
+        void Enqueue(Ptr<Packet> packet, Mac48Address to) override
+        {
+        }
+    };
+
+  public:
+    MldSwapLinksTest();
+    ~MldSwapLinksTest() override = default;
+
+  protected:
+    void DoRun() override;
+
+  private:
+    /**
+     * Run a single test case.
+     *
+     * \param text string identifying the test case
+     * \param nLinks the number of links of the MLD
+     * \param links a set of pairs (from, to) each mapping a current link ID to the
+     *              link ID it has to become (i.e., link 'from' becomes link 'to')
+     * \param expected maps each link ID to the id of the PHY that is expected
+     *                 to operate on that link after the swap
+     */
+    void RunOne(std::string text,
+                std::size_t nLinks,
+                const std::map<uint8_t, uint8_t>& links,
+                const std::map<uint8_t, uint8_t>& expected);
+};
+
+MldSwapLinksTest::MldSwapLinksTest()
+    : TestCase("Test the WifiMac::SwapLinks() method")
+{
+}
+
+void
+MldSwapLinksTest::RunOne(std::string text,
+                         std::size_t nLinks,
+                         const std::map<uint8_t, uint8_t>& links,
+                         const std::map<uint8_t, uint8_t>& expected)
+{
+    TestWifiMac mac;
+
+    std::vector<Ptr<WifiPhy>> phys;
+    for (std::size_t i = 0; i < nLinks; i++)
+    {
+        phys.emplace_back(CreateObject<SpectrumWifiPhy>());
+    }
+    mac.SetWifiPhys(phys); // create links containing the given PHYs
+
+    mac.SwapLinks(links);
+
+    NS_TEST_EXPECT_MSG_EQ(mac.GetNLinks(), nLinks, "Number of links changed after swapping");
+
+    for (const auto& [linkId, phyId] : expected)
+    {
+        NS_TEST_ASSERT_MSG_EQ(mac.GetLinks().count(linkId),
+                              1,
+                              "Link ID " << +linkId << " does not exist");
+
+        NS_TEST_ASSERT_MSG_LT(+phyId, nLinks, "Invalid PHY ID");
+
+        // the id of the PHY operating on a link is the original ID of the link
+        NS_TEST_EXPECT_MSG_EQ(mac.GetWifiPhy(linkId),
+                              phys.at(phyId),
+                              text << ": Link " << +phyId << " has not been moved to link "
+                                   << +linkId);
+    }
+}
+
+void
+MldSwapLinksTest::DoRun()
+{
+    RunOne("No change needed", 3, {{0, 0}, {1, 1}, {2, 2}}, {{0, 0}, {1, 1}, {2, 2}});
+    RunOne("Circular swapping", 3, {{0, 2}, {1, 0}, {2, 1}}, {{0, 1}, {1, 2}, {2, 0}});
+    RunOne("Swapping two links, one unchanged", 3, {{0, 2}, {2, 0}}, {{0, 2}, {1, 1}, {2, 0}});
+    RunOne("Non-circular swapping, autodetect how to close the loop",
+           3,
+           {{0, 2}, {2, 1}},
+           {{0, 1}, {1, 2}, {2, 0}});
+    RunOne("One move only, autodetect how to complete the swapping",
+           3,
+           {{2, 0}},
+           {{0, 2}, {1, 1}, {2, 0}});
+    RunOne("Create a new link ID (2), remove the unused one (0)",
+           2,
+           {{0, 1}, {1, 2}},
+           {{1, 0}, {2, 1}});
+    RunOne("One move only that creates a new link ID (2)", 2, {{0, 2}}, {{1, 1}, {2, 0}});
+    RunOne("Move all links to a new set of IDs", 2, {{0, 2}, {1, 3}}, {{2, 0}, {3, 1}});
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief Base class for Multi-Link Operations tests
  *
  * Three spectrum channels are created, one for each band (2.4 GHz, 5 GHz and 6 GHz).
@@ -2632,6 +2747,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                    std::vector<uint8_t>>; // IDs of link that cannot change PHY band
 
     AddTestCase(new GetRnrLinkInfoTest(), TestCase::QUICK);
+    AddTestCase(new MldSwapLinksTest(), TestCase::QUICK);
 
     for (const auto& [staChannels, apChannels, setupLinks, fixedPhyBands] :
          {// matching channels: setup all links

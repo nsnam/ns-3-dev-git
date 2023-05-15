@@ -934,6 +934,22 @@ WifiMac::GetNLinks() const
     return m_links.size();
 }
 
+void
+WifiMac::UpdateLinkId(uint8_t id)
+{
+    NS_LOG_FUNCTION(this << id);
+
+    auto& link = GetLink(id);
+    if (link.feManager)
+    {
+        link.feManager->SetLinkId(id);
+    }
+    if (link.channelAccessManager)
+    {
+        link.channelAccessManager->SetLinkId(id);
+    }
+}
+
 std::optional<uint8_t>
 WifiMac::GetLinkIdByAddress(const Mac48Address& address) const
 {
@@ -945,6 +961,58 @@ WifiMac::GetLinkIdByAddress(const Mac48Address& address) const
         }
     }
     return std::nullopt;
+}
+
+void
+WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
+{
+    NS_LOG_FUNCTION(this);
+
+    while (!links.empty())
+    {
+        auto from = links.cbegin()->first;
+        auto to = links.cbegin()->second;
+
+        if (from == to)
+        {
+            // nothing to do
+            links.erase(links.cbegin());
+            continue;
+        }
+
+        std::unique_ptr<LinkEntity> linkToMove;
+        NS_ASSERT(m_links.find(from) != m_links.cend());
+        linkToMove.swap(m_links.at(from)); // from is now out of m_links
+        auto empty = from;                 // track empty cell in m_links
+
+        do
+        {
+            auto [it, inserted] =
+                m_links.emplace(to, nullptr); // insert an element with key to if not present
+            m_links[to].swap(linkToMove);     // to is the link to move now
+            UpdateLinkId(to);
+            links.erase(from);
+            if (!linkToMove)
+            {
+                if (inserted)
+                {
+                    m_links.erase(empty);
+                }
+                break;
+            }
+
+            auto nextTo = links.find(to);
+            if (nextTo == links.cend())
+            {
+                // no new position specified for 'to', use the current empty cell
+                m_links[empty].swap(linkToMove);
+                break;
+            }
+
+            from = to;
+            to = nextTo->second;
+        } while (true);
+    }
 }
 
 void

@@ -753,6 +753,16 @@ class WifiMac : public Object
     virtual void DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu);
 
     /**
+     * Swap the links based on the information included in the given map. This method
+     * is normally called by a non-AP MLD upon completing ML setup to have its link IDs
+     * match AP MLD's link IDs.
+     *
+     * \param links a set of pairs (from, to) each mapping a current link ID to the
+     *              link ID it has to become (i.e., link 'from' becomes link 'to')
+     */
+    void SwapLinks(std::map<uint8_t, uint8_t> links);
+
+    /**
      * Structure holding information specific to a single link. Here, the meaning of
      * "link" is that of the 11be amendment which introduced multi-link devices. For
      * previous amendments, only one link can be created. Therefore, "link" has not
@@ -840,6 +850,15 @@ class WifiMac : public Object
      * \return a unique pointer to the created LinkEntity object
      */
     virtual std::unique_ptr<LinkEntity> CreateLinkEntity() const;
+
+    /**
+     * This method is intended to be called when a link changes ID in order to update the
+     * link ID stored by the Frame Exchange Manager and the Channel Access Manager operating
+     * on that link.
+     *
+     * \param id the (new) ID of the link that has changed ID
+     */
+    void UpdateLinkId(uint8_t id);
 
     /**
      * This method is called if this device is an MLD to determine the MAC address of

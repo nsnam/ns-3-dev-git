@@ -59,6 +59,14 @@ EhtFrameExchangeManager::~EhtFrameExchangeManager()
 void
 EhtFrameExchangeManager::SetLinkId(uint8_t linkId)
 {
+    if (auto protectionManager = GetProtectionManager())
+    {
+        protectionManager->SetLinkId(linkId);
+    }
+    if (auto ackManager = GetAckManager())
+    {
+        ackManager->SetLinkId(linkId);
+    }
     m_msduAggregator->SetLinkId(linkId);
     m_mpduAggregator->SetLinkId(linkId);
     HeFrameExchangeManager::SetLinkId(linkId);
