@@ -800,11 +800,12 @@ TestDlMuMimoPhyTransmission::RunOne()
     m_phySta1->AssignStreams(streamNumber);
     m_phySta2->AssignStreams(streamNumber);
 
-    auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                      m_frequency,
-                                                                      m_channelWidth,
-                                                                      WIFI_STANDARD_80211ax,
-                                                                      WIFI_PHY_BAND_5GHZ));
+    auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                         m_frequency,
+                                                         m_channelWidth,
+                                                         WIFI_STANDARD_80211ax,
+                                                         WIFI_PHY_BAND_5GHZ)
+                          ->number;
 
     m_phyAp->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
@@ -1708,11 +1709,12 @@ TestUlMuMimoPhyTransmission::RunOne()
         phy->AssignStreams(streamNumber);
     }
 
-    auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                      m_frequency,
-                                                                      m_channelWidth,
-                                                                      WIFI_STANDARD_80211ax,
-                                                                      WIFI_PHY_BAND_5GHZ));
+    auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                         m_frequency,
+                                                         m_channelWidth,
+                                                         WIFI_STANDARD_80211ax,
+                                                         WIFI_PHY_BAND_5GHZ)
+                          ->number;
 
     m_phyAp->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});

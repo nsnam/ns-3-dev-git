@@ -4543,21 +4543,28 @@ TestPrimary20CoveredByPpdu::TestPrimary20CoveredByPpdu()
 Ptr<HePpdu>
 TestPrimary20CoveredByPpdu::CreatePpdu(uint16_t ppduCenterFreqMhz)
 {
-    [[maybe_unused]] auto [channelNumber, centerFreq, channelWidth, type, phyBand] =
-        (*WifiPhyOperatingChannel::FindFirst(0,
-                                             ppduCenterFreqMhz,
-                                             0,
-                                             WIFI_STANDARD_80211ax,
-                                             m_rxPhy->GetPhyBand()));
-    m_txPhy->SetOperatingChannel(WifiPhy::ChannelTuple{channelNumber, channelWidth, phyBand, 0});
-    auto txVector =
-        WifiTxVector(HePhy::GetHeMcs7(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, channelWidth, false);
+    const auto& channelInfo = (*WifiPhyOperatingChannel::FindFirst(0,
+                                                                   ppduCenterFreqMhz,
+                                                                   0,
+                                                                   WIFI_STANDARD_80211ax,
+                                                                   m_rxPhy->GetPhyBand()));
+    m_txPhy->SetOperatingChannel(
+        WifiPhy::ChannelTuple{channelInfo.number, channelInfo.width, channelInfo.band, 0});
+    auto txVector = WifiTxVector(HePhy::GetHeMcs7(),
+                                 0,
+                                 WIFI_PREAMBLE_HE_SU,
+                                 800,
+                                 1,
+                                 1,
+                                 0,
+                                 channelInfo.width,
+                                 false);
 
     auto pkt = Create<Packet>(1000);
     WifiMacHeader hdr(WIFI_MAC_QOSDATA);
 
     auto psdu = Create<WifiPsdu>(pkt, hdr);
-    auto txDuration = m_txPhy->CalculateTxDuration(psdu->GetSize(), txVector, phyBand);
+    auto txDuration = m_txPhy->CalculateTxDuration(psdu->GetSize(), txVector, channelInfo.band);
 
     return Create<HePpdu>(psdu, txVector, m_txPhy->GetOperatingChannel(), txDuration, 0);
 }
@@ -4599,11 +4606,11 @@ TestPrimary20CoveredByPpdu::RunOne(WifiPhyBand band,
                                    bool expectedP20Overlap,
                                    bool expectedP20Covered)
 {
-    [[maybe_unused]] const auto [channelNumber, centerFreq, channelWidth, type, phyBand] =
+    const auto& channelInfo =
         (*WifiPhyOperatingChannel::FindFirst(0, phyCenterFreqMhz, 0, WIFI_STANDARD_80211ax, band));
 
     m_rxPhy->SetOperatingChannel(
-        WifiPhy::ChannelTuple{channelNumber, channelWidth, band, p20Index});
+        WifiPhy::ChannelTuple{channelInfo.number, channelInfo.width, channelInfo.band, p20Index});
     auto p20CenterFreq = m_rxPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(20);
     auto p20MinFreq = p20CenterFreq - 10;
     auto p20MaxFreq = p20CenterFreq + 10;

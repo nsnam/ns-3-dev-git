@@ -249,8 +249,9 @@ WifiPhyCcaThresholdsTest::DoSetup()
     m_phy->SetInterferenceHelper(CreateObject<InterferenceHelper>());
     m_phy->AddChannel(CreateObject<MultiModelSpectrumChannel>());
 
-    auto channelNum = std::get<0>(
-        *WifiPhyOperatingChannel::FindFirst(0, 0, 160, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ));
+    auto channelNum =
+        WifiPhyOperatingChannel::FindFirst(0, 0, 160, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ)
+            ->number;
     m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{channelNum, 160, WIFI_PHY_BAND_5GHZ, 0});
     m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
 
@@ -870,11 +871,12 @@ WifiPhyCcaIndicationTest::SendHeSuPpdu(double txPowerDbm,
 {
     NS_LOG_FUNCTION(this << txPowerDbm);
 
-    auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                      frequency,
-                                                                      bandwidth,
-                                                                      WIFI_STANDARD_80211ax,
-                                                                      WIFI_PHY_BAND_5GHZ));
+    auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                         frequency,
+                                                         bandwidth,
+                                                         WIFI_STANDARD_80211ax,
+                                                         WIFI_PHY_BAND_5GHZ)
+                          ->number;
     m_txPhy->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, bandwidth, WIFI_PHY_BAND_5GHZ, 0});
 
@@ -1074,11 +1076,12 @@ WifiPhyCcaIndicationTest::RunOne()
     m_rxPhy->AssignStreams(streamNumber);
     m_txPhy->AssignStreams(streamNumber);
 
-    auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                      m_frequency,
-                                                                      m_channelWidth,
-                                                                      WIFI_STANDARD_80211ax,
-                                                                      WIFI_PHY_BAND_5GHZ));
+    auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                         m_frequency,
+                                                         m_channelWidth,
+                                                         WIFI_STANDARD_80211ax,
+                                                         WIFI_PHY_BAND_5GHZ)
+                          ->number;
 
     m_rxPhy->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});

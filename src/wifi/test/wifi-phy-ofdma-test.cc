@@ -816,11 +816,12 @@ TestDlOfdmaPhyTransmission::RunOne()
     m_phySta2->AssignStreams(streamNumber);
     m_phySta3->AssignStreams(streamNumber);
 
-    auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                      m_frequency,
-                                                                      m_channelWidth,
-                                                                      WIFI_STANDARD_80211ax,
-                                                                      WIFI_PHY_BAND_5GHZ));
+    auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                         m_frequency,
+                                                         m_channelWidth,
+                                                         WIFI_STANDARD_80211ax,
+                                                         WIFI_PHY_BAND_5GHZ)
+                          ->number;
 
     m_phyAp->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
@@ -1636,11 +1637,12 @@ TestDlOfdmaPhyPuncturing::RunOne()
     m_phySta1->AssignStreams(streamNumber);
     m_phySta2->AssignStreams(streamNumber);
 
-    auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                      m_frequency,
-                                                                      m_channelWidth,
-                                                                      WIFI_STANDARD_80211ax,
-                                                                      WIFI_PHY_BAND_5GHZ));
+    auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                         m_frequency,
+                                                         m_channelWidth,
+                                                         WIFI_STANDARD_80211ax,
+                                                         WIFI_PHY_BAND_5GHZ)
+                          ->number;
 
     m_phyAp->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
@@ -1917,11 +1919,12 @@ TestUlOfdmaPpduUid::DoSetup()
     m_phyAp->SetErrorRateModel(apErrorModel);
     m_phyAp->AddChannel(spectrumChannel);
     m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
-    auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                      DEFAULT_FREQUENCY,
-                                                                      DEFAULT_CHANNEL_WIDTH,
-                                                                      WIFI_STANDARD_80211ax,
-                                                                      WIFI_PHY_BAND_5GHZ));
+    auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                         DEFAULT_FREQUENCY,
+                                                         DEFAULT_CHANNEL_WIDTH,
+                                                         WIFI_STANDARD_80211ax,
+                                                         WIFI_PHY_BAND_5GHZ)
+                          ->number;
     m_phyAp->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, WIFI_PHY_BAND_5GHZ, 0});
     m_phyAp->SetDevice(apDev);
@@ -4122,11 +4125,12 @@ TestUlOfdmaPhyTransmission::RunOne()
     m_phySta2->AssignStreams(streamNumber);
     m_phySta3->AssignStreams(streamNumber);
 
-    auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                      m_frequency,
-                                                                      m_channelWidth,
-                                                                      WIFI_STANDARD_80211ax,
-                                                                      WIFI_PHY_BAND_5GHZ));
+    auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                         m_frequency,
+                                                         m_channelWidth,
+                                                         WIFI_STANDARD_80211ax,
+                                                         WIFI_PHY_BAND_5GHZ)
+                          ->number;
 
     m_phyAp->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, 0});
@@ -5095,11 +5099,12 @@ TestPhyPaddingExclusion::DoSetup()
     m_phyAp->AddChannel(spectrumChannel);
     m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
     m_phyAp->AssignStreams(streamNumber);
-    auto channelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                      DEFAULT_FREQUENCY,
-                                                                      DEFAULT_CHANNEL_WIDTH,
-                                                                      WIFI_STANDARD_80211ax,
-                                                                      WIFI_PHY_BAND_5GHZ));
+    auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                         DEFAULT_FREQUENCY,
+                                                         DEFAULT_CHANNEL_WIDTH,
+                                                         WIFI_STANDARD_80211ax,
+                                                         WIFI_PHY_BAND_5GHZ)
+                          ->number;
 
     m_phyAp->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, DEFAULT_CHANNEL_WIDTH, WIFI_PHY_BAND_5GHZ, 0});

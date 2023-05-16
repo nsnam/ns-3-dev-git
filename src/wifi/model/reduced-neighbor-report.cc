@@ -283,10 +283,10 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
 
     for (const auto& channel : WifiPhyOperatingChannel::m_frequencyChannels)
     {
-        if (std::get<2>(channel) == width && std::get<3>(channel) == FrequencyChannelType::OFDM &&
-            std::get<4>(channel) == band &&
-            primaryChannelCenterFrequency > std::get<1>(channel) - width / 2 &&
-            primaryChannelCenterFrequency < std::get<1>(channel) + width / 2)
+        if (channel.width == width && channel.type == FrequencyChannelType::OFDM &&
+            channel.band == band &&
+            primaryChannelCenterFrequency > (channel.frequency - (width / 2)) &&
+            primaryChannelCenterFrequency < (channel.frequency + (width / 2)))
         {
             // the center frequency of the primary channel falls into the frequency
             // range of this channel
@@ -304,14 +304,14 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
                 switch (width)
                 {
                 case 20:
-                    if (std::get<1>(channel) == primaryChannelCenterFrequency)
+                    if (channel.frequency == primaryChannelCenterFrequency)
                     {
                         found = true;
                     }
                     break;
                 case 40:
-                    if (std::get<1>(channel) == primaryChannelCenterFrequency + 10 ||
-                        std::get<1>(channel) == primaryChannelCenterFrequency - 10)
+                    if ((channel.frequency == primaryChannelCenterFrequency + 10) ||
+                        (channel.frequency == primaryChannelCenterFrequency - 10))
                     {
                         found = true;
                     }
@@ -323,8 +323,8 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
 
             if (found)
             {
-                channelNumber = std::get<0>(channel);
-                frequency = std::get<1>(channel);
+                channelNumber = channel.number;
+                frequency = channel.frequency;
                 break;
             }
         }

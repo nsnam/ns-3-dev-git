@@ -664,11 +664,12 @@ SpectrumWifiPhyFilterTest::RunOne()
         txFrequency = 5250;
         break;
     }
-    auto txChannelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                        txFrequency,
-                                                                        m_txChannelWidth,
-                                                                        WIFI_STANDARD_80211ax,
-                                                                        WIFI_PHY_BAND_5GHZ));
+    auto txChannelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                           txFrequency,
+                                                           m_txChannelWidth,
+                                                           WIFI_STANDARD_80211ax,
+                                                           WIFI_PHY_BAND_5GHZ)
+                            ->number;
     m_txPhy->SetOperatingChannel(
         WifiPhy::ChannelTuple{txChannelNum, m_txChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
@@ -689,11 +690,12 @@ SpectrumWifiPhyFilterTest::RunOne()
         rxFrequency = 5250;
         break;
     }
-    auto rxChannelNum = std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                                        rxFrequency,
-                                                                        m_rxChannelWidth,
-                                                                        WIFI_STANDARD_80211ax,
-                                                                        WIFI_PHY_BAND_5GHZ));
+    auto rxChannelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                           rxFrequency,
+                                                           m_rxChannelWidth,
+                                                           WIFI_STANDARD_80211ax,
+                                                           WIFI_PHY_BAND_5GHZ)
+                            ->number;
     m_rxPhy->SetOperatingChannel(
         WifiPhy::ChannelTuple{rxChannelNum, m_rxChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
@@ -1276,20 +1278,12 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
     for (std::size_t i = 0; i < interfaces.size(); ++i)
     {
         auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
-        [[maybe_unused]] const auto [channel, frequency, channelWidth, type, band] =
-            (*WifiPhyOperatingChannel::FindFirst(interfaces.at(i).number,
-                                                 0,
-                                                 0,
-                                                 WIFI_STANDARD_80211be,
-                                                 interfaces.at(i).band));
-
         auto delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
         spectrumChannel->SetPropagationDelayModel(delayModel);
         std::ostringstream oss;
         oss << "{" << +interfaces.at(i).number << ", 0, " << interfaces.at(i).bandName << ", 0}";
         phyHelper.Set(i, "ChannelSettings", StringValue(oss.str()));
         phyHelper.AddChannel(spectrumChannel, interfaces.at(i).range);
-
         m_spectrumChannels.emplace_back(spectrumChannel);
     }
 
@@ -1552,7 +1546,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                                        txPpduPhy->GetPhyBand());
                 for (auto bw = txPpduPhy->GetChannelWidth(); bw >= 20; bw /= 2)
                 {
-                    [[maybe_unused]] const auto [channel, frequency, channelWidth, type, band] =
+                    const auto& channelInfo =
                         (*WifiPhyOperatingChannel::FindFirst(0,
                                                              0,
                                                              bw,
@@ -1570,9 +1564,9 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                         &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
                                         this,
                                         m_rxPhys.at(j),
-                                        band,
-                                        channel,
-                                        channelWidth,
+                                        channelInfo.band,
+                                        channelInfo.number,
+                                        channelInfo.width,
                                         j);
                     for (std::size_t k = 0; k < 4; ++k)
                     {

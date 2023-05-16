@@ -474,13 +474,12 @@ TestNonHtDuplicatePhyReception::DoSetup()
 
     if (!m_per20MhzInterference.empty())
     {
-        [[maybe_unused]] auto [channelNum, centerFreq, apChannelWidth, type, phyBand] =
-            (*WifiPhyOperatingChannel::FindFirst(0,
-                                                 m_apFrequency,
-                                                 0,
-                                                 m_apStandard,
-                                                 WIFI_PHY_BAND_5GHZ));
-        NS_ASSERT(m_per20MhzInterference.size() == (apChannelWidth / 20));
+        const auto& channelInfo = (*WifiPhyOperatingChannel::FindFirst(0,
+                                                                       m_apFrequency,
+                                                                       0,
+                                                                       m_apStandard,
+                                                                       WIFI_PHY_BAND_5GHZ));
+        NS_ASSERT(m_per20MhzInterference.size() == (channelInfo.width / 20));
         for (std::size_t i = 0; i < m_per20MhzInterference.size(); ++i)
         {
             auto interfererNode = CreateObject<Node>();
@@ -524,32 +523,34 @@ TestNonHtDuplicatePhyReception::DoRun()
         phySta->AssignStreams(streamNumber);
     }
 
-    [[maybe_unused]] auto [apChannelNum, centerFreq, apChannelWidth, type, phyBand] =
-        (*WifiPhyOperatingChannel::FindFirst(0,
-                                             m_apFrequency,
-                                             0,
-                                             m_apStandard,
-                                             WIFI_PHY_BAND_5GHZ));
-    m_phyAp->SetOperatingChannel(
-        WifiPhy::ChannelTuple{apChannelNum, apChannelWidth, WIFI_PHY_BAND_5GHZ, m_apP20Index});
+    const auto& apchannelInfo = (*WifiPhyOperatingChannel::FindFirst(0,
+                                                                     m_apFrequency,
+                                                                     0,
+                                                                     m_apStandard,
+                                                                     WIFI_PHY_BAND_5GHZ));
+    m_phyAp->SetOperatingChannel(WifiPhy::ChannelTuple{apchannelInfo.number,
+                                                       apchannelInfo.width,
+                                                       WIFI_PHY_BAND_5GHZ,
+                                                       m_apP20Index});
 
     auto index = 0;
     for (const auto& [staStandard, staFrequency, staP20Index] : m_stasParams)
     {
-        [[maybe_unused]] auto [staChannelNum, centerFreq, staChannelWidth, type, phyBand] =
-            (*WifiPhyOperatingChannel::FindFirst(0,
-                                                 staFrequency,
-                                                 0,
-                                                 staStandard,
-                                                 WIFI_PHY_BAND_5GHZ));
-        m_phyStas.at(index++)->SetOperatingChannel(
-            WifiPhy::ChannelTuple{staChannelNum, staChannelWidth, WIFI_PHY_BAND_5GHZ, staP20Index});
+        const auto& stachannelInfo = (*WifiPhyOperatingChannel::FindFirst(0,
+                                                                          staFrequency,
+                                                                          0,
+                                                                          staStandard,
+                                                                          WIFI_PHY_BAND_5GHZ));
+        m_phyStas.at(index++)->SetOperatingChannel(WifiPhy::ChannelTuple{stachannelInfo.number,
+                                                                         stachannelInfo.width,
+                                                                         WIFI_PHY_BAND_5GHZ,
+                                                                         staP20Index});
     }
 
     index = 0;
     const auto minApCenterFrequency =
         m_phyAp->GetFrequency() - (m_phyAp->GetChannelWidth() / 2) + (20 / 2);
-    for (auto channelWidth = 20; channelWidth <= apChannelWidth; channelWidth *= 2, ++index)
+    for (auto channelWidth = 20; channelWidth <= apchannelInfo.width; channelWidth *= 2, ++index)
     {
         if (!m_phyInterferers.empty())
         {
@@ -899,8 +900,9 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
                          m_ctsTxInfosPerSta.cend(),
                          [](const auto& lhs, const auto& rhs) { return lhs.bw < rhs.bw; })
             ->bw;
-    auto apChannelNum = std::get<0>(
-        *WifiPhyOperatingChannel::FindFirst(0, 0, apBw, WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ));
+    auto apChannelNum =
+        WifiPhyOperatingChannel::FindFirst(0, 0, apBw, WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ)
+            ->number;
 
     m_phyAp->SetOperatingChannel(WifiPhy::ChannelTuple{apChannelNum, apBw, WIFI_PHY_BAND_5GHZ, 0});
 
@@ -929,12 +931,12 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
         phySta->SetTxPowerStart(m_stasTxPowerDbm);
         phySta->SetTxPowerEnd(m_stasTxPowerDbm);
 
-        auto channelNum =
-            std::get<0>(*WifiPhyOperatingChannel::FindFirst(0,
-                                                            0,
-                                                            m_ctsTxInfosPerSta.at(i).bw,
-                                                            WIFI_STANDARD_80211ac,
-                                                            WIFI_PHY_BAND_5GHZ));
+        auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
+                                                             0,
+                                                             m_ctsTxInfosPerSta.at(i).bw,
+                                                             WIFI_STANDARD_80211ac,
+                                                             WIFI_PHY_BAND_5GHZ)
+                              ->number;
 
         phySta->SetOperatingChannel(
             WifiPhy::ChannelTuple{channelNum, m_ctsTxInfosPerSta.at(i).bw, WIFI_PHY_BAND_5GHZ, 0});

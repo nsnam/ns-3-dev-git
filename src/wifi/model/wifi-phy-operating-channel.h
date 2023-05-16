@@ -33,10 +33,25 @@ namespace ns3
 {
 
 /**
- * A tuple (number, frequency, width, type, band) identifying a frequency channel
+ * A structure containing the information about a frequency channel
  */
-using FrequencyChannelInfo =
-    std::tuple<uint8_t, uint16_t, ChannelWidthMhz, FrequencyChannelType, WifiPhyBand>;
+struct FrequencyChannelInfo
+{
+    /**
+     * \brief spaceship operator.
+     *
+     * \param info the frequency channel info
+     * \returns -1 if the provided channel info is located at a lower channel number, 0 if the
+     * provided channel info is identical or 1 if the provided channel info is located at a higher
+     * channel number
+     */
+    auto operator<=>(const FrequencyChannelInfo& info) const = default;
+    uint8_t number{0};                                        ///< the channel number
+    uint16_t frequency{0};                                    ///< the center frequency
+    ChannelWidthMhz width{0};                                 ///< the channel width in MHz
+    WifiPhyBand band{WifiPhyBand::WIFI_PHY_BAND_UNSPECIFIED}; ///< the PHY band
+    FrequencyChannelType type{FrequencyChannelType::OFDM};    ///< the frequency channel type
+};
 
 /**
  * \ingroup wifi
