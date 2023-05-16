@@ -363,7 +363,7 @@ WifiMac::DoInitialize()
         it->second->Initialize();
     }
 
-    for (auto& link : m_links)
+    for (const auto& [id, link] : m_links)
     {
         if (auto cam = link->channelAccessManager)
         {
@@ -481,7 +481,7 @@ WifiMac::GetBssid(uint8_t linkId) const
 void
 WifiMac::SetPromisc()
 {
-    for (auto& link : m_links)
+    for (auto& [id, link] : m_links)
     {
         link->feManager->SetPromisc();
     }
@@ -646,7 +646,7 @@ void
 WifiMac::ConfigureContentionWindow(uint32_t cwMin, uint32_t cwMax)
 {
     std::list<bool> isDsssOnly;
-    for (const auto& link : m_links)
+    for (const auto& [id, link] : m_links)
     {
         isDsssOnly.push_back(link->dsssSupported && !link->erpSupported);
     }
@@ -751,11 +751,11 @@ WifiMac::ConfigureStandard(WifiStandard standard)
     NS_ABORT_IF(standard >= WIFI_STANDARD_80211n && !m_qosSupported);
     NS_ABORT_MSG_IF(m_links.empty(), "No PHY configured yet");
 
-    for (auto& link : m_links)
+    for (auto& [id, link] : m_links)
     {
         NS_ABORT_MSG_IF(
             !link->phy || !link->phy->GetOperatingChannel().IsSet(),
-            "[LinkID " << link->id
+            "[LinkID " << +id
                        << "] PHY must have been set and an operating channel must have been set");
 
         // do not create a ChannelAccessManager and a FrameExchangeManager if they
@@ -772,8 +772,8 @@ WifiMac::ConfigureStandard(WifiStandard standard)
         }
         link->feManager->SetWifiPhy(link->phy);
         link->feManager->SetWifiMac(this);
-        link->feManager->SetLinkId(link->id);
-        link->channelAccessManager->SetLinkId(link->id);
+        link->feManager->SetLinkId(id);
+        link->channelAccessManager->SetLinkId(id);
         link->channelAccessManager->SetupFrameExchangeManager(link->feManager);
 
         if (m_txop)
@@ -787,7 +787,7 @@ WifiMac::ConfigureStandard(WifiStandard standard)
             link->channelAccessManager->Add(it->second);
         }
 
-        ConfigurePhyDependentParameters(link->id);
+        ConfigurePhyDependentParameters(id);
     }
 }
 
@@ -896,13 +896,8 @@ WifiMac::SetWifiRemoteStationManagers(
     for (std::size_t i = 0; i < stationManagers.size(); i++)
     {
         // the link may already exist in case PHY objects were configured first
-        if (i == m_links.size())
-        {
-            m_links.push_back(CreateLinkEntity());
-            m_links.back()->id = i;
-        }
-        NS_ABORT_IF(i != m_links[i]->id);
-        m_links[i]->stationManager = stationManagers[i];
+        auto [it, inserted] = m_links.emplace(i, CreateLinkEntity());
+        it->second->stationManager = stationManagers[i];
     }
 }
 
@@ -921,9 +916,10 @@ WifiMac::CreateLinkEntity() const
 WifiMac::LinkEntity&
 WifiMac::GetLink(uint8_t linkId) const
 {
-    NS_ASSERT(linkId < m_links.size());
-    NS_ASSERT(m_links.at(linkId)); // check that the pointer owns an object
-    return *m_links.at(linkId);
+    auto it = m_links.find(linkId);
+    NS_ASSERT(it != m_links.cend());
+    NS_ASSERT(it->second); // check that the pointer owns an object
+    return *it->second;
 }
 
 uint8_t
@@ -935,11 +931,11 @@ WifiMac::GetNLinks() const
 std::optional<uint8_t>
 WifiMac::GetLinkIdByAddress(const Mac48Address& address) const
 {
-    for (std::size_t ret = 0; ret < m_links.size(); ++ret)
+    for (const auto& [id, link] : m_links)
     {
-        if (m_links[ret]->feManager->GetAddress() == address)
+        if (link->feManager->GetAddress() == address)
         {
-            return ret;
+            return id;
         }
     }
     return std::nullopt;
@@ -964,13 +960,8 @@ WifiMac::SetWifiPhys(const std::vector<Ptr<WifiPhy>>& phys)
         // the link may already exist in case we are setting new PHY objects
         // (ResetWifiPhys just nullified the PHY(s) but left the links)
         // or the remote station managers were configured first
-        if (i == m_links.size())
-        {
-            m_links.push_back(CreateLinkEntity());
-            m_links.back()->id = i;
-        }
-        NS_ABORT_IF(i != m_links[i]->id);
-        m_links[i]->phy = phys[i];
+        auto [it, inserted] = m_links.emplace(i, CreateLinkEntity());
+        it->second->phy = phys[i];
     }
 }
 
@@ -985,7 +976,7 @@ void
 WifiMac::ResetWifiPhys()
 {
     NS_LOG_FUNCTION(this);
-    for (auto& link : m_links)
+    for (auto& [id, link] : m_links)
     {
         if (link->feManager)
         {
@@ -1357,9 +1348,9 @@ WifiMac::DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu)
 std::optional<Mac48Address>
 WifiMac::GetMldAddress(const Mac48Address& remoteAddr) const
 {
-    for (std::size_t linkId = 0; linkId < m_links.size(); linkId++)
+    for (const auto& [id, link] : m_links)
     {
-        if (auto mldAddress = m_links[linkId]->stationManager->GetMldAddress(remoteAddr))
+        if (auto mldAddress = link->stationManager->GetMldAddress(remoteAddr))
         {
             return *mldAddress;
         }
@@ -1370,7 +1361,7 @@ WifiMac::GetMldAddress(const Mac48Address& remoteAddr) const
 Mac48Address
 WifiMac::GetLocalAddress(const Mac48Address& remoteAddr) const
 {
-    for (const auto& link : m_links)
+    for (const auto& [id, link] : m_links)
     {
         if (auto mldAddress = link->stationManager->GetMldAddress(remoteAddr))
         {
@@ -1511,7 +1502,7 @@ WifiMac::GetEhtSupported() const
 bool
 WifiMac::GetHtSupported(const Mac48Address& address) const
 {
-    for (const auto& link : m_links)
+    for (const auto& [id, link] : m_links)
     {
         if (link->stationManager->GetHtSupported(address))
         {
@@ -1524,7 +1515,7 @@ WifiMac::GetHtSupported(const Mac48Address& address) const
 bool
 WifiMac::GetVhtSupported(const Mac48Address& address) const
 {
-    for (const auto& link : m_links)
+    for (const auto& [id, link] : m_links)
     {
         if (link->stationManager->GetVhtSupported(address))
         {
@@ -1537,7 +1528,7 @@ WifiMac::GetVhtSupported(const Mac48Address& address) const
 bool
 WifiMac::GetHeSupported(const Mac48Address& address) const
 {
-    for (const auto& link : m_links)
+    for (const auto& [id, link] : m_links)
     {
         if (link->stationManager->GetHeSupported(address))
         {
@@ -1550,7 +1541,7 @@ WifiMac::GetHeSupported(const Mac48Address& address) const
 bool
 WifiMac::GetEhtSupported(const Mac48Address& address) const
 {
-    for (const auto& link : m_links)
+    for (const auto& [id, link] : m_links)
     {
         if (link->stationManager->GetEhtSupported(address))
         {

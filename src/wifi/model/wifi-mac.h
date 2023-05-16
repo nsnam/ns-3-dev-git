@@ -27,6 +27,7 @@
 #include "wifi-standards.h"
 
 #include <list>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -763,7 +764,6 @@ class WifiMac : public Object
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         virtual ~LinkEntity();
 
-        uint8_t id;                                     //!< Link ID (starting at 0)
         Ptr<WifiPhy> phy;                               //!< Wifi PHY object
         Ptr<ChannelAccessManager> channelAccessManager; //!< channel access manager object
         Ptr<FrameExchangeManager> feManager;            //!< Frame Exchange Manager object
@@ -932,8 +932,8 @@ class WifiMac : public Object
 
     TypeOfStation m_typeOfStation; //!< the type of station
 
-    Ptr<WifiNetDevice> m_device;                      //!< Pointer to the device
-    std::vector<std::unique_ptr<LinkEntity>> m_links; //!< vector of Link objects
+    Ptr<WifiNetDevice> m_device;                            //!< Pointer to the device
+    std::map<uint8_t, std::unique_ptr<LinkEntity>> m_links; //!< ID-indexed map of Link objects
 
     Mac48Address m_address; //!< MAC address of this station
     Ssid m_ssid;            //!< Service Set ID (SSID)
