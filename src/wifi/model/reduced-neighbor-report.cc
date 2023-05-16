@@ -283,7 +283,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
 
     for (const auto& channel : WifiPhyOperatingChannel::m_frequencyChannels)
     {
-        if (std::get<2>(channel) == width && std::get<3>(channel) == WIFI_PHY_OFDM_CHANNEL &&
+        if (std::get<2>(channel) == width && std::get<3>(channel) == FrequencyChannelType::OFDM &&
             std::get<4>(channel) == band &&
             primaryChannelCenterFrequency > std::get<1>(channel) - width / 2 &&
             primaryChannelCenterFrequency < std::get<1>(channel) + width / 2)

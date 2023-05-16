@@ -91,17 +91,6 @@ operator<<(std::ostream& os, WifiStandard standard)
 extern const std::map<WifiStandard, std::list<WifiPhyBand>> wifiStandards;
 
 /**
- * \ingroup wifi
- * \brief Enumeration of frequency channel types
- */
-enum FrequencyChannelType : uint8_t
-{
-    WIFI_PHY_DSSS_CHANNEL = 0,
-    WIFI_PHY_OFDM_CHANNEL,
-    WIFI_PHY_80211p_CHANNEL
-};
-
-/**
  * Get the type of the frequency channel for the given standard
  *
  * \param standard the standard
@@ -113,11 +102,11 @@ GetFrequencyChannelType(WifiStandard standard)
     switch (standard)
     {
     case WIFI_STANDARD_80211b:
-        return WIFI_PHY_DSSS_CHANNEL;
+        return FrequencyChannelType::DSSS;
     case WIFI_STANDARD_80211p:
-        return WIFI_PHY_80211p_CHANNEL;
+        return FrequencyChannelType::CH_80211P;
     default:
-        return WIFI_PHY_OFDM_CHANNEL;
+        return FrequencyChannelType::OFDM;
     }
 }
 

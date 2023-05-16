@@ -86,6 +86,17 @@ struct RxSignalInfo
     double rssi; ///< RSSI in dBm
 };
 
+/**
+ * \ingroup wifi
+ * \brief Enumeration of frequency channel types
+ */
+enum class FrequencyChannelType : uint8_t
+{
+    DSSS = 0,
+    OFDM,
+    CH_80211P
+};
+
 } // namespace ns3
 
 #endif /* WIFI_TYPES_H */
