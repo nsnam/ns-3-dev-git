@@ -39,30 +39,25 @@ NS_LOG_COMPONENT_DEFINE("WifiSpectrumValueHelper");
 ///< Wifi Spectrum Model structure
 struct WifiSpectrumModelId
 {
-    uint16_t m_centerFrequency;       ///< center frequency (in MHz)
-    ChannelWidthMhz m_channelWidth;   ///< channel width (in MHz)
-    uint32_t m_carrierSpacing;        ///< carrier spacing (in Hz)
-    ChannelWidthMhz m_guardBandwidth; ///< guard band width (in MHz)
+    uint16_t centerFrequency;       ///< center frequency (in MHz)
+    ChannelWidthMhz channelWidth;   ///< channel width (in MHz)
+    uint32_t carrierSpacing;        ///< carrier spacing (in Hz)
+    ChannelWidthMhz guardBandwidth; ///< guard band width (in MHz)
 };
 
 /**
  * Less than operator
- * \param a the first wifi spectrum to compare
- * \param b the second wifi spectrum to compare
- * \returns true if the first spectrum is less than the second spectrum
+ * \param lhs the left hand side wifi spectrum to compare
+ * \param rhs the right hand side wifi spectrum to compare
+ * \returns true if the left hand side spectrum is less than the right hand side spectrum
  */
 bool
-operator<(const WifiSpectrumModelId& a, const WifiSpectrumModelId& b)
+operator<(const WifiSpectrumModelId& lhs, const WifiSpectrumModelId& rhs)
 {
-    return (
-        (a.m_centerFrequency < b.m_centerFrequency) ||
-        ((a.m_centerFrequency == b.m_centerFrequency) && (a.m_channelWidth < b.m_channelWidth)) ||
-        ((a.m_centerFrequency == b.m_centerFrequency) && (a.m_channelWidth == b.m_channelWidth) &&
-         (a.m_carrierSpacing < b.m_carrierSpacing)) // to cover coexistence of 11ax with legacy case
-        || ((a.m_centerFrequency == b.m_centerFrequency) &&
-            (a.m_channelWidth == b.m_channelWidth) && (a.m_carrierSpacing == b.m_carrierSpacing) &&
-            (a.m_guardBandwidth <
-             b.m_guardBandwidth))); // to cover 2.4 GHz case, where DSSS coexists with OFDM
+    return std::tie(lhs.centerFrequency, lhs.channelWidth, lhs.carrierSpacing, lhs.guardBandwidth) <
+           std::tie(rhs.centerFrequency, rhs.channelWidth, rhs.carrierSpacing, rhs.guardBandwidth);
+    // TODO: replace with default spaceship operator, but it seems currently not working with all
+    // compilers
 }
 
 static std::map<WifiSpectrumModelId, Ptr<SpectrumModel>>
