@@ -206,6 +206,12 @@ StaWifiMac::GetLink(uint8_t linkId) const
     return static_cast<StaLinkEntity&>(WifiMac::GetLink(linkId));
 }
 
+StaWifiMac::StaLinkEntity&
+StaWifiMac::GetStaLink(const std::unique_ptr<WifiMac::LinkEntity>& link) const
+{
+    return static_cast<StaLinkEntity&>(*link);
+}
+
 int64_t
 StaWifiMac::AssignStreams(int64_t stream)
 {
@@ -415,10 +421,11 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
     // frame is transmitted, the Link Info field of the Basic Multi-Link element carried
     // in the (Re)Association Request frame shall contain the corresponding Per-STA Profile
     // subelement(s).
-    for (uint8_t index = 0; index < GetNLinks(); index++)
+    for (const auto& [index, link] : GetLinks())
     {
-        auto& link = GetLink(index);
-        if (index != linkId && link.apLinkId.has_value())
+        const auto& staLink = GetStaLink(link);
+
+        if (index != linkId && staLink.apLinkId.has_value())
         {
             multiLinkElement.AddPerStaProfileSubelement();
             auto& perStaProfile = multiLinkElement.GetPerStaProfile(
@@ -427,7 +434,7 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
             // for the corresponding non-AP STA that requests a link for multi-link (re)setup
             // with the AP MLD is set to the link ID of the AP affiliated with the AP MLD that
             // is operating on that link. The link ID is obtained during multi-link discovery
-            perStaProfile.SetLinkId(link.apLinkId.value());
+            perStaProfile.SetLinkId(staLink.apLinkId.value());
             // For each Per-STA Profile subelement included in the Link Info field, the
             // Complete Profile subfield of the STA Control field shall be set to 1
             perStaProfile.SetCompleteProfile();
@@ -435,7 +442,7 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
             // subfield in the STA Info field and is set to 1 if the STA MAC Address subfield
             // is present in the STA Info field; otherwise set to 0. An STA sets this subfield
             // to 1 when the element carries complete profile.
-            perStaProfile.SetStaMacAddress(link.feManager->GetAddress());
+            perStaProfile.SetStaMacAddress(staLink.feManager->GetAddress());
             perStaProfile.SetAssocRequest(GetAssociationRequest(isReassoc, index));
         }
     }
@@ -447,16 +454,18 @@ void
 StaWifiMac::SendAssociationRequest(bool isReassoc)
 {
     // find the link where the (Re)Association Request has to be sent
-    uint8_t linkId = 0;
-    while (linkId < GetNLinks())
+    auto it = GetLinks().cbegin();
+    while (it != GetLinks().cend())
     {
-        if (GetLink(linkId).sendAssocReq)
+        if (GetStaLink(it->second).sendAssocReq)
         {
             break;
         }
-        linkId++;
+        it++;
     }
-    NS_ABORT_MSG_IF(linkId == GetNLinks(), "No link selected to send the (Re)Association Request");
+    NS_ABORT_MSG_IF(it == GetLinks().cend(),
+                    "No link selected to send the (Re)Association Request");
+    uint8_t linkId = it->first;
     auto& link = GetLink(linkId);
     NS_ABORT_MSG_IF(!link.bssid.has_value(),
                     "No BSSID set for the link on which the (Re)Association Request is to be sent");
@@ -567,12 +576,11 @@ StaWifiMac::StartScanning()
 
     WifiScanParams scanParams;
     scanParams.ssid = GetSsid();
-    for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+    for (const auto& [id, link] : GetLinks())
     {
         WifiScanParams::ChannelList channel{
-            (GetWifiPhy(linkId)->HasFixedPhyBand())
-                ? WifiScanParams::Channel{0, GetWifiPhy(linkId)->GetPhyBand()}
-                : WifiScanParams::Channel{0, WIFI_PHY_BAND_UNSPECIFIED}};
+            (link->phy->HasFixedPhyBand()) ? WifiScanParams::Channel{0, link->phy->GetPhyBand()}
+                                           : WifiScanParams::Channel{0, WIFI_PHY_BAND_UNSPECIFIED}};
 
         scanParams.channelList.push_back(channel);
     }
@@ -606,12 +614,12 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
     NS_LOG_DEBUG("Attempting to associate with AP: " << *bestAp);
     UpdateApInfo(bestAp->m_frame, bestAp->m_apAddr, bestAp->m_bssid, bestAp->m_linkId);
     // reset info on links to setup
-    for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+    for (auto& [id, link] : GetLinks())
     {
-        auto& link = GetLink(linkId);
-        link.sendAssocReq = false;
-        link.apLinkId = std::nullopt;
-        link.bssid = std::nullopt;
+        auto& staLink = GetStaLink(link);
+        staLink.sendAssocReq = false;
+        staLink.apLinkId = std::nullopt;
+        staLink.bssid = std::nullopt;
     }
     // send Association Request on the link where the Beacon/Probe Response was received
     GetLink(bestAp->m_linkId).sendAssocReq = true;
@@ -651,11 +659,11 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
     Time beaconInterval = std::visit(getBeaconInterval, bestAp->m_frame);
     Time delay = beaconInterval * m_maxMissedBeacons;
     // restart beacon watchdog for all links to setup
-    for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+    for (const auto& [id, link] : GetLinks())
     {
-        if (GetLink(linkId).apLinkId.has_value() || GetNLinks() == 1)
+        if (GetStaLink(link).apLinkId.has_value() || GetNLinks() == 1)
         {
-            RestartBeaconWatchdog(delay, linkId);
+            RestartBeaconWatchdog(delay, id);
         }
     }
     SetState(WAIT_ASSOC_RESP);
@@ -716,9 +724,9 @@ StaWifiMac::Disassociated(uint8_t linkId)
     link.bssid = std::nullopt;
     link.phy->SetOffMode();
 
-    for (uint8_t id = 0; id < GetNLinks(); id++)
+    for (const auto& [id, lnk] : GetLinks())
     {
-        if (GetLink(id).apLinkId.has_value())
+        if (GetStaLink(lnk).apLinkId.has_value())
         {
             // found an enabled link
             return;
@@ -741,9 +749,9 @@ StaWifiMac::Disassociated(uint8_t linkId)
     }
     m_aid = 0; // reset AID
     // ensure all links are on
-    for (uint8_t id = 0; id < GetNLinks(); id++)
+    for (const auto& [id, lnk] : GetLinks())
     {
-        GetLink(id).phy->ResumeFromOff();
+        lnk->phy->ResumeFromOff();
     }
     TryToEnsureAssociated();
 }
@@ -782,11 +790,11 @@ StaWifiMac::GetSetupLinkIds() const
     }
 
     std::set<uint8_t> linkIds;
-    for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+    for (const auto& [id, link] : GetLinks())
     {
-        if (GetLink(linkId).bssid)
+        if (GetStaLink(link).bssid)
         {
-            linkIds.insert(linkId);
+            linkIds.insert(id);
         }
     }
     return linkIds;
@@ -1151,8 +1159,11 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         // create a list of all local Link IDs. IDs are removed as we find a corresponding
         // Per-STA Profile Subelements indicating successful association. Links with
         // remaining IDs are not setup
-        std::list<uint8_t> setupLinks(GetNLinks());
-        std::iota(setupLinks.begin(), setupLinks.end(), 0);
+        std::list<uint8_t> setupLinks;
+        for (const auto& [id, link] : GetLinks())
+        {
+            setupLinks.push_back(id);
+        }
         if (assocResp.GetStatusCode().IsSuccess())
         {
             setupLinks.remove(linkId);
@@ -1177,18 +1188,19 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             {
                 auto& perStaProfile = mle->GetPerStaProfile(elem);
                 uint8_t apLinkId = perStaProfile.GetLinkId();
-                uint8_t staLinkid = 0;
-                while (staLinkid < GetNLinks())
+                auto it = GetLinks().cbegin();
+                while (it != GetLinks().cend())
                 {
-                    if (GetLink(staLinkid).apLinkId == apLinkId)
+                    if (GetStaLink(it->second).apLinkId == apLinkId)
                     {
                         break;
                     }
-                    staLinkid++;
+                    it++;
                 }
+                uint8_t staLinkid = 0;
                 std::optional<Mac48Address> bssid;
-                NS_ABORT_MSG_IF(staLinkid == GetNLinks() ||
-                                    !(bssid = GetLink(staLinkid).bssid).has_value(),
+                NS_ABORT_MSG_IF(it == GetLinks().cend() ||
+                                    !(bssid = GetLink((staLinkid = it->first)).bssid).has_value(),
                                 "Setup for AP link ID " << apLinkId << " was not requested");
                 NS_ABORT_MSG_IF(*bssid != perStaProfile.GetStaMacAddress(),
                                 "The BSSID in the Per-STA Profile for link ID "
@@ -1268,9 +1280,9 @@ StaWifiMac::SetPmModeAfterAssociation(uint8_t linkId)
             auto ackDuration =
                 WifiPhy::CalculateTxDuration(psduMap, txVector, GetLink(linkId).phy->GetPhyBand());
 
-            for (uint8_t id = 0; id < GetNLinks(); id++)
+            for (const auto& [id, lnk] : GetLinks())
             {
-                auto& link = GetLink(id);
+                auto& link = GetStaLink(lnk);
 
                 if (!link.bssid)
                 {

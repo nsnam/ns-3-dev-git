@@ -774,6 +774,11 @@ class WifiMac : public Object
     };
 
     /**
+     * \return a const reference to the map of link entities
+     */
+    const std::map<uint8_t, std::unique_ptr<LinkEntity>>& GetLinks() const;
+
+    /**
      * Get a reference to the link associated with the given ID.
      *
      * \param linkId the given link ID

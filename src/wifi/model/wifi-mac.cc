@@ -913,6 +913,12 @@ WifiMac::CreateLinkEntity() const
     return std::make_unique<LinkEntity>();
 }
 
+const std::map<uint8_t, std::unique_ptr<WifiMac::LinkEntity>>&
+WifiMac::GetLinks() const
+{
+    return m_links;
+}
+
 WifiMac::LinkEntity&
 WifiMac::GetLink(uint8_t linkId) const
 {

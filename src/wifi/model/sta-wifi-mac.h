@@ -342,6 +342,14 @@ class StaWifiMac : public WifiMac
      */
     StaLinkEntity& GetLink(uint8_t linkId) const;
 
+    /**
+     * Cast the given LinkEntity object to StaLinkEntity.
+     *
+     * \param link the given LinkEntity object
+     * \return a reference to the object casted to StaLinkEntity
+     */
+    StaLinkEntity& GetStaLink(const std::unique_ptr<WifiMac::LinkEntity>& link) const;
+
   private:
     /**
      * The current MAC state of the STA.
