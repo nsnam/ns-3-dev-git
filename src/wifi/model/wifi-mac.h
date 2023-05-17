@@ -804,6 +804,15 @@ class WifiMac : public Object
     virtual void DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu);
 
     /**
+     * Apply the TID-to-Link Mapping negotiated with the given MLD for the given direction
+     * by properly configuring the queue scheduler.
+     *
+     * \param mldAddr the MLD MAC address of the given MLD
+     * \param dir the given direction (DL or UL)
+     */
+    void ApplyTidLinkMapping(const Mac48Address& mldAddr, WifiDirection dir);
+
+    /**
      * Swap the links based on the information included in the given map. This method
      * is normally called by a non-AP MLD upon completing ML setup to have its link IDs
      * match AP MLD's link IDs.

@@ -1303,6 +1303,88 @@ WifiMac::SetLinkDownCallback(Callback<void> linkDown)
 }
 
 void
+WifiMac::ApplyTidLinkMapping(const Mac48Address& mldAddr, WifiDirection dir)
+{
+    NS_LOG_FUNCTION(this << mldAddr);
+
+    NS_ABORT_MSG_IF(
+        dir == WifiDirection::BOTH_DIRECTIONS,
+        "This method can be used to enforce TID-to-Link mapping for one direction at a time");
+
+    const auto& mappings =
+        (dir == WifiDirection::DOWNLINK ? m_dlTidLinkMappings : m_ulTidLinkMappings);
+
+    auto it = mappings.find(mldAddr);
+
+    if (it == mappings.cend())
+    {
+        // no mapping has been ever negotiated with the given MLD, the default mapping is used
+        return;
+    }
+
+    std::set<uint8_t> setupLinks;
+
+    // find the IDs of the links setup with the given MLD
+    for (const auto& [id, link] : m_links)
+    {
+        if (link->stationManager->GetMldAddress(mldAddr))
+        {
+            setupLinks.insert(id);
+        }
+    }
+
+    auto linkMapping = it->second;
+
+    if (linkMapping.empty())
+    {
+        // default link mapping, each TID mapped on all setup links
+        for (uint8_t tid = 0; tid < 8; tid++)
+        {
+            linkMapping.emplace(tid, setupLinks);
+        }
+    }
+
+    for (const auto& [tid, linkSet] : linkMapping)
+    {
+        decltype(setupLinks) mappedLinks; // empty
+        auto notMappedLinks = setupLinks; // all setup links
+
+        for (const auto id : linkSet)
+        {
+            if (setupLinks.find(id) != setupLinks.cend())
+            {
+                // link is mapped
+                mappedLinks.insert(id);
+                notMappedLinks.erase(id);
+            }
+        }
+
+        // unblock mapped links
+        NS_ABORT_MSG_IF(mappedLinks.empty(), "Every TID must be mapped to at least a link");
+
+        m_scheduler->UnblockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                   QosUtilsMapTidToAc(tid),
+                                   {WIFI_QOSDATA_QUEUE},
+                                   mldAddr,
+                                   GetAddress(),
+                                   {tid},
+                                   mappedLinks);
+
+        // block unmapped links
+        if (!notMappedLinks.empty())
+        {
+            m_scheduler->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                     QosUtilsMapTidToAc(tid),
+                                     {WIFI_QOSDATA_QUEUE},
+                                     mldAddr,
+                                     GetAddress(),
+                                     {tid},
+                                     notMappedLinks);
+        }
+    }
+}
+
+void
 WifiMac::BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                const Mac48Address& address,
                                const std::set<uint8_t>& linkIds)
