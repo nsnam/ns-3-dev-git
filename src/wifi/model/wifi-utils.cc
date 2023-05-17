@@ -144,4 +144,37 @@ GetSize(Ptr<const Packet> packet, const WifiMacHeader* hdr, bool isAmpdu)
     return size;
 }
 
+bool
+TidToLinkMappingValidForNegType1(const WifiTidLinkMapping& dlLinkMapping,
+                                 const WifiTidLinkMapping& ulLinkMapping)
+{
+    if (dlLinkMapping.empty() && ulLinkMapping.empty())
+    {
+        // default mapping is valid
+        return true;
+    }
+
+    if (dlLinkMapping.size() != 8 || ulLinkMapping.size() != 8)
+    {
+        // not all TIDs have been mapped
+        return false;
+    }
+
+    const auto& linkSet = dlLinkMapping.cbegin()->second;
+
+    for (const auto& linkMapping : {std::cref(dlLinkMapping), std::cref(ulLinkMapping)})
+    {
+        for (const auto& [tid, links] : linkMapping.get())
+        {
+            if (links != linkSet)
+            {
+                // distinct link sets
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 } // namespace ns3

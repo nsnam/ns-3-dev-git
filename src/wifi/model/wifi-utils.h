@@ -170,6 +170,17 @@ void AddWifiMacTrailer(Ptr<Packet> packet);
  */
 uint32_t GetSize(Ptr<const Packet> packet, const WifiMacHeader* hdr, bool isAmpdu);
 
+/**
+ * Check if the given TID-to-Link Mappings are valid for a negotiation type of 1. Specifically,
+ * it is checked whether all TIDs are mapped to the same set of links.
+ *
+ * \param dlLinkMapping the given TID-to-Link Mapping for Downlink
+ * \param ulLinkMapping the given TID-to-Link Mapping for Uplink
+ * \return whether the given TID-to-Link Mappings are valid for a negotiation type of 1
+ */
+bool TidToLinkMappingValidForNegType1(const WifiTidLinkMapping& dlLinkMapping,
+                                      const WifiTidLinkMapping& ulLinkMapping);
+
 /// Size of the space of sequence numbers
 static constexpr uint16_t SEQNO_SPACE_SIZE = 4096;
 

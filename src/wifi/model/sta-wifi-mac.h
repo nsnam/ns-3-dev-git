@@ -504,6 +504,13 @@ class StaWifiMac : public WifiMac
      * \return the Multi-Link Element
      */
     MultiLinkElement GetMultiLinkElement(bool isReassoc, uint8_t linkId) const;
+
+    /**
+     * \param apNegSupport the negotiation type supported by the AP MLD
+     * \return the TID-to-Link Mapping element(s) to include in Association Request frame.
+     */
+    std::vector<TidToLinkMapping> GetTidToLinkMappingElements(uint8_t apNegSupport);
+
     /**
      * Set the current MAC state.
      *
@@ -589,6 +596,11 @@ class StaWifiMac : public WifiMac
     Ptr<RandomVariableStream> m_probeDelay; ///< RandomVariable used to randomize the time
                                             ///< of the first Probe Response on each channel
     Time m_pmModeSwitchTimeout;             ///< PM mode switch timeout
+
+    /// store the DL TID-to-Link Mapping included in the Association Request frame
+    WifiTidLinkMapping m_dlTidLinkMappingInAssocReq;
+    /// store the UL TID-to-Link Mapping included in the Association Request frame
+    WifiTidLinkMapping m_ulTidLinkMappingInAssocReq;
 
     TracedCallback<Mac48Address> m_assocLogger;             ///< association logger
     TracedCallback<uint8_t, Mac48Address> m_setupCompleted; ///< link setup completed logger

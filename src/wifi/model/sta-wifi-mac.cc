@@ -467,6 +467,76 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
     return multiLinkElement;
 }
 
+std::vector<TidToLinkMapping>
+StaWifiMac::GetTidToLinkMappingElements(uint8_t apNegSupport)
+{
+    NS_LOG_FUNCTION(this << apNegSupport);
+
+    auto ehtConfig = GetEhtConfiguration();
+    NS_ASSERT(ehtConfig);
+
+    EnumValue negSupport;
+    ehtConfig->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
+
+    NS_ABORT_MSG_IF(negSupport.Get() == 0,
+                    "Cannot request TID-to-Link Mapping if negotiation is not supported");
+
+    // store the mappings, so that we can enforce them when the AP MLD accepts them
+    m_dlTidLinkMappingInAssocReq = ehtConfig->GetTidLinkMapping(WifiDirection::DOWNLINK);
+    m_ulTidLinkMappingInAssocReq = ehtConfig->GetTidLinkMapping(WifiDirection::UPLINK);
+
+    bool mappingValidForNegType1 = TidToLinkMappingValidForNegType1(m_dlTidLinkMappingInAssocReq,
+                                                                    m_ulTidLinkMappingInAssocReq);
+    NS_ABORT_MSG_IF(
+        negSupport.Get() == 1 && !mappingValidForNegType1,
+        "Mapping TIDs to distinct link sets is incompatible with negotiation support of 1");
+
+    if (apNegSupport == 1 && !mappingValidForNegType1)
+    {
+        // If the TID-to-link Mapping Negotiation Support subfield value received from a peer
+        // MLD is equal to 1, the MLD that initiates a TID-to-link mapping negotiation with the
+        // peer MLD shall send only the TID-to-link Mapping element where all TIDs are mapped to
+        // the same link set (Sec. 35.3.7.1.3 of 802.11be D3.1). We use default mapping to meet
+        // this requirement.
+        NS_LOG_DEBUG("Using default mapping because AP MLD advertised negotiation support of 1");
+        m_dlTidLinkMappingInAssocReq.clear();
+        m_ulTidLinkMappingInAssocReq.clear();
+    }
+
+    std::vector<TidToLinkMapping> ret(1);
+
+    ret.back().m_control.direction = WifiDirection::DOWNLINK;
+
+    // lambda to fill the last TID-to-Link Mapping IE in the vector to return
+    auto fillIe = [&ret](const auto& mapping) {
+        ret.back().m_control.defaultMapping = mapping.empty();
+
+        for (const auto& [tid, linkSet] : mapping)
+        {
+            // At any point in time, a TID shall always be mapped to at least one setup link both
+            // in DL and UL, which means that a TID-to-link mapping change is only valid and
+            // successful if it will not result in having any TID for which the link set for DL
+            // or UL is made of zero setup links (Sec. 35.3.7.1.1 of 802.11be D3.1)
+            NS_ABORT_MSG_IF(linkSet.empty(), "Cannot map a TID to an empty link set");
+            ret.back().SetLinkMappingOfTid(tid, linkSet);
+        }
+    };
+
+    fillIe(m_dlTidLinkMappingInAssocReq);
+
+    if (m_ulTidLinkMappingInAssocReq == m_dlTidLinkMappingInAssocReq)
+    {
+        ret.back().m_control.direction = WifiDirection::BOTH_DIRECTIONS;
+        return ret;
+    }
+
+    ret.emplace_back();
+    ret.back().m_control.direction = WifiDirection::UPLINK;
+    fillIe(m_ulTidLinkMappingInAssocReq);
+
+    return ret;
+}
+
 void
 StaWifiMac::SendAssociationRequest(bool isReassoc)
 {
@@ -500,7 +570,9 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
     auto frame = GetAssociationRequest(isReassoc, linkId);
 
     // include a Multi-Link Element if this device has multiple links (independently
-    // of how many links will be setup) and the AP is a multi-link device
+    // of how many links will be setup) and the AP is a multi-link device;
+    // if the AP MLD  has indicated a support of TID-to-link mapping negotiation, also
+    // include the TID-to-link Mapping element(s)
     if (GetNLinks() > 1 &&
         GetWifiRemoteStationManager(linkId)->GetMldAddress(*link.bssid).has_value())
     {
@@ -508,6 +580,17 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
             frame.template Get<MultiLinkElement>() = GetMultiLinkElement(isReassoc, linkId);
         };
         std::visit(addMle, frame);
+
+        uint8_t negSupport;
+        if (const auto& mldCapabilities =
+                GetWifiRemoteStationManager(linkId)->GetStationMldCapabilities(*link.bssid);
+            mldCapabilities && (negSupport = mldCapabilities->get().tidToLinkMappingSupport) > 0)
+        {
+            auto addTlm = [&](auto&& frame) {
+                frame.template Get<TidToLinkMapping>() = GetTidToLinkMappingElements(negSupport);
+            };
+            std::visit(addTlm, frame);
+        }
     }
 
     if (!isReassoc)

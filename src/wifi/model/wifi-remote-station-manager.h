@@ -311,6 +311,12 @@ class WifiRemoteStationManager : public Object
     std::optional<std::reference_wrapper<CommonInfoBasicMle::EmlCapabilities>>
     GetStationEmlCapabilities(const Mac48Address& from);
     /**
+     * \param from the (MLD or link) address of the remote non-AP MLD
+     * \return the MLD Capabilities advertised by the remote non-AP MLD
+     */
+    std::optional<std::reference_wrapper<CommonInfoBasicMle::MldCapabilities>>
+    GetStationMldCapabilities(const Mac48Address& from);
+    /**
      * Return whether the device has HT capability support enabled.
      *
      * \return true if HT capability support is enabled, false otherwise

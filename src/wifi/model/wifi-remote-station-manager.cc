@@ -1642,6 +1642,17 @@ WifiRemoteStationManager::GetStationEmlCapabilities(const Mac48Address& from)
     return std::nullopt;
 }
 
+std::optional<std::reference_wrapper<CommonInfoBasicMle::MldCapabilities>>
+WifiRemoteStationManager::GetStationMldCapabilities(const Mac48Address& from)
+{
+    if (auto state = LookupState(from);
+        state->m_mleCommonInfo && state->m_mleCommonInfo->m_mldCapabilities)
+    {
+        return state->m_mleCommonInfo->m_mldCapabilities.value();
+    }
+    return std::nullopt;
+}
+
 bool
 WifiRemoteStationManager::GetLdpcSupported(Mac48Address address) const
 {
