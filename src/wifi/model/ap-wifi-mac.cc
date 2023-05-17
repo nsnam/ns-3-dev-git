@@ -1102,6 +1102,10 @@ ApWifiMac::GetAssocResp(Mac48Address to, uint8_t linkId)
     {
         assoc.Get<EhtCapabilities>() = GetEhtCapabilities(linkId);
         assoc.Get<EhtOperation>() = GetEhtOperation(linkId);
+        // The AP MLD that accepts the requested TID-to-link mapping shall not include in the
+        // (Re)Association Response frame the TID-to-link Mapping element.
+        // (Sec. 35.3.7.1.8 of 802.11be D3.1).
+        // For now, we assume that AP MLDs always accept requested TID-to-link mappings.
     }
     return assoc;
 }
@@ -1485,6 +1489,9 @@ ApWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
                     StaSwitchingToPsMode(*staAddress, i);
                 }
             }
+
+            // Apply the negotiated TID-to-Link Mapping (if any) for DL direction
+            ApplyTidLinkMapping(*staMldAddress, WifiDirection::DOWNLINK);
         }
     }
     else if (hdr.IsAction())
@@ -1911,9 +1918,105 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         }
         if (GetEhtSupported())
         {
-            // check whether the EHT STA supports all MCSs in Basic MCS Set
-            //  const auto& ehtCapabilities = frame.GetEhtCapabilities ();
-            // TODO: to be completed
+            // TODO check whether the EHT STA supports all MCSs in Basic MCS Set
+            auto ehtConfig = GetEhtConfiguration();
+            NS_ASSERT(ehtConfig);
+
+            if (const auto& tidLinkMapping = frame.template Get<TidToLinkMapping>();
+                !tidLinkMapping.empty())
+            {
+                // non-AP MLD included TID-to-Link Mapping IE(s) in the Association Request.
+                // We refuse association if we do not support TID-to-Link mapping negotiation
+                // or the non-AP MLD included more than two TID-to-Link Mapping IEs
+                // or we support negotiation type 1 but TIDs are mapped onto distinct link sets
+                // or there is some TID that is not mapped to any link
+                // or the direction(s) is/are not set properly
+                if (tidLinkMapping.size() > 2)
+                {
+                    return failure("More than two TID-to-Link Mapping IEs");
+                }
+
+                // if only one Tid-to-Link Mapping element is present, it must be valid for
+                // both directions
+                bool bothDirIfOneTlm =
+                    tidLinkMapping.size() != 1 ||
+                    tidLinkMapping[0].m_control.direction == WifiDirection::BOTH_DIRECTIONS;
+                // An MLD that includes two TID-To-Link Mapping elements in a (Re)Association
+                // Request frame or a (Re)Association Response frame shall set the Direction
+                // subfield in one of the TID-To-Link Mapping elements to 0 and the Direction
+                // subfield in the other TID-To- Link Mapping element to 1.
+                // (Sec. 35.3.7.1.8 of 802.11be D3.1)
+                bool distinctDirsIfTwoTlms =
+                    tidLinkMapping.size() != 2 ||
+                    (tidLinkMapping[0].m_control.direction != WifiDirection::BOTH_DIRECTIONS &&
+                     tidLinkMapping[1].m_control.direction != WifiDirection::BOTH_DIRECTIONS &&
+                     tidLinkMapping[0].m_control.direction !=
+                         tidLinkMapping[1].m_control.direction);
+
+                if (!bothDirIfOneTlm || !distinctDirsIfTwoTlms)
+                {
+                    return failure("Incorrect directions in TID-to-Link Mapping IEs");
+                }
+
+                EnumValue negSupport;
+                ehtConfig->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
+
+                if (negSupport.Get() == 0)
+                {
+                    return failure("TID-to-Link Mapping negotiation not supported");
+                }
+
+                auto getMapping = [](const TidToLinkMapping& tlmIe, WifiTidLinkMapping& mapping) {
+                    if (tlmIe.m_control.defaultMapping)
+                    {
+                        return;
+                    }
+                    for (uint8_t tid = 0; tid < 8; tid++)
+                    {
+                        if (auto linkSet = tlmIe.GetLinkMappingOfTid(tid); !linkSet.empty())
+                        {
+                            mapping.emplace(tid, std::move(linkSet));
+                        }
+                    }
+                };
+
+                WifiTidLinkMapping dlMapping;
+                WifiTidLinkMapping ulMapping;
+
+                switch (tidLinkMapping[0].m_control.direction)
+                {
+                case WifiDirection::BOTH_DIRECTIONS:
+                    getMapping(tidLinkMapping.at(0), dlMapping);
+                    ulMapping = dlMapping;
+                    break;
+                case WifiDirection::DOWNLINK:
+                    getMapping(tidLinkMapping.at(0), dlMapping);
+                    getMapping(tidLinkMapping.at(1), ulMapping);
+                    break;
+                case WifiDirection::UPLINK:
+                    getMapping(tidLinkMapping.at(0), ulMapping);
+                    getMapping(tidLinkMapping.at(1), dlMapping);
+                    break;
+                }
+
+                if (negSupport.Get() == 1 &&
+                    !TidToLinkMappingValidForNegType1(dlMapping, ulMapping))
+                {
+                    return failure("Mapping TIDs to distinct link sets is incompatible with "
+                                   "negotiation support of 1");
+                }
+
+                // otherwise, we accept the TID-to-link Mapping and store it
+                const auto& mle = frame.template Get<MultiLinkElement>();
+                NS_ASSERT_MSG(mle,
+                              "Multi-Link Element not present in an Association Request including "
+                              "TID-to-Link Mapping element(s)");
+                auto mldAddr = mle->GetMldMacAddress();
+
+                // The requested link mappings are valid and can be accepted; store them.
+                UpdateTidToLinkMapping(mldAddr, WifiDirection::DOWNLINK, dlMapping);
+                UpdateTidToLinkMapping(mldAddr, WifiDirection::UPLINK, ulMapping);
+            }
         }
 
         // The association request from the station can be accepted.
@@ -1994,7 +2097,6 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         NS_LOG_DEBUG("Association Request from " << from << " accepted");
         remoteStationManager->RecordWaitAssocTxOk(from);
         return true;
-        ;
     };
 
     return std::visit(recvAssocRequest, assoc);
