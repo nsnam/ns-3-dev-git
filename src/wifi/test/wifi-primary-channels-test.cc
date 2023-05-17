@@ -18,6 +18,7 @@
  */
 
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/config.h"
 #include "ns3/ctrl-headers.h"
@@ -397,13 +398,16 @@ WifiPrimaryChannelsTest::DoSetup()
                 "WaitBeaconTimeout",
                 TimeValue(MicroSeconds(102400))); // same as BeaconInterval
 
-    TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue> channelValue;
+    AttributeContainerValue<
+        TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
+        ';'>
+        channelValue;
 
     // Each BSS uses a distinct primary20 channel
     for (uint8_t bss = 0; bss < m_nBss; bss++)
     {
         channelValue.Set(
-            WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, bss});
+            WifiPhy::ChannelSegments{{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, bss}});
         phy.Set("ChannelSettings", channelValue);
 
         m_staDevices.push_back(wifi.Install(phy, mac, wifiStaNodes[bss]));
@@ -412,7 +416,7 @@ WifiPrimaryChannelsTest::DoSetup()
     for (uint8_t bss = 0; bss < m_nBss; bss++)
     {
         channelValue.Set(
-            WifiPhy::ChannelTuple{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, bss});
+            WifiPhy::ChannelSegments{{channelNum, m_channelWidth, WIFI_PHY_BAND_5GHZ, bss}});
         phy.Set("ChannelSettings", channelValue);
 
         mac.SetType("ns3::ApWifiMac",

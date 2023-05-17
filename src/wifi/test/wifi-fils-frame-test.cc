@@ -186,9 +186,12 @@ WifiFilsFrameTest::SetupDevice(Ptr<YansWifiChannel>& channel, bool isAp)
     MobilityHelper mobility;
     node.Create(1);
     phy.SetChannel(channel);
-    TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue> channelValue;
-    channelValue.Set(
-        WifiPhy::ChannelTuple{INVALID_CHAN_NUM, m_params.bw, DEFAULT_BAND, DEFAULT_PRIMARY_INDEX});
+    AttributeContainerValue<
+        TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
+        ';'>
+        channelValue;
+    channelValue.Set(WifiPhy::ChannelSegments{
+        {INVALID_CHAN_NUM, m_params.bw, DEFAULT_BAND, DEFAULT_PRIMARY_INDEX}});
     phy.Set("ChannelSettings", channelValue);
     phy.Set("Antennas", UintegerValue(m_params.nss));
     phy.Set("MaxSupportedTxSpatialStreams", UintegerValue(m_params.nss));

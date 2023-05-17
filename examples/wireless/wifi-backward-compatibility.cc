@@ -17,6 +17,7 @@
  * Author: Sebastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/command-line.h"
 #include "ns3/config.h"
@@ -150,7 +151,10 @@ main(int argc, char* argv[])
     WifiMacHelper mac;
     WifiHelper wifi;
     Ssid ssid = Ssid("ns3");
-    TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue> channelValue;
+    AttributeContainerValue<
+        TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
+        ';'>
+        channelValue;
 
     const auto& [staStandard, staBand] = ConvertStringToStandardAndBand(staVersion);
     wifi.SetStandard(staStandard);
@@ -160,7 +164,7 @@ main(int argc, char* argv[])
 
     // Workaround needed as long as we do not fully support channel bonding
     uint16_t width = (staVersion == "80211ac" ? 20 : 0);
-    channelValue.Set(WifiPhy::ChannelTuple{0, width, staBand, 0});
+    channelValue.Set(WifiPhy::ChannelSegments{{0, width, staBand, 0}});
     phy.Set("ChannelSettings", channelValue);
 
     NetDeviceContainer staDevice;
@@ -174,7 +178,7 @@ main(int argc, char* argv[])
 
     // Workaround needed as long as we do not fully support channel bonding
     width = (apVersion == "80211ac" ? 20 : 0);
-    channelValue.Set(WifiPhy::ChannelTuple{0, width, apBand, 0});
+    channelValue.Set(WifiPhy::ChannelSegments{{0, width, apBand, 0}});
     phy.Set("ChannelSettings", channelValue);
 
     NetDeviceContainer apDevice;

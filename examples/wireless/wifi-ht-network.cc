@@ -18,6 +18,7 @@
  *          Sebastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/command-line.h"
 #include "ns3/config.h"
@@ -176,10 +177,12 @@ main(int argc, char* argv[])
                 wifi.ConfigHtOptions("ShortGuardIntervalSupported", BooleanValue(sgi));
 
                 Ssid ssid = Ssid("ns3-80211n");
-                TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>
+                AttributeContainerValue<
+                    TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
+                    ';'>
                     channelValue;
                 WifiPhyBand band = (frequency == 5.0 ? WIFI_PHY_BAND_5GHZ : WIFI_PHY_BAND_2_4GHZ);
-                channelValue.Set(WifiPhy::ChannelTuple{0, channelWidth, band, 0});
+                channelValue.Set(WifiPhy::ChannelSegments{{0, channelWidth, band, 0}});
 
                 mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
                 phy.Set("ChannelSettings", channelValue);

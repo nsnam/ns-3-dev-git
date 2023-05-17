@@ -46,6 +46,7 @@
 // --broadcast instead of unicast (default is unicast)
 // --rtsThreshold (by default, value of 99999 disables it)
 
+#include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/command-line.h"
 #include "ns3/config.h"
@@ -639,41 +640,38 @@ main(int argc, char* argv[])
     NetDeviceContainer serverDevice;
     NetDeviceContainer clientDevice;
 
-    TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue> channelValue;
+    AttributeContainerValue<
+        TupleValue<UintegerValue, UintegerValue, EnumValue<WifiPhyBand>, UintegerValue>,
+        ';'>
+        channelValue;
 
     WifiMacHelper wifiMac;
     if (infrastructure)
     {
         Ssid ssid = Ssid("ns-3-ssid");
         wifiMac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
-        channelValue.Set(WifiPhy::ChannelTuple{0,
-                                               serverSelectedStandard.m_width,
-                                               serverSelectedStandard.m_band,
-                                               0});
+        channelValue.Set(WifiPhy::ChannelSegments{
+            {0, serverSelectedStandard.m_width, serverSelectedStandard.m_band, 0}});
         wifiPhy.Set("ChannelSettings", channelValue);
         serverDevice = wifi.Install(wifiPhy, wifiMac, serverNode);
 
         wifiMac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid));
-        channelValue.Set(WifiPhy::ChannelTuple{0,
-                                               clientSelectedStandard.m_width,
-                                               clientSelectedStandard.m_band,
-                                               0});
+        channelValue.Set(WifiPhy::ChannelSegments{
+            {0, clientSelectedStandard.m_width, clientSelectedStandard.m_band, 0}});
+        wifiPhy.Set("ChannelSettings", channelValue);
         clientDevice = wifi.Install(wifiPhy, wifiMac, clientNode);
     }
     else
     {
         wifiMac.SetType("ns3::AdhocWifiMac");
-        channelValue.Set(WifiPhy::ChannelTuple{0,
-                                               serverSelectedStandard.m_width,
-                                               serverSelectedStandard.m_band,
-                                               0});
+        channelValue.Set(WifiPhy::ChannelSegments{
+            {0, serverSelectedStandard.m_width, serverSelectedStandard.m_band, 0}});
         wifiPhy.Set("ChannelSettings", channelValue);
         serverDevice = wifi.Install(wifiPhy, wifiMac, serverNode);
 
-        channelValue.Set(WifiPhy::ChannelTuple{0,
-                                               clientSelectedStandard.m_width,
-                                               clientSelectedStandard.m_band,
-                                               0});
+        channelValue.Set(WifiPhy::ChannelSegments{
+            {0, clientSelectedStandard.m_width, clientSelectedStandard.m_band, 0}});
+        wifiPhy.Set("ChannelSettings", channelValue);
         clientDevice = wifi.Install(wifiPhy, wifiMac, clientNode);
     }
 
