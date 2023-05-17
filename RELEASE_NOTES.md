@@ -40,6 +40,7 @@ Release 3-dev
 - (wifi) Fix assert when non-HE STAs receive CTS frames sent using non-HT duplicate following a MU-RTS frame
 - (lr-wpan) !1481 Small fixes in MAC orphan scan
 - (core) #902 - Fix vector inversion in the function `AttributeContainerTestSuite::ReverseList()`
+- (wifi) Fix OBSS-PD support for 802.11be
 
 Release 3.38
 ------------
