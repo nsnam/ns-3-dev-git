@@ -337,14 +337,14 @@ class MultiLinkOperationsTestBase : public TestCase
     /**
      * Callback invoked when a FEM passes PSDUs to the PHY.
      *
-     * \param linkId the ID of the link transmitting the PSDUs
-     * \param context the context
+     * \param mac the MAC transmitting the PSDUs
+     * \param phyId the ID of the PHY transmitting the PSDUs
      * \param psduMap the PSDU map
      * \param txVector the TX vector
      * \param txPowerW the tx power in Watts
      */
-    virtual void Transmit(uint8_t linkId,
-                          std::string context,
+    virtual void Transmit(Ptr<WifiMac> mac,
+                          uint8_t phyId,
                           WifiConstPsduMap psduMap,
                           WifiTxVector txVector,
                           double txPowerW);
@@ -379,6 +379,7 @@ class MultiLinkOperationsTestBase : public TestCase
         WifiConstPsduMap psduMap; ///< transmitted PSDU map
         WifiTxVector txVector;    ///< TXVECTOR
         uint8_t linkId;           ///< link ID
+        uint8_t phyId;            ///< ID of the transmitting PHY
     };
 
     std::vector<FrameInfo> m_txPsdus;             ///< transmitted PSDUs
@@ -489,7 +490,7 @@ MultiLinkOperationsTestBase::CheckAddresses(Ptr<const WifiPsdu> psdu,
         bool found = false;
         for (uint8_t i = 0; i < m_nStations; i++)
         {
-            for (uint8_t linkId = 0; linkId < m_staMacs[i]->GetNLinks(); linkId++)
+            for (const auto& linkId : m_staMacs[i]->GetLinkIds())
             {
                 if (m_staMacs[i]->GetFrameExchangeManager(linkId)->GetAddress() == *staAddr)
                 {
@@ -510,21 +511,24 @@ MultiLinkOperationsTestBase::CheckAddresses(Ptr<const WifiPsdu> psdu,
 }
 
 void
-MultiLinkOperationsTestBase::Transmit(uint8_t linkId,
-                                      std::string context,
+MultiLinkOperationsTestBase::Transmit(Ptr<WifiMac> mac,
+                                      uint8_t phyId,
                                       WifiConstPsduMap psduMap,
                                       WifiTxVector txVector,
                                       double txPowerW)
 {
-    m_txPsdus.push_back({Simulator::Now(), psduMap, txVector, linkId});
+    auto linkId = mac->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(), true, "No link found for PHY ID " << +phyId);
+    m_txPsdus.push_back({Simulator::Now(), psduMap, txVector, *linkId, phyId});
 
     for (const auto& [aid, psdu] : psduMap)
     {
         std::stringstream ss;
-        ss << std::setprecision(10) << "PSDU #" << m_txPsdus.size() << " Link ID " << +linkId << " "
-           << psdu->GetHeader(0).GetTypeString() << " #MPDUs " << psdu->GetNMpdus()
-           << " duration/ID " << psdu->GetHeader(0).GetDuration() << " RA = " << psdu->GetAddr1()
-           << " TA = " << psdu->GetAddr2() << " ADDR3 = " << psdu->GetHeader(0).GetAddr3()
+        ss << std::setprecision(10) << "PSDU #" << m_txPsdus.size() << " Link ID "
+           << +linkId.value() << " Phy ID " << +phyId << " " << psdu->GetHeader(0).GetTypeString()
+           << " #MPDUs " << psdu->GetNMpdus() << " duration/ID " << psdu->GetHeader(0).GetDuration()
+           << " RA = " << psdu->GetAddr1() << " TA = " << psdu->GetAddr2()
+           << " ADDR3 = " << psdu->GetHeader(0).GetAddr3()
            << " ToDS = " << psdu->GetHeader(0).IsToDs()
            << " FromDS = " << psdu->GetHeader(0).IsFromDs();
         if (psdu->GetHeader(0).IsQosData())
@@ -641,22 +645,22 @@ MultiLinkOperationsTestBase::DoSetup()
     }
 
     // Trace PSDUs passed to the PHY on all devices
-    for (uint8_t linkId = 0; linkId < StaticCast<WifiNetDevice>(apDevices.Get(0))->GetNPhys();
-         linkId++)
+    for (uint8_t phyId = 0; phyId < m_apMac->GetDevice()->GetNPhys(); phyId++)
     {
-        Config::Connect("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Phys/" +
-                            std::to_string(linkId) + "/PhyTxPsduBegin",
-                        MakeCallback(&MultiLinkOperationsTestBase::Transmit, this).Bind(linkId));
+        Config::ConnectWithoutContext(
+            "/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Phys/" + std::to_string(phyId) +
+                "/PhyTxPsduBegin",
+            MakeCallback(&MultiLinkOperationsTestBase::Transmit, this).Bind(m_apMac, phyId));
     }
     for (uint8_t i = 0; i < m_nStations; i++)
     {
-        for (uint8_t linkId = 0; linkId < StaticCast<WifiNetDevice>(staDevices.Get(i))->GetNPhys();
-             linkId++)
+        for (uint8_t phyId = 0; phyId < m_staMacs[i]->GetDevice()->GetNPhys(); phyId++)
         {
-            Config::Connect(
-                "/NodeList/" + std::to_string(i + 1) + "/DeviceList/*/$ns3::WifiNetDevice/Phys/" +
-                    std::to_string(linkId) + "/PhyTxPsduBegin",
-                MakeCallback(&MultiLinkOperationsTestBase::Transmit, this).Bind(linkId));
+            Config::ConnectWithoutContext("/NodeList/" + std::to_string(i + 1) +
+                                              "/DeviceList/*/$ns3::WifiNetDevice/Phys/" +
+                                              std::to_string(phyId) + "/PhyTxPsduBegin",
+                                          MakeCallback(&MultiLinkOperationsTestBase::Transmit, this)
+                                              .Bind(m_staMacs[i], phyId));
         }
     }
 
@@ -1302,8 +1306,8 @@ class MultiLinkTxTest : public MultiLinkOperationsTestBase
      */
     void CheckBlockAck(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId);
 
-    void Transmit(uint8_t linkId,
-                  std::string context,
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
                   WifiConstPsduMap psduMap,
                   WifiTxVector txVector,
                   double txPowerW) override;
@@ -1367,12 +1371,15 @@ MultiLinkTxTest::MultiLinkTxTest(WifiTrafficPattern trafficPattern,
 }
 
 void
-MultiLinkTxTest::Transmit(uint8_t linkId,
-                          std::string context,
+MultiLinkTxTest::Transmit(Ptr<WifiMac> mac,
+                          uint8_t phyId,
                           WifiConstPsduMap psduMap,
                           WifiTxVector txVector,
                           double txPowerW)
 {
+    MultiLinkOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+    auto linkId = m_txPsdus.back().linkId;
+
     auto psdu = psduMap.begin()->second;
 
     switch (psdu->GetHeader(0).GetType())
@@ -1397,7 +1404,7 @@ MultiLinkTxTest::Transmit(uint8_t linkId,
         {
             // determine the max number of simultaneous transmissions for this MPDU
             // (only if sent by the traffic source and this is not a broadcast frame)
-            if (m_baEnabled && linkId < m_sourceMac->GetNLinks() &&
+            if (m_baEnabled && m_sourceMac->GetLinkIds().count(linkId) == 1 &&
                 m_sourceMac->GetFrameExchangeManager(linkId)->GetAddress() ==
                     mpdu->GetHeader().GetAddr2() &&
                 !mpdu->GetHeader().GetAddr1().IsGroup())
@@ -1476,8 +1483,6 @@ MultiLinkTxTest::Transmit(uint8_t linkId,
     }
     default:;
     }
-
-    MultiLinkOperationsTestBase::Transmit(linkId, context, psduMap, txVector, txPowerW);
 }
 
 void
@@ -1645,15 +1650,14 @@ MultiLinkTxTest::DoSetup()
         m_errorModels[m_apMac->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
         m_apMac->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
     }
-    for (std::size_t linkId = 0; linkId < m_staMacs[0]->GetNLinks(); linkId++)
+    for (std::size_t i : {0, 1})
     {
-        auto errorModel = CreateObject<ListErrorModel>();
-        m_errorModels[m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
-        m_staMacs[0]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
-
-        errorModel = CreateObject<ListErrorModel>();
-        m_errorModels[m_staMacs[1]->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
-        m_staMacs[1]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
+        for (const auto linkId : m_staMacs[i]->GetLinkIds())
+        {
+            auto errorModel = CreateObject<ListErrorModel>();
+            m_errorModels[m_staMacs[i]->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
+            m_staMacs[i]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
+        }
     }
 }
 
@@ -1921,8 +1925,8 @@ class MultiLinkMuTxTest : public MultiLinkOperationsTestBase
      */
     void CheckBlockAck(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint8_t linkId);
 
-    void Transmit(uint8_t linkId,
-                  std::string context,
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
                   WifiConstPsduMap psduMap,
                   WifiTxVector txVector,
                   double txPowerW) override;
@@ -1984,12 +1988,15 @@ MultiLinkMuTxTest::MultiLinkMuTxTest(WifiMuTrafficPattern muTrafficPattern,
 }
 
 void
-MultiLinkMuTxTest::Transmit(uint8_t linkId,
-                            std::string context,
+MultiLinkMuTxTest::Transmit(Ptr<WifiMac> mac,
+                            uint8_t phyId,
                             WifiConstPsduMap psduMap,
                             WifiTxVector txVector,
                             double txPowerW)
 {
+    MultiLinkOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+    auto linkId = m_txPsdus.back().linkId;
+
     CtrlTriggerHeader trigger;
 
     for (const auto& [staId, psdu] : psduMap)
@@ -2092,7 +2099,7 @@ MultiLinkMuTxTest::Transmit(uint8_t linkId,
                 m_waitFirstTf = false;
                 // the AP is starting the transmission of the Basic Trigger frame, so generate
                 // the configured number of packets at STAs, which are sent in TB PPDUs
-                auto band = m_apMac->GetWifiPhy(linkId)->GetPhyBand();
+                auto band = mac->GetWifiPhy(linkId)->GetPhyBand();
                 Time txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, band);
                 for (uint8_t i = 0; i < m_nStations; i++)
                 {
@@ -2112,8 +2119,6 @@ MultiLinkMuTxTest::Transmit(uint8_t linkId,
         default:;
         }
     }
-
-    MultiLinkOperationsTestBase::Transmit(linkId, context, psduMap, txVector, txPowerW);
 }
 
 void
@@ -2341,15 +2346,14 @@ MultiLinkMuTxTest::DoSetup()
         m_errorModels[m_apMac->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
         m_apMac->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
     }
-    for (std::size_t linkId = 0; linkId < m_staMacs[0]->GetNLinks(); linkId++)
+    for (std::size_t i : {0, 1})
     {
-        auto errorModel = CreateObject<ListErrorModel>();
-        m_errorModels[m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
-        m_staMacs[0]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
-
-        errorModel = CreateObject<ListErrorModel>();
-        m_errorModels[m_staMacs[1]->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
-        m_staMacs[1]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
+        for (const auto linkId : m_staMacs[i]->GetLinkIds())
+        {
+            auto errorModel = CreateObject<ListErrorModel>();
+            m_errorModels[m_staMacs[i]->GetFrameExchangeManager(linkId)->GetAddress()] = errorModel;
+            m_staMacs[i]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(errorModel);
+        }
     }
 }
 
@@ -2556,8 +2560,8 @@ class ReleaseSeqNoAfterCtsTimeoutTest : public MultiLinkOperationsTestBase
   protected:
     void DoSetup() override;
     void DoRun() override;
-    void Transmit(uint8_t linkId,
-                  std::string context,
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
                   WifiConstPsduMap psduMap,
                   WifiTxVector txVector,
                   double txPowerW) override;
@@ -2597,7 +2601,7 @@ ReleaseSeqNoAfterCtsTimeoutTest::DoSetup()
     MultiLinkOperationsTestBase::DoSetup();
 
     // install post reception error model on all STAs affiliated with non-AP MLD
-    for (std::size_t linkId = 0; linkId < m_staMacs[0]->GetNLinks(); linkId++)
+    for (const auto linkId : m_staMacs[0]->GetLinkIds())
     {
         m_staMacs[0]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
     }
@@ -2647,12 +2651,14 @@ ReleaseSeqNoAfterCtsTimeoutTest::StartTraffic()
 }
 
 void
-ReleaseSeqNoAfterCtsTimeoutTest::Transmit(uint8_t linkId,
-                                          std::string context,
+ReleaseSeqNoAfterCtsTimeoutTest::Transmit(Ptr<WifiMac> mac,
+                                          uint8_t phyId,
                                           WifiConstPsduMap psduMap,
                                           WifiTxVector txVector,
                                           double txPowerW)
 {
+    MultiLinkOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+
     auto psdu = psduMap.begin()->second;
 
     if (psdu->GetHeader(0).IsRts() && !m_rtsCorrupted)
@@ -2672,8 +2678,6 @@ ReleaseSeqNoAfterCtsTimeoutTest::Transmit(uint8_t linkId,
             m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication());
         }
     }
-
-    MultiLinkOperationsTestBase::Transmit(linkId, context, psduMap, txVector, txPowerW);
 }
 
 void

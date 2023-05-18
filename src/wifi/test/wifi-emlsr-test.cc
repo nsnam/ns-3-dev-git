@@ -55,15 +55,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiEmlsrTest");
 
-static uint32_t
-ContextToNodeId(std::string context)
-{
-    std::string sub = context.substr(10);
-    uint32_t pos = sub.find("/Device");
-    uint32_t nodeId = std::stoi(sub.substr(0, pos));
-    return nodeId;
-}
-
 /**
  * \ingroup wifi-test
  * \ingroup tests
@@ -168,14 +159,14 @@ class EmlsrOperationsTestBase : public TestCase
     /**
      * Callback invoked when a FEM passes PSDUs to the PHY.
      *
-     * \param linkId the ID of the link transmitting the PSDUs
-     * \param context the context
+     * \param mac the MAC transmitting the PSDUs
+     * \param phyId the ID of the PHY transmitting the PSDUs
      * \param psduMap the PSDU map
      * \param txVector the TX vector
      * \param txPowerW the tx power in Watts
      */
-    virtual void Transmit(uint8_t linkId,
-                          std::string context,
+    virtual void Transmit(Ptr<WifiMac> mac,
+                          uint8_t phyId,
                           WifiConstPsduMap psduMap,
                           WifiTxVector txVector,
                           double txPowerW);
@@ -202,6 +193,7 @@ class EmlsrOperationsTestBase : public TestCase
         WifiConstPsduMap psduMap; ///< transmitted PSDU map
         WifiTxVector txVector;    ///< TXVECTOR
         uint8_t linkId;           ///< link ID
+        uint8_t phyId;            ///< ID of the transmitting PHY
     };
 
     std::set<uint8_t> m_linksToEnableEmlsrOn; /**< IDs of the links on which EMLSR mode has to
@@ -250,21 +242,24 @@ EmlsrOperationsTestBase::EmlsrOperationsTestBase(const std::string& name)
 }
 
 void
-EmlsrOperationsTestBase::Transmit(uint8_t linkId,
-                                  std::string context,
+EmlsrOperationsTestBase::Transmit(Ptr<WifiMac> mac,
+                                  uint8_t phyId,
                                   WifiConstPsduMap psduMap,
                                   WifiTxVector txVector,
                                   double txPowerW)
 {
-    m_txPsdus.push_back({Simulator::Now(), psduMap, txVector, linkId});
+    auto linkId = mac->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(), true, "No link found for PHY ID " << +phyId);
+    m_txPsdus.push_back({Simulator::Now(), psduMap, txVector, *linkId, phyId});
+
     auto txDuration =
-        WifiPhy::CalculateTxDuration(psduMap, txVector, m_apMac->GetWifiPhy(linkId)->GetPhyBand());
+        WifiPhy::CalculateTxDuration(psduMap, txVector, mac->GetWifiPhy(*linkId)->GetPhyBand());
 
     for (const auto& [aid, psdu] : psduMap)
     {
         std::stringstream ss;
-        ss << std::setprecision(10) << "PSDU #" << m_txPsdus.size() << " Link ID " << +linkId << " "
-           << psdu->GetHeader(0).GetTypeString();
+        ss << std::setprecision(10) << "PSDU #" << m_txPsdus.size() << " Link ID "
+           << +linkId.value() << " Phy ID " << +phyId << " " << psdu->GetHeader(0).GetTypeString();
         if (psdu->GetHeader(0).IsAction())
         {
             ss << " ";
@@ -375,11 +370,22 @@ EmlsrOperationsTestBase::DoSetup()
     }
 
     // Trace PSDUs passed to the PHY on AP MLD and non-AP MLDs
-    for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+    for (uint8_t phyId = 0; phyId < m_apMac->GetDevice()->GetNPhys(); phyId++)
     {
-        Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phys/" +
-                            std::to_string(linkId) + "/PhyTxPsduBegin",
-                        MakeCallback(&EmlsrOperationsTestBase::Transmit, this).Bind(linkId));
+        Config::ConnectWithoutContext(
+            "/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Phys/" + std::to_string(phyId) +
+                "/PhyTxPsduBegin",
+            MakeCallback(&EmlsrOperationsTestBase::Transmit, this).Bind(m_apMac, phyId));
+    }
+    for (std::size_t i = 0; i < m_nEmlsrStations + m_nNonEmlsrStations; i++)
+    {
+        for (uint8_t phyId = 0; phyId < m_staMacs[i]->GetDevice()->GetNPhys(); phyId++)
+        {
+            Config::ConnectWithoutContext(
+                "/NodeList/" + std::to_string(i + 1) + "/DeviceList/*/$ns3::WifiNetDevice/Phys/" +
+                    std::to_string(phyId) + "/PhyTxPsduBegin",
+                MakeCallback(&EmlsrOperationsTestBase::Transmit, this).Bind(m_staMacs[i], phyId));
+        }
     }
 
     // Uncomment the lines below to write PCAP files
@@ -547,8 +553,8 @@ class EmlNotificationExchangeTest : public EmlsrOperationsTestBase
   protected:
     void DoSetup() override;
     void DoRun() override;
-    void Transmit(uint8_t linkId,
-                  std::string context,
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
                   WifiConstPsduMap psduMap,
                   WifiTxVector txVector,
                   double txPowerW) override;
@@ -651,12 +657,15 @@ EmlNotificationExchangeTest::DoSetup()
 }
 
 void
-EmlNotificationExchangeTest::Transmit(uint8_t linkId,
-                                      std::string context,
+EmlNotificationExchangeTest::Transmit(Ptr<WifiMac> mac,
+                                      uint8_t phyId,
                                       WifiConstPsduMap psduMap,
                                       WifiTxVector txVector,
                                       double txPowerW)
 {
+    EmlsrOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+    auto linkId = m_txPsdus.back().linkId;
+
     auto psdu = psduMap.begin()->second;
 
     switch (psdu->GetHeader(0).GetType())
@@ -690,8 +699,6 @@ EmlNotificationExchangeTest::Transmit(uint8_t linkId,
 
     default:;
     }
-
-    EmlsrOperationsTestBase::Transmit(linkId, context, psduMap, txVector, txPowerW);
 }
 
 void
@@ -970,8 +977,8 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
   protected:
     void DoSetup() override;
     void DoRun() override;
-    void Transmit(uint8_t linkId,
-                  std::string context,
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
                   WifiConstPsduMap psduMap,
                   WifiTxVector txVector,
                   double txPowerW) override;
@@ -1086,14 +1093,17 @@ EmlsrDlTxopTest::EmlsrDlTxopTest(std::size_t nEmlsrStations,
 }
 
 void
-EmlsrDlTxopTest::Transmit(uint8_t linkId,
-                          std::string context,
+EmlsrDlTxopTest::Transmit(Ptr<WifiMac> mac,
+                          uint8_t phyId,
                           WifiConstPsduMap psduMap,
                           WifiTxVector txVector,
                           double txPowerW)
 {
+    EmlsrOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+    auto linkId = m_txPsdus.back().linkId;
+
     auto psdu = psduMap.begin()->second;
-    auto nodeId = ContextToNodeId(context);
+    auto nodeId = mac->GetDevice()->GetNode()->GetId();
 
     switch (psdu->GetHeader(0).GetType())
     {
@@ -1105,7 +1115,7 @@ EmlsrDlTxopTest::Transmit(uint8_t linkId,
             // this AssocReq is being sent by an EMLSR client. The other EMLSR links should be
             // in powersave mode after association; we let the non-EMLSR links transition to
             // active mode (by sending data null frames) after association
-            for (uint8_t id = 0; id < m_staMacs.at(nodeId - 1)->GetNLinks(); id++)
+            for (const auto id : m_staMacs.at(nodeId - 1)->GetLinkIds())
             {
                 if (id != linkId && m_emlsrLinks.count(id) == 1)
                 {
@@ -1146,8 +1156,6 @@ EmlsrDlTxopTest::Transmit(uint8_t linkId,
 
     default:;
     }
-
-    EmlsrOperationsTestBase::Transmit(linkId, context, psduMap, txVector, txPowerW);
 }
 
 void
