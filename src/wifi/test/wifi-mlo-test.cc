@@ -712,13 +712,14 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
      * \param staChannels the strings specifying the operating channels for the STA
      * \param apChannels the strings specifying the operating channels for the AP
      * \param scanType the scan type (active or passive)
-     * \param setupLinks a list of links (STA link ID, AP link ID) that are expected to be setup
+     * \param setupLinks a list of links that are expected to be setup. In case one of the two
+     *                   devices has a single link, the ID of the link on the MLD is indicated
      * \param fixedPhyBands list of IDs of STA links that cannot switch PHY band
      */
     MultiLinkSetupTest(std::vector<std::string> staChannels,
                        std::vector<std::string> apChannels,
                        WifiScanType scanType,
-                       std::vector<std::pair<uint8_t, uint8_t>> setupLinks,
+                       std::vector<uint8_t> setupLinks,
                        std::vector<uint8_t> fixedPhyBands = {});
     ~MultiLinkSetupTest() override = default;
 
@@ -770,7 +771,7 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
     void CheckAssocResponse(Ptr<WifiMpdu> mpdu, uint8_t linkId);
 
     /// expected links to setup (STA link ID, AP link ID)
-    const std::vector<std::pair<uint8_t, uint8_t>> m_setupLinks;
+    const std::vector<uint8_t> m_setupLinks;
     WifiScanType m_scanType;  //!< the scan type (active or passive)
     std::size_t m_nProbeResp; //!< number of Probe Responses received by the non-AP MLD
 };
@@ -778,7 +779,7 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
 MultiLinkSetupTest::MultiLinkSetupTest(std::vector<std::string> staChannels,
                                        std::vector<std::string> apChannels,
                                        WifiScanType scanType,
-                                       std::vector<std::pair<uint8_t, uint8_t>> setupLinks,
+                                       std::vector<uint8_t> setupLinks,
                                        std::vector<uint8_t> fixedPhyBands)
     : MultiLinkOperationsTestBase("Check correctness of Multi-Link Setup",
                                   1,
@@ -1027,14 +1028,12 @@ MultiLinkSetupTest::CheckAssocRequest(Ptr<WifiMpdu> mpdu, uint8_t linkId)
             +staLinkId.value(),
             +linkId,
             "The STA that sent the Assoc Request should not be included in a Per-STA Profile");
-        auto it = std::find_if(m_setupLinks.begin(), m_setupLinks.end(), [&staLinkId](auto&& pair) {
-            return pair.first == staLinkId.value();
-        });
+        auto it = std::find(m_setupLinks.begin(), m_setupLinks.end(), staLinkId.value());
         NS_TEST_EXPECT_MSG_EQ((it != m_setupLinks.end()),
                               true,
                               "Not expecting to setup STA link ID " << +staLinkId.value());
         NS_TEST_EXPECT_MSG_EQ(
-            +it->second,
+            +staLinkId.value(),
             +perStaProfile.GetLinkId(),
             "Not expecting to request association to AP Link ID in Per-STA Profile");
         NS_TEST_EXPECT_MSG_EQ(perStaProfile.HasAssocRequest(),
@@ -1093,9 +1092,7 @@ MultiLinkSetupTest::CheckAssocResponse(Ptr<WifiMpdu> mpdu, uint8_t linkId)
             +apLinkId.value(),
             +linkId,
             "The AP that sent the Assoc Response should not be included in a Per-STA Profile");
-        auto it = std::find_if(m_setupLinks.begin(), m_setupLinks.end(), [&apLinkId](auto&& pair) {
-            return pair.second == apLinkId.value();
-        });
+        auto it = std::find(m_setupLinks.begin(), m_setupLinks.end(), apLinkId.value());
         NS_TEST_EXPECT_MSG_EQ((it != m_setupLinks.end()),
                               true,
                               "Not expecting to setup AP link ID " << +apLinkId.value());
@@ -1113,8 +1110,11 @@ MultiLinkSetupTest::CheckMlSetup()
      */
     NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->IsAssociated(), true, "Expected the STA to be associated");
 
-    for (const auto& [staLinkId, apLinkId] : m_setupLinks)
+    for (const auto linkId : m_setupLinks)
     {
+        auto staLinkId = (m_staMacs[0]->GetNLinks() > 1 ? linkId : SINGLE_LINK_OP_ID);
+        auto apLinkId = (m_apMac->GetNLinks() > 1 ? linkId : SINGLE_LINK_OP_ID);
+
         auto staAddr = m_staMacs[0]->GetFrameExchangeManager(staLinkId)->GetAddress();
         auto apAddr = m_apMac->GetFrameExchangeManager(apLinkId)->GetAddress();
 
@@ -1184,11 +1184,15 @@ MultiLinkSetupTest::CheckMlSetup()
 void
 MultiLinkSetupTest::CheckDisabledLinks()
 {
-    for (std::size_t linkId = 0; linkId < m_staChannels.size(); linkId++)
+    if (m_staMacs[0]->GetNLinks() == 1)
     {
-        auto it = std::find_if(m_setupLinks.begin(), m_setupLinks.end(), [&linkId](auto&& link) {
-            return link.first == linkId;
-        });
+        // no link is disabled on a single link device
+        return;
+    }
+
+    for (const auto& linkId : m_staMacs[0]->GetLinkIds())
+    {
+        auto it = std::find(m_setupLinks.begin(), m_setupLinks.end(), linkId);
         if (it == m_setupLinks.end())
         {
             // the link has not been setup
@@ -2743,12 +2747,10 @@ class WifiMultiLinkOperationsTestSuite : public TestSuite
 WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     : TestSuite("wifi-mlo", UNIT)
 {
-    using ParamsTuple =
-        std::tuple<std::vector<std::string>,                 // non-AP MLD channels
-                   std::vector<std::string>,                 // AP MLD channels
-                   std::vector<std::pair<uint8_t, uint8_t>>, // (STA link ID, AP link ID) of setup
-                                                             // links
-                   std::vector<uint8_t>>; // IDs of link that cannot change PHY band
+    using ParamsTuple = std::tuple<std::vector<std::string>, // non-AP MLD channels
+                                   std::vector<std::string>, // AP MLD channels
+                                   std::vector<uint8_t>,     // link ID of setup links
+                                   std::vector<uint8_t>>; // IDs of link that cannot change PHY band
 
     AddTestCase(new GetRnrLinkInfoTest(), TestCase::QUICK);
     AddTestCase(new MldSwapLinksTest(), TestCase::QUICK);
@@ -2757,24 +2759,24 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
          {// matching channels: setup all links
           ParamsTuple({"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
                       {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-                      {{0, 0}, {1, 1}, {2, 2}},
+                      {0, 1, 2},
                       {}),
           // non-matching channels, matching PHY bands: setup all links
           ParamsTuple({"{108, 0, BAND_5GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
                       {"{36, 0, BAND_5GHZ, 0}", "{120, 0, BAND_5GHZ, 0}", "{5, 0, BAND_6GHZ, 0}"},
-                      {{1, 0}, {0, 1}, {2, 2}},
+                      {0, 1, 2},
                       {}),
           // non-AP MLD switches band on some links to setup 3 links
           ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
                       {"{36, 0, BAND_5GHZ, 0}", "{9, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                      {{2, 0}, {0, 1}, {1, 2}},
+                      {0, 1, 2},
                       {}),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
           // that band, hence only 2 links are setup
           ParamsTuple(
               {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-              {{1, 0}, {2, 1}},
+              {0, 1},
               {0}),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
           // that band; the second link of the non-AP MLD cannot change PHY band and there is
@@ -2782,7 +2784,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
           ParamsTuple(
               {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-              {{1, 0}, {2, 1}},
+              {0, 1},
               {0, 1}),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
           // that band; the second link of the non-AP MLD cannot change PHY band and there is
@@ -2791,29 +2793,29 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
           // hence 2 links are setup by switching channel (not band) on the third link
           ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{60, 0, BAND_5GHZ, 0}"},
                       {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                      {{1, 0}, {2, 2}},
+                      {0, 2},
                       {0, 1, 2}),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
           // that band; the second link of the non-AP MLD cannot change PHY band and there is
           // an AP operating on the same channel; hence one link only is setup
-          ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+          ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                       {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                      {{1, 0}},
+                      {2},
                       {0, 1}),
           // non-AP MLD has only two STAs and setups two links
           ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
                       {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                      {{0, 1}, {1, 0}},
+                      {1, 0},
                       {}),
           // single link non-AP STA associates with an AP affiliated with an AP MLD
           ParamsTuple({"{120, 0, BAND_5GHZ, 0}"},
                       {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                      {{0, 2}},
+                      {2}, // link ID of AP MLD only (non-AP STA is single link)
                       {}),
           // a STA affiliated with a non-AP MLD associates with a single link AP
           ParamsTuple({"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                       {"{120, 0, BAND_5GHZ, 0}"},
-                      {{2, 0}},
+                      {2}, // link ID of non-AP MLD only (AP is single link)
                       {})})
     {
         AddTestCase(new MultiLinkSetupTest(staChannels,

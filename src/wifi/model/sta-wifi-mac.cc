@@ -629,6 +629,7 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
     const auto& mle =
         std::visit([](auto&& frame) { return frame.template Get<MultiLinkElement>(); },
                    bestAp->m_frame);
+    std::map<uint8_t, uint8_t> swapInfo;
     for (const auto& [localLinkId, apLinkId, bssid] : bestAp->m_setupLinks)
     {
         NS_ASSERT_MSG(mle, "We get here only for ML setup");
@@ -641,7 +642,11 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
             mleCommonInfo = std::make_shared<CommonInfoBasicMle>(mle->GetCommonInfoBasic());
         }
         GetWifiRemoteStationManager(localLinkId)->AddStationMleCommonInfo(bssid, mleCommonInfo);
+        swapInfo.emplace(localLinkId, apLinkId);
     }
+
+    SwapLinks(swapInfo);
+
     // lambda to get beacon interval from Beacon or Probe Response
     auto getBeaconInterval = [](auto&& frame) {
         using T = std::decay_t<decltype(frame)>;

@@ -352,16 +352,15 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
 
         // this assert checks that the RA field also contain an MLD address, unless
         // it contains the broadcast address
-        NS_ASSERT_MSG(rxAddr.IsGroup() || GetMac()->GetMldAddress(rxAddr),
+        NS_ASSERT_MSG(rxAddr.IsGroup() || GetMac()->GetMldAddress(rxAddr) == rxAddr,
                       "Address 1 (" << rxAddr << ") is not an MLD address");
 
         // this assert checks that association (ML setup) has been established
         // between sender and receiver (unless the receiver is the broadcast address)
         NS_ASSERT_MSG(GetMac()->CanForwardPacketsTo(rxAddr), "Cannot forward frame to " << rxAddr);
-
         // we have to include all the links in case of broadcast frame (we are an AP)
         // and the links that have been setup with the receiver in case of unicast frame
-        for (uint8_t linkId = 0; linkId < GetMac()->GetNLinks(); linkId++)
+        for (const auto linkId : GetMac()->GetLinkIds())
         {
             if (rxAddr.IsGroup() ||
                 GetMac()->GetWifiRemoteStationManager(linkId)->GetAffiliatedStaAddress(rxAddr))

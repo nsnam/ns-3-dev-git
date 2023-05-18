@@ -394,7 +394,7 @@ WifiNetDevice::GetAddress() const
     if (m_mac->GetTypeOfStation() == STA &&
         (staMac = StaticCast<StaWifiMac>(m_mac))->IsAssociated() && m_mac->GetNLinks() > 1 &&
         (linkIds = staMac->GetSetupLinkIds()).size() == 1 &&
-        !GetRemoteStationManager(*linkIds.begin())
+        !m_mac->GetWifiRemoteStationManager(*linkIds.begin())
              ->GetMldAddress(m_mac->GetBssid(*linkIds.begin())))
     {
         return m_mac->GetFrameExchangeManager(*linkIds.begin())->GetAddress();
