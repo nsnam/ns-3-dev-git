@@ -273,6 +273,9 @@ class FlowMonitor : public Object
     /// \param enableProbes if true, include also the per-probe/flow pair statistics in the output
     void SerializeToXmlFile(std::string fileName, bool enableHistograms, bool enableProbes);
 
+    /// Reset all the statistics
+    void ResetAllStats();
+
   protected:
     void NotifyConstructionCompleted() override;
     void DoDispose() override;

@@ -534,4 +534,31 @@ FlowMonitor::SerializeToXmlFile(std::string fileName, bool enableHistograms, boo
     os.close();
 }
 
+void
+FlowMonitor::ResetAllStats()
+{
+    NS_LOG_FUNCTION(this);
+
+    for (auto& iter : m_flowStats)
+    {
+        auto& flowStat = iter.second;
+        flowStat.delaySum = Seconds(0);
+        flowStat.jitterSum = Seconds(0);
+        flowStat.lastDelay = Seconds(0);
+        flowStat.txBytes = 0;
+        flowStat.rxBytes = 0;
+        flowStat.txPackets = 0;
+        flowStat.rxPackets = 0;
+        flowStat.lostPackets = 0;
+        flowStat.timesForwarded = 0;
+        flowStat.bytesDropped.clear();
+        flowStat.packetsDropped.clear();
+
+        flowStat.delayHistogram.Clear();
+        flowStat.jitterHistogram.Clear();
+        flowStat.packetSizeHistogram.Clear();
+        flowStat.flowInterruptionsHistogram.Clear();
+    }
+}
+
 } // namespace ns3
