@@ -47,6 +47,7 @@
 #include "ns3/vht-configuration.h"
 
 #include <algorithm>
+#include <numeric>
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT                                                                      \
@@ -1227,8 +1228,8 @@ WifiPhy::DoChannelSwitch()
     m_channelAccessRequested = false;
 
     // Update unspecified parameters with default values
+    for (auto& [number, width, band, primary20] : m_channelSettings)
     {
-        auto& [number, width, band, primary20] = m_channelSettings.front();
         if (band == WIFI_PHY_BAND_UNSPECIFIED)
         {
             band = GetDefaultPhyBand(m_standard);
@@ -1280,9 +1281,18 @@ WifiPhy::DoChannelSwitch()
     }
 
     NS_LOG_DEBUG("switching channel");
-    const auto& segmentSettings = m_channelSettings.front();
-    m_operatingChannel.Set({{std::get<0>(segmentSettings), 0, chWidth, m_band}}, m_standard);
-    m_operatingChannel.SetPrimary20Index(std::get<3>(segmentSettings));
+    std::vector<FrequencyChannelInfo> segments{};
+    std::transform(m_channelSettings.cbegin(),
+                   m_channelSettings.cend(),
+                   std::back_inserter(segments),
+                   [this](const auto& channelTuple) {
+                       return FrequencyChannelInfo{std::get<0>(channelTuple),
+                                                   0,
+                                                   std::get<1>(channelTuple),
+                                                   m_band};
+                   });
+    m_operatingChannel.Set(segments, m_standard);
+    m_operatingChannel.SetPrimary20Index(std::get<3>(m_channelSettings.front()));
 
     if (changingPhyBand)
     {
