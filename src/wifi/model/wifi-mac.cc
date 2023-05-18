@@ -996,6 +996,8 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
 {
     NS_LOG_FUNCTION(this);
 
+    std::map<uint8_t, uint8_t> actualPairs;
+
     while (!links.empty())
     {
         auto from = links.cbegin()->first;
@@ -1018,6 +1020,7 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
             auto [it, inserted] =
                 m_links.emplace(to, nullptr); // insert an element with key to if not present
             m_links[to].swap(linkToMove);     // to is the link to move now
+            actualPairs.emplace(from, to);
             UpdateLinkId(to);
             links.erase(from);
             if (!linkToMove)
@@ -1034,6 +1037,7 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
             {
                 // no new position specified for 'to', use the current empty cell
                 m_links[empty].swap(linkToMove);
+                actualPairs.emplace(to, empty);
                 break;
             }
 
@@ -1046,6 +1050,15 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
     for (const auto& [id, link] : m_links)
     {
         m_linkIds.insert(id);
+    }
+
+    if (m_txop)
+    {
+        m_txop->SwapLinks(actualPairs);
+    }
+    for (auto& [ac, edca] : m_edca)
+    {
+        edca->SwapLinks(actualPairs);
     }
 }
 

@@ -26,6 +26,7 @@
 #include "ns3/object.h"
 #include "ns3/traced-value.h"
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -408,6 +409,16 @@ class Txop : public Object
      */
     virtual bool HasFramesToTransmit(uint8_t linkId);
 
+    /**
+     * Swap the links based on the information included in the given map. This method
+     * is normally called by the WifiMac of a non-AP MLD upon completing ML setup to have
+     * its link IDs match AP MLD's link IDs.
+     *
+     * \param links a set of pairs (from, to) each mapping a current link ID to the
+     *              link ID it has to become (i.e., link 'from' becomes link 'to')
+     */
+    void SwapLinks(std::map<uint8_t, uint8_t> links);
+
   protected:
     ///< ChannelAccessManager associated class
     friend class ChannelAccessManager;
@@ -483,7 +494,6 @@ class Txop : public Object
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         virtual ~LinkEntity() = default;
 
-        uint8_t id{0};                             //!< Link ID (starting at 0)
         uint32_t backoffSlots{0};                  //!< the number of backoff slots
         Time backoffStart{0};                      /**< the backoffStart variable is used to keep
                                                         track of the time at which a backoff was
@@ -504,12 +514,11 @@ class Txop : public Object
      * \return a reference to the link associated with the given ID
      */
     LinkEntity& GetLink(uint8_t linkId) const;
+
     /**
-     * Get the number of links.
-     *
-     * \return the number of links
+     * \return a const reference to the map of link entities
      */
-    uint8_t GetNLinks() const;
+    const std::map<uint8_t, std::unique_ptr<LinkEntity>>& GetLinks() const;
 
     DroppedMpdu m_droppedMpduCallback; //!< the dropped MPDU callback
     Ptr<WifiMacQueue> m_queue;         //!< the wifi MAC queue
@@ -533,7 +542,8 @@ class Txop : public Object
      */
     virtual std::unique_ptr<LinkEntity> CreateLinkEntity() const;
 
-    std::vector<std::unique_ptr<LinkEntity>> m_links; //!< vector of LinkEntity objects
+    std::map<uint8_t, std::unique_ptr<LinkEntity>>
+        m_links; //!< ID-indexed map of LinkEntity objects
 };
 
 } // namespace ns3

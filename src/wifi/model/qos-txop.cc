@@ -640,9 +640,9 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address re
         m_baManager->NotifyOriginatorAgreementRejected(recipient, tid);
     }
 
-    for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+    for (const auto& [id, link] : GetLinks())
     {
-        StartAccessIfNeeded(linkId);
+        StartAccessIfNeeded(id);
     }
 }
 
@@ -662,9 +662,9 @@ QosTxop::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t
     m_baManager->NotifyOriginatorAgreementNoReply(recipient, tid);
     // the recipient has been "unblocked" and transmissions can resume using normal
     // acknowledgment, hence start access (if needed) on all the links
-    for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+    for (const auto& [id, link] : GetLinks())
     {
-        StartAccessIfNeeded(linkId);
+        StartAccessIfNeeded(id);
     }
 }
 
