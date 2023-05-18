@@ -1144,8 +1144,6 @@ WifiPhy::SetOperatingChannel(const ChannelTuple& tuple)
 void
 WifiPhy::SetOperatingChannel(const ChannelSegments& channelSegments)
 {
-    NS_ASSERT_MSG(channelSegments.size() == 1,
-                  "Non-contiguous operating channel is not supported yet");
     NS_LOG_FUNCTION(this << +std::get<0>(channelSegments.front())
                          << std::get<1>(channelSegments.front())
                          << static_cast<WifiPhyBand>(std::get<2>(channelSegments.front()))

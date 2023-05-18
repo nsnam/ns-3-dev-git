@@ -141,6 +141,8 @@ void
 YansWifiPhy::FinalizeChannelSwitch()
 {
     NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_IF(GetOperatingChannel().GetNSegments() > 1,
+                    "operating channel made of non-contiguous segments cannot be used with Yans");
 }
 
 } // namespace ns3
