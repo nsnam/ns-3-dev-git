@@ -19,9 +19,18 @@
 
 #include "ns3/he-phy.h"
 #include "ns3/he-ppdu.h"
+#include "ns3/interference-helper.h"
+#include "ns3/log.h"
+#include "ns3/multi-model-spectrum-channel.h"
+#include "ns3/nist-error-rate-model.h"
+#include "ns3/node.h"
+#include "ns3/spectrum-wifi-phy.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-psdu.h"
+#include "ns3/wifi-utils.h"
 
 using namespace ns3;
 
@@ -215,6 +224,241 @@ SetWifiOperatingChannelTest::DoRun()
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            true);
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Test the conversion from PHY ChannelSettings attribute to WifiPhyOperatingChannel.
+ */
+class PhyChannelSettingsToOperatingChannelTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    PhyChannelSettingsToOperatingChannelTest();
+    ~PhyChannelSettingsToOperatingChannelTest() override = default;
+
+  private:
+    void DoSetup() override;
+    void DoTeardown() override;
+    void DoRun() override;
+
+    /**
+     * Run one function.
+     * \param channelSettings the string to set the ChannelSettings attribute
+     * \param expectedWidthType the expected width type of the operating channel
+     * \param expectedSegments the info about each expected segment of the operating channel
+     * \param expectedP20Index the expected index of the P20
+     */
+    void RunOne(const std::string& channelSettings,
+                WifiChannelWidthType expectedWidthType,
+                const std::vector<FrequencyChannelInfo>& expectedSegments,
+                uint8_t expectedP20Index);
+
+    Ptr<SpectrumWifiPhy> m_phy; //!< the PHY
+};
+
+PhyChannelSettingsToOperatingChannelTest::PhyChannelSettingsToOperatingChannelTest()
+    : TestCase("Check conversion from attribute to the operating channel")
+{
+}
+
+void
+PhyChannelSettingsToOperatingChannelTest::DoSetup()
+{
+    LogComponentEnable("WifiPhyOperatingChannel", LOG_LEVEL_ALL);
+    auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+    auto node = CreateObject<Node>();
+    auto dev = CreateObject<WifiNetDevice>();
+    m_phy = CreateObject<SpectrumWifiPhy>();
+    auto interferenceHelper = CreateObject<InterferenceHelper>();
+    m_phy->SetInterferenceHelper(interferenceHelper);
+    auto error = CreateObject<NistErrorRateModel>();
+    m_phy->SetErrorRateModel(error);
+    m_phy->SetDevice(dev);
+    m_phy->AddChannel(spectrumChannel);
+    m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
+    dev->SetPhy(m_phy);
+    node->AddDevice(dev);
+}
+
+void
+PhyChannelSettingsToOperatingChannelTest::DoTeardown()
+{
+    m_phy->Dispose();
+    m_phy = nullptr;
+}
+
+void
+PhyChannelSettingsToOperatingChannelTest::RunOne(
+    const std::string& channelSettings,
+    WifiChannelWidthType expectedWidthType,
+    const std::vector<FrequencyChannelInfo>& expectedSegments,
+    uint8_t expectedP20Index)
+{
+    NS_LOG_FUNCTION(this << channelSettings);
+
+    bool exceptionThrown = false;
+    try
+    {
+        m_phy->SetAttribute("ChannelSettings", StringValue(channelSettings));
+    }
+    catch (const std::runtime_error&)
+    {
+        exceptionThrown = true;
+    }
+    NS_TEST_ASSERT_MSG_EQ(exceptionThrown,
+                          expectedSegments.empty(),
+                          "Exception thrown mismatch for channel settings " << channelSettings);
+
+    if (exceptionThrown)
+    {
+        return;
+    }
+
+    NS_TEST_ASSERT_MSG_EQ(
+        m_phy->GetOperatingChannel().GetWidthType(),
+        expectedWidthType,
+        "Operating channel has an incorrect channel width type for channel settings "
+            << channelSettings);
+
+    const auto numSegments = m_phy->GetOperatingChannel().GetNSegments();
+    NS_TEST_ASSERT_MSG_EQ(
+        numSegments,
+        expectedSegments.size(),
+        "Operating channel has an incorrect number of segments for channel settings "
+            << channelSettings);
+
+    for (std::size_t i = 0; i < numSegments; ++i)
+    {
+        NS_TEST_ASSERT_MSG_EQ(m_phy->GetOperatingChannel().GetNumber(i),
+                              expectedSegments.at(i).number,
+                              "Operating channel has an incorrect channel number at segment "
+                                  << i << " for channel settings " << channelSettings);
+        NS_TEST_ASSERT_MSG_EQ(m_phy->GetOperatingChannel().GetFrequency(i),
+                              expectedSegments.at(i).frequency,
+                              "Operating channel has an incorrect center frequency at segment "
+                                  << i << " for channel settings " << channelSettings);
+        NS_TEST_ASSERT_MSG_EQ(m_phy->GetOperatingChannel().GetWidth(i),
+                              expectedSegments.at(i).width,
+                              "Operating channel has an incorrect channel width at segment "
+                                  << i << " for channel settings " << channelSettings);
+        NS_TEST_ASSERT_MSG_EQ(m_phy->GetOperatingChannel().GetPhyBand(),
+                              expectedSegments.at(i).band,
+                              "Operating channel has an incorrect band for channel settings "
+                                  << channelSettings);
+    }
+
+    NS_TEST_ASSERT_MSG_EQ(m_phy->GetOperatingChannel().GetPrimaryChannelIndex(20),
+                          expectedP20Index,
+                          "Operating channel has an incorrect P20 index for channel settings "
+                              << channelSettings);
+}
+
+void
+PhyChannelSettingsToOperatingChannelTest::DoRun()
+{
+    // Test invalid combination
+    RunOne("{36, 40, BAND_UNSPECIFIED, 0}", WifiChannelWidthType::UNKNOWN, {}, 0);
+
+    // Test default with a single frequency segment
+    RunOne("{0, 0, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_80MHZ,
+           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test default with two frequency segments unspecified
+    RunOne("{0, 0, BAND_UNSPECIFIED, 0};{0, 0, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_80_PLUS_80MHZ,
+           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}, {106, 5530, 80, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test default with two frequency segments and first is specified (but equals default)
+    RunOne("{42, 0, BAND_UNSPECIFIED, 0};{0, 0, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_80_PLUS_80MHZ,
+           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}, {106, 5530, 80, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test default with second segment specified to be at the first available 80 MHz segment
+    RunOne("{0, 0, BAND_UNSPECIFIED, 0};{42, 0, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::UNKNOWN,
+           {},
+           0);
+
+    // Test default with two frequency segments and first is specified (and differs from default)
+    RunOne("{106, 0, BAND_UNSPECIFIED, 0};{0, 0, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_80_PLUS_80MHZ,
+           {{106, 5530, 80, WIFI_PHY_BAND_5GHZ}, {138, 5690, 80, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test unique channel 36 (20 MHz)
+    RunOne("{36, 0, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_20MHZ,
+           {{36, 5180, 20, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test unique channel 38 (40 MHz)
+    RunOne("{38, 0, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_40MHZ,
+           {{38, 5190, 40, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test unique channel 42 (80 MHz)
+    RunOne("{42, 0, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_80MHZ,
+           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test unique channel 50 (160 MHz)
+    RunOne("{50, 0, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_160MHZ,
+           {{50, 5250, 160, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test 80+80 MHz
+    RunOne("{42, 0, BAND_UNSPECIFIED, 0};{106, 0, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_80_PLUS_80MHZ,
+           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}, {106, 5530, 80, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test P20 for 80+80 MHz: second value shall be ignored
+    RunOne("{42, 0, BAND_UNSPECIFIED, 1};{106, 0, BAND_UNSPECIFIED, 2}",
+           WifiChannelWidthType::CW_80_PLUS_80MHZ,
+           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}, {106, 5530, 80, WIFI_PHY_BAND_5GHZ}},
+           1);
+
+    // Test default 20 MHz channel
+    RunOne("{0, 20, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_20MHZ,
+           {{36, 5180, 20, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test default 40 MHz channel
+    RunOne("{0, 40, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_40MHZ,
+           {{38, 5190, 40, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test default 80 MHz channel
+    RunOne("{0, 80, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_80MHZ,
+           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test default 160 MHz channel
+    RunOne("{0, 160, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_160MHZ,
+           {{50, 5250, 160, WIFI_PHY_BAND_5GHZ}},
+           0);
+
+    // Test default 80+80 MHz channel
+    RunOne("{0, 80, BAND_UNSPECIFIED, 0};{0, 80, BAND_UNSPECIFIED, 0}",
+           WifiChannelWidthType::CW_80_PLUS_80MHZ,
+           {{42, 5210, 80, WIFI_PHY_BAND_5GHZ}, {106, 5530, 80, WIFI_PHY_BAND_5GHZ}},
+           0);
 }
 
 /**
@@ -695,10 +939,11 @@ class WifiOperatingChannelTestSuite : public TestSuite
 };
 
 WifiOperatingChannelTestSuite::WifiOperatingChannelTestSuite()
-    : TestSuite("wifi-operating-channel", UNIT)
+    : TestSuite("wifi-operating-channel", Type::UNIT)
 {
-    AddTestCase(new SetWifiOperatingChannelTest(), TestCase::QUICK);
-    AddTestCase(new WifiPhyChannel80Plus80Test(), TestCase::QUICK);
+    AddTestCase(new SetWifiOperatingChannelTest(), TestCase::Duration::QUICK);
+    AddTestCase(new PhyChannelSettingsToOperatingChannelTest(), TestCase::Duration::QUICK);
+    AddTestCase(new WifiPhyChannel80Plus80Test(), TestCase::Duration::QUICK);
 }
 
 static WifiOperatingChannelTestSuite g_wifiOperatingChannelTestSuite; ///< the test suite
