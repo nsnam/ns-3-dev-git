@@ -103,6 +103,11 @@ class Histogram
     void AddValue(double value);
 
     /**
+     * Clear the histogram content.
+     */
+    void Clear();
+
+    /**
      * \brief Serializes the results to an std::ostream in XML format.
      * \param os the output stream
      * \param indent number of spaces to use as base indentation level

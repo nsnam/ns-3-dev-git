@@ -24,6 +24,7 @@ Changes from ns-3.38 to ns-3-dev
 * (network) Added `Mac16Address::Mac16Address(uint16t addr)` and `Mac16Address::Mac64Address(uint64t addr)` constructors.
 * (lr-wpan) Added `LrwpanMac::MlmeGetRequest` function and the corresponding confirm callbacks as well as `LrwpanMac::SetMlmeGetConfirm` function.
 * (applications) Added `Tx` and `TxWithAddresses` trace sources in `UdpClient`.
+* (stats) Added `Histogram::Clear` function to clear the histogram contents.
 
 ### Changes to existing API
 

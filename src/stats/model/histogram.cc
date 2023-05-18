@@ -92,6 +92,12 @@ Histogram::AddValue(double value)
     m_histogram[index]++;
 }
 
+void
+Histogram::Clear()
+{
+    m_histogram.clear();
+}
+
 Histogram::Histogram(double binWidth)
 {
     m_binWidth = binWidth;
