@@ -425,7 +425,7 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
     {
         const auto& staLink = GetStaLink(link);
 
-        if (index != linkId && staLink.apLinkId.has_value())
+        if (index != linkId && staLink.bssid.has_value())
         {
             multiLinkElement.AddPerStaProfileSubelement();
             auto& perStaProfile = multiLinkElement.GetPerStaProfile(
@@ -434,7 +434,7 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
             // for the corresponding non-AP STA that requests a link for multi-link (re)setup
             // with the AP MLD is set to the link ID of the AP affiliated with the AP MLD that
             // is operating on that link. The link ID is obtained during multi-link discovery
-            perStaProfile.SetLinkId(staLink.apLinkId.value());
+            perStaProfile.SetLinkId(index);
             // For each Per-STA Profile subelement included in the Link Info field, the
             // Complete Profile subfield of the STA Control field shall be set to 1
             perStaProfile.SetCompleteProfile();
@@ -618,7 +618,6 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
     {
         auto& staLink = GetStaLink(link);
         staLink.sendAssocReq = false;
-        staLink.apLinkId = std::nullopt;
         staLink.bssid = std::nullopt;
     }
     // send Association Request on the link where the Beacon/Probe Response was received
@@ -635,7 +634,6 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
         NS_ASSERT_MSG(mle, "We get here only for ML setup");
         NS_LOG_DEBUG("Setting up link (local ID=" << +localLinkId << ", AP ID=" << +apLinkId
                                                   << ")");
-        GetLink(localLinkId).apLinkId = apLinkId;
         GetLink(localLinkId).bssid = bssid;
         if (!mleCommonInfo)
         {
@@ -666,7 +664,7 @@ StaWifiMac::ScanningTimeout(const std::optional<ApInfo>& bestAp)
     // restart beacon watchdog for all links to setup
     for (const auto& [id, link] : GetLinks())
     {
-        if (GetStaLink(link).apLinkId.has_value() || GetNLinks() == 1)
+        if (GetStaLink(link).bssid.has_value() || GetNLinks() == 1)
         {
             RestartBeaconWatchdog(delay, id);
         }
@@ -718,20 +716,19 @@ StaWifiMac::Disassociated(uint8_t linkId)
     NS_LOG_FUNCTION(this << +linkId);
 
     auto& link = GetLink(linkId);
-    if (link.apLinkId.has_value())
+    if (link.bssid.has_value())
     {
         // this is a link setup in an ML setup
         m_setupCanceled(linkId, GetBssid(linkId));
     }
 
     // disable the given link
-    link.apLinkId = std::nullopt;
     link.bssid = std::nullopt;
     link.phy->SetOffMode();
 
     for (const auto& [id, lnk] : GetLinks())
     {
-        if (GetStaLink(lnk).apLinkId.has_value())
+        if (GetStaLink(lnk).bssid.has_value())
         {
             // found an enabled link
             return;
@@ -803,12 +800,6 @@ StaWifiMac::GetSetupLinkIds() const
         }
     }
     return linkIds;
-}
-
-std::optional<uint8_t>
-StaWifiMac::GetApLinkId(uint8_t linkId) const
-{
-    return GetLink(linkId).apLinkId;
 }
 
 Mac48Address
@@ -1177,10 +1168,10 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         // if a Multi-Link Element is present, check its content
         if (const auto& mle = assocResp.Get<MultiLinkElement>())
         {
-            NS_ABORT_MSG_IF(!GetLink(linkId).apLinkId.has_value(),
+            NS_ABORT_MSG_IF(!GetLink(linkId).bssid.has_value(),
                             "The link on which the Association Response was received "
                             "is not a link we requested to setup");
-            NS_ABORT_MSG_IF(*GetLink(linkId).apLinkId != mle->GetLinkIdInfo(),
+            NS_ABORT_MSG_IF(linkId != mle->GetLinkIdInfo(),
                             "The link ID of the AP that transmitted the Association "
                             "Response does not match the stored link ID");
             NS_ABORT_MSG_IF(GetWifiRemoteStationManager(linkId)->GetMldAddress(hdr.GetAddr2()) !=
@@ -1193,15 +1184,7 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             {
                 auto& perStaProfile = mle->GetPerStaProfile(elem);
                 uint8_t apLinkId = perStaProfile.GetLinkId();
-                auto it = GetLinks().cbegin();
-                while (it != GetLinks().cend())
-                {
-                    if (GetStaLink(it->second).apLinkId == apLinkId)
-                    {
-                        break;
-                    }
-                    it++;
-                }
+                auto it = GetLinks().find(apLinkId);
                 uint8_t staLinkid = 0;
                 std::optional<Mac48Address> bssid;
                 NS_ABORT_MSG_IF(it == GetLinks().cend() ||
@@ -1241,7 +1224,6 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         // remaining links in setupLinks are not setup and hence must be disabled
         for (const auto& id : setupLinks)
         {
-            GetLink(id).apLinkId = std::nullopt;
             GetLink(id).bssid = std::nullopt;
             // if at least one link was setup, disable the links that were not setup (if any)
             if (m_state == ASSOCIATED)

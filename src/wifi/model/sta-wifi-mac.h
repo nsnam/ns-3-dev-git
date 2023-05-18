@@ -257,12 +257,6 @@ class StaWifiMac : public WifiMac
     std::set<uint8_t> GetSetupLinkIds() const;
 
     /**
-     * \param linkId the IO of the given link
-     * \return the ID (as set by the AP) of the given link, if the given link has been setup
-     */
-    std::optional<uint8_t> GetApLinkId(uint8_t linkId) const;
-
-    /**
      * Return the association ID.
      *
      * \return the association ID
@@ -324,8 +318,6 @@ class StaWifiMac : public WifiMac
 
         bool sendAssocReq;                 //!< whether this link is used to send the
                                            //!< Association Request frame
-        std::optional<uint8_t> apLinkId;   //!< ID (as set by the AP) of the link we have
-                                           //!< setup or are setting up
         std::optional<Mac48Address> bssid; //!< BSSID of the AP to associate with over this link
         EventId beaconWatchdog;            //!< beacon watchdog
         Time beaconWatchdogEnd{0};         //!< beacon watchdog end

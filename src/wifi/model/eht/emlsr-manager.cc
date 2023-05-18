@@ -220,9 +220,7 @@ EmlsrManager::SendEmlOperatingModeNotification()
         if (auto setupLinkIt = setupLinkIds.find(*emlsrLinkIt); setupLinkIt != setupLinkIds.cend())
         {
             setupLinkIds.erase(setupLinkIt);
-            auto apLinkId = m_staMac->GetApLinkId(*emlsrLinkIt);
-            NS_ASSERT(apLinkId);
-            frame.SetLinkIdInBitmap(*apLinkId);
+            frame.SetLinkIdInBitmap(*emlsrLinkIt);
             emlsrLinkIt++;
         }
         else
