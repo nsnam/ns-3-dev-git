@@ -60,7 +60,8 @@ class WifiSpectrumValueHelper
      * \param centerFrequencies center frequency (MHz) per segment
      * \param channelWidth total allocated channel width (MHz) over all segments
      * \param carrierSpacing carrier spacing (Hz)
-     * \param guardBandwidth width of the guard band (MHz)
+     * \param guardBandwidth total width of the guard band (MHz), which will be split over the
+     * segments
      *
      * \return the static SpectrumModel instance corresponding to the
      * given carrier frequency and channel width configuration.

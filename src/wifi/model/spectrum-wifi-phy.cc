@@ -277,7 +277,7 @@ SpectrumWifiPhy::ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInt
     // it again in the entry associated with the new RX spectrum model UID)
 
     // Replace existing spectrum model with new one
-    spectrumPhyInterface->SetRxSpectrumModel(centerFrequency,
+    spectrumPhyInterface->SetRxSpectrumModel({centerFrequency},
                                              channelWidth,
                                              GetSubcarrierSpacing(),
                                              GetGuardBandwidth(channelWidth));
@@ -327,7 +327,8 @@ SpectrumWifiPhy::DoChannelSwitch()
     m_currentSpectrumPhyInterface = newSpectrumPhyInterface;
 
     auto reset = true;
-    if (m_currentSpectrumPhyInterface->GetCenterFrequency() == frequencyAfter)
+    if (!m_currentSpectrumPhyInterface->GetCenterFrequencies().empty() &&
+        m_currentSpectrumPhyInterface->GetCenterFrequencies().front() == frequencyAfter)
     {
         // Center frequency has not changed for that interface, hence we do not need to
         // reset the spectrum model nor update any band stored in the interference helper
@@ -384,7 +385,8 @@ SpectrumWifiPhy::ConfigureInterface(uint16_t frequency, ChannelWidthMhz width)
     NS_ABORT_MSG_IF(spectrumPhyInterface == m_currentSpectrumPhyInterface,
                     "This method should not be called for the current interface");
 
-    if ((frequency == spectrumPhyInterface->GetCenterFrequency()) &&
+    if (!spectrumPhyInterface->GetCenterFrequencies().empty() &&
+        (frequency == spectrumPhyInterface->GetCenterFrequencies().front()) &&
         (width == spectrumPhyInterface->GetChannelWidth()))
     {
         NS_LOG_DEBUG("Same RF channel as before on that interface, do nothing");

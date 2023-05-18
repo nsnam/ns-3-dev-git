@@ -25,6 +25,8 @@
 #include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-value.h"
 
+#include <sstream>
+
 NS_LOG_COMPONENT_DEFINE("WifiSpectrumPhyInterface");
 
 namespace ns3
@@ -42,7 +44,7 @@ WifiSpectrumPhyInterface::GetTypeId()
 
 WifiSpectrumPhyInterface::WifiSpectrumPhyInterface(FrequencyRange freqRange)
     : m_frequencyRange{freqRange},
-      m_centerFrequency{0},
+      m_centerFrequencies{},
       m_channelWidth{0},
       m_bands{},
       m_heRuBands{}
@@ -107,15 +109,20 @@ WifiSpectrumPhyInterface::SetChannel(const Ptr<SpectrumChannel> c)
 }
 
 void
-WifiSpectrumPhyInterface::SetRxSpectrumModel(uint16_t centerFrequency,
+WifiSpectrumPhyInterface::SetRxSpectrumModel(const std::vector<uint16_t>& centerFrequencies,
                                              ChannelWidthMhz channelWidth,
                                              uint32_t bandBandwidth,
                                              ChannelWidthMhz guardBandwidth)
 {
-    NS_LOG_FUNCTION(this << centerFrequency << channelWidth << bandBandwidth << guardBandwidth);
-    m_centerFrequency = centerFrequency;
+    std::stringstream ss;
+    for (const auto& centerFrequency : centerFrequencies)
+    {
+        ss << centerFrequency << " ";
+    }
+    NS_LOG_FUNCTION(this << ss.str() << channelWidth << bandBandwidth << guardBandwidth);
+    m_centerFrequencies = centerFrequencies;
     m_channelWidth = channelWidth;
-    m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel({centerFrequency},
+    m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel(centerFrequencies,
                                                                   channelWidth,
                                                                   bandBandwidth,
                                                                   guardBandwidth);
@@ -145,10 +152,10 @@ WifiSpectrumPhyInterface::GetFrequencyRange() const
     return m_frequencyRange;
 }
 
-uint16_t
-WifiSpectrumPhyInterface::GetCenterFrequency() const
+const std::vector<uint16_t>&
+WifiSpectrumPhyInterface::GetCenterFrequencies() const
 {
-    return m_centerFrequency;
+    return m_centerFrequencies;
 }
 
 ChannelWidthMhz

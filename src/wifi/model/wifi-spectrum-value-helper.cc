@@ -103,6 +103,9 @@ WifiSpectrumValueHelper::GetSpectrumModel(const std::vector<uint16_t>& centerFre
         NS_ASSERT_MSG(centerFrequencies.front() != centerFrequencies.back(),
                       "Center frequency of each segment shall be different");
     }
+    // assume all frequency segments have the same width, hence split the guard bandwidth
+    // accordingly over the segments
+    guardBandwidth /= centerFrequencies.size();
     Ptr<SpectrumModel> ret;
     WifiSpectrumModelId key{centerFrequencies, channelWidth, carrierSpacing, guardBandwidth};
     if (const auto it = g_wifiSpectrumModelMap.find(key); it != g_wifiSpectrumModelMap.cend())
@@ -279,9 +282,11 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
                     << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr
                     << minOuterBandDbr << lowestPointDbr);
     uint32_t carrierSpacing = 312500;
-    guardBandwidth /= centerFrequencies.size();
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
+    // assume all frequency segments have the same width, hence split the guard bandwidth
+    // accordingly over the segments
+    guardBandwidth /= centerFrequencies.size();
     const auto nGuardBands =
         static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / carrierSpacing) + 0.5);
     const auto nAllocatedBands =
@@ -381,9 +386,11 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
                     << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr
                     << minOuterBandDbr << lowestPointDbr);
     uint32_t carrierSpacing = 312500;
-    guardBandwidth /= centerFrequencies.size();
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
+    // assume all frequency segments have the same width, hence split the guard bandwidth
+    // accordingly over the segments
+    guardBandwidth /= centerFrequencies.size();
     const auto nGuardBands =
         static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / carrierSpacing) + 0.5);
     const auto nAllocatedBands =
@@ -489,9 +496,11 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
                     << channelWidth << txPowerW << guardBandwidth << minInnerBandDbr
                     << minOuterBandDbr << lowestPointDbr);
     uint32_t carrierSpacing = 78125;
-    guardBandwidth /= centerFrequencies.size();
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
+    // assume all frequency segments have the same width, hence split the guard bandwidth
+    // accordingly over the segments
+    guardBandwidth /= centerFrequencies.size();
     const auto nGuardBands =
         static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / carrierSpacing) + 0.5);
     const auto separationWidth = std::abs(centerFrequencies.back() - centerFrequencies.front());
@@ -649,7 +658,6 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << txPowerW << guardBandwidth << ru.first << ru.second);
     uint32_t carrierSpacing = 78125;
-    guardBandwidth /= centerFrequencies.size();
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
 

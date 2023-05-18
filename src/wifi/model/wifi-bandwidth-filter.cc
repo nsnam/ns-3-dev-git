@@ -82,7 +82,8 @@ WifiBandwidthFilter::DoFilter(Ptr<const SpectrumSignalParameters> params,
                   "SpectrumWifiPhy::TrackSignalsFromInactiveInterfaces attribute is not enabled");
 
     NS_ASSERT((interface != wifiPhy->GetCurrentInterface()) ||
-              (wifiPhy->GetOperatingChannel().GetFrequency() == interface->GetCenterFrequency()));
+              (wifiPhy->GetOperatingChannel().GetFrequency() ==
+               interface->GetCenterFrequencies().front()));
     NS_ASSERT((interface != wifiPhy->GetCurrentInterface()) ||
               (wifiPhy->GetOperatingChannel().GetWidth() == interface->GetChannelWidth()));
 
@@ -92,7 +93,7 @@ WifiBandwidthFilter::DoFilter(Ptr<const SpectrumSignalParameters> params,
     const auto rxCenterFreq = wifiRxParams->ppdu->GetTxCenterFreqs().front();
     const auto rxWidth = wifiRxParams->ppdu->GetTxVector().GetChannelWidth();
     const auto guardBandwidth = wifiPhy->GetGuardBandwidth(rxWidth);
-    const auto operatingFrequency = interface->GetCenterFrequency();
+    const auto operatingFrequency = interface->GetCenterFrequencies().front();
     const auto operatingChannelWidth = interface->GetChannelWidth();
 
     const auto rxMinFreq = rxCenterFreq - rxWidth / 2 - guardBandwidth;
