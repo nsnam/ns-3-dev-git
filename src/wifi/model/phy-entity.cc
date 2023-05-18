@@ -877,6 +877,7 @@ PhyEntity::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPow
             // Update received power of the event associated to that transmission
             UpdateInterferenceEvent(event, rxPowersW);
         }
+        return nullptr;
     }
     else
     {
