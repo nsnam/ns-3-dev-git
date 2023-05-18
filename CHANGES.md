@@ -70,6 +70,7 @@ Changes from ns-3.38 to ns-3-dev
 * (lte) The `EpsBearer` is extended to include 3GPP Release 18 5QIs.
 * (lte) Add PDCP discard timer. If enabled using the attribute `EnablePdcpDiscarding`, in case that the buffering time (head-of-line delay) of a packet is greater than the PDB or a value set by the user, it will perform discarding at the moment of passing the PDCP SDU to RLC.
 * (lte) Centralize the constants `MIN_NO_CC` and `MAX_NO_CC`, declared in multiple header files, into the header `lte-common.h`.
+* (wave) The Wave module was removed from the codebase due to lack of maintenance
 
 ### Changes to build system
 

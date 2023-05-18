@@ -18,6 +18,7 @@ Release 3-dev
 
 ### Supported platforms
 
+
 ### New user-visible features
 
 - (lr-wpan) !1399 - Add orphan scan support.
@@ -25,6 +26,12 @@ Release 3-dev
 - (lr-wpan) !1402 - Add attributes to MLME-SET and MLME-GET
 - (lr-wpan) !1410 - Add Mac16 and Mac64 functions
 - (applications) !1412 - Add Tx and TxWithAddresses trace sources in UdpClient
+
+Note:  This release has removed the "wave" module from the codebase due to lack of maintenance
+and due to lack of relevance to modern vehicular networks which appear to be moving to cellular
+V2X solutions.  Future users who may wish to use this code should obtain it from an earlier ns-3
+release but should also be aware of a number of issues that arose and can be found in the
+[ns-3 Issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues/?state=all&label_name%5B%5D=module%3A%3Awave); in particular,  #249, #879, #872, and #637.
 
 ### Bugs fixed
 

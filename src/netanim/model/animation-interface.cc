@@ -35,7 +35,6 @@
 #ifdef __WIN32__
 #include "ns3/bs-net-device.h"
 #include "ns3/csma-net-device.h"
-#include "ns3/wave-net-device.h"
 #endif
 #include "animation-interface.h"
 
@@ -108,7 +107,7 @@ AnimationInterface::AnimationInterface(const std::string fn)
      * The .dll.a/.lib however, only gets linked if we instantiate at
      * least one symbol exported by the .dll.
      *
-     * To ensure TypeIds from the Csma, Uan, Wave, Wifi and Wimax
+     * To ensure TypeIds from the Csma, Uan, Wifi and Wimax
      * modules are registered during runtime, we need to instantiate
      * at least one symbol exported by each of these module libraries.
      */
@@ -116,7 +115,6 @@ AnimationInterface::AnimationInterface(const std::string fn)
     static CsmaNetDevice c;
     static WifiNetDevice w;
     static UanNetDevice u;
-    static WaveNetDevice wv;
 #endif
 }
 
@@ -495,7 +493,6 @@ AnimationInterface::MobilityAutoCheck()
         PurgePendingPackets(AnimationInterface::LTE);
         PurgePendingPackets(AnimationInterface::CSMA);
         PurgePendingPackets(AnimationInterface::LRWPAN);
-        PurgePendingPackets(AnimationInterface::WAVE);
         Simulator::Schedule(m_mobilityPollInterval, &AnimationInterface::MobilityAutoCheck, this);
     }
 }
@@ -1085,50 +1082,6 @@ AnimationInterface::LrWpanPhyRxBeginTrace(std::string context, Ptr<const Packet>
 }
 
 void
-AnimationInterface::WavePhyTxBeginTrace(std::string context, Ptr<const Packet> p)
-{
-    NS_LOG_FUNCTION(this);
-    return GenericWirelessTxTrace(context, p, AnimationInterface::WAVE);
-}
-
-void
-AnimationInterface::WavePhyRxBeginTrace(std::string context, Ptr<const Packet> p)
-{
-    NS_LOG_FUNCTION(this);
-    CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS;
-    Ptr<NetDevice> ndev = GetNetDeviceFromContext(context);
-    NS_ASSERT(ndev);
-    UpdatePosition(ndev);
-    uint64_t animUid = GetAnimUidFromPacket(p);
-    NS_LOG_INFO("Wave RxBeginTrace for packet:" << animUid);
-    if (!IsPacketPending(animUid, AnimationInterface::WAVE))
-    {
-        NS_ASSERT_MSG(false, "WavePhyRxBeginTrace: unknown Uid");
-        std::ostringstream oss;
-        WifiMacHeader hdr;
-        if (!p->PeekHeader(hdr))
-        {
-            NS_LOG_WARN("WaveMacHeader not present");
-            return;
-        }
-        oss << hdr.GetAddr2();
-        if (m_macToNodeIdMap.find(oss.str()) == m_macToNodeIdMap.end())
-        {
-            NS_LOG_WARN("Transmitter Mac address " << oss.str() << " never seen before. Skipping");
-            return;
-        }
-        Ptr<Node> txNode = NodeList::GetNode(m_macToNodeIdMap[oss.str()]);
-        UpdatePosition(txNode);
-        AnimPacketInfo pktInfo(nullptr, Simulator::Now(), m_macToNodeIdMap[oss.str()]);
-        AddPendingPacket(AnimationInterface::WAVE, animUid, pktInfo);
-        NS_LOG_WARN("WavePhyRxBegin: unknown Uid, but we are adding a wave packet");
-    }
-    /// \todo NS_ASSERT (WavePacketIsPending (animUid) == true);
-    m_pendingWavePackets[animUid].ProcessRxBegin(ndev, Simulator::Now().GetSeconds());
-    OutputWirelessPacketRxInfo(p, m_pendingWavePackets[animUid], animUid);
-}
-
-void
 AnimationInterface::WimaxTxTrace(std::string context, Ptr<const Packet> p, const Mac48Address& m)
 {
     NS_LOG_FUNCTION(this);
@@ -1419,10 +1372,6 @@ AnimationInterface::ProtocolTypeToPendingPackets(AnimationInterface::ProtocolTyp
         pendingPackets = &m_pendingLrWpanPackets;
         break;
     }
-    case AnimationInterface::WAVE: {
-        pendingPackets = &m_pendingWavePackets;
-        break;
-    }
     }
     return pendingPackets;
 }
@@ -1455,10 +1404,6 @@ AnimationInterface::ProtocolTypeToString(AnimationInterface::ProtocolType protoc
     }
     case AnimationInterface::LRWPAN: {
         result = "LRWPAN";
-        break;
-    }
-    case AnimationInterface::WAVE: {
-        result = "WAVE";
         break;
     }
     }
@@ -1775,14 +1720,6 @@ AnimationInterface::ConnectCallbacks()
                             MakeCallback(&AnimationInterface::LrWpanMacRxTrace, this));
     Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRxDrop",
                             MakeCallback(&AnimationInterface::LrWpanMacRxDropTrace, this));
-
-    // Wave
-    Config::ConnectFailSafe(
-        "/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/$ns3::WifiPhy/PhyTxBegin",
-        MakeCallback(&AnimationInterface::WavePhyTxBeginTrace, this));
-    Config::ConnectFailSafe(
-        "/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/$ns3::WifiPhy/PhyRxBegin",
-        MakeCallback(&AnimationInterface::WavePhyRxBeginTrace, this));
 }
 
 Vector

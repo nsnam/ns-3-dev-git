@@ -93,7 +93,7 @@ set(NS3_ENABLED_MODULES ""
     CACHE STRING "List of modules to enable (e.g. core;network;internet)"
 )
 set(NS3_DISABLED_MODULES ""
-    CACHE STRING "List of modules to disable (e.g. lte;wimax;wave)"
+    CACHE STRING "List of modules to disable (e.g. lte;wimax)"
 )
 
 # Filter in the modules from which examples and tests will be built

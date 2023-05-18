@@ -98,7 +98,6 @@ SOURCES = \
 	$(SRC)/spectrum/doc/spectrum.rst \
 	$(SRC)/netanim/doc/animation.rst \
 	$(SRC)/flow-monitor/doc/flow-monitor.rst \
-	$(SRC)/wave/doc/wave.rst \
 	$(SRC)/sixlowpan/doc/sixlowpan.rst \
 	$(SRC)/lr-wpan/doc/lr-wpan.rst \
 

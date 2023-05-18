@@ -70,9 +70,9 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     Ptr<WifiMacQueueScheduler> queueScheduler = m_queueScheduler.Create<WifiMacQueueScheduler>();
     mac->SetMacQueueScheduler(queueScheduler);
 
-    // WaveNetDevice stores PHY entities in a different member than WifiNetDevice, hence
-    // GetNPhys() would return 0. We have to attach a protection manager and an ack manager
-    // to the unique instance of frame exchange manager anyway
+    // WaveNetDevice (through ns-3.38) stores PHY entities in a different member than WifiNetDevice,
+    // hence GetNPhys() would return 0. We have to attach a protection manager and an ack manager to
+    // the unique instance of frame exchange manager anyway
     for (uint8_t linkId = 0; linkId < std::max<uint8_t>(device->GetNPhys(), 1); ++linkId)
     {
         auto fem = mac->GetFrameExchangeManager(linkId);

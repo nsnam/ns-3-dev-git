@@ -12,7 +12,6 @@ build_lib(
     ${libuan}
     ${libenergy}
     ${liblr-wpan}
-    ${libwave}
     ${libpoint-to-point-layout}
   TEST_SOURCES test/netanim-test.cc
 )
