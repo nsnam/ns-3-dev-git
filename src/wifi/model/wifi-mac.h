@@ -142,6 +142,12 @@ class WifiMac : public Object
      * \return the number of links used by this MAC
      */
     uint8_t GetNLinks() const;
+
+    /**
+     * \return the set of link IDs in use by this device
+     */
+    const std::set<uint8_t>& GetLinkIds() const;
+
     /**
      * Get the ID of the link having the given MAC address, if any.
      *
@@ -974,6 +980,7 @@ class WifiMac : public Object
 
     Ptr<WifiNetDevice> m_device;                            //!< Pointer to the device
     std::map<uint8_t, std::unique_ptr<LinkEntity>> m_links; //!< ID-indexed map of Link objects
+    std::set<uint8_t> m_linkIds;                            //!< IDs of the links in use
 
     Mac48Address m_address; //!< MAC address of this station
     Ssid m_ssid;            //!< Service Set ID (SSID)

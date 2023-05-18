@@ -897,6 +897,7 @@ WifiMac::SetWifiRemoteStationManagers(
     {
         // the link may already exist in case PHY objects were configured first
         auto [it, inserted] = m_links.emplace(i, CreateLinkEntity());
+        m_linkIds.insert(i);
         it->second->stationManager = stationManagers[i];
     }
 }
@@ -932,6 +933,12 @@ uint8_t
 WifiMac::GetNLinks() const
 {
     return m_links.size();
+}
+
+const std::set<uint8_t>&
+WifiMac::GetLinkIds() const
+{
+    return m_linkIds;
 }
 
 void
@@ -1034,6 +1041,12 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
             to = nextTo->second;
         } while (true);
     }
+
+    m_linkIds.clear();
+    for (const auto& [id, link] : m_links)
+    {
+        m_linkIds.insert(id);
+    }
 }
 
 void
@@ -1056,6 +1069,7 @@ WifiMac::SetWifiPhys(const std::vector<Ptr<WifiPhy>>& phys)
         // (ResetWifiPhys just nullified the PHY(s) but left the links)
         // or the remote station managers were configured first
         auto [it, inserted] = m_links.emplace(i, CreateLinkEntity());
+        m_linkIds.insert(i);
         it->second->phy = phys[i];
     }
 }
