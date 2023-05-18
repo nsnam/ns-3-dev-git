@@ -32,7 +32,6 @@
 #include <iterator>
 #include <list>
 #include <map>
-#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -59,13 +58,26 @@ class AttributeContainerObject : public Object
     /**
      * Reverses the list of doubles.
      */
-    void ReverseList();
+    void ReverseDoubleList();
 
     /**
      * \brief Get the type ID.
      * \return The object TypeId.
      */
     static TypeId GetTypeId();
+
+    /**
+     * Set the list of doubles to the given list
+     *
+     * \param doubleList the given list
+     */
+    void SetDoubleList(const std::list<double>& doubleList);
+    /**
+     * Get the list of doubles
+     *
+     * \return the list of doubles
+     */
+    std::list<double> GetDoubleList() const;
 
     /**
      * Set the vector of ints to the given vector
@@ -79,15 +91,6 @@ class AttributeContainerObject : public Object
      * \return the vector of ints
      */
     std::vector<int> GetIntVec() const;
-
-    /**
-     * \brief Stream insertion operator.
-     *
-     * \param [in] os The reference to the output stream.
-     * \param [in] obj The AttributeContainer object.
-     * \returns The reference to the output stream.
-     */
-    friend std::ostream& operator<<(std::ostream& os, const AttributeContainerObject& obj);
 
   private:
     std::list<double> m_doublelist; //!< List of doubles.
@@ -161,10 +164,21 @@ AttributeContainerObject::GetTypeId()
 }
 
 void
-AttributeContainerObject::ReverseList()
+AttributeContainerObject::ReverseDoubleList()
 {
     m_doublelist.reverse();
-    std::reverse(m_intvec.begin(), m_intvec.end());
+}
+
+void
+AttributeContainerObject::SetDoubleList(const std::list<double>& doubleList)
+{
+    m_doublelist = doubleList;
+}
+
+std::list<double>
+AttributeContainerObject::GetDoubleList() const
+{
+    return m_doublelist;
 }
 
 void
@@ -177,23 +191,6 @@ std::vector<int>
 AttributeContainerObject::GetIntVec() const
 {
     return m_intvec;
-}
-
-std::ostream&
-operator<<(std::ostream& os, const AttributeContainerObject& obj)
-{
-    os << "AttributeContainerObject: ";
-    bool first = true;
-    for (auto d : obj.m_doublelist)
-    {
-        if (!first)
-        {
-            os << ", ";
-        }
-        os << d;
-        first = false;
-    }
-    return os;
 }
 
 /**
@@ -274,7 +271,7 @@ AttributeContainerTestCase::DoRun()
         auto ref = {"one", "two", "three"};
         AttributeContainerValue<StringValue> ac(ref.begin(), ref.end());
 
-        NS_TEST_ASSERT_MSG_EQ(3, ac.GetN(), "Container size mismatch");
+        NS_TEST_ASSERT_MSG_EQ(ref.size(), ac.GetN(), "Container size mismatch");
         auto aciter = ac.Begin();
         for (auto v : ref)
         {
@@ -289,7 +286,7 @@ AttributeContainerTestCase::DoRun()
         auto ref = {"one", "two", "three"};
         AttributeContainerValue<StringValue, ',', std::vector> ac(ref);
 
-        NS_TEST_ASSERT_MSG_EQ(3, ac.GetN(), "Container size mismatch");
+        NS_TEST_ASSERT_MSG_EQ(ref.size(), ac.GetN(), "Container size mismatch");
         auto aciter = ac.Begin();
         for (auto v : ref)
         {
@@ -305,7 +302,7 @@ AttributeContainerTestCase::DoRun()
         std::map<std::string, int64_t> ref = {{"one", 1}, {"two", 2}, {"three", 3}};
         AttributeContainerValue<PairValue<StringValue, IntegerValue>> ac(ref);
 
-        NS_TEST_ASSERT_MSG_EQ(3, ac.GetN(), "Container size mismatch");
+        NS_TEST_ASSERT_MSG_EQ(ref.size(), ac.GetN(), "Container size mismatch");
         auto aciter = ac.Begin();
         for (const auto& v : ref)
         {
@@ -443,29 +440,24 @@ AttributeContainerSetGetTestCase::DoRun()
 {
     Ptr<AttributeContainerObject> obj = CreateObject<AttributeContainerObject>();
     {
-        std::ostringstream oss;
-        oss << *obj;
-        NS_TEST_ASSERT_MSG_EQ(oss.str(),
-                              "AttributeContainerObject: ",
-                              "DoubleList initialized incorrectly");
+        auto doubleList = obj->GetDoubleList();
+        NS_TEST_ASSERT_MSG_EQ(doubleList.empty(), true, "DoubleList initialized incorrectly");
     }
 
-    std::list<double> doubles = {1.1, 2.22, 3.333};
+    const std::list<double> doubles = {1.1, 2.22, 3.333};
     obj->SetAttribute("DoubleList", AttributeContainerValue<DoubleValue>(doubles));
     {
-        std::ostringstream oss;
-        oss << *obj;
-        NS_TEST_ASSERT_MSG_EQ(oss.str(),
-                              "AttributeContainerObject: 1.1, 2.22, 3.333",
+        auto doubleList = obj->GetDoubleList();
+        NS_TEST_ASSERT_MSG_EQ(std::equal(doubles.begin(), doubles.end(), doubleList.begin()),
+                              true,
                               "DoubleList incorrectly set");
     }
 
-    obj->ReverseList();
+    obj->ReverseDoubleList();
     {
-        std::ostringstream oss;
-        oss << *obj;
-        NS_TEST_ASSERT_MSG_EQ(oss.str(),
-                              "AttributeContainerObject: 3.333, 2.22, 1.1",
+        auto doubleList = obj->GetDoubleList();
+        NS_TEST_ASSERT_MSG_EQ(std::equal(doubles.rbegin(), doubles.rend(), doubleList.begin()),
+                              true,
                               "DoubleList incorrectly reversed");
 
         // NOTE: changing the return container here too!
@@ -475,15 +467,12 @@ AttributeContainerSetGetTestCase::DoRun()
 
         AttributeContainerValue<DoubleValue>::result_type doublevec = value.Get();
         NS_TEST_ASSERT_MSG_EQ(doubles.size(), doublevec.size(), "DoublesVec wrong size");
-        auto iter = doubles.rbegin();
-        for (auto d : doublevec)
-        {
-            NS_TEST_ASSERT_MSG_EQ(d, *iter, "Incorrect value in doublesvec");
-            ++iter;
-        }
+        NS_TEST_ASSERT_MSG_EQ(std::equal(doubles.rbegin(), doubles.rend(), doublevec.begin()),
+                              true,
+                              "Incorrect value in doublesvec");
     }
 
-    std::vector<int> ints = {-1, 0, 1, 2, 3};
+    const std::vector<int> ints = {-1, 0, 1, 2, 3};
     // NOTE: here the underlying attribute container type differs from the actual container
     obj->SetAttribute("IntegerVector", AttributeContainerValue<IntegerValue, ';'>(ints));
 
@@ -495,12 +484,10 @@ AttributeContainerSetGetTestCase::DoRun()
 
         AttributeContainerValue<IntegerValue>::result_type intlist = value.Get();
         NS_TEST_ASSERT_MSG_EQ(ints.size(), intlist.size(), "Intvec wrong size");
-        auto iter = ints.begin();
-        for (auto d : intlist)
-        {
-            NS_TEST_ASSERT_MSG_EQ(d, *iter, "Incorrect value in intvec");
-            ++iter;
-        }
+
+        NS_TEST_ASSERT_MSG_EQ(std::equal(ints.begin(), ints.end(), intlist.begin()),
+                              true,
+                              "Incorrect value in intvec");
     }
 
     std::string intVecPairString("0 1,2,3; 1 0; 2 0,1");
