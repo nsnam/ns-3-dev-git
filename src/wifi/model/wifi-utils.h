@@ -22,6 +22,7 @@
 
 #include "block-ack-type.h"
 
+#include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
 
 #include <list>
@@ -33,6 +34,41 @@ namespace ns3
 
 class WifiMacHeader;
 class Packet;
+
+/**
+ * Wifi direction. Values are those defined for the TID-to-Link Mapping Control Direction
+ * field in IEEE 802.11be D3.1 Figure 9-1002ap
+ */
+enum class WifiDirection : uint8_t
+{
+    DOWNLINK = 0,
+    UPLINK = 1,
+    BOTH_DIRECTIONS = 2,
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param direction the direction
+ * \returns a reference to the stream
+ */
+inline std::ostream&
+operator<<(std::ostream& os, const WifiDirection& direction)
+{
+    switch (direction)
+    {
+    case WifiDirection::DOWNLINK:
+        return (os << "DOWNLINK");
+    case WifiDirection::UPLINK:
+        return (os << "UPLINK");
+    case WifiDirection::BOTH_DIRECTIONS:
+        return (os << "BOTH_DIRECTIONS");
+    default:
+        NS_FATAL_ERROR("Invalid direction");
+        return (os << "INVALID");
+    }
+}
 
 /// @brief TID-indexed map of the link set to which the TID is mapped
 using WifiTidLinkMapping = std::map<uint8_t, std::set<uint8_t>>;

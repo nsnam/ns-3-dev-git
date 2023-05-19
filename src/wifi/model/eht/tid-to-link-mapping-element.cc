@@ -66,7 +66,7 @@ TidToLinkMapping::Control::Deserialize(Buffer::Iterator start)
     auto val = i.ReadU8();
     count++;
 
-    direction = static_cast<TidLinkMapDir>(val & 0x03);
+    direction = static_cast<WifiDirection>(val & 0x03);
     defaultMapping = (((val >> 2) & 0x01) == 1);
     mappingSwitchTimePresent = (((val >> 3) & 0x01) == 1);
     expectedDurationPresent = (((val >> 4) & 0x01) == 1);

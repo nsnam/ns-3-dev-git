@@ -1212,7 +1212,7 @@ class TidToLinkMappingElementTest : public HeaderSerializationTestCase
      * \param expectedDuration the Expected Duration
      * \param mappings A TID-indexed map of the link sets the TIDs are mapped to
      */
-    TidToLinkMappingElementTest(TidLinkMapDir direction,
+    TidToLinkMappingElementTest(WifiDirection direction,
                                 std::optional<Time> mappingSwitchTime,
                                 std::optional<Time> expectedDuration,
                                 const WifiTidLinkMapping& mappings);
@@ -1223,14 +1223,14 @@ class TidToLinkMappingElementTest : public HeaderSerializationTestCase
     void DoSetup() override;
     void DoRun() override;
 
-    TidLinkMapDir m_direction;               ///< the direction for the TID-to-link mapping
+    WifiDirection m_direction;               ///< the direction for the TID-to-link mapping
     std::optional<Time> m_mappingSwitchTime; ///< the Mapping Switching Time
     std::optional<Time> m_expectedDuration;  ///< the Expected Duration
     WifiTidLinkMapping m_mappings;           ///< maps TIDs to link sets
     TidToLinkMapping m_tidToLinkMapping;     ///< TID-To-Link Mapping element
 };
 
-TidToLinkMappingElementTest::TidToLinkMappingElementTest(TidLinkMapDir direction,
+TidToLinkMappingElementTest::TidToLinkMappingElementTest(WifiDirection direction,
                                                          std::optional<Time> mappingSwitchTime,
                                                          std::optional<Time> expectedDuration,
                                                          const WifiTidLinkMapping& mappings)
@@ -1380,20 +1380,20 @@ WifiEhtInfoElemsTestSuite::WifiEhtInfoElemsTestSuite()
     AddTestCase(new WifiEhtCapabilitiesIeTest(false, 160), TestCase::QUICK);
     AddTestCase(new WifiEhtCapabilitiesIeTest(false, 320), TestCase::QUICK);
     AddTestCase(
-        new TidToLinkMappingElementTest(TidLinkMapDir::DOWNLINK, std::nullopt, std::nullopt, {}),
+        new TidToLinkMappingElementTest(WifiDirection::DOWNLINK, std::nullopt, std::nullopt, {}),
         TestCase::QUICK);
-    AddTestCase(new TidToLinkMappingElementTest(TidLinkMapDir::UPLINK,
+    AddTestCase(new TidToLinkMappingElementTest(WifiDirection::UPLINK,
                                                 MicroSeconds(500 * 1024),
                                                 MicroSeconds(300 * 1024),
                                                 {{3, std::set<uint8_t>{0, 4, 6}}}),
                 TestCase::QUICK);
     AddTestCase(new TidToLinkMappingElementTest(
-                    TidLinkMapDir::BOTH_DIRECTIONS,
+                    WifiDirection::BOTH_DIRECTIONS,
                     std::nullopt,
                     MicroSeconds(100 * 1024),
                     {{3, std::set<uint8_t>{0, 4, 6}}, {6, std::set<uint8_t>{3, 7, 11, 14}}}),
                 TestCase::QUICK);
-    AddTestCase(new TidToLinkMappingElementTest(TidLinkMapDir::DOWNLINK,
+    AddTestCase(new TidToLinkMappingElementTest(WifiDirection::DOWNLINK,
                                                 MicroSeconds(100 * 1024),
                                                 std::nullopt,
                                                 {{0, std::set<uint8_t>{0, 1, 2}},

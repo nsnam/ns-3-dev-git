@@ -22,6 +22,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/wifi-information-element.h"
+#include "ns3/wifi-utils.h"
 
 #include <map>
 #include <optional>
@@ -30,21 +31,10 @@
 namespace ns3
 {
 
-/**
- * TID-to-Link Mapping Control Direction
- * IEEE 802.11be D2.0 Figure 9-1002an
- */
-enum class TidLinkMapDir : uint8_t
-{
-    DOWNLINK = 0,
-    UPLINK = 1,
-    BOTH_DIRECTIONS = 2,
-};
-
 /// whether to enforce the default link mapping
 constexpr auto DEFAULT_WIFI_TID_LINK_MAPPING{true};
 /// default value for the Direction subfield of the TID-To-Link Control field
-constexpr auto DEFAULT_WIFI_TID_LINK_MAP_DIR{TidLinkMapDir::BOTH_DIRECTIONS};
+constexpr auto DEFAULT_WIFI_TID_LINK_MAP_DIR{WifiDirection::BOTH_DIRECTIONS};
 /// size in bytes of the TID-To-Link Control field with default link mapping
 constexpr uint16_t WIFI_TID_TO_LINK_MAPPING_CONTROL_BASIC_SIZE_B =
     1; // IEEE 802.11be D2.0 9.4.2.314
@@ -71,7 +61,7 @@ class TidToLinkMapping : public WifiInformationElement
     {
         friend class TidToLinkMapping;
 
-        TidLinkMapDir direction{DEFAULT_WIFI_TID_LINK_MAP_DIR}; ///< Direction
+        WifiDirection direction{DEFAULT_WIFI_TID_LINK_MAP_DIR}; ///< Direction
         bool defaultMapping{DEFAULT_WIFI_TID_LINK_MAPPING};     ///< Default link mapping
 
         /// \return Serialized size of TID-to-Link Mapping Control in octets
