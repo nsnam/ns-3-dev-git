@@ -1773,8 +1773,7 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                     packet->PeekHeader(reassocReq);
                     frame = reassocReq;
                 }
-                ReceiveAssocRequest(frame, from, linkId);
-                if (GetNLinks() > 1)
+                if (ReceiveAssocRequest(frame, from, linkId) && GetNLinks() > 1)
                 {
                     ParseReportedStaInfo(frame, from, linkId);
                 }

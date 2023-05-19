@@ -1248,6 +1248,18 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             m_linkUp();
         }
     }
+    else
+    {
+        // If the link on which the (Re)Association Request frame was received cannot be
+        // accepted by the AP MLD, the AP MLD shall treat the multi-link (re)setup as a
+        // failure and shall not accept any requested links. If the link on which the
+        // (Re)Association Request frame was received is accepted by the AP MLD, the
+        // multi-link (re)setup is successful. (Sec. 35.3.5.1 of 802.11be D3.1)
+        NS_LOG_DEBUG("association refused");
+        SetState(REFUSED);
+        StartScanning();
+        return;
+    }
 
     // if this is an MLD, check if we can setup (other) links
     if (GetNLinks() > 1)
@@ -1325,26 +1337,13 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         for (const auto& id : setupLinks)
         {
             GetLink(id).bssid = std::nullopt;
-            // if at least one link was setup, disable the links that were not setup (if any)
-            if (m_state == ASSOCIATED)
-            {
-                GetLink(id).phy->SetOffMode();
-            }
+            GetLink(id).phy->SetOffMode();
         }
         if (apMldAddress)
         {
             // this is an ML setup, trace the MLD address of the AP (only once)
             m_assocLogger(*apMldAddress);
         }
-    }
-
-    if (m_state == WAIT_ASSOC_RESP)
-    {
-        // if we didn't transition to ASSOCIATED, the request was refused
-        NS_LOG_DEBUG("association refused");
-        SetState(REFUSED);
-        StartScanning();
-        return;
     }
 
     SetPmModeAfterAssociation(linkId);
