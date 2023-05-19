@@ -87,6 +87,7 @@ build_example(
     ${libolsr}
     ${libinternet}
     ${libapplications}
+    ${libflow-monitor}
 )
 
 build_example(

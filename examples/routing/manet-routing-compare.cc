@@ -69,6 +69,7 @@
 #include "ns3/core-module.h"
 #include "ns3/dsdv-module.h"
 #include "ns3/dsr-module.h"
+#include "ns3/flow-monitor-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/network-module.h"
@@ -137,6 +138,7 @@ class RoutingExperiment
     double m_txp;               //!< Tx power.
     bool m_traceMobility;       //!< Enavle mobility tracing.
     uint32_t m_protocol;        //!< Protocol type.
+    bool m_flowMonitor{false};  //!< Enable FlowMonitor.
 };
 
 RoutingExperiment::RoutingExperiment()
@@ -216,6 +218,7 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("CSVfileName", "The name of the CSV output file name", m_CSVfileName);
     cmd.AddValue("traceMobility", "Enable mobility tracing", m_traceMobility);
     cmd.AddValue("protocol", "1=OLSR;2=AODV;3=DSDV;4=DSR", m_protocol);
+    cmd.AddValue("flowMonitor", "enable FlowMonitor", m_flowMonitor);
     cmd.Parse(argc, argv);
     return m_CSVfileName;
 }
@@ -359,6 +362,10 @@ RoutingExperiment::Run(int nSinks, double txp, std::string CSVfileName)
     {
         internet.Install(adhocNodes);
         dsrMain.Install(dsr, adhocNodes);
+        if (m_flowMonitor)
+        {
+            NS_FATAL_ERROR("Error: FlowMonitor does not work with DSR. Terminating.");
+        }
     }
 
     NS_LOG_INFO("assigning ip address");
@@ -411,9 +418,12 @@ RoutingExperiment::Run(int nSinks, double txp, std::string CSVfileName)
     AsciiTraceHelper ascii;
     MobilityHelper::EnableAsciiAll(ascii.CreateFileStream(tr_name + ".mob"));
 
-    // Ptr<FlowMonitor> flowmon;
-    // FlowMonitorHelper flowmonHelper;
-    // flowmon = flowmonHelper.InstallAll();
+    FlowMonitorHelper flowmonHelper;
+    Ptr<FlowMonitor> flowmon;
+    if (m_flowMonitor)
+    {
+        flowmon = flowmonHelper.InstallAll();
+    }
 
     NS_LOG_INFO("Run Simulation.");
 
@@ -422,7 +432,10 @@ RoutingExperiment::Run(int nSinks, double txp, std::string CSVfileName)
     Simulator::Stop(Seconds(TotalTime));
     Simulator::Run();
 
-    // flowmon->SerializeToXmlFile(tr_name + ".flowmon", false, false);
+    if (m_flowMonitor)
+    {
+        flowmon->SerializeToXmlFile(tr_name + ".flowmon", false, false);
+    }
 
     Simulator::Destroy();
 }
