@@ -1063,6 +1063,86 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
 }
 
 void
+WifiMac::UpdateTidToLinkMapping(const Mac48Address& mldAddr,
+                                WifiDirection dir,
+                                const WifiTidLinkMapping& mapping)
+{
+    NS_LOG_FUNCTION(this << mldAddr);
+
+    NS_ABORT_MSG_IF(dir == WifiDirection::BOTH_DIRECTIONS,
+                    "DL and UL directions for TID-to-Link mapping must be set separately");
+
+    auto& mappings = (dir == WifiDirection::DOWNLINK ? m_dlTidLinkMappings : m_ulTidLinkMappings);
+
+    auto [it, inserted] = mappings.emplace(mldAddr, mapping);
+
+    if (inserted)
+    {
+        // we are done
+        return;
+    }
+
+    // a previous mapping is stored for this MLD
+    if (mapping.empty())
+    {
+        // the default mapping has been now negotiated
+        it->second.clear();
+        return;
+    }
+
+    for (const auto& [tid, linkSet] : mapping)
+    {
+        it->second[tid] = linkSet;
+    }
+}
+
+std::optional<std::reference_wrapper<const WifiTidLinkMapping>>
+WifiMac::GetTidToLinkMapping(Mac48Address mldAddr, WifiDirection dir) const
+{
+    NS_ABORT_MSG_IF(dir == WifiDirection::BOTH_DIRECTIONS,
+                    "Cannot request TID-to-Link mapping for both directions");
+
+    const auto& mappings =
+        (dir == WifiDirection::DOWNLINK ? m_dlTidLinkMappings : m_ulTidLinkMappings);
+
+    if (const auto it = mappings.find(mldAddr); it != mappings.cend())
+    {
+        return it->second;
+    }
+    return std::nullopt;
+}
+
+bool
+WifiMac::TidMappedOnLink(Mac48Address mldAddr, WifiDirection dir, uint8_t tid, uint8_t linkId) const
+{
+    NS_ABORT_MSG_IF(dir == WifiDirection::BOTH_DIRECTIONS,
+                    "Cannot request TID-to-Link mapping for both directions");
+
+    const auto& mappings =
+        (dir == WifiDirection::DOWNLINK ? m_dlTidLinkMappings : m_ulTidLinkMappings);
+
+    const auto it = mappings.find(mldAddr);
+
+    if (it == mappings.cend())
+    {
+        // TID-to-link mapping was not negotiated, TIDs are mapped to all setup links
+        return GetWifiRemoteStationManager(linkId)->GetMldAddress(mldAddr).has_value();
+    }
+
+    auto linkSetIt = it->second.find(tid);
+
+    if (linkSetIt == it->second.cend())
+    {
+        // If there is no successfully negotiated TID-to-link mapping for a TID, then the TID
+        // is mapped to all setup links for DL and UL (Sec. 35.3.7.1.3 of 802.11be D3.1)
+        return GetWifiRemoteStationManager(linkId)->GetMldAddress(mldAddr).has_value();
+    }
+
+    return std::find(linkSetIt->second.cbegin(), linkSetIt->second.cend(), linkId) !=
+           linkSetIt->second.cend();
+}
+
+void
 WifiMac::SetWifiPhys(const std::vector<Ptr<WifiPhy>>& phys)
 {
     NS_LOG_FUNCTION(this);

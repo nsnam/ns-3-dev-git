@@ -26,6 +26,7 @@
 #include "wifi-remote-station-manager.h"
 #include "wifi-standards.h"
 
+#include <functional>
 #include <list>
 #include <map>
 #include <memory>
@@ -677,6 +678,34 @@ class WifiMac : public Object
      */
     BlockAckReqType GetBarTypeAsRecipient(Mac48Address originator, uint8_t tid) const;
 
+    /**
+     * Get the TID-to-Link Mapping negotiated with the given MLD (if any) for the given direction.
+     * An empty mapping indicates the default mapping.
+     *
+     * \param mldAddr the MLD address of the given MLD
+     * \param dir the given direction (DL or UL)
+     * \return the negotiated TID-to-Link Mapping
+     */
+    std::optional<std::reference_wrapper<const WifiTidLinkMapping>> GetTidToLinkMapping(
+        Mac48Address mldAddr,
+        WifiDirection dir) const;
+
+    /**
+     * Check whether the given TID is mapped on the given link in the given direction for the
+     * given MLD.
+     *
+     * \param mldAddr the MLD address of the given MLD
+     * \param dir the given direction (DL or UL)
+     * \param tid the given TID
+     * \param linkId the ID of the given link
+     * \return whether the given TID is mapped on the given link in the given direction for the
+     *         given MLD
+     */
+    bool TidMappedOnLink(Mac48Address mldAddr,
+                         WifiDirection dir,
+                         uint8_t tid,
+                         uint8_t linkId) const;
+
   protected:
     void DoInitialize() override;
     void DoDispose() override;
@@ -817,6 +846,18 @@ class WifiMac : public Object
      * \return a reference to the link associated with the given ID
      */
     LinkEntity& GetLink(uint8_t linkId) const;
+
+    /**
+     * Update the TID-to-Link Mappings for the given MLD in the given direction based on the
+     * given negotiated mappings. An empty mapping indicates the default mapping.
+     *
+     * \param mldAddr the MLD address of the given MLD
+     * \param dir the given direction (DL or UL)
+     * \param mapping the negotiated TID-to-Link Mapping
+     */
+    void UpdateTidToLinkMapping(const Mac48Address& mldAddr,
+                                WifiDirection dir,
+                                const WifiTidLinkMapping& mapping);
 
     Ptr<MacRxMiddle> m_rxMiddle; //!< RX middle (defragmentation etc.)
     Ptr<MacTxMiddle> m_txMiddle; //!< TX middle (aggregation etc.)
@@ -1003,6 +1044,11 @@ class WifiMac : public Object
     uint32_t m_viMaxAmpduSize; ///< maximum A-MPDU size for AC_VI (in bytes)
     uint32_t m_beMaxAmpduSize; ///< maximum A-MPDU size for AC_BE (in bytes)
     uint32_t m_bkMaxAmpduSize; ///< maximum A-MPDU size for AC_BK (in bytes)
+
+    /// @brief DL TID-to-Link Mapping negotiated with an MLD (identified by its MLD address)
+    std::unordered_map<Mac48Address, WifiTidLinkMapping, WifiAddressHash> m_dlTidLinkMappings;
+    /// @brief UL TID-to-Link Mapping negotiated with an MLD (identified by its MLD address)
+    std::unordered_map<Mac48Address, WifiTidLinkMapping, WifiAddressHash> m_ulTidLinkMappings;
 
     ForwardUpCallback m_forwardUp; //!< Callback to forward packet up the stack
 
