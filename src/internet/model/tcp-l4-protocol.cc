@@ -21,10 +21,12 @@
 
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
-#include "ipv4-l3-protocol.h"
+#include "ipv4-route.h"
+#include "ipv4-routing-protocol.h"
 #include "ipv6-end-point-demux.h"
 #include "ipv6-end-point.h"
 #include "ipv6-l3-protocol.h"
+#include "ipv6-route.h"
 #include "ipv6-routing-protocol.h"
 #include "rtt-estimator.h"
 #include "tcp-congestion-ops.h"
@@ -37,8 +39,6 @@
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
-#include "ns3/ipv4-route.h"
-#include "ns3/ipv6-route.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/nstime.h"

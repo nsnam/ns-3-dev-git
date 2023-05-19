@@ -22,18 +22,18 @@
 #include "icmpv6-header.h"
 #include "icmpv6-l4-protocol.h"
 #include "ipv6-l3-protocol.h"
+#include "ipv6-packet-info-tag.h"
+#include "ipv6-route.h"
+#include "ipv6-routing-protocol.h"
 
 #include "ns3/inet6-socket-address.h"
-#include "ns3/ipv6-packet-info-tag.h"
-#include "ns3/ipv6-route.h"
-#include "ns3/ipv6-routing-protocol.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
 
 #ifdef __WIN32__
-#include "ns3/win32-internet.h"
+#include "win32-internet.h"
 #else
 #include <netinet/in.h>
 #include <sys/socket.h>

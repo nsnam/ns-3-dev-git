@@ -17,9 +17,10 @@
 
 #include "ipv4-queue-disc-item.h"
 
+#include "tcp-header.h"
+#include "udp-header.h"
+
 #include "ns3/log.h"
-#include "ns3/tcp-header.h"
-#include "ns3/udp-header.h"
 
 namespace ns3
 {

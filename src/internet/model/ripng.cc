@@ -19,18 +19,19 @@
 
 #include "ripng.h"
 
+#include "ipv6-packet-info-tag.h"
+#include "ipv6-route.h"
+#include "ripng-header.h"
+#include "udp-header.h"
+
 #include "ns3/abort.h"
 #include "ns3/assert.h"
 #include "ns3/enum.h"
-#include "ns3/ipv6-packet-info-tag.h"
-#include "ns3/ipv6-route.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include "ns3/node.h"
 #include "ns3/random-variable-stream.h"
-#include "ns3/ripng-header.h"
 #include "ns3/simulator.h"
-#include "ns3/udp-header.h"
 #include "ns3/uinteger.h"
 
 #include <iomanip>

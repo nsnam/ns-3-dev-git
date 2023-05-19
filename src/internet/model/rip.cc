@@ -19,18 +19,19 @@
 
 #include "rip.h"
 
+#include "ipv4-packet-info-tag.h"
+#include "ipv4-route.h"
+#include "loopback-net-device.h"
+#include "rip-header.h"
+#include "udp-header.h"
+
 #include "ns3/abort.h"
 #include "ns3/assert.h"
 #include "ns3/enum.h"
-#include "ns3/ipv4-packet-info-tag.h"
-#include "ns3/ipv4-route.h"
 #include "ns3/log.h"
-#include "ns3/loopback-net-device.h"
 #include "ns3/names.h"
 #include "ns3/node.h"
 #include "ns3/random-variable-stream.h"
-#include "ns3/rip-header.h"
-#include "ns3/udp-header.h"
 #include "ns3/uinteger.h"
 
 #include <iomanip>

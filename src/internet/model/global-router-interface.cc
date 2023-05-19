@@ -20,13 +20,13 @@
 #include "global-router-interface.h"
 
 #include "ipv4-global-routing.h"
+#include "ipv4.h"
 #include "loopback-net-device.h"
 
 #include "ns3/abort.h"
 #include "ns3/assert.h"
 #include "ns3/bridge-net-device.h"
 #include "ns3/channel.h"
-#include "ns3/ipv4.h"
 #include "ns3/log.h"
 #include "ns3/net-device.h"
 #include "ns3/node-list.h"

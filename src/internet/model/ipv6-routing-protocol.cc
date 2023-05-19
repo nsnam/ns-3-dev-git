@@ -19,8 +19,6 @@
 
 #include "ipv6-routing-protocol.h"
 
-#include "ipv6-route.h"
-
 #include "ns3/assert.h"
 
 namespace ns3

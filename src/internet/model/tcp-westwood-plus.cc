@@ -32,9 +32,6 @@
 
 #include "tcp-westwood-plus.h"
 
-#include "rtt-estimator.h"
-#include "tcp-socket-base.h"
-
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 

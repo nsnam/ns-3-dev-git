@@ -18,10 +18,10 @@
 #include "ipv4-global-routing.h"
 
 #include "global-route-manager.h"
+#include "ipv4-route.h"
+#include "ipv4-routing-table-entry.h"
 
 #include "ns3/boolean.h"
-#include "ns3/ipv4-route.h"
-#include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include "ns3/net-device.h"

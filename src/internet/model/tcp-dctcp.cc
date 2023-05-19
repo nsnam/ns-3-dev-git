@@ -20,9 +20,10 @@
 
 #include "tcp-dctcp.h"
 
+#include "tcp-socket-state.h"
+
 #include "ns3/abort.h"
 #include "ns3/log.h"
-#include "ns3/tcp-socket-state.h"
 
 namespace ns3
 {

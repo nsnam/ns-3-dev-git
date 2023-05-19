@@ -21,20 +21,18 @@
 
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
-#include "ipv4-l3-protocol.h"
+#include "ipv4-route.h"
+#include "ipv4.h"
 #include "ipv6-end-point-demux.h"
 #include "ipv6-end-point.h"
-#include "ipv6-l3-protocol.h"
+#include "ipv6-route.h"
+#include "ipv6.h"
 #include "udp-header.h"
 #include "udp-socket-factory-impl.h"
 #include "udp-socket-impl.h"
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
-#include "ns3/ipv4-route.h"
-#include "ns3/ipv6-header.h"
-#include "ns3/ipv6-route.h"
-#include "ns3/ipv6.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/object-vector.h"
@@ -362,7 +360,7 @@ UdpL4Protocol::Receive(Ptr<Packet> packet, const Ipv4Header& header, Ptr<Ipv4Int
                                                                  interface);
     if (endPoints.empty())
     {
-        if (this->GetObject<Ipv6L3Protocol>())
+        if (this->GetObject<Ipv6>())
         {
             NS_LOG_LOGIC("  No Ipv4 endpoints matched on UdpL4Protocol, trying Ipv6 " << this);
             Ptr<Ipv6Interface> fakeInterface;

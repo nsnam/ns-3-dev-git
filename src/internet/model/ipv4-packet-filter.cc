@@ -26,8 +26,6 @@
 
 #include "ns3/enum.h"
 #include "ns3/log.h"
-#include "ns3/tcp-header.h"
-#include "ns3/udp-header.h"
 #include "ns3/uinteger.h"
 
 namespace ns3

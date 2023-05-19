@@ -17,7 +17,7 @@
  * Author: Zhiheng Dong <dzh2077@gmail.com>
  */
 
-#include "ns3/neighbor-cache-helper.h"
+#include "neighbor-cache-helper.h"
 
 #include "ns3/assert.h"
 #include "ns3/channel-list.h"

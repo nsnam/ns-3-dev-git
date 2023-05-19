@@ -23,7 +23,7 @@
 #include "ns3/abort.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
-#include "ns3/tcp-option-ts.h"
+#include "ns3/simulator.h"
 
 #include <algorithm>
 #include <iostream>

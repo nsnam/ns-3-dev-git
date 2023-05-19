@@ -19,9 +19,9 @@
 
 #include "ipv6-static-routing.h"
 
+#include "ipv6-route.h"
 #include "ipv6-routing-table-entry.h"
 
-#include "ns3/ipv6-route.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include "ns3/net-device.h"

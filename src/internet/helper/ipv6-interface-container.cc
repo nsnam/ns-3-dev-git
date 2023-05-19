@@ -21,7 +21,8 @@
 
 #include "ipv6-interface-container.h"
 
-#include "ns3/ipv6-static-routing-helper.h"
+#include "ipv6-static-routing-helper.h"
+
 #include "ns3/names.h"
 #include "ns3/node-list.h"
 

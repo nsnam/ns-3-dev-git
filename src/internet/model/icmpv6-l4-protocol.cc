@@ -24,13 +24,13 @@
 
 #include "ipv6-interface.h"
 #include "ipv6-l3-protocol.h"
+#include "ipv6-route.h"
+#include "ipv6-routing-protocol.h"
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/integer.h"
-#include "ns3/ipv6-route.h"
-#include "ns3/ipv6-routing-protocol.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
