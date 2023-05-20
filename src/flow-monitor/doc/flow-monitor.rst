@@ -13,7 +13,7 @@ Flow Monitor
 Model Description
 *****************
 
-The source code for the new module lives in the directory ``src/flow-monitor``.
+The source code for the module lives in the directory ``src/flow-monitor``.
 
 The Flow Monitor module goal is to provide a flexible system to measure the
 performance of network protocols. The module uses probes, installed in network
@@ -85,6 +85,9 @@ It is worth pointing out that the probes measure the packet bytes including IP h
 The L2 headers are not included in the measure.
 
 These stats will be written in XML form upon request (see the Usage section).
+
+Due to the above design, FlowMonitor can not generate statistics when used with DSR routing
+protocol (because DSR forwards packets using broadcast addresses)
 
 The "lost" packets problem
 ##########################
