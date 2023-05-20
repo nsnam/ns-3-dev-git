@@ -2521,6 +2521,447 @@ EmlsrDlTxopTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test the switching of PHYs on EMLSR clients.
+ *
+ * An AP MLD and an EMLSR client setup 3 links, on which EMLSR mode is enabled. The AP MLD
+ * transmits 4 QoS data frames (one after another, each protected by ICF):
+ *
+ * - the first one on the link used for ML setup, hence no PHY switch occurs
+ * - the second one on another link, thus causing the main PHY to switch link
+ * - the third one on the remaining link, thus causing the main PHY to switch link again
+ * - the fourth one on the link used for ML setup; if the aux PHYs switches link, there is
+ *   one aux PHY listening on such a link and the main PHY switches to this link, otherwise
+ *   no PHY is listening on such a link and there is no response to the ICF sent by the AP MLD
+ */
+class EmlsrLinkSwitchTest : public EmlsrOperationsTestBase
+{
+  public:
+    /**
+     * Constructor
+     *
+     * \param switchAuxPhy whether AUX PHY should switch channel to operate on the link on which
+                          the Main PHY was operating before moving to the link of the Aux PHY
+     * \param resetCamState whether to reset the state of the ChannelAccessManager associated with
+                            the link on which the main PHY has just switched to
+        \param auxPhyMaxChWidth max channel width (MHz) supported by aux PHYs
+     */
+    EmlsrLinkSwitchTest(bool switchAuxPhy, bool resetCamState, uint16_t auxPhyMaxChWidth);
+
+    ~EmlsrLinkSwitchTest() override = default;
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+
+    /**
+     * Check that the simulation produced the expected results.
+     */
+    void CheckResults();
+
+    /**
+     * Check that the Main PHY (and possibly the Aux PHY) correctly switches channel when the
+     * reception of an ICF ends.
+     *
+     * \param psduMap the PSDU carrying the MU-RTS TF
+     * \param txVector the TXVECTOR used to send the PPDU
+     * \param linkId the ID of the given link
+     */
+    void CheckInitialControlFrame(const WifiConstPsduMap& psduMap,
+                                  const WifiTxVector& txVector,
+                                  uint8_t linkId);
+
+    /**
+     * Check that appropriate actions are taken by the AP MLD transmitting a PPDU containing
+     * QoS data frames to the EMLSR client on the given link.
+     *
+     * \param psduMap the PSDU(s) carrying QoS data frames
+     * \param txVector the TXVECTOR used to send the PPDU
+     * \param linkId the ID of the given link
+     */
+    void CheckQosFrames(const WifiConstPsduMap& psduMap,
+                        const WifiTxVector& txVector,
+                        uint8_t linkId);
+
+  private:
+    bool m_switchAuxPhy;  /**< whether AUX PHY should switch channel to operate on the link on which
+                               the Main PHY was operating before moving to the link of Aux PHY */
+    bool m_resetCamState; /**< whether to reset the state of the ChannelAccessManager associated
+                               with the link on which the main PHY has just switched to */
+    uint16_t m_auxPhyMaxChWidth;  //!< max channel width (MHz) supported by aux PHYs
+    std::size_t m_countQoSframes; //!< counter for QoS data frames
+    std::size_t m_txPsdusPos;     //!< a position in the vector of TX PSDUs
+};
+
+EmlsrLinkSwitchTest::EmlsrLinkSwitchTest(bool switchAuxPhy,
+                                         bool resetCamState,
+                                         uint16_t auxPhyMaxChWidth)
+    : EmlsrOperationsTestBase(std::string("Check EMLSR link switching (switchAuxPhy=") +
+                              std::to_string(switchAuxPhy) +
+                              ", resetCamState=" + std::to_string(resetCamState) +
+                              ", auxPhyMaxChWidth=" + std::to_string(auxPhyMaxChWidth) + "MHz )"),
+      m_switchAuxPhy(switchAuxPhy),
+      m_resetCamState(resetCamState),
+      m_auxPhyMaxChWidth(auxPhyMaxChWidth),
+      m_countQoSframes(0),
+      m_txPsdusPos(0)
+{
+    m_nEmlsrStations = 1;
+    m_nNonEmlsrStations = 0;
+    m_linksToEnableEmlsrOn = {0, 1, 2}; // enable EMLSR on all links right after association
+    m_mainPhyId = 1;
+    m_establishBaDl = true;
+    m_duration = Seconds(1.0);
+}
+
+void
+EmlsrLinkSwitchTest::Transmit(Ptr<WifiMac> mac,
+                              uint8_t phyId,
+                              WifiConstPsduMap psduMap,
+                              WifiTxVector txVector,
+                              double txPowerW)
+{
+    EmlsrOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+    auto linkId = m_txPsdus.back().linkId;
+
+    auto psdu = psduMap.begin()->second;
+    auto nodeId = mac->GetDevice()->GetNode()->GetId();
+
+    switch (psdu->GetHeader(0).GetType())
+    {
+    case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
+        NS_ASSERT_MSG(nodeId > 0, "APs do not send AssocReq frames");
+        NS_TEST_EXPECT_MSG_EQ(+linkId, +m_mainPhyId, "AssocReq not sent by the main PHY");
+        break;
+
+    case WIFI_MAC_MGT_ACTION: {
+        auto [category, action] = WifiActionHeader::Peek(psdu->GetPayload(0));
+
+        if (nodeId == 1 && category == WifiActionHeader::PROTECTED_EHT &&
+            action.protectedEhtAction ==
+                WifiActionHeader::PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION)
+        {
+            // the EMLSR client is starting the transmission of the EML OMN frame;
+            // temporarily block transmissions of QoS data frames from the AP MLD to the
+            // non-AP MLD on all the links but the one used for ML setup, so that we know
+            // that the first QoS data frame is sent on the link of the main PHY
+            std::set<uint8_t> linksToBlock;
+            for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+            {
+                if (id != m_mainPhyId)
+                {
+                    linksToBlock.insert(id);
+                }
+            }
+            m_apMac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                         AC_BE,
+                                                         {WIFI_QOSDATA_QUEUE},
+                                                         m_staMacs[0]->GetAddress(),
+                                                         m_apMac->GetAddress(),
+                                                         {0},
+                                                         linksToBlock);
+        }
+        else if (category == WifiActionHeader::BLOCK_ACK &&
+                 action.blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE)
+        {
+            // store the current number of transmitted frame
+            m_txPsdusPos = m_txPsdus.size() - 1;
+        }
+    }
+    break;
+
+    case WIFI_MAC_CTL_TRIGGER:
+        CheckInitialControlFrame(psduMap, txVector, linkId);
+        break;
+
+    case WIFI_MAC_QOSDATA:
+        CheckQosFrames(psduMap, txVector, linkId);
+        break;
+
+    default:;
+    }
+}
+
+void
+EmlsrLinkSwitchTest::DoSetup()
+{
+    Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(m_switchAuxPhy));
+    Config::SetDefault("ns3::EmlsrManager::ResetCamState", BooleanValue(m_resetCamState));
+    Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth", UintegerValue(m_auxPhyMaxChWidth));
+
+    EmlsrOperationsTestBase::DoSetup();
+
+    // use channels of different widths
+    for (auto mac : std::initializer_list<Ptr<WifiMac>>{m_apMac, m_staMacs[0]})
+    {
+        mac->GetWifiPhy(0)->SetOperatingChannel(
+            WifiPhy::ChannelTuple{4, 40, WIFI_PHY_BAND_2_4GHZ, 1});
+        mac->GetWifiPhy(1)->SetOperatingChannel(
+            WifiPhy::ChannelTuple{58, 80, WIFI_PHY_BAND_5GHZ, 3});
+        mac->GetWifiPhy(2)->SetOperatingChannel(
+            WifiPhy::ChannelTuple{79, 160, WIFI_PHY_BAND_6GHZ, 7});
+    }
+}
+
+void
+EmlsrLinkSwitchTest::DoRun()
+{
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    CheckResults();
+
+    Simulator::Destroy();
+}
+
+void
+EmlsrLinkSwitchTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
+                                    const WifiTxVector& txVector,
+                                    uint8_t linkId)
+{
+    m_countQoSframes++;
+
+    switch (m_countQoSframes)
+    {
+    case 1:
+        // unblock transmissions on all links
+        m_apMac->GetMacQueueScheduler()->UnblockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                       AC_BE,
+                                                       {WIFI_QOSDATA_QUEUE},
+                                                       m_staMacs[0]->GetAddress(),
+                                                       m_apMac->GetAddress(),
+                                                       {0},
+                                                       {0, 1, 2});
+        // block transmissions on the link used for ML setup
+        m_apMac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                     AC_BE,
+                                                     {WIFI_QOSDATA_QUEUE},
+                                                     m_staMacs[0]->GetAddress(),
+                                                     m_apMac->GetAddress(),
+                                                     {0},
+                                                     {m_mainPhyId});
+        // generate a new data packet, which will be sent on a link other than the one
+        // used for ML setup, hence triggering a link switching on the EMLSR client
+        m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(DOWNLINK, 0, 2, 1000));
+        break;
+    case 2:
+        // block transmission on the link used to send this QoS data frame
+        m_apMac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                     AC_BE,
+                                                     {WIFI_QOSDATA_QUEUE},
+                                                     m_staMacs[0]->GetAddress(),
+                                                     m_apMac->GetAddress(),
+                                                     {0},
+                                                     {linkId});
+        // generate a new data packet, which will be sent on the link that has not been used
+        // so far, hence triggering another link switching on the EMLSR client
+        m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(DOWNLINK, 0, 2, 1000));
+        break;
+    case 3:
+        // block transmission on the link used to send this QoS data frame
+        m_apMac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                     AC_BE,
+                                                     {WIFI_QOSDATA_QUEUE},
+                                                     m_staMacs[0]->GetAddress(),
+                                                     m_apMac->GetAddress(),
+                                                     {0},
+                                                     {linkId});
+        // unblock transmissions on the link used for ML setup
+        m_apMac->GetMacQueueScheduler()->UnblockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                       AC_BE,
+                                                       {WIFI_QOSDATA_QUEUE},
+                                                       m_staMacs[0]->GetAddress(),
+                                                       m_apMac->GetAddress(),
+                                                       {0},
+                                                       {m_mainPhyId});
+        // generate a new data packet, which will be sent again on the link used for ML setup,
+        // hence triggering yet another link switching on the EMLSR client
+        m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(DOWNLINK, 0, 2, 1000));
+        break;
+    }
+}
+
+/**
+ * AUX PHY switching enabled
+ *
+ *  |--------- aux PHY A ---------|------ main PHY ------|-------------- aux PHY B --------------
+ *                            ┌───┐     ┌───┐
+ *                            │ICF│     │QoS│
+ *  ──────────────────────────┴───┴┬───┬┴───┴┬──┬────────────────────────────────────────────────
+ *  [link 0]                       │CTS│     │BA│
+ *                                 └───┘     └──┘
+ *
+ *
+ *  |--------- main PHY ----------|------------------ aux PHY A ----------------|--- main PHY ---
+ *     ┌───┐     ┌───┐                                                      ┌───┐     ┌───┐
+ *     │ICF│     │QoS│                                                      │ICF│     │QoS│
+ *  ───┴───┴┬───┬┴───┴┬──┬──────────────────────────────────────────────────┴───┴┬───┬┴───┴┬──┬──
+ *  [link 1]│CTS│     │BA│                                                       │CTS│     │BA│
+ *          └───┘     └──┘                                                       └───┘     └──┘
+ *
+ *
+ *  |--------------------- aux PHY B --------------------|------ main PHY ------|-- aux PHY A ---
+ *                                                   ┌───┐     ┌───┐
+ *                                                   │ICF│     │QoS│
+ *  ─────────────────────────────────────────────────┴───┴┬───┬┴───┴┬──┬─────────────────────────
+ *  [link 2]                                              │CTS│     │BA│
+ *                                                        └───┘     └──┘
+ *
+ *
+ * AUX PHY switching disabled
+ *
+ *  |--------- aux PHY A ---------|------ main PHY ------|
+ *                            ┌───┐     ┌───┐
+ *                            │ICF│     │QoS│
+ *  ──────────────────────────┴───┴┬───┬┴───┴┬──┬────────────────────────────────────────────────
+ *  [link 0]                       │CTS│     │BA│
+ *                                 └───┘     └──┘
+ *
+ *
+ *  |--------- main PHY ----------|
+ *     ┌───┐     ┌───┐                                                      ┌───┐  ┌───┐  ┌───┐
+ *     │ICF│     │QoS│                                                      │ICF│  │ICF│  │ICF│
+ *  ───┴───┴┬───┬┴───┴┬──┬──────────────────────────────────────────────────┴───┴──┴───┴──┴───┴──
+ *  [link 1]│CTS│     │BA│
+ *          └───┘     └──┘
+ *
+ *
+ *  |--------------------- aux PHY B --------------------|--------------- main PHY --------------
+ *                                                   ┌───┐     ┌───┐
+ *                                                   │ICF│     │QoS│
+ *  ─────────────────────────────────────────────────┴───┴┬───┬┴───┴┬──┬─────────────────────────
+ *  [link 2]                                              │CTS│     │BA│
+ *                                                        └───┘     └──┘
+ */
+
+void
+EmlsrLinkSwitchTest::CheckInitialControlFrame(const WifiConstPsduMap& psduMap,
+                                              const WifiTxVector& txVector,
+                                              uint8_t linkId)
+{
+    if (m_txPsdusPos == 0)
+    {
+        // the iterator has not been set yet, thus we are not done with the establishment of
+        // the BA agreement
+        return;
+    }
+
+    auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+    auto phyRecvIcf = m_staMacs[0]->GetWifiPhy(linkId); // PHY receiving the ICF
+
+    auto currMainPhyLinkId = m_staMacs[0]->GetLinkForPhy(mainPhy);
+    NS_TEST_ASSERT_MSG_EQ(currMainPhyLinkId.has_value(),
+                          true,
+                          "Didn't find the link on which the Main PHY is operating");
+
+    if (phyRecvIcf && phyRecvIcf != mainPhy)
+    {
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(
+            phyRecvIcf->GetChannelWidth(),
+            m_auxPhyMaxChWidth,
+            "Aux PHY that received ICF is operating on a channel whose width exceeds the limit "
+                << m_countQoSframes);
+    }
+
+    auto txDuration =
+        WifiPhy::CalculateTxDuration(psduMap, txVector, m_apMac->GetWifiPhy(linkId)->GetPhyBand());
+
+    // check that PHYs are operating on the expected link after the reception of the ICF
+    Simulator::Schedule(txDuration + NanoSeconds(1), [=]() {
+        std::size_t nRxOk = m_switchAuxPhy ? 4 : 3; // successfully received ICFs
+
+        if (m_countQoSframes < nRxOk)
+        {
+            // the main PHY must be operating on the link where ICF was sent
+            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(linkId),
+                                  mainPhy,
+                                  "PHY operating on link where ICF was sent is not the main PHY");
+        }
+
+        // the first ICF is received by the main PHY and no channel switch occurs
+        if (m_countQoSframes == 0)
+        {
+            NS_TEST_EXPECT_MSG_EQ(phyRecvIcf,
+                                  mainPhy,
+                                  "PHY that received the ICF is not the main PHY");
+            return;
+        }
+
+        // the behavior of Aux PHYs depends on whether they switch channel or not
+        if (m_switchAuxPhy)
+        {
+            NS_TEST_EXPECT_MSG_LT(m_countQoSframes, nRxOk, "Unexpected number of ICFs");
+            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(*currMainPhyLinkId),
+                                  phyRecvIcf,
+                                  "PHY operating on link where Main PHY was before switching "
+                                  "channel is not the aux PHY that received the ICF");
+        }
+        else if (m_countQoSframes < nRxOk)
+        {
+            // the first 3 ICFs are actually received by some PHY
+            NS_TEST_EXPECT_MSG_NE(phyRecvIcf, nullptr, "Expected some PHY to receive the ICF");
+            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(*currMainPhyLinkId),
+                                  nullptr,
+                                  "No PHY expected to operate on link where Main PHY was "
+                                  "before switching channel");
+        }
+        else
+        {
+            // no PHY received the ICF
+            NS_TEST_EXPECT_MSG_EQ(phyRecvIcf,
+                                  nullptr,
+                                  "Expected no PHY to operate on link where ICF is sent");
+        }
+    });
+}
+
+void
+EmlsrLinkSwitchTest::CheckResults()
+{
+    NS_TEST_ASSERT_MSG_NE(m_txPsdusPos, 0, "BA agreement establishment not completed");
+
+    std::size_t nRxOk = m_switchAuxPhy ? 4 : 3; // successfully received ICFs
+
+    NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(),
+                                m_txPsdusPos + 3 + nRxOk * 4,
+                                "Insufficient number of TX PSDUs");
+
+    // m_txPsdusPos points to ADDBA_RESPONSE, then ACK and then ICF
+    auto psduIt = std::next(m_txPsdus.cbegin(), m_txPsdusPos + 2);
+
+    for (std::size_t i = 0; i < nRxOk; i++)
+    {
+        NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.size() == 1 &&
+                               psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsTrigger()),
+                              true,
+                              "Expected a Trigger Frame (ICF)");
+        psduIt++;
+        NS_TEST_EXPECT_MSG_EQ(
+            (psduIt->psduMap.size() == 1 && psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsCts()),
+            true,
+            "Expected a CTS");
+        psduIt++;
+        NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.size() == 1 &&
+                               psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsQosData()),
+                              true,
+                              "Expected a QoS Data frame");
+        psduIt++;
+        NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.size() == 1 &&
+                               psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsBlockAck()),
+                              true,
+                              "Expected a BlockAck");
+        psduIt++;
+    }
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi EMLSR Test Suite
  */
 class WifiEmlsrTestSuite : public TestSuite
@@ -2561,6 +3002,18 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
                                         {MicroSeconds(128), MicroSeconds(256)},
                                         MicroSeconds(512)),
                     TestCase::QUICK);
+    }
+
+    for (bool switchAuxPhy : {true, false})
+    {
+        for (bool resetCamState : {true, false})
+        {
+            for (uint16_t auxPhyMaxChWidth : {20, 40, 80, 160})
+            {
+                AddTestCase(new EmlsrLinkSwitchTest(switchAuxPhy, resetCamState, auxPhyMaxChWidth),
+                            TestCase::QUICK);
+            }
+        }
     }
 }
 
