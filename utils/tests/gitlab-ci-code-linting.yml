@@ -94,9 +94,9 @@ emacs-line:
   stage: .pre
   image: ubuntu:latest
   script:
-    - (! grep -rn --include="*.h" --include="*.cc" "c-file-style:\"gnu\"" ) ||
-      (echo "Found Emacs lines on the above C++ files" && exit 1)
-    - echo "No Emacs lines found on C++ files"
+    - (! egrep -rn --include="*.h" --include="*.cc" --include="*.py" "c-file-style:|py-indent-offset:" ) ||
+      (echo "Found Emacs lines on the above C++ / Python files" && exit 1)
+    - echo "No Emacs lines found on C++ / Python files"
   timeout: 1h
 
 # Spell checking
