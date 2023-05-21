@@ -129,7 +129,8 @@ WifiPhy::GetTypeId()
                           MakeUintegerChecker<uint8_t>(0, 233))
             .AddAttribute(
                 "ChannelWidth",
-                "The width in MHz of the current operating channel (5, 10, 20, 22, 40, 80 or 160).",
+                "The width in MHz of the current operating channel (5, 10, 20, 22, 40, 80 or 160). "
+                "If 80+80MHz is used, this corresponds to the total channel width, hence 160 MHz.",
                 TypeId::ATTR_GET,
                 UintegerValue(0),
                 MakeUintegerAccessor(&WifiPhy::GetChannelWidth),
@@ -1082,7 +1083,7 @@ WifiPhy::GetChannelNumber() const
 ChannelWidthMhz
 WifiPhy::GetChannelWidth() const
 {
-    return m_operatingChannel.GetWidth();
+    return m_operatingChannel.GetTotalWidth();
 }
 
 uint8_t
