@@ -26,6 +26,7 @@
 #include "ns3/log.h"
 
 #include <algorithm>
+#include <numeric>
 
 namespace ns3
 {
@@ -462,11 +463,22 @@ WifiPhyOperatingChannel::Is80211p() const
     return (m_channelIts.front()->type == FrequencyChannelType::CH_80211P);
 }
 
+ChannelWidthMhz
+WifiPhyOperatingChannel::GetTotalWidth() const
+{
+    NS_ASSERT(IsSet());
+    return std::accumulate(
+        m_channelIts.cbegin(),
+        m_channelIts.cend(),
+        0,
+        [](ChannelWidthMhz sum, const auto& channel) { return sum + channel->width; });
+}
+
 WifiChannelWidthType
 WifiPhyOperatingChannel::GetWidthType() const
 {
     NS_ASSERT(IsSet());
-    switch (GetWidth())
+    switch (GetTotalWidth())
     {
     case 20:
         return WifiChannelWidthType::CW_20MHZ;
@@ -508,7 +520,7 @@ WifiPhyOperatingChannel::GetPrimaryChannelIndex(ChannelWidthMhz primaryChannelWi
         return 0;
     }
 
-    NS_ASSERT(primaryChannelWidth <= GetWidth());
+    NS_ASSERT(primaryChannelWidth <= GetTotalWidth());
 
     // the index of primary40 is half the index of primary20; the index of
     // primary80 is half the index of primary40, ...
@@ -537,7 +549,7 @@ WifiPhyOperatingChannel::SetPrimary20Index(uint8_t index)
 {
     NS_LOG_FUNCTION(this << +index);
 
-    NS_ABORT_MSG_IF(index > 0 && index >= GetWidth() / 20, "Primary20 index out of range");
+    NS_ABORT_MSG_IF(index > 0 && index >= GetTotalWidth() / 20, "Primary20 index out of range");
     m_primary20Index = index;
 }
 
@@ -575,7 +587,7 @@ WifiPhyOperatingChannel::GetPrimaryChannelNumber(ChannelWidthMhz primaryChannelW
 std::set<uint8_t>
 WifiPhyOperatingChannel::GetAll20MHzChannelIndicesInPrimary(ChannelWidthMhz width) const
 {
-    if (width > GetWidth())
+    if (width > GetTotalWidth())
     {
         // a primary channel of the given width does not exist
         return {};
@@ -604,7 +616,7 @@ std::set<uint8_t>
 WifiPhyOperatingChannel::GetAll20MHzChannelIndicesInSecondary(
     const std::set<uint8_t>& primaryIndices) const
 {
-    if (primaryIndices.empty() || GetWidth() == 20)
+    if (primaryIndices.empty() || GetTotalWidth() == 20)
     {
         return {};
     }
@@ -618,7 +630,7 @@ WifiPhyOperatingChannel::GetAll20MHzChannelIndicesInSecondary(
         size <<= 1;
         primaryWidth <<= 1;
 
-        if (primaryWidth >= GetWidth())
+        if (primaryWidth >= GetTotalWidth())
         {
             // the width of the primary channel resulting from the given indices
             // exceeds the width of the operating channel
@@ -642,9 +654,9 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, ChannelWidth
 
     NS_ASSERT_MSG(HeRu::GetBandwidth(ruType) <= width,
                   "No RU of type " << ruType << " is contained in a " << width << " MHz channel");
-    NS_ASSERT_MSG(width <= GetWidth(),
+    NS_ASSERT_MSG(width <= GetTotalWidth(),
                   "The given width (" << width << " MHz) exceeds the operational width ("
-                                      << GetWidth() << " MHz)");
+                                      << GetTotalWidth() << ")");
 
     // trivial case: 2x996-tone RU
     if (ruType == HeRu::RU_2x996_TONE)

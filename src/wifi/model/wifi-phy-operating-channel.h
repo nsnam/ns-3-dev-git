@@ -200,6 +200,12 @@ class WifiPhyOperatingChannel
      */
     ChannelWidthMhz GetWidth(std::size_t segment = 0) const;
     /**
+     * Return the width of the whole operating channel in MHz.
+     *
+     * \return the width of the whole operating channel in MHz
+     */
+    ChannelWidthMhz GetTotalWidth() const;
+    /**
      * Return the width type of the operating channel.
      *
      * \return the width type of the operating channel
