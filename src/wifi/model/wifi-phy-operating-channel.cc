@@ -516,6 +516,42 @@ WifiPhyOperatingChannel::Is80211p() const
     return ((*m_channelIts.cbegin())->type == FrequencyChannelType::CH_80211P);
 }
 
+std::vector<uint8_t>
+WifiPhyOperatingChannel::GetNumbers() const
+{
+    NS_ASSERT(IsSet());
+    std::vector<uint8_t> channelNumbers{};
+    std::transform(m_channelIts.cbegin(),
+                   m_channelIts.cend(),
+                   std::back_inserter(channelNumbers),
+                   [](const auto& channel) { return channel->number; });
+    return channelNumbers;
+}
+
+std::vector<uint16_t>
+WifiPhyOperatingChannel::GetFrequencies() const
+{
+    NS_ASSERT(IsSet());
+    std::vector<uint16_t> centerFrequencies{};
+    std::transform(m_channelIts.cbegin(),
+                   m_channelIts.cend(),
+                   std::back_inserter(centerFrequencies),
+                   [](const auto& channel) { return channel->frequency; });
+    return centerFrequencies;
+}
+
+std::vector<ChannelWidthMhz>
+WifiPhyOperatingChannel::GetWidths() const
+{
+    NS_ASSERT(IsSet());
+    std::vector<ChannelWidthMhz> channelWidths{};
+    std::transform(m_channelIts.cbegin(),
+                   m_channelIts.cend(),
+                   std::back_inserter(channelWidths),
+                   [](const auto& channel) { return channel->width; });
+    return channelWidths;
+}
+
 ChannelWidthMhz
 WifiPhyOperatingChannel::GetTotalWidth() const
 {

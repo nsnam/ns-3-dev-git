@@ -216,6 +216,27 @@ class WifiPhyOperatingChannel
      */
     ChannelWidthMhz GetTotalWidth() const;
     /**
+     * Return the channel number per segment.
+     * Segments are ordered by increasing frequencies.
+     *
+     * \return the channel number per segment
+     */
+    std::vector<uint8_t> GetNumbers() const;
+    /**
+     * Return the center frequency per segment (in MHz).
+     * Segments are ordered by increasing frequencies.
+     *
+     * \return the center frequency per segment (in MHz)
+     */
+    std::vector<uint16_t> GetFrequencies() const;
+    /**
+     * Return the channel width per segment (in MHz).
+     * Segments are ordered by increasing frequencies.
+     *
+     * \return the channel width per segment (in MHz)
+     */
+    std::vector<ChannelWidthMhz> GetWidths() const;
+    /**
      * Return the width type of the operating channel.
      *
      * \return the width type of the operating channel
