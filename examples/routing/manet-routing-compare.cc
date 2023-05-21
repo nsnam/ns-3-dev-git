@@ -216,8 +216,6 @@ RoutingExperiment::CommandSetup(int argc, char** argv)
     {
         NS_FATAL_ERROR("No such protocol:" << m_protocolName);
     }
-
-    return;
 }
 
 int
