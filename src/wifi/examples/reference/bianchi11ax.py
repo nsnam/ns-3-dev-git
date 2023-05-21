@@ -129,41 +129,39 @@ ack_rates_160MHz = [6e6, 12e6, 12e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 2
 k = 1
 
 difs = 1
-fo = open("bianchi_11ax_difs.txt", "w", encoding="utf-8")
-for i in range(len(data_rates_20MHz)):
-    bianchi_result = bianchi_ax(data_rates_20MHz[i], ack_rates_20MHz[i], k, difs)
-    str_s = str_result(bianchi_result, i, 20)
-    fo.write(str_s)
-for i in range(len(data_rates_40MHz)):
-    bianchi_result = bianchi_ax(data_rates_40MHz[i], ack_rates_40MHz[i], k, difs)
-    str_s = str_result(bianchi_result, i, 40)
-    fo.write(str_s)
-for i in range(len(data_rates_80MHz)):
-    bianchi_result = bianchi_ax(data_rates_80MHz[i], ack_rates_80MHz[i], k, difs)
-    str_s = str_result(bianchi_result, i, 80)
-    fo.write(str_s)
-for i in range(len(data_rates_160MHz)):
-    bianchi_result = bianchi_ax(data_rates_160MHz[i], ack_rates_160MHz[i], k, difs)
-    str_s = str_result(bianchi_result, i, 160)
-    fo.write(str_s)
-fo.close()
+with open("bianchi_11ax_difs.txt", "w", encoding="utf-8") as fo:
+    for i in range(len(data_rates_20MHz)):
+        bianchi_result = bianchi_ax(data_rates_20MHz[i], ack_rates_20MHz[i], k, difs)
+        str_s = str_result(bianchi_result, i, 20)
+        fo.write(str_s)
+    for i in range(len(data_rates_40MHz)):
+        bianchi_result = bianchi_ax(data_rates_40MHz[i], ack_rates_40MHz[i], k, difs)
+        str_s = str_result(bianchi_result, i, 40)
+        fo.write(str_s)
+    for i in range(len(data_rates_80MHz)):
+        bianchi_result = bianchi_ax(data_rates_80MHz[i], ack_rates_80MHz[i], k, difs)
+        str_s = str_result(bianchi_result, i, 80)
+        fo.write(str_s)
+    for i in range(len(data_rates_160MHz)):
+        bianchi_result = bianchi_ax(data_rates_160MHz[i], ack_rates_160MHz[i], k, difs)
+        str_s = str_result(bianchi_result, i, 160)
+        fo.write(str_s)
 
 difs = 0
-fo = open("bianchi_11ax_eifs.txt", "w", encoding="utf-8")
-for i in range(len(data_rates_20MHz)):
-    bianchi_result = bianchi_ax(data_rates_20MHz[i], ack_rates_20MHz[i], k, difs)
-    str_s = str_result(bianchi_result, i, 20)
-    fo.write(str_s)
-for i in range(len(data_rates_40MHz)):
-    bianchi_result = bianchi_ax(data_rates_40MHz[i], ack_rates_40MHz[i], k, difs)
-    str_s = str_result(bianchi_result, i, 40)
-    fo.write(str_s)
-for i in range(len(data_rates_80MHz)):
-    bianchi_result = bianchi_ax(data_rates_80MHz[i], ack_rates_80MHz[i], k, difs)
-    str_s = str_result(bianchi_result, i, 80)
-    fo.write(str_s)
-for i in range(len(data_rates_160MHz)):
-    bianchi_result = bianchi_ax(data_rates_160MHz[i], ack_rates_160MHz[i], k, difs)
-    str_s = str_result(bianchi_result, i, 160)
-    fo.write(str_s)
-fo.close()
+with open("bianchi_11ax_eifs.txt", "w", encoding="utf-8") as fo:
+    for i in range(len(data_rates_20MHz)):
+        bianchi_result = bianchi_ax(data_rates_20MHz[i], ack_rates_20MHz[i], k, difs)
+        str_s = str_result(bianchi_result, i, 20)
+        fo.write(str_s)
+    for i in range(len(data_rates_40MHz)):
+        bianchi_result = bianchi_ax(data_rates_40MHz[i], ack_rates_40MHz[i], k, difs)
+        str_s = str_result(bianchi_result, i, 40)
+        fo.write(str_s)
+    for i in range(len(data_rates_80MHz)):
+        bianchi_result = bianchi_ax(data_rates_80MHz[i], ack_rates_80MHz[i], k, difs)
+        str_s = str_result(bianchi_result, i, 80)
+        fo.write(str_s)
+    for i in range(len(data_rates_160MHz)):
+        bianchi_result = bianchi_ax(data_rates_160MHz[i], ack_rates_160MHz[i], k, difs)
+        str_s = str_result(bianchi_result, i, 160)
+        fo.write(str_s)

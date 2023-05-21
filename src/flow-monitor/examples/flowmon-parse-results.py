@@ -179,23 +179,23 @@ class Simulation(object):
 
 
 def main(argv):
-    file_obj = open(argv[1], encoding="utf-8")
-    print("Reading XML file ", end=" ")
+    with open(argv[1], encoding="utf-8") as file_obj:
+        print("Reading XML file ", end=" ")
 
-    sys.stdout.flush()
-    level = 0
-    sim_list = []
-    for event, elem in ElementTree.iterparse(file_obj, events=("start", "end")):
-        if event == "start":
-            level += 1
-        if event == "end":
-            level -= 1
-            if level == 0 and elem.tag == 'FlowMonitor':
-                sim = Simulation(elem)
-                sim_list.append(sim)
-                elem.clear() # won't need this any more
-                sys.stdout.write(".")
-                sys.stdout.flush()
+        sys.stdout.flush()
+        level = 0
+        sim_list = []
+        for event, elem in ElementTree.iterparse(file_obj, events=("start", "end")):
+            if event == "start":
+                level += 1
+            if event == "end":
+                level -= 1
+                if level == 0 and elem.tag == 'FlowMonitor':
+                    sim = Simulation(elem)
+                    sim_list.append(sim)
+                    elem.clear() # won't need this any more
+                    sys.stdout.write(".")
+                    sys.stdout.flush()
     print(" done.")
 
 

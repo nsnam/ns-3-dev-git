@@ -593,23 +593,21 @@ def sigint_hook(signal, frame):
 #
 def read_ns3_config():
     lock_filename = ".lock-ns3_%s_build" % sys.platform
-    f = None
+
     try:
         # sys.platform reports linux2 for python2 and linux for python3
-        f = open(lock_filename, "rt", encoding="utf-8")
+        with open(lock_filename, "rt", encoding="utf-8") as f:
+            for line in f:
+                if line.startswith("top_dir ="):
+                    key, val = line.split('=')
+                    top_dir = eval(val.strip())
+                if line.startswith("out_dir ="):
+                    key, val = line.split('=')
+                    out_dir = eval(val.strip())
+
     except FileNotFoundError:
         print('The .lock-ns3 file was not found.  You must configure before running test.py.', file=sys.stderr)
         sys.exit(2)
-
-    for line in f:
-        if line.startswith("top_dir ="):
-            key, val = line.split('=')
-            top_dir = eval(val.strip())
-        if line.startswith("out_dir ="):
-            key, val = line.split('=')
-            out_dir = eval(val.strip())
-
-    f.close()
 
     global NS3_BASEDIR
     NS3_BASEDIR = top_dir

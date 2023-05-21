@@ -12,11 +12,11 @@ import os
 import codecs
 
 def dump_pickles(out, dirname, filename, path):
-    f = open(os.path.join(dirname, filename), 'r', encoding='utf-8')
-    data = pickle.load(f)
-    fragment_file = codecs.open(data['current_page_name'] + '.frag', mode='w', encoding='utf-8')
-    fragment_file.write(data['body'])
-    fragment_file.close()
+    with open(os.path.join(dirname, filename), 'r', encoding='utf-8') as f:
+        data = pickle.load(f)
+    with codecs.open(data['current_page_name'] + '.frag', mode='w', encoding='utf-8') as fragment_file:
+        fragment_file.write(data['body'])
+
     out.write('  <page url="%s">\n' % path)
     out.write('    <fragment>%s.frag</fragment>\n' % data['current_page_name'])
     if data['prev'] is not None:
@@ -28,7 +28,7 @@ def dump_pickles(out, dirname, filename, path):
                   (os.path.normpath(os.path.join(path, data['next']['link'])),
                    data['next']['title']))
     out.write('  </page>\n')
-    f.close()
+
     if data['next'] is not None:
         next_path = os.path.normpath(os.path.join(path, data['next']['link']))
         next_filename = os.path.basename(next_path) + '.fpickle'

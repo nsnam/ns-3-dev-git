@@ -438,9 +438,8 @@ def print_cplusplus_map_from_fit_results(fit: pd.DataFrame, out_fname: str):
     out_str = out_str[0:-2]
     out_str += '}\n'
 
-    f = open(out_fname, "w", encoding="utf-8")
-    f.write(out_str)
-    f.close()
+    with open(out_fname, "w", encoding="utf-8") as f:
+        f.write(out_str)
 
 
 if __name__ == '__main__':
@@ -499,12 +498,10 @@ if __name__ == '__main__':
             res = joblib.Parallel(n_jobs=10)(
                 joblib.delayed(fit_ftr_to_reference)(df, params_comb, num_search_grid_params, num_refinements) for params_comb in product(scenarios, is_los, frequencies))
 
-        f = open(fit_out_fname, "w", encoding="utf-8")
-        f.write("scen\tcond\tfc\tsigma\tk\tdelta\tm\n")
-        for line in res:
-            f.write(line)
-
-        f.close()
+        with open(fit_out_fname, "w", encoding="utf-8") as f:
+            f.write("scen\tcond\tfc\tsigma\tk\tdelta\tm\n")
+            for line in res:
+                f.write(line)
 
     if output_ns3_table:
 
