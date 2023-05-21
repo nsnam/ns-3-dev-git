@@ -1,5 +1,4 @@
 #! /usr/bin/env python3
-## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 #
 # Copyright (c) 2014 Siddharth Santurkar
 #
