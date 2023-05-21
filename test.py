@@ -277,7 +277,7 @@ def translate_to_text(results_file, text_file):
     import xml.etree.ElementTree as ET
     et = ET.parse(results_file)
 
-    with open(text_file, 'w') as f:
+    with open(text_file, 'w', encoding='utf-8') as f:
         for test in et.findall('Test'):
             node_to_text(test, f)
 
@@ -303,7 +303,7 @@ def translate_to_html(results_file, html_file):
     html_file += '.html'
     print('Writing results to html file %s...' % html_file, end='')
 
-    with open(html_file, 'w') as f:
+    with open(html_file, 'w', encoding='utf-8') as f:
         f.write("<html>\n")
         f.write("<body>\n")
         f.write("<center><h1>ns-3 Test Results</h1></center>\n")
@@ -596,7 +596,7 @@ def read_ns3_config():
     f = None
     try:
         # sys.platform reports linux2 for python2 and linux for python3
-        f = open(lock_filename, "rt")
+        f = open(lock_filename, "rt", encoding="utf-8")
     except FileNotFoundError:
         print('The .lock-ns3 file was not found.  You must configure before running test.py.', file=sys.stderr)
         sys.exit(2)
@@ -616,7 +616,7 @@ def read_ns3_config():
     global NS3_BUILDDIR
     NS3_BUILDDIR = out_dir
 
-    with open(lock_filename) as f:
+    with open(lock_filename, encoding='utf-8') as f:
         for line in f.readlines():
             for item in interesting_config_items:
                 if line.startswith(item):
@@ -1296,7 +1296,7 @@ def run_tests():
     # do this since the tests will just append individual results to this file.
     #
     xml_results_file = os.path.join(testpy_output_dir, "results.xml")
-    with open(xml_results_file, 'w') as f:
+    with open(xml_results_file, 'w', encoding='utf-8') as f:
         f.write('<?xml version="1.0"?>\n')
         f.write('<Results>\n')
 
@@ -1768,7 +1768,7 @@ def run_tests():
             # XXX We could add some timing information to the examples, i.e. run
             # them through time and print the results here.
             #
-            with open(xml_results_file, 'a') as f:
+            with open(xml_results_file, 'a', encoding='utf-8') as f:
                 f.write('<Example>\n')
                 example_name = "  <Name>%s</Name>\n" % job.display_name
                 f.write(example_name)
@@ -1833,7 +1833,7 @@ def run_tests():
             # followed by a VALGR failing test suite of the same name.
             #
             if job.is_skip:
-                with open(xml_results_file, 'a') as f:
+                with open(xml_results_file, 'a', encoding='utf-8') as f:
                     f.write("<Test>\n")
                     f.write("  <Name>%s</Name>\n" % job.display_name)
                     f.write('  <Result>SKIP</Result>\n')
@@ -1841,10 +1841,10 @@ def run_tests():
                     f.write("</Test>\n")
             else:
                 if job.returncode == 0 or job.returncode == 1 or job.returncode == 2:
-                    with open(xml_results_file, 'a') as f_to, open(job.tmp_file_name) as f_from:
+                    with open(xml_results_file, 'a', encoding='utf-8') as f_to, open(job.tmp_file_name, encoding='utf-8') as f_from:
                         f_to.write(f_from.read())
                 else:
-                    with open(xml_results_file, 'a') as f:
+                    with open(xml_results_file, 'a', encoding='utf-8') as f:
                         f.write("<Test>\n")
                         f.write("  <Name>%s</Name>\n" % job.display_name)
                         f.write('  <Result>CRASH</Result>\n')
@@ -1864,7 +1864,7 @@ def run_tests():
     # individual pieces.  So, we need to finish off and close out the XML
     # document
     #
-    with open(xml_results_file, 'a') as f:
+    with open(xml_results_file, 'a', encoding='utf-8') as f:
         f.write('</Results>\n')
 
     #

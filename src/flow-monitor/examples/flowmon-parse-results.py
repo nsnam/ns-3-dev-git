@@ -179,7 +179,7 @@ class Simulation(object):
 
 
 def main(argv):
-    file_obj = open(argv[1])
+    file_obj = open(argv[1], encoding="utf-8")
     print("Reading XML file ", end=" ")
 
     sys.stdout.flush()

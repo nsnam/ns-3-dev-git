@@ -129,7 +129,7 @@ ack_rates_160MHz = [6e6, 12e6, 12e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 2
 k = 1
 
 difs = 1
-fo = open("bianchi_11ax_difs.txt", "w")
+fo = open("bianchi_11ax_difs.txt", "w", encoding="utf-8")
 for i in range(len(data_rates_20MHz)):
     bianchi_result = bianchi_ax(data_rates_20MHz[i], ack_rates_20MHz[i], k, difs)
     str_s = str_result(bianchi_result, i, 20)
@@ -149,7 +149,7 @@ for i in range(len(data_rates_160MHz)):
 fo.close()
 
 difs = 0
-fo = open("bianchi_11ax_eifs.txt", "w")
+fo = open("bianchi_11ax_eifs.txt", "w", encoding="utf-8")
 for i in range(len(data_rates_20MHz)):
     bianchi_result = bianchi_ax(data_rates_20MHz[i], ack_rates_20MHz[i], k, difs)
     str_s = str_result(bianchi_result, i, 20)

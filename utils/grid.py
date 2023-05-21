@@ -1608,7 +1608,7 @@ def read_data(filename):
     m3 = re.compile('event-int ([^ ]+) ([^ ]+) ([0-9]+) ([0-9]+)')
     m4 = re.compile('color ([^ ]+) #([a-fA-F0-9]{2,2})([a-fA-F0-9]{2,2})([a-fA-F0-9]{2,2})')
 
-    with open(filename) as fh:
+    with open(filename, encoding='utf-8') as fh:
         for line in fh.readlines():
             m = m1.match(line)
             if m:

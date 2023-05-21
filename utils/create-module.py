@@ -336,7 +336,7 @@ def create_file(path, template, **kwargs):
     artifact_path = Path(path)
 
     #open file for (w)rite and in (t)ext mode
-    with artifact_path.open("wt") as f:
+    with artifact_path.open("wt", encoding="utf-8") as f:
         f.write(template.format(**kwargs))
 
 

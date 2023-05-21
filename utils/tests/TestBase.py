@@ -121,9 +121,9 @@ class TestBaseClass:
         passed = 0
         progress = 0.0
         failed_cases = []
-        with open(self.options.out_file, 'w') as out:
+        with open(self.options.out_file, 'w', encoding='utf-8') as out:
             outstream = out
-            with open(os.devnull, 'w') as sink:
+            with open(os.devnull, 'w', encoding='utf-8') as sink:
                 if self.options.mute:
                     outstream = sink
                 for cmd in cmds:

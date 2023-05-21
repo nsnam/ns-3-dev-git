@@ -12,7 +12,7 @@ import os
 import codecs
 
 def dump_pickles(out, dirname, filename, path):
-    f = open(os.path.join(dirname, filename), 'r')
+    f = open(os.path.join(dirname, filename), 'r', encoding='utf-8')
     data = pickle.load(f)
     fragment_file = codecs.open(data['current_page_name'] + '.frag', mode='w', encoding='utf-8')
     fragment_file.write(data['body'])
