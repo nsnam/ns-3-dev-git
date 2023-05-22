@@ -33,7 +33,6 @@ def dump_pickles(out, dirname, filename, path):
         next_path = os.path.normpath(os.path.join(path, data['next']['link']))
         next_filename = os.path.basename(next_path) + '.fpickle'
         dump_pickles(out, dirname, next_filename, next_path)
-    return
 
 import sys
 

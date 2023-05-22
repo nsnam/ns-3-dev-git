@@ -5,7 +5,7 @@
 # should be enabled
 
 import os
-import sys
+
 
 def get_list_from_file(file_path, list_name):
     '''Looks for a Python list called list_name in the file specified
@@ -121,4 +121,3 @@ def read_config_file():
     tests_enabled = get_bool_from_file(dot_ns3rc_path, 'tests_enabled', value_if_missing)
 
     return (config_file_exists, modules_enabled, examples_enabled, tests_enabled)
-

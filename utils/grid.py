@@ -14,7 +14,7 @@ class DataRange:
     #  end
     ## @var value
     #  value
-    def __init__(self, start = 0, end = 0, value = ''):
+    def __init__(self, start=0, end=0, value=''):
         """! Initializer
         @param self this object
         @param start start
@@ -30,7 +30,7 @@ class EventString:
     #  at
     ## @var value
     #  value
-    def __init__(self, at = 0, value = ''):
+    def __init__(self, at=0, value=''):
         """! Initializer
         @param self this object
         @param at you
@@ -44,7 +44,7 @@ class EventFloat:
     #  at
     ## @var value
     #  value
-    def __init__(self, at = 0, value = 0.0):
+    def __init__(self, at=0, value=0.0):
         """! Initializer
         @param self this object
         @param at you
@@ -58,7 +58,7 @@ class EventInt:
     #  at
     ## @var value
     #  value
-    def __init__(self, at = 0, value = 0.0):
+    def __init__(self, at=0, value=0.0):
         """! Initializer
         @param self this object
         @param at you
@@ -88,7 +88,7 @@ class TimelineDataRange:
     #  name
     ## @var ranges
     #  ranges
-    def __init__(self, name = ''):
+    def __init__(self, name=''):
         """! Initializer
         @param self this object
         @param name name
@@ -154,13 +154,13 @@ class TimelineDataRange:
         s = self.__search(start)
         e = self.__search(end)
         if s == -1 and e == -1:
-            return(0, 0)
+            return (0, 0)
         elif s == -1:
-            return(0, e + 1)
+            return (0, e + 1)
         elif e == -1:
-            return(s, len(self.ranges))
+            return (s, len(self.ranges))
         else:
-            return(s, e + 1)
+            return (s, e + 1)
     def sort(self):
         """! Sort ranges
         @param self this object
@@ -175,16 +175,16 @@ class TimelineDataRange:
         if len(self.ranges) > 0:
             lo = self.ranges[0].start
             hi = self.ranges[len(self.ranges)-1].end
-            return(lo, hi)
+            return (lo, hi)
         else:
-            return(0, 0)
+            return (0, 0)
 ## TimelineEvent class
 class TimelineEvent:
     ## @var name
     #  name
     ## @var events
     #  events
-    def __init__(self, name = ''):
+    def __init__(self, name=''):
         """! Get ranges bounds
         @param self this object
         @param name name
@@ -235,7 +235,7 @@ class TimelineEvent:
         """
         s = self.__search(start)
         e = self.__search(end)
-        return(s, e + 1)
+        return (s, e + 1)
     def sort(self):
         """! Sort function
         @param self this object
@@ -250,9 +250,9 @@ class TimelineEvent:
         if len(self.events) > 0:
             lo = self.events[0].at
             hi = self.events[-1].at
-            return(lo, hi)
+            return (lo, hi)
         else:
-            return(0, 0)
+            return (0, 0)
 
 ## Timeline class
 class Timeline:
@@ -264,7 +264,7 @@ class Timeline:
     #  event string
     ## @var event_int
     #  event int
-    def __init__(self, name = ''):
+    def __init__(self, name=''):
         """! Initializer
         @param self this object
         @param name name
@@ -363,7 +363,7 @@ class Timeline:
                 lo = ev_lo
             if ev_hi > hi:
                 hi = ev_hi
-        return(lo, hi)
+        return (lo, hi)
 
 ## Timelines class
 class Timelines:
@@ -412,7 +412,7 @@ class Timelines:
                 lo = t_lo
             if t_hi > hi:
                 hi = t_hi
-        return(lo, hi)
+        return (lo, hi)
     def get_all_range_values(self):
         """! Get All Ranges
         @param self this object
@@ -433,7 +433,7 @@ class Color:
     #  green
     ## @var b
     #  blue
-    def __init__(self, r = 0.0, g = 0.0, b = 0.0):
+    def __init__(self, r=0.0, g=0.0, b=0.0):
         """! Initializer
         @param self: this object
         @param r: red
@@ -586,8 +586,6 @@ class TopLegendRenderer:
             ctx.set_source_rgb(0, 0, 0)
             ctx.show_text(legend)
             i += 1
-
-        return
 
 ## TimelinesRenderer class
 class TimelinesRenderer:
@@ -797,7 +795,7 @@ class TimelinesRenderer:
         for timeline in self.timelines.get_all():
             (y_bearing, t_width, t_height) = ctx.text_extents(timeline.name)[1:4]
             ctx.move_to(left_x_start, cur_y + self.max_text_height - (t_height + y_bearing))
-            ctx.show_text(timeline.name);
+            ctx.show_text(timeline.name)
             for events_int in timeline.get_events_int():
                 (y_bearing, t_width, t_height) = ctx.text_extents(events_int.name)[1:4]
                 ctx.move_to(right_x_start, cur_y + self.max_text_height - (t_height + y_bearing))
@@ -830,7 +828,6 @@ class TimelinesRenderer:
                        0, bot_y)
         self.draw_line(ctx, right_x_end + self.padding / 2, 0,
                        0, bot_y)
-        return
 
 ## ScaleRenderer class
 class ScaleRenderer:
@@ -869,7 +866,7 @@ class ScaleRenderer:
         @param x x
         @return real x
         """
-        real_x = (x - self.__lo ) * self.__width / (self.__hi - self.__lo)
+        real_x = (x - self.__lo) * self.__width / (self.__hi - self.__lo)
         return real_x
     def set_top(self):
         """! Set Top
@@ -899,7 +896,7 @@ class ScaleRenderer:
             closest *= 10
         if (data_delta / closest) == 0:
             delta = closest
-        elif(data_delta / closest) == 1:
+        elif (data_delta / closest) == 1:
             delta = closest / 10
         else:
             delta = closest
@@ -940,7 +937,7 @@ class ScaleRenderer:
         ctx.set_line_width(1.0)
         ticks = range(int(start), int(end + delta), int(delta))
         for x in ticks:
-            real_x = (x - self.__lo ) * self.__width / (self.__hi - self.__lo)
+            real_x = (x - self.__lo) * self.__width / (self.__hi - self.__lo)
             ctx.move_to(real_x, 0)
             ctx.line_to(real_x, 5*s)
             ctx.close_path()
@@ -958,7 +955,7 @@ class ScaleRenderer:
             start = self.__lo - (self.__lo % delta) + delta
             end = self.__hi - (self.__hi % delta)
             for x in range(int(start), int(end + delta), int(delta)):
-                real_x = (x - self.__lo ) * self.__width / (self.__hi - self.__lo)
+                real_x = (x - self.__lo) * self.__width / (self.__hi - self.__lo)
                 ctx.move_to(real_x, 0)
                 ctx.line_to(real_x, 3*s)
                 ctx.close_path()
@@ -1024,7 +1021,7 @@ class GraphicRenderer:
         """
         y_start = self.__top_legend.get_height()
         x_start = self.__data.get_data_x_start()
-        return(x_start, y_start, self.__width - x_start, self.__data.get_height())
+        return (x_start, y_start, self.__width - x_start, self.__data.get_height())
     def scale_data(self, x):
         """! Get Data Rectangle
         @param self this object
@@ -1044,7 +1041,7 @@ class GraphicRenderer:
         y_height = self.__bot_scale.get_height() + 20
         x_start = self.__bot_scale.get_position(self.__r_start)
         x_end = self.__bot_scale.get_position(self.__r_end)
-        return(x_start, y_start, x_end - x_start, y_height)
+        return (x_start, y_start, x_end - x_start, y_height)
     def scale_selection(self, x):
         """! Scale Selection
         @param self this object
@@ -1074,7 +1071,7 @@ class GraphicRenderer:
         @param self this object
         @return range
         """
-        return(self.__r_start, self.__r_end)
+        return (self.__r_start, self.__r_end)
     def set_data(self, data):
         """! Set Date
         @param self this object
@@ -1144,14 +1141,14 @@ class GraphicRenderer:
         # data
         ctx.save()
         ctx.translate(0,
-                       top_legend_height)
+                      top_legend_height)
         self.__data.draw(ctx)
         ctx.restore()
 
         # scale below data
         ctx.save()
         ctx.translate(self.__data.get_data_x_start(),
-                       top_legend_height + self.__data.get_height() + self.__mid_scale.get_height())
+                      top_legend_height + self.__data.get_height() + self.__mid_scale.get_height())
         self.__mid_scale.draw(ctx)
         ctx.restore()
 
@@ -1177,7 +1174,7 @@ class GraphicRenderer:
         select_end = self.__bot_scale.get_position(self.__r_end)
 
         # left connection between top scale and bottom scale
-        ctx.move_to(0, height_used);
+        ctx.move_to(0, height_used)
         ctx.line_to(self.__data.get_data_x_start(), height_used)
         ctx.line_to(select_start, height_used + 20)
         ctx.line_to(0, height_used + 20)
@@ -1206,12 +1203,12 @@ class GraphicRenderer:
         unused_end = self.__bot_scale.get_position(self.__r_end)
         unused_height = self.__bot_scale.get_height() + 20
         ctx.rectangle(0, height_used,
-                       unused_start,
-                       unused_height)
+                      unused_start,
+                      unused_height)
         ctx.rectangle(unused_end,
-                       height_used,
-                       self.__width - unused_end,
-                       unused_height)
+                      height_used,
+                      self.__width - unused_end,
+                      unused_height)
         ctx.set_source_rgb(0.9, 0.9, 0.9)
         ctx.fill()
 
@@ -1584,7 +1581,6 @@ class MainWindow:
         dialog.set_default_response(1)
         dialog.connect("response", self.__dialog_response_cb)
         dialog.show()
-        return
     def __dialog_response_cb(self, widget, response):
         """! Dialog Response Callback
         @param self this object
@@ -1596,7 +1592,6 @@ class MainWindow:
             filename = self.__dialog.get_filename()
             self.__render.output_png(filename)
             widget.hide()
-        return
 
 
 ## read_data function
@@ -1652,7 +1647,6 @@ def read_data(filename):
                 continue
     timelines.sort()
     return (colors, timelines)
-
 
 
 def main():

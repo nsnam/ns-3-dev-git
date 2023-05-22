@@ -22,7 +22,6 @@ import argparse
 import subprocess
 import threading
 import signal
-import xml.dom.minidom
 import shutil
 import fnmatch
 
@@ -32,14 +31,14 @@ from utils import get_list_from_file
 colors_lst={'USE':True,'BOLD':'\x1b[01;1m','RED':'\x1b[01;31m','GREEN':'\x1b[32m','YELLOW':'\x1b[33m','PINK':'\x1b[35m','BLUE':'\x1b[01;34m','CYAN':'\x1b[36m','GREY':'\x1b[37m','NORMAL':'\x1b[0m','cursor_on':'\x1b[?25h','cursor_off':'\x1b[?25l',}
 def get_color(cl):
     if colors_lst['USE']:
-        return colors_lst.get(cl,'')
-    return''
+        return colors_lst.get(cl, '')
+    return ''
 class color_dict(object):
-    def __getattr__(self,a):
+    def __getattr__(self, a):
         return get_color(a)
-    def __call__(self,a):
+    def __call__(self, a):
         return get_color(a)
-colors=color_dict()
+colors = color_dict()
 
 try:
     import queue
@@ -1246,13 +1245,13 @@ def run_tests():
             examples_sorted.sort()
         if ENABLE_PYTHON_BINDINGS:
             python_examples_sorted = []
-            for (x,y) in python_tests:
+            for (x, y) in python_tests:
                 if y == 'True':
                     python_examples_sorted.append(x)
             python_examples_sorted.sort()
             examples_sorted.extend(python_examples_sorted)
         for item in examples_sorted:
-                print("example     ", item)
+            print("example     ", item)
         print()
 
     if args.kinds or args.list:
@@ -1284,7 +1283,7 @@ def run_tests():
     if not os.path.exists(TMP_OUTPUT_DIR):
         os.makedirs(TMP_OUTPUT_DIR)
 
-    testpy_output_dir = os.path.join(TMP_OUTPUT_DIR, date_and_time);
+    testpy_output_dir = os.path.join(TMP_OUTPUT_DIR, date_and_time)
 
     if not os.path.exists(testpy_output_dir):
         os.makedirs(testpy_output_dir)
@@ -1390,7 +1389,7 @@ def run_tests():
     output_queue = queue.Queue(0)
 
     jobs = 0
-    threads=[]
+    threads = []
 
     #
     # In Python 2.6 you can just use multiprocessing module, but we don't want
@@ -1399,7 +1398,7 @@ def run_tests():
     processors = 1
 
     if sys.platform != "win32":
-        if 'SC_NPROCESSORS_ONLN'in os.sysconf_names:
+        if 'SC_NPROCESSORS_ONLN' in os.sysconf_names:
             processors = os.sysconf('SC_NPROCESSORS_ONLN')
         else:
             proc = subprocess.Popen("sysctl -n hw.ncpu", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -1553,7 +1552,7 @@ def run_tests():
 
         key_list = []
         for key in ns3_runnable_programs_dictionary:
-            key_list.append (key)
+            key_list.append(key)
         example_name_key_list = fnmatch.filter(key_list, example_name)
 
         if len(example_name_key_list) == 0:
@@ -2013,7 +2012,7 @@ def main(argv):
     signal.signal(signal.SIGINT, sigint_hook)
 
     # From waf/waflib/Options.py
-    envcolor=os.environ.get('NOCOLOR','') and 'no' or 'auto' or 'yes'
+    envcolor = os.environ.get('NOCOLOR', '') and 'no' or 'auto' or 'yes'
 
     if args.nocolor or envcolor == 'no':
         colors_lst['USE'] = False
