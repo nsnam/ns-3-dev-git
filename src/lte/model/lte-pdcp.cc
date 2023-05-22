@@ -17,12 +17,13 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/lte-pdcp.h"
+#include "lte-pdcp.h"
+
+#include "lte-pdcp-header.h"
+#include "lte-pdcp-sap.h"
+#include "lte-pdcp-tag.h"
 
 #include "ns3/log.h"
-#include "ns3/lte-pdcp-header.h"
-#include "ns3/lte-pdcp-sap.h"
-#include "ns3/lte-pdcp-tag.h"
 #include "ns3/simulator.h"
 
 namespace ns3

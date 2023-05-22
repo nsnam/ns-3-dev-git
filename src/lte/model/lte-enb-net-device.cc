@@ -21,25 +21,25 @@
  * 2015 - Carrier Aggregation
  */
 
+#include "lte-enb-net-device.h"
+
+#include "component-carrier-enb.h"
+#include "lte-anr.h"
+#include "lte-enb-component-carrier-manager.h"
+#include "lte-enb-mac.h"
+#include "lte-enb-phy.h"
+#include "lte-enb-rrc.h"
+#include "lte-ffr-algorithm.h"
+#include "lte-handover-algorithm.h"
+#include "lte-net-device.h"
+
 #include <ns3/abort.h>
 #include <ns3/callback.h>
 #include <ns3/enum.h>
-#include <ns3/ff-mac-scheduler.h>
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/ipv6-l3-protocol.h>
 #include <ns3/llc-snap-header.h>
 #include <ns3/log.h>
-#include <ns3/lte-amc.h>
-#include <ns3/lte-anr.h>
-#include <ns3/lte-enb-component-carrier-manager.h>
-#include <ns3/lte-enb-mac.h>
-#include <ns3/lte-enb-net-device.h>
-#include <ns3/lte-enb-phy.h>
-#include <ns3/lte-enb-rrc.h>
-#include <ns3/lte-ffr-algorithm.h>
-#include <ns3/lte-handover-algorithm.h>
-#include <ns3/lte-net-device.h>
-#include <ns3/lte-ue-net-device.h>
 #include <ns3/node.h>
 #include <ns3/object-factory.h>
 #include <ns3/object-map.h>

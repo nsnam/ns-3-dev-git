@@ -22,13 +22,15 @@
  * Proportional Fair and Round Robin schedulers implementations.
  */
 
+#include "cqa-ff-mac-scheduler.h"
+
+#include "ff-mac-common.h"
+#include "lte-amc.h"
+#include "lte-vendor-specific-parameters.h"
+
 #include <ns3/boolean.h>
-#include <ns3/cqa-ff-mac-scheduler.h>
-#include <ns3/ff-mac-common.h>
 #include <ns3/integer.h>
 #include <ns3/log.h>
-#include <ns3/lte-amc.h>
-#include <ns3/lte-vendor-specific-parameters.h>
 #include <ns3/math.h>
 #include <ns3/pointer.h>
 #include <ns3/simulator.h>

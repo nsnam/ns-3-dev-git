@@ -20,7 +20,8 @@
 #ifndef EPC_X2_HEADER_H
 #define EPC_X2_HEADER_H
 
-#include "ns3/epc-x2-sap.h"
+#include "epc-x2-sap.h"
+
 #include "ns3/header.h"
 
 #include <vector>

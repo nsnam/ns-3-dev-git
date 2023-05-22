@@ -20,9 +20,10 @@
 #ifndef EPC_SGW_APPLICATION_H
 #define EPC_SGW_APPLICATION_H
 
+#include "epc-gtpc-header.h"
+
 #include "ns3/address.h"
 #include "ns3/application.h"
-#include "ns3/epc-gtpc-header.h"
 #include "ns3/socket.h"
 
 #include <map>

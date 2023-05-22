@@ -23,10 +23,10 @@
 #ifndef LTE_ENB_NET_DEVICE_H
 #define LTE_ENB_NET_DEVICE_H
 
-#include "ns3/component-carrier-enb.h"
+#include "component-carrier.h"
+#include "lte-net-device.h"
+
 #include "ns3/event-id.h"
-#include "ns3/lte-net-device.h"
-#include "ns3/lte-phy.h"
 #include "ns3/mac48-address.h"
 #include "ns3/nstime.h"
 #include "ns3/traced-callback.h"

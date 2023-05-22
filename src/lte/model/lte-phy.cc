@@ -20,6 +20,7 @@
 
 #include "lte-phy.h"
 
+#include "lte-control-messages.h"
 #include "lte-net-device.h"
 
 #include "ns3/spectrum-error-model.h"

@@ -21,9 +21,9 @@
 #ifndef NO_OP_HANDOVER_ALGORITHM_H
 #define NO_OP_HANDOVER_ALGORITHM_H
 
-#include <ns3/lte-handover-algorithm.h>
-#include <ns3/lte-handover-management-sap.h>
-#include <ns3/lte-rrc-sap.h>
+#include "lte-handover-algorithm.h"
+#include "lte-handover-management-sap.h"
+#include "lte-rrc-sap.h"
 
 namespace ns3
 {

@@ -18,10 +18,11 @@
  *         (based on epc-sgw-pgw-application.cc)
  */
 
-#include "ns3/epc-pgw-application.h"
+#include "epc-pgw-application.h"
+
+#include "epc-gtpu-header.h"
 
 #include "ns3/abort.h"
-#include "ns3/epc-gtpu-header.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv4.h"

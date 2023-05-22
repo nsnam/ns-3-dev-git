@@ -22,6 +22,8 @@
 
 #include "no-op-component-carrier-manager.h"
 
+#include "lte-common.h"
+
 #include <ns3/log.h>
 #include <ns3/random-variable-stream.h>
 

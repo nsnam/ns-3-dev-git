@@ -20,9 +20,6 @@
 
 #include "lte-control-messages.h"
 
-#include "lte-net-device.h"
-#include "lte-ue-net-device.h"
-
 #include "ns3/address-utils.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"

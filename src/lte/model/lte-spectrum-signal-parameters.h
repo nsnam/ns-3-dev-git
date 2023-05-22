@@ -23,6 +23,8 @@
 
 #include <ns3/spectrum-signal-parameters.h>
 
+#include <list>
+
 namespace ns3
 {
 

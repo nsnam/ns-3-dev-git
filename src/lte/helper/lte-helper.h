@@ -22,23 +22,23 @@
 #ifndef LTE_HELPER_H
 #define LTE_HELPER_H
 
-#include <ns3/cc-helper.h>
+#include "mac-stats-calculator.h"
+#include "phy-rx-stats-calculator.h"
+#include "phy-stats-calculator.h"
+#include "phy-tx-stats-calculator.h"
+#include "radio-bearer-stats-calculator.h"
+#include "radio-bearer-stats-connector.h"
+
 #include <ns3/component-carrier-enb.h>
 #include <ns3/config.h>
 #include <ns3/epc-tft.h>
 #include <ns3/eps-bearer.h>
-#include <ns3/mac-stats-calculator.h>
 #include <ns3/mobility-model.h>
 #include <ns3/names.h>
 #include <ns3/net-device-container.h>
 #include <ns3/net-device.h>
 #include <ns3/node-container.h>
 #include <ns3/node.h>
-#include <ns3/phy-rx-stats-calculator.h>
-#include <ns3/phy-stats-calculator.h>
-#include <ns3/phy-tx-stats-calculator.h>
-#include <ns3/radio-bearer-stats-calculator.h>
-#include <ns3/radio-bearer-stats-connector.h>
 #include <ns3/simulator.h>
 
 #include <map>

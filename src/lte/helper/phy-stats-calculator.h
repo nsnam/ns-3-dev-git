@@ -20,7 +20,8 @@
 #ifndef PHY_STATS_CALCULATOR_H_
 #define PHY_STATS_CALCULATOR_H_
 
-#include "ns3/lte-stats-calculator.h"
+#include "lte-stats-calculator.h"
+
 #include "ns3/nstime.h"
 #include "ns3/spectrum-value.h"
 #include "ns3/uinteger.h"

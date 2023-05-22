@@ -19,7 +19,7 @@
  *         Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/emu-epc-helper.h"
+#include "emu-epc-helper.h"
 
 #include "ns3/emu-fd-net-device-helper.h"
 #include "ns3/epc-x2.h"

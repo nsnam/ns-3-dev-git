@@ -21,7 +21,8 @@
 #ifndef LTE_ENB_CPHY_SAP_H
 #define LTE_ENB_CPHY_SAP_H
 
-#include <ns3/lte-rrc-sap.h>
+#include "lte-rrc-sap.h"
+
 #include <ns3/ptr.h>
 
 #include <stdint.h>

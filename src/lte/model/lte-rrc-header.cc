@@ -20,7 +20,7 @@
  *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
-#include "ns3/lte-rrc-header.h"
+#include "lte-rrc-header.h"
 
 #include "ns3/log.h"
 

@@ -22,6 +22,7 @@
 
 #include "lte-enb-net-device.h"
 #include "lte-enb-rrc.h"
+#include "lte-rrc-header.h"
 #include "lte-ue-net-device.h"
 #include "lte-ue-rrc.h"
 

@@ -21,9 +21,8 @@
 #define COMPONENT_CARRIER_ENB_H
 
 #include "component-carrier.h"
+#include "lte-enb-phy.h"
 
-#include "ns3/lte-phy.h"
-#include <ns3/lte-enb-phy.h>
 #include <ns3/nstime.h>
 #include <ns3/object.h>
 #include <ns3/packet.h>

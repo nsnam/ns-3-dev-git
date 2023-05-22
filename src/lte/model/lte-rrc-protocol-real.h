@@ -21,10 +21,10 @@
 #ifndef LTE_RRC_PROTOCOL_REAL_H
 #define LTE_RRC_PROTOCOL_REAL_H
 
-#include <ns3/lte-pdcp-sap.h>
-#include <ns3/lte-rlc-sap.h>
-#include <ns3/lte-rrc-header.h>
-#include <ns3/lte-rrc-sap.h>
+#include "lte-pdcp-sap.h"
+#include "lte-rlc-sap.h"
+#include "lte-rrc-sap.h"
+
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 

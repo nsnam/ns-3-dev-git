@@ -19,12 +19,14 @@
  *                  Nicola Baldo   <nbaldo@cttc.es>
  */
 
+#include "lte-amc.h"
+
+#include "lte-mi-error-model.h"
+
 #include "ns3/enum.h"
 #include <ns3/assert.h>
 #include <ns3/double.h>
 #include <ns3/log.h>
-#include <ns3/lte-amc.h>
-#include <ns3/lte-mi-error-model.h>
 #include <ns3/math.h>
 #include <ns3/spectrum-value.h>
 

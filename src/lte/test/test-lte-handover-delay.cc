@@ -20,6 +20,7 @@
 
 #include <ns3/boolean.h>
 #include <ns3/callback.h>
+#include <ns3/cc-helper.h>
 #include <ns3/config.h>
 #include <ns3/data-rate.h>
 #include <ns3/internet-stack-helper.h>

@@ -21,7 +21,7 @@
 #ifndef LTE_HANDOVER_MANAGEMENT_SAP_H
 #define LTE_HANDOVER_MANAGEMENT_SAP_H
 
-#include <ns3/lte-rrc-sap.h>
+#include "lte-rrc-sap.h"
 
 namespace ns3
 {

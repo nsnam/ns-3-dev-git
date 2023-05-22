@@ -25,17 +25,18 @@
 
 #include "lte-enb-rrc.h"
 
+#include "component-carrier-enb.h"
+#include "eps-bearer-tag.h"
+#include "lte-pdcp.h"
+#include "lte-radio-bearer-info.h"
+#include "lte-rlc-am.h"
+#include "lte-rlc-tm.h"
+#include "lte-rlc-um.h"
+#include "lte-rlc.h"
+
 #include <ns3/abort.h>
-#include <ns3/eps-bearer-tag.h>
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
-#include <ns3/lte-common.h>
-#include <ns3/lte-pdcp.h>
-#include <ns3/lte-radio-bearer-info.h>
-#include <ns3/lte-rlc-am.h>
-#include <ns3/lte-rlc-tm.h>
-#include <ns3/lte-rlc-um.h>
-#include <ns3/lte-rlc.h>
 #include <ns3/object-factory.h>
 #include <ns3/object-map.h>
 #include <ns3/packet.h>

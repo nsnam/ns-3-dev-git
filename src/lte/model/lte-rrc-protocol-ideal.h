@@ -20,7 +20,8 @@
 #ifndef LTE_RRC_PROTOCOL_IDEAL_H
 #define LTE_RRC_PROTOCOL_IDEAL_H
 
-#include <ns3/lte-rrc-sap.h>
+#include "lte-rrc-sap.h"
+
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 

@@ -21,12 +21,13 @@
 #ifndef LTE_ENB_COMPONENT_CARRIER_MANAGER_H
 #define LTE_ENB_COMPONENT_CARRIER_MANAGER_H
 
-#include <ns3/lte-ccm-mac-sap.h>
-#include <ns3/lte-ccm-rrc-sap.h>
-#include <ns3/lte-enb-cmac-sap.h>
-#include <ns3/lte-enb-rrc.h>
-#include <ns3/lte-mac-sap.h>
-#include <ns3/lte-rrc-sap.h>
+#include "lte-ccm-mac-sap.h"
+#include "lte-ccm-rrc-sap.h"
+#include "lte-enb-cmac-sap.h"
+#include "lte-enb-rrc.h"
+#include "lte-mac-sap.h"
+#include "lte-rrc-sap.h"
+
 #include <ns3/object.h>
 
 #include <map>

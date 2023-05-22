@@ -22,19 +22,20 @@
 #ifndef LTE_SPECTRUM_PHY_H
 #define LTE_SPECTRUM_PHY_H
 
-#include "ns3/random-variable-stream.h"
+#include "ff-mac-common.h"
+#include "lte-common.h"
+#include "lte-harq-phy.h"
+#include "lte-interference.h"
+
 #include <ns3/data-rate.h>
 #include <ns3/event-id.h>
-#include <ns3/ff-mac-common.h>
 #include <ns3/generic-phy.h>
-#include <ns3/lte-common.h>
-#include <ns3/lte-harq-phy.h>
-#include <ns3/lte-interference.h>
 #include <ns3/mobility-model.h>
 #include <ns3/net-device.h>
 #include <ns3/nstime.h>
 #include <ns3/packet-burst.h>
 #include <ns3/packet.h>
+#include <ns3/random-variable-stream.h>
 #include <ns3/spectrum-channel.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/spectrum-phy.h>

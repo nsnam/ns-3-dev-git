@@ -21,7 +21,8 @@
 #ifndef LTE_RLC_TM_H
 #define LTE_RLC_TM_H
 
-#include "ns3/lte-rlc.h"
+#include "lte-rlc.h"
+
 #include <ns3/event-id.h>
 
 #include <map>

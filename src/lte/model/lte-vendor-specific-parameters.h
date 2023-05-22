@@ -20,7 +20,7 @@
 #ifndef LTE_VENDOR_SPECIFIC_PARAMETERS
 #define LTE_VENDOR_SPECIFIC_PARAMETERS
 
-#include <ns3/ff-mac-common.h>
+#include "ff-mac-common.h"
 
 #define SRS_CQI_RNTI_VSP 1
 

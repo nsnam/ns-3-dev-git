@@ -26,19 +26,15 @@
 
 #include "ff-mac-common.h"
 #include "lte-amc.h"
-#include "lte-chunk-processor.h"
-#include "lte-enb-net-device.h"
-#include "lte-enb-phy.h"
+#include "lte-common.h"
 #include "lte-net-device.h"
 #include "lte-spectrum-value-helper.h"
-#include "lte-ue-mac.h"
 #include "lte-ue-net-device.h"
+#include "lte-ue-power-control.h"
 
 #include <ns3/boolean.h>
 #include <ns3/double.h>
 #include <ns3/log.h>
-#include <ns3/lte-common.h>
-#include <ns3/lte-ue-power-control.h>
 #include <ns3/node.h>
 #include <ns3/object-factory.h>
 #include <ns3/pointer.h>

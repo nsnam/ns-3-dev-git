@@ -17,7 +17,7 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/lte-rlc-am-header.h"
+#include "lte-rlc-am-header.h"
 
 #include "ns3/log.h"
 

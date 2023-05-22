@@ -24,10 +24,10 @@
 
 #include "lte-ue-net-device.h"
 
-#include "epc-tft.h"
 #include "epc-ue-nas.h"
-#include "lte-amc.h"
+#include "lte-enb-net-device.h"
 #include "lte-net-device.h"
+#include "lte-ue-component-carrier-manager.h"
 #include "lte-ue-mac.h"
 #include "lte-ue-phy.h"
 #include "lte-ue-rrc.h"
@@ -39,7 +39,6 @@
 #include "ns3/ipv6-header.h"
 #include "ns3/ipv6.h"
 #include "ns3/llc-snap-header.h"
-#include "ns3/lte-enb-net-device.h"
 #include "ns3/node.h"
 #include "ns3/packet-burst.h"
 #include "ns3/packet.h"
@@ -50,7 +49,6 @@
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/ipv6-l3-protocol.h>
 #include <ns3/log.h>
-#include <ns3/lte-ue-component-carrier-manager.h>
 #include <ns3/object-factory.h>
 #include <ns3/object-map.h>
 

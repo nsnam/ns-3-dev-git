@@ -20,9 +20,10 @@
 
 #include "a3-rsrp-handover-algorithm.h"
 
+#include "lte-common.h"
+
 #include <ns3/double.h>
 #include <ns3/log.h>
-#include <ns3/lte-common.h>
 
 #include <algorithm>
 #include <list>

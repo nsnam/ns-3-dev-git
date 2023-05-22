@@ -17,7 +17,7 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/lte-rlc-sdu-status-tag.h"
+#include "lte-rlc-sdu-status-tag.h"
 
 namespace ns3
 {

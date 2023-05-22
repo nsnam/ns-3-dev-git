@@ -20,13 +20,12 @@
 
 #include "lte-ue-mac.h"
 
+#include "ff-mac-common.h"
+#include "lte-common.h"
+#include "lte-control-messages.h"
 #include "lte-radio-bearer-tag.h"
-#include "lte-ue-net-device.h"
 
-#include <ns3/ff-mac-common.h>
 #include <ns3/log.h>
-#include <ns3/lte-common.h>
-#include <ns3/lte-control-messages.h>
 #include <ns3/packet-burst.h>
 #include <ns3/packet.h>
 #include <ns3/pointer.h>

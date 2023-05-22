@@ -21,9 +21,9 @@
 #ifndef SIMPLE_UE_COMPONENT_CARRIER_MANAGER_H
 #define SIMPLE_UE_COMPONENT_CARRIER_MANAGER_H
 
-#include <ns3/lte-rrc-sap.h>
-#include <ns3/lte-ue-ccm-rrc-sap.h>
-#include <ns3/lte-ue-component-carrier-manager.h>
+#include "lte-rrc-sap.h"
+#include "lte-ue-ccm-rrc-sap.h"
+#include "lte-ue-component-carrier-manager.h"
 
 #include <map>
 

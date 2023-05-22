@@ -22,8 +22,8 @@
 #include "lte-spectrum-phy.h"
 
 #include "lte-chunk-processor.h"
-#include "lte-net-device.h"
-#include "lte-phy-tag.h"
+#include "lte-control-messages.h"
+#include "lte-mi-error-model.h"
 #include "lte-radio-bearer-tag.h"
 #include "lte-spectrum-signal-parameters.h"
 
@@ -32,8 +32,6 @@
 #include <ns3/config.h>
 #include <ns3/double.h>
 #include <ns3/log.h>
-#include <ns3/lte-mi-error-model.h>
-#include <ns3/lte-radio-bearer-tag.h>
 #include <ns3/object-factory.h>
 #include <ns3/simulator.h>
 #include <ns3/trace-source-accessor.h>

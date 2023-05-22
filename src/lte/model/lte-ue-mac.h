@@ -21,10 +21,12 @@
 #ifndef LTE_UE_MAC_ENTITY_H
 #define LTE_UE_MAC_ENTITY_H
 
+#include "ff-mac-common.h"
+#include "lte-mac-sap.h"
+#include "lte-ue-cmac-sap.h"
+#include "lte-ue-phy-sap.h"
+
 #include <ns3/event-id.h>
-#include <ns3/lte-mac-sap.h>
-#include <ns3/lte-ue-cmac-sap.h>
-#include <ns3/lte-ue-phy-sap.h>
 #include <ns3/nstime.h>
 #include <ns3/packet-burst.h>
 #include <ns3/packet.h>

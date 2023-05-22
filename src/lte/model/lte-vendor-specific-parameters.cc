@@ -17,8 +17,9 @@
  * Author: Marco Miozzo  <marco.miozzo@cttc.es>
  */
 
+#include "lte-vendor-specific-parameters.h"
+
 #include <ns3/log.h>
-#include <ns3/lte-vendor-specific-parameters.h>
 
 namespace ns3
 {

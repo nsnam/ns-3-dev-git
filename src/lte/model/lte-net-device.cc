@@ -20,9 +20,8 @@
 
 #include "lte-net-device.h"
 
-#include "lte-amc.h"
-
 #include "ns3/callback.h"
+#include "ns3/channel.h"
 #include "ns3/enum.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv6-header.h"
@@ -37,7 +36,6 @@
 #include <ns3/ipv4-l3-protocol.h>
 #include <ns3/ipv6-l3-protocol.h>
 #include <ns3/log.h>
-#include <ns3/lte-radio-bearer-tag.h>
 
 namespace ns3
 {

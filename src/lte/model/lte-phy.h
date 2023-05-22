@@ -22,8 +22,9 @@
 #ifndef LTE_PHY_H
 #define LTE_PHY_H
 
+#include "lte-spectrum-phy.h"
+
 #include <ns3/generic-phy.h>
-#include <ns3/lte-spectrum-phy.h>
 #include <ns3/mobility-model.h>
 #include <ns3/nstime.h>
 #include <ns3/packet.h>

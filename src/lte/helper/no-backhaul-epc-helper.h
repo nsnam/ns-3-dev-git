@@ -21,7 +21,7 @@
 #ifndef NO_BACKHAUL_EPC_HELPER_H
 #define NO_BACKHAUL_EPC_HELPER_H
 
-#include "ns3/epc-helper.h"
+#include "epc-helper.h"
 
 namespace ns3
 {

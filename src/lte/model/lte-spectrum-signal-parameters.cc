@@ -18,9 +18,11 @@
  * Modified by Marco Miozzo <mmiozzo@cttc.es> (add data and ctrl diversity)
  */
 
+#include "lte-spectrum-signal-parameters.h"
+
+#include "lte-control-messages.h"
+
 #include <ns3/log.h>
-#include <ns3/lte-control-messages.h>
-#include <ns3/lte-spectrum-signal-parameters.h>
 #include <ns3/packet-burst.h>
 #include <ns3/ptr.h>
 

@@ -20,7 +20,8 @@
 #ifndef EPC_X2_SAP_H
 #define EPC_X2_SAP_H
 
-#include "ns3/eps-bearer.h"
+#include "eps-bearer.h"
+
 #include "ns3/ipv4-address.h"
 #include "ns3/packet.h"
 

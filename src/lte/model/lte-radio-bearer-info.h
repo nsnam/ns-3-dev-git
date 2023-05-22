@@ -20,9 +20,10 @@
 #ifndef LTE_RADIO_BEARER_INFO_H
 #define LTE_RADIO_BEARER_INFO_H
 
-#include <ns3/eps-bearer.h>
+#include "eps-bearer.h"
+#include "lte-rrc-sap.h"
+
 #include <ns3/ipv4-address.h>
-#include <ns3/lte-rrc-sap.h>
 #include <ns3/object.h>
 #include <ns3/pointer.h>
 

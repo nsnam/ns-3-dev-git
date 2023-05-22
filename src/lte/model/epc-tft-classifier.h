@@ -20,7 +20,8 @@
 #ifndef EPC_TFT_CLASSIFIER_H
 #define EPC_TFT_CLASSIFIER_H
 
-#include "ns3/epc-tft.h"
+#include "epc-tft.h"
+
 #include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
 

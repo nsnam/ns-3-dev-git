@@ -22,7 +22,7 @@
 #ifndef EMU_EPC_HELPER_H
 #define EMU_EPC_HELPER_H
 
-#include "ns3/no-backhaul-epc-helper.h"
+#include "no-backhaul-epc-helper.h"
 
 namespace ns3
 {

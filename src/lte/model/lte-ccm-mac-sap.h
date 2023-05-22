@@ -21,11 +21,8 @@
 #ifndef LTE_CCM_MAC_SAP_H
 #define LTE_CCM_MAC_SAP_H
 
-#include <ns3/eps-bearer.h>
-#include <ns3/ff-mac-common.h>
-#include <ns3/lte-enb-cmac-sap.h>
-#include <ns3/lte-mac-sap.h>
-#include <ns3/lte-rrc-sap.h>
+#include "ff-mac-common.h"
+#include "lte-mac-sap.h"
 
 namespace ns3
 {

@@ -17,7 +17,7 @@
  * Author: Nicola Baldo  <nbaldo@cttc.es>
  */
 
-#include "ns3/lte-mac-sap.h"
+#include "lte-mac-sap.h"
 
 namespace ns3
 {

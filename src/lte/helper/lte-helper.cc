@@ -22,11 +22,17 @@
 
 #include "lte-helper.h"
 
+#include "cc-helper.h"
+#include "epc-helper.h"
+#include "mac-stats-calculator.h"
+#include "phy-rx-stats-calculator.h"
+#include "phy-stats-calculator.h"
+#include "phy-tx-stats-calculator.h"
+
 #include <ns3/abort.h>
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/epc-enb-application.h>
 #include <ns3/epc-enb-s1-sap.h>
-#include <ns3/epc-helper.h>
 #include <ns3/epc-ue-nas.h>
 #include <ns3/epc-x2.h>
 #include <ns3/ff-mac-scheduler.h>
@@ -55,13 +61,9 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-ue-phy.h>
 #include <ns3/lte-ue-rrc.h>
-#include <ns3/mac-stats-calculator.h>
 #include <ns3/multi-model-spectrum-channel.h>
 #include <ns3/object-factory.h>
 #include <ns3/object-map.h>
-#include <ns3/phy-rx-stats-calculator.h>
-#include <ns3/phy-stats-calculator.h>
-#include <ns3/phy-tx-stats-calculator.h>
 #include <ns3/pointer.h>
 #include <ns3/string.h>
 #include <ns3/trace-fading-loss-model.h>

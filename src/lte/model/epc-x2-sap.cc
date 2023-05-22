@@ -17,7 +17,7 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/epc-x2-sap.h"
+#include "epc-x2-sap.h"
 
 namespace ns3
 {

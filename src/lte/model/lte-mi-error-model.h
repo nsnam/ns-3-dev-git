@@ -31,7 +31,8 @@
 #ifndef LTE_MI_ERROR_MODEL_H
 #define LTE_MI_ERROR_MODEL_H
 
-#include <ns3/lte-harq-phy.h>
+#include "lte-harq-phy.h"
+
 #include <ns3/ptr.h>
 #include <ns3/spectrum-value.h>
 

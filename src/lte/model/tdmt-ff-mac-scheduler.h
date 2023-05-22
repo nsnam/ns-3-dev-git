@@ -21,12 +21,13 @@
 #ifndef TDMT_FF_MAC_SCHEDULER_H
 #define TDMT_FF_MAC_SCHEDULER_H
 
-#include <ns3/ff-mac-csched-sap.h>
-#include <ns3/ff-mac-sched-sap.h>
-#include <ns3/ff-mac-scheduler.h>
-#include <ns3/lte-amc.h>
-#include <ns3/lte-common.h>
-#include <ns3/lte-ffr-sap.h>
+#include "ff-mac-csched-sap.h"
+#include "ff-mac-sched-sap.h"
+#include "ff-mac-scheduler.h"
+#include "lte-amc.h"
+#include "lte-common.h"
+#include "lte-ffr-sap.h"
+
 #include <ns3/nstime.h>
 
 #include <map>

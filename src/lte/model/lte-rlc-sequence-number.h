@@ -26,8 +26,6 @@
 #include <limits>
 #include <stdint.h>
 
-// #include "ns3/lte-rlc.h"
-
 namespace ns3
 {
 

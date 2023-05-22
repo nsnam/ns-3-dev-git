@@ -24,11 +24,10 @@
 #ifndef LTE_UE_NET_DEVICE_H
 #define LTE_UE_NET_DEVICE_H
 
-#include "ns3/component-carrier-ue.h"
-#include "ns3/eps-bearer.h"
+#include "component-carrier-ue.h"
+#include "lte-net-device.h"
+
 #include "ns3/event-id.h"
-#include "ns3/lte-net-device.h"
-#include "ns3/lte-phy.h"
 #include "ns3/nstime.h"
 #include "ns3/traced-callback.h"
 

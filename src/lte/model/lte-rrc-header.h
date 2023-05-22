@@ -23,9 +23,10 @@
 #ifndef RRC_HEADER_H
 #define RRC_HEADER_H
 
+#include "lte-asn1-header.h"
+#include "lte-rrc-sap.h"
+
 #include "ns3/header.h"
-#include "ns3/lte-asn1-header.h"
-#include "ns3/lte-rrc-sap.h"
 
 #include <bitset>
 #include <string>

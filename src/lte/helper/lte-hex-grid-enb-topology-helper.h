@@ -20,7 +20,7 @@
 #ifndef LTE_HEX_GRID_ENB_TOPOLOGY_HELPER_H
 #define LTE_HEX_GRID_ENB_TOPOLOGY_HELPER_H
 
-#include <ns3/lte-helper.h>
+#include "lte-helper.h"
 
 namespace ns3
 {

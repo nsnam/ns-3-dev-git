@@ -17,10 +17,11 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/epc-x2.h"
+#include "epc-x2.h"
 
-#include "ns3/epc-gtpu-header.h"
-#include "ns3/epc-x2-header.h"
+#include "epc-gtpu-header.h"
+#include "epc-x2-header.h"
+
 #include "ns3/inet-socket-address.h"
 #include "ns3/log.h"
 #include "ns3/node.h"

@@ -17,7 +17,7 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/epc-x2-header.h"
+#include "epc-x2-header.h"
 
 #include "ns3/log.h"
 

@@ -21,9 +21,10 @@
 #ifndef LTE_FFR_ALGORITHM_H
 #define LTE_FFR_ALGORITHM_H
 
-#include <ns3/epc-x2-sap.h>
-#include <ns3/ff-mac-sched-sap.h>
-#include <ns3/lte-rrc-sap.h>
+#include "epc-x2-sap.h"
+#include "ff-mac-sched-sap.h"
+#include "lte-rrc-sap.h"
+
 #include <ns3/object.h>
 
 #include <map>

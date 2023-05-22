@@ -20,8 +20,9 @@
 #ifndef EPC_GTPC_HEADER_H
 #define EPC_GTPC_HEADER_H
 
-#include "ns3/epc-tft.h"
-#include "ns3/eps-bearer.h"
+#include "epc-tft.h"
+#include "eps-bearer.h"
+
 #include "ns3/header.h"
 
 namespace ns3

@@ -27,8 +27,9 @@
 #ifndef LTE_ANR_H
 #define LTE_ANR_H
 
-#include <ns3/lte-anr-sap.h>
-#include <ns3/lte-rrc-sap.h>
+#include "lte-anr-sap.h"
+#include "lte-rrc-sap.h"
+
 #include <ns3/object.h>
 
 #include <map>

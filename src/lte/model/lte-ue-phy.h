@@ -24,13 +24,14 @@
 #ifndef LTE_UE_PHY_H
 #define LTE_UE_PHY_H
 
-#include <ns3/ff-mac-common.h>
-#include <ns3/lte-amc.h>
-#include <ns3/lte-control-messages.h>
-#include <ns3/lte-phy.h>
-#include <ns3/lte-ue-cphy-sap.h>
-#include <ns3/lte-ue-phy-sap.h>
-#include <ns3/lte-ue-power-control.h>
+#include "ff-mac-common.h"
+#include "lte-amc.h"
+#include "lte-control-messages.h"
+#include "lte-phy.h"
+#include "lte-ue-cphy-sap.h"
+#include "lte-ue-phy-sap.h"
+#include "lte-ue-power-control.h"
+
 #include <ns3/ptr.h>
 
 #include <set>

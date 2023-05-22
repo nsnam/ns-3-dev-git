@@ -17,7 +17,7 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/lte-pdcp-header.h"
+#include "lte-pdcp-header.h"
 
 #include "ns3/log.h"
 

@@ -20,8 +20,9 @@
 #ifndef LTE_RLC_UM_H
 #define LTE_RLC_UM_H
 
-#include "ns3/lte-rlc-sequence-number.h"
-#include "ns3/lte-rlc.h"
+#include "lte-rlc-sequence-number.h"
+#include "lte-rlc.h"
+
 #include <ns3/event-id.h>
 
 #include <map>

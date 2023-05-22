@@ -21,7 +21,8 @@
 #ifndef LTE_HANDOVER_ALGORITHM_H
 #define LTE_HANDOVER_ALGORITHM_H
 
-#include <ns3/lte-rrc-sap.h>
+#include "lte-rrc-sap.h"
+
 #include <ns3/object.h>
 
 namespace ns3

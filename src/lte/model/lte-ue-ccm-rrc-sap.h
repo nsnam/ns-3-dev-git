@@ -21,10 +21,8 @@
 #ifndef LTE_UE_CCM_RRC_SAP_H
 #define LTE_UE_CCM_RRC_SAP_H
 
-#include <ns3/eps-bearer.h>
-#include <ns3/lte-mac-sap.h>
-#include <ns3/lte-rrc-sap.h>
-#include <ns3/lte-ue-cmac-sap.h>
+#include "lte-mac-sap.h"
+#include "lte-ue-cmac-sap.h"
 
 #include <map>
 

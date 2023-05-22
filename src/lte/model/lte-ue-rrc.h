@@ -26,13 +26,13 @@
 #ifndef LTE_UE_RRC_H
 #define LTE_UE_RRC_H
 
-#include "ns3/component-carrier-ue.h"
-#include <ns3/lte-as-sap.h>
-#include <ns3/lte-pdcp-sap.h>
-#include <ns3/lte-rrc-sap.h>
-#include <ns3/lte-ue-ccm-rrc-sap.h>
-#include <ns3/lte-ue-cmac-sap.h>
-#include <ns3/lte-ue-cphy-sap.h>
+#include "lte-as-sap.h"
+#include "lte-pdcp-sap.h"
+#include "lte-rrc-sap.h"
+#include "lte-ue-ccm-rrc-sap.h"
+#include "lte-ue-cmac-sap.h"
+#include "lte-ue-cphy-sap.h"
+
 #include <ns3/object.h>
 #include <ns3/packet.h>
 #include <ns3/traced-callback.h>

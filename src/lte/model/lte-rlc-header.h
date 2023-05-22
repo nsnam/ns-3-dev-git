@@ -20,8 +20,9 @@
 #ifndef LTE_RLC_HEADER_H
 #define LTE_RLC_HEADER_H
 
+#include "lte-rlc-sequence-number.h"
+
 #include "ns3/header.h"
-#include "ns3/lte-rlc-sequence-number.h"
 
 #include <list>
 

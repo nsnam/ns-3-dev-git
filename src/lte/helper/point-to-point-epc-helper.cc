@@ -20,7 +20,7 @@
  *         (most of the code refactored to no-backhaul-epc-helper.cc)
  */
 
-#include "ns3/point-to-point-epc-helper.h"
+#include "point-to-point-epc-helper.h"
 
 #include "ns3/boolean.h"
 #include "ns3/log.h"

@@ -18,7 +18,7 @@
  *         (based on the original point-to-point-epc-helper.cc)
  */
 
-#include "ns3/no-backhaul-epc-helper.h"
+#include "no-backhaul-epc-helper.h"
 
 #include "ns3/boolean.h"
 #include "ns3/epc-enb-application.h"

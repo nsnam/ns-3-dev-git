@@ -22,9 +22,9 @@
 #ifndef NO_OP_COMPONENT_CARRIER_MANAGER_H
 #define NO_OP_COMPONENT_CARRIER_MANAGER_H
 
-#include <ns3/lte-ccm-rrc-sap.h>
-#include <ns3/lte-enb-component-carrier-manager.h>
-#include <ns3/lte-rrc-sap.h>
+#include "lte-ccm-rrc-sap.h"
+#include "lte-enb-component-carrier-manager.h"
+#include "lte-rrc-sap.h"
 
 #include <map>
 

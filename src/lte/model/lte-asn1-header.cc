@@ -17,7 +17,7 @@
  * Author: Lluis Parcerisa <lparcerisa@cttc.cat>
  */
 
-#include "ns3/lte-asn1-header.h"
+#include "lte-asn1-header.h"
 
 #include "ns3/log.h"
 

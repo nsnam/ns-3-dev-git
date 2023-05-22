@@ -20,9 +20,10 @@
 #ifndef EPC_S1AP_SAP_H
 #define EPC_S1AP_SAP_H
 
+#include "eps-bearer.h"
+
 #include <ns3/address.h>
-#include <ns3/epc-tft.h>
-#include <ns3/eps-bearer.h>
+#include <ns3/ipv4-address.h>
 #include <ns3/object.h>
 #include <ns3/ptr.h>
 

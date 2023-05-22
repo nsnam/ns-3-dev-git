@@ -18,12 +18,13 @@
  *         Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include "ns3/lte-rlc-am.h"
+#include "lte-rlc-am.h"
+
+#include "lte-rlc-am-header.h"
+#include "lte-rlc-sdu-status-tag.h"
+#include "lte-rlc-tag.h"
 
 #include "ns3/log.h"
-#include "ns3/lte-rlc-am-header.h"
-#include "ns3/lte-rlc-sdu-status-tag.h"
-#include "ns3/lte-rlc-tag.h"
 #include "ns3/simulator.h"
 
 namespace ns3
