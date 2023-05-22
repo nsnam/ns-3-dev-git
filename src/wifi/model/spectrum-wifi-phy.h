@@ -180,12 +180,14 @@ class SpectrumWifiPhy : public WifiPhy
      * Determine the number of bands between the two segments if the operating channel is made of
      * non-contiguous segments, otherwise the function returns zero.
      *
-     * \param channel the operating channel
+     * \param centerFrequencies the center frequency of each segment in MHz
+     * \param totalWidth the width of the operating channel in MHz
      * \param subcarrierSpacing the subcarrier spacing
      * \return the number of bands between the two segments if the operating channel is made of
      * non-contiguous segments, zero otherwise
      */
-    static uint32_t GetNumBandsBetweenSegments(const WifiPhyOperatingChannel& channel,
+    static uint32_t GetNumBandsBetweenSegments(const std::vector<uint16_t>& centerFrequencies,
+                                               ChannelWidthMhz totalWidth,
                                                uint32_t subcarrierSpacing);
 
     /**

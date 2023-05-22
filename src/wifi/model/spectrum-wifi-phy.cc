@@ -170,11 +170,14 @@ SpectrumWifiPhy::GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
                     HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup(bw, ruType, phyIndex);
                     HeRu::SubcarrierRange subcarrierRange =
                         std::make_pair(group.front().first, group.back().second);
-                    const auto bandIndices = HePhy::ConvertHeRuSubcarriers(bw,
-                                                                           guardBandwidth,
-                                                                           GetSubcarrierSpacing(),
-                                                                           subcarrierRange,
-                                                                           i);
+                    const auto bandIndices =
+                        HePhy::ConvertHeRuSubcarriers(bw,
+                                                      guardBandwidth,
+                                                      spectrumPhyInterface->GetCenterFrequencies(),
+                                                      spectrumPhyInterface->GetChannelWidth(),
+                                                      GetSubcarrierSpacing(),
+                                                      subcarrierRange,
+                                                      i);
                     const auto bandFrequencies =
                         ConvertIndicesToFrequenciesForInterface(spectrumPhyInterface, bandIndices);
                     WifiSpectrumBandInfo band = {bandIndices, bandFrequencies};
@@ -667,21 +670,21 @@ SpectrumWifiPhy::GetGuardBandwidth(ChannelWidthMhz currentChannelWidth) const
 }
 
 uint32_t
-SpectrumWifiPhy::GetNumBandsBetweenSegments(const WifiPhyOperatingChannel& channel,
+SpectrumWifiPhy::GetNumBandsBetweenSegments(const std::vector<uint16_t>& centerFrequencies,
+                                            ChannelWidthMhz totalWidth,
                                             uint32_t subcarrierSpacing)
 {
-    NS_ABORT_MSG_IF(channel.GetNSegments() > 2,
-                    "Only 2 non-contiguous frequency segments are supported");
-    if (channel.GetNSegments() < 2)
+    const auto numSegments = centerFrequencies.size();
+    NS_ABORT_MSG_IF(numSegments > 2, "Only 2 non-contiguous frequency segments are supported");
+    if (numSegments < 2)
     {
         return 0;
     }
-    const auto frequencies = channel.GetFrequencies();
-    const auto lowFrequency = *frequencies.cbegin();
-    const auto highFrequency = *frequencies.crbegin();
+    const auto lowFrequency = *centerFrequencies.cbegin();
+    const auto highFrequency = *centerFrequencies.crbegin();
     NS_ASSERT(lowFrequency != highFrequency);
     // all segments have the same width
-    const auto segmentsWidth = channel.GetWidth(0);
+    const auto segmentsWidth = totalWidth / numSegments;
     const auto widthBetweenSegments = highFrequency - lowFrequency - segmentsWidth;
     return (widthBetweenSegments * 1e6) / subcarrierSpacing;
 }
@@ -691,8 +694,10 @@ SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyIn
                                      ChannelWidthMhz bandWidth,
                                      uint8_t bandIndex /* = 0 */)
 {
-    const auto subcarrierSpacing = GetSubcarrierSpacing();
     const auto channelWidth = spectrumPhyInterface->GetChannelWidth();
+    NS_ASSERT_MSG(bandWidth <= (channelWidth / spectrumPhyInterface->GetCenterFrequencies().size()),
+                  "Bandwidth cannot exceed segment width");
+    const auto subcarrierSpacing = GetSubcarrierSpacing();
     const auto numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
     auto numBandsInChannel = static_cast<size_t>(channelWidth * 1e6 / subcarrierSpacing);
     const auto numBands = channelWidth / bandWidth;
@@ -707,7 +712,9 @@ SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyIn
     NS_ASSERT_MSG(bandIndex < numBands, "Band index is out of bound");
     NS_ASSERT(totalNumBands >= numBandsInChannel);
     const auto numBandsBetweenSegments =
-        GetNumBandsBetweenSegments(GetOperatingChannel(), GetSubcarrierSpacing());
+        GetNumBandsBetweenSegments(spectrumPhyInterface->GetCenterFrequencies(),
+                                   channelWidth,
+                                   GetSubcarrierSpacing());
     auto startIndex = ((totalNumBands - numBandsInChannel - numBandsBetweenSegments) / 2) +
                       (bandIndex * numBandsInBand);
     if (bandIndex >= (numBands / 2))

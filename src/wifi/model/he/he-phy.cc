@@ -29,10 +29,10 @@
 #include "ns3/interference-helper.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/spectrum-wifi-phy.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/wifi-phy.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-utils.h"
 
@@ -999,6 +999,8 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
     // and the spectrum width equals the transmission channel width (hence bandIndex equals 0)
     auto indices = ConvertHeRuSubcarriers(channelWidth,
                                           GetGuardBandwidth(channelWidth),
+                                          m_wifiPhy->GetOperatingChannel().GetFrequencies(),
+                                          m_wifiPhy->GetChannelWidth(),
                                           m_wifiPhy->GetSubcarrierSpacing(),
                                           {group.front().first, group.back().second},
                                           0);
@@ -1022,6 +1024,8 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
     auto indices = ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
+        m_wifiPhy->GetOperatingChannel().GetFrequencies(),
+        m_wifiPhy->GetChannelWidth(),
         m_wifiPhy->GetSubcarrierSpacing(),
         {group.front().first, group.back().second},
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
@@ -1051,6 +1055,8 @@ HePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const
     auto indices = ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
+        m_wifiPhy->GetOperatingChannel().GetFrequencies(),
+        m_wifiPhy->GetChannelWidth(),
         m_wifiPhy->GetSubcarrierSpacing(),
         {groupPreamble.front().first, groupPreamble.back().second},
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
@@ -1834,13 +1840,20 @@ HePhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
 WifiSpectrumBandIndices
 HePhy::ConvertHeRuSubcarriers(ChannelWidthMhz bandWidth,
                               ChannelWidthMhz guardBandwidth,
+                              const std::vector<uint16_t>& centerFrequencies,
+                              ChannelWidthMhz totalWidth,
                               uint32_t subcarrierSpacing,
                               HeRu::SubcarrierRange subcarrierRange,
                               uint8_t bandIndex)
 {
+    const auto segmentWidth = (totalWidth / centerFrequencies.size());
+    NS_ASSERT_MSG(bandWidth <= segmentWidth,
+                  "Bandwidth (" << bandWidth << ") cannot exceed contiguous segment width ("
+                                << segmentWidth << ")");
     WifiSpectrumBandIndices convertedSubcarriers;
-    auto nGuardBands =
+    const auto nGuardBands =
         static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / subcarrierSpacing) + 0.5);
+    const auto numBands = totalWidth / bandWidth;
     uint32_t centerFrequencyIndex = 0;
     switch (bandWidth)
     {
@@ -1861,8 +1874,17 @@ HePhy::ConvertHeRuSubcarriers(ChannelWidthMhz bandWidth,
         break;
     }
 
-    auto numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
+    const auto numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
     centerFrequencyIndex += numBandsInBand * bandIndex;
+
+    if ((centerFrequencies.size() > 1) && (bandIndex >= (numBands / 2)))
+    {
+        const auto numBandsBetweenSegments =
+            SpectrumWifiPhy::GetNumBandsBetweenSegments(centerFrequencies,
+                                                        totalWidth,
+                                                        subcarrierSpacing);
+        centerFrequencyIndex += numBandsBetweenSegments;
+    }
 
     convertedSubcarriers.first = centerFrequencyIndex + subcarrierRange.first;
     convertedSubcarriers.second = centerFrequencyIndex + subcarrierRange.second;
