@@ -1232,17 +1232,40 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         UpdateApInfo(assocResp, hdr.GetAddr2(), hdr.GetAddr3(), linkId);
         NS_ASSERT(GetLink(linkId).bssid.has_value() && *GetLink(linkId).bssid == hdr.GetAddr3());
         SetBssid(hdr.GetAddr3(), linkId);
+        SetState(ASSOCIATED);
         if ((GetNLinks() > 1) && assocResp.Get<MultiLinkElement>().has_value())
         {
             // this is an ML setup, trace the setup link
             m_setupCompleted(linkId, hdr.GetAddr3());
             apMldAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(hdr.GetAddr3());
+            NS_ASSERT(apMldAddress);
+
+            if (const auto& mldCapabilities =
+                    GetWifiRemoteStationManager(linkId)->GetStationMldCapabilities(hdr.GetAddr3());
+                mldCapabilities && mldCapabilities->get().tidToLinkMappingSupport > 0)
+            {
+                // the AP MLD supports TID-to-Link Mapping negotiation, hence we included
+                // TID-to-Link Mapping element(s) in the Association Request.
+                if (assocResp.Get<TidToLinkMapping>().empty())
+                {
+                    // The AP MLD did not include a TID-to-Link Mapping element in the Association
+                    // Response, hence it accepted the mapping, which we can now store.
+                    UpdateTidToLinkMapping(*apMldAddress,
+                                           WifiDirection::DOWNLINK,
+                                           m_dlTidLinkMappingInAssocReq);
+                    UpdateTidToLinkMapping(*apMldAddress,
+                                           WifiDirection::UPLINK,
+                                           m_ulTidLinkMappingInAssocReq);
+
+                    // Apply the negotiated TID-to-Link Mapping (if any) for UL direction
+                    ApplyTidLinkMapping(*apMldAddress, WifiDirection::UPLINK);
+                }
+            }
         }
         else
         {
             m_assocLogger(hdr.GetAddr3());
         }
-        SetState(ASSOCIATED);
         if (!m_linkUp.IsNull())
         {
             m_linkUp();
