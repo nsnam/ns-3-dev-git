@@ -454,7 +454,6 @@ main(int argc, char* argv[])
         NS_ASSERT(phySta->GetChannelWidth() == 20);
         NS_ASSERT(phySta->GetFrequency() == 5180);
         NS_ASSERT(exceptionThrown);
-        phySta->SetAttribute("ChannelSettings", StringValue("{36, 0, BAND_5GHZ, 0}"));
         exceptionThrown = false;
         try
         {
@@ -464,6 +463,7 @@ main(int argc, char* argv[])
         {
             exceptionThrown = true;
         }
+        phySta->SetAttribute("ChannelSettings", StringValue("{36, 0, BAND_5GHZ, 0}"));
         // We expect channel number to be 36 and an exception to be thrown
         NS_ASSERT(phySta->GetChannelNumber() == 36);
         NS_ASSERT(phySta->GetChannelWidth() == 20);
