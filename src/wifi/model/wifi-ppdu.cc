@@ -196,39 +196,48 @@ WifiPpdu::GetTxCenterFreqs() const
 bool
 WifiPpdu::DoesOverlapChannel(uint16_t minFreq, uint16_t maxFreq) const
 {
-    NS_LOG_FUNCTION(this << m_txCenterFreqs.front() << minFreq << maxFreq);
-    uint16_t minTxFreq = m_txCenterFreqs.front() - m_txChannelWidth / 2;
-    uint16_t maxTxFreq = m_txCenterFreqs.front() + m_txChannelWidth / 2;
-    /**
-     * The PPDU does not overlap the channel in two cases.
-     *
-     * First non-overlapping case:
-     *
-     *                                        ┌─────────┐
-     *                                PPDU    │ Nominal │
-     *                                        │  Band   │
-     *                                        └─────────┘
-     *                                   minTxFreq   maxTxFreq
-     *
-     *       minFreq                       maxFreq
-     *         ┌──────────────────────────────┐
-     *         │           Channel            │
-     *         └──────────────────────────────┘
-     *
-     * Second non-overlapping case:
-     *
-     *         ┌─────────┐
-     * PPDU    │ Nominal │
-     *         │  Band   │
-     *         └─────────┘
-     *    minTxFreq   maxTxFreq
-     *
-     *                 minFreq                       maxFreq
-     *                   ┌──────────────────────────────┐
-     *                   │           Channel            │
-     *                   └──────────────────────────────┘
-     */
-    return minTxFreq < maxFreq && maxTxFreq > minFreq;
+    NS_LOG_FUNCTION(this << minFreq << maxFreq);
+    // all segments have the same width
+    const auto txChannelWidth = (m_txChannelWidth / m_txCenterFreqs.size());
+    for (auto txCenterFreq : m_txCenterFreqs)
+    {
+        const auto minTxFreq = txCenterFreq - txChannelWidth / 2;
+        const auto maxTxFreq = txCenterFreq + txChannelWidth / 2;
+        /**
+         * The PPDU does not overlap the channel in two cases.
+         *
+         * First non-overlapping case:
+         *
+         *                                        ┌─────────┐
+         *                                PPDU    │ Nominal │
+         *                                        │  Band   │
+         *                                        └─────────┘
+         *                                   minTxFreq   maxTxFreq
+         *
+         *       minFreq                       maxFreq
+         *         ┌──────────────────────────────┐
+         *         │           Channel            │
+         *         └──────────────────────────────┘
+         *
+         * Second non-overlapping case:
+         *
+         *         ┌─────────┐
+         * PPDU    │ Nominal │
+         *         │  Band   │
+         *         └─────────┘
+         *    minTxFreq   maxTxFreq
+         *
+         *                 minFreq                       maxFreq
+         *                   ┌──────────────────────────────┐
+         *                   │           Channel            │
+         *                   └──────────────────────────────┘
+         */
+        if ((minTxFreq < maxFreq) && (maxTxFreq > minFreq))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 uint64_t
