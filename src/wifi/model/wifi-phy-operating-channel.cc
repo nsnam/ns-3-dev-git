@@ -268,6 +268,14 @@ const std::set<FrequencyChannelInfo> WifiPhyOperatingChannel::m_frequencyChannel
     {207, 6985, 160, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM},
 }};
 
+std::ostream&
+operator<<(std::ostream& os, const FrequencyChannelInfo& info)
+{
+    os << "{" << +info.number << " " << info.frequency << " " << info.width << " " << info.band
+       << "}";
+    return os;
+}
+
 WifiPhyOperatingChannel::WifiPhyOperatingChannel()
     : WifiPhyOperatingChannel(m_frequencyChannels.end())
 {

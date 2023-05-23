@@ -54,6 +54,15 @@ struct FrequencyChannelInfo
 };
 
 /**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param info the frequency channel info
+ * \returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, const FrequencyChannelInfo& info);
+
+/**
  * \ingroup wifi
  *
  * Class that keeps track of all information about the current PHY operating channel.
