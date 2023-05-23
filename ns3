@@ -186,8 +186,7 @@ def parse_args(argv):
                                   action="store_true", default=None)
 
     parser_configure.add_argument('--out', '--output-directory',
-                                  help=('Use BRITE integration support, given by the indicated path,'
-                                        ' to allow the use of the BRITE topology generator'),
+                                  help=('Directory to store build artifacts'),
                                   type=str, default=None, dest="output_directory")
     parser_configure.add_argument('--with-brite',
                                   help=('Use BRITE integration support, given by the indicated path,'
