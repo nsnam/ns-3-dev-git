@@ -42,7 +42,7 @@ clang-tidy-16:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
       clang cmake
-      clang-tidy-16
+      clang-tidy clang-tidy-16
       python3 python3-pip
       libboost-all-dev libeigen3-dev libgtk-3-dev libopenmpi-dev libsqlite3-dev
       gsl-bin libgsl-dev libgsl27
