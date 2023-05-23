@@ -31,6 +31,7 @@
 
 #include <map>
 #include <optional>
+#include <vector>
 
 class SpectrumWifiPhyFilterTest;
 
@@ -201,11 +202,13 @@ class SpectrumWifiPhy : public WifiPhy
     /**
      * Perform run-time spectrum model change
      * \param spectrumPhyInterface the spectrum PHY interface for which the spectrum model should be
-     * changed \param centerFrequency the center frequency in MHz the PHY interface should use
-     * \param channelWidth the channel width in MHz the PHY interface should use
+     * changed
+     * \param centerFrequencies the center frequency of each segment in MHz the PHY interface should
+     * use
+     * \param channelWidth the total channel width in MHz the PHY interface should use
      */
     void ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
-                            uint16_t centerFrequency,
+                            const std::vector<uint16_t>& centerFrequencies,
                             ChannelWidthMhz channelWidth);
 
     /**
@@ -286,8 +289,8 @@ class SpectrumWifiPhy : public WifiPhy
     bool m_disableWifiReception;           //!< forces this PHY to fail to sync on any signal
     bool m_trackSignalsInactiveInterfaces; //!< flag whether signals coming from inactive spectrum
                                            //!< PHY interfaces are tracked
-    uint16_t m_frequencyBeforeSwitch;      //!< center frequency before channel switch
-    ChannelWidthMhz m_widthBeforeSwitch;   //!< channel width before channel switch
+    std::vector<uint16_t> m_frequenciesBeforeSwitch;   //!< center frequency before channel switch
+    std::vector<ChannelWidthMhz> m_widthsBeforeSwitch; //!< channel width before channel switch
 
     TracedCallback<Ptr<const SpectrumSignalParameters>, uint32_t, double, Time>
         m_signalCb; //!< Signal callback

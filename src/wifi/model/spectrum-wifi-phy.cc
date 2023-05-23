@@ -99,8 +99,8 @@ SpectrumWifiPhy::GetTypeId()
 SpectrumWifiPhy::SpectrumWifiPhy()
     : m_spectrumPhyInterfaces{},
       m_currentSpectrumPhyInterface{nullptr},
-      m_frequencyBeforeSwitch{0},
-      m_widthBeforeSwitch{0}
+      m_frequenciesBeforeSwitch{},
+      m_widthsBeforeSwitch{}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -265,10 +265,15 @@ SpectrumWifiPhy::AddChannel(const Ptr<SpectrumChannel> channel, const FrequencyR
 
 void
 SpectrumWifiPhy::ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
-                                    uint16_t centerFrequency,
+                                    const std::vector<uint16_t>& centerFrequencies,
                                     ChannelWidthMhz channelWidth)
 {
-    NS_LOG_FUNCTION(this << spectrumPhyInterface << centerFrequency << channelWidth);
+    std::stringstream ss;
+    for (const auto& centerFrequency : centerFrequencies)
+    {
+        ss << centerFrequency << " ";
+    }
+    NS_LOG_FUNCTION(this << spectrumPhyInterface << ss.str() << channelWidth);
 
     // We have to reset the spectrum model because we changed RF channel. Consequently,
     // we also have to add the spectrum interface to the spectrum channel again because
@@ -279,7 +284,7 @@ SpectrumWifiPhy::ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInt
     // it again in the entry associated with the new RX spectrum model UID)
 
     // Replace existing spectrum model with new one
-    spectrumPhyInterface->SetRxSpectrumModel({centerFrequency},
+    spectrumPhyInterface->SetRxSpectrumModel(centerFrequencies,
                                              channelWidth,
                                              GetSubcarrierSpacing(),
                                              GetGuardBandwidth(channelWidth));
@@ -293,8 +298,11 @@ void
 SpectrumWifiPhy::DoChannelSwitch()
 {
     NS_LOG_FUNCTION(this);
-    m_frequencyBeforeSwitch = GetOperatingChannel().IsSet() ? GetFrequency() : 0;
-    m_widthBeforeSwitch = GetOperatingChannel().IsSet() ? GetChannelWidth() : 0;
+    m_frequenciesBeforeSwitch = GetOperatingChannel().IsSet()
+                                    ? GetOperatingChannel().GetFrequencies()
+                                    : std::vector<uint16_t>{};
+    m_widthsBeforeSwitch = GetOperatingChannel().IsSet() ? GetOperatingChannel().GetWidths()
+                                                         : std::vector<ChannelWidthMhz>{};
     WifiPhy::DoChannelSwitch();
 }
 
@@ -302,9 +310,9 @@ void
 SpectrumWifiPhy::FinalizeChannelSwitch()
 {
     NS_LOG_FUNCTION(this);
-    const auto frequencyAfter = GetFrequency();
-    const auto widthAfter = GetChannelWidth();
-    if ((m_frequencyBeforeSwitch == frequencyAfter) && (m_widthBeforeSwitch == widthAfter))
+    const auto frequenciesAfter = GetOperatingChannel().GetFrequencies();
+    const auto widthsAfter = GetOperatingChannel().GetWidths();
+    if ((m_frequenciesBeforeSwitch == frequenciesAfter) && (m_widthsBeforeSwitch == widthsAfter))
     {
         NS_LOG_DEBUG("Same RF channel as before, do nothing");
         if (IsInitialized())
@@ -314,18 +322,38 @@ SpectrumWifiPhy::FinalizeChannelSwitch()
         return;
     }
 
-    auto newSpectrumPhyInterface = GetInterfaceCoveringChannelBand(frequencyAfter, widthAfter);
+    Ptr<WifiSpectrumPhyInterface> newSpectrumPhyInterface;
+    const auto numSegments = GetOperatingChannel().GetNSegments();
+    NS_ASSERT(numSegments == frequenciesAfter.size() && numSegments == widthsAfter.size());
+    for (std::size_t i = 0; i < numSegments; ++i)
+    {
+        auto interfaceCoveringBand =
+            GetInterfaceCoveringChannelBand(frequenciesAfter.at(i), widthsAfter.at(i));
+        NS_ABORT_MSG_IF(!interfaceCoveringBand,
+                        "No spectrum channel covers frequency range ["
+                            << frequenciesAfter.at(i) - (widthsAfter.at(i) / 2) << " MHz - "
+                            << frequenciesAfter.at(i) + (widthsAfter.at(i) / 2) << " MHz]");
+        if (!newSpectrumPhyInterface)
+        {
+            newSpectrumPhyInterface = interfaceCoveringBand;
+        }
+        else
+        {
+            NS_ABORT_MSG_IF(interfaceCoveringBand != newSpectrumPhyInterface,
+                            "All segments are not covered by the same spectrum channel");
+        }
+    }
     const auto interfaceChanged = (newSpectrumPhyInterface != m_currentSpectrumPhyInterface);
-
-    NS_ABORT_MSG_IF(!newSpectrumPhyInterface,
-                    "No spectrum channel covers frequency range ["
-                        << frequencyAfter - (widthAfter / 2) << " MHz - "
-                        << frequencyAfter + (widthAfter / 2) << " MHz]");
 
     if (interfaceChanged)
     {
-        NS_LOG_DEBUG("Switch to existing RF interface with frequency/width pair of ("
-                     << frequencyAfter << ", " << widthAfter << ")");
+        std::stringstream ss;
+        for (std::size_t i = 0; i < frequenciesAfter.size(); ++i)
+        {
+            ss << "(" << frequenciesAfter.at(i) << ", " << widthsAfter.at(i) << ") ";
+        }
+        NS_LOG_DEBUG("Switch to existing RF interface with frequency/width "
+                     << (numSegments > 1 ? "pair" : "pairs") << " of " << ss.str());
         if (m_currentSpectrumPhyInterface && !m_trackSignalsInactiveInterfaces)
         {
             m_currentSpectrumPhyInterface->GetChannel()->RemoveRx(m_currentSpectrumPhyInterface);
@@ -335,10 +363,9 @@ SpectrumWifiPhy::FinalizeChannelSwitch()
     m_currentSpectrumPhyInterface = newSpectrumPhyInterface;
 
     auto reset = true;
-    if (!m_currentSpectrumPhyInterface->GetCenterFrequencies().empty() &&
-        m_currentSpectrumPhyInterface->GetCenterFrequencies().front() == frequencyAfter)
+    if (m_currentSpectrumPhyInterface->GetCenterFrequencies() == frequenciesAfter)
     {
-        // Center frequency has not changed for that interface, hence we do not need to
+        // Center frequencies have not changed for that interface, hence we do not need to
         // reset the spectrum model nor update any band stored in the interference helper
         if (!m_trackSignalsInactiveInterfaces)
         {
@@ -352,7 +379,9 @@ SpectrumWifiPhy::FinalizeChannelSwitch()
 
     if (reset)
     {
-        ResetSpectrumModel(m_currentSpectrumPhyInterface, frequencyAfter, widthAfter);
+        ResetSpectrumModel(m_currentSpectrumPhyInterface,
+                           frequenciesAfter,
+                           GetOperatingChannel().GetTotalWidth());
     }
 
     if (IsInitialized())
@@ -403,7 +432,7 @@ SpectrumWifiPhy::ConfigureInterface(uint16_t frequency, ChannelWidthMhz width)
         return;
     }
 
-    ResetSpectrumModel(spectrumPhyInterface, frequency, width);
+    ResetSpectrumModel(spectrumPhyInterface, {frequency}, width);
 }
 
 bool
