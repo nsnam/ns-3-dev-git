@@ -33,6 +33,9 @@
 namespace ns3
 {
 
+/// STA_ID for a RU that is intended for no user (Section 26.11.1 802.11ax-2021)
+static constexpr uint16_t NO_USER_STA_ID = 2046;
+
 /// HE MU specific user transmission parameters.
 struct HeMuUserInfo
 {

@@ -699,7 +699,7 @@ WifiDefaultAckManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
         {
             uint16_t aid12 = userInfo.GetAid12();
 
-            if (aid12 == 2046)
+            if (aid12 == NO_USER_STA_ID)
             {
                 NS_LOG_INFO("Unallocated RU");
                 continue;
