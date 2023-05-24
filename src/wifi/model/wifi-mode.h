@@ -31,7 +31,8 @@
 namespace ns3
 {
 
-#define SU_STA_ID 65535
+/// STA_ID to identify a single user (SU)
+static constexpr uint16_t SU_STA_ID = 65535;
 
 class WifiTxVector;
 
