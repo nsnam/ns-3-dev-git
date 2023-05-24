@@ -22,6 +22,8 @@
 
 #include "sta-wifi-mac.h"
 
+#include "ns3/eht-configuration.h"
+#include "ns3/enum.h"
 #include "ns3/log.h"
 
 #include <algorithm>
@@ -283,6 +285,26 @@ WifiAssocManager::CanSetupMultiLink(OptMleConstRef& mle, OptRnrConstRef& rnr)
     {
         NS_LOG_DEBUG("No Link ID Info subfield in the Multi-Link Element");
         return false;
+    }
+
+    if (const auto& mldCapabilities = mle->get().GetCommonInfoBasic().m_mldCapabilities)
+    {
+        auto ehtConfig = m_mac->GetEhtConfiguration();
+        NS_ASSERT(ehtConfig);
+        EnumValue negSupport;
+        ehtConfig->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
+
+        // A non-AP MLD that performs multi-link (re)setup on at least two links with an AP MLD
+        // that sets the TID-To-Link Mapping Negotiation Support subfield of the MLD Capabilities
+        // field of the Basic Multi-Link element to a nonzero value shall support TID-to-link
+        // mapping negotiation with the TID-To-Link Mapping Negotiation Support subfield of the
+        // MLD Capabilities field of the Basic Multi-Link element it transmits to at least 1.
+        // (Sec. 35.3.7.1.1 of 802.11be D3.1)
+        if (mldCapabilities->tidToLinkMappingSupport > 0 && negSupport.Get() == 0)
+        {
+            NS_LOG_DEBUG("AP MLD supports TID-to-Link Mapping negotiation, while we don't");
+            return false;
+        }
     }
 
     return true;
