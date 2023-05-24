@@ -349,6 +349,30 @@ class MultiLinkOperationsTestBase : public TestCase
                           WifiTxVector txVector,
                           double txPowerW);
 
+    /**
+     * Function to trace packets received by the server application
+     * \param nodeId the ID of the node that received the packet
+     * \param p the packet
+     * \param addr the address
+     */
+    virtual void L7Receive(uint8_t nodeId, Ptr<const Packet> p, const Address& addr);
+
+    /**
+     * \param sockAddr the packet socket address identifying local outgoing interface
+     *                 and remote address
+     * \param count the number of packets to generate
+     * \param pktSize the size of the packets to generate
+     * \param delay the delay with which traffic generation starts
+     * \param priority user priority for generated packets
+     * \return an application generating the given number packets of the given size destined
+     *         to the given packet socket address
+     */
+    Ptr<PacketSocketClient> GetApplication(const PacketSocketAddress& sockAddr,
+                                           std::size_t count,
+                                           std::size_t pktSize,
+                                           Time delay = Seconds(0),
+                                           uint8_t priority = 0) const;
+
     void DoSetup() override;
 
     /// PHY band-indexed map of spectrum channels
@@ -390,6 +414,9 @@ class MultiLinkOperationsTestBase : public TestCase
     std::vector<Ptr<StaWifiMac>> m_staMacs;       ///< STA wifi MACs
     uint8_t m_nStations;                          ///< number of stations to create
     uint16_t m_lastAid;                           ///< AID of last associated station
+    Time m_duration{Seconds(1)};                  ///< simulation duration
+    std::vector<std::size_t> m_rxPkts; ///< number of packets received at application layer
+                                       ///< by each node (index is node ID)
 
   private:
     /**
@@ -433,7 +460,8 @@ MultiLinkOperationsTestBase::MultiLinkOperationsTestBase(const std::string& name
       m_fixedPhyBands(fixedPhyBands),
       m_staMacs(nStations),
       m_nStations(nStations),
-      m_lastAid(0)
+      m_lastAid(0),
+      m_rxPkts(nStations + 1)
 {
 }
 
@@ -543,6 +571,13 @@ MultiLinkOperationsTestBase::Transmit(Ptr<WifiMac> mac,
         NS_LOG_INFO(ss.str());
     }
     NS_LOG_INFO("TXVECTOR = " << txVector << "\n");
+}
+
+void
+MultiLinkOperationsTestBase::L7Receive(uint8_t nodeId, Ptr<const Packet> p, const Address& addr)
+{
+    NS_LOG_INFO("Packet received by NODE " << +nodeId << "\n");
+    m_rxPkts[nodeId]++;
 }
 
 void
@@ -664,10 +699,58 @@ MultiLinkOperationsTestBase::DoSetup()
         }
     }
 
+    // install packet socket on all nodes
+    PacketSocketHelper packetSocket;
+    packetSocket.Install(wifiApNode);
+    packetSocket.Install(wifiStaNodes);
+
+    // install a packet socket server on all nodes
+    for (auto nodeIt = NodeList::Begin(); nodeIt != NodeList::End(); ++nodeIt)
+    {
+        PacketSocketAddress srvAddr;
+        auto device = DynamicCast<WifiNetDevice>((*nodeIt)->GetDevice(0));
+        NS_TEST_ASSERT_MSG_NE(device, nullptr, "Expected a WifiNetDevice");
+        srvAddr.SetSingleDevice(device->GetIfIndex());
+        srvAddr.SetProtocol(1);
+
+        auto server = CreateObject<PacketSocketServer>();
+        server->SetLocal(srvAddr);
+        (*nodeIt)->AddApplication(server);
+        server->SetStartTime(Seconds(0)); // now
+        server->SetStopTime(m_duration);
+    }
+
+    for (std::size_t nodeId = 0; nodeId < NodeList::GetNNodes(); nodeId++)
+    {
+        Config::ConnectWithoutContext(
+            "/NodeList/" + std::to_string(nodeId) +
+                "/ApplicationList/*/$ns3::PacketSocketServer/Rx",
+            MakeCallback(&MultiLinkOperationsTestBase::L7Receive, this).Bind(nodeId));
+    }
+
     // schedule ML setup for one station at a time
     m_apMac->TraceConnectWithoutContext("AssociatedSta",
                                         MakeCallback(&MultiLinkOperationsTestBase::SetSsid, this));
     m_staMacs[0]->SetSsid(Ssid("ns-3-ssid"));
+}
+
+Ptr<PacketSocketClient>
+MultiLinkOperationsTestBase::GetApplication(const PacketSocketAddress& sockAddr,
+                                            std::size_t count,
+                                            std::size_t pktSize,
+                                            Time delay,
+                                            uint8_t priority) const
+{
+    auto client = CreateObject<PacketSocketClient>();
+    client->SetAttribute("PacketSize", UintegerValue(pktSize));
+    client->SetAttribute("MaxPackets", UintegerValue(count));
+    client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
+    client->SetAttribute("Priority", UintegerValue(priority));
+    client->SetRemote(sockAddr);
+    client->SetStartTime(delay);
+    client->SetStopTime(m_duration - Simulator::Now());
+
+    return client;
 }
 
 void
@@ -1293,14 +1376,6 @@ class MultiLinkTxTest : public MultiLinkOperationsTestBase
 
   protected:
     /**
-     * Function to trace packets received by the server application
-     * \param nodeId the ID of the node that received the packet
-     * \param p the packet
-     * \param addr the address
-     */
-    void L7Receive(uint8_t nodeId, Ptr<const Packet> p, const Address& addr);
-
-    /**
      * Check the content of a received BlockAck frame when the max number of links on which
      * an MPDU can be inflight is one.
      *
@@ -1324,18 +1399,16 @@ class MultiLinkTxTest : public MultiLinkOperationsTestBase
     /// Receiver address-indexed map of list error models
     using RxErrorModelMap = std::unordered_map<Mac48Address, Ptr<ListErrorModel>, WifiAddressHash>;
 
-    RxErrorModelMap m_errorModels;         ///< error rate models to corrupt packets
-    std::list<uint64_t> m_uidList;         ///< list of UIDs of packets to corrupt
-    bool m_dataCorrupted{false};           ///< whether second data frame has been already corrupted
-    WifiTrafficPattern m_trafficPattern;   ///< the pattern of traffic to generate
-    bool m_baEnabled;                      ///< whether BA agreement is enabled or disabled
-    bool m_useBarAfterMissedBa;            ///< whether to send BAR after missed BlockAck
-    std::size_t m_nMaxInflight;            ///< max number of links on which an MPDU can be inflight
-    std::size_t m_nPackets;                ///< number of application packets to generate
-    std::size_t m_blockAckCount{0};        ///< transmitted BlockAck counter
-    std::size_t m_blockAckReqCount{0};     ///< transmitted BlockAckReq counter
-    std::array<std::size_t, 3> m_rxPkts{}; ///< number of packets received at application layer
-                                           ///< by each node (AP, STA 0, STA 1)
+    RxErrorModelMap m_errorModels;       ///< error rate models to corrupt packets
+    std::list<uint64_t> m_uidList;       ///< list of UIDs of packets to corrupt
+    bool m_dataCorrupted{false};         ///< whether second data frame has been already corrupted
+    WifiTrafficPattern m_trafficPattern; ///< the pattern of traffic to generate
+    bool m_baEnabled;                    ///< whether BA agreement is enabled or disabled
+    bool m_useBarAfterMissedBa;          ///< whether to send BAR after missed BlockAck
+    std::size_t m_nMaxInflight;          ///< max number of links on which an MPDU can be inflight
+    std::size_t m_nPackets;              ///< number of application packets to generate
+    std::size_t m_blockAckCount{0};      ///< transmitted BlockAck counter
+    std::size_t m_blockAckReqCount{0};   ///< transmitted BlockAckReq counter
     std::map<uint16_t, std::size_t> m_inflightCount; ///< seqNo-indexed max number of simultaneous
                                                      ///< transmissions of a data frame
     Ptr<WifiMac> m_sourceMac; ///< MAC of the node sending application packets
@@ -1624,13 +1697,6 @@ MultiLinkTxTest::CheckBlockAck(Ptr<const WifiPsdu> psdu,
 }
 
 void
-MultiLinkTxTest::L7Receive(uint8_t nodeId, Ptr<const Packet> p, const Address& addr)
-{
-    NS_LOG_INFO("Packet received by NODE " << +nodeId << "\n");
-    m_rxPkts[nodeId]++;
-}
-
-void
 MultiLinkTxTest::DoSetup()
 {
     MultiLinkOperationsTestBase::DoSetup();
@@ -1668,7 +1734,6 @@ MultiLinkTxTest::DoSetup()
 void
 MultiLinkTxTest::StartTraffic()
 {
-    const Time duration = Seconds(1);
     Address destAddr;
 
     switch (m_trafficPattern)
@@ -1695,58 +1760,24 @@ MultiLinkTxTest::StartTraffic()
         break;
     }
 
-    PacketSocketHelper packetSocket;
-    packetSocket.Install(m_apMac->GetDevice()->GetNode());
-    packetSocket.Install(m_staMacs[0]->GetDevice()->GetNode());
-    packetSocket.Install(m_staMacs[1]->GetDevice()->GetNode());
-
-    PacketSocketAddress socket;
-    socket.SetSingleDevice(m_sourceMac->GetDevice()->GetIfIndex());
-    socket.SetPhysicalAddress(destAddr);
-    socket.SetProtocol(1);
+    PacketSocketAddress sockAddr;
+    sockAddr.SetSingleDevice(m_sourceMac->GetDevice()->GetIfIndex());
+    sockAddr.SetPhysicalAddress(destAddr);
+    sockAddr.SetProtocol(1);
 
     // install first client application generating at most 4 packets
-    auto client1 = CreateObject<PacketSocketClient>();
-    client1->SetAttribute("PacketSize", UintegerValue(1000));
-    client1->SetAttribute("MaxPackets", UintegerValue(std::min<std::size_t>(m_nPackets, 4)));
-    client1->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
-    client1->SetRemote(socket);
-    m_sourceMac->GetDevice()->GetNode()->AddApplication(client1);
-    client1->SetStartTime(Seconds(0)); // now
-    client1->SetStopTime(duration);
+    m_sourceMac->GetDevice()->GetNode()->AddApplication(
+        GetApplication(sockAddr, std::min<std::size_t>(m_nPackets, 4), 1000));
 
     if (m_nPackets > 4)
     {
-        // install a second client application generating the remaining packets
-        auto client2 = CreateObject<PacketSocketClient>();
-        client2->SetAttribute("PacketSize", UintegerValue(1000));
-        client2->SetAttribute("MaxPackets", UintegerValue(m_nPackets - 4));
-        client2->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
-        client2->SetRemote(socket);
-        m_sourceMac->GetDevice()->GetNode()->AddApplication(client2);
-        // start during transmission of first A-MPDU, if multiple links are setup
-        client2->SetStartTime(MilliSeconds(4));
-        client2->SetStopTime(duration);
+        // install a second client application generating the remaining packets and
+        // starting during transmission of first A-MPDU, if multiple links are setup
+        m_sourceMac->GetDevice()->GetNode()->AddApplication(
+            GetApplication(sockAddr, m_nPackets - 4, 1000, MilliSeconds(4)));
     }
 
-    // install a server on all nodes
-    for (auto nodeIt = NodeList::Begin(); nodeIt != NodeList::End(); nodeIt++)
-    {
-        Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
-        server->SetLocal(socket);
-        (*nodeIt)->AddApplication(server);
-        server->SetStartTime(Seconds(0)); // now
-        server->SetStopTime(duration);
-    }
-
-    for (std::size_t nodeId = 0; nodeId < NodeList::GetNNodes(); nodeId++)
-    {
-        Config::ConnectWithoutContext("/NodeList/" + std::to_string(nodeId) +
-                                          "/ApplicationList/*/$ns3::PacketSocketServer/Rx",
-                                      MakeCallback(&MultiLinkTxTest::L7Receive, this).Bind(nodeId));
-    }
-
-    Simulator::Stop(duration);
+    Simulator::Stop(m_duration);
 }
 
 void
@@ -1912,14 +1943,6 @@ class MultiLinkMuTxTest : public MultiLinkOperationsTestBase
 
   protected:
     /**
-     * Function to trace packets received by the server application
-     * \param nodeId the ID of the node that received the packet
-     * \param p the packet
-     * \param addr the address
-     */
-    void L7Receive(uint8_t nodeId, Ptr<const Packet> p, const Address& addr);
-
-    /**
      * Check the content of a received BlockAck frame when the max number of links on which
      * an MPDU can be inflight is one.
      *
@@ -1959,8 +1982,6 @@ class MultiLinkMuTxTest : public MultiLinkOperationsTestBase
     std::size_t m_nPackets;                     ///< number of application packets to generate
     std::size_t m_blockAckCount{0};             ///< transmitted BlockAck counter
     // std::size_t m_blockAckReqCount{0};     ///< transmitted BlockAckReq counter
-    std::array<std::size_t, 3> m_rxPkts{}; ///< number of packets received at application layer
-                                           ///< by each node (AP, STA 0, STA 1)
     std::map<AddrSeqNoPair, std::size_t> m_inflightCount; ///< max number of simultaneous
                                                           ///< transmissions of each data frame
     Ptr<WifiMac> m_sourceMac; ///< MAC of the node sending application packets
@@ -2102,21 +2123,14 @@ MultiLinkMuTxTest::Transmit(Ptr<WifiMac> mac,
             {
                 m_waitFirstTf = false;
                 // the AP is starting the transmission of the Basic Trigger frame, so generate
-                // the configured number of packets at STAs, which are sent in TB PPDUs
+                // the configured number of packets at STAs, which are sent in TB PPDUs, when
+                // transmission of the Trigger Frame ends
                 auto band = mac->GetWifiPhy(linkId)->GetPhyBand();
                 Time txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, band);
                 for (uint8_t i = 0; i < m_nStations; i++)
                 {
-                    Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient>();
-                    client->SetAttribute("PacketSize", UintegerValue(450));
-                    client->SetAttribute("MaxPackets", UintegerValue(m_nPackets));
-                    client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
-                    client->SetAttribute("Priority", UintegerValue(i * 4)); // 0 and 4
-                    client->SetRemote(m_sockets[i]);
-                    m_staMacs[i]->GetDevice()->GetNode()->AddApplication(client);
-                    client->SetStartTime(txDuration);  // start when TX ends
-                    client->SetStopTime(Seconds(1.0)); // stop in a second
-                    client->Initialize();
+                    m_staMacs[i]->GetDevice()->GetNode()->AddApplication(
+                        GetApplication(m_sockets[i], m_nPackets, 450, txDuration, i * 4));
                 }
             }
             break;
@@ -2291,13 +2305,6 @@ MultiLinkMuTxTest::CheckBlockAck(Ptr<const WifiPsdu> psdu,
 }
 
 void
-MultiLinkMuTxTest::L7Receive(uint8_t nodeId, Ptr<const Packet> p, const Address& addr)
-{
-    NS_LOG_INFO("Packet received by NODE " << +nodeId << "\n");
-    m_rxPkts[nodeId]++;
-}
-
-void
 MultiLinkMuTxTest::DoSetup()
 {
     switch (m_muTrafficPattern)
@@ -2364,58 +2371,35 @@ MultiLinkMuTxTest::DoSetup()
 void
 MultiLinkMuTxTest::StartTraffic()
 {
-    const Time duration = Seconds(1);
-    Address destAddr;
-
-    PacketSocketHelper packetSocket;
-    packetSocket.Install(m_apMac->GetDevice()->GetNode());
-    packetSocket.Install(m_staMacs[0]->GetDevice()->GetNode());
-    packetSocket.Install(m_staMacs[1]->GetDevice()->GetNode());
-
     if (m_muTrafficPattern < WifiMuTrafficPattern::UL_MU)
     {
         // DL Traffic
         for (uint8_t i = 0; i < m_nStations; i++)
         {
-            PacketSocketAddress socket;
-            socket.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
-            socket.SetPhysicalAddress(m_staMacs[i]->GetDevice()->GetAddress());
-            socket.SetProtocol(1);
+            PacketSocketAddress sockAddr;
+            sockAddr.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
+            sockAddr.SetPhysicalAddress(m_staMacs[i]->GetDevice()->GetAddress());
+            sockAddr.SetProtocol(1);
 
             // the first client application generates three packets in order
             // to trigger the establishment of a Block Ack agreement
-            auto client1 = CreateObject<PacketSocketClient>();
-            client1->SetAttribute("PacketSize", UintegerValue(450));
-            client1->SetAttribute("MaxPackets", UintegerValue(3));
-            client1->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
-            client1->SetRemote(socket);
-            m_apMac->GetDevice()->GetNode()->AddApplication(client1);
-            client1->SetStartTime(i * MilliSeconds(50));
-            client1->SetStopTime(duration);
+            m_apMac->GetDevice()->GetNode()->AddApplication(
+                GetApplication(sockAddr, 3, 450, i * MilliSeconds(50)));
 
             // the second client application generates the first half of the selected number
-            // of packets, which are sent in DL MU PPDUs.
-            auto client2 = CreateObject<PacketSocketClient>();
-            client2->SetAttribute("PacketSize", UintegerValue(450));
-            client2->SetAttribute("MaxPackets", UintegerValue(m_nPackets / 2));
-            client2->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
-            client2->SetRemote(socket);
-            m_apMac->GetDevice()->GetNode()->AddApplication(client2);
-            // start after all BA agreements are established
-            client2->SetStartTime(m_nStations * MilliSeconds(50));
-            client2->SetStopTime(duration);
+            // of packets, which are sent in DL MU PPDUs, and starts after all BA agreements
+            // are established
+            m_apMac->GetDevice()->GetNode()->AddApplication(
+                GetApplication(sockAddr, m_nPackets / 2, 450, m_nStations * MilliSeconds(50)));
 
             // the third client application generates the second half of the selected number
-            // of packets, which are sent in DL MU PPDUs.
-            auto client3 = CreateObject<PacketSocketClient>();
-            client3->SetAttribute("PacketSize", UintegerValue(450));
-            client3->SetAttribute("MaxPackets", UintegerValue(m_nPackets / 2));
-            client3->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
-            client3->SetRemote(socket);
-            m_apMac->GetDevice()->GetNode()->AddApplication(client3);
-            // start during transmission of first A-MPDU, if multiple links are setup
-            client3->SetStartTime(m_nStations * MilliSeconds(50) + MilliSeconds(3));
-            client3->SetStopTime(duration);
+            // of packets, which are sent in DL MU PPDUs, and starts during transmission of
+            // first A-MPDU, if multiple links are setup
+            m_apMac->GetDevice()->GetNode()->AddApplication(
+                GetApplication(sockAddr,
+                               m_nPackets / 2,
+                               450,
+                               m_nStations * MilliSeconds(50) + MilliSeconds(3)));
         }
     }
     else
@@ -2429,15 +2413,8 @@ MultiLinkMuTxTest::StartTraffic()
 
             // the first client application generates three packets in order
             // to trigger the establishment of a Block Ack agreement
-            Ptr<PacketSocketClient> client1 = CreateObject<PacketSocketClient>();
-            client1->SetAttribute("PacketSize", UintegerValue(450));
-            client1->SetAttribute("MaxPackets", UintegerValue(3));
-            client1->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
-            client1->SetAttribute("Priority", UintegerValue(i * 4)); // 0 and 4
-            client1->SetRemote(m_sockets[i]);
-            m_staMacs[i]->GetDevice()->GetNode()->AddApplication(client1);
-            client1->SetStartTime(i * MilliSeconds(50));
-            client1->SetStopTime(duration);
+            m_staMacs[i]->GetDevice()->GetNode()->AddApplication(
+                GetApplication(m_sockets[i], 3, 450, i * MilliSeconds(50), i * 4));
 
             // packets to be included in TB PPDUs are generated (by Transmit()) when
             // the first Basic Trigger Frame is sent by the AP
@@ -2453,26 +2430,7 @@ MultiLinkMuTxTest::StartTraffic()
         });
     }
 
-    // install a server on all nodes and connect traced callback
-    for (auto nodeIt = NodeList::Begin(); nodeIt != NodeList::End(); nodeIt++)
-    {
-        PacketSocketAddress srvAddr;
-        auto device = DynamicCast<WifiNetDevice>((*nodeIt)->GetDevice(0));
-        NS_TEST_ASSERT_MSG_NE(device, nullptr, "Expected a WifiNetDevice");
-        srvAddr.SetSingleDevice(device->GetIfIndex());
-        srvAddr.SetProtocol(1);
-
-        Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
-        server->SetLocal(srvAddr);
-        (*nodeIt)->AddApplication(server);
-        server->SetStartTime(Seconds(0)); // now
-        server->SetStopTime(duration);
-        server->TraceConnectWithoutContext(
-            "Rx",
-            MakeCallback(&MultiLinkMuTxTest::L7Receive, this).Bind(device->GetNode()->GetId()));
-    }
-
-    Simulator::Stop(duration);
+    Simulator::Stop(m_duration);
 }
 
 void
@@ -2573,12 +2531,7 @@ class ReleaseSeqNoAfterCtsTimeoutTest : public MultiLinkOperationsTestBase
   private:
     void StartTraffic() override;
 
-    /**
-     * \return the client application generating 4 packets addressed to the non-AP MLD
-     */
-    Ptr<PacketSocketClient> GetApplication() const;
-
-    PacketSocketAddress m_socket;     //!< packet socket address
+    PacketSocketAddress m_sockAddr;   //!< packet socket address
     std::size_t m_nQosDataFrames;     //!< counter for transmitted QoS data frames
     Ptr<ListErrorModel> m_errorModel; //!< error rate model to corrupt first RTS frame
     bool m_rtsCorrupted;              //!< whether the first RTS frame has been corrupted
@@ -2611,47 +2564,15 @@ ReleaseSeqNoAfterCtsTimeoutTest::DoSetup()
     }
 }
 
-Ptr<PacketSocketClient>
-ReleaseSeqNoAfterCtsTimeoutTest::GetApplication() const
-{
-    const Time duration = Seconds(1);
-
-    auto client = CreateObject<PacketSocketClient>();
-    client->SetAttribute("PacketSize", UintegerValue(1000));
-    client->SetAttribute("MaxPackets", UintegerValue(4));
-    client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
-    client->SetRemote(m_socket);
-    client->SetStartTime(Seconds(0)); // now
-    client->SetStopTime(duration);
-
-    return client;
-}
-
 void
 ReleaseSeqNoAfterCtsTimeoutTest::StartTraffic()
 {
-    const Time duration = Seconds(1);
-
-    PacketSocketHelper packetSocket;
-    packetSocket.Install(m_apMac->GetDevice()->GetNode());
-    packetSocket.Install(m_staMacs[0]->GetDevice()->GetNode());
-
-    m_socket.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
-    m_socket.SetPhysicalAddress(m_staMacs[0]->GetAddress());
-    m_socket.SetProtocol(1);
+    m_sockAddr.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
+    m_sockAddr.SetPhysicalAddress(m_staMacs[0]->GetAddress());
+    m_sockAddr.SetProtocol(1);
 
     // install client application generating 4 packets
-    m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication());
-
-    // install a server on all nodes
-    for (auto nodeIt = NodeList::Begin(); nodeIt != NodeList::End(); nodeIt++)
-    {
-        Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
-        server->SetLocal(m_socket);
-        (*nodeIt)->AddApplication(server);
-        server->SetStartTime(Seconds(0)); // now
-        server->SetStopTime(duration);
-    }
+    m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(m_sockAddr, 4, 1000));
 }
 
 void
@@ -2670,7 +2591,7 @@ ReleaseSeqNoAfterCtsTimeoutTest::Transmit(Ptr<WifiMac> mac,
         m_errorModel->SetList({psdu->GetPacket()->GetUid()});
         m_rtsCorrupted = true;
         // generate other packets when the first RTS is transmitted
-        m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication());
+        m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(m_sockAddr, 4, 1000));
     }
     else if (psdu->GetHeader(0).IsQosData())
     {
@@ -2679,7 +2600,7 @@ ReleaseSeqNoAfterCtsTimeoutTest::Transmit(Ptr<WifiMac> mac,
         if (m_nQosDataFrames == 2)
         {
             // generate other packets when the second QoS data frame is transmitted
-            m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication());
+            m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(m_sockAddr, 4, 1000));
         }
     }
 }
@@ -2687,7 +2608,7 @@ ReleaseSeqNoAfterCtsTimeoutTest::Transmit(Ptr<WifiMac> mac,
 void
 ReleaseSeqNoAfterCtsTimeoutTest::DoRun()
 {
-    Simulator::Stop(Seconds(1.0));
+    Simulator::Stop(m_duration);
     Simulator::Run();
 
     NS_TEST_EXPECT_MSG_EQ(m_nQosDataFrames, 3, "Unexpected number of transmitted QoS data frames");
