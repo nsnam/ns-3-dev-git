@@ -19,9 +19,8 @@
 
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/config.h"
-#include "ns3/he-configuration.h"
-#include "ns3/he-frame-exchange-manager.h"
-#include "ns3/he-phy.h"
+#include "ns3/eht-configuration.h"
+#include "ns3/frame-exchange-manager.h"
 #include "ns3/log.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/mobility-helper.h"
@@ -54,6 +53,7 @@
 #include <iomanip>
 #include <optional>
 #include <sstream>
+#include <tuple>
 #include <vector>
 
 using namespace ns3;
@@ -318,19 +318,28 @@ class MultiLinkOperationsTestBase : public TestCase
 {
   public:
     /**
+     * Configuration parameters common to all subclasses
+     */
+    struct BaseParams
+    {
+        std::vector<std::string>
+            staChannels; //!< the strings specifying the operating channels for the non-AP MLD
+        std::vector<std::string>
+            apChannels; //!< the strings specifying the operating channels for the AP MLD
+        std::vector<uint8_t>
+            fixedPhyBands; //!< list of IDs of non-AP MLD PHYs that cannot switch band
+    };
+
+    /**
      * Constructor
      *
      * \param name The name of the new TestCase created
      * \param nStations the number of stations to create
-     * \param staChannels the strings specifying the operating channels for the STA
-     * \param apChannels the strings specifying the operating channels for the AP
-     * \param fixedPhyBands list of IDs of STA links that cannot switch PHY band
+     * \param baseParams common configuration parameters
      */
     MultiLinkOperationsTestBase(const std::string& name,
                                 uint8_t nStations,
-                                std::vector<std::string> staChannels,
-                                std::vector<std::string> apChannels,
-                                std::vector<uint8_t> fixedPhyBands = {});
+                                const BaseParams& baseParams);
     ~MultiLinkOperationsTestBase() override = default;
 
   protected:
@@ -451,13 +460,11 @@ class MultiLinkOperationsTestBase : public TestCase
 
 MultiLinkOperationsTestBase::MultiLinkOperationsTestBase(const std::string& name,
                                                          uint8_t nStations,
-                                                         std::vector<std::string> staChannels,
-                                                         std::vector<std::string> apChannels,
-                                                         std::vector<uint8_t> fixedPhyBands)
+                                                         const BaseParams& baseParams)
     : TestCase(name),
-      m_staChannels(staChannels),
-      m_apChannels(apChannels),
-      m_fixedPhyBands(fixedPhyBands),
+      m_staChannels(baseParams.staChannels),
+      m_apChannels(baseParams.apChannels),
+      m_fixedPhyBands(baseParams.fixedPhyBands),
       m_staMacs(nStations),
       m_nStations(nStations),
       m_lastAid(0),
@@ -785,6 +792,23 @@ MultiLinkOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
  * switch PHY band (if any). The links that are expected to be setup are also provided as input
  * parameters. This test verifies that the management frames exchanged during ML discovery
  * and ML setup contain the expected values and that the two MLDs setup the expected links.
+ *
+ * The negotiated TID-to-link mapping is tested by verifying that generated QoS data frames of
+ * a given TID are transmitted on links which the TID is mapped to. Specifically, the following
+ * operations are performed separately for each direction (downlink and uplink). A first TID
+ * is searched such that it is not mapped on all the setup links. If no such TID is found, only
+ * QoS frames of TID 0 are generated. Otherwise, we also search for a second TID that is mapped
+ * to a link set that is disjoint with the link set to which the first TID is mapped. If such a
+ * TID is found, QoS frames of both the first TID and the second TID are generated; otherwise,
+ * only QoS frames of the first TID are generated. For each TID, a number of QoS frames equal
+ * to the number of setup links is generated. For each TID, we check that the first N QoS frames,
+ * where N is the size of the link set to which the TID is mapped, are transmitted concurrently,
+ * while the following QoS frames are sent after the first QoS frame sent on the same link. We
+ * also check that all the QoS frames are sent on a link belonging to the link set to which the
+ * TID is mapped. If QoS frames of two TIDs are generated, we also check that the first N QoS
+ * frames of a TID, where N is the size of the link set to which that TID is mapped, are sent
+ * concurrently with the first M QoS frames of the other TID, where M is the size of the link
+ * set to which the other TID is mapped.
  */
 class MultiLinkSetupTest : public MultiLinkOperationsTestBase
 {
@@ -792,18 +816,20 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
     /**
      * Constructor
      *
-     * \param staChannels the strings specifying the operating channels for the STA
-     * \param apChannels the strings specifying the operating channels for the AP
+     * \param baseParams common configuration parameters
      * \param scanType the scan type (active or passive)
      * \param setupLinks a list of links that are expected to be setup. In case one of the two
      *                   devices has a single link, the ID of the link on the MLD is indicated
-     * \param fixedPhyBands list of IDs of STA links that cannot switch PHY band
+     * \param apNegSupport TID-to-Link Mapping negotiation supported by the AP MLD (0, 1, or 3)
+     * \param dlTidToLinkMapping DL TID-to-Link Mapping for EHT configuration of non-AP MLD
+     * \param ulTidToLinkMapping UL TID-to-Link Mapping for EHT configuration of non-AP MLD
      */
-    MultiLinkSetupTest(std::vector<std::string> staChannels,
-                       std::vector<std::string> apChannels,
+    MultiLinkSetupTest(const BaseParams& baseParams,
                        WifiScanType scanType,
-                       std::vector<uint8_t> setupLinks,
-                       std::vector<uint8_t> fixedPhyBands = {});
+                       const std::vector<uint8_t>& setupLinks,
+                       uint8_t apNegSupport,
+                       const std::string& dlTidToLinkMapping,
+                       const std::string& ulTidToLinkMapping);
     ~MultiLinkSetupTest() override = default;
 
   protected:
@@ -811,6 +837,8 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
     void DoRun() override;
 
   private:
+    void StartTraffic() override;
+
     /**
      * Check correctness of Multi-Link Setup procedure.
      */
@@ -853,25 +881,48 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
      */
     void CheckAssocResponse(Ptr<WifiMpdu> mpdu, uint8_t linkId);
 
-    /// expected links to setup (STA link ID, AP link ID)
-    const std::vector<uint8_t> m_setupLinks;
-    WifiScanType m_scanType;  //!< the scan type (active or passive)
-    std::size_t m_nProbeResp; //!< number of Probe Responses received by the non-AP MLD
+    /**
+     * Check that QoS data frames are sent on links their TID is mapped to.
+     *
+     * \param mpdu the given QoS data frame
+     * \param linkId the ID of the link on which the QoS data frame was transmitted
+     * \param index index of the QoS data frame in the vector of transmitted PSDUs
+     */
+    void CheckQosData(Ptr<WifiMpdu> mpdu, uint8_t linkId, std::size_t index);
+
+    const std::vector<uint8_t> m_setupLinks; //!< IDs of the expected links to setup
+    WifiScanType m_scanType;                 //!< the scan type (active or passive)
+    std::size_t m_nProbeResp;          //!< number of Probe Responses received by the non-AP MLD
+    uint8_t m_apNegSupport;            //!< TID-to-Link Mapping negotiation supported by the AP MLD
+    std::string m_dlTidLinkMappingStr; //!< DL TID-to-Link Mapping for non-AP MLD EHT configuration
+    std::string m_ulTidLinkMappingStr; //!< UL TID-to-Link Mapping for non-AP MLD EHT configuration
+    WifiTidLinkMapping m_dlTidLinkMapping; //!< expected DL TID-to-Link Mapping requested by non-AP
+                                           //!< MLD and accepted by AP MLD
+    WifiTidLinkMapping m_ulTidLinkMapping; //!< expected UL TID-to-Link Mapping requested by non-AP
+                                           //!< MLD and accepted by AP MLD
+    uint8_t m_dlTid1;                      //!< the TID of the first set of DL QoS data frames
+    uint8_t m_ulTid1;                      //!< the TID of the first set of UL QoS data frames
+    std::optional<uint8_t> m_dlTid2;       //!< the TID of the optional set of DL QoS data frames
+    std::optional<uint8_t> m_ulTid2;       //!< the TID of the optional set of UL QoS data frames
+    std::vector<std::size_t>
+        m_qosFrames1; //!< indices of QoS frames of the first set in the vector of TX PSDUs
+    std::vector<std::size_t>
+        m_qosFrames2; //!< indices of QoS frames of the optional set in the vector of TX PSDUs
 };
 
-MultiLinkSetupTest::MultiLinkSetupTest(std::vector<std::string> staChannels,
-                                       std::vector<std::string> apChannels,
+MultiLinkSetupTest::MultiLinkSetupTest(const BaseParams& baseParams,
                                        WifiScanType scanType,
-                                       std::vector<uint8_t> setupLinks,
-                                       std::vector<uint8_t> fixedPhyBands)
-    : MultiLinkOperationsTestBase("Check correctness of Multi-Link Setup",
-                                  1,
-                                  staChannels,
-                                  apChannels,
-                                  fixedPhyBands),
+                                       const std::vector<uint8_t>& setupLinks,
+                                       uint8_t apNegSupport,
+                                       const std::string& dlTidToLinkMapping,
+                                       const std::string& ulTidToLinkMapping)
+    : MultiLinkOperationsTestBase("Check correctness of Multi-Link Setup", 1, baseParams),
       m_setupLinks(setupLinks),
       m_scanType(scanType),
-      m_nProbeResp(0)
+      m_nProbeResp(0),
+      m_apNegSupport(apNegSupport),
+      m_dlTidLinkMappingStr(dlTidToLinkMapping),
+      m_ulTidLinkMappingStr(ulTidToLinkMapping)
 {
 }
 
@@ -881,6 +932,137 @@ MultiLinkSetupTest::DoSetup()
     MultiLinkOperationsTestBase::DoSetup();
 
     m_staMacs[0]->SetAttribute("ActiveProbing", BooleanValue(m_scanType == WifiScanType::ACTIVE));
+    m_apMac->GetEhtConfiguration()->SetAttribute("TidToLinkMappingNegSupport",
+                                                 EnumValue(m_apNegSupport));
+    // For non-AP MLD, it does not make sense to set the negotiation type to 0 (unless the AP MLD
+    // also advertises 0) or 1 (the AP MLD is discarded if it advertises a support of 3)
+    auto staEhtConfig = m_staMacs[0]->GetEhtConfiguration();
+    staEhtConfig->SetAttribute("TidToLinkMappingNegSupport", EnumValue(3));
+    staEhtConfig->SetAttribute("TidToLinkMappingDl", StringValue(m_dlTidLinkMappingStr));
+    staEhtConfig->SetAttribute("TidToLinkMappingUl", StringValue(m_ulTidLinkMappingStr));
+
+    // the negotiated link mapping matches the one configured in EHT configuration, unless
+    // the AP MLD does not support TID-to-link mapping negotiation or the AP MLD supports
+    // the negotiation type 1 and the non-AP MLD is configured with a link mapping that
+    // maps distinct link sets to the TIDs, in which case the default link mapping is used
+    m_dlTidLinkMapping = staEhtConfig->GetTidLinkMapping(WifiDirection::DOWNLINK);
+    m_ulTidLinkMapping = staEhtConfig->GetTidLinkMapping(WifiDirection::UPLINK);
+
+    if (m_apNegSupport == 0 ||
+        (m_apNegSupport == 1 &&
+         !TidToLinkMappingValidForNegType1(m_dlTidLinkMapping, m_ulTidLinkMapping)))
+    {
+        m_dlTidLinkMapping.clear(); // default link mapping
+        m_ulTidLinkMapping.clear(); // default link mapping
+    }
+
+    // find (if any) a TID that is not mapped to all setup links
+    using TupleRefs = std::tuple<std::reference_wrapper<const WifiTidLinkMapping>,
+                                 std::reference_wrapper<uint8_t>,
+                                 std::reference_wrapper<std::optional<uint8_t>>,
+                                 Ptr<WifiMac>>;
+    for (auto& [mappingRef, tid1Ref, tid2Ref, mac] :
+         {TupleRefs{m_dlTidLinkMapping, m_dlTid1, m_dlTid2, m_apMac},
+          TupleRefs{m_ulTidLinkMapping, m_ulTid1, m_ulTid2, m_staMacs[0]}})
+    {
+        tid1Ref.get() = 0;
+        for (uint8_t tid1 = 0; tid1 < 8; tid1++)
+        {
+            if (auto it1 = mappingRef.get().find(tid1);
+                it1 != mappingRef.get().cend() && it1->second.size() != m_setupLinks.size())
+            {
+                // found. Now search for another TID with a disjoint mapped link set
+                for (uint8_t tid2 = tid1 + 1; tid2 < 8; tid2++)
+                {
+                    if (auto it2 = mappingRef.get().find(tid2);
+                        it2 != mappingRef.get().cend() && it2->second.size() != m_setupLinks.size())
+                    {
+                        std::list<uint8_t> intersection;
+                        std::set_intersection(it1->second.cbegin(),
+                                              it1->second.cend(),
+                                              it2->second.cbegin(),
+                                              it2->second.cend(),
+                                              std::back_inserter(intersection));
+                        if (intersection.empty())
+                        {
+                            // found a second TID
+                            tid2Ref.get() = tid2;
+                            break;
+                        }
+                    }
+                }
+                tid1Ref.get() = tid1;
+                break;
+            }
+        }
+
+        std::list<uint8_t> tids = {tid1Ref.get()};
+        if (tid2Ref.get())
+        {
+            tids.emplace_back(*tid2Ref.get());
+        }
+
+        // prevent aggregation of MPDUs
+        for (auto tid : tids)
+        {
+            std::string attrName;
+            switch (QosUtilsMapTidToAc(tid))
+            {
+            case AC_VI:
+                attrName = "VI_MaxAmpduSize";
+                break;
+            case AC_VO:
+                attrName = "VO_MaxAmpduSize";
+                break;
+            case AC_BE:
+                attrName = "BE_MaxAmpduSize";
+                break;
+            case AC_BK:
+                attrName = "BK_MaxAmpduSize";
+                break;
+            default:
+                NS_FATAL_ERROR("Invalid TID " << +tid);
+            }
+
+            mac->SetAttribute(attrName, UintegerValue(100));
+        }
+    }
+}
+
+void
+MultiLinkSetupTest::StartTraffic()
+{
+    // DL traffic
+    {
+        PacketSocketAddress sockAddr;
+        sockAddr.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
+        sockAddr.SetPhysicalAddress(m_staMacs[0]->GetDevice()->GetAddress());
+        sockAddr.SetProtocol(1);
+
+        m_apMac->GetDevice()->GetNode()->AddApplication(
+            GetApplication(sockAddr, m_setupLinks.size(), 500, Seconds(0), m_dlTid1));
+        if (m_dlTid2)
+        {
+            m_apMac->GetDevice()->GetNode()->AddApplication(
+                GetApplication(sockAddr, m_setupLinks.size(), 500, Seconds(0), *m_dlTid2));
+        }
+    }
+
+    // UL Traffic
+    {
+        PacketSocketAddress sockAddr;
+        sockAddr.SetSingleDevice(m_staMacs[0]->GetDevice()->GetIfIndex());
+        sockAddr.SetPhysicalAddress(m_apMac->GetDevice()->GetAddress());
+        sockAddr.SetProtocol(1);
+
+        m_staMacs[0]->GetDevice()->GetNode()->AddApplication(
+            GetApplication(sockAddr, m_setupLinks.size(), 500, MilliSeconds(500), m_ulTid1));
+        if (m_ulTid2)
+        {
+            m_staMacs[0]->GetDevice()->GetNode()->AddApplication(
+                GetApplication(sockAddr, m_setupLinks.size(), 500, MilliSeconds(500), *m_ulTid2));
+        }
+    }
 }
 
 void
@@ -888,12 +1070,14 @@ MultiLinkSetupTest::DoRun()
 {
     Simulator::Schedule(MilliSeconds(500), &MultiLinkSetupTest::CheckMlSetup, this);
 
-    Simulator::Stop(Seconds(1.5));
+    Simulator::Stop(m_duration);
     Simulator::Run();
 
     /**
      * Check content of management frames
      */
+    std::size_t index = 0;
+
     for (const auto& frameInfo : m_txPsdus)
     {
         const auto& mpdu = *frameInfo.psduMap.begin()->second->begin();
@@ -918,9 +1102,15 @@ MultiLinkSetupTest::DoRun()
             CheckAssocResponse(mpdu, linkId);
             break;
 
+        case WIFI_MAC_QOSDATA:
+            CheckQosData(mpdu, linkId, index);
+            break;
+
         default:
             break;
         }
+
+        index++;
     }
 
     CheckDisabledLinks();
@@ -944,6 +1134,24 @@ MultiLinkSetupTest::DoRun()
     }
 
     NS_TEST_EXPECT_MSG_EQ(m_nProbeResp, expectedProbeResp, "Unexpected number of Probe Responses");
+
+    std::size_t expectedRxDlPkts = m_setupLinks.size();
+    if (m_dlTid2)
+    {
+        expectedRxDlPkts *= 2;
+    }
+    NS_TEST_EXPECT_MSG_EQ(m_rxPkts[m_staMacs[0]->GetDevice()->GetNode()->GetId()],
+                          expectedRxDlPkts,
+                          "Unexpected number of DL packets received");
+
+    std::size_t expectedRxUlPkts = m_setupLinks.size();
+    if (m_ulTid2)
+    {
+        expectedRxUlPkts *= 2;
+    }
+    NS_TEST_EXPECT_MSG_EQ(m_rxPkts[m_apMac->GetDevice()->GetNode()->GetId()],
+                          expectedRxUlPkts,
+                          "Unexpected number of UL packets received");
 
     Simulator::Destroy();
 }
@@ -1085,43 +1293,113 @@ MultiLinkSetupTest::CheckAssocRequest(Ptr<WifiMpdu> mpdu, uint8_t linkId)
         NS_TEST_EXPECT_MSG_EQ(mle.has_value(),
                               false,
                               "Multi-Link Element in Assoc Request frame from single link STA");
-        return;
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_EQ(mle.has_value(),
+                              true,
+                              "No Multi-Link Element in Assoc Request frame");
+        NS_TEST_EXPECT_MSG_EQ(mle->GetMldMacAddress(),
+                              m_staMacs[0]->GetAddress(),
+                              "Incorrect MLD Address advertised in Multi-Link Element");
+        NS_TEST_EXPECT_MSG_EQ(
+            mle->GetNPerStaProfileSubelements(),
+            m_setupLinks.size() - 1,
+            "Incorrect number of Per-STA Profile subelements in Multi-Link Element");
+        for (std::size_t i = 0; i < mle->GetNPerStaProfileSubelements(); i++)
+        {
+            auto& perStaProfile = mle->GetPerStaProfile(i);
+            NS_TEST_EXPECT_MSG_EQ(perStaProfile.HasStaMacAddress(),
+                                  true,
+                                  "Per-STA Profile must contain STA MAC address");
+            // find ID of the local link corresponding to this subelement
+            auto staLinkId = m_staMacs[0]->GetLinkIdByAddress(perStaProfile.GetStaMacAddress());
+            NS_TEST_EXPECT_MSG_EQ(
+                staLinkId.has_value(),
+                true,
+                "No link found with the STA MAC address advertised in Per-STA Profile");
+            NS_TEST_EXPECT_MSG_NE(
+                +staLinkId.value(),
+                +linkId,
+                "The STA that sent the Assoc Request should not be included in a Per-STA Profile");
+            auto it = std::find(m_setupLinks.begin(), m_setupLinks.end(), staLinkId.value());
+            NS_TEST_EXPECT_MSG_EQ((it != m_setupLinks.end()),
+                                  true,
+                                  "Not expecting to setup STA link ID " << +staLinkId.value());
+            NS_TEST_EXPECT_MSG_EQ(
+                +staLinkId.value(),
+                +perStaProfile.GetLinkId(),
+                "Not expecting to request association to AP Link ID in Per-STA Profile");
+            NS_TEST_EXPECT_MSG_EQ(perStaProfile.HasAssocRequest(),
+                                  true,
+                                  "Missing Association Request in Per-STA Profile");
+        }
     }
 
-    NS_TEST_EXPECT_MSG_EQ(mle.has_value(), true, "No Multi-Link Element in Assoc Request frame");
-    NS_TEST_EXPECT_MSG_EQ(mle->GetMldMacAddress(),
-                          m_staMacs[0]->GetAddress(),
-                          "Incorrect MLD Address advertised in Multi-Link Element");
-    NS_TEST_EXPECT_MSG_EQ(mle->GetNPerStaProfileSubelements(),
-                          m_setupLinks.size() - 1,
-                          "Incorrect number of Per-STA Profile subelements in Multi-Link Element");
-    for (std::size_t i = 0; i < mle->GetNPerStaProfileSubelements(); i++)
+    const auto& tlm = assoc.Get<TidToLinkMapping>();
+
+    // A TID-to-Link Mapping IE is included in the Association Request if and only if the AP MLD
+    // and the non-AP MLD are performing ML setup (i.e., they both have multiple links) and the
+    // AP MLD advertises a non-null negotiation support type
+    if (m_apMac->GetNLinks() == 1 || m_staMacs[0]->GetNLinks() == 1 || m_apNegSupport == 0)
     {
-        auto& perStaProfile = mle->GetPerStaProfile(i);
-        NS_TEST_EXPECT_MSG_EQ(perStaProfile.HasStaMacAddress(),
+        NS_TEST_EXPECT_MSG_EQ(tlm.empty(),
                               true,
-                              "Per-STA Profile must contain STA MAC address");
-        // find ID of the local link corresponding to this subelement
-        auto staLinkId = m_staMacs[0]->GetLinkIdByAddress(perStaProfile.GetStaMacAddress());
-        NS_TEST_EXPECT_MSG_EQ(
-            staLinkId.has_value(),
-            true,
-            "No link found with the STA MAC address advertised in Per-STA Profile");
-        NS_TEST_EXPECT_MSG_NE(
-            +staLinkId.value(),
-            +linkId,
-            "The STA that sent the Assoc Request should not be included in a Per-STA Profile");
-        auto it = std::find(m_setupLinks.begin(), m_setupLinks.end(), staLinkId.value());
-        NS_TEST_EXPECT_MSG_EQ((it != m_setupLinks.end()),
-                              true,
-                              "Not expecting to setup STA link ID " << +staLinkId.value());
-        NS_TEST_EXPECT_MSG_EQ(
-            +staLinkId.value(),
-            +perStaProfile.GetLinkId(),
-            "Not expecting to request association to AP Link ID in Per-STA Profile");
-        NS_TEST_EXPECT_MSG_EQ(perStaProfile.HasAssocRequest(),
-                              true,
-                              "Missing Association Request in Per-STA Profile");
+                              "Didn't expect a TID-to-Link Mapping IE in Assoc Request frame");
+    }
+    else
+    {
+        std::size_t expectedNTlm = (m_dlTidLinkMapping == m_ulTidLinkMapping ? 1 : 2);
+
+        NS_TEST_ASSERT_MSG_EQ(tlm.size(),
+                              expectedNTlm,
+                              "Unexpected number of TID-to-Link Mapping IE in Assoc Request");
+
+        // lambda to check content of TID-to-Link Mapping IE(s)
+        auto checkTlm = [&](std::size_t tlmId, WifiDirection dir) {
+            NS_TEST_EXPECT_MSG_EQ(+static_cast<uint8_t>(tlm[tlmId].m_control.direction),
+                                  +static_cast<uint8_t>(dir),
+                                  "Unexpected direction in TID-to-Link Mapping IE " << tlmId);
+            auto& expectedMapping =
+                (dir == WifiDirection::UPLINK ? m_ulTidLinkMapping : m_dlTidLinkMapping);
+
+            NS_TEST_EXPECT_MSG_EQ(tlm[tlmId].m_control.defaultMapping,
+                                  expectedMapping.empty(),
+                                  "Default Link Mapping bit not set correctly");
+            NS_TEST_EXPECT_MSG_EQ(tlm[tlmId].m_linkMapping.size(),
+                                  expectedMapping.size(),
+                                  "Unexpected number of Link Mapping Of TID n fields");
+            for (uint8_t tid = 0; tid < 8; tid++)
+            {
+                if (auto it = expectedMapping.find(tid); it != expectedMapping.cend())
+                {
+                    NS_TEST_EXPECT_MSG_EQ((tlm[tlmId].GetLinkMappingOfTid(tid) == it->second),
+                                          true,
+                                          "Unexpected link mapping for TID "
+                                              << +tid << " direction " << dir);
+                }
+                else
+                {
+                    NS_TEST_EXPECT_MSG_EQ(tlm[tlmId].GetLinkMappingOfTid(tid).empty(),
+                                          true,
+                                          "Expecting no Link Mapping Of TID n field for TID "
+                                              << +tid << " direction " << dir);
+                }
+            }
+        };
+
+        if (tlm.size() == 1)
+        {
+            checkTlm(0, WifiDirection::BOTH_DIRECTIONS);
+        }
+        else
+        {
+            std::size_t dlId = (tlm[0].m_control.direction == WifiDirection::DOWNLINK ? 0 : 1);
+            std::size_t ulId = (dlId == 0 ? 1 : 0);
+
+            checkTlm(dlId, WifiDirection::DOWNLINK);
+            checkTlm(ulId, WifiDirection::UPLINK);
+        }
     }
 }
 
@@ -1183,6 +1461,12 @@ MultiLinkSetupTest::CheckAssocResponse(Ptr<WifiMpdu> mpdu, uint8_t linkId)
                               true,
                               "Missing Association Response in Per-STA Profile");
     }
+
+    // For the moment, the AP MLD always accepts a valid TID-to-Link Mapping request, hence
+    // in every case there is no TID-to-Link Mapping IE in the Association Response
+    NS_TEST_EXPECT_MSG_EQ(assoc.Get<TidToLinkMapping>().empty(),
+                          true,
+                          "Didn't expect to find a TID-to-Link Mapping IE in Association Response");
 }
 
 void
@@ -1262,6 +1546,35 @@ MultiLinkSetupTest::CheckMlSetup()
             +m_apMac->GetWifiPhy(apLinkId)->GetOperatingChannel().GetPrimaryChannelIndex(20),
             "Incorrect operating primary channel index for STA on link " << +staLinkId);
     }
+
+    // lambda to check the link mapping stored at wifi MAC
+    auto checkStoredMapping =
+        [this](Ptr<WifiMac> mac, Ptr<WifiMac> dest, WifiDirection dir, bool present) {
+            NS_TEST_ASSERT_MSG_EQ(mac->GetTidToLinkMapping(dest->GetAddress(), dir).has_value(),
+                                  present,
+                                  "Link mapping stored by "
+                                      << (mac->GetTypeOfStation() == AP ? "AP" : "non-AP")
+                                      << " MLD for " << dir << " direction "
+                                      << (present ? "expected" : "not expected"));
+            if (present)
+            {
+                const auto& mapping =
+                    (dir == WifiDirection::DOWNLINK ? m_dlTidLinkMapping : m_ulTidLinkMapping);
+                NS_TEST_EXPECT_MSG_EQ(
+                    (mac->GetTidToLinkMapping(dest->GetAddress(), dir)->get() == mapping),
+                    true,
+                    "Incorrect link mapping stored by "
+                        << (mac->GetTypeOfStation() == AP ? "AP" : "non-AP") << " MLD for " << dir
+                        << " direction");
+            }
+        };
+
+    auto storedMapping =
+        m_apMac->GetNLinks() > 1 && m_staMacs[0]->GetNLinks() > 1 && m_apNegSupport > 0;
+    checkStoredMapping(m_apMac, m_staMacs[0], WifiDirection::DOWNLINK, storedMapping);
+    checkStoredMapping(m_apMac, m_staMacs[0], WifiDirection::UPLINK, storedMapping);
+    checkStoredMapping(m_staMacs[0], m_apMac, WifiDirection::DOWNLINK, storedMapping);
+    checkStoredMapping(m_staMacs[0], m_apMac, WifiDirection::UPLINK, storedMapping);
 }
 
 void
@@ -1289,6 +1602,146 @@ MultiLinkSetupTest::CheckDisabledLinks()
         NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(linkId)->GetState()->IsStateOff(),
                               false,
                               "Expecting link " << +linkId << " to be active");
+    }
+}
+
+void
+MultiLinkSetupTest::CheckQosData(Ptr<WifiMpdu> mpdu, uint8_t linkId, std::size_t index)
+{
+    WifiDirection dir;
+    const auto& hdr = mpdu->GetHeader();
+
+    NS_TEST_ASSERT_MSG_EQ(hdr.IsQosData(), true, "Expected a QoS data frame");
+
+    if (!hdr.IsToDs() && hdr.IsFromDs())
+    {
+        dir = WifiDirection::DOWNLINK;
+    }
+    else if (hdr.IsToDs() && !hdr.IsFromDs())
+    {
+        dir = WifiDirection::UPLINK;
+    }
+    else
+    {
+        NS_ABORT_MSG("Invalid combination for QoS data frame: ToDS(" << hdr.IsToDs() << ") FromDS("
+                                                                     << hdr.IsFromDs() << ")");
+    }
+
+    const auto& tid1 = (dir == WifiDirection::DOWNLINK) ? m_dlTid1 : m_ulTid1;
+    const auto& tid2 = (dir == WifiDirection::DOWNLINK) ? m_dlTid2 : m_ulTid2;
+    uint8_t tid = hdr.GetQosTid();
+
+    NS_TEST_ASSERT_MSG_NE((tid == tid1),
+                          (tid2.has_value() && tid == *tid2),
+                          "QoS frame with unexpected TID " << +tid);
+
+    // lambda to find the link set the given TID is mapped to
+    auto findLinkSet = [this, dir](uint8_t tid) -> std::set<uint8_t> {
+        std::set<uint8_t> linkSet(m_setupLinks.cbegin(), m_setupLinks.cend());
+        if (auto mappingOptRef = m_apMac->GetTidToLinkMapping(m_staMacs[0]->GetAddress(), dir))
+        {
+            // if the TID is not present in the mapping, it is mapped to all setup links
+            if (auto it = mappingOptRef->get().find(tid); it != mappingOptRef->get().cend())
+            {
+                linkSet = it->second;
+                NS_ASSERT_MSG(!linkSet.empty(), "TID " << +tid << " mapped to no link");
+            }
+        }
+        return linkSet;
+    };
+
+    auto linkSet = findLinkSet(tid);
+    auto& qosFrames = (tid == tid1) ? m_qosFrames1 : m_qosFrames2;
+
+    // Let N the size of the link set, the first N QoS data frames are sent simultaneously
+    // on the links of the set, the others (if any) will be sent afterwards on such links
+
+    // number of concurrent frames of the same TID transmitted so far (excluding current frame)
+    std::size_t nConcurFrames = std::min(qosFrames.size(), linkSet.size());
+
+    // iterate over the concurrent frames of the same TID transmitted so far
+    for (std::size_t i = 0; i < nConcurFrames; i++)
+    {
+        auto prev = qosFrames[i];
+
+        // TX duration of i-th frame
+        auto band = m_apMac->GetWifiPhy(m_txPsdus[prev].linkId)->GetPhyBand();
+        Time txDuration =
+            WifiPhy::CalculateTxDuration(m_txPsdus[prev].psduMap, m_txPsdus[prev].txVector, band);
+
+        // the current frame is transmitted concurrently with this previous frame if it is
+        // within the first N (size of the link set) frames, otherwise it is transmitted after
+        // this previous frame if they have been transmitted on the same link
+        if (qosFrames.size() < linkSet.size())
+        {
+            // the current frame can be sent concurrently with this previous frame
+            NS_TEST_EXPECT_MSG_LT(m_txPsdus[index].startTx,
+                                  m_txPsdus[prev].startTx + txDuration,
+                                  "The " << dir << " QoS frame number " << qosFrames.size()
+                                         << " was not sent concurrently with others on link "
+                                         << +linkId << " which TID " << +tid << " is mapped to");
+        }
+        else if (m_txPsdus[prev].linkId == linkId)
+        {
+            // the current  frame is sent afterwards
+            NS_TEST_EXPECT_MSG_GT(m_txPsdus[index].startTx,
+                                  m_txPsdus[prev].startTx + txDuration,
+                                  "The " << dir << " QoS frame number " << qosFrames.size()
+                                         << " was sent concurrently with others on a link "
+                                         << +linkId << " which TID " << +tid << " is mapped to");
+        }
+    }
+
+    if (m_apMac->GetNLinks() > 1 && m_staMacs[0]->GetNLinks() > 1)
+    {
+        NS_TEST_EXPECT_MSG_EQ(std::count(linkSet.cbegin(), linkSet.cend(), linkId),
+                              1,
+                              "QoS frame sent on Link ID "
+                                  << +linkId << " that does not belong to the link set of TID "
+                                  << +tid);
+    }
+
+    if (tid2)
+    {
+        // QoS frames of two distinct TIDs are sent.
+        auto otherTid = (tid == tid1) ? *tid2 : tid1;
+        const auto& otherQosFrames = (tid == tid1) ? m_qosFrames2 : m_qosFrames1;
+        auto otherLinkSet = findLinkSet(otherTid);
+
+        // number of concurrent frames of the other TID transmitted so far
+        std::size_t nOtherConcurFrames = std::min(otherQosFrames.size(), otherLinkSet.size());
+
+        // iterate over the concurrent frames of the other TID
+        for (std::size_t i = 0; i < nOtherConcurFrames; i++)
+        {
+            auto prev = otherQosFrames[i];
+
+            // TX duration of i-th frame
+            auto band = m_apMac->GetWifiPhy(m_txPsdus[prev].linkId)->GetPhyBand();
+            Time txDuration = WifiPhy::CalculateTxDuration(m_txPsdus[prev].psduMap,
+                                                           m_txPsdus[prev].txVector,
+                                                           band);
+
+            // the current frame is transmitted concurrently with this previous frame of the
+            // other TID if it is within the first N (size of the link set) frames of its TID
+            if (qosFrames.size() < linkSet.size())
+            {
+                // the current frame can be sent concurrently with this previous frame
+                NS_TEST_EXPECT_MSG_LT(m_txPsdus[index].startTx,
+                                      m_txPsdus[prev].startTx + txDuration,
+                                      "The " << dir << " QoS frame number " << qosFrames.size()
+                                             << " was not sent concurrently with others with TID "
+                                             << +otherTid);
+            }
+        }
+    }
+
+    // insert the frame
+    qosFrames.emplace_back(index);
+
+    if (qosFrames.size() == m_setupLinks.size())
+    {
+        qosFrames.clear();
     }
 }
 
@@ -1356,22 +1809,18 @@ class MultiLinkTxTest : public MultiLinkOperationsTestBase
     /**
      * Constructor
      *
+     * \param baseParams common configuration parameters
      * \param trafficPattern the pattern of traffic to generate
      * \param baEnabled whether BA agreement is enabled or disabled
      * \param useBarAfterMissedBa whether a BAR or Data frames are sent after missed BlockAck
      * \param nMaxInflight the max number of links on which an MPDU can be simultaneously inflight
      *                     (unused if Block Ack agreements are not established)
-     * \param staChannels the strings specifying the operating channels for the STA
-     * \param apChannels the strings specifying the operating channels for the AP
-     * \param fixedPhyBands list of IDs of STA links that cannot switch PHY band
      */
-    MultiLinkTxTest(WifiTrafficPattern trafficPattern,
+    MultiLinkTxTest(const BaseParams& baseParams,
+                    WifiTrafficPattern trafficPattern,
                     WifiBaEnabled baEnabled,
                     WifiUseBarAfterMissedBa useBarAfterMissedBa,
-                    uint8_t nMaxInflight,
-                    const std::vector<std::string>& staChannels,
-                    const std::vector<std::string>& apChannels,
-                    const std::vector<uint8_t>& fixedPhyBands = {});
+                    uint8_t nMaxInflight);
     ~MultiLinkTxTest() override = default;
 
   protected:
@@ -1414,13 +1863,11 @@ class MultiLinkTxTest : public MultiLinkOperationsTestBase
     Ptr<WifiMac> m_sourceMac; ///< MAC of the node sending application packets
 };
 
-MultiLinkTxTest::MultiLinkTxTest(WifiTrafficPattern trafficPattern,
+MultiLinkTxTest::MultiLinkTxTest(const BaseParams& baseParams,
+                                 WifiTrafficPattern trafficPattern,
                                  WifiBaEnabled baEnabled,
                                  WifiUseBarAfterMissedBa useBarAfterMissedBa,
-                                 uint8_t nMaxInflight,
-                                 const std::vector<std::string>& staChannels,
-                                 const std::vector<std::string>& apChannels,
-                                 const std::vector<uint8_t>& fixedPhyBands)
+                                 uint8_t nMaxInflight)
     : MultiLinkOperationsTestBase(
           std::string("Check data transmission between MLDs ") +
               (baEnabled == WifiBaEnabled::YES
@@ -1433,9 +1880,7 @@ MultiLinkTxTest::MultiLinkTxTest(WifiTrafficPattern trafficPattern,
                                                : "") +
               ")",
           2,
-          staChannels,
-          apChannels,
-          fixedPhyBands),
+          baseParams),
       m_trafficPattern(trafficPattern),
       m_baEnabled(baEnabled == WifiBaEnabled::YES),
       m_useBarAfterMissedBa(useBarAfterMissedBa == WifiUseBarAfterMissedBa::YES),
@@ -1925,20 +2370,16 @@ class MultiLinkMuTxTest : public MultiLinkOperationsTestBase
     /**
      * Constructor
      *
+     * \param baseParams common configuration parameters
      * \param muTrafficPattern the pattern of traffic to generate
      * \param useBarAfterMissedBa whether a BAR or Data frames are sent after missed BlockAck
      * \param nMaxInflight the max number of links on which an MPDU can be simultaneously inflight
      *                     (unused if Block Ack agreements are not established)
-     * \param staChannels the strings specifying the operating channels for the STA
-     * \param apChannels the strings specifying the operating channels for the AP
-     * \param fixedPhyBands list of IDs of STA links that cannot switch PHY band
      */
-    MultiLinkMuTxTest(WifiMuTrafficPattern muTrafficPattern,
+    MultiLinkMuTxTest(const BaseParams& baseParams,
+                      WifiMuTrafficPattern muTrafficPattern,
                       WifiUseBarAfterMissedBa useBarAfterMissedBa,
-                      uint8_t nMaxInflight,
-                      const std::vector<std::string>& staChannels,
-                      const std::vector<std::string>& apChannels,
-                      const std::vector<uint8_t>& fixedPhyBands = {});
+                      uint8_t nMaxInflight);
     ~MultiLinkMuTxTest() override = default;
 
   protected:
@@ -1987,12 +2428,10 @@ class MultiLinkMuTxTest : public MultiLinkOperationsTestBase
     Ptr<WifiMac> m_sourceMac; ///< MAC of the node sending application packets
 };
 
-MultiLinkMuTxTest::MultiLinkMuTxTest(WifiMuTrafficPattern muTrafficPattern,
+MultiLinkMuTxTest::MultiLinkMuTxTest(const BaseParams& baseParams,
+                                     WifiMuTrafficPattern muTrafficPattern,
                                      WifiUseBarAfterMissedBa useBarAfterMissedBa,
-                                     uint8_t nMaxInflight,
-                                     const std::vector<std::string>& staChannels,
-                                     const std::vector<std::string>& apChannels,
-                                     const std::vector<uint8_t>& fixedPhyBands)
+                                     uint8_t nMaxInflight)
     : MultiLinkOperationsTestBase(
           std::string("Check MU data transmission between MLDs ") +
               (useBarAfterMissedBa == WifiUseBarAfterMissedBa::YES
@@ -2001,9 +2440,7 @@ MultiLinkMuTxTest::MultiLinkMuTxTest(WifiMuTrafficPattern muTrafficPattern,
               " MU Traffic pattern: " + std::to_string(static_cast<uint8_t>(muTrafficPattern)) +
               ", nMaxInflight=" + std::to_string(nMaxInflight) + ")",
           2,
-          staChannels,
-          apChannels,
-          fixedPhyBands),
+          baseParams),
       m_muTrafficPattern(muTrafficPattern),
       m_useBarAfterMissedBa(useBarAfterMissedBa == WifiUseBarAfterMissedBa::YES),
       m_nMaxInflight(nMaxInflight),
@@ -2541,8 +2978,9 @@ ReleaseSeqNoAfterCtsTimeoutTest::ReleaseSeqNoAfterCtsTimeoutTest()
     : MultiLinkOperationsTestBase(
           "Check sequence numbers after CTS timeout",
           1,
-          {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-          {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"}),
+          BaseParams{{"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                     {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                     {}}),
       m_nQosDataFrames(0),
       m_errorModel(CreateObject<ListErrorModel>()),
       m_rtsCorrupted(false)
@@ -2668,88 +3106,127 @@ class WifiMultiLinkOperationsTestSuite : public TestSuite
 WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     : TestSuite("wifi-mlo", UNIT)
 {
-    using ParamsTuple = std::tuple<std::vector<std::string>, // non-AP MLD channels
-                                   std::vector<std::string>, // AP MLD channels
-                                   std::vector<uint8_t>,     // link ID of setup links
-                                   std::vector<uint8_t>>; // IDs of link that cannot change PHY band
+    using ParamsTuple = std::tuple<MultiLinkOperationsTestBase::BaseParams, // base config params
+                                   std::vector<uint8_t>, // link ID of setup links
+                                   uint8_t,              // AP negotiation support
+                                   std::string,          // DL TID-to-Link Mapping
+                                   std::string>;         // UL TID-to-Link Mapping
 
     AddTestCase(new GetRnrLinkInfoTest(), TestCase::QUICK);
     AddTestCase(new MldSwapLinksTest(), TestCase::QUICK);
 
-    for (const auto& [staChannels, apChannels, setupLinks, fixedPhyBands] :
+    for (const auto& [baseParams,
+                      setupLinks,
+                      apNegSupport,
+                      dlTidLinkMapping,
+                      ulTidLinkMapping] :
          {// matching channels: setup all links
-          ParamsTuple({"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-                      {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+          ParamsTuple({{"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                       {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                       {}},
                       {0, 1, 2},
-                      {}),
+                      0, // AP MLD does not support TID-to-Link Mapping negotiation
+                      "0,1,2,3  0,1,2;  4,5  0,1", // default mapping used instead
+                      "0,1,2,3  1,2;    6,7  0,1"  // default mapping used instead
+                      ),
           // non-matching channels, matching PHY bands: setup all links
-          ParamsTuple({"{108, 0, BAND_5GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-                      {"{36, 0, BAND_5GHZ, 0}", "{120, 0, BAND_5GHZ, 0}", "{5, 0, BAND_6GHZ, 0}"},
+          ParamsTuple({{"{108, 0, BAND_5GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                       {"{36, 0, BAND_5GHZ, 0}", "{120, 0, BAND_5GHZ, 0}", "{5, 0, BAND_6GHZ, 0}"},
+                       {}},
                       {0, 1, 2},
-                      {}),
+                      1, // AP MLD does not support distinct link sets for TIDs
+                      "0,1,2,3  0,1,2;  4,5  0,1", // default mapping used instead
+                      ""),
           // non-AP MLD switches band on some links to setup 3 links
-          ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
-                      {"{36, 0, BAND_5GHZ, 0}", "{9, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+          ParamsTuple({{"{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+                       {"{36, 0, BAND_5GHZ, 0}", "{9, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                       {}},
                       {0, 1, 2},
-                      {}),
+                      3,
+                      "0,1,2,3  0;  4,5,6,7  1,2", // frames of two TIDs are generated
+                      "0,2,3  1,2;  1,4,5,6,7  0"  // frames of two TIDs are generated
+                      ),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
           // that band, hence only 2 links are setup
           ParamsTuple(
-              {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
-              {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+              {{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
+               {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+               {0}},
               {0, 1},
-              {0}),
+              1, // AP MLD does not support distinct link sets for TIDs
+              "0,1,2,3,4,5,6,7  0",
+              "0,1,2,3,4,5,6,7  0"),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
           // that band; the second link of the non-AP MLD cannot change PHY band and there is
           // an AP operating on the same channel; hence 2 links are setup
           ParamsTuple(
-              {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
-              {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+              {{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{8, 20, BAND_2_4GHZ, 0}"},
+               {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+               {0, 1}},
               {0, 1},
-              {0, 1}),
+              3,
+              "0,1,2,3  1",
+              "0,1,2,3  1"),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
           // that band; the second link of the non-AP MLD cannot change PHY band and there is
           // an AP operating on the same channel; the third link of the non-AP MLD cannot
           // change PHY band and there is an AP operating on the same band (different channel);
           // hence 2 links are setup by switching channel (not band) on the third link
-          ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{60, 0, BAND_5GHZ, 0}"},
-                      {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+          ParamsTuple({{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{60, 0, BAND_5GHZ, 0}"},
+                       {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                       {0, 1, 2}},
                       {0, 2},
-                      {0, 1, 2}),
+                      3,
+                      "",
+                      ""),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
           // that band; the second link of the non-AP MLD cannot change PHY band and there is
           // an AP operating on the same channel; hence one link only is setup
-          ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                      {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+          ParamsTuple({{"{2, 0, BAND_2_4GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                       {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                       {0, 1}},
                       {2},
-                      {0, 1}),
+                      3,
+                      "",
+                      ""),
           // non-AP MLD has only two STAs and setups two links
-          ParamsTuple({"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
-                      {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+          ParamsTuple({{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+                       {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                       {}},
                       {1, 0},
-                      {}),
+                      3,
+                      "0,1,2,3  1",
+                      ""),
           // single link non-AP STA associates with an AP affiliated with an AP MLD
-          ParamsTuple({"{120, 0, BAND_5GHZ, 0}"},
-                      {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+          ParamsTuple({{"{120, 0, BAND_5GHZ, 0}"},
+                       {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                       {}},
                       {2}, // link ID of AP MLD only (non-AP STA is single link)
-                      {}),
+                      3,
+                      "",
+                      ""),
           // a STA affiliated with a non-AP MLD associates with a single link AP
-          ParamsTuple({"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
-                      {"{120, 0, BAND_5GHZ, 0}"},
+          ParamsTuple({{"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
+                       {"{120, 0, BAND_5GHZ, 0}"},
+                       {}},
                       {2}, // link ID of non-AP MLD only (AP is single link)
-                      {})})
+                      0,
+                      "0,1,2,3  0,1;  4,5,6,7  0,1", // ignored by single link AP
+                      "")})
     {
-        AddTestCase(new MultiLinkSetupTest(staChannels,
-                                           apChannels,
+        AddTestCase(new MultiLinkSetupTest(baseParams,
                                            WifiScanType::PASSIVE,
                                            setupLinks,
-                                           fixedPhyBands),
+                                           apNegSupport,
+                                           dlTidLinkMapping,
+                                           ulTidLinkMapping),
                     TestCase::QUICK);
-        AddTestCase(new MultiLinkSetupTest(staChannels,
-                                           apChannels,
+        AddTestCase(new MultiLinkSetupTest(baseParams,
                                            WifiScanType::ACTIVE,
                                            setupLinks,
-                                           fixedPhyBands),
+                                           apNegSupport,
+                                           dlTidLinkMapping,
+                                           ulTidLinkMapping),
                     TestCase::QUICK);
 
         for (const auto& trafficPattern : {WifiTrafficPattern::STA_TO_STA,
@@ -2759,34 +3236,28 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                                            WifiTrafficPattern::STA_TO_BCAST})
         {
             // No Block Ack agreement
-            AddTestCase(new MultiLinkTxTest(trafficPattern,
+            AddTestCase(new MultiLinkTxTest(baseParams,
+                                            trafficPattern,
                                             WifiBaEnabled::NO,
                                             WifiUseBarAfterMissedBa::NO,
-                                            1,
-                                            staChannels,
-                                            apChannels,
-                                            fixedPhyBands),
+                                            1),
                         TestCase::QUICK);
             for (const auto& useBarAfterMissedBa :
                  {WifiUseBarAfterMissedBa::YES, WifiUseBarAfterMissedBa::NO})
             {
                 // Block Ack agreement with nMaxInflight=1
-                AddTestCase(new MultiLinkTxTest(trafficPattern,
+                AddTestCase(new MultiLinkTxTest(baseParams,
+                                                trafficPattern,
                                                 WifiBaEnabled::YES,
                                                 useBarAfterMissedBa,
-                                                1,
-                                                staChannels,
-                                                apChannels,
-                                                fixedPhyBands),
+                                                1),
                             TestCase::QUICK);
                 // Block Ack agreement with nMaxInflight=2
-                AddTestCase(new MultiLinkTxTest(trafficPattern,
+                AddTestCase(new MultiLinkTxTest(baseParams,
+                                                trafficPattern,
                                                 WifiBaEnabled::YES,
                                                 useBarAfterMissedBa,
-                                                2,
-                                                staChannels,
-                                                apChannels,
-                                                fixedPhyBands),
+                                                2),
                             TestCase::QUICK);
             }
         }
@@ -2800,21 +3271,13 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                  {WifiUseBarAfterMissedBa::YES, WifiUseBarAfterMissedBa::NO})
             {
                 // Block Ack agreement with nMaxInflight=1
-                AddTestCase(new MultiLinkMuTxTest(muTrafficPattern,
-                                                  useBarAfterMissedBa,
-                                                  1,
-                                                  staChannels,
-                                                  apChannels,
-                                                  fixedPhyBands),
-                            TestCase::QUICK);
+                AddTestCase(
+                    new MultiLinkMuTxTest(baseParams, muTrafficPattern, useBarAfterMissedBa, 1),
+                    TestCase::QUICK);
                 // Block Ack agreement with nMaxInflight=2
-                AddTestCase(new MultiLinkMuTxTest(muTrafficPattern,
-                                                  useBarAfterMissedBa,
-                                                  2,
-                                                  staChannels,
-                                                  apChannels,
-                                                  fixedPhyBands),
-                            TestCase::QUICK);
+                AddTestCase(
+                    new MultiLinkMuTxTest(baseParams, muTrafficPattern, useBarAfterMissedBa, 2),
+                    TestCase::QUICK);
             }
         }
     }
