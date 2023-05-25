@@ -78,12 +78,15 @@ This release has discontinued support for g++-8 compilers.
 - (network) !938 - Added class `TimestampTag` for associating a timestamp with a packet.
 - (network) !1163 - Initializing an Ipv[4,6]Address from an invalid string do not raise an exception anymore. Instead the address is marked as not initialized.
 - (spectrum) !1046 - Added the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the related GSoC 2022 project titled "A simplified channel and beamforming model for ns-3"
+- (spectrum) !1119 - Added a capability to filter signals (with a new SpectrumTransmitFilter) sent on the SpectrumChannel before they are forwarded to receivers on the channel.  This is motivated by scalability (reducing inconsequential simulation events).
+the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the related GSoC 2022 project titled "A simplified channel and beamforming model for ns-3"
 - (wifi) Added support for 802.11be Multi-Link Operations (MLO), STR mode only
 - (wifi) Added more fields to the EHT Capabilities information element
 - (wifi) Added an initial 802.11be-based example program
 - (wifi) Added 802.11ax dual NAV (basic NAV and intra-BSS NAV)
 - (wifi) Added 802.11ax Uplink Multi-User Carrier Sense (UL MU CS) mechanism and have it used by non-AP STAs when determining if they can reply to a received Trigger Frame
 - (wifi) Added support for 802.11ax MU-RTS/CTS protection
+- (wifi) !1119 - Added, by default, a WifiBandwidthFilter to spectrum channels created by the SpectrumWifiHelper, so as to filter out-of-band signals from the receiver.
 - (internet) InternetStackHelper can be now used on nodes with an InternetStack already installed (it will not install IPv[4,6] twice).
 
 ### Bugs fixed

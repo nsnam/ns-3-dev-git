@@ -24,7 +24,9 @@ Changes from ns-3.38 to ns-3-dev
 * (network) Added `Mac16Address::Mac16Address(uint16t addr)` and `Mac16Address::Mac64Address(uint64t addr)` constructors.
 * (lr-wpan) Added `LrwpanMac::MlmeGetRequest` function and the corresponding confirm callbacks as well as `LrwpanMac::SetMlmeGetConfirm` function.
 * (applications) Added `Tx` and `TxWithAddresses` trace sources in `UdpClient`.
+* (spectrum) Added `SpectrumTransmitFilter` class and the ability to add them to `SpectrumChannel` instances.
 * (stats) Added `Histogram::Clear` function to clear the histogram contents.
+* (wifi) Added `WifiBandwidthFilter` class to allow filtering of out-of-band Wi-Fi signals.
 * (flow-monitor) Added `FlowMonitor::ResetAllStats` function to reset the FlowMonitor statistics.
 
 ### Changes to existing API
@@ -75,6 +77,7 @@ Changes from ns-3.38 to ns-3-dev
 
 * (buildings) Calculation of the O2I Low/High Building Penetration Losses based on 3GPP 38.901 7.4.3.1 was missing. These losses are now included in the pathloss calculation when buildings are present.
 * (network) The function `Buffer::Allocate` will over-provision `ALLOC_OVER_PROVISION` bytes when allocating buffers for packets. `ALLOC_OVER_PROVISION` is currently set to 100 bytes.
+* (wifi) By default, the `SpectrumWifiHelper` now adds a `WifiBandwidthFilter` to discard out-of-band signals before scheduling them on the receiver.  This should not affect the simulated behavior of Wi-Fi but may speed up the execution of large Wi-Fi simulations.
 
 Changes from ns-3.37 to ns-3.38
 -------------------------------
