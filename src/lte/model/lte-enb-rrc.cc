@@ -3123,6 +3123,7 @@ LteEnbRrc::DoAllocateTemporaryCellRnti(uint8_t componentCarrierId)
     // if no SRS index is available, then do not create a new UE context.
     if (IsMaxSrsReached())
     {
+        NS_LOG_WARN("Not enough SRS configuration index, UE context not created");
         return 0; // return 0 since new RNTI was not assigned for the received preamble
     }
     return AddUe(UeManager::INITIAL_RANDOM_ACCESS, componentCarrierId);
