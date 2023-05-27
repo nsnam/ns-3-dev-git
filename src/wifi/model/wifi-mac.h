@@ -55,7 +55,8 @@ class OriginatorBlockAckAgreement;
 class RecipientBlockAckAgreement;
 
 /**
- * Enumeration for type of station
+ * \ingroup wifi
+ * Enumeration for type of WiFi station
  */
 enum TypeOfStation
 {
@@ -68,7 +69,6 @@ enum TypeOfStation
 
 /**
  * \ingroup wifi
- * \enum WifiMacDropReason
  * \brief The reason why an MPDU was dropped
  */
 enum WifiMacDropReason : uint8_t

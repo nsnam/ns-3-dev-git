@@ -21,7 +21,8 @@
 #include "ns3/ipv6-routing-protocol.h"
 #include "ns3/test.h"
 
-using namespace ns3;
+namespace ns3
+{
 
 /**
  * \ingroup internet-test
@@ -246,3 +247,5 @@ class Ipv6ListRoutingTestSuite : public TestSuite
 
 static Ipv6ListRoutingTestSuite
     g_ipv6ListRoutingTestSuite; //!< Static variable for test initialization
+
+} // namespace ns3

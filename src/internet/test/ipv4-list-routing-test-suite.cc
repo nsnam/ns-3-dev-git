@@ -20,7 +20,8 @@
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/test.h"
 
-using namespace ns3;
+namespace ns3
+{
 
 /**
  * \ingroup internet-test
@@ -217,3 +218,5 @@ class Ipv4ListRoutingTestSuite : public TestSuite
 
 static Ipv4ListRoutingTestSuite
     g_ipv4ListRoutingTestSuite; //!< Static variable for test initialization
+
+} // namespace ns3
