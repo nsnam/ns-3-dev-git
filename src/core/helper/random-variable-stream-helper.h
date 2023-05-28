@@ -18,6 +18,7 @@
 #ifndef RANDOM_VARIABLE_STREAM_HELPER_H
 #define RANDOM_VARIABLE_STREAM_HELPER_H
 
+#include <cstdint>
 #include <string>
 
 /**
