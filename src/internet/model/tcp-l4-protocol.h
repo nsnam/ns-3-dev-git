@@ -27,6 +27,7 @@
 #include "ns3/sequence-number.h"
 
 #include <stdint.h>
+#include <unordered_map>
 
 namespace ns3
 {
@@ -334,13 +335,15 @@ class TcpL4Protocol : public IpL4Protocol
                           const Address& incomingDAddr);
 
   private:
-    Ptr<Node> m_node;                                //!< the node this stack is associated with
-    Ipv4EndPointDemux* m_endPoints;                  //!< A list of IPv4 end points.
-    Ipv6EndPointDemux* m_endPoints6;                 //!< A list of IPv6 end points.
-    TypeId m_rttTypeId;                              //!< The RTT Estimator TypeId
-    TypeId m_congestionTypeId;                       //!< The socket TypeId
-    TypeId m_recoveryTypeId;                         //!< The recovery TypeId
-    std::vector<Ptr<TcpSocketBase>> m_sockets;       //!< list of sockets
+    Ptr<Node> m_node;                //!< the node this stack is associated with
+    Ipv4EndPointDemux* m_endPoints;  //!< A list of IPv4 end points.
+    Ipv6EndPointDemux* m_endPoints6; //!< A list of IPv6 end points.
+    TypeId m_rttTypeId;              //!< The RTT Estimator TypeId
+    TypeId m_congestionTypeId;       //!< The socket TypeId
+    TypeId m_recoveryTypeId;         //!< The recovery TypeId
+    std::unordered_map<uint64_t, Ptr<TcpSocketBase>>
+        m_sockets;             //!< Unordered map of socket IDs and corresponding sockets
+    uint64_t m_socketIndex{0}; //!< index of the next socket to be created
     IpL4Protocol::DownTargetCallback m_downTarget;   //!< Callback to send packets over IPv4
     IpL4Protocol::DownTargetCallback6 m_downTarget6; //!< Callback to send packets over IPv6
 

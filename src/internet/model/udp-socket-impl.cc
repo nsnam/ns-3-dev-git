@@ -176,6 +176,10 @@ void
 UdpSocketImpl::Destroy()
 {
     NS_LOG_FUNCTION(this);
+    if (m_udp)
+    {
+        m_udp->RemoveSocket(this);
+    }
     m_endPoint = nullptr;
 }
 
@@ -183,6 +187,10 @@ void
 UdpSocketImpl::Destroy6()
 {
     NS_LOG_FUNCTION(this);
+    if (m_udp)
+    {
+        m_udp->RemoveSocket(this);
+    }
     m_endPoint6 = nullptr;
 }
 
@@ -192,13 +200,11 @@ UdpSocketImpl::DeallocateEndPoint()
 {
     if (m_endPoint != nullptr)
     {
-        m_endPoint->SetDestroyCallback(MakeNullCallback<void>());
         m_udp->DeAllocate(m_endPoint);
         m_endPoint = nullptr;
     }
     if (m_endPoint6 != nullptr)
     {
-        m_endPoint6->SetDestroyCallback(MakeNullCallback<void>());
         m_udp->DeAllocate(m_endPoint6);
         m_endPoint6 = nullptr;
     }

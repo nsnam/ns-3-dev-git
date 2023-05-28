@@ -2875,6 +2875,11 @@ TcpSocketBase::SendRST()
 void
 TcpSocketBase::DeallocateEndPoint()
 {
+    // note: it shouldn't be necessary to invalidate the callback and manually call
+    // TcpL4Protocol::RemoveSocket. Alas, if one relies on the endpoint destruction
+    // callback, there's a weird memory access to a free'd area. Harmless, but valgrind
+    // considers it an error.
+
     if (m_endPoint != nullptr)
     {
         CancelAllTimers();
