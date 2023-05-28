@@ -1228,6 +1228,7 @@ WifiPhy::DoChannelSwitch()
     m_channelAccessRequested = false;
 
     // Update unspecified parameters with default values
+    std::optional<uint8_t> prevChannelNumber{};
     for (auto& [number, width, band, primary20] : m_channelSettings)
     {
         if (band == WIFI_PHY_BAND_UNSPECIFIED)
@@ -1243,8 +1244,10 @@ WifiPhy::DoChannelSwitch()
             number =
                 WifiPhyOperatingChannel::GetDefaultChannelNumber(width,
                                                                  m_standard,
-                                                                 static_cast<WifiPhyBand>(band));
+                                                                 static_cast<WifiPhyBand>(band),
+                                                                 prevChannelNumber);
         }
+        prevChannelNumber = number;
     }
 
     // We need to call SetStandard if this is the first time we set a channel or we

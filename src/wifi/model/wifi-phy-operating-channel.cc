@@ -399,12 +399,38 @@ WifiPhyOperatingChannel::SetDefault(ChannelWidthMhz width, WifiStandard standard
 }
 
 uint8_t
-WifiPhyOperatingChannel::GetDefaultChannelNumber(ChannelWidthMhz width,
-                                                 WifiStandard standard,
-                                                 WifiPhyBand band)
+WifiPhyOperatingChannel::GetDefaultChannelNumber(
+    ChannelWidthMhz width,
+    WifiStandard standard,
+    WifiPhyBand band,
+    std::optional<uint8_t> previousChannelNumber /* = std::nullopt */)
 {
-    auto channelIt = FindFirst(0, 0, width, standard, band);
-
+    auto start = m_frequencyChannels.begin();
+    auto prevSegmentChannelIt = m_frequencyChannels.end();
+    if (previousChannelNumber)
+    {
+        prevSegmentChannelIt = FindFirst(*previousChannelNumber, 0, width, standard, band, start);
+        if (prevSegmentChannelIt != m_frequencyChannels.end())
+        {
+            start = std::next(prevSegmentChannelIt);
+        }
+    }
+    auto channelIt = FindFirst(0, 0, width, standard, band, start);
+    if (prevSegmentChannelIt != m_frequencyChannels.end() && channelIt != m_frequencyChannels.end())
+    {
+        const auto prevFreq = prevSegmentChannelIt->frequency;
+        const auto prevWidth = prevSegmentChannelIt->width;
+        const auto prevMaxFreq = prevFreq + (prevWidth / 2);
+        const auto nextFreq = channelIt->frequency;
+        const auto nextWidth = channelIt->width;
+        const auto nextMinFreq = nextFreq - (nextWidth / 2);
+        if (prevMaxFreq <= nextMinFreq)
+        {
+            // segments are contiguous to each others, find next segment to make sure they are
+            // not contiguous
+            channelIt = FindFirst(0, 0, width, standard, band, std::next(channelIt));
+        }
+    }
     if (channelIt != m_frequencyChannels.end())
     {
         // a channel matches the specified criteria

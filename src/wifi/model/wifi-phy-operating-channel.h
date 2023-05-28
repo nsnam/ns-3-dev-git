@@ -26,6 +26,7 @@
 
 #include "ns3/he-ru.h"
 
+#include <optional>
 #include <set>
 #include <tuple>
 #include <vector>
@@ -167,17 +168,22 @@ class WifiPhyOperatingChannel
     void SetDefault(ChannelWidthMhz width, WifiStandard standard, WifiPhyBand band);
 
     /**
-     * Get the default channel number of the given width and for the given standard
-     * and band.
+     * Get the default channel number for a given segment of the given width and for the given
+     * standard and band.
      *
      * \param width the channel width in MHz
      * \param standard the standard
      * \param band the PHY band
+     * \param previousChannelNumber the channel number of the previous (in frequency) segment (if
+     * non-contiguous operating channel is used). If there is no place for another segment that is
+     * not contiguous to that previous one (at a higher frequency), an error is thrown
      * \return the default channel number
      */
-    static uint8_t GetDefaultChannelNumber(ChannelWidthMhz width,
-                                           WifiStandard standard,
-                                           WifiPhyBand band);
+    static uint8_t GetDefaultChannelNumber(
+        ChannelWidthMhz width,
+        WifiStandard standard,
+        WifiPhyBand band,
+        std::optional<uint8_t> previousChannelNumber = std::nullopt);
 
     /**
      * Return the channel number for a given frequency segment.
