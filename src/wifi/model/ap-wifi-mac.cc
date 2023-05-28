@@ -928,14 +928,22 @@ ApWifiMac::GetVhtOperation(uint8_t linkId) const
     // For 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
     // indicates the channel center frequency index of the 80 MHz channel
     // segment that contains the primary channel.
+    // For 80+80 MHz BSS bandwidth and the Channel Width subfield equal to 1 or 3,
+    // indicates the channel center frequency index for the primary 80 MHz channel of the VHT BSS.
     operation.SetChannelCenterFrequencySegment0(
         (bssBandwidth == 160) ? phy->GetPrimaryChannelNumber(80) : phy->GetChannelNumber());
     // For a 20, 40, or 80 MHz BSS bandwidth, this subfield is set to 0.
     // For a 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
     // indicates the channel center frequency index of the 160 MHz channel on
     // which the VHT BSS operates.
-    operation.SetChannelCenterFrequencySegment1((bssBandwidth == 160) ? phy->GetChannelNumber()
-                                                                      : 0);
+    // For an 80+80 MHz BSS bandwidth and the Channel Width subfield equal to 1 or 3,
+    // indicates the channel center frequency index of the secondary 80 MHz channel of the VHT BSS.
+    const auto& operatingChannel = phy->GetOperatingChannel();
+    const auto is80Plus80 =
+        operatingChannel.GetWidthType() == WifiChannelWidthType::CW_80_PLUS_80MHZ;
+    operation.SetChannelCenterFrequencySegment1(
+        (bssBandwidth == 160) ? is80Plus80 ? operatingChannel.GetNumber(1) : phy->GetChannelNumber()
+                              : 0);
     uint8_t maxSpatialStream = phy->GetMaxSupportedRxSpatialStreams();
     for (const auto& sta : GetLink(linkId).staList)
     {
