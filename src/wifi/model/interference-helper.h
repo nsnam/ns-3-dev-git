@@ -149,6 +149,13 @@ class InterferenceHelper : public Object
     void AddBand(const WifiSpectrumBandInfo& band);
 
     /**
+     * Remove a frequency band.
+     *
+     * \param band the band to be removed
+     */
+    void RemoveBand(const WifiSpectrumBandInfo& band);
+
+    /**
      * Check whether bands are already tracked by this interference helper.
      *
      * \return true if bands are tracked by this interference helper, false otherwise

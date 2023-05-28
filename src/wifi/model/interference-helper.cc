@@ -262,15 +262,27 @@ InterferenceHelper::AddBand(const WifiSpectrumBandInfo& band)
 }
 
 void
+InterferenceHelper::RemoveBand(const WifiSpectrumBandInfo& band)
+{
+    NS_LOG_FUNCTION(this << band);
+    NS_ASSERT(m_firstPowers.count(band) != 0);
+    m_firstPowers.erase(band);
+    auto it = m_niChanges.find(band);
+    NS_ASSERT(it != std::end(m_niChanges));
+    it->second.clear();
+    m_niChanges.erase(it);
+}
+
+void
 InterferenceHelper::UpdateBands(const std::vector<WifiSpectrumBandInfo>& bands,
                                 const FrequencyRange& freqRange)
 {
     NS_LOG_FUNCTION(this << freqRange);
-    for (auto it = m_niChanges.begin(); it != m_niChanges.end();)
+    std::vector<WifiSpectrumBandInfo> bandsToRemove{};
+    for (auto it = m_niChanges.begin(); it != m_niChanges.end(); ++it)
     {
         if (!IsBandInFrequencyRange(it->first, freqRange))
         {
-            it++;
             continue;
         }
         const auto frequencies = it->first.frequencies;
@@ -281,14 +293,12 @@ InterferenceHelper::UpdateBands(const std::vector<WifiSpectrumBandInfo>& bands,
         if (!found)
         {
             // band does not belong to the new bands, erase it
-            m_firstPowers.erase(it->first);
-            it->second.clear();
-            it = m_niChanges.erase(it);
+            bandsToRemove.emplace_back(it->first);
         }
-        else
-        {
-            it++;
-        }
+    }
+    for (const auto& band : bandsToRemove)
+    {
+        RemoveBand(band);
     }
     for (const auto& band : bands)
     {
