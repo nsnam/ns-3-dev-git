@@ -706,21 +706,19 @@ LteFfrDistributedAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti,
     }
 
     NS_ASSERT(it1 != m_ueMeasures.end());
-    Ptr<UeMeasure> cellMeasures;
     std::map<uint16_t, Ptr<UeMeasure>>::iterator it2;
     it2 = it1->second.find(cellId);
 
     if (it2 != it1->second.end())
     {
-        cellMeasures = it2->second;
-        cellMeasures->m_cellId = cellId;
-        cellMeasures->m_rsrp = rsrp;
-        cellMeasures->m_rsrq = rsrq;
+        it2->second->m_cellId = cellId;
+        it2->second->m_rsrp = rsrp;
+        it2->second->m_rsrq = rsrq;
     }
     else
     {
         // insert a new cell entry
-        cellMeasures = Create<UeMeasure>();
+        Ptr<UeMeasure> cellMeasures = Create<UeMeasure>();
         cellMeasures->m_cellId = cellId;
         cellMeasures->m_rsrp = rsrp;
         cellMeasures->m_rsrq = rsrq;
