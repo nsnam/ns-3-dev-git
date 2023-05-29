@@ -102,7 +102,6 @@ MakeObjectVectorAccessor(U T::*memberVector)
                 {
                     *index = k;
                     return *j;
-                    break;
                 }
             }
             NS_ASSERT(false);

@@ -222,7 +222,6 @@ EpcUeNas::Send(Ptr<Packet> packet, uint16_t protocolNumber)
     default:
         NS_LOG_WARN(this << " NAS OFF, discarding packet");
         return false;
-        break;
     }
 }
 

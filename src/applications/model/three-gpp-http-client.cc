@@ -169,29 +169,21 @@ ThreeGppHttpClient::GetStateString(ThreeGppHttpClient::State_t state)
     {
     case NOT_STARTED:
         return "NOT_STARTED";
-        break;
     case CONNECTING:
         return "CONNECTING";
-        break;
     case EXPECTING_MAIN_OBJECT:
         return "EXPECTING_MAIN_OBJECT";
-        break;
     case PARSING_MAIN_OBJECT:
         return "PARSING_MAIN_OBJECT";
-        break;
     case EXPECTING_EMBEDDED_OBJECT:
         return "EXPECTING_EMBEDDED_OBJECT";
-        break;
     case READING:
         return "READING";
-        break;
     case STOPPED:
         return "STOPPED";
-        break;
     default:
         NS_FATAL_ERROR("Unknown state");
         return "FATAL_ERROR";
-        break;
     }
 }
 

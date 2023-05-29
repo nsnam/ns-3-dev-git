@@ -361,31 +361,22 @@ CommandPayloadHeader::GetCommandFrameType() const
     {
     case 0x01:
         return ASSOCIATION_REQ;
-        break;
     case 0x02:
         return ASSOCIATION_RESP;
-        break;
     case 0x03:
         return DISASSOCIATION_NOTIF;
-        break;
     case 0x04:
         return DATA_REQ;
-        break;
     case 0x05:
         return PANID_CONFLICT;
-        break;
     case 0x06:
         return ORPHAN_NOTIF;
-        break;
     case 0x07:
         return BEACON_REQ;
-        break;
     case 0x08:
         return COOR_REALIGN;
-        break;
     case 0x09:
         return GTS_REQ;
-        break;
     default:
         return CMD_RESERVED;
     }

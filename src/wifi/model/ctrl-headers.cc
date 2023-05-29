@@ -1876,8 +1876,7 @@ CtrlTriggerHeader::GetTypeString(TriggerFrameType type)
 {
 #define FOO(x)                                                                                     \
     case TriggerFrameType::x:                                                                      \
-        return #x;                                                                                 \
-        break;
+        return #x;
 
     switch (type)
     {

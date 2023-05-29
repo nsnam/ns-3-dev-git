@@ -529,7 +529,6 @@ StaWifiMac::TryToEnsureAssociated()
     {
     case ASSOCIATED:
         return;
-        break;
     case SCANNING:
         /* we have initiated active or passive scanning, continue to wait
            and gather beacons or probe responses until the scanning timeout

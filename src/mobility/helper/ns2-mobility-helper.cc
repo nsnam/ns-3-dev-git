@@ -700,13 +700,10 @@ GetNodeIdString(ParseResult pr)
     {
     case 4: // line like $node_(0) set X_ 11
         return pr.svals[0];
-        break;
     case 7: // line like $ns_ at 4 "$node_(0) set X_ 28"
         return pr.svals[3];
-        break;
     case 8: // line like $ns_ at 1 "$node_(0) setdest 2 3 4"
         return pr.svals[3];
-        break;
     default:
         return "";
     }

@@ -1508,7 +1508,6 @@ PbbMessage::DeserializeMessage(Buffer::Iterator& start)
         break;
     default:
         return nullptr;
-        break;
     }
     newmsg->Deserialize(start);
     return newmsg;
@@ -2434,13 +2433,10 @@ PbbAddressBlock::GetPrefixFlags() const
     {
     case 0:
         return 0;
-        break;
     case 1:
         return AHAS_SINGLE_PRE_LEN;
-        break;
     default:
         return AHAS_MULTI_PRE_LEN;
-        break;
     }
 
     /* Quiet compiler */

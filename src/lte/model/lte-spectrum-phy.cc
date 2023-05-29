@@ -456,12 +456,10 @@ LteSpectrumPhy::StartTxDataFrame(Ptr<PacketBurst> pb,
         m_endTxEvent = Simulator::Schedule(duration, &LteSpectrumPhy::EndTxData, this);
     }
         return false;
-        break;
 
     default:
         NS_FATAL_ERROR("unknown state");
         return true;
-        break;
     }
 }
 
@@ -514,12 +512,10 @@ LteSpectrumPhy::StartTxDlCtrlFrame(std::list<Ptr<LteControlMessage>> ctrlMsgList
         m_endTxEvent = Simulator::Schedule(DL_CTRL_DURATION, &LteSpectrumPhy::EndTxDlCtrl, this);
     }
         return false;
-        break;
 
     default:
         NS_FATAL_ERROR("unknown state");
         return true;
-        break;
     }
 }
 
@@ -570,12 +566,10 @@ LteSpectrumPhy::StartTxUlSrsFrame()
         m_endTxEvent = Simulator::Schedule(UL_SRS_DURATION, &LteSpectrumPhy::EndTxUlSrs, this);
     }
         return false;
-        break;
 
     default:
         NS_FATAL_ERROR("unknown state");
         return true;
-        break;
     }
 }
 

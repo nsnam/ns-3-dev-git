@@ -302,9 +302,7 @@ HalfDuplexIdealPhy::StartTx(Ptr<Packet> p)
     break;
 
     case TX:
-
         return true;
-        break;
     }
     return false;
 }

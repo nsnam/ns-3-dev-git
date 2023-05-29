@@ -65,16 +65,12 @@ LrWpanMacHeader::GetType() const
     {
     case 0:
         return LRWPAN_MAC_BEACON;
-        break;
     case 1:
         return LRWPAN_MAC_DATA;
-        break;
     case 2:
         return LRWPAN_MAC_ACKNOWLEDGMENT;
-        break;
     case 3:
         return LRWPAN_MAC_COMMAND;
-        break;
     default:
         return LRWPAN_MAC_RESERVED;
     }

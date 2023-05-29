@@ -827,16 +827,12 @@ ServiceFlow::GetSchedulingTypeStr() const
     {
     case SF_TYPE_UGS:
         return (char*)"UGS";
-        break;
     case SF_TYPE_RTPS:
         return (char*)"rtPS";
-        break;
     case SF_TYPE_NRTPS:
         return (char*)"nrtPS";
-        break;
     case SF_TYPE_BE:
         return (char*)"BE";
-        break;
     default:
         NS_FATAL_ERROR("Invalid scheduling type");
     }

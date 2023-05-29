@@ -96,14 +96,12 @@ WifiTxTimer::GetReasonString(Reason reason) const
 {
 #define FOO(x)                                                                                     \
     case WAIT_##x:                                                                                 \
-        return #x;                                                                                 \
-        break;
+        return #x;
 
     switch (reason)
     {
     case NOT_RUNNING:
         return "NOT_RUNNING";
-        break;
         FOO(CTS);
         FOO(NORMAL_ACK);
         FOO(BLOCK_ACK);

@@ -161,22 +161,16 @@ WimaxConnection::GetTypeStr() const
     {
     case Cid::BROADCAST:
         return "Broadcast";
-        break;
     case Cid::INITIAL_RANGING:
         return "Initial Ranging";
-        break;
     case Cid::BASIC:
         return "Basic";
-        break;
     case Cid::PRIMARY:
         return "Primary";
-        break;
     case Cid::TRANSPORT:
         return "Transport";
-        break;
     case Cid::MULTICAST:
         return "Multicast";
-        break;
     default:
         NS_FATAL_ERROR("Invalid connection type");
     }

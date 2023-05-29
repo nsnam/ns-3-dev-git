@@ -664,7 +664,6 @@ WifiMacHeader::IsCfAck() const
         return true;
     default:
         return false;
-        break;
     }
 }
 
@@ -1047,8 +1046,7 @@ WifiMacHeader::GetTypeString() const
 {
 #define FOO(x)                                                                                     \
     case WIFI_MAC_##x:                                                                             \
-        return #x;                                                                                 \
-        break;
+        return #x;
 
     switch (GetType())
     {

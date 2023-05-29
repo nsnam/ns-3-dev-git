@@ -102,7 +102,6 @@ MakeObjectMapAccessor(U T::*memberVector)
                 {
                     *index = (*j).first;
                     return (*j).second;
-                    break;
                 }
             }
             NS_ASSERT(false);

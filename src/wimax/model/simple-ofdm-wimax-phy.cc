@@ -690,25 +690,18 @@ SimpleOfdmWimaxPhy::DoGetDataRate(WimaxPhy::ModulationType modulationType) const
     {
     case MODULATION_TYPE_BPSK_12:
         return m_dataRateBpsk12;
-        break;
     case MODULATION_TYPE_QPSK_12:
         return m_dataRateQpsk12;
-        break;
     case MODULATION_TYPE_QPSK_34:
         return m_dataRateQpsk34;
-        break;
     case MODULATION_TYPE_QAM16_12:
         return m_dataRateQam16_12;
-        break;
     case MODULATION_TYPE_QAM16_34:
         return m_dataRateQam16_34;
-        break;
     case MODULATION_TYPE_QAM64_23:
         return m_dataRateQam64_23;
-        break;
     case MODULATION_TYPE_QAM64_34:
         return m_dataRateQam64_34;
-        break;
     }
     NS_FATAL_ERROR("Invalid modulation type");
     return 0;
@@ -893,25 +886,18 @@ SimpleOfdmWimaxPhy::DoGetFrameDuration(uint8_t frameDurationCode) const
     {
     case FRAME_DURATION_2_POINT_5_MS:
         return Seconds(2.5);
-        break;
     case FRAME_DURATION_4_MS:
         return Seconds(4);
-        break;
     case FRAME_DURATION_5_MS:
         return Seconds(5);
-        break;
     case FRAME_DURATION_8_MS:
         return Seconds(8);
-        break;
     case FRAME_DURATION_10_MS:
         return Seconds(10);
-        break;
     case FRAME_DURATION_12_POINT_5_MS:
         return Seconds(12.5);
-        break;
     case FRAME_DURATION_20_MS:
         return Seconds(20);
-        break;
     default:
         NS_FATAL_ERROR("Invalid modulation type");
     }

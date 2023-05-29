@@ -155,17 +155,13 @@ ThreeGppHttpServer::GetStateString(ThreeGppHttpServer::State_t state)
     {
     case NOT_STARTED:
         return "NOT_STARTED";
-        break;
     case STARTED:
         return "STARTED";
-        break;
     case STOPPED:
         return "STOPPED";
-        break;
     default:
         NS_FATAL_ERROR("Unknown state");
         return "FATAL_ERROR";
-        break;
     }
 }
 
