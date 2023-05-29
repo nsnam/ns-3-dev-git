@@ -38,6 +38,7 @@ previous versions.
 The following list contains the set of clang-format versions that are verified
 to produce consistent output among themselves.
 
+* clang-format-17
 * clang-format-16
 * clang-format-15
 * clang-format-14
