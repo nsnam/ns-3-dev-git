@@ -67,3 +67,11 @@ per-commit-gcc-optimized-test:
   variables:
     MODE: optimized
     COMPILER: g++
+
+per-commit-disabled-precompiled-headers:
+  extends: .base-per-commit-compile
+  stage: build
+  variables:
+    MODE: debug
+    COMPILER: g++
+    EXTRA_OPTIONS: --disable-precompiled-headers
