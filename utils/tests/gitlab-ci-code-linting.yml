@@ -94,9 +94,13 @@ emacs-line:
   stage: .pre
   image: ubuntu:latest
   script:
-    - (! egrep -rn --include="*.h" --include="*.cc" --include="*.py" "c-file-style:|py-indent-offset:" ) ||
-      (echo "Found Emacs lines on the above C++ / Python files" && exit 1)
-    - echo "No Emacs lines found on C++ / Python files"
+    - if ( egrep -rn --include="*.h" --include="*.cc" --include="*.c" --include="*.py" --include="*.rst" "c-file-style:|py-indent-offset:" ) ; then
+      echo "Found Emacs lines on the above C/C++, Python and RST files" ;
+      exit 1 ;
+      else
+      echo "No Emacs lines found on C/C++, Python and RST files" ;
+      exit 0 ;
+      fi
   timeout: 1h
 
 # Spell checking
