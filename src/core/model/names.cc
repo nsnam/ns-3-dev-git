@@ -307,7 +307,7 @@ NamesPriv::Clear()
          ++i)
     {
         delete i->second;
-        i->second = 0;
+        i->second = nullptr;
     }
 
     m_objectMap.clear();
