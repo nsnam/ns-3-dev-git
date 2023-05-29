@@ -44,6 +44,7 @@ workflow:
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     - export MPI_CI=1
     - CXX=$COMPILER ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-asserts $ENABLE_MPI
+      $EXTRA_OPTIONS
     - ccache -z
     - if [[ "$CI_JOB_STAGE" == "build" ]];
       then ./ns3 build;
