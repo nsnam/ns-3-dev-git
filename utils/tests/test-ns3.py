@@ -2337,7 +2337,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
         # First enable examples and static build
         return_code, stdout, stderr = run_ns3(
-            "configure -G \"{generator}\" --enable-python-bindings")
+            "configure -G \"{generator}\" --enable-examples --enable-python-bindings")
 
         # If configuration passes, we are half way done
         self.assertEqual(return_code, 0)
