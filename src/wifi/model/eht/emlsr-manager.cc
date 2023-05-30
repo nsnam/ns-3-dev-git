@@ -28,6 +28,7 @@
 #include "ns3/log.h"
 #include "ns3/wifi-mpdu.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-phy-state-helper.h"
 
 namespace ns3
 {
@@ -288,6 +289,20 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
         {
             m_staMac->BlockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
         }
+    }
+
+    // if this TXOP is being started by an aux PHY, wait until the end of RTS transmission
+    // and then have the main PHY take over the TXOP on this link
+    if (m_staMac->GetLinkForPhy(m_mainPhyId) != linkId)
+    {
+        auto stateHelper = m_staMac->GetWifiPhy(linkId)->GetState();
+        NS_ASSERT(stateHelper);
+        NS_ASSERT_MSG(stateHelper->GetState() == TX,
+                      "Expecting the aux PHY to be transmitting (an RTS frame)");
+        Simulator::Schedule(stateHelper->GetDelayUntilIdle(),
+                            &EmlsrManager::SwitchMainPhy,
+                            this,
+                            linkId);
     }
 }
 
