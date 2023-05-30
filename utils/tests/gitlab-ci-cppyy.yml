@@ -1,4 +1,5 @@
 cppyy-22.04:
+  stage: test
   image: ubuntu:22.04 # python 3.10
   rules:
     - if: $RELEASE == "weekly"
@@ -35,6 +36,7 @@ cppyy-22.04:
   timeout: 9h
 
 cppyy-20.04:
+  stage: test
   image: ubuntu:20.04 # python 3.8
   rules:
     - if: $RELEASE == "manual"
@@ -59,6 +61,7 @@ cppyy-20.04:
   timeout: 9h
 
 cppyy-18.04:
+  stage: test
   image: ubuntu:18.04 # python 3.6
   rules:
     - if: $RELEASE == "manual"
@@ -87,10 +90,10 @@ cppyy-18.04:
   timeout: 9h
 
 .manylinux-pip-wheel:
+  stage: test
   image: quay.io/pypa/manylinux_2_28_x86_64
-  only:
-    variables:
-      - $RELEASE == "manual"
+  rules:
+    - if: $RELEASE == "manual"
   script:
     # Untar libraries (just to make CMake happy, but we are not going to actually link them)
     # https://github.com/scikit-build/scikit-build/pull/47
@@ -140,34 +143,34 @@ cppyy-18.04:
   artifacts:
     paths:
       - wheelhouse/*.whl
-  when: on_success
+    when: on_success
 
 manylinux-pip-wheel-py3.6:
   extends: .manylinux-pip-wheel
   variables:
-    PYTHON: 'python3.6'
+    PYTHON: "python3.6"
 
 manylinux-pip-wheel-py3.7:
   extends: .manylinux-pip-wheel
   variables:
-    PYTHON: 'python3.7'
+    PYTHON: "python3.7"
 
 manylinux-pip-wheel-py3.8:
   extends: .manylinux-pip-wheel
   variables:
-    PYTHON: 'python3.8'
+    PYTHON: "python3.8"
 
 manylinux-pip-wheel-py3.9:
   extends: .manylinux-pip-wheel
   variables:
-    PYTHON: 'python3.9'
+    PYTHON: "python3.9"
 
 manylinux-pip-wheel-py3.10:
   extends: .manylinux-pip-wheel
   variables:
-    PYTHON: 'python3.10'
+    PYTHON: "python3.10"
 
 manylinux-pip-wheel-py3.11:
   extends: .manylinux-pip-wheel
   variables:
-    PYTHON: 'python3.11'
+    PYTHON: "python3.11"
