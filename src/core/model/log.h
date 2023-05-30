@@ -100,17 +100,17 @@ enum LogLevel
     LOG_WARN = 0x00000002,       //!< Warning messages.
     LOG_LEVEL_WARN = 0x00000003, //!< LOG_WARN and above.
 
-    LOG_DEBUG = 0x00000004,       //!< Rare ad-hoc debug messages.
-    LOG_LEVEL_DEBUG = 0x00000007, //!< LOG_DEBUG and above.
+    LOG_INFO = 0x00000004,       //!< Something happened to change state.
+    LOG_LEVEL_INFO = 0x00000007, //!< LOG_INFO and above.
 
-    LOG_INFO = 0x00000008,       //!< Informational messages (e.g., banners).
-    LOG_LEVEL_INFO = 0x0000000f, //!< LOG_INFO and above.
+    LOG_FUNCTION = 0x00000008,       //!< Function tracing for non-trivial function calls.
+    LOG_LEVEL_FUNCTION = 0x0000000f, //!< LOG_FUNCTION and above.
 
-    LOG_FUNCTION = 0x00000010,       //!< Function tracing.
-    LOG_LEVEL_FUNCTION = 0x0000001f, //!< LOG_FUNCTION and above.
+    LOG_LOGIC = 0x00000010,       //!< Debugging logs for key branches and decisions in a function.
+    LOG_LEVEL_LOGIC = 0x0000001f, //!< LOG_LOGIC and above.
 
-    LOG_LOGIC = 0x00000020,       //!< Control flow tracing within functions.
-    LOG_LEVEL_LOGIC = 0x0000003f, //!< LOG_LOGIC and above.
+    LOG_DEBUG = 0x00000020,       //!< Full voluminous logging to support debugging.
+    LOG_LEVEL_DEBUG = 0x0000003f, //!< LOG_DEBUG and above.
 
     LOG_ALL = 0x0fffffff,    //!< Print everything.
     LOG_LEVEL_ALL = LOG_ALL, //!< Print everything.

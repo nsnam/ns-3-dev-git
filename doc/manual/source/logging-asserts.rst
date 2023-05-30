@@ -14,8 +14,8 @@ The |ns3| logging facility can be used to monitor or debug the progress
 of simulation programs.  Logging output can be enabled by program statements
 in your ``main()`` program or by the use of the ``NS_LOG`` environment variable.
 
-Logging statements are not compiled into optimized builds of |ns3|.  To use
-logging, one must build the (default) debug build of |ns3|.
+Logging statements are not compiled into ``optimized`` builds of |ns3|.  To use
+logging, one must use the ``default`` or ``debug`` build profiles of |ns3|.
 
 The project makes no guarantee about whether logging output will remain
 the same over time.  Users are cautioned against building simulation output
@@ -29,21 +29,20 @@ Overview
 execution events, such as the occurrence of simulation events or the
 use of a particular function.
 
-For example, this code snippet is from ``Ipv4L3Protocol::IsDestinationAddress()``::
+For example, this code snippet is from ``TcpSocketBase::EnterCwr()`` and informs the user that
+the model is reducing the congestion window and changing state::
 
-  if (address == iaddr.GetBroadcast())
-    {
-      NS_LOG_LOGIC("For me (interface broadcast address)");
-      return true;
-     }
+  NS_LOG_INFO("Enter CWR recovery mode; set cwnd to " << m_tcb->m_cWnd << ", ssthresh to "
+                                                      << m_tcb->m_ssThresh << ", recover to "
+                                                      << m_recover);
 
 If logging has been enabled for the ``Ipv4L3Protocol`` component at a severity
-of ``LOGIC`` or above (see below about log severity), the statement
+of ``INFO`` or above (see below about log severity), the statement
 will be printed out; otherwise, it will be suppressed.
 
 The logging implementation is enabled in ``debug`` and ``default``
 builds, but disabled in all other build profiles,
-so has no impact of execution speed.
+so that it does not impact the execution speed of more optimized profiles.
 
 You can try the example program `log-example.cc` in `src/core/example`
 with various values for the `NS_LOG` environment variable to see the
@@ -138,21 +137,21 @@ Severity and Level Options
 
 Individual messages belong to a single "severity class," set by the macro
 creating the message.  In the example above,
-``NS_LOG_LOGIC(..)`` creates the message in the ``LOG_LOGIC`` severity class.
+``NS_LOG_INFO(..)`` creates the message in the ``LOG_INFO`` severity class.
 
 The following severity classes are defined as ``enum`` constants:
 
-================  =====================================
+================  =========================================================
 Severity Class    Meaning
-================  =====================================
+================  =========================================================
 ``LOG_NONE``      The default, no logging
 ``LOG_ERROR``     Serious error messages only
 ``LOG_WARN``      Warning messages
-``LOG_DEBUG``     For use in debugging
-``LOG_INFO``      Informational
+``LOG_INFO``      Info about the model changing state
 ``LOG_FUNCTION``  Function tracing
-``LOG_LOGIC``     Control flow tracing within functions
-================  =====================================
+``LOG_LOGIC``     For tracing key decision points or branches in a function
+``LOG_DEBUG``     For use in debugging
+================  =========================================================
 
 Typically one wants to see messages at a given severity class *and higher*.
 This is done by defining inclusive logging "levels":
@@ -162,10 +161,10 @@ Level                   Meaning
 ======================  ===========================================
 ``LOG_LEVEL_ERROR``     Only ``LOG_ERROR`` severity class messages.
 ``LOG_LEVEL_WARN``      ``LOG_WARN`` and above.
-``LOG_LEVEL_DEBUG``     ``LOG_DEBUG`` and above.
 ``LOG_LEVEL_INFO``      ``LOG_INFO`` and above.
 ``LOG_LEVEL_FUNCTION``  ``LOG_FUNCTION`` and above.
 ``LOG_LEVEL_LOGIC``     ``LOG_LOGIC`` and above.
+``LOG_LEVEL_DEBUG``     ``LOG_DEBUG`` and above.
 ``LOG_LEVEL_ALL``       All severity classes.
 ``LOG_ALL``             Synonym for ``LOG_LEVEL_ALL``
 ======================  ===========================================
@@ -178,10 +177,10 @@ Class         Level
 ============  =================
 ``error``     ``level_error``
 ``warn``      ``level_warn``
-``debug``     ``level_debug``
 ``info``      ``level_info``
 ``function``  ``level_function``
 ``logic``     ``level_logic``
+``debug``     ``level_debug``
 ..            | ``level_all``
               | ``all``
               | ``*``
@@ -193,8 +192,8 @@ For example, ``NS_LOG="*=warn"`` won't output messages with severity ``error``.
 ``debug`` and above.
 
 Severity classes and levels can be combined with the \`|' operator:
-``NS_LOG="*=level_warn|logic"`` will output messages at severity levels
-``error``, ``warn`` and ``logic``.
+``NS_LOG="*=level_warn|debug"`` will output messages at severity levels
+``error``, ``warn`` and ``debug``, but not ``info``, ``function``, or ``logic``.
 
 The ``NS_LOG`` severity level wildcard \`*' and ``all``
 are synonyms for ``level_all``.
@@ -265,10 +264,10 @@ class (``|prefix_level``).
    Scratch Simulator
    [ERROR] error message
    [WARN] warn message
-   [DEBUG] debug message
    [INFO] info message
    [FUNCT] function message
    [LOGIC] logic message
+   [DEBUG] debug message
 
 Time Prefix
 ###########
@@ -415,10 +414,10 @@ Logging Macros
   ``LOG_NONE``      (none needed)
   ``LOG_ERROR``     ``NS_LOG_ERROR(...);``
   ``LOG_WARN``      ``NS_LOG_WARN(...);``
-  ``LOG_DEBUG``     ``NS_LOG_DEBUG(...);``
   ``LOG_INFO``      ``NS_LOG_INFO(...);``
   ``LOG_FUNCTION``  ``NS_LOG_FUNCTION(...);``
   ``LOG_LOGIC``     ``NS_LOG_LOGIC(...);``
+  ``LOG_DEBUG``     ``NS_LOG_DEBUG(...);``
   ================  ==========================
 
   The macros function as output streamers, so anything you can send to
@@ -449,14 +448,20 @@ severity.  This macro does not use any of the prefix options.  Recall
 that logging is only enabled in ``debug``, ``default`` and ``relwithdebinfo``
 builds, so this macro will only produce output in the same builds.
 
+The |ns3| model libraries do not typically use the ``NS_LOG_UNCOND(...)`` macro;
+it is provided for users for assistance with debugging.
+
 Guidelines
 ==========
 
-* Start every class method with ``NS_LOG_FUNCTION(this << args...);``
+* Start every significant class method with ``NS_LOG_FUNCTION(this << args...);``
   This enables easy function call tracing.
 
-  * Except:  don't log operators or explicit copy constructors,
+  * Exception 1:  don't log operators or explicit copy constructors,
     since these will cause infinite recursion and stack overflow.
+
+  * Exception 2:  For simple methods such as getters, avoid function
+    logging because it tends to overload the logging output.
 
   * For methods without arguments use the same form:
     ``NS_LOG_FUNCTION(this);``
@@ -467,26 +472,49 @@ Guidelines
     * Without arguments use ``NS_LOG_FUNCTION_NOARGS();``
 
 * Use ``NS_LOG_ERROR`` for serious error conditions that probably
-  invalidate the simulation execution.
+  invalidate the simulation execution.  Note that in |ns3|, we typically
+  abort the simulation under such conditions rather than log it as
+  an error (which might go undetected if the user is not using logging).
+  The ``NS_ABORT_MSG_IF/UNLESS(cond,msg)`` macros and variants, as well
+  as the lower-level ``NS_FATAL_ERROR(msg)`` macro, can be used to terminate
+  the simulation with an error message.
 
-* Use ``NS_LOG_WARN`` for unusual conditions that may be correctable.
+* Use ``NS_LOG_WARN`` for unusual conditions that are not considered
+  invalid.  An example might be that some resource has been exhausted
+  (e.g., the DHCP server has run out of addresses to allocate).
   Please give some hints as to the nature of the problem and how
   it might be corrected.
 
-* ``NS_LOG_DEBUG`` is usually used in an *ad hoc* way to understand
-  the execution of a model.
+* Use ``NS_LOG_INFO`` for events that cause a state change in the model.
+  Avoid using it for logging periodic events that are not causing a
+  state change (e.g., a Wi-Fi beacon is sent, but all nodes are already
+  associated to the access point).  Try to be efficient in using it;
+  for instance, sending a message is usually an important state change event,
+  but try to capture this event with one single log message at the ``INFO``
+  level rather than multiple.  If multiple log messages are desired to
+  fully capture the event and all of its consequences,  use ``DEBUG`` level
+  for the additional messages.  The intent of this log level is to allow a
+  user to examine the normal operation of a model without becoming overwhelmed
+  by the output.
 
-* Use ``NS_LOG_INFO`` for additional information about the execution,
-  such as the size of a data structure when adding/removing from it.
+* ``NS_LOG_LOGIC`` is used to trace important logic branches or decision points
+  within a function, without dumping all details of the variable states,
+  called function return values, individual iterations, etc.  It may be useful
+  to think of it as a less granular level of function logging than ``DEBUG,``
+  and may not be used by all models (some authors may choose to only use
+  ``DEBUG`` level for full logging).
 
-* Use ``NS_LOG_LOGIC`` to trace important logic branches within a function.
+* ``NS_LOG_DEBUG`` is usually used for full voluminous debugging, and contains
+  much more information than ``NS_LOG_INFO``, such as the detailed execution
+  logic of functions and the values that variables take within those functions.
 
 * Test that your logging changes do not break the code.
   Run some example programs with all log components turned on (e.g.
   ``NS_LOG="***"``).
 
-* Use an explicit cast for any variable of type uint8_t or int8_t,
-  e.g., ``NS_LOG_LOGIC("Variable i is " << static_cast<int>(i));``.
+* Use a unary operator (preferred) or an explicit cast for any variable of type uint8_t or int8_t,
+  e.g., ``NS_LOG_DEBUG("Variable i is " << +i);``.
+  e.g., ``NS_LOG_DEBUG("Variable i is " << static_cast<int>(i));`` or
   Without the cast, the integer is interpreted as a char, and the result
   will be most likely not in line with the expectations.
   This is a well documented C++ 'feature'.
