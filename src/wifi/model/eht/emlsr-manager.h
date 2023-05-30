@@ -130,6 +130,13 @@ class EmlsrManager : public Object
     void NotifyIcfReceived(uint8_t linkId);
 
     /**
+     * Notify the start of an UL TXOP on the given link
+     *
+     * \param linkId the ID of the given link
+     */
+    void NotifyUlTxopStart(uint8_t linkId);
+
+    /**
      * Notify the end of a TXOP on the given link.
      *
      * \param linkId the ID of the given link

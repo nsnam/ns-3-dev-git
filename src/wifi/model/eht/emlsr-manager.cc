@@ -271,6 +271,27 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
 }
 
 void
+EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    if (!m_staMac->IsEmlsrLink(linkId))
+    {
+        NS_LOG_DEBUG("EMLSR is not enabled on link " << +linkId);
+        return;
+    }
+
+    // block transmissions on all other EMLSR links
+    for (auto id : m_staMac->GetLinkIds())
+    {
+        if (id != linkId && m_staMac->IsEmlsrLink(id))
+        {
+            m_staMac->BlockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+        }
+    }
+}
+
+void
 EmlsrManager::NotifyTxopEnd(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);

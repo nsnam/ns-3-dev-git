@@ -148,6 +148,23 @@ EhtFrameExchangeManager::CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const
     return mpdu;
 }
 
+bool
+EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth)
+{
+    NS_LOG_FUNCTION(this << edca << allowedWidth);
+
+    auto started = HeFrameExchangeManager::StartTransmission(edca, allowedWidth);
+
+    if (started && m_staMac && m_staMac->IsEmlsrLink(m_linkId))
+    {
+        // notify the EMLSR Manager of the UL TXOP start on an EMLSR link
+        NS_ASSERT(m_staMac->GetEmlsrManager());
+        m_staMac->GetEmlsrManager()->NotifyUlTxopStart(m_linkId);
+    }
+
+    return started;
+}
+
 void
 EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector)
 {
@@ -497,15 +514,24 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
 {
     NS_LOG_FUNCTION(this << txop);
 
-    // the channel has been released; all EMLSR clients will switch back to listening
-    // operation after a timeout interval of aSIFSTime + aSlotTime + aRxPHYStartDelay
-    auto delay = m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
-    for (const auto& address : m_protectedStas)
+    if (m_apMac)
     {
-        if (GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
+        // the channel has been released; all EMLSR clients will switch back to listening
+        // operation after a timeout interval of aSIFSTime + aSlotTime + aRxPHYStartDelay
+        auto delay = m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
+        for (const auto& address : m_protectedStas)
         {
-            EmlsrSwitchToListening(address, delay);
+            if (GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
+            {
+                EmlsrSwitchToListening(address, delay);
+            }
         }
+    }
+    else if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
+    {
+        // notify the EMLSR Manager of the UL TXOP end
+        NS_ASSERT(m_staMac->GetEmlsrManager());
+        m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId);
     }
 
     HeFrameExchangeManager::NotifyChannelReleased(txop);
