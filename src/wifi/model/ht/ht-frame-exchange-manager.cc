@@ -1016,6 +1016,7 @@ HtFrameExchangeManager::SendPsdu()
         NS_ASSERT(!m_txTimer.IsRunning());
         m_txTimer.Set(WifiTxTimer::WAIT_BLOCK_ACK,
                       timeout,
+                      {m_psdu->GetAddr1()},
                       &HtFrameExchangeManager::BlockAckTimeout,
                       this,
                       m_psdu,

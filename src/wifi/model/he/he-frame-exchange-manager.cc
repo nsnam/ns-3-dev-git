@@ -397,6 +397,7 @@ HeFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
     NS_ASSERT(!m_txTimer.IsRunning());
     m_txTimer.Set(WifiTxTimer::WAIT_CTS_AFTER_MU_RTS,
                   timeout,
+                  m_sentRtsTo,
                   &HeFrameExchangeManager::CtsAfterMuRtsTimeout,
                   this,
                   mpdu,
@@ -516,6 +517,7 @@ HeFrameExchangeManager::SendPsduMap()
     Ptr<WifiMpdu> mpdu = nullptr;
     Ptr<WifiPsdu> psdu = nullptr;
     WifiTxVector txVector;
+    std::set<Mac48Address> staExpectResponseFrom;
 
     // Compute the type of TX timer to set depending on the acknowledgment method
 
@@ -552,10 +554,11 @@ HeFrameExchangeManager::SendPsduMap()
             timerType = WifiTxTimer::WAIT_NORMAL_ACK_AFTER_DL_MU_PPDU;
             responseTxVector =
                 &acknowledgment->stationsReplyingWithNormalAck.begin()->second.ackTxVector;
-            psdu =
-                GetPsduTo(acknowledgment->stationsReplyingWithNormalAck.begin()->first, m_psduMap);
+            auto from = acknowledgment->stationsReplyingWithNormalAck.begin()->first;
+            psdu = GetPsduTo(from, m_psduMap);
             NS_ASSERT(psdu->GetNMpdus() == 1);
             mpdu = *psdu->begin();
+            staExpectResponseFrom.insert(from);
         }
         else if (!acknowledgment->stationsReplyingWithBlockAck.empty())
         {
@@ -563,8 +566,9 @@ HeFrameExchangeManager::SendPsduMap()
             timerType = WifiTxTimer::WAIT_BLOCK_ACK;
             responseTxVector =
                 &acknowledgment->stationsReplyingWithBlockAck.begin()->second.blockAckTxVector;
-            psdu =
-                GetPsduTo(acknowledgment->stationsReplyingWithBlockAck.begin()->first, m_psduMap);
+            auto from = acknowledgment->stationsReplyingWithBlockAck.begin()->first;
+            psdu = GetPsduTo(from, m_psduMap);
+            staExpectResponseFrom.insert(from);
         }
         // else no station will reply immediately
     }
@@ -608,10 +612,9 @@ HeFrameExchangeManager::SendPsduMap()
             // we are transmitting the MU-BAR following the DL MU PPDU after a SIFS.
             // m_psduMap and m_txParams are still the same as when the DL MU PPDU was sent.
             // record the set of stations expected to send a BlockAck frame
-            m_staExpectTbPpduFrom.clear();
             for (auto& station : acknowledgment->stationsReplyingWithBlockAck)
             {
-                m_staExpectTbPpduFrom.insert(station.first);
+                staExpectResponseFrom.insert(station.first);
             }
 
             Ptr<WifiPsdu> triggerPsdu = GetWifiPsdu(m_triggerFrame, acknowledgment->muBarTxVector);
@@ -629,11 +632,11 @@ HeFrameExchangeManager::SendPsduMap()
 
             m_txTimer.Set(WifiTxTimer::WAIT_BLOCK_ACKS_IN_TB_PPDU,
                           timeout,
+                          staExpectResponseFrom,
                           &HeFrameExchangeManager::BlockAcksInTbPpduTimeout,
                           this,
                           &m_psduMap,
-                          &m_staExpectTbPpduFrom,
-                          m_staExpectTbPpduFrom.size());
+                          staExpectResponseFrom.size());
             m_channelAccessManager->NotifyAckTimeoutStartNow(timeout);
 
             ForwardPsduDown(triggerPsdu, acknowledgment->muBarTxVector);
@@ -654,15 +657,13 @@ HeFrameExchangeManager::SendPsduMap()
         WifiDlMuAggregateTf* acknowledgment =
             static_cast<WifiDlMuAggregateTf*>(m_txParams.m_acknowledgment.get());
 
-        // record the set of stations expected to send a BlockAck frame
-        m_staExpectTbPpduFrom.clear();
-
         m_trigVector =
             acknowledgment->stationsReplyingWithBlockAck.begin()->second.blockAckTxVector;
 
+        // record the set of stations expected to send a BlockAck frame
         for (auto& station : acknowledgment->stationsReplyingWithBlockAck)
         {
-            m_staExpectTbPpduFrom.insert(station.first);
+            staExpectResponseFrom.insert(station.first);
             // check that the station that is expected to send a BlockAck frame is
             // actually the receiver of a PSDU
             auto psduMapIt = std::find_if(m_psduMap.begin(),
@@ -705,11 +706,9 @@ HeFrameExchangeManager::SendPsduMap()
             static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
 
         // record the set of stations solicited by this Trigger Frame
-        m_staExpectTbPpduFrom.clear();
-
         for (const auto& station : acknowledgment->stationsReceivingMultiStaBa)
         {
-            m_staExpectTbPpduFrom.insert(station.first.first);
+            staExpectResponseFrom.insert(station.first.first);
         }
 
         // Reset stationsReceivingMultiStaBa, which will be filled as soon as
@@ -732,13 +731,11 @@ HeFrameExchangeManager::SendPsduMap()
         NS_ASSERT(m_apMac);
 
         // record the set of stations solicited by this Trigger Frame
-        m_staExpectTbPpduFrom.clear();
-
         for (const auto& userInfo : trigger)
         {
             auto staIt = m_apMac->GetStaList(m_linkId).find(userInfo.GetAid12());
             NS_ASSERT(staIt != m_apMac->GetStaList(m_linkId).end());
-            m_staExpectTbPpduFrom.insert(staIt->second);
+            staExpectResponseFrom.insert(staIt->second);
         }
 
         timerType = WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF;
@@ -755,10 +752,10 @@ HeFrameExchangeManager::SendPsduMap()
         NS_ASSERT(m_psduMap.size() == 1);
         timerType = WifiTxTimer::WAIT_BLOCK_ACK_AFTER_TB_PPDU;
         NS_ASSERT(m_staMac && m_staMac->IsAssociated());
-        txVector = GetWifiRemoteStationManager()->GetBlockAckTxVector(
-            m_psduMap.begin()->second->GetAddr1(),
-            m_txParams.m_txVector);
+        auto recv = m_psduMap.begin()->second->GetAddr1();
+        txVector = GetWifiRemoteStationManager()->GetBlockAckTxVector(recv, m_txParams.m_txVector);
         responseTxVector = &txVector;
+        staExpectResponseFrom.insert(recv);
     }
     /*
      * QoS Null frames solicited by a BSRP Trigger Frame
@@ -828,6 +825,7 @@ HeFrameExchangeManager::SendPsduMap()
             NS_ASSERT(mpdu);
             m_txTimer.Set(timerType,
                           timeout,
+                          staExpectResponseFrom,
                           &HeFrameExchangeManager::NormalAckTimeout,
                           this,
                           mpdu,
@@ -837,6 +835,7 @@ HeFrameExchangeManager::SendPsduMap()
             NS_ASSERT(psdu);
             m_txTimer.Set(timerType,
                           timeout,
+                          staExpectResponseFrom,
                           &HeFrameExchangeManager::BlockAckTimeout,
                           this,
                           psdu,
@@ -845,25 +844,26 @@ HeFrameExchangeManager::SendPsduMap()
         case WifiTxTimer::WAIT_BLOCK_ACKS_IN_TB_PPDU:
             m_txTimer.Set(timerType,
                           timeout,
+                          staExpectResponseFrom,
                           &HeFrameExchangeManager::BlockAcksInTbPpduTimeout,
                           this,
                           &m_psduMap,
-                          &m_staExpectTbPpduFrom,
-                          m_staExpectTbPpduFrom.size());
+                          staExpectResponseFrom.size());
             break;
         case WifiTxTimer::WAIT_TB_PPDU_AFTER_BASIC_TF:
         case WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF:
             m_txTimer.Set(timerType,
                           timeout,
+                          staExpectResponseFrom,
                           &HeFrameExchangeManager::TbPpduTimeout,
                           this,
                           &m_psduMap,
-                          &m_staExpectTbPpduFrom,
-                          m_staExpectTbPpduFrom.size());
+                          staExpectResponseFrom.size());
             break;
         case WifiTxTimer::WAIT_BLOCK_ACK_AFTER_TB_PPDU:
             m_txTimer.Set(timerType,
                           timeout,
+                          staExpectResponseFrom,
                           &HeFrameExchangeManager::BlockAckAfterTbPpduTimeout,
                           this,
                           m_psduMap.begin()->second,
@@ -1256,20 +1256,19 @@ HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
 }
 
 void
-HeFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap,
-                                      const std::set<Mac48Address>* staMissedTbPpduFrom,
-                                      std::size_t nSolicitedStations)
+HeFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations)
 {
-    NS_LOG_FUNCTION(this << psduMap << staMissedTbPpduFrom->size() << nSolicitedStations);
+    const auto& staMissedTbPpduFrom = m_txTimer.GetStasExpectedToRespond();
+    NS_LOG_FUNCTION(this << psduMap << staMissedTbPpduFrom.size() << nSolicitedStations);
 
     NS_ASSERT(psduMap);
     NS_ASSERT(IsTrigger(*psduMap));
 
     // This method is called if some station(s) did not send a TB PPDU
-    NS_ASSERT(!staMissedTbPpduFrom->empty());
+    NS_ASSERT(!staMissedTbPpduFrom.empty());
     NS_ASSERT(m_edca);
 
-    if (staMissedTbPpduFrom->size() == nSolicitedStations)
+    if (staMissedTbPpduFrom.size() == nSolicitedStations)
     {
         // no station replied, the transmission failed
         m_edca->UpdateFailedCw(m_linkId);
@@ -1286,10 +1285,8 @@ HeFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap,
 }
 
 void
-HeFrameExchangeManager::BlockAcksInTbPpduTimeout(
-    WifiPsduMap* psduMap,
-    const std::set<Mac48Address>* staMissedBlockAckFrom,
-    std::size_t nSolicitedStations)
+HeFrameExchangeManager::BlockAcksInTbPpduTimeout(WifiPsduMap* psduMap,
+                                                 std::size_t nSolicitedStations)
 {
     NS_LOG_FUNCTION(this << psduMap << nSolicitedStations);
 
@@ -1299,11 +1296,12 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout(
                m_txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_TF_MU_BAR));
 
     // This method is called if some station(s) did not send a BlockAck frame in a TB PPDU
-    NS_ASSERT(!staMissedBlockAckFrom->empty());
+    const auto& staMissedBlockAckFrom = m_txTimer.GetStasExpectedToRespond();
+    NS_ASSERT(!staMissedBlockAckFrom.empty());
 
     bool resetCw;
 
-    if (staMissedBlockAckFrom->size() == nSolicitedStations)
+    if (staMissedBlockAckFrom.size() == nSolicitedStations)
     {
         // no station replied, the transmission failed
         // call ReportDataFailed to increase SRC/LRC
@@ -1322,7 +1320,7 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout(
         m_triggerFrame = nullptr;
     }
 
-    for (const auto& sta : *staMissedBlockAckFrom)
+    for (const auto& sta : staMissedBlockAckFrom)
     {
         Ptr<WifiPsdu> psdu = GetPsduTo(sta, *psduMap);
         NS_ASSERT(psdu);
@@ -1346,7 +1344,7 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout(
         m_edca->UpdateFailedCw(m_linkId);
     }
 
-    if (staMissedBlockAckFrom->size() == nSolicitedStations)
+    if (staMissedBlockAckFrom.size() == nSolicitedStations)
     {
         // no station replied, the transmission failed
         TransmissionFailed();
@@ -2191,7 +2189,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
         std::size_t index = acknowledgment->baType.m_bitmapLen.size();
 
-        if (m_staExpectTbPpduFrom.find(sender) == m_staExpectTbPpduFrom.end())
+        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;
@@ -2252,9 +2250,9 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         }
 
         // remove the sender from the set of stations that are expected to send a TB PPDU
-        m_staExpectTbPpduFrom.erase(sender);
+        m_txTimer.GotResponseFrom(sender);
 
-        if (m_staExpectTbPpduFrom.empty())
+        if (m_txTimer.GetStasExpectedToRespond().empty())
         {
             // we do not expect any other BlockAck frame
             m_txTimer.Cancel();
@@ -2280,7 +2278,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     {
         const auto& sender = hdr.GetAddr2();
 
-        if (m_staExpectTbPpduFrom.find(sender) == m_staExpectTbPpduFrom.end())
+        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;
@@ -2294,9 +2292,9 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         NS_LOG_DEBUG("Received a QoS Null frame in a TB PPDU from " << sender);
 
         // remove the sender from the set of stations that are expected to send a TB PPDU
-        m_staExpectTbPpduFrom.erase(sender);
+        m_txTimer.GotResponseFrom(sender);
 
-        if (m_staExpectTbPpduFrom.empty())
+        if (m_txTimer.GetStasExpectedToRespond().empty())
         {
             // we do not expect any other response
             m_txTimer.Cancel();
@@ -2411,13 +2409,15 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                                                m_txParams.m_txVector);
 
             // remove the sender from the set of stations that are expected to send a BlockAck
-            if (m_staExpectTbPpduFrom.erase(sender) == 0)
+            if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
             {
                 NS_LOG_WARN("Received a BlockAck from an unexpected stations: " << sender);
                 return;
             }
 
-            if (m_staExpectTbPpduFrom.empty())
+            m_txTimer.GotResponseFrom(sender);
+
+            if (m_txTimer.GetStasExpectedToRespond().empty())
             {
                 // we do not expect any other BlockAck frame
                 m_txTimer.Cancel();
@@ -2663,7 +2663,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
             static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
         std::size_t index = acknowledgment->baType.m_bitmapLen.size();
 
-        if (m_staExpectTbPpduFrom.find(sender) == m_staExpectTbPpduFrom.end())
+        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;
@@ -2709,9 +2709,9 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
         }
 
         // remove the sender from the set of stations that are expected to send a TB PPDU
-        m_staExpectTbPpduFrom.erase(sender);
+        m_txTimer.GotResponseFrom(sender);
 
-        if (m_staExpectTbPpduFrom.empty())
+        if (m_txTimer.GetStasExpectedToRespond().empty())
         {
             // we do not expect any other BlockAck frame
             m_txTimer.Cancel();
@@ -2736,7 +2736,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
     {
         Mac48Address sender = psdu->GetAddr2();
 
-        if (m_staExpectTbPpduFrom.find(sender) == m_staExpectTbPpduFrom.end())
+        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;
@@ -2752,9 +2752,9 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
         NS_LOG_DEBUG("Received QoS Null frames in a TB PPDU from " << sender);
 
         // remove the sender from the set of stations that are expected to send a TB PPDU
-        m_staExpectTbPpduFrom.erase(sender);
+        m_txTimer.GotResponseFrom(sender);
 
-        if (m_staExpectTbPpduFrom.empty())
+        if (m_txTimer.GetStasExpectedToRespond().empty())
         {
             // we do not expect any other response
             m_txTimer.Cancel();

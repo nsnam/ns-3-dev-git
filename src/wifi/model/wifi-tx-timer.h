@@ -81,12 +81,18 @@ class WifiTxTimer
      * \tparam Args \deduced Type template parameter pack
      * \param reason the reason why the timer was started
      * \param delay the time to the expiration of the timer
+     * \param from the set of stations we expect to receive a response from
      * \param mem_ptr Member method pointer to invoke
      * \param obj The object on which to invoke the member method
      * \param args The arguments to pass to the invoked method
      */
     template <typename MEM, typename OBJ, typename... Args>
-    void Set(Reason reason, const Time& delay, MEM mem_ptr, OBJ obj, Args... args);
+    void Set(Reason reason,
+             const Time& delay,
+             const std::set<Mac48Address>& from,
+             MEM mem_ptr,
+             OBJ obj,
+             Args... args);
 
     /**
      * Reschedule the timer to time out the given amount of time from the moment
@@ -123,6 +129,18 @@ class WifiTxTimer
      * Cancel the timer.
      */
     void Cancel();
+
+    /**
+     * Notify that a response was got from the given station.
+     *
+     * \param from the MAC address of the given station
+     */
+    void GotResponseFrom(const Mac48Address& from);
+
+    /**
+     * \return the set of stations that are still expected to respond
+     */
+    const std::set<Mac48Address>& GetStasExpectedToRespond() const;
 
     /**
      * Get the remaining time until the timer will expire.
@@ -216,18 +234,17 @@ class WifiTxTimer
      * timeout callback.
      *
      * \param psduMap the PSDU map for which not all responses were received
-     * \param missingStations the set of stations that did not respond
      * \param nTotalStations the total number of expected responses
      */
-    void FeedTraceSource(WifiPsduMap* psduMap,
-                         std::set<Mac48Address>* missingStations,
-                         std::size_t nTotalStations);
+    void FeedTraceSource(WifiPsduMap* psduMap, std::size_t nTotalStations);
 
     EventId m_timeoutEvent; //!< the timeout event after a missing response
     Reason m_reason;        //!< the reason why the timer was started
     Ptr<EventImpl> m_impl;  /**< the timer implementation, which contains the bound
                                  callback function and arguments */
     Time m_end;             //!< the absolute time when the timer will expire
+    std::set<Mac48Address>
+        m_staExpectResponseFrom; //!< the set of stations we expect to receive a response from
 
     /// the MPDU response timeout callback
     mutable MpduResponseTimeout m_mpduResponseTimeoutCallback;
@@ -248,13 +265,19 @@ namespace ns3
 
 template <typename MEM, typename OBJ, typename... Args>
 void
-WifiTxTimer::Set(Reason reason, const Time& delay, MEM mem_ptr, OBJ obj, Args... args)
+WifiTxTimer::Set(Reason reason,
+                 const Time& delay,
+                 const std::set<Mac48Address>& from,
+                 MEM mem_ptr,
+                 OBJ obj,
+                 Args... args)
 {
     typedef void (WifiTxTimer::*TimeoutType)(MEM, OBJ, Args...);
 
     m_timeoutEvent = Simulator::Schedule(delay, &WifiTxTimer::Expire, this);
     m_reason = reason;
     m_end = Simulator::Now() + delay;
+    m_staExpectResponseFrom = from;
 
     // create an event to invoke when the timer expires
     m_impl = Ptr<EventImpl>(MakeEvent<TimeoutType>(&WifiTxTimer::Timeout,

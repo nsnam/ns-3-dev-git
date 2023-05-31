@@ -502,6 +502,7 @@ FrameExchangeManager::SendMpdu()
         NS_ASSERT(!m_txTimer.IsRunning());
         m_txTimer.Set(WifiTxTimer::WAIT_NORMAL_ACK,
                       timeout,
+                      {m_mpdu->GetHeader().GetAddr1()},
                       &FrameExchangeManager::NormalAckTimeout,
                       this,
                       m_mpdu,
@@ -727,6 +728,7 @@ FrameExchangeManager::SendRts(const WifiTxParameters& txParams)
     NS_ASSERT(!m_txTimer.IsRunning());
     m_txTimer.Set(WifiTxTimer::WAIT_CTS,
                   timeout,
+                  {receiver},
                   &FrameExchangeManager::CtsTimeout,
                   this,
                   mpdu,

@@ -129,6 +129,19 @@ WifiTxTimer::Cancel()
     NS_LOG_FUNCTION(this << GetReasonString(m_reason));
     m_timeoutEvent.Cancel();
     m_impl = nullptr;
+    m_staExpectResponseFrom.clear();
+}
+
+void
+WifiTxTimer::GotResponseFrom(const Mac48Address& from)
+{
+    m_staExpectResponseFrom.erase(from);
+}
+
+const std::set<Mac48Address>&
+WifiTxTimer::GetStasExpectedToRespond() const
+{
+    return m_staExpectResponseFrom;
 }
 
 Time
@@ -174,13 +187,14 @@ WifiTxTimer::SetPsduMapResponseTimeoutCallback(PsduMapResponseTimeout callback) 
 }
 
 void
-WifiTxTimer::FeedTraceSource(WifiPsduMap* psduMap,
-                             std::set<Mac48Address>* missingStations,
-                             std::size_t nTotalStations)
+WifiTxTimer::FeedTraceSource(WifiPsduMap* psduMap, std::size_t nTotalStations)
 {
     if (!m_psduMapResponseTimeoutCallback.IsNull())
     {
-        m_psduMapResponseTimeoutCallback(m_reason, psduMap, missingStations, nTotalStations);
+        m_psduMapResponseTimeoutCallback(m_reason,
+                                         psduMap,
+                                         &m_staExpectResponseFrom,
+                                         nTotalStations);
     }
 }
 
