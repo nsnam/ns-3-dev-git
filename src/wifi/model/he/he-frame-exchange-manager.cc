@@ -116,15 +116,12 @@ HeFrameExchangeManager::SetWifiMac(const Ptr<WifiMac> mac)
 }
 
 void
-HeFrameExchangeManager::SetWifiPhy(const Ptr<WifiPhy> phy)
+HeFrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDuration)
 {
-    NS_LOG_FUNCTION(this << phy);
-    VhtFrameExchangeManager::SetWifiPhy(phy);
+    NS_LOG_FUNCTION(this << txVector << psduDuration.As(Time::MS));
+    VhtFrameExchangeManager::RxStartIndication(txVector, psduDuration);
     // Cancel intra-BSS NAV reset timer when receiving a frame from the PHY
-    phy->TraceConnectWithoutContext("PhyRxPayloadBegin",
-                                    Callback<void, WifiTxVector, Time>([this](WifiTxVector, Time) {
-                                        m_intraBssNavResetEvent.Cancel();
-                                    }));
+    m_intraBssNavResetEvent.Cancel();
 }
 
 void

@@ -78,7 +78,6 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     uint16_t GetSupportedBaBufferSize() const override;
     bool StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
     void SetWifiMac(const Ptr<WifiMac> mac) override;
-    void SetWifiPhy(const Ptr<WifiPhy> phy) override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
     void CalculateProtectionTime(WifiProtection* protection) const override;
     void SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
@@ -144,7 +143,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
   protected:
     void DoDispose() override;
     void Reset() override;
-
+    void RxStartIndication(WifiTxVector txVector, Time psduDuration) override;
     void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                      RxSignalInfo rxSignalInfo,
                      const WifiTxVector& txVector,
