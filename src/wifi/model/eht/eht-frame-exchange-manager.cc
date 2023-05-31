@@ -180,41 +180,39 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
 
     auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
 
-    if (!m_apMac)
-    {
-        HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
-        UpdateTxopEndOnTxStart(txDuration);
-        return;
-    }
-
-    // check if the EMLSR clients shall switch back to listening operation at the end of this PPDU
-    for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
-    {
-        auto aid = GetWifiRemoteStationManager()->GetAssociationId(*clientIt);
-
-        if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt))
-        {
-            if (GetEmlsrSwitchToListening(psdu, aid, *clientIt))
-            {
-                EmlsrSwitchToListening(*clientIt, txDuration);
-                // this client is no longer involved in the current TXOP
-                clientIt = m_protectedStas.erase(clientIt);
-                continue;
-            }
-            if (!m_responseFromEmlsrClients.IsRunning() && m_txTimer.IsRunning() &&
-                m_txTimer.GetStasExpectedToRespond().count(*clientIt) == 1)
-            {
-                // we expect a response from this EMLSR client
-                m_responseFromEmlsrClients =
-                    Simulator::Schedule(m_txTimer.GetDelayLeft(),
-                                        &EhtFrameExchangeManager::HandleMissingResponses,
-                                        this);
-            }
-        }
-        clientIt++;
-    }
-
     HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
+    UpdateTxopEndOnTxStart(txDuration);
+
+    if (m_apMac)
+    {
+        // check if the EMLSR clients shall switch back to listening operation at the end of this
+        // PPDU
+        for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
+        {
+            auto aid = GetWifiRemoteStationManager()->GetAssociationId(*clientIt);
+
+            if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt))
+            {
+                if (GetEmlsrSwitchToListening(psdu, aid, *clientIt))
+                {
+                    EmlsrSwitchToListening(*clientIt, txDuration);
+                    // this client is no longer involved in the current TXOP
+                    clientIt = m_protectedStas.erase(clientIt);
+                    continue;
+                }
+                if (!m_responseFromEmlsrClients.IsRunning() && m_txTimer.IsRunning() &&
+                    m_txTimer.GetStasExpectedToRespond().count(*clientIt) == 1)
+                {
+                    // we expect a response from this EMLSR client
+                    m_responseFromEmlsrClients =
+                        Simulator::Schedule(m_txTimer.GetDelayLeft(),
+                                            &EhtFrameExchangeManager::HandleMissingResponses,
+                                            this);
+                }
+            }
+            clientIt++;
+        }
+    }
 }
 
 void
@@ -224,43 +222,41 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
 
     auto txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, m_phy->GetPhyBand());
 
-    if (!m_apMac)
-    {
-        HeFrameExchangeManager::ForwardPsduMapDown(psduMap, txVector);
-        UpdateTxopEndOnTxStart(txDuration);
-        return;
-    }
-
-    // check if the EMLSR clients shall switch back to listening operation at the end of this PPDU
-    for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
-    {
-        auto aid = GetWifiRemoteStationManager()->GetAssociationId(*clientIt);
-
-        if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt))
-        {
-            if (auto psduMapIt = psduMap.find(aid);
-                psduMapIt == psduMap.cend() ||
-                GetEmlsrSwitchToListening(psduMapIt->second, aid, *clientIt))
-            {
-                EmlsrSwitchToListening(*clientIt, txDuration);
-                // this client is no longer involved in the current TXOP
-                clientIt = m_protectedStas.erase(clientIt);
-                continue;
-            }
-            if (!m_responseFromEmlsrClients.IsRunning() && m_txTimer.IsRunning() &&
-                m_txTimer.GetStasExpectedToRespond().count(*clientIt) == 1)
-            {
-                // we expect a response from this EMLSR client
-                m_responseFromEmlsrClients =
-                    Simulator::Schedule(m_txTimer.GetDelayLeft(),
-                                        &EhtFrameExchangeManager::HandleMissingResponses,
-                                        this);
-            }
-        }
-        clientIt++;
-    }
-
     HeFrameExchangeManager::ForwardPsduMapDown(psduMap, txVector);
+    UpdateTxopEndOnTxStart(txDuration);
+
+    if (m_apMac)
+    {
+        // check if the EMLSR clients shall switch back to listening operation at the end of this
+        // PPDU
+        for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
+        {
+            auto aid = GetWifiRemoteStationManager()->GetAssociationId(*clientIt);
+
+            if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt))
+            {
+                if (auto psduMapIt = psduMap.find(aid);
+                    psduMapIt == psduMap.cend() ||
+                    GetEmlsrSwitchToListening(psduMapIt->second, aid, *clientIt))
+                {
+                    EmlsrSwitchToListening(*clientIt, txDuration);
+                    // this client is no longer involved in the current TXOP
+                    clientIt = m_protectedStas.erase(clientIt);
+                    continue;
+                }
+                if (!m_responseFromEmlsrClients.IsRunning() && m_txTimer.IsRunning() &&
+                    m_txTimer.GetStasExpectedToRespond().count(*clientIt) == 1)
+                {
+                    // we expect a response from this EMLSR client
+                    m_responseFromEmlsrClients =
+                        Simulator::Schedule(m_txTimer.GetDelayLeft(),
+                                            &EhtFrameExchangeManager::HandleMissingResponses,
+                                            this);
+                }
+            }
+            clientIt++;
+        }
+    }
 }
 
 void
@@ -544,13 +540,41 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
 
     HeFrameExchangeManager::PostProcessFrame(psdu, txVector);
 
-    if (!m_ongoingTxopEnd.IsRunning())
+    if (m_apMac && m_txopHolder == psdu->GetAddr2() &&
+        GetWifiRemoteStationManager()->GetEmlsrEnabled(*m_txopHolder))
     {
-        // nothing to do
-        return;
+        if (!m_ongoingTxopEnd.IsRunning())
+        {
+            // an EMLSR client has started an UL TXOP. We may send a response after a SIFS or
+            // we may receive another frame after a SIFS. Postpone the TXOP end by considering
+            // the latter (which takes longer)
+            auto delay =
+                m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
+            NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
+            m_ongoingTxopEnd = Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this);
+
+            // block transmissions on other links
+            auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(psdu->GetAddr2());
+            NS_ASSERT(mldAddress);
+
+            for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+            {
+                if (linkId != m_linkId &&
+                    m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
+                {
+                    m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                                 *mldAddress,
+                                                 {linkId});
+                }
+            }
+        }
+        else
+        {
+            UpdateTxopEndOnRxEnd();
+        }
     }
 
-    if (m_staMac)
+    if (m_staMac && m_ongoingTxopEnd.IsRunning())
     {
         if (GetEmlsrSwitchToListening(psdu, m_staMac->GetAssociationId(), m_self))
         {
@@ -640,6 +664,12 @@ EhtFrameExchangeManager::TxopEnd()
     if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
     {
         m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId);
+    }
+    else if (m_apMac && m_txopHolder &&
+             GetWifiRemoteStationManager()->GetEmlsrEnabled(*m_txopHolder))
+    {
+        // EMLSR client terminated its TXOP and is back to listening operation
+        EmlsrSwitchToListening(*m_txopHolder, Seconds(0));
     }
 }
 
