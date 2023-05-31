@@ -715,13 +715,14 @@ SpectrumWifiPhyFilterTest::RunOne()
                         std::make_pair(subcarrierGroup.front().first,
                                        subcarrierGroup.back().second);
                     const auto band = HePhy::ConvertHeRuSubcarriers(
-                        bw,
-                        m_rxPhy->GetGuardBandwidth(m_rxChannelWidth),
-                        m_rxPhy->GetOperatingChannel().GetFrequencies(),
-                        m_rxPhy->GetChannelWidth(),
-                        m_rxPhy->GetSubcarrierSpacing(),
-                        subcarrierRange,
-                        i);
+                                          bw,
+                                          m_rxPhy->GetGuardBandwidth(m_rxChannelWidth),
+                                          m_rxPhy->GetOperatingChannel().GetFrequencies(),
+                                          m_rxPhy->GetChannelWidth(),
+                                          m_rxPhy->GetSubcarrierSpacing(),
+                                          subcarrierRange,
+                                          i)
+                                          .front();
                     m_ruBands.insert(band);
                 }
             }

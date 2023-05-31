@@ -58,7 +58,7 @@ YansWifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
 {
     WifiPhy::SetInterferenceHelper(helper);
     // add dummy band for Yans
-    m_interference->AddBand({{0, 0}, {0, 0}});
+    m_interference->AddBand({{{0, 0}}, {{0, 0}}});
 }
 
 YansWifiPhy::~YansWifiPhy()
@@ -122,7 +122,7 @@ YansWifiPhy::GetTxMaskRejectionParams() const
 WifiSpectrumBandInfo
 YansWifiPhy::GetBand(ChannelWidthMhz /*bandWidth*/, uint8_t /*bandIndex*/)
 {
-    return {{0, 0}, {0, 0}};
+    return {{{0, 0}}, {{0, 0}}};
 }
 
 FrequencyRange

@@ -236,7 +236,7 @@ class WifiSpectrumValueHelper
         ChannelWidthMhz channelWidth,
         double txPowerW,
         ChannelWidthMhz guardBandwidth,
-        const WifiSpectrumBandIndices& ru);
+        const std::vector<WifiSpectrumBandIndices>& ru);
 
     /**
      * Create a power spectral density corresponding to the noise
@@ -348,11 +348,13 @@ class WifiSpectrumValueHelper
      * Calculate the power of the specified band composed of uniformly-sized sub-bands.
      *
      * \param psd received Power Spectral Density in W/Hz
-     * \param band a pair of start and stop indexes that defines the band
+     * \param segments a vector of pair of start and stop indexes that defines each segment of the
+     * band
      *
      * \return band power in W
      */
-    static double GetBandPowerW(Ptr<SpectrumValue> psd, const WifiSpectrumBandIndices& band);
+    static double GetBandPowerW(Ptr<SpectrumValue> psd,
+                                const std::vector<WifiSpectrumBandIndices>& segments);
 };
 
 /**

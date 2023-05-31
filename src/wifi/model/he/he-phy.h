@@ -453,9 +453,10 @@ class HePhy : public VhtPhy
      * \return the converted subcarriers
      *
      * This is a helper function to convert HE RU subcarriers, which are relative to the center
-     * frequency subcarrier, to the indexes used by the Spectrum model.
+     * frequency subcarrier, to the indexes used by the Spectrum model. The size of the returned
+     * vector corresponds to the number of segments covered by the HE RU.
      */
-    static WifiSpectrumBandIndices ConvertHeRuSubcarriers(
+    static std::vector<WifiSpectrumBandIndices> ConvertHeRuSubcarriers(
         ChannelWidthMhz bandWidth,
         ChannelWidthMhz guardBandwidth,
         const std::vector<uint16_t>& centerFrequencies,

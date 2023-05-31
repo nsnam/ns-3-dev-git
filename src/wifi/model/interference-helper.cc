@@ -848,8 +848,12 @@ bool
 InterferenceHelper::IsBandInFrequencyRange(const WifiSpectrumBandInfo& band,
                                            const FrequencyRange& freqRange) const
 {
-    return ((band.frequencies.second > (freqRange.minFrequency * 1e6)) &&
-            (band.frequencies.first < (freqRange.maxFrequency * 1e6)));
+    return std::all_of(band.frequencies.cbegin(),
+                       band.frequencies.cend(),
+                       [&freqRange](const auto& freqs) {
+                           return ((freqs.second > (freqRange.minFrequency * 1e6)) &&
+                                   (freqs.first < (freqRange.maxFrequency * 1e6)));
+                       });
 }
 
 bool

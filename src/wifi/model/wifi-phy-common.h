@@ -30,6 +30,7 @@
 #include "ns3/ptr.h"
 
 #include <ostream>
+#include <vector>
 
 /**
  * \file
@@ -60,8 +61,10 @@ using WifiSpectrumBandFrequencies = std::pair<uint64_t, uint64_t>;
 /// WifiSpectrumBandInfo structure containing info about a spectrum band
 struct WifiSpectrumBandInfo
 {
-    WifiSpectrumBandIndices indices;         //!< the start and stop indices of the band
-    WifiSpectrumBandFrequencies frequencies; //!< the start and stop frequencies of the band
+    std::vector<WifiSpectrumBandIndices>
+        indices; //!< the start and stop indices for each segment of the band
+    std::vector<WifiSpectrumBandFrequencies>
+        frequencies; //!< the start and stop frequencies for each segment of the band
 };
 
 /// vector of spectrum bands
@@ -73,13 +76,20 @@ using WifiSpectrumBands = std::vector<WifiSpectrumBandInfo>;
  *
  * \param lhs the band on the left of operator<
  * \param rhs the band on the right of operator<
- * \return true if the start/stop frequencies of left are lower than the start/stop frequencies of
- * right, false otherwise
+ * \return true if the start/stop frequencies of the first segment of left are lower than the
+ * start/stop frequencies of the first segment of right. If the first segment is the same for left
+ * and right, it return true if the start/stop frequencies of the second segment of left are lower
+ * than the start/stop frequencies of the second segment of right. Otherwise, the function return
+ * false.
  */
 inline bool
 operator<(const WifiSpectrumBandInfo& lhs, const WifiSpectrumBandInfo& rhs)
 {
-    return lhs.frequencies < rhs.frequencies;
+    if (lhs.frequencies.front() == rhs.frequencies.front())
+    {
+        return lhs.frequencies.back() < rhs.frequencies.back();
+    }
+    return lhs.frequencies.front() < rhs.frequencies.front();
 }
 
 /**
@@ -92,8 +102,14 @@ operator<(const WifiSpectrumBandInfo& lhs, const WifiSpectrumBandInfo& rhs)
 inline std::ostream&
 operator<<(std::ostream& os, const WifiSpectrumBandInfo& band)
 {
-    os << "indices: [" << band.indices.first << "-" << band.indices.second << "], frequencies: ["
-       << band.frequencies.first << "Hz-" << band.frequencies.second << "Hz]";
+    NS_ASSERT(band.indices.size() == band.frequencies.size());
+    for (std::size_t segmentIndex = 0; segmentIndex < band.indices.size(); ++segmentIndex)
+    {
+        os << "indices segment" << segmentIndex << ": [" << band.indices.at(segmentIndex).first
+           << "-" << band.indices.at(segmentIndex).second << "], frequencies segment"
+           << segmentIndex << ": [" << band.frequencies.at(segmentIndex).first << "Hz-"
+           << band.frequencies.at(segmentIndex).second << "Hz] ";
+    }
     return os;
 }
 

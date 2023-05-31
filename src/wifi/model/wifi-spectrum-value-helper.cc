@@ -653,10 +653,18 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
     ChannelWidthMhz channelWidth,
     double txPowerW,
     ChannelWidthMhz guardBandwidth,
-    const WifiSpectrumBandIndices& ru)
+    const std::vector<WifiSpectrumBandIndices>& ru)
 {
+    auto printRuIndices = [](const std::vector<WifiSpectrumBandIndices>& v) {
+        std::stringstream ss;
+        for (const auto& [start, stop] : v)
+        {
+            ss << start << "-" << stop << " ";
+        }
+        return ss.str();
+    };
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
-                    << channelWidth << txPowerW << guardBandwidth << ru.first << ru.second);
+                    << channelWidth << txPowerW << guardBandwidth << printRuIndices(ru));
     uint32_t carrierSpacing = 78125;
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
@@ -664,18 +672,18 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
     // Build spectrum mask
     auto vit = c->ValuesBegin();
     auto bit = c->ConstBandsBegin();
-    double txPowerPerBandW = (txPowerW / (ru.second - ru.first + 1)); // FIXME: null subcarriers
+    const auto numSubcarriers =
+        std::accumulate(ru.cbegin(), ru.cend(), 0, [](uint32_t sum, const auto& p) {
+            return sum + (p.second - p.first) + 1;
+        });
+    double txPowerPerBandW = (txPowerW / numSubcarriers); // FIXME: null subcarriers
     uint32_t numBands = c->GetSpectrumModel()->GetNumBands();
     for (size_t i = 0; i < numBands; i++, vit++, bit++)
     {
-        if (i < ru.first || i > ru.second) // outside the spectrum mask
-        {
-            *vit = 0.0;
-        }
-        else
-        {
-            *vit = (txPowerPerBandW / (bit->fh - bit->fl));
-        }
+        const auto allocated = std::any_of(ru.cbegin(), ru.cend(), [i](const auto& p) {
+            return (i >= p.first && i <= p.second);
+        });
+        *vit = allocated ? (txPowerPerBandW / (bit->fh - bit->fl)) : 0.0;
     }
 
     return c;
@@ -1131,28 +1139,30 @@ WifiSpectrumValueHelper::DbmToW(double dBm)
 }
 
 double
-WifiSpectrumValueHelper::GetBandPowerW(Ptr<SpectrumValue> psd, const WifiSpectrumBandIndices& band)
+WifiSpectrumValueHelper::GetBandPowerW(Ptr<SpectrumValue> psd,
+                                       const std::vector<WifiSpectrumBandIndices>& segments)
 {
-    auto valueIt = psd->ConstValuesBegin() + band.first;
-    auto end = psd->ConstValuesBegin() + band.second;
-    auto bandIt = psd->ConstBandsBegin() + band.first; // all bands have same width
+    auto powerWattPerHertz{0.0};
+    auto bandIt = psd->ConstBandsBegin() + segments.front().first; // all bands have same width
     const auto bandWidth = (bandIt->fh - bandIt->fl);
     NS_ASSERT_MSG(bandWidth >= 0.0,
                   "Invalid width for subband [" << bandIt->fl << ";" << bandIt->fh << "]");
-    uint32_t index [[maybe_unused]] = 0;
-    auto powerWattPerHertz{0.0};
-    while (valueIt <= end)
+    for (const auto& [start, stop] : segments)
     {
-        NS_ASSERT_MSG(*valueIt >= 0.0,
-                      "Invalid power value " << *valueIt << " in subband " << index);
-        powerWattPerHertz += *valueIt;
-        ++valueIt;
-        ++index;
+        auto valueIt = psd->ConstValuesBegin() + start;
+        auto end = psd->ConstValuesBegin() + stop;
+        uint32_t index [[maybe_unused]] = 0;
+        while (valueIt <= end)
+        {
+            NS_ASSERT_MSG(*valueIt >= 0.0,
+                          "Invalid power value " << *valueIt << " in subband " << index);
+            powerWattPerHertz += *valueIt;
+            ++valueIt;
+            ++index;
+        }
     }
     const auto power = powerWattPerHertz * bandWidth;
-    NS_ASSERT_MSG(power >= 0.0,
-                  "Invalid calculated power " << power << " for band [" << band.first << ";"
-                                              << band.second << "]");
+    NS_ASSERT_MSG(power >= 0.0, "Invalid calculated power " << power);
     return power;
 }
 

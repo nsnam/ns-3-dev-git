@@ -40,6 +40,7 @@
 #include "ns3/spectrum-channel.h"
 
 #include <algorithm>
+#include <numeric>
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT WIFI_PHY_NS_LOG_APPEND_CONTEXT(Ptr(this))
@@ -178,9 +179,15 @@ SpectrumWifiPhy::GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
                                                       GetSubcarrierSpacing(),
                                                       subcarrierRange,
                                                       i);
-                    const auto bandFrequencies =
-                        ConvertIndicesToFrequenciesForInterface(spectrumPhyInterface, bandIndices);
-                    WifiSpectrumBandInfo band = {bandIndices, bandFrequencies};
+
+                    WifiSpectrumBandInfo band{};
+                    for (const auto& indicesPerSegment : bandIndices)
+                    {
+                        band.indices.emplace_back(indicesPerSegment);
+                        band.frequencies.emplace_back(
+                            ConvertIndicesToFrequenciesForInterface(spectrumPhyInterface,
+                                                                    indicesPerSegment));
+                    }
                     std::size_t index =
                         (bw == 160 && phyIndex > nRus / 2 ? phyIndex - nRus / 2 : phyIndex);
                     const auto p20Index = GetOperatingChannel().GetPrimaryChannelIndex(20);
@@ -502,7 +509,13 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     ChannelWidthMhz prevBw = 0;
     for (const auto& band : bands)
     {
-        ChannelWidthMhz bw = (band.frequencies.second - band.frequencies.first) / 1e6;
+        const auto bw =
+            std::accumulate(band.frequencies.cbegin(),
+                            band.frequencies.cend(),
+                            0,
+                            [](ChannelWidthMhz sum, const auto& startStopFreqs) {
+                                return sum + ((startStopFreqs.second - startStopFreqs.first) / 1e6);
+                            });
         NS_ASSERT(bw <= channelWidth);
         index = ((bw != prevBw) ? 0 : (index + 1));
         double rxPowerPerBandW =
@@ -695,9 +708,19 @@ SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyIn
                                      uint8_t bandIndex /* = 0 */)
 {
     const auto channelWidth = spectrumPhyInterface->GetChannelWidth();
-    NS_ASSERT_MSG(bandWidth <= (channelWidth / spectrumPhyInterface->GetCenterFrequencies().size()),
-                  "Bandwidth cannot exceed segment width");
+    NS_ASSERT_MSG(bandWidth <= channelWidth,
+                  "Bandwidth cannot exceed total operating channel width");
     const auto subcarrierSpacing = GetSubcarrierSpacing();
+    WifiSpectrumBandInfo bandInfo;
+    std::size_t numSegments = 1;
+    if (const auto segmentWidth =
+            (channelWidth / spectrumPhyInterface->GetCenterFrequencies().size());
+        bandWidth > segmentWidth)
+    {
+        NS_ASSERT(bandIndex == 0);
+        numSegments = spectrumPhyInterface->GetCenterFrequencies().size();
+        bandWidth /= spectrumPhyInterface->GetCenterFrequencies().size();
+    }
     const auto numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
     auto numBandsInChannel = static_cast<size_t>(channelWidth * 1e6 / subcarrierSpacing);
     const auto numBands = channelWidth / bandWidth;
@@ -709,31 +732,37 @@ SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyIn
     size_t totalNumBands = rxSpectrumModel->GetNumBands();
     NS_ASSERT_MSG((numBandsInChannel % 2 == 1) && (totalNumBands % 2 == 1),
                   "Should have odd number of bands");
-    NS_ASSERT_MSG(bandIndex < numBands, "Band index is out of bound");
-    NS_ASSERT(totalNumBands >= numBandsInChannel);
-    const auto numBandsBetweenSegments =
-        GetNumBandsBetweenSegments(spectrumPhyInterface->GetCenterFrequencies(),
-                                   channelWidth,
-                                   GetSubcarrierSpacing());
-    auto startIndex = ((totalNumBands - numBandsInChannel - numBandsBetweenSegments) / 2) +
-                      (bandIndex * numBandsInBand);
-    if (bandIndex >= (numBands / 2))
+    for (std::size_t segmentIndex = 0; segmentIndex < numSegments; ++segmentIndex)
     {
-        startIndex += numBandsBetweenSegments;
+        NS_ASSERT_MSG(bandIndex < numBands, "Band index is out of bound");
+        NS_ASSERT(totalNumBands >= numBandsInChannel);
+        const auto numBandsBetweenSegments =
+            GetNumBandsBetweenSegments(spectrumPhyInterface->GetCenterFrequencies(),
+                                       channelWidth,
+                                       GetSubcarrierSpacing());
+        auto startIndex = ((totalNumBands - numBandsInChannel - numBandsBetweenSegments) / 2) +
+                          (bandIndex * numBandsInBand);
+        if (bandIndex >= (numBands / 2))
+        {
+            startIndex += numBandsBetweenSegments;
+        }
+        auto stopIndex = startIndex + numBandsInBand - 1;
+        auto frequencies =
+            ConvertIndicesToFrequenciesForInterface(spectrumPhyInterface, {startIndex, stopIndex});
+        auto freqRange = spectrumPhyInterface->GetFrequencyRange();
+        NS_ASSERT(frequencies.first >= (freqRange.minFrequency * 1e6));
+        NS_ASSERT(frequencies.second <= (freqRange.maxFrequency * 1e6));
+        NS_ASSERT((frequencies.second - frequencies.first) == (bandWidth * 1e6));
+        if (startIndex >= totalNumBands / 2)
+        {
+            // step past DC
+            startIndex += 1;
+        }
+        bandInfo.indices.emplace_back(startIndex, stopIndex);
+        bandInfo.frequencies.emplace_back(frequencies);
+        ++bandIndex;
     }
-    auto stopIndex = startIndex + numBandsInBand - 1;
-    auto frequencies =
-        ConvertIndicesToFrequenciesForInterface(spectrumPhyInterface, {startIndex, stopIndex});
-    auto freqRange = spectrumPhyInterface->GetFrequencyRange();
-    NS_ASSERT(frequencies.first >= (freqRange.minFrequency * 1e6));
-    NS_ASSERT(frequencies.second <= (freqRange.maxFrequency * 1e6));
-    NS_ASSERT((frequencies.second - frequencies.first) == (bandWidth * 1e6));
-    if (startIndex >= totalNumBands / 2)
-    {
-        // step past DC
-        startIndex += 1;
-    }
-    return {{startIndex, stopIndex}, frequencies};
+    return bandInfo;
 }
 
 WifiSpectrumBandInfo
