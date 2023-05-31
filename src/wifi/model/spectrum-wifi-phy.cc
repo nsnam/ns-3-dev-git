@@ -137,7 +137,7 @@ SpectrumWifiPhy::ComputeBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
     }
     else
     {
-        for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
+        for (uint16_t bw = channelWidth; bw >= 20; bw = bw / 2)
         {
             for (uint32_t i = 0; i < (channelWidth / bw); ++i)
             {
@@ -154,7 +154,7 @@ SpectrumWifiPhy::GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface
 {
     HeRuBands heRuBands{};
     const auto channelWidth = spectrumPhyInterface->GetChannelWidth();
-    for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
+    for (uint16_t bw = channelWidth; bw >= 20; bw = bw / 2)
     {
         for (uint32_t i = 0; i < (channelWidth / bw); ++i)
         {
