@@ -94,7 +94,7 @@ WifiTxTimer::GetReason() const
 std::string
 WifiTxTimer::GetReasonString(Reason reason) const
 {
-#define FOO(x)                                                                                     \
+#define CASE_REASON(x)                                                                             \
     case WAIT_##x:                                                                                 \
         return #x;
 
@@ -102,19 +102,19 @@ WifiTxTimer::GetReasonString(Reason reason) const
     {
     case NOT_RUNNING:
         return "NOT_RUNNING";
-        FOO(CTS);
-        FOO(NORMAL_ACK);
-        FOO(BLOCK_ACK);
-        FOO(CTS_AFTER_MU_RTS);
-        FOO(NORMAL_ACK_AFTER_DL_MU_PPDU);
-        FOO(BLOCK_ACKS_IN_TB_PPDU);
-        FOO(TB_PPDU_AFTER_BASIC_TF);
-        FOO(QOS_NULL_AFTER_BSRP_TF);
-        FOO(BLOCK_ACK_AFTER_TB_PPDU);
+        CASE_REASON(CTS);
+        CASE_REASON(NORMAL_ACK);
+        CASE_REASON(BLOCK_ACK);
+        CASE_REASON(CTS_AFTER_MU_RTS);
+        CASE_REASON(NORMAL_ACK_AFTER_DL_MU_PPDU);
+        CASE_REASON(BLOCK_ACKS_IN_TB_PPDU);
+        CASE_REASON(TB_PPDU_AFTER_BASIC_TF);
+        CASE_REASON(QOS_NULL_AFTER_BSRP_TF);
+        CASE_REASON(BLOCK_ACK_AFTER_TB_PPDU);
     default:
         NS_ABORT_MSG("Unknown reason");
     }
-#undef FOO
+#undef CASE_REASON
 }
 
 bool

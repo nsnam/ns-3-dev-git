@@ -1044,55 +1044,55 @@ WifiMacHeader::GetSize() const
 const char*
 WifiMacHeader::GetTypeString() const
 {
-#define FOO(x)                                                                                     \
+#define CASE_WIFI_MAC_TYPE(x)                                                                      \
     case WIFI_MAC_##x:                                                                             \
         return #x;
 
     switch (GetType())
     {
-        FOO(CTL_RTS);
-        FOO(CTL_CTS);
-        FOO(CTL_ACK);
-        FOO(CTL_BACKREQ);
-        FOO(CTL_BACKRESP);
-        FOO(CTL_END);
-        FOO(CTL_END_ACK);
-        FOO(CTL_PSPOLL);
-        FOO(CTL_TRIGGER);
+        CASE_WIFI_MAC_TYPE(CTL_RTS);
+        CASE_WIFI_MAC_TYPE(CTL_CTS);
+        CASE_WIFI_MAC_TYPE(CTL_ACK);
+        CASE_WIFI_MAC_TYPE(CTL_BACKREQ);
+        CASE_WIFI_MAC_TYPE(CTL_BACKRESP);
+        CASE_WIFI_MAC_TYPE(CTL_END);
+        CASE_WIFI_MAC_TYPE(CTL_END_ACK);
+        CASE_WIFI_MAC_TYPE(CTL_PSPOLL);
+        CASE_WIFI_MAC_TYPE(CTL_TRIGGER);
 
-        FOO(MGT_BEACON);
-        FOO(MGT_ASSOCIATION_REQUEST);
-        FOO(MGT_ASSOCIATION_RESPONSE);
-        FOO(MGT_DISASSOCIATION);
-        FOO(MGT_REASSOCIATION_REQUEST);
-        FOO(MGT_REASSOCIATION_RESPONSE);
-        FOO(MGT_PROBE_REQUEST);
-        FOO(MGT_PROBE_RESPONSE);
-        FOO(MGT_AUTHENTICATION);
-        FOO(MGT_DEAUTHENTICATION);
-        FOO(MGT_ACTION);
-        FOO(MGT_ACTION_NO_ACK);
-        FOO(MGT_MULTIHOP_ACTION);
+        CASE_WIFI_MAC_TYPE(MGT_BEACON);
+        CASE_WIFI_MAC_TYPE(MGT_ASSOCIATION_REQUEST);
+        CASE_WIFI_MAC_TYPE(MGT_ASSOCIATION_RESPONSE);
+        CASE_WIFI_MAC_TYPE(MGT_DISASSOCIATION);
+        CASE_WIFI_MAC_TYPE(MGT_REASSOCIATION_REQUEST);
+        CASE_WIFI_MAC_TYPE(MGT_REASSOCIATION_RESPONSE);
+        CASE_WIFI_MAC_TYPE(MGT_PROBE_REQUEST);
+        CASE_WIFI_MAC_TYPE(MGT_PROBE_RESPONSE);
+        CASE_WIFI_MAC_TYPE(MGT_AUTHENTICATION);
+        CASE_WIFI_MAC_TYPE(MGT_DEAUTHENTICATION);
+        CASE_WIFI_MAC_TYPE(MGT_ACTION);
+        CASE_WIFI_MAC_TYPE(MGT_ACTION_NO_ACK);
+        CASE_WIFI_MAC_TYPE(MGT_MULTIHOP_ACTION);
 
-        FOO(DATA);
-        FOO(DATA_CFACK);
-        FOO(DATA_CFPOLL);
-        FOO(DATA_CFACK_CFPOLL);
-        FOO(DATA_NULL);
-        FOO(DATA_NULL_CFACK);
-        FOO(DATA_NULL_CFPOLL);
-        FOO(DATA_NULL_CFACK_CFPOLL);
-        FOO(QOSDATA);
-        FOO(QOSDATA_CFACK);
-        FOO(QOSDATA_CFPOLL);
-        FOO(QOSDATA_CFACK_CFPOLL);
-        FOO(QOSDATA_NULL);
-        FOO(QOSDATA_NULL_CFPOLL);
-        FOO(QOSDATA_NULL_CFACK_CFPOLL);
+        CASE_WIFI_MAC_TYPE(DATA);
+        CASE_WIFI_MAC_TYPE(DATA_CFACK);
+        CASE_WIFI_MAC_TYPE(DATA_CFPOLL);
+        CASE_WIFI_MAC_TYPE(DATA_CFACK_CFPOLL);
+        CASE_WIFI_MAC_TYPE(DATA_NULL);
+        CASE_WIFI_MAC_TYPE(DATA_NULL_CFACK);
+        CASE_WIFI_MAC_TYPE(DATA_NULL_CFPOLL);
+        CASE_WIFI_MAC_TYPE(DATA_NULL_CFACK_CFPOLL);
+        CASE_WIFI_MAC_TYPE(QOSDATA);
+        CASE_WIFI_MAC_TYPE(QOSDATA_CFACK);
+        CASE_WIFI_MAC_TYPE(QOSDATA_CFPOLL);
+        CASE_WIFI_MAC_TYPE(QOSDATA_CFACK_CFPOLL);
+        CASE_WIFI_MAC_TYPE(QOSDATA_NULL);
+        CASE_WIFI_MAC_TYPE(QOSDATA_NULL_CFPOLL);
+        CASE_WIFI_MAC_TYPE(QOSDATA_NULL_CFACK_CFPOLL);
     default:
         return "ERROR";
     }
-#undef FOO
+#undef CASE_WIFI_MAC_TYPE
 #ifndef _WIN32
     // needed to make gcc 4.0.1 ppc darwin happy.
     return "BIG_ERROR";
