@@ -1439,22 +1439,26 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
                               edcaParameters->GetBeCWmin(),
                               edcaParameters->GetBeCWmax(),
                               edcaParameters->GetBeAifsn(),
-                              32 * MicroSeconds(edcaParameters->GetBeTxopLimit()));
+                              32 * MicroSeconds(edcaParameters->GetBeTxopLimit()),
+                              linkId);
             SetEdcaParameters(AC_BK,
                               edcaParameters->GetBkCWmin(),
                               edcaParameters->GetBkCWmax(),
                               edcaParameters->GetBkAifsn(),
-                              32 * MicroSeconds(edcaParameters->GetBkTxopLimit()));
+                              32 * MicroSeconds(edcaParameters->GetBkTxopLimit()),
+                              linkId);
             SetEdcaParameters(AC_VI,
                               edcaParameters->GetViCWmin(),
                               edcaParameters->GetViCWmax(),
                               edcaParameters->GetViAifsn(),
-                              32 * MicroSeconds(edcaParameters->GetViTxopLimit()));
+                              32 * MicroSeconds(edcaParameters->GetViTxopLimit()),
+                              linkId);
             SetEdcaParameters(AC_VO,
                               edcaParameters->GetVoCWmin(),
                               edcaParameters->GetVoCWmax(),
                               edcaParameters->GetVoAifsn(),
-                              32 * MicroSeconds(edcaParameters->GetVoTxopLimit()));
+                              32 * MicroSeconds(edcaParameters->GetVoTxopLimit()),
+                              linkId);
         }
         GetWifiRemoteStationManager(linkId)->SetQosSupport(apAddr, qosSupported);
 
@@ -1533,22 +1537,26 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
                                 muEdcaParameters->GetMuCwMin(AC_BE),
                                 muEdcaParameters->GetMuCwMax(AC_BE),
                                 muEdcaParameters->GetMuAifsn(AC_BE),
-                                muEdcaParameters->GetMuEdcaTimer(AC_BE));
+                                muEdcaParameters->GetMuEdcaTimer(AC_BE),
+                                linkId);
             SetMuEdcaParameters(AC_BK,
                                 muEdcaParameters->GetMuCwMin(AC_BK),
                                 muEdcaParameters->GetMuCwMax(AC_BK),
                                 muEdcaParameters->GetMuAifsn(AC_BK),
-                                muEdcaParameters->GetMuEdcaTimer(AC_BK));
+                                muEdcaParameters->GetMuEdcaTimer(AC_BK),
+                                linkId);
             SetMuEdcaParameters(AC_VI,
                                 muEdcaParameters->GetMuCwMin(AC_VI),
                                 muEdcaParameters->GetMuCwMax(AC_VI),
                                 muEdcaParameters->GetMuAifsn(AC_VI),
-                                muEdcaParameters->GetMuEdcaTimer(AC_VI));
+                                muEdcaParameters->GetMuEdcaTimer(AC_VI),
+                                linkId);
             SetMuEdcaParameters(AC_VO,
                                 muEdcaParameters->GetMuCwMin(AC_VO),
                                 muEdcaParameters->GetMuCwMax(AC_VO),
                                 muEdcaParameters->GetMuAifsn(AC_VO),
-                                muEdcaParameters->GetMuEdcaTimer(AC_VO));
+                                muEdcaParameters->GetMuEdcaTimer(AC_VO),
+                                linkId);
         }
 
         if (!GetEhtSupported())
@@ -1718,13 +1726,14 @@ StaWifiMac::SetEdcaParameters(AcIndex ac,
                               uint32_t cwMin,
                               uint32_t cwMax,
                               uint8_t aifsn,
-                              Time txopLimit)
+                              Time txopLimit,
+                              uint8_t linkId)
 {
     Ptr<QosTxop> edca = GetQosTxop(ac);
-    edca->SetMinCw(cwMin, SINGLE_LINK_OP_ID);
-    edca->SetMaxCw(cwMax, SINGLE_LINK_OP_ID);
-    edca->SetAifsn(aifsn, SINGLE_LINK_OP_ID);
-    edca->SetTxopLimit(txopLimit, SINGLE_LINK_OP_ID);
+    edca->SetMinCw(cwMin, linkId);
+    edca->SetMaxCw(cwMax, linkId);
+    edca->SetAifsn(aifsn, linkId);
+    edca->SetTxopLimit(txopLimit, linkId);
 }
 
 void
@@ -1732,13 +1741,14 @@ StaWifiMac::SetMuEdcaParameters(AcIndex ac,
                                 uint16_t cwMin,
                                 uint16_t cwMax,
                                 uint8_t aifsn,
-                                Time muEdcaTimer)
+                                Time muEdcaTimer,
+                                uint8_t linkId)
 {
     Ptr<QosTxop> edca = GetQosTxop(ac);
-    edca->SetMuCwMin(cwMin, SINGLE_LINK_OP_ID);
-    edca->SetMuCwMax(cwMax, SINGLE_LINK_OP_ID);
-    edca->SetMuAifsn(aifsn, SINGLE_LINK_OP_ID);
-    edca->SetMuEdcaTimer(muEdcaTimer, SINGLE_LINK_OP_ID);
+    edca->SetMuCwMin(cwMin, linkId);
+    edca->SetMuCwMax(cwMax, linkId);
+    edca->SetMuAifsn(aifsn, linkId);
+    edca->SetMuEdcaTimer(muEdcaTimer, linkId);
 }
 
 void

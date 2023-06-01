@@ -501,33 +501,37 @@ class StaWifiMac : public WifiMac
      */
     void SetState(MacState value);
     /**
-     * Set the EDCA parameters.
+     * Set the EDCA parameters for the given link.
      *
      * \param ac the access class
      * \param cwMin the minimum contention window size
      * \param cwMax the maximum contention window size
      * \param aifsn the number of slots that make up an AIFS
      * \param txopLimit the TXOP limit
+     * \param linkId the ID of the given link
      */
     void SetEdcaParameters(AcIndex ac,
                            uint32_t cwMin,
                            uint32_t cwMax,
                            uint8_t aifsn,
-                           Time txopLimit);
+                           Time txopLimit,
+                           uint8_t linkId);
     /**
-     * Set the MU EDCA parameters.
+     * Set the MU EDCA parameters for the given link.
      *
      * \param ac the Access Category
      * \param cwMin the minimum contention window size
      * \param cwMax the maximum contention window size
      * \param aifsn the number of slots that make up an AIFS
      * \param muEdcaTimer the MU EDCA timer
+     * \param linkId the ID of the given link
      */
     void SetMuEdcaParameters(AcIndex ac,
                              uint16_t cwMin,
                              uint16_t cwMax,
                              uint8_t aifsn,
-                             Time muEdcaTimer);
+                             Time muEdcaTimer,
+                             uint8_t linkId);
     /**
      * Return the Capability information for the given link.
      *
