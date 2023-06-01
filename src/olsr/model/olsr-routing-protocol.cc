@@ -2414,7 +2414,7 @@ RoutingProtocol::RemoveDuplicateTuple(const DuplicateTuple& tuple)
 }
 
 void
-RoutingProtocol::LinkTupleAdded(const LinkTuple& tuple, uint8_t willingness)
+RoutingProtocol::LinkTupleAdded(const LinkTuple& tuple, Willingness willingness)
 {
     // Creates associated neighbor tuple
     NeighborTuple nb_tuple;
@@ -2444,7 +2444,7 @@ RoutingProtocol::RemoveLinkTuple(const LinkTuple& tuple)
 }
 
 void
-RoutingProtocol::LinkTupleUpdated(const LinkTuple& tuple, uint8_t willingness)
+RoutingProtocol::LinkTupleUpdated(const LinkTuple& tuple, Willingness willingness)
 {
     // Each time a link tuple changes, the associated neighbor tuple must be recomputed
 

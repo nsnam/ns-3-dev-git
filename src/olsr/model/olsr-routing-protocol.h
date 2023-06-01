@@ -256,11 +256,11 @@ class RoutingProtocol : public Ipv4RoutingProtocol
     uint16_t m_messageSequenceNumber; //!< Messages sequence number counter.
     uint16_t m_ansn;                  //!< Advertised Neighbor Set sequence number.
 
-    Time m_helloInterval;  //!< HELLO messages' emission interval.
-    Time m_tcInterval;     //!< TC messages' emission interval.
-    Time m_midInterval;    //!< MID messages' emission interval.
-    Time m_hnaInterval;    //!< HNA messages' emission interval.
-    uint8_t m_willingness; //!<  Willingness for forwarding packets on behalf of other nodes.
+    Time m_helloInterval;      //!< HELLO messages' emission interval.
+    Time m_tcInterval;         //!< TC messages' emission interval.
+    Time m_midInterval;        //!< MID messages' emission interval.
+    Time m_hnaInterval;        //!< HNA messages' emission interval.
+    Willingness m_willingness; //!< Willingness for forwarding packets on behalf of other nodes.
 
     OlsrState m_state; //!< Internal state with all needed data structs.
     Ptr<Ipv4> m_ipv4;  //!< IPv4 object the routing is linked to.
@@ -614,7 +614,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      * \param tuple The tuple to be added.
      * \param willingness The tuple willingness.
      */
-    void LinkTupleAdded(const LinkTuple& tuple, uint8_t willingness);
+    void LinkTupleAdded(const LinkTuple& tuple, Willingness willingness);
 
     /**
      * \brief Removes a link tuple from the Link Set.
@@ -630,7 +630,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      * \param tuple The link tuple which has been updated.
      * \param willingness The tuple willingness.
      */
-    void LinkTupleUpdated(const LinkTuple& tuple, uint8_t willingness);
+    void LinkTupleUpdated(const LinkTuple& tuple, Willingness willingness);
 
     /**
      * \brief Adds a neighbor tuple to the Neighbor Set.

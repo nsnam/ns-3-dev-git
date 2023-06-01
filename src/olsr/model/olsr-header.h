@@ -20,6 +20,8 @@
 #ifndef OLSR_HEADER_H
 #define OLSR_HEADER_H
 
+#include "olsr-repositories.h"
+
 #include "ns3/header.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
@@ -412,8 +414,8 @@ class MessageHeader : public Header
             return Seconds(EmfToSeconds(this->hTime));
         }
 
-        uint8_t willingness; //!< The willingness of a node to carry and forward traffic for other
-                             //!< nodes.
+        Willingness willingness; //!< The willingness of a node to carry and forward traffic for
+                                 //!< other nodes.
         std::vector<LinkMessage> linkMessages; //!< Link messages container.
 
         /**

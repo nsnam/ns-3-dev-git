@@ -25,6 +25,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
 
+#include <iostream>
 #include <set>
 #include <vector>
 
@@ -50,6 +51,34 @@ enum Willingness : uint8_t
     HIGH = 6,
     ALWAYS = 7,
 };
+
+/**
+ * Stream insertion operator for OLSR willingness.
+ *
+ * \param os Output stream.
+ * \param willingness Willingness.
+ * \return A reference to the output stream.
+ */
+inline std::ostream&
+operator<<(std::ostream& os, Willingness willingness)
+{
+    switch (willingness)
+    {
+    case Willingness::NEVER:
+        return (os << "NEVER");
+    case Willingness::LOW:
+        return (os << "LOW");
+    case Willingness::DEFAULT:
+        return (os << "DEFAULT");
+    case Willingness::HIGH:
+        return (os << "HIGH");
+    case Willingness::ALWAYS:
+        return (os << "ALWAYS");
+    default:
+        return (os << static_cast<uint32_t>(willingness)); // Cast to uint32_t to print correctly
+    }
+    return os;
+}
 
 /// \ingroup olsr
 /// An Interface Association Tuple.
@@ -127,7 +156,7 @@ struct NeighborTuple
 
     /// A value between 0 and 7 specifying the node's willingness to carry traffic on behalf of
     /// other nodes.
-    uint8_t willingness;
+    Willingness willingness;
 };
 
 static inline bool
@@ -142,7 +171,7 @@ operator<<(std::ostream& os, const NeighborTuple& tuple)
 {
     os << "NeighborTuple(neighborMainAddr=" << tuple.neighborMainAddr
        << ", status=" << (tuple.status == NeighborTuple::STATUS_SYM ? "SYM" : "NOT_SYM")
-       << ", willingness=" << (int)tuple.willingness << ")";
+       << ", willingness=" << tuple.willingness << ")";
     return os;
 }
 

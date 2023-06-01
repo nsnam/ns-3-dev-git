@@ -132,7 +132,7 @@ OlsrState::FindSymNeighborTuple(const Ipv4Address& mainAddr) const
 }
 
 NeighborTuple*
-OlsrState::FindNeighborTuple(const Ipv4Address& mainAddr, uint8_t willingness)
+OlsrState::FindNeighborTuple(const Ipv4Address& mainAddr, Willingness willingness)
 {
     for (NeighborSet::iterator it = m_neighborSet.begin(); it != m_neighborSet.end(); it++)
     {

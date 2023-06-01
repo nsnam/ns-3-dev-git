@@ -137,7 +137,7 @@ class OlsrState
      * \param willingness The neighbor willingness.
      * \returns The neighbor tuple, if found. Else it returns a null pointer.
      */
-    NeighborTuple* FindNeighborTuple(const Ipv4Address& mainAddr, uint8_t willingness);
+    NeighborTuple* FindNeighborTuple(const Ipv4Address& mainAddr, Willingness willingness);
 
     /**
      * Erases a neighbor tuple.

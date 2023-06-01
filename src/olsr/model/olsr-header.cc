@@ -399,7 +399,7 @@ void
 MessageHeader::Hello::Print(std::ostream& os) const
 {
     os << " Interval: " << +hTime << " (" << EmfToSeconds(hTime) << "s)";
-    os << " Willingness: " << +willingness;
+    os << " Willingness: " << willingness;
 
     for (const auto& ilinkMessage : linkMessages)
     {
@@ -430,7 +430,7 @@ MessageHeader::Hello::Serialize(Buffer::Iterator start) const
 
     i.WriteU16(0); // Reserved
     i.WriteU8(this->hTime);
-    i.WriteU8(this->willingness);
+    i.WriteU8(static_cast<uint8_t>(this->willingness));
 
     for (std::vector<LinkMessage>::const_iterator iter = this->linkMessages.begin();
          iter != this->linkMessages.end();
@@ -470,7 +470,7 @@ MessageHeader::Hello::Deserialize(Buffer::Iterator start, uint32_t messageSize)
 
     i.ReadNtohU16(); // Reserved
     this->hTime = i.ReadU8();
-    this->willingness = i.ReadU8();
+    this->willingness = Willingness(i.ReadU8());
 
     helloSizeLeft -= 4;
 
