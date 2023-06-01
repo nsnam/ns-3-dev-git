@@ -762,16 +762,8 @@ RoutingProtocol::MprComputation()
         {
             if (neigh->neighborMainAddr == twoHopNeigh->neighborMainAddr)
             {
-                if (neigh->willingness == Willingness::NEVER)
-                {
-                    ok = false;
-                    break;
-                }
-                else
-                {
-                    ok = true;
-                    break;
-                }
+                ok = (neigh->willingness != Willingness::NEVER);
+                break;
             }
         }
         if (!ok)
