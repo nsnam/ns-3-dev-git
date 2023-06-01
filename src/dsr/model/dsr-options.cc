@@ -58,6 +58,7 @@
 #include "ns3/udp-header.h"
 #include "ns3/uinteger.h"
 
+#include <algorithm>
 #include <ctime>
 #include <list>
 #include <map>
@@ -164,14 +165,10 @@ bool
 DsrOptions::ReverseRoutes(std::vector<Ipv4Address>& vec)
 {
     NS_LOG_FUNCTION(this);
-    std::vector<Ipv4Address> vec2(vec);
-    vec.clear(); // To ensure vec is empty before start
-    for (std::vector<Ipv4Address>::reverse_iterator ri = vec2.rbegin(); ri != vec2.rend(); ++ri)
-    {
-        vec.push_back(*ri);
-    }
 
-    return (vec.size() == vec2.size()) && (vec.front() == vec2.back());
+    std::reverse(vec.begin(), vec.end());
+
+    return true;
 }
 
 Ipv4Address

@@ -3654,7 +3654,7 @@ DsrRouting::Receive(Ptr<Packet> p, const Ipv4Header& ip, Ptr<Ipv4Interface> inco
         optionLength =
             dsrOption
                 ->Process(p, packet, m_mainAddress, source, ip, protocol, isPromisc, promiscSource);
-        segmentsLeft = *(data + 3);
+        segmentsLeft = data[3];
         if (optionLength == 0)
         {
             NS_LOG_INFO("Discard this packet");

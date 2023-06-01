@@ -436,13 +436,7 @@ DsrRouteCache::RebuildBestRouteTable(Ipv4Address source)
             }
             route.push_back(source);
             // Reverse the route
-            DsrRouteCacheEntry::IP_VECTOR reverseroute;
-            for (DsrRouteCacheEntry::IP_VECTOR::reverse_iterator j = route.rbegin();
-                 j != route.rend();
-                 ++j)
-            {
-                reverseroute.push_back(*j);
-            }
+            DsrRouteCacheEntry::IP_VECTOR reverseroute(route.rbegin(), route.rend());
             NS_LOG_LOGIC("Add newly calculated best routes");
             PrintVector(reverseroute);
             m_bestRoutesTable_link[i->first] = reverseroute;
