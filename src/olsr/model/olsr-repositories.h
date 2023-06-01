@@ -33,6 +33,24 @@ namespace ns3
 namespace olsr
 {
 
+/**
+ * \ingroup olsr
+ *
+ * Willingness for forwarding packets from other nodes.
+ * The standard defines the following set of values.
+ * Values 0 - 7 are allowed by the standard, but this is not enforced in the code.
+ *
+ * See \RFC{3626} section 18.8
+ */
+enum Willingness : uint8_t
+{
+    NEVER = 0,
+    LOW = 1,
+    DEFAULT = 3, // medium
+    HIGH = 6,
+    ALWAYS = 7,
+};
+
 /// \ingroup olsr
 /// An Interface Association Tuple.
 struct IfaceAssocTuple

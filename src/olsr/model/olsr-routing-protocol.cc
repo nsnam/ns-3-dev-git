@@ -34,6 +34,8 @@
 
 #include "olsr-routing-protocol.h"
 
+#include "olsr-repositories.h"
+
 #include "ns3/boolean.h"
 #include "ns3/enum.h"
 #include "ns3/inet-socket-address.h"

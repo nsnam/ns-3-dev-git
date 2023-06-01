@@ -20,6 +20,7 @@
  */
 
 #include "ns3/ipv4-header.h"
+#include "ns3/olsr-repositories.h"
 #include "ns3/olsr-routing-protocol.h"
 #include "ns3/test.h"
 
