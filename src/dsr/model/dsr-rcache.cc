@@ -219,89 +219,84 @@ DsrRouteCache::LookupRoute(Ipv4Address id, DsrRouteCacheEntry& rt)
     {
         return LookupRoute_Link(id, rt);
     }
-    else
-    {
-        Purge(); // Purge first to remove expired entries
-        if (m_sortedRoutes.empty())
-        {
-            NS_LOG_LOGIC("Route to " << id << " not found; m_sortedRoutes is empty");
-            return false;
-        }
-        std::map<Ipv4Address, std::list<DsrRouteCacheEntry>>::const_iterator i =
-            m_sortedRoutes.find(id);
-        if (i == m_sortedRoutes.end())
-        {
-            NS_LOG_LOGIC("No Direct Route to " << id << " found");
-            for (std::map<Ipv4Address, std::list<DsrRouteCacheEntry>>::const_iterator j =
-                     m_sortedRoutes.begin();
-                 j != m_sortedRoutes.end();
-                 ++j)
-            {
-                std::list<DsrRouteCacheEntry> rtVector =
-                    j->second; // The route cache vector linked with destination address
-                /*
-                 * Loop through the possibly multiple routes within the route vector
-                 */
-                for (std::list<DsrRouteCacheEntry>::const_iterator k = rtVector.begin();
-                     k != rtVector.end();
-                     ++k)
-                {
-                    // return the first route in the route vector
-                    DsrRouteCacheEntry::IP_VECTOR routeVector = k->GetVector();
-                    DsrRouteCacheEntry::IP_VECTOR changeVector;
 
-                    for (DsrRouteCacheEntry::IP_VECTOR::iterator l = routeVector.begin();
-                         l != routeVector.end();
-                         ++l)
+    Purge(); // Purge first to remove expired entries
+    if (m_sortedRoutes.empty())
+    {
+        NS_LOG_LOGIC("Route to " << id << " not found; m_sortedRoutes is empty");
+        return false;
+    }
+    std::map<Ipv4Address, std::list<DsrRouteCacheEntry>>::const_iterator i =
+        m_sortedRoutes.find(id);
+    if (i == m_sortedRoutes.end())
+    {
+        NS_LOG_LOGIC("No Direct Route to " << id << " found");
+        for (std::map<Ipv4Address, std::list<DsrRouteCacheEntry>>::const_iterator j =
+                 m_sortedRoutes.begin();
+             j != m_sortedRoutes.end();
+             ++j)
+        {
+            std::list<DsrRouteCacheEntry> rtVector =
+                j->second; // The route cache vector linked with destination address
+            /*
+             * Loop through the possibly multiple routes within the route vector
+             */
+            for (std::list<DsrRouteCacheEntry>::const_iterator k = rtVector.begin();
+                 k != rtVector.end();
+                 ++k)
+            {
+                // return the first route in the route vector
+                DsrRouteCacheEntry::IP_VECTOR routeVector = k->GetVector();
+                DsrRouteCacheEntry::IP_VECTOR changeVector;
+
+                for (DsrRouteCacheEntry::IP_VECTOR::iterator l = routeVector.begin();
+                     l != routeVector.end();
+                     ++l)
+                {
+                    changeVector.push_back(*l);
+
+                    if (*l == id)
                     {
-                        if (*l != id)
-                        {
-                            changeVector.push_back(*l);
-                        }
-                        else
-                        {
-                            changeVector.push_back(*l);
-                            break;
-                        }
+                        break;
                     }
-                    /*
-                     * When the changed vector is smaller in size and larger than 1, which means we
-                     * have found a route with the destination address we are looking for
-                     */
-                    if ((changeVector.size() < routeVector.size()) && (changeVector.size() > 1))
-                    {
-                        DsrRouteCacheEntry changeEntry; // Create the route entry
-                        changeEntry.SetVector(changeVector);
-                        changeEntry.SetDestination(id);
-                        // Use the expire time from original route entry
-                        changeEntry.SetExpireTime(k->GetExpireTime());
-                        // We need to add new route entry here
-                        std::list<DsrRouteCacheEntry> newVector;
-                        newVector.push_back(changeEntry);
-                        newVector.sort(CompareRoutesExpire); // sort the route vector first
-                        m_sortedRoutes[id] =
-                            newVector; // Only get the first sub route and add it in route cache
-                        NS_LOG_INFO("We have a sub-route to " << id << " add it in route cache");
-                    }
+                }
+                /*
+                 * When the changed vector is smaller in size and larger than 1, which means we
+                 * have found a route with the destination address we are looking for
+                 */
+                if ((changeVector.size() < routeVector.size()) && (changeVector.size() > 1))
+                {
+                    DsrRouteCacheEntry changeEntry; // Create the route entry
+                    changeEntry.SetVector(changeVector);
+                    changeEntry.SetDestination(id);
+                    // Use the expire time from original route entry
+                    changeEntry.SetExpireTime(k->GetExpireTime());
+                    // We need to add new route entry here
+                    std::list<DsrRouteCacheEntry> newVector;
+                    newVector.push_back(changeEntry);
+                    newVector.sort(CompareRoutesExpire); // sort the route vector first
+                    m_sortedRoutes[id] =
+                        newVector; // Only get the first sub route and add it in route cache
+                    NS_LOG_INFO("We have a sub-route to " << id << " add it in route cache");
                 }
             }
         }
-        NS_LOG_INFO("Here we check the route cache again after updated the sub routes");
-        std::map<Ipv4Address, std::list<DsrRouteCacheEntry>>::const_iterator m =
-            m_sortedRoutes.find(id);
-        if (m == m_sortedRoutes.end())
-        {
-            NS_LOG_LOGIC("No updated route till last time");
-            return false;
-        }
-        /*
-         * We have a direct route to the destination address
-         */
-        std::list<DsrRouteCacheEntry> rtVector = m->second;
-        rt = rtVector.front(); // use the first entry in the route vector
-        NS_LOG_LOGIC("Route to " << id << " with route size " << rtVector.size());
-        return true;
     }
+    NS_LOG_INFO("Here we check the route cache again after updated the sub routes");
+    std::map<Ipv4Address, std::list<DsrRouteCacheEntry>>::const_iterator m =
+        m_sortedRoutes.find(id);
+    if (m == m_sortedRoutes.end())
+    {
+        NS_LOG_LOGIC("No updated route till last time");
+        return false;
+    }
+    /*
+     * We have a direct route to the destination address
+     */
+    std::list<DsrRouteCacheEntry> rtVector = m->second;
+    rt = rtVector.front(); // use the first entry in the route vector
+    NS_LOG_LOGIC("Route to " << id << " with route size " << rtVector.size());
+    return true;
 }
 
 void
@@ -468,24 +463,22 @@ DsrRouteCache::LookupRoute_Link(Ipv4Address id, DsrRouteCacheEntry& rt)
         NS_LOG_INFO("No route find to " << id);
         return false;
     }
-    else
-    {
-        if (i->second.size() < 2)
-        {
-            NS_LOG_LOGIC("Route to " << id << " error");
-            return false;
-        }
 
-        DsrRouteCacheEntry newEntry; // Create the route entry
-        newEntry.SetVector(i->second);
-        newEntry.SetDestination(id);
-        newEntry.SetExpireTime(RouteCacheTimeout);
-        NS_LOG_INFO("Route to " << id << " found with the length " << i->second.size());
-        rt = newEntry;
-        std::vector<Ipv4Address> path = rt.GetVector();
-        PrintVector(path);
-        return true;
+    if (i->second.size() < 2)
+    {
+        NS_LOG_LOGIC("Route to " << id << " error");
+        return false;
     }
+
+    DsrRouteCacheEntry newEntry; // Create the route entry
+    newEntry.SetVector(i->second);
+    newEntry.SetDestination(id);
+    newEntry.SetExpireTime(RouteCacheTimeout);
+    NS_LOG_INFO("Route to " << id << " found with the length " << i->second.size());
+    rt = newEntry;
+    std::vector<Ipv4Address> path = rt.GetVector();
+    PrintVector(path);
+    return true;
 }
 
 void
@@ -709,55 +702,54 @@ DsrRouteCache::AddRoute(DsrRouteCacheEntry& rt)
             m_sortedRoutes.insert(std::make_pair(dst, rtVector));
         return result.second;
     }
+
+    rtVector = i->second;
+    NS_LOG_DEBUG("The existing route size " << rtVector.size() << " for destination address "
+                                            << dst);
+    /**
+     * \brief Drop the most aged packet when buffer reaches to max
+     */
+    if (rtVector.size() >= m_maxEntriesEachDst)
+    {
+        RemoveLastEntry(rtVector); // Drop the last entry for the sorted route cache, the route
+                                   // has already been sorted
+    }
+
+    if (FindSameRoute(rt, rtVector))
+    {
+        NS_LOG_DEBUG(
+            "Find same vector, the FindSameRoute function will update the route expire time");
+        return true;
+    }
     else
     {
-        rtVector = i->second;
-        NS_LOG_DEBUG("The existing route size " << rtVector.size() << " for destination address "
-                                                << dst);
-        /**
-         * \brief Drop the most aged packet when buffer reaches to max
-         */
-        if (rtVector.size() >= m_maxEntriesEachDst)
+        // Check if the expire time for the new route has expired or not
+        if (rt.GetExpireTime() > Time(0))
         {
-            RemoveLastEntry(rtVector); // Drop the last entry for the sorted route cache, the route
-                                       // has already been sorted
-        }
-
-        if (FindSameRoute(rt, rtVector))
-        {
-            NS_LOG_DEBUG(
-                "Find same vector, the FindSameRoute function will update the route expire time");
-            return true;
+            rtVector.push_back(rt);
+            // This sort function will sort the route cache entries based on the size of route
+            // in each of the route entries
+            rtVector.sort(CompareRoutesExpire);
+            NS_LOG_DEBUG("The first time" << rtVector.front().GetExpireTime().As(Time::S)
+                                          << " The second time "
+                                          << rtVector.back().GetExpireTime().As(Time::S));
+            NS_LOG_DEBUG("The first hop" << rtVector.front().GetVector().size()
+                                         << " The second hop "
+                                         << rtVector.back().GetVector().size());
+            m_sortedRoutes.erase(dst); // erase the route entries for dst first
+            /**
+             * Save the new route cache along with the destination address in map
+             */
+            std::pair<std::map<Ipv4Address, std::list<DsrRouteCacheEntry>>::iterator, bool> result =
+                m_sortedRoutes.insert(std::make_pair(dst, rtVector));
+            return result.second;
         }
         else
         {
-            // Check if the expire time for the new route has expired or not
-            if (rt.GetExpireTime() > Time(0))
-            {
-                rtVector.push_back(rt);
-                // This sort function will sort the route cache entries based on the size of route
-                // in each of the route entries
-                rtVector.sort(CompareRoutesExpire);
-                NS_LOG_DEBUG("The first time" << rtVector.front().GetExpireTime().As(Time::S)
-                                              << " The second time "
-                                              << rtVector.back().GetExpireTime().As(Time::S));
-                NS_LOG_DEBUG("The first hop" << rtVector.front().GetVector().size()
-                                             << " The second hop "
-                                             << rtVector.back().GetVector().size());
-                m_sortedRoutes.erase(dst); // erase the route entries for dst first
-                /**
-                 * Save the new route cache along with the destination address in map
-                 */
-                std::pair<std::map<Ipv4Address, std::list<DsrRouteCacheEntry>>::iterator, bool>
-                    result = m_sortedRoutes.insert(std::make_pair(dst, rtVector));
-                return result.second;
-            }
-            else
-            {
-                NS_LOG_INFO("The newly found route is already expired");
-            }
+            NS_LOG_INFO("The newly found route is already expired");
         }
     }
+
     return false;
 }
 
@@ -896,14 +888,11 @@ DsrRouteCache::DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
                     }
                     else
                     {
+                        changeVector.push_back(*i);
+
                         if (*(i + 1) == unreachNode)
                         {
-                            changeVector.push_back(*i);
                             break;
-                        }
-                        else
-                        {
-                            changeVector.push_back(*i);
                         }
                     }
                 }
@@ -1108,14 +1097,12 @@ DsrRouteCache::CheckUniqueAckId(Ipv4Address nextHop)
         m_ackIdCache[nextHop] = 1;
         return 1;
     }
-    else
-    {
-        uint16_t ackId = m_ackIdCache[nextHop];
-        NS_LOG_LOGIC("Ack id for " << nextHop << " found in the cache has value " << ackId);
-        ackId++;
-        m_ackIdCache[nextHop] = ackId;
-        return ackId;
-    }
+
+    uint16_t ackId = m_ackIdCache[nextHop];
+    NS_LOG_LOGIC("Ack id for " << nextHop << " found in the cache has value " << ackId);
+    ackId++;
+    m_ackIdCache[nextHop] = ackId;
+    return ackId;
 }
 
 uint16_t

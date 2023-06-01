@@ -145,11 +145,9 @@ DsrRreqTable::GetRreqCnt(Ipv4Address dst)
         NS_LOG_LOGIC("Request table entry not found");
         return 0;
     }
-    else
-    {
-        RreqTableEntry rreqTableEntry = i->second;
-        return rreqTableEntry.m_reqNo;
-    }
+
+    RreqTableEntry rreqTableEntry = i->second;
+    return rreqTableEntry.m_reqNo;
 }
 
 // ----------------------------------------------------------------------------------------------------------
@@ -168,25 +166,23 @@ DsrRreqTable::CheckUniqueRreqId(Ipv4Address dst)
         m_rreqIdCache[dst] = 0;
         return 0;
     }
+
+    NS_LOG_LOGIC("Request id for " << dst << " found in the cache");
+    uint32_t rreqId = m_rreqIdCache[dst];
+    if (rreqId >= m_maxRreqId)
+    {
+        NS_LOG_DEBUG("The request id increase past the max value, " << m_maxRreqId
+                                                                    << " so reset it to 0");
+        rreqId = 0;
+        m_rreqIdCache[dst] = rreqId;
+    }
     else
     {
-        NS_LOG_LOGIC("Request id for " << dst << " found in the cache");
-        uint32_t rreqId = m_rreqIdCache[dst];
-        if (rreqId >= m_maxRreqId)
-        {
-            NS_LOG_DEBUG("The request id increase past the max value, " << m_maxRreqId
-                                                                        << " so reset it to 0");
-            rreqId = 0;
-            m_rreqIdCache[dst] = rreqId;
-        }
-        else
-        {
-            rreqId++;
-            m_rreqIdCache[dst] = rreqId;
-        }
-        NS_LOG_INFO("The Request id for " << dst << " is " << rreqId);
-        return rreqId;
+        rreqId++;
+        m_rreqIdCache[dst] = rreqId;
     }
+    NS_LOG_INFO("The Request id for " << dst << " is " << rreqId);
+    return rreqId;
 }
 
 uint32_t
@@ -276,35 +272,32 @@ DsrRreqTable::FindSourceEntry(Ipv4Address src, Ipv4Address dst, uint16_t id)
         m_sourceRreqMap[src] = receivedRreqEntryList;
         return false;
     }
-    else
-    {
-        NS_LOG_LOGIC("Find the request table entry for  " << src
-                                                          << ", check if it is exact duplicate");
-        /*
-         * Drop the most aged packet when buffer reaches to max
-         */
-        receivedRreqEntryList = i->second;
-        if (receivedRreqEntryList.size() >= m_requestIdSize)
-        {
-            receivedRreqEntryList.pop_front();
-        }
 
-        // We loop the receive rreq entry to find duplicate
-        for (std::list<DsrReceivedRreqEntry>::const_iterator j = receivedRreqEntryList.begin();
-             j != receivedRreqEntryList.end();
-             ++j)
-        {
-            if (*j == rreqEntry) /// Check if we have found one duplication entry or not
-            {
-                return true;
-            }
-        }
-        /// if this entry is not found, we need to save the entry in the cache, and then return
-        /// false for the check
-        receivedRreqEntryList.push_back(rreqEntry);
-        m_sourceRreqMap[src] = receivedRreqEntryList;
-        return false;
+    NS_LOG_LOGIC("Find the request table entry for  " << src << ", check if it is exact duplicate");
+    /*
+     * Drop the most aged packet when buffer reaches to max
+     */
+    receivedRreqEntryList = i->second;
+    if (receivedRreqEntryList.size() >= m_requestIdSize)
+    {
+        receivedRreqEntryList.pop_front();
     }
+
+    // We loop the receive rreq entry to find duplicate
+    for (std::list<DsrReceivedRreqEntry>::const_iterator j = receivedRreqEntryList.begin();
+         j != receivedRreqEntryList.end();
+         ++j)
+    {
+        if (*j == rreqEntry) /// Check if we have found one duplication entry or not
+        {
+            return true;
+        }
+    }
+    /// if this entry is not found, we need to save the entry in the cache, and then return
+    /// false for the check
+    receivedRreqEntryList.push_back(rreqEntry);
+    m_sourceRreqMap[src] = receivedRreqEntryList;
+    return false;
 }
 
 } // namespace dsr

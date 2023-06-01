@@ -186,23 +186,22 @@ DsrOptions::SearchNextHop(Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec
         nextHop = vec[1];
         return nextHop;
     }
-    else
+
+    if (ipv4Address == vec.back())
     {
-        if (ipv4Address == vec.back())
+        NS_LOG_DEBUG("We have reached to the final destination " << ipv4Address << " "
+                                                                 << vec.back());
+        return ipv4Address;
+    }
+    for (std::vector<Ipv4Address>::const_iterator i = vec.begin(); i != vec.end(); ++i)
+    {
+        if (ipv4Address == (*i))
         {
-            NS_LOG_DEBUG("We have reached to the final destination " << ipv4Address << " "
-                                                                     << vec.back());
-            return ipv4Address;
-        }
-        for (std::vector<Ipv4Address>::const_iterator i = vec.begin(); i != vec.end(); ++i)
-        {
-            if (ipv4Address == (*i))
-            {
-                nextHop = *(++i);
-                return nextHop;
-            }
+            nextHop = *(++i);
+            return nextHop;
         }
     }
+
     NS_LOG_DEBUG("next hop address not found, route corrupted");
     Ipv4Address none = "0.0.0.0";
     return none;
@@ -219,17 +218,16 @@ DsrOptions::ReverseSearchNextHop(Ipv4Address ipv4Address, std::vector<Ipv4Addres
         nextHop = vec[0];
         return nextHop;
     }
-    else
+
+    for (std::vector<Ipv4Address>::reverse_iterator ri = vec.rbegin(); ri != vec.rend(); ++ri)
     {
-        for (std::vector<Ipv4Address>::reverse_iterator ri = vec.rbegin(); ri != vec.rend(); ++ri)
+        if (ipv4Address == (*ri))
         {
-            if (ipv4Address == (*ri))
-            {
-                nextHop = *(++ri);
-                return nextHop;
-            }
+            nextHop = *(++ri);
+            return nextHop;
         }
     }
+
     NS_LOG_DEBUG("next hop address not found, route corrupted");
     Ipv4Address none = "0.0.0.0";
     return none;
@@ -288,10 +286,6 @@ DsrOptions::IfDuplicates(std::vector<Ipv4Address>& vec, std::vector<Ipv4Address>
             {
                 return true;
             }
-            else
-            {
-                continue;
-            }
         }
     }
     return false;
@@ -306,10 +300,6 @@ DsrOptions::CheckDuplicates(Ipv4Address ipv4Address, std::vector<Ipv4Address>& v
         if ((*i) == ipv4Address)
         {
             return true;
-        }
-        else
-        {
-            continue;
         }
     }
     return false;
@@ -331,31 +321,22 @@ DsrOptions::RemoveDuplicates(std::vector<Ipv4Address>& vec)
             vec.push_back(*i);
             continue;
         }
-        else
+
+        for (std::vector<Ipv4Address>::iterator j = vec.begin(); j != vec.end(); ++j)
         {
-            for (std::vector<Ipv4Address>::iterator j = vec.begin(); j != vec.end(); ++j)
+            if ((*i) == (*j))
             {
-                if ((*i) == (*j))
+                if ((j + 1) != vec.end())
                 {
-                    if ((j + 1) != vec.end())
-                    {
-                        vec.erase(j + 1, vec.end()); // Automatic shorten the route
-                        break;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    vec.erase(j + 1, vec.end()); // Automatic shorten the route
                 }
-                else if (j == (vec.end() - 1))
-                {
-                    vec.push_back(*i);
-                    break;
-                }
-                else
-                {
-                    continue;
-                }
+
+                break;
+            }
+            else if (j == (vec.end() - 1))
+            {
+                vec.push_back(*i);
+                break;
             }
         }
     }

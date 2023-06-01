@@ -767,23 +767,22 @@ DsrRouting::SearchNextHop(Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec
         nextHop = vec[1];
         return nextHop;
     }
-    else
+
+    if (ipv4Address == vec.back())
     {
-        if (ipv4Address == vec.back())
+        NS_LOG_DEBUG("We have reached to the final destination " << ipv4Address << " "
+                                                                 << vec.back());
+        return ipv4Address;
+    }
+    for (std::vector<Ipv4Address>::const_iterator i = vec.begin(); i != vec.end(); ++i)
+    {
+        if (ipv4Address == (*i))
         {
-            NS_LOG_DEBUG("We have reached to the final destination " << ipv4Address << " "
-                                                                     << vec.back());
-            return ipv4Address;
-        }
-        for (std::vector<Ipv4Address>::const_iterator i = vec.begin(); i != vec.end(); ++i)
-        {
-            if (ipv4Address == (*i))
-            {
-                nextHop = *(++i);
-                return nextHop;
-            }
+            nextHop = *(++i);
+            return nextHop;
         }
     }
+
     NS_LOG_DEBUG("Next hop address not found");
     Ipv4Address none = "0.0.0.0";
     return none;
@@ -831,12 +830,10 @@ DsrRouting::GetIPfromID(uint16_t id)
         NS_LOG_DEBUG("Exceed the node range");
         return "0.0.0.0";
     }
-    else
-    {
-        Ptr<Node> node = NodeList::GetNode(uint32_t(id));
-        Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
-        return ipv4->GetAddress(1, 0).GetLocal();
-    }
+
+    Ptr<Node> node = NodeList::GetNode(uint32_t(id));
+    Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
+    return ipv4->GetAddress(1, 0).GetLocal();
 }
 
 uint32_t
@@ -3033,7 +3030,6 @@ DsrRouting::SendErrorRequest(DsrOptionRerrUnreachHeader& rerr, uint8_t protocol)
             SendPacketFromBuffer(sourceRoute, nextHop, protocol);
         }
         NS_LOG_LOGIC("Route to " << dst << " found");
-        return;
     }
     else
     {
@@ -3672,34 +3668,32 @@ DsrRouting::Receive(Ptr<Packet> p, const Ipv4Header& ip, Ptr<Ipv4Interface> inco
                 uint8_t nextHeader = dsrRoutingHeader.GetNextHeader();
                 Ptr<Ipv4L3Protocol> l3proto = m_node->GetObject<Ipv4L3Protocol>();
                 Ptr<IpL4Protocol> nextProto = l3proto->GetProtocol(nextHeader);
-                if (nextProto)
-                {
-                    // we need to make a copy in the unlikely event we hit the
-                    // RX_ENDPOINT_UNREACH code path
-                    // Here we can use the packet that has been get off whole DSR header
-                    IpL4Protocol::RxStatus status = nextProto->Receive(copy, ip, incomingInterface);
-                    NS_LOG_DEBUG("The receive status " << status);
-                    switch (status)
-                    {
-                    case IpL4Protocol::RX_OK:
-                    // fall through
-                    case IpL4Protocol::RX_ENDPOINT_CLOSED:
-                    // fall through
-                    case IpL4Protocol::RX_CSUM_FAILED:
-                        break;
-                    case IpL4Protocol::RX_ENDPOINT_UNREACH:
-                        if (ip.GetDestination().IsBroadcast() || ip.GetDestination().IsMulticast())
-                        {
-                            break; // Do not reply to broadcast or multicast
-                        }
-                        // Another case to suppress ICMP is a subnet-directed broadcast
-                    }
-                    return status;
-                }
-                else
+                if (!nextProto)
                 {
                     NS_FATAL_ERROR("Should not have 0 next protocol value");
                 }
+
+                // we need to make a copy in the unlikely event we hit the
+                // RX_ENDPOINT_UNREACH code path
+                // Here we can use the packet that has been get off whole DSR header
+                IpL4Protocol::RxStatus status = nextProto->Receive(copy, ip, incomingInterface);
+                NS_LOG_DEBUG("The receive status " << status);
+                switch (status)
+                {
+                case IpL4Protocol::RX_OK:
+                // fall through
+                case IpL4Protocol::RX_ENDPOINT_CLOSED:
+                // fall through
+                case IpL4Protocol::RX_CSUM_FAILED:
+                    break;
+                case IpL4Protocol::RX_ENDPOINT_UNREACH:
+                    if (ip.GetDestination().IsBroadcast() || ip.GetDestination().IsMulticast())
+                    {
+                        break; // Do not reply to broadcast or multicast
+                    }
+                    // Another case to suppress ICMP is a subnet-directed broadcast
+                }
+                return status;
             }
             else
             {
