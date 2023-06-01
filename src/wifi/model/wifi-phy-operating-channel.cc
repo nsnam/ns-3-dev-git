@@ -441,6 +441,34 @@ WifiPhyOperatingChannel::Is80211p() const
     return std::get<FrequencyChannelType>(*m_channelIt) == WIFI_PHY_80211p_CHANNEL;
 }
 
+WifiChannelWidthType
+WifiPhyOperatingChannel::GetWidthType() const
+{
+    NS_ASSERT(IsSet());
+    switch (GetWidth())
+    {
+    case 20:
+        return WifiChannelWidthType::CW_20MHZ;
+    case 22:
+        return WifiChannelWidthType::CW_22MHZ;
+    case 5:
+        return WifiChannelWidthType::CW_5MHZ;
+    case 10:
+        return WifiChannelWidthType::CW_10MHZ;
+    case 40:
+        return WifiChannelWidthType::CW_40MHZ;
+    case 80:
+        return WifiChannelWidthType::CW_80MHZ;
+    case 160:
+        return WifiChannelWidthType::CW_160MHZ;
+    case 2160:
+        return WifiChannelWidthType::CW_2160MHZ;
+    case 0:
+    default:
+        return WifiChannelWidthType::UNKNOWN;
+    }
+}
+
 uint8_t
 WifiPhyOperatingChannel::GetPrimaryChannelIndex(ChannelWidthMhz primaryChannelWidth) const
 {

@@ -155,6 +155,12 @@ class WifiPhyOperatingChannel
      */
     ChannelWidthMhz GetWidth() const;
     /**
+     * Return the width type of the operating channel.
+     *
+     * \return the width type of the operating channel
+     */
+    WifiChannelWidthType GetWidthType() const;
+    /**
      * Return the PHY band of the operating channel
      *
      * \return the PHY band of the operating channel
