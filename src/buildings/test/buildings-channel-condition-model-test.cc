@@ -121,6 +121,7 @@ BuildingsChannelConditionModelTestCase::DoRun()
     building->SetNRoomsY(1);
     building->SetNFloors(1);
     building->SetBoundaries(Box(0.0, 10.0, 0.0, 10.0, 0.0, 5.0));
+    building->SetExtWallsType(Building::ExtWallsType_t::Wood);
 
     BuildingsHelper::Install(nodes);
 

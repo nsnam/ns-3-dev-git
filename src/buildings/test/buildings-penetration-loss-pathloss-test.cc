@@ -254,7 +254,9 @@ BuildingsPenetrationLossesTestCase::DoRun()
                                   testVector.m_pr,
                                   "rcv power is not less than calculated value");
         }
+        m_propModel = nullptr;
     }
+    Simulator::Destroy();
 }
 
 /**
