@@ -755,8 +755,8 @@ For standard headers, use the C++ style of inclusion:
 
     #include <ns3/header.h>
 
-Variables
-=========
+Variables and constants
+=======================
 
 Each variable declaration is on a separate line.
 Variables should be declared at the point in the code where they are needed,
@@ -770,6 +770,34 @@ and should be assigned an initial value at the time of declaration.
   // Declare one variable per line and assign an initial value
   int x = 0;
   int y = 0;
+
+Named constants defined in classes should be declared as ``static constexpr`` instead of
+macros, const, or enums. Use of ``static constexpr`` allows a single instance to be
+evaluated at compile-time. Declaring the constant in the class enables it to share the scope
+of the class.
+
+If the constant is only used in one file, consider declaring the constant in the implementation
+file (``*.cc``).
+
+.. sourcecode:: cpp
+
+  // Avoid declaring constants as enum
+  class LteRlcAmHeader : public Header
+  {
+      enum ControlPduType_t
+      {
+          STATUS_PDU = 000,
+      };
+  };
+
+  // Prefer to declare them as static constexpr (in class)
+  class LteRlcAmHeader : public Header
+  {
+      static constexpr uint8_t STATUS_PDU{0};
+  };
+
+  // Or as constexpr (in implementation files)
+  constexpr uint8_t STATUS_PDU{0};
 
 Comments
 ========
