@@ -168,30 +168,8 @@ point-to-point link between two nodes and echo a single packet between the
 nodes.  Let's take a look at that script line by line, so go ahead and open
 ``first.cc`` in your favorite editor.
 
-Boilerplate
-+++++++++++
-The first line in the file is an emacs mode line.  This tells emacs about the
-formatting conventions (coding style) we use in our source code.
-
-::
-
-  /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-
-This is always a somewhat controversial subject, so we might as well get it
-out of the way immediately.  The |ns3| project, like most large
-projects, has adopted a coding style to which all contributed code must
-adhere.  If you want to contribute your code to the project, you will
-eventually have to conform to the |ns3| coding standard as described
-in the file ``doc/contributing/source/coding-style.rst`` or shown on the project web page
-`here
-<https://www.nsnam.org/docs/contributing/html/coding-style.html>`_.
-
-We recommend that you, well, just get used to the look and feel of |ns3|
-code and adopt this standard whenever you are working with our code.  All of
-the development team and contributors have done so with various amounts of
-grumbling.  The emacs mode line above makes it easier to get the formatting
-correct if you use the emacs editor.
-
+Copyright
++++++++++
 The |ns3| simulator is licensed using the GNU General Public
 License version 2.  You will see the appropriate GNU legalese at the head of every file
 in the |ns3| distribution.  Often you will see a copyright notice for

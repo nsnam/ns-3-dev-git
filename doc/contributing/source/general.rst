@@ -95,7 +95,6 @@ the previous copyrights from the copyright file!  See below for this case.
 An example placement of a copyright statement can be found in the file
 ``src/network/model/packet.h``::
 
-  /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
   /*
    * Copyright (c) 2005,2006 INRIA
    *
@@ -112,7 +111,6 @@ contributor may add a copyright statement that clarifies the new portion
 of code that is covered by the new copyright.  An example is the program
 ``src/lte/model/lte-ue-phy.h``::
 
-  /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
   /*
    * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
    * Copyright (c) 2018 Fraunhofer ESK : RLF extensions

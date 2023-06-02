@@ -423,8 +423,6 @@ We are going to use the aodv module as an example:
 
 .. sourcecode:: python3
 
-  ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-
   def build(bld):
     module = bld.create_ns3_module('aodv', ['internet', 'wifi'])
     module.includes = '.'
@@ -520,8 +518,6 @@ Next, we need to port the examples wscript. Repeat the copy, rename and open
 steps. We should have something like the following:
 
 .. sourcecode:: python3
-
-  ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
   def build(bld):
       obj = bld.create_ns3_program('aodv',

@@ -313,7 +313,6 @@ We have provided some code to implement what is really the simplest
 example of tracing that can be assembled.  You can find this code in
 the tutorial directory as ``fourth.cc``.  Let's walk through it::
 
-  /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
   /*
    * This program is free software; you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 2 as
@@ -1390,7 +1389,6 @@ dissecting the congestion window test.  Open
 ``examples/tutorial/fifth.cc`` in your favorite editor.  You should
 see some familiar looking code::
 
-  /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
   /*
    * This program is free software; you can redistribute it and/or modify
    * it under the terms of the GNU General Public License version 2 as
