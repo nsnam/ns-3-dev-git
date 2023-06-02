@@ -74,11 +74,8 @@ class LteRlcAmHeader : public Header
         DATA_PDU = 1
     };
 
-    /// ControlPduType_t enumeration
-    enum ControlPduType_t
-    {
-        STATUS_PDU = 000,
-    };
+    /// Control PDU type status
+    static constexpr uint8_t STATUS_PDU{0};
 
     //
     // DATA PDU

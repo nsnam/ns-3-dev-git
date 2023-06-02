@@ -98,10 +98,7 @@ class Fnv1a : public Implementation
     /**
      * Seed value
      */
-    enum Seed
-    {
-        SEED = 0x8BADF00D /**< Ate bad food */
-    };
+    static constexpr auto SEED{0x8BADF00D}; // Ate bad food
 
     /** Cache last hash value, for incremental hashing. */
     /**@{*/

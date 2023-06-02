@@ -233,11 +233,8 @@ class Timer
     void Resume();
 
   private:
-    /** Internal bit marking the suspended state. */
-    enum InternalSuspended
-    {
-        TIMER_SUSPENDED = (1 << 7) /** Timer suspended. */
-    };
+    /** Internal bit marking the suspended timer state */
+    static constexpr auto TIMER_SUSPENDED{1 << 7};
 
     /**
      * Bitfield for Timer State, DestroyPolicy and InternalSuspended.

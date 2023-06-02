@@ -103,10 +103,7 @@ class Address
      * The maximum size of a byte buffer which
      * can be stored in an Address instance.
      */
-    enum MaxSize_e
-    {
-        MAX_SIZE = 20
-    };
+    static constexpr uint32_t MAX_SIZE{20};
 
     /**
      * Create an invalid address
