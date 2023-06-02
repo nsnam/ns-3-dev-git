@@ -653,7 +653,8 @@ class Time
      */
     static inline Resolution* PeekResolution()
     {
-        return &m_resolution;
+        static Time::Resolution& resolution{SetDefaultNsResolution()};
+        return &resolution;
     }
 
     /**
@@ -831,8 +832,7 @@ class Time
     friend Time& operator-=(Time& lhs, const Time& rhs);
     /**@}*/ // Compound assignment
 
-    int64_t m_data;                       //!< Virtual time value, in the current unit.
-    static Time::Resolution m_resolution; //!< The current time resolution
+    int64_t m_data; //!< Virtual time value, in the current unit.
 
 }; // class Time
 
