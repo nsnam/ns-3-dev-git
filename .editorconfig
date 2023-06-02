@@ -31,6 +31,6 @@ indent_size = 4
 indent_style = space
 indent_size = 2
 
-[*.yml]
+[*.{md,rst,yml,yaml}]
 indent_style = space
 indent_size = 2
