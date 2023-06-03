@@ -28,6 +28,7 @@
 
 #include <set>
 #include <tuple>
+#include <vector>
 
 namespace ns3
 {
@@ -85,6 +86,14 @@ class WifiPhyOperatingChannel
      * \param it the iterator pointing to a channel in the set of available channels
      */
     WifiPhyOperatingChannel(ConstIterator it);
+
+    /**
+     * Create a PHY operating channel from iterators pointing to multiple frequency segments in the
+     * set of available channels.
+     *
+     * \param its the iterators pointing to frequency segments in the set of available channels
+     */
+    WifiPhyOperatingChannel(const std::vector<ConstIterator>& its);
 
     virtual ~WifiPhyOperatingChannel();
 
@@ -231,7 +240,7 @@ class WifiPhyOperatingChannel
 
     /**
      * Set the index of the primary 20 MHz channel (0 indicates the 20 MHz subchannel
-     * with the lowest center frequency).
+     * with the lowest center frequency among all segments).
      *
      * \param index the index of the primary 20 MHz channel
      */
@@ -290,7 +299,7 @@ class WifiPhyOperatingChannel
         const std::set<uint8_t>& primaryIndices) const;
 
     /**
-     * Find the first channel matching the specified parameters.
+     * Find the first frequency segment matching the specified parameters.
      *
      * \param number the channel number (use 0 to leave it unspecified)
      * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
@@ -330,9 +339,15 @@ class WifiPhyOperatingChannel
     std::set<uint8_t> Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, ChannelWidthMhz width) const;
 
   private:
-    ConstIterator m_channelIt; //!< const iterator pointing to the configured frequency channel
-    uint8_t m_primary20Index;  /**< index of the primary20 channel (0 indicates the 20 MHz
-                                    subchannel with the lowest center frequency) */
+    /**
+     * Sort the segments by increasing frequencies.
+     */
+    void SortSegments();
+
+    std::vector<ConstIterator>
+        m_channelIts;         //!< const iterators pointing to the configured frequency channel
+    uint8_t m_primary20Index; /**< index of the primary20 channel (0 indicates the 20 MHz
+                                   subchannel with the lowest center frequency) */
 };
 
 /**

@@ -277,15 +277,23 @@ operator<<(std::ostream& os, const FrequencyChannelInfo& info)
 }
 
 WifiPhyOperatingChannel::WifiPhyOperatingChannel()
-    : WifiPhyOperatingChannel(m_frequencyChannels.end())
+    : WifiPhyOperatingChannel(std::vector<ConstIterator>{})
 {
 }
 
 WifiPhyOperatingChannel::WifiPhyOperatingChannel(ConstIterator it)
-    : m_channelIt(it),
+    : WifiPhyOperatingChannel(std::vector<ConstIterator>{it})
+{
+}
+
+WifiPhyOperatingChannel::WifiPhyOperatingChannel(const std::vector<ConstIterator>& channelIts)
+    : m_channelIts(channelIts),
       m_primary20Index(0)
 {
     NS_LOG_FUNCTION(this);
+    NS_ASSERT_MSG(channelIts.size() <= 2,
+                  "Operating channel does not support more than 2 segments");
+    SortSegments();
 }
 
 WifiPhyOperatingChannel::~WifiPhyOperatingChannel()
@@ -296,7 +304,7 @@ WifiPhyOperatingChannel::~WifiPhyOperatingChannel()
 bool
 WifiPhyOperatingChannel::IsSet() const
 {
-    return m_channelIt != m_frequencyChannels.end();
+    return !m_channelIts.empty();
 }
 
 void
@@ -308,14 +316,14 @@ WifiPhyOperatingChannel::Set(uint8_t number,
 {
     NS_LOG_FUNCTION(this << +number << frequency << width << standard << band);
 
-    auto channelIt = FindFirst(number, frequency, width, standard, band);
-
-    if (channelIt != m_frequencyChannels.end() &&
+    if (const auto channelIt = FindFirst(number, frequency, width, standard, band);
+        channelIt != m_frequencyChannels.cend() &&
         FindFirst(number, frequency, width, standard, band, std::next(channelIt)) ==
-            m_frequencyChannels.end())
+            m_frequencyChannels.cend())
     {
         // a unique channel matches the specified criteria
-        m_channelIt = channelIt;
+        m_channelIts.resize(1);
+        m_channelIts.front() = channelIt;
         m_primary20Index = 0;
         return;
     }
@@ -404,49 +412,49 @@ uint8_t
 WifiPhyOperatingChannel::GetNumber() const
 {
     NS_ASSERT(IsSet());
-    return m_channelIt->number;
+    return m_channelIts.front()->number;
 }
 
 uint16_t
 WifiPhyOperatingChannel::GetFrequency() const
 {
     NS_ASSERT(IsSet());
-    return m_channelIt->frequency;
+    return m_channelIts.front()->frequency;
 }
 
 ChannelWidthMhz
 WifiPhyOperatingChannel::GetWidth() const
 {
     NS_ASSERT(IsSet());
-    return m_channelIt->width;
+    return m_channelIts.front()->width;
 }
 
 WifiPhyBand
 WifiPhyOperatingChannel::GetPhyBand() const
 {
     NS_ASSERT(IsSet());
-    return m_channelIt->band;
+    return m_channelIts.front()->band;
 }
 
 bool
 WifiPhyOperatingChannel::IsOfdm() const
 {
     NS_ASSERT(IsSet());
-    return (m_channelIt->type == FrequencyChannelType::OFDM);
+    return (m_channelIts.front()->type == FrequencyChannelType::OFDM);
 }
 
 bool
 WifiPhyOperatingChannel::IsDsss() const
 {
     NS_ASSERT(IsSet());
-    return (m_channelIt->type == FrequencyChannelType::DSSS);
+    return (m_channelIts.front()->type == FrequencyChannelType::DSSS);
 }
 
 bool
 WifiPhyOperatingChannel::Is80211p() const
 {
     NS_ASSERT(IsSet());
-    return (m_channelIt->type == FrequencyChannelType::CH_80211P);
+    return (m_channelIts.front()->type == FrequencyChannelType::CH_80211P);
 }
 
 WifiChannelWidthType
@@ -475,6 +483,15 @@ WifiPhyOperatingChannel::GetWidthType() const
     default:
         return WifiChannelWidthType::UNKNOWN;
     }
+}
+
+void
+WifiPhyOperatingChannel::SortSegments()
+{
+    std::sort(m_channelIts.begin(), m_channelIts.end(), [](const auto& lhs, const auto& rhs) {
+        return lhs->frequency < rhs->frequency;
+    });
+    m_channelIts.erase(std::unique(m_channelIts.begin(), m_channelIts.end()), m_channelIts.end());
 }
 
 uint8_t
@@ -729,7 +746,7 @@ WifiPhyOperatingChannel::Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, ChannelWidth
 bool
 WifiPhyOperatingChannel::operator==(const WifiPhyOperatingChannel& other) const
 {
-    return m_channelIt == other.m_channelIt;
+    return m_channelIts == other.m_channelIts;
 }
 
 bool
