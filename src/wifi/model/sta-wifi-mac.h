@@ -500,38 +500,47 @@ class StaWifiMac : public WifiMac
      * \param value the new state
      */
     void SetState(MacState value);
+
+    /**
+     * EDCA Parameters
+     */
+    struct EdcaParams
+    {
+        AcIndex ac;     //!< the access category
+        uint32_t cwMin; //!< the minimum contention window size
+        uint32_t cwMax; //!< the maximum contention window size
+        uint8_t aifsn;  //!< the number of slots that make up an AIFS
+        Time txopLimit; //!< the TXOP limit
+    };
+
     /**
      * Set the EDCA parameters for the given link.
      *
-     * \param ac the access class
-     * \param cwMin the minimum contention window size
-     * \param cwMax the maximum contention window size
-     * \param aifsn the number of slots that make up an AIFS
-     * \param txopLimit the TXOP limit
+     * \param params the EDCA parameters
      * \param linkId the ID of the given link
      */
-    void SetEdcaParameters(AcIndex ac,
-                           uint32_t cwMin,
-                           uint32_t cwMax,
-                           uint8_t aifsn,
-                           Time txopLimit,
-                           uint8_t linkId);
+    void SetEdcaParameters(const EdcaParams& params, uint8_t linkId);
+
+    /**
+     * MU EDCA Parameters
+     */
+    struct MuEdcaParams
+    {
+        AcIndex ac;       //!< the access category
+        uint32_t cwMin;   //!< the minimum contention window size
+        uint32_t cwMax;   //!< the maximum contention window size
+        uint8_t aifsn;    //!< the number of slots that make up an AIFS
+        Time muEdcaTimer; //!< the MU EDCA timer
+    };
+
     /**
      * Set the MU EDCA parameters for the given link.
      *
-     * \param ac the Access Category
-     * \param cwMin the minimum contention window size
-     * \param cwMax the maximum contention window size
-     * \param aifsn the number of slots that make up an AIFS
-     * \param muEdcaTimer the MU EDCA timer
+     * \param params the MU EDCA parameters
      * \param linkId the ID of the given link
      */
-    void SetMuEdcaParameters(AcIndex ac,
-                             uint16_t cwMin,
-                             uint16_t cwMax,
-                             uint8_t aifsn,
-                             Time muEdcaTimer,
-                             uint8_t linkId);
+    void SetMuEdcaParameters(const MuEdcaParams& params, uint8_t linkId);
+
     /**
      * Return the Capability information for the given link.
      *
