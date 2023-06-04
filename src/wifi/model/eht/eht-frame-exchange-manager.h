@@ -87,6 +87,8 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time delay);
 
   protected:
+    void DoDispose() override;
+    void RxStartIndication(WifiTxVector txVector, Time psduDuration) override;
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
     void SendMuRts(const WifiTxParameters& txParams) override;
@@ -107,6 +109,15 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      * \param delay the given delay
      */
     void EmlsrSwitchToListening(const Mac48Address& address, const Time& delay);
+
+  private:
+    /**
+     * Handle missing responses from EMLSR clients that were expected to send a response.
+     */
+    void HandleMissingResponses();
+
+    EventId m_responseFromEmlsrClients; ///< timer used by an AP MLD when expecting a response from
+                                        ///< an EMLSR client
 };
 
 } // namespace ns3
