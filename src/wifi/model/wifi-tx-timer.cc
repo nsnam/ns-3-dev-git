@@ -134,7 +134,7 @@ WifiTxTimer::Cancel()
 Time
 WifiTxTimer::GetDelayLeft() const
 {
-    return Simulator::GetDelayLeft(m_timeoutEvent);
+    return m_end - Simulator::Now();
 }
 
 void
