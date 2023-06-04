@@ -308,11 +308,11 @@ void
 DsrRouteCache::SetCacheType(std::string type)
 {
     NS_LOG_FUNCTION(this << type);
-    if (type == std::string("LinkCache"))
+    if (type == "LinkCache")
     {
         m_isLinkCache = true;
     }
-    else if (type == std::string("PathCache"))
+    else if (type == "PathCache")
     {
         m_isLinkCache = false;
     }

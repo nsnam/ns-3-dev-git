@@ -2007,7 +2007,7 @@ AnimationInterface::WriteLinkProperties()
             }
             NS_LOG_DEBUG("Got ChannelType" << channelType);
 
-            if (!ch || (channelType != std::string("ns3::PointToPointChannel")))
+            if (!ch || (channelType != "ns3::PointToPointChannel"))
             {
                 NS_LOG_DEBUG("No channel can't be a p2p device");
                 /*
@@ -2042,7 +2042,7 @@ AnimationInterface::WriteLinkProperties()
                 continue;
             }
 
-            else if (channelType == std::string("ns3::PointToPointChannel"))
+            else if (channelType == "ns3::PointToPointChannel")
             { // Since these are duplex links, we only need to dump
                 // if srcid < dstid
                 std::size_t nChDev = ch->GetNDevices();
