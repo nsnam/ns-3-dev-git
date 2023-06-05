@@ -91,6 +91,25 @@ class ExtInterferenceHelper : public InterferenceHelper
             return rxing.second;
         });
     }
+
+    /**
+     * Indicate whether a given band is tracked by the interference helper
+     *
+     * \param startStopFreqs the start and stop frequencies per segment of the band (in Hz)
+     *
+     * \return true if the specified band is tracked by the interference helper, false otherwise
+     */
+    bool IsBandTracked(const std::vector<WifiSpectrumBandFrequencies>& startStopFreqs) const
+    {
+        for (const auto& [band, nis] : m_niChanges)
+        {
+            if (band.frequencies == startStopFreqs)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 };
 
 NS_OBJECT_ENSURE_REGISTERED(ExtInterferenceHelper);
@@ -991,6 +1010,240 @@ SpectrumWifiPhyGetBandTest::DoRun()
             }
         }
     }
+
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Test tracked bands in interference helper upon channel switching
+ *
+ * The test is verifying that the correct bands are tracked by the interference helper upon channel
+ * switching. It focuses on 80 and 160 MHz bands while considering 160 MHz operating channels, for
+ * both contiguous and non-contiguous cases.
+ */
+class SpectrumWifiPhyTrackedBandsTest : public TestCase
+{
+  public:
+    SpectrumWifiPhyTrackedBandsTest();
+
+  private:
+    void DoSetup() override;
+    void DoTeardown() override;
+    void DoRun() override;
+
+    /**
+     * Switch channel function
+     *
+     * \param channelNumberPerSegment the channel number for each segment of the operating channel
+     * to switch to
+     */
+    void SwitchChannel(const std::vector<uint8_t>& channelNumberPerSegment);
+
+    /**
+     * Verify the bands tracked by the interference helper
+     *
+     * \param expectedTrackedBands the bands that are expected to be tracked by the interference
+     * helper
+     * \param expectedUntrackedBands the bands that are expected to be untracked by the
+     * interference helper
+     */
+    void VerifyTrackedBands(
+        const std::vector<std::vector<WifiSpectrumBandFrequencies>>& expectedTrackedBands,
+        const std::vector<std::vector<WifiSpectrumBandFrequencies>>& expectedUntrackedBands);
+
+    /**
+     * Run one function
+     * \param channelNumberPerSegmentBeforeSwitching the channel number for each segment of the
+     * operating channel to switch from \param channelNumberPerSegmentAfterSwitching the channel
+     * number for each segment of the operating channel to switch to \param expectedTrackedBands the
+     * bands that are expected to be tracked by the interference helper \param expectedUntrackedBand
+     * the bands that are expected to be untracked by the interference helper
+     */
+    void RunOne(const std::vector<uint8_t>& channelNumberPerSegmentBeforeSwitching,
+                const std::vector<uint8_t>& channelNumberPerSegmentAfterSwitching,
+                const std::vector<std::vector<WifiSpectrumBandFrequencies>>& expectedTrackedBands,
+                const std::vector<std::vector<WifiSpectrumBandFrequencies>>& expectedUntrackedBand);
+
+    Ptr<ExtSpectrumWifiPhy> m_phy; ///< PHY
+};
+
+SpectrumWifiPhyTrackedBandsTest::SpectrumWifiPhyTrackedBandsTest()
+    : TestCase("SpectrumWifiPhy test channel switching for non-contiguous operating channels")
+{
+}
+
+void
+SpectrumWifiPhyTrackedBandsTest::DoSetup()
+{
+    // WifiHelper::EnableLogComponents();
+    // LogComponentEnable("SpectrumWifiPhyTest", LOG_LEVEL_ALL);
+
+    auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+    auto lossModel = CreateObject<FriisPropagationLossModel>();
+    lossModel->SetFrequency(5.180e9);
+    spectrumChannel->AddPropagationLossModel(lossModel);
+    auto delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
+    spectrumChannel->SetPropagationDelayModel(delayModel);
+
+    auto node = CreateObject<Node>();
+    auto dev = CreateObject<WifiNetDevice>();
+    m_phy = CreateObject<ExtSpectrumWifiPhy>();
+    auto interferenceHelper = CreateObject<ExtInterferenceHelper>();
+    m_phy->SetInterferenceHelper(interferenceHelper);
+    auto errorModel = CreateObject<NistErrorRateModel>();
+    m_phy->SetErrorRateModel(errorModel);
+    m_phy->SetDevice(dev);
+    m_phy->AddChannel(spectrumChannel);
+    m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
+    dev->SetPhy(m_phy);
+    node->AddDevice(dev);
+}
+
+void
+SpectrumWifiPhyTrackedBandsTest::DoTeardown()
+{
+    m_phy->Dispose();
+    m_phy = nullptr;
+}
+
+void
+SpectrumWifiPhyTrackedBandsTest::SwitchChannel(const std::vector<uint8_t>& channelNumberPerSegment)
+{
+    NS_LOG_FUNCTION(this);
+    WifiPhy::ChannelSegments channelSegments;
+    for (auto channelNumber : channelNumberPerSegment)
+    {
+        const auto& channelInfo = WifiPhyOperatingChannel::FindFirst(channelNumber,
+                                                                     0,
+                                                                     0,
+                                                                     WIFI_STANDARD_80211ax,
+                                                                     WIFI_PHY_BAND_5GHZ);
+        channelSegments.emplace_back(channelInfo->number, channelInfo->width, channelInfo->band, 0);
+    }
+    m_phy->SetOperatingChannel(channelSegments);
+}
+
+void
+SpectrumWifiPhyTrackedBandsTest::VerifyTrackedBands(
+    const std::vector<std::vector<WifiSpectrumBandFrequencies>>& expectedTrackedBands,
+    const std::vector<std::vector<WifiSpectrumBandFrequencies>>& expectedUntrackedBands)
+{
+    NS_LOG_FUNCTION(this);
+    PointerValue ptr;
+    m_phy->GetAttribute("InterferenceHelper", ptr);
+    auto interferenceHelper = DynamicCast<ExtInterferenceHelper>(ptr.Get<ExtInterferenceHelper>());
+    NS_ASSERT(interferenceHelper);
+    auto printBand = [](const std::vector<WifiSpectrumBandFrequencies>& v) {
+        std::stringstream ss;
+        for (const auto& [start, stop] : v)
+        {
+            ss << "[" << start << "-" << stop << "] ";
+        }
+        return ss.str();
+    };
+    for (const auto& expectedTrackedBand : expectedTrackedBands)
+    {
+        auto bandTracked = interferenceHelper->IsBandTracked(expectedTrackedBand);
+        NS_TEST_ASSERT_MSG_EQ(bandTracked,
+                              true,
+                              "Band " << printBand(expectedTrackedBand) << " is not tracked");
+    }
+    for (const auto& expectedUntrackedBand : expectedUntrackedBands)
+    {
+        auto bandTracked = interferenceHelper->IsBandTracked(expectedUntrackedBand);
+        NS_TEST_ASSERT_MSG_EQ(bandTracked,
+                              false,
+                              "Band " << printBand(expectedUntrackedBand)
+                                      << " is unexpectedly tracked");
+    }
+}
+
+void
+SpectrumWifiPhyTrackedBandsTest::RunOne(
+    const std::vector<uint8_t>& channelNumberPerSegmentBeforeSwitching,
+    const std::vector<uint8_t>& channelNumberPerSegmentAfterSwitching,
+    const std::vector<std::vector<WifiSpectrumBandFrequencies>>& expectedTrackedBands,
+    const std::vector<std::vector<WifiSpectrumBandFrequencies>>& expectedUntrackedBands)
+{
+    NS_LOG_FUNCTION(this);
+
+    Simulator::Schedule(Seconds(0),
+                        &SpectrumWifiPhyTrackedBandsTest::SwitchChannel,
+                        this,
+                        channelNumberPerSegmentBeforeSwitching);
+
+    Simulator::Schedule(Seconds(1),
+                        &SpectrumWifiPhyTrackedBandsTest::SwitchChannel,
+                        this,
+                        channelNumberPerSegmentAfterSwitching);
+
+    Simulator::Schedule(Seconds(2),
+                        &SpectrumWifiPhyTrackedBandsTest::VerifyTrackedBands,
+                        this,
+                        expectedTrackedBands,
+                        expectedUntrackedBands);
+
+    Simulator::Run();
+}
+
+void
+SpectrumWifiPhyTrackedBandsTest::DoRun()
+{
+    // switch from 160 MHz to 80+80 MHz
+    RunOne({50},
+           {42, 106},
+           {{{5170 * 1e6, 5250 * 1e6}} /* first 80 MHz segment */,
+            {{5490 * 1e6, 5570 * 1e6}} /* second 80 MHz segment */,
+            {{5170 * 1e6, 5250 * 1e6},
+             {5490 * 1e6, 5570 * 1e6}} /* non-contiguous 160 MHz band made of the two segments */},
+           {{{5170 * 1e6, 5330 * 1e6}} /* full 160 MHz band should have been removed */});
+
+    // switch from 80+80 MHz to 160 MHz
+    RunOne({42, 106},
+           {50},
+           {{{5170 * 1e6, 5330 * 1e6}} /* full 160 MHz band */,
+            {{5170 * 1e6, 5250 * 1e6}} /* first 80 MHz segment is part of the 160 MHz channel*/},
+           {{{5490 * 1e6, 5570 * 1e6}} /* second 80 MHz segment should have been removed */,
+            {{5170 * 1e6, 5250 * 1e6},
+             {5490 * 1e6, 5570 * 1e6}} /* non-contiguous 160 MHz band should have been removed */});
+
+    // switch from 80+80 MHz to 80+80 MHz with segment swap
+    RunOne({42, 106},
+           {106, 42},
+           {{{5490 * 1e6, 5570 * 1e6}} /* first 80 MHz segment */,
+            {{5490 * 1e6, 5570 * 1e6}} /* second 80 MHz segment */,
+            {{5170 * 1e6, 5250 * 1e6},
+             {5490 * 1e6, 5570 * 1e6}} /* non-contiguous 160 MHz band made of the two segments */},
+           {});
+
+    // switch from 80+80 MHz to another 80+80 MHz with one common segment
+    RunOne({42, 106},
+           {106, 138},
+           {{{5490 * 1e6, 5570 * 1e6}} /* first 80 MHz segment */,
+            {{5650 * 1e6, 5730 * 1e6}} /* second 80 MHz segment */,
+            {{5490 * 1e6, 5570 * 1e6},
+             {5650 * 1e6, 5730 * 1e6}} /* non-contiguous 160 MHz band made of the two segments */},
+           {{{5170 * 1e6, 5250 * 1e6}} /* 80 MHz segment at channel 42 should have been removed */,
+            {{5170 * 1e6, 5250 * 1e6},
+             {5490 * 1e6,
+              5570 * 1e6}} /* previous non-contiguous 160 MHz band should have been removed */});
+
+    // switch from 80+80 MHz to another 80+80 MHz with no common segment
+    RunOne(
+        {42, 106},
+        {122, 155},
+        {{{5570 * 1e6, 5650 * 1e6}} /* first 80 MHz segment */,
+         {{5735 * 1e6, 5815 * 1e6}} /* second 80 MHz segment */,
+         {{5570 * 1e6, 5650 * 1e6},
+          {5735 * 1e6, 5815 * 1e6}} /* non-contiguous 160 MHz band made of the two segments */},
+        {{{5170 * 1e6, 5250 * 1e6}} /* previous first 80 MHz segment should have been removed */,
+         {{5490 * 1e6, 5570 * 1e6}} /* previous second 80 MHz segment should have been removed */,
+         {{5170 * 1e6, 5250 * 1e6},
+          {5490 * 1e6,
+           5570 * 1e6}} /* previous non-contiguous 160 MHz band should have been removed */});
 
     Simulator::Destroy();
 }
@@ -2203,6 +2456,7 @@ SpectrumWifiPhyTestSuite::SpectrumWifiPhyTestSuite()
     AddTestCase(new SpectrumWifiPhyListenerTest, TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyFilterTest, TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyGetBandTest, TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyTrackedBandsTest, TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(
                     false,
                     SpectrumWifiPhyMultipleInterfacesTest::ChannelSwitchScenario::BEFORE_TX),

@@ -363,7 +363,6 @@ class InterferenceHelper : public Object
     std::map<FrequencyRange, bool>
         m_rxing; //!< flag whether it is in receiving state for a given FrequencyRange
 
-  private:
     /**
      * Noise and Interference (thus Ni) event.
      */
@@ -417,6 +416,9 @@ class InterferenceHelper : public Object
      */
     using FirstPowerPerBand = std::map<WifiSpectrumBandInfo, double>;
 
+    NiChangesPerBand m_niChanges; //!< NI Changes for each band
+
+  private:
     /**
      * Check whether a given band is tracked by this interference helper.
      *
@@ -527,7 +529,6 @@ class InterferenceHelper : public Object
     double m_noiseFigure;                 //!< noise figure (linear)
     Ptr<ErrorRateModel> m_errorRateModel; //!< error rate model
     uint8_t m_numRxAntennas;         //!< the number of RX antennas in the corresponding receiver
-    NiChangesPerBand m_niChanges;    //!< NI Changes for each band
     FirstPowerPerBand m_firstPowers; //!< first power of each band in watts
 
     /**
