@@ -504,8 +504,8 @@ HePpdu::GetContentChannels(const WifiTxVector& txVector, uint8_t p20Index)
         contentChannels.emplace_back();
     }
 
-    const auto& orderedRus = txVector.GetOrderedRus(p20Index);
-    for (const auto& [ru, staId] : orderedRus)
+    const auto& orderedMap = txVector.GetUserInfoMapOrderedByRus(p20Index);
+    for (const auto& [ru, staId] : orderedMap)
     {
         auto ruType = ru.GetRuType();
         auto ruIdx = ru.GetIndex();
@@ -573,14 +573,14 @@ HePpdu::GetSigBFieldSize(uint16_t channelWidth, const RuAllocation& ruAllocation
             8 * (channelWidth / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
     }
 
-    auto numStaPerContentChannel = GetNumRusPerHeSigBContentChannel(channelWidth, ruAllocation);
-    auto maxNumStaPerContentChannel =
-        std::max(numStaPerContentChannel.first, numStaPerContentChannel.second);
-    auto maxNumUserBlockFields = maxNumStaPerContentChannel /
+    auto numRusPerContentChannel = GetNumRusPerHeSigBContentChannel(channelWidth, ruAllocation);
+    auto maxNumRusPerContentChannel =
+        std::max(numRusPerContentChannel.first, numRusPerContentChannel.second);
+    auto maxNumUserBlockFields = maxNumRusPerContentChannel /
                                  2; // handle last user block with single user, if any, further down
     std::size_t userSpecificFieldSize =
         maxNumUserBlockFields * (2 * 21 /* user fields (2 users) */ + 4 /* tail */ + 6 /* CRC */);
-    if (maxNumStaPerContentChannel % 2 != 0)
+    if (maxNumRusPerContentChannel % 2 != 0)
     {
         userSpecificFieldSize += 21 /* last user field */ + 4 /* CRC */ + 6 /* tail */;
     }

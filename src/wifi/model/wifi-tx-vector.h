@@ -423,16 +423,16 @@ class WifiTxVector
      */
     HeMuUserInfoMap& GetHeMuUserInfoMap();
 
-    /// Ordered RUs per increasing frequency
-    using OrderedRus = std::map<HeRu::RuSpec, uint16_t, HeRu::RuSpecCompare>;
+    /// map of specific user info parameters ordered per increasing frequency RUs
+    using UserInfoMapOrderedByRus = std::map<HeRu::RuSpec, uint16_t, HeRu::RuSpecCompare>;
 
     /**
-     * Get the ordered RUs with their associated STA-IDs per increasing frequency.
+     * Get the map of specific user info parameters ordered per increasing frequency RUs.
      *
      * \param p20Index the index of the primary20 channel
-     * \return the ordered RUs with their associated STA-IDs
+     * \return the map of specific user info parameters ordered per increasing frequency RUs
      */
-    OrderedRus GetOrderedRus(uint8_t p20Index) const;
+    UserInfoMapOrderedByRus GetUserInfoMapOrderedByRus(uint8_t p20Index) const;
 
     /**
      * Set the 20 MHz subchannels that are punctured.

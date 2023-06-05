@@ -647,17 +647,17 @@ HeMuUserInfo::operator!=(const HeMuUserInfo& other) const
     return !(*this == other);
 }
 
-WifiTxVector::OrderedRus
-WifiTxVector::GetOrderedRus(uint8_t p20Index) const
+WifiTxVector::UserInfoMapOrderedByRus
+WifiTxVector::GetUserInfoMapOrderedByRus(uint8_t p20Index) const
 {
     auto heRuComparator = HeRu::RuSpecCompare(m_channelWidth, p20Index);
-    OrderedRus orderedRus{heRuComparator};
+    UserInfoMapOrderedByRus orderedMap{heRuComparator};
     std::transform(
         m_muUserInfos.cbegin(),
         m_muUserInfos.cend(),
-        std::inserter(orderedRus, orderedRus.end()),
+        std::inserter(orderedMap, orderedMap.end()),
         [](auto&& userInfo) { return std::make_pair(userInfo.second.ru, userInfo.first); });
-    return orderedRus;
+    return orderedMap;
 }
 
 RuAllocation
@@ -666,8 +666,8 @@ WifiTxVector::DeriveRuAllocation(uint8_t p20Index) const
     RuAllocation ruAllocations(m_channelWidth / 20, HeRu::EMPTY_242_TONE_RU);
     std::vector<HeRu::RuType> ruTypes{};
     ruTypes.resize(ruAllocations.size());
-    const auto& orderedRus = GetOrderedRus(p20Index);
-    for (const auto& [ru, staId] : orderedRus)
+    const auto& orderedMap = GetUserInfoMapOrderedByRus(p20Index);
+    for (const auto& [ru, staId] : orderedMap)
     {
         const auto ruType = ru.GetRuType();
         const auto ruBw = HeRu::GetBandwidth(ruType);

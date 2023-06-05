@@ -158,15 +158,15 @@ EhtPpdu::GetEhtSigFieldSize(uint16_t channelWidth,
             8 * (channelWidth / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
     }
 
-    auto numStaPerContentChannel =
+    auto numRusPerContentChannel =
         GetNumRusPerEhtSigBContentChannel(channelWidth, ehtPpduType, ruAllocation);
-    auto maxNumStaPerContentChannel =
-        std::max(numStaPerContentChannel.first, numStaPerContentChannel.second);
-    auto maxNumUserBlockFields = maxNumStaPerContentChannel /
+    auto maxNumRusPerContentChannel =
+        std::max(numRusPerContentChannel.first, numRusPerContentChannel.second);
+    auto maxNumUserBlockFields = maxNumRusPerContentChannel /
                                  2; // handle last user block with single user, if any, further down
     std::size_t userSpecificFieldSize =
         maxNumUserBlockFields * (2 * 21 /* user fields (2 users) */ + 4 /* tail */ + 6 /* CRC */);
-    if (maxNumStaPerContentChannel % 2 != 0)
+    if (maxNumRusPerContentChannel % 2 != 0)
     {
         userSpecificFieldSize += 21 /* last user field */ + 4 /* CRC */ + 6 /* tail */;
     }
