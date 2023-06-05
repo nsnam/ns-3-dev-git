@@ -621,6 +621,23 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         if (trigger.IsMuRts() && m_staMac->IsEmlsrLink(m_linkId))
         {
             // this is an initial Control frame
+            auto apAddress = GetWifiRemoteStationManager()->GetMldAddress(m_bssid);
+            NS_ASSERT_MSG(apAddress, "MLD address not found for BSSID " << m_bssid);
+            // when EMLSR links are blocked, all TIDs are blocked (we test TID 0 here)
+            WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *apAddress, 0);
+            if (auto mask =
+                    m_staMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
+                mask && mask->test(static_cast<std::size_t>(
+                            WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK)))
+            {
+                // we received an ICF on a link that is blocked because another EMLSR link is
+                // being used. This is likely because transmission on the other EMLSR link
+                // started before the reception of the ICF ended. We drop this ICF and let the
+                // UL TXOP continue.
+                NS_LOG_DEBUG("Drop ICF because another EMLSR link is being used");
+                return;
+            }
+
             NS_ASSERT(m_staMac->GetEmlsrManager());
             Simulator::ScheduleNow(&EmlsrManager::NotifyIcfReceived,
                                    m_staMac->GetEmlsrManager(),
