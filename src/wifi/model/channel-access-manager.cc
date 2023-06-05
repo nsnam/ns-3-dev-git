@@ -27,6 +27,8 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
+#include <sstream>
+
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[link=" << +m_linkId << "] "
 
@@ -167,13 +169,15 @@ class PhyListener : public ns3::WifiPhyListener
  ****************************************************************/
 
 ChannelAccessManager::ChannelAccessManager()
-    : m_lastAckTimeoutEnd(MicroSeconds(0)),
-      m_lastCtsTimeoutEnd(MicroSeconds(0)),
-      m_lastNavEnd(MicroSeconds(0)),
+    : m_lastAckTimeoutEnd(0),
+      m_lastCtsTimeoutEnd(0),
+      m_lastNavEnd(0),
       m_lastRx({MicroSeconds(0), MicroSeconds(0)}),
       m_lastRxReceivedOk(true),
-      m_lastTxEnd(MicroSeconds(0)),
-      m_lastSwitchingEnd(MicroSeconds(0)),
+      m_lastTxEnd(0),
+      m_lastSwitchingEnd(0),
+      m_usingOtherEmlsrLink(false),
+      m_lastUsingOtherEmlsrLinkEnd(0),
       m_sleeping(false),
       m_off(false),
       m_linkId(0)
@@ -393,8 +397,8 @@ ChannelAccessManager::NeedBackoffUponAccess(Ptr<Txop> txop)
 {
     NS_LOG_FUNCTION(this << txop);
 
-    // No backoff needed if in sleep mode or off
-    if (m_sleeping || m_off)
+    // No backoff needed if in sleep mode, off or when using another EMLSR link
+    if (m_sleeping || m_off || m_usingOtherEmlsrLink)
     {
         return false;
     }
@@ -452,6 +456,11 @@ ChannelAccessManager::RequestAccess(Ptr<Txop> txop)
     if (m_phy)
     {
         m_phy->NotifyChannelAccessRequested();
+    }
+    if (m_usingOtherEmlsrLink)
+    {
+        NS_LOG_DEBUG("Channel access cannot be requested while using another EMLSR link");
+        return;
     }
     // Deny access if in sleep mode or off
     if (m_sleeping || m_off)
@@ -586,6 +595,8 @@ ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
     Time ackTimeoutAccessStart = m_lastAckTimeoutEnd + sifs;
     Time ctsTimeoutAccessStart = m_lastCtsTimeoutEnd + sifs;
     Time switchingAccessStart = m_lastSwitchingEnd + sifs;
+    Time usingOtherEmlsrLinkAccessStart =
+        (m_usingOtherEmlsrLink ? Simulator::Now() : m_lastUsingOtherEmlsrLinkEnd) + sifs;
     Time accessGrantedStart;
     if (ignoreNav)
     {
@@ -594,6 +605,7 @@ ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
                                        txAccessStart,
                                        ackTimeoutAccessStart,
                                        ctsTimeoutAccessStart,
+                                       usingOtherEmlsrLinkAccessStart,
                                        switchingAccessStart});
     }
     else
@@ -604,12 +616,18 @@ ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
                                        navAccessStart,
                                        ackTimeoutAccessStart,
                                        ctsTimeoutAccessStart,
+                                       usingOtherEmlsrLinkAccessStart,
                                        switchingAccessStart});
+    }
+    std::stringstream ss;
+    if (m_usingOtherEmlsrLink)
+    {
+        ss << ", using other EMLSR link access start=" << usingOtherEmlsrLinkAccessStart;
     }
     NS_LOG_INFO("access grant start=" << accessGrantedStart << ", rx access start=" << rxAccessStart
                                       << ", busy access start=" << busyAccessStart
                                       << ", tx access start=" << txAccessStart
-                                      << ", nav access start=" << navAccessStart);
+                                      << ", nav access start=" << navAccessStart << ss.str());
     return accessGrantedStart;
 }
 
@@ -1071,10 +1089,38 @@ ChannelAccessManager::NotifyCtsTimeoutResetNow()
 }
 
 void
+ChannelAccessManager::NotifyStartUsingOtherEmlsrLink()
+{
+    NS_LOG_FUNCTION(this);
+    // update backoff if a PHY is operating on this link
+    if (m_phy)
+    {
+        UpdateBackoff();
+    }
+    // Cancel timeout
+    if (m_accessTimeout.IsRunning())
+    {
+        m_accessTimeout.Cancel();
+    }
+    m_usingOtherEmlsrLink = true;
+    UpdateLastIdlePeriod();
+}
+
+void
+ChannelAccessManager::NotifyStopUsingOtherEmlsrLink()
+{
+    NS_LOG_FUNCTION(this);
+    m_usingOtherEmlsrLink = false;
+    m_lastUsingOtherEmlsrLinkEnd = Simulator::Now();
+    DoRestartAccessTimeoutIfNeeded();
+}
+
+void
 ChannelAccessManager::UpdateLastIdlePeriod()
 {
     NS_LOG_FUNCTION(this);
-    Time idleStart = std::max({m_lastTxEnd, m_lastRx.end, m_lastSwitchingEnd});
+    Time idleStart =
+        std::max({m_lastTxEnd, m_lastRx.end, m_lastSwitchingEnd, m_lastUsingOtherEmlsrLinkEnd});
     Time now = Simulator::Now();
 
     if (idleStart >= now)

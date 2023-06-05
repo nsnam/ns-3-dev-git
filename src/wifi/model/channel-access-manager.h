@@ -265,6 +265,15 @@ class ChannelAccessManager : public Object
     void NotifyCtsTimeoutResetNow();
 
     /**
+     * Notify that another EMLSR link is being used, hence medium access should be disabled.
+     */
+    void NotifyStartUsingOtherEmlsrLink();
+    /**
+     * Notify that another EMLSR link is no longer being used, hence medium access can be resumed.
+     */
+    void NotifyStopUsingOtherEmlsrLink();
+
+    /**
      * Check if the device is busy sending or receiving,
      * or NAV or CCA busy.
      *
@@ -398,12 +407,15 @@ class ChannelAccessManager : public Object
     std::vector<Time> m_lastPer20MHzBusyEnd; /**< the last busy end time per 20 MHz channel
                                                   (HE stations and channel width > 20 MHz only) */
     std::map<WifiChannelListType, Timespan>
-        m_lastIdle;          //!< the last idle start and end time for each channel type
-    Time m_lastSwitchingEnd; //!< the last switching end time
-    bool m_sleeping;         //!< flag whether it is in sleeping state
-    bool m_off;              //!< flag whether it is in off state
-    Time m_eifsNoDifs;       //!< EIFS no DIFS time
-    EventId m_accessTimeout; //!< the access timeout ID
+        m_lastIdle;                    //!< the last idle start and end time for each channel type
+    Time m_lastSwitchingEnd;           //!< the last switching end time
+    bool m_usingOtherEmlsrLink;        //!< whether another EMLSR link is being used
+    Time m_lastUsingOtherEmlsrLinkEnd; //!< the last time we were blocked because using another
+                                       //!< EMLSR link
+    bool m_sleeping;                   //!< flag whether it is in sleeping state
+    bool m_off;                        //!< flag whether it is in off state
+    Time m_eifsNoDifs;                 //!< EIFS no DIFS time
+    EventId m_accessTimeout;           //!< the access timeout ID
 
     /// Information associated with each PHY that is going to operate on another EMLSR link
     struct EmlsrLinkSwitchInfo

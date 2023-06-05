@@ -246,12 +246,13 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
 
     NS_ASSERT(m_staMac->IsEmlsrLink(linkId));
 
-    // block transmissions on all other EMLSR links
+    // block transmissions and suspend medium access on all other EMLSR links
     for (auto id : m_staMac->GetLinkIds())
     {
         if (id != linkId && m_staMac->IsEmlsrLink(id))
         {
             m_staMac->BlockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+            m_staMac->GetChannelAccessManager(id)->NotifyStartUsingOtherEmlsrLink();
         }
     }
 
@@ -282,12 +283,13 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
         return;
     }
 
-    // block transmissions on all other EMLSR links
+    // block transmissions and suspend medium access on all other EMLSR links
     for (auto id : m_staMac->GetLinkIds())
     {
         if (id != linkId && m_staMac->IsEmlsrLink(id))
         {
             m_staMac->BlockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+            m_staMac->GetChannelAccessManager(id)->NotifyStartUsingOtherEmlsrLink();
         }
     }
 
@@ -320,12 +322,13 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId)
         return;
     }
 
-    // unblock transmissions on other EMLSR links
+    // unblock transmissions and resume medium access on other EMLSR links
     for (auto id : m_staMac->GetLinkIds())
     {
         if (id != linkId && m_staMac->IsEmlsrLink(id))
         {
             m_staMac->UnblockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+            m_staMac->GetChannelAccessManager(id)->NotifyStopUsingOtherEmlsrLink();
         }
     }
 }
