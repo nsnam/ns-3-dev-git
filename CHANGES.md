@@ -33,6 +33,7 @@ Changes from ns-3.42 to ns-3-dev
 * (lr-wpan) Attribute `macAssociatePermit` added to the supported attributes in `MacPibAttributes`.
 * (lr-wpan) Attribute `pCurrentChannel` added to the supported attributes in `MacPibAttributes`.
 * (lr-wpan) Attribute `pCurrentPage` added to the supported attributes in `MacPibAttributes`.
+* (wifi) Attribute `ChannelSettings` has been changed to allow configuration of non-contiguous operating channels by specifying each 80 MHz segment. It has changed from TupleValue to AttributeContainerValue, but the configuration of contiguous channels using a StringValue still works as before.
 
 ### Changes to build system
 
