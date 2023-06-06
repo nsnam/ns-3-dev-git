@@ -74,14 +74,6 @@ class EmlsrManager : public Object
     std::optional<Time> GetTransitionTimeout() const;
 
     /**
-     * Set the ID of main PHY (position in the vector of PHYs held by WifiNetDevice). This
-     * method cannot be called during or after initialization.
-     *
-     * \param mainPhyId the ID of the main PHY
-     */
-    void SetMainPhyId(uint8_t mainPhyId);
-
-    /**
      * \return the ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
      */
     uint8_t GetMainPhyId() const;
@@ -196,6 +188,14 @@ class EmlsrManager : public Object
     uint16_t m_auxPhyMaxWidth; //!< max channel width (MHz) supported by aux PHYs
 
   private:
+    /**
+     * Set the ID of main PHY (position in the vector of PHYs held by WifiNetDevice). This
+     * method cannot be called during or after initialization.
+     *
+     * \param mainPhyId the ID of the main PHY
+     */
+    void SetMainPhyId(uint8_t mainPhyId);
+
     /**
      * Compute the operating channels that the main PHY and the aux PHY(s) must switch to in order
      * to operate on each of the setup links. The operating channels may be different due to

@@ -59,12 +59,15 @@ EmlsrManager::GetTypeId()
             .AddAttribute(
                 "MainPhyId",
                 "The ID of the main PHY (position in the vector of PHYs held by "
-                "WifiNetDevice). This attribute cannot be set after initialization.",
+                "WifiNetDevice). This attribute cannot be set after construction.",
+                TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                 UintegerValue(0),
                 MakeUintegerAccessor(&EmlsrManager::SetMainPhyId, &EmlsrManager::GetMainPhyId),
                 MakeUintegerChecker<uint8_t>())
             .AddAttribute("AuxPhyChannelWidth",
                           "The maximum channel width (MHz) supported by Aux PHYs",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           UintegerValue(20),
                           MakeUintegerAccessor(&EmlsrManager::m_auxPhyMaxWidth),
                           MakeUintegerChecker<uint16_t>(20, 160))
