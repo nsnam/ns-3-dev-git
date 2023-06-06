@@ -916,6 +916,12 @@ ChannelAccessManager::NotifySwitchingStartNow(PhyListener* phyListener, Time dur
 
     ResetState();
 
+    // Reset backoffs
+    for (const auto& txop : m_txops)
+    {
+        ResetBackoff(txop);
+    }
+
     // Notify the FEM, which will in turn notify the MAC
     m_feManager->NotifySwitchingStartNow(duration);
 
@@ -943,19 +949,21 @@ ChannelAccessManager::ResetState()
     {
         m_accessTimeout.Cancel();
     }
+}
 
-    // Reset backoffs
-    for (auto txop : m_txops)
+void
+ChannelAccessManager::ResetBackoff(Ptr<Txop> txop)
+{
+    NS_LOG_FUNCTION(this << txop);
+
+    uint32_t remainingSlots = txop->GetBackoffSlots(m_linkId);
+    if (remainingSlots > 0)
     {
-        uint32_t remainingSlots = txop->GetBackoffSlots(m_linkId);
-        if (remainingSlots > 0)
-        {
-            txop->UpdateBackoffSlotsNow(remainingSlots, now, m_linkId);
-            NS_ASSERT(txop->GetBackoffSlots(m_linkId) == 0);
-        }
-        txop->ResetCw(m_linkId);
-        txop->GetLink(m_linkId).access = Txop::NOT_REQUESTED;
+        txop->UpdateBackoffSlotsNow(remainingSlots, Simulator::Now(), m_linkId);
+        NS_ASSERT(txop->GetBackoffSlots(m_linkId) == 0);
     }
+    txop->ResetCw(m_linkId);
+    txop->GetLink(m_linkId).access = Txop::NOT_REQUESTED;
 }
 
 void
@@ -1001,14 +1009,7 @@ ChannelAccessManager::NotifyWakeupNow()
     m_sleeping = false;
     for (auto txop : m_txops)
     {
-        uint32_t remainingSlots = txop->GetBackoffSlots(m_linkId);
-        if (remainingSlots > 0)
-        {
-            txop->UpdateBackoffSlotsNow(remainingSlots, Simulator::Now(), m_linkId);
-            NS_ASSERT(txop->GetBackoffSlots(m_linkId) == 0);
-        }
-        txop->ResetCw(m_linkId);
-        txop->GetLink(m_linkId).access = Txop::NOT_REQUESTED;
+        ResetBackoff(txop);
         txop->NotifyWakeUp(m_linkId);
     }
 }
@@ -1020,14 +1021,7 @@ ChannelAccessManager::NotifyOnNow()
     m_off = false;
     for (auto txop : m_txops)
     {
-        uint32_t remainingSlots = txop->GetBackoffSlots(m_linkId);
-        if (remainingSlots > 0)
-        {
-            txop->UpdateBackoffSlotsNow(remainingSlots, Simulator::Now(), m_linkId);
-            NS_ASSERT(txop->GetBackoffSlots(m_linkId) == 0);
-        }
-        txop->ResetCw(m_linkId);
-        txop->GetLink(m_linkId).access = Txop::NOT_REQUESTED;
+        ResetBackoff(txop);
         txop->NotifyOn();
     }
 }

@@ -286,6 +286,12 @@ class ChannelAccessManager : public Object
      * Reset the state variables of this channel access manager.
      */
     void ResetState();
+    /**
+     * Reset the backoff for the given DCF/EDCAF.
+     *
+     * \param txop the given DCF/EDCAF
+     */
+    void ResetBackoff(Ptr<Txop> txop);
 
     /**
      * Notify that the given PHY is about to switch to the given operating channel, which is
