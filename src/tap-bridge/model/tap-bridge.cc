@@ -282,9 +282,9 @@ TapBridge::CreateTap()
     // be configuring a tap device outside the scope of the ns-3 simulation and
     // will be expecting us to work with it.  The user will do something like:
     //
-    //   sudo tunctl -t tap0
-    //   sudo ifconfig tap0 hw ether 00:00:00:00:00:01
-    //   sudo ifconfig tap0 10.1.1.1 netmask 255.255.255.0 up
+    //   sudo ip tuntap add mode tap tap0
+    //   sudo ip address add 10.1.1.1/24 dev tap0
+    //   sudo ip link set dev tap0 address 00:00:00:00:00:01 up
     //
     // The user will then set the "Mode" Attribute of the TapBridge to "UseLocal"
     // and the "DeviceName" Attribute to "tap0" in this case.
@@ -300,13 +300,13 @@ TapBridge::CreateTap()
     // net device and logically add it to the existing bridge.  We expect that
     // the user has done something like:
     //
-    //   sudo brctl addbr mybridge
-    //   sudo tunctl -t mytap
-    //   sudo ifconfig mytap hw ether 00:00:00:00:00:01
-    //   sudo ifconfig mytap 0.0.0.0 up
-    //   sudo brctl addif mybridge mytap
-    //   sudo brctl addif mybridge ...
-    //   sudo ifconfig mybridge 10.1.1.1 netmask 255.255.255.0 up
+    //   sudo ip link add mybridge type bridge
+    //   sudo ip tuntap add mode tap mytap
+    //   sudo ip link set dev mytap address 00:00:00:00:00:01 up
+    //   sudo ip link set dev mytap master mybridge
+    //   sudo ip link set dev ... master mybridge
+    //   sudo ip address add 10.1.1.1/24 dev mybridge
+    //   sudo ip link set dev mybridge up
     //
     // The bottom line at this point is that we want to either create or use a
     // tap device on the host based on the verb part "Use" or "Configure" of the
@@ -833,9 +833,9 @@ TapBridge::ForwardToBridgedDevice(uint8_t* buf, ssize_t len)
     // In Linux, "Other Device" and "Tap Device" are bridged together.  By this
     // we mean that a user has sone something in Linux like:
     //
-    //   brctl addbr mybridge
-    //   brctl addif other-device
-    //   brctl addif tap-device
+    //   ip link add mybridge type bridge
+    //   ip link set dev other-device master mybridge
+    //   ip link set dev tap-device master mybridge
     //
     // In USE_BRIDGE mode, we want to logically extend this Linux behavior to the
     // simulated ns3 device and make it appear as if it is connected to the Linux

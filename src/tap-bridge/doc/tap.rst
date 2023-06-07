@@ -147,9 +147,9 @@ completely outside the scope of the ns-3 simulation using something like:
 
 .. sourcecode:: bash
 
-  $ sudo tunctl -t tap0
-  $ sudo ifconfig tap0 hw ether 08:00:2e:00:00:01
-  $ sudo ifconfig tap0 10.1.1.1 netmask 255.255.255.0 up
+  $ sudo ip tuntap add mode tap tap0
+  $ sudo ip address add 10.1.1.1/24 dev tap0
+  $ sudo ip link set dev tap0 address 08:00:2e:00:00:01 up
 
 To tell the TapBridge what is going on, the user will set either directly
 into the TapBridge or via the TapBridgeHelper, the "DeviceName" attribute.
@@ -185,7 +185,7 @@ This is illustrated below:
     +---------+ +--------+                  |  bridge  |     |   stack  |
         ||          ||                      | -------- |     | -------- |
     +--------------------+                  |   ns-3   |     |   ns-3   |
-    | OS (brctl) Bridge  |                  |   net    |     |   net    |
+    |     OS Bridge      |                  |   net    |     |   net    |
     +--------------------+                  |  device  |     |  device  |
                                             +----------+     +----------+
                                                  ||               ||
@@ -215,13 +215,13 @@ configure the bridge and tap completely outside ns-3:
 
 .. sourcecode:: bash
 
-  $ sudo brctl addbr mybridge
-  $ sudo tunctl -t mytap
-  $ sudo ifconfig mytap hw ether 00:00:00:00:00:01
-  $ sudo ifconfig mytap 0.0.0.0 up
-  $ sudo brctl addif mybridge mytap
-  $ sudo brctl addif mybridge ...
-  $ sudo ifconfig mybridge 10.1.1.1 netmask 255.255.255.0 up
+  $ sudo ip link add mybridge type bridge
+  $ sudo ip address add 10.1.1.1/24 dev mybridge
+  $ sudo ip tuntap add mode tap mytap
+  $ sudo ip link set dev mytap address 00:00:00:00:00:01 up
+  $ sudo ip link set dev mytap master mybridge
+  $ sudo ip link set dev ... master mybridge
+  $ sudo ip link set dev mybridge up
 
 To tell the TapBridge what is going on, the user will set either directly
 into the TapBridge or via the TapBridgeHelper, the "DeviceName" attribute.
@@ -390,8 +390,8 @@ found in the packet.
 
 In the other direction, a packet received by an ns-3 net device is hooked
 via callback to the TapBridge.  This must be done in promiscuous mode since
-the goal is to bridge the ns-3 net device onto the OS (brctl) bridge of
-which the TAP device is a part.
+the goal is to bridge the ns-3 net device onto the OS bridge of which the
+TAP device is a part.
 
 For these reasons, only ns-3 net devices that support SendFrom() and have a
 hookable promiscuous receive callback are allowed to participate in UseBridge

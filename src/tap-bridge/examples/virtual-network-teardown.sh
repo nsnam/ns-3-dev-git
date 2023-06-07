@@ -3,13 +3,13 @@ lxc-stop -n left
 lxc-stop -n right
 lxc-destroy -n left
 lxc-destroy -n right
-ifconfig br-left down
-ifconfig br-right down
-brctl delif br-left tap-left
-brctl delif br-right tap-right
-brctl delbr br-left
-brctl delbr br-right
-ifconfig tap-left down
-ifconfig tap-right down
-tunctl -d tap-left
-tunctl -d tap-right
+ip link set dev br-left down
+ip link set dev br-right down
+ip link set dev tap-left nomaster
+ip link set dev tap-right nomaster
+ip link del br-left
+ip link del br-right
+ip link set dev tap-left down
+ip link set dev tap-right down
+ip tuntap del mode tap tap-left
+ip tuntap del mode tap tap-right

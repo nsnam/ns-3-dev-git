@@ -50,7 +50,7 @@
 //  1') If you run emulation in dpdk mode, use device address (eg. 0000:00.1f.6)
 //      as device name. This address can be obtained by running `lspci`
 //  2) The host device must be set to promiscuous mode
-//     (e.g. "sudo ifconfig eth0 promisc")
+//     (e.g. "sudo ip link set eth0 promisc on")
 //  2') If you run emulation in netmap or dpdk mode, you need before to load
 //      the netmap.ko or dpdk modules. The user is in charge to configure and
 //      build netmap/dpdk separately.

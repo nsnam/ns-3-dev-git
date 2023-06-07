@@ -1,14 +1,14 @@
 #!/bin/bash
-brctl addbr br-left
-brctl addbr br-right
-tunctl -t tap-left
-tunctl -t tap-right
-ifconfig tap-left 0.0.0.0 promisc up
-ifconfig tap-right 0.0.0.0 promisc up
-brctl addif br-left tap-left
-ifconfig br-left up
-brctl addif br-right tap-right
-ifconfig br-right up
+ip link add br-left type bridge
+ip link add br-right type bridge
+ip tuntap add mode tap tap-left
+ip tuntap add mode tap tap-right
+ip link set tap-left promisc on up
+ip link set tap-right promisc on up
+ip link set dev tap-left master br-left
+ip link set dev br-left up
+ip link set dev tap-right master br-right
+ip link set dev br-right up
 # Note:  you also need to have loaded br_netfilter module
 # ('modprobe br_netfilter') to enable /proc/sys/net/bridge
 pushd /proc/sys/net/bridge
