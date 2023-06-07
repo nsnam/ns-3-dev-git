@@ -65,12 +65,35 @@ EmlsrManager::GetTypeId()
                 MakeUintegerAccessor(&EmlsrManager::SetMainPhyId, &EmlsrManager::GetMainPhyId),
                 MakeUintegerChecker<uint8_t>())
             .AddAttribute("AuxPhyChannelWidth",
-                          "The maximum channel width (MHz) supported by Aux PHYs",
+                          "The maximum channel width (MHz) supported by Aux PHYs. Note that the "
+                          "maximum channel width is capped to the maximum channel width supported "
+                          "by the configured maximum modulation class supported.",
                           TypeId::ATTR_GET |
                               TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           UintegerValue(20),
                           MakeUintegerAccessor(&EmlsrManager::m_auxPhyMaxWidth),
                           MakeUintegerChecker<uint16_t>(20, 160))
+            .AddAttribute("AuxPhyMaxModClass",
+                          "The maximum modulation class supported by Aux PHYs. Use "
+                          "WIFI_MOD_CLASS_OFDM for non-HT.",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
+                          EnumValue(WIFI_MOD_CLASS_OFDM),
+                          MakeEnumAccessor(&EmlsrManager::m_auxPhyMaxModClass),
+                          MakeEnumChecker(WIFI_MOD_CLASS_HR_DSSS,
+                                          "HR-DSSS",
+                                          WIFI_MOD_CLASS_ERP_OFDM,
+                                          "ERP-OFDM",
+                                          WIFI_MOD_CLASS_OFDM,
+                                          "OFDM",
+                                          WIFI_MOD_CLASS_HT,
+                                          "HT",
+                                          WIFI_MOD_CLASS_VHT,
+                                          "VHT",
+                                          WIFI_MOD_CLASS_HE,
+                                          "HE",
+                                          WIFI_MOD_CLASS_EHT,
+                                          "EHT"))
             .AddAttribute(
                 "EmlsrLinkSet",
                 "IDs of the links on which EMLSR mode will be enabled. An empty set "
@@ -385,6 +408,26 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId, bool noSwitchDelay)
     NotifyMainPhySwitch(*currMainPhyLinkId, linkId);
 }
 
+void
+EmlsrManager::SwitchAuxPhy(uint8_t currLinkId, uint8_t nextLinkId)
+{
+    NS_LOG_FUNCTION(this << currLinkId << nextLinkId);
+
+    auto auxPhy = GetStaMac()->GetWifiPhy(currLinkId);
+
+    auto newAuxPhyChannel = GetChannelForAuxPhy(nextLinkId);
+
+    NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") is about to switch to " << newAuxPhyChannel
+                             << " to operate on link " << +nextLinkId);
+
+    GetStaMac()
+        ->GetChannelAccessManager(currLinkId)
+        ->NotifySwitchingEmlsrLink(auxPhy, newAuxPhyChannel, nextLinkId);
+
+    void (WifiPhy::*fp)(const WifiPhyOperatingChannel&) = &WifiPhy::SetOperatingChannel;
+    Simulator::ScheduleNow(fp, auxPhy, newAuxPhyChannel);
+}
+
 MgtEmlOmn
 EmlsrManager::GetEmlOmn()
 {
@@ -538,13 +581,13 @@ EmlsrManager::ChangeEmlsrMode()
     // active mode or passive mode (depending on whether EMLSR mode has been enabled or disabled)
     m_staMac->NotifyEmlsrModeChanged(m_emlsrLinks);
     // Enforce the limit on the max channel width supported by aux PHYs
-    ApplyMaxChannelWidthOnAuxPhys();
+    ApplyMaxChannelWidthAndModClassOnAuxPhys();
 
     NotifyEmlsrModeChanged();
 }
 
 void
-EmlsrManager::ApplyMaxChannelWidthOnAuxPhys()
+EmlsrManager::ApplyMaxChannelWidthAndModClassOnAuxPhys()
 {
     NS_LOG_FUNCTION(this);
     auto currMainPhyLinkId = m_staMac->GetLinkForPhy(m_mainPhyId);
@@ -560,6 +603,8 @@ EmlsrManager::ApplyMaxChannelWidthOnAuxPhys()
         {
             continue;
         }
+
+        auxPhy->SetMaxModulationClassSupported(m_auxPhyMaxModClass);
 
         NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") is about to switch to " << channel
                                  << " to operate on link " << +linkId);
@@ -593,25 +638,27 @@ EmlsrManager::ComputeOperatingChannels()
         m_mainPhyChannels.emplace(linkId, channel);
 
         auto mainPhyChWidth = channel.GetWidth();
-        if (m_auxPhyMaxWidth >= mainPhyChWidth)
+        auto auxPhyMaxWidth =
+            std::min(m_auxPhyMaxWidth, GetMaximumChannelWidth(m_auxPhyMaxModClass));
+        if (auxPhyMaxWidth >= mainPhyChWidth)
         {
             // same channel can be used by aux PHYs
             m_auxPhyChannels.emplace(linkId, channel);
             continue;
         }
         // aux PHYs will operate on a primary subchannel
-        auto freq = channel.GetPrimaryChannelCenterFrequency(m_auxPhyMaxWidth);
+        auto freq = channel.GetPrimaryChannelCenterFrequency(auxPhyMaxWidth);
         auto chIt = WifiPhyOperatingChannel::FindFirst(0,
                                                        freq,
-                                                       m_auxPhyMaxWidth,
+                                                       auxPhyMaxWidth,
                                                        WIFI_STANDARD_UNSPECIFIED,
                                                        channel.GetPhyBand());
         NS_ASSERT_MSG(chIt != WifiPhyOperatingChannel::m_frequencyChannels.end(),
-                      "Primary" << m_auxPhyMaxWidth << " channel not found");
+                      "Primary" << auxPhyMaxWidth << " channel not found");
         m_auxPhyChannels.emplace(linkId, chIt);
         // find the P20 index for the channel used by the aux PHYs
         auto p20Index = channel.GetPrimaryChannelIndex(20);
-        while (mainPhyChWidth > m_auxPhyMaxWidth)
+        while (mainPhyChWidth > auxPhyMaxWidth)
         {
             mainPhyChWidth /= 2;
             p20Index /= 2;

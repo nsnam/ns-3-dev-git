@@ -178,6 +178,15 @@ class EmlsrManager : public Object
     const WifiPhyOperatingChannel& GetChannelForAuxPhy(uint8_t linkId) const;
 
     /**
+     * Switch channel on the Aux PHY operating on the given current link so that it operates
+     * on the given next link.
+     *
+     * \param currLinkId the ID of the link on which the aux PHY is currently operating
+     * \param nextLinkId the ID of the link on which the aux PHY will be operating
+     */
+    void SwitchAuxPhy(uint8_t currLinkId, uint8_t nextLinkId);
+
+    /**
      * \return the EML Operating Mode Notification to send
      */
     MgtEmlOmn GetEmlOmn();
@@ -185,7 +194,8 @@ class EmlsrManager : public Object
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
     uint8_t m_mainPhyId; //!< ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
-    uint16_t m_auxPhyMaxWidth; //!< max channel width (MHz) supported by aux PHYs
+    uint16_t m_auxPhyMaxWidth;               //!< max channel width (MHz) supported by aux PHYs
+    WifiModulationClass m_auxPhyMaxModClass; //!< max modulation class supported by aux PHYs
 
   private:
     /**
@@ -250,7 +260,7 @@ class EmlsrManager : public Object
      * Adjust the operating channel of all the aux PHYs to meet the constraint on the maximum
      * channel width supported by aux PHYs.
      */
-    void ApplyMaxChannelWidthOnAuxPhys();
+    void ApplyMaxChannelWidthAndModClassOnAuxPhys();
 
     /**
      * Notify subclass that EMLSR mode changed.
