@@ -144,7 +144,7 @@ main(int argc, char* argv[])
     Ssid ssid = Ssid("left");
     WifiHelper wifi;
     WifiMacHelper wifiMac;
-    wifi.SetRemoteStationManager("ns3::ArfWifiManager");
+    wifi.SetStandard(WIFI_STANDARD_80211a);
 
     wifiMac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid));
     NetDeviceContainer devicesLeft = wifi.Install(wifiPhy, wifiMac, nodesLeft.Get(0));
