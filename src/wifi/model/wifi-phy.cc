@@ -349,6 +349,7 @@ WifiPhy::WifiPhy()
       m_currentEvent(nullptr),
       m_previouslyRxPpduUid(UINT64_MAX),
       m_standard(WIFI_STANDARD_UNSPECIFIED),
+      m_maxModClassSupported(WIFI_MOD_CLASS_UNKNOWN),
       m_band(WIFI_PHY_BAND_UNSPECIFIED),
       m_sifs(Seconds(0)),
       m_slot(Seconds(0)),
@@ -947,6 +948,19 @@ WifiPhy::Configure80211be()
 }
 
 void
+WifiPhy::SetMaxModulationClassSupported(WifiModulationClass modClass)
+{
+    NS_LOG_FUNCTION(this << modClass);
+    m_maxModClassSupported = modClass;
+}
+
+WifiModulationClass
+WifiPhy::GetMaxModulationClassSupported() const
+{
+    return m_maxModClassSupported;
+}
+
+void
 WifiPhy::ConfigureStandard(WifiStandard standard)
 {
     NS_LOG_FUNCTION(this << standard);
@@ -955,6 +969,11 @@ WifiPhy::ConfigureStandard(WifiStandard standard)
                     "Cannot change standard");
 
     m_standard = standard;
+
+    if (m_maxModClassSupported == WIFI_MOD_CLASS_UNKNOWN)
+    {
+        m_maxModClassSupported = GetModulationClassForStandard(m_standard);
+    }
 
     if (!m_operatingChannel.IsSet())
     {
@@ -1864,8 +1883,9 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
 {
     NS_LOG_FUNCTION(this << ppdu << rxDuration);
     WifiModulationClass modulation = ppdu->GetModulation();
-    auto it = m_phyEntities.find(modulation);
-    if (it != m_phyEntities.end())
+    NS_ASSERT(m_maxModClassSupported != WIFI_MOD_CLASS_UNKNOWN);
+    if (auto it = m_phyEntities.find(modulation);
+        it != m_phyEntities.end() && modulation <= m_maxModClassSupported)
     {
         it->second->StartReceivePreamble(ppdu, rxPowersW, rxDuration);
     }
