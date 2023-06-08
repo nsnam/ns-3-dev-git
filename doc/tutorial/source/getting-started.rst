@@ -57,18 +57,9 @@ emacs, or Eclipse) and, if using the development repositories, an
 installation of Git source code control system.  Most beginning users
 need not concern themselves if their configuration reports some missing
 optional features of |ns3|, but for those wishing a full installation,
-the project provides a wiki that includes pages with many useful hints
-and tips.  One such page is the "Installation" page, with install instructions
+the project provides an installation guide
 for various systems, available at
-https://www.nsnam.org/wiki/Installation.
-
-The "Prerequisites" section of this wiki page explains which packages are
-required to support common |ns3| options, and also provides the
-commands used to install them for common Linux or macOS variants.
-
-You may want to take this opportunity to explore the |ns3| wiki
-a bit, or the main web site at https://www.nsnam.org, since there is a
-wealth of information there.
+https://www.nsnam.org/docs/installation/html/index.html.
 
 As of the most recent |ns3| release (ns-3.38), the following tools
 are needed to get started with |ns3|:
@@ -87,7 +78,8 @@ bunzip2       any recent version (to uncompress an |ns3| release)
 
 To check the default version of Python, type ``python -V``.  To check
 the default version of g++, type ``g++ -v``.  If your installation is
-missing or too old, please consult the |ns3| installation wiki for guidance.
+missing or too old, please consult the |ns3|
+`installation guide <https://www.nsnam.org/docs/installation/html/index.html>`_ for guidance.
 
 From this point forward, we are going to assume that the reader is working in
 Linux, macOS, or a Linux emulation environment, and has at least the above

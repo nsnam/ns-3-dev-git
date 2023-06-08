@@ -84,18 +84,14 @@ neither make directly.  We use CMake for these functions.
 
 On macOS, the toolchain used is Xcode.  |ns3| users on a Mac are strongly
 encouraged to install Xcode and the command-line tools packages from the
-Apple App Store, and to look at the |ns3| installation wiki for more
-information (https://www.nsnam.org/wiki/Installation).
+Apple App Store, and to look at the |ns3| installation guide for more
+information (https://www.nsnam.org/docs/installation/html/).
 
 Typically an |ns3| author will work in Linux or a Unix-like environment.
 For those running under Windows, there do exist environments
 which simulate the Linux environment to various degrees.  The |ns3|
-project has in the past (but not presently) supported development in the Cygwin environment for
-these users.  See http://www.cygwin.com/
-for details on downloading, and visit the |ns3| wiki for more information
-about Cygwin and |ns3|.  MinGW is presently not officially supported.
-Another alternative to Cygwin is to install a virtual machine environment
-such as VMware server and install a Linux virtual machine.
+installation guide has information about Windows support
+(https://www.nsnam.org/docs/installation/html/windows.html).
 
 Socket Programming
 ******************
