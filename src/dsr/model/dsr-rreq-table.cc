@@ -288,7 +288,7 @@ DsrRreqTable::FindSourceEntry(Ipv4Address src, Ipv4Address dst, uint16_t id)
         {
             receivedRreqEntryList.pop_front();
         }
-        Ipv4Address src = i->first;
+
         // We loop the receive rreq entry to find duplicate
         for (std::list<DsrReceivedRreqEntry>::const_iterator j = receivedRreqEntryList.begin();
              j != receivedRreqEntryList.end();
