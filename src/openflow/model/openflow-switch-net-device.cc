@@ -14,7 +14,6 @@
  *
  * Author: Blake Hurd  <naimorai@gmail.com>
  */
-#ifdef NS3_OPENFLOW
 
 #include "openflow-switch-net-device.h"
 
@@ -1700,5 +1699,3 @@ OpenFlowSwitchNetDevice::GetVPortTable()
 }
 
 } // namespace ns3
-
-#endif // NS3_OPENFLOW

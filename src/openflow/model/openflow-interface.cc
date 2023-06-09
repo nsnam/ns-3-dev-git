@@ -14,7 +14,6 @@
  *
  * Author: Blake Hurd  <naimorai@gmail.com>
  */
-#ifdef NS3_OPENFLOW
 
 #include "openflow-interface.h"
 
@@ -1231,5 +1230,3 @@ ValidateVendor(const sw_flow_key* key, const ofp_action_header* ah, uint16_t len
 } // namespace ofi
 
 } // namespace ns3
-
-#endif // NS3_OPENFLOW

@@ -86,7 +86,6 @@ SetTimeout(const std::string& value)
 int
 main(int argc, char* argv[])
 {
-#ifdef NS3_OPENFLOW
     //
     // Allow the user to override any of the defaults and the above Bind() at
     // run-time, via command-line arguments
@@ -223,9 +222,6 @@ main(int argc, char* argv[])
     Simulator::Run();
     Simulator::Destroy();
     NS_LOG_INFO("Done.");
-#else
-    NS_LOG_INFO("NS-3 OpenFlow is not enabled. Cannot run simulation.");
-#endif // NS3_OPENFLOW
 
     return 0;
 }

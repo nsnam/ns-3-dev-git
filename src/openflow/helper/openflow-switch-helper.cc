@@ -16,7 +16,6 @@
  *
  * Author: Blake Hurd  <naimorai@gmail.com>
  */
-#ifdef NS3_OPENFLOW
 
 #include "openflow-switch-helper.h"
 
@@ -96,5 +95,3 @@ OpenFlowSwitchHelper::Install(std::string nodeName, NetDeviceContainer c)
 }
 
 } // namespace ns3
-
-#endif // NS3_OPENFLOW
