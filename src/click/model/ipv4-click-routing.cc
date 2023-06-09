@@ -227,14 +227,7 @@ Ipv4ClickRouting::GetInterfaceId(const char* ifname)
 bool
 Ipv4ClickRouting::IsInterfaceReady(int ifid)
 {
-    if (ifid >= 0 && ifid < (int)m_ipv4->GetNInterfaces())
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return ifid >= 0 && ifid < static_cast<int>(m_ipv4->GetNInterfaces());
 }
 
 std::string
@@ -288,7 +281,7 @@ Ipv4ClickRouting::GetTimevalFromNow() const
     curtime.tv_sec = Simulator::Now().GetSeconds();
     curtime.tv_usec = Simulator::Now().GetMicroSeconds() % 1000000;
 
-    switch (Simulator::Now().GetResolution())
+    switch (Simulator::Now()::GetResolution())
     {
     case Time::NS:
         remainder = Simulator::Now().GetNanoSeconds() % 1000;

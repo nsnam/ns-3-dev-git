@@ -412,8 +412,8 @@ BriteTopologyHelper::BuildBriteTopology(InternetStackHelper& stack, const uint32
     NS_LOG_LOGIC("Assigning << " << m_numAs << " AS to " << systemCount << " MPI instances");
     for (uint32_t i = 0; i < m_numAs; ++i)
     {
-        int val = i % systemCount;
-        m_systemForAs.push_back(val);
+        uint32_t val = i % systemCount;
+        m_systemForAs.push_back(static_cast<int>(val));
         NS_LOG_INFO("AS: " << i << " System: " << val);
     }
 

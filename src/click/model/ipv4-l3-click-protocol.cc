@@ -229,11 +229,10 @@ Ipv4L3ClickProtocol::IsDestinationAddress(Ipv4Address address, uint32_t iif) con
 #ifdef NOTYET
         if (MulticastCheckGroup(iif, address))
 #endif
-            if (true)
-            {
-                NS_LOG_LOGIC("For me (Ipv4Addr multicast address");
-                return true;
-            }
+        {
+            NS_LOG_LOGIC("For me (Ipv4Addr multicast address");
+            return true;
+        }
     }
 
     if (address.IsBroadcast())
@@ -470,7 +469,7 @@ Ipv4L3ClickProtocol::SourceAddressSelection(uint32_t interfaceIdx, Ipv4Address d
         Ipv4InterfaceAddress test = GetAddress(interfaceIdx, i);
         if (test.GetLocal().CombineMask(test.GetMask()) == dest.CombineMask(test.GetMask()))
         {
-            if (test.IsSecondary() == false)
+            if (!test.IsSecondary())
             {
                 return test.GetLocal();
             }
@@ -677,7 +676,7 @@ Ipv4L3ClickProtocol::BuildHeader(Ipv4Address source,
     ipHeader.SetProtocol(protocol);
     ipHeader.SetPayloadSize(payloadSize);
     ipHeader.SetTtl(ttl);
-    if (mayFragment == true)
+    if (mayFragment)
     {
         ipHeader.SetMayFragment();
         ipHeader.SetIdentification(m_identification);
@@ -786,7 +785,7 @@ Ipv4L3ClickProtocol::Receive(Ptr<NetDevice> device,
     NS_LOG_LOGIC("Packet from " << from << " received on node " << m_node->GetId());
 
     // Forward packet to raw sockets, if any
-    if (protocol == Ipv4L3ClickProtocol::PROT_NUMBER && m_sockets.size() > 0)
+    if (protocol == Ipv4L3ClickProtocol::PROT_NUMBER && !m_sockets.empty())
     {
         Ptr<Packet> packetForRawSocket = p->Copy();
         int32_t interface = GetInterfaceForDevice(device);
@@ -854,8 +853,7 @@ Ipv4L3ClickProtocol::LocalDeliver(Ptr<const Packet> packet, const Ipv4Header& ip
         case IpL4Protocol::RX_CSUM_FAILED:
             break;
         case IpL4Protocol::RX_ENDPOINT_UNREACH:
-            if (ip.GetDestination().IsBroadcast() == true ||
-                ip.GetDestination().IsMulticast() == true)
+            if (ip.GetDestination().IsBroadcast() || ip.GetDestination().IsMulticast())
             {
                 break; // Do not reply to broadcast or multicast
             }
@@ -871,7 +869,7 @@ Ipv4L3ClickProtocol::LocalDeliver(Ptr<const Packet> packet, const Ipv4Header& ip
                     subnetDirected = true;
                 }
             }
-            if (subnetDirected == false)
+            if (!subnetDirected)
             {
                 GetIcmp()->SendDestUnreachPort(ip, copy);
             }
