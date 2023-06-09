@@ -23,6 +23,7 @@
 #include "wifi-spectrum-phy-interface.h"
 #include "wifi-spectrum-signal-parameters.h"
 
+#include <ns3/boolean.h>
 #include <ns3/spectrum-transmit-filter.h>
 
 namespace ns3
@@ -61,25 +62,39 @@ WifiBandwidthFilter::DoFilter(Ptr<const SpectrumSignalParameters> params,
     }
 
     // WifiSpectrumPhyInterface (passed in) can be used to fetch SpectrumWifiPhy
-    Ptr<const SpectrumWifiPhy> wifiPhy =
-        DynamicCast<const WifiSpectrumPhyInterface>(receiverPhy)->GetSpectrumWifiPhy();
+
+    auto interface = DynamicCast<const WifiSpectrumPhyInterface>(receiverPhy);
+    auto wifiPhy = interface->GetSpectrumWifiPhy();
 
     NS_ASSERT_MSG(wifiPhy, "WifiPhy should be valid if WifiSpectrumSignalParameters was found");
+
+    BooleanValue trackSignalsInactiveInterfaces;
+    wifiPhy->GetAttribute("TrackSignalsFromInactiveInterfaces", trackSignalsInactiveInterfaces);
+
+    NS_ASSERT_MSG(trackSignalsInactiveInterfaces.Get() ||
+                      (interface == wifiPhy->GetCurrentInterface()),
+                  "DoFilter should not be called for an inactive interface if "
+                  "SpectrumWifiPhy::TrackSignalsFromInactiveInterfaces attribute is not enabled");
+
+    NS_ASSERT((interface != wifiPhy->GetCurrentInterface()) ||
+              (wifiPhy->GetOperatingChannel().GetFrequency() == interface->GetCenterFrequency()));
+    NS_ASSERT((interface != wifiPhy->GetCurrentInterface()) ||
+              (wifiPhy->GetOperatingChannel().GetWidth() == interface->GetChannelWidth()));
 
     // The signal power is spread over a frequency interval that includes a guard
     // band on the left and a guard band on the right of the nominal TX band
 
-    const uint16_t rxCenterFreq = wifiRxParams->ppdu->GetTxCenterFreq();
-    const uint16_t rxWidth = wifiRxParams->ppdu->GetTxVector().GetChannelWidth();
-    const uint16_t guardBandwidth = wifiPhy->GetGuardBandwidth(rxWidth);
-    const uint16_t operatingFrequency = wifiPhy->GetOperatingChannel().GetFrequency();
-    const uint16_t operatingChannelWidth = wifiPhy->GetOperatingChannel().GetWidth();
+    const auto rxCenterFreq = wifiRxParams->ppdu->GetTxCenterFreq();
+    const auto rxWidth = wifiRxParams->ppdu->GetTxVector().GetChannelWidth();
+    const auto guardBandwidth = wifiPhy->GetGuardBandwidth(rxWidth);
+    const auto operatingFrequency = interface->GetCenterFrequency();
+    const auto operatingChannelWidth = interface->GetChannelWidth();
 
-    const uint16_t rxMinFreq = rxCenterFreq - rxWidth / 2 - guardBandwidth;
-    const uint16_t rxMaxFreq = rxCenterFreq + rxWidth / 2 + guardBandwidth;
+    const auto rxMinFreq = rxCenterFreq - rxWidth / 2 - guardBandwidth;
+    const auto rxMaxFreq = rxCenterFreq + rxWidth / 2 + guardBandwidth;
 
-    const uint16_t channelMinFreq = operatingFrequency - operatingChannelWidth / 2;
-    const uint16_t channelMaxFreq = operatingFrequency + operatingChannelWidth / 2;
+    const auto channelMinFreq = operatingFrequency - operatingChannelWidth / 2;
+    const auto channelMaxFreq = operatingFrequency + operatingChannelWidth / 2;
 
     /**
      * The PPDU can be ignored if the two bands do not overlap.

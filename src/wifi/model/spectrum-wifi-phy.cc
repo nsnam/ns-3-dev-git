@@ -715,4 +715,10 @@ SpectrumWifiPhy::GetInterfaceCoveringChannelBand(uint16_t frequency, uint16_t wi
     return it->second;
 }
 
+Ptr<WifiSpectrumPhyInterface>
+SpectrumWifiPhy::GetCurrentInterface() const
+{
+    return m_currentSpectrumPhyInterface;
+}
+
 } // namespace ns3

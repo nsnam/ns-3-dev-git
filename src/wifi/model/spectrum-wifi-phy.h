@@ -170,6 +170,13 @@ class SpectrumWifiPhy : public WifiPhy
      */
     Ptr<const WifiPpdu> GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu);
 
+    /**
+     * Get the currently active spectrum PHY interface
+     *
+     * \return the current spectrum PHY interface
+     */
+    Ptr<WifiSpectrumPhyInterface> GetCurrentInterface() const;
+
   protected:
     void DoDispose() override;
     void DoInitialize() override;
