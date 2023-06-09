@@ -58,6 +58,87 @@ static InterfaceFileMapIpv4
 static InterfaceStreamMapIpv4
     g_interfaceStreamMapIpv4; /**< A mapping of Ipv4/interface pairs to ascii streams */
 
+static void
+Ipv4L3ProtocolRxTxSink(Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
+{
+    NS_LOG_FUNCTION(p << ipv4 << interface);
+
+    //
+    // Since trace sources are independent of interface, if we hook a source
+    // on a particular protocol we will get traces for all of its interfaces.
+    // We need to filter this to only report interfaces for which the user
+    // has expressed interest.
+    //
+    InterfacePairIpv4 pair = std::make_pair(ipv4, interface);
+    if (g_interfaceFileMapIpv4.find(pair) == g_interfaceFileMapIpv4.end())
+    {
+        NS_LOG_INFO("Ignoring packet to/from interface " << interface);
+        return;
+    }
+
+    Ptr<PcapFileWrapper> file = g_interfaceFileMapIpv4[pair];
+    file->Write(Simulator::Now(), p);
+}
+
+static void
+Ipv4L3ProtocolDropSinkWithoutContext(Ptr<OutputStreamWrapper> stream,
+                                     const Ipv4Header& header,
+                                     Ptr<const Packet> packet,
+                                     Ipv4L3Protocol::DropReason reason,
+                                     Ptr<Ipv4> ipv4,
+                                     uint32_t interface)
+{
+    //
+    // Since trace sources are independent of interface, if we hook a source
+    // on a particular protocol we will get traces for all of its interfaces.
+    // We need to filter this to only report interfaces for which the user
+    // has expressed interest.
+    //
+    InterfacePairIpv4 pair = std::make_pair(ipv4, interface);
+    if (g_interfaceStreamMapIpv4.find(pair) == g_interfaceStreamMapIpv4.end())
+    {
+        NS_LOG_INFO("Ignoring packet to/from interface " << interface);
+        return;
+    }
+
+    Ptr<Packet> p = packet->Copy();
+    p->AddHeader(header);
+    *stream->GetStream() << "d " << Simulator::Now().GetSeconds() << " " << *p << std::endl;
+}
+
+static void
+Ipv4L3ProtocolDropSinkWithContext(Ptr<OutputStreamWrapper> stream,
+                                  std::string context,
+                                  const Ipv4Header& header,
+                                  Ptr<const Packet> packet,
+                                  Ipv4L3Protocol::DropReason reason,
+                                  Ptr<Ipv4> ipv4,
+                                  uint32_t interface)
+{
+    //
+    // Since trace sources are independent of interface, if we hook a source
+    // on a particular protocol we will get traces for all of its interfaces.
+    // We need to filter this to only report interfaces for which the user
+    // has expressed interest.
+    //
+    InterfacePairIpv4 pair = std::make_pair(ipv4, interface);
+    if (g_interfaceStreamMapIpv4.find(pair) == g_interfaceStreamMapIpv4.end())
+    {
+        NS_LOG_INFO("Ignoring packet to/from interface " << interface);
+        return;
+    }
+
+    Ptr<Packet> p = packet->Copy();
+    p->AddHeader(header);
+#ifdef INTERFACE_CONTEXT
+    *stream->GetStream() << "d " << Simulator::Now().GetSeconds() << " " << context << "("
+                         << interface << ") " << *p << std::endl;
+#else
+    *stream->GetStream() << "d " << Simulator::Now().GetSeconds() << " " << context << " " << *p
+                         << std::endl;
+#endif
+}
+
 ClickInternetStackHelper::ClickInternetStackHelper()
     : m_ipv4Enabled(true)
 {
@@ -220,28 +301,6 @@ ClickInternetStackHelper::Install(std::string nodeName) const
     Install(node);
 }
 
-static void
-Ipv4L3ProtocolRxTxSink(Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
-{
-    NS_LOG_FUNCTION(p << ipv4 << interface);
-
-    //
-    // Since trace sources are independent of interface, if we hook a source
-    // on a particular protocol we will get traces for all of its interfaces.
-    // We need to filter this to only report interfaces for which the user
-    // has expressed interest.
-    //
-    InterfacePairIpv4 pair = std::make_pair(ipv4, interface);
-    if (g_interfaceFileMapIpv4.find(pair) == g_interfaceFileMapIpv4.end())
-    {
-        NS_LOG_INFO("Ignoring packet to/from interface " << interface);
-        return;
-    }
-
-    Ptr<PcapFileWrapper> file = g_interfaceFileMapIpv4[pair];
-    file->Write(Simulator::Now(), p);
-}
-
 bool
 ClickInternetStackHelper::PcapHooked(Ptr<Ipv4> ipv4)
 {
@@ -318,65 +377,6 @@ ClickInternetStackHelper::EnablePcapIpv4Internal(std::string prefix,
     }
 
     g_interfaceFileMapIpv4[std::make_pair(ipv4, interface)] = file;
-}
-
-static void
-Ipv4L3ProtocolDropSinkWithoutContext(Ptr<OutputStreamWrapper> stream,
-                                     const Ipv4Header& header,
-                                     Ptr<const Packet> packet,
-                                     Ipv4L3Protocol::DropReason reason,
-                                     Ptr<Ipv4> ipv4,
-                                     uint32_t interface)
-{
-    //
-    // Since trace sources are independent of interface, if we hook a source
-    // on a particular protocol we will get traces for all of its interfaces.
-    // We need to filter this to only report interfaces for which the user
-    // has expressed interest.
-    //
-    InterfacePairIpv4 pair = std::make_pair(ipv4, interface);
-    if (g_interfaceStreamMapIpv4.find(pair) == g_interfaceStreamMapIpv4.end())
-    {
-        NS_LOG_INFO("Ignoring packet to/from interface " << interface);
-        return;
-    }
-
-    Ptr<Packet> p = packet->Copy();
-    p->AddHeader(header);
-    *stream->GetStream() << "d " << Simulator::Now().GetSeconds() << " " << *p << std::endl;
-}
-
-static void
-Ipv4L3ProtocolDropSinkWithContext(Ptr<OutputStreamWrapper> stream,
-                                  std::string context,
-                                  const Ipv4Header& header,
-                                  Ptr<const Packet> packet,
-                                  Ipv4L3Protocol::DropReason reason,
-                                  Ptr<Ipv4> ipv4,
-                                  uint32_t interface)
-{
-    //
-    // Since trace sources are independent of interface, if we hook a source
-    // on a particular protocol we will get traces for all of its interfaces.
-    // We need to filter this to only report interfaces for which the user
-    // has expressed interest.
-    //
-    InterfacePairIpv4 pair = std::make_pair(ipv4, interface);
-    if (g_interfaceStreamMapIpv4.find(pair) == g_interfaceStreamMapIpv4.end())
-    {
-        NS_LOG_INFO("Ignoring packet to/from interface " << interface);
-        return;
-    }
-
-    Ptr<Packet> p = packet->Copy();
-    p->AddHeader(header);
-#ifdef INTERFACE_CONTEXT
-    *stream->GetStream() << "d " << Simulator::Now().GetSeconds() << " " << context << "("
-                         << interface << ") " << *p << std::endl;
-#else
-    *stream->GetStream() << "d " << Simulator::Now().GetSeconds() << " " << context << " " << *p
-                         << std::endl;
-#endif
 }
 
 bool
