@@ -518,7 +518,7 @@ class OpenFlowSwitchNetDevice : public NetDevice
 
     /// Rx Callback
     NetDevice::ReceiveCallback m_rxCallback;
-    /// Promiscuopus Rx Callback
+    /// Promiscuous Rx Callback
     NetDevice::PromiscReceiveCallback m_promiscRxCallback;
 
     Mac48Address m_address;       ///< Address of this device.

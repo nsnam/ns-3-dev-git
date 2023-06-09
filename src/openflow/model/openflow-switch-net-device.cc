@@ -27,6 +27,11 @@ NS_LOG_COMPONENT_DEFINE("OpenFlowSwitchNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED(OpenFlowSwitchNetDevice);
 
+/**
+ * Generate an ID.
+ *
+ * \return Generated ID.
+ */
 static uint64_t
 GenerateId()
 {
