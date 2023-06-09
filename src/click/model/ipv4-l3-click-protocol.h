@@ -61,6 +61,11 @@ class Icmpv4L4Protocol;
 class Ipv4L3ClickProtocol : public Ipv4
 {
   public:
+    /**
+     * Get Type ID.
+     *
+     * \return The type ID.
+     */
     static TypeId GetTypeId();
 
     /**
@@ -223,6 +228,12 @@ class Ipv4L3ClickProtocol : public Ipv4
     void SetDown(uint32_t i) override;
     bool IsForwarding(uint32_t i) const override;
     void SetForwarding(uint32_t i, bool val) override;
+
+    /**
+     * Sets an interface to run on promiscuous mode.
+     *
+     * \param i Interface ID.
+     */
     void SetPromisc(uint32_t i);
 
   protected:
@@ -235,6 +246,17 @@ class Ipv4L3ClickProtocol : public Ipv4
     void NotifyNewAggregate() override;
 
   private:
+    /**
+     * Build IPv4 header.
+     *
+     * \param source IPv4 source address.
+     * \param destination IPv4 destination address.
+     * \param protocol Protocol.
+     * \param payloadSize Payload size.
+     * \param ttl Time To Live (TTL).
+     * \param mayFragment Whether the packet can be fragmented or not.
+     * \return The IPv4 header.
+     */
     Ipv4Header BuildHeader(Ipv4Address source,
                            Ipv4Address destination,
                            uint8_t protocol,
@@ -247,32 +269,42 @@ class Ipv4L3ClickProtocol : public Ipv4
     void SetWeakEsModel(bool model) override;
     bool GetWeakEsModel() const override;
 
+    /**
+     * \brief List of IPv4 interfaces.
+     */
     typedef std::vector<Ptr<Ipv4Interface>> Ipv4InterfaceList;
+
     /**
      * \brief Container of NetDevices registered to IPv4 and their interface indexes.
      */
     typedef std::map<Ptr<const NetDevice>, uint32_t> Ipv4InterfaceReverseContainer;
+
+    /**
+     * \brief List of sockets.
+     */
     typedef std::list<Ptr<Ipv4RawSocketImpl>> SocketList;
+
     /**
      * \brief Container of the IPv4 L4 keys: protocol number, interface index
      */
     typedef std::pair<int, int32_t> L4ListKey_t;
+
     /**
      * \brief Container of the IPv4 L4 instances.
      */
     typedef std::map<L4ListKey_t, Ptr<IpL4Protocol>> L4List_t;
 
-    Ptr<Ipv4RoutingProtocol> m_routingProtocol;
-    bool m_ipForward;
-    bool m_weakEsModel;
-    L4List_t m_protocols;
-    Ipv4InterfaceList m_interfaces;
+    Ptr<Ipv4RoutingProtocol> m_routingProtocol; //!< IPv4 routing protocol
+    bool m_ipForward;                           //!< Whether IP forwarding is enabled
+    bool m_weakEsModel;                         //!< Whether to use weak Es model
+    L4List_t m_protocols;                       //!< List of IPv4 L4 protocols
+    Ipv4InterfaceList m_interfaces;             //!< List of interfaces
     Ipv4InterfaceReverseContainer
-        m_reverseInterfacesContainer; //!< Container of NetDevice / Interface index associations.
-    uint8_t m_defaultTtl;
-    uint16_t m_identification;
+        m_reverseInterfacesContainer; //!< Container of NetDevice / Interface index associations
+    uint8_t m_defaultTtl;             //!< Default TTL
+    uint16_t m_identification;        //!< Identification
 
-    Ptr<Node> m_node;
+    Ptr<Node> m_node; //!< Node
 
     /** \todo Remove; this TracedCallback is never invoked. */
     TracedCallback<const Ipv4Header&, Ptr<const Packet>, uint32_t> m_sendOutgoingTrace;
@@ -281,9 +313,9 @@ class Ipv4L3ClickProtocol : public Ipv4
     /** \todo This TracedCallback is invoked but not accessible. */
     TracedCallback<const Ipv4Header&, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
 
-    SocketList m_sockets;
+    SocketList m_sockets; //!< List of sockets
 
-    std::vector<bool> m_promiscDeviceList;
+    std::vector<bool> m_promiscDeviceList; //!< List of promiscuous devices
 };
 
 } // namespace ns3

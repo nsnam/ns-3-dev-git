@@ -57,7 +57,20 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
      * Destroy the ClickInternetStackHelper
      */
     ~ClickInternetStackHelper() override;
-    ClickInternetStackHelper(const ClickInternetStackHelper&);
+
+    /**
+     * Copy constructor.
+     *
+     * \param o Object to copy from.
+     */
+    ClickInternetStackHelper(const ClickInternetStackHelper& o);
+
+    /**
+     * Assignment operator.
+     *
+     * \param o Object to copy from.
+     * \return Reference to updated object.
+     */
     ClickInternetStackHelper& operator=(const ClickInternetStackHelper& o);
 
     /**
@@ -143,11 +156,12 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
 
   private:
     /**
-     * @brief Enable pcap output the indicated Ipv4 and interface pair.
+     * \brief Enable pcap output the indicated Ipv4 and interface pair.
      *
-     * @param prefix Filename prefix to use for pcap files.
-     * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
-     * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+     * \param prefix Filename prefix to use for pcap files.
+     * \param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+     * \param interface Interface ID on the Ipv4 on which you want to enable tracing.
+     * \param explicitFilename Whether the filename is explicit or not.
      */
     void EnablePcapIpv4Internal(std::string prefix,
                                 Ptr<Ipv4> ipv4,
@@ -155,13 +169,14 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
                                 bool explicitFilename) override;
 
     /**
-     * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
+     * \brief Enable ascii trace output on the indicated Ipv4 and interface pair.
      *
-     * @param stream An OutputStreamWrapper representing an existing file to use
+     * \param stream An OutputStreamWrapper representing an existing file to use
      *               when writing trace data.
-     * @param prefix Filename prefix to use for ascii trace files.
-     * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
-     * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+     * \param prefix Filename prefix to use for ascii trace files.
+     * \param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+     * \param interface Interface ID on the Ipv4 on which you want to enable tracing.
+     * \param explicitFilename Whether the filename is explicit or not.
      */
     void EnableAsciiIpv4Internal(Ptr<OutputStreamWrapper> stream,
                                  std::string prefix,
@@ -169,12 +184,34 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
                                  uint32_t interface,
                                  bool explicitFilename) override;
 
+    /**
+     * Initialize stack helper.
+     * Called by both constructor and Reset().
+     */
     void Initialize();
 
+    /**
+     * Create and aggregate object from type ID.
+     *
+     * \param node Node.
+     * \param typeId Type ID.
+     */
     static void CreateAndAggregateObjectFromTypeId(Ptr<Node> node, const std::string typeId);
 
+    /**
+     * Check if PCAP is hooked.
+     *
+     * \param ipv4 IPv4 stack.
+     * \return True if PCAP is hooked.
+     */
     bool PcapHooked(Ptr<Ipv4> ipv4);
 
+    /**
+     * Check if ASCII is hooked.
+     *
+     * \param ipv4 IPv4 stack.
+     * \return True if ASCII is hooked.
+     */
     bool AsciiHooked(Ptr<Ipv4> ipv4);
 
     /**
