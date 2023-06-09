@@ -84,9 +84,9 @@ ClickInternetStackHelper::ClickInternetStackHelper(const ClickInternetStackHelpe
 ClickInternetStackHelper&
 ClickInternetStackHelper::operator=(const ClickInternetStackHelper& o)
 {
-    if (this == &o)
+    if (this != &o)
     {
-        return *this;
+        m_ipv4Enabled = o.m_ipv4Enabled;
     }
     return *this;
 }
