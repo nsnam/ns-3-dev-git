@@ -175,8 +175,6 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
 
     static void CreateAndAggregateObjectFromTypeId(Ptr<Node> node, const std::string typeId);
 
-    static void Cleanup();
-
     bool PcapHooked(Ptr<Ipv4> ipv4);
 
     bool AsciiHooked(Ptr<Ipv4> ipv4);
