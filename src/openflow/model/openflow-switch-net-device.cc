@@ -27,6 +27,14 @@ NS_LOG_COMPONENT_DEFINE("OpenFlowSwitchNetDevice");
 
 NS_OBJECT_ENSURE_REGISTERED(OpenFlowSwitchNetDevice);
 
+static uint64_t
+GenerateId()
+{
+    uint8_t ea[ETH_ADDR_LEN];
+    eth_addr_random(ea);
+    return eth_addr_to_uint64(ea);
+}
+
 const char*
 OpenFlowSwitchNetDevice::GetManufacturerDescription()
 {
@@ -49,14 +57,6 @@ const char*
 OpenFlowSwitchNetDevice::GetSerialNumber()
 {
     return "N/A";
-}
-
-static uint64_t
-GenerateId()
-{
-    uint8_t ea[ETH_ADDR_LEN];
-    eth_addr_random(ea);
-    return eth_addr_to_uint64(ea);
 }
 
 TypeId
