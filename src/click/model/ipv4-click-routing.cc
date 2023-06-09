@@ -17,8 +17,6 @@
  * Authors: Lalith Suresh <suresh.lalith@gmail.com>
  */
 
-#ifdef NS3_CLICK
-
 #include "ipv4-click-routing.h"
 
 #include "ns3/ipv4-interface.h"
@@ -850,5 +848,3 @@ simclick_sim_command(simclick_node_t* simnode, int cmd, ...)
     va_end(val);
     return retval;
 }
-
-#endif // NS3_CLICK

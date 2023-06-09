@@ -19,8 +19,6 @@
  * Author: Lalith Suresh  <suresh.lalith@gmail.com>
  */
 
-#ifdef NS3_CLICK
-
 #include "click-internet-stack-helper.h"
 
 #include "ns3/arp-l3-protocol.h"
@@ -521,5 +519,3 @@ ClickInternetStackHelper::EnableAsciiIpv4Internal(Ptr<OutputStreamWrapper> strea
 }
 
 } // namespace ns3
-
-#endif // NS3_CLICK

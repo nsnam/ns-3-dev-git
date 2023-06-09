@@ -57,7 +57,6 @@ class UniformRandomVariable;
 
 class Ipv4ClickRouting : public Ipv4RoutingProtocol
 {
-#ifdef NS3_CLICK
   public:
     // Allow test cases to access private members
     friend class ::ClickTrivialTest;
@@ -287,7 +286,6 @@ class Ipv4ClickRouting : public Ipv4RoutingProtocol
 
     Ptr<Ipv4> m_ipv4;
     Ptr<UniformRandomVariable> m_random;
-#endif /* NS3_CLICK */
 };
 
 } // namespace ns3

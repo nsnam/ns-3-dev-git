@@ -18,8 +18,6 @@
 // Author: Lalith Suresh <suresh.lalith@gmail.com>
 //
 
-#ifdef NS3_CLICK
-
 #include "ipv4-l3-click-protocol.h"
 
 #include "ns3/arp-l3-protocol.h"
@@ -991,5 +989,3 @@ Ipv4L3ClickProtocol::GetProtocol(int protocolNumber, int32_t interfaceIndex) con
 }
 
 } // namespace ns3
-
-#endif // NS3_CLICK

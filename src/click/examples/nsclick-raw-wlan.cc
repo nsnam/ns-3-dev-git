@@ -44,7 +44,6 @@ ReceivePacket(Ptr<Socket> socket)
 int
 main(int argc, char* argv[])
 {
-#ifdef NS3_CLICK
     double rss = -80;
     std::string clickConfigFolder = "src/click/examples";
 
@@ -150,9 +149,6 @@ main(int argc, char* argv[])
     Simulator::Run();
 
     Simulator::Destroy();
-#else
-    NS_FATAL_ERROR("Can't use ns-3-click without NSCLICK compiled in");
-#endif
 
     return 0;
 }

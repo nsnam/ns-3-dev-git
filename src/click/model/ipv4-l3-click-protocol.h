@@ -60,7 +60,6 @@ class Icmpv4L4Protocol;
 
 class Ipv4L3ClickProtocol : public Ipv4
 {
-#ifdef NS3_CLICK
   public:
     static TypeId GetTypeId();
 
@@ -285,8 +284,6 @@ class Ipv4L3ClickProtocol : public Ipv4
     SocketList m_sockets;
 
     std::vector<bool> m_promiscDeviceList;
-
-#endif /* NS3_CLICK */
 };
 
 } // namespace ns3

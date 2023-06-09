@@ -45,7 +45,6 @@ NS_LOG_COMPONENT_DEFINE("NsclickRouting");
 int
 main(int argc, char* argv[])
 {
-#ifdef NS3_CLICK
     std::string clickConfigFolder = "src/click/examples";
 
     CommandLine cmd(__FILE__);
@@ -131,9 +130,6 @@ main(int argc, char* argv[])
     Simulator::Run();
     Simulator::Destroy();
     NS_LOG_INFO("Done.");
-#else
-    NS_FATAL_ERROR("Can't use ns-3-click without NSCLICK compiled in");
-#endif
 
     return 0;
 }

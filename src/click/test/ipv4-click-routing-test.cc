@@ -17,8 +17,6 @@
  * Authors: Lalith Suresh <suresh.lalith@gmail.com>
  */
 
-#ifdef NS3_CLICK
-
 #include "ns3/click-internet-stack-helper.h"
 #include "ns3/ipv4-click-routing.h"
 #include "ns3/ipv4-l3-protocol.h"
@@ -217,5 +215,3 @@ class ClickIfidFromNameTestSuite : public TestSuite
         AddTestCase(new ClickIpMacAddressFromNameTest, TestCase::QUICK);
     }
 } g_ipv4ClickRoutingTestSuite;
-
-#endif // NS3_CLICK

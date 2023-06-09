@@ -18,8 +18,6 @@
  * Author: Lalith Suresh  <suresh.lalith@gmail.com>
  */
 
-#ifdef NS3_CLICK
-
 #ifndef CLICK_INTERNET_STACK_HELPER_H
 #define CLICK_INTERNET_STACK_HELPER_H
 
@@ -203,5 +201,3 @@ class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelp
 } // namespace ns3
 
 #endif /* CLICK_INTERNET_STACK_HELPER_H */
-
-#endif /* NS3_CLICK */

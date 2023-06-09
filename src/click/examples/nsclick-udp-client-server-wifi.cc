@@ -50,7 +50,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("NsclickUdpClientServerWifi");
 
-#ifdef NS3_CLICK
 void
 ReadArp(Ptr<Ipv4ClickRouting> clickRouter)
 {
@@ -66,12 +65,10 @@ WriteArp(Ptr<Ipv4ClickRouting> clickRouter)
     NS_LOG_INFO(
         clickRouter->WriteHandler("wifi/arpquerier", "insert", "172.16.1.2 00:00:00:00:00:02"));
 }
-#endif
 
 int
 main(int argc, char* argv[])
 {
-#ifdef NS3_CLICK
     std::string clickConfigFolder = "src/click/examples";
 
     CommandLine cmd(__FILE__);
@@ -216,9 +213,6 @@ main(int argc, char* argv[])
     Simulator::Run();
     Simulator::Destroy();
     NS_LOG_INFO("Done.");
-#else
-    NS_FATAL_ERROR("Can't use ns-3-click without NSCLICK compiled in");
-#endif
 
     return 0;
 }
