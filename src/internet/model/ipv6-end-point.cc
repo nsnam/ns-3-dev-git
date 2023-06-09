@@ -49,7 +49,7 @@ Ipv6EndPoint::~Ipv6EndPoint()
 }
 
 Ipv6Address
-Ipv6EndPoint::GetLocalAddress()
+Ipv6EndPoint::GetLocalAddress() const
 {
     return m_localAddr;
 }
@@ -73,7 +73,7 @@ Ipv6EndPoint::SetLocalPort(uint16_t port)
 }
 
 Ipv6Address
-Ipv6EndPoint::GetPeerAddress()
+Ipv6EndPoint::GetPeerAddress() const
 {
     return m_peerAddr;
 }
@@ -91,7 +91,7 @@ Ipv6EndPoint::BindToNetDevice(Ptr<NetDevice> netdevice)
 }
 
 Ptr<NetDevice>
-Ipv6EndPoint::GetBoundNetDevice()
+Ipv6EndPoint::GetBoundNetDevice() const
 {
     return m_boundnetdevice;
 }
