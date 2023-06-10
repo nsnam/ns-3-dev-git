@@ -286,6 +286,12 @@ void
 AthstatsWifiTraceSink::WriteStats()
 {
     NS_LOG_FUNCTION(this);
+
+    if (!m_writer)
+    {
+        return;
+    }
+
     // The comments below refer to how each value maps to madwifi's athstats
     // I know C strings are ugly but that's the quickest way to use exactly the same format as in
     // madwifi
@@ -309,13 +315,10 @@ AthstatsWifiTraceSink::WriteStats()
         (unsigned int)0                     // rate
     );
 
-    if (m_writer)
-    {
-        *m_writer << str;
+    *m_writer << str;
 
-        ResetCounters();
-        Simulator::Schedule(m_interval, &AthstatsWifiTraceSink::WriteStats, this);
-    }
+    ResetCounters();
+    Simulator::Schedule(m_interval, &AthstatsWifiTraceSink::WriteStats, this);
 }
 
 } // namespace ns3

@@ -144,14 +144,11 @@ DpdkNetDevice::CheckAllPortsLinkStatus()
         /* print link status if flag set */
         if (printFlag == 1)
         {
-            if (link.link_status)
-            {
-                continue;
-            }
-            else
+            if (!link.link_status)
             {
                 printf("Port %d Link Down\n", m_portId);
             }
+
             continue;
         }
         /* clear allPortsUp flag if any link down */
