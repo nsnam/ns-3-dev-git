@@ -281,7 +281,7 @@ Ipv4ClickRouting::GetTimevalFromNow() const
     curtime.tv_sec = Simulator::Now().GetSeconds();
     curtime.tv_usec = Simulator::Now().GetMicroSeconds() % 1000000;
 
-    switch (Simulator::Now()::GetResolution())
+    switch (Time::GetResolution())
     {
     case Time::NS:
         remainder = Simulator::Now().GetNanoSeconds() % 1000;
