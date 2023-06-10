@@ -121,60 +121,60 @@ weekly-test-ubuntu-18.04-optimized:
 #     MODE: optimized
 #     LIBGSL: libgsl23
 
-# Ubuntu 22.04 (Until January 2032)
-weekly-build-ubuntu-22.04-debug:
-  extends: .weekly-base-ubuntu
-  needs: ["weekly-ubuntu"]
-  image: ubuntu:22.04
-  stage: build
-  variables:
-    MODE: debug
-    LIBGSL: libgsl27
-    COMPILER: g++
+# Ubuntu 22.04 (Until January 2032) -- commented out because we are using Ubuntu 22.04 for gcc jobs
+# weekly-build-ubuntu-22.04-debug:
+#   extends: .weekly-base-ubuntu
+#   needs: ["weekly-ubuntu"]
+#   image: ubuntu:22.04
+#   stage: build
+#   variables:
+#     MODE: debug
+#     LIBGSL: libgsl27
+#     COMPILER: g++
 
-weekly-build-ubuntu-22.04-default:
-  extends: .weekly-base-ubuntu
-  needs: ["weekly-ubuntu"]
-  image: ubuntu:22.04
-  stage: build
-  variables:
-    MODE: default
-    LIBGSL: libgsl27
-    COMPILER: g++
+# weekly-build-ubuntu-22.04-default:
+#   extends: .weekly-base-ubuntu
+#   needs: ["weekly-ubuntu"]
+#   image: ubuntu:22.04
+#   stage: build
+#   variables:
+#     MODE: default
+#     LIBGSL: libgsl27
+#     COMPILER: g++
 
-weekly-build-ubuntu-22.04-optimized:
-  extends: .weekly-base-ubuntu
-  needs: ["weekly-ubuntu"]
-  image: ubuntu:22.04
-  stage: build
-  variables:
-    MODE: optimized
-    LIBGSL: libgsl27
-    COMPILER: g++
+# weekly-build-ubuntu-22.04-optimized:
+#   extends: .weekly-base-ubuntu
+#   needs: ["weekly-ubuntu"]
+#   image: ubuntu:22.04
+#   stage: build
+#   variables:
+#     MODE: optimized
+#     LIBGSL: libgsl27
+#     COMPILER: g++
 
-weekly-test-ubuntu-22.04-default:
-  extends: .weekly-base-ubuntu
-  image: ubuntu:22.04
-  stage: test
-  needs: ["weekly-build-ubuntu-22.04-default"]
-  dependencies:
-    - weekly-build-ubuntu-22.04-default
-  variables:
-    MODE: default
-    LIBGSL: libgsl27
-    COMPILER: g++
+# weekly-test-ubuntu-22.04-default:
+#   extends: .weekly-base-ubuntu
+#   image: ubuntu:22.04
+#   stage: test
+#   needs: ["weekly-build-ubuntu-22.04-default"]
+#   dependencies:
+#     - weekly-build-ubuntu-22.04-default
+#   variables:
+#     MODE: default
+#     LIBGSL: libgsl27
+#     COMPILER: g++
 
-weekly-test-ubuntu-22.04-optimized:
-  extends: .weekly-base-ubuntu
-  image: ubuntu:22.04
-  stage: test
-  needs: ["weekly-build-ubuntu-22.04-optimized"]
-  dependencies:
-    - weekly-build-ubuntu-22.04-optimized
-  variables:
-    MODE: optimized
-    LIBGSL: libgsl27
-    COMPILER: g++
+# weekly-test-ubuntu-22.04-optimized:
+#   extends: .weekly-base-ubuntu
+#   image: ubuntu:22.04
+#   stage: test
+#   needs: ["weekly-build-ubuntu-22.04-optimized"]
+#   dependencies:
+#     - weekly-build-ubuntu-22.04-optimized
+#   variables:
+#     MODE: optimized
+#     LIBGSL: libgsl27
+#     COMPILER: g++
 
 # Ubuntu Latest
 weekly-build-ubuntu-latest-debug:
