@@ -23,6 +23,7 @@
 #include "qos-utils.h"
 #include "sta-wifi-mac.h"
 
+#include <optional>
 #include <set>
 #include <unordered_map>
 

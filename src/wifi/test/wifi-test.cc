@@ -57,6 +57,8 @@
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/yans-wifi-phy.h"
 
+#include <optional>
+
 using namespace ns3;
 
 // Helper function to assign streams to random variables, to control

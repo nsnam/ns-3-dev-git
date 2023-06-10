@@ -27,6 +27,7 @@
 #include "ns3/simulator.h"
 
 #include <functional>
+#include <optional>
 
 namespace ns3
 {

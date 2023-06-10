@@ -32,6 +32,7 @@
 #include "ns3/traced-callback.h"
 
 #include <map>
+#include <optional>
 
 namespace ns3
 {

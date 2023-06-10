@@ -25,6 +25,7 @@
 
 #include <list>
 #include <numeric>
+#include <optional>
 
 using namespace ns3;
 

@@ -26,6 +26,7 @@
 #include "ns3/tid-to-link-mapping-element.h"
 #include "ns3/wifi-phy-operating-channel.h"
 
+#include <optional>
 #include <sstream>
 #include <vector>
 

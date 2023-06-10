@@ -52,6 +52,7 @@
 #include <algorithm>
 #include <array>
 #include <iomanip>
+#include <optional>
 #include <sstream>
 #include <vector>
 

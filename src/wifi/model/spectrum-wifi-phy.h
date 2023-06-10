@@ -30,6 +30,7 @@
 #include "ns3/antenna-model.h"
 
 #include <map>
+#include <optional>
 
 class SpectrumWifiPhyFilterTest;
 
