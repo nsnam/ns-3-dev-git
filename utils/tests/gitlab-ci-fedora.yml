@@ -44,50 +44,50 @@ weekly-fedora:
     - echo "Starting Fedora jobs"
 
 # Fedora 36
-weekly-build-fedora-36-debug:
-  extends: .weekly-build-fedora
-  needs: ["weekly-fedora"]
-  image: fedora:36
-  stage: build
-  variables:
-    MODE: debug
+# weekly-build-fedora-36-debug:
+#   extends: .weekly-build-fedora
+#   needs: ["weekly-fedora"]
+#   image: fedora:36
+#   stage: build
+#   variables:
+#     MODE: debug
 
-weekly-build-fedora-36-default:
-  extends: .weekly-build-fedora
-  needs: ["weekly-fedora"]
-  image: fedora:36
-  stage: build
-  variables:
-    MODE: default
+# weekly-build-fedora-36-default:
+#   extends: .weekly-build-fedora
+#   needs: ["weekly-fedora"]
+#   image: fedora:36
+#   stage: build
+#   variables:
+#     MODE: default
 
-weekly-build-fedora-36-optimized:
-  extends: .weekly-build-fedora
-  needs: ["weekly-fedora"]
-  image: fedora:36
-  stage: build
-  variables:
-    MODE: optimized
+# weekly-build-fedora-36-optimized:
+#   extends: .weekly-build-fedora
+#   needs: ["weekly-fedora"]
+#   image: fedora:36
+#   stage: build
+#   variables:
+#     MODE: optimized
 
 # Fedora 36 test
-weekly-test-fedora-36-default:
-  extends: .weekly-build-fedora
-  image: fedora:36
-  stage: test
-  needs: ["weekly-build-fedora-36-default"]
-  dependencies:
-    - weekly-build-fedora-36-default
-  variables:
-    MODE: default
+# weekly-test-fedora-36-default:
+#   extends: .weekly-build-fedora
+#   image: fedora:36
+#   stage: test
+#   needs: ["weekly-build-fedora-36-default"]
+#   dependencies:
+#     - weekly-build-fedora-36-default
+#   variables:
+#     MODE: default
 
-weekly-test-fedora-36-optimized:
-  extends: .weekly-build-fedora
-  image: fedora:36
-  stage: test
-  needs: ["weekly-build-fedora-36-optimized"]
-  dependencies:
-    - weekly-build-fedora-36-optimized
-  variables:
-    MODE: optimized
+# weekly-test-fedora-36-optimized:
+#   extends: .weekly-build-fedora
+#   image: fedora:36
+#   stage: test
+#   needs: ["weekly-build-fedora-36-optimized"]
+#   dependencies:
+#     - weekly-build-fedora-36-optimized
+#   variables:
+#     MODE: optimized
 
 # Fedora 37
 weekly-build-fedora-37-debug:
@@ -132,5 +132,51 @@ weekly-test-fedora-37-optimized:
   needs: ["weekly-build-fedora-37-optimized"]
   dependencies:
     - weekly-build-fedora-37-optimized
+  variables:
+    MODE: optimized
+
+# Fedora 38
+weekly-build-fedora-38-debug:
+  extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
+  image: fedora:38
+  stage: build
+  variables:
+    MODE: debug
+
+weekly-build-fedora-38-default:
+  extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
+  image: fedora:38
+  stage: build
+  variables:
+    MODE: default
+
+weekly-build-fedora-38-optimized:
+  extends: .weekly-build-fedora
+  needs: ["weekly-fedora"]
+  image: fedora:38
+  stage: build
+  variables:
+    MODE: optimized
+
+# Fedora 38 test
+weekly-test-fedora-38-default:
+  extends: .weekly-build-fedora
+  image: fedora:38
+  stage: test
+  needs: ["weekly-build-fedora-38-default"]
+  dependencies:
+    - weekly-build-fedora-38-default
+  variables:
+    MODE: default
+
+weekly-test-fedora-38-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:38
+  stage: test
+  needs: ["weekly-build-fedora-38-optimized"]
+  dependencies:
+    - weekly-build-fedora-38-optimized
   variables:
     MODE: optimized
