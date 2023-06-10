@@ -278,19 +278,21 @@ Ipv4ClickRouting::GetTimevalFromNow() const
     struct timeval curtime;
     uint64_t remainder = 0;
 
-    curtime.tv_sec = Simulator::Now().GetSeconds();
-    curtime.tv_usec = Simulator::Now().GetMicroSeconds() % 1000000;
+    Time now = Simulator::Now();
+
+    curtime.tv_sec = now.GetSeconds();
+    curtime.tv_usec = now.GetMicroSeconds() % 1000000;
 
     switch (Time::GetResolution())
     {
     case Time::NS:
-        remainder = Simulator::Now().GetNanoSeconds() % 1000;
+        remainder = now.GetNanoSeconds() % 1000;
         break;
     case Time::PS:
-        remainder = Simulator::Now().GetPicoSeconds() % 1000000;
+        remainder = now.GetPicoSeconds() % 1000000;
         break;
     case Time::FS:
-        remainder = Simulator::Now().GetFemtoSeconds() % 1000000000;
+        remainder = now.GetFemtoSeconds() % 1000000000;
         break;
     default:
         break;
