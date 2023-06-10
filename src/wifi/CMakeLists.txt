@@ -50,6 +50,7 @@ set(source_files
     model/frame-capture-model.cc
     model/frame-exchange-manager.cc
     model/gcr-group-address.cc
+    model/gcr-manager.cc
     model/he/constant-obss-pd-algorithm.cc
     model/he/he-6ghz-band-capabilities.cc
     model/he/he-capabilities.cc
@@ -135,6 +136,7 @@ set(source_files
     model/wifi-bandwidth-filter.cc
     model/wifi-default-ack-manager.cc
     model/wifi-default-assoc-manager.cc
+    model/wifi-default-gcr-manager.cc
     model/wifi-default-protection-manager.cc
     model/wifi-information-element.cc
     model/wifi-mac-header.cc
@@ -216,6 +218,7 @@ set(header_files
     model/frame-capture-model.h
     model/frame-exchange-manager.h
     model/gcr-group-address.h
+    model/gcr-manager.h
     model/he/constant-obss-pd-algorithm.h
     model/he/he-6ghz-band-capabilities.h
     model/he/he-capabilities.h
@@ -301,6 +304,7 @@ set(header_files
     model/wifi-bandwidth-filter.h
     model/wifi-default-ack-manager.h
     model/wifi-default-assoc-manager.h
+    model/wifi-default-gcr-manager.h
     model/wifi-default-protection-manager.h
     model/wifi-information-element.h
     model/wifi-mac-header.h

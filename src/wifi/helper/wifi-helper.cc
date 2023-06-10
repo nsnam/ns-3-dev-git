@@ -1197,6 +1197,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("ErpOfdmPhy", logLevel);
     LogComponentEnable("ErpOfdmPpdu", logLevel);
     LogComponentEnable("FrameExchangeManager", logLevel);
+    LogComponentEnable("GcrManager", logLevel);
     LogComponentEnable("HeConfiguration", logLevel);
     LogComponentEnable("HeFrameExchangeManager", logLevel);
     LogComponentEnable("HePhy", logLevel);
@@ -1244,6 +1245,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("WifiAssocManager", logLevel);
     LogComponentEnable("WifiDefaultAckManager", logLevel);
     LogComponentEnable("WifiDefaultAssocManager", logLevel);
+    LogComponentEnable("WifiDefaultGcrManager", logLevel);
     LogComponentEnable("WifiDefaultProtectionManager", logLevel);
     LogComponentEnable("WifiMac", logLevel);
     LogComponentEnable("WifiMacQueue", logLevel);
