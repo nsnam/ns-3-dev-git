@@ -742,7 +742,7 @@ SubscriberStationNetDevice::Enqueue(Ptr<Packet> packet,
         if (connection->GetSchedulingType() == ServiceFlow::SF_TYPE_UGS && m_scheduler->GetPollMe())
         {
             NS_ASSERT_MSG(hdrType.GetType() != MacHeaderType::HEADER_TYPE_BANDWIDTH,
-                          "Error while equeuing  packet: incorrect header type");
+                          "Error while enqueuing  packet: incorrect header type");
 
             GrantManagementSubheader grantMgmntSubhdr;
             grantMgmntSubhdr.SetPm(true);

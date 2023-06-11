@@ -680,7 +680,7 @@ UplinkSchedulerMBQoS::DequeueJob(UlJob::JobPriority priority)
 void
 UplinkSchedulerMBQoS::CheckDeadline(uint32_t& availableSymbols)
 {
-    // for each request in the imermediate queue
+    // for each request in the intermediate queue
     if (!m_uplinkJobs_inter.empty())
     {
         std::list<Ptr<UlJob>>::iterator iter = m_uplinkJobs_inter.begin();

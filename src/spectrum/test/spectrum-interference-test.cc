@@ -62,7 +62,7 @@ class SpectrumInterferenceTestCase : public TestCase
   private:
     Ptr<SpectrumValue> m_s;                     //!< Spectrum value
     uint32_t m_txBytes;                         //!< number of bytes to transmit
-    uint32_t m_rxCorrectKnownOutcome;           //!< extected Rx bytes
+    uint32_t m_rxCorrectKnownOutcome;           //!< expected Rx bytes
     Ptr<const SpectrumModel> m_mySpectrumModel; //!< Spectrum model pointer
 };
 

@@ -323,8 +323,8 @@ class HtCapabilities : public WifiInformationElement
     uint8_t m_implicitTxBfCapable;                  ///< implicit transmit BF capable
     uint8_t m_calibration;                          ///< calibration
     uint8_t m_explicitCsiTxBfCapable;               ///< explicit CSI transmit BF capable
-    uint8_t m_explicitNoncompressedSteeringCapable; ///< explicit non compressed steeering capable
-    uint8_t m_explicitCompressedSteeringCapable;    ///< explicit compressed steeering capable
+    uint8_t m_explicitNoncompressedSteeringCapable; ///< explicit non compressed steering capable
+    uint8_t m_explicitCompressedSteeringCapable;    ///< explicit compressed steering capable
     uint8_t m_explicitTxBfCsiFeedback;              ///< explicit transmit BF CSI feedback
     uint8_t
         m_explicitNoncompressedBfFeedbackCapable;  ///< explicit non compressed BF feedback capable
