@@ -784,13 +784,10 @@ LteRrcTestSuite::LteRrcTestSuite()
 
     for (uint32_t useIdealRrc = 0; useIdealRrc <= 1; ++useIdealRrc)
     {
-        //         <----- all times in ms ----------------->
+        // <----- all times in ms ----------------->
 
-        //                                                     nUes      tConnBase delayDiscStart
-        //                                                     useIdealRrc
-        //                                                        nBearers       tConnIncrPerUe
-        //                                                        errorExpected
-        //                                                        admitRrcConnectionRequest
+        // nUes tConnBase delayDiscStart useIdealRrc nBearers tConnIncrPerUe errorExpected
+        // admitRrcConnectionRequest
         AddTestCase(
             new LteRrcConnectionEstablishmentTestCase(1, 0, 0, 0, 1, false, useIdealRrc, true),
             TestCase::EXTENSIVE);
