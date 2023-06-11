@@ -356,6 +356,22 @@ class WifiPhyOperatingChannel
      */
     std::set<uint8_t> Get20MHzIndicesCoveringRu(HeRu::RuSpec ru, ChannelWidthMhz width) const;
 
+    /**
+     * Get the index of the segment that contains a given primary channel (in MHz).
+     *
+     * \param primaryChannelWidth the width of the primary channel in MHz
+     * \return the index of the segment that contains the primary channel
+     */
+    uint8_t GetPrimarySegmentIndex(ChannelWidthMhz primaryChannelWidth) const;
+
+    /**
+     * Get the index of the segment that contains a given secondary channel (in MHz).
+     *
+     * \param secondaryChannelWidth the width of the secondary channel in MHz
+     * \return the index of the segment that contains the secondary channel
+     */
+    uint8_t GetSecondarySegmentIndex(ChannelWidthMhz secondaryChannelWidth) const;
+
   private:
     /**
      * Sort the segments by increasing frequencies.

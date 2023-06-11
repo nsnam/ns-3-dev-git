@@ -553,6 +553,34 @@ WifiPhyOperatingChannel::SetPrimary20Index(uint8_t index)
     m_primary20Index = index;
 }
 
+uint8_t
+WifiPhyOperatingChannel::GetPrimarySegmentIndex(ChannelWidthMhz primaryChannelWidth) const
+{
+    if (m_channelIts.size() < 2)
+    {
+        return 0;
+    }
+    // Note: this function assumes no more than 2 segments are used
+    const auto numIndices = GetTotalWidth() / primaryChannelWidth;
+    const auto primaryIndex = GetPrimaryChannelIndex(primaryChannelWidth);
+    return (primaryIndex >= (numIndices / 2)) ? 1 : 0;
+}
+
+uint8_t
+WifiPhyOperatingChannel::GetSecondarySegmentIndex(ChannelWidthMhz primaryChannelWidth) const
+{
+    NS_ABORT_MSG_IF(primaryChannelWidth > GetWidth(),
+                    "Primary channel width cannot be larger than the width of a frequency segment");
+    if (m_channelIts.size() < 2)
+    {
+        return 0;
+    }
+    // Note: this function assumes no more than 2 segments are used
+    const auto numIndices = GetTotalWidth() / primaryChannelWidth;
+    const auto secondaryIndex = GetSecondaryChannelIndex(primaryChannelWidth);
+    return (secondaryIndex >= (numIndices / 2)) ? 1 : 0;
+}
+
 uint16_t
 WifiPhyOperatingChannel::GetPrimaryChannelCenterFrequency(ChannelWidthMhz primaryChannelWidth) const
 {
