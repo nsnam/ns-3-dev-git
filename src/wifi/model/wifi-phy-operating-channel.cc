@@ -601,27 +601,37 @@ WifiPhyOperatingChannel::GetSecondarySegmentIndex(ChannelWidthMhz primaryChannel
 uint16_t
 WifiPhyOperatingChannel::GetPrimaryChannelCenterFrequency(ChannelWidthMhz primaryChannelWidth) const
 {
-    uint16_t freq = GetFrequency() - GetWidth() / 2. +
-                    (GetPrimaryChannelIndex(primaryChannelWidth) + 0.5) * primaryChannelWidth;
-
-    NS_LOG_FUNCTION(this << primaryChannelWidth << freq);
-    return freq;
+    const auto segmentIndex = GetPrimarySegmentIndex(primaryChannelWidth);
+    // we assume here that all segments have the same width
+    const auto segmentWidth = GetWidth(segmentIndex);
+    const auto segmentOffset = (segmentIndex * (segmentWidth / primaryChannelWidth));
+    return GetFrequency(segmentIndex) - segmentWidth / 2. +
+           (GetPrimaryChannelIndex(primaryChannelWidth) - segmentOffset + 0.5) *
+               primaryChannelWidth;
 }
 
 uint16_t
 WifiPhyOperatingChannel::GetSecondaryChannelCenterFrequency(
     ChannelWidthMhz secondaryChannelWidth) const
 {
-    const uint8_t primaryIndex = GetPrimaryChannelIndex(secondaryChannelWidth);
-    const uint16_t primaryCenterFrequency = GetPrimaryChannelCenterFrequency(secondaryChannelWidth);
-    return (primaryIndex % 2 == 0) ? (primaryCenterFrequency + secondaryChannelWidth)
-                                   : (primaryCenterFrequency - secondaryChannelWidth);
+    const auto segmentIndex = GetSecondarySegmentIndex(secondaryChannelWidth);
+    // we assume here that all segments have the same width
+    const auto segmentWidth = GetWidth(segmentIndex);
+    const auto segmentOffset = (segmentIndex * (segmentWidth / secondaryChannelWidth));
+    const auto primaryChannelIndex = GetPrimaryChannelIndex(secondaryChannelWidth);
+    const auto primaryCenterFrequency =
+        GetFrequency(segmentIndex) - segmentWidth / 2. +
+        (primaryChannelIndex - segmentOffset + 0.5) * secondaryChannelWidth;
+    return (primaryChannelIndex % 2 == 0) ? (primaryCenterFrequency + secondaryChannelWidth)
+                                          : (primaryCenterFrequency - secondaryChannelWidth);
 }
 
 uint8_t
 WifiPhyOperatingChannel::GetPrimaryChannelNumber(ChannelWidthMhz primaryChannelWidth,
                                                  WifiStandard standard) const
 {
+    NS_ABORT_MSG_IF(primaryChannelWidth > GetWidth(),
+                    "Primary channel width cannot be larger than the width of a frequency segment");
     auto frequency = GetPrimaryChannelCenterFrequency(primaryChannelWidth);
     NS_ASSERT_MSG(IsSet(), "No channel set");
     auto primaryChanIt = FindFirst(0, frequency, primaryChannelWidth, standard, GetPhyBand());
