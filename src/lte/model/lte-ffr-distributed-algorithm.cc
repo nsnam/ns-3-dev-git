@@ -587,7 +587,10 @@ LteFfrDistributedAlgorithm::Calculate()
 
             for (uint16_t i = 0; i < rbgNum; i++)
             {
-                metricA[i] += cellIt->second * rntpIt->second[i];
+                if (rntpIt->second[i])
+                {
+                    metricA[i] += cellIt->second;
+                }
             }
         }
 
