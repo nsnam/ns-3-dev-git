@@ -14,6 +14,7 @@
 #include "ns3/emlsr-manager.h"
 #include "ns3/enum.h"
 #include "ns3/frame-exchange-manager.h"
+#include "ns3/gcr-manager.h"
 #include "ns3/multi-user-scheduler.h"
 #include "ns3/pointer.h"
 #include "ns3/wifi-ack-manager.h"
@@ -165,6 +166,13 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     {
         auto apEmlsrManager = m_apEmlsrManager.Create<ApEmlsrManager>();
         apMac->SetApEmlsrManager(apEmlsrManager);
+    }
+
+    // create and install the GCR Manager if this is a HT-capable AP
+    if (apMac && apMac->GetRobustAVStreamingSupported() && m_gcrManager.IsTypeIdSet())
+    {
+        auto gcrManager = m_gcrManager.Create<GcrManager>();
+        apMac->SetGcrManager(gcrManager);
     }
 
     return mac;

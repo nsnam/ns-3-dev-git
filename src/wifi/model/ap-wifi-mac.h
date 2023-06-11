@@ -39,6 +39,7 @@ class CfParameterSet;
 class UniformRandomVariable;
 class MgtEmlOmn;
 class ApEmlsrManager;
+class GcrManager;
 
 /// variant holding a  reference to a (Re)Association Request
 using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHeader>,
@@ -84,6 +85,18 @@ class ApWifiMac : public WifiMac
      * @return the AP EMLSR Manager
      */
     Ptr<ApEmlsrManager> GetApEmlsrManager() const;
+
+    /**
+     * Set the GCR Manager.
+     *
+     * @param gcrManager the GCR Manager
+     */
+    void SetGcrManager(Ptr<GcrManager> gcrManager);
+
+    /**
+     * @return the GCR Manager
+     */
+    Ptr<GcrManager> GetGcrManager() const;
 
     /**
      * @param interval the interval between two beacon transmissions.
@@ -607,6 +620,7 @@ class ApWifiMac : public WifiMac
     /// transition timeout events running for EMLSR clients
     std::map<Mac48Address, EventId> m_transitionTimeoutEvents;
     Ptr<ApEmlsrManager> m_apEmlsrManager; ///< AP EMLSR Manager
+    Ptr<GcrManager> m_gcrManager;         //!< GCR Manager
 
     UintAccessParamsMap m_cwMinsForSta;     //!< Per-AC CW min values to advertise to stations
     UintAccessParamsMap m_cwMaxsForSta;     //!< Per-AC CW max values to advertise to stations

@@ -12,6 +12,7 @@
 
 #include "amsdu-subframe-header.h"
 #include "channel-access-manager.h"
+#include "gcr-manager.h"
 #include "mac-rx-middle.h"
 #include "mac-tx-middle.h"
 #include "mgt-action-headers.h"
@@ -168,6 +169,13 @@ ApWifiMac::GetTypeId()
                 MakeAttributeContainerAccessor<TimeAccessParamsPairValue, ';'>(
                     &ApWifiMac::m_txopLimitsForSta),
                 GetTimeAccessParamsChecker())
+            .AddAttribute("GcrManager",
+                          "The GCR manager object.",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
+                          PointerValue(),
+                          MakePointerAccessor(&ApWifiMac::GetGcrManager, &ApWifiMac::SetGcrManager),
+                          MakePointerChecker<GcrManager>())
             .AddTraceSource("AssociatedSta",
                             "A station associated with this access point.",
                             MakeTraceSourceAccessor(&ApWifiMac::m_assocLogger),
@@ -228,6 +236,11 @@ ApWifiMac::DoDispose()
         m_apEmlsrManager->Dispose();
     }
     m_apEmlsrManager = nullptr;
+    if (m_gcrManager)
+    {
+        m_gcrManager->Dispose();
+    }
+    m_gcrManager = nullptr;
     WifiMac::DoDispose();
 }
 
@@ -261,6 +274,20 @@ Ptr<ApEmlsrManager>
 ApWifiMac::GetApEmlsrManager() const
 {
     return m_apEmlsrManager;
+}
+
+void
+ApWifiMac::SetGcrManager(Ptr<GcrManager> gcrManager)
+{
+    NS_LOG_FUNCTION(this << gcrManager);
+    m_gcrManager = gcrManager;
+    m_gcrManager->SetWifiMac(this);
+}
+
+Ptr<GcrManager>
+ApWifiMac::GetGcrManager() const
+{
+    return m_gcrManager;
 }
 
 void
@@ -2566,6 +2593,11 @@ ApWifiMac::DoInitialize()
         }
         UpdateShortSlotTimeEnabled(linkId);
         UpdateShortPreambleEnabled(linkId);
+    }
+
+    if (m_gcrManager)
+    {
+        m_gcrManager->Initialize();
     }
 
     NS_ABORT_IF(!TraceConnectWithoutContext("AckedMpdu", MakeCallback(&ApWifiMac::TxOk, this)));
