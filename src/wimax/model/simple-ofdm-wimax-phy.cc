@@ -547,7 +547,7 @@ SimpleOfdmWimaxPhy::ConvertBitsToBurst(Bvec buffer)
         for (int l = 0; l < 8; l++)
         {
             bool bin = buffer.at(i + l);
-            temp += (uint8_t)(bin * std::pow(2.0, (7 - l)));
+            temp |= (bin << (7 - l));
         }
 
         *(pstart + j) = temp;
