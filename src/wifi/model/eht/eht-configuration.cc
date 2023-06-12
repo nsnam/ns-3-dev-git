@@ -23,6 +23,7 @@
 #include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/enum.h"
+#include "ns3/integer.h"
 #include "ns3/log.h"
 #include "ns3/pair.h"
 #include "ns3/string.h"
@@ -70,6 +71,29 @@ EhtConfiguration::GetTypeId()
                           TimeValue(MicroSeconds(0)),
                           MakeTimeAccessor(&EhtConfiguration::m_transitionTimeout),
                           MakeTimeChecker(MicroSeconds(0), MicroSeconds(65536)))
+            .AddAttribute(
+                "MediumSyncDuration",
+                "The duration of the MediumSyncDelay timer (must be a multiple of 32 us). "
+                "The value of this attribute is only used by AP MLDs with EMLSR activated.",
+                TimeValue(MicroSeconds(DEFAULT_MSD_DURATION_USEC)),
+                MakeTimeAccessor(&EhtConfiguration::m_mediumSyncDuration),
+                MakeTimeChecker(MicroSeconds(0), MicroSeconds(255 * 32)))
+            .AddAttribute(
+                "MsdOfdmEdThreshold",
+                "Threshold (dBm) to be used instead of the normal CCA sensitivity for the primary "
+                "20 MHz channel if the MediumSyncDelay timer has a nonzero value. "
+                "The value of this attribute is only used by AP MLDs with EMLSR activated.",
+                IntegerValue(DEFAULT_MSD_OFDM_ED_THRESH),
+                MakeIntegerAccessor(&EhtConfiguration::m_msdOfdmEdThreshold),
+                MakeIntegerChecker<int8_t>(-72, -62))
+            .AddAttribute(
+                "MsdMaxNTxops",
+                "Maximum number of TXOPs that an EMLSR client is allowed to attempt to initiate "
+                "while the MediumSyncDelay timer is running (zero indicates no limit). "
+                "The value of this attribute is only used by AP MLDs with EMLSR activated.",
+                UintegerValue(DEFAULT_MSD_MAX_N_TXOPS),
+                MakeUintegerAccessor(&EhtConfiguration::m_msdMaxNTxops),
+                MakeUintegerChecker<uint8_t>(0, 15))
             .AddAttribute(
                 "TidToLinkMappingNegSupport",
                 "TID-to-Link Mapping Negotiation Support.",

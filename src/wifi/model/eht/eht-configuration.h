@@ -31,6 +31,15 @@
 namespace ns3
 {
 
+/// default MediumSyncDelay timer duration (max PPDU TX time rounded to a multiple of 32 us)
+static constexpr uint16_t DEFAULT_MSD_DURATION_USEC = 5484 / 32 * 32;
+
+/// default MediumSyncDelay timer OFDM ED threshold
+static constexpr int8_t DEFAULT_MSD_OFDM_ED_THRESH = -72;
+
+/// default MediumSyncDelay max number of TXOP attempts
+static constexpr uint8_t DEFAULT_MSD_MAX_N_TXOPS = 1;
+
 /**
  * \brief TID-to-Link Mapping Negotiation Support
  */
@@ -77,8 +86,11 @@ class EhtConfiguration : public Object
                            const std::map<std::list<uint8_t>, std::list<uint8_t>>& mapping);
 
   private:
-    bool m_emlsrActivated;    //!< whether EMLSR option is activated
-    Time m_transitionTimeout; //!< Transition timeout
+    bool m_emlsrActivated;       //!< whether EMLSR option is activated
+    Time m_transitionTimeout;    //!< Transition timeout
+    Time m_mediumSyncDuration;   //!< duration of the MediumSyncDelay timer
+    int8_t m_msdOfdmEdThreshold; //!< MediumSyncDelay OFDM ED threshold
+    uint8_t m_msdMaxNTxops;      //!< MediumSyncDelay max number of TXOPs
     WifiTidToLinkMappingNegSupport
         m_tidLinkMappingSupport; //!< TID-to-Link Mapping Negotiation Support
     std::map<std::list<uint64_t>, std::list<uint64_t>>
