@@ -92,13 +92,13 @@ struct IfaceAssocTuple
     Time time;
 };
 
-static inline bool
+inline bool
 operator==(const IfaceAssocTuple& a, const IfaceAssocTuple& b)
 {
     return (a.ifaceAddr == b.ifaceAddr && a.mainAddr == b.mainAddr);
 }
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const IfaceAssocTuple& tuple)
 {
     os << "IfaceAssocTuple(ifaceAddr=" << tuple.ifaceAddr << ", mainAddr=" << tuple.mainAddr
@@ -122,13 +122,13 @@ struct LinkTuple
     Time time;
 };
 
-static inline bool
+inline bool
 operator==(const LinkTuple& a, const LinkTuple& b)
 {
     return (a.localIfaceAddr == b.localIfaceAddr && a.neighborIfaceAddr == b.neighborIfaceAddr);
 }
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const LinkTuple& tuple)
 {
     os << "LinkTuple(localIfaceAddr=" << tuple.localIfaceAddr
@@ -159,14 +159,14 @@ struct NeighborTuple
     Willingness willingness;
 };
 
-static inline bool
+inline bool
 operator==(const NeighborTuple& a, const NeighborTuple& b)
 {
     return (a.neighborMainAddr == b.neighborMainAddr && a.status == b.status &&
             a.willingness == b.willingness);
 }
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const NeighborTuple& tuple)
 {
     os << "NeighborTuple(neighborMainAddr=" << tuple.neighborMainAddr
@@ -187,7 +187,7 @@ struct TwoHopNeighborTuple
     Time expirationTime; // previously called 'time_'
 };
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const TwoHopNeighborTuple& tuple)
 {
     os << "TwoHopNeighborTuple(neighborMainAddr=" << tuple.neighborMainAddr
@@ -196,7 +196,7 @@ operator<<(std::ostream& os, const TwoHopNeighborTuple& tuple)
     return os;
 }
 
-static inline bool
+inline bool
 operator==(const TwoHopNeighborTuple& a, const TwoHopNeighborTuple& b)
 {
     return (a.neighborMainAddr == b.neighborMainAddr &&
@@ -213,7 +213,7 @@ struct MprSelectorTuple
     Time expirationTime; // previously called 'time_'
 };
 
-static inline bool
+inline bool
 operator==(const MprSelectorTuple& a, const MprSelectorTuple& b)
 {
     return (a.mainAddr == b.mainAddr);
@@ -238,7 +238,7 @@ struct DuplicateTuple
     Time expirationTime;
 };
 
-static inline bool
+inline bool
 operator==(const DuplicateTuple& a, const DuplicateTuple& b)
 {
     return (a.address == b.address && a.sequenceNumber == b.sequenceNumber);
@@ -258,14 +258,14 @@ struct TopologyTuple
     Time expirationTime;
 };
 
-static inline bool
+inline bool
 operator==(const TopologyTuple& a, const TopologyTuple& b)
 {
     return (a.destAddr == b.destAddr && a.lastAddr == b.lastAddr &&
             a.sequenceNumber == b.sequenceNumber);
 }
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const TopologyTuple& tuple)
 {
     os << "TopologyTuple(destAddr=" << tuple.destAddr << ", lastAddr=" << tuple.lastAddr
@@ -282,13 +282,13 @@ struct Association
     Ipv4Mask netmask;        //!< IPv4 Network mask.
 };
 
-static inline bool
+inline bool
 operator==(const Association& a, const Association& b)
 {
     return (a.networkAddr == b.networkAddr && a.netmask == b.netmask);
 }
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const Association& tuple)
 {
     os << "Association(networkAddr=" << tuple.networkAddr << ", netmask=" << tuple.netmask << ")";
@@ -309,14 +309,14 @@ struct AssociationTuple
     Time expirationTime;
 };
 
-static inline bool
+inline bool
 operator==(const AssociationTuple& a, const AssociationTuple& b)
 {
     return (a.gatewayAddr == b.gatewayAddr && a.networkAddr == b.networkAddr &&
             a.netmask == b.netmask);
 }
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const AssociationTuple& tuple)
 {
     os << "AssociationTuple(gatewayAddr=" << tuple.gatewayAddr

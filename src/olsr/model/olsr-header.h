@@ -686,14 +686,14 @@ class MessageHeader : public Header
     }
 };
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const PacketHeader& packet)
 {
     packet.Print(os);
     return os;
 }
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const MessageHeader& message)
 {
     message.Print(os);
@@ -702,7 +702,7 @@ operator<<(std::ostream& os, const MessageHeader& message)
 
 typedef std::vector<MessageHeader> MessageList;
 
-static inline std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const MessageList& messages)
 {
     os << "[";
