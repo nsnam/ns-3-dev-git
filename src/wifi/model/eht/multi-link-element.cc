@@ -219,6 +219,79 @@ CommonInfoBasicMle::DecodeEmlsrTransitionDelay(uint8_t value)
     return MicroSeconds(1 << (3 + value));
 }
 
+void
+CommonInfoBasicMle::SetMediumSyncDelayTimer(Time delay)
+{
+    int64_t delayUs = delay.GetMicroSeconds();
+    NS_ABORT_MSG_IF(delayUs % 32 != 0, "Delay must be a multiple of 32 microseconds");
+    delayUs /= 32;
+
+    if (!m_mediumSyncDelayInfo.has_value())
+    {
+        m_mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo{};
+    }
+    m_mediumSyncDelayInfo->mediumSyncDuration = (delayUs & 0xff);
+}
+
+Time
+CommonInfoBasicMle::GetMediumSyncDelayTimer() const
+{
+    NS_ASSERT(m_mediumSyncDelayInfo);
+    return MicroSeconds(m_mediumSyncDelayInfo->mediumSyncDuration * 32);
+}
+
+void
+CommonInfoBasicMle::SetMediumSyncOfdmEdThreshold(int8_t threshold)
+{
+    NS_ABORT_MSG_IF(threshold < -72 || threshold > -62, "Threshold may range from -72 to -62 dBm");
+    uint8_t value = 72 + threshold;
+
+    if (!m_mediumSyncDelayInfo.has_value())
+    {
+        m_mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo{};
+    }
+    m_mediumSyncDelayInfo->mediumSyncOfdmEdThreshold = value;
+}
+
+int8_t
+CommonInfoBasicMle::GetMediumSyncOfdmEdThreshold() const
+{
+    NS_ASSERT(m_mediumSyncDelayInfo);
+    return (m_mediumSyncDelayInfo->mediumSyncOfdmEdThreshold) - 72;
+}
+
+void
+CommonInfoBasicMle::SetMediumSyncMaxNTxops(uint8_t nTxops)
+{
+    NS_ASSERT_MSG(nTxops < 16, "Value " << +nTxops << "cannot be encoded in 4 bits");
+
+    if (!m_mediumSyncDelayInfo.has_value())
+    {
+        m_mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo{};
+    }
+
+    if (nTxops == 0)
+    {
+        // no limit on max number of TXOPs
+        m_mediumSyncDelayInfo->mediumSyncMaxNTxops = 15;
+        return;
+    }
+
+    m_mediumSyncDelayInfo->mediumSyncMaxNTxops = --nTxops;
+}
+
+std::optional<uint8_t>
+CommonInfoBasicMle::GetMediumSyncMaxNTxops() const
+{
+    NS_ASSERT(m_mediumSyncDelayInfo);
+    uint8_t nTxops = m_mediumSyncDelayInfo->mediumSyncMaxNTxops;
+    if (nTxops == 15)
+    {
+        return std::nullopt;
+    }
+    return nTxops + 1;
+}
+
 /**
  * MultiLinkElement
  */
@@ -327,81 +400,6 @@ uint8_t
 MultiLinkElement::GetBssParamsChangeCount() const
 {
     return std::get<BASIC_VARIANT>(m_commonInfo).m_bssParamsChangeCount.value();
-}
-
-void
-MultiLinkElement::SetMediumSyncDelayTimer(Time delay)
-{
-    int64_t delayUs = delay.GetMicroSeconds();
-    NS_ABORT_MSG_IF(delayUs % 32 != 0, "Delay must be a multiple of 32 microseconds");
-    delayUs /= 32;
-
-    auto& mediumSyncDelayInfo = std::get<BASIC_VARIANT>(m_commonInfo).m_mediumSyncDelayInfo;
-    if (!mediumSyncDelayInfo.has_value())
-    {
-        mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo{};
-    }
-    mediumSyncDelayInfo.value().mediumSyncDuration = (delayUs & 0xff);
-}
-
-Time
-MultiLinkElement::GetMediumSyncDelayTimer() const
-{
-    return MicroSeconds(
-        (std::get<BASIC_VARIANT>(m_commonInfo).m_mediumSyncDelayInfo.value().mediumSyncDuration) *
-        32);
-}
-
-void
-MultiLinkElement::SetMediumSyncOfdmEdThreshold(int8_t threshold)
-{
-    NS_ABORT_MSG_IF(threshold < -72 || threshold > -62, "Threshold may range from -72 to -62 dBm");
-    uint8_t value = 72 + threshold;
-
-    auto& mediumSyncDelayInfo = std::get<BASIC_VARIANT>(m_commonInfo).m_mediumSyncDelayInfo;
-    if (!mediumSyncDelayInfo.has_value())
-    {
-        mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo{};
-    }
-    mediumSyncDelayInfo.value().mediumSyncOfdmEdThreshold = value;
-}
-
-int8_t
-MultiLinkElement::GetMediumSyncOfdmEdThreshold() const
-{
-    return (std::get<BASIC_VARIANT>(m_commonInfo)
-                .m_mediumSyncDelayInfo.value()
-                .mediumSyncOfdmEdThreshold) -
-           72;
-}
-
-void
-MultiLinkElement::SetMediumSyncMaxNTxops(uint8_t nTxops)
-{
-    NS_ASSERT(nTxops > 0);
-    nTxops--;
-
-    auto& mediumSyncDelayInfo = std::get<BASIC_VARIANT>(m_commonInfo).m_mediumSyncDelayInfo;
-    if (!mediumSyncDelayInfo.has_value())
-    {
-        mediumSyncDelayInfo = CommonInfoBasicMle::MediumSyncDelayInfo{};
-    }
-    mediumSyncDelayInfo.value().mediumSyncMaxNTxops = (nTxops & 0x0f);
-}
-
-uint8_t
-MultiLinkElement::GetMediumSyncMaxNTxops() const
-{
-    return (std::get<BASIC_VARIANT>(m_commonInfo)
-                .m_mediumSyncDelayInfo.value()
-                .mediumSyncMaxNTxops) +
-           1;
-}
-
-bool
-MultiLinkElement::HasMediumSyncDelayInfo() const
-{
-    return std::get<BASIC_VARIANT>(m_commonInfo).m_mediumSyncDelayInfo.has_value();
 }
 
 void

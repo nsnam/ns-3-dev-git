@@ -97,11 +97,12 @@ BasicMultiLinkElementTest::GetMultiLinkElement(
     }
     if (commonInfo.m_mediumSyncDelayInfo.has_value())
     {
-        mle.SetMediumSyncDelayTimer(
+        mle.GetCommonInfoBasic().SetMediumSyncDelayTimer(
             MicroSeconds(32 * commonInfo.m_mediumSyncDelayInfo->mediumSyncDuration));
-        mle.SetMediumSyncOfdmEdThreshold(
+        mle.GetCommonInfoBasic().SetMediumSyncOfdmEdThreshold(
             commonInfo.m_mediumSyncDelayInfo->mediumSyncOfdmEdThreshold - 72);
-        mle.SetMediumSyncMaxNTxops(commonInfo.m_mediumSyncDelayInfo->mediumSyncMaxNTxops + 1);
+        mle.GetCommonInfoBasic().SetMediumSyncMaxNTxops(
+            commonInfo.m_mediumSyncDelayInfo->mediumSyncMaxNTxops + 1);
     }
     if (commonInfo.m_emlCapabilities.has_value())
     {

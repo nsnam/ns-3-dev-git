@@ -140,6 +140,54 @@ struct CommonInfoBasicMle
      * \return the corresponding EMLSR Transition delay
      */
     static Time DecodeEmlsrTransitionDelay(uint8_t value);
+
+    /**
+     * Set the Medium Synchronization Duration subfield of the Medium Synchronization
+     * Delay Information in the Common Info field.
+     *
+     * \param delay the timer duration (must be a multiple of 32 microseconds)
+     */
+    void SetMediumSyncDelayTimer(Time delay);
+    /**
+     * Set the Medium Synchronization OFDM ED Threshold subfield of the Medium Synchronization
+     * Delay Information in the Common Info field.
+     *
+     * \param threshold the threshold in dBm (ranges from -72 to -62 dBm)
+     */
+    void SetMediumSyncOfdmEdThreshold(int8_t threshold);
+    /**
+     * Set the Medium Synchronization Maximum Number of TXOPs subfield of the Medium Synchronization
+     * Delay Information in the Common Info field. A value of zero indicates no limit on the
+     * maximum number of TXOPs.
+     *
+     * \param nTxops the maximum number of TXOPs a non-AP STA is allowed to attempt to
+     *               initiate while the MediumSyncDelay timer is running at a non-AP STA
+     */
+    void SetMediumSyncMaxNTxops(uint8_t nTxops);
+    /**
+     * Get the Medium Synchronization Duration subfield of the Medium Synchronization Delay
+     * Information in the Common Info field. Make sure that the Medium Synchronization Delay
+     * Information subfield is present.
+     *
+     * \return the timer duration
+     */
+    Time GetMediumSyncDelayTimer() const;
+    /**
+     * Get the Medium Synchronization OFDM ED Threshold in dBm. Make sure that the Medium
+     * Synchronization Delay Information subfield is present.
+     *
+     * \return the threshold in dBm
+     */
+    int8_t GetMediumSyncOfdmEdThreshold() const;
+    /**
+     * Get the maximum number of TXOPs a non-AP STA is allowed to attempt to initiate
+     * while the MediumSyncDelay timer is running at a non-AP STA. If no value is returned,
+     * no limit is imposed on the number of TXOPs. Make sure that the Medium Synchronization
+     * Delay Information subfield is present.
+     *
+     * \return the number of TXOPs
+     */
+    std::optional<uint8_t> GetMediumSyncMaxNTxops() const;
 };
 
 /**
@@ -284,64 +332,6 @@ class MultiLinkElement : public WifiInformationElement
      * \return the BSS Parameters Change Count subfield in the Common Info field
      */
     uint8_t GetBssParamsChangeCount() const;
-
-    /**
-     * Set the Medium Synchronization Duration subfield of the Medium Synchronization
-     * Delay information in the Common Info field. Make sure that this is a Basic
-     * Multi-Link Element.
-     *
-     * \param delay the timer duration (must be a multiple of 32 microseconds)
-     */
-    void SetMediumSyncDelayTimer(Time delay);
-    /**
-     * Set the Medium Synchronization OFDM ED Threshold subfield of the Medium Synchronization
-     * Delay information in the Common Info field. Make sure that this is a Basic
-     * Multi-Link Element.
-     *
-     * \param threshold the threshold in dBm (ranges from -72 to -62 dBm)
-     */
-    void SetMediumSyncOfdmEdThreshold(int8_t threshold);
-    /**
-     * Set the Medium Synchronization Maximum Number of TXOPs subfield of the Medium Synchronization
-     * Delay information in the Common Info field. Make sure that this is a Basic
-     * Multi-Link Element.
-     *
-     * \param nTxops the maximum number of TXOPs a non-AP STA is allowed to attempt to
-     *               initiate while the MediumSyncDelay timer is running at a non-AP STA
-     */
-    void SetMediumSyncMaxNTxops(uint8_t nTxops);
-    /**
-     * Return true if the Medium Synchronization Delay Information subfield in the
-     * Common Info field is present and false otherwise. Make sure that this is a Basic
-     * Multi-Link Element.
-     *
-     * \return true if the Medium Synchronization Delay Information subfield in the
-     * Common Info field is present and false otherwise
-     */
-    bool HasMediumSyncDelayInfo() const;
-    /**
-     * Get the Medium Synchronization Duration subfield of the Medium Synchronization
-     * Delay information in the Common Info field. Make sure that this is a Basic
-     * Multi-Link Element and the Medium Synchronization Duration subfield is present.
-     *
-     * \return the timer duration
-     */
-    Time GetMediumSyncDelayTimer() const;
-    /**
-     * Get the Medium Synchronization OFDM ED Threshold in dBm. Make sure that this is a Basic
-     * Multi-Link Element and the Medium Synchronization Duration subfield is present.
-     *
-     * \return the threshold in dBm
-     */
-    int8_t GetMediumSyncOfdmEdThreshold() const;
-    /**
-     * Get the maximum number of TXOPs a non-AP STA is allowed to attempt to initiate
-     * while the MediumSyncDelay timer is running at a non-AP STA. Make sure that this is a
-     * Basic Multi-Link Element and the Medium Synchronization Duration subfield is present.
-     *
-     * \return the number of TXOPs
-     */
-    uint8_t GetMediumSyncMaxNTxops() const;
 
     /**
      * Set the EMLSR Support subfield of the EML Capabilities subfield in the Common Info field
