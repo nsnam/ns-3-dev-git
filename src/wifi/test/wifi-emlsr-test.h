@@ -351,23 +351,28 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
 {
   public:
     /**
+     * Parameters for the EMLSR DL TXOP test
+     */
+    struct Params
+    {
+        std::size_t nEmlsrStations;    //!< number of non-AP MLDs that support EMLSR
+        std::size_t nNonEmlsrStations; //!< number of non-AP MLDs that do not support EMLSR
+        std::set<uint8_t>
+            linksToEnableEmlsrOn;       //!< IDs of links on which EMLSR mode should be enabled
+        std::vector<Time> paddingDelay; //!< vector (whose size equals <i>nEmlsrStations</i>) of the
+                                        //!< padding delay values advertised by non-AP MLDs
+        std::vector<Time>
+            transitionDelay;    //!< vector (whose size equals <i>nEmlsrStations</i>) of
+                                //!< transition the delay values advertised by non-AP MLDs
+        Time transitionTimeout; //!< the Transition Timeout advertised by the AP MLD
+    };
+
+    /**
      * Constructor
      *
-     * \param nEmlsrStations number of non-AP MLDs that support EMLSR
-     * \param nNonEmlsrStations number of non-AP MLDs that do not support EMLSR
-     * \param linksToEnableEmlsrOn IDs of links on which EMLSR mode should be enabled
-     * \param paddingDelay vector (whose size equals <i>nEmlsrStations</i>) of the padding
-     *                     delay values advertised by non-AP MLDs
-     * \param transitionDelay vector (whose size equals <i>nEmlsrStations</i>) of the transition
-     *                        delay values advertised by non-AP MLDs
-     * \param transitionTimeout the Transition Timeout advertised by the AP MLD
+     * \param params parameters for the EMLSR DL TXOP test
      */
-    EmlsrDlTxopTest(std::size_t nEmlsrStations,
-                    std::size_t nNonEmlsrStations,
-                    const std::set<uint8_t>& linksToEnableEmlsrOn,
-                    const std::vector<Time>& paddingDelay,
-                    const std::vector<Time>& transitionDelay,
-                    Time transitionTimeout);
+    EmlsrDlTxopTest(const Params& params);
     ~EmlsrDlTxopTest() override = default;
 
   protected:
@@ -477,15 +482,24 @@ class EmlsrLinkSwitchTest : public EmlsrOperationsTestBase
 {
   public:
     /**
+     * Parameters for the EMLSR link switching test
+     */
+    struct Params
+    {
+        bool
+            switchAuxPhy; //!< whether AUX PHY should switch channel to operate on the link on which
+                          //!<  the Main PHY was operating before moving to the link of the Aux PHY
+        bool resetCamState; //!< whether to reset the state of the ChannelAccessManager associated
+                            //!< with the link on which the main PHY has just switched to
+        uint16_t auxPhyMaxChWidth; //!< max channel width (MHz) supported by aux PHYs
+    };
+
+    /**
      * Constructor
      *
-     * \param switchAuxPhy whether AUX PHY should switch channel to operate on the link on which
-                          the Main PHY was operating before moving to the link of the Aux PHY
-     * \param resetCamState whether to reset the state of the ChannelAccessManager associated with
-                            the link on which the main PHY has just switched to
-        \param auxPhyMaxChWidth max channel width (MHz) supported by aux PHYs
+     * \param params parameters for the EMLSR link switching test
      */
-    EmlsrLinkSwitchTest(bool switchAuxPhy, bool resetCamState, uint16_t auxPhyMaxChWidth);
+    EmlsrLinkSwitchTest(const Params& params);
 
     ~EmlsrLinkSwitchTest() override = default;
 

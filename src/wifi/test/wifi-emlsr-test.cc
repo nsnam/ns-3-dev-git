@@ -699,31 +699,27 @@ EmlOmnExchangeTest::DoRun()
     Simulator::Destroy();
 }
 
-EmlsrDlTxopTest::EmlsrDlTxopTest(std::size_t nEmlsrStations,
-                                 std::size_t nNonEmlsrStations,
-                                 const std::set<uint8_t>& linksToEnableEmlsrOn,
-                                 const std::vector<Time>& paddingDelay,
-                                 const std::vector<Time>& transitionDelay,
-                                 Time transitionTimeout)
-    : EmlsrOperationsTestBase("Check EML DL TXOP transmissions (" + std::to_string(nEmlsrStations) +
-                              "," + std::to_string(nNonEmlsrStations) + ")"),
-      m_emlsrLinks(linksToEnableEmlsrOn),
+EmlsrDlTxopTest::EmlsrDlTxopTest(const Params& params)
+    : EmlsrOperationsTestBase("Check EML DL TXOP transmissions (" +
+                              std::to_string(params.nEmlsrStations) + "," +
+                              std::to_string(params.nNonEmlsrStations) + ")"),
+      m_emlsrLinks(params.linksToEnableEmlsrOn),
       m_emlsrEnabledTime(0),
       m_fe2to3delay(MilliSeconds(20)),
       m_countQoSframes(0),
       m_countBlockAck(0)
 {
-    m_nEmlsrStations = nEmlsrStations;
-    m_nNonEmlsrStations = nNonEmlsrStations;
+    m_nEmlsrStations = params.nEmlsrStations;
+    m_nNonEmlsrStations = params.nNonEmlsrStations;
     m_linksToEnableEmlsrOn = {}; // do not enable EMLSR right after association
     m_mainPhyId = 1;
-    m_paddingDelay = paddingDelay;
-    m_transitionDelay = transitionDelay;
-    m_transitionTimeout = transitionTimeout;
+    m_paddingDelay = params.paddingDelay;
+    m_transitionDelay = params.transitionDelay;
+    m_transitionTimeout = params.transitionTimeout;
     m_establishBaDl = true;
     m_duration = Seconds(1.5);
 
-    NS_ABORT_MSG_IF(linksToEnableEmlsrOn.size() < 2,
+    NS_ABORT_MSG_IF(params.linksToEnableEmlsrOn.size() < 2,
                     "This test requires at least two links to be configured as EMLSR links");
 }
 
@@ -2203,16 +2199,15 @@ EmlsrDlTxopTest::DoRun()
     Simulator::Destroy();
 }
 
-EmlsrLinkSwitchTest::EmlsrLinkSwitchTest(bool switchAuxPhy,
-                                         bool resetCamState,
-                                         uint16_t auxPhyMaxChWidth)
+EmlsrLinkSwitchTest::EmlsrLinkSwitchTest(const Params& params)
     : EmlsrOperationsTestBase(std::string("Check EMLSR link switching (switchAuxPhy=") +
-                              std::to_string(switchAuxPhy) +
-                              ", resetCamState=" + std::to_string(resetCamState) +
-                              ", auxPhyMaxChWidth=" + std::to_string(auxPhyMaxChWidth) + "MHz )"),
-      m_switchAuxPhy(switchAuxPhy),
-      m_resetCamState(resetCamState),
-      m_auxPhyMaxChWidth(auxPhyMaxChWidth),
+                              std::to_string(params.switchAuxPhy) +
+                              ", resetCamState=" + std::to_string(params.resetCamState) +
+                              ", auxPhyMaxChWidth=" + std::to_string(params.auxPhyMaxChWidth) +
+                              "MHz )"),
+      m_switchAuxPhy(params.switchAuxPhy),
+      m_resetCamState(params.resetCamState),
+      m_auxPhyMaxChWidth(params.auxPhyMaxChWidth),
       m_countQoSframes(0),
       m_txPsdusPos(0)
 {
@@ -2577,26 +2572,20 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     for (const auto& emlsrLinks :
          {std::set<uint8_t>{0, 1, 2}, std::set<uint8_t>{1, 2}, std::set<uint8_t>{0, 1}})
     {
-        AddTestCase(new EmlsrDlTxopTest(1,
-                                        0,
-                                        emlsrLinks,
-                                        {MicroSeconds(32)},
-                                        {MicroSeconds(32)},
-                                        MicroSeconds(512)),
-                    TestCase::QUICK);
-        AddTestCase(new EmlsrDlTxopTest(1,
-                                        1,
-                                        emlsrLinks,
-                                        {MicroSeconds(64)},
-                                        {MicroSeconds(64)},
-                                        MicroSeconds(512)),
-                    TestCase::QUICK);
-        AddTestCase(new EmlsrDlTxopTest(2,
-                                        2,
-                                        emlsrLinks,
-                                        {MicroSeconds(128), MicroSeconds(256)},
-                                        {MicroSeconds(128), MicroSeconds(256)},
-                                        MicroSeconds(512)),
+        AddTestCase(
+            new EmlsrDlTxopTest(
+                {1, 0, emlsrLinks, {MicroSeconds(32)}, {MicroSeconds(32)}, MicroSeconds(512)}),
+            TestCase::QUICK);
+        AddTestCase(
+            new EmlsrDlTxopTest(
+                {1, 1, emlsrLinks, {MicroSeconds(64)}, {MicroSeconds(64)}, MicroSeconds(512)}),
+            TestCase::QUICK);
+        AddTestCase(new EmlsrDlTxopTest({2,
+                                         2,
+                                         emlsrLinks,
+                                         {MicroSeconds(128), MicroSeconds(256)},
+                                         {MicroSeconds(128), MicroSeconds(256)},
+                                         MicroSeconds(512)}),
                     TestCase::QUICK);
     }
 
@@ -2606,8 +2595,9 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
         {
             for (uint16_t auxPhyMaxChWidth : {20, 40, 80, 160})
             {
-                AddTestCase(new EmlsrLinkSwitchTest(switchAuxPhy, resetCamState, auxPhyMaxChWidth),
-                            TestCase::QUICK);
+                AddTestCase(
+                    new EmlsrLinkSwitchTest({switchAuxPhy, resetCamState, auxPhyMaxChWidth}),
+                    TestCase::QUICK);
             }
         }
     }
