@@ -88,7 +88,7 @@ WifiDefaultProtectionManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxP
             NS_ASSERT(txParams.m_protection->method == WifiProtection::NONE);
             return nullptr;
         }
-        return std::unique_ptr<WifiProtection>(new WifiNoProtection);
+        return std::make_unique<WifiNoProtection>();
     }
 
     // if this is a Trigger Frame, call a separate method
@@ -171,36 +171,36 @@ WifiDefaultProtectionManager::GetPsduProtection(const WifiMacHeader& hdr,
     // a non-initial fragment does not need to be protected, unless it is being retransmitted
     if (hdr.GetFragmentNumber() > 0 && !hdr.IsRetry())
     {
-        return std::unique_ptr<WifiProtection>(new WifiNoProtection());
+        return std::make_unique<WifiNoProtection>();
     }
 
     // no need to use protection if destination already received an RTS in this TXOP
     if (m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas().count(hdr.GetAddr1()) == 1)
     {
-        return std::unique_ptr<WifiProtection>(new WifiNoProtection());
+        return std::make_unique<WifiNoProtection>();
     }
 
     // check if RTS/CTS is needed
     if (GetWifiRemoteStationManager()->NeedRts(hdr, size))
     {
-        WifiRtsCtsProtection* protection = new WifiRtsCtsProtection;
+        auto protection = std::make_unique<WifiRtsCtsProtection>();
         protection->rtsTxVector = GetWifiRemoteStationManager()->GetRtsTxVector(hdr.GetAddr1());
         protection->ctsTxVector =
             GetWifiRemoteStationManager()->GetCtsTxVector(hdr.GetAddr1(),
                                                           protection->rtsTxVector.GetMode());
-        return std::unique_ptr<WifiProtection>(protection);
+        return protection;
     }
 
     // check if CTS-to-Self is needed
     if (GetWifiRemoteStationManager()->GetUseNonErpProtection() &&
         GetWifiRemoteStationManager()->NeedCtsToSelf(txVector))
     {
-        WifiCtsToSelfProtection* protection = new WifiCtsToSelfProtection;
+        auto protection = std::make_unique<WifiCtsToSelfProtection>();
         protection->ctsTxVector = GetWifiRemoteStationManager()->GetCtsToSelfTxVector();
-        return std::unique_ptr<WifiProtection>(protection);
+        return protection;
     }
 
-    return std::unique_ptr<WifiProtection>(new WifiNoProtection());
+    return std::make_unique<WifiNoProtection>();
 }
 
 std::unique_ptr<WifiProtection>
@@ -221,7 +221,7 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
         {
             return nullptr;
         }
-        return std::unique_ptr<WifiProtection>(new WifiNoProtection());
+        return std::make_unique<WifiNoProtection>();
     }
 
     WifiMuRtsCtsProtection* protection = nullptr;
@@ -299,7 +299,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     if (!m_sendMuRts)
     {
         // No protection because sending MU-RTS is disabled
-        return std::unique_ptr<WifiProtection>(new WifiNoProtection());
+        return std::make_unique<WifiNoProtection>();
     }
 
     CtrlTriggerHeader trigger;
@@ -307,7 +307,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     NS_ASSERT(trigger.GetNUserInfoFields() > 0);
     auto txWidth = trigger.GetUlBandwidth();
 
-    WifiMuRtsCtsProtection* protection = new WifiMuRtsCtsProtection;
+    auto protection = std::make_unique<WifiMuRtsCtsProtection>();
     // initialize the MU-RTS Trigger Frame
     // The UL Length, GI And HE-LTF Type, MU-MIMO HE-LTF Mode, Number Of HE-LTF Symbols,
     // UL STBC, LDPC Extra Symbol Segment, AP TX Power, Pre-FEC Padding Factor,
@@ -338,7 +338,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     if (allProtected)
     {
         // No protection needed
-        return std::unique_ptr<WifiProtection>(new WifiNoProtection());
+        return std::make_unique<WifiNoProtection>();
     }
 
     // compute the TXVECTOR to use to send the MU-RTS Trigger Frame
@@ -355,7 +355,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
         protection->muRtsTxVector.SetMode(ErpOfdmPhy::GetErpOfdmRate6Mbps());
     }
 
-    return std::unique_ptr<WifiMuRtsCtsProtection>(protection);
+    return protection;
 }
 
 } // namespace ns3

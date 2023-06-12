@@ -51,7 +51,7 @@ WifiNoProtection::WifiNoProtection()
 std::unique_ptr<WifiProtection>
 WifiNoProtection::Copy() const
 {
-    return std::unique_ptr<WifiProtection>(new WifiNoProtection(*this));
+    return std::make_unique<WifiNoProtection>(*this);
 }
 
 void
@@ -72,7 +72,7 @@ WifiRtsCtsProtection::WifiRtsCtsProtection()
 std::unique_ptr<WifiProtection>
 WifiRtsCtsProtection::Copy() const
 {
-    return std::unique_ptr<WifiProtection>(new WifiRtsCtsProtection(*this));
+    return std::make_unique<WifiRtsCtsProtection>(*this);
 }
 
 void
@@ -93,7 +93,7 @@ WifiCtsToSelfProtection::WifiCtsToSelfProtection()
 std::unique_ptr<WifiProtection>
 WifiCtsToSelfProtection::Copy() const
 {
-    return std::unique_ptr<WifiProtection>(new WifiCtsToSelfProtection(*this));
+    return std::make_unique<WifiCtsToSelfProtection>(*this);
 }
 
 void
@@ -114,7 +114,7 @@ WifiMuRtsCtsProtection::WifiMuRtsCtsProtection()
 std::unique_ptr<WifiProtection>
 WifiMuRtsCtsProtection::Copy() const
 {
-    return std::unique_ptr<WifiProtection>(new WifiMuRtsCtsProtection(*this));
+    return std::make_unique<WifiMuRtsCtsProtection>(*this);
 }
 
 void

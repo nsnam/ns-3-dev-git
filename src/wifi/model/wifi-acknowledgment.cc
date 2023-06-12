@@ -70,7 +70,7 @@ WifiNoAck::WifiNoAck()
 std::unique_ptr<WifiAcknowledgment>
 WifiNoAck::Copy() const
 {
-    return std::unique_ptr<WifiAcknowledgment>(new WifiNoAck(*this));
+    return std::make_unique<WifiNoAck>(*this);
 }
 
 bool
@@ -99,7 +99,7 @@ WifiNormalAck::WifiNormalAck()
 std::unique_ptr<WifiAcknowledgment>
 WifiNormalAck::Copy() const
 {
-    return std::unique_ptr<WifiAcknowledgment>(new WifiNormalAck(*this));
+    return std::make_unique<WifiNormalAck>(*this);
 }
 
 bool
@@ -128,7 +128,7 @@ WifiBlockAck::WifiBlockAck()
 std::unique_ptr<WifiAcknowledgment>
 WifiBlockAck::Copy() const
 {
-    return std::unique_ptr<WifiAcknowledgment>(new WifiBlockAck(*this));
+    return std::make_unique<WifiBlockAck>(*this);
 }
 
 bool
@@ -157,7 +157,7 @@ WifiBarBlockAck::WifiBarBlockAck()
 std::unique_ptr<WifiAcknowledgment>
 WifiBarBlockAck::Copy() const
 {
-    return std::unique_ptr<WifiAcknowledgment>(new WifiBarBlockAck(*this));
+    return std::make_unique<WifiBarBlockAck>(*this);
 }
 
 bool
@@ -186,7 +186,7 @@ WifiDlMuBarBaSequence::WifiDlMuBarBaSequence()
 std::unique_ptr<WifiAcknowledgment>
 WifiDlMuBarBaSequence::Copy() const
 {
-    return std::unique_ptr<WifiAcknowledgment>(new WifiDlMuBarBaSequence(*this));
+    return std::make_unique<WifiDlMuBarBaSequence>(*this);
 }
 
 bool
@@ -247,7 +247,7 @@ WifiDlMuTfMuBar::WifiDlMuTfMuBar()
 std::unique_ptr<WifiAcknowledgment>
 WifiDlMuTfMuBar::Copy() const
 {
-    return std::unique_ptr<WifiAcknowledgment>(new WifiDlMuTfMuBar(*this));
+    return std::make_unique<WifiDlMuTfMuBar>(*this);
 }
 
 bool
@@ -283,7 +283,7 @@ WifiDlMuAggregateTf::WifiDlMuAggregateTf()
 std::unique_ptr<WifiAcknowledgment>
 WifiDlMuAggregateTf::Copy() const
 {
-    return std::unique_ptr<WifiAcknowledgment>(new WifiDlMuAggregateTf(*this));
+    return std::make_unique<WifiDlMuAggregateTf>(*this);
 }
 
 bool
@@ -319,7 +319,7 @@ WifiUlMuMultiStaBa::WifiUlMuMultiStaBa()
 std::unique_ptr<WifiAcknowledgment>
 WifiUlMuMultiStaBa::Copy() const
 {
-    return std::unique_ptr<WifiAcknowledgment>(new WifiUlMuMultiStaBa(*this));
+    return std::make_unique<WifiUlMuMultiStaBa>(*this);
 }
 
 bool
@@ -354,7 +354,7 @@ WifiAckAfterTbPpdu::WifiAckAfterTbPpdu()
 std::unique_ptr<WifiAcknowledgment>
 WifiAckAfterTbPpdu::Copy() const
 {
-    return std::unique_ptr<WifiAcknowledgment>(new WifiAckAfterTbPpdu(*this));
+    return std::make_unique<WifiAckAfterTbPpdu>(*this);
 }
 
 bool
