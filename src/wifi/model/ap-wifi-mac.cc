@@ -684,6 +684,26 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac4
         TimeValue time;
         ehtConfiguration->GetAttribute("TransitionTimeout", time);
         mle.SetTransitionTimeout(time.Get());
+
+        // An AP affiliated with an AP MLD may include the Medium Synchronization Delay Information
+        // subfield in the Common Info field of the Basic Multi-Link element carried in transmitted
+        // (Re)Association Response or Multi-Link Probe Response frames to provide medium
+        // synchronization information used by the AP MLD. (Section 35.3.16.8.2 of 802.11be D3.1)
+        if (frameType == WIFI_MAC_MGT_ASSOCIATION_RESPONSE)
+        {
+            auto& commonInfo = mle.GetCommonInfoBasic();
+
+            ehtConfiguration->GetAttribute("MediumSyncDuration", time);
+            commonInfo.SetMediumSyncDelayTimer(time.Get());
+
+            IntegerValue ofdmEdThres;
+            ehtConfiguration->GetAttribute("MsdOfdmEdThreshold", ofdmEdThres);
+            commonInfo.SetMediumSyncOfdmEdThreshold(ofdmEdThres.Get());
+
+            UintegerValue maxNTxops;
+            ehtConfiguration->GetAttribute("MsdMaxNTxops", maxNTxops);
+            commonInfo.SetMediumSyncMaxNTxops(maxNTxops.Get());
+        }
     }
 
     // The MLD Capabilities And Operations subfield is present in the Common Info field of the

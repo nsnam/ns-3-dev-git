@@ -463,6 +463,9 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
         // When the Transition Timeout subfield is included in a frame sent by a non-AP STA
         // affiliated with a non-AP MLD, the Transition Timeout subfield is reserved
         // (Section 9.4.2.312.2.3 of 802.11be D2.3)
+        // The Medium Synchronization Delay Information subfield in the Common Info subfield is
+        // not present if the Basic Multi-Link element is sent by a non-AP STA. (Section
+        // 9.4.2.312.2.3 of 802.11be D3.1)
     }
 
     // The MLD Capabilities And Operations subfield is present in the Common Info field of the
