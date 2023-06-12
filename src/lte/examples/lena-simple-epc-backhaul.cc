@@ -158,7 +158,7 @@ main(int argc, char* argv[])
         for (uint16_t i = 0; i < numNodePairs; ++i)
         {
             Ptr<Node> enb = enbNodes.Get(i);
-            std::vector<uint16_t> cellIds(1, i);
+            std::vector<uint16_t> cellIds(1, i + 1);
 
             // Create a point to point link between the eNB and the SGW with
             // the corresponding new NetDevices on each side
