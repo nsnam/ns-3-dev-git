@@ -1965,7 +1965,7 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
             // cache the component of the "rxPhaseDiff" terms which depend on the random angle of
             // arrivals only
             double sinRayZoa = sin(rayZoaRadian[nIndex][mIndex]);
-            double sinRayAoa = cos(rayAoaRadian[nIndex][mIndex]);
+            double sinRayAoa = sin(rayAoaRadian[nIndex][mIndex]);
             double cosRayAoa = cos(rayAoaRadian[nIndex][mIndex]);
             sinCosA[nIndex][mIndex] = sinRayZoa * cosRayAoa;
             sinSinA[nIndex][mIndex] = sinRayZoa * sinRayAoa;
@@ -1974,7 +1974,7 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
             // cache the component of the "txPhaseDiff" terms which depend on the random angle of
             // departure only
             double sinRayZod = sin(rayZodRadian[nIndex][mIndex]);
-            double sinRayAod = cos(rayAodRadian[nIndex][mIndex]);
+            double sinRayAod = sin(rayAodRadian[nIndex][mIndex]);
             double cosRayAod = cos(rayAodRadian[nIndex][mIndex]);
             sinCosD[nIndex][mIndex] = sinRayZod * cosRayAod;
             sinSinD[nIndex][mIndex] = sinRayZod * sinRayAod;
