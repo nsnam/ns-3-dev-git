@@ -264,7 +264,7 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
         return;
     }
 
-    SwitchMainPhy(linkId);
+    SwitchMainPhy(linkId, true); // channel switch should occur instantaneously
 
     // aux PHY received the ICF but main PHY will send the response
     auto uid = auxPhy->GetPreviouslyRxPpduUid();
@@ -291,8 +291,10 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
         }
     }
 
-    // if this TXOP is being started by an aux PHY, wait until the end of RTS transmission
-    // and then have the main PHY take over the TXOP on this link
+    // if this TXOP is being started by an aux PHY, wait until the end of RTS transmission and
+    // then have the main PHY (instantaneously) take over the TXOP on this link. We may start the
+    // channel switch now and use the channel switch delay configured for the main PHY, but then
+    // we would have no guarantees that the channel switch is completed in RTS TX time plus SIFS.
     if (m_staMac->GetLinkForPhy(m_mainPhyId) != linkId)
     {
         auto stateHelper = m_staMac->GetWifiPhy(linkId)->GetState();
@@ -302,7 +304,8 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
         Simulator::Schedule(stateHelper->GetDelayUntilIdle(),
                             &EmlsrManager::SwitchMainPhy,
                             this,
-                            linkId);
+                            linkId,
+                            true); // channel switch should occur instantaneously
     }
 }
 
@@ -328,9 +331,9 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId)
 }
 
 void
-EmlsrManager::SwitchMainPhy(uint8_t linkId)
+EmlsrManager::SwitchMainPhy(uint8_t linkId, bool noSwitchDelay)
 {
-    NS_LOG_FUNCTION(this << linkId);
+    NS_LOG_FUNCTION(this << linkId << noSwitchDelay);
 
     auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
 
@@ -350,9 +353,28 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId)
     m_staMac->GetChannelAccessManager(*currMainPhyLinkId)
         ->NotifySwitchingEmlsrLink(mainPhy, newMainPhyChannel, linkId);
 
+    // this assert also ensures that the actual channel switch is not delayed
+    NS_ASSERT_MSG(!mainPhy->GetState()->IsStateTx(),
+                  "We should not ask the main PHY to switch channel while transmitting");
+
     // request the main PHY to switch channel
-    void (WifiPhy::*fp)(const WifiPhyOperatingChannel&) = &WifiPhy::SetOperatingChannel;
-    Simulator::ScheduleNow(fp, mainPhy, newMainPhyChannel);
+    Simulator::ScheduleNow([=]() {
+        auto delay = mainPhy->GetChannelSwitchDelay();
+        NS_ASSERT_MSG(noSwitchDelay || delay <= m_lastAdvTransitionDelay,
+                      "Transition delay (" << m_lastAdvTransitionDelay.As(Time::US)
+                                           << ") should exceed the channel switch delay ("
+                                           << delay.As(Time::US) << ")");
+        if (noSwitchDelay)
+        {
+            mainPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
+        }
+        mainPhy->SetOperatingChannel(newMainPhyChannel);
+        // restore previous channel switch delay
+        if (noSwitchDelay)
+        {
+            mainPhy->SetAttribute("ChannelSwitchDelay", TimeValue(delay));
+        }
+    });
 
     NotifyMainPhySwitch(*currMainPhyLinkId, linkId);
 }

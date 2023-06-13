@@ -311,8 +311,6 @@ EmlsrOperationsTestBase::Transmit(Ptr<WifiMac> mac,
 void
 EmlsrOperationsTestBase::DoSetup()
 {
-    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(Seconds(0)));
-
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(2);
     int64_t streamNumber = 100;
@@ -2933,10 +2931,12 @@ EmlsrLinkSwitchTest::CheckInitialControlFrame(const WifiConstPsduMap& psduMap,
         if (m_switchAuxPhy)
         {
             NS_TEST_EXPECT_MSG_LT(m_countQoSframes, nRxOk, "Unexpected number of ICFs");
-            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(*currMainPhyLinkId),
-                                  phyRecvIcf,
-                                  "PHY operating on link where Main PHY was before switching "
-                                  "channel is not the aux PHY that received the ICF");
+            Simulator::Schedule(phyRecvIcf->GetChannelSwitchDelay(), [=]() {
+                NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(*currMainPhyLinkId),
+                                      phyRecvIcf,
+                                      "PHY operating on link where Main PHY was before switching "
+                                      "channel is not the aux PHY that received the ICF");
+            });
         }
         else if (m_countQoSframes < nRxOk)
         {

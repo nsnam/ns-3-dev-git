@@ -242,8 +242,9 @@ class EmlsrManager : public Object
      * Switch channel on the Main PHY so that it operates on the given link.
      *
      * \param linkId the ID of the link on which the main PHY has to operate
+     * \param noSwitchDelay whether switching delay should be zero
      */
-    void SwitchMainPhy(uint8_t linkId);
+    void SwitchMainPhy(uint8_t linkId, bool noSwitchDelay);
 
     /**
      * Adjust the operating channel of all the aux PHYs to meet the constraint on the maximum
