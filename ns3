@@ -853,6 +853,7 @@ def cmake_check_version():
     if not cmake:
         print("Error:  CMake not found; please install version 3.10 or greater, or modify", path_variable)
         exit(1)
+    cmake = cmake.replace(".EXE", "").replace(".exe", "")  # Trim cmake executable extension
     cmake_output = subprocess.check_output([cmake, "--version"]).decode("utf-8")
     version = re.findall("version (.*)", cmake_output)[0]
     if parse_version(version) < parse_version("3.10.0"):
