@@ -34,6 +34,10 @@
 namespace ns3
 {
 
+/// generic value for aRxPHYStartDelay PHY characteristic (used when we do not know the preamble
+/// type of the next frame)
+static constexpr uint8_t RX_PHY_START_DELAY_USEC = 48;
+
 NS_LOG_COMPONENT_DEFINE("EhtFrameExchangeManager");
 
 NS_OBJECT_ENSURE_REGISTERED(EhtFrameExchangeManager);
@@ -491,7 +495,7 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
 
     // the channel has been released; all EMLSR clients will switch back to listening
     // operation after a timeout interval of aSIFSTime + aSlotTime + aRxPHYStartDelay
-    auto delay = m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(20);
+    auto delay = m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
     for (const auto& address : m_protectedStas)
     {
         if (GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
