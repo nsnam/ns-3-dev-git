@@ -296,6 +296,8 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
     // aux PHY received the ICF but main PHY will send the response
     auto uid = auxPhy->GetPreviouslyRxPpduUid();
     mainPhy->SetPreviouslyRxPpduUid(uid);
+
+    DoNotifyIcfReceived(linkId);
 }
 
 void
@@ -335,6 +337,8 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
                             linkId,
                             true); // channel switch should occur instantaneously
     }
+
+    DoNotifyUlTxopStart(linkId);
 }
 
 void
@@ -357,6 +361,8 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId)
             m_staMac->GetChannelAccessManager(id)->NotifyStopUsingOtherEmlsrLink();
         }
     }
+
+    DoNotifyTxopEnd(linkId);
 }
 
 void

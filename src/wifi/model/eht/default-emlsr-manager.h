@@ -52,6 +52,9 @@ class DefaultEmlsrManager : public EmlsrManager
     void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     void NotifyEmlsrModeChanged() override;
     void NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId) override;
+    void DoNotifyIcfReceived(uint8_t linkId) override;
+    void DoNotifyUlTxopStart(uint8_t linkId) override;
+    void DoNotifyTxopEnd(uint8_t linkId) override;
 
     bool m_switchAuxPhy; /**< whether Aux PHY should switch channel to operate on the link on which
                               the Main PHY was operating before moving to the link of the Aux PHY */

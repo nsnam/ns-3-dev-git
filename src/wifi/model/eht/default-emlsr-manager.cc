@@ -103,4 +103,22 @@ DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId)
     SwitchAuxPhy(nextLinkId, currLinkId);
 }
 
+void
+DefaultEmlsrManager::DoNotifyIcfReceived(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+}
+
+void
+DefaultEmlsrManager::DoNotifyUlTxopStart(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+}
+
+void
+DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+}
+
 } // namespace ns3
