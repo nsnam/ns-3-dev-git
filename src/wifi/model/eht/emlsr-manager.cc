@@ -409,6 +409,11 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId, bool noSwitchDelay)
         {
             mainPhy->SetAttribute("ChannelSwitchDelay", TimeValue(delay));
         }
+        // re-enable short time slot, if needed
+        if (m_staMac->GetWifiRemoteStationManager(linkId)->GetShortSlotTimeEnabled())
+        {
+            mainPhy->SetSlot(MicroSeconds(9));
+        }
     });
 
     NotifyMainPhySwitch(*currMainPhyLinkId, linkId);
@@ -430,8 +435,14 @@ EmlsrManager::SwitchAuxPhy(uint8_t currLinkId, uint8_t nextLinkId)
         ->GetChannelAccessManager(currLinkId)
         ->NotifySwitchingEmlsrLink(auxPhy, newAuxPhyChannel, nextLinkId);
 
-    void (WifiPhy::*fp)(const WifiPhyOperatingChannel&) = &WifiPhy::SetOperatingChannel;
-    Simulator::ScheduleNow(fp, auxPhy, newAuxPhyChannel);
+    Simulator::ScheduleNow([=]() {
+        auxPhy->SetOperatingChannel(newAuxPhyChannel);
+        // re-enable short time slot, if needed
+        if (m_staMac->GetWifiRemoteStationManager(nextLinkId)->GetShortSlotTimeEnabled())
+        {
+            auxPhy->SetSlot(MicroSeconds(9));
+        }
+    });
 }
 
 MgtEmlOmn
