@@ -409,23 +409,27 @@ WifiPhyOperatingChannel::FindFirst(uint8_t number,
 }
 
 uint8_t
-WifiPhyOperatingChannel::GetNumber() const
+WifiPhyOperatingChannel::GetNumber(std::size_t segment /* = 0 */) const
 {
     NS_ASSERT(IsSet());
-    return m_channelIts.front()->number;
+    NS_ASSERT_MSG(segment == 0, "non-contiguous operating channel is not supported yet");
+    return m_channelIts.at(segment)->number;
 }
 
 uint16_t
-WifiPhyOperatingChannel::GetFrequency() const
+WifiPhyOperatingChannel::GetFrequency(std::size_t segment /* = 0 */) const
 {
     NS_ASSERT(IsSet());
-    return m_channelIts.front()->frequency;
+    NS_ASSERT_MSG(segment == 0, "non-contiguous operating channel is not supported yet");
+    return m_channelIts.at(segment)->frequency;
 }
 
 ChannelWidthMhz
-WifiPhyOperatingChannel::GetWidth() const
+WifiPhyOperatingChannel::GetWidth(std::size_t segment /* = 0 */) const
 {
     NS_ASSERT(IsSet());
+    NS_ASSERT_MSG(segment == 0, "non-contiguous operating channel is not supported yet");
+    // Current specs only allow all segments to be the same width
     return m_channelIts.front()->width;
 }
 
@@ -433,6 +437,7 @@ WifiPhyBand
 WifiPhyOperatingChannel::GetPhyBand() const
 {
     NS_ASSERT(IsSet());
+    // Current specs only allow all segments to be the same band
     return m_channelIts.front()->band;
 }
 

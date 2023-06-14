@@ -170,23 +170,35 @@ class WifiPhyOperatingChannel
                                            WifiPhyBand band);
 
     /**
-     * Return the channel number identifying the whole operating channel.
+     * Return the channel number for a given frequency segment.
+     * Segments are ordered by increasing frequencies, hence by default
+     * it returns the channel number of the segment occuping the lowest
+     * frequencies when a non-contiguous operating channel is used.
      *
-     * \return the channel number identifying the whole operating channel
+     * \param segment the index of the frequency segment (if operating channel is non-contiguous)
+     * \return the channel number for a given frequency segment
      */
-    uint8_t GetNumber() const;
+    uint8_t GetNumber(std::size_t segment = 0) const;
     /**
-     * Return the center frequency of the operating channel (in MHz).
+     * Return the center frequency for a given frequency segment (in MHz).
+     * Segments are ordered by increasing frequencies, hence by default
+     * it returns the center frequency of the segment occuping the lowest
+     * frequencies when a non-contiguous operating channel is used.
      *
-     * \return the center frequency of the operating channel (in MHz)
+     * \param segment the index of the frequency segment (if operating channel is non-contiguous)
+     * \return the center frequency for a given frequency segment (in MHz)
      */
-    uint16_t GetFrequency() const;
+    uint16_t GetFrequency(std::size_t segment = 0) const;
     /**
-     * Return the width of the whole operating channel (in MHz).
+     * Return the channel width for a given frequency segment (in MHz).
+     * Segments are ordered by increasing frequencies, hence by default
+     * it returns the channel width of the segment occuping the lowest
+     * frequencies when a non-contiguous operating channel is used.
      *
-     * \return the width of the whole operating channel (in MHz)
+     * \param segment the index of the frequency segment (if operating channel is non-contiguous)
+     * \return the channel width for a given frequency segment (in MHz)
      */
-    ChannelWidthMhz GetWidth() const;
+    ChannelWidthMhz GetWidth(std::size_t segment = 0) const;
     /**
      * Return the width type of the operating channel.
      *
