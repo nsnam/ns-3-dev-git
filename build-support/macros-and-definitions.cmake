@@ -343,7 +343,6 @@ macro(clear_global_cached_variables)
   unset(ns3-headers-to-module-map CACHE)
   unset(ns3-libs CACHE)
   unset(ns3-libs-tests CACHE)
-  unset(ns3-python-bindings-modules CACHE)
   mark_as_advanced(
     build_profile
     build_profile_suffix
@@ -357,7 +356,6 @@ macro(clear_global_cached_variables)
     ns3-headers-to-module-map
     ns3-libs
     ns3-libs-tests
-    ns3-python-bindings-modules
   )
 endmacro()
 
@@ -1393,8 +1391,6 @@ macro(process_options)
   set(ns3-contrib-libs)
   set(lib-ns3-static-objs)
   set(ns3-external-libs)
-  set(ns3-python-bindings ns${NS3_VER}-pybindings${build_profile_suffix})
-  set(ns3-python-bindings-modules)
 
   foreach(libname ${scanned_modules})
     # Create libname of output library of module
