@@ -58,6 +58,12 @@ class DefaultEmlsrManager : public EmlsrManager
 
     bool m_switchAuxPhy; /**< whether Aux PHY should switch channel to operate on the link on which
                               the Main PHY was operating before moving to the link of the Aux PHY */
+    std::optional<uint8_t>
+        m_linkIdForMainPhyAfterTxop;  //!< ID of the link the main PHY has to switch to once
+                                      //!< the current TXOP terminates
+    Ptr<WifiPhy> m_auxPhyToReconnect; //!< Aux PHY the ChannelAccessManager of the link on which
+                                      //!< the main PHY is operating has to connect a listener to
+                                      //!< when the main PHY is back operating on its previous link
 };
 
 } // namespace ns3

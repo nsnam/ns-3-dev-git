@@ -2217,6 +2217,9 @@ EmlsrLinkSwitchTest::EmlsrLinkSwitchTest(const Params& params)
     m_mainPhyId = 1;
     m_establishBaDl = true;
     m_duration = Seconds(1.0);
+    // when aux PHYs do not switch link, the main PHY switches back to its previous link after
+    // a TXOP, hence the transition delay must exceed the channel switch delay (default: 250us)
+    m_transitionDelay = {MicroSeconds(256)};
 }
 
 void
@@ -2413,25 +2416,27 @@ EmlsrLinkSwitchTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
  *                                                        └───┘     └──┘
  *
  *
- * AUX PHY switching disabled
+ * AUX PHY switching disabled (X = main PHY channel switch delay)
  *
- *  |--------- aux PHY A ---------|------ main PHY ------|
+ *  |------------------------------------------ aux PHY A ---------------------------------------
+ *                                |-- main PHY --|X|
  *                            ┌───┐     ┌───┐
  *                            │ICF│     │QoS│
  *  ──────────────────────────┴───┴┬───┬┴───┴┬──┬────────────────────────────────────────────────
  *  [link 0]                       │CTS│     │BA│
  *                                 └───┘     └──┘
  *
+ *                                                 |-main|
+ *  |--------- main PHY ----------|                |-PHY-|                |------ main PHY ------
+ *     ┌───┐     ┌───┐                                                      ┌───┐     ┌───┐
+ *     │ICF│     │QoS│                                                      │ICF│     │QoS│
+ *  ───┴───┴┬───┬┴───┴┬──┬──────────────────────────────────────────────────┴───┴┬───┬┴───┴┬──┬──
+ *  [link 1]│CTS│     │BA│                                                       │CTS│     │BA│
+ *          └───┘     └──┘                                                       └───┘     └──┘
  *
- *  |--------- main PHY ----------|
- *     ┌───┐     ┌───┐                                                      ┌───┐  ┌───┐  ┌───┐
- *     │ICF│     │QoS│                                                      │ICF│  │ICF│  │ICF│
- *  ───┴───┴┬───┬┴───┴┬──┬──────────────────────────────────────────────────┴───┴──┴───┴──┴───┴──
- *  [link 1]│CTS│     │BA│
- *          └───┘     └──┘
  *
- *
- *  |--------------------- aux PHY B --------------------|--------------- main PHY --------------
+ *  |------------------------------------------ aux PHY B ---------------------------------------
+ *                                                       |-- main PHY --|X|
  *                                                   ┌───┐     ┌───┐
  *                                                   │ICF│     │QoS│
  *  ─────────────────────────────────────────────────┴───┴┬───┬┴───┴┬──┬─────────────────────────
@@ -2451,6 +2456,8 @@ EmlsrLinkSwitchTest::CheckInitialControlFrame(const WifiConstPsduMap& psduMap,
         return;
     }
 
+    NS_TEST_EXPECT_MSG_LT(m_countQoSframes, 4, "Unexpected number of ICFs");
+
     auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
     auto phyRecvIcf = m_staMacs[0]->GetWifiPhy(linkId); // PHY receiving the ICF
 
@@ -2458,66 +2465,68 @@ EmlsrLinkSwitchTest::CheckInitialControlFrame(const WifiConstPsduMap& psduMap,
     NS_TEST_ASSERT_MSG_EQ(currMainPhyLinkId.has_value(),
                           true,
                           "Didn't find the link on which the Main PHY is operating");
+    NS_TEST_ASSERT_MSG_NE(phyRecvIcf,
+                          nullptr,
+                          "No PHY on the link where ICF " << m_countQoSframes << " was sent");
 
-    if (phyRecvIcf && phyRecvIcf != mainPhy)
+    if (phyRecvIcf != mainPhy)
     {
         NS_TEST_EXPECT_MSG_LT_OR_EQ(
             phyRecvIcf->GetChannelWidth(),
             m_auxPhyMaxChWidth,
-            "Aux PHY that received ICF is operating on a channel whose width exceeds the limit "
-                << m_countQoSframes);
+            "Aux PHY that received ICF "
+                << m_countQoSframes << " is operating on a channel whose width exceeds the limit");
     }
+
+    // if aux PHYs switch links, only the first ICF is received by the main PHY; otherwise,
+    // the first ICF and the last ICF are received by the main PHY
+    NS_TEST_EXPECT_MSG_EQ((phyRecvIcf == mainPhy),
+                          (m_countQoSframes == 0 || (!m_switchAuxPhy && m_countQoSframes == 3)),
+                          "Expecting that the ICF was received by the main PHY");
+
+    // if aux PHYs do not switch links, the main PHY is operating on its original link when
+    // the transmission of an ICF starts
+    NS_TEST_EXPECT_MSG_EQ(m_switchAuxPhy || currMainPhyLinkId == m_mainPhyId,
+                          true,
+                          "Main PHY is operating on an unexpected link ("
+                              << +currMainPhyLinkId.value() << ", expected " << +m_mainPhyId
+                              << ")");
 
     auto txDuration =
         WifiPhy::CalculateTxDuration(psduMap, txVector, m_apMac->GetWifiPhy(linkId)->GetPhyBand());
 
     // check that PHYs are operating on the expected link after the reception of the ICF
     Simulator::Schedule(txDuration + NanoSeconds(1), [=]() {
-        std::size_t nRxOk = m_switchAuxPhy ? 4 : 3; // successfully received ICFs
-
-        if (m_countQoSframes < nRxOk)
-        {
-            // the main PHY must be operating on the link where ICF was sent
-            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(linkId),
-                                  mainPhy,
-                                  "PHY operating on link where ICF was sent is not the main PHY");
-        }
-
-        // the first ICF is received by the main PHY and no channel switch occurs
-        if (m_countQoSframes == 0)
-        {
-            NS_TEST_EXPECT_MSG_EQ(phyRecvIcf,
-                                  mainPhy,
-                                  "PHY that received the ICF is not the main PHY");
-            return;
-        }
+        // the main PHY must be operating on the link where ICF was sent
+        NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(linkId),
+                              mainPhy,
+                              "PHY operating on link where ICF was sent is not the main PHY");
 
         // the behavior of Aux PHYs depends on whether they switch channel or not
         if (m_switchAuxPhy)
         {
-            NS_TEST_EXPECT_MSG_LT(m_countQoSframes, nRxOk, "Unexpected number of ICFs");
+            if (mainPhy != phyRecvIcf)
+            {
+                NS_TEST_EXPECT_MSG_EQ(phyRecvIcf->IsStateSwitching(),
+                                      true,
+                                      "Aux PHY expected to switch channel");
+            }
             Simulator::Schedule(phyRecvIcf->GetChannelSwitchDelay(), [=]() {
                 NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(*currMainPhyLinkId),
                                       phyRecvIcf,
-                                      "PHY operating on link where Main PHY was before switching "
-                                      "channel is not the aux PHY that received the ICF");
+                                      "The Aux PHY that received the ICF is expected to operate "
+                                      "on the link where Main PHY was before switching channel");
             });
-        }
-        else if (m_countQoSframes < nRxOk)
-        {
-            // the first 3 ICFs are actually received by some PHY
-            NS_TEST_EXPECT_MSG_NE(phyRecvIcf, nullptr, "Expected some PHY to receive the ICF");
-            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(*currMainPhyLinkId),
-                                  nullptr,
-                                  "No PHY expected to operate on link where Main PHY was "
-                                  "before switching channel");
         }
         else
         {
-            // no PHY received the ICF
-            NS_TEST_EXPECT_MSG_EQ(phyRecvIcf,
-                                  nullptr,
-                                  "Expected no PHY to operate on link where ICF is sent");
+            NS_TEST_EXPECT_MSG_EQ(phyRecvIcf->IsStateSwitching(),
+                                  false,
+                                  "Aux PHY is not expected to switch channel");
+            NS_TEST_EXPECT_MSG_EQ(phyRecvIcf->GetPhyBand(),
+                                  mainPhy->GetPhyBand(),
+                                  "The Aux PHY that received the ICF is expected to operate "
+                                  "on the same band as the Main PHY");
         }
     });
 }
@@ -2527,7 +2536,7 @@ EmlsrLinkSwitchTest::CheckResults()
 {
     NS_TEST_ASSERT_MSG_NE(m_txPsdusPos, 0, "BA agreement establishment not completed");
 
-    std::size_t nRxOk = m_switchAuxPhy ? 4 : 3; // successfully received ICFs
+    const std::size_t nRxOk = 4; // successfully received ICFs
 
     NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(),
                                 m_txPsdusPos + 3 + nRxOk * 4,

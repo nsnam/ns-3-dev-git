@@ -42,7 +42,10 @@ DefaultEmlsrManager::GetTypeId()
             .AddConstructor<DefaultEmlsrManager>()
             .AddAttribute("SwitchAuxPhy",
                           "Whether Aux PHY should switch channel to operate on the link on which "
-                          "the Main PHY was operating before moving to the link of the Aux PHY.",
+                          "the Main PHY was operating before moving to the link of the Aux PHY. "
+                          "Note that, if the Aux PHY does not switch channel, the main PHY will "
+                          "switch back to its previous link once the TXOP terminates (otherwise, "
+                          "no PHY will be listening on that EMLSR link).",
                           BooleanValue(true),
                           MakeBooleanAccessor(&DefaultEmlsrManager::m_switchAuxPhy),
                           MakeBooleanChecker());
@@ -96,7 +99,10 @@ DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId)
 
     if (!m_switchAuxPhy)
     {
-        return; // nothing to do
+        // record that the main PHY will have to switch back to its current link
+        m_linkIdForMainPhyAfterTxop = currLinkId;
+        m_auxPhyToReconnect = GetStaMac()->GetWifiPhy(nextLinkId);
+        return;
     }
 
     // switch channel on Aux PHY so that it operates on the link on which the main PHY was operating
@@ -119,6 +125,16 @@ void
 DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
+
+    // switch main PHY to the previous link, if needed
+    if (m_linkIdForMainPhyAfterTxop && linkId != m_linkIdForMainPhyAfterTxop)
+    {
+        auto phy = m_auxPhyToReconnect;
+        SwitchMainPhy(*m_linkIdForMainPhyAfterTxop, false);
+        // Reconnect the aux PHY to its original link
+        Simulator::ScheduleNow(&StaWifiMac::NotifySwitchingEmlsrLink, GetStaMac(), phy, linkId);
+    }
+    m_linkIdForMainPhyAfterTxop.reset();
 }
 
 } // namespace ns3

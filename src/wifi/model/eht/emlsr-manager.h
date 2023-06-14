@@ -178,6 +178,14 @@ class EmlsrManager : public Object
     const WifiPhyOperatingChannel& GetChannelForAuxPhy(uint8_t linkId) const;
 
     /**
+     * Switch channel on the Main PHY so that it operates on the given link.
+     *
+     * \param linkId the ID of the link on which the main PHY has to operate
+     * \param noSwitchDelay whether switching delay should be zero
+     */
+    void SwitchMainPhy(uint8_t linkId, bool noSwitchDelay);
+
+    /**
      * Switch channel on the Aux PHY operating on the given current link so that it operates
      * on the given next link.
      *
@@ -268,14 +276,6 @@ class EmlsrManager : public Object
      * delay has elapsed or a notification response has been received from the AP.
      */
     void ChangeEmlsrMode();
-
-    /**
-     * Switch channel on the Main PHY so that it operates on the given link.
-     *
-     * \param linkId the ID of the link on which the main PHY has to operate
-     * \param noSwitchDelay whether switching delay should be zero
-     */
-    void SwitchMainPhy(uint8_t linkId, bool noSwitchDelay);
 
     /**
      * Adjust the operating channel of all the aux PHYs to meet the constraint on the maximum
