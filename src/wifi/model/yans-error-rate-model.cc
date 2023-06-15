@@ -206,7 +206,7 @@ YansErrorRateModel::DoGetChunkSuccessRate(WifiMode mode,
     if (mode.GetModulationClass() >= WIFI_MOD_CLASS_ERP_OFDM)
     {
         uint64_t phyRate;
-        if ((txVector.IsMu() && (staId == SU_STA_ID)) || (mode != txVector.GetMode()))
+        if ((txVector.IsMu() && (staId == SU_STA_ID)) || (mode != txVector.GetMode(staId)))
         {
             phyRate = mode.GetPhyRate(txVector.GetChannelWidth() >= 40
                                           ? 20
