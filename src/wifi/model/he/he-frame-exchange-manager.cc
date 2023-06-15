@@ -93,14 +93,6 @@ HeFrameExchangeManager::Reset()
 }
 
 void
-HeFrameExchangeManager::SetWifiMac(const Ptr<WifiMac> mac)
-{
-    m_apMac = DynamicCast<ApWifiMac>(mac);
-    m_staMac = DynamicCast<StaWifiMac>(mac);
-    VhtFrameExchangeManager::SetWifiMac(mac);
-}
-
-void
 HeFrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDuration)
 {
     NS_LOG_FUNCTION(this << txVector << psduDuration.As(Time::MS));
@@ -113,7 +105,6 @@ void
 HeFrameExchangeManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    m_apMac = nullptr;
     m_staMac = nullptr;
     m_psduMap.clear();
     m_txParams.Clear();

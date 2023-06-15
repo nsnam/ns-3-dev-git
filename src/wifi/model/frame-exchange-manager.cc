@@ -8,6 +8,7 @@
 
 #include "frame-exchange-manager.h"
 
+#include "ap-wifi-mac.h"
 #include "snr-tag.h"
 #include "sta-wifi-mac.h"
 #include "wifi-mac-queue.h"
@@ -91,6 +92,8 @@ FrameExchangeManager::DoDispose()
     Reset();
     m_fragmentedPacket = nullptr;
     m_mac = nullptr;
+    m_apMac = nullptr;
+    m_staMac = nullptr;
     m_txMiddle = nullptr;
     m_rxMiddle = nullptr;
     m_channelAccessManager = nullptr;
@@ -138,6 +141,8 @@ FrameExchangeManager::SetWifiMac(Ptr<WifiMac> mac)
 {
     NS_LOG_FUNCTION(this << mac);
     m_mac = mac;
+    m_apMac = DynamicCast<ApWifiMac>(m_mac);
+    m_staMac = DynamicCast<StaWifiMac>(mac);
 }
 
 void

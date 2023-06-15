@@ -20,8 +20,6 @@ namespace ns3
 {
 
 class MultiUserScheduler;
-class ApWifiMac;
-class StaWifiMac;
 class CtrlTriggerHeader;
 
 /**
@@ -65,7 +63,6 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     ~HeFrameExchangeManager() override;
 
     bool StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
-    void SetWifiMac(const Ptr<WifiMac> mac) override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
     void CalculateProtectionTime(WifiProtection* protection) const override;
     std::optional<Mac48Address> FindTxopHolder(const WifiMacHeader& hdr,
@@ -362,8 +359,6 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      */
     virtual void ReceivedQosNullAfterBsrpTf(Mac48Address sender);
 
-    Ptr<ApWifiMac> m_apMac;          //!< MAC pointer (null if not an AP)
-    Ptr<StaWifiMac> m_staMac;        //!< MAC pointer (null if not a STA)
     WifiTxVector m_trigVector;       //!< the TRIGVECTOR
     Time m_intraBssNavEnd;           //!< intra-BSS NAV expiration time
     EventId m_intraBssNavResetEvent; //!< the event to reset the intra-BSS NAV after an RTS

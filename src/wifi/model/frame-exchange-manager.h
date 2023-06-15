@@ -35,6 +35,9 @@
 namespace ns3
 {
 
+class ApWifiMac;
+class StaWifiMac;
+
 struct RxSignalInfo;
 struct WifiProtection;
 struct WifiAcknowledgment;
@@ -506,6 +509,8 @@ class FrameExchangeManager : public Object
     WifiTxTimer m_txTimer;                            //!< the timer set upon frame transmission
     EventId m_navResetEvent;                          //!< the event to reset the NAV after an RTS
     Ptr<WifiMac> m_mac;                               //!< the MAC layer on this station
+    Ptr<ApWifiMac> m_apMac;                           //!< AP MAC layer pointer (null if not an AP)
+    Ptr<StaWifiMac> m_staMac;                         //!< STA MAC layer pointer (null if not a STA)
     Ptr<MacTxMiddle> m_txMiddle;                      //!< the MAC TX Middle on this station
     Ptr<MacRxMiddle> m_rxMiddle;                      //!< the MAC RX Middle on this station
     Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
