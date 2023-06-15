@@ -112,6 +112,13 @@ EmlsrManager::GetTypeId()
 }
 
 EmlsrManager::EmlsrManager()
+    // The STA initializes dot11MSDTimerDuration to aPPDUMaxTime defined in Table 36-70
+    // (Sec. 35.3.16.8.1 of 802.11be D3.1)
+    : m_mediumSyncDuration(MicroSeconds(DEFAULT_MSD_DURATION_USEC)),
+      // The default value of dot11MSDOFDMEDthreshold is –72 dBm and the default value of
+      // dot11MSDTXOPMax is 1, respectively (Sec. 35.3.16.8.1 of 802.11be D3.1)
+      m_msdOfdmEdThreshold(DEFAULT_MSD_OFDM_ED_THRESH),
+      m_msdMaxNTxops(DEFAULT_MSD_MAX_N_TXOPS)
 {
     NS_LOG_FUNCTION(this);
 }
@@ -205,6 +212,45 @@ std::optional<Time>
 EmlsrManager::GetTransitionTimeout() const
 {
     return m_emlsrTransitionTimeout;
+}
+
+void
+EmlsrManager::SetMediumSyncDuration(Time duration)
+{
+    NS_LOG_FUNCTION(this << duration.As(Time::US));
+    m_mediumSyncDuration = duration;
+}
+
+Time
+EmlsrManager::GetMediumSyncDuration() const
+{
+    return m_mediumSyncDuration;
+}
+
+void
+EmlsrManager::SetMediumSyncOfdmEdThreshold(int8_t threshold)
+{
+    NS_LOG_FUNCTION(this << threshold);
+    m_msdOfdmEdThreshold = threshold;
+}
+
+int8_t
+EmlsrManager::GetMediumSyncOfdmEdThreshold() const
+{
+    return m_msdOfdmEdThreshold;
+}
+
+void
+EmlsrManager::SetMediumSyncMaxNTxops(std::optional<uint8_t> nTxops)
+{
+    NS_LOG_FUNCTION(this << nTxops.has_value());
+    m_msdMaxNTxops = nTxops;
+}
+
+std::optional<uint8_t>
+EmlsrManager::GetMediumSyncMaxNTxops() const
+{
+    return m_msdMaxNTxops;
 }
 
 void

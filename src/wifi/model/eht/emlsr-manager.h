@@ -74,6 +74,47 @@ class EmlsrManager : public Object
     std::optional<Time> GetTransitionTimeout() const;
 
     /**
+     * Set the duration of the MediumSyncDelay timer.
+     *
+     * \param duration the duration of the MediumSyncDelay timer
+     */
+    void SetMediumSyncDuration(Time duration);
+
+    /**
+     * \return the duration of the MediumSyncDelay timer
+     */
+    Time GetMediumSyncDuration() const;
+
+    /**
+     * Set the Medium Synchronization OFDM ED threshold (dBm) to use while the MediumSyncDelay
+     * timer is running.
+     *
+     * \param threshold the threshold in dBm (ranges from -72 to -62 dBm)
+     */
+    void SetMediumSyncOfdmEdThreshold(int8_t threshold);
+
+    /**
+     * \return the Medium Synchronization OFDM ED threshold (dBm) to use while the MediumSyncDelay
+     * timer is running.
+     */
+    int8_t GetMediumSyncOfdmEdThreshold() const;
+
+    /**
+     * Set the maximum number of TXOPs a non-AP STA is allowed to attempt to initiate while
+     * the MediumSyncDelay timer is running. No value indicates no limit.
+     *
+     * \param nTxops the maximum number of TXOPs a non-AP STA is allowed to attempt to
+     *               initiate while the MediumSyncDelay timer is running
+     */
+    void SetMediumSyncMaxNTxops(std::optional<uint8_t> nTxops);
+
+    /**
+     * \return the maximum number of TXOPs a non-AP STA is allowed to attempt to initiate while
+     * the MediumSyncDelay timer is running. No value indicates no limit.
+     */
+    std::optional<uint8_t> GetMediumSyncMaxNTxops() const;
+
+    /**
      * \return the ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
      */
     uint8_t GetMainPhyId() const;
@@ -299,6 +340,10 @@ class EmlsrManager : public Object
     Ptr<StaWifiMac> m_staMac;                     //!< the MAC of the managed non-AP MLD
     std::optional<Time> m_emlsrTransitionTimeout; /**< Transition timeout advertised by APs with
                                                        EMLSR activated */
+    Time m_mediumSyncDuration;                    //!< duration of the MediumSyncDelay timer
+    int8_t m_msdOfdmEdThreshold;                  //!< MediumSyncDelay OFDM ED threshold
+    std::optional<uint8_t> m_msdMaxNTxops;        //!< MediumSyncDelay max number of TXOPs
+
     std::set<uint8_t> m_emlsrLinks; //!< ID of the EMLSR links (empty if EMLSR mode is disabled)
     std::optional<std::set<uint8_t>> m_nextEmlsrLinks; /**< ID of the links that will become the
                                                             EMLSR links when the pending

@@ -1785,10 +1785,18 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
         // is supported by the peer
         GetWifiRemoteStationManager(linkId)->AddStationEhtCapabilities(apAddr, *ehtCapabilities);
 
-        if (const auto& mle = frame.template Get<MultiLinkElement>();
-            mle && mle->HasEmlCapabilities() && m_emlsrManager)
+        if (const auto& mle = frame.template Get<MultiLinkElement>(); mle && m_emlsrManager)
         {
-            m_emlsrManager->SetTransitionTimeout(mle->GetTransitionTimeout());
+            if (mle->HasEmlCapabilities())
+            {
+                m_emlsrManager->SetTransitionTimeout(mle->GetTransitionTimeout());
+            }
+            if (const auto& common = mle->GetCommonInfoBasic(); common.m_mediumSyncDelayInfo)
+            {
+                m_emlsrManager->SetMediumSyncDuration(common.GetMediumSyncDelayTimer());
+                m_emlsrManager->SetMediumSyncOfdmEdThreshold(common.GetMediumSyncOfdmEdThreshold());
+                m_emlsrManager->SetMediumSyncMaxNTxops(common.GetMediumSyncMaxNTxops());
+            }
         }
     };
 
