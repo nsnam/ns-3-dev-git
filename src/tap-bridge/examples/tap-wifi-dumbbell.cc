@@ -52,7 +52,7 @@
 //
 // 1) Ping one of the simulated nodes on the left side of the topology.
 //
-//    ./ns3 run tap-wifi-dumbbell&
+//    ./ns3 run --enable-sudo tap-wifi-dumbbell&
 //    ping 10.1.1.3
 //
 // 2) Configure a route in the linux host and ping once of the nodes on the
@@ -60,7 +60,7 @@
 //    delays due to CBR background traffic on the point-to-point (see next
 //    item).
 //
-//    ./ns3 run tap-wifi-dumbbell&
+//    ./ns3 run --enable-sudo tap-wifi-dumbbell&
 //    sudo ip route add 10.1.3.0/24 dev thetap via 10.1.1.2
 //    ping 10.1.3.4
 //
@@ -76,13 +76,15 @@
 //    reflected in large delays seen by ping.  You can crank down the CBR
 //    traffic data rate and watch the ping timing change dramatically.
 //
-//    ./ns3 run "tap-wifi-dumbbell --ns3::OnOffApplication::DataRate=100kb/s"&
+//    ./ns3 run --enable-sudo "tap-wifi-dumbbell --ns3::OnOffApplication::DataRate=100kb/s"&
 //    sudo ip route add 10.1.3.0/24 dev thetap via 10.1.1.2
 //    ping 10.1.3.4
 //
 // 4) Try to run this in UseBridge mode.  This allows you to bridge an ns-3
 //    simulation to an existing pre-configured bridge.  This uses tap devices
 //    just for illustration, you can create your own bridge if you want.
+//    The "--enable-sudo" option to "./ns3 run" is not needed in this case
+//    because devices are being created outside of ns-3 execution.
 //
 //    sudo ip tuntap add mode tap mytap1
 //    sudo ip link set mytap1 promisc on up
