@@ -176,6 +176,25 @@ class EmlsrManager : public Object
      */
     void NotifyTxopEnd(uint8_t linkId);
 
+    /**
+     * Check whether the MediumSyncDelay timer is running for the STA operating on the given link.
+     * If so, returns the time elapsed since the timer started.
+     *
+     * \param linkId the ID of the given link
+     * \return the time elapsed since the MediumSyncDelay timer started, if this timer is running
+     *         for the STA operating on the given link
+     */
+    std::optional<Time> GetElapsedMediumSyncDelayTimer(uint8_t linkId) const;
+
+    /**
+     * Cancel the MediumSyncDelay timer associated with the given link and take the appropriate
+     * actions. This function must not be called when the MediumSyncDelay timer is not running
+     * on the given link.
+     *
+     * \param linkId the ID of the link associated with the MediumSyncDelay timer to cancel
+     */
+    void CancelMediumSyncDelayTimer(uint8_t linkId);
+
   protected:
     void DoDispose() override;
 
@@ -236,6 +255,15 @@ class EmlsrManager : public Object
     void SwitchAuxPhy(uint8_t currLinkId, uint8_t nextLinkId);
 
     /**
+     * Set the CCA ED threshold (if needed) on the given PHY that is switching channel to
+     * operate on the given link.
+     *
+     * \param phy the given PHY
+     * \param linkId the ID of the given link
+     */
+    void SetCcaEdThresholdOnLinkSwitch(Ptr<WifiPhy> phy, uint8_t linkId);
+
+    /**
      * \return the EML Operating Mode Notification to send
      */
     MgtEmlOmn GetEmlOmn();
@@ -267,6 +295,22 @@ class EmlsrManager : public Object
      * Send an EML Operating Mode Notification frame.
      */
     void SendEmlOmn();
+
+    /**
+     * Start the MediumSyncDelay timer and take the appropriate actions, if the timer is not
+     * already running.
+     *
+     * \param linkId the ID of the link on which a TXOP was carried out that caused the STAs
+     *               operating on other links to lose medium synchronization
+     */
+    void StartMediumSyncDelayTimer(uint8_t linkId);
+
+    /**
+     * Take the appropriate actions when the MediumSyncDelay timer expires or is cancelled.
+     *
+     * \param linkId the ID of the link associated with the MediumSyncDelay timer to cancel
+     */
+    void MediumSyncDelayTimerExpired(uint8_t linkId);
 
     /**
      * Notify the subclass of the reception of a management frame addressed to us.
@@ -337,12 +381,29 @@ class EmlsrManager : public Object
      */
     virtual void NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId) = 0;
 
+    /**
+     * Information about the status of the MediumSyncDelay timer associated with a link.
+     */
+    struct MediumSyncDelayStatus
+    {
+        EventId timer;                        //!< the MediumSyncDelay timer
+        std::optional<uint8_t> msdNTxopsLeft; //!< number of TXOP attempts left while the
+                                              //!< MediumSyncDelay timer is running
+    };
+
     Ptr<StaWifiMac> m_staMac;                     //!< the MAC of the managed non-AP MLD
     std::optional<Time> m_emlsrTransitionTimeout; /**< Transition timeout advertised by APs with
                                                        EMLSR activated */
     Time m_mediumSyncDuration;                    //!< duration of the MediumSyncDelay timer
     int8_t m_msdOfdmEdThreshold;                  //!< MediumSyncDelay OFDM ED threshold
     std::optional<uint8_t> m_msdMaxNTxops;        //!< MediumSyncDelay max number of TXOPs
+
+    std::map<uint8_t, MediumSyncDelayStatus>
+        m_mediumSyncDelayStatus; //!< the status of MediumSyncDelay timers (link ID-indexed)
+    std::map<Ptr<WifiPhy>, double> m_prevCcaEdThreshold; //!< the CCA sensitivity threshold (dBm)
+                                                         //!< to restore once the MediumSyncDelay
+                                                         //!< timer expires or the PHY moves to a
+                                                         //!< link on which the timer is not running
 
     std::set<uint8_t> m_emlsrLinks; //!< ID of the EMLSR links (empty if EMLSR mode is disabled)
     std::optional<std::set<uint8_t>> m_nextEmlsrLinks; /**< ID of the links that will become the

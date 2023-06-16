@@ -137,6 +137,10 @@ EmlsrManager::DoDispose()
                                             MakeCallback(&EmlsrManager::TxDropped, this));
     m_staMac = nullptr;
     m_transitionTimeoutEvent.Cancel();
+    for (auto& [id, status] : m_mediumSyncDelayStatus)
+    {
+        status.timer.Cancel();
+    }
     Object::DoDispose();
 }
 
@@ -199,6 +203,17 @@ Ptr<EhtFrameExchangeManager>
 EmlsrManager::GetEhtFem(uint8_t linkId) const
 {
     return StaticCast<EhtFrameExchangeManager>(m_staMac->GetFrameExchangeManager(linkId));
+}
+
+std::optional<Time>
+EmlsrManager::GetElapsedMediumSyncDelayTimer(uint8_t linkId) const
+{
+    if (const auto statusIt = m_mediumSyncDelayStatus.find(linkId);
+        statusIt != m_mediumSyncDelayStatus.cend() && statusIt->second.timer.IsRunning())
+    {
+        return m_mediumSyncDuration - Simulator::GetDelayLeft(statusIt->second.timer);
+    }
+    return std::nullopt;
 }
 
 void
@@ -408,7 +423,38 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId)
         }
     }
 
+    StartMediumSyncDelayTimer(linkId);
+
     DoNotifyTxopEnd(linkId);
+}
+
+void
+EmlsrManager::SetCcaEdThresholdOnLinkSwitch(Ptr<WifiPhy> phy, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << phy << linkId);
+
+    // if a MediumSyncDelay timer is running for the link on which the main PHY is going to
+    // operate, set the CCA ED threshold to the MediumSyncDelay OFDM ED threshold
+    if (auto statusIt = m_mediumSyncDelayStatus.find(linkId);
+        statusIt != m_mediumSyncDelayStatus.cend() && statusIt->second.timer.IsRunning())
+    {
+        NS_LOG_DEBUG("Setting CCA ED threshold of PHY " << phy << " to " << +m_msdOfdmEdThreshold
+                                                        << " on link " << +linkId);
+
+        // store the current CCA ED threshold in the m_prevCcaEdThreshold map, if not present
+        m_prevCcaEdThreshold.try_emplace(phy, phy->GetCcaEdThreshold());
+
+        phy->SetCcaEdThreshold(m_msdOfdmEdThreshold);
+    }
+    // otherwise, restore the previous value for the CCA ED threshold (if any)
+    else if (auto threshIt = m_prevCcaEdThreshold.find(phy);
+             threshIt != m_prevCcaEdThreshold.cend())
+    {
+        NS_LOG_DEBUG("Resetting CCA ED threshold of PHY " << phy << " to " << threshIt->second
+                                                          << " on link " << +linkId);
+        phy->SetCcaEdThreshold(threshIt->second);
+        m_prevCcaEdThreshold.erase(threshIt);
+    }
 }
 
 void
@@ -462,6 +508,7 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId, bool noSwitchDelay)
         }
     });
 
+    SetCcaEdThresholdOnLinkSwitch(mainPhy, linkId);
     NotifyMainPhySwitch(*currMainPhyLinkId, linkId);
 }
 
@@ -489,6 +536,89 @@ EmlsrManager::SwitchAuxPhy(uint8_t currLinkId, uint8_t nextLinkId)
             auxPhy->SetSlot(MicroSeconds(9));
         }
     });
+
+    SetCcaEdThresholdOnLinkSwitch(auxPhy, nextLinkId);
+}
+
+void
+EmlsrManager::StartMediumSyncDelayTimer(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    // iterate over all the other EMLSR links
+    for (auto id : m_staMac->GetLinkIds())
+    {
+        if (id != linkId && m_staMac->IsEmlsrLink(id))
+        {
+            const auto [it, inserted] = m_mediumSyncDelayStatus.try_emplace(id);
+
+            // reset the max number of TXOP attempts
+            it->second.msdNTxopsLeft = m_msdMaxNTxops;
+
+            if (!it->second.timer.IsRunning())
+            {
+                // set the MSD OFDM ED threshold
+                auto phy = m_staMac->GetWifiPhy(id);
+                NS_ASSERT_MSG(phy,
+                              "Expected a PHY to be operating on link "
+                                  << +id << " after terminating a TXOP");
+                NS_LOG_DEBUG("Setting CCA ED threshold on link "
+                             << +id << " to " << +m_msdOfdmEdThreshold << " PHY " << phy);
+                m_prevCcaEdThreshold[phy] = phy->GetCcaEdThreshold();
+                phy->SetCcaEdThreshold(m_msdOfdmEdThreshold);
+            }
+
+            // (re)start the timer
+            it->second.timer.Cancel();
+            it->second.timer = Simulator::Schedule(m_mediumSyncDuration,
+                                                   &EmlsrManager::MediumSyncDelayTimerExpired,
+                                                   this,
+                                                   id);
+        }
+    }
+}
+
+void
+EmlsrManager::CancelMediumSyncDelayTimer(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto timerIt = m_mediumSyncDelayStatus.find(linkId);
+
+    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsRunning());
+
+    timerIt->second.timer.Cancel();
+    MediumSyncDelayTimerExpired(linkId);
+}
+
+void
+EmlsrManager::MediumSyncDelayTimerExpired(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto timerIt = m_mediumSyncDelayStatus.find(linkId);
+
+    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && !timerIt->second.timer.IsRunning());
+
+    // reset the MSD OFDM ED threshold
+    auto phy = m_staMac->GetWifiPhy(linkId);
+
+    if (!phy)
+    {
+        // no PHY is operating on this link. This may happen when a MediumSyncDelay timer expires
+        // on the link left "uncovered" by the main PHY that is operating on another link (and the
+        // aux PHY of that link did not switch). In this case, do nothing, since the CCA ED
+        // threshold on the main PHY will be restored once the main PHY switches back to its link
+        return;
+    }
+
+    auto threshIt = m_prevCcaEdThreshold.find(phy);
+    NS_ASSERT_MSG(threshIt != m_prevCcaEdThreshold.cend(),
+                  "No value to restore for CCA ED threshold on PHY " << phy);
+    NS_LOG_DEBUG("Resetting CCA ED threshold of PHY " << phy << " to " << threshIt->second
+                                                      << " on link " << +linkId);
+    phy->SetCcaEdThreshold(threshIt->second);
+    m_prevCcaEdThreshold.erase(threshIt);
 }
 
 MgtEmlOmn

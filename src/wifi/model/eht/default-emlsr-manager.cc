@@ -23,6 +23,7 @@
 #include "ns3/channel-access-manager.h"
 #include "ns3/log.h"
 #include "ns3/wifi-mpdu.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
 
 namespace ns3
@@ -133,6 +134,7 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
         SwitchMainPhy(*m_linkIdForMainPhyAfterTxop, false);
         // Reconnect the aux PHY to its original link
         Simulator::ScheduleNow(&StaWifiMac::NotifySwitchingEmlsrLink, GetStaMac(), phy, linkId);
+        SetCcaEdThresholdOnLinkSwitch(phy, linkId);
     }
     m_linkIdForMainPhyAfterTxop.reset();
 }
