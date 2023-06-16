@@ -190,8 +190,8 @@ WifiDefaultProtectionManager::GetPsduProtection(const WifiMacHeader& hdr,
         return std::make_unique<WifiNoProtection>();
     }
 
-    // when an EMLSR client starts an UL TXOP on a link on which the main PHY is not operating,
-    // the aux PHY sends an RTS frame
+    // when an EMLSR client starts an UL TXOP on a link while the MediumSyncDelay timer is running
+    // or on a link on which the main PHY is not operating, it needs to send an RTS frame
     bool emlsrNeedRts = false;
 
     if (auto staMac = DynamicCast<StaWifiMac>(m_mac))
@@ -199,7 +199,8 @@ WifiDefaultProtectionManager::GetPsduProtection(const WifiMacHeader& hdr,
         auto emlsrManager = staMac->GetEmlsrManager();
 
         emlsrNeedRts = emlsrManager && staMac->IsEmlsrLink(m_linkId) &&
-                       m_mac->GetLinkForPhy(emlsrManager->GetMainPhyId()) != m_linkId;
+                       (emlsrManager->GetElapsedMediumSyncDelayTimer(m_linkId) ||
+                        m_mac->GetLinkForPhy(emlsrManager->GetMainPhyId()) != m_linkId);
     }
 
     // check if RTS/CTS is needed
