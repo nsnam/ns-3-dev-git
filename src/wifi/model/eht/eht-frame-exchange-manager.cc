@@ -533,6 +533,23 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
 }
 
 void
+EhtFrameExchangeManager::PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector);
+
+    // In addition, the timer resets to zero when any of the following events occur:
+    // — The STA receives an MPDU
+    // (Sec. 35.3.16.8.1 of 802.11be D3.1)
+    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
+        m_staMac->GetEmlsrManager()->GetElapsedMediumSyncDelayTimer(m_linkId))
+    {
+        m_staMac->GetEmlsrManager()->CancelMediumSyncDelayTimer(m_linkId);
+    }
+
+    HeFrameExchangeManager::PreProcessFrame(psdu, txVector);
+}
+
+void
 EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << psdu << txVector);

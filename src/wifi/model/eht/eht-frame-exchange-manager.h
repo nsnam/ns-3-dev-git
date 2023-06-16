@@ -95,6 +95,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void SendMuRts(const WifiTxParameters& txParams) override;
     void TransmissionFailed() override;
     void NotifyChannelReleased(Ptr<Txop> txop) override;
+    void PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                      RxSignalInfo rxSignalInfo,
