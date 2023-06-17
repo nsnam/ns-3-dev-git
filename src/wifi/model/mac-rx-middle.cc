@@ -287,10 +287,7 @@ MacRxMiddle::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     }
     NS_LOG_DEBUG("forwarding data from=" << hdr.GetAddr2() << ", seq=" << hdr.GetSequenceNumber()
                                          << ", frag=" << +hdr.GetFragmentNumber());
-    if (!hdr.GetAddr1().IsGroup())
-    {
-        originator.SetSequenceControl(hdr.GetSequenceControl());
-    }
+    originator.SetSequenceControl(hdr.GetSequenceControl());
     if (aggregate == mpdu->GetPacket())
     {
         m_callback(mpdu, linkId);
