@@ -158,6 +158,7 @@ RoutingTableEntry::GetPrecursors(std::vector<Ipv4Address>& prec) const
             if (*j == *i)
             {
                 result = false;
+                break;
             }
         }
         if (result)
