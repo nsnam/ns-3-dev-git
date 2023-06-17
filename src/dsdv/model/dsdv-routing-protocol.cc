@@ -1192,20 +1192,20 @@ RoutingProtocol::LookForQueuedPackets()
             if (rt.GetHop() == 1)
             {
                 route = rt.GetRoute();
+                NS_ASSERT(route);
                 NS_LOG_LOGIC("A route exists from " << route->GetSource()
                                                     << " to neighboring destination "
                                                     << route->GetDestination());
-                NS_ASSERT(route);
             }
             else
             {
                 RoutingTableEntry newrt;
                 m_routingTable.LookupRoute(rt.GetNextHop(), newrt);
                 route = newrt.GetRoute();
+                NS_ASSERT(route);
                 NS_LOG_LOGIC("A route exists from " << route->GetSource() << " to destination "
                                                     << route->GetDestination() << " via "
                                                     << rt.GetNextHop());
-                NS_ASSERT(route);
             }
             SendPacketFromQueue(rt.GetDestination(), route);
         }
