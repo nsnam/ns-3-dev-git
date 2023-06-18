@@ -129,10 +129,15 @@ HePpdu::SetHeSigHeader(const WifiTxVector& txVector)
     else if (ns3::IsDlMu(m_preamble))
     {
         const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
+        const uint8_t noMuMimoUsers{0};
         m_heSig.emplace<HeMuSigHeader>(HeMuSigHeader{
             .m_bssColor = bssColor,
             .m_bandwidth = GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth()),
             .m_sigBMcs = txVector.GetSigBMode().GetMcsValue(),
+            .m_muMimoUsers = (txVector.IsSigBCompression()
+                                  ? GetMuMimoUsersEncoding(txVector.GetHeMuUserInfoMap().size())
+                                  : noMuMimoUsers),
+            .m_sigBCompression = txVector.IsSigBCompression(),
             .m_giLtfSize = GetGuardIntervalAndNltfEncoding(txVector.GetGuardInterval(),
                                                            2 /*NLTF currently unused*/),
             .m_ruAllocation = txVector.GetRuAllocation(p20Index),
@@ -201,6 +206,11 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
         if (heSigHeader->m_center26ToneRuIndication.has_value())
         {
             txVector.SetCenter26ToneRuIndication(heSigHeader->m_center26ToneRuIndication.value());
+        }
+        if (heSigHeader->m_sigBCompression)
+        {
+            NS_ASSERT(GetMuMimoUsersFromEncoding(heSigHeader->m_muMimoUsers) ==
+                      txVector.GetHeMuUserInfoMap().size());
         }
     }
 }
