@@ -698,4 +698,17 @@ HePpdu::GetNssFromNstsEncoding(uint8_t nsts)
     return nsts + 1;
 }
 
+uint8_t
+HePpdu::GetMuMimoUsersEncoding(uint8_t nUsers)
+{
+    NS_ASSERT(nUsers <= 8);
+    return (nUsers - 1);
+}
+
+uint8_t
+HePpdu::GetMuMimoUsersFromEncoding(uint8_t encoding)
+{
+    return (encoding + 1);
+}
+
 } // namespace ns3

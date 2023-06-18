@@ -89,10 +89,12 @@ class HePpdu : public OfdmPpdu
     struct HeMuSigHeader
     {
         // HE-SIG-A fields
-        uint8_t m_bssColor{0};  ///< BSS color field
-        uint8_t m_bandwidth{0}; ///< Bandwidth field
-        uint8_t m_sigBMcs{0};   ///< HE-SIG-B MCS
-        uint8_t m_giLtfSize{0}; ///< GI+LTF Size field
+        uint8_t m_bssColor{0};        ///< BSS color field
+        uint8_t m_bandwidth{0};       ///< Bandwidth field
+        uint8_t m_sigBMcs{0};         ///< HE-SIG-B MCS
+        uint8_t m_muMimoUsers;        ///< MU-MIMO users
+        uint8_t m_sigBCompression{0}; ///< SIG-B compression
+        uint8_t m_giLtfSize{0};       ///< GI+LTF Size field
 
         // HE-SIG-B fields
         RuAllocation m_ruAllocation; //!< RU allocations that are going to be carried in SIG-B
@@ -286,6 +288,22 @@ class HePpdu : public OfdmPpdu
      * \return the guard interval in nanoseconds
      */
     static uint16_t GetGuardIntervalFromEncoding(uint8_t giAndNltfSize);
+
+    /**
+     * Convert number of MU-MIMO users to its encoding in HE-SIG-A.
+     *
+     * \param nUsers the number of MU-MIMO users
+     * \return the number of MU-MIMO users to its encoding in HE-SIG-A
+     */
+    static uint8_t GetMuMimoUsersEncoding(uint8_t nUsers);
+
+    /**
+     * Convert number of MU-MIMO users from its encoding in HE-SIG-A.
+     *
+     * \param encoding the number of MU-MIMO users encoded in HE-SIG-A
+     * \return the number of MU-MIMO users from its encoding in HE-SIG-A
+     */
+    static uint8_t GetMuMimoUsersFromEncoding(uint8_t encoding);
 
     mutable TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
 
