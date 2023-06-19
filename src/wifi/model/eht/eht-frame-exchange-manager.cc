@@ -27,6 +27,7 @@
 #include "ns3/log.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
+#include "ns3/wifi-net-device.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[link=" << +m_linkId << "][mac=" << m_self << "] "
@@ -170,6 +171,13 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
                     m_staMac->GetChannelAccessManager(m_linkId)->RequestAccess(edca);
                 }
             });
+            return false;
+        }
+
+        if (!emlsrManager->GetAuxPhyTxCapable() &&
+            m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId()) != m_phy)
+        {
+            NS_LOG_DEBUG("Aux PHY is not capable of transmitting a PPDU");
             return false;
         }
     }

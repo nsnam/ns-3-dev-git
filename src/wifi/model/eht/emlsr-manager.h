@@ -148,6 +148,18 @@ class EmlsrManager : public Object
     bool GetCamStateReset() const;
 
     /**
+     * Set the member variable indicating whether Aux PHYs are capable of transmitting PPDUs.
+     *
+     * \param capable whether Aux PHYs are capable of transmitting PPDUs
+     */
+    void SetAuxPhyTxCapable(bool capable);
+
+    /**
+     * \return whether Aux PHYs are capable of transmitting PPDUs
+     */
+    bool GetAuxPhyTxCapable() const;
+
+    /**
      * Notify the reception of a management frame addressed to us.
      *
      * \param mpdu the received MPDU
@@ -302,6 +314,7 @@ class EmlsrManager : public Object
     uint8_t m_mainPhyId; //!< ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
     uint16_t m_auxPhyMaxWidth;               //!< max channel width (MHz) supported by aux PHYs
     WifiModulationClass m_auxPhyMaxModClass; //!< max modulation class supported by aux PHYs
+    bool m_auxPhyTxCapable;                  //!< whether Aux PHYs are capable of transmitting PPDUs
 
   private:
     /**

@@ -94,6 +94,12 @@ EmlsrManager::GetTypeId()
                                           "HE",
                                           WIFI_MOD_CLASS_EHT,
                                           "EHT"))
+            .AddAttribute("AuxPhyTxCapable",
+                          "Whether Aux PHYs are capable of transmitting PPDUs.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&EmlsrManager::SetAuxPhyTxCapable,
+                                              &EmlsrManager::GetAuxPhyTxCapable),
+                          MakeBooleanChecker())
             .AddAttribute(
                 "EmlsrLinkSet",
                 "IDs of the links on which EMLSR mode will be enabled. An empty set "
@@ -185,6 +191,18 @@ bool
 EmlsrManager::GetCamStateReset() const
 {
     return m_resetCamState;
+}
+
+void
+EmlsrManager::SetAuxPhyTxCapable(bool capable)
+{
+    m_auxPhyTxCapable = capable;
+}
+
+bool
+EmlsrManager::GetAuxPhyTxCapable() const
+{
+    return m_auxPhyTxCapable;
 }
 
 const std::set<uint8_t>&
