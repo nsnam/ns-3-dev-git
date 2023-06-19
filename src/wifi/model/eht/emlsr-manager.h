@@ -195,6 +195,35 @@ class EmlsrManager : public Object
      */
     void CancelMediumSyncDelayTimer(uint8_t linkId);
 
+    /**
+     * Decrement the counter indicating the number of TXOP attempts left while the MediumSyncDelay
+     * timer is running. This function must not be called when the MediumSyncDelay timer is not
+     * running on the given link.
+     *
+     * \param linkId the ID of the link on which a new TXOP attempt may be carried out
+     */
+    void DecrementMediumSyncDelayNTxops(uint8_t linkId);
+
+    /**
+     * Reset the counter indicating the number of TXOP attempts left while the MediumSyncDelay
+     * timer is running, so as to remove the limit on the number of attempts that can be made
+     * while the MediumSyncDelay timer is running. This function is normally called when a TXOP
+     * attempt is successful. This function must not be called when the MediumSyncDelay timer is
+     * not running on the given link.
+     *
+     * \param linkId the ID of the link for which the counter of the TXOP attempts is reset
+     */
+    void ResetMediumSyncDelayNTxops(uint8_t linkId);
+
+    /**
+     * Return whether no more TXOP attempt is allowed on the given link. This function must not
+     * be called when the MediumSyncDelay timer is not running on the given link.
+     *
+     * \param linkId the ID of the link on which a new TXOP attempt may be carried out
+     * \return whether no more TXOP attempt on the given link is allowed
+     */
+    bool MediumSyncDelayNTxopsExceeded(uint8_t linkId);
+
   protected:
     void DoDispose() override;
 

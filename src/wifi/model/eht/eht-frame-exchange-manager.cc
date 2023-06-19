@@ -154,6 +154,24 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
         NS_ASSERT_MSG(mask && !mask->test(static_cast<std::size_t>(
                                   WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK)),
                       "StartTransmission called while EMLSR link is being used");
+
+        auto emlsrManager = m_staMac->GetEmlsrManager();
+
+        if (auto elapsed = emlsrManager->GetElapsedMediumSyncDelayTimer(m_linkId);
+            elapsed && emlsrManager->MediumSyncDelayNTxopsExceeded(m_linkId))
+        {
+            edca->NotifyChannelReleased(m_linkId);
+            NS_LOG_DEBUG("No new TXOP attempts allowed while MediumSyncDelay is running");
+            // request channel access if needed when the MediumSyncDelay timer expires
+            Simulator::Schedule(emlsrManager->GetMediumSyncDuration() - *elapsed, [=]() {
+                if (edca->GetAccessStatus(m_linkId) == Txop::NOT_REQUESTED &&
+                    edca->HasFramesToTransmit(m_linkId))
+                {
+                    m_staMac->GetChannelAccessManager(m_linkId)->RequestAccess(edca);
+                }
+            });
+            return false;
+        }
     }
 
     auto started = HeFrameExchangeManager::StartTransmission(edca, allowedWidth);
@@ -490,9 +508,33 @@ EhtFrameExchangeManager::GetEmlsrSwitchToListening(Ptr<const WifiPsdu> psdu,
 }
 
 void
+EhtFrameExchangeManager::TransmissionSucceeded()
+{
+    NS_LOG_FUNCTION(this);
+
+    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
+        m_staMac->GetEmlsrManager()->GetElapsedMediumSyncDelayTimer(m_linkId))
+    {
+        NS_LOG_DEBUG("Reset the counter of TXOP attempts allowed while "
+                     "MediumSyncDelay is running");
+        m_staMac->GetEmlsrManager()->ResetMediumSyncDelayNTxops(m_linkId);
+    }
+
+    HeFrameExchangeManager::TransmissionSucceeded();
+}
+
+void
 EhtFrameExchangeManager::TransmissionFailed()
 {
     NS_LOG_FUNCTION(this);
+
+    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
+        m_staMac->GetEmlsrManager()->GetElapsedMediumSyncDelayTimer(m_linkId))
+    {
+        NS_LOG_DEBUG("Decrement the remaining number of TXOP attempts allowed while "
+                     "MediumSyncDelay is running");
+        m_staMac->GetEmlsrManager()->DecrementMediumSyncDelayNTxops(m_linkId);
+    }
 
     for (const auto& address : m_txTimer.GetStasExpectedToRespond())
     {
@@ -509,7 +551,7 @@ EhtFrameExchangeManager::TransmissionFailed()
             // protected stations, hence next transmission to this client in this TXOP will be
             // protected by ICF
             NS_LOG_DEBUG("EMLSR client " << address << " did not respond, continue TXOP");
-            TransmissionSucceeded();
+            HeFrameExchangeManager::TransmissionSucceeded();
             return;
         }
     }

@@ -621,6 +621,44 @@ EmlsrManager::MediumSyncDelayTimerExpired(uint8_t linkId)
     m_prevCcaEdThreshold.erase(threshIt);
 }
 
+void
+EmlsrManager::DecrementMediumSyncDelayNTxops(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    const auto timerIt = m_mediumSyncDelayStatus.find(linkId);
+
+    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsRunning());
+    NS_ASSERT(timerIt->second.msdNTxopsLeft != 0);
+
+    if (timerIt->second.msdNTxopsLeft)
+    {
+        --timerIt->second.msdNTxopsLeft.value();
+    }
+}
+
+void
+EmlsrManager::ResetMediumSyncDelayNTxops(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto timerIt = m_mediumSyncDelayStatus.find(linkId);
+
+    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsRunning());
+    timerIt->second.msdNTxopsLeft.reset();
+}
+
+bool
+EmlsrManager::MediumSyncDelayNTxopsExceeded(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto timerIt = m_mediumSyncDelayStatus.find(linkId);
+
+    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsRunning());
+    return timerIt->second.msdNTxopsLeft == 0;
+}
+
 MgtEmlOmn
 EmlsrManager::GetEmlOmn()
 {

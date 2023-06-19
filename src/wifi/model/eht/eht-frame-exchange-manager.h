@@ -93,6 +93,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
     void SendMuRts(const WifiTxParameters& txParams) override;
+    void TransmissionSucceeded() override;
     void TransmissionFailed() override;
     void NotifyChannelReleased(Ptr<Txop> txop) override;
     void PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
