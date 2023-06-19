@@ -45,7 +45,7 @@ class IdealWifiManager : public WifiRemoteStationManager
 
     void SetupPhy(const Ptr<WifiPhy> phy) override;
 
-  private:
+  protected:
     void DoInitialize() override;
     WifiRemoteStation* DoCreateStation() const override;
     void DoReportRxOk(WifiRemoteStation* station, double rxSnr, WifiMode txMode) override;
@@ -73,6 +73,7 @@ class IdealWifiManager : public WifiRemoteStationManager
     WifiTxVector DoGetDataTxVector(WifiRemoteStation* station, MHz_u allowedWidth) override;
     WifiTxVector DoGetRtsTxVector(WifiRemoteStation* station) override;
 
+  private:
     /**
      * Reset the station, invoked if the maximum amount of retries has failed.
      *
