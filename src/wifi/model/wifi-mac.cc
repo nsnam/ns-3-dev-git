@@ -1940,7 +1940,7 @@ WifiMac::GetHtCapabilities(uint8_t linkId) const
     capabilities.SetLdpc(htConfiguration->GetLdpcSupported());
     capabilities.SetSupportedChannelWidth(htConfiguration->Get40MHzOperationSupported() ? 1 : 0);
     capabilities.SetShortGuardInterval20(sgiSupported);
-    capabilities.SetShortGuardInterval40(phy->GetChannelWidth() >= 40 && sgiSupported);
+    capabilities.SetShortGuardInterval40(sgiSupported);
     // Set Maximum A-MSDU Length subfield
     uint16_t maxAmsduSize =
         std::max({m_voMaxAmsduSize, m_viMaxAmsduSize, m_beMaxAmsduSize, m_bkMaxAmsduSize});
@@ -1966,7 +1966,9 @@ WifiMac::GetHtCapabilities(uint8_t linkId) const
         capabilities.SetRxMcsBitmask(mcs.GetMcsValue());
         uint8_t nss = (mcs.GetMcsValue() / 8) + 1;
         NS_ASSERT(nss > 0 && nss < 5);
-        uint64_t dataRate = mcs.GetDataRate(phy->GetChannelWidth(), sgiSupported ? 400 : 800, nss);
+        uint64_t dataRate = mcs.GetDataRate(htConfiguration->Get40MHzOperationSupported() ? 40 : 20,
+                                            sgiSupported ? 400 : 800,
+                                            nss);
         if (dataRate > maxSupportedRate)
         {
             maxSupportedRate = dataRate;
@@ -2022,8 +2024,8 @@ WifiMac::GetVhtCapabilities(uint8_t linkId) const
     capabilities.SetMaxAmpduLength(std::min(std::max(maxAmpduLength, 8191U), 1048575U));
 
     capabilities.SetRxLdpc(htConfiguration->GetLdpcSupported());
-    capabilities.SetShortGuardIntervalFor80Mhz((phy->GetChannelWidth() == 80) && sgiSupported);
-    capabilities.SetShortGuardIntervalFor160Mhz((phy->GetChannelWidth() == 160) && sgiSupported);
+    capabilities.SetShortGuardIntervalFor80Mhz(sgiSupported);
+    capabilities.SetShortGuardIntervalFor160Mhz(sgiSupported);
     uint8_t maxMcs = 0;
     for (const auto& mcs : phy->GetMcsList(WIFI_MOD_CLASS_VHT))
     {
@@ -2042,15 +2044,16 @@ WifiMac::GetVhtCapabilities(uint8_t linkId) const
         capabilities.SetTxMcsMap(maxMcs, nss);
     }
     uint64_t maxSupportedRateLGI = 0; // in bit/s
+    uint16_t maxWidth = vhtConfiguration->Get160MHzOperationSupported() ? 160 : 80;
     for (const auto& mcs : phy->GetMcsList(WIFI_MOD_CLASS_VHT))
     {
-        if (!mcs.IsAllowed(phy->GetChannelWidth(), 1))
+        if (!mcs.IsAllowed(maxWidth, 1))
         {
             continue;
         }
-        if (mcs.GetDataRate(phy->GetChannelWidth()) > maxSupportedRateLGI)
+        if (mcs.GetDataRate(maxWidth) > maxSupportedRateLGI)
         {
-            maxSupportedRateLGI = mcs.GetDataRate(phy->GetChannelWidth());
+            maxSupportedRateLGI = mcs.GetDataRate(maxWidth);
             NS_LOG_DEBUG("Updating maxSupportedRateLGI to " << maxSupportedRateLGI);
         }
     }
@@ -2074,18 +2077,20 @@ WifiMac::GetHeCapabilities(uint8_t linkId) const
 
     Ptr<WifiPhy> phy = GetLink(linkId).phy;
     Ptr<HtConfiguration> htConfiguration = GetHtConfiguration();
+    Ptr<VhtConfiguration> vhtConfiguration = GetVhtConfiguration();
     Ptr<HeConfiguration> heConfiguration = GetHeConfiguration();
     uint8_t channelWidthSet = 0;
-    if ((phy->GetChannelWidth() >= 40) && (phy->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ))
+    if ((htConfiguration->Get40MHzOperationSupported()) &&
+        (phy->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ))
     {
         channelWidthSet |= 0x01;
     }
-    if (((phy->GetChannelWidth() >= 80) || GetEhtSupported()) &&
-        ((phy->GetPhyBand() == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ)))
+    // we assume that HE stations support 80 MHz operations
+    if ((phy->GetPhyBand() == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ))
     {
         channelWidthSet |= 0x02;
     }
-    if ((phy->GetChannelWidth() >= 160) &&
+    if ((vhtConfiguration->Get160MHzOperationSupported()) &&
         ((phy->GetPhyBand() == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ)))
     {
         channelWidthSet |= 0x04;
@@ -2167,7 +2172,7 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
 
     const uint8_t maxTxNss = phy->GetMaxSupportedTxSpatialStreams();
     const uint8_t maxRxNss = phy->GetMaxSupportedRxSpatialStreams();
-    if (phy->GetChannelWidth() == 20)
+    if (auto htConfig = GetHtConfiguration(); !htConfig->Get40MHzOperationSupported())
     {
         for (auto maxMcs : {7, 9, 11, 13})
         {
@@ -2195,7 +2200,7 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
                 phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
         }
     }
-    if (phy->GetChannelWidth() >= 160)
+    if (auto vhtConfig = GetVhtConfiguration(); vhtConfig->Get160MHzOperationSupported())
     {
         for (auto maxMcs : {9, 11, 13})
         {
