@@ -532,7 +532,7 @@ ByteTagList::Serialize(uint32_t* buffer, uint32_t maxSize) const
     }
 
     // Serialized successfully
-    return 1;
+    return size;
 }
 
 uint32_t

@@ -107,17 +107,17 @@ class NixVector : public SimpleRefCount<NixVector>
      * @return the number of bytes required for serialization
      */
     uint32_t GetSerializedSize() const;
+
     /**
-     * @return zero if buffer not large enough
-     *
-     * @param buffer points to serialization buffer
-     *
-     * @param maxSize max number of bytes to write
-     *
      * This nix-vector is serialized into the raw character
      * buffer parameter.
+     *
+     * @param buffer points to serialization buffer
+     * @param maxSize max number of bytes to write
+     * @return number of serialized bytes on success, 0 on failure
      */
     uint32_t Serialize(uint32_t* buffer, uint32_t maxSize) const;
+
     /**
      * @return zero if a complete nix-vector is not deserialized
      *

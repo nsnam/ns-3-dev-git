@@ -626,11 +626,9 @@ Buffer::Serialize(uint8_t* buffer, uint32_t maxSize) const
     }
 
     memcpy(p, m_data->m_data + m_zeroAreaStart, dataEndLength);
-    // The following line is unnecessary.
-    // p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
 
     // Serialized everything successfully
-    return 1;
+    return size;
 }
 
 uint32_t

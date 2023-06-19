@@ -590,14 +590,14 @@ class Buffer
     uint32_t GetSerializedSize() const;
 
     /**
-     * @return zero if buffer not large enough
-     * @param buffer points to serialization buffer
-     * @param maxSize max number of bytes to write
-     *
      * This buffer's contents are serialized into the raw
      * character buffer parameter. Note: The zero length
      * data is not copied entirely. Only the length of
      * zero byte data is serialized.
+     *
+     * @param buffer points to serialization buffer
+     * @param maxSize max number of bytes to write
+     * @return number of serialized bytes on success, 0 on failure
      */
     uint32_t Serialize(uint8_t* buffer, uint32_t maxSize) const;
 

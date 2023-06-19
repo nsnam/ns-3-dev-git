@@ -203,6 +203,7 @@ NixVector::Serialize(uint32_t* buffer, uint32_t maxSize) const
 {
     NS_LOG_FUNCTION(this << buffer << maxSize);
     uint32_t* p = buffer;
+    uint32_t size = 0;
 
     if (maxSize < GetSerializedSize())
     {
@@ -210,18 +211,22 @@ NixVector::Serialize(uint32_t* buffer, uint32_t maxSize) const
     }
 
     *p++ = m_totalBitSize;
+    size += 4;
 
     if (m_totalBitSize)
     {
         *p++ = m_used;
+        size += 4;
         for (uint32_t j = 0; j < m_nixVector.size(); j++)
         {
             *p++ = m_nixVector.at(j);
         }
+        size += 4 * m_nixVector.size();
         *p++ = m_epoch;
+        size += 4;
     }
 
-    return 1;
+    return size;
 }
 
 uint32_t

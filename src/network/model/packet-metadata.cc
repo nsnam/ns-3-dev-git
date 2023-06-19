@@ -1246,8 +1246,8 @@ PacketMetadata::Serialize(uint8_t* buffer, uint32_t maxSize) const
         current = item.next;
     }
 
-    NS_ASSERT(static_cast<uint32_t>(buffer - start) == maxSize);
-    return 1;
+    NS_ASSERT(static_cast<uint32_t>(buffer - start) <= maxSize);
+    return static_cast<uint32_t>(buffer - start);
 }
 
 uint32_t

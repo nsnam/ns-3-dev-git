@@ -777,9 +777,7 @@ Packet::Serialize(uint8_t* buffer, uint32_t maxSize) const
     {
         return 0;
     }
-
-    // Serialized successfully
-    return 1;
+    return size + bufSize + 4;
 }
 
 uint32_t
