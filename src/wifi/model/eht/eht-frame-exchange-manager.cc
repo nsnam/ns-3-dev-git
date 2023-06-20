@@ -66,7 +66,6 @@ void
 EhtFrameExchangeManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    m_responseFromEmlsrClients.Cancel();
     m_ongoingTxopEnd.Cancel();
     HeFrameExchangeManager::DoDispose();
 }
@@ -77,15 +76,6 @@ EhtFrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDurat
     NS_LOG_FUNCTION(this << txVector << psduDuration.As(Time::MS));
 
     HeFrameExchangeManager::RxStartIndication(txVector, psduDuration);
-
-    if (m_txTimer.IsRunning() && m_responseFromEmlsrClients.IsRunning())
-    {
-        m_responseFromEmlsrClients.Cancel();
-        m_responseFromEmlsrClients =
-            Simulator::Schedule(m_txTimer.GetDelayLeft(),
-                                &EhtFrameExchangeManager::HandleMissingResponses,
-                                this);
-    }
     UpdateTxopEndOnRxStartIndication(psduDuration);
 }
 
@@ -191,26 +181,17 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
         {
             auto aid = GetWifiRemoteStationManager()->GetAssociationId(*clientIt);
 
-            if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt))
+            if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt) &&
+                GetEmlsrSwitchToListening(psdu, aid, *clientIt))
             {
-                if (GetEmlsrSwitchToListening(psdu, aid, *clientIt))
-                {
-                    EmlsrSwitchToListening(*clientIt, txDuration);
-                    // this client is no longer involved in the current TXOP
-                    clientIt = m_protectedStas.erase(clientIt);
-                    continue;
-                }
-                if (!m_responseFromEmlsrClients.IsRunning() && m_txTimer.IsRunning() &&
-                    m_txTimer.GetStasExpectedToRespond().count(*clientIt) == 1)
-                {
-                    // we expect a response from this EMLSR client
-                    m_responseFromEmlsrClients =
-                        Simulator::Schedule(m_txTimer.GetDelayLeft(),
-                                            &EhtFrameExchangeManager::HandleMissingResponses,
-                                            this);
-                }
+                EmlsrSwitchToListening(*clientIt, txDuration);
+                // this client is no longer involved in the current TXOP
+                clientIt = m_protectedStas.erase(clientIt);
             }
-            clientIt++;
+            else
+            {
+                clientIt++;
+            }
         }
     }
 }
@@ -233,28 +214,19 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
         {
             auto aid = GetWifiRemoteStationManager()->GetAssociationId(*clientIt);
 
-            if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt))
+            if (auto psduMapIt = psduMap.find(aid);
+                GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt) &&
+                (psduMapIt == psduMap.cend() ||
+                 GetEmlsrSwitchToListening(psduMapIt->second, aid, *clientIt)))
             {
-                if (auto psduMapIt = psduMap.find(aid);
-                    psduMapIt == psduMap.cend() ||
-                    GetEmlsrSwitchToListening(psduMapIt->second, aid, *clientIt))
-                {
-                    EmlsrSwitchToListening(*clientIt, txDuration);
-                    // this client is no longer involved in the current TXOP
-                    clientIt = m_protectedStas.erase(clientIt);
-                    continue;
-                }
-                if (!m_responseFromEmlsrClients.IsRunning() && m_txTimer.IsRunning() &&
-                    m_txTimer.GetStasExpectedToRespond().count(*clientIt) == 1)
-                {
-                    // we expect a response from this EMLSR client
-                    m_responseFromEmlsrClients =
-                        Simulator::Schedule(m_txTimer.GetDelayLeft(),
-                                            &EhtFrameExchangeManager::HandleMissingResponses,
-                                            this);
-                }
+                EmlsrSwitchToListening(*clientIt, txDuration);
+                // this client is no longer involved in the current TXOP
+                clientIt = m_protectedStas.erase(clientIt);
             }
-            clientIt++;
+            else
+            {
+                clientIt++;
+            }
         }
     }
 }
@@ -506,6 +478,34 @@ EhtFrameExchangeManager::GetEmlsrSwitchToListening(Ptr<const WifiPsdu> psdu,
 }
 
 void
+EhtFrameExchangeManager::TransmissionFailed()
+{
+    NS_LOG_FUNCTION(this);
+
+    for (const auto& address : m_txTimer.GetStasExpectedToRespond())
+    {
+        if (GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
+        {
+            // This EMLSR client did not respond to a frame sent by the AP. Specs say:
+            // The AP affiliated with the AP MLD should transmit before the TXNAV timer expires
+            // another initial Control frame addressed to the non-AP STA affiliated with the
+            // non-AP MLD if the AP intends to continue the frame exchanges with the STA and did
+            // not receive the response frame from this STA for the most recently transmitted
+            // frame that requires an immediate response after a SIFS
+            // (Sec. 35.3.17 of 802.11be D3.1)
+            // We let the AP continue the TXOP. TransmissionSucceeded() removes this client from
+            // protected stations, hence next transmission to this client in this TXOP will be
+            // protected by ICF
+            NS_LOG_DEBUG("EMLSR client " << address << " did not respond, continue TXOP");
+            TransmissionSucceeded();
+            return;
+        }
+    }
+
+    HeFrameExchangeManager::TransmissionFailed();
+}
+
+void
 EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
 {
     NS_LOG_FUNCTION(this << txop);
@@ -644,6 +644,7 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                    m_linkId);
             // we just got involved in a DL TXOP. Check if we are still involved in the TXOP in a
             // SIFS (we are expected to reply by sending a CTS frame)
+            m_ongoingTxopEnd.Cancel();
             NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + m_phy->GetSifs()).As(Time::S));
             m_ongoingTxopEnd = Simulator::Schedule(m_phy->GetSifs() + NanoSeconds(1),
                                                    &EhtFrameExchangeManager::TxopEnd,
@@ -652,25 +653,6 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     }
 
     HeFrameExchangeManager::ReceiveMpdu(mpdu, rxSignalInfo, txVector, inAmpdu);
-}
-
-void
-EhtFrameExchangeManager::HandleMissingResponses()
-{
-    NS_LOG_FUNCTION(this);
-
-    // The non-AP STA affiliated with the non-AP MLD that received the initial Control frame
-    // does not respond to the most recently received frame from the AP affiliated with the
-    // AP MLD that requires immediate response after a SIFS. (Sec. 35.3.17 of 802.11be D3.1)
-    for (const auto& address : m_txTimer.GetStasExpectedToRespond())
-    {
-        NS_LOG_DEBUG(address << " did not respond");
-        if (GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
-        {
-            m_protectedStas.erase(address);
-            EmlsrSwitchToListening(address, Seconds(0));
-        }
-    }
 }
 
 void

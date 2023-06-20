@@ -93,6 +93,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
     void SendMuRts(const WifiTxParameters& txParams) override;
+    void TransmissionFailed() override;
     void NotifyChannelReleased(Ptr<Txop> txop) override;
     void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
@@ -113,11 +114,6 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void EmlsrSwitchToListening(const Mac48Address& address, const Time& delay);
 
   private:
-    /**
-     * Handle missing responses from EMLSR clients that were expected to send a response.
-     */
-    void HandleMissingResponses();
-
     /**
      * Update the TXOP end timer when starting a frame transmission.
      *
@@ -142,8 +138,6 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      */
     void TxopEnd();
 
-    EventId m_responseFromEmlsrClients; ///< timer used by an AP MLD when expecting a response from
-                                        ///< an EMLSR client
     EventId m_ongoingTxopEnd; //!< event indicating the possible end of the current TXOP (of which
                               //!< we are not the holder)
 };

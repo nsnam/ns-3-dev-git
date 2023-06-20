@@ -1701,15 +1701,15 @@ EmlsrDlTxopTest::CheckResults()
      *                   │CTS│       │BA│       │BA│
      *                   ├───┤       ├──┤       └──┘
      *                   │CTS│       │BA│
-     *                   └───┘       └──┘                      A switches to listening
-     *                                                         after timeout + transition delay
-     *                                                         │
-     *                                     ┌───┐     ┌─────┐   │       ┌───┐
-     *                                     │MU │     │QoS x│   │       │MU │     ┌───┐
-     *  [link 1]                           │RTS│     │ to A│   │       │RTS│     │BAR│
-     *  ───────────────────────────────────┴───┴┬───┬┴─────┴┬──┬───────┴───┴┬───┬┴───┴┬──┬─
-     *                                          │CTS│       │BA│            │CTS│     │BA│
-     *                                          └───┘       └──x            └───┘     └──┘
+     *                   └───┘       └──┘  AP continues the TXOP despite   A switches to listening
+     *                                     the failure, but sends an ICF    after transition delay
+     *                                                                │                       │
+     *                                            ┌───┐     ┌─────┐   │┌───┐              ┌───┐
+     *                                            │MU │     │QoS x│   ││MU │     ┌───┐    │CF-│
+     *  [link 1]                                  │RTS│     │ to A│   ││RTS│     │BAR│    │End│
+     *  ──────────────────────────────────────────┴───┴┬───┬┴─────┴┬──┬┴───┴┬───┬┴───┴┬──┬┴───┴─
+     *                                                 │CTS│       │BA│     │CTS│     │BA│
+     *                                                 └───┘       └──x     └───┘     └──┘
      */
     if (m_nEmlsrStations == 2 && m_apMac->GetNLinks() == m_emlsrLinks.size())
     {
@@ -1829,11 +1829,16 @@ EmlsrDlTxopTest::CheckResults()
                                                                            phy->GetPhyBand());
         auto timeout = phy->GetSifs() + phy->GetSlot() + MicroSeconds(20);
 
-        // the fourth frame exchange starts a SIFS after the previous one
+        // the fourth frame exchange starts a SIFS after the previous one because the AP can
+        // continue the TXOP despite it does not receive the BlockAck (the AP received the
+        // PHY-RXSTART.indication and the frame exchange involves an EMLSR client)
         NS_TEST_EXPECT_MSG_GT_OR_EQ(fourthExchangeIt->front()->startTx,
-                                    bAckRespTxEnd + timeout +
-                                        m_transitionDelay.at(thirdExchangeStaId),
-                                    "Transmission started before transition delay");
+                                    bAckRespTxEnd + phy->GetSifs(),
+                                    "Transmission started less than a SIFS after BlockAck");
+        NS_TEST_EXPECT_MSG_LT(fourthExchangeIt->front()->startTx,
+                              bAckRespTxEnd + phy->GetSifs() +
+                                  MicroSeconds(1) /* propagation delay upper bound */,
+                              "Transmission started too much time after BlockAck");
 
         auto bAckReqIt = std::next(fourthExchangeIt->front(), 2);
         NS_TEST_EXPECT_MSG_EQ(bAckReqIt->psduMap.cbegin()->second->GetHeader(0).IsBlockAckReq(),
@@ -2445,6 +2450,10 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
 
     auto apPhy = m_apMac->GetWifiPhy(linkId);
     auto txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, apPhy->GetPhyBand());
+    auto cfEndTxDuration = WifiPhy::CalculateTxDuration(
+        Create<WifiPsdu>(Create<Packet>(), WifiMacHeader(WIFI_MAC_CTL_END)),
+        m_apMac->GetWifiRemoteStationManager(linkId)->GetRtsTxVector(Mac48Address::GetBroadcast()),
+        apPhy->GetPhyBand());
 
     m_countBlockAck++;
 
@@ -2454,10 +2463,10 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
         // the PPDU carrying this BlockAck is corrupted, hence the AP MLD MAC receives the
         // PHY-RXSTART indication but it does not receive any frame from the PHY. Therefore,
         // at the end of the PPDU transmission, the AP MLD realizes that the EMLSR client has
-        // not responded and assumes that the EMLSR client has started the transition to the
-        // listening mode (such transition lasting the transition delay)
+        // not responded and makes an attempt at continuing the TXOP
 
-        // at the end of the PPDU, this link only is not blocked on the EMLSR client
+        // at the end of the PPDU, this link only is not blocked on both the EMLSR client and
+        // the AP MLD
         Simulator::Schedule(txDuration, [=]() {
             for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
             {
@@ -2474,50 +2483,30 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                  WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
                                  id != linkId,
                                  "Checking links of EMLSR client " + std::to_string(clientId) +
-                                     " on the AP MLD before the end of the PPDU plus timeout");
+                                     " on the AP MLD at the end of fourth BlockAck");
             }
         });
-        // immediately after the end of the PPDU, all links are blocked for the EMLSR client
-        Simulator::Schedule(txDuration + MicroSeconds(1), [=]() {
+        // a SIFS after the end of the PPDU, still this link only is not blocked on both the
+        // EMLSR client and the AP MLD
+        Simulator::Schedule(txDuration + apPhy->GetSifs(), [=]() {
             for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
             {
-                CheckBlockedLink(
-                    m_apMac,
-                    *addr,
-                    id,
-                    WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
-                    true,
-                    "Checking links of EMLSR client " + std::to_string(clientId) +
-                        " are all blocked on the AP MLD after the end of the PPDU plus timeout");
-            }
-        });
-        // immediately before the transition delay, all links are still blocked for the EMLSR client
-        Simulator::Schedule(txDuration + m_transitionDelay.at(clientId), [=]() {
-            for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
-            {
+                CheckBlockedLink(m_staMacs[clientId],
+                                 m_apMac->GetAddress(),
+                                 id,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 id != linkId,
+                                 "Checking links on EMLSR client " + std::to_string(clientId) +
+                                     " a SIFS after the end of fourth BlockAck");
                 CheckBlockedLink(m_apMac,
                                  *addr,
                                  id,
-                                 WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
-                                 true,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 id != linkId,
                                  "Checking links of EMLSR client " + std::to_string(clientId) +
-                                     " are all blocked on the AP MLD before the transition delay");
+                                     " a SIFS after the end of fourth BlockAck");
             }
         });
-        // immediately after the transition delay, all links are unblocked for the EMLSR client
-        Simulator::Schedule(txDuration + m_transitionDelay.at(clientId) + MicroSeconds(1), [=]() {
-            for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
-            {
-                CheckBlockedLink(m_apMac,
-                                 *addr,
-                                 id,
-                                 WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
-                                 false,
-                                 "Checking links of EMLSR client " + std::to_string(clientId) +
-                                     " are all unblocked on the AP MLD after the transition delay");
-            }
-        });
-
         // corrupt this BlockAck so that the AP MLD sends a BlockAckReq later on
         {
             auto uid = psduMap.cbegin()->second->GetPacket()->GetUid();
@@ -2525,7 +2514,8 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
         }
         break;
     case 5:
-        // at the end of the PPDU, this link only is not blocked on the EMLSR client
+        // at the end of the PPDU, this link only is not blocked on both the EMLSR client and
+        // the AP MLD
         Simulator::Schedule(txDuration, [=]() {
             for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
             {
@@ -2536,8 +2526,90 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                  id != linkId,
                                  "Checking links on EMLSR client " + std::to_string(clientId) +
                                      " at the end of fifth BlockAck");
+                CheckBlockedLink(m_apMac,
+                                 *addr,
+                                 id,
+                                 WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                 id != linkId,
+                                 "Checking links of EMLSR client " + std::to_string(clientId) +
+                                     " on the AP MLD at the end of fifth BlockAck");
             }
         });
+        // before the end of the CF-End frame, still this link only is not blocked on both the
+        // EMLSR client and the AP MLD
+        Simulator::Schedule(
+            txDuration + apPhy->GetSifs() + cfEndTxDuration - MicroSeconds(1),
+            [=]() {
+                for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+                {
+                    CheckBlockedLink(m_staMacs[clientId],
+                                     m_apMac->GetAddress(),
+                                     id,
+                                     WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                     id != linkId,
+                                     "Checking links on EMLSR client " + std::to_string(clientId) +
+                                         " before the end of CF-End frame");
+                    CheckBlockedLink(m_apMac,
+                                     *addr,
+                                     id,
+                                     WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                     id != linkId,
+                                     "Checking links of EMLSR client " + std::to_string(clientId) +
+                                         " on the AP MLD before the end of CF-End frame");
+                }
+            });
+        // after the end of the CF-End frame, all links for the EMLSR client are blocked on the
+        // AP MLD
+        Simulator::Schedule(
+            txDuration + apPhy->GetSifs() + cfEndTxDuration + MicroSeconds(1),
+            [=]() {
+                for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+                {
+                    CheckBlockedLink(
+                        m_apMac,
+                        *addr,
+                        id,
+                        WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                        true,
+                        "Checking links of EMLSR client " + std::to_string(clientId) +
+                            " are all blocked on the AP MLD right after the end of CF-End");
+                }
+            });
+        // before the end of the transition delay, all links for the EMLSR client are still
+        // blocked on the AP MLD
+        Simulator::Schedule(
+            txDuration + apPhy->GetSifs() + cfEndTxDuration + m_transitionDelay.at(clientId) -
+                MicroSeconds(1),
+            [=]() {
+                for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+                {
+                    CheckBlockedLink(
+                        m_apMac,
+                        *addr,
+                        id,
+                        WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                        true,
+                        "Checking links of EMLSR client " + std::to_string(clientId) +
+                            " are all blocked on the AP MLD before the end of transition delay");
+                }
+            });
+        // immediately after the transition delay, all links for the EMLSR client are unblocked
+        Simulator::Schedule(
+            txDuration + apPhy->GetSifs() + cfEndTxDuration + m_transitionDelay.at(clientId) +
+                MicroSeconds(1),
+            [=]() {
+                for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+                {
+                    CheckBlockedLink(
+                        m_apMac,
+                        *addr,
+                        id,
+                        WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                        false,
+                        "Checking links of EMLSR client " + std::to_string(clientId) +
+                            " are all unblocked on the AP MLD after the transition delay");
+                }
+            });
         break;
     }
 }
