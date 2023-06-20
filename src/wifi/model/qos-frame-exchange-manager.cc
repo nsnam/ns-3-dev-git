@@ -99,15 +99,15 @@ QosFrameExchangeManager::SendCfEndIfNeeded()
 
     WifiTxVector cfEndTxVector = GetWifiRemoteStationManager()->GetRtsTxVector(cfEnd.GetAddr1());
 
-    Time txDuration = m_phy->CalculateTxDuration(cfEnd.GetSize() + WIFI_MAC_FCS_LENGTH,
-                                                 cfEndTxVector,
-                                                 m_phy->GetPhyBand());
+    auto mpdu = Create<WifiMpdu>(Create<Packet>(), cfEnd);
+    auto txDuration =
+        m_phy->CalculateTxDuration(mpdu->GetSize(), cfEndTxVector, m_phy->GetPhyBand());
 
     // Send the CF-End frame if the remaining duration is long enough to transmit this frame
     if (m_edca->GetRemainingTxop(m_linkId) > txDuration)
     {
         NS_LOG_DEBUG("Send CF-End frame");
-        m_phy->Send(Create<WifiPsdu>(Create<Packet>(), cfEnd), cfEndTxVector);
+        ForwardMpduDown(mpdu, cfEndTxVector);
         Simulator::Schedule(txDuration,
                             &QosFrameExchangeManager::NotifyChannelReleased,
                             this,
