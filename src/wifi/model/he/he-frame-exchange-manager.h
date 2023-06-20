@@ -163,6 +163,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     void NavResetTimeout() override;
     void StartProtection(const WifiTxParameters& txParams) override;
     void ProtectionCompleted() override;
+    void TransmissionSucceeded() override;
 
     /**
      * Clear the TXOP holder if the intra-BSS NAV counted down to zero (includes the case

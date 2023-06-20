@@ -505,6 +505,23 @@ HeFrameExchangeManager::CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVect
 }
 
 void
+HeFrameExchangeManager::TransmissionSucceeded()
+{
+    NS_LOG_FUNCTION(this);
+
+    // A multi-user transmission may succeed even if some stations did not respond.
+    // Remove such stations from the set of stations for which protection is not needed
+    // in the current TXOP.
+    for (const auto& address : m_txTimer.GetStasExpectedToRespond())
+    {
+        NS_LOG_DEBUG(address << " did not respond, hence it is no longer protected");
+        m_protectedStas.erase(address);
+    }
+
+    VhtFrameExchangeManager::TransmissionSucceeded();
+}
+
+void
 HeFrameExchangeManager::SendPsduMap()
 {
     NS_LOG_FUNCTION(this);
