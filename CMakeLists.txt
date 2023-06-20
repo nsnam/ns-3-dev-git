@@ -25,6 +25,7 @@ option(NS3_TESTS "Enable tests to be built" OFF)
 # fd-net-device options
 option(NS3_EMU "Build with emulation support" ON)
 option(NS3_TAP "Build with Tap support" ON)
+option(NS3_DPDK "Enable fd-net-device DPDK features" OFF)
 
 # maintenance and documentation
 option(NS3_CLANG_FORMAT "Enforce cody style with clang-format" OFF)

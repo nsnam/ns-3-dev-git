@@ -1,9 +1,3 @@
-option(
-  NS3_DPDK
-  "Enable fd-net-device DPDK features"
-  OFF
-)
-
 set(module_enabled_features) # modulegen_customizations consumes this list
 
 check_include_file(
