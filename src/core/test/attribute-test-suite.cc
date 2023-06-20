@@ -237,6 +237,11 @@ class AttributeObjectTest : public Object
                               ObjectMapValue(),
                               MakeObjectMapAccessor(&AttributeObjectTest::m_map1),
                               MakeObjectMapChecker<Derived>())
+                .AddAttribute("TestUnorderedMap",
+                              "help text",
+                              ObjectMapValue(),
+                              MakeObjectMapAccessor(&AttributeObjectTest::m_unorderedMap),
+                              MakeObjectMapChecker<Derived>())
                 .AddAttribute("IntegerTraceSource1",
                               "help text",
                               IntegerValue(-2),
@@ -348,6 +353,24 @@ class AttributeObjectTest : public Object
     void AddToMap1(uint32_t i)
     {
         m_map1.insert(std::pair<uint32_t, Ptr<Derived>>(i, CreateObject<Derived>()));
+    }
+
+    /**
+     * Adds an object to the unordered map.
+     * \param i The index to assign to the object.
+     */
+    void AddToUnorderedMap(uint64_t i)
+    {
+        m_unorderedMap.insert({i, CreateObject<Derived>()});
+    }
+
+    /**
+     * Remove an object from the first map.
+     * \param i The index to assign to the object.
+     */
+    void RemoveFromUnorderedMap(uint64_t i)
+    {
+        m_unorderedMap.erase(i);
     }
 
     /**
@@ -483,9 +506,11 @@ class AttributeObjectTest : public Object
     std::vector<Ptr<Derived>> m_vector1;     //!< First vector of derived objects.
     std::vector<Ptr<Derived>> m_vector2;     //!< Second vector of derived objects.
     std::map<uint32_t, Ptr<Derived>> m_map1; //!< Map of uint32_t, derived objects.
-    Callback<void, int8_t> m_cbValue;        //!< Callback accepting an integer.
-    TracedValue<int8_t> m_intSrc1;           //!< First int8_t Traced value.
-    TracedValue<int8_t> m_intSrc2;           //!< Second int8_t Traced value.
+    std::unordered_map<uint64_t, Ptr<Derived>>
+        m_unorderedMap;               //!< Unordered map of uint64_t, derived objects.
+    Callback<void, int8_t> m_cbValue; //!< Callback accepting an integer.
+    TracedValue<int8_t> m_intSrc1;    //!< First int8_t Traced value.
+    TracedValue<int8_t> m_intSrc2;    //!< Second int8_t Traced value.
 
     /// Traced callbacks for (double, int, float) values.
     typedef void (*NumericTracedCallback)(double, int, float);
@@ -1329,6 +1354,42 @@ ObjectMapAttributeTestCase::DoRun()
     //
     p->GetAttribute("TestMap1", map);
     NS_TEST_ASSERT_MSG_EQ(map.GetN(), 2, "ObjectVectorValue \"TestMap1\" should be incremented");
+
+    //
+    // Test that ObjectMapValue is iterable with an underlying unordered_map
+    //
+    ObjectMapValue unorderedMap;
+    // Add objects at 1, 2, 3, 4
+    p->AddToUnorderedMap(4);
+    p->AddToUnorderedMap(2);
+    p->AddToUnorderedMap(1);
+    p->AddToUnorderedMap(3);
+    // Remove object 2
+    p->RemoveFromUnorderedMap(2);
+    p->GetAttribute("TestUnorderedMap", unorderedMap);
+    NS_TEST_ASSERT_MSG_EQ(unorderedMap.GetN(),
+                          3,
+                          "ObjectMapValue \"TestUnorderedMap\" should have three values");
+    Ptr<Object> o1 = unorderedMap.Get(1);
+    NS_TEST_ASSERT_MSG_NE(o1,
+                          nullptr,
+                          "ObjectMapValue \"TestUnorderedMap\" should have value with key 1");
+    Ptr<Object> o2 = unorderedMap.Get(2);
+    NS_TEST_ASSERT_MSG_EQ(o2,
+                          nullptr,
+                          "ObjectMapValue \"TestUnorderedMap\" should not have value with key 2");
+    auto it = unorderedMap.Begin();
+    NS_TEST_ASSERT_MSG_EQ(it->first,
+                          1,
+                          "ObjectMapValue \"TestUnorderedMap\" should have a value with key 1");
+    it++;
+    NS_TEST_ASSERT_MSG_EQ(it->first,
+                          3,
+                          "ObjectMapValue \"TestUnorderedMap\" should have a value with key 3");
+    it++;
+    NS_TEST_ASSERT_MSG_EQ(it->first,
+                          4,
+                          "ObjectMapValue \"TestUnorderedMap\" should have a value with key 4");
 }
 
 /**
