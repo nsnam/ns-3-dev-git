@@ -112,6 +112,11 @@ class WifiPhy : public Object
                               Time rxDuration);
 
     /**
+     * \return whether the PHY is busy decoding the PHY header fields of a PPDU
+     */
+    bool IsReceivingPhyHeader() const;
+
+    /**
      * For HE receptions only, check and possibly modify the transmit power restriction state at
      * the end of PPDU reception.
      */

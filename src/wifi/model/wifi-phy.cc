@@ -1899,6 +1899,12 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
     }
 }
 
+bool
+WifiPhy::IsReceivingPhyHeader() const
+{
+    return m_endPhyRxEvent.IsRunning();
+}
+
 void
 WifiPhy::EndReceiveInterBss()
 {

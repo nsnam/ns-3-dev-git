@@ -35,9 +35,24 @@
 namespace ns3
 {
 
-/// generic value for aRxPHYStartDelay PHY characteristic (used when we do not know the preamble
-/// type of the next frame)
-static constexpr uint8_t RX_PHY_START_DELAY_USEC = 48;
+/// aRxPHYStartDelay value to use when waiting for a new frame in the context of EMLSR operations
+/// (Sec. 35.3.17 of 802.11be D3.1)
+static constexpr uint8_t RX_PHY_START_DELAY_USEC = 20;
+/**
+ * Additional time (exceeding 20 us) to wait for a PHY-RXSTART.indication when the PHY is
+ * decoding a PHY header.
+ *
+ * Values for aRxPHYStartDelay:
+ * - OFDM : 20 us (for 20 MHz) [Table 17-21 of 802.11-2020]
+ * - ERP-OFDM : 20 us [Table 18-5 of 802.11-2020]
+ * - HT : 28 us (HT-mixed), 24 us (HT-greenfield) [Table 19-25 of 802.11-2020]
+ * - VHT : 36 + 4 * max N_VHT-LTF + 4 = 72 us [Table 21-28 of 802.11-2020]
+ * - HE : 32 us (for HE SU and HE TB PPDUs)
+ *        32 + 4 * N_HE-SIG-B us (for HE MU PPDUs) [Table 27-54 of 802.11ax-2021]
+ * - EHT : 32 us (for EHT TB PPDUs)
+ *         32 + 4 * N_EHT-SIG us (for EHT MU PPDUs) [Table 36-70 of 802.11be D3.2]
+ */
+static constexpr uint8_t WAIT_FOR_RXSTART_DELAY_USEC = 52;
 
 NS_LOG_COMPONENT_DEFINE("EhtFrameExchangeManager");
 
@@ -738,6 +753,19 @@ void
 EhtFrameExchangeManager::TxopEnd()
 {
     NS_LOG_FUNCTION(this);
+
+    if (m_phy->IsReceivingPhyHeader())
+    {
+        // we may get here because the PHY has not issued the PHY-RXSTART.indication before
+        // the expiration of the timer started to detect new received frames, but the PHY is
+        // currently decoding the PHY header of a PPDU, so let's wait some more time to check
+        // if we receive a PHY-RXSTART.indication when the PHY is done decoding the PHY header
+        NS_LOG_DEBUG("PHY is decoding the PHY header of PPDU, postpone TXOP end");
+        m_ongoingTxopEnd = Simulator::Schedule(MicroSeconds(WAIT_FOR_RXSTART_DELAY_USEC),
+                                               &EhtFrameExchangeManager::TxopEnd,
+                                               this);
+        return;
+    }
 
     if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
     {
