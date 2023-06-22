@@ -80,13 +80,13 @@ Download
 
 There are two main options:
 
-1. Download a release tarball.  This will unpack to a directory such as ``ns-allinone-3.38``
+1. Download a release tarball.  This will unpack to a directory such as ``ns-allinone-3.39``
 containing |ns3| and some other programs.  Below is a command-line download using ``wget``,
 but a browser download will also work::
 
-  $ wget https://www.nsnam.org/releases/ns-allinone-3.38.tar.bz2
-  $ tar xfj ns-allinone-3.38.tar.bz2
-  $ cd ns-allinone-3.38/ns-3.38
+  $ wget https://www.nsnam.org/releases/ns-allinone-3.39.tar.bz2
+  $ tar xfj ns-allinone-3.39.tar.bz2
+  $ cd ns-allinone-3.39/ns-3.39
 
 2. Clone |ns3| from the Git repository.  The ``ns-3-allinone`` can be cloned, as well as
 ``ns-3-dev`` by itself.  Below, we illustrate the latter::
@@ -99,7 +99,7 @@ you clone |ns3|, your directory will be named ``ns-3-dev``.  By default, Git wil
 the |ns3| ``master`` branch, which is a development branch.  All |ns3| releases are tagged
 in Git, so if you would then like to check out a past release, you can do so as follows::
 
-  $ git checkout -b ns-3.38-release ns-3.38
+  $ git checkout -b ns-3.39-release ns-3.39
 
 In this quick-start, we are omitting download and build instructions for optional |ns3| modules,
 the ``NetAnim`` animator, Python bindings, and ``NetSimulyzer``.  The
@@ -152,8 +152,8 @@ You should see some output such as below, if successful::
   propagation               sixlowpan                 spectrum
   stats                     tap-bridge                test (no Python)
   topology-read             traffic-control           uan
-  virtual-net-device        visualizer                wave
-  wifi                      wimax
+  virtual-net-device        visualizer                wifi
+  wimax
 
   Modules not built (see ns-3 tutorial for explanation):
   brite                     click                     openflow
