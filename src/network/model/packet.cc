@@ -664,10 +664,9 @@ Packet::Serialize(uint8_t* buffer, uint32_t maxSize) const
             return 0;
         }
 
-        // put the total length of nix-vector in the
-        // buffer. this includes 4-bytes for total
-        // length itself
-        *p++ = nixSize + 4;
+        // put the total length of nix-vector in the buffer
+        *p++ = nixSize;
+        size += 4;
 
         // serialize the nix-vector
         uint32_t serialized = m_nixVector->Serialize(p, nixSize);
@@ -682,16 +681,14 @@ Packet::Serialize(uint8_t* buffer, uint32_t maxSize) const
     }
     else
     {
-        // no nix vector, set zero length,
-        // ie 4-bytes, since it must include
-        // length for itself
         size += 4;
         if (size > maxSize)
         {
             return 0;
         }
 
-        *p++ = 4;
+        // no nix vector, set zero length
+        *p++ = 0;
     }
 
     // Serialize byte tag list
@@ -702,10 +699,9 @@ Packet::Serialize(uint8_t* buffer, uint32_t maxSize) const
         return 0;
     }
 
-    // put the total length of byte tag list in the
-    // buffer. this includes 4-bytes for total
-    // length itself
-    *p++ = byteTagSize + 4;
+    // put the total length of byte tag list in the buffer
+    *p++ = byteTagSize;
+    size += 4;
 
     // serialize the byte tag list
     uint32_t serialized = m_byteTagList.Serialize(p, byteTagSize);
@@ -726,10 +722,9 @@ Packet::Serialize(uint8_t* buffer, uint32_t maxSize) const
         return 0;
     }
 
-    // put the total length of packet tag list in the
-    // buffer. this includes 4-bytes for total
-    // length itself
-    *p++ = packetTagSize + 4;
+    // put the total length of packet tag list in the buffer
+    *p++ = packetTagSize;
+    size += 4;
 
     // serialize the packet tag list
     serialized = m_packetTagList.Serialize(p, packetTagSize);
@@ -750,10 +745,9 @@ Packet::Serialize(uint8_t* buffer, uint32_t maxSize) const
         return 0;
     }
 
-    // put the total length of metadata in the
-    // buffer. this includes 4-bytes for total
-    // length itself
-    *p++ = metaSize + 4;
+    // put the total length of metadata in the buffer
+    *p++ = metaSize;
+    size += 4;
 
     // serialize the metadata
     serialized = m_metadata.Serialize(reinterpret_cast<uint8_t*>(p), metaSize);
@@ -774,10 +768,8 @@ Packet::Serialize(uint8_t* buffer, uint32_t maxSize) const
         return 0;
     }
 
-    // put the total length of the buffer in the
-    // buffer. this includes 4-bytes for total
-    // length itself
-    *p++ = bufSize + 4;
+    // put the total length of the buffer in the buffer
+    *p++ = bufSize;
 
     // serialize the buffer
     serialized = m_buffer.Serialize(reinterpret_cast<uint8_t*>(p), bufSize);
@@ -805,7 +797,7 @@ Packet::Deserialize(const uint8_t* buffer, uint32_t size)
     // will be overrun, assert
     NS_ASSERT(size >= nixSize);
 
-    if (nixSize > 4)
+    if (nixSize > 0)
     {
         Ptr<NixVector> nix = Create<NixVector>();
         uint32_t nixDeserialized = nix->Deserialize(p, nixSize);
@@ -818,9 +810,9 @@ Packet::Deserialize(const uint8_t* buffer, uint32_t size)
         m_nixVector = nix;
         // increment p by nixSize ensuring
         // 4-byte boundary
-        p += ((((nixSize - 4) + 3) & (~3)) / 4);
+        p += (((nixSize + 3) & (~3)) / 4);
     }
-    size -= nixSize;
+    size -= nixSize + 4;
 
     // read byte tags
     uint32_t byteTagSize = *p++;
@@ -837,8 +829,8 @@ Packet::Deserialize(const uint8_t* buffer, uint32_t size)
     }
     // increment p by byteTagSize ensuring
     // 4-byte boundary
-    p += ((((byteTagSize - 4) + 3) & (~3)) / 4);
-    size -= byteTagSize;
+    p += (((byteTagSize + 3) & (~3)) / 4);
+    size -= byteTagSize + 4;
 
     // read packet tags
     uint32_t packetTagSize = *p++;
@@ -855,8 +847,8 @@ Packet::Deserialize(const uint8_t* buffer, uint32_t size)
     }
     // increment p by packetTagSize ensuring
     // 4-byte boundary
-    p += ((((packetTagSize - 4) + 3) & (~3)) / 4);
-    size -= packetTagSize;
+    p += (((packetTagSize + 3) & (~3)) / 4);
+    size -= packetTagSize + 4;
 
     // read metadata
     uint32_t metaSize = *p++;
@@ -875,8 +867,8 @@ Packet::Deserialize(const uint8_t* buffer, uint32_t size)
     }
     // increment p by metaSize ensuring
     // 4-byte boundary
-    p += ((((metaSize - 4) + 3) & (~3)) / 4);
-    size -= metaSize;
+    p += (((metaSize + 3) & (~3)) / 4);
+    size -= metaSize + 4;
 
     // read buffer contents
     uint32_t bufSize = *p++;
@@ -893,7 +885,7 @@ Packet::Deserialize(const uint8_t* buffer, uint32_t size)
         // completely
         return 0;
     }
-    size -= bufSize;
+    size -= bufSize + 4;
 
     // return zero if did not deserialize the
     // number of expected bytes

@@ -1255,7 +1255,7 @@ PacketMetadata::Deserialize(const uint8_t* buffer, uint32_t size)
 {
     NS_LOG_FUNCTION(this << &buffer << size);
     const uint8_t* start = buffer;
-    uint32_t desSize = size - 4;
+    uint32_t desSize = size;
 
     buffer = ReadFromRawU64(m_packetUid, start, buffer, size);
     desSize -= 8;

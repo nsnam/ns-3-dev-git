@@ -385,7 +385,7 @@ PacketTagList::Deserialize(const uint32_t* buffer, uint32_t size)
 {
     NS_LOG_FUNCTION(this << buffer << size);
     const uint32_t* p = buffer;
-    uint32_t sizeCheck = size - 4;
+    uint32_t sizeCheck = size;
 
     NS_ASSERT(sizeCheck >= 4);
     uint32_t numberOfTags = *p++;
