@@ -13,19 +13,32 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
-Release 3-dev
--------------
+Release 3.39
+------------
 
 ### Supported platforms
 
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-9 or later, or LLVM/clang++-6 or later
+- Python 3.6 or later
+- CMake 3.10 or later
+- (macOS only) Xcode 11 or later
+- (Windows only) Msys2/MinGW64 toolchain or WSL2
+
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html).
 
 ### New user-visible features
 
+- (applications) !1412 - Add Tx and TxWithAddresses trace sources in UdpClient
+- (bindings) - Package ns-3 as a pip wheel
+- (doc) #876 - Improve dark-mode heading, navigation, and search bars
+- (flowmonitor) #901 - Allow to reset the stats
 - (lr-wpan) !1399 - Add orphan scan support.
-- (network) !1405 - Add ConvertToInt to Mac64Address
 - (lr-wpan) !1402 - Add attributes to MLME-SET and MLME-GET
 - (lr-wpan) !1410 - Add Mac16 and Mac64 functions
-- (applications) !1412 - Add Tx and TxWithAddresses trace sources in UdpClient
+- (network) !1405 - Add ConvertToInt to Mac64Address
 
 Note:  This release has removed the "wave" module from the codebase due to lack of maintenance
 and due to lack of relevance to modern vehicular networks which appear to be moving to cellular
@@ -35,19 +48,25 @@ release but should also be aware of a number of issues that arose and can be fou
 
 ### Bugs fixed
 
-- (lr-wpan) !1406 - Fixes issues during MAC scan
-- (wifi) #880 - Post-install change in WifiPhy::ChannelSettings does not completely reconfigure Wi-Fi
-- (energy) !1422 - Fix null harvester issue in EnergySource
-- (wifi) #862 - sta-wifi-mac.cc cond="!link.bssid.has_value()", High occurrence at higher numbers of STAs per AP in indoor deployment.
-- (wifi) Fix the equality operator of WifiInformationElement
-- (wifi) Make the implementation of the Multi-Link Element compliant with the 11be specs by adding support of inheritance
-- (wifi) Reset intra-BSS NAV when CF-End is an intra-BSS PPDU
-- (wifi) UL MU CS shall be evaluated a SIFS after end of MU-RTS
-- (wifi) Fix crash when changing operating channel after configuration but before initialization
-- (wifi) Fix assert when non-HE STAs receive CTS frames sent using non-HT duplicate following a MU-RTS frame
-- (lr-wpan) !1481 Small fixes in MAC orphan scan
+- (build) #881 - Fix scratch targets for file names containing dots
 - (core) #902 - Fix vector inversion in the function `AttributeContainerTestSuite::ReverseList()`
-- (wifi) Fix OBSS-PD support for 802.11be
+- (energy) !1422 - Fix null harvester issue in EnergySource
+- (internet) #910 - Release memory when sockets are closed
+- (lr-wpan) !1406 - Fixes issues during MAC scan
+- (lr-wpan) !1481 - Small fixes in MAC orphan scan
+- (lte) #906 - Don't use invalid cell ID
+- (propagation) - fix height assignment in 3gpp propagation loss model
+- (wifi) #880 - Post-install change in WifiPhy::ChannelSettings does not completely reconfigure Wi-Fi
+- (wifi) #862 - sta-wifi-mac.cc cond="!link.bssid.has_value()", High occurrence at higher numbers of STAs per AP in indoor deployment.
+- (wifi) - Fix the equality operator of WifiInformationElement
+- (wifi) - Make the implementation of the Multi-Link Element compliant with the 11be specs by adding support of inheritance
+- (wifi) - Reset intra-BSS NAV when CF-End is an intra-BSS PPDU
+- (wifi) - UL MU CS shall be evaluated a SIFS after end of MU-RTS
+- (wifi) - Fix crash when changing operating channel after configuration but before initialization
+- (wifi) - Fix assert when non-HE STAs receive CTS frames sent using non-HT duplicate following a MU-RTS frame
+- (wifi) - Fix OBSS-PD support for 802.11be
+- (wifi) #917 - Add missing STA-ID in GetMode() call from YansErrorRateModel
+- (wifi) - Fix wifi-rate-adaptation-distance.cc example issues with CCA threshold
 
 Release 3.38
 ------------
