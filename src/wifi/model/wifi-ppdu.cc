@@ -264,7 +264,7 @@ std::string
 WifiPpdu::PrintPayload() const
 {
     std::ostringstream ss;
-    ss << "PSDU=" << GetPsdu() << " ";
+    ss << "PSDU=" << *GetPsdu() << " ";
     return ss.str();
 }
 
