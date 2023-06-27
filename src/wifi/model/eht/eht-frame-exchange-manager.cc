@@ -225,7 +225,7 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
     auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
 
     HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
-    UpdateTxopEndOnTxStart(txDuration);
+    UpdateTxopEndOnTxStart(txDuration, psdu->GetDuration());
 
     if (m_apMac)
     {
@@ -258,7 +258,7 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
     auto txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, m_phy->GetPhyBand());
 
     HeFrameExchangeManager::ForwardPsduMapDown(psduMap, txVector);
-    UpdateTxopEndOnTxStart(txDuration);
+    UpdateTxopEndOnTxStart(txDuration, psduMap.begin()->second->GetDuration());
 
     if (m_apMac)
     {
@@ -589,14 +589,13 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
 
     if (m_apMac)
     {
-        // the channel has been released; all EMLSR clients will switch back to listening
-        // operation after a timeout interval of aSIFSTime + aSlotTime + aRxPHYStartDelay
-        auto delay = m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
+        // the channel has been released; all EMLSR clients are switching back to
+        // listening operation
         for (const auto& address : m_protectedStas)
         {
             if (GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
             {
-                EmlsrSwitchToListening(address, delay);
+                EmlsrSwitchToListening(address, Seconds(0));
             }
         }
     }
@@ -664,7 +663,7 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
         }
         else
         {
-            UpdateTxopEndOnRxEnd();
+            UpdateTxopEndOnRxEnd(psdu->GetDuration());
         }
     }
 
@@ -678,7 +677,7 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
         }
         else
         {
-            UpdateTxopEndOnRxEnd();
+            UpdateTxopEndOnRxEnd(psdu->GetDuration());
         }
     }
 }
@@ -780,9 +779,9 @@ EhtFrameExchangeManager::TxopEnd()
 }
 
 void
-EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration)
+EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration, Time durationId)
 {
-    NS_LOG_FUNCTION(this << txDuration.As(Time::MS));
+    NS_LOG_FUNCTION(this << txDuration.As(Time::MS) << durationId.As(Time::US));
 
     if (!m_ongoingTxopEnd.IsRunning())
     {
@@ -799,6 +798,13 @@ EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration)
         // to match the TX timer (which is long enough to get the PHY-RXSTART.indication for
         // the response)
         delay = m_txTimer.GetDelayLeft();
+    }
+    else if (durationId <= m_phy->GetSifs())
+    {
+        // the TX timer is not running, hence no response is expected, and the Duration/ID value
+        // is less than or equal to a SIFS; the TXOP will end after this transmission
+        NS_LOG_DEBUG("Assume TXOP will end based on Duration/ID value");
+        delay = txDuration;
     }
     else
     {
@@ -834,9 +840,9 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxStartIndication(Time psduDuration)
 }
 
 void
-EhtFrameExchangeManager::UpdateTxopEndOnRxEnd()
+EhtFrameExchangeManager::UpdateTxopEndOnRxEnd(Time durationId)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << durationId.As(Time::US));
 
     if (!m_ongoingTxopEnd.IsRunning())
     {
@@ -845,6 +851,15 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxEnd()
     }
 
     m_ongoingTxopEnd.Cancel();
+
+    // if the Duration/ID of the received frame is less than a SIFS, the TXOP
+    // is terminated
+    if (durationId <= m_phy->GetSifs())
+    {
+        NS_LOG_DEBUG("Assume TXOP ended based on Duration/ID value");
+        TxopEnd();
+        return;
+    }
 
     // we may send a response after a SIFS or we may receive another frame after a SIFS.
     // Postpone the TXOP end by considering the latter (which takes longer)

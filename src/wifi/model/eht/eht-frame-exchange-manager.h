@@ -120,8 +120,9 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      * Update the TXOP end timer when starting a frame transmission.
      *
      * \param txDuration the TX duration of the frame being transmitted
+     * \param durationId the Duration/ID value carried by the frame being transmitted
      */
-    void UpdateTxopEndOnTxStart(Time txDuration);
+    void UpdateTxopEndOnTxStart(Time txDuration, Time durationId);
 
     /**
      * Update the TXOP end timer when receiving a PHY-RXSTART.indication.
@@ -132,8 +133,10 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     /**
      * Update the TXOP end timer when a frame reception ends.
+     *
+     * \param durationId the Duration/ID value carried by the received frame
      */
-    void UpdateTxopEndOnRxEnd();
+    void UpdateTxopEndOnRxEnd(Time durationId);
 
     /**
      * Take actions when a TXOP (of which we are not the holder) ends.
