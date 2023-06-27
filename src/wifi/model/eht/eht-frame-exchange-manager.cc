@@ -297,36 +297,41 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
     auto emlCapabilities = GetWifiRemoteStationManager()->GetStationEmlCapabilities(address);
     NS_ASSERT(emlCapabilities);
 
+    std::set<uint8_t> linkIds;
     for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
     {
         if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
         {
-            Simulator::Schedule(delay, [=, this]() {
-                if (linkId != m_linkId)
-                {
-                    // the reason for blocking the other EMLSR links has changed now
-                    m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-                                                   *mldAddress,
-                                                   {linkId});
-                }
-
-                // block DL transmissions on this link until transition delay elapses
-                m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
-                                             *mldAddress,
-                                             {linkId});
-            });
-
-            // unblock all EMLSR links when the transition delay elapses
-            Simulator::Schedule(delay + CommonInfoBasicMle::DecodeEmlsrTransitionDelay(
-                                            emlCapabilities->get().emlsrTransitionDelay),
-                                [=, this]() {
-                                    m_mac->UnblockUnicastTxOnLinks(
-                                        WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
-                                        *mldAddress,
-                                        {linkId});
-                                });
+            linkIds.insert(linkId);
         }
     }
+
+    auto blockLinks = [=, this]() {
+        // the reason for blocking the other EMLSR links has changed now
+        m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                       *mldAddress,
+                                       linkIds);
+
+        // block DL transmissions on this link until transition delay elapses
+        m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                                     *mldAddress,
+                                     linkIds);
+    };
+
+    delay.IsZero() ? blockLinks() : static_cast<void>(Simulator::Schedule(delay, blockLinks));
+
+    // unblock all EMLSR links when the transition delay elapses
+    auto unblockLinks = [=, this]() {
+        m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                                       *mldAddress,
+                                       linkIds);
+    };
+
+    auto endDelay = delay + CommonInfoBasicMle::DecodeEmlsrTransitionDelay(
+                                emlCapabilities->get().emlsrTransitionDelay);
+
+    endDelay.IsZero() ? unblockLinks()
+                      : static_cast<void>(Simulator::Schedule(endDelay, unblockLinks));
 }
 
 void
