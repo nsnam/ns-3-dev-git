@@ -689,21 +689,6 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
                 m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
             NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
             m_ongoingTxopEnd = Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this);
-
-            // block transmissions on other links
-            auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(psdu->GetAddr2());
-            NS_ASSERT(mldAddress);
-
-            for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
-            {
-                if (linkId != m_linkId &&
-                    m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
-                {
-                    m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-                                                 *mldAddress,
-                                                 {linkId});
-                }
-            }
         }
         else
         {
@@ -736,6 +721,32 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     NS_ASSERT(mpdu->GetHeader().GetAddr1().IsGroup() || mpdu->GetHeader().GetAddr1() == m_self);
 
     const auto& hdr = mpdu->GetHeader();
+
+    if (m_apMac && GetWifiRemoteStationManager()->GetEmlsrEnabled(hdr.GetAddr2()))
+    {
+        // the AP MLD received an MPDU from an EMLSR client, which is now involved in an UL TXOP,
+        // hence block transmissions for this EMLSR client on other links
+        auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(hdr.GetAddr2());
+        NS_ASSERT(mldAddress);
+
+        for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+        {
+            if (linkId != m_linkId &&
+                m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
+            {
+                m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                             *mldAddress,
+                                             {linkId});
+            }
+        }
+
+        // Make sure that transmissions for this EMLSR client are not blocked on this link
+        // (the AP MLD may have sent an ICF on another link right before receiving this MPDU,
+        // thus transmissions on this link may have been blocked)
+        m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                       *mldAddress,
+                                       {m_linkId});
+    }
 
     if (hdr.IsTrigger())
     {
