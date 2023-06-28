@@ -469,6 +469,45 @@ EhtFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
     HeFrameExchangeManager::SendMuRts(txParams);
 }
 
+void
+EhtFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << *muRts << txVector);
+
+    // we blocked transmissions on the other EMLSR links for the EMLSR clients we sent the ICF to.
+    // Given that no client responded, we can unblock transmissions for a client if there is no
+    // ongoing UL TXOP held by that client
+    for (const auto& address : m_sentRtsTo)
+    {
+        if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
+        {
+            continue;
+        }
+
+        auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
+        NS_ASSERT(mldAddress);
+
+        if (m_ongoingTxopEnd.IsRunning() && m_txopHolder &&
+            m_mac->GetMldAddress(*m_txopHolder) == mldAddress)
+        {
+            continue;
+        }
+
+        for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+        {
+            if (linkId != m_linkId &&
+                m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
+            {
+                m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                               *mldAddress,
+                                               {linkId});
+            }
+        }
+    }
+
+    HeFrameExchangeManager::CtsAfterMuRtsTimeout(muRts, txVector);
+}
+
 bool
 EhtFrameExchangeManager::GetEmlsrSwitchToListening(Ptr<const WifiPsdu> psdu,
                                                    uint16_t aid,
