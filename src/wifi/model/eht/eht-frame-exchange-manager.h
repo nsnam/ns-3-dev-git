@@ -23,6 +23,8 @@
 #include "ns3/he-frame-exchange-manager.h"
 #include "ns3/mgt-headers.h"
 
+#include <unordered_map>
+
 namespace ns3
 {
 
@@ -146,6 +148,8 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     EventId m_ongoingTxopEnd; //!< event indicating the possible end of the current TXOP (of which
                               //!< we are not the holder)
+    std::unordered_map<Mac48Address, EventId, WifiAddressHash>
+        m_transDelayTimer; //!< MLD address-indexed map of transition delay timers
 };
 
 } // namespace ns3

@@ -331,7 +331,8 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
                                 emlCapabilities->get().emlsrTransitionDelay);
 
     endDelay.IsZero() ? unblockLinks()
-                      : static_cast<void>(Simulator::Schedule(endDelay, unblockLinks));
+                      : static_cast<void>(m_transDelayTimer[*mldAddress] =
+                                              Simulator::Schedule(endDelay, unblockLinks));
 }
 
 void
@@ -746,6 +747,14 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
                                        *mldAddress,
                                        {m_linkId});
+
+        // Stop the transition delay timer for this EMLSR client, if any is running
+        if (auto it = m_transDelayTimer.find(*mldAddress);
+            it != m_transDelayTimer.end() && it->second.IsRunning())
+        {
+            it->second.PeekEventImpl()->Invoke();
+            it->second.Cancel();
+        }
     }
 
     if (hdr.IsTrigger())
