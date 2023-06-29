@@ -370,13 +370,15 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
         return;
     }
 
-    SwitchMainPhy(linkId, true); // channel switch should occur instantaneously
+    Simulator::ScheduleNow([=, this]() {
+        SwitchMainPhy(linkId, true); // channel switch should occur instantaneously
 
-    // aux PHY received the ICF but main PHY will send the response
-    auto uid = auxPhy->GetPreviouslyRxPpduUid();
-    mainPhy->SetPreviouslyRxPpduUid(uid);
+        // aux PHY received the ICF but main PHY will send the response
+        auto uid = auxPhy->GetPreviouslyRxPpduUid();
+        mainPhy->SetPreviouslyRxPpduUid(uid);
 
-    DoNotifyIcfReceived(linkId);
+        DoNotifyIcfReceived(linkId);
+    });
 }
 
 void

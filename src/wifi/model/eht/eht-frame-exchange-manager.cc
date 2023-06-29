@@ -836,9 +836,8 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             }
 
             NS_ASSERT(m_staMac->GetEmlsrManager());
-            Simulator::ScheduleNow(&EmlsrManager::NotifyIcfReceived,
-                                   m_staMac->GetEmlsrManager(),
-                                   m_linkId);
+            m_staMac->GetEmlsrManager()->NotifyIcfReceived(m_linkId);
+
             // we just got involved in a DL TXOP. Check if we are still involved in the TXOP in a
             // SIFS (we are expected to reply by sending a CTS frame)
             m_ongoingTxopEnd.Cancel();
