@@ -668,6 +668,38 @@ EhtFrameExchangeManager::PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxV
         m_staMac->GetEmlsrManager()->CancelMediumSyncDelayTimer(m_linkId);
     }
 
+    if (m_apMac)
+    {
+        // we iterate over protected STAs to consider only the case when the AP is the TXOP holder.
+        // The AP received a PSDU from a non-AP STA; given that the AP is the TXOP holder, this
+        // PSDU has been likely solicited by the AP. In most of the cases, we identify which EMLSR
+        // clients are no longer involved in the TXOP when the AP transmits the frame soliciting
+        // response(s) from client(s). This is not the case, for example, for the acknowledgment
+        // in SU format of a DL MU PPDU, where all the EMLSR clients (but one) switch to listening
+        // operation after the immediate response (if any) by one of the EMLSR clients.
+        for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
+        {
+            // TB PPDUs are received by the AP at distinct times, so it is difficult to take a
+            // decision based on one of them. However, clients transmitting TB PPDUs are identified
+            // by the soliciting Trigger Frame, thus we have already identified (when sending the
+            // Trigger Frame) which EMLSR clients have switched to listening operation.
+            // If the PSDU is not carried in a TB PPDU, we can determine whether this EMLSR client
+            // is switching to listening operation by checking whether the AP is expecting a
+            // response from it.
+            if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt) && !txVector.IsUlMu() &&
+                m_txTimer.GetStasExpectedToRespond().count(*clientIt) == 0)
+            {
+                EmlsrSwitchToListening(*clientIt, Seconds(0));
+                // this client is no longer involved in the current TXOP
+                clientIt = m_protectedStas.erase(clientIt);
+            }
+            else
+            {
+                clientIt++;
+            }
+        }
+    }
+
     HeFrameExchangeManager::PreProcessFrame(psdu, txVector);
 }
 
