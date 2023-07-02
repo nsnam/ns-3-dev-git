@@ -1404,7 +1404,7 @@ WifiMac::BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
             continue;
         }
 
-        for (const auto [acIndex, ac] : wifiAcList)
+        for (const auto& [acIndex, ac] : wifiAcList)
         {
             // block queues storing QoS data frames and control frames that use MLD addresses
             m_scheduler->BlockQueues(reason,
@@ -1445,7 +1445,7 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
             continue;
         }
 
-        for (const auto [acIndex, ac] : wifiAcList)
+        for (const auto& [acIndex, ac] : wifiAcList)
         {
             // unblock queues storing QoS data frames and control frames that use MLD addresses
             m_scheduler->UnblockQueues(reason,

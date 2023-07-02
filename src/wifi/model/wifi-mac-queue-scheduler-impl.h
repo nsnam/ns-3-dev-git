@@ -450,7 +450,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetLinkIds(AcIndex ac, Ptr<const W
     std::list<uint8_t> linkIds;
 
     // include only links that are not blocked in the returned list
-    for (const auto [linkId, mask] : queueInfoIt->second.linkIds)
+    for (const auto& [linkId, mask] : queueInfoIt->second.linkIds)
     {
         if (mask.none())
         {

@@ -1063,7 +1063,7 @@ StaWifiMac::BlockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
 
     BlockUnicastTxOnLinks(reason, apAddress, {linkId});
     // the only type of broadcast frames that a non-AP STA can send are management frames
-    for (const auto [acIndex, ac] : wifiAcList)
+    for (const auto& [acIndex, ac] : wifiAcList)
     {
         GetMacQueueScheduler()->BlockQueues(reason,
                                             acIndex,
@@ -1085,7 +1085,7 @@ StaWifiMac::UnblockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
 
     UnblockUnicastTxOnLinks(reason, apAddress, {linkId});
     // the only type of broadcast frames that a non-AP STA can send are management frames
-    for (const auto [acIndex, ac] : wifiAcList)
+    for (const auto& [acIndex, ac] : wifiAcList)
     {
         GetMacQueueScheduler()->UnblockQueues(reason,
                                               acIndex,
