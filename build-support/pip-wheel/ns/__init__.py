@@ -1,5 +1,5 @@
 # This is a stub module that loads the actual ns-3
-# bindings from nsnam.ns
+# bindings from ns3.ns
 import sys
 
 try:

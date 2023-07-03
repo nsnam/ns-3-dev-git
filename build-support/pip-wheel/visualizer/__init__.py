@@ -1,5 +1,5 @@
 # This is a stub module that loads the actual visualizer
-# from nsnam.visualizer
+# from ns3.visualizer
 import sys
 
 try:

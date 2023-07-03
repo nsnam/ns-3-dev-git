@@ -1,7 +1,7 @@
 from gi.repository import Gtk
 
 try:
-    from nsnam.visualizer.base import InformationWindow
+    from ns3.visualizer.base import InformationWindow
 except ModuleNotFoundError:
     from visualizer.base import InformationWindow
 

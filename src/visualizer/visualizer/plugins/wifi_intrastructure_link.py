@@ -3,7 +3,7 @@ from ns import ns
 from gi.repository import GooCanvas
 
 try:
-    from nsnam.visualizer.base import Link, transform_distance_canvas_to_simulation
+    from ns3.visualizer.base import Link, transform_distance_canvas_to_simulation
 except ModuleNotFoundError:
     from visualizer.base import Link, transform_distance_canvas_to_simulation
 
