@@ -235,10 +235,14 @@ class HePpdu : public OfdmPpdu
      * \param txVector the TXVECTOR to set its HeMuUserInfoMap
      * \param ruAllocation the RU_ALLOCATION per 20 MHz
      * \param contentChannels the HE-SIG-B content channels
+     * \param sigBCompression flag whether SIG-B compression is used by the PPDU
+     * \param numMuMimoUsers the number of MU-MIMO users addressed by the PPDU
      */
     void SetHeMuUserInfos(WifiTxVector& txVector,
                           const RuAllocation& ruAllocation,
-                          const HeSigBContentChannels& contentChannels) const;
+                          const HeSigBContentChannels& contentChannels,
+                          bool sigBCompression,
+                          uint8_t numMuMimoUsers) const;
 
     /**
      * Convert channel width expressed in MHz to bandwidth field encoding in HE-SIG-A.

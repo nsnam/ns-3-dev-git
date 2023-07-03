@@ -25,6 +25,8 @@
 #include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-psdu.h"
 
+#include <numeric>
+
 namespace ns3
 {
 
@@ -135,7 +137,19 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
             ruAllocation.has_value())
         {
             txVector.SetRuAllocation(ruAllocation.value(), p20Index);
-            SetHeMuUserInfos(txVector, ruAllocation.value(), ehtPhyHeader->m_contentChannels);
+            const auto isMuMimo = (ehtPhyHeader->m_ppduType == 2);
+            const auto muMimoUsers =
+                isMuMimo
+                    ? std::accumulate(ehtPhyHeader->m_contentChannels.cbegin(),
+                                      ehtPhyHeader->m_contentChannels.cend(),
+                                      0,
+                                      [](uint8_t prev, const auto& cc) { return prev + cc.size(); })
+                    : 0;
+            SetHeMuUserInfos(txVector,
+                             ruAllocation.value(),
+                             ehtPhyHeader->m_contentChannels,
+                             ehtPhyHeader->m_ppduType == 2,
+                             muMimoUsers);
         }
         if (ehtPhyHeader->m_ppduType == 1) // EHT SU
         {

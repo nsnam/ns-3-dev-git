@@ -199,7 +199,11 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
         txVector.SetChannelWidth(GetChannelWidthMhzFromEncoding(heSigHeader->m_bandwidth));
         txVector.SetGuardInterval(GetGuardIntervalFromEncoding(heSigHeader->m_giLtfSize));
         txVector.SetBssColor(heSigHeader->m_bssColor);
-        SetHeMuUserInfos(txVector, heSigHeader->m_ruAllocation, heSigHeader->m_contentChannels);
+        SetHeMuUserInfos(txVector,
+                         heSigHeader->m_ruAllocation,
+                         heSigHeader->m_contentChannels,
+                         heSigHeader->m_sigBCompression,
+                         GetMuMimoUsersFromEncoding(heSigHeader->m_muMimoUsers));
         txVector.SetSigBMode(HePhy::GetVhtMcs(heSigHeader->m_sigBMcs));
         const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(20);
         txVector.SetRuAllocation(heSigHeader->m_ruAllocation, p20Index);
@@ -218,18 +222,25 @@ HePpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
 void
 HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
                          const RuAllocation& ruAllocation,
-                         const HeSigBContentChannels& contentChannels) const
+                         const HeSigBContentChannels& contentChannels,
+                         bool sigBcompression,
+                         uint8_t numMuMimoUsers) const
 {
-    auto contentChannelIndex = 0;
+    std::size_t contentChannelIndex = 0;
     for (const auto& contentChannel : contentChannels)
     {
-        auto numRusLeft = 0;
-        auto ruAllocIndex = contentChannelIndex;
+        std::size_t numRusLeft = 0;
+        std::size_t numUsersLeft = 0;
+        std::size_t ruAllocIndex = contentChannelIndex;
         for (const auto& userInfo : contentChannel)
         {
             if (userInfo.staId == NO_USER_STA_ID)
             {
                 continue;
+            }
+            if (ruAllocIndex >= ruAllocation.size())
+            {
+                break;
             }
             auto ruSpecs = HeRu::GetRuSpecs(ruAllocation.at(ruAllocIndex));
             if (ruSpecs.empty())
@@ -240,14 +251,27 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
             {
                 numRusLeft = ruSpecs.size();
             }
+            if (numUsersLeft == 0)
+            {
+                if (sigBcompression)
+                {
+                    numUsersLeft = numMuMimoUsers;
+                }
+                else
+                {
+                    // not MU-MIMO
+                    numUsersLeft = 1;
+                }
+            }
             auto ruIndex = (ruSpecs.size() - numRusLeft);
             auto ruSpec = ruSpecs.at(ruIndex);
             auto ruType = ruSpec.GetRuType();
             if ((ruAllocation.size() == 8) && (ruType == HeRu::RU_996_TONE) &&
-                (std::all_of(
-                    contentChannel.cbegin(),
-                    contentChannel.cend(),
-                    [&userInfo](const auto& item) { return userInfo.staId == item.staId; })))
+                (((txVector.GetChannelWidth() == 160) && sigBcompression) ||
+                 std::all_of(
+                     contentChannel.cbegin(),
+                     contentChannel.cend(),
+                     [&userInfo](const auto& item) { return userInfo.staId == item.staId; })))
             {
                 NS_ASSERT(txVector.GetChannelWidth() == 160);
                 ruType = HeRu::RU_2x996_TONE;
@@ -269,12 +293,13 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
                                           userInfo.mcs,
                                           userInfo.nss});
             }
-            if (ruType == HeRu::RU_2x996_TONE)
+            if ((ruType == HeRu::RU_2x996_TONE) && !sigBcompression)
             {
                 return;
             }
             numRusLeft--;
-            if (numRusLeft == 0)
+            numUsersLeft--;
+            if (numRusLeft == 0 && numUsersLeft == 0)
             {
                 ruAllocIndex += (2 * numRuAllocsInContentChannel);
             }
