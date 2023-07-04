@@ -143,6 +143,19 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
 {
     NS_LOG_FUNCTION(this << edca << allowedWidth);
 
+    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
+    {
+        auto apAddress = GetWifiRemoteStationManager()->GetMldAddress(m_bssid);
+        NS_ASSERT_MSG(apAddress, "MLD address not found for BSSID " << m_bssid);
+        // when EMLSR links are blocked, all TIDs are blocked (we test TID 0 here)
+        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *apAddress, 0);
+        auto mask = m_staMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
+        // Cannot start a transmission on a link blocked because another EMLSR link is being used
+        NS_ASSERT_MSG(mask && !mask->test(static_cast<std::size_t>(
+                                  WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK)),
+                      "StartTransmission called while EMLSR link is being used");
+    }
+
     auto started = HeFrameExchangeManager::StartTransmission(edca, allowedWidth);
 
     if (started && m_staMac && m_staMac->IsEmlsrLink(m_linkId))
