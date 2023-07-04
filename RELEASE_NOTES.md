@@ -27,7 +27,7 @@ requirements (Note: not all ns-3 features are available on all systems):
 - (macOS only) Xcode 11 or later
 - (Windows only) Msys2/MinGW64 toolchain or WSL2
 
-Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html).
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html).  Specifically, avoid Cppyy version 3; stay with version 2.4.2 for this release.
 
 ### New user-visible features
 

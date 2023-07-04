@@ -140,7 +140,8 @@ if you are running LTE or NR simulations (which make use of SQLite databases):
 Python bindings (ns-3.37 and newer)
 ===================================
 
-|ns3| Python support now uses `cppyy <https://cppyy.readthedocs.io/en/latest/>`_.
+|ns3| Python support now uses `cppyy <https://cppyy.readthedocs.io/en/latest/>`_.  Version 2.4.2
+is the most recent supported cppyy release; version 3.0.0 is not currently supported.
 
 Using Python bindings (release 3.30 to ns-3.36)
 ===============================================

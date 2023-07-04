@@ -106,9 +106,11 @@ Please see below subsections for Python-related package requirements.
 Python bindings
 ===============
 
+Python requires `Cppyy, <https://cppyy.readthedocs.io/en/latest/installation.html>` and specifically, version 2.4.2 is the latest version known to work with ns-3 at this time.
+
 ns-3.37 and newer::
 
-  python3 -m pip install --user cppyy
+  python3 -m pip install --user cppyy==2.4.2
 
 ns-3.30-3.36 (also requires pybindgen, found in the ``allinone`` directory)::
 

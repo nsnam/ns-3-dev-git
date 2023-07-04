@@ -115,10 +115,11 @@ simple modules in python, jump to the `Using the pip wheel`_ section.
 Using the bindings from the ns-3 source
 =======================================
 
-The main prerequisite is to install `cppyy`.  Depending on how you may manage
+The main prerequisite is to install `cppyy`, with version no later than 2.4.2.
+Depending on how you may manage
 Python extensions, the installation instructions may vary, but you can first
 check if it installed by seeing if the `cppyy` module can be
-successfully imported:
+successfully imported and the version is no later than 2.4.2:
 
 .. sourcecode:: bash
 
@@ -127,6 +128,8 @@ successfully imported:
   [GCC 9.4.0] on linux
   Type "help", "copyright", "credits" or "license" for more information.
   >>> import cppyy
+  >>> print("%s" % cppyy.__version)
+  2.4.2
   >>>
 
 If not, you may try to install via `pip` or whatever other manager you are
@@ -134,7 +137,7 @@ using; e.g.:
 
 .. sourcecode:: bash
 
-  $ python3 -m pip install --user cppyy
+  $ python3 -m pip install --user cppyy==2.4.2
 
 First, we need to enable the build of Python bindings:
 
@@ -149,13 +152,13 @@ To run example programs, there are two ways to use ns3 to take care of this.  On
 .. sourcecode:: bash
 
   $ ./ns3 shell
-  $ python3 examples/wireless/mixed-wireless.py
+  $ python3 examples/wireless/mixed-wired-wireless.py
 
 and the other is to use the 'run' option to ns3:
 
 .. sourcecode:: bash
 
-  $ ./ns3 run examples/wireless/mixed-wireless.py
+  $ ./ns3 run examples/wireless/mixed-wired-wireless.py
 
 Use the ``--no-build`` option to run the program without invoking a project rebuild.
 This option may be useful to improve execution time when running the same program
@@ -163,14 +166,14 @@ repeatedly but with different arguments, such as from scripts.
 
 .. sourcecode:: bash
 
-  $ ./ns3 run --no-build examples/wireless/mixed-wireless.py
+  $ ./ns3 run --no-build examples/wireless/mixed-wired-wireless.py
 
 To run a python script under the C debugger:
 
 .. sourcecode:: bash
 
   $ ./ns3 shell
-  $ gdb --args python3 examples/wireless/mixed-wireless.py
+  $ gdb --args python3 examples/wireless/mixed-wired-wireless.py
 
 To run your own Python script that calls |ns3| and that has this path, ``/path/to/your/example/my-script.py``, do the following:
 
