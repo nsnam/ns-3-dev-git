@@ -789,6 +789,8 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         }
     }
 
+    bool icfReceived = false;
+
     if (hdr.IsTrigger())
     {
         if (!m_staMac)
@@ -869,6 +871,7 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
             NS_ASSERT(m_staMac->GetEmlsrManager());
             m_staMac->GetEmlsrManager()->NotifyIcfReceived(m_linkId);
+            icfReceived = true;
 
             // we just got involved in a DL TXOP. Check if we are still involved in the TXOP in a
             // SIFS (we are expected to reply by sending a CTS frame)
@@ -878,6 +881,22 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                                    &EhtFrameExchangeManager::TxopEnd,
                                                    this);
         }
+    }
+
+    // We impose that an aux PHY is only able to receive an ICF or a management frame (we are
+    // interested in receiving mainly Beacon frames). Note that other frames are still
+    // post-processed, e.g., used to set the NAV and the TXOP holder.
+    // The motivation is that, e.g., an AP MLD may send an ICF to EMLSR clients A and B;
+    // A responds while B does not; the AP MLD sends a DL MU PPDU to both clients followed
+    // by an MU-BAR to solicit a BlockAck from both clients. If an aux PHY of client B is
+    // operating on this link, the MU-BAR will be received and a TB PPDU response sent
+    // through the aux PHY.
+    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
+        m_mac->GetLinkForPhy(m_staMac->GetEmlsrManager()->GetMainPhyId()) != m_linkId &&
+        !icfReceived && !mpdu->GetHeader().IsMgt())
+    {
+        NS_LOG_DEBUG("Dropping " << *mpdu << " received by an aux PHY on link " << +m_linkId);
+        return;
     }
 
     HeFrameExchangeManager::ReceiveMpdu(mpdu, rxSignalInfo, txVector, inAmpdu);
