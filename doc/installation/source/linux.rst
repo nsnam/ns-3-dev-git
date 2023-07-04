@@ -21,8 +21,8 @@ extensions you need; please review the previous chapter if you need more informa
 Requirements
 ************
 
-The minimum supported version of Ubuntu is Ubuntu 16.04 LTS (as long as a modern compiler
-version such as g++ version 8 or later is added).
+The minimum supported version of Ubuntu is Ubuntu 18.04 LTS (as long as a modern compiler
+version such as g++ version 9 or later is added).
 
   +--------------------+---------------------------------------------------------------------+
   | **ns-3 Version**   | **apt Packages**                                                    |
@@ -35,11 +35,8 @@ version such as g++ version 8 or later is added).
   +--------------------+---------------------------------------------------------------------+
 
 .. note::
-  As of January 2022 (ns-3.36 release and later), the minimum g++ version is g++-8.
-  Older Ubuntu releases (18.04, 16.04) come with an older default g++. On Ubuntu 18.04, this
-  `StackOverflow answer <https://askubuntu.com/a/1028656>`_ can be followed to install and
-  prefer g++-8. On older Ubuntu such as 16.04, to use the most recent |ns3|, you must install
-  g++-8 or g++-9 from the `Ubuntu toolchain <https://launchpad.net/%7Eubuntu-toolchain-r/+archive/ubuntu/test>`_.
+  As of July 2023 (ns-3.39 release and later), the minimum g++ version is g++-9.
+  Older ns-3 releases may work with older versions of g++; check the RELEASE_NOTES.
 
 Recommended
 ***********
