@@ -529,6 +529,10 @@ WifiTxVector::IsDlOfdma() const
     {
         return false;
     }
+    if (IsEht(m_preamble))
+    {
+        return m_ehtPpduType == 0;
+    }
     if (m_muUserInfos.size() == 1)
     {
         return true;
@@ -551,6 +555,10 @@ WifiTxVector::IsDlMuMimo() const
     if (!IsDlMu())
     {
         return false;
+    }
+    if (IsEht(m_preamble))
+    {
+        return m_ehtPpduType == 2;
     }
     if (m_muUserInfos.size() < 2)
     {
