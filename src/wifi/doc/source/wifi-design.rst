@@ -167,8 +167,6 @@ packets.  Interference from other wireless technologies is only modeled
 when the SpectrumWifiPhy is used.
 The following details pertain to the physical layer and channel models:
 
-* 802.11ax/be MU-RTS/CTS is not yet supported
-* 802.11ac/ax/be MU-MIMO is not supported, and no more than 4 antennas can be configured
 * 802.11n/ac/ax/be beamforming is not supported
 * 802.11n RIFS is not supported
 * 802.11 PCF/HCF/HCCA are not implemented
@@ -178,11 +176,11 @@ The following details pertain to the physical layer and channel models:
 * Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE/EHT formats are not supported
 * Energy consumption model does not consider MIMO
 * 802.11ax preamble puncturing is supported by the PHY but is currently not exploited by the MAC
-* Only minimal 802.11be PHY is supported (no MAC layer yet)
+* Only minimal MU-MIMO is supported (ideal PHY assumed, no MAC layer yet)
 
 At the MAC layer, most of the main functions found in deployed Wi-Fi
-equipment for 802.11a/b/e/g/n/ac/ax are implemented, but there are scattered instances
-where some limitations in the models exist. Support for 802.11n, ac and ax is evolving.
+equipment for 802.11a/b/e/g/n/ac/ax/be are implemented, but there are scattered instances
+where some limitations in the models exist. Support for 802.11n, ac, ax and be is evolving.
 
 Some implementation choices that are not imposed by the standard are listed below:
 
