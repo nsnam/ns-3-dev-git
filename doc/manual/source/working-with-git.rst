@@ -256,7 +256,7 @@ It is strongly suggested to rebase your branch on top of upstream/master (or mas
 This helps reviewing the code changes proposed in the branch. merge it without conflicts, and it increase the speed of the GitLab CI.
 
 GitLab CI (Continuous Integration)
-+++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++
 
 GitLab provides a CI (Continuous Integration) feature. Shortly put, after every push the code is built and tests are run in one of the GitLab servers.
 
