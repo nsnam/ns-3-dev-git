@@ -16,6 +16,11 @@ and references prefixed by '!' refer to a
 Release 3.39
 ------------
 
+### Availability
+
+This release is available from:
+<https://www.nsnam.org/release/ns-allinone-3.39.tar.bz2>
+
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
