@@ -740,18 +740,9 @@ HePhy::ProcessSigB(Ptr<Event> event, PhyFieldRxStatus status)
             return PhyFieldRxStatus(false, FILTERED, DROP);
         }
     }
-    if (event->GetTxVector().IsDlMu())
-    {
-        // When including a Trigger Frame, a DL MU PPDU solicits a TB PPDU.
-        // NOTE that the 'if' condition above is not needed for HE because SIG-B is only
-        // included in HE MU PPDUs, but it is necessary for EHT to avoid that a non-AP
-        // STA receiving a Trigger Frame sent as an EHT SU transmission (which carries
-        // the EHT-SIG field) stores the PPDU UID and uses it later to schedule the
-        // reception of the payload of the TB PPDU (see HePhy::StartReceivePreamble())
-        // despite it lacks the TRIGVECTOR.
-        m_currentMuPpduUid =
-            event->GetPpdu()->GetUid(); // to be able to correctly schedule start of MU payload
-    }
+    m_currentMuPpduUid =
+        event->GetPpdu()->GetUid(); // to be able to correctly schedule start of MU payload
+
     return status;
 }
 
@@ -934,6 +925,8 @@ HePhy::DoEndReceivePayload(Ptr<const WifiPpdu> ppdu)
         NS_ASSERT(m_wifiPhy->GetLastRxEndTime() == Simulator::Now());
         PhyEntity::DoEndReceivePayload(ppdu);
     }
+    // we are done receiving the payload, we can reset the current MU PPDU UID
+    m_currentMuPpduUid = UINT64_MAX;
 }
 
 void
