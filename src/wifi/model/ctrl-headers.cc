@@ -1451,7 +1451,8 @@ CtrlTriggerUserInfoField::GetUlFecCodingType() const
 void
 CtrlTriggerUserInfoField::SetUlMcs(uint8_t mcs)
 {
-    NS_ABORT_MSG_IF(mcs > 11, "Invalid MCS index");
+    uint8_t maxMcs = m_variant == TriggerFrameVariant::EHT ? 13 : 11;
+    NS_ABORT_MSG_IF(mcs > maxMcs, "Invalid MCS index");
     m_ulMcs = mcs;
 }
 
