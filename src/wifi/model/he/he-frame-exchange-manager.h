@@ -157,7 +157,6 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     Time GetTxDuration(uint32_t ppduPayloadSize,
                        Mac48Address receiver,
                        const WifiTxParameters& txParams) const override;
-    bool SendMpduFromBaManager(Ptr<WifiMpdu> mpdu, Time availableTime, bool initialFrame) override;
     void NormalAckTimeout(Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector) override;
     void BlockAckTimeout(Ptr<WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVector) override;

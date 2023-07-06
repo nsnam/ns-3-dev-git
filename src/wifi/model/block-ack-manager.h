@@ -418,14 +418,6 @@ class BlockAckManager : public Object
      * it is placed at the head of the queue, otherwise at the tail.
      */
     void ScheduleBar(const CtrlBAckRequestHeader& reqHdr, const WifiMacHeader& hdr);
-    /**
-     * \param muBar the MU-BAR Trigger Frame to enqueue
-     *
-     * Enqueue the given MU-BAR Trigger Frame into the queue storing the next MU-BAR
-     * frames to transmit. If the given MU-BAR Trigger Frame is retransmitted,
-     * it is placed at the head of the queue, otherwise at the tail.
-     */
-    void ScheduleMuBar(Ptr<WifiMpdu> muBar);
 
     /// agreement key typedef (MAC address and TID)
     using AgreementKey = std::pair<Mac48Address, uint8_t>;

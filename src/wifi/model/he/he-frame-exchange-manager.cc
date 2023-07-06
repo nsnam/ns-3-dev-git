@@ -214,26 +214,6 @@ HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
     return false;
 }
 
-bool
-HeFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
-                                              Time availableTime,
-                                              bool initialFrame)
-{
-    NS_LOG_FUNCTION(this << *mpdu << availableTime << initialFrame);
-
-    // First, check if there is a Trigger Frame to be transmitted
-    if (!mpdu->GetHeader().IsTrigger())
-    {
-        // BlockAckReq are handled by the HT FEM
-        return HtFrameExchangeManager::SendMpduFromBaManager(mpdu, availableTime, initialFrame);
-    }
-
-    m_triggerFrame = mpdu;
-
-    SendPsduMap();
-    return true;
-}
-
 void
 HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxParameters& txParams)
 {
@@ -624,8 +604,7 @@ HeFrameExchangeManager::SendPsduMap()
             // set the UL Length field of the MU-BAR Trigger Frame
             m_trigVector.SetLength(acknowledgment->ulLength);
 
-            NS_ASSERT(m_edca);
-            m_edca->GetBaManager()->ScheduleMuBar(PrepareMuBar(m_trigVector, recipients));
+            m_triggerFrame = PrepareMuBar(m_trigVector, recipients);
         }
         else
         {
@@ -827,7 +806,14 @@ HeFrameExchangeManager::SendPsduMap()
 
     if (timerType == WifiTxTimer::NOT_RUNNING)
     {
-        if (!m_txParams.m_txVector.IsUlMu())
+        if (m_triggerFrame)
+        {
+            NS_LOG_DEBUG("Scheduling MU-BAR " << *m_triggerFrame);
+            Simulator::Schedule(txDuration + m_phy->GetSifs(),
+                                &HeFrameExchangeManager::SendPsduMap,
+                                this);
+        }
+        else if (!m_txParams.m_txVector.IsUlMu())
         {
             Simulator::Schedule(txDuration, &HeFrameExchangeManager::TransmissionSucceeded, this);
         }
@@ -1334,7 +1320,6 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout(
     if (m_triggerFrame)
     {
         // this is strictly needed for DL_MU_TF_MU_BAR only
-        DequeueMpdu(m_triggerFrame);
         m_triggerFrame = nullptr;
     }
 
@@ -2441,7 +2426,6 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 if (m_triggerFrame)
                 {
                     // this is strictly needed for DL_MU_TF_MU_BAR only
-                    DequeueMpdu(m_triggerFrame);
                     m_triggerFrame = nullptr;
                 }
 
