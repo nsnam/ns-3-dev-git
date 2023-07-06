@@ -946,7 +946,7 @@ Vehicular fast fading model
 
 The fast fading model described in Sec. 6.2.3 of TR 37.885 is based on the one
 specified in TR 38.901, whose implementation is provided in the ``spectrum`` module
-(see the :ref:`spectrum module documentation <sec-3gpp-fast-fading-model>`).
+(see the :ref:`spectrum module documentation <3gpp-fast-fading-model>`).
 This model is general and includes different parameters which can
 be tuned to simulate multiple propagation environments.
 To better model the channel dynamics in vehicular environments, TR 37.885
@@ -956,7 +956,7 @@ To select the parameters for vehicular scenarios, it is necessary to set
 the attribute "Scenario" of the class :cpp:class:`ThreeGppChannelModel` using the value
 "V2V-Urban" or "V2V-Highway".
 
-Additionally, TR 37.885 specifies a new equation to compute the Doppler component,
+edditionally, TR 37.885 specifies a new equation to compute the Doppler component,
 which accounts for the mobility of both nodes, as well as scattering
 from the environment.
 In particular, the scattering effect is considered by deviating the Doppler
@@ -978,7 +978,7 @@ We considered two communicating vehicles moving within the scenario, and
 computed the SNR experienced during the entire simulation, with a time
 resolution of 10 ms.
 The vehicles are equipped with 2x2 antenna arrays modeled using the
-:ref:`3GPP antenna model <sec-3gpp-antenna-model>`.
+:ref:`3GPP antenna model <3gpp-antenna-model>`.
 The bearing and the downtilt angles are properly configured and the
 optimal beamforming vectors are computed at the beginning of the simulation.
 

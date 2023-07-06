@@ -33,7 +33,7 @@ search for specific information.
 
 To run it, simply open terminal and type
 
-.. sourcecode::
+.. sourcecode:: bash
 
     $ ./ns3 run print-introspected-doxygen
 
@@ -78,7 +78,7 @@ This tool is used to benchmark the scheduler algorithms used in |ns3|.
 Command-line Arguments
 ++++++++++++++++++++++
 
-.. sourcecode::
+.. sourcecode:: bash
 
     $ ./ns3 run "bench-scheduler --help"
     bench-scheduler [Program Options] [General Arguments]
@@ -129,7 +129,7 @@ Invocation
 
 To run it, simply open the terminal and type
 
-.. sourcecode::
+.. sourcecode:: bash
 
     $ ./ns3 run bench-scheduler -- --runs=5
 
@@ -156,7 +156,7 @@ It will show something like this depending upon the scheduler being benchmarked:
 
 Suppose we had to benchmark `CalendarScheduler` instead, we would have written
 
-.. sourcecode::
+.. sourcecode:: bash
 
     $ ./ns3 run bench-scheduler -- --runs=5 --cal"
 

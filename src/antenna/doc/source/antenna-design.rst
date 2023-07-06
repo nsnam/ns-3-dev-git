@@ -153,6 +153,7 @@ Derived classes must implement the following functions:
 The class PhasedArrayModel also assumes that all antenna elements are equal, a typical key assumption which allows to model the PAA field pattern as the sum of the array factor, given by the geometry of the location of the antenna elements, and the element field pattern.
 Any class derived from AntennaModel is a valid antenna element for the PhasedArrayModel, allowing for a great flexibility of the framework.
 
+.. _3gpp-antenna-model:
 
 UniformPlanarArray
 ++++++++++++++++++

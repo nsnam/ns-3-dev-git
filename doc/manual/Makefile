@@ -78,7 +78,6 @@ SOURCEFIGS = \
 	figures/hotspot-top-down.png \
 	figures/perfetto-trace-cmake.png \
 	figures/uprof-collect-callstack.png \
-	figures/uprof-collect-callstack.png \
 	figures/uprof-profile-application.png \
 	figures/uprof-select-events.png \
 	figures/uprof-start.png \

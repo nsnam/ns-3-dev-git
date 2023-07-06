@@ -19,7 +19,7 @@ either WSL or the Msys2/MinGW64 toolchain (installing both is not required).
 
 .. note::
   |ns3| is not fully compatible with Visual Studio IDE / MSVC compiler; only Visual Studio Code
-editor, the Msys2/MinGW64 toolchain, and WSL, as explained below.
+  editor, the Msys2/MinGW64 toolchain, and WSL, as explained below.
 
 .. _WSL2:
 

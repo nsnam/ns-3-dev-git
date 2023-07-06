@@ -1463,8 +1463,8 @@ This should also be self-explanatory.
 
 Previous versions of |ns3| declared a custom application called ``MyApp``
 for use in this program.  Current versions of |ns3| have moved this to
-a separate header file (``tutorial-app.h'') and implementation file
-(``tutorial-app.cc'').  This simple application allows the ``Socket''
+a separate header file (``tutorial-app.h``) and implementation file
+(``tutorial-app.cc``).  This simple application allows the ``Socket``
 to be created at configuration time.
 
 ::
@@ -1887,11 +1887,11 @@ Main Program
 ~~~~~~~~~~~~
 
 The main function starts off by configuring the TCP type to use a legacy
-``NewReno`` congestion control variant, with what is called the ``classic''
+``NewReno`` congestion control variant, with what is called the ``classic``
 TCP loss recovery mechanism.  When this tutorial program was originally
 written, these were the default TCP configurations, but over time,
 |ns3| TCP has evolved to use the current Linux TCP defaults of ``Cubic``
-and ``Prr'' loss recovery.  The first statements also configure the
+and ``Prr`` loss recovery.  The first statements also configure the
 command-line argument processing.
 
 ::

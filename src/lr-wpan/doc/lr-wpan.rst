@@ -220,7 +220,10 @@ reference packets (11 bytes MAC header + 7 bytes payload (MSDU) + FCS 2 bytes). 
 have the effect to receive more packets (and at a greater distance) but it raises the probability to have dropped packets at the
 MAC layer or the probability of corrupted packets. By default, the receiver sensitivity is set to the maximum theoretical possible value of -106.58 dBm for the supported IEEE 802.15.4 O-QPSK 250kps.
 This rx sensitivity is set for the "perfect radio" which only considers the floor noise, in essence, this do not include the noise factor (noise introduced by imperfections in the demodulator chip or external factors).
-The receiver sensitivity can be changed to different values using ``SetRxSensitivity`` function in the PHY to simulate the hearing capabilities of different compliant radio transceivers (the standard minimum compliant Rx sensitivity is -85 dBm).:::
+The receiver sensitivity can be changed to different values using ``SetRxSensitivity`` function in the PHY to simulate the hearing capabilities of different compliant radio transceivers (the standard minimum compliant Rx sensitivity is -85 dBm).:
+
+::
+
                                                               (defined by the standard)
    NoiseFloor          Max Sensitivity                          Min Sensitivity
    -106.987dBm          -106.58dBm                                   -85dBm
