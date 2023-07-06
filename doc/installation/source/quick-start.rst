@@ -42,7 +42,7 @@ source archive download (via a web browser, ``wget``, or ``curl``).
   |                    | or ``tar`` and ``bunzip2``           | No minimum version           |
   |                    | (for Web download)                   |                              |
   +--------------------+--------------------------------------+------------------------------+
-  | **Compiler**       | ``g++``                              | >= 8                         |
+  | **Compiler**       | ``g++``                              | >= 9                         |
   +                    +                                      +                              +
   |                    | or ``clang++``                       | >= 10                        |
   +--------------------+--------------------------------------+------------------------------+
@@ -177,3 +177,30 @@ since CMake enables |ns3| integration with a variety of code editors, including:
 * Apple's XCode
 * CodeBlocks
 * Eclipse CDT4
+
+Installing ns-3
+***************
+
+Most users do not install |ns3| libraries to typical system library directories; they instead
+just leave the libraries in the ``build`` directory, and the ``ns3`` Python program will
+find these libraries.  However, it is possible to perform an installation step-- ``ns3 install``--
+with the following caveats.
+
+The location of the installed libraries is set by the ``--prefix`` option specified at the
+configure step.  The prefix defaults to ``/usr/local``.  For a given ``--prefix=$PREFIX``,
+the installation step will install headers to a ``$PREFIX/include`` directory, libraries
+and pkgconfig files to a ``$PREFIX/lib`` directory, and a few binaries to a
+``$PREFIX/libexec`` directory.  For example, ``./ns3 configure --prefix=/tmp``, followed
+by ``./ns3 build`` and ``./ns3 install``, will lead to files being installed in
+``/tmp/include``, ``/tmp/lib``, and ``/tmp/libexec``.
+
+Note that the ``ns3`` script prevents running the script as root (or as a sudo user).  As a
+result, with the default prefix of ``/usr/local``, the installation will fail unless the
+user has write privileges in that directory.  Attempts to force this with
+``sudo ./ns3 install`` will fail due to a check in the ``ns3`` program that prevents running
+as root.  This check was installed by |ns3| maintainers for the safety of novice users who may
+run ``./ns3`` in a root shell and later in a normal shell, and become confused about errors
+resulting in lack of privileges to modify files.   For users who know what they are doing and
+who want to install to a privileged directory, users can comment out the statement
+``refuse_run_as_root()`` in the ``ns3`` program (around line 1400), and then run
+``sudo ./ns3 install``.
