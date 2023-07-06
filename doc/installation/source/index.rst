@@ -24,6 +24,7 @@ for `Sphinx <http://sphinx.pocoo.org/>`_ and is maintained in the ``doc/installa
 
 .. toctree::
    :maxdepth: 2
+   :numbered:
 
    overview
    quick-start

@@ -24,6 +24,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
 
 .. toctree::
    :maxdepth: 2
+   :numbered:
 
    organization
    simulator
