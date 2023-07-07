@@ -104,16 +104,16 @@ cppyy-18.04:
     - $PYTHON -m venv ./venv
     - . ./venv/bin/activate
     # Upgrade the pip version to reuse the pre-build cppyy
-    - $PYTHON -m pip install pip --upgrade
-    - $PYTHON -m pip install setuptools setuptools_scm wheel --upgrade
-    - $PYTHON -m pip install wheel auditwheel cmake-build-extension cppyy==2.4.2
+    - python -m pip install pip --upgrade
+    - python -m pip install setuptools setuptools_scm wheel --upgrade
+    - python -m pip install auditwheel cmake-build-extension cppyy==2.4.2
     # Configure and build wheel
-    - $PYTHON setup.py bdist_wheel build_ext
-    - export EXCLUDE_INTERNAL_LIBRARIES=`$PYTHON ./build-support/pip-wheel/auditwheel-exclude-list.py`
+    - python setup.py bdist_wheel build_ext
+    - export EXCLUDE_INTERNAL_LIBRARIES=`python ./build-support/pip-wheel/auditwheel-exclude-list.py`
     # Bundle in shared libraries that were not explicitly packaged or depended upon
-    - $PYTHON -m auditwheel repair ./dist/*whl -L /lib64 $EXCLUDE_INTERNAL_LIBRARIES
+    - python -m auditwheel repair ./dist/*whl -L /lib64 $EXCLUDE_INTERNAL_LIBRARIES
     # Clean the build directory
-    - $PYTHON ./ns3 clean
+    - python ./ns3 clean
     # Clean up the environment
     - deactivate
     - rm -R ./venv
