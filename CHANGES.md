@@ -29,6 +29,7 @@ Changes from ns-3.39 to ns-3-dev
 * (lr-wpan) Added the possibility to obtain the LQI from a received `MlmeAssociateIndicationParams`.
 * (wifi) Added new helper methods to SpectrumWifiPhyHelper to allow flexible configuration for the mapping between spectrum PHY interfaces and PHY instances.
 * (wifi) Added new trace sources to `WifiPhy`: **OperatingChannelChange**, which is fired when the operating channel of a PHY is changed.
+* (wifi) The attribute `WifiPhy::Antennas` is extended to support up to 8 antennas.
 
 ### Changes to build system
 

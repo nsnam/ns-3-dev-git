@@ -36,6 +36,7 @@ requirements (Note: not all ns-3 features are available on all systems):
 - (lr-wpan) - !1645 - Add LQI to MlmeAssociateIndicationParams
 - (wifi) Added a new trace source to WifiPhy to indicate operating channel change
 - (wifi) Improved support for multiple spectrum PHY interfaces
+- (wifi) Added initial support for MU-MIMO (ideal PHY layer only)
 
 ### Bugs fixed
 
