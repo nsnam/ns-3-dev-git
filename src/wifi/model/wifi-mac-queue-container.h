@@ -34,7 +34,8 @@ enum WifiContainerQueueType
 enum WifiReceiverAddressType : uint8_t
 {
     WIFI_UNICAST = 0,
-    WIFI_BROADCAST
+    WIFI_BROADCAST,
+    WIFI_GROUPCAST
 };
 
 /**
