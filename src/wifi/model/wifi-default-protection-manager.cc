@@ -207,7 +207,9 @@ WifiDefaultProtectionManager::GetPsduProtection(const WifiMacHeader& hdr,
     if (emlsrNeedRts || GetWifiRemoteStationManager()->NeedRts(hdr, size))
     {
         auto protection = std::make_unique<WifiRtsCtsProtection>();
-        protection->rtsTxVector = GetWifiRemoteStationManager()->GetRtsTxVector(hdr.GetAddr1());
+        protection->rtsTxVector =
+            GetWifiRemoteStationManager()->GetRtsTxVector(hdr.GetAddr1(),
+                                                          txVector.GetChannelWidth());
         protection->ctsTxVector =
             GetWifiRemoteStationManager()->GetCtsTxVector(hdr.GetAddr1(),
                                                           protection->rtsTxVector.GetMode());
@@ -301,7 +303,8 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
             }
 
             // compute the TXVECTOR to use to send the MU-RTS Trigger Frame
-            protection->muRtsTxVector = GetWifiRemoteStationManager()->GetRtsTxVector(receiver);
+            protection->muRtsTxVector =
+                GetWifiRemoteStationManager()->GetRtsTxVector(receiver, txWidth);
             // The transmitter of an MU-RTS Trigger frame shall not request a non-AP STA to send
             // a CTS frame response in a 20 MHz channel that is not occupied by the PPDU that
             // contains the MU-RTS Trigger frame. (Sec. 26.2.6.2 of 802.11ax)
@@ -391,7 +394,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
 
     // compute the TXVECTOR to use to send the MU-RTS Trigger Frame
     protection->muRtsTxVector =
-        GetWifiRemoteStationManager()->GetRtsTxVector(mpdu->GetHeader().GetAddr1());
+        GetWifiRemoteStationManager()->GetRtsTxVector(mpdu->GetHeader().GetAddr1(), txWidth);
     // The transmitter of an MU-RTS Trigger frame shall not request a non-AP STA to send
     // a CTS frame response in a 20 MHz channel that is not occupied by the PPDU that
     // contains the MU-RTS Trigger frame. (Sec. 26.2.6.2 of 802.11ax)

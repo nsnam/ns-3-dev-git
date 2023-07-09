@@ -2026,7 +2026,8 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
     auto txDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, apPhy->GetPhyBand());
     auto cfEndTxDuration = WifiPhy::CalculateTxDuration(
         Create<WifiPsdu>(Create<Packet>(), WifiMacHeader(WIFI_MAC_CTL_END)),
-        m_apMac->GetWifiRemoteStationManager(linkId)->GetRtsTxVector(Mac48Address::GetBroadcast()),
+        m_apMac->GetWifiRemoteStationManager(linkId)->GetRtsTxVector(Mac48Address::GetBroadcast(),
+                                                                     txVector.GetChannelWidth()),
         apPhy->GetPhyBand());
 
     m_countBlockAck++;

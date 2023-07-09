@@ -97,7 +97,8 @@ QosFrameExchangeManager::SendCfEndIfNeeded()
     cfEnd.SetAddr1(Mac48Address::GetBroadcast());
     cfEnd.SetAddr2(m_self);
 
-    WifiTxVector cfEndTxVector = GetWifiRemoteStationManager()->GetRtsTxVector(cfEnd.GetAddr1());
+    WifiTxVector cfEndTxVector =
+        GetWifiRemoteStationManager()->GetRtsTxVector(cfEnd.GetAddr1(), m_allowedWidth);
 
     auto mpdu = Create<WifiMpdu>(Create<Packet>(), cfEnd);
     auto txDuration =

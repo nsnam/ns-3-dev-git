@@ -320,7 +320,8 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     m_txParams.Clear();
     // set the TXVECTOR used to send the Trigger Frame
     m_txParams.m_txVector =
-        m_apMac->GetWifiRemoteStationManager(m_linkId)->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
+        m_apMac->GetWifiRemoteStationManager(m_linkId)->GetRtsTxVector(m_triggerMacHdr.GetAddr1(),
+                                                                       m_allowedWidth);
 
     if (!GetHeFem(m_linkId)->TryAddMpdu(item, m_txParams, m_availableTime))
     {
@@ -442,7 +443,8 @@ RrMultiUserScheduler::TrySendingBasicTf()
     m_txParams.Clear();
     // set the TXVECTOR used to send the Trigger Frame
     m_txParams.m_txVector =
-        m_apMac->GetWifiRemoteStationManager(m_linkId)->GetRtsTxVector(m_triggerMacHdr.GetAddr1());
+        m_apMac->GetWifiRemoteStationManager(m_linkId)->GetRtsTxVector(m_triggerMacHdr.GetAddr1(),
+                                                                       m_allowedWidth);
 
     if (!GetHeFem(m_linkId)->TryAddMpdu(item, m_txParams, m_availableTime))
     {

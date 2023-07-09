@@ -572,7 +572,9 @@ WifiDefaultAckManager::GetAckInfoIfTfMuBar(Ptr<const WifiMpdu> mpdu,
                                           m_mac->GetBaTypeAsOriginator(receiver, tid)});
 
         acknowledgment->barTypes.push_back(m_mac->GetBarTypeAsOriginator(receiver, tid));
-        acknowledgment->muBarTxVector = GetWifiRemoteStationManager()->GetRtsTxVector(receiver);
+        acknowledgment->muBarTxVector =
+            GetWifiRemoteStationManager()->GetRtsTxVector(receiver,
+                                                          txParams.m_txVector.GetChannelWidth());
         acknowledgment->SetQosAckPolicy(receiver, tid, WifiMacHeader::BLOCK_ACK);
         return std::unique_ptr<WifiDlMuTfMuBar>(acknowledgment);
     }

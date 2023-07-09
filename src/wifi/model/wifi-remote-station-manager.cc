@@ -701,13 +701,13 @@ WifiRemoteStationManager::GetCtsToSelfTxVector()
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetRtsTxVector(Mac48Address address)
+WifiRemoteStationManager::GetRtsTxVector(Mac48Address address, uint16_t allowedWidth)
 {
-    NS_LOG_FUNCTION(this << address);
+    NS_LOG_FUNCTION(this << address << allowedWidth);
+    WifiTxVector v;
     if (address.IsGroup())
     {
         WifiMode mode = GetNonUnicastMode();
-        WifiTxVector v;
         v.SetMode(mode);
         v.SetPreambleType(
             GetPreambleForTransmission(mode.GetModulationClass(), GetShortPreambleEnabled()));
@@ -717,9 +717,31 @@ WifiRemoteStationManager::GetRtsTxVector(Mac48Address address)
         v.SetNTx(GetNumberOfAntennas());
         v.SetNss(1);
         v.SetNess(0);
-        return v;
     }
-    return DoGetRtsTxVector(Lookup(address));
+    else
+    {
+        v = DoGetRtsTxVector(Lookup(address));
+    }
+    auto modulation = v.GetModulationClass();
+
+    if (allowedWidth >= 40 &&
+        (modulation == WIFI_MOD_CLASS_DSSS || modulation == WIFI_MOD_CLASS_HR_DSSS))
+    {
+        // RTS must be sent in a non-HT duplicate PPDU because it must protect a frame being
+        // transmitted on at least 40 MHz. Change the modulation class to ERP-OFDM and the rate
+        // to 6 Mbps
+        v.SetMode(ErpOfdmPhy::GetErpOfdmRate6Mbps());
+        modulation = v.GetModulationClass();
+    }
+    // do not set allowedWidth as the TX width if the modulation class is (HR-)DSSS (allowedWidth
+    // may be >= 40 MHz) or allowedWidth is 22 MHz (the selected modulation class may be OFDM)
+    if (modulation != WIFI_MOD_CLASS_DSSS && modulation != WIFI_MOD_CLASS_HR_DSSS &&
+        allowedWidth != 22)
+    {
+        v.SetChannelWidth(allowedWidth);
+    }
+
+    return v;
 }
 
 WifiTxVector
