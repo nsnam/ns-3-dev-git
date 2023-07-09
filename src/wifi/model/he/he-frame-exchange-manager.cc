@@ -918,6 +918,8 @@ HeFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVecto
         FinalizeMacHeader(psdu);
         NotifyTxToEdca(psdu);
     }
+    m_allowedWidth = std::min(m_allowedWidth, txVector.GetChannelWidth());
+
     if (psduMap.size() > 1 || psduMap.begin()->second->IsAggregate() ||
         psduMap.begin()->second->IsSingle())
     {

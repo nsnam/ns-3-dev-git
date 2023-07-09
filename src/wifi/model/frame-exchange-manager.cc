@@ -525,6 +525,7 @@ FrameExchangeManager::ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector
 
     auto psdu = Create<WifiPsdu>(mpdu, false);
     FinalizeMacHeader(psdu);
+    m_allowedWidth = std::min(m_allowedWidth, txVector.GetChannelWidth());
     m_phy->Send(psdu, txVector);
 }
 

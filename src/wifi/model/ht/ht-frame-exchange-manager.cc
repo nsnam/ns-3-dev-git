@@ -1131,6 +1131,7 @@ HtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& 
     NS_LOG_DEBUG("Transmitting a PSDU: " << *psdu << " TXVECTOR: " << txVector);
     FinalizeMacHeader(psdu);
     NotifyTxToEdca(psdu);
+    m_allowedWidth = std::min(m_allowedWidth, txVector.GetChannelWidth());
 
     if (psdu->IsAggregate())
     {
