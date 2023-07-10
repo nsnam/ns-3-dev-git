@@ -433,19 +433,36 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId)
         return;
     }
 
-    // unblock transmissions and resume medium access on other EMLSR links
-    for (auto id : m_staMac->GetLinkIds())
-    {
-        if (id != linkId && m_staMac->IsEmlsrLink(id))
-        {
-            m_staMac->UnblockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
-            m_staMac->GetChannelAccessManager(id)->NotifyStopUsingOtherEmlsrLink();
-        }
-    }
-
-    StartMediumSyncDelayTimer(linkId);
-
     DoNotifyTxopEnd(linkId);
+
+    // if the main PHY starts switching link at the end of the TXOP (which happens, e.g., when the
+    // aux PHY does not switch link), we have to keep blocking transmissions until the channel
+    // switch is complete. Otherwise, an aux PHY may get channel access, transmit an RTS and
+    // request the main PHY to switch to its link, but the main PHY may still be completing the
+    // previous channel switch
+    Simulator::ScheduleNow([=, this]() {
+        auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
+        auto delay = mainPhy->IsStateSwitching() ? mainPhy->GetDelayUntilIdle() : Seconds(0);
+        NS_LOG_DEBUG("Main PHY is switching, postpone unblocking links by " << delay.As(Time::US));
+
+        // block transmissions on the link on which the TXOP was carried out
+        m_staMac->BlockTxOnLink(linkId, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+        m_staMac->GetChannelAccessManager(linkId)->NotifyStartUsingOtherEmlsrLink();
+
+        Simulator::Schedule(delay, [=, this]() {
+            // unblock transmissions and resume medium access on other EMLSR links
+            for (auto id : m_staMac->GetLinkIds())
+            {
+                if (m_staMac->IsEmlsrLink(id))
+                {
+                    m_staMac->UnblockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+                    m_staMac->GetChannelAccessManager(id)->NotifyStopUsingOtherEmlsrLink();
+                }
+            }
+        });
+
+        StartMediumSyncDelayTimer(linkId);
+    });
 }
 
 void
