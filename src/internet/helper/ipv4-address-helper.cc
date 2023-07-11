@@ -48,7 +48,7 @@ Ipv4AddressHelper::Ipv4AddressHelper()
     m_mask = 0;
     m_address = 0xffffffff;
     m_base = 0xffffffff;
-    m_shift = 0xffffffff;
+    m_shift = 0;
     m_max = 0xffffffff;
 }
 
