@@ -25,7 +25,6 @@
 #include "ns3/enum.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
-#include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
@@ -147,6 +146,11 @@ main(int argc, char* argv[])
     bool downlink{true};
     bool useRts{false};
     bool useExtendedBlockAck{false};
+    std::string emlsrLinks;
+    uint16_t paddingDelayUsec{32};
+    uint16_t transitionDelayUsec{128};
+    uint16_t channelSwitchDelayUsec{100};
+    bool switchAuxPhy{true};
     double simulationTime{10}; // seconds
     double distance{1.0};      // meters
     double frequency{5};       // whether the first link operates in the 2.4, 5 or 6 GHz
@@ -181,6 +185,22 @@ main(int argc, char* argv[])
         "Whether the third link operates in the 2.4, 5 or 6 GHz band (0 means the device has up to "
         "two links, otherwise the band must be different than first link and second link)",
         frequency3);
+    cmd.AddValue("emlsrLinks",
+                 "The comma separated list of IDs of EMLSR links (for MLDs only)",
+                 emlsrLinks);
+    cmd.AddValue("emlsrPaddingDelay",
+                 "The EMLSR padding delay in microseconds (0, 32, 64, 128 or 256)",
+                 paddingDelayUsec);
+    cmd.AddValue("emlsrTransitionDelay",
+                 "The EMLSR transition delay in microseconds (0, 16, 32, 64, 128 or 256)",
+                 transitionDelayUsec);
+    cmd.AddValue("emlsrAuxSwitch",
+                 "Whether Aux PHY should switch channel to operate on the link on which "
+                 "the Main PHY was operating before moving to the link of the Aux PHY. ",
+                 switchAuxPhy);
+    cmd.AddValue("channelSwitchDelay",
+                 "The PHY channel switch delay in microseconds",
+                 channelSwitchDelayUsec);
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
                  distance);
@@ -286,6 +306,7 @@ main(int argc, char* argv[])
 
                 wifi.SetStandard(WIFI_STANDARD_80211be);
                 std::array<std::string, 3> channelStr;
+                std::array<FrequencyRange, 3> freqRanges;
                 uint8_t nLinks = 0;
                 std::string dataModeStr = "EhtMcs" + std::to_string(mcs);
                 std::string ctrlRateStr;
@@ -308,6 +329,7 @@ main(int argc, char* argv[])
                     if (freq == 6)
                     {
                         channelStr[nLinks] += "BAND_6GHZ, 0}";
+                        freqRanges[nLinks] = WIFI_SPECTRUM_6_GHZ;
                         Config::SetDefault("ns3::LogDistancePropagationLossModel::ReferenceLoss",
                                            DoubleValue(48));
                         wifi.SetRemoteStationManager(nLinks,
@@ -320,6 +342,7 @@ main(int argc, char* argv[])
                     else if (freq == 5)
                     {
                         channelStr[nLinks] += "BAND_5GHZ, 0}";
+                        freqRanges[nLinks] = WIFI_SPECTRUM_5_GHZ;
                         ctrlRateStr = "OfdmRate" + std::to_string(nonHtRefRateMbps) + "Mbps";
                         wifi.SetRemoteStationManager(nLinks,
                                                      "ns3::ConstantRateWifiManager",
@@ -331,6 +354,7 @@ main(int argc, char* argv[])
                     else if (freq == 2.4)
                     {
                         channelStr[nLinks] += "BAND_2_4GHZ, 0}";
+                        freqRanges[nLinks] = WIFI_SPECTRUM_2_4_GHZ;
                         Config::SetDefault("ns3::LogDistancePropagationLossModel::ReferenceLoss",
                                            DoubleValue(40));
                         ctrlRateStr = "ErpOfdmRate" + std::to_string(nonHtRefRateMbps) + "Mbps";
@@ -349,6 +373,11 @@ main(int argc, char* argv[])
                     nLinks++;
                 }
 
+                if (nLinks > 1 && !emlsrLinks.empty())
+                {
+                    wifi.ConfigEhtOptions("EmlsrActivated", BooleanValue(true));
+                }
+
                 Ssid ssid = Ssid("ns3-80211be");
 
                 /*
@@ -357,21 +386,28 @@ main(int argc, char* argv[])
                  * and one with 312.5 kHz bands for, e.g., non-HT PPDUs (for more details,
                  * see issue #408 (CLOSED))
                  */
-                Ptr<MultiModelSpectrumChannel> spectrumChannel =
-                    CreateObject<MultiModelSpectrumChannel>();
-
-                Ptr<LogDistancePropagationLossModel> lossModel =
-                    CreateObject<LogDistancePropagationLossModel>();
-                spectrumChannel->AddPropagationLossModel(lossModel);
-
                 SpectrumWifiPhyHelper phy(nLinks);
                 phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
-                phy.SetChannel(spectrumChannel);
+                phy.Set("ChannelSwitchDelay", TimeValue(MicroSeconds(channelSwitchDelayUsec)));
 
                 mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
+                mac.SetEmlsrManager("ns3::DefaultEmlsrManager",
+                                    "EmlsrLinkSet",
+                                    StringValue(emlsrLinks),
+                                    "EmlsrPaddingDelay",
+                                    TimeValue(MicroSeconds(paddingDelayUsec)),
+                                    "EmlsrTransitionDelay",
+                                    TimeValue(MicroSeconds(transitionDelayUsec)),
+                                    "SwitchAuxPhy",
+                                    BooleanValue(switchAuxPhy));
                 for (uint8_t linkId = 0; linkId < nLinks; linkId++)
                 {
                     phy.Set(linkId, "ChannelSettings", StringValue(channelStr[linkId]));
+
+                    auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+                    auto lossModel = CreateObject<LogDistancePropagationLossModel>();
+                    spectrumChannel->AddPropagationLossModel(lossModel);
+                    phy.AddChannel(spectrumChannel, freqRanges[linkId]);
                 }
                 staDevices = wifi.Install(phy, mac, wifiStaNodes);
 
@@ -506,8 +542,6 @@ main(int argc, char* argv[])
                                         tputInterval,
                                         simulationTime + 1);
                 }
-
-                Simulator::Schedule(Seconds(0), &Ipv4GlobalRoutingHelper::PopulateRoutingTables);
 
                 Simulator::Stop(Seconds(simulationTime + 1));
                 Simulator::Run();
