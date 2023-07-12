@@ -20,20 +20,19 @@
 #ifndef WIFI_EMLSR_TEST_H
 #define WIFI_EMLSR_TEST_H
 
+#include "ns3/ap-wifi-mac.h"
+#include "ns3/error-model.h"
 #include "ns3/header-serialization-test.h"
 #include "ns3/packet-socket-address.h"
+#include "ns3/packet-socket-client.h"
+#include "ns3/sta-wifi-mac.h"
+#include "ns3/test.h"
 #include "ns3/wifi-mac-queue-scheduler.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/wifi-ppdu.h"
+#include "ns3/wifi-psdu.h"
 
-namespace ns3
-{
-
-class ApWifiMac;
-class ListErrorModel;
-class PacketSocketClient;
-class StaWifiMac;
-class WifiPsdu;
+using namespace ns3;
 
 /**
  * \ingroup wifi-test
@@ -466,6 +465,155 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test the transmission of UL frames from EMLSR clients.
+ *
+ * This test considers an AP MLD and a non-AP MLD that support EMLSR. The non-AP MLD setups three
+ * links, while the set of EMLSR links is configurable. Block ack agreements (for TID 0) for both
+ * DL and UL directions are established after that the EML Operating Mode Notification frames are
+ * exchanged to enable the EMLSR mode on the EMLSR links. Aux PHYs on the EMLSR client do not
+ * switch link, hence the main PHY will switch link (if needed) when terminating a TXOP.
+ *
+ * It is checked that:
+ *
+ * - Initially, aux PHYs are configured so that they are unable to transmit frames. Before
+ *   generating the packets for the first UL data frame, transmissions on the link where the
+ *   main PHY is operating and on the non-EMLSR link (if any) are blocked. Thus, the first UL data
+ *   frame is held until transmissions on the link where the main PHY is operating are unblocked.
+ *   The first UL data frame is sent by the main PHY without RTS protection. When the data frame
+ *   exchange terminates, the MediumSyncDelay timer is started on the other EMLSR links and the
+ *   CCA ED threshold is set as expected
+ * - If there is a non-EMLSR link, another data frame can be sent concurrently (without protection)
+ *   on the non-EMLSR link
+ * - When the first UL data frame is transmitted, we make the aux PHYs on the EMLSR client capable
+ *   of transmitting, we block transmissions on the link where the main PHY is operating and
+ *   generate new UL packets, which will then be transmitted on a link where an aux PHY is
+ *   operating. Thus, the aux PHY transmits an RTS frame and the main PHY will take over and
+ *   transmit the second UL data frame. We check that the number of backoff slots on the link
+ *   where the main PHY was operating (which is blocked because another EMLSR link is being used)
+ *   at the end of the frame exchange on the other EMLSR link is the same as the one at the
+ *   beginning of that frame exchange.
+ * - When the exchange of the second UL data frame terminates, we make the aux PHY unable to
+ *   transmit, block transmissions on the non-EMLSR link (if any) and generate some more UL
+ *   packets, which will then be transmitted by the main PHY. However, a MediumSyncDelay timer
+ *   is now running on the link where the main PHY is operating, hence transmissions are protected
+ *   by an RTS frame. We install a post reception error model on the AP MLD so that all RTS frames
+ *   sent by the EMLSR client are not received by the AP MLD. We check that the EMLSR client makes
+ *   at most the configured max number of transmission attempts and that the last UL data frame is
+ *   sent once the MediumSyncDelay timer is expired. We also check that the TX width of the RTS
+ *   frames and the last UL data frame equal the channel width used by the main PHY.
+ */
+class EmlsrUlTxopTest : public EmlsrOperationsTestBase
+{
+  public:
+    /**
+     * Parameters for the EMLSR UL TXOP test
+     */
+    struct Params
+    {
+        std::set<uint8_t>
+            linksToEnableEmlsrOn;    //!< IDs of links on which EMLSR mode should be enabled
+        uint16_t channelWidth;       //!< width (MHz) of the channels used by MLDs
+        uint16_t auxPhyChannelWidth; //!< max width (MHz) supported by aux PHYs
+        Time mediumSyncDuration;     //!< duration of the MediumSyncDelay timer
+        uint8_t msdMaxNTxops;        //!< Max number of TXOPs that an EMLSR client is allowed
+                                     //!< to attempt to initiate while the MediumSyncDelay
+                                     //!< timer is running (zero indicates no limit)
+    };
+
+    /**
+     * Constructor
+     *
+     * \param params parameters for the EMLSR UL TXOP test
+     */
+    EmlsrUlTxopTest(const Params& params);
+    ~EmlsrUlTxopTest() override = default;
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+
+    /**
+     * Check that the simulation produced the expected results.
+     */
+    void CheckResults();
+
+    /**
+     * Check that appropriate actions are taken by the EMLSR client when transmitting an RTS
+     * frame on the given link.
+     *
+     * \param mpdu the MPDU carrying the RTS frame
+     * \param txVector the TXVECTOR used to send the PPDU
+     * \param linkId the ID of the given link
+     */
+    void CheckRtsFrames(Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector, uint8_t linkId);
+
+    /**
+     * Check that appropriate actions are taken when an MLD transmits a PPDU containing
+     * QoS data frames on the given link.
+     *
+     * \param psduMap the PSDU(s) carrying QoS data frames
+     * \param txVector the TXVECTOR used to send the PPDU
+     * \param linkId the ID of the given link
+     */
+    void CheckQosFrames(const WifiConstPsduMap& psduMap,
+                        const WifiTxVector& txVector,
+                        uint8_t linkId);
+
+    /**
+     * Check that appropriate actions are taken when an MLD transmits a PPDU containing
+     * BlockAck frames on the given link.
+     *
+     * \param psduMap the PSDU carrying BlockAck frames
+     * \param txVector the TXVECTOR used to send the PPDU
+     * \param linkId the ID of the given link
+     */
+    void CheckBlockAck(const WifiConstPsduMap& psduMap,
+                       const WifiTxVector& txVector,
+                       uint8_t linkId);
+
+  private:
+    void StartTraffic() override;
+
+    /**
+     * Callback invoked when a new backoff value is generated by the EMLSR client.
+     *
+     * \param backoff the generated backoff value
+     * \param linkId the ID of the link for which the backoff value has been generated
+     */
+    void BackoffGenerated(uint32_t backoff, uint8_t linkId);
+
+    std::set<uint8_t> m_emlsrLinks; /**< IDs of the links on which EMLSR mode has to be enabled */
+    uint16_t m_channelWidth;        //!< width (MHz) of the channels used by MLDs
+    uint16_t m_auxPhyChannelWidth;  //!< max width (MHz) supported by aux PHYs
+    Time m_mediumSyncDuration;      //!< duration of the MediumSyncDelay timer
+    uint8_t m_msdMaxNTxops;         //!< Max number of TXOPs that an EMLSR client is allowed
+                                    //!< to attempt to initiate while the MediumSyncDelay
+                                    //!< timer is running (zero indicates no limit)
+    std::optional<uint8_t> m_nonEmlsrLink; //!< ID of the non-EMLSR link (if any)
+    Time m_emlsrEnabledTime;              //!< when EMLSR mode has been enabled on all EMLSR clients
+    Time m_firstUlPktsGenTime;            //!< generation time of the first two UL packets
+    const Time m_unblockMainPhyLinkDelay; //!< delay between the time the first two UL packets are
+                                          //!< generated and the time transmissions are unblocked
+                                          //!< on the link where the main PHY is operating on
+    Time m_lastMsdExpiryTime;             //!< expiry time of the last MediumSyncDelay timer
+    Ptr<ListErrorModel> m_errorModel;     ///< error rate model to corrupt packets
+    std::size_t m_countQoSframes;         //!< counter for QoS frames
+    std::size_t m_countBlockAck;          //!< counter for BlockAck frames
+    std::size_t m_countRtsframes;         //!< counter for RTS frames
+    uint32_t m_backoffSlots;              //!< backoff slots on the link where the main PHY is
+                                          //!< operating when an RTS is sent by the aux PHY to
+                                          //!< start an UL TXOP
+};
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief Test the switching of PHYs on EMLSR clients.
  *
  * An AP MLD and an EMLSR client setup 3 links, on which EMLSR mode is enabled. The AP MLD
@@ -562,7 +710,5 @@ class WifiEmlsrTestSuite : public TestSuite
   public:
     WifiEmlsrTestSuite();
 };
-
-} // namespace ns3
 
 #endif /* WIFI_EMLSR_TEST_H */

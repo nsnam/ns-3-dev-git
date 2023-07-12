@@ -30,6 +30,8 @@
 #include <memory>
 #include <vector>
 
+class EmlsrUlTxopTest;
+
 namespace ns3
 {
 
@@ -422,6 +424,7 @@ class Txop : public Object
   protected:
     ///< ChannelAccessManager associated class
     friend class ChannelAccessManager;
+    friend class ::EmlsrUlTxopTest;
 
     void DoDispose() override;
     void DoInitialize() override;
