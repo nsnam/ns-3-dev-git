@@ -24,6 +24,8 @@ Changes from ns-3.39 to ns-3-dev
 
 ### Changed behavior
 
+* (wifi) Upon ML setup, a non-AP MLD updates the IDs of the setup links to match the IDs used by the AP MLD.
+
 Changes from ns-3.38 to ns-3.39
 -------------------------------
 
