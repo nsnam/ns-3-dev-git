@@ -278,9 +278,6 @@ class Ipv4ClickRouting : public Ipv4RoutingProtocol
     std::string m_nodeName;
     std::string m_clickRoutingTableElement;
 
-    std::map<std::string, uint32_t> m_ifaceIdFromName;
-    std::map<std::string, Address> m_ifaceMacFromName;
-    std::map<std::string, Ipv4Address> m_ifaceAddrFromName;
     bool m_clickInitialised;
     bool m_nonDefaultName;
 
