@@ -324,7 +324,7 @@ class CallbackImpl : public CallbackImplBase
         return DoGetTypeid();
     }
 
-    /** \copydoc GetTypeid(). */
+    /** \copydoc GetTypeid() */
     static std::string DoGetTypeid()
     {
         static std::vector<std::string> vec = {GetCppTypeid<R>(), GetCppTypeid<UArgs>()...};
