@@ -1,7 +1,5 @@
 # Set lib core link dependencies
-set(libraries_to_link
-    ${CMAKE_THREAD_LIBS_INIT}
-)
+set(libraries_to_link)
 
 set(gsl_test_sources)
 if(${GSL_FOUND})
