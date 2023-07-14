@@ -20,6 +20,8 @@ Release 3-dev
 
 ### New user-visible features
 
+- (wifi) Added support for 802.11be TID-to-Link Mapping
+
 ### Bugs fixed
 
 Release 3.39
