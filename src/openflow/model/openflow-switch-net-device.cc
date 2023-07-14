@@ -1166,6 +1166,49 @@ OpenFlowSwitchNetDevice::RunThroughVPortTable(uint32_t packet_uid, int port, uin
 }
 
 int
+OpenFlowSwitchNetDevice::ReceivePortMod(const void* msg)
+{
+    ofp_port_mod* opm = (ofp_port_mod*)msg;
+
+    int port = opm->port_no; // ntohs(opm->port_no);
+    if (port < DP_MAX_PORTS)
+    {
+        ofi::Port& p = m_ports[port];
+
+        // Make sure the port id hasn't changed since this was sent
+        Mac48Address hw_addr = Mac48Address();
+        hw_addr.CopyFrom(opm->hw_addr);
+        if (p.netdev->GetAddress() != hw_addr)
+        {
+            return 0;
+        }
+
+        if (opm->mask)
+        {
+            uint32_t config_mask = ntohl(opm->mask);
+            p.config &= ~config_mask;
+            p.config |= ntohl(opm->config) & config_mask;
+        }
+
+        if (opm->mask & htonl(OFPPC_PORT_DOWN))
+        {
+            if ((opm->config & htonl(OFPPC_PORT_DOWN)) && (p.config & OFPPC_PORT_DOWN) == 0)
+            {
+                p.config |= OFPPC_PORT_DOWN;
+                /// \todo Possibly disable the Port's Net Device via the appropriate interface.
+            }
+            else if ((opm->config & htonl(OFPPC_PORT_DOWN)) == 0 && (p.config & OFPPC_PORT_DOWN))
+            {
+                p.config &= ~OFPPC_PORT_DOWN;
+                /// \todo Possibly enable the Port's Net Device via the appropriate interface.
+            }
+        }
+    }
+
+    return 0;
+}
+
+int
 OpenFlowSwitchNetDevice::ReceiveFeaturesRequest(const void* msg)
 {
     SendFeaturesReply();
@@ -1249,49 +1292,6 @@ OpenFlowSwitchNetDevice::ReceivePacketOut(const void* msg)
     }
 
     ofi::ExecuteActions(this, opo->buffer_id, buffer, &key, opo->actions, actions_len, true);
-    return 0;
-}
-
-int
-OpenFlowSwitchNetDevice::ReceivePortMod(const void* msg)
-{
-    ofp_port_mod* opm = (ofp_port_mod*)msg;
-
-    int port = opm->port_no; // ntohs(opm->port_no);
-    if (port < DP_MAX_PORTS)
-    {
-        ofi::Port& p = m_ports[port];
-
-        // Make sure the port id hasn't changed since this was sent
-        Mac48Address hw_addr = Mac48Address();
-        hw_addr.CopyFrom(opm->hw_addr);
-        if (p.netdev->GetAddress() != hw_addr)
-        {
-            return 0;
-        }
-
-        if (opm->mask)
-        {
-            uint32_t config_mask = ntohl(opm->mask);
-            p.config &= ~config_mask;
-            p.config |= ntohl(opm->config) & config_mask;
-        }
-
-        if (opm->mask & htonl(OFPPC_PORT_DOWN))
-        {
-            if ((opm->config & htonl(OFPPC_PORT_DOWN)) && (p.config & OFPPC_PORT_DOWN) == 0)
-            {
-                p.config |= OFPPC_PORT_DOWN;
-                /// \todo Possibly disable the Port's Net Device via the appropriate interface.
-            }
-            else if ((opm->config & htonl(OFPPC_PORT_DOWN)) == 0 && (p.config & OFPPC_PORT_DOWN))
-            {
-                p.config &= ~OFPPC_PORT_DOWN;
-                /// \todo Possibly enable the Port's Net Device via the appropriate interface.
-            }
-        }
-    }
-
     return 0;
 }
 
