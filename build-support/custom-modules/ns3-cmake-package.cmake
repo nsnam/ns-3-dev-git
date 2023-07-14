@@ -29,7 +29,7 @@ function(build_required_and_libs_lists module_name visibility libraries
       )
       set(lib_real_name "-l${lib_real_name}")
     else()
-      if(IS_ABSOLUTE ${lib})
+      if((IS_ABSOLUTE "${lib}") OR ("${lib}" MATCHES "^-l"))
         set(lib_real_name ${lib})
       else()
         set(lib_real_name "-l${lib}")
@@ -86,6 +86,9 @@ function(pkgconfig_module libname)
                    "${pkgconfig_interface_include_directories}"
     )
     string(REPLACE ";-I" " -I" pkgconfig_interface_include_directories
+                   "${pkgconfig_interface_include_directories}"
+    )
+    string(REPLACE ";" "" pkgconfig_interface_include_directories
                    "${pkgconfig_interface_include_directories}"
     )
   endif()
