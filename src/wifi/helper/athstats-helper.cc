@@ -30,6 +30,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <sstream>
 
 namespace ns3
 {
@@ -292,30 +293,27 @@ AthstatsWifiTraceSink::WriteStats()
         return;
     }
 
-    // The comments below refer to how each value maps to madwifi's athstats
-    // I know C strings are ugly but that's the quickest way to use exactly the same format as in
-    // madwifi
-    char str[200];
-    snprintf(
-        str,
-        200,
-        "%8u %8u %7u %7u %7u %6u %6u %6u %7u %4u %3uM\n",
-        (unsigned int)m_txCount, // /proc/net/dev transmitted packets to which we should subtract
-                                 // management frames
-        (unsigned int)
-            m_rxCount,   // /proc/net/dev received packets but subtracts management frames from it
-        (unsigned int)0, // ast_tx_altrate
-        (unsigned int)m_shortRetryCount,    // ast_tx_shortretry
-        (unsigned int)m_longRetryCount,     // ast_tx_longretry
-        (unsigned int)m_exceededRetryCount, // ast_tx_xretries
-        (unsigned int)m_phyRxErrorCount,    // ast_rx_crcerr
-        (unsigned int)0,                    // ast_rx_badcrypt
-        (unsigned int)0,                    // ast_rx_phyerr
-        (unsigned int)0,                    // ast_rx_rssi
-        (unsigned int)0                     // rate
-    );
+    // The comments below refer to how each value maps to madwifi's athstats.
+    // Format: "%8lu %8lu %7u %7u %7u %6u %6u %6u %7u %4u %3uM"
+    std::stringstream ss;
 
-    *m_writer << str;
+    // /proc/net/dev transmitted packets to which we should subtract management frames
+    ss << std::setw(8) << m_txCount << " ";
+
+    // /proc/net/dev received packets but subtracts management frames from it
+    ss << std::setw(8) << m_rxCount << " ";
+
+    ss << std::setw(7) << 0 << " ";                    // ast_tx_altrate
+    ss << std::setw(7) << m_shortRetryCount << " ";    // ast_tx_shortretry
+    ss << std::setw(7) << m_longRetryCount << " ";     // ast_tx_longretry
+    ss << std::setw(6) << m_exceededRetryCount << " "; // ast_tx_xretries
+    ss << std::setw(6) << m_phyRxErrorCount << " ";    // ast_rx_crcerr
+    ss << std::setw(6) << 0 << " ";                    // ast_rx_badcrypt
+    ss << std::setw(7) << 0 << " ";                    // ast_rx_phyerr
+    ss << std::setw(4) << 0 << " ";                    // ast_rx_rssi
+    ss << std::setw(3) << 0 << "M";                    // rate
+
+    *m_writer << ss.str() << std::endl;
 
     ResetCounters();
     Simulator::Schedule(m_interval, &AthstatsWifiTraceSink::WriteStats, this);

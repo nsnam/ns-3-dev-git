@@ -23,7 +23,6 @@
 
 #include <cmath>
 #include <sstream>
-#include <stdio.h>
 
 namespace ns3
 {
@@ -165,7 +164,7 @@ Asn1Header::SerializeBitset(std::bitset<N> data) const
     // Clause 16.11 ITU-T X.691
     else
     {
-        printf("FRAGMENTATION NEEDED!\n");
+        NS_LOG_DEBUG("Fragmentation needed!");
     }
 }
 
