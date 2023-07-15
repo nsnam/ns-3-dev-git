@@ -935,6 +935,7 @@ macro(process_options)
       message(${HIGHLIGHTED_STATUS}
               "Python: development libraries were not found"
       )
+      set(ENABLE_PYTHON_BINDINGS_REASON "missing Python development libraries")
     endif()
   else()
     if(${NS3_PYTHON_BINDINGS})
@@ -942,6 +943,7 @@ macro(process_options)
         ${HIGHLIGHTED_STATUS}
         "Python: an incompatible version of Python was found, python bindings will be disabled"
       )
+      set(ENABLE_PYTHON_BINDINGS_REASON "incompatible Python version")
     endif()
   endif()
 
@@ -952,10 +954,14 @@ macro(process_options)
         ${HIGHLIGHTED_STATUS}
         "Bindings: python bindings require Python, but it could not be found"
       )
+      set(ENABLE_PYTHON_BINDINGS_REASON "missing dependency: python")
     elseif(APPLE AND "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
       # Warn users that Cppyy on ARM Macs isn't supported yet
       message(${HIGHLIGHTED_STATUS}
               "Bindings: macOS silicon detected -- see issue 930"
+      )
+      set(ENABLE_PYTHON_BINDINGS_REASON
+          "macOS silicon detected -- see issue 930"
       )
     else()
       check_python_packages("cppyy" missing_packages)
@@ -963,6 +969,9 @@ macro(process_options)
         message(
           ${HIGHLIGHTED_STATUS}
           "Bindings: python bindings disabled due to the following missing dependencies: ${missing_packages}"
+        )
+        set(ENABLE_PYTHON_BINDINGS_REASON
+            "missing dependency: ${missing_packages}"
         )
       else()
         set(ENABLE_PYTHON_BINDINGS ON)
