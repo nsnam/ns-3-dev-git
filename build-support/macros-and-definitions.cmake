@@ -952,6 +952,11 @@ macro(process_options)
         ${HIGHLIGHTED_STATUS}
         "Bindings: python bindings require Python, but it could not be found"
       )
+    elseif(APPLE AND "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
+      # Warn users that Cppyy on ARM Macs isn't supported yet
+      message(${HIGHLIGHTED_STATUS}
+              "Bindings: macOS silicon detected -- see issue 930"
+      )
     else()
       check_python_packages("cppyy" missing_packages)
       if(missing_packages)
