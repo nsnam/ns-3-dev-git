@@ -22,7 +22,6 @@
 #include "ns3/abort.h"
 #include "ns3/config.h"
 #include "ns3/fd-net-device.h"
-#include "ns3/internet-module.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include "ns3/object-factory.h"
