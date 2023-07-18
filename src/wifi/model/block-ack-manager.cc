@@ -65,7 +65,6 @@ BlockAckManager::DoDispose()
 BlockAckManager::OriginatorAgreementOptConstRef
 BlockAckManager::GetAgreementAsOriginator(const Mac48Address& recipient, uint8_t tid) const
 {
-    NS_LOG_FUNCTION(this << recipient << +tid);
     if (auto it = m_originatorAgreements.find({recipient, tid}); it != m_originatorAgreements.end())
     {
         return std::cref(it->second.first);
@@ -77,7 +76,6 @@ BlockAckManager::GetAgreementAsOriginator(const Mac48Address& recipient, uint8_t
 BlockAckManager::RecipientAgreementOptConstRef
 BlockAckManager::GetAgreementAsRecipient(const Mac48Address& originator, uint8_t tid) const
 {
-    NS_LOG_FUNCTION(this << originator << +tid);
     if (auto it = m_recipientAgreements.find({originator, tid}); it != m_recipientAgreements.end())
     {
         return std::cref(it->second);
@@ -274,7 +272,6 @@ BlockAckManager::StorePacket(Ptr<WifiMpdu> mpdu)
 uint32_t
 BlockAckManager::GetNBufferedPackets(const Mac48Address& recipient, uint8_t tid) const
 {
-    NS_LOG_FUNCTION(this << recipient << +tid);
     auto it = m_originatorAgreements.find({recipient, tid});
     if (it == m_originatorAgreements.end())
     {
@@ -634,10 +631,8 @@ BlockAckManager::NotifyGotMpdu(Ptr<const WifiMpdu> mpdu)
 CtrlBAckRequestHeader
 BlockAckManager::GetBlockAckReqHeader(const Mac48Address& recipient, uint8_t tid) const
 {
-    NS_LOG_FUNCTION(this << recipient << +tid);
     auto it = m_originatorAgreements.find({recipient, tid});
     NS_ASSERT(it != m_originatorAgreements.end());
-
     CtrlBAckRequestHeader reqHdr;
     reqHdr.SetType((*it).second.first.GetBlockAckReqType());
     reqHdr.SetTidInfo(tid);

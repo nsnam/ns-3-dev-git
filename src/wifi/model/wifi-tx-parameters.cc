@@ -270,8 +270,6 @@ WifiTxParameters::GetSizeIfAggregateMsdu(Ptr<const WifiMpdu> msdu) const
 uint32_t
 WifiTxParameters::GetSize(Mac48Address receiver) const
 {
-    NS_LOG_FUNCTION(this << receiver);
-
     auto infoIt = m_info.find(receiver);
 
     if (infoIt == m_info.end())

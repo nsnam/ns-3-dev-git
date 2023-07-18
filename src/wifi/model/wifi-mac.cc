@@ -2175,16 +2175,13 @@ WifiMac::SetBkBlockAckInactivityTimeout(uint16_t timeout)
 ExtendedCapabilities
 WifiMac::GetExtendedCapabilities() const
 {
-    NS_LOG_FUNCTION(this);
     ExtendedCapabilities capabilities;
-    // TODO: to be completed
     return capabilities;
 }
 
 HtCapabilities
 WifiMac::GetHtCapabilities(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetHtSupported(linkId));
     HtCapabilities capabilities;
 
@@ -2243,7 +2240,6 @@ WifiMac::GetHtCapabilities(uint8_t linkId) const
 VhtCapabilities
 WifiMac::GetVhtCapabilities(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetVhtSupported(linkId));
     VhtCapabilities capabilities;
 
@@ -2324,7 +2320,6 @@ WifiMac::GetVhtCapabilities(uint8_t linkId) const
 HeCapabilities
 WifiMac::GetHeCapabilities(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetHeSupported());
     HeCapabilities capabilities;
 
@@ -2416,7 +2411,6 @@ WifiMac::GetHe6GhzBandCapabilities(uint8_t linkId) const
 EhtCapabilities
 WifiMac::GetEhtCapabilities(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetEhtSupported());
     EhtCapabilities capabilities;
 
