@@ -282,8 +282,7 @@ WifiTxVector::IsLdpc() const
 bool
 WifiTxVector::IsNonHtDuplicate() const
 {
-    return ((m_channelWidth >= 40) && !IsMu() &&
-            (GetMode().GetModulationClass() < WIFI_MOD_CLASS_HT));
+    return ((m_channelWidth >= 40) && !IsMu() && (GetModulationClass() < WIFI_MOD_CLASS_HT));
 }
 
 void
