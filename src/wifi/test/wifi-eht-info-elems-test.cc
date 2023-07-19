@@ -23,6 +23,7 @@
 #include "ns3/mgt-headers.h"
 #include "ns3/multi-link-element.h"
 #include "ns3/reduced-neighbor-report.h"
+#include "ns3/simulator.h"
 #include "ns3/tid-to-link-mapping-element.h"
 #include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-utils.h"
@@ -1280,6 +1281,8 @@ void
 TidToLinkMappingElementTest::DoRun()
 {
     TestHeaderSerialization(m_tidToLinkMapping);
+
+    Simulator::Destroy();
 }
 
 /**
