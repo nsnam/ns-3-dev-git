@@ -179,13 +179,11 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
             edca->NotifyChannelReleased(m_linkId);
             NS_LOG_DEBUG("No new TXOP attempts allowed while MediumSyncDelay is running");
             // request channel access if needed when the MediumSyncDelay timer expires
-            Simulator::Schedule(emlsrManager->GetMediumSyncDuration() - *elapsed, [=, this]() {
-                if (edca->GetAccessStatus(m_linkId) == Txop::NOT_REQUESTED &&
-                    edca->HasFramesToTransmit(m_linkId))
-                {
-                    m_staMac->GetChannelAccessManager(m_linkId)->RequestAccess(edca);
-                }
-            });
+            Simulator::Schedule(emlsrManager->GetMediumSyncDuration() - *elapsed,
+                                &Txop::StartAccessIfNeeded,
+                                edca,
+                                m_linkId);
+
             return false;
         }
 

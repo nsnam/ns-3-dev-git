@@ -396,6 +396,13 @@ class Txop : public Object
     virtual ChannelAccessStatus GetAccessStatus(uint8_t linkId) const;
 
     /**
+     * Request access from Txop on the given link if needed.
+     *
+     * \param linkId the ID of the given link
+     */
+    void StartAccessIfNeeded(uint8_t linkId);
+
+    /**
      * \param nSlots the number of slots of the backoff.
      * \param linkId the ID of the given link
      *
@@ -443,12 +450,6 @@ class Txop : public Object
      * \param linkId the ID of the given link
      */
     virtual void GenerateBackoff(uint8_t linkId);
-    /**
-     * Request access from Txop on the given link if needed.
-     *
-     * \param linkId the ID of the given link
-     */
-    virtual void StartAccessIfNeeded(uint8_t linkId);
     /**
      * Request access to the ChannelAccessManager associated with the given link
      *
