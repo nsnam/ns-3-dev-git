@@ -292,13 +292,11 @@ WifiMacQueue::DequeueIfQueued(const std::list<Ptr<const WifiMpdu>>& mpdus)
 Ptr<const WifiMpdu>
 WifiMacQueue::Peek() const
 {
-    // Need to specify the link ID
-    NS_ABORT_MSG("Not implemented by WifiMacQueue");
-    return nullptr;
+    return Peek(std::nullopt);
 }
 
 Ptr<WifiMpdu>
-WifiMacQueue::Peek(uint8_t linkId) const
+WifiMacQueue::Peek(std::optional<uint8_t> linkId) const
 {
     NS_LOG_FUNCTION(this);
 
@@ -385,7 +383,7 @@ WifiMacQueue::PeekFirstAvailable(uint8_t linkId, Ptr<const WifiMpdu> item) const
 Ptr<WifiMpdu>
 WifiMacQueue::Remove()
 {
-    return Remove(Peek(0));
+    return Remove(Peek());
 }
 
 Ptr<WifiMpdu>

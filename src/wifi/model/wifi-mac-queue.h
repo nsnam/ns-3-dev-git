@@ -30,6 +30,7 @@
 #include "ns3/queue.h"
 
 #include <functional>
+#include <optional>
 #include <unordered_map>
 
 namespace ns3
@@ -141,12 +142,12 @@ class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
     Ptr<const WifiMpdu> Peek() const override;
     /**
      * Peek the packet in the front of the queue for transmission on the given
-     * link. The packet is not removed.
+     * link (if any). The packet is not removed.
      *
      * \param linkId the ID of the link onto which we can transmit a packet
      * \return the packet
      */
-    Ptr<WifiMpdu> Peek(uint8_t linkId) const;
+    Ptr<WifiMpdu> Peek(std::optional<uint8_t> linkId) const;
     /**
      * Search and return, if present in the queue, the first packet having the
      * receiver address equal to <i>dest</i>, and TID equal to <i>tid</i>.
