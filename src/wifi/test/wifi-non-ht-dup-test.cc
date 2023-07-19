@@ -386,6 +386,11 @@ TestNonHtDuplicatePhyReception::RxSuccess(std::size_t index,
                                           std::vector<bool> /*statusPerMpdu*/)
 {
     NS_LOG_FUNCTION(this << index << *psdu << rxSignalInfo << txVector);
+    const auto expectedWidth =
+        std::min(m_phyAp->GetChannelWidth(), m_phyStas.at(index)->GetChannelWidth());
+    NS_TEST_ASSERT_MSG_EQ(txVector.GetChannelWidth(),
+                          expectedWidth,
+                          "Incorrect channel width in TXVECTOR");
     m_countRxSuccessStas.at(index)++;
 }
 
@@ -616,7 +621,8 @@ TestNonHtDuplicatePhyReception::DoRun()
  * The test is checking whether the reception of multiple identical CTS frames as a response to a
  * MU-RTS frame is successfully received by the AP PHY and that only a single CTS frame is forwarded
  * up to the MAC. Since the test is focusing on the PHY reception of multiple CTS response, the
- * transmission of the MU-RTS frame is faked.
+ * transmission of the MU-RTS frame is faked. The test also checks the correct channel width is
+ * passed to the MAC layer through the TXVECTOR.
  */
 class TestMultipleCtsResponsesFromMuRts : public TestCase
 {
@@ -634,10 +640,8 @@ class TestMultipleCtsResponsesFromMuRts : public TestCase
 
     /**
      * Function called to fake the transmission of a MU-RTS.
-     *
-     * \param bw the bandwidth to use for the transmission in MHz
      */
-    void FakePreviousMuRts(uint16_t bw);
+    void FakePreviousMuRts();
 
     /**
      * Function called to trigger a CTS frame sent by a STA using non-HT duplicate.
@@ -695,10 +699,11 @@ TestMultipleCtsResponsesFromMuRts::TestMultipleCtsResponsesFromMuRts(
 }
 
 void
-TestMultipleCtsResponsesFromMuRts::FakePreviousMuRts(uint16_t bw)
+TestMultipleCtsResponsesFromMuRts::FakePreviousMuRts()
 {
-    NS_LOG_FUNCTION(this << bw);
+    NS_LOG_FUNCTION(this);
 
+    const auto bw = *std::max_element(m_bwPerSta.cbegin(), m_bwPerSta.cend());
     WifiTxVector txVector;
     txVector.SetChannelWidth(bw); // only the channel width matters for this test
 
@@ -756,6 +761,10 @@ TestMultipleCtsResponsesFromMuRts::RxCtsSuccess(Ptr<const WifiPsdu> psdu,
                               WToDbm(DbmToW(m_stasTxPowerDbm) * m_bwPerSta.size()),
                               0.1,
                               "RX power is not correct!");
+    const auto expectedWidth = *std::max_element(m_bwPerSta.cbegin(), m_bwPerSta.cend());
+    NS_TEST_ASSERT_MSG_EQ(txVector.GetChannelWidth(),
+                          expectedWidth,
+                          "Incorrect channel width in TXVECTOR");
     m_countRxCtsSuccess++;
 }
 
@@ -902,10 +911,7 @@ void
 TestMultipleCtsResponsesFromMuRts::DoRun()
 {
     // Fake transmission of a MU-RTS frame preceding the CTS responses
-    Simulator::Schedule(Seconds(0.0),
-                        &TestMultipleCtsResponsesFromMuRts::FakePreviousMuRts,
-                        this,
-                        *std::max_element(m_bwPerSta.cbegin(), m_bwPerSta.cend()));
+    Simulator::Schedule(Seconds(0.0), &TestMultipleCtsResponsesFromMuRts::FakePreviousMuRts, this);
 
     std::size_t index = 1;
     for (auto& phySta : m_phyStas)
@@ -1004,8 +1010,12 @@ WifiNonHtDuplicateTestSuite::WifiNonHtDuplicateTestSuite()
     AddTestCase(new TestMultipleCtsResponsesFromMuRts({80, 80, 80, 80}), TestCase::QUICK);
     /* 4 STAs operating on 160 MHz */
     AddTestCase(new TestMultipleCtsResponsesFromMuRts({160, 160, 160, 160}), TestCase::QUICK);
-    /* 4 STAs operating on different bandwidths: 160, 80, 40 and 20 MHz */
+    /* 4 STAs operating on different bandwidths with PPDUs sent with decreasing BW: 160, 80, 40 and
+     * 20 MHz */
     AddTestCase(new TestMultipleCtsResponsesFromMuRts({160, 80, 40, 20}), TestCase::QUICK);
+    /* 4 STAs operating on different bandwidths with PPDUs sent with increasing BW: 20, 40, 80 and
+     * 160 MHz */
+    AddTestCase(new TestMultipleCtsResponsesFromMuRts({20, 40, 80, 160}), TestCase::QUICK);
 }
 
 static WifiNonHtDuplicateTestSuite wifiNonHtDuplicateTestSuite; ///< the test suite
