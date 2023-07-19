@@ -213,6 +213,11 @@ class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
     Ptr<WifiMpdu> Remove(Ptr<const WifiMpdu> item);
 
     /**
+     * Flush the queue.
+     */
+    void Flush();
+
+    /**
      * Replace the given current item with the given new item. Actually, the current
      * item is dequeued and the new item is enqueued in its place. In this way,
      * statistics about queue size (in terms of bytes) are correctly updated.

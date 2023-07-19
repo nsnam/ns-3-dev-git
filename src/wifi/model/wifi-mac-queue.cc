@@ -399,6 +399,17 @@ WifiMacQueue::Remove(Ptr<const WifiMpdu> mpdu)
 }
 
 void
+WifiMacQueue::Flush()
+{
+    NS_LOG_FUNCTION(this);
+
+    // there may be some expired MPDUs in the container queue storing MPDUs with expired lifetime,
+    // which will not be flushed by the Flush() method of the base class.
+    WipeAllExpiredMpdus();
+    Queue<WifiMpdu, WifiMacQueueContainer>::Flush();
+}
+
+void
 WifiMacQueue::Replace(Ptr<const WifiMpdu> currentItem, Ptr<WifiMpdu> newItem)
 {
     NS_LOG_FUNCTION(this << *currentItem << *newItem);
