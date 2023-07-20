@@ -1120,16 +1120,30 @@ HtFrameExchangeManager::SendPsdu()
 
     if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
     {
-        Simulator::Schedule(txDuration, &HtFrameExchangeManager::TransmissionSucceeded, this);
-
         std::set<uint8_t> tids = m_psdu->GetTids();
         NS_ASSERT_MSG(tids.size() <= 1, "Multi-TID A-MPDUs are not supported");
 
-        if (tids.empty() || m_psdu->GetAckPolicyForTid(*tids.begin()) == WifiMacHeader::NO_ACK)
+        if (const auto isGcr =
+                m_mac->GetTypeOfStation() == AP && m_apMac->UseGcr(m_psdu->GetHeader(0));
+            isGcr && m_apMac->GetGcrManager()->KeepGroupcastQueued(*m_psdu->begin()))
+        {
+            // keep the groupcast frame in the queue for future retransmission
+            Simulator::Schedule(txDuration + m_phy->GetSifs(), [=, this, psdu = m_psdu]() {
+                NS_LOG_DEBUG("Prepare groupcast PSDU for retry");
+                for (const auto& mpdu : *PeekPointer(psdu))
+                {
+                    mpdu->ResetInFlight(m_linkId);
+                    mpdu->GetHeader().SetRetry();
+                }
+            });
+        }
+        else if (tids.empty() || m_psdu->GetAckPolicyForTid(*tids.begin()) == WifiMacHeader::NO_ACK)
         {
             // No acknowledgment, hence dequeue the PSDU if it is stored in a queue
             DequeuePsdu(m_psdu);
         }
+
+        Simulator::Schedule(txDuration, &HtFrameExchangeManager::TransmissionSucceeded, this);
     }
     else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::BLOCK_ACK)
     {
@@ -1755,11 +1769,18 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         return;
     }
 
-    if (hdr.IsQosData() && hdr.HasData() && hdr.GetAddr1() == m_self)
+    if (const auto isGroup = IsGroupcast(hdr.GetAddr1());
+        hdr.IsQosData() && hdr.HasData() && ((hdr.GetAddr1() == m_self) || (isGroup && inAmpdu)))
     {
-        uint8_t tid = hdr.GetQosTid();
+        const auto tid = hdr.GetQosTid();
 
-        if (m_mac->GetBaAgreementEstablishedAsRecipient(hdr.GetAddr2(), tid))
+        auto agreement = m_mac->GetBaAgreementEstablishedAsRecipient(
+            hdr.GetAddr2(),
+            tid,
+            isGroup ? std::optional{hdr.IsQosAmsdu() ? mpdu->begin()->second.GetDestinationAddr()
+                                                     : hdr.GetAddr1()}
+                    : std::nullopt);
+        if (agreement)
         {
             // a Block Ack agreement has been established
             NS_LOG_DEBUG("Received from=" << hdr.GetAddr2() << " (" << *mpdu << ")");
