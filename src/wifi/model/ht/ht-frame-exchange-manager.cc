@@ -1133,8 +1133,7 @@ HtFrameExchangeManager::FinalizeMacHeader(Ptr<const WifiPsdu> psdu)
 void
 HtFrameExchangeManager::DequeuePsdu(Ptr<const WifiPsdu> psdu)
 {
-    NS_LOG_DEBUG(this << psdu);
-
+    NS_LOG_FUNCTION(this << *psdu);
     for (const auto& mpdu : *PeekPointer(psdu))
     {
         DequeueMpdu(mpdu);
