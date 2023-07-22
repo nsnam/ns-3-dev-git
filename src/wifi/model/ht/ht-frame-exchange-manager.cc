@@ -1520,6 +1520,8 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                     const WifiTxVector& txVector,
                                     bool inAmpdu)
 {
+    NS_LOG_FUNCTION(this << *mpdu << rxSignalInfo << txVector << inAmpdu);
+
     // The received MPDU is either broadcast or addressed to this station
     NS_ASSERT(mpdu->GetHeader().GetAddr1().IsGroup() || mpdu->GetHeader().GetAddr1() == m_self);
 
@@ -1765,6 +1767,10 @@ HtFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
                                         const WifiTxVector& txVector,
                                         const std::vector<bool>& perMpduStatus)
 {
+    NS_LOG_FUNCTION(
+        this << *psdu << rxSignalInfo << txVector << perMpduStatus.size()
+             << std::all_of(perMpduStatus.begin(), perMpduStatus.end(), [](bool v) { return v; }));
+
     std::set<uint8_t> tids = psdu->GetTids();
 
     // Multi-TID A-MPDUs are not supported yet
