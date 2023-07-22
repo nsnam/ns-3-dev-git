@@ -40,7 +40,7 @@ MacTxMiddle::GetNextSequenceNumberFor(const WifiMacHeader* hdr)
 {
     NS_LOG_FUNCTION(this);
     uint16_t retval;
-    if (hdr->IsQosData() && !hdr->GetAddr1().IsGroup())
+    if (hdr->IsQosData() && !hdr->GetAddr1().IsBroadcast())
     {
         uint8_t tid = hdr->GetQosTid();
         NS_ASSERT(tid < 16);
@@ -78,7 +78,7 @@ MacTxMiddle::PeekNextSequenceNumberFor(const WifiMacHeader* hdr)
 {
     NS_LOG_FUNCTION(this);
     uint16_t retval;
-    if (hdr->IsQosData() && !hdr->GetAddr1().IsGroup())
+    if (hdr->IsQosData() && !hdr->GetAddr1().IsBroadcast())
     {
         uint8_t tid = hdr->GetQosTid();
         NS_ASSERT(tid < 16);
@@ -118,7 +118,7 @@ MacTxMiddle::SetSequenceNumberFor(const WifiMacHeader* hdr)
 {
     NS_LOG_FUNCTION(this << *hdr);
 
-    if (hdr->IsQosData() && !hdr->GetAddr1().IsGroup())
+    if (hdr->IsQosData() && !hdr->GetAddr1().IsBroadcast())
     {
         uint8_t tid = hdr->GetQosTid();
         NS_ASSERT(tid < 16);
