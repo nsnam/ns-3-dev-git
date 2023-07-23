@@ -747,7 +747,9 @@ WifiRemoteStationManager::GetRtsTxVector(Mac48Address address, MHz_u allowedWidt
 WifiTxVector
 WifiRemoteStationManager::GetCtsTxVector(Mac48Address to, WifiMode rtsTxMode) const
 {
-    NS_ASSERT(!to.IsGroup());
+    auto apMac = DynamicCast<ApWifiMac>(m_wifiMac);
+    NS_ASSERT(!to.IsGroup() ||
+              (m_wifiMac && (m_wifiMac->GetTypeOfStation() == AP) && apMac->GetGcrManager()));
     WifiMode ctsMode = GetControlAnswerMode(rtsTxMode);
     WifiTxVector v;
     v.SetMode(ctsMode);
@@ -969,11 +971,12 @@ void
 WifiRemoteStationManager::ReportRtsFailed(const WifiMacHeader& header)
 {
     NS_LOG_FUNCTION(this << header);
-    NS_ASSERT(!header.GetAddr1().IsGroup());
+    const auto recipient = GetIndividuallyAddressedRecipient(m_wifiMac, header);
+    NS_ASSERT(!recipient.IsGroup());
     AcIndex ac = QosUtilsMapTidToAc((header.IsQosData()) ? header.GetQosTid() : 0);
     m_ssrc[ac]++;
-    m_macTxRtsFailed(header.GetAddr1());
-    DoReportRtsFailed(Lookup(header.GetAddr1()));
+    m_macTxRtsFailed(recipient);
+    DoReportRtsFailed(Lookup(recipient));
 }
 
 void
@@ -1003,8 +1006,9 @@ WifiRemoteStationManager::ReportRtsOk(const WifiMacHeader& header,
                                       double rtsSnr)
 {
     NS_LOG_FUNCTION(this << header << ctsSnr << ctsMode << rtsSnr);
-    NS_ASSERT(!header.GetAddr1().IsGroup());
-    WifiRemoteStation* station = Lookup(header.GetAddr1());
+    const auto recipient = GetIndividuallyAddressedRecipient(m_wifiMac, header);
+    NS_ASSERT(!recipient.IsGroup());
+    WifiRemoteStation* station = Lookup(recipient);
     AcIndex ac = QosUtilsMapTidToAc((header.IsQosData()) ? header.GetQosTid() : 0);
     station->m_state->m_info.NotifyTxSuccess(m_ssrc[ac]);
     m_ssrc[ac] = 0;
@@ -1178,11 +1182,23 @@ WifiRemoteStationManager::NeedRts(const WifiMacHeader& header, const WifiTxParam
 {
     NS_LOG_FUNCTION(this << header << &txParams);
     auto address = header.GetAddr1();
-    const auto modulationClass = txParams.m_txVector.GetModulationClass();
-    if (address.IsGroup())
+    const auto isGcr = IsGcr(m_wifiMac, header);
+    if (!isGcr && address.IsGroup())
     {
         return false;
     }
+    if (isGcr)
+    {
+        EnumValue<GroupcastProtectionMode> enumValue;
+        auto apMac = DynamicCast<ApWifiMac>(m_wifiMac);
+        apMac->GetGcrManager()->GetAttribute("GcrProtectionMode", enumValue);
+        if (enumValue.Get() != GroupcastProtectionMode::RTS_CTS)
+        {
+            return false;
+        }
+        address = apMac->GetGcrManager()->GetIndividuallyAddressedRecipient(address);
+    }
+    const auto modulationClass = txParams.m_txVector.GetModulationClass();
     if (m_erpProtectionMode == RTS_CTS &&
         ((modulationClass == WIFI_MOD_CLASS_ERP_OFDM) || (modulationClass == WIFI_MOD_CLASS_HT) ||
          (modulationClass == WIFI_MOD_CLASS_VHT) || (modulationClass == WIFI_MOD_CLASS_HE) ||

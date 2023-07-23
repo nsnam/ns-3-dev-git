@@ -772,7 +772,9 @@ FrameExchangeManager::SendRts(const WifiTxParameters& txParams)
     NS_LOG_FUNCTION(this << &txParams);
 
     NS_ASSERT(txParams.GetPsduInfoMap().size() == 1);
-    Mac48Address receiver = txParams.GetPsduInfoMap().begin()->first;
+
+    const auto& hdr = txParams.GetPsduInfoMap().begin()->second.header;
+    const auto receiver = GetIndividuallyAddressedRecipient(m_mac, hdr);
 
     WifiMacHeader rts;
     rts.SetType(WIFI_MAC_CTL_RTS);
@@ -1371,7 +1373,7 @@ FrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             NS_ABORT_MSG_IF(inAmpdu, "Received CTS as part of an A-MPDU");
             NS_ASSERT(hdr.GetAddr1() == m_self);
 
-            Mac48Address sender = m_mpdu->GetHeader().GetAddr1();
+            const auto sender = GetIndividuallyAddressedRecipient(m_mac, m_mpdu->GetHeader());
             NS_LOG_DEBUG("Received CTS from=" << sender);
 
             SnrTag tag;
