@@ -23,6 +23,7 @@ Changes from ns-3.39 to ns-3-dev
 * (energy) Added `GenericBatteryModel` to the energy module with working examples.
 * (energy) Support for battery presets and cell packs.
 * (energy) Documentation was updated and reformatted.
+* (lr-wpan) Removed unnecessary bcst filter from `LrWpanMac::PdDataIndication` which also blocked the correct reception of beacon request commands.
 
 ### Changes to build system
 

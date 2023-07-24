@@ -25,6 +25,8 @@ Release 3-dev
 
 ### Bugs fixed
 
+- (lr-wpan) - !1591 - Removed unnecessary Bcst filter from MAC
+
 Release 3.39
 ------------
 

@@ -1974,21 +1974,6 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                               (m_macPanId == 0xffff && receivedMacHdr.IsCommand());
             }
 
-            if (acceptFrame && (receivedMacHdr.GetShortDstAddr() == Mac16Address("FF:FF")))
-            {
-                // TODO: shouldn't this be filtered by the PHY?
-                // A broadcast message (e.g. beacons, orphan notifications) should not be received
-                // by the device who issues it.
-                if (receivedMacHdr.GetSrcAddrMode() == EXT_ADDR)
-                {
-                    acceptFrame = (receivedMacHdr.GetExtSrcAddr() != GetExtendedAddress());
-                }
-                else
-                {
-                    acceptFrame = (receivedMacHdr.GetShortSrcAddr() != GetShortAddress());
-                }
-            }
-
             if (acceptFrame && (receivedMacHdr.GetDstAddrMode() == SHORT_ADDR))
             {
                 if (receivedMacHdr.GetShortDstAddr() == m_shortAddress)

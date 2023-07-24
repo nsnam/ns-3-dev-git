@@ -308,6 +308,7 @@ class TestActiveScanPanDescriptors : public TestCase
      * \param params MLME scan confirm parameters
      */
     void ScanConfirm(MlmeScanConfirmParams params);
+
     /**
      * Function used to notify the reception of a beacon with payload.
      *
@@ -380,9 +381,16 @@ TestActiveScanPanDescriptors::DoRun()
     Ptr<LrWpanNetDevice> endNodeNetDevice = CreateObject<LrWpanNetDevice>();
     Ptr<LrWpanNetDevice> coord2NetDevice = CreateObject<LrWpanNetDevice>();
 
-    coord1NetDevice->SetAddress(Mac16Address("00:01"));
-    endNodeNetDevice->SetAddress(Mac16Address("00:02"));
-    coord2NetDevice->SetAddress(Mac16Address("00:03"));
+    // PAN coordinators typically have a short address = 00:00 (e.g. Zigbee networks)
+    coord1NetDevice->GetMac()->SetExtendedAddress("00:00:00:00:00:00:CA:FE");
+    coord1NetDevice->GetMac()->SetShortAddress(Mac16Address("00:00"));
+
+    coord2NetDevice->GetMac()->SetExtendedAddress("00:00:00:00:00:00:BE:BE");
+    coord2NetDevice->GetMac()->SetShortAddress(Mac16Address("00:00"));
+
+    // An end device currently not associated (short address = ff:ff)
+    endNodeNetDevice->GetMac()->SetExtendedAddress("00:00:00:00:00:00:00:03");
+    endNodeNetDevice->GetMac()->SetShortAddress(Mac16Address("ff:ff"));
 
     // Configure Spectrum channel
     Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel>();
