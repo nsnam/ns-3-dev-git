@@ -26,6 +26,7 @@
 #include "ns3/assert.h"
 #include "ns3/attribute-container.h"
 #include "ns3/log.h"
+#include "ns3/mgt-action-headers.h"
 #include "ns3/wifi-mpdu.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy-state-helper.h"

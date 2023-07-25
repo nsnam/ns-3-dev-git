@@ -25,6 +25,7 @@
 #include "channel-access-manager.h"
 #include "mac-rx-middle.h"
 #include "mac-tx-middle.h"
+#include "mgt-action-headers.h"
 #include "mgt-headers.h"
 #include "msdu-aggregator.h"
 #include "qos-txop.h"

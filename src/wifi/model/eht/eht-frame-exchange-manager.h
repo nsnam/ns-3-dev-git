@@ -28,6 +28,8 @@
 namespace ns3
 {
 
+class MgtEmlOmn;
+
 /**
  * \ingroup wifi
  *

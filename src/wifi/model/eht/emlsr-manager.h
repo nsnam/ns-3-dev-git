@@ -22,7 +22,6 @@
 
 #include "ns3/ctrl-headers.h"
 #include "ns3/mac48-address.h"
-#include "ns3/mgt-headers.h"
 #include "ns3/object.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-phy-operating-channel.h"
@@ -35,6 +34,7 @@ namespace ns3
 {
 
 class EhtFrameExchangeManager;
+class MgtEmlOmn;
 class WifiMpdu;
 
 /**

@@ -23,6 +23,7 @@
 #include "ns3/ht-frame-exchange-manager.h"
 #include "ns3/interference-helper.h"
 #include "ns3/mac-tx-middle.h"
+#include "ns3/mgt-action-headers.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mpdu-aggregator.h"
 #include "ns3/msdu-aggregator.h"

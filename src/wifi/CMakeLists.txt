@@ -62,6 +62,7 @@ set(source_files
     model/interference-helper.cc
     model/mac-rx-middle.cc
     model/mac-tx-middle.cc
+    model/mgt-action-headers.cc
     model/mgt-headers.cc
     model/mpdu-aggregator.cc
     model/msdu-aggregator.cc
@@ -213,6 +214,7 @@ set(header_files
     model/interference-helper.h
     model/mac-rx-middle.h
     model/mac-tx-middle.h
+    model/mgt-action-headers.h
     model/mgt-headers.h
     model/mpdu-aggregator.h
     model/msdu-aggregator.h

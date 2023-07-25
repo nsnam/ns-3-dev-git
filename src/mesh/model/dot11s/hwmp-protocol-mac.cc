@@ -28,6 +28,7 @@
 
 #include "ns3/log.h"
 #include "ns3/mesh-wifi-interface-mac.h"
+#include "ns3/mgt-action-headers.h"
 #include "ns3/nstime.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"

@@ -27,7 +27,7 @@
 #include "ns3/emlsr-manager.h"
 #include "ns3/he-frame-exchange-manager.h"
 #include "ns3/log.h"
-#include "ns3/mgt-headers.h"
+#include "ns3/mgt-action-headers.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/node-list.h"

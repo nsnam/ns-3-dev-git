@@ -21,7 +21,7 @@
 #include "qos-utils.h"
 
 #include "ctrl-headers.h"
-#include "mgt-headers.h"
+#include "mgt-action-headers.h"
 #include "wifi-mac-header.h"
 
 #include "ns3/queue-item.h"

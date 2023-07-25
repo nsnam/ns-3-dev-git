@@ -23,6 +23,7 @@
 
 #include "channel-access-manager.h"
 #include "frame-exchange-manager.h"
+#include "mgt-action-headers.h"
 #include "mgt-headers.h"
 #include "qos-txop.h"
 #include "snr-tag.h"

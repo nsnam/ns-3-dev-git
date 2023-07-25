@@ -25,6 +25,7 @@
 #include "ns3/abort.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/log.h"
+#include "ns3/mgt-action-headers.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-net-device.h"

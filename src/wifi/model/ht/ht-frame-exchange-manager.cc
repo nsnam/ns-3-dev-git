@@ -23,7 +23,7 @@
 #include "ns3/assert.h"
 #include "ns3/ctrl-headers.h"
 #include "ns3/log.h"
-#include "ns3/mgt-headers.h"
+#include "ns3/mgt-action-headers.h"
 #include "ns3/recipient-block-ack-agreement.h"
 #include "ns3/snr-tag.h"
 #include "ns3/sta-wifi-mac.h"
