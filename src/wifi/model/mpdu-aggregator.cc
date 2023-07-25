@@ -229,8 +229,16 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
     auto qosTxop = m_mac->GetQosTxop(tid);
     NS_ASSERT(qosTxop);
 
+    const auto isGcr = IsGcr(m_mac, header);
+    const auto bufferSize = qosTxop->GetBaBufferSize(origRecipient, tid, isGcr);
+    const auto startSeq = qosTxop->GetBaStartingSequence(origRecipient, tid, isGcr);
+
     // Have to make sure that the block ack agreement is established and A-MPDU is enabled
-    if (m_mac->GetBaAgreementEstablishedAsOriginator(recipient, tid) &&
+    auto apMac = DynamicCast<ApWifiMac>(m_mac);
+    const auto agreementEstablished =
+        isGcr ? apMac->IsGcrBaAgreementEstablishedWithAllMembers(header.GetAddr1(), tid)
+              : m_mac->GetBaAgreementEstablishedAsOriginator(recipient, tid).has_value();
+    if (agreementEstablished &&
         GetMaxAmpduSize(recipient, tid, txParams.m_txVector.GetModulationClass()) > 0)
     {
         /* here is performed MPDU aggregation */
@@ -238,6 +246,23 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
 
         while (nextMpdu)
         {
+            const auto isGcrUr = isGcr && (apMac->GetGcrManager()->GetRetransmissionPolicy() ==
+                                           GroupAddressRetransmissionPolicy::GCR_UNSOLICITED_RETRY);
+            if (isGcrUr && header.IsRetry() && !nextMpdu->GetHeader().IsRetry())
+            {
+                // if this is a retransmitted A-MPDU transmitted via GCR-UR, do not add new MPDU
+                break;
+            }
+            if (isGcr &&
+                apMac->GetGcrManager()->GetRetransmissionPolicyFor(header) !=
+                    apMac->GetGcrManager()->GetRetransmissionPolicyFor(nextMpdu->GetHeader()))
+            {
+                // if an MPDU has been previously transmitted using No-Ack/No-Retry,
+                // do not add a new MPDU that still needs to be transmitted using No-Ack/No-Retry,
+                // unless No-Ack/No-Retry is the only selected retransmission policy
+                break;
+            }
+
             // if we are here, nextMpdu can be aggregated to the A-MPDU.
             NS_LOG_DEBUG("Adding packet with sequence number "
                          << nextMpdu->GetHeader().GetSequenceNumber()
@@ -254,9 +279,8 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
             if (peekedMpdu)
             {
                 // PeekNextMpdu() does not return an MPDU that is beyond the transmit window
-                NS_ASSERT(IsInWindow(peekedMpdu->GetHeader().GetSequenceNumber(),
-                                     qosTxop->GetBaStartingSequence(origRecipient, tid),
-                                     qosTxop->GetBaBufferSize(origRecipient, tid)));
+                NS_ASSERT(
+                    IsInWindow(peekedMpdu->GetHeader().GetSequenceNumber(), startSeq, bufferSize));
 
                 peekedMpdu = m_htFem->CreateAliasIfNeeded(peekedMpdu);
                 // get the next MPDU to aggregate, provided that the constraints on size

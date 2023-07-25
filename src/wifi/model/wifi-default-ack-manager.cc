@@ -292,8 +292,8 @@ WifiDefaultAckManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxParamete
 
     if (receiver.IsGroup())
     {
-        NS_ABORT_MSG_IF(!txParams.LastAddedIsFirstMpdu(receiver),
-                        "Unicast frames only can be aggregated");
+        NS_ABORT_MSG_IF(!IsGcr(m_mac, hdr) && !txParams.LastAddedIsFirstMpdu(receiver),
+                        "Unicast frames only can be aggregated if GCR is not used");
         auto acknowledgment = std::make_unique<WifiNoAck>();
         if (hdr.IsQosData())
         {
