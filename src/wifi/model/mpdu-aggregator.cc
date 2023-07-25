@@ -10,11 +10,12 @@
 #include "mpdu-aggregator.h"
 
 #include "ampdu-subframe-header.h"
+#include "ap-wifi-mac.h"
 #include "ctrl-headers.h"
+#include "gcr-manager.h"
 #include "msdu-aggregator.h"
 #include "qos-txop.h"
 #include "wifi-mac-trailer.h"
-#include "wifi-mac.h"
 #include "wifi-mpdu.h"
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
@@ -122,8 +123,13 @@ MpduAggregator::GetMaxAmpduSize(Mac48Address recipient,
 {
     NS_LOG_FUNCTION(this << recipient << +tid << modulation);
 
-    AcIndex ac = QosUtilsMapTidToAc(tid);
+    if (auto apMac = DynamicCast<ApWifiMac>(m_mac);
+        IsGroupcast(recipient) && (m_mac->GetTypeOfStation() == AP) && apMac->GetGcrManager())
+    {
+        recipient = apMac->GetGcrManager()->GetIndividuallyAddressedRecipient(recipient);
+    }
 
+    AcIndex ac = QosUtilsMapTidToAc(tid);
     // Find the A-MPDU max size configured on this device
     uint32_t maxAmpduSize = m_mac->GetMaxAmpduSize(ac);
 
@@ -212,12 +218,15 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
 
     std::vector<Ptr<WifiMpdu>> mpduList;
 
-    Mac48Address recipient = mpdu->GetHeader().GetAddr1();
-    NS_ASSERT(mpdu->GetHeader().IsQosData() && !recipient.IsBroadcast());
-    uint8_t tid = mpdu->GetHeader().GetQosTid();
-    auto origRecipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
+    const auto& header = mpdu->GetHeader();
+    const auto recipient = GetIndividuallyAddressedRecipient(m_mac, header);
+    NS_ASSERT(header.IsQosData() && !recipient.IsBroadcast());
 
-    Ptr<QosTxop> qosTxop = m_mac->GetQosTxop(tid);
+    const auto& origAddr1 = mpdu->GetOriginal()->GetHeader().GetAddr1();
+    auto origRecipient = GetIndividuallyAddressedRecipient(m_mac, mpdu->GetOriginal()->GetHeader());
+
+    const auto tid = header.GetQosTid();
+    auto qosTxop = m_mac->GetQosTxop(tid);
     NS_ASSERT(qosTxop);
 
     // Have to make sure that the block ack agreement is established and A-MPDU is enabled
@@ -239,7 +248,7 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
 
             // If allowed by the BA agreement, get the next MPDU
             auto peekedMpdu =
-                qosTxop->PeekNextMpdu(m_linkId, tid, origRecipient, nextMpdu->GetOriginal());
+                qosTxop->PeekNextMpdu(m_linkId, tid, origAddr1, nextMpdu->GetOriginal());
             nextMpdu = nullptr;
 
             if (peekedMpdu)
