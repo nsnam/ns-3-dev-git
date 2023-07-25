@@ -415,12 +415,6 @@ FrameExchangeManager::SendMpduWithProtection(Ptr<WifiMpdu> mpdu, WifiTxParameter
     }
 
     StartProtection(m_txParams);
-
-    if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
-    {
-        // we are done with frames that do not require acknowledgment
-        m_mpdu = nullptr;
-    }
 }
 
 void
@@ -473,14 +467,17 @@ FrameExchangeManager::SendMpdu()
 
     if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
     {
-        Simulator::Schedule(txDuration, &FrameExchangeManager::TransmissionSucceeded, this);
-
         if (!m_mpdu->GetHeader().IsQosData() ||
             m_mpdu->GetHeader().GetQosAckPolicy() == WifiMacHeader::NO_ACK)
         {
             // No acknowledgment, hence dequeue the MPDU if it is stored in a queue
             DequeueMpdu(m_mpdu);
         }
+
+        Simulator::Schedule(txDuration, [=, this]() {
+            TransmissionSucceeded();
+            m_mpdu = nullptr;
+        });
     }
     else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NORMAL_ACK)
     {
