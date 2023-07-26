@@ -145,7 +145,6 @@ WifiPhyReceptionTest::SendPacket(double rxPowerDbm, uint32_t packetSize, uint8_t
     txParams->txPhy = nullptr;
     txParams->duration = txDuration;
     txParams->ppdu = ppdu;
-    txParams->txWidth = CHANNEL_WIDTH;
 
     m_phy->StartRx(txParams, nullptr);
 }
@@ -2805,7 +2804,6 @@ TestAmpduReception::SendAmpduWithThreeMpdus(double rxPowerDbm, uint32_t referenc
     txParams->txPhy = nullptr;
     txParams->duration = txDuration;
     txParams->ppdu = ppdu;
-    txParams->txWidth = CHANNEL_WIDTH;
 
     m_phy->StartRx(txParams, nullptr);
 }
@@ -4328,7 +4326,6 @@ TestUnsupportedBandwidthReception::SendPpdu(uint16_t centerFreqMhz, uint16_t ban
     txParams->txPhy = nullptr;
     txParams->duration = txDuration;
     txParams->ppdu = ppdu;
-    txParams->txWidth = bandwidthMhz;
 
     m_rxPhy->StartRx(txParams, nullptr);
 }
@@ -4619,12 +4616,8 @@ TestPrimary20CoveredByPpdu::RunOne(WifiPhyBand band,
                           "PPDU is " << (expectedP20Overlap ? "expected" : "not expected")
                                      << " to overlap with the P20");
 
-    auto p20Covered =
-        m_rxPhy->GetPhyEntity(WIFI_STANDARD_80211ax)
-            ->CanStartRx(
-                ppdu,
-                ppdu->GetTxVector()
-                    .GetChannelWidth()); // CanStartRx returns true is the P20 is fully covered
+    auto p20Covered = m_rxPhy->GetPhyEntity(WIFI_STANDARD_80211ax)
+                          ->CanStartRx(ppdu); // CanStartRx returns true is the P20 is fully covered
     NS_TEST_ASSERT_MSG_EQ(p20Covered,
                           expectedP20Covered,
                           "PPDU is " << (expectedP20Covered ? "expected" : "not expected")

@@ -31,16 +31,14 @@ NS_LOG_COMPONENT_DEFINE("WifiSpectrumSignalParameters");
 
 WifiSpectrumSignalParameters::WifiSpectrumSignalParameters()
     : SpectrumSignalParameters(),
-      ppdu(nullptr),
-      txWidth(0)
+      ppdu(nullptr)
 {
     NS_LOG_FUNCTION(this);
 }
 
 WifiSpectrumSignalParameters::WifiSpectrumSignalParameters(const WifiSpectrumSignalParameters& p)
     : SpectrumSignalParameters(p),
-      ppdu(p.ppdu),
-      txWidth(p.txWidth)
+      ppdu(p.ppdu)
 {
     NS_LOG_FUNCTION(this << &p);
 }

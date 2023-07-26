@@ -116,7 +116,7 @@ class HePhy : public VhtPhy
     void NotifyCcaBusy(const Ptr<const WifiPpdu> ppdu,
                        Time duration,
                        WifiChannelListType channelType) override;
-    bool CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txChannelWidth) const override;
+    bool CanStartRx(Ptr<const WifiPpdu> ppdu) const override;
     Ptr<const WifiPpdu> GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu) override;
 
     /**

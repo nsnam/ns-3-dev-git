@@ -1779,7 +1779,7 @@ HePhy::GetMaxPsduSize() const
 }
 
 bool
-HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txChannelWidth) const
+HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
 {
     /*
      * The PHY shall not issue a PHY-RXSTART.indication primitive in response to a PPDU
@@ -1794,7 +1794,7 @@ HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txChannelWidth) const
     {
         return true;
     }
-    return VhtPhy::CanStartRx(ppdu, txChannelWidth);
+    return VhtPhy::CanStartRx(ppdu);
 }
 
 Ptr<const WifiPpdu>

@@ -50,7 +50,6 @@ struct WifiSpectrumSignalParameters : public SpectrumSignalParameters
     WifiSpectrumSignalParameters(const WifiSpectrumSignalParameters& p);
 
     Ptr<const WifiPpdu> ppdu; ///< The PPDU being transmitted
-    uint16_t txWidth;         ///< The TX width in MHz
 };
 
 } // namespace ns3
