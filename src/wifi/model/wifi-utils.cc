@@ -169,4 +169,10 @@ TidToLinkMappingValidForNegType1(const WifiTidLinkMapping& dlLinkMapping,
     return true;
 }
 
+bool
+IsGroupcast(const Mac48Address& adr)
+{
+    return adr.IsGroup() && !adr.IsBroadcast();
+}
+
 } // namespace ns3

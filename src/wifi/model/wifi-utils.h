@@ -23,6 +23,7 @@
 namespace ns3
 {
 
+class Mac48Address;
 class WifiMacHeader;
 class Packet;
 
@@ -171,6 +172,14 @@ uint32_t GetSize(Ptr<const Packet> packet, const WifiMacHeader* hdr, bool isAmpd
  */
 bool TidToLinkMappingValidForNegType1(const WifiTidLinkMapping& dlLinkMapping,
                                       const WifiTidLinkMapping& ulLinkMapping);
+
+/**
+ * Check whether a MAC destination address corresponds to a groupcast transmission.
+ *
+ * @param adr the MAC address
+ * @return true if the MAC address is a group address that is not a broadcast address
+ */
+bool IsGroupcast(const Mac48Address& adr);
 
 /// Size of the space of sequence numbers
 static constexpr uint16_t SEQNO_SPACE_SIZE = 4096;
