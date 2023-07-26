@@ -42,7 +42,8 @@ WifiPpdu::WifiPpdu(Ptr<const WifiPsdu> psdu,
       m_txVector(txVector),
       m_operatingChannel(channel),
       m_truncatedTx(false),
-      m_txPowerLevel(txVector.GetTxPowerLevel())
+      m_txPowerLevel(txVector.GetTxPowerLevel()),
+      m_txAntennas(txVector.GetNTx())
 {
     NS_LOG_FUNCTION(this << *psdu << txVector << channel << uid);
     m_psdus.insert(std::make_pair(SU_STA_ID, psdu));
