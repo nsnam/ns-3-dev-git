@@ -154,7 +154,7 @@ class HePpdu : public OfdmPpdu
     Ptr<WifiPpdu> Copy() const override;
     WifiPpduType GetType() const override;
     uint16_t GetStaId() const override;
-    uint16_t GetTransmissionChannelWidth() const override;
+    uint16_t GetTxChannelWidth() const override;
 
     /**
      * Get the payload of the PPDU.

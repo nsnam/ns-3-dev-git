@@ -2185,7 +2185,7 @@ WifiPhy::GetTxPowerForTransmission(Ptr<const WifiPpdu> ppdu) const
     }
 
     // Apply power density constraint on EIRP
-    uint16_t channelWidth = ppdu->GetTransmissionChannelWidth();
+    uint16_t channelWidth = ppdu->GetTxChannelWidth();
     double txPowerDbmPerMhz =
         (txPowerDbm + GetTxGain()) - RatioToDb(channelWidth); // account for antenna gain since EIRP
     NS_LOG_INFO("txPowerDbm=" << txPowerDbm << " with txPowerDbmPerMhz=" << txPowerDbmPerMhz

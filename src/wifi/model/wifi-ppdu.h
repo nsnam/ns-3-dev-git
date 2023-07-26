@@ -134,7 +134,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
      *
      * \return the effective channel width (in MHz) used for the tranmsission
      */
-    virtual uint16_t GetTransmissionChannelWidth() const;
+    virtual uint16_t GetTxChannelWidth() const;
 
     /**
      * \return the center frequency (MHz) used for the transmission of this PPDU
@@ -222,7 +222,13 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
     uint8_t m_txPowerLevel; //!< the transmission power level (used only for TX and initializing the
                             //!< returned WifiTxVector)
     uint8_t m_txAntennas;   //!< the number of antennas used to transmit this PPDU
-};                          // class WifiPpdu
+
+    uint16_t m_txChannelWidth; /**< The channel width (MHz) used for the transmission of this
+                                         PPDU. This has to be stored since channel width can not
+                                         always be obtained from the PHY headers, especially for
+                                         non-HT PPDU, since we do not sense the spectrum to
+                                         determine the occupied channel width for simplicity. */
+};                             // class WifiPpdu
 
 /**
  * \brief Stream insertion operator.
