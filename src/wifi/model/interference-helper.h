@@ -100,6 +100,15 @@ class Event : public SimpleRefCount<Event>
      * \param rxPower the received power (W) for all bands.
      */
     void UpdateRxPowerW(const RxPowerWattPerChannelBand& rxPower);
+    /**
+     * Update the PPDU that initially generated the event.
+     * This is needed to have the PPDU holding the correct TXVECTOR
+     * upon reception of multiple signals carring the same content
+     * but over different channel width (typically non-HT duplicates).
+     *
+     * \param ppdu the new PPDU to use for this event.
+     */
+    void UpdatePpdu(Ptr<const WifiPpdu> ppdu);
 
   private:
     Ptr<const WifiPpdu> m_ppdu;           //!< PPDU

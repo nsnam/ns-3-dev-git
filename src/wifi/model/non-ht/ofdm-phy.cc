@@ -684,6 +684,25 @@ OfdmPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType cha
     return PhyEntity::GetCcaThreshold(ppdu, channelType);
 }
 
+Ptr<const WifiPpdu>
+OfdmPhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
+{
+    const auto txWidth = ppdu->GetTxChannelWidth();
+    const auto& txVector = ppdu->GetTxVector();
+    // Update channel width in TXVECTOR for non-HT duplicate PPDUs.
+    if ((txVector.IsNonHtDuplicate() && (txWidth > m_wifiPhy->GetChannelWidth())))
+    {
+        // We also do a copy of the PPDU for non-HT duplicate PPDUs since other
+        // PHYs might set a different channel width in the reconstructed TXVECTOR.
+        auto rxPpdu = ppdu->Copy();
+        auto updatedTxVector = txVector;
+        updatedTxVector.SetChannelWidth(std::min(txWidth, m_wifiPhy->GetChannelWidth()));
+        rxPpdu->UpdateTxVector(updatedTxVector);
+        return rxPpdu;
+    }
+    return PhyEntity::GetRxPpduFromTxPpdu(ppdu);
+}
+
 } // namespace ns3
 
 namespace

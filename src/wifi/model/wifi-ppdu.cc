@@ -89,6 +89,7 @@ WifiPpdu::GetTxVector() const
         m_txVector = DoGetTxVector();
         m_txVector->SetTxPowerLevel(m_txPowerLevel);
         m_txVector->SetNTx(m_txAntennas);
+        m_txVector->SetChannelWidth(m_txChannelWidth);
     }
     return m_txVector.value();
 }

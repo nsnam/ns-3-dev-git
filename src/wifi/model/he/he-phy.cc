@@ -464,8 +464,8 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
     const auto uidPreamblePair = std::make_pair(ppdu->GetUid(), ppdu->GetPreamble());
     const auto& currentPreambleEvents = GetCurrentPreambleEvents();
     const auto it = currentPreambleEvents.find(uidPreamblePair);
-    const auto isResponseToTrigger = (m_previouslyTxPpduUid == ppdu->GetUid());
-    if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU || isResponseToTrigger)
+    if (const auto isResponseToTrigger = (m_previouslyTxPpduUid == ppdu->GetUid());
+        ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU || isResponseToTrigger)
     {
         const auto& txVector = ppdu->GetTxVector();
         const auto rxDuration =
@@ -486,34 +486,7 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
                 NS_LOG_DEBUG("Received another response to a trigger frame " << ppdu->GetUid());
             }
             event = it->second;
-
-            if (Simulator::Now() - event->GetStartTime() > GetMaxDelayPpduSameUid(txVector))
-            {
-                // This HE TB PPDU arrived too late to be decoded properly. The HE TB PPDU
-                // is dropped and added as interference
-                event = CreateInterferenceEvent(ppdu, rxDuration, rxPowersW);
-                NS_LOG_DEBUG("Drop HE TB PPDU that arrived too late");
-                m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), PPDU_TOO_LATE);
-            }
-            else
-            {
-                // Update received power of the event associated to that UL MU transmission
-                UpdateInterferenceEvent(event, rxPowersW);
-            }
-
-            if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU && GetCurrentEvent() &&
-                (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
-            {
-                NS_LOG_DEBUG("Drop packet because already receiving another HE TB PPDU");
-                m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), RXING);
-            }
-            else if (isResponseToTrigger && GetCurrentEvent() &&
-                     (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
-            {
-                NS_LOG_DEBUG(
-                    "Drop packet because already receiving another response to a trigger frame");
-                m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), RXING);
-            }
+            HandleRxPpduWithSameContent(event, ppdu, rxPowersW);
             return nullptr;
         }
         else
@@ -545,6 +518,28 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
         event = VhtPhy::DoGetEvent(ppdu, rxPowersW);
     }
     return event;
+}
+
+void
+HePhy::HandleRxPpduWithSameContent(Ptr<Event> event,
+                                   Ptr<const WifiPpdu> ppdu,
+                                   RxPowerWattPerChannelBand& rxPower)
+{
+    VhtPhy::HandleRxPpduWithSameContent(event, ppdu, rxPower);
+
+    if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU && GetCurrentEvent() &&
+        (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
+    {
+        NS_LOG_DEBUG("Drop packet because already receiving another HE TB PPDU");
+        m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), RXING);
+    }
+    else if (const auto isResponseToTrigger = (m_previouslyTxPpduUid == ppdu->GetUid());
+             isResponseToTrigger && GetCurrentEvent() &&
+             (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
+    {
+        NS_LOG_DEBUG("Drop packet because already receiving another response to a trigger frame");
+        m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), RXING);
+    }
 }
 
 Ptr<const WifiPsdu>
@@ -1819,18 +1814,6 @@ HePhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
         NS_ASSERT(hePpdu);
         hePpdu->UpdateTxVectorForUlMu(m_trigVector);
         return rxPpdu;
-    }
-    else if (auto txVector = ppdu->GetTxVector();
-             m_currentTxVector.has_value() &&
-             (m_previouslyTxPpduUid == ppdu->GetUid()) &&         // response to a trigger frame
-             (txVector.GetModulationClass() < WIFI_MOD_CLASS_HT)) // PPDU is a non-HT (duplicate)
-    {
-        auto triggerChannelWidth = m_currentTxVector->GetChannelWidth();
-        if (txVector.GetChannelWidth() != triggerChannelWidth)
-        {
-            txVector.SetChannelWidth(triggerChannelWidth);
-            ppdu->UpdateTxVector(txVector);
-        }
     }
     return VhtPhy::GetRxPpduFromTxPpdu(ppdu);
 }

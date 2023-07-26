@@ -89,6 +89,7 @@ class OfdmPhy : public PhyEntity
                             Time ppduDuration) override;
     double GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                            WifiChannelListType channelType) const override;
+    Ptr<const WifiPpdu> GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu) override;
 
     /**
      * Initialize all OFDM modes (for all variants).

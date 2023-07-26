@@ -787,8 +787,7 @@ PhyEntity::GetReceptionStatus(Ptr<const WifiPsdu> psdu,
                               Time mpduDuration)
 {
     NS_LOG_FUNCTION(this << *psdu << *event << staId << relativeMpduStart << mpduDuration);
-    const auto& channelWidthAndBand =
-        GetChannelWidthAndBand(event->GetPpdu()->GetTxVector(), staId);
+    const auto channelWidthAndBand = GetChannelWidthAndBand(event->GetPpdu()->GetTxVector(), staId);
     SnrPer snrPer = m_wifiPhy->m_interference->CalculatePayloadSnrPer(
         event,
         channelWidthAndBand.first,
@@ -859,21 +858,7 @@ PhyEntity::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPow
         // received another signal with the same content
         NS_LOG_DEBUG("Received another PPDU for UID " << ppdu->GetUid());
         const auto foundEvent = it->second;
-        const auto maxDelay =
-            m_wifiPhy->GetPhyEntityForPpdu(ppdu)->GetMaxDelayPpduSameUid(ppdu->GetTxVector());
-        if (Simulator::Now() - foundEvent->GetStartTime() > maxDelay)
-        {
-            // This PPDU arrived too late to be decoded properly. The PPDU is dropped and added as
-            // interference
-            CreateInterferenceEvent(ppdu, ppdu->GetTxDuration(), rxPowersW);
-            NS_LOG_DEBUG("Drop PPDU that arrived too late");
-            m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), PPDU_TOO_LATE);
-        }
-        else
-        {
-            // Update received power of the event associated to that transmission
-            UpdateInterferenceEvent(foundEvent, rxPowersW);
-        }
+        HandleRxPpduWithSameContent(foundEvent, ppdu, rxPowersW);
         return nullptr;
     }
 
@@ -892,9 +877,35 @@ PhyEntity::CreateInterferenceEvent(Ptr<const WifiPpdu> ppdu,
 }
 
 void
-PhyEntity::UpdateInterferenceEvent(Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower)
+PhyEntity::HandleRxPpduWithSameContent(Ptr<Event> event,
+                                       Ptr<const WifiPpdu> ppdu,
+                                       RxPowerWattPerChannelBand& rxPower)
 {
+    if (const auto maxDelay =
+            m_wifiPhy->GetPhyEntityForPpdu(ppdu)->GetMaxDelayPpduSameUid(ppdu->GetTxVector());
+        Simulator::Now() - event->GetStartTime() > maxDelay)
+    {
+        // This PPDU arrived too late to be decoded properly. The PPDU is dropped and added as
+        // interference
+        event = CreateInterferenceEvent(ppdu, ppdu->GetTxDuration(), rxPower);
+        NS_LOG_DEBUG("Drop PPDU that arrived too late");
+        m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), PPDU_TOO_LATE);
+        return;
+    }
+
+    // Update received power and TXVECTOR of the event associated to that transmission upon
+    // reception of a signal adding up constructively (in case of a UL MU PPDU or non-HT duplicate
+    // PPDU)
     m_wifiPhy->m_interference->UpdateEvent(event, rxPower);
+    const auto& txVector = ppdu->GetTxVector();
+    const auto& eventTxVector = event->GetPpdu()->GetTxVector();
+    auto updatedTxVector{eventTxVector};
+    updatedTxVector.SetChannelWidth(
+        std::max(eventTxVector.GetChannelWidth(), txVector.GetChannelWidth()));
+    if (updatedTxVector.GetChannelWidth() != eventTxVector.GetChannelWidth())
+    {
+        event->UpdatePpdu(ppdu);
+    }
 }
 
 void

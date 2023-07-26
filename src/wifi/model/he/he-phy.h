@@ -493,6 +493,9 @@ class HePhy : public VhtPhy
     uint32_t GetMaxPsduSize() const override;
     WifiConstPsduMap GetWifiConstPsduMap(Ptr<const WifiPsdu> psdu,
                                          const WifiTxVector& txVector) const override;
+    void HandleRxPpduWithSameContent(Ptr<Event> event,
+                                     Ptr<const WifiPpdu> ppdu,
+                                     RxPowerWattPerChannelBand& rxPower) override;
 
     /**
      * Process SIG-A, perform amendment-specific actions, and

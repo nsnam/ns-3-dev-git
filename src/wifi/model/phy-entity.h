@@ -846,13 +846,22 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
                                        RxPowerWattPerChannelBand& rxPower,
                                        bool isStartHePortionRxing = false);
     /**
-     * Update an event in WifiPhy's InterferenceHelper class.
-     * Wrapper used by child classes.
+     * Handle reception of a PPDU that carries the same content of another PPDU.
+     * This is typically called upon reception of preambles of HE MU PPDUs or reception
+     * of non-HT duplicate control frames that carries the exact same content sent from different
+     * STAs. If the delay between the PPDU and the first PPDU carrying the same content is small
+     * enough, PPDU can be decoded and its power is added constructively, and the TXVECTOR is
+     * updated accordingly. Otherwise, a new interference event is created and PPDU is dropped by
+     * the PHY.
      *
-     * \param event the event to be updated
-     * \param rxPower the received power (W) per band to be added to the current event
+     * \param event the event of the ongoing reception
+     * \param ppdu the newly received PPDU (UL MU or non-HT duplicate)
+     * \param rxPower the received power (W) per band of the newly received PPDU
      */
-    void UpdateInterferenceEvent(Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower);
+    virtual void HandleRxPpduWithSameContent(Ptr<Event> event,
+                                             Ptr<const WifiPpdu> ppdu,
+                                             RxPowerWattPerChannelBand& rxPower);
+
     /**
      * Notify WifiPhy's InterferenceHelper of the end of the reception,
      * clear maps and end of MPDU event, and eventually reset WifiPhy.

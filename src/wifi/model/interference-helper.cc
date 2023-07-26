@@ -124,6 +124,12 @@ Event::UpdateRxPowerW(const RxPowerWattPerChannelBand& rxPower)
     }
 }
 
+void
+Event::UpdatePpdu(Ptr<const WifiPpdu> ppdu)
+{
+    m_ppdu = ppdu;
+}
+
 std::ostream&
 operator<<(std::ostream& os, const Event& event)
 {
