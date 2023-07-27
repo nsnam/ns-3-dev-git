@@ -665,23 +665,6 @@ macro(process_options)
     endif()
   endif()
 
-  set(ENABLE_SQLITE False)
-  if(${NS3_SQLITE})
-    # find_package(SQLite3 QUIET) # unsupported in CMake 3.10 We emulate the
-    # behavior of find_package below
-    find_external_library(
-      DEPENDENCY_NAME SQLite3 HEADER_NAME sqlite3.h LIBRARY_NAME sqlite3
-    )
-
-    if(${SQLite3_FOUND})
-      set(ENABLE_SQLITE True)
-      add_definitions(-DHAVE_SQLITE3)
-      include_directories(${SQLite3_INCLUDE_DIRS})
-    else()
-      message(${HIGHLIGHTED_STATUS} "SQLite was not found")
-    endif()
-  endif()
-
   if(${NS3_NATIVE_OPTIMIZATIONS} AND ${GCC})
     add_compile_options(-march=native -mtune=native)
   endif()
@@ -796,6 +779,23 @@ macro(process_options)
     endif()
   endif()
   # End of package managers
+
+  set(ENABLE_SQLITE False)
+  if(${NS3_SQLITE})
+    # find_package(SQLite3 QUIET) # unsupported in CMake 3.10 We emulate the
+    # behavior of find_package below
+    find_external_library(
+      DEPENDENCY_NAME SQLite3 HEADER_NAME sqlite3.h LIBRARY_NAME sqlite3
+    )
+
+    if(${SQLite3_FOUND})
+      set(ENABLE_SQLITE True)
+      add_definitions(-DHAVE_SQLITE3)
+      include_directories(${SQLite3_INCLUDE_DIRS})
+    else()
+      message(${HIGHLIGHTED_STATUS} "SQLite was not found")
+    endif()
+  endif()
 
   set(ENABLE_EIGEN False)
   if(${NS3_EIGEN})
