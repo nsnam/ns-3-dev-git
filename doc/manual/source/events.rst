@@ -215,9 +215,9 @@ for example::
   GlobalValue::Bind("SimulatorImplementationType",
                     StringValue("ns3::DistributedSimulatorImpl"));
 
-or by using a command line argument::
+or by using a command line argument
 
-.. sourcecode:: bash
+.. sourcecode:: terminal
 
   $ ./ns3 run "...  -–SimulatorImplementationType=ns3::DistributedSimulatorImpl"
 

@@ -5,36 +5,14 @@ table,
 div,
 p,
 dl {
-  color: black;
-  font-family: Lucida Grande, Verdana, Geneva, Arial, sans-serif;
-  font-size: 12px;
-}
-
-/* Dark mode is not supported in Doxygen versions earlier than 1.9.6 */
-@media (prefers-color-scheme: dark) {
-  body,
-  table,
-  div,
-  p,
-  dl,
-  div.body,
-  div.sphinxsidebar h3,
-  div.sphinxsidebar h4 ,
-  div.sphinxsidebar h3 a{
-    color: ivory;
-    background:black;
-  }
-  div.sphinxsidebar input{
-    background: #2c2d24;
-  }
-  div.related{
-    background-image: linear-gradient(to bottom, #66696a 0%, transparent 80%);
-  }
+    color: black;
+    font-family: Lucida Grande, Verdana, Geneva, Arial, sans-serif;
+    font-size: 12px;
 }
 
 a {
-  color: #91A501;
-  font-weight: bold;
+    color: #91A501;
+    font-weight: bold;
 }
 
 /* Sphinx headings */
@@ -51,16 +29,16 @@ div.body h6 {
 
 /* Sphinx figure captions */
 p.caption {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 /* Doxygen side bar */
 #nav-tree {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 #nav-tree a {
-  font-weight: normal;
+    font-weight: normal;
 }
 
 /* Sphinx nav links bar (relbar) */
@@ -71,87 +49,87 @@ div.related {
 */
 
 div.related h3 {
-  display: none;
+    display: none;
 }
 
 div.related a {
-  color: #91A501;
-  font-size: 14px;
-  font-weight: bold;
+    color: #91A501;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 div.related li {
-  background-image: url('bc_s.png');
-  background-position: 100% 40%;
-  background-repeat: no-repeat;
-  padding-left: 10px;
-  padding-right: 15px;
+    background-image: url('bc_s.png');
+    background-position: 100% 40%;
+    background-repeat: no-repeat;
+    padding-left: 10px;
+    padding-right: 15px;
 }
 
 div.related li.right {
-  background-image: none;
-  padding-left: 0px;
-  padding-right: 0px;
+    background-image: none;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 /* Sphinx side bar */
 div.sphinxsidebar {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 div.sphinxsidebar a {
-  font-weight: normal;
+    font-weight: normal;
 }
 
 
 /* Title bar elements */
 
 #titlearea {
-  background-image: url('bar-top.png');
-  background-repeat: repeat;
-  border-bottom: 1px solid #5B5B5B;
-  color: white;
-  position: relative;
-  /* Doxygen tab bar ("Main Page", "Related Pages"..) is at z: 9999 */
-  z-index: 10000;
+    background-image: url('bar-top.png');
+    background-repeat: repeat;
+    border-bottom: 1px solid #5B5B5B;
+    color: white;
+    position: relative;
+    /* Doxygen tab bar ("Main Page", "Related Pages"..) is at z: 9999 */
+    z-index: 10000;
 }
 
 #projectlogo {
-  color: white;
-  margin: 10px;
-  text-align: center;
-  vertical-align: middle;
-  width: 220px;
+    color: white;
+    margin: 10px;
+    text-align: center;
+    vertical-align: middle;
+    width: 220px;
 }
 
 #projecttext {
-  text-align: left;
-  color: white;
-  padding-left: 2em;
-  width: 250px;
+    text-align: left;
+    color: white;
+    padding-left: 2em;
+    width: 250px;
 }
 
 #projectbrief {
-  color: white;
-  font: 120% Tahoma, Arial, sans-serif;
-  margin: 0px;
-  padding: 0px;
+    color: white;
+    font: 120% Tahoma, Arial, sans-serif;
+    margin: 0px;
+    padding: 0px;
 }
 
 #projectnumber {
-  color: white;
-  font: 100% Tahoma, Arial, sans-serif;
-  margin: 0px;
-  padding: 0px;
+    color: white;
+    font: 100% Tahoma, Arial, sans-serif;
+    margin: 0px;
+    padding: 0px;
 }
 
 #projectsection {
-  color: white;
-  font: 24pt Aldo, Tahoma, Arial, sans-serif;
-  margin-right: 10px;
-  margin: 10px;
-  text-align: right;
-  vertical-align: middle;
+    color: white;
+    font: 24pt Aldo, Tahoma, Arial, sans-serif;
+    margin-right: 10px;
+    margin: 10px;
+    text-align: right;
+    vertical-align: middle;
 }
 
 /*
@@ -162,86 +140,217 @@ div.sphinxsidebar a {
    */
 
 #ns3-menu .menu {
-  background-image: url('menu-bgr-400.png');
-  /*   background-origin: padding-box; */
-  /*   background-position: -10px 0; */
-  background-repeat: no-repeat;
-  background-size: 100% 39px;
-  display: table-cell;
-  float: left;
-  height: 40px;
-  margin: 0px 0px 0px 0px;
-  padding: 0px 0px 0px 0px;
-  vertical-align: middle;
+    background-image: url('menu-bgr-400.png');
+    /*   background-origin: padding-box; */
+    /*   background-position: -10px 0; */
+    background-repeat: no-repeat;
+    background-size: 100% 39px;
+    display: table-cell;
+    float: left;
+    height: 40px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    vertical-align: middle;
 }
 
 
 #ns3-menu .menu ul {
-  /*   float:left; */
-  height: 40;
-  list-style: none;
-  margin: 0px 0px 0px -2px;
-  /*   overflow:hidden; */
-  padding: 0px 0px 0px 0px;
-  z-index: 30;
+    /*   float:left; */
+    height: 40;
+    list-style: none;
+    margin: 0px 0px 0px -2px;
+    /*   overflow:hidden; */
+    padding: 0px 0px 0px 0px;
+    z-index: 30;
 }
 
 #ns3-menu .menu ul li {
-  background-image: url('ver.png');
-  background-origin: padding-box;
-  background-position: 0 11px;
-  background-repeat: no-repeat;
-  color: #ffffff;
-  float: left;
-  font-family: Aldo, Tahoma, Arial, sans-serif;
-  font-size: 14px;
-  /*   height:40px; */
-  margin: 0px 0px 0px 0px;
-  /*   overflow:hidden; */
-  padding: 11px 13px 0px 12px;
-  text-transform: uppercase;
+    background-image: url('ver.png');
+    background-origin: padding-box;
+    background-position: 0 11px;
+    background-repeat: no-repeat;
+    color: #ffffff;
+    float: left;
+    font-family: Aldo, Tahoma, Arial, sans-serif;
+    font-size: 14px;
+    /*   height:40px; */
+    margin: 0px 0px 0px 0px;
+    /*   overflow:hidden; */
+    padding: 11px 13px 0px 12px;
+    text-transform: uppercase;
 }
 
 #ns3-menu .menu ul li a {
-  color: #ffffff;
-  /* cursor: pointer; */
-  display: block;
-  float: left;
-  font-weight: normal;
-  /* default anchors are bold */
-  text-decoration: none;
-  /* default anchors are underlined */
+    color: #ffffff;
+    /* cursor: pointer; */
+    display: block;
+    float: left;
+    font-weight: normal;
+    /* default anchors are bold */
+    text-decoration: none;
+    /* default anchors are underlined */
 }
 
 #ns3-menu .menu ul li a:hover {
-  color: #cadc48;
-  text-decoration: none;
-  /* don't add underline on hover */
+    color: #cadc48;
+    text-decoration: none;
+    /* don't add underline on hover */
 }
 
 #ns3-menu .menu div {
-  background: #94A901;
-  background-size: 100%;
-  color: #ffffff;
-  position: absolute;
-  visibility: hidden;
+    background: #94A901;
+    background-size: 100%;
+    color: #ffffff;
+    position: absolute;
+    visibility: hidden;
 }
 
 #ns3-menu .menu div a {
-  position: relative;
-  display: block;
-  float: left;
-  font-family: Aldo, Tahoma, Arial, sans-serif;
-  font-size: 14px;
-  margin: 0;
-  padding: 5px 10px;
-  text-align: left;
-  width: auto;
-  white-space: nowrap;
+    position: relative;
+    display: block;
+    float: left;
+    font-family: Aldo, Tahoma, Arial, sans-serif;
+    font-size: 14px;
+    margin: 0;
+    padding: 5px 10px;
+    text-align: left;
+    width: auto;
+    white-space: nowrap;
 }
 
 #ns3-menu .menu div a:hover {
-  color: #cadc48;
-  text-decoration: none;
-  /* don't add underline on hover */
+    color: #cadc48;
+    text-decoration: none;
+    /* don't add underline on hover */
+}
+
+/* Dark mode is not supported in Doxygen versions earlier than 1.9.6 */
+@media (prefers-color-scheme: dark) {
+    a {
+        color: #cfde63;
+    }
+
+    a:visited {
+        color: #91A501;
+    }
+
+    body,
+    table,
+    div,
+    p,
+    dl,
+    div.body,
+    div.sphinxsidebar h3,
+    div.sphinxsidebar h4,
+    div.sphinxsidebar h3 a {
+        color: ivory;
+        background: #2f2f2f;
+    }
+
+    div.related a,
+    div.sphinxsidebar a {
+        color: #cfde63;
+    }
+
+    div.sphinxsidebar input {
+        background: #2c2d24;
+    }
+
+    div.note {
+        background-color: unset;
+    }
+
+    div.related {
+        background-image: linear-gradient(to bottom, #66696a 0%, transparent 80%);
+    }
+
+    th {
+        background-color: #483448;
+    }
+
+    th p {
+        background-color: transparent;
+    }
+
+    .highlight {
+        background-color: #424e20;
+    }
+
+    .highlight .c,
+    .highlight .c1,
+    .highlight .ch,
+    .highlight .cm,
+    .highlight .cpf {
+        color: #79a6b2;
+    }
+
+    .highlight .fm,
+    .highlight .nf {
+        color: #82abdb;
+    }
+
+    .highlight .gi {
+        color: #65df65;
+    }
+
+    .highlight .go {
+        color: #b6b2ad;
+    }
+
+    .highlight .m,
+    .highlight .mf,
+    .highlight .mh,
+    .highlight .mi {
+        color: #7ec6a2;
+    }
+
+    .highlight .cp,
+    .highlight .k,
+    .highlight .kn,
+    .highlight .nb {
+        color: #7edf9a;
+    }
+
+    .highlight .kt {
+        color: #df876d;
+    }
+
+    .highlight .nn {
+        color: unset;
+    }
+
+    .highlight .nt {
+        color: #87afdb;
+    }
+
+    .highlight .s,
+    .highlight .s1,
+    .highlight .s2 {
+        color: #7c9cb7;
+    }
+
+    .highlight .ss {
+        color: #adcc80;
+    }
+
+    .highlight .nc {
+        color: #5db1d5;
+    }
+
+    .highlight .nv {
+        color: #ae6dc1;
+    }
+
+    .highlight .o {
+        color: #9e9890;
+    }
+
+    pre {
+        color: #ceccca;
+    }
+
+    img {
+        background-color: #ceccca;
+        padding: 3px;
+    }
 }
