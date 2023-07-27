@@ -55,6 +55,7 @@ option(NS3_NETANIM "Build netanim" OFF)
 # other options
 option(NS3_ENABLE_BUILD_VERSION "Embed version info into libraries" OFF)
 option(NS3_CCACHE "Use Ccache to speed up recompilation" ON)
+option(NS3_CPM "Enable the CPM C++ library manager support" OFF)
 option(NS3_FAST_LINKERS "Use Mold or LLD to speed up linking if available" ON)
 option(NS3_FETCH_OPTIONAL_COMPONENTS
        "Fetch Brite, Click and Openflow dependencies" OFF
@@ -82,6 +83,7 @@ option(NS3_EIGEN "Build with Eigen support" ON)
 option(NS3_STATIC "Build a static ns-3 library and link it against executables"
        OFF
 )
+option(NS3_VCPKG "Enable the Vcpkg C++ library manager support" OFF)
 option(NS3_VERBOSE "Print additional build system messages" OFF)
 option(NS3_VISUALIZER "Build visualizer module" ON)
 option(NS3_WARNINGS "Enable compiler warnings" ON)

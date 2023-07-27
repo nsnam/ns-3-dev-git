@@ -505,6 +505,10 @@ def clean_pip_packaging_artifacts(dry_run=False):
         remove_dir(directory, dry_run)
 
 
+def clean_vcpkg_artifacts(dry_run=False):
+    remove_dir(os.path.join(ns3_path, "vcpkg"), dry_run)
+
+
 def search_cmake_cache(build_profile):
     # Search for the CMake cache
     cmake_cache_files = glob.glob("%s/**/CMakeCache.txt" % ns3_path, recursive=True)
@@ -1445,6 +1449,7 @@ def main():
         clean_cmake_artifacts(dry_run=args.dry_run)
         clean_docs_and_tests_artifacts(dry_run=args.dry_run)
         clean_pip_packaging_artifacts(dry_run=args.dry_run)
+        clean_vcpkg_artifacts(dry_run=args.dry_run)
         # We end things earlier when cleaning
         return
 

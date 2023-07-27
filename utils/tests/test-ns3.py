@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #
-# Copyright (c) 2021 Universidade de Brasília
+# Copyright (c) 2021-2023 Universidade de Brasília
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
@@ -2833,6 +2833,98 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         self.assertEqual(return_code, 0)
         self.assertIn("scratch-simulator", stdout)
         self.assertIn("(lldb) target create", stdout)
+
+    def test_18_CpmAndVcpkgManagers(self):
+        """!
+        Test if CPM and Vcpkg package managers are working properly
+        @return None
+        """
+        # Clean the ns-3 configuration
+        return_code, stdout, stderr = run_ns3("clean")
+        self.assertEqual(return_code, 0)
+
+        # Cleanup VcPkg leftovers
+        if os.path.exists("vcpkg"):
+            shutil.rmtree("vcpkg")
+
+        # Copy a test module that consumes armadillo
+        destination_src = os.path.join(ns3_path, "src/test-package-managers")
+        # Remove pre-existing directories
+        if os.path.exists(destination_src):
+            shutil.rmtree(destination_src)
+
+        # Always use a fresh copy
+        shutil.copytree(os.path.join(ns3_path, "build-support/test-files/test-package-managers"),
+                        destination_src)
+
+        with DockerContainerManager(self, "ubuntu:22.04") as container:
+            # Install toolchain
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 cmake g++ ninja-build")
+
+            # Verify that Armadillo is not available and that we did not
+            # add any new unnecessary dependency when features are not used
+            try:
+                container.execute(
+                    "./ns3 configure -- -DTEST_PACKAGE_MANAGER:STRING=ON")
+                self.skipTest("Armadillo is already installed")
+            except DockerException as e:
+                pass
+
+            # Clean cache to prevent dumb errors
+            return_code, stdout, stderr = run_ns3("clean")
+            self.assertEqual(return_code, 0)
+
+            # Install CPM and VcPkg shared dependency
+            container.execute("apt-get install -y git")
+
+            # Install Armadillo with CPM
+            try:
+                container.execute(
+                    "./ns3 configure -- -DNS3_CPM=ON -DTEST_PACKAGE_MANAGER:STRING=CPM")
+            except DockerException as e:
+                self.fail()
+
+            # Try to build module using CPM's Armadillo
+            try:
+                container.execute(
+                    "./ns3 build test-package-managers")
+            except DockerException as e:
+                self.fail()
+
+            # Clean cache to prevent dumb errors
+            return_code, stdout, stderr = run_ns3("clean")
+            self.assertEqual(return_code, 0)
+
+            # Install VcPkg dependencies
+            container.execute("apt-get install -y zip unzip tar curl")
+
+            # Install Armadillo dependencies
+            container.execute("apt-get install -y pkg-config gfortran")
+
+            # Install VcPkg
+            try:
+                container.execute(
+                    "./ns3 configure -- -DNS3_VCPKG=ON")
+            except DockerException as e:
+                self.fail()
+
+            # Install Armadillo with VcPkg
+            try:
+                container.execute("./ns3 configure -- -DTEST_PACKAGE_MANAGER:STRING=VCPKG")
+            except DockerException as e:
+                self.fail()
+
+            # Try to build module using VcPkg's Armadillo
+            try:
+                container.execute(
+                    "./ns3 build test-package-managers")
+            except DockerException as e:
+                self.fail()
+
+        # Remove test module
+        if os.path.exists(destination_src):
+            shutil.rmtree(destination_src)
 
 
 class NS3QualityControlTestCase(unittest.TestCase):

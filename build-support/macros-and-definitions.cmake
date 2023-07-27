@@ -150,6 +150,7 @@ set(CMAKE_HEADER_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/include/ns3)
 set(THIRD_PARTY_DIRECTORY ${PROJECT_SOURCE_DIR}/3rd-party)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 link_directories(${CMAKE_OUTPUT_DIRECTORY}/lib)
+file(MAKE_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY})
 
 # Get installation folder default values for each platform and include package
 # configuration macro
@@ -750,6 +751,51 @@ macro(process_options)
        "${PROJECT_SOURCE_DIR}/build-support/custom-modules"
   )
   list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/3rd-party")
+
+  # Include our package managers
+  # cmake-format: off
+  # Starting with a custom cmake file that provides a Hunter-like interface to vcpkg
+  # Use add_package(package) to install a package
+  # Then find_package(package) to use it
+  # cmake-format: on
+  include(ns3-vcpkg-hunter)
+
+  # Then the beautiful CPM manager (too bad it doesn't work with everything)
+  # https://github.com/cpm-cmake/CPM.cmake
+  if(${NS3_CPM})
+    set(CPM_DOWNLOAD_VERSION 0.38.2)
+    set(CPM_DOWNLOAD_LOCATION
+        "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake"
+    )
+    if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
+      message(STATUS "Downloading CPM.cmake to ${CPM_DOWNLOAD_LOCATION}")
+      file(
+        DOWNLOAD
+        https://github.com/cpm-cmake/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake
+        ${CPM_DOWNLOAD_LOCATION}
+      )
+    endif()
+    include(${CPM_DOWNLOAD_LOCATION})
+    set(CPM_USE_LOCAL_PACKAGES ON)
+  endif()
+  # Package manager test block
+  if(TEST_PACKAGE_MANAGER)
+    if(${TEST_PACKAGE_MANAGER} STREQUAL "CPM")
+      cpmaddpackage(
+        NAME ARMADILLO GIT_TAG 6cada351248c9a967b137b9fcb3d160dad7c709b
+        GIT_REPOSITORY https://gitlab.com/conradsnicta/armadillo-code.git
+      )
+      find_package(ARMADILLO REQUIRED)
+      message(STATUS "Armadillo was found? ${ARMADILLO_FOUND}")
+    elseif(${TEST_PACKAGE_MANAGER} STREQUAL "VCPKG")
+      add_package(Armadillo)
+      find_package(Armadillo REQUIRED)
+      message(STATUS "Armadillo was found? ${ARMADILLO_FOUND}")
+    else()
+      find_package(Armadillo REQUIRED)
+    endif()
+  endif()
+  # End of package managers
 
   set(ENABLE_EIGEN False)
   if(${NS3_EIGEN})

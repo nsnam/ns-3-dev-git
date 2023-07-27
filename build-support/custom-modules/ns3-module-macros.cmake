@@ -191,9 +191,29 @@ function(build_lib)
     # include directories, allowing consumers of this module to include and link
     # the 3rd-party code with no additional setup
     get_target_includes(${lib${BLIB_LIBNAME}} exported_include_directories)
+
     string(REPLACE "-I" "" exported_include_directories
                    "${exported_include_directories}"
     )
+
+    # include directories prefixed in the source or binary directory need to be
+    # treated differently
+    set(new_exported_include_directories)
+    foreach(directory ${exported_include_directories})
+      string(FIND "${directory}" "${PROJECT_SOURCE_DIR}" is_prefixed_in_subdir)
+      if(${is_prefixed_in_subdir} GREATER_EQUAL 0)
+        string(SUBSTRING "${directory}" ${is_prefixed_in_subdir} -1
+                         directory_path
+        )
+        list(APPEND new_exported_include_directories
+             $<BUILD_INTERFACE:${directory_path}>
+        )
+      else()
+        list(APPEND new_exported_include_directories ${directory})
+      endif()
+    endforeach()
+    set(exported_include_directories ${new_exported_include_directories})
+
     string(REPLACE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/include" ""
                    exported_include_directories
                    "${exported_include_directories}"

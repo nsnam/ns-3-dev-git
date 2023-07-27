@@ -48,6 +48,7 @@ cmake-build-debug/
 cmake-build-relwithdebinfo/
 cmake-build-minsizerel/
 cmake-build-release/
+vcpkg/
 
 .vs/
 
