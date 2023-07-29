@@ -315,18 +315,28 @@ AddressCollision6TestCase::DoRun()
     Ipv6AddressGenerator::AddAllocated("0::0:16");
 
     Ipv6AddressGenerator::TestMode();
+    bool allocated = Ipv6AddressGenerator::IsAddressAllocated("0::0:21");
+    NS_TEST_EXPECT_MSG_EQ(allocated, false, "0::0:21 should not be already allocated");
     bool added = Ipv6AddressGenerator::AddAllocated("0::0:21");
     NS_TEST_EXPECT_MSG_EQ(added, true, "address should get allocated");
 
+    allocated = Ipv6AddressGenerator::IsAddressAllocated("0::0:4");
+    NS_TEST_EXPECT_MSG_EQ(allocated, true, "0::0:4 should be already allocated");
     added = Ipv6AddressGenerator::AddAllocated("0::0:4");
     NS_TEST_EXPECT_MSG_EQ(added, false, "address should not get allocated");
 
+    allocated = Ipv6AddressGenerator::IsAddressAllocated("0::0:9");
+    NS_TEST_EXPECT_MSG_EQ(allocated, true, "0::0:9 should be already allocated");
     added = Ipv6AddressGenerator::AddAllocated("0::0:9");
     NS_TEST_EXPECT_MSG_EQ(added, false, "address should not get allocated");
 
+    allocated = Ipv6AddressGenerator::IsAddressAllocated("0::0:16");
+    NS_TEST_EXPECT_MSG_EQ(allocated, true, "0::0:16 should be already allocated");
     added = Ipv6AddressGenerator::AddAllocated("0::0:16");
     NS_TEST_EXPECT_MSG_EQ(added, false, "address should not get allocated");
 
+    allocated = Ipv6AddressGenerator::IsAddressAllocated("0::0:21");
+    NS_TEST_EXPECT_MSG_EQ(allocated, true, "0::0:21 should be already allocated");
     added = Ipv6AddressGenerator::AddAllocated("0::0:21");
     NS_TEST_EXPECT_MSG_EQ(added, false, "address should not get allocated");
 }

@@ -323,18 +323,28 @@ AddressCollisionTestCase::DoRun()
     Ipv4AddressGenerator::AddAllocated("0.0.0.16");
 
     Ipv4AddressGenerator::TestMode();
+    bool allocated = Ipv4AddressGenerator::IsAddressAllocated("0.0.0.21");
+    NS_TEST_EXPECT_MSG_EQ(allocated, false, "0.0.0.21 should not be already allocated");
     bool added = Ipv4AddressGenerator::AddAllocated("0.0.0.21");
     NS_TEST_EXPECT_MSG_EQ(added, true, "400");
 
+    allocated = Ipv4AddressGenerator::IsAddressAllocated("0.0.0.4");
+    NS_TEST_EXPECT_MSG_EQ(allocated, true, "0.0.0.4 should be already allocated");
     added = Ipv4AddressGenerator::AddAllocated("0.0.0.4");
     NS_TEST_EXPECT_MSG_EQ(added, false, "401");
 
+    allocated = Ipv4AddressGenerator::IsAddressAllocated("0.0.0.9");
+    NS_TEST_EXPECT_MSG_EQ(allocated, true, "0.0.0.9 should be already allocated");
     added = Ipv4AddressGenerator::AddAllocated("0.0.0.9");
     NS_TEST_EXPECT_MSG_EQ(added, false, "402");
 
+    allocated = Ipv4AddressGenerator::IsAddressAllocated("0.0.0.16");
+    NS_TEST_EXPECT_MSG_EQ(allocated, true, "0.0.0.16 should be already allocated");
     added = Ipv4AddressGenerator::AddAllocated("0.0.0.16");
     NS_TEST_EXPECT_MSG_EQ(added, false, "403");
 
+    allocated = Ipv4AddressGenerator::IsAddressAllocated("0.0.0.21");
+    NS_TEST_EXPECT_MSG_EQ(allocated, true, "0.0.0.21 should be already allocated");
     added = Ipv4AddressGenerator::AddAllocated("0.0.0.21");
     NS_TEST_EXPECT_MSG_EQ(added, false, "404");
 }
