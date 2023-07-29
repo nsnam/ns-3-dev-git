@@ -594,10 +594,10 @@ Ipv6AddressGeneratorImpl::IsAddressAllocated(const Ipv6Address address)
         {
             NS_LOG_LOGIC("Ipv6AddressGeneratorImpl::IsAddressAllocated(): Address Collision: "
                          << Ipv6Address(addr));
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 bool

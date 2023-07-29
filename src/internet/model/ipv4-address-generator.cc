@@ -469,10 +469,10 @@ Ipv4AddressGeneratorImpl::IsAddressAllocated(const Ipv4Address address)
         {
             NS_LOG_LOGIC("Ipv4AddressGeneratorImpl::IsAddressAllocated(): Address Collision: "
                          << Ipv4Address(addr));
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 bool
