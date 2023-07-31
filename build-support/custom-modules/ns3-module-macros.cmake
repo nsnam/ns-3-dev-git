@@ -235,6 +235,23 @@ function(build_lib)
     INTERFACE ${exported_include_directories}
   )
 
+  # Export definitions as interface definitions, propagating local definitions
+  # to other modules and scratches
+  get_target_property(
+    target_definitions ${lib${BLIB_LIBNAME}} COMPILE_DEFINITIONS
+  )
+  if(${target_definitions} STREQUAL "target_definitions-NOTFOUND")
+    set(target_definitions)
+  endif()
+  get_directory_property(dir_definitions COMPILE_DEFINITIONS)
+  set(exported_definitions "${target_definitions};${dir_definitions}")
+  list(REMOVE_DUPLICATES exported_definitions)
+  list(REMOVE_ITEM exported_definitions "")
+  set_target_properties(
+    ${lib${BLIB_LIBNAME}} PROPERTIES INTERFACE_COMPILE_DEFINITIONS
+                                     "${exported_definitions}"
+  )
+
   set(ns3-external-libs "${non_ns_libraries_to_link};${ns3-external-libs}"
       CACHE INTERNAL
             "list of non-ns libraries to link to NS3_STATIC and NS3_MONOLIB"
