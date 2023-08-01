@@ -21,6 +21,8 @@
 
 #include "mgt-action-headers.h"
 
+#include "addba-extension.h"
+
 #include "ns3/multi-link-element.h"
 #include "ns3/packet.h"
 
@@ -753,6 +755,11 @@ MgtAddBaRequestHeader::GetSerializedSize() const
     size += 2; // Block ack parameter set
     size += 2; // Block ack timeout value
     size += 2; // Starting sequence control
+    if (m_bufferSize >= 1024)
+    {
+        // an ADDBA Extension element has to be added
+        size += AddbaExtension().GetSerializedSize();
+    }
     return size;
 }
 
@@ -764,6 +771,12 @@ MgtAddBaRequestHeader::Serialize(Buffer::Iterator start) const
     i.WriteHtolsbU16(GetParameterSet());
     i.WriteHtolsbU16(m_timeoutValue);
     i.WriteHtolsbU16(GetStartingSequenceControl());
+    if (m_bufferSize >= 1024)
+    {
+        AddbaExtension addbaExt;
+        addbaExt.m_extParamSet.extBufferSize = m_bufferSize / 1024;
+        i = addbaExt.Serialize(i);
+    }
 }
 
 uint32_t
@@ -774,6 +787,15 @@ MgtAddBaRequestHeader::Deserialize(Buffer::Iterator start)
     SetParameterSet(i.ReadLsbtohU16());
     m_timeoutValue = i.ReadLsbtohU16();
     SetStartingSequenceControl(i.ReadLsbtohU16());
+    AddbaExtension addbaExt;
+    auto tmp = i;
+    i = addbaExt.DeserializeIfPresent(i);
+    if (i.GetDistanceFrom(tmp) != 0)
+    {
+        // the buffer size is Extended Buffer Size × 1024 + Buffer Size
+        // (Sec. 9.4.2.138 of 802.11be D4.0)
+        m_bufferSize += addbaExt.m_extParamSet.extBufferSize * 1024;
+    }
     return i.GetDistanceFrom(start);
 }
 
@@ -875,7 +897,7 @@ MgtAddBaRequestHeader::GetParameterSet() const
     res |= m_amsduSupport;
     res |= m_policy << 1;
     res |= m_tid << 2;
-    res |= m_bufferSize << 6;
+    res |= (m_bufferSize % 1024) << 6;
     return res;
 }
 
@@ -924,6 +946,11 @@ MgtAddBaResponseHeader::GetSerializedSize() const
     size += m_code.GetSerializedSize(); // Status code
     size += 2;                          // Block ack parameter set
     size += 2;                          // Block ack timeout value
+    if (m_bufferSize >= 1024)
+    {
+        // an ADDBA Extension element has to be added
+        size += AddbaExtension().GetSerializedSize();
+    }
     return size;
 }
 
@@ -935,6 +962,12 @@ MgtAddBaResponseHeader::Serialize(Buffer::Iterator start) const
     i = m_code.Serialize(i);
     i.WriteHtolsbU16(GetParameterSet());
     i.WriteHtolsbU16(m_timeoutValue);
+    if (m_bufferSize >= 1024)
+    {
+        AddbaExtension addbaExt;
+        addbaExt.m_extParamSet.extBufferSize = m_bufferSize / 1024;
+        i = addbaExt.Serialize(i);
+    }
 }
 
 uint32_t
@@ -945,6 +978,15 @@ MgtAddBaResponseHeader::Deserialize(Buffer::Iterator start)
     i = m_code.Deserialize(i);
     SetParameterSet(i.ReadLsbtohU16());
     m_timeoutValue = i.ReadLsbtohU16();
+    AddbaExtension addbaExt;
+    auto tmp = i;
+    i = addbaExt.DeserializeIfPresent(i);
+    if (i.GetDistanceFrom(tmp) != 0)
+    {
+        // the buffer size is Extended Buffer Size × 1024 + Buffer Size
+        // (Sec. 9.4.2.138 of 802.11be D4.0)
+        m_bufferSize += addbaExt.m_extParamSet.extBufferSize * 1024;
+    }
     return i.GetDistanceFrom(start);
 }
 
@@ -1034,7 +1076,7 @@ MgtAddBaResponseHeader::GetParameterSet() const
     res |= m_amsduSupport;
     res |= m_policy << 1;
     res |= m_tid << 2;
-    res |= m_bufferSize << 6;
+    res |= (m_bufferSize % 1024) << 6;
     return res;
 }
 
