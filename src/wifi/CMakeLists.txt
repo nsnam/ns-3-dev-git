@@ -12,6 +12,7 @@ set(source_files
     helper/wifi-mac-helper.cc
     helper/wifi-radio-energy-model-helper.cc
     helper/yans-wifi-helper.cc
+    model/addba-extension.cc
     model/adhoc-wifi-mac.cc
     model/ampdu-subframe-header.cc
     model/ampdu-tag.cc
@@ -164,6 +165,7 @@ set(header_files
     helper/wifi-mac-helper.h
     helper/wifi-radio-energy-model-helper.h
     helper/yans-wifi-helper.h
+    model/addba-extension.h
     model/adhoc-wifi-mac.h
     model/ampdu-subframe-header.h
     model/ampdu-tag.h
