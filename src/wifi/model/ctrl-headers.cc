@@ -719,14 +719,27 @@ CtrlBAckResponseHeader::GetStartingSequenceControl(std::size_t index) const
 
     uint16_t ret = (m_baInfo[index].m_startingSeq << 4) & 0xfff0;
 
-    // The Fragment Number subfield encodes the length of the bitmap for
-    // Compressed and Multi-STA variants (see sections 9.3.1.9.3 and 9.3.1.9.7
-    // of 802.11ax Draft 3.0). Note that Fragmentation Level 3 is not supported.
+    // The Fragment Number subfield encodes the length of the bitmap for Compressed and Multi-STA
+    // variants (see sections 9.3.1.8.2 and 9.3.1.8.7 of 802.11ax-2021 and 802.11be Draft 4.0).
+    // Note that Fragmentation Level 3 is not supported.
     if (m_baType.m_variant == BlockAckType::COMPRESSED)
     {
-        if (m_baType.m_bitmapLen[0] == 32)
+        switch (m_baType.m_bitmapLen[0])
         {
+        case 8:
+            // do nothing
+            break;
+        case 32:
             ret |= 0x0004;
+            break;
+        case 64:
+            ret |= 0x0008;
+            break;
+        case 128:
+            ret |= 0x000a;
+            break;
+        default:
+            NS_ABORT_MSG("Unsupported bitmap length: " << +m_baType.m_bitmapLen[0] << " bytes");
         }
     }
     else if (m_baType.m_variant == BlockAckType::MULTI_STA)
@@ -735,17 +748,28 @@ CtrlBAckResponseHeader::GetStartingSequenceControl(std::size_t index) const
         NS_ASSERT_MSG(!m_baInfo[index].m_bitmap.empty(),
                       "This Per AID TID Info subfield has no Starting Sequence Control subfield");
 
-        if (m_baType.m_bitmapLen[index] == 16)
+        switch (m_baType.m_bitmapLen[index])
         {
+        case 8:
+            // do nothing
+            break;
+        case 16:
             ret |= 0x0002;
-        }
-        else if (m_baType.m_bitmapLen[index] == 32)
-        {
+            break;
+        case 32:
             ret |= 0x0004;
-        }
-        else if (m_baType.m_bitmapLen[index] == 4)
-        {
+            break;
+        case 4:
             ret |= 0x0006;
+            break;
+        case 64:
+            ret |= 0x0008;
+            break;
+        case 128:
+            ret |= 0x000a;
+            break;
+        default:
+            NS_ABORT_MSG("Unsupported bitmap length: " << +m_baType.m_bitmapLen[index] << " bytes");
         }
     }
     return ret;
@@ -758,54 +782,66 @@ CtrlBAckResponseHeader::SetStartingSequenceControl(uint16_t seqControl, std::siz
                   "index can only be non null for Multi-STA Block Ack");
     NS_ASSERT(index < m_baInfo.size());
 
-    // The Fragment Number subfield encodes the length of the bitmap for
-    // Compressed and Multi-STA variants (see sections 9.3.1.9.3 and 9.3.1.9.7
-    // of 802.11ax Draft 3.0). Note that Fragmentation Level 3 is not supported.
+    // The Fragment Number subfield encodes the length of the bitmap for Compressed and Multi-STA
+    // variants (see sections 9.3.1.8.2 and 9.3.1.8.7 of 802.11ax-2021 and 802.11be Draft 4.0).
+    // Note that Fragmentation Level 3 is not supported.
     if (m_baType.m_variant == BlockAckType::COMPRESSED)
     {
-        if ((seqControl & 0x0001) == 1)
+        uint16_t fragNumber = seqControl & 0x000f;
+
+        if ((fragNumber & 0x0001) == 1)
         {
             NS_FATAL_ERROR("Fragmentation Level 3 unsupported");
         }
-        if (((seqControl >> 3) & 0x0001) == 0 && ((seqControl >> 1) & 0x0003) == 0)
+        switch (fragNumber)
         {
+        case 0:
             SetType({BlockAckType::COMPRESSED, {8}});
-        }
-        else if (((seqControl >> 3) & 0x0001) == 0 && ((seqControl >> 1) & 0x0003) == 2)
-        {
+            break;
+        case 4:
             SetType({BlockAckType::COMPRESSED, {32}});
-        }
-        else
-        {
-            NS_FATAL_ERROR("Reserved configurations");
+            break;
+        case 8:
+            SetType({BlockAckType::COMPRESSED, {64}});
+            break;
+        case 10:
+            SetType({BlockAckType::COMPRESSED, {128}});
+            break;
+        default:
+            NS_ABORT_MSG("Unsupported fragment number: " << fragNumber);
         }
     }
     else if (m_baType.m_variant == BlockAckType::MULTI_STA)
     {
-        if ((seqControl & 0x0001) == 1)
+        uint16_t fragNumber = seqControl & 0x000f;
+
+        if ((fragNumber & 0x0001) == 1)
         {
             NS_FATAL_ERROR("Fragmentation Level 3 unsupported");
         }
         uint8_t bitmapLen = 0;
-        if (((seqControl >> 3) & 0x0001) == 0 && ((seqControl >> 1) & 0x0003) == 0)
+        switch (fragNumber)
         {
+        case 0:
             bitmapLen = 8;
-        }
-        else if (((seqControl >> 3) & 0x0001) == 0 && ((seqControl >> 1) & 0x0003) == 1)
-        {
+            break;
+        case 2:
             bitmapLen = 16;
-        }
-        else if (((seqControl >> 3) & 0x0001) == 0 && ((seqControl >> 1) & 0x0003) == 2)
-        {
+            break;
+        case 4:
             bitmapLen = 32;
-        }
-        else if (((seqControl >> 3) & 0x0001) == 0 && ((seqControl >> 1) & 0x0003) == 3)
-        {
+            break;
+        case 6:
             bitmapLen = 4;
-        }
-        else
-        {
-            NS_FATAL_ERROR("Reserved configurations");
+            break;
+        case 8:
+            bitmapLen = 64;
+            break;
+        case 10:
+            bitmapLen = 128;
+            break;
+        default:
+            NS_ABORT_MSG("Unsupported fragment number: " << fragNumber);
         }
         m_baType.m_bitmapLen[index] = bitmapLen;
         m_baInfo[index].m_bitmap.assign(bitmapLen, 0);
