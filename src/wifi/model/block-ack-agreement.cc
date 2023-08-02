@@ -23,6 +23,8 @@
 
 #include "ns3/log.h"
 
+#include <set>
+
 namespace ns3
 {
 
@@ -174,12 +176,13 @@ BlockAckAgreement::GetBlockAckType() const
     {
         return BlockAckType::BASIC;
     }
+
+    std::set<uint16_t> lengths{64, 256, 512, 1024}; // bitmap lengths in bits
+    // first bitmap length that is greater than or equal to the buffer size
+    auto it = lengths.lower_bound(m_bufferSize);
+    NS_ASSERT_MSG(it != lengths.cend(), "Buffer size too large: " << m_bufferSize);
     // Multi-TID Block Ack is not currently supported
-    if (m_bufferSize > 64)
-    {
-        return {BlockAckType::COMPRESSED, {32}};
-    }
-    return {BlockAckType::COMPRESSED, {8}};
+    return {BlockAckType::COMPRESSED, {static_cast<uint8_t>(*it / 8)}};
 }
 
 BlockAckReqType
