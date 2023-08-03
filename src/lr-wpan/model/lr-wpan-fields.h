@@ -355,88 +355,137 @@ class CapabilityField
 {
   public:
     CapabilityField();
+
+    /**
+     * Construct a Capability field based on a bitmap.
+     *
+     * \param bitmap The bitmap representing the capability
+     */
+    CapabilityField(uint8_t bitmap);
+
+    /**
+     * Get the bitmap representing the device capability.
+     *
+     * \return The bitmap representing the device capability.
+     */
+    uint8_t GetCapability() const;
+
+    /**
+     * Set the bitmap representing the device capability.
+     *
+     * \param bitmap The bitmap representing the capability
+     */
+    void SetCapability(uint8_t bitmap);
+
     /**
      * Get the size of the serialized Capability Information Field.
+     *
      * \return the size of the serialized field.
      */
     uint32_t GetSerializedSize() const;
+
     /**
      * Serialize the entire Capability Information Field.
+     *
      * \param i an iterator which points to where the Capability information field
      * should be written.
      * \return an iterator.
      */
     Buffer::Iterator Serialize(Buffer::Iterator i) const;
+
     /**
      * Deserialize the entire Capability Information Field.
+     *
      * \param i an iterator which points to where the Capability information field should be read.
      * \return an iterator.
      */
     Buffer::Iterator Deserialize(Buffer::Iterator i);
+
     /**
      * True if the device type is a Full Functional Device (FFD) false if is a Reduced Functional
      * Device (RFD).
+     *
      * \return True if the device type is a Full Functional Device (FFD) false if is a Reduced
      * Functional Device (RFD).
      */
     bool IsDeviceTypeFfd() const;
+
     /**
      * True if the device is receiving power from alternating current mains.
+     *
      * \return True if the device is receiving power from alternating current mains.
      */
     bool IsPowSrcAvailable() const;
+
     /**
      * True if the device does not disable its receiver to conserve power during idle periods.
+     *
      * \return True if the device does not disable its receiver to conserve power during idle
      * periods.
      */
     bool IsReceiverOnWhenIdle() const;
+
     /**
      * True if the device is capable of sending and receiving cryptographically protected MAC
      * frames.
+     *
      * \return True if the device is capable of sending and receiving cryptographically protected
      * MAC frames.
      */
     bool IsSecurityCapability() const;
+
     /**
      * True if the device wishes the coordinator to allocate a short address as result of the
      * association procedure.
+     *
      * \return True if the device wishes the coordinator to allocate a short address as result of
      * the association procedure.
      */
     bool IsShortAddrAllocOn() const;
+
     /**
      * Set the Device type in the Capability Information Field.
      * True = full functional device (FFD)  False = reduced functional device (RFD).
+     *
      * \param devType The device type described in the Capability Information Field.
      */
     void SetFfdDevice(bool devType);
+
     /**
      * Set the Power Source available flag in the Capability Information Field.
+     *
      * \param pow Set true if a Power Source is available in the Capability Information Field.
      */
     void SetPowSrcAvailable(bool pow);
+
     /**
      * Indicate if the receiver is On on Idle
+     *
      * \param rxIdle Set true if the receiver is on when Idle
      */
     void SetRxOnWhenIdle(bool rxIdle);
+
     /**
      * Set the Security Capability flag in the Capability Information Field.
+     *
      * \param sec Set true if the device have Security Capabilities.
      */
     void SetSecurityCap(bool sec);
+
     /**
      * Set the Short Address Flag in the Capability Information Field.
+     *
      * \param addrAlloc Describes whether or not the coordinator should allocate a short
      *                  address in the association process.
      */
     void SetShortAddrAllocOn(bool addrAlloc);
 
   private:
+    bool m_reservedBit0;       //!< Capability Information Field, Reserved (bit 0)
     bool m_deviceType;         //!< Capability Information Field, Device Type  (bit 1)
     bool m_powerSource;        //!< Capability Information Field, Power Source (bit 2)
     bool m_receiverOnWhenIdle; //!< Capability Information Field, Receiver On When Idle (bit 3)
+    uint8_t m_reservedBit45;   //!< Capability Information Field, Reserved (bit 4 & 5)
     bool m_securityCap;        //!< Capability Information Field, Security Capability (bit 6)
     bool m_allocAddr;          //!< Capability Information Field, Allocate Address (bit 7)
 };

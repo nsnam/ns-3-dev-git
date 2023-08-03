@@ -22,6 +22,7 @@ Release 3-dev
 
 - (wifi) Added support for 802.11be TID-to-Link Mapping
 - (energy) - !1329 - Extensions to battery discharge module
+- (lr-wpan) - !1604 - Add CapabilityField bitmap functions
 
 ### Bugs fixed
 
