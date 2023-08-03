@@ -288,11 +288,13 @@ The ``GenericBatteryModelHelper`` can be used to easily install an energy source
 node or node container of one of four types of chemestries (Li-Ion,Lead Acid, NiCd,NiMH).
 Users must use one of the available presets that represent an specific battery.
 
-:::
-GenericBatteryModelHelper batteryHelper;
-EnergySourceContainer
-energySourceContainer = batteryHelper.Install(nodeContainer, PANASONIC_CGR18650DA_LION);
-batteryHelper.SetCellPack(energySourceContainer,2,2);
+.. sourcecode:: cpp
+
+   GenericBatteryModelHelper batteryHelper;
+   EnergySourceContainer
+   energySourceContainer = batteryHelper.Install(nodeContainer,
+                                                 PANASONIC_CGR18650DA_LION);
+   batteryHelper.SetCellPack(energySourceContainer,2,2);
 
 In the previous example, the ``GenericBatteryModelHelper`` was used to install a Panasonic CGR18650DA
 Li-Ion battery. Likewise, the helper is used to define a cell pack of 4 batteries. 2 batteries
@@ -300,24 +302,26 @@ connected in series and 2 connected in parallel (2S,2P).
 
 Another option is to manually configure the values that makes the preset:
 
-:::
-node = CreateObject<Node>();
-devicesEnergyModel = CreateObject<SimpleDeviceEnergyModel>();
-batteryModel = CreateObject<GenericBatteryModel>();
-batteryModel->SetAttribute("FullVoltage", DoubleValue(1.39));            // Qfull
-batteryModel->SetAttribute("MaxCapacity", DoubleValue(7.0));             // Q
-batteryModel->SetAttribute("NominalVoltage", DoubleValue(1.18));         // Vnom
-batteryModel->SetAttribute("NominalCapacity", DoubleValue(6.25));        // QNom
-batteryModel->SetAttribute("ExponentialVoltage", DoubleValue(1.28));     // Vexp
-batteryModel->SetAttribute("ExponentialCapacity", DoubleValue(1.3));     // Qexp
-batteryModel->SetAttribute("InternalResistance", DoubleValue(0.0046));   // R
-batteryModel->SetAttribute("TypicalDischargeCurrent", DoubleValue(1.3)); // i typical
-batteryModel->SetAttribute("CutoffVoltage", DoubleValue(1.0));           // End of charge.
-batteryModel->SetAttribute("BatteryType", EnumValue(NIMH_NICD));
-batteryModel = DynamicCast<GenericBatteryModel>(batteryHelper.Install(node,PANASONIC_HHR650D_NIMH));
-devicesEnergyModel->SetEnergySource(batteryModel);
-batteryModel->AppendDeviceEnergyModel(devicesEnergyModel);
-devicesEnergyModel->SetNode(node);
+.. sourcecode:: cpp
+
+   auto node = CreateObject<Node>();
+   auto devicesEnergyModel = CreateObject<SimpleDeviceEnergyModel>();
+   batteryModel = CreateObject<GenericBatteryModel>();
+   batteryModel->SetAttribute("FullVoltage", DoubleValue(1.39));            // Qfull
+   batteryModel->SetAttribute("MaxCapacity", DoubleValue(7.0));             // Q
+   batteryModel->SetAttribute("NominalVoltage", DoubleValue(1.18));         // Vnom
+   batteryModel->SetAttribute("NominalCapacity", DoubleValue(6.25));        // QNom
+   batteryModel->SetAttribute("ExponentialVoltage", DoubleValue(1.28));     // Vexp
+   batteryModel->SetAttribute("ExponentialCapacity", DoubleValue(1.3));     // Qexp
+   batteryModel->SetAttribute("InternalResistance", DoubleValue(0.0046));   // R
+   batteryModel->SetAttribute("TypicalDischargeCurrent", DoubleValue(1.3)); // i typical
+   batteryModel->SetAttribute("CutoffVoltage", DoubleValue(1.0));           // End of charge.
+   batteryModel->SetAttribute("BatteryType", EnumValue(NIMH_NICD));         // General battery type
+   batteryModel = DynamicCast<GenericBatteryModel>
+                  (batteryHelper.Install(node,PANASONIC_HHR650D_NIMH));
+   devicesEnergyModel->SetEnergySource(batteryModel);
+   batteryModel->AppendDeviceEnergyModel(devicesEnergyModel);
+   devicesEnergyModel->SetNode(node);
 
 
 Usage of both of these type of configurations are shown in ``generic-battery-discharge-example.cc``.
