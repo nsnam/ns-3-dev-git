@@ -10,4 +10,30 @@ ns-3-dev-git$ git commit
 ns-3-dev-git$ git push -u
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% If problem with https push %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+$ git remote show origin
+
+$ git remote rm origin		## if a https link is attached, 
+
+$ git remote add origin git@github.com:rahulg737/ns-3-dev-git.git	## adding ssh link
+
+%% if still the error comes,
+Here are some steps you can take to resolve the issue:
+
+First, ensure that the SSH agent is running and that your SSH key is added to the agent. You can check the running agents with the following command:
+$$$ eval "$(ssh-agent -s)"
+
+Then, add your SSH key to the agent:
+$$$ ssh-add ~/.ssh/id_rsa
+
+Ensure that your SSH private key (id_rsa) has the correct permissions. The file should only be readable by your user, so set the permissions as follows:
+$$$ chmod 600 ~/.ssh/id_rsa
+
+When you run git push, ensure that you are using the SSH URL for the remote repository. 
+$$$ git remote add origin git@github.com:rahulg737/ns-3-dev-git.git	## adding ssh link
+
+After performing these checks, try pushing to the remote repository again using the command:
+$$$ git push -u origin prb-util
+
 
