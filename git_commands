@@ -1,0 +1,13 @@
+$ git clone https://github.com/rahulg737/ns-3-dev-git.git
+
+ns-3-dev-git$ git checkout origin/prb-util
+
+ns-3-dev-git$ git checkout prb-util 
+
+ns-3-dev-git$ git add rahul-examples/
+ns-3-dev-git$ git commit
+
+ns-3-dev-git$ git push -u
+
+
+
