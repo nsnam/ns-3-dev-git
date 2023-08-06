@@ -958,20 +958,20 @@ UeManager::SendData(uint8_t bid, Ptr<Packet> p)
     case CONNECTION_REESTABLISHMENT:
     case HANDOVER_PREPARATION:
     case HANDOVER_PATH_SWITCH: {
-        NS_LOG_LOGIC("queueing data on PDCP for transmission over the air");
+        NS_LOG_INFO("queueing data on PDCP for transmission over the air");
         SendPacket(bid, p);
     }
     break;
 
     case HANDOVER_JOINING: {
         // Buffer data until RRC Connection Reconfiguration Complete message is received
-        NS_LOG_LOGIC("buffering data");
+        NS_LOG_INFO("buffering data");
         m_packetBuffer.emplace_back(bid, p);
     }
     break;
 
     case HANDOVER_LEAVING: {
-        NS_LOG_LOGIC("forwarding data to target eNB over X2-U");
+        NS_LOG_INFO("forwarding data to target eNB over X2-U");
         uint8_t drbid = Bid2Drbid(bid);
         EpcX2Sap::UeDataParams params;
         params.sourceCellId = m_rrc->ComponentCarrierToCellId(m_componentCarrierId);
@@ -2604,6 +2604,11 @@ LteEnbRrc::SendData(Ptr<Packet> packet)
     bool found = packet->RemovePacketTag(tag);
     NS_ASSERT_MSG(found, "no EpsBearerTag found in packet to be sent");
     Ptr<UeManager> ueManager = GetUeManager(tag.GetRnti());
+
+    NS_LOG_INFO("Sending a packet of " << packet->GetSize() << " bytes to IMSI "
+                                       << ueManager->GetImsi() << ", RNTI " << ueManager->GetRnti()
+                                       << ", BID " << (uint16_t)tag.GetBid());
+
     ueManager->SendData(tag.GetBid(), packet);
 
     return true;
