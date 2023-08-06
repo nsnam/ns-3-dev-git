@@ -867,7 +867,7 @@ Ipv6StaticRouting::NotifyAddRoute(Ipv6Address dst,
                                   uint32_t interface,
                                   Ipv6Address prefixToUse)
 {
-    NS_LOG_INFO(this << dst << mask << nextHop << interface << prefixToUse);
+    NS_LOG_FUNCTION(this << dst << mask << nextHop << interface << prefixToUse);
     if (nextHop == Ipv6Address::GetZero())
     {
         AddNetworkRouteTo(dst, mask, interface);
