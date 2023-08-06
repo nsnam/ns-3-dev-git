@@ -82,8 +82,7 @@ PointToPointHelper::EnablePcapInternal(std::string prefix,
     Ptr<PointToPointNetDevice> device = nd->GetObject<PointToPointNetDevice>();
     if (!device)
     {
-        NS_LOG_INFO("PointToPointHelper::EnablePcapInternal(): Device "
-                    << device << " not of type ns3::PointToPointNetDevice");
+        NS_LOG_INFO("Device " << device << " not of type ns3::PointToPointNetDevice");
         return;
     }
 
@@ -117,8 +116,7 @@ PointToPointHelper::EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
     Ptr<PointToPointNetDevice> device = nd->GetObject<PointToPointNetDevice>();
     if (!device)
     {
-        NS_LOG_INFO("PointToPointHelper::EnableAsciiInternal(): Device "
-                    << device << " not of type ns3::PointToPointNetDevice");
+        NS_LOG_INFO("Device " << device << " not of type ns3::PointToPointNetDevice");
         return;
     }
 
