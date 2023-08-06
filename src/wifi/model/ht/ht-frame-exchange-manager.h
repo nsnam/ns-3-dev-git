@@ -26,8 +26,6 @@
 #include "ns3/wifi-psdu.h"
 
 class AmpduAggregationTest;
-class TwoLevelAggregationTest;
-class HeAggregationTest;
 
 namespace ns3
 {
@@ -46,10 +44,6 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
   public:
     /// allow AmpduAggregationTest class access
     friend class ::AmpduAggregationTest;
-    /// allow TwoLevelAggregationTest class access
-    friend class ::TwoLevelAggregationTest;
-    /// allow HeAggregationTest class access
-    friend class ::HeAggregationTest;
 
     /**
      * \brief Get the type ID.

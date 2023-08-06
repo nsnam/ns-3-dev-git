@@ -28,9 +28,7 @@
 #include <set>
 #include <variant>
 
-class TwoLevelAggregationTest;
 class AmpduAggregationTest;
-class HeAggregationTest;
 class MultiLinkOperationsTestBase;
 
 namespace ns3
@@ -144,11 +142,7 @@ class StaWifiMac : public WifiMac
 {
   public:
     /// Allow test cases to access private members
-    friend class ::TwoLevelAggregationTest;
-    /// Allow test cases to access private members
     friend class ::AmpduAggregationTest;
-    /// Allow test cases to access private members
-    friend class ::HeAggregationTest;
     /// Allow test cases to access private members
     friend class ::MultiLinkOperationsTestBase;
 
