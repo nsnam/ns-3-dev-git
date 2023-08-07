@@ -33,6 +33,7 @@
 #include "wifi-tx-parameters.h"
 #include "wifi-tx-vector.h"
 
+#include "ns3/eht-capabilities.h"
 #include "ns3/he-capabilities.h"
 #include "ns3/ht-capabilities.h"
 #include "ns3/ht-frame-exchange-manager.h"
@@ -147,14 +148,20 @@ MpduAggregator::GetMaxAmpduSize(Mac48Address recipient,
     NS_ASSERT(stationManager);
 
     // Retrieve the Capabilities elements advertised by the recipient
-    Ptr<const HeCapabilities> heCapabilities = stationManager->GetStationHeCapabilities(recipient);
-    Ptr<const VhtCapabilities> vhtCapabilities =
-        stationManager->GetStationVhtCapabilities(recipient);
-    Ptr<const HtCapabilities> htCapabilities = stationManager->GetStationHtCapabilities(recipient);
+    auto ehtCapabilities = stationManager->GetStationEhtCapabilities(recipient);
+    auto heCapabilities = stationManager->GetStationHeCapabilities(recipient);
+    auto vhtCapabilities = stationManager->GetStationVhtCapabilities(recipient);
+    auto htCapabilities = stationManager->GetStationHtCapabilities(recipient);
 
     // Determine the constraint imposed by the recipient based on the PPDU
     // format used to transmit the A-MPDU
-    if (modulation >= WIFI_MOD_CLASS_HE)
+    if (modulation >= WIFI_MOD_CLASS_EHT)
+    {
+        NS_ABORT_MSG_IF(!ehtCapabilities, "EHT Capabilities element not received");
+
+        maxAmpduSize = std::min(maxAmpduSize, ehtCapabilities->GetMaxAmpduLength());
+    }
+    else if (modulation >= WIFI_MOD_CLASS_HE)
     {
         NS_ABORT_MSG_IF(!heCapabilities, "HE Capabilities element not received");
 
