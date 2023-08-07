@@ -79,7 +79,6 @@ SpectrumWifiPhyHelper::AddChannel(const std::string& channelName, const Frequenc
 {
     Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel>(channelName);
     AddChannel(channel, freqRange);
-    AddWifiBandwidthFilter(channel);
 }
 
 void
