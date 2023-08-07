@@ -273,7 +273,7 @@ class EhtCapabilities : public WifiInformationElement
     /**
      * Set the maximum A-MPDU length.
      *
-     * \param maxAmpduLength 2^(23 + x) - 1, x in the range 0 to 3
+     * \param maxAmpduLength 2^(23 + x) - 1, x in the range 0 to 1
      */
     void SetMaxAmpduLength(uint32_t maxAmpduLength);
 
