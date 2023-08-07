@@ -54,16 +54,13 @@ SpectrumWifiPhyHelper::SpectrumWifiPhyHelper(uint8_t nLinks)
 void
 SpectrumWifiPhyHelper::SetChannel(const Ptr<SpectrumChannel> channel)
 {
-    m_channels[WHOLE_WIFI_SPECTRUM] = channel;
-    AddWifiBandwidthFilter(channel);
+    AddChannel(channel);
 }
 
 void
 SpectrumWifiPhyHelper::SetChannel(const std::string& channelName)
 {
-    Ptr<SpectrumChannel> channel = Names::Find<SpectrumChannel>(channelName);
-    m_channels[WHOLE_WIFI_SPECTRUM] = channel;
-    AddWifiBandwidthFilter(channel);
+    AddChannel(channelName);
 }
 
 void
