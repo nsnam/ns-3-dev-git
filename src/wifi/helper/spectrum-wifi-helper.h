@@ -22,10 +22,14 @@
 
 #include "wifi-helper.h"
 
+#include <map>
+#include <set>
+
 namespace ns3
 {
 
 class SpectrumChannel;
+class SpectrumWifiPhy;
 
 /**
  * \brief Make it easy to create and manage PHY objects for the spectrum model.
@@ -81,6 +85,16 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
     void AddChannel(const std::string& channelName,
                     const FrequencyRange& freqRange = WHOLE_WIFI_SPECTRUM);
 
+    /**
+     * Add a given spectrum PHY interface to the PHY instance corresponding of a given link.
+     * If no mapping has been specified for a given link, all spectrum PHY interfaces will
+     * be added to the PHY instance of that link.
+     *
+     * \param linkId ID of the link to setup
+     * \param freqRange frequency range handled by of the spectrum PHY interface
+     */
+    void AddPhyToFreqRangeMapping(uint8_t linkId, const FrequencyRange& freqRange);
+
   private:
     /**
      * \param node the node on which we wish to create a wifi PHY
@@ -90,6 +104,16 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
      * This method implements the pure virtual method defined in \ref ns3::WifiPhyHelper.
      */
     std::vector<Ptr<WifiPhy>> Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const override;
+
+    /**
+     * \brief Install PHY interfaces to the PHY instance of a given link
+     * based on the currently configured mapping (\see AddPhyInterface).
+     *
+     * \param linkId ID of the link to setup
+     * \param phy spectrum PHY instance of the link
+     */
+    void InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy> phy) const;
+
     /**
      * \param channel The channel to inspect to possibly add a WifiBandwidthFilter
      *
@@ -99,6 +123,9 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
     void AddWifiBandwidthFilter(Ptr<SpectrumChannel> channel);
 
     std::map<FrequencyRange, Ptr<SpectrumChannel>> m_channels; ///< the spectrum channels
+    std::map<uint8_t /* linkId */, std::set<FrequencyRange>>
+        m_interfacesMap; ///< map of the spectrum PHY interfaces to be added to the PHY instance
+                         ///< corresponding to a given link ID
 };
 
 } // namespace ns3

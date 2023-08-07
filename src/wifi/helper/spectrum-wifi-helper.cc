@@ -104,6 +104,19 @@ SpectrumWifiPhyHelper::AddWifiBandwidthFilter(Ptr<SpectrumChannel> channel)
     }
 }
 
+void
+SpectrumWifiPhyHelper::AddPhyToFreqRangeMapping(uint8_t linkId, const FrequencyRange& freqRange)
+{
+    if (auto it = m_interfacesMap.find(linkId); it == m_interfacesMap.end())
+    {
+        m_interfacesMap.insert({linkId, {freqRange}});
+    }
+    else
+    {
+        it->second.emplace(freqRange);
+    }
+}
+
 std::vector<Ptr<WifiPhy>>
 SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
 {
@@ -114,7 +127,7 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
         auto phy = m_phys.at(i).Create<SpectrumWifiPhy>();
         auto interference = m_interferenceHelper.Create<InterferenceHelper>();
         phy->SetInterferenceHelper(interference);
-        Ptr<ErrorRateModel> error = m_errorRateModel.at(i).Create<ErrorRateModel>();
+        auto error = m_errorRateModel.at(i).Create<ErrorRateModel>();
         phy->SetErrorRateModel(error);
         if (m_frameCaptureModel.at(i).IsTypeIdSet())
         {
@@ -127,16 +140,33 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
                 m_preambleDetectionModel.at(i).Create<PreambleDetectionModel>();
             phy->SetPreambleDetectionModel(preambleDetection);
         }
-        for (const auto& [freqRange, channel] : m_channels)
-        {
-            phy->AddChannel(channel, freqRange);
-        }
+        InstallPhyInterfaces(i, phy);
         phy->SetDevice(device);
         phy->SetMobility(node->GetObject<MobilityModel>());
         ret.emplace_back(phy);
     }
 
     return ret;
+}
+
+void
+SpectrumWifiPhyHelper::InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy> phy) const
+{
+    if (m_interfacesMap.count(linkId) == 0)
+    {
+        // default setup: set all interfaces to this link
+        for (const auto& [freqRange, channel] : m_channels)
+        {
+            phy->AddChannel(channel, freqRange);
+        }
+    }
+    else
+    {
+        for (const auto& freqRange : m_interfacesMap.at(linkId))
+        {
+            phy->AddChannel(m_channels.at(freqRange), freqRange);
+        }
+    }
 }
 
 } // namespace ns3
