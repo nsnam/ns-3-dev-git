@@ -145,7 +145,7 @@ main(int argc, char* argv[])
     bool udp{true};
     bool downlink{true};
     bool useRts{false};
-    bool useExtendedBlockAck{false};
+    uint16_t mpduBufferSize{512};
     std::string emlsrLinks;
     uint16_t paddingDelayUsec{32};
     uint16_t transitionDelayUsec{128};
@@ -210,7 +210,9 @@ main(int argc, char* argv[])
                  "Generate downlink flows if set to 1, uplink flows otherwise",
                  downlink);
     cmd.AddValue("useRts", "Enable/disable RTS/CTS", useRts);
-    cmd.AddValue("useExtendedBlockAck", "Enable/disable use of extended BACK", useExtendedBlockAck);
+    cmd.AddValue("mpduBufferSize",
+                 "Size (in number of MPDUs) of the BlockAck buffer",
+                 mpduBufferSize);
     cmd.AddValue("nStations", "Number of non-AP HE stations", nStations);
     cmd.AddValue("dlAckType",
                  "Ack sequence type for DL OFDMA (NO-OFDMA, ACK-SU-FORMAT, MU-BAR, AGGR-MU-BAR)",
@@ -439,7 +441,7 @@ main(int argc, char* argv[])
                     "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/GuardInterval",
                     TimeValue(NanoSeconds(gi)));
                 Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MpduBufferSize",
-                            UintegerValue(useExtendedBlockAck ? 256 : 64));
+                            UintegerValue(mpduBufferSize));
 
                 // mobility.
                 MobilityHelper mobility;
