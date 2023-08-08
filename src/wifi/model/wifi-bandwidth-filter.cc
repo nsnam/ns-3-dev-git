@@ -61,12 +61,17 @@ WifiBandwidthFilter::DoFilter(Ptr<const SpectrumSignalParameters> params,
         return false;
     }
 
-    // WifiSpectrumPhyInterface (passed in) can be used to fetch SpectrumWifiPhy
-
     auto interface = DynamicCast<const WifiSpectrumPhyInterface>(receiverPhy);
-    auto wifiPhy = interface->GetSpectrumWifiPhy();
+    if (!interface)
+    {
+        NS_LOG_DEBUG("Sending a Wi-Fi signal to a non Wi-Fi device; do not filter");
+        return false;
+    }
 
-    NS_ASSERT_MSG(wifiPhy, "WifiPhy should be valid if WifiSpectrumSignalParameters was found");
+    auto wifiPhy = interface->GetSpectrumWifiPhy();
+    NS_ASSERT_MSG(wifiPhy,
+                  "WifiPhy should be valid if WifiSpectrumSignalParameters was found and sending "
+                  "to a WifiSpectrumPhyInterface");
 
     BooleanValue trackSignalsInactiveInterfaces;
     wifiPhy->GetAttribute("TrackSignalsFromInactiveInterfaces", trackSignalsInactiveInterfaces);
