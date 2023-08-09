@@ -26,6 +26,7 @@
 #include "ns3/pointer.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
@@ -1495,6 +1496,195 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Spectrum Wifi Phy Interfaces Helper Test
+ *
+ * This test checks the expected interfaces are added to the spectrum PHY instances
+ * created by the helper.
+ */
+class SpectrumWifiPhyInterfacesHelperTest : public TestCase
+{
+  public:
+    SpectrumWifiPhyInterfacesHelperTest();
+    ~SpectrumWifiPhyInterfacesHelperTest() override = default;
+
+  private:
+    void DoRun() override;
+};
+
+SpectrumWifiPhyInterfacesHelperTest::SpectrumWifiPhyInterfacesHelperTest()
+    : TestCase("Check PHY interfaces added to PHY instances using helper")
+{
+}
+
+void
+SpectrumWifiPhyInterfacesHelperTest::DoRun()
+{
+    WifiHelper wifiHelper;
+    wifiHelper.SetStandard(WIFI_STANDARD_80211be);
+
+    SpectrumWifiPhyHelper phyHelper(3);
+    phyHelper.Set(0, "ChannelSettings", StringValue("{2, 0, BAND_2_4GHZ, 0}"));
+    phyHelper.Set(1, "ChannelSettings", StringValue("{36, 0, BAND_5GHZ, 0}"));
+    phyHelper.Set(2, "ChannelSettings", StringValue("{1, 0, BAND_6GHZ, 0}"));
+
+    phyHelper.AddChannel(CreateObject<MultiModelSpectrumChannel>(), WIFI_SPECTRUM_2_4_GHZ);
+    phyHelper.AddChannel(CreateObject<MultiModelSpectrumChannel>(), WIFI_SPECTRUM_5_GHZ);
+    phyHelper.AddChannel(CreateObject<MultiModelSpectrumChannel>(), WIFI_SPECTRUM_6_GHZ);
+
+    WifiMacHelper macHelper;
+    NodeContainer nodes(4);
+
+    /* Default case: all interfaces are added to each link */
+    auto device = wifiHelper.Install(phyHelper, macHelper, nodes.Get(0));
+
+    // Verify each PHY has 3 interfaces
+    auto phyLink0 =
+        DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(0));
+    NS_ASSERT(phyLink0);
+    NS_TEST_ASSERT_MSG_EQ(phyLink0->GetSpectrumPhyInterfaces().size(),
+                          3,
+                          "Incorrect number of PHY interfaces added to PHY link ID 0");
+
+    auto phyLink1 =
+        DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(1));
+    NS_ASSERT(phyLink1);
+    NS_TEST_ASSERT_MSG_EQ(phyLink1->GetSpectrumPhyInterfaces().size(),
+                          3,
+                          "Incorrect number of PHY interfaces added to PHY link ID 1");
+
+    auto phyLink2 =
+        DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(2));
+    NS_ASSERT(phyLink2);
+    NS_TEST_ASSERT_MSG_EQ(phyLink1->GetSpectrumPhyInterfaces().size(),
+                          3,
+                          "Incorrect number of PHY interfaces added to PHY link ID 2");
+
+    /* each PHY has a single interface */
+    phyHelper.AddPhyToFreqRangeMapping(0, WIFI_SPECTRUM_2_4_GHZ);
+    phyHelper.AddPhyToFreqRangeMapping(1, WIFI_SPECTRUM_5_GHZ);
+    phyHelper.AddPhyToFreqRangeMapping(2, WIFI_SPECTRUM_6_GHZ);
+    device = wifiHelper.Install(phyHelper, macHelper, nodes.Get(1));
+
+    // Verify each PHY has a single interface
+    phyLink0 = DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(0));
+    NS_ASSERT(phyLink0);
+    NS_TEST_ASSERT_MSG_EQ(phyLink0->GetSpectrumPhyInterfaces().size(),
+                          1,
+                          "Incorrect number of PHY interfaces added to PHY link ID 0");
+    NS_TEST_ASSERT_MSG_EQ(phyLink0->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_2_4_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+
+    phyLink1 = DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(1));
+    NS_ASSERT(phyLink1);
+    NS_TEST_ASSERT_MSG_EQ(phyLink1->GetSpectrumPhyInterfaces().size(),
+                          1,
+                          "Incorrect number of PHY interfaces added to PHY link ID 1");
+    NS_TEST_ASSERT_MSG_EQ(phyLink1->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_5_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 1");
+
+    phyLink2 = DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(2));
+    NS_ASSERT(phyLink2);
+    NS_TEST_ASSERT_MSG_EQ(phyLink2->GetSpectrumPhyInterfaces().size(),
+                          1,
+                          "Incorrect number of PHY interfaces added to PHY link ID 2");
+    NS_TEST_ASSERT_MSG_EQ(phyLink2->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_6_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 2");
+
+    /* add yet another interface to PHY 0 */
+    phyHelper.AddPhyToFreqRangeMapping(0, WIFI_SPECTRUM_5_GHZ);
+    device = wifiHelper.Install(phyHelper, macHelper, nodes.Get(2));
+
+    // Verify each PHY has a single interface except PHY 0 that should have 2 interfaces
+    phyLink0 = DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(0));
+    NS_ASSERT(phyLink0);
+    NS_TEST_ASSERT_MSG_EQ(phyLink0->GetSpectrumPhyInterfaces().size(),
+                          2,
+                          "Incorrect number of PHY interfaces added to PHY link ID 0");
+    NS_TEST_ASSERT_MSG_EQ(phyLink0->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_2_4_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+    NS_TEST_ASSERT_MSG_EQ(phyLink0->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_5_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+
+    phyLink1 = DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(1));
+    NS_ASSERT(phyLink1);
+    NS_TEST_ASSERT_MSG_EQ(phyLink1->GetSpectrumPhyInterfaces().size(),
+                          1,
+                          "Incorrect number of PHY interfaces added to PHY link ID 1");
+    NS_TEST_ASSERT_MSG_EQ(phyLink1->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_5_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 1");
+
+    phyLink2 = DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(2));
+    NS_ASSERT(phyLink2);
+    NS_TEST_ASSERT_MSG_EQ(phyLink2->GetSpectrumPhyInterfaces().size(),
+                          1,
+                          "Incorrect number of PHY interfaces added to PHY link ID 2");
+    NS_TEST_ASSERT_MSG_EQ(phyLink2->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_6_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 2");
+
+    /* reset mapping previously configured to helper: back to default */
+    phyHelper.ResetPhyToFreqRangeMapping();
+    device = wifiHelper.Install(phyHelper, macHelper, nodes.Get(3));
+
+    // Verify each PHY has 3 interfaces
+    phyLink0 = DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(0));
+    NS_ASSERT(phyLink0);
+    NS_TEST_ASSERT_MSG_EQ(phyLink0->GetSpectrumPhyInterfaces().size(),
+                          3,
+                          "Incorrect number of PHY interfaces added to PHY link ID 0");
+    NS_TEST_ASSERT_MSG_EQ(phyLink0->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_2_4_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+    NS_TEST_ASSERT_MSG_EQ(phyLink0->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_5_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+    NS_TEST_ASSERT_MSG_EQ(phyLink0->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_6_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+
+    phyLink1 = DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(1));
+    NS_ASSERT(phyLink1);
+    NS_TEST_ASSERT_MSG_EQ(phyLink1->GetSpectrumPhyInterfaces().size(),
+                          3,
+                          "Incorrect number of PHY interfaces added to PHY link ID 1");
+    NS_TEST_ASSERT_MSG_EQ(phyLink1->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_2_4_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+    NS_TEST_ASSERT_MSG_EQ(phyLink1->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_5_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+    NS_TEST_ASSERT_MSG_EQ(phyLink1->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_6_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+
+    phyLink2 = DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(device.Get(0))->GetPhy(2));
+    NS_ASSERT(phyLink2);
+    NS_TEST_ASSERT_MSG_EQ(phyLink2->GetSpectrumPhyInterfaces().size(),
+                          3,
+                          "Incorrect number of PHY interfaces added to PHY link ID 2");
+    NS_TEST_ASSERT_MSG_EQ(phyLink2->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_2_4_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+    NS_TEST_ASSERT_MSG_EQ(phyLink2->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_5_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+    NS_TEST_ASSERT_MSG_EQ(phyLink2->GetSpectrumPhyInterfaces().count(WIFI_SPECTRUM_6_GHZ),
+                          1,
+                          "Incorrect PHY interfaces added to PHY link ID 0");
+
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief Spectrum Wifi Phy Test Suite
  */
 class SpectrumWifiPhyTestSuite : public TestSuite
@@ -1511,6 +1701,7 @@ SpectrumWifiPhyTestSuite::SpectrumWifiPhyTestSuite()
     AddTestCase(new SpectrumWifiPhyFilterTest, TestCase::QUICK);
     AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(false), TestCase::QUICK);
     AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(true), TestCase::QUICK);
+    AddTestCase(new SpectrumWifiPhyInterfacesHelperTest, TestCase::QUICK);
 }
 
 static SpectrumWifiPhyTestSuite spectrumWifiPhyTestSuite; ///< the test suite
