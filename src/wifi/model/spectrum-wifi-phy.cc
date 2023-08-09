@@ -64,7 +64,7 @@ SpectrumWifiPhy::GetTypeId()
             .AddAttribute(
                 "TrackSignalsFromInactiveInterfaces",
                 "Enable or disable tracking signals coming from inactive spectrum PHY interfaces",
-                BooleanValue(false),
+                BooleanValue(true),
                 MakeBooleanAccessor(&SpectrumWifiPhy::m_trackSignalsInactiveInterfaces),
                 MakeBooleanChecker())
             .AddAttribute(
