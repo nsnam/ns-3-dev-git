@@ -545,7 +545,14 @@ Txop::Queue(Ptr<WifiMpdu> mpdu)
     m_queue->Enqueue(mpdu);
     for (const auto linkId : linkIds)
     {
-        StartAccessIfNeeded(linkId);
+        // schedule a call to StartAccessIfNeeded() to request channel access after that all the
+        // packets of a burst have been enqueued, instead of requesting channel access right after
+        // the first packet. The call to StartAccessIfNeeded() is scheduled only after the first
+        // packet
+        if (auto& event = GetLink(linkId).accessRequest.event; !event.IsRunning())
+        {
+            event = Simulator::ScheduleNow(&Txop::StartAccessIfNeeded, this, linkId);
+        }
     }
 }
 

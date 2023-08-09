@@ -509,6 +509,12 @@ class Txop : public Object
         uint8_t aifsn{0};                          //!< the AIFSN
         Time txopLimit{0};                         //!< the TXOP limit time
         ChannelAccessStatus access{NOT_REQUESTED}; //!< channel access status
+
+        mutable class
+        {
+            friend void Txop::Queue(Ptr<WifiMpdu>);
+            EventId event;
+        } accessRequest; //!< access request event, to be used by Txop::Queue() only
     };
 
     /**
