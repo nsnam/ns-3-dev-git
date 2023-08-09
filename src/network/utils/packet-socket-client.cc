@@ -183,7 +183,17 @@ PacketSocketClient::Send()
 
     if ((m_sent < m_maxPackets) || (m_maxPackets == 0))
     {
-        m_sendEvent = Simulator::Schedule(m_interval, &PacketSocketClient::Send, this);
+        if (m_interval.IsZero())
+        {
+            NS_ABORT_MSG_IF(
+                m_maxPackets == 0,
+                "Generating infinite packets at the same time does not seem to be a good idea");
+            Send();
+        }
+        else
+        {
+            m_sendEvent = Simulator::Schedule(m_interval, &PacketSocketClient::Send, this);
+        }
     }
 }
 

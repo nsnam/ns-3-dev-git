@@ -91,6 +91,11 @@ class PacketSocketClient : public Application
 
     /**
      * \brief Send a packet
+     *
+     * Either <i>Interval</i> and <i>MaxPackets</i> may be zero, but not both.  If <i>Interval</i>
+     * is zero, the PacketSocketClient will send <i>MaxPackets</i> packets without any delay into
+     * the socket.  If <i>MaxPackets</i> is zero, then the PacketSocketClient will send every
+     * <i>Interval</i> until the application is stopped.
      */
     void Send();
 
