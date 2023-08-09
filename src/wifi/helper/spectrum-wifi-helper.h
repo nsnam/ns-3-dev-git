@@ -95,6 +95,11 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
      */
     void AddPhyToFreqRangeMapping(uint8_t linkId, const FrequencyRange& freqRange);
 
+    /**
+     * Reset mapping of the spectrum PHY interfaces added to the PHY instances.
+     */
+    void ResetPhyToFreqRangeMapping();
+
   private:
     /**
      * \param node the node on which we wish to create a wifi PHY

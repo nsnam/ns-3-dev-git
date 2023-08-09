@@ -117,6 +117,12 @@ SpectrumWifiPhyHelper::AddPhyToFreqRangeMapping(uint8_t linkId, const FrequencyR
     }
 }
 
+void
+SpectrumWifiPhyHelper::ResetPhyToFreqRangeMapping()
+{
+    m_interfacesMap.clear();
+}
+
 std::vector<Ptr<WifiPhy>>
 SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
 {
