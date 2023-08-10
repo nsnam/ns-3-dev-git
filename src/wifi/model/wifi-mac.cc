@@ -1471,6 +1471,21 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
 }
 
 void
+WifiMac::StartAccessIfNeeded(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    if (m_txop)
+    {
+        m_txop->StartAccessIfNeeded(linkId);
+    }
+    for (const auto& [acIndex, edca] : m_edca)
+    {
+        edca->StartAccessIfNeeded(linkId);
+    }
+}
+
+void
 WifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from)
 {
     // We expect WifiMac subclasses which do support forwarding (e.g.,

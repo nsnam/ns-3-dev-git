@@ -1464,6 +1464,17 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         }
     }
 
+    // the station that associated with the AP may have dissociated and then associated again.
+    // In this case, the station may store packets from the previous period in which it was
+    // associated. Have the station restart access if it has packets queued.
+    for (const auto& [id, link] : GetLinks())
+    {
+        if (GetStaLink(link).bssid)
+        {
+            StartAccessIfNeeded(id);
+        }
+    }
+
     SetPmModeAfterAssociation(linkId);
 }
 
