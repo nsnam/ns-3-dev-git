@@ -20,6 +20,7 @@
   variables:
     ENABLE_MPI: --enable-mpi
 
+# Build stage
 per-commit-clang-debug:
   extends: .base-per-commit-compile
   stage: build
@@ -48,6 +49,15 @@ per-commit-gcc-optimized:
     MODE: optimized
     COMPILER: g++
 
+per-commit-disabled-precompiled-headers:
+  extends: .base-per-commit-compile
+  stage: build
+  variables:
+    MODE: debug
+    COMPILER: g++
+    EXTRA_OPTIONS: --disable-precompiled-headers
+
+# Test stage
 per-commit-gcc-default-test:
   extends: .base-per-commit-compile
   stage: test
@@ -67,11 +77,3 @@ per-commit-gcc-optimized-test:
   variables:
     MODE: optimized
     COMPILER: g++
-
-per-commit-disabled-precompiled-headers:
-  extends: .base-per-commit-compile
-  stage: build
-  variables:
-    MODE: debug
-    COMPILER: g++
-    EXTRA_OPTIONS: --disable-precompiled-headers
