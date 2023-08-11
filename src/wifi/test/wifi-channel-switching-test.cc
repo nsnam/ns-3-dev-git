@@ -45,9 +45,9 @@ NS_LOG_COMPONENT_DEFINE("WifiChannelSwitchingTest");
  *
  * This test verifies that communication between an AP and a STA resumes
  * after that both switch channel and PHY band. The channel switch is
- * scheduled to happen during the transmission of a frame sent by the AP
- * to the STA. STA discards the frame, associates with the AP again and
- * finally receives the frame successfully.
+ * scheduled to happen during the transmission of a frame sent by the STA
+ * to the AP. AP discards the frame, STA associates with the AP again and
+ * the AP finally receives the frame successfully.
  */
 class WifiChannelSwitchingTest : public TestCase
 {
@@ -69,7 +69,7 @@ class WifiChannelSwitchingTest : public TestCase
     void Associated(Mac48Address bssid);
     /**
      * Callback invoked when PHY receives a PSDU to transmit from the MAC. Tracks the
-     * number of times a QoS data frame is transmitted by the AP.
+     * number of times a QoS data frame is transmitted by the STA.
      *
      * \param psduMap the PSDU map
      * \param txVector the TX vector
@@ -84,7 +84,7 @@ class WifiChannelSwitchingTest : public TestCase
      */
     void L7Receive(Ptr<const Packet> p, const Address& addr);
     /**
-     * Send a packet from the AP to the STA through a packet socket
+     * Send a packet from the STA to the AP through a packet socket
      */
     void SendPacket();
     /**
@@ -172,8 +172,8 @@ void
 WifiChannelSwitchingTest::SendPacket()
 {
     PacketSocketAddress socket;
-    socket.SetSingleDevice(m_apDevice.Get(0)->GetIfIndex());
-    socket.SetPhysicalAddress(m_staDevice.Get(0)->GetAddress());
+    socket.SetSingleDevice(m_staDevice.Get(0)->GetIfIndex());
+    socket.SetPhysicalAddress(m_apDevice.Get(0)->GetAddress());
     socket.SetProtocol(1);
 
     // give packet socket powers to nodes.
@@ -181,18 +181,18 @@ WifiChannelSwitchingTest::SendPacket()
     packetSocket.Install(m_staNode);
     packetSocket.Install(m_apNode);
 
-    Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient>();
+    auto client = CreateObject<PacketSocketClient>();
     client->SetAttribute("PacketSize", UintegerValue(m_payloadSize));
     client->SetAttribute("MaxPackets", UintegerValue(1));
     client->SetAttribute("Interval", TimeValue(MicroSeconds(0)));
     client->SetRemote(socket);
-    m_apNode.Get(0)->AddApplication(client);
+    m_staNode.Get(0)->AddApplication(client);
     client->SetStartTime(Seconds(0.5));
     client->SetStopTime(Seconds(1.0));
 
-    Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer>();
+    auto server = CreateObject<PacketSocketServer>();
     server->SetLocal(socket);
-    m_staNode.Get(0)->AddApplication(server);
+    m_apNode.Get(0)->AddApplication(server);
     server->SetStartTime(Seconds(0.0));
     server->SetStopTime(Seconds(1.0));
 }
@@ -229,11 +229,10 @@ WifiChannelSwitchingTest::DoRun()
     m_apNode.Create(1);
     m_staNode.Create(1);
 
-    Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
-    Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel>();
+    auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+    auto lossModel = CreateObject<FriisPropagationLossModel>();
     spectrumChannel->AddPropagationLossModel(lossModel);
-    Ptr<ConstantSpeedPropagationDelayModel> delayModel =
-        CreateObject<ConstantSpeedPropagationDelayModel>();
+    auto delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
     spectrumChannel->SetPropagationDelayModel(delayModel);
 
     SpectrumWifiPhyHelper phy;
@@ -293,10 +292,10 @@ WifiChannelSwitchingTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(+m_assocCount, 2, "STA did not associate twice");
     NS_TEST_EXPECT_MSG_EQ(+m_txCount,
                           2,
-                          "The QoS Data frame should have been transmitted twice by the AP");
+                          "The QoS Data frame should have been transmitted twice by the STA");
     NS_TEST_EXPECT_MSG_EQ(m_rxBytes,
                           m_payloadSize,
-                          "The QoS Data frame should have been received once by the STA");
+                          "The QoS Data frame should have been received once by the AP");
     NS_TEST_EXPECT_MSG_EQ(+m_channelSwitchCount[0], 1, "AP had to perform one channel switch");
     NS_TEST_EXPECT_MSG_EQ(+m_channelSwitchCount[1], 1, "STA had to perform one channel switch");
 
