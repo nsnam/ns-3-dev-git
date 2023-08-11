@@ -57,6 +57,14 @@ per-commit-disabled-precompiled-headers:
     COMPILER: g++
     EXTRA_OPTIONS: --disable-precompiled-headers
 
+per-commit-disabled-asserts:
+  extends: .base-per-commit-compile
+  stage: build
+  variables:
+    MODE: debug
+    COMPILER: g++
+    EXTRA_OPTIONS: --disable-asserts
+
 # Test stage
 per-commit-gcc-default-test:
   extends: .base-per-commit-compile
