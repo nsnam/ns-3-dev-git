@@ -247,10 +247,8 @@ filter_blacklistRE=""
 REappend filter_blacklistRE "cairo-wideint"
 
 #   Functions with varying numbers of arguments
-#   This is temporary until we move to C++-14
-REappend filter_blacklistRE "Schedule(Time"
-REappend filter_blacklistRE "ScheduleWithContext(uint32_t"
-REappend filter_blacklistRE "Schedule\\(Now\\|Destroy\\)(\\(MEM\\|void\\)"
+#   Explicit template instantiation declaration
+REappend filter_blacklistRE "MakeCallback< ObjectBase \\* >(ObjectBase \\*"
 
 #   ATTRIBUTE_HELPER_CPP( and _HEADER(
 REappend filter_blacklistRE "ATTRIBUTE_HELPER_\\(CPP\\|HEADER\\)"
