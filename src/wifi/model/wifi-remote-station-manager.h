@@ -698,6 +698,15 @@ class WifiRemoteStationManager : public Object
     WifiMode GetNonUnicastMode() const;
 
     /**
+     * Return the TXVECTOR to use for a groupcast packet.
+     *
+     * @param header the MAC header of the groupcast packet
+     * @param allowedWidth the allowed width in MHz to send this packet
+     * @return the TXVECTOR to use to send the groupcast packet
+     */
+    WifiTxVector GetGroupcastTxVector(const WifiMacHeader& header, MHz_u allowedWidth);
+
+    /**
      * Invoked in a STA or AP to store the set of
      * modes supported by a destination which is
      * also supported locally.
