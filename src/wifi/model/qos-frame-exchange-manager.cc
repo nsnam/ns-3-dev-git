@@ -614,6 +614,13 @@ QosFrameExchangeManager::TransmissionFailed()
     }
     else
     {
+        // some STA(s) did not respond, they are no longer protected
+        for (const auto& address : m_txTimer.GetStasExpectedToRespond())
+        {
+            NS_LOG_DEBUG(address << " did not respond, hence it is no longer protected");
+            m_protectedStas.erase(address);
+        }
+
         NS_ASSERT_MSG(m_edca->GetTxopLimit(m_linkId).IsStrictlyPositive(),
                       "Cannot transmit more than one frame if TXOP Limit is zero");
 
