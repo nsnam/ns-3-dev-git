@@ -129,8 +129,11 @@ QosFrameExchangeManager::PifsRecovery()
     NS_ASSERT(m_edca->IsTxopStarted(m_linkId));
 
     // Release the channel if it has not been idle for the last PIFS interval
-    if (m_channelAccessManager->GetAccessGrantStart() - m_phy->GetSifs() >
-        Simulator::Now() - m_phy->GetPifs())
+    m_allowedWidth = std::min(
+        m_allowedWidth,
+        m_channelAccessManager->GetLargestIdlePrimaryChannel(m_phy->GetPifs(), Simulator::Now()));
+
+    if (m_allowedWidth == 0)
     {
         NotifyChannelReleased(m_edca);
         m_edca = nullptr;
