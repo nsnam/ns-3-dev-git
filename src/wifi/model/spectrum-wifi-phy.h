@@ -154,6 +154,13 @@ class SpectrumWifiPhy : public WifiPhy
      */
     Ptr<WifiSpectrumPhyInterface> GetCurrentInterface() const;
 
+    /**
+     * Get the map of interfaces attached to this spectrum PHY
+     *
+     * \return the map of interfaces attached to this spectrum PHY
+     */
+    const std::map<FrequencyRange, Ptr<WifiSpectrumPhyInterface>>& GetSpectrumPhyInterfaces() const;
+
   protected:
     void DoDispose() override;
     void DoInitialize() override;

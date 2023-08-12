@@ -557,6 +557,12 @@ SpectrumWifiPhy::GetCurrentFrequencyRange() const
     return m_currentSpectrumPhyInterface->GetFrequencyRange();
 }
 
+const std::map<FrequencyRange, Ptr<WifiSpectrumPhyInterface>>&
+SpectrumWifiPhy::GetSpectrumPhyInterfaces() const
+{
+    return m_spectrumPhyInterfaces;
+}
+
 Ptr<WifiSpectrumPhyInterface>
 SpectrumWifiPhy::GetInterfaceCoveringChannelBand(uint16_t frequency, uint16_t width) const
 {
