@@ -1770,9 +1770,7 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
     {
         noEndPreambleDetectionEvent &= it.second->NoEndPreambleDetectionEvents();
     }
-    if (!noEndPreambleDetectionEvent ||
-        (m_currentEvent &&
-         (m_currentEvent->GetEndTime() > (Simulator::Now() + m_state->GetDelayUntilIdle()))))
+    if (!noEndPreambleDetectionEvent || m_currentEvent)
     {
         AbortCurrentReception(RECEPTION_ABORTED_BY_TX);
     }
