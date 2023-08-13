@@ -407,11 +407,10 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     // Compare received TX power per MHz to normalized RX sensitivity
     const auto txWidth = wifiRxParams->txWidth;
     const auto& ppdu = GetRxPpduFromTxPpdu(wifiRxParams->ppdu);
-    const auto& txVector = ppdu->GetTxVector();
     if (totalRxPowerW < DbmToW(GetRxSensitivity()) * (txWidth / 20.0))
     {
         NS_LOG_INFO("Received signal too weak to process: " << WToDbm(totalRxPowerW) << " dBm");
-        m_interference->Add(ppdu, txVector, rxDuration, rxPowerW);
+        m_interference->Add(ppdu, rxDuration, rxPowerW);
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
@@ -421,7 +420,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         if (!CanStartRx(ppdu, txWidth))
         {
             NS_LOG_INFO("Cannot start reception of the PPDU, consider it as interference");
-            m_interference->Add(ppdu, txVector, rxDuration, rxPowerW);
+            m_interference->Add(ppdu, rxDuration, rxPowerW);
             SwitchMaybeToCcaBusy(ppdu);
             return;
         }

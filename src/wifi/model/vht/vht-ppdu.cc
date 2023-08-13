@@ -111,7 +111,7 @@ VhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
 Time
 VhtPpdu::GetTxDuration() const
 {
-    const WifiTxVector& txVector = GetTxVector();
+    const auto& txVector = GetTxVector();
     const auto length = m_lSig.GetLength();
     const auto sgi = m_vhtSig.GetShortGuardInterval();
     const auto sgiDisambiguation = m_vhtSig.GetShortGuardIntervalDisambiguation();

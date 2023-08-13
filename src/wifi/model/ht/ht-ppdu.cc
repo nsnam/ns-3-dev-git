@@ -109,7 +109,7 @@ HtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
 Time
 HtPpdu::GetTxDuration() const
 {
-    const WifiTxVector& txVector = GetTxVector();
+    const auto& txVector = GetTxVector();
     const auto htLength = m_htSig.GetHtLength();
     NS_ASSERT(m_operatingChannel.IsSet());
     return WifiPhy::CalculateTxDuration(htLength, txVector, m_operatingChannel.GetPhyBand());

@@ -407,7 +407,7 @@ PhyEntity::PhyFieldRxStatus
 HtPhy::EndReceiveHtSig(Ptr<Event> event)
 {
     NS_LOG_FUNCTION(this << *event);
-    NS_ASSERT(event->GetTxVector().GetPreambleType() == WIFI_PREAMBLE_HT_MF);
+    NS_ASSERT(event->GetPpdu()->GetTxVector().GetPreambleType() == WIFI_PREAMBLE_HT_MF);
     SnrPer snrPer = GetPhyHeaderSnrPer(WIFI_PPDU_FIELD_HT_SIG, event);
     NS_LOG_DEBUG("HT-SIG: SNR(dB)=" << RatioToDb(snrPer.snr) << ", PER=" << snrPer.per);
     PhyFieldRxStatus status(GetRandomValue() > snrPer.per);
@@ -441,7 +441,7 @@ HtPhy::IsAllConfigSupported(WifiPpduField field, Ptr<const WifiPpdu> ppdu) const
 bool
 HtPhy::IsConfigSupported(Ptr<const WifiPpdu> ppdu) const
 {
-    const WifiTxVector& txVector = ppdu->GetTxVector();
+    const auto& txVector = ppdu->GetTxVector();
     if (txVector.GetNss() > m_wifiPhy->GetMaxSupportedRxSpatialStreams())
     {
         NS_LOG_DEBUG("Packet reception could not be started because not enough RX antennas");

@@ -83,7 +83,7 @@ OfdmPpdu::SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lS
 Time
 OfdmPpdu::GetTxDuration() const
 {
-    const WifiTxVector& txVector = GetTxVector();
+    const auto& txVector = GetTxVector();
     const auto length = m_lSig.GetLength();
     NS_ASSERT(m_operatingChannel.IsSet());
     return WifiPhy::CalculateTxDuration(length, txVector, m_operatingChannel.GetPhyBand());

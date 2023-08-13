@@ -44,14 +44,10 @@ class Event : public SimpleRefCount<Event>
      * be moved into this object.
      *
      * \param ppdu the PPDU
-     * \param txVector the TXVECTOR
      * \param duration duration of the PPDU
      * \param rxPower the received power per band (W)
      */
-    Event(Ptr<const WifiPpdu> ppdu,
-          const WifiTxVector& txVector,
-          Time duration,
-          RxPowerWattPerChannelBand&& rxPower);
+    Event(Ptr<const WifiPpdu> ppdu, Time duration, RxPowerWattPerChannelBand&& rxPower);
     ~Event();
 
     /**
@@ -98,12 +94,6 @@ class Event : public SimpleRefCount<Event>
      */
     const RxPowerWattPerChannelBand& GetRxPowerWPerBand() const;
     /**
-     * Return the TXVECTOR of the PPDU.
-     *
-     * \return the TXVECTOR of the PPDU
-     */
-    const WifiTxVector& GetTxVector() const;
-    /**
      * Update the received power (W) for all bands, i.e. add up the received power
      * to the current received power, for each band.
      *
@@ -113,7 +103,6 @@ class Event : public SimpleRefCount<Event>
 
   private:
     Ptr<const WifiPpdu> m_ppdu;           //!< PPDU
-    WifiTxVector m_txVector;              //!< TXVECTOR
     Time m_startTime;                     //!< start time
     Time m_endTime;                       //!< end time
     RxPowerWattPerChannelBand m_rxPowerW; //!< received power in watts per band
@@ -209,7 +198,6 @@ class InterferenceHelper : public Object
      * Add the PPDU-related signal to interference helper.
      *
      * \param ppdu the PPDU
-     * \param txVector the TXVECTOR
      * \param duration the PPDU duration
      * \param rxPower received power per band (W)
      * \param isStartHePortionRxing flag whether the event corresponds to the start of the HE
@@ -218,7 +206,6 @@ class InterferenceHelper : public Object
      * \return Event
      */
     Ptr<Event> Add(Ptr<const WifiPpdu> ppdu,
-                   const WifiTxVector& txVector,
                    Time duration,
                    RxPowerWattPerChannelBand& rxPower,
                    bool isStartHePortionRxing = false);

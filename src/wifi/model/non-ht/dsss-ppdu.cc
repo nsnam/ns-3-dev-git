@@ -80,7 +80,7 @@ DsssPpdu::SetTxVectorFromDsssHeader(WifiTxVector& txVector, const DsssSigHeader&
 Time
 DsssPpdu::GetTxDuration() const
 {
-    const WifiTxVector& txVector = GetTxVector();
+    const auto& txVector = GetTxVector();
     const auto length = m_dsssSig.GetLength();
     return (MicroSeconds(length) + WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector));
 }

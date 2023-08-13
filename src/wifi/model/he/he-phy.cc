@@ -596,7 +596,7 @@ PhyEntity::PhyFieldRxStatus
 HePhy::ProcessSig(Ptr<Event> event, PhyFieldRxStatus status, WifiPpduField field)
 {
     NS_LOG_FUNCTION(this << *event << status << field);
-    NS_ASSERT(event->GetTxVector().GetPreambleType() >= WIFI_PREAMBLE_HE_SU);
+    NS_ASSERT(event->GetPpdu()->GetTxVector().GetPreambleType() >= WIFI_PREAMBLE_HE_SU);
     switch (field)
     {
     case WIFI_PPDU_FIELD_SIG_A:
@@ -614,7 +614,7 @@ HePhy::ProcessSigA(Ptr<Event> event, PhyFieldRxStatus status)
 {
     NS_LOG_FUNCTION(this << *event << status);
     // Notify end of SIG-A (in all cases)
-    WifiTxVector txVector = event->GetTxVector();
+    const auto& txVector = event->GetPpdu()->GetTxVector();
     HeSigAParameters params;
     params.rssiW = GetRxPowerWForPpdu(event);
     params.bssColor = txVector.GetBssColor();
@@ -728,7 +728,7 @@ PhyEntity::PhyFieldRxStatus
 HePhy::ProcessSigB(Ptr<Event> event, PhyFieldRxStatus status)
 {
     NS_LOG_FUNCTION(this << *event << status);
-    NS_ASSERT(IsDlMu(event->GetTxVector().GetPreambleType()));
+    NS_ASSERT(IsDlMu(event->GetPpdu()->GetTxVector().GetPreambleType()));
     if (status.isSuccess)
     {
         // Check if PPDU is filtered only if the SIG-B content is supported (not explicitly stated
@@ -754,7 +754,7 @@ HePhy::IsConfigSupported(Ptr<const WifiPpdu> ppdu) const
         return true; // evaluated in ProcessSigA
     }
 
-    const WifiTxVector& txVector = ppdu->GetTxVector();
+    const auto& txVector = ppdu->GetTxVector();
     uint16_t staId = GetStaId(ppdu);
     WifiMode txMode = txVector.GetMode(staId);
     uint8_t nss = txVector.GetNssMax();
@@ -789,7 +789,8 @@ Time
 HePhy::DoStartReceivePayload(Ptr<Event> event)
 {
     NS_LOG_FUNCTION(this << *event);
-    const auto& txVector = event->GetTxVector();
+    const auto ppdu = event->GetPpdu();
+    const auto& txVector = ppdu->GetTxVector();
 
     if (!txVector.IsMu())
     {
@@ -797,7 +798,6 @@ HePhy::DoStartReceivePayload(Ptr<Event> event)
     }
 
     NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
-    Ptr<const WifiPpdu> ppdu = event->GetPpdu();
 
     if (txVector.IsDlMu())
     {

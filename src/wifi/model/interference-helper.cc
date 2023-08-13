@@ -44,12 +44,8 @@ NS_OBJECT_ENSURE_REGISTERED(InterferenceHelper);
  *       PHY event class
  ****************************************************************/
 
-Event::Event(Ptr<const WifiPpdu> ppdu,
-             const WifiTxVector& txVector,
-             Time duration,
-             RxPowerWattPerChannelBand&& rxPower)
+Event::Event(Ptr<const WifiPpdu> ppdu, Time duration, RxPowerWattPerChannelBand&& rxPower)
     : m_ppdu(ppdu),
-      m_txVector(txVector),
       m_startTime(Simulator::Now()),
       m_endTime(m_startTime + duration),
       m_rxPowerW(std::move(rxPower))
@@ -112,12 +108,6 @@ Event::GetRxPowerWPerBand() const
     return m_rxPowerW;
 }
 
-const WifiTxVector&
-Event::GetTxVector() const
-{
-    return m_txVector;
-}
-
 void
 Event::UpdateRxPowerW(const RxPowerWattPerChannelBand& rxPower)
 {
@@ -138,7 +128,7 @@ std::ostream&
 operator<<(std::ostream& os, const Event& event)
 {
     os << "start=" << event.GetStartTime() << ", end=" << event.GetEndTime()
-       << ", TXVECTOR=" << event.GetTxVector() << ", power=" << event.GetRxPowerW() << "W"
+       << ", power=" << event.GetRxPowerW() << "W"
        << ", PPDU=" << event.GetPpdu();
     return os;
 }
@@ -219,12 +209,11 @@ InterferenceHelper::DoDispose()
 
 Ptr<Event>
 InterferenceHelper::Add(Ptr<const WifiPpdu> ppdu,
-                        const WifiTxVector& txVector,
                         Time duration,
                         RxPowerWattPerChannelBand& rxPowerW,
                         bool isStartHePortionRxing)
 {
-    Ptr<Event> event = Create<Event>(ppdu, txVector, duration, std::move(rxPowerW));
+    Ptr<Event> event = Create<Event>(ppdu, duration, std::move(rxPowerW));
     AppendEvent(event, isStartHePortionRxing);
     return event;
 }
@@ -240,7 +229,7 @@ InterferenceHelper::AddForeignSignal(Time duration, RxPowerWattPerChannelBand& r
     Ptr<WifiPpdu> fakePpdu = Create<WifiPpdu>(Create<WifiPsdu>(Create<Packet>(0), hdr),
                                               WifiTxVector(),
                                               WifiPhyOperatingChannel());
-    Add(fakePpdu, WifiTxVector(), duration, rxPowerW);
+    Add(fakePpdu, duration, rxPowerW);
 }
 
 bool
@@ -531,14 +520,14 @@ InterferenceHelper::CalculatePayloadPer(Ptr<const Event> event,
     const auto& niIt = nis->find(band)->second;
     auto j = niIt.cbegin();
     Time previous = j->first;
-    WifiMode payloadMode = event->GetTxVector().GetMode(staId);
+    WifiMode payloadMode = event->GetPpdu()->GetTxVector().GetMode(staId);
     Time phyPayloadStart = j->first;
     if (event->GetPpdu()->GetType() != WIFI_PPDU_TYPE_UL_MU &&
         event->GetPpdu()->GetType() !=
             WIFI_PPDU_TYPE_DL_MU) // j->first corresponds to the start of the MU payload
     {
-        phyPayloadStart =
-            j->first + WifiPhy::CalculatePhyPreambleAndHeaderDuration(event->GetTxVector());
+        phyPayloadStart = j->first + WifiPhy::CalculatePhyPreambleAndHeaderDuration(
+                                         event->GetPpdu()->GetTxVector());
     }
     Time windowStart = phyPayloadStart + window.first;
     Time windowEnd = phyPayloadStart + window.second;
@@ -553,13 +542,13 @@ InterferenceHelper::CalculatePayloadPer(Ptr<const Event> event,
         double snr = CalculateSnr(powerW,
                                   noiseInterferenceW,
                                   channelWidth,
-                                  event->GetTxVector().GetNss(staId));
+                                  event->GetPpdu()->GetTxVector().GetNss(staId));
         // Case 1: Both previous and current point to the windowed payload
         if (previous >= windowStart)
         {
             psr *= CalculatePayloadChunkSuccessRate(snr,
                                                     Min(windowEnd, current) - previous,
-                                                    event->GetTxVector(),
+                                                    event->GetPpdu()->GetTxVector(),
                                                     staId);
             NS_LOG_DEBUG("Both previous and current point to the windowed payload: mode="
                          << payloadMode << ", psr=" << psr);
@@ -569,7 +558,7 @@ InterferenceHelper::CalculatePayloadPer(Ptr<const Event> event,
         {
             psr *= CalculatePayloadChunkSuccessRate(snr,
                                                     Min(windowEnd, current) - windowStart,
-                                                    event->GetTxVector(),
+                                                    event->GetPpdu()->GetTxVector(),
                                                     staId);
             NS_LOG_DEBUG(
                 "previous is before windowed payload and current is in the windowed payload: mode="
@@ -631,7 +620,7 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr(
                     psr *= CalculateChunkSuccessRate(snr,
                                                      duration,
                                                      section.second.second,
-                                                     event->GetTxVector(),
+                                                     event->GetPpdu()->GetTxVector(),
                                                      section.first);
                     NS_LOG_DEBUG("Current NI change in "
                                  << section.first << " [" << start << ", " << stop << "] for "
@@ -661,11 +650,12 @@ InterferenceHelper::CalculatePhyHeaderPer(Ptr<const Event> event,
 {
     NS_LOG_FUNCTION(this << band << header);
     auto niIt = nis->find(band)->second;
-    auto phyEntity = WifiPhy::GetStaticPhyEntity(event->GetTxVector().GetModulationClass());
+    auto phyEntity =
+        WifiPhy::GetStaticPhyEntity(event->GetPpdu()->GetTxVector().GetModulationClass());
 
     PhyEntity::PhyHeaderSections sections;
     for (const auto& section :
-         phyEntity->GetPhyHeaderSections(event->GetTxVector(), niIt.begin()->first))
+         phyEntity->GetPhyHeaderSections(event->GetPpdu()->GetTxVector(), niIt.begin()->first))
     {
         if (section.first == header)
         {
@@ -695,7 +685,7 @@ InterferenceHelper::CalculatePayloadSnrPer(Ptr<Event> event,
     double snr = CalculateSnr(event->GetRxPowerW(band),
                               noiseInterferenceW,
                               channelWidth,
-                              event->GetTxVector().GetNss(staId));
+                              event->GetPpdu()->GetTxVector().GetNss(staId));
 
     /* calculate the SNIR at the start of the MPDU (located through windowing) and accumulate
      * all SNIR changes in the SNIR vector.
