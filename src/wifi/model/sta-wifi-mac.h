@@ -520,13 +520,9 @@ class StaWifiMac : public WifiMac
      */
     void RestartBeaconWatchdog(Time delay, uint8_t linkId);
     /**
-     * Check if any enabled link remains after the given link is disabled (because,
-     * e.g., the maximum number of beacons is missed or the channel is switched).
-     * If no enabled link remains, proceed with disassociation.
-     *
-     * \param linkId the ID of the given link
+     * Set the state to unassociated and try to associate again.
      */
-    void Disassociated(uint8_t linkId);
+    void Disassociated();
     /**
      * Return an instance of SupportedRates that contains all rates that we support
      * including HT rates.

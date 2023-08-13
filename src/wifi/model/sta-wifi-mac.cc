@@ -858,54 +858,32 @@ StaWifiMac::MissedBeacons(uint8_t linkId)
     {
         delay = GetWifiPhy(linkId)->GetDelayUntilIdle();
     }
-    Simulator::Schedule(delay, &StaWifiMac::Disassociated, this, linkId);
+    Simulator::Schedule(delay, &StaWifiMac::Disassociated, this);
 }
 
 void
-StaWifiMac::Disassociated(uint8_t linkId)
+StaWifiMac::Disassociated()
 {
-    NS_LOG_FUNCTION(this << +linkId);
+    NS_LOG_FUNCTION(this);
 
-    auto& link = GetLink(linkId);
-    if (link.bssid.has_value())
+    Mac48Address apAddr; // the AP address to trace (MLD address in case of ML setup)
+
+    for (const auto& [id, link] : GetLinks())
     {
-        // this is a link setup in an ML setup
-        m_setupCanceled(linkId, GetBssid(linkId));
-    }
-
-    // disable the given link
-    link.bssid = std::nullopt;
-    link.phy->SetOffMode();
-
-    for (const auto& [id, lnk] : GetLinks())
-    {
-        if (GetStaLink(lnk).bssid.has_value())
+        auto& bssid = GetStaLink(link).bssid;
+        if (bssid)
         {
-            // found an enabled link
-            return;
+            apAddr = GetWifiRemoteStationManager(id)->GetMldAddress(*bssid).value_or(*bssid);
         }
+        bssid = std::nullopt; // link is no longer setup
     }
 
     NS_LOG_DEBUG("Set state to UNASSOCIATED and start scanning");
     SetState(UNASSOCIATED);
     // cancel the association request timer (see issue #862)
     m_assocRequestEvent.Cancel();
-    auto mldAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(GetBssid(linkId));
-    if (GetNLinks() > 1 && mldAddress.has_value())
-    {
-        // trace the AP MLD address
-        m_deAssocLogger(*mldAddress);
-    }
-    else
-    {
-        m_deAssocLogger(GetBssid(linkId));
-    }
+    m_deAssocLogger(apAddr);
     m_aid = 0; // reset AID
-    // ensure all links are on
-    for (const auto& [id, lnk] : GetLinks())
-    {
-        lnk->phy->ResumeFromOff();
-    }
     TryToEnsureAssociated();
 }
 
@@ -2074,7 +2052,7 @@ StaWifiMac::NotifyChannelSwitching(uint8_t linkId)
 
     if (IsInitialized() && IsAssociated())
     {
-        Disassociated(linkId);
+        Disassociated();
     }
 
     // notify association manager
