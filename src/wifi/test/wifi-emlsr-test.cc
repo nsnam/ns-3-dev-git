@@ -1261,7 +1261,7 @@ EmlsrDlTxopTest::CheckResults()
     /**
      * A and B are two EMLSR clients. No ICF before the second QoS data frame because B
      * has not switched to listening mode. ICF is sent before the third QoS data frame because
-     * A has switched to listening mode.
+     * A has switched to listening mode. C is a non-EMLSR client.
      *
      *                        ┌─────┐          A switches to listening
      *                        │QoS x│          after transition delay
@@ -1273,15 +1273,15 @@ EmlsrDlTxopTest::CheckResults()
      *                   │CTS│       │BA│       │BA│
      *                   ├───┤       ├──┤       └──┘
      *                   │CTS│       │BA│
-     *                   └───┘       └──┘  AP continues the TXOP despite   A switches to listening
-     *                                     the failure, but sends an ICF    after transition delay
+     *                   └───┘       └──┘        AP continues the TXOP     A switches to listening
+     *                                             after PIFS recovery      after transition delay
      *                                                                │                       │
-     *                                            ┌───┐     ┌─────┐   │┌───┐              ┌───┐
-     *                                            │MU │     │QoS x│   ││MU │     ┌───┐    │CF-│
-     *  [link 1]                                  │RTS│     │ to A│   ││RTS│     │BAR│    │End│
-     *  ──────────────────────────────────────────┴───┴┬───┬┴─────┴┬──┬┴───┴┬───┬┴───┴┬──┬┴───┴─
-     *                                                 │CTS│       │BA│     │CTS│     │BA│
-     *                                                 └───┘       └──x     └───┘     └──┘
+     *                                 ┌─────┐    ┌───┐     ┌─────┐   │┌───┐              ┌───┐
+     *                                 │QoS z│    │MU │     │QoS x│   ││MU │     ┌───┐    │CF-│
+     *  [link 1]                       │ to C│    │RTS│     │ to A│   ││RTS│     │BAR│    │End│
+     *  ───────────────────────────────┴─────┴┬──┬┴───┴┬───┬┴─────┴┬──┬┴───┴┬───┬┴───┴┬──┬┴───┴─
+     *                                        │BA│     │CTS│       │BA│     │CTS│     │BA│
+     *                                        └──┘     └───┘       └──x     └───┘     └──┘
      */
     if (m_nEmlsrStations == 2 && m_apMac->GetNLinks() == m_emlsrLinks.size())
     {
@@ -1401,14 +1401,14 @@ EmlsrDlTxopTest::CheckResults()
                                                                            phy->GetPhyBand());
         auto timeout = phy->GetSifs() + phy->GetSlot() + MicroSeconds(20);
 
-        // the fourth frame exchange starts a SIFS after the previous one because the AP can
-        // continue the TXOP despite it does not receive the BlockAck (the AP received the
-        // PHY-RXSTART.indication and the frame exchange involves an EMLSR client)
+        // the fourth frame exchange starts a PIFS after the previous one because the AP
+        // performs PIFS recovery (the initial frame in the TXOP was successfully received by
+        // a non-EMLSR client)
         NS_TEST_EXPECT_MSG_GT_OR_EQ(fourthExchangeIt->front()->startTx,
-                                    bAckRespTxEnd + phy->GetSifs(),
-                                    "Transmission started less than a SIFS after BlockAck");
+                                    bAckRespTxEnd + phy->GetPifs(),
+                                    "Transmission started less than a PIFS after BlockAck");
         NS_TEST_EXPECT_MSG_LT(fourthExchangeIt->front()->startTx,
-                              bAckRespTxEnd + phy->GetSifs() +
+                              bAckRespTxEnd + phy->GetPifs() +
                                   MicroSeconds(1) /* propagation delay upper bound */,
                               "Transmission started too much time after BlockAck");
 
@@ -1767,7 +1767,8 @@ EmlsrDlTxopTest::CheckInitialControlFrame(Ptr<const WifiMpdu> mpdu,
                                  id != linkId,
                                  "Checking that AP blocked transmissions on all other EMLSR "
                                  "links after sending ICF to client with AID=" +
-                                     std::to_string(userInfo.GetAid12()));
+                                     std::to_string(userInfo.GetAid12()),
+                                 false);
             }
         }
     }
@@ -1957,13 +1958,62 @@ EmlsrDlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
                         WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
                         true,
                         "Checking links of EMLSR client " + std::to_string(secondClientId) +
-                            " are all blocked on the AP MLD before the transition delay");
+                            " are all blocked on the AP MLD before the transition delay",
+                        false);
                 }
             });
 
+        // 100 us before the transition delay expires, generate another small packet addressed
+        // to a non-EMLSR client. The AP will start a TXOP to transmit this frame, while the
+        // frame addressed to the EMLSR client is still queued because the transition delay has
+        // not yet elapsed. The transition delay will expire while the AP is transmitting the
+        // frame to the non-EMLSR client, so that the AP continues the TXOP to transmit the frame
+        // to the EMLSR client and we can check that the AP performs PIFS recovery after missing
+        // the BlockAck from the EMLSR client
+        Simulator::Schedule(txDuration + m_transitionDelay.at(secondClientId) - MicroSeconds(100),
+                            [=, this]() {
+                                m_apMac->GetDevice()->GetNode()->AddApplication(
+                                    GetApplication(DOWNLINK, m_nEmlsrStations, 1, 40));
+                            });
+
         break;
     case 3:
-        // at the end of the third QoS frame, this link only is not blocked on the EMLSR
+        // this is the frame addressed to a non-EMLSR client, which is transmitted before the
+        // frame addressed to the EMLSR client, because the links of the latter are still blocked
+        // at the AP because the transition delay has not yet elapsed
+        NS_TEST_EXPECT_MSG_EQ(
+            psduMap.cbegin()->second->GetAddr1(),
+            m_staMacs[m_nEmlsrStations]->GetFrameExchangeManager(linkId)->GetAddress(),
+            "QoS frame not addressed to a non-EMLSR client");
+
+        for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+        {
+            CheckBlockedLink(m_apMac,
+                             addr,
+                             id,
+                             WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                             true,
+                             "Checking links of EMLSR client " + std::to_string(secondClientId) +
+                                 " are all blocked on the AP MLD before the transition delay");
+        }
+        // Block transmissions to the EMLSR client on all the links but the one on which this
+        // frame is sent, so that the AP will continue this TXOP to send the queued frame to the
+        // EMLSR client once the transition delay elapses
+        for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+        {
+            if (id != linkId)
+            {
+                m_apMac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED, addr, {id});
+            }
+        }
+        break;
+    case 4:
+        // the AP is continuing the TXOP, no need to block transmissions anymore
+        for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+        {
+            m_apMac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED, addr, {id});
+        }
+        // at the end of the fourth QoS frame, this link only is not blocked on the EMLSR
         // client receiving the frame
         Simulator::Schedule(txDuration, [=, this]() {
             for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
@@ -1975,7 +2025,7 @@ EmlsrDlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
                                  id != linkId,
                                  "Checking EMLSR links on EMLSR client " +
                                      std::to_string(secondClientId) +
-                                     " after receiving the third QoS data frame");
+                                     " after receiving the fourth QoS data frame");
             }
         });
         break;
@@ -1991,6 +2041,12 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
         m_emlsrEnabledTime.IsZero() || Simulator::Now() < m_emlsrEnabledTime + m_fe2to3delay)
     {
         // we are interested in frames sent to test transition delay
+        return;
+    }
+
+    if (++m_countBlockAck == 4)
+    {
+        // fourth BlockAck is sent by a non-EMLSR client
         return;
     }
 
@@ -2028,11 +2084,9 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                                                      txVector.GetChannelWidth()),
         apPhy->GetPhyBand());
 
-    m_countBlockAck++;
-
     switch (m_countBlockAck)
     {
-    case 4:
+    case 5:
         // the PPDU carrying this BlockAck is corrupted, hence the AP MLD MAC receives the
         // PHY-RXSTART indication but it does not receive any frame from the PHY. Therefore,
         // at the end of the PPDU transmission, the AP MLD realizes that the EMLSR client has
@@ -2086,7 +2140,7 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
             m_errorModel->SetList({uid});
         }
         break;
-    case 5:
+    case 6:
         // at the end of the PPDU, this link only is not blocked on both the EMLSR client and
         // the AP MLD
         Simulator::Schedule(txDuration, [=, this]() {

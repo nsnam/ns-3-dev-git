@@ -603,26 +603,6 @@ EhtFrameExchangeManager::TransmissionFailed()
         m_staMac->GetEmlsrManager()->DecrementMediumSyncDelayNTxops(m_linkId);
     }
 
-    for (const auto& address : m_txTimer.GetStasExpectedToRespond())
-    {
-        if (GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
-        {
-            // This EMLSR client did not respond to a frame sent by the AP. Specs say:
-            // The AP affiliated with the AP MLD should transmit before the TXNAV timer expires
-            // another initial Control frame addressed to the non-AP STA affiliated with the
-            // non-AP MLD if the AP intends to continue the frame exchanges with the STA and did
-            // not receive the response frame from this STA for the most recently transmitted
-            // frame that requires an immediate response after a SIFS
-            // (Sec. 35.3.17 of 802.11be D3.1)
-            // We let the AP continue the TXOP. TransmissionSucceeded() removes this client from
-            // protected stations, hence next transmission to this client in this TXOP will be
-            // protected by ICF
-            NS_LOG_DEBUG("EMLSR client " << address << " did not respond, continue TXOP");
-            HeFrameExchangeManager::TransmissionSucceeded();
-            return;
-        }
-    }
-
     HeFrameExchangeManager::TransmissionFailed();
 }
 
