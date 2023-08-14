@@ -1202,29 +1202,6 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                           ///< in time the transmission is ongoing
 
     Time delay{0};
-    // make sure all interfaces got active once for all RX PHYs to have them monitored
-    for (std::size_t rxPhyIndex = 0; rxPhyIndex < m_rxPhys.size(); ++rxPhyIndex)
-    {
-        for (std::size_t txPhyIndex = 0; txPhyIndex < m_txPhys.size(); ++txPhyIndex)
-        {
-            if (txPhyIndex == rxPhyIndex)
-            {
-                // handled at end
-                continue;
-            }
-            auto txPhy = m_txPhys.at(txPhyIndex);
-            Simulator::Schedule(delay + Seconds((rxPhyIndex + rxPhyIndex) * 0.1),
-                                &SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel,
-                                this,
-                                rxPhyIndex,
-                                txPhy->GetPhyBand(),
-                                txPhy->GetChannelNumber(),
-                                txPhy->GetChannelWidth());
-        }
-        Simulator::Schedule(delay + flushResultsDelay,
-                            &SpectrumWifiPhyMultipleInterfacesTest::Reset,
-                            this);
-    }
 
     // default channels active for all PHYs: each PHY only receives from its associated TX
     std::vector<std::size_t> expectedConnectedPhysPerChannel =
