@@ -125,7 +125,7 @@ WifiMac::GetTypeId()
                 "The size (in number of MPDUs) of the buffer used for each BlockAck "
                 "agreement in which this node is a recipient. The provided value is "
                 "capped to the maximum allowed value based on the supported standard.",
-                UintegerValue(64),
+                UintegerValue(1024),
                 MakeUintegerAccessor(&WifiMac::GetMpduBufferSize, &WifiMac::SetMpduBufferSize),
                 MakeUintegerChecker<uint16_t>(1, 1024))
             .AddAttribute("VO_MaxAmsduSize",

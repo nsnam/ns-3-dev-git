@@ -156,6 +156,8 @@ EmlsrOperationsTestBase::DoSetup()
     RngSeedManager::SetRun(2);
     int64_t streamNumber = 100;
 
+    Config::SetDefault("ns3::WifiMac::MpduBufferSize", UintegerValue(64));
+
     NodeContainer wifiApNode(1);
     NodeContainer wifiStaNodes(m_nEmlsrStations);
 
