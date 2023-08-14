@@ -148,13 +148,6 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * \param originator the MAC address of the originator.
      */
     void SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr, Mac48Address originator);
-    /**
-     * Get the maximum supported buffer size for a Block Ack agreement. This value
-     * is typically included in ADDBA Response frames.
-     *
-     * \return the maximum supported buffer size for a Block Ack agreement
-     */
-    virtual uint16_t GetSupportedBaBufferSize() const;
 
     /**
      * Sends DELBA frame to cancel a block ack agreement with STA

@@ -75,7 +75,6 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     HeFrameExchangeManager();
     ~HeFrameExchangeManager() override;
 
-    uint16_t GetSupportedBaBufferSize() const override;
     bool StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
     void SetWifiMac(const Ptr<WifiMac> mac) override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;

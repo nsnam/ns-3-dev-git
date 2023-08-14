@@ -96,17 +96,6 @@ HeFrameExchangeManager::Reset()
     VhtFrameExchangeManager::Reset();
 }
 
-uint16_t
-HeFrameExchangeManager::GetSupportedBaBufferSize() const
-{
-    NS_ASSERT(m_mac->GetHeConfiguration());
-    if (m_mac->GetHeConfiguration()->GetMpduBufferSize() > 64)
-    {
-        return 256;
-    }
-    return 64;
-}
-
 void
 HeFrameExchangeManager::SetWifiMac(const Ptr<WifiMac> mac)
 {

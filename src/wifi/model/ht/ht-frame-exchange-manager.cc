@@ -309,12 +309,6 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr,
     m_mac->GetQosTxop(tid)->Queue(mpdu);
 }
 
-uint16_t
-HtFrameExchangeManager::GetSupportedBaBufferSize() const
-{
-    return 64;
-}
-
 void
 HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr, uint8_t tid, bool byOriginator)
 {
