@@ -1149,11 +1149,9 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
             DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(apDevice.Get(0))->GetPhy(i));
         m_txPhys.push_back(txPhy);
 
+        const auto index = m_rxPhys.size();
         auto rxPhy =
             DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(staDevice.Get(0))->GetPhy(i));
-        rxPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
-
-        const auto index = m_rxPhys.size();
         rxPhy->TraceConnectWithoutContext(
             "PhyRxBegin",
             MakeCallback(&SpectrumWifiPhyMultipleInterfacesTest::RxCallback, this).Bind(index));
@@ -1238,10 +1236,10 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 (i == j) ? 1 : 0,
                                 expectedFreqRange,
                                 expectedConnectedPhysPerChannel);
-            Simulator::Schedule(delay + flushResultsDelay,
-                                &SpectrumWifiPhyMultipleInterfacesTest::Reset,
-                                this);
         }
+        Simulator::Schedule(delay + flushResultsDelay,
+                            &SpectrumWifiPhyMultipleInterfacesTest::Reset,
+                            this);
     }
 
     // same channel active for all PHYs: all PHYs receive from TX
@@ -1286,10 +1284,10 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 1,
                                 expectedFreqRange,
                                 expectedConnectedPhysPerChannel);
-            Simulator::Schedule(delay + flushResultsDelay,
-                                &SpectrumWifiPhyMultipleInterfacesTest::Reset,
-                                this);
         }
+        Simulator::Schedule(delay + flushResultsDelay,
+                            &SpectrumWifiPhyMultipleInterfacesTest::Reset,
+                            this);
     }
 
     // Switch all PHYs to channel 36: all PHYs switch to the second spectrum channel
@@ -1330,10 +1328,10 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 (i == secondSpectrumChannelIndex) ? 1 : 0,
                                 expectedFreqRange,
                                 expectedConnectedPhysPerChannel);
-            Simulator::Schedule(delay + flushResultsDelay,
-                                &SpectrumWifiPhyMultipleInterfacesTest::Reset,
-                                this);
         }
+        Simulator::Schedule(delay + flushResultsDelay,
+                            &SpectrumWifiPhyMultipleInterfacesTest::Reset,
+                            this);
     }
 
     // verify CCA indication when switching to a channel with an ongoing transmission
@@ -1374,9 +1372,6 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                         channelWidth);
                     for (std::size_t k = 0; k < 4; ++k)
                     {
-                        Simulator::Schedule(delay + flushResultsDelay,
-                                            &SpectrumWifiPhyMultipleInterfacesTest::Reset,
-                                            this);
                         if ((i != j) && (k == i))
                         {
                             continue;
@@ -1394,6 +1389,9 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                             expectCcaBusyIndication,
                             txOngoingAfterTxStartedDelay);
                     }
+                    Simulator::Schedule(delay + flushResultsDelay,
+                                        &SpectrumWifiPhyMultipleInterfacesTest::Reset,
+                                        this);
                 }
             }
         }
