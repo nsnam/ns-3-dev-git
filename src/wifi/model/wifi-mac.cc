@@ -1831,6 +1831,21 @@ WifiMac::GetEhtSupported(const Mac48Address& address) const
     return false;
 }
 
+uint16_t
+WifiMac::GetMaxBaBufferSize(std::optional<Mac48Address> address) const
+{
+    if (address ? GetEhtSupported(*address) : GetEhtSupported())
+    {
+        return 1024;
+    }
+    if (address ? GetHeSupported(*address) : GetHeSupported())
+    {
+        return 256;
+    }
+    NS_ASSERT(address ? GetHtSupported(*address) : GetHtSupported());
+    return 64;
+}
+
 void
 WifiMac::SetVoBlockAckThreshold(uint8_t threshold)
 {

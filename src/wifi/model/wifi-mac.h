@@ -686,6 +686,15 @@ class WifiMac : public Object
     BlockAckReqType GetBarTypeAsRecipient(Mac48Address originator, uint8_t tid) const;
 
     /**
+     * Get the maximum Block Ack buffer size (in number of MPDUs) supported by the given device,
+     * if any, or by this device, otherwise, based on the supported standard.
+     *
+     * \param address the (MLD or link) address of the given device
+     * \return the maximum supported Block Ack buffer size (in number of MPDUs)
+     */
+    uint16_t GetMaxBaBufferSize(std::optional<Mac48Address> address = std::nullopt) const;
+
+    /**
      * Get the TID-to-Link Mapping negotiated with the given MLD (if any) for the given direction.
      * An empty mapping indicates the default mapping.
      *
