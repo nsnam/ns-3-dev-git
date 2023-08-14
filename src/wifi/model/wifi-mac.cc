@@ -120,6 +120,14 @@ WifiMac::GetTypeId()
                           PointerValue(),
                           MakePointerAccessor(&WifiMac::GetBKQueue),
                           MakePointerChecker<QosTxop>())
+            .AddAttribute(
+                "MpduBufferSize",
+                "The size (in number of MPDUs) of the buffer used for each BlockAck "
+                "agreement in which this node is a recipient. The provided value is "
+                "capped to the maximum allowed value based on the supported standard.",
+                UintegerValue(64),
+                MakeUintegerAccessor(&WifiMac::GetMpduBufferSize, &WifiMac::SetMpduBufferSize),
+                MakeUintegerChecker<uint16_t>(1, 1024))
             .AddAttribute("VO_MaxAmsduSize",
                           "Maximum length in bytes of an A-MSDU for AC_VO access class "
                           "(capped to 7935 for HT PPDUs and 11398 for VHT/HE/EHT PPDUs). "
@@ -420,6 +428,11 @@ void
 WifiMac::SetDevice(const Ptr<WifiNetDevice> device)
 {
     m_device = device;
+    if (GetHtSupported())
+    {
+        // the configured BlockAck buffer size can now be capped
+        m_mpduBufferSize = std::min(m_mpduBufferSize, GetMaxBaBufferSize());
+    }
 }
 
 Ptr<WifiNetDevice>
@@ -1844,6 +1857,21 @@ WifiMac::GetMaxBaBufferSize(std::optional<Mac48Address> address) const
     }
     NS_ASSERT(address ? GetHtSupported(*address) : GetHtSupported());
     return 64;
+}
+
+void
+WifiMac::SetMpduBufferSize(uint16_t size)
+{
+    NS_LOG_FUNCTION(this << size);
+
+    // the cap can be computed if the device has been configured
+    m_mpduBufferSize = m_device ? std::min(size, GetMaxBaBufferSize()) : size;
+}
+
+uint16_t
+WifiMac::GetMpduBufferSize() const
+{
+    return m_mpduBufferSize;
 }
 
 void

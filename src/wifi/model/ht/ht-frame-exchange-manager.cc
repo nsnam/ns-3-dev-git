@@ -238,7 +238,8 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr,
     auto tid = reqHdr->GetTid();
     respHdr.SetTid(tid);
 
-    respHdr.SetBufferSize(GetSupportedBaBufferSize());
+    auto bufferSize = std::min(m_mac->GetMpduBufferSize(), m_mac->GetMaxBaBufferSize(originator));
+    respHdr.SetBufferSize(bufferSize);
     respHdr.SetTimeout(reqHdr->GetTimeout());
 
     WifiActionHeader actionHdr;

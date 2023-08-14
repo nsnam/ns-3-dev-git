@@ -250,11 +250,8 @@ main(int argc, char* argv[])
                                              StringValue(ossDataMode.str()),
                                              "ControlMode",
                                              ctrlRate);
-                // Set guard interval and MPDU buffer size
-                wifi.ConfigHeOptions("GuardInterval",
-                                     TimeValue(NanoSeconds(gi)),
-                                     "MpduBufferSize",
-                                     UintegerValue(useExtendedBlockAck ? 256 : 64));
+                // Set guard interval
+                wifi.ConfigHeOptions("GuardInterval", TimeValue(NanoSeconds(gi)));
 
                 Ssid ssid = Ssid("ns3-80211ax");
 
@@ -277,7 +274,11 @@ main(int argc, char* argv[])
                     phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
                     phy.SetChannel(spectrumChannel);
 
-                    mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
+                    mac.SetType("ns3::StaWifiMac",
+                                "Ssid",
+                                SsidValue(ssid),
+                                "MpduBufferSize",
+                                UintegerValue(useExtendedBlockAck ? 256 : 64));
                     phy.Set("ChannelSettings", StringValue(channelStr));
                     staDevices = wifi.Install(phy, mac, wifiStaNodes);
 
@@ -305,7 +306,11 @@ main(int argc, char* argv[])
                     phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
                     phy.SetChannel(channel.Create());
 
-                    mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
+                    mac.SetType("ns3::StaWifiMac",
+                                "Ssid",
+                                SsidValue(ssid),
+                                "MpduBufferSize",
+                                UintegerValue(useExtendedBlockAck ? 256 : 64));
                     phy.Set("ChannelSettings", StringValue(channelStr));
                     staDevices = wifi.Install(phy, mac, wifiStaNodes);
 

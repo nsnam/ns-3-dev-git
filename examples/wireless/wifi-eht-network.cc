@@ -438,9 +438,8 @@ main(int argc, char* argv[])
                 Config::Set(
                     "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/GuardInterval",
                     TimeValue(NanoSeconds(gi)));
-                Config::Set(
-                    "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/MpduBufferSize",
-                    UintegerValue(useExtendedBlockAck ? 256 : 64));
+                Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MpduBufferSize",
+                            UintegerValue(useExtendedBlockAck ? 256 : 64));
 
                 // mobility.
                 MobilityHelper mobility;
