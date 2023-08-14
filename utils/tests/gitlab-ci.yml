@@ -89,7 +89,7 @@ include:
   - "utils/tests/gitlab-ci-fedora.yml"
   - "utils/tests/gitlab-ci-gcc.yml"
   - "utils/tests/gitlab-ci-clang.yml"
-  - "utils/tests/gitlab-ci-daily.yml"
+  - "utils/tests/gitlab-ci-scheduled.yml"
   - "utils/tests/gitlab-ci-code-linting.yml"
   - "utils/tests/gitlab-ci-doc.yml"
   - "utils/tests/gitlab-ci-cppyy.yml"
