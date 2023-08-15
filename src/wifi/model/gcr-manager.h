@@ -32,6 +32,13 @@ enum class GroupAddressRetransmissionPolicy : uint8_t
     GCR_UNSOLICITED_RETRY
 };
 
+/// Groupcast protection mode enumeration
+enum GroupcastProtectionMode : uint8_t
+{
+    RTS_CTS,
+    CTS_TO_SELF
+};
+
 /**
  * @ingroup wifi
  *
@@ -115,8 +122,8 @@ class GcrManager : public Object
     const GcrMembers& GetMemberStasForGroupAddress(const Mac48Address& groupAddress) const;
 
     /**
-     * Get the MAC address of the individually addressed recipient to use for a groupcast frame for
-     * a given group address.
+     * Get the MAC address of the individually addressed recipient to use for a groupcast frame
+     * or for a protection frame sent prior to groupcast frames for a given group address.
      * @param groupAddress the group address
      * @return the MAC address of the individually addressed recipient to use.
      */
@@ -137,6 +144,7 @@ class GcrManager : public Object
     NonGcrStas m_nonGcrStas;                                 //!< the list of non-GCR capable STAs
     GcrMembers m_staMembers; //!< the list of STA members (assume currently each member is part of
                              //!< all group)
+    GroupcastProtectionMode m_gcrProtectionMode; //!< Protection mode for groupcast frames
 };
 
 } // namespace ns3

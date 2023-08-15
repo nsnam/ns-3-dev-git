@@ -42,6 +42,16 @@ GcrManager::GetTypeId()
                                           "NO_RETRY",
                                           GroupAddressRetransmissionPolicy::GCR_UNSOLICITED_RETRY,
                                           "GCR_UR"))
+            .AddAttribute(
+                "GcrProtectionMode",
+                "Protection mode used for groupcast frames when needed: "
+                "Rts-Cts or Cts-To-Self",
+                EnumValue(GroupcastProtectionMode::RTS_CTS),
+                MakeEnumAccessor<GroupcastProtectionMode>(&GcrManager::m_gcrProtectionMode),
+                MakeEnumChecker(GroupcastProtectionMode::RTS_CTS,
+                                "Rts-Cts",
+                                GroupcastProtectionMode::CTS_TO_SELF,
+                                "Cts-To-Self"))
             .AddAttribute("UnsolicitedRetryLimit",
                           "The maximum number of transmission attempts of a frame delivered using "
                           "the GCR unsolicited retry retransmission policy.",
