@@ -1022,12 +1022,12 @@ class WifiRemoteStationManager : public Object
     /**
      * Return if we need to do CTS-to-self before sending a DATA.
      *
-     * @param txVector the TXVECTOR of the packet to be sent
-     *
+     * @param txVector the TXVECTOR of the DATA
+     * @param header the MAC header of the DATA
      * @return true if CTS-to-self is needed,
      *         false otherwise
      */
-    bool NeedCtsToSelf(const WifiTxVector& txVector);
+    bool NeedCtsToSelf(const WifiTxVector& txVector, const WifiMacHeader& header);
 
     /**
      * @param mpdu the MPDU to send

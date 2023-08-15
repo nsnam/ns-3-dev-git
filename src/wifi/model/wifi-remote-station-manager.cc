@@ -1225,9 +1225,9 @@ WifiRemoteStationManager::NeedRts(const WifiMacHeader& header, const WifiTxParam
 }
 
 bool
-WifiRemoteStationManager::NeedCtsToSelf(const WifiTxVector& txVector)
+WifiRemoteStationManager::NeedCtsToSelf(const WifiTxVector& txVector, const WifiMacHeader& header)
 {
-    NS_LOG_FUNCTION(this << txVector);
+    NS_LOG_FUNCTION(this << txVector << header);
     if (m_useNonErpProtection && m_erpProtectionMode == CTS_TO_SELF &&
         ((txVector.GetModulationClass() == WIFI_MOD_CLASS_ERP_OFDM) ||
          (txVector.GetModulationClass() == WIFI_MOD_CLASS_HT) ||
@@ -1247,6 +1247,16 @@ WifiRemoteStationManager::NeedCtsToSelf(const WifiTxVector& txVector)
         NS_LOG_DEBUG(
             "WifiRemoteStationManager::NeedCtsToSelf returning true to protect non-HT stations");
         return true;
+    }
+    else if (IsGcr(m_wifiMac, header))
+    {
+        EnumValue<GroupcastProtectionMode> enumValue;
+        auto apMac = DynamicCast<ApWifiMac>(m_wifiMac);
+        apMac->GetGcrManager()->GetAttribute("GcrProtectionMode", enumValue);
+        if (enumValue.Get() == GroupcastProtectionMode::CTS_TO_SELF)
+        {
+            return true;
+        }
     }
     // FIXME: commented out for now
     /*else if (!m_useNonErpProtection)
