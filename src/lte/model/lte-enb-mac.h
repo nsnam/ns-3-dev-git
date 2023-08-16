@@ -187,7 +187,12 @@ class LteEnbMac : public Object
                                                const uint8_t mcs,
                                                const uint16_t tbsSize);
 
+    float GetPrbUtil();                                  
+
   private:
+    std::map<int, std::map<int,std::pair<int,int>>> PrbUtilMap;
+    uint32_t PrbUtilTimeIdx;
+
     /**
      * \brief Receive a DL CQI ideal control message
      * \param msg the DL CQI message

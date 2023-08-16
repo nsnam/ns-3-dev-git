@@ -1060,6 +1060,40 @@ LteEnbMac::DoReportBufferStatus(LteMacSapProvider::ReportBufferStatusParameters 
     req.m_rlcRetransmissionHolDelay = params.retxQueueHolDelay;
     req.m_rlcStatusPduSize = params.statusPduSize;
     m_schedSapProvider->SchedDlRlcBufferReq(req);
+
+    PrbUtilTimeIdx = Simulator::Now().GetMilliSeconds()%1000;
+    PrbUtilMap[params.rnti][PrbUtilTimeIdx].first = params.txQueueSize;
+
+    std::cout<< "\n Buffer Size: " << params.txQueueSize;
+}
+
+float
+LteEnbMac::GetPrbUtil()  
+{
+    // Create the whole map here and then calculate the PRB util
+
+    float prbutil=0;
+    for (const auto& outerPair : PrbUtilMap) 
+    {
+        uint32_t bufTmp=0;
+        int tbTmp=0;
+        int rnti = outerPair.first;
+        const auto& innerMap = outerPair.second;
+
+        for (const auto& innerPair : innerMap) 
+        {
+            int innerKey = innerPair.first;
+            const auto& pairValue = innerPair.second;
+            int bufSize = pairValue.first;
+            int tbSize = pairValue.second;
+            // std::cout << "\n \n Outer Key: \t" << rnti << "\t Inner Key: \t" << innerKey
+            //         << "\t Pair Values: \t" << bufSize << "\t " << tbSize << "\t " << std::endl;
+
+            prbutil += 1.0 * bufSize/tbSize;    
+        }
+    }  
+    prbutil = prbutil /1000 * 100 ;
+    return prbutil;
 }
 
 // ////////////////////////////////////////////
