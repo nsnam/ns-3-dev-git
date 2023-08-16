@@ -1922,7 +1922,6 @@ LteEnbRrc::DoDispose()
 TypeId
 LteEnbRrc::GetTypeId()
 {
-    NS_LOG_FUNCTION("LteEnbRrc::GetTypeId");
     static TypeId tid =
         TypeId("ns3::LteEnbRrc")
             .SetParent<Object>()
