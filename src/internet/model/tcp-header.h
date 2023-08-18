@@ -45,9 +45,6 @@ namespace ns3
 class TcpHeader : public Header
 {
   public:
-    TcpHeader();
-    ~TcpHeader() override;
-
     typedef std::list<Ptr<const TcpOption>> TcpOptionList; //!< List of TcpOption
 
     /**
@@ -331,25 +328,25 @@ class TcpHeader : public Header
      */
     uint8_t CalculateHeaderLength() const;
 
-    uint16_t m_sourcePort;             //!< Source port
-    uint16_t m_destinationPort;        //!< Destination port
-    SequenceNumber32 m_sequenceNumber; //!< Sequence number
-    SequenceNumber32 m_ackNumber;      //!< ACK number
-    uint8_t m_length;                  //!< Length (really a uint4_t) in words.
-    uint8_t m_flags;                   //!< Flags (really a uint6_t)
-    uint16_t m_windowSize;             //!< Window size
-    uint16_t m_urgentPointer;          //!< Urgent pointer
+    uint16_t m_sourcePort{0};             //!< Source port
+    uint16_t m_destinationPort{0};        //!< Destination port
+    SequenceNumber32 m_sequenceNumber{0}; //!< Sequence number
+    SequenceNumber32 m_ackNumber{0};      //!< ACK number
+    uint8_t m_length{5};                  //!< Length (really a uint4_t) in words.
+    uint8_t m_flags{0};                   //!< Flags (really a uint6_t)
+    uint16_t m_windowSize{0xffff};        //!< Window size
+    uint16_t m_urgentPointer{0};          //!< Urgent pointer
 
     Address m_source;      //!< Source IP address
     Address m_destination; //!< Destination IP address
-    uint8_t m_protocol;    //!< Protocol number
+    uint8_t m_protocol{6}; //!< Protocol number
 
-    bool m_calcChecksum; //!< Flag to calculate checksum
-    bool m_goodChecksum; //!< Flag to indicate that checksum is correct
+    bool m_calcChecksum{false}; //!< Flag to calculate checksum
+    bool m_goodChecksum{true};  //!< Flag to indicate that checksum is correct
 
     static const uint8_t m_maxOptionsLen = 40; //!< Maximum options length
     TcpOptionList m_options;                   //!< TcpOption present in the header
-    uint8_t m_optionsLen;                      //!< Tcp options length.
+    uint8_t m_optionsLen{0};                   //!< Tcp options length.
 };
 
 } // namespace ns3
