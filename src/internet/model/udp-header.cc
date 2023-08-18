@@ -33,7 +33,6 @@ NS_OBJECT_ENSURE_REGISTERED(UdpHeader);
 UdpHeader::UdpHeader()
     : m_sourcePort(0xfffd),
       m_destinationPort(0xfffd),
-      m_payloadSize(0),
       m_checksum(0),
       m_calcChecksum(false),
       m_goodChecksum(true)
@@ -150,7 +149,7 @@ UdpHeader::ForceChecksum(uint16_t checksum)
 void
 UdpHeader::ForcePayloadSize(uint16_t payloadSize)
 {
-    m_payloadSize = payloadSize;
+    m_forcedPayloadSize = payloadSize;
 }
 
 TypeId
@@ -189,13 +188,13 @@ UdpHeader::Serialize(Buffer::Iterator start) const
 
     i.WriteHtonU16(m_sourcePort);
     i.WriteHtonU16(m_destinationPort);
-    if (m_payloadSize == 0)
+    if (m_forcedPayloadSize == 0)
     {
         i.WriteHtonU16(start.GetSize());
     }
     else
     {
-        i.WriteHtonU16(m_payloadSize);
+        i.WriteHtonU16(m_forcedPayloadSize);
     }
 
     if (m_checksum == 0)

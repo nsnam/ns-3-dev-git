@@ -167,9 +167,10 @@ class UdpHeader : public Header
      * \returns the checksum
      */
     uint16_t CalculateHeaderChecksum(uint16_t size) const;
-    uint16_t m_sourcePort;      //!< Source port
-    uint16_t m_destinationPort; //!< Destination port
-    uint16_t m_payloadSize;     //!< Payload size
+    uint16_t m_sourcePort;           //!< Source port
+    uint16_t m_destinationPort;      //!< Destination port
+    uint16_t m_payloadSize{0};       //!< Payload size
+    uint16_t m_forcedPayloadSize{0}; //!< Payload size (forced)
 
     Address m_source;      //!< Source IP address
     Address m_destination; //!< Destination IP address
