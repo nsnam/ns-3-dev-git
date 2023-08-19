@@ -15,20 +15,20 @@
     - python3 utils/check-style-clang-format.py --verbose .
   timeout: 1h
 
-check-style-clang-format-14:
+check-style-clang-format-16:
   extends: .check-style-clang-format
   variables:
-    CLANG_FORMAT_VERSION: 14
+    CLANG_FORMAT_VERSION: 16
 
 check-style-clang-format-15:
   extends: .check-style-clang-format
   variables:
     CLANG_FORMAT_VERSION: 15
 
-check-style-clang-format-16:
+check-style-clang-format-14:
   extends: .check-style-clang-format
   variables:
-    CLANG_FORMAT_VERSION: 16
+    CLANG_FORMAT_VERSION: 14
 
 # Clang-tidy
 clang-tidy-16:
