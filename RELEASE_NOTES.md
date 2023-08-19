@@ -23,6 +23,7 @@ Release 3-dev
 - (lr-wpan) !1686 - Change CapabilityField to standard bitmap
 - (lr-wpan) !1698 - Change SuperframeField to standard bitmap
 - (lr-wpan) !1706 - Create MAC layer abstraction (decoupling, alternative MACs)
+- (wifi) Added support for BlockAck buffer size of up to 1024 MPDUs (EHT STAs only)
 
 ### Bugs fixed
 
