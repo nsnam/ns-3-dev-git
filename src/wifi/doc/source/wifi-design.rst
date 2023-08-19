@@ -1139,7 +1139,11 @@ attribute of the EMLSR Manager base class (after multi-link setup, EMLSR mode is
 default). Setting the ``EmlsrLinkSet`` attribute triggers the transmission of an EML Operating
 Mode Notification frame to the AP to communicate the new set of EMLSR links, if ML setup has been
 completed. Otherwise, the set of EMLSR links is stored and the EML Operating Mode Notification
-frame is sent as soon as the ML setup is completed. The selection of the link used by the non-AP
+frame is sent as soon as the ML setup is completed. Therefore, users can choose to enable EMLSR
+mode on some links upon the completion of ML setup by setting the ``EmlsrLinkSet`` attribute at
+(or before) initialization time; alternatively, they can leave the ``EmlsrLinkSet`` attribute
+empty at initialization time and set it at runtime to enable EMLSR mode on some links at a
+specific simulation time (after ML setup). The selection of the link used by the non-AP
 MLD to transmit the EML Operating Mode Notification frame is done by the EMLSR Manager subclass.
 The default EMLSR Manager subclass, ``DefaultEmlsrManager``, selects the link on which the main
 PHY is operating. When the non-AP MLD receives the acknowledgment for the EML Operating Mode

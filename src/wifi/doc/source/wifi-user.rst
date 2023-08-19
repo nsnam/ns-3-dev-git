@@ -1082,3 +1082,71 @@ Multiple RF interfaces configuration
   mobility.Install(c);
 
   // other set up (e.g. InternetStack, Application)
+
+EMLSR configuration
++++++++++++++++++++
+
+Proper EMLSR operations require the configuration of multiple RF interfaces, as illustrated above.
+Therefore, in order to configure EMLSR operations, we can start from the configuration shown above
+and apply the changes described in the following. Firstly, we need to activate EMLSR on both the
+AP MLD and the EMLSR client. This can be done by configuring the appropriate ``EhtConfiguration``
+attribute through the wifi helper:
+
+.. sourcecode:: cpp
+
+  WifiHelper wifi;
+  wifi.SetStandard(WIFI_STANDARD_80211be);
+  wifi.ConfigEhtOptions("EmlsrActivated", BooleanValue(true));
+
+The ``EhtConfiguration`` class also provides attributes for the various EMLSR parameters that an
+AP MLD that supports EMLSR has to advertise. Given that these attributes are simply ignored by
+non-AP MLDs, we can use the same wifi helper to configure such parameters:
+
+.. sourcecode:: cpp
+
+  WifiHelper wifi;
+  wifi.SetStandard(WIFI_STANDARD_80211be);
+  wifi.ConfigEhtOptions("EmlsrActivated", BooleanValue(true));
+  wifi.ConfigEhtOptions("TransitionTimeout", TimeValue(MicroSeconds(1024)));
+  wifi.ConfigEhtOptions("MediumSyncDuration", TimeValue(MicroSeconds(3200)));
+  wifi.ConfigEhtOptions("MsdOfdmEdThreshold", IntegerValue(-72);
+  wifi.ConfigEhtOptions("MsdMaxNTxops", UintegerValue(0)); // unlimited attempts
+
+EMLSR parameters that are client specific can be configured through the attributes of the EMLSR
+Manager class and subclass. The ``WifiMacHelper`` class provides the ``SetEmlsrManager``
+method to conveniently set the type of EMLSR Manager and its attributes:
+
+.. sourcecode:: cpp
+
+  // setup STA.
+  wifiMac.SetType("ns3::StaWifiMac",
+                  "Ssid", SsidValue(ssid),
+                  "ActiveProbing", BooleanValue(false));
+  wifiMac.SetEmlsrManager("ns3::DefaultEmlsrManager",
+                          "EmlsrLinkSet",
+                          StringValue("0,1,2"),  // enable EMLSR on all EMLSR links
+                          "MainPhyId",
+                          UintegerValue(1),
+                          "EmlsrPaddingDelay",
+                          TimeValue(MicroSeconds(32)),
+                          "EmlsrTransitionDelay",
+                          TimeValue(MicroSeconds(128)),
+                          "SwitchAuxPhy",
+                          BooleanValue(false),
+                          "AuxPhyChannelWidth",
+                          UintegerValue(40));
+  NetDeviceContainer staDevice = wifi.Install(wifiPhy, wifiMac, sta);
+  devices.Add(staDevice);
+
+Note that the channel switch delay should be less than the transition delay:
+
+.. sourcecode:: cpp
+
+  // SpectrumWifiPhyHelper (3 links)
+  SpectrumWifiPhyHelper phy(3);
+  phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+  phy.AddChannel(spectrumChannel2_4Ghz, WIFI_SPECTRUM_2_4_GHZ);
+  phy.AddChannel(spectrumChannel5Ghz, WIFI_SPECTRUM_5_GHZ);
+  phy.AddChannel(spectrumChannel6Ghz, WIFI_SPECTRUM_6_GHZ);
+  phy.Set("ChannelSwitchDelay", TimeValue(MicroSeconds(100)));
+
