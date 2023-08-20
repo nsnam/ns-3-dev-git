@@ -965,6 +965,16 @@ assigned a User Priority based on the socket priority (see, e.g., the wifi-multi
 the wifi-mac-ofdma examples), which determines the Access Category that handles the
 packet. By default, wifi MAC queues support flow control, hence upper layers do not
 forward a packet down if there is no room for it in the corresponding MAC queue.
+Wifi MAC queues do not support dynamic queue limits (byte queue limits); therefore,
+there is no backpressure into the traffic control layer until the WifiMacQueue for
+an access category is completely full (i.e., when the queue depth reaches the value
+of the MaxSize attribute, which defaults to 500 packets).
+TCP small queues (TSQ) [corbet2012]_ is a Linux feature that provides feedback from the
+Wi-Fi device to the socket layer, to control how much data is queued at the Wi-Fi
+level.  |ns3| TCP does not implement TSQ, nor does the WifiNetDevice provide that
+specific feedback (although some use of the existing trace sources may be enough to
+support it).  Regardless, experimental tests have demonstrated that TSQ interferes with
+Wi-Fi aggregation on uplink transfers [grazia2022]_.
 Packets stay in the wifi MAC queue until they are acknowledged or discarded. A packet
 may be discarded because, e.g., its lifetime expired (i.e., it stayed in the queue for too
 long) or the maximum number of retries was reached. The maximum lifetime for a packet can

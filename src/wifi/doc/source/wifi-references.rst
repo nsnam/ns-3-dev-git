@@ -64,3 +64,7 @@ References
 .. [magrin2021mu] \ D. Magrin, S. Avallone, S. Roy, and M. Zorzi, 'Validation of the ns-3 802.11ax OFDMA implementation', in Proceedings of WNS3 2021.
 
 .. [avallone2021wcm] \ S. Avallone, P. Imputato, G. Redieteab, C. Ghosh and S. Roy, "Will OFDMA Improve the Performance of 802.11 WiFi Networks?", in IEEE Wireless Communications Magazine, DOI: 10.1109/MWC.001.2000332, to appear.
+
+.. [corbet2012] \ J. Corbet, "TCP Small Queues", `LWN.net, July 17, 2012 <https://lwn.net/Articles/507065/>`__
+
+.. [grazia2022] \ C. Grazia, N. Patriciello, T. Hoiland-Jorgensen, M. Klapez and M. Casoni, "Aggregating Without Bloating: Hard Times for TCP on Wi-Fi", IEEE/ACM Transactions on Networking, Vol. 30, No.5, October 2022.
