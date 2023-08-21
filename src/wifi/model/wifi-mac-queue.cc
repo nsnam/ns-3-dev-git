@@ -191,7 +191,17 @@ WifiMacQueue::TtlExceeded(Ptr<const WifiMpdu> item, const Time& now)
     {
         NS_LOG_DEBUG("Removing packet that stayed in the queue for too long (queuing time="
                      << now - it->expiryTime + m_maxDelay << ")");
-        m_traceExpired(DoRemove(it));
+        // Trace the expired MPDU first and then remove it from the queue (if still in the queue).
+        // Indeed, the Expired traced source is connected to BlockAckManager::NotifyDiscardedMpdu,
+        // which checks if the expired MPDU is in-flight or is a retransmission to determine
+        // whether a BlockAckReq frame must be sent to advance the recipient window. If the
+        // expired MPDU is removed from the queue before tracing the expiration, it is no longer
+        // in-flight and NotifyDiscardedMpdu wrongfully assumes that a BlockAckReq is not needed.
+        m_traceExpired(item);
+        if (item->IsQueued())
+        {
+            DoRemove(it);
+        }
         return true;
     }
     return false;
