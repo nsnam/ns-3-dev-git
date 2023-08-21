@@ -1726,6 +1726,116 @@ state in case the received RSSI is lower than that constant OBSS PD level value,
 
 Note: since our model is based on a single threshold, the PHY only supports one restricted power level.
 
+Groupcast with retries (GCR)
+############################
+
+The IEEE 802.11aa amendment introduced GCR functionality to provide reliable multicast transmissions.
+The standard proposes two retransmission policies: unsolicited retry (GCR-UR) and block acknowledgement (GCR-BA).
+|ns3| supports both GCR-UR and GCR-BA operations as described in the following. Only one retransmission policy
+can be selected and it cannot be changed at run-time.
+
+GCR service activation
+----------------------
+
+For any HT-capable AP, the WifiMacHelper will install an GCR Manager by using the type
+and attribute values configured through the ``SetGcrManager`` method.
+
+GCR-UR service is used by an AP if the ``RetransmissionPolicy`` attribute of the GCR manager
+base class is set to ``GCR_UNSOLICITED_RETRY`` and if there is at least one HT-capable STA
+associated to the AP. Similarly, GCR-BA service is used by an AP if the ``RetransmissionPolicy``
+attribute of the GCR manager base class is set to ``GCR_BLOCK_ACK`` and if there is at least
+one HT-capable STA associated to the AP.
+
+The current implementation does not support hybrid scenarios made of GCR capable and non-GCR capable STAs.
+
+Groupcast transmissions using GCR-UR
+------------------------------------
+
+When a multicast data packet is ready for transmission, it is first transmitted similarly to the
+legacy No-Ack/No-retry. Afterwards, the GCR-UR service retransmits the packet multiple times.
+The number of retransmission per multicast data packet is controlled through the ``UnsolicitedRetryLimit``
+attribute of the GCR manager base class (default is 7), unless it gets dropped because of lifetime expiry.
+
+The GCR manager holds a counter that gets incremented at each transmission of a
+groupcast packet, which is used to determine if a groupcast packet shall be retransmitted.
+The frame exchange manager polls the GCR manager to know whether a given groupcast packet
+shall be kept for retransmission. As long as a packet needs to be retransmitted, the
+groupcast packet is not removed from the queue and the retry flag is set in the MAC header.
+
+When GCR-UR service is used, A-MPDU can be enabled for groupcast frames the same way as for unicast ones.
+In that case, the AP attempts to establish a Block Ack agreement prior to a groupcast transmission
+with each member STA of the group corresponding to that transmission. As long as the Block Ack agreement
+is not successfully established with all members of the group, MPDU aggregation cannot be used.
+
+the establishment of the Block Ack agreements is done by sending ADDBA Request frames containing
+a GCR Group Address element, which indicates to the receiving STAs the group address for which the
+agreements are being established.
+
+The AP retransmits the same A-MPDU multiple times and, once the last retransmission is done,
+it advances its scoreboad boundaries since it does not get any feedback from the receivers.
+
+Upon reception of an A-MPDU, GCR-capable STAs flush any previous pending MPDUs by assuming
+an implicit BAR has been received. This ensures the receiver window follows the transmit window.
+In order to prevent MPDUs to stay pending and never get forwarded up, an event is also scheduled
+to ensure the receiver window gets flushed once the maximum MSDU lifetime has elapsed. This event
+is canceled upon reception of a new A-MPDU belonging to the same Block Ack agreement.
+
+Groupcast transmissions using GCR-BA
+------------------------------------
+
+The use of GCR-BA for a given group address requires the establishment of a block ack agreement
+with all members of that group address as described in the previous section.
+
+When a TXOP is granted to the AP and at least one groupcast is ready for transmission,
+the AP sends one or more groupcast MPDUs and schedules transmissions of a Block Ack Request
+packets to each member of the group. The first request is sent a SIFS after transmission of
+the last MPDU, unless the remaining TXOP duration does not allow it. The Block Ack Request
+packets may be transmitted in following TXOPs. If a STA does not answer to a Block Ack Request,
+it gets retransmitted until the Block Ack response is received.
+
+Once Block Ack responses have been received from all members of the group, the AP determines the
+groupcast MPDUs that have been successfully received by all members of the group. These MPDUs
+are removed from the queues and the AP advances its transmit window accordingly. In a following TXOP,
+the AP retransmits the groupcast MPDUs that have not been successfully received by all members of the group,
+and eventually adds other queued groupcast MPDU to the same group, if the TXOP limit allows it.
+
+TXVECTOR for groupcast transmissions using GCR service
+------------------------------------------------------
+
+When GCR is used, the lowest MCS and modulation class that can be decoded by all STAs
+that are members of the group address is selected for the transmission. Furthermore,
+it selects the minimum channel width and number of spatial streams supported over all
+members of the group. Similarly, depending on the selected modulation class, a guard
+interval duration that is supported by all members of the group address is picked.
+The current implementation assumes all GCR-capable STAs are members of all groups.
+
+Protection for groupcast transmissions
+--------------------------------------
+
+Protection used for groupcast transmission can be controlled through the
+``GcrProtectionMode"`` attribute of the GCR manager base class. If RTS/CTS
+protection mode is selected and if the groupcast data frames have a size larger than
+the value of the ``WifiRemoteStationManager::RtsCtsThreshold`` attribute, a RTS frame
+is directed to one of the STA that is part of the group, prior to groupcast MPDUs
+transmitted using the GCR service. If CTS-to-self protection mode is selected, a CTS
+frame is transmitted prior to groupcast MPDUs.
+
+The protection manager is responsible for selecting the protection frames to send
+prior to data transmissions. It relies on ``WifiRemoteStationManager::NeedRts`` and
+``WifiRemoteStationManager::NeedCtsToSelf``, which check the configured protection mode
+in GCR manager when data transmissions involve groupcast MPDUs using the GCR service.
+
+When RTS/CTS is used for protection, the default implementation picks the STA with the
+lowest AID as individual address to set as recipient of the RTS frame.
+
+Concealment of GCR transmissions
+--------------------------------
+
+MSDUs transmitted via the GCR service are sent in an A-MSDU made of a single A-MSDU
+subframe, regardless of current A-MSDU size settings. The Address 1 field of the A-MSDU
+is set to the concealment address, which can be configured through the
+``GcrManager::GcrConcealmentAddress`` attribute.
+
 Modifying Wifi model
 ####################
 
