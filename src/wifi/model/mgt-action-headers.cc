@@ -11,6 +11,7 @@
 #include "mgt-action-headers.h"
 
 #include "addba-extension.h"
+#include "gcr-group-address.h"
 
 #include "ns3/multi-link-element.h"
 #include "ns3/packet.h"
@@ -742,6 +743,10 @@ MgtAddBaRequestHeader::Print(std::ostream& os) const
     os << "A-MSDU support=" << m_amsduSupport << " Policy=" << +m_policy << " TID=" << +m_tid
        << " Buffer size=" << m_bufferSize << " Timeout=" << m_timeoutValue
        << " Starting seq=" << m_startingSeq;
+    if (m_gcrGroupAddress.has_value())
+    {
+        os << " GCR group address=" << m_gcrGroupAddress.value();
+    }
 }
 
 uint32_t
@@ -752,6 +757,11 @@ MgtAddBaRequestHeader::GetSerializedSize() const
     size += 2; // Block ack parameter set
     size += 2; // Block ack timeout value
     size += 2; // Starting sequence control
+    if (m_gcrGroupAddress)
+    {
+        // a GCR Group Address element has to be added
+        size += GcrGroupAddress().GetSerializedSize();
+    }
     if (m_bufferSize >= 1024)
     {
         // an ADDBA Extension element has to be added
@@ -768,6 +778,12 @@ MgtAddBaRequestHeader::Serialize(Buffer::Iterator start) const
     i.WriteHtolsbU16(GetParameterSet());
     i.WriteHtolsbU16(m_timeoutValue);
     i.WriteHtolsbU16(GetStartingSequenceControl());
+    if (m_gcrGroupAddress)
+    {
+        GcrGroupAddress gcrGroupAddr;
+        gcrGroupAddr.m_gcrGroupAddress = *m_gcrGroupAddress;
+        i = gcrGroupAddr.Serialize(i);
+    }
     if (m_bufferSize >= 1024)
     {
         AddbaExtension addbaExt;
@@ -784,8 +800,16 @@ MgtAddBaRequestHeader::Deserialize(Buffer::Iterator start)
     SetParameterSet(i.ReadLsbtohU16());
     m_timeoutValue = i.ReadLsbtohU16();
     SetStartingSequenceControl(i.ReadLsbtohU16());
-    AddbaExtension addbaExt;
+    m_gcrGroupAddress.reset();
+    GcrGroupAddress gcrGroupAddr;
     auto tmp = i;
+    i = gcrGroupAddr.DeserializeIfPresent(i);
+    if (i.GetDistanceFrom(tmp) != 0)
+    {
+        m_gcrGroupAddress = gcrGroupAddr.m_gcrGroupAddress;
+    }
+    AddbaExtension addbaExt;
+    tmp = i;
     i = addbaExt.DeserializeIfPresent(i);
     if (i.GetDistanceFrom(tmp) != 0)
     {
@@ -845,6 +869,12 @@ MgtAddBaRequestHeader::SetAmsduSupport(bool supported)
     m_amsduSupport = supported;
 }
 
+void
+MgtAddBaRequestHeader::SetGcrGroupAddress(const Mac48Address& address)
+{
+    m_gcrGroupAddress = address;
+}
+
 uint8_t
 MgtAddBaRequestHeader::GetTid() const
 {
@@ -885,6 +915,12 @@ uint16_t
 MgtAddBaRequestHeader::GetStartingSequenceControl() const
 {
     return (m_startingSeq << 4) & 0xfff0;
+}
+
+std::optional<Mac48Address>
+MgtAddBaRequestHeader::GetGcrGroupAddress() const
+{
+    return m_gcrGroupAddress;
 }
 
 uint16_t
@@ -933,6 +969,10 @@ MgtAddBaResponseHeader::Print(std::ostream& os) const
 {
     os << "Status code=" << m_code << "A-MSDU support=" << m_amsduSupport << " Policy=" << +m_policy
        << " TID=" << +m_tid << " Buffer size=" << m_bufferSize << " Timeout=" << m_timeoutValue;
+    if (m_gcrGroupAddress.has_value())
+    {
+        os << " GCR group address=" << m_gcrGroupAddress.value();
+    }
 }
 
 uint32_t
@@ -943,6 +983,11 @@ MgtAddBaResponseHeader::GetSerializedSize() const
     size += m_code.GetSerializedSize(); // Status code
     size += 2;                          // Block ack parameter set
     size += 2;                          // Block ack timeout value
+    if (m_gcrGroupAddress)
+    {
+        // a GCR Group Address element has to be added
+        size += GcrGroupAddress().GetSerializedSize();
+    }
     if (m_bufferSize >= 1024)
     {
         // an ADDBA Extension element has to be added
@@ -959,6 +1004,12 @@ MgtAddBaResponseHeader::Serialize(Buffer::Iterator start) const
     i = m_code.Serialize(i);
     i.WriteHtolsbU16(GetParameterSet());
     i.WriteHtolsbU16(m_timeoutValue);
+    if (m_gcrGroupAddress)
+    {
+        GcrGroupAddress gcrGroupAddr;
+        gcrGroupAddr.m_gcrGroupAddress = *m_gcrGroupAddress;
+        i = gcrGroupAddr.Serialize(i);
+    }
     if (m_bufferSize >= 1024)
     {
         AddbaExtension addbaExt;
@@ -975,8 +1026,16 @@ MgtAddBaResponseHeader::Deserialize(Buffer::Iterator start)
     i = m_code.Deserialize(i);
     SetParameterSet(i.ReadLsbtohU16());
     m_timeoutValue = i.ReadLsbtohU16();
-    AddbaExtension addbaExt;
+    m_gcrGroupAddress.reset();
+    GcrGroupAddress gcrGroupAddr;
     auto tmp = i;
+    i = gcrGroupAddr.DeserializeIfPresent(i);
+    if (i.GetDistanceFrom(tmp) != 0)
+    {
+        m_gcrGroupAddress = gcrGroupAddr.m_gcrGroupAddress;
+    }
+    AddbaExtension addbaExt;
+    tmp = i;
     i = addbaExt.DeserializeIfPresent(i);
     if (i.GetDistanceFrom(tmp) != 0)
     {
@@ -1030,6 +1089,12 @@ MgtAddBaResponseHeader::SetAmsduSupport(bool supported)
     m_amsduSupport = supported;
 }
 
+void
+MgtAddBaResponseHeader::SetGcrGroupAddress(const Mac48Address& address)
+{
+    m_gcrGroupAddress = address;
+}
+
 StatusCode
 MgtAddBaResponseHeader::GetStatusCode() const
 {
@@ -1064,6 +1129,12 @@ bool
 MgtAddBaResponseHeader::IsAmsduSupported() const
 {
     return m_amsduSupport;
+}
+
+std::optional<Mac48Address>
+MgtAddBaResponseHeader::GetGcrGroupAddress() const
+{
+    return m_gcrGroupAddress;
 }
 
 uint16_t

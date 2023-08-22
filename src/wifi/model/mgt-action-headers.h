@@ -18,6 +18,7 @@
 #include "wifi-standards.h"
 
 #include "ns3/header.h"
+#include "ns3/mac48-address.h"
 
 #include <list>
 #include <optional>
@@ -345,6 +346,12 @@ class MgtAddBaRequestHeader : public Header
      * @param supported enable or disable A-MSDU support
      */
     void SetAmsduSupport(bool supported);
+    /**
+     * Set the GCR Group address.
+     *
+     * @param address the GCR Group Address
+     */
+    void SetGcrGroupAddress(const Mac48Address& address);
 
     /**
      * Return the starting sequence number.
@@ -382,6 +389,10 @@ class MgtAddBaRequestHeader : public Header
      * @return true is A-MSDU is supported, false otherwise
      */
     bool IsAmsduSupported() const;
+    /**
+     * @return the GCR Group Address, if present
+     */
+    std::optional<Mac48Address> GetGcrGroupAddress() const;
 
   private:
     /**
@@ -409,13 +420,14 @@ class MgtAddBaRequestHeader : public Header
      */
     void SetStartingSequenceControl(uint16_t seqControl);
 
-    uint8_t m_dialogToken{1};   //!< Not used for now
-    bool m_amsduSupport{true};  //!< Flag if A-MSDU is supported
-    uint8_t m_policy{1};        //!< Block Ack policy
-    uint8_t m_tid{0};           //!< Traffic ID
-    uint16_t m_bufferSize{0};   //!< Buffer size
-    uint16_t m_timeoutValue{0}; //!< Timeout
-    uint16_t m_startingSeq{0};  //!< Starting sequence number
+    uint8_t m_dialogToken{1};                      //!< Not used for now
+    bool m_amsduSupport{true};                     //!< Flag if A-MSDU is supported
+    uint8_t m_policy{1};                           //!< Block Ack policy
+    uint8_t m_tid{0};                              //!< Traffic ID
+    uint16_t m_bufferSize{0};                      //!< Buffer size
+    uint16_t m_timeoutValue{0};                    //!< Timeout
+    uint16_t m_startingSeq{0};                     //!< Starting sequence number
+    std::optional<Mac48Address> m_gcrGroupAddress; //!< GCR Group Address (optional)
 };
 
 /**
@@ -474,6 +486,12 @@ class MgtAddBaResponseHeader : public Header
      * @param supported enable or disable A-MSDU support
      */
     void SetAmsduSupport(bool supported);
+    /**
+     * Set the GCR Group address.
+     *
+     * @param address the GCR Group Address
+     */
+    void SetGcrGroupAddress(const Mac48Address& address);
 
     /**
      * Return the status code.
@@ -511,6 +529,10 @@ class MgtAddBaResponseHeader : public Header
      * @return true is A-MSDU is supported, false otherwise
      */
     bool IsAmsduSupported() const;
+    /**
+     * @return the GCR Group Address, if present
+     */
+    std::optional<Mac48Address> GetGcrGroupAddress() const;
 
   private:
     /**
@@ -526,13 +548,14 @@ class MgtAddBaResponseHeader : public Header
      */
     void SetParameterSet(uint16_t params);
 
-    uint8_t m_dialogToken{1};   //!< Not used for now
-    StatusCode m_code{};        //!< Status code
-    bool m_amsduSupport{true};  //!< Flag if A-MSDU is supported
-    uint8_t m_policy{1};        //!< Block ACK policy
-    uint8_t m_tid{0};           //!< Traffic ID
-    uint16_t m_bufferSize{0};   //!< Buffer size
-    uint16_t m_timeoutValue{0}; //!< Timeout
+    uint8_t m_dialogToken{1};                      //!< Not used for now
+    StatusCode m_code{};                           //!< Status code
+    bool m_amsduSupport{true};                     //!< Flag if A-MSDU is supported
+    uint8_t m_policy{1};                           //!< Block ACK policy
+    uint8_t m_tid{0};                              //!< Traffic ID
+    uint16_t m_bufferSize{0};                      //!< Buffer size
+    uint16_t m_timeoutValue{0};                    //!< Timeout
+    std::optional<Mac48Address> m_gcrGroupAddress; //!< GCR Group Address (optional)
 };
 
 /**
