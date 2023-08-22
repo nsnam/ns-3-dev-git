@@ -23,6 +23,7 @@ BlockAckType::BlockAckType(Variant v)
         break;
     case COMPRESSED:
     case EXTENDED_COMPRESSED:
+    case GCR:
         m_bitmapLen.push_back(8);
         break;
     case MULTI_TID:
@@ -53,6 +54,7 @@ BlockAckReqType::BlockAckReqType(Variant v)
     case BASIC:
     case COMPRESSED:
     case EXTENDED_COMPRESSED:
+    case GCR:
         m_nSeqControls = 1;
         break;
     case MULTI_TID:
@@ -91,6 +93,9 @@ operator<<(std::ostream& os, const BlockAckType& type)
     case BlockAckType::MULTI_TID:
         os << "multi-tid-block-ack[" << type.m_bitmapLen.size() << "]";
         break;
+    case BlockAckType::GCR:
+        os << "gcr-block-ack";
+        break;
     case BlockAckType::MULTI_STA:
         os << "multi-sta-block-ack[" << type.m_bitmapLen.size() << "]";
         break;
@@ -116,6 +121,9 @@ operator<<(std::ostream& os, const BlockAckReqType& type)
         break;
     case BlockAckReqType::MULTI_TID:
         os << "multi-tid-block-ack-req[" << type.m_nSeqControls << "]";
+        break;
+    case BlockAckReqType::GCR:
+        os << "gcr-block-ack-req";
         break;
     default:
         NS_FATAL_ERROR("Unknown block ack request type");

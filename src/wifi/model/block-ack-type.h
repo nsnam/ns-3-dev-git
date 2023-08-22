@@ -26,12 +26,13 @@ struct BlockAckType
      * @enum Variant
      * @brief The BlockAck variants
      */
-    enum Variant
+    enum Variant : uint8_t
     {
         BASIC,
         COMPRESSED,
         EXTENDED_COMPRESSED,
         MULTI_TID,
+        GCR,
         MULTI_STA
     };
 
@@ -68,12 +69,13 @@ struct BlockAckReqType
      * @enum Variant
      * @brief The BlockAckReq variants
      */
-    enum Variant
+    enum Variant : uint8_t
     {
         BASIC,
         COMPRESSED,
         EXTENDED_COMPRESSED,
-        MULTI_TID
+        MULTI_TID,
+        GCR
     };
 
     Variant m_variant;      //!< Block Ack Request variant

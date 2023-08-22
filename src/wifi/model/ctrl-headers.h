@@ -29,13 +29,13 @@ enum AcIndex : uint8_t;
  * @ingroup wifi
  * @brief Headers for BlockAckRequest.
  *
- *  802.11n standard includes three types of BlockAck:
- *    - Basic BlockAck (unique type in 802.11e)
- *    - Compressed BlockAck
- *    - Multi-TID BlockAck
- *  For now only basic BlockAck and compressed BlockAck
- *  are supported.
- *  Basic BlockAck is also default variant.
+ *  802.11 standard includes multiple BlockAckReq variants:
+ *    - Basic BlockAckReq (unique type in 802.11e)
+ *    - Compressed BlockAckReq
+ *    - Multi-TID BlockAckReq
+ *    - GCR BlockAckReq
+ *  For now only basic BlockAckReq, compressed BlockAckReq and GCR BlockAckReq are supported.
+ *  Basic BlockAckReq is the default variant.
  */
 class CtrlBAckRequestHeader : public Header
 {
@@ -79,6 +79,12 @@ class CtrlBAckRequestHeader : public Header
      * @param seq the raw sequence control
      */
     void SetStartingSequence(uint16_t seq);
+    /**
+     * Set the GCR Group address (GCR variant only).
+     *
+     * @param address the GCR Group Address
+     */
+    void SetGcrGroupAddress(const Mac48Address& address);
 
     /**
      * Check if the current Ack Policy is immediate.
@@ -106,35 +112,29 @@ class CtrlBAckRequestHeader : public Header
      */
     uint16_t GetStartingSequence() const;
     /**
-     * Check if the current Ack Policy is Basic Block Ack
-     * (i.e. not multi-TID nor compressed).
-     *
-     * @return true if the current Ack Policy is Basic Block Ack,
-     *         false otherwise
+     * @return the GCR Group Address (GCR variant only)
+     */
+    Mac48Address GetGcrGroupAddress() const;
+    /**
+     * @return whether the variant of this BlockAckReq is Basic
      */
     bool IsBasic() const;
     /**
-     * Check if the current Ack Policy is Compressed Block Ack
-     * and not multi-TID.
-     *
-     * @return true if the current Ack Policy is Compressed Block Ack,
-     *         false otherwise
+     * @return whether the variant of this BlockAckReq is Compressed
      */
     bool IsCompressed() const;
     /**
-     * Check if the current Ack Policy is Extended Compressed Block Ack.
-     *
-     * @return true if the current Ack Policy is Extended Compressed Block Ack,
-     *         false otherwise
+     * @return whether the variant of this BlockAckReq is Extended Compressed
      */
     bool IsExtendedCompressed() const;
     /**
-     * Check if the current Ack Policy has Multi-TID Block Ack.
-     *
-     * @return true if the current Ack Policy has Multi-TID Block Ack,
-     *         false otherwise
+     * @return whether the variant of this BlockAckReq is Multi-TID
      */
     bool IsMultiTid() const;
+    /**
+     * @return whether the variant of this BlockAckReq is GCR
+     */
+    bool IsGcr() const;
 
     /**
      * Return the starting sequence control.
@@ -174,17 +174,20 @@ class CtrlBAckRequestHeader : public Header
     BlockAckReqType m_barType; ///< BAR type
     uint16_t m_tidInfo;        ///< TID info
     uint16_t m_startingSeq;    ///< starting seq
+    Mac48Address m_gcrAddress; ///< GCR Group Address (GCR variant only)
 };
 
 /**
  * @ingroup wifi
  * @brief Headers for BlockAck response.
  *
- *  802.11n standard includes three types of BlockAck:
+ *  802.11 standard includes multiple BlockAck variants:
  *    - Basic BlockAck (unique type in 802.11e)
  *    - Compressed BlockAck
  *    - Multi-TID BlockAck
- *  For now only basic BlockAck and compressed BlockAck
+ *    - GCR BlockAck
+ *    - Multi-STA BlockAck
+ *  For now only basic BlockAck, compressed BlockAck, GCR BlockAck and Multi-STA BlockAck
  *  are supported.
  *  Basic BlockAck is also default variant.
  */
@@ -236,6 +239,12 @@ class CtrlBAckResponseHeader : public Header
      * @param index the index of the Per AID TID Info subfield (Multi-STA Block Ack only)
      */
     void SetStartingSequence(uint16_t seq, std::size_t index = 0);
+    /**
+     * Set the GCR Group address (GCR variant only).
+     *
+     * @param address the GCR Group Address
+     */
+    void SetGcrGroupAddress(const Mac48Address& address);
 
     /**
      * Check if the current Ack Policy is immediate.
@@ -270,38 +279,31 @@ class CtrlBAckResponseHeader : public Header
      */
     uint16_t GetStartingSequence(std::size_t index = 0) const;
     /**
-     * Check if the current BA policy is Basic Block Ack.
-     *
-     * @return true if the current BA policy is Basic Block Ack,
-     *         false otherwise
+     * @return the GCR Group Address (GCR variant only)
+     */
+    Mac48Address GetGcrGroupAddress() const;
+    /**
+     * @return whether the variant of this BlockAckReq is Basic
      */
     bool IsBasic() const;
     /**
-     * Check if the current BA policy is Compressed Block Ack.
-     *
-     * @return true if the current BA policy is Compressed Block Ack,
-     *         false otherwise
+     * @return whether the variant of this BlockAckReq is Compressed
      */
     bool IsCompressed() const;
     /**
-     * Check if the current BA policy is Extended Compressed Block Ack.
-     *
-     * @return true if the current BA policy is Extended Compressed Block Ack,
-     *         false otherwise
+     * @return whether the variant of this BlockAckReq is Extended Compressed
      */
     bool IsExtendedCompressed() const;
     /**
-     * Check if the current BA policy is Multi-TID Block Ack.
-     *
-     * @return true if the current BA policy is Multi-TID Block Ack,
-     *         false otherwise
+     * @return whether the variant of this BlockAckReq is Multi-TID
      */
     bool IsMultiTid() const;
     /**
-     * Check if the BlockAck frame variant is Multi-STA Block Ack.
-     *
-     * @return true if the BlockAck frame variant is Multi-STA Block Ack,
-     *         false otherwise
+     * @return whether the variant of this BlockAckReq is GCR
+     */
+    bool IsGcr() const;
+    /**
+     * @return whether the variant of this BlockAckReq is Multi-STA
      */
     bool IsMultiSta() const;
 
@@ -534,8 +536,9 @@ class CtrlBAckResponseHeader : public Header
                                        //!< AID TID Info subfield for Multi-STA
         uint16_t m_startingSeq;        //!< Block Ack Starting Sequence Control subfield
         std::vector<uint8_t> m_bitmap; //!< block ack bitmap
-        Mac48Address m_ra;             //!< RA subfield (address of an unassociated station)
-                                       //!< for Multi-STA; reserved for other variants
+        Mac48Address m_address;        //!< RA subfield (address of an unassociated station) for
+                                       //!< Multi-STA variant; GCR Group Address subfield for GCR
+                                       //!< variant; reserved for other variants
     };
 
     std::vector<BaInfoInstance> m_baInfo; //!< BA Information field

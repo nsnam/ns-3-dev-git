@@ -72,6 +72,9 @@ CtrlBAckRequestHeader::GetSerializedSize() const
     case BlockAckReqType::MULTI_TID:
         size += (2 + 2) * (m_tidInfo + 1);
         break;
+    case BlockAckReqType::GCR:
+        size += (2 + 6); // SSC plus GCR Group Address
+        break;
     default:
         NS_FATAL_ERROR("Invalid BA type");
         break;
@@ -94,6 +97,10 @@ CtrlBAckRequestHeader::Serialize(Buffer::Iterator start) const
     case BlockAckReqType::MULTI_TID:
         NS_FATAL_ERROR("Multi-tid block ack is not supported.");
         break;
+    case BlockAckReqType::GCR:
+        i.WriteHtolsbU16(GetStartingSequenceControl());
+        WriteTo(i, m_gcrAddress);
+        break;
     default:
         NS_FATAL_ERROR("Invalid BA type");
         break;
@@ -114,6 +121,10 @@ CtrlBAckRequestHeader::Deserialize(Buffer::Iterator start)
         break;
     case BlockAckReqType::MULTI_TID:
         NS_FATAL_ERROR("Multi-tid block ack is not supported.");
+        break;
+    case BlockAckReqType::GCR:
+        SetStartingSequenceControl(i.ReadLsbtohU16());
+        ReadFrom(i, m_gcrAddress);
         break;
     default:
         NS_FATAL_ERROR("Invalid BA type");
@@ -139,6 +150,9 @@ CtrlBAckRequestHeader::GetBarControl() const
     case BlockAckReqType::MULTI_TID:
         res |= (0x03 << 1);
         break;
+    case BlockAckReqType::GCR:
+        res |= (0x06 << 1);
+        break;
     default:
         NS_FATAL_ERROR("Invalid BA type");
         break;
@@ -151,7 +165,11 @@ void
 CtrlBAckRequestHeader::SetBarControl(uint16_t bar)
 {
     m_barAckPolicy = ((bar & 0x01) == 1);
-    if (((bar >> 1) & 0x0f) == 0x03)
+    if (((bar >> 1) & 0x0f) == 0x06)
+    {
+        m_barType.m_variant = BlockAckReqType::GCR;
+    }
+    else if (((bar >> 1) & 0x0f) == 0x03)
     {
         m_barType.m_variant = BlockAckReqType::MULTI_TID;
     }
@@ -231,6 +249,20 @@ CtrlBAckRequestHeader::GetStartingSequence() const
     return m_startingSeq;
 }
 
+void
+CtrlBAckRequestHeader::SetGcrGroupAddress(const Mac48Address& address)
+{
+    NS_ASSERT(IsGcr());
+    m_gcrAddress = address;
+}
+
+Mac48Address
+CtrlBAckRequestHeader::GetGcrGroupAddress() const
+{
+    NS_ASSERT(IsGcr());
+    return m_gcrAddress;
+}
+
 bool
 CtrlBAckRequestHeader::IsBasic() const
 {
@@ -253,6 +285,12 @@ bool
 CtrlBAckRequestHeader::IsMultiTid() const
 {
     return m_barType.m_variant == BlockAckReqType::MULTI_TID;
+}
+
+bool
+CtrlBAckRequestHeader::IsGcr() const
+{
+    return m_barType.m_variant == BlockAckReqType::GCR;
 }
 
 /***********************************
@@ -323,6 +361,9 @@ CtrlBAckResponseHeader::GetSerializedSize() const
     case BlockAckType::MULTI_TID:
         size += (2 + 2 + 8) * (m_tidInfo + 1); // Multi-TID block ack
         break;
+    case BlockAckType::GCR:
+        size += (2 + 6 + m_baType.m_bitmapLen[0]);
+        break;
     case BlockAckType::MULTI_STA:
         for (auto& bitmapLen : m_baType.m_bitmapLen)
         {
@@ -349,6 +390,11 @@ CtrlBAckResponseHeader::Serialize(Buffer::Iterator start) const
         i.WriteHtolsbU16(GetStartingSequenceControl());
         i = SerializeBitmap(i);
         break;
+    case BlockAckType::GCR:
+        i.WriteHtolsbU16(GetStartingSequenceControl());
+        WriteTo(i, m_baInfo[0].m_address);
+        i = SerializeBitmap(i);
+        break;
     case BlockAckType::MULTI_STA:
         for (std::size_t index = 0; index < m_baInfo.size(); index++)
         {
@@ -365,7 +411,7 @@ CtrlBAckResponseHeader::Serialize(Buffer::Iterator start) const
             {
                 uint32_t reserved = 0;
                 i.WriteHtolsbU32(reserved);
-                WriteTo(i, m_baInfo[index].m_ra);
+                WriteTo(i, m_baInfo[index].m_address);
             }
         }
         break;
@@ -391,6 +437,11 @@ CtrlBAckResponseHeader::Deserialize(Buffer::Iterator start)
         SetStartingSequenceControl(i.ReadLsbtohU16());
         i = DeserializeBitmap(i);
         break;
+    case BlockAckType::GCR:
+        SetStartingSequenceControl(i.ReadLsbtohU16());
+        ReadFrom(i, m_baInfo[0].m_address);
+        i = DeserializeBitmap(i);
+        break;
     case BlockAckType::MULTI_STA: {
         std::size_t index = 0;
         while (i.GetRemainingSize() > 0)
@@ -414,7 +465,7 @@ CtrlBAckResponseHeader::Deserialize(Buffer::Iterator start)
             else
             {
                 i.ReadLsbtohU32(); // next 4 bytes are reserved
-                ReadFrom(i, m_baInfo.back().m_ra);
+                ReadFrom(i, m_baInfo.back().m_address);
                 // the length of this Per AID TID Info subfield is 12, so set
                 // the bitmap length to 8 to simulate the correct size
                 m_baType.m_bitmapLen.back() = 8;
@@ -450,7 +501,7 @@ CtrlBAckResponseHeader::SetType(BlockAckType type)
         BaInfoInstance baInfoInstance{.m_aidTidInfo = 0,
                                       .m_startingSeq = 0,
                                       .m_bitmap = std::vector<uint8_t>(bitmapLen, 0),
-                                      .m_ra = Mac48Address()};
+                                      .m_address = Mac48Address()};
 
         m_baInfo.emplace_back(baInfoInstance);
     }
@@ -555,6 +606,12 @@ CtrlBAckResponseHeader::IsMultiSta() const
     return m_baType.m_variant == BlockAckType::MULTI_STA;
 }
 
+bool
+CtrlBAckResponseHeader::IsGcr() const
+{
+    return m_baType.m_variant == BlockAckType::GCR;
+}
+
 void
 CtrlBAckResponseHeader::SetAid11(uint16_t aid, std::size_t index)
 {
@@ -595,7 +652,7 @@ CtrlBAckResponseHeader::SetUnassociatedStaAddress(const Mac48Address& ra, std::s
 {
     NS_ASSERT(GetAid11(index) == 2045);
 
-    m_baInfo[index].m_ra = ra;
+    m_baInfo[index].m_address = ra;
 }
 
 Mac48Address
@@ -603,7 +660,7 @@ CtrlBAckResponseHeader::GetUnassociatedStaAddress(std::size_t index) const
 {
     NS_ASSERT(GetAid11(index) == 2045);
 
-    return m_baInfo[index].m_ra;
+    return m_baInfo[index].m_address;
 }
 
 std::size_t
@@ -630,6 +687,20 @@ CtrlBAckResponseHeader::FindPerAidTidInfoWithAid(uint16_t aid) const
     return ret;
 }
 
+void
+CtrlBAckResponseHeader::SetGcrGroupAddress(const Mac48Address& address)
+{
+    NS_ASSERT(IsGcr());
+    m_baInfo[0].m_address = address;
+}
+
+Mac48Address
+CtrlBAckResponseHeader::GetGcrGroupAddress() const
+{
+    NS_ASSERT(IsGcr());
+    return m_baInfo[0].m_address;
+}
+
 uint16_t
 CtrlBAckResponseHeader::GetBaControl() const
 {
@@ -651,6 +722,9 @@ CtrlBAckResponseHeader::GetBaControl() const
     case BlockAckType::MULTI_TID:
         res |= (0x03 << 1);
         break;
+    case BlockAckType::GCR:
+        res |= (0x06 << 1);
+        break;
     case BlockAckType::MULTI_STA:
         res |= (0x0b << 1);
         break;
@@ -669,7 +743,11 @@ void
 CtrlBAckResponseHeader::SetBaControl(uint16_t ba)
 {
     m_baAckPolicy = ((ba & 0x01) == 1);
-    if (((ba >> 1) & 0x0f) == 0x03)
+    if (((ba >> 1) & 0x0f) == 0x06)
+    {
+        SetType(BlockAckType::GCR);
+    }
+    else if (((ba >> 1) & 0x0f) == 0x03)
     {
         SetType(BlockAckType::MULTI_TID);
     }
@@ -711,7 +789,7 @@ CtrlBAckResponseHeader::GetStartingSequenceControl(std::size_t index) const
     // The Fragment Number subfield encodes the length of the bitmap for Compressed and Multi-STA
     // variants (see sections 9.3.1.8.2 and 9.3.1.8.7 of 802.11ax-2021 and 802.11be Draft 4.0).
     // Note that Fragmentation Level 3 is not supported.
-    if (m_baType.m_variant == BlockAckType::COMPRESSED)
+    if (m_baType.m_variant == BlockAckType::COMPRESSED || m_baType.m_variant == BlockAckType::GCR)
     {
         switch (m_baType.m_bitmapLen[0])
         {
@@ -774,7 +852,7 @@ CtrlBAckResponseHeader::SetStartingSequenceControl(uint16_t seqControl, std::siz
     // The Fragment Number subfield encodes the length of the bitmap for Compressed and Multi-STA
     // variants (see sections 9.3.1.8.2 and 9.3.1.8.7 of 802.11ax-2021 and 802.11be Draft 4.0).
     // Note that Fragmentation Level 3 is not supported.
-    if (m_baType.m_variant == BlockAckType::COMPRESSED)
+    if (m_baType.m_variant == BlockAckType::COMPRESSED || m_baType.m_variant == BlockAckType::GCR)
     {
         uint16_t fragNumber = seqControl & 0x000f;
 
@@ -785,16 +863,16 @@ CtrlBAckResponseHeader::SetStartingSequenceControl(uint16_t seqControl, std::siz
         switch (fragNumber)
         {
         case 0:
-            SetType({BlockAckType::COMPRESSED, {8}});
+            SetType({m_baType.m_variant, {8}});
             break;
         case 4:
-            SetType({BlockAckType::COMPRESSED, {32}});
+            SetType({m_baType.m_variant, {32}});
             break;
         case 8:
-            SetType({BlockAckType::COMPRESSED, {64}});
+            SetType({m_baType.m_variant, {64}});
             break;
         case 10:
-            SetType({BlockAckType::COMPRESSED, {128}});
+            SetType({m_baType.m_variant, {128}});
             break;
         default:
             NS_ABORT_MSG("Unsupported fragment number: " << fragNumber);
@@ -852,6 +930,7 @@ CtrlBAckResponseHeader::SerializeBitmap(Buffer::Iterator start, std::size_t inde
     case BlockAckType::BASIC:
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
+    case BlockAckType::GCR:
     case BlockAckType::MULTI_STA:
         for (const auto& byte : m_baInfo[index].m_bitmap)
         {
@@ -881,6 +960,7 @@ CtrlBAckResponseHeader::DeserializeBitmap(Buffer::Iterator start, std::size_t in
     case BlockAckType::BASIC:
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
+    case BlockAckType::GCR:
     case BlockAckType::MULTI_STA:
         for (uint8_t j = 0; j < m_baType.m_bitmapLen[index]; j++)
         {
@@ -917,6 +997,7 @@ CtrlBAckResponseHeader::SetReceivedPacket(uint16_t seq, std::size_t index)
         break;
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
+    case BlockAckType::GCR:
     case BlockAckType::MULTI_STA: {
         uint16_t i = IndexInBitmap(seq, index);
         m_baInfo[index].m_bitmap[i / 8] |= (uint8_t(0x01) << (i % 8));
@@ -946,6 +1027,7 @@ CtrlBAckResponseHeader::SetReceivedFragment(uint16_t seq, uint8_t frag)
         break;
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
+    case BlockAckType::GCR:
     case BlockAckType::MULTI_STA:
         /* We can ignore this...compressed block ack doesn't support
            acknowledgment of single fragments */
@@ -983,6 +1065,7 @@ CtrlBAckResponseHeader::IsPacketReceived(uint16_t seq, std::size_t index) const
         return false;
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
+    case BlockAckType::GCR:
     case BlockAckType::MULTI_STA: {
         uint16_t i = IndexInBitmap(seq, index);
         uint8_t mask = uint8_t(0x01) << (i % 8);
@@ -1013,6 +1096,7 @@ CtrlBAckResponseHeader::IsFragmentReceived(uint16_t seq, uint8_t frag) const
                0;
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
+    case BlockAckType::GCR:
     case BlockAckType::MULTI_STA:
         /* We can ignore this...compressed block ack doesn't support
            acknowledgement of single fragments */
