@@ -198,7 +198,14 @@ typedef uint8_t WifiInformationElementId;
 #define IE_QUIET_PERIOD_RESPONSE ((WifiInformationElementId)177)
 // 178 to 181 are reserved
 #define IE_ECPAC_POLICY ((WifiInformationElementId)182)
-// 183 to 190 are reserved
+#define IE_CLUSTER_TIME_OFFSET ((WifiInformationElementId)183)
+#define IE_INTRA_ACCESS_CATEGORY_PRIORITY ((WifiInformationElementId)184)
+#define IE_SCS_DESCRIPTOR ((WifiInformationElementId)185)
+#define IE_QLOAD_REPORT ((WifiInformationElementId)186)
+#define IE_HCCA_TXOP_UPDATE_COUNT ((WifiInformationElementId)187)
+#define IE_HIGHER_LAYER_STREAM_ID ((WifiInformationElementId)188)
+#define IE_GCR_GROUP_ADDRESS ((WifiInformationElementId)189)
+#define IE_ANTENNA_SECTOR_ID_PATTERN ((WifiInformationElementId)190)
 #define IE_VHT_CAPABILITIES ((WifiInformationElementId)191)
 #define IE_VHT_OPERATION ((WifiInformationElementId)192)
 #define IE_EXTENDED_BSS_LOAD ((WifiInformationElementId)193)

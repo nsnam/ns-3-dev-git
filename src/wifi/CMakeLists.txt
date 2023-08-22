@@ -46,6 +46,7 @@ set(source_files
     model/fcfs-wifi-queue-scheduler.cc
     model/frame-capture-model.cc
     model/frame-exchange-manager.cc
+    model/gcr-group-address.cc
     model/he/constant-obss-pd-algorithm.cc
     model/he/he-6ghz-band-capabilities.cc
     model/he/he-capabilities.cc
@@ -209,6 +210,7 @@ set(header_files
     model/fcfs-wifi-queue-scheduler.h
     model/frame-capture-model.h
     model/frame-exchange-manager.h
+    model/gcr-group-address.h
     model/he/constant-obss-pd-algorithm.h
     model/he/he-6ghz-band-capabilities.h
     model/he/he-capabilities.h
