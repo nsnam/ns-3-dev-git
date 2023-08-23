@@ -401,7 +401,7 @@ HePhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
     }
     else
     {
-        PhyEntity::StartReceivePreamble(
+        VhtPhy::StartReceivePreamble(
             ppdu,
             rxPowersW,
             ppdu->GetTxDuration()); // The actual duration of the PPDU should be used
@@ -417,7 +417,7 @@ HePhy::CancelAllEvents()
         beginMuPayloadRxEvent.second.Cancel();
     }
     m_beginMuPayloadRxEvents.clear();
-    PhyEntity::CancelAllEvents();
+    VhtPhy::CancelAllEvents();
 }
 
 void
@@ -434,7 +434,7 @@ HePhy::DoAbortCurrentReception(WifiPhyRxfailureReason reason)
     }
     else
     {
-        PhyEntity::DoAbortCurrentReception(reason);
+        VhtPhy::DoAbortCurrentReception(reason);
     }
 }
 
@@ -542,7 +542,7 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
     }
     else
     {
-        event = PhyEntity::DoGetEvent(ppdu, rxPowersW);
+        event = VhtPhy::DoGetEvent(ppdu, rxPowersW);
     }
     return event;
 }
@@ -556,7 +556,7 @@ HePhy::GetAddressedPsduInPpdu(Ptr<const WifiPpdu> ppdu) const
         NS_ASSERT(hePpdu);
         return hePpdu->GetPsdu(GetBssColor(), GetStaId(ppdu));
     }
-    return PhyEntity::GetAddressedPsduInPpdu(ppdu);
+    return VhtPhy::GetAddressedPsduInPpdu(ppdu);
 }
 
 uint8_t
@@ -589,7 +589,7 @@ HePhy::GetStaId(const Ptr<const WifiPpdu> ppdu) const
             return mac->GetAssociationId();
         }
     }
-    return PhyEntity::GetStaId(ppdu);
+    return VhtPhy::GetStaId(ppdu);
 }
 
 PhyEntity::PhyFieldRxStatus
@@ -793,7 +793,7 @@ HePhy::DoStartReceivePayload(Ptr<Event> event)
 
     if (!txVector.IsMu())
     {
-        return PhyEntity::DoStartReceivePayload(event);
+        return VhtPhy::DoStartReceivePayload(event);
     }
 
     NS_ASSERT(txVector.GetModulationClass() >= WIFI_MOD_CLASS_HE);
@@ -827,7 +827,7 @@ HePhy::DoStartReceivePayload(Ptr<Event> event)
         NS_LOG_DEBUG("Ignore HE TB PPDU payload received by STA but keep state in Rx");
         NotifyPayloadBegin(txVector, timeToEndRx);
         m_endRxPayloadEvents.push_back(
-            Simulator::Schedule(timeToEndRx, &PhyEntity::ResetReceive, this, event));
+            Simulator::Schedule(timeToEndRx, &HePhy::ResetReceive, this, event));
         // Cancel all scheduled events for MU payload reception
         NS_ASSERT(!m_beginMuPayloadRxEvents.empty() &&
                   m_beginMuPayloadRxEvents.begin()->second.IsRunning());
@@ -923,7 +923,7 @@ HePhy::DoEndReceivePayload(Ptr<const WifiPpdu> ppdu)
     else
     {
         NS_ASSERT(m_wifiPhy->GetLastRxEndTime() == Simulator::Now());
-        PhyEntity::DoEndReceivePayload(ppdu);
+        VhtPhy::DoEndReceivePayload(ppdu);
     }
     // we are done receiving the payload, we can reset the current MU PPDU UID
     m_currentMuPpduUid = UINT64_MAX;
@@ -962,7 +962,7 @@ HePhy::StartReceiveMuPayload(Ptr<Event> event)
     Ptr<const WifiPsdu> psdu = GetAddressedPsduInPpdu(ppdu);
     ScheduleEndOfMpdus(event);
     m_endRxPayloadEvents.push_back(
-        Simulator::Schedule(payloadDuration, &PhyEntity::EndReceivePayload, this, event));
+        Simulator::Schedule(payloadDuration, &HePhy::EndReceivePayload, this, event));
     uint16_t staId = GetStaId(ppdu);
     m_signalNoiseMap.insert({std::make_pair(ppdu->GetUid(), staId), SignalNoiseDbm()});
     m_statusPerMpduMap.insert({std::make_pair(ppdu->GetUid(), staId), std::vector<bool>()});
@@ -980,7 +980,7 @@ HePhy::GetChannelWidthAndBand(const WifiTxVector& txVector, uint16_t staId) cons
     }
     else
     {
-        return PhyEntity::GetChannelWidthAndBand(txVector, staId);
+        return VhtPhy::GetChannelWidthAndBand(txVector, staId);
     }
 }
 
@@ -1491,7 +1491,7 @@ HePhy::StartTx(Ptr<const WifiPpdu> ppdu)
     }
     else
     {
-        PhyEntity::StartTx(ppdu);
+        VhtPhy::StartTx(ppdu);
     }
 }
 
@@ -1794,7 +1794,7 @@ HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu, uint16_t txChannelWidth) const
     {
         return true;
     }
-    return PhyEntity::CanStartRx(ppdu, txChannelWidth);
+    return VhtPhy::CanStartRx(ppdu, txChannelWidth);
 }
 
 Ptr<const WifiPpdu>
@@ -1832,7 +1832,7 @@ HePhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
             ppdu->UpdateTxVector(txVector);
         }
     }
-    return PhyEntity::GetRxPpduFromTxPpdu(ppdu);
+    return VhtPhy::GetRxPpduFromTxPpdu(ppdu);
 }
 
 WifiSpectrumBandIndices

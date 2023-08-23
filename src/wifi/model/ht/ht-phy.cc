@@ -146,7 +146,7 @@ HtPhy::GetSigMode(WifiPpduField field, const WifiTxVector& txVector) const
     case WIFI_PPDU_FIELD_HT_SIG:
         return GetHtSigMode();
     default:
-        return PhyEntity::GetSigMode(field, txVector);
+        return OfdmPhy::GetSigMode(field, txVector);
     }
 }
 
@@ -242,7 +242,7 @@ HtPhy::GetDuration(WifiPpduField field, const WifiTxVector& txVector) const
     case WIFI_PPDU_FIELD_HT_SIG:
         return GetHtSigDuration();
     default:
-        return PhyEntity::GetDuration(field, txVector);
+        return OfdmPhy::GetDuration(field, txVector);
     }
 }
 
@@ -824,7 +824,7 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     NS_LOG_FUNCTION(this);
     if (m_wifiPhy->GetChannelWidth() < 40)
     {
-        return PhyEntity::GetCcaIndication(ppdu);
+        return OfdmPhy::GetCcaIndication(ppdu);
     }
     double ccaThresholdDbm = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
     Time delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, GetPrimaryBand(20));
