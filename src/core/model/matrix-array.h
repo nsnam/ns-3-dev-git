@@ -243,8 +243,7 @@ class MatrixArray : public ValArray<T>
      * \return Returns a new matrix that is the result of the Hermitian transpose
      */
     template <bool EnableBool = true,
-              typename = typename std::enable_if<(std::is_same<T, std::complex<double>>::value &&
-                                                  EnableBool)>::type>
+              typename = std::enable_if_t<(std::is_same_v<T, std::complex<double>> && EnableBool)>>
     MatrixArray<T> HermitianTranspose() const;
 
   protected:

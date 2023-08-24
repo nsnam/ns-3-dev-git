@@ -332,9 +332,7 @@ bool operator==(const Ptr<T1>& lhs, const Ptr<T2>& rhs);
  * \copydoc operator==(Ptr<T1>const&,Ptr<T2>const&)
  */
 template <typename T1, typename T2>
-typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type operator==(
-    const Ptr<T1>& lhs,
-    T2 rhs);
+std::enable_if_t<std::is_same_v<T2, std::nullptr_t>, bool> operator==(const Ptr<T1>& lhs, T2 rhs);
 
 /**
  * \ingroup ptr
@@ -373,9 +371,7 @@ bool operator!=(const Ptr<T1>& lhs, const Ptr<T2>& rhs);
  * \copydoc operator==(Ptr<T1>const&,Ptr<T2>const&)
  */
 template <typename T1, typename T2>
-typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type operator!=(
-    const Ptr<T1>& lhs,
-    T2 rhs);
+std::enable_if_t<std::is_same_v<T2, std::nullptr_t>, bool> operator!=(const Ptr<T1>& lhs, T2 rhs);
 
 /**
  * \ingroup ptr
@@ -549,14 +545,14 @@ operator!=(const Ptr<T1>& lhs, const Ptr<T2>& rhs)
 }
 
 template <typename T1, typename T2>
-typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type
+std::enable_if_t<std::is_same_v<T2, std::nullptr_t>, bool>
 operator==(const Ptr<T1>& lhs, T2 rhs)
 {
     return PeekPointer(lhs) == nullptr;
 }
 
 template <typename T1, typename T2>
-typename std::enable_if<std::is_same<T2, std::nullptr_t>::value, bool>::type
+std::enable_if_t<std::is_same_v<T2, std::nullptr_t>, bool>
 operator!=(const Ptr<T1>& lhs, T2 rhs)
 {
     return PeekPointer(lhs) != nullptr;

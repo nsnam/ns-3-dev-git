@@ -228,12 +228,10 @@ class Simulator
      * @param [in] args Arguments to pass to MakeEvent.
      * @returns The id for the scheduled event.
      */
-    template <
-        typename FUNC,
-        typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value, int>::type = 0,
-        typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,
-                                int>::type = 0,
-        typename... Ts>
+    template <typename FUNC,
+              std::enable_if_t<!std::is_convertible_v<FUNC, Ptr<EventImpl>>, int> = 0,
+              std::enable_if_t<!std::is_function_v<std::remove_pointer_t<FUNC>>, int> = 0,
+              typename... Ts>
     static EventId Schedule(const Time& delay, FUNC f, Ts&&... args);
 
     /**
@@ -276,12 +274,10 @@ class Simulator
      * @param [in] f The function to invoke.
      * @param [in] args Arguments to pass to MakeEvent.
      */
-    template <
-        typename FUNC,
-        typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value, int>::type = 0,
-        typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,
-                                int>::type = 0,
-        typename... Ts>
+    template <typename FUNC,
+              std::enable_if_t<!std::is_convertible_v<FUNC, Ptr<EventImpl>>, int> = 0,
+              std::enable_if_t<!std::is_function_v<std::remove_pointer_t<FUNC>>, int> = 0,
+              typename... Ts>
     static void ScheduleWithContext(uint32_t context, const Time& delay, FUNC f, Ts&&... args);
 
     /**
@@ -321,12 +317,10 @@ class Simulator
      * @param [in] args Arguments to pass to the invoked function.
      * @return The EventId of the scheduled event.
      */
-    template <
-        typename FUNC,
-        typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value, int>::type = 0,
-        typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,
-                                int>::type = 0,
-        typename... Ts>
+    template <typename FUNC,
+              std::enable_if_t<!std::is_convertible_v<FUNC, Ptr<EventImpl>>, int> = 0,
+              std::enable_if_t<!std::is_function_v<std::remove_pointer_t<FUNC>>, int> = 0,
+              typename... Ts>
     static EventId ScheduleNow(FUNC f, Ts&&... args);
 
     /**
@@ -365,12 +359,10 @@ class Simulator
      * @param [in] args Arguments to pass to MakeEvent.
      * @return The EventId of the scheduled event.
      */
-    template <
-        typename FUNC,
-        typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value, int>::type = 0,
-        typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,
-                                int>::type = 0,
-        typename... Ts>
+    template <typename FUNC,
+              std::enable_if_t<!std::is_convertible_v<FUNC, Ptr<EventImpl>>, int> = 0,
+              std::enable_if_t<!std::is_function_v<std::remove_pointer_t<FUNC>>, int> = 0,
+              typename... Ts>
     static EventId ScheduleDestroy(FUNC f, Ts&&... args);
 
     /**
@@ -558,12 +550,10 @@ namespace ns3
 // it treats the in-class declaration as different from the
 // out of class definition, so makes two entries in the member list.  Ugh
 
-template <
-    typename FUNC,
-    typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value, int>::type,
-    typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,
-                            int>::type,
-    typename... Ts>
+template <typename FUNC,
+          std::enable_if_t<!std::is_convertible_v<FUNC, Ptr<EventImpl>>, int>,
+          std::enable_if_t<!std::is_function_v<std::remove_pointer_t<FUNC>>, int>,
+          typename... Ts>
 EventId
 Simulator::Schedule(const Time& delay, FUNC f, Ts&&... args)
 {
@@ -577,12 +567,10 @@ Simulator::Schedule(const Time& delay, void (*f)(Us...), Ts&&... args)
     return DoSchedule(delay, MakeEvent(f, std::forward<Ts>(args)...));
 }
 
-template <
-    typename FUNC,
-    typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value, int>::type,
-    typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,
-                            int>::type,
-    typename... Ts>
+template <typename FUNC,
+          std::enable_if_t<!std::is_convertible_v<FUNC, Ptr<EventImpl>>, int>,
+          std::enable_if_t<!std::is_function_v<std::remove_pointer_t<FUNC>>, int>,
+          typename... Ts>
 void
 Simulator::ScheduleWithContext(uint32_t context, const Time& delay, FUNC f, Ts&&... args)
 {
@@ -596,12 +584,10 @@ Simulator::ScheduleWithContext(uint32_t context, const Time& delay, void (*f)(Us
     return ScheduleWithContext(context, delay, MakeEvent(f, std::forward<Ts>(args)...));
 }
 
-template <
-    typename FUNC,
-    typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value, int>::type,
-    typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,
-                            int>::type,
-    typename... Ts>
+template <typename FUNC,
+          std::enable_if_t<!std::is_convertible_v<FUNC, Ptr<EventImpl>>, int>,
+          std::enable_if_t<!std::is_function_v<std::remove_pointer_t<FUNC>>, int>,
+          typename... Ts>
 EventId
 Simulator::ScheduleNow(FUNC f, Ts&&... args)
 {
@@ -615,12 +601,10 @@ Simulator::ScheduleNow(void (*f)(Us...), Ts&&... args)
     return DoScheduleNow(MakeEvent(f, std::forward<Ts>(args)...));
 }
 
-template <
-    typename FUNC,
-    typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value, int>::type,
-    typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,
-                            int>::type,
-    typename... Ts>
+template <typename FUNC,
+          std::enable_if_t<!std::is_convertible_v<FUNC, Ptr<EventImpl>>, int>,
+          std::enable_if_t<!std::is_function_v<std::remove_pointer_t<FUNC>>, int>,
+          typename... Ts>
 EventId
 Simulator::ScheduleDestroy(FUNC f, Ts&&... args)
 {
