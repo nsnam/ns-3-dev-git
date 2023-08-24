@@ -403,8 +403,8 @@ main(int argc, char* argv[])
     std::ofstream outfile("throughput-" + outputFileName + ".plt");
     Gnuplot gnuplot = Gnuplot("throughput-" + outputFileName + ".eps", "Throughput");
     gnuplot.SetTerminal("post eps color enhanced");
-    gnuplot.SetLegend("Time (seconds)", "Throughput (Mb/s)");
-    gnuplot.SetTitle("Throughput (AP to STA) vs time");
+    gnuplot.SetLegend("Distance (meters)", "Throughput (Mb/s)");
+    gnuplot.SetTitle("Throughput (AP to STA) vs distance");
     gnuplot.AddDataset(atpCounter.GetDatafile());
     gnuplot.GenerateOutput(outfile);
 
