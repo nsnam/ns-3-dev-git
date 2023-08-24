@@ -1417,3 +1417,14 @@ of rules that should be observed while developing code.
 
 - Prefer to use ``static_assert()`` over ``NS_ASSERT()`` when conditions can be
   evaluated at compile-time.
+
+- Prefer using transparent functors to non-transparent ones, to avoid repeating
+  the type name. This improves readability and avoids errors when refactoring code.
+
+  .. sourcecode:: cpp
+
+    // Prefer using transparent functors
+    std::map<MyClass, int, std::less<>> myMap;
+
+    // Avoid repeating the type name "MyClass" in std::less<>
+    std::map<MyClass, int, std::less<MyClass>> myMap;
