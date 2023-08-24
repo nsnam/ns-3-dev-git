@@ -173,3 +173,48 @@ Running test.py will cause all of the examples and tests to be run:
 .. sourcecode:: text
 
   170 of 170 tests passed (170 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
+
+
+Enable examples and tests that depend on a set of modules using |ns3|
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+As seen above, the following command only builds the requested modules (core and wifi),
+plus any modules that are implicitly needed (e.g., network), and the resulting compatible examples and tests:
+
+.. sourcecode:: terminal
+
+  ./ns3 configure --enable-modules="wifi;core" --enable-examples --enable-tests
+
+However, when developing a new module, you may prefer to use the following alternative, which builds
+all module libraries, but will filter out any examples and tests from modules that are not explicitly listed.
+
+.. sourcecode:: terminal
+
+  ./ns3 configure --filter-module-examples-and-tests="wifi;core" --enable-examples --enable-tests
+
+The first command will generally lead to a shorter build time, but the second option will provide better
+coverage, by building additional test cases and examples directly related to the specified modules.
+
+Enable examples and tests that depend on a set of modules using the |ns3| configuration file
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+As seen above, examples and tests can be enabled for just a subset of the available modules via the
+``ns3`` script. The same can be accomplished via the ``.ns3rc`` configuration file.
+
+.. sourcecode:: cmake
+
+    # A list of the modules that will be enabled when ns-3 is run.
+    # Modules that depend on the listed modules will be enabled also.
+    #
+    # All modules can be enabled by emptying the list.
+    set(ns3rc_enabled_modules)
+
+    # ...
+
+    # Override other ns-3 settings by setting their values below
+    # Note: command-line settings will also be overridden.
+    #set(NS3_LOG ON)
+
+    # The following will build core and wifi tests, plus their examples
+    # and examples on /ns-3-dev/examples that depend on either of them
+    set(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS wifi core) # <==

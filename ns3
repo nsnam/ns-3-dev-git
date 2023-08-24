@@ -167,13 +167,14 @@ def parse_args(argv):
         parser_configure = on_off_argument(parser_configure, *on_off_option)
 
     parser_configure.add_argument('--enable-modules',
-                                  help='List of modules to build (e.g. core;network;internet)',
+                                  help='List of modules to build (e.g. \"core;network;internet\")',
                                   action="store", type=str, default=None)
     parser_configure.add_argument('--disable-modules',
-                                  help='List of modules not to build (e.g. lte;wimax)',
+                                  help='List of modules not to build (e.g. \"lte;wimax\")',
                                   action="store", type=str, default=None)
     parser_configure.add_argument('--filter-module-examples-and-tests',
-                                  help='List of modules that should have their examples and tests built (e.g. lte;wifi)',
+                                  help=('List of modules that should have their examples '
+                                        'and tests built (e.g. \"lte;wifi\")'),
                                   action="store", type=str, default=None)
     parser_configure.add_argument('--lcov-report',
                                   help=('Generate a code coverage report '
