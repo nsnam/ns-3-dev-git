@@ -155,7 +155,7 @@ def extract_linked_libraries(library_name: str, prefix: str) -> tuple:
     linked_libs = []
     # First discover which 3rd-party libraries are used by the current module
     try:
-        with open(os.path.abspath(library_path), "rb", encoding="utf-8") as f:
+        with open(os.path.abspath(library_path), "rb") as f:
             linked_libs = re.findall(b"\x00(lib.*?.%b)" % LIBRARY_EXTENSION.encode("utf-8"), f.read())
     except Exception as e:
         print("Failed to extract libraries used by {library} with exception:{exception}"
