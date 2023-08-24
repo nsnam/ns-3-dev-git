@@ -22,7 +22,11 @@
 #ifndef MGT_ACTION_HEADERS_H
 #define MGT_ACTION_HEADERS_H
 
+#include "reduced-neighbor-report.h"
 #include "status-code.h"
+#include "tim.h"
+#include "wifi-opt-field.h"
+#include "wifi-standards.h"
 
 #include "ns3/header.h"
 
@@ -99,6 +103,7 @@ class WifiActionHeader : public Header
     {
         QAB_REQUEST = 16,
         QAB_RESPONSE = 17,
+        FILS_DISCOVERY = 34
     };
 
     /// RadioMeasurementActionValue enumeration
@@ -665,6 +670,175 @@ class MgtEmlOmn : public Header
     EmlControl m_emlControl{};                            //!< EML Control field
     std::optional<EmlsrParamUpdate> m_emlsrParamUpdate{}; //!< EMLSR Parameter Update field
 };
+
+/**
+ * \ingroup wifi
+ * Implement the FILS (Fast Initial Link Setup) action frame.
+ * See sec. 9.6.7.36 of IEEE 802.11-2020 and IEEE 802.11ax-2021.
+ */
+class FilsDiscHeader : public Header
+{
+  public:
+    FilsDiscHeader();
+
+    /// \return the object TypeId
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
+    void Print(std::ostream& os) const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
+
+    /**
+     * Set the SSID field.
+     *
+     * \param ssid the SSID
+     */
+    void SetSsid(const std::string& ssid);
+
+    /// \return the SSID
+    const std::string& GetSsid() const;
+
+    /// \return size of FILS Discovery Information field in octets
+    uint32_t GetInformationFieldSize() const;
+
+    /// \return size of non-optional subfields in octets
+    uint32_t GetSizeNonOptSubfields() const;
+
+    /// \brief sets value of Length subfield
+    void SetLengthSubfield();
+
+    /// FILS Discovery Frame Control subfield of FILS Discovery Information field
+    struct FilsDiscFrameControl // 2 octets
+    {
+        uint8_t m_ssidLen : 5 {0};               ///< SSID Length
+        bool m_capPresenceInd{false};            ///< Capability Presence Indicator
+        uint8_t m_shortSsidInd : 1 {0};          ///< Short SSID Indicator (not supported)
+        bool m_apCsnPresenceInd{false};          ///< AP-CSN Presence Indicator
+        bool m_anoPresenceInd{false};            ///< ANO Presence Indicator
+        bool m_chCntrFreqSeg1PresenceInd{false}; ///< Channel Center Frequency Segment 1
+                                                 ///< Presence Indicator
+        bool m_primChPresenceInd{false};         ///< Primary Channel Presence Indicator
+        uint8_t m_rsnInfoPresenceInd : 1 {0};    ///< RSN info Presence Indicator (not supported)
+        bool m_lenPresenceInd{false};            ///< Length Presence Indicator
+        uint8_t m_mdPresenceInd : 1 {0};         ///< MD Presence Indicator (not supported)
+        uint8_t m_reserved : 2 {0};              ///< Reserved Bits
+
+        /**
+         * \brief serialize content to a given buffer
+         * \param start given input buffer iterator
+         */
+        void Serialize(Buffer::Iterator& start) const;
+
+        /**
+         * \brief read content from a given buffer
+         * \param start input buffer iterator
+         * \return number of read octets
+         */
+        uint32_t Deserialize(Buffer::Iterator start);
+    };
+
+    /// FD Capability subfield of FILS Discovery Information field
+    struct FdCapability // 2 octets
+    {
+        uint8_t m_ess : 1 {0};                   ///< ESS
+        uint8_t m_privacy : 1 {0};               ///< Privacy
+        uint8_t m_chWidth : 3 {0};               ///< BSS Operating Channel Width
+        uint8_t m_maxNss : 3 {0};                ///< Maximum Number of Spatial Streams
+        uint8_t m_reserved : 1 {0};              ///< Reserved Bit
+        uint8_t m_multiBssidPresenceInd : 1 {0}; ///< Multiple BSSIDs Presence Indicator
+        uint8_t m_phyIdx : 3 {0};                ///< PHY Index
+        uint8_t m_minRate : 3 {0};               ///< FILS Minimum Rate
+
+        /**
+         * \brief Set the BSS Operating Channel Width field based on the operating channel width
+         * \param width the operating channel width in MHz
+         */
+        void SetOpChannelWidth(uint16_t width);
+
+        /// \return the operating channel width encoded in the BSS Operating Channel Width field
+        uint16_t GetOpChannelWidth() const;
+
+        /**
+         * \brief Set the Maximum Number of Spatial Streams field
+         * \param maxNss the maximum number of supported spatial streams
+         */
+        void SetMaxNss(uint8_t maxNss);
+
+        /**
+         * Note that this function returns 5 if the maximum number of supported spatial streams
+         * is greater than 4.
+         *
+         * \return the maximum number of supported spatial streams
+         */
+        uint8_t GetMaxNss() const;
+
+        /**
+         * \brief Set the PHY Index field based on the given wifi standard
+         * \param standard the wifi standard
+         */
+        void SetStandard(WifiStandard standard);
+
+        /**
+         * \param band the PHY band in which the device is operating (needed to distinguish
+         *             between 802.11a and 802.11g)
+         * \return the wifi standard encoded in the PHY Index field
+         */
+        WifiStandard GetStandard(WifiPhyBand band) const;
+
+        /**
+         * \brief serialize content to a given buffer
+         * \param start given input buffer iterator
+         */
+        void Serialize(Buffer::Iterator& start) const;
+
+        /**
+         * \brief read content from a given buffer
+         * \param start input buffer iterator
+         * \return number of read octets
+         */
+        uint32_t Deserialize(Buffer::Iterator start);
+    };
+
+    // FILS Discovery Frame Information field
+    // TODO: add optional FD-RSN and Mobility domain subfields
+    FilsDiscFrameControl m_frameCtl;               ///< FILS Discovery Frame Control
+    uint64_t m_timeStamp{0};                       ///< Timestamp
+    uint16_t m_beaconInt{0};                       ///< Beacon Interval in TU (1024 us)
+    OptFieldWithPresenceInd<uint8_t> m_len;        ///< Length
+    OptFieldWithPresenceInd<FdCapability> m_fdCap; ///< FD Capability
+    std::optional<uint8_t> m_opClass;              ///< Operating Class
+    OptFieldWithPresenceInd<uint8_t> m_primaryCh;  ///< Primary Channel
+    OptFieldWithPresenceInd<uint8_t>
+        m_apConfigSeqNum;                            ///< AP Configuration Sequence Number (AP-CSN)
+    OptFieldWithPresenceInd<uint8_t> m_accessNetOpt; ///< Access Network Options
+    OptFieldWithPresenceInd<uint8_t> m_chCntrFreqSeg1; ///< Channel Center Frequency Segment 1
+
+    // (Optional) Information Elements
+    std::optional<ReducedNeighborReport> m_rnr; ///< Reduced Neighbor Report
+    std::optional<Tim> m_tim;                   ///< Traffic Indication Map element
+
+  private:
+    std::string m_ssid; ///< SSID
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the output stream
+ * \param control the Fils Discovery Frame Control field
+ * \returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, const FilsDiscHeader::FilsDiscFrameControl& control);
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the output stream
+ * \param capability the Fils Discovery Frame Capability field
+ * \returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, const FilsDiscHeader::FdCapability& capability);
 
 } // namespace ns3
 
