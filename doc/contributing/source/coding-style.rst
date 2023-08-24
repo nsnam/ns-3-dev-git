@@ -1415,6 +1415,21 @@ of rules that should be observed while developing code.
     MyClass myClass;
     MyClass.StaticFunction();
 
+- Prefer using type traits in short form ``traits_t<...>`` and ``traits_v<...>``,
+  instead of the long form ``traits<...>::type`` and ``traits<...>::value``, respectively.
+
+  .. sourcecode:: cpp
+
+    // Prefer using the shorter version of type traits
+    std::is_same_v<int, float>
+    std::is_integral_v<T>
+    std::enable_if_t<std::is_integral_v<T>, Time>
+
+    // Avoid the longer form of type traits
+    std::is_same<int, float>::value
+    std::is_integral<T>::value
+    std::enable_if<std::is_integral<T>::value, Time>::type
+
 - Prefer to use ``static_assert()`` over ``NS_ASSERT()`` when conditions can be
   evaluated at compile-time.
 
