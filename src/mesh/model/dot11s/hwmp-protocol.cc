@@ -841,8 +841,7 @@ HwmpProtocol::DropDataFrame(uint32_t seqno, Mac48Address source)
         NS_LOG_DEBUG("Dropping seqno " << seqno << "; from self");
         return true;
     }
-    std::map<Mac48Address, uint32_t, std::less<Mac48Address>>::const_iterator i =
-        m_lastDataSeqno.find(source);
+    const auto i = m_lastDataSeqno.find(source);
     if (i == m_lastDataSeqno.end())
     {
         m_lastDataSeqno[source] = seqno;

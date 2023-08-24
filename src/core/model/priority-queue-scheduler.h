@@ -90,7 +90,7 @@ class PriorityQueueScheduler : public Scheduler
      */
     class EventPriorityQueue : public std::priority_queue<Scheduler::Event,
                                                           std::vector<Scheduler::Event>,
-                                                          std::greater<Scheduler::Event>>
+                                                          std::greater<>>
     {
       public:
         /**

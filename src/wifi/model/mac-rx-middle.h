@@ -111,25 +111,21 @@ class MacRxMiddle : public SimpleRefCount<MacRxMiddle>
     /**
      * typedef for a map between address and OriginatorRxStatus
      */
-    typedef std::map<Mac48Address, OriginatorRxStatus*, std::less<Mac48Address>> Originators;
+    typedef std::map<Mac48Address, OriginatorRxStatus*, std::less<>> Originators;
     /**
      * typedef for a map between address, OriginatorRxStatus, and Traffic ID
      */
-    typedef std::map<std::pair<Mac48Address, uint8_t>,
-                     OriginatorRxStatus*,
-                     std::less<std::pair<Mac48Address, uint8_t>>>
+    typedef std::map<std::pair<Mac48Address, uint8_t>, OriginatorRxStatus*, std::less<>>
         QosOriginators;
     /**
      * typedef for an iterator for Originators
      */
-    typedef std::map<Mac48Address, OriginatorRxStatus*, std::less<Mac48Address>>::iterator
-        OriginatorsI;
+    typedef std::map<Mac48Address, OriginatorRxStatus*, std::less<>>::iterator OriginatorsI;
     /**
      * typedef for an iterator for QosOriginators
      */
-    typedef std::map<std::pair<Mac48Address, uint8_t>,
-                     OriginatorRxStatus*,
-                     std::less<std::pair<Mac48Address, uint8_t>>>::iterator QosOriginatorsI;
+    typedef std::map<std::pair<Mac48Address, uint8_t>, OriginatorRxStatus*, std::less<>>::iterator
+        QosOriginatorsI;
 
     Originators m_originatorStatus;       ///< originator status
     QosOriginators m_qosOriginatorStatus; ///< QOS originator status

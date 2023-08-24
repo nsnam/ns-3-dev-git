@@ -1038,7 +1038,7 @@ class WifiMac : public Object
     /** This type defines a mapping between an Access Category index,
     and a pointer to the corresponding channel access function.
     Access Categories are sorted in decreasing order of priority. */
-    typedef std::map<AcIndex, Ptr<QosTxop>, std::greater<AcIndex>> EdcaQueues;
+    typedef std::map<AcIndex, Ptr<QosTxop>, std::greater<>> EdcaQueues;
 
     /** This is a map from Access Category index to the corresponding
     channel access function */
