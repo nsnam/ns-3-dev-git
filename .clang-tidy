@@ -18,6 +18,7 @@ Checks: >
   modernize-make-shared,
   modernize-make-unique,
   modernize-redundant-void-arg,
+  modernize-type-traits,
   modernize-use-emplace,
   modernize-use-equals-delete,
   modernize-use-nullptr,
