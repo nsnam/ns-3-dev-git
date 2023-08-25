@@ -42,6 +42,11 @@ namespace ns3
  * of the model, we rebound on the boundary with a reflexive angle
  * and speed. This model is often identified as a brownian motion
  * model.
+ *
+ * The Direction random variable is used for any point strictly
+ * inside the boundaries. The points on the boundary have their
+ * direction chosen randomly, without considering the Direction
+ * Attribute.
  */
 class RandomWalk2dMobilityModel : public MobilityModel
 {

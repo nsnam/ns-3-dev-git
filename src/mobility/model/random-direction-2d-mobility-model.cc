@@ -117,23 +117,36 @@ RandomDirection2dMobilityModel::SetDirectionAndSpeed(double direction)
 void
 RandomDirection2dMobilityModel::ResetDirectionAndSpeed()
 {
-    double direction = m_direction->GetValue(0, M_PI);
+    double direction = 0;
 
     m_helper.UpdateWithBounds(m_bounds);
     Vector position = m_helper.GetCurrentPosition();
-    switch (m_bounds.GetClosestSide(position))
+    switch (m_bounds.GetClosestSideOrCorner(position))
     {
-    case Rectangle::RIGHT:
+    case Rectangle::RIGHTSIDE:
+        direction = m_direction->GetValue(M_PI_2, M_PI + M_PI_2);
+        break;
+    case Rectangle::LEFTSIDE:
+        direction = m_direction->GetValue(-M_PI_2, M_PI - M_PI_2);
+        break;
+    case Rectangle::TOPSIDE:
+        direction = m_direction->GetValue(M_PI, 2 * M_PI);
+        break;
+    case Rectangle::BOTTOMSIDE:
+        direction = m_direction->GetValue(0, M_PI);
+        break;
+    case Rectangle::TOPRIGHTCORNER:
+        direction = m_direction->GetValue(M_PI, M_PI + M_PI_2);
+        break;
+    case Rectangle::TOPLEFTCORNER:
+        direction = m_direction->GetValue(M_PI + M_PI_2, 2 * M_PI);
+        break;
+    case Rectangle::BOTTOMRIGHTCORNER:
+        direction = m_direction->GetValue(0, M_PI_2);
         direction += M_PI / 2;
         break;
-    case Rectangle::LEFT:
-        direction += -M_PI / 2;
-        break;
-    case Rectangle::TOP:
-        direction += M_PI;
-        break;
-    case Rectangle::BOTTOM:
-        direction += 0.0;
+    case Rectangle::BOTTOMLEFTCORNER:
+        direction = m_direction->GetValue(M_PI_2, M_PI);
         break;
     }
     SetDirectionAndSpeed(direction);

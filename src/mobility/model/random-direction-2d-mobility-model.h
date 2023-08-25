@@ -40,7 +40,7 @@ namespace ns3
  * pauses for a specific delay, chooses a random direction and speed and
  * then travels in the specific direction until it reaches one of
  * the boundaries of the model. When it reaches the boundary, it pauses,
- * selects a new direction and speed, aso.
+ * and selects a new direction and speed.
  */
 class RandomDirection2dMobilityModel : public MobilityModel
 {

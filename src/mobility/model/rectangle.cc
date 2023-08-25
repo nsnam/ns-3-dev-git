@@ -61,7 +61,7 @@ Rectangle::IsOnTheBorder(const Vector& position) const
 }
 
 Rectangle::Side
-Rectangle::GetClosestSide(const Vector& position) const
+Rectangle::GetClosestSideOrCorner(const Vector& position) const
 {
     std::array<double, 4> distanceFromBorders{
         std::abs(position.x - this->xMin), // left border

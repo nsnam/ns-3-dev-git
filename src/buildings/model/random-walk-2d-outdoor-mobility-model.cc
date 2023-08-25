@@ -31,6 +31,7 @@
 #include "ns3/uinteger.h"
 
 #include <cmath>
+#include <limits>
 
 namespace ns3
 {
@@ -132,6 +133,11 @@ RandomWalk2dOutdoorMobilityModel::DoInitializePrivate()
 void
 RandomWalk2dOutdoorMobilityModel::DoWalk(Time delayLeft)
 {
+    if (delayLeft.IsNegative())
+    {
+        NS_LOG_INFO(this << " Ran out of time");
+        return;
+    }
     NS_LOG_FUNCTION(this << delayLeft.GetSeconds());
 
     Vector position = m_helper.GetCurrentPosition();
@@ -160,7 +166,18 @@ RandomWalk2dOutdoorMobilityModel::DoWalk(Time delayLeft)
             NS_LOG_LOGIC("NextPosition would lead into a building");
             nextPosition =
                 CalculateIntersectionFromOutside(position, nextPosition, building->GetBoundaries());
-            Time delay = Seconds((nextPosition.x - position.x) / speed.x);
+
+            double delaySecondsX = std::numeric_limits<double>::max();
+            double delaySecondsY = std::numeric_limits<double>::max();
+            if (speed.x != 0)
+            {
+                delaySecondsX = std::abs((nextPosition.x - position.x) / speed.x);
+            }
+            if (speed.y != 0)
+            {
+                delaySecondsY = std::abs((nextPosition.y - position.y) / speed.y);
+            }
+            Time delay = Seconds(std::min(delaySecondsX, delaySecondsY));
             m_event = Simulator::Schedule(delay,
                                           &RandomWalk2dOutdoorMobilityModel::AvoidBuilding,
                                           this,
@@ -179,7 +196,24 @@ RandomWalk2dOutdoorMobilityModel::DoWalk(Time delayLeft)
 
         if (outdoor)
         {
-            Time delay = Seconds((nextPosition.x - position.x) / speed.x);
+            double delaySeconds = std::numeric_limits<double>::max();
+            if (speed.x != 0)
+            {
+                delaySeconds =
+                    std::min(delaySeconds, std::abs((nextPosition.x - position.x) / speed.x));
+            }
+            else if (speed.y != 0)
+            {
+                delaySeconds =
+                    std::min(delaySeconds, std::abs((nextPosition.y - position.y) / speed.y));
+            }
+            else
+            {
+                NS_ABORT_MSG("RandomWalk2dOutdoorMobilityModel::DoWalk: unable to calculate the "
+                             "rebound time "
+                             "(the node is stationary).");
+            }
+            Time delay = Seconds(delaySeconds);
             m_event = Simulator::Schedule(delay,
                                           &RandomWalk2dOutdoorMobilityModel::Rebound,
                                           this,
@@ -190,7 +224,28 @@ RandomWalk2dOutdoorMobilityModel::DoWalk(Time delayLeft)
             NS_LOG_LOGIC("NextPosition would lead into a building");
             nextPosition =
                 CalculateIntersectionFromOutside(position, nextPosition, building->GetBoundaries());
-            Time delay = Seconds((nextPosition.x - position.x) / speed.x);
+
+            double delaySecondsX = std::numeric_limits<double>::max();
+            double delaySecondsY = std::numeric_limits<double>::max();
+            if (speed.x != 0)
+            {
+                delaySecondsX =
+                    std::min(delaySecondsX, std::abs((nextPosition.x - position.x) / speed.x));
+            }
+            if (speed.y != 0)
+            {
+                delaySecondsY =
+                    std::min(delaySecondsY, std::abs((nextPosition.y - position.y) / speed.y));
+            }
+            if (delaySecondsX == std::numeric_limits<double>::max() &&
+                delaySecondsY == std::numeric_limits<double>::max())
+            {
+                NS_ABORT_MSG("RandomWalk2dOutdoorMobilityModel::DoWalk: unable to calculate the "
+                             "rebound time "
+                             "(the node is stationary).");
+            }
+
+            Time delay = Seconds(std::min(delaySecondsX, delaySecondsY));
             m_event = Simulator::Schedule(delay,
                                           &RandomWalk2dOutdoorMobilityModel::AvoidBuilding,
                                           this,
@@ -250,44 +305,72 @@ RandomWalk2dOutdoorMobilityModel::CalculateIntersectionFromOutside(const Vector&
 
     // get the closest side
     Rectangle rect = Rectangle(boundaries.xMin, boundaries.xMax, boundaries.yMin, boundaries.yMax);
-    NS_LOG_INFO("rect " << rect);
-    Rectangle::Side closestSide = rect.GetClosestSide(current);
+    NS_LOG_DEBUG("rect " << rect);
+    Rectangle::Side closestSide = rect.GetClosestSideOrCorner(current);
 
     double xIntersect = 0;
     double yIntersect = 0;
 
     switch (closestSide)
     {
-    case Rectangle::RIGHT:
-        NS_LOG_INFO("The closest side is RIGHT");
-        NS_ABORT_MSG_IF(next.x - current.x == 0, "x position not updated");
+    case Rectangle::RIGHTSIDE:
+        NS_LOG_DEBUG("The closest side is RIGHT");
         xIntersect = boundaries.xMax + m_epsilon;
+        NS_ABORT_MSG_IF(next.x - current.x == 0, "x position not updated");
         yIntersect =
             (next.y - current.y) / (next.x - current.x) * (xIntersect - current.x) + current.y;
         break;
-    case Rectangle::LEFT:
-        NS_LOG_INFO("The closest side is LEFT");
+    case Rectangle::LEFTSIDE:
+        NS_LOG_DEBUG("The closest side is LEFT");
         xIntersect = boundaries.xMin - m_epsilon;
         NS_ABORT_MSG_IF(next.x - current.x == 0, "x position not updated");
         yIntersect =
             (next.y - current.y) / (next.x - current.x) * (xIntersect - current.x) + current.y;
         break;
-    case Rectangle::TOP:
-        NS_LOG_INFO("The closest side is TOP");
+    case Rectangle::TOPSIDE:
+        NS_LOG_DEBUG("The closest side is TOP");
         yIntersect = boundaries.yMax + m_epsilon;
         NS_ABORT_MSG_IF(next.y - current.y == 0, "y position not updated");
         xIntersect =
             (next.x - current.x) / (next.y - current.y) * (yIntersect - current.y) + current.x;
         break;
-    case Rectangle::BOTTOM:
-        NS_LOG_INFO("The closest side is BOTTOM");
+    case Rectangle::BOTTOMSIDE:
+        NS_LOG_DEBUG("The closest side is BOTTOM");
         yIntersect = boundaries.yMin - m_epsilon;
         NS_ABORT_MSG_IF(next.y - current.y == 0, "y position not updated");
         xIntersect =
             (next.x - current.x) / (next.y - current.y) * (yIntersect - current.y) + current.x;
         break;
+    case Rectangle::TOPRIGHTCORNER:
+        NS_LOG_DEBUG("The closest side is TOPRIGHT");
+        xIntersect = boundaries.xMax + m_epsilon;
+        NS_ABORT_MSG_IF(next.x - current.x == 0, "x position not updated");
+        yIntersect = boundaries.yMax + m_epsilon;
+        NS_ABORT_MSG_IF(next.y - current.y == 0, "y position not updated");
+        break;
+    case Rectangle::TOPLEFTCORNER:
+        NS_LOG_DEBUG("The closest side is TOPLEFT");
+        xIntersect = boundaries.xMin - m_epsilon;
+        NS_ABORT_MSG_IF(next.x - current.x == 0, "x position not updated");
+        yIntersect = boundaries.yMax + m_epsilon;
+        NS_ABORT_MSG_IF(next.y - current.y == 0, "y position not updated");
+        break;
+    case Rectangle::BOTTOMRIGHTCORNER:
+        NS_LOG_DEBUG("The closest side is BOTTOMRIGHT");
+        xIntersect = boundaries.xMax + m_epsilon;
+        NS_ABORT_MSG_IF(next.x - current.x == 0, "x position not updated");
+        yIntersect = boundaries.yMin - m_epsilon;
+        NS_ABORT_MSG_IF(next.y - current.y == 0, "y position not updated");
+        break;
+    case Rectangle::BOTTOMLEFTCORNER:
+        NS_LOG_DEBUG("The closest side is BOTTOMLEFT");
+        xIntersect = boundaries.xMin - m_epsilon;
+        NS_ABORT_MSG_IF(next.x - current.x == 0, "x position not updated");
+        yIntersect = boundaries.yMin - m_epsilon;
+        NS_ABORT_MSG_IF(next.y - current.y == 0, "y position not updated");
+        break;
     }
-    NS_LOG_INFO("xIntersect " << xIntersect << " yIntersect " << yIntersect);
+    NS_LOG_DEBUG("xIntersect " << xIntersect << " yIntersect " << yIntersect);
     return Vector(xIntersect, yIntersect, 0);
 }
 
@@ -298,19 +381,26 @@ RandomWalk2dOutdoorMobilityModel::Rebound(Time delayLeft)
     m_helper.UpdateWithBounds(m_bounds);
     Vector position = m_helper.GetCurrentPosition();
     Vector speed = m_helper.GetVelocity();
-    switch (m_bounds.GetClosestSide(position))
+    switch (m_bounds.GetClosestSideOrCorner(position))
     {
-    case Rectangle::RIGHT:
-        NS_LOG_INFO("The closest side is RIGHT");
-    case Rectangle::LEFT:
-        NS_LOG_INFO("The closest side is LEFT");
+    case Rectangle::RIGHTSIDE:
+    case Rectangle::LEFTSIDE:
+        NS_LOG_DEBUG("The closest side is RIGHT or LEFT");
         speed.x = -speed.x;
         break;
-    case Rectangle::TOP:
-        NS_LOG_INFO("The closest side is TOP");
-    case Rectangle::BOTTOM:
-        NS_LOG_INFO("The closest side is BOTTOM");
+    case Rectangle::TOPSIDE:
+    case Rectangle::BOTTOMSIDE:
+        NS_LOG_DEBUG("The closest side is TOP or BOTTOM");
         speed.y = -speed.y;
+        break;
+    case Rectangle::TOPRIGHTCORNER:
+    case Rectangle::BOTTOMRIGHTCORNER:
+    case Rectangle::TOPLEFTCORNER:
+    case Rectangle::BOTTOMLEFTCORNER:
+        NS_LOG_DEBUG("The closest side is a corner");
+        auto temp = speed.x;
+        speed.x = -speed.y;
+        speed.y = -temp;
         break;
     }
     m_helper.SetVelocity(speed);
