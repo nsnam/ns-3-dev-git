@@ -2932,34 +2932,37 @@ LrWpanMac::PurgeInd()
 }
 
 void
-LrWpanMac::PrintPendTxQ(std::ostream& os) const
+LrWpanMac::PrintPendingTxQueue(std::ostream& os) const
 {
     LrWpanMacHeader peekedMacHdr;
 
     os << "Pending Transaction List [" << GetShortAddress() << " | " << GetExtendedAddress()
        << "] | CurrentTime: " << Simulator::Now().As(Time::S) << "\n"
-       << "       Destination        | Sequence Number |   Frame type    | Expire time\n";
+       << "    Destination    |"
+       << "    Sequence Number |"
+       << "    Frame type    |"
+       << "    Expire time\n";
 
-    for (uint32_t i = 0; i < m_indTxQueue.size(); i++)
+    for (auto transaction : m_indTxQueue)
     {
-        m_indTxQueue[i]->txQPkt->PeekHeader(peekedMacHdr);
-        os << m_indTxQueue[i]->dstExtAddress << "           "
-           << static_cast<uint32_t>(m_indTxQueue[i]->seqNum) << "          ";
+        transaction->txQPkt->PeekHeader(peekedMacHdr);
+        os << transaction->dstExtAddress << "           "
+           << static_cast<uint32_t>(transaction->seqNum) << "          ";
 
         if (peekedMacHdr.IsCommand())
         {
-            os << "Cmd Frame    ";
+            os << " Command Frame   ";
         }
         else if (peekedMacHdr.IsData())
         {
-            os << "Data Frame   ";
+            os << " Data Frame      ";
         }
         else
         {
-            os << "Unk Frame    ";
+            os << " Unknown Frame   ";
         }
 
-        os << m_indTxQueue[i]->expireTime.As(Time::S) << "\n";
+        os << transaction->expireTime.As(Time::S) << "\n";
     }
 }
 
@@ -2970,11 +2973,14 @@ LrWpanMac::PrintTxQueue(std::ostream& os) const
 
     os << "\nTx Queue [" << GetShortAddress() << " | " << GetExtendedAddress()
        << "] | CurrentTime: " << Simulator::Now().As(Time::S) << "\n"
-       << "       Destination                 | Sequence Number |  Dst PAN id | Frame type    |\n";
+       << "    Destination    |"
+       << "    Sequence Number    |"
+       << "    Dst PAN id    |"
+       << "    Frame type    |\n";
 
-    for (uint32_t i = 0; i < m_indTxQueue.size(); i++)
+    for (auto transaction : m_txQueue)
     {
-        m_txQueue[i]->txQPkt->PeekHeader(peekedMacHdr);
+        transaction->txQPkt->PeekHeader(peekedMacHdr);
 
         os << "[" << peekedMacHdr.GetShortDstAddr() << "]"
            << ", [" << peekedMacHdr.GetExtDstAddr() << "]        "
@@ -2983,15 +2989,15 @@ LrWpanMac::PrintTxQueue(std::ostream& os) const
 
         if (peekedMacHdr.IsCommand())
         {
-            os << "Cmd Frame    ";
+            os << " Command Frame   ";
         }
         else if (peekedMacHdr.IsData())
         {
-            os << "Data Frame   ";
+            os << " Data Frame      ";
         }
         else
         {
-            os << "Unk Frame    ";
+            os << " Unknown Frame   ";
         }
 
         os << "\n";

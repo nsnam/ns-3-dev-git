@@ -33,6 +33,7 @@ Release 3-dev
 - (wifi) - Fix flush operation on WifiMacQueues
 - (wifi) - #942 - Trace expired MPDUs before removing them from the queue to avoid blocking the recipient buffer
 - (wifi) - Fix wrong condition preventing PHY from aborting RX when starting TX
+- (lr-wpan) - #944 - Fix for-loop in PrintTxQueue(s) functions
 
 Release 3.39
 ------------

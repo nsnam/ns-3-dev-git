@@ -1584,7 +1584,7 @@ class LrWpanMac : public Object
      * Print the Pending transaction list.
      * \param os The reference to the output stream used by this print function.
      */
-    void PrintPendTxQ(std::ostream& os) const;
+    void PrintPendingTxQueue(std::ostream& os) const;
 
     /**
      * Print the Transmit Queue.
