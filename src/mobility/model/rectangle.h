@@ -39,10 +39,14 @@ class Rectangle
      */
     enum Side
     {
-        RIGHT,
-        LEFT,
-        TOP,
-        BOTTOM
+        RIGHTSIDE = 0,
+        LEFTSIDE,
+        TOPSIDE,
+        BOTTOMSIDE,
+        TOPRIGHTCORNER,
+        TOPLEFTCORNER,
+        BOTTOMRIGHTCORNER,
+        BOTTOMLEFTCORNER
     };
 
     /**
@@ -66,6 +70,14 @@ class Rectangle
      * It ignores the z coordinate.
      */
     bool IsInside(const Vector& position) const;
+    /**
+     * \param position the position to test.
+     * \return true if the input position is located on the rectable border, false otherwise.
+     *
+     * This method compares only the x and y coordinates of the input position.
+     * It ignores the z coordinate.
+     */
+    bool IsOnTheBorder(const Vector& position) const;
     /**
      * \param position the position to test.
      * \return the side of the rectangle the input position is closest to.
@@ -94,6 +106,7 @@ class Rectangle
 
 std::ostream& operator<<(std::ostream& os, const Rectangle& rectangle);
 std::istream& operator>>(std::istream& is, Rectangle& rectangle);
+std::ostream& operator<<(std::ostream& os, const Rectangle::Side& side);
 
 ATTRIBUTE_HELPER_HEADER(Rectangle);
 

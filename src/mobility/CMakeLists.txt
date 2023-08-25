@@ -50,6 +50,7 @@ build_lib(
     test/mobility-trace-test-suite.cc
     test/ns2-mobility-helper-test-suite.cc
     test/rand-cart-around-geo-test.cc
+    test/rectangle-closest-border-test.cc
     test/steady-state-random-waypoint-mobility-model-test.cc
     test/waypoint-mobility-model-test.cc
 )
