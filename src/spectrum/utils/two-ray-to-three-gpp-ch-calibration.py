@@ -220,7 +220,7 @@ def compute_ftr_th_mean(params: FtrParams):
 def compute_anderson_darling_measure(ref_ecdf: list, target_ecdf: list) -> float:
     '''!  Computes the Anderson-Darling measure for the specified reference and targets distributions.
           In particular, the Anderson-Darling measure is defined as:
-          A^2 = -N -S, where S = \sum_{i=1}^N \frac{2i - 1}{N} \left[ ln F(Y_i) + ln F(Y_{N + 1 - i}) \right].
+          \f$A^2 = -N -S\f$, where \f$S = \sum_{i=1}^N \frac{2i - 1}{N} \left[ ln F(Y_i) + ln F(Y_{N + 1 - i}) \right]\f$.
 
           See https://www.itl.nist.gov/div898/handbook/eda/section3/eda35e.htm for further details.
 
@@ -248,7 +248,7 @@ def compute_anderson_darling_measure(ref_ecdf: list, target_ecdf: list) -> float
 def compute_ecdf_value(ecdf: list, data_points: float) -> np.ndarray:
     '''!  Given an ECDF and data points belonging to its domain, returns their associated EDCF value.
         @param ecdf: The ECDF, represented as a sorted list of samples.
-        @param data_point: A list of data points belonging to the same domain as the samples.
+        @param data_points: A list of data points belonging to the same domain as the samples.
         @returns The ECDF value of the domain points of the specified ECDF
     '''
 
