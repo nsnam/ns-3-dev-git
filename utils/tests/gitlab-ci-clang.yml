@@ -4,12 +4,11 @@
 # "RELEASE", that has a value "weekly". Also, a variable "CLANG" should be set
 # to True.
 
-# We support CLANG 6, 8, 9, 10, 11, 12, 13, 14
-# We test only CLANG 6 and 10 on Ubuntu 18.04, and 11 and 14 on Ubuntu 22.04
-# The test is done under Linux.
+# We support CLANG versions 10 through 16
+# We test only CLANG 10 on Ubuntu 20.04 and CLANG 16 on Ubuntu 23.04
 
-.weekly-clang-ubuntu18.04:
-  image: ubuntu:18.04
+.weekly-clang-ubuntu20.04:
+  image: ubuntu:20.04
   extends: .base-build
   rules:
     - if: $RELEASE == "weekly"
@@ -18,7 +17,7 @@
   before_script:
     - apt update
     - apt upgrade -y
-    - apt install -y
+    - DEBIAN_FRONTEND=noninteractive apt install -y
       clang-$CLANG cmake ninja-build ccache build-essential
       libboost-all-dev
       libeigen3-dev
@@ -31,8 +30,8 @@
     COMPILER: clang++-$CLANG
     LIBGSL: libgsl23
 
-.weekly-clang-ubuntu22.04:
-  image: ubuntu:22.04
+.weekly-clang-ubuntu23.04:
+  image: ubuntu:23.04
   extends: .base-build
   rules:
     - if: $RELEASE == "weekly"
@@ -41,7 +40,7 @@
   before_script:
     - apt update
     - apt upgrade -y
-    - apt install -y
+    - DEBIAN_FRONTEND=noninteractive apt install -y
       clang-$CLANG cmake ninja-build ccache build-essential
       libboost-all-dev
       libeigen3-dev
@@ -64,54 +63,9 @@ weekly-clang:
   script:
     - echo "Starting clang jobs"
 
-# CLANG 6
-weekly-build-clang-6-debug:
-  extends: .weekly-clang-ubuntu18.04
-  needs: ["weekly-clang"]
-  stage: build
-  variables:
-    CLANG: "6.0"
-    MODE: debug
-
-weekly-build-clang-6-default:
-  extends: .weekly-clang-ubuntu18.04
-  needs: ["weekly-clang"]
-  stage: build
-  variables:
-    CLANG: "6.0"
-    MODE: default
-
-weekly-build-clang-6-optimized:
-  extends: .weekly-clang-ubuntu18.04
-  needs: ["weekly-clang"]
-  stage: build
-  variables:
-    CLANG: "6.0"
-    MODE: optimized
-
-weekly-test-clang-6-default:
-  extends: .weekly-clang-ubuntu18.04
-  stage: test
-  needs: ["weekly-build-clang-6-default"]
-  dependencies:
-    - weekly-build-clang-6-default
-  variables:
-    CLANG: "6.0"
-    MODE: default
-
-weekly-test-clang-6-optimized:
-  extends: .weekly-clang-ubuntu18.04
-  stage: test
-  needs: ["weekly-build-clang-6-optimized"]
-  dependencies:
-    - weekly-build-clang-6-optimized
-  variables:
-    CLANG: "6.0"
-    MODE: optimized
-
 # CLANG 10
 weekly-build-clang-10-debug:
-  extends: .weekly-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu20.04
   needs: ["weekly-clang"]
   stage: build
   variables:
@@ -119,7 +73,7 @@ weekly-build-clang-10-debug:
     MODE: debug
 
 weekly-build-clang-10-default:
-  extends: .weekly-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu20.04
   needs: ["weekly-clang"]
   stage: build
   variables:
@@ -127,7 +81,7 @@ weekly-build-clang-10-default:
     MODE: default
 
 weekly-build-clang-10-optimized:
-  extends: .weekly-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu20.04
   needs: ["weekly-clang"]
   stage: build
   variables:
@@ -135,7 +89,7 @@ weekly-build-clang-10-optimized:
     MODE: optimized
 
 weekly-test-clang-10-default:
-  extends: .weekly-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu20.04
   stage: test
   needs: ["weekly-build-clang-10-default"]
   dependencies:
@@ -145,7 +99,7 @@ weekly-test-clang-10-default:
     MODE: default
 
 weekly-test-clang-10-optimized:
-  extends: .weekly-clang-ubuntu18.04
+  extends: .weekly-clang-ubuntu20.04
   stage: test
   needs: ["weekly-build-clang-10-optimized"]
   dependencies:
@@ -154,92 +108,47 @@ weekly-test-clang-10-optimized:
     CLANG: 10
     MODE: optimized
 
-# CLANG 11
-weekly-build-clang-11-debug:
-  extends: .weekly-clang-ubuntu22.04
+# CLANG 16
+weekly-build-clang-16-debug:
+  extends: .weekly-clang-ubuntu23.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 11
+    CLANG: 16
     MODE: debug
 
-weekly-build-clang-11-default:
-  extends: .weekly-clang-ubuntu22.04
+weekly-build-clang-16-default:
+  extends: .weekly-clang-ubuntu23.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 11
+    CLANG: 16
     MODE: default
 
-weekly-build-clang-11-optimized:
-  extends: .weekly-clang-ubuntu22.04
+weekly-build-clang-16-optimized:
+  extends: .weekly-clang-ubuntu23.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 11
+    CLANG: 16
     MODE: optimized
 
-weekly-test-clang-11-default:
-  extends: .weekly-clang-ubuntu22.04
+weekly-test-clang-16-default:
+  extends: .weekly-clang-ubuntu23.04
   stage: test
-  needs: ["weekly-build-clang-11-default"]
+  needs: ["weekly-build-clang-16-default"]
   dependencies:
-    - weekly-build-clang-11-default
+    - weekly-build-clang-16-default
   variables:
-    CLANG: 11
+    CLANG: 16
     MODE: default
 
-weekly-test-clang-11-optimized:
-  extends: .weekly-clang-ubuntu22.04
+weekly-test-clang-16-optimized:
+  extends: .weekly-clang-ubuntu23.04
   stage: test
-  needs: ["weekly-build-clang-11-optimized"]
+  needs: ["weekly-build-clang-16-optimized"]
   dependencies:
-    - weekly-build-clang-11-optimized
+    - weekly-build-clang-16-optimized
   variables:
-    CLANG: 11
-    MODE: optimized
-
-# CLANG 14
-weekly-build-clang-14-debug:
-  extends: .weekly-clang-ubuntu22.04
-  needs: ["weekly-clang"]
-  stage: build
-  variables:
-    CLANG: 14
-    MODE: debug
-
-weekly-build-clang-14-default:
-  extends: .weekly-clang-ubuntu22.04
-  needs: ["weekly-clang"]
-  stage: build
-  variables:
-    CLANG: 14
-    MODE: default
-
-weekly-build-clang-14-optimized:
-  extends: .weekly-clang-ubuntu22.04
-  needs: ["weekly-clang"]
-  stage: build
-  variables:
-    CLANG: 14
-    MODE: optimized
-
-weekly-test-clang-14-default:
-  extends: .weekly-clang-ubuntu22.04
-  stage: test
-  needs: ["weekly-build-clang-14-default"]
-  dependencies:
-    - weekly-build-clang-14-default
-  variables:
-    CLANG: 14
-    MODE: default
-
-weekly-test-clang-14-optimized:
-  extends: .weekly-clang-ubuntu22.04
-  stage: test
-  needs: ["weekly-build-clang-14-optimized"]
-  dependencies:
-    - weekly-build-clang-14-optimized
-  variables:
-    CLANG: 14
+    CLANG: 16
     MODE: optimized

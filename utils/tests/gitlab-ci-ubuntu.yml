@@ -14,10 +14,6 @@
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
   before_script:
-    # The following ppa is needed only for Ubuntu 18.04 to install g++9
-    - apt update
-    - DEBIAN_FRONTEND=noninteractive apt install -y software-properties-common
-    - add-apt-repository ppa:ubuntu-toolchain-r/test -y
     - apt update
     - apt upgrade -y
     - DEBIAN_FRONTEND=noninteractive apt install -y
@@ -44,211 +40,171 @@ weekly-ubuntu:
   script:
     - echo "Starting Ubuntu jobs"
 
-# Ubuntu 18.04 (Until April 2023)
-weekly-build-ubuntu-18.04-debug:
+# Ubuntu 20.04 (Until April 2025)
+weekly-build-ubuntu-20.04-debug:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
-  image: ubuntu:18.04
+  image: ubuntu:20.04
   stage: build
   variables:
     MODE: debug
     LIBGSL: libgsl23
-    COMPILER: g++-9
+    COMPILER: g++
 
-weekly-build-ubuntu-18.04-default:
+weekly-build-ubuntu-20.04-default:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
-  image: ubuntu:18.04
+  image: ubuntu:20.04
   stage: build
   variables:
     MODE: default
     LIBGSL: libgsl23
-    COMPILER: g++-9
+    COMPILER: g++
 
-weekly-build-ubuntu-18.04-optimized:
+weekly-build-ubuntu-20.04-optimized:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
-  image: ubuntu:18.04
+  image: ubuntu:20.04
   stage: build
   variables:
     MODE: optimized
     LIBGSL: libgsl23
-    COMPILER: g++-9
+    COMPILER: g++
 
-weekly-test-ubuntu-18.04-default:
+weekly-test-ubuntu-20.04-default:
   extends: .weekly-base-ubuntu
-  image: ubuntu:18.04
+  image: ubuntu:20.04
   stage: test
-  needs: ["weekly-build-ubuntu-18.04-default"]
+  needs: ["weekly-build-ubuntu-20.04-default"]
   dependencies:
-    - weekly-build-ubuntu-18.04-default
+    - weekly-build-ubuntu-20.04-default
   variables:
     MODE: default
     LIBGSL: libgsl23
-    COMPILER: g++-9
+    COMPILER: g++
 
-weekly-test-ubuntu-18.04-optimized:
+weekly-test-ubuntu-20.04-optimized:
   extends: .weekly-base-ubuntu
-  image: ubuntu:18.04
+  image: ubuntu:20.04
   stage: test
-  needs: ["weekly-build-ubuntu-18.04-optimized"]
+  needs: ["weekly-build-ubuntu-20.04-optimized"]
   dependencies:
-    - weekly-build-ubuntu-18.04-optimized
+    - weekly-build-ubuntu-20.04-optimized
   variables:
     MODE: optimized
     LIBGSL: libgsl23
-    COMPILER: g++-9
+    COMPILER: g++
 
-# # Ubuntu 20.04 (Until April 2025)
-# weekly-build-ubuntu-20.04-debug:
-#   extends: .weekly-base-ubuntu
-#   image: ubuntu:20.04
-#   variables:
-#     MODE: debug
-#     LIBGSL: libgsl23
-
-# weekly-build-ubuntu-20.04-default:
-#   extends: .weekly-base-ubuntu
-#   image: ubuntu:20.04
-#   variables:
-#     MODE: default
-#     LIBGSL: libgsl23
-
-# weekly-build-ubuntu-20.04-optimized:
-#   extends: .weekly-base-ubuntu
-#   image: ubuntu:20.04
-#   variables:
-#     MODE: optimized
-#     LIBGSL: libgsl23
-
-# Ubuntu 22.04 (Until January 2032) -- commented out because we are using Ubuntu 22.04 for gcc jobs
-# weekly-build-ubuntu-22.04-debug:
-#   extends: .weekly-base-ubuntu
-#   needs: ["weekly-ubuntu"]
-#   image: ubuntu:22.04
-#   stage: build
-#   variables:
-#     MODE: debug
-#     LIBGSL: libgsl27
-#     COMPILER: g++
-
-# weekly-build-ubuntu-22.04-default:
-#   extends: .weekly-base-ubuntu
-#   needs: ["weekly-ubuntu"]
-#   image: ubuntu:22.04
-#   stage: build
-#   variables:
-#     MODE: default
-#     LIBGSL: libgsl27
-#     COMPILER: g++
-
-# weekly-build-ubuntu-22.04-optimized:
-#   extends: .weekly-base-ubuntu
-#   needs: ["weekly-ubuntu"]
-#   image: ubuntu:22.04
-#   stage: build
-#   variables:
-#     MODE: optimized
-#     LIBGSL: libgsl27
-#     COMPILER: g++
-
-# weekly-test-ubuntu-22.04-default:
-#   extends: .weekly-base-ubuntu
-#   image: ubuntu:22.04
-#   stage: test
-#   needs: ["weekly-build-ubuntu-22.04-default"]
-#   dependencies:
-#     - weekly-build-ubuntu-22.04-default
-#   variables:
-#     MODE: default
-#     LIBGSL: libgsl27
-#     COMPILER: g++
-
-# weekly-test-ubuntu-22.04-optimized:
-#   extends: .weekly-base-ubuntu
-#   image: ubuntu:22.04
-#   stage: test
-#   needs: ["weekly-build-ubuntu-22.04-optimized"]
-#   dependencies:
-#     - weekly-build-ubuntu-22.04-optimized
-#   variables:
-#     MODE: optimized
-#     LIBGSL: libgsl27
-#     COMPILER: g++
-
-# Ubuntu Latest
-weekly-build-ubuntu-latest-debug:
+# Ubuntu 22.04 (Until January 2032)
+weekly-build-ubuntu-22.04-debug:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
-  image: ubuntu:latest
+  image: ubuntu:22.04
   stage: build
   variables:
     MODE: debug
     LIBGSL: libgsl27
     COMPILER: g++
 
-weekly-build-ubuntu-latest-default:
+weekly-build-ubuntu-22.04-default:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
-  image: ubuntu:latest
+  image: ubuntu:22.04
   stage: build
   variables:
     MODE: default
     LIBGSL: libgsl27
     COMPILER: g++
 
-weekly-build-ubuntu-latest-optimized:
+weekly-build-ubuntu-22.04-optimized:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
-  image: ubuntu:latest
+  image: ubuntu:22.04
   stage: build
   variables:
     MODE: optimized
     LIBGSL: libgsl27
     COMPILER: g++
 
-weekly-test-ubuntu-latest-default:
+weekly-test-ubuntu-22.04-default:
   extends: .weekly-base-ubuntu
-  image: ubuntu:latest
+  image: ubuntu:22.04
   stage: test
-  needs: ["weekly-build-ubuntu-latest-default"]
+  needs: ["weekly-build-ubuntu-22.04-default"]
   dependencies:
-    - weekly-build-ubuntu-latest-default
+    - weekly-build-ubuntu-22.04-default
   variables:
     MODE: default
     LIBGSL: libgsl27
     COMPILER: g++
 
-weekly-test-ubuntu-latest-optimized:
+weekly-test-ubuntu-22.04-optimized:
   extends: .weekly-base-ubuntu
-  image: ubuntu:latest
+  image: ubuntu:22.04
   stage: test
-  needs: ["weekly-build-ubuntu-latest-optimized"]
+  needs: ["weekly-build-ubuntu-22.04-optimized"]
   dependencies:
-    - weekly-build-ubuntu-latest-optimized
+    - weekly-build-ubuntu-22.04-optimized
   variables:
     MODE: optimized
     LIBGSL: libgsl27
     COMPILER: g++
 
-# Ubuntu Rolling
-# weekly-build-ubuntu-rolling-debug:
-#   extends: .weekly-base-ubuntu
-#   image: ubuntu:rolling
-#   variables:
-#     MODE: debug
-#     LIBGSL: libgsl27
+# Ubuntu Rolling (latest released, might be non-LTS)
+weekly-build-ubuntu-rolling-debug:
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
+  image: ubuntu:rolling
+  stage: build
+  variables:
+    MODE: debug
+    LIBGSL: libgsl27
+    COMPILER: g++
 
-# weekly-build-ubuntu-rolling-default:
-#   extends: .weekly-base-ubuntu
-#   image: ubuntu:rolling
-#   variables:
-#     MODE: default
-#     LIBGSL: libgsl27
+weekly-build-ubuntu-rolling-default:
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
+  image: ubuntu:rolling
+  stage: build
+  variables:
+    MODE: default
+    LIBGSL: libgsl27
+    COMPILER: g++
 
-# weekly-build-ubuntu-rolling-optimized:
-#   extends: .weekly-base-ubuntu
-#   image: ubuntu:rolling
-#   variables:
-#     MODE: optimized
-#     LIBGSL: libgsl27
+# Aug. 26, 2023: --disable-eigen is needed to prevent a -Werror=unused-variable
+weekly-build-ubuntu-rolling-optimized:
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
+  image: ubuntu:rolling
+  stage: build
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl27
+    COMPILER: g++
+    EXTRA_OPTIONS: --disable-eigen
+
+weekly-test-ubuntu-rolling-default:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:rolling
+  stage: test
+  needs: ["weekly-build-ubuntu-rolling-default"]
+  dependencies:
+    - weekly-build-ubuntu-rolling-default
+  variables:
+    MODE: default
+    LIBGSL: libgsl27
+    COMPILER: g++
+
+# Aug. 26, 2023: --disable-eigen is needed to prevent a -Werror=unused-variable
+weekly-test-ubuntu-rolling-optimized:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:rolling
+  stage: test
+  needs: ["weekly-build-ubuntu-rolling-optimized"]
+  dependencies:
+    - weekly-build-ubuntu-rolling-optimized
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl27
+    COMPILER: g++
+    EXTRA_OPTIONS: --disable-eigen

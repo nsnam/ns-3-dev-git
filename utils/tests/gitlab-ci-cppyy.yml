@@ -60,35 +60,6 @@ cppyy-20.04:
     - ./ns3 run ./utils/python-unit-tests.py
   timeout: 9h
 
-cppyy-18.04:
-  stage: test
-  image: ubuntu:18.04 # python 3.6
-  rules:
-    - if: $RELEASE == "manual"
-  tags:
-    - nsnam
-    - linux
-  before_script:
-    - apt update
-    - apt install -y software-properties-common
-    - add-apt-repository ppa:ubuntu-toolchain-r/test -y
-    - apt update
-    - DEBIAN_FRONTEND=noninteractive apt install -y
-      g++-9 gcc-9 cmake ninja-build ccache libclang-dev llvm-dev
-      python3 python3-pip
-      libboost-dev libgsl-dev libgtk-3-dev
-      git wget
-    - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 800 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-    - pip3 install cppyy-cling cppyy-backend CPyCppyy cppyy # older python version may install dependencies in the wrong order
-  script:
-    - CXX=g++-9 ./ns3 configure -G Ninja --enable-python-bindings
-    - ./ns3 build
-    - ./ns3 run first.py
-    - ./ns3 run second.py
-    - ./ns3 run third.py
-    - ./ns3 run ./utils/python-unit-tests.py
-  timeout: 9h
-
 .manylinux-pip-wheel:
   stage: test
   image: quay.io/pypa/manylinux_2_28_x86_64
