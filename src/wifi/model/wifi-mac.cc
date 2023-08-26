@@ -1170,7 +1170,6 @@ WifiMac::SetWifiPhys(const std::vector<Ptr<WifiPhy>>& phys)
 Ptr<WifiPhy>
 WifiMac::GetWifiPhy(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     return GetLink(linkId).phy;
 }
 
