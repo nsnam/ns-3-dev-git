@@ -1856,47 +1856,6 @@ HePhy::ConvertHeRuSubcarriers(uint16_t bandWidth,
     return convertedSubcarriers;
 }
 
-HePhy::RuBands
-HePhy::GetRuBands(Ptr<const WifiPhy> phy, uint16_t channelWidth, uint16_t guardBandwidth)
-{
-    HePhy::RuBands ruBands{};
-    for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
-    {
-        for (uint32_t i = 0; i < (channelWidth / bw); ++i)
-        {
-            for (uint32_t type = 0; type < 7; type++)
-            {
-                auto ruType = static_cast<HeRu::RuType>(type);
-                std::size_t nRus = HeRu::GetNRus(bw, ruType);
-                for (std::size_t phyIndex = 1; phyIndex <= nRus; phyIndex++)
-                {
-                    HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup(bw, ruType, phyIndex);
-                    HeRu::SubcarrierRange subcarrierRange =
-                        std::make_pair(group.front().first, group.back().second);
-                    const auto bandIndices = ConvertHeRuSubcarriers(bw,
-                                                                    guardBandwidth,
-                                                                    phy->GetSubcarrierSpacing(),
-                                                                    subcarrierRange,
-                                                                    i);
-                    const auto bandFrequencies = phy->ConvertIndicesToFrequencies(bandIndices);
-                    WifiSpectrumBandInfo band = {bandIndices, bandFrequencies};
-                    std::size_t index =
-                        (bw == 160 && phyIndex > nRus / 2 ? phyIndex - nRus / 2 : phyIndex);
-                    const auto p20Index = phy->GetOperatingChannel().GetPrimaryChannelIndex(20);
-                    bool primary80IsLower80 = (p20Index < bw / 40);
-                    bool primary80 = (bw < 160 || ruType == HeRu::RU_2x996_TONE ||
-                                      (primary80IsLower80 && phyIndex <= nRus / 2) ||
-                                      (!primary80IsLower80 && phyIndex > nRus / 2));
-                    HeRu::RuSpec ru(ruType, index, primary80);
-                    NS_ABORT_IF(ru.GetPhyIndex(bw, p20Index) != phyIndex);
-                    ruBands.insert({band, ru});
-                }
-            }
-        }
-    }
-    return ruBands;
-}
-
 } // namespace ns3
 
 namespace

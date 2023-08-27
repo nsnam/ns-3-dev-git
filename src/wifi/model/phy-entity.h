@@ -31,7 +31,6 @@
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/simple-ref-count.h"
-#include "ns3/wifi-spectrum-value-helper.h"
 
 #include <list>
 #include <map>

@@ -45,7 +45,7 @@ WifiSpectrumPhyInterface::WifiSpectrumPhyInterface(FrequencyRange freqRange)
       m_centerFrequency{0},
       m_channelWidth{0},
       m_bands{},
-      m_ruBands{}
+      m_heRuBands{}
 {
     NS_LOG_FUNCTION(this << freqRange);
 }
@@ -59,7 +59,7 @@ WifiSpectrumPhyInterface::DoDispose()
     m_netDevice = nullptr;
     m_channel = nullptr;
     m_bands.clear();
-    m_ruBands.clear();
+    m_heRuBands.clear();
 }
 
 void
@@ -158,27 +158,27 @@ WifiSpectrumPhyInterface::GetChannelWidth() const
 }
 
 void
-WifiSpectrumPhyInterface::SetBands(WifiSpectrumPhyInterface::WifiSpectrumBands&& bands)
+WifiSpectrumPhyInterface::SetBands(WifiSpectrumBands&& bands)
 {
     m_bands = std::move(bands);
 }
 
-const WifiSpectrumPhyInterface::WifiSpectrumBands&
+const WifiSpectrumBands&
 WifiSpectrumPhyInterface::GetBands() const
 {
     return m_bands;
 }
 
 void
-WifiSpectrumPhyInterface::SetRuBands(HePhy::RuBands&& ruBands)
+WifiSpectrumPhyInterface::SetHeRuBands(HeRuBands&& heRuBands)
 {
-    m_ruBands = std::move(ruBands);
+    m_heRuBands = std::move(heRuBands);
 }
 
-const HePhy::RuBands&
-WifiSpectrumPhyInterface::GetRuBands() const
+const HeRuBands&
+WifiSpectrumPhyInterface::GetHeRuBands() const
 {
-    return m_ruBands;
+    return m_heRuBands;
 }
 
 void

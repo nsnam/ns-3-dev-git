@@ -126,9 +126,6 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
                             uint32_t bandBandwidth,
                             uint16_t guardBandwidth);
 
-    /// vector of spectrum bands handled by this interface
-    using WifiSpectrumBands = std::vector<WifiSpectrumBandInfo>;
-
     /**
      * Set the vector of spectrum bands handled by this interface
      *
@@ -145,15 +142,15 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
     /**
      * Set the HE RU spectrum bands handled by this interface (if any)
      *
-     * \param ruBands the HE RU spectrum bands
+     * \param heRuBands the HE RU spectrum bands
      */
-    void SetRuBands(HePhy::RuBands&& ruBands);
+    void SetHeRuBands(HeRuBands&& heRuBands);
     /**
      * Get the HE RU spectrum bands handled by this interface
      *
      * \return the HE RU spectrum bands
      */
-    const HePhy::RuBands& GetRuBands() const;
+    const HeRuBands& GetHeRuBands() const;
 
   private:
     void DoDispose() override;
@@ -168,7 +165,7 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
 
     WifiSpectrumBands
         m_bands; /**< Store all the distinct spectrum bands associated with every channels widths */
-    HePhy::RuBands m_ruBands; /**< Store all the distinct spectrum bands associated with every RU */
+    HeRuBands m_heRuBands; /**< Store all the distinct spectrum bands associated with every RU */
 };
 
 } // namespace ns3

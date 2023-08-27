@@ -60,6 +60,9 @@ struct WifiSpectrumBandInfo
     WifiSpectrumBandFrequencies frequencies; //!< the start and stop frequencies of the band
 };
 
+/// vector of spectrum bands
+using WifiSpectrumBands = std::vector<WifiSpectrumBandInfo>;
+
 /**
  * \ingroup wifi
  * Compare two bands.

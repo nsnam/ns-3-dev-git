@@ -42,6 +42,9 @@ struct SpectrumSignalParameters;
 class WifiSpectrumPhyInterface;
 struct WifiSpectrumSignalParameters;
 
+/// Map a spectrum band associated with an RU to the RU specification
+using HeRuBands = std::map<WifiSpectrumBandInfo, HeRu::RuSpec>;
+
 /**
  * \brief 802.11 PHY layer model
  * \ingroup wifi
@@ -178,15 +181,62 @@ class SpectrumWifiPhy : public WifiPhy
 
   private:
     /**
-     * Perform run-time spectrum model change if the one used by the current Spectrum PHY interface
-     * has changed
+     * Perform run-time spectrum model change
+     * \param spectrumPhyInterface the spectrum PHY interface for which the spectrum model should be
+     * changed \param centerFrequency the center frequency in MHz the PHY interface should use
+     * \param channelWidth the channel width in MHz the PHY interface should use
      */
-    void ResetSpectrumModelIfNeeded();
+    void ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
+                            uint16_t centerFrequency,
+                            uint16_t channelWidth);
 
     /**
      * This function is called to update the bands handled by the InterferenceHelper.
+     * \param spectrumPhyInterface the spectrum PHY interface for which the bands should be updated
      */
-    void UpdateInterferenceHelperBands();
+    void UpdateInterferenceHelperBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface);
+
+    /**
+     * This function computes the RU bands that belong to a given spectrum PHY interface.
+     *
+     * \param spectrumPhyInterface the spectrum PHY interface to consider to compute the RU bands
+     * \param guardBandwidth width of the guard band in MHz
+     * \returns the computed RU bands for the spectrum PHY interface
+     */
+    HeRuBands GetHeRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
+                           uint16_t guardBandwidth);
+
+    /**
+     * This function computes the bands that belong to a given spectrum PHY interface.
+     *
+     * \param spectrumPhyInterface the spectrum PHY interface to consider to compute the bands
+     * \returns the computed bands for the spectrum PHY interface
+     */
+    WifiSpectrumBands ComputeBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface);
+
+    /**
+     * Get the info of a given band that belongs to a given spectrum PHY interface
+     *
+     * \param spectrumPhyInterface the spectrum PHY interface
+     * \param bandWidth the width of the band to be returned (MHz)
+     * \param bandIndex the index of the band to be returned
+     *
+     * \return the info that defines the band
+     */
+    WifiSpectrumBandInfo GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
+                                             uint16_t bandWidth,
+                                             uint8_t bandIndex = 0);
+
+    /**
+     * This is a helper function to convert start and stop indices to start and stop frequencies.
+     *
+     * \param spectrumPhyInterface the spectrum PHY interface to consider for the calculations
+     * \param indices the start/stop indices to convert
+     * \return the converted frequencies
+     */
+    WifiSpectrumBandFrequencies ConvertIndicesToFrequenciesForInterface(
+        Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
+        const WifiSpectrumBandIndices& indices) const;
 
     /**
      * Determine whether the PHY shall issue a PHY-RXSTART.indication primitive in response to a
