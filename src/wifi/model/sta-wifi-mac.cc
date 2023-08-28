@@ -522,7 +522,7 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
 }
 
 std::vector<TidToLinkMapping>
-StaWifiMac::GetTidToLinkMappingElements(uint8_t apNegSupport)
+StaWifiMac::GetTidToLinkMappingElements(WifiTidToLinkMappingNegSupport apNegSupport)
 {
     NS_LOG_FUNCTION(this << apNegSupport);
 
@@ -546,7 +546,7 @@ StaWifiMac::GetTidToLinkMappingElements(uint8_t apNegSupport)
             !mappingValidForNegType1,
         "Mapping TIDs to distinct link sets is incompatible with negotiation support of 1");
 
-    if (apNegSupport == 1 && !mappingValidForNegType1)
+    if (apNegSupport == WifiTidToLinkMappingNegSupport::SAME_LINK_SET && !mappingValidForNegType1)
     {
         // If the TID-to-link Mapping Negotiation Support subfield value received from a peer
         // MLD is equal to 1, the MLD that initiates a TID-to-link mapping negotiation with the
@@ -636,10 +636,12 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
         };
         std::visit(addMle, frame);
 
-        uint8_t negSupport;
+        WifiTidToLinkMappingNegSupport negSupport;
         if (const auto& mldCapabilities =
                 GetWifiRemoteStationManager(linkId)->GetStationMldCapabilities(*link.bssid);
-            mldCapabilities && (negSupport = mldCapabilities->get().tidToLinkMappingSupport) > 0)
+            mldCapabilities && (negSupport = static_cast<WifiTidToLinkMappingNegSupport>(
+                                    mldCapabilities->get().tidToLinkMappingSupport)) >
+                                   WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
         {
             auto addTlm = [&](auto&& frame) {
                 frame.template Get<TidToLinkMapping>() = GetTidToLinkMappingElements(negSupport);
@@ -1317,7 +1319,9 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 
             if (const auto& mldCapabilities =
                     GetWifiRemoteStationManager(linkId)->GetStationMldCapabilities(hdr.GetAddr3());
-                mldCapabilities && mldCapabilities->get().tidToLinkMappingSupport > 0)
+                mldCapabilities && static_cast<WifiTidToLinkMappingNegSupport>(
+                                       mldCapabilities->get().tidToLinkMappingSupport) >
+                                       WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
             {
                 // the AP MLD supports TID-to-Link Mapping negotiation, hence we included
                 // TID-to-Link Mapping element(s) in the Association Request.

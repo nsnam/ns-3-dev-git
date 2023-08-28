@@ -827,7 +827,7 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
     MultiLinkSetupTest(const BaseParams& baseParams,
                        WifiScanType scanType,
                        const std::vector<uint8_t>& setupLinks,
-                       uint8_t apNegSupport,
+                       WifiTidToLinkMappingNegSupport apNegSupport,
                        const std::string& dlTidToLinkMapping,
                        const std::string& ulTidToLinkMapping);
     ~MultiLinkSetupTest() override = default;
@@ -892,8 +892,9 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
 
     const std::vector<uint8_t> m_setupLinks; //!< IDs of the expected links to setup
     WifiScanType m_scanType;                 //!< the scan type (active or passive)
-    std::size_t m_nProbeResp;          //!< number of Probe Responses received by the non-AP MLD
-    uint8_t m_apNegSupport;            //!< TID-to-Link Mapping negotiation supported by the AP MLD
+    std::size_t m_nProbeResp; //!< number of Probe Responses received by the non-AP MLD
+    WifiTidToLinkMappingNegSupport
+        m_apNegSupport;                //!< TID-to-Link Mapping negotiation supported by the AP MLD
     std::string m_dlTidLinkMappingStr; //!< DL TID-to-Link Mapping for non-AP MLD EHT configuration
     std::string m_ulTidLinkMappingStr; //!< UL TID-to-Link Mapping for non-AP MLD EHT configuration
     WifiTidLinkMapping m_dlTidLinkMapping; //!< expected DL TID-to-Link Mapping requested by non-AP
@@ -913,7 +914,7 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
 MultiLinkSetupTest::MultiLinkSetupTest(const BaseParams& baseParams,
                                        WifiScanType scanType,
                                        const std::vector<uint8_t>& setupLinks,
-                                       uint8_t apNegSupport,
+                                       WifiTidToLinkMappingNegSupport apNegSupport,
                                        const std::string& dlTidToLinkMapping,
                                        const std::string& ulTidToLinkMapping)
     : MultiLinkOperationsTestBase("Check correctness of Multi-Link Setup", 1, baseParams),
@@ -932,9 +933,8 @@ MultiLinkSetupTest::DoSetup()
     MultiLinkOperationsTestBase::DoSetup();
 
     m_staMacs[0]->SetAttribute("ActiveProbing", BooleanValue(m_scanType == WifiScanType::ACTIVE));
-    m_apMac->GetEhtConfiguration()->SetAttribute(
-        "TidToLinkMappingNegSupport",
-        EnumValue(static_cast<WifiTidToLinkMappingNegSupport>(m_apNegSupport)));
+    m_apMac->GetEhtConfiguration()->SetAttribute("TidToLinkMappingNegSupport",
+                                                 EnumValue(m_apNegSupport));
     // For non-AP MLD, it does not make sense to set the negotiation type to 0 (unless the AP MLD
     // also advertises 0) or 1 (the AP MLD is discarded if it advertises a support of 3)
     auto staEhtConfig = m_staMacs[0]->GetEhtConfiguration();
@@ -950,8 +950,8 @@ MultiLinkSetupTest::DoSetup()
     m_dlTidLinkMapping = staEhtConfig->GetTidLinkMapping(WifiDirection::DOWNLINK);
     m_ulTidLinkMapping = staEhtConfig->GetTidLinkMapping(WifiDirection::UPLINK);
 
-    if (m_apNegSupport == 0 ||
-        (m_apNegSupport == 1 &&
+    if (m_apNegSupport == WifiTidToLinkMappingNegSupport::NOT_SUPPORTED ||
+        (m_apNegSupport == WifiTidToLinkMappingNegSupport::SAME_LINK_SET &&
          !TidToLinkMappingValidForNegType1(m_dlTidLinkMapping, m_ulTidLinkMapping)))
     {
         m_dlTidLinkMapping.clear(); // default link mapping
@@ -1343,7 +1343,8 @@ MultiLinkSetupTest::CheckAssocRequest(Ptr<WifiMpdu> mpdu, uint8_t linkId)
     // A TID-to-Link Mapping IE is included in the Association Request if and only if the AP MLD
     // and the non-AP MLD are performing ML setup (i.e., they both have multiple links) and the
     // AP MLD advertises a non-null negotiation support type
-    if (m_apMac->GetNLinks() == 1 || m_staMacs[0]->GetNLinks() == 1 || m_apNegSupport == 0)
+    if (m_apMac->GetNLinks() == 1 || m_staMacs[0]->GetNLinks() == 1 ||
+        m_apNegSupport == WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
     {
         NS_TEST_EXPECT_MSG_EQ(tlm.empty(),
                               true,
@@ -1571,8 +1572,8 @@ MultiLinkSetupTest::CheckMlSetup()
             }
         };
 
-    auto storedMapping =
-        m_apMac->GetNLinks() > 1 && m_staMacs[0]->GetNLinks() > 1 && m_apNegSupport > 0;
+    auto storedMapping = m_apMac->GetNLinks() > 1 && m_staMacs[0]->GetNLinks() > 1 &&
+                         m_apNegSupport > WifiTidToLinkMappingNegSupport::NOT_SUPPORTED;
     checkStoredMapping(m_apMac, m_staMacs[0], WifiDirection::DOWNLINK, storedMapping);
     checkStoredMapping(m_apMac, m_staMacs[0], WifiDirection::UPLINK, storedMapping);
     checkStoredMapping(m_staMacs[0], m_apMac, WifiDirection::DOWNLINK, storedMapping);
@@ -3117,10 +3118,10 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     : TestSuite("wifi-mlo", UNIT)
 {
     using ParamsTuple = std::tuple<MultiLinkOperationsTestBase::BaseParams, // base config params
-                                   std::vector<uint8_t>, // link ID of setup links
-                                   uint8_t,              // AP negotiation support
-                                   std::string,          // DL TID-to-Link Mapping
-                                   std::string>;         // UL TID-to-Link Mapping
+                                   std::vector<uint8_t>,           // link ID of setup links
+                                   WifiTidToLinkMappingNegSupport, // AP negotiation support
+                                   std::string,                    // DL TID-to-Link Mapping
+                                   std::string>;                   // UL TID-to-Link Mapping
 
     AddTestCase(new GetRnrLinkInfoTest(), TestCase::QUICK);
     AddTestCase(new MldSwapLinksTest(), TestCase::QUICK);
@@ -3131,28 +3132,31 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                       dlTidLinkMapping,
                       ulTidLinkMapping] :
          {// matching channels: setup all links
-          ParamsTuple({{"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-                       {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
-                       {}},
-                      {0, 1, 2},
-                      0, // AP MLD does not support TID-to-Link Mapping negotiation
-                      "0,1,2,3  0,1,2;  4,5  0,1", // default mapping used instead
-                      "0,1,2,3  1,2;    6,7  0,1"  // default mapping used instead
-                      ),
+          ParamsTuple(
+              {{"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+               {}},
+              {0, 1, 2},
+              WifiTidToLinkMappingNegSupport::NOT_SUPPORTED, // AP MLD does not support TID-to-Link
+                                                             // Mapping negotiation
+              "0,1,2,3  0,1,2;  4,5  0,1",                   // default mapping used instead
+              "0,1,2,3  1,2;    6,7  0,1"                    // default mapping used instead
+              ),
           // non-matching channels, matching PHY bands: setup all links
           ParamsTuple({{"{108, 0, BAND_5GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
                        {"{36, 0, BAND_5GHZ, 0}", "{120, 0, BAND_5GHZ, 0}", "{5, 0, BAND_6GHZ, 0}"},
                        {}},
                       {0, 1, 2},
-                      1, // AP MLD does not support distinct link sets for TIDs
-                      "0,1,2,3  0,1,2;  4,5  0,1", // default mapping used instead
+                      WifiTidToLinkMappingNegSupport::SAME_LINK_SET, // AP MLD does not support
+                                                                     // distinct link sets for TIDs
+                      "0,1,2,3  0,1,2;  4,5  0,1",                   // default mapping used instead
                       ""),
           // non-AP MLD switches band on some links to setup 3 links
           ParamsTuple({{"{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
                        {"{36, 0, BAND_5GHZ, 0}", "{9, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                        {}},
                       {0, 1, 2},
-                      3,
+                      WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
                       "0,1,2,3  0;  4,5,6,7  1,2", // frames of two TIDs are generated
                       "0,2,3  1,2;  1,4,5,6,7  0"  // frames of two TIDs are generated
                       ),
@@ -3163,7 +3167,8 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                {0}},
               {0, 1},
-              1, // AP MLD does not support distinct link sets for TIDs
+              WifiTidToLinkMappingNegSupport::SAME_LINK_SET, // AP MLD does not support distinct
+                                                             // link sets for TIDs
               "0,1,2,3,4,5,6,7  0",
               "0,1,2,3,4,5,6,7  0"),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
@@ -3174,7 +3179,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                {0, 1}},
               {0, 1},
-              3,
+              WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
               "0,1,2,3  1",
               "0,1,2,3  1"),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
@@ -3186,7 +3191,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                        {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                        {0, 1, 2}},
                       {0, 2},
-                      3,
+                      WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
                       "",
                       ""),
           // the first link of the non-AP MLD cannot change PHY band and no AP is operating on
@@ -3196,7 +3201,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                        {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                        {0, 1}},
                       {2},
-                      3,
+                      WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
                       "",
                       ""),
           // non-AP MLD has only two STAs and setups two links
@@ -3204,7 +3209,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                        {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                        {}},
                       {1, 0},
-                      3,
+                      WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
                       "0,1,2,3  1",
                       ""),
           // single link non-AP STA associates with an AP affiliated with an AP MLD
@@ -3212,7 +3217,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                        {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{120, 0, BAND_5GHZ, 0}"},
                        {}},
                       {2}, // link ID of AP MLD only (non-AP STA is single link)
-                      3,
+                      WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
                       "",
                       ""),
           // a STA affiliated with a non-AP MLD associates with a single link AP
@@ -3220,7 +3225,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                        {"{120, 0, BAND_5GHZ, 0}"},
                        {}},
                       {2}, // link ID of non-AP MLD only (AP is single link)
-                      0,
+                      WifiTidToLinkMappingNegSupport::NOT_SUPPORTED,
                       "0,1,2,3  0,1;  4,5,6,7  0,1", // ignored by single link AP
                       "")})
     {

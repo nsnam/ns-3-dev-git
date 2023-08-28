@@ -22,6 +22,7 @@
 #ifndef STA_WIFI_MAC_H
 #define STA_WIFI_MAC_H
 
+#include "eht/eht-configuration.h"
 #include "mgt-headers.h"
 #include "wifi-mac.h"
 
@@ -534,7 +535,8 @@ class StaWifiMac : public WifiMac
      * \param apNegSupport the negotiation type supported by the AP MLD
      * \return the TID-to-Link Mapping element(s) to include in Association Request frame.
      */
-    std::vector<TidToLinkMapping> GetTidToLinkMappingElements(uint8_t apNegSupport);
+    std::vector<TidToLinkMapping> GetTidToLinkMappingElements(
+        WifiTidToLinkMappingNegSupport apNegSupport);
 
     /**
      * Set the current MAC state.
