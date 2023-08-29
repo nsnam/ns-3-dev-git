@@ -347,6 +347,37 @@ SpectrumWifiPhy::DoChannelSwitch()
     }
 }
 
+void
+SpectrumWifiPhy::ConfigureInterface(uint16_t frequency, uint16_t width)
+{
+    NS_LOG_FUNCTION(this << frequency << width);
+
+    if (!m_trackSignalsInactiveInterfaces)
+    {
+        NS_LOG_DEBUG("Tracking of signals on inactive interfaces is not enabled");
+        return;
+    }
+
+    auto spectrumPhyInterface = GetInterfaceCoveringChannelBand(frequency, width);
+
+    NS_ABORT_MSG_IF(!spectrumPhyInterface,
+                    "No spectrum channel covers frequency range ["
+                        << frequency - (width / 2) << " MHz - " << frequency + (width / 2)
+                        << " MHz]");
+
+    NS_ABORT_MSG_IF(spectrumPhyInterface == m_currentSpectrumPhyInterface,
+                    "This method should not be called for the current interface");
+
+    if ((frequency == spectrumPhyInterface->GetCenterFrequency()) &&
+        (width == spectrumPhyInterface->GetChannelWidth()))
+    {
+        NS_LOG_DEBUG("Same RF channel as before on that interface, do nothing");
+        return;
+    }
+
+    ResetSpectrumModel(spectrumPhyInterface, frequency, width);
+}
+
 bool
 SpectrumWifiPhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
 {
