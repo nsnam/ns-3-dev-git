@@ -156,21 +156,31 @@ EhtFrameExchangeManager::CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const
 }
 
 bool
+EhtFrameExchangeManager::UsingOtherEmlsrLink() const
+{
+    if (!m_staMac || !m_staMac->IsEmlsrLink(m_linkId))
+    {
+        return false;
+    }
+    auto apAddress = GetWifiRemoteStationManager()->GetMldAddress(m_bssid);
+    NS_ASSERT_MSG(apAddress, "MLD address not found for BSSID " << m_bssid);
+    // when EMLSR links are blocked, all TIDs are blocked (we test TID 0 here)
+    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *apAddress, 0);
+    auto mask = m_staMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
+    NS_ASSERT_MSG(mask, "No mask for AP " << *apAddress << " on link " << m_linkId);
+    return mask->test(static_cast<std::size_t>(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK));
+}
+
+bool
 EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << edca << allowedWidth);
 
     if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
     {
-        auto apAddress = GetWifiRemoteStationManager()->GetMldAddress(m_bssid);
-        NS_ASSERT_MSG(apAddress, "MLD address not found for BSSID " << m_bssid);
-        // when EMLSR links are blocked, all TIDs are blocked (we test TID 0 here)
-        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *apAddress, 0);
-        auto mask = m_staMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
         // Cannot start a transmission on a link blocked because another EMLSR link is being used
-        NS_ASSERT_MSG(mask && !mask->test(static_cast<std::size_t>(
-                                  WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK)),
-                      "StartTransmission called while EMLSR link is being used");
+        NS_ASSERT_MSG(!UsingOtherEmlsrLink(),
+                      "StartTransmission called while another EMLSR link is being used");
 
         auto emlsrManager = m_staMac->GetEmlsrManager();
 
@@ -791,14 +801,7 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         if (trigger.IsMuRts() && m_staMac->IsEmlsrLink(m_linkId))
         {
             // this is an initial Control frame
-            auto apAddress = GetWifiRemoteStationManager()->GetMldAddress(m_bssid);
-            NS_ASSERT_MSG(apAddress, "MLD address not found for BSSID " << m_bssid);
-            // when EMLSR links are blocked, all TIDs are blocked (we test TID 0 here)
-            WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *apAddress, 0);
-            if (auto mask =
-                    m_staMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
-                mask && mask->test(static_cast<std::size_t>(
-                            WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK)))
+            if (UsingOtherEmlsrLink())
             {
                 // we received an ICF on a link that is blocked because another EMLSR link is
                 // being used. This is likely because transmission on the other EMLSR link
