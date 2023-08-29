@@ -198,11 +198,31 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
             return false;
         }
 
-        if (!emlsrManager->GetAuxPhyTxCapable() &&
-            m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId()) != m_phy)
+        if (auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
+            mainPhy != m_phy)
         {
-            NS_LOG_DEBUG("Aux PHY is not capable of transmitting a PPDU");
-            return false;
+            // an aux PHY is operating on this link
+            if (!emlsrManager->GetAuxPhyTxCapable())
+            {
+                NS_LOG_DEBUG("Aux PHY is not capable of transmitting a PPDU");
+                NotifyChannelReleased(edca);
+                return false;
+            }
+
+            if (mainPhy->IsStateRx())
+            {
+                NS_LOG_DEBUG(
+                    "Main PHY is receiving a PPDU (may be, e.g., an ICF or a Beacon); do not "
+                    "transmit to avoid dropping that PPDU due to the main PHY switching to this "
+                    "link to take over the TXOP");
+                // Note that we do not prevent a (main or aux) PHY from starting a TXOP when
+                // an(other) aux PHY is receiving a PPDU. The reason is that if the aux PHY is
+                // receiving a Beacon frame, the aux PHY will not be affected by the start of
+                // a TXOP; if the aux PHY is receiving an ICF, the ICF will be dropped by
+                // ReceiveMpdu because another EMLSR link is being used.
+                NotifyChannelReleased(edca);
+                return false;
+            }
         }
     }
 
