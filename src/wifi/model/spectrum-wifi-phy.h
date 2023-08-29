@@ -131,10 +131,6 @@ class SpectrumWifiPhy : public WifiPhy
                                           double rxPower,
                                           Time duration);
 
-    // The following method calls the base WifiPhy class method
-    // but also generates a new SpectrumModel if called during runtime
-    void DoChannelSwitch() override;
-
     /**
      * This function is sending the signal to the Spectrum channel
      * after finishing the configuration of the transmit parameters.
@@ -161,6 +157,10 @@ class SpectrumWifiPhy : public WifiPhy
   protected:
     void DoDispose() override;
     void DoInitialize() override;
+
+    // The following method calls the base WifiPhy class method
+    // but also generates a new SpectrumModel if called during runtime
+    void DoChannelSwitch() override;
 
     std::map<FrequencyRange, Ptr<WifiSpectrumPhyInterface>>
         m_spectrumPhyInterfaces; //!< Spectrum PHY interfaces
