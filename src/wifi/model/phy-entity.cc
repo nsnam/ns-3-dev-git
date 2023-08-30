@@ -847,7 +847,6 @@ PhyEntity::AddPreambleEvent(Ptr<Event> event)
 Ptr<Event>
 PhyEntity::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW)
 {
-    Ptr<Event> event;
     // We store all incoming preamble events, and a decision is made at the end of the preamble
     // detection window.
     const auto uidPreamblePair = std::make_pair(ppdu->GetUid(), ppdu->GetPreamble());
@@ -857,29 +856,27 @@ PhyEntity::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPow
     {
         // received another signal with the same content
         NS_LOG_DEBUG("Received another PPDU for UID " << ppdu->GetUid());
-        event = it->second;
+        const auto foundEvent = it->second;
         const auto maxDelay =
             m_wifiPhy->GetPhyEntityForPpdu(ppdu)->GetMaxDelayPpduSameUid(ppdu->GetTxVector());
-        if (Simulator::Now() - event->GetStartTime() > maxDelay)
+        if (Simulator::Now() - foundEvent->GetStartTime() > maxDelay)
         {
             // This PPDU arrived too late to be decoded properly. The PPDU is dropped and added as
             // interference
-            event = CreateInterferenceEvent(ppdu, ppdu->GetTxDuration(), rxPowersW);
+            CreateInterferenceEvent(ppdu, ppdu->GetTxDuration(), rxPowersW);
             NS_LOG_DEBUG("Drop PPDU that arrived too late");
             m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), PPDU_TOO_LATE);
         }
         else
         {
             // Update received power of the event associated to that transmission
-            UpdateInterferenceEvent(event, rxPowersW);
+            UpdateInterferenceEvent(foundEvent, rxPowersW);
         }
         return nullptr;
     }
-    else
-    {
-        event = CreateInterferenceEvent(ppdu, ppdu->GetTxDuration(), rxPowersW);
-        AddPreambleEvent(event);
-    }
+
+    auto event = CreateInterferenceEvent(ppdu, ppdu->GetTxDuration(), rxPowersW);
+    AddPreambleEvent(event);
     return event;
 }
 
