@@ -3193,15 +3193,13 @@ LrWpanMac::PdDataConfirm(LrWpanPhyEnumeration status)
                     switch (receivedMacPayload.GetAssociationStatus())
                     {
                     case CommandPayloadHeader::SUCCESSFUL:
-                        confirmParams.m_status =
-                            LrWpanMlmeAssociateConfirmStatus::MLMEASSOC_SUCCESS;
-                        // The original short address used in the association
-                        // used in the association request
-                        confirmParams.m_assocShortAddr = GetShortAddress();
-
                         // The assigned short address by the coordinator
                         SetShortAddress(receivedMacPayload.GetShortAddr());
                         m_macPanId = receivedMacHdr.GetSrcPanId();
+
+                        confirmParams.m_status =
+                            LrWpanMlmeAssociateConfirmStatus::MLMEASSOC_SUCCESS;
+                        confirmParams.m_assocShortAddr = GetShortAddress();
                         break;
                     case CommandPayloadHeader::FULL_CAPACITY:
                         confirmParams.m_status =
