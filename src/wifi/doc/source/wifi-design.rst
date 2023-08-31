@@ -751,9 +751,14 @@ the other ones are referred to as inactive RF interfaces and might be disconnect
 
    Multiple RF interfaces concept
 
-If the ``SpectrumWifiPhy::TrackSignalsFromInactiveInterfaces`` attribute is set to true,
+If the ``SpectrumWifiPhy::TrackSignalsFromInactiveInterfaces`` attribute is set to true (default),
 inactive RF interfaces are connected to their respective spectrum channels and the ``SpectrumWifiPhy``
-forwards received signals from these inactive RF interfaces to the ``InterferenceHelper`` without processing them.
+also receive signals from these inactive RF interfaces when they belong to a configured portion
+of the frequency range covered by the interface.
+The portion of the spectrum being monitored by an inactive interface is specified by a center frequency
+and a channel width, and is seamlessly set to equivalent of the operating channel of the spectrum PHY
+that is actively using that frequency range. The ``SpectrumWifiPhy``forwards these received signals
+from inactive interfaces to the ``InterferenceHelper`` without further processing them.
 The benefit of the latter is that more accurate PHY-CCA.indication can be generated upon channel switching
 if one or more signals started to be transmitted on the new channel before the switch occurs,
 which would be ignored otherwise. This is illustrated in Figure :ref:`fig-cca-channel-switching-multiple-interfaces`, where the parts in red are only generated when ``SpectrumWifiPhy::TrackSignalsFromInactiveInterfaces`` is set to true.
