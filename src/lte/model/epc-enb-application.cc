@@ -277,7 +277,7 @@ EpcEnbApplication::RecvFromLteSocket(Ptr<Socket> socket)
     NS_ASSERT(found);
     uint16_t rnti = tag.GetRnti();
     uint8_t bid = tag.GetBid();
-    NS_LOG_LOGIC("received packet with RNTI=" << (uint32_t)rnti << ", BID=" << (uint32_t)bid);
+    NS_LOG_INFO("Received packet with RNTI: " << rnti << ", BID: " << +bid);
     auto rntiIt = m_rbidTeidMap.find(rnti);
     if (rntiIt == m_rbidTeidMap.end())
     {
@@ -302,6 +302,7 @@ EpcEnbApplication::RecvFromS1uSocket(Ptr<Socket> socket)
     GtpuHeader gtpu;
     packet->RemoveHeader(gtpu);
     uint32_t teid = gtpu.GetTeid();
+    NS_LOG_INFO("Received packet from S1-U interface with GTP TEID: " << teid);
     auto it = m_teidRbidMap.find(teid);
     if (it == m_teidRbidMap.end())
     {
@@ -317,9 +318,10 @@ EpcEnbApplication::RecvFromS1uSocket(Ptr<Socket> socket)
 void
 EpcEnbApplication::SendToLteSocket(Ptr<Packet> packet, uint16_t rnti, uint8_t bid)
 {
-    NS_LOG_FUNCTION(this << packet << rnti << (uint16_t)bid << packet->GetSize());
+    NS_LOG_FUNCTION(this << packet << rnti << bid << packet->GetSize());
     EpsBearerTag tag(rnti, bid);
     packet->AddPacketTag(tag);
+    NS_LOG_INFO("Add EpsBearerTag with RNTI " << rnti << " and bearer ID " << +bid);
     uint8_t ipType;
 
     packet->CopyData(&ipType, 1);
@@ -328,10 +330,12 @@ EpcEnbApplication::SendToLteSocket(Ptr<Packet> packet, uint16_t rnti, uint8_t bi
     int sentBytes;
     if (ipType == 0x04)
     {
+        NS_LOG_INFO("Forward packet from eNB's S1-U to LTE stack via IPv4 socket.");
         sentBytes = m_lteSocket->Send(packet);
     }
     else if (ipType == 0x06)
     {
+        NS_LOG_INFO("Forward packet from eNB's S1-U to LTE stack via IPv6 socket.");
         sentBytes = m_lteSocket6->Send(packet);
     }
     else
@@ -353,6 +357,7 @@ EpcEnbApplication::SendToS1uSocket(Ptr<Packet> packet, uint32_t teid)
     gtpu.SetLength(packet->GetSize() + gtpu.GetSerializedSize() - 8);
     packet->AddHeader(gtpu);
     uint32_t flags = 0;
+    NS_LOG_INFO("Forward packet from eNB's LTE to S1-U stack with TEID: " << teid);
     m_s1uSocket->SendTo(packet, flags, InetSocketAddress(m_sgwS1uAddress, m_gtpuUdpPort));
 }
 
