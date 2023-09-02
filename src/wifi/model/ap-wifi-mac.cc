@@ -1412,6 +1412,15 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdS
                             "AID " << it->first << " already assigned to " << staAddr
                                    << ", could not assign " << aid);
         }
+
+        if (auto extendedCapabilities =
+                GetWifiRemoteStationManager(linkId)->GetStationExtendedCapabilities(staAddr);
+            m_gcrManager)
+        {
+            const auto isGcrCapable =
+                extendedCapabilities && extendedCapabilities->m_robustAvStreaming;
+            m_gcrManager->NotifyStaAssociated(staAddr, isGcrCapable);
+        }
     }
 
     // set the AID in all the Association Responses. NOTE that the Association
@@ -2060,6 +2069,10 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                         UpdateShortSlotTimeEnabled(linkId);
                         UpdateShortPreambleEnabled(linkId);
                         StaSwitchingToActiveModeOrDeassociated(from, linkId);
+                        if (m_gcrManager)
+                        {
+                            m_gcrManager->NotifyStaDeassociated(from);
+                        }
                         break;
                     }
                 }
