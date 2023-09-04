@@ -144,6 +144,8 @@ WifiRemoteStationManager::WifiRemoteStationManager()
       m_shortSlotTimeEnabled(false)
 {
     NS_LOG_FUNCTION(this);
+    m_ssrc.fill(0);
+    m_slrc.fill(0);
 }
 
 WifiRemoteStationManager::~WifiRemoteStationManager()
@@ -168,7 +170,6 @@ WifiRemoteStationManager::SetupPhy(const Ptr<WifiPhy> phy)
     // transmit rate for automatic control responses like
     // acknowledgments.
     m_wifiPhy = phy;
-    Reset();
 }
 
 void
@@ -178,7 +179,6 @@ WifiRemoteStationManager::SetupMac(const Ptr<WifiMac> mac)
     // We need to track our MAC because it is the object that knows the
     // full set of interframe spaces.
     m_wifiMac = mac;
-    Reset();
 }
 
 int64_t

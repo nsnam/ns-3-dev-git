@@ -587,10 +587,8 @@ WifiMac::NotifyChannelSwitching(uint8_t linkId)
     // the PHY dependent parameters. In any case, this makes no harm
     ConfigurePhyDependentParameters(linkId);
 
-    // SetupPhy not only resets the remote station manager, but also sets the
-    // default TX mode and MCS, which is required when switching to a channel
-    // in a different band
-    GetLink(linkId).stationManager->SetupPhy(GetLink(linkId).phy);
+    // Reset remote station manager
+    GetLink(linkId).stationManager->Reset();
 }
 
 void
