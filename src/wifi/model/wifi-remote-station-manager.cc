@@ -168,12 +168,6 @@ WifiRemoteStationManager::SetupPhy(const Ptr<WifiPhy> phy)
     // transmit rate for automatic control responses like
     // acknowledgments.
     m_wifiPhy = phy;
-    m_defaultTxMode = phy->GetDefaultMode();
-    NS_ASSERT(m_defaultTxMode.IsMandatory());
-    if (GetHtSupported())
-    {
-        m_defaultTxMcs = HtPhy::GetHtMcs(0);
-    }
     Reset();
 }
 
@@ -1701,13 +1695,16 @@ WifiRemoteStationManager::GetLdpcSupported(Mac48Address address) const
 WifiMode
 WifiRemoteStationManager::GetDefaultMode() const
 {
-    return m_defaultTxMode;
+    NS_ASSERT(m_wifiPhy);
+    auto defaultTxMode = m_wifiPhy->GetDefaultMode();
+    NS_ASSERT(defaultTxMode.IsMandatory());
+    return defaultTxMode;
 }
 
 WifiMode
 WifiRemoteStationManager::GetDefaultMcs() const
 {
-    return m_defaultTxMcs;
+    return HtPhy::GetHtMcs0();
 }
 
 WifiMode

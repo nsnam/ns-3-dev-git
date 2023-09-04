@@ -1491,9 +1491,6 @@ class WifiRemoteStationManager : public Object
     StationStates m_states; //!< States of known stations
     Stations m_stations;    //!< Information for each known stations
 
-    WifiMode m_defaultTxMode; //!< The default transmission mode
-    WifiMode m_defaultTxMcs;  //!< The default transmission modulation-coding scheme (MCS)
-
     uint32_t m_maxSsrc;                //!< Maximum STA short retry count (SSRC)
     uint32_t m_maxSlrc;                //!< Maximum STA long retry count (SLRC)
     uint32_t m_rtsCtsThreshold;        //!< Threshold for RTS/CTS
