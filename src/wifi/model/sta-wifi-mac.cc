@@ -2055,6 +2055,8 @@ StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time dela
         newLink.feManager->ResetPhy();
         // Connect the FEM on the new link to the given PHY
         newLink.feManager->SetWifiPhy(phy);
+        // Connect the station manager on the new link to the given PHY
+        newLink.stationManager->SetupPhy(phy);
     };
 
     // if there is no PHY operating on the new link, connect the PHY to the new link now.
