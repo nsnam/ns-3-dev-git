@@ -9,10 +9,11 @@
 
 #include "msdu-aggregator.h"
 
+#include "ap-wifi-mac.h"
+#include "gcr-manager.h"
 #include "qos-txop.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
-#include "wifi-mac.h"
 #include "wifi-remote-station-manager.h"
 #include "wifi-tx-parameters.h"
 
@@ -83,15 +84,12 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
 {
     NS_LOG_FUNCTION(this << *peekedItem << &txParams << availableTime);
 
-    Ptr<WifiMacQueue> queue = m_mac->GetTxopQueue(peekedItem->GetQueueAc());
-
-    uint8_t tid = peekedItem->GetHeader().GetQosTid();
-    auto recipient = peekedItem->GetOriginal()->GetHeader().GetAddr1();
-
     /* "The Address 1 field of an MPDU carrying an A-MSDU shall be set to an
      * individual address or to the GCR concealment address" (Section 10.12
      * of 802.11-2016)
      */
+    const auto& header = peekedItem->GetOriginal()->GetHeader();
+    const auto recipient = GetIndividuallyAddressedRecipient(m_mac, header);
     NS_ABORT_MSG_IF(recipient.IsBroadcast(), "Recipient address is broadcast");
 
     /* "A STA shall not transmit an A-MSDU within a QoS Data frame under a block
@@ -106,14 +104,34 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
 
     NS_ASSERT(m_htFem);
 
+    auto queue = m_mac->GetTxopQueue(peekedItem->GetQueueAc());
+
+    // if GCR, A-MSDU is always used with a single A-MSDU subframe
+    if (IsGcr(m_mac, header))
+    {
+        auto msdu = peekedItem->GetOriginal();
+        auto gcrAmsdu =
+            Create<WifiMpdu>(msdu->GetPacket(), msdu->GetHeader(), msdu->GetTimestamp());
+        gcrAmsdu->Aggregate(nullptr);
+        queue->Replace(msdu, gcrAmsdu);
+        return m_htFem->CreateAliasIfNeeded(gcrAmsdu);
+    }
+    else if (IsGroupcast(recipient))
+    {
+        NS_LOG_DEBUG("No A-MSDU aggregation for groupcast frames without GCR service");
+        return nullptr;
+    }
+
+    const auto tid = header.GetQosTid();
     if (GetMaxAmsduSize(recipient, tid, txParams.m_txVector.GetModulationClass()) == 0)
     {
         NS_LOG_DEBUG("A-MSDU aggregation disabled");
         return nullptr;
     }
 
-    Ptr<WifiMpdu> amsdu = queue->GetOriginal(peekedItem);
-    uint8_t nMsdu = 1;
+    // perform A-MSDU aggregation
+    auto amsdu = queue->GetOriginal(peekedItem);
+    std::size_t nMsdu = 1;
     peekedItem = queue->PeekByTidAndAddress(tid, recipient, peekedItem->GetOriginal());
 
     // stop aggregation if we find an A-MSDU in the queue. This likely happens when an A-MSDU is
@@ -127,7 +145,7 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
                       "Found item with sequence number assignment after one without: perhaps "
                       "sequence numbers were not released correctly?");
         // find the next MPDU before dequeuing the current one
-        Ptr<const WifiMpdu> msdu = peekedItem->GetOriginal();
+        auto msdu = peekedItem->GetOriginal();
         peekedItem = queue->PeekByTidAndAddress(tid, recipient, msdu);
         queue->DequeueIfQueued({amsdu});
         // perform A-MSDU aggregation

@@ -796,7 +796,8 @@ BlockAckManager::NotifyGotMpdu(Ptr<const WifiMpdu> mpdu)
     std::optional<Mac48Address> groupAddress;
     if (const auto addr1 = mpdu->GetOriginal()->GetHeader().GetAddr1(); addr1.IsGroup())
     {
-        groupAddress = mpdu->begin()->second.GetDestinationAddr();
+        groupAddress =
+            mpdu->GetHeader().IsQosAmsdu() ? mpdu->begin()->second.GetDestinationAddr() : addr1;
     }
     if (auto it = GetRecipientBaAgreement(originator, tid, groupAddress);
         it != m_recipientAgreements.end())
