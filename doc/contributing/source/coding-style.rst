@@ -151,17 +151,13 @@ For quick-reference, the most used commands are listed below:
 .. sourcecode:: console
 
   # Entire codebase (using paths relative to the ns-3 main directory)
-  ./utils/check-style-clang-format.py [--fix] [--verbose] [--no-formatting] [--no-whitespace] [--no-tabs] .
+  ./utils/check-style-clang-format.py --fix .
 
   # Entire codebase (using absolute paths)
-  /path/to/utils/check-style-clang-format.py [--fix] [--verbose] [--no-formatting] [--no-whitespace] [--no-tabs] /path/to/ns3
+  /path/to/utils/check-style-clang-format.py --fix /path/to/ns3
 
-  # Specific directory
-  /path/to/utils/check-style-clang-format.py [--fix] [--verbose] [--no-formatting] [--no-whitespace] [--no-tabs] absolute_or_relative/path/to/directory
-
-  # Individual file
-  /path/to/utils/check-style-clang-format.py [--fix] [--verbose] [--no-formatting] [--no-whitespace] [--no-tabs] absolute_or_relative/path/to/file
-
+  # Specific directory or file
+  /path/to/utils/check-style-clang-format.py --fix absolute_or_relative/path/to/directory_or_file
 
 Clang-tidy
 **********
