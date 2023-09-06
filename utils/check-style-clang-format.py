@@ -197,6 +197,8 @@ def find_files_to_check_style(path: str) -> Tuple[List[str], List[str], List[str
     else:
         raise ValueError(f'Error: {path} is not a file nor a directory')
 
+    files_to_check.sort()
+
     files_to_check_formatting: List[str] = []
     files_to_check_whitespace: List[str] = []
     files_to_check_tabs: List[str] = []
