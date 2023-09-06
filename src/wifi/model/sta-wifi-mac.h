@@ -381,7 +381,7 @@ class StaWifiMac : public WifiMac
      */
     StaLinkEntity& GetStaLink(const std::unique_ptr<WifiMac::LinkEntity>& link) const;
 
-  private:
+  public:
     /**
      * The current MAC state of the STA.
      */
@@ -394,6 +394,7 @@ class StaWifiMac : public WifiMac
         REFUSED
     };
 
+  private:
     /**
      * Enable or disable active probing.
      *
