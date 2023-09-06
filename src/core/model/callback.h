@@ -467,7 +467,8 @@ class Callback : public CallbackBase
         auto f = cb.DoPeekImpl()->GetFunction();
 
         CallbackComponentVector components(cb.DoPeekImpl()->GetComponents());
-        components.insert(components.end(), {std::make_shared<CallbackComponent<BArgs>>(bargs)...});
+        components.insert(components.end(),
+                          {std::make_shared<CallbackComponent<std::decay_t<BArgs>>>(bargs)...});
 
         m_impl = Create<CallbackImpl<R, UArgs...>>(
             [f, bargs...](auto&&... uargs) -> R {
@@ -501,8 +502,9 @@ class Callback : public CallbackBase
         constexpr bool isComp =
             std::is_function_v<std::remove_pointer_t<T>> || std::is_member_pointer_v<T>;
 
-        CallbackComponentVector components({std::make_shared<CallbackComponent<T, isComp>>(func),
-                                            std::make_shared<CallbackComponent<BArgs>>(bargs)...});
+        CallbackComponentVector components(
+            {std::make_shared<CallbackComponent<T, isComp>>(func),
+             std::make_shared<CallbackComponent<std::decay_t<BArgs>>>(bargs)...});
 
         m_impl = Create<CallbackImpl<R, UArgs...>>(
             [f, bargs...](auto&&... uargs) -> R {
@@ -532,7 +534,7 @@ class Callback : public CallbackBase
 
         CallbackComponentVector components(DoPeekImpl()->GetComponents());
         components.insert(components.end(),
-                          {std::make_shared<CallbackComponent<BoundArgs>>(bargs)...});
+                          {std::make_shared<CallbackComponent<std::decay_t<BoundArgs>>>(bargs)...});
 
         cb.m_impl = Create<std::remove_pointer_t<decltype(cb.DoPeekImpl())>>(
             [f, bargs...](auto&&... uargs) mutable {
