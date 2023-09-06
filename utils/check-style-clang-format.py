@@ -489,10 +489,12 @@ def check_trailing_whitespace_file(filename: str,
         file_lines[i] = line_fixed
 
         if verbose:
+            line_fixed_stripped_expanded = line_fixed.rstrip().expandtabs(TAB_SIZE)
+
             verbose_infos.extend([
-                f'{filename}:{i + 1}: error: Trailing whitespace detected',
-                f'    {line_fixed.rstrip()}',
-                f'    {"":{len(line_fixed) - 1}}^',
+                f'{filename}:{i + 1}:{len(line_fixed_stripped_expanded) + 1}: error: Trailing whitespace detected',
+                f'    {line_fixed_stripped_expanded}',
+                f'    {"":{len(line_fixed_stripped_expanded)}}^',
             ])
 
         # Optimization: If running in non-verbose check mode, only one error is needed to check that the file is not compliant
