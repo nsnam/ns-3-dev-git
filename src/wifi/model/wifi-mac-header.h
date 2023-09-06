@@ -188,7 +188,7 @@ class WifiMacHeader : public Header
      * \param resetToDsFromDs whether the ToDs and FromDs flags
      *        should be reset.
      */
-    void SetType(WifiMacType type, bool resetToDsFromDs = true);
+    virtual void SetType(WifiMacType type, bool resetToDsFromDs = true);
     /**
      * Set the Duration/ID field with the given raw uint16_t value.
      *
@@ -330,7 +330,7 @@ class WifiMacHeader : public Header
      *
      * \return the type (WifiMacType)
      */
-    WifiMacType GetType() const;
+    virtual WifiMacType GetType() const;
     /**
      * \return true if From DS bit is set, false otherwise
      */
@@ -621,13 +621,13 @@ class WifiMacHeader : public Header
      *
      * \return the size of the WifiMacHeader in octets
      */
-    uint32_t GetSize() const;
+    virtual uint32_t GetSize() const;
     /**
      * Return a string corresponds to the header type.
      *
      * \returns a string corresponds to the header type.
      */
-    const char* GetTypeString() const;
+    virtual const char* GetTypeString() const;
 
     /**
      * TracedCallback signature for WifiMacHeader
@@ -636,25 +636,25 @@ class WifiMacHeader : public Header
      */
     typedef void (*TracedCallback)(const WifiMacHeader& header);
 
-  private:
+  protected:
     /**
      * Return the raw Frame Control field.
      *
      * \return the raw Frame Control field
      */
-    uint16_t GetFrameControl() const;
+    virtual uint16_t GetFrameControl() const;
     /**
      * Return the raw QoS Control field.
      *
      * \return the raw QoS Control field
      */
-    uint16_t GetQosControl() const;
+    virtual uint16_t GetQosControl() const;
     /**
      * Set the Frame Control field with the given raw value.
      *
      * \param control the raw Frame Control field value
      */
-    void SetFrameControl(uint16_t control);
+    virtual void SetFrameControl(uint16_t control);
     /**
      * Set the Sequence Control field with the given raw value.
      *
@@ -666,7 +666,7 @@ class WifiMacHeader : public Header
      *
      * \param qos the raw QoS Control field value
      */
-    void SetQosControl(uint16_t qos);
+    virtual void SetQosControl(uint16_t qos);
     /**
      * Print the Frame Control field to the output stream.
      *
