@@ -22,13 +22,10 @@ Check and apply the ns-3 coding style to all files in the PATH argument.
 
 The coding style is defined with the clang-format tool, whose definitions are in
 the ".clang-format" file. This script performs the following checks / fixes:
-- Check / apply clang-format.
-- Check / trim trailing whitespace.
-- Check / replace tabs with spaces.
-
-The clang-format and tabs checks respect clang-format guards, which mark code blocks
-that should not be checked. Trailing whitespace is always checked regardless of
-clang-format guards.
+- Check / fix local #include headers with "ns3/" prefix. Respects clang-format guards.
+- Check / apply clang-format. Respects clang-format guards.
+- Check / trim trailing whitespace. Always checked.
+- Check / replace tabs with spaces. Respects clang-format guards.
 
 This script can be applied to all text files in a given path or to individual files.
 
@@ -41,6 +38,7 @@ import argparse
 import concurrent.futures
 import itertools
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -79,6 +77,8 @@ FILE_EXTENSIONS_TO_CHECK_FORMATTING = [
     '.cc',
     '.h',
 ]
+
+FILE_EXTENSIONS_TO_CHECK_INCLUDE_PREFIXES = FILE_EXTENSIONS_TO_CHECK_FORMATTING
 
 FILE_EXTENSIONS_TO_CHECK_WHITESPACE = [
     '.c',
@@ -169,12 +169,13 @@ def should_analyze_file(path: str,
             extension in file_extensions_to_check)
 
 
-def find_files_to_check_style(path: str) -> Tuple[List[str], List[str], List[str]]:
+def find_files_to_check_style(path: str) -> Tuple[List[str], List[str], List[str], List[str]]:
     """
     Find all files to be checked in a given path.
 
     @param path Path to check.
-    @return Tuple [List of files to check formatting,
+    @return Tuple [List of files to check include prefixes,
+                   List of files to check formatting,
                    List of files to check trailing whitespace,
                    List of files to check tabs].
     """
@@ -199,11 +200,15 @@ def find_files_to_check_style(path: str) -> Tuple[List[str], List[str], List[str
 
     files_to_check.sort()
 
+    files_to_check_include_prefixes: List[str] = []
     files_to_check_formatting: List[str] = []
     files_to_check_whitespace: List[str] = []
     files_to_check_tabs: List[str] = []
 
     for f in files_to_check:
+        if should_analyze_file(f, [], FILE_EXTENSIONS_TO_CHECK_INCLUDE_PREFIXES):
+            files_to_check_include_prefixes.append(f)
+
         if should_analyze_file(f, [], FILE_EXTENSIONS_TO_CHECK_FORMATTING):
             files_to_check_formatting.append(f)
 
@@ -214,6 +219,7 @@ def find_files_to_check_style(path: str) -> Tuple[List[str], List[str], List[str
             files_to_check_tabs.append(f)
 
     return (
+        files_to_check_include_prefixes,
         files_to_check_formatting,
         files_to_check_whitespace,
         files_to_check_tabs,
@@ -263,6 +269,7 @@ def find_clang_format_path() -> str:
 # CHECK STYLE MAIN FUNCTIONS
 ###########################################################
 def check_style_clang_format(path: str,
+                             enable_check_include_prefixes: bool,
                              enable_check_formatting: bool,
                              enable_check_whitespace: bool,
                              enable_check_tabs: bool,
@@ -274,22 +281,37 @@ def check_style_clang_format(path: str,
     Check / fix the coding style of a list of files.
 
     @param path Path to the files.
-    @param enable_check_formatting Whether to enable code formatting checking.
-    @param enable_check_whitespace Whether to enable trailing whitespace checking.
-    @param enable_check_tabs Whether to enable tabs checking.
+    @param enable_check_include_prefixes Whether to enable checking #include headers from the same module with the "ns3/" prefix.
+    @param enable_check_formatting Whether to enable checking code formatting.
+    @param enable_check_whitespace Whether to enable checking trailing whitespace.
+    @param enable_check_tabs Whether to enable checking tabs.
     @param fix Whether to fix (True) or just check (False) the file.
     @param verbose Show the lines that are not compliant with the style.
     @param n_jobs Number of parallel jobs.
     @return Whether all files are compliant with all enabled style checks.
     """
 
-    (files_to_check_formatting,
+    (files_to_check_include_prefixes,
+     files_to_check_formatting,
      files_to_check_whitespace,
      files_to_check_tabs) = find_files_to_check_style(path)
 
+    check_include_prefixes_successful = True
     check_formatting_successful = True
     check_whitespace_successful = True
     check_tabs_successful = True
+
+    if enable_check_include_prefixes:
+        check_include_prefixes_successful = check_style_file(
+            files_to_check_include_prefixes,
+            check_include_prefixes_file,
+            '#include headers from the same module with the "ns3/" prefix',
+            fix,
+            verbose,
+            n_jobs,
+        )
+
+        print('')
 
     if enable_check_formatting:
         check_formatting_successful = check_style_file(
@@ -327,6 +349,7 @@ def check_style_clang_format(path: str,
         )
 
     return all([
+        check_include_prefixes_successful,
         check_formatting_successful,
         check_whitespace_successful,
         check_tabs_successful,
@@ -400,6 +423,81 @@ def check_style_file(filenames: List[str],
 ###########################################################
 # CHECK STYLE FUNCTIONS
 ###########################################################
+def check_include_prefixes_file(filename: str,
+                                fix: bool,
+                                verbose: bool,
+                                ) -> Tuple[str, bool, List[str]]:
+    """
+    Check / fix #include headers from the same module with the "ns3/" prefix in a file.
+
+    @param filename Name of the file to be checked.
+    @param fix Whether to fix (True) or just check (False) the style of the file (True).
+    @param verbose Show the lines that are not compliant with the style.
+    @return Tuple [Filename,
+                   Whether the file is compliant with the style (before the check),
+                   Verbose information].
+    """
+
+    is_file_compliant = True
+    clang_format_enabled = True
+
+    verbose_infos: List[str] = []
+
+    with open(filename, 'r', encoding='utf-8') as f:
+        file_lines = f.readlines()
+
+    for (i, line) in enumerate(file_lines):
+
+        # Check clang-format guards
+        line_stripped = line.strip()
+
+        if line_stripped == CLANG_FORMAT_GUARD_ON:
+            clang_format_enabled = True
+        elif line_stripped == CLANG_FORMAT_GUARD_OFF:
+            clang_format_enabled = False
+
+        if (not clang_format_enabled and
+                line_stripped not in (CLANG_FORMAT_GUARD_ON, CLANG_FORMAT_GUARD_OFF)):
+            continue
+
+        # Check if the line is an #include and extract its header file
+        header_file = re.findall(r'^#include ["<]ns3/(.*\.h)[">]', line_stripped)
+
+        if not header_file:
+            continue
+
+        # Check if the header file belongs to the same module and remove the "ns3/" prefix
+        header_file = header_file[0]
+        parent_path = os.path.split(filename)[0]
+
+        if not os.path.exists(os.path.join(parent_path, header_file)):
+            continue
+
+        is_file_compliant = False
+        file_lines[i] = line_stripped.replace(
+            f'ns3/{header_file}', header_file).replace('<', '"').replace('>', '"') + '\n'
+
+        if verbose:
+            header_index = len('#include "')
+
+            verbose_infos.extend([
+                f'{filename}:{i + 1}:{header_index + 1}: error: #include headers from the same module with the "ns3/" prefix detected',
+                f'    {line_stripped}',
+                f'    {"":{header_index}}^',
+            ])
+
+        # Optimization: If running in non-verbose check mode, only one error is needed to check that the file is not compliant
+        if not fix and not verbose:
+            break
+
+    # Update file with the fixed lines
+    if fix and not is_file_compliant:
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.writelines(file_lines)
+
+    return (filename, is_file_compliant, verbose_infos)
+
+
 def check_formatting_file(filename: str,
                           fix: bool,
                           verbose: bool,
@@ -582,8 +680,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Check and apply the ns-3 coding style to all files in a given PATH. '
         'The script checks the formatting of the file with clang-format. '
-        'Additionally, it checks the presence of trailing whitespace and tabs. '
-        'Formatting and tabs checks respect clang-format guards. '
+        'Additionally, it checks #include headers from the same module with the "ns3/" prefix, '
+        'the presence of trailing whitespace and tabs. '
+        'Formatting, local #include "ns3/" prefixes and tabs checks respect clang-format guards. '
         'When used in "check mode" (default), the script checks if all files are well '
         'formatted and do not have trailing whitespace nor tabs. '
         'If it detects non-formatted files, they will be printed and this process exits with a '
@@ -591,6 +690,9 @@ if __name__ == '__main__':
 
     parser.add_argument('path', action='store', type=str,
                         help='Path to the files to check')
+
+    parser.add_argument('--no-include-prefixes', action='store_true',
+                        help='Do not check / fix #include headers from the same module with the "ns3/" prefix')
 
     parser.add_argument('--no-formatting', action='store_true',
                         help='Do not check / fix code formatting')
@@ -615,6 +717,7 @@ if __name__ == '__main__':
     try:
         all_checks_successful = check_style_clang_format(
             path=args.path,
+            enable_check_include_prefixes=(not args.no_include_prefixes),
             enable_check_formatting=(not args.no_formatting),
             enable_check_whitespace=(not args.no_whitespace),
             enable_check_tabs=(not args.no_tabs),
