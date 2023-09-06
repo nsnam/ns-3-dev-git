@@ -357,8 +357,6 @@ class StaWifiMac : public WifiMac
         bool sendAssocReq;                 //!< whether this link is used to send the
                                            //!< Association Request frame
         std::optional<Mac48Address> bssid; //!< BSSID of the AP to associate with over this link
-        EventId beaconWatchdog;            //!< beacon watchdog
-        Time beaconWatchdogEnd{0};         //!< beacon watchdog end
         WifiPowerManagementMode pmMode{WIFI_PM_ACTIVE}; /**< the current PM mode, if the STA is
                                                              associated, or the PM mode to switch
                                                              to upon association, otherwise */
@@ -506,19 +504,15 @@ class StaWifiMac : public WifiMac
      */
     bool IsWaitAssocResp() const;
     /**
-     * This method is called after we have not received a beacon from the AP
-     * on the given link.
-     *
-     * \param linkId the ID of the given link
+     * This method is called after we have not received a beacon from the AP on any link.
      */
-    void MissedBeacons(uint8_t linkId);
+    void MissedBeacons();
     /**
-     * Restarts the beacon timer for the given link.
+     * Restarts the beacon timer.
      *
      * \param delay the delay before the watchdog fires
-     * \param linkId the ID of the given link
      */
-    void RestartBeaconWatchdog(Time delay, uint8_t linkId);
+    void RestartBeaconWatchdog(Time delay);
     /**
      * Set the state to unassociated and try to associate again.
      */
@@ -628,6 +622,8 @@ class StaWifiMac : public WifiMac
     Time m_assocRequestTimeout;             ///< association request timeout
     EventId m_assocRequestEvent;            ///< association request event
     uint32_t m_maxMissedBeacons;            ///< maximum missed beacons
+    EventId m_beaconWatchdog;               //!< beacon watchdog
+    Time m_beaconWatchdogEnd{0};            //!< beacon watchdog end
     bool m_activeProbing;                   ///< active probing
     Ptr<RandomVariableStream> m_probeDelay; ///< RandomVariable used to randomize the time
                                             ///< of the first Probe Response on each channel
