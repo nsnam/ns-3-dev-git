@@ -267,7 +267,7 @@ def check_style_clang_format(path: str,
                              fix: bool,
                              verbose: bool,
                              n_jobs: int = 1,
-                             ) -> None:
+                             ) -> bool:
     """
     Check / fix the coding style of a list of files.
 
@@ -278,6 +278,7 @@ def check_style_clang_format(path: str,
     @param fix Whether to fix (True) or just check (False) the file.
     @param verbose Show the lines that are not compliant with the style.
     @param n_jobs Number of parallel jobs.
+    @return Whether all files are compliant with all enabled style checks.
     """
 
     (files_to_check_formatting,
@@ -323,14 +324,11 @@ def check_style_clang_format(path: str,
             n_jobs,
         )
 
-    if all([
+    return all([
         check_formatting_successful,
         check_whitespace_successful,
         check_tabs_successful,
-    ]):
-        sys.exit(0)
-    else:
-        sys.exit(1)
+    ])
 
 
 def check_style_file(filenames: List[str],
@@ -611,7 +609,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     try:
-        check_style_clang_format(
+        all_checks_successful = check_style_clang_format(
             path=args.path,
             enable_check_formatting=(not args.no_formatting),
             enable_check_whitespace=(not args.no_whitespace),
@@ -623,4 +621,9 @@ if __name__ == '__main__':
 
     except Exception as e:
         print(e)
+        sys.exit(1)
+
+    if all_checks_successful:
+        sys.exit(0)
+    else:
         sys.exit(1)
