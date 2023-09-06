@@ -1106,9 +1106,6 @@ class WifiMac : public Object
      */
     TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
 
-    TracedCallback<const WifiMacHeader&> m_txOkCallback;  ///< transmit OK callback
-    TracedCallback<const WifiMacHeader&> m_txErrCallback; ///< transmit error callback
-
     /**
      * TracedCallback signature for MPDU drop events.
      *

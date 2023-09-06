@@ -289,19 +289,6 @@ WifiMac::GetTypeId()
                             "up from the physical layer.",
                             MakeTraceSourceAccessor(&WifiMac::m_macRxDropTrace),
                             "ns3::Packet::TracedCallback")
-            .AddTraceSource("TxOkHeader",
-                            "The header of successfully transmitted packet.",
-                            MakeTraceSourceAccessor(&WifiMac::m_txOkCallback),
-                            "ns3::WifiMacHeader::TracedCallback",
-                            TypeId::OBSOLETE,
-                            "Use the AckedMpdu trace instead.")
-            .AddTraceSource("TxErrHeader",
-                            "The header of unsuccessfuly transmitted packet.",
-                            MakeTraceSourceAccessor(&WifiMac::m_txErrCallback),
-                            "ns3::WifiMacHeader::TracedCallback",
-                            TypeId::OBSOLETE,
-                            "Depending on the failure type, use the NAckedMpdu trace, the "
-                            "DroppedMpdu trace or one of the traces associated with TX timeouts.")
             .AddTraceSource("AckedMpdu",
                             "An MPDU that was successfully acknowledged, via either a "
                             "Normal Ack or a Block Ack.",
