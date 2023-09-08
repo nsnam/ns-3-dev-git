@@ -331,7 +331,7 @@ class WifiRadioEnergyModel : public DeviceEnergyModel
     /**
      * \returns Pointer to the PHY listener.
      */
-    WifiRadioEnergyModelPhyListener* GetPhyListener();
+    std::shared_ptr<WifiRadioEnergyModelPhyListener> GetPhyListener();
 
   private:
     void DoDispose() override;
@@ -384,7 +384,7 @@ class WifiRadioEnergyModel : public DeviceEnergyModel
     WifiRadioEnergyRechargedCallback m_energyRechargedCallback;
 
     /// WifiPhy listener
-    WifiRadioEnergyModelPhyListener* m_listener;
+    std::shared_ptr<WifiRadioEnergyModelPhyListener> m_listener;
 
     EventId m_switchToOffEvent; ///< switch to off event
 };

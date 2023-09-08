@@ -461,13 +461,13 @@ WifiPhy::SetReceiveErrorCallback(RxErrorCallback callback)
 }
 
 void
-WifiPhy::RegisterListener(WifiPhyListener* listener)
+WifiPhy::RegisterListener(const std::shared_ptr<WifiPhyListener>& listener)
 {
     m_state->RegisterListener(listener);
 }
 
 void
-WifiPhy::UnregisterListener(WifiPhyListener* listener)
+WifiPhy::UnregisterListener(const std::shared_ptr<WifiPhyListener>& listener)
 {
     m_state->UnregisterListener(listener);
 }

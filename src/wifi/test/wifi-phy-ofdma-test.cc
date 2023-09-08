@@ -3180,7 +3180,7 @@ class TestUlOfdmaPhyTransmission : public TestCase
     Ptr<OfdmaSpectrumWifiPhy> m_phySta2; ///< PHY of STA 2
     Ptr<OfdmaSpectrumWifiPhy> m_phySta3; ///< PHY of STA 3
 
-    std::unique_ptr<OfdmaTestPhyListener>
+    std::shared_ptr<OfdmaTestPhyListener>
         m_apPhyStateListener; ///< listener for AP PHY state transitions
 
     Ptr<WaveformGenerator> m_phyInterferer; ///< PHY of interferer
@@ -3735,7 +3735,7 @@ TestUlOfdmaPhyTransmission::DoSetup()
     Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel>();
     m_phyAp->SetMobility(apMobility);
     m_apPhyStateListener = std::make_unique<OfdmaTestPhyListener>();
-    m_phyAp->RegisterListener(m_apPhyStateListener.get());
+    m_phyAp->RegisterListener(m_apPhyStateListener);
     apDev->SetPhy(m_phyAp);
     apMac->SetWifiPhys({m_phyAp});
     apNode->AggregateObject(apMobility);

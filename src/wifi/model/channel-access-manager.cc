@@ -212,12 +212,12 @@ ChannelAccessManager::DoDispose()
     m_phyListeners.clear();
 }
 
-PhyListener*
+std::shared_ptr<PhyListener>
 ChannelAccessManager::GetPhyListener(Ptr<WifiPhy> phy) const
 {
     if (auto listenerIt = m_phyListeners.find(phy); listenerIt != m_phyListeners.end())
     {
-        return listenerIt->second.get();
+        return listenerIt->second;
     }
     return nullptr;
 }
@@ -227,9 +227,7 @@ ChannelAccessManager::SetupPhyListener(Ptr<WifiPhy> phy)
 {
     NS_LOG_FUNCTION(this << phy);
 
-    auto phyListener = GetPhyListener(phy);
-
-    if (phyListener)
+    if (auto phyListener = GetPhyListener(phy))
     {
         // a PHY listener for the given PHY already exists, it must be inactive
         NS_ASSERT_MSG(!phyListener->IsActive(),
@@ -239,7 +237,7 @@ ChannelAccessManager::SetupPhyListener(Ptr<WifiPhy> phy)
     }
     else
     {
-        phyListener = new PhyListener(this);
+        phyListener = std::make_shared<PhyListener>(this);
         m_phyListeners.emplace(phy, phyListener);
         phy->RegisterListener(phyListener);
     }

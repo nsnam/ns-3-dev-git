@@ -812,7 +812,7 @@ class WifiPhyCcaIndicationTest : public TestCase
     std::size_t
         m_numSignalGenerators; ///< The number of non-wifi signals generators needed for the test
 
-    std::unique_ptr<CcaTestPhyListener>
+    std::shared_ptr<CcaTestPhyListener>
         m_rxPhyStateListener; ///< Listener for PHY state transitions
 
     uint16_t m_frequency;    ///< Operating frequency in MHz
@@ -1018,7 +1018,7 @@ WifiPhyCcaIndicationTest::DoSetup()
     rxDev->SetVhtConfiguration(vhtConfiguration);
     m_rxPhy = CreateObject<SpectrumWifiPhy>();
     m_rxPhyStateListener = std::make_unique<CcaTestPhyListener>();
-    m_rxPhy->RegisterListener(m_rxPhyStateListener.get());
+    m_rxPhy->RegisterListener(m_rxPhyStateListener);
     Ptr<InterferenceHelper> rxInterferenceHelper = CreateObject<InterferenceHelper>();
     m_rxPhy->SetInterferenceHelper(rxInterferenceHelper);
     Ptr<ErrorRateModel> rxErrorModel = CreateObject<NistErrorRateModel>();

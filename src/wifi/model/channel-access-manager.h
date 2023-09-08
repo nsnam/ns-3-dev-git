@@ -317,7 +317,7 @@ class ChannelAccessManager : public Object
      * \param phy the given PHY
      * \return the current registered listener for PHY events on the given PHY
      */
-    PhyListener* GetPhyListener(Ptr<WifiPhy> phy) const;
+    std::shared_ptr<PhyListener> GetPhyListener(Ptr<WifiPhy> phy) const;
     /**
      * Initialize the structures holding busy end times per channel type (primary,
      * secondary, etc.) and per 20 MHz channel.
@@ -434,7 +434,7 @@ class ChannelAccessManager : public Object
     std::unordered_map<Ptr<WifiPhy>, EmlsrLinkSwitchInfo> m_switchingEmlsrLinks;
 
     /// Maps each PHY listener to the associated PHY
-    using PhyListenerMap = std::unordered_map<Ptr<WifiPhy>, std::unique_ptr<PhyListener>>;
+    using PhyListenerMap = std::unordered_map<Ptr<WifiPhy>, std::shared_ptr<PhyListener>>;
 
     PhyListenerMap m_phyListeners;         //!< the PHY listeners
     Ptr<WifiPhy> m_phy;                    //!< pointer to the unique active PHY

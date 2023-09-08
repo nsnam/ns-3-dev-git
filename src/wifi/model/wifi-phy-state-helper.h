@@ -29,6 +29,7 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 
+#include <memory>
 #include <vector>
 
 namespace ns3
@@ -93,13 +94,13 @@ class WifiPhyStateHelper : public Object
      *
      * \param listener the WifiPhyListener to register
      */
-    void RegisterListener(WifiPhyListener* listener);
+    void RegisterListener(const std::shared_ptr<WifiPhyListener>& listener);
     /**
      * Remove WifiPhyListener from this WifiPhyStateHelper.
      *
      * \param listener the WifiPhyListener to unregister
      */
-    void UnregisterListener(WifiPhyListener* listener);
+    void UnregisterListener(const std::shared_ptr<WifiPhyListener>& listener);
     /**
      * Return the current state of WifiPhy.
      *

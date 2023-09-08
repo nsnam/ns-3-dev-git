@@ -99,7 +99,7 @@ WifiRadioEnergyModel::WifiRadioEnergyModel()
     NS_LOG_FUNCTION(this);
     m_energyDepletionCallback.Nullify();
     // set callback for WifiPhy listener
-    m_listener = new WifiRadioEnergyModelPhyListener;
+    m_listener = std::make_shared<WifiRadioEnergyModelPhyListener>();
     m_listener->SetChangeStateCallback(MakeCallback(&DeviceEnergyModel::ChangeState, this));
     // set callback for updating the TX current
     m_listener->SetUpdateTxCurrentCallback(
@@ -110,7 +110,7 @@ WifiRadioEnergyModel::~WifiRadioEnergyModel()
 {
     NS_LOG_FUNCTION(this);
     m_txCurrentModel = nullptr;
-    delete m_listener;
+    m_listener.reset();
 }
 
 void
@@ -387,7 +387,7 @@ WifiRadioEnergyModel::HandleEnergyChanged()
     }
 }
 
-WifiRadioEnergyModelPhyListener*
+std::shared_ptr<WifiRadioEnergyModelPhyListener>
 WifiRadioEnergyModel::GetPhyListener()
 {
     NS_LOG_FUNCTION(this);
