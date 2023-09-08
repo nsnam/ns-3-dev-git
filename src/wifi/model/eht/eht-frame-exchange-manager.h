@@ -113,6 +113,8 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
                      RxSignalInfo rxSignalInfo,
                      const WifiTxVector& txVector,
                      bool inAmpdu) override;
+    void NavResetTimeout() override;
+    void IntraBssNavResetTimeout() override;
 
     /**
      * This method is intended to be called when an AP MLD detects that an EMLSR client previously

@@ -1028,6 +1028,14 @@ void
 ChannelAccessManager::NotifyNavResetNow(Time duration)
 {
     NS_LOG_FUNCTION(this << duration);
+
+    if (!m_phy)
+    {
+        NS_LOG_DEBUG("Do not reset NAV, CTS may have been missed due to the main PHY switching "
+                     "to another link to take over a TXOP while receiving the CTS");
+        return;
+    }
+
     NS_LOG_DEBUG("nav reset for=" << duration);
     UpdateBackoff();
     m_lastNavEnd = Simulator::Now() + duration;

@@ -295,6 +295,30 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
 }
 
 void
+EhtFrameExchangeManager::NavResetTimeout()
+{
+    NS_LOG_FUNCTION(this);
+    if (UsingOtherEmlsrLink())
+    {
+        // the CTS may have been missed because another EMLSR link is being used; do not reset NAV
+        return;
+    }
+    HeFrameExchangeManager::NavResetTimeout();
+}
+
+void
+EhtFrameExchangeManager::IntraBssNavResetTimeout()
+{
+    NS_LOG_FUNCTION(this);
+    if (UsingOtherEmlsrLink())
+    {
+        // the CTS may have been missed because another EMLSR link is being used; do not reset NAV
+        return;
+    }
+    HeFrameExchangeManager::IntraBssNavResetTimeout();
+}
+
+void
 EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, const Time& delay)
 {
     NS_LOG_FUNCTION(this << address << delay.As(Time::US));
