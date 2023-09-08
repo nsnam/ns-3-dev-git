@@ -380,7 +380,12 @@ void
 WifiPhyStateHelper::NotifyListeners(FUNC f, Ts&&... args)
 {
     NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
+    // In some cases (e.g., when notifying an EMLSR client of a link switch), a notification
+    // to a PHY listener involves the addition and/or removal of a PHY listener, thus modifying
+    // the list we are iterating over. This is dangerous, so ensure that we iterate over a copy
+    // of the list of PHY listeners.
+    auto listeners = m_listeners;
+    for (const auto& listener : listeners)
     {
         std::invoke(f, listener, std::forward<Ts>(args)...);
     }
