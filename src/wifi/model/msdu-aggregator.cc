@@ -127,11 +127,16 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
     uint8_t nMsdu = 1;
     peekedItem = queue->PeekByTidAndAddress(tid, recipient, peekedItem->GetOriginal());
 
-    while (peekedItem &&
+    // stop aggregation if we find an A-MSDU in the queue. This likely happens when an A-MSDU is
+    // prepared but not transmitted due to RTS/CTS failure
+    while (peekedItem && !peekedItem->GetHeader().IsQosAmsdu() &&
            m_htFem->TryAggregateMsdu(peekedItem = m_htFem->CreateAliasIfNeeded(peekedItem),
                                      txParams,
                                      availableTime))
     {
+        NS_ASSERT_MSG(!peekedItem->HasSeqNoAssigned(),
+                      "Found item with sequence number assignment after one without: perhaps "
+                      "sequence numbers were not released correctly?");
         // find the next MPDU before dequeuing the current one
         Ptr<const WifiMpdu> msdu = peekedItem->GetOriginal();
         peekedItem = queue->PeekByTidAndAddress(tid, recipient, msdu);

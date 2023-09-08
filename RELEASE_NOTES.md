@@ -32,6 +32,7 @@ Release 3-dev
 
 - (lr-wpan) !1673 - Fixes PHY BUSY_RX -> RX_ON operation
 - (wifi) - Fix agreement not always properly torn down when Block Ack inactivity timeout is elapsed
+- (wifi) - Stop A-MSDU aggregation when an A-MSDU is found in the queue
 
 Release 3.40
 ------------
