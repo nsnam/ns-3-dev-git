@@ -619,17 +619,96 @@ TwoLevelAggregationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(), false, "aggregation failed");
     NS_TEST_EXPECT_MSG_EQ(mpduList.size(), 3, "Unexpected number of MPDUs in the A-MPDU");
     NS_TEST_EXPECT_MSG_EQ(mpduList.at(0)->GetSize(), 2660, "Unexpected size of the first MPDU");
+    NS_TEST_EXPECT_MSG_EQ(mpduList.at(0)->GetHeader().IsQosAmsdu(),
+                          true,
+                          "Expecting the first MPDU to contain an A-MSDU");
     NS_TEST_EXPECT_MSG_EQ(mpduList.at(1)->GetSize(), 2660, "Unexpected size of the second MPDU");
-    NS_TEST_EXPECT_MSG_EQ(mpduList.at(2)->GetSize(), 1330, "Unexpected size of the first MPDU");
+    NS_TEST_EXPECT_MSG_EQ(mpduList.at(1)->GetHeader().IsQosAmsdu(),
+                          true,
+                          "Expecting the second MPDU to contain an A-MSDU");
+    NS_TEST_EXPECT_MSG_EQ(mpduList.at(2)->GetSize(), 1330, "Unexpected size of the third MPDU");
+    NS_TEST_EXPECT_MSG_EQ(mpduList.at(2)->GetHeader().IsQosAmsdu(),
+                          false,
+                          "Expecting the third MPDU not to contain an A-MSDU");
 
     auto psdu = Create<WifiPsdu>(mpduList);
-    DequeueMpdus(mpduList);
-
-    NS_TEST_EXPECT_MSG_EQ(GetBeQueue()->GetWifiMacQueue()->GetNPackets(),
-                          5,
-                          "Unexpected number of MSDUs left in the EDCA queue");
-
     NS_TEST_EXPECT_MSG_EQ(psdu->GetSize(), 6662, "Unexpected size of the A-MPDU");
+
+    // we now have two A-MSDUs and 6 MSDUs in the queue (5 MSDUs with no assigned sequence number)
+    NS_TEST_EXPECT_MSG_EQ(GetBeQueue()->GetWifiMacQueue()->GetNPackets(),
+                          8,
+                          "Unexpected number of items left in the EDCA queue");
+
+    // prepare another A-MPDU (e.g., for transmission on another link)
+    peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID, 0, psdu->GetAddr1(), mpduList.at(2));
+    txParams.Clear();
+    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
+        peeked->GetHeader(),
+        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
+
+    // Compute the first MPDU to be aggregated in an A-MPDU. It must contain an A-MSDU
+    // aggregating two MSDUs
+    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, m_params.txopLimit, true);
+
+    NS_TEST_EXPECT_MSG_EQ(std::distance(item->begin(), item->end()),
+                          2,
+                          "There must be 2 MSDUs in the A-MSDU");
+
+    auto mpduList2 = mpduAggregator->GetNextAmpdu(item, txParams, m_params.txopLimit);
+
+    // we now have two A-MSDUs, one MSDU, two A-MSDUs and one MSDU in the queue (all with assigned
+    // sequence number)
+    NS_TEST_EXPECT_MSG_EQ(GetBeQueue()->GetWifiMacQueue()->GetNPackets(),
+                          6,
+                          "Unexpected number of items left in the EDCA queue");
+
+    // unassign sequence numbers for all MPDUs (emulates an RTS/CTS failure on both links)
+    mpduList.at(0)->UnassignSeqNo();
+    mpduList.at(1)->UnassignSeqNo();
+    mpduList.at(2)->UnassignSeqNo();
+    mpduList2.at(0)->UnassignSeqNo();
+    mpduList2.at(1)->UnassignSeqNo();
+    mpduList2.at(2)->UnassignSeqNo();
+
+    // set A-MSDU max size to a large value
+    m_mac->SetAttribute("BE_MaxAmsduSize", UintegerValue(7000));
+
+    // A-MSDU aggregation now fails because the first item in the queue contain A-MSDUs
+    peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
+    txParams.Clear();
+    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
+        peeked->GetHeader(),
+        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
+
+    htFem->TryAddMpdu(peeked, txParams, Time::Min());
+    item = msduAggregator->GetNextAmsdu(peeked, txParams, Time::Min());
+
+    NS_TEST_EXPECT_MSG_EQ(item, nullptr, "Expecting not to be able to aggregate A-MSDUs");
+
+    // remove the first two items in the queue (containing A-MSDUs)
+    DequeueMpdus({mpduList.at(0), mpduList.at(1)});
+
+    // we now have one MSDU, two A-MSDUs and one MSDU in the queue
+    NS_TEST_EXPECT_MSG_EQ(GetBeQueue()->GetWifiMacQueue()->GetNPackets(),
+                          4,
+                          "Unexpected number of items left in the EDCA queue");
+
+    peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
+    txParams.Clear();
+    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
+        peeked->GetHeader(),
+        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
+
+    NS_TEST_EXPECT_MSG_EQ(peeked->GetHeader().IsQosAmsdu(),
+                          false,
+                          "Expecting the peeked MPDU not to contain an A-MSDU");
+
+    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, Time::Min(), true);
+
+    // A-MSDU aggregation is not attempted because the next item contains an A-MSDU
+    NS_TEST_EXPECT_MSG_EQ(item->GetHeader().IsQosAmsdu(),
+                          false,
+                          "Expecting the returned MPDU not to contain an A-MSDU");
 }
 
 /**
