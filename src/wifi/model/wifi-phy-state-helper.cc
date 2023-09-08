@@ -29,6 +29,7 @@
 #include "ns3/simulator.h"
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
 
 namespace ns3
@@ -66,7 +67,8 @@ WifiPhyStateHelper::GetTypeId()
 }
 
 WifiPhyStateHelper::WifiPhyStateHelper()
-    : m_sleeping(false),
+    : NS_LOG_TEMPLATE_DEFINE("Queue"),
+      m_sleeping(false),
       m_isOff(false),
       m_endTx(Seconds(0)),
       m_endRx(Seconds(0)),
@@ -231,108 +233,6 @@ WifiPhyStateHelper::GetState() const
 }
 
 void
-WifiPhyStateHelper::NotifyTxStart(Time duration, double txPowerDbm)
-{
-    NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
-    {
-        listener->NotifyTxStart(duration, txPowerDbm);
-    }
-}
-
-void
-WifiPhyStateHelper::NotifyRxStart(Time duration)
-{
-    NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
-    {
-        listener->NotifyRxStart(duration);
-    }
-}
-
-void
-WifiPhyStateHelper::NotifyRxEndOk()
-{
-    NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
-    {
-        listener->NotifyRxEndOk();
-    }
-}
-
-void
-WifiPhyStateHelper::NotifyRxEndError()
-{
-    NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
-    {
-        listener->NotifyRxEndError();
-    }
-}
-
-void
-WifiPhyStateHelper::NotifyCcaBusyStart(Time duration,
-                                       WifiChannelListType channelType,
-                                       const std::vector<Time>& per20MhzDurations)
-{
-    NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
-    {
-        listener->NotifyCcaBusyStart(duration, channelType, per20MhzDurations);
-    }
-}
-
-void
-WifiPhyStateHelper::NotifySwitchingStart(Time duration)
-{
-    NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
-    {
-        listener->NotifySwitchingStart(duration);
-    }
-}
-
-void
-WifiPhyStateHelper::NotifySleep()
-{
-    NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
-    {
-        listener->NotifySleep();
-    }
-}
-
-void
-WifiPhyStateHelper::NotifyOff()
-{
-    NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
-    {
-        listener->NotifyOff();
-    }
-}
-
-void
-WifiPhyStateHelper::NotifyWakeup()
-{
-    NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
-    {
-        listener->NotifyWakeup();
-    }
-}
-
-void
-WifiPhyStateHelper::NotifyOn()
-{
-    NS_LOG_FUNCTION(this);
-    for (const auto& listener : m_listeners)
-    {
-        listener->NotifyOn();
-    }
-}
-
-void
 WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates()
 {
     NS_LOG_FUNCTION(this);
@@ -404,7 +304,7 @@ WifiPhyStateHelper::SwitchToTx(Time txDuration,
     m_previousStateChangeTime = now;
     m_endTx = now + txDuration;
     m_startTx = now;
-    NotifyTxStart(txDuration, txPowerDbm);
+    NotifyListeners(&WifiPhyListener::NotifyTxStart, txDuration, txPowerDbm);
 }
 
 void
@@ -427,7 +327,7 @@ WifiPhyStateHelper::SwitchToRx(Time rxDuration)
     m_previousStateChangeTime = now;
     m_startRx = now;
     m_endRx = now + rxDuration;
-    NotifyRxStart(rxDuration);
+    NotifyListeners(&WifiPhyListener::NotifyRxStart, rxDuration);
     NS_ASSERT(IsStateRx());
 }
 
@@ -460,7 +360,7 @@ WifiPhyStateHelper::SwitchToChannelSwitching(Time switchingDuration)
     m_previousStateChangeTime = now;
     m_startSwitching = now;
     m_endSwitching = now + switchingDuration;
-    NotifySwitchingStart(switchingDuration);
+    NotifyListeners(&WifiPhyListener::NotifySwitchingStart, switchingDuration);
     NS_ASSERT(switchingDuration.IsZero() || IsStateSwitching());
 }
 
@@ -520,7 +420,7 @@ WifiPhyStateHelper::SwitchFromRxEndOk()
 {
     NS_LOG_FUNCTION(this);
     NS_ASSERT(m_endRx == Simulator::Now());
-    NotifyRxEndOk();
+    NotifyListeners(&WifiPhyListener::NotifyRxEndOk);
     DoSwitchFromRx();
 }
 
@@ -529,7 +429,7 @@ WifiPhyStateHelper::SwitchFromRxEndError()
 {
     NS_LOG_FUNCTION(this);
     NS_ASSERT(m_endRx == Simulator::Now());
-    NotifyRxEndError();
+    NotifyListeners(&WifiPhyListener::NotifyRxEndError);
     DoSwitchFromRx();
 }
 
@@ -554,7 +454,7 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy(Time duration,
     {
         return;
     }
-    NotifyCcaBusyStart(duration, channelType, per20MhzDurations);
+    NotifyListeners(&WifiPhyListener::NotifyCcaBusyStart, duration, channelType, per20MhzDurations);
     if (channelType != WIFI_CHANLIST_PRIMARY)
     {
         // WifiPhyStateHelper only updates CCA start and end durations for the primary channel
@@ -591,7 +491,7 @@ WifiPhyStateHelper::SwitchToSleep()
     m_previousStateChangeTime = now;
     m_sleeping = true;
     m_startSleep = now;
-    NotifySleep();
+    NotifyListeners(&WifiPhyListener::NotifySleep);
     NS_ASSERT(IsStateSleep());
 }
 
@@ -604,7 +504,7 @@ WifiPhyStateHelper::SwitchFromSleep()
     m_stateLogger(m_startSleep, now - m_startSleep, WifiPhyState::SLEEP);
     m_previousStateChangeTime = now;
     m_sleeping = false;
-    NotifyWakeup();
+    NotifyListeners(&WifiPhyListener::NotifyWakeup);
 }
 
 void
@@ -613,7 +513,7 @@ WifiPhyStateHelper::SwitchFromRxAbort(uint16_t operatingWidth)
     NS_LOG_FUNCTION(this << operatingWidth);
     NS_ASSERT(IsStateCcaBusy()); // abort is called (with OBSS_PD_CCA_RESET reason) before RX is set
                                  // by payload start
-    NotifyRxEndOk();
+    NotifyListeners(&WifiPhyListener::NotifyRxEndOk);
     DoSwitchFromRx();
     m_endCcaBusy = Simulator::Now();
     std::vector<Time> per20MhzDurations;
@@ -621,7 +521,10 @@ WifiPhyStateHelper::SwitchFromRxAbort(uint16_t operatingWidth)
     {
         std::fill_n(std::back_inserter(per20MhzDurations), (operatingWidth / 20), Seconds(0));
     }
-    NotifyCcaBusyStart(Seconds(0), WIFI_CHANLIST_PRIMARY, per20MhzDurations);
+    NotifyListeners(&WifiPhyListener::NotifyCcaBusyStart,
+                    Seconds(0),
+                    WIFI_CHANLIST_PRIMARY,
+                    per20MhzDurations);
     NS_ASSERT(IsStateIdle());
 }
 
@@ -657,7 +560,7 @@ WifiPhyStateHelper::SwitchToOff()
     }
     m_previousStateChangeTime = now;
     m_isOff = true;
-    NotifyOff();
+    NotifyListeners(&WifiPhyListener::NotifyOff);
     NS_ASSERT(IsStateOff());
 }
 
@@ -669,7 +572,7 @@ WifiPhyStateHelper::SwitchFromOff()
     Time now = Simulator::Now();
     m_previousStateChangeTime = now;
     m_isOff = false;
-    NotifyOn();
+    NotifyListeners(&WifiPhyListener::NotifyOn);
 }
 
 } // namespace ns3

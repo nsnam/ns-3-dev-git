@@ -310,6 +310,17 @@ class WifiPhyStateHelper : public Object
                                      WifiPreamble preamble,
                                      uint8_t power);
 
+    /**
+     * Notify all WifiPhyListener objects of the given PHY event.
+     *
+     * \tparam FUNC \deduced Member function type
+     * \tparam Ts \deduced Function argument types
+     * \param f the member function to invoke
+     * \param args arguments to pass to the member function
+     */
+    template <typename FUNC, typename... Ts>
+    void NotifyListeners(FUNC f, Ts&&... args);
+
   private:
     /**
      * typedef for a list of WifiPhyListeners
@@ -322,72 +333,16 @@ class WifiPhyStateHelper : public Object
     void LogPreviousIdleAndCcaBusyStates();
 
     /**
-     * Notify all WifiPhyListener that the transmission has started for the given duration.
-     *
-     * \param duration the duration of the transmission
-     * \param txPowerDbm the nominal TX power in dBm
-     */
-    void NotifyTxStart(Time duration, double txPowerDbm);
-    /**
-     * Notify all WifiPhyListener that the reception has started for the given duration.
-     *
-     * \param duration the duration of the reception
-     */
-    void NotifyRxStart(Time duration);
-    /**
-     * Notify all WifiPhyListener that the reception was successful.
-     */
-    void NotifyRxEndOk();
-    /**
-     * Notify all WifiPhyListener that the reception was not successful.
-     */
-    void NotifyRxEndError();
-    /**
-     * Notify all WifiPhyListener that the CCA has started for the given duration.
-     *
-     * \param duration the duration of the CCA state
-     * \param channelType the channel type for which the CCA busy state is reported.
-     * \param per20MhzDurations vector that indicates for how long each 20 MHz subchannel
-     *        (corresponding to the index of the element in the vector) is busy and where a zero
-     * duration indicates that the subchannel is idle. The vector is non-empty if  the PHY supports
-     * 802.11ax or later and if the operational channel width is larger than 20 MHz.
-     */
-    void NotifyCcaBusyStart(Time duration,
-                            WifiChannelListType channelType,
-                            const std::vector<Time>& per20MhzDurations);
-    /**
-     * Notify all WifiPhyListener that we are switching channel with the given channel
-     * switching delay.
-     *
-     * \param duration the delay to switch the channel
-     */
-    void NotifySwitchingStart(Time duration);
-    /**
-     * Notify all WifiPhyListener that we are going to sleep
-     */
-    void NotifySleep();
-    /**
-     * Notify all WifiPhyListener that we are going to switch off
-     */
-    void NotifyOff();
-    /**
-     * Notify all WifiPhyListener that we woke up
-     */
-    void NotifyWakeup();
-    /**
      * Switch the state from RX.
      */
     void DoSwitchFromRx();
-    /**
-     * Notify all WifiPhyListener that we are going to switch on
-     */
-    void NotifyOn();
 
     /**
      * The trace source fired when state is changed.
      */
     TracedCallback<Time, Time, WifiPhyState> m_stateLogger;
 
+    NS_LOG_TEMPLATE_DECLARE;        //!< the log component
     bool m_sleeping;                ///< sleeping
     bool m_isOff;                   ///< switched off
     Time m_endTx;                   ///< end transmit
@@ -410,6 +365,26 @@ class WifiPhyStateHelper : public Object
     RxOkCallback m_rxOkCallback;       ///< receive OK callback
     RxErrorCallback m_rxErrorCallback; ///< receive error callback
 };
+
+} // namespace ns3
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+namespace ns3
+{
+
+template <typename FUNC, typename... Ts>
+void
+WifiPhyStateHelper::NotifyListeners(FUNC f, Ts&&... args)
+{
+    NS_LOG_FUNCTION(this);
+    for (const auto& listener : m_listeners)
+    {
+        std::invoke(f, listener, std::forward<Ts>(args)...);
+    }
+}
 
 } // namespace ns3
 
