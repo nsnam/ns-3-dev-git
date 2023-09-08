@@ -64,6 +64,10 @@ void
 HtFrameExchangeManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
+    if (m_flushGroupcastMpdusEvent.IsPending())
+    {
+        m_flushGroupcastMpdusEvent.Cancel();
+    }
     m_pendingAddBaResp.clear();
     m_msduAggregator = nullptr;
     m_mpduAggregator = nullptr;
@@ -1938,7 +1942,56 @@ HtFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(psdu->GetAddr2(), txVector),
                 rxSignalInfo.snr);
         }
+        else if (psdu->GetAddr1().IsGroup() && (ackPolicy == WifiMacHeader::NO_ACK))
+        {
+            // groupcast A-MPDU received
+            m_flushGroupcastMpdusEvent.Cancel();
+
+            /*
+             * There might be pending MPDUs from a previous groupcast transmission
+             * that have not been forwarded up yet (e.g. all transmission attempts
+             * of a given MPDU have failed). For groupcast transmissions using GCR-UR service,
+             * transmitter keeps advancing its window since there is no feedback from the
+             * recipients. In order to forward up previously received groupcast MPDUs and avoid
+             * following MPDUs not to be forwarded up, we flush the recipient window. The sequence
+             * number to use can easily be deduced since sequence number of groupcast MPDUs are
+             * consecutive.
+             */
+            const auto startSeq = psdu->GetHeader(0).GetSequenceNumber();
+            const auto groupAddress = psdu->GetHeader(0).IsQosAmsdu()
+                                          ? (*psdu->begin())->begin()->second.GetDestinationAddr()
+                                          : psdu->GetAddr1();
+            FlushGroupcastMpdus(groupAddress, psdu->GetAddr2(), tid, startSeq);
+
+            /*
+             * In case all MPDUs of all following transmissions are corrupted or
+             * if no following groupcast transmission happens, some groupcast MPDUs
+             * of the currently received A-MPDU would never be forwarded up. To prevent this,
+             * we schedule a flush of the recipient window once the MSDU lifetime limit elapsed.
+             */
+            const auto stopSeq = (startSeq + perMpduStatus.size()) % 4096;
+            const auto maxDelay = m_mac->GetQosTxop(tid)->GetWifiMacQueue()->GetMaxDelay();
+            m_flushGroupcastMpdusEvent =
+                Simulator::Schedule(maxDelay,
+                                    &HtFrameExchangeManager::FlushGroupcastMpdus,
+                                    this,
+                                    groupAddress,
+                                    psdu->GetAddr2(),
+                                    tid,
+                                    stopSeq);
+        }
     }
+}
+
+void
+HtFrameExchangeManager::FlushGroupcastMpdus(const Mac48Address& groupAddress,
+                                            const Mac48Address& originator,
+                                            uint8_t tid,
+                                            uint16_t seq)
+{
+    NS_LOG_FUNCTION(this << groupAddress << originator << tid << seq);
+    // We can flush the recipient window by indicating the reception of an implicit GCR BAR
+    GetBaManager(tid)->NotifyGotBlockAckRequest(originator, tid, seq, groupAddress);
 }
 
 } // namespace ns3

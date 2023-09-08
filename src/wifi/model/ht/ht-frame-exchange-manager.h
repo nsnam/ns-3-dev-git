@@ -372,6 +372,22 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      */
     virtual void MissedBlockAck(Ptr<WifiPsdu> psdu, const WifiTxVector& txVector);
 
+    /**
+     * Perform required actions to ensure the receiver window is flushed when a groupcast A-MPDU is
+     * received via the GCR service. If there are pending groupcast MPDUs from that recipient and
+     * that traffic ID, these MPDUs are forwarded up, by assuming an implicit BAR from the
+     * originator.
+     *
+     * @param groupAddress the destination group address of the MPDUs
+     * @param originator MAC address of the sender of the groupcast MPDUs
+     * @param tid Traffic ID
+     * @param seq the starting sequence number of the recipient window
+     */
+    void FlushGroupcastMpdus(const Mac48Address& groupAddress,
+                             const Mac48Address& originator,
+                             uint8_t tid,
+                             uint16_t seq);
+
     /// agreement key typedef (MAC address and TID)
     typedef std::pair<Mac48Address, uint8_t> AgreementKey;
 
@@ -390,6 +406,9 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
 
     Ptr<WifiPsdu> m_psdu;        //!< the A-MPDU being transmitted
     WifiTxParameters m_txParams; //!< the TX parameters for the current frame
+
+    EventId m_flushGroupcastMpdusEvent; //!< the event to flush pending groupcast MPDUs from
+                                        //!< previously received A-MPDU
 };
 
 } // namespace ns3
