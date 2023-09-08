@@ -29,6 +29,7 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 
+#include <list>
 #include <memory>
 #include <vector>
 
@@ -323,9 +324,11 @@ class WifiPhyStateHelper : public Object
 
   private:
     /**
-     * typedef for a list of WifiPhyListeners
+     * typedef for a list of WifiPhyListeners. We use weak pointers so that unregistering a
+     * listener is not necessary to delete a listener (reference count is not incremented by
+     * weak pointers).
      */
-    typedef std::vector<WifiPhyListener*> Listeners;
+    typedef std::list<std::weak_ptr<WifiPhyListener>> Listeners;
 
     /**
      * Log the idle and CCA busy states.
@@ -383,11 +386,20 @@ WifiPhyStateHelper::NotifyListeners(FUNC f, Ts&&... args)
     // In some cases (e.g., when notifying an EMLSR client of a link switch), a notification
     // to a PHY listener involves the addition and/or removal of a PHY listener, thus modifying
     // the list we are iterating over. This is dangerous, so ensure that we iterate over a copy
-    // of the list of PHY listeners.
-    auto listeners = m_listeners;
+    // of the list of PHY listeners. The copied list contains shared pointers to the PHY listeners
+    // to prevent them from being deleted.
+    std::list<std::shared_ptr<WifiPhyListener>> listeners;
+    std::transform(m_listeners.cbegin(),
+                   m_listeners.cend(),
+                   std::back_inserter(listeners),
+                   [](auto&& listener) { return listener.lock(); });
+
     for (const auto& listener : listeners)
     {
-        std::invoke(f, listener, std::forward<Ts>(args)...);
+        if (listener)
+        {
+            std::invoke(f, listener, std::forward<Ts>(args)...);
+        }
     }
 }
 

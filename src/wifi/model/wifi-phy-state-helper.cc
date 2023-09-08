@@ -99,17 +99,13 @@ WifiPhyStateHelper::SetReceiveErrorCallback(RxErrorCallback callback)
 void
 WifiPhyStateHelper::RegisterListener(const std::shared_ptr<WifiPhyListener>& listener)
 {
-    m_listeners.push_back(listener.get());
+    m_listeners.emplace_back(listener);
 }
 
 void
 WifiPhyStateHelper::UnregisterListener(const std::shared_ptr<WifiPhyListener>& listener)
 {
-    auto it = find(m_listeners.begin(), m_listeners.end(), listener.get());
-    if (it != m_listeners.end())
-    {
-        m_listeners.erase(it);
-    }
+    m_listeners.remove_if([&listener](auto&& weakPtr) { return weakPtr.lock() == listener; });
 }
 
 bool
