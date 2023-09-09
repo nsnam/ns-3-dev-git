@@ -1479,6 +1479,9 @@ explained here.
     std::is_integral<T>::value
     std::enable_if<std::is_integral<T>::value, Time>::type
 
+- Avoid using integer values (``1`` or ``0``) to represent boolean variables
+  (``true`` or ``false``), to improve code readability and avoid implicit conversions.
+
 - Prefer to use ``static_assert()`` over ``NS_ASSERT()`` when conditions can be
   evaluated at compile-time.
 
