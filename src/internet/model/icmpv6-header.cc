@@ -346,9 +346,9 @@ Icmpv6NA::Icmpv6NA()
     SetType(ICMPV6_ND_NEIGHBOR_ADVERTISEMENT);
     SetCode(0);
     SetReserved(0);
-    SetFlagR(0);
-    SetFlagS(0);
-    SetFlagO(0);
+    SetFlagR(false);
+    SetFlagS(false);
+    SetFlagO(false);
     m_checksum = 0;
 }
 
@@ -545,9 +545,9 @@ Icmpv6RA::Icmpv6RA()
     NS_LOG_FUNCTION(this);
     SetType(ICMPV6_ND_ROUTER_ADVERTISEMENT);
     SetCode(0);
-    SetFlagM(0);
-    SetFlagO(0);
-    SetFlagH(0);
+    SetFlagM(false);
+    SetFlagO(false);
+    SetFlagH(false);
     SetCurHopLimit(0);
     SetLifeTime(0);
     SetRetransmissionTime(0);

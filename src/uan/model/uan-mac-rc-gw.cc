@@ -724,7 +724,7 @@ UanMacRcGw::FindOptA()
 {
     double tput = 0;
     uint32_t a = 1;
-    while (1)
+    while (true)
     {
         double newtput = ComputeExpS(a, m_frameSize);
         if (newtput < tput)

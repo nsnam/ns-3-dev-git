@@ -770,10 +770,9 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
         CheckPointEvent(Seconds(25), Seconds(37), checkInterval, 0, 3),
     };
 
-    int32_t useIdealRrc;
     std::string sched = "ns3::PfFfMacScheduler";
     std::string ho = "ns3::A2A4RsrqHandoverAlgorithm";
-    for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+    for (auto useIdealRrc : {true, false})
     {
         // nEnbs, nUes, nDBearers, celist, name, useUdp, sched, ho, admitHo, idealRrc
         AddTestCase(new LteX2HandoverMeasuresTestCase(2,
@@ -878,7 +877,7 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
     }
 
     sched = "ns3::RrFfMacScheduler";
-    for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+    for (auto useIdealRrc : {true, false})
     {
         // nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
         AddTestCase(new LteX2HandoverMeasuresTestCase(2,
@@ -918,7 +917,7 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
 
     ho = "ns3::A3RsrpHandoverAlgorithm";
     sched = "ns3::PfFfMacScheduler";
-    for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+    for (auto useIdealRrc : {true, false})
     {
         // nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
         AddTestCase(new LteX2HandoverMeasuresTestCase(2,
@@ -957,7 +956,7 @@ LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
     }
 
     sched = "ns3::RrFfMacScheduler";
-    for (useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+    for (auto useIdealRrc : {true, false})
     {
         // nEnbs, nUes, nDBearers, celist, name, useUdp, sched, admitHo, idealRrc
         AddTestCase(new LteX2HandoverMeasuresTestCase(2,

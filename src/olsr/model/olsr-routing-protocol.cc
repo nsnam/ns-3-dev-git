@@ -2925,7 +2925,7 @@ RoutingProtocol::RouteOutput(Ptr<Packet> p,
     RoutingTableEntry entry2;
     bool found = false;
 
-    if (Lookup(header.GetDestination(), entry1) != 0)
+    if (Lookup(header.GetDestination(), entry1))
     {
         bool foundSendEntry = FindSendEntry(entry1, entry2);
         if (!foundSendEntry)

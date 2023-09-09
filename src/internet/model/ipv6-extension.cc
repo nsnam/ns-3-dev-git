@@ -730,7 +730,7 @@ Ipv6ExtensionFragment::HandleTimeout()
 }
 
 Ipv6ExtensionFragment::Fragments::Fragments()
-    : m_moreFragment(0)
+    : m_moreFragment(false)
 {
 }
 
@@ -1310,7 +1310,7 @@ Ipv6ExtensionAH::Process(Ptr<Packet>& packet,
 
     /** \todo */
 
-    return true;
+    return 1;
 }
 
 } /* namespace ns3 */

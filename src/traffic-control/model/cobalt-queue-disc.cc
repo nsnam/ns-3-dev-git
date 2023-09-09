@@ -359,7 +359,7 @@ CobaltQueueDisc::DoDequeue()
 {
     NS_LOG_FUNCTION(this);
 
-    while (1)
+    while (true)
     {
         Ptr<QueueDiscItem> item = GetInternalQueue(0)->Dequeue();
         if (!item)
@@ -542,7 +542,7 @@ CobaltQueueDisc::CobaltShouldDrop(Ptr<QueueDiscItem> item, int64_t now)
     if (m_pDrop)
     {
         double u = m_uv->GetValue();
-        drop = drop | (u < m_pDrop);
+        drop = drop || (u < m_pDrop);
     }
 
     /* Overload the drop_next field as an activity timeout */

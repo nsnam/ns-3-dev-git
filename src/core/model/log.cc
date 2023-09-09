@@ -247,7 +247,7 @@ bool
 LogComponent::IsEnabled(const LogLevel level) const
 {
     //  LogComponentEnableEnvVar ();
-    return (level & m_levels) ? 1 : 0;
+    return level & m_levels;
 }
 
 bool

@@ -64,7 +64,7 @@ SSRecord::Initialize()
 
     m_serviceFlows = new std::vector<ServiceFlow*>();
     m_dsaRsp = DsaRsp();
-    m_broadcast = 0;
+    m_broadcast = false;
 }
 
 SSRecord::~SSRecord()

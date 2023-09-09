@@ -73,7 +73,7 @@ ServiceFlow::ServiceFlow(Tlv tlv)
 {
     InitValues();
     m_connection = nullptr;
-    m_isEnabled = 0;
+    m_isEnabled = false;
     m_record = new ServiceFlowRecord();
     NS_ASSERT_MSG(tlv.GetType() == Tlv::UPLINK_SERVICE_FLOW ||
                       tlv.GetType() == Tlv::DOWNLINK_SERVICE_FLOW,

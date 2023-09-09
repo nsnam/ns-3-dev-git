@@ -1609,7 +1609,7 @@ Ipv4L3Protocol::ProcessFragment(Ptr<Packet>& packet, Ipv4Header& ipHeader, uint3
 }
 
 Ipv4L3Protocol::Fragments::Fragments()
-    : m_moreFragment(0)
+    : m_moreFragment(false)
 {
     NS_LOG_FUNCTION(this);
 }

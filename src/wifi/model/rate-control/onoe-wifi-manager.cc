@@ -222,9 +222,8 @@ OnoeWifiManager::UpdateMode(OnoeWifiRemoteStation* station)
      */
 
     int dir = 0;
-    int enough;
     uint8_t nrate;
-    enough = (station->m_tx_ok + station->m_tx_err >= 10);
+    bool enough = (station->m_tx_ok + station->m_tx_err >= 10);
 
     /* no packet reached -> down */
     if (station->m_tx_err > 0 && station->m_tx_ok == 0)

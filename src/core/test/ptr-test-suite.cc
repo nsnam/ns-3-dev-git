@@ -178,7 +178,7 @@ PtrTestCase::CallTestConst(const Ptr<NoCount> p)
 void
 PtrTestCase::DoRun()
 {
-    m_nDestroyed = false;
+    m_nDestroyed = 0;
     {
         Ptr<NoCount> p = Create<NoCount>(this);
     }

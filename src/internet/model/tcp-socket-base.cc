@@ -3291,13 +3291,13 @@ TcpSocketBase::SendPendingData(bool withAck)
     NS_LOG_FUNCTION(this << withAck);
     if (m_txBuffer->Size() == 0)
     {
-        return false; // Nothing to send
+        return 0; // Nothing to send
     }
     if (m_endPoint == nullptr && m_endPoint6 == nullptr)
     {
         NS_LOG_INFO(
             "TcpSocketBase::SendPendingData: No endpoint; m_shutdownSend=" << m_shutdownSend);
-        return false; // Is this the right way to handle this condition?
+        return 0; // Is this the right way to handle this condition?
     }
 
     uint32_t nPacketsSent = 0;

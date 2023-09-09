@@ -118,7 +118,7 @@ main(int argc, char* argv[])
         double previous = 0;
         for (int channelWidth = 20; channelWidth <= 40;)
         {
-            for (int sgi = 0; sgi < 2; sgi++)
+            for (auto sgi : {false, true})
             {
                 uint32_t payloadSize; // 1500 byte IP packet
                 if (udp)
@@ -283,11 +283,11 @@ main(int argc, char* argv[])
 
                 Simulator::Destroy();
 
-                std::cout << mcs << "\t\t\t" << channelWidth << " MHz\t\t\t" << sgi << "\t\t\t"
-                          << throughput << " Mbit/s" << std::endl;
+                std::cout << mcs << "\t\t\t" << channelWidth << " MHz\t\t\t" << std::boolalpha
+                          << sgi << "\t\t\t" << throughput << " Mbit/s" << std::endl;
 
                 // test first element
-                if (mcs == 0 && channelWidth == 20 && sgi == 0)
+                if (mcs == 0 && channelWidth == 20 && !sgi)
                 {
                     if (throughput < minExpectedThroughput)
                     {
@@ -295,7 +295,7 @@ main(int argc, char* argv[])
                     }
                 }
                 // test last element
-                if (mcs == 7 && channelWidth == 40 && sgi == 1)
+                if (mcs == 7 && channelWidth == 40 && sgi)
                 {
                     if (maxExpectedThroughput > 0 && throughput > maxExpectedThroughput)
                     {

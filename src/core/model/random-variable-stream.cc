@@ -421,7 +421,7 @@ double
 ExponentialRandomVariable::GetValue(double mean, double bound)
 {
     NS_LOG_FUNCTION(this << mean << bound);
-    while (1)
+    while (true)
     {
         // Get a uniform random variable in [0,1].
         double v = Peek()->RandU01();
@@ -520,7 +520,7 @@ ParetoRandomVariable::GetValue(double scale, double shape, double bound)
     // Calculate the scale parameter.
     NS_LOG_FUNCTION(this << scale << shape << bound);
 
-    while (1)
+    while (true)
     {
         // Get a uniform random variable in [0,1].
         double v = Peek()->RandU01();
@@ -617,7 +617,7 @@ WeibullRandomVariable::GetValue(double scale, double shape, double bound)
 {
     NS_LOG_FUNCTION(this << scale << shape << bound);
     double exponent = 1.0 / shape;
-    while (1)
+    while (true)
     {
         // Get a uniform random variable in [0,1].
         double v = Peek()->RandU01();
@@ -724,7 +724,7 @@ NormalRandomVariable::GetValue(double mean, double variance, double bound)
             return x2;
         }
     }
-    while (1)
+    while (true)
     { // See Simulation Modeling and Analysis p. 466 (Averill Law)
         // for algorithm; basically a Box-Muller transform:
         // http://en.wikipedia.org/wiki/Box-Muller_transform
@@ -992,7 +992,7 @@ GammaRandomVariable::GetValue(double alpha, double beta)
     double d = alpha - 1.0 / 3.0;
     double c = (1.0 / 3.0) / std::sqrt(d);
 
-    while (1)
+    while (true)
     {
         do
         {
@@ -1045,7 +1045,7 @@ GammaRandomVariable::GetNormalValue(double mean, double variance, double bound)
             return x2;
         }
     }
-    while (1)
+    while (true)
     { // See Simulation Modeling and Analysis p. 466 (Averill Law)
         // for algorithm; basically a Box-Muller transform:
         // http://en.wikipedia.org/wiki/Box-Muller_transform
@@ -1173,7 +1173,7 @@ double
 ErlangRandomVariable::GetExponentialValue(double mean, double bound)
 {
     NS_LOG_FUNCTION(this << mean << bound);
-    while (1)
+    while (true)
     {
         // Get a uniform random variable in [0,1].
         double v = Peek()->RandU01();

@@ -216,8 +216,8 @@ SetUp(char* deviceName)
 int
 CreateTap(char* deviceName,
           const char* mac,
-          const int ifftap,
-          const int iffpi,
+          bool ifftap,
+          bool iffpi,
           const char* ip4,
           const char* netmask,
           const char* ip6,
@@ -293,8 +293,8 @@ main(int argc, char* argv[])
     char* mac = nullptr;
     char* netmask = nullptr;
     char* path = nullptr;
-    int tap = false;
-    int pi = false;
+    bool tap = false;
+    bool pi = false;
     int prefix = -1;
 
     while ((c = getopt(argc, argv, "vd:i:m:n:I:P:thp:")) != -1)

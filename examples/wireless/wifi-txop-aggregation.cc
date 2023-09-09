@@ -111,9 +111,9 @@ main(int argc, char* argv[])
     double simulationTime = 10;  // seconds
     double txopLimit = 3520;     // microseconds
     double distance = 5;         // meters
-    bool enableRts = 0;
-    bool enablePcap = 0;
-    bool verifyResults = 0; // used for regression
+    bool enableRts = false;
+    bool enablePcap = false;
+    bool verifyResults = false; // used for regression
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("payloadSize", "Payload size in bytes", payloadSize);

@@ -296,10 +296,10 @@ class Dictionary
             return;
         }
 
-        int newPhrases = 0;
+        bool newPhrases = false;
         for (auto& collider : m_hashes)
         {
-            newPhrases += collider.Add(phrase);
+            newPhrases |= collider.Add(phrase);
         }
 
         if (newPhrases)

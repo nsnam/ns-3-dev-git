@@ -645,7 +645,7 @@ WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, uint16_t 
     {
         txVector = DoGetDataTxVector(Lookup(address), allowedWidth);
         txVector.SetLdpc(txVector.GetMode().GetModulationClass() < WIFI_MOD_CLASS_HT
-                             ? 0
+                             ? false
                              : UseLdpcForDestination(address));
     }
     Ptr<HeConfiguration> heConfiguration = m_wifiPhy->GetDevice()->GetHeConfiguration();
@@ -1550,7 +1550,7 @@ WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from, HeCapabili
             state->m_channelWidth = 20;
         }
     }
-    if (heCapabilities.GetHeSuPpdu1xHeLtf800nsGi() == 1)
+    if (heCapabilities.GetHeSuPpdu1xHeLtf800nsGi())
     {
         state->m_guardInterval = 800;
     }

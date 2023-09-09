@@ -163,7 +163,7 @@ main(int argc, char* argv[])
     {
         for (size_t j = 0; j < Adj_Matrix[i].size(); j++)
         {
-            if (Adj_Matrix[i][j] == 1)
+            if (Adj_Matrix[i][j])
             {
                 NodeContainer n_links = NodeContainer(nodes.Get(i), nodes.Get(j));
                 NetDeviceContainer n_devs = p2p.Install(n_links);

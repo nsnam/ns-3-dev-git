@@ -370,7 +370,7 @@ main(int argc, char* argv[])
     params.payloadSize = 1472;  // bytes
     params.simulationTime = 10; // seconds
 
-    bool verifyResults = 0; // used for regression
+    bool verifyResults = false; // used for regression
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("payloadSize", "Payload size in bytes", params.payloadSize);

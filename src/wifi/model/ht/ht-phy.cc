@@ -300,7 +300,7 @@ HtPhy::GetPayloadDuration(uint32_t size,
     case FIRST_MPDU_IN_AGGREGATE: {
         // First packet in an A-MPDU
         numSymbols = (stbc * (service + size * 8.0 + 6 * nes) / (stbc * numDataBitsPerSymbol));
-        if (incFlag == 1)
+        if (incFlag)
         {
             totalAmpduSize += size;
             totalAmpduNumSymbols += numSymbols;
@@ -310,7 +310,7 @@ HtPhy::GetPayloadDuration(uint32_t size,
     case MIDDLE_MPDU_IN_AGGREGATE: {
         // consecutive packets in an A-MPDU
         numSymbols = (stbc * size * 8.0) / (stbc * numDataBitsPerSymbol);
-        if (incFlag == 1)
+        if (incFlag)
         {
             totalAmpduSize += size;
             totalAmpduNumSymbols += numSymbols;
@@ -324,7 +324,7 @@ HtPhy::GetPayloadDuration(uint32_t size,
             stbc * ceil((service + totalSize * 8.0 + 6 * nes) / (stbc * numDataBitsPerSymbol)));
         NS_ASSERT(totalAmpduNumSymbols <= numSymbols);
         numSymbols -= totalAmpduNumSymbols;
-        if (incFlag == 1)
+        if (incFlag)
         {
             totalAmpduSize = 0;
             totalAmpduNumSymbols = 0;

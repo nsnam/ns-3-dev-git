@@ -4888,7 +4888,7 @@ TestPhyPaddingExclusion::SendHeTbPpdu(uint16_t txStaId,
                                          DEFAULT_CHANNEL_WIDTH,
                                          false,
                                          false,
-                                         1);
+                                         true);
 
     HeRu::RuSpec ru(HeRu::RU_106_TONE, index, false);
     txVector.SetRu(ru, txStaId);
@@ -5184,7 +5184,7 @@ TestPhyPaddingExclusion::SetTrigVector(Time ppduDuration)
                             DEFAULT_CHANNEL_WIDTH,
                             false,
                             false,
-                            1);
+                            true);
     trigVector.SetRu(HeRu::RuSpec(HeRu::RU_106_TONE, 1, false), 1);
     trigVector.SetMode(HePhy::GetHeMcs7(), 1);
     trigVector.SetNss(1, 1);

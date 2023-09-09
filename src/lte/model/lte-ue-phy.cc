@@ -968,7 +968,7 @@ LteUePhy::ReportUeMeasurements()
                                (*it).first,
                                avg_rsrp,
                                avg_rsrq,
-                               ((*it).first == m_cellId ? 1 : 0),
+                               (*it).first == m_cellId,
                                m_componentCarrierId);
     }
 

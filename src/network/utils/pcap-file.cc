@@ -404,7 +404,7 @@ PcapFile::Init(uint32_t dataLinkType,
     //
     // And set swap mode if requested or we are on a big-endian system.
     //
-    m_swapMode = swapMode | bigEndian;
+    m_swapMode = swapMode || bigEndian;
 
     WriteFileHeader();
 }

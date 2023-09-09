@@ -572,7 +572,7 @@ class ThreeGppChannelConditionModel : public ChannelConditionModel
         0}; //!< the threshold for determining what is the ratio of channels with O2I
     double m_o2iLowLossThreshold{0}; //!< the threshold for determining what is the ratio of low -
                                      //!< high O2I building penetration losses
-    double m_linkO2iConditionToAntennaHeight{
+    bool m_linkO2iConditionToAntennaHeight{
         false}; //!< the indicator that determines whether the O2I/O2O condition is determined based
                 //!< on the UE height
     Ptr<UniformRandomVariable> m_uniformVarO2i; //!< uniform random variable that is used for the

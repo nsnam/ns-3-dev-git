@@ -90,7 +90,7 @@ WimaxPhy::WimaxPhy()
       m_psPerFrame(0),
       m_symbolsPerFrame(0)
 {
-    m_duplex = 0;
+    m_duplex = false;
     m_txFrequency = 0;
     m_rxFrequency = 0;
 }

@@ -313,7 +313,7 @@ WimaxHelper::Install(NodeContainer c,
     {
         Ptr<Node> node = *i;
 
-        Ptr<WimaxPhy> phy = CreatePhyWithoutChannel(phyType, (char*)"dummy", 0);
+        Ptr<WimaxPhy> phy = CreatePhyWithoutChannel(phyType, (char*)"dummy", false);
         Ptr<WimaxNetDevice> device;
         Ptr<UplinkScheduler> uplinkScheduler = CreateUplinkScheduler(schedulerType);
         Ptr<BSScheduler> bsScheduler = CreateBSScheduler(schedulerType);
@@ -349,7 +349,7 @@ WimaxHelper::Install(Ptr<Node> node,
                      SchedulerType schedulerType)
 {
     // Ptr<WimaxPhy> phy = CreatePhyWithoutChannel (phyType);
-    Ptr<WimaxPhy> phy = CreatePhyWithoutChannel(phyType, (char*)"dummy", 0);
+    Ptr<WimaxPhy> phy = CreatePhyWithoutChannel(phyType, (char*)"dummy", false);
     Ptr<WimaxNetDevice> device;
     Ptr<UplinkScheduler> uplinkScheduler = CreateUplinkScheduler(schedulerType);
     Ptr<BSScheduler> bsScheduler = CreateBSScheduler(schedulerType);

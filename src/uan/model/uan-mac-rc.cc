@@ -617,7 +617,7 @@ UanMacRc::Associate()
     m_resList.push_back(res);
     Ptr<UanPhyDual> phyDual = m_phy->GetObject<UanPhyDual>();
     bool phy1ok = IsPhy1Ok();
-    if (phy1ok && !phyDual->IsPhy2Tx() & !m_rtsBlocked)
+    if (phy1ok && !phyDual->IsPhy2Tx() && !m_rtsBlocked)
     {
         Ptr<Packet> pkt = Create<Packet>(0);
         pkt->AddHeader(CreateRtsHeader(res));

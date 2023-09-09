@@ -322,19 +322,15 @@ RocketfuelTopologyReader::GenerateFromWeightsFile(const std::vector<std::string>
 RocketfuelTopologyReader::RF_FileType
 RocketfuelTopologyReader::GetFileType(const std::string& line)
 {
-    int ret;
-
     // Check whether Maps file or not
     std::smatch matches;
-    ret = std::regex_match(line, matches, rocketfuel_maps_regex);
-    if (ret)
+    if (std::regex_match(line, matches, rocketfuel_maps_regex))
     {
         return RF_MAPS;
     }
 
     // Check whether Weights file or not
-    ret = std::regex_match(line, matches, rocketfuel_weights_regex);
-    if (ret)
+    if (std::regex_match(line, matches, rocketfuel_weights_regex))
     {
         return RF_WEIGHTS;
     }
@@ -362,7 +358,6 @@ RocketfuelTopologyReader::Read()
 
     while (!topgen.eof())
     {
-        int ret;
         std::vector<std::string> argv;
 
         lineNumber++;
@@ -385,7 +380,7 @@ RocketfuelTopologyReader::Read()
 
         if (ftype == RF_MAPS)
         {
-            ret = std::regex_match(line, matches, rocketfuel_maps_regex);
+            bool ret = std::regex_match(line, matches, rocketfuel_maps_regex);
             if (!ret || matches.empty())
             {
                 NS_LOG_WARN("match failed (maps file): %s" << line);
@@ -394,7 +389,7 @@ RocketfuelTopologyReader::Read()
         }
         else if (ftype == RF_WEIGHTS)
         {
-            ret = std::regex_match(line, matches, rocketfuel_weights_regex);
+            bool ret = std::regex_match(line, matches, rocketfuel_weights_regex);
             if (!ret || matches.empty())
             {
                 NS_LOG_WARN("match failed (weights file): %s" << line);

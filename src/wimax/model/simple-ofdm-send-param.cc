@@ -29,7 +29,7 @@ SimpleOfdmSendParam::SimpleOfdmSendParam()
 {
     // m_fecBlock = 0;
     m_burstSize = 0;
-    m_isFirstBlock = 0;
+    m_isFirstBlock = false;
     m_frequency = 0;
     m_modulationType = WimaxPhy::MODULATION_TYPE_QPSK_12;
     m_direction = 0;

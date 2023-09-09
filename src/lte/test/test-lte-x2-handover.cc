@@ -763,7 +763,7 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite()
          schedIt != schedulers.end();
          ++schedIt)
     {
-        for (int32_t useIdealRrc = 1; useIdealRrc >= 0; --useIdealRrc)
+        for (auto useIdealRrc : {true, false})
         {
             // nUes, nDBearers, helist, name, sched, admitHo, idealRrc
             AddTestCase(new LteX2HandoverTestCase(1,

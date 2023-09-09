@@ -84,9 +84,9 @@ main(int argc, char* argv[])
     uint32_t payloadSize = 1472; // bytes
     double simulationTime = 10;  // seconds
     double distance = 5;         // meters
-    bool enableRts = 0;
-    bool enablePcap = 0;
-    bool verifyResults = 0; // used for regression
+    bool enableRts = false;
+    bool enablePcap = false;
+    bool verifyResults = false; // used for regression
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("payloadSize", "Payload size in bytes", payloadSize);

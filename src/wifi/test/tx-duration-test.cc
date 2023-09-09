@@ -154,7 +154,7 @@ TxDurationTest::CheckPayloadDuration(uint32_t size,
     txVector.SetChannelWidth(channelWidth);
     txVector.SetGuardInterval(guardInterval);
     txVector.SetNss(1);
-    txVector.SetStbc(0);
+    txVector.SetStbc(false);
     txVector.SetNess(0);
     std::list<WifiPhyBand> testedBands;
     Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy>();
@@ -206,7 +206,7 @@ TxDurationTest::CheckTxDuration(uint32_t size,
     txVector.SetChannelWidth(channelWidth);
     txVector.SetGuardInterval(guardInterval);
     txVector.SetNss(1);
-    txVector.SetStbc(0);
+    txVector.SetStbc(false);
     txVector.SetNess(0);
     std::list<WifiPhyBand> testedBands;
     Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy>();
@@ -274,7 +274,7 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
     txVector.SetPreambleType(preamble);
     txVector.SetChannelWidth(channelWidth);
     txVector.SetGuardInterval(guardInterval);
-    txVector.SetStbc(0);
+    txVector.SetStbc(false);
     txVector.SetNess(0);
     if (IsEht(preamble))
     {
@@ -1378,7 +1378,7 @@ HeSigBDurationTest::BuildTxVector() const
     txVector.SetPreambleType(WIFI_PREAMBLE_HE_MU);
     txVector.SetChannelWidth(m_channelWidth);
     txVector.SetGuardInterval(3200);
-    txVector.SetStbc(0);
+    txVector.SetStbc(false);
     txVector.SetNess(0);
     std::list<uint16_t> staIds;
     uint16_t staId = 1;

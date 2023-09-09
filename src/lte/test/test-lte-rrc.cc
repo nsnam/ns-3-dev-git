@@ -782,7 +782,7 @@ LteRrcTestSuite::LteRrcTestSuite()
 
     NS_LOG_FUNCTION(this);
 
-    for (uint32_t useIdealRrc = 0; useIdealRrc <= 1; ++useIdealRrc)
+    for (auto useIdealRrc : {false, true})
     {
         // <----- all times in ms ----------------->
 

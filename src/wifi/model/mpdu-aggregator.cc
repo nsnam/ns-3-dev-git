@@ -195,7 +195,7 @@ MpduAggregator::GetAmpduSubframeHeader(uint16_t mpduSize, bool isSingle)
     hdr.SetLength(mpduSize);
     if (isSingle)
     {
-        hdr.SetEof(1);
+        hdr.SetEof(true);
     }
     return hdr;
 }

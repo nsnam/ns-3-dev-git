@@ -218,7 +218,7 @@ Ping6::Send()
     data[3] = 0xEF;
 
     Ptr<Packet> p = Create<Packet>(data, size);
-    Icmpv6Echo req(1);
+    Icmpv6Echo req(true);
 
     req.SetId(0xBEEF);
     req.SetSeq(m_seq);
@@ -268,7 +268,7 @@ Ping6::HandleRead(Ptr<Socket> socket)
         if (Inet6SocketAddress::IsMatchingType(from))
         {
             Ipv6Header hdr;
-            Icmpv6Echo reply(0);
+            Icmpv6Echo reply(false);
             Icmpv6DestinationUnreachable destUnreach;
             Icmpv6TimeExceeded timeExceeded;
             Inet6SocketAddress address = Inet6SocketAddress::ConvertFrom(from);

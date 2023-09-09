@@ -994,7 +994,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                                                maskSlopes,
                                                tol,
                                                prec,
-                                               {1, 0, 0, 0}),
+                                               {true, false, false, false}),
                 TestCase::QUICK);
 
     // ============================================================================================
@@ -1038,7 +1038,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                                                maskSlopes,
                                                tol,
                                                prec,
-                                               {0, 1, 0, 0}),
+                                               {false, true, false, false}),
                 TestCase::QUICK);
 
     // ============================================================================================
@@ -1082,7 +1082,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                                                maskSlopes,
                                                tol,
                                                prec,
-                                               {0, 0, 1, 0}),
+                                               {false, false, true, false}),
                 TestCase::QUICK);
 
     // ============================================================================================
@@ -1122,7 +1122,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                                                maskSlopes,
                                                tol,
                                                prec,
-                                               {0, 0, 0, 1}),
+                                               {false, false, false, true}),
                 TestCase::QUICK);
 
     // ============================================================================================
@@ -1162,15 +1162,16 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
         std::make_pair(6144, -40.0),    // Outer band right (stop)
     };
 
-    AddTestCase(new WifiOfdmMaskSlopesTestCase("11ax_5GHz 160MHz first subchannels punctured",
-                                               WIFI_STANDARD_80211ax,
-                                               WIFI_PHY_BAND_5GHZ,
-                                               160,
-                                               maskSlopes,
-                                               tol,
-                                               prec,
-                                               {1, 1, 0, 0, 0, 0, 0, 0}),
-                TestCase::QUICK);
+    AddTestCase(
+        new WifiOfdmMaskSlopesTestCase("11ax_5GHz 160MHz first subchannels punctured",
+                                       WIFI_STANDARD_80211ax,
+                                       WIFI_PHY_BAND_5GHZ,
+                                       160,
+                                       maskSlopes,
+                                       tol,
+                                       prec,
+                                       {true, true, false, false, false, false, false, false}),
+        TestCase::QUICK);
 
     // ============================================================================================
     // 11ax 160MHz @ 5GHz - third and fourth 20 MHz subchannels punctured
@@ -1219,7 +1220,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                                        maskSlopes,
                                        tol,
                                        prec,
-                                       {0, 0, 1, 1, 0, 0, 0, 0}),
+                                       {false, false, true, true, false, false, false, false}),
         TestCase::QUICK);
 
     // ============================================================================================
@@ -1269,7 +1270,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                                        maskSlopes,
                                        tol,
                                        prec,
-                                       {0, 0, 0, 0, 1, 1, 0, 0}),
+                                       {false, false, false, false, true, true, false, false}),
         TestCase::QUICK);
 
     // ============================================================================================
@@ -1309,13 +1310,14 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
         std::make_pair(6144, -40.0),   // Outer band right (stop)
     };
 
-    AddTestCase(new WifiOfdmMaskSlopesTestCase("11ax_5GHz 160MHz last subchannels punctured",
-                                               WIFI_STANDARD_80211ax,
-                                               WIFI_PHY_BAND_5GHZ,
-                                               160,
-                                               maskSlopes,
-                                               tol,
-                                               prec,
-                                               {0, 0, 0, 0, 0, 0, 1, 1}),
-                TestCase::QUICK);
+    AddTestCase(
+        new WifiOfdmMaskSlopesTestCase("11ax_5GHz 160MHz last subchannels punctured",
+                                       WIFI_STANDARD_80211ax,
+                                       WIFI_PHY_BAND_5GHZ,
+                                       160,
+                                       maskSlopes,
+                                       tol,
+                                       prec,
+                                       {false, false, false, false, false, false, true, true}),
+        TestCase::QUICK);
 }

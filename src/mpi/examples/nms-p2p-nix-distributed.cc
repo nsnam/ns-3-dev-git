@@ -78,7 +78,7 @@ main(int argc, char* argv[])
 
     uint32_t nCN = 2;
     uint32_t nLANClients = 10;
-    bool single = 0;
+    bool single = false;
     int nPackets = 10; // Packets sent by OnOff applications
     bool nix = true;
     Time stop = Seconds(100);

@@ -309,7 +309,7 @@ SimpleOfdmWimaxPhy::StartSendDummyFecBlock(bool isFirstBlock,
                                            uint8_t direction)
 {
     SetState(PHY_STATE_TX);
-    bool isLastFecBlock = 0;
+    bool isLastFecBlock = false;
     if (isFirstBlock)
     {
         m_blockTime = GetBlockTransmissionTime(modulationType);
@@ -496,7 +496,7 @@ SimpleOfdmWimaxPhy::EndReceive(Ptr<const PacketBurst> burst)
 Bvec
 SimpleOfdmWimaxPhy::ConvertBurstToBits(Ptr<const PacketBurst> burst)
 {
-    Bvec buffer(burst->GetSize() * 8, 0);
+    Bvec buffer(burst->GetSize() * 8, false);
 
     std::list<Ptr<Packet>> packets = burst->GetPackets();
 
@@ -508,8 +508,8 @@ SimpleOfdmWimaxPhy::ConvertBurstToBits(Ptr<const PacketBurst> burst)
         std::memset(pstart, 0, packet->GetSize());
         packet->CopyData(pstart, packet->GetSize());
         Bvec temp(8);
-        temp.resize(0, 0);
-        temp.resize(8, 0);
+        temp.resize(0, false);
+        temp.resize(8, false);
         for (uint32_t i = 0; i < packet->GetSize(); i++)
         {
             for (uint8_t l = 0; l < 8; l++)
@@ -593,7 +593,7 @@ SimpleOfdmWimaxPhy::CreateFecBlocks(const Bvec& buffer, WimaxPhy::ModulationType
         if (j == 1 && m_paddingBits > 0) // last block can be smaller than block size
         {
             fecBlock = Bvec(buffer.begin() + i, buffer.end());
-            fecBlock.resize(m_blockSize, 0);
+            fecBlock.resize(m_blockSize, false);
         }
         else
         {

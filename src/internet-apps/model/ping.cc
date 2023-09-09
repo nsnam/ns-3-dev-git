@@ -286,7 +286,7 @@ Ping::Receive(Ptr<Socket> socket)
             switch (type)
             {
             case Icmpv6Header::ICMPV6_ECHO_REPLY: {
-                Icmpv6Echo echo(0);
+                Icmpv6Echo echo(false);
                 packet->RemoveHeader(echo);
 
                 if (echo.GetId() != PING_ID)

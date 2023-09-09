@@ -317,7 +317,7 @@ class RoutingTableEntry
     /// A node does that in hope of receiving a better update.
     Time m_settlingTime;
     /// Flag to show if any of the routing table entries were changed with the routing update.
-    uint32_t m_entriesChanged;
+    bool m_entriesChanged;
 };
 
 /**

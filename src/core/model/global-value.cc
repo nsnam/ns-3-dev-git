@@ -127,7 +127,7 @@ GlobalValue::SetValue(const AttributeValue& value)
     Ptr<AttributeValue> v = m_checker->CreateValidValue(value);
     if (!v)
     {
-        return 0;
+        return false;
     }
     m_currentValue = v;
     return true;

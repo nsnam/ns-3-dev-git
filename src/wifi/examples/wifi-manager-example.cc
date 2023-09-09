@@ -211,7 +211,7 @@ main(int argc, char* argv[])
     double stepSize = 1;        // dBm
     double stepTime = 1;        // seconds
     uint32_t packetSize = 1024; // bytes
-    bool broadcast = 0;
+    bool broadcast = false;
     int ap1_x = 0;
     int ap1_y = 0;
     int sta1_x = 5;

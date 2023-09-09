@@ -632,7 +632,7 @@ main(int argc, char* argv[])
     Config::ConnectWithoutContext(oss.str(), MakeCallback(&ReceivePacket));
 
     bool firstWrite = true;
-    std::string rrcType = useIdealRrc == 1 ? "ideal_rrc" : "real_rrc";
+    std::string rrcType = useIdealRrc ? "ideal_rrc" : "real_rrc";
     std::string fileName = "rlf_dl_thrput_" + std::to_string(enbNodes.GetN()) + "_eNB_" + rrcType;
     Time binSize = Seconds(0.2);
     Simulator::Schedule(Seconds(0.47), &Throughput, firstWrite, binSize, fileName);
