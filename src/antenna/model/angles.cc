@@ -74,55 +74,85 @@ RadiansToDegrees(const std::vector<double>& radians)
 double
 WrapTo360(double a)
 {
-    a = fmod(a, 360);
-    if (a < 0)
+    static constexpr int64_t INT_RANGE = 100000000000;
+    // Divide the input by 360.
+    // Multiply it by INT_RANGE and store into an integer.
+    int64_t b(a / (360.0) * INT_RANGE);
+    // Clamp it between [-INT_RANGE / 2, INT_RANGE / 2)
+    b = b % INT_RANGE;
+    if (b < 0)
     {
-        a += 360;
+        b += INT_RANGE;
     }
-
-    NS_ASSERT_MSG(0 <= a && a < 360, "Invalid wrap, a=" << a);
-    return a;
+    else if (b >= INT_RANGE)
+    {
+        b -= INT_RANGE;
+    }
+    // Divide by INT_RANGE and multiply by 360.
+    return b * (360.0) / INT_RANGE;
 }
 
 double
 WrapTo180(double a)
 {
-    a = fmod(a + 180, 360);
-    if (a < 0)
+    static constexpr int64_t INT_RANGE = 100000000000;
+    // Divide the input by 360.
+    // Multiply it by INT_RANGE and store into an integer.
+    int64_t b(a / (360.0) * INT_RANGE);
+    // Clamp it between [-INT_RANGE / 2, INT_RANGE / 2)
+    b = b % INT_RANGE;
+    if (b < -INT_RANGE / 2)
     {
-        a += 360;
+        b += INT_RANGE;
     }
-    a -= 180;
-
-    NS_ASSERT_MSG(-180 <= a && a < 180, "Invalid wrap, a=" << a);
-    return a;
+    else if (b >= INT_RANGE / 2)
+    {
+        b -= INT_RANGE;
+    }
+    // Divide by INT_RANGE and multiply by 360.
+    return b * (360.0) / INT_RANGE;
 }
 
 double
 WrapTo2Pi(double a)
 {
-    a = fmod(a, 2 * M_PI);
-    if (a < 0)
+    static constexpr int64_t INT_RANGE = 100000000000;
+    // Divide the input by 2*M_PI.
+    // Multiply it by INT_RANGE and store into an integer.
+    int64_t b(a / (2 * M_PI) * INT_RANGE);
+    // Clamp it between [-INT_RANGE / 2, INT_RANGE / 2)
+    b = b % INT_RANGE;
+    if (b < 0)
     {
-        a += 2 * M_PI;
+        b += INT_RANGE;
     }
-
-    NS_ASSERT_MSG(0 <= a && a < 2 * M_PI, "Invalid wrap, a=" << a);
-    return a;
+    else if (b >= INT_RANGE)
+    {
+        b -= INT_RANGE;
+    }
+    // Divide by INT_RANGE and multiply by 2*M_PI.
+    return b * (2 * M_PI) / INT_RANGE;
 }
 
 double
 WrapToPi(double a)
 {
-    a = fmod(a + M_PI, 2 * M_PI);
-    if (a < 0)
+    static constexpr int64_t INT_RANGE = 100000000000;
+    // Divide the input by 2*M_PI.
+    // Multiply it by INT_RANGE and store into an integer.
+    int64_t b(a / (2 * M_PI) * INT_RANGE);
+    // Clamp it between [-INT_RANGE / 2, INT_RANGE / 2)
+    b = b % INT_RANGE;
+    if (b < -INT_RANGE / 2)
     {
-        a += 2 * M_PI;
+        b += INT_RANGE;
     }
-    a -= M_PI;
-
-    NS_ASSERT_MSG(-M_PI <= a && a < M_PI, "Invalid wrap, a=" << a);
-    return a;
+    else if (b >= INT_RANGE / 2)
+    {
+        b -= INT_RANGE;
+    }
+    // Divide by INT_RANGE and multiply by 2*M_PI.
+    return b * (2 * M_PI) / INT_RANGE;
 }
 
 std::ostream&
