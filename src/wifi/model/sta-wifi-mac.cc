@@ -846,13 +846,14 @@ StaWifiMac::MissedBeacons()
         return;
     }
     NS_LOG_DEBUG("beacon missed");
-    // We need to switch to the UNASSOCIATED state. However, if we are receiving
-    // a frame, wait until the RX is completed (otherwise, crashes may occur if
-    // we are receiving a MU frame because its reception requires the STA-ID)
+    // We need to switch to the UNASSOCIATED state. However, if we are receiving a frame, wait
+    // until the RX is completed (otherwise, crashes may occur if we are receiving a MU frame
+    // because its reception requires the STA-ID). We need to check that a PHY is operating on
+    // the given link, because this may (temporarily) not be the case for EMLSR clients.
     Time delay = Seconds(0);
     for (const auto& [id, link] : GetLinks())
     {
-        if (link->phy->IsStateRx())
+        if (link->phy && link->phy->IsStateRx())
         {
             delay = std::max(delay, link->phy->GetDelayUntilIdle());
         }
