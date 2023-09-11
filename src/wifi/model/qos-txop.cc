@@ -520,9 +520,11 @@ QosTxop::GetNextMpdu(uint8_t linkId,
                       GetBaStartingSequence(peekedItem->GetOriginal()->GetHeader().GetAddr1(), tid),
                       GetBaBufferSize(peekedItem->GetOriginal()->GetHeader().GetAddr1(), tid)));
 
-        // try A-MSDU aggregation
+        // try A-MSDU aggregation if the MPDU does not contain an A-MSDU and does not already
+        // have a sequence number assigned (may be a retransmission)
         if (m_mac->GetHtSupported() && !recipient.IsBroadcast() &&
-            !peekedItem->HasSeqNoAssigned() && !peekedItem->IsFragment())
+            !peekedItem->GetHeader().IsQosAmsdu() && !peekedItem->HasSeqNoAssigned() &&
+            !peekedItem->IsFragment())
         {
             auto htFem = StaticCast<HtFrameExchangeManager>(qosFem);
             mpdu = htFem->GetMsduAggregator()->GetNextAmsdu(peekedItem, txParams, availableTime);
