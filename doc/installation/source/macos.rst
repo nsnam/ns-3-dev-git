@@ -38,6 +38,8 @@ of Python, please keep the possibility of a virtualenv in mind if you run into P
 For a short guide on virtual environments, please see
 `this link <https://www.dataquest.io/blog/a-complete-guide-to-python-virtual-environments/>`_.
 
+Due to an `upstream limitation with Cppyy <https://github.com/wlav/cppyy/issues/150>`_, Python bindings do not work on macOS machines with Apple silicon (M1 and M2 processors).
+
 Requirements
 ************
 

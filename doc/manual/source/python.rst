@@ -38,11 +38,7 @@ If a user is not interested in Python, no action is needed; the Python bindings
 are only built on-demand by Cppyy, and only if the user enables them in the
 configuration of |ns3|.
 
-It is also important to note that the current capability is provided on a
-lightly maintained basis and not officially supported by the project
-(in other words, we are currently looking for a Python bindings maintainer).
-The Cppyy framework could be replaced if it becomes too burdensome to
-maintain as we are presently doing.
+Due to an `upstream limitation with Cppyy <https://github.com/wlav/cppyy/issues/150>`_, Python bindings do not work on macOS machines with Apple silicon (M1 and M2 processors).
 
 Prior to ns-3.37, the previous Python bindings framework was based on
 `Pybindgen <https://github.com/gjcarneiro/pybindgen>`_.

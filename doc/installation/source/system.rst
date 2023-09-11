@@ -143,6 +143,8 @@ Python bindings (ns-3.37 and newer)
 |ns3| Python support now uses `cppyy <https://cppyy.readthedocs.io/en/latest/>`_.  Version 2.4.2
 is the most recent supported cppyy release; version 3.0.0 is not currently supported.
 
+Due to an `upstream limitation with cppyy <https://github.com/wlav/cppyy/issues/150>`_, Python bindings do not work on macOS machines with Apple silicon (M1 and M2 processors).
+
 Using Python bindings (release 3.30 to ns-3.36)
 ===============================================
 
