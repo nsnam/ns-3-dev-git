@@ -57,7 +57,13 @@ GcrManager::GetTypeId()
                           "the GCR unsolicited retry retransmission policy.",
                           UintegerValue(7),
                           MakeUintegerAccessor(&GcrManager::m_gcrUnsolicitedRetryLimit),
-                          MakeUintegerChecker<uint8_t>());
+                          MakeUintegerChecker<uint8_t>())
+            .AddAttribute("GcrConcealmentAddress",
+                          "The GCR concealment address.",
+                          Mac48AddressValue(Mac48Address("01:0F:AC:47:43:52")),
+                          MakeMac48AddressAccessor(&GcrManager::SetGcrConcealmentAddress,
+                                                   &GcrManager::GetGcrConcealmentAddress),
+                          MakeMac48AddressChecker());
     return tid;
 }
 
@@ -121,6 +127,20 @@ GcrManager::GetRetransmissionPolicyFor(const WifiMacHeader& header) const
 
     // not a retry and GCR-incapable STA(s) present, transmit using No-Ack/No-Retry
     return GroupAddressRetransmissionPolicy::NO_ACK_NO_RETRY;
+}
+
+void
+GcrManager::SetGcrConcealmentAddress(const Mac48Address& address)
+{
+    NS_LOG_FUNCTION(this << address);
+    NS_ASSERT_MSG(address.IsGroup(), "The concealment address should be a group address");
+    m_gcrConcealmentAddress = address;
+}
+
+const Mac48Address&
+GcrManager::GetGcrConcealmentAddress() const
+{
+    return m_gcrConcealmentAddress;
 }
 
 bool

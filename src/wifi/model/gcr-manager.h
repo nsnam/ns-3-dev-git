@@ -79,6 +79,20 @@ class GcrManager : public Object
     GroupAddressRetransmissionPolicy GetRetransmissionPolicyFor(const WifiMacHeader& header) const;
 
     /**
+     * Set the GCR concealment address.
+     *
+     * @param address the GCR concealment address
+     */
+    void SetGcrConcealmentAddress(const Mac48Address& address);
+
+    /**
+     * Get the GCR concealment address.
+     *
+     * @return the GCR concealment address
+     */
+    const Mac48Address& GetGcrConcealmentAddress() const;
+
+    /**
      * This function indicates whether a groupcast MPDU should be kept for next retransmission.
      *
      * @param mpdu the groupcast MPDU
@@ -145,6 +159,7 @@ class GcrManager : public Object
     GcrMembers m_staMembers; //!< the list of STA members (assume currently each member is part of
                              //!< all group)
     GroupcastProtectionMode m_gcrProtectionMode; //!< Protection mode for groupcast frames
+    Mac48Address m_gcrConcealmentAddress;        //!< GCR concealment address
 };
 
 } // namespace ns3
