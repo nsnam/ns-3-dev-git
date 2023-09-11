@@ -337,12 +337,14 @@ RoutingProtocol::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit u
     *os << std::setw(16) << "Interface";
     *os << "Distance" << std::endl;
 
-    for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin();
-         iter != m_table.end();
-         iter++)
+    for (auto iter = m_table.begin(); iter != m_table.end(); iter++)
     {
-        *os << std::setw(16) << iter->first;
-        *os << std::setw(16) << iter->second.nextAddr;
+        std::ostringstream dest;
+        std::ostringstream nextHop;
+        dest << iter->first;
+        nextHop << iter->second.nextAddr;
+        *os << std::setw(16) << dest.str();
+        *os << std::setw(16) << nextHop.str();
         *os << std::setw(16);
         if (!Names::FindName(m_ipv4->GetNetDevice(iter->second.interface)).empty())
         {
@@ -364,7 +366,7 @@ RoutingProtocol::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit u
     }
     else
     {
-        *os << "HNA Routing Table: empty" << std::endl;
+        *os << "HNA Routing Table: empty" << std::endl << std::endl;
     }
     // Restore the previous ostream state
     (*os).copyfmt(oldState);
