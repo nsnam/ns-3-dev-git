@@ -24,7 +24,8 @@ Changes from ns-3.39 to ns-3-dev
 * (energy) Support for battery presets and cell packs.
 * (energy) Documentation was updated and reformatted.
 * (lr-wpan) Removed unnecessary bcst filter from `LrWpanMac::PdDataIndication` which also blocked the correct reception of beacon request commands.
-* (lr-wpan) Add the functions to set or get the capability field via bitmap (a 8 bit int).
+* (lr-wpan) Added the functions to set or get the capability field via bitmap (a 8 bit int).
+* (lr-wpan) Added the possibility to obtain the LQI from a received `MlmeAssociateIndicationParams`.
 
 ### Changes to build system
 

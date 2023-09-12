@@ -32,6 +32,7 @@ requirements (Note: not all ns-3 features are available on all systems):
 - (wifi) Added support for 802.11be TID-to-Link Mapping
 - (energy) - !1329 - Extensions to battery discharge module
 - (lr-wpan) - !1604 - Add CapabilityField bitmap functions
+- (lr-wpan) - !1645 - Add LQI to MlmeAssociateIndicationParams
 
 ### Bugs fixed
 

@@ -183,6 +183,7 @@ LrWpanMac::LrWpanMac()
     m_numCsmacaRetry = 0;
     m_txPkt = nullptr;
     m_rxPkt = nullptr;
+    m_lastRxFrameLqi = 0;
     m_ifs = 0;
 
     m_macLIFSPeriod = 40;
@@ -2093,9 +2094,10 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                     m_setMacState.Cancel();
                     ChangeMacState(MAC_IDLE);
 
-                    // save received packet to process the appropriate indication/response after
-                    // sending ACK (PD-DATA.confirm)
+                    // save received packet and LQI to process the appropriate indication/response
+                    // after sending ACK (PD-DATA.confirm)
                     m_rxPkt = originalPkt->Copy();
+                    m_lastRxFrameLqi = lqi;
 
                     // LOG Commands with ACK required.
                     CommandPayloadHeader receivedMacPayload;
@@ -3176,9 +3178,13 @@ LrWpanMac::PdDataConfirm(LrWpanPhyEnumeration status)
                 {
                     if (!m_mlmeAssociateIndicationCallback.IsNull())
                     {
+                        // NOTE: The LQI parameter is not part of the standard but found
+                        // in some implementations as is required for higher layers (See Zboss
+                        // implementation).
                         MlmeAssociateIndicationParams associateParams;
                         associateParams.capabilityInfo = receivedMacPayload.GetCapabilityField();
                         associateParams.m_extDevAddr = receivedMacHdr.GetExtSrcAddr();
+                        associateParams.lqi = m_lastRxFrameLqi;
                         m_mlmeAssociateIndicationCallback(associateParams);
                     }
 

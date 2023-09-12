@@ -447,9 +447,11 @@ struct McpsDataIndicationParams
  */
 struct MlmeAssociateIndicationParams
 {
-    Mac64Address m_extDevAddr; //!< The extended address of the device requesting association
-    CapabilityField
-        capabilityInfo; //!< The operational capabilities of the device requesting association.
+    Mac64Address m_extDevAddr;      //!< The extended address of the device requesting association
+    CapabilityField capabilityInfo; //!< The operational capabilities of
+                                    //!< the device requesting association.
+    u_int8_t lqi{0}; //!< The link quality indicator of the received associate request command
+                     //!< (Not officially supported in the standard but found in implementations)
 };
 
 /**
@@ -2217,6 +2219,11 @@ class LrWpanMac : public Object
      * The number of CSMA/CA retries used for sending the current packet.
      */
     uint8_t m_numCsmacaRetry;
+
+    /**
+     * Keep track of the last received frame Link Quality Indicator
+     */
+    uint8_t m_lastRxFrameLqi;
 
     /**
      * Scheduler event for the ACK timeout of the currently transmitted data
