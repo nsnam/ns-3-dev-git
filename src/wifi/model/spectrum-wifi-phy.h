@@ -176,6 +176,11 @@ class SpectrumWifiPhy : public WifiPhy
      */
     const std::map<FrequencyRange, Ptr<WifiSpectrumPhyInterface>>& GetSpectrumPhyInterfaces() const;
 
+    /**
+     * \param callback the callback to invoke when operating channel has switched.
+     */
+    void SetChannelSwitchedCallback(Callback<void> callback);
+
   protected:
     void DoDispose() override;
     void DoInitialize() override;
@@ -270,6 +275,11 @@ class SpectrumWifiPhy : public WifiPhy
     Ptr<WifiSpectrumPhyInterface> GetInterfaceCoveringChannelBand(uint16_t frequency,
                                                                   uint16_t width) const;
 
+    /**
+     * Notify the spectrum channel has switched
+     */
+    void NotifyChannelSwitched();
+
     Ptr<AntennaModel> m_antenna; //!< antenna model
 
     bool m_disableWifiReception;           //!< forces this PHY to fail to sync on any signal
@@ -284,6 +294,8 @@ class SpectrumWifiPhy : public WifiPhy
                                               //!< of the transmit spectrum mask
     double m_txMaskOuterBandMaximumRejection; //!< The maximum rejection (in dBr) for the outer band
                                               //!< of the transmit spectrum mask
+
+    Callback<void> m_channelSwitchedCallback; //!< Callback when channel switched
 };
 
 } // namespace ns3

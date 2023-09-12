@@ -345,6 +345,17 @@ SpectrumWifiPhy::DoChannelSwitch()
     {
         SwitchMaybeToCcaBusy(nullptr);
     }
+
+    Simulator::ScheduleNow(&SpectrumWifiPhy::NotifyChannelSwitched, this);
+}
+
+void
+SpectrumWifiPhy::NotifyChannelSwitched()
+{
+    if (!m_channelSwitchedCallback.IsNull())
+    {
+        m_channelSwitchedCallback();
+    }
 }
 
 void
@@ -691,6 +702,12 @@ Ptr<WifiSpectrumPhyInterface>
 SpectrumWifiPhy::GetCurrentInterface() const
 {
     return m_currentSpectrumPhyInterface;
+}
+
+void
+SpectrumWifiPhy::SetChannelSwitchedCallback(Callback<void> callback)
+{
+    m_channelSwitchedCallback = callback;
 }
 
 } // namespace ns3
