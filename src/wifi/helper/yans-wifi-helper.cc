@@ -82,7 +82,7 @@ YansWifiPhyHelper::YansWifiPhyHelper()
     : WifiPhyHelper(1), // YANS phy is not used for 11be devices
       m_channel(nullptr)
 {
-    m_phy.at(0).SetTypeId("ns3::YansWifiPhy");
+    m_phys.front().SetTypeId("ns3::YansWifiPhy");
     SetInterferenceHelper("ns3::InterferenceHelper");
     SetErrorRateModel("ns3::TableBasedErrorRateModel");
 }
@@ -103,19 +103,19 @@ YansWifiPhyHelper::SetChannel(std::string channelName)
 std::vector<Ptr<WifiPhy>>
 YansWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
 {
-    Ptr<YansWifiPhy> phy = m_phy.at(0).Create<YansWifiPhy>();
+    Ptr<YansWifiPhy> phy = m_phys.front().Create<YansWifiPhy>();
     Ptr<InterferenceHelper> interference = m_interferenceHelper.Create<InterferenceHelper>();
     phy->SetInterferenceHelper(interference);
-    Ptr<ErrorRateModel> error = m_errorRateModel.at(0).Create<ErrorRateModel>();
+    Ptr<ErrorRateModel> error = m_errorRateModel.front().Create<ErrorRateModel>();
     phy->SetErrorRateModel(error);
-    if (m_frameCaptureModel.at(0).IsTypeIdSet())
+    if (m_frameCaptureModel.front().IsTypeIdSet())
     {
-        auto frameCapture = m_frameCaptureModel.at(0).Create<FrameCaptureModel>();
+        auto frameCapture = m_frameCaptureModel.front().Create<FrameCaptureModel>();
         phy->SetFrameCaptureModel(frameCapture);
     }
-    if (m_preambleDetectionModel.at(0).IsTypeIdSet())
+    if (m_preambleDetectionModel.front().IsTypeIdSet())
     {
-        auto preambleDetection = m_preambleDetectionModel.at(0).Create<PreambleDetectionModel>();
+        auto preambleDetection = m_preambleDetectionModel.front().Create<PreambleDetectionModel>();
         phy->SetPreambleDetectionModel(preambleDetection);
     }
     phy->SetChannel(m_channel);

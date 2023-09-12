@@ -147,7 +147,7 @@ WifiPhyHelper::WifiPhyHelper(uint8_t nLinks)
     : m_pcapDlt(PcapHelper::DLT_IEEE802_11)
 {
     NS_ABORT_IF(nLinks == 0);
-    m_phy.resize(nLinks);
+    m_phys.resize(nLinks);
     m_errorRateModel.resize(nLinks);
     m_frameCaptureModel.resize(nLinks);
     m_preambleDetectionModel.resize(nLinks);
@@ -162,7 +162,7 @@ WifiPhyHelper::~WifiPhyHelper()
 void
 WifiPhyHelper::Set(std::string name, const AttributeValue& v)
 {
-    for (auto& phy : m_phy)
+    for (auto& phy : m_phys)
     {
         phy.Set(name, v);
     }
@@ -171,7 +171,7 @@ WifiPhyHelper::Set(std::string name, const AttributeValue& v)
 void
 WifiPhyHelper::Set(uint8_t linkId, std::string name, const AttributeValue& v)
 {
-    m_phy.at(linkId).Set(name, v);
+    m_phys.at(linkId).Set(name, v);
 }
 
 void

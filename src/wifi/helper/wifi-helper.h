@@ -235,7 +235,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
                                  SignalNoiseDbm signalNoise,
                                  uint16_t staId = SU_STA_ID);
 
-    std::vector<ObjectFactory> m_phy;                    ///< PHY object
+    std::vector<ObjectFactory> m_phys;                   ///< PHY objects
     ObjectFactory m_interferenceHelper;                  ///< interference helper
     std::vector<ObjectFactory> m_errorRateModel;         ///< error rate model
     std::vector<ObjectFactory> m_frameCaptureModel;      ///< frame capture model
@@ -549,7 +549,7 @@ template <typename... Args>
 void
 WifiPhyHelper::SetErrorRateModel(std::string type, Args&&... args)
 {
-    for (std::size_t linkId = 0; linkId < m_phy.size(); linkId++)
+    for (std::size_t linkId = 0; linkId < m_phys.size(); linkId++)
     {
         SetErrorRateModel(linkId, type, std::forward<Args>(args)...);
     }
@@ -567,7 +567,7 @@ template <typename... Args>
 void
 WifiPhyHelper::SetFrameCaptureModel(std::string type, Args&&... args)
 {
-    for (std::size_t linkId = 0; linkId < m_phy.size(); linkId++)
+    for (std::size_t linkId = 0; linkId < m_phys.size(); linkId++)
     {
         SetFrameCaptureModel(linkId, type, std::forward<Args>(args)...);
     }
@@ -585,7 +585,7 @@ template <typename... Args>
 void
 WifiPhyHelper::SetPreambleDetectionModel(std::string type, Args&&... args)
 {
-    for (std::size_t linkId = 0; linkId < m_phy.size(); linkId++)
+    for (std::size_t linkId = 0; linkId < m_phys.size(); linkId++)
     {
         SetPreambleDetectionModel(linkId, type, std::forward<Args>(args)...);
     }

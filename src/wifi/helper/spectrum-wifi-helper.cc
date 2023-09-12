@@ -42,8 +42,8 @@ NS_LOG_COMPONENT_DEFINE("SpectrumWifiHelper");
 SpectrumWifiPhyHelper::SpectrumWifiPhyHelper(uint8_t nLinks)
     : WifiPhyHelper(nLinks)
 {
-    NS_ABORT_IF(m_phy.size() != nLinks);
-    for (auto& phy : m_phy)
+    NS_ABORT_IF(m_phys.size() != nLinks);
+    for (auto& phy : m_phys)
     {
         phy.SetTypeId("ns3::SpectrumWifiPhy");
     }
@@ -113,9 +113,9 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
 {
     std::vector<Ptr<WifiPhy>> ret;
 
-    for (std::size_t i = 0; i < m_phy.size(); i++)
+    for (std::size_t i = 0; i < m_phys.size(); i++)
     {
-        Ptr<SpectrumWifiPhy> phy = m_phy.at(i).Create<SpectrumWifiPhy>();
+        auto phy = m_phys.at(i).Create<SpectrumWifiPhy>();
         auto interference = m_interferenceHelper.Create<InterferenceHelper>();
         phy->SetInterferenceHelper(interference);
         Ptr<ErrorRateModel> error = m_errorRateModel.at(i).Create<ErrorRateModel>();
