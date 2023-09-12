@@ -20,13 +20,14 @@
 #ifndef UAN_MAC_CW_H
 #define UAN_MAC_CW_H
 
+#include "uan-mac.h"
+#include "uan-phy.h"
+#include "uan-tx-mode.h"
+
 #include "ns3/mac8-address.h"
 #include "ns3/nstime.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
-#include "ns3/uan-mac.h"
-#include "ns3/uan-phy.h"
-#include "ns3/uan-tx-mode.h"
 
 namespace ns3
 {

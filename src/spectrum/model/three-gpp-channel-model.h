@@ -21,10 +21,11 @@
 #ifndef THREE_GPP_CHANNEL_H
 #define THREE_GPP_CHANNEL_H
 
+#include "matrix-based-channel-model.h"
+
 #include "ns3/angles.h"
 #include <ns3/boolean.h>
 #include <ns3/channel-condition-model.h>
-#include <ns3/matrix-based-channel-model.h>
 
 #include <complex.h>
 #include <unordered_map>

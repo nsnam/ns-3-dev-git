@@ -20,8 +20,9 @@
 #ifndef SINGLE_MODEL_SPECTRUM_CHANNEL_H
 #define SINGLE_MODEL_SPECTRUM_CHANNEL_H
 
-#include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-model.h>
+#include "spectrum-channel.h"
+#include "spectrum-model.h"
+
 #include <ns3/traced-callback.h>
 
 namespace ns3

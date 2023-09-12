@@ -16,7 +16,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns3/mobility-helper.h"
+#include "mobility-helper.h"
 
 #include "ns3/config.h"
 #include "ns3/hierarchical-mobility-model.h"

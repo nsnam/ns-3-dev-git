@@ -19,8 +19,8 @@
 #ifndef THREE_GPP_PROPAGATION_LOSS_MODEL_H
 #define THREE_GPP_PROPAGATION_LOSS_MODEL_H
 
-#include "ns3/channel-condition-model.h"
-#include "ns3/propagation-loss-model.h"
+#include "channel-condition-model.h"
+#include "propagation-loss-model.h"
 
 namespace ns3
 {

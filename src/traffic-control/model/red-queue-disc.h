@@ -60,10 +60,11 @@
 #ifndef RED_QUEUE_DISC_H
 #define RED_QUEUE_DISC_H
 
+#include "queue-disc.h"
+
 #include "ns3/boolean.h"
 #include "ns3/data-rate.h"
 #include "ns3/nstime.h"
-#include "ns3/queue-disc.h"
 #include "ns3/random-variable-stream.h"
 
 namespace ns3

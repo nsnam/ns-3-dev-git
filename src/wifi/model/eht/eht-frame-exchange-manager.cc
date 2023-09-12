@@ -20,10 +20,10 @@
 #include "eht-frame-exchange-manager.h"
 
 #include "eht-phy.h"
+#include "emlsr-manager.h"
 
 #include "ns3/abort.h"
 #include "ns3/ap-wifi-mac.h"
-#include "ns3/emlsr-manager.h"
 #include "ns3/log.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"

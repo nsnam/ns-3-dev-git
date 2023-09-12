@@ -21,7 +21,7 @@
 #ifndef OH_BUILDINGS_PROPAGATION_LOSS_MODEL_H_
 #define OH_BUILDINGS_PROPAGATION_LOSS_MODEL_H_
 
-#include <ns3/buildings-propagation-loss-model.h>
+#include "buildings-propagation-loss-model.h"
 
 namespace ns3
 {

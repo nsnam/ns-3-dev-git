@@ -20,8 +20,9 @@
 #ifndef ICMPV4_H
 #define ICMPV4_H
 
+#include "ipv4-header.h"
+
 #include "ns3/header.h"
-#include "ns3/ipv4-header.h"
 #include "ns3/ptr.h"
 
 #include <stdint.h>

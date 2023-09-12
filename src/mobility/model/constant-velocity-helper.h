@@ -19,7 +19,8 @@
 #ifndef CONSTANT_VELOCITY_HELPER_H
 #define CONSTANT_VELOCITY_HELPER_H
 
-#include "ns3/box.h"
+#include "box.h"
+
 #include "ns3/nstime.h"
 #include "ns3/vector.h"
 

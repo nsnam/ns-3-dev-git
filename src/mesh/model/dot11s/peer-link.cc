@@ -19,7 +19,7 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-#include "ns3/peer-link.h"
+#include "peer-link.h"
 
 #include "peer-management-protocol-mac.h"
 

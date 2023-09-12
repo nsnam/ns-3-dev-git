@@ -27,11 +27,12 @@
 #ifndef PIE_QUEUE_DISC_H
 #define PIE_QUEUE_DISC_H
 
+#include "queue-disc.h"
+
 #include "ns3/boolean.h"
 #include "ns3/data-rate.h"
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
-#include "ns3/queue-disc.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/timer.h"
 

@@ -19,10 +19,11 @@
 #ifndef PHASED_ARRAY_SPECTRUM_PROPAGATION_LOSS_MODEL_H
 #define PHASED_ARRAY_SPECTRUM_PROPAGATION_LOSS_MODEL_H
 
+#include "spectrum-value.h"
+
 #include <ns3/mobility-model.h>
 #include <ns3/object.h>
 #include <ns3/phased-array-model.h>
-#include <ns3/spectrum-value.h>
 
 namespace ns3
 {

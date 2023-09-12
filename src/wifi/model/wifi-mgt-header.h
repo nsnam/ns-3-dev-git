@@ -21,11 +21,11 @@
 #define WIFI_MGT_HEADER_H
 
 #include "non-inheritance.h"
+#include "supported-rates.h"
 
 #include "ns3/eht-capabilities.h"
 #include "ns3/header.h"
 #include "ns3/multi-link-element.h"
-#include "ns3/supported-rates.h"
 
 #include <algorithm>
 #include <iterator>

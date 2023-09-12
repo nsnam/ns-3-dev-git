@@ -20,8 +20,9 @@
 #ifndef ETHERNET_HEADER_H
 #define ETHERNET_HEADER_H
 
+#include "mac48-address.h"
+
 #include "ns3/header.h"
-#include "ns3/mac48-address.h"
 
 #include <string>
 

@@ -24,12 +24,13 @@
 #ifndef ONOFF_APPLICATION_H
 #define ONOFF_APPLICATION_H
 
+#include "seq-ts-size-header.h"
+
 #include "ns3/address.h"
 #include "ns3/application.h"
 #include "ns3/data-rate.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
-#include "ns3/seq-ts-size-header.h"
 #include "ns3/traced-callback.h"
 
 namespace ns3

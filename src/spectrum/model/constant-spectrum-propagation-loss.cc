@@ -17,7 +17,7 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/constant-spectrum-propagation-loss.h"
+#include "constant-spectrum-propagation-loss.h"
 
 #include "spectrum-signal-parameters.h"
 

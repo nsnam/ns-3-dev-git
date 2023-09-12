@@ -20,11 +20,12 @@
 
 #include "ipv4-l3-click-protocol.h"
 
+#include "ipv4-click-routing.h"
+
 #include "ns3/arp-l3-protocol.h"
 #include "ns3/ethernet-header.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/ip-l4-protocol.h"
-#include "ns3/ipv4-click-routing.h"
 #include "ns3/ipv4-raw-socket-impl.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/loopback-net-device.h"

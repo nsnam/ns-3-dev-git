@@ -20,7 +20,7 @@
 #ifndef BUILD_VERSION_H_
 #define BUILD_VERSION_H_
 
-#include "ns3/int64x64.h"
+#include "int64x64.h"
 
 #include <string>
 

@@ -18,14 +18,15 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-#include "ns3/mesh-wifi-interface-mac.h"
+#include "mesh-wifi-interface-mac.h"
+
+#include "mesh-wifi-beacon.h"
 
 #include "ns3/boolean.h"
 #include "ns3/channel-access-manager.h"
 #include "ns3/double.h"
 #include "ns3/log.h"
 #include "ns3/mac-tx-middle.h"
-#include "ns3/mesh-wifi-beacon.h"
 #include "ns3/pointer.h"
 #include "ns3/qos-txop.h"
 #include "ns3/random-variable-stream.h"

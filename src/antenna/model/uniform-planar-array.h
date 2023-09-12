@@ -18,8 +18,9 @@
 #ifndef UNIFORM_PLANAR_ARRAY_H
 #define UNIFORM_PLANAR_ARRAY_H
 
+#include "phased-array-model.h"
+
 #include <ns3/object.h>
-#include <ns3/phased-array-model.h>
 
 namespace ns3
 {

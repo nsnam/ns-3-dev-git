@@ -23,9 +23,10 @@
 
 #include "packetbb.h"
 
+#include "ipv4-address.h"
+#include "ipv6-address.h"
+
 #include "ns3/assert.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/ipv6-address.h"
 #include "ns3/log.h"
 
 static const uint8_t VERSION = 0;

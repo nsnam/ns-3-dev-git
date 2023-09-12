@@ -20,9 +20,10 @@
 #ifndef FLOW_MONITOR_H
 #define FLOW_MONITOR_H
 
+#include "flow-classifier.h"
+#include "flow-probe.h"
+
 #include "ns3/event-id.h"
-#include "ns3/flow-classifier.h"
-#include "ns3/flow-probe.h"
 #include "ns3/histogram.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"

@@ -25,9 +25,10 @@
 #ifndef LR_WPAN_MAC_H
 #define LR_WPAN_MAC_H
 
+#include "lr-wpan-fields.h"
+#include "lr-wpan-phy.h"
+
 #include <ns3/event-id.h>
-#include <ns3/lr-wpan-fields.h>
-#include <ns3/lr-wpan-phy.h>
 #include <ns3/mac16-address.h>
 #include <ns3/mac64-address.h>
 #include <ns3/object.h>

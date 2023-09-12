@@ -20,7 +20,8 @@
 #ifndef TIME_SERIES_ADAPTOR_H
 #define TIME_SERIES_ADAPTOR_H
 
-#include "ns3/data-collection-object.h"
+#include "data-collection-object.h"
+
 #include "ns3/object.h"
 #include "ns3/traced-value.h"
 #include "ns3/type-id.h"

@@ -17,11 +17,12 @@
  * Author: Stefano Avallone <stefano.avallone@.unina.it>
  */
 
-#include "ns3/net-device-queue-interface.h"
+#include "net-device-queue-interface.h"
+
+#include "queue-item.h"
+#include "queue-limits.h"
 
 #include "ns3/abort.h"
-#include "ns3/queue-item.h"
-#include "ns3/queue-limits.h"
 #include "ns3/uinteger.h"
 
 namespace ns3

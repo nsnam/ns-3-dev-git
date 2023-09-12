@@ -20,7 +20,7 @@
 #ifndef SPECTRUM_CONVERTER_H
 #define SPECTRUM_CONVERTER_H
 
-#include <ns3/spectrum-value.h>
+#include "spectrum-value.h"
 
 namespace ns3
 {

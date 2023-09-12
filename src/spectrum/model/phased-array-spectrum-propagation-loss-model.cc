@@ -18,7 +18,8 @@
 
 #include "phased-array-spectrum-propagation-loss-model.h"
 
-#include "ns3/spectrum-signal-parameters.h"
+#include "spectrum-signal-parameters.h"
+
 #include <ns3/log.h>
 #include <ns3/phased-array-model.h>
 

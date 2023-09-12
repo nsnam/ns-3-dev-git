@@ -20,7 +20,8 @@
 #ifndef TCP_OPTION_TS_H
 #define TCP_OPTION_TS_H
 
-#include "ns3/tcp-option.h"
+#include "tcp-option.h"
+
 #include "ns3/timer.h"
 
 namespace ns3

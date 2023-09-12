@@ -27,8 +27,9 @@
 #ifndef CODEL_H
 #define CODEL_H
 
+#include "queue-disc.h"
+
 #include "ns3/nstime.h"
-#include "ns3/queue-disc.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/trace-source-accessor.h"

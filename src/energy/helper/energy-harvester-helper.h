@@ -21,10 +21,11 @@
 #ifndef ENERGY_HARVESTER_HELPER_H
 #define ENERGY_HARVESTER_HELPER_H
 
+#include "energy-harvester-container.h"
+#include "energy-source-container.h"
+
 #include "ns3/attribute.h"
-#include "ns3/energy-harvester-container.h"
 #include "ns3/energy-harvester.h"
-#include "ns3/energy-source-container.h"
 #include "ns3/energy-source.h"
 #include "ns3/node-container.h"
 #include "ns3/object-factory.h"

@@ -18,8 +18,9 @@
 
 #include "three-gpp-propagation-loss-model.h"
 
+#include "channel-condition-model.h"
+
 #include "ns3/boolean.h"
-#include "ns3/channel-condition-model.h"
 #include "ns3/double.h"
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"

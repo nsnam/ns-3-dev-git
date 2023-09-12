@@ -22,10 +22,10 @@
 #include "socket.h"
 
 #include "node.h"
+#include "packet.h"
 #include "socket-factory.h"
 
 #include "ns3/log.h"
-#include "ns3/packet.h"
 
 #include <limits>
 

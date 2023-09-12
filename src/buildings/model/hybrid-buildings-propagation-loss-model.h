@@ -22,7 +22,8 @@
 #ifndef HYBRID_BUILDINGS_PROPAGATION_LOSS_MODEL_H_
 #define HYBRID_BUILDINGS_PROPAGATION_LOSS_MODEL_H_
 
-#include <ns3/buildings-propagation-loss-model.h>
+#include "buildings-propagation-loss-model.h"
+
 #include <ns3/propagation-environment.h>
 
 namespace ns3

@@ -20,7 +20,8 @@
 #ifndef HWMP_STATE_H
 #define HWMP_STATE_H
 
-#include "ns3/hwmp-protocol.h"
+#include "hwmp-protocol.h"
+
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 
 namespace ns3

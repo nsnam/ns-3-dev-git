@@ -19,6 +19,7 @@
 
 #include "yans-wifi-channel.h"
 
+#include "wifi-net-device.h"
 #include "wifi-ppdu.h"
 #include "wifi-psdu.h"
 #include "wifi-utils.h"
@@ -31,7 +32,6 @@
 #include "ns3/propagation-delay-model.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/simulator.h"
-#include "ns3/wifi-net-device.h"
 
 namespace ns3
 {

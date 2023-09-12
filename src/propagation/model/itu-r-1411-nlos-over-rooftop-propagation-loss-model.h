@@ -22,8 +22,8 @@
 #ifndef ITU_R_1411_NLOS_OVER_ROOFTOP_PROPAGATION_LOSS_MODEL_H
 #define ITU_R_1411_NLOS_OVER_ROOFTOP_PROPAGATION_LOSS_MODEL_H
 
-#include <ns3/propagation-environment.h>
-#include <ns3/propagation-loss-model.h>
+#include "propagation-environment.h"
+#include "propagation-loss-model.h"
 
 namespace ns3
 {

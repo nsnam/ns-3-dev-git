@@ -21,8 +21,9 @@
 #ifndef TCP_DCTCP_H
 #define TCP_DCTCP_H
 
-#include "ns3/tcp-congestion-ops.h"
-#include "ns3/tcp-linux-reno.h"
+#include "tcp-congestion-ops.h"
+#include "tcp-linux-reno.h"
+
 #include "ns3/traced-callback.h"
 
 namespace ns3

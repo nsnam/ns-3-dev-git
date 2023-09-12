@@ -19,11 +19,12 @@
  */
 #include "building-position-allocator.h"
 
+#include "buildings-helper.h"
+
 #include "ns3/boolean.h"
 #include "ns3/box.h"
 #include "ns3/building-list.h"
 #include "ns3/building.h"
-#include "ns3/buildings-helper.h"
 #include "ns3/double.h"
 #include "ns3/enum.h"
 #include "ns3/log.h"

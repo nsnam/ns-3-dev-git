@@ -23,10 +23,11 @@
 #ifndef BOOL_PROBE_H
 #define BOOL_PROBE_H
 
+#include "probe.h"
+
 #include "ns3/boolean.h"
 #include "ns3/callback.h"
 #include "ns3/object.h"
-#include "ns3/probe.h"
 #include "ns3/simulator.h"
 #include "ns3/traced-value.h"
 

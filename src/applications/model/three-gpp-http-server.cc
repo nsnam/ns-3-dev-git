@@ -20,6 +20,8 @@
 
 #include "three-gpp-http-server.h"
 
+#include "three-gpp-http-variables.h"
+
 #include <ns3/callback.h>
 #include <ns3/config.h>
 #include <ns3/inet-socket-address.h>
@@ -31,7 +33,6 @@
 #include <ns3/socket.h>
 #include <ns3/tcp-socket-factory.h>
 #include <ns3/tcp-socket.h>
-#include <ns3/three-gpp-http-variables.h>
 #include <ns3/uinteger.h>
 
 NS_LOG_COMPONENT_DEFINE("ThreeGppHttpServer");

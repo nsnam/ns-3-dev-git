@@ -20,14 +20,14 @@
 #define UDP_SOCKET_IMPL_H
 
 #include "icmpv4.h"
+#include "ipv4-interface.h"
+#include "udp-socket.h"
 
 #include "ns3/callback.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/ipv4-interface.h"
 #include "ns3/ptr.h"
 #include "ns3/socket.h"
 #include "ns3/traced-callback.h"
-#include "ns3/udp-socket.h"
 
 #include <queue>
 #include <stdint.h>

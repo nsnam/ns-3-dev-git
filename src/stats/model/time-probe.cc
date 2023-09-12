@@ -21,7 +21,7 @@
  *
  */
 
-#include "ns3/time-probe.h"
+#include "time-probe.h"
 
 #include "ns3/config.h"
 #include "ns3/log.h"

@@ -20,7 +20,7 @@
 #ifndef NS3_EXAMPLE_AS_TEST_SUITE_H
 #define NS3_EXAMPLE_AS_TEST_SUITE_H
 
-#include "ns3/test.h"
+#include "test.h"
 
 #include <string>
 

@@ -30,12 +30,12 @@
 #include "wifi-tx-timer.h"
 #include "wifi-tx-vector.h"
 
-#include "ns3/object.h"
 // Needed to compile wave bindings
 #include "channel-access-manager.h"
+#include "wifi-ack-manager.h"
+#include "wifi-protection-manager.h"
 
-#include "ns3/wifi-ack-manager.h"
-#include "ns3/wifi-protection-manager.h"
+#include "ns3/object.h"
 
 namespace ns3
 {

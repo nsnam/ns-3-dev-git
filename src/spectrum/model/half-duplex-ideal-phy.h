@@ -20,6 +20,12 @@
 #ifndef HALF_DUPLEX_IDEAL_PHY_H
 #define HALF_DUPLEX_IDEAL_PHY_H
 
+#include "spectrum-channel.h"
+#include "spectrum-interference.h"
+#include "spectrum-phy.h"
+#include "spectrum-signal-parameters.h"
+#include "spectrum-value.h"
+
 #include <ns3/data-rate.h>
 #include <ns3/event-id.h>
 #include <ns3/generic-phy.h>
@@ -27,11 +33,6 @@
 #include <ns3/net-device.h>
 #include <ns3/nstime.h>
 #include <ns3/packet.h>
-#include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-interference.h>
-#include <ns3/spectrum-phy.h>
-#include <ns3/spectrum-signal-parameters.h>
-#include <ns3/spectrum-value.h>
 
 namespace ns3
 {

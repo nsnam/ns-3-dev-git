@@ -21,7 +21,7 @@
 #ifndef UAN_PHY_DUAL_H
 #define UAN_PHY_DUAL_H
 
-#include "ns3/uan-phy.h"
+#include "uan-phy.h"
 
 namespace ns3
 {

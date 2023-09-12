@@ -20,11 +20,12 @@
 
 #include "uan-phy-gen.h"
 
+#include "acoustic-modem-energy-model.h"
 #include "uan-channel.h"
 #include "uan-net-device.h"
 #include "uan-transducer.h"
+#include "uan-tx-mode.h"
 
-#include "ns3/acoustic-modem-energy-model.h"
 #include "ns3/double.h"
 #include "ns3/energy-source-container.h"
 #include "ns3/log.h"
@@ -34,7 +35,6 @@
 #include "ns3/string.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/traced-callback.h"
-#include "ns3/uan-tx-mode.h"
 #include "ns3/uinteger.h"
 
 namespace ns3

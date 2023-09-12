@@ -20,13 +20,14 @@
 #ifndef TCP_SOCKET_BASE_H
 #define TCP_SOCKET_BASE_H
 
+#include "ipv4-header.h"
+#include "ipv6-header.h"
+#include "tcp-socket-state.h"
+#include "tcp-socket.h"
+
 #include "ns3/data-rate.h"
-#include "ns3/ipv4-header.h"
-#include "ns3/ipv6-header.h"
 #include "ns3/node.h"
 #include "ns3/sequence-number.h"
-#include "ns3/tcp-socket-state.h"
-#include "ns3/tcp-socket.h"
 #include "ns3/timer.h"
 #include "ns3/traced-value.h"
 

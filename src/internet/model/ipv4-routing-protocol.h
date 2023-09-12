@@ -18,10 +18,10 @@
 #define IPV4_ROUTING_PROTOCOL_H
 
 #include "ipv4-header.h"
+#include "ipv4-interface-address.h"
 #include "ipv4.h"
 
 #include "ns3/callback.h"
-#include "ns3/ipv4-interface-address.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/output-stream-wrapper.h"

@@ -38,7 +38,6 @@
 #endif
 #include "animation-interface.h"
 
-#include "ns3/animation-interface.h"
 #include "ns3/channel.h"
 #include "ns3/config.h"
 #include "ns3/constant-position-mobility-model.h"

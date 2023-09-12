@@ -20,7 +20,7 @@
 #ifndef PACKET_SOCKET_HELPER_H
 #define PACKET_SOCKET_HELPER_H
 
-#include "ns3/node-container.h"
+#include "node-container.h"
 
 namespace ns3
 {

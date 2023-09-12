@@ -31,7 +31,8 @@
 #ifndef DSR_MAIN_HELPER_H
 #define DSR_MAIN_HELPER_H
 
-#include "ns3/dsr-helper.h"
+#include "dsr-helper.h"
+
 #include "ns3/dsr-routing.h"
 #include "ns3/node-container.h"
 #include "ns3/node.h"

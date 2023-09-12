@@ -20,7 +20,8 @@
 #ifndef GENERIC_BATTERY_MODEL_HELPER_H_
 #define GENERIC_BATTERY_MODEL_HELPER_H_
 
-#include <ns3/energy-model-helper.h>
+#include "energy-model-helper.h"
+
 #include <ns3/generic-battery-model.h>
 #include <ns3/node.h>
 

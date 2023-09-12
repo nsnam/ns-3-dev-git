@@ -20,7 +20,7 @@
  * Modified by: Mitch Watrous (watrous@u.washington.edu)
  */
 
-#include "ns3/double-probe.h"
+#include "double-probe.h"
 
 #include "ns3/config.h"
 #include "ns3/log.h"

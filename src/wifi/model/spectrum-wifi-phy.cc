@@ -25,6 +25,7 @@
 #include "spectrum-wifi-phy.h"
 
 #include "interference-helper.h"
+#include "wifi-net-device.h"
 #include "wifi-psdu.h"
 #include "wifi-spectrum-phy-interface.h"
 #include "wifi-spectrum-signal-parameters.h"
@@ -37,7 +38,6 @@
 #include "ns3/node.h"
 #include "ns3/simulator.h"
 #include "ns3/spectrum-channel.h"
-#include "ns3/wifi-net-device.h"
 
 #include <algorithm>
 

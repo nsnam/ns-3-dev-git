@@ -20,7 +20,8 @@
 #ifndef NIX_VECTOR_H
 #define NIX_VECTOR_H
 
-#include "ns3/buffer.h"
+#include "buffer.h"
+
 #include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
 

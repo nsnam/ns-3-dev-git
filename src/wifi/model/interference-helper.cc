@@ -21,6 +21,7 @@
 #include "interference-helper.h"
 
 #include "error-rate-model.h"
+#include "wifi-phy-operating-channel.h"
 #include "wifi-phy.h"
 #include "wifi-psdu.h"
 #include "wifi-utils.h"
@@ -29,7 +30,6 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/wifi-phy-operating-channel.h"
 
 #include <algorithm>
 #include <numeric>

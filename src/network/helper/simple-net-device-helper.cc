@@ -19,6 +19,8 @@
 
 #include "simple-net-device-helper.h"
 
+#include "trace-helper.h"
+
 #include "ns3/abort.h"
 #include "ns3/boolean.h"
 #include "ns3/config.h"
@@ -30,7 +32,6 @@
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/simulator.h"
-#include "ns3/trace-helper.h"
 
 #include <string>
 

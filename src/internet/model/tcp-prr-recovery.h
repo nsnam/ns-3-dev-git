@@ -22,7 +22,7 @@
 #ifndef TCP_PRR_RECOVERY_H
 #define TCP_PRR_RECOVERY_H
 
-#include "ns3/tcp-recovery-ops.h"
+#include "tcp-recovery-ops.h"
 
 namespace ns3
 {

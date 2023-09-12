@@ -19,9 +19,10 @@
 #ifndef TWO_RAY_SPECTRUM_PROPAGATION_LOSS_H
 #define TWO_RAY_SPECTRUM_PROPAGATION_LOSS_H
 
+#include "phased-array-spectrum-propagation-loss-model.h"
+#include "spectrum-signal-parameters.h"
+
 #include "ns3/channel-condition-model.h"
-#include "ns3/phased-array-spectrum-propagation-loss-model.h"
-#include "ns3/spectrum-signal-parameters.h"
 
 #include <map>
 

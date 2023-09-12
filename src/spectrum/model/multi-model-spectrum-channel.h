@@ -20,11 +20,12 @@
 #ifndef MULTI_MODEL_SPECTRUM_CHANNEL_H
 #define MULTI_MODEL_SPECTRUM_CHANNEL_H
 
+#include "spectrum-channel.h"
+#include "spectrum-converter.h"
+#include "spectrum-propagation-loss-model.h"
+#include "spectrum-value.h"
+
 #include <ns3/propagation-delay-model.h>
-#include <ns3/spectrum-channel.h>
-#include <ns3/spectrum-converter.h>
-#include <ns3/spectrum-propagation-loss-model.h>
-#include <ns3/spectrum-value.h>
 
 #include <map>
 #include <set>

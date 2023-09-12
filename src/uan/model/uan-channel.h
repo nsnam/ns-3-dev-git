@@ -20,11 +20,12 @@
 #ifndef UAN_CHANNEL_H
 #define UAN_CHANNEL_H
 
+#include "uan-noise-model.h"
+#include "uan-prop-model.h"
+
 #include "ns3/channel.h"
 #include "ns3/net-device.h"
 #include "ns3/packet.h"
-#include "ns3/uan-noise-model.h"
-#include "ns3/uan-prop-model.h"
 
 #include <list>
 #include <vector>

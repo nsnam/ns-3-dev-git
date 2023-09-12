@@ -22,7 +22,8 @@
 #ifndef LR_WPAN_NET_DEVICE_H
 #define LR_WPAN_NET_DEVICE_H
 
-#include <ns3/lr-wpan-mac.h>
+#include "lr-wpan-mac.h"
+
 #include <ns3/net-device.h>
 #include <ns3/traced-callback.h>
 

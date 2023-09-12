@@ -18,7 +18,8 @@
 #ifndef IPV4_LIST_ROUTING_H
 #define IPV4_LIST_ROUTING_H
 
-#include "ns3/ipv4-routing-protocol.h"
+#include "ipv4-routing-protocol.h"
+
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
 

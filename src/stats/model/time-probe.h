@@ -23,11 +23,12 @@
 #ifndef TIME_PROBE_H
 #define TIME_PROBE_H
 
+#include "probe.h"
+
 #include "ns3/boolean.h"
 #include "ns3/callback.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
-#include "ns3/probe.h"
 #include "ns3/simulator.h"
 #include "ns3/traced-value.h"
 

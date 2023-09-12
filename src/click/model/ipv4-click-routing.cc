@@ -19,8 +19,9 @@
 
 #include "ipv4-click-routing.h"
 
+#include "ipv4-l3-click-protocol.h"
+
 #include "ns3/ipv4-interface.h"
-#include "ns3/ipv4-l3-click-protocol.h"
 #include "ns3/log.h"
 #include "ns3/mac48-address.h"
 #include "ns3/node.h"

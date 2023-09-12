@@ -20,13 +20,14 @@
 #ifndef RIPNG_H
 #define RIPNG_H
 
+#include "ipv6-interface.h"
+#include "ipv6-l3-protocol.h"
+#include "ipv6-routing-protocol.h"
+#include "ipv6-routing-table-entry.h"
+#include "ripng-header.h"
+
 #include "ns3/inet6-socket-address.h"
-#include "ns3/ipv6-interface.h"
-#include "ns3/ipv6-l3-protocol.h"
-#include "ns3/ipv6-routing-protocol.h"
-#include "ns3/ipv6-routing-table-entry.h"
 #include "ns3/random-variable-stream.h"
-#include "ns3/ripng-header.h"
 
 #include <list>
 

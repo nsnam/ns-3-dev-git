@@ -20,8 +20,9 @@
 #ifndef IPV6_RAW_SOCKET_IMPL_H
 #define IPV6_RAW_SOCKET_IMPL_H
 
+#include "ipv6-header.h"
+
 #include "ns3/ipv6-address.h"
-#include "ns3/ipv6-header.h"
 #include "ns3/socket.h"
 
 #include <list>

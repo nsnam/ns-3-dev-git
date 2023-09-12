@@ -20,7 +20,7 @@
 #ifndef MICROWAVE_OVEN_SPECTRUM_VALUE_HELPER_H
 #define MICROWAVE_OVEN_SPECTRUM_VALUE_HELPER_H
 
-#include <ns3/spectrum-value.h>
+#include "spectrum-value.h"
 
 namespace ns3
 {

@@ -19,8 +19,8 @@
 #ifndef TCPCUBIC_H
 #define TCPCUBIC_H
 
-#include "ns3/tcp-congestion-ops.h"
-#include "ns3/tcp-socket-base.h"
+#include "tcp-congestion-ops.h"
+#include "tcp-socket-base.h"
 
 namespace ns3
 {

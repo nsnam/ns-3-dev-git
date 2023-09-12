@@ -18,10 +18,11 @@
 #ifndef INTERNET_TRACE_HELPER_H
 #define INTERNET_TRACE_HELPER_H
 
+#include "ipv4-interface-container.h"
+#include "ipv6-interface-container.h"
+
 #include "ns3/assert.h"
-#include "ns3/ipv4-interface-container.h"
 #include "ns3/ipv4.h"
-#include "ns3/ipv6-interface-container.h"
 #include "ns3/ipv6.h"
 #include "ns3/trace-helper.h"
 

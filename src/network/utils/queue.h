@@ -22,12 +22,13 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+#include "queue-fwd.h"
+#include "queue-item.h"
+#include "queue-size.h"
+
 #include "ns3/log.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"
-#include "ns3/queue-fwd.h"
-#include "ns3/queue-item.h"
-#include "ns3/queue-size.h"
 #include "ns3/traced-callback.h"
 #include "ns3/traced-value.h"
 

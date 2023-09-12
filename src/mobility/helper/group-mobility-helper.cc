@@ -19,7 +19,7 @@
  * Adapted from 'mobility-helper.cc' for group mobility by Tom Henderson
  */
 
-#include "ns3/group-mobility-helper.h"
+#include "group-mobility-helper.h"
 
 #include "ns3/config.h"
 #include "ns3/hierarchical-mobility-model.h"

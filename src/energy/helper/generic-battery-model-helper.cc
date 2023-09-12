@@ -17,7 +17,7 @@
  * Authors: Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
  */
 
-#include <ns3/generic-battery-model-helper.h>
+#include "generic-battery-model-helper.h"
 
 namespace ns3
 {

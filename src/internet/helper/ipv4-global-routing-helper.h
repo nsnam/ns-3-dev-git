@@ -19,7 +19,8 @@
 #ifndef IPV4_GLOBAL_ROUTING_HELPER_H
 #define IPV4_GLOBAL_ROUTING_HELPER_H
 
-#include "ns3/ipv4-routing-helper.h"
+#include "ipv4-routing-helper.h"
+
 #include "ns3/node-container.h"
 
 namespace ns3

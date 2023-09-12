@@ -15,18 +15,18 @@
 
 // Implement an object to create a star topology.
 
-#include <cmath>
-#include <iostream>
-#include <sstream>
+#include "point-to-point-star.h"
 
-// ns3 includes
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/ipv6-address-generator.h"
 #include "ns3/log.h"
 #include "ns3/node-list.h"
 #include "ns3/point-to-point-net-device.h"
-#include "ns3/point-to-point-star.h"
 #include "ns3/vector.h"
+
+#include <cmath>
+#include <iostream>
+#include <sstream>
 
 namespace ns3
 {

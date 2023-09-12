@@ -20,7 +20,7 @@
 #ifndef UNUSED_H
 #define UNUSED_H
 
-#include "ns3/deprecated.h"
+#include "deprecated.h"
 
 /**
  * \file

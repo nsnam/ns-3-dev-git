@@ -19,7 +19,7 @@
 #ifndef IPV6_LIST_ROUTING_HELPER_H
 #define IPV6_LIST_ROUTING_HELPER_H
 
-#include "ns3/ipv6-routing-helper.h"
+#include "ipv6-routing-helper.h"
 
 #include <list>
 #include <stdint.h>

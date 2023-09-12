@@ -20,7 +20,8 @@
 #ifndef LI_ION_ENERGY_SOURCE_H
 #define LI_ION_ENERGY_SOURCE_H
 
-#include "ns3/energy-source.h"
+#include "energy-source.h"
+
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/traced-value.h"

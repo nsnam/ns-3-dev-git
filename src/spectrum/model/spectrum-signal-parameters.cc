@@ -17,11 +17,13 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
+#include "spectrum-signal-parameters.h"
+
+#include "spectrum-phy.h"
+#include "spectrum-value.h"
+
 #include <ns3/antenna-model.h>
 #include <ns3/log.h>
-#include <ns3/spectrum-phy.h>
-#include <ns3/spectrum-signal-parameters.h>
-#include <ns3/spectrum-value.h>
 
 namespace ns3
 {

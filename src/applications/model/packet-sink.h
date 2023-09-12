@@ -20,13 +20,14 @@
 #ifndef PACKET_SINK_H
 #define PACKET_SINK_H
 
+#include "seq-ts-size-header.h"
+
 #include "ns3/address.h"
 #include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/ptr.h"
-#include "ns3/seq-ts-size-header.h"
 #include "ns3/traced-callback.h"
 
 #include <unordered_map>

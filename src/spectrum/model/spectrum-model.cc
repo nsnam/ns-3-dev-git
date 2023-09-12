@@ -18,9 +18,10 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
+#include "spectrum-model.h"
+
 #include <ns3/assert.h>
 #include <ns3/log.h>
-#include <ns3/spectrum-model.h>
 
 #include <cmath>
 #include <cstddef>

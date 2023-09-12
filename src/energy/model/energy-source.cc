@@ -22,7 +22,8 @@
  * Modifications made by: Cristiano Tapparello <cristiano.tapparello@rochester.edu>
  */
 
-#include <ns3/energy-source.h>
+#include "energy-source.h"
+
 #include <ns3/log.h>
 
 namespace ns3

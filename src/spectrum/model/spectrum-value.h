@@ -20,9 +20,10 @@
 #ifndef SPECTRUM_VALUE_H
 #define SPECTRUM_VALUE_H
 
+#include "spectrum-model.h"
+
 #include <ns3/ptr.h>
 #include <ns3/simple-ref-count.h>
-#include <ns3/spectrum-model.h>
 
 #include <ostream>
 #include <vector>

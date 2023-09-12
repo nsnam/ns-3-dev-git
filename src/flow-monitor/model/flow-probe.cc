@@ -17,9 +17,9 @@
 // Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt> <gjcarneiro@gmail.com>
 //
 
-#include "ns3/flow-probe.h"
+#include "flow-probe.h"
 
-#include "ns3/flow-monitor.h"
+#include "flow-monitor.h"
 
 namespace ns3
 {

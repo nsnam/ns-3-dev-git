@@ -20,7 +20,7 @@
 #ifndef HALF_DUPLEX_IDEAL_PHY_SPECTRUM_PARAMETERS_H
 #define HALF_DUPLEX_IDEAL_PHY_SPECTRUM_PARAMETERS_H
 
-#include <ns3/spectrum-signal-parameters.h>
+#include "spectrum-signal-parameters.h"
 
 namespace ns3
 {

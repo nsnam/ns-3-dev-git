@@ -21,7 +21,7 @@
 #ifndef DPDK_NET_DEVICE_HELPER_H
 #define DPDK_NET_DEVICE_HELPER_H
 
-#include "ns3/emu-fd-net-device-helper.h"
+#include "emu-fd-net-device-helper.h"
 
 namespace ns3
 {

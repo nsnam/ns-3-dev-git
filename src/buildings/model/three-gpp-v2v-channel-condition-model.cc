@@ -19,9 +19,10 @@
 
 #include "three-gpp-v2v-channel-condition-model.h"
 
+#include "building-list.h"
+
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
-#include <ns3/building-list.h>
 
 namespace ns3
 {

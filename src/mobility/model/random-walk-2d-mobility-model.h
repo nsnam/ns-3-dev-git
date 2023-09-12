@@ -21,12 +21,12 @@
 
 #include "constant-velocity-helper.h"
 #include "mobility-model.h"
+#include "rectangle.h"
 
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/random-variable-stream.h"
-#include "ns3/rectangle.h"
 
 namespace ns3
 {

@@ -19,6 +19,10 @@
 
 #include "single-model-spectrum-channel.h"
 
+#include "spectrum-phy.h"
+#include "spectrum-propagation-loss-model.h"
+#include "spectrum-transmit-filter.h"
+
 #include <ns3/angles.h>
 #include <ns3/antenna-model.h>
 #include <ns3/double.h>
@@ -32,9 +36,6 @@
 #include <ns3/propagation-delay-model.h>
 #include <ns3/propagation-loss-model.h>
 #include <ns3/simulator.h>
-#include <ns3/spectrum-phy.h>
-#include <ns3/spectrum-propagation-loss-model.h>
-#include <ns3/spectrum-transmit-filter.h>
 
 #include <algorithm>
 

@@ -25,7 +25,7 @@
 #ifndef TCP_OPTION_SACK_PERMITTED_H
 #define TCP_OPTION_SACK_PERMITTED_H
 
-#include "ns3/tcp-option.h"
+#include "tcp-option.h"
 
 namespace ns3
 {

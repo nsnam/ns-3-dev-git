@@ -23,8 +23,9 @@
 #ifndef LR_WPAN_CSMACA_H
 #define LR_WPAN_CSMACA_H
 
+#include "lr-wpan-mac.h"
+
 #include <ns3/event-id.h>
-#include <ns3/lr-wpan-mac.h>
 #include <ns3/object.h>
 
 namespace ns3

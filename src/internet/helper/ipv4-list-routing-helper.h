@@ -19,7 +19,7 @@
 #ifndef IPV4_LIST_ROUTING_HELPER_H
 #define IPV4_LIST_ROUTING_HELPER_H
 
-#include "ns3/ipv4-routing-helper.h"
+#include "ipv4-routing-helper.h"
 
 #include <list>
 #include <stdint.h>

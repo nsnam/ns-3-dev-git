@@ -19,11 +19,12 @@
 #ifndef ERROR_CHANNEL_H
 #define ERROR_CHANNEL_H
 
+#include "error-model.h"
+#include "mac48-address.h"
+#include "simple-channel.h"
+
 #include "ns3/channel.h"
-#include "ns3/error-model.h"
-#include "ns3/mac48-address.h"
 #include "ns3/nstime.h"
-#include "ns3/simple-channel.h"
 
 #include <vector>
 

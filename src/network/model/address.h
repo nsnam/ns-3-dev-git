@@ -20,9 +20,10 @@
 #ifndef ADDRESS_H
 #define ADDRESS_H
 
+#include "tag-buffer.h"
+
 #include "ns3/attribute-helper.h"
 #include "ns3/attribute.h"
-#include "ns3/tag-buffer.h"
 
 #include <ostream>
 #include <stdint.h>

@@ -21,7 +21,8 @@
 #ifndef MESH_HELPER_H
 #define MESH_HELPER_H
 
-#include "ns3/mesh-stack-installer.h"
+#include "mesh-stack-installer.h"
+
 #include "ns3/object-factory.h"
 #include "ns3/qos-utils.h"
 #include "ns3/wifi-standards.h"

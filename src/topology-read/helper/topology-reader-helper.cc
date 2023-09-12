@@ -18,7 +18,7 @@
  * Author: Valerio Sartini (valesar@gmail.com)
  */
 
-#include "ns3/topology-reader-helper.h"
+#include "topology-reader-helper.h"
 
 #include "ns3/inet-topology-reader.h"
 #include "ns3/log.h"

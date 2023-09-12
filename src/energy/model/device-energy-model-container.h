@@ -22,7 +22,7 @@
 #ifndef DEVICE_ENERGY_MODEL_CONTAINER_H
 #define DEVICE_ENERGY_MODEL_CONTAINER_H
 
-#include "ns3/device-energy-model.h"
+#include "device-energy-model.h"
 
 #include <stdint.h>
 #include <vector>

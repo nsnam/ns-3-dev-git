@@ -23,13 +23,13 @@
 #include "application.h"
 #include "net-device.h"
 #include "node-list.h"
+#include "packet.h"
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
 #include "ns3/global-value.h"
 #include "ns3/log.h"
 #include "ns3/object-vector.h"
-#include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/uinteger.h"
 

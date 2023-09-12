@@ -22,6 +22,7 @@
 #define SIMPLE_OFDM_WIMAX_PHY_H
 
 #include "bvec.h"
+#include "snr-to-block-error-rate-manager.h"
 #include "wimax-connection.h"
 #include "wimax-phy.h"
 
@@ -29,7 +30,6 @@
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/random-variable-stream.h"
-#include "ns3/snr-to-block-error-rate-manager.h"
 
 #include <list>
 #include <stdint.h>

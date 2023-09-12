@@ -20,7 +20,7 @@
 #ifndef IPV6_RAW_SOCKET_FACTORY_IMPL_H
 #define IPV6_RAW_SOCKET_FACTORY_IMPL_H
 
-#include "ns3/ipv6-raw-socket-factory.h"
+#include "ipv6-raw-socket-factory.h"
 
 namespace ns3
 {

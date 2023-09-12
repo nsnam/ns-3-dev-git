@@ -18,9 +18,10 @@
 #ifndef TRACE_HELPER_H
 #define TRACE_HELPER_H
 
+#include "net-device-container.h"
+#include "node-container.h"
+
 #include "ns3/assert.h"
-#include "ns3/net-device-container.h"
-#include "ns3/node-container.h"
 #include "ns3/output-stream-wrapper.h"
 #include "ns3/pcap-file-wrapper.h"
 #include "ns3/simulator.h"

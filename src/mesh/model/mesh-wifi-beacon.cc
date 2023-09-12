@@ -17,7 +17,7 @@
  * Author: Pavel Boyko <boyko@iitp.ru>
  */
 
-#include "ns3/mesh-wifi-beacon.h"
+#include "mesh-wifi-beacon.h"
 
 #include "ns3/nstime.h"
 #include "ns3/wifi-mac-header.h"

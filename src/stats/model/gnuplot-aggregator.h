@@ -23,8 +23,8 @@
 #ifndef GNUPLOT_AGGREGATOR_H
 #define GNUPLOT_AGGREGATOR_H
 
-#include "ns3/data-collection-object.h"
-#include "ns3/gnuplot.h"
+#include "data-collection-object.h"
+#include "gnuplot.h"
 
 #include <map>
 #include <string>

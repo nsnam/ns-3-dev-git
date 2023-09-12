@@ -19,10 +19,10 @@
 
 #include "wifi-ppdu.h"
 
+#include "wifi-phy-operating-channel.h"
 #include "wifi-psdu.h"
 
 #include "ns3/log.h"
-#include "ns3/wifi-phy-operating-channel.h"
 
 namespace ns3
 {

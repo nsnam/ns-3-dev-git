@@ -20,7 +20,8 @@
 
 #ifndef AVERAGE_H
 #define AVERAGE_H
-#include "ns3/basic-data-calculators.h"
+
+#include "basic-data-calculators.h"
 
 #include <cmath>
 #include <limits>

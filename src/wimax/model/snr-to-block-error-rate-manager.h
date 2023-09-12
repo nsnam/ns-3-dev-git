@@ -21,8 +21,9 @@
 #ifndef SNR_TO_BLOCK_ERROR_RATE_MANAGER_H
 #define SNR_TO_BLOCK_ERROR_RATE_MANAGER_H
 
+#include "snr-to-block-error-rate-record.h"
+
 #include "ns3/ptr.h"
-#include "ns3/snr-to-block-error-rate-record.h"
 
 #include <vector>
 

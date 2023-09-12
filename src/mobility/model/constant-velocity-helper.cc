@@ -18,9 +18,10 @@
  */
 #include "constant-velocity-helper.h"
 
-#include "ns3/box.h"
+#include "box.h"
+#include "rectangle.h"
+
 #include "ns3/log.h"
-#include "ns3/rectangle.h"
 #include "ns3/simulator.h"
 
 namespace ns3

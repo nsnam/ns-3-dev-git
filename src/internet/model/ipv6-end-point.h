@@ -20,10 +20,11 @@
 #ifndef IPV6_END_POINT_H
 #define IPV6_END_POINT_H
 
+#include "ipv6-header.h"
+#include "ipv6-interface.h"
+
 #include "ns3/callback.h"
 #include "ns3/ipv6-address.h"
-#include "ns3/ipv6-header.h"
-#include "ns3/ipv6-interface.h"
 #include "ns3/net-device.h"
 
 #include <stdint.h>

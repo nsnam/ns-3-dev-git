@@ -17,7 +17,8 @@
 #ifndef BRIDGE_NET_DEVICE_H
 #define BRIDGE_NET_DEVICE_H
 
-#include "ns3/bridge-channel.h"
+#include "bridge-channel.h"
+
 #include "ns3/mac48-address.h"
 #include "ns3/net-device.h"
 #include "ns3/nstime.h"

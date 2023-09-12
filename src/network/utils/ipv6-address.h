@@ -20,11 +20,11 @@
 #ifndef IPV6_ADDRESS_H
 #define IPV6_ADDRESS_H
 
+#include "ipv4-address.h"
 #include "mac8-address.h"
 
 #include "ns3/address.h"
 #include "ns3/attribute-helper.h"
-#include "ns3/ipv4-address.h"
 
 #include <cstring>
 #include <ostream>

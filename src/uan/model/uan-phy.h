@@ -21,12 +21,13 @@
 #ifndef UAN_PHY_H
 #define UAN_PHY_H
 
+#include "uan-mac.h"
+#include "uan-prop-model.h"
+#include "uan-transducer.h"
+#include "uan-tx-mode.h"
+
 #include "ns3/device-energy-model.h"
 #include "ns3/object.h"
-#include "ns3/uan-mac.h"
-#include "ns3/uan-prop-model.h"
-#include "ns3/uan-transducer.h"
-#include "ns3/uan-tx-mode.h"
 
 namespace ns3
 {

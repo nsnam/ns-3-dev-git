@@ -24,9 +24,10 @@
 #ifndef IPV6_PACKET_PROBE_H
 #define IPV6_PACKET_PROBE_H
 
+#include "ipv6.h"
+
 #include "ns3/boolean.h"
 #include "ns3/callback.h"
-#include "ns3/ipv6.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"

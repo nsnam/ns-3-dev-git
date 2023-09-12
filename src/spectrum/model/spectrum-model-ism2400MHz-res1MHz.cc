@@ -17,7 +17,7 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include <ns3/spectrum-model-ism2400MHz-res1MHz.h>
+#include "spectrum-model-ism2400MHz-res1MHz.h"
 
 namespace ns3
 {

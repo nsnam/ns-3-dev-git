@@ -21,9 +21,10 @@
 #ifndef THREE_GPP_HTTP_CLIENT_H
 #define THREE_GPP_HTTP_CLIENT_H
 
+#include "three-gpp-http-header.h"
+
 #include <ns3/address.h>
 #include <ns3/application.h>
-#include <ns3/three-gpp-http-header.h>
 #include <ns3/traced-callback.h>
 
 namespace ns3

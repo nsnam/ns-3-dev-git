@@ -19,8 +19,8 @@
 #ifndef VAL_ARRAY_H
 #define VAL_ARRAY_H
 
-#include <ns3/assert.h>
-#include <ns3/simple-ref-count.h>
+#include "assert.h"
+#include "simple-ref-count.h"
 
 #include <complex>
 #include <valarray>

@@ -33,10 +33,10 @@
 #define TCP_WESTWOOD_H
 
 #include "tcp-congestion-ops.h"
+#include "tcp-recovery-ops.h"
 
 #include "ns3/data-rate.h"
 #include "ns3/event-id.h"
-#include "ns3/tcp-recovery-ops.h"
 #include "ns3/traced-value.h"
 
 namespace ns3

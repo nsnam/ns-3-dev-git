@@ -17,7 +17,7 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
-#include "ns3/flame-installer.h"
+#include "flame-installer.h"
 
 #include "ns3/flame-protocol.h"
 #include "ns3/mesh-wifi-interface-mac.h"

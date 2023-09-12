@@ -18,9 +18,10 @@
 #ifndef TCP_RATE_OPS_H
 #define TCP_RATE_OPS_H
 
+#include "tcp-tx-item.h"
+
 #include "ns3/data-rate.h"
 #include "ns3/object.h"
-#include "ns3/tcp-tx-item.h"
 #include "ns3/traced-callback.h"
 #include "ns3/traced-value.h"
 

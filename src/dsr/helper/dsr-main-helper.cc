@@ -30,7 +30,8 @@
 
 #include "dsr-main-helper.h"
 
-#include "ns3/dsr-helper.h"
+#include "dsr-helper.h"
+
 #include "ns3/dsr-rcache.h"
 #include "ns3/dsr-routing.h"
 #include "ns3/dsr-rreq-table.h"

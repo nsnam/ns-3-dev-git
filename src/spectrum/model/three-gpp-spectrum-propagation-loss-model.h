@@ -21,8 +21,9 @@
 #ifndef THREE_GPP_SPECTRUM_PROPAGATION_LOSS_H
 #define THREE_GPP_SPECTRUM_PROPAGATION_LOSS_H
 
-#include "ns3/matrix-based-channel-model.h"
-#include "ns3/phased-array-spectrum-propagation-loss-model.h"
+#include "matrix-based-channel-model.h"
+#include "phased-array-spectrum-propagation-loss-model.h"
+
 #include "ns3/random-variable-stream.h"
 
 #include <complex.h>

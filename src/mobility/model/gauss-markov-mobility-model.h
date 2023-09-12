@@ -21,11 +21,11 @@
 #ifndef GAUSS_MARKOV_MOBILITY_MODEL_H
 #define GAUSS_MARKOV_MOBILITY_MODEL_H
 
+#include "box.h"
 #include "constant-velocity-helper.h"
 #include "mobility-model.h"
 #include "position-allocator.h"
 
-#include "ns3/box.h"
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"

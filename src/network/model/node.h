@@ -20,8 +20,9 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include "net-device.h"
+
 #include "ns3/callback.h"
-#include "ns3/net-device.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 

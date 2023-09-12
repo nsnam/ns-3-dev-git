@@ -20,8 +20,9 @@
  */
 #include "random-walk-2d-outdoor-mobility-model.h"
 
-#include "ns3/building-list.h"
-#include "ns3/building.h"
+#include "building-list.h"
+#include "building.h"
+
 #include "ns3/double.h"
 #include "ns3/enum.h"
 #include "ns3/log.h"

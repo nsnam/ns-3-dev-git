@@ -18,9 +18,10 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
+#include "spectrum-value.h"
+
 #include <ns3/log.h>
 #include <ns3/math.h>
-#include <ns3/spectrum-value.h>
 
 namespace ns3
 {

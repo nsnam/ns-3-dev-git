@@ -18,8 +18,9 @@
 #ifndef IPV6_STATIC_ROUTING_HELPER_H
 #define IPV6_STATIC_ROUTING_HELPER_H
 
+#include "ipv6-routing-helper.h"
+
 #include "ns3/ipv6-address.h"
-#include "ns3/ipv6-routing-helper.h"
 #include "ns3/ipv6-static-routing.h"
 #include "ns3/ipv6.h"
 #include "ns3/net-device-container.h"

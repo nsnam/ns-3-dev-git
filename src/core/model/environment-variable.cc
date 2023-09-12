@@ -19,7 +19,7 @@
 
 #include "environment-variable.h"
 
-#include "ns3/string.h"
+#include "string.h"
 
 #include <cstdlib>  // std::getenv
 #include <cstring>  // strlen

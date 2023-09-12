@@ -20,7 +20,7 @@
 #ifndef FREQS_ISM2400MHZ_RES1MHZ_H
 #define FREQS_ISM2400MHZ_RES1MHZ_H
 
-#include <ns3/spectrum-value.h>
+#include "spectrum-value.h"
 
 namespace ns3
 {

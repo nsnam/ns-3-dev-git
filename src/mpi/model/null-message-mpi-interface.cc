@@ -26,12 +26,12 @@
 
 #include "null-message-mpi-interface.h"
 
+#include "mpi-receiver.h"
 #include "null-message-simulator-impl.h"
 #include "remote-channel-bundle-manager.h"
 #include "remote-channel-bundle.h"
 
 #include "ns3/log.h"
-#include "ns3/mpi-receiver.h"
 #include "ns3/net-device.h"
 #include "ns3/node-list.h"
 #include "ns3/node.h"

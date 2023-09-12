@@ -23,8 +23,7 @@
 #define ASCII_TEST_H
 
 #include "ascii-file.h"
-
-#include "ns3/test.h"
+#include "test.h"
 
 #include <stdint.h>
 

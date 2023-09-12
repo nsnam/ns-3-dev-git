@@ -22,7 +22,7 @@
 #ifndef ISM_SPECTRUM_VALUE_HELPER_H
 #define ISM_SPECTRUM_VALUE_HELPER_H
 
-#include <ns3/spectrum-value.h>
+#include "spectrum-value.h"
 
 namespace ns3
 {

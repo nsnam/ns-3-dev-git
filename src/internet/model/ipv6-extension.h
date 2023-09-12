@@ -21,12 +21,12 @@
 #define IPV6_EXTENSION_H
 
 #include "ipv6-extension-header.h"
+#include "ipv6-header.h"
 #include "ipv6-interface.h"
+#include "ipv6-l3-protocol.h"
 
 #include "ns3/buffer.h"
 #include "ns3/ipv6-address.h"
-#include "ns3/ipv6-header.h"
-#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/node.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"

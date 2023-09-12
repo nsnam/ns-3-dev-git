@@ -20,7 +20,8 @@
 #ifndef SIMPLE_DEVICE_ENERGY_MODEL_H
 #define SIMPLE_DEVICE_ENERGY_MODEL_H
 
-#include "ns3/device-energy-model.h"
+#include "device-energy-model.h"
+
 #include "ns3/nstime.h"
 #include "ns3/traced-value.h"
 

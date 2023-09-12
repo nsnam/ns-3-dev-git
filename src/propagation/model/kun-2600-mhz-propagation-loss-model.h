@@ -22,7 +22,7 @@
 #ifndef KUN_2600MHZ_PROPAGATION_LOSS_MODEL_H
 #define KUN_2600MHZ_PROPAGATION_LOSS_MODEL_H
 
-#include <ns3/propagation-loss-model.h>
+#include "propagation-loss-model.h"
 
 namespace ns3
 {

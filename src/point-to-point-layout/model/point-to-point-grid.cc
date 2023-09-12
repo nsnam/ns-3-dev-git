@@ -17,7 +17,7 @@
 
 // Implement an object to create a grid topology.
 
-#include "ns3/point-to-point-grid.h"
+#include "point-to-point-grid.h"
 
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/internet-stack-helper.h"

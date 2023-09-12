@@ -18,7 +18,7 @@
  *                              <amine.ismail@udcast.com>
  */
 
-#include "ns3/snr-to-block-error-rate-record.h"
+#include "snr-to-block-error-rate-record.h"
 
 #include "ns3/assert.h"
 #include "ns3/simulator.h"

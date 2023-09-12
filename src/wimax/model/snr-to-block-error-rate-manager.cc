@@ -18,13 +18,13 @@
  *                              <amine.ismail@udcast.com>
  */
 
-#include "ns3/snr-to-block-error-rate-manager.h"
+#include "snr-to-block-error-rate-manager.h"
 
 #include "default-traces.h"
+#include "snr-to-block-error-rate-record.h"
 
 #include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/snr-to-block-error-rate-record.h"
 
 #include <cstring>
 #include <fstream>

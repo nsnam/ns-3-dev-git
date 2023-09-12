@@ -21,8 +21,9 @@
 #ifndef FQ_CODEL_QUEUE_DISC
 #define FQ_CODEL_QUEUE_DISC
 
+#include "queue-disc.h"
+
 #include "ns3/object-factory.h"
-#include "ns3/queue-disc.h"
 
 #include <list>
 #include <map>

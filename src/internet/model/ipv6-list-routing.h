@@ -18,7 +18,7 @@
 #ifndef IPV6_LIST_ROUTING_H
 #define IPV6_LIST_ROUTING_H
 
-#include "ns3/ipv6-routing-protocol.h"
+#include "ipv6-routing-protocol.h"
 
 #include <list>
 

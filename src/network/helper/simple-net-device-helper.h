@@ -19,9 +19,10 @@
 #ifndef SIMPLE_NETDEVICE_HELPER_H
 #define SIMPLE_NETDEVICE_HELPER_H
 
+#include "net-device-container.h"
+#include "node-container.h"
+
 #include "ns3/attribute.h"
-#include "ns3/net-device-container.h"
-#include "ns3/node-container.h"
 #include "ns3/object-factory.h"
 #include "ns3/queue.h"
 #include "ns3/simple-channel.h"

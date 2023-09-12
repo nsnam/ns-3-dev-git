@@ -18,8 +18,9 @@
 #ifndef PHASED_ARRAY_MODEL_H
 #define PHASED_ARRAY_MODEL_H
 
-#include <ns3/angles.h>
-#include <ns3/antenna-model.h>
+#include "angles.h"
+#include "antenna-model.h"
+
 #include <ns3/matrix-array.h>
 #include <ns3/object.h>
 

@@ -17,9 +17,10 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
+#include "friis-spectrum-propagation-loss.h"
+
 #include "spectrum-signal-parameters.h"
 
-#include <ns3/friis-spectrum-propagation-loss.h>
 #include <ns3/mobility-model.h>
 
 #include <cmath> // for M_PI

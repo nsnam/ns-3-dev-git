@@ -25,8 +25,9 @@
 #ifndef TCP_OPTION_SACK_H
 #define TCP_OPTION_SACK_H
 
+#include "tcp-option.h"
+
 #include "ns3/sequence-number.h"
-#include "ns3/tcp-option.h"
 
 namespace ns3
 {

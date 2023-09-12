@@ -22,7 +22,8 @@
 #ifndef RANDOM_WALK_2D_OUTDOOR_MOBILITY_MODEL_H
 #define RANDOM_WALK_2D_OUTDOOR_MOBILITY_MODEL_H
 
-#include "ns3/building.h"
+#include "building.h"
+
 #include "ns3/constant-velocity-helper.h"
 #include "ns3/event-id.h"
 #include "ns3/mobility-model.h"

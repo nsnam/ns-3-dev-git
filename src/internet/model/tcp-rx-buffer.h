@@ -20,10 +20,11 @@
 #ifndef TCP_RX_BUFFER_H
 #define TCP_RX_BUFFER_H
 
+#include "tcp-header.h"
+#include "tcp-option-sack.h"
+
 #include "ns3/ptr.h"
 #include "ns3/sequence-number.h"
-#include "ns3/tcp-header.h"
-#include "ns3/tcp-option-sack.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/traced-value.h"
 

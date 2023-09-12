@@ -20,9 +20,10 @@
 #ifndef PACKET_SOCKET_CLIENT_H
 #define PACKET_SOCKET_CLIENT_H
 
+#include "packet-socket-address.h"
+
 #include "ns3/application.h"
 #include "ns3/event-id.h"
-#include "ns3/packet-socket-address.h"
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
 

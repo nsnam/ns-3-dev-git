@@ -20,10 +20,11 @@
 #ifndef IPV6_STATIC_ROUTING_H
 #define IPV6_STATIC_ROUTING_H
 
+#include "ipv6-header.h"
+#include "ipv6-routing-protocol.h"
+#include "ipv6.h"
+
 #include "ns3/ipv6-address.h"
-#include "ns3/ipv6-header.h"
-#include "ns3/ipv6-routing-protocol.h"
-#include "ns3/ipv6.h"
 #include "ns3/ptr.h"
 
 #include <list>

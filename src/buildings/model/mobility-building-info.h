@@ -20,8 +20,9 @@
 #ifndef MOBILITY_BUILDING_INFO_H
 #define MOBILITY_BUILDING_INFO_H
 
+#include "building.h"
+
 #include <ns3/box.h>
-#include <ns3/building.h>
 #include <ns3/constant-velocity-helper.h>
 #include <ns3/mobility-model.h>
 #include <ns3/object.h>

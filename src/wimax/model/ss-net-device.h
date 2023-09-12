@@ -23,12 +23,12 @@
 #define WIMAX_SS_NET_DEVICE_H
 
 #include "ipcs-classifier.h"
+#include "ss-service-flow-manager.h"
 #include "wimax-mac-header.h"
 #include "wimax-net-device.h"
 
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
-#include "ns3/ss-service-flow-manager.h"
 #include "ns3/uinteger.h"
 
 namespace ns3

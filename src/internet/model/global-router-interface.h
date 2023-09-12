@@ -21,11 +21,12 @@
 #ifndef GLOBAL_ROUTER_INTERFACE_H
 #define GLOBAL_ROUTER_INTERFACE_H
 
+#include "global-route-manager.h"
+#include "ipv4-routing-table-entry.h"
+
 #include "ns3/bridge-net-device.h"
 #include "ns3/channel.h"
-#include "ns3/global-route-manager.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node.h"
 #include "ns3/object.h"

@@ -23,7 +23,7 @@
 #ifndef FILE_AGGREGATOR_H
 #define FILE_AGGREGATOR_H
 
-#include "ns3/data-collection-object.h"
+#include "data-collection-object.h"
 
 #include <fstream>
 #include <map>

@@ -20,8 +20,9 @@
 #ifndef CSMA_NET_DEVICE_H
 #define CSMA_NET_DEVICE_H
 
+#include "backoff.h"
+
 #include "ns3/address.h"
-#include "ns3/backoff.h"
 #include "ns3/callback.h"
 #include "ns3/data-rate.h"
 #include "ns3/mac48-address.h"

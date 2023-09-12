@@ -20,7 +20,8 @@
 #ifndef MESH_WIFI_BEACON_H
 #define MESH_WIFI_BEACON_H
 
-#include "ns3/mesh-information-element-vector.h"
+#include "mesh-information-element-vector.h"
+
 #include "ns3/mgt-headers.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"

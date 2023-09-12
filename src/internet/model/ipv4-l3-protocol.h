@@ -20,10 +20,11 @@
 #ifndef IPV4_L3_PROTOCOL_H
 #define IPV4_L3_PROTOCOL_H
 
+#include "ipv4-header.h"
+#include "ipv4-routing-protocol.h"
+#include "ipv4.h"
+
 #include "ns3/ipv4-address.h"
-#include "ns3/ipv4-header.h"
-#include "ns3/ipv4-routing-protocol.h"
-#include "ns3/ipv4.h"
 #include "ns3/net-device.h"
 #include "ns3/nstime.h"
 #include "ns3/ptr.h"

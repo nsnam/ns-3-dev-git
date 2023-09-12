@@ -22,11 +22,12 @@
 #ifndef TCPBBR_H
 #define TCPBBR_H
 
+#include "tcp-congestion-ops.h"
+#include "windowed-filter.h"
+
 #include "ns3/data-rate.h"
 #include "ns3/random-variable-stream.h"
-#include "ns3/tcp-congestion-ops.h"
 #include "ns3/traced-value.h"
-#include "ns3/windowed-filter.h"
 
 class TcpBbrCheckGainValuesTest;
 

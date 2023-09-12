@@ -18,7 +18,7 @@
 #ifndef DROPTAIL_H
 #define DROPTAIL_H
 
-#include "ns3/queue.h"
+#include "queue.h"
 
 namespace ns3
 {

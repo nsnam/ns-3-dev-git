@@ -19,7 +19,7 @@
 #ifndef PROBABILISTIC_V2V_CHANNEL_CONDITION_MODEL_H
 #define PROBABILISTIC_V2V_CHANNEL_CONDITION_MODEL_H
 
-#include "ns3/channel-condition-model.h"
+#include "channel-condition-model.h"
 
 namespace ns3
 {

@@ -19,13 +19,14 @@
 
 #include "acoustic-modem-energy-model.h"
 
+#include "uan-net-device.h"
+#include "uan-phy.h"
+
 #include "ns3/double.h"
 #include "ns3/energy-source.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/uan-net-device.h"
-#include "ns3/uan-phy.h"
 
 namespace ns3
 {

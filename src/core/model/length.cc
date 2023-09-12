@@ -17,9 +17,9 @@
  * Author: Mathew Bielejeski <bielejeski1@llnl.gov>
  */
 
-#include "ns3/length.h"
+#include "length.h"
 
-#include "ns3/log.h"
+#include "log.h"
 
 #include <algorithm>
 #include <array>

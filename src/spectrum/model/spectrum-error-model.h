@@ -20,11 +20,12 @@
 #ifndef SPECTRUM_ERROR_MODEL_H
 #define SPECTRUM_ERROR_MODEL_H
 
+#include "spectrum-value.h"
+
 #include <ns3/nstime.h>
 #include <ns3/object.h>
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
-#include <ns3/spectrum-value.h>
 
 namespace ns3
 {

@@ -20,7 +20,7 @@
 #ifndef PRIO_QUEUE_DISC_H
 #define PRIO_QUEUE_DISC_H
 
-#include "ns3/queue-disc.h"
+#include "queue-disc.h"
 
 #include <array>
 

@@ -23,8 +23,9 @@
 #ifndef UINTEGER_16_PROBE_H
 #define UINTEGER_16_PROBE_H
 
+#include "probe.h"
+
 #include "ns3/callback.h"
-#include "ns3/probe.h"
 #include "ns3/traced-value.h"
 
 namespace ns3

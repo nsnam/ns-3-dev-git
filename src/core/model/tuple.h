@@ -20,8 +20,8 @@
 #ifndef TUPLE_H
 #define TUPLE_H
 
-#include <ns3/attribute-helper.h>
-#include <ns3/string.h>
+#include "attribute-helper.h"
+#include "string.h"
 
 #include <algorithm>
 #include <sstream>

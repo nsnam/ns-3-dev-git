@@ -20,7 +20,7 @@
  * Modified by: Mitch Watrous (watrous@u.washington.edu)
  */
 
-#include "ns3/uinteger-16-probe.h"
+#include "uinteger-16-probe.h"
 
 #include "ns3/config.h"
 #include "ns3/log.h"

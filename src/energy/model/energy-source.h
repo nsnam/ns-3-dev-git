@@ -26,8 +26,8 @@
 #define ENERGY_SOURCE_H
 
 #include "device-energy-model-container.h" // #include "device-energy-model.h"
+#include "energy-harvester.h"
 
-#include "ns3/energy-harvester.h"
 #include "ns3/node.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"

@@ -20,7 +20,7 @@
 #ifndef SEQ_TS_SIZE_HEADER_H
 #define SEQ_TS_SIZE_HEADER_H
 
-#include <ns3/seq-ts-header.h>
+#include "seq-ts-header.h"
 
 namespace ns3
 {

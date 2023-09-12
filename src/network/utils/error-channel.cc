@@ -19,10 +19,11 @@
 
 #include "error-channel.h"
 
+#include "simple-net-device.h"
+
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
-#include "ns3/simple-net-device.h"
 #include "ns3/simulator.h"
 
 namespace ns3

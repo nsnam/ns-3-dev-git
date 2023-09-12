@@ -21,9 +21,10 @@
 #ifndef L2ROUTING_NET_DEVICE_H
 #define L2ROUTING_NET_DEVICE_H
 
+#include "mesh-l2-routing-protocol.h"
+
 #include "ns3/bridge-channel.h"
 #include "ns3/mac48-address.h"
-#include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/random-variable-stream.h"

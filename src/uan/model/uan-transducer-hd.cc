@@ -21,12 +21,12 @@
 
 #include "uan-channel.h"
 #include "uan-phy.h"
+#include "uan-prop-model.h"
 
 #include "ns3/double.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
 #include "ns3/simulator.h"
-#include "ns3/uan-prop-model.h"
 
 namespace ns3
 {
