@@ -19,7 +19,7 @@
 # NOTE: Run this script with the Python3 interpreter if the python3 compatibility
 #       of the ns-3 unit test runner needs to be tested.
 
-#   The following options of test.py are being tested for poratability by this script.
+#   The following options of test.py are being tested for portability by this script.
 #   To see the options supported by this script, run with the -h option on the command line
 #
 #   -h, --help            show this help message and exit
@@ -84,7 +84,8 @@ def main(argv):
         '--example=socket-options-ipv6',
         '-u',
         '--update-data',
-        '-f EXTENSIVE --fullness=EXTENSIVE'
+        '-f EXTENSIVE',
+        '--fullness=EXTENSIVE',
         '-g',
         '--grind',
         '-l',
@@ -97,17 +98,17 @@ def main(argv):
         '--pyexample=first',
         '-r',
         '--retain',
-        '-s ns3-tcp-interoperability',
-        '--suite=ns3-tcp-interoperability',
+        '-s ns3-tcp-state',
+        '--suite=ns3-tcp-state',
         '-t t_opt.txt',
-        '--text=t_opt.txt && rm -rf t_opt.txt',
+        '--text=t_opt.txt && rm t_opt.txt',
         '-v',
         '--verbose',
-        '-w t_opt.html && rm -rf t_opt.html',
-        '--web=t_opt.html && rm -rf t_opt.html',
-        '--html=t_opt.html && rm -rf t_opt.html',
-        '-x t_opt.xml && rm -rf t_opt.xml',
-        '--xml=t_opt.xml && rm -rf t_opt.xml',
+        '-w t_opt.html && rm t_opt.html',
+        '--web=t_opt.html && rm t_opt.html',
+        '--html=t_opt.html && rm t_opt.html',
+        '-x t_opt.xml && rm t_opt.xml',
+        '--xml=t_opt.xml && rm t_opt.xml',
     ]
 
     configure_string = sys.executable + ' ns3 configure --enable-tests --enable-examples'

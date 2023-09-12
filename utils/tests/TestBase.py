@@ -115,7 +115,7 @@ class TestBaseClass:
         if self.options.cmds:
             print_cmds(cmds)
             return
-
+        base_dir = os.sep.join(os.path.abspath(__file__).replace(os.path.pathsep, '/').split('/')[:-3])
         final_return = 0
         total_tests = len(cmds)
         passed = 0
@@ -131,7 +131,13 @@ class TestBaseClass:
                     print("running test case: " + case_string)
                     print_case_in_file(case_string, out)
                     progress += 1
-                    ret = subprocess.call(cmd, shell=True, env=self.my_env, stdout=outstream, stderr=out)
+                    ret = subprocess.call(cmd,
+                                          shell=True,
+                                          env=self.my_env,
+                                          stdout=outstream,
+                                          stderr=out,
+                                          cwd=base_dir
+                                          )
                     if not ret:
                         passed += 1
                     else:

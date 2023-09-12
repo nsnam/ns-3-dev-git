@@ -139,7 +139,7 @@ daily-build-test-optimized-valgrind:
   dependencies: []
   variables:
     MODE: optimized
-    VALGRIND_FLAG: -g
+    VALGRIND_FLAG: -g --verbose-failed
     FORCE_TESTS: Force
   tags:
     - nsnam
@@ -157,7 +157,7 @@ weekly-build-test-debug-valgrind:
   dependencies: []
   variables:
     MODE: debug
-    VALGRIND_FLAG: -g
+    VALGRIND_FLAG: -g --verbose-failed
     FORCE_TESTS: Force
   tags:
     - nsnam
@@ -175,7 +175,7 @@ weekly-build-test-default-valgrind:
   dependencies: []
   variables:
     MODE: default
-    VALGRIND_FLAG: -g
+    VALGRIND_FLAG: -g --verbose-failed
     FORCE_TESTS: Force
   tags:
     - nsnam
@@ -193,7 +193,7 @@ weekly-build-test-optimized-valgrind:
   dependencies: []
   variables:
     MODE: optimized
-    VALGRIND_FLAG: -g
+    VALGRIND_FLAG: -g --verbose-failed
     FORCE_TESTS: Force
   tags:
     - nsnam

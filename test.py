@@ -15,17 +15,22 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-import os
-import sys
-import time
 import argparse
-import subprocess
-import threading
-import signal
-import shutil
 import fnmatch
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import threading
+import time
+import xml.etree.ElementTree as ET
+
 
 from utils import get_list_from_file
+
+# Global variable
+args = None
 
 # imported from waflib Logs
 colors_lst={'USE':True,'BOLD':'\x1b[01;1m','RED':'\x1b[01;31m','GREEN':'\x1b[32m','YELLOW':'\x1b[33m','PINK':'\x1b[35m','BLUE':'\x1b[01;34m','CYAN':'\x1b[36m','GREY':'\x1b[37m','NORMAL':'\x1b[0m','cursor_on':'\x1b[?25h','cursor_off':'\x1b[?25l',}
@@ -271,9 +276,8 @@ def node_to_text(test, f, test_type='Suite'):
         node_to_text(child, f, 'Case')
 
 def translate_to_text(results_file, text_file):
-    text_file += '.txt'
+    text_file += ('.txt' if '.txt' not in text_file else '')
     print('Writing results to text file \"%s\"...' % text_file, end='')
-    import xml.etree.ElementTree as ET
     et = ET.parse(results_file)
 
     with open(text_file, 'w', encoding='utf-8') as f:
@@ -299,7 +303,7 @@ def translate_to_text(results_file, text_file):
 # since it will probably grow over time.
 #
 def translate_to_html(results_file, html_file):
-    html_file += '.html'
+    html_file += ('.html' if '.html' not in html_file else '')
     print('Writing results to html file %s...' % html_file, end='')
 
     with open(html_file, 'w', encoding='utf-8') as f:
@@ -310,7 +314,6 @@ def translate_to_html(results_file, html_file):
         #
         # Read and parse the whole results file.
         #
-        import xml.etree.ElementTree as ET
         et = ET.parse(results_file)
 
         #
@@ -391,7 +394,7 @@ def translate_to_html(results_file, html_file):
                 f.write("<th>Failure Details</th>\n")
 
             #
-            # Now iterate through all of the test cases.
+            # Now iterate through all the test cases.
             #
             for case in suite.findall('Test'):
 
@@ -502,7 +505,7 @@ def translate_to_html(results_file, html_file):
         f.write("<th>Details</th>\n")
 
         #
-        # Now iterate through all of the examples
+        # Now iterate through all the examples
         #
         for example in et.findall("Example"):
 
@@ -1023,7 +1026,7 @@ class worker_thread(threading.Thread):
                     # know.  It will be something like "examples/udp/udp-echo" or
                     # "examples/wireless/mixed-wireless.py"
                     #
-                    (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command,
+                    (job.returncode, job.standard_out, job.standard_err, et) = run_job_synchronously(job.shell_command,
                         job.cwd, args.valgrind, job.is_pyexample, job.build_path)
                 else:
                     #
@@ -1035,7 +1038,7 @@ class worker_thread(threading.Thread):
                         update_data = '--update-data'
                     else:
                         update_data = ''
-                    (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command +
+                    (job.returncode, job.standard_out, job.standard_err, et) = run_job_synchronously(job.shell_command +
                         " --xml --tempdir=%s --out=%s %s" % (job.tempdir, job.tmp_file_name, update_data),
                         job.cwd, args.valgrind, False)
 
@@ -1044,12 +1047,41 @@ class worker_thread(threading.Thread):
                 if args.verbose:
                     print("returncode = %d" % job.returncode)
                     print("---------- begin standard out ----------")
-                    print(standard_out)
+                    print(job.standard_out)
                     print("---------- begin standard err ----------")
-                    print(standard_err)
+                    print(job.standard_err)
                     print("---------- end standard err ----------")
 
                 self.output_queue.put(job)
+
+#
+# This function loads the list of previously successful or skipped examples and test suites.
+#
+def load_previously_successful_tests():
+    import glob
+    previously_run_tests_to_skip = {"test": [], "example": []}
+    previous_results = glob.glob(f"{TMP_OUTPUT_DIR}/*-results.xml")
+    if not previous_results:
+        print("No previous runs to rerun")
+        exit(-1)
+    latest_result_file = list(sorted(previous_results, key=lambda x: os.path.basename(x), reverse=True))[0]
+
+    try:
+        previous_run_results = ET.parse(latest_result_file)
+    except ET.ParseError:
+        print(f"Failed to parse XML {latest_result_file}")
+        exit(-1)
+
+    for test_type in ["Test", "Example"]:
+        if previous_run_results.find(test_type):
+            temp = list(map(lambda x: (x.find('Name').text, x.find('Result').text),
+                            previous_run_results.findall(test_type)
+                            )
+                        )
+            temp = list(filter(lambda x: x[1] in ['PASS', 'SKIP'], temp))
+            temp = [x[0] for x in temp]
+            previously_run_tests_to_skip[test_type.lower()] = temp
+    return previously_run_tests_to_skip
 
 #
 # This is the main function that does the work of interacting with the
@@ -1289,10 +1321,19 @@ def run_tests():
         os.makedirs(testpy_output_dir)
 
     #
+    # Load results from the latest results.xml, then use the list of
+    # failed tests to filter out (SKIP) successful tests
+    #
+    previously_run_tests_to_skip = {"test": [], "example": []}
+    if args.rerun_failed:
+        previously_run_tests_to_skip = load_previously_successful_tests()
+
+    #
     # Create the main output file and start filling it with XML.  We need to
     # do this since the tests will just append individual results to this file.
+    # The file is created outside the directory that gets automatically deleted.
     #
-    xml_results_file = os.path.join(testpy_output_dir, "results.xml")
+    xml_results_file = os.path.join(TMP_OUTPUT_DIR, f"{date_and_time}-results.xml")
     with open(xml_results_file, 'w', encoding='utf-8') as f:
         f.write('<?xml version="1.0"?>\n')
         f.write('<Results>\n')
@@ -1330,7 +1371,8 @@ def run_tests():
         if isinstance(suites, bytes):
             suites = suites.decode()
 
-        suites_found = fnmatch.filter(suites.split('\n'), args.suite)
+        suites = suites.replace("\r\n", "\n")
+        suites_found = fnmatch.filter(suites.split("\n"), args.suite)
 
         if not suites_found:
             print('The test suite was not run because an unknown test suite name was requested.', file=sys.stderr)
@@ -1440,7 +1482,7 @@ def run_tests():
     # Dispatching will run with unlimited speed and the worker threads will
     # execute as fast as possible from the queue.
     #
-    # Note that we actually dispatch tests to be skipped, so all of the
+    # Note that we actually dispatch tests to be skipped, so all the
     # PASS, FAIL, CRASH and SKIP processing is done in the same place.
     #
     for test in suite_list:
@@ -1471,6 +1513,10 @@ def run_tests():
             if args.valgrind and test in core_valgrind_skip_tests:
                 job.set_is_skip(True)
                 job.set_skip_reason("crashes valgrind")
+
+            if args.rerun_failed and test in previously_run_tests_to_skip["test"]:
+                job.is_skip = True
+                job.set_skip_reason("didn't fail in the previous run")
 
             if args.verbose:
                 print("Queue %s" % test)
@@ -1537,6 +1583,10 @@ def run_tests():
                             if args.valgrind and not eval(do_valgrind_run):
                                 job.set_is_skip(True)
                                 job.set_skip_reason("skip in valgrind runs")
+
+                            if args.rerun_failed and name in previously_run_tests_to_skip["example"]:
+                                job.is_skip = True
+                                job.set_skip_reason("didn't fail in the previous run")
 
                             if args.verbose:
                                 print("Queue %s" % test)
@@ -1713,6 +1763,7 @@ def run_tests():
     crashed_testnames = []
     valgrind_errors = 0
     valgrind_testnames = []
+    failed_jobs = []
     for i in range(jobs):
         job = output_queue.get()
         if job.is_break:
@@ -1729,10 +1780,12 @@ def run_tests():
             skipped_tests = skipped_tests + 1
             skipped_testnames.append(job.display_name + (" (%s)" % job.skip_reason))
         else:
+            failed_jobs.append(job)
             if job.returncode == 0:
                 status = "PASS"
                 status_print = colors.GREEN + status + colors.NORMAL
                 passed_tests = passed_tests + 1
+                failed_jobs.pop()
             elif job.returncode == 1:
                 failed_tests = failed_tests + 1
                 failed_testnames.append(job.display_name)
@@ -1749,7 +1802,7 @@ def run_tests():
                 status = "CRASH"
                 status_print = colors.PINK + status + colors.NORMAL
 
-        print("[%d/%d]" % (passed_tests + failed_tests + skipped_tests + crashed_tests, total_tests), end=' ')
+        print("[%d/%d]" % (i, total_tests), end=' ')
         if args.duration or args.constrain == "performance":
             print("%s (%.3f): %s %s" % (status_print, job.elapsed_time, kind, job.display_name))
         else:
@@ -1837,9 +1890,18 @@ def run_tests():
                     f.write("  <Reason>%s</Reason>\n" % job.skip_reason)
                     f.write("</Test>\n")
             else:
+                failed_jobs.append(job)
                 if job.returncode == 0 or job.returncode == 1 or job.returncode == 2:
                     with open(xml_results_file, 'a', encoding='utf-8') as f_to, open(job.tmp_file_name, encoding='utf-8') as f_from:
-                        f_to.write(f_from.read())
+                        contents = f_from.read()
+                        if status == "VALGR":
+                            pre = contents.find("<Result>") + len("<Result>")
+                            post = contents.find("</Result>")
+                            contents = contents[:pre] + "VALGR" + contents[post:]
+                        f_to.write(contents)
+                        et = ET.parse(job.tmp_file_name)
+                        if et.find("Result").text in ["PASS", "SKIP"]:
+                            failed_jobs.pop()
                 else:
                     with open(xml_results_file, 'a', encoding='utf-8') as f:
                         f.write("<Test>\n")
@@ -1884,8 +1946,18 @@ def run_tests():
     if valgrind_testnames:
         valgrind_testnames.sort()
         print('List of VALGR failures:\n    %s' % '\n    '.join(map(str, valgrind_testnames)))
+
+    if failed_jobs and args.verbose_failed:
+        for job in failed_jobs:
+            if job.standard_out or job.standard_err:
+                job_type = 'example' if (job.is_example or job.is_pyexample) else 'test suite'
+                print(f"===================== Begin of {job_type} '{job.display_name}' stdout =====================")
+                print(job.standard_out)
+                print(f"===================== Begin of {job_type} '{job.display_name}' stderr =====================")
+                print(job.standard_err)
+                print(f"===================== End of {job_type} '{job.display_name}' ==============================")
     #
-    # The last things to do are to translate the XML results file to "human
+    # The last things to do are to translate the XML results file to "human-
     # readable form" if the user asked for it (or make an XML file somewhere)
     #
     if len(args.html) + len(args.text) + len(args.xml):
@@ -1898,7 +1970,7 @@ def run_tests():
         translate_to_text(xml_results_file, args.text)
 
     if len(args.xml):
-        xml_file = args.xml + '.xml'
+        xml_file = args.xml + ('.xml' if ".xml" not in args.xml else '')
         print('Writing results to xml file %s...' % xml_file, end='')
         shutil.copyfile(xml_results_file, xml_file)
         print('done.')
@@ -1993,6 +2065,9 @@ def main(argv):
     parser.add_argument("-v", "--verbose", action="store_true", default=False,
                         help="print progress and informational messages")
 
+    parser.add_argument("--verbose-failed", action="store_true", default=False,
+                        help="print progress and informational messages for failed jobs")
+
     parser.add_argument("-w", "--web", "--html", action="store", type=str, dest="html", default="",
                         metavar="HTML-FILE",
                         help="write detailed test results into HTML-FILE.html")
@@ -2006,6 +2081,9 @@ def main(argv):
 
     parser.add_argument("--jobs", action="store", type=int, dest="process_limit", default=0,
                         help="limit number of worker threads")
+
+    parser.add_argument("--rerun-failed", action="store_true", dest="rerun_failed", default=False,
+                        help="rerun failed tests")
 
     global args
     args = parser.parse_args()
