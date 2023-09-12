@@ -178,8 +178,10 @@ class EmlsrManager : public Object
      * Notify the start of an UL TXOP on the given link
      *
      * \param linkId the ID of the given link
+     * \param timeToCtsEnd time remaining to the end of CTS reception, in case the UL TXOP is
+     *                     started by an aux PHY
      */
-    void NotifyUlTxopStart(uint8_t linkId);
+    void NotifyUlTxopStart(uint8_t linkId, std::optional<Time> timeToCtsEnd);
 
     /**
      * Notify the end of a TXOP on the given link.

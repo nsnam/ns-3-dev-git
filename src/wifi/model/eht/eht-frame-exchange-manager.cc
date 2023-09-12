@@ -39,6 +39,7 @@ namespace ns3
 /// aRxPHYStartDelay value to use when waiting for a new frame in the context of EMLSR operations
 /// (Sec. 35.3.17 of 802.11be D3.1)
 static constexpr uint8_t RX_PHY_START_DELAY_USEC = 20;
+
 /**
  * Additional time (exceeding 20 us) to wait for a PHY-RXSTART.indication when the PHY is
  * decoding a PHY header.
@@ -176,6 +177,8 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
 {
     NS_LOG_FUNCTION(this << edca << allowedWidth);
 
+    std::optional<Time> timeToCtsEnd;
+
     if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
     {
         // Cannot start a transmission on a link blocked because another EMLSR link is being used
@@ -200,6 +203,13 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
                                 m_linkId,
                                 false,  // queued frames cannot be transmitted until MSD expires
                                 false); // generate backoff regardless of medium busy
+            NotifyChannelReleased(edca);
+            return false;
+        }
+
+        if (!m_phy)
+        {
+            NS_LOG_DEBUG("No PHY is currently operating on EMLSR link " << +m_linkId);
             NotifyChannelReleased(edca);
             return false;
         }
@@ -229,6 +239,39 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
                 NotifyChannelReleased(edca);
                 return false;
             }
+
+            const auto rtsTxVector =
+                GetWifiRemoteStationManager()->GetRtsTxVector(m_bssid, allowedWidth);
+            const auto rtsTxTime =
+                m_phy->CalculateTxDuration(GetRtsSize(), rtsTxVector, m_phy->GetPhyBand());
+            const auto ctsTxVector =
+                GetWifiRemoteStationManager()->GetCtsTxVector(m_bssid, rtsTxVector.GetMode());
+            const auto ctsTxTime =
+                m_phy->CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand());
+
+            // the main PHY shall terminate the channel switch at the end of CTS reception;
+            // the time remaining to the end of CTS reception includes two propagation delays
+            timeToCtsEnd = rtsTxTime + m_phy->GetSifs() + ctsTxTime +
+                           MicroSeconds(2 * MAX_PROPAGATION_DELAY_USEC);
+
+            auto switchingTime = mainPhy->GetChannelSwitchDelay();
+
+            if (mainPhy->IsStateSwitching())
+            {
+                // the main PHY is switching (to another link), hence the remaining time to the
+                // end of the current channel switch needs to be added up
+                switchingTime += mainPhy->GetDelayUntilIdle();
+            }
+
+            if (switchingTime > timeToCtsEnd)
+            {
+                // switching takes longer than RTS/CTS exchange, do not transmit anything to
+                // avoid that the main PHY is requested to switch while already switching
+                NS_LOG_DEBUG("Main PHY will still be switching channel when RTS/CTS ends, thus it "
+                             "will not be able to take over this TXOP");
+                NotifyChannelReleased(edca);
+                return false;
+            }
         }
     }
 
@@ -238,7 +281,7 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
     {
         // notify the EMLSR Manager of the UL TXOP start on an EMLSR link
         NS_ASSERT(m_staMac->GetEmlsrManager());
-        m_staMac->GetEmlsrManager()->NotifyUlTxopStart(m_linkId);
+        m_staMac->GetEmlsrManager()->NotifyUlTxopStart(m_linkId, timeToCtsEnd);
     }
 
     return started;
@@ -924,8 +967,8 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         }
     }
 
-    // We impose that an aux PHY is only able to receive an ICF or a management frame (we are
-    // interested in receiving mainly Beacon frames). Note that other frames are still
+    // We impose that an aux PHY is only able to receive an ICF, a CTS or a management frame
+    // (we are interested in receiving mainly Beacon frames). Note that other frames are still
     // post-processed, e.g., used to set the NAV and the TXOP holder.
     // The motivation is that, e.g., an AP MLD may send an ICF to EMLSR clients A and B;
     // A responds while B does not; the AP MLD sends a DL MU PPDU to both clients followed
@@ -934,7 +977,7 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     // through the aux PHY.
     if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
         m_mac->GetLinkForPhy(m_staMac->GetEmlsrManager()->GetMainPhyId()) != m_linkId &&
-        !icfReceived && !mpdu->GetHeader().IsMgt())
+        !icfReceived && !mpdu->GetHeader().IsCts() && !mpdu->GetHeader().IsMgt())
     {
         NS_LOG_DEBUG("Dropping " << *mpdu << " received by an aux PHY on link " << +m_linkId);
         return;

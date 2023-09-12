@@ -2304,6 +2304,9 @@ EmlsrUlTxopTest::DoSetup()
     Config::SetDefault("ns3::EhtConfiguration::MsdMaxNTxops", UintegerValue(m_msdMaxNTxops));
     Config::SetDefault("ns3::ChannelAccessManager::GenerateBackoffIfTxopWithoutTx",
                        BooleanValue(m_genBackoffIfTxopWithoutTx));
+    // Channel switch delay should be less than RTS TX time + SIFS + CTS TX time, otherwise
+    // UL TXOPs cannot be initiated by aux PHYs
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(75)));
 
     EmlsrOperationsTestBase::DoSetup();
 

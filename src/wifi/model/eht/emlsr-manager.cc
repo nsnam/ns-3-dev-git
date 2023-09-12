@@ -383,7 +383,7 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
 }
 
 void
-EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
+EmlsrManager::NotifyUlTxopStart(uint8_t linkId, std::optional<Time> timeToCtsEnd)
 {
     NS_LOG_FUNCTION(this << linkId);
 
@@ -403,21 +403,27 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
         }
     }
 
-    // if this TXOP is being started by an aux PHY, wait until the end of RTS transmission and
-    // then have the main PHY (instantaneously) take over the TXOP on this link. We may start the
-    // channel switch now and use the channel switch delay configured for the main PHY, but then
-    // we would have no guarantees that the channel switch is completed in RTS TX time plus SIFS.
+    // if this TXOP is being started by an aux PHY, schedule a channel switch for the main PHY
+    // such that the channel switch is completed by the time the CTS response is received. The
+    // delay has been passed by the FEM.
     if (m_staMac->GetLinkForPhy(m_mainPhyId) != linkId)
     {
         auto stateHelper = m_staMac->GetWifiPhy(linkId)->GetState();
         NS_ASSERT(stateHelper);
         NS_ASSERT_MSG(stateHelper->GetState() == TX,
                       "Expecting the aux PHY to be transmitting (an RTS frame)");
-        Simulator::Schedule(stateHelper->GetDelayUntilIdle(),
-                            &EmlsrManager::SwitchMainPhy,
-                            this,
-                            linkId,
-                            true); // channel switch should occur instantaneously
+        NS_ASSERT_MSG(timeToCtsEnd.has_value(),
+                      "Aux PHY is sending RTS, expected to get the time to CTS end");
+
+        auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
+
+        // the main PHY shall terminate the channel switch at the end of CTS reception;
+        // the time remaining to the end of CTS reception includes two propagation delays
+        const auto delay = *timeToCtsEnd - mainPhy->GetChannelSwitchDelay();
+
+        NS_ASSERT(delay.IsPositive());
+        NS_LOG_DEBUG("Schedule main Phy switch in " << delay.As(Time::US));
+        Simulator::Schedule(delay, &EmlsrManager::SwitchMainPhy, this, linkId, false);
     }
 
     DoNotifyUlTxopStart(linkId);
@@ -436,31 +442,16 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId)
 
     DoNotifyTxopEnd(linkId);
 
-    // if the main PHY starts switching link at the end of the TXOP (which happens, e.g., when the
-    // aux PHY does not switch link), we have to keep blocking transmissions until the channel
-    // switch is complete. Otherwise, an aux PHY may get channel access, transmit an RTS and
-    // request the main PHY to switch to its link, but the main PHY may still be completing the
-    // previous channel switch
     Simulator::ScheduleNow([=, this]() {
-        auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
-        auto delay = mainPhy->IsStateSwitching() ? mainPhy->GetDelayUntilIdle() : Seconds(0);
-        NS_LOG_DEBUG("Main PHY is switching, postpone unblocking links by " << delay.As(Time::US));
-
-        // block transmissions on the link on which the TXOP was carried out
-        m_staMac->BlockTxOnLink(linkId, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
-        m_staMac->GetChannelAccessManager(linkId)->NotifyStartUsingOtherEmlsrLink();
-
-        Simulator::Schedule(delay, [=, this]() {
-            // unblock transmissions and resume medium access on other EMLSR links
-            for (auto id : m_staMac->GetLinkIds())
+        // unblock transmissions and resume medium access on other EMLSR links
+        for (auto id : m_staMac->GetLinkIds())
+        {
+            if (m_staMac->IsEmlsrLink(id))
             {
-                if (m_staMac->IsEmlsrLink(id))
-                {
-                    m_staMac->UnblockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
-                    m_staMac->GetChannelAccessManager(id)->NotifyStopUsingOtherEmlsrLink();
-                }
+                m_staMac->UnblockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+                m_staMac->GetChannelAccessManager(id)->NotifyStopUsingOtherEmlsrLink();
             }
-        });
+        }
 
         StartMediumSyncDelayTimer(linkId);
     });
