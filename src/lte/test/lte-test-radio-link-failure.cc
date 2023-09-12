@@ -24,7 +24,6 @@
 
 #include "lte-test-radio-link-failure.h"
 
-#include "ns3/applications-module.h"
 #include "ns3/config-store-module.h"
 #include "ns3/config-store.h"
 #include "ns3/core-module.h"
@@ -32,7 +31,9 @@
 #include "ns3/lte-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/network-module.h"
+#include "ns3/packet-sink-helper.h"
 #include "ns3/point-to-point-module.h"
+#include "ns3/udp-client-server-helper.h"
 
 #include <iomanip>
 #include <iostream>

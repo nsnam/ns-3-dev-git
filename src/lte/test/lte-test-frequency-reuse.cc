@@ -23,12 +23,13 @@
 #include "lte-ffr-simple.h"
 #include "lte-simple-spectrum-phy.h"
 
-#include "ns3/applications-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/lte-helper.h"
 #include "ns3/mobility-helper.h"
+#include "ns3/packet-sink-helper.h"
 #include "ns3/point-to-point-epc-helper.h"
 #include "ns3/point-to-point-module.h"
+#include "ns3/udp-client-server-helper.h"
 #include <ns3/boolean.h>
 #include <ns3/callback.h>
 #include <ns3/config.h>
