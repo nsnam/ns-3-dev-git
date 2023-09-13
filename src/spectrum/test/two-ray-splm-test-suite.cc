@@ -153,8 +153,10 @@ FtrFadingModelAverageTest::DoRun()
     // Generate a set of values for the FTR model parameters
     for (uint8_t j = 0; j < NUM_VALUES; j++)
     {
-        sigma[j] = std::pow(2, j);
-        k[j] = std::pow(2, j);
+        double power = std::pow(2, j);
+
+        sigma[j] = power;
+        k[j] = power;
         delta[j] = double(j) / NUM_VALUES; // Delta must be in [0, 1]
     }
 

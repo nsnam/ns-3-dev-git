@@ -57,7 +57,7 @@ UanNoiseModelDefault::GetTypeId()
 }
 
 // Common acoustic noise formulas.  These can be found
-// in "Priniciples of Underwater Sound" by Robert J. Urick
+// in "Principles of Underwater Sound" by Robert J. Urick
 double
 UanNoiseModelDefault::GetNoiseDbHz(double fKhz) const
 {
@@ -71,18 +71,18 @@ UanNoiseModelDefault::GetNoiseDbHz(double fKhz) const
     double thermalDb;
     double noiseDb;
 
-    turbDb = 17.0 - 30.0 * std::log10(fKhz);
+    double log_fKhz = std::log10(fKhz);
+
+    turbDb = 17.0 - 30.0 * log_fKhz;
     turb = std::pow(10.0, turbDb * 0.1);
 
-    shipDb =
-        40.0 + 20.0 * (m_shipping - 0.5) + 26.0 * std::log10(fKhz) - 60.0 * std::log10(fKhz + 0.03);
+    shipDb = 40.0 + 20.0 * (m_shipping - 0.5) + 26.0 * log_fKhz - 60.0 * std::log10(fKhz + 0.03);
     ship = std::pow(10.0, (shipDb * 0.1));
 
-    windDb = 50.0 + 7.5 * std::pow(m_wind, 0.5) + 20.0 * std::log10(fKhz) -
-             40.0 * std::log10(fKhz + 0.4);
+    windDb = 50.0 + 7.5 * std::pow(m_wind, 0.5) + 20.0 * log_fKhz - 40.0 * std::log10(fKhz + 0.4);
     wind = std::pow(10.0, windDb * 0.1);
 
-    thermalDb = -15 + 20 * std::log10(fKhz);
+    thermalDb = -15 + 20 * log_fKhz;
     thermal = std::pow(10, thermalDb * 0.1);
 
     noiseDb = 10 * std::log10(turb + ship + wind + thermal);

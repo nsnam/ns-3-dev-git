@@ -35,7 +35,7 @@ using namespace ns3;
 int
 main(int argc, char* argv[])
 {
-    uint32_t FrameSize = 1500; // bytes
+    uint32_t frameSizeBytes = 1500;
     std::ofstream file("frame-success-rate-dsss.plt");
 
     const std::vector<std::string> modes{
@@ -46,7 +46,7 @@ main(int argc, char* argv[])
     };
 
     CommandLine cmd(__FILE__);
-    cmd.AddValue("FrameSize", "The frame size in bytes", FrameSize);
+    cmd.AddValue("FrameSize", "The frame size in bytes", frameSizeBytes);
     cmd.Parse(argc, argv);
 
     Gnuplot plot = Gnuplot("frame-success-rate-dsss.eps");
@@ -56,27 +56,27 @@ main(int argc, char* argv[])
     Ptr<TableBasedErrorRateModel> table = CreateObject<TableBasedErrorRateModel>();
     WifiTxVector txVector;
 
-    for (uint32_t i = 0; i < modes.size(); i++)
-    {
-        std::cout << modes[i] << std::endl;
-        Gnuplot2dDataset dataset(modes[i]);
-        txVector.SetMode(modes[i]);
+    uint32_t frameSizeBits = frameSizeBytes * 8;
 
-        for (double snr = -10.0; snr <= 20.0; snr += 0.1)
+    for (const auto& mode : modes)
+    {
+        std::cout << mode << std::endl;
+        Gnuplot2dDataset dataset(mode);
+        txVector.SetMode(mode);
+
+        WifiMode wifiMode(mode);
+
+        for (double snrDb = -10.0; snrDb <= 20.0; snrDb += 0.1)
         {
-            double psYans = yans->GetChunkSuccessRate(WifiMode(modes[i]),
-                                                      txVector,
-                                                      std::pow(10.0, snr / 10.0),
-                                                      FrameSize * 8);
+            double snr = std::pow(10.0, snrDb / 10.0);
+
+            double psYans = yans->GetChunkSuccessRate(wifiMode, txVector, snr, frameSizeBits);
             if (psYans < 0.0 || psYans > 1.0)
             {
                 // error
                 exit(1);
             }
-            double psNist = nist->GetChunkSuccessRate(WifiMode(modes[i]),
-                                                      txVector,
-                                                      std::pow(10.0, snr / 10.0),
-                                                      FrameSize * 8);
+            double psNist = nist->GetChunkSuccessRate(wifiMode, txVector, snr, frameSizeBits);
             if (psNist < 0.0 || psNist > 1.0)
             {
                 std::cout << psNist << std::endl;
@@ -87,10 +87,7 @@ main(int argc, char* argv[])
             {
                 exit(1);
             }
-            double psTable = table->GetChunkSuccessRate(WifiMode(modes[i]),
-                                                        txVector,
-                                                        std::pow(10.0, snr / 10.0),
-                                                        FrameSize * 8);
+            double psTable = table->GetChunkSuccessRate(wifiMode, txVector, snr, frameSizeBits);
             if (psTable < 0.0 || psTable > 1.0)
             {
                 std::cout << psTable << std::endl;
@@ -101,7 +98,7 @@ main(int argc, char* argv[])
             {
                 exit(1);
             }
-            dataset.Add(snr, psYans);
+            dataset.Add(snrDb, psYans);
         }
 
         plot.AddDataset(dataset);
