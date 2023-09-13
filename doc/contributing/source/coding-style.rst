@@ -1222,12 +1222,15 @@ for more details.
     }
 
 - Prefer to initialize STL containers (e.g., ``std::vector``, ``std::map``, etc.)
-  directly with a braced-init-list, instead of pushing elements one-by-one.
+  directly through the constructor or with a braced-init-list, instead of pushing
+  elements one-by-one.
 
   .. sourcecode:: cpp
 
     // Prefer to initialize containers directly
     std::vector<int> myVector1{1, 2, 3};
+    std::vector<int> myVector2(myVector1.begin(), myVector1.end());
+    std::vector<bool> myVector3(myVector2.size(), true);
 
     // Avoid pushing elements one-by-one
     std::vector<int> myVector1;
@@ -1235,6 +1238,20 @@ for more details.
     myVector1.emplace_back(1);
     myVector1.emplace_back(2);
     myVector1.emplace_back(3);
+
+    std::vector<int> myVector2;
+    myVector2.reserve(myVector1.size());
+    for (const auto& v : myVector1)
+    {
+        myVector2.emplace_back(v);
+    }
+
+    std::vector<bool> myVector3;
+    myVector3.reserve(myVector1.size());
+    for (std::size_t i = 0; i < myVector1.size(); i++)
+    {
+        myVector3.emplace_back(true);
+    }
 
 - When looping through containers, prefer to use const-ref syntax over copying
   elements.
@@ -1266,6 +1283,31 @@ for more details.
 
     // Avoid
     if (ptr.get()) { ... }
+
+- Consider caching frequently-used results (especially expensive calculations,
+  such as mathematical functions) in a temporary variable, instead of calculating
+  them in every loop.
+
+  .. sourcecode:: cpp
+
+    // Prefer to cache intermediate results
+    const double sinTheta = std::sin(theta);
+    const double cosTheta = std::cos(theta);
+
+    for (uint8_t i = 0; i < NUM_VALUES; i++)
+    {
+        double power = std::pow(2, i);
+
+        array1[i] = (power * sinTheta) + cosTheta;
+        array2[i] = (power * cosTheta) + sinTheta;
+    }
+
+    // Avoid repeating calculations
+    for (uint8_t i = 0; i < NUM_VALUES; i++)
+    {
+        array1[i] = (std::pow(2, i) * std::sin(theta)) + std::cos(theta);
+        array2[i] = (std::pow(2, i) * std::cos(theta)) + std::sin(theta);
+    }
 
 - Do not include inline implementations in header files; put all
   implementation in a ``.cc`` file (unless implementation in the header file
