@@ -33,6 +33,8 @@ requirements (Note: not all ns-3 features are available on all systems):
 - (energy) - !1329 - Extensions to battery discharge module
 - (lr-wpan) - !1604 - Add CapabilityField bitmap functions
 - (lr-wpan) - !1645 - Add LQI to MlmeAssociateIndicationParams
+- (wifi) Added a new trace source to WifiPhy to indicate operating channel change
+- (wifi) Improved support for multiple spectrum PHY interfaces
 
 ### Bugs fixed
 

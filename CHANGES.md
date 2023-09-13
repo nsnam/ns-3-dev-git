@@ -26,12 +26,15 @@ Changes from ns-3.39 to ns-3-dev
 * (lr-wpan) Removed unnecessary bcst filter from `LrWpanMac::PdDataIndication` which also blocked the correct reception of beacon request commands.
 * (lr-wpan) Added the functions to set or get the capability field via bitmap (a 8 bit int).
 * (lr-wpan) Added the possibility to obtain the LQI from a received `MlmeAssociateIndicationParams`.
+* (wifi) Added new helper methods to SpectrumWifiPhyHelper to allow flexible configuration for the mapping between spectrum PHY interfaces and PHY instances.
+* (wifi) Added new trace sources to `WifiPhy`: **OperatingChannelChange**, which is fired when the operating channel of a PHY is changed.
 
 ### Changes to build system
 
 ### Changed behavior
 
 * (wifi) Upon ML setup, a non-AP MLD updates the IDs of the setup links to match the IDs used by the AP MLD.
+* (wifi) Attribute **TrackSignalsFromInactiveInterfaces** in SpectrumWifiPhy has been defaulted to be enabled.
 
 Changes from ns-3.38 to ns-3.39
 -------------------------------
