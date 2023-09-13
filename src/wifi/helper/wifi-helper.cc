@@ -975,6 +975,11 @@ WifiHelper::EnableLogComponents()
     LogComponentEnable("YansWifiChannel", LOG_LEVEL_ALL);
     LogComponentEnable("YansWifiPhy", LOG_LEVEL_ALL);
 
+    LogComponentEnable("Athstats", LOG_LEVEL_ALL);
+    LogComponentEnable("WifiHelper", LOG_LEVEL_ALL);
+    LogComponentEnable("SpectrumWifiHelper", LOG_LEVEL_ALL);
+    LogComponentEnable("YansWifiHelper", LOG_LEVEL_ALL);
+
     // From Spectrum
     LogComponentEnable("WifiSpectrumValueHelper", LOG_LEVEL_ALL);
 }
