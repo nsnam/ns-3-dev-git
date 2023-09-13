@@ -68,7 +68,6 @@ build_lib(
   LIBRARIES_TO_LINK
     ${libinternet}
     ${libwifi}
-    ${libapplications}
   TEST_SOURCES
     test/dot11s/dot11s-test-suite.cc
     test/dot11s/hwmp-proactive-regression.cc

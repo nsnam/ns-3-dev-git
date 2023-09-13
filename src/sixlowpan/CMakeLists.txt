@@ -17,8 +17,6 @@ build_lib(
     model/sixlowpan-net-device.h
   LIBRARIES_TO_LINK
     ${libinternet}
-    ${libinternet}
-    ${libcore}
   TEST_SOURCES
     ${example_as_test_suite}
     test/mock-net-device.cc
