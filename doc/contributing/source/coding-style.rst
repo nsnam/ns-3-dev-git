@@ -1196,6 +1196,83 @@ the |ns3| smart pointer class ``Ptr`` should be used in boolean comparisons as f
 
   NS_TEST...  (p, nullptr, ...)      NS_TEST...  (p, nullptr, ...)
 
+Code performance tips
+=====================
+
+While developing code, consider the following tips to improve the code's performance.
+Some tips are general recommendations, but are not strictly enforced.
+Other tips are enforced by clang-tidy. Please refer to the clang-tidy section below
+for more details.
+
+- Prefer to use ``.emplace_back()`` over ``.push_back()`` to optimize performance.
+
+- When initializing STL containers (e.g., ``std::vector``) with known size,
+  reserve memory to store all items, before pushing them in a loop.
+
+  .. sourcecode:: cpp
+
+    constexpr int N_ITEMS = 5;
+
+    std::vector<int> myVector;
+    myVector.reserve(N_ITEMS); // Reserve memory to store all items
+
+    for (int i = 0; i < N_ITEMS; i++)
+    {
+        myVector.emplace_back(i);
+    }
+
+- Prefer to initialize STL containers (e.g., ``std::vector``, ``std::map``, etc.)
+  directly with a braced-init-list, instead of pushing elements one-by-one.
+
+  .. sourcecode:: cpp
+
+    // Prefer to initialize containers directly
+    std::vector<int> myVector1{1, 2, 3};
+
+    // Avoid pushing elements one-by-one
+    std::vector<int> myVector1;
+    myVector1.reserve(3);
+    myVector1.emplace_back(1);
+    myVector1.emplace_back(2);
+    myVector1.emplace_back(3);
+
+- When looping through containers, prefer to use const-ref syntax over copying
+  elements.
+
+  .. sourcecode:: cpp
+
+    std::vector<int> myVector{1, 2, 3};
+
+    for (const auto& v : myVector) { ... }  // OK
+    for (auto v : myVector) { ... }         // Avoid
+
+- Prefer to use the ``empty()`` function of STL containers (e.g., ``std::vector``),
+  instead of the condition ``size() > 0``, to avoid unnecessarily calculating the
+  size of the container.
+
+- Avoid unnecessary calls to the functions ``.c_str()`` and ``.data()`` of
+  ``std::string``.
+
+- Avoid unnecessarily dereferencing std smart pointers (``std::shared_ptr``,
+  ``std::unique_ptr``) with calls to their member function ``.get()``.
+  Prefer to use the std smart pointer directly where needed.
+
+  .. sourcecode:: cpp
+
+    auto ptr = std::make_shared<Node>();
+
+    // OK
+    if (ptr) { ... }
+
+    // Avoid
+    if (ptr.get()) { ... }
+
+- Do not include inline implementations in header files; put all
+  implementation in a ``.cc`` file (unless implementation in the header file
+  brings demonstrable and significant performance improvement).
+
+- Avoid declaring trivial destructors, to optimize performance.
+
 C++ standard
 ============
 
@@ -1245,10 +1322,6 @@ Miscellaneous items
 
     void MySub(const T& t);  // OK
     void MySub(T const& t);  // Not OK
-
-- Do not include inline implementations in header files; put all
-  implementation in a ``.cc`` file (unless implementation in the header file
-  brings demonstrable and significant performance improvement).
 
 - Do not use ``NULL``, ``nil`` or ``0`` constants; use ``nullptr`` (improves portability)
 
@@ -1311,12 +1384,13 @@ Miscellaneous items
 Clang-tidy rules
 ================
 
-Please refer to the ``.clang-tidy`` file in the |ns3| root directory for the full list
+Please refer to the ``.clang-tidy`` file in the |ns3| main directory for the full list
 of rules that should be observed while developing code.
 
-- Explicitly mark inherited functions with the ``override`` specifier.
+Some rules are explained in the corresponding sections above. The remaining rules are
+explained here.
 
-- Prefer to use ``.emplace_back()`` over ``.push_back()`` to optimize performance.
+- Explicitly mark inherited functions with the ``override`` specifier.
 
 - When creating STL smart pointers, prefer to use ``std::make_shared`` or
   ``std::make_unique``, instead of creating the smart pointer with ``new``.
@@ -1335,69 +1409,6 @@ of rules that should be observed while developing code.
 
     for (const auto& v : myVector) { ... }             // Prefer
     for (int i = 0; i < myVector.size(); i++) { ... }  // Avoid
-
-- When looping through containers, prefer to use const-ref syntax over copying
-  elements.
-
-  .. sourcecode:: cpp
-
-    std::vector<int> myVector{1, 2, 3};
-
-    for (const auto& v : myVector) { ... }  // OK
-    for (auto v : myVector) { ... }         // Avoid
-
-- When initializing ``std::vector`` containers with known size, reserve memory to
-  store all items, before pushing them in a loop.
-
-  .. sourcecode:: cpp
-
-    constexpr int N_ITEMS = 5;
-
-    std::vector<int> myVector;
-    myVector.reserve(N_ITEMS); // Reserve memory to store all items
-
-    for (int i = 0; i < N_ITEMS; i++)
-    {
-        myVector.emplace_back(i);
-    }
-
-- Prefer to initialize STL containers (e.g., ``std::vector``, ``std::map``, etc.)
-  directly with a braced-init-list, instead of pushing elements one-by-one.
-
-  .. sourcecode:: cpp
-
-    // OK
-    std::vector<int> myVector{1, 2, 3};
-
-    // Avoid
-    std::vector<int> myVector;
-    myVector.reserve(3);
-    myVector.emplace_back(1);
-    myVector.emplace_back(2);
-    myVector.emplace_back(3);
-
-- Prefer to use the ``empty()`` function of STL containers (e.g., ``std::vector``),
-  instead of the condition ``size() > 0``, to avoid unnecessarily calculating the
-  size of the container.
-
-- Avoid unnecessary calls to the functions ``.c_str()`` and ``.data()`` of
-  ``std::string``.
-
-- Avoid unnecessarily dereferencing std smart pointers (``std::shared_ptr``,
-  ``std::unique_ptr``) with calls to their member function ``.get()``.
-  Prefer to use the std smart pointer directly where needed.
-
-  .. sourcecode:: cpp
-
-    auto ptr = std::make_shared<Node>();
-
-    // OK
-    if (ptr) { ... }
-
-    // Avoid
-    if (ptr.get()) { ... }
-
-- Avoid declaring trivial destructors, to optimize performance.
 
 - Avoid accessing class static functions and members through objects.
   Instead, prefer to access them through the class.
