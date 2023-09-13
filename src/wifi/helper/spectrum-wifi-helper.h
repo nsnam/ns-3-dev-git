@@ -120,6 +120,12 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
     void InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy> phy) const;
 
     /**
+     * Function that is notified when a spectrum channel switched
+     * \param phy spectrum PHY instance that has switched its channel
+     */
+    void SpectrumChannelSwitched(Ptr<SpectrumWifiPhy> phy) const;
+
+    /**
      * \param channel The channel to inspect to possibly add a WifiBandwidthFilter
      *
      * This method will add a WifiBandwidthFilter object to the SpectrumChannel, only if

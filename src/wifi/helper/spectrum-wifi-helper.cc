@@ -147,6 +147,8 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
             phy->SetPreambleDetectionModel(preambleDetection);
         }
         InstallPhyInterfaces(i, phy);
+        phy->SetChannelSwitchedCallback(
+            MakeCallback(&SpectrumWifiPhyHelper::SpectrumChannelSwitched, this).Bind(phy));
         phy->SetDevice(device);
         phy->SetMobility(node->GetObject<MobilityModel>());
         ret.emplace_back(phy);
@@ -172,6 +174,34 @@ SpectrumWifiPhyHelper::InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy>
         {
             phy->AddChannel(m_channels.at(freqRange), freqRange);
         }
+    }
+}
+
+void
+SpectrumWifiPhyHelper::SpectrumChannelSwitched(Ptr<SpectrumWifiPhy> phy) const
+{
+    NS_LOG_FUNCTION(this << phy);
+    for (const auto& otherPhy : phy->GetDevice()->GetPhys())
+    {
+        auto spectrumPhy = DynamicCast<SpectrumWifiPhy>(otherPhy);
+        NS_ASSERT(spectrumPhy);
+        if (spectrumPhy == phy)
+        {
+            // this is the PHY that has switched
+            continue;
+        }
+        if (spectrumPhy->GetCurrentFrequencyRange() == phy->GetCurrentFrequencyRange())
+        {
+            // this is the active interface
+            continue;
+        }
+        if (const auto& interfaces = spectrumPhy->GetSpectrumPhyInterfaces();
+            interfaces.count(phy->GetCurrentFrequencyRange()) == 0)
+        {
+            // no interface attached to that channel
+            continue;
+        }
+        spectrumPhy->ConfigureInterface(phy->GetFrequency(), phy->GetChannelWidth());
     }
 }
 
