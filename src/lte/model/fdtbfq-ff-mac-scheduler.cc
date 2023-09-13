@@ -1207,10 +1207,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq(
                 std::vector<uint8_t> sbCqi;
                 if (itCqi == m_a30CqiRxed.end())
                 {
-                    for (uint8_t k = 0; k < nLayer; k++)
-                    {
-                        sbCqi.push_back(1); // start with lowest value
-                    }
+                    sbCqi = std::vector<uint8_t>(nLayer, 1); // start with lowest value
                 }
                 else
                 {

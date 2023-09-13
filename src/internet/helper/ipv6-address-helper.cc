@@ -220,11 +220,7 @@ Ipv6InterfaceContainer
 Ipv6AddressHelper::Assign(const NetDeviceContainer& c)
 {
     NS_LOG_FUNCTION(this);
-    std::vector<bool> withConfiguration;
-    for (uint32_t i = 0; i < c.GetN(); ++i)
-    {
-        withConfiguration.push_back(true);
-    }
+    std::vector<bool> withConfiguration(c.GetN(), true);
     return Assign(c, withConfiguration);
 }
 
@@ -232,11 +228,7 @@ Ipv6InterfaceContainer
 Ipv6AddressHelper::Assign(const NetDeviceContainer& c, std::vector<bool> withConfiguration)
 {
     NS_LOG_FUNCTION(this);
-    std::vector<bool> onLink;
-    for (uint32_t i = 0; i < c.GetN(); ++i)
-    {
-        onLink.push_back(true);
-    }
+    std::vector<bool> onLink(c.GetN(), true);
     return Assign(c, withConfiguration, onLink);
 }
 
@@ -312,11 +304,7 @@ Ipv6InterfaceContainer
 Ipv6AddressHelper::AssignWithoutAddress(const NetDeviceContainer& c)
 {
     NS_LOG_FUNCTION(this);
-    std::vector<bool> withConfiguration;
-    for (uint32_t i = 0; i < c.GetN(); ++i)
-    {
-        withConfiguration.push_back(false);
-    }
+    std::vector<bool> withConfiguration(c.GetN(), false);
     return Assign(c, withConfiguration);
 }
 
@@ -324,13 +312,10 @@ Ipv6InterfaceContainer
 Ipv6AddressHelper::AssignWithoutOnLink(const NetDeviceContainer& c)
 {
     NS_LOG_FUNCTION(this);
-    std::vector<bool> withConfiguration;
-    std::vector<bool> onLink;
-    for (uint32_t i = 0; i < c.GetN(); ++i)
-    {
-        withConfiguration.push_back(true);
-        onLink.push_back(false);
-    }
+
+    std::vector<bool> withConfiguration(c.GetN(), true);
+    std::vector<bool> onLink(c.GetN(), false);
+
     return Assign(c, withConfiguration, onLink);
 }
 

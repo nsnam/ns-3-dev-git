@@ -1150,10 +1150,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq(
                         std::vector<uint8_t> sbCqis;
                         if (itCqi == m_a30CqiRxed.end())
                         {
-                            for (uint8_t k = 0; k < nLayer; k++)
-                            {
-                                sbCqis.push_back(1); // start with lowest value
-                            }
+                            sbCqis = std::vector<uint8_t>(nLayer, 1); // start with lowest value
                         }
                         else
                         {
@@ -1230,10 +1227,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq(
                         std::vector<uint8_t> sbCqis;
                         if (itCqi == m_a30CqiRxed.end())
                         {
-                            for (uint8_t k = 0; k < nLayer; k++)
-                            {
-                                sbCqis.push_back(1); // start with lowest value
-                            }
+                            sbCqis = std::vector<uint8_t>(nLayer, 1); // start with lowest value
                         }
                         else
                         {
@@ -1336,10 +1330,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq(
                         std::vector<uint8_t> sbCqis;
                         if (itCqi == m_a30CqiRxed.end())
                         {
-                            for (uint8_t k = 0; k < nLayer; k++)
-                            {
-                                sbCqis.push_back(1); // start with lowest value
-                            }
+                            sbCqis = std::vector<uint8_t>(nLayer, 1); // start with lowest value
                         }
                         else
                         {

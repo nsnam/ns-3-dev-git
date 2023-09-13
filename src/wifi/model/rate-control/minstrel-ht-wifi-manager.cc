@@ -2229,33 +2229,24 @@ MinstrelHtWifiManager::GetLowestIndex(MinstrelHtWifiRemoteStation* station, uint
 WifiModeList
 MinstrelHtWifiManager::GetHeDeviceMcsList() const
 {
-    WifiModeList heMcsList;
-    for (const auto& mode : GetPhy()->GetMcsList(WIFI_MOD_CLASS_HE))
-    {
-        heMcsList.push_back(mode);
-    }
+    const auto& mcsList = GetPhy()->GetMcsList(WIFI_MOD_CLASS_HE);
+    WifiModeList heMcsList(mcsList.begin(), mcsList.end());
     return heMcsList;
 }
 
 WifiModeList
 MinstrelHtWifiManager::GetVhtDeviceMcsList() const
 {
-    WifiModeList vhtMcsList;
-    for (const auto& mode : GetPhy()->GetMcsList(WIFI_MOD_CLASS_VHT))
-    {
-        vhtMcsList.push_back(mode);
-    }
+    const auto& mcsList = GetPhy()->GetMcsList(WIFI_MOD_CLASS_VHT);
+    WifiModeList vhtMcsList(mcsList.begin(), mcsList.end());
     return vhtMcsList;
 }
 
 WifiModeList
 MinstrelHtWifiManager::GetHtDeviceMcsList() const
 {
-    WifiModeList htMcsList;
-    for (const auto& mode : GetPhy()->GetMcsList(WIFI_MOD_CLASS_HT))
-    {
-        htMcsList.push_back(mode);
-    }
+    const auto& mcsList = GetPhy()->GetMcsList(WIFI_MOD_CLASS_HT);
+    WifiModeList htMcsList(mcsList.begin(), mcsList.end());
     return htMcsList;
 }
 
