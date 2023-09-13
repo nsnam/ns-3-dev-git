@@ -818,7 +818,10 @@ If the number of missed beacons exceeds the threshold, the STA will notify
 the rest of the device that the link is down (association is lost) and
 restart the scanning process. Note that this can also happen when an
 association request fails without explicit refusal (i.e., the AP fails to
-respond to association request).
+respond to association request). In case of non-AP MLDs, in order for losing
+association, it is necessary that no beacon is received on any link for an
+interval of duration equal to the maximum number of missed beacons times the
+interval between two consecutive Beacon frames.
 
 Roaming
 #######

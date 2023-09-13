@@ -387,6 +387,7 @@ Changes from ns-3.33 to ns-3.34
 * The **wifi BCC AWGN error rate tables** have been aligned with the ones provided by MATLAB and users may note a few dB difference when using BCC at high SNR and high MCS.
 * **`ThreeGppChannelModel` has been fixed**: cluster and sub-cluster angles could have been generated with inclination angles outside the inclination range `[0, pi]`, and have now been constrained to the correct range.
 * The **LTE RLC Acknowledged Mode (AM) transmit buffer** is now limited by default to a size of (`1024 * 10`) bytes. Configuration of unlimited behavior can still be made by passing the value of zero to the new attribute `MaxTxBufferSize`.
+* A **non-AP MLD loses association** when receiving no beacon an any link link for an interval of duration equal to the maximum number of missed beacons times the interval between two consecutive Beacon frames.
 
 Changes from ns-3.32 to ns-3.33
 -------------------------------
