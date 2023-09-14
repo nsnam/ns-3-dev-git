@@ -82,7 +82,9 @@ OkumuraHataPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel
     double loss = 0.0;
     double fmhz = m_frequency / 1e6;
     double log_fMhz = std::log10(fmhz);
-    double dist = a->GetDistanceFrom(b);
+    // In the Okumura Hata literature, the distance is expressed in units of kilometers
+    // but other lengths are expressed in meters
+    double distKm = a->GetDistanceFrom(b) / 1000.0;
 
     Vector aPosition = a->GetPosition();
     Vector bPosition = b->GetPosition();
@@ -118,10 +120,10 @@ OkumuraHataPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel
         }
 
         NS_LOG_INFO(this << " logf " << 26.16 * log_fMhz << " loga " << log_aHeight << " X "
-                         << ((44.9 - (6.55 * log_hb)) * std::log10(dist)) << " logb "
+                         << ((44.9 - (6.55 * log_hb)) * std::log10(distKm)) << " logb "
                          << log_bHeight);
         loss = 69.55 + (26.16 * log_fMhz) - log_aHeight +
-               ((44.9 - (6.55 * log_hb)) * std::log10(dist / 1e3)) - log_bHeight;
+               ((44.9 - (6.55 * log_hb)) * std::log10(distKm)) - log_bHeight;
         if (m_environment == SubUrbanEnvironment)
         {
             loss += -2 * (std::pow(std::log10(fmhz / 28), 2)) - 5.4;
@@ -149,7 +151,7 @@ OkumuraHataPropagationLossModel::GetLoss(Ptr<MobilityModel> a, Ptr<MobilityModel
         }
 
         loss = 46.3 + (33.9 * log_fMhz) - log_aHeight +
-               ((44.9 - (6.55 * log_hb)) * std::log10(dist / 1e3)) - log_bHeight + C;
+               ((44.9 - (6.55 * log_hb)) * std::log10(distKm)) - log_bHeight + C;
     }
     return loss;
 }
