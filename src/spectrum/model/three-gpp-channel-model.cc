@@ -2314,7 +2314,7 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage(
     }
 
     // step c: Determine the attenuation of each blocker due to blockers
-    for (uint8_t cInd = 0; cInd < clusterNum; cInd++)
+    for (std::size_t cInd = 0; cInd < clusterNum; cInd++)
     {
         NS_ASSERT_MSG(clusterAOA[cInd] >= 0 && clusterAOA[cInd] <= 360,
                       "the AOA should be the range of [0,360]");
