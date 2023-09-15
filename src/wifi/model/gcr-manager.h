@@ -29,7 +29,8 @@ class WifiMpdu;
 enum class GroupAddressRetransmissionPolicy : uint8_t
 {
     NO_ACK_NO_RETRY = 0,
-    GCR_UNSOLICITED_RETRY
+    GCR_UNSOLICITED_RETRY,
+    GCR_BLOCK_ACK
 };
 
 /// Groupcast protection mode enumeration

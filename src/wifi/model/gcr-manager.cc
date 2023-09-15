@@ -41,7 +41,9 @@ GcrManager::GetTypeId()
                           MakeEnumChecker(GroupAddressRetransmissionPolicy::NO_ACK_NO_RETRY,
                                           "NO_RETRY",
                                           GroupAddressRetransmissionPolicy::GCR_UNSOLICITED_RETRY,
-                                          "GCR_UR"))
+                                          "GCR_UR",
+                                          GroupAddressRetransmissionPolicy::GCR_BLOCK_ACK,
+                                          "GCR_BA"))
             .AddAttribute(
                 "GcrProtectionMode",
                 "Protection mode used for groupcast frames when needed: "
@@ -175,6 +177,10 @@ GcrManager::KeepGroupcastQueued(Ptr<WifiMpdu> mpdu)
     NS_ASSERT_MSG(m_retransmissionPolicy != GroupAddressRetransmissionPolicy::NO_ACK_NO_RETRY,
                   "GCR service is not enabled");
     NS_ASSERT_MSG(!m_staMembers.empty(), "GCR service should not be used");
+    if (m_retransmissionPolicy == GroupAddressRetransmissionPolicy::GCR_BLOCK_ACK)
+    {
+        return !mpdu->GetHeader().IsRetry() && !m_nonGcrStas.empty();
+    }
     if (!m_mpdu || !mpdu->GetHeader().IsRetry())
     {
         m_unsolicitedRetryCounter = 0;
