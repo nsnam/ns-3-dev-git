@@ -131,7 +131,9 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
     /**
      * \brief Aggregate the MSDU contained in the given MPDU to this MPDU (thus
      *        constituting an A-MSDU). Note that the given MPDU cannot contain
-     *        an A-MSDU.
+     *        an A-MSDU. If the given MPDU is a null pointer, the effect of this
+     *        call is to add only an A-MSDU subframe header, thus producing an A-MSDU
+     *        containing a single MSDU.
      * \param msdu the MPDU containing the MSDU to aggregate
      */
     void Aggregate(Ptr<const WifiMpdu> msdu);

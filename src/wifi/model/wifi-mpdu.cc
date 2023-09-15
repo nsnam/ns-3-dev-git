@@ -174,9 +174,15 @@ WifiMpdu::GetProtocolDataUnit() const
 void
 WifiMpdu::Aggregate(Ptr<const WifiMpdu> msdu)
 {
-    NS_ASSERT(msdu);
-    NS_LOG_FUNCTION(this << *msdu);
-    NS_ABORT_MSG_IF(!msdu->GetHeader().IsQosData() || msdu->GetHeader().IsQosAmsdu(),
+    if (msdu)
+    {
+        NS_LOG_FUNCTION(this << *msdu);
+    }
+    else
+    {
+        NS_LOG_FUNCTION(this);
+    }
+    NS_ABORT_MSG_IF(msdu && (!msdu->GetHeader().IsQosData() || msdu->GetHeader().IsQosAmsdu()),
                     "Only QoS data frames that do not contain an A-MSDU can be aggregated");
     NS_ABORT_MSG_IF(!std::holds_alternative<OriginalInfo>(m_instanceInfo),
                     "This method can only be called on the original version of the MPDU");
@@ -206,7 +212,10 @@ WifiMpdu::Aggregate(Ptr<const WifiMpdu> msdu)
         // to be set to the BSSID, but neither Address 1 nor Address 2 contain the
         // BSSID. Hence, it is left up to the caller to set these Address fields.
     }
-    DoAggregate(msdu);
+    if (msdu)
+    {
+        DoAggregate(msdu);
+    }
 }
 
 void
