@@ -450,8 +450,8 @@ struct MlmeAssociateIndicationParams
     Mac64Address m_extDevAddr;      //!< The extended address of the device requesting association
     CapabilityField capabilityInfo; //!< The operational capabilities of
                                     //!< the device requesting association.
-    u_int8_t lqi{0}; //!< The link quality indicator of the received associate request command
-                     //!< (Not officially supported in the standard but found in implementations)
+    uint8_t lqi{0}; //!< The link quality indicator of the received associate request command
+                    //!< (Not officially supported in the standard but found in implementations)
 };
 
 /**
