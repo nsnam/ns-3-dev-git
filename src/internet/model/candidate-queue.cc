@@ -58,8 +58,6 @@ operator<<(std::ostream& os, const SPFVertex::VertexType& t)
 std::ostream&
 operator<<(std::ostream& os, const CandidateQueue& q)
 {
-    typedef CandidateQueue::CandidateList_t List_t;
-    typedef List_t::const_iterator CIter_t;
     const CandidateQueue::CandidateList_t& list = q.m_candidates;
 
     os << "*** CandidateQueue Begin (<id, distance, LSA-type>) ***" << std::endl;

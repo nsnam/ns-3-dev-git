@@ -62,7 +62,6 @@ operator<<(std::ostream& os, const SPFVertex::NodeExit_t& exit)
 std::ostream&
 operator<<(std::ostream& os, const SPFVertex::ListOfSPFVertex_t& vs)
 {
-    typedef SPFVertex::ListOfSPFVertex_t::const_iterator CIter_t;
     os << "{";
     for (auto iter = vs.begin(); iter != vs.end();)
     {
@@ -302,7 +301,6 @@ SPFVertex::NodeExit_t
 SPFVertex::GetRootExitDirection(uint32_t i) const
 {
     NS_LOG_FUNCTION(this << i);
-    typedef ListOfNodeExit_t::const_iterator CIter_t;
 
     NS_ASSERT_MSG(i < m_ecmpRootExits.size(),
                   "Index out-of-range when accessing SPFVertex::m_ecmpRootExits!");

@@ -2167,7 +2167,6 @@ RoutingProtocol::PopulateTwoHopNeighborSet(const olsr::MessageHeader& msg,
             continue;
         }
 
-        typedef std::vector<olsr::MessageHeader::Hello::LinkMessage> LinkMessageVec;
         for (auto linkMessage = hello.linkMessages.begin(); linkMessage != hello.linkMessages.end();
              linkMessage++)
         {
@@ -2250,7 +2249,6 @@ RoutingProtocol::PopulateMprSelectorSet(const olsr::MessageHeader& msg,
 
     Time now = Simulator::Now();
 
-    typedef std::vector<olsr::MessageHeader::Hello::LinkMessage> LinkMessageVec;
     for (auto linkMessage = hello.linkMessages.begin(); linkMessage != hello.linkMessages.end();
          linkMessage++)
     {
