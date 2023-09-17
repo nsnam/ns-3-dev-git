@@ -97,7 +97,7 @@ const uint32_t NULL_MESSAGE_MAX_MPI_MSG_SIZE = 2000;
 NullMessageSentBuffer::NullMessageSentBuffer()
 {
     m_buffer = nullptr;
-    m_request = nullptr;
+    m_request = MPI_REQUEST_NULL;
 }
 
 NullMessageSentBuffer::~NullMessageSentBuffer()

@@ -52,7 +52,7 @@ NS_OBJECT_ENSURE_REGISTERED(GrantedTimeWindowMpiInterface);
 SentBuffer::SentBuffer()
 {
     m_buffer = nullptr;
-    m_request = nullptr;
+    m_request = MPI_REQUEST_NULL;
 }
 
 SentBuffer::~SentBuffer()
