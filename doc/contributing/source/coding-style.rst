@@ -796,6 +796,29 @@ file (``*.cc``).
   // Or as constexpr (in implementation files)
   constexpr uint8_t STATUS_PDU{0};
 
+When declaring variables that are easily deducible from context, prefer to declare them
+with ``auto`` instead of repeating the type name. Not only does this improve code readability,
+by making lines shorter, but it also facilitates future code refactoring.
+When declaring variables, prefer to use direct-initialization, to avoid repeating the type name.
+
+.. sourcecode:: cpp
+
+  // Avoid repeating the type name when declaring iterators or pointers, and casting variables
+  std::map<uint32_t, std::string>::const_iterator it = myMap.find(key);
+  int* ptr = new int[10];
+  uint8_t m = static_cast<uint8_t>(97 + (i % 26));
+
+  // Prefer to declare them with auto
+  auto it = myMap.find(key);
+  auto* ptr = new int[10];
+  auto m = static_cast<uint8_t>(97 + (i % 26));
+
+  // Avoid splitting the declaration and initialization of variables
+  Ipv4Address ipv4Address = Ipv4Address("192.168.0.1")
+
+  // Prefer to use direct-initialization
+  Ipv4Address ipv4Address("192.168.0.1")
+
 Comments
 ========
 
