@@ -44,7 +44,7 @@ TcpHeader::FlagsToString(uint8_t flags, const std::string& delimiter)
     {
         if (flags & (1 << i))
         {
-            if (flagsDescription.length() > 0)
+            if (!flagsDescription.empty())
             {
                 flagsDescription += delimiter;
             }

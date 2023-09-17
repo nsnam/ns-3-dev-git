@@ -51,7 +51,7 @@ PathSplit(std::string str)
         }
         str = str.substr(cutAt + 1);
     }
-    if (str.length() > 0)
+    if (!str.empty())
     {
         results.push_back(str);
     }

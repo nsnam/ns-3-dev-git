@@ -59,8 +59,7 @@ PcapHelperForIpv4::EnablePcapIpv4(std::string prefix, Ipv4InterfaceContainer c)
 {
     for (Ipv4InterfaceContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
-        std::pair<Ptr<Ipv4>, uint32_t> pair = *i;
-        EnablePcapIpv4(prefix, pair.first, pair.second, false);
+        EnablePcapIpv4(prefix, (*i).first, (*i).second, false);
     }
 }
 
@@ -200,8 +199,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl(Ptr<OutputStreamWrapper> stream,
 {
     for (Ipv4InterfaceContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
-        std::pair<Ptr<Ipv4>, uint32_t> pair = *i;
-        EnableAsciiIpv4Internal(stream, prefix, pair.first, pair.second, false);
+        EnableAsciiIpv4Internal(stream, prefix, (*i).first, (*i).second, false);
     }
 }
 
@@ -341,8 +339,7 @@ PcapHelperForIpv6::EnablePcapIpv6(std::string prefix, Ipv6InterfaceContainer c)
 {
     for (Ipv6InterfaceContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
-        std::pair<Ptr<Ipv6>, uint32_t> pair = *i;
-        EnablePcapIpv6(prefix, pair.first, pair.second, false);
+        EnablePcapIpv6(prefix, (*i).first, (*i).second, false);
     }
 }
 
@@ -482,8 +479,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl(Ptr<OutputStreamWrapper> stream,
 {
     for (Ipv6InterfaceContainer::Iterator i = c.Begin(); i != c.End(); ++i)
     {
-        std::pair<Ptr<Ipv6>, uint32_t> pair = *i;
-        EnableAsciiIpv6Internal(stream, prefix, pair.first, pair.second, false);
+        EnableAsciiIpv6Internal(stream, prefix, (*i).first, (*i).second, false);
     }
 }
 

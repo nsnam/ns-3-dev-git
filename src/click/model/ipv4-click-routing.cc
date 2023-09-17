@@ -86,7 +86,7 @@ Ipv4ClickRouting::DoInitialize()
         m_nodeName = name.str();
     }
 
-    NS_ASSERT(m_clickFile.length() > 0);
+    NS_ASSERT(!m_clickFile.empty());
 
     // Even though simclick_click_create() will halt programme execution
     // if it is unable to initialise a Click router, we play safe
