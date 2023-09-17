@@ -30,6 +30,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
+#include <algorithm>
 #include <optional>
 
 namespace ns3

@@ -29,6 +29,8 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-utils.h"
 
+#include <algorithm>
+
 namespace ns3
 {
 

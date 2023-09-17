@@ -38,6 +38,8 @@
 #include "ns3/pointer.h"
 #include "ns3/vht-configuration.h"
 
+#include <algorithm>
+
 namespace ns3
 {
 

@@ -24,6 +24,7 @@
 #include "wifi-mac-queue.h"
 #include "wifi-mac.h"
 
+#include <algorithm>
 #include <functional>
 #include <list>
 #include <map>
