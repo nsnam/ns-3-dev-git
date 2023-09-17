@@ -88,7 +88,7 @@ AthstatsHelper::EnableAthstats(std::string filename, Ptr<NetDevice> nd)
 void
 AthstatsHelper::EnableAthstats(std::string filename, NetDeviceContainer d)
 {
-    for (NetDeviceContainer::Iterator i = d.Begin(); i != d.End(); ++i)
+    for (auto i = d.Begin(); i != d.End(); ++i)
     {
         Ptr<NetDevice> dev = *i;
         EnableAthstats(filename, dev->GetNode()->GetId(), dev->GetIfIndex());
@@ -99,7 +99,7 @@ void
 AthstatsHelper::EnableAthstats(std::string filename, NodeContainer n)
 {
     NetDeviceContainer devs;
-    for (NodeContainer::Iterator i = n.Begin(); i != n.End(); ++i)
+    for (auto i = n.Begin(); i != n.End(); ++i)
     {
         Ptr<Node> node = *i;
         for (std::size_t j = 0; j < node->GetNDevices(); ++j)

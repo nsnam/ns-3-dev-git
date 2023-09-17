@@ -540,7 +540,7 @@ NoBackhaulEpcHelper::AssignUeIpv4Address(NetDeviceContainer ueDevices)
 Ipv6InterfaceContainer
 NoBackhaulEpcHelper::AssignUeIpv6Address(NetDeviceContainer ueDevices)
 {
-    for (NetDeviceContainer::Iterator iter = ueDevices.Begin(); iter != ueDevices.End(); iter++)
+    for (auto iter = ueDevices.Begin(); iter != ueDevices.End(); iter++)
     {
         Ptr<Icmpv6L4Protocol> icmpv6 = (*iter)->GetNode()->GetObject<Icmpv6L4Protocol>();
         icmpv6->SetAttribute("DAD", BooleanValue(false));

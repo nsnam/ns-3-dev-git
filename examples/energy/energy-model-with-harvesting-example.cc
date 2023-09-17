@@ -354,9 +354,7 @@ main(int argc, char* argv[])
     Simulator::Stop(Seconds(10.0));
     Simulator::Run();
 
-    for (DeviceEnergyModelContainer::Iterator iter = deviceModels.Begin();
-         iter != deviceModels.End();
-         iter++)
+    for (auto iter = deviceModels.Begin(); iter != deviceModels.End(); iter++)
     {
         double energyConsumed = (*iter)->GetTotalEnergyConsumption();
         NS_LOG_UNCOND("End of simulation ("

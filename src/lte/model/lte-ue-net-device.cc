@@ -267,8 +267,7 @@ LteUeNetDevice::DoInitialize()
     m_isConstructed = true;
     UpdateConfig();
 
-    std::map<uint8_t, Ptr<ComponentCarrierUe>>::iterator it;
-    for (it = m_ccMap.begin(); it != m_ccMap.end(); ++it)
+    for (auto it = m_ccMap.begin(); it != m_ccMap.end(); ++it)
     {
         it->second->GetPhy()->Initialize();
         it->second->GetMac()->Initialize();

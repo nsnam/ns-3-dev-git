@@ -32,7 +32,7 @@ OutputStreamWrapper::OutputStreamWrapper(std::string filename, std::ios::openmod
     : m_destroyable(true)
 {
     NS_LOG_FUNCTION(this << filename << filemode);
-    std::ofstream* os = new std::ofstream();
+    auto os = new std::ofstream();
     os->open(filename, filemode);
     m_ostream = os;
     FatalImpl::RegisterStream(m_ostream);

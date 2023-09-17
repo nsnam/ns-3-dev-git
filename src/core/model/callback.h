@@ -284,7 +284,7 @@ class CallbackImpl : public CallbackImplBase
 
     bool IsEqual(Ptr<const CallbackImplBase> other) const override
     {
-        const CallbackImpl<R, UArgs...>* otherDerived =
+        const auto otherDerived =
             dynamic_cast<const CallbackImpl<R, UArgs...>*>(PeekPointer(other));
 
         if (otherDerived == nullptr)

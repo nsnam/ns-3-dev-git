@@ -224,7 +224,7 @@ WifiRemoteStation*
 IdealWifiManager::DoCreateStation() const
 {
     NS_LOG_FUNCTION(this);
-    IdealWifiRemoteStation* station = new IdealWifiRemoteStation();
+    auto station = new IdealWifiRemoteStation();
     Reset(station);
     return station;
 }
@@ -233,7 +233,7 @@ void
 IdealWifiManager::Reset(WifiRemoteStation* station) const
 {
     NS_LOG_FUNCTION(this << station);
-    IdealWifiRemoteStation* st = static_cast<IdealWifiRemoteStation*>(station);
+    auto st = static_cast<IdealWifiRemoteStation*>(station);
     st->m_lastSnrObserved = 0.0;
     st->m_lastChannelWidthObserved = 0;
     st->m_lastNssObserved = 1;
@@ -268,7 +268,7 @@ IdealWifiManager::DoReportRtsOk(WifiRemoteStation* st,
                                 double rtsSnr)
 {
     NS_LOG_FUNCTION(this << st << ctsSnr << ctsMode.GetUniqueName() << rtsSnr);
-    IdealWifiRemoteStation* station = static_cast<IdealWifiRemoteStation*>(st);
+    auto station = static_cast<IdealWifiRemoteStation*>(st);
     station->m_lastSnrObserved = rtsSnr;
     station->m_lastChannelWidthObserved =
         GetPhy()->GetChannelWidth() >= 40 ? 20 : GetPhy()->GetChannelWidth();
@@ -285,7 +285,7 @@ IdealWifiManager::DoReportDataOk(WifiRemoteStation* st,
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode.GetUniqueName() << dataSnr << dataChannelWidth
                          << +dataNss);
-    IdealWifiRemoteStation* station = static_cast<IdealWifiRemoteStation*>(st);
+    auto station = static_cast<IdealWifiRemoteStation*>(st);
     if (dataSnr == 0)
     {
         NS_LOG_WARN("DataSnr reported to be zero; not saving this report.");
@@ -307,7 +307,7 @@ IdealWifiManager::DoReportAmpduTxStatus(WifiRemoteStation* st,
 {
     NS_LOG_FUNCTION(this << st << nSuccessfulMpdus << nFailedMpdus << rxSnr << dataSnr
                          << dataChannelWidth << +dataNss);
-    IdealWifiRemoteStation* station = static_cast<IdealWifiRemoteStation*>(st);
+    auto station = static_cast<IdealWifiRemoteStation*>(st);
     if (dataSnr == 0)
     {
         NS_LOG_WARN("DataSnr reported to be zero; not saving this report.");
@@ -336,7 +336,7 @@ WifiTxVector
 IdealWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
-    IdealWifiRemoteStation* station = static_cast<IdealWifiRemoteStation*>(st);
+    auto station = static_cast<IdealWifiRemoteStation*>(st);
     // We search within the Supported rate set the mode with the
     // highest data rate for which the SNR threshold is smaller than m_lastSnr
     // to ensure correct packet delivery.
@@ -586,7 +586,7 @@ WifiTxVector
 IdealWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
 {
     NS_LOG_FUNCTION(this << st);
-    IdealWifiRemoteStation* station = static_cast<IdealWifiRemoteStation*>(st);
+    auto station = static_cast<IdealWifiRemoteStation*>(st);
     // We search within the Basic rate set the mode with the highest
     // SNR threshold possible which is smaller than m_lastSnr to
     // ensure correct packet delivery.

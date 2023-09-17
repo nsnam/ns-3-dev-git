@@ -295,8 +295,7 @@ HeFrameExchangeManager::RecordSentMuRtsTo(const WifiTxParameters& txParams)
     NS_LOG_FUNCTION(this << &txParams);
 
     NS_ASSERT(txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS);
-    WifiMuRtsCtsProtection* protection =
-        static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
+    auto protection = static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
 
     NS_ASSERT(protection->muRts.IsMuRts());
     NS_ASSERT_MSG(m_apMac, "APs only can send MU-RTS TF");
@@ -363,8 +362,7 @@ HeFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
     hdr.SetNoMoreFragments();
 
     NS_ASSERT(txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS);
-    WifiMuRtsCtsProtection* protection =
-        static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
+    auto protection = static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
 
     NS_ASSERT(protection->muRts.IsMuRts());
     protection->muRts.SetCsRequired(true);
@@ -543,7 +541,7 @@ HeFrameExchangeManager::SendPsduMap()
      */
     if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE)
     {
-        WifiDlMuBarBaSequence* acknowledgment =
+        auto acknowledgment =
             static_cast<WifiDlMuBarBaSequence*>(m_txParams.m_acknowledgment.get());
 
         // schedule the transmission of required BlockAckReq frames
@@ -594,8 +592,7 @@ HeFrameExchangeManager::SendPsduMap()
      */
     else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_TF_MU_BAR)
     {
-        WifiDlMuTfMuBar* acknowledgment =
-            static_cast<WifiDlMuTfMuBar*>(m_txParams.m_acknowledgment.get());
+        auto acknowledgment = static_cast<WifiDlMuTfMuBar*>(m_txParams.m_acknowledgment.get());
 
         if (!m_triggerFrame)
         {
@@ -671,8 +668,7 @@ HeFrameExchangeManager::SendPsduMap()
      */
     else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_AGGREGATE_TF)
     {
-        WifiDlMuAggregateTf* acknowledgment =
-            static_cast<WifiDlMuAggregateTf*>(m_txParams.m_acknowledgment.get());
+        auto acknowledgment = static_cast<WifiDlMuAggregateTf*>(m_txParams.m_acknowledgment.get());
 
         m_trigVector =
             acknowledgment->stationsReplyingWithBlockAck.begin()->second.blockAckTxVector;
@@ -719,8 +715,7 @@ HeFrameExchangeManager::SendPsduMap()
         NS_ASSERT(IsTrigger(m_psduMap));
         mpdu = *m_psduMap.begin()->second->begin();
 
-        WifiUlMuMultiStaBa* acknowledgment =
-            static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
+        auto acknowledgment = static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
 
         // record the set of stations solicited by this Trigger Frame
         for (const auto& station : acknowledgment->stationsReceivingMultiStaBa)
@@ -1004,8 +999,7 @@ HeFrameExchangeManager::CalculateProtectionTime(WifiProtection* protection) cons
 
     if (protection->method == WifiProtection::MU_RTS_CTS)
     {
-        WifiMuRtsCtsProtection* muRtsCtsProtection =
-            static_cast<WifiMuRtsCtsProtection*>(protection);
+        auto muRtsCtsProtection = static_cast<WifiMuRtsCtsProtection*>(protection);
 
         // Get the TXVECTOR used by one station to send the CTS response. This is used
         // to compute the TX duration, so it does not matter which station we choose
@@ -1039,8 +1033,7 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
      */
     if (acknowledgment->method == WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE)
     {
-        WifiDlMuBarBaSequence* dlMuBarBaAcknowledgment =
-            static_cast<WifiDlMuBarBaSequence*>(acknowledgment);
+        auto dlMuBarBaAcknowledgment = static_cast<WifiDlMuBarBaSequence*>(acknowledgment);
 
         Time duration = Seconds(0);
 
@@ -1087,7 +1080,7 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
      */
     else if (acknowledgment->method == WifiAcknowledgment::DL_MU_TF_MU_BAR)
     {
-        WifiDlMuTfMuBar* dlMuTfMuBarAcknowledgment = static_cast<WifiDlMuTfMuBar*>(acknowledgment);
+        auto dlMuTfMuBarAcknowledgment = static_cast<WifiDlMuTfMuBar*>(acknowledgment);
 
         Time duration = Seconds(0);
 
@@ -1133,8 +1126,7 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
      */
     else if (acknowledgment->method == WifiAcknowledgment::DL_MU_AGGREGATE_TF)
     {
-        WifiDlMuAggregateTf* dlMuAggrTfAcknowledgment =
-            static_cast<WifiDlMuAggregateTf*>(acknowledgment);
+        auto dlMuAggrTfAcknowledgment = static_cast<WifiDlMuAggregateTf*>(acknowledgment);
 
         Time duration = Seconds(0);
 
@@ -1168,7 +1160,7 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
      */
     else if (acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA)
     {
-        WifiUlMuMultiStaBa* ulMuMultiStaBa = static_cast<WifiUlMuMultiStaBa*>(acknowledgment);
+        auto ulMuMultiStaBa = static_cast<WifiUlMuMultiStaBa*>(acknowledgment);
 
         Time duration = m_phy->CalculateTxDuration(GetBlockAckSize(ulMuMultiStaBa->baType),
                                                    ulMuMultiStaBa->multiStaBaTxVector,
@@ -1252,8 +1244,7 @@ HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
         txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_AGGREGATE_TF)
     {
         // we need to account for the size of the aggregated MU-BAR Trigger Frame
-        WifiDlMuAggregateTf* acknowledgment =
-            static_cast<WifiDlMuAggregateTf*>(txParams.m_acknowledgment.get());
+        auto acknowledgment = static_cast<WifiDlMuAggregateTf*>(txParams.m_acknowledgment.get());
 
         const auto& info = acknowledgment->stationsReplyingWithBlockAck.find(receiver);
         NS_ASSERT(info != acknowledgment->stationsReplyingWithBlockAck.end());
@@ -1507,7 +1498,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
         trigger.GetApTxPower() -
         static_cast<int8_t>(
             *optRssi); // cast RSSI to be on equal footing with AP Tx power information
-    double reqTxPowerDbm = static_cast<double>(userInfoIt->GetUlTargetRssi() + pathLossDb);
+    auto reqTxPowerDbm = static_cast<double>(userInfoIt->GetUlTargetRssi() + pathLossDb);
 
     // Convert the transmit power to a power level
     uint8_t numPowerLevels = m_phy->GetNTxPower();
@@ -1560,7 +1551,7 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
         NS_ASSERT(itAidAddr != staList.end());
         auto optRssi = GetMostRecentRssi(itAidAddr->second);
         NS_ASSERT(optRssi);
-        int8_t rssi = static_cast<int8_t>(*optRssi);
+        auto rssi = static_cast<int8_t>(*optRssi);
         rssi = (rssi >= -20)
                    ? -20
                    : ((rssi <= -110) ? -110 : rssi); // cap so as to keep within [-110; -20] dBm
@@ -1641,8 +1632,7 @@ HeFrameExchangeManager::SendMultiStaBlockAck(const WifiTxParameters& txParams, T
     NS_ASSERT(m_apMac);
     NS_ASSERT(txParams.m_acknowledgment &&
               txParams.m_acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA);
-    WifiUlMuMultiStaBa* acknowledgment =
-        static_cast<WifiUlMuMultiStaBa*>(txParams.m_acknowledgment.get());
+    auto acknowledgment = static_cast<WifiUlMuMultiStaBa*>(txParams.m_acknowledgment.get());
 
     NS_ASSERT(!acknowledgment->stationsReceivingMultiStaBa.empty());
 
@@ -2202,8 +2192,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         Mac48Address sender = hdr.GetAddr2();
         NS_ASSERT(m_txParams.m_acknowledgment &&
                   m_txParams.m_acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA);
-        WifiUlMuMultiStaBa* acknowledgment =
-            static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
+        auto acknowledgment = static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
         std::size_t index = acknowledgment->baType.m_bitmapLen.size();
 
         if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
@@ -2374,7 +2363,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             NS_ASSERT(m_txParams.m_acknowledgment->method ==
                       WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE);
 
-            WifiDlMuBarBaSequence* acknowledgment =
+            auto acknowledgment =
                 static_cast<WifiDlMuBarBaSequence*>(m_txParams.m_acknowledgment.get());
             NS_ASSERT(acknowledgment->stationsReplyingWithNormalAck.size() == 1);
             NS_ASSERT(m_apMac);
@@ -2676,8 +2665,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
         Mac48Address sender = psdu->GetAddr2();
         NS_ASSERT(m_txParams.m_acknowledgment &&
                   m_txParams.m_acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA);
-        WifiUlMuMultiStaBa* acknowledgment =
-            static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
+        auto acknowledgment = static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
         std::size_t index = acknowledgment->baType.m_bitmapLen.size();
 
         if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)

@@ -62,7 +62,7 @@ UanTransducerHd::Clear()
         m_channel = nullptr;
     }
 
-    UanPhyList::iterator it = m_phyList.begin();
+    auto it = m_phyList.begin();
     for (; it != m_phyList.end(); it++)
     {
         if (*it)
@@ -71,7 +71,7 @@ UanTransducerHd::Clear()
             *it = nullptr;
         }
     }
-    ArrivalList::iterator ait = m_arrivalList.begin();
+    auto ait = m_arrivalList.begin();
     for (; ait != m_arrivalList.end(); ait++)
     {
         ait->GetPacket() = nullptr;
@@ -164,7 +164,7 @@ UanTransducerHd::Receive(Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode,
     if (m_state == RX)
     {
         NS_LOG_DEBUG("Transducer state = RX");
-        UanPhyList::const_iterator it = m_phyList.begin();
+        auto it = m_phyList.begin();
         for (; it != m_phyList.end(); it++)
         {
             NS_LOG_DEBUG("Calling StartRx");
@@ -191,7 +191,7 @@ UanTransducerHd::Transmit(Ptr<UanPhy> src, Ptr<Packet> packet, double txPowerDb,
     NS_LOG_DEBUG("Transducer transmitting:  TX delay = "
                  << delay << " seconds for packet size " << packet->GetSize()
                  << " bytes and rate = " << txMode.GetDataRateBps() << " bps");
-    UanPhyList::const_iterator it = m_phyList.begin();
+    auto it = m_phyList.begin();
     for (; it != m_phyList.end(); it++)
     {
         if (src != (*it))
@@ -245,7 +245,7 @@ void
 UanTransducerHd::RemoveArrival(UanPacketArrival arrival)
 {
     // Remove entry from arrival list
-    ArrivalList::iterator it = m_arrivalList.begin();
+    auto it = m_arrivalList.begin();
     for (; it != m_arrivalList.end(); it++)
     {
         if (it->GetPacket() == arrival.GetPacket())
@@ -254,7 +254,7 @@ UanTransducerHd::RemoveArrival(UanPacketArrival arrival)
             break;
         }
     }
-    UanPhyList::const_iterator ait = m_phyList.begin();
+    auto ait = m_phyList.begin();
     for (; ait != m_phyList.end(); ait++)
     {
         (*ait)->NotifyIntChange();

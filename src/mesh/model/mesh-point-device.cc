@@ -83,8 +83,7 @@ void
 MeshPointDevice::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    for (std::vector<Ptr<NetDevice>>::iterator iter = m_ifaces.begin(); iter != m_ifaces.end();
-         iter++)
+    for (auto iter = m_ifaces.begin(); iter != m_ifaces.end(); iter++)
     {
         *iter = nullptr;
     }
@@ -399,7 +398,7 @@ Ptr<NetDevice>
 MeshPointDevice::GetInterface(uint32_t n) const
 {
     NS_LOG_FUNCTION(this << n);
-    for (std::vector<Ptr<NetDevice>>::const_iterator i = m_ifaces.begin(); i != m_ifaces.end(); i++)
+    for (auto i = m_ifaces.begin(); i != m_ifaces.end(); i++)
     {
         if ((*i)->GetIfIndex() == n)
         {
@@ -516,7 +515,7 @@ MeshPointDevice::DoSend(bool success,
     }
     else
     {
-        for (std::vector<Ptr<NetDevice>>::iterator i = m_ifaces.begin(); i != m_ifaces.end(); i++)
+        for (auto i = m_ifaces.begin(); i != m_ifaces.end(); i++)
         {
             (*i)->SendFrom(packet->Copy(), src, dst, protocol);
         }

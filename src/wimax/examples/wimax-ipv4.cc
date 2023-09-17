@@ -117,7 +117,7 @@ main(int argc, char* argv[])
                            WimaxHelper::SIMPLE_PHY_TYPE_OFDM,
                            scheduler);
 
-    Ptr<SubscriberStationNetDevice>* ss = new Ptr<SubscriberStationNetDevice>[nbSS];
+    auto ss = new Ptr<SubscriberStationNetDevice>[nbSS];
 
     for (int i = 0; i < nbSS; i++)
     {
@@ -146,10 +146,10 @@ main(int argc, char* argv[])
         WimaxHelper::EnableLogComponents(); // Turn on all wimax logging
     }
     /*------------------------------*/
-    UdpServerHelper* udpServer = new UdpServerHelper[nbSS / 2];
-    ApplicationContainer* serverApps = new ApplicationContainer[nbSS / 2];
-    UdpClientHelper* udpClient = new UdpClientHelper[nbSS / 2];
-    ApplicationContainer* clientApps = new ApplicationContainer[nbSS / 2];
+    auto udpServer = new UdpServerHelper[nbSS / 2];
+    auto serverApps = new ApplicationContainer[nbSS / 2];
+    auto udpClient = new UdpClientHelper[nbSS / 2];
+    auto clientApps = new ApplicationContainer[nbSS / 2];
 
     for (int i = 0; i < nbSS / 2; i++)
     {

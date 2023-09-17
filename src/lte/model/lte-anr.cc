@@ -97,7 +97,7 @@ LteAnr::RemoveNeighbourRelation(uint16_t cellId)
 {
     NS_LOG_FUNCTION(this << m_servingCellId << cellId);
 
-    NeighbourRelationTable_t::iterator it = m_neighbourRelationTable.find(cellId);
+    auto it = m_neighbourRelationTable.find(cellId);
     if (it != m_neighbourRelationTable.end())
     {
         NS_FATAL_ERROR("Cell ID " << cellId << " cannot be found in NRT");
@@ -157,8 +157,7 @@ LteAnr::DoReportUeMeas(LteRrcSap::MeasResults measResults)
     {
         if (measResults.haveMeasResultNeighCells && !(measResults.measResultListEutra.empty()))
         {
-            for (std::list<LteRrcSap::MeasResultEutra>::iterator it =
-                     measResults.measResultListEutra.begin();
+            for (auto it = measResults.measResultListEutra.begin();
                  it != measResults.measResultListEutra.end();
                  ++it)
             {
@@ -167,8 +166,7 @@ LteAnr::DoReportUeMeas(LteRrcSap::MeasResults measResults)
                               "RSRQ measure missing for cellId " << it->physCellId);
 
                 // Update Neighbour Relation Table
-                NeighbourRelationTable_t::iterator itNrt =
-                    m_neighbourRelationTable.find(it->physCellId);
+                auto itNrt = m_neighbourRelationTable.find(it->physCellId);
                 if (itNrt != m_neighbourRelationTable.end())
                 {
                     // Update neighbour relation entry
@@ -243,7 +241,7 @@ LteAnr::DoGetNoX2(uint16_t cellId) const
 const LteAnr::NeighbourRelation_t*
 LteAnr::Find(uint16_t cellId) const
 {
-    NeighbourRelationTable_t::const_iterator it = m_neighbourRelationTable.find(cellId);
+    auto it = m_neighbourRelationTable.find(cellId);
     if (it == m_neighbourRelationTable.end())
     {
         NS_FATAL_ERROR("Cell ID " << cellId << " cannot be found in NRT");

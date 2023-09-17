@@ -92,7 +92,7 @@ YansWifiChannel::Send(Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, double 
     NS_LOG_FUNCTION(this << sender << ppdu << txPowerDbm);
     Ptr<MobilityModel> senderMobility = sender->GetMobility();
     NS_ASSERT(senderMobility);
-    for (PhyList::const_iterator i = m_phyList.begin(); i != m_phyList.end(); i++)
+    for (auto i = m_phyList.begin(); i != m_phyList.end(); i++)
     {
         if (sender != (*i))
         {

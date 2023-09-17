@@ -74,7 +74,7 @@ operator<<(std::ostream& os, const int64x64_t& value)
     int64_t hi = absVal.GetHigh();
 
     // Save stream format flags
-    std::size_t precision = static_cast<std::size_t>(os.precision());
+    auto precision = static_cast<std::size_t>(os.precision());
     std::ios_base::fmtflags ff = os.flags();
     const bool floatfield = os.flags() & std::ios_base::floatfield;
     os << std::setw(1) << std::noshowpos;

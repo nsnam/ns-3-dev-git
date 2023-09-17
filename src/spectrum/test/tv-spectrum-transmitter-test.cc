@@ -124,7 +124,7 @@ TvSpectrumTransmitterTestCase::DoRun()
 
     /* Test max PSD value */
     Ptr<SpectrumValue> psd = phy->GetTxPsd();
-    Values::const_iterator psdIter = psd->ConstValuesBegin();
+    auto psdIter = psd->ConstValuesBegin();
     double maxValue = 0;
     while (psdIter != psd->ConstValuesEnd())
     {
@@ -154,8 +154,8 @@ TvSpectrumTransmitterTestCase::DoRun()
     }
 
     /* Test frequency range */
-    Bands::const_iterator bandStart = psd->ConstBandsBegin();
-    Bands::const_iterator bandEnd = psd->ConstBandsEnd();
+    auto bandStart = psd->ConstBandsBegin();
+    auto bandEnd = psd->ConstBandsEnd();
     epsilon = TOLERANCE * std::max(1.0, std::max((*bandStart).fc, m_startFrequency));
     NS_TEST_ASSERT_MSG_EQ_TOL((*bandStart).fc,
                               m_startFrequency,

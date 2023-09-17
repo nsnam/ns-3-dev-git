@@ -848,7 +848,7 @@ LrWpanMac::MlmeSyncRequest(MlmeSyncRequestParams params)
     NS_LOG_FUNCTION(this);
     NS_ASSERT(params.m_logCh <= 26 && m_macPanId != 0xffff);
 
-    uint64_t symbolRate = (uint64_t)m_phy->GetDataOrSymbolRate(false); // symbols per second
+    auto symbolRate = (uint64_t)m_phy->GetDataOrSymbolRate(false); // symbols per second
     // change phy current logical channel
     Ptr<LrWpanPhyPibAttributes> pibAttr = Create<LrWpanPhyPibAttributes>();
     pibAttr->phyCurrentChannel = params.m_logCh;
@@ -1660,7 +1660,7 @@ LrWpanMac::AwaitBeacon()
 void
 LrWpanMac::BeaconSearchTimeout()
 {
-    uint64_t symbolRate = (uint64_t)m_phy->GetDataOrSymbolRate(false); // symbols per second
+    auto symbolRate = (uint64_t)m_phy->GetDataOrSymbolRate(false); // symbols per second
 
     if (m_numLostBeacons > lrwpan::aMaxLostBeacons)
     {
@@ -1872,8 +1872,8 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
     // srcPanId = m_macPanId if only srcAddr field in Data or Command frame,accept frame if
     // srcPanId=m_macPanId
 
-    Ptr<Packet> originalPkt = p->Copy(); // because we will strip headers
-    uint64_t symbolRate = (uint64_t)m_phy->GetDataOrSymbolRate(false); // symbols per second
+    Ptr<Packet> originalPkt = p->Copy();                           // because we will strip headers
+    auto symbolRate = (uint64_t)m_phy->GetDataOrSymbolRate(false); // symbols per second
     m_promiscSnifferTrace(originalPkt);
 
     m_macPromiscRxTrace(originalPkt);
@@ -2667,7 +2667,7 @@ LrWpanMac::AckWaitTimeout()
 void
 LrWpanMac::IfsWaitTimeout(Time ifsTime)
 {
-    uint64_t symbolRate = (uint64_t)m_phy->GetDataOrSymbolRate(false);
+    auto symbolRate = (uint64_t)m_phy->GetDataOrSymbolRate(false);
     Time lifsTime = Seconds((double)m_macLIFSPeriod / symbolRate);
     Time sifsTime = Seconds((double)m_macSIFSPeriod / symbolRate);
 
@@ -3419,7 +3419,7 @@ LrWpanMac::PlmeSetAttributeConfirm(LrWpanPhyEnumeration status, LrWpanPibAttribu
     {
         if (status == LrWpanPhyEnumeration::IEEE_802_15_4_PHY_SUCCESS)
         {
-            uint64_t symbolRate = static_cast<uint64_t>(m_phy->GetDataOrSymbolRate(false));
+            auto symbolRate = static_cast<uint64_t>(m_phy->GetDataOrSymbolRate(false));
             Time nextScanTime;
 
             if (m_scanParams.m_scanType == MLMESCAN_ORPHAN)

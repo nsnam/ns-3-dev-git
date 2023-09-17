@@ -79,7 +79,7 @@ UanPhyCalcSinrDual::CalcSinrDb(Ptr<Packet> pkt,
     }
 
     double intKp = -DbToKp(rxPowerDb); // This packet is in the arrivalList
-    UanTransducer::ArrivalList::const_iterator it = arrivalList.begin();
+    auto it = arrivalList.begin();
     for (; it != arrivalList.end(); it++)
     {
         // Only count interference if there is overlap in incoming frequency

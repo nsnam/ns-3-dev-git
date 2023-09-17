@@ -195,13 +195,11 @@ LteEpcE2eDataTestCase::DoRun()
                                      StringValue("RowFirst"));
     enbMobility.Install(enbs);
     NetDeviceContainer enbLteDevs = lteHelper->InstallEnbDevice(enbs);
-    NetDeviceContainer::Iterator enbLteDevIt = enbLteDevs.Begin();
+    auto enbLteDevIt = enbLteDevs.Begin();
 
     uint16_t ulPort = 1000;
 
-    for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin();
-         enbit < m_enbTestData.end();
-         ++enbit, ++enbLteDevIt)
+    for (auto enbit = m_enbTestData.begin(); enbit < m_enbTestData.end(); ++enbit, ++enbLteDevIt)
     {
         NS_ABORT_IF(enbLteDevIt == enbLteDevs.End());
 
@@ -317,12 +315,9 @@ LteEpcE2eDataTestCase::DoRun()
 
     uint64_t imsiCounter = 0;
 
-    for (std::vector<EnbTestData>::iterator enbit = m_enbTestData.begin();
-         enbit < m_enbTestData.end();
-         ++enbit)
+    for (auto enbit = m_enbTestData.begin(); enbit < m_enbTestData.end(); ++enbit)
     {
-        for (std::vector<UeTestData>::iterator ueit = enbit->ues.begin(); ueit < enbit->ues.end();
-             ++ueit)
+        for (auto ueit = enbit->ues.begin(); ueit < enbit->ues.end(); ++ueit)
         {
             uint64_t imsi = ++imsiCounter;
             for (uint32_t b = 0; b < ueit->bearers.size(); ++b)

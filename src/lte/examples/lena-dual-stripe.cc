@@ -158,7 +158,7 @@ FemtocellBlockAllocator::Create()
 bool
 FemtocellBlockAllocator::OverlapsWithAnyPrevious(Box box)
 {
-    for (std::list<Box>::iterator it = m_previousBlocks.begin(); it != m_previousBlocks.end(); ++it)
+    for (auto it = m_previousBlocks.begin(); it != m_previousBlocks.end(); ++it)
     {
         if (AreOverlapping(*it, box))
         {
@@ -184,7 +184,7 @@ PrintGnuplottableBuildingListToFile(std::string filename)
         return;
     }
     uint32_t index = 0;
-    for (BuildingList::Iterator it = BuildingList::Begin(); it != BuildingList::End(); ++it)
+    for (auto it = BuildingList::Begin(); it != BuildingList::End(); ++it)
     {
         ++index;
         Box box = (*it)->GetBoundaries();
@@ -208,7 +208,7 @@ PrintGnuplottableUeListToFile(std::string filename)
         NS_LOG_ERROR("Can't open file " << filename);
         return;
     }
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();
@@ -242,7 +242,7 @@ PrintGnuplottableEnbListToFile(std::string filename)
         NS_LOG_ERROR("Can't open file " << filename);
         return;
     }
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();
@@ -714,7 +714,7 @@ main(int argc, char* argv[])
         // forcing initialization so we don't have to wait for Nodes to
         // start before positions are assigned (which is needed to
         // output node positions to file and to make AttachToClosestEnb work)
-        for (NodeContainer::Iterator it = macroUes.Begin(); it != macroUes.End(); ++it)
+        for (auto it = macroUes.Begin(); it != macroUes.End(); ++it)
         {
             (*it)->Initialize();
         }

@@ -98,7 +98,7 @@ Ns3WimaxSfCreationTestCase::DoRun()
     Ipv4InterfaceContainer BSinterface = address.Assign(bsDevs);
 
     // Create one UGS Downlink service flow between the ss and the bs
-    ServiceFlow* DlServiceFlowUgs = new ServiceFlow(ServiceFlow::SF_DIRECTION_DOWN);
+    auto DlServiceFlowUgs = new ServiceFlow(ServiceFlow::SF_DIRECTION_DOWN);
     IpcsClassifierRecord DlClassifierUgs(Ipv4Address("0.0.0.0"),
                                          Ipv4Mask("0.0.0.0"),
                                          Ipv4Address("0.0.0.0"),
@@ -121,7 +121,7 @@ Ns3WimaxSfCreationTestCase::DoRun()
     DlServiceFlowUgs->SetTrafficPriority(1);
 
     // Create one UGS Uplink service flow between the ss and the bs
-    ServiceFlow* UlServiceFlowUgs = new ServiceFlow(ServiceFlow::SF_DIRECTION_UP);
+    auto UlServiceFlowUgs = new ServiceFlow(ServiceFlow::SF_DIRECTION_UP);
     IpcsClassifierRecord UlClassifierUgs(Ipv4Address("0.0.0.0"),
                                          Ipv4Mask("0.0.0.0"),
                                          Ipv4Address("0.0.0.0"),

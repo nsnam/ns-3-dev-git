@@ -106,7 +106,7 @@ void
 Experiment::UpdatePositions(NodeContainer& nodes) const
 {
     NS_LOG_DEBUG(Now().As(Time::S) << " Updating positions");
-    NodeContainer::Iterator it = nodes.Begin();
+    auto it = nodes.Begin();
     Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable>();
     for (; it != nodes.End(); it++)
     {

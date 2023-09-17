@@ -542,7 +542,7 @@ LenaCqaFfMacSchedulerTestCase2::BuildNameString(uint16_t nUser, std::vector<doub
 {
     std::ostringstream oss;
     oss << "distances (m) = [ ";
-    for (std::vector<double>::iterator it = dist.begin(); it != dist.end(); ++it)
+    for (auto it = dist.begin(); it != dist.end(); ++it)
     {
         oss << *it << " ";
     }

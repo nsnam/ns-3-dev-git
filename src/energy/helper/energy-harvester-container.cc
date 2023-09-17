@@ -105,7 +105,7 @@ void
 EnergyHarvesterContainer::Add(EnergyHarvesterContainer container)
 {
     NS_LOG_FUNCTION(this << &container);
-    for (Iterator i = container.Begin(); i != container.End(); i++)
+    for (auto i = container.Begin(); i != container.End(); i++)
     {
         m_harvesters.push_back(*i);
     }
@@ -143,9 +143,7 @@ void
 EnergyHarvesterContainer::DoDispose()
 {
     // call Object::Dispose for all EnergyHarvester objects
-    for (std::vector<Ptr<EnergyHarvester>>::iterator i = m_harvesters.begin();
-         i != m_harvesters.end();
-         i++)
+    for (auto i = m_harvesters.begin(); i != m_harvesters.end(); i++)
     {
         (*i)->Dispose();
     }
@@ -156,9 +154,7 @@ void
 EnergyHarvesterContainer::DoInitialize()
 {
     // call Object::Initialize for all EnergyHarvester objects
-    for (std::vector<Ptr<EnergyHarvester>>::iterator i = m_harvesters.begin();
-         i != m_harvesters.end();
-         i++)
+    for (auto i = m_harvesters.begin(); i != m_harvesters.end(); i++)
     {
         (*i)->Initialize();
     }

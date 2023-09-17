@@ -151,8 +151,7 @@ Ipv4MulticastRoute::SetOutputTtl(uint32_t oif, uint32_t ttl)
     if (ttl >= MAX_TTL)
     {
         // This TTL value effectively disables the interface
-        std::map<uint32_t, uint32_t>::iterator iter;
-        iter = m_ttls.find(oif);
+        auto iter = m_ttls.find(oif);
         if (iter != m_ttls.end())
         {
             m_ttls.erase(iter);

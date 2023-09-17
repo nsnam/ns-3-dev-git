@@ -118,7 +118,7 @@ Ipv6ExtensionHeader::Deserialize(Buffer::Iterator start)
     m_length = i.ReadU8();
 
     uint32_t dataLength = GetLength() - 2;
-    uint8_t* data = new uint8_t[dataLength];
+    auto data = new uint8_t[dataLength];
     i.Read(data, dataLength);
 
     if (dataLength > m_data.GetSize())
@@ -175,7 +175,7 @@ OptionField::Serialize(Buffer::Iterator start) const
 uint32_t
 OptionField::Deserialize(Buffer::Iterator start, uint32_t length)
 {
-    uint8_t* buf = new uint8_t[length];
+    auto buf = new uint8_t[length];
     start.Read(buf, length);
     m_optionData = Buffer();
     m_optionData.AddAtEnd(length);
@@ -613,9 +613,7 @@ Ipv6ExtensionLooseRoutingHeader::Print(std::ostream& os) const
        << " typeRouting = " << (uint32_t)GetTypeRouting()
        << " segmentsLeft = " << (uint32_t)GetSegmentsLeft() << " ";
 
-    for (std::vector<Ipv6Address>::const_iterator it = m_routersAddress.begin();
-         it != m_routersAddress.end();
-         it++)
+    for (auto it = m_routersAddress.begin(); it != m_routersAddress.end(); it++)
     {
         os << *it << " ";
     }
@@ -643,9 +641,7 @@ Ipv6ExtensionLooseRoutingHeader::Serialize(Buffer::Iterator start) const
     i.WriteU8(GetSegmentsLeft());
     i.WriteU32(0);
 
-    for (VectorIpv6Address_t::const_iterator it = m_routersAddress.begin();
-         it != m_routersAddress.end();
-         it++)
+    for (auto it = m_routersAddress.begin(); it != m_routersAddress.end(); it++)
     {
         it->Serialize(buff);
         i.Write(buff, 16);

@@ -425,8 +425,7 @@ CarrierAggregationTestCase::DoRun()
 
     bool testDownlinkShare = true;
 
-    for (std::map<uint8_t, uint32_t>::iterator itDownlink = m_ccDownlinkTraffic.begin();
-         itDownlink != m_ccDownlinkTraffic.end();
+    for (auto itDownlink = m_ccDownlinkTraffic.begin(); itDownlink != m_ccDownlinkTraffic.end();
          itDownlink++)
     {
         if (itDownlink == m_ccDownlinkTraffic.begin())
@@ -445,9 +444,7 @@ CarrierAggregationTestCase::DoRun()
 
     bool testUplinkShare = true;
 
-    for (std::map<uint8_t, uint32_t>::iterator itUplink = m_ccUplinkTraffic.begin();
-         itUplink != m_ccUplinkTraffic.end();
-         itUplink++)
+    for (auto itUplink = m_ccUplinkTraffic.begin(); itUplink != m_ccUplinkTraffic.end(); itUplink++)
     {
         if (itUplink == m_ccUplinkTraffic.begin())
         {

@@ -333,9 +333,7 @@ LteUeMac::DoReportBufferStatus(LteMacSapProvider::ReportBufferStatusParameters p
 {
     NS_LOG_FUNCTION(this << (uint32_t)params.lcid);
 
-    std::map<uint8_t, LteMacSapProvider::ReportBufferStatusParameters>::iterator it;
-
-    it = m_ulBsrReceived.find(params.lcid);
+    auto it = m_ulBsrReceived.find(params.lcid);
     if (it != m_ulBsrReceived.end())
     {
         // update entry
@@ -371,13 +369,11 @@ LteUeMac::SendReportBufferStatus()
     bsr.m_macCeType = MacCeListElement_s::BSR;
 
     // BSR is reported for each LCG
-    std::map<uint8_t, LteMacSapProvider::ReportBufferStatusParameters>::iterator it;
     std::vector<uint32_t> queue(4, 0); // one value per each of the 4 LCGs, initialized to 0
-    for (it = m_ulBsrReceived.begin(); it != m_ulBsrReceived.end(); it++)
+    for (auto it = m_ulBsrReceived.begin(); it != m_ulBsrReceived.end(); it++)
     {
         uint8_t lcid = it->first;
-        std::map<uint8_t, LcInfo>::iterator lcInfoMapIt;
-        lcInfoMapIt = m_lcInfoMap.find(lcid);
+        auto lcInfoMapIt = m_lcInfoMap.find(lcid);
         NS_ASSERT(lcInfoMapIt != m_lcInfoMap.end());
         NS_ASSERT_MSG((lcid != 0) ||
                           (((*it).second.txQueueSize == 0) && ((*it).second.retxQueueSize == 0) &&
@@ -462,10 +458,9 @@ LteUeMac::RecvRaResponse(BuildRarListElement_s raResponse)
     // trigger tx opportunity for Message 3 over LC 0
     // this is needed since Message 3's UL GRANT is in the RAR, not in UL-DCIs
     const uint8_t lc0Lcid = 0;
-    std::map<uint8_t, LcInfo>::iterator lc0InfoIt = m_lcInfoMap.find(lc0Lcid);
+    auto lc0InfoIt = m_lcInfoMap.find(lc0Lcid);
     NS_ASSERT(lc0InfoIt != m_lcInfoMap.end());
-    std::map<uint8_t, LteMacSapProvider::ReportBufferStatusParameters>::iterator lc0BsrIt =
-        m_ulBsrReceived.find(lc0Lcid);
+    auto lc0BsrIt = m_ulBsrReceived.find(lc0Lcid);
     if ((lc0BsrIt != m_ulBsrReceived.end()) && (lc0BsrIt->second.txQueueSize > 0))
     {
         NS_ASSERT_MSG(raResponse.m_grant.m_tbSize > lc0BsrIt->second.txQueueSize,
@@ -596,7 +591,7 @@ void
 LteUeMac::DoReset()
 {
     NS_LOG_FUNCTION(this);
-    std::map<uint8_t, LcInfo>::iterator it = m_lcInfoMap.begin();
+    auto it = m_lcInfoMap.begin();
     while (it != m_lcInfoMap.end())
     {
         // don't delete CCCH)
@@ -633,7 +628,7 @@ LteUeMac::DoReceivePhyPdu(Ptr<Packet> p)
     if (tag.GetRnti() == m_rnti)
     {
         // packet is for the current user
-        std::map<uint8_t, LcInfo>::const_iterator it = m_lcInfoMap.find(tag.GetLcid());
+        auto it = m_lcInfoMap.find(tag.GetLcid());
         if (it != m_lcInfoMap.end())
         {
             LteMacSapUser::ReceivePduParameters rxPduParams;
@@ -663,10 +658,9 @@ LteUeMac::DoReceiveLteControlMessage(Ptr<LteControlMessage> msg)
             Ptr<PacketBurst> pb = CreateObject<PacketBurst>();
             m_miUlHarqProcessesPacket.at(m_harqProcessId) = pb;
             // Retrieve data from RLC
-            std::map<uint8_t, LteMacSapProvider::ReportBufferStatusParameters>::iterator itBsr;
             uint16_t activeLcs = 0;
             uint32_t statusPduMinSize = 0;
-            for (itBsr = m_ulBsrReceived.begin(); itBsr != m_ulBsrReceived.end(); itBsr++)
+            for (auto itBsr = m_ulBsrReceived.begin(); itBsr != m_ulBsrReceived.end(); itBsr++)
             {
                 if (((*itBsr).second.statusPduSize > 0) || ((*itBsr).second.retxQueueSize > 0) ||
                     ((*itBsr).second.txQueueSize > 0))
@@ -688,7 +682,6 @@ LteUeMac::DoReceiveLteControlMessage(Ptr<LteControlMessage> msg)
                 NS_LOG_ERROR(this << " No active flows for this UL-DCI");
                 return;
             }
-            std::map<uint8_t, LcInfo>::iterator it;
             uint32_t bytesPerActiveLc = dci.m_tbSize / activeLcs;
             bool statusPduPriority = false;
             if ((statusPduMinSize != 0) && (bytesPerActiveLc < statusPduMinSize))
@@ -709,9 +702,9 @@ LteUeMac::DoReceiveLteControlMessage(Ptr<LteControlMessage> msg)
 
             LteMacSapUser::TxOpportunityParameters txOpParams;
 
-            for (it = m_lcInfoMap.begin(); it != m_lcInfoMap.end(); it++)
+            for (auto it = m_lcInfoMap.begin(); it != m_lcInfoMap.end(); it++)
             {
-                itBsr = m_ulBsrReceived.find((*it).first);
+                auto itBsr = m_ulBsrReceived.find((*it).first);
                 NS_LOG_DEBUG(this << " Processing LC " << (uint32_t)(*it).first
                                   << " bytesPerActiveLc " << bytesPerActiveLc);
                 if ((itBsr != m_ulBsrReceived.end()) &&
@@ -849,7 +842,7 @@ LteUeMac::DoReceiveLteControlMessage(Ptr<LteControlMessage> msg)
             // HARQ retransmission -> retrieve data from HARQ buffer
             NS_LOG_DEBUG(this << " UE MAC RETX HARQ " << (uint16_t)m_harqProcessId);
             Ptr<PacketBurst> pb = m_miUlHarqProcessesPacket.at(m_harqProcessId);
-            for (std::list<Ptr<Packet>>::const_iterator j = pb->Begin(); j != pb->End(); ++j)
+            for (auto j = pb->Begin(); j != pb->End(); ++j)
             {
                 Ptr<Packet> pkt = (*j)->Copy();
                 m_uePhySapProvider->SendMacPdu(pkt);
@@ -867,10 +860,7 @@ LteUeMac::DoReceiveLteControlMessage(Ptr<LteControlMessage> msg)
                               << (uint32_t)m_raRnti);
             if (raRnti == m_raRnti) // RAR corresponds to TX subframe of preamble
             {
-                for (std::list<RarLteControlMessage::Rar>::const_iterator it =
-                         rarMsg->RarListBegin();
-                     it != rarMsg->RarListEnd();
-                     ++it)
+                for (auto it = rarMsg->RarListBegin(); it != rarMsg->RarListEnd(); ++it)
                 {
                     if (it->rapId == m_raPreambleId) // RAR is for me
                     {

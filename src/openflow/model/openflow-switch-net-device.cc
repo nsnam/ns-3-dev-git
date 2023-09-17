@@ -137,7 +137,7 @@ OpenFlowSwitchNetDevice::DoDispose()
 {
     NS_LOG_FUNCTION_NOARGS();
 
-    for (Ports_t::iterator b = m_ports.begin(), e = m_ports.end(); b != e; b++)
+    for (auto b = m_ports.begin(), e = m_ports.end(); b != e; b++)
     {
         SendPortStatus(*b, OFPPR_DELETE);
         b->netdev = nullptr;

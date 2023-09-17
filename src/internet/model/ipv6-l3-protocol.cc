@@ -150,14 +150,14 @@ Ipv6L3Protocol::DoDispose()
     NS_LOG_FUNCTION(this);
 
     /* clear protocol and interface list */
-    for (L4List_t::iterator it = m_protocols.begin(); it != m_protocols.end(); ++it)
+    for (auto it = m_protocols.begin(); it != m_protocols.end(); ++it)
     {
         it->second = nullptr;
     }
     m_protocols.clear();
 
     /* remove interfaces */
-    for (Ipv6InterfaceList::iterator it = m_interfaces.begin(); it != m_interfaces.end(); ++it)
+    for (auto it = m_interfaces.begin(); it != m_interfaces.end(); ++it)
     {
         *it = nullptr;
     }
@@ -165,14 +165,14 @@ Ipv6L3Protocol::DoDispose()
     m_reverseInterfacesContainer.clear();
 
     /* remove raw sockets */
-    for (SocketList::iterator it = m_sockets.begin(); it != m_sockets.end(); ++it)
+    for (auto it = m_sockets.begin(); it != m_sockets.end(); ++it)
     {
         *it = nullptr;
     }
     m_sockets.clear();
 
     /* remove list of prefix */
-    for (Ipv6AutoconfiguredPrefixListI it = m_prefixes.begin(); it != m_prefixes.end(); ++it)
+    for (auto it = m_prefixes.begin(); it != m_prefixes.end(); ++it)
     {
         (*it)->StopValidTimer();
         (*it)->StopPreferredTimer();
@@ -263,8 +263,7 @@ Ipv6L3Protocol::GetInterfaceForAddress(Ipv6Address address) const
     NS_LOG_FUNCTION(this << address);
     int32_t index = 0;
 
-    for (Ipv6InterfaceList::const_iterator it = m_interfaces.begin(); it != m_interfaces.end();
-         it++)
+    for (auto it = m_interfaces.begin(); it != m_interfaces.end(); it++)
     {
         uint32_t j = 0;
         uint32_t max = (*it)->GetNAddresses();
@@ -287,8 +286,7 @@ Ipv6L3Protocol::GetInterfaceForPrefix(Ipv6Address address, Ipv6Prefix mask) cons
     NS_LOG_FUNCTION(this << address << mask);
     int32_t index = 0;
 
-    for (Ipv6InterfaceList::const_iterator it = m_interfaces.begin(); it != m_interfaces.end();
-         it++)
+    for (auto it = m_interfaces.begin(); it != m_interfaces.end(); it++)
     {
         uint32_t j = 0;
         for (j = 0; j < (*it)->GetNAddresses(); j++)
@@ -316,7 +314,7 @@ Ipv6L3Protocol::GetInterfaceForDevice(Ptr<const NetDevice> device) const
 {
     NS_LOG_FUNCTION(this << device);
 
-    Ipv6InterfaceReverseContainer::const_iterator iter = m_reverseInterfacesContainer.find(device);
+    auto iter = m_reverseInterfacesContainer.find(device);
     if (iter != m_reverseInterfacesContainer.end())
     {
         return (*iter).second;
@@ -361,7 +359,7 @@ Ipv6L3Protocol::AddAutoconfiguredAddress(uint32_t interface,
         address.SetOnLink(onLink);
 
         /* see if we have already the prefix */
-        for (Ipv6AutoconfiguredPrefixListI it = m_prefixes.begin(); it != m_prefixes.end(); ++it)
+        for (auto it = m_prefixes.begin(); it != m_prefixes.end(); ++it)
         {
             if ((*it)->GetInterface() == interface && (*it)->GetPrefix() == network &&
                 (*it)->GetMask() == mask)
@@ -421,7 +419,7 @@ Ipv6L3Protocol::RemoveAutoconfiguredAddress(uint32_t interface,
     }
 
     /* remove from list of autoconfigured address */
-    for (Ipv6AutoconfiguredPrefixListI it = m_prefixes.begin(); it != m_prefixes.end(); ++it)
+    for (auto it = m_prefixes.begin(); it != m_prefixes.end(); ++it)
     {
         if ((*it)->GetInterface() == interface && (*it)->GetPrefix() == network &&
             (*it)->GetMask() == mask)
@@ -721,8 +719,7 @@ Ipv6L3Protocol::SetIpForward(bool forward)
     NS_LOG_FUNCTION(this << forward);
     m_ipForward = forward;
 
-    for (Ipv6InterfaceList::const_iterator it = m_interfaces.begin(); it != m_interfaces.end();
-         it++)
+    for (auto it = m_interfaces.begin(); it != m_interfaces.end(); it++)
     {
         (*it)->SetForwarding(forward);
     }
@@ -823,7 +820,7 @@ Ipv6L3Protocol::Remove(Ptr<IpL4Protocol> protocol)
     NS_LOG_FUNCTION(this << protocol);
 
     L4ListKey_t key = std::make_pair(protocol->GetProtocolNumber(), -1);
-    L4List_t::iterator iter = m_protocols.find(key);
+    auto iter = m_protocols.find(key);
     if (iter == m_protocols.end())
     {
         NS_LOG_WARN("Trying to remove an non-existent default protocol "
@@ -841,7 +838,7 @@ Ipv6L3Protocol::Remove(Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex)
     NS_LOG_FUNCTION(this << protocol << interfaceIndex);
 
     L4ListKey_t key = std::make_pair(protocol->GetProtocolNumber(), interfaceIndex);
-    L4List_t::iterator iter = m_protocols.find(key);
+    auto iter = m_protocols.find(key);
     if (iter == m_protocols.end())
     {
         NS_LOG_WARN("Trying to remove an non-existent protocol "
@@ -867,21 +864,19 @@ Ipv6L3Protocol::GetProtocol(int protocolNumber, int32_t interfaceIndex) const
 {
     NS_LOG_FUNCTION(this << protocolNumber << interfaceIndex);
 
-    L4ListKey_t key;
-    L4List_t::const_iterator i;
     if (interfaceIndex >= 0)
     {
         // try the interface-specific protocol.
-        key = std::make_pair(protocolNumber, interfaceIndex);
-        i = m_protocols.find(key);
+        auto key = std::make_pair(protocolNumber, interfaceIndex);
+        auto i = m_protocols.find(key);
         if (i != m_protocols.end())
         {
             return i->second;
         }
     }
     // try the generic protocol.
-    key = std::make_pair(protocolNumber, -1);
-    i = m_protocols.find(key);
+    auto key = std::make_pair(protocolNumber, -1);
+    auto i = m_protocols.find(key);
     if (i != m_protocols.end())
     {
         return i->second;
@@ -905,7 +900,7 @@ Ipv6L3Protocol::DeleteRawSocket(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
 
-    for (SocketList::iterator it = m_sockets.begin(); it != m_sockets.end(); ++it)
+    for (auto it = m_sockets.begin(); it != m_sockets.end(); ++it)
     {
         if ((*it) == socket)
         {
@@ -1089,8 +1084,7 @@ Ipv6L3Protocol::Receive(Ptr<NetDevice> device,
             // addresses. In doubt, update all of them. Note: it's a confirmed behavior for Linux
             // routers.
             std::list<NdiscCache::Entry*> entryList = ndiscCache->LookupInverse(from);
-            std::list<NdiscCache::Entry*>::iterator iter;
-            for (iter = entryList.begin(); iter != entryList.end(); iter++)
+            for (auto iter = entryList.begin(); iter != entryList.end(); iter++)
             {
                 (*iter)->UpdateReachableTimer();
             }
@@ -1098,7 +1092,7 @@ Ipv6L3Protocol::Receive(Ptr<NetDevice> device,
     }
 
     /* forward up to IPv6 raw sockets */
-    for (SocketList::iterator it = m_sockets.begin(); it != m_sockets.end(); ++it)
+    for (auto it = m_sockets.begin(); it != m_sockets.end(); ++it)
     {
         Ptr<Ipv6RawSocketImpl> socket = *it;
         socket->ForwardUp(packet, hdr, device);
@@ -1301,10 +1295,7 @@ Ipv6L3Protocol::SendRealOut(Ptr<Ipv6Route> route, Ptr<Packet> packet, const Ipv6
             {
                 std::ostringstream oss;
 
-                for (std::list<Ipv6ExtensionFragment::Ipv6PayloadHeaderPair>::const_iterator it =
-                         fragments.begin();
-                     it != fragments.end();
-                     it++)
+                for (auto it = fragments.begin(); it != fragments.end(); it++)
                 {
                     CallTxTrace(it->second, it->first, this, interface);
                     outInterface->Send(it->first, it->second, route->GetGateway());
@@ -1332,10 +1323,7 @@ Ipv6L3Protocol::SendRealOut(Ptr<Ipv6Route> route, Ptr<Packet> packet, const Ipv6
             {
                 std::ostringstream oss;
 
-                for (std::list<Ipv6ExtensionFragment::Ipv6PayloadHeaderPair>::const_iterator it =
-                         fragments.begin();
-                     it != fragments.end();
-                     it++)
+                for (auto it = fragments.begin(); it != fragments.end(); it++)
                 {
                     CallTxTrace(it->second, it->first, this, interface);
                     outInterface->Send(it->first, it->second, ipHeader.GetDestination());
@@ -1458,9 +1446,8 @@ Ipv6L3Protocol::IpMulticastForward(Ptr<const NetDevice> idev,
     NS_LOG_LOGIC("Multicast forwarding logic for node: " << m_node->GetId());
 
     std::map<uint32_t, uint32_t> ttlMap = mrtentry->GetOutputTtlMap();
-    std::map<uint32_t, uint32_t>::iterator mapIter;
 
-    for (mapIter = ttlMap.begin(); mapIter != ttlMap.end(); mapIter++)
+    for (auto mapIter = ttlMap.begin(); mapIter != ttlMap.end(); mapIter++)
     {
         uint32_t interfaceId = mapIter->first;
         // uint32_t outputTtl = mapIter->second;  // Unused for now
@@ -1788,7 +1775,7 @@ Ipv6L3Protocol::IsRegisteredMulticastAddress(Ipv6Address address, uint32_t inter
     NS_LOG_FUNCTION(address << interface);
 
     Ipv6RegisteredMulticastAddressKey_t key = std::make_pair(address, interface);
-    Ipv6RegisteredMulticastAddressCIter_t iter = m_multicastAddresses.find(key);
+    auto iter = m_multicastAddresses.find(key);
 
     return iter != m_multicastAddresses.end();
 }
@@ -1798,8 +1785,7 @@ Ipv6L3Protocol::IsRegisteredMulticastAddress(Ipv6Address address) const
 {
     NS_LOG_FUNCTION(address);
 
-    Ipv6RegisteredMulticastAddressNoInterfaceCIter_t iter =
-        m_multicastAddressesNoInterface.find(address);
+    auto iter = m_multicastAddressesNoInterface.find(address);
 
     return iter != m_multicastAddressesNoInterface.end();
 }
@@ -1837,9 +1823,7 @@ Ipv6L3Protocol::ReachabilityHint(uint32_t ipInterfaceIndex, Ipv6Address address)
         // we just confirm the entry's MAC address to get the waiting packets (if any)
         std::list<NdiscCache::Ipv6PayloadHeaderPair> waiting =
             entry->MarkReachable(entry->GetMacAddress());
-        for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin();
-             it != waiting.end();
-             it++)
+        for (auto it = waiting.begin(); it != waiting.end(); it++)
         {
             ndiscCache->GetInterface()->Send(it->first, it->second, it->second.GetSource());
         }

@@ -317,11 +317,11 @@ struct RerrHeaderTest : public TestCase
         RerrHeader h;
         h.SetNoDelete(true);
         NS_TEST_EXPECT_MSG_EQ(h.GetNoDelete(), true, "trivial");
-        Ipv4Address dst = Ipv4Address("1.2.3.4");
+        Ipv4Address dst("1.2.3.4");
         NS_TEST_EXPECT_MSG_EQ(h.AddUnDestination(dst, 12), true, "trivial");
         NS_TEST_EXPECT_MSG_EQ(h.GetDestCount(), 1, "trivial");
         NS_TEST_EXPECT_MSG_EQ(h.AddUnDestination(dst, 13), true, "trivial");
-        Ipv4Address dst2 = Ipv4Address("4.3.2.1");
+        Ipv4Address dst2("4.3.2.1");
         NS_TEST_EXPECT_MSG_EQ(h.AddUnDestination(dst2, 12), true, "trivial");
         NS_TEST_EXPECT_MSG_EQ(h.GetDestCount(), 2, "trivial");
 

@@ -210,7 +210,7 @@ Ping6::Send()
         size = 4;
     }
 
-    uint8_t* data = new uint8_t[size];
+    auto data = new uint8_t[size];
     memset(data, 0, size);
     data[0] = 0xDE;
     data[1] = 0xAD;

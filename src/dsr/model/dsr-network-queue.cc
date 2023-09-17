@@ -107,9 +107,7 @@ bool
 DsrNetworkQueue::FindPacketWithNexthop(Ipv4Address nextHop, DsrNetworkQueueEntry& entry)
 {
     Cleanup();
-    for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin();
-         i != m_dsrNetworkQueue.end();
-         ++i)
+    for (auto i = m_dsrNetworkQueue.begin(); i != m_dsrNetworkQueue.end(); ++i)
     {
         if (i->GetNextHopAddress() == nextHop)
         {
@@ -125,9 +123,7 @@ bool
 DsrNetworkQueue::Find(Ipv4Address nextHop)
 {
     Cleanup();
-    for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin();
-         i != m_dsrNetworkQueue.end();
-         ++i)
+    for (auto i = m_dsrNetworkQueue.begin(); i != m_dsrNetworkQueue.end(); ++i)
     {
         if (i->GetNextHopAddress() == nextHop)
         {
@@ -158,7 +154,7 @@ DsrNetworkQueue::Dequeue(DsrNetworkQueueEntry& entry)
 {
     NS_LOG_FUNCTION(this);
     Cleanup();
-    std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin();
+    auto i = m_dsrNetworkQueue.begin();
     if (i == m_dsrNetworkQueue.end())
     {
         // no elements in array
@@ -182,8 +178,7 @@ DsrNetworkQueue::Cleanup()
 
     Time now = Simulator::Now();
     uint32_t n = 0;
-    for (std::vector<DsrNetworkQueueEntry>::iterator i = m_dsrNetworkQueue.begin();
-         i != m_dsrNetworkQueue.end();)
+    for (auto i = m_dsrNetworkQueue.begin(); i != m_dsrNetworkQueue.end();)
     {
         if (i->GetInsertedTimeStamp() + m_maxDelay > now)
         {

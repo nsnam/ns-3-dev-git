@@ -81,8 +81,7 @@ void
 NoOpComponentCarrierManager::DoTransmitPdu(LteMacSapProvider::TransmitPduParameters params)
 {
     NS_LOG_FUNCTION(this);
-    std::map<uint8_t, LteMacSapProvider*>::iterator it =
-        m_macSapProvidersMap.find(params.componentCarrierId);
+    auto it = m_macSapProvidersMap.find(params.componentCarrierId);
     NS_ASSERT_MSG(it != m_macSapProvidersMap.end(),
                   "could not find Sap for ComponentCarrier " << params.componentCarrierId);
     // with this algorithm all traffic is on Primary Carrier
@@ -95,8 +94,7 @@ NoOpComponentCarrierManager::DoReportBufferStatus(
 {
     NS_LOG_FUNCTION(this);
     auto ueManager = m_ccmRrcSapUser->GetUeManager(params.rnti);
-    std::map<uint8_t, LteMacSapProvider*>::iterator it =
-        m_macSapProvidersMap.find(ueManager->GetComponentCarrierId());
+    auto it = m_macSapProvidersMap.find(ueManager->GetComponentCarrierId());
     NS_ASSERT_MSG(it != m_macSapProvidersMap.end(), "could not find Sap for ComponentCarrier ");
     it->second->ReportBufferStatus(params);
 }
@@ -138,7 +136,6 @@ void
 NoOpComponentCarrierManager::DoAddUe(uint16_t rnti, uint8_t state)
 {
     NS_LOG_FUNCTION(this << rnti << (uint16_t)state);
-    std::map<uint16_t, uint8_t>::iterator eccIt; // m_enabledComponentCarrier iterator
     auto ueInfoIt = m_ueInfo.find(rnti);
     if (ueInfoIt == m_ueInfo.end())
     {

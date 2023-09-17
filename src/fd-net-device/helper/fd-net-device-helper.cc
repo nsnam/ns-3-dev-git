@@ -199,7 +199,7 @@ FdNetDeviceHelper::Install(const NodeContainer& c) const
 {
     NetDeviceContainer devs;
 
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); i++)
+    for (auto i = c.Begin(); i != c.End(); i++)
     {
         devs.Add(InstallPriv(*i));
     }

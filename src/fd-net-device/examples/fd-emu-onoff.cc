@@ -200,7 +200,7 @@ main(int argc, char* argv[])
 #ifdef HAVE_PACKET_H
     if (emuMode == "raw")
     {
-        EmuFdNetDeviceHelper* raw = new EmuFdNetDeviceHelper;
+        auto raw = new EmuFdNetDeviceHelper;
         raw->SetDeviceName(deviceName);
         helper = raw;
     }

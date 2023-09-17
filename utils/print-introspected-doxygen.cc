@@ -456,8 +456,7 @@ StaticInformation::DoGather(TypeId tid)
     for (uint32_t i = 0; i < tid.GetAttributeN(); ++i)
     {
         struct TypeId::AttributeInformation info = tid.GetAttribute(i);
-        const PointerChecker* ptrChecker =
-            dynamic_cast<const PointerChecker*>(PeekPointer(info.checker));
+        const auto ptrChecker = dynamic_cast<const PointerChecker*>(PeekPointer(info.checker));
         if (ptrChecker != nullptr)
         {
             TypeId pointee = ptrChecker->GetPointeeTypeId();
@@ -482,7 +481,7 @@ StaticInformation::DoGather(TypeId tid)
             continue;
         }
         // attempt to cast to an object vector.
-        const ObjectPtrContainerChecker* vectorChecker =
+        const auto vectorChecker =
             dynamic_cast<const ObjectPtrContainerChecker*>(PeekPointer(info.checker));
         if (vectorChecker != nullptr)
         {
@@ -723,7 +722,7 @@ PrintAttributesTid(std::ostream& os, const TypeId tid)
                 // Indirect cases to handle
                 if (valType == "ns3::PointerValue")
                 {
-                    const PointerChecker* ptrChecker =
+                    const auto ptrChecker =
                         dynamic_cast<const PointerChecker*>(PeekPointer(info.checker));
                     if (ptrChecker != nullptr)
                     {
@@ -734,7 +733,7 @@ PrintAttributesTid(std::ostream& os, const TypeId tid)
                 }
                 else if (valType == "ns3::ObjectPtrContainerValue")
                 {
-                    const ObjectPtrContainerChecker* ptrChecker =
+                    const auto ptrChecker =
                         dynamic_cast<const ObjectPtrContainerChecker*>(PeekPointer(info.checker));
                     if (ptrChecker != nullptr)
                     {
@@ -1071,7 +1070,7 @@ PrintAllGlobals(std::ostream& os)
        << "See ns3::GlobalValue for how to set these." << std::endl;
 
     os << listStart << std::endl;
-    for (GlobalValue::Iterator i = GlobalValue::Begin(); i != GlobalValue::End(); ++i)
+    for (auto i = GlobalValue::Begin(); i != GlobalValue::End(); ++i)
     {
         StringValue val;
         (*i)->GetValue(val);
@@ -1127,7 +1126,6 @@ PrintAllLogComponents(std::ostream& os)
     os << tLeft << ":" << std::string(widthL - 1, '-') << tMid << ":"
        << std::string(widthR - 1, '-') << tRight << std::endl;
 
-    LogComponent::ComponentList::const_iterator it;
     for (const auto& it : (*logs))
     {
         std::string file = it.second->File();

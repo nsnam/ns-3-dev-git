@@ -747,7 +747,7 @@ NakagamiPropagationLossModel::DoCalcRxPower(double txPowerDbm,
 
     // switch between Erlang- and Gamma distributions: this is only for
     // speed. (Gamma is equal to Erlang for any positive integer m.)
-    unsigned int int_m = static_cast<unsigned int>(std::floor(m));
+    auto int_m = static_cast<unsigned int>(std::floor(m));
 
     if (int_m == m)
     {
@@ -869,7 +869,7 @@ MatrixPropagationLossModel::SetLoss(Ptr<MobilityModel> ma,
     NS_ASSERT(ma && mb);
 
     MobilityPair p = std::make_pair(ma, mb);
-    std::map<MobilityPair, double>::iterator i = m_loss.find(p);
+    auto i = m_loss.find(p);
 
     if (i == m_loss.end())
     {
@@ -891,7 +891,7 @@ MatrixPropagationLossModel::DoCalcRxPower(double txPowerDbm,
                                           Ptr<MobilityModel> a,
                                           Ptr<MobilityModel> b) const
 {
-    std::map<MobilityPair, double>::const_iterator i = m_loss.find(std::make_pair(a, b));
+    auto i = m_loss.find(std::make_pair(a, b));
 
     if (i != m_loss.end())
     {

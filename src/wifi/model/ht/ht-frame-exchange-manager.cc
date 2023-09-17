@@ -643,7 +643,7 @@ HtFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
 
     if (acknowledgment->method == WifiAcknowledgment::BLOCK_ACK)
     {
-        WifiBlockAck* blockAcknowledgment = static_cast<WifiBlockAck*>(acknowledgment);
+        auto blockAcknowledgment = static_cast<WifiBlockAck*>(acknowledgment);
         Time baTxDuration = m_phy->CalculateTxDuration(GetBlockAckSize(blockAcknowledgment->baType),
                                                        blockAcknowledgment->blockAckTxVector,
                                                        m_phy->GetPhyBand());
@@ -651,7 +651,7 @@ HtFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
     }
     else if (acknowledgment->method == WifiAcknowledgment::BAR_BLOCK_ACK)
     {
-        WifiBarBlockAck* barBlockAcknowledgment = static_cast<WifiBarBlockAck*>(acknowledgment);
+        auto barBlockAcknowledgment = static_cast<WifiBarBlockAck*>(acknowledgment);
         Time barTxDuration =
             m_phy->CalculateTxDuration(GetBlockAckRequestSize(barBlockAcknowledgment->barType),
                                        barBlockAcknowledgment->blockAckReqTxVector,
@@ -1007,8 +1007,7 @@ HtFrameExchangeManager::SendPsdu()
         // the timeout duration is "aSIFSTime + aSlotTime + aRxPHYStartDelay, starting
         // at the PHY-TXEND.confirm primitive" (section 10.3.2.9 or 10.22.2.2 of 802.11-2016).
         // aRxPHYStartDelay equals the time to transmit the PHY header.
-        WifiBlockAck* blockAcknowledgment =
-            static_cast<WifiBlockAck*>(m_txParams.m_acknowledgment.get());
+        auto blockAcknowledgment = static_cast<WifiBlockAck*>(m_txParams.m_acknowledgment.get());
 
         Time timeout =
             txDuration + m_phy->GetSifs() + m_phy->GetSlot() +

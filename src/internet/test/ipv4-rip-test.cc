@@ -558,7 +558,7 @@ Ipv4RipSplitHorizonStrategyTest::ReceivePktProbe(Ptr<Socket> socket)
         std::list<RipRte> rtes = hdr.GetRteList();
 
         // validate the RTEs before processing
-        for (std::list<RipRte>::iterator iter = rtes.begin(); iter != rtes.end(); iter++)
+        for (auto iter = rtes.begin(); iter != rtes.end(); iter++)
         {
             if (iter->GetPrefix() == "10.0.1.0")
             {

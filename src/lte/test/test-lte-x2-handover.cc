@@ -276,7 +276,7 @@ LteX2HandoverTestCase::DoRun()
     NetDeviceContainer enbDevices;
     enbDevices = m_lteHelper->InstallEnbDevice(enbNodes);
     stream += m_lteHelper->AssignStreams(enbDevices, stream);
-    for (NetDeviceContainer::Iterator it = enbDevices.Begin(); it != enbDevices.End(); ++it)
+    for (auto it = enbDevices.Begin(); it != enbDevices.End(); ++it)
     {
         Ptr<LteEnbRrc> enbRrc = (*it)->GetObject<LteEnbNetDevice>()->GetRrc();
         enbRrc->SetAttribute("AdmitHandoverRequest", BooleanValue(m_admitHo));
@@ -440,7 +440,7 @@ LteX2HandoverTestCase::DoRun()
 
     // check initial RRC connection
     const Time maxRrcConnectionEstablishmentDuration = Seconds(0.080);
-    for (NetDeviceContainer::Iterator it = ueDevices.Begin(); it != ueDevices.End(); ++it)
+    for (auto it = ueDevices.Begin(); it != ueDevices.End(); ++it)
     {
         Simulator::Schedule(maxRrcConnectionEstablishmentDuration,
                             &LteX2HandoverTestCase::CheckConnected,
@@ -452,8 +452,7 @@ LteX2HandoverTestCase::DoRun()
     // schedule handover events and corresponding checks
 
     Time stopTime = Seconds(0);
-    for (std::list<HandoverEvent>::iterator hoEventIt = m_handoverEventList.begin();
-         hoEventIt != m_handoverEventList.end();
+    for (auto hoEventIt = m_handoverEventList.begin(); hoEventIt != m_handoverEventList.end();
          ++hoEventIt)
     {
         // Teleport the UE between both eNBs just before the handover starts
@@ -569,8 +568,8 @@ LteX2HandoverTestCase::CheckConnected(Ptr<NetDevice> ueDevice, Ptr<NetDevice> en
                           m_nDedicatedBearers + 1,
                           "wrong num bearers at UE");
 
-    ObjectMapValue::Iterator enbBearerIt = enbDataRadioBearerMapValue.Begin();
-    ObjectMapValue::Iterator ueBearerIt = ueDataRadioBearerMapValue.Begin();
+    auto enbBearerIt = enbDataRadioBearerMapValue.Begin();
+    auto ueBearerIt = ueDataRadioBearerMapValue.Begin();
     while (enbBearerIt != enbDataRadioBearerMapValue.End() &&
            ueBearerIt != ueDataRadioBearerMapValue.End())
     {
@@ -621,7 +620,7 @@ LteX2HandoverTestCase::TeleportUeNearTargetEnb(Ptr<Node> ueNode, Ptr<Node> enbNo
 void
 LteX2HandoverTestCase::SaveStatsAfterHandover(uint32_t ueIndex)
 {
-    for (std::list<BearerData>::iterator it = m_ueDataVector.at(ueIndex).bearerDataList.begin();
+    for (auto it = m_ueDataVector.at(ueIndex).bearerDataList.begin();
          it != m_ueDataVector.at(ueIndex).bearerDataList.end();
          ++it)
     {
@@ -634,7 +633,7 @@ void
 LteX2HandoverTestCase::CheckStatsAWhileAfterHandover(uint32_t ueIndex)
 {
     uint32_t b = 1;
-    for (std::list<BearerData>::iterator it = m_ueDataVector.at(ueIndex).bearerDataList.begin();
+    for (auto it = m_ueDataVector.at(ueIndex).bearerDataList.begin();
          it != m_ueDataVector.at(ueIndex).bearerDataList.end();
          ++it)
     {
@@ -761,9 +760,7 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite()
         "ns3::PfFfMacScheduler",
     };
 
-    for (std::vector<std::string>::iterator schedIt = schedulers.begin();
-         schedIt != schedulers.end();
-         ++schedIt)
+    for (auto schedIt = schedulers.begin(); schedIt != schedulers.end(); ++schedIt)
     {
         for (auto useIdealRrc : {true, false})
         {

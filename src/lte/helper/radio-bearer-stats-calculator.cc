@@ -189,7 +189,7 @@ RadioBearerStatsCalculator::UlRxPdu(uint16_t cellId,
         m_ulRxPackets[p]++;
         m_ulRxData[p] += packetSize;
 
-        Uint64StatsMap::iterator it = m_ulDelay.find(p);
+        auto it = m_ulDelay.find(p);
         if (it == m_ulDelay.end())
         {
             NS_LOG_DEBUG(this << " Creating UL stats calculators for IMSI " << p.m_imsi
@@ -220,7 +220,7 @@ RadioBearerStatsCalculator::DlRxPdu(uint16_t cellId,
         m_dlRxPackets[p]++;
         m_dlRxData[p] += packetSize;
 
-        Uint64StatsMap::iterator it = m_dlDelay.find(p);
+        auto it = m_dlDelay.find(p);
         if (it == m_dlDelay.end())
         {
             NS_LOG_DEBUG(this << " Creating DL stats calculators for IMSI " << p.m_imsi
@@ -298,7 +298,7 @@ RadioBearerStatsCalculator::WriteUlResults(std::ofstream& outFile)
 
     // Get the unique IMSI/LCID pairs list
     std::vector<ImsiLcidPair_t> pairVector;
-    for (Uint32Map::iterator it = m_ulTxPackets.begin(); it != m_ulTxPackets.end(); ++it)
+    for (auto it = m_ulTxPackets.begin(); it != m_ulTxPackets.end(); ++it)
     {
         if (find(pairVector.begin(), pairVector.end(), (*it).first) == pairVector.end())
         {
@@ -306,7 +306,7 @@ RadioBearerStatsCalculator::WriteUlResults(std::ofstream& outFile)
         }
     }
 
-    for (Uint32Map::iterator it = m_ulRxPackets.begin(); it != m_ulRxPackets.end(); ++it)
+    for (auto it = m_ulRxPackets.begin(); it != m_ulRxPackets.end(); ++it)
     {
         if (find(pairVector.begin(), pairVector.end(), (*it).first) == pairVector.end())
         {
@@ -315,11 +315,10 @@ RadioBearerStatsCalculator::WriteUlResults(std::ofstream& outFile)
     }
 
     Time endTime = m_startTime + m_epochDuration;
-    for (std::vector<ImsiLcidPair_t>::iterator it = pairVector.begin(); it != pairVector.end();
-         ++it)
+    for (auto it = pairVector.begin(); it != pairVector.end(); ++it)
     {
         ImsiLcidPair_t p = *it;
-        FlowIdMap::const_iterator flowIdIt = m_flowId.find(p);
+        auto flowIdIt = m_flowId.find(p);
         NS_ASSERT_MSG(flowIdIt != m_flowId.end(),
                       "FlowId (imsi " << p.m_imsi << " lcid " << (uint32_t)p.m_lcId
                                       << ") is missing");
@@ -337,12 +336,12 @@ RadioBearerStatsCalculator::WriteUlResults(std::ofstream& outFile)
         outFile << GetUlRxPackets(p.m_imsi, p.m_lcId) << "\t";
         outFile << GetUlRxData(p.m_imsi, p.m_lcId) << "\t";
         std::vector<double> stats = GetUlDelayStats(p.m_imsi, p.m_lcId);
-        for (std::vector<double>::iterator it = stats.begin(); it != stats.end(); ++it)
+        for (auto it = stats.begin(); it != stats.end(); ++it)
         {
             outFile << (*it) * 1e-9 << "\t";
         }
         stats = GetUlPduSizeStats(p.m_imsi, p.m_lcId);
-        for (std::vector<double>::iterator it = stats.begin(); it != stats.end(); ++it)
+        for (auto it = stats.begin(); it != stats.end(); ++it)
         {
             outFile << (*it) << "\t";
         }
@@ -359,7 +358,7 @@ RadioBearerStatsCalculator::WriteDlResults(std::ofstream& outFile)
 
     // Get the unique IMSI/LCID pairs list
     std::vector<ImsiLcidPair_t> pairVector;
-    for (Uint32Map::iterator it = m_dlTxPackets.begin(); it != m_dlTxPackets.end(); ++it)
+    for (auto it = m_dlTxPackets.begin(); it != m_dlTxPackets.end(); ++it)
     {
         if (find(pairVector.begin(), pairVector.end(), (*it).first) == pairVector.end())
         {
@@ -367,7 +366,7 @@ RadioBearerStatsCalculator::WriteDlResults(std::ofstream& outFile)
         }
     }
 
-    for (Uint32Map::iterator it = m_dlRxPackets.begin(); it != m_dlRxPackets.end(); ++it)
+    for (auto it = m_dlRxPackets.begin(); it != m_dlRxPackets.end(); ++it)
     {
         if (find(pairVector.begin(), pairVector.end(), (*it).first) == pairVector.end())
         {
@@ -376,11 +375,10 @@ RadioBearerStatsCalculator::WriteDlResults(std::ofstream& outFile)
     }
 
     Time endTime = m_startTime + m_epochDuration;
-    for (std::vector<ImsiLcidPair_t>::iterator pair = pairVector.begin(); pair != pairVector.end();
-         ++pair)
+    for (auto pair = pairVector.begin(); pair != pairVector.end(); ++pair)
     {
         ImsiLcidPair_t p = *pair;
-        FlowIdMap::const_iterator flowIdIt = m_flowId.find(p);
+        auto flowIdIt = m_flowId.find(p);
         NS_ASSERT_MSG(flowIdIt != m_flowId.end(),
                       "FlowId (imsi " << p.m_imsi << " lcid " << (uint32_t)p.m_lcId
                                       << ") is missing");
@@ -398,12 +396,12 @@ RadioBearerStatsCalculator::WriteDlResults(std::ofstream& outFile)
         outFile << GetDlRxPackets(p.m_imsi, p.m_lcId) << "\t";
         outFile << GetDlRxData(p.m_imsi, p.m_lcId) << "\t";
         std::vector<double> stats = GetDlDelayStats(p.m_imsi, p.m_lcId);
-        for (std::vector<double>::iterator it = stats.begin(); it != stats.end(); ++it)
+        for (auto it = stats.begin(); it != stats.end(); ++it)
         {
             outFile << (*it) * 1e-9 << "\t";
         }
         stats = GetDlPduSizeStats(p.m_imsi, p.m_lcId);
-        for (std::vector<double>::iterator it = stats.begin(); it != stats.end(); ++it)
+        for (auto it = stats.begin(); it != stats.end(); ++it)
         {
             outFile << (*it) << "\t";
         }
@@ -492,7 +490,7 @@ RadioBearerStatsCalculator::GetUlDelay(uint64_t imsi, uint8_t lcid)
 {
     NS_LOG_FUNCTION(this << imsi << (uint16_t)lcid);
     ImsiLcidPair_t p(imsi, lcid);
-    Uint64StatsMap::iterator it = m_ulDelay.find(p);
+    auto it = m_ulDelay.find(p);
     if (it == m_ulDelay.end())
     {
         NS_LOG_ERROR("UL delay for " << imsi << " - " << (uint16_t)lcid << " not found");
@@ -507,7 +505,7 @@ RadioBearerStatsCalculator::GetUlDelayStats(uint64_t imsi, uint8_t lcid)
     NS_LOG_FUNCTION(this << imsi << (uint16_t)lcid);
     ImsiLcidPair_t p(imsi, lcid);
     std::vector<double> stats;
-    Uint64StatsMap::iterator it = m_ulDelay.find(p);
+    auto it = m_ulDelay.find(p);
     if (it == m_ulDelay.end())
     {
         stats.push_back(0.0);
@@ -529,7 +527,7 @@ RadioBearerStatsCalculator::GetUlPduSizeStats(uint64_t imsi, uint8_t lcid)
     NS_LOG_FUNCTION(this << imsi << (uint16_t)lcid);
     ImsiLcidPair_t p(imsi, lcid);
     std::vector<double> stats;
-    Uint32StatsMap::iterator it = m_ulPduSize.find(p);
+    auto it = m_ulPduSize.find(p);
     if (it == m_ulPduSize.end())
     {
         stats.push_back(0.0);
@@ -598,7 +596,7 @@ RadioBearerStatsCalculator::GetDlDelay(uint64_t imsi, uint8_t lcid)
 {
     NS_LOG_FUNCTION(this << imsi << (uint16_t)lcid);
     ImsiLcidPair_t p(imsi, lcid);
-    Uint64StatsMap::iterator it = m_dlDelay.find(p);
+    auto it = m_dlDelay.find(p);
     if (it == m_dlDelay.end())
     {
         NS_LOG_ERROR("DL delay for " << imsi << " not found");
@@ -613,7 +611,7 @@ RadioBearerStatsCalculator::GetDlDelayStats(uint64_t imsi, uint8_t lcid)
     NS_LOG_FUNCTION(this << imsi << (uint16_t)lcid);
     ImsiLcidPair_t p(imsi, lcid);
     std::vector<double> stats;
-    Uint64StatsMap::iterator it = m_dlDelay.find(p);
+    auto it = m_dlDelay.find(p);
     if (it == m_dlDelay.end())
     {
         stats.push_back(0.0);
@@ -635,7 +633,7 @@ RadioBearerStatsCalculator::GetDlPduSizeStats(uint64_t imsi, uint8_t lcid)
     NS_LOG_FUNCTION(this << imsi << (uint16_t)lcid);
     ImsiLcidPair_t p(imsi, lcid);
     std::vector<double> stats;
-    Uint32StatsMap::iterator it = m_dlPduSize.find(p);
+    auto it = m_dlPduSize.find(p);
     if (it == m_dlPduSize.end())
     {
         stats.push_back(0.0);

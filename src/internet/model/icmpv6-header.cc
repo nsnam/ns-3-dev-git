@@ -1192,7 +1192,7 @@ Icmpv6DestinationUnreachable::Serialize(Buffer::Iterator start) const
     iter.WriteU32(0);
 
     uint32_t size = m_packet->GetSize();
-    uint8_t* buf = new uint8_t[size];
+    auto buf = new uint8_t[size];
     m_packet->CopyData(buf, size);
     iter.Write(buf, size);
     delete[] buf;
@@ -1308,7 +1308,7 @@ Icmpv6TooBig::Serialize(Buffer::Iterator start) const
     iter.WriteHtonU32(GetMtu());
 
     uint32_t size = m_packet->GetSize();
-    uint8_t* buf = new uint8_t[size];
+    auto buf = new uint8_t[size];
     m_packet->CopyData(buf, size);
     iter.Write(buf, size);
     delete[] buf;
@@ -1410,7 +1410,7 @@ Icmpv6TimeExceeded::Serialize(Buffer::Iterator start) const
     iter.WriteU32(0);
 
     uint32_t size = m_packet->GetSize();
-    uint8_t* buf = new uint8_t[size];
+    auto buf = new uint8_t[size];
     m_packet->CopyData(buf, size);
     iter.Write(buf, size);
     delete[] buf;
@@ -1527,7 +1527,7 @@ Icmpv6ParameterError::Serialize(Buffer::Iterator start) const
     iter.WriteHtonU32(GetPtr());
 
     uint32_t size = m_packet->GetSize();
-    uint8_t* buf = new uint8_t[size];
+    auto buf = new uint8_t[size];
     m_packet->CopyData(buf, size);
     iter.Write(buf, size);
     delete[] buf;
@@ -2128,7 +2128,7 @@ Icmpv6OptionRedirected::Serialize(Buffer::Iterator start) const
     i.WriteU32(0);
 
     uint32_t size = m_packet->GetSize();
-    uint8_t* buf = new uint8_t[size];
+    auto buf = new uint8_t[size];
     m_packet->CopyData(buf, size);
     i.Write(buf, size);
     delete[] buf;
@@ -2147,7 +2147,7 @@ Icmpv6OptionRedirected::Deserialize(Buffer::Iterator start)
     i.ReadU32();
 
     uint32_t len2 = (GetLength() - 1) * 8;
-    uint8_t* buff = new uint8_t[len2];
+    auto buff = new uint8_t[len2];
     i.Read(buff, len2);
     m_packet = Create<Packet>(buff, len2);
     delete[] buff;

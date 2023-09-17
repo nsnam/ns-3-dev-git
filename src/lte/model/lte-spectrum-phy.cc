@@ -911,11 +911,10 @@ LteSpectrumPhy::AddExpectedTb(uint16_t rnti,
     TbId_t tbId;
     tbId.m_rnti = rnti;
     tbId.m_layer = layer;
-    expectedTbs_t::iterator it;
-    it = m_expectedTbs.find(tbId);
+    auto it = m_expectedTbs.find(tbId);
     if (it != m_expectedTbs.end())
     {
-        // might be a TB of an unreceived packet (due to high progpalosses)
+        // might be a TB of an unreceived packet (due to high propagation losses)
         m_expectedTbs.erase(it);
     }
     // insert new entry
@@ -933,8 +932,7 @@ LteSpectrumPhy::RemoveExpectedTb(uint16_t rnti)
     for (uint8_t i = 0; i < 2; i++)
     {
         tbId.m_layer = i;
-        expectedTbs_t::iterator it;
-        it = m_expectedTbs.find(tbId);
+        auto it = m_expectedTbs.find(tbId);
         if (it != m_expectedTbs.end())
         {
             m_expectedTbs.erase(it);
@@ -955,7 +953,7 @@ LteSpectrumPhy::EndRxData()
     m_interferenceData->EndRx();
     NS_LOG_DEBUG(this << " No. of burts " << m_rxPacketBurstList.size());
     NS_LOG_DEBUG(this << " Expected TBs " << m_expectedTbs.size());
-    expectedTbs_t::iterator itTb = m_expectedTbs.begin();
+    auto itTb = m_expectedTbs.begin();
 
     // apply transmission mode gain
     NS_LOG_DEBUG(this << " txMode " << (uint16_t)m_transmissionMode << " gain "
@@ -1029,11 +1027,9 @@ LteSpectrumPhy::EndRxData()
         itTb++;
     }
     std::map<uint16_t, DlInfoListElement_s> harqDlInfoMap;
-    for (std::list<Ptr<PacketBurst>>::const_iterator i = m_rxPacketBurstList.begin();
-         i != m_rxPacketBurstList.end();
-         ++i)
+    for (auto i = m_rxPacketBurstList.begin(); i != m_rxPacketBurstList.end(); ++i)
     {
-        for (std::list<Ptr<Packet>>::const_iterator j = (*i)->Begin(); j != (*i)->End(); ++j)
+        for (auto j = (*i)->Begin(); j != (*i)->End(); ++j)
         {
             // retrieve TB info of this packet
             LteRadioBearerTag tag;
@@ -1094,8 +1090,7 @@ LteSpectrumPhy::EndRxData()
                     }
                     else
                     {
-                        std::map<uint16_t, DlInfoListElement_s>::iterator itHarq =
-                            harqDlInfoMap.find(tbId.m_rnti);
+                        auto itHarq = harqDlInfoMap.find(tbId.m_rnti);
                         if (itHarq == harqDlInfoMap.end())
                         {
                             DlInfoListElement_s harqDlInfo;
@@ -1170,8 +1165,7 @@ LteSpectrumPhy::EndRxData()
     }
 
     // send DL HARQ feedback to LtePhy
-    std::map<uint16_t, DlInfoListElement_s>::iterator itHarq;
-    for (itHarq = harqDlInfoMap.begin(); itHarq != harqDlInfoMap.end(); itHarq++)
+    for (auto itHarq = harqDlInfoMap.begin(); itHarq != harqDlInfoMap.end(); itHarq++)
     {
         if (!m_ltePhyDlHarqFeedbackCallback.IsNull())
         {

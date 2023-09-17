@@ -424,7 +424,7 @@ LteFfrSoftAlgorithm::DoIsDlRbgAvailableForUe(int rbgId, uint16_t rnti)
     bool isMediumRbg = m_dlMediumRbgMap[rbgId];
     bool isEdgeRbg = m_dlEdgeRbgMap[rbgId];
 
-    std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+    auto it = m_ues.find(rnti);
     if (it == m_ues.end())
     {
         m_ues.insert(std::pair<uint16_t, uint8_t>(rnti, AreaUnset));
@@ -485,7 +485,7 @@ LteFfrSoftAlgorithm::DoIsUlRbgAvailableForUe(int rbgId, uint16_t rnti)
     bool isMediumRbg = m_ulMediumRbgMap[rbgId];
     bool isEdgeRbg = m_ulEdgeRbgMap[rbgId];
 
-    std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+    auto it = m_ues.find(rnti);
     if (it == m_ues.end())
     {
         m_ues.insert(std::pair<uint16_t, uint8_t>(rnti, AreaUnset));
@@ -563,7 +563,7 @@ LteFfrSoftAlgorithm::DoGetTpc(uint16_t rnti)
     //------------------------------------------------
     //  here Absolute mode is used
 
-    std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+    auto it = m_ues.find(rnti);
     if (it == m_ues.end())
     {
         return 1;
@@ -662,7 +662,7 @@ LteFfrSoftAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measRe
     }
     else
     {
-        std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+        auto it = m_ues.find(rnti);
         if (it == m_ues.end())
         {
             m_ues.insert(std::pair<uint16_t, uint8_t>(rnti, AreaUnset));

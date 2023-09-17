@@ -320,9 +320,7 @@ void
 LogComponentEnableAll(LogLevel level)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
-    for (LogComponent::ComponentList::const_iterator i = components->begin();
-         i != components->end();
-         i++)
+    for (auto i = components->begin(); i != components->end(); i++)
     {
         i->second->Enable(level);
     }
@@ -344,9 +342,7 @@ void
 LogComponentDisableAll(LogLevel level)
 {
     LogComponent::ComponentList* components = LogComponent::GetComponentList();
-    for (LogComponent::ComponentList::const_iterator i = components->begin();
-         i != components->end();
-         i++)
+    for (auto i = components->begin(); i != components->end(); i++)
     {
         i->second->Disable(level);
     }

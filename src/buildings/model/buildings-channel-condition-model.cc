@@ -171,7 +171,7 @@ bool
 BuildingsChannelConditionModel::IsLineOfSightBlocked(const ns3::Vector& l1,
                                                      const ns3::Vector& l2) const
 {
-    for (BuildingList::Iterator bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
+    for (auto bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
     {
         if ((*bit)->IsIntersect(l1, l2))
         {

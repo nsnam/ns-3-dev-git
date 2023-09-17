@@ -57,7 +57,7 @@ TapBridgeFdReader::DoRead()
     NS_LOG_FUNCTION(this);
 
     uint32_t bufferSize = 65536;
-    uint8_t* buf = (uint8_t*)std::malloc(bufferSize);
+    auto buf = (uint8_t*)std::malloc(bufferSize);
     NS_ABORT_MSG_IF(buf == nullptr, "malloc() failed");
 
     NS_LOG_LOGIC("Calling read on tap device fd " << m_fd);

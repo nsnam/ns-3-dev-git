@@ -438,8 +438,7 @@ WimaxMacQueue::Front(MacHeaderType::HeaderType packetType) const
 {
     QueueElement element;
 
-    for (std::deque<QueueElement>::const_iterator iter = m_queue.begin(); iter != m_queue.end();
-         ++iter)
+    for (auto iter = m_queue.begin(); iter != m_queue.end(); ++iter)
     {
         element = *iter;
         if (element.m_hdrType.GetType() == packetType)
@@ -456,7 +455,7 @@ WimaxMacQueue::Pop(MacHeaderType::HeaderType packetType)
 {
     QueueElement element;
 
-    for (std::deque<QueueElement>::iterator iter = m_queue.begin(); iter != m_queue.end(); ++iter)
+    for (auto iter = m_queue.begin(); iter != m_queue.end(); ++iter)
     {
         element = *iter;
         if (element.m_hdrType.GetType() == packetType)
@@ -498,8 +497,7 @@ bool
 WimaxMacQueue::CheckForFragmentation(MacHeaderType::HeaderType packetType)
 {
     QueueElement element;
-    for (std::deque<QueueElement>::const_iterator iter = m_queue.begin(); iter != m_queue.end();
-         ++iter)
+    for (auto iter = m_queue.begin(); iter != m_queue.end(); ++iter)
     {
         element = *iter;
         if (element.m_hdrType.GetType() == packetType)
@@ -522,8 +520,7 @@ uint32_t
 WimaxMacQueue::GetFirstPacketHdrSize(MacHeaderType::HeaderType packetType)
 {
     QueueElement element;
-    for (std::deque<QueueElement>::const_iterator iter = m_queue.begin(); iter != m_queue.end();
-         ++iter)
+    for (auto iter = m_queue.begin(); iter != m_queue.end(); ++iter)
     {
         element = *iter;
         if (element.m_hdrType.GetType() == packetType)
@@ -559,8 +556,7 @@ uint32_t
 WimaxMacQueue::GetFirstPacketPayloadSize(MacHeaderType::HeaderType packetType)
 {
     QueueElement element;
-    for (std::deque<QueueElement>::const_iterator iter = m_queue.begin(); iter != m_queue.end();
-         ++iter)
+    for (auto iter = m_queue.begin(); iter != m_queue.end(); ++iter)
     {
         element = *iter;
         if (element.m_hdrType.GetType() == packetType)
@@ -601,7 +597,7 @@ WimaxMacQueue::GetFirstPacketRequiredByte(MacHeaderType::HeaderType packetType)
 void
 WimaxMacQueue::SetFragmentation(MacHeaderType::HeaderType packetType)
 {
-    for (std::deque<QueueElement>::iterator iter = m_queue.begin(); iter != m_queue.end(); ++iter)
+    for (auto iter = m_queue.begin(); iter != m_queue.end(); ++iter)
     {
         if (iter->m_hdrType.GetType() == packetType)
         {
@@ -614,7 +610,7 @@ WimaxMacQueue::SetFragmentation(MacHeaderType::HeaderType packetType)
 void
 WimaxMacQueue::SetFragmentNumber(MacHeaderType::HeaderType packetType)
 {
-    for (std::deque<QueueElement>::iterator iter = m_queue.begin(); iter != m_queue.end(); ++iter)
+    for (auto iter = m_queue.begin(); iter != m_queue.end(); ++iter)
     {
         if (iter->m_hdrType.GetType() == packetType)
         {
@@ -627,7 +623,7 @@ WimaxMacQueue::SetFragmentNumber(MacHeaderType::HeaderType packetType)
 void
 WimaxMacQueue::SetFragmentOffset(MacHeaderType::HeaderType packetType, uint32_t offset)
 {
-    for (std::deque<QueueElement>::iterator iter = m_queue.begin(); iter != m_queue.end(); ++iter)
+    for (auto iter = m_queue.begin(); iter != m_queue.end(); ++iter)
     {
         if (iter->m_hdrType.GetType() == packetType)
         {

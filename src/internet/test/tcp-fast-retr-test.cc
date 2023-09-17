@@ -443,7 +443,7 @@ class TcpFastRetrTestSuite : public TestSuite
         types.insert(types.begin(), TcpWestwoodPlus::GetTypeId());
         types.insert(types.begin(), TcpNewReno::GetTypeId());
 
-        for (std::list<TypeId>::iterator it = types.begin(); it != types.end(); ++it)
+        for (auto it = types.begin(); it != types.end(); ++it)
         {
             AddTestCase(new TcpFastRetrTest((*it), 5001, "Fast Retransmit testing"),
                         TestCase::QUICK);

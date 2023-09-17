@@ -129,9 +129,7 @@ BandwidthManager::SelectFlowForRequest(uint32_t& bytesToRequest)
     std::vector<ServiceFlow*> serviceFlows =
         ss->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_ALL);
 
-    for (std::vector<ServiceFlow*>::iterator iter = serviceFlows.begin();
-         iter != serviceFlows.end();
-         ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         serviceFlow = *iter;
         if (serviceFlow->GetSchedulingType() == ServiceFlow::SF_TYPE_RTPS ||
@@ -229,15 +227,11 @@ BandwidthManager::GetSymbolsPerFrameAllocated()
     uint32_t allocationPerFrame = 0;
 
     std::vector<SSRecord*>* ssRecords = bs->GetSSManager()->GetSSRecords();
-    for (std::vector<SSRecord*>::const_iterator iter1 = ssRecords->begin();
-         iter1 != ssRecords->end();
-         ++iter1)
+    for (auto iter1 = ssRecords->begin(); iter1 != ssRecords->end(); ++iter1)
     {
         std::vector<ServiceFlow*> ssServiceFlows =
             (*iter1)->GetServiceFlows(ServiceFlow::SF_TYPE_ALL);
-        for (std::vector<ServiceFlow*>::const_iterator iter2 = ssServiceFlows.begin();
-             iter2 != ssServiceFlows.end();
-             ++iter2)
+        for (auto iter2 = ssServiceFlows.begin(); iter2 != ssServiceFlows.end(); ++iter2)
         {
             allocationPerFrame += (*iter2)->GetRecord()->GetGrantSize();
         }

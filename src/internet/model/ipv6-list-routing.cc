@@ -57,8 +57,7 @@ void
 Ipv6ListRouting::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    for (Ipv6RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         // Note:  Calling dispose on these protocols causes memory leak
@@ -79,9 +78,7 @@ Ipv6ListRouting::RouteOutput(Ptr<Packet> p,
     NS_LOG_FUNCTION(this << header.GetDestination() << header.GetSource() << oif);
     Ptr<Ipv6Route> route;
 
-    for (Ipv6RoutingProtocolList::const_iterator i = m_routingProtocols.begin();
-         i != m_routingProtocols.end();
-         i++)
+    for (auto i = m_routingProtocols.begin(); i != m_routingProtocols.end(); i++)
     {
         NS_LOG_LOGIC("Checking protocol " << (*i).second->GetInstanceTypeId() << " with priority "
                                           << (*i).first);
@@ -131,8 +128,7 @@ Ipv6ListRouting::RouteInput(Ptr<const Packet> p,
     ErrorCallback nullEcb =
         MakeNullCallback<void, Ptr<const Packet>, const Ipv6Header&, Socket::SocketErrno>();
 
-    for (Ipv6RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         if ((*rprotoIter).second->RouteInput(p, header, idev, ucb, mcb, lcb, nullEcb))
@@ -150,8 +146,7 @@ void
 Ipv6ListRouting::NotifyInterfaceUp(uint32_t interface)
 {
     NS_LOG_FUNCTION(this << interface);
-    for (Ipv6RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->NotifyInterfaceUp(interface);
@@ -162,8 +157,7 @@ void
 Ipv6ListRouting::NotifyInterfaceDown(uint32_t interface)
 {
     NS_LOG_FUNCTION(this << interface);
-    for (Ipv6RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->NotifyInterfaceDown(interface);
@@ -174,8 +168,7 @@ void
 Ipv6ListRouting::NotifyAddAddress(uint32_t interface, Ipv6InterfaceAddress address)
 {
     NS_LOG_FUNCTION(this << interface << address);
-    for (Ipv6RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->NotifyAddAddress(interface, address);
@@ -186,8 +179,7 @@ void
 Ipv6ListRouting::NotifyRemoveAddress(uint32_t interface, Ipv6InterfaceAddress address)
 {
     NS_LOG_FUNCTION(this << interface << address);
-    for (Ipv6RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->NotifyRemoveAddress(interface, address);
@@ -202,8 +194,7 @@ Ipv6ListRouting::NotifyAddRoute(Ipv6Address dst,
                                 Ipv6Address prefixToUse)
 {
     NS_LOG_FUNCTION(this << dst << mask << nextHop << interface);
-    for (Ipv6RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->NotifyAddRoute(dst, mask, nextHop, interface, prefixToUse);
@@ -218,8 +209,7 @@ Ipv6ListRouting::NotifyRemoveRoute(Ipv6Address dst,
                                    Ipv6Address prefixToUse)
 {
     NS_LOG_FUNCTION(this << dst << mask << nextHop << interface);
-    for (Ipv6RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->NotifyRemoveRoute(dst, mask, nextHop, interface, prefixToUse);
@@ -235,9 +225,7 @@ Ipv6ListRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit u
                          << ", Time: " << Now().As(unit)
                          << ", Local time: " << m_ipv6->GetObject<Node>()->GetLocalTime().As(unit)
                          << ", Ipv6ListRouting table" << std::endl;
-    for (Ipv6RoutingProtocolList::const_iterator i = m_routingProtocols.begin();
-         i != m_routingProtocols.end();
-         i++)
+    for (auto i = m_routingProtocols.begin(); i != m_routingProtocols.end(); i++)
     {
         *stream->GetStream() << "  Priority: " << (*i).first
                              << " Protocol: " << (*i).second->GetInstanceTypeId() << std::endl;
@@ -250,8 +238,7 @@ Ipv6ListRouting::SetIpv6(Ptr<Ipv6> ipv6)
 {
     NS_LOG_FUNCTION(this << ipv6);
     NS_ASSERT(!m_ipv6);
-    for (Ipv6RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->SetIpv6(ipv6);
@@ -288,8 +275,7 @@ Ipv6ListRouting::GetRoutingProtocol(uint32_t index, int16_t& priority) const
                                                                          << " out of range");
     }
     uint32_t i = 0;
-    for (Ipv6RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++, i++)
     {
         if (i == index)

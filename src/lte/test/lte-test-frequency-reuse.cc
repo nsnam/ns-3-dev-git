@@ -480,9 +480,8 @@ void
 LteFrTestCase::DlDataRxStart(Ptr<const SpectrumValue> spectrumValue)
 {
     NS_LOG_DEBUG("DL DATA Power allocation :");
-    Values::const_iterator it;
     uint32_t i = 0;
-    for (it = spectrumValue->ConstValuesBegin(); it != spectrumValue->ConstValuesEnd(); it++)
+    for (auto it = spectrumValue->ConstValuesBegin(); it != spectrumValue->ConstValuesEnd(); it++)
     {
         double power = (*it) * (m_dlBandwidth * 180000);
         NS_LOG_DEBUG("RB " << i << " POWER: "
@@ -500,9 +499,8 @@ void
 LteFrTestCase::UlDataRxStart(Ptr<const SpectrumValue> spectrumValue)
 {
     NS_LOG_DEBUG("UL DATA Power allocation :");
-    Values::const_iterator it;
     uint32_t i = 0;
-    for (it = spectrumValue->ConstValuesBegin(); it != spectrumValue->ConstValuesEnd(); it++)
+    for (auto it = spectrumValue->ConstValuesBegin(); it != spectrumValue->ConstValuesEnd(); it++)
     {
         double power = (*it) * (m_ulBandwidth * 180000);
         NS_LOG_DEBUG("RB " << i << " POWER: "
@@ -822,9 +820,8 @@ LteFrAreaTestCase::DlDataRxStart(Ptr<const SpectrumValue> spectrumValue)
     }
 
     NS_LOG_DEBUG("DL DATA Power allocation :");
-    Values::const_iterator it;
     uint32_t i = 0;
-    for (it = spectrumValue->ConstValuesBegin(); it != spectrumValue->ConstValuesEnd(); it++)
+    for (auto it = spectrumValue->ConstValuesBegin(); it != spectrumValue->ConstValuesEnd(); it++)
     {
         double power = (*it) * (m_dlBandwidth * 180000);
         NS_LOG_DEBUG("RB " << i << " POWER: "
@@ -858,7 +855,6 @@ LteFrAreaTestCase::UlDataRxStart(Ptr<const SpectrumValue> spectrumValue)
     }
 
     NS_LOG_DEBUG("UL DATA Power allocation :");
-    Values::const_iterator it;
     uint32_t i = 0;
     uint32_t numActiveRbs = 0;
 
@@ -866,7 +862,7 @@ LteFrAreaTestCase::UlDataRxStart(Ptr<const SpectrumValue> spectrumValue)
     // of active RBs. This method is independent of the bandwidth
     // configuration done in a test scenario, thus, it requires
     // minimum change to the script.
-    for (it = spectrumValue->ConstValuesBegin(); it != spectrumValue->ConstValuesEnd(); it++)
+    for (auto it = spectrumValue->ConstValuesBegin(); it != spectrumValue->ConstValuesEnd(); it++)
     {
         // Count the RB as active if it is part of
         // the expected UL RBs and has Power Spectral Density (PSD) > 0
@@ -879,7 +875,7 @@ LteFrAreaTestCase::UlDataRxStart(Ptr<const SpectrumValue> spectrumValue)
 
     // The uplink power control and the uplink PSD
     // calculation only consider active resource blocks.
-    for (it = spectrumValue->ConstValuesBegin(); it != spectrumValue->ConstValuesEnd(); it++)
+    for (auto it = spectrumValue->ConstValuesBegin(); it != spectrumValue->ConstValuesEnd(); it++)
     {
         double power = (*it) * (numActiveRbs * 180000);
         NS_LOG_DEBUG("RB " << i << " POWER: " << power

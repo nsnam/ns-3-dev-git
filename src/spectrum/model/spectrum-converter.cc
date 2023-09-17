@@ -41,13 +41,10 @@ SpectrumConverter::SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
     m_toSpectrumModel = toSpectrumModel;
 
     size_t rowPtr = 0;
-    for (Bands::const_iterator toit = toSpectrumModel->Begin(); toit != toSpectrumModel->End();
-         ++toit)
+    for (auto toit = toSpectrumModel->Begin(); toit != toSpectrumModel->End(); ++toit)
     {
         size_t colInd = 0;
-        for (Bands::const_iterator fromit = fromSpectrumModel->Begin();
-             fromit != fromSpectrumModel->End();
-             ++fromit)
+        for (auto fromit = fromSpectrumModel->Begin(); fromit != fromSpectrumModel->End(); ++fromit)
         {
             double c = GetCoefficient(*fromit, *toit);
             NS_LOG_LOGIC("(" << fromit->fl << "," << fromit->fh << ")"
@@ -83,12 +80,10 @@ SpectrumConverter::Convert(Ptr<const SpectrumValue> fvvf) const
 
     Ptr<SpectrumValue> tvvf = Create<SpectrumValue>(m_toSpectrumModel);
 
-    Values::iterator tvit = tvvf->ValuesBegin();
+    auto tvit = tvvf->ValuesBegin();
     size_t i = 0; // Index of conversion coefficient
 
-    for (std::vector<size_t>::const_iterator convIt = m_conversionRowPtr.begin();
-         convIt != m_conversionRowPtr.end();
-         ++convIt)
+    for (auto convIt = m_conversionRowPtr.begin(); convIt != m_conversionRowPtr.end(); ++convIt)
     {
         double sum = 0;
         while (i < *convIt)

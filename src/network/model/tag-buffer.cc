@@ -118,7 +118,7 @@ void
 TagBuffer::WriteDouble(double v)
 {
     NS_LOG_FUNCTION(this << v);
-    uint8_t* buf = (uint8_t*)&v;
+    auto buf = (uint8_t*)&v;
     for (uint32_t i = 0; i < sizeof(double); ++i, ++buf)
     {
         WriteU8(*buf);
@@ -171,7 +171,7 @@ TagBuffer::ReadDouble()
 {
     NS_LOG_FUNCTION(this);
     double v;
-    uint8_t* buf = (uint8_t*)&v;
+    auto buf = (uint8_t*)&v;
     for (uint32_t i = 0; i < sizeof(double); ++i, ++buf)
     {
         *buf = ReadU8();

@@ -182,7 +182,7 @@ TcpHtcp::GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
     UpdateAlpha();
 
     uint32_t segWin = 2 * tcb->m_segmentSize;
-    uint32_t bFlight = static_cast<uint32_t>(bytesInFlight * m_beta);
+    auto bFlight = static_cast<uint32_t>(bytesInFlight * m_beta);
     uint32_t ssThresh = std::max(segWin, bFlight);
     m_minRtt = Time::Max();
     m_maxRtt = Time::Min();

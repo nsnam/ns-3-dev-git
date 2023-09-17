@@ -499,8 +499,7 @@ LteEnbMac::DoSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
         // process received RACH preambles and notify the scheduler
         FfMacSchedSapProvider::SchedDlRachInfoReqParameters rachInfoReqParams;
         NS_ASSERT(subframeNo > 0 && subframeNo <= 10); // subframe in 1..10
-        for (std::map<uint8_t, uint32_t>::const_iterator it = m_receivedRachPreambleCount.begin();
-             it != m_receivedRachPreambleCount.end();
+        for (auto it = m_receivedRachPreambleCount.begin(); it != m_receivedRachPreambleCount.end();
              ++it)
         {
             NS_LOG_INFO(this << " preambleId " << (uint32_t)it->first << ": " << it->second
@@ -515,8 +514,7 @@ LteEnbMac::DoSubframeIndication(uint32_t frameNo, uint32_t subframeNo)
             else
             {
                 uint16_t rnti;
-                std::map<uint8_t, NcRaPreambleInfo>::iterator jt =
-                    m_allocatedNcRaPreambleMap.find(it->first);
+                auto jt = m_allocatedNcRaPreambleMap.find(it->first);
                 if (jt != m_allocatedNcRaPreambleMap.end())
                 {
                     rnti = jt->second.rnti;
@@ -716,10 +714,9 @@ LteEnbMac::DoReceivePhyPdu(Ptr<Packet> p)
 
     // store info of the packet received
 
-    //   std::map <uint16_t,UlInfoListElement_s>::iterator it;
     //   u_int rnti = tag.GetRnti ();
-    //  u_int lcid = tag.GetLcid ();
-    //   it = m_ulInfoListElements.find (tag.GetRnti ());
+    //   u_int lcid = tag.GetLcid ();
+    //   auto it = m_ulInfoListElements.find (tag.GetRnti ());
     //   if (it == m_ulInfoListElements.end ())
     //     {
     //       // new RNTI
@@ -749,10 +746,9 @@ LteEnbMac::DoReceivePhyPdu(Ptr<Packet> p)
     // forward the packet to the correspondent RLC
     uint16_t rnti = tag.GetRnti();
     uint8_t lcid = tag.GetLcid();
-    std::map<uint16_t, std::map<uint8_t, LteMacSapUser*>>::iterator rntiIt =
-        m_rlcAttached.find(rnti);
+    auto rntiIt = m_rlcAttached.find(rnti);
     NS_ASSERT_MSG(rntiIt != m_rlcAttached.end(), "could not find RNTI" << rnti);
-    std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find(lcid);
+    auto lcidIt = rntiIt->second.find(lcid);
     // NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID" << lcid);
 
     LteMacSapUser::ReceivePduParameters rxPduParams;
@@ -789,7 +785,7 @@ LteEnbMac::DoAddUe(uint16_t rnti)
 {
     NS_LOG_FUNCTION(this << " rnti=" << rnti);
     std::map<uint8_t, LteMacSapUser*> empty;
-    std::pair<std::map<uint16_t, std::map<uint8_t, LteMacSapUser*>>::iterator, bool> ret =
+    auto ret =
         m_rlcAttached.insert(std::pair<uint16_t, std::map<uint8_t, LteMacSapUser*>>(rnti, empty));
     NS_ASSERT_MSG(ret.second, "element already present, RNTI already existed");
 
@@ -833,13 +829,12 @@ LteEnbMac::DoRemoveUe(uint16_t rnti)
 
     NS_LOG_DEBUG("start checking for unprocessed preamble for rnti: " << rnti);
     // remove unprocessed preamble received for RACH during handover
-    std::map<uint8_t, NcRaPreambleInfo>::iterator jt = m_allocatedNcRaPreambleMap.begin();
+    auto jt = m_allocatedNcRaPreambleMap.begin();
     while (jt != m_allocatedNcRaPreambleMap.end())
     {
         if (jt->second.rnti == rnti)
         {
-            std::map<uint8_t, uint32_t>::const_iterator it =
-                m_receivedRachPreambleCount.find(jt->first);
+            auto it = m_receivedRachPreambleCount.find(jt->first);
             if (it != m_receivedRachPreambleCount.end())
             {
                 m_receivedRachPreambleCount.erase(it->first);
@@ -852,7 +847,7 @@ LteEnbMac::DoRemoveUe(uint16_t rnti)
         }
     }
 
-    std::vector<MacCeListElement_s>::iterator itCeRxd = m_ulCeReceived.begin();
+    auto itCeRxd = m_ulCeReceived.begin();
     while (itCeRxd != m_ulCeReceived.end())
     {
         if (itCeRxd->m_rnti == rnti)
@@ -871,14 +866,11 @@ LteEnbMac::DoAddLc(LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu)
 {
     NS_LOG_FUNCTION(this << lcinfo.rnti << (uint16_t)lcinfo.lcId);
 
-    std::map<LteFlowId_t, LteMacSapUser*>::iterator it;
-
     LteFlowId_t flow(lcinfo.rnti, lcinfo.lcId);
 
-    std::map<uint16_t, std::map<uint8_t, LteMacSapUser*>>::iterator rntiIt =
-        m_rlcAttached.find(lcinfo.rnti);
+    auto rntiIt = m_rlcAttached.find(lcinfo.rnti);
     NS_ASSERT_MSG(rntiIt != m_rlcAttached.end(), "RNTI not found");
-    std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find(lcinfo.lcId);
+    auto lcidIt = rntiIt->second.find(lcinfo.lcId);
     if (lcidIt == rntiIt->second.end())
     {
         rntiIt->second.insert(std::pair<uint8_t, LteMacSapUser*>(lcinfo.lcId, msu));
@@ -928,8 +920,7 @@ LteEnbMac::DoReleaseLc(uint16_t rnti, uint8_t lcid)
     NS_LOG_FUNCTION(this);
 
     // Find user based on rnti and then erase lcid stored against the same
-    std::map<uint16_t, std::map<uint8_t, LteMacSapUser*>>::iterator rntiIt =
-        m_rlcAttached.find(rnti);
+    auto rntiIt = m_rlcAttached.find(rnti);
     rntiIt->second.erase(lcid);
 
     FfMacCschedSapProvider::CschedLcReleaseReqParameters params;
@@ -969,8 +960,7 @@ LteEnbMac::DoAllocateNcRaPreamble(uint16_t rnti)
     uint8_t preambleId;
     for (preambleId = m_numberOfRaPreambles; preambleId < 64; ++preambleId)
     {
-        std::map<uint8_t, NcRaPreambleInfo>::iterator it =
-            m_allocatedNcRaPreambleMap.find(preambleId);
+        auto it = m_allocatedNcRaPreambleMap.find(preambleId);
         /**
          * Allocate preamble only if its free. The non-contention preamble
          * assigned to UE during handover or PDCCH order is valid only until the
@@ -1036,8 +1026,7 @@ LteEnbMac::DoTransmitPdu(LteMacSapProvider::TransmitPduParameters params)
     params.pdu->AddPacketTag(tag);
     params.componentCarrierId = m_componentCarrierId;
     // Store pkt in HARQ buffer
-    std::map<uint16_t, DlHarqProcessesBuffer_t>::iterator it =
-        m_miDlHarqProcessesPackets.find(params.rnti);
+    auto it = m_miDlHarqProcessesPackets.find(params.rnti);
     NS_ASSERT(it != m_miDlHarqProcessesPackets.end());
     NS_LOG_DEBUG(this << " LAYER " << (uint16_t)tag.GetLayer() << " HARQ ID "
                       << (uint16_t)params.harqProcessId);
@@ -1072,7 +1061,6 @@ LteEnbMac::DoSchedDlConfigInd(FfMacSchedSapUser::SchedDlConfigIndParameters ind)
     NS_LOG_FUNCTION(this);
     // Create DL PHY PDU
     Ptr<PacketBurst> pb = CreateObject<PacketBurst>();
-    std::map<LteFlowId_t, LteMacSapUser*>::iterator it;
     LteMacSapUser::TxOpportunityParameters txOpParams;
 
     for (std::size_t i = 0; i < ind.m_buildDataList.size(); i++)
@@ -1082,8 +1070,7 @@ LteEnbMac::DoSchedDlConfigInd(FfMacSchedSapUser::SchedDlConfigIndParameters ind)
             if (ind.m_buildDataList.at(i).m_dci.m_ndi.at(layer) == 1)
             {
                 // new data -> force emptying correspondent harq pkt buffer
-                std::map<uint16_t, DlHarqProcessesBuffer_t>::iterator it =
-                    m_miDlHarqProcessesPackets.find(ind.m_buildDataList.at(i).m_rnti);
+                auto it = m_miDlHarqProcessesPackets.find(ind.m_buildDataList.at(i).m_rnti);
                 NS_ASSERT(it != m_miDlHarqProcessesPackets.end());
                 for (std::size_t lcId = 0; lcId < (*it).second.size(); lcId++)
                 {
@@ -1102,10 +1089,9 @@ LteEnbMac::DoSchedDlConfigInd(FfMacSchedSapUser::SchedDlConfigIndParameters ind)
                     uint16_t rnti = ind.m_buildDataList.at(i).m_rnti;
                     uint8_t lcid =
                         ind.m_buildDataList.at(i).m_rlcPduList.at(j).at(k).m_logicalChannelIdentity;
-                    std::map<uint16_t, std::map<uint8_t, LteMacSapUser*>>::iterator rntiIt =
-                        m_rlcAttached.find(rnti);
+                    auto rntiIt = m_rlcAttached.find(rnti);
                     NS_ASSERT_MSG(rntiIt != m_rlcAttached.end(), "could not find RNTI" << rnti);
-                    std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find(lcid);
+                    auto lcidIt = rntiIt->second.find(lcid);
                     NS_ASSERT_MSG(lcidIt != rntiIt->second.end(),
                                   "could not find LCID" << (uint32_t)lcid << " carrier id:"
                                                         << (uint16_t)m_componentCarrierId);
@@ -1124,13 +1110,11 @@ LteEnbMac::DoSchedDlConfigInd(FfMacSchedSapUser::SchedDlConfigIndParameters ind)
                     if (ind.m_buildDataList.at(i).m_dci.m_tbsSize.at(k) > 0)
                     {
                         // HARQ retransmission -> retrieve TB from HARQ buffer
-                        std::map<uint16_t, DlHarqProcessesBuffer_t>::iterator it =
-                            m_miDlHarqProcessesPackets.find(ind.m_buildDataList.at(i).m_rnti);
+                        auto it = m_miDlHarqProcessesPackets.find(ind.m_buildDataList.at(i).m_rnti);
                         NS_ASSERT(it != m_miDlHarqProcessesPackets.end());
                         Ptr<PacketBurst> pb =
                             (*it).second.at(k).at(ind.m_buildDataList.at(i).m_dci.m_harqProcess);
-                        for (std::list<Ptr<Packet>>::const_iterator j = pb->Begin(); j != pb->End();
-                             ++j)
+                        for (auto j = pb->Begin(); j != pb->End(); ++j)
                         {
                             Ptr<Packet> pkt = (*j)->Copy();
                             m_enbPhySapProvider->SendMacPdu(pkt);
@@ -1198,8 +1182,7 @@ LteEnbMac::DoSchedDlConfigInd(FfMacSchedSapUser::SchedDlConfigIndParameters ind)
     rarMsg->SetRaRnti(raRnti);
     for (unsigned int i = 0; i < ind.m_buildRarList.size(); i++)
     {
-        std::map<uint16_t, uint32_t>::iterator itRapId =
-            m_rapIdRntiMap.find(ind.m_buildRarList.at(i).m_rnti);
+        auto itRapId = m_rapIdRntiMap.find(ind.m_buildRarList.at(i).m_rnti);
         if (itRapId == m_rapIdRntiMap.end())
         {
             NS_FATAL_ERROR("Unable to find rapId of RNTI " << ind.m_buildRarList.at(i).m_rnti);
@@ -1309,8 +1292,7 @@ LteEnbMac::DoDlInfoListElementHarqFeedback(DlInfoListElement_s params)
 {
     NS_LOG_FUNCTION(this);
     // Update HARQ buffer
-    std::map<uint16_t, DlHarqProcessesBuffer_t>::iterator it =
-        m_miDlHarqProcessesPackets.find(params.m_rnti);
+    auto it = m_miDlHarqProcessesPackets.find(params.m_rnti);
     NS_ASSERT(it != m_miDlHarqProcessesPackets.end());
     for (std::size_t layer = 0; layer < params.m_harqStatus.size(); layer++)
     {

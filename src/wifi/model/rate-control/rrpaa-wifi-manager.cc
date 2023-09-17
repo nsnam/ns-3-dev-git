@@ -198,7 +198,7 @@ Time
 RrpaaWifiManager::GetCalcTxTime(WifiMode mode) const
 {
     NS_LOG_FUNCTION(this << mode);
-    for (TxTime::const_iterator i = m_calcTxTime.begin(); i != m_calcTxTime.end(); i++)
+    for (auto i = m_calcTxTime.begin(); i != m_calcTxTime.end(); i++)
     {
         if (mode == i->second)
         {
@@ -221,9 +221,7 @@ RrpaaWifiManager::GetThresholds(RrpaaWifiRemoteStation* station, WifiMode mode) 
 {
     NS_LOG_FUNCTION(this << station << mode);
     WifiRrpaaThresholds threshold;
-    for (RrpaaThresholdsTable::const_iterator i = station->m_thresholds.begin();
-         i != station->m_thresholds.end();
-         i++)
+    for (auto i = station->m_thresholds.begin(); i != station->m_thresholds.end(); i++)
     {
         if (mode == i->second)
         {
@@ -238,7 +236,7 @@ WifiRemoteStation*
 RrpaaWifiManager::DoCreateStation() const
 {
     NS_LOG_FUNCTION(this);
-    RrpaaWifiRemoteStation* station = new RrpaaWifiRemoteStation();
+    auto station = new RrpaaWifiRemoteStation();
     station->m_adaptiveRtsWnd = 0;
     station->m_rtsCounter = 0;
     station->m_adaptiveRtsOn = false;
@@ -264,7 +262,7 @@ RrpaaWifiManager::CheckInit(RrpaaWifiRemoteStation* station)
         station->m_powerLevel = m_maxPowerLevel;
         WifiMode mode = GetSupported(station, 0);
         uint16_t channelWidth = GetChannelWidth(station);
-        DataRate rate = DataRate(mode.GetDataRate(channelWidth));
+        DataRate rate(mode.GetDataRate(channelWidth));
         double power = GetPhy()->GetPowerDbm(station->m_powerLevel);
         m_rateChange(rate, rate, station->m_state->m_address);
         m_powerChange(power, power, station->m_state->m_address);
@@ -345,7 +343,7 @@ void
 RrpaaWifiManager::DoReportDataFailed(WifiRemoteStation* st)
 {
     NS_LOG_FUNCTION(this << st);
-    RrpaaWifiRemoteStation* station = static_cast<RrpaaWifiRemoteStation*>(st);
+    auto station = static_cast<RrpaaWifiRemoteStation*>(st);
     CheckInit(station);
     station->m_lastFrameFail = true;
     CheckTimeout(station);
@@ -378,7 +376,7 @@ RrpaaWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                  uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
-    RrpaaWifiRemoteStation* station = static_cast<RrpaaWifiRemoteStation*>(st);
+    auto station = static_cast<RrpaaWifiRemoteStation*>(st);
     CheckInit(station);
     station->m_lastFrameFail = false;
     CheckTimeout(station);
@@ -402,7 +400,7 @@ WifiTxVector
 RrpaaWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
-    RrpaaWifiRemoteStation* station = static_cast<RrpaaWifiRemoteStation*>(st);
+    auto station = static_cast<RrpaaWifiRemoteStation*>(st);
     uint16_t channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
@@ -410,9 +408,8 @@ RrpaaWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth
     }
     CheckInit(station);
     WifiMode mode = GetSupported(station, station->m_rateIndex);
-    DataRate rate = DataRate(mode.GetDataRate(channelWidth));
-    DataRate prevRate =
-        DataRate(GetSupported(station, station->m_prevRateIndex).GetDataRate(channelWidth));
+    DataRate rate(mode.GetDataRate(channelWidth));
+    DataRate prevRate(GetSupported(station, station->m_prevRateIndex).GetDataRate(channelWidth));
     double power = GetPhy()->GetPowerDbm(station->m_powerLevel);
     double prevPower = GetPhy()->GetPowerDbm(station->m_prevPowerLevel);
     if (station->m_prevRateIndex != station->m_rateIndex)
@@ -441,7 +438,7 @@ WifiTxVector
 RrpaaWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
 {
     NS_LOG_FUNCTION(this << st);
-    RrpaaWifiRemoteStation* station = static_cast<RrpaaWifiRemoteStation*>(st);
+    auto station = static_cast<RrpaaWifiRemoteStation*>(st);
     uint16_t channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
@@ -472,7 +469,7 @@ bool
 RrpaaWifiManager::DoNeedRts(WifiRemoteStation* st, uint32_t size, bool normally)
 {
     NS_LOG_FUNCTION(this << st << size << normally);
-    RrpaaWifiRemoteStation* station = static_cast<RrpaaWifiRemoteStation*>(st);
+    auto station = static_cast<RrpaaWifiRemoteStation*>(st);
     CheckInit(station);
     if (m_basic)
     {

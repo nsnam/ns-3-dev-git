@@ -346,7 +346,7 @@ Rip::NotifyInterfaceUp(uint32_t i)
     }
 
     bool sendSocketFound = false;
-    for (SocketListI iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end(); iter++)
+    for (auto iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end(); iter++)
     {
         if (iter->second == i)
         {
@@ -406,7 +406,7 @@ Rip::NotifyInterfaceDown(uint32_t interface)
     NS_LOG_FUNCTION(this << interface);
 
     /* remove all routes that are going through this interface */
-    for (RoutesI it = m_routes.begin(); it != m_routes.end(); it++)
+    for (auto it = m_routes.begin(); it != m_routes.end(); it++)
     {
         if (it->first->GetInterface() == interface)
         {
@@ -414,7 +414,7 @@ Rip::NotifyInterfaceDown(uint32_t interface)
         }
     }
 
-    for (SocketListI iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end(); iter++)
+    for (auto iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end(); iter++)
     {
         NS_LOG_INFO("Checking socket for interface " << interface);
         if (iter->second == interface)
@@ -478,7 +478,7 @@ Rip::NotifyRemoveAddress(uint32_t interface, Ipv4InterfaceAddress address)
 
     // Remove all routes that are going through this interface
     // which reference this network
-    for (RoutesI it = m_routes.begin(); it != m_routes.end(); it++)
+    for (auto it = m_routes.begin(); it != m_routes.end(); it++)
     {
         if (it->first->GetInterface() == interface && it->first->IsNetwork() &&
             it->first->GetDestNetwork() == networkAddress &&
@@ -536,7 +536,7 @@ Rip::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
     {
         *os << "Destination     Gateway         Genmask         Flags Metric Ref    Use Iface"
             << std::endl;
-        for (RoutesCI it = m_routes.begin(); it != m_routes.end(); it++)
+        for (auto it = m_routes.begin(); it != m_routes.end(); it++)
         {
             RipRoutingTableEntry* route = it->first;
             RipRoutingTableEntry::Status_e status = route->GetRouteStatus();
@@ -592,7 +592,7 @@ Rip::DoDispose()
 {
     NS_LOG_FUNCTION(this);
 
-    for (RoutesI j = m_routes.begin(); j != m_routes.end(); j = m_routes.erase(j))
+    for (auto j = m_routes.begin(); j != m_routes.end(); j = m_routes.erase(j))
     {
         delete j->first;
     }
@@ -603,7 +603,7 @@ Rip::DoDispose()
     m_nextTriggeredUpdate = EventId();
     m_nextUnsolicitedUpdate = EventId();
 
-    for (SocketListI iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end(); iter++)
+    for (auto iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end(); iter++)
     {
         iter->first->Close();
     }
@@ -639,7 +639,7 @@ Rip::Lookup(Ipv4Address dst, bool setSource, Ptr<NetDevice> interface)
         return rtentry;
     }
 
-    for (RoutesI it = m_routes.begin(); it != m_routes.end(); it++)
+    for (auto it = m_routes.begin(); it != m_routes.end(); it++)
     {
         RipRoutingTableEntry* j = it->first;
 
@@ -708,8 +708,7 @@ Rip::AddNetworkRouteTo(Ipv4Address network,
 {
     NS_LOG_FUNCTION(this << network << networkPrefix << nextHop << interface);
 
-    RipRoutingTableEntry* route =
-        new RipRoutingTableEntry(network, networkPrefix, nextHop, interface);
+    auto route = new RipRoutingTableEntry(network, networkPrefix, nextHop, interface);
     route->SetRouteMetric(1);
     route->SetRouteStatus(RipRoutingTableEntry::RIP_VALID);
     route->SetRouteChanged(true);
@@ -722,7 +721,7 @@ Rip::AddNetworkRouteTo(Ipv4Address network, Ipv4Mask networkPrefix, uint32_t int
 {
     NS_LOG_FUNCTION(this << network << networkPrefix << interface);
 
-    RipRoutingTableEntry* route = new RipRoutingTableEntry(network, networkPrefix, interface);
+    auto route = new RipRoutingTableEntry(network, networkPrefix, interface);
     route->SetRouteMetric(1);
     route->SetRouteStatus(RipRoutingTableEntry::RIP_VALID);
     route->SetRouteChanged(true);
@@ -735,7 +734,7 @@ Rip::InvalidateRoute(RipRoutingTableEntry* route)
 {
     NS_LOG_FUNCTION(this << *route);
 
-    for (RoutesI it = m_routes.begin(); it != m_routes.end(); it++)
+    for (auto it = m_routes.begin(); it != m_routes.end(); it++)
     {
         if (it->first == route)
         {
@@ -759,7 +758,7 @@ Rip::DeleteRoute(RipRoutingTableEntry* route)
 {
     NS_LOG_FUNCTION(this << *route);
 
-    for (RoutesI it = m_routes.begin(); it != m_routes.end(); it++)
+    for (auto it = m_routes.begin(); it != m_routes.end(); it++)
     {
         if (it->first == route)
         {
@@ -869,8 +868,7 @@ Rip::HandleRequests(RipHeader requestHdr,
                 // we use one of the sending sockets, as they're bound to the right interface
                 // and the local address might be used on different interfaces.
                 Ptr<Socket> sendingSocket;
-                for (SocketListI iter = m_unicastSocketList.begin();
-                     iter != m_unicastSocketList.end();
+                for (auto iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end();
                      iter++)
                 {
                     if (iter->second == incomingInterface)
@@ -903,7 +901,7 @@ Rip::HandleRequests(RipHeader requestHdr,
                 RipHeader hdr;
                 hdr.SetCommand(RipHeader::RESPONSE);
 
-                for (RoutesI rtIter = m_routes.begin(); rtIter != m_routes.end(); rtIter++)
+                for (auto rtIter = m_routes.begin(); rtIter != m_routes.end(); rtIter++)
                 {
                     bool splitHorizoning = (rtIter->first->GetInterface() == incomingInterface);
 
@@ -976,10 +974,10 @@ Rip::HandleRequests(RipHeader requestHdr,
         RipHeader hdr;
         hdr.SetCommand(RipHeader::RESPONSE);
 
-        for (std::list<RipRte>::iterator iter = rtes.begin(); iter != rtes.end(); iter++)
+        for (auto iter = rtes.begin(); iter != rtes.end(); iter++)
         {
             bool found = false;
-            for (RoutesI rtIter = m_routes.begin(); rtIter != m_routes.end(); rtIter++)
+            for (auto rtIter = m_routes.begin(); rtIter != m_routes.end(); rtIter++)
             {
                 Ipv4InterfaceAddress rtDestAddr =
                     Ipv4InterfaceAddress(rtIter->first->GetDestNetwork(),
@@ -1033,7 +1031,7 @@ Rip::HandleResponses(RipHeader hdr,
     std::list<RipRte> rtes = hdr.GetRteList();
 
     // validate the RTEs before processing
-    for (std::list<RipRte>::iterator iter = rtes.begin(); iter != rtes.end(); iter++)
+    for (auto iter = rtes.begin(); iter != rtes.end(); iter++)
     {
         if (iter->GetRouteMetric() == 0 || iter->GetRouteMetric() > m_linkDown)
         {
@@ -1051,7 +1049,7 @@ Rip::HandleResponses(RipHeader hdr,
 
     bool changed = false;
 
-    for (std::list<RipRte>::iterator iter = rtes.begin(); iter != rtes.end(); iter++)
+    for (auto iter = rtes.begin(); iter != rtes.end(); iter++)
     {
         Ipv4Mask rtePrefixMask = iter->GetSubnetMask();
         Ipv4Address rteAddr = iter->GetPrefix().CombineMask(rtePrefixMask);
@@ -1081,10 +1079,10 @@ Rip::HandleResponses(RipHeader hdr,
                 {
                     if (senderAddress != it->first->GetGateway())
                     {
-                        RipRoutingTableEntry* route = new RipRoutingTableEntry(rteAddr,
-                                                                               rtePrefixMask,
-                                                                               senderAddress,
-                                                                               incomingInterface);
+                        auto route = new RipRoutingTableEntry(rteAddr,
+                                                              rtePrefixMask,
+                                                              senderAddress,
+                                                              incomingInterface);
                         delete it->first;
                         it->first = route;
                     }
@@ -1111,11 +1109,10 @@ Rip::HandleResponses(RipHeader hdr,
                     {
                         if (Simulator::GetDelayLeft(it->second) < m_timeoutDelay / 2)
                         {
-                            RipRoutingTableEntry* route =
-                                new RipRoutingTableEntry(rteAddr,
-                                                         rtePrefixMask,
-                                                         senderAddress,
-                                                         incomingInterface);
+                            auto route = new RipRoutingTableEntry(rteAddr,
+                                                                  rtePrefixMask,
+                                                                  senderAddress,
+                                                                  incomingInterface);
                             route->SetRouteMetric(rteMetric);
                             route->SetRouteStatus(RipRoutingTableEntry::RIP_VALID);
                             route->SetRouteTag(iter->GetRouteTag());
@@ -1159,7 +1156,7 @@ Rip::HandleResponses(RipHeader hdr,
         {
             NS_LOG_LOGIC("Received a RTE with new route, adding.");
 
-            RipRoutingTableEntry* route =
+            auto route =
                 new RipRoutingTableEntry(rteAddr, rtePrefixMask, senderAddress, incomingInterface);
             route->SetRouteMetric(rteMetric);
             route->SetRouteStatus(RipRoutingTableEntry::RIP_VALID);
@@ -1183,7 +1180,7 @@ Rip::DoSendRouteUpdate(bool periodic)
 {
     NS_LOG_FUNCTION(this << (periodic ? " periodic" : " triggered"));
 
-    for (SocketListI iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end(); iter++)
+    for (auto iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end(); iter++)
     {
         uint32_t interface = iter->second;
 
@@ -1202,7 +1199,7 @@ Rip::DoSendRouteUpdate(bool periodic)
             RipHeader hdr;
             hdr.SetCommand(RipHeader::RESPONSE);
 
-            for (RoutesI rtIter = m_routes.begin(); rtIter != m_routes.end(); rtIter++)
+            for (auto rtIter = m_routes.begin(); rtIter != m_routes.end(); rtIter++)
             {
                 bool splitHorizoning = (rtIter->first->GetInterface() == interface);
                 Ipv4InterfaceAddress rtDestAddr =
@@ -1270,7 +1267,7 @@ Rip::DoSendRouteUpdate(bool periodic)
             }
         }
     }
-    for (RoutesI rtIter = m_routes.begin(); rtIter != m_routes.end(); rtIter++)
+    for (auto rtIter = m_routes.begin(); rtIter != m_routes.end(); rtIter++)
     {
         rtIter->first->SetRouteChanged(false);
     }
@@ -1344,7 +1341,7 @@ Rip::GetInterfaceMetric(uint32_t interface) const
 {
     NS_LOG_FUNCTION(this << interface);
 
-    std::map<uint32_t, uint8_t>::const_iterator iter = m_interfaceMetrics.find(interface);
+    auto iter = m_interfaceMetrics.find(interface);
     if (iter != m_interfaceMetrics.end())
     {
         return iter->second;
@@ -1385,7 +1382,7 @@ Rip::SendRouteRequest()
     hdr.AddRte(rte);
     p->AddHeader(hdr);
 
-    for (SocketListI iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end(); iter++)
+    for (auto iter = m_unicastSocketList.begin(); iter != m_unicastSocketList.end(); iter++)
     {
         uint32_t interface = iter->second;
 

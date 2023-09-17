@@ -162,8 +162,7 @@ template <typename... Ts>
 void
 TracedCallback<Ts...>::DisconnectWithoutContext(const CallbackBase& callback)
 {
-    for (typename CallbackList::iterator i = m_callbackList.begin(); i != m_callbackList.end();
-         /* empty */)
+    for (auto i = m_callbackList.begin(); i != m_callbackList.end(); /* empty */)
     {
         if ((*i).IsEqual(callback))
         {
@@ -193,9 +192,7 @@ template <typename... Ts>
 void
 TracedCallback<Ts...>::operator()(Ts... args) const
 {
-    for (typename CallbackList::const_iterator i = m_callbackList.begin();
-         i != m_callbackList.end();
-         i++)
+    for (auto i = m_callbackList.begin(); i != m_callbackList.end(); i++)
     {
         (*i)(args...);
     }

@@ -32,9 +32,7 @@ Ipv4InterfaceContainer::Ipv4InterfaceContainer()
 void
 Ipv4InterfaceContainer::Add(const Ipv4InterfaceContainer& other)
 {
-    for (InterfaceVector::const_iterator i = other.m_interfaces.begin();
-         i != other.m_interfaces.end();
-         i++)
+    for (auto i = other.m_interfaces.begin(); i != other.m_interfaces.end(); i++)
     {
         m_interfaces.push_back(*i);
     }

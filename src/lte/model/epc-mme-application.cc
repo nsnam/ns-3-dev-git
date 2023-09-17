@@ -103,7 +103,7 @@ uint8_t
 EpcMmeApplication::AddBearer(uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer)
 {
     NS_LOG_FUNCTION(this << imsi);
-    std::map<uint64_t, Ptr<UeInfo>>::iterator it = m_ueInfoMap.find(imsi);
+    auto it = m_ueInfoMap.find(imsi);
     NS_ASSERT_MSG(it != m_ueInfoMap.end(), "could not find any UE with IMSI " << imsi);
     NS_ASSERT_MSG(it->second->bearerCounter < 11,
                   "too many bearers already! " << it->second->bearerCounter);
@@ -124,7 +124,7 @@ EpcMmeApplication::DoInitialUeMessage(uint64_t mmeUeS1Id,
                                       uint16_t gci)
 {
     NS_LOG_FUNCTION(this << mmeUeS1Id << enbUeS1Id << imsi << gci);
-    std::map<uint64_t, Ptr<UeInfo>>::iterator it = m_ueInfoMap.find(imsi);
+    auto it = m_ueInfoMap.find(imsi);
     NS_ASSERT_MSG(it != m_ueInfoMap.end(), "could not find any UE with IMSI " << imsi);
     it->second->cellId = gci;
 
@@ -139,7 +139,7 @@ EpcMmeApplication::DoInitialUeMessage(uint64_t mmeUeS1Id,
     msg.SetSenderCpFteid(mmeS11Fteid); // S11 MME GTP-C F-TEID
 
     std::list<GtpcCreateSessionRequestMessage::BearerContextToBeCreated> bearerContexts;
-    for (std::list<BearerInfo>::iterator bit = it->second->bearersToBeActivated.begin();
+    for (auto bit = it->second->bearersToBeActivated.begin();
          bit != it->second->bearersToBeActivated.end();
          ++bit)
     {
@@ -180,7 +180,7 @@ EpcMmeApplication::DoPathSwitchRequest(
 {
     NS_LOG_FUNCTION(this << mmeUeS1Id << enbUeS1Id << gci);
     uint64_t imsi = mmeUeS1Id;
-    std::map<uint64_t, Ptr<UeInfo>>::iterator it = m_ueInfoMap.find(imsi);
+    auto it = m_ueInfoMap.find(imsi);
     NS_ASSERT_MSG(it != m_ueInfoMap.end(), "could not find any UE with IMSI " << imsi);
     NS_LOG_INFO("IMSI " << imsi << " old eNB: " << it->second->cellId << ", new eNB: " << gci);
     it->second->cellId = gci;
@@ -221,7 +221,7 @@ EpcMmeApplication::DoErabReleaseIndication(
 {
     NS_LOG_FUNCTION(this << mmeUeS1Id << enbUeS1Id);
     uint64_t imsi = mmeUeS1Id;
-    std::map<uint64_t, Ptr<UeInfo>>::iterator it = m_ueInfoMap.find(imsi);
+    auto it = m_ueInfoMap.find(imsi);
     NS_ASSERT_MSG(it != m_ueInfoMap.end(), "could not find any UE with IMSI " << imsi);
 
     GtpcDeleteBearerCommandMessage msg;
@@ -247,7 +247,7 @@ void
 EpcMmeApplication::RemoveBearer(Ptr<UeInfo> ueInfo, uint8_t epsBearerId)
 {
     NS_LOG_FUNCTION(this << epsBearerId);
-    std::list<BearerInfo>::iterator bit = ueInfo->bearersToBeActivated.begin();
+    auto bit = ueInfo->bearersToBeActivated.begin();
     while (bit != ueInfo->bearersToBeActivated.end())
     {
         if (bit->bearerId == epsBearerId)
@@ -296,13 +296,13 @@ EpcMmeApplication::DoRecvCreateSessionResponse(GtpcHeader& header, Ptr<Packet> p
     NS_LOG_FUNCTION(this << header);
     uint64_t imsi = header.GetTeid();
     NS_LOG_DEBUG("TEID/IMSI " << imsi);
-    std::map<uint64_t, Ptr<UeInfo>>::iterator it = m_ueInfoMap.find(imsi);
+    auto it = m_ueInfoMap.find(imsi);
     NS_ASSERT_MSG(it != m_ueInfoMap.end(), "could not find any UE with IMSI " << imsi);
     uint16_t cellId = it->second->cellId;
     uint16_t enbUeS1Id = it->second->enbUeS1Id;
     uint64_t mmeUeS1Id = it->second->mmeUeS1Id;
     NS_LOG_DEBUG("cellId " << cellId << " mmeUeS1Id " << mmeUeS1Id << " enbUeS1Id " << enbUeS1Id);
-    std::map<uint16_t, Ptr<EnbInfo>>::iterator jt = m_enbInfoMap.find(cellId);
+    auto jt = m_enbInfoMap.find(cellId);
     NS_ASSERT_MSG(jt != m_enbInfoMap.end(), "could not find any eNB with CellId " << cellId);
 
     GtpcCreateSessionResponseMessage msg;
@@ -337,7 +337,7 @@ EpcMmeApplication::DoRecvModifyBearerResponse(GtpcHeader& header, Ptr<Packet> pa
 
     uint64_t imsi = header.GetTeid();
     NS_LOG_DEBUG("TEID/IMSI " << imsi);
-    std::map<uint64_t, Ptr<UeInfo>>::iterator it = m_ueInfoMap.find(imsi);
+    auto it = m_ueInfoMap.find(imsi);
     NS_ASSERT_MSG(it != m_ueInfoMap.end(), "could not find any UE with IMSI " << imsi);
     uint16_t cellId = it->second->cellId;
     uint16_t enbUeS1Id = it->second->enbUeS1Id;
@@ -345,7 +345,7 @@ EpcMmeApplication::DoRecvModifyBearerResponse(GtpcHeader& header, Ptr<Packet> pa
     NS_LOG_DEBUG("cellId " << cellId << " mmeUeS1Id " << mmeUeS1Id << " enbUeS1Id " << enbUeS1Id);
     std::list<EpcS1apSapEnb::ErabSwitchedInUplinkItem>
         erabToBeSwitchedInUplinkList; // unused for now
-    std::map<uint16_t, Ptr<EnbInfo>>::iterator jt = m_enbInfoMap.find(cellId);
+    auto jt = m_enbInfoMap.find(cellId);
     NS_ASSERT_MSG(jt != m_enbInfoMap.end(), "could not find any eNB with CellId " << cellId);
 
     NS_LOG_DEBUG("Send PathSwitchRequestAcknowledge to eNB " << jt->second->s1apSapEnb);
@@ -361,7 +361,7 @@ EpcMmeApplication::DoRecvDeleteBearerRequest(GtpcHeader& header, Ptr<Packet> pac
     NS_LOG_FUNCTION(this << header);
     uint64_t imsi = header.GetTeid();
     NS_LOG_DEBUG("TEID/IMSI " << imsi);
-    std::map<uint64_t, Ptr<UeInfo>>::iterator it = m_ueInfoMap.find(imsi);
+    auto it = m_ueInfoMap.find(imsi);
     NS_ASSERT_MSG(it != m_ueInfoMap.end(), "could not find any UE with IMSI " << imsi);
 
     GtpcDeleteBearerRequestMessage msg;

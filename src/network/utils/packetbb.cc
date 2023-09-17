@@ -182,7 +182,7 @@ void
 PbbTlvBlock::Clear()
 {
     NS_LOG_FUNCTION(this);
-    for (Iterator iter = Begin(); iter != End(); iter++)
+    for (auto iter = Begin(); iter != End(); iter++)
     {
         *iter = nullptr;
     }
@@ -195,7 +195,7 @@ PbbTlvBlock::GetSerializedSize() const
     NS_LOG_FUNCTION(this);
     /* tlv size */
     uint32_t size = 2;
-    for (ConstIterator iter = Begin(); iter != End(); iter++)
+    for (auto iter = Begin(); iter != End(); iter++)
     {
         size += (*iter)->GetSerializedSize();
     }
@@ -216,7 +216,7 @@ PbbTlvBlock::Serialize(Buffer::Iterator& start) const
      * position. */
     Buffer::Iterator tlvsize = start;
     start.Next(2);
-    for (ConstIterator iter = Begin(); iter != End(); iter++)
+    for (auto iter = Begin(); iter != End(); iter++)
     {
         (*iter)->Serialize(start);
     }
@@ -264,7 +264,7 @@ PbbTlvBlock::Print(std::ostream& os, int level) const
     os << prefix << "\tsize = " << Size() << std::endl;
     os << prefix << "\tmembers [" << std::endl;
 
-    for (ConstIterator iter = Begin(); iter != End(); iter++)
+    for (auto iter = Begin(); iter != End(); iter++)
     {
         (*iter)->Print(os, level + 2);
     }
@@ -421,7 +421,7 @@ void
 PbbAddressTlvBlock::Clear()
 {
     NS_LOG_FUNCTION(this);
-    for (Iterator iter = Begin(); iter != End(); iter++)
+    for (auto iter = Begin(); iter != End(); iter++)
     {
         *iter = nullptr;
     }
@@ -434,7 +434,7 @@ PbbAddressTlvBlock::GetSerializedSize() const
     NS_LOG_FUNCTION(this);
     /* tlv size */
     uint32_t size = 2;
-    for (ConstIterator iter = Begin(); iter != End(); iter++)
+    for (auto iter = Begin(); iter != End(); iter++)
     {
         size += (*iter)->GetSerializedSize();
     }
@@ -455,7 +455,7 @@ PbbAddressTlvBlock::Serialize(Buffer::Iterator& start) const
      * position. */
     Buffer::Iterator tlvsize = start;
     start.Next(2);
-    for (ConstIterator iter = Begin(); iter != End(); iter++)
+    for (auto iter = Begin(); iter != End(); iter++)
     {
         (*iter)->Serialize(start);
     }
@@ -503,7 +503,7 @@ PbbAddressTlvBlock::Print(std::ostream& os, int level) const
     os << prefix << "\tsize = " << Size() << std::endl;
     os << prefix << "\tmembers [" << std::endl;
 
-    for (ConstIterator iter = Begin(); iter != End(); iter++)
+    for (auto iter = Begin(); iter != End(); iter++)
     {
         (*iter)->Print(os, level + 2);
     }
@@ -822,7 +822,7 @@ void
 PbbPacket::MessageClear()
 {
     NS_LOG_FUNCTION(this);
-    for (MessageIterator iter = MessageBegin(); iter != MessageEnd(); iter++)
+    for (auto iter = MessageBegin(); iter != MessageEnd(); iter++)
     {
         *iter = nullptr;
     }
@@ -862,7 +862,7 @@ PbbPacket::GetSerializedSize() const
         size += m_tlvList.GetSerializedSize();
     }
 
-    for (ConstMessageIterator iter = MessageBegin(); iter != MessageEnd(); iter++)
+    for (auto iter = MessageBegin(); iter != MessageEnd(); iter++)
     {
         size += (*iter)->GetSerializedSize();
     }
@@ -897,7 +897,7 @@ PbbPacket::Serialize(Buffer::Iterator start) const
 
     bufref.WriteU8(flags);
 
-    for (ConstMessageIterator iter = MessageBegin(); iter != MessageEnd(); iter++)
+    for (auto iter = MessageBegin(); iter != MessageEnd(); iter++)
     {
         (*iter)->Serialize(start);
     }
@@ -952,7 +952,7 @@ PbbPacket::Print(std::ostream& os) const
 
     m_tlvList.Print(os, 1);
 
-    for (ConstMessageIterator iter = MessageBegin(); iter != MessageEnd(); iter++)
+    for (auto iter = MessageBegin(); iter != MessageEnd(); iter++)
     {
         (*iter)->Print(os, 1);
     }
@@ -1383,7 +1383,7 @@ void
 PbbMessage::AddressBlockClear()
 {
     NS_LOG_FUNCTION(this);
-    for (AddressBlockIterator iter = AddressBlockBegin(); iter != AddressBlockEnd(); iter++)
+    for (auto iter = AddressBlockBegin(); iter != AddressBlockEnd(); iter++)
     {
         *iter = nullptr;
     }
@@ -1419,7 +1419,7 @@ PbbMessage::GetSerializedSize() const
 
     size += m_tlvList.GetSerializedSize();
 
-    for (ConstAddressBlockIterator iter = AddressBlockBegin(); iter != AddressBlockEnd(); iter++)
+    for (auto iter = AddressBlockBegin(); iter != AddressBlockEnd(); iter++)
     {
         size += (*iter)->GetSerializedSize();
     }
@@ -1474,7 +1474,7 @@ PbbMessage::Serialize(Buffer::Iterator& start) const
 
     m_tlvList.Serialize(start);
 
-    for (ConstAddressBlockIterator iter = AddressBlockBegin(); iter != AddressBlockEnd(); iter++)
+    for (auto iter = AddressBlockBegin(); iter != AddressBlockEnd(); iter++)
     {
         (*iter)->Serialize(start);
     }
@@ -1602,7 +1602,7 @@ PbbMessage::Print(std::ostream& os, int level) const
 
     m_tlvList.Print(os, level + 1);
 
-    for (ConstAddressBlockIterator iter = AddressBlockBegin(); iter != AddressBlockEnd(); iter++)
+    for (auto iter = AddressBlockBegin(); iter != AddressBlockEnd(); iter++)
     {
         (*iter)->Print(os, level + 1);
     }
@@ -1722,7 +1722,7 @@ void
 PbbMessageIpv4::SerializeOriginatorAddress(Buffer::Iterator& start) const
 {
     NS_LOG_FUNCTION(this << &start);
-    uint8_t* buffer = new uint8_t[GetAddressLength() + 1];
+    auto buffer = new uint8_t[GetAddressLength() + 1];
     Ipv4Address::ConvertFrom(GetOriginatorAddress()).Serialize(buffer);
     start.Write(buffer, GetAddressLength() + 1);
     delete[] buffer;
@@ -1732,7 +1732,7 @@ Address
 PbbMessageIpv4::DeserializeOriginatorAddress(Buffer::Iterator& start) const
 {
     NS_LOG_FUNCTION(this << &start);
-    uint8_t* buffer = new uint8_t[GetAddressLength() + 1];
+    auto buffer = new uint8_t[GetAddressLength() + 1];
     start.Read(buffer, GetAddressLength() + 1);
     Address result = Ipv4Address::Deserialize(buffer);
     delete[] buffer;
@@ -1773,7 +1773,7 @@ void
 PbbMessageIpv6::SerializeOriginatorAddress(Buffer::Iterator& start) const
 {
     NS_LOG_FUNCTION(this << &start);
-    uint8_t* buffer = new uint8_t[GetAddressLength() + 1];
+    auto buffer = new uint8_t[GetAddressLength() + 1];
     Ipv6Address::ConvertFrom(GetOriginatorAddress()).Serialize(buffer);
     start.Write(buffer, GetAddressLength() + 1);
     delete[] buffer;
@@ -1783,7 +1783,7 @@ Address
 PbbMessageIpv6::DeserializeOriginatorAddress(Buffer::Iterator& start) const
 {
     NS_LOG_FUNCTION(this << &start);
-    uint8_t* buffer = new uint8_t[GetAddressLength() + 1];
+    auto buffer = new uint8_t[GetAddressLength() + 1];
     start.Read(buffer, GetAddressLength() + 1);
     Address res = Ipv6Address::Deserialize(buffer);
     delete[] buffer;
@@ -2175,9 +2175,9 @@ PbbAddressBlock::GetSerializedSize() const
     }
     else if (AddressSize() > 0)
     {
-        uint8_t* head = new uint8_t[GetAddressLength()];
+        auto head = new uint8_t[GetAddressLength()];
         uint8_t headlen = 0;
-        uint8_t* tail = new uint8_t[GetAddressLength()];
+        auto tail = new uint8_t[GetAddressLength()];
         uint8_t taillen = 0;
 
         GetHeadTail(head, headlen, tail, taillen);
@@ -2221,7 +2221,7 @@ PbbAddressBlock::Serialize(Buffer::Iterator& start) const
 
     if (AddressSize() == 1)
     {
-        uint8_t* buf = new uint8_t[GetAddressLength()];
+        auto buf = new uint8_t[GetAddressLength()];
         SerializeAddress(buf, AddressBegin());
         start.Write(buf, GetAddressLength());
 
@@ -2235,8 +2235,8 @@ PbbAddressBlock::Serialize(Buffer::Iterator& start) const
     }
     else if (AddressSize() > 0)
     {
-        uint8_t* head = new uint8_t[GetAddressLength()];
-        uint8_t* tail = new uint8_t[GetAddressLength()];
+        auto head = new uint8_t[GetAddressLength()];
+        auto tail = new uint8_t[GetAddressLength()];
         uint8_t headlen = 0;
         uint8_t taillen = 0;
 
@@ -2266,9 +2266,8 @@ PbbAddressBlock::Serialize(Buffer::Iterator& start) const
 
         if (headlen + taillen < GetAddressLength())
         {
-            uint8_t* mid = new uint8_t[GetAddressLength()];
-            for (PbbAddressBlock::ConstAddressIterator iter = AddressBegin(); iter != AddressEnd();
-                 iter++)
+            auto mid = new uint8_t[GetAddressLength()];
+            for (auto iter = AddressBegin(); iter != AddressEnd(); iter++)
             {
                 SerializeAddress(mid, iter);
                 start.Write(mid + headlen, GetAddressLength() - headlen - taillen);
@@ -2279,7 +2278,7 @@ PbbAddressBlock::Serialize(Buffer::Iterator& start) const
         flags |= GetPrefixFlags();
         bufref.WriteU8(flags);
 
-        for (ConstPrefixIterator iter = PrefixBegin(); iter != PrefixEnd(); iter++)
+        for (auto iter = PrefixBegin(); iter != PrefixEnd(); iter++)
         {
             start.WriteU8(*iter);
         }
@@ -2302,7 +2301,7 @@ PbbAddressBlock::Deserialize(Buffer::Iterator& start)
     {
         uint8_t headlen = 0;
         uint8_t taillen = 0;
-        uint8_t* addrtmp = new uint8_t[GetAddressLength()];
+        auto addrtmp = new uint8_t[GetAddressLength()];
         memset(addrtmp, 0, GetAddressLength());
 
         if (flags & AHAS_HEAD)
@@ -2364,7 +2363,7 @@ PbbAddressBlock::Print(std::ostream& os, int level) const
 
     os << prefix << "PbbAddressBlock {" << std::endl;
     os << prefix << "\taddresses = " << std::endl;
-    for (ConstAddressIterator iter = AddressBegin(); iter != AddressEnd(); iter++)
+    for (auto iter = AddressBegin(); iter != AddressEnd(); iter++)
     {
         os << prefix << "\t\t";
         PrintAddress(os, iter);
@@ -2372,7 +2371,7 @@ PbbAddressBlock::Print(std::ostream& os, int level) const
     }
 
     os << prefix << "\tprefixes = " << std::endl;
-    for (ConstPrefixIterator iter = PrefixBegin(); iter != PrefixEnd(); iter++)
+    for (auto iter = PrefixBegin(); iter != PrefixEnd(); iter++)
     {
         os << prefix << "\t\t" << (int)(*iter) << std::endl;
     }
@@ -2453,15 +2452,14 @@ PbbAddressBlock::GetHeadTail(uint8_t* head, uint8_t& headlen, uint8_t* tail, uin
     taillen = headlen;
 
     /* Temporary automatic buffers to store serialized addresses */
-    uint8_t* buflast = new uint8_t[GetAddressLength()];
-    uint8_t* bufcur = new uint8_t[GetAddressLength()];
+    auto buflast = new uint8_t[GetAddressLength()];
+    auto bufcur = new uint8_t[GetAddressLength()];
     uint8_t* tmp;
 
     SerializeAddress(buflast, AddressBegin());
 
     /* Skip the first item */
-    for (PbbAddressBlock::ConstAddressIterator iter = AddressBegin()++; iter != AddressEnd();
-         iter++)
+    for (auto iter = AddressBegin()++; iter != AddressEnd(); iter++)
     {
         SerializeAddress(bufcur, iter);
 

@@ -255,7 +255,7 @@ Time::SetResolution(Unit unit, Resolution* resolution, const bool convert /* = t
             info->isValid = false;
             continue;
         }
-        int64_t factor = static_cast<int64_t>(std::pow(10, std::fabs(shift)) * quotient);
+        auto factor = static_cast<int64_t>(std::pow(10, std::fabs(shift)) * quotient);
         double realFactor = std::pow(10, (double)shift) * static_cast<double>(UNIT_COEFF[i]) /
                             UNIT_COEFF[(int)unit];
         NS_LOG_DEBUG("SetResolution factor " << factor << " real factor " << realFactor);
@@ -333,9 +333,7 @@ Time::Mark(Time* const time)
     // since earlier test was outside and might be stale.
     if (g_markingTimes)
     {
-        std::pair<MarkedTimes::iterator, bool> ret;
-
-        ret = g_markingTimes->insert(time);
+        auto ret = g_markingTimes->insert(time);
         NS_LOG_LOGIC("\t[" << g_markingTimes->size() << "] recording " << time);
 
         if (!ret.second)
@@ -385,7 +383,7 @@ Time::ConvertTimes(const Unit unit)
                   "No MarkedTimes registry. "
                   "Time::SetResolution () called more than once?");
 
-    for (MarkedTimes::iterator it = g_markingTimes->begin(); it != g_markingTimes->end(); it++)
+    for (auto it = g_markingTimes->begin(); it != g_markingTimes->end(); it++)
     {
         Time* const tp = *it;
         if (!(tp->m_data == std::numeric_limits<int64_t>::min() ||
@@ -434,7 +432,7 @@ operator<<(std::ostream& os, const TimeWithUnit& timeU)
 
     if (unit == Time::AUTO)
     {
-        long double value = static_cast<long double>(timeU.m_time.GetTimeStep());
+        auto value = static_cast<long double>(timeU.m_time.GetTimeStep());
         // convert to finest scale (fs)
         value *= Scale(Time::GetResolution());
         // find the best unit
@@ -547,7 +545,7 @@ MakeTimeChecker(const Time min, const Time max)
         bool Check(const AttributeValue& value) const override
         {
             NS_LOG_FUNCTION(&value);
-            const TimeValue* v = dynamic_cast<const TimeValue*>(&value);
+            const auto v = dynamic_cast<const TimeValue*>(&value);
             if (v == nullptr)
             {
                 return false;
@@ -585,8 +583,8 @@ MakeTimeChecker(const Time min, const Time max)
         bool Copy(const AttributeValue& source, AttributeValue& destination) const override
         {
             NS_LOG_FUNCTION(&source << &destination);
-            const TimeValue* src = dynamic_cast<const TimeValue*>(&source);
-            TimeValue* dst = dynamic_cast<TimeValue*>(&destination);
+            const auto src = dynamic_cast<const TimeValue*>(&source);
+            auto dst = dynamic_cast<TimeValue*>(&destination);
             if (src == nullptr || dst == nullptr)
             {
                 return false;

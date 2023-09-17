@@ -56,7 +56,7 @@ Ipv6PmtuCache::~Ipv6PmtuCache()
 void
 Ipv6PmtuCache::DoDispose()
 {
-    for (pathMtuTimerIter iter = m_pathMtuTimer.begin(); iter != m_pathMtuTimer.end(); iter++)
+    for (auto iter = m_pathMtuTimer.begin(); iter != m_pathMtuTimer.end(); iter++)
     {
         iter->second.Cancel();
     }

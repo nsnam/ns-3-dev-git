@@ -306,7 +306,7 @@ void
 RadioEnvironmentMapHelper::RunOneIteration(double xMin, double xMax, double yMin, double yMax)
 {
     NS_LOG_FUNCTION(this << xMin << xMax << yMin << yMax);
-    std::list<RemPoint>::iterator remIt = m_rem.begin();
+    auto remIt = m_rem.begin();
     double x = 0.0;
     double y = 0.0;
     for (x = xMin; x < xMax + 0.5 * m_xStep; x += m_xStep)
@@ -342,7 +342,7 @@ RadioEnvironmentMapHelper::PrintAndReset()
 {
     NS_LOG_FUNCTION(this);
 
-    for (std::list<RemPoint>::iterator it = m_rem.begin(); it != m_rem.end(); ++it)
+    for (auto it = m_rem.begin(); it != m_rem.end(); ++it)
     {
         if (!(it->phy->IsActive()))
         {

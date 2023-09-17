@@ -113,7 +113,7 @@ UanHelper::EnableAscii(std::ostream& os, uint32_t nodeid, uint32_t deviceid)
 void
 UanHelper::EnableAscii(std::ostream& os, NetDeviceContainer d)
 {
-    for (NetDeviceContainer::Iterator i = d.Begin(); i != d.End(); ++i)
+    for (auto i = d.Begin(); i != d.End(); ++i)
     {
         Ptr<NetDevice> dev = *i;
         EnableAscii(os, dev->GetNode()->GetId(), dev->GetIfIndex());
@@ -124,7 +124,7 @@ void
 UanHelper::EnableAscii(std::ostream& os, NodeContainer n)
 {
     NetDeviceContainer devs;
-    for (NodeContainer::Iterator i = n.Begin(); i != n.End(); ++i)
+    for (auto i = n.Begin(); i != n.End(); ++i)
     {
         Ptr<Node> node = *i;
         for (uint32_t j = 0; j < node->GetNDevices(); ++j)
@@ -156,7 +156,7 @@ NetDeviceContainer
 UanHelper::Install(NodeContainer c, Ptr<UanChannel> channel) const
 {
     NetDeviceContainer devices;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); i++)
+    for (auto i = c.Begin(); i != c.End(); i++)
     {
         Ptr<Node> node = *i;
 
@@ -193,7 +193,7 @@ UanHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
 {
     int64_t currentStream = stream;
     Ptr<NetDevice> netDevice;
-    for (NetDeviceContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         netDevice = (*i);
         Ptr<UanNetDevice> uan = DynamicCast<UanNetDevice>(netDevice);

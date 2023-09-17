@@ -303,8 +303,7 @@ NamesPriv::Clear()
     // Every name is associated with an object in the object map, so freeing the
     // NameNodes in this map will free all of the memory allocated for the NameNodes
     //
-    for (std::map<Ptr<Object>, NameNode*>::iterator i = m_objectMap.begin(); i != m_objectMap.end();
-         ++i)
+    for (auto i = m_objectMap.begin(); i != m_objectMap.end(); ++i)
     {
         delete i->second;
         i->second = nullptr;
@@ -420,7 +419,7 @@ NamesPriv::Add(Ptr<Object> context, std::string name, Ptr<Object> object)
         return false;
     }
 
-    NameNode* newNode = new NameNode(node, name, object);
+    auto newNode = new NameNode(node, name, object);
     node->m_nameMap[name] = newNode;
     m_objectMap[object] = newNode;
 
@@ -525,7 +524,7 @@ NamesPriv::Rename(Ptr<Object> context, std::string oldname, std::string newname)
         return false;
     }
 
-    std::map<std::string, NameNode*>::iterator i = node->m_nameMap.find(oldname);
+    auto i = node->m_nameMap.find(oldname);
     if (i == node->m_nameMap.end())
     {
         NS_LOG_LOGIC("Old name does not exist in name map");
@@ -555,7 +554,7 @@ NamesPriv::FindName(Ptr<Object> object)
 {
     NS_LOG_FUNCTION(this << object);
 
-    std::map<Ptr<Object>, NameNode*>::iterator i = m_objectMap.find(object);
+    auto i = m_objectMap.find(object);
     if (i == m_objectMap.end())
     {
         NS_LOG_LOGIC("Object does not exist in object map");
@@ -573,7 +572,7 @@ NamesPriv::FindPath(Ptr<Object> object)
 {
     NS_LOG_FUNCTION(this << object);
 
-    std::map<Ptr<Object>, NameNode*>::iterator i = m_objectMap.find(object);
+    auto i = m_objectMap.find(object);
     if (i == m_objectMap.end())
     {
         NS_LOG_LOGIC("Object does not exist in object map");
@@ -648,7 +647,7 @@ NamesPriv::Find(std::string path)
             // There are no remaining slashes so this is the last segment of the
             // specified name.  We're done when we find it
             //
-            std::map<std::string, NameNode*>::iterator i = node->m_nameMap.find(remaining);
+            auto i = node->m_nameMap.find(remaining);
             if (i == node->m_nameMap.end())
             {
                 NS_LOG_LOGIC("Name does not exist in name map");
@@ -669,7 +668,7 @@ NamesPriv::Find(std::string path)
             offset = remaining.find('/');
             std::string segment = remaining.substr(0, offset);
 
-            std::map<std::string, NameNode*>::iterator i = node->m_nameMap.find(segment);
+            auto i = node->m_nameMap.find(segment);
             if (i == node->m_nameMap.end())
             {
                 NS_LOG_LOGIC("Name does not exist in name map");
@@ -723,7 +722,7 @@ NamesPriv::Find(Ptr<Object> context, std::string name)
         }
     }
 
-    std::map<std::string, NameNode*>::iterator i = node->m_nameMap.find(name);
+    auto i = node->m_nameMap.find(name);
     if (i == node->m_nameMap.end())
     {
         NS_LOG_LOGIC("Name does not exist in name map");
@@ -741,7 +740,7 @@ NamesPriv::IsNamed(Ptr<Object> object)
 {
     NS_LOG_FUNCTION(this << object);
 
-    std::map<Ptr<Object>, NameNode*>::iterator i = m_objectMap.find(object);
+    auto i = m_objectMap.find(object);
     if (i == m_objectMap.end())
     {
         NS_LOG_LOGIC("Object does not exist in object map, returning NameNode 0");
@@ -759,7 +758,7 @@ NamesPriv::IsDuplicateName(NameNode* node, std::string name)
 {
     NS_LOG_FUNCTION(this << node << name);
 
-    std::map<std::string, NameNode*>::iterator i = node->m_nameMap.find(name);
+    auto i = node->m_nameMap.find(name);
     if (i == node->m_nameMap.end())
     {
         NS_LOG_LOGIC("Name does not exist in name map");

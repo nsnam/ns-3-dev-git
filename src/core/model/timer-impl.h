@@ -1085,7 +1085,7 @@ void
 TimerImpl::SetArgs(T1 a1)
 {
     typedef TimerImplOne<typename TimerTraits<T1>::ParameterType> TimerImplBase;
-    TimerImplBase* impl = dynamic_cast<TimerImplBase*>(this);
+    auto impl = dynamic_cast<TimerImplBase*>(this);
     if (impl == nullptr)
     {
         NS_FATAL_ERROR("You tried to set Timer arguments incompatible with its function.");
@@ -1101,7 +1101,7 @@ TimerImpl::SetArgs(T1 a1, T2 a2)
     typedef TimerImplTwo<typename TimerTraits<T1>::ParameterType,
                          typename TimerTraits<T2>::ParameterType>
         TimerImplBase;
-    TimerImplBase* impl = dynamic_cast<TimerImplBase*>(this);
+    auto impl = dynamic_cast<TimerImplBase*>(this);
     if (impl == nullptr)
     {
         NS_FATAL_ERROR("You tried to set Timer arguments incompatible with its function.");
@@ -1118,7 +1118,7 @@ TimerImpl::SetArgs(T1 a1, T2 a2, T3 a3)
                            typename TimerTraits<T2>::ParameterType,
                            typename TimerTraits<T3>::ParameterType>
         TimerImplBase;
-    TimerImplBase* impl = dynamic_cast<TimerImplBase*>(this);
+    auto impl = dynamic_cast<TimerImplBase*>(this);
     if (impl == nullptr)
     {
         NS_FATAL_ERROR("You tried to set Timer arguments incompatible with its function.");
@@ -1136,7 +1136,7 @@ TimerImpl::SetArgs(T1 a1, T2 a2, T3 a3, T4 a4)
                           typename TimerTraits<T3>::ParameterType,
                           typename TimerTraits<T4>::ParameterType>
         TimerImplBase;
-    TimerImplBase* impl = dynamic_cast<TimerImplBase*>(this);
+    auto impl = dynamic_cast<TimerImplBase*>(this);
     if (impl == nullptr)
     {
         NS_FATAL_ERROR("You tried to set Timer arguments incompatible with its function.");
@@ -1155,7 +1155,7 @@ TimerImpl::SetArgs(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
                           typename TimerTraits<T4>::ParameterType,
                           typename TimerTraits<T5>::ParameterType>
         TimerImplBase;
-    TimerImplBase* impl = dynamic_cast<TimerImplBase*>(this);
+    auto impl = dynamic_cast<TimerImplBase*>(this);
     if (impl == nullptr)
     {
         NS_FATAL_ERROR("You tried to set Timer arguments incompatible with its function.");
@@ -1175,7 +1175,7 @@ TimerImpl::SetArgs(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
                          typename TimerTraits<T5>::ParameterType,
                          typename TimerTraits<T6>::ParameterType>
         TimerImplBase;
-    TimerImplBase* impl = dynamic_cast<TimerImplBase*>(this);
+    auto impl = dynamic_cast<TimerImplBase*>(this);
     if (impl == 0)
     {
         NS_FATAL_ERROR("You tried to set Timer arguments incompatible with its function.");

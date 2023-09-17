@@ -115,8 +115,8 @@ main(int argc, char* argv[])
 
     if (!destinationStr.empty())
     {
-        Ipv4Address v4Dst = Ipv4Address(destinationStr.c_str());
-        Ipv6Address v6Dst = Ipv6Address(destinationStr.c_str());
+        Ipv4Address v4Dst(destinationStr.c_str());
+        Ipv6Address v6Dst(destinationStr.c_str());
         if (v4Dst.IsInitialized())
         {
             useIpv6 = false;
@@ -131,8 +131,8 @@ main(int argc, char* argv[])
 
     if (!sourceStr.empty())
     {
-        Ipv4Address v4Src = Ipv4Address(sourceStr.c_str());
-        Ipv6Address v6Src = Ipv6Address(sourceStr.c_str());
+        Ipv4Address v4Src(sourceStr.c_str());
+        Ipv6Address v6Src(sourceStr.c_str());
         if (v4Src.IsInitialized())
         {
             source = v4Src;
@@ -157,7 +157,7 @@ main(int argc, char* argv[])
         }
         else
         {
-            Ipv4Address v4Dst = Ipv4Address(destinationStr.c_str());
+            Ipv4Address v4Dst(destinationStr.c_str());
             if (v4Dst.IsInitialized() && (v4Dst.IsBroadcast() || v4Dst.IsMulticast()))
             {
                 std::cout << "Specify a source address to use when pinging broadcast or multicast "

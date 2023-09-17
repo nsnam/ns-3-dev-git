@@ -89,10 +89,8 @@ Ns3WimaxCsParamTlvTestCase::DoRun()
     packet->RemoveHeader(tlvReceived);
     if (tlvReceived.GetType() == Tlv::UPLINK_SERVICE_FLOW)
     {
-        SfVectorTlvValue* sfVecValue = (SfVectorTlvValue*)tlvReceived.PeekValue();
-        for (std::vector<Tlv*>::const_iterator iter = sfVecValue->Begin();
-             iter != sfVecValue->End();
-             ++iter)
+        auto sfVecValue = (SfVectorTlvValue*)tlvReceived.PeekValue();
+        for (auto iter = sfVecValue->Begin(); iter != sfVecValue->End(); ++iter)
         {
             if ((*iter)->GetType() == SfVectorTlvValue::IPV4_CS_Parameters)
             {

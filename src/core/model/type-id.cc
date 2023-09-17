@@ -443,7 +443,7 @@ IidManager::AllocateUid(std::string name)
     m_information.push_back(information);
     std::size_t tuid = m_information.size();
     NS_ASSERT(tuid <= 0xffff);
-    uint16_t uid = static_cast<uint16_t>(tuid);
+    auto uid = static_cast<uint16_t>(tuid);
 
     // Add to both maps:
     m_namemap.insert(std::make_pair(name, uid));
@@ -512,7 +512,7 @@ IidManager::GetUid(std::string name) const
 {
     NS_LOG_FUNCTION(IID << name);
     uint16_t uid = 0;
-    namemap_t::const_iterator it = m_namemap.find(name);
+    auto it = m_namemap.find(name);
     if (it != m_namemap.end())
     {
         uid = it->second;
@@ -525,7 +525,7 @@ uint16_t
 IidManager::GetUid(TypeId::hash_t hash) const
 {
     NS_LOG_FUNCTION(IID << hash);
-    hashmap_t::const_iterator it = m_hashmap.find(hash);
+    auto it = m_hashmap.find(hash);
     uint16_t uid = 0;
     if (it != m_hashmap.end())
     {
@@ -627,10 +627,7 @@ IidManager::HasAttribute(uint16_t uid, std::string name)
     IidInformation* information = LookupInformation(uid);
     while (true)
     {
-        for (std::vector<TypeId::AttributeInformation>::const_iterator i =
-                 information->attributes.begin();
-             i != information->attributes.end();
-             ++i)
+        for (auto i = information->attributes.begin(); i != information->attributes.end(); ++i)
         {
             if (i->name == name)
             {
@@ -729,10 +726,7 @@ IidManager::HasTraceSource(uint16_t uid, std::string name)
     IidInformation* information = LookupInformation(uid);
     while (true)
     {
-        for (std::vector<TypeId::TraceSourceInformation>::const_iterator i =
-                 information->traceSources.begin();
-             i != information->traceSources.end();
-             ++i)
+        for (auto i = information->traceSources.begin(); i != information->traceSources.end(); ++i)
         {
             if (i->name == name)
             {

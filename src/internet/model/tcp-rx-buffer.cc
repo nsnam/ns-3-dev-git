@@ -172,7 +172,7 @@ TcpRxBuffer::Add(Ptr<Packet> p, const TcpHeader& tcph)
         }
     }
     // Remove overlapped bytes from packet
-    BufIterator i = m_data.begin();
+    auto i = m_data.begin();
     while (i != m_data.end() && i->first <= tailSeq)
     {
         SequenceNumber32 lastByteSeq = i->first + SequenceNumber32(i->second->GetSize());
@@ -204,7 +204,7 @@ TcpRxBuffer::Add(Ptr<Packet> p, const TcpHeader& tcph)
     else
     {
         uint32_t start = static_cast<uint32_t>(headSeq - tcph.GetSequenceNumber());
-        uint32_t length = static_cast<uint32_t>(tailSeq - headSeq);
+        auto length = static_cast<uint32_t>(tailSeq - headSeq);
         p = p->CreateFragment(start, length);
         NS_ASSERT(length == p->GetSize());
     }
@@ -292,7 +292,7 @@ TcpRxBuffer::UpdateSackList(const SequenceNumber32& head, const SequenceNumber32
     // We have inserted the block at the beginning of the list. Now, we should
     // check if any existing blocks overlap with that.
     bool updated = false;
-    TcpOptionSack::SackList::iterator it = m_sackList.begin();
+    auto it = m_sackList.begin();
     TcpOptionSack::SackBlock begin = *it;
     TcpOptionSack::SackBlock merged;
     ++it;
@@ -353,8 +353,7 @@ TcpRxBuffer::ClearSackList(const SequenceNumber32& seq)
 {
     NS_LOG_FUNCTION(this << seq);
 
-    TcpOptionSack::SackList::iterator it;
-    for (it = m_sackList.begin(); it != m_sackList.end();)
+    for (auto it = m_sackList.begin(); it != m_sackList.end();)
     {
         TcpOptionSack::SackBlock block = *it;
         NS_ASSERT(block.first < block.second);

@@ -42,7 +42,7 @@ DhcpHeader::DhcpHeader()
     m_secs = 0;
     m_hops = 0;
     m_flags = 0;
-    Ipv4Address addr = Ipv4Address("0.0.0.0");
+    Ipv4Address addr("0.0.0.0");
     m_yiAddr = addr;
     m_ciAddr = addr;
     m_siAddr = addr;

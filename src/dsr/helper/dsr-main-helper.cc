@@ -81,7 +81,7 @@ DsrMainHelper::Install(DsrHelper& dsrHelper, NodeContainer nodes)
     NS_LOG_DEBUG("Passed node container");
     delete m_dsrHelper;
     m_dsrHelper = dsrHelper.Copy();
-    for (NodeContainer::Iterator i = nodes.Begin(); i != nodes.End(); ++i)
+    for (auto i = nodes.Begin(); i != nodes.End(); ++i)
     {
         Install(*i);
     }

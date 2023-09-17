@@ -56,8 +56,7 @@ void
 Ipv4ListRouting::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    for (Ipv4RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         // Note:  Calling dispose on these protocols causes memory leak
@@ -77,9 +76,7 @@ Ipv4ListRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit u
                          << ", Time: " << Now().As(unit)
                          << ", Local time: " << m_ipv4->GetObject<Node>()->GetLocalTime().As(unit)
                          << ", Ipv4ListRouting table" << std::endl;
-    for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin();
-         i != m_routingProtocols.end();
-         i++)
+    for (auto i = m_routingProtocols.begin(); i != m_routingProtocols.end(); i++)
     {
         *stream->GetStream() << "  Priority: " << (*i).first
                              << " Protocol: " << (*i).second->GetInstanceTypeId() << std::endl;
@@ -91,8 +88,7 @@ void
 Ipv4ListRouting::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
-    for (Ipv4RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         Ptr<Ipv4RoutingProtocol> protocol = (*rprotoIter).second;
@@ -110,9 +106,7 @@ Ipv4ListRouting::RouteOutput(Ptr<Packet> p,
     NS_LOG_FUNCTION(this << p << header.GetDestination() << header.GetSource() << oif << sockerr);
     Ptr<Ipv4Route> route;
 
-    for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin();
-         i != m_routingProtocols.end();
-         i++)
+    for (auto i = m_routingProtocols.begin(); i != m_routingProtocols.end(); i++)
     {
         NS_LOG_LOGIC("Checking protocol " << (*i).second->GetInstanceTypeId() << " with priority "
                                           << (*i).first);
@@ -182,8 +176,7 @@ Ipv4ListRouting::RouteInput(Ptr<const Packet> p,
     {
         downstreamLcb = MakeNullCallback<void, Ptr<const Packet>, const Ipv4Header&, uint32_t>();
     }
-    for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         if ((*rprotoIter).second->RouteInput(p, header, idev, ucb, mcb, downstreamLcb, ecb))
@@ -201,8 +194,7 @@ void
 Ipv4ListRouting::NotifyInterfaceUp(uint32_t interface)
 {
     NS_LOG_FUNCTION(this << interface);
-    for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->NotifyInterfaceUp(interface);
@@ -213,8 +205,7 @@ void
 Ipv4ListRouting::NotifyInterfaceDown(uint32_t interface)
 {
     NS_LOG_FUNCTION(this << interface);
-    for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->NotifyInterfaceDown(interface);
@@ -225,8 +216,7 @@ void
 Ipv4ListRouting::NotifyAddAddress(uint32_t interface, Ipv4InterfaceAddress address)
 {
     NS_LOG_FUNCTION(this << interface << address);
-    for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->NotifyAddAddress(interface, address);
@@ -237,8 +227,7 @@ void
 Ipv4ListRouting::NotifyRemoveAddress(uint32_t interface, Ipv4InterfaceAddress address)
 {
     NS_LOG_FUNCTION(this << interface << address);
-    for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->NotifyRemoveAddress(interface, address);
@@ -250,8 +239,7 @@ Ipv4ListRouting::SetIpv4(Ptr<Ipv4> ipv4)
 {
     NS_LOG_FUNCTION(this << ipv4);
     NS_ASSERT(!m_ipv4);
-    for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++)
     {
         (*rprotoIter).second->SetIpv4(ipv4);
@@ -288,8 +276,7 @@ Ipv4ListRouting::GetRoutingProtocol(uint32_t index, int16_t& priority) const
                                                                         << " out of range");
     }
     uint32_t i = 0;
-    for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin();
-         rprotoIter != m_routingProtocols.end();
+    for (auto rprotoIter = m_routingProtocols.begin(); rprotoIter != m_routingProtocols.end();
          rprotoIter++, i++)
     {
         if (i == index)

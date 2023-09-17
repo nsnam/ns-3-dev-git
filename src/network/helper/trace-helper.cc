@@ -438,7 +438,7 @@ PcapHelperForDevice::EnablePcap(std::string prefix,
 void
 PcapHelperForDevice::EnablePcap(std::string prefix, NetDeviceContainer d, bool promiscuous)
 {
-    for (NetDeviceContainer::Iterator i = d.Begin(); i != d.End(); ++i)
+    for (auto i = d.Begin(); i != d.End(); ++i)
     {
         Ptr<NetDevice> dev = *i;
         EnablePcap(prefix, dev, promiscuous);
@@ -449,7 +449,7 @@ void
 PcapHelperForDevice::EnablePcap(std::string prefix, NodeContainer n, bool promiscuous)
 {
     NetDeviceContainer devs;
-    for (NodeContainer::Iterator i = n.Begin(); i != n.End(); ++i)
+    for (auto i = n.Begin(); i != n.End(); ++i)
     {
         Ptr<Node> node = *i;
         for (uint32_t j = 0; j < node->GetNDevices(); ++j)
@@ -474,7 +474,7 @@ PcapHelperForDevice::EnablePcap(std::string prefix,
 {
     NodeContainer n = NodeContainer::GetGlobal();
 
-    for (NodeContainer::Iterator i = n.Begin(); i != n.End(); ++i)
+    for (auto i = n.Begin(); i != n.End(); ++i)
     {
         Ptr<Node> node = *i;
         if (node->GetId() != nodeid)
@@ -567,7 +567,7 @@ AsciiTraceHelperForDevice::EnableAsciiImpl(Ptr<OutputStreamWrapper> stream,
                                            std::string prefix,
                                            NetDeviceContainer d)
 {
-    for (NetDeviceContainer::Iterator i = d.Begin(); i != d.End(); ++i)
+    for (auto i = d.Begin(); i != d.End(); ++i)
     {
         Ptr<NetDevice> dev = *i;
         EnableAsciiInternal(stream, prefix, dev, false);
@@ -601,7 +601,7 @@ AsciiTraceHelperForDevice::EnableAsciiImpl(Ptr<OutputStreamWrapper> stream,
                                            NodeContainer n)
 {
     NetDeviceContainer devs;
-    for (NodeContainer::Iterator i = n.Begin(); i != n.End(); ++i)
+    for (auto i = n.Begin(); i != n.End(); ++i)
     {
         Ptr<Node> node = *i;
         for (uint32_t j = 0; j < node->GetNDevices(); ++j)
@@ -665,7 +665,7 @@ AsciiTraceHelperForDevice::EnableAsciiImpl(Ptr<OutputStreamWrapper> stream,
 {
     NodeContainer n = NodeContainer::GetGlobal();
 
-    for (NodeContainer::Iterator i = n.Begin(); i != n.End(); ++i)
+    for (auto i = n.Begin(); i != n.End(); ++i)
     {
         Ptr<Node> node = *i;
         if (node->GetId() != nodeid)

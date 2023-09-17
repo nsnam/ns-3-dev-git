@@ -106,7 +106,7 @@ TcpHybla::SlowStart(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
          */
 
         double increment = std::pow(2, m_rho) - 1.0;
-        uint32_t incr = static_cast<uint32_t>(increment * tcb->m_segmentSize);
+        auto incr = static_cast<uint32_t>(increment * tcb->m_segmentSize);
         NS_LOG_INFO("Slow start: inc=" << increment);
 
         tcb->m_cWnd = std::min(tcb->m_cWnd + incr, tcb->m_ssThresh);
@@ -145,7 +145,7 @@ TcpHybla::CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
     if (m_cWndCnt >= 1.0)
     {
         // double to int truncates every time.
-        uint32_t inc = static_cast<uint32_t>(m_cWndCnt);
+        auto inc = static_cast<uint32_t>(m_cWndCnt);
         m_cWndCnt -= inc;
 
         NS_ASSERT(m_cWndCnt >= 0.0);

@@ -69,7 +69,7 @@ WifiRemoteStation*
 ConstantRateWifiManager::DoCreateStation() const
 {
     NS_LOG_FUNCTION(this);
-    WifiRemoteStation* station = new WifiRemoteStation();
+    auto station = new WifiRemoteStation();
     return station;
 }
 

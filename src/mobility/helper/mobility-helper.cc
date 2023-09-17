@@ -126,7 +126,7 @@ MobilityHelper::Install(std::string nodeName) const
 void
 MobilityHelper::Install(NodeContainer c) const
 {
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Install(*i);
     }
@@ -201,7 +201,7 @@ MobilityHelper::EnableAscii(Ptr<OutputStreamWrapper> stream, uint32_t nodeid)
 void
 MobilityHelper::EnableAscii(Ptr<OutputStreamWrapper> stream, NodeContainer n)
 {
-    for (NodeContainer::Iterator i = n.Begin(); i != n.End(); ++i)
+    for (auto i = n.Begin(); i != n.End(); ++i)
     {
         EnableAscii(stream, (*i)->GetId());
     }
@@ -219,7 +219,7 @@ MobilityHelper::AssignStreams(NodeContainer c, int64_t stream)
     int64_t currentStream = stream;
     Ptr<Node> node;
     Ptr<MobilityModel> mobility;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         node = (*i);
         mobility = node->GetObject<MobilityModel>();

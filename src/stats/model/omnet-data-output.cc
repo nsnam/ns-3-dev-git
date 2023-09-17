@@ -75,7 +75,7 @@ isNumeric(const std::string& s)
     bool exponentSeen = false;
     char last = '\0';
 
-    for (std::string::const_iterator it = s.begin(); it != s.end(); it++)
+    for (auto it = s.begin(); it != s.end(); it++)
     {
         if ((*it == '.') && (decimalPtSeen))
         {
@@ -120,7 +120,7 @@ OmnetDataOutput::Output(DataCollector& dc)
     scalarFile << "attr measurement \"" << dc.GetInputLabel() << "\"" << std::endl;
     scalarFile << "attr description \"" << dc.GetDescription() << "\"" << std::endl;
 
-    for (MetadataList::iterator i = dc.MetadataBegin(); i != dc.MetadataEnd(); i++)
+    for (auto i = dc.MetadataBegin(); i != dc.MetadataEnd(); i++)
     {
         std::pair<std::string, std::string> blob = (*i);
         scalarFile << "attr \"" << blob.first << "\" \"" << blob.second << "\"" << std::endl;
@@ -131,7 +131,7 @@ OmnetDataOutput::Output(DataCollector& dc)
     {
         scalarFile << "scalar . measurement \"" << dc.GetInputLabel() << "\"" << std::endl;
     }
-    for (MetadataList::iterator i = dc.MetadataBegin(); i != dc.MetadataEnd(); i++)
+    for (auto i = dc.MetadataBegin(); i != dc.MetadataEnd(); i++)
     {
         std::pair<std::string, std::string> blob = (*i);
         if (isNumeric(blob.second))
@@ -142,8 +142,7 @@ OmnetDataOutput::Output(DataCollector& dc)
     }
     OmnetOutputCallback callback(&scalarFile);
 
-    for (DataCalculatorList::iterator i = dc.DataCalculatorBegin(); i != dc.DataCalculatorEnd();
-         i++)
+    for (auto i = dc.DataCalculatorBegin(); i != dc.DataCalculatorEnd(); i++)
     {
         (*i)->Output(callback);
     }

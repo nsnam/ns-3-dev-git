@@ -1578,9 +1578,7 @@ Bug2843TestCase::StoreDistinctTuple(std::string context, Ptr<SpectrumSignalParam
     FreqWidthSubbandModulationTuple tupleForCurrentTx =
         std::make_tuple(startingFreq, m_channelWidth, numBands, modulationClass);
     bool found = false;
-    for (std::vector<FreqWidthSubbandModulationTuple>::const_iterator it = m_distinctTuples.begin();
-         it != m_distinctTuples.end();
-         it++)
+    for (auto it = m_distinctTuples.begin(); it != m_distinctTuples.end(); it++)
     {
         if (*it == tupleForCurrentTx)
         {

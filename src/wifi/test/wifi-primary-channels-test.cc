@@ -665,7 +665,7 @@ WifiPrimaryChannelsTest::DoRun()
         {
             for (unsigned int type = 0; type < 7; type++)
             {
-                HeRu::RuType ruType = static_cast<HeRu::RuType>(type);
+                auto ruType = static_cast<HeRu::RuType>(type);
                 std::size_t nRus = HeRu::GetNRus(txChannelWidth, ruType);
                 std::set<uint8_t> txBss;
                 if (nRus > 0)
@@ -713,7 +713,7 @@ WifiPrimaryChannelsTest::DoRun()
         {
             for (unsigned int type = 0; type < 7; type++)
             {
-                HeRu::RuType ruType = static_cast<HeRu::RuType>(type);
+                auto ruType = static_cast<HeRu::RuType>(type);
                 std::size_t nRus = HeRu::GetNRus(txChannelWidth, ruType);
                 std::set<uint8_t> txBss;
                 if (nRus > 0)

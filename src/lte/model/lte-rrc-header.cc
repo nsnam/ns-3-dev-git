@@ -138,7 +138,7 @@ RrcAsn1Header::SerializeDrbToAddModList(std::list<LteRrcSap::DrbToAddMod> drbToA
     SerializeSequenceOf(drbToAddModList.size(), MAX_DRB, 1);
 
     // Serialize the elements in the sequence-of list
-    std::list<LteRrcSap::DrbToAddMod>::iterator it = drbToAddModList.begin();
+    auto it = drbToAddModList.begin();
     for (; it != drbToAddModList.end(); it++)
     {
         // Serialize DRB-ToAddMod sequence
@@ -226,7 +226,7 @@ RrcAsn1Header::SerializeSrbToAddModList(std::list<LteRrcSap::SrbToAddMod> srbToA
     SerializeSequenceOf(srbToAddModList.size(), 2, 1);
 
     // Serialize the elements in the sequence-of list
-    std::list<LteRrcSap::SrbToAddMod>::iterator it = srbToAddModList.begin();
+    auto it = srbToAddModList.begin();
     for (; it != srbToAddModList.end(); it++)
     {
         // Serialize SRB-ToAddMod sequence
@@ -464,7 +464,7 @@ RrcAsn1Header::SerializeRadioResourceConfigDedicated(
     if (isDrbToReleaseListPresent)
     {
         SerializeSequenceOf(radioResourceConfigDedicated.drbToReleaseList.size(), MAX_DRB, 1);
-        std::list<uint8_t>::iterator it = radioResourceConfigDedicated.drbToReleaseList.begin();
+        auto it = radioResourceConfigDedicated.drbToReleaseList.begin();
         for (; it != radioResourceConfigDedicated.drbToReleaseList.end(); it++)
         {
             // DRB-Identity ::= INTEGER (1..32)
@@ -718,8 +718,7 @@ RrcAsn1Header::SerializeMeasResults(LteRrcSap::MeasResults measResults) const
         SerializeSequenceOf(measResults.measResultListEutra.size(), MAX_CELL_REPORT, 1);
 
         // serialize MeasResultEutra elements in the list
-        std::list<LteRrcSap::MeasResultEutra>::iterator it;
-        for (it = measResults.measResultListEutra.begin();
+        for (auto it = measResults.measResultListEutra.begin();
              it != measResults.measResultListEutra.end();
              it++)
         {
@@ -745,8 +744,7 @@ RrcAsn1Header::SerializeMeasResults(LteRrcSap::MeasResults measResults) const
                 if (!it->cgiInfo.plmnIdentityList.empty())
                 {
                     SerializeSequenceOf(it->cgiInfo.plmnIdentityList.size(), 5, 1);
-                    std::list<uint32_t>::iterator it2;
-                    for (it2 = it->cgiInfo.plmnIdentityList.begin();
+                    for (auto it2 = it->cgiInfo.plmnIdentityList.begin();
                          it2 != it->cgiInfo.plmnIdentityList.end();
                          it2++)
                     {
@@ -1141,7 +1139,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
     if (!measConfig.measObjectToRemoveList.empty())
     {
         SerializeSequenceOf(measConfig.measObjectToRemoveList.size(), MAX_OBJECT_ID, 1);
-        for (std::list<uint8_t>::iterator it = measConfig.measObjectToRemoveList.begin();
+        for (auto it = measConfig.measObjectToRemoveList.begin();
              it != measConfig.measObjectToRemoveList.end();
              it++)
         {
@@ -1152,8 +1150,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
     if (!measConfig.measObjectToAddModList.empty())
     {
         SerializeSequenceOf(measConfig.measObjectToAddModList.size(), MAX_OBJECT_ID, 1);
-        for (std::list<LteRrcSap::MeasObjectToAddMod>::iterator it =
-                 measConfig.measObjectToAddModList.begin();
+        for (auto it = measConfig.measObjectToAddModList.begin();
              it != measConfig.measObjectToAddModList.end();
              it++)
         {
@@ -1183,8 +1180,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
             if (!it->measObjectEutra.cellsToRemoveList.empty())
             {
                 SerializeSequenceOf(it->measObjectEutra.cellsToRemoveList.size(), MAX_CELL_MEAS, 1);
-                for (std::list<uint8_t>::iterator it2 =
-                         it->measObjectEutra.cellsToRemoveList.begin();
+                for (auto it2 = it->measObjectEutra.cellsToRemoveList.begin();
                      it2 != it->measObjectEutra.cellsToRemoveList.end();
                      it2++)
                 {
@@ -1195,8 +1191,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
             if (!it->measObjectEutra.cellsToAddModList.empty())
             {
                 SerializeSequenceOf(it->measObjectEutra.cellsToAddModList.size(), MAX_CELL_MEAS, 1);
-                for (std::list<LteRrcSap::CellsToAddMod>::iterator it2 =
-                         it->measObjectEutra.cellsToAddModList.begin();
+                for (auto it2 = it->measObjectEutra.cellsToAddModList.begin();
                      it2 != it->measObjectEutra.cellsToAddModList.end();
                      it2++)
                 {
@@ -1218,8 +1213,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
                 SerializeSequenceOf(it->measObjectEutra.blackCellsToRemoveList.size(),
                                     MAX_CELL_MEAS,
                                     1);
-                for (std::list<uint8_t>::iterator it2 =
-                         it->measObjectEutra.blackCellsToRemoveList.begin();
+                for (auto it2 = it->measObjectEutra.blackCellsToRemoveList.begin();
                      it2 != it->measObjectEutra.blackCellsToRemoveList.end();
                      it2++)
                 {
@@ -1232,8 +1226,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
                 SerializeSequenceOf(it->measObjectEutra.blackCellsToAddModList.size(),
                                     MAX_CELL_MEAS,
                                     1);
-                for (std::list<LteRrcSap::BlackCellsToAddMod>::iterator it2 =
-                         it->measObjectEutra.blackCellsToAddModList.begin();
+                for (auto it2 = it->measObjectEutra.blackCellsToAddModList.begin();
                      it2 != it->measObjectEutra.blackCellsToAddModList.end();
                      it2++)
                 {
@@ -1242,7 +1235,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
 
                     // Serialize PhysCellIdRange
                     // range optional
-                    std::bitset<1> rangePresent = std::bitset<1>(it2->physCellIdRange.haveRange);
+                    std::bitset<1> rangePresent(it2->physCellIdRange.haveRange);
                     SerializeSequence(rangePresent, false);
                     SerializeInteger(it2->physCellIdRange.start, 0, 503);
                     if (it2->physCellIdRange.haveRange)
@@ -1308,7 +1301,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
     if (!measConfig.reportConfigToRemoveList.empty())
     {
         SerializeSequenceOf(measConfig.reportConfigToRemoveList.size(), MAX_REPORT_CONFIG_ID, 1);
-        for (std::list<uint8_t>::iterator it = measConfig.reportConfigToRemoveList.begin();
+        for (auto it = measConfig.reportConfigToRemoveList.begin();
              it != measConfig.reportConfigToRemoveList.end();
              it++)
         {
@@ -1319,8 +1312,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
     if (!measConfig.reportConfigToAddModList.empty())
     {
         SerializeSequenceOf(measConfig.reportConfigToAddModList.size(), MAX_REPORT_CONFIG_ID, 1);
-        for (std::list<LteRrcSap::ReportConfigToAddMod>::iterator it =
-                 measConfig.reportConfigToAddModList.begin();
+        for (auto it = measConfig.reportConfigToAddModList.begin();
              it != measConfig.reportConfigToAddModList.end();
              it++)
         {
@@ -1545,7 +1537,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
     if (!measConfig.measIdToRemoveList.empty())
     {
         SerializeSequenceOf(measConfig.measIdToRemoveList.size(), MAX_MEAS_ID, 1);
-        for (std::list<uint8_t>::iterator it = measConfig.measIdToRemoveList.begin();
+        for (auto it = measConfig.measIdToRemoveList.begin();
              it != measConfig.measIdToRemoveList.end();
              it++)
         {
@@ -1556,8 +1548,7 @@ RrcAsn1Header::SerializeMeasConfig(LteRrcSap::MeasConfig measConfig) const
     if (!measConfig.measIdToAddModList.empty())
     {
         SerializeSequenceOf(measConfig.measIdToAddModList.size(), MAX_MEAS_ID, 1);
-        for (std::list<LteRrcSap::MeasIdToAddMod>::iterator it =
-                 measConfig.measIdToAddModList.begin();
+        for (auto it = measConfig.measIdToAddModList.begin();
              it != measConfig.measIdToAddModList.end();
              it++)
         {
@@ -3067,8 +3058,7 @@ RrcAsn1Header::Print(std::ostream& os,
                      LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) const
 {
     os << "   srbToAddModList: " << std::endl;
-    std::list<LteRrcSap::SrbToAddMod>::iterator it =
-        radioResourceConfigDedicated.srbToAddModList.begin();
+    auto it = radioResourceConfigDedicated.srbToAddModList.begin();
     for (; it != radioResourceConfigDedicated.srbToAddModList.end(); it++)
     {
         os << "      srbIdentity: " << (int)it->srbIdentity << std::endl;
@@ -3084,8 +3074,7 @@ RrcAsn1Header::Print(std::ostream& os,
     os << std::endl;
 
     os << "   drbToAddModList: " << std::endl;
-    std::list<LteRrcSap::DrbToAddMod>::iterator it2 =
-        radioResourceConfigDedicated.drbToAddModList.begin();
+    auto it2 = radioResourceConfigDedicated.drbToAddModList.begin();
     for (; it2 != radioResourceConfigDedicated.drbToAddModList.end(); it2++)
     {
         os << "      epsBearerIdentity: " << (int)it2->epsBearerIdentity << std::endl;
@@ -3104,7 +3093,7 @@ RrcAsn1Header::Print(std::ostream& os,
     os << std::endl;
 
     os << "   drbToReleaseList: ";
-    std::list<uint8_t>::iterator it3 = radioResourceConfigDedicated.drbToReleaseList.begin();
+    auto it3 = radioResourceConfigDedicated.drbToReleaseList.begin();
     for (; it3 != radioResourceConfigDedicated.drbToReleaseList.end(); it3++)
     {
         os << (int)*it3 << ", ";
@@ -5600,7 +5589,7 @@ RrcConnectionReconfigurationHeader::Print(std::ostream& os) const
         {
             os << "  measObjectToRemoveList: ";
             std::list<uint8_t> auxList = m_measConfig.measObjectToRemoveList;
-            std::list<uint8_t>::iterator it = auxList.begin();
+            auto it = auxList.begin();
             for (; it != auxList.end(); it++)
             {
                 os << (int)*it << ", ";
@@ -5611,7 +5600,7 @@ RrcConnectionReconfigurationHeader::Print(std::ostream& os) const
         {
             os << "  reportConfigToRemoveList: ";
             std::list<uint8_t> auxList = m_measConfig.reportConfigToRemoveList;
-            std::list<uint8_t>::iterator it = auxList.begin();
+            auto it = auxList.begin();
             for (; it != auxList.end(); it++)
             {
                 os << (int)*it << ", ";
@@ -5622,7 +5611,7 @@ RrcConnectionReconfigurationHeader::Print(std::ostream& os) const
         {
             os << "  measIdToRemoveList: ";
             std::list<uint8_t> auxList = m_measConfig.measIdToRemoveList;
-            std::list<uint8_t>::iterator it = auxList.begin();
+            auto it = auxList.begin();
             for (; it != auxList.end(); it++)
             {
                 os << (int)*it << ", ";
@@ -5634,7 +5623,7 @@ RrcConnectionReconfigurationHeader::Print(std::ostream& os) const
         {
             os << "  measObjectToAddMod: " << std::endl;
             std::list<LteRrcSap::MeasObjectToAddMod> auxList = m_measConfig.measObjectToAddModList;
-            std::list<LteRrcSap::MeasObjectToAddMod>::iterator it = auxList.begin();
+            auto it = auxList.begin();
             for (; it != auxList.end(); it++)
             {
                 os << "    measObjectId: " << (int)it->measObjectId << std::endl;
@@ -5651,7 +5640,7 @@ RrcConnectionReconfigurationHeader::Print(std::ostream& os) const
                 {
                     os << "    cellsToRemoveList: ";
                     std::list<uint8_t> auxList = it->measObjectEutra.cellsToRemoveList;
-                    std::list<uint8_t>::iterator it = auxList.begin();
+                    auto it = auxList.begin();
                     for (; it != auxList.end(); it++)
                     {
                         os << (int)*it << ", ";
@@ -5663,7 +5652,7 @@ RrcConnectionReconfigurationHeader::Print(std::ostream& os) const
                 {
                     os << "    blackCellsToRemoveList: ";
                     std::list<uint8_t> auxList = it->measObjectEutra.blackCellsToRemoveList;
-                    std::list<uint8_t>::iterator it = auxList.begin();
+                    auto it = auxList.begin();
                     for (; it != auxList.end(); it++)
                     {
                         os << (int)*it << ", ";
@@ -5676,7 +5665,7 @@ RrcConnectionReconfigurationHeader::Print(std::ostream& os) const
                     os << "    cellsToAddModList: " << std::endl;
                     std::list<LteRrcSap::CellsToAddMod> auxList =
                         it->measObjectEutra.cellsToAddModList;
-                    std::list<LteRrcSap::CellsToAddMod>::iterator it = auxList.begin();
+                    auto it = auxList.begin();
                     for (; it != auxList.end(); it++)
                     {
                         os << "      cellIndex: " << (int)it->cellIndex << std::endl;
@@ -5692,7 +5681,7 @@ RrcConnectionReconfigurationHeader::Print(std::ostream& os) const
                     os << "    blackCellsToAddModList: " << std::endl;
                     std::list<LteRrcSap::BlackCellsToAddMod> auxList =
                         it->measObjectEutra.blackCellsToAddModList;
-                    std::list<LteRrcSap::BlackCellsToAddMod>::iterator it = auxList.begin();
+                    auto it = auxList.begin();
                     for (; it != auxList.end(); it++)
                     {
                         os << "      cellIndex: " << (int)it->cellIndex << std::endl;
@@ -5719,7 +5708,7 @@ RrcConnectionReconfigurationHeader::Print(std::ostream& os) const
             os << "  reportConfigToAddModList: " << std::endl;
             std::list<LteRrcSap::ReportConfigToAddMod> auxList =
                 m_measConfig.reportConfigToAddModList;
-            std::list<LteRrcSap::ReportConfigToAddMod>::iterator it = auxList.begin();
+            auto it = auxList.begin();
             for (; it != auxList.end(); it++)
             {
                 os << "    reportConfigId: " << (int)it->reportConfigId << std::endl;
@@ -5777,7 +5766,7 @@ RrcConnectionReconfigurationHeader::Print(std::ostream& os) const
         {
             os << "  measIdToAddModList: " << std::endl;
             std::list<LteRrcSap::MeasIdToAddMod> auxList = m_measConfig.measIdToAddModList;
-            std::list<LteRrcSap::MeasIdToAddMod>::iterator it = auxList.begin();
+            auto it = auxList.begin();
             for (; it != auxList.end(); it++)
             {
                 os << "    measId: " << (int)it->measId << std::endl;
@@ -7061,7 +7050,7 @@ MeasurementReportHeader::Print(std::ostream& os) const
     {
         std::list<LteRrcSap::MeasResultEutra> measResultListEutra =
             m_measurementReport.measResults.measResultListEutra;
-        std::list<LteRrcSap::MeasResultEutra>::iterator it = measResultListEutra.begin();
+        auto it = measResultListEutra.begin();
         for (; it != measResultListEutra.end(); it++)
         {
             os << "   physCellId =" << (int)it->physCellId << std::endl;
@@ -7075,7 +7064,7 @@ MeasurementReportHeader::Print(std::ostream& os) const
                    << std::endl;
                 if (!it->cgiInfo.plmnIdentityList.empty())
                 {
-                    for (std::list<uint32_t>::iterator it2 = it->cgiInfo.plmnIdentityList.begin();
+                    for (auto it2 = it->cgiInfo.plmnIdentityList.begin();
                          it2 != it->cgiInfo.plmnIdentityList.end();
                          it2++)
                     {

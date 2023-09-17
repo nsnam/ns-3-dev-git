@@ -235,7 +235,7 @@ EpcSgwApplication::DoRecvCreateSessionRequest(Ptr<Packet> packet)
     uint16_t cellId = msg.GetUliEcgi();
     NS_LOG_DEBUG("cellId " << cellId << " IMSI " << imsi);
 
-    std::map<uint16_t, EnbInfo>::iterator enbit = m_enbInfoByCellId.find(cellId);
+    auto enbit = m_enbInfoByCellId.find(cellId);
     NS_ASSERT_MSG(enbit != m_enbInfoByCellId.end(), "unknown CellId " << cellId);
     Ipv4Address enbAddr = enbit->second.enbAddr;
     NS_LOG_DEBUG("eNB " << enbAddr);
@@ -301,7 +301,7 @@ EpcSgwApplication::DoRecvModifyBearerRequest(Ptr<Packet> packet)
     uint16_t cellId = msg.GetUliEcgi();
     NS_LOG_DEBUG("cellId " << cellId << " IMSI " << imsi);
 
-    std::map<uint16_t, EnbInfo>::iterator enbit = m_enbInfoByCellId.find(cellId);
+    auto enbit = m_enbInfoByCellId.find(cellId);
     NS_ASSERT_MSG(enbit != m_enbInfoByCellId.end(), "unknown CellId " << cellId);
     Ipv4Address enbAddr = enbit->second.enbAddr;
     NS_LOG_DEBUG("eNB " << enbAddr);
@@ -321,7 +321,7 @@ EpcSgwApplication::DoRecvModifyBearerRequest(Ptr<Packet> packet)
         uint32_t teid = bearerContext.fteid.teid;
         Ipv4Address enbAddr = bearerContext.fteid.addr;
         NS_LOG_DEBUG("bearerId " << (uint16_t)bearerContext.epsBearerId << " TEID " << teid);
-        std::map<uint32_t, Ipv4Address>::iterator addrit = m_enbByTeidMap.find(teid);
+        auto addrit = m_enbByTeidMap.find(teid);
         NS_ASSERT_MSG(addrit != m_enbByTeidMap.end(), "unknown TEID " << teid);
         addrit->second = enbAddr;
         GtpcModifyBearerRequestMessage::BearerContextToBeModified bearerContextOut;

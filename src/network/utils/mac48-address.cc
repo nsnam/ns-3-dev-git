@@ -201,7 +201,7 @@ Mac48Address
 Mac48Address::GetBroadcast()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static Mac48Address broadcast = Mac48Address("ff:ff:ff:ff:ff:ff");
+    static Mac48Address broadcast("ff:ff:ff:ff:ff:ff");
     return broadcast;
 }
 
@@ -209,7 +209,7 @@ Mac48Address
 Mac48Address::GetMulticastPrefix()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static Mac48Address multicast = Mac48Address("01:00:5e:00:00:00");
+    static Mac48Address multicast("01:00:5e:00:00:00");
     return multicast;
 }
 
@@ -217,7 +217,7 @@ Mac48Address
 Mac48Address::GetMulticast6Prefix()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static Mac48Address multicast = Mac48Address("33:33:00:00:00:00");
+    static Mac48Address multicast("33:33:00:00:00:00");
     return multicast;
 }
 

@@ -125,9 +125,9 @@ DsrOptions::ContainAddressAfter(Ipv4Address ipv4Address,
                                 std::vector<Ipv4Address>& nodeList)
 {
     NS_LOG_FUNCTION(this << ipv4Address << destAddress);
-    std::vector<Ipv4Address>::iterator it = find(nodeList.begin(), nodeList.end(), destAddress);
+    auto it = find(nodeList.begin(), nodeList.end(), destAddress);
 
-    for (std::vector<Ipv4Address>::iterator i = it; i != nodeList.end(); ++i)
+    for (auto i = it; i != nodeList.end(); ++i)
     {
         if ((ipv4Address == (*i)) && ((*i) != nodeList.back()))
         {
@@ -141,9 +141,9 @@ std::vector<Ipv4Address>
 DsrOptions::CutRoute(Ipv4Address ipv4Address, std::vector<Ipv4Address>& nodeList)
 {
     NS_LOG_FUNCTION(this << ipv4Address);
-    std::vector<Ipv4Address>::iterator it = find(nodeList.begin(), nodeList.end(), ipv4Address);
+    auto it = find(nodeList.begin(), nodeList.end(), ipv4Address);
     std::vector<Ipv4Address> cutRoute;
-    for (std::vector<Ipv4Address>::iterator i = it; i != nodeList.end(); ++i)
+    for (auto i = it; i != nodeList.end(); ++i)
     {
         cutRoute.push_back(*i);
     }
@@ -190,7 +190,7 @@ DsrOptions::SearchNextHop(Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec
                                                                  << vec.back());
         return ipv4Address;
     }
-    for (std::vector<Ipv4Address>::const_iterator i = vec.begin(); i != vec.end(); ++i)
+    for (auto i = vec.begin(); i != vec.end(); ++i)
     {
         if (ipv4Address == (*i))
         {
@@ -216,7 +216,7 @@ DsrOptions::ReverseSearchNextHop(Ipv4Address ipv4Address, std::vector<Ipv4Addres
         return nextHop;
     }
 
-    for (std::vector<Ipv4Address>::reverse_iterator ri = vec.rbegin(); ri != vec.rend(); ++ri)
+    for (auto ri = vec.rbegin(); ri != vec.rend(); ++ri)
     {
         if (ipv4Address == (*ri))
         {
@@ -237,7 +237,7 @@ DsrOptions::ReverseSearchNextTwoHop(Ipv4Address ipv4Address, std::vector<Ipv4Add
     Ipv4Address nextTwoHop;
     NS_LOG_DEBUG("The vector size " << vec.size());
     NS_ASSERT(vec.size() > 2);
-    for (std::vector<Ipv4Address>::reverse_iterator ri = vec.rbegin(); ri != vec.rend(); ++ri)
+    for (auto ri = vec.rbegin(); ri != vec.rend(); ++ri)
     {
         if (ipv4Address == (*ri))
         {
@@ -264,7 +264,7 @@ DsrOptions::PrintVector(std::vector<Ipv4Address>& vec)
     else
     {
         NS_LOG_DEBUG("Print all the elements in a vector");
-        for (std::vector<Ipv4Address>::const_iterator i = vec.begin(); i != vec.end(); ++i)
+        for (auto i = vec.begin(); i != vec.end(); ++i)
         {
             NS_LOG_DEBUG("The ip address " << *i);
         }
@@ -275,9 +275,9 @@ bool
 DsrOptions::IfDuplicates(std::vector<Ipv4Address>& vec, std::vector<Ipv4Address>& vec2)
 {
     NS_LOG_FUNCTION(this);
-    for (std::vector<Ipv4Address>::const_iterator i = vec.begin(); i != vec.end(); ++i)
+    for (auto i = vec.begin(); i != vec.end(); ++i)
     {
-        for (std::vector<Ipv4Address>::const_iterator j = vec2.begin(); j != vec2.end(); ++j)
+        for (auto j = vec2.begin(); j != vec2.end(); ++j)
         {
             if ((*i) == (*j))
             {
@@ -292,7 +292,7 @@ bool
 DsrOptions::CheckDuplicates(Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec)
 {
     NS_LOG_FUNCTION(this << ipv4Address);
-    for (std::vector<Ipv4Address>::const_iterator i = vec.begin(); i != vec.end(); ++i)
+    for (auto i = vec.begin(); i != vec.end(); ++i)
     {
         if ((*i) == ipv4Address)
         {
@@ -311,7 +311,7 @@ DsrOptions::RemoveDuplicates(std::vector<Ipv4Address>& vec)
     std::vector<Ipv4Address> vec2(vec); // declare vec2 as a copy of the vec
     PrintVector(vec2);                  // Print all the ip address in the route
     vec.clear();                        // clear vec
-    for (std::vector<Ipv4Address>::const_iterator i = vec2.begin(); i != vec2.end(); ++i)
+    for (auto i = vec2.begin(); i != vec2.end(); ++i)
     {
         if (vec.empty())
         {
@@ -319,7 +319,7 @@ DsrOptions::RemoveDuplicates(std::vector<Ipv4Address>& vec)
             continue;
         }
 
-        for (std::vector<Ipv4Address>::iterator j = vec.begin(); j != vec.end(); ++j)
+        for (auto j = vec.begin(); j != vec.end(); ++j)
         {
             if ((*i) == (*j))
             {
@@ -679,9 +679,7 @@ DsrOptionRreq::Process(Ptr<Packet> packet,
                 std::vector<Ipv4Address> changeRoute(nodeList);
                 changeRoute.push_back(ipv4Address); // push back our own address
                 m_finalRoute.clear();               // get a clear route vector
-                for (std::vector<Ipv4Address>::iterator i = changeRoute.begin();
-                     i != changeRoute.end();
-                     ++i)
+                for (auto i = changeRoute.begin(); i != changeRoute.end(); ++i)
                 {
                     m_finalRoute.push_back(*i); // Get the full route from source to destination
                 }
@@ -805,8 +803,7 @@ DsrOptionRreq::Process(Ptr<Packet> packet,
             /**
              * push back the intermediate node address from the source to this node
              */
-            for (std::vector<Ipv4Address>::iterator i = saveRoute.begin(); i != saveRoute.end();
-                 ++i)
+            for (auto i = saveRoute.begin(); i != saveRoute.end(); ++i)
             {
                 m_finalRoute.push_back(*i);
             }
@@ -814,7 +811,7 @@ DsrOptionRreq::Process(Ptr<Packet> packet,
              * push back the route vector we found in our route cache to destination, including this
              * node's address
              */
-            for (std::vector<Ipv4Address>::iterator j = ip.begin(); j != ip.end(); ++j)
+            for (auto j = ip.begin(); j != ip.end(); ++j)
             {
                 m_finalRoute.push_back(*j);
             }
@@ -1389,7 +1386,7 @@ DsrOptionSR::Process(Ptr<Packet> packet,
 
         // Get the option type value
         uint32_t size = p->GetSize();
-        uint8_t* data = new uint8_t[size];
+        auto data = new uint8_t[size];
         p->CopyData(data, size);
         uint8_t optionType = 0;
         optionType = *(data);
@@ -1560,7 +1557,7 @@ DsrOptionRerr::Process(Ptr<Packet> packet,
                          << (uint32_t)protocol << isPromisc);
     Ptr<Packet> p = packet->Copy();
     uint32_t size = p->GetSize();
-    uint8_t* data = new uint8_t[size];
+    auto data = new uint8_t[size];
     p->CopyData(data, size);
     uint8_t errorType = *(data + 2);
     /*

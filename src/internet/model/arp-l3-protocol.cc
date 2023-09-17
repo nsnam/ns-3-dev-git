@@ -131,7 +131,7 @@ void
 ArpL3Protocol::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    for (CacheList::iterator i = m_cacheList.begin(); i != m_cacheList.end(); ++i)
+    for (auto i = m_cacheList.begin(); i != m_cacheList.end(); ++i)
     {
         Ptr<ArpCache> cache = *i;
         cache->Dispose();
@@ -160,7 +160,7 @@ Ptr<ArpCache>
 ArpL3Protocol::FindCache(Ptr<NetDevice> device)
 {
     NS_LOG_FUNCTION(this << device);
-    for (CacheList::const_iterator i = m_cacheList.begin(); i != m_cacheList.end(); i++)
+    for (auto i = m_cacheList.begin(); i != m_cacheList.end(); i++)
     {
         if ((*i)->GetDevice() == device)
         {

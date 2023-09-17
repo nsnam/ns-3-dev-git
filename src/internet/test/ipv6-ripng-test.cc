@@ -556,7 +556,7 @@ Ipv6RipngSplitHorizonStrategyTest::ReceivePktProbe(Ptr<Socket> socket)
         std::list<RipNgRte> rtes = hdr.GetRteList();
 
         // validate the RTEs before processing
-        for (std::list<RipNgRte>::iterator iter = rtes.begin(); iter != rtes.end(); iter++)
+        for (auto iter = rtes.begin(); iter != rtes.end(); iter++)
         {
             if (iter->GetPrefix() == "2001:1::")
             {

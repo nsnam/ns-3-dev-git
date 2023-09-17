@@ -382,8 +382,7 @@ UdpL4Protocol::Receive(Ptr<Packet> packet, const Ipv4Header& header, Ptr<Ipv4Int
     }
 
     packet->RemoveHeader(udpHeader);
-    for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin(); endPoint != endPoints.end();
-         endPoint++)
+    for (auto endPoint = endPoints.begin(); endPoint != endPoints.end(); endPoint++)
     {
         (*endPoint)->ForwardUp(packet->Copy(), header, udpHeader.GetSourcePort(), interface);
     }
@@ -422,8 +421,7 @@ UdpL4Protocol::Receive(Ptr<Packet> packet, const Ipv6Header& header, Ptr<Ipv6Int
         NS_LOG_LOGIC("RX_ENDPOINT_UNREACH");
         return IpL4Protocol::RX_ENDPOINT_UNREACH;
     }
-    for (Ipv6EndPointDemux::EndPointsI endPoint = endPoints.begin(); endPoint != endPoints.end();
-         endPoint++)
+    for (auto endPoint = endPoints.begin(); endPoint != endPoints.end(); endPoint++)
     {
         (*endPoint)->ForwardUp(packet->Copy(), header, udpHeader.GetSourcePort(), interface);
     }

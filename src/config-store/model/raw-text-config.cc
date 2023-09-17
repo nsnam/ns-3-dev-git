@@ -131,7 +131,7 @@ void
 RawTextConfigSave::Global()
 {
     NS_LOG_FUNCTION(this);
-    for (GlobalValue::Iterator i = GlobalValue::Begin(); i != GlobalValue::End(); ++i)
+    for (auto i = GlobalValue::Begin(); i != GlobalValue::End(); ++i)
     {
         StringValue value;
         (*i)->GetValue(value);

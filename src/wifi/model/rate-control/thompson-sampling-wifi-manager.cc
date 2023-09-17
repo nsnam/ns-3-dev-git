@@ -105,7 +105,7 @@ WifiRemoteStation*
 ThompsonSamplingWifiManager::DoCreateStation() const
 {
     NS_LOG_FUNCTION(this);
-    ThompsonSamplingWifiRemoteStation* station = new ThompsonSamplingWifiRemoteStation();
+    auto station = new ThompsonSamplingWifiRemoteStation();
     station->m_nextMode = 0;
     station->m_lastMode = 0;
     return station;

@@ -60,7 +60,7 @@ ApplicationContainer
 OnOffHelper::Install(NodeContainer c) const
 {
     ApplicationContainer apps;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         apps.Add(InstallPriv(*i));
     }
@@ -82,7 +82,7 @@ OnOffHelper::AssignStreams(NodeContainer c, int64_t stream)
 {
     int64_t currentStream = stream;
     Ptr<Node> node;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         node = (*i);
         for (uint32_t j = 0; j < node->GetNApplications(); j++)

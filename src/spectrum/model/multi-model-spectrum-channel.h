@@ -128,7 +128,7 @@ class MultiModelSpectrumChannel : public SpectrumChannel
      * This method checks if m_rxSpectrumModelInfoMap contains an entry
      * for the given TX SpectrumModel. If such entry exists, it returns
      * an iterator pointing to it. If not, it creates a new entry in
-     * m_txSpectrumMpodelInfoMap, and returns an iterator to it.
+     * m_txSpectrumModelInfoMap, and returns an iterator to it.
      *
      * \param txSpectrumModel The TX SpectrumModel  being considered
      *

@@ -535,7 +535,7 @@ InterferenceHelper::CalculateChunkSuccessRate(double snir,
         return 1.0;
     }
     uint64_t rate = mode.GetDataRate(txVector.GetChannelWidth());
-    uint64_t nbits = static_cast<uint64_t>(rate * duration.GetSeconds());
+    auto nbits = static_cast<uint64_t>(rate * duration.GetSeconds());
     double csr =
         m_errorRateModel->GetChunkSuccessRate(mode, txVector, snir, nbits, m_numRxAntennas, field);
     return csr;
@@ -553,7 +553,7 @@ InterferenceHelper::CalculatePayloadChunkSuccessRate(double snir,
     }
     WifiMode mode = txVector.GetMode(staId);
     uint64_t rate = mode.GetDataRate(txVector, staId);
-    uint64_t nbits = static_cast<uint64_t>(rate * duration.GetSeconds());
+    auto nbits = static_cast<uint64_t>(rate * duration.GetSeconds());
     nbits /= txVector.GetNss(staId); // divide effective number of bits by NSS to achieve same chunk
                                      // error rate as SISO for AWGN
     double csr = m_errorRateModel->GetChunkSuccessRate(mode,

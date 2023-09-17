@@ -620,7 +620,7 @@ Int64x64Bug455TestCase::DoRun()
     std::cout << std::endl;
     std::cout << GetParent()->GetName() << " Bug 455: " << GetName() << std::endl;
 
-    int64x64_t a = int64x64_t(0.1);
+    int64x64_t a(0.1);
     a /= int64x64_t(1.25);
     Check(a.GetDouble(), 0.08, "The original testcase");
 
@@ -684,7 +684,7 @@ Int64x64Bug863TestCase::DoRun()
     std::cout << std::endl;
     std::cout << GetParent()->GetName() << " Bug 863: " << GetName() << std::endl;
 
-    int64x64_t a = int64x64_t(0.9);
+    int64x64_t a(0.9);
     a /= int64x64_t(1);
     Check(a.GetDouble(), 0.9, "The original testcase");
 
@@ -1033,7 +1033,7 @@ Int64x64InvertTestCase::Check(const int64_t factor)
     const int64x64_t factorI = one / int64x64_t(factor);
 
     const int64x64_t a = int64x64_t::Invert(factor);
-    int64x64_t b = int64x64_t(factor);
+    int64x64_t b(factor);
 
     double tolerance = 0;
     if (int64x64_t::implementation == int64x64_t::ld_impl)
@@ -1045,15 +1045,15 @@ Int64x64InvertTestCase::Check(const int64_t factor)
     b.MulByInvert(a);
     CheckCase(factor, b, one, "x * x^-1 == 1", tolerance);
 
-    int64x64_t c = int64x64_t(1);
+    int64x64_t c(1);
     c.MulByInvert(a);
     CheckCase(factor, c, factorI, "1 * x^-1 == 1 / x");
 
-    int64x64_t d = int64x64_t(1);
+    int64x64_t d(1);
     d /= (int64x64_t(factor));
     CheckCase(factor, d, c, "1/x == x^-1");
 
-    int64x64_t e = int64x64_t(-factor);
+    int64x64_t e(-factor);
     e.MulByInvert(a);
     CheckCase(factor, e, -one, "-x * x^-1 == -1", tolerance);
 }

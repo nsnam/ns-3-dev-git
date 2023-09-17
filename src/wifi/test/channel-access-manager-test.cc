@@ -650,7 +650,7 @@ ChannelAccessManagerTest<TxopType>::EndTest()
 {
     Simulator::Run();
 
-    for (typename TxopTests::const_iterator i = m_txop.begin(); i != m_txop.end(); i++)
+    for (auto i = m_txop.begin(); i != m_txop.end(); i++)
     {
         Ptr<TxopTest<TxopType>> state = *i;
         NS_TEST_EXPECT_MSG_EQ(state->m_expectedGrants.empty(), true, "Have no expected grants");

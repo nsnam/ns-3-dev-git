@@ -140,9 +140,7 @@ IePerr::GetAddressUnitVector() const
 void
 IePerr::DeleteAddressUnit(Mac48Address address)
 {
-    for (std::vector<HwmpProtocol::FailedDestination>::iterator i = m_addressUnits.begin();
-         i != m_addressUnits.end();
-         i++)
+    for (auto i = m_addressUnits.begin(); i != m_addressUnits.end(); i++)
     {
         if (i->destination == address)
         {

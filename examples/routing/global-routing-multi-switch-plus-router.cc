@@ -350,9 +350,7 @@ main(int argc, char* argv[])
             }
         }
 
-        for (std::vector<std::string>::const_iterator ploc = pcapLocationVec.begin();
-             ploc != pcapLocationVec.end();
-             ++ploc)
+        for (auto ploc = pcapLocationVec.begin(); ploc != pcapLocationVec.end(); ++ploc)
         {
             NS_LOG_INFO("PCAP capture at: <" + *ploc + ">");
         }

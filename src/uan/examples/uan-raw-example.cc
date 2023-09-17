@@ -131,7 +131,7 @@ UanExperiment::SetupCommunications()
     UanHelper uanHelper;
     NetDeviceContainer netDeviceContainer = uanHelper.Install(m_nodes, channel);
     EnergySourceContainer energySourceContainer;
-    NodeContainer::Iterator node = m_nodes.Begin();
+    auto node = m_nodes.Begin();
     while (node != m_nodes.End())
     {
         energySourceContainer.Add((*node)->GetObject<EnergySourceContainer>()->Get(0));
@@ -165,7 +165,7 @@ UanExperiment::PrintReceivedPacket(Ptr<Socket> socket)
 void
 UanExperiment::SetupApplications()
 {
-    NodeContainer::Iterator node = m_nodes.Begin();
+    auto node = m_nodes.Begin();
     PacketSocketHelper packetSocketHelper;
     while (node != m_nodes.End())
     {
@@ -187,7 +187,7 @@ UanExperiment::SendPackets()
 {
     Ptr<UniformRandomVariable> uniformRandomVariable = CreateObject<UniformRandomVariable>();
 
-    NodeContainer::Iterator node = m_nodes.Begin();
+    auto node = m_nodes.Begin();
     Mac8Address dst = Mac8Address::ConvertFrom((*node)->GetDevice(0)->GetAddress());
     node++;
     while (node != m_nodes.End())
@@ -230,9 +230,7 @@ UanExperiment::Prepare()
 void
 UanExperiment::Teardown()
 {
-    std::map<Ptr<Node>, Ptr<Socket>>::iterator socket;
-
-    for (socket = m_sockets.begin(); socket != m_sockets.end(); socket++)
+    for (auto socket = m_sockets.begin(); socket != m_sockets.end(); socket++)
     {
         socket->second->Close();
     }

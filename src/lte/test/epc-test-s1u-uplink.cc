@@ -366,9 +366,7 @@ EpcS1uUlTestCase::DoRun()
     uint16_t cellIdCounter = 0;
     uint64_t imsiCounter = 0;
 
-    for (std::vector<EnbUlTestData>::iterator enbit = m_enbUlTestData.begin();
-         enbit < m_enbUlTestData.end();
-         ++enbit)
+    for (auto enbit = m_enbUlTestData.begin(); enbit < m_enbUlTestData.end(); ++enbit)
     {
         Ptr<Node> enb = CreateObject<Node>();
         enbs.Add(enb);
@@ -486,12 +484,9 @@ EpcS1uUlTestCase::DoRun()
 
     Simulator::Run();
 
-    for (std::vector<EnbUlTestData>::iterator enbit = m_enbUlTestData.begin();
-         enbit < m_enbUlTestData.end();
-         ++enbit)
+    for (auto enbit = m_enbUlTestData.begin(); enbit < m_enbUlTestData.end(); ++enbit)
     {
-        for (std::vector<UeUlTestData>::iterator ueit = enbit->ues.begin(); ueit < enbit->ues.end();
-             ++ueit)
+        for (auto ueit = enbit->ues.begin(); ueit < enbit->ues.end(); ++ueit)
         {
             NS_TEST_ASSERT_MSG_EQ(ueit->serverApp->GetTotalRx(),
                                   (ueit->numPkts) * (ueit->pktSize),

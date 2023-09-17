@@ -62,9 +62,7 @@ SimpleChannel::Send(Ptr<Packet> p,
                     Ptr<SimpleNetDevice> sender)
 {
     NS_LOG_FUNCTION(this << p << protocol << to << from << sender);
-    for (std::vector<Ptr<SimpleNetDevice>>::const_iterator i = m_devices.begin();
-         i != m_devices.end();
-         ++i)
+    for (auto i = m_devices.begin(); i != m_devices.end(); ++i)
     {
         Ptr<SimpleNetDevice> tmp = *i;
         if (tmp == sender)
@@ -133,8 +131,7 @@ SimpleChannel::UnBlackList(Ptr<SimpleNetDevice> from, Ptr<SimpleNetDevice> to)
 {
     if (m_blackListedDevices.find(to) != m_blackListedDevices.end())
     {
-        std::vector<Ptr<SimpleNetDevice>>::iterator iter;
-        iter = find(m_blackListedDevices[to].begin(), m_blackListedDevices[to].end(), from);
+        auto iter = find(m_blackListedDevices[to].begin(), m_blackListedDevices[to].end(), from);
         if (iter != m_blackListedDevices[to].end())
         {
             m_blackListedDevices[to].erase(iter);

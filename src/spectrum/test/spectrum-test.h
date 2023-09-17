@@ -48,8 +48,8 @@
 #define NS_TEST_ASSERT_MSG_SPECTRUM_MODEL_EQ_TOL(actual, expected, tol, msg)                       \
     do                                                                                             \
     {                                                                                              \
-        Bands::const_iterator i = (actual).Begin();                                                \
-        Bands::const_iterator j = (expected).Begin();                                              \
+        auto i = (actual).Begin();                                                                 \
+        auto j = (expected).Begin();                                                               \
         uint32_t k = 0;                                                                            \
         while (i != (actual).End() && j != (expected).End())                                       \
         {                                                                                          \
@@ -113,8 +113,8 @@
 #define NS_TEST_ASSERT_MSG_SPECTRUM_VALUE_EQ_TOL(actual, expected, tol, msg)                       \
     do                                                                                             \
     {                                                                                              \
-        Values::const_iterator i = (actual).ConstValuesBegin();                                    \
-        Values::const_iterator j = (expected).ConstValuesBegin();                                  \
+        auto i = (actual).ConstValuesBegin();                                                      \
+        auto j = (expected).ConstValuesBegin();                                                    \
         uint32_t k = 0;                                                                            \
         while (i != (actual).ConstValuesEnd() && j != (expected).ConstValuesEnd())                 \
         {                                                                                          \

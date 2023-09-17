@@ -267,8 +267,7 @@ Object::AggregateObject(Ptr<Object> o)
     Object* other = PeekPointer(o);
     // first create the new aggregate buffer.
     uint32_t total = m_aggregates->n + other->m_aggregates->n;
-    Aggregates* aggregates =
-        (Aggregates*)std::malloc(sizeof(Aggregates) + (total - 1) * sizeof(Object*));
+    auto aggregates = (Aggregates*)std::malloc(sizeof(Aggregates) + (total - 1) * sizeof(Object*));
     aggregates->n = total;
 
     // copy our buffer to the new buffer

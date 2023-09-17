@@ -86,7 +86,7 @@ RadvdInterface::~RadvdInterface()
 {
     NS_LOG_FUNCTION(this);
     /* clear prefixes */
-    for (RadvdPrefixListI it = m_prefixes.begin(); it != m_prefixes.end(); ++it)
+    for (auto it = m_prefixes.begin(); it != m_prefixes.end(); ++it)
     {
         (*it) = nullptr;
     }

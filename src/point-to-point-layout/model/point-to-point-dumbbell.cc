@@ -191,7 +191,7 @@ PointToPointDumbbellHelper::AssignIpv6Addresses(Ipv6Address addrBase, Ipv6Prefix
         ndc.Add(m_leftLeafDevices.Get(i));
         ndc.Add(m_leftRouterDevices.Get(i));
         Ipv6InterfaceContainer ifc = addressHelper.Assign(ndc);
-        Ipv6InterfaceContainer::Iterator it = ifc.Begin();
+        auto it = ifc.Begin();
         m_leftLeafInterfaces6.Add((*it).first, (*it).second);
         it++;
         m_leftRouterInterfaces6.Add((*it).first, (*it).second);
@@ -207,7 +207,7 @@ PointToPointDumbbellHelper::AssignIpv6Addresses(Ipv6Address addrBase, Ipv6Prefix
         ndc.Add(m_rightLeafDevices.Get(i));
         ndc.Add(m_rightRouterDevices.Get(i));
         Ipv6InterfaceContainer ifc = addressHelper.Assign(ndc);
-        Ipv6InterfaceContainer::Iterator it = ifc.Begin();
+        auto it = ifc.Begin();
         m_rightLeafInterfaces6.Add((*it).first, (*it).second);
         it++;
         m_rightRouterInterfaces6.Add((*it).first, (*it).second);

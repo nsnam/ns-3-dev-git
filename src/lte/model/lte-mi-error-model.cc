@@ -1042,7 +1042,7 @@ LteMiErrorModel::GetPcfichPdcchError(const SpectrumValue& sinr)
     NS_LOG_FUNCTION(sinr);
     double MI;
     double MIsum = 0.0;
-    Values::const_iterator sinrIt = sinr.ConstValuesBegin();
+    auto sinrIt = sinr.ConstValuesBegin();
     uint16_t rb = 0;
     NS_ASSERT(sinrIt != sinr.ConstValuesEnd());
     while (sinrIt != sinr.ConstValuesEnd())

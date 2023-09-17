@@ -398,8 +398,7 @@ EhtFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
     {
         NS_ASSERT(txParams.m_protection &&
                   txParams.m_protection->method == WifiProtection::MU_RTS_CTS);
-        WifiMuRtsCtsProtection* protection =
-            static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
+        auto protection = static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
         NS_ASSERT(protection->muRts.IsMuRts());
 
         // see formula (35-1) in Sec. 35.5.2.2.3 of 802.11be D3.0

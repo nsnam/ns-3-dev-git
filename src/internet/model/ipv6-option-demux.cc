@@ -57,7 +57,7 @@ Ipv6OptionDemux::~Ipv6OptionDemux()
 void
 Ipv6OptionDemux::DoDispose()
 {
-    for (Ipv6OptionList_t::iterator it = m_options.begin(); it != m_options.end(); it++)
+    for (auto it = m_options.begin(); it != m_options.end(); it++)
     {
         (*it)->Dispose();
         *it = nullptr;
@@ -82,7 +82,7 @@ Ipv6OptionDemux::Insert(Ptr<Ipv6Option> option)
 Ptr<Ipv6Option>
 Ipv6OptionDemux::GetOption(int optionNumber)
 {
-    for (Ipv6OptionList_t::iterator i = m_options.begin(); i != m_options.end(); ++i)
+    for (auto i = m_options.begin(); i != m_options.end(); ++i)
     {
         if ((*i)->GetOptionNumber() == optionNumber)
         {

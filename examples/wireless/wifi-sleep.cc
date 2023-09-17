@@ -228,7 +228,7 @@ main(int argc, char* argv[])
                                         DoubleValue(eta));
 
     // install an energy source on each node
-    for (NodeContainer::Iterator n = c.Begin(); n != c.End(); n++)
+    for (auto n = c.Begin(); n != c.End(); n++)
     {
         eSources.Add(basicSourceHelper.Install(*n));
 

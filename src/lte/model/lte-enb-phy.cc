@@ -378,8 +378,7 @@ bool
 LteEnbPhy::AddUePhy(uint16_t rnti)
 {
     NS_LOG_FUNCTION(this << rnti);
-    std::set<uint16_t>::iterator it;
-    it = m_ueAttached.find(rnti);
+    auto it = m_ueAttached.find(rnti);
     if (it == m_ueAttached.end())
     {
         m_ueAttached.insert(rnti);
@@ -396,8 +395,7 @@ bool
 LteEnbPhy::DeleteUePhy(uint16_t rnti)
 {
     NS_LOG_FUNCTION(this << rnti);
-    std::set<uint16_t>::iterator it;
-    it = m_ueAttached.find(rnti);
+    auto it = m_ueAttached.find(rnti);
     if (it == m_ueAttached.end())
     {
         NS_LOG_ERROR("UE not attached");
@@ -461,7 +459,7 @@ LteEnbPhy::GeneratePowerAllocationMap(uint16_t rnti, int rbId)
     NS_LOG_FUNCTION(this);
     double rbgTxPower = m_txPower;
 
-    std::map<uint16_t, double>::iterator it = m_paMap.find(rnti);
+    auto it = m_paMap.find(rnti);
     if (it != m_paMap.end())
     {
         rbgTxPower = m_txPower + it->second;
@@ -525,8 +523,7 @@ void
 LteEnbPhy::ReceiveLteControlMessageList(std::list<Ptr<LteControlMessage>> msgList)
 {
     NS_LOG_FUNCTION(this);
-    std::list<Ptr<LteControlMessage>>::iterator it;
-    for (it = msgList.begin(); it != msgList.end(); it++)
+    for (auto it = msgList.begin(); it != msgList.end(); it++)
     {
         switch ((*it)->GetMessageType())
         {
@@ -626,12 +623,10 @@ LteEnbPhy::StartSubFrame()
 
     // update info on TB to be received
     std::list<UlDciLteControlMessage> uldcilist = DequeueUlDci();
-    std::list<UlDciLteControlMessage>::iterator dciIt = uldcilist.begin();
     NS_LOG_DEBUG(this << " eNB Expected TBs " << uldcilist.size());
-    for (dciIt = uldcilist.begin(); dciIt != uldcilist.end(); dciIt++)
+    for (auto dciIt = uldcilist.begin(); dciIt != uldcilist.end(); dciIt++)
     {
-        std::set<uint16_t>::iterator it2;
-        it2 = m_ueAttached.find((*dciIt).GetDci().m_rnti);
+        auto it2 = m_ueAttached.find((*dciIt).GetDci().m_rnti);
 
         if (it2 == m_ueAttached.end())
         {
@@ -674,8 +669,7 @@ LteEnbPhy::StartSubFrame()
     m_dlPowerAllocationMap.clear();
     if (!ctrlMsg.empty())
     {
-        std::list<Ptr<LteControlMessage>>::iterator it;
-        it = ctrlMsg.begin();
+        auto it = ctrlMsg.begin();
         while (it != ctrlMsg.end())
         {
             Ptr<LteControlMessage> msg = (*it);
@@ -726,10 +720,7 @@ LteEnbPhy::StartSubFrame()
             else if (msg->GetMessageType() == LteControlMessage::RAR)
             {
                 Ptr<RarLteControlMessage> rarMsg = DynamicCast<RarLteControlMessage>(msg);
-                for (std::list<RarLteControlMessage::Rar>::const_iterator it =
-                         rarMsg->RarListBegin();
-                     it != rarMsg->RarListEnd();
-                     ++it)
+                for (auto it = rarMsg->RarListBegin(); it != rarMsg->RarListEnd(); ++it)
                 {
                     if (it->rarPayload.m_grant.m_ulDelay)
                     {
@@ -870,10 +861,9 @@ FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
 LteEnbPhy::CreatePuschCqiReport(const SpectrumValue& sinr)
 {
     NS_LOG_FUNCTION(this << sinr);
-    Values::const_iterator it;
     FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi;
     ulcqi.m_ulCqi.m_type = UlCqi_s::PUSCH;
-    for (it = sinr.ConstValuesBegin(); it != sinr.ConstValuesEnd(); it++)
+    for (auto it = sinr.ConstValuesBegin(); it != sinr.ConstValuesEnd(); it++)
     {
         double sinrdb = 10 * std::log10((*it));
         // NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
@@ -936,7 +926,7 @@ LteEnbPhy::DoRemoveUe(uint16_t rnti)
     NS_ASSERT_MSG(success, "DeleteUePhy() failed");
 
     // remove also P_A value
-    std::map<uint16_t, double>::iterator it = m_paMap.find(rnti);
+    auto it = m_paMap.find(rnti);
     if (it != m_paMap.end())
     {
         m_paMap.erase(it);
@@ -945,7 +935,7 @@ LteEnbPhy::DoRemoveUe(uint16_t rnti)
     // additional data to be removed
     m_uplinkSpectrumPhy->RemoveExpectedTb(rnti);
     // remove srs info to avoid trace errors
-    std::map<uint16_t, uint16_t>::iterator sit = m_srsSampleCounterMap.find(rnti);
+    auto sit = m_srsSampleCounterMap.find(rnti);
     if (sit != m_srsSampleCounterMap.end())
     {
         m_srsSampleCounterMap.erase(rnti);
@@ -955,7 +945,7 @@ LteEnbPhy::DoRemoveUe(uint16_t rnti)
 
     for (auto& ctrlMessageList : m_controlMessagesQueue)
     {
-        std::list<Ptr<LteControlMessage>>::iterator ctrlMsgListIt = ctrlMessageList.begin();
+        auto ctrlMsgListIt = ctrlMessageList.begin();
         while (ctrlMsgListIt != ctrlMessageList.end())
         {
             Ptr<LteControlMessage> msg = (*ctrlMsgListIt);
@@ -1000,7 +990,7 @@ LteEnbPhy::DoSetPa(uint16_t rnti, double pa)
 {
     NS_LOG_FUNCTION(this << rnti);
 
-    std::map<uint16_t, double>::iterator it = m_paMap.find(rnti);
+    auto it = m_paMap.find(rnti);
 
     if (it == m_paMap.end())
     {
@@ -1016,12 +1006,11 @@ FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
 LteEnbPhy::CreateSrsCqiReport(const SpectrumValue& sinr)
 {
     NS_LOG_FUNCTION(this << sinr);
-    Values::const_iterator it;
     FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqi;
     ulcqi.m_ulCqi.m_type = UlCqi_s::SRS;
     int i = 0;
     double srsSum = 0.0;
-    for (it = sinr.ConstValuesBegin(); it != sinr.ConstValuesEnd(); it++)
+    for (auto it = sinr.ConstValuesBegin(); it != sinr.ConstValuesEnd(); it++)
     {
         double sinrdb = 10 * log10((*it));
         //       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
@@ -1048,7 +1037,7 @@ void
 LteEnbPhy::CreateSrsReport(uint16_t rnti, double srs)
 {
     NS_LOG_FUNCTION(this << rnti << srs);
-    std::map<uint16_t, uint16_t>::iterator it = m_srsSampleCounterMap.find(rnti);
+    auto it = m_srsSampleCounterMap.find(rnti);
     if (it == m_srsSampleCounterMap.end())
     {
         // create new entry
@@ -1119,7 +1108,7 @@ LteEnbPhy::DoSetSrsConfigurationIndex(uint16_t rnti, uint16_t srcCi)
 
     NS_LOG_DEBUG(this << " ENB SRS P " << m_srsPeriodicity << " RNTI " << rnti << " offset "
                       << GetSrsSubframeOffset(srcCi) << " CI " << srcCi);
-    std::map<uint16_t, uint16_t>::iterator it = m_srsCounter.find(rnti);
+    auto it = m_srsCounter.find(rnti);
     if (it != m_srsCounter.end())
     {
         (*it).second = GetSrsSubframeOffset(srcCi) + 1;

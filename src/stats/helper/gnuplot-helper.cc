@@ -257,8 +257,7 @@ Ptr<Probe>
 GnuplotHelper::GetProbe(std::string probeName) const
 {
     // Look for the probe.
-    std::map<std::string, std::pair<Ptr<Probe>, std::string>>::const_iterator mapIterator =
-        m_probeMap.find(probeName);
+    auto mapIterator = m_probeMap.find(probeName);
 
     // Return the probe if it has been added.
     if (mapIterator != m_probeMap.end())

@@ -609,8 +609,8 @@ LteUePhy::GenerateCqiRsrpRsrq(const SpectrumValue& sinr)
         // RSRP evaluated as averaged received power among RBs
         double sum = 0.0;
         uint8_t rbNum = 0;
-        Values::const_iterator it;
-        for (it = m_rsReceivedPower.ConstValuesBegin(); it != m_rsReceivedPower.ConstValuesEnd();
+        for (auto it = m_rsReceivedPower.ConstValuesBegin();
+             it != m_rsReceivedPower.ConstValuesEnd();
              it++)
         {
             // convert PSD [W/Hz] to linear power [W] for the single RE
@@ -648,14 +648,14 @@ LteUePhy::GenerateCqiRsrpRsrq(const SpectrumValue& sinr)
         // measure instantaneous RSRQ now
         NS_ASSERT_MSG(m_rsInterferencePowerUpdated, " RS interference power info obsolete");
 
-        std::list<PssElement>::iterator itPss = m_pssList.begin();
+        auto itPss = m_pssList.begin();
         while (itPss != m_pssList.end())
         {
             uint16_t rbNum = 0;
             double rssiSum = 0.0;
 
-            Values::const_iterator itIntN = m_rsInterferencePower.ConstValuesBegin();
-            Values::const_iterator itPj = m_rsReceivedPower.ConstValuesBegin();
+            auto itIntN = m_rsInterferencePower.ConstValuesBegin();
+            auto itPj = m_rsReceivedPower.ConstValuesBegin();
             for (itPj = m_rsReceivedPower.ConstValuesBegin();
                  itPj != m_rsReceivedPower.ConstValuesEnd();
                  itIntN++, itPj++)
@@ -675,8 +675,7 @@ LteUePhy::GenerateCqiRsrpRsrq(const SpectrumValue& sinr)
                 NS_LOG_INFO(this << " PSS RNTI " << m_rnti << " cellId " << m_cellId << " has RSRQ "
                                  << rsrq_dB << " and RBnum " << rbNum);
                 // store measurements
-                std::map<uint16_t, UeMeasurementsElement>::iterator itMeasMap;
-                itMeasMap = m_ueMeasurementsMap.find((*itPss).cellId);
+                auto itMeasMap = m_ueMeasurementsMap.find((*itPss).cellId);
                 if (itMeasMap != m_ueMeasurementsMap.end())
                 {
                     (*itMeasMap).second.rsrqSum += rsrq_dB;
@@ -706,9 +705,8 @@ LteUePhy::ComputeAvgSinr(const SpectrumValue& sinr)
     // averaged SINR among RBs
     double sum = 0.0;
     uint8_t rbNum = 0;
-    Values::const_iterator it;
 
-    for (it = sinr.ConstValuesBegin(); it != sinr.ConstValuesEnd(); it++)
+    for (auto it = sinr.ConstValuesBegin(); it != sinr.ConstValuesEnd(); it++)
     {
         sum += (*it);
         rbNum++;
@@ -818,8 +816,8 @@ LteUePhy::ReportRsReceivedPower(const SpectrumValue& power)
     if (m_enableUplinkPowerControl)
     {
         double sum = 0;
-        Values::const_iterator it;
-        for (it = m_rsReceivedPower.ConstValuesBegin(); it != m_rsReceivedPower.ConstValuesEnd();
+        for (auto it = m_rsReceivedPower.ConstValuesBegin();
+             it != m_rsReceivedPower.ConstValuesEnd();
              it++)
         {
             double powerTxW = ((*it) * 180000);
@@ -940,8 +938,7 @@ LteUePhy::ReportUeMeasurements()
 
     LteUeCphySapUser::UeMeasurementsParameters ret;
 
-    std::map<uint16_t, UeMeasurementsElement>::iterator it;
-    for (it = m_ueMeasurementsMap.begin(); it != m_ueMeasurementsMap.end(); it++)
+    for (auto it = m_ueMeasurementsMap.begin(); it != m_ueMeasurementsMap.end(); it++)
     {
         double avg_rsrp = (*it).second.rsrpSum / (double)(*it).second.rsrpNum;
         double avg_rsrq = (*it).second.rsrqSum / (double)(*it).second.rsrqNum;
@@ -1029,10 +1026,9 @@ LteUePhy::ReceiveLteControlMessageList(std::list<Ptr<LteControlMessage>> msgList
 {
     NS_LOG_FUNCTION(this);
 
-    std::list<Ptr<LteControlMessage>>::iterator it;
     NS_LOG_DEBUG(this << " I am rnti = " << m_rnti << " and I received msgs "
                       << (uint16_t)msgList.size());
-    for (it = msgList.begin(); it != msgList.end(); it++)
+    for (auto it = msgList.begin(); it != msgList.end(); it++)
     {
         Ptr<LteControlMessage> msg = (*it);
 
@@ -1135,10 +1131,7 @@ LteUePhy::ReceiveLteControlMessageList(std::list<Ptr<LteControlMessage>> msgList
             Ptr<RarLteControlMessage> rarMsg = DynamicCast<RarLteControlMessage>(msg);
             if (rarMsg->GetRaRnti() == m_raRnti)
             {
-                for (std::list<RarLteControlMessage::Rar>::const_iterator it =
-                         rarMsg->RarListBegin();
-                     it != rarMsg->RarListEnd();
-                     ++it)
+                for (auto it = rarMsg->RarListBegin(); it != rarMsg->RarListEnd(); ++it)
                 {
                     if (it->rapId != m_raPreambleId)
                     {
@@ -1195,8 +1188,7 @@ LteUePhy::ReceivePss(uint16_t cellId, Ptr<SpectrumValue> p)
 
     double sum = 0.0;
     uint16_t nRB = 0;
-    Values::const_iterator itPi;
-    for (itPi = p->ConstValuesBegin(); itPi != p->ConstValuesEnd(); itPi++)
+    for (auto itPi = p->ConstValuesBegin(); itPi != p->ConstValuesEnd(); itPi++)
     {
         // convert PSD [W/Hz] to linear power [W] for the single RE
         double powerTxW = ((*itPi) * 180000.0) / 12.0;
@@ -1211,8 +1203,7 @@ LteUePhy::ReceivePss(uint16_t cellId, Ptr<SpectrumValue> p)
     // note that m_pssReceptionThreshold does not apply here
 
     // store measurements
-    std::map<uint16_t, UeMeasurementsElement>::iterator itMeasMap =
-        m_ueMeasurementsMap.find(cellId);
+    auto itMeasMap = m_ueMeasurementsMap.find(cellId);
     if (itMeasMap == m_ueMeasurementsMap.end())
     {
         // insert new entry

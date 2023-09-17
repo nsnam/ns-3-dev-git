@@ -93,10 +93,10 @@ MakeObjectVectorAccessor(U T::*memberVector)
                           std::size_t* index) const override
         {
             const T* obj = static_cast<const T*>(object);
-            typename U::const_iterator begin = (obj->*m_memberVector).begin();
-            typename U::const_iterator end = (obj->*m_memberVector).end();
+            auto begin = (obj->*m_memberVector).begin();
+            auto end = (obj->*m_memberVector).end();
             std::size_t k = 0;
-            for (typename U::const_iterator j = begin; j != end; j++, k++)
+            for (auto j = begin; j != end; j++, k++)
             {
                 if (k == i)
                 {

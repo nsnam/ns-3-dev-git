@@ -517,7 +517,7 @@ WimaxNetDevice::Receive(Ptr<const PacketBurst> burst)
     NS_LOG_DEBUG("WimaxNetDevice::Receive, station = " << GetMacAddress());
 
     Ptr<PacketBurst> b = burst->Copy();
-    for (std::list<Ptr<Packet>>::const_iterator iter = b->Begin(); iter != b->End(); ++iter)
+    for (auto iter = b->Begin(); iter != b->End(); ++iter)
     {
         Ptr<Packet> packet = *iter;
         DoReceive(packet);

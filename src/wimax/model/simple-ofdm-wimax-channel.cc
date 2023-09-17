@@ -128,9 +128,7 @@ Ptr<NetDevice>
 SimpleOfdmWimaxChannel::DoGetDevice(std::size_t index) const
 {
     std::size_t j = 0;
-    for (std::list<Ptr<SimpleOfdmWimaxPhy>>::const_iterator iter = m_phyList.begin();
-         iter != m_phyList.end();
-         ++iter)
+    for (auto iter = m_phyList.begin(); iter != m_phyList.end(); ++iter)
     {
         if (j == index)
         {
@@ -160,9 +158,7 @@ SimpleOfdmWimaxChannel::Send(Time BlockTime,
     Ptr<MobilityModel> receiverMobility = nullptr;
     senderMobility = phy->GetDevice()->GetNode()->GetObject<MobilityModel>();
     SimpleOfdmSendParam* param;
-    for (std::list<Ptr<SimpleOfdmWimaxPhy>>::iterator iter = m_phyList.begin();
-         iter != m_phyList.end();
-         ++iter)
+    for (auto iter = m_phyList.begin(); iter != m_phyList.end(); ++iter)
     {
         Time delay = Seconds(0);
         if (phy != *iter)
@@ -221,7 +217,7 @@ SimpleOfdmWimaxChannel::AssignStreams(int64_t stream)
 {
     int64_t currentStream = stream;
     typedef std::list<Ptr<SimpleOfdmWimaxPhy>> PhyList;
-    for (PhyList::const_iterator i = m_phyList.begin(); i != m_phyList.end(); i++)
+    for (auto i = m_phyList.begin(); i != m_phyList.end(); i++)
     {
         Ptr<SimpleOfdmWimaxPhy> simpleOfdm = (*i);
         currentStream += simpleOfdm->AssignStreams(currentStream);

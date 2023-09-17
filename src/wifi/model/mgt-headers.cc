@@ -1688,7 +1688,7 @@ uint8_t
 MgtDelBaHeader::GetTid() const
 {
     NS_ASSERT(m_tid < 16);
-    uint8_t tid = static_cast<uint8_t>(m_tid);
+    auto tid = static_cast<uint8_t>(m_tid);
     return tid;
 }
 

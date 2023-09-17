@@ -47,7 +47,7 @@ MeshInformationElementVector::MeshInformationElementVector()
 
 MeshInformationElementVector::~MeshInformationElementVector()
 {
-    for (IE_VECTOR::iterator i = m_elements.begin(); i != m_elements.end(); i++)
+    for (auto i = m_elements.begin(); i != m_elements.end(); i++)
     {
         *i = nullptr;
     }
@@ -79,7 +79,7 @@ MeshInformationElementVector::GetSerializedSize() const
 void
 MeshInformationElementVector::Serialize(Buffer::Iterator start) const
 {
-    for (IE_VECTOR::const_iterator i = m_elements.begin(); i != m_elements.end(); i++)
+    for (auto i = m_elements.begin(); i != m_elements.end(); i++)
     {
         start = (*i)->Serialize(start);
     }
@@ -164,7 +164,7 @@ MeshInformationElementVector::DeserializeSingleIe(Buffer::Iterator start)
 void
 MeshInformationElementVector::Print(std::ostream& os) const
 {
-    for (IE_VECTOR::const_iterator i = m_elements.begin(); i != m_elements.end(); i++)
+    for (auto i = m_elements.begin(); i != m_elements.end(); i++)
     {
         os << "(";
         (*i)->Print(os);
@@ -198,7 +198,7 @@ MeshInformationElementVector::AddInformationElement(Ptr<WifiInformationElement> 
 Ptr<WifiInformationElement>
 MeshInformationElementVector::FindFirst(WifiInformationElementId id) const
 {
-    for (IE_VECTOR::const_iterator i = m_elements.begin(); i != m_elements.end(); i++)
+    for (auto i = m_elements.begin(); i != m_elements.end(); i++)
     {
         if ((*i)->ElementId() == id)
         {
@@ -212,7 +212,7 @@ uint32_t
 MeshInformationElementVector::GetSize() const
 {
     uint32_t size = 0;
-    for (IE_VECTOR::const_iterator i = m_elements.begin(); i != m_elements.end(); i++)
+    for (auto i = m_elements.begin(); i != m_elements.end(); i++)
     {
         size += (*i)->GetSerializedSize();
     }
@@ -234,10 +234,8 @@ MeshInformationElementVector::operator==(const MeshInformationElementVector& a) 
     // I'm leaving it like this, however, so that there is the option of
     // having individual Information Elements implement slightly more
     // flexible equality operators.
-    MeshInformationElementVector::IE_VECTOR::const_iterator j = a.m_elements.begin();
-    for (MeshInformationElementVector::IE_VECTOR::const_iterator i = m_elements.begin();
-         i != m_elements.end();
-         i++, j++)
+    auto j = a.m_elements.begin();
+    for (auto i = m_elements.begin(); i != m_elements.end(); i++, j++)
     {
         if (!(*(*i) == *(*j)))
         {

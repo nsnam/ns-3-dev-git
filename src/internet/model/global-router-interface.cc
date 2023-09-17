@@ -193,12 +193,10 @@ void
 GlobalRoutingLSA::CopyLinkRecords(const GlobalRoutingLSA& lsa)
 {
     NS_LOG_FUNCTION(this << &lsa);
-    for (ListOfLinkRecords_t::const_iterator i = lsa.m_linkRecords.begin();
-         i != lsa.m_linkRecords.end();
-         i++)
+    for (auto i = lsa.m_linkRecords.begin(); i != lsa.m_linkRecords.end(); i++)
     {
         GlobalRoutingLinkRecord* pSrc = *i;
-        GlobalRoutingLinkRecord* pDst = new GlobalRoutingLinkRecord;
+        auto pDst = new GlobalRoutingLinkRecord;
 
         pDst->SetLinkType(pSrc->GetLinkType());
         pDst->SetLinkId(pSrc->GetLinkId());
@@ -222,7 +220,7 @@ void
 GlobalRoutingLSA::ClearLinkRecords()
 {
     NS_LOG_FUNCTION(this);
-    for (ListOfLinkRecords_t::iterator i = m_linkRecords.begin(); i != m_linkRecords.end(); i++)
+    for (auto i = m_linkRecords.begin(); i != m_linkRecords.end(); i++)
     {
         NS_LOG_LOGIC("Free link record");
 
@@ -256,8 +254,7 @@ GlobalRoutingLSA::GetLinkRecord(uint32_t n) const
 {
     NS_LOG_FUNCTION(this << n);
     uint32_t j = 0;
-    for (ListOfLinkRecords_t::const_iterator i = m_linkRecords.begin(); i != m_linkRecords.end();
-         i++, j++)
+    for (auto i = m_linkRecords.begin(); i != m_linkRecords.end(); i++, j++)
     {
         if (j == n)
         {
@@ -358,9 +355,7 @@ GlobalRoutingLSA::GetAttachedRouter(uint32_t n) const
 {
     NS_LOG_FUNCTION(this << n);
     uint32_t j = 0;
-    for (ListOfAttachedRouters_t::const_iterator i = m_attachedRouters.begin();
-         i != m_attachedRouters.end();
-         i++, j++)
+    for (auto i = m_attachedRouters.begin(); i != m_attachedRouters.end(); i++, j++)
     {
         if (j == n)
         {
@@ -422,9 +417,7 @@ GlobalRoutingLSA::Print(std::ostream& os) const
 
     if (m_lsType == GlobalRoutingLSA::RouterLSA)
     {
-        for (ListOfLinkRecords_t::const_iterator i = m_linkRecords.begin();
-             i != m_linkRecords.end();
-             i++)
+        for (auto i = m_linkRecords.begin(); i != m_linkRecords.end(); i++)
         {
             GlobalRoutingLinkRecord* p = *i;
 
@@ -469,9 +462,7 @@ GlobalRoutingLSA::Print(std::ostream& os) const
     {
         os << "---------- NetworkLSA Link Record ----------" << std::endl;
         os << "m_networkLSANetworkMask = " << m_networkLSANetworkMask << std::endl;
-        for (ListOfAttachedRouters_t::const_iterator i = m_attachedRouters.begin();
-             i != m_attachedRouters.end();
-             i++)
+        for (auto i = m_attachedRouters.begin(); i != m_attachedRouters.end(); i++)
         {
             Ipv4Address p = *i;
             os << "attachedRouter = " << p << std::endl;
@@ -545,7 +536,7 @@ GlobalRouter::DoDispose()
 {
     NS_LOG_FUNCTION(this);
     m_routingProtocol = nullptr;
-    for (InjectedRoutesI k = m_injectedRoutes.begin(); k != m_injectedRoutes.end();
+    for (auto k = m_injectedRoutes.begin(); k != m_injectedRoutes.end();
          k = m_injectedRoutes.erase(k))
     {
         delete (*k);
@@ -557,7 +548,7 @@ void
 GlobalRouter::ClearLSAs()
 {
     NS_LOG_FUNCTION(this);
-    for (ListOfLSAs_t::iterator i = m_LSAs.begin(); i != m_LSAs.end(); i++)
+    for (auto i = m_LSAs.begin(); i != m_LSAs.end(); i++)
     {
         NS_LOG_LOGIC("Free LSA");
 
@@ -614,7 +605,7 @@ GlobalRouter::DiscoverLSAs()
     //
     // Every router node originates a Router-LSA
     //
-    GlobalRoutingLSA* pLSA = new GlobalRoutingLSA;
+    auto pLSA = new GlobalRoutingLSA;
     pLSA->SetLSType(GlobalRoutingLSA::RouterLSA);
     pLSA->SetLinkStateId(m_routerId);
     pLSA->SetAdvertisingRouter(m_routerId);
@@ -717,9 +708,9 @@ GlobalRouter::DiscoverLSAs()
     // Build injected route LSAs as external routes
     // RFC 2328, section 12.4.4
     //
-    for (InjectedRoutesCI i = m_injectedRoutes.begin(); i != m_injectedRoutes.end(); i++)
+    for (auto i = m_injectedRoutes.begin(); i != m_injectedRoutes.end(); i++)
     {
-        GlobalRoutingLSA* pLSA = new GlobalRoutingLSA;
+        auto pLSA = new GlobalRoutingLSA;
         pLSA->SetLSType(GlobalRoutingLSA::ASExternalLSAs);
         pLSA->SetLinkStateId((*i)->GetDestNetwork());
         pLSA->SetAdvertisingRouter(m_routerId);
@@ -752,7 +743,7 @@ GlobalRouter::ProcessSingleBroadcastLink(Ptr<NetDevice> nd,
 {
     NS_LOG_FUNCTION(this << nd << pLSA << &c);
 
-    GlobalRoutingLinkRecord* plr = new GlobalRoutingLinkRecord;
+    auto plr = new GlobalRoutingLinkRecord;
     NS_ABORT_MSG_IF(plr == nullptr,
                     "GlobalRouter::ProcessSingleBroadcastLink(): Can't alloc link record");
 
@@ -1193,7 +1184,7 @@ GlobalRouter::BuildNetworkLSAs(NetDeviceContainer c)
         Ipv4Address addrLocal = ipv4Local->GetAddress(interfaceLocal, 0).GetLocal();
         Ipv4Mask maskLocal = ipv4Local->GetAddress(interfaceLocal, 0).GetMask();
 
-        GlobalRoutingLSA* pLSA = new GlobalRoutingLSA;
+        auto pLSA = new GlobalRoutingLSA;
         NS_ABORT_MSG_IF(pLSA == nullptr,
                         "GlobalRouter::BuildNetworkLSAs(): Can't alloc link record");
 
@@ -1604,7 +1595,7 @@ GlobalRouter::GetLSA(uint32_t n, GlobalRoutingLSA& lsa) const
     // walk the list of link state advertisements created there and return the
     // one the client is interested in.
     //
-    ListOfLSAs_t::const_iterator i = m_LSAs.begin();
+    auto i = m_LSAs.begin();
     uint32_t j = 0;
 
     for (; i != m_LSAs.end(); i++, j++)
@@ -1624,7 +1615,7 @@ void
 GlobalRouter::InjectRoute(Ipv4Address network, Ipv4Mask networkMask)
 {
     NS_LOG_FUNCTION(this << network << networkMask);
-    Ipv4RoutingTableEntry* route = new Ipv4RoutingTableEntry();
+    auto route = new Ipv4RoutingTableEntry();
     //
     // Interface number does not matter here, using 1.
     //
@@ -1639,7 +1630,7 @@ GlobalRouter::GetInjectedRoute(uint32_t index)
     if (index < m_injectedRoutes.size())
     {
         uint32_t tmp = 0;
-        for (InjectedRoutesCI i = m_injectedRoutes.begin(); i != m_injectedRoutes.end(); i++)
+        for (auto i = m_injectedRoutes.begin(); i != m_injectedRoutes.end(); i++)
         {
             if (tmp == index)
             {
@@ -1666,7 +1657,7 @@ GlobalRouter::RemoveInjectedRoute(uint32_t index)
     NS_LOG_FUNCTION(this << index);
     NS_ASSERT(index < m_injectedRoutes.size());
     uint32_t tmp = 0;
-    for (InjectedRoutesI i = m_injectedRoutes.begin(); i != m_injectedRoutes.end(); i++)
+    for (auto i = m_injectedRoutes.begin(); i != m_injectedRoutes.end(); i++)
     {
         if (tmp == index)
         {
@@ -1683,7 +1674,7 @@ bool
 GlobalRouter::WithdrawRoute(Ipv4Address network, Ipv4Mask networkMask)
 {
     NS_LOG_FUNCTION(this << network << networkMask);
-    for (InjectedRoutesI i = m_injectedRoutes.begin(); i != m_injectedRoutes.end(); i++)
+    for (auto i = m_injectedRoutes.begin(); i != m_injectedRoutes.end(); i++)
     {
         if ((*i)->GetDestNetwork() == network && (*i)->GetDestNetworkMask() == networkMask)
         {
@@ -1791,8 +1782,7 @@ GlobalRouter::ClearBridgesVisited() const
 bool
 GlobalRouter::BridgeHasAlreadyBeenVisited(Ptr<BridgeNetDevice> bridgeNetDevice) const
 {
-    std::vector<Ptr<BridgeNetDevice>>::iterator iter;
-    for (iter = m_bridgesVisited.begin(); iter != m_bridgesVisited.end(); ++iter)
+    for (auto iter = m_bridgesVisited.begin(); iter != m_bridgesVisited.end(); ++iter)
     {
         if (bridgeNetDevice == *iter)
         {

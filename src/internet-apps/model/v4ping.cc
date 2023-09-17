@@ -137,11 +137,11 @@ V4Ping::Receive(Ptr<Socket> socket)
         {
             Icmpv4Echo echo;
             p->RemoveHeader(echo);
-            std::map<uint16_t, Time>::iterator i = m_sent.find(echo.GetSequenceNumber());
+            auto i = m_sent.find(echo.GetSequenceNumber());
 
             if (i != m_sent.end() && echo.GetIdentifier() == 0)
             {
-                uint32_t* buf = new uint32_t[m_size];
+                auto buf = new uint32_t[m_size];
                 uint32_t dataSize = echo.GetDataSize();
                 uint32_t nodeId;
                 uint32_t appId;
@@ -215,7 +215,7 @@ V4Ping::Send()
     // (where any difference would show up anyway) and borrow that code.  Don't
     // be too surprised when you see that this is a little endian convention.
     //
-    uint8_t* data = new uint8_t[m_size];
+    auto data = new uint8_t[m_size];
     for (uint32_t i = 0; i < m_size; ++i)
     {
         data[i] = 0;

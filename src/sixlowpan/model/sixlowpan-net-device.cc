@@ -192,7 +192,7 @@ SixLowPanNetDevice::DoDispose()
         m_timeoutEvent.Cancel();
     }
 
-    for (MapFragmentsI_t iter = m_fragments.begin(); iter != m_fragments.end(); iter++)
+    for (auto iter = m_fragments.begin(); iter != m_fragments.end(); iter++)
     {
         iter->second = nullptr;
     }
@@ -666,9 +666,8 @@ SixLowPanNetDevice::DoSend(Ptr<Packet> packet,
         // fragment
         std::list<Ptr<Packet>> fragmentList;
         DoFragmentation(packet, origPacketSize, origHdrSize, extraHdrSize, fragmentList);
-        std::list<Ptr<Packet>>::iterator it;
         bool success = true;
-        for (it = fragmentList.begin(); it != fragmentList.end(); it++)
+        for (auto it = fragmentList.begin(); it != fragmentList.end(); it++)
         {
             NS_LOG_DEBUG("SixLowPanNetDevice::Send (Fragment) " << **it);
             m_txTrace(*it, this, GetIfIndex());
@@ -2343,7 +2342,7 @@ SixLowPanNetDevice::DoFragmentation(Ptr<Packet> packet,
     uint32_t packetSize = packet->GetSize();
     uint32_t compressedHeaderSize = packetSize - (origPacketSize - origHdrSize);
 
-    uint16_t tag = uint16_t(m_rng->GetValue(0, 65535));
+    auto tag = static_cast<uint16_t>(m_rng->GetValue(0, 65535));
     NS_LOG_LOGIC("random tag " << tag << " - test " << packetSize);
 
     // first fragment
@@ -2474,18 +2473,17 @@ SixLowPanNetDevice::ProcessFragment(Ptr<Packet>& packet,
 
     Ptr<Fragments> fragments;
 
-    MapFragments_t::iterator it = m_fragments.find(key);
+    auto it = m_fragments.find(key);
     if (it == m_fragments.end())
     {
         // erase the oldest packet.
         if (m_fragmentReassemblyListSize && (m_fragments.size() >= m_fragmentReassemblyListSize))
         {
-            FragmentsTimeoutsListI_t iter = m_timeoutEventList.begin();
+            auto iter = m_timeoutEventList.begin();
             FragmentKey_t oldestKey = std::get<1>(*iter);
 
             std::list<Ptr<Packet>> storedFragments = m_fragments[oldestKey]->GetFragments();
-            for (std::list<Ptr<Packet>>::iterator fragIter = storedFragments.begin();
-                 fragIter != storedFragments.end();
+            for (auto fragIter = storedFragments.begin(); fragIter != storedFragments.end();
                  fragIter++)
             {
                 m_dropTrace(DROP_FRAGMENT_BUFFER_FULL, *fragIter, this, GetIfIndex());
@@ -2500,7 +2498,7 @@ SixLowPanNetDevice::ProcessFragment(Ptr<Packet>& packet,
         m_fragments.insert(std::make_pair(key, fragments));
         uint32_t ifIndex = GetIfIndex();
 
-        FragmentsTimeoutsListI_t iter = SetTimeout(key, ifIndex);
+        auto iter = SetTimeout(key, ifIndex);
         fragments->SetTimeoutIter(iter);
     }
     else
@@ -2592,9 +2590,7 @@ SixLowPanNetDevice::Fragments::IsEntire() const
 
     if (ret)
     {
-        for (std::list<std::pair<Ptr<Packet>, uint16_t>>::const_iterator it = m_fragments.begin();
-             it != m_fragments.end();
-             it++)
+        for (auto it = m_fragments.begin(); it != m_fragments.end(); it++)
         {
             // overlapping fragments should not exist
             NS_LOG_LOGIC("Checking overlaps " << lastEndOffset << " - " << it->second);
@@ -2618,7 +2614,7 @@ SixLowPanNetDevice::Fragments::GetPacket() const
 {
     NS_LOG_FUNCTION(this);
 
-    std::list<std::pair<Ptr<Packet>, uint16_t>>::const_iterator it = m_fragments.begin();
+    auto it = m_fragments.begin();
 
     Ptr<Packet> p = Create<Packet>();
     uint16_t lastEndOffset = 0;
@@ -2655,8 +2651,7 @@ std::list<Ptr<Packet>>
 SixLowPanNetDevice::Fragments::GetFragments() const
 {
     std::list<Ptr<Packet>> fragments;
-    std::list<std::pair<Ptr<Packet>, uint16_t>>::const_iterator iter;
-    for (iter = m_fragments.begin(); iter != m_fragments.end(); iter++)
+    for (auto iter = m_fragments.begin(); iter != m_fragments.end(); iter++)
     {
         fragments.push_back(iter->first);
     }
@@ -2680,11 +2675,9 @@ SixLowPanNetDevice::HandleFragmentsTimeout(FragmentKey_t key, uint32_t iif)
 {
     NS_LOG_FUNCTION(this);
 
-    MapFragments_t::iterator it = m_fragments.find(key);
+    auto it = m_fragments.find(key);
     std::list<Ptr<Packet>> storedFragments = it->second->GetFragments();
-    for (std::list<Ptr<Packet>>::iterator fragIter = storedFragments.begin();
-         fragIter != storedFragments.end();
-         fragIter++)
+    for (auto fragIter = storedFragments.begin(); fragIter != storedFragments.end(); fragIter++)
     {
         m_dropTrace(DROP_FRAGMENT_TIMEOUT, *fragIter, this, iif);
     }
@@ -2719,7 +2712,7 @@ SixLowPanNetDevice::SetTimeout(FragmentKey_t key, uint32_t iif)
     }
     m_timeoutEventList.emplace_back(Simulator::Now() + m_fragmentExpirationTimeout, key, iif);
 
-    SixLowPanNetDevice::FragmentsTimeoutsListI_t iter = --m_timeoutEventList.end();
+    auto iter = --m_timeoutEventList.end();
 
     return (iter);
 }

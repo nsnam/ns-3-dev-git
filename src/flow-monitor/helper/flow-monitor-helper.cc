@@ -112,7 +112,7 @@ FlowMonitorHelper::Install(Ptr<Node> node)
 Ptr<FlowMonitor>
 FlowMonitorHelper::Install(NodeContainer nodes)
 {
-    for (NodeContainer::Iterator i = nodes.Begin(); i != nodes.End(); ++i)
+    for (auto i = nodes.Begin(); i != nodes.End(); ++i)
     {
         Ptr<Node> node = *i;
         if (node->GetObject<Ipv4L3Protocol>() || node->GetObject<Ipv6L3Protocol>())
@@ -126,7 +126,7 @@ FlowMonitorHelper::Install(NodeContainer nodes)
 Ptr<FlowMonitor>
 FlowMonitorHelper::InstallAll()
 {
-    for (NodeList::Iterator i = NodeList::Begin(); i != NodeList::End(); ++i)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); ++i)
     {
         Ptr<Node> node = *i;
         if (node->GetObject<Ipv4L3Protocol>() || node->GetObject<Ipv6L3Protocol>())

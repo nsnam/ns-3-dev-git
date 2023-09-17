@@ -716,7 +716,7 @@ SpectrumWifiPhyFilterTest::RunOne()
         {
             for (unsigned int type = 0; type < 7; type++)
             {
-                HeRu::RuType ruType = static_cast<HeRu::RuType>(type);
+                auto ruType = static_cast<HeRu::RuType>(type);
                 for (std::size_t index = 1; index <= HeRu::GetNRus(bw, ruType); index++)
                 {
                     HeRu::SubcarrierGroup subcarrierGroup =

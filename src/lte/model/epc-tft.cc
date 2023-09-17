@@ -265,7 +265,7 @@ EpcTft::Matches(Direction direction,
 {
     NS_LOG_FUNCTION(this << direction << remoteAddress << localAddress << std::dec << remotePort
                          << localPort << (uint16_t)typeOfService);
-    for (std::list<PacketFilter>::iterator it = m_filters.begin(); it != m_filters.end(); ++it)
+    for (auto it = m_filters.begin(); it != m_filters.end(); ++it)
     {
         if (it->Matches(direction,
                         remoteAddress,
@@ -290,7 +290,7 @@ EpcTft::Matches(Direction direction,
 {
     NS_LOG_FUNCTION(this << direction << remoteAddress << localAddress << std::dec << remotePort
                          << localPort << (uint16_t)typeOfService);
-    for (std::list<PacketFilter>::iterator it = m_filters.begin(); it != m_filters.end(); ++it)
+    for (auto it = m_filters.begin(); it != m_filters.end(); ++it)
     {
         if (it->Matches(direction,
                         remoteAddress,

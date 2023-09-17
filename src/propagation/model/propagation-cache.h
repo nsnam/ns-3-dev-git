@@ -48,7 +48,7 @@ class PropagationCache
     Ptr<T> GetPathData(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b, uint32_t modelUid)
     {
         PropagationPathIdentifier key = PropagationPathIdentifier(a, b, modelUid);
-        typename PathCache::iterator it = m_pathCache.find(key);
+        auto it = m_pathCache.find(key);
         if (it == m_pathCache.end())
         {
             return nullptr;

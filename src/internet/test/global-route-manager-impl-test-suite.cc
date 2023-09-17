@@ -60,7 +60,7 @@ GlobalRouteManagerImplTestCase::DoRun()
 
     for (int i = 0; i < 100; ++i)
     {
-        SPFVertex* v = new SPFVertex;
+        auto v = new SPFVertex;
         v->SetDistanceFromRoot(std::rand() % 100);
         candidate.Push(v);
     }
@@ -88,18 +88,17 @@ GlobalRouteManagerImplTestCase::DoRun()
     //  link2:  10.1.3.1/30, 10.1.3.2/30
     //
     // Router 0
-    GlobalRoutingLinkRecord* lr0 =
-        new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
-                                    "0.0.0.2",  // router ID 0.0.0.2
-                                    "10.1.1.1", // local ID
-                                    1);         // metric
+    auto lr0 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
+                                           "0.0.0.2",  // router ID 0.0.0.2
+                                           "10.1.1.1", // local ID
+                                           1);         // metric
 
-    GlobalRoutingLinkRecord* lr1 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
-                                                               "10.1.1.1",
-                                                               "255.255.255.252",
-                                                               1);
+    auto lr1 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
+                                           "10.1.1.1",
+                                           "255.255.255.252",
+                                           1);
 
-    GlobalRoutingLSA* lsa0 = new GlobalRoutingLSA();
+    auto lsa0 = new GlobalRoutingLSA();
     lsa0->SetLSType(GlobalRoutingLSA::RouterLSA);
     lsa0->SetLinkStateId("0.0.0.0");
     lsa0->SetAdvertisingRouter("0.0.0.0");
@@ -107,18 +106,17 @@ GlobalRouteManagerImplTestCase::DoRun()
     lsa0->AddLinkRecord(lr1);
 
     // Router 1
-    GlobalRoutingLinkRecord* lr2 =
-        new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
-                                    "0.0.0.2",
-                                    "10.1.2.1",
-                                    1);
+    auto lr2 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
+                                           "0.0.0.2",
+                                           "10.1.2.1",
+                                           1);
 
-    GlobalRoutingLinkRecord* lr3 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
-                                                               "10.1.2.1",
-                                                               "255.255.255.252",
-                                                               1);
+    auto lr3 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
+                                           "10.1.2.1",
+                                           "255.255.255.252",
+                                           1);
 
-    GlobalRoutingLSA* lsa1 = new GlobalRoutingLSA();
+    auto lsa1 = new GlobalRoutingLSA();
     lsa1->SetLSType(GlobalRoutingLSA::RouterLSA);
     lsa1->SetLinkStateId("0.0.0.1");
     lsa1->SetAdvertisingRouter("0.0.0.1");
@@ -126,40 +124,37 @@ GlobalRouteManagerImplTestCase::DoRun()
     lsa1->AddLinkRecord(lr3);
 
     // Router 2
-    GlobalRoutingLinkRecord* lr4 =
-        new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
-                                    "0.0.0.0",
-                                    "10.1.1.2",
-                                    1);
+    auto lr4 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
+                                           "0.0.0.0",
+                                           "10.1.1.2",
+                                           1);
 
-    GlobalRoutingLinkRecord* lr5 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
-                                                               "10.1.1.2",
-                                                               "255.255.255.252",
-                                                               1);
+    auto lr5 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
+                                           "10.1.1.2",
+                                           "255.255.255.252",
+                                           1);
 
-    GlobalRoutingLinkRecord* lr6 =
-        new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
-                                    "0.0.0.1",
-                                    "10.1.2.2",
-                                    1);
+    auto lr6 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
+                                           "0.0.0.1",
+                                           "10.1.2.2",
+                                           1);
 
-    GlobalRoutingLinkRecord* lr7 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
-                                                               "10.1.2.2",
-                                                               "255.255.255.252",
-                                                               1);
+    auto lr7 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
+                                           "10.1.2.2",
+                                           "255.255.255.252",
+                                           1);
 
-    GlobalRoutingLinkRecord* lr8 =
-        new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
-                                    "0.0.0.3",
-                                    "10.1.3.2",
-                                    1);
+    auto lr8 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
+                                           "0.0.0.3",
+                                           "10.1.3.2",
+                                           1);
 
-    GlobalRoutingLinkRecord* lr9 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
-                                                               "10.1.3.2",
-                                                               "255.255.255.252",
-                                                               1);
+    auto lr9 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
+                                           "10.1.3.2",
+                                           "255.255.255.252",
+                                           1);
 
-    GlobalRoutingLSA* lsa2 = new GlobalRoutingLSA();
+    auto lsa2 = new GlobalRoutingLSA();
     lsa2->SetLSType(GlobalRoutingLSA::RouterLSA);
     lsa2->SetLinkStateId("0.0.0.2");
     lsa2->SetAdvertisingRouter("0.0.0.2");
@@ -171,19 +166,17 @@ GlobalRouteManagerImplTestCase::DoRun()
     lsa2->AddLinkRecord(lr9);
 
     // Router 3
-    GlobalRoutingLinkRecord* lr10 =
-        new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
-                                    "0.0.0.2",
-                                    "10.1.2.1",
-                                    1);
+    auto lr10 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::PointToPoint,
+                                            "0.0.0.2",
+                                            "10.1.2.1",
+                                            1);
 
-    GlobalRoutingLinkRecord* lr11 =
-        new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
-                                    "10.1.2.1",
-                                    "255.255.255.252",
-                                    1);
+    auto lr11 = new GlobalRoutingLinkRecord(GlobalRoutingLinkRecord::StubNetwork,
+                                            "10.1.2.1",
+                                            "255.255.255.252",
+                                            1);
 
-    GlobalRoutingLSA* lsa3 = new GlobalRoutingLSA();
+    auto lsa3 = new GlobalRoutingLSA();
     lsa3->SetLSType(GlobalRoutingLSA::RouterLSA);
     lsa3->SetLinkStateId("0.0.0.3");
     lsa3->SetAdvertisingRouter("0.0.0.3");
@@ -191,7 +184,7 @@ GlobalRouteManagerImplTestCase::DoRun()
     lsa3->AddLinkRecord(lr11);
 
     // Test the database
-    GlobalRouteManagerLSDB* srmlsdb = new GlobalRouteManagerLSDB();
+    auto srmlsdb = new GlobalRouteManagerLSDB();
     srmlsdb->Insert(lsa0->GetLinkStateId(), lsa0);
     srmlsdb->Insert(lsa1->GetLinkStateId(), lsa1);
     srmlsdb->Insert(lsa2->GetLinkStateId(), lsa2);
@@ -201,7 +194,7 @@ GlobalRouteManagerImplTestCase::DoRun()
                           "The Ipv4Address is not stored as the link state ID");
 
     // next, calculate routes based on the manually created LSDB
-    GlobalRouteManagerImpl* srm = new GlobalRouteManagerImpl();
+    auto srm = new GlobalRouteManagerImpl();
     srm->DebugUseLsdb(srmlsdb); // manually add in an LSDB
     // Note-- this will succeed without any nodes in the topology
     // because the NodeList is empty

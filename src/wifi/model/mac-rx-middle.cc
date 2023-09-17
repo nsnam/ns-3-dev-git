@@ -103,7 +103,7 @@ class OriginatorRxStatus
         m_fragments.push_back(packet);
         m_defragmenting = false;
         Ptr<Packet> full = Create<Packet>();
-        for (FragmentsCI i = m_fragments.begin(); i != m_fragments.end(); i++)
+        for (auto i = m_fragments.begin(); i != m_fragments.end(); i++)
         {
             full->AddAtEnd(*i);
         }
@@ -167,12 +167,12 @@ MacRxMiddle::MacRxMiddle()
 MacRxMiddle::~MacRxMiddle()
 {
     NS_LOG_FUNCTION_NOARGS();
-    for (OriginatorsI i = m_originatorStatus.begin(); i != m_originatorStatus.end(); i++)
+    for (auto i = m_originatorStatus.begin(); i != m_originatorStatus.end(); i++)
     {
         delete (*i).second;
     }
     m_originatorStatus.erase(m_originatorStatus.begin(), m_originatorStatus.end());
-    for (QosOriginatorsI i = m_qosOriginatorStatus.begin(); i != m_qosOriginatorStatus.end(); i++)
+    for (auto i = m_qosOriginatorStatus.begin(); i != m_qosOriginatorStatus.end(); i++)
     {
         delete (*i).second;
     }

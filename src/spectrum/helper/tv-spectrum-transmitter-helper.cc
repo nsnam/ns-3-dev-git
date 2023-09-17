@@ -133,7 +133,7 @@ TvSpectrumTransmitterHelper::Install(NodeContainer nodeCont)
     NS_LOG_FUNCTION(this);
     NetDeviceContainer devCont;
     // iterate over node container to make one transmitter for each given node
-    for (NodeContainer::Iterator i = nodeCont.Begin(); i != nodeCont.End(); ++i)
+    for (auto i = nodeCont.Begin(); i != nodeCont.End(); ++i)
     {
         Ptr<Node> node = *i;
         Ptr<TvSpectrumTransmitter> phy = m_factory.Create()->GetObject<TvSpectrumTransmitter>();
@@ -193,7 +193,7 @@ TvSpectrumTransmitterHelper::Install(NodeContainer nodeCont, Region region, uint
             japanEndFrequencies[channelNumber] - japanStartFrequencies[channelNumber];
     }
     // iterate over node container to make one transmitter for each given node
-    for (NodeContainer::Iterator i = nodeCont.Begin(); i != nodeCont.End(); ++i)
+    for (auto i = nodeCont.Begin(); i != nodeCont.End(); ++i)
     {
         Ptr<Node> node = *i;
         Ptr<TvSpectrumTransmitter> phy = m_factory.Create()->GetObject<TvSpectrumTransmitter>();
@@ -226,7 +226,7 @@ TvSpectrumTransmitterHelper::InstallAdjacent(NodeContainer nodeCont)
     DoubleValue startFrequency;
     DoubleValue channelBandwidth;
     // iterate over node container to make one transmitter for each given node
-    for (NodeContainer::Iterator i = nodeCont.Begin(); i != nodeCont.End(); ++i)
+    for (auto i = nodeCont.Begin(); i != nodeCont.End(); ++i)
     {
         Ptr<Node> node = *i;
         Ptr<TvSpectrumTransmitter> phy = m_factory.Create()->GetObject<TvSpectrumTransmitter>();
@@ -265,7 +265,7 @@ TvSpectrumTransmitterHelper::InstallAdjacent(NodeContainer nodeCont,
     uint16_t currChannelNumber;
     int index = 0;
     // iterate over node container to make one transmitter for each given node
-    for (NodeContainer::Iterator i = nodeCont.Begin(); i != nodeCont.End(); ++i)
+    for (auto i = nodeCont.Begin(); i != nodeCont.End(); ++i)
     {
         currChannelNumber = channelNumber + index;
         if (region == REGION_NORTH_AMERICA)
@@ -461,7 +461,7 @@ TvSpectrumTransmitterHelper::InstallRandomRegionalTransmitters(
         tvNode.Create(1);
         mobility.Install(tvNode);
         // set channel number for this transmitter
-        uint16_t channelNumber = (uint16_t)transmitterIndicesToCreate.front();
+        auto channelNumber = (uint16_t)transmitterIndicesToCreate.front();
         Install(tvNode, region, channelNumber); // install tv transmitter
         transmitterLocations.pop_front();       // remove created transmitter location
         transmitterIndicesToCreate.pop_front(); // remove created transmitter index

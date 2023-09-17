@@ -140,7 +140,7 @@ NullMessageSimulatorImpl::CalculateLookAhead()
     if (MpiInterface::GetSize() > 1)
     {
         NodeContainer c = NodeContainer::GetGlobal();
-        for (NodeContainer::Iterator iter = c.Begin(); iter != c.End(); ++iter)
+        for (auto iter = c.Begin(); iter != c.End(); ++iter)
         {
             if ((*iter)->GetSystemId() != MpiInterface::GetSystemId())
             {
@@ -476,7 +476,7 @@ NullMessageSimulatorImpl::Remove(const EventId& id)
     if (id.GetUid() == EventId::UID::DESTROY)
     {
         // destroy events.
-        for (DestroyEvents::iterator i = m_destroyEvents.begin(); i != m_destroyEvents.end(); i++)
+        for (auto i = m_destroyEvents.begin(); i != m_destroyEvents.end(); i++)
         {
             if (*i == id)
             {
@@ -522,8 +522,7 @@ NullMessageSimulatorImpl::IsExpired(const EventId& id) const
             return true;
         }
         // destroy events.
-        for (DestroyEvents::const_iterator i = m_destroyEvents.begin(); i != m_destroyEvents.end();
-             i++)
+        for (auto i = m_destroyEvents.begin(); i != m_destroyEvents.end(); i++)
         {
             if (*i == id)
             {

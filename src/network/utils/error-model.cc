@@ -471,7 +471,7 @@ ListErrorModel::DoCorrupt(Ptr<Packet> p)
         return false;
     }
     auto uid = p->GetUid();
-    for (PacketListCI i = m_packetList.begin(); i != m_packetList.end(); i++)
+    for (auto i = m_packetList.begin(); i != m_packetList.end(); i++)
     {
         if (uid == *i)
         {
@@ -538,7 +538,7 @@ ReceiveListErrorModel::DoCorrupt(Ptr<Packet> p)
         return false;
     }
     m_timesInvoked += 1;
-    for (PacketListCI i = m_packetList.begin(); i != m_packetList.end(); i++)
+    for (auto i = m_packetList.begin(); i != m_packetList.end(); i++)
     {
         if (m_timesInvoked - 1 == *i)
         {

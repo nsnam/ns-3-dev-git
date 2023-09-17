@@ -1826,7 +1826,7 @@ HePhy::ConvertHeRuSubcarriers(uint16_t bandWidth,
                               uint8_t bandIndex)
 {
     WifiSpectrumBandIndices convertedSubcarriers;
-    uint32_t nGuardBands =
+    auto nGuardBands =
         static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / subcarrierSpacing) + 0.5);
     uint32_t centerFrequencyIndex = 0;
     switch (bandWidth)
@@ -1848,7 +1848,7 @@ HePhy::ConvertHeRuSubcarriers(uint16_t bandWidth,
         break;
     }
 
-    size_t numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
+    auto numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
     centerFrequencyIndex += numBandsInBand * bandIndex;
 
     convertedSubcarriers.first = centerFrequencyIndex + subcarrierRange.first;
@@ -1866,7 +1866,7 @@ HePhy::GetRuBands(Ptr<const WifiPhy> phy, uint16_t channelWidth, uint16_t guardB
         {
             for (uint32_t type = 0; type < 7; type++)
             {
-                HeRu::RuType ruType = static_cast<HeRu::RuType>(type);
+                auto ruType = static_cast<HeRu::RuType>(type);
                 std::size_t nRus = HeRu::GetNRus(bw, ruType);
                 for (std::size_t phyIndex = 1; phyIndex <= nRus; phyIndex++)
                 {

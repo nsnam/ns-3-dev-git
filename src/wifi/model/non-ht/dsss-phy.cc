@@ -380,7 +380,7 @@ DsssPhy::GetDataRate(const std::string& name, WifiModulationClass modClass)
         NS_FATAL_ERROR("Incorrect modulation class, must specify either WIFI_MOD_CLASS_DSSS or "
                        "WIFI_MOD_CLASS_HR_DSSS!");
     }
-    uint16_t numberOfBitsPerSubcarrier = static_cast<uint16_t>(log2(constellationSize));
+    auto numberOfBitsPerSubcarrier = static_cast<uint16_t>(log2(constellationSize));
     uint64_t dataRate = ((11000000 / divisor) * numberOfBitsPerSubcarrier);
     return dataRate;
 }

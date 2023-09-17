@@ -759,7 +759,7 @@ WifiHelper::Install(const WifiPhyHelper& phyHelper,
                     NodeContainer::Iterator last) const
 {
     NetDeviceContainer devices;
-    for (NodeContainer::Iterator i = first; i != last; ++i)
+    for (auto i = first; i != last; ++i)
     {
         Ptr<Node> node = *i;
         Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice>();
@@ -984,7 +984,7 @@ WifiHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
 {
     int64_t currentStream = stream;
     Ptr<NetDevice> netDevice;
-    for (NetDeviceContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         netDevice = (*i);
         Ptr<WifiNetDevice> wifi = DynamicCast<WifiNetDevice>(netDevice);

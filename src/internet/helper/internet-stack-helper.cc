@@ -223,7 +223,7 @@ int64_t
 InternetStackHelper::AssignStreams(NodeContainer c, int64_t stream)
 {
     int64_t currentStream = stream;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
         Ptr<GlobalRouter> router = node->GetObject<GlobalRouter>();
@@ -267,7 +267,7 @@ InternetStackHelper::AssignStreams(NodeContainer c, int64_t stream)
 void
 InternetStackHelper::Install(NodeContainer c) const
 {
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Install(*i);
     }
@@ -406,9 +406,7 @@ InternetStackHelper::PcapHooked(Ptr<Ipv4> ipv4)
 {
     auto id = ipv4->GetObject<Node>()->GetId();
 
-    for (InterfaceFileMapIpv4::const_iterator i = g_interfaceFileMapIpv4.begin();
-         i != g_interfaceFileMapIpv4.end();
-         ++i)
+    for (auto i = g_interfaceFileMapIpv4.begin(); i != g_interfaceFileMapIpv4.end(); ++i)
     {
         if ((*i).first.first == id)
         {
@@ -514,9 +512,7 @@ InternetStackHelper::PcapHooked(Ptr<Ipv6> ipv6)
 {
     auto id = ipv6->GetObject<Node>()->GetId();
 
-    for (InterfaceFileMapIpv6::const_iterator i = g_interfaceFileMapIpv6.begin();
-         i != g_interfaceFileMapIpv6.end();
-         ++i)
+    for (auto i = g_interfaceFileMapIpv6.begin(); i != g_interfaceFileMapIpv6.end(); ++i)
     {
         if ((*i).first.first == id)
         {
@@ -780,9 +776,7 @@ InternetStackHelper::AsciiHooked(Ptr<Ipv4> ipv4)
 {
     auto id = ipv4->GetObject<Node>()->GetId();
 
-    for (InterfaceStreamMapIpv4::const_iterator i = g_interfaceStreamMapIpv4.begin();
-         i != g_interfaceStreamMapIpv4.end();
-         ++i)
+    for (auto i = g_interfaceStreamMapIpv4.begin(); i != g_interfaceStreamMapIpv4.end(); ++i)
     {
         if ((*i).first.first == id)
         {
@@ -1126,9 +1120,7 @@ InternetStackHelper::AsciiHooked(Ptr<Ipv6> ipv6)
 {
     auto id = ipv6->GetObject<Node>()->GetId();
 
-    for (InterfaceStreamMapIpv6::const_iterator i = g_interfaceStreamMapIpv6.begin();
-         i != g_interfaceStreamMapIpv6.end();
-         ++i)
+    for (auto i = g_interfaceStreamMapIpv6.begin(); i != g_interfaceStreamMapIpv6.end(); ++i)
     {
         if ((*i).first.first == id)
         {

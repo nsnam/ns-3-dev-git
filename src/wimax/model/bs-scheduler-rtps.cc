@@ -96,7 +96,7 @@ BSSchedulerRtps::AddDownlinkBurst(Ptr<const WimaxConnection> connection,
                                   WimaxPhy::ModulationType modulationType,
                                   Ptr<PacketBurst> burst)
 {
-    OfdmDlMapIe* dlMapIe = new OfdmDlMapIe();
+    auto dlMapIe = new OfdmDlMapIe();
     dlMapIe->SetCid(connection->GetCid());
     dlMapIe->SetDiuc(diuc);
 
@@ -319,11 +319,10 @@ BSSchedulerRtps::BSSchedulerBasicConnection(uint32_t& availableSymbols)
     Ptr<Packet> packet;
     Ptr<PacketBurst> burst = Create<PacketBurst>();
 
-    std::vector<Ptr<WimaxConnection>>::const_iterator iter;
     std::vector<Ptr<WimaxConnection>> connections;
 
     connections = GetBs()->GetConnectionManager()->GetConnections(Cid::BASIC);
-    for (iter = connections.begin(); iter != connections.end(); ++iter)
+    for (auto iter = connections.begin(); iter != connections.end(); ++iter)
     {
         while ((*iter)->HasPackets() && availableSymbols > 0)
         {
@@ -381,11 +380,10 @@ BSSchedulerRtps::BSSchedulerPrimaryConnection(uint32_t& availableSymbols)
     Ptr<Packet> packet;
     Ptr<PacketBurst> burst = Create<PacketBurst>();
 
-    std::vector<Ptr<WimaxConnection>>::const_iterator iter;
     std::vector<Ptr<WimaxConnection>> connections;
 
     connections = GetBs()->GetConnectionManager()->GetConnections(Cid::PRIMARY);
-    for (iter = connections.begin(); iter != connections.end(); ++iter)
+    for (auto iter = connections.begin(); iter != connections.end(); ++iter)
     {
         while ((*iter)->HasPackets() && availableSymbols > 0)
         {
@@ -444,12 +442,11 @@ BSSchedulerRtps::BSSchedulerUGSConnection(uint32_t& availableSymbols)
 
     Time currentTime = Simulator::Now();
 
-    std::vector<ServiceFlow*>::iterator iter;
     ServiceFlowRecord* serviceFlowRecord;
     std::vector<ServiceFlow*> serviceFlows;
 
     serviceFlows = GetBs()->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_UGS);
-    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         serviceFlowRecord = (*iter)->GetRecord();
         // if latency would exceed in case grant is allocated in next frame then allocate in current
@@ -503,7 +500,6 @@ BSSchedulerRtps::BSSchedulerRTPSConnection(uint32_t& availableSymbols)
     Time currentTime = Simulator::Now();
 
     std::vector<Ptr<WimaxConnection>> connections;
-    std::vector<ServiceFlow*>::iterator iter2;
     ServiceFlowRecord* serviceFlowRecord;
     std::vector<ServiceFlow*> serviceFlows;
 
@@ -520,7 +516,7 @@ BSSchedulerRtps::BSSchedulerRTPSConnection(uint32_t& availableSymbols)
 
     serviceFlows = GetBs()->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_RTPS);
     nbConnection = 0;
-    for (iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
+    for (auto iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
     {
         // DL RTPS Scheduler works for all rtPS connection that have packets to transmitt!!!
         serviceFlowRecord = (*iter2)->GetRecord();
@@ -644,11 +640,10 @@ BSSchedulerRtps::BSSchedulerNRTPSConnection(uint32_t& availableSymbols)
     Ptr<Packet> packet;
     Ptr<PacketBurst> burst = Create<PacketBurst>();
 
-    std::vector<ServiceFlow*>::iterator iter;
     std::vector<ServiceFlow*> serviceFlows;
 
     serviceFlows = GetBs()->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_NRTPS);
-    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         connection = (*iter)->GetConnection();
 
@@ -702,11 +697,10 @@ BSSchedulerRtps::BSSchedulerBEConnection(uint32_t& availableSymbols)
     Ptr<Packet> packet;
     Ptr<PacketBurst> burst = Create<PacketBurst>();
 
-    std::vector<ServiceFlow*>::iterator iter;
     std::vector<ServiceFlow*> serviceFlows;
 
     serviceFlows = GetBs()->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_BE);
-    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         connection = (*iter)->GetConnection();
 

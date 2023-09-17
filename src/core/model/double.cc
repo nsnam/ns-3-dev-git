@@ -66,7 +66,7 @@ MakeDoubleChecker(double min, double max, std::string name)
         bool Check(const AttributeValue& value) const override
         {
             NS_LOG_FUNCTION(&value);
-            const DoubleValue* v = dynamic_cast<const DoubleValue*>(&value);
+            const auto v = dynamic_cast<const DoubleValue*>(&value);
             if (v == nullptr)
             {
                 return false;
@@ -103,8 +103,8 @@ MakeDoubleChecker(double min, double max, std::string name)
         bool Copy(const AttributeValue& source, AttributeValue& destination) const override
         {
             NS_LOG_FUNCTION(&source << &destination);
-            const DoubleValue* src = dynamic_cast<const DoubleValue*>(&source);
-            DoubleValue* dst = dynamic_cast<DoubleValue*>(&destination);
+            const auto src = dynamic_cast<const DoubleValue*>(&source);
+            auto dst = dynamic_cast<DoubleValue*>(&destination);
             if (src == nullptr || dst == nullptr)
             {
                 return false;

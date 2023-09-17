@@ -167,8 +167,6 @@ Ptr<WimaxConnection>
 SSScheduler::SelectConnection()
 {
     Time currentTime = Simulator::Now();
-    std::vector<ServiceFlow*>::const_iterator iter;
-    std::vector<ServiceFlow*> serviceFlows;
 
     NS_LOG_INFO("SS Scheduler: Selecting connection...");
     if (m_ss->GetInitialRangingConnection()->HasPackets())
@@ -187,8 +185,8 @@ SSScheduler::SelectConnection()
         return m_ss->GetPrimaryConnection();
     }
 
-    serviceFlows = m_ss->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_UGS);
-    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
+    auto serviceFlows = m_ss->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_UGS);
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         // making sure that this grant was actually intended for this UGS
 
@@ -206,7 +204,7 @@ SSScheduler::SelectConnection()
      hence this function will never be called. */
 
     serviceFlows = m_ss->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_RTPS);
-    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         if ((*iter)->HasPackets(MacHeaderType::HEADER_TYPE_GENERIC) &&
             (currentTime + m_ss->GetPhy()->GetFrameDuration() >
@@ -219,7 +217,7 @@ SSScheduler::SelectConnection()
     }
 
     serviceFlows = m_ss->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_NRTPS);
-    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         if ((*iter)->HasPackets(MacHeaderType::HEADER_TYPE_GENERIC))
         {
@@ -230,7 +228,7 @@ SSScheduler::SelectConnection()
     }
 
     serviceFlows = m_ss->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_BE);
-    for (iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         if ((*iter)->HasPackets(MacHeaderType::HEADER_TYPE_GENERIC))
         {

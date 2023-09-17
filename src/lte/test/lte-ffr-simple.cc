@@ -279,9 +279,7 @@ LteFfrSimple::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults measResults)
 {
     NS_LOG_FUNCTION(this << rnti << (uint16_t)measResults.measId);
 
-    std::map<uint16_t, LteRrcSap::PdschConfigDedicated>::iterator it;
-
-    it = m_ues.find(rnti);
+    auto it = m_ues.find(rnti);
 
     if (it == m_ues.end())
     {
@@ -302,8 +300,7 @@ LteFfrSimple::UpdatePdschConfigDedicated()
 {
     NS_LOG_FUNCTION(this);
 
-    std::map<uint16_t, LteRrcSap::PdschConfigDedicated>::iterator it;
-    for (it = m_ues.begin(); it != m_ues.end(); it++)
+    for (auto it = m_ues.begin(); it != m_ues.end(); it++)
     {
         if (it->second.pa != m_pdschConfigDedicated.pa)
         {

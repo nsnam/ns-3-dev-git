@@ -706,9 +706,7 @@ inline std::ostream&
 operator<<(std::ostream& os, const MessageList& messages)
 {
     os << "[";
-    for (std::vector<MessageHeader>::const_iterator messageIter = messages.begin();
-         messageIter != messages.end();
-         messageIter++)
+    for (auto messageIter = messages.begin(); messageIter != messages.end(); messageIter++)
     {
         messageIter->Print(os);
         if (messageIter + 1 != messages.end())

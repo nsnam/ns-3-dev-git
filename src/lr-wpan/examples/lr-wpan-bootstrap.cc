@@ -381,7 +381,7 @@ main(int argc, char* argv[])
     lrWpanHelper.SetExtendedAddresses(lrwpanDevices);
 
     // Devices hooks & MAC MLME-scan primitive set
-    for (NodeContainer::Iterator i = nodes.Begin(); i != nodes.End(); i++)
+    for (auto i = nodes.Begin(); i != nodes.End(); i++)
     {
         Ptr<Node> node = *i;
         Ptr<NetDevice> netDevice = node->GetDevice(0);
@@ -416,7 +416,7 @@ main(int argc, char* argv[])
     }
 
     // Coordinator hooks
-    for (NodeContainer::Iterator i = coordinators.Begin(); i != coordinators.End(); i++)
+    for (auto i = coordinators.Begin(); i != coordinators.End(); i++)
     {
         Ptr<Node> coor = *i;
         Ptr<NetDevice> netDevice = coor->GetDevice(0);

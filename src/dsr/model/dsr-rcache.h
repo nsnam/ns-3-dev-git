@@ -356,8 +356,8 @@ class DsrRouteCacheEntry
             NS_ASSERT(false);
             return false;
         }
-        IP_VECTOR::const_iterator j = o.m_path.begin();
-        for (IP_VECTOR::const_iterator i = m_path.begin(); i != m_path.end(); i++, j++)
+        auto j = o.m_path.begin();
+        for (auto i = m_path.begin(); i != m_path.end(); i++, j++)
         {
             /*
              * Verify if neither the entry are not 0 and they equal to each other

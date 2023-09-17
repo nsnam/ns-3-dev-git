@@ -175,17 +175,14 @@ UplinkSchedulerMBQoS::UplinkSchedWindowTimer()
     std::vector<SSRecord*>* ssRecords = GetBs()->GetSSManager()->GetSSRecords();
 
     // For each SS
-    for (std::vector<SSRecord*>::iterator iter = ssRecords->begin(); iter != ssRecords->end();
-         ++iter)
+    for (auto iter = ssRecords->begin(); iter != ssRecords->end(); ++iter)
     {
         SSRecord* ssRecord = *iter;
         std::vector<ServiceFlow*> serviceFlows =
             ssRecord->GetServiceFlows(ServiceFlow::SF_TYPE_ALL);
 
         // For each flow
-        for (std::vector<ServiceFlow*>::iterator iter2 = serviceFlows.begin();
-             iter2 != serviceFlows.end();
-             ++iter2)
+        for (auto iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
         {
             ServiceFlow* serviceFlow = *iter2;
             if ((serviceFlow->GetSchedulingType() == ServiceFlow::SF_TYPE_RTPS) ||
@@ -235,8 +232,7 @@ UplinkSchedulerMBQoS::Schedule()
     AllocateInitialRangingInterval(symbolsToAllocation, availableSymbols);
 
     std::vector<SSRecord*>* ssRecords = GetBs()->GetSSManager()->GetSSRecords();
-    for (std::vector<SSRecord*>::iterator iter = ssRecords->begin(); iter != ssRecords->end();
-         ++iter)
+    for (auto iter = ssRecords->begin(); iter != ssRecords->end(); ++iter)
     {
         SSRecord* ssRecord = *iter;
 
@@ -575,7 +571,7 @@ uint32_t
 UplinkSchedulerMBQoS::CountSymbolsQueue(std::list<Ptr<UlJob>> jobs)
 {
     uint32_t symbols = 0;
-    for (std::list<Ptr<UlJob>>::iterator iter = jobs.begin(); iter != jobs.end(); ++iter)
+    for (auto iter = jobs.begin(); iter != jobs.end(); ++iter)
     {
         Ptr<UlJob> job = *iter;
 
@@ -683,7 +679,7 @@ UplinkSchedulerMBQoS::CheckDeadline(uint32_t& availableSymbols)
     // for each request in the intermediate queue
     if (!m_uplinkJobs_inter.empty())
     {
-        std::list<Ptr<UlJob>>::iterator iter = m_uplinkJobs_inter.begin();
+        auto iter = m_uplinkJobs_inter.begin();
 
         while (iter != m_uplinkJobs_inter.end() && availableSymbols)
         {
@@ -776,15 +772,12 @@ UplinkSchedulerMBQoS::CheckMinimumBandwidth(uint32_t& availableSymbols)
 
     // For each connection of type rtPS or nrtPS
     std::vector<SSRecord*>* ssRecords = GetBs()->GetSSManager()->GetSSRecords();
-    for (std::vector<SSRecord*>::iterator iter = ssRecords->begin(); iter != ssRecords->end();
-         ++iter)
+    for (auto iter = ssRecords->begin(); iter != ssRecords->end(); ++iter)
     {
         SSRecord* ssRecord = *iter;
         std::vector<ServiceFlow*> serviceFlows =
             ssRecord->GetServiceFlows(ServiceFlow::SF_TYPE_ALL);
-        for (std::vector<ServiceFlow*>::iterator iter2 = serviceFlows.begin();
-             iter2 != serviceFlows.end();
-             ++iter2)
+        for (auto iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
         {
             ServiceFlow* serviceFlow = *iter2;
             if (serviceFlow->GetSchedulingType() == ServiceFlow::SF_TYPE_RTPS ||
@@ -799,9 +792,7 @@ UplinkSchedulerMBQoS::CheckMinimumBandwidth(uint32_t& availableSymbols)
     }
 
     // for each request in the imermediate queue
-    for (std::list<Ptr<UlJob>>::const_iterator iter = m_uplinkJobs_inter.begin();
-         iter != m_uplinkJobs_inter.end();
-         ++iter)
+    for (auto iter = m_uplinkJobs_inter.begin(); iter != m_uplinkJobs_inter.end(); ++iter)
     {
         Ptr<UlJob> job = *iter;
         // SSRecord ssRecord = job->GetSsRecord();
@@ -850,9 +841,7 @@ UplinkSchedulerMBQoS::CheckMinimumBandwidth(uint32_t& availableSymbols)
 
     priorityUlJobs.sort(SortProcessPtr());
 
-    for (std::list<Ptr<PriorityUlJob>>::const_iterator iter = priorityUlJobs.begin();
-         iter != priorityUlJobs.end();
-         ++iter)
+    for (auto iter = priorityUlJobs.begin(); iter != priorityUlJobs.end(); ++iter)
     {
         Ptr<PriorityUlJob> priorityUlJob = *iter;
         Ptr<UlJob> job_priority = priorityUlJob->GetUlJob();
@@ -879,9 +868,7 @@ UplinkSchedulerMBQoS::ServiceUnsolicitedGrants(const SSRecord* ssRecord,
     uint8_t uiuc = ulMapIe.GetUiuc(); // SS's burst profile
     std::vector<ServiceFlow*> serviceFlows = ssRecord->GetServiceFlows(schedulingType);
 
-    for (std::vector<ServiceFlow*>::iterator iter = serviceFlows.begin();
-         iter != serviceFlows.end();
-         ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         ServiceFlow* serviceFlow = *iter;
 
@@ -945,9 +932,7 @@ UplinkSchedulerMBQoS::ServiceBandwidthRequests(const SSRecord* ssRecord,
 {
     std::vector<ServiceFlow*> serviceFlows = ssRecord->GetServiceFlows(schedulingType);
 
-    for (std::vector<ServiceFlow*>::iterator iter = serviceFlows.begin();
-         iter != serviceFlows.end();
-         ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         if (!ServiceBandwidthRequests(*iter,
                                       schedulingType,
@@ -1127,9 +1112,7 @@ UplinkSchedulerMBQoS::GetPendingSize(ServiceFlow* serviceFlow)
     std::list<Ptr<PriorityUlJob>> priorityUlJobs;
 
     // for each request in the imermediate queue
-    for (std::list<Ptr<UlJob>>::const_iterator iter = m_uplinkJobs_inter.begin();
-         iter != m_uplinkJobs_inter.end();
-         ++iter)
+    for (auto iter = m_uplinkJobs_inter.begin(); iter != m_uplinkJobs_inter.end(); ++iter)
     {
         Ptr<UlJob> job = *iter;
 

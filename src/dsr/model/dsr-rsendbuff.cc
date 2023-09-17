@@ -56,9 +56,7 @@ bool
 DsrSendBuffer::Enqueue(DsrSendBuffEntry& entry)
 {
     Purge();
-    for (std::vector<DsrSendBuffEntry>::const_iterator i = m_sendBuffer.begin();
-         i != m_sendBuffer.end();
-         ++i)
+    for (auto i = m_sendBuffer.begin(); i != m_sendBuffer.end(); ++i)
     {
         //      NS_LOG_DEBUG ("packet id " << i->GetPacket ()->GetUid () << " " << entry.GetPacket
         //      ()->GetUid ()
@@ -94,8 +92,7 @@ DsrSendBuffer::DropPacketWithDst(Ipv4Address dst)
     /*
      * Drop the packet with destination address dst
      */
-    for (std::vector<DsrSendBuffEntry>::iterator i = m_sendBuffer.begin(); i != m_sendBuffer.end();
-         ++i)
+    for (auto i = m_sendBuffer.begin(); i != m_sendBuffer.end(); ++i)
     {
         if (i->GetDestination() == dst)
         {
@@ -116,8 +113,7 @@ DsrSendBuffer::Dequeue(Ipv4Address dst, DsrSendBuffEntry& entry)
     /*
      * Dequeue the entry with destination address dst
      */
-    for (std::vector<DsrSendBuffEntry>::iterator i = m_sendBuffer.begin(); i != m_sendBuffer.end();
-         ++i)
+    for (auto i = m_sendBuffer.begin(); i != m_sendBuffer.end(); ++i)
     {
         if (i->GetDestination() == dst)
         {
@@ -136,9 +132,7 @@ DsrSendBuffer::Find(Ipv4Address dst)
     /*
      * Make sure if the send buffer contains entry with certain dst
      */
-    for (std::vector<DsrSendBuffEntry>::const_iterator i = m_sendBuffer.begin();
-         i != m_sendBuffer.end();
-         ++i)
+    for (auto i = m_sendBuffer.begin(); i != m_sendBuffer.end(); ++i)
     {
         if (i->GetDestination() == dst)
         {
@@ -171,8 +165,7 @@ DsrSendBuffer::Purge()
      */
     NS_LOG_INFO("The send buffer size " << m_sendBuffer.size());
     IsExpired pred;
-    for (std::vector<DsrSendBuffEntry>::iterator i = m_sendBuffer.begin(); i != m_sendBuffer.end();
-         ++i)
+    for (auto i = m_sendBuffer.begin(); i != m_sendBuffer.end(); ++i)
     {
         if (pred(*i))
         {

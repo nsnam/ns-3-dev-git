@@ -158,7 +158,7 @@ void
 BuildingListPriv::DoDispose()
 {
     NS_LOG_FUNCTION_NOARGS();
-    for (std::vector<Ptr<Building>>::iterator i = m_buildings.begin(); i != m_buildings.end(); i++)
+    for (auto i = m_buildings.begin(); i != m_buildings.end(); i++)
     {
         Ptr<Building> building = *i;
         building->Dispose();

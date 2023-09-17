@@ -41,8 +41,7 @@ ns3::RemoteChannelBundleManager::RemoteChannelMap
 Ptr<RemoteChannelBundle>
 RemoteChannelBundleManager::Find(uint32_t systemId)
 {
-    ns3::RemoteChannelBundleManager::RemoteChannelMap::iterator kv =
-        g_remoteChannelBundles.find(systemId);
+    auto kv = g_remoteChannelBundles.find(systemId);
 
     if (kv == g_remoteChannelBundles.end())
     {
@@ -78,9 +77,7 @@ RemoteChannelBundleManager::InitializeNullMessageEvents()
 {
     NS_ASSERT(!g_initialized);
 
-    for (RemoteChannelMap::const_iterator iter = g_remoteChannelBundles.begin();
-         iter != g_remoteChannelBundles.end();
-         ++iter)
+    for (auto iter = g_remoteChannelBundles.begin(); iter != g_remoteChannelBundles.end(); ++iter)
     {
         Ptr<RemoteChannelBundle> bundle = iter->second;
         bundle->Send(bundle->GetDelay());
@@ -98,9 +95,7 @@ RemoteChannelBundleManager::GetSafeTime()
 
     Time safeTime = Simulator::GetMaximumSimulationTime();
 
-    for (RemoteChannelMap::const_iterator kv = g_remoteChannelBundles.begin();
-         kv != g_remoteChannelBundles.end();
-         ++kv)
+    for (auto kv = g_remoteChannelBundles.begin(); kv != g_remoteChannelBundles.end(); ++kv)
     {
         safeTime = Min(safeTime, kv->second->GetGuaranteeTime());
     }

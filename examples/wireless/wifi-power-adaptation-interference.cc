@@ -274,7 +274,7 @@ NodeStatistics::SetupPhy(Ptr<WifiPhy> phy)
         txVector.SetMode(mode);
         txVector.SetPreambleType(WIFI_PREAMBLE_LONG);
         txVector.SetChannelWidth(phy->GetChannelWidth());
-        DataRate dataRate = DataRate(mode.GetDataRate(phy->GetChannelWidth()));
+        DataRate dataRate(mode.GetDataRate(phy->GetChannelWidth()));
         Time time = phy->CalculateTxDuration(packetSize, txVector, phy->GetPhyBand());
         NS_LOG_DEBUG(mode.GetUniqueName() << " " << time.GetSeconds() << " " << dataRate);
         m_timeTable.emplace_back(time, dataRate);
@@ -284,7 +284,7 @@ NodeStatistics::SetupPhy(Ptr<WifiPhy> phy)
 Time
 NodeStatistics::GetCalcTxTime(DataRate rate)
 {
-    for (TxTime::const_iterator i = m_timeTable.begin(); i != m_timeTable.end(); i++)
+    for (auto i = m_timeTable.begin(); i != m_timeTable.end(); i++)
     {
         if (rate == i->second)
         {
@@ -667,9 +667,7 @@ main(int argc, char* argv[])
 
     Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier>(flowmon.GetClassifier());
     std::map<FlowId, FlowMonitor::FlowStats> stats = monitor->GetFlowStats();
-    for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin();
-         i != stats.end();
-         ++i)
+    for (auto i = stats.begin(); i != stats.end(); ++i)
     {
         Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow(i->first);
         if ((t.sourceAddress == "10.1.1.3" && t.destinationAddress == "10.1.1.1"))

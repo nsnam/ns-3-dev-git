@@ -495,7 +495,7 @@ ChannelAccessManager::DoGrantDcfAccess()
     NS_LOG_FUNCTION(this);
     uint32_t k = 0;
     Time now = Simulator::Now();
-    for (Txops::iterator i = m_txops.begin(); i != m_txops.end(); k++)
+    for (auto i = m_txops.begin(); i != m_txops.end(); k++)
     {
         Ptr<Txop> txop = *i;
         if (txop->GetAccessStatus(m_linkId) == Txop::REQUESTED &&
@@ -511,7 +511,7 @@ ChannelAccessManager::DoGrantDcfAccess()
             i++; // go to the next item in the list.
             k++;
             std::vector<Ptr<Txop>> internalCollisionTxops;
-            for (Txops::iterator j = i; j != m_txops.end(); j++, k++)
+            for (auto j = i; j != m_txops.end(); j++, k++)
             {
                 Ptr<Txop> otherTxop = *j;
                 if (otherTxop->GetAccessStatus(m_linkId) == Txop::REQUESTED &&
@@ -891,13 +891,13 @@ ChannelAccessManager::NotifySwitchingStartNow(PhyListener* phyListener, Time dur
     if (phyListener) // to make tests happy
     {
         // check if the PHY switched channel to operate on another EMLSR link
-        decltype(m_switchingEmlsrLinks)::const_iterator emlsrInfoIt;
 
         for (const auto& [phyRef, listener] : m_phyListeners)
         {
             Ptr<WifiPhy> phy = phyRef;
-            if (listener.get() == phyListener &&
-                (emlsrInfoIt = m_switchingEmlsrLinks.find(phy)) != m_switchingEmlsrLinks.cend() &&
+            auto emlsrInfoIt = m_switchingEmlsrLinks.find(phy);
+
+            if (listener.get() == phyListener && emlsrInfoIt != m_switchingEmlsrLinks.cend() &&
                 phy->GetOperatingChannel() == emlsrInfoIt->second.channel)
             {
                 // the PHY associated with the given PHY listener switched channel to

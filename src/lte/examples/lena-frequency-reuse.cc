@@ -41,7 +41,7 @@ PrintGnuplottableUeListToFile(std::string filename)
         NS_LOG_ERROR("Can't open file " << filename);
         return;
     }
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();
@@ -70,7 +70,7 @@ PrintGnuplottableEnbListToFile(std::string filename)
         NS_LOG_ERROR("Can't open file " << filename);
         return;
     }
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();

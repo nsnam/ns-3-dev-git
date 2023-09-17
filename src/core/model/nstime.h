@@ -580,7 +580,7 @@ class Time
 
         NS_ASSERT_MSG(info->isValid, "Attempted a conversion to an unavailable unit.");
 
-        int64x64_t retval = int64x64_t(m_data);
+        int64x64_t retval(m_data);
         if (info->toMul)
         {
             retval *= info->timeTo;

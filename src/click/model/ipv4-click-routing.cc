@@ -396,7 +396,7 @@ Ipv4ClickRouting::Send(Ptr<Packet> p, Ipv4Address src, Ipv4Address dst)
     }
 
     int len = p->GetSize();
-    uint8_t* buf = new uint8_t[len];
+    auto buf = new uint8_t[len];
     p->CopyData(buf, len);
 
     // ... and send the packet on the corresponding Click interface.
@@ -424,7 +424,7 @@ Ipv4ClickRouting::Receive(Ptr<Packet> p, Mac48Address receiverAddr, Mac48Address
     }
 
     int len = p->GetSize();
-    uint8_t* buf = new uint8_t[len];
+    auto buf = new uint8_t[len];
     p->CopyData(buf, len);
 
     // ... and send the packet to the corresponding Click interface
@@ -816,8 +816,8 @@ simclick_sim_command(simclick_node_t* simnode, int cmd, ...)
 
         // Append key/value pair, separated by \0.
         std::map<std::string, std::string> defines = clickInstance->GetDefines();
-        std::map<std::string, std::string>::const_iterator it = defines.begin();
-        while (it != defines.end())
+
+        for (auto it = defines.begin(); it != defines.end(); it++)
         {
             size_t available = *size - required;
             if (it->first.length() + it->second.length() + 2 <= available)
@@ -832,7 +832,6 @@ simclick_sim_command(simclick_node_t* simnode, int cmd, ...)
             {
                 required += it->first.length() + it->second.length() + 2;
             }
-            it++;
         }
         if (required > *size)
         {

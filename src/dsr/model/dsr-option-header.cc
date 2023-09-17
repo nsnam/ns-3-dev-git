@@ -371,9 +371,7 @@ DsrOptionRreqHeader::Print(std::ostream& os) const
 {
     os << "( type = " << (uint32_t)GetType() << " length = " << (uint32_t)GetLength() << "";
 
-    for (std::vector<Ipv4Address>::const_iterator it = m_ipv4Address.begin();
-         it != m_ipv4Address.end();
-         it++)
+    for (auto it = m_ipv4Address.begin(); it != m_ipv4Address.end(); it++)
     {
         os << *it << " ";
     }
@@ -398,8 +396,7 @@ DsrOptionRreqHeader::Serialize(Buffer::Iterator start) const
     i.WriteHtonU16(m_identification);
     WriteTo(i, m_target);
 
-    for (VectorIpv4Address_t::const_iterator it = m_ipv4Address.begin(); it != m_ipv4Address.end();
-         it++)
+    for (auto it = m_ipv4Address.begin(); it != m_ipv4Address.end(); it++)
     {
         it->Serialize(buff);
         i.Write(buff, 4);
@@ -506,9 +503,7 @@ DsrOptionRrepHeader::Print(std::ostream& os) const
 {
     os << "( type = " << (uint32_t)GetType() << " length = " << (uint32_t)GetLength() << "";
 
-    for (std::vector<Ipv4Address>::const_iterator it = m_ipv4Address.begin();
-         it != m_ipv4Address.end();
-         it++)
+    for (auto it = m_ipv4Address.begin(); it != m_ipv4Address.end(); it++)
     {
         os << *it << " ";
     }
@@ -533,8 +528,7 @@ DsrOptionRrepHeader::Serialize(Buffer::Iterator start) const
     i.WriteU8(0);
     i.WriteU8(0);
 
-    for (VectorIpv4Address_t::const_iterator it = m_ipv4Address.begin(); it != m_ipv4Address.end();
-         it++)
+    for (auto it = m_ipv4Address.begin(); it != m_ipv4Address.end(); it++)
     {
         it->Serialize(buff);
         i.Write(buff, 4);
@@ -666,9 +660,7 @@ DsrOptionSRHeader::Print(std::ostream& os) const
 {
     os << "( type = " << (uint32_t)GetType() << " length = " << (uint32_t)GetLength() << "";
 
-    for (std::vector<Ipv4Address>::const_iterator it = m_ipv4Address.begin();
-         it != m_ipv4Address.end();
-         it++)
+    for (auto it = m_ipv4Address.begin(); it != m_ipv4Address.end(); it++)
     {
         os << *it << " ";
     }
@@ -693,8 +685,7 @@ DsrOptionSRHeader::Serialize(Buffer::Iterator start) const
     i.WriteU8(m_salvage);
     i.WriteU8(m_segmentsLeft);
 
-    for (VectorIpv4Address_t::const_iterator it = m_ipv4Address.begin(); it != m_ipv4Address.end();
-         it++)
+    for (auto it = m_ipv4Address.begin(); it != m_ipv4Address.end(); it++)
     {
         it->Serialize(buff);
         i.Write(buff, 4);

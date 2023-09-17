@@ -78,7 +78,7 @@ Ipv4StaticRouting::AddNetworkRouteTo(Ipv4Address network,
 
     if (!LookupRoute(route, metric))
     {
-        Ipv4RoutingTableEntry* routePtr = new Ipv4RoutingTableEntry(route);
+        auto routePtr = new Ipv4RoutingTableEntry(route);
         m_networkRoutes.emplace_back(routePtr, metric);
     }
 }
@@ -95,7 +95,7 @@ Ipv4StaticRouting::AddNetworkRouteTo(Ipv4Address network,
         Ipv4RoutingTableEntry::CreateNetworkRouteTo(network, networkMask, interface);
     if (!LookupRoute(route, metric))
     {
-        Ipv4RoutingTableEntry* routePtr = new Ipv4RoutingTableEntry(route);
+        auto routePtr = new Ipv4RoutingTableEntry(route);
 
         m_networkRoutes.emplace_back(routePtr, metric);
     }
@@ -133,7 +133,7 @@ Ipv4StaticRouting::AddMulticastRoute(Ipv4Address origin,
 {
     NS_LOG_FUNCTION(this << origin << " " << group << " " << inputInterface << " "
                          << &outputInterfaces);
-    Ipv4MulticastRoutingTableEntry* route = new Ipv4MulticastRoutingTableEntry();
+    auto route = new Ipv4MulticastRoutingTableEntry();
     *route = Ipv4MulticastRoutingTableEntry::CreateMulticastRoute(origin,
                                                                   group,
                                                                   inputInterface,
@@ -148,9 +148,9 @@ void
 Ipv4StaticRouting::SetDefaultMulticastRoute(uint32_t outputInterface)
 {
     NS_LOG_FUNCTION(this << outputInterface);
-    Ipv4RoutingTableEntry* route = new Ipv4RoutingTableEntry();
-    Ipv4Address network = Ipv4Address("224.0.0.0");
-    Ipv4Mask networkMask = Ipv4Mask("240.0.0.0");
+    auto route = new Ipv4RoutingTableEntry();
+    Ipv4Address network("224.0.0.0");
+    Ipv4Mask networkMask("240.0.0.0");
     *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo(network, networkMask, outputInterface);
     m_networkRoutes.emplace_back(route, 0);
 }
@@ -172,7 +172,7 @@ Ipv4StaticRouting::GetMulticastRoute(uint32_t index) const
     if (index < m_multicastRoutes.size())
     {
         uint32_t tmp = 0;
-        for (MulticastRoutesCI i = m_multicastRoutes.begin(); i != m_multicastRoutes.end(); i++)
+        for (auto i = m_multicastRoutes.begin(); i != m_multicastRoutes.end(); i++)
         {
             if (tmp == index)
             {
@@ -190,7 +190,7 @@ Ipv4StaticRouting::RemoveMulticastRoute(Ipv4Address origin,
                                         uint32_t inputInterface)
 {
     NS_LOG_FUNCTION(this << origin << " " << group << " " << inputInterface);
-    for (MulticastRoutesI i = m_multicastRoutes.begin(); i != m_multicastRoutes.end(); i++)
+    for (auto i = m_multicastRoutes.begin(); i != m_multicastRoutes.end(); i++)
     {
         Ipv4MulticastRoutingTableEntry* route = *i;
         if (origin == route->GetOrigin() && group == route->GetGroup() &&
@@ -209,7 +209,7 @@ Ipv4StaticRouting::RemoveMulticastRoute(uint32_t index)
 {
     NS_LOG_FUNCTION(this << index);
     uint32_t tmp = 0;
-    for (MulticastRoutesI i = m_multicastRoutes.begin(); i != m_multicastRoutes.end(); i++)
+    for (auto i = m_multicastRoutes.begin(); i != m_multicastRoutes.end(); i++)
     {
         if (tmp == index)
         {
@@ -224,7 +224,7 @@ Ipv4StaticRouting::RemoveMulticastRoute(uint32_t index)
 bool
 Ipv4StaticRouting::LookupRoute(const Ipv4RoutingTableEntry& route, uint32_t metric)
 {
-    for (NetworkRoutesI j = m_networkRoutes.begin(); j != m_networkRoutes.end(); j++)
+    for (auto j = m_networkRoutes.begin(); j != m_networkRoutes.end(); j++)
     {
         Ipv4RoutingTableEntry* rtentry = j->first;
 
@@ -261,7 +261,7 @@ Ipv4StaticRouting::LookupStatic(Ipv4Address dest, Ptr<NetDevice> oif)
         return rtentry;
     }
 
-    for (NetworkRoutesI i = m_networkRoutes.begin(); i != m_networkRoutes.end(); i++)
+    for (auto i = m_networkRoutes.begin(); i != m_networkRoutes.end(); i++)
     {
         Ipv4RoutingTableEntry* j = i->first;
         uint32_t metric = i->second;
@@ -328,7 +328,7 @@ Ipv4StaticRouting::LookupStatic(Ipv4Address origin, Ipv4Address group, uint32_t 
     NS_LOG_FUNCTION(this << origin << " " << group << " " << interface);
     Ptr<Ipv4MulticastRoute> mrtentry = nullptr;
 
-    for (MulticastRoutesI i = m_multicastRoutes.begin(); i != m_multicastRoutes.end(); i++)
+    for (auto i = m_multicastRoutes.begin(); i != m_multicastRoutes.end(); i++)
     {
         Ipv4MulticastRoutingTableEntry* route = *i;
         //
@@ -385,7 +385,7 @@ Ipv4StaticRouting::GetDefaultRoute()
     Ipv4Address dest("0.0.0.0");
     uint32_t shortest_metric = 0xffffffff;
     Ipv4RoutingTableEntry* result = nullptr;
-    for (NetworkRoutesI i = m_networkRoutes.begin(); i != m_networkRoutes.end(); i++)
+    for (auto i = m_networkRoutes.begin(); i != m_networkRoutes.end(); i++)
     {
         Ipv4RoutingTableEntry* j = i->first;
         uint32_t metric = i->second;
@@ -417,7 +417,7 @@ Ipv4StaticRouting::GetRoute(uint32_t index) const
 {
     NS_LOG_FUNCTION(this << index);
     uint32_t tmp = 0;
-    for (NetworkRoutesCI j = m_networkRoutes.begin(); j != m_networkRoutes.end(); j++)
+    for (auto j = m_networkRoutes.begin(); j != m_networkRoutes.end(); j++)
     {
         if (tmp == index)
         {
@@ -435,7 +435,7 @@ Ipv4StaticRouting::GetMetric(uint32_t index) const
 {
     NS_LOG_FUNCTION(this << index);
     uint32_t tmp = 0;
-    for (NetworkRoutesCI j = m_networkRoutes.begin(); j != m_networkRoutes.end(); j++)
+    for (auto j = m_networkRoutes.begin(); j != m_networkRoutes.end(); j++)
     {
         if (tmp == index)
         {
@@ -453,7 +453,7 @@ Ipv4StaticRouting::RemoveRoute(uint32_t index)
 {
     NS_LOG_FUNCTION(this << index);
     uint32_t tmp = 0;
-    for (NetworkRoutesI j = m_networkRoutes.begin(); j != m_networkRoutes.end(); j++)
+    for (auto j = m_networkRoutes.begin(); j != m_networkRoutes.end(); j++)
     {
         if (tmp == index)
         {
@@ -588,12 +588,11 @@ void
 Ipv4StaticRouting::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    for (NetworkRoutesI j = m_networkRoutes.begin(); j != m_networkRoutes.end();
-         j = m_networkRoutes.erase(j))
+    for (auto j = m_networkRoutes.begin(); j != m_networkRoutes.end(); j = m_networkRoutes.erase(j))
     {
         delete (j->first);
     }
-    for (MulticastRoutesI i = m_multicastRoutes.begin(); i != m_multicastRoutes.end();
+    for (auto i = m_multicastRoutes.begin(); i != m_multicastRoutes.end();
          i = m_multicastRoutes.erase(i))
     {
         delete (*i);
@@ -628,7 +627,7 @@ Ipv4StaticRouting::NotifyInterfaceDown(uint32_t i)
 {
     NS_LOG_FUNCTION(this << i);
     // Remove all static routes that are going through this interface
-    for (NetworkRoutesI it = m_networkRoutes.begin(); it != m_networkRoutes.end();)
+    for (auto it = m_networkRoutes.begin(); it != m_networkRoutes.end();)
     {
         if (it->first->GetInterface() == i)
         {
@@ -671,7 +670,7 @@ Ipv4StaticRouting::NotifyRemoveAddress(uint32_t interface, Ipv4InterfaceAddress 
     Ipv4Mask networkMask = address.GetMask();
     // Remove all static routes that are going through this interface
     // which reference this network
-    for (NetworkRoutesI it = m_networkRoutes.begin(); it != m_networkRoutes.end();)
+    for (auto it = m_networkRoutes.begin(); it != m_networkRoutes.end();)
     {
         if (it->first->GetInterface() == interface && it->first->IsNetwork() &&
             it->first->GetDestNetwork() == networkAddress &&

@@ -185,7 +185,7 @@ LteCellSelectionTestCase::DoRun()
     NodeContainer enbNodes;
     enbNodes.Create(4);
     NodeContainer ueNodes;
-    uint16_t nUe = static_cast<uint16_t>(m_ueSetupList.size());
+    auto nUe = static_cast<uint16_t>(m_ueSetupList.size());
     ueNodes.Create(nUe);
 
     // Assign nodes to position

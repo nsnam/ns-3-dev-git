@@ -252,7 +252,7 @@ Ns3TcpStateTestCase::Ipv4L3Tx(std::string, Ptr<const Packet> packet, Ptr<Ipv4>, 
 
         NS_LOG_INFO("read " << readLen << " bytes");
 
-        uint8_t* actual = new uint8_t[readLen];
+        auto actual = new uint8_t[readLen];
         received->CopyData(actual, readLen);
 
         int result = memcmp(actual, expectedBuffer, readLen);

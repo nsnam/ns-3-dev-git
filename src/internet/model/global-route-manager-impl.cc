@@ -64,7 +64,7 @@ operator<<(std::ostream& os, const SPFVertex::ListOfSPFVertex_t& vs)
 {
     typedef SPFVertex::ListOfSPFVertex_t::const_iterator CIter_t;
     os << "{";
-    for (CIter_t iter = vs.begin(); iter != vs.end();)
+    for (auto iter = vs.begin(); iter != vs.end();)
     {
         os << (*iter)->m_vertexId;
         if (++iter != vs.end())
@@ -133,7 +133,7 @@ SPFVertex::~SPFVertex()
 
     // find this node from all its parents and remove the entry of this node
     // from all its parents
-    for (ListOfSPFVertex_t::iterator piter = m_parents.begin(); piter != m_parents.end(); piter++)
+    for (auto piter = m_parents.begin(); piter != m_parents.end(); piter++)
     {
         // remove the current vertex from its parent's children list. Check
         // if the size of the list is reduced, or the child<->parent relation
@@ -255,7 +255,7 @@ SPFVertex::GetParent(uint32_t i) const
         NS_LOG_LOGIC("Index to SPFVertex's parent is out-of-range.");
         return nullptr;
     }
-    ListOfSPFVertex_t::const_iterator iter = m_parents.begin();
+    auto iter = m_parents.begin();
     while (i-- > 0)
     {
         iter++;
@@ -306,7 +306,7 @@ SPFVertex::GetRootExitDirection(uint32_t i) const
 
     NS_ASSERT_MSG(i < m_ecmpRootExits.size(),
                   "Index out-of-range when accessing SPFVertex::m_ecmpRootExits!");
-    CIter_t iter = m_ecmpRootExits.begin();
+    auto iter = m_ecmpRootExits.begin();
     while (i-- > 0)
     {
         iter++;
@@ -376,7 +376,7 @@ SPFVertex::GetChild(uint32_t n) const
     NS_LOG_FUNCTION(this << n);
     uint32_t j = 0;
 
-    for (ListOfSPFVertex_t::const_iterator i = m_children.begin(); i != m_children.end(); i++, j++)
+    for (auto i = m_children.begin(); i != m_children.end(); i++, j++)
     {
         if (j == n)
         {
@@ -436,8 +436,7 @@ GlobalRouteManagerLSDB::GlobalRouteManagerLSDB()
 GlobalRouteManagerLSDB::~GlobalRouteManagerLSDB()
 {
     NS_LOG_FUNCTION(this);
-    LSDBMap_t::iterator i;
-    for (i = m_database.begin(); i != m_database.end(); i++)
+    for (auto i = m_database.begin(); i != m_database.end(); i++)
     {
         NS_LOG_LOGIC("free LSA");
         GlobalRoutingLSA* temp = i->second;
@@ -457,8 +456,7 @@ void
 GlobalRouteManagerLSDB::Initialize()
 {
     NS_LOG_FUNCTION(this);
-    LSDBMap_t::iterator i;
-    for (i = m_database.begin(); i != m_database.end(); i++)
+    for (auto i = m_database.begin(); i != m_database.end(); i++)
     {
         GlobalRoutingLSA* temp = i->second;
         temp->SetStatus(GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED);
@@ -500,8 +498,7 @@ GlobalRouteManagerLSDB::GetLSA(Ipv4Address addr) const
     //
     // Look up an LSA by its address.
     //
-    LSDBMap_t::const_iterator i;
-    for (i = m_database.begin(); i != m_database.end(); i++)
+    for (auto i = m_database.begin(); i != m_database.end(); i++)
     {
         if (i->first == addr)
         {
@@ -518,8 +515,7 @@ GlobalRouteManagerLSDB::GetLSAByLinkData(Ipv4Address addr) const
     //
     // Look up an LSA by its address.
     //
-    LSDBMap_t::const_iterator i;
-    for (i = m_database.begin(); i != m_database.end(); i++)
+    for (auto i = m_database.begin(); i != m_database.end(); i++)
     {
         GlobalRoutingLSA* temp = i->second;
         // Iterate among temp's Link Records
@@ -573,8 +569,7 @@ void
 GlobalRouteManagerImpl::DeleteGlobalRoutes()
 {
     NS_LOG_FUNCTION(this);
-    NodeList::Iterator listEnd = NodeList::End();
-    for (NodeList::Iterator i = NodeList::Begin(); i != listEnd; i++)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); i++)
     {
         Ptr<Node> node = *i;
         Ptr<GlobalRouter> router = node->GetObject<GlobalRouter>();
@@ -621,8 +616,7 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase()
     // Walk the list of nodes looking for the GlobalRouter Interface.  Nodes with
     // global router interfaces are, not too surprisingly, our routers.
     //
-    NodeList::Iterator listEnd = NodeList::End();
-    for (NodeList::Iterator i = NodeList::Begin(); i != listEnd; i++)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); i++)
     {
         Ptr<Node> node = *i;
 
@@ -648,7 +642,7 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase()
 
         for (uint32_t j = 0; j < numLSAs; ++j)
         {
-            GlobalRoutingLSA* lsa = new GlobalRoutingLSA();
+            auto lsa = new GlobalRoutingLSA();
             //
             // This is the call to actually fetch a Link State Advertisement from the
             // router.
@@ -704,8 +698,7 @@ GlobalRouteManagerImpl::InitializeRoutes()
     // Walk the list of nodes in the system.
     //
     NS_LOG_INFO("About to start SPF calculation");
-    NodeList::Iterator listEnd = NodeList::End();
-    for (NodeList::Iterator i = NodeList::Begin(); i != listEnd; i++)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); i++)
     {
         Ptr<Node> node = *i;
         //
@@ -1561,9 +1554,7 @@ GlobalRouteManagerImpl::SPFAddASExternal(GlobalRoutingLSA* extlsa, SPFVertex* v)
     // ID corresponding to the root vertex.  This is the one we're going to write
     // the routing information to.
     //
-    NodeList::Iterator i = NodeList::Begin();
-    NodeList::Iterator listEnd = NodeList::End();
-    for (; i != listEnd; i++)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); i++)
     {
         Ptr<Node> node = *i;
         //
@@ -1727,9 +1718,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub(GlobalRoutingLinkRecord* l, SPFVertex* v
     // ID corresponding to the root vertex.  This is the one we're going to write
     // the routing information to.
     //
-    NodeList::Iterator i = NodeList::Begin();
-    NodeList::Iterator listEnd = NodeList::End();
-    for (; i != listEnd; i++)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); i++)
     {
         Ptr<Node> node = *i;
         //
@@ -1849,9 +1838,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId(Ipv4Address a, Ipv4Mask amask)
     // the node at the root of the SPF tree.  This is the node for which we are
     // building the routing table.
     //
-    NodeList::Iterator i = NodeList::Begin();
-    NodeList::Iterator listEnd = NodeList::End();
-    for (; i != listEnd; i++)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); i++)
     {
         Ptr<Node> node = *i;
 
@@ -1938,9 +1925,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter(SPFVertex* v)
     // ID corresponding to the root vertex.  This is the one we're going to write
     // the routing information to.
     //
-    NodeList::Iterator i = NodeList::Begin();
-    NodeList::Iterator listEnd = NodeList::End();
-    for (; i != listEnd; i++)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); i++)
     {
         Ptr<Node> node = *i;
         //
@@ -2082,9 +2067,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit(SPFVertex* v)
     // ID corresponding to the root vertex.  This is the one we're going to write
     // the routing information to.
     //
-    NodeList::Iterator i = NodeList::Begin();
-    NodeList::Iterator listEnd = NodeList::End();
-    for (; i != listEnd; i++)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); i++)
     {
         Ptr<Node> node = *i;
         //

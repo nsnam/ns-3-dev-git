@@ -342,7 +342,7 @@ WifiMacQueue::PeekByQueueId(const WifiContainerQueueId& queueId, Ptr<const WifiM
         ExtractExpiredMpdus(queueId);
     }
 
-    ConstIterator it = (item ? std::next(GetIt(item)) : GetContainer().GetQueue(queueId).cbegin());
+    auto it = (item ? std::next(GetIt(item)) : GetContainer().GetQueue(queueId).cbegin());
 
     if (it == GetContainer().GetQueue(queueId).cend())
     {

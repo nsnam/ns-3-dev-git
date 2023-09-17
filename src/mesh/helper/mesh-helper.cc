@@ -64,7 +64,7 @@ MeshHelper::Install(const WifiPhyHelper& phyHelper, NodeContainer c) const
 {
     NetDeviceContainer devices;
     NS_ASSERT(m_stack);
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
         // Create a mesh point device
@@ -179,7 +179,7 @@ MeshHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
 {
     int64_t currentStream = stream;
     Ptr<NetDevice> netDevice;
-    for (NetDeviceContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         netDevice = (*i);
         Ptr<MeshPointDevice> mpd = DynamicCast<MeshPointDevice>(netDevice);
@@ -190,7 +190,7 @@ MeshHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
             currentStream += mpd->AssignStreams(currentStream);
             // To access, we need the underlying WifiNetDevices
             std::vector<Ptr<NetDevice>> ifaces = mpd->GetInterfaces();
-            for (std::vector<Ptr<NetDevice>>::iterator i = ifaces.begin(); i != ifaces.end(); i++)
+            for (auto i = ifaces.begin(); i != ifaces.end(); i++)
             {
                 wifi = DynamicCast<WifiNetDevice>(*i);
 

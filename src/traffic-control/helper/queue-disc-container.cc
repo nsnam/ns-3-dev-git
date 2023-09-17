@@ -58,7 +58,7 @@ QueueDiscContainer::Get(std::size_t i) const
 void
 QueueDiscContainer::Add(QueueDiscContainer other)
 {
-    for (ConstIterator i = other.Begin(); i != other.End(); i++)
+    for (auto i = other.Begin(); i != other.End(); i++)
     {
         m_queueDiscs.push_back(*i);
     }

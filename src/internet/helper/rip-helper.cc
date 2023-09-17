@@ -56,20 +56,18 @@ RipHelper::Create(Ptr<Node> node) const
 {
     Ptr<Rip> rip = m_factory.Create<Rip>();
 
-    std::map<Ptr<Node>, std::set<uint32_t>>::const_iterator it = m_interfaceExclusions.find(node);
+    auto it = m_interfaceExclusions.find(node);
 
     if (it != m_interfaceExclusions.end())
     {
         rip->SetInterfaceExclusions(it->second);
     }
 
-    std::map<Ptr<Node>, std::map<uint32_t, uint8_t>>::const_iterator iter =
-        m_interfaceMetrics.find(node);
+    auto iter = m_interfaceMetrics.find(node);
 
     if (iter != m_interfaceMetrics.end())
     {
-        std::map<uint32_t, uint8_t>::const_iterator subiter;
-        for (subiter = iter->second.begin(); subiter != iter->second.end(); subiter++)
+        for (auto subiter = iter->second.begin(); subiter != iter->second.end(); subiter++)
         {
             rip->SetInterfaceMetric(subiter->first, subiter->second);
         }
@@ -90,7 +88,7 @@ RipHelper::AssignStreams(NodeContainer c, int64_t stream)
 {
     int64_t currentStream = stream;
     Ptr<Node> node;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         node = (*i);
         Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
@@ -160,7 +158,7 @@ RipHelper::SetDefaultRouter(Ptr<Node> node, Ipv4Address nextHop, uint32_t interf
 void
 RipHelper::ExcludeInterface(Ptr<Node> node, uint32_t interface)
 {
-    std::map<Ptr<Node>, std::set<uint32_t>>::iterator it = m_interfaceExclusions.find(node);
+    auto it = m_interfaceExclusions.find(node);
 
     if (it == m_interfaceExclusions.end())
     {

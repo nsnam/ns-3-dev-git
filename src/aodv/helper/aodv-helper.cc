@@ -59,7 +59,7 @@ AodvHelper::AssignStreams(NodeContainer c, int64_t stream)
 {
     int64_t currentStream = stream;
     Ptr<Node> node;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         node = (*i);
         Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();

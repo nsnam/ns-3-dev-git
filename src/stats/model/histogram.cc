@@ -80,7 +80,7 @@ Histogram::GetBinCount(uint32_t index) const
 void
 Histogram::AddValue(double value)
 {
-    uint32_t index = (uint32_t)std::floor(value / m_binWidth);
+    auto index = (uint32_t)std::floor(value / m_binWidth);
 
     // check if we need to resize the vector
     NS_LOG_DEBUG("AddValue: index=" << index << ", m_histogram.size()=" << m_histogram.size());

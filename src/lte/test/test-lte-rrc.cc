@@ -321,7 +321,7 @@ LteRrcConnectionEstablishmentTestCase::DoRun()
     // instead of lteHelper->Attach () and lteHelper->ActivateXxx
 
     // Set AdmitConnectionRequest attribute
-    for (NetDeviceContainer::Iterator it = enbDevs.Begin(); it != enbDevs.End(); ++it)
+    for (auto it = enbDevs.Begin(); it != enbDevs.End(); ++it)
     {
         Ptr<LteEnbRrc> enbRrc = (*it)->GetObject<LteEnbNetDevice>()->GetRrc();
         enbRrc->SetAttribute("AdmitRrcConnectionRequest",
@@ -330,7 +330,7 @@ LteRrcConnectionEstablishmentTestCase::DoRun()
 
     uint32_t i = 0;
     uint32_t tmax = 0;
-    for (NetDeviceContainer::Iterator it = ueDevs.Begin(); it != ueDevs.End(); ++it)
+    for (auto it = ueDevs.Begin(); it != ueDevs.End(); ++it)
     {
         Ptr<NetDevice> ueDevice = *it;
         Ptr<NetDevice> enbDevice = enbDevs.Get(0);
@@ -494,8 +494,8 @@ LteRrcConnectionEstablishmentTestCase::CheckConnected(Ptr<NetDevice> ueDevice,
                                   m_nBearers,
                                   "wrong num bearers at UE");
 
-            ObjectMapValue::Iterator enbBearerIt = enbDataRadioBearerMapValue.Begin();
-            ObjectMapValue::Iterator ueBearerIt = ueDataRadioBearerMapValue.Begin();
+            auto enbBearerIt = enbDataRadioBearerMapValue.Begin();
+            auto ueBearerIt = ueDataRadioBearerMapValue.Begin();
             while (enbBearerIt != enbDataRadioBearerMapValue.End() &&
                    ueBearerIt != ueDataRadioBearerMapValue.End())
             {
@@ -679,7 +679,7 @@ LteRrcConnectionEstablishmentErrorTestCase::DoRun()
     // instead of lteHelper->Attach () and lteHelper->ActivateXxx
 
     // Set AdmitConnectionRequest attribute
-    for (NetDeviceContainer::Iterator it = enbDevs.Begin(); it != enbDevs.End(); ++it)
+    for (auto it = enbDevs.Begin(); it != enbDevs.End(); ++it)
     {
         Ptr<LteEnbRrc> enbRrc = (*it)->GetObject<LteEnbNetDevice>()->GetRrc();
         enbRrc->SetAttribute("AdmitRrcConnectionRequest",
@@ -688,7 +688,7 @@ LteRrcConnectionEstablishmentErrorTestCase::DoRun()
 
     uint32_t i = 0;
     uint32_t tmax = 0;
-    for (NetDeviceContainer::Iterator it = ueDevs.Begin(); it != ueDevs.End(); ++it)
+    for (auto it = ueDevs.Begin(); it != ueDevs.End(); ++it)
     {
         Ptr<NetDevice> ueDevice = *it;
         Ptr<NetDevice> enbDevice = enbDevs.Get(0);

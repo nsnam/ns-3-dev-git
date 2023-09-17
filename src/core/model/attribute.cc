@@ -69,7 +69,7 @@ AttributeChecker::CreateValidValue(const AttributeValue& value) const
         return value.Copy();
     }
     // attempt to convert to string.
-    const StringValue* str = dynamic_cast<const StringValue*>(&value);
+    const auto str = dynamic_cast<const StringValue*>(&value);
     if (str == nullptr)
     {
         return nullptr;

@@ -223,7 +223,7 @@ BsServiceFlowManager::ProcessDsaReq(const DsaReq& dsaReq, Cid cid)
 void
 BsServiceFlowManager::AddMulticastServiceFlow(ServiceFlow sf, WimaxPhy::ModulationType modulation)
 {
-    ServiceFlow* serviceFlow = new ServiceFlow();
+    auto serviceFlow = new ServiceFlow();
     serviceFlow->CopyParametersFrom(sf);
     Ptr<BaseStationNetDevice> bs = m_device->GetObject<BaseStationNetDevice>();
     Ptr<WimaxConnection> multicastConnection =

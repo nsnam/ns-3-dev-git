@@ -62,7 +62,7 @@ void
 TcpOptionSack::Print(std::ostream& os) const
 {
     os << "blocks: " << GetNumSackBlocks() << ",";
-    for (SackList::const_iterator it = m_sackList.begin(); it != m_sackList.end(); ++it)
+    for (auto it = m_sackList.begin(); it != m_sackList.end(); ++it)
     {
         os << "[" << it->first << "," << it->second << "]";
     }
@@ -82,10 +82,10 @@ TcpOptionSack::Serialize(Buffer::Iterator start) const
     NS_LOG_FUNCTION(this);
     Buffer::Iterator i = start;
     i.WriteU8(GetKind()); // Kind
-    uint8_t length = static_cast<uint8_t>(GetNumSackBlocks() * 8 + 2);
+    auto length = static_cast<uint8_t>(GetNumSackBlocks() * 8 + 2);
     i.WriteU8(length); // Length
 
-    for (SackList::const_iterator it = m_sackList.begin(); it != m_sackList.end(); ++it)
+    for (auto it = m_sackList.begin(); it != m_sackList.end(); ++it)
     {
         SequenceNumber32 leftEdge = it->first;
         SequenceNumber32 rightEdge = it->second;
@@ -112,8 +112,8 @@ TcpOptionSack::Deserialize(Buffer::Iterator start)
     uint8_t sackCount = (size - 2) / 8;
     while (sackCount)
     {
-        SequenceNumber32 leftEdge = SequenceNumber32(i.ReadNtohU32());
-        SequenceNumber32 rightEdge = SequenceNumber32(i.ReadNtohU32());
+        SequenceNumber32 leftEdge(i.ReadNtohU32());
+        SequenceNumber32 rightEdge(i.ReadNtohU32());
         SackBlock s(leftEdge, rightEdge);
         AddSackBlock(s);
         sackCount--;

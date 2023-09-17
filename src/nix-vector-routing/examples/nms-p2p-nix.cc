@@ -193,7 +193,7 @@ main(int argc, char* argv[])
 
     Array2D<NodeContainer> nodes_net0(nCN, 3);
     Array2D<NodeContainer> nodes_net1(nCN, 6);
-    NodeContainer* nodes_netLR = new NodeContainer[nCN];
+    auto nodes_netLR = new NodeContainer[nCN];
     Array2D<NodeContainer> nodes_net2(nCN, 14);
     Array3D<NodeContainer> nodes_net2LAN(nCN, 7, nLANClients);
     Array2D<NodeContainer> nodes_net3(nCN, 9);
@@ -599,7 +599,7 @@ main(int argc, char* argv[])
     if (nCN > 1)
     {
         std::cout << "Forming Ring Topology..." << std::endl;
-        NodeContainer* nodes_ring = new NodeContainer[nCN];
+        auto nodes_ring = new NodeContainer[nCN];
         for (int z = 0; z < nCN - 1; ++z)
         {
             nodes_ring[z].Add(nodes_net0[z][0].Get(0));
@@ -607,7 +607,7 @@ main(int argc, char* argv[])
         }
         nodes_ring[nCN - 1].Add(nodes_net0[nCN - 1][0].Get(0));
         nodes_ring[nCN - 1].Add(nodes_net0[0][0].Get(0));
-        NetDeviceContainer* ndc_ring = new NetDeviceContainer[nCN];
+        auto ndc_ring = new NetDeviceContainer[nCN];
         for (int z = 0; z < nCN; ++z)
         {
             ndc_ring[z] = p2p_2gb200ms.Install(nodes_ring[z]);

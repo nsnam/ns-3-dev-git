@@ -128,9 +128,7 @@ ConnectionManager::AddConnection(Ptr<WimaxConnection> connection, Cid::Type type
 Ptr<WimaxConnection>
 ConnectionManager::GetConnection(Cid cid)
 {
-    std::vector<Ptr<WimaxConnection>>::const_iterator iter;
-
-    for (iter = m_basicConnections.begin(); iter != m_basicConnections.end(); ++iter)
+    for (auto iter = m_basicConnections.begin(); iter != m_basicConnections.end(); ++iter)
     {
         if ((*iter)->GetCid() == cid)
         {
@@ -138,7 +136,7 @@ ConnectionManager::GetConnection(Cid cid)
         }
     }
 
-    for (iter = m_primaryConnections.begin(); iter != m_primaryConnections.end(); ++iter)
+    for (auto iter = m_primaryConnections.begin(); iter != m_primaryConnections.end(); ++iter)
     {
         if ((*iter)->GetCid() == cid)
         {
@@ -146,7 +144,7 @@ ConnectionManager::GetConnection(Cid cid)
         }
     }
 
-    for (iter = m_transportConnections.begin(); iter != m_transportConnections.end(); ++iter)
+    for (auto iter = m_transportConnections.begin(); iter != m_transportConnections.end(); ++iter)
     {
         if ((*iter)->GetCid() == cid)
         {
@@ -189,27 +187,21 @@ ConnectionManager::GetNPackets(Cid::Type type, ServiceFlow::SchedulingType sched
     switch (type)
     {
     case Cid::BASIC: {
-        for (std::vector<Ptr<WimaxConnection>>::const_iterator iter = m_basicConnections.begin();
-             iter != m_basicConnections.end();
-             ++iter)
+        for (auto iter = m_basicConnections.begin(); iter != m_basicConnections.end(); ++iter)
         {
             nrPackets += (*iter)->GetQueue()->GetSize();
         }
         break;
     }
     case Cid::PRIMARY: {
-        for (std::vector<Ptr<WimaxConnection>>::const_iterator iter = m_primaryConnections.begin();
-             iter != m_primaryConnections.end();
-             ++iter)
+        for (auto iter = m_primaryConnections.begin(); iter != m_primaryConnections.end(); ++iter)
         {
             nrPackets += (*iter)->GetQueue()->GetSize();
         }
         break;
     }
     case Cid::TRANSPORT: {
-        for (std::vector<Ptr<WimaxConnection>>::const_iterator iter =
-                 m_transportConnections.begin();
-             iter != m_transportConnections.end();
+        for (auto iter = m_transportConnections.begin(); iter != m_transportConnections.end();
              ++iter)
         {
             if (schedulingType == ServiceFlow::SF_TYPE_ALL ||
@@ -231,8 +223,7 @@ ConnectionManager::GetNPackets(Cid::Type type, ServiceFlow::SchedulingType sched
 bool
 ConnectionManager::HasPackets() const
 {
-    std::vector<Ptr<WimaxConnection>>::const_iterator iter;
-    for (iter = m_basicConnections.begin(); iter != m_basicConnections.end(); ++iter)
+    for (auto iter = m_basicConnections.begin(); iter != m_basicConnections.end(); ++iter)
     {
         if ((*iter)->HasPackets())
         {
@@ -240,7 +231,7 @@ ConnectionManager::HasPackets() const
         }
     }
 
-    for (iter = m_primaryConnections.begin(); iter != m_primaryConnections.end(); ++iter)
+    for (auto iter = m_primaryConnections.begin(); iter != m_primaryConnections.end(); ++iter)
     {
         if ((*iter)->HasPackets())
         {
@@ -248,7 +239,7 @@ ConnectionManager::HasPackets() const
         }
     }
 
-    for (iter = m_transportConnections.begin(); iter != m_transportConnections.end(); ++iter)
+    for (auto iter = m_transportConnections.begin(); iter != m_transportConnections.end(); ++iter)
     {
         if ((*iter)->HasPackets())
         {

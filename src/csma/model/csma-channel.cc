@@ -86,8 +86,7 @@ CsmaChannel::Reattach(Ptr<CsmaNetDevice> device)
     NS_LOG_FUNCTION(this << device);
     NS_ASSERT(device);
 
-    std::vector<CsmaDeviceRec>::iterator it;
-    for (it = m_deviceList.begin(); it < m_deviceList.end(); it++)
+    for (auto it = m_deviceList.begin(); it < m_deviceList.end(); it++)
     {
         if (it->devicePtr == device)
         {
@@ -161,8 +160,7 @@ CsmaChannel::Detach(Ptr<CsmaNetDevice> device)
     NS_LOG_FUNCTION(this << device);
     NS_ASSERT(device);
 
-    std::vector<CsmaDeviceRec>::iterator it;
-    for (it = m_deviceList.begin(); it < m_deviceList.end(); it++)
+    for (auto it = m_deviceList.begin(); it < m_deviceList.end(); it++)
     {
         if ((it->devicePtr == device) && (it->active))
         {
@@ -227,8 +225,7 @@ CsmaChannel::TransmitEnd()
 
     NS_LOG_LOGIC("Receive");
 
-    std::vector<CsmaDeviceRec>::iterator it;
-    for (it = m_deviceList.begin(); it < m_deviceList.end(); it++)
+    for (auto it = m_deviceList.begin(); it < m_deviceList.end(); it++)
     {
         if (it->IsActive() && it->devicePtr != m_deviceList[m_currentSrc].devicePtr)
         {
@@ -261,8 +258,7 @@ uint32_t
 CsmaChannel::GetNumActDevices()
 {
     int numActDevices = 0;
-    std::vector<CsmaDeviceRec>::iterator it;
-    for (it = m_deviceList.begin(); it < m_deviceList.end(); it++)
+    for (auto it = m_deviceList.begin(); it < m_deviceList.end(); it++)
     {
         if (it->active)
         {
@@ -287,9 +283,8 @@ CsmaChannel::GetCsmaDevice(std::size_t i) const
 int32_t
 CsmaChannel::GetDeviceNum(Ptr<CsmaNetDevice> device)
 {
-    std::vector<CsmaDeviceRec>::iterator it;
     int i = 0;
-    for (it = m_deviceList.begin(); it < m_deviceList.end(); it++)
+    for (auto it = m_deviceList.begin(); it < m_deviceList.end(); it++)
     {
         if (it->devicePtr == device)
         {

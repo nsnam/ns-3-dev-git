@@ -137,8 +137,8 @@ CalendarScheduler::DoInsert(const Event& ev)
     NS_LOG_LOGIC("insert in bucket=" << bucket);
 
     // insert in bucket list.
-    Bucket::iterator end = m_buckets[bucket].end();
-    for (Bucket::iterator i = m_buckets[bucket].begin(); i != end; ++i)
+    auto end = m_buckets[bucket].end();
+    for (auto i = m_buckets[bucket].begin(); i != end; ++i)
     {
         if (Order(ev.key, i->key))
         {
@@ -267,8 +267,8 @@ CalendarScheduler::Remove(const Event& ev)
     // bucket index of event
     uint32_t bucket = Hash(ev.key.m_ts);
 
-    Bucket::iterator end = m_buckets[bucket].end();
-    for (Bucket::iterator i = m_buckets[bucket].begin(); i != end; ++i)
+    auto end = m_buckets[bucket].end();
+    for (auto i = m_buckets[bucket].begin(); i != end; ++i)
     {
         if (i->key.m_uid == ev.key.m_uid)
         {
@@ -341,7 +341,7 @@ CalendarScheduler::CalculateNewWidth()
         samples.push_back(DoRemoveNext());
     }
     // put them back
-    for (std::list<Scheduler::Event>::const_iterator i = samples.begin(); i != samples.end(); ++i)
+    for (auto i = samples.begin(); i != samples.end(); ++i)
     {
         DoInsert(*i);
     }
@@ -353,9 +353,9 @@ CalendarScheduler::CalculateNewWidth()
 
     // finally calculate inter-time average over samples.
     uint64_t totalSeparation = 0;
-    std::list<Scheduler::Event>::const_iterator end = samples.end();
-    std::list<Scheduler::Event>::const_iterator cur = samples.begin();
-    std::list<Scheduler::Event>::const_iterator next = cur;
+    auto end = samples.end();
+    auto cur = samples.begin();
+    auto next = cur;
     next++;
     while (next != end)
     {
@@ -395,8 +395,8 @@ CalendarScheduler::DoResize(uint32_t newSize, uint64_t newWidth)
 
     for (uint32_t i = 0; i < oldNBuckets; i++)
     {
-        Bucket::iterator end = oldBuckets[i].end();
-        for (Bucket::iterator j = oldBuckets[i].begin(); j != end; ++j)
+        auto end = oldBuckets[i].end();
+        for (auto j = oldBuckets[i].begin(); j != end; ++j)
         {
             DoInsert(*j);
         }

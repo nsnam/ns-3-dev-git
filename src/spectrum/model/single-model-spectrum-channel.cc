@@ -119,9 +119,7 @@ SingleModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
 
     Ptr<MobilityModel> senderMobility = txParams->txPhy->GetMobility();
 
-    for (PhyList::const_iterator rxPhyIterator = m_phyList.begin();
-         rxPhyIterator != m_phyList.end();
-         ++rxPhyIterator)
+    for (auto rxPhyIterator = m_phyList.begin(); rxPhyIterator != m_phyList.end(); ++rxPhyIterator)
     {
         Ptr<NetDevice> rxNetDevice = (*rxPhyIterator)->GetDevice();
         Ptr<NetDevice> txNetDevice = txParams->txPhy->GetDevice();

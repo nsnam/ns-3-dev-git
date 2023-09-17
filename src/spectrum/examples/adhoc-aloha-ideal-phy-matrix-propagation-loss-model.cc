@@ -110,14 +110,9 @@ GlobalPathlossDatabase::UpdatePathloss(std::string context,
 void
 GlobalPathlossDatabase::Print()
 {
-    for (std::map<uint32_t, std::map<uint32_t, double>>::const_iterator txit =
-             m_pathlossMap.begin();
-         txit != m_pathlossMap.end();
-         ++txit)
+    for (auto txit = m_pathlossMap.begin(); txit != m_pathlossMap.end(); ++txit)
     {
-        for (std::map<uint32_t, double>::const_iterator rxit = txit->second.begin();
-             rxit != txit->second.end();
-             ++rxit)
+        for (auto rxit = txit->second.begin(); rxit != txit->second.end(); ++rxit)
         {
             std::cout << txit->first << " --> " << rxit->first << " : " << rxit->second << " dB"
                       << std::endl;

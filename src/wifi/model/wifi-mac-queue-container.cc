@@ -123,8 +123,8 @@ std::pair<WifiMacQueueContainer::iterator, WifiMacQueueContainer::iterator>
 WifiMacQueueContainer::DoExtractExpiredMpdus(ContainerQueue& queue) const
 {
     std::optional<std::pair<WifiMacQueueContainer::iterator, WifiMacQueueContainer::iterator>> ret;
-    iterator firstExpiredIt = queue.begin();
-    iterator lastExpiredIt = firstExpiredIt;
+    auto firstExpiredIt = queue.begin();
+    auto lastExpiredIt = firstExpiredIt;
     Time now = Simulator::Now();
 
     do

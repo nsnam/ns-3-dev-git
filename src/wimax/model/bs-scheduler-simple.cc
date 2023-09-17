@@ -94,7 +94,7 @@ BSSchedulerSimple::AddDownlinkBurst(Ptr<const WimaxConnection> connection,
                                     WimaxPhy::ModulationType modulationType,
                                     Ptr<PacketBurst> burst)
 {
-    OfdmDlMapIe* dlMapIe = new OfdmDlMapIe();
+    auto dlMapIe = new OfdmDlMapIe();
     dlMapIe->SetCid(connection->GetCid());
     dlMapIe->SetDiuc(diuc);
 
@@ -243,8 +243,6 @@ BSSchedulerSimple::SelectConnection(Ptr<WimaxConnection>& connection)
 {
     connection = nullptr;
     Time currentTime = Simulator::Now();
-    std::vector<Ptr<WimaxConnection>>::const_iterator iter1;
-    std::vector<ServiceFlow*>::iterator iter2;
     ServiceFlowRecord* serviceFlowRecord;
     NS_LOG_INFO("BS Scheduler: Selecting connection...");
     if (GetBs()->GetBroadcastConnection()->HasPackets())
@@ -265,7 +263,7 @@ BSSchedulerSimple::SelectConnection(Ptr<WimaxConnection>& connection)
         std::vector<ServiceFlow*> serviceFlows;
 
         connections = GetBs()->GetConnectionManager()->GetConnections(Cid::BASIC);
-        for (iter1 = connections.begin(); iter1 != connections.end(); ++iter1)
+        for (auto iter1 = connections.begin(); iter1 != connections.end(); ++iter1)
         {
             if ((*iter1)->HasPackets())
             {
@@ -276,7 +274,7 @@ BSSchedulerSimple::SelectConnection(Ptr<WimaxConnection>& connection)
         }
 
         connections = GetBs()->GetConnectionManager()->GetConnections(Cid::PRIMARY);
-        for (iter1 = connections.begin(); iter1 != connections.end(); ++iter1)
+        for (auto iter1 = connections.begin(); iter1 != connections.end(); ++iter1)
         {
             if ((*iter1)->HasPackets())
             {
@@ -287,7 +285,7 @@ BSSchedulerSimple::SelectConnection(Ptr<WimaxConnection>& connection)
         }
 
         serviceFlows = GetBs()->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_UGS);
-        for (iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
+        for (auto iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
         {
             serviceFlowRecord = (*iter2)->GetRecord();
             NS_LOG_INFO("processing UGS: HAS PACKET="
@@ -310,7 +308,7 @@ BSSchedulerSimple::SelectConnection(Ptr<WimaxConnection>& connection)
         }
 
         serviceFlows = GetBs()->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_RTPS);
-        for (iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
+        for (auto iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
         {
             serviceFlowRecord = (*iter2)->GetRecord();
             // if latency would exceed in case poll is allocated in next frame then allocate in
@@ -329,7 +327,7 @@ BSSchedulerSimple::SelectConnection(Ptr<WimaxConnection>& connection)
 
         serviceFlows =
             GetBs()->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_NRTPS);
-        for (iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
+        for (auto iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
         {
             // unused: serviceFlowRecord = (*iter2)->GetRecord ();
             if ((*iter2)->HasPackets())
@@ -342,7 +340,7 @@ BSSchedulerSimple::SelectConnection(Ptr<WimaxConnection>& connection)
         }
 
         serviceFlows = GetBs()->GetServiceFlowManager()->GetServiceFlows(ServiceFlow::SF_TYPE_BE);
-        for (iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
+        for (auto iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
         {
             // unused: serviceFlowRecord = (*iter2)->GetRecord ();
             if ((*iter2)->HasPackets())

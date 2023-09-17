@@ -363,7 +363,7 @@ WallClockSynchronizer::DriftCorrect(uint64_t nsNow, uint64_t nsDelay)
     // have more drift than delay, then we just play catch up as fast as possible
     // by not delaying at all.
     //
-    uint64_t correction = (uint64_t)drift;
+    auto correction = (uint64_t)drift;
     if (correction <= nsDelay)
     {
         return nsDelay - correction;

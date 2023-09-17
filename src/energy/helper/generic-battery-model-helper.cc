@@ -51,7 +51,7 @@ Ptr<EnergySourceContainer>
 GenericBatteryModelHelper::Install(NodeContainer c) const
 {
     Ptr<EnergySourceContainer> batteryContainer = CreateObject<EnergySourceContainer>();
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); i++)
+    for (auto i = c.Begin(); i != c.End(); i++)
     {
         batteryContainer->Add(DoInstall(*i));
     }
@@ -90,7 +90,7 @@ EnergySourceContainer
 GenericBatteryModelHelper::Install(NodeContainer c, BatteryModel bm) const
 {
     EnergySourceContainer batteryContainer;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); i++)
+    for (auto i = c.Begin(); i != c.End(); i++)
     {
         Ptr<EnergySource> energySource = Install(*i, bm);
         batteryContainer.Add(energySource);
@@ -147,9 +147,7 @@ GenericBatteryModelHelper::SetCellPack(EnergySourceContainer energySourceContain
 {
     NS_ASSERT_MSG(energySourceContainer.GetN() > 0, "This energy container is empty");
 
-    for (EnergySourceContainer::Iterator i = energySourceContainer.Begin();
-         i != energySourceContainer.End();
-         i++)
+    for (auto i = energySourceContainer.Begin(); i != energySourceContainer.End(); i++)
     {
         SetCellPack(*i, series, parallel);
     }

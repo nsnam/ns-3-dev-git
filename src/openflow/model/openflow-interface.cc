@@ -158,7 +158,7 @@ int
 Stats::FlowStatsInit(const void* body, int body_len, void** state)
 {
     const ofp_flow_stats_request* fsr = (ofp_flow_stats_request*)body;
-    FlowStatsState* s = (FlowStatsState*)xmalloc(sizeof *s);
+    auto s = (FlowStatsState*)xmalloc(sizeof *s);
 
     s->table_idx = fsr->table_id == 0xff ? 0 : fsr->table_id;
     memset(&s->position, 0, sizeof s->position);
@@ -170,7 +170,7 @@ Stats::FlowStatsInit(const void* body, int body_len, void** state)
 int
 Stats_FlowDumpCallback(sw_flow* flow, void* state)
 {
-    Stats::FlowStatsState* s = (Stats::FlowStatsState*)state;
+    auto s = (Stats::FlowStatsState*)state;
 
     // Fill Flow Stats
     ofp_flow_stats* ofs;
@@ -325,7 +325,7 @@ Stats::PortTableStatsDump(Ptr<OpenFlowSwitchNetDevice> swtch, void* state, ofpbu
 int
 Stats::PortStatsInit(const void* body, int body_len, void** state)
 {
-    PortStatsState* s = (PortStatsState*)xmalloc(sizeof *s);
+    auto s = (PortStatsState*)xmalloc(sizeof *s);
 
     // the body contains a list of port numbers
     s->ports = (uint32_t*)xmalloc(body_len);
@@ -878,7 +878,7 @@ LearningController::ReceiveFromSwitch(Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf
         dst_addr.CopyFrom(key.flow.dl_dst);
         if (!dst_addr.IsBroadcast())
         {
-            LearnState_t::iterator st = m_learnState.find(dst_addr);
+            auto st = m_learnState.find(dst_addr);
             if (st != m_learnState.end())
             {
                 out_port = st->second.port;
@@ -915,7 +915,7 @@ LearningController::ReceiveFromSwitch(Ptr<OpenFlowSwitchNetDevice> swtch, ofpbuf
         // We can learn a specific port for the source address for future use.
         Mac48Address src_addr;
         src_addr.CopyFrom(key.flow.dl_src);
-        LearnState_t::iterator st = m_learnState.find(src_addr);
+        auto st = m_learnState.find(src_addr);
         if (st == m_learnState.end()) // We haven't learned our source MAC yet.
         {
             LearnedState ls;
@@ -963,7 +963,7 @@ ExecuteActions(Ptr<OpenFlowSwitchNetDevice> swtch,
     int prev_port;
     size_t max_len = 0;                   // Initialize to make compiler happy
     uint16_t in_port = key->flow.in_port; // ntohs(key->flow.in_port);
-    uint8_t* p = (uint8_t*)actions;
+    auto p = (uint8_t*)actions;
 
     prev_port = -1;
 
@@ -1022,7 +1022,7 @@ ExecuteActions(Ptr<OpenFlowSwitchNetDevice> swtch,
 uint16_t
 ValidateActions(const sw_flow_key* key, const ofp_action_header* actions, size_t actions_len)
 {
-    uint8_t* p = (uint8_t*)actions;
+    auto p = (uint8_t*)actions;
     int err;
 
     while (actions_len >= sizeof(ofp_action_header))
@@ -1088,7 +1088,7 @@ ExecuteVPortActions(Ptr<OpenFlowSwitchNetDevice> swtch,
     int prev_port;
     size_t max_len = 0; // Initialize to make compiler happy
     uint16_t in_port = ntohs(key->flow.in_port);
-    uint8_t* p = (uint8_t*)actions;
+    auto p = (uint8_t*)actions;
     uint16_t type;
     ofp_action_output* oa;
 
@@ -1130,7 +1130,7 @@ ExecuteVPortActions(Ptr<OpenFlowSwitchNetDevice> swtch,
 uint16_t
 ValidateVPortActions(const ofp_action_header* actions, size_t actions_len)
 {
-    uint8_t* p = (uint8_t*)actions;
+    auto p = (uint8_t*)actions;
     int err;
 
     while (actions_len >= sizeof(ofp_action_header))

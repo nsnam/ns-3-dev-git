@@ -44,7 +44,7 @@ PrintGnuplottableBuildingListToFile(std::string filename)
         return;
     }
     uint32_t index = 0;
-    for (BuildingList::Iterator it = BuildingList::Begin(); it != BuildingList::End(); ++it)
+    for (auto it = BuildingList::Begin(); it != BuildingList::End(); ++it)
     {
         ++index;
         Box box = (*it)->GetBoundaries();

@@ -95,7 +95,7 @@ AllSupportedRates::SetBasicRate(uint64_t bs)
 {
     NS_LOG_FUNCTION(this << bs);
     NS_ASSERT_MSG(IsBssMembershipSelectorRate(bs) == false, "Invalid rate");
-    uint8_t rate = static_cast<uint8_t>(bs / 500000);
+    auto rate = static_cast<uint8_t>(bs / 500000);
     for (uint8_t i = 0; i < GetNRates(); i++)
     {
         auto& currRate = i < 8 ? rates.m_rates[i] : extendedRates->m_rates[i - 8];
@@ -121,7 +121,7 @@ AllSupportedRates::AddBssMembershipSelectorRate(uint64_t bs)
     NS_ASSERT_MSG(bs == BSS_MEMBERSHIP_SELECTOR_HT_PHY || bs == BSS_MEMBERSHIP_SELECTOR_VHT_PHY ||
                       bs == BSS_MEMBERSHIP_SELECTOR_HE_PHY || bs == BSS_MEMBERSHIP_SELECTOR_EHT_PHY,
                   "Value " << bs << " not a BSS Membership Selector");
-    uint8_t rate = static_cast<uint8_t>(bs / 500000);
+    auto rate = static_cast<uint8_t>(bs / 500000);
     for (std::size_t i = 0; i < rates.m_rates.size(); i++)
     {
         if (rate == rates.m_rates[i])
@@ -158,7 +158,7 @@ bool
 AllSupportedRates::IsSupportedRate(uint64_t bs) const
 {
     NS_LOG_FUNCTION(this << bs);
-    uint8_t rate = static_cast<uint8_t>(bs / 500000);
+    auto rate = static_cast<uint8_t>(bs / 500000);
     for (std::size_t i = 0; i < rates.m_rates.size(); i++)
     {
         if (rate == rates.m_rates[i] || (rate | 0x80) == rates.m_rates[i])

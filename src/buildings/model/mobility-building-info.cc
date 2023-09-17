@@ -168,7 +168,7 @@ MobilityBuildingInfo::MakeConsistent(Ptr<MobilityModel> mm)
 {
     bool found = false;
     Vector pos = mm->GetPosition();
-    for (BuildingList::Iterator bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
+    for (auto bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
     {
         NS_LOG_LOGIC("checking building " << (*bit)->GetId() << " with boundaries "
                                           << (*bit)->GetBoundaries());

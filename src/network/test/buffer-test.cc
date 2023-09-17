@@ -363,7 +363,7 @@ BufferTest::DoRun()
     NS_TEST_ASSERT_MSG_EQ(sizeBuffer, ct.size(), "Buffer bad size");
     const uint8_t* evilBuffer = buffer.PeekData();
     NS_TEST_ASSERT_MSG_NE(evilBuffer, 0, "Buffer PeekData failed");
-    uint8_t* cBuf = (uint8_t*)malloc(sizeBuffer);
+    auto cBuf = (uint8_t*)malloc(sizeBuffer);
     uint32_t copyLen = buffer.CopyData(cBuf, sizeBuffer);
     NS_TEST_ASSERT_MSG_EQ(copyLen, sizeBuffer, "CopyData return bad size");
     for (uint32_t i = 0; i < sizeBuffer; i++)

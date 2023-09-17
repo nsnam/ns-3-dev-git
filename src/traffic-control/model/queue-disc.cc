@@ -178,9 +178,6 @@ QueueDisc::Stats::GetNMarkedBytes(std::string reason) const
 void
 QueueDisc::Stats::Print(std::ostream& os) const
 {
-    std::map<std::string, uint32_t>::const_iterator itp;
-    std::map<std::string, uint64_t>::const_iterator itb;
-
     os << std::endl
        << "Packets/Bytes received: " << nTotalReceivedPackets << " / " << nTotalReceivedBytes
        << std::endl
@@ -195,8 +192,8 @@ QueueDisc::Stats::Print(std::ostream& os) const
        << "Packets/Bytes dropped before enqueue: " << nTotalDroppedPacketsBeforeEnqueue << " / "
        << nTotalDroppedBytesBeforeEnqueue;
 
-    itp = nDroppedPacketsBeforeEnqueue.begin();
-    itb = nDroppedBytesBeforeEnqueue.begin();
+    auto itp = nDroppedPacketsBeforeEnqueue.begin();
+    auto itb = nDroppedBytesBeforeEnqueue.begin();
 
     while (itp != nDroppedPacketsBeforeEnqueue.end() && itb != nDroppedBytesBeforeEnqueue.end())
     {
@@ -403,8 +400,7 @@ QueueDisc::DoInitialize()
     InitializeParams();
 
     // Check the configuration and initialize the parameters of the child queue discs
-    for (std::vector<Ptr<QueueDiscClass>>::iterator cl = m_classes.begin(); cl != m_classes.end();
-         cl++)
+    for (auto cl = m_classes.begin(); cl != m_classes.end(); cl++)
     {
         (*cl)->GetQueueDisc()->Initialize();
     }
@@ -673,9 +669,7 @@ QueueDisc::Classify(Ptr<QueueDiscItem> item)
     NS_LOG_FUNCTION(this << item);
 
     int32_t ret = PacketFilter::PF_NO_MATCH;
-    for (std::vector<Ptr<PacketFilter>>::iterator f = m_filters.begin();
-         f != m_filters.end() && ret == PacketFilter::PF_NO_MATCH;
-         f++)
+    for (auto f = m_filters.begin(); f != m_filters.end() && ret == PacketFilter::PF_NO_MATCH; f++)
     {
         ret = (*f)->Classify(item);
     }
@@ -733,8 +727,7 @@ QueueDisc::DropBeforeEnqueue(Ptr<const QueueDiscItem> item, const char* reason)
     m_stats.nTotalDroppedBytesBeforeEnqueue += item->GetSize();
 
     // update the number of packets dropped for the given reason
-    std::map<std::string, uint32_t>::iterator itp =
-        m_stats.nDroppedPacketsBeforeEnqueue.find(reason);
+    auto itp = m_stats.nDroppedPacketsBeforeEnqueue.find(reason);
     if (itp != m_stats.nDroppedPacketsBeforeEnqueue.end())
     {
         itp->second++;
@@ -744,7 +737,7 @@ QueueDisc::DropBeforeEnqueue(Ptr<const QueueDiscItem> item, const char* reason)
         m_stats.nDroppedPacketsBeforeEnqueue[reason] = 1;
     }
     // update the amount of bytes dropped for the given reason
-    std::map<std::string, uint64_t>::iterator itb = m_stats.nDroppedBytesBeforeEnqueue.find(reason);
+    auto itb = m_stats.nDroppedBytesBeforeEnqueue.find(reason);
     if (itb != m_stats.nDroppedBytesBeforeEnqueue.end())
     {
         itb->second += item->GetSize();
@@ -773,8 +766,7 @@ QueueDisc::DropAfterDequeue(Ptr<const QueueDiscItem> item, const char* reason)
     m_stats.nTotalDroppedBytesAfterDequeue += item->GetSize();
 
     // update the number of packets dropped for the given reason
-    std::map<std::string, uint32_t>::iterator itp =
-        m_stats.nDroppedPacketsAfterDequeue.find(reason);
+    auto itp = m_stats.nDroppedPacketsAfterDequeue.find(reason);
     if (itp != m_stats.nDroppedPacketsAfterDequeue.end())
     {
         itp->second++;
@@ -784,7 +776,7 @@ QueueDisc::DropAfterDequeue(Ptr<const QueueDiscItem> item, const char* reason)
         m_stats.nDroppedPacketsAfterDequeue[reason] = 1;
     }
     // update the amount of bytes dropped for the given reason
-    std::map<std::string, uint64_t>::iterator itb = m_stats.nDroppedBytesAfterDequeue.find(reason);
+    auto itb = m_stats.nDroppedBytesAfterDequeue.find(reason);
     if (itb != m_stats.nDroppedBytesAfterDequeue.end())
     {
         itb->second += item->GetSize();
@@ -829,7 +821,7 @@ QueueDisc::Mark(Ptr<QueueDiscItem> item, const char* reason)
     m_stats.nTotalMarkedBytes += item->GetSize();
 
     // update the number of packets marked for the given reason
-    std::map<std::string, uint32_t>::iterator itp = m_stats.nMarkedPackets.find(reason);
+    auto itp = m_stats.nMarkedPackets.find(reason);
     if (itp != m_stats.nMarkedPackets.end())
     {
         itp->second++;
@@ -839,7 +831,7 @@ QueueDisc::Mark(Ptr<QueueDiscItem> item, const char* reason)
         m_stats.nMarkedPackets[reason] = 1;
     }
     // update the amount of bytes marked for the given reason
-    std::map<std::string, uint64_t>::iterator itb = m_stats.nMarkedBytes.find(reason);
+    auto itb = m_stats.nMarkedBytes.find(reason);
     if (itb != m_stats.nMarkedBytes.end())
     {
         itb->second += item->GetSize();

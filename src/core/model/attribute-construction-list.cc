@@ -45,7 +45,7 @@ AttributeConstructionList::Add(std::string name,
     // vector of values.
     NS_LOG_FUNCTION(this << name << checker << value);
 
-    for (std::list<Item>::iterator k = m_list.begin(); k != m_list.end(); k++)
+    for (auto k = m_list.begin(); k != m_list.end(); k++)
     {
         if (k->checker == checker)
         {
@@ -65,7 +65,7 @@ Ptr<AttributeValue>
 AttributeConstructionList::Find(Ptr<const AttributeChecker> checker) const
 {
     NS_LOG_FUNCTION(this << checker);
-    for (CIterator k = m_list.begin(); k != m_list.end(); k++)
+    for (auto k = m_list.begin(); k != m_list.end(); k++)
     {
         NS_LOG_DEBUG("Found " << k->name << " " << k->checker << " " << k->value);
         if (k->checker == checker)

@@ -273,7 +273,7 @@ SimpleOfdmWimaxPhy::DoAttach(Ptr<WimaxChannel> channel)
 void
 SimpleOfdmWimaxPhy::Send(SendParams* params)
 {
-    OfdmSendParams* o_params = dynamic_cast<OfdmSendParams*>(params);
+    auto o_params = dynamic_cast<OfdmSendParams*>(params);
     NS_ASSERT(o_params != nullptr);
     Send(o_params->GetBurst(),
          (WimaxPhy::ModulationType)o_params->GetModulationType(),
@@ -501,10 +501,10 @@ SimpleOfdmWimaxPhy::ConvertBurstToBits(Ptr<const PacketBurst> burst)
     std::list<Ptr<Packet>> packets = burst->GetPackets();
 
     uint32_t j = 0;
-    for (std::list<Ptr<Packet>>::iterator iter = packets.begin(); iter != packets.end(); ++iter)
+    for (auto iter = packets.begin(); iter != packets.end(); ++iter)
     {
         Ptr<Packet> packet = *iter;
-        uint8_t* pstart = (uint8_t*)std::malloc(packet->GetSize());
+        auto pstart = (uint8_t*)std::malloc(packet->GetSize());
         std::memset(pstart, 0, packet->GetSize());
         packet->CopyData(pstart, packet->GetSize());
         Bvec temp(8);
@@ -677,7 +677,7 @@ SimpleOfdmWimaxPhy::CalculateDataRate(WimaxPhy::ModulationType modulationType) c
     double fecCode = 0;
     GetModulationFecParams(modulationType, bitsPerSymbol, fecCode);
     double symbolsPerSecond = 1 / GetSymbolDuration().GetSeconds();
-    uint16_t bitsTransmittedPerSymbol = (uint16_t)(bitsPerSymbol * GetNrCarriers() * fecCode);
+    auto bitsTransmittedPerSymbol = (uint16_t)(bitsPerSymbol * GetNrCarriers() * fecCode);
     // 96, 192, 288, 384, 576, 767 and 864 bits per symbol for the seven modulations, respectively
 
     return (uint32_t)symbolsPerSecond * bitsTransmittedPerSymbol;

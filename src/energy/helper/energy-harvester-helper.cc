@@ -43,8 +43,7 @@ EnergyHarvesterContainer
 EnergyHarvesterHelper::Install(EnergySourceContainer sourceContainer) const
 {
     EnergyHarvesterContainer container;
-    for (EnergySourceContainer::Iterator i = sourceContainer.Begin(); i != sourceContainer.End();
-         ++i)
+    for (auto i = sourceContainer.Begin(); i != sourceContainer.End(); ++i)
     {
         Ptr<EnergyHarvester> harvester = DoInstall(*i);
         container.Add(harvester);

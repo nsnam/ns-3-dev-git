@@ -116,7 +116,7 @@ UanTxModeFactory::~UanTxModeFactory()
 bool
 UanTxModeFactory::NameUsed(std::string name)
 {
-    std::map<uint32_t, UanTxModeItem>::iterator it = m_modes.begin();
+    auto it = m_modes.begin();
 
     for (; it != m_modes.end(); it++)
     {
@@ -176,7 +176,7 @@ UanTxModeFactory::GetModeItem(uint32_t uid)
 UanTxModeFactory::UanTxModeItem&
 UanTxModeFactory::GetModeItem(std::string name)
 {
-    std::map<uint32_t, UanTxModeItem>::iterator it = m_modes.begin();
+    auto it = m_modes.begin();
     for (; it != m_modes.end(); it++)
     {
         if ((*it).second.m_name == name)
@@ -237,7 +237,7 @@ UanModesList::DeleteMode(uint32_t modeNum)
 {
     NS_ASSERT(modeNum < m_modes.size());
 
-    std::vector<UanTxMode>::iterator it = m_modes.begin();
+    auto it = m_modes.begin();
     for (uint32_t i = 0; i < modeNum; i++)
     {
         it++;

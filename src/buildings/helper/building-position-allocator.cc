@@ -82,8 +82,7 @@ RandomBuildingPositionAllocator::GetNext() const
     {
         if (m_buildingListWithoutReplacement.empty())
         {
-            for (BuildingList::Iterator bit = BuildingList::Begin(); bit != BuildingList::End();
-                 ++bit)
+            for (auto bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
             {
                 m_buildingListWithoutReplacement.push_back(*bit);
             }
@@ -189,7 +188,7 @@ OutdoorPositionAllocator::GetNext() const
         NS_LOG_INFO("Position " << position);
 
         bool inside = false;
-        for (BuildingList::Iterator bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
+        for (auto bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
         {
             if ((*bit)->IsInside(position))
             {
@@ -255,7 +254,7 @@ RandomRoomPositionAllocator::GetNext() const
 
     if (m_roomListWithoutReplacement.empty())
     {
-        for (BuildingList::Iterator bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
+        for (auto bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
         {
             NS_LOG_LOGIC("building " << (*bit)->GetId());
             for (uint32_t rx = 1; rx <= (*bit)->GetNRoomsX(); ++rx)
@@ -327,7 +326,7 @@ SameRoomPositionAllocator::SameRoomPositionAllocator(NodeContainer c)
     m_rand = CreateObject<UniformRandomVariable>();
     m_nodeIt = m_nodes.Begin();
     // this is needed to make sure the building models associated with c have been initialized
-    for (NodeContainer::Iterator it = m_nodes.Begin(); it != m_nodes.End(); ++it)
+    for (auto it = m_nodes.Begin(); it != m_nodes.End(); ++it)
     {
         Ptr<MobilityModel> mm = (*it)->GetObject<MobilityModel>();
         NS_ASSERT_MSG(mm, "no mobility model aggregated to this node");

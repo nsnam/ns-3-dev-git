@@ -37,7 +37,7 @@ CsParameters::CsParameters(Tlv tlv)
     NS_ASSERT_MSG(tlv.GetType() == SfVectorTlvValue::IPV4_CS_Parameters, "Invalid TLV");
     CsParamVectorTlvValue* param = ((CsParamVectorTlvValue*)(tlv.PeekValue()));
 
-    for (std::vector<Tlv*>::const_iterator iter = param->Begin(); iter != param->End(); ++iter)
+    for (auto iter = param->Begin(); iter != param->End(); ++iter)
     {
         switch ((*iter)->GetType())
         {

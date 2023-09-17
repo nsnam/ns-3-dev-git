@@ -269,9 +269,9 @@ LteUeRrcProtocolReal::SetEnbRrcSapProvider()
 
     // walk list of all nodes to get the peer eNB
     Ptr<LteEnbNetDevice> enbDev;
-    NodeList::Iterator listEnd = NodeList::End();
+    auto listEnd = NodeList::End();
     bool found = false;
-    for (NodeList::Iterator i = NodeList::Begin(); (i != listEnd) && (!found); ++i)
+    for (auto i = NodeList::Begin(); (i != listEnd) && (!found); ++i)
     {
         Ptr<Node> node = *i;
         int nDevs = node->GetNDevices();
@@ -400,8 +400,7 @@ LteEnbRrcProtocolReal::DoDispose()
 {
     NS_LOG_FUNCTION(this);
     delete m_enbRrcSapUser;
-    for (std::map<uint16_t, LteEnbRrcSapProvider::CompleteSetupUeParameters>::iterator it =
-             m_completeSetupUeParametersMap.begin();
+    for (auto it = m_completeSetupUeParametersMap.begin();
          it != m_completeSetupUeParametersMap.end();
          ++it)
     {
@@ -442,8 +441,7 @@ LteEnbRrcProtocolReal::SetCellId(uint16_t cellId)
 LteUeRrcSapProvider*
 LteEnbRrcProtocolReal::GetUeRrcSapProvider(uint16_t rnti)
 {
-    std::map<uint16_t, LteUeRrcSapProvider*>::const_iterator it;
-    it = m_enbRrcSapProviderMap.find(rnti);
+    auto it = m_enbRrcSapProviderMap.find(rnti);
     NS_ASSERT_MSG(it != m_enbRrcSapProviderMap.end(), "could not find RNTI = " << rnti);
     return it->second;
 }
@@ -451,8 +449,7 @@ LteEnbRrcProtocolReal::GetUeRrcSapProvider(uint16_t rnti)
 void
 LteEnbRrcProtocolReal::SetUeRrcSapProvider(uint16_t rnti, LteUeRrcSapProvider* p)
 {
-    std::map<uint16_t, LteUeRrcSapProvider*>::iterator it;
-    it = m_enbRrcSapProviderMap.find(rnti);
+    auto it = m_enbRrcSapProviderMap.find(rnti);
     // assign UE RRC only if the RNTI is found at eNB
     if (it != m_enbRrcSapProviderMap.end())
     {
@@ -503,8 +500,7 @@ LteEnbRrcProtocolReal::DoSetupUe(uint16_t rnti, LteEnbRrcSapUser::SetupUeParamet
     m_setupUeParametersMap[rnti] = params;
 
     LteEnbRrcSapProvider::CompleteSetupUeParameters completeSetupUeParameters;
-    std::map<uint16_t, LteEnbRrcSapProvider::CompleteSetupUeParameters>::iterator csupIt =
-        m_completeSetupUeParametersMap.find(rnti);
+    auto csupIt = m_completeSetupUeParametersMap.find(rnti);
     if (csupIt == m_completeSetupUeParametersMap.end())
     {
         // Create LteRlcSapUser, LtePdcpSapUser
@@ -527,8 +523,7 @@ void
 LteEnbRrcProtocolReal::DoRemoveUe(uint16_t rnti)
 {
     NS_LOG_FUNCTION(this << rnti);
-    std::map<uint16_t, LteEnbRrcSapProvider::CompleteSetupUeParameters>::iterator it =
-        m_completeSetupUeParametersMap.find(rnti);
+    auto it = m_completeSetupUeParametersMap.find(rnti);
     NS_ASSERT(it != m_completeSetupUeParametersMap.end());
     delete it->second.srb0SapUser;
     delete it->second.srb1SapUser;
@@ -543,7 +538,7 @@ LteEnbRrcProtocolReal::DoSendSystemInformation(uint16_t cellId, LteRrcSap::Syste
     NS_LOG_FUNCTION(this << cellId);
     // walk list of all nodes to get UEs with this cellId
     Ptr<LteUeRrc> ueRrc;
-    for (NodeList::Iterator i = NodeList::Begin(); i != NodeList::End(); ++i)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); ++i)
     {
         Ptr<Node> node = *i;
         int nDevs = node->GetNDevices();

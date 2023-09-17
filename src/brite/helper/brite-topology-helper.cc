@@ -186,10 +186,9 @@ BriteTopologyHelper::BuildBriteEdgeInfoList()
 {
     NS_LOG_FUNCTION(this);
     brite::Graph* g = m_topology->GetGraph();
-    std::list<brite::Edge*>::iterator el;
     std::list<brite::Edge*> edgeList = g->GetEdges();
 
-    for (el = edgeList.begin(); el != edgeList.end(); el++)
+    for (auto el = edgeList.begin(); el != edgeList.end(); el++)
     {
         BriteEdgeInfo edgeInfo;
         edgeInfo.edgeId = (*el)->GetId();
@@ -418,9 +417,7 @@ BriteTopologyHelper::BuildBriteTopology(InternetStackHelper& stack, const uint32
     }
 
     // create nodes
-    for (BriteTopologyHelper::BriteNodeInfoList::iterator it = m_briteNodeInfoList.begin();
-         it != m_briteNodeInfoList.end();
-         ++it)
+    for (auto it = m_briteNodeInfoList.begin(); it != m_briteNodeInfoList.end(); ++it)
     {
         m_nodes.Add(CreateObject<Node>(GetSystemNumberForAs((*it).asId)));
         m_numNodes++;
@@ -468,9 +465,7 @@ BriteTopologyHelper::ConstructTopology()
         m_nodesByAs.push_back(new NodeContainer());
     }
 
-    for (BriteTopologyHelper::BriteEdgeInfoList::iterator it = m_briteEdgeInfoList.begin();
-         it != m_briteEdgeInfoList.end();
-         ++it)
+    for (auto it = m_briteEdgeInfoList.begin(); it != m_briteEdgeInfoList.end(); ++it)
     {
         // Set the link delay
         // The brite value for delay is given in milliseconds
@@ -492,9 +487,7 @@ BriteTopologyHelper::ConstructTopology()
     NS_LOG_INFO("Created " << m_numEdges << " edges in BRITE topology");
 
     // iterate through all nodes and add leaf nodes for each AS
-    for (BriteTopologyHelper::BriteNodeInfoList::iterator it = m_briteNodeInfoList.begin();
-         it != m_briteNodeInfoList.end();
-         ++it)
+    for (auto it = m_briteNodeInfoList.begin(); it != m_briteNodeInfoList.end(); ++it)
     {
         m_nodesByAs[(*it).asId]->Add(m_nodes.Get((*it).nodeId));
 

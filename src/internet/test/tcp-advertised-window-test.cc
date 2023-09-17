@@ -447,7 +447,7 @@ Ptr<ErrorModel>
 TcpAdvWindowOnLossTest::CreateReceiverErrorModel()
 {
     Ptr<TcpSeqErrorModel> m_errorModel = CreateObject<TcpSeqErrorModel>();
-    for (std::vector<uint32_t>::iterator it = m_toDrop.begin(); it != m_toDrop.end(); ++it)
+    for (auto it = m_toDrop.begin(); it != m_toDrop.end(); ++it)
     {
         m_errorModel->AddSeqToKill(SequenceNumber32(*it));
     }

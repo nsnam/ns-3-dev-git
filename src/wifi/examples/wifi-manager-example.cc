@@ -714,8 +714,8 @@ main(int argc, char* argv[])
     Ptr<WifiNetDevice> wndServer = ndServer->GetObject<WifiNetDevice>();
     Ptr<WifiPhy> wifiPhyPtrClient = wndClient->GetPhy();
     Ptr<WifiPhy> wifiPhyPtrServer = wndServer->GetPhy();
-    uint8_t t_clientNss = static_cast<uint8_t>(clientNss);
-    uint8_t t_serverNss = static_cast<uint8_t>(serverNss);
+    auto t_clientNss = static_cast<uint8_t>(clientNss);
+    auto t_serverNss = static_cast<uint8_t>(serverNss);
     wifiPhyPtrClient->SetNumberOfAntennas(t_clientNss);
     wifiPhyPtrClient->SetMaxSupportedTxSpatialStreams(t_clientNss);
     wifiPhyPtrClient->SetMaxSupportedRxSpatialStreams(t_clientNss);

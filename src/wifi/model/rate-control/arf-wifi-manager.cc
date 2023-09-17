@@ -107,7 +107,7 @@ WifiRemoteStation*
 ArfWifiManager::DoCreateStation() const
 {
     NS_LOG_FUNCTION(this);
-    ArfWifiRemoteStation* station = new ArfWifiRemoteStation();
+    auto station = new ArfWifiRemoteStation();
 
     station->m_successThreshold = m_successThreshold;
     station->m_timerTimeout = m_timerThreshold;
@@ -141,7 +141,7 @@ void
 ArfWifiManager::DoReportDataFailed(WifiRemoteStation* st)
 {
     NS_LOG_FUNCTION(this << st);
-    ArfWifiRemoteStation* station = static_cast<ArfWifiRemoteStation*>(st);
+    auto station = static_cast<ArfWifiRemoteStation*>(st);
     station->m_timer++;
     station->m_failed++;
     station->m_success = 0;
@@ -202,7 +202,7 @@ ArfWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
-    ArfWifiRemoteStation* station = static_cast<ArfWifiRemoteStation*>(st);
+    auto station = static_cast<ArfWifiRemoteStation*>(st);
     station->m_timer++;
     station->m_success++;
     station->m_failed = 0;
@@ -236,7 +236,7 @@ WifiTxVector
 ArfWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
-    ArfWifiRemoteStation* station = static_cast<ArfWifiRemoteStation*>(st);
+    auto station = static_cast<ArfWifiRemoteStation*>(st);
     uint16_t channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
@@ -267,7 +267,7 @@ ArfWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     NS_LOG_FUNCTION(this << st);
     /// \todo we could/should implement the ARF algorithm for
     /// RTS only by picking a single rate within the BasicRateSet.
-    ArfWifiRemoteStation* station = static_cast<ArfWifiRemoteStation*>(st);
+    auto station = static_cast<ArfWifiRemoteStation*>(st);
     uint16_t channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {

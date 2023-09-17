@@ -143,7 +143,7 @@ LteFfConverter::double2fpS11dot3(double val)
     {
         val = -4096;
     }
-    int16_t valFp = (int16_t)(val * 8);
+    auto valFp = (int16_t)(val * 8);
     return (valFp);
 }
 
@@ -361,7 +361,7 @@ EutranMeasurementMapping::IeValue2ActualQQualMin(int8_t qQualMinIeValue)
                                     << " for Q-QualMin IE value");
     }
 
-    double actual = static_cast<double>(qQualMinIeValue);
+    auto actual = static_cast<double>(qQualMinIeValue);
     NS_ASSERT(actual >= -34.0);
     NS_ASSERT(actual <= -3.0);
     return actual;

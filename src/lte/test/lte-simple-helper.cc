@@ -91,7 +91,7 @@ LteSimpleHelper::InstallEnbDevice(NodeContainer c)
     NS_LOG_FUNCTION(this);
     Initialize(); // will run DoInitialize () if necessary
     NetDeviceContainer devices;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
         Ptr<NetDevice> device = InstallSingleEnbDevice(node);
@@ -105,7 +105,7 @@ LteSimpleHelper::InstallUeDevice(NodeContainer c)
 {
     NS_LOG_FUNCTION(this);
     NetDeviceContainer devices;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
         Ptr<NetDevice> device = InstallSingleUeDevice(node);
@@ -209,8 +209,7 @@ LteSimpleHelper::InstallSingleUeDevice(Ptr<Node> n)
 void
 LteSimpleHelper::EnableLogComponents()
 {
-    LogLevel level =
-        (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC);
+    auto level = (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_PREFIX_FUNC);
 
     LogComponentEnable("Config", level);
     LogComponentEnable("LteSimpleHelper", level);

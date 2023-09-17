@@ -69,7 +69,7 @@ main(int argc, char* argv[])
     Ptr<Node> pgw = epcHelper->GetPgwNode();
 
     // Enable Logging
-    LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+    auto logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 
     LogComponentEnable("BearerDeactivateExample", LOG_LEVEL_ALL);
     LogComponentEnable("LteHelper", logLevel);

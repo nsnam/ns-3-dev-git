@@ -201,7 +201,7 @@ Mac16Address::GetBroadcast()
 {
     NS_LOG_FUNCTION_NOARGS();
 
-    static Mac16Address broadcast = Mac16Address("ff:ff");
+    static Mac16Address broadcast("ff:ff");
     return broadcast;
 }
 

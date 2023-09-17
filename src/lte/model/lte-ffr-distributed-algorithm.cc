@@ -247,7 +247,7 @@ LteFfrDistributedAlgorithm::DoIsDlRbgAvailableForUe(int rbgId, uint16_t rnti)
 
     bool edgeRbg = m_dlEdgeRbgMap[rbgId];
 
-    std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+    auto it = m_ues.find(rnti);
     if (it == m_ues.end())
     {
         m_ues.insert(std::pair<uint16_t, uint8_t>(rnti, AreaUnset));
@@ -288,7 +288,7 @@ LteFfrDistributedAlgorithm::DoIsUlRbgAvailableForUe(int rbId, uint16_t rnti)
 
     bool edgeRbg = m_ulEdgeRbgMap[rbId];
 
-    std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+    auto it = m_ues.find(rnti);
     if (it == m_ues.end())
     {
         m_ues.insert(std::pair<uint16_t, uint8_t>(rnti, AreaUnset));
@@ -348,7 +348,7 @@ LteFfrDistributedAlgorithm::DoGetTpc(uint16_t rnti)
     //------------------------------------------------
     //  here Absolute mode is used
 
-    std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+    auto it = m_ues.find(rnti);
     if (it == m_ues.end())
     {
         return 1;
@@ -397,7 +397,7 @@ LteFfrDistributedAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults
     if (measResults.measId == m_rsrqMeasId)
     {
         // check if it is center or edge UE
-        std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+        auto it = m_ues.find(rnti);
         if (it == m_ues.end())
         {
             m_ues.insert(std::pair<uint16_t, uint8_t>(rnti, AreaUnset));
@@ -431,7 +431,7 @@ LteFfrDistributedAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults
     }
     else if (measResults.measId == m_rsrpMeasId)
     {
-        std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+        auto it = m_ues.find(rnti);
         if (it == m_ues.end())
         {
             m_ues.insert(std::pair<uint16_t, uint8_t>(rnti, AreaUnset));
@@ -444,8 +444,7 @@ LteFfrDistributedAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults
 
         if (measResults.haveMeasResultNeighCells && !measResults.measResultListEutra.empty())
         {
-            for (std::list<LteRrcSap::MeasResultEutra>::iterator it =
-                     measResults.measResultListEutra.begin();
+            for (auto it = measResults.measResultListEutra.begin();
                  it != measResults.measResultListEutra.end();
                  ++it)
             {
@@ -456,9 +455,7 @@ LteFfrDistributedAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults
                 UpdateNeighbourMeasurements(rnti, it->physCellId, it->rsrpResult, it->rsrqResult);
 
                 bool found = false;
-                for (std::vector<uint16_t>::iterator ncIt = m_neighborCell.begin();
-                     ncIt != m_neighborCell.end();
-                     ncIt++)
+                for (auto ncIt = m_neighborCell.begin(); ncIt != m_neighborCell.end(); ncIt++)
                 {
                     if ((*ncIt) == it->physCellId)
                     {
@@ -499,14 +496,11 @@ LteFfrDistributedAlgorithm::Calculate()
     m_ulEdgeRbgMap.clear();
     m_ulEdgeRbgMap.resize(m_ulBandwidth, false);
 
-    MeasurementTable_t::iterator it1;
-    MeasurementRow_t::iterator it2;
     Ptr<UeMeasure> servingCellMeasures;
     Ptr<UeMeasure> neighbourCellMeasures;
 
     uint32_t edgeUeNum = 0;
-    std::map<uint16_t, uint8_t>::iterator areaIt;
-    for (areaIt = m_ues.begin(); areaIt != m_ues.end(); areaIt++)
+    for (auto areaIt = m_ues.begin(); areaIt != m_ues.end(); areaIt++)
     {
         if (areaIt->second == EdgeArea)
         {
@@ -516,9 +510,9 @@ LteFfrDistributedAlgorithm::Calculate()
 
     if (edgeUeNum != 0)
     {
-        for (it1 = m_ueMeasures.begin(); it1 != m_ueMeasures.end(); it1++)
+        for (auto it1 = m_ueMeasures.begin(); it1 != m_ueMeasures.end(); it1++)
         {
-            std::map<uint16_t, uint8_t>::iterator areaIt = m_ues.find(it1->first);
+            auto areaIt = m_ues.find(it1->first);
             if (areaIt->second != EdgeArea)
             {
                 continue;
@@ -527,7 +521,7 @@ LteFfrDistributedAlgorithm::Calculate()
             servingCellMeasures = nullptr;
             neighbourCellMeasures = nullptr;
 
-            it2 = it1->second.find(m_cellId);
+            auto it2 = it1->second.find(m_cellId);
             if (it2 != it1->second.end())
             {
                 servingCellMeasures = it2->second;
@@ -573,13 +567,12 @@ LteFfrDistributedAlgorithm::Calculate()
             metricA[i] = 0;
         }
 
-        std::map<uint16_t, uint32_t>::iterator cellIt;
-        for (cellIt = m_cellWeightMap.begin(); cellIt != m_cellWeightMap.end(); cellIt++)
+        for (auto cellIt = m_cellWeightMap.begin(); cellIt != m_cellWeightMap.end(); cellIt++)
         {
             NS_LOG_INFO("CellId: " << m_cellId << " NeighborCellId: " << cellIt->first
                                    << " Weight: " << cellIt->second);
 
-            std::map<uint16_t, std::vector<bool>>::iterator rntpIt = m_rntp.find(cellIt->first);
+            auto rntpIt = m_rntp.find(cellIt->first);
             if (rntpIt == m_rntp.end())
             {
                 continue;
@@ -596,15 +589,12 @@ LteFfrDistributedAlgorithm::Calculate()
 
         std::vector<uint16_t> sortedRbgByMetric;
         std::multimap<uint64_t, uint16_t> sortedMetricA;
-        for (std::map<uint16_t, uint64_t>::const_iterator it = metricA.begin(); it != metricA.end();
-             ++it)
+        for (auto it = metricA.begin(); it != metricA.end(); ++it)
         {
             sortedMetricA.insert(std::pair<uint64_t, uint16_t>(it->second, it->first));
         }
 
-        for (std::multimap<uint64_t, uint16_t>::const_iterator it = sortedMetricA.begin();
-             it != sortedMetricA.end();
-             ++it)
+        for (auto it = sortedMetricA.begin(); it != sortedMetricA.end(); ++it)
         {
             sortedRbgByMetric.push_back(it->second);
         }
@@ -625,9 +615,7 @@ LteFfrDistributedAlgorithm::Calculate()
         }
     }
 
-    for (std::vector<uint16_t>::iterator ncIt = m_neighborCell.begin();
-         ncIt != m_neighborCell.end();
-         ncIt++)
+    for (auto ncIt = m_neighborCell.begin(); ncIt != m_neighborCell.end(); ncIt++)
     {
         SendLoadInformation((*ncIt));
     }
@@ -674,7 +662,7 @@ LteFfrDistributedAlgorithm::DoRecvLoadInformation(EpcX2Sap::LoadInformationParam
     }
 
     uint16_t neighborCellId = params.cellInformationList[0].sourceCellId;
-    std::map<uint16_t, std::vector<bool>>::iterator it = m_rntp.find(neighborCellId);
+    auto it = m_rntp.find(neighborCellId);
     if (it != m_rntp.end())
     {
         it->second = params.cellInformationList[0].relativeNarrowbandTxBand.rntpPerPrbList;
@@ -695,22 +683,19 @@ LteFfrDistributedAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti,
 {
     NS_LOG_FUNCTION(this << rnti << cellId << (uint16_t)rsrq);
 
-    MeasurementTable_t::iterator it1;
-    it1 = m_ueMeasures.find(rnti);
+    auto it1 = m_ueMeasures.find(rnti);
 
     if (it1 == m_ueMeasures.end())
     {
         // insert a new UE entry
         MeasurementRow_t row;
-        std::pair<MeasurementTable_t::iterator, bool> ret;
-        ret = m_ueMeasures.insert(std::pair<uint16_t, MeasurementRow_t>(rnti, row));
+        auto ret = m_ueMeasures.insert(std::pair<uint16_t, MeasurementRow_t>(rnti, row));
         NS_ASSERT(ret.second);
         it1 = ret.first;
     }
 
     NS_ASSERT(it1 != m_ueMeasures.end());
-    std::map<uint16_t, Ptr<UeMeasure>>::iterator it2;
-    it2 = it1->second.find(cellId);
+    auto it2 = it1->second.find(cellId);
 
     if (it2 != it1->second.end())
     {

@@ -62,7 +62,7 @@ IpcsClassifierRecord::IpcsClassifierRecord(Tlv tlv)
     m_tosHigh = 0;
     m_tosMask = 0;
     m_cid = 0;
-    for (std::vector<Tlv*>::const_iterator iter = rules->Begin(); iter != rules->End(); ++iter)
+    for (auto iter = rules->Begin(); iter != rules->End(); ++iter)
     {
         switch ((*iter)->GetType())
         {
@@ -75,49 +75,40 @@ IpcsClassifierRecord::IpcsClassifierRecord(Tlv tlv)
             break;
         }
         case ClassificationRuleVectorTlvValue::Protocol: {
-            ProtocolTlvValue* list = (ProtocolTlvValue*)(*iter)->PeekValue();
-            for (std::vector<uint8_t>::const_iterator iter2 = list->Begin(); iter2 != list->End();
-                 ++iter2)
+            auto list = (ProtocolTlvValue*)(*iter)->PeekValue();
+            for (auto iter2 = list->Begin(); iter2 != list->End(); ++iter2)
             {
                 AddProtocol(*iter2);
             }
             break;
         }
         case ClassificationRuleVectorTlvValue::IP_src: {
-            Ipv4AddressTlvValue* list = (Ipv4AddressTlvValue*)(*iter)->PeekValue();
-            for (std::vector<Ipv4AddressTlvValue::Ipv4Addr>::const_iterator iter2 = list->Begin();
-                 iter2 != list->End();
-                 ++iter2)
+            auto list = (Ipv4AddressTlvValue*)(*iter)->PeekValue();
+            for (auto iter2 = list->Begin(); iter2 != list->End(); ++iter2)
             {
                 AddSrcAddr((*iter2).Address, (*iter2).Mask);
             }
             break;
         }
         case ClassificationRuleVectorTlvValue::IP_dst: {
-            Ipv4AddressTlvValue* list = (Ipv4AddressTlvValue*)(*iter)->PeekValue();
-            for (std::vector<Ipv4AddressTlvValue::Ipv4Addr>::const_iterator iter2 = list->Begin();
-                 iter2 != list->End();
-                 ++iter2)
+            auto list = (Ipv4AddressTlvValue*)(*iter)->PeekValue();
+            for (auto iter2 = list->Begin(); iter2 != list->End(); ++iter2)
             {
                 AddDstAddr((*iter2).Address, (*iter2).Mask);
             }
             break;
         }
         case ClassificationRuleVectorTlvValue::Port_src: {
-            PortRangeTlvValue* list = (PortRangeTlvValue*)(*iter)->PeekValue();
-            for (std::vector<PortRangeTlvValue::PortRange>::const_iterator iter2 = list->Begin();
-                 iter2 != list->End();
-                 ++iter2)
+            auto list = (PortRangeTlvValue*)(*iter)->PeekValue();
+            for (auto iter2 = list->Begin(); iter2 != list->End(); ++iter2)
             {
                 AddSrcPortRange((*iter2).PortLow, (*iter2).PortHigh);
             }
             break;
         }
         case ClassificationRuleVectorTlvValue::Port_dst: {
-            PortRangeTlvValue* list = (PortRangeTlvValue*)(*iter)->PeekValue();
-            for (std::vector<PortRangeTlvValue::PortRange>::const_iterator iter2 = list->Begin();
-                 iter2 != list->End();
-                 ++iter2)
+            auto list = (PortRangeTlvValue*)(*iter)->PeekValue();
+            for (auto iter2 = list->Begin(); iter2 != list->End(); ++iter2)
             {
                 AddDstPortRange((*iter2).PortLow, (*iter2).PortHigh);
             }
@@ -236,8 +227,7 @@ IpcsClassifierRecord::GetPriority() const
 bool
 IpcsClassifierRecord::CheckMatchSrcAddr(Ipv4Address srcAddress) const
 {
-    for (std::vector<Ipv4Addr>::const_iterator iter = m_srcAddr.begin(); iter != m_srcAddr.end();
-         ++iter)
+    for (auto iter = m_srcAddr.begin(); iter != m_srcAddr.end(); ++iter)
     {
         NS_LOG_INFO("src addr check match: pkt=" << srcAddress << " cls=" << (*iter).Address << "/"
                                                  << (*iter).Mask);
@@ -253,8 +243,7 @@ IpcsClassifierRecord::CheckMatchSrcAddr(Ipv4Address srcAddress) const
 bool
 IpcsClassifierRecord::CheckMatchDstAddr(Ipv4Address dstAddress) const
 {
-    for (std::vector<Ipv4Addr>::const_iterator iter = m_dstAddr.begin(); iter != m_dstAddr.end();
-         ++iter)
+    for (auto iter = m_dstAddr.begin(); iter != m_dstAddr.end(); ++iter)
     {
         NS_LOG_INFO("dst addr check match: pkt=" << dstAddress << " cls=" << (*iter).Address << "/"
                                                  << (*iter).Mask);
@@ -270,9 +259,7 @@ IpcsClassifierRecord::CheckMatchDstAddr(Ipv4Address dstAddress) const
 bool
 IpcsClassifierRecord::CheckMatchSrcPort(uint16_t port) const
 {
-    for (std::vector<PortRange>::const_iterator iter = m_srcPortRange.begin();
-         iter != m_srcPortRange.end();
-         ++iter)
+    for (auto iter = m_srcPortRange.begin(); iter != m_srcPortRange.end(); ++iter)
     {
         NS_LOG_INFO("src port check match: pkt=" << port << " cls= [" << (*iter).PortLow << " TO "
                                                  << (*iter).PortHigh << "]");
@@ -288,9 +275,7 @@ IpcsClassifierRecord::CheckMatchSrcPort(uint16_t port) const
 bool
 IpcsClassifierRecord::CheckMatchDstPort(uint16_t port) const
 {
-    for (std::vector<PortRange>::const_iterator iter = m_dstPortRange.begin();
-         iter != m_dstPortRange.end();
-         ++iter)
+    for (auto iter = m_dstPortRange.begin(); iter != m_dstPortRange.end(); ++iter)
     {
         NS_LOG_INFO("dst port check match: pkt=" << port << " cls= [" << (*iter).PortLow << " TO "
                                                  << (*iter).PortHigh << "]");
@@ -306,8 +291,7 @@ IpcsClassifierRecord::CheckMatchDstPort(uint16_t port) const
 bool
 IpcsClassifierRecord::CheckMatchProtocol(uint8_t proto) const
 {
-    for (std::vector<uint8_t>::const_iterator iter = m_protocol.begin(); iter != m_protocol.end();
-         ++iter)
+    for (auto iter = m_protocol.begin(); iter != m_protocol.end(); ++iter)
     {
         NS_LOG_INFO("proto check match: pkt=" << (uint16_t)proto << " cls=" << (uint16_t)proto);
         if (proto == (*iter))
@@ -334,38 +318,31 @@ Tlv
 IpcsClassifierRecord::ToTlv() const
 {
     Ipv4AddressTlvValue ipv4AddrValSrc;
-    for (std::vector<Ipv4Addr>::const_iterator iter = m_srcAddr.begin(); iter != m_srcAddr.end();
-         ++iter)
+    for (auto iter = m_srcAddr.begin(); iter != m_srcAddr.end(); ++iter)
     {
         ipv4AddrValSrc.Add((*iter).Address, (*iter).Mask);
     }
 
     Ipv4AddressTlvValue ipv4AddrValDst;
-    for (std::vector<Ipv4Addr>::const_iterator iter = m_dstAddr.begin(); iter != m_dstAddr.end();
-         ++iter)
+    for (auto iter = m_dstAddr.begin(); iter != m_dstAddr.end(); ++iter)
     {
         ipv4AddrValDst.Add((*iter).Address, (*iter).Mask);
     }
 
     ProtocolTlvValue protoVal;
-    for (std::vector<uint8_t>::const_iterator iter = m_protocol.begin(); iter != m_protocol.end();
-         ++iter)
+    for (auto iter = m_protocol.begin(); iter != m_protocol.end(); ++iter)
     {
         protoVal.Add((*iter));
     }
 
     PortRangeTlvValue portValueSrc;
-    for (std::vector<PortRange>::const_iterator iter = m_srcPortRange.begin();
-         iter != m_srcPortRange.end();
-         ++iter)
+    for (auto iter = m_srcPortRange.begin(); iter != m_srcPortRange.end(); ++iter)
     {
         portValueSrc.Add((*iter).PortLow, (*iter).PortHigh);
     }
 
     PortRangeTlvValue portValueDst;
-    for (std::vector<PortRange>::const_iterator iter = m_dstPortRange.begin();
-         iter != m_dstPortRange.end();
-         ++iter)
+    for (auto iter = m_dstPortRange.begin(); iter != m_dstPortRange.end(); ++iter)
     {
         portValueDst.Add((*iter).PortLow, (*iter).PortHigh);
     }

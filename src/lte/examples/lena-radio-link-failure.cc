@@ -49,7 +49,7 @@ uint32_t oldByteCounter = 0;             //!< Old Byte counter,
 void
 PrintUePosition(uint64_t imsi)
 {
-    for (NodeList::Iterator it = NodeList::Begin(); it != NodeList::End(); ++it)
+    for (auto it = NodeList::Begin(); it != NodeList::End(); ++it)
     {
         Ptr<Node> node = *it;
         int nDevs = node->GetNDevices();
@@ -381,7 +381,7 @@ main(int argc, char* argv[])
 
     if (enableNsLogs)
     {
-        LogLevel logLevel =
+        auto logLevel =
             (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_NODE | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
         LogComponentEnable("LteUeRrc", logLevel);
         LogComponentEnable("LteUeMac", logLevel);

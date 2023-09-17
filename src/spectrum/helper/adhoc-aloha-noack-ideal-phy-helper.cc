@@ -91,7 +91,7 @@ NetDeviceContainer
 AdhocAlohaNoackIdealPhyHelper::Install(NodeContainer c) const
 {
     NetDeviceContainer devices;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
 

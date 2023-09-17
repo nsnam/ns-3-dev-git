@@ -248,8 +248,7 @@ LteRlcAmHeader::IsNackPresent(SequenceNumber10 nack)
     NS_LOG_FUNCTION(this);
     NS_ASSERT_MSG(m_dataControlBit == CONTROL_PDU && m_controlPduType == LteRlcAmHeader::STATUS_PDU,
                   "method allowed only for STATUS PDUs");
-    for (std::list<int>::iterator nackIt = m_nackSnList.begin(); nackIt != m_nackSnList.end();
-         ++nackIt)
+    for (auto nackIt = m_nackSnList.begin(); nackIt != m_nackSnList.end(); ++nackIt)
     {
         if ((*nackIt) == nack.GetValue())
         {
@@ -301,9 +300,9 @@ LteRlcAmHeader::GetInstanceTypeId() const
 void
 LteRlcAmHeader::Print(std::ostream& os) const
 {
-    std::list<uint8_t>::const_iterator it1 = m_extensionBits.begin();
-    std::list<uint16_t>::const_iterator it2 = m_lengthIndicators.begin();
-    std::list<int>::const_iterator it3 = m_nackSnList.begin();
+    auto it1 = m_extensionBits.begin();
+    auto it2 = m_lengthIndicators.begin();
+    auto it3 = m_nackSnList.begin();
 
     os << "Len=" << m_headerLength;
     os << " D/C=" << (uint16_t)m_dataControlBit;
@@ -362,9 +361,9 @@ LteRlcAmHeader::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
 
-    std::list<uint8_t>::const_iterator it1 = m_extensionBits.begin();
-    std::list<uint16_t>::const_iterator it2 = m_lengthIndicators.begin();
-    std::list<int>::const_iterator it3 = m_nackSnList.begin();
+    auto it1 = m_extensionBits.begin();
+    auto it2 = m_lengthIndicators.begin();
+    auto it3 = m_nackSnList.begin();
 
     if (m_dataControlBit == DATA_PDU)
     {

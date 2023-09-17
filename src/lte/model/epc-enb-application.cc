@@ -164,9 +164,7 @@ EpcEnbApplication::DoPathSwitchRequest(EpcEnbS1SapProvider::PathSwitchRequestPar
 
     uint16_t gci = params.cellId;
     std::list<EpcS1apSapMme::ErabSwitchedInDownlinkItem> erabToBeSwitchedInDownlinkList;
-    for (std::list<EpcEnbS1SapProvider::BearerToBeSwitched>::iterator bit =
-             params.bearersToBeSwitched.begin();
-         bit != params.bearersToBeSwitched.end();
+    for (auto bit = params.bearersToBeSwitched.begin(); bit != params.bearersToBeSwitched.end();
          ++bit)
     {
         EpsFlowId_t flowId;
@@ -193,12 +191,10 @@ void
 EpcEnbApplication::DoUeContextRelease(uint16_t rnti)
 {
     NS_LOG_FUNCTION(this << rnti);
-    std::map<uint16_t, std::map<uint8_t, uint32_t>>::iterator rntiIt = m_rbidTeidMap.find(rnti);
+    auto rntiIt = m_rbidTeidMap.find(rnti);
     if (rntiIt != m_rbidTeidMap.end())
     {
-        for (std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.begin();
-             bidIt != rntiIt->second.end();
-             ++bidIt)
+        for (auto bidIt = rntiIt->second.begin(); bidIt != rntiIt->second.end(); ++bidIt)
         {
             uint32_t teid = bidIt->second;
             m_teidRbidMap.erase(teid);
@@ -218,13 +214,11 @@ EpcEnbApplication::DoInitialContextSetupRequest(
     NS_LOG_FUNCTION(this);
 
     uint64_t imsi = mmeUeS1Id;
-    std::map<uint64_t, uint16_t>::iterator imsiIt = m_imsiRntiMap.find(imsi);
+    auto imsiIt = m_imsiRntiMap.find(imsi);
     NS_ASSERT_MSG(imsiIt != m_imsiRntiMap.end(), "unknown IMSI");
     uint16_t rnti = imsiIt->second;
 
-    for (std::list<EpcS1apSapEnb::ErabToBeSetupItem>::iterator erabIt = erabToBeSetupList.begin();
-         erabIt != erabToBeSetupList.end();
-         ++erabIt)
+    for (auto erabIt = erabToBeSetupList.begin(); erabIt != erabToBeSetupList.end(); ++erabIt)
     {
         // request the RRC to setup a radio bearer
         EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
@@ -256,7 +250,7 @@ EpcEnbApplication::DoPathSwitchRequestAcknowledge(
     NS_LOG_FUNCTION(this);
 
     uint64_t imsi = mmeUeS1Id;
-    std::map<uint64_t, uint16_t>::iterator imsiIt = m_imsiRntiMap.find(imsi);
+    auto imsiIt = m_imsiRntiMap.find(imsi);
     NS_ASSERT_MSG(imsiIt != m_imsiRntiMap.end(), "unknown IMSI");
     uint16_t rnti = imsiIt->second;
     EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params;
@@ -284,14 +278,14 @@ EpcEnbApplication::RecvFromLteSocket(Ptr<Socket> socket)
     uint16_t rnti = tag.GetRnti();
     uint8_t bid = tag.GetBid();
     NS_LOG_LOGIC("received packet with RNTI=" << (uint32_t)rnti << ", BID=" << (uint32_t)bid);
-    std::map<uint16_t, std::map<uint8_t, uint32_t>>::iterator rntiIt = m_rbidTeidMap.find(rnti);
+    auto rntiIt = m_rbidTeidMap.find(rnti);
     if (rntiIt == m_rbidTeidMap.end())
     {
         NS_LOG_WARN("UE context not found, discarding packet");
     }
     else
     {
-        std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.find(bid);
+        auto bidIt = rntiIt->second.find(bid);
         NS_ASSERT(bidIt != rntiIt->second.end());
         uint32_t teid = bidIt->second;
         m_rxLteSocketPktTrace(packet->Copy());
@@ -308,7 +302,7 @@ EpcEnbApplication::RecvFromS1uSocket(Ptr<Socket> socket)
     GtpuHeader gtpu;
     packet->RemoveHeader(gtpu);
     uint32_t teid = gtpu.GetTeid();
-    std::map<uint32_t, EpsFlowId_t>::iterator it = m_teidRbidMap.find(teid);
+    auto it = m_teidRbidMap.find(teid);
     if (it == m_teidRbidMap.end())
     {
         NS_LOG_WARN("UE context at cell id " << m_cellId << " not found, discarding packet");

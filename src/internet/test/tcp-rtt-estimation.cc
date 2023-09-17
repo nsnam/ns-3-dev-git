@@ -232,9 +232,7 @@ TcpRttEstimationWithLossTest::CreateReceiverErrorModel()
 {
     Ptr<TcpSeqErrorModel> errorModel = CreateObject<TcpSeqErrorModel>();
 
-    std::vector<uint32_t>::iterator it;
-
-    for (it = m_toDrop.begin(); it != m_toDrop.end(); ++it)
+    for (auto it = m_toDrop.begin(); it != m_toDrop.end(); ++it)
     {
         errorModel->AddSeqToKill(SequenceNumber32((*it)));
     }

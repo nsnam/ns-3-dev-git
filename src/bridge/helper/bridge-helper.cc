@@ -57,7 +57,7 @@ BridgeHelper::Install(Ptr<Node> node, NetDeviceContainer c)
     devs.Add(dev);
     node->AddDevice(dev);
 
-    for (NetDeviceContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         NS_LOG_LOGIC("**** Add BridgePort " << *i);
         dev->AddBridgePort(*i);

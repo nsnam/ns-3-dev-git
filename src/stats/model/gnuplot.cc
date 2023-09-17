@@ -293,7 +293,7 @@ Gnuplot2dDataset::Data2d::PrintExpression(std::ostream& os,
 void
 Gnuplot2dDataset::Data2d::PrintDataFile(std::ostream& os, bool generateOneOutputFile) const
 {
-    for (PointSet::const_iterator i = m_pointset.begin(); i != m_pointset.end(); ++i)
+    for (auto i = m_pointset.begin(); i != m_pointset.end(); ++i)
     {
         if (i->empty)
         {
@@ -578,7 +578,7 @@ Gnuplot3dDataset::Data3d::PrintExpression(std::ostream& os,
 void
 Gnuplot3dDataset::Data3d::PrintDataFile(std::ostream& os, bool generateOneOutputFile) const
 {
-    for (PointSet::const_iterator i = m_pointset.begin(); i != m_pointset.end(); ++i)
+    for (auto i = m_pointset.begin(); i != m_pointset.end(); ++i)
     {
         if (i->empty)
         {
@@ -852,7 +852,7 @@ Gnuplot::GenerateOutput(std::ostream& osControl, std::ostream& osData, std::stri
 
     std::string command = m_datasets.begin()->m_data->GetCommand();
 
-    for (Datasets::const_iterator i = m_datasets.begin() + 1; i != m_datasets.end(); ++i)
+    for (auto i = m_datasets.begin() + 1; i != m_datasets.end(); ++i)
     {
         NS_ASSERT_MSG(command == i->m_data->GetCommand(),
                       "Cannot mix 'plot' and 'splot' GnuplotDatasets.");
@@ -863,7 +863,7 @@ Gnuplot::GenerateOutput(std::ostream& osControl, std::ostream& osData, std::stri
     // Print all dataset expressions
 
     bool isDataEmpty;
-    for (Datasets::const_iterator i = m_datasets.begin(); i != m_datasets.end();)
+    for (auto i = m_datasets.begin(); i != m_datasets.end();)
     {
         // Only print the dataset if it's not empty.
         isDataEmpty = i->m_data->IsEmpty();
@@ -889,7 +889,7 @@ Gnuplot::GenerateOutput(std::ostream& osControl, std::ostream& osData, std::stri
 
     // followed by the inline datafile.
 
-    for (Datasets::const_iterator i = m_datasets.begin(); i != m_datasets.end(); i++)
+    for (auto i = m_datasets.begin(); i != m_datasets.end(); i++)
     {
         i->m_data->PrintDataFile(osData, m_generateOneOutputFile);
     }
@@ -950,7 +950,7 @@ GnuplotCollection::GenerateOutput(std::ostream& os)
         os << "set output \"" << m_outputFilename << "\"" << std::endl;
     }
 
-    for (Plots::iterator i = m_plots.begin(); i != m_plots.end(); ++i)
+    for (auto i = m_plots.begin(); i != m_plots.end(); ++i)
     {
         i->GenerateOutput(os);
     }
@@ -974,7 +974,7 @@ GnuplotCollection::GenerateOutput(std::ostream& osControl,
         osControl << "set output \"" << m_outputFilename << "\"" << std::endl;
     }
 
-    for (Plots::iterator i = m_plots.begin(); i != m_plots.end(); ++i)
+    for (auto i = m_plots.begin(); i != m_plots.end(); ++i)
     {
         i->GenerateOutput(osControl, osData, dataFileName);
     }

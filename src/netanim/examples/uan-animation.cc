@@ -98,7 +98,7 @@ void
 NetAnimExperiment::UpdatePositions(NodeContainer& nodes) const
 {
     NS_LOG_DEBUG(Simulator::Now().As(Time::S) << " Updating positions");
-    NodeContainer::Iterator it = nodes.Begin();
+    auto it = nodes.Begin();
     Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable>();
     uv->SetAttribute("Min", DoubleValue(0.0));
     uv->SetAttribute("Max", DoubleValue(m_boundary));

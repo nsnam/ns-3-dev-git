@@ -88,7 +88,7 @@ FlowProbe::SerializeToXmlStream(std::ostream& os, uint16_t indent, uint32_t inde
 
     indent += 2;
 
-    for (Stats::const_iterator iter = m_stats.begin(); iter != m_stats.end(); iter++)
+    for (auto iter = m_stats.begin(); iter != m_stats.end(); iter++)
     {
         os << std::string(indent, ' ');
         os << "<FlowStats "

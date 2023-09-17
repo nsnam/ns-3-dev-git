@@ -59,9 +59,7 @@ SNRToBlockErrorRateManager::ClearRecords()
 {
     for (int i = 0; i < 7; i++)
     {
-        for (std::vector<SNRToBlockErrorRateRecord*>::iterator iter =
-                 m_recordModulation[i]->begin();
-             iter != m_recordModulation[i]->end();
+        for (auto iter = m_recordModulation[i]->begin(); iter != m_recordModulation[i]->end();
              ++iter)
         {
             if (*iter)
@@ -107,12 +105,12 @@ SNRToBlockErrorRateManager::LoadTraces()
         while (traceFile.good())
         {
             traceFile >> snrValue >> bitErrorRate >> burstErrorRate >> sigma2 >> I1 >> I2;
-            SNRToBlockErrorRateRecord* record = new SNRToBlockErrorRateRecord(snrValue,
-                                                                              bitErrorRate,
-                                                                              burstErrorRate,
-                                                                              sigma2,
-                                                                              I1,
-                                                                              I2);
+            auto record = new SNRToBlockErrorRateRecord(snrValue,
+                                                        bitErrorRate,
+                                                        burstErrorRate,
+                                                        sigma2,
+                                                        I1,
+                                                        I2);
             m_recordModulation[i]->push_back(record);
         }
         traceFile.close();
@@ -138,7 +136,7 @@ SNRToBlockErrorRateManager::LoadDefaultTraces()
         sigma2 = modulation0[3][j];
         I1 = modulation0[4][j];
         I2 = modulation0[5][j];
-        SNRToBlockErrorRateRecord* record =
+        auto record =
             new SNRToBlockErrorRateRecord(snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2);
         m_recordModulation[0]->push_back(record);
     }
@@ -150,7 +148,7 @@ SNRToBlockErrorRateManager::LoadDefaultTraces()
         sigma2 = modulation1[3][j];
         I1 = modulation1[4][j];
         I2 = modulation1[5][j];
-        SNRToBlockErrorRateRecord* record =
+        auto record =
             new SNRToBlockErrorRateRecord(snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2);
         m_recordModulation[1]->push_back(record);
     }
@@ -162,7 +160,7 @@ SNRToBlockErrorRateManager::LoadDefaultTraces()
         sigma2 = modulation2[3][j];
         I1 = modulation2[4][j];
         I2 = modulation2[5][j];
-        SNRToBlockErrorRateRecord* record =
+        auto record =
             new SNRToBlockErrorRateRecord(snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2);
         m_recordModulation[2]->push_back(record);
     }
@@ -174,7 +172,7 @@ SNRToBlockErrorRateManager::LoadDefaultTraces()
         sigma2 = modulation3[3][j];
         I1 = modulation3[4][j];
         I2 = modulation3[5][j];
-        SNRToBlockErrorRateRecord* record =
+        auto record =
             new SNRToBlockErrorRateRecord(snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2);
         m_recordModulation[3]->push_back(record);
     }
@@ -186,7 +184,7 @@ SNRToBlockErrorRateManager::LoadDefaultTraces()
         sigma2 = modulation4[3][j];
         I1 = modulation4[4][j];
         I2 = modulation4[5][j];
-        SNRToBlockErrorRateRecord* record =
+        auto record =
             new SNRToBlockErrorRateRecord(snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2);
         m_recordModulation[4]->push_back(record);
     }
@@ -198,7 +196,7 @@ SNRToBlockErrorRateManager::LoadDefaultTraces()
         sigma2 = modulation5[3][j];
         I1 = modulation5[4][j];
         I2 = modulation5[5][j];
-        SNRToBlockErrorRateRecord* record =
+        auto record =
             new SNRToBlockErrorRateRecord(snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2);
         m_recordModulation[5]->push_back(record);
     }
@@ -210,7 +208,7 @@ SNRToBlockErrorRateManager::LoadDefaultTraces()
         sigma2 = modulation6[3][j];
         I1 = modulation6[4][j];
         I2 = modulation6[5][j];
-        SNRToBlockErrorRateRecord* record =
+        auto record =
             new SNRToBlockErrorRateRecord(snrValue, bitErrorRate, burstErrorRate, sigma2, I1, I2);
         m_recordModulation[6]->push_back(record);
     }
@@ -246,12 +244,12 @@ SNRToBlockErrorRateManager::ReLoadTraces()
         while (traceFile.good())
         {
             traceFile >> snrValue >> bitErrorRate >> burstErrorRate >> sigma2 >> I1 >> I2;
-            SNRToBlockErrorRateRecord* record = new SNRToBlockErrorRateRecord(snrValue,
-                                                                              bitErrorRate,
-                                                                              burstErrorRate,
-                                                                              sigma2,
-                                                                              I1,
-                                                                              I2);
+            auto record = new SNRToBlockErrorRateRecord(snrValue,
+                                                        bitErrorRate,
+                                                        burstErrorRate,
+                                                        sigma2,
+                                                        I1,
+                                                        I2);
 
             m_recordModulation[i]->push_back(record);
         }
@@ -349,8 +347,7 @@ SNRToBlockErrorRateManager::GetSNRToBlockErrorRateRecord(double SNR, uint8_t mod
     double I1 = coeff2 * (record->at(i - 1)->GetI1()) + coeff1 * (record->at(i)->GetI1());
     double I2 = coeff2 * (record->at(i - 1)->GetI2()) + coeff1 * (record->at(i)->GetI2());
 
-    SNRToBlockErrorRateRecord* SNRToBlockErrorRate =
-        new SNRToBlockErrorRateRecord(SNR, BER, BlcER, sigma2, I1, I2);
+    auto SNRToBlockErrorRate = new SNRToBlockErrorRateRecord(SNR, BER, BlcER, sigma2, I1, I2);
     return SNRToBlockErrorRate;
 }
 

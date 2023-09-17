@@ -206,7 +206,7 @@ Ping::Receive(Ptr<Socket> socket)
                     NS_LOG_INFO("Packet too short, discarding");
                     return;
                 }
-                uint8_t* buf = new uint8_t[dataSize];
+                auto buf = new uint8_t[dataSize];
                 echo.GetData(buf);
                 uint64_t appSignature = Read64(buf);
                 delete[] buf;
@@ -305,7 +305,7 @@ Ping::Receive(Ptr<Socket> socket)
                     NS_LOG_INFO("Packet too short, discarding");
                     return;
                 }
-                uint8_t* buf = new uint8_t[dataSize];
+                auto buf = new uint8_t[dataSize];
                 packet->CopyData(buf, dataSize);
                 uint64_t appSignature = Read64(buf);
                 delete[] buf;
@@ -426,7 +426,7 @@ Ping::Send()
     // (where any difference would show up anyway) and borrow that code.  Don't
     // be too surprised when you see that this is a little endian convention.
     //
-    uint8_t* data = new uint8_t[m_size];
+    auto data = new uint8_t[m_size];
     memset(data, 0, m_size);
     NS_ASSERT_MSG(m_size >= 16, "ECHO Payload size must be at least 16 bytes");
 
@@ -583,8 +583,7 @@ Ping::StartApplication()
     {
         if (Ipv4Address::IsMatchingType(m_interfaceAddress))
         {
-            InetSocketAddress senderInet =
-                InetSocketAddress(Ipv4Address::ConvertFrom(m_interfaceAddress));
+            InetSocketAddress senderInet(Ipv4Address::ConvertFrom(m_interfaceAddress));
             int status = m_socket->Bind(senderInet);
             NS_ASSERT_MSG(status == 0, "Failed to bind IPv4 socket");
         }

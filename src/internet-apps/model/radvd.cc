@@ -75,7 +75,7 @@ Radvd::Radvd()
 Radvd::~Radvd()
 {
     NS_LOG_FUNCTION(this);
-    for (RadvdInterfaceListI it = m_configurations.begin(); it != m_configurations.end(); ++it)
+    for (auto it = m_configurations.begin(); it != m_configurations.end(); ++it)
     {
         *it = nullptr;
     }
@@ -91,7 +91,7 @@ Radvd::DoDispose()
     m_recvSocket->Close();
     m_recvSocket = nullptr;
 
-    for (SocketMapI it = m_sendSockets.begin(); it != m_sendSockets.end(); ++it)
+    for (auto it = m_sendSockets.begin(); it != m_sendSockets.end(); ++it)
     {
         it->second->Close();
         it->second = nullptr;
@@ -120,7 +120,7 @@ Radvd::StartApplication()
         m_recvSocket->SetRecvPktInfo(true);
     }
 
-    for (RadvdInterfaceListCI it = m_configurations.begin(); it != m_configurations.end(); it++)
+    for (auto it = m_configurations.begin(); it != m_configurations.end(); it++)
     {
         if ((*it)->IsSendAdvert())
         {
@@ -159,13 +159,13 @@ Radvd::StopApplication()
         m_recvSocket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
     }
 
-    for (EventIdMapI it = m_unsolicitedEventIds.begin(); it != m_unsolicitedEventIds.end(); ++it)
+    for (auto it = m_unsolicitedEventIds.begin(); it != m_unsolicitedEventIds.end(); ++it)
     {
         Simulator::Cancel((*it).second);
     }
     m_unsolicitedEventIds.clear();
 
-    for (EventIdMapI it = m_solicitedEventIds.begin(); it != m_solicitedEventIds.end(); ++it)
+    for (auto it = m_solicitedEventIds.begin(); it != m_solicitedEventIds.end(); ++it)
     {
         Simulator::Cancel((*it).second);
     }
@@ -231,8 +231,7 @@ Radvd::Send(Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
     }
 
     /* add list of prefixes */
-    for (std::list<Ptr<RadvdPrefix>>::const_iterator jt = prefixes.begin(); jt != prefixes.end();
-         jt++)
+    for (auto jt = prefixes.begin(); jt != prefixes.end(); jt++)
     {
         uint8_t flags = 0;
         prefixHdr = Icmpv6OptionPrefixInformation();
@@ -288,7 +287,7 @@ Radvd::Send(Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
 
     if (reschedule)
     {
-        uint64_t delay = static_cast<uint64_t>(
+        auto delay = static_cast<uint64_t>(
             m_jitter->GetValue(config->GetMinRtrAdvInterval(), config->GetMaxRtrAdvInterval()) +
             0.5);
         if (config->IsInitialRtrAdv())
@@ -348,9 +347,7 @@ Radvd::HandleRead(Ptr<Socket> socket)
                 NS_LOG_INFO("Received ICMPv6 Router Solicitation from "
                             << hdr.GetSource() << " code = " << (uint32_t)rsHdr.GetCode());
 
-                for (RadvdInterfaceListCI it = m_configurations.begin();
-                     it != m_configurations.end();
-                     it++)
+                for (auto it = m_configurations.begin(); it != m_configurations.end(); it++)
                 {
                     if (ipInterfaceIndex == (*it)->GetInterface())
                     {

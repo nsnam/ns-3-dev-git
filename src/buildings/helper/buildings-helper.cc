@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE("BuildingsHelper");
 void
 BuildingsHelper::Install(NodeContainer c)
 {
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Install(*i);
     }

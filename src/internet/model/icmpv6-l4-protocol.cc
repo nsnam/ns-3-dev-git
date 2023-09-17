@@ -168,7 +168,7 @@ void
 Icmpv6L4Protocol::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    for (CacheList::const_iterator it = m_cacheList.begin(); it != m_cacheList.end(); it++)
+    for (auto it = m_cacheList.begin(); it != m_cacheList.end(); it++)
     {
         Ptr<NdiscCache> cache = *it;
         cache->Dispose();
@@ -397,7 +397,7 @@ Icmpv6L4Protocol::HandleEchoRequest(Ptr<Packet> packet,
 {
     NS_LOG_FUNCTION(this << packet << src << dst << interface);
     Icmpv6Echo request;
-    uint8_t* buf = new uint8_t[packet->GetSize()];
+    auto buf = new uint8_t[packet->GetSize()];
 
     packet->RemoveHeader(request);
     /* XXX IPv6 extension: obtain a fresh copy of data otherwise it crash... */
@@ -522,9 +522,7 @@ Icmpv6L4Protocol::ReceiveLLA(Icmpv6OptionLinkLayerAddress lla,
             waiting = entry->MarkReachable(lla.GetAddress());
             entry->StartReachableTimer();
             // send out waiting packet
-            for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin();
-                 it != waiting.end();
-                 it++)
+            for (auto it = waiting.begin(); it != waiting.end(); it++)
             {
                 cache->GetInterface()->Send(it->first, it->second, src);
             }
@@ -558,10 +556,7 @@ Icmpv6L4Protocol::ReceiveLLA(Icmpv6OptionLinkLayerAddress lla,
             {
                 entry->StopNudTimer();
                 waiting = entry->MarkReachable(lla.GetAddress());
-                for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it =
-                         waiting.begin();
-                     it != waiting.end();
-                     it++)
+                for (auto it = waiting.begin(); it != waiting.end(); it++)
                 {
                     cache->GetInterface()->Send(it->first, it->second, src);
                 }
@@ -911,9 +906,7 @@ Icmpv6L4Protocol::HandleNA(Ptr<Packet> packet,
             waiting = entry->MarkReachable(lla.GetAddress());
             entry->StartReachableTimer();
             /* send out waiting packet */
-            for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin();
-                 it != waiting.end();
-                 it++)
+            for (auto it = waiting.begin(); it != waiting.end(); it++)
             {
                 cache->GetInterface()->Send(it->first, it->second, src);
             }
@@ -978,10 +971,7 @@ Icmpv6L4Protocol::HandleNA(Ptr<Packet> packet,
             if (naHeader.GetFlagS())
             {
                 waiting = entry->MarkReachable(lla.GetAddress());
-                for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it =
-                         waiting.begin();
-                     it != waiting.end();
-                     it++)
+                for (auto it = waiting.begin(); it != waiting.end(); it++)
                 {
                     cache->GetInterface()->Send(it->first, it->second, src);
                 }
@@ -1676,7 +1666,7 @@ Icmpv6L4Protocol::FindCache(Ptr<NetDevice> device)
 {
     NS_LOG_FUNCTION(this << device);
 
-    for (CacheList::const_iterator i = m_cacheList.begin(); i != m_cacheList.end(); i++)
+    for (auto i = m_cacheList.begin(); i != m_cacheList.end(); i++)
     {
         if ((*i)->GetDevice() == device)
         {

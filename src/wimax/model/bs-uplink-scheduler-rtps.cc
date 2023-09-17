@@ -183,8 +183,7 @@ UplinkSchedulerRtps::Schedule()
     std::vector<SSRecord*>* ssRecords = GetBs()->GetSSManager()->GetSSRecords();
     NS_LOG_INFO("UL Scheduler start, availableSymbols = " << availableSymbols);
 
-    for (std::vector<SSRecord*>::iterator iter = ssRecords->begin(); iter != ssRecords->end();
-         ++iter)
+    for (auto iter = ssRecords->begin(); iter != ssRecords->end(); ++iter)
     {
         SSRecord* ssRecord = *iter;
         if (ssRecord->GetIsBroadcastSS())
@@ -305,8 +304,7 @@ UplinkSchedulerRtps::Schedule()
     // UL Scheduler for nrtPS and BE flows
     if (availableSymbols)
     {
-        for (std::vector<SSRecord*>::iterator iter = ssRecords->begin(); iter != ssRecords->end();
-             ++iter)
+        for (auto iter = ssRecords->begin(); iter != ssRecords->end(); ++iter)
         {
             SSRecord* ssRecord = *iter;
             if (ssRecord->GetIsBroadcastSS())
@@ -371,9 +369,7 @@ UplinkSchedulerRtps::ServiceUnsolicitedGrants(const SSRecord* ssRecord,
     uint8_t uiuc = ulMapIe.GetUiuc(); // SS's burst profile
     std::vector<ServiceFlow*> serviceFlows = ssRecord->GetServiceFlows(schedulingType);
 
-    for (std::vector<ServiceFlow*>::iterator iter = serviceFlows.begin();
-         iter != serviceFlows.end();
-         ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         ServiceFlow* serviceFlow = *iter;
 
@@ -458,9 +454,7 @@ UplinkSchedulerRtps::ServiceBandwidthRequests(const SSRecord* ssRecord,
 {
     std::vector<ServiceFlow*> serviceFlows = ssRecord->GetServiceFlows(schedulingType);
 
-    for (std::vector<ServiceFlow*>::iterator iter = serviceFlows.begin();
-         iter != serviceFlows.end();
-         ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         if (!ServiceBandwidthRequests(*iter,
                                       schedulingType,
@@ -550,8 +544,7 @@ UplinkSchedulerRtps::ULSchedulerRTPSConnection(uint32_t& symbolsToAllocation,
     Cid cid;
     std::vector<SSRecord*>* ssRecords = GetBs()->GetSSManager()->GetSSRecords();
 
-    for (std::vector<SSRecord*>::iterator iter = ssRecords->begin(); iter != ssRecords->end();
-         ++iter)
+    for (auto iter = ssRecords->begin(); iter != ssRecords->end(); ++iter)
     {
         SSRecord* ssRecord = *iter;
         if (ssRecord->GetIsBroadcastSS())
@@ -571,9 +564,7 @@ UplinkSchedulerRtps::ULSchedulerRTPSConnection(uint32_t& symbolsToAllocation,
 
             std::vector<ServiceFlow*> serviceFlows =
                 ssRecord->GetServiceFlows(ServiceFlow::SF_TYPE_RTPS);
-            for (std::vector<ServiceFlow*>::iterator iter2 = serviceFlows.begin();
-                 iter2 != serviceFlows.end();
-                 ++iter2)
+            for (auto iter2 = serviceFlows.begin(); iter2 != serviceFlows.end(); ++iter2)
             {
                 record_[nbAllocation] = (*iter2)->GetRecord();
                 uint32_t requiredBandwidth = record_[nbAllocation]->GetRequestedBandwidth() -

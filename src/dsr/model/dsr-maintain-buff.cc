@@ -56,9 +56,7 @@ bool
 DsrMaintainBuffer::Enqueue(DsrMaintainBuffEntry& entry)
 {
     Purge();
-    for (std::vector<DsrMaintainBuffEntry>::const_iterator i = m_maintainBuffer.begin();
-         i != m_maintainBuffer.end();
-         ++i)
+    for (auto i = m_maintainBuffer.begin(); i != m_maintainBuffer.end(); ++i)
     {
         //      NS_LOG_INFO ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our
         //      add " << i->GetOurAdd () << " " << entry.GetOurAdd ()
@@ -106,9 +104,7 @@ bool
 DsrMaintainBuffer::Dequeue(Ipv4Address nextHop, DsrMaintainBuffEntry& entry)
 {
     Purge();
-    for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin();
-         i != m_maintainBuffer.end();
-         ++i)
+    for (auto i = m_maintainBuffer.begin(); i != m_maintainBuffer.end(); ++i)
     {
         if (i->GetNextHop() == nextHop)
         {
@@ -124,9 +120,7 @@ DsrMaintainBuffer::Dequeue(Ipv4Address nextHop, DsrMaintainBuffEntry& entry)
 bool
 DsrMaintainBuffer::Find(Ipv4Address nextHop)
 {
-    for (std::vector<DsrMaintainBuffEntry>::const_iterator i = m_maintainBuffer.begin();
-         i != m_maintainBuffer.end();
-         ++i)
+    for (auto i = m_maintainBuffer.begin(); i != m_maintainBuffer.end(); ++i)
     {
         if (i->GetNextHop() == nextHop)
         {
@@ -140,9 +134,7 @@ DsrMaintainBuffer::Find(Ipv4Address nextHop)
 bool
 DsrMaintainBuffer::AllEqual(DsrMaintainBuffEntry& entry)
 {
-    for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin();
-         i != m_maintainBuffer.end();
-         ++i)
+    for (auto i = m_maintainBuffer.begin(); i != m_maintainBuffer.end(); ++i)
     {
         //      NS_LOG_DEBUG ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our
         //      address " << i->GetOurAdd () << " " << entry.GetOurAdd ()
@@ -166,9 +158,7 @@ DsrMaintainBuffer::AllEqual(DsrMaintainBuffEntry& entry)
 bool
 DsrMaintainBuffer::NetworkEqual(DsrMaintainBuffEntry& entry)
 {
-    for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin();
-         i != m_maintainBuffer.end();
-         ++i)
+    for (auto i = m_maintainBuffer.begin(); i != m_maintainBuffer.end(); ++i)
     {
         //      NS_LOG_DEBUG ("nexthop " << i->GetNextHop () << " " << entry.GetNextHop () << " our
         //      address " << i->GetOurAdd () << " " << entry.GetOurAdd ()
@@ -193,9 +183,7 @@ bool
 DsrMaintainBuffer::PromiscEqual(DsrMaintainBuffEntry& entry)
 {
     NS_LOG_DEBUG("The maintenance buffer size " << m_maintainBuffer.size());
-    for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin();
-         i != m_maintainBuffer.end();
-         ++i)
+    for (auto i = m_maintainBuffer.begin(); i != m_maintainBuffer.end(); ++i)
     {
         //      NS_LOG_DEBUG ("src " << i->GetSrc () << " " << entry.GetSrc () << " dst " <<
         //      i->GetDst () << " " << entry.GetDst ()
@@ -220,9 +208,7 @@ bool
 DsrMaintainBuffer::LinkEqual(DsrMaintainBuffEntry& entry)
 {
     NS_LOG_DEBUG("The maintenance buffer size " << m_maintainBuffer.size());
-    for (std::vector<DsrMaintainBuffEntry>::iterator i = m_maintainBuffer.begin();
-         i != m_maintainBuffer.end();
-         ++i)
+    for (auto i = m_maintainBuffer.begin(); i != m_maintainBuffer.end(); ++i)
     {
         //      NS_LOG_DEBUG ("src " << i->GetSrc () << " " << entry.GetSrc () << " dst " <<
         //      i->GetDst () << " " << entry.GetDst ()

@@ -443,8 +443,7 @@ DsrRouting::Start()
                                               << m_maxNetworkDelay.As(Time::S));
         Ptr<dsr::DsrNetworkQueue> queue_i =
             CreateObject<dsr::DsrNetworkQueue>(m_maxNetworkSize, m_maxNetworkDelay);
-        std::pair<std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator, bool> result_i =
-            m_priorityQueue.insert(std::make_pair(i, queue_i));
+        auto result_i = m_priorityQueue.insert(std::make_pair(i, queue_i));
         NS_ASSERT_MSG(result_i.second, "Error in creating queues");
     }
     Ptr<dsr::DsrRreqTable> rreqTable = CreateObject<dsr::DsrRreqTable>();
@@ -748,7 +747,7 @@ DsrRouting::PrintVector(std::vector<Ipv4Address>& vec)
     else
     {
         NS_LOG_DEBUG("Print all the elements in a vector");
-        for (std::vector<Ipv4Address>::const_iterator i = vec.begin(); i != vec.end(); ++i)
+        for (auto i = vec.begin(); i != vec.end(); ++i)
         {
             NS_LOG_DEBUG("The ip address " << *i);
         }
@@ -774,7 +773,7 @@ DsrRouting::SearchNextHop(Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec
                                                                  << vec.back());
         return ipv4Address;
     }
-    for (std::vector<Ipv4Address>::const_iterator i = vec.begin(); i != vec.end(); ++i)
+    for (auto i = vec.begin(); i != vec.end(); ++i)
     {
         if (ipv4Address == (*i))
         {
@@ -866,8 +865,7 @@ DsrRouting::CheckSendBuffer()
     NS_LOG_INFO(Simulator::Now().As(Time::S) << " Checking send buffer at " << m_mainAddress
                                              << " with size " << m_sendBuffer.GetSize());
 
-    for (std::vector<DsrSendBuffEntry>::iterator i = m_sendBuffer.GetBuffer().begin();
-         i != m_sendBuffer.GetBuffer().end();)
+    for (auto i = m_sendBuffer.GetBuffer().begin(); i != m_sendBuffer.GetBuffer().end();)
     {
         NS_LOG_DEBUG("Here we try to find the data packet in the send buffer");
         Ipv4Address destination = i->GetDestination();
@@ -895,7 +893,7 @@ DsrRouting::CheckSendBuffer()
              * Peek data to get the option type as well as length and segmentsLeft field
              */
             uint32_t size = copyP->GetSize();
-            uint8_t* data = new uint8_t[size];
+            auto data = new uint8_t[size];
             copyP->CopyData(data, size);
 
             uint8_t optionType = 0;
@@ -959,8 +957,7 @@ DsrRouting::CheckSendBuffer()
                     m_ipv4Route->SetOutputDevice(dev);
 
                     uint32_t priority = GetPriority(DSR_CONTROL_PACKET); /// This will be priority 0
-                    std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator i =
-                        m_priorityQueue.find(priority);
+                    auto i = m_priorityQueue.find(priority);
                     Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
                     NS_LOG_LOGIC("Will be inserting into priority queue number: " << priority);
 
@@ -1175,7 +1172,7 @@ DsrRouting::PromiscReceive(Ptr<NetDevice> device,
          * Peek data to get the option type as well as length and segmentsLeft field
          */
         uint32_t size = pktMinusIpHdr->GetSize();
-        uint8_t* data = new uint8_t[size];
+        auto data = new uint8_t[size];
         pktMinusIpHdr->CopyData(data, size);
         uint8_t optionType = 0;
         optionType = *(data);
@@ -1451,7 +1448,7 @@ DsrRouting::SendUnreachError(Ipv4Address unreachNode,
                                                                << newPacket->GetSize());
 
         uint32_t priority = GetPriority(DSR_CONTROL_PACKET);
-        std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator i = m_priorityQueue.find(priority);
+        auto i = m_priorityQueue.find(priority);
         Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
         NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue
                                                               << " number: " << priority);
@@ -1501,7 +1498,7 @@ DsrRouting::ForwardErrPacket(DsrOptionRerrUnreachHeader& rerr,
     route->SetOutputDevice(dev);
 
     uint32_t priority = GetPriority(DSR_CONTROL_PACKET);
-    std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator i = m_priorityQueue.find(priority);
+    auto i = m_priorityQueue.find(priority);
     Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
     NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue
                                                           << " number: " << priority);
@@ -1740,7 +1737,7 @@ DsrRouting::SendPacket(Ptr<Packet> packet,
     m_ipv4Route->SetOutputDevice(dev);
 
     uint32_t priority = GetPriority(DSR_DATA_PACKET);
-    std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator i = m_priorityQueue.find(priority);
+    auto i = m_priorityQueue.find(priority);
     Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
     NS_LOG_INFO("Will be inserting into priority queue number: " << priority);
 
@@ -1782,7 +1779,7 @@ DsrRouting::PriorityScheduler(uint32_t priority, bool continueWithFirst)
     // priorities ranging from 0 to m_numPriorityQueues, with 0 as the highest priority
     for (uint32_t i = priority; numPriorities < m_numPriorityQueues; numPriorities++)
     {
-        std::map<uint32_t, Ptr<DsrNetworkQueue>>::iterator q = m_priorityQueue.find(i);
+        auto q = m_priorityQueue.find(i);
         Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = q->second;
         uint32_t queueSize = dsrNetworkQueue->GetSize();
         if (queueSize == 0)
@@ -1799,10 +1796,7 @@ DsrRouting::PriorityScheduler(uint32_t priority, bool continueWithFirst)
         else
         {
             uint32_t totalQueueSize = 0;
-            for (std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator j =
-                     m_priorityQueue.begin();
-                 j != m_priorityQueue.end();
-                 j++)
+            for (auto j = m_priorityQueue.begin(); j != m_priorityQueue.end(); j++)
             {
                 NS_LOG_INFO("The size of the network queue for " << j->first << " is "
                                                                  << j->second->GetSize());
@@ -1854,18 +1848,14 @@ DsrRouting::IncreaseRetransTimer()
     // We may want to get the queue first and then we need to save a vector of the entries here and
     // then find
     uint32_t priority = GetPriority(DSR_DATA_PACKET);
-    std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator i = m_priorityQueue.find(priority);
+    auto i = m_priorityQueue.find(priority);
     Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
 
     std::vector<DsrNetworkQueueEntry> newNetworkQueue = dsrNetworkQueue->GetQueue();
-    for (std::vector<DsrNetworkQueueEntry>::iterator i = newNetworkQueue.begin();
-         i != newNetworkQueue.end();
-         i++)
+    for (auto i = newNetworkQueue.begin(); i != newNetworkQueue.end(); i++)
     {
         Ipv4Address nextHop = i->GetNextHopAddress();
-        for (std::map<NetworkKey, Timer>::iterator j = m_addressForwardTimer.begin();
-             j != m_addressForwardTimer.end();
-             j++)
+        for (auto j = m_addressForwardTimer.begin(); j != m_addressForwardTimer.end(); j++)
         {
             if (nextHop == j->first.m_nextHop)
             {
@@ -2031,7 +2021,7 @@ DsrRouting::SendPacketFromBuffer(const DsrOptionSRHeader& sourceRoute,
              * Peek data to get the option type as well as length and segmentsLeft field
              */
             uint32_t size = copyP->GetSize();
-            uint8_t* data = new uint8_t[size];
+            auto data = new uint8_t[size];
             copyP->CopyData(data, size);
 
             uint8_t optionType = 0;
@@ -2085,8 +2075,7 @@ DsrRouting::SendPacketFromBuffer(const DsrOptionSRHeader& sourceRoute,
                     m_ipv4Route->SetOutputDevice(dev);
 
                     uint32_t priority = GetPriority(DSR_CONTROL_PACKET);
-                    std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator i =
-                        m_priorityQueue.find(priority);
+                    auto i = m_priorityQueue.find(priority);
                     Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
                     NS_LOG_DEBUG("Will be inserting into priority queue "
                                  << dsrNetworkQueue << " number: " << priority);
@@ -2259,7 +2248,7 @@ DsrRouting::CancelLinkPacketTimer(DsrMaintainBuffEntry& mb)
     // TODO if find the linkkey, we need to remove it
 
     // Find the network acknowledgment timer
-    std::map<LinkKey, Timer>::const_iterator i = m_linkAckTimer.find(linkKey);
+    auto i = m_linkAckTimer.find(linkKey);
     if (i == m_linkAckTimer.end())
     {
         NS_LOG_INFO("did not find the link timer");
@@ -2308,7 +2297,7 @@ DsrRouting::CancelNetworkPacketTimer(DsrMaintainBuffEntry& mb)
                          << mb.GetNextHop() << " source " << mb.GetSrc() << " destination "
                          << mb.GetDst() << " segsLeft " << (uint32_t)mb.GetSegsLeft());
     // Find the network acknowledgment timer
-    std::map<NetworkKey, Timer>::const_iterator i = m_addressForwardTimer.find(networkKey);
+    auto i = m_addressForwardTimer.find(networkKey);
     if (i == m_addressForwardTimer.end())
     {
         NS_LOG_INFO("did not find the packet timer");
@@ -2349,7 +2338,7 @@ DsrRouting::CancelPassivePacketTimer(DsrMaintainBuffEntry& mb)
     m_passiveCnt.erase(passiveKey);
 
     // Find the passive acknowledgment timer
-    std::map<PassiveKey, Timer>::const_iterator j = m_passiveAckTimer.find(passiveKey);
+    auto j = m_passiveAckTimer.find(passiveKey);
     if (j == m_passiveAckTimer.end())
     {
         NS_LOG_INFO("did not find the passive timer");
@@ -2523,7 +2512,7 @@ DsrRouting::SalvagePacket(Ptr<const Packet> packet,
 
         // Send out the data packet
         uint32_t priority = GetPriority(DSR_DATA_PACKET);
-        std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator i = m_priorityQueue.find(priority);
+        auto i = m_priorityQueue.find(priority);
         Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
         NS_LOG_DEBUG("Will be inserting into priority queue " << dsrNetworkQueue
                                                               << " number: " << priority);
@@ -3309,7 +3298,7 @@ DsrRouting::SendRequest(Ptr<Packet> packet, Ipv4Address source)
      * The destination address here is directed broadcast address
      */
     uint32_t priority = GetPriority(DSR_CONTROL_PACKET);
-    std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator i = m_priorityQueue.find(priority);
+    auto i = m_priorityQueue.find(priority);
     Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
     NS_LOG_LOGIC("Inserting into priority queue number: " << priority);
 
@@ -3363,16 +3352,14 @@ DsrRouting::SendGratuitousReply(Ipv4Address source,
         /**
          * Push back the node addresses other than those between srcAddress and our own ip address
          */
-        std::vector<Ipv4Address>::iterator before =
-            find(nodeList.begin(), nodeList.end(), srcAddress);
-        for (std::vector<Ipv4Address>::iterator i = nodeList.begin(); i != before; ++i)
+        auto before = find(nodeList.begin(), nodeList.end(), srcAddress);
+        for (auto i = nodeList.begin(); i != before; ++i)
         {
             m_finalRoute.push_back(*i);
         }
         m_finalRoute.push_back(srcAddress);
-        std::vector<Ipv4Address>::iterator after =
-            find(nodeList.begin(), nodeList.end(), m_mainAddress);
-        for (std::vector<Ipv4Address>::iterator j = after; j != nodeList.end(); ++j)
+        auto after = find(nodeList.begin(), nodeList.end(), m_mainAddress);
+        for (auto j = after; j != nodeList.end(); ++j)
         {
             m_finalRoute.push_back(*j);
         }
@@ -3426,7 +3413,7 @@ DsrRouting::SendReply(Ptr<Packet> packet,
     NS_LOG_INFO("The output device " << dev << " packet is: " << *packet);
 
     uint32_t priority = GetPriority(DSR_CONTROL_PACKET);
-    std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator i = m_priorityQueue.find(priority);
+    auto i = m_priorityQueue.find(priority);
     Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
     NS_LOG_INFO("Inserting into priority queue number: " << priority);
 
@@ -3509,7 +3496,7 @@ DsrRouting::SendAck(uint16_t ackId,
     route->SetOutputDevice(dev);
 
     uint32_t priority = GetPriority(DSR_CONTROL_PACKET);
-    std::map<uint32_t, Ptr<dsr::DsrNetworkQueue>>::iterator i = m_priorityQueue.find(priority);
+    auto i = m_priorityQueue.find(priority);
     Ptr<dsr::DsrNetworkQueue> dsrNetworkQueue = i->second;
 
     NS_LOG_LOGIC("Will be inserting into priority queue " << dsrNetworkQueue
@@ -3568,7 +3555,7 @@ DsrRouting::Receive(Ptr<Packet> p, const Ipv4Header& ip, Ptr<Ipv4Interface> inco
      * Peek data to get the option type as well as length and segmentsLeft field
      */
     uint32_t size = p->GetSize();
-    uint8_t* data = new uint8_t[size];
+    auto data = new uint8_t[size];
     p->CopyData(data, size);
 
     uint8_t optionType = 0;
@@ -3770,7 +3757,7 @@ DsrRouting::Insert(Ptr<dsr::DsrOptions> option)
 Ptr<dsr::DsrOptions>
 DsrRouting::GetOption(int optionNumber)
 {
-    for (DsrOptionList_t::iterator i = m_options.begin(); i != m_options.end(); ++i)
+    for (auto i = m_options.begin(); i != m_options.end(); ++i)
     {
         if ((*i)->GetOptionNumber() == optionNumber)
         {

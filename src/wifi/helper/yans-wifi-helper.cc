@@ -54,9 +54,7 @@ YansWifiChannelHelper::Create() const
 {
     Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel>();
     Ptr<PropagationLossModel> prev = nullptr;
-    for (std::vector<ObjectFactory>::const_iterator i = m_propagationLoss.begin();
-         i != m_propagationLoss.end();
-         ++i)
+    for (auto i = m_propagationLoss.begin(); i != m_propagationLoss.end(); ++i)
     {
         Ptr<PropagationLossModel> cur = (*i).Create<PropagationLossModel>();
         if (prev)

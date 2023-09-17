@@ -68,9 +68,7 @@ ServiceFlowManager::~ServiceFlowManager()
 void
 ServiceFlowManager::DoDispose()
 {
-    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
-         iter != m_serviceFlows->end();
-         ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         delete (*iter);
     }
@@ -92,9 +90,7 @@ ServiceFlowManager::DoClassify(Ipv4Address srcAddress,
                                uint8_t proto,
                                ServiceFlow::Direction dir) const
 {
-    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
-         iter != m_serviceFlows->end();
-         ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         if ((*iter)->GetDirection() == dir)
         {
@@ -110,9 +106,7 @@ ServiceFlowManager::DoClassify(Ipv4Address srcAddress,
 ServiceFlow*
 ServiceFlowManager::GetServiceFlow(uint32_t sfid) const
 {
-    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
-         iter != m_serviceFlows->end();
-         ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         if ((*iter)->GetSfid() == sfid)
         {
@@ -127,9 +121,7 @@ ServiceFlowManager::GetServiceFlow(uint32_t sfid) const
 ServiceFlow*
 ServiceFlowManager::GetServiceFlow(Cid cid) const
 {
-    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
-         iter != m_serviceFlows->end();
-         ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         if ((*iter)->GetCid() == cid.GetIdentifier())
         {
@@ -145,9 +137,7 @@ std::vector<ServiceFlow*>
 ServiceFlowManager::GetServiceFlows(ServiceFlow::SchedulingType schedulingType) const
 {
     std::vector<ServiceFlow*> tmpServiceFlows;
-    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
-         iter != m_serviceFlows->end();
-         ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         if (((*iter)->GetSchedulingType() == schedulingType) ||
             (schedulingType == ServiceFlow::SF_TYPE_ALL))
@@ -173,9 +163,7 @@ ServiceFlowManager::AreServiceFlowsAllocated(std::vector<ServiceFlow*>* serviceF
 bool
 ServiceFlowManager::AreServiceFlowsAllocated(std::vector<ServiceFlow*> serviceFlowVector)
 {
-    for (std::vector<ServiceFlow*>::const_iterator iter = serviceFlowVector.begin();
-         iter != serviceFlowVector.end();
-         ++iter)
+    for (auto iter = serviceFlowVector.begin(); iter != serviceFlowVector.end(); ++iter)
     {
         if (!(*iter)->GetIsEnabled())
         {
@@ -188,8 +176,7 @@ ServiceFlowManager::AreServiceFlowsAllocated(std::vector<ServiceFlow*> serviceFl
 ServiceFlow*
 ServiceFlowManager::GetNextServiceFlowToAllocate()
 {
-    std::vector<ServiceFlow*>::iterator iter;
-    for (iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         if (!(*iter)->GetIsEnabled())
         {

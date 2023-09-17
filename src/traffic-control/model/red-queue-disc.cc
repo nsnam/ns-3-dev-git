@@ -763,7 +763,7 @@ double
 RedQueueDisc::ModifyP(double p, uint32_t size)
 {
     NS_LOG_FUNCTION(this << p << size);
-    double count1 = (double)m_count;
+    auto count1 = (double)m_count;
 
     if (GetMaxSize().GetUnit() == QueueSizeUnit::BYTES)
     {

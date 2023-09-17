@@ -76,9 +76,7 @@ BurstProfileManager::GetModulationType(uint8_t iuc, WimaxNetDevice::Direction di
     {
         std::vector<OfdmDlBurstProfile> dlBurstProfiles =
             m_device->GetCurrentDcd().GetDlBurstProfiles();
-        for (std::vector<OfdmDlBurstProfile>::iterator iter = dlBurstProfiles.begin();
-             iter != dlBurstProfiles.end();
-             ++iter)
+        for (auto iter = dlBurstProfiles.begin(); iter != dlBurstProfiles.end(); ++iter)
         {
             if (iter->GetDiuc() == iuc)
             {
@@ -90,9 +88,7 @@ BurstProfileManager::GetModulationType(uint8_t iuc, WimaxNetDevice::Direction di
     {
         std::vector<OfdmUlBurstProfile> ulBurstProfiles =
             m_device->GetCurrentUcd().GetUlBurstProfiles();
-        for (std::vector<OfdmUlBurstProfile>::iterator iter = ulBurstProfiles.begin();
-             iter != ulBurstProfiles.end();
-             ++iter)
+        for (auto iter = ulBurstProfiles.begin(); iter != ulBurstProfiles.end(); ++iter)
         {
             if (iter->GetUiuc() == iuc)
             {
@@ -115,9 +111,7 @@ BurstProfileManager::GetBurstProfile(WimaxPhy::ModulationType modulationType,
     {
         std::vector<OfdmDlBurstProfile> dlBurstProfiles =
             m_device->GetCurrentDcd().GetDlBurstProfiles();
-        for (std::vector<OfdmDlBurstProfile>::iterator iter = dlBurstProfiles.begin();
-             iter != dlBurstProfiles.end();
-             ++iter)
+        for (auto iter = dlBurstProfiles.begin(); iter != dlBurstProfiles.end(); ++iter)
         {
             if (iter->GetFecCodeType() == modulationType)
             {
@@ -129,9 +123,7 @@ BurstProfileManager::GetBurstProfile(WimaxPhy::ModulationType modulationType,
     {
         std::vector<OfdmUlBurstProfile> ulBurstProfiles =
             m_device->GetCurrentUcd().GetUlBurstProfiles();
-        for (std::vector<OfdmUlBurstProfile>::iterator iter = ulBurstProfiles.begin();
-             iter != ulBurstProfiles.end();
-             ++iter)
+        for (auto iter = ulBurstProfiles.begin(); iter != ulBurstProfiles.end(); ++iter)
         {
             if (iter->GetFecCodeType() == modulationType)
             {

@@ -160,7 +160,7 @@ WifiRemoteStation*
 AparfWifiManager::DoCreateStation() const
 {
     NS_LOG_FUNCTION(this);
-    AparfWifiRemoteStation* station = new AparfWifiRemoteStation();
+    auto station = new AparfWifiRemoteStation();
 
     station->m_successThreshold = m_successMax1;
     station->m_failThreshold = m_failMax;
@@ -189,7 +189,7 @@ AparfWifiManager::CheckInit(AparfWifiRemoteStation* station)
         station->m_critRateIndex = 0;
         WifiMode mode = GetSupported(station, station->m_rateIndex);
         uint16_t channelWidth = GetChannelWidth(station);
-        DataRate rate = DataRate(mode.GetDataRate(channelWidth));
+        DataRate rate(mode.GetDataRate(channelWidth));
         double power = GetPhy()->GetPowerDbm(m_maxPower);
         m_powerChange(power, power, station->m_state->m_address);
         m_rateChange(rate, rate, station->m_state->m_address);
@@ -207,7 +207,7 @@ void
 AparfWifiManager::DoReportDataFailed(WifiRemoteStation* st)
 {
     NS_LOG_FUNCTION(this << st);
-    AparfWifiRemoteStation* station = static_cast<AparfWifiRemoteStation*>(st);
+    auto station = static_cast<AparfWifiRemoteStation*>(st);
     CheckInit(station);
     station->m_nFailed++;
     station->m_nSuccess = 0;
@@ -271,7 +271,7 @@ AparfWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                  uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
-    AparfWifiRemoteStation* station = static_cast<AparfWifiRemoteStation*>(st);
+    auto station = static_cast<AparfWifiRemoteStation*>(st);
     CheckInit(station);
     station->m_nSuccess++;
     station->m_nFailed = 0;
@@ -354,7 +354,7 @@ WifiTxVector
 AparfWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
-    AparfWifiRemoteStation* station = static_cast<AparfWifiRemoteStation*>(st);
+    auto station = static_cast<AparfWifiRemoteStation*>(st);
     uint16_t channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {
@@ -362,9 +362,8 @@ AparfWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth
     }
     CheckInit(station);
     WifiMode mode = GetSupported(station, station->m_rateIndex);
-    DataRate rate = DataRate(mode.GetDataRate(channelWidth));
-    DataRate prevRate =
-        DataRate(GetSupported(station, station->m_prevRateIndex).GetDataRate(channelWidth));
+    DataRate rate(mode.GetDataRate(channelWidth));
+    DataRate prevRate(GetSupported(station, station->m_prevRateIndex).GetDataRate(channelWidth));
     double power = GetPhy()->GetPowerDbm(station->m_powerLevel);
     double prevPower = GetPhy()->GetPowerDbm(station->m_prevPowerLevel);
     if (station->m_prevPowerLevel != station->m_powerLevel)
@@ -395,7 +394,7 @@ AparfWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
     NS_LOG_FUNCTION(this << st);
     /// \todo we could/should implement the ARF algorithm for
     /// RTS only by picking a single rate within the BasicRateSet.
-    AparfWifiRemoteStation* station = static_cast<AparfWifiRemoteStation*>(st);
+    auto station = static_cast<AparfWifiRemoteStation*>(st);
     uint16_t channelWidth = GetChannelWidth(station);
     if (channelWidth > 20 && channelWidth != 22)
     {

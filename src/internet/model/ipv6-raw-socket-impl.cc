@@ -421,7 +421,7 @@ Ipv6RawSocketImpl::GetRxAvailable() const
     NS_LOG_FUNCTION(this);
     uint32_t rx = 0;
 
-    for (std::list<Data>::const_iterator it = m_data.begin(); it != m_data.end(); ++it)
+    for (auto it = m_data.begin(); it != m_data.end(); ++it)
     {
         rx += (it->packet)->GetSize();
     }

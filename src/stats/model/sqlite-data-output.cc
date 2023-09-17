@@ -116,7 +116,7 @@ SqliteDataOutput::Output(DataCollector& dc)
                                    "values (?, ?, ?)");
     NS_ASSERT(res);
 
-    for (MetadataList::iterator i = dc.MetadataBegin(); i != dc.MetadataEnd(); i++)
+    for (auto i = dc.MetadataBegin(); i != dc.MetadataEnd(); i++)
     {
         std::pair<std::string, std::string> blob = (*i);
         m_sqliteOut->SpinReset(stmt);
@@ -130,8 +130,7 @@ SqliteDataOutput::Output(DataCollector& dc)
 
     m_sqliteOut->SpinExec("BEGIN");
     SqliteOutputCallback callback(m_sqliteOut, run);
-    for (DataCalculatorList::iterator i = dc.DataCalculatorBegin(); i != dc.DataCalculatorEnd();
-         i++)
+    for (auto i = dc.DataCalculatorBegin(); i != dc.DataCalculatorEnd(); i++)
     {
         (*i)->Output(callback);
     }

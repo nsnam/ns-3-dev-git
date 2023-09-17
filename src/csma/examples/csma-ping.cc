@@ -100,7 +100,7 @@ main(int argc, char* argv[])
 
     NS_LOG_INFO("Create Source");
     Config::SetDefault("ns3::Ipv4RawSocketImpl::Protocol", StringValue("2"));
-    InetSocketAddress dst = InetSocketAddress(addresses.GetAddress(3));
+    InetSocketAddress dst(addresses.GetAddress(3));
     OnOffHelper onoff = OnOffHelper("ns3::Ipv4RawSocketFactory", dst);
     onoff.SetConstantRate(DataRate(15000));
     onoff.SetAttribute("PacketSize", UintegerValue(1200));

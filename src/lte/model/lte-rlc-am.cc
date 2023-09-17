@@ -238,7 +238,6 @@ LteRlcAm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
                                                    << m_vrMs.GetValue());
         SequenceNumber10 sn;
         sn.SetModulusBase(m_vrR);
-        std::map<uint16_t, PduBuffer>::iterator pduIt;
         for (sn = m_vrR; sn < m_vrMs; sn++)
         {
             NS_LOG_LOGIC("SN = " << sn);
@@ -247,7 +246,7 @@ LteRlcAm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
                 NS_LOG_LOGIC("Can't fit more NACKs in STATUS PDU");
                 break;
             }
-            pduIt = m_rxonBuffer.find(sn.GetValue());
+            auto pduIt = m_rxonBuffer.find(sn.GetValue());
             if (pduIt == m_rxonBuffer.end() || (!(pduIt->second.m_pduComplete)))
             {
                 NS_LOG_LOGIC("adding NACK_SN " << sn.GetValue());
@@ -258,7 +257,7 @@ LteRlcAm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
         // 3GPP TS 36.322 section 6.2.2.1.4 ACK SN
         // find the  SN of the next not received RLC Data PDU
         // which is not reported as missing in the STATUS PDU.
-        pduIt = m_rxonBuffer.find(sn.GetValue());
+        auto pduIt = m_rxonBuffer.find(sn.GetValue());
         while ((sn < m_vrMs) && (pduIt != m_rxonBuffer.end()) && (pduIt->second.m_pduComplete))
         {
             NS_LOG_LOGIC("SN = " << sn << " < " << m_vrMs << " = " << (sn < m_vrMs));
@@ -660,8 +659,7 @@ LteRlcAm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
 
     // Calculate FramingInfo flag according the status of the SDUs in the DataField
     uint8_t framingInfo = 0;
-    std::vector<Ptr<Packet>>::iterator it;
-    it = dataField.begin();
+    auto it = dataField.begin();
 
     // FIRST SEGMENT
     LteRlcSduStatusTag tag;
@@ -926,7 +924,7 @@ LteRlcAm::DoReceivePdu(LteMacSapUser::ReceivePduParameters rxPduParams)
             //         - discard the duplicate byte segments.
             // note: re-segmentation of AMD PDU is currently not supported,
             // so we just check that the segment was not received before
-            std::map<uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find(seqNumber.GetValue());
+            auto it = m_rxonBuffer.find(seqNumber.GetValue());
             if (it != m_rxonBuffer.end())
             {
                 NS_ASSERT(!it->second.m_byteSegments.empty());
@@ -959,7 +957,7 @@ LteRlcAm::DoReceivePdu(LteMacSapUser::ReceivePduParameters rxPduParams)
         //     - update VR(MS) to the SN of the first AMD PDU with SN > current VR(MS) for
         //       which not all byte segments have been received;
 
-        std::map<uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find(m_vrMs.GetValue());
+        auto it = m_rxonBuffer.find(m_vrMs.GetValue());
         if (it != m_rxonBuffer.end() && it->second.m_pduComplete)
         {
             int firstVrMs = m_vrMs.GetValue();
@@ -986,7 +984,7 @@ LteRlcAm::DoReceivePdu(LteMacSapUser::ReceivePduParameters rxPduParams)
 
         if (seqNumber == m_vrR)
         {
-            std::map<uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find(seqNumber.GetValue());
+            auto it = m_rxonBuffer.find(seqNumber.GetValue());
             if (it != m_rxonBuffer.end() && it->second.m_pduComplete)
             {
                 it = m_rxonBuffer.find(m_vrR.GetValue());
@@ -1243,15 +1241,19 @@ LteRlcAm::ReassembleAndDeliver(Ptr<Packet> packet)
         }
     } while (extensionBit == 1);
 
-    std::list<Ptr<Packet>>::iterator it;
-
     // Current reassembling state
     if (m_reassemblingState == WAITING_S0_FULL)
+    {
         NS_LOG_LOGIC("Reassembling State = 'WAITING_S0_FULL'");
+    }
     else if (m_reassemblingState == WAITING_SI_SF)
+    {
         NS_LOG_LOGIC("Reassembling State = 'WAITING_SI_SF'");
+    }
     else
+    {
         NS_LOG_LOGIC("Reassembling State = Unknown state");
+    }
 
     // Received framing Info
     NS_LOG_LOGIC("Framing Info = " << (uint16_t)framingInfo);
@@ -1271,7 +1273,7 @@ LteRlcAm::ReassembleAndDeliver(Ptr<Packet> packet)
                 /**
                  * Deliver one or multiple PDUs
                  */
-                for (it = m_sdusBuffer.begin(); it != m_sdusBuffer.end(); it++)
+                for (auto it = m_sdusBuffer.begin(); it != m_sdusBuffer.end(); it++)
                 {
                     m_rlcSapUser->ReceivePdcpPdu(*it);
                 }
@@ -1401,7 +1403,7 @@ LteRlcAm::ReassembleAndDeliver(Ptr<Packet> packet)
                 /**
                  * Deliver one or multiple PDUs
                  */
-                for (it = m_sdusBuffer.begin(); it != m_sdusBuffer.end(); it++)
+                for (auto it = m_sdusBuffer.begin(); it != m_sdusBuffer.end(); it++)
                 {
                     m_rlcSapUser->ReceivePdcpPdu(*it);
                 }
@@ -1702,7 +1704,7 @@ LteRlcAm::ExpireReorderingTimer()
 
     m_vrMs = m_vrX;
     int firstVrMs = m_vrMs.GetValue();
-    std::map<uint16_t, PduBuffer>::iterator it = m_rxonBuffer.find(m_vrMs.GetValue());
+    auto it = m_rxonBuffer.find(m_vrMs.GetValue());
     while (it != m_rxonBuffer.end() && it->second.m_pduComplete)
     {
         m_vrMs++;

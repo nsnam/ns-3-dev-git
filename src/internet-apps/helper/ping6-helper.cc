@@ -59,7 +59,7 @@ Ping6Helper::Install(NodeContainer c)
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
     ApplicationContainer apps;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
         Ptr<Ping6> client = m_factory.Create<Ping6>();

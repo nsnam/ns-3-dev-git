@@ -120,7 +120,7 @@ HwmpProtocolMac::ReceiveAction(Ptr<Packet> packet, const WifiMacHeader& header)
     // this is the last header to remove.
     packet->RemoveHeader(elements, packet->GetSize());
     std::vector<HwmpProtocol::FailedDestination> failedDestinations;
-    for (MeshInformationElementVector::Iterator i = elements.Begin(); i != elements.End(); i++)
+    for (auto i = elements.Begin(); i != elements.End(); i++)
     {
         if ((*i)->ElementId() == IE_RANN)
         {
@@ -169,10 +169,7 @@ HwmpProtocolMac::ReceiveAction(Ptr<Packet> packet, const WifiMacHeader& header)
             m_stats.rxPerr++;
             std::vector<HwmpProtocol::FailedDestination> destinations =
                 perr->GetAddressUnitVector();
-            for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i =
-                     destinations.begin();
-                 i != destinations.end();
-                 i++)
+            for (auto i = destinations.begin(); i != destinations.end(); i++)
             {
                 failedDestinations.push_back(*i);
             }
@@ -263,7 +260,7 @@ HwmpProtocolMac::SendPreqVector(std::vector<IePreq> preq)
     NS_LOG_FUNCTION(this);
     Ptr<Packet> packet = Create<Packet>();
     MeshInformationElementVector elements;
-    for (std::vector<IePreq>::iterator i = preq.begin(); i != preq.end(); i++)
+    for (auto i = preq.begin(); i != preq.end(); i++)
     {
         elements.AddInformationElement(Ptr<IePreq>(&(*i)));
     }
@@ -278,7 +275,7 @@ HwmpProtocolMac::SendPreqVector(std::vector<IePreq> preq)
     hdr.SetAddr3(m_protocol->GetAddress());
     // Send Management frame
     std::vector<Mac48Address> receivers = m_protocol->GetPreqReceivers(m_ifIndex);
-    for (std::vector<Mac48Address>::const_iterator i = receivers.begin(); i != receivers.end(); i++)
+    for (auto i = receivers.begin(); i != receivers.end(); i++)
     {
         hdr.SetAddr1(*i);
         m_stats.txPreq++;
@@ -292,7 +289,7 @@ void
 HwmpProtocolMac::RequestDestination(Mac48Address dst, uint32_t originator_seqno, uint32_t dst_seqno)
 {
     NS_LOG_FUNCTION(this << dst << originator_seqno << dst_seqno);
-    for (std::vector<IePreq>::iterator i = m_myPreq.begin(); i != m_myPreq.end(); i++)
+    for (auto i = m_myPreq.begin(); i != m_myPreq.end(); i++)
     {
         if (i->IsFull())
         {
@@ -372,10 +369,7 @@ HwmpProtocolMac::ForwardPerr(std::vector<HwmpProtocol::FailedDestination> failed
     Ptr<Packet> packet = Create<Packet>();
     Ptr<IePerr> perr = Create<IePerr>();
     MeshInformationElementVector elements;
-    for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i =
-             failedDestinations.begin();
-         i != failedDestinations.end();
-         i++)
+    for (auto i = failedDestinations.begin(); i != failedDestinations.end(); i++)
     {
         if (!perr->IsFull())
         {
@@ -406,7 +400,7 @@ HwmpProtocolMac::ForwardPerr(std::vector<HwmpProtocol::FailedDestination> failed
         receivers.push_back(Mac48Address::GetBroadcast());
     }
     // Send Management frame
-    for (std::vector<Mac48Address>::const_iterator i = receivers.begin(); i != receivers.end(); i++)
+    for (auto i = receivers.begin(); i != receivers.end(); i++)
     {
         //
         // 64-bit Intel valgrind complains about hdr.SetAddr1 (*i).  It likes this
@@ -429,13 +423,10 @@ HwmpProtocolMac::InitiatePerr(std::vector<HwmpProtocol::FailedDestination> faile
     // All duplicates in PERR are checked here, and there is no reason to
     // check it at any other place
     {
-        std::vector<Mac48Address>::const_iterator end = receivers.end();
-        for (std::vector<Mac48Address>::const_iterator i = receivers.begin(); i != end; i++)
+        for (auto i = receivers.begin(); i != receivers.end(); i++)
         {
             bool should_add = true;
-            for (std::vector<Mac48Address>::const_iterator j = m_myPerr.receivers.begin();
-                 j != m_myPerr.receivers.end();
-                 j++)
+            for (auto j = m_myPerr.receivers.begin(); j != m_myPerr.receivers.end(); j++)
             {
                 if ((*i) == (*j))
                 {
@@ -450,17 +441,10 @@ HwmpProtocolMac::InitiatePerr(std::vector<HwmpProtocol::FailedDestination> faile
         }
     }
     {
-        std::vector<HwmpProtocol::FailedDestination>::const_iterator end = failedDestinations.end();
-        for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i =
-                 failedDestinations.begin();
-             i != end;
-             i++)
+        for (auto i = failedDestinations.begin(); i != failedDestinations.end(); i++)
         {
             bool should_add = true;
-            for (std::vector<HwmpProtocol::FailedDestination>::const_iterator j =
-                     m_myPerr.destinations.begin();
-                 j != m_myPerr.destinations.end();
-                 j++)
+            for (auto j = m_myPerr.destinations.begin(); j != m_myPerr.destinations.end(); j++)
             {
                 if (((*i).destination == (*j).destination) && ((*j).seqnum > (*i).seqnum))
                 {

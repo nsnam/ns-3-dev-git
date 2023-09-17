@@ -345,7 +345,7 @@ LteX2HandoverMeasuresTestCase::DoRun()
     NetDeviceContainer enbDevices;
     enbDevices = m_lteHelper->InstallEnbDevice(enbNodes);
     stream += m_lteHelper->AssignStreams(enbDevices, stream);
-    for (NetDeviceContainer::Iterator it = enbDevices.Begin(); it != enbDevices.End(); ++it)
+    for (auto it = enbDevices.Begin(); it != enbDevices.End(); ++it)
     {
         Ptr<LteEnbRrc> enbRrc = (*it)->GetObject<LteEnbNetDevice>()->GetRrc();
         enbRrc->SetAttribute("AdmitHandoverRequest", BooleanValue(m_admitHo));
@@ -541,7 +541,7 @@ LteX2HandoverMeasuresTestCase::DoRun()
 
     // check initial RRC connection
     const Time maxRrcConnectionEstablishmentDuration = Seconds(0.080);
-    for (NetDeviceContainer::Iterator it = ueDevices.Begin(); it != ueDevices.End(); ++it)
+    for (auto it = ueDevices.Begin(); it != ueDevices.End(); ++it)
     {
         NS_LOG_FUNCTION(maxRrcConnectionEstablishmentDuration);
         Simulator::Schedule(maxRrcConnectionEstablishmentDuration,
@@ -554,7 +554,7 @@ LteX2HandoverMeasuresTestCase::DoRun()
     // schedule the checkpoint events
 
     Time stopTime = Seconds(0);
-    for (std::list<CheckPointEvent>::iterator checkPointEventIt = m_checkPointEventList.begin();
+    for (auto checkPointEventIt = m_checkPointEventList.begin();
          checkPointEventIt != m_checkPointEventList.end();
          ++checkPointEventIt)
     {
@@ -642,8 +642,8 @@ LteX2HandoverMeasuresTestCase::CheckConnected(Ptr<NetDevice> ueDevice, Ptr<NetDe
                           m_nDedicatedBearers + 1,
                           "wrong num bearers at UE");
 
-    ObjectMapValue::Iterator enbBearerIt = enbDataRadioBearerMapValue.Begin();
-    ObjectMapValue::Iterator ueBearerIt = ueDataRadioBearerMapValue.Begin();
+    auto enbBearerIt = enbDataRadioBearerMapValue.Begin();
+    auto ueBearerIt = ueDataRadioBearerMapValue.Begin();
     while (enbBearerIt != enbDataRadioBearerMapValue.End() &&
            ueBearerIt != ueDataRadioBearerMapValue.End())
     {
@@ -678,7 +678,7 @@ void
 LteX2HandoverMeasuresTestCase::SaveStats(uint32_t ueIndex)
 {
     NS_LOG_FUNCTION(ueIndex);
-    for (std::list<BearerData>::iterator it = m_ueDataVector.at(ueIndex).bearerDataList.begin();
+    for (auto it = m_ueDataVector.at(ueIndex).bearerDataList.begin();
          it != m_ueDataVector.at(ueIndex).bearerDataList.end();
          ++it)
     {
@@ -698,7 +698,7 @@ LteX2HandoverMeasuresTestCase::CheckStats(uint32_t ueIndex)
 {
     NS_LOG_FUNCTION(ueIndex);
     uint32_t b = 1;
-    for (std::list<BearerData>::iterator it = m_ueDataVector.at(ueIndex).bearerDataList.begin();
+    for (auto it = m_ueDataVector.at(ueIndex).bearerDataList.begin();
          it != m_ueDataVector.at(ueIndex).bearerDataList.end();
          ++it)
     {

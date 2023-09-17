@@ -1607,8 +1607,7 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback(
             NS_TEST_ASSERT_MSG_EQ(measResults.haveMeasResultNeighCells,
                                   true,
                                   "Unexpected report content");
-            std::list<LteRrcSap::MeasResultEutra>::iterator it =
-                measResults.measResultListEutra.begin();
+            auto it = measResults.measResultListEutra.begin();
             NS_ASSERT(it != measResults.measResultListEutra.end());
             NS_ASSERT(it->physCellId == 2);
             NS_TEST_ASSERT_MSG_EQ(it->haveCgiInfo,
@@ -1900,8 +1899,7 @@ LteUeMeasurementsPiecewiseTestCase3::RecvMeasurementReportCallback(
             NS_TEST_ASSERT_MSG_EQ(measResults.haveMeasResultNeighCells,
                                   true,
                                   "Unexpected report content");
-            std::list<LteRrcSap::MeasResultEutra>::iterator it =
-                measResults.measResultListEutra.begin();
+            auto it = measResults.measResultListEutra.begin();
             NS_ASSERT(it != measResults.measResultListEutra.end());
             for (const auto& it : measResults.measResultListEutra)
             {
@@ -2402,18 +2400,19 @@ LteUeMeasurementsHandoverTestCase::DoRun()
 
     // Setup UE measurement configuration in eNodeBs
     uint8_t measId;
-    std::list<LteRrcSap::ReportConfigEutra>::const_iterator itReportConfig;
     Ptr<LteEnbRrc> enbRrc1 = enbDevs.Get(0)->GetObject<LteEnbNetDevice>()->GetRrc();
     Ptr<LteEnbRrc> enbRrc2 = enbDevs.Get(1)->GetObject<LteEnbNetDevice>()->GetRrc();
 
-    for (itReportConfig = m_sourceConfigList.begin(); itReportConfig != m_sourceConfigList.end();
+    for (auto itReportConfig = m_sourceConfigList.begin();
+         itReportConfig != m_sourceConfigList.end();
          itReportConfig++)
     {
         measId = enbRrc1->AddUeMeasReportConfig(*itReportConfig).at(0);
         m_expectedSourceCellMeasId.insert(measId);
     }
 
-    for (itReportConfig = m_targetConfigList.begin(); itReportConfig != m_targetConfigList.end();
+    for (auto itReportConfig = m_targetConfigList.begin();
+         itReportConfig != m_targetConfigList.end();
          itReportConfig++)
     {
         measId = enbRrc2->AddUeMeasReportConfig(*itReportConfig).at(0);
@@ -2490,12 +2489,12 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback(
     bool isCorrectMeasId;
     if (cellId == 1)
     {
-        std::set<uint8_t>::iterator itMeasId = m_expectedSourceCellMeasId.find(measId);
+        auto itMeasId = m_expectedSourceCellMeasId.find(measId);
         isCorrectMeasId = (itMeasId != m_expectedSourceCellMeasId.end());
     }
     else if (cellId == 2)
     {
-        std::set<uint8_t>::iterator itMeasId = m_expectedTargetCellMeasId.find(measId);
+        auto itMeasId = m_expectedTargetCellMeasId.find(measId);
         isCorrectMeasId = (itMeasId != m_expectedTargetCellMeasId.end());
     }
     else
@@ -2528,8 +2527,7 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback(
             NS_TEST_ASSERT_MSG_EQ(measResults.haveMeasResultNeighCells,
                                   true,
                                   "Unexpected report content");
-            std::list<LteRrcSap::MeasResultEutra>::iterator it =
-                measResults.measResultListEutra.begin();
+            auto it = measResults.measResultListEutra.begin();
             NS_ASSERT(it != measResults.measResultListEutra.end());
             NS_ASSERT(it->physCellId != cellId);
             NS_ASSERT(it->physCellId <= 2);

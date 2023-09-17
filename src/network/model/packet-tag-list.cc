@@ -47,7 +47,7 @@ PacketTagList::CreateTagData(size_t dataSize)
     void* p = std::malloc(sizeof(TagData) + dataSize - 1);
     // The matching frees are in RemoveAll and RemoveWriter
 
-    TagData* tag = new (p) TagData;
+    auto tag = new (p) TagData;
     tag->size = dataSize;
     return tag;
 }

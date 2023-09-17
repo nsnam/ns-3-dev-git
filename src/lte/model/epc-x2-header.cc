@@ -1209,8 +1209,7 @@ EpcX2LoadInformationHeader::Deserialize(Buffer::Iterator start)
         m_headerLength += 2;
         for (int k = 0; k < sz2; k++)
         {
-            EpcX2Sap::UlInterferenceOverloadIndicationItem item =
-                (EpcX2Sap::UlInterferenceOverloadIndicationItem)i.ReadU8();
+            auto item = (EpcX2Sap::UlInterferenceOverloadIndicationItem)i.ReadU8();
             cellInfoItem.ulInterferenceOverloadIndicationList.push_back(item);
         }
         m_headerLength += sz2;

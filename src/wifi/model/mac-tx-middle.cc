@@ -40,9 +40,7 @@ MacTxMiddle::MacTxMiddle()
 MacTxMiddle::~MacTxMiddle()
 {
     NS_LOG_FUNCTION(this);
-    for (std::map<Mac48Address, uint16_t*>::const_iterator i = m_qosSequences.begin();
-         i != m_qosSequences.end();
-         i++)
+    for (auto i = m_qosSequences.begin(); i != m_qosSequences.end(); i++)
     {
         delete[] i->second;
     }
@@ -57,7 +55,7 @@ MacTxMiddle::GetNextSequenceNumberFor(const WifiMacHeader* hdr)
     {
         uint8_t tid = hdr->GetQosTid();
         NS_ASSERT(tid < 16);
-        std::map<Mac48Address, uint16_t*>::const_iterator it = m_qosSequences.find(hdr->GetAddr1());
+        auto it = m_qosSequences.find(hdr->GetAddr1());
         if (it != m_qosSequences.end())
         {
             retval = it->second[tid];
@@ -68,8 +66,7 @@ MacTxMiddle::GetNextSequenceNumberFor(const WifiMacHeader* hdr)
         {
             retval = 0;
             std::pair<Mac48Address, uint16_t*> newSeq(hdr->GetAddr1(), new uint16_t[16]);
-            std::pair<std::map<Mac48Address, uint16_t*>::const_iterator, bool> newIns =
-                m_qosSequences.insert(newSeq);
+            auto newIns = m_qosSequences.insert(newSeq);
             NS_ASSERT(newIns.second == true);
             for (uint8_t i = 0; i < 16; i++)
             {
@@ -96,7 +93,7 @@ MacTxMiddle::PeekNextSequenceNumberFor(const WifiMacHeader* hdr)
     {
         uint8_t tid = hdr->GetQosTid();
         NS_ASSERT(tid < 16);
-        std::map<Mac48Address, uint16_t*>::const_iterator it = m_qosSequences.find(hdr->GetAddr1());
+        auto it = m_qosSequences.find(hdr->GetAddr1());
         if (it != m_qosSequences.end())
         {
             retval = it->second[tid];
@@ -119,7 +116,7 @@ MacTxMiddle::GetNextSeqNumberByTidAndAddress(uint8_t tid, Mac48Address addr) con
     NS_LOG_FUNCTION(this);
     NS_ASSERT(tid < 16);
     uint16_t seq = 0;
-    std::map<Mac48Address, uint16_t*>::const_iterator it = m_qosSequences.find(addr);
+    auto it = m_qosSequences.find(addr);
     if (it != m_qosSequences.end())
     {
         return it->second[tid];

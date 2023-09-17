@@ -105,15 +105,14 @@ WaypointMobilityModelNotifyTest::DoRun()
     }
 
     // Add the same waypoints to each node
-    std::vector<Ptr<MobilityModel>>::iterator i;
-    for (i = mobilityStack.begin(); i != mobilityStack.end(); ++i)
+    for (auto i = mobilityStack.begin(); i != mobilityStack.end(); ++i)
     {
         Ptr<WaypointMobilityModel> mob = (*i)->GetObject<WaypointMobilityModel>();
         mob->TraceConnectWithoutContext(
             "CourseChange",
             MakeCallback(&WaypointMobilityModelNotifyTest::CourseChangeCallback, this));
 
-        for (std::deque<Waypoint>::iterator w = waypoints.begin(); w != waypoints.end(); ++w)
+        for (auto w = waypoints.begin(); w != waypoints.end(); ++w)
         {
             mob->AddWaypoint(*w);
         }
@@ -135,8 +134,7 @@ WaypointMobilityModelNotifyTest::DoRun()
 void
 WaypointMobilityModelNotifyTest::ForceUpdates()
 {
-    std::vector<Ptr<MobilityModel>>::iterator i;
-    for (i = mobilityStack.begin(); i != mobilityStack.end(); ++i)
+    for (auto i = mobilityStack.begin(); i != mobilityStack.end(); ++i)
     {
         Ptr<WaypointMobilityModel> mob = (*i)->GetObject<WaypointMobilityModel>();
         mob->Update();

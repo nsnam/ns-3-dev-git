@@ -151,8 +151,7 @@ RlcAmStatusPduTestCase::DoRun()
     LteRlcAmHeader h;
     h.SetControlPdu(LteRlcAmHeader::STATUS_PDU);
     h.SetAckSn(m_ackSn);
-    for (std::list<SequenceNumber10>::iterator it = m_nackSnList.begin(); it != m_nackSnList.end();
-         ++it)
+    for (auto it = m_nackSnList.begin(); it != m_nackSnList.end(); ++it)
     {
         h.PushNack(it->GetValue());
     }
@@ -170,8 +169,7 @@ RlcAmStatusPduTestCase::DoRun()
     SequenceNumber10 ackSn = h2.GetAckSn();
     NS_TEST_ASSERT_MSG_EQ(ackSn, m_ackSn, "deserialized ACK SN differs from test vector");
 
-    for (std::list<SequenceNumber10>::iterator it = m_nackSnList.begin(); it != m_nackSnList.end();
-         ++it)
+    for (auto it = m_nackSnList.begin(); it != m_nackSnList.end(); ++it)
     {
         int nackSn = h2.PopNack();
         NS_TEST_ASSERT_MSG_GT(nackSn, -1, "not enough elements in deserialized NACK list");

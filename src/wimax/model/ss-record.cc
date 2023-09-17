@@ -233,9 +233,7 @@ std::vector<ServiceFlow*>
 SSRecord::GetServiceFlows(ServiceFlow::SchedulingType schedulingType) const
 {
     std::vector<ServiceFlow*> tmpServiceFlows;
-    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
-         iter != m_serviceFlows->end();
-         ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         if (((*iter)->GetSchedulingType() == schedulingType) ||
             (schedulingType == ServiceFlow::SF_TYPE_ALL))
@@ -261,9 +259,7 @@ SSRecord::GetIsBroadcastSS() const
 bool
 SSRecord::GetHasServiceFlowUgs() const
 {
-    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
-         iter != m_serviceFlows->end();
-         ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         if ((*iter)->GetSchedulingType() == ServiceFlow::SF_TYPE_UGS)
         {
@@ -276,9 +272,7 @@ SSRecord::GetHasServiceFlowUgs() const
 bool
 SSRecord::GetHasServiceFlowRtps() const
 {
-    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
-         iter != m_serviceFlows->end();
-         ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         if ((*iter)->GetSchedulingType() == ServiceFlow::SF_TYPE_RTPS)
         {
@@ -291,9 +285,7 @@ SSRecord::GetHasServiceFlowRtps() const
 bool
 SSRecord::GetHasServiceFlowNrtps() const
 {
-    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
-         iter != m_serviceFlows->end();
-         ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         if ((*iter)->GetSchedulingType() == ServiceFlow::SF_TYPE_NRTPS)
         {
@@ -306,9 +298,7 @@ SSRecord::GetHasServiceFlowNrtps() const
 bool
 SSRecord::GetHasServiceFlowBe() const
 {
-    for (std::vector<ServiceFlow*>::iterator iter = m_serviceFlows->begin();
-         iter != m_serviceFlows->end();
-         ++iter)
+    for (auto iter = m_serviceFlows->begin(); iter != m_serviceFlows->end(); ++iter)
     {
         if ((*iter)->GetSchedulingType() == ServiceFlow::SF_TYPE_BE)
         {

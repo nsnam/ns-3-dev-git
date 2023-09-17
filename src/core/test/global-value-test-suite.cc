@@ -84,7 +84,7 @@ GlobalValueTestCase::DoRun()
     // Remove the global value for a valgrind clean run
     //
     GlobalValue::Vector* vector = GlobalValue::GetVector();
-    for (GlobalValue::Vector::iterator i = vector->begin(); i != vector->end(); ++i)
+    for (auto i = vector->begin(); i != vector->end(); ++i)
     {
         if ((*i) == &uint)
         {

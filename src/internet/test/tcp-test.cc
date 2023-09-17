@@ -220,7 +220,7 @@ TcpTestCase::DoRun()
     m_serverRxPayload = new uint8_t[m_totalBytes];
     for (uint32_t i = 0; i < m_totalBytes; ++i)
     {
-        uint8_t m = (uint8_t)(97 + (i % 26));
+        auto m = (uint8_t)(97 + (i % 26));
         m_sourceTxPayload[i] = m;
     }
     memset(m_sourceRxPayload, 0, m_totalBytes);

@@ -182,8 +182,7 @@ UplinkSchedulerSimple::Schedule()
     AllocateInitialRangingInterval(symbolsToAllocation, availableSymbols);
 
     std::vector<SSRecord*>* ssRecords = GetBs()->GetSSManager()->GetSSRecords();
-    for (std::vector<SSRecord*>::iterator iter = ssRecords->begin(); iter != ssRecords->end();
-         ++iter)
+    for (auto iter = ssRecords->begin(); iter != ssRecords->end(); ++iter)
     {
         SSRecord* ssRecord = *iter;
 
@@ -350,9 +349,7 @@ UplinkSchedulerSimple::ServiceUnsolicitedGrants(const SSRecord* ssRecord,
     uint8_t uiuc = ulMapIe.GetUiuc(); // SS's burst profile
     std::vector<ServiceFlow*> serviceFlows = ssRecord->GetServiceFlows(schedulingType);
 
-    for (std::vector<ServiceFlow*>::iterator iter = serviceFlows.begin();
-         iter != serviceFlows.end();
-         ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         ServiceFlow* serviceFlow = *iter;
 
@@ -423,9 +420,7 @@ UplinkSchedulerSimple::ServiceBandwidthRequests(const SSRecord* ssRecord,
 {
     std::vector<ServiceFlow*> serviceFlows = ssRecord->GetServiceFlows(schedulingType);
 
-    for (std::vector<ServiceFlow*>::iterator iter = serviceFlows.begin();
-         iter != serviceFlows.end();
-         ++iter)
+    for (auto iter = serviceFlows.begin(); iter != serviceFlows.end(); ++iter)
     {
         if (!ServiceBandwidthRequests(*iter,
                                       schedulingType,

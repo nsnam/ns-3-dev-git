@@ -336,7 +336,7 @@ void
 MeshTest::Report()
 {
     unsigned n(0);
-    for (NetDeviceContainer::Iterator i = meshDevices.Begin(); i != meshDevices.End(); ++i, ++n)
+    for (auto i = meshDevices.Begin(); i != meshDevices.End(); ++i, ++n)
     {
         std::ostringstream os;
         os << "mp-report-" << n << ".xml";

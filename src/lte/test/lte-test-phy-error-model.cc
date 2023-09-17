@@ -260,7 +260,7 @@ LenaDataPhyErrorModelTestCase::DoRun()
 
         // sanity check for whether the tx packets reported by the stats are correct
         // we expect one packet per TTI
-        double expectedDlTxPackets = static_cast<double>(statsDuration.GetMilliSeconds());
+        auto expectedDlTxPackets = static_cast<double>(statsDuration.GetMilliSeconds());
         NS_TEST_ASSERT_MSG_EQ_TOL(dlTxPackets,
                                   expectedDlTxPackets,
                                   expectedDlTxPackets * 0.005,
@@ -422,7 +422,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun()
 
         // sanity check for whether the tx packets reported by the stats are correct
         // we expect one packet per TTI
-        double expectedDlTxPackets = static_cast<double>(statsDuration.GetMilliSeconds());
+        auto expectedDlTxPackets = static_cast<double>(statsDuration.GetMilliSeconds());
         NS_TEST_ASSERT_MSG_EQ_TOL(dlTxPackets,
                                   expectedDlTxPackets,
                                   expectedDlTxPackets * 0.005,

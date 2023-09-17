@@ -164,8 +164,7 @@ LteIpv6RoutingTestCase::Checker()
     bool b = false;
     bool check = true;
     // Extract each received reply packet of the client
-    for (std::list<Ptr<Packet>>::iterator it1 = m_clientRxPkts.begin(); it1 != m_clientRxPkts.end();
-         it1++)
+    for (auto it1 = m_clientRxPkts.begin(); it1 != m_clientRxPkts.end(); it1++)
     {
         Ipv6Header ipv6header1;
         UdpHeader udpHeader1;
@@ -174,9 +173,7 @@ LteIpv6RoutingTestCase::Checker()
         uint64_t uid = p1->GetUid();
         p1->RemoveHeader(udpHeader1);
         // Search each packet in list of sent request packet of the client
-        for (std::list<Ptr<Packet>>::iterator it2 = m_clientTxPkts.begin();
-             it2 != m_clientTxPkts.end();
-             it2++)
+        for (auto it2 = m_clientTxPkts.begin(); it2 != m_clientTxPkts.end(); it2++)
         {
             Ptr<Packet> p2 = (*it2)->Copy();
             Ipv6Header ipv6header2;

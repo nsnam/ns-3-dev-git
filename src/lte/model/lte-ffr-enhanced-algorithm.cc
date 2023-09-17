@@ -478,8 +478,7 @@ LteFfrEnhancedAlgorithm::DoGetAvailableDlRbg()
 
     std::vector<bool> rbgMap = m_dlRbgMap;
 
-    std::map<uint16_t, std::vector<bool>>::iterator it;
-    for (it = m_dlRbgAvailableforUe.begin(); it != m_dlRbgAvailableforUe.end(); it++)
+    for (auto it = m_dlRbgAvailableforUe.begin(); it != m_dlRbgAvailableforUe.end(); it++)
     {
         NS_LOG_INFO("RNTI : " << it->first);
         std::vector<bool> rbgAvailableMap = it->second;
@@ -506,7 +505,7 @@ LteFfrEnhancedAlgorithm::DoIsDlRbgAvailableForUe(int rbgId, uint16_t rnti)
     bool isPrimarySegmentRbg = m_dlPrimarySegmentRbgMap[rbgId];
     bool isSecondarySegmentRbg = m_dlSecondarySegmentRbgMap[rbgId];
 
-    std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+    auto it = m_ues.find(rnti);
     if (it == m_ues.end())
     {
         m_ues.insert(std::pair<uint16_t, uint8_t>(rnti, AreaUnset));
@@ -541,7 +540,7 @@ LteFfrEnhancedAlgorithm::DoIsDlRbgAvailableForUe(int rbgId, uint16_t rnti)
     {
         // check if RB can be used by UE based on CQI information
         NS_LOG_INFO("SECONDARY SEGMENT RNTI: " << rnti << "  rbgId: " << rbgId);
-        std::map<uint16_t, std::vector<bool>>::iterator it = m_dlRbgAvailableforUe.find(rnti);
+        auto it = m_dlRbgAvailableforUe.find(rnti);
         if (it != m_dlRbgAvailableforUe.end())
         {
             NS_LOG_INFO("RNTI: " << rnti << "  rbgId: " << rbgId
@@ -574,8 +573,7 @@ LteFfrEnhancedAlgorithm::DoGetAvailableUlRbg()
 
     std::vector<bool> rbgMap = m_ulRbgMap;
 
-    std::map<uint16_t, std::vector<bool>>::iterator it;
-    for (it = m_ulRbAvailableforUe.begin(); it != m_ulRbAvailableforUe.end(); it++)
+    for (auto it = m_ulRbAvailableforUe.begin(); it != m_ulRbAvailableforUe.end(); it++)
     {
         NS_LOG_INFO("RNTI : " << it->first);
         std::vector<bool> rbAvailableMap = it->second;
@@ -607,7 +605,7 @@ LteFfrEnhancedAlgorithm::DoIsUlRbgAvailableForUe(int rbgId, uint16_t rnti)
     bool isPrimarySegmentRbg = m_ulPrimarySegmentRbgMap[rbgId];
     bool isSecondarySegmentRbg = m_ulSecondarySegmentRbgMap[rbgId];
 
-    std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+    auto it = m_ues.find(rnti);
     if (it == m_ues.end())
     {
         m_ues.insert(std::pair<uint16_t, uint8_t>(rnti, AreaUnset));
@@ -641,7 +639,7 @@ LteFfrEnhancedAlgorithm::DoIsUlRbgAvailableForUe(int rbgId, uint16_t rnti)
     {
         // check if RB can be used by UE based on CQI information
         NS_LOG_INFO("UL SECONDARY SEGMENT RNTI: " << rnti << "  rbgId: " << rbgId);
-        std::map<uint16_t, std::vector<bool>>::iterator it = m_ulRbAvailableforUe.find(rnti);
+        auto it = m_ulRbAvailableforUe.find(rnti);
         if (it != m_ulRbAvailableforUe.end())
         {
             NS_LOG_INFO("RNTI: " << rnti << "  rbgId: " << rbgId
@@ -670,10 +668,9 @@ LteFfrEnhancedAlgorithm::DoReportDlCqiInfo(
         {
             NS_LOG_INFO("subband CQI reporting high layer configured");
             // subband CQI reporting high layer configured
-            std::map<uint16_t, SbMeasResult_s>::iterator it;
             uint16_t rnti = params.m_cqiList.at(i).m_rnti;
 
-            std::map<uint16_t, uint8_t>::iterator ueIt = m_ues.find(rnti);
+            auto ueIt = m_ues.find(rnti);
             if (ueIt != m_ues.end())
             {
                 if (ueIt->second != CenterArea)
@@ -686,7 +683,7 @@ LteFfrEnhancedAlgorithm::DoReportDlCqiInfo(
                 continue;
             }
 
-            it = m_dlCqi.find(rnti);
+            auto it = m_dlCqi.find(rnti);
             if (it == m_dlCqi.end())
             {
                 // create the new entry
@@ -708,8 +705,7 @@ LteFfrEnhancedAlgorithm::DoReportDlCqiInfo(
 
     uint32_t rbgSize = GetRbgSize(m_dlBandwidth);
     m_dlRbgAvailableforUe.clear();
-    std::map<uint16_t, SbMeasResult_s>::iterator it;
-    for (it = m_dlCqi.begin(); it != m_dlCqi.end(); it++)
+    for (auto it = m_dlCqi.begin(); it != m_dlCqi.end(); it++)
     {
         uint16_t rnti = it->first;
         std::vector<bool> rbgAvailableMap;
@@ -741,9 +737,7 @@ LteFfrEnhancedAlgorithm::DoReportDlCqiInfo(
     }
 
     m_ulRbAvailableforUe.clear();
-    for (std::map<uint16_t, std::vector<bool>>::iterator it = m_dlRbgAvailableforUe.begin();
-         it != m_dlRbgAvailableforUe.end();
-         it++)
+    for (auto it = m_dlRbgAvailableforUe.begin(); it != m_dlRbgAvailableforUe.end(); it++)
     {
         uint16_t rnti = it->first;
         std::vector<bool> dlRbgAvailableMap = it->second;
@@ -796,7 +790,7 @@ LteFfrEnhancedAlgorithm::EstimateUlSinr(uint16_t rnti,
                                         uint16_t rb,
                                         std::map<uint16_t, std::vector<double>> ulCqiMap)
 {
-    std::map<uint16_t, std::vector<double>>::iterator itCqi = ulCqiMap.find(rnti);
+    auto itCqi = ulCqiMap.find(rnti);
     if (itCqi == ulCqiMap.end())
     {
         // no cqi info about this UE
@@ -844,7 +838,7 @@ LteFfrEnhancedAlgorithm::DoGetTpc(uint16_t rnti)
     //------------------------------------------------
     //  here Absolute mode is used
 
-    std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+    auto it = m_ues.find(rnti);
     if (it == m_ues.end())
     {
         return 1;
@@ -903,7 +897,7 @@ LteFfrEnhancedAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults me
     }
     else
     {
-        std::map<uint16_t, uint8_t>::iterator it = m_ues.find(rnti);
+        auto it = m_ues.find(rnti);
         if (it == m_ues.end())
         {
             m_ues.insert(std::pair<uint16_t, uint8_t>(rnti, AreaUnset));

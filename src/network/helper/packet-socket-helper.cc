@@ -28,7 +28,7 @@ namespace ns3
 void
 PacketSocketHelper::Install(NodeContainer c) const
 {
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Install(*i);
     }

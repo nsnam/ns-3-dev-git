@@ -79,13 +79,13 @@ void
 Ipv4L3ClickProtocol::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+    for (auto i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
         i->second = nullptr;
     }
     m_protocols.clear();
 
-    for (Ipv4InterfaceList::iterator i = m_interfaces.begin(); i != m_interfaces.end(); ++i)
+    for (auto i = m_interfaces.begin(); i != m_interfaces.end(); ++i)
     {
         *i = nullptr;
     }
@@ -152,8 +152,7 @@ Ipv4L3ClickProtocol::GetInterfaceForAddress(Ipv4Address address) const
     NS_LOG_FUNCTION(this << address);
 
     int32_t interface = 0;
-    for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin(); i != m_interfaces.end();
-         i++, interface++)
+    for (auto i = m_interfaces.begin(); i != m_interfaces.end(); i++, interface++)
     {
         for (uint32_t j = 0; j < (*i)->GetNAddresses(); j++)
         {
@@ -173,8 +172,7 @@ Ipv4L3ClickProtocol::GetInterfaceForPrefix(Ipv4Address address, Ipv4Mask mask) c
     NS_LOG_FUNCTION(this << address << mask);
 
     int32_t interface = 0;
-    for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin(); i != m_interfaces.end();
-         i++, interface++)
+    for (auto i = m_interfaces.begin(); i != m_interfaces.end(); i++, interface++)
     {
         for (uint32_t j = 0; j < (*i)->GetNAddresses(); j++)
         {
@@ -193,7 +191,7 @@ Ipv4L3ClickProtocol::GetInterfaceForDevice(Ptr<const NetDevice> device) const
 {
     NS_LOG_FUNCTION(this << device->GetIfIndex());
 
-    Ipv4InterfaceReverseContainer::const_iterator iter = m_reverseInterfacesContainer.find(device);
+    auto iter = m_reverseInterfacesContainer.find(device);
     if (iter != m_reverseInterfacesContainer.end())
     {
         return (*iter).second;
@@ -274,7 +272,7 @@ Ipv4L3ClickProtocol::SetIpForward(bool forward)
 {
     NS_LOG_FUNCTION(this << forward);
     m_ipForward = forward;
-    for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin(); i != m_interfaces.end(); i++)
+    for (auto i = m_interfaces.begin(); i != m_interfaces.end(); i++)
     {
         (*i)->SetForwarding(forward);
     }
@@ -363,7 +361,7 @@ void
 Ipv4L3ClickProtocol::DeleteRawSocket(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
-    for (SocketList::iterator i = m_sockets.begin(); i != m_sockets.end(); ++i)
+    for (auto i = m_sockets.begin(); i != m_sockets.end(); ++i)
     {
         if ((*i) == socket)
         {
@@ -804,7 +802,7 @@ Ipv4L3ClickProtocol::Receive(Ptr<NetDevice> device,
         }
         packetForRawSocket->RemoveHeader(ipHeader);
 
-        for (SocketList::iterator i = m_sockets.begin(); i != m_sockets.end(); ++i)
+        for (auto i = m_sockets.begin(); i != m_sockets.end(); ++i)
         {
             NS_LOG_LOGIC("Forwarding to raw socket");
             Ptr<Ipv4RawSocketImpl> socket = *i;
@@ -922,7 +920,7 @@ Ipv4L3ClickProtocol::Remove(Ptr<IpL4Protocol> protocol)
     NS_LOG_FUNCTION(this << protocol);
 
     L4ListKey_t key = std::make_pair(protocol->GetProtocolNumber(), -1);
-    L4List_t::iterator iter = m_protocols.find(key);
+    auto iter = m_protocols.find(key);
     if (iter == m_protocols.end())
     {
         NS_LOG_WARN("Trying to remove an non-existent default protocol "
@@ -940,7 +938,7 @@ Ipv4L3ClickProtocol::Remove(Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex)
     NS_LOG_FUNCTION(this << protocol << interfaceIndex);
 
     L4ListKey_t key = std::make_pair(protocol->GetProtocolNumber(), interfaceIndex);
-    L4List_t::iterator iter = m_protocols.find(key);
+    auto iter = m_protocols.find(key);
     if (iter == m_protocols.end())
     {
         NS_LOG_WARN("Trying to remove an non-existent protocol "
@@ -967,12 +965,11 @@ Ipv4L3ClickProtocol::GetProtocol(int protocolNumber, int32_t interfaceIndex) con
     NS_LOG_FUNCTION(this << protocolNumber << interfaceIndex);
 
     L4ListKey_t key;
-    L4List_t::const_iterator i;
     if (interfaceIndex >= 0)
     {
         // try the interface-specific protocol.
         key = std::make_pair(protocolNumber, interfaceIndex);
-        i = m_protocols.find(key);
+        auto i = m_protocols.find(key);
         if (i != m_protocols.end())
         {
             return i->second;
@@ -980,7 +977,7 @@ Ipv4L3ClickProtocol::GetProtocol(int protocolNumber, int32_t interfaceIndex) con
     }
     // try the generic protocol.
     key = std::make_pair(protocolNumber, -1);
-    i = m_protocols.find(key);
+    auto i = m_protocols.find(key);
     if (i != m_protocols.end())
     {
         return i->second;

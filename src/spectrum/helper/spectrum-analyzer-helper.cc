@@ -51,8 +51,8 @@ WriteAveragePowerSpectralDensityReport(Ptr<OutputStreamWrapper> streamWrapper,
     std::ostream* ostream = streamWrapper->GetStream();
     if (ostream->good())
     {
-        Bands::const_iterator fi = avgPowerSpectralDensity->ConstBandsBegin();
-        Values::const_iterator vi = avgPowerSpectralDensity->ConstValuesBegin();
+        auto fi = avgPowerSpectralDensity->ConstBandsBegin();
+        auto vi = avgPowerSpectralDensity->ConstValuesBegin();
         while (fi != avgPowerSpectralDensity->ConstBandsEnd())
         {
             NS_ASSERT(vi != avgPowerSpectralDensity->ConstValuesEnd());
@@ -126,7 +126,7 @@ SpectrumAnalyzerHelper::Install(NodeContainer c) const
 {
     NS_LOG_FUNCTION(this);
     NetDeviceContainer devices;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
 

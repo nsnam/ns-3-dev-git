@@ -432,7 +432,7 @@ GetRandomStream(std::string filename)
         {
             if (*input >> value)
             {
-                uint64_t ns = (uint64_t)(value * 1000000000);
+                auto ns = (uint64_t)(value * 1000000000);
                 nsValues.push_back(ns);
             }
             else

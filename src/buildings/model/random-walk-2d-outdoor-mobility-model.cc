@@ -271,7 +271,7 @@ RandomWalk2dOutdoorMobilityModel::IsLineClearOfBuildings(Vector currentPosition,
     double minIntersectionDistance = std::numeric_limits<double>::max();
     Ptr<Building> minIntersectionDistanceBuilding;
 
-    for (BuildingList::Iterator bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
+    for (auto bit = BuildingList::Begin(); bit != BuildingList::End(); ++bit)
     {
         // check if this building intersects the line between the current and next positions
         // this checks also if the next position is inside the building

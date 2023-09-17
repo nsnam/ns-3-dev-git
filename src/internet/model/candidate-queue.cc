@@ -63,7 +63,7 @@ operator<<(std::ostream& os, const CandidateQueue& q)
     const CandidateQueue::CandidateList_t& list = q.m_candidates;
 
     os << "*** CandidateQueue Begin (<id, distance, LSA-type>) ***" << std::endl;
-    for (CIter_t iter = list.begin(); iter != list.end(); iter++)
+    for (auto iter = list.begin(); iter != list.end(); iter++)
     {
         os << "<" << (*iter)->GetVertexId() << ", " << (*iter)->GetDistanceFromRoot() << ", "
            << (*iter)->GetVertexType() << ">" << std::endl;
@@ -101,10 +101,10 @@ CandidateQueue::Push(SPFVertex* vNew)
 {
     NS_LOG_FUNCTION(this << vNew);
 
-    CandidateList_t::iterator i = std::upper_bound(m_candidates.begin(),
-                                                   m_candidates.end(),
-                                                   vNew,
-                                                   &CandidateQueue::CompareSPFVertex);
+    auto i = std::upper_bound(m_candidates.begin(),
+                              m_candidates.end(),
+                              vNew,
+                              &CandidateQueue::CompareSPFVertex);
     m_candidates.insert(i, vNew);
 }
 
@@ -152,7 +152,7 @@ SPFVertex*
 CandidateQueue::Find(const Ipv4Address addr) const
 {
     NS_LOG_FUNCTION(this);
-    CandidateList_t::const_iterator i = m_candidates.begin();
+    auto i = m_candidates.begin();
 
     for (; i != m_candidates.end(); i++)
     {

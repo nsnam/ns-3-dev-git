@@ -164,8 +164,7 @@ main(int argc, char** argv)
     routerInterface->SetMaxRtrAdvInterval(2000);
     routerInterface->SetMinRtrAdvInterval(1000);
     RadvdInterface::RadvdPrefixList prefixList = routerInterface->GetPrefixes();
-    for (RadvdInterface::RadvdPrefixListI iter = prefixList.begin(); iter != prefixList.end();
-         iter++)
+    for (auto iter = prefixList.begin(); iter != prefixList.end(); iter++)
     {
         (*iter)->SetPreferredLifeTime(3);
         (*iter)->SetValidLifeTime(5);
@@ -179,8 +178,7 @@ main(int argc, char** argv)
     routerInterface->SetMaxRtrAdvInterval(2000);
     routerInterface->SetMinRtrAdvInterval(1000);
     prefixList = routerInterface->GetPrefixes();
-    for (RadvdInterface::RadvdPrefixListI iter = prefixList.begin(); iter != prefixList.end();
-         iter++)
+    for (auto iter = prefixList.begin(); iter != prefixList.end(); iter++)
     {
         (*iter)->SetPreferredLifeTime(3);
         (*iter)->SetValidLifeTime(5);

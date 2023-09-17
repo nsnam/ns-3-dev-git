@@ -266,9 +266,7 @@ IePreq::SerializeInformationField(Buffer::Iterator i) const
     i.WriteHtolsbU32(m_metric);
     i.WriteU8(m_destCount);
     int written = 0;
-    for (std::vector<Ptr<DestinationAddressUnit>>::const_iterator j = m_destinations.begin();
-         j != m_destinations.end();
-         j++)
+    for (auto j = m_destinations.begin(); j != m_destinations.end(); j++)
     {
         uint8_t flags = 0;
         if ((*j)->IsDo())
@@ -386,9 +384,7 @@ IePreq::AddDestinationAddressElement(bool doFlag,
                                      Mac48Address dest_address,
                                      uint32_t dest_seq_number)
 {
-    for (std::vector<Ptr<DestinationAddressUnit>>::const_iterator i = m_destinations.begin();
-         i != m_destinations.end();
-         i++)
+    for (auto i = m_destinations.begin(); i != m_destinations.end(); i++)
     {
         if ((*i)->GetDestinationAddress() == dest_address)
         {
@@ -407,9 +403,7 @@ IePreq::AddDestinationAddressElement(bool doFlag,
 void
 IePreq::DelDestinationAddressElement(Mac48Address dest_address)
 {
-    for (std::vector<Ptr<DestinationAddressUnit>>::iterator i = m_destinations.begin();
-         i != m_destinations.end();
-         i++)
+    for (auto i = m_destinations.begin(); i != m_destinations.end(); i++)
     {
         if ((*i)->GetDestinationAddress() == dest_address)
         {
@@ -423,9 +417,7 @@ IePreq::DelDestinationAddressElement(Mac48Address dest_address)
 void
 IePreq::ClearDestinationAddressElements()
 {
-    for (std::vector<Ptr<DestinationAddressUnit>>::iterator j = m_destinations.begin();
-         j != m_destinations.end();
-         j++)
+    for (auto j = m_destinations.begin(); j != m_destinations.end(); j++)
     {
         (*j) = nullptr;
     }

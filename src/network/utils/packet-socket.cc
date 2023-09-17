@@ -659,7 +659,7 @@ void
 DeviceNameTag::Serialize(TagBuffer i) const
 {
     const char* n = m_deviceName.c_str();
-    uint8_t l = (uint8_t)m_deviceName.size();
+    auto l = (uint8_t)m_deviceName.size();
 
     i.WriteU8(l);
     i.Write((uint8_t*)n, (uint32_t)l);

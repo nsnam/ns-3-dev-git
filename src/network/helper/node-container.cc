@@ -28,7 +28,7 @@ NodeContainer
 NodeContainer::GetGlobal()
 {
     NodeContainer c;
-    for (NodeList::Iterator i = NodeList::Begin(); i != NodeList::End(); ++i)
+    for (auto i = NodeList::Begin(); i != NodeList::End(); ++i)
     {
         c.Add(*i);
     }
@@ -101,7 +101,7 @@ NodeContainer::Create(uint32_t n, uint32_t systemId)
 void
 NodeContainer::Add(const NodeContainer& nc)
 {
-    for (Iterator i = nc.Begin(); i != nc.End(); i++)
+    for (auto i = nc.Begin(); i != nc.End(); i++)
     {
         m_nodes.push_back(*i);
     }

@@ -38,7 +38,7 @@ void
 ModelTypeidCreator::Add(ModelTypeid* node)
 {
     GtkTreeIter* parent = m_iters.back();
-    GtkTreeIter* current = g_new(GtkTreeIter, 1);
+    auto current = g_new(GtkTreeIter, 1);
     gtk_tree_store_append(m_treestore, current, parent);
     gtk_tree_store_set(m_treestore, current, COL_TYPEID, node, -1);
     m_iters.push_back(current);
@@ -58,7 +58,7 @@ ModelTypeidCreator::VisitAttribute(TypeId tid,
                                    std::string defaultValue,
                                    uint32_t index)
 {
-    ModelTypeid* node = new ModelTypeid();
+    auto node = new ModelTypeid();
     node->type = ModelTypeid::NODE_ATTRIBUTE;
     node->tid = tid;
     node->name = name;
@@ -71,7 +71,7 @@ ModelTypeidCreator::VisitAttribute(TypeId tid,
 void
 ModelTypeidCreator::StartVisitTypeId(std::string name)
 {
-    ModelTypeid* node = new ModelTypeid();
+    auto node = new ModelTypeid();
     node->type = ModelTypeid::NODE_TYPEID;
     node->tid = TypeId::LookupByName(name);
     Add(node);

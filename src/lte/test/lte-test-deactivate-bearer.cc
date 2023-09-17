@@ -109,7 +109,7 @@ LenaDeactivateBearerTestCase::BuildNameString(uint16_t nUser, std::vector<uint16
 {
     std::ostringstream oss;
     oss << "distances (m) = [ ";
-    for (std::vector<uint16_t>::iterator it = dist.begin(); it != dist.end(); ++it)
+    for (auto it = dist.begin(); it != dist.end(); ++it)
     {
         oss << *it << " ";
     }

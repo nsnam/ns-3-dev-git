@@ -267,7 +267,7 @@ uint32_t
 ThreeGppHttpVariables::GetNumOfEmbeddedObjects()
 {
     // Validate parameters.
-    const uint32_t upperBound = static_cast<uint32_t>(m_numOfEmbeddedObjectsRng->GetBound());
+    const auto upperBound = static_cast<uint32_t>(m_numOfEmbeddedObjectsRng->GetBound());
     if (upperBound <= m_numOfEmbeddedObjectsScale)
     {
         NS_FATAL_ERROR("`NumOfEmbeddedObjectsMax` attribute "

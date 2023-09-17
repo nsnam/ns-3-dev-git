@@ -45,9 +45,9 @@ TidToLinkMapping::Control::GetSubfieldSize() const
 void
 TidToLinkMapping::Control::Serialize(Buffer::Iterator& start) const
 {
-    uint8_t val = static_cast<uint8_t>(direction) | ((defaultMapping ? 1 : 0) << 2) |
-                  ((mappingSwitchTimePresent ? 1 : 0) << 3) |
-                  ((expectedDurationPresent ? 1 : 0) << 4) | ((linkMappingSize == 1 ? 1 : 0) << 5);
+    auto val = static_cast<uint8_t>(direction) | ((defaultMapping ? 1 : 0) << 2) |
+               ((mappingSwitchTimePresent ? 1 : 0) << 3) |
+               ((expectedDurationPresent ? 1 : 0) << 4) | ((linkMappingSize == 1 ? 1 : 0) << 5);
 
     start.WriteU8(val);
     NS_ASSERT_MSG(!defaultMapping || !presenceBitmap.has_value(),

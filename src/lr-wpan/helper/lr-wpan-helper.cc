@@ -179,7 +179,7 @@ NetDeviceContainer
 LrWpanHelper::Install(NodeContainer c)
 {
     NetDeviceContainer devices;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); i++)
+    for (auto i = c.Begin(); i != c.End(); i++)
     {
         Ptr<Node> node = *i;
 
@@ -218,7 +218,7 @@ LrWpanHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
 {
     int64_t currentStream = stream;
     Ptr<NetDevice> netDevice;
-    for (NetDeviceContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         netDevice = (*i);
         Ptr<LrWpanNetDevice> lrwpan = DynamicCast<LrWpanNetDevice>(netDevice);
@@ -242,7 +242,7 @@ LrWpanHelper::CreateAssociatedPan(NetDeviceContainer c, uint16_t panId)
     Mac16Address coordShortAddr;
     Mac64Address coordExtAddr;
 
-    for (NetDeviceContainer::Iterator i = c.Begin(); i != c.End(); i++)
+    for (auto i = c.Begin(); i != c.End(); i++)
     {
         if (id < 0x0001 || id > 0xFFFD)
         {
@@ -285,7 +285,7 @@ LrWpanHelper::SetExtendedAddresses(NetDeviceContainer c)
     uint8_t idBuf[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     Mac64Address address64;
 
-    for (NetDeviceContainer::Iterator i = c.Begin(); i != c.End(); i++)
+    for (auto i = c.Begin(); i != c.End(); i++)
     {
         Ptr<LrWpanNetDevice> device = DynamicCast<LrWpanNetDevice>(*i);
         if (device)

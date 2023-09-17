@@ -99,7 +99,7 @@ SimpleNetDeviceHelper::Install(const NodeContainer& c, Ptr<SimpleChannel> channe
 {
     NetDeviceContainer devs;
 
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); i++)
+    for (auto i = c.Begin(); i != c.End(); i++)
     {
         devs.Add(InstallPriv(*i, channel));
     }

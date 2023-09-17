@@ -515,7 +515,7 @@ Ipv6AddressGeneratorImpl::AddAllocated(const Ipv6Address address)
         taddr[15] += 1;
         if (Ipv6Address(addr) == Ipv6Address(taddr))
         {
-            std::list<Entry>::iterator j = i;
+            auto j = i;
             ++j;
 
             if (j != m_entries.end())
@@ -581,9 +581,7 @@ Ipv6AddressGeneratorImpl::IsAddressAllocated(const Ipv6Address address)
     uint8_t addr[16];
     address.GetBytes(addr);
 
-    std::list<Entry>::iterator i;
-
-    for (i = m_entries.begin(); i != m_entries.end(); ++i)
+    for (auto i = m_entries.begin(); i != m_entries.end(); ++i)
     {
         NS_LOG_LOGIC("examine entry: " << Ipv6Address((*i).addrLow) << " to "
                                        << Ipv6Address((*i).addrHigh));
@@ -610,9 +608,7 @@ Ipv6AddressGeneratorImpl::IsNetworkAllocated(const Ipv6Address address, const Ip
         "Ipv6AddressGeneratorImpl::IsNetworkAllocated(): network address and mask don't match "
             << address << " " << prefix);
 
-    std::list<Entry>::iterator i;
-
-    for (i = m_entries.begin(); i != m_entries.end(); ++i)
+    for (auto i = m_entries.begin(); i != m_entries.end(); ++i)
     {
         NS_LOG_LOGIC("examine entry: " << Ipv6Address((*i).addrLow) << " to "
                                        << Ipv6Address((*i).addrHigh));

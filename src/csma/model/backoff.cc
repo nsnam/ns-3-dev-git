@@ -75,7 +75,7 @@ Backoff::GetBackoffTime()
         maxSlot = m_maxSlots;
     }
 
-    uint32_t backoffSlots = (uint32_t)m_rng->GetValue(minSlot, maxSlot);
+    auto backoffSlots = (uint32_t)m_rng->GetValue(minSlot, maxSlot);
 
     Time backoff = Time(backoffSlots * m_slotTime);
     return backoff;

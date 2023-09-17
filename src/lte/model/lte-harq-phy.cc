@@ -53,8 +53,7 @@ LteHarqPhy::SubframeIndication(uint32_t frameNo, uint32_t subframeNo)
     NS_LOG_FUNCTION(this);
 
     // left shift UL HARQ buffers
-    std::map<uint16_t, std::vector<HarqProcessInfoList_t>>::iterator it;
-    for (it = m_miUlHarqProcessesInfoMap.begin(); it != m_miUlHarqProcessesInfoMap.end(); it++)
+    for (auto it = m_miUlHarqProcessesInfoMap.begin(); it != m_miUlHarqProcessesInfoMap.end(); it++)
     {
         (*it).second.erase((*it).second.begin());
         HarqProcessInfoList_t h;
@@ -87,8 +86,7 @@ LteHarqPhy::GetAccumulatedMiUl(uint16_t rnti)
 {
     NS_LOG_FUNCTION(this << rnti);
 
-    std::map<uint16_t, std::vector<HarqProcessInfoList_t>>::iterator it;
-    it = m_miUlHarqProcessesInfoMap.find(rnti);
+    auto it = m_miUlHarqProcessesInfoMap.find(rnti);
     NS_ASSERT_MSG(it != m_miUlHarqProcessesInfoMap.end(), " Does not find MI for RNTI");
     HarqProcessInfoList_t list = (*it).second.at(0);
     double mi = 0.0;
@@ -103,8 +101,7 @@ HarqProcessInfoList_t
 LteHarqPhy::GetHarqProcessInfoUl(uint16_t rnti, uint8_t harqProcId)
 {
     NS_LOG_FUNCTION(this << rnti << (uint16_t)harqProcId);
-    std::map<uint16_t, std::vector<HarqProcessInfoList_t>>::iterator it;
-    it = m_miUlHarqProcessesInfoMap.find(rnti);
+    auto it = m_miUlHarqProcessesInfoMap.find(rnti);
     if (it == m_miUlHarqProcessesInfoMap.end())
     {
         // new entry
@@ -157,8 +154,7 @@ LteHarqPhy::UpdateUlHarqProcessStatus(uint16_t rnti,
                                       uint16_t codeBytes)
 {
     NS_LOG_FUNCTION(this << rnti << mi);
-    std::map<uint16_t, std::vector<HarqProcessInfoList_t>>::iterator it;
-    it = m_miUlHarqProcessesInfoMap.find(rnti);
+    auto it = m_miUlHarqProcessesInfoMap.find(rnti);
     if (it == m_miUlHarqProcessesInfoMap.end())
     {
         // new entry
@@ -199,8 +195,7 @@ void
 LteHarqPhy::ResetUlHarqProcessStatus(uint16_t rnti, uint8_t id)
 {
     NS_LOG_FUNCTION(this << rnti << (uint16_t)id);
-    std::map<uint16_t, std::vector<HarqProcessInfoList_t>>::iterator it;
-    it = m_miUlHarqProcessesInfoMap.find(rnti);
+    auto it = m_miUlHarqProcessesInfoMap.find(rnti);
     if (it == m_miUlHarqProcessesInfoMap.end())
     {
         // new entry

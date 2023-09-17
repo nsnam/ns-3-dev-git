@@ -161,7 +161,7 @@ main(int argc, char* argv[])
     Time simulationEndTime = Seconds(5);
     DataRate bottleneckBandwidth("10Mbps"); // value of x as shown in the above network topology
     Time bottleneckDelay = MilliSeconds(40);
-    DataRate regLinkBandwidth = DataRate(4 * bottleneckBandwidth.GetBitRate());
+    DataRate regLinkBandwidth(4 * bottleneckBandwidth.GetBitRate());
     Time regLinkDelay = MilliSeconds(5);
     DataRate maxPacingRate("4Gbps");
 
@@ -324,9 +324,7 @@ main(int argc, char* argv[])
     monitor->CheckForLostPackets();
     Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier>(flowmon.GetClassifier());
     FlowMonitor::FlowStatsContainer stats = monitor->GetFlowStats();
-    for (std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin();
-         i != stats.end();
-         ++i)
+    for (auto i = stats.begin(); i != stats.end(); ++i)
     {
         Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow(i->first);
 

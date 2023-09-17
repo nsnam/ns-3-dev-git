@@ -246,7 +246,7 @@ TvSpectrumTransmitter::CreateTvPsd()
     NS_ASSERT(m_channelBandwidth != 0);
     Ptr<SpectrumModel> model;
     TvSpectrumModelId key(m_startFrequency, m_channelBandwidth);
-    std::map<TvSpectrumModelId, Ptr<SpectrumModel>>::iterator iter = g_tvSpectrumModelMap.find(key);
+    auto iter = g_tvSpectrumModelMap.find(key);
     if (iter != g_tvSpectrumModelMap.end())
     {
         model = iter->second; // set SpectrumModel to previously created one

@@ -359,7 +359,6 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
 
     NS_ABORT_MSG_IF(m_mac->GetTypeOfStation() != AP, "HE APs only can send DL MU PPDUs");
     const auto& staList = StaticCast<ApWifiMac>(m_mac)->GetStaList(m_linkId);
-    std::remove_reference_t<decltype(staList)>::const_iterator staIt;
 
     bool allProtected = true;
     bool isUnprotectedEmlsrDst = false;
@@ -369,7 +368,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
         // Add a User Info field to the MU-RTS for this solicited station
         // The UL HE-MCS, UL FEC Coding Type, UL DCM, SS Allocation and UL Target RSSI fields
         // in the User Info field are reserved (Sec. 9.3.1.22.5 of 802.11ax)
-        staIt = staList.find(userInfo.GetAid12());
+        auto staIt = staList.find(userInfo.GetAid12());
         NS_ASSERT(staIt != staList.cend());
         AddUserInfoToMuRts(protection->muRts, txWidth, staIt->second);
         bool isProtected =

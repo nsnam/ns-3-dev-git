@@ -56,9 +56,7 @@ bool
 DsrErrorBuffer::Enqueue(DsrErrorBuffEntry& entry)
 {
     Purge();
-    for (std::vector<DsrErrorBuffEntry>::const_iterator i = m_errorBuffer.begin();
-         i != m_errorBuffer.end();
-         ++i)
+    for (auto i = m_errorBuffer.begin(); i != m_errorBuffer.end(); ++i)
     {
         NS_LOG_INFO("packet id " << i->GetPacket()->GetUid() << " " << entry.GetPacket()->GetUid()
                                  << " source " << i->GetSource() << " " << entry.GetSource()
@@ -101,9 +99,7 @@ DsrErrorBuffer::DropPacketForErrLink(Ipv4Address source, Ipv4Address nextHop)
     /*
      * Drop the packet with the error link source----------nextHop
      */
-    for (std::vector<DsrErrorBuffEntry>::iterator i = m_errorBuffer.begin();
-         i != m_errorBuffer.end();
-         ++i)
+    for (auto i = m_errorBuffer.begin(); i != m_errorBuffer.end(); ++i)
     {
         if ((i->GetSource() == link[0]) && (i->GetNextHop() == link[1]))
         {
@@ -127,9 +123,7 @@ DsrErrorBuffer::Dequeue(Ipv4Address dst, DsrErrorBuffEntry& entry)
     /*
      * Dequeue the entry with destination address dst
      */
-    for (std::vector<DsrErrorBuffEntry>::iterator i = m_errorBuffer.begin();
-         i != m_errorBuffer.end();
-         ++i)
+    for (auto i = m_errorBuffer.begin(); i != m_errorBuffer.end(); ++i)
     {
         if (i->GetDestination() == dst)
         {
@@ -148,9 +142,7 @@ DsrErrorBuffer::Find(Ipv4Address dst)
     /*
      * Make sure if the send buffer contains entry with certain dst
      */
-    for (std::vector<DsrErrorBuffEntry>::const_iterator i = m_errorBuffer.begin();
-         i != m_errorBuffer.end();
-         ++i)
+    for (auto i = m_errorBuffer.begin(); i != m_errorBuffer.end(); ++i)
     {
         if (i->GetDestination() == dst)
         {
@@ -184,9 +176,7 @@ DsrErrorBuffer::Purge()
      */
     NS_LOG_DEBUG("The error buffer size " << m_errorBuffer.size());
     IsExpired pred;
-    for (std::vector<DsrErrorBuffEntry>::iterator i = m_errorBuffer.begin();
-         i != m_errorBuffer.end();
-         ++i)
+    for (auto i = m_errorBuffer.begin(); i != m_errorBuffer.end(); ++i)
     {
         if (pred(*i))
         {

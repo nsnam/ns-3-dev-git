@@ -149,8 +149,7 @@ A2A4RsrqHandoverAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults 
     {
         if (measResults.haveMeasResultNeighCells && !measResults.measResultListEutra.empty())
         {
-            for (std::list<LteRrcSap::MeasResultEutra>::iterator it =
-                     measResults.measResultListEutra.begin();
+            for (auto it = measResults.measResultListEutra.begin();
                  it != measResults.measResultListEutra.end();
                  ++it)
             {
@@ -177,8 +176,7 @@ A2A4RsrqHandoverAlgorithm::EvaluateHandover(uint16_t rnti, uint8_t servingCellRs
 {
     NS_LOG_FUNCTION(this << rnti << (uint16_t)servingCellRsrq);
 
-    MeasurementTable_t::iterator it1;
-    it1 = m_neighbourCellMeasures.find(rnti);
+    auto it1 = m_neighbourCellMeasures.find(rnti);
 
     if (it1 == m_neighbourCellMeasures.end())
     {
@@ -191,8 +189,7 @@ A2A4RsrqHandoverAlgorithm::EvaluateHandover(uint16_t rnti, uint8_t servingCellRs
         NS_LOG_LOGIC("Number of neighbour cells = " << it1->second.size());
         uint16_t bestNeighbourCellId = 0;
         uint8_t bestNeighbourRsrq = 0;
-        MeasurementRow_t::iterator it2;
-        for (it2 = it1->second.begin(); it2 != it1->second.end(); ++it2)
+        for (auto it2 = it1->second.begin(); it2 != it1->second.end(); ++it2)
         {
             if ((it2->second->m_rsrq > bestNeighbourRsrq) && IsValidNeighbour(it2->first))
             {
@@ -239,23 +236,20 @@ void
 A2A4RsrqHandoverAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti, uint16_t cellId, uint8_t rsrq)
 {
     NS_LOG_FUNCTION(this << rnti << cellId << (uint16_t)rsrq);
-    MeasurementTable_t::iterator it1;
-    it1 = m_neighbourCellMeasures.find(rnti);
+    auto it1 = m_neighbourCellMeasures.find(rnti);
 
     if (it1 == m_neighbourCellMeasures.end())
     {
         // insert a new UE entry
         MeasurementRow_t row;
-        std::pair<MeasurementTable_t::iterator, bool> ret;
-        ret = m_neighbourCellMeasures.insert(std::pair<uint16_t, MeasurementRow_t>(rnti, row));
+        auto ret = m_neighbourCellMeasures.insert(std::pair<uint16_t, MeasurementRow_t>(rnti, row));
         NS_ASSERT(ret.second);
         it1 = ret.first;
     }
 
     NS_ASSERT(it1 != m_neighbourCellMeasures.end());
     Ptr<UeMeasure> neighbourCellMeasures;
-    std::map<uint16_t, Ptr<UeMeasure>>::iterator it2;
-    it2 = it1->second.find(cellId);
+    auto it2 = it1->second.find(cellId);
 
     if (it2 != it1->second.end())
     {

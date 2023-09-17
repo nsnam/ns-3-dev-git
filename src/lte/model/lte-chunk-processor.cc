@@ -72,8 +72,8 @@ LteChunkProcessor::End()
     NS_LOG_FUNCTION(this);
     if (m_totDuration.GetSeconds() > 0)
     {
-        std::vector<LteChunkProcessorCallback>::iterator it;
-        for (it = m_lteChunkProcessorCallbacks.begin(); it != m_lteChunkProcessorCallbacks.end();
+        for (auto it = m_lteChunkProcessorCallbacks.begin();
+             it != m_lteChunkProcessorCallbacks.end();
              it++)
         {
             (*it)((*m_sumValues) / m_totDuration.GetSeconds());

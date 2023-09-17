@@ -207,7 +207,7 @@ ClickInternetStackHelper::Reset()
 void
 ClickInternetStackHelper::SetClickFile(NodeContainer c, std::string clickfile)
 {
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         SetClickFile(*i, clickfile);
     }
@@ -222,7 +222,7 @@ ClickInternetStackHelper::SetClickFile(Ptr<Node> node, std::string clickfile)
 void
 ClickInternetStackHelper::SetDefines(NodeContainer c, std::map<std::string, std::string> defines)
 {
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         SetDefines(*i, defines);
     }
@@ -237,7 +237,7 @@ ClickInternetStackHelper::SetDefines(Ptr<Node> node, std::map<std::string, std::
 void
 ClickInternetStackHelper::SetRoutingTableElement(NodeContainer c, std::string rt)
 {
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         SetRoutingTableElement(*i, rt);
     }
@@ -252,7 +252,7 @@ ClickInternetStackHelper::SetRoutingTableElement(Ptr<Node> node, std::string rt)
 void
 ClickInternetStackHelper::Install(NodeContainer c) const
 {
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Install(*i);
     }
@@ -296,16 +296,14 @@ ClickInternetStackHelper::Install(Ptr<Node> node) const
         // Set routing
         Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
         Ptr<Ipv4ClickRouting> ipv4Routing = CreateObject<Ipv4ClickRouting>();
-        std::map<Ptr<Node>, std::string>::const_iterator it;
-        it = m_nodeToClickFileMap.find(node);
+        auto it = m_nodeToClickFileMap.find(node);
 
         if (it != m_nodeToClickFileMap.end())
         {
             ipv4Routing->SetClickFile(it->second);
         }
 
-        std::map<Ptr<Node>, std::map<std::string, std::string>>::const_iterator definesIt;
-        definesIt = m_nodeToDefinesMap.find(node);
+        auto definesIt = m_nodeToDefinesMap.find(node);
         if (definesIt != m_nodeToDefinesMap.end())
         {
             ipv4Routing->SetDefines(definesIt->second);
@@ -331,9 +329,7 @@ ClickInternetStackHelper::Install(std::string nodeName) const
 bool
 ClickInternetStackHelper::PcapHooked(Ptr<Ipv4> ipv4)
 {
-    for (InterfaceFileMapIpv4::const_iterator i = g_interfaceFileMapIpv4.begin();
-         i != g_interfaceFileMapIpv4.end();
-         ++i)
+    for (auto i = g_interfaceFileMapIpv4.begin(); i != g_interfaceFileMapIpv4.end(); ++i)
     {
         if ((*i).first.first == ipv4)
         {
@@ -409,9 +405,7 @@ ClickInternetStackHelper::EnablePcapIpv4Internal(std::string prefix,
 bool
 ClickInternetStackHelper::AsciiHooked(Ptr<Ipv4> ipv4)
 {
-    for (InterfaceStreamMapIpv4::const_iterator i = g_interfaceStreamMapIpv4.begin();
-         i != g_interfaceStreamMapIpv4.end();
-         ++i)
+    for (auto i = g_interfaceStreamMapIpv4.begin(); i != g_interfaceStreamMapIpv4.end(); ++i)
     {
         if ((*i).first.first == ipv4)
         {

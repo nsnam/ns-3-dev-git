@@ -97,7 +97,7 @@ Ipv6StaticRoutingHelper::AddMulticastRoute(Ptr<Node> n,
     // We need to convert the NetDeviceContainer to an array of interface
     // numbers
     std::vector<uint32_t> outputInterfaces;
-    for (NetDeviceContainer::Iterator i = output.Begin(); i != output.End(); ++i)
+    for (auto i = output.Begin(); i != output.End(); ++i)
     {
         Ptr<NetDevice> nd = *i;
         int32_t interface = ipv6->GetInterfaceForDevice(nd);

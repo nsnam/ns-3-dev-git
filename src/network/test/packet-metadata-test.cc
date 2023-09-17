@@ -381,7 +381,7 @@ PacketMetadataTest::CheckHistory(Ptr<Packet> p, uint32_t n, ...)
         if (item.type == PacketMetadata::Item::HEADER)
         {
             Callback<ObjectBase*> constructor = item.tid.GetConstructor();
-            HistoryHeaderBase* header = dynamic_cast<HistoryHeaderBase*>(constructor());
+            auto header = dynamic_cast<HistoryHeaderBase*>(constructor());
             if (header == nullptr)
             {
                 goto error;
@@ -397,7 +397,7 @@ PacketMetadataTest::CheckHistory(Ptr<Packet> p, uint32_t n, ...)
         else if (item.type == PacketMetadata::Item::TRAILER)
         {
             Callback<ObjectBase*> constructor = item.tid.GetConstructor();
-            HistoryTrailerBase* trailer = dynamic_cast<HistoryTrailerBase*>(constructor());
+            auto trailer = dynamic_cast<HistoryTrailerBase*>(constructor());
             if (trailer == nullptr)
             {
                 goto error;
@@ -413,7 +413,7 @@ PacketMetadataTest::CheckHistory(Ptr<Packet> p, uint32_t n, ...)
         got.push_back(item.currentSize);
     }
 
-    for (std::list<int>::iterator i = got.begin(), j = expected.begin(); i != got.end(); i++, j++)
+    for (auto i = got.begin(), j = expected.begin(); i != got.end(); i++, j++)
     {
         NS_ASSERT(j != expected.end());
         if (*j != *i)
@@ -425,12 +425,12 @@ PacketMetadataTest::CheckHistory(Ptr<Packet> p, uint32_t n, ...)
 error:
     std::ostringstream failure;
     failure << "PacketMetadata error. Got:\"";
-    for (std::list<int>::iterator i = got.begin(); i != got.end(); i++)
+    for (auto i = got.begin(); i != got.end(); i++)
     {
         failure << *i << ", ";
     }
     failure << "\", expected: \"";
-    for (std::list<int>::iterator j = expected.begin(); j != expected.end(); j++)
+    for (auto j = expected.begin(); j != expected.end(); j++)
     {
         failure << *j << ", ";
     }
@@ -872,7 +872,7 @@ PacketMetadataTest::DoRun()
     REM_HEADER(p3, 2);
     CHECK_HISTORY(p3, 1, 11);
 
-    uint8_t* buf = new uint8_t[p3->GetSize()];
+    auto buf = new uint8_t[p3->GetSize()];
     p3->CopyData(buf, p3->GetSize());
     std::string msg = std::string(reinterpret_cast<const char*>(buf), p3->GetSize());
     delete[] buf;

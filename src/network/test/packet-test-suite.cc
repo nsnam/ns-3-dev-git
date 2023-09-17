@@ -632,7 +632,7 @@ PacketTest::DoRun()
 
     NS_TEST_EXPECT_MSG_EQ(packet->GetSize(), 11, "trivial");
 
-    uint8_t* buf = new uint8_t[packet->GetSize()];
+    auto buf = new uint8_t[packet->GetSize()];
     packet->CopyData(buf, packet->GetSize());
 
     std::string msg = std::string(reinterpret_cast<const char*>(buf), packet->GetSize());
@@ -811,7 +811,7 @@ PacketTest::DoRun()
         p1->AddPacketTag(c1);
 
         uint32_t serializedSize = p1->GetSerializedSize();
-        uint8_t* buffer = new uint8_t[serializedSize + 16];
+        auto buffer = new uint8_t[serializedSize + 16];
         p1->Serialize(buffer, serializedSize);
 
         Ptr<Packet> p2 = Create<Packet>(buffer, serializedSize, true);
@@ -846,7 +846,7 @@ PacketTest::DoRun()
         CHECK(p1, 3, E(10, 0, 1000), E(11, 0, 1000), E(12, 0, 1000));
 
         uint32_t serializedSize = p1->GetSerializedSize();
-        uint8_t* buffer = new uint8_t[serializedSize];
+        auto buffer = new uint8_t[serializedSize];
         p1->Serialize(buffer, serializedSize);
 
         Ptr<Packet> p2 = Create<Packet>(buffer, serializedSize, true);

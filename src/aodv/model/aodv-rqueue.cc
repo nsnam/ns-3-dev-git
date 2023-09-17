@@ -51,7 +51,7 @@ bool
 RequestQueue::Enqueue(QueueEntry& entry)
 {
     Purge();
-    for (std::vector<QueueEntry>::const_iterator i = m_queue.begin(); i != m_queue.end(); ++i)
+    for (auto i = m_queue.begin(); i != m_queue.end(); ++i)
     {
         if ((i->GetPacket()->GetUid() == entry.GetPacket()->GetUid()) &&
             (i->GetIpv4Header().GetDestination() == entry.GetIpv4Header().GetDestination()))
@@ -74,7 +74,7 @@ RequestQueue::DropPacketWithDst(Ipv4Address dst)
 {
     NS_LOG_FUNCTION(this << dst);
     Purge();
-    for (std::vector<QueueEntry>::iterator i = m_queue.begin(); i != m_queue.end(); ++i)
+    for (auto i = m_queue.begin(); i != m_queue.end(); ++i)
     {
         if (i->GetIpv4Header().GetDestination() == dst)
         {
@@ -91,7 +91,7 @@ bool
 RequestQueue::Dequeue(Ipv4Address dst, QueueEntry& entry)
 {
     Purge();
-    for (std::vector<QueueEntry>::iterator i = m_queue.begin(); i != m_queue.end(); ++i)
+    for (auto i = m_queue.begin(); i != m_queue.end(); ++i)
     {
         if (i->GetIpv4Header().GetDestination() == dst)
         {
@@ -106,7 +106,7 @@ RequestQueue::Dequeue(Ipv4Address dst, QueueEntry& entry)
 bool
 RequestQueue::Find(Ipv4Address dst)
 {
-    for (std::vector<QueueEntry>::const_iterator i = m_queue.begin(); i != m_queue.end(); ++i)
+    for (auto i = m_queue.begin(); i != m_queue.end(); ++i)
     {
         if (i->GetIpv4Header().GetDestination() == dst)
         {
@@ -138,7 +138,7 @@ void
 RequestQueue::Purge()
 {
     IsExpired pred;
-    for (std::vector<QueueEntry>::iterator i = m_queue.begin(); i != m_queue.end(); ++i)
+    for (auto i = m_queue.begin(); i != m_queue.end(); ++i)
     {
         if (pred(*i))
         {

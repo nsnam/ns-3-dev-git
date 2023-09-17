@@ -99,7 +99,7 @@ Histogram(Ptr<RandomVariableStream> rndvar,
         data.SetStyle(Gnuplot2dDataset::IMPULSES);
     }
 
-    for (histogram_maptype::const_iterator hi = histogram.begin(); hi != histogram.end(); ++hi)
+    for (auto hi = histogram.begin(); hi != histogram.end(); ++hi)
     {
         data.Add(hi->first, (double)hi->second / (double)probes / precision);
     }

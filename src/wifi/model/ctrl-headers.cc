@@ -232,7 +232,7 @@ CtrlBAckRequestHeader::MustSendHtImmediateAck() const
 uint8_t
 CtrlBAckRequestHeader::GetTidInfo() const
 {
-    uint8_t tid = static_cast<uint8_t>(m_tidInfo);
+    auto tid = static_cast<uint8_t>(m_tidInfo);
     return tid;
 }
 

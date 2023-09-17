@@ -43,7 +43,7 @@ namespace std
 ostream&
 operator<<(ostream& os, const vector<int>& v)
 {
-    vector<int>::const_iterator it = v.begin();
+    auto it = v.begin();
     while (it != v.end())
     {
         os << *it << " ";
@@ -252,7 +252,7 @@ LteSpectrumValueHelper::GetSpectrumModel(uint32_t earfcn, uint16_t txBandwidthCo
     NS_LOG_FUNCTION(earfcn << txBandwidthConfiguration);
     Ptr<SpectrumModel> ret;
     LteSpectrumModelId key(earfcn, txBandwidthConfiguration);
-    std::map<LteSpectrumModelId, Ptr<SpectrumModel>>::iterator it = g_lteSpectrumModelMap.find(key);
+    auto it = g_lteSpectrumModelMap.find(key);
     if (it != g_lteSpectrumModelMap.end())
     {
         ret = it->second;
@@ -297,7 +297,7 @@ LteSpectrumValueHelper::CreateTxPowerSpectralDensity(uint32_t earfcn,
 
     double txPowerDensity = (powerTxW / (txBandwidthConfiguration * 180000));
 
-    for (std::vector<int>::iterator it = activeRbs.begin(); it != activeRbs.end(); it++)
+    for (auto it = activeRbs.begin(); it != activeRbs.end(); it++)
     {
         int rbId = (*it);
         (*txPsd)[rbId] = txPowerDensity;
@@ -323,11 +323,11 @@ LteSpectrumValueHelper::CreateTxPowerSpectralDensity(uint32_t earfcn,
     // powerTx is expressed in dBm. We must convert it into natural unit.
     double basicPowerTxW = std::pow(10., (powerTx - 30) / 10);
 
-    for (std::vector<int>::iterator it = activeRbs.begin(); it != activeRbs.end(); it++)
+    for (auto it = activeRbs.begin(); it != activeRbs.end(); it++)
     {
         int rbId = (*it);
 
-        std::map<int, double>::iterator powerIt = powerTxMap.find(rbId);
+        auto powerIt = powerTxMap.find(rbId);
 
         double txPowerDensity;
 
@@ -365,7 +365,7 @@ LteSpectrumValueHelper::CreateUlTxPowerSpectralDensity(uint16_t earfcn,
 
     double txPowerDensity = (powerTxW / (activeRbs.size() * 180000));
 
-    for (std::vector<int>::iterator it = activeRbs.begin(); it != activeRbs.end(); it++)
+    for (auto it = activeRbs.begin(); it != activeRbs.end(); it++)
     {
         int rbId = (*it);
         (*txPsd)[rbId] = txPowerDensity;

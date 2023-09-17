@@ -89,7 +89,7 @@ void
 DeviceEnergyModelContainer::Add(DeviceEnergyModelContainer container)
 {
     NS_LOG_FUNCTION(this << &container);
-    for (Iterator i = container.Begin(); i != container.End(); i++)
+    for (auto i = container.Begin(); i != container.End(); i++)
     {
         m_models.push_back(*i);
     }

@@ -352,8 +352,7 @@ MessageHeader::Mid::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
 
-    for (std::vector<Ipv4Address>::const_iterator iter = this->interfaceAddresses.begin();
-         iter != this->interfaceAddresses.end();
+    for (auto iter = this->interfaceAddresses.begin(); iter != this->interfaceAddresses.end();
          iter++)
     {
         i.WriteHtonU32(iter->Get());
@@ -384,9 +383,7 @@ uint32_t
 MessageHeader::Hello::GetSerializedSize() const
 {
     uint32_t size = 4;
-    for (std::vector<LinkMessage>::const_iterator iter = this->linkMessages.begin();
-         iter != this->linkMessages.end();
-         iter++)
+    for (auto iter = this->linkMessages.begin(); iter != this->linkMessages.end(); iter++)
     {
         const LinkMessage& lm = *iter;
         size += 4;
@@ -432,9 +429,7 @@ MessageHeader::Hello::Serialize(Buffer::Iterator start) const
     i.WriteU8(this->hTime);
     i.WriteU8(static_cast<uint8_t>(this->willingness));
 
-    for (std::vector<LinkMessage>::const_iterator iter = this->linkMessages.begin();
-         iter != this->linkMessages.end();
-         iter++)
+    for (auto iter = this->linkMessages.begin(); iter != this->linkMessages.end(); iter++)
     {
         const LinkMessage& lm = *iter;
 
@@ -447,8 +442,7 @@ MessageHeader::Hello::Serialize(Buffer::Iterator start) const
         // - the end of the message).
         i.WriteHtonU16(4 + lm.neighborInterfaceAddresses.size() * IPV4_ADDRESS_SIZE);
 
-        for (std::vector<Ipv4Address>::const_iterator neigh_iter =
-                 lm.neighborInterfaceAddresses.begin();
+        for (auto neigh_iter = lm.neighborInterfaceAddresses.begin();
              neigh_iter != lm.neighborInterfaceAddresses.end();
              neigh_iter++)
         {
@@ -530,9 +524,7 @@ MessageHeader::Tc::Serialize(Buffer::Iterator start) const
     i.WriteHtonU16(this->ansn);
     i.WriteHtonU16(0); // Reserved
 
-    for (std::vector<Ipv4Address>::const_iterator iter = this->neighborAddresses.begin();
-         iter != this->neighborAddresses.end();
-         iter++)
+    for (auto iter = this->neighborAddresses.begin(); iter != this->neighborAddresses.end(); iter++)
     {
         i.WriteHtonU32(iter->Get());
     }

@@ -243,7 +243,7 @@ V4TraceRoute::Receive(Ptr<Socket> socket)
             recvSeq = (uint16_t)data[7] << 0;
             recvSeq |= (uint16_t)data[6] << 8;
 
-            std::map<uint16_t, Time>::iterator i = m_sent.find(recvSeq);
+            auto i = m_sent.find(recvSeq);
             if (i != m_sent.end())
             {
                 Time sendTime = i->second;
@@ -296,7 +296,7 @@ V4TraceRoute::Receive(Ptr<Socket> socket)
 
             Icmpv4Echo echo;
             p->RemoveHeader(echo);
-            std::map<uint16_t, Time>::iterator i = m_sent.find(echo.GetSequenceNumber());
+            auto i = m_sent.find(echo.GetSequenceNumber());
 
             if (i != m_sent.end() && echo.GetIdentifier() == 0)
             {

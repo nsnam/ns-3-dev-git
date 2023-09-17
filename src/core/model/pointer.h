@@ -129,7 +129,7 @@ class PointerChecker : public ns3::PointerChecker
 {
     bool Check(const AttributeValue& val) const override
     {
-        const PointerValue* value = dynamic_cast<const PointerValue*>(&val);
+        const auto value = dynamic_cast<const PointerValue*>(&val);
         if (value == nullptr)
         {
             return false;
@@ -166,8 +166,8 @@ class PointerChecker : public ns3::PointerChecker
 
     bool Copy(const AttributeValue& source, AttributeValue& destination) const override
     {
-        const PointerValue* src = dynamic_cast<const PointerValue*>(&source);
-        PointerValue* dst = dynamic_cast<PointerValue*>(&destination);
+        const auto src = dynamic_cast<const PointerValue*>(&source);
+        auto dst = dynamic_cast<PointerValue*>(&destination);
         if (src == nullptr || dst == nullptr)
         {
             return false;

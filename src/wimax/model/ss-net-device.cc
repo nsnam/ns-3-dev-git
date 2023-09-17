@@ -1089,9 +1089,7 @@ SubscriberStationNetDevice::DoReceive(Ptr<Packet> packet)
 
                     // DEFRAGMENTATION
                     NS_LOG_INFO("\t SS PACKET DEFRAGMENTATION" << std::endl);
-                    for (std::list<Ptr<const Packet>>::const_iterator iter = fragmentsQueue.begin();
-                         iter != fragmentsQueue.end();
-                         ++iter)
+                    for (auto iter = fragmentsQueue.begin(); iter != fragmentsQueue.end(); ++iter)
                     {
                         // Create the whole Packet
                         fullPacket->AddAtEnd(*iter);
@@ -1146,8 +1144,7 @@ SubscriberStationNetDevice::ProcessDlMap(const DlMap& dlmap)
     m_baseStationId = dlmap.GetBaseStationId();
     std::list<OfdmDlMapIe> dlMapElements = dlmap.GetDlMapElements();
 
-    for (std::list<OfdmDlMapIe>::iterator iter = dlMapElements.begin(); iter != dlMapElements.end();
-         ++iter)
+    for (auto iter = dlMapElements.begin(); iter != dlMapElements.end(); ++iter)
     {
         if (iter->GetDiuc() == OfdmDlBurstProfile::DIUC_END_OF_MAP)
         {
@@ -1180,8 +1177,7 @@ SubscriberStationNetDevice::ProcessUlMap(const UlMap& ulmap)
     std::list<OfdmUlMapIe> ulMapElements = ulmap.GetUlMapElements();
     m_linkManager->SetRangingIntervalFound(false);
 
-    for (std::list<OfdmUlMapIe>::iterator iter = ulMapElements.begin(); iter != ulMapElements.end();
-         ++iter)
+    for (auto iter = ulMapElements.begin(); iter != ulMapElements.end(); ++iter)
     {
         OfdmUlMapIe ulMapIe = *iter;
 
@@ -1282,9 +1278,7 @@ SubscriberStationNetDevice::ProcessDcd(const Dcd& dcd)
 
     std::vector<OfdmDlBurstProfile> dlBurstProfiles = dcd.GetDlBurstProfiles();
 
-    for (std::vector<OfdmDlBurstProfile>::iterator iter = dlBurstProfiles.begin();
-         iter != dlBurstProfiles.end();
-         ++iter)
+    for (auto iter = dlBurstProfiles.begin(); iter != dlBurstProfiles.end(); ++iter)
     {
         OfdmDlBurstProfile brstProfile = *iter;
 
@@ -1319,9 +1313,7 @@ SubscriberStationNetDevice::ProcessUcd(const Ucd& ucd)
 
     std::vector<OfdmUlBurstProfile> ulBurstProfiles = ucd.GetUlBurstProfiles();
 
-    for (std::vector<OfdmUlBurstProfile>::iterator iter = ulBurstProfiles.begin();
-         iter != ulBurstProfiles.end();
-         ++iter)
+    for (auto iter = ulBurstProfiles.begin(); iter != ulBurstProfiles.end(); ++iter)
     {
         OfdmUlBurstProfile brstProfile = *iter;
 

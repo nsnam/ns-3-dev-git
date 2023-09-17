@@ -93,7 +93,7 @@ LrWpanMacTrailer::SetFcs(Ptr<const Packet> p)
     if (m_calcFcs)
     {
         uint16_t size = p->GetSize();
-        uint8_t* serial_packet = new uint8_t[size];
+        auto serial_packet = new uint8_t[size];
 
         p->CopyData(serial_packet, size);
 
@@ -115,7 +115,7 @@ LrWpanMacTrailer::CheckFcs(Ptr<const Packet> p)
     {
         uint16_t checkFcs;
         uint16_t size = p->GetSize();
-        uint8_t* serial_packet = new uint8_t[size];
+        auto serial_packet = new uint8_t[size];
 
         p->CopyData(serial_packet, size);
 

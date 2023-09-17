@@ -232,7 +232,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
     NS_ASSERT(m_tc);
 
     // is this packet aimed at a local interface ?
-    for (Ipv4InterfaceAddressListCI i = m_ifaddrs.begin(); i != m_ifaddrs.end(); ++i)
+    for (auto i = m_ifaddrs.begin(); i != m_ifaddrs.end(); ++i)
     {
         if (dest == (*i).GetLocal())
         {
@@ -271,7 +271,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
         }
         else
         {
-            for (Ipv4InterfaceAddressListCI i = m_ifaddrs.begin(); i != m_ifaddrs.end(); ++i)
+            for (auto i = m_ifaddrs.begin(); i != m_ifaddrs.end(); ++i)
             {
                 if (dest.IsSubnetDirectedBroadcast((*i).GetMask()))
                 {
@@ -335,7 +335,7 @@ Ipv4Interface::GetAddress(uint32_t index) const
     if (index < m_ifaddrs.size())
     {
         uint32_t tmp = 0;
-        for (Ipv4InterfaceAddressListCI i = m_ifaddrs.begin(); i != m_ifaddrs.end(); i++)
+        for (auto i = m_ifaddrs.begin(); i != m_ifaddrs.end(); i++)
         {
             if (tmp == index)
             {
@@ -360,7 +360,7 @@ Ipv4Interface::RemoveAddress(uint32_t index)
     {
         NS_FATAL_ERROR("Bug in Ipv4Interface::RemoveAddress");
     }
-    Ipv4InterfaceAddressListI i = m_ifaddrs.begin();
+    auto i = m_ifaddrs.begin();
     uint32_t tmp = 0;
     while (i != m_ifaddrs.end())
     {
@@ -393,7 +393,7 @@ Ipv4Interface::RemoveAddress(Ipv4Address address)
         return Ipv4InterfaceAddress();
     }
 
-    for (Ipv4InterfaceAddressListI it = m_ifaddrs.begin(); it != m_ifaddrs.end(); it++)
+    for (auto it = m_ifaddrs.begin(); it != m_ifaddrs.end(); it++)
     {
         if ((*it).GetLocal() == address)
         {

@@ -95,7 +95,7 @@ ObjectFactory::Create() const
     NS_LOG_FUNCTION(this);
     Callback<ObjectBase*> cb = m_tid.GetConstructor();
     ObjectBase* base = cb();
-    Object* derived = dynamic_cast<Object*>(base);
+    auto derived = dynamic_cast<Object*>(base);
     NS_ASSERT(derived != nullptr);
     derived->SetTypeId(m_tid);
     derived->Construct(m_parameters);
@@ -108,9 +108,7 @@ operator<<(std::ostream& os, const ObjectFactory& factory)
 {
     os << factory.m_tid.GetName() << "[";
     bool first = true;
-    for (AttributeConstructionList::CIterator i = factory.m_parameters.Begin();
-         i != factory.m_parameters.End();
-         ++i)
+    for (auto i = factory.m_parameters.Begin(); i != factory.m_parameters.End(); ++i)
     {
         os << i->name << "=" << i->value->SerializeToString(i->checker);
         if (first)

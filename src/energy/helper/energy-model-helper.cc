@@ -42,7 +42,7 @@ EnergySourceContainer
 EnergySourceHelper::Install(NodeContainer c) const
 {
     EnergySourceContainer container;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<EnergySource> src = DoInstall(*i);
         container.Add(src);
@@ -105,8 +105,8 @@ DeviceEnergyModelHelper::Install(NetDeviceContainer deviceContainer,
 {
     NS_ASSERT(deviceContainer.GetN() <= sourceContainer.GetN());
     DeviceEnergyModelContainer container;
-    NetDeviceContainer::Iterator dev = deviceContainer.Begin();
-    EnergySourceContainer::Iterator src = sourceContainer.Begin();
+    auto dev = deviceContainer.Begin();
+    auto src = sourceContainer.Begin();
     while (dev != deviceContainer.End())
     {
         // check to make sure source and net device are on the same node

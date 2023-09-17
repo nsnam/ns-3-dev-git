@@ -870,7 +870,7 @@ CsmaPingTestCase::DoRun()
     // Make packets be sent about every DefaultPacketSize / DataRate =
     // 4096 bits / (5000 bits/second) = 0.82 second.
     Config::SetDefault("ns3::Ipv4RawSocketImpl::Protocol", StringValue("2"));
-    InetSocketAddress dst = InetSocketAddress(addresses.GetAddress(3));
+    InetSocketAddress dst(addresses.GetAddress(3));
     OnOffHelper onoff = OnOffHelper("ns3::Ipv4RawSocketFactory", dst);
     onoff.SetConstantRate(DataRate(5000));
 
@@ -1004,7 +1004,7 @@ CsmaRawIpSocketTestCase::DoRun()
     // Make packets be sent about every DefaultPacketSize / DataRate =
     // 4096 bits / (5000 bits/second) = 0.82 second.
     Config::SetDefault("ns3::Ipv4RawSocketImpl::Protocol", StringValue("2"));
-    InetSocketAddress dst = InetSocketAddress(addresses.GetAddress(3));
+    InetSocketAddress dst(addresses.GetAddress(3));
     OnOffHelper onoff = OnOffHelper("ns3::Ipv4RawSocketFactory", dst);
     onoff.SetConstantRate(DataRate(5000));
 

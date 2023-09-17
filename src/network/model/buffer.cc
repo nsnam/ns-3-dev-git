@@ -88,7 +88,7 @@ Buffer::LocalStaticDestructor::~LocalStaticDestructor()
     NS_LOG_FUNCTION(this);
     if (IS_INITIALIZED(g_freeList))
     {
-        for (Buffer::FreeList::iterator i = g_freeList->begin(); i != g_freeList->end(); i++)
+        for (auto i = g_freeList->begin(); i != g_freeList->end(); i++)
         {
             Buffer::Deallocate(*i);
         }
@@ -173,8 +173,8 @@ Buffer::Allocate(uint32_t reqSize)
     NS_ASSERT(reqSize >= 1);
     reqSize += ALLOC_OVER_PROVISION;
     uint32_t size = reqSize - 1 + sizeof(Buffer::Data);
-    uint8_t* b = new uint8_t[size];
-    Buffer::Data* data = reinterpret_cast<Buffer::Data*>(b);
+    auto b = new uint8_t[size];
+    auto data = reinterpret_cast<Buffer::Data*>(b);
     data->m_size = reqSize;
     data->m_count = 1;
     return data;
@@ -185,7 +185,7 @@ Buffer::Deallocate(Buffer::Data* data)
 {
     NS_LOG_FUNCTION(data);
     NS_ASSERT(data->m_count == 0);
-    uint8_t* buf = reinterpret_cast<uint8_t*>(data);
+    auto buf = reinterpret_cast<uint8_t*>(data);
     delete[] buf;
 }
 
@@ -582,7 +582,7 @@ uint32_t
 Buffer::Serialize(uint8_t* buffer, uint32_t maxSize) const
 {
     NS_LOG_FUNCTION(this << &buffer << maxSize);
-    uint32_t* p = reinterpret_cast<uint32_t*>(buffer);
+    auto p = reinterpret_cast<uint32_t*>(buffer);
     uint32_t size = 0;
 
     // Add the zero data length
@@ -654,7 +654,7 @@ uint32_t
 Buffer::Deserialize(const uint8_t* buffer, uint32_t size)
 {
     NS_LOG_FUNCTION(this << &buffer << size);
-    const uint32_t* p = reinterpret_cast<const uint32_t*>(buffer);
+    auto p = reinterpret_cast<const uint32_t*>(buffer);
     uint32_t sizeCheck = size - 4;
 
     NS_ASSERT(sizeCheck >= 4);

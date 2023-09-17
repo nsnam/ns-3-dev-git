@@ -160,11 +160,10 @@ BuildingsPropagationLossModel::GetShadowing(Ptr<MobilityModel> a, Ptr<MobilityMo
     Ptr<MobilityBuildingInfo> b1 = b->GetObject<MobilityBuildingInfo>();
     NS_ASSERT_MSG(a1 && b1, "BuildingsPropagationLossModel only works with MobilityBuildingInfo");
 
-    std::map<Ptr<MobilityModel>, std::map<Ptr<MobilityModel>, ShadowingLoss>>::iterator ait =
-        m_shadowingLossMap.find(a);
+    auto ait = m_shadowingLossMap.find(a);
     if (ait != m_shadowingLossMap.end())
     {
-        std::map<Ptr<MobilityModel>, ShadowingLoss>::iterator bit = ait->second.find(b);
+        auto bit = ait->second.find(b);
         if (bit != ait->second.end())
         {
             return (bit->second.GetLoss());

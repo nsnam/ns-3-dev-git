@@ -249,7 +249,7 @@ TcpYeah::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 
             // queue = rttQueue * bw = rttQueue * (cwnd/RTTmin)
             double bw = segCwnd / m_minRtt.GetSeconds();
-            uint32_t queue = static_cast<uint32_t>(bw * rttQueue.GetSeconds());
+            auto queue = static_cast<uint32_t>(bw * rttQueue.GetSeconds());
             NS_LOG_DEBUG("Queue backlog = " << queue << " given by cwnd = " << segCwnd
                                             << ", minRtt = " << m_minRtt.GetMilliSeconds()
                                             << " ms, baseRtt = " << m_baseRtt.GetMilliSeconds()

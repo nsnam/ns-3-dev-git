@@ -48,7 +48,7 @@ ApplicationContainer
 UdpServerHelper::Install(NodeContainer c)
 {
     ApplicationContainer apps;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
 
@@ -93,7 +93,7 @@ ApplicationContainer
 UdpClientHelper::Install(NodeContainer c)
 {
     ApplicationContainer apps;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
         Ptr<UdpClient> client = m_factory.Create<UdpClient>();
@@ -133,7 +133,7 @@ ApplicationContainer
 UdpTraceClientHelper::Install(NodeContainer c)
 {
     ApplicationContainer apps;
-    for (NodeContainer::Iterator i = c.Begin(); i != c.End(); ++i)
+    for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
         Ptr<UdpTraceClient> client = m_factory.Create<UdpTraceClient>();

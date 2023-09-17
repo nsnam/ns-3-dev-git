@@ -67,7 +67,7 @@ ApplicationContainer
 DhcpHelper::InstallDhcpClient(NetDeviceContainer netDevices) const
 {
     ApplicationContainer apps;
-    for (NetDeviceContainer::Iterator i = netDevices.Begin(); i != netDevices.End(); ++i)
+    for (auto i = netDevices.Begin(); i != netDevices.End(); ++i)
     {
         apps.Add(InstallDhcpClientPriv(*i));
     }
@@ -184,8 +184,7 @@ DhcpHelper::InstallDhcpServer(Ptr<NetDevice> netDevice,
     }
 
     // check that the already fixed addresses are not in conflict with the pool
-    std::list<Ipv4Address>::iterator iter;
-    for (iter = m_fixedAddresses.begin(); iter != m_fixedAddresses.end(); iter++)
+    for (auto iter = m_fixedAddresses.begin(); iter != m_fixedAddresses.end(); iter++)
     {
         if (iter->Get() >= minAddr.Get() && iter->Get() <= maxAddr.Get())
         {
@@ -250,8 +249,7 @@ DhcpHelper::InstallFixedAddress(Ptr<NetDevice> netDevice, Ipv4Address addr, Ipv4
     }
 
     // check that the already fixed addresses are not in conflict with the pool
-    std::list<std::pair<Ipv4Address, Ipv4Address>>::iterator iter;
-    for (iter = m_addressPools.begin(); iter != m_addressPools.end(); iter++)
+    for (auto iter = m_addressPools.begin(); iter != m_addressPools.end(); iter++)
     {
         if (addr.Get() >= iter->first.Get() && addr.Get() <= iter->second.Get())
         {

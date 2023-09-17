@@ -55,8 +55,8 @@ FriisSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
     Ptr<const MobilityModel> b) const
 {
     Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue>(params->psd);
-    Values::iterator vit = rxPsd->ValuesBegin();
-    Bands::const_iterator fit = rxPsd->ConstBandsBegin();
+    auto vit = rxPsd->ValuesBegin();
+    auto fit = rxPsd->ConstBandsBegin();
 
     NS_ASSERT(a);
     NS_ASSERT(b);

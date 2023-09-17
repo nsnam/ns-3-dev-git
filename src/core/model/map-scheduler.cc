@@ -79,7 +79,7 @@ Scheduler::Event
 MapScheduler::PeekNext() const
 {
     NS_LOG_FUNCTION(this);
-    EventMapCI i = m_list.begin();
+    auto i = m_list.begin();
     NS_ASSERT(i != m_list.end());
 
     Event ev;
@@ -93,7 +93,7 @@ Scheduler::Event
 MapScheduler::RemoveNext()
 {
     NS_LOG_FUNCTION(this);
-    EventMapI i = m_list.begin();
+    auto i = m_list.begin();
     NS_ASSERT(i != m_list.end());
     Event ev;
     ev.impl = i->second;
@@ -107,7 +107,7 @@ void
 MapScheduler::Remove(const Event& ev)
 {
     NS_LOG_FUNCTION(this << ev.impl << ev.key.m_ts << ev.key.m_uid);
-    EventMapI i = m_list.find(ev.key);
+    auto i = m_list.find(ev.key);
     NS_ASSERT(i->second == ev.impl);
     m_list.erase(i);
 }

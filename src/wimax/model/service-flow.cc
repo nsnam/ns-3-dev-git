@@ -91,7 +91,7 @@ ServiceFlow::ServiceFlow(Tlv tlv)
         m_direction = SF_DIRECTION_DOWN;
     }
 
-    for (std::vector<Tlv*>::const_iterator iter = param->Begin(); iter != param->End(); ++iter)
+    for (auto iter = param->Begin(); iter != param->End(); ++iter)
     {
         switch ((*iter)->GetType())
         {

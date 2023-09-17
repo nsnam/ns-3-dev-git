@@ -77,8 +77,7 @@ LteUeComponentCarrierManager::SetComponentCarrierMacSapProviders(uint8_t compone
 {
     NS_LOG_FUNCTION(this);
     bool result = false;
-    std::map<uint8_t, LteMacSapProvider*>::iterator it;
-    it = m_macSapProvidersMap.find(componentCarrierId);
+    auto it = m_macSapProvidersMap.find(componentCarrierId);
     if (componentCarrierId > m_noOfComponentCarriers)
     {
         NS_FATAL_ERROR("Inconsistent componentCarrierId or you didn't call "

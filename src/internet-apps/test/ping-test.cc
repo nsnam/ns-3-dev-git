@@ -576,7 +576,7 @@ PingTestSuite::PingTestSuite()
     //                        number sent equals number received, which equals 5.
     //    How validated:  PingReport trace is checked for number of packets
     //                    transmitted and received (5), and number of drops (0).
-    PingTestCase* testcase1v4 = new PingTestCase(
+    auto testcase1v4 = new PingTestCase(
         "1. Unlimited pings, no losses, StopApplication () with no packets in flight IPv4",
         USEIPV6_FALSE);
     testcase1v4->SetStartTime(Seconds(1));
@@ -588,7 +588,7 @@ PingTestSuite::PingTestSuite()
     testcase1v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
     AddTestCase(testcase1v4, TestCase::QUICK);
 
-    PingTestCase* testcase1v6 = new PingTestCase(
+    auto testcase1v6 = new PingTestCase(
         "1. Unlimited pings, no losses, StopApplication () with no packets in flight IPv6",
         USEIPV6_TRUE);
     testcase1v6->SetStartTime(Seconds(1));
@@ -608,7 +608,7 @@ PingTestSuite::PingTestSuite()
     //                     to be lost
     // How validated:  PingReport trace is checked for number of packets
     //                 transmitted (1) and received (0), and number of drops (0)
-    PingTestCase* testcase2v4 = new PingTestCase(
+    auto testcase2v4 = new PingTestCase(
         "2. Unlimited pings, no losses, StopApplication () with 1 packet in flight IPv4",
         USEIPV6_FALSE);
     testcase2v4->SetStartTime(Seconds(1));
@@ -619,7 +619,7 @@ PingTestSuite::PingTestSuite()
     testcase1v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
     AddTestCase(testcase2v4, TestCase::QUICK);
 
-    PingTestCase* testcase2v6 = new PingTestCase(
+    auto testcase2v6 = new PingTestCase(
         "2. Unlimited pings, no losses, StopApplication () with 1 packet in flight IPv6",
         USEIPV6_TRUE);
     testcase2v6->SetStartTime(Seconds(1));
@@ -645,10 +645,9 @@ PingTestSuite::PingTestSuite()
     //                 Report time will be MicroSeconds (2020001).
     uint32_t count = 2;
     uint32_t expectedTx = 2;
-    PingTestCase* testcase3v4 =
-        new PingTestCase("3. Test for operation of count attribute and exit "
-                         "time after all pings were received, IPv4",
-                         USEIPV6_FALSE);
+    auto testcase3v4 = new PingTestCase("3. Test for operation of count attribute and exit "
+                                        "time after all pings were received, IPv4",
+                                        USEIPV6_FALSE);
     testcase3v4->SetStartTime(Seconds(1));
     testcase3v4->SetStopTime(Seconds(5));
     testcase3v4->SetCount(count);
@@ -660,10 +659,9 @@ PingTestSuite::PingTestSuite()
     testcase3v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
     AddTestCase(testcase3v4, TestCase::QUICK);
 
-    PingTestCase* testcase3v6 =
-        new PingTestCase("3. Test for operation of count attribute and exit "
-                         "time after all pings were received, IPv6",
-                         USEIPV6_TRUE);
+    auto testcase3v6 = new PingTestCase("3. Test for operation of count attribute and exit "
+                                        "time after all pings were received, IPv6",
+                                        USEIPV6_TRUE);
     testcase3v6->SetStartTime(Seconds(1));
     testcase3v6->SetStopTime(Seconds(5));
     testcase3v6->SetCount(count);
@@ -685,7 +683,7 @@ PingTestSuite::PingTestSuite()
     // How validated:  PingReport trace is checked for number of packets
     //                 transmitted (2) and received (2), and number of drops (0)
     Time interval = Seconds(3.0);
-    PingTestCase* testcase4v4 =
+    auto testcase4v4 =
         new PingTestCase("4. Test for the operation of interval attribute for IPv4", USEIPV6_FALSE);
     testcase4v4->SetStartTime(Seconds(1));
     testcase4v4->SetStopTime(Seconds(5));
@@ -696,7 +694,7 @@ PingTestSuite::PingTestSuite()
     testcase4v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
     AddTestCase(testcase4v4, TestCase::QUICK);
 
-    PingTestCase* testcase4v6 =
+    auto testcase4v6 =
         new PingTestCase("4. Test for the operation of interval attribute for IPv6", USEIPV6_TRUE);
     testcase4v6->SetStartTime(Seconds(1));
     testcase4v6->SetStopTime(Seconds(5));
@@ -724,7 +722,7 @@ PingTestSuite::PingTestSuite()
     // How validated:  PingReport trace is checked for number of packets
     //                 transmitted (5) and  received (0).
     //                 The packet loss rate should be checked to be 100 percent
-    PingTestCase* testcase5v4 =
+    auto testcase5v4 =
         new PingTestCase("5. Test for behavior of ping to unreachable IPv4 address", USEIPV6_FALSE);
     testcase5v4->SetStartTime(Seconds(1));
     testcase5v4->SetStopTime(Seconds(5.5));
@@ -734,7 +732,7 @@ PingTestSuite::PingTestSuite()
     testcase5v4->CheckReportLoss(100);
     AddTestCase(testcase5v4, TestCase::QUICK);
 
-    PingTestCase* testcase5v6 =
+    auto testcase5v6 =
         new PingTestCase("5. Test for behavior of ping to unreachable IPv6 address", USEIPV6_TRUE);
     testcase5v6->SetStartTime(Seconds(1));
     testcase5v6->SetStopTime(Seconds(5.5));
@@ -757,7 +755,7 @@ PingTestSuite::PingTestSuite()
     // How validated:  PingReport trace is checked for number of packets
     //                 transmitted (2) and received (2),number of drops (0),
     //                 Report time will be MicroSeconds (2020001).
-    PingTestCase* testcase6v4 =
+    auto testcase6v4 =
         new PingTestCase("6. Test for behavior of ping to broadcast IPv4 address", USEIPV6_FALSE);
     testcase6v4->SetStartTime(Seconds(1));
     testcase6v4->SetStopTime(Seconds(5.5));
@@ -767,7 +765,7 @@ PingTestSuite::PingTestSuite()
     testcase6v4->CheckReportLoss(0);
     AddTestCase(testcase6v4, TestCase::QUICK);
 
-    PingTestCase* testcase6v6 =
+    auto testcase6v6 =
         new PingTestCase("6. Test for behavior of ping to all-nodes multicast IPv6 address",
                          USEIPV6_TRUE);
     testcase6v6->SetStartTime(Seconds(1));
@@ -791,7 +789,7 @@ PingTestSuite::PingTestSuite()
     //                 transmitted (3) and received (2), loss percentage (33).
     //                 Ping Tx trace (3) and Rtt trace (2) are also checked.
     //                 Report time will be MicroSeconds (3040000).
-    PingTestCase* testcase7v4 = new PingTestCase(
+    auto testcase7v4 = new PingTestCase(
         "7. Test behavior of first reply lost in a count-limited configuration, IPv4",
         USEIPV6_FALSE);
     std::list<uint32_t> dropList{0};
@@ -807,7 +805,7 @@ PingTestSuite::PingTestSuite()
     testcase7v4->CheckReportTime(MicroSeconds(3040000));
     AddTestCase(testcase7v4, TestCase::QUICK);
 
-    PingTestCase* testcase7v6 = new PingTestCase(
+    auto testcase7v6 = new PingTestCase(
         "7. Test behavior of first reply lost in a count-limited configuration, IPv6",
         USEIPV6_TRUE);
     testcase7v6->SetDropList(dropList);
@@ -836,7 +834,7 @@ PingTestSuite::PingTestSuite()
     //                 transmitted (3) and received (2), loss percentage (33).
     //                 Ping Tx trace (3) and Rtt trace (2) are also checked.
     //                 Report time will be MicroSeconds (3040000).
-    PingTestCase* testcase8v4 = new PingTestCase(
+    auto testcase8v4 = new PingTestCase(
         "8. Test behavior of second reply lost in a count-limited configuration, IPv4",
         USEIPV6_FALSE);
     std::list<uint32_t> dropList2{1};
@@ -852,7 +850,7 @@ PingTestSuite::PingTestSuite()
     testcase8v4->CheckReportTime(MicroSeconds(3040000));
     AddTestCase(testcase8v4, TestCase::QUICK);
 
-    PingTestCase* testcase8v6 = new PingTestCase(
+    auto testcase8v6 = new PingTestCase(
         "8. Test behavior of second reply lost in a count-limited configuration, IPv6",
         USEIPV6_TRUE);
     testcase8v6->SetDropList(dropList2);
@@ -881,7 +879,7 @@ PingTestSuite::PingTestSuite()
     //                 transmitted (3) and received (2), loss percentage (33).
     //                 Ping Tx trace (3) and Rtt trace (2) are also checked.
     //                 Report time will be MicroSeconds (3040000).
-    PingTestCase* testcase9v4 = new PingTestCase(
+    auto testcase9v4 = new PingTestCase(
         "9. Test behavior of last reply lost in a count-limited configuration, IPv4",
         USEIPV6_FALSE);
     std::list<uint32_t> dropList3{2};
@@ -897,7 +895,7 @@ PingTestSuite::PingTestSuite()
     testcase9v4->CheckReportTime(MicroSeconds(3040000));
     AddTestCase(testcase9v4, TestCase::QUICK);
 
-    PingTestCase* testcase9v6 = new PingTestCase(
+    auto testcase9v6 = new PingTestCase(
         "9. Test behavior of last reply lost in a count-limited configuration, IPv6",
         USEIPV6_TRUE);
     testcase9v6->SetDropList(dropList3);

@@ -127,8 +127,8 @@ LteRlcHeader::GetInstanceTypeId() const
 void
 LteRlcHeader::Print(std::ostream& os) const
 {
-    std::list<uint8_t>::const_iterator it1 = m_extensionBits.begin();
-    std::list<uint16_t>::const_iterator it2 = m_lengthIndicators.begin();
+    auto it1 = m_extensionBits.begin();
+    auto it2 = m_lengthIndicators.begin();
 
     os << "Len=" << m_headerLength;
     os << " FI=" << (uint16_t)m_framingInfo;
@@ -168,8 +168,8 @@ LteRlcHeader::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
 
-    std::list<uint8_t>::const_iterator it1 = m_extensionBits.begin();
-    std::list<uint16_t>::const_iterator it2 = m_lengthIndicators.begin();
+    auto it1 = m_extensionBits.begin();
+    auto it2 = m_lengthIndicators.begin();
 
     i.WriteU8(((m_framingInfo << 3) & 0x18) | (((*it1) << 2) & 0x04) |
               ((m_sequenceNumber.GetValue() >> 8) & 0x0003));

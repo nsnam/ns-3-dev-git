@@ -288,7 +288,7 @@ TcpLedbat::UpdateBaseDelay(uint32_t owd)
     }
     else
     {
-        uint32_t last = static_cast<uint32_t>(m_baseHistory.buffer.size() - 1);
+        auto last = static_cast<uint32_t>(m_baseHistory.buffer.size() - 1);
         if (owd < m_baseHistory.buffer[last])
         {
             m_baseHistory.buffer[last] = owd;

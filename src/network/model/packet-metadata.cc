@@ -44,7 +44,7 @@ PacketMetadata::DataFreeList PacketMetadata::m_freeList;
 PacketMetadata::DataFreeList::~DataFreeList()
 {
     NS_LOG_FUNCTION(this);
-    for (iterator i = begin(); i != end(); i++)
+    for (auto i = begin(); i != end(); i++)
     {
         PacketMetadata::Deallocate(*i);
     }
@@ -620,8 +620,8 @@ PacketMetadata::Allocate(uint32_t n)
         n = PACKET_METADATA_DATA_M_DATA_SIZE;
     }
     size += n - PACKET_METADATA_DATA_M_DATA_SIZE;
-    uint8_t* buf = new uint8_t[size];
-    PacketMetadata::Data* data = (PacketMetadata::Data*)buf;
+    auto buf = new uint8_t[size];
+    auto data = (PacketMetadata::Data*)buf;
     data->m_size = n;
     data->m_count = 1;
     data->m_dirtyEnd = 0;
@@ -632,7 +632,7 @@ void
 PacketMetadata::Deallocate(PacketMetadata::Data* data)
 {
     NS_LOG_FUNCTION(data);
-    uint8_t* buf = (uint8_t*)data;
+    auto buf = (uint8_t*)data;
     delete[] buf;
 }
 

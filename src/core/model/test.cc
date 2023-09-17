@@ -290,7 +290,7 @@ TestCase::~TestCase()
     NS_ASSERT(m_runner == nullptr);
     m_parent = nullptr;
     delete m_result;
-    for (std::vector<TestCase*>::const_iterator i = m_children.begin(); i != m_children.end(); ++i)
+    for (auto i = m_children.begin(); i != m_children.end(); ++i)
     {
         delete *i;
     }
@@ -353,7 +353,7 @@ TestCase::Run(TestRunnerImpl* runner)
     m_runner = runner;
     DoSetup();
     m_result->clock.Start();
-    for (std::vector<TestCase*>::const_iterator i = m_children.begin(); i != m_children.end(); ++i)
+    for (auto i = m_children.begin(); i != m_children.end(); ++i)
     {
         TestCase* test = *i;
         test->Run(runner);
@@ -571,7 +571,7 @@ TestRunnerImpl::IsTopLevelSourceDir(std::string path) const
     //
 
     std::list<std::string> files = SystemPath::ReadFiles(path);
-    for (std::list<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
+    for (auto i = files.begin(); i != files.end(); ++i)
     {
         if (*i == "VERSION")
         {
@@ -629,7 +629,7 @@ TestRunnerImpl::ReplaceXmlSpecialCharacters(std::string xml) const
     {
         char character = xml[i];
 
-        specials_map::const_iterator it = specials.find(character);
+        auto it = specials.find(character);
 
         if (it == specials.end())
         {
@@ -802,9 +802,9 @@ TestRunnerImpl::PrintTestNameList(std::list<TestCase*>::const_iterator begin,
     label[TestSuite::EXAMPLE] = "example      ";
     label[TestSuite::PERFORMANCE] = "performance  ";
 
-    for (std::list<TestCase*>::const_iterator i = begin; i != end; ++i)
+    for (auto i = begin; i != end; ++i)
     {
-        TestSuite* test = dynamic_cast<TestSuite*>(*i);
+        auto test = dynamic_cast<TestSuite*>(*i);
         NS_ASSERT(test != nullptr);
         if (printTestType)
         {
@@ -852,8 +852,7 @@ TestRunnerImpl::FilterTests(std::string testName,
         }
 
         // Remove any test cases that should be skipped.
-        std::vector<TestCase*>::iterator j;
-        for (j = test->m_children.begin(); j != test->m_children.end();)
+        for (auto j = test->m_children.begin(); j != test->m_children.end();)
         {
             TestCase* testCase = *j;
 
@@ -1090,7 +1089,7 @@ TestRunnerImpl::Run(int argc, char* argv[])
         return 1;
     }
 
-    for (std::list<TestCase*>::const_iterator i = tests.begin(); i != tests.end(); ++i)
+    for (auto i = tests.begin(); i != tests.end(); ++i)
     {
         TestCase* test = *i;
 

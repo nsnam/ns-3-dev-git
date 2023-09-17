@@ -342,8 +342,8 @@ Ipv4AddressGeneratorImpl::NextAddress(const Ipv4Mask mask)
     NS_ABORT_MSG_UNLESS(m_netTable[index].addr <= m_netTable[index].addrMax,
                         "Ipv4AddressGeneratorImpl::NextAddress(): Address overflow");
 
-    Ipv4Address addr = Ipv4Address((m_netTable[index].network << m_netTable[index].shift) |
-                                   m_netTable[index].addr);
+    Ipv4Address addr((m_netTable[index].network << m_netTable[index].shift) |
+                     m_netTable[index].addr);
 
     ++m_netTable[index].addr;
     //
@@ -404,7 +404,7 @@ Ipv4AddressGeneratorImpl::AddAllocated(const Ipv4Address address)
         //
         if (addr == (*i).addrHigh + 1)
         {
-            std::list<Entry>::iterator j = i;
+            auto j = i;
             ++j;
 
             if (j != m_entries.end())
@@ -459,9 +459,7 @@ Ipv4AddressGeneratorImpl::IsAddressAllocated(const Ipv4Address address)
         addr,
         "Ipv4AddressGeneratorImpl::IsAddressAllocated(): Don't check for the broadcast address...");
 
-    std::list<Entry>::iterator i;
-
-    for (i = m_entries.begin(); i != m_entries.end(); ++i)
+    for (auto i = m_entries.begin(); i != m_entries.end(); ++i)
     {
         NS_LOG_LOGIC("examine entry: " << Ipv4Address((*i).addrLow) << " to "
                                        << Ipv4Address((*i).addrHigh));
@@ -485,14 +483,12 @@ Ipv4AddressGeneratorImpl::IsNetworkAllocated(const Ipv4Address address, const Ip
         "Ipv4AddressGeneratorImpl::IsNetworkAllocated(): network address and mask don't match "
             << address << " " << mask);
 
-    std::list<Entry>::iterator i;
-
-    for (i = m_entries.begin(); i != m_entries.end(); ++i)
+    for (auto i = m_entries.begin(); i != m_entries.end(); ++i)
     {
         NS_LOG_LOGIC("examine entry: " << Ipv4Address((*i).addrLow) << " to "
                                        << Ipv4Address((*i).addrHigh));
-        Ipv4Address low = Ipv4Address((*i).addrLow);
-        Ipv4Address high = Ipv4Address((*i).addrHigh);
+        Ipv4Address low((*i).addrLow);
+        Ipv4Address high((*i).addrHigh);
 
         if (address == low.CombineMask(mask) || address == high.CombineMask(mask))
         {

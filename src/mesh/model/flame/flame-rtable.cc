@@ -70,7 +70,7 @@ FlameRtable::AddPath(const Mac48Address destination,
                      const uint8_t cost,
                      const uint16_t seqnum)
 {
-    std::map<Mac48Address, Route>::iterator i = m_routes.find(destination);
+    auto i = m_routes.find(destination);
     if (i == m_routes.end())
     {
         Route newroute;
@@ -93,7 +93,7 @@ FlameRtable::AddPath(const Mac48Address destination,
 FlameRtable::LookupResult
 FlameRtable::Lookup(Mac48Address destination)
 {
-    std::map<Mac48Address, Route>::iterator i = m_routes.find(destination);
+    auto i = m_routes.find(destination);
     if (i == m_routes.end())
     {
         return LookupResult();

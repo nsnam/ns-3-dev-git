@@ -105,7 +105,7 @@ SsServiceFlowManager::GetDsaAckTimeoutEvent() const
 void
 SsServiceFlowManager::AddServiceFlow(ServiceFlow serviceFlow)
 {
-    ServiceFlow* sf = new ServiceFlow();
+    auto sf = new ServiceFlow();
     sf->CopyParametersFrom(serviceFlow);
     ServiceFlowManager::AddServiceFlow(sf);
 }

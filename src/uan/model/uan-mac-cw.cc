@@ -151,7 +151,7 @@ UanMacCw::Enqueue(Ptr<Packet> packet, uint16_t protocolNumber, const Address& de
             m_pktTx = packet;
             m_pktTxProt = GetTxModeIndex();
             m_state = CCABUSY;
-            uint32_t cw = (uint32_t)m_rv->GetValue(0, m_cw);
+            auto cw = (uint32_t)m_rv->GetValue(0, m_cw);
             m_savedDelayS = cw * m_slotTime;
             m_sendTime = Simulator::Now() + m_savedDelayS;
             NS_LOG_DEBUG("Time " << Now().As(Time::S) << ": Addr " << GetAddress()

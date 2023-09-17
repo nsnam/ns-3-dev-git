@@ -141,7 +141,7 @@ Dirname(std::string path)
 {
     NS_LOG_FUNCTION(path);
     std::list<std::string> elements = Split(path);
-    std::list<std::string>::const_iterator last = elements.end();
+    auto last = elements.end();
     last--;
     return Join(elements.begin(), last);
 }
@@ -268,7 +268,7 @@ Join(std::list<std::string>::const_iterator begin, std::list<std::string>::const
 {
     NS_LOG_FUNCTION(*begin << *end);
     std::string retval = "";
-    for (std::list<std::string>::const_iterator i = begin; i != end; i++)
+    for (auto i = begin; i != end; i++)
     {
         if ((*i).empty())
         {

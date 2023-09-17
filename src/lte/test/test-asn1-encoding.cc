@@ -207,9 +207,9 @@ RrcHeaderTestCase::AssertEqualRadioResourceConfigDedicated(
                           "SrbToAddModList different sizes");
 
     std::list<LteRrcSap::SrbToAddMod> srcSrbToAddModList = rrcd1.srbToAddModList;
-    std::list<LteRrcSap::SrbToAddMod>::iterator it1 = srcSrbToAddModList.begin();
+    auto it1 = srcSrbToAddModList.begin();
     std::list<LteRrcSap::SrbToAddMod> dstSrbToAddModList = rrcd2.srbToAddModList;
-    std::list<LteRrcSap::SrbToAddMod>::iterator it2 = dstSrbToAddModList.begin();
+    auto it2 = dstSrbToAddModList.begin();
 
     for (; it1 != srcSrbToAddModList.end(); it1++, it2++)
     {
@@ -233,9 +233,9 @@ RrcHeaderTestCase::AssertEqualRadioResourceConfigDedicated(
                           "DrbToAddModList different sizes");
 
     std::list<LteRrcSap::DrbToAddMod> srcDrbToAddModList = rrcd1.drbToAddModList;
-    std::list<LteRrcSap::DrbToAddMod>::iterator it3 = srcDrbToAddModList.begin();
+    auto it3 = srcDrbToAddModList.begin();
     std::list<LteRrcSap::DrbToAddMod> dstDrbToAddModList = rrcd2.drbToAddModList;
-    std::list<LteRrcSap::DrbToAddMod>::iterator it4 = dstDrbToAddModList.begin();
+    auto it4 = dstDrbToAddModList.begin();
 
     for (; it3 != srcDrbToAddModList.end(); it3++, it4++)
     {
@@ -267,8 +267,8 @@ RrcHeaderTestCase::AssertEqualRadioResourceConfigDedicated(
 
     std::list<uint8_t> srcDrbToReleaseList = rrcd1.drbToReleaseList;
     std::list<uint8_t> dstDrbToReleaseList = rrcd2.drbToReleaseList;
-    std::list<uint8_t>::iterator it5 = srcDrbToReleaseList.begin();
-    std::list<uint8_t>::iterator it6 = dstDrbToReleaseList.begin();
+    auto it5 = srcDrbToReleaseList.begin();
+    auto it6 = dstDrbToReleaseList.begin();
 
     for (; it5 != srcDrbToReleaseList.end(); it5++, it6++)
     {
@@ -1186,8 +1186,8 @@ MeasurementReportTestCase::DoRun()
 
     if (srcMeas.haveMeasResultNeighCells)
     {
-        std::list<LteRrcSap::MeasResultEutra>::iterator itsrc = srcMeas.measResultListEutra.begin();
-        std::list<LteRrcSap::MeasResultEutra>::iterator itdst = dstMeas.measResultListEutra.begin();
+        auto itsrc = srcMeas.measResultListEutra.begin();
+        auto itdst = dstMeas.measResultListEutra.begin();
         for (; itsrc != srcMeas.measResultListEutra.end(); itsrc++, itdst++)
         {
             NS_TEST_ASSERT_MSG_EQ(itsrc->physCellId, itdst->physCellId, "Different physCellId!");
@@ -1210,8 +1210,8 @@ MeasurementReportTestCase::DoRun()
 
                 if (!itsrc->cgiInfo.plmnIdentityList.empty())
                 {
-                    std::list<uint32_t>::iterator itsrc2 = itsrc->cgiInfo.plmnIdentityList.begin();
-                    std::list<uint32_t>::iterator itdst2 = itdst->cgiInfo.plmnIdentityList.begin();
+                    auto itsrc2 = itsrc->cgiInfo.plmnIdentityList.begin();
+                    auto itdst2 = itdst->cgiInfo.plmnIdentityList.begin();
                     for (; itsrc2 != itsrc->cgiInfo.plmnIdentityList.begin(); itsrc2++, itdst2++)
                     {
                         NS_TEST_ASSERT_MSG_EQ(*itsrc2, *itdst2, "Different plmnId elements!");

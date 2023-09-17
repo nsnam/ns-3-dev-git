@@ -65,7 +65,7 @@ EventGarbageCollector::Shrink()
 void
 EventGarbageCollector::Cleanup()
 {
-    for (EventList::iterator iter = m_events.begin(); iter != m_events.end();)
+    for (auto iter = m_events.begin(); iter != m_events.end();)
     {
         if ((*iter).IsExpired())
         {

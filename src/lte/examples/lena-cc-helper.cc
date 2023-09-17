@@ -44,10 +44,8 @@ main(int argc, char* argv[])
 
     std::map<uint8_t, ComponentCarrier> ccm = cch->EquallySpacedCcs();
 
-    std::map<uint8_t, ComponentCarrier>::iterator it;
-
     std::cout << " CcMap size " << ccm.size() << std::endl;
-    for (it = ccm.begin(); it != ccm.end(); it++)
+    for (auto it = ccm.begin(); it != ccm.end(); it++)
     {
         Print(it->second);
     }

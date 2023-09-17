@@ -400,7 +400,7 @@ Ipv4RawSocketImpl::GetRxAvailable() const
 {
     NS_LOG_FUNCTION(this);
     uint32_t rx = 0;
-    for (std::list<Data>::const_iterator i = m_recv.begin(); i != m_recv.end(); ++i)
+    for (auto i = m_recv.begin(); i != m_recv.end(); ++i)
     {
         rx += (i->packet)->GetSize();
     }
