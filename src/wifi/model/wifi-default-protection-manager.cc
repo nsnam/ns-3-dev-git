@@ -212,8 +212,7 @@ WifiDefaultProtectionManager::GetPsduProtection(const WifiMacHeader& hdr,
     }
 
     // check if CTS-to-Self is needed
-    if (GetWifiRemoteStationManager()->GetUseNonErpProtection() &&
-        GetWifiRemoteStationManager()->NeedCtsToSelf(txParams.m_txVector))
+    if (GetWifiRemoteStationManager()->NeedCtsToSelf(txParams.m_txVector))
     {
         auto protection = std::make_unique<WifiCtsToSelfProtection>();
         protection->ctsTxVector = GetWifiRemoteStationManager()->GetCtsToSelfTxVector();

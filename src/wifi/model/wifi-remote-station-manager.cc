@@ -1221,31 +1221,31 @@ WifiRemoteStationManager::NeedRts(const WifiMacHeader& header, const WifiTxParam
 bool
 WifiRemoteStationManager::NeedCtsToSelf(const WifiTxVector& txVector)
 {
-    WifiMode mode = txVector.GetMode();
-    NS_LOG_FUNCTION(this << mode);
-    if (m_erpProtectionMode == CTS_TO_SELF &&
-        ((mode.GetModulationClass() == WIFI_MOD_CLASS_ERP_OFDM) ||
-         (mode.GetModulationClass() == WIFI_MOD_CLASS_HT) ||
-         (mode.GetModulationClass() == WIFI_MOD_CLASS_VHT) ||
-         (mode.GetModulationClass() == WIFI_MOD_CLASS_HE) ||
-         (mode.GetModulationClass() == WIFI_MOD_CLASS_EHT)) &&
-        m_useNonErpProtection)
+    NS_LOG_FUNCTION(this << txVector);
+    if (m_useNonErpProtection && m_erpProtectionMode == CTS_TO_SELF &&
+        ((txVector.GetModulationClass() == WIFI_MOD_CLASS_ERP_OFDM) ||
+         (txVector.GetModulationClass() == WIFI_MOD_CLASS_HT) ||
+         (txVector.GetModulationClass() == WIFI_MOD_CLASS_VHT) ||
+         (txVector.GetModulationClass() == WIFI_MOD_CLASS_HE) ||
+         (txVector.GetModulationClass() == WIFI_MOD_CLASS_EHT)))
     {
         NS_LOG_DEBUG(
             "WifiRemoteStationManager::NeedCtsToSelf returning true to protect non-ERP stations");
         return true;
     }
     else if (m_htProtectionMode == CTS_TO_SELF &&
-             ((mode.GetModulationClass() == WIFI_MOD_CLASS_HT) ||
-              (mode.GetModulationClass() == WIFI_MOD_CLASS_VHT)) &&
+             ((txVector.GetModulationClass() == WIFI_MOD_CLASS_HT) ||
+              (txVector.GetModulationClass() == WIFI_MOD_CLASS_VHT)) &&
              m_useNonHtProtection && !(m_erpProtectionMode != CTS_TO_SELF && m_useNonErpProtection))
     {
         NS_LOG_DEBUG(
             "WifiRemoteStationManager::NeedCtsToSelf returning true to protect non-HT stations");
         return true;
     }
-    else if (!m_useNonErpProtection)
+    // FIXME: commented out for now
+    /*else if (!m_useNonErpProtection)
     {
+        const auto mode = txVector.GetMode();
         // search for the BSS Basic Rate set, if the used mode is in the basic set then there is no
         // need for CTS To Self
         for (auto i = m_bssBasicRateSet.begin(); i != m_bssBasicRateSet.end(); i++)
@@ -1271,7 +1271,7 @@ WifiRemoteStationManager::NeedCtsToSelf(const WifiTxVector& txVector)
         }
         NS_LOG_DEBUG("WifiRemoteStationManager::NeedCtsToSelf returning true");
         return true;
-    }
+    }*/
     return false;
 }
 
