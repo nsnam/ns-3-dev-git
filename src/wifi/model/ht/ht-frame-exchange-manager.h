@@ -303,6 +303,8 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * @param immediateBAck flag to indicate whether immediate BlockAck is used.
      * @param availableTime the amount of time allowed for the frame exchange. Equals
      *                      Time::Min() in case the TXOP limit is null
+     * @param gcrGroupAddr the GCR Group Address (only if the Block Ack agreement is being
+     *                     set up for the GCR service)
      * @return true if ADDBA Request frame is transmitted, false otherwise
      */
     bool SendAddBaRequest(Mac48Address recipient,
@@ -310,7 +312,8 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
                           uint16_t startingSeq,
                           uint16_t timeout,
                           bool immediateBAck,
-                          Time availableTime);
+                          Time availableTime,
+                          std::optional<Mac48Address> gcrGroupAddr = std::nullopt);
 
     /**
      * Create a BlockAck frame with header equal to <i>blockAck</i> and start its transmission.

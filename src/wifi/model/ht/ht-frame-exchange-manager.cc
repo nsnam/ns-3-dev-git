@@ -140,10 +140,11 @@ HtFrameExchangeManager::SendAddBaRequest(Mac48Address dest,
                                          uint16_t startingSeq,
                                          uint16_t timeout,
                                          bool immediateBAck,
-                                         Time availableTime)
+                                         Time availableTime,
+                                         std::optional<Mac48Address> gcrGroupAddr)
 {
-    NS_LOG_FUNCTION(this << dest << +tid << startingSeq << timeout << immediateBAck
-                         << availableTime);
+    NS_LOG_FUNCTION(this << dest << +tid << startingSeq << timeout << immediateBAck << availableTime
+                         << gcrGroupAddr.has_value());
     NS_LOG_DEBUG("Send ADDBA request to " << dest);
 
     WifiMacHeader hdr;
@@ -181,6 +182,11 @@ HtFrameExchangeManager::SendAddBaRequest(Mac48Address dest,
     reqHdr.SetTimeout(timeout);
     // set the starting sequence number for the BA agreement
     reqHdr.SetStartingSequence(startingSeq);
+
+    if (gcrGroupAddr)
+    {
+        reqHdr.SetGcrGroupAddress(*gcrGroupAddr);
+    }
 
     GetBaManager(tid)->CreateOriginatorAgreement(reqHdr, dest);
 
@@ -242,6 +248,11 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader& reqHdr,
     auto bufferSize = std::min(m_mac->GetMpduBufferSize(), m_mac->GetMaxBaBufferSize(originator));
     respHdr.SetBufferSize(bufferSize);
     respHdr.SetTimeout(reqHdr.GetTimeout());
+
+    if (auto gcrGroupAddr = reqHdr.GetGcrGroupAddress())
+    {
+        respHdr.SetGcrGroupAddress(*gcrGroupAddr);
+    }
 
     WifiActionHeader actionHdr;
     WifiActionHeader::ActionValue action;
