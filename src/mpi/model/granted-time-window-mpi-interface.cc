@@ -90,7 +90,6 @@ MPI_Request* GrantedTimeWindowMpiInterface::g_requests;
 char** GrantedTimeWindowMpiInterface::g_pRxBuffers;
 MPI_Comm GrantedTimeWindowMpiInterface::g_communicator = MPI_COMM_WORLD;
 bool GrantedTimeWindowMpiInterface::g_freeCommunicator = false;
-;
 
 TypeId
 GrantedTimeWindowMpiInterface::GetTypeId()
