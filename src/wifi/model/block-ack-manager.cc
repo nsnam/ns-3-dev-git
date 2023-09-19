@@ -756,6 +756,7 @@ BlockAckManager::NotifyOriginatorAgreementRejected(const Mac48Address& recipient
                                    OriginatorBlockAckAgreement::REJECTED);
     }
     it->second.first.SetState(OriginatorBlockAckAgreement::REJECTED);
+    m_unblockPackets(recipient, tid);
 }
 
 void
