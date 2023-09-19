@@ -591,16 +591,6 @@ Txop::StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool check
 }
 
 void
-Txop::StartAccessIfNeeded(uint8_t linkId)
-{
-    NS_LOG_FUNCTION(this << +linkId);
-    if (HasFramesToTransmit(linkId) && GetLink(linkId).access == NOT_REQUESTED)
-    {
-        m_mac->GetChannelAccessManager(linkId)->RequestAccess(this);
-    }
-}
-
-void
 Txop::DoInitialize()
 {
     NS_LOG_FUNCTION(this);

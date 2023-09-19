@@ -413,13 +413,6 @@ class Txop : public Object
     void StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool checkMediumBusy);
 
     /**
-     * Request access from Txop on the given link if needed.
-     *
-     * \param linkId the ID of the given link
-     */
-    void StartAccessIfNeeded(uint8_t linkId);
-
-    /**
      * \param nSlots the number of slots of the backoff.
      * \param linkId the ID of the given link
      *

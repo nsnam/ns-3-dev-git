@@ -369,13 +369,6 @@ class WifiMac : public Object
     virtual bool SupportsSendFrom() const;
 
     /**
-     * Request channel access from DCF/EDCAFs on the given link if needed.
-     *
-     * \param linkId the ID of the given link
-     */
-    void StartAccessIfNeeded(uint8_t linkId);
-
-    /**
      * \param phys the physical layers attached to this MAC.
      */
     virtual void SetWifiPhys(const std::vector<Ptr<WifiPhy>>& phys);
