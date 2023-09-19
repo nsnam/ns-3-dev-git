@@ -1450,7 +1450,17 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     {
         if (GetStaLink(link).bssid)
         {
-            StartAccessIfNeeded(id);
+            if (const auto txop = GetTxop())
+            {
+                txop->StartAccessAfterEvent(id, false, true);
+            }
+            for (const auto [acIndex, ac] : wifiAcList)
+            {
+                if (const auto edca = GetQosTxop(acIndex))
+                {
+                    edca->StartAccessAfterEvent(id, false, true);
+                }
+            }
         }
     }
 
