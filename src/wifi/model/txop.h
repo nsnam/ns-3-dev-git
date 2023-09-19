@@ -396,6 +396,23 @@ class Txop : public Object
     virtual ChannelAccessStatus GetAccessStatus(uint8_t linkId) const;
 
     /**
+     * Request channel access on the given link after the occurrence of an event that possibly
+     * requires to generate a new backoff value. Examples of such an event are: a packet has been
+     * enqueued by the upper layer; the given link has been unblocked after being blocked for some
+     * reason (e.g., wait for ADDBA Response, wait for TX on another EMLSR link to finish, etc.);
+     * the PHY operating on the given link just woke up from sleep mode. The <i>checkMediumBusy</i>
+     * argument is forwarded to the NeedBackoffUponAccess method of the ChannelAccessManager.
+     *
+     * \param linkId the ID of the given link
+     * \param hadFramesToTransmit whether packets available for transmission were queued just
+     *                            before the occurrence of the event causing this channel access
+     *                            request
+     * \param checkMediumBusy whether generation of backoff (also) depends on the busy/idle state
+     *                        of the medium
+     */
+    void StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool checkMediumBusy);
+
+    /**
      * Request access from Txop on the given link if needed.
      *
      * \param linkId the ID of the given link

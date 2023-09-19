@@ -535,12 +535,13 @@ Txop::Queue(Ptr<WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);
     const auto linkIds = m_mac->GetMacQueueScheduler()->GetLinkIds(m_queue->GetAc(), mpdu);
+    std::map<uint8_t, bool> hasFramesToTransmit;
+
+    // save the status of the AC queues before enqueuing the MPDU (required to determine if
+    // backoff is needed)
     for (const auto linkId : linkIds)
     {
-        if (m_mac->GetChannelAccessManager(linkId)->NeedBackoffUponAccess(this))
-        {
-            GenerateBackoff(linkId);
-        }
+        hasFramesToTransmit[linkId] = HasFramesToTransmit(linkId);
     }
     m_queue->Enqueue(mpdu);
     for (const auto linkId : linkIds)
@@ -551,7 +552,11 @@ Txop::Queue(Ptr<WifiMpdu> mpdu)
         // packet
         if (auto& event = GetLink(linkId).accessRequest.event; !event.IsRunning())
         {
-            event = Simulator::ScheduleNow(&Txop::StartAccessIfNeeded, this, linkId);
+            event = Simulator::ScheduleNow(&Txop::StartAccessAfterEvent,
+                                           this,
+                                           linkId,
+                                           hasFramesToTransmit.at(linkId),
+                                           true);
         }
     }
 }
@@ -562,6 +567,27 @@ Txop::AssignStreams(int64_t stream)
     NS_LOG_FUNCTION(this << stream);
     m_rng->SetStream(stream);
     return 1;
+}
+
+void
+Txop::StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool checkMediumBusy)
+{
+    NS_LOG_FUNCTION(this << +linkId << hadFramesToTransmit << checkMediumBusy);
+
+    if (GetLink(linkId).access != NOT_REQUESTED || !HasFramesToTransmit(linkId))
+    {
+        NS_LOG_DEBUG("No need to request channel access on link " << +linkId);
+        return;
+    }
+
+    if (m_mac->GetChannelAccessManager(linkId)->NeedBackoffUponAccess(this,
+                                                                      hadFramesToTransmit,
+                                                                      checkMediumBusy))
+    {
+        GenerateBackoff(linkId);
+    }
+
+    m_mac->GetChannelAccessManager(linkId)->RequestAccess(this);
 }
 
 void

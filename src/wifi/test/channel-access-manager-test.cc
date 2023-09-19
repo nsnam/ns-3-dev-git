@@ -806,11 +806,12 @@ ChannelAccessManagerTest<TxopType>::DoAccessRequest(uint64_t txTime,
                                                     uint64_t expectedGrantTime,
                                                     Ptr<TxopTest<TxopType>> state)
 {
-    if (m_ChannelAccessManager->NeedBackoffUponAccess(state))
+    auto hadFramesToTransmit = state->HasFramesToTransmit(SINGLE_LINK_OP_ID);
+    state->QueueTx(txTime, expectedGrantTime);
+    if (m_ChannelAccessManager->NeedBackoffUponAccess(state, hadFramesToTransmit, true))
     {
         state->GenerateBackoff(0);
     }
-    state->QueueTx(txTime, expectedGrantTime);
     m_ChannelAccessManager->RequestAccess(state);
 }
 

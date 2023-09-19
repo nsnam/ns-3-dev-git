@@ -109,13 +109,22 @@ class ChannelAccessManager : public Object
     void Add(Ptr<Txop> txop);
 
     /**
-     * Determine if a new backoff needs to be generated when a packet is queued
-     * for transmission.
+     * Determine if a new backoff needs to be generated as per letter a) of Section 10.23.2.2
+     * of IEEE 802.11-2020 ("EDCA backoff procedure"). This method is called upon the occurrence
+     * of events such as the enqueuing of a packet or the unblocking of some links after they
+     * have been blocked for some reason (e.g., wait for ADDBA Response, wait for TX on another
+     * EMLSR link to finish, etc.). The <i>checkMediumBusy</i> argument allows to generate a new
+     * backoff regardless of the busy/idle state of the medium, as per Section 35.3.16.4 of
+     * 802.11be D4.0.
      *
      * \param txop the Txop requesting to generate a backoff
+     * \param hadFramesToTransmit whether packets available for transmission were queued just
+     *                            before the occurrence of the event triggering this call
+     * \param checkMediumBusy whether generation of backoff (also) depends on the busy/idle state
+     *                        of the medium
      * \return true if backoff needs to be generated, false otherwise
      */
-    bool NeedBackoffUponAccess(Ptr<Txop> txop);
+    bool NeedBackoffUponAccess(Ptr<Txop> txop, bool hadFramesToTransmit, bool checkMediumBusy);
 
     /**
      * \param txop a Txop

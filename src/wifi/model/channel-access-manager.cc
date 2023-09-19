@@ -391,9 +391,11 @@ ChannelAccessManager::IsBusy() const
 }
 
 bool
-ChannelAccessManager::NeedBackoffUponAccess(Ptr<Txop> txop)
+ChannelAccessManager::NeedBackoffUponAccess(Ptr<Txop> txop,
+                                            bool hadFramesToTransmit,
+                                            bool checkMediumBusy)
 {
-    NS_LOG_FUNCTION(this << txop);
+    NS_LOG_FUNCTION(this << txop << hadFramesToTransmit << checkMediumBusy);
 
     // No backoff needed if in sleep mode, off or when using another EMLSR link
     if (m_sleeping || m_off || m_usingOtherEmlsrLink)
@@ -424,10 +426,10 @@ ChannelAccessManager::NeedBackoffUponAccess(Ptr<Txop> txop)
      *    with that AC has now become non-empty and any other transmit queues
      *    associated with that AC are empty; the medium is busy on the primary channel
      */
-    if (!txop->HasFramesToTransmit(m_linkId) && txop->GetAccessStatus(m_linkId) != Txop::GRANTED &&
-        txop->GetBackoffSlots(m_linkId) == 0)
+    if (!hadFramesToTransmit && txop->HasFramesToTransmit(m_linkId) &&
+        txop->GetAccessStatus(m_linkId) != Txop::GRANTED && txop->GetBackoffSlots(m_linkId) == 0)
     {
-        if (!IsBusy())
+        if (checkMediumBusy && !IsBusy())
         {
             // medium idle. If this is a DCF, use immediate access (we can transmit
             // in a DIFS if the medium remains idle). If this is an EDCAF, update
