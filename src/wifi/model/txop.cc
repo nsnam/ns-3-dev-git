@@ -679,7 +679,8 @@ void
 Txop::NotifyWakeUp(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << +linkId);
-    StartAccessIfNeeded(linkId);
+    // before wake up, no packet can be transmitted
+    StartAccessAfterEvent(linkId, false, false);
 }
 
 void
@@ -688,7 +689,8 @@ Txop::NotifyOn()
     NS_LOG_FUNCTION(this);
     for (const auto& [id, link] : m_links)
     {
-        StartAccessIfNeeded(id);
+        // before being turned on, no packet can be transmitted
+        StartAccessAfterEvent(id, false, false);
     }
 }
 
