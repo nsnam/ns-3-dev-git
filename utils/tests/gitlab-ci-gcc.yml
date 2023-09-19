@@ -37,8 +37,6 @@
       libeigen3-dev
       qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
       ssh
-  variables:
-    ENABLE_MPI: --enable-mpi
 
 weekly-gcc:
   rules:

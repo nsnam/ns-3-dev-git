@@ -14,14 +14,16 @@
     - pacman -Syu --noconfirm
       base-devel cmake ninja ccache valgrind
       python
-      boost gsl gtk3
+      boost gsl gtk3 openmpi
       glibc-debug
+      openssh
   script:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
+    - export MPI_CI=1
     # missing the flag --disable-python
-    - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --disable-gtk
+    - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-mpi --disable-gtk
     - if [[ "$CI_JOB_STAGE" == "build" ]];
       then ./ns3 build;
       fi

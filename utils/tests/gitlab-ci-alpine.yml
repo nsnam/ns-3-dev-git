@@ -20,6 +20,8 @@
       python3
       bash
       iproute2 linux-headers
+      openmpi openmpi-dev
+      openssh
   variables:
     COMPILER: g++
 

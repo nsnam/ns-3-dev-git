@@ -17,8 +17,6 @@
       python
       boost gsl gtk3 openmpi
       openssh
-  variables:
-    ENABLE_MPI: --enable-mpi
 
 # Build stage
 per-commit-clang-debug:
