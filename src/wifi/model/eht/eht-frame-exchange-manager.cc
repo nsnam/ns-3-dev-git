@@ -187,14 +187,16 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
         if (auto elapsed = emlsrManager->GetElapsedMediumSyncDelayTimer(m_linkId);
             elapsed && emlsrManager->MediumSyncDelayNTxopsExceeded(m_linkId))
         {
-            edca->NotifyChannelReleased(m_linkId);
             NS_LOG_DEBUG("No new TXOP attempts allowed while MediumSyncDelay is running");
-            // request channel access if needed when the MediumSyncDelay timer expires
+            // request channel access if needed when the MediumSyncDelay timer expires; in the
+            // meantime no queued packet can be transmitted
             Simulator::Schedule(emlsrManager->GetMediumSyncDuration() - *elapsed,
-                                &Txop::StartAccessIfNeeded,
+                                &Txop::StartAccessAfterEvent,
                                 edca,
-                                m_linkId);
-
+                                m_linkId,
+                                false,  // queued frames cannot be transmitted until MSD expires
+                                false); // generate backoff regardless of medium busy
+            NotifyChannelReleased(edca);
             return false;
         }
 
