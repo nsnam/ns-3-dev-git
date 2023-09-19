@@ -1447,6 +1447,9 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
 
         for (const auto& [acIndex, ac] : wifiAcList)
         {
+            // save the status of the AC queues before unblocking the requested queues
+            auto hasFramesToTransmit = GetQosTxop(acIndex)->HasFramesToTransmit(linkId);
+
             // unblock queues storing QoS data frames and control frames that use MLD addresses
             m_scheduler->UnblockQueues(reason,
                                        acIndex,
@@ -1465,7 +1468,11 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                        {linkId});
             // request channel access if needed (schedule now because multiple invocations
             // of this method may be done in a loop at the caller)
-            Simulator::ScheduleNow(&Txop::StartAccessIfNeeded, GetQosTxop(acIndex), linkId);
+            Simulator::ScheduleNow(&Txop::StartAccessAfterEvent,
+                                   GetQosTxop(acIndex),
+                                   linkId,
+                                   hasFramesToTransmit,
+                                   true); // generate backoff if medium busy
         }
     }
 }
