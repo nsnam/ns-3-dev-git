@@ -11,8 +11,10 @@
 #include "ht-configuration.h"
 
 #include "ns3/abort.h"
+#include "ns3/ap-wifi-mac.h"
 #include "ns3/assert.h"
 #include "ns3/ctrl-headers.h"
+#include "ns3/gcr-manager.h"
 #include "ns3/log.h"
 #include "ns3/mgt-action-headers.h"
 #include "ns3/recipient-block-ack-agreement.h"
@@ -132,6 +134,43 @@ HtFrameExchangeManager::NeedSetupBlockAck(Mac48Address recipient, uint8_t tid)
 
     NS_LOG_FUNCTION(this << recipient << +tid << establish);
     return establish;
+}
+
+std::optional<Mac48Address>
+HtFrameExchangeManager::NeedSetupGcrBlockAck(const WifiMacHeader& header)
+{
+    NS_ASSERT(m_mac->GetTypeOfStation() == AP && m_apMac->UseGcr(header));
+    const auto& groupAddress = header.GetAddr1();
+
+    const auto tid = header.GetQosTid();
+    auto qosTxop = m_mac->GetQosTxop(tid);
+    const auto maxMpduSize =
+        m_mpduAggregator->GetMaxAmpduSize(groupAddress, tid, WIFI_MOD_CLASS_HT);
+    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WIFI_GROUPCAST, groupAddress, tid};
+
+    for (const auto& recipients =
+             m_apMac->GetGcrManager()->GetMemberStasForGroupAddress(groupAddress);
+         const auto& nextRecipient : recipients)
+    {
+        if (auto agreement =
+                qosTxop->GetBaManager()->GetAgreementAsOriginator(nextRecipient, tid, groupAddress);
+            agreement && !agreement->get().IsReset())
+        {
+            continue;
+        }
+
+        const auto packets = qosTxop->GetWifiMacQueue()->GetNPackets(queueId);
+        const auto establish =
+            ((qosTxop->GetBlockAckThreshold() > 0 && packets >= qosTxop->GetBlockAckThreshold()) ||
+             (maxMpduSize > 0 && packets > 1));
+        NS_LOG_FUNCTION(this << groupAddress << +tid << establish);
+        if (establish)
+        {
+            return nextRecipient;
+        }
+    }
+
+    return std::nullopt;
 }
 
 bool
@@ -356,6 +395,17 @@ HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr,
     m_mac->GetQosTxop(tid)->Queue(Create<WifiMpdu>(packet, hdr));
 }
 
+uint16_t
+HtFrameExchangeManager::GetBaAgreementStartingSequenceNumber(const WifiMacHeader& header)
+{
+    // if the peeked MPDU has been already transmitted, use its sequence number
+    // as the starting sequence number for the BA agreement, otherwise use the
+    // next available sequence number
+    return header.IsRetry()
+               ? header.GetSequenceNumber()
+               : m_txMiddle->GetNextSeqNumberByTidAndAddress(header.GetQosTid(), header.GetAddr1());
+}
+
 bool
 HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame)
 {
@@ -384,19 +434,25 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
     if (hdr.IsQosData() && !hdr.GetAddr1().IsGroup() &&
         NeedSetupBlockAck(hdr.GetAddr1(), hdr.GetQosTid()))
     {
-        // if the peeked MPDU has been already transmitted, use its sequence number
-        // as the starting sequence number for the BA agreement, otherwise use the
-        // next available sequence number
-        uint16_t startingSeq =
-            (hdr.IsRetry()
-                 ? hdr.GetSequenceNumber()
-                 : m_txMiddle->GetNextSeqNumberByTidAndAddress(hdr.GetQosTid(), hdr.GetAddr1()));
         return SendAddBaRequest(hdr.GetAddr1(),
                                 hdr.GetQosTid(),
-                                startingSeq,
+                                GetBaAgreementStartingSequenceNumber(hdr),
                                 edca->GetBlockAckInactivityTimeout(),
                                 true,
                                 availableTime);
+    }
+    else if (IsGcr(m_mac, hdr))
+    {
+        if (const auto addbaRecipient = NeedSetupGcrBlockAck(hdr))
+        {
+            return SendAddBaRequest(addbaRecipient.value(),
+                                    hdr.GetQosTid(),
+                                    GetBaAgreementStartingSequenceNumber(hdr),
+                                    edca->GetBlockAckInactivityTimeout(),
+                                    true,
+                                    availableTime,
+                                    hdr.GetAddr1());
+        }
     }
 
     // Use SendDataFrame if we can try aggregation

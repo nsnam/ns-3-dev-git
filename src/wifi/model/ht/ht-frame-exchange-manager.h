@@ -282,6 +282,15 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     virtual bool SendDataFrame(Ptr<WifiMpdu> peekedItem, Time availableTime, bool initialFrame);
 
     /**
+     * Retrieve the starting sequence number for a BA agreement to be established.
+     *
+     * @param header the MAC header of the next data packet selected for transmission once the BA
+     * agreement is established. \return the starting sequence number for a BA agreement to be
+     * established
+     */
+    uint16_t GetBaAgreementStartingSequenceNumber(const WifiMacHeader& header);
+
+    /**
      * A Block Ack agreement needs to be established with the given recipient for the
      * given TID if it does not already exist (or exists and is in state RESET) and:
      *
@@ -294,6 +303,21 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * @return true if a Block Ack agreement needs to be established, false otherwise.
      */
     virtual bool NeedSetupBlockAck(Mac48Address recipient, uint8_t tid);
+
+    /**
+     * A Block Ack agreement needs to be established prior to the transmission of a groupcast data
+     * packet using the GCR service if it does not already exist (or exists and is in state RESET)
+     * for all member STAs and:
+     *
+     * - the number of packets in the groupcast queue reaches the BlockAckThreshold value OR
+     * - MPDU aggregation is enabled and there is more than one groupcast packet in the queue OR
+     * - the station is a VHT station
+     *
+     * @param header the MAC header of the next groupcast data packet selected for transmission.
+     * @return the recipient of the ADDBA frame if a Block Ack agreement needs to be established,
+     * std::nullopt otherwise.
+     */
+    virtual std::optional<Mac48Address> NeedSetupGcrBlockAck(const WifiMacHeader& header);
 
     /**
      * Sends an ADDBA Request to establish a block ack agreement with STA
