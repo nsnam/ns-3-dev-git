@@ -190,8 +190,9 @@ RectangleClosestBorderTestCase::BuildNameString(double x,
 {
     std::ostringstream oss;
     oss << "Rectangle closest border test : checking"
-        << " (x,y) = (" << x << "," << y << ") closest border to the rectangle (" << rectangle
-        << "). The expected side = " << side;
+        << " (x,y) = (" << x << "," << y << ") closest border to the rectangle [(" << rectangle.xMin
+        << ", " << rectangle.yMin << "), (" << rectangle.xMax << ", " << rectangle.yMax
+        << ")]. The expected side = " << side;
     return oss.str();
 }
 
