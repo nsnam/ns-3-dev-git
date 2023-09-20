@@ -35,6 +35,7 @@ Changes from ns-3.39 to ns-3-dev
 ### Changed behavior
 
 * (core) `EmpiricalRandomVariable` CDF pairs can now be added in any order.
+* (core) `EmpiricalRandomVariable` no longer requires that a CDF pair with a range value exactly equal to 1.0 be added (see issue #922).
 * (wifi) Upon ML setup, a non-AP MLD updates the IDs of the setup links to match the IDs used by the AP MLD.
 * (wifi) Attribute **TrackSignalsFromInactiveInterfaces** in SpectrumWifiPhy has been defaulted to be enabled.
 

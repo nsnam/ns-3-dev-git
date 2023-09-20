@@ -39,6 +39,7 @@ requirements (Note: not all ns-3 features are available on all systems):
 
 ### Bugs fixed
 
+- (core) #922 - `EmpiricalRandomVariable` no longer requires that a CDF pair with a range value exactly equal to 1.0 be added.
 - (lr-wpan) - !1591 - Removed unnecessary Bcst filter from MAC
 - (wifi) - Reset MU PPDU UID to prevent STA from receiving the TB PPDU sent by another STA
 - (wifi) - Fix max value for UL MCS field of User Info fields (depends on TF variant)

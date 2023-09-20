@@ -1735,12 +1735,6 @@ EmpiricalRandomVariable::Validate()
                        << lastCdfPair->first << ", Value: " << lastCdfPair->second);
     }
 
-    // Check if last CDF ends with 1.0
-    if (m_empCdf.rbegin()->first != 1.0)
-    {
-        NS_FATAL_ERROR("CDF does not cover the whole distribution");
-    }
-
     m_validated = true;
 }
 
