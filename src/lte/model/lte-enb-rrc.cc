@@ -936,6 +936,7 @@ UeManager::SendPacket(uint8_t bid, Ptr<Packet> p)
         Ptr<LteDataRadioBearerInfo> bearerInfo = GetDataRadioBearerInfo(drbid);
         if (bearerInfo)
         {
+            NS_LOG_INFO("Send packet to PDCP layer");
             LtePdcpSapProvider* pdcpSapProvider = bearerInfo->m_pdcp->GetLtePdcpSapProvider();
             pdcpSapProvider->TransmitPdcpSdu(params);
         }
@@ -2598,7 +2599,6 @@ bool
 LteEnbRrc::SendData(Ptr<Packet> packet)
 {
     NS_LOG_FUNCTION(this << packet);
-
     EpsBearerTag tag;
     bool found = packet->RemovePacketTag(tag);
     NS_ASSERT_MSG(found, "no EpsBearerTag found in packet to be sent");
@@ -2607,7 +2607,6 @@ LteEnbRrc::SendData(Ptr<Packet> packet)
     NS_LOG_INFO("Sending a packet of " << packet->GetSize() << " bytes to IMSI "
                                        << ueManager->GetImsi() << ", RNTI " << ueManager->GetRnti()
                                        << ", BID " << (uint16_t)tag.GetBid());
-
     ueManager->SendData(tag.GetBid(), packet);
 
     return true;
