@@ -1350,6 +1350,17 @@ Icmpv6L4Protocol::SendRS(Ipv6Address src, Ipv6Address dst, Address hardwareAddre
         p->AddHeader(llOption);
     }
 
+    if (!src.IsAny())
+    {
+        Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol>();
+        if (ipv6->GetInterfaceForAddress(src) == -1)
+        {
+            NS_LOG_INFO("Preventing RS from being sent or rescheduled because the source address "
+                        << src << " has been removed");
+            return;
+        }
+    }
+
     NS_LOG_LOGIC("Send RS (from " << src << " to " << dst << ")");
 
     rs.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + rs.GetSerializedSize(), PROT_NUMBER);
