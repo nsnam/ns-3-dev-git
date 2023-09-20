@@ -681,9 +681,16 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
     }
     else if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
     {
-        // notify the EMLSR Manager of the UL TXOP end
+        // notify the EMLSR Manager of the UL TXOP end, if the TXOP included the transmission of
+        // at least a frame
         NS_ASSERT(m_staMac->GetEmlsrManager());
-        m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId);
+        auto edca = DynamicCast<QosTxop>(txop);
+        NS_ASSERT(edca);
+        if (auto txopStart = edca->GetTxopStartTime(m_linkId);
+            txopStart && Simulator::Now() > *txopStart)
+        {
+            m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId);
+        }
     }
 
     HeFrameExchangeManager::NotifyChannelReleased(txop);
