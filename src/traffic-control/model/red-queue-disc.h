@@ -244,9 +244,9 @@ class RedQueueDisc : public QueueDisc
      * \brief Check if a packet needs to be dropped due to probability mark
      * \param item queue item
      * \param qSize queue size
-     * \returns 0 for no drop/mark, 1 for drop
+     * \returns false for no drop/mark, true for drop
      */
-    uint32_t DropEarly(Ptr<QueueDiscItem> item, uint32_t qSize);
+    bool DropEarly(Ptr<QueueDiscItem> item, uint32_t qSize);
     /**
      * \brief Returns a probability using these function parameters for the DropEarly function
      * \returns Prob. of packet drop before "count"
