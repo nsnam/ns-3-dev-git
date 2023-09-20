@@ -29,6 +29,7 @@ requirements (Note: not all ns-3 features are available on all systems):
 
 ### New user-visible features
 
+- (core) !1586 - `EmpiricalRandomVariable` CDF pairs can now be added in any order.
 - (wifi) Added support for 802.11be TID-to-Link Mapping
 - (energy) - !1329 - Extensions to battery discharge module
 - (lr-wpan) - !1604 - Add CapabilityField bitmap functions

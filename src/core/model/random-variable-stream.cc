@@ -1534,28 +1534,6 @@ DeterministicRandomVariable::GetValue()
 
 NS_OBJECT_ENSURE_REGISTERED(EmpiricalRandomVariable);
 
-// ValueCDF methods
-EmpiricalRandomVariable::ValueCDF::ValueCDF()
-    : value(0.0),
-      cdf(0.0)
-{
-    NS_LOG_FUNCTION(this);
-}
-
-EmpiricalRandomVariable::ValueCDF::ValueCDF(double v, double c)
-    : value(v),
-      cdf(c)
-{
-    NS_LOG_FUNCTION(this << v << c);
-    NS_ASSERT(c >= 0.0 && c <= 1.0);
-}
-
-bool
-operator<(EmpiricalRandomVariable::ValueCDF a, EmpiricalRandomVariable::ValueCDF b)
-{
-    return a.cdf < b.cdf;
-}
-
 TypeId
 EmpiricalRandomVariable::GetTypeId()
 {
@@ -1608,14 +1586,14 @@ EmpiricalRandomVariable::PreSample(double& value)
     value = r;
     bool valid = false;
     // check extrema
-    if (r <= m_emp.front().cdf)
+    if (r <= m_empCdf.begin()->first)
     {
-        value = m_emp.front().value; // Less than first
+        value = m_empCdf.begin()->second; // Less than first
         valid = true;
     }
-    else if (r >= m_emp.back().cdf)
+    else if (r >= m_empCdf.rbegin()->first)
     {
-        value = m_emp.back().value; // Greater than last
+        value = m_empCdf.rbegin()->second; // Greater than last
         valid = true;
     }
     return valid;
@@ -1649,10 +1627,10 @@ EmpiricalRandomVariable::DoSampleCDF(double r)
 {
     NS_LOG_FUNCTION(this << r);
 
-    ValueCDF selector(0, r);
-    auto bound = std::upper_bound(m_emp.begin(), m_emp.end(), selector);
+    // Find first CDF that is greater than r
+    auto bound = m_empCdf.upper_bound(r);
 
-    return bound->value;
+    return bound->second;
 }
 
 double
@@ -1680,19 +1658,19 @@ EmpiricalRandomVariable::DoInterpolate(double r)
     // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
 
     // search
-    ValueCDF selector(0, r);
-    auto upper = std::upper_bound(m_emp.begin(), m_emp.end(), selector);
+    auto upper = m_empCdf.upper_bound(r);
     auto lower = std::prev(upper, 1);
-    if (upper == m_emp.begin())
+
+    if (upper == m_empCdf.begin())
     {
         lower = upper;
     }
 
     // Interpolate random value in range [v1..v2) based on [c1 .. r .. c2)
-    double c1 = lower->cdf;
-    double c2 = upper->cdf;
-    double v1 = lower->value;
-    double v2 = upper->value;
+    double c1 = lower->first;
+    double c2 = upper->first;
+    double v1 = lower->second;
+    double v2 = upper->second;
 
     double value = (v1 + ((v2 - v1) / (c2 - c1)) * (r - c1));
     return value;
@@ -1701,36 +1679,68 @@ EmpiricalRandomVariable::DoInterpolate(double r)
 void
 EmpiricalRandomVariable::CDF(double v, double c)
 {
-    // Add a new empirical datapoint to the empirical cdf
-    // NOTE.   These MUST be inserted in non-decreasing order
     NS_LOG_FUNCTION(this << v << c);
-    m_emp.emplace_back(v, c);
+
+    auto vPrevious = m_empCdf.find(c);
+
+    if (vPrevious != m_empCdf.end())
+    {
+        NS_LOG_WARN("Empirical CDF already has a value " << vPrevious->second << " for CDF " << c
+                                                         << ". Overwriting it with value " << v
+                                                         << ".");
+    }
+
+    m_empCdf[c] = v;
 }
 
 void
 EmpiricalRandomVariable::Validate()
 {
     NS_LOG_FUNCTION(this);
-    if (m_emp.empty())
+
+    if (m_empCdf.empty())
     {
         NS_FATAL_ERROR("CDF is not initialized");
     }
-    ValueCDF prior = m_emp[0];
-    for (auto current : m_emp)
+
+    double vPrev = m_empCdf.begin()->second;
+
+    // Check if values are non-decreasing
+    for (const auto& cdfPair : m_empCdf)
     {
-        if (current.value < prior.value || current.cdf < prior.cdf)
-        { // Error
-            std::cerr << "Empirical Dist error,"
-                      << " current value " << current.value << " prior value " << prior.value
-                      << " current cdf " << current.cdf << " prior cdf " << prior.cdf << std::endl;
-            NS_FATAL_ERROR("Empirical Dist error");
+        const auto& vCurr = cdfPair.second;
+
+        if (vCurr < vPrev)
+        {
+            NS_FATAL_ERROR("Empirical distribution has decreasing CDF values. Current CDF: "
+                           << vCurr << ", prior CDF: " << vPrev);
         }
-        prior = current;
+
+        vPrev = vCurr;
     }
-    if (prior.cdf != 1.0)
+
+    // Bounds check on CDF endpoints
+    auto firstCdfPair = m_empCdf.begin();
+    auto lastCdfPair = m_empCdf.rbegin();
+
+    if (firstCdfPair->first < 0.0)
+    {
+        NS_FATAL_ERROR("Empirical distribution has invalid first CDF value. CDF: "
+                       << firstCdfPair->first << ", Value: " << firstCdfPair->second);
+    }
+
+    if (lastCdfPair->first > 1.0)
+    {
+        NS_FATAL_ERROR("Empirical distribution has invalid last CDF value. CDF: "
+                       << lastCdfPair->first << ", Value: " << lastCdfPair->second);
+    }
+
+    // Check if last CDF ends with 1.0
+    if (m_empCdf.rbegin()->first != 1.0)
     {
         NS_FATAL_ERROR("CDF does not cover the whole distribution");
     }
+
     m_validated = true;
 }
 

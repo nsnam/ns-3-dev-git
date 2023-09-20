@@ -20,6 +20,7 @@ Changes from ns-3.39 to ns-3-dev
 
 ### Changes to existing API
 
+* (core) Removed private class `EmpiricalRandomVariable::ValueCDF` in favor of `std::map`.
 * (energy) Added `GenericBatteryModel` to the energy module with working examples.
 * (energy) Support for battery presets and cell packs.
 * (energy) Documentation was updated and reformatted.
@@ -33,6 +34,7 @@ Changes from ns-3.39 to ns-3-dev
 
 ### Changed behavior
 
+* (core) `EmpiricalRandomVariable` CDF pairs can now be added in any order.
 * (wifi) Upon ML setup, a non-AP MLD updates the IDs of the setup links to match the IDs used by the AP MLD.
 * (wifi) Attribute **TrackSignalsFromInactiveInterfaces** in SpectrumWifiPhy has been defaulted to be enabled.
 

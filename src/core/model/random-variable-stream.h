@@ -29,6 +29,7 @@
 #include "object.h"
 #include "type-id.h"
 
+#include <map>
 #include <stdint.h>
 
 /**
@@ -1983,7 +1984,6 @@ class EmpiricalRandomVariable : public RandomVariableStream
 
     /**
      * \brief Specifies a point in the empirical distribution
-     * \note These *MUST* be inserted in ascending order of \p c
      *
      * \param [in] v The function value for this point
      * \param [in] c Probability that the function is less than or equal to \p v
@@ -2018,26 +2018,6 @@ class EmpiricalRandomVariable : public RandomVariableStream
     bool SetInterpolate(bool interpolate);
 
   private:
-    /** \brief Helper to hold one point of the CDF. */
-    class ValueCDF
-    {
-      public:
-        /** \brief Constructor. */
-        ValueCDF();
-        /**
-         * \brief Construct from values.
-         *
-         * \param [in] v The argument value.
-         * \param [in] c The CDF at the argument value \pname{v}
-         */
-        ValueCDF(double v, double c);
-
-        /** The argument value. */
-        double value;
-        /** The CDF at \pname{value}  */
-        double cdf;
-    }; // class ValueCDF
-
     /**
      * \brief Check that the CDF is valid.
      *
@@ -2078,18 +2058,14 @@ class EmpiricalRandomVariable : public RandomVariableStream
      */
     double DoInterpolate(double r);
 
-    /**
-     * \brief Comparison operator, for use by std::upper_bound
-     * \param a [in] the first value
-     * \param b [in] the second value
-     * \returns \c true if \c a.cdf < \c b.cdf
-     */
-    friend bool operator<(ValueCDF a, ValueCDF b);
-
     /** \c true once the CDF has been validated. */
     bool m_validated;
-    /** The vector of CDF points. */
-    std::vector<ValueCDF> m_emp;
+    /**
+     * The map of CDF points (x, F(x)).
+     * The CDF points are stored in the std::map in reverse order, as follows:
+     * Key: CDF F(x) [0, 1] | Value: domain value (x) [-inf, inf].
+     */
+    std::map<double, double> m_empCdf;
     /**
      * If \c true GetValue will interpolate,
      * otherwise treat CDF as normal histogram.
