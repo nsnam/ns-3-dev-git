@@ -574,12 +574,12 @@ QosTxop::NotifyChannelAccessed(uint8_t linkId, Time txopDuration)
     Txop::NotifyChannelAccessed(linkId);
 }
 
-bool
-QosTxop::IsTxopStarted(uint8_t linkId) const
+std::optional<Time>
+QosTxop::GetTxopStartTime(uint8_t linkId) const
 {
     auto& link = GetLink(linkId);
-    NS_LOG_FUNCTION(this << !link.startTxop.IsZero());
-    return (!link.startTxop.IsZero());
+    NS_LOG_FUNCTION(this << link.startTxop.has_value());
+    return link.startTxop;
 }
 
 void
@@ -588,12 +588,12 @@ QosTxop::NotifyChannelReleased(uint8_t linkId)
     NS_LOG_FUNCTION(this << +linkId);
     auto& link = GetLink(linkId);
 
-    if (link.startTxop.IsStrictlyPositive())
+    if (link.startTxop)
     {
-        NS_LOG_DEBUG("Terminating TXOP. Duration = " << Simulator::Now() - link.startTxop);
-        m_txopTrace(link.startTxop, Simulator::Now() - link.startTxop, linkId);
+        NS_LOG_DEBUG("Terminating TXOP. Duration = " << Simulator::Now() - *link.startTxop);
+        m_txopTrace(*link.startTxop, Simulator::Now() - *link.startTxop, linkId);
     }
-    link.startTxop = Seconds(0);
+    link.startTxop.reset();
     Txop::NotifyChannelReleased(linkId);
 }
 
@@ -601,10 +601,10 @@ Time
 QosTxop::GetRemainingTxop(uint8_t linkId) const
 {
     auto& link = GetLink(linkId);
-    NS_ASSERT(link.startTxop.IsStrictlyPositive());
+    NS_ASSERT(link.startTxop.has_value());
 
     Time remainingTxop = link.txopDuration;
-    remainingTxop -= (Simulator::Now() - link.startTxop);
+    remainingTxop -= (Simulator::Now() - *link.startTxop);
     if (remainingTxop.IsStrictlyNegative())
     {
         remainingTxop = Seconds(0);

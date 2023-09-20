@@ -28,6 +28,8 @@
 
 #include "ns3/traced-value.h"
 
+#include <optional>
+
 namespace ns3
 {
 
@@ -324,12 +326,10 @@ class QosTxop : public Txop
     uint8_t GetQosQueueSize(uint8_t tid, Mac48Address receiver) const;
 
     /**
-     * Return true if a TXOP has started on the given link.
-     *
      * \param linkId the ID of the given link
-     * \return true if a TXOP has started, false otherwise.
+     * \return the TXOP start time, if a TXOP is ongoing on the given link
      */
-    virtual bool IsTxopStarted(uint8_t linkId) const;
+    virtual std::optional<Time> GetTxopStartTime(uint8_t linkId) const;
     /**
      * Return the remaining duration in the current TXOP on the given link.
      *
@@ -429,13 +429,13 @@ class QosTxop : public Txop
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         ~QosLinkEntity() override = default;
 
-        Time startTxop{0};            //!< the start TXOP time
-        Time txopDuration{0};         //!< the duration of a TXOP
-        uint32_t muCwMin{0};          //!< the MU CW minimum
-        uint32_t muCwMax{0};          //!< the MU CW maximum
-        uint8_t muAifsn{0};           //!< the MU AIFSN
-        Time muEdcaTimer{0};          //!< the MU EDCA Timer
-        Time muEdcaTimerStartTime{0}; //!< last start time of the MU EDCA Timer
+        std::optional<Time> startTxop; //!< the start TXOP time
+        Time txopDuration{0};          //!< the duration of a TXOP
+        uint32_t muCwMin{0};           //!< the MU CW minimum
+        uint32_t muCwMax{0};           //!< the MU CW maximum
+        uint8_t muAifsn{0};            //!< the MU AIFSN
+        Time muEdcaTimer{0};           //!< the MU EDCA Timer
+        Time muEdcaTimerStartTime{0};  //!< last start time of the MU EDCA Timer
     };
 
     void DoDispose() override;
