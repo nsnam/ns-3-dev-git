@@ -745,7 +745,7 @@ SubscriberStationNetDevice::Enqueue(Ptr<Packet> packet,
                           "Error while enqueuing  packet: incorrect header type");
 
             GrantManagementSubheader grantMgmntSubhdr;
-            grantMgmntSubhdr.SetPm(true);
+            grantMgmntSubhdr.SetPm(1);
             packet->AddHeader(grantMgmntSubhdr);
         }
     }
