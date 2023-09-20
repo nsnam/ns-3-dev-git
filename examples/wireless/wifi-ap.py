@@ -85,7 +85,7 @@ ns.cppyy.cppdef("""
 def main(argv):
     ns.core.CommandLine().Parse(argv)
 
-    ns.network.Packet.EnablePrinting();
+    ns.network.Packet.EnablePrinting()
 
     wifi = ns.wifi.WifiHelper()
     mobility = ns.mobility.MobilityHelper()
@@ -110,7 +110,10 @@ def main(argv):
 
     # setup stas.
     wifiMac.SetType("ns3::StaWifiMac",
-                    "Ssid", ns.wifi.SsidValue(ssid))
+                    "ActiveProbing",
+                    ns.core.BooleanValue(True),
+                    "Ssid",
+                    ns.wifi.SsidValue(ssid))
     staDevs = wifi.Install(wifiPhy, wifiMac, stas)
     # setup ap.
     wifiMac.SetType("ns3::ApWifiMac",
