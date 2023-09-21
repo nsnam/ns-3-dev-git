@@ -453,16 +453,15 @@ RealtimeSimulatorImpl::Run()
             }
         }
 
-        if (!process)
+        if (process)
         {
-            // Sleep until signalled
-            m_synchronizer->Synchronize(tsNow, tsDelay);
-
-            // Re-check event queue
-            continue;
+            ProcessOneEvent();
         }
-
-        ProcessOneEvent();
+        else
+        {
+            // Sleep until signalled and re-check event queue
+            m_synchronizer->Synchronize(tsNow, tsDelay);
+        }
     }
 
     //
