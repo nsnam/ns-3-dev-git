@@ -456,7 +456,7 @@ RealtimeSimulatorImpl::Run()
         if (!process)
         {
             // Sleep until signalled
-            tsNow = m_synchronizer->Synchronize(tsNow, tsDelay);
+            m_synchronizer->Synchronize(tsNow, tsDelay);
 
             // Re-check event queue
             continue;
