@@ -63,6 +63,12 @@ class ChannelAccessManager : public Object
     ~ChannelAccessManager() override;
 
     /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+
+    /**
      * Set up (or reactivate) listener for PHY events on the given PHY. The new (or reactivated)
      * listener becomes the active listener and the previous active listener attached to another
      * PHY, if any, is deactivated.
@@ -156,6 +162,22 @@ class ChannelAccessManager : public Object
      * the backoff timer.
      */
     void DisableEdcaFor(Ptr<Txop> qosTxop, Time duration);
+
+    /**
+     * Set the member variable indicating whether the backoff should be invoked when an AC gains
+     * the right to start a TXOP but it does not transmit any frame (e.g., due to constraints
+     * associated with EMLSR operations), provided that the queue is not actually empty.
+     *
+     * \param enable whether to enable backoff generation when no TX is performed in a TXOP
+     */
+    void SetGenerateBackoffOnNoTx(bool enable);
+
+    /**
+     * \return whether the backoff should be invoked when an AC gains the right to start a TXOP
+     *         but it does not transmit any frame (e.g., due to constraints associated with EMLSR
+     *         operations), provided that the queue is not actually empty
+     */
+    bool GetGenerateBackoffOnNoTx() const;
 
     /**
      * Return the width of the largest primary channel that has been idle for the
@@ -431,6 +453,10 @@ class ChannelAccessManager : public Object
     bool m_off;                        //!< flag whether it is in off state
     Time m_eifsNoDifs;                 //!< EIFS no DIFS time
     EventId m_accessTimeout;           //!< the access timeout ID
+    bool m_generateBackoffOnNoTx; //!< whether the backoff should be invoked when the AC gains the
+                                  //!< right to start a TXOP but it does not transmit any frame
+                                  //!< (e.g., due to constraints associated with EMLSR operations),
+                                  //!< provided that the queue is not actually empty
 
     /// Information associated with each PHY that is going to operate on another EMLSR link
     struct EmlsrLinkSwitchInfo

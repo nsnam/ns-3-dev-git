@@ -37,6 +37,8 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("ChannelAccessManager");
 
+NS_OBJECT_ENSURE_REGISTERED(ChannelAccessManager);
+
 /**
  * Listener for PHY events. Forwards to ChannelAccessManager.
  * The ChannelAccessManager may handle multiple PHY listeners connected to distinct PHYs,
@@ -167,6 +169,26 @@ class PhyListener : public ns3::WifiPhyListener
 /****************************************************************
  *      Implement the channel access manager of all Txop holders
  ****************************************************************/
+
+TypeId
+ChannelAccessManager::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::ChannelAccessManager")
+            .SetParent<ns3::Object>()
+            .SetGroupName("Wifi")
+            .AddConstructor<ChannelAccessManager>()
+            .AddAttribute("GenerateBackoffIfTxopWithoutTx",
+                          "Specify whether the backoff should be invoked when the AC gains the "
+                          "right to start a TXOP but it does not transmit any frame "
+                          "(e.g., due to constraints associated with EMLSR operations), "
+                          "provided that the queue is not actually empty.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&ChannelAccessManager::SetGenerateBackoffOnNoTx,
+                                              &ChannelAccessManager::GetGenerateBackoffOnNoTx),
+                          MakeBooleanChecker());
+    return tid;
+}
 
 ChannelAccessManager::ChannelAccessManager()
     : m_lastAckTimeoutEnd(0),
@@ -453,7 +475,7 @@ void
 ChannelAccessManager::RequestAccess(Ptr<Txop> txop)
 {
     NS_LOG_FUNCTION(this << txop);
-    if (m_phy)
+    if (m_phy && txop->HasFramesToTransmit(m_linkId))
     {
         m_phy->NotifyChannelAccessRequested();
     }
@@ -558,6 +580,9 @@ ChannelAccessManager::DoGrantDcfAccess()
             }
             else
             {
+                // this TXOP did not transmit anything, make sure that backoff counter starts
+                // decreasing in a slot again
+                txop->UpdateBackoffSlotsNow(0, now, m_linkId);
                 // reset the current state to the EDCAF that won the contention
                 // but did not transmit anything
                 i--;
@@ -799,6 +824,19 @@ ChannelAccessManager::DisableEdcaFor(Ptr<Txop> qosTxop, Time duration)
                                                 << " remaining slot(s)");
     qosTxop->UpdateBackoffSlotsNow(0, resume, m_linkId);
     DoRestartAccessTimeoutIfNeeded();
+}
+
+void
+ChannelAccessManager::SetGenerateBackoffOnNoTx(bool enable)
+{
+    NS_LOG_FUNCTION(this << enable);
+    m_generateBackoffOnNoTx = enable;
+}
+
+bool
+ChannelAccessManager::GetGenerateBackoffOnNoTx() const
+{
+    return m_generateBackoffOnNoTx;
 }
 
 void

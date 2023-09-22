@@ -593,8 +593,27 @@ QosTxop::NotifyChannelReleased(uint8_t linkId)
         NS_LOG_DEBUG("Terminating TXOP. Duration = " << Simulator::Now() - *link.startTxop);
         m_txopTrace(*link.startTxop, Simulator::Now() - *link.startTxop, linkId);
     }
+
+    // generate a new backoff value if either the TXOP duration is not null (i.e., some frames
+    // were transmitted) or no frame was transmitted but the queue actually contains frame to
+    // transmit and the user indicated that a backoff value should be generated in this situation.
+    // This behavior reflects the following specs text (Sec. 35.3.16.4 of 802.11be D4.0):
+    // An AP or non-AP STA affiliated with an MLD that has gained the right to initiate the
+    // transmission of a frame as described in 10.23.2.4 (Obtaining an EDCA TXOP) for an AC but
+    // does not transmit any frame corresponding to that AC for the reasons stated above may:
+    // - invoke a backoff for the EDCAF associated with that AC as allowed per h) of 10.23.2.2
+    //   (EDCA backoff procedure).
+    auto hasTransmitted = link.startTxop.has_value() && Simulator::Now() > *link.startTxop;
+
+    m_queue->WipeAllExpiredMpdus();
+    if ((hasTransmitted) ||
+        (!m_queue->IsEmpty() && m_mac->GetChannelAccessManager(linkId)->GetGenerateBackoffOnNoTx()))
+    {
+        GenerateBackoff(linkId);
+        Simulator::ScheduleNow(&QosTxop::RequestAccess, this, linkId);
+    }
     link.startTxop.reset();
-    Txop::NotifyChannelReleased(linkId);
+    GetLink(linkId).access = NOT_REQUESTED;
 }
 
 Time

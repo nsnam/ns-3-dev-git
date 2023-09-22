@@ -907,6 +907,8 @@ one and only one of the following functions:
 
 *  Decrement the backoff timer.
 *  Initiate the transmission of a frame exchange sequence.
+*  Invoke the backoff procedure due to choosing not to transmit (to be included
+   in the version of the standard following IEEE 802.11-2020)
 *  Invoke the backoff procedure due to an internal collision.
 *  Do nothing.
 
