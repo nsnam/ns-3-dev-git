@@ -111,6 +111,7 @@ SpectrumWifiPhy::DoDispose()
     m_spectrumPhyInterfaces.clear();
     m_currentSpectrumPhyInterface = nullptr;
     m_antenna = nullptr;
+    m_channelSwitchedCallback.Nullify();
     WifiPhy::DoDispose();
 }
 
