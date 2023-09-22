@@ -107,7 +107,7 @@ WifiPsdu::GetAddr1() const
     {
         if (m_mpduList.at(i)->GetHeader().GetAddr1() != ra)
         {
-            NS_ABORT_MSG("MPDUs in an A-AMPDU must have the same receiver address");
+            NS_ABORT_MSG("MPDUs in an A-MPDU must have the same receiver address");
         }
     }
     return ra;
@@ -122,7 +122,7 @@ WifiPsdu::GetAddr2() const
     {
         if (m_mpduList.at(i)->GetHeader().GetAddr2() != ta)
         {
-            NS_ABORT_MSG("MPDUs in an A-AMPDU must have the same transmitter address");
+            NS_ABORT_MSG("MPDUs in an A-MPDU must have the same transmitter address");
         }
     }
     return ta;
