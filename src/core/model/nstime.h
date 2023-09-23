@@ -271,9 +271,10 @@ class Time
      * - `d`  (days)
      * - `y`  (years)
      *
-     * There can be no white space between the numerical portion
-     * and the units.  Any otherwise malformed string causes a fatal error to
-     * occur.
+     * There must be no whitespace between the numerical portion
+     * and the unit. If the string only contains a number, it is treated as seconds.
+     * Any otherwise malformed string causes a fatal error to occur.
+     *
      * \param [in] s The string to parse into a Time
      */
     explicit Time(const std::string& s);
