@@ -2443,17 +2443,13 @@ EmlsrUlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
                 GetApplication(UPLINK, 0, 2, 1000));
 
             // unblock transmissions on the non-EMLSR link once the two packets are queued
-            Simulator::Schedule(NanoSeconds(1), [=, this]() {
+            Simulator::ScheduleNow([=, this]() {
                 m_staMacs[0]->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED,
                                                       m_apMac->GetAddress(),
                                                       {*m_nonEmlsrLink});
             });
-
-            break;
         }
-        m_countQoSframes++; // if all EMLSR links, next case is already executed now
-        [[fallthrough]];
-    case 4:
+
         // check that other EMLSR links are now blocked on the EMLSR client and on the AP MLD
         // after this QoS data frame is received
         Simulator::ScheduleNow([=, this]() {
@@ -2465,24 +2461,33 @@ EmlsrUlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
                     id,
                     WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
                     id != m_staMacs[0]->GetLinkForPhy(m_mainPhyId) && m_staMacs[0]->IsEmlsrLink(id),
-                    std::to_string(Simulator::Now().GetMicroSeconds()) +
-                        "Checking EMLSR links on EMLSR client while sending the first data frame");
+                    "Checking EMLSR links on EMLSR client while sending the first data frame");
 
-                Simulator::Schedule(txDuration + MicroSeconds(1) /* propagation delay */,
-                                    [=, this]() {
-                                        CheckBlockedLink(
-                                            m_apMac,
-                                            m_staMacs[0]->GetAddress(),
-                                            id,
-                                            WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-                                            id != m_staMacs[0]->GetLinkForPhy(m_mainPhyId) &&
-                                                m_staMacs[0]->IsEmlsrLink(id),
-                                            std::to_string(Simulator::Now().GetMicroSeconds()) +
-                                                "Checking EMLSR links on AP MLD while sending the "
-                                                "first data frame");
-                                    });
+                Simulator::Schedule(
+                    txDuration + MicroSeconds(1) /* propagation delay */,
+                    [=, this]() {
+                        CheckBlockedLink(
+                            m_apMac,
+                            m_staMacs[0]->GetAddress(),
+                            id,
+                            WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                            id != m_staMacs[0]->GetLinkForPhy(m_mainPhyId) &&
+                                m_staMacs[0]->IsEmlsrLink(id),
+                            "Checking EMLSR links on AP MLD while sending the first data frame");
+                    });
             }
+        });
 
+        if (m_nonEmlsrLink)
+        {
+            break;
+        }
+        m_countQoSframes++; // if all EMLSR links, next case is already executed now
+        [[fallthrough]];
+    case 4:
+        // check that other EMLSR links are now blocked on the EMLSR client and on the AP MLD
+        // after this QoS data frame is received
+        Simulator::ScheduleNow([=, this]() {
             // make aux PHYs capable of transmitting frames
             m_staMacs[0]->GetEmlsrManager()->SetAttribute("AuxPhyTxCapable", BooleanValue(true));
 
@@ -2591,6 +2596,15 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
         }
         [[fallthrough]];
     case 4:
+        if (m_nonEmlsrLink && m_countBlockAck == 4)
+        {
+            // block transmissions on the non-EMLSR link
+            Simulator::Schedule(txDuration + NanoSeconds(1), [=, this]() {
+                m_staMacs[0]->BlockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                    m_apMac->GetAddress(),
+                                                    {*m_nonEmlsrLink});
+            });
+        }
         if (linkId == m_nonEmlsrLink)
         {
             // this BlockAck has been sent on the non-EMLSR link, ignore it
@@ -2622,14 +2636,6 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
 
         // make aux PHYs not capable of transmitting frames
         m_staMacs[0]->GetEmlsrManager()->SetAttribute("AuxPhyTxCapable", BooleanValue(false));
-
-        if (m_nonEmlsrLink)
-        {
-            // block transmissions on the non-EMLSR link
-            m_staMacs[0]->BlockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED,
-                                                m_apMac->GetAddress(),
-                                                {*m_nonEmlsrLink});
-        }
 
         // generate data packets for another UL data frame, which will be sent on the link where
         // the main PHY is operating
