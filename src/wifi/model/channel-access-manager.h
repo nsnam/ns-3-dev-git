@@ -33,6 +33,8 @@
 #include <unordered_map>
 #include <vector>
 
+class EmlsrUlTxopTest;
+
 namespace ns3
 {
 
@@ -58,6 +60,9 @@ class FrameExchangeManager;
  */
 class ChannelAccessManager : public Object
 {
+    /// Allow test cases to access private members
+    friend class ::EmlsrUlTxopTest;
+
   public:
     ChannelAccessManager();
     ~ChannelAccessManager() override;
@@ -444,15 +449,13 @@ class ChannelAccessManager : public Object
     std::vector<Time> m_lastPer20MHzBusyEnd; /**< the last busy end time per 20 MHz channel
                                                   (HE stations and channel width > 20 MHz only) */
     std::map<WifiChannelListType, Timespan>
-        m_lastIdle;                    //!< the last idle start and end time for each channel type
-    Time m_lastSwitchingEnd;           //!< the last switching end time
-    bool m_usingOtherEmlsrLink;        //!< whether another EMLSR link is being used
-    Time m_lastUsingOtherEmlsrLinkEnd; //!< the last time we were blocked because using another
-                                       //!< EMLSR link
-    bool m_sleeping;                   //!< flag whether it is in sleeping state
-    bool m_off;                        //!< flag whether it is in off state
-    Time m_eifsNoDifs;                 //!< EIFS no DIFS time
-    EventId m_accessTimeout;           //!< the access timeout ID
+        m_lastIdle;               //!< the last idle start and end time for each channel type
+    Time m_lastSwitchingEnd;      //!< the last switching end time
+    bool m_usingOtherEmlsrLink;   //!< whether another EMLSR link is being used
+    bool m_sleeping;              //!< flag whether it is in sleeping state
+    bool m_off;                   //!< flag whether it is in off state
+    Time m_eifsNoDifs;            //!< EIFS no DIFS time
+    EventId m_accessTimeout;      //!< the access timeout ID
     bool m_generateBackoffOnNoTx; //!< whether the backoff should be invoked when the AC gains the
                                   //!< right to start a TXOP but it does not transmit any frame
                                   //!< (e.g., due to constraints associated with EMLSR operations),

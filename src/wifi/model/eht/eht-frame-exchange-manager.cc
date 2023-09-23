@@ -179,8 +179,12 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
     if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
     {
         // Cannot start a transmission on a link blocked because another EMLSR link is being used
-        NS_ASSERT_MSG(!UsingOtherEmlsrLink(),
-                      "StartTransmission called while another EMLSR link is being used");
+        if (UsingOtherEmlsrLink())
+        {
+            NS_LOG_DEBUG("StartTransmission called while another EMLSR link is being used");
+            NotifyChannelReleased(edca);
+            return false;
+        }
 
         auto emlsrManager = m_staMac->GetEmlsrManager();
 
