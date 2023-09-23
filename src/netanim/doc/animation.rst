@@ -14,7 +14,7 @@ We will describe the NetAnim method briefly here.
 NetAnim
 *******
 
-NetAnim is a standalone, Qt4-based software executable that uses a trace file generated during
+NetAnim is a standalone, Qt5-based software executable that uses a trace file generated during
 an |ns3| simulation to display the topology and animate the packet flow between nodes.
 
 .. figure:: figures/NetAnim_3_105.*
@@ -77,33 +77,23 @@ Downloading NetAnim
 ===================
 If NetAnim is not already available in the |ns3| package you downloaded, you can do the following:
 
-Please ensure that you have installed mercurial.
-The latest version of NetAnim can be downloaded using mercurial with the following command:
+The latest version of NetAnim can be downloaded using git with the following command:
 
 .. sourcecode:: bash
 
-  $ hg clone http://code.nsnam.org/netanim
+  $ git clone https://gitlab.com/nsnam/netanim.git
 
 Building NetAnim
 ================
 Prerequisites
 ~~~~~~~~~~~~~
-Qt5 (5.4 and over) is required to build NetAnim. This can be obtained using the following ways:
+Qt5 (5.4 and over) is required to build NetAnim. The ns-3 Installation Guide
+lists some packages to install for some
+`Linux <https://www.nsnam.org/docs/installation/html/linux.html#optional>`_ systems,
+for `macOS <https://www.nsnam.org/docs/installation/html/macos.html#optional>`, and
+for `Windows <https://www.nsnam.org/docs/installation/html/windows.html>`_.
 
-For Ubuntu Linux distributions:
-
-.. sourcecode:: bash
-
-  $ apt-get install qt5-default
-
-For Red Hat/Fedora based distribution:
-
-.. sourcecode:: bash
-
-  $ yum install qt5
-  $ yum install qt5-devel
-
-For Mac/OSX, see https://www.qt.io/download
+The `Qt site <https://www.qt.io/download>`_ also provides download options.
 
 Build steps
 ~~~~~~~~~~~
