@@ -254,6 +254,7 @@ BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader& respHdr
         if (const auto gcrGroupAddr = respHdr.GetGcrGroupAddress())
         {
             agreement.SetGcrGroupAddress(*gcrGroupAddr);
+            m_gcrBlockAcks.emplace(*gcrGroupAddr, GcrBlockAcks{});
         }
         if (!it->second.first.IsEstablished())
         {
@@ -676,6 +677,140 @@ BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
     }
 
     return {nSuccessfulMpdus, nFailedMpdus};
+}
+
+std::optional<std::pair<uint16_t, uint16_t>>
+BlockAckManager::NotifyGotGcrBlockAck(uint8_t linkId,
+                                      const CtrlBAckResponseHeader& blockAck,
+                                      const Mac48Address& recipient,
+                                      const GcrManager::GcrMembers& members)
+{
+    NS_LOG_FUNCTION(this << linkId << blockAck << recipient);
+    NS_ABORT_MSG_IF(!blockAck.IsGcr(), "GCR Block Ack is expected");
+    NS_ABORT_MSG_IF(members.count(recipient) == 0,
+                    "Received GCR Block Ack response from unexpected recipient");
+
+    const auto tid = blockAck.GetTidInfo();
+    auto it = GetOriginatorBaAgreement(recipient, tid, blockAck.GetGcrGroupAddress());
+    if (it == m_originatorAgreements.end() || !it->second.first.IsEstablished())
+    {
+        return {};
+    }
+
+    NS_ASSERT_MSG(it->second.first.GetGcrGroupAddress().has_value() &&
+                      it->second.first.GetGcrGroupAddress().value() ==
+                          blockAck.GetGcrGroupAddress(),
+                  "No GCR agreement for group address " << blockAck.GetGcrGroupAddress());
+    if (it->second.first.m_inactivityEvent.IsPending())
+    {
+        /* Upon reception of a BlockAck frame, the inactivity timer at the
+            originator must be reset.
+            For more details see section 11.5.3 in IEEE802.11e standard */
+        it->second.first.m_inactivityEvent.Cancel();
+        Time timeout = MicroSeconds(1024 * it->second.first.GetTimeout());
+        it->second.first.m_inactivityEvent =
+            Simulator::Schedule(timeout,
+                                &BlockAckManager::InactivityTimeout,
+                                this,
+                                recipient,
+                                tid,
+                                blockAck.GetGcrGroupAddress());
+    }
+
+    auto itGcrBlockAcks = m_gcrBlockAcks.find(blockAck.GetGcrGroupAddress());
+    NS_ASSERT(itGcrBlockAcks != m_gcrBlockAcks.end());
+    NS_ASSERT(itGcrBlockAcks->second.count(recipient) == 0);
+    itGcrBlockAcks->second[recipient] = blockAck;
+
+    if (itGcrBlockAcks->second.size() < members.size())
+    {
+        // we need to collect feedback from all members
+        NS_LOG_DEBUG("Expecting more GCR Block ACK(s)");
+        return {};
+    }
+
+    std::vector<bool> acked;
+    for (auto queueIt = it->second.second.begin(); queueIt != it->second.second.end(); ++queueIt)
+    {
+        auto currentSeq = (*queueIt)->GetHeader().GetSequenceNumber();
+        NS_LOG_DEBUG("Current seq=" << currentSeq);
+        auto received = true;
+        for ([[maybe_unused]] const auto& [recipient, gcrBlockAcks] : itGcrBlockAcks->second)
+        {
+            received &= gcrBlockAcks.IsPacketReceived(currentSeq, 0);
+        }
+        acked.emplace_back(received);
+    }
+
+    uint16_t nSuccessfulMpdus = 0;
+    uint16_t nFailedMpdus = 0;
+    const auto now = Simulator::Now();
+    std::list<Ptr<const WifiMpdu>> ackedMpdus;
+    auto countAndNotify = true;
+    for (const auto& member : members)
+    {
+        std::size_t index = 0;
+        it = GetOriginatorBaAgreement(member, tid, blockAck.GetGcrGroupAddress());
+        NS_ASSERT(acked.size() == it->second.second.size());
+        for (auto queueIt = it->second.second.begin(); queueIt != it->second.second.end();)
+        {
+            if (acked.at(index++))
+            {
+                it->second.first.NotifyAckedMpdu(*queueIt);
+                if (countAndNotify)
+                {
+                    nSuccessfulMpdus++;
+                    if (!m_txOkCallback.IsNull())
+                    {
+                        m_txOkCallback(*queueIt);
+                    }
+                    ackedMpdus.emplace_back(*queueIt);
+                }
+                queueIt = HandleInFlightMpdu(linkId, queueIt, ACKNOWLEDGED, it, now);
+            }
+            else
+            {
+                ++queueIt;
+            }
+        }
+        countAndNotify = false;
+    }
+
+    // Dequeue all acknowledged MPDUs at once
+    m_queue->DequeueIfQueued(ackedMpdus);
+
+    // Remaining outstanding MPDUs have not been acknowledged
+    countAndNotify = true;
+    for (const auto& member : members)
+    {
+        it = GetOriginatorBaAgreement(member, tid, blockAck.GetGcrGroupAddress());
+        for (auto queueIt = it->second.second.begin(); queueIt != it->second.second.end();)
+        {
+            // transmission actually failed if the MPDU is inflight only on the same link on
+            // which we received the BlockAck frame
+            auto linkIds = (*queueIt)->GetInFlightLinkIds();
+
+            if (linkIds.size() == 1 && *linkIds.begin() == linkId)
+            {
+                if (countAndNotify)
+                {
+                    nFailedMpdus++;
+                    if (!m_txFailedCallback.IsNull())
+                    {
+                        m_txFailedCallback(*queueIt);
+                    }
+                }
+                queueIt = HandleInFlightMpdu(linkId, queueIt, TO_RETRANSMIT, it, now);
+                continue;
+            }
+
+            queueIt = HandleInFlightMpdu(linkId, queueIt, STAY_INFLIGHT, it, now);
+        }
+        countAndNotify = false;
+    }
+
+    itGcrBlockAcks->second.clear();
+    return std::make_pair(nSuccessfulMpdus, nFailedMpdus);
 }
 
 void
