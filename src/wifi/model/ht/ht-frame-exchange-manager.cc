@@ -1803,7 +1803,8 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     }
 
     if (const auto isGroup = IsGroupcast(hdr.GetAddr1());
-        hdr.IsQosData() && hdr.HasData() && ((hdr.GetAddr1() == m_self) || (isGroup && inAmpdu)))
+        hdr.IsQosData() && hdr.HasData() &&
+        ((hdr.GetAddr1() == m_self) || (isGroup && (inAmpdu || !mpdu->GetHeader().IsQosNoAck()))))
     {
         const auto tid = hdr.GetQosTid();
 
