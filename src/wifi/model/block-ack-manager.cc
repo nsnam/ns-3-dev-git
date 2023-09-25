@@ -368,15 +368,32 @@ void
 BlockAckManager::StorePacket(Ptr<WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);
+    DoStorePacket(mpdu, mpdu->GetHeader().GetAddr1());
+}
+
+void
+BlockAckManager::StoreGcrPacket(Ptr<WifiMpdu> mpdu, const GcrManager::GcrMembers& members)
+{
+    NS_LOG_FUNCTION(this << *mpdu << members.size());
+    for (const auto& member : members)
+    {
+        DoStorePacket(mpdu, member, mpdu->begin()->second.GetDestinationAddr());
+    }
+}
+
+void
+BlockAckManager::DoStorePacket(Ptr<WifiMpdu> mpdu,
+                               const Mac48Address& recipient,
+                               std::optional<Mac48Address> gcrGroupAddr)
+{
+    NS_LOG_FUNCTION(this << *mpdu << recipient << gcrGroupAddr.has_value());
     NS_ASSERT(mpdu->GetHeader().IsQosData());
 
     const auto tid = mpdu->GetHeader().GetQosTid();
-    const auto recipient = mpdu->GetHeader().GetAddr1();
-
-    auto agreementIt = GetOriginatorBaAgreement(recipient, tid);
+    auto agreementIt = GetOriginatorBaAgreement(recipient, tid, gcrGroupAddr);
     NS_ASSERT(agreementIt != m_originatorAgreements.end());
 
-    uint16_t mpduDist =
+    const auto mpduDist =
         agreementIt->second.first.GetDistance(mpdu->GetHeader().GetSequenceNumber());
 
     if (mpduDist >= SEQNO_SPACE_HALF_SIZE)
@@ -396,7 +413,7 @@ BlockAckManager::StorePacket(Ptr<WifiMpdu> mpdu)
             return;
         }
 
-        uint16_t dist =
+        const auto dist =
             agreementIt->second.first.GetDistance((*it)->GetHeader().GetSequenceNumber());
 
         if (mpduDist > dist || (mpduDist == dist && mpdu->GetHeader().GetFragmentNumber() >
@@ -450,7 +467,7 @@ BlockAckManager::HandleInFlightMpdu(uint8_t linkId,
 
     const WifiMacHeader& hdr = (*mpduIt)->GetHeader();
 
-    NS_ASSERT(hdr.GetAddr1() == it->first.first);
+    NS_ASSERT((hdr.GetAddr1() == it->first.first) || hdr.GetAddr1().IsGroup());
     NS_ASSERT(hdr.IsQosData() && hdr.GetQosTid() == it->first.second);
 
     if (it->second.first.GetDistance(hdr.GetSequenceNumber()) >= SEQNO_SPACE_HALF_SIZE)

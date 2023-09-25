@@ -166,9 +166,19 @@ class BlockAckManager : public Object
      * @param mpdu MPDU to store.
      *
      * Stores <i>mpdu</i> for a possible future retransmission. Retransmission occurs
-     * if the packet, in a BlockAck frame, is indicated by recipient as not received.
+     * if the packet, in a Block Ack frame, is indicated by recipient as not received.
      */
     void StorePacket(Ptr<WifiMpdu> mpdu);
+
+    /**
+     * @param mpdu groupcast MPDU to store.
+     * @param members intended recipients for the groupcast MPDU.
+     *
+     * Stores <i>mpdu</i> for a possible future retransmission. Retransmission occurs
+     * if the packet, in a GCR Block Ack frame, is indicated by recipient as not received.
+     */
+    void StoreGcrPacket(Ptr<WifiMpdu> mpdu, const GcrManager::GcrMembers& members);
+
     /**
      * Invoked upon receipt of an Ack frame on the given link after the transmission of a
      * QoS data frame sent under an established block ack agreement. Remove the acknowledged
@@ -199,8 +209,8 @@ class BlockAckManager : public Object
      * @return a pair of values indicating the number of successfully received MPDUs
      *         and the number of failed MPDUs
      *
-     * Invoked upon receipt of a BlockAck frame on the given link. Typically, this function
-     * is called by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
+     * Invoked upon receipt of a Block Ack frame on the given link. Typically, this function
+     * is called by the frame exchange manager. Performs a check on which MPDUs, previously sent
      * with Ack Policy set to Block Ack, were correctly received by the recipient.
      * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.
      * Note that <i>tids</i> is only used if <i>blockAck</i> is a Multi-STA Block Ack
@@ -211,6 +221,7 @@ class BlockAckManager : public Object
                                                     const Mac48Address& recipient,
                                                     const std::set<uint8_t>& tids,
                                                     size_t index = 0);
+
     /**
      * @param linkId the ID of the given link
      * @param recipient Sender of the expected BlockAck frame.
@@ -505,6 +516,17 @@ class BlockAckManager : public Object
     void InactivityTimeout(const Mac48Address& recipient,
                            uint8_t tid,
                            std::optional<Mac48Address> gcrGroupAddr);
+
+    /**
+     * @param mpdu MPDU to store.
+     * @param recipient intended recipient for the stored MPDU.
+     * @param gcrGroupAddr the GCR Group Address (only if MPDU is transmitted using the GCR service)
+     *
+     * Stores <i>mpdu</i> for a possible future retransmission.
+     */
+    void DoStorePacket(Ptr<WifiMpdu> mpdu,
+                       const Mac48Address& recipient,
+                       std::optional<Mac48Address> gcrGroupAddr = std::nullopt);
 
     /**
      * typedef for a list of WifiMpdu.

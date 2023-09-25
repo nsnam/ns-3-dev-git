@@ -732,10 +732,26 @@ QosTxop::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient,
 void
 QosTxop::CompleteMpduTx(Ptr<WifiMpdu> mpdu)
 {
+    NS_LOG_FUNCTION(this << *mpdu);
     NS_ASSERT(mpdu->GetHeader().IsQosData());
     // If there is an established BA agreement, store the packet in the queue of outstanding packets
-    if (m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(),
-                                                     mpdu->GetHeader().GetQosTid()))
+
+    if (auto apMac = DynamicCast<ApWifiMac>(m_mac);
+        IsGcr(m_mac, mpdu->GetHeader()) &&
+        (apMac->GetGcrManager()->GetRetransmissionPolicyFor(mpdu->GetHeader()) ==
+         GroupAddressRetransmissionPolicy::GCR_BLOCK_ACK))
+    {
+        NS_ASSERT(mpdu->IsQueued());
+        NS_ASSERT(m_queue->GetAc() == mpdu->GetQueueAc());
+        const auto recipient = mpdu->begin()->second.GetDestinationAddr();
+        m_baManager->StoreGcrPacket(
+            m_queue->GetOriginal(mpdu),
+            apMac->GetGcrManager()->GetMemberStasForGroupAddress(recipient));
+        return;
+    }
+
+    if (const auto recipient = mpdu->GetHeader().GetAddr1();
+        m_mac->GetBaAgreementEstablishedAsOriginator(recipient, mpdu->GetHeader().GetQosTid()))
     {
         NS_ASSERT(mpdu->IsQueued());
         NS_ASSERT(m_queue->GetAc() == mpdu->GetQueueAc());
