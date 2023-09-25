@@ -302,15 +302,17 @@ QosTxop::GetBaStartingSequence(Mac48Address address, uint8_t tid, bool isGcr) co
 }
 
 std::pair<CtrlBAckRequestHeader, WifiMacHeader>
-QosTxop::PrepareBlockAckRequest(Mac48Address recipient, uint8_t tid) const
+QosTxop::PrepareBlockAckRequest(Mac48Address recipient,
+                                uint8_t tid,
+                                std::optional<Mac48Address> gcrGroupAddr) const
 {
-    NS_LOG_FUNCTION(this << recipient << +tid);
+    NS_LOG_FUNCTION(this << recipient << +tid << gcrGroupAddr.has_value());
     NS_ASSERT(QosUtilsMapTidToAc(tid) == m_ac);
 
     auto recipientMld = m_mac->GetMldAddress(recipient);
 
-    CtrlBAckRequestHeader reqHdr =
-        m_baManager->GetBlockAckReqHeader(recipientMld.value_or(recipient), tid);
+    auto reqHdr =
+        m_baManager->GetBlockAckReqHeader(recipientMld.value_or(recipient), tid, gcrGroupAddr);
 
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_CTL_BACKREQ);
@@ -683,7 +685,10 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address re
 
     if (respHdr.GetStatusCode().IsSuccess())
     {
-        NS_LOG_DEBUG("block ack agreement established with " << recipient << " tid " << +tid);
+        const auto gcrGroup = respHdr.GetGcrGroupAddress();
+        NS_LOG_DEBUG("block ack agreement established with "
+                     << recipient << " tid " << +tid << (gcrGroup ? " group " : "")
+                     << (gcrGroup ? gcrGroup->ConvertTo() : Address()));
         m_baEstablishedCallback(recipient, tid);
         // A (destination, TID) pair is "blocked" (i.e., no more packets are sent) when an
         // Add BA Request is sent to the destination. However, when the Add BA Request timer

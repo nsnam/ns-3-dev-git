@@ -739,7 +739,7 @@ GcrTestBase::DoSetup()
     // LogComponentEnable("WifiGcrTest", LOG_LEVEL_ALL);
 
     RngSeedManager::SetSeed(1);
-    RngSeedManager::SetRun(70);
+    RngSeedManager::SetRun(2);
     int64_t streamNumber = 100;
 
     Config::SetDefault("ns3::WifiMacQueue::MaxDelay", TimeValue(m_params.maxLifetime));

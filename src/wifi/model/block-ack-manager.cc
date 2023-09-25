@@ -920,25 +920,21 @@ BlockAckManager::HandleDiscardedMpdu(Ptr<const WifiMpdu> mpdu, OriginatorAgreeme
         }
     }
 
-    // TODO: GCR-BA not supported yet
-    if (!baAgreement.GetGcrGroupAddress())
-    {
-        // schedule a BlockAckRequest
-        const auto [recipient, tid] = iter->first;
-        NS_LOG_DEBUG("Schedule a Block Ack Request for agreement (" << recipient << ", " << +tid
-                                                                    << ")");
+    // schedule a BlockAckRequest
+    const auto [recipient, tid] = iter->first;
+    NS_LOG_DEBUG("Schedule a Block Ack Request for agreement (" << recipient << ", " << +tid
+                                                                << ")");
 
-        WifiMacHeader hdr;
-        hdr.SetType(WIFI_MAC_CTL_BACKREQ);
-        hdr.SetAddr1(recipient);
-        hdr.SetAddr2(mpdu->GetOriginal()->GetHeader().GetAddr2());
-        hdr.SetDsNotTo();
-        hdr.SetDsNotFrom();
-        hdr.SetNoRetry();
-        hdr.SetNoMoreFragments();
+    WifiMacHeader hdr;
+    hdr.SetType(WIFI_MAC_CTL_BACKREQ);
+    hdr.SetAddr1(recipient);
+    hdr.SetAddr2(mpdu->GetOriginal()->GetHeader().GetAddr2());
+    hdr.SetDsNotTo();
+    hdr.SetDsNotFrom();
+    hdr.SetNoRetry();
+    hdr.SetNoMoreFragments();
 
-        ScheduleBar(GetBlockAckReqHeader(recipient, tid), hdr);
-    }
+    ScheduleBar(GetBlockAckReqHeader(recipient, tid, baAgreement.GetGcrGroupAddress()), hdr);
 }
 
 void
@@ -976,12 +972,22 @@ BlockAckManager::NotifyGotMpdu(Ptr<const WifiMpdu> mpdu)
 }
 
 CtrlBAckRequestHeader
-BlockAckManager::GetBlockAckReqHeader(const Mac48Address& recipient, uint8_t tid) const
+BlockAckManager::GetBlockAckReqHeader(const Mac48Address& recipient,
+                                      uint8_t tid,
+                                      std::optional<Mac48Address> gcrGroupAddr) const
 {
-    auto it = GetOriginatorBaAgreement(recipient, tid);
+    auto it = GetOriginatorBaAgreement(recipient, tid, gcrGroupAddr);
     NS_ASSERT(it != m_originatorAgreements.end());
     CtrlBAckRequestHeader reqHdr;
-    reqHdr.SetType((*it).second.first.GetBlockAckReqType());
+    if (gcrGroupAddr.has_value())
+    {
+        reqHdr.SetType(BlockAckReqType::GCR);
+        reqHdr.SetGcrGroupAddress(gcrGroupAddr.value());
+    }
+    else
+    {
+        reqHdr.SetType((*it).second.first.GetBlockAckReqType());
+    }
     reqHdr.SetTidInfo(tid);
     reqHdr.SetStartingSequence((*it).second.first.GetStartingSequence());
     return reqHdr;

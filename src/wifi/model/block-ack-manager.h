@@ -450,12 +450,17 @@ class BlockAckManager : public Object
     /**
      * @param recipient the recipient
      * @param tid the TID
+     * @param gcrGroupAddr the GCR Group Address (only if the Block Ack Request is being used for
+     * the GCR service)
      * @return the BlockAckRequest header for the established BA agreement
      *
      * Get the BlockAckRequest header for the established BA agreement
      * (<i>recipient</i>,<i>tid</i>).
      */
-    CtrlBAckRequestHeader GetBlockAckReqHeader(const Mac48Address& recipient, uint8_t tid) const;
+    CtrlBAckRequestHeader GetBlockAckReqHeader(
+        const Mac48Address& recipient,
+        uint8_t tid,
+        std::optional<Mac48Address> gcrGroupAddr = std::nullopt) const;
 
     /**
      * @param reqHdr the BlockAckRequest header

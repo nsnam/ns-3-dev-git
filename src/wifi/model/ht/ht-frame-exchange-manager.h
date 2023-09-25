@@ -350,11 +350,14 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * @param durationId the Duration/ID of the frame soliciting this Block Ack response
      * @param blockAckTxVector the transmit vector for the Block Ack response
      * @param rxSnr the receive SNR
+     * @param gcrGroupAddr the GCR Group Address (only if the Block Ack is being used for the GCR
+     * service)
      */
     void SendBlockAck(const RecipientBlockAckAgreement& agreement,
                       Time durationId,
                       WifiTxVector& blockAckTxVector,
-                      double rxSnr);
+                      double rxSnr,
+                      std::optional<Mac48Address> gcrGroupAddr = std::nullopt);
 
     /**
      * Called when the BlockAck timeout expires.
