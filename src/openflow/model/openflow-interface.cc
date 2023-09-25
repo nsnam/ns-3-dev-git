@@ -158,7 +158,7 @@ int
 Stats::FlowStatsInit(const void* body, int body_len, void** state)
 {
     const ofp_flow_stats_request* fsr = (ofp_flow_stats_request*)body;
-    auto s = (FlowStatsState*)xmalloc(sizeof *s);
+    auto s = (FlowStatsState*)xmalloc(sizeof(FlowStatsState));
 
     s->table_idx = fsr->table_id == 0xff ? 0 : fsr->table_id;
     memset(&s->position, 0, sizeof s->position);
@@ -325,7 +325,7 @@ Stats::PortTableStatsDump(Ptr<OpenFlowSwitchNetDevice> swtch, void* state, ofpbu
 int
 Stats::PortStatsInit(const void* body, int body_len, void** state)
 {
-    auto s = (PortStatsState*)xmalloc(sizeof *s);
+    auto s = (PortStatsState*)xmalloc(sizeof(PortStatsState));
 
     // the body contains a list of port numbers
     s->ports = (uint32_t*)xmalloc(body_len);
