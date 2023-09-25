@@ -51,6 +51,13 @@ DefaultEmlsrManager::GetTypeId()
                           "no PHY will be listening on that EMLSR link).",
                           BooleanValue(true),
                           MakeBooleanAccessor(&DefaultEmlsrManager::m_switchAuxPhy),
+                          MakeBooleanChecker())
+            .AddAttribute("PutAuxPhyToSleep",
+                          "Whether Aux PHY should be put into sleep mode while the Main PHY "
+                          "is operating on the same link as the Aux PHY (this only matters "
+                          "when the Aux PHY does not switch channel).",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&DefaultEmlsrManager::m_auxPhyToSleep),
                           MakeBooleanChecker());
     return tid;
 }
@@ -96,9 +103,9 @@ DefaultEmlsrManager::NotifyEmlsrModeChanged()
 }
 
 void
-DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId)
+DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId, Time duration)
 {
-    NS_LOG_FUNCTION(this << currLinkId << nextLinkId);
+    NS_LOG_FUNCTION(this << currLinkId << nextLinkId << duration.As(Time::US));
 
     if (m_switchAuxPhy)
     {
@@ -117,6 +124,8 @@ DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId)
 
         // the Aux PHY is not actually switching (hence no switching delay)
         GetStaMac()->NotifySwitchingEmlsrLink(m_auxPhyToReconnect, currLinkId, Seconds(0));
+        // resume aux PHY from sleep (once reconnected to its original link)
+        Simulator::ScheduleNow(&WifiPhy::ResumeFromSleep, m_auxPhyToReconnect);
         SetCcaEdThresholdOnLinkSwitch(m_auxPhyToReconnect, currLinkId);
         m_auxPhyToReconnect = nullptr;
     }
@@ -125,6 +134,13 @@ DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId)
     {
         // the main PHY is moving to a non-primary link and the aux PHY does not switch link
         m_auxPhyToReconnect = GetStaMac()->GetWifiPhy(nextLinkId);
+
+        if (m_auxPhyToSleep)
+        {
+            // the main PHY is switching to takeover a TXOP; the aux PHY does not switch,
+            // so it can be put into sleep mode
+            Simulator::Schedule(duration, &WifiPhy::SetSleepMode, m_auxPhyToReconnect);
+        }
     }
 }
 

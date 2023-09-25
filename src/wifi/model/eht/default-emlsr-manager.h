@@ -51,13 +51,16 @@ class DefaultEmlsrManager : public EmlsrManager
   private:
     void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     void NotifyEmlsrModeChanged() override;
-    void NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId) override;
+    void NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId, Time duration) override;
     void DoNotifyIcfReceived(uint8_t linkId) override;
     void DoNotifyUlTxopStart(uint8_t linkId) override;
     void DoNotifyTxopEnd(uint8_t linkId) override;
 
-    bool m_switchAuxPhy; /**< whether Aux PHY should switch channel to operate on the link on which
-                              the Main PHY was operating before moving to the link of the Aux PHY */
+    bool m_switchAuxPhy;  /**< whether Aux PHY should switch channel to operate on the link on which
+                               the Main PHY was operating before moving to the link of the Aux PHY */
+    bool m_auxPhyToSleep; //!< whether Aux PHY should be put into sleep mode while the Main PHY
+                          //!< is operating on the same link as the Aux PHY
+
     Ptr<WifiPhy> m_auxPhyToReconnect; //!< Aux PHY the ChannelAccessManager of the link on which
                                       //!< the main PHY is operating has to connect a listener to
                                       //!< when the main PHY is back operating on its previous link

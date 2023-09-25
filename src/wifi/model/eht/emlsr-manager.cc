@@ -620,7 +620,7 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     }
 
     SetCcaEdThresholdOnLinkSwitch(mainPhy, linkId);
-    NotifyMainPhySwitch(*currMainPhyLinkId, linkId);
+    NotifyMainPhySwitch(*currMainPhyLinkId, linkId, timeToSwitchEnd);
 }
 
 void
