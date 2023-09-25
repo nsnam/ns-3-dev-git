@@ -66,6 +66,8 @@ Changes from ns-3.40 to ns-3-dev
 
 ### Changed behavior
 
+* (wifi) Increase the duration of the timer started when waiting for an ADDBA_RESPONSE from 1ms to 5ms to better account for the time required by the recipient to access the medium and complete the frame exchange (which may involve protection with (MU-)RTS/CTS).
+
 Changes from ns-3.39 to ns-3.40
 -------------------------------
 
@@ -95,7 +97,6 @@ Changes from ns-3.39 to ns-3.40
 * (core) `EmpiricalRandomVariable` no longer requires that a CDF pair with a range value exactly equal to 1.0 be added (see issue #922).
 * (wifi) Upon ML setup, a non-AP MLD updates the IDs of the setup links to match the IDs used by the AP MLD.
 * (wifi) Attribute **TrackSignalsFromInactiveInterfaces** in SpectrumWifiPhy has been defaulted to be enabled.
-* (wifi) The default BlockAck buffer size is raised to the max value allowed by the supported standard
 
 Changes from ns-3.38 to ns-3.39
 -------------------------------

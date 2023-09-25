@@ -72,7 +72,7 @@ QosTxop::GetTypeId()
             .AddAttribute("AddBaResponseTimeout",
                           "The timeout to wait for ADDBA response after the Ack to "
                           "ADDBA request is received.",
-                          TimeValue(MilliSeconds(1)),
+                          TimeValue(MilliSeconds(5)),
                           MakeTimeAccessor(&QosTxop::SetAddBaResponseTimeout,
                                            &QosTxop::GetAddBaResponseTimeout),
                           MakeTimeChecker())
