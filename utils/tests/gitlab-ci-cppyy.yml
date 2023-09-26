@@ -7,9 +7,6 @@ cppyy-22.04:
     - if: $RELEASE == "manual"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   dependencies: []
-  tags:
-    - nsnam
-    - linux
   before_script:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
@@ -41,9 +38,6 @@ cppyy-20.04:
   image: ubuntu:20.04 # python 3.8
   rules:
     - if: $RELEASE == "manual"
-  tags:
-    - nsnam
-    - linux
   before_script:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
