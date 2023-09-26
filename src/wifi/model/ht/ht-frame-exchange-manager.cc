@@ -1485,7 +1485,7 @@ HtFrameExchangeManager::SendBlockAck(const RecipientBlockAckAgreement& agreement
     CtrlBAckResponseHeader blockAck;
     blockAck.SetType(agreement.GetBlockAckType());
     blockAck.SetTidInfo(agreement.GetTid());
-    agreement.FillBlockAckBitmap(&blockAck);
+    agreement.FillBlockAckBitmap(blockAck);
 
     Ptr<Packet> packet = Create<Packet>();
     packet->AddHeader(blockAck);

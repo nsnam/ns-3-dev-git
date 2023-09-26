@@ -79,7 +79,7 @@ class RecipientBlockAckAgreement : public BlockAckAgreement
      * @param blockAckHeader the block ack header
      * @param index the index of the Per AID TID Info subfield (Multi-STA Block Ack only)
      */
-    void FillBlockAckBitmap(CtrlBAckResponseHeader* blockAckHeader, std::size_t index = 0) const;
+    void FillBlockAckBitmap(CtrlBAckResponseHeader& blockAckHeader, std::size_t index = 0) const;
     /**
      * This is called when a Block Ack agreement is destroyed to flush the
      * received packets.
