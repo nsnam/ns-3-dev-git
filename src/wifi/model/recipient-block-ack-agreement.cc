@@ -231,7 +231,7 @@ RecipientBlockAckAgreement::FillBlockAckBitmap(CtrlBAckResponseHeader& blockAckH
         NS_FATAL_ERROR("Multi-tid block ack is not supported.");
     }
     else if (blockAckHeader.IsCompressed() || blockAckHeader.IsExtendedCompressed() ||
-             blockAckHeader.IsMultiSta())
+             blockAckHeader.IsMultiSta() || blockAckHeader.IsGcr())
     {
         // The Starting Sequence Number subfield of the Block Ack Starting Sequence
         // Control subfield of the BlockAck frame shall be set to any value in the
