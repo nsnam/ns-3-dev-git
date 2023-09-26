@@ -28,6 +28,8 @@
 #include <ns3/traced-callback.h>
 #include <ns3/traced-value.h>
 
+#include <iostream>
+
 namespace ns3
 {
 
@@ -121,6 +123,24 @@ enum LrWpanPhyEnumeration
     IEEE_802_15_4_PHY_READ_ONLY = 0xb,
     IEEE_802_15_4_PHY_UNSPECIFIED = 0xc // all cases not covered by ieee802.15.4
 };
+
+/**
+ *  Overloaded operator to print the value of a LrWpanPhyEnumeration.
+ *
+ *  \param os The output stream
+ *  \param state The text value of the PHY state
+ *  \return The output stream with text value of the PHY state
+ */
+std::ostream& operator<<(std::ostream& os, const LrWpanPhyEnumeration& state);
+
+/**
+ *  Overloaded operator to print the value of a TracedValue<LrWpanPhyEnumeration>.
+ *
+ *  \param os The output stream
+ *  \param state The text value of the PHY state
+ *  \return The output stream with text value of the PHY state
+ */
+std::ostream& operator<<(std::ostream& os, const TracedValue<LrWpanPhyEnumeration>& state);
 
 namespace TracedValueCallback
 {
@@ -704,7 +724,10 @@ class LrWpanPhy : public SpectrumPhy
 
     /**
      * The trace source fired when a packet ends the reception process from
-     * the medium.  Second quantity is received SINR.
+     * the medium. In essence, the notional event of receiving all the energy
+     * of a signal is traced. The received completed signal might represent
+     * a complete packet or a packet that is later on dropped because of interference,
+     * cancellation or post-rx corruption. Second quantity is the received SINR (LQI).
      *
      * \see class CallBackTraceSource
      */
@@ -712,6 +735,8 @@ class LrWpanPhy : public SpectrumPhy
 
     /**
      * The trace source fired when the phy layer drops a packet it has received.
+     * (Destruction of a packet due to interference, post-rx corruption or
+     *  cancellation of packet rx)
      *
      * \see class CallBackTraceSource
      */
@@ -894,18 +919,18 @@ class LrWpanPhy : public SpectrumPhy
     Time m_rxLastUpdate;
 
     /**
-     * Statusinformation of the currently received packet. The first parameter
-     * contains the frame, as well the signal power of the frame. The second
-     * parameter is set to false, if the frame is either invalid or destroyed
-     * due to interference.
+     * Status information of the currently received packet. The first parameter
+     * contains the frame, as well the signal power of the frame. If the second
+     * parameter is set to true, the frame is either invalid, destroyed
+     * due to interference or cancelled.
      */
     std::pair<Ptr<LrWpanSpectrumSignalParameters>, bool> m_currentRxPacket;
 
     /**
-     * Statusinformation of the currently transmitted packet. The first parameter
-     * contains the frame. The second parameter is set to false, if the frame not
-     * completely transmitted, in the event of a force transceiver switch, for
-     * example.
+     * Status information of the currently transmitted packet. The first parameter
+     * contains the frame. If the second parameter is set to true, the frame has not
+     * been completely transmitted (in the event of a force transceiver switch, for
+     * example).
      */
     PacketAndStatus m_currentTxPacket;
 

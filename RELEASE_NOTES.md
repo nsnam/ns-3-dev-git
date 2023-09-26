@@ -22,6 +22,8 @@ Release 3-dev
 
 ### Bugs fixed
 
+- (lr-wpan) !1673 - Fixes PHY BUSY_RX -> RX_ON operation
+
 Release 3.40
 ------------
 
