@@ -517,6 +517,11 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
  *   not transmitted successfully. Specifically, we check that the main PHY is completing the
  *   channel switch when the (unsuccessful) reception of the CTS ends and that a new RTS/CTS
  *   exchange is carried out to protect the transmission of the last data frame.
+ * - While the main PHY is operating on the same link as an aux PHY (which does not switch
+ *   channel), the aux PHY is put in sleep mode as soon as the main PHY starts operating on the
+ *   link, stays in sleep mode until the TXOP ends and is resumed from sleep mode right after the
+ *   end of the DL/UL TXOP.
+ *
  */
 class EmlsrUlTxopTest : public EmlsrOperationsTestBase
 {
@@ -570,6 +575,18 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
      * \param linkId the ID of the given link
      */
     void CheckRtsFrames(Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector, uint8_t linkId);
+
+    /**
+     * Check that appropriate actions are taken by the AP MLD transmitting an initial
+     * Control frame to an EMLSR client on the given link.
+     *
+     * \param mpdu the MPDU carrying the MU-RTS TF
+     * \param txVector the TXVECTOR used to send the PPDU
+     * \param linkId the ID of the given link
+     */
+    void CheckInitialControlFrame(Ptr<const WifiMpdu> mpdu,
+                                  const WifiTxVector& txVector,
+                                  uint8_t linkId);
 
     /**
      * Check that appropriate actions are taken by the EMLSR client when receiving a CTS

@@ -2534,6 +2534,10 @@ EmlsrUlTxopTest::Transmit(Ptr<WifiMac> mac,
         NS_TEST_EXPECT_MSG_EQ(+linkId, +m_mainPhyId, "AssocReq not sent by the main PHY");
         break;
 
+    case WIFI_MAC_CTL_TRIGGER:
+        CheckInitialControlFrame(*psdu->begin(), txVector, linkId);
+        break;
+
     case WIFI_MAC_CTL_RTS:
         CheckRtsFrames(*psdu->begin(), txVector, linkId);
         break;
@@ -2648,7 +2652,7 @@ EmlsrUlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
                     false);
 
                 Simulator::Schedule(
-                    txDuration + MicroSeconds(1) /* propagation delay */,
+                    txDuration + MicroSeconds(MAX_PROPAGATION_DELAY_USEC),
                     [=, this]() {
                         CheckBlockedLink(
                             m_apMac,
@@ -2776,6 +2780,23 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
     auto txDuration =
         WifiPhy::CalculateTxDuration(psduMap, txVector, m_apMac->GetWifiPhy(linkId)->GetPhyBand());
 
+    // in this test, BlockAck frames terminates TXOP. If a BlockAck frame is sent on an EMLSR link
+    // other than the main PHY link, it means that the aux PHY associated with that link is in
+    // sleep mode and it is resumed after the end of the BlockAck frame
+    if (linkId != m_mainPhyId && linkId != m_nonEmlsrLink)
+    {
+        Simulator::Schedule(txDuration - NanoSeconds(1), [=, this]() {
+            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetDevice()->GetPhy(linkId)->IsStateSleep(),
+                                  true,
+                                  "Aux PHY on link " << +linkId << " not in sleep mode");
+        });
+        Simulator::Schedule(txDuration + NanoSeconds(1), [=, this]() {
+            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetDevice()->GetPhy(linkId)->IsStateSleep(),
+                                  false,
+                                  "Aux PHY on link " << +linkId << " in sleep mode");
+        });
+    }
+
     switch (m_countBlockAck)
     {
     case 1:
@@ -2881,6 +2902,33 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
 }
 
 void
+EmlsrUlTxopTest::CheckInitialControlFrame(Ptr<const WifiMpdu> mpdu,
+                                          const WifiTxVector& txVector,
+                                          uint8_t linkId)
+{
+    CtrlTriggerHeader trigger;
+    mpdu->GetPacket()->PeekHeader(trigger);
+    if (!trigger.IsMuRts())
+    {
+        return;
+    }
+
+    if (linkId != m_mainPhyId && linkId != m_nonEmlsrLink)
+    {
+        // this is an ICF sent on an aux PHY link to start a DL TXOP. Given that aux PHYs do not
+        // switch channel, they are put in sleep mode while the main PHY is operating on their link
+        auto auxPhy = m_staMacs[0]->GetWifiPhy(linkId);
+        auto txDuration =
+            WifiPhy::CalculateTxDuration(mpdu->GetSize(), txVector, auxPhy->GetPhyBand());
+        Simulator::Schedule(txDuration + NanoSeconds(1), [=, this]() {
+            NS_TEST_EXPECT_MSG_EQ(auxPhy->IsStateSleep(),
+                                  true,
+                                  "Aux PHY on link " << +linkId << " not in sleep mode");
+        });
+    }
+}
+
+void
 EmlsrUlTxopTest::CheckRtsFrames(Ptr<const WifiMpdu> mpdu,
                                 const WifiTxVector& txVector,
                                 uint8_t linkId)
@@ -2923,6 +2971,42 @@ EmlsrUlTxopTest::CheckCtsFrames(Ptr<const WifiMpdu> mpdu,
                                 const WifiTxVector& txVector,
                                 uint8_t linkId)
 {
+    if (m_firstUlPktsGenTime.IsZero())
+    {
+        // this function only considers CTS frames sent after the first QoS data frame
+        return;
+    }
+
+    auto txDuration = WifiPhy::CalculateTxDuration(mpdu->GetSize(),
+                                                   txVector,
+                                                   m_apMac->GetWifiPhy(linkId)->GetPhyBand());
+
+    if (linkId != m_mainPhyId && linkId != m_nonEmlsrLink &&
+        mpdu->GetHeader().GetAddr1() == m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress())
+    {
+        // this is a CTS sent to an aux PHY starting an UL TXOP. Given that aux PHYs do not
+        // switch channel, they are put in sleep mode when the main PHY starts operating on their
+        // link, which coincides with the end of CTS plus two propagation delays
+        auto auxPhy = m_staMacs[0]->GetWifiPhy(linkId);
+        Simulator::Schedule(txDuration, [=, this]() {
+            NS_TEST_EXPECT_MSG_EQ(auxPhy->IsStateSleep(),
+                                  false,
+                                  "Aux PHY on link " << +linkId << " already in sleep mode");
+        });
+        // if the CTS is corrupted, the TXOP ends and the aux PHY is not put to sleep
+        auto isStateSleep = !(m_corruptCts.has_value() && *m_corruptCts);
+
+        Simulator::Schedule(
+            txDuration + MicroSeconds(2 * MAX_PROPAGATION_DELAY_USEC) + NanoSeconds(1),
+            [=, this]() {
+                NS_TEST_EXPECT_MSG_EQ(auxPhy->IsStateSleep(),
+                                      isStateSleep,
+                                      "Aux PHY on link " << +linkId
+                                                         << (isStateSleep ? " not yet" : " already")
+                                                         << " in sleep mode");
+            });
+    }
+
     if (m_corruptCts.has_value() && *m_corruptCts)
     {
         // corrupt reception at EMLSR client
@@ -2930,9 +3014,6 @@ EmlsrUlTxopTest::CheckCtsFrames(Ptr<const WifiMpdu> mpdu,
         m_errorModel->SetList({mpdu->GetPacket()->GetUid()});
         m_corruptCts = false;
 
-        auto txDuration = WifiPhy::CalculateTxDuration(mpdu->GetSize(),
-                                                       txVector,
-                                                       m_apMac->GetWifiPhy(linkId)->GetPhyBand());
         // main PHY is about to complete channel switch when CTS ends
         Simulator::Schedule(txDuration, [=, this]() {
             const auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
