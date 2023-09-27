@@ -533,6 +533,8 @@ FrameExchangeManager::SendMpdu()
                     NS_LOG_DEBUG("Prepare groupcast MPDU for retry");
                     mpdu->ResetInFlight(m_linkId);
                     mpdu->GetHeader().SetRetry();
+                    // restore addr1 to the group address instead of the concealment address
+                    mpdu->GetHeader().SetAddr1(mpdu->begin()->second.GetDestinationAddr());
                 });
             }
             else

@@ -70,10 +70,23 @@ WifiMacQueueContainer::GetQueueId(Ptr<const WifiMpdu> mpdu)
 {
     const WifiMacHeader& hdr = mpdu->GetHeader();
 
-    auto addrType = hdr.GetAddr1().IsBroadcast() ? WIFI_BROADCAST
-                    : hdr.GetAddr1().IsGroup()   ? WIFI_GROUPCAST
-                                                 : WIFI_UNICAST;
-    auto address = hdr.GetAddr1().IsBroadcast() ? hdr.GetAddr2() : hdr.GetAddr1();
+    WifiReceiverAddressType addrType;
+    Mac48Address address;
+    if (hdr.GetAddr1().IsBroadcast())
+    {
+        addrType = WIFI_BROADCAST;
+        address = hdr.GetAddr2();
+    }
+    else if (hdr.GetAddr1().IsGroup())
+    {
+        addrType = WIFI_GROUPCAST;
+        address = hdr.IsQosAmsdu() ? mpdu->begin()->second.GetDestinationAddr() : hdr.GetAddr1();
+    }
+    else
+    {
+        addrType = WIFI_UNICAST;
+        address = hdr.GetAddr1();
+    }
 
     if (hdr.IsCtl())
     {
