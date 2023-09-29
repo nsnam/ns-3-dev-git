@@ -169,11 +169,11 @@ def should_analyze_file(path: str,
             extension in file_extensions_to_check)
 
 
-def find_files_to_check_style(path: str) -> Tuple[List[str], List[str], List[str], List[str]]:
+def find_files_to_check_style(paths: List[str]) -> Tuple[List[str], List[str], List[str], List[str]]:
     """
-    Find all files to be checked in a given path.
+    Find all files to be checked in a given list of paths.
 
-    @param path Path to check.
+    @param paths List of paths to the files to check.
     @return Tuple [List of files to check include prefixes,
                    List of files to check formatting,
                    List of files to check trailing whitespace,
@@ -181,22 +181,24 @@ def find_files_to_check_style(path: str) -> Tuple[List[str], List[str], List[str
     """
 
     files_to_check: List[str] = []
-    abs_path = os.path.abspath(os.path.expanduser(path))
 
-    if os.path.isfile(abs_path):
-        files_to_check = [path]
+    for path in paths:
+        abs_path = os.path.abspath(os.path.expanduser(path))
 
-    elif os.path.isdir(abs_path):
-        for dirpath, dirnames, filenames in os.walk(path, topdown=True):
-            if not should_analyze_directory(dirpath):
-                # Remove directory and its subdirectories
-                dirnames[:] = []
-                continue
+        if os.path.isfile(abs_path):
+            files_to_check.append(path)
 
-            files_to_check.extend([os.path.join(dirpath, f) for f in filenames])
+        elif os.path.isdir(abs_path):
+            for dirpath, dirnames, filenames in os.walk(path, topdown=True):
+                if not should_analyze_directory(dirpath):
+                    # Remove directory and its subdirectories
+                    dirnames[:] = []
+                    continue
 
-    else:
-        raise ValueError(f'Error: {path} is not a file nor a directory')
+                files_to_check.extend([os.path.join(dirpath, f) for f in filenames])
+
+        else:
+            raise ValueError(f'Error: {path} is not a file nor a directory')
 
     files_to_check.sort()
 
@@ -268,7 +270,7 @@ def find_clang_format_path() -> str:
 ###########################################################
 # CHECK STYLE MAIN FUNCTIONS
 ###########################################################
-def check_style_clang_format(path: str,
+def check_style_clang_format(paths: List[str],
                              enable_check_include_prefixes: bool,
                              enable_check_formatting: bool,
                              enable_check_whitespace: bool,
@@ -280,7 +282,7 @@ def check_style_clang_format(path: str,
     """
     Check / fix the coding style of a list of files.
 
-    @param path Path to the files.
+    @param paths List of paths to the files to check.
     @param enable_check_include_prefixes Whether to enable checking #include headers from the same module with the "ns3/" prefix.
     @param enable_check_formatting Whether to enable checking code formatting.
     @param enable_check_whitespace Whether to enable checking trailing whitespace.
@@ -294,7 +296,7 @@ def check_style_clang_format(path: str,
     (files_to_check_include_prefixes,
      files_to_check_formatting,
      files_to_check_whitespace,
-     files_to_check_tabs) = find_files_to_check_style(path)
+     files_to_check_tabs) = find_files_to_check_style(paths)
 
     check_include_prefixes_successful = True
     check_formatting_successful = True
@@ -688,8 +690,8 @@ if __name__ == '__main__':
         'If it detects non-formatted files, they will be printed and this process exits with a '
         'non-zero code. When used in "fix mode", this script automatically fixes the files.')
 
-    parser.add_argument('path', action='store', type=str,
-                        help='Path to the files to check')
+    parser.add_argument('paths', action='store', type=str, nargs='+',
+                        help='List of paths to the files to check')
 
     parser.add_argument('--no-include-prefixes', action='store_true',
                         help='Do not check / fix #include headers from the same module with the "ns3/" prefix')
@@ -716,7 +718,7 @@ if __name__ == '__main__':
 
     try:
         all_checks_successful = check_style_clang_format(
-            path=args.path,
+            paths=args.paths,
             enable_check_include_prefixes=(not args.no_include_prefixes),
             enable_check_formatting=(not args.no_formatting),
             enable_check_whitespace=(not args.no_whitespace),
