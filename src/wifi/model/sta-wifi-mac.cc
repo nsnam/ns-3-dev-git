@@ -2024,34 +2024,50 @@ StaWifiMac::PhyCapabilitiesChanged()
  */
 
 void
-StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId)
+StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time delay)
 {
-    NS_LOG_FUNCTION(this << phy << linkId);
+    NS_LOG_FUNCTION(this << phy << linkId << delay.As(Time::US));
 
-    // if any link points to the PHY that switched channel, reset the phy pointer
+    // If the PHY is switching channel to operate on another link, then it is no longer operating
+    // on the current link. If any link (other than the current link) points to the PHY that is
+    // switching channel, reset the phy pointer of the link
     for (auto& [id, link] : GetLinks())
     {
-        // auto& link = GetStaLink(lnk);
-        if (link->phy == phy)
+        if (link->phy == phy && id != linkId)
         {
             link->phy = nullptr;
         }
     }
 
-    auto& newLink = GetLink(linkId);
-    // The MAC stack associated with the new link uses the given PHY
-    newLink.phy = phy;
-    // Setup a PHY listener for the given PHY on the CAM associated with the new link
-    newLink.channelAccessManager->SetupPhyListener(phy);
-    NS_ASSERT(m_emlsrManager);
-    if (m_emlsrManager->GetCamStateReset())
+    // lambda to connect the PHY to the new link
+    auto connectPhy = [=, this]() mutable {
+        auto& newLink = GetLink(linkId);
+        // The MAC stack associated with the new link uses the given PHY
+        newLink.phy = phy;
+        // Setup a PHY listener for the given PHY on the CAM associated with the new link
+        newLink.channelAccessManager->SetupPhyListener(phy);
+        NS_ASSERT(m_emlsrManager);
+        if (m_emlsrManager->GetCamStateReset())
+        {
+            newLink.channelAccessManager->ResetState();
+        }
+        // Disconnect the FEM on the new link from the current PHY
+        newLink.feManager->ResetPhy();
+        // Connect the FEM on the new link to the given PHY
+        newLink.feManager->SetWifiPhy(phy);
+    };
+
+    // if there is no PHY operating on the new link, connect the PHY to the new link now.
+    // Otherwise, wait until the channel switch is completed, so that the PHY operating on the new
+    // link can possibly continue receiving frames in the meantime.
+    if (!GetLink(linkId).phy)
     {
-        newLink.channelAccessManager->ResetState();
+        connectPhy();
     }
-    // Disconnect the FEM on the new link from the current PHY
-    newLink.feManager->ResetPhy();
-    // Connect the FEM on the new link to the given PHY
-    newLink.feManager->SetWifiPhy(phy);
+    else
+    {
+        Simulator::Schedule(delay, connectPhy);
+    }
 }
 
 void

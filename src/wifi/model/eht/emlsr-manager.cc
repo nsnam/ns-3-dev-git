@@ -882,12 +882,22 @@ EmlsrManager::ApplyMaxChannelWidthAndModClassOnAuxPhys()
         // this channel switch must not have such a consequence. We already have a method
         // for doing so, i.e., inform the MAC that the PHY is switching channel to operate
         // on the "same" link.
-        m_staMac->GetChannelAccessManager(linkId)->NotifySwitchingEmlsrLink(auxPhy,
-                                                                            channel,
-                                                                            linkId);
+        auto cam = m_staMac->GetChannelAccessManager(linkId);
+        cam->NotifySwitchingEmlsrLink(auxPhy, channel, linkId);
 
         void (WifiPhy::*fp)(const WifiPhyOperatingChannel&) = &WifiPhy::SetOperatingChannel;
         Simulator::ScheduleNow(fp, auxPhy, channel);
+
+        // the way the ChannelAccessManager handles EMLSR link switch implies that a PHY listener
+        // is removed when the channel switch starts and another one is attached when the channel
+        // switch ends. In the meantime, no PHY is connected to the ChannelAccessManager. Inform
+        // the ChannelAccessManager that this channel switch is related to EMLSR operations, so
+        // that the ChannelAccessManager does not complain if events requiring access to the PHY
+        // occur during the channel switch.
+        cam->NotifyStartUsingOtherEmlsrLink();
+        Simulator::Schedule(auxPhy->GetChannelSwitchDelay(),
+                            &ChannelAccessManager::NotifyStopUsingOtherEmlsrLink,
+                            cam);
     }
 }
 

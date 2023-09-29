@@ -407,12 +407,14 @@ EhtFrameExchangeManager::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t link
 
     // if we receive the notification from a PHY that is not connected to us, it means that
     // we have been already connected to another PHY operating on this link, hence we do not
-    // have to reset the connected PHY
-    if (phy == m_phy)
+    // have to reset the connected PHY. Similarly, we do not have to reset the connected PHY if
+    // the link does not change (this occurs when changing the channel width of aux PHYs upon
+    // enabling the EMLSR mode).
+    if (phy == m_phy && linkId != m_linkId)
     {
         ResetPhy();
     }
-    m_staMac->NotifySwitchingEmlsrLink(phy, linkId);
+    m_staMac->NotifySwitchingEmlsrLink(phy, linkId, delay);
 }
 
 void

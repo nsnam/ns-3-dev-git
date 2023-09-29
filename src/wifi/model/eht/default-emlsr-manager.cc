@@ -133,7 +133,10 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
         auto phy = m_auxPhyToReconnect;
         SwitchMainPhy(*m_linkIdForMainPhyAfterTxop, false);
         // Reconnect the aux PHY to its original link
-        Simulator::ScheduleNow(&StaWifiMac::NotifySwitchingEmlsrLink, GetStaMac(), phy, linkId);
+        Simulator::ScheduleNow([=, this]() {
+            // the Aux PHY is not actually switching (hence no switching delay)
+            GetStaMac()->NotifySwitchingEmlsrLink(phy, linkId, Seconds(0));
+        });
         SetCcaEdThresholdOnLinkSwitch(phy, linkId);
     }
     m_linkIdForMainPhyAfterTxop.reset();

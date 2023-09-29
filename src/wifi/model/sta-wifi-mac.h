@@ -307,8 +307,9 @@ class StaWifiMac : public WifiMac
      *
      * \param phy the given PHY
      * \param linkId the ID of the EMLSR link on which the given PHY is operating
+     * \param delay the delay after which the channel switch will be completed
      */
-    void NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId);
+    void NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time delay);
 
     /**
      * Block transmissions on the given link for the given reason.
