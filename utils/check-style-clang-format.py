@@ -304,22 +304,24 @@ def check_style_clang_format(paths: List[str],
     check_tabs_successful = True
 
     if enable_check_include_prefixes:
-        check_include_prefixes_successful = check_style_file(
-            files_to_check_include_prefixes,
-            check_include_prefixes_file,
+        check_include_prefixes_successful = check_style_files(
             '#include headers from the same module with the "ns3/" prefix',
+            check_manually_file,
+            files_to_check_include_prefixes,
             fix,
             verbose,
             n_jobs,
+            respect_clang_format_guards=True,
+            check_style_line_function=check_include_prefixes_line,
         )
 
         print('')
 
     if enable_check_formatting:
-        check_formatting_successful = check_style_file(
-            files_to_check_formatting,
-            check_formatting_file,
+        check_formatting_successful = check_style_files(
             'bad code formatting',
+            check_formatting_file,
+            files_to_check_formatting,
             fix,
             verbose,
             n_jobs,
@@ -329,25 +331,29 @@ def check_style_clang_format(paths: List[str],
         print('')
 
     if enable_check_whitespace:
-        check_whitespace_successful = check_style_file(
-            files_to_check_whitespace,
-            check_trailing_whitespace_file,
+        check_whitespace_successful = check_style_files(
             'trailing whitespace',
+            check_manually_file,
+            files_to_check_whitespace,
             fix,
             verbose,
             n_jobs,
+            respect_clang_format_guards=False,
+            check_style_line_function=check_whitespace_line,
         )
 
         print('')
 
     if enable_check_tabs:
-        check_tabs_successful = check_style_file(
-            files_to_check_tabs,
-            check_tabs_file,
+        check_tabs_successful = check_style_files(
             'tabs',
+            check_manually_file,
+            files_to_check_tabs,
             fix,
             verbose,
             n_jobs,
+            respect_clang_format_guards=True,
+            check_style_line_function=check_tabs_line,
         )
 
     return all([
@@ -358,20 +364,20 @@ def check_style_clang_format(paths: List[str],
     ])
 
 
-def check_style_file(filenames: List[str],
-                     check_style_file_function: Callable,
-                     style_check_str: str,
-                     fix: bool,
-                     verbose: bool,
-                     n_jobs: int,
-                     **kwargs,
-                     ) -> bool:
+def check_style_files(style_check_str: str,
+                      check_style_file_function: Callable[..., Tuple[str, bool, List[str]]],
+                      filenames: List[str],
+                      fix: bool,
+                      verbose: bool,
+                      n_jobs: int,
+                      **kwargs,
+                      ) -> bool:
     """
     Check / fix style of a list of files.
 
-    @param filename Name of the file to be checked.
-    @param check_style_file_function Function used to check the file.
     @param style_check_str Description of the check to be performed.
+    @param check_style_file_function Function used to check the file.
+    @param filename Name of the file to be checked.
     @param fix Whether to fix (True) or just check (False) the file (True).
     @param verbose Show the lines that are not compliant with the style.
     @param n_jobs Number of parallel jobs.
@@ -425,81 +431,6 @@ def check_style_file(filenames: List[str],
 ###########################################################
 # CHECK STYLE FUNCTIONS
 ###########################################################
-def check_include_prefixes_file(filename: str,
-                                fix: bool,
-                                verbose: bool,
-                                ) -> Tuple[str, bool, List[str]]:
-    """
-    Check / fix #include headers from the same module with the "ns3/" prefix in a file.
-
-    @param filename Name of the file to be checked.
-    @param fix Whether to fix (True) or just check (False) the style of the file (True).
-    @param verbose Show the lines that are not compliant with the style.
-    @return Tuple [Filename,
-                   Whether the file is compliant with the style (before the check),
-                   Verbose information].
-    """
-
-    is_file_compliant = True
-    clang_format_enabled = True
-
-    verbose_infos: List[str] = []
-
-    with open(filename, 'r', encoding='utf-8') as f:
-        file_lines = f.readlines()
-
-    for (i, line) in enumerate(file_lines):
-
-        # Check clang-format guards
-        line_stripped = line.strip()
-
-        if line_stripped == CLANG_FORMAT_GUARD_ON:
-            clang_format_enabled = True
-        elif line_stripped == CLANG_FORMAT_GUARD_OFF:
-            clang_format_enabled = False
-
-        if (not clang_format_enabled and
-                line_stripped not in (CLANG_FORMAT_GUARD_ON, CLANG_FORMAT_GUARD_OFF)):
-            continue
-
-        # Check if the line is an #include and extract its header file
-        header_file = re.findall(r'^#include ["<]ns3/(.*\.h)[">]', line_stripped)
-
-        if not header_file:
-            continue
-
-        # Check if the header file belongs to the same module and remove the "ns3/" prefix
-        header_file = header_file[0]
-        parent_path = os.path.split(filename)[0]
-
-        if not os.path.exists(os.path.join(parent_path, header_file)):
-            continue
-
-        is_file_compliant = False
-        file_lines[i] = line_stripped.replace(
-            f'ns3/{header_file}', header_file).replace('<', '"').replace('>', '"') + '\n'
-
-        if verbose:
-            header_index = len('#include "')
-
-            verbose_infos.extend([
-                f'{filename}:{i + 1}:{header_index + 1}: error: #include headers from the same module with the "ns3/" prefix detected',
-                f'    {line_stripped}',
-                f'    {"":{header_index}}^',
-            ])
-
-        # Optimization: If running in non-verbose check mode, only one error is needed to check that the file is not compliant
-        if not fix and not verbose:
-            break
-
-    # Update file with the fixed lines
-    if fix and not is_file_compliant:
-        with open(filename, 'w', encoding='utf-8') as f:
-            f.writelines(file_lines)
-
-    return (filename, is_file_compliant, verbose_infos)
-
-
 def check_formatting_file(filename: str,
                           fix: bool,
                           verbose: bool,
@@ -557,16 +488,20 @@ def check_formatting_file(filename: str,
     return (filename, is_file_compliant, verbose_infos)
 
 
-def check_trailing_whitespace_file(filename: str,
-                                   fix: bool,
-                                   verbose: bool,
-                                   ) -> Tuple[str, bool, List[str]]:
+def check_manually_file(filename: str,
+                        fix: bool,
+                        verbose: bool,
+                        respect_clang_format_guards: bool,
+                        check_style_line_function: Callable[[str, str, int], Tuple[bool, str, List[str]]],
+                        ) -> Tuple[str, bool, List[str]]:
     """
-    Check / fix trailing whitespace in a file.
+    Check / fix a file manually using a function to check / fix each line.
 
     @param filename Name of the file to be checked.
     @param fix Whether to fix (True) or just check (False) the style of the file (True).
     @param verbose Show the lines that are not compliant with the style.
+    @param respect_clang_format_guards Whether to respect clang-format guards.
+    @param check_style_line_function Function used to check each line.
     @return Tuple [Filename,
                    Whether the file is compliant with the style (before the check),
                    Verbose information].
@@ -574,60 +509,7 @@ def check_trailing_whitespace_file(filename: str,
 
     is_file_compliant = True
     verbose_infos: List[str] = []
-
-    with open(filename, 'r', encoding='utf-8') as f:
-        file_lines = f.readlines()
-
-    # Check if there are trailing whitespace and fix them
-    for (i, line) in enumerate(file_lines):
-        line_fixed = line.rstrip() + '\n'
-
-        if line_fixed == line:
-            continue
-
-        is_file_compliant = False
-        file_lines[i] = line_fixed
-
-        if verbose:
-            line_fixed_stripped_expanded = line_fixed.rstrip().expandtabs(TAB_SIZE)
-
-            verbose_infos.extend([
-                f'{filename}:{i + 1}:{len(line_fixed_stripped_expanded) + 1}: error: Trailing whitespace detected',
-                f'    {line_fixed_stripped_expanded}',
-                f'    {"":{len(line_fixed_stripped_expanded)}}^',
-            ])
-
-        # Optimization: If running in non-verbose check mode, only one error is needed to check that the file is not compliant
-        if not fix and not verbose:
-            break
-
-    # Update file with the fixed lines
-    if fix and not is_file_compliant:
-        with open(filename, 'w', encoding='utf-8') as f:
-            f.writelines(file_lines)
-
-    return (filename, is_file_compliant, verbose_infos)
-
-
-def check_tabs_file(filename: str,
-                    fix: bool,
-                    verbose: bool,
-                    ) -> Tuple[str, bool, List[str]]:
-    """
-    Check / fix tabs in a file.
-
-    @param filename Name of the file to be checked.
-    @param fix Whether to fix (True) or just check (False) the style of the file (True).
-    @param verbose Show the lines that are not compliant with the style.
-    @return Tuple [Filename,
-                   Whether the file is compliant with the style (before the check),
-                   Verbose information].
-    """
-
-    is_file_compliant = True
     clang_format_enabled = True
-
-    verbose_infos: List[str] = []
 
     with open(filename, 'r', encoding='utf-8') as f:
         file_lines = f.readlines()
@@ -635,36 +517,29 @@ def check_tabs_file(filename: str,
     for (i, line) in enumerate(file_lines):
 
         # Check clang-format guards
-        line_stripped = line.strip()
+        if respect_clang_format_guards:
+            line_stripped = line.strip()
 
-        if line_stripped == CLANG_FORMAT_GUARD_ON:
-            clang_format_enabled = True
-        elif line_stripped == CLANG_FORMAT_GUARD_OFF:
-            clang_format_enabled = False
+            if line_stripped == CLANG_FORMAT_GUARD_ON:
+                clang_format_enabled = True
+            elif line_stripped == CLANG_FORMAT_GUARD_OFF:
+                clang_format_enabled = False
 
-        if (not clang_format_enabled and
-                line_stripped not in (CLANG_FORMAT_GUARD_ON, CLANG_FORMAT_GUARD_OFF)):
-            continue
+            if (not clang_format_enabled and
+                    line_stripped not in (CLANG_FORMAT_GUARD_ON, CLANG_FORMAT_GUARD_OFF)):
+                continue
 
-        # Check if there are tabs and fix them
-        tab_index = line.find('\t')
+        # Check if the line is compliant with the style and fix it
+        (is_line_compliant, line_fixed, line_verbose_infos) = check_style_line_function(line, filename, i)
 
-        if tab_index == -1:
-            continue
+        if not is_line_compliant:
+            is_file_compliant = False
+            file_lines[i] = line_fixed
+            verbose_infos.extend(line_verbose_infos)
 
-        is_file_compliant = False
-        file_lines[i] = line.expandtabs(TAB_SIZE)
-
-        if verbose:
-            verbose_infos.extend([
-                f'{filename}:{i + 1}:{tab_index + 1}: error: Tab detected',
-                f'    {line.rstrip()}',
-                f'    {"":{tab_index}}^',
-            ])
-
-        # Optimization: If running in non-verbose check mode, only one error is needed to check that the file is not compliant
-        if not fix and not verbose:
-            break
+            # Optimization: If running in non-verbose check mode, only one error is needed to check that the file is not compliant
+            if not fix and not verbose:
+                break
 
     # Update file with the fixed lines
     if fix and not is_file_compliant:
@@ -672,6 +547,116 @@ def check_tabs_file(filename: str,
             f.writelines(file_lines)
 
     return (filename, is_file_compliant, verbose_infos)
+
+
+def check_include_prefixes_line(line: str,
+                                filename: str,
+                                line_number: int,
+                                ) -> Tuple[bool, str, List[str]]:
+    """
+    Check / fix #include headers from the same module with the "ns3/" prefix in a line.
+
+    @param line The line to check.
+    @param filename Name of the file to be checked.
+    @param line_number The number of the line checked.
+    @return Tuple [Whether the line is compliant with the style (before the check),
+                   Fixed line,
+                   Verbose information].
+    """
+
+    is_line_compliant = True
+    line_fixed = line
+    verbose_infos: List[str] = []
+
+    # Check if the line is an #include and extract its header file
+    line_stripped = line.strip()
+    header_file = re.findall(r'^#include ["<]ns3/(.*\.h)[">]', line_stripped)
+
+    if header_file:
+        # Check if the header file belongs to the same module and remove the "ns3/" prefix
+        header_file = header_file[0]
+        parent_path = os.path.split(filename)[0]
+
+        if os.path.exists(os.path.join(parent_path, header_file)):
+            is_line_compliant = False
+            line_fixed = line_stripped.replace(
+                f'ns3/{header_file}', header_file).replace('<', '"').replace('>', '"') + '\n'
+
+            header_index = len('#include "')
+
+            verbose_infos.extend([
+                f'{filename}:{line_number + 1}:{header_index + 1}: error: #include headers from the same module with the "ns3/" prefix detected',
+                f'    {line_stripped}',
+                f'    {"":{header_index}}^',
+            ])
+
+    return (is_line_compliant, line_fixed, verbose_infos)
+
+
+def check_whitespace_line(line: str,
+                          filename: str,
+                          line_number: int,
+                          ) -> Tuple[bool, str, List[str]]:
+    """
+    Check / fix whitespace in a line.
+
+    @param line The line to check.
+    @param filename Name of the file to be checked.
+    @param line_number The number of the line checked.
+    @return Tuple [Whether the line is compliant with the style (before the check),
+                   Fixed line,
+                   Verbose information].
+    """
+
+    is_line_compliant = True
+    line_fixed = line.rstrip() + '\n'
+    verbose_infos: List[str] = []
+
+    if line_fixed != line:
+        is_line_compliant = False
+        line_fixed_stripped_expanded = line_fixed.rstrip().expandtabs(TAB_SIZE)
+
+        verbose_infos = [
+            f'{filename}:{line_number + 1}:{len(line_fixed_stripped_expanded) + 1}: error: Trailing whitespace detected',
+            f'    {line_fixed_stripped_expanded}',
+            f'    {"":{len(line_fixed_stripped_expanded)}}^',
+        ]
+
+    return (is_line_compliant, line_fixed, verbose_infos)
+
+
+def check_tabs_line(line: str,
+                    filename: str,
+                    line_number: int,
+                    ) -> Tuple[bool, str, List[str]]:
+    """
+    Check / fix tabs in a line.
+
+    @param line The line to check.
+    @param filename Name of the file to be checked.
+    @param line_number The number of the line checked.
+    @return Tuple [Whether the line is compliant with the style (before the check),
+                   Fixed line,
+                   Verbose information].
+    """
+
+    is_line_compliant = True
+    line_fixed = line
+    verbose_infos: List[str] = []
+
+    tab_index = line.find('\t')
+
+    if tab_index != -1:
+        is_line_compliant = False
+        line_fixed = line.expandtabs(TAB_SIZE)
+
+        verbose_infos = [
+            f'{filename}:{line_number + 1}:{tab_index + 1}: error: Tab detected',
+            f'    {line.rstrip()}',
+            f'    {"":{tab_index}}^',
+        ]
+
+    return (is_line_compliant, line_fixed, verbose_infos)
 
 
 ###########################################################
