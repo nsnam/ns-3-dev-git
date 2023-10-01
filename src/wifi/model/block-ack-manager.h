@@ -482,6 +482,16 @@ class BlockAckManager : public Object
                                    uint8_t tid,
                                    const GcrManager::GcrMembers& members) const;
 
+    /**
+     * Notify the block ack manager about the last groupcast MPDU transmitted with the GCR-UR
+     * service. If there is an established block ack agreement, it makes the transmit window
+     * advance beyond the transmitted MPDU.
+     *
+     * @param mpdu the groupcast MPDU
+     * @param recipients the list of recipients for the groupcast MPDU
+     */
+    void NotifyLastGcrUrTx(Ptr<const WifiMpdu> mpdu, const GcrManager::GcrMembers& recipients);
+
   protected:
     void DoDispose() override;
 

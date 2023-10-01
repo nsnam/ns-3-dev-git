@@ -522,6 +522,23 @@ BlockAckManager::NotifyGotAck(uint8_t linkId, Ptr<const WifiMpdu> mpdu)
 }
 
 void
+BlockAckManager::NotifyLastGcrUrTx(Ptr<const WifiMpdu> mpdu,
+                                   const GcrManager::GcrMembers& recipients)
+{
+    NS_LOG_FUNCTION(this << *mpdu << recipients.size());
+    NS_ASSERT(mpdu->GetHeader().IsQosData());
+    const auto tid = mpdu->GetHeader().GetQosTid();
+    const auto gcrGroupAddr = mpdu->GetHeader().GetAddr1();
+    for (const auto& recipient : recipients)
+    {
+        auto it = GetOriginatorBaAgreement(recipient, tid, gcrGroupAddr);
+        NS_ASSERT(it != m_originatorAgreements.end());
+        NS_ASSERT(it->second.first.IsEstablished());
+        it->second.first.NotifyAckedMpdu(mpdu);
+    }
+}
+
+void
 BlockAckManager::NotifyMissedAck(uint8_t linkId, Ptr<WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << linkId << *mpdu);

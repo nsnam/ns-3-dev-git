@@ -524,15 +524,26 @@ FrameExchangeManager::SendMpdu()
 
     if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
     {
-        const auto isGcr = m_mac->GetTypeOfStation() == AP && m_apMac->UseGcr(m_mpdu->GetHeader());
-        if (isGcr && m_apMac->GetGcrManager()->KeepGroupcastQueued(m_mpdu))
+        if (m_mac->GetTypeOfStation() == AP && m_apMac->UseGcr(m_mpdu->GetHeader()))
         {
-            // keep the groupcast frame in the queue for future retransmission
-            Simulator::Schedule(txDuration + m_phy->GetSifs(), [=, this, mpdu = m_mpdu]() {
-                NS_LOG_DEBUG("Prepare groupcast MPDU for retry");
-                mpdu->ResetInFlight(m_linkId);
-                mpdu->GetHeader().SetRetry();
-            });
+            if (m_apMac->GetGcrManager()->KeepGroupcastQueued(m_mpdu))
+            {
+                // keep the groupcast frame in the queue for future retransmission
+                Simulator::Schedule(txDuration + m_phy->GetSifs(), [=, this, mpdu = m_mpdu]() {
+                    NS_LOG_DEBUG("Prepare groupcast MPDU for retry");
+                    mpdu->ResetInFlight(m_linkId);
+                    mpdu->GetHeader().SetRetry();
+                });
+            }
+            else
+            {
+                if (m_apMac->GetGcrManager()->GetRetransmissionPolicy() ==
+                    GroupAddressRetransmissionPolicy::GCR_UNSOLICITED_RETRY)
+                {
+                    NotifyLastGcrUrTx(m_mpdu);
+                }
+                DequeueMpdu(m_mpdu);
+            }
         }
         else if (!m_mpdu->GetHeader().IsQosData() ||
                  m_mpdu->GetHeader().GetQosAckPolicy() == WifiMacHeader::NO_ACK)
@@ -1509,6 +1520,12 @@ FrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
                                       const std::vector<bool>& perMpduStatus)
 {
     NS_ASSERT_MSG(false, "A non-QoS station should not receive an A-MPDU");
+}
+
+void
+FrameExchangeManager::NotifyLastGcrUrTx(Ptr<const WifiMpdu> mpdu)
+{
+    NS_ASSERT_MSG(false, "A non-QoS station should not use GCR-UR");
 }
 
 } // namespace ns3

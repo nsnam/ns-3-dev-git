@@ -723,6 +723,13 @@ class FrameExchangeManager : public Object
                                 const WifiTxVector& txVector,
                                 Time psduDuration);
 
+    /**
+     * Notify the last (re)transmission of a groupcast MPDU using the GCR-UR service.
+     *
+     * @param mpdu the groupcast MPDU
+     */
+    virtual void NotifyLastGcrUrTx(Ptr<const WifiMpdu> mpdu);
+
   private:
     /**
      * Send the current MPDU, which can be acknowledged by a Normal Ack.

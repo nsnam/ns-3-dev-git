@@ -189,6 +189,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     void CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVector) override;
     void TransmissionSucceeded() override;
     void ProtectionCompleted() override;
+    void NotifyLastGcrUrTx(Ptr<const WifiMpdu> mpdu) override;
 
     /**
      * Process a received management action frame that relates to Block Ack agreement.

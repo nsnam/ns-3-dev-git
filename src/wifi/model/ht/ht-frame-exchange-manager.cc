@@ -1127,19 +1127,32 @@ HtFrameExchangeManager::SendPsdu()
         std::set<uint8_t> tids = m_psdu->GetTids();
         NS_ASSERT_MSG(tids.size() <= 1, "Multi-TID A-MPDUs are not supported");
 
-        if (const auto isGcr =
-                m_mac->GetTypeOfStation() == AP && m_apMac->UseGcr(m_psdu->GetHeader(0));
-            isGcr && m_apMac->GetGcrManager()->KeepGroupcastQueued(*m_psdu->begin()))
+        if (m_mac->GetTypeOfStation() == AP && m_apMac->UseGcr(m_psdu->GetHeader(0)))
         {
-            // keep the groupcast frame in the queue for future retransmission
-            Simulator::Schedule(txDuration + m_phy->GetSifs(), [=, this, psdu = m_psdu]() {
-                NS_LOG_DEBUG("Prepare groupcast PSDU for retry");
-                for (const auto& mpdu : *PeekPointer(psdu))
+            if (m_apMac->GetGcrManager()->KeepGroupcastQueued(*m_psdu->begin()))
+            {
+                // keep the groupcast frame in the queue for future retransmission
+                Simulator::Schedule(txDuration + m_phy->GetSifs(), [=, this, psdu = m_psdu]() {
+                    NS_LOG_DEBUG("Prepare groupcast PSDU for retry");
+                    for (const auto& mpdu : *PeekPointer(psdu))
+                    {
+                        mpdu->ResetInFlight(m_linkId);
+                        mpdu->GetHeader().SetRetry();
+                    }
+                });
+            }
+            else
+            {
+                if (m_apMac->GetGcrManager()->GetRetransmissionPolicy() ==
+                    GroupAddressRetransmissionPolicy::GCR_UNSOLICITED_RETRY)
                 {
-                    mpdu->ResetInFlight(m_linkId);
-                    mpdu->GetHeader().SetRetry();
+                    for (const auto& mpdu : *PeekPointer(m_psdu))
+                    {
+                        NotifyLastGcrUrTx(mpdu);
+                    }
                 }
-            });
+                DequeuePsdu(m_psdu);
+            }
         }
         else if (tids.empty() || m_psdu->GetAckPolicyForTid(*tids.begin()) == WifiMacHeader::NO_ACK)
         {
@@ -1992,6 +2005,24 @@ HtFrameExchangeManager::FlushGroupcastMpdus(const Mac48Address& groupAddress,
     NS_LOG_FUNCTION(this << groupAddress << originator << tid << seq);
     // We can flush the recipient window by indicating the reception of an implicit GCR BAR
     GetBaManager(tid)->NotifyGotBlockAckRequest(originator, tid, seq, groupAddress);
+}
+
+void
+HtFrameExchangeManager::NotifyLastGcrUrTx(Ptr<const WifiMpdu> mpdu)
+{
+    NS_LOG_FUNCTION(this << mpdu);
+    const auto tid = mpdu->GetHeader().GetQosTid();
+    const auto groupAddress = mpdu->GetHeader().GetAddr1();
+    if (!GetBaManager(tid)->IsGcrAgreementEstablished(
+            groupAddress,
+            tid,
+            m_apMac->GetGcrManager()->GetMemberStasForGroupAddress(groupAddress)))
+    {
+        return;
+    }
+    GetBaManager(tid)->NotifyLastGcrUrTx(
+        mpdu,
+        m_apMac->GetGcrManager()->GetMemberStasForGroupAddress(groupAddress));
 }
 
 } // namespace ns3
