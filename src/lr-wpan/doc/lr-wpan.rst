@@ -232,10 +232,10 @@ The receiver sensitivity can be changed to different values using ``SetRxSensiti
                               | <--------------------------------------->|
                                     Acceptable sensitivity range
 
-The example ``lr-wpan-per-plot.cc` shows that at given Rx sensitiviy, packets are dropped regardless of their theoretical error probability.
+The example ``lr-wpan-per-plot.cc` shows that at given Rx sensitivity, packets are dropped regardless of their theoretical error probability.
 This program outputs a file named ``802.15.4-per-vs-rxSignal.plt``.
 Loading this file into gnuplot yields a file ``802.15.4-per-vs-rsSignal.eps``, which can
-be converted to pdf or other formats. Packet payload size, Tx power and Rx sensitivity can be configurated.
+be converted to pdf or other formats. Packet payload size, Tx power and Rx sensitivity can be configured.
 The point where the blue line crosses with the PER indicates the Rx sensitivity. The default output is shown below.
 
 .. _fig-802-15-4-per-sens:
@@ -301,7 +301,7 @@ in the upper-layer notification callback, which can contain either the pseudo-ad
 the long address (64 bit) of the sender.
 
 Note also that RFC 4944 or RFC 6282 are the RFCs defining the IPv6 address compression formats
-(HC1 and IPHC respectively). It is defintely not a good idea to either mix devices using different
+(HC1 and IPHC respectively). It is definitely not a good idea to either mix devices using different
 pseudo-address format or compression types in the same network. This point is further discussed
 in the ``sixlowpan`` module documentation.
 
@@ -393,8 +393,8 @@ The program outputs a file named ``802.15.4-psr-distance.plt``.
 Loading this file into gnuplot yields a file ``802.15.4-psr-distance.eps``, which can
 be converted to pdf or other formats.  The following image shows the output
 of multiple runs using different Rx sensitivity values. A higher Rx sensitivity (lower dBm) results
-in a increased communication distance but also makes the radio suceptible to more interference from
-surronding devices.
+in a increased communication distance but also makes the radio susceptible to more interference from
+surrounding devices.
 
 .. _fig-802-15-4-psr-distance:
 

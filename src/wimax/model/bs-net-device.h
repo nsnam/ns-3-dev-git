@@ -492,7 +492,7 @@ class BaseStationNetDevice : public WimaxNetDevice
      * \see class CallBackTraceSource
      */
     TracedCallback<Ptr<const Packet>>
-        m_bsPromiscRxTrace; ///< base station promiscious receive trace callback
+        m_bsPromiscRxTrace; ///< base station promiscuous receive trace callback
 
     /**
      * The trace source fired for packets successfully received by the device

@@ -216,13 +216,13 @@ PfFfMacScheduler::DoCschedLcConfigReq(
             pfsFlowPerf_t flowStatsDl;
             flowStatsDl.flowStart = Simulator::Now();
             flowStatsDl.totalBytesTransmitted = 0;
-            flowStatsDl.lastTtiBytesTrasmitted = 0;
+            flowStatsDl.lastTtiBytesTransmitted = 0;
             flowStatsDl.lastAveragedThroughput = 1;
             m_flowStatsDl.insert(std::pair<uint16_t, pfsFlowPerf_t>(params.m_rnti, flowStatsDl));
             pfsFlowPerf_t flowStatsUl;
             flowStatsUl.flowStart = Simulator::Now();
             flowStatsUl.totalBytesTransmitted = 0;
-            flowStatsUl.lastTtiBytesTrasmitted = 0;
+            flowStatsUl.lastTtiBytesTransmitted = 0;
             flowStatsUl.lastAveragedThroughput = 1;
             m_flowStatsUl.insert(std::pair<uint16_t, pfsFlowPerf_t>(params.m_rnti, flowStatsUl));
         }
@@ -1040,7 +1040,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
     // reset TTI stats of users
     for (auto itStats = m_flowStatsDl.begin(); itStats != m_flowStatsDl.end(); itStats++)
     {
-        (*itStats).second.lastTtiBytesTrasmitted = 0;
+        (*itStats).second.lastTtiBytesTransmitted = 0;
     }
 
     // generate the transmission opportunities by grouping the RBGs of the same RNTI and
@@ -1224,8 +1224,8 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
         auto it = m_flowStatsDl.find((*itMap).first);
         if (it != m_flowStatsDl.end())
         {
-            (*it).second.lastTtiBytesTrasmitted = bytesTxed;
-            NS_LOG_INFO(this << " UE total bytes txed " << (*it).second.lastTtiBytesTrasmitted);
+            (*it).second.lastTtiBytesTransmitted = bytesTxed;
+            NS_LOG_INFO(this << " UE total bytes txed " << (*it).second.lastTtiBytesTransmitted);
         }
         else
         {
@@ -1240,15 +1240,15 @@ PfFfMacScheduler::DoSchedDlTriggerReq(
     NS_LOG_INFO(this << " Update UEs statistics");
     for (auto itStats = m_flowStatsDl.begin(); itStats != m_flowStatsDl.end(); itStats++)
     {
-        (*itStats).second.totalBytesTransmitted += (*itStats).second.lastTtiBytesTrasmitted;
+        (*itStats).second.totalBytesTransmitted += (*itStats).second.lastTtiBytesTransmitted;
         // update average throughput (see eq. 12.3 of Sec 12.3.1.2 of LTE – The UMTS Long Term
         // Evolution, Ed Wiley)
         (*itStats).second.lastAveragedThroughput =
             ((1.0 - (1.0 / m_timeWindow)) * (*itStats).second.lastAveragedThroughput) +
-            ((1.0 / m_timeWindow) * (double)((*itStats).second.lastTtiBytesTrasmitted / 0.001));
+            ((1.0 / m_timeWindow) * (double)((*itStats).second.lastTtiBytesTransmitted / 0.001));
         NS_LOG_INFO(this << " UE total bytes " << (*itStats).second.totalBytesTransmitted);
         NS_LOG_INFO(this << " UE average throughput " << (*itStats).second.lastAveragedThroughput);
-        (*itStats).second.lastTtiBytesTrasmitted = 0;
+        (*itStats).second.lastTtiBytesTransmitted = 0;
     }
 
     m_schedSapUser->SchedDlConfigInd(ret);
@@ -1735,7 +1735,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq(
         auto itStats = m_flowStatsUl.find((*it).first);
         if (itStats != m_flowStatsUl.end())
         {
-            (*itStats).second.lastTtiBytesTrasmitted = uldci.m_tbSize;
+            (*itStats).second.lastTtiBytesTransmitted = uldci.m_tbSize;
         }
         else
         {
@@ -1760,15 +1760,15 @@ PfFfMacScheduler::DoSchedUlTriggerReq(
     // update UEs stats
     for (auto itStats = m_flowStatsUl.begin(); itStats != m_flowStatsUl.end(); itStats++)
     {
-        (*itStats).second.totalBytesTransmitted += (*itStats).second.lastTtiBytesTrasmitted;
+        (*itStats).second.totalBytesTransmitted += (*itStats).second.lastTtiBytesTransmitted;
         // update average throughput (see eq. 12.3 of Sec 12.3.1.2 of LTE – The UMTS Long Term
         // Evolution, Ed Wiley)
         (*itStats).second.lastAveragedThroughput =
             ((1.0 - (1.0 / m_timeWindow)) * (*itStats).second.lastAveragedThroughput) +
-            ((1.0 / m_timeWindow) * (double)((*itStats).second.lastTtiBytesTrasmitted / 0.001));
+            ((1.0 / m_timeWindow) * (double)((*itStats).second.lastTtiBytesTransmitted / 0.001));
         NS_LOG_INFO(this << " UE total bytes " << (*itStats).second.totalBytesTransmitted);
         NS_LOG_INFO(this << " UE average throughput " << (*itStats).second.lastAveragedThroughput);
-        (*itStats).second.lastTtiBytesTrasmitted = 0;
+        (*itStats).second.lastTtiBytesTransmitted = 0;
     }
     m_allocationMaps.insert(
         std::pair<uint16_t, std::vector<uint16_t>>(params.m_sfnSf, rbgAllocationMap));

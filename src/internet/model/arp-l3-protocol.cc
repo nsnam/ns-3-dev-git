@@ -191,7 +191,7 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device,
     //
     // If we're connected to a real world network, then some of the fields sizes
     // in an ARP packet can vary in ways not seen in simulations.  We need to be
-    // able to detect ARP packets with headers we don't recongnize and not process
+    // able to detect ARP packets with headers we don't recognize and not process
     // them instead of crashing.  The ArpHeader will return 0 if it can't deal
     // with the received header.
     //

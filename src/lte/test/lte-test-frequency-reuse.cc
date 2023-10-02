@@ -444,13 +444,13 @@ static LteFrequencyReuseTestSuite lteFrequencyReuseTestSuite;
  * TestCase Data
  */
 void
-DlDataRxStartNofitication(LteFrTestCase* testcase, Ptr<const SpectrumValue> spectrumValue)
+DlDataRxStartNotification(LteFrTestCase* testcase, Ptr<const SpectrumValue> spectrumValue)
 {
     testcase->DlDataRxStart(spectrumValue);
 }
 
 void
-UlDataRxStartNofitication(LteFrTestCase* testcase, Ptr<const SpectrumValue> spectrumValue)
+UlDataRxStartNotification(LteFrTestCase* testcase, Ptr<const SpectrumValue> spectrumValue)
 {
     testcase->UlDataRxStart(spectrumValue);
 }
@@ -617,7 +617,7 @@ LteHardFrTestCase::DoRun()
 
     testDlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&DlDataRxStartNofitication, this));
+        MakeBoundCallback(&DlDataRxStartNotification, this));
 
     // Test SpectrumPhy to get signals form UL channel
     Ptr<LteSpectrumPhy> ueUlSpectrumPhy = ueDevs.Get(0)
@@ -634,7 +634,7 @@ LteHardFrTestCase::DoRun()
 
     testUlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&UlDataRxStartNofitication, this));
+        MakeBoundCallback(&UlDataRxStartNotification, this));
 
     Simulator::Stop(Seconds(0.500));
     Simulator::Run();
@@ -755,7 +755,7 @@ LteStrictFrTestCase::DoRun()
 
     testDlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&DlDataRxStartNofitication, this));
+        MakeBoundCallback(&DlDataRxStartNotification, this));
 
     // Test SpectrumPhy to get signals form UL channel
     Ptr<LteSpectrumPhy> ueUlSpectrumPhy = ueDevs.Get(0)
@@ -772,7 +772,7 @@ LteStrictFrTestCase::DoRun()
 
     testUlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&UlDataRxStartNofitication, this));
+        MakeBoundCallback(&UlDataRxStartNotification, this));
 
     Simulator::Stop(Seconds(0.500));
     Simulator::Run();
@@ -785,13 +785,13 @@ LteStrictFrTestCase::DoRun()
 }
 
 void
-DlDataRxStartNofiticationArea(LteFrAreaTestCase* testcase, Ptr<const SpectrumValue> spectrumValue)
+DlDataRxStartNotificationArea(LteFrAreaTestCase* testcase, Ptr<const SpectrumValue> spectrumValue)
 {
     testcase->DlDataRxStart(spectrumValue);
 }
 
 void
-UlDataRxStartNofiticationArea(LteFrAreaTestCase* testcase, Ptr<const SpectrumValue> spectrumValue)
+UlDataRxStartNotificationArea(LteFrAreaTestCase* testcase, Ptr<const SpectrumValue> spectrumValue)
 {
     testcase->UlDataRxStart(spectrumValue);
 }
@@ -1087,7 +1087,7 @@ LteStrictFrAreaTestCase::DoRun()
 
     testDlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&DlDataRxStartNofiticationArea, this));
+        MakeBoundCallback(&DlDataRxStartNotificationArea, this));
 
     // Test SpectrumPhy to get signals form UL channel
     Ptr<LteSpectrumPhy> ueUlSpectrumPhy = ueDevs1.Get(0)
@@ -1106,7 +1106,7 @@ LteStrictFrAreaTestCase::DoRun()
 
     testUlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&UlDataRxStartNofiticationArea, this));
+        MakeBoundCallback(&UlDataRxStartNotificationArea, this));
 
     std::vector<bool> expectedDlRbCenterArea;
     expectedDlRbCenterArea.resize(m_dlBandwidth, false);
@@ -1303,7 +1303,7 @@ LteSoftFrAreaTestCase::DoRun()
 
     testDlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&DlDataRxStartNofiticationArea, this));
+        MakeBoundCallback(&DlDataRxStartNotificationArea, this));
 
     // Test SpectrumPhy to get signals form UL channel
     Ptr<LteSpectrumPhy> ueUlSpectrumPhy = ueDevs1.Get(0)
@@ -1322,7 +1322,7 @@ LteSoftFrAreaTestCase::DoRun()
 
     testUlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&UlDataRxStartNofiticationArea, this));
+        MakeBoundCallback(&UlDataRxStartNotificationArea, this));
 
     std::vector<bool> expectedDlRbCenterArea;
     expectedDlRbCenterArea.resize(m_dlBandwidth, false);
@@ -1532,7 +1532,7 @@ LteSoftFfrAreaTestCase::DoRun()
 
     testDlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&DlDataRxStartNofiticationArea, this));
+        MakeBoundCallback(&DlDataRxStartNotificationArea, this));
 
     // Test SpectrumPhy to get signals form UL channel
     Ptr<LteSpectrumPhy> ueUlSpectrumPhy = ueDevs1.Get(0)
@@ -1551,7 +1551,7 @@ LteSoftFfrAreaTestCase::DoRun()
 
     testUlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&UlDataRxStartNofiticationArea, this));
+        MakeBoundCallback(&UlDataRxStartNotificationArea, this));
 
     double expectedDlPowerCenterArea = 0.5;
     std::vector<bool> expectedDlRbCenterArea;
@@ -1803,7 +1803,7 @@ LteEnhancedFfrAreaTestCase::DoRun()
 
     testDlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&DlDataRxStartNofiticationArea, this));
+        MakeBoundCallback(&DlDataRxStartNotificationArea, this));
 
     // Test SpectrumPhy to get signals form UL channel
     Ptr<LteSpectrumPhy> ueUlSpectrumPhy = ueDevs1.Get(0)
@@ -1822,7 +1822,7 @@ LteEnhancedFfrAreaTestCase::DoRun()
 
     testUlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&UlDataRxStartNofiticationArea, this));
+        MakeBoundCallback(&UlDataRxStartNotificationArea, this));
 
     double expectedDlPowerCenterArea = 0.251189;
     std::vector<bool> expectedDlRbCenterArea;
@@ -2184,7 +2184,7 @@ LteDistributedFfrAreaTestCase::DoRun()
 
     testDlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&DlDataRxStartNofiticationArea, this));
+        MakeBoundCallback(&DlDataRxStartNotificationArea, this));
 
     // Test SpectrumPhy to get signals form UL channel
     Ptr<LteSpectrumPhy> ueUlSpectrumPhy = ueDevs1.Get(0)
@@ -2203,7 +2203,7 @@ LteDistributedFfrAreaTestCase::DoRun()
 
     testUlSpectrumPhy->TraceConnectWithoutContext(
         "RxStart",
-        MakeBoundCallback(&UlDataRxStartNofiticationArea, this));
+        MakeBoundCallback(&UlDataRxStartNotificationArea, this));
 
     double expectedDlPowerCenterArea = 1.0;
     std::vector<bool> expectedDlRbCenterArea;

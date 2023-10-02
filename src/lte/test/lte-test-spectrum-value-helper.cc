@@ -155,7 +155,7 @@ class LteTxPsdTestCase : public TestCase
      * \param str the reference name
      * \param earfcn
      * \param bw bandwidth
-     * \param txPowerDbm tranmit power in dBm
+     * \param txPowerDbm transmit power in dBm
      * \param activeRbs active RBs
      * \param expected executed spectrum value
      */

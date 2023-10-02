@@ -14,9 +14,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Jaume Nin <jnin@cttc.es>
- *         Nicola Baldo <nbaldo@cttc.es>
- *         Manuel Requena <manuel.requena@cttc.es>
+ * Authors:
+ *   Jaume Nin <jnin@cttc.es>
+ *   Nicola Baldo <nbaldo@cttc.es>
+ *   Manuel Requena <manuel.requena@cttc.es>
  */
 
 #include "epc-helper.h"

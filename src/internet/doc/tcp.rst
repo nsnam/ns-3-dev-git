@@ -1596,7 +1596,7 @@ SACK based loss recovery is used when sender and receiver support SACK options.
 In the case when SACK options are disabled, the NewReno modification handles
 the recovery.
 
-At the start of recovery phase the congestion window is reduced diffently for
+At the start of recovery phase the congestion window is reduced differently for
 NewReno and SACK based recovery. For NewReno the reduction is done as given below:
 
 .. math::  cWnd = ssThresh

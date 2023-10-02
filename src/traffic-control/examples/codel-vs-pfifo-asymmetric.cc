@@ -260,7 +260,7 @@ TraceDroppingState(std::string dropStateTrFileName)
  *
  * \param remoteAddress Remote address.
  * \param sender Sender node.
- * \param pktSize Pakcet size.
+ * \param pktSize Packet size.
  * \param stopTime Stop time.
  */
 void

@@ -39,10 +39,10 @@ namespace ns3
 /// fdbetsFlowPerf_t structure
 struct fdbetsFlowPerf_t
 {
-    Time flowStart;                      ///< flow start time
-    unsigned long totalBytesTransmitted; ///< total bytes transmitted
-    unsigned int lastTtiBytesTrasmitted; ///< last total bytes transmitted
-    double lastAveragedThroughput;       ///< last averaged throughput
+    Time flowStart;                       ///< flow start time
+    unsigned long totalBytesTransmitted;  ///< total bytes transmitted
+    unsigned int lastTtiBytesTransmitted; ///< last total bytes transmitted
+    double lastAveragedThroughput;        ///< last averaged throughput
 };
 
 /**

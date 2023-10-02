@@ -71,9 +71,9 @@ class LteFfrSimple : public LteFfrAlgorithm
      * \brief Set transmission power control
      * \param tpc TPC
      * \param num number of TPC configurations in the test case
-     * \param acculumatedMode whether TPC accumulated mode is used
+     * \param accumulatedMode whether TPC accumulated mode is used
      */
-    void SetTpc(uint32_t tpc, uint32_t num, bool acculumatedMode);
+    void SetTpc(uint32_t tpc, uint32_t num, bool accumulatedMode);
 
     // inherited from LteFfrAlgorithm
     void SetLteFfrSapUser(LteFfrSapUser* s) override;

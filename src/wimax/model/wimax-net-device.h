@@ -211,7 +211,7 @@ class WimaxNetDevice : public NetDevice
 
     /**
      * Set the connection manager of the device
-     * \param  connectionManager the commection manager to be installed in the device
+     * \param  connectionManager the connection manager to be installed in the device
      */
     virtual void SetConnectionManager(Ptr<ConnectionManager> connectionManager);
 
@@ -421,13 +421,13 @@ class WimaxNetDevice : public NetDevice
                   const Address& dest,
                   uint16_t protocolNumber) override;
     /**
-     * Set promiscious receive callback function
-     * \param cb the promiscious mode callback
+     * Set promiscuous receive callback function
+     * \param cb the promiscuous mode callback
      */
     void SetPromiscReceiveCallback(PromiscReceiveCallback cb) override;
     /**
-     * Get promiscious receive callback function
-     * \returns the promiscious mode callback
+     * Get promiscuous receive callback function
+     * \returns the promiscuous mode callback
      */
     NetDevice::PromiscReceiveCallback GetPromiscReceiveCallback();
     /**
@@ -470,12 +470,12 @@ class WimaxNetDevice : public NetDevice
     bool IsBridge() const override;
 
     /**
-     * Check if device is promiscious
-     * \returns true if promiscious
+     * Check if device is promiscuous
+     * \returns true if promiscuous
      */
     bool IsPromisc();
     /**
-     * Notify promiscious trace of a packet arrival
+     * Notify promiscuous trace of a packet arrival
      * \param p the packet
      */
     void NotifyPromiscTrace(Ptr<Packet> p);
@@ -527,7 +527,7 @@ class WimaxNetDevice : public NetDevice
     Ptr<Node> m_node;                              ///< the node
     Ptr<WimaxPhy> m_phy;                           ///< the phy
     NetDevice::ReceiveCallback m_forwardUp;        ///< forward up callback function
-    NetDevice::PromiscReceiveCallback m_promiscRx; ///< promiscious receive fcallback function
+    NetDevice::PromiscReceiveCallback m_promiscRx; ///< promiscuous receive callback function
 
     uint32_t m_ifIndex;          ///< IF index
     std::string m_name;          ///< service name

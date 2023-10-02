@@ -165,11 +165,11 @@ LteFfrSimple::SetPdschConfigDedicated(LteRrcSap::PdschConfigDedicated pdschConfi
 }
 
 void
-LteFfrSimple::SetTpc(uint32_t tpc, uint32_t num, bool acculumatedMode)
+LteFfrSimple::SetTpc(uint32_t tpc, uint32_t num, bool accumulatedMode)
 {
     m_tpc = tpc;
     m_tpcNum = num;
-    m_accumulatedMode = acculumatedMode;
+    m_accumulatedMode = accumulatedMode;
 }
 
 std::vector<bool>

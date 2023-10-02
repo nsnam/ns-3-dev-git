@@ -27,7 +27,7 @@ The configuration is split in different files, each one containing a group of jo
 - `gitlab-ci-scheduled.yml`: daily and weekly ordinary and slow jobs.
 - `gitlab-ci-gcc.yml`: jobs to test various GCC versions.
 
-If you did fork ns-3, the CI should already point to the right configureation file. Otherwise, you will have to select the `gitlab-ci.yml` in your fork configuration. Note that Gitlab requires a user verification (usually it requires a valid credit card) to run CI jobs. If you did skip the verification process the CI will always fail.
+If you did fork ns-3, the CI should already point to the right configuration file. Otherwise, you will have to select the `gitlab-ci.yml` in your fork configuration. Note that Gitlab requires a user verification (usually it requires a valid credit card) to run CI jobs. If you did skip the verification process the CI will always fail.
 
 ### CI pipelines
 

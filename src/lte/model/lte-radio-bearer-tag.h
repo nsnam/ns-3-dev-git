@@ -27,7 +27,7 @@ namespace ns3
 class Tag;
 
 /**
- * Tag used to define the RNTI and LC id for each MAC packet trasmitted
+ * Tag used to define the RNTI and LC id for each MAC packet transmitted
  */
 
 class LteRadioBearerTag : public Tag

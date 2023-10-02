@@ -136,7 +136,7 @@ class LteUeRrc : public Object
      */
     static TypeId GetTypeId();
 
-    /// Initiaize SAP
+    /// Initialize SAP
     void InitializeSap();
 
     /**

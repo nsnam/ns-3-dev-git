@@ -485,7 +485,7 @@ class RrepHeader : public Header
      */
     void SetPrefixSize(uint8_t sz);
     /**
-     * \brief Set the pefix size
+     * \brief Set the prefix size
      * \return the prefix size
      */
     uint8_t GetPrefixSize() const;

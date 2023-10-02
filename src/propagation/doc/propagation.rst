@@ -410,7 +410,7 @@ The extension for the standard OH in open area is
 
 
 The literature lacks of extensions of the COST231 to open area (for suburban it seems that
-we can just impose C = 0); therefore we consider it a special case fo the suburban one.
+we can just impose C = 0); therefore we consider it a special case of the suburban one.
 
 
 Cost231PropagationLossModel

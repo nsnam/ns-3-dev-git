@@ -174,16 +174,16 @@ MeshPointDevice::ReceiveFromDevice(Ptr<NetDevice> incomingPort,
 }
 
 void
-MeshPointDevice::Forward(Ptr<NetDevice> inport,
+MeshPointDevice::Forward(Ptr<NetDevice> incomingPort,
                          Ptr<const Packet> packet,
                          uint16_t protocol,
                          const Mac48Address src,
                          const Mac48Address dst)
 {
-    NS_LOG_FUNCTION(this << inport << packet << protocol << src << dst);
+    NS_LOG_FUNCTION(this << incomingPort << packet << protocol << src << dst);
     // pass through routing protocol
     NS_LOG_DEBUG("Forwarding from " << src << " to " << dst << " at " << m_address);
-    bool result = m_routingProtocol->RequestRoute(inport->GetIfIndex(),
+    bool result = m_routingProtocol->RequestRoute(incomingPort->GetIfIndex(),
                                                   src,
                                                   dst,
                                                   packet,

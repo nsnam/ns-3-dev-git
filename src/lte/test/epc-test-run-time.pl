@@ -13,7 +13,7 @@ my @nodes = ( 1,2,3,4,5,6,7, 8, 12, 14);
 my @simTime = (5, 10);
 
 
-# Configure and complite first the program to avoid counting compilation time as running time
+# Configure and compile first the program to avoid counting compilation time as running time
 my $launch = "CXXFLAGS=\"-O3 -w\" ./ns3 configure -d optimized --enable-static --enable-examples --enable-modules=lte";
 my $out, my $err;
 capture { system($launch ) } \$out, \$err;

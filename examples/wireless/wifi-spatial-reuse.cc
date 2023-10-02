@@ -34,7 +34,7 @@
 //
 //  STA1 is continuously transmitting data to AP1, while STA2 is continuously sending data to AP2.
 //  Each STA has configurable traffic loads (inter packet interval and packet size).
-//  It is also possible to configure TX power per node as well as their CCA-ED tresholds.
+//  It is also possible to configure TX power per node as well as their CCA-ED thresholds.
 //  OBSS_PD spatial reuse feature can be enabled (default) or disabled, and the OBSS_PD
 //  threshold can be set as well (default: -72 dBm).
 //  A simple Friis path loss model is used and a constant PHY rate is considered.

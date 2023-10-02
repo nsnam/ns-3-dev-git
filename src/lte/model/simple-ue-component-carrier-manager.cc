@@ -229,7 +229,7 @@ SimpleUeComponentCarrierManager::DoNotifyTxOpportunity(
     NS_ABORT_MSG_IF(lcidIt == m_lcAttached.end(),
                     "could not find LCID" << (uint16_t)txOpParams.lcid);
     NS_LOG_DEBUG(this << " lcid = " << (uint32_t)txOpParams.lcid
-                      << " layer= " << (uint16_t)txOpParams.layer << " componentCarierId "
+                      << " layer= " << (uint16_t)txOpParams.layer << " componentCarrierId "
                       << (uint16_t)txOpParams.componentCarrierId << " rnti " << txOpParams.rnti);
 
     NS_LOG_DEBUG(this << " MAC is asking component carrier id = "

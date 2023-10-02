@@ -854,7 +854,7 @@ SetSchedPosition(Ptr<ConstantVelocityMobilityModel> model,
     position.y = model->GetPosition().y;
     position.z = model->GetPosition().z;
 
-    // Chedule next positions
+    // Schedule next positions
     Simulator::Schedule(Seconds(at), &ConstantVelocityMobilityModel::SetPosition, model, position);
 
     return position;

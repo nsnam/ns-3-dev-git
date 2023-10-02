@@ -15,9 +15,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Piotr Gawlowicz <gawlowicz.p@gmail.com>
- * Based on lte-test-interference.{h,cc} by Manuel Requena <manuel.requena@cttc.es>
- *                                                                              Nicola Baldo
- * <nbaldo@cttc.es>
+ * Based on lte-test-interference.{h,cc} by:
+ *   Manuel Requena <manuel.requena@cttc.es>
+ *   Nicola Baldo <nbaldo@cttc.es>
  */
 
 #include "lte-test-interference-fr.h"

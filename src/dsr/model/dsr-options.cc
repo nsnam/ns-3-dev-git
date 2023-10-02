@@ -1759,7 +1759,7 @@ DsrOptionAckReq::Process(Ptr<Packet> packet,
     DsrOptionAckReqHeader ackReq;
     p->RemoveHeader(ackReq);
     /*
-     * Get the node with ip address and get the dsr extension and reoute cache objects
+     * Get the node with ip address and get the dsr extension and route cache objects
      */
     Ptr<Node> node = GetNodeWithAddress(ipv4Address);
     Ptr<dsr::DsrRouting> dsr = node->GetObject<dsr::DsrRouting>();

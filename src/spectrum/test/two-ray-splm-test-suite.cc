@@ -259,7 +259,7 @@ ArrayResponseTest::ArrayResponseTest(Ptr<AntennaModel> txAntElem,
                                      double expectedGain)
     // TODO: Create a string with the test parameters as the test case name like in
     // test-uniform-planar-array ?
-    : TestCase("Check that the overall array response gain has the proper trend with respect to"
+    : TestCase("Check that the overall array response gain has the proper trend with respect to "
                "the number of antennas and the type of single element antenna"),
       m_txAntElem(txAntElem),
       m_rxAntElem(rxAntElem),

@@ -94,10 +94,10 @@ Command-line Arguments
 
     Program Options:
     --all:     use all schedulers [false]
-    --cal:     use CalendarSheduler [false]
+    --cal:     use CalendarScheduler [false]
     --calrev:  reverse ordering in the CalendarScheduler [false]
     --heap:    use HeapScheduler [false]
-    --list:    use ListSheduler [false]
+    --list:    use ListScheduler [false]
     --map:     use MapScheduler (default) [true]
     --pri:     use PriorityQueue [false]
     --debug:   enable debugging output [false]

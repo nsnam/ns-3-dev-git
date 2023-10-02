@@ -49,6 +49,42 @@ Network Animator nam.  It is not possible to run a simulation
                 arp_h->ar_tha);                                       // Target hardware address.
             arp_h->ar_hln = sizeof arp_h->ar_tha;                     // Hardware address length.
 
+# Names and emails
+ * Author: Manuel Requena <manuel.requena@cttc.es>
+ *   Manuel Requena <manuel.requena@cttc.es>
+ *   Dave Täht <d@taht.net>
+.. [Pal19] J. Palmei, S. Gupta, P. Imputato, J. Morton, M. Tahiliani, S. Avallone, and D. Taht, Design and Evaluation of COBALT Queue Discipline, 2019 IEEE International Symposium on Local and Metropolitan Area Networks (LANMAN), Paris, France, 2019.
+.. [Hoe18] T. Hoiland-Jørgensen, D. Taht and J. Morton, "Piece of CAKE: A Comprehensive Queue Management Solution for Home Gateways," 2018 IEEE International Symposium on Local and Metropolitan Area Networks (LANMAN), Washington, DC, USA, 2018.
+.. [Hoe16] T. Hoeiland-Joergensen, P. McKenney, D. Taht, J. Gettys and E. Dumazet, The FlowQueue-CoDel Packet Scheduler and Active Queue Management Algorithm, IETF draft.  Available online at `<https://tools.ietf.org/html/draft-ietf-aqm-fq-codel>`_
+   Morton,  Mohit P. Tahiliani, Stefano Avallone and Dave Taht (2019).
+ * Author: Jaume Nin <jnin@cttc.cat>
+ *   Jaume Nin <jnin@cttc.cat>
+ * Author: Jaume Nin <jaume.nin@cttc.cat>
+ *   Jaume Nin <jaume.nin@cttc.cat>
+ * Author: Jaume Nin <jaume.nin@cttc.es>
+ * Author: Jaume Nin <jnin@cttc.es>
+ *   Jaume Nin <jnin@cttc.es>
+ * Copyright (c) 2014 Universita' degli Studi di Napoli "Federico II"
+ *               2014 Universita' degli Studi di Napoli "Federico II"
+ * Copyright (c) 2015 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2015 Universita' degli Studi di Napoli "Federico II"
+ *               2015 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2016 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2017 Universita' degli Studi di Napoli Federico II
+ *               2017 Università' degli Studi di Napoli Federico II
+ *               2017 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2018 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2019 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2020 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2021 2020 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2021 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2022 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2022 Universita' degli Studi di Napoli "Federico II"
+ * Copyright (c) 2023 Universita' degli Studi di Napoli Federico II
+
+./src/core/examples/hash-example.cc
+6ed21de2  brand-newness       peripherial
+
 ./src/dsr/model/dsr-routing.cc:243, 246, 3360, 3363
             .AddAttribute("GratReplyHoldoff",
                           MakeTimeAccessor(&DsrRouting::m_gratReplyHoldoff),
@@ -95,6 +131,10 @@ static ns3::GlobalValue g_rate("VRCrate",
 ./src/internet/model/global-route-manager-impl.h:555
     typedef std::list<SPFVertex*> ListOfSPFVertex_t; //!< container of SPFVertexes
 
+./utils/tests/test-ns3.py
+        destination_src = os.path.join(ns3_path, "src/test-src-dependant-on-contrib")
+        shutil.copytree(os.path.join(ns3_path, "build-support/test-files/test-src-dependant-on-contrib"),
+
 ./CHANGES.md:
   * (dsr) Class `DsrOptionRerrUnsupportHeader` from `dsr-option-header.h` was renamed `DsrOptionRerrUnsupportedHeader`.
   * (internet) Enumerated value `IPV6_EXT_AUTHENTIFICATION` from `ipv6-header.h` was renamed `IPV6_EXT_AUTHENTICATION`.
@@ -117,5 +157,8 @@ static ns3::GlobalValue g_rate("VRCrate",
   * (wifi) Enumerated value `MDAOP_ADVERTISMENTS` from `mgmt-headers.h` was renamed `MDAOP_ADVERTISEMENTS`.
   * (wifi) Define `IE_BEAMLINK_MAINENANCE` from `wifi-information-element.h` was renamed `IE_BEAMLINK_MAINTENANCE`.
   * (wimax) Attribute `m_nrRecivedFecBlocks` from `simple-ofdm-wimax-phy.h` was renamed `m_nrReceivedFecBlocks`.
+  * (lte) Struct member `fdbetsFlowPerf_t::lastTtiBytesTrasmitted` in file `fdbet-ff-mac-scheduler.h` was renamed `fdbetsFlowPerf_t::lastTtiBytesTransmitted`.
+  * (lte) Struct member `tdbetsFlowPerf_t::lastTtiBytesTrasmitted` in file `tdbet-ff-mac-scheduler.h` was renamed `fdbetsFlowPerf_t::lastTtiBytesTransmitted`.
+  * (lte) Struct member `pfsFlowPerf_t::lastTtiBytesTrasmitted` in file `pf-ff-mac-scheduler.h` was renamed `fdbetsFlowPerf_t::lastTtiBytesTransmitted`.
 * The spelling of the attribute `IntialCellVoltage` from `LiIonEnergySource` was corrected to `InitialCellVoltage`; this will affect existing users who were using the attribute with the misspelling.
 * The attribute `Recievers` in class `YansWifiPhy` was misspelled, so this has been corrected to `Receivers`.

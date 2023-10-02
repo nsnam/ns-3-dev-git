@@ -246,7 +246,7 @@ class LteRlcAmHeader : public Header
     /**
      * Get ack sn function
      *
-     * \returns sequence numbr
+     * \returns sequence number
      */
     SequenceNumber10 GetAckSn() const;
 

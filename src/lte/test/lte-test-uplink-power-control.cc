@@ -78,7 +78,7 @@ static LteUplinkPowerControlTestSuite lteUplinkPowerControlTestSuite;
  * TestCase Data
  */
 void
-PuschTxPowerNofitication(LteUplinkPowerControlTestCase* testcase,
+PuschTxPowerNotification(LteUplinkPowerControlTestCase* testcase,
                          uint16_t cellId,
                          uint16_t rnti,
                          double txPower)
@@ -87,7 +87,7 @@ PuschTxPowerNofitication(LteUplinkPowerControlTestCase* testcase,
 }
 
 void
-PucchTxPowerNofitication(LteUplinkPowerControlTestCase* testcase,
+PucchTxPowerNotification(LteUplinkPowerControlTestCase* testcase,
                          uint16_t cellId,
                          uint16_t rnti,
                          double txPower)
@@ -96,7 +96,7 @@ PucchTxPowerNofitication(LteUplinkPowerControlTestCase* testcase,
 }
 
 void
-SrsTxPowerNofitication(LteUplinkPowerControlTestCase* testcase,
+SrsTxPowerNotification(LteUplinkPowerControlTestCase* testcase,
                        uint16_t cellId,
                        uint16_t rnti,
                        double txPower)
@@ -269,11 +269,11 @@ LteUplinkOpenLoopPowerControlTestCase::DoRun()
     m_ueUpc = uePhy->GetUplinkPowerControl();
 
     m_ueUpc->TraceConnectWithoutContext("ReportPuschTxPower",
-                                        MakeBoundCallback(&PuschTxPowerNofitication, this));
+                                        MakeBoundCallback(&PuschTxPowerNotification, this));
     m_ueUpc->TraceConnectWithoutContext("ReportPucchTxPower",
-                                        MakeBoundCallback(&PucchTxPowerNofitication, this));
+                                        MakeBoundCallback(&PucchTxPowerNotification, this));
     m_ueUpc->TraceConnectWithoutContext("ReportSrsTxPower",
-                                        MakeBoundCallback(&SrsTxPowerNofitication, this));
+                                        MakeBoundCallback(&SrsTxPowerNotification, this));
 
     // Attach a UE to a eNB
     lteHelper->Attach(ueDevs, enbDevs.Get(0));
@@ -452,11 +452,11 @@ LteUplinkClosedLoopPowerControlAbsoluteModeTestCase::DoRun()
     m_ueUpc = uePhy->GetUplinkPowerControl();
 
     m_ueUpc->TraceConnectWithoutContext("ReportPuschTxPower",
-                                        MakeBoundCallback(&PuschTxPowerNofitication, this));
+                                        MakeBoundCallback(&PuschTxPowerNotification, this));
     m_ueUpc->TraceConnectWithoutContext("ReportPucchTxPower",
-                                        MakeBoundCallback(&PucchTxPowerNofitication, this));
+                                        MakeBoundCallback(&PucchTxPowerNotification, this));
     m_ueUpc->TraceConnectWithoutContext("ReportSrsTxPower",
-                                        MakeBoundCallback(&SrsTxPowerNofitication, this));
+                                        MakeBoundCallback(&SrsTxPowerNotification, this));
 
     // Attach a UE to a eNB
     lteHelper->Attach(ueDevs, enbDevs.Get(0));
@@ -616,11 +616,11 @@ LteUplinkClosedLoopPowerControlAccumulatedModeTestCase::DoRun()
     m_ueUpc = uePhy->GetUplinkPowerControl();
 
     m_ueUpc->TraceConnectWithoutContext("ReportPuschTxPower",
-                                        MakeBoundCallback(&PuschTxPowerNofitication, this));
+                                        MakeBoundCallback(&PuschTxPowerNotification, this));
     m_ueUpc->TraceConnectWithoutContext("ReportPucchTxPower",
-                                        MakeBoundCallback(&PucchTxPowerNofitication, this));
+                                        MakeBoundCallback(&PucchTxPowerNotification, this));
     m_ueUpc->TraceConnectWithoutContext("ReportSrsTxPower",
-                                        MakeBoundCallback(&SrsTxPowerNofitication, this));
+                                        MakeBoundCallback(&SrsTxPowerNotification, this));
 
     // Attach a UE to a eNB
     lteHelper->Attach(ueDevs, enbDevs.Get(0));

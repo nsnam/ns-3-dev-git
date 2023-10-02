@@ -16,12 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Original work authors (from lte-enb-rrc.cc):
- * - Nicola Baldo <nbaldo@cttc.es>
- * - Marco Miozzo <mmiozzo@cttc.es>
- * - Manuel Requena <manuel.requena@cttc.es>
+ *   Nicola Baldo <nbaldo@cttc.es>
+ *   Marco Miozzo <mmiozzo@cttc.es>
+ *   Manuel Requena <manuel.requena@cttc.es>
  *
  * Converted to handover algorithm interface by:
- * - Budiarto Herman <budiarto.herman@magister.fi>
+ *   Budiarto Herman <budiarto.herman@magister.fi>
  */
 
 #ifndef A2_A4_RSRQ_HANDOVER_ALGORITHM_H

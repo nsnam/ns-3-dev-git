@@ -383,8 +383,8 @@ uint32_t
 DhcpHeader::Deserialize(Buffer::Iterator start)
 {
     uint32_t len;
-    uint32_t clen = start.GetSize();
-    if (clen < 240)
+    uint32_t cLen = start.GetSize();
+    if (cLen < 240)
     {
         NS_LOG_WARN("Malformed Packet");
         return 0;
@@ -416,7 +416,7 @@ DhcpHeader::Deserialize(Buffer::Iterator start)
     bool loop = true;
     do
     {
-        if (len + 1 <= clen)
+        if (len + 1 <= cLen)
         {
             option = i.ReadU8();
             len += 1;
@@ -429,7 +429,7 @@ DhcpHeader::Deserialize(Buffer::Iterator start)
         switch (option)
         {
         case OP_MASK:
-            if (len + 5 < clen)
+            if (len + 5 < cLen)
             {
                 i.ReadU8();
                 m_mask = i.ReadNtohU32();
@@ -442,7 +442,7 @@ DhcpHeader::Deserialize(Buffer::Iterator start)
             }
             break;
         case OP_ROUTE:
-            if (len + 5 < clen)
+            if (len + 5 < cLen)
             {
                 i.ReadU8();
                 ReadFrom(i, m_route);
@@ -455,7 +455,7 @@ DhcpHeader::Deserialize(Buffer::Iterator start)
             }
             break;
         case OP_MSGTYPE:
-            if (len + 2 < clen)
+            if (len + 2 < cLen)
             {
                 i.ReadU8();
                 m_op = (i.ReadU8() - 1);
@@ -468,7 +468,7 @@ DhcpHeader::Deserialize(Buffer::Iterator start)
             }
             break;
         case OP_SERVID:
-            if (len + 5 < clen)
+            if (len + 5 < cLen)
             {
                 i.ReadU8();
                 ReadFrom(i, m_dhcps);
@@ -481,7 +481,7 @@ DhcpHeader::Deserialize(Buffer::Iterator start)
             }
             break;
         case OP_ADDREQ:
-            if (len + 5 < clen)
+            if (len + 5 < cLen)
             {
                 i.ReadU8();
                 ReadFrom(i, m_req);
@@ -494,7 +494,7 @@ DhcpHeader::Deserialize(Buffer::Iterator start)
             }
             break;
         case OP_LEASE:
-            if (len + 5 < clen)
+            if (len + 5 < cLen)
             {
                 i.ReadU8();
                 m_lease = i.ReadNtohU32();
@@ -507,7 +507,7 @@ DhcpHeader::Deserialize(Buffer::Iterator start)
             }
             break;
         case OP_RENEW:
-            if (len + 5 < clen)
+            if (len + 5 < cLen)
             {
                 i.ReadU8();
                 m_renew = i.ReadNtohU32();
@@ -520,7 +520,7 @@ DhcpHeader::Deserialize(Buffer::Iterator start)
             }
             break;
         case OP_REBIND:
-            if (len + 5 < clen)
+            if (len + 5 < cLen)
             {
                 i.ReadU8();
                 m_rebind = i.ReadNtohU32();

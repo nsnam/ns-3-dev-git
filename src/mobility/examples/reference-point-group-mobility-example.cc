@@ -33,7 +33,7 @@
  * and different child mobility models.
  *
  * There is no node associated with the parent (reference) model.
- * Instead, all nodes are associated with a hiearchical mobility model
+ * Instead, all nodes are associated with a hierarchical mobility model
  * containing both the parent and child models, and the position of
  * the node is the vector sum of these parent and child positions.
  *
