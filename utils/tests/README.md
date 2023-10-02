@@ -1,7 +1,6 @@
-./utils/tests directory
-=======================
+# ./utils/tests directory
 
-## Table of Contents:
+## Table of Contents
 
 1) [What is](#what-is)
 2) [Gitlab CI infrastructure](#gitlab-ci-infrastructure)
@@ -13,7 +12,7 @@ In this directory, we store documents related to our testing infrastructure.
 
 ## Gitlab CI infrastructure
 
-To know more about the Gitlab CI feature, please refer to https://about.gitlab.com/product/continuous-integration/. We use the services offered by Gitlab to test our software in multiple ways. If you are interested how to run these tests on your fork, please read below.
+To know more about the Gitlab CI feature, please refer to <https://about.gitlab.com/product/continuous-integration/>. We use the services offered by Gitlab to test our software in multiple ways. If you are interested how to run these tests on your fork, please read below.
 
 Note: each user does have a limited amount of "minutes" (time used to run CI jobs). Minutes are limited, and if you run out of minutes you will not be able to run jobs until the next month - or until you pay for more minutes.
 
@@ -78,7 +77,6 @@ To perform a deeper test, you can manually run the daily or the weekly test. Go 
 Related to the timeout, our `gitlab-ci.yml` script also configures the job-level timeout. Currently, this timeout is set to 24h considering the extensive and time-consuming testing done in weekly jobs.
 
 **Note**: The job-level timeout can exceed the [project-level](https://docs.gitlab.com/ee/ci/pipelines/settings.html#set-a-limit-for-how-long-jobs-can-run) timeout (default: 60 min), but can not exceed the Runner-specific timeout.
-
 
 To summarize, if you are unsure about the commit you're about to
 merge into master, you can push it to a branch of your fork, then go to
