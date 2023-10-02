@@ -73,9 +73,11 @@ Socket::CreateSocket(Ptr<Node> node, TypeId tid)
 {
     NS_LOG_FUNCTION(node << tid);
     Ptr<Socket> s;
-    NS_ASSERT(node);
+    NS_ASSERT_MSG(node, "CreateSocket: node is null.");
     Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory>(tid);
-    NS_ASSERT(socketFactory);
+    NS_ASSERT_MSG(socketFactory,
+                  "CreateSocket: can not create a "
+                      << tid.GetName() << " - perhaps the node is missing the required protocol.");
     s = socketFactory->CreateSocket();
     NS_ASSERT(s);
     return s;
