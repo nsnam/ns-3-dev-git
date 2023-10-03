@@ -59,7 +59,7 @@ CLANG_FORMAT_GUARD_OFF = '// clang-format off'
 
 DIRECTORIES_TO_SKIP = [
     '__pycache__',
-    '.vscode',
+    '.git',
     'bindings',
     'build',
     'cmake-cache',
