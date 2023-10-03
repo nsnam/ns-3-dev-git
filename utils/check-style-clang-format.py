@@ -18,7 +18,7 @@
 # Author: Eduardo Nuno Almeida <enmsa@outlook.pt> [INESC TEC and FEUP, Portugal]
 
 """
-Check and apply the ns-3 coding style to all files in the PATH argument.
+Check and apply the ns-3 coding style recursively to all files in the PATH arguments.
 
 The coding style is defined with the clang-format tool, whose definitions are in
 the ".clang-format" file. This script performs the following checks / fixes:
@@ -30,8 +30,8 @@ the ".clang-format" file. This script performs the following checks / fixes:
 This script can be applied to all text files in a given path or to individual files.
 
 NOTE: The formatting check requires clang-format (version >= 14) to be found on the path.
-Trimming of trailing whitespace and conversion of tabs to spaces (via the "--no-formatting"
-option) do not depend on clang-format.
+The remaining checks do not depend on clang-format and can be executed by disabling clang-format
+checking with the "--no-formatting" option.
 """
 
 import argparse
@@ -680,7 +680,7 @@ def check_tabs_file(filename: str,
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        description='Check and apply the ns-3 coding style to all files in a given PATH. '
+        description='Check and apply the ns-3 coding style recursively to all files in the given PATHs. '
         'The script checks the formatting of the file with clang-format. '
         'Additionally, it checks #include headers from the same module with the "ns3/" prefix, '
         'the presence of trailing whitespace and tabs. '

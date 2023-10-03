@@ -114,8 +114,8 @@ check-style-clang-format.py
 To facilitate checking and fixing source code files according to the |ns3| coding style,
 |ns3| maintains the ``check-style-clang-format.py`` Python script (located in ``utils/``).
 This script is a wrapper to clang-format and provides useful options to check and fix
-source code files. Additionally, it checks and fixes trailing whitespace and tabs in text
-files.
+source code files. Additionally, it performs other manual checks and fixes in text files
+(described below).
 
 We recommend running this script over your newly introduced C++ files prior to submission
 as a Merge Request.
@@ -159,6 +159,9 @@ For quick-reference, the most used commands are listed below:
 
   # Specific directory or file
   /path/to/utils/check-style-clang-format.py --fix absolute_or_relative/path/to/directory_or_file
+
+  # Modified files
+  git diff --name-only | xargs ./utils/check-style-clang-format.py --fix
 
 Clang-tidy
 **********
