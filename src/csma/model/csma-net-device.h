@@ -172,7 +172,7 @@ class CsmaNetDevice : public NetDevice
      * \param p a reference to the received packet
      * \param sender the CsmaNetDevice that transmitted the packet in the first place
      */
-    void Receive(Ptr<Packet> p, Ptr<CsmaNetDevice> sender);
+    void Receive(Ptr<const Packet> p, Ptr<CsmaNetDevice> sender);
 
     /**
      * Is the send side of the network device enabled?

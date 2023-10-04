@@ -191,7 +191,7 @@ CsmaChannel::TransmitStart(Ptr<const Packet> p, uint32_t srcId)
     }
 
     NS_LOG_LOGIC("switch to TRANSMITTING");
-    m_currentPkt = p->Copy();
+    m_currentPkt = p;
     m_currentSrc = srcId;
     m_state = TRANSMITTING;
     return true;
@@ -234,7 +234,7 @@ CsmaChannel::TransmitEnd()
                                            m_delay,
                                            &CsmaNetDevice::Receive,
                                            it->devicePtr,
-                                           m_currentPkt->Copy(),
+                                           m_currentPkt,
                                            m_deviceList[m_currentSrc].devicePtr);
         }
     }
