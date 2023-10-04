@@ -130,14 +130,34 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     // switch main PHY to the previous link, if needed
     if (m_linkIdForMainPhyAfterTxop && linkId != m_linkIdForMainPhyAfterTxop)
     {
-        auto phy = m_auxPhyToReconnect;
-        SwitchMainPhy(*m_linkIdForMainPhyAfterTxop, false);
-        // Reconnect the aux PHY to its original link
-        Simulator::ScheduleNow([=, this]() {
+        auto auxPhy = m_auxPhyToReconnect;
+
+        // lambda to switch the main PHY back to its previous link and reconnect the aux PHY to
+        // its original link
+        auto restorePhys = [=, this]() {
+            SwitchMainPhy(*m_linkIdForMainPhyAfterTxop, false);
             // the Aux PHY is not actually switching (hence no switching delay)
-            GetStaMac()->NotifySwitchingEmlsrLink(phy, linkId, Seconds(0));
-        });
-        SetCcaEdThresholdOnLinkSwitch(phy, linkId);
+            GetStaMac()->NotifySwitchingEmlsrLink(auxPhy, linkId, Seconds(0));
+            SetCcaEdThresholdOnLinkSwitch(auxPhy, linkId);
+            m_linkIdForMainPhyAfterTxop.reset();
+        };
+
+        auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+
+        // the main PHY may be switching at the end of a TXOP when, e.g., the main PHY starts
+        // switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
+        // is not received and the UL TXOP ends before the main PHY channel switch is completed.
+        // In such cases, wait until the main PHY channel switch is completed before requesting
+        // a new channel switch.
+        if (!mainPhy->IsStateSwitching())
+        {
+            restorePhys();
+        }
+        else
+        {
+            Simulator::Schedule(mainPhy->GetDelayUntilIdle(), restorePhys);
+        }
+        return;
     }
     m_linkIdForMainPhyAfterTxop.reset();
 }

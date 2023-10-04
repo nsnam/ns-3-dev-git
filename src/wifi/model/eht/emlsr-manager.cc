@@ -584,13 +584,12 @@ EmlsrManager::StartMediumSyncDelayTimer(uint8_t linkId)
             // reset the max number of TXOP attempts
             it->second.msdNTxopsLeft = m_msdMaxNTxops;
 
-            if (!it->second.timer.IsRunning())
+            // there are cases in which no PHY is operating on a link; e.g., the main PHY starts
+            // switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
+            // is not received and the UL TXOP ends before the main PHY channel switch is
+            // completed. The MSD timer is started on the link left "uncovered" by the main PHY
+            if (auto phy = m_staMac->GetWifiPhy(id); phy && !it->second.timer.IsRunning())
             {
-                // set the MSD OFDM ED threshold
-                auto phy = m_staMac->GetWifiPhy(id);
-                NS_ASSERT_MSG(phy,
-                              "Expected a PHY to be operating on link "
-                                  << +id << " after terminating a TXOP");
                 NS_LOG_DEBUG("Setting CCA ED threshold on link "
                              << +id << " to " << +m_msdOfdmEdThreshold << " PHY " << phy);
                 m_prevCcaEdThreshold[phy] = phy->GetCcaEdThreshold();
