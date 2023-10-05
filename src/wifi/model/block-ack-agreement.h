@@ -164,14 +164,14 @@ class BlockAckAgreement
 
   protected:
     Mac48Address m_peer;               //!< Peer address
-    uint8_t m_amsduSupported;          //!< Flag whether MSDU aggregation is supported
+    bool m_amsduSupported;             //!< Flag whether MSDU aggregation is supported
     uint8_t m_blockAckPolicy;          //!< Type of block ack: immediate or delayed
     uint8_t m_tid;                     //!< Traffic ID
     uint16_t m_bufferSize;             //!< Buffer size
     uint16_t m_timeout;                //!< Timeout
     uint16_t m_startingSeq;            //!< Starting sequence control
     uint16_t m_winEnd;                 //!< Ending sequence number
-    uint8_t m_htSupported;             //!< Flag whether HT is supported
+    bool m_htSupported;                //!< Flag whether HT is supported
     mutable EventId m_inactivityEvent; //!< inactivity event
 };
 

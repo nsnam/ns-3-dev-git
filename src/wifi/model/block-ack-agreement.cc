@@ -21,10 +21,10 @@ NS_LOG_COMPONENT_DEFINE("BlockAckAgreement");
 
 BlockAckAgreement::BlockAckAgreement(Mac48Address peer, uint8_t tid)
     : m_peer(peer),
-      m_amsduSupported(0),
+      m_amsduSupported(false),
       m_blockAckPolicy(1),
       m_tid(tid),
-      m_htSupported(0),
+      m_htSupported(false),
       m_inactivityEvent()
 {
     NS_LOG_FUNCTION(this << peer << +tid);
@@ -134,7 +134,7 @@ BlockAckAgreement::IsImmediateBlockAck() const
 bool
 BlockAckAgreement::IsAmsduSupported() const
 {
-    return m_amsduSupported == 1;
+    return m_amsduSupported;
 }
 
 uint16_t
@@ -153,7 +153,7 @@ BlockAckAgreement::SetHtSupported(bool htSupported)
 bool
 BlockAckAgreement::IsHtSupported() const
 {
-    return m_htSupported == 1;
+    return m_htSupported;
 }
 
 BlockAckType
