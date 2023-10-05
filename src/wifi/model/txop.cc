@@ -230,7 +230,6 @@ Txop::SetDroppedMpduCallback(DroppedMpdu callback)
 Ptr<WifiMacQueue>
 Txop::GetWifiMacQueue() const
 {
-    NS_LOG_FUNCTION(this);
     return m_queue;
 }
 
