@@ -20,6 +20,7 @@
 #include "channel-access-manager.h"
 
 #include "txop.h"
+#include "wifi-mac-queue.h"
 #include "wifi-phy-listener.h"
 #include "wifi-phy.h"
 
@@ -634,11 +635,13 @@ ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
                                        ctsTimeoutAccessStart,
                                        switchingAccessStart});
     }
-    std::stringstream ss;
-    NS_LOG_INFO("access grant start=" << accessGrantedStart << ", rx access start=" << rxAccessStart
-                                      << ", busy access start=" << busyAccessStart
-                                      << ", tx access start=" << txAccessStart
-                                      << ", nav access start=" << navAccessStart << ss.str());
+    NS_LOG_INFO("access grant start=" << accessGrantedStart.As(Time::US)
+                                      << ", rx access start=" << rxAccessStart.As(Time::US)
+                                      << ", busy access start=" << busyAccessStart.As(Time::US)
+                                      << ", tx access start=" << txAccessStart.As(Time::US)
+                                      << ", nav access start=" << navAccessStart.As(Time::US)
+                                      << ", switching access start="
+                                      << switchingAccessStart.As(Time::US));
     return accessGrantedStart;
 }
 
@@ -649,7 +652,8 @@ ChannelAccessManager::GetBackoffStartFor(Ptr<Txop> txop)
     Time mostRecentEvent =
         std::max({txop->GetBackoffStart(m_linkId),
                   GetAccessGrantStart() + (txop->GetAifsn(m_linkId) * GetSlot())});
-    NS_LOG_DEBUG("Backoff start: " << mostRecentEvent.As(Time::US));
+    NS_LOG_DEBUG("Backoff start for " << txop->GetWifiMacQueue()->GetAc() << ": "
+                                      << mostRecentEvent.As(Time::US));
 
     return mostRecentEvent;
 }
@@ -659,7 +663,8 @@ ChannelAccessManager::GetBackoffEndFor(Ptr<Txop> txop)
 {
     NS_LOG_FUNCTION(this << txop);
     Time backoffEnd = GetBackoffStartFor(txop) + (txop->GetBackoffSlots(m_linkId) * GetSlot());
-    NS_LOG_DEBUG("Backoff end: " << backoffEnd.As(Time::US));
+    NS_LOG_DEBUG("Backoff end for " << txop->GetWifiMacQueue()->GetAc() << ": "
+                                    << backoffEnd.As(Time::US));
 
     return backoffEnd;
 }
