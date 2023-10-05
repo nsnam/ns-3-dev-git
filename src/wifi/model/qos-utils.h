@@ -20,6 +20,7 @@
 #ifndef QOS_UTILS_H
 #define QOS_UTILS_H
 
+#include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
 
 #include <map>
@@ -85,6 +86,38 @@ enum AcIndex : uint8_t
     /** Total number of ACs */
     AC_UNDEF
 };
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param acIndex the AC index
+ * \returns a reference to the stream
+ */
+inline std::ostream&
+operator<<(std::ostream& os, const AcIndex& acIndex)
+{
+    switch (acIndex)
+    {
+    case AC_BE:
+        return (os << "AC BE");
+    case AC_BK:
+        return (os << "AC BK");
+    case AC_VI:
+        return (os << "AC VI");
+    case AC_VO:
+        return (os << "AC VO");
+    case AC_BE_NQOS:
+        return (os << "AC BE NQOS");
+    case AC_BEACON:
+        return (os << "AC BEACON");
+    case AC_UNDEF:
+        return (os << "AC Undefined");
+    default:
+        NS_FATAL_ERROR("Unknown AC index");
+        return (os << "Unknown");
+    }
+}
 
 /**
  * \ingroup wifi
