@@ -498,9 +498,13 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
  *   is now running on the link where the main PHY is operating, hence transmissions are protected
  *   by an RTS frame. We install a post reception error model on the AP MLD so that all RTS frames
  *   sent by the EMLSR client are not received by the AP MLD. We check that the EMLSR client makes
- *   at most the configured max number of transmission attempts and that the last UL data frame is
+ *   at most the configured max number of transmission attempts and that another UL data frame is
  *   sent once the MediumSyncDelay timer is expired. We also check that the TX width of the RTS
- *   frames and the last UL data frame equal the channel width used by the main PHY.
+ *   frames and the UL data frame equal the channel width used by the main PHY.
+ * - We check that no issue arises in case an aux PHY sends an RTS frame but the CTS response is
+ *   not transmitted successfully. Specifically, we check that the main PHY is completing the
+ *   channel switch when the (unsuccessful) reception of the CTS ends and that a new RTS/CTS
+ *   exchange is carried out to protect the transmission of the last data frame.
  */
 class EmlsrUlTxopTest : public EmlsrOperationsTestBase
 {
@@ -554,6 +558,16 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
      * \param linkId the ID of the given link
      */
     void CheckRtsFrames(Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector, uint8_t linkId);
+
+    /**
+     * Check that appropriate actions are taken by the EMLSR client when receiving a CTS
+     * frame on the given link.
+     *
+     * \param mpdu the MPDU carrying the CTS frame
+     * \param txVector the TXVECTOR used to send the PPDU
+     * \param linkId the ID of the given link
+     */
+    void CheckCtsFrames(Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector, uint8_t linkId);
 
     /**
      * Check that appropriate actions are taken when an MLD transmits a PPDU containing
@@ -613,6 +627,7 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
     bool m_genBackoffIfTxopWithoutTx;     //!< whether the backoff should be invoked when the AC
                                           //!< gains the right to start a TXOP but it does not
                                           //!< transmit any frame
+    std::optional<bool> m_corruptCts;     //!< whether the transmitted CTS must be corrupted
 };
 
 /**

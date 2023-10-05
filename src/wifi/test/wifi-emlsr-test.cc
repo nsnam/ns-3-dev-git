@@ -2407,6 +2407,10 @@ EmlsrUlTxopTest::Transmit(Ptr<WifiMac> mac,
         CheckRtsFrames(*psdu->begin(), txVector, linkId);
         break;
 
+    case WIFI_MAC_CTL_CTS:
+        CheckCtsFrames(*psdu->begin(), txVector, linkId);
+        break;
+
     case WIFI_MAC_QOSDATA:
         CheckQosFrames(psduMap, txVector, linkId);
         break;
@@ -2691,6 +2695,29 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
         NS_LOG_INFO("Enqueuing two packets at the EMLSR client\n");
         m_staMacs[0]->GetDevice()->GetNode()->AddApplication(GetApplication(UPLINK, 0, 2, 1000));
         break;
+    case 6:
+        // block transmission on the main PHY link and on the non-EMLSR link (if any), so that
+        // the next QoS frames are sent on a link where an aux PHY is operating
+        std::set<uint8_t> linkIds{m_mainPhyId};
+        if (m_nonEmlsrLink)
+        {
+            linkIds.insert(*m_nonEmlsrLink);
+        }
+        m_staMacs[0]->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                          AC_BE,
+                                                          {WIFI_QOSDATA_QUEUE},
+                                                          m_apMac->GetAddress(),
+                                                          m_staMacs[0]->GetAddress(),
+                                                          {0},
+                                                          linkIds);
+        // make sure aux PHYs are capable of transmitting frames
+        m_staMacs[0]->GetEmlsrManager()->SetAttribute("AuxPhyTxCapable", BooleanValue(true));
+
+        // generate data packets for another UL data frame
+        NS_LOG_INFO("Enqueuing two packets at the EMLSR client\n");
+        m_staMacs[0]->GetDevice()->GetNode()->AddApplication(GetApplication(UPLINK, 0, 2, 1000));
+
+        break;
     }
 }
 
@@ -2699,13 +2726,28 @@ EmlsrUlTxopTest::CheckRtsFrames(Ptr<const WifiMpdu> mpdu,
                                 const WifiTxVector& txVector,
                                 uint8_t linkId)
 {
-    if (linkId != m_mainPhyId || m_firstUlPktsGenTime.IsZero())
+    if (m_firstUlPktsGenTime.IsZero())
     {
-        // this function only considers RTS frames sent by the main PHY while the MediumSyncDelay
-        // timer is running
+        // this function only considers RTS frames sent after the first QoS data frame
         return;
     }
 
+    if (linkId != m_mainPhyId)
+    {
+        if (m_countRtsframes > 0 && !m_corruptCts.has_value())
+        {
+            // we get here for the frame exchange in which the CTS response must be corrupted.
+            // Install post reception error model on the STA affiliated with the EMLSR client that
+            // is transmitting this RTS frame
+            m_errorModel = CreateObject<ListErrorModel>();
+            m_staMacs[0]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
+            m_corruptCts = true;
+        }
+
+        return;
+    }
+
+    // we get here for RTS frames sent by the main PHY while the MediumSyncDelay timer is running
     m_countRtsframes++;
 
     NS_TEST_EXPECT_MSG_EQ(txVector.GetChannelWidth(),
@@ -2715,6 +2757,31 @@ EmlsrUlTxopTest::CheckRtsFrames(Ptr<const WifiMpdu> mpdu,
     // corrupt reception at AP MLD
     NS_LOG_INFO("CORRUPTED");
     m_errorModel->SetList({mpdu->GetPacket()->GetUid()});
+}
+
+void
+EmlsrUlTxopTest::CheckCtsFrames(Ptr<const WifiMpdu> mpdu,
+                                const WifiTxVector& txVector,
+                                uint8_t linkId)
+{
+    if (m_corruptCts.has_value() && *m_corruptCts)
+    {
+        // corrupt reception at EMLSR client
+        NS_LOG_INFO("CORRUPTED");
+        m_errorModel->SetList({mpdu->GetPacket()->GetUid()});
+        m_corruptCts = false;
+
+        auto txDuration = WifiPhy::CalculateTxDuration(mpdu->GetSize(),
+                                                       txVector,
+                                                       m_apMac->GetWifiPhy(linkId)->GetPhyBand());
+        // main PHY is about to complete channel switch when CTS ends
+        Simulator::Schedule(txDuration, [=, this]() {
+            const auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+            NS_TEST_EXPECT_MSG_EQ(mainPhy->IsStateSwitching(),
+                                  true,
+                                  "Expecting the main PHY to be switching link");
+        });
+    }
 }
 
 void
@@ -2804,6 +2871,7 @@ EmlsrUlTxopTest::CheckResults()
      *  ────────────────────────┬───┬┴───┴┬───┬───┬┴──┴─────────────────────────────────────────
      *                          │RTS│     │QoS│QoS│
      *                          └───┘     │ 8 │ 9 │
+     *                                    └───┴───┘
      *                             gen backoff      gen backoff if     MediumSyncDelay
      *                    ┌──┐    (also many times)  not running       timer expired ┌──┐
      *  [link 1]          │BA│  │   if allowed        │                   │          │BA│
@@ -2818,6 +2886,16 @@ EmlsrUlTxopTest::CheckResults()
      *            │ 6 │ 7 │
      *            └───┴───┘
      *
+     * For both scenarios, after the last frame exchange on the main PHY link, we have the
+     * following frame exchange on an EMLSR link where an aux PHY is operating on:
+     *
+     *             ┌───┐              ┌───┐         ┌──┐
+     *             │CTS│              │CTS│         │BA│
+     *  ──────┬───┬┴───X─────────┬───┬┴───┴┬───┬───┬┴──┴─────────────────────────────────────
+     *        │RTS│              │RTS│     │QoS│QoS│
+     *        └───┘              └───┘     │ X │ Y │
+     *                                     └───┴───┘
+     * For all EMLSR links scenario, X=10, Y=11; otherwise, X=12, Y=13.
      */
 
     // jump to the first (non-Beacon) frame transmitted after establishing BA agreements and
@@ -2912,7 +2990,7 @@ EmlsrUlTxopTest::CheckResults()
                           m_auxPhyChannelWidth,
                           "Second data frame not transmitted on the same width as RTS");
 
-    bool lastQosDataFound = false;
+    bool moreQosDataFound = false;
 
     while (++psduIt != m_txPsdus.cend())
     {
@@ -2920,7 +2998,7 @@ EmlsrUlTxopTest::CheckResults()
         if (psduIt != m_txPsdus.cend() &&
             psduIt->psduMap.cbegin()->second->GetHeader(0).IsQosData())
         {
-            lastQosDataFound = true;
+            moreQosDataFound = true;
 
             NS_TEST_EXPECT_MSG_EQ(+psduIt->phyId,
                                   +m_mainPhyId,
@@ -2938,7 +3016,78 @@ EmlsrUlTxopTest::CheckResults()
         }
     }
 
-    NS_TEST_EXPECT_MSG_EQ(lastQosDataFound, true, "Last QoS data frame not found");
+    NS_TEST_EXPECT_MSG_EQ(moreQosDataFound,
+                          true,
+                          "Last QoS data frame transmitted by the main PHY not found");
+
+    NS_TEST_ASSERT_MSG_EQ((psduIt != m_txPsdus.cend()), true, "Expected more frames");
+    ++psduIt;
+    jumpToQosDataOrMuRts();
+
+    // the first attempt at transmitting the last QoS data frame fails because CTS is corrupted
+    // RTS
+    NS_TEST_ASSERT_MSG_EQ((psduIt != m_txPsdus.cend()),
+                          true,
+                          "RTS before last QoS data frame has not been transmitted");
+    NS_TEST_EXPECT_MSG_EQ(psduIt->psduMap.cbegin()->second->GetHeader(0).IsRts(),
+                          true,
+                          "Last QoS data frame should be transmitted with protection");
+    NS_TEST_EXPECT_MSG_NE(
+        +psduIt->phyId,
+        +m_mainPhyId,
+        "RTS before last QoS data frame should not be transmitted by the main PHY");
+    NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetChannelWidth(),
+                          m_auxPhyChannelWidth,
+                          "RTS before last data frame transmitted on an unexpected width");
+    psduIt++;
+    // CTS
+    NS_TEST_ASSERT_MSG_EQ((psduIt != m_txPsdus.cend()),
+                          true,
+                          "CTS before last QoS data frame has not been transmitted");
+    NS_TEST_EXPECT_MSG_EQ(psduIt->psduMap.cbegin()->second->GetHeader(0).IsCts(),
+                          true,
+                          "CTS before last QoS data frame has not been transmitted");
+    psduIt++;
+    jumpToQosDataOrMuRts();
+
+    // the last QoS data frame is transmitted by an aux PHY after that the aux PHY has
+    // obtained a TXOP and sent an RTS
+    // RTS
+    NS_TEST_ASSERT_MSG_EQ((psduIt != m_txPsdus.cend()),
+                          true,
+                          "RTS before last QoS data frame has not been transmitted");
+    NS_TEST_EXPECT_MSG_EQ(psduIt->psduMap.cbegin()->second->GetHeader(0).IsRts(),
+                          true,
+                          "Last QoS data frame should be transmitted with protection");
+    NS_TEST_EXPECT_MSG_NE(
+        +psduIt->phyId,
+        +m_mainPhyId,
+        "RTS before last QoS data frame should not be transmitted by the main PHY");
+    NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetChannelWidth(),
+                          m_auxPhyChannelWidth,
+                          "RTS before last data frame transmitted on an unexpected width");
+    psduIt++;
+    // CTS
+    NS_TEST_ASSERT_MSG_EQ((psduIt != m_txPsdus.cend()),
+                          true,
+                          "CTS before last QoS data frame has not been transmitted");
+    NS_TEST_EXPECT_MSG_EQ(psduIt->psduMap.cbegin()->second->GetHeader(0).IsCts(),
+                          true,
+                          "CTS before last QoS data frame has not been transmitted");
+    psduIt++;
+    // QoS Data
+    NS_TEST_ASSERT_MSG_EQ((psduIt != m_txPsdus.cend()),
+                          true,
+                          "Last QoS data frame has not been transmitted");
+    NS_TEST_EXPECT_MSG_EQ(psduIt->psduMap.cbegin()->second->GetHeader(0).IsQosData(),
+                          true,
+                          "Last QoS data frame has not been transmitted");
+    NS_TEST_EXPECT_MSG_EQ(+psduIt->phyId,
+                          +m_mainPhyId,
+                          "Last QoS data frame should be transmitted by the main PHY");
+    NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetChannelWidth(),
+                          m_auxPhyChannelWidth,
+                          "Last data frame not transmitted on the same width as RTS");
 }
 
 EmlsrLinkSwitchTest::EmlsrLinkSwitchTest(const Params& params)
