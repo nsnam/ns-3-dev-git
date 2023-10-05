@@ -53,7 +53,7 @@ LrWpanMac::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::LrWpanMac")
-            .SetParent<Object>()
+            .SetParent<LrWpanMacBase>()
             .SetGroupName("LrWpan")
             .AddConstructor<LrWpanMac>()
             .AddAttribute("PanId",
@@ -1780,84 +1780,6 @@ Ptr<LrWpanPhy>
 LrWpanMac::GetPhy()
 {
     return m_phy;
-}
-
-void
-LrWpanMac::SetMcpsDataIndicationCallback(McpsDataIndicationCallback c)
-{
-    m_mcpsDataIndicationCallback = c;
-}
-
-void
-LrWpanMac::SetMlmeAssociateIndicationCallback(MlmeAssociateIndicationCallback c)
-{
-    m_mlmeAssociateIndicationCallback = c;
-}
-
-void
-LrWpanMac::SetMlmeCommStatusIndicationCallback(MlmeCommStatusIndicationCallback c)
-{
-    m_mlmeCommStatusIndicationCallback = c;
-}
-
-void
-LrWpanMac::SetMlmeOrphanIndicationCallback(MlmeOrphanIndicationCallback c)
-{
-    m_mlmeOrphanIndicationCallback = c;
-}
-
-void
-LrWpanMac::SetMcpsDataConfirmCallback(McpsDataConfirmCallback c)
-{
-    m_mcpsDataConfirmCallback = c;
-}
-
-void
-LrWpanMac::SetMlmeStartConfirmCallback(MlmeStartConfirmCallback c)
-{
-    m_mlmeStartConfirmCallback = c;
-}
-
-void
-LrWpanMac::SetMlmeScanConfirmCallback(MlmeScanConfirmCallback c)
-{
-    m_mlmeScanConfirmCallback = c;
-}
-
-void
-LrWpanMac::SetMlmeAssociateConfirmCallback(MlmeAssociateConfirmCallback c)
-{
-    m_mlmeAssociateConfirmCallback = c;
-}
-
-void
-LrWpanMac::SetMlmeBeaconNotifyIndicationCallback(MlmeBeaconNotifyIndicationCallback c)
-{
-    m_mlmeBeaconNotifyIndicationCallback = c;
-}
-
-void
-LrWpanMac::SetMlmeSyncLossIndicationCallback(MlmeSyncLossIndicationCallback c)
-{
-    m_mlmeSyncLossIndicationCallback = c;
-}
-
-void
-LrWpanMac::SetMlmePollConfirmCallback(MlmePollConfirmCallback c)
-{
-    m_mlmePollConfirmCallback = c;
-}
-
-void
-LrWpanMac::SetMlmeSetConfirmCallback(MlmeSetConfirmCallback c)
-{
-    m_mlmeSetConfirmCallback = c;
-}
-
-void
-LrWpanMac::SetMlmeGetConfirmCallback(MlmeGetConfirmCallback c)
-{
-    m_mlmeGetConfirmCallback = c;
 }
 
 void
