@@ -1329,7 +1329,7 @@ PacketMetadata::AddToRawU8(const uint8_t& data, uint8_t* start, uint8_t* current
 {
     NS_LOG_FUNCTION(static_cast<uint32_t>(data) << &start << &current << maxSize);
     // First check buffer overflow
-    if (static_cast<uint32_t>((current + sizeof(uint8_t) - start)) > maxSize)
+    if (static_cast<uint32_t>(current + sizeof(uint8_t) - start) > maxSize)
     {
         return nullptr;
     }
@@ -1345,7 +1345,7 @@ PacketMetadata::AddToRawU16(const uint16_t& data,
 {
     NS_LOG_FUNCTION(data << &start << &current << maxSize);
     // First check buffer overflow
-    if (static_cast<uint32_t>((current + sizeof(uint16_t) - start)) > maxSize)
+    if (static_cast<uint32_t>(current + sizeof(uint16_t) - start) > maxSize)
     {
         return nullptr;
     }
@@ -1361,7 +1361,7 @@ PacketMetadata::AddToRawU32(const uint32_t& data,
 {
     NS_LOG_FUNCTION(data << &start << &current << maxSize);
     // First check buffer overflow
-    if (static_cast<uint32_t>((current + sizeof(uint32_t) - start)) > maxSize)
+    if (static_cast<uint32_t>(current + sizeof(uint32_t) - start) > maxSize)
     {
         return nullptr;
     }
@@ -1377,7 +1377,7 @@ PacketMetadata::AddToRawU64(const uint64_t& data,
 {
     NS_LOG_FUNCTION(data << &start << &current << maxSize);
     // First check buffer overflow
-    if (static_cast<uint32_t>((current + sizeof(uint64_t) - start)) > maxSize)
+    if (static_cast<uint32_t>(current + sizeof(uint64_t) - start) > maxSize)
     {
         return nullptr;
     }
@@ -1394,7 +1394,7 @@ PacketMetadata::AddToRaw(const uint8_t* data,
 {
     NS_LOG_FUNCTION(&data << dataSize << &start << &current << maxSize);
     // First check buffer overflow
-    if (static_cast<uint32_t>((current + dataSize - start)) > maxSize)
+    if (static_cast<uint32_t>(current + dataSize - start) > maxSize)
     {
         return nullptr;
     }
@@ -1410,7 +1410,7 @@ PacketMetadata::ReadFromRawU8(uint8_t& data,
 {
     NS_LOG_FUNCTION(static_cast<uint32_t>(data) << &start << &current << maxSize);
     // First check buffer underflow
-    if (static_cast<uint32_t>((current + sizeof(uint8_t) - start)) > maxSize)
+    if (static_cast<uint32_t>(current + sizeof(uint8_t) - start) > maxSize)
     {
         return nullptr;
     }
@@ -1426,7 +1426,7 @@ PacketMetadata::ReadFromRawU16(uint16_t& data,
 {
     NS_LOG_FUNCTION(data << &start << &current << maxSize);
     // First check buffer underflow
-    if (static_cast<uint32_t>((current + sizeof(uint16_t) - start)) > maxSize)
+    if (static_cast<uint32_t>(current + sizeof(uint16_t) - start) > maxSize)
     {
         return nullptr;
     }
@@ -1442,7 +1442,7 @@ PacketMetadata::ReadFromRawU32(uint32_t& data,
 {
     NS_LOG_FUNCTION(data << &start << &current << maxSize);
     // First check buffer underflow
-    if (static_cast<uint32_t>((current + sizeof(uint32_t) - start)) > maxSize)
+    if (static_cast<uint32_t>(current + sizeof(uint32_t) - start) > maxSize)
     {
         return nullptr;
     }
@@ -1458,7 +1458,7 @@ PacketMetadata::ReadFromRawU64(uint64_t& data,
 {
     NS_LOG_FUNCTION(data << &start << &current << maxSize);
     // First check buffer underflow
-    if ((uint32_t)((current + sizeof(uint64_t) - start)) > maxSize)
+    if ((uint32_t)(current + sizeof(uint64_t) - start) > maxSize)
     {
         return nullptr;
     }

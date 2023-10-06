@@ -327,18 +327,18 @@ RrFfMacScheduler::GetRbgSize(int dlbandwidth)
     {
         if (dlbandwidth < Type0AllocationRbg[i])
         {
-            return (i + 1);
+            return i + 1;
         }
     }
 
-    return (-1);
+    return -1;
 }
 
 bool
 RrFfMacScheduler::SortRlcBufferReq(FfMacSchedSapProvider::SchedDlRlcBufferReqParameters i,
                                    FfMacSchedSapProvider::SchedDlRlcBufferReqParameters j)
 {
-    return (i.m_rnti < j.m_rnti);
+    return i.m_rnti < j.m_rnti;
 }
 
 bool
@@ -372,7 +372,7 @@ RrFfMacScheduler::UpdateHarqProcessId(uint16_t rnti)
 
     if (!m_harqOn)
     {
-        return (0);
+        return 0;
     }
 
     auto it = m_dlHarqCurrentProcessId.find(rnti);
@@ -397,10 +397,10 @@ RrFfMacScheduler::UpdateHarqProcessId(uint16_t rnti)
     }
     else
     {
-        return (9); // return a not valid harq proc id
+        return 9; // return a not valid harq proc id
     }
 
-    return ((*it).second);
+    return (*it).second;
 }
 
 void

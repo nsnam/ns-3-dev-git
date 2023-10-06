@@ -644,7 +644,7 @@ MinstrelWifiManager::UpdateStats(MinstrelWifiRemoteStation* station)
 
             // calculating throughput
             station->m_minstrelTable[i].throughput =
-                tempProb * static_cast<uint32_t>((1000000 / txTime.GetMicroSeconds()));
+                tempProb * static_cast<uint32_t>(1000000 / txTime.GetMicroSeconds());
         }
         else
         {

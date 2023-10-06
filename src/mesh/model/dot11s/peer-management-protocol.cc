@@ -336,7 +336,7 @@ PeerManagementProtocol::FindPeerLink(uint32_t interface, Mac48Address peerAddres
             }
             else
             {
-                return (*i);
+                return *i;
             }
         }
     }
@@ -390,7 +390,7 @@ PeerManagementProtocol::IsActiveLink(uint32_t interface, Mac48Address peerAddres
     Ptr<PeerLink> peerLink = FindPeerLink(interface, peerAddress);
     if (peerLink)
     {
-        return (peerLink->LinkIsEstab());
+        return peerLink->LinkIsEstab();
     }
     return false;
 }

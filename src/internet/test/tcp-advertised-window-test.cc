@@ -81,7 +81,7 @@ class TcpSocketAdvertisedWindowProxy : public TcpSocketMsgBase
     void SetExpectedSegmentSize(uint16_t seg)
     {
         m_segmentSize = seg;
-    };
+    }
 
   protected:
     Ptr<TcpSocketBase> Fork() override;

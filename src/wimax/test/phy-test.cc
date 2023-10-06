@@ -103,7 +103,7 @@ Ns3WimaxSimpleOFDMTestCase::DoRunOnce(double FrameDuration)
         }
     }
     Simulator::Destroy();
-    return (false); // Test was ok, all the SSs are registered
+    return false; // Test was ok, all the SSs are registered
 }
 
 void

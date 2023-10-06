@@ -966,7 +966,7 @@ ProtocolTlvValue::Serialize(Buffer::Iterator i) const
 {
     for (auto iter = m_protocol->begin(); iter != m_protocol->end(); ++iter)
     {
-        i.WriteU8((*iter));
+        i.WriteU8(*iter);
     }
 }
 
@@ -1006,7 +1006,7 @@ ProtocolTlvValue::Copy() const
     auto tmp = new ProtocolTlvValue();
     for (auto iter = m_protocol->begin(); iter != m_protocol->end(); ++iter)
     {
-        tmp->Add((*iter));
+        tmp->Add(*iter);
     }
     return tmp;
 }

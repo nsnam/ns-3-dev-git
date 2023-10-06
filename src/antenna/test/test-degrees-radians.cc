@@ -155,7 +155,7 @@ DegreesRadiansTestSuite::DegreesRadiansTestSuite()
     AddTestCase(new RadiansToDegreesTestCase(M_PI + M_PI, 360), TestCase::QUICK);
     AddTestCase(new RadiansToDegreesTestCase(-M_PI_2, -90), TestCase::QUICK);
     AddTestCase(new RadiansToDegreesTestCase(4.5 * M_PI, 810), TestCase::QUICK);
-};
+}
 
 /// Static variable for test initialization
 static DegreesRadiansTestSuite g_staticDegreesRadiansTestSuiteInstance;

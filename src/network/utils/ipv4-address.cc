@@ -248,7 +248,7 @@ bool
 Ipv4Address::IsInitialized() const
 {
     NS_LOG_FUNCTION(this);
-    return (m_initialized);
+    return m_initialized;
 }
 
 bool

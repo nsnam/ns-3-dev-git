@@ -721,7 +721,7 @@ CosineAntennaModelTestSuite::CosineAntennaModelTestSuite()
                                                -7,
                                                EQUAL),
                 TestCase::QUICK);
-};
+}
 
 /// Static variable for test initialization
 static CosineAntennaModelTestSuite g_staticCosineAntennaModelTestSuiteInstance;

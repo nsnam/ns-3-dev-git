@@ -179,7 +179,7 @@ CaraWifiManager::DoReportDataOk(WifiRemoteStation* st,
     station->m_failed = 0;
     NS_LOG_DEBUG("self=" << station << " data ok success=" << station->m_success
                          << ", timer=" << station->m_timer);
-    if ((station->m_success == m_successThreshold || station->m_timer >= m_timerTimeout))
+    if (station->m_success == m_successThreshold || station->m_timer >= m_timerTimeout)
     {
         if (station->m_rate < GetNSupported(station) - 1)
         {

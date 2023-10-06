@@ -156,11 +156,11 @@ LteFfrAlgorithm::GetRbgSize(int dlbandwidth)
     {
         if (dlbandwidth < Type0AllocationRbg[i])
         {
-            return (i + 1);
+            return i + 1;
         }
     }
 
-    return (-1);
+    return -1;
 }
 
 void

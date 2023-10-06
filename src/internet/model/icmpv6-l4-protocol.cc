@@ -1250,7 +1250,7 @@ Icmpv6L4Protocol::SendNA(Ipv6Address src, Ipv6Address dst, Address* hardwareAddr
     NS_LOG_LOGIC("Send NA ( from " << src << " to " << dst << " target " << src << ")");
     na.SetIpv6Target(src);
 
-    if ((flags & 1))
+    if (flags & 1)
     {
         na.SetFlagO(true);
     }
@@ -1258,7 +1258,7 @@ Icmpv6L4Protocol::SendNA(Ipv6Address src, Ipv6Address dst, Address* hardwareAddr
     {
         na.SetFlagS(true);
     }
-    if ((flags & 4))
+    if (flags & 4)
     {
         na.SetFlagR(true);
     }
@@ -1618,7 +1618,7 @@ Icmpv6L4Protocol::ForgeNA(Ipv6Address src, Ipv6Address dst, Address* hardwareAdd
     p->AddHeader(llOption);
     na.SetIpv6Target(src);
 
-    if ((flags & 1))
+    if (flags & 1)
     {
         na.SetFlagO(true);
     }
@@ -1626,7 +1626,7 @@ Icmpv6L4Protocol::ForgeNA(Ipv6Address src, Ipv6Address dst, Address* hardwareAdd
     {
         na.SetFlagS(true);
     }
-    if ((flags & 4))
+    if (flags & 4)
     {
         na.SetFlagR(true);
     }

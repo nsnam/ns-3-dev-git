@@ -122,7 +122,7 @@ int
 PacketSocket::Bind6()
 {
     NS_LOG_FUNCTION(this);
-    return (Bind());
+    return Bind();
 }
 
 int

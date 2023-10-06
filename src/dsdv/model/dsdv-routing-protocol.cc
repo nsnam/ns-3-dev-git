@@ -932,7 +932,7 @@ RoutingProtocol::SendPeriodicUpdate()
             else
             {
                 dsdvHeader.SetDst(i->second.GetDestination());
-                dsdvHeader.SetDstSeqno((i->second.GetSeqNo()));
+                dsdvHeader.SetDstSeqno(i->second.GetSeqNo());
                 dsdvHeader.SetHopCount(i->second.GetHop() + 1);
                 packet->AddHeader(dsdvHeader);
             }

@@ -589,7 +589,7 @@ ParabolicAntennaModelTestSuite::ParabolicAntennaModelTestSuite()
                                           -3,
                                           EQUAL),
         TestCase::QUICK);
-};
+}
 
 /// Static variable for test initialization
 static ParabolicAntennaModelTestSuite g_staticParabolicAntennaModelTestSuiteInstance;

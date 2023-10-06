@@ -617,7 +617,7 @@ LteFfrDistributedAlgorithm::Calculate()
 
     for (auto ncIt = m_neighborCell.begin(); ncIt != m_neighborCell.end(); ncIt++)
     {
-        SendLoadInformation((*ncIt));
+        SendLoadInformation(*ncIt);
     }
 }
 

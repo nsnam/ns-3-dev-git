@@ -101,7 +101,7 @@ const std::map<uint16_t, std::array<uint64_t, 8>>&
 GetOfdmRatesBpsList()
 {
     return s_ofdmRatesBpsList;
-};
+}
 
 OfdmPhy::OfdmPhy(OfdmPhyVariant variant /* = OFDM_PHY_DEFAULT */, bool buildModeList /* = true */)
 {
@@ -495,7 +495,7 @@ OfdmPhy::GetOfdmRate(uint64_t rate, uint16_t bw)
     {                                                                                              \
         static WifiMode mode = CreateOfdmMode(#x, f);                                              \
         return mode;                                                                               \
-    };
+    }
 
 // 20 MHz channel rates (default)
 GET_OFDM_MODE(OfdmRate6Mbps, true)
@@ -690,7 +690,7 @@ OfdmPhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
     const auto txWidth = ppdu->GetTxChannelWidth();
     const auto& txVector = ppdu->GetTxVector();
     // Update channel width in TXVECTOR for non-HT duplicate PPDUs.
-    if ((txVector.IsNonHtDuplicate() && (txWidth > m_wifiPhy->GetChannelWidth())))
+    if (txVector.IsNonHtDuplicate() && txWidth > m_wifiPhy->GetChannelWidth())
     {
         // We also do a copy of the PPDU for non-HT duplicate PPDUs since other
         // PHYs might set a different channel width in the reconstructed TXVECTOR.

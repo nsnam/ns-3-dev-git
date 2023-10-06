@@ -537,7 +537,7 @@ HtPhy::GetHtMcs(uint8_t index)
     {                                                                                              \
         static WifiMode mcs = CreateHtMcs(x);                                                      \
         return mcs;                                                                                \
-    };
+    }
 
 GET_HT_MCS(0)
 GET_HT_MCS(1)

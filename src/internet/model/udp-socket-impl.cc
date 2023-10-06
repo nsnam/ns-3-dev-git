@@ -496,7 +496,7 @@ UdpSocketImpl::DoSend(Ptr<Packet> p)
     }
 
     m_errno = ERROR_AFNOSUPPORT;
-    return (-1);
+    return -1;
 }
 
 int
@@ -695,7 +695,7 @@ UdpSocketImpl::DoSendTo(Ptr<Packet> p, Ipv6Address dest, uint16_t port)
 
     if (dest.IsIpv4MappedAddress())
     {
-        return (DoSendTo(p, dest.GetIpv4MappedAddress(), port, 0));
+        return DoSendTo(p, dest.GetIpv4MappedAddress(), port, 0);
     }
     if (m_boundnetdevice)
     {

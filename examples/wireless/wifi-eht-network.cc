@@ -93,7 +93,7 @@ GetRxBytes(bool udp, const ApplicationContainer& serverApp, uint32_t payloadSize
         }
     }
     return rxBytes;
-};
+}
 
 /**
  * Print average throughput over an intermediate time interval.

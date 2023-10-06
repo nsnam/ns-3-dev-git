@@ -96,7 +96,7 @@ ServiceFlowManager::DoClassify(Ipv4Address srcAddress,
         {
             if ((*iter)->CheckClassifierMatch(srcAddress, dstAddress, srcPort, dstPort, proto))
             {
-                return (*iter);
+                return *iter;
             }
         }
     }
@@ -110,7 +110,7 @@ ServiceFlowManager::GetServiceFlow(uint32_t sfid) const
     {
         if ((*iter)->GetSfid() == sfid)
         {
-            return (*iter);
+            return *iter;
         }
     }
 
@@ -125,7 +125,7 @@ ServiceFlowManager::GetServiceFlow(Cid cid) const
     {
         if ((*iter)->GetCid() == cid.GetIdentifier())
         {
-            return (*iter);
+            return *iter;
         }
     }
 
@@ -142,7 +142,7 @@ ServiceFlowManager::GetServiceFlows(ServiceFlow::SchedulingType schedulingType) 
         if (((*iter)->GetSchedulingType() == schedulingType) ||
             (schedulingType == ServiceFlow::SF_TYPE_ALL))
         {
-            tmpServiceFlows.push_back((*iter));
+            tmpServiceFlows.push_back(*iter);
         }
     }
     return tmpServiceFlows;
@@ -180,7 +180,7 @@ ServiceFlowManager::GetNextServiceFlowToAllocate()
     {
         if (!(*iter)->GetIsEnabled())
         {
-            return (*iter);
+            return *iter;
         }
     }
     return nullptr;

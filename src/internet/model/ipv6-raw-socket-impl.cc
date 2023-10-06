@@ -139,7 +139,7 @@ Ipv6RawSocketImpl::Bind()
 int
 Ipv6RawSocketImpl::Bind6()
 {
-    return (Bind());
+    return Bind();
 }
 
 int
@@ -534,25 +534,25 @@ Ipv6RawSocketImpl::Icmpv6FilterSetBlockAll()
 void
 Ipv6RawSocketImpl::Icmpv6FilterSetPass(uint8_t type)
 {
-    (m_icmpFilter.icmpv6Filt[(type) >> 5]) |= (uint32_t(1) << ((type)&31));
+    m_icmpFilter.icmpv6Filt[type >> 5] |= (uint32_t(1) << (type & 31));
 }
 
 void
 Ipv6RawSocketImpl::Icmpv6FilterSetBlock(uint8_t type)
 {
-    (m_icmpFilter.icmpv6Filt[(type) >> 5]) &= ~(uint32_t(1) << ((type)&31));
+    m_icmpFilter.icmpv6Filt[(type) >> 5] &= ~(uint32_t(1) << (type & 31));
 }
 
 bool
 Ipv6RawSocketImpl::Icmpv6FilterWillPass(uint8_t type)
 {
-    return (((m_icmpFilter.icmpv6Filt[(type) >> 5]) & (uint32_t(1) << ((type)&31))) != 0);
+    return ((m_icmpFilter.icmpv6Filt[type >> 5]) & (uint32_t(1) << (type & 31))) != 0;
 }
 
 bool
 Ipv6RawSocketImpl::Icmpv6FilterWillBlock(uint8_t type)
 {
-    return (((m_icmpFilter.icmpv6Filt[(type) >> 5]) & (uint32_t(1) << ((type)&31))) == 0);
+    return ((m_icmpFilter.icmpv6Filt[type >> 5]) & (uint32_t(1) << (type & 31))) == 0;
 }
 
 } /* namespace ns3 */

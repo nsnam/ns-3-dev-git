@@ -115,14 +115,14 @@ bool
 LrWpanCsmaCa::IsSlottedCsmaCa() const
 {
     NS_LOG_FUNCTION(this);
-    return (m_isSlotted);
+    return m_isSlotted;
 }
 
 bool
 LrWpanCsmaCa::IsUnSlottedCsmaCa() const
 {
     NS_LOG_FUNCTION(this);
-    return (!m_isSlotted);
+    return !m_isSlotted;
 }
 
 void

@@ -54,7 +54,7 @@ class PropagationCache
             return nullptr;
         }
         return it->second;
-    };
+    }
 
     /**
      * Add a model to the path
@@ -71,7 +71,7 @@ class PropagationCache
         PropagationPathIdentifier key = PropagationPathIdentifier(a, b, modelUid);
         NS_ASSERT(m_pathCache.find(key) == m_pathCache.end());
         m_pathCache.insert(std::make_pair(key, data));
-    };
+    }
 
     /**
      * Clean the cache

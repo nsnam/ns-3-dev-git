@@ -260,7 +260,7 @@ Ipv6Address::MakeIpv4MappedAddress(Ipv4Address addr)
         0x00,
     };
     addr.Serialize(&buf[12]);
-    return (Ipv6Address(buf));
+    return Ipv6Address(buf);
 }
 
 Ipv4Address
@@ -272,7 +272,7 @@ Ipv6Address::GetIpv4MappedAddress() const
 
     Serialize(buf);
     v4Addr = Ipv4Address::Deserialize(&buf[12]);
-    return (v4Addr);
+    return v4Addr;
 }
 
 Ipv6Address
@@ -568,11 +568,7 @@ Ipv6Address::IsIpv4MappedAddress() const
     NS_LOG_FUNCTION(this);
     static uint8_t v4MappedPrefix[12] =
         {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff};
-    if (memcmp(m_address, v4MappedPrefix, sizeof(v4MappedPrefix)) == 0)
-    {
-        return (true);
-    }
-    return (false);
+    return memcmp(m_address, v4MappedPrefix, sizeof(v4MappedPrefix)) == 0;
 }
 
 Ipv6Address
@@ -651,7 +647,7 @@ Ipv6Address::HasPrefix(const Ipv6Prefix& prefix) const
     Ipv6Address masked = CombinePrefix(prefix);
     Ipv6Address reference = Ipv6Address::GetOnes().CombinePrefix(prefix);
 
-    return (masked == reference);
+    return masked == reference;
 }
 
 bool
@@ -768,7 +764,7 @@ bool
 Ipv6Address::IsInitialized() const
 {
     NS_LOG_FUNCTION(this);
-    return (m_initialized);
+    return m_initialized;
 }
 
 std::ostream&

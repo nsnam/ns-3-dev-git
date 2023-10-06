@@ -1122,7 +1122,7 @@ LteMiErrorModel::GetPcfichPdcchError(const SpectrumValue& sinr)
         errorRate = PdcchPcfichBlerCurveYaxis[i];
     }
 
-    return (errorRate);
+    return errorRate;
 }
 
 TbStats_t

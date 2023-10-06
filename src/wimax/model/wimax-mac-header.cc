@@ -325,7 +325,7 @@ GenericMacHeader::Deserialize(Buffer::Iterator start)
 bool
 GenericMacHeader::check_hcs() const
 {
-    return (m_hcs == c_hcs);
+    return m_hcs == c_hcs;
 }
 
 // ----------------------------------------------------------------------------------------------------------
@@ -527,7 +527,7 @@ BandwidthRequestHeader::Deserialize(Buffer::Iterator start)
 bool
 BandwidthRequestHeader::check_hcs() const
 {
-    return (m_hcs == c_hcs);
+    return m_hcs == c_hcs;
 }
 
 // ----------------------------------------------------------------------------------------------------------

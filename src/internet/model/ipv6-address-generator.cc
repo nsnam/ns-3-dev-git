@@ -553,7 +553,7 @@ Ipv6AddressGeneratorImpl::AddAllocated(const Ipv6Address address)
             taddr[j] = (*i).addrLow[j];
         }
         taddr[15] -= 1;
-        if ((Ipv6Address(addr) == Ipv6Address(taddr)))
+        if (Ipv6Address(addr) == Ipv6Address(taddr))
         {
             NS_LOG_LOGIC("New addrLow = " << Ipv6Address(addr));
             for (uint32_t j = 0; j < 16; j++)

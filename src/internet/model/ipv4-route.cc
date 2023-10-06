@@ -167,7 +167,7 @@ std::map<uint32_t, uint32_t>
 Ipv4MulticastRoute::GetOutputTtlMap() const
 {
     NS_LOG_FUNCTION(this);
-    return (m_ttls);
+    return m_ttls;
 }
 
 } // namespace ns3

@@ -282,7 +282,7 @@ NixVector::Deserialize(const uint32_t* buffer, uint32_t size)
         m_epoch = *p++;
     }
 
-    return (GetSerializedSize());
+    return GetSerializedSize();
 }
 
 void

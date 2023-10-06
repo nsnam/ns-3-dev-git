@@ -927,7 +927,7 @@ DsrRouting::CheckSendBuffer()
                     {
                         m_routeCache->UseExtends(errorRoute);
                     }
-                    sourceRoute.SetSegmentsLeft((errorRoute.size() - 2));
+                    sourceRoute.SetSegmentsLeft(errorRoute.size() - 2);
                     uint8_t salvage = 0;
                     sourceRoute.SetSalvage(salvage);
                     Ipv4Address nextHop =
@@ -1000,12 +1000,12 @@ DsrRouting::CheckSendBuffer()
                     return;
                 }
                 uint8_t salvage = 0;
-                sourceRoute.SetNodesAddress(
-                    nodeList); // Save the whole route in the source route header of the packet
-                sourceRoute.SetSegmentsLeft(
-                    (nodeList.size() - 2)); // The segmentsLeft field will indicate the hops to go
+                // Save the whole route in the source route header of the packet
+                sourceRoute.SetNodesAddress(nodeList);
+                // The segmentsLeft field will indicate the hops to go
+                sourceRoute.SetSegmentsLeft(nodeList.size() - 2);
                 sourceRoute.SetSalvage(salvage);
-                /// When found a route and use it, UseExtends to the link cache
+                // When found a route and use it, UseExtends to the link cache
                 if (m_routeCache->IsLinkCache())
                 {
                     m_routeCache->UseExtends(nodeList);
@@ -1273,8 +1273,8 @@ DsrRouting::PacketNewRoute(Ptr<Packet> packet,
         {
             m_routeCache->UseExtends(nodeList);
         }
-        sourceRoute.SetSegmentsLeft(
-            (nodeList.size() - 2)); // The segmentsLeft field will indicate the hops to go
+        // The segmentsLeft field will indicate the hops to go
+        sourceRoute.SetSegmentsLeft(nodeList.size() - 2);
         sourceRoute.SetSalvage(salvage);
 
         uint8_t length = sourceRoute.GetLength();
@@ -1431,7 +1431,7 @@ DsrRouting::SendUnreachError(Ipv4Address unreachNode,
         {
             m_routeCache->UseExtends(nodeList);
         }
-        sourceRoute.SetSegmentsLeft((nodeList.size() - 2));
+        sourceRoute.SetSegmentsLeft(nodeList.size() - 2);
         uint8_t srLength = sourceRoute.GetLength();
         uint8_t length = (srLength + rerrLength);
 
@@ -1600,8 +1600,8 @@ DsrRouting::Send(Ptr<Packet> packet,
             {
                 m_routeCache->UseExtends(nodeList);
             }
-            sourceRoute.SetSegmentsLeft(
-                (nodeList.size() - 2)); // The segmentsLeft field will indicate the hops to go
+            // The segmentsLeft field will indicate the hops to go
+            sourceRoute.SetSegmentsLeft(nodeList.size() - 2);
             sourceRoute.SetSalvage(salvage);
 
             uint8_t length = sourceRoute.GetLength();
@@ -2491,10 +2491,10 @@ DsrRouting::SalvagePacket(Ptr<const Packet> packet,
         salvage++;
         DsrOptionSRHeader sourceRoute;
         sourceRoute.SetSalvage(salvage);
-        sourceRoute.SetNodesAddress(
-            nodeList); // Save the whole route in the source route header of the packet
-        sourceRoute.SetSegmentsLeft(
-            (nodeList.size() - 2)); // The segmentsLeft field will indicate the hops to go
+        // Save the whole route in the source route header of the packet
+        sourceRoute.SetNodesAddress(nodeList);
+        // The segmentsLeft field will indicate the hops to go
+        sourceRoute.SetSegmentsLeft(nodeList.size() - 2);
         /// When found a route and use it, UseExtends to the link cache
         if (m_routeCache->IsLinkCache())
         {
@@ -3000,7 +3000,7 @@ DsrRouting::SendErrorRequest(DsrOptionRerrUnreachHeader& rerr, uint8_t protocol)
         {
             m_routeCache->UseExtends(ip);
         }
-        sourceRoute.SetSegmentsLeft((ip.size() - 2));
+        sourceRoute.SetSegmentsLeft(ip.size() - 2);
         sourceRoute.SetSalvage(salvage);
         Ipv4Address nextHop = SearchNextHop(m_mainAddress, ip); // Get the next hop address
         NS_LOG_DEBUG("The nextHop address " << nextHop);
@@ -3237,7 +3237,7 @@ DsrRouting::RouteRequestTimerExpire(Ptr<Packet> packet,
         {
             m_routeCache->UseExtends(ip);
         }
-        sourceRoute.SetSegmentsLeft((ip.size() - 2));
+        sourceRoute.SetSegmentsLeft(ip.size() - 2);
         /// Set the salvage value to 0
         sourceRoute.SetSalvage(0);
         Ipv4Address nextHop = SearchNextHop(m_mainAddress, ip); // Get the next hop address

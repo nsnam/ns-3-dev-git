@@ -105,7 +105,7 @@ IsotropicAntennaModelTestSuite::IsotropicAntennaModelTestSuite()
     AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI_2, 0), 0.0), TestCase::QUICK);
     AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI_2, M_PI), 0.0), TestCase::QUICK);
     AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI_2, M_PI_2), 0.0), TestCase::QUICK);
-};
+}
 
 /// Static variable for test initialization
 static IsotropicAntennaModelTestSuite g_staticIsotropicAntennaModelTestSuiteInstance;

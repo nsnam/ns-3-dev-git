@@ -794,7 +794,7 @@ LteFfrEnhancedAlgorithm::EstimateUlSinr(uint16_t rnti,
     if (itCqi == ulCqiMap.end())
     {
         // no cqi info about this UE
-        return (NO_SINR);
+        return NO_SINR;
     }
     else
     {
@@ -813,7 +813,7 @@ LteFfrEnhancedAlgorithm::EstimateUlSinr(uint16_t rnti,
         double estimatedSinr = (sinrNum > 0) ? (sinrSum / sinrNum) : DBL_MAX;
         // store the value
         (*itCqi).second.at(rb) = estimatedSinr;
-        return (estimatedSinr);
+        return estimatedSinr;
     }
 }
 

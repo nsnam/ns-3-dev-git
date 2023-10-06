@@ -144,7 +144,7 @@ LteFfConverter::double2fpS11dot3(double val)
         val = -4096;
     }
     auto valFp = (int16_t)(val * 8);
-    return (valFp);
+    return valFp;
 }
 
 double
@@ -152,13 +152,13 @@ LteFfConverter::fpS11dot3toDouble(uint16_t val)
 {
     // convert from fixed point notation Sxxxxxxxxxxx.xxx to double
     double valD = ((int16_t)val) / 8.0;
-    return (valD);
+    return valD;
 }
 
 double
 LteFfConverter::getMinFpS11dot3Value()
 {
-    return (-4096); // -4096 = 0x8000 = 1000 0000 0000 0000 b
+    return -4096; // -4096 = 0x8000 = 1000 0000 0000 0000 b
 }
 
 // static double g_lowestFpS11dot3Value = -4096; // 0x8001 (1000 0000 0000 0000)
@@ -196,7 +196,7 @@ BufferSizeLevelBsr::BufferSize2BsrId(uint32_t val)
         }
     }
 
-    return (index);
+    return index;
 }
 
 uint8_t
@@ -227,7 +227,7 @@ TransmissionModesLayers::TxMode2LayerNum(uint8_t txMode)
         nLayer = 1;
         break;
     }
-    return (nLayer);
+    return nLayer;
 }
 
 double

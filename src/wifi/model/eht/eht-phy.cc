@@ -271,7 +271,7 @@ EhtPhy::GetEhtMcs(uint8_t index)
     {                                                                                              \
         static WifiMode mcs = CreateEhtMcs(x);                                                     \
         return mcs;                                                                                \
-    };
+    }
 
 GET_EHT_MCS(0)
 GET_EHT_MCS(1)

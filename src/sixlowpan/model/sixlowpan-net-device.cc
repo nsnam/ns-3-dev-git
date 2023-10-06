@@ -2714,7 +2714,7 @@ SixLowPanNetDevice::SetTimeout(FragmentKey_t key, uint32_t iif)
 
     auto iter = --m_timeoutEventList.end();
 
-    return (iter);
+    return iter;
 }
 
 void

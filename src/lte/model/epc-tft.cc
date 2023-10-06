@@ -310,6 +310,6 @@ EpcTft::GetPacketFilters() const
 {
     NS_LOG_FUNCTION(this);
     return m_filters;
-};
+}
 
 } // namespace ns3

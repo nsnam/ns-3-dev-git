@@ -202,7 +202,7 @@ MeshInformationElementVector::FindFirst(WifiInformationElementId id) const
     {
         if ((*i)->ElementId() == id)
         {
-            return (*i);
+            return *i;
         }
     }
     return nullptr;

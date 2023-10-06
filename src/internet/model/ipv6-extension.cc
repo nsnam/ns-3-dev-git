@@ -686,7 +686,7 @@ Ipv6ExtensionFragment::SetTimeout(FragmentKey_t key, Ipv6Header ipHeader)
 
     auto iter = --m_timeoutEventList.end();
 
-    return (iter);
+    return iter;
 }
 
 void

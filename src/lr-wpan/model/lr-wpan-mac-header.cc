@@ -120,7 +120,7 @@ LrWpanMacHeader::IsPanIdComp() const
 uint8_t
 LrWpanMacHeader::GetFrmCtrlRes() const
 {
-    return (m_fctrlReserved);
+    return m_fctrlReserved;
 }
 
 uint8_t
@@ -144,43 +144,43 @@ LrWpanMacHeader::GetSrcAddrMode() const
 uint8_t
 LrWpanMacHeader::GetSeqNum() const
 {
-    return (m_SeqNum);
+    return m_SeqNum;
 }
 
 uint16_t
 LrWpanMacHeader::GetDstPanId() const
 {
-    return (m_addrDstPanId);
+    return m_addrDstPanId;
 }
 
 Mac16Address
 LrWpanMacHeader::GetShortDstAddr() const
 {
-    return (m_addrShortDstAddr);
+    return m_addrShortDstAddr;
 }
 
 Mac64Address
 LrWpanMacHeader::GetExtDstAddr() const
 {
-    return (m_addrExtDstAddr);
+    return m_addrExtDstAddr;
 }
 
 uint16_t
 LrWpanMacHeader::GetSrcPanId() const
 {
-    return (m_addrSrcPanId);
+    return m_addrSrcPanId;
 }
 
 Mac16Address
 LrWpanMacHeader::GetShortSrcAddr() const
 {
-    return (m_addrShortSrcAddr);
+    return m_addrShortSrcAddr;
 }
 
 Mac64Address
 LrWpanMacHeader::GetExtSrcAddr() const
 {
-    return (m_addrExtSrcAddr);
+    return m_addrExtSrcAddr;
 }
 
 uint8_t
@@ -192,49 +192,49 @@ LrWpanMacHeader::GetSecControl() const
     val |= (m_secctrlKeyIdMode << 3) & (0x3 << 3); // Bit 3-4
     val |= (m_secctrlReserved << 5) & (0x7 << 5);  // Bit 5-7
 
-    return (val);
+    return val;
 }
 
 uint32_t
 LrWpanMacHeader::GetFrmCounter() const
 {
-    return (m_auxFrmCntr);
+    return m_auxFrmCntr;
 }
 
 uint8_t
 LrWpanMacHeader::GetSecLevel() const
 {
-    return (m_secctrlSecLevel);
+    return m_secctrlSecLevel;
 }
 
 uint8_t
 LrWpanMacHeader::GetKeyIdMode() const
 {
-    return (m_secctrlKeyIdMode);
+    return m_secctrlKeyIdMode;
 }
 
 uint8_t
 LrWpanMacHeader::GetSecCtrlReserved() const
 {
-    return (m_secctrlReserved);
+    return m_secctrlReserved;
 }
 
 uint32_t
 LrWpanMacHeader::GetKeyIdSrc32() const
 {
-    return (m_auxKeyIdKeySrc32);
+    return m_auxKeyIdKeySrc32;
 }
 
 uint64_t
 LrWpanMacHeader::GetKeyIdSrc64() const
 {
-    return (m_auxKeyIdKeySrc64);
+    return m_auxKeyIdKeySrc64;
 }
 
 uint8_t
 LrWpanMacHeader::GetKeyIdIndex() const
 {
-    return (m_auxKeyIdKeyIndex);
+    return m_auxKeyIdKeyIndex;
 }
 
 bool
@@ -597,7 +597,7 @@ LrWpanMacHeader::GetSerializedSize() const
             break;
         }
     }
-    return (size);
+    return size;
 }
 
 void

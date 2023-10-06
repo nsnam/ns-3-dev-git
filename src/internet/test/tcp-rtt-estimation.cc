@@ -234,7 +234,7 @@ TcpRttEstimationWithLossTest::CreateReceiverErrorModel()
 
     for (auto it = m_toDrop.begin(); it != m_toDrop.end(); ++it)
     {
-        errorModel->AddSeqToKill(SequenceNumber32((*it)));
+        errorModel->AddSeqToKill(SequenceNumber32(*it));
     }
 
     return errorModel;

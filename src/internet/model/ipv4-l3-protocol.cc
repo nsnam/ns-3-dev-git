@@ -1880,7 +1880,7 @@ Ipv4L3Protocol::SetTimeout(FragmentKey_t key, Ipv4Header ipHeader, uint32_t iif)
 
     auto iter = --m_timeoutEventList.end();
 
-    return (iter);
+    return iter;
 }
 
 void

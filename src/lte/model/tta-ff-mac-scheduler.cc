@@ -317,11 +317,11 @@ TtaFfMacScheduler::GetRbgSize(int dlbandwidth)
     {
         if (dlbandwidth < TtaType0AllocationRbg[i])
         {
-            return (i + 1);
+            return i + 1;
         }
     }
 
-    return (-1);
+    return -1;
 }
 
 unsigned int
@@ -341,7 +341,7 @@ TtaFfMacScheduler::LcActivePerFlow(uint16_t rnti)
             break;
         }
     }
-    return (lcActive);
+    return lcActive;
 }
 
 bool
@@ -375,7 +375,7 @@ TtaFfMacScheduler::UpdateHarqProcessId(uint16_t rnti)
 
     if (!m_harqOn)
     {
-        return (0);
+        return 0;
     }
 
     auto it = m_dlHarqCurrentProcessId.find(rnti);
@@ -404,7 +404,7 @@ TtaFfMacScheduler::UpdateHarqProcessId(uint16_t rnti)
                        << rnti << " check before update with HarqProcessAvailability");
     }
 
-    return ((*it).second);
+    return (*it).second;
 }
 
 void
@@ -860,25 +860,25 @@ TtaFfMacScheduler::DoSchedDlTriggerReq(
             double rcqiMax = 0.0;
             for (auto it = m_flowStatsDl.begin(); it != m_flowStatsDl.end(); it++)
             {
-                auto itRnti = rntiAllocated.find((*it));
-                if ((itRnti != rntiAllocated.end()) || (!HarqProcessAvailability((*it))))
+                auto itRnti = rntiAllocated.find(*it);
+                if (itRnti != rntiAllocated.end() || !HarqProcessAvailability(*it))
                 {
                     // UE already allocated for HARQ or without HARQ process available -> drop it
                     if (itRnti != rntiAllocated.end())
                     {
                         NS_LOG_DEBUG(this << " RNTI discarded for HARQ tx" << (uint16_t)(*it));
                     }
-                    if (!HarqProcessAvailability((*it)))
+                    if (!HarqProcessAvailability(*it))
                     {
                         NS_LOG_DEBUG(this << " RNTI discarded for HARQ id" << (uint16_t)(*it));
                     }
                     continue;
                 }
 
-                auto itSbCqi = m_a30CqiRxed.find((*it));
-                auto itWbCqi = m_p10CqiRxed.find((*it));
+                auto itSbCqi = m_a30CqiRxed.find(*it);
+                auto itWbCqi = m_p10CqiRxed.find(*it);
 
-                auto itTxMode = m_uesTxMode.find((*it));
+                auto itTxMode = m_uesTxMode.find(*it);
                 if (itTxMode == m_uesTxMode.end())
                 {
                     NS_FATAL_ERROR("No Transmission Mode info on user " << (*it));
@@ -914,7 +914,7 @@ TtaFfMacScheduler::DoSchedDlTriggerReq(
                 if ((cqi1 > 0) ||
                     (cqi2 > 0)) // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
                 {
-                    if (LcActivePerFlow((*it)) > 0)
+                    if (LcActivePerFlow(*it) > 0)
                     {
                         // this UE has data to transmit
                         double achievableSbRate = 0.0;
@@ -959,7 +959,7 @@ TtaFfMacScheduler::DoSchedDlTriggerReq(
             else
             {
                 rbgMap.at(i) = true;
-                auto itMap = allocationMap.find((*itMax));
+                auto itMap = allocationMap.find(*itMax);
                 if (itMap == allocationMap.end())
                 {
                     // insert new element
@@ -1232,7 +1232,7 @@ TtaFfMacScheduler::EstimateUlSinr(uint16_t rnti, uint16_t rb)
     if (itCqi == m_ueCqi.end())
     {
         // no cqi info about this UE
-        return (NO_SINR);
+        return NO_SINR;
     }
     else
     {
@@ -1251,7 +1251,7 @@ TtaFfMacScheduler::EstimateUlSinr(uint16_t rnti, uint16_t rb)
         double estimatedSinr = (sinrNum > 0) ? (sinrSum / sinrNum) : DBL_MAX;
         // store the value
         (*itCqi).second.at(rb) = estimatedSinr;
-        return (estimatedSinr);
+        return estimatedSinr;
     }
 }
 

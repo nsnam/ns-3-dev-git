@@ -317,11 +317,11 @@ TdMtFfMacScheduler::GetRbgSize(int dlbandwidth)
     {
         if (dlbandwidth < TdMtType0AllocationRbg[i])
         {
-            return (i + 1);
+            return i + 1;
         }
     }
 
-    return (-1);
+    return -1;
 }
 
 unsigned int
@@ -341,7 +341,7 @@ TdMtFfMacScheduler::LcActivePerFlow(uint16_t rnti)
             break;
         }
     }
-    return (lcActive);
+    return lcActive;
 }
 
 bool
@@ -375,7 +375,7 @@ TdMtFfMacScheduler::UpdateHarqProcessId(uint16_t rnti)
 
     if (!m_harqOn)
     {
-        return (0);
+        return 0;
     }
 
     auto it = m_dlHarqCurrentProcessId.find(rnti);
@@ -404,7 +404,7 @@ TdMtFfMacScheduler::UpdateHarqProcessId(uint16_t rnti)
                        << rnti << " check before update with HarqProcessAvailability");
     }
 
-    return ((*it).second);
+    return (*it).second;
 }
 
 void
@@ -855,15 +855,15 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq(
     double metricMax = 0.0;
     for (auto it = m_flowStatsDl.begin(); it != m_flowStatsDl.end(); it++)
     {
-        auto itRnti = rntiAllocated.find((*it));
-        if ((itRnti != rntiAllocated.end()) || (!HarqProcessAvailability((*it))))
+        auto itRnti = rntiAllocated.find(*it);
+        if (itRnti != rntiAllocated.end() || !HarqProcessAvailability(*it))
         {
             // UE already allocated for HARQ or without HARQ process available -> drop it
             if (itRnti != rntiAllocated.end())
             {
                 NS_LOG_DEBUG(this << " RNTI discarded for HARQ tx" << (uint16_t)(*it));
             }
-            if (!HarqProcessAvailability((*it)))
+            if (!HarqProcessAvailability(*it))
             {
                 NS_LOG_DEBUG(this << " RNTI discarded for HARQ id" << (uint16_t)(*it));
             }
@@ -871,13 +871,13 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq(
             continue;
         }
 
-        auto itTxMode = m_uesTxMode.find((*it));
+        auto itTxMode = m_uesTxMode.find(*it);
         if (itTxMode == m_uesTxMode.end())
         {
             NS_FATAL_ERROR("No Transmission Mode info on user " << (*it));
         }
         auto nLayer = TransmissionModesLayers::TxMode2LayerNum((*itTxMode).second);
-        auto itCqi = m_p10CqiRxed.find((*it));
+        auto itCqi = m_p10CqiRxed.find(*it);
         uint8_t wbCqi = 0;
         if (itCqi != m_p10CqiRxed.end())
         {
@@ -1151,7 +1151,7 @@ TdMtFfMacScheduler::EstimateUlSinr(uint16_t rnti, uint16_t rb)
     if (itCqi == m_ueCqi.end())
     {
         // no cqi info about this UE
-        return (NO_SINR);
+        return NO_SINR;
     }
     else
     {
@@ -1170,7 +1170,7 @@ TdMtFfMacScheduler::EstimateUlSinr(uint16_t rnti, uint16_t rb)
         double estimatedSinr = (sinrNum > 0) ? (sinrSum / sinrNum) : DBL_MAX;
         // store the value
         (*itCqi).second.at(rb) = estimatedSinr;
-        return (estimatedSinr);
+        return estimatedSinr;
     }
 }
 

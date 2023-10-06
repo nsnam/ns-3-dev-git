@@ -377,19 +377,19 @@ std::istream& operator>>(std::istream& is, Ipv4Mask& mask);
 inline bool
 operator==(const Ipv4Address& a, const Ipv4Address& b)
 {
-    return (a.m_address == b.m_address);
+    return a.m_address == b.m_address;
 }
 
 inline bool
 operator!=(const Ipv4Address& a, const Ipv4Address& b)
 {
-    return (a.m_address != b.m_address);
+    return a.m_address != b.m_address;
 }
 
 inline bool
 operator<(const Ipv4Address& a, const Ipv4Address& b)
 {
-    return (a.m_address < b.m_address);
+    return a.m_address < b.m_address;
 }
 
 /**
@@ -414,13 +414,13 @@ class Ipv4AddressHash
 inline bool
 operator==(const Ipv4Mask& a, const Ipv4Mask& b)
 {
-    return (a.m_mask == b.m_mask);
+    return a.m_mask == b.m_mask;
 }
 
 inline bool
 operator!=(const Ipv4Mask& a, const Ipv4Mask& b)
 {
-    return (a.m_mask != b.m_mask);
+    return a.m_mask != b.m_mask;
 }
 
 } // namespace ns3

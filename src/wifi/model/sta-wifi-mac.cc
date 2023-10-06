@@ -965,7 +965,7 @@ StaWifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr) const
 bool
 StaWifiMac::CanForwardPacketsTo(Mac48Address to) const
 {
-    return (IsAssociated());
+    return IsAssociated();
 }
 
 void

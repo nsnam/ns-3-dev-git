@@ -68,7 +68,7 @@ NixVectorRouting<T>::GetTypeId()
     {
         name = "Ipv6";
     }
-    static TypeId tid = TypeId(("ns3::" + name + "NixVectorRouting"))
+    static TypeId tid = TypeId("ns3::" + name + "NixVectorRouting")
                             .SetParent<T>()
                             .SetGroupName("NixVectorRouting")
                             .template AddConstructor<NixVectorRouting<T>>();

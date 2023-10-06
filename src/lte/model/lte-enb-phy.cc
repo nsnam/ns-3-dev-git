@@ -131,7 +131,7 @@ EnbMemberLteEnbPhySapProvider::SendLteControlMessage(Ptr<LteControlMessage> msg)
 uint8_t
 EnbMemberLteEnbPhySapProvider::GetMacChTtiDelay()
 {
-    return (m_phy->DoGetMacChTtiDelay());
+    return m_phy->DoGetMacChTtiDelay();
 }
 
 ////////////////////////////////////////
@@ -283,7 +283,7 @@ LteEnbPhy::SetLteEnbPhySapUser(LteEnbPhySapUser* s)
 LteEnbPhySapProvider*
 LteEnbPhy::GetLteEnbPhySapProvider()
 {
-    return (m_enbPhySapProvider);
+    return m_enbPhySapProvider;
 }
 
 void
@@ -297,7 +297,7 @@ LteEnbCphySapProvider*
 LteEnbPhy::GetLteEnbCphySapProvider()
 {
     NS_LOG_FUNCTION(this);
-    return (m_enbCphySapProvider);
+    return m_enbCphySapProvider;
 }
 
 void
@@ -359,7 +359,7 @@ LteEnbPhy::SetMacChDelay(uint8_t delay)
 uint8_t
 LteEnbPhy::GetMacChDelay() const
 {
-    return (m_macChTtiDelay);
+    return m_macChTtiDelay;
 }
 
 Ptr<LteSpectrumPhy>
@@ -382,12 +382,12 @@ LteEnbPhy::AddUePhy(uint16_t rnti)
     if (it == m_ueAttached.end())
     {
         m_ueAttached.insert(rnti);
-        return (true);
+        return true;
     }
     else
     {
         NS_LOG_ERROR("UE already attached");
-        return (false);
+        return false;
     }
 }
 
@@ -399,12 +399,12 @@ LteEnbPhy::DeleteUePhy(uint16_t rnti)
     if (it == m_ueAttached.end())
     {
         NS_LOG_ERROR("UE not attached");
-        return (false);
+        return false;
     }
     else
     {
         m_ueAttached.erase(it);
-        return (true);
+        return true;
     }
 }
 
@@ -418,7 +418,7 @@ LteEnbPhy::DoSendMacPdu(Ptr<Packet> p)
 uint8_t
 LteEnbPhy::DoGetMacChTtiDelay()
 {
-    return (m_macChTtiDelay);
+    return m_macChTtiDelay;
 }
 
 void
@@ -865,7 +865,7 @@ LteEnbPhy::CreatePuschCqiReport(const SpectrumValue& sinr)
     ulcqi.m_ulCqi.m_type = UlCqi_s::PUSCH;
     for (auto it = sinr.ConstValuesBegin(); it != sinr.ConstValuesEnd(); it++)
     {
-        double sinrdb = 10 * std::log10((*it));
+        double sinrdb = 10 * std::log10(*it);
         // NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
         // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
         int16_t sinrFp = LteFfConverter::double2fpS11dot3(sinrdb);
@@ -1012,7 +1012,7 @@ LteEnbPhy::CreateSrsCqiReport(const SpectrumValue& sinr)
     double srsSum = 0.0;
     for (auto it = sinr.ConstValuesBegin(); it != sinr.ConstValuesEnd(); it++)
     {
-        double sinrdb = 10 * log10((*it));
+        double sinrdb = 10 * log10(*it);
         //       NS_LOG_DEBUG ("ULCQI RB " << i << " value " << sinrdb);
         // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
         int16_t sinrFp = LteFfConverter::double2fpS11dot3(sinrdb);
@@ -1030,7 +1030,7 @@ LteEnbPhy::CreateSrsCqiReport(const SpectrumValue& sinr)
     ulcqi.m_vendorSpecificList.push_back(vsp);
     // call SRS tracing method
     CreateSrsReport(m_srsUeOffset.at(m_currentSrsOffset), (i > 0) ? (srsSum / i) : DBL_MAX);
-    return (ulcqi);
+    return ulcqi;
 }
 
 void
@@ -1076,7 +1076,7 @@ LteEnbPhy::DequeueUlDci()
         m_ulDciQueue.erase(m_ulDciQueue.begin());
         std::list<UlDciLteControlMessage> l;
         m_ulDciQueue.push_back(l);
-        return (ret);
+        return ret;
     }
     else
     {
@@ -1084,7 +1084,7 @@ LteEnbPhy::DequeueUlDci()
         std::list<UlDciLteControlMessage> l;
         m_ulDciQueue.push_back(l);
         std::list<UlDciLteControlMessage> emptylist;
-        return (emptylist);
+        return emptylist;
     }
 }
 

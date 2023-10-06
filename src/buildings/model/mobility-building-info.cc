@@ -139,28 +139,28 @@ uint8_t
 MobilityBuildingInfo::GetFloorNumber()
 {
     NS_LOG_FUNCTION(this);
-    return (m_nFloor);
+    return m_nFloor;
 }
 
 uint8_t
 MobilityBuildingInfo::GetRoomNumberX()
 {
     NS_LOG_FUNCTION(this);
-    return (m_roomX);
+    return m_roomX;
 }
 
 uint8_t
 MobilityBuildingInfo::GetRoomNumberY()
 {
     NS_LOG_FUNCTION(this);
-    return (m_roomY);
+    return m_roomY;
 }
 
 Ptr<Building>
 MobilityBuildingInfo::GetBuilding()
 {
     NS_LOG_FUNCTION(this);
-    return (m_myBuilding);
+    return m_myBuilding;
 }
 
 void

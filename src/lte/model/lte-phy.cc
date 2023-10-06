@@ -196,13 +196,13 @@ LtePhy::GetPacketBurst()
         Ptr<PacketBurst> ret = m_packetBurstQueue.at(0)->Copy();
         m_packetBurstQueue.erase(m_packetBurstQueue.begin());
         m_packetBurstQueue.push_back(CreateObject<PacketBurst>());
-        return (ret);
+        return ret;
     }
     else
     {
         m_packetBurstQueue.erase(m_packetBurstQueue.begin());
         m_packetBurstQueue.push_back(CreateObject<PacketBurst>());
-        return (nullptr);
+        return nullptr;
     }
 }
 
@@ -224,7 +224,7 @@ LtePhy::GetControlMessages()
         m_controlMessagesQueue.erase(m_controlMessagesQueue.begin());
         std::list<Ptr<LteControlMessage>> newlist;
         m_controlMessagesQueue.push_back(newlist);
-        return (ret);
+        return ret;
     }
     else
     {
@@ -232,7 +232,7 @@ LtePhy::GetControlMessages()
         std::list<Ptr<LteControlMessage>> newlist;
         m_controlMessagesQueue.push_back(newlist);
         std::list<Ptr<LteControlMessage>> emptylist;
-        return (emptylist);
+        return emptylist;
     }
 }
 

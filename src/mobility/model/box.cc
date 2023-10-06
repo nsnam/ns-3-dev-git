@@ -145,7 +145,7 @@ Box::IsIntersect(const Vector& l1, const Vector& l2) const
 {
     // If any of the position falls inside the box,
     // return true.
-    if ((IsInside(l1) || IsInside(l2)))
+    if (IsInside(l1) || IsInside(l2))
     {
         return true;
     }

@@ -204,7 +204,7 @@ LteRlcHeader::Serialize(Buffer::Iterator start) const
         else
         {
             i.WriteU8(((oddE << 7) & 0x80) | ((oddLi >> 4) & 0x007F));
-            i.WriteU8(((oddLi << 4) & 0x00F0)); // Padding is implicit
+            i.WriteU8((oddLi << 4) & 0x00F0); // Padding is implicit
         }
     }
 }

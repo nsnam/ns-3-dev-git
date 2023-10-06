@@ -338,7 +338,7 @@ DhcpHeader::Serialize(Buffer::Iterator start) const
     {
         i.WriteU8(OP_MSGTYPE);
         i.WriteU8(1);
-        i.WriteU8((m_op + 1));
+        i.WriteU8(m_op + 1);
     }
     if (m_opt[OP_ADDREQ])
     {

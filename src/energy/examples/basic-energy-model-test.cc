@@ -145,7 +145,7 @@ BasicEnergyUpdateTest::StateSwitchTest(WifiPhyState state)
     // retrieve device energy model from energy source
     DeviceEnergyModelContainer models = source->FindDeviceEnergyModels("ns3::WifiRadioEnergyModel");
     // check list
-    if ((models.GetN() == 0))
+    if (models.GetN() == 0)
     {
         std::cerr << "Model list is empty!." << std::endl;
         return true;

@@ -404,7 +404,7 @@ LteRlcAmHeader::Serialize(Buffer::Iterator start) const
             else
             {
                 i.WriteU8(((oddE << 7) & 0x80) | ((oddLi >> 4) & 0x007F));
-                i.WriteU8(((oddLi << 4) & 0x00F0)); // Padding is implicit
+                i.WriteU8((oddLi << 4) & 0x00F0); // Padding is implicit
             }
         }
     }
@@ -420,7 +420,7 @@ LteRlcAmHeader::Serialize(Buffer::Iterator start) const
             NS_LOG_LOGIC(this << " no NACKs");
             // If there are no NACKs then this line adds the rest of the ACK
             // along with 0x00, indicating an E1 value of 0 or no NACKs follow.
-            i.WriteU8(((m_ackSn.GetValue() << 2) & 0xFC));
+            i.WriteU8((m_ackSn.GetValue() << 2) & 0xFC);
         }
         else
         {
@@ -440,7 +440,7 @@ LteRlcAmHeader::Serialize(Buffer::Iterator start) const
                 // either the setup to enter this loop or the previous loop would
                 // have written the highest order bit to the previous octet.
                 // Write the next set of bits (2 - 9) into the next octet
-                i.WriteU8(((oddNack >> 1) & 0xFF));
+                i.WriteU8((oddNack >> 1) & 0xFF);
 
                 // Next check to see if there is going to be another NACK after
                 // this
@@ -466,13 +466,13 @@ LteRlcAmHeader::Serialize(Buffer::Iterator start) const
                     else
                     {
                         // No, there are no more NACKs
-                        i.WriteU8(((evenNack << 3) & 0xF8));
+                        i.WriteU8((evenNack << 3) & 0xF8);
                     }
                 }
                 else
                 {
                     // No, this is the last NACK so E1 will be 0
-                    i.WriteU8(((oddNack << 7) & 0x80));
+                    i.WriteU8((oddNack << 7) & 0x80);
                 }
             }
         }

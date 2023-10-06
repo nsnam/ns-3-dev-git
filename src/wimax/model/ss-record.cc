@@ -238,7 +238,7 @@ SSRecord::GetServiceFlows(ServiceFlow::SchedulingType schedulingType) const
         if (((*iter)->GetSchedulingType() == schedulingType) ||
             (schedulingType == ServiceFlow::SF_TYPE_ALL))
         {
-            tmpServiceFlows.push_back((*iter));
+            tmpServiceFlows.push_back(*iter);
         }
     }
     return tmpServiceFlows;

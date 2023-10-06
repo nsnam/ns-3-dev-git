@@ -185,13 +185,13 @@ IeBeaconTiming::DeserializeInformationField(Buffer::Iterator start, uint16_t len
         m_neighbours.push_back(new_element);
     }
     return i.GetDistanceFrom(start);
-};
+}
 
 uint16_t
 IeBeaconTiming::TimestampToU16(Time t)
 {
     return ((uint16_t)((t.GetMicroSeconds() >> 8) & 0xffff));
-};
+}
 
 uint16_t
 IeBeaconTiming::BeaconIntervalToU16(Time t)

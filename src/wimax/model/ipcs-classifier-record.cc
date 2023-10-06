@@ -332,7 +332,7 @@ IpcsClassifierRecord::ToTlv() const
     ProtocolTlvValue protoVal;
     for (auto iter = m_protocol.begin(); iter != m_protocol.end(); ++iter)
     {
-        protoVal.Add((*iter));
+        protoVal.Add(*iter);
     }
 
     PortRangeTlvValue portValueSrc;

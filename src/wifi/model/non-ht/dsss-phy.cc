@@ -74,7 +74,7 @@ const std::array<uint64_t, 4>&
 GetDsssRatesBpsList()
 {
     return s_dsssRatesBpsList;
-};
+}
 
 DsssPhy::DsssPhy()
 {
@@ -311,7 +311,7 @@ DsssPhy::GetDsssRate(uint64_t rate)
     {                                                                                              \
         static WifiMode mode = CreateDsssMode(#x, WIFI_MOD_CLASS_##m);                             \
         return mode;                                                                               \
-    };
+    }
 
 // Clause 15 rates (DSSS)
 GET_DSSS_MODE(DsssRate1Mbps, DSSS)

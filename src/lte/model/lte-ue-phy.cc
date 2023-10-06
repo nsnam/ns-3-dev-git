@@ -375,7 +375,7 @@ LteUePhySapProvider*
 LteUePhy::GetLteUePhySapProvider()
 {
     NS_LOG_FUNCTION(this);
-    return (m_uePhySapProvider);
+    return m_uePhySapProvider;
 }
 
 void
@@ -389,7 +389,7 @@ LteUeCphySapProvider*
 LteUePhy::GetLteUeCphySapProvider()
 {
     NS_LOG_FUNCTION(this);
-    return (m_ueCphySapProvider);
+    return m_ueCphySapProvider;
 }
 
 void
@@ -431,7 +431,7 @@ LteUePhy::GetUplinkPowerControl() const
 uint8_t
 LteUePhy::GetMacChDelay() const
 {
-    return (m_macChTtiDelay);
+    return m_macChTtiDelay;
 }
 
 Ptr<LteSpectrumPhy>

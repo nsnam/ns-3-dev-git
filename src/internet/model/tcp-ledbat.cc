@@ -102,7 +102,7 @@ TcpLedbat::TcpLedbat()
     m_sndCwndCnt = 0;
     m_flag = LEDBAT_CAN_SS;
     m_minCwnd = 2;
-};
+}
 
 void
 TcpLedbat::InitCircBuf(OwdCircBuf& buffer)

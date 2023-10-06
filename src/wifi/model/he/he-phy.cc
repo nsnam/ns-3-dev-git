@@ -1580,7 +1580,7 @@ HePhy::GetHeMcs(uint8_t index)
     {                                                                                              \
         static WifiMode mcs = CreateHeMcs(x);                                                      \
         return mcs;                                                                                \
-    };
+    }
 
 GET_HE_MCS(0)
 GET_HE_MCS(1)

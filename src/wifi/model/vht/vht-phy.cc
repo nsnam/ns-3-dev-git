@@ -369,7 +369,7 @@ VhtPhy::GetVhtMcs(uint8_t index)
     {                                                                                              \
         static WifiMode mcs = CreateVhtMcs(x);                                                     \
         return mcs;                                                                                \
-    };
+    }
 
 GET_VHT_MCS(0)
 GET_VHT_MCS(1)

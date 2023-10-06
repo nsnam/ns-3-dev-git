@@ -38,7 +38,7 @@ SrsCqiRntiVsp::~SrsCqiRntiVsp()
 uint16_t
 SrsCqiRntiVsp::GetRnti() const
 {
-    return (m_rnti);
+    return m_rnti;
 }
 
 } // namespace ns3

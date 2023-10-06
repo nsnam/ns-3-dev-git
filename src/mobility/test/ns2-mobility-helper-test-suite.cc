@@ -118,7 +118,7 @@ class Ns2MobilityHelperTest : public TestCase
          */
         bool operator<(const ReferencePoint& o) const
         {
-            return (time < o.time);
+            return time < o.time;
         }
     };
 

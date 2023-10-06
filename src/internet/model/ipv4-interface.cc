@@ -349,7 +349,7 @@ Ipv4Interface::GetAddress(uint32_t index) const
         NS_FATAL_ERROR("index " << index << " out of bounds");
     }
     Ipv4InterfaceAddress addr;
-    return (addr); // quiet compiler
+    return addr; // quiet compiler
 }
 
 Ipv4InterfaceAddress
@@ -379,7 +379,7 @@ Ipv4Interface::RemoveAddress(uint32_t index)
     }
     NS_FATAL_ERROR("Address " << index << " not found");
     Ipv4InterfaceAddress addr;
-    return (addr); // quiet compiler
+    return addr; // quiet compiler
 }
 
 Ipv4InterfaceAddress

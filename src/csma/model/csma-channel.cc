@@ -200,7 +200,7 @@ CsmaChannel::TransmitStart(Ptr<const Packet> p, uint32_t srcId)
 bool
 CsmaChannel::IsActive(uint32_t deviceId)
 {
-    return (m_deviceList[deviceId].active);
+    return m_deviceList[deviceId].active;
 }
 
 bool

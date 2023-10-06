@@ -269,7 +269,7 @@ main(int argc, char** argv)
     std::vector<double> freqs;
     int margin = 2; // 1MHz margin on each side
     int band = (bw + margin);
-    freqs.reserve((4 * 10 * band));
+    freqs.reserve(4 * 10 * band);
     for (int i = 0; i < (4 * 10 * band); ++i) // conversion to 100kHz scale
     {
         freqs.push_back(i * 1e5 + (freq - 2 * band) * 1e6);

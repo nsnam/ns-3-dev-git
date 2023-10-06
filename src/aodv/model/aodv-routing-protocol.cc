@@ -1379,7 +1379,7 @@ RoutingProtocol::RecvRequest(Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sr
             /*iface=*/m_ipv4->GetAddress(m_ipv4->GetInterfaceForAddress(receiver), 0),
             /*hops=*/hop,
             /*nextHop=*/src,
-            /*lifetime=*/Time((2 * m_netTraversalTime - 2 * hop * m_nodeTraversalTime)));
+            /*lifetime=*/Time(2 * m_netTraversalTime - 2 * hop * m_nodeTraversalTime));
         m_routingTable.AddRoute(newEntry);
     }
     else

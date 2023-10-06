@@ -98,7 +98,7 @@ FlameRtable::Lookup(Mac48Address destination)
     {
         return LookupResult();
     }
-    if ((i->second.whenExpire < Simulator::Now()))
+    if (i->second.whenExpire < Simulator::Now())
     {
         NS_LOG_DEBUG("Route has expired, sorry.");
         m_routes.erase(i);

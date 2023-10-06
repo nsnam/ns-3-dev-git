@@ -233,7 +233,7 @@ class RoutingTableEntry
      */
     Time GetSettlingTime() const
     {
-        return (m_settlingTime);
+        return m_settlingTime;
     }
 
     /**

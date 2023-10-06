@@ -402,7 +402,7 @@ MeshPointDevice::GetInterface(uint32_t n) const
     {
         if ((*i)->GetIfIndex() == n)
         {
-            return (*i);
+            return *i;
         }
     }
     NS_FATAL_ERROR("Mesh point interface is not found by index");

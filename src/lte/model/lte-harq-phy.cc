@@ -71,14 +71,14 @@ LteHarqPhy::GetAccumulatedMiDl(uint8_t harqProcId, uint8_t layer)
     {
         mi += list.at(i).m_mi;
     }
-    return (mi);
+    return mi;
 }
 
 HarqProcessInfoList_t
 LteHarqPhy::GetHarqProcessInfoDl(uint8_t harqProcId, uint8_t layer)
 {
     NS_LOG_FUNCTION(this << (uint32_t)harqProcId << (uint16_t)layer);
-    return (m_miDlHarqProcessesInfoMap.at(layer).at(harqProcId));
+    return m_miDlHarqProcessesInfoMap.at(layer).at(harqProcId);
 }
 
 double
@@ -94,7 +94,7 @@ LteHarqPhy::GetAccumulatedMiUl(uint16_t rnti)
     {
         mi += list.at(i).m_mi;
     }
-    return (mi);
+    return mi;
 }
 
 HarqProcessInfoList_t
@@ -109,11 +109,11 @@ LteHarqPhy::GetHarqProcessInfoUl(uint16_t rnti, uint8_t harqProcId)
         harqList.resize(8);
         m_miUlHarqProcessesInfoMap.insert(
             std::pair<uint16_t, std::vector<HarqProcessInfoList_t>>(rnti, harqList));
-        return (harqList.at(harqProcId));
+        return harqList.at(harqProcId);
     }
     else
     {
-        return ((*it).second.at(harqProcId));
+        return (*it).second.at(harqProcId);
     }
 }
 

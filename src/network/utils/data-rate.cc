@@ -228,7 +228,7 @@ DataRate::operator-=(DataRate rhs)
 DataRate
 DataRate::operator*(double rhs) const
 {
-    return DataRate(((uint64_t)(m_bps * rhs)));
+    return DataRate((uint64_t)(m_bps * rhs));
 }
 
 DataRate&

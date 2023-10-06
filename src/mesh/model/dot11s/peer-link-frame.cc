@@ -243,7 +243,7 @@ PeerLinkCloseStart::Deserialize(Buffer::Iterator start)
 bool
 operator==(const PeerLinkCloseStart& a, const PeerLinkCloseStart& b)
 {
-    return ((a.m_meshId.IsEqual(b.m_meshId)));
+    return (a.m_meshId.IsEqual(b.m_meshId));
 }
 
 NS_OBJECT_ENSURE_REGISTERED(PeerLinkConfirmStart);

@@ -135,7 +135,7 @@ int
 Ipv4RawSocketImpl::Bind6()
 {
     NS_LOG_FUNCTION(this);
-    return (-1);
+    return -1;
 }
 
 int

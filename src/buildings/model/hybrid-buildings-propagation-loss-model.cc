@@ -278,11 +278,11 @@ HybridBuildingsPropagationLossModel::ItuR1411(Ptr<MobilityModel> a, Ptr<Mobility
 {
     if (a->GetDistanceFrom(b) < m_itu1411NlosThreshold)
     {
-        return (m_ituR1411Los->GetLoss(a, b));
+        return m_ituR1411Los->GetLoss(a, b);
     }
     else
     {
-        return (m_ituR1411NlosOverRooftop->GetLoss(a, b));
+        return m_ituR1411NlosOverRooftop->GetLoss(a, b);
     }
 }
 

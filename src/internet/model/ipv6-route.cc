@@ -156,7 +156,7 @@ Ipv6MulticastRoute::SetOutputTtl(uint32_t oif, uint32_t ttl)
 std::map<uint32_t, uint32_t>
 Ipv6MulticastRoute::GetOutputTtlMap() const
 {
-    return (m_ttls);
+    return m_ttls;
 }
 
 std::ostream&

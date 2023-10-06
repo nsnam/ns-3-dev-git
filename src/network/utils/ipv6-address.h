@@ -654,7 +654,7 @@ std::istream& operator>>(std::istream& is, Ipv6Prefix& prefix);
 inline bool
 operator==(const Ipv6Address& a, const Ipv6Address& b)
 {
-    return (!std::memcmp(a.m_address, b.m_address, 16));
+    return !std::memcmp(a.m_address, b.m_address, 16);
 }
 
 inline bool
@@ -666,13 +666,13 @@ operator!=(const Ipv6Address& a, const Ipv6Address& b)
 inline bool
 operator<(const Ipv6Address& a, const Ipv6Address& b)
 {
-    return (std::memcmp(a.m_address, b.m_address, 16) < 0);
+    return std::memcmp(a.m_address, b.m_address, 16) < 0;
 }
 
 inline bool
 operator==(const Ipv6Prefix& a, const Ipv6Prefix& b)
 {
-    return (!std::memcmp(a.m_prefix, b.m_prefix, 16));
+    return !std::memcmp(a.m_prefix, b.m_prefix, 16);
 }
 
 inline bool

@@ -379,21 +379,21 @@ inline size_t
 ValArray<T>::GetNumRows() const
 {
     return m_numRows;
-};
+}
 
 template <class T>
 inline size_t
 ValArray<T>::GetNumCols() const
 {
     return m_numCols;
-};
+}
 
 template <class T>
 inline size_t
 ValArray<T>::GetNumPages() const
 {
     return m_numPages;
-};
+}
 
 template <class T>
 inline size_t
@@ -411,7 +411,7 @@ ValArray<T>::operator()(size_t rowIndex, size_t colIndex, size_t pageIndex)
     NS_ASSERT_MSG(pageIndex < m_numPages, "Pages index out of bounds");
     size_t index = (rowIndex + m_numRows * (colIndex + m_numCols * pageIndex));
     return m_values[index];
-};
+}
 
 template <class T>
 inline const T&
@@ -422,7 +422,7 @@ ValArray<T>::operator()(size_t rowIndex, size_t colIndex, size_t pageIndex) cons
     NS_ASSERT_MSG(pageIndex < m_numPages, "Pages index out of bounds");
     size_t index = (rowIndex + m_numRows * (colIndex + m_numCols * pageIndex));
     return m_values[index];
-};
+}
 
 template <class T>
 inline T&
@@ -430,7 +430,7 @@ ValArray<T>::operator()(size_t rowIndex, size_t colIndex)
 {
     NS_ASSERT_MSG(m_numPages == 1, "Cannot use 2D access operator for 3D ValArray.");
     return (*this)(rowIndex, colIndex, 0);
-};
+}
 
 template <class T>
 inline const T&
@@ -438,7 +438,7 @@ ValArray<T>::operator()(size_t rowIndex, size_t colIndex) const
 {
     NS_ASSERT_MSG(m_numPages == 1, "Cannot use 2D access operator for 3D ValArray.");
     return (*this)(rowIndex, colIndex, 0);
-};
+}
 
 template <class T>
 inline T&
@@ -451,7 +451,7 @@ ValArray<T>::operator()(size_t index)
                       (m_numRows == 1 && m_numCols == 1),
                   "Access operator allowed only for 1D ValArray.");
     return m_values[index];
-};
+}
 
 template <class T>
 inline const T&
@@ -464,7 +464,7 @@ ValArray<T>::operator()(size_t index) const
                       (m_numRows == 1 && m_numCols == 1),
                   "Access operator allowed only for 1D ValArray.");
     return m_values[index];
-};
+}
 
 template <class T>
 inline ValArray<T>
@@ -523,7 +523,7 @@ ValArray<T>::GetPagePtr(size_t pageIndex)
 {
     NS_ASSERT_MSG(pageIndex < m_numPages, "Invalid page index.");
     return &(m_values[m_numRows * m_numCols * pageIndex]);
-};
+}
 
 template <class T>
 inline const T*
@@ -531,7 +531,7 @@ ValArray<T>::GetPagePtr(size_t pageIndex) const
 {
     NS_ASSERT_MSG(pageIndex < m_numPages, "Invalid page index.");
     return &(m_values[m_numRows * m_numCols * pageIndex]);
-};
+}
 
 template <class T>
 inline bool
@@ -567,14 +567,14 @@ inline T&
 ValArray<T>::Elem(size_t row, size_t col, size_t page)
 {
     return (*this)(row, col, page);
-};
+}
 
 template <class T>
 inline const T&
 ValArray<T>::Elem(size_t row, size_t col, size_t page) const
 {
     return (*this)(row, col, page);
-};
+}
 
 /*************************************************
  **  Class ValArray non-inline implementations
@@ -587,7 +587,7 @@ ValArray<T>::ValArray(size_t numRows, size_t numCols, size_t numPages)
       m_numPages{numPages}
 {
     m_values.resize(m_numRows * m_numCols * m_numPages);
-};
+}
 
 template <class T>
 ValArray<T>::ValArray(const std::valarray<T>& values)
@@ -626,7 +626,7 @@ ValArray<T>::ValArray(size_t numRows, size_t numCols, const std::valarray<T>& va
 {
     NS_ASSERT_MSG(m_numRows * m_numCols == values.size(),
                   "Dimensions and the initialization array size do not match.");
-};
+}
 
 template <class T>
 ValArray<T>::ValArray(size_t numRows, size_t numCols, std::valarray<T>&& values)
@@ -637,7 +637,7 @@ ValArray<T>::ValArray(size_t numRows, size_t numCols, std::valarray<T>&& values)
     NS_ASSERT_MSG(m_numRows * m_numCols == values.size(),
                   "Dimensions and the initialization array size do not match.");
     m_values = std::move(values);
-};
+}
 
 template <class T>
 ValArray<T>::ValArray(size_t numRows,
@@ -651,7 +651,7 @@ ValArray<T>::ValArray(size_t numRows,
 {
     NS_ASSERT_MSG(m_numRows * m_numCols * m_numPages == values.size(),
                   "Dimensions and the initialization array size do not match.");
-};
+}
 
 template <class T>
 ValArray<T>::ValArray(size_t numRows, size_t numCols, size_t numPages, std::valarray<T>&& values)
@@ -662,7 +662,7 @@ ValArray<T>::ValArray(size_t numRows, size_t numCols, size_t numPages, std::vala
     NS_ASSERT_MSG(m_numRows * m_numCols * m_numPages == values.size(),
                   "Dimensions and the initialization array size do not match.");
     m_values = std::move(values);
-};
+}
 
 template <class T>
 bool
