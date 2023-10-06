@@ -1448,7 +1448,7 @@ MgtAddBaRequestHeader::GetParameterSet() const
 void
 MgtAddBaRequestHeader::SetParameterSet(uint16_t params)
 {
-    m_amsduSupport = (params)&0x01;
+    m_amsduSupport = params & 0x01;
     m_policy = (params >> 1) & 0x01;
     m_tid = (params >> 2) & 0x0f;
     m_bufferSize = (params >> 6) & 0x03ff;
@@ -1614,7 +1614,7 @@ MgtAddBaResponseHeader::GetParameterSet() const
 void
 MgtAddBaResponseHeader::SetParameterSet(uint16_t params)
 {
-    m_amsduSupport = (params)&0x01;
+    m_amsduSupport = params & 0x01;
     m_policy = (params >> 1) & 0x01;
     m_tid = (params >> 2) & 0x0f;
     m_bufferSize = (params >> 6) & 0x03ff;
