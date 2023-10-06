@@ -378,30 +378,6 @@ class CapabilityField
     void SetCapability(uint8_t bitmap);
 
     /**
-     * Get the size of the serialized Capability Information Field.
-     *
-     * \return the size of the serialized field.
-     */
-    uint32_t GetSerializedSize() const;
-
-    /**
-     * Serialize the entire Capability Information Field.
-     *
-     * \param i an iterator which points to where the Capability information field
-     * should be written.
-     * \return an iterator.
-     */
-    Buffer::Iterator Serialize(Buffer::Iterator i) const;
-
-    /**
-     * Deserialize the entire Capability Information Field.
-     *
-     * \param i an iterator which points to where the Capability information field should be read.
-     * \return an iterator.
-     */
-    Buffer::Iterator Deserialize(Buffer::Iterator i);
-
-    /**
      * True if the device type is a Full Functional Device (FFD) false if is a Reduced Functional
      * Device (RFD).
      *

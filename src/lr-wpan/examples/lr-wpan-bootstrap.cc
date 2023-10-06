@@ -133,6 +133,7 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
                     assocParams.m_chPage = params.m_panDescList[panDescIndex].m_logChPage;
                     assocParams.m_coordPanId = params.m_panDescList[panDescIndex].m_coorPanId;
                     assocParams.m_coordAddrMode = params.m_panDescList[panDescIndex].m_coorAddrMode;
+                    CapabilityField capability;
 
                     if (params.m_panDescList[panDescIndex].m_coorAddrMode ==
                         LrWpanAddressMode::SHORT_ADDR)
@@ -140,7 +141,7 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
                         assocParams.m_coordAddrMode = LrWpanAddressMode::SHORT_ADDR;
                         assocParams.m_coordShortAddr =
                             params.m_panDescList[panDescIndex].m_coorShortAddr;
-                        assocParams.m_capabilityInfo.SetShortAddrAllocOn(true);
+                        capability.SetShortAddrAllocOn(true);
                     }
                     else if (assocParams.m_coordAddrMode == LrWpanAddressMode::EXT_ADDR)
                     {
@@ -148,8 +149,9 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
                         assocParams.m_coordExtAddr =
                             params.m_panDescList[panDescIndex].m_coorExtAddr;
                         assocParams.m_coordShortAddr = Mac16Address("ff:fe");
-                        assocParams.m_capabilityInfo.SetShortAddrAllocOn(false);
+                        capability.SetShortAddrAllocOn(false);
                     }
+                    assocParams.m_capabilityInfo = capability.GetCapability();
 
                     Simulator::ScheduleNow(&LrWpanMac::MlmeAssociateRequest,
                                            device->GetMac(),
@@ -207,7 +209,10 @@ AssociateIndication(Ptr<LrWpanNetDevice> device, MlmeAssociateIndicationParams p
 
     assocRespParams.m_extDevAddr = params.m_extDevAddr;
     assocRespParams.m_status = LrWpanAssociationStatus::ASSOCIATED;
-    if (params.capabilityInfo.IsShortAddrAllocOn())
+    CapabilityField capability;
+    capability.SetCapability(params.capabilityInfo);
+
+    if (capability.IsShortAddrAllocOn())
     {
         // Truncate the extended address and make an assigned
         // short address based on this. This mechanism is not described by the standard.

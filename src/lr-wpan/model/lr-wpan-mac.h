@@ -448,9 +448,9 @@ struct McpsDataIndicationParams
  */
 struct MlmeAssociateIndicationParams
 {
-    Mac64Address m_extDevAddr;      //!< The extended address of the device requesting association
-    CapabilityField capabilityInfo; //!< The operational capabilities of
-                                    //!< the device requesting association.
+    Mac64Address m_extDevAddr; //!< The extended address of the device requesting association
+    uint8_t capabilityInfo;    //!< The operational capabilities of
+                               //!< the device requesting association.
     uint8_t lqi{0}; //!< The link quality indicator of the received associate request command
                     //!< (Not officially supported in the standard but found in implementations)
 };
@@ -512,8 +512,8 @@ struct MlmeSyncRequestParams
  */
 struct MlmePollRequestParams
 {
-    LrWpanAddressMode m_coorAddrMode{
-        SHORT_ADDR}; //!< The addressing mode of the coordinator to which the pool is intended.
+    LrWpanAddressMode m_coorAddrMode{SHORT_ADDR}; //!< The addressing mode of the coordinator
+                                                  //!< to which the pool is intended.
     uint16_t m_coorPanId{0};      //!< The PAN id of the coordinator to which the poll is intended.
     Mac16Address m_coorShortAddr; //!< Coordinator short address.
     Mac64Address m_coorExtAddr;   //!< Coordinator extended address.
@@ -567,17 +567,17 @@ struct MlmeScanConfirmParams
  */
 struct MlmeAssociateRequestParams
 {
-    uint8_t m_chNum{11};  //!< The channel number on which to attempt association.
-    uint32_t m_chPage{0}; //!< The channel page on which to attempt association.
-    uint8_t m_coordAddrMode{
-        SHORT_ADDR}; //!< The coordinator addressing mode for this primitive and subsequent MPDU.
-    uint16_t m_coordPanId{0}; //!< The identifier of the PAN with which to associate.
-    Mac16Address
-        m_coordShortAddr; //!< The short address of the coordinator with which to associate.
-    Mac64Address
-        m_coordExtAddr; //!< The extended address of the coordinator with which to associate.
-    CapabilityField
-        m_capabilityInfo; //!< Specifies the operational capabilities of the associating device.
+    uint8_t m_chNum{11};                 //!< The channel number on which to attempt association.
+    uint32_t m_chPage{0};                //!< The channel page on which to attempt association.
+    uint8_t m_coordAddrMode{SHORT_ADDR}; //!< The coordinator addressing mode for this
+                                         //!< primitive and subsequent MPDU.
+    uint16_t m_coordPanId{0};            //!< The identifier of the PAN with which to associate.
+    Mac16Address m_coordShortAddr;       //!< The short address of the coordinator
+                                         //!< with which to associate.
+    Mac64Address m_coordExtAddr;         //!< The extended address of the coordinator
+                                         //!< with which to associate.
+    uint8_t m_capabilityInfo;            //!< Specifies the operational capabilities
+                                         //!< of the associating device (bitmap).
 };
 
 /**
@@ -589,7 +589,8 @@ struct MlmeAssociateConfirmParams
 {
     Mac16Address m_assocShortAddr; //!< The short address used in the association request
     LrWpanMlmeAssociateConfirmStatus m_status{
-        MLMEASSOC_INVALID_PARAMETER}; //!< The status of a MLME-associate.request
+        MLMEASSOC_INVALID_PARAMETER}; //!< The status of
+                                      //!< a MLME-associate.request
 };
 
 /**
@@ -599,8 +600,8 @@ struct MlmeAssociateConfirmParams
  */
 struct MlmeStartConfirmParams
 {
-    LrWpanMlmeStartConfirmStatus m_status{
-        MLMESTART_INVALID_PARAMETER}; //!< The status of a MLME-start.request
+    LrWpanMlmeStartConfirmStatus m_status{MLMESTART_INVALID_PARAMETER}; //!< The status of
+                                                                        //!< a MLME-start.request
 };
 
 /**
@@ -624,7 +625,8 @@ struct MlmeBeaconNotifyIndicationParams
 struct MlmeSyncLossIndicationParams
 {
     LrWpanSyncLossReason m_lossReason{
-        MLMESYNCLOSS_PAN_ID_CONFLICT}; //!< The reason for the lost of synchronization.
+        MLMESYNCLOSS_PAN_ID_CONFLICT}; //!< The reason for
+                                       //!< the lost of synchronization.
     uint16_t m_panId{0}; //!< The PAN identifier with which the device lost synchronization or to
                          //!< which it was realigned.
     uint8_t m_logCh{11}; //!< The channel number on which the device lost synchronization or to

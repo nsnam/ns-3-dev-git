@@ -20,6 +20,8 @@ Release 3-dev
 
 ### New user-visible features
 
+- (lr-wpan) !1686 Change CapabilityField to standard bitmap
+
 ### Bugs fixed
 
 - (lr-wpan) !1673 - Fixes PHY BUSY_RX -> RX_ON operation

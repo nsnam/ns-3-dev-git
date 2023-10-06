@@ -166,7 +166,7 @@ CommandPayloadHeader::GetSerializedSize() const
     switch (m_cmdFrameId)
     {
     case ASSOCIATION_REQ:
-        size += m_capabilityInfo.GetSerializedSize();
+        size += 1; // (Capability field)
         break;
     case ASSOCIATION_RESP:
         size += 3; // (short address + Association Status)
@@ -201,7 +201,7 @@ CommandPayloadHeader::Serialize(Buffer::Iterator start) const
     switch (m_cmdFrameId)
     {
     case ASSOCIATION_REQ:
-        i = m_capabilityInfo.Serialize(i);
+        i.WriteU8(m_capabilityInfo);
         break;
     case ASSOCIATION_RESP:
         WriteTo(i, m_shortAddr);
@@ -240,7 +240,7 @@ CommandPayloadHeader::Deserialize(Buffer::Iterator start)
     switch (m_cmdFrameId)
     {
     case ASSOCIATION_REQ:
-        i = m_capabilityInfo.Deserialize(i);
+        m_capabilityInfo = i.ReadU8();
         break;
     case ASSOCIATION_RESP:
         ReadFrom(i, m_shortAddr);
@@ -278,13 +278,15 @@ CommandPayloadHeader::Print(std::ostream& os) const
     os << "| MAC Command Frame ID | = " << static_cast<uint32_t>(m_cmdFrameId);
     switch (m_cmdFrameId)
     {
-    case ASSOCIATION_REQ:
-        os << "| Device Type FFD | = " << m_capabilityInfo.IsDeviceTypeFfd()
-           << "| Alternative Power Source available | = " << m_capabilityInfo.IsPowSrcAvailable()
-           << "| Receiver on when Idle | = " << m_capabilityInfo.IsReceiverOnWhenIdle()
-           << "| Security capable | = " << m_capabilityInfo.IsSecurityCapability()
-           << "| Allocate address on | = " << m_capabilityInfo.IsShortAddrAllocOn();
+    case ASSOCIATION_REQ: {
+        CapabilityField capability(m_capabilityInfo);
+        os << "| Device Type FFD | = " << capability.IsDeviceTypeFfd()
+           << "| Alternative Power Source available | = " << capability.IsPowSrcAvailable()
+           << "| Receiver on when Idle | = " << capability.IsReceiverOnWhenIdle()
+           << "| Security capable | = " << capability.IsSecurityCapability()
+           << "| Allocate address on | = " << capability.IsShortAddrAllocOn();
         break;
+    }
     case ASSOCIATION_RESP:
         os << "| Assigned Short Address | = " << m_shortAddr
            << "| Status Response | = " << m_assocStatus;
@@ -310,6 +312,8 @@ CommandPayloadHeader::Print(std::ostream& os) const
         break;
     case CMD_RESERVED:
         break;
+    default:
+        break;
     }
 }
 
@@ -320,7 +324,7 @@ CommandPayloadHeader::SetCommandFrameType(MacCommand macCommand)
 }
 
 void
-CommandPayloadHeader::SetCapabilityField(CapabilityField cap)
+CommandPayloadHeader::SetCapabilityField(uint8_t cap)
 {
     NS_ASSERT(m_cmdFrameId == ASSOCIATION_REQ);
     m_capabilityInfo = cap;
@@ -409,7 +413,7 @@ CommandPayloadHeader::GetAssociationStatus() const
     return m_assocStatus;
 }
 
-CapabilityField
+uint8_t
 CommandPayloadHeader::GetCapabilityField() const
 {
     NS_ASSERT(m_cmdFrameId == ASSOCIATION_REQ);

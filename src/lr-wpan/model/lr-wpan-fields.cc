@@ -525,27 +525,6 @@ CapabilityField::SetCapability(uint8_t bitmap)
     m_allocAddr = (bitmap >> 7) & (0x01);          //!< Bit 7
 }
 
-uint32_t
-CapabilityField::GetSerializedSize() const
-{
-    return 1;
-}
-
-Buffer::Iterator
-CapabilityField::Serialize(Buffer::Iterator i) const
-{
-    i.WriteU8(GetCapability());
-    return i;
-}
-
-Buffer::Iterator
-CapabilityField::Deserialize(Buffer::Iterator i)
-{
-    uint8_t capability = i.ReadU8();
-    SetCapability(capability);
-    return i;
-}
-
 bool
 CapabilityField::IsDeviceTypeFfd() const
 {

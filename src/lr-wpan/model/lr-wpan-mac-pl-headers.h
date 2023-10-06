@@ -161,7 +161,7 @@ class CommandPayloadHeader : public Header
      * Command).
      * \param cap The capability Information field
      */
-    void SetCapabilityField(CapabilityField cap);
+    void SetCapabilityField(uint8_t cap);
     /**
      *  Set the coordinator short address (16 bit address).
      * \param addr The coordinator short address.
@@ -212,9 +212,9 @@ class CommandPayloadHeader : public Header
     /**
      * Get the Capability Information Field from the command payload header.
      * (Association Request Command)
-     * \return The Capability Information Field
+     * \return The Capability Information Field (8 bit bitmap)
      */
-    CapabilityField GetCapabilityField() const;
+    uint8_t GetCapabilityField() const;
     /**
      *  Get the coordinator short address.
      * \return The coordinator short address (16 bit address)
@@ -237,11 +237,11 @@ class CommandPayloadHeader : public Header
     uint16_t GetPanId() const;
 
   private:
-    MacCommand m_cmdFrameId;          //!< The command Frame Identifier (Used by all commands)
-    CapabilityField m_capabilityInfo; //!< Capability Information Field
-                                      //!< (Association Request Command)
-    Mac16Address m_shortAddr;         //!< Contains the short address assigned by the coordinator
-                              //!< (Association Response and Coordinator Realiagment Command)
+    MacCommand m_cmdFrameId;       //!< The command Frame Identifier (Used by all commands)
+    uint8_t m_capabilityInfo;      //!< Capability Information Field
+                                   //!< (Association Request Command)
+    Mac16Address m_shortAddr;      //!< Contains the short address assigned by the coordinator
+                                   //!< (Association Response and Coordinator Realiagment Command)
     Mac16Address m_coordShortAddr; //!< The coordinator short address
                                    //!< (Coordinator realigment command)
     uint16_t m_panid;              //!< The PAN identifier (Coordinator realigment command)
