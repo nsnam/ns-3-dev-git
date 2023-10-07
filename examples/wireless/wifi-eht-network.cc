@@ -151,6 +151,8 @@ main(int argc, char* argv[])
     uint16_t transitionDelayUsec{128};
     uint16_t channelSwitchDelayUsec{100};
     bool switchAuxPhy{true};
+    uint16_t auxPhyChWidth{20};
+    bool auxPhyTxCapable{true};
     double simulationTime{10}; // seconds
     double distance{1.0};      // meters
     double frequency{5};       // whether the first link operates in the 2.4, 5 or 6 GHz
@@ -198,6 +200,12 @@ main(int argc, char* argv[])
                  "Whether Aux PHY should switch channel to operate on the link on which "
                  "the Main PHY was operating before moving to the link of the Aux PHY. ",
                  switchAuxPhy);
+    cmd.AddValue("emlsrAuxChWidth",
+                 "The maximum channel width (MHz) supported by Aux PHYs.",
+                 auxPhyChWidth);
+    cmd.AddValue("emlsrAuxTxCapable",
+                 "Whether Aux PHYs are capable of transmitting.",
+                 auxPhyTxCapable);
     cmd.AddValue("channelSwitchDelay",
                  "The PHY channel switch delay in microseconds",
                  channelSwitchDelayUsec);
@@ -400,7 +408,11 @@ main(int argc, char* argv[])
                                     "EmlsrTransitionDelay",
                                     TimeValue(MicroSeconds(transitionDelayUsec)),
                                     "SwitchAuxPhy",
-                                    BooleanValue(switchAuxPhy));
+                                    BooleanValue(switchAuxPhy),
+                                    "AuxPhyTxCapable",
+                                    BooleanValue(auxPhyTxCapable),
+                                    "AuxPhyChannelWidth",
+                                    UintegerValue(auxPhyChWidth));
                 for (uint8_t linkId = 0; linkId < nLinks; linkId++)
                 {
                     phy.Set(linkId, "ChannelSettings", StringValue(channelStr[linkId]));
