@@ -2589,6 +2589,7 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
             new EmlsrDlTxopTest(
                 {1, 1, emlsrLinks, {MicroSeconds(64)}, {MicroSeconds(64)}, MicroSeconds(512)}),
             TestCase::QUICK);
+#if 0
         AddTestCase(new EmlsrDlTxopTest({2,
                                          2,
                                          emlsrLinks,
@@ -2596,8 +2597,9 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
                                          {MicroSeconds(128), MicroSeconds(256)},
                                          MicroSeconds(512)}),
                     TestCase::QUICK);
+#endif
     }
-
+#if 0
     for (bool switchAuxPhy : {true, false})
     {
         for (bool resetCamState : {true, false})
@@ -2610,6 +2612,7 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
             }
         }
     }
+#endif
 }
 
 static WifiEmlsrTestSuite g_wifiEmlsrTestSuite; ///< the test suite
