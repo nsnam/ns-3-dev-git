@@ -15,6 +15,11 @@
     - python3 utils/check-style-clang-format.py --verbose .
   timeout: 1h
 
+check-style-clang-format-17:
+  extends: .check-style-clang-format
+  variables:
+    CLANG_FORMAT_VERSION: 17
+
 check-style-clang-format-16:
   extends: .check-style-clang-format
   variables:
@@ -31,7 +36,7 @@ check-style-clang-format-14:
     CLANG_FORMAT_VERSION: 14
 
 # Clang-tidy
-clang-tidy-16:
+clang-tidy-17:
   stage: code-linting
   image: ubuntu:rolling
   variables:
@@ -42,7 +47,7 @@ clang-tidy-16:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
       clang cmake
-      clang-tidy clang-tidy-16
+      clang-tidy clang-tidy-17
       python3 python3-pip
       libboost-all-dev libeigen3-dev libgtk-3-dev libopenmpi-dev libsqlite3-dev
       gsl-bin libgsl-dev libgsl27
@@ -63,7 +68,7 @@ clang-tidy-16:
     - if !([[ $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ]] || (grep -q ".clang-tidy" $FILES_CHANGED)) ; then
       echo "Running clang-tidy-diff" ;
       git diff -U0 upstream/$CI_DEFAULT_BRANCH |
-      clang-tidy-diff-16.py -path cmake-cache/ -p1 -quiet -use-color
+      clang-tidy-diff-17.py -path cmake-cache/ -p1 -quiet -use-color
       -iregex "(contrib|examples|src|scratch|utils)\/.+\.(cpp|cc|cxx|c|h|hpp)"
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null ;
@@ -72,7 +77,7 @@ clang-tidy-16:
     # Run full clang-tidy in the following cases: 1) default branch, 2) ".clang-tidy" file changed, 3) clang-tidy-diff had an error
     - if [[ $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ]] || (grep -q ".clang-tidy" $FILES_CHANGED) || (egrep -q -A 3 "file not found \[clang-diagnostic-error\]" $CLANG_TIDY_OUTPUT) ; then
       echo "Running full clang-tidy" ;
-      run-clang-tidy-16 -p cmake-cache/ -quiet
+      run-clang-tidy-17 -p cmake-cache/ -quiet
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null ;
       fi
