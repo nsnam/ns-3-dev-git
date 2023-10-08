@@ -370,7 +370,7 @@ RngStream::RandU01()
     m_currentState[5] = p2;
 
     /* Combination */
-    u = ((p1 > p2) ? (p1 - p2) * norm : (p1 - p2 + m1) * norm);
+    u = ((p1 > p2) ? (p1 - p2) * MRG32k3a::norm : (p1 - p2 + m1) * MRG32k3a::norm);
 
     return u;
 }
