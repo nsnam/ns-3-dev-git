@@ -2,6 +2,7 @@
 /*
 !.gitignore
 
+!nested-subdir/
 !subdir/
 !scratch-simulator.cc
 !CMakeLists.txt
