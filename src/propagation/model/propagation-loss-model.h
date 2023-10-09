@@ -27,7 +27,7 @@
 #include "ns3/object.h"
 #include "ns3/random-variable-stream.h"
 
-#include <map>
+#include <unordered_map>
 
 namespace ns3
 {
@@ -742,9 +742,29 @@ class MatrixPropagationLossModel : public PropagationLossModel
     double m_default; //!< default loss
 
     /// Typedef: Mobility models pair
-    typedef std::pair<Ptr<MobilityModel>, Ptr<MobilityModel>> MobilityPair;
+    typedef std::pair<const Ptr<MobilityModel>, const Ptr<MobilityModel>> MobilityPair;
 
-    std::map<MobilityPair, double> m_loss; //!< Propagation loss between pair of nodes
+    /**
+     * \ingroup propagation
+     *
+     * \brief Hasher for a pair of mobility models.
+     */
+    class MobilityPairHasher
+    {
+      public:
+        /**
+         * \brief Get the hash for a MobilityPair.
+         * \param key MobilityPair reference to hash
+         * \return the MobilityPair hash
+         */
+        size_t operator()(const MobilityPair& key) const
+        {
+            return uint64_t(key.first.operator->()) ^ uint64_t(key.second.operator->());
+        }
+    };
+
+    std::unordered_map<MobilityPair, double, MobilityPairHasher>
+        m_loss; //!< Propagation loss between pair of nodes
 };
 
 /**
