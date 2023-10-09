@@ -2426,8 +2426,16 @@ EmlsrUlTxopTest::Transmit(Ptr<WifiMac> mac,
 void
 EmlsrUlTxopTest::StartTraffic()
 {
-    // initially, aux PHYs are not capable to transmit frames
-    m_staMacs[0]->GetEmlsrManager()->SetAttribute("AuxPhyTxCapable", BooleanValue(false));
+    // initially, we prevent transmissions on aux PHY links
+    auto auxPhyLinks = m_staMacs[0]->GetSetupLinkIds();
+    auxPhyLinks.erase(m_mainPhyId);
+    if (m_nonEmlsrLink)
+    {
+        auxPhyLinks.erase(*m_nonEmlsrLink);
+    }
+    m_staMacs[0]->BlockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                        m_apMac->GetAddress(),
+                                        auxPhyLinks);
 
     // Association, Block Ack agreement establishment and enabling EMLSR mode have been done.
     // After 50ms, schedule:
@@ -2505,7 +2513,8 @@ EmlsrUlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
                     id,
                     WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
                     id != m_staMacs[0]->GetLinkForPhy(m_mainPhyId) && m_staMacs[0]->IsEmlsrLink(id),
-                    "Checking EMLSR links on EMLSR client while sending the first data frame");
+                    "Checking EMLSR links on EMLSR client while sending the first data frame",
+                    false);
 
                 Simulator::Schedule(
                     txDuration + MicroSeconds(1) /* propagation delay */,
@@ -2533,7 +2542,15 @@ EmlsrUlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
         // after this QoS data frame is received
         Simulator::ScheduleNow([=, this]() {
             // make aux PHYs capable of transmitting frames
-            m_staMacs[0]->GetEmlsrManager()->SetAttribute("AuxPhyTxCapable", BooleanValue(true));
+            auto auxPhyLinks = m_staMacs[0]->GetSetupLinkIds();
+            auxPhyLinks.erase(m_mainPhyId);
+            if (m_nonEmlsrLink)
+            {
+                auxPhyLinks.erase(*m_nonEmlsrLink);
+            }
+            m_staMacs[0]->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                  m_apMac->GetAddress(),
+                                                  auxPhyLinks);
 
             // block transmissions on the link where the main PHY is operating
             m_staMacs[0]->BlockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED,
@@ -2591,6 +2608,13 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                uint8_t linkId)
 {
     m_countBlockAck++;
+
+    auto auxPhyLinks = m_staMacs[0]->GetSetupLinkIds();
+    auxPhyLinks.erase(m_mainPhyId);
+    if (m_nonEmlsrLink)
+    {
+        auxPhyLinks.erase(*m_nonEmlsrLink);
+    }
 
     // lambda to check that the MediumSyncDelay timer is correctly running/not running and
     // the CCA ED threshold is set to the correct value on all the links
@@ -2688,7 +2712,9 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
         });
 
         // make aux PHYs not capable of transmitting frames
-        m_staMacs[0]->GetEmlsrManager()->SetAttribute("AuxPhyTxCapable", BooleanValue(false));
+        m_staMacs[0]->BlockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                            m_apMac->GetAddress(),
+                                            auxPhyLinks);
 
         // generate data packets for another UL data frame, which will be sent on the link where
         // the main PHY is operating
@@ -2711,7 +2737,9 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                                           {0},
                                                           linkIds);
         // make sure aux PHYs are capable of transmitting frames
-        m_staMacs[0]->GetEmlsrManager()->SetAttribute("AuxPhyTxCapable", BooleanValue(true));
+        m_staMacs[0]->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                              m_apMac->GetAddress(),
+                                              auxPhyLinks);
 
         // generate data packets for another UL data frame
         NS_LOG_INFO("Enqueuing two packets at the EMLSR client\n");
