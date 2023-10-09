@@ -30,7 +30,6 @@ build_lib(
     TEST_SOURCES test/{MODULE}-test-suite.cc
                  ${{examples_as_tests_sources}}
 )
-
 '''
 
 
@@ -108,7 +107,6 @@ build_lib_example(
     SOURCE_FILES {MODULE}-example.cc
     LIBRARIES_TO_LINK ${{lib{MODULE}}}
 )
-
 '''
 
 EXAMPLE_CC_TEMPLATE = '''\
