@@ -24,7 +24,7 @@ Changes from ns-3.40 to ns-3-dev
   * (lte) Struct member `fdbetsFlowPerf_t::lastTtiBytesTrasmitted` in file `fdbet-ff-mac-scheduler.h` was renamed `fdbetsFlowPerf_t::lastTtiBytesTransmitted`.
   * (lte) Struct member `tdbetsFlowPerf_t::lastTtiBytesTrasmitted` in file `tdbet-ff-mac-scheduler.h` was renamed `fdbetsFlowPerf_t::lastTtiBytesTransmitted`.
   * (lte) Struct member `pfsFlowPerf_t::lastTtiBytesTrasmitted` in file `pf-ff-mac-scheduler.h` was renamed `fdbetsFlowPerf_t::lastTtiBytesTransmitted`.
-  * (lr-wpan) Change the CapabilityField parameter in `LrWpanMac::MlmeAssociateRequest` and `LrWpanMac::MlmeAssociateIndication` to a standard bitmap.
+* (lr-wpan) Change the CapabilityField parameter in `LrWpanMac::MlmeAssociateRequest` and `LrWpanMac::MlmeAssociateIndication` to a standard bitmap.
 
 ### Changes to build system
 
