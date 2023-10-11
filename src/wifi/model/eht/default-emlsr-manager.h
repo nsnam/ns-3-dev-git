@@ -44,6 +44,8 @@ class DefaultEmlsrManager : public EmlsrManager
     DefaultEmlsrManager();
     ~DefaultEmlsrManager() override;
 
+    bool SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId) override;
+
   protected:
     uint8_t GetLinkToSendEmlOmn() override;
     std::optional<uint8_t> ResendNotification(Ptr<const WifiMpdu> mpdu) override;

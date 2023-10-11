@@ -195,6 +195,16 @@ class EmlsrManager : public Object
     void NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted = false, bool ongoingDlTxop = false);
 
     /**
+     * This method is intended to notify the EMLSR Manager that an aux PHY that is NOT TX capable
+     * has gained a TXOP on a given link and returns whether the main PHY has been requested to
+     * switch to the given link to take over the TXOP.
+     *
+     * \param linkId the ID of the given link
+     * \return whether main PHY has been requested to switch
+     */
+    virtual bool SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId) = 0;
+
+    /**
      * Check whether the MediumSyncDelay timer is running for the STA operating on the given link.
      * If so, returns the time elapsed since the timer started.
      *

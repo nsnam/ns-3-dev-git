@@ -285,27 +285,51 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, ChannelWidthMhz allow
             mainPhy != m_phy)
         {
             // an aux PHY is operating on this link
+
             if (!emlsrManager->GetAuxPhyTxCapable())
             {
                 NS_LOG_DEBUG("Aux PHY is not capable of transmitting a PPDU");
+
+                if (emlsrManager->SwitchMainPhyIfTxopGainedByAuxPhy(m_linkId))
+                {
+                    NS_ASSERT_MSG(mainPhy->IsStateSwitching(),
+                                  "SwitchMainPhyIfTxopGainedByAuxPhy returned true but main PHY is "
+                                  "not switching");
+
+                    const auto pifs = m_phy->GetSifs() + m_phy->GetSlot();
+                    auto checkMediumLastPifs = [=, this]() {
+                        // check if the medium has been idle for the last PIFS interval
+                        auto width = m_staMac->GetChannelAccessManager(m_linkId)
+                                         ->GetLargestIdlePrimaryChannel(pifs, Simulator::Now());
+
+                        if (width == 0)
+                        {
+                            NS_LOG_DEBUG("Medium busy in the last PIFS after channel switch end");
+                            edca->StartAccessAfterEvent(m_linkId,
+                                                        Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                                                        Txop::CHECK_MEDIUM_BUSY);
+                            return;
+                        }
+
+                        // medium idle, start a TXOP
+                        if (HeFrameExchangeManager::StartTransmission(edca, width))
+                        {
+                            // notify the EMLSR Manager of the UL TXOP start on an EMLSR link
+                            emlsrManager->NotifyUlTxopStart(m_linkId, std::nullopt);
+                        }
+                    };
+                    Simulator::Schedule(mainPhy->GetDelayUntilIdle() + pifs, checkMediumLastPifs);
+                }
+
                 NotifyChannelReleased(edca);
                 return false;
             }
 
-            if (mainPhy->IsStateRx())
-            {
-                NS_LOG_DEBUG(
-                    "Main PHY is receiving a PPDU (may be, e.g., an ICF or a Beacon); do not "
-                    "transmit to avoid dropping that PPDU due to the main PHY switching to this "
-                    "link to take over the TXOP");
-                // Note that we do not prevent a (main or aux) PHY from starting a TXOP when
-                // an(other) aux PHY is receiving a PPDU. The reason is that if the aux PHY is
-                // receiving a Beacon frame, the aux PHY will not be affected by the start of
-                // a TXOP; if the aux PHY is receiving an ICF, the ICF will be dropped by
-                // ReceiveMpdu because another EMLSR link is being used.
-                NotifyChannelReleased(edca);
-                return false;
-            }
+            // Note that we do not prevent a (main or aux) PHY from starting a TXOP when
+            // an(other) aux PHY is receiving a PPDU. The reason is that if the aux PHY is
+            // receiving a Beacon frame, the aux PHY will not be affected by the start of
+            // a TXOP; if the aux PHY is receiving an ICF, the ICF will be dropped by
+            // ReceiveMpdu because another EMLSR link is being used.
 
             const auto rtsTxVector =
                 GetWifiRemoteStationManager()->GetRtsTxVector(m_bssid, allowedWidth);
@@ -323,21 +347,37 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, ChannelWidthMhz allow
 
             auto switchingTime = mainPhy->GetChannelSwitchDelay();
 
-            if (mainPhy->IsStateSwitching())
+            switch (mainPhy->GetState()->GetState())
             {
-                // the main PHY is switching (to another link), hence the remaining time to the
-                // end of the current channel switch needs to be added up
+            case WifiPhyState::RX:
+            case WifiPhyState::SWITCHING:
+                // the main PHY is receiving or switching (to another link), hence the remaining
+                // time to the end of the current reception/channel switch needs to be added up
                 switchingTime += mainPhy->GetDelayUntilIdle();
-            }
-
-            if (switchingTime > timeToCtsEnd)
-            {
-                // switching takes longer than RTS/CTS exchange, do not transmit anything to
-                // avoid that the main PHY is requested to switch while already switching
-                NS_LOG_DEBUG("Main PHY will still be switching channel when RTS/CTS ends, thus it "
-                             "will not be able to take over this TXOP");
+                [[fallthrough]];
+            case WifiPhyState::IDLE:
+            case WifiPhyState::CCA_BUSY:
+                if (!mainPhy->IsReceivingPhyHeader() && switchingTime <= timeToCtsEnd)
+                {
+                    break; // start TXOP
+                }
+                // release channel
+                if (mainPhy->IsReceivingPhyHeader())
+                {
+                    NS_LOG_DEBUG(
+                        "Aux PHY cannot start TXOP because main PHY is receiving a PHY header");
+                }
+                else
+                {
+                    // switching takes longer than RTS/CTS exchange, do not transmit anything to
+                    // avoid that the main PHY is requested to switch while already switching
+                    NS_LOG_DEBUG("Not enough time for main PHY to switch link (main PHY state: "
+                                 << mainPhy->GetState() << ")");
+                }
                 NotifyChannelReleased(edca);
                 return false;
+            default:
+                NS_ABORT_MSG("Main PHY cannot be in state " << mainPhy->GetState());
             }
         }
     }
