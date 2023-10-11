@@ -447,25 +447,11 @@ class ParameterLogger
     /**
      * Write a function parameter on the output stream,
      * separating parameters after the first by `,` strings.
-     * Overload for arithmetic types (integral type or floating point type),
-     * enabling the parameter to be passed by value.
      *
      * \param [in] param The function parameter.
      * \return This ParameterLogger, so it's chainable.
      */
-    template <typename T, typename U = std::enable_if_t<std::is_arithmetic_v<T>>>
-    ParameterLogger& operator<<(T param);
-
-    /**
-     * Write a function parameter on the output stream,
-     * separating parameters after the first by `,` strings.
-     * Overload for non-arithmetic types, enabling the parameter
-     * to be passed by reference.
-     *
-     * \param [in] param The function parameter.
-     * \return This ParameterLogger, so it's chainable.
-     */
-    template <typename T, typename U = std::enable_if_t<!std::is_arithmetic_v<T>>>
+    template <typename T>
     ParameterLogger& operator<<(const T& param);
 
     /**
@@ -477,14 +463,6 @@ class ParameterLogger
     template <typename T>
     ParameterLogger& operator<<(const std::vector<T>& vector);
 
-    /**
-     * Overload for C-strings.
-     *
-     * \param [in] param The C-string
-     * \return This ParameterLogger, so it's chainable.
-     */
-    ParameterLogger& operator<<(const char* param);
-
   private:
     /** Add `, ` before every parameter after the first. */
     void CommaRest();
@@ -493,21 +471,26 @@ class ParameterLogger
     std::ostream& m_os; //!< Underlying output stream.
 };
 
-template <typename T, typename U>
-ParameterLogger&
-ParameterLogger::operator<<(T param)
-{
-    CommaRest();
-    m_os << param;
-    return *this;
-}
-
-template <typename T, typename U>
+template <typename T>
 ParameterLogger&
 ParameterLogger::operator<<(const T& param)
 {
     CommaRest();
-    m_os << param;
+
+    if constexpr (std::is_convertible_v<T, std::string>)
+    {
+        m_os << "\"" << param << "\"";
+    }
+    else if constexpr (std::is_arithmetic_v<T>)
+    {
+        // Use + unary operator to cast uint8_t / int8_t to uint32_t / int32_t, respectively
+        m_os << +param;
+    }
+    else
+    {
+        m_os << param;
+    }
+
     return *this;
 }
 
@@ -521,30 +504,6 @@ ParameterLogger::operator<<(const std::vector<T>& vector)
     }
     return *this;
 }
-
-/**
- * Specialization for strings.
- * \param [in] param The function parameter.
- * \return This ParameterLogger, so it's chainable.
- */
-template <>
-ParameterLogger& ParameterLogger::operator<< <std::string>(const std::string& param);
-
-/**
- * Specialization for int8_t.
- * \param [in] param The function parameter.
- * \return This ParameterLogger, so it's chainable.
- */
-template <>
-ParameterLogger& ParameterLogger::operator<< <int8_t>(const int8_t param);
-
-/**
- * Specialization for uint8_t.
- * \param [in] param The function parameter.
- * \return This ParameterLogger, so it's chainable.
- */
-template <>
-ParameterLogger& ParameterLogger::operator<< <uint8_t>(const uint8_t param);
 
 } // namespace ns3
 

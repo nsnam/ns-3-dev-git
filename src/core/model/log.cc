@@ -535,36 +535,4 @@ ParameterLogger::CommaRest()
     }
 }
 
-template <>
-ParameterLogger&
-ParameterLogger::operator<< <std::string>(const std::string& param)
-{
-    CommaRest();
-    m_os << "\"" << param << "\"";
-    return *this;
-}
-
-ParameterLogger&
-ParameterLogger::operator<<(const char* param)
-{
-    (*this) << std::string(param);
-    return *this;
-}
-
-template <>
-ParameterLogger&
-ParameterLogger::operator<< <int8_t>(const int8_t param)
-{
-    (*this) << static_cast<int16_t>(param);
-    return *this;
-}
-
-template <>
-ParameterLogger&
-ParameterLogger::operator<< <uint8_t>(const uint8_t param)
-{
-    (*this) << static_cast<uint16_t>(param);
-    return *this;
-}
-
 } // namespace ns3
