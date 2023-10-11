@@ -219,9 +219,9 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * \param trigger the MU-RTS Trigger Frame header
      * \param muRtsSnr the SNR of the MU-RTS in linear scale
      */
-    void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
-                           const CtrlTriggerHeader& trigger,
-                           double muRtsSnr);
+    virtual void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
+                                   const CtrlTriggerHeader& trigger,
+                                   double muRtsSnr);
 
     /**
      * \return the mode used to transmit a CTS after an MU-RTS.

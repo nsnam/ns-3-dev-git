@@ -518,6 +518,12 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     NS_ASSERT_MSG(mainPhy != m_staMac->GetWifiPhy(linkId),
                   "Main PHY is already operating on link " << +linkId);
 
+    if (mainPhy->IsStateSwitching())
+    {
+        NS_LOG_DEBUG("Main PHY is already switching, ignore new switching request");
+        return;
+    }
+
     // find the link on which the main PHY is operating
     auto currMainPhyLinkId = m_staMac->GetLinkForPhy(mainPhy);
     NS_ASSERT_MSG(currMainPhyLinkId, "Current link ID for main PHY not found");

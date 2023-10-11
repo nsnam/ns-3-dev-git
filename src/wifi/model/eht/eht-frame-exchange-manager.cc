@@ -577,6 +577,31 @@ EhtFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
 }
 
 void
+EhtFrameExchangeManager::SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
+                                           const CtrlTriggerHeader& trigger,
+                                           double muRtsSnr)
+{
+    NS_LOG_FUNCTION(this << muRtsHdr << trigger << muRtsSnr);
+
+    NS_ASSERT(m_staMac);
+    if (auto emlsrManager = m_staMac->GetEmlsrManager())
+    {
+        auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
+
+        // an aux PHY that is not TX capable may get a TXOP, release the channel and request
+        // the main PHY to switch channel. Shortly afterwards, the AP MLD may send an ICF, thus
+        // when the main PHY is scheduled to send the CTS, the main PHY may be switching channel
+        // or may be operating on another link
+        if (mainPhy->IsStateSwitching() || m_mac->GetLinkForPhy(mainPhy) != m_linkId)
+        {
+            NS_LOG_DEBUG("Main PHY is switching or operating on another link, abort sending CTS");
+            return;
+        }
+    }
+    HeFrameExchangeManager::SendCtsAfterMuRts(muRtsHdr, trigger, muRtsSnr);
+}
+
+void
 EhtFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << *muRts << txVector);
