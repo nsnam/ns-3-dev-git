@@ -244,6 +244,13 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
     # ns3-module-macros.cmake.
     set(GCC8 TRUE)
   endif()
+  if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "12.2.0"))
+    # PCH causes weird errors on certain versions of GCC when C++20 is enabled
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=106799
+    set(NS3_PRECOMPILE_HEADERS OFF
+        CACHE BOOL "Precompile module headers to speed up compilation" FORCE
+    )
+  endif()
   set(GCC TRUE)
   add_definitions(-fno-semantic-interposition)
   if(${NS3_COLORED_OUTPUT} OR "$ENV{CLICOLOR}")

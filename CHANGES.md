@@ -28,6 +28,9 @@ Changes from ns-3.40 to ns-3-dev
 
 ### Changes to build system
 
+* In preparation to enable C++20, the following actions have been taken due to compiler issues:
+  * Precompiled headers have been disabled in GCC versions >= 12.2.
+
 ### Changed behavior
 
 Changes from ns-3.39 to ns-3.40
