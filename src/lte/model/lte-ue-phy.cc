@@ -936,7 +936,7 @@ LteUePhy::ReportUeMeasurements()
     NS_LOG_FUNCTION(this << Simulator::Now());
     NS_LOG_DEBUG(this << " Report UE Measurements ");
 
-    LteUeCphySapUser::UeMeasurementsParameters ret;
+    LteUeCphySapUser::UeMeasurementsParameters ret{};
 
     for (auto it = m_ueMeasurementsMap.begin(); it != m_ueMeasurementsMap.end(); it++)
     {
