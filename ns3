@@ -469,7 +469,9 @@ def clean_cmake_artifacts(dry_run=False):
         remove_dir(dirname, dry_run, "CMake cache")
 
     dirs_to_remove = ["testpy-output",
-                      "__pycache__"
+                      "__pycache__",
+                      "build",
+                      "cmake-cache"
                       ]
     for dir_to_remove in map(append_to_ns3_path, dirs_to_remove):
         remove_dir(dir_to_remove, dry_run)
