@@ -47,11 +47,10 @@ clang-tidy-16:
       libboost-all-dev libeigen3-dev libgtk-3-dev libopenmpi-dev libsqlite3-dev
       gsl-bin libgsl-dev libgsl27
       git ssh
-    - pip3 install --break-system-packages cppyy
     - ./ns3 configure -d debug
       --enable-clang-tidy
       --enable-examples --enable-tests --enable-asserts
-      --enable-mpi --enable-python-bindings
+      --enable-mpi
   script:
     - if (git remote | grep -qw upstream) ; then
       git remote remove upstream ;

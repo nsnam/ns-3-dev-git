@@ -2,10 +2,7 @@ cppyy-22.04:
   stage: test
   image: ubuntu:22.04 # python 3.10
   rules:
-    - if: $RELEASE == "weekly"
-    - if: $RELEASE == "daily"
     - if: $RELEASE == "manual"
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   dependencies: []
   before_script:
     - apt update
