@@ -1359,6 +1359,9 @@ WifiPhy::SetSleepMode()
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::IDLE:
         NS_LOG_DEBUG("setting sleep mode");
+        // The PHY object may be in CCA_BUSY state because it is receiving a preamble. Cancel
+        // preamble events before switching to sleep state
+        Reset();
         m_state->SwitchToSleep();
         break;
     case WifiPhyState::SLEEP:
