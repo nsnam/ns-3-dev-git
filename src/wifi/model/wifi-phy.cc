@@ -1362,7 +1362,13 @@ WifiPhy::SetSleepMode()
         // The PHY object may be in CCA_BUSY state because it is receiving a preamble. Cancel
         // preamble events before switching to sleep state
         Reset();
-        m_state->SwitchToSleep();
+        // It may happen that we request to switch to sleep at the same time the reception of
+        // a PPDU ends. In such a case, WifiPhyStateHelper::GetState() does not return RX
+        // (m_endRx equals now), we get here and set the state to SLEEP. However,
+        // WifiPhyStateHelper::DoSwitchFromRx() may be called after this function (at the same
+        // simulation time), thus hitting the assert that checks that the state is IDLE or
+        // CCA_BUSY.
+        Simulator::ScheduleNow(&WifiPhyStateHelper::SwitchToSleep, m_state);
         break;
     case WifiPhyState::SLEEP:
         NS_LOG_DEBUG("already in sleep mode");
