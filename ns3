@@ -2,6 +2,7 @@
 
 import argparse
 import atexit
+import functools
 import glob
 import os
 import re
@@ -10,6 +11,7 @@ import subprocess
 import sys
 
 ns3_path = os.path.dirname(os.path.abspath(__file__))
+append_to_ns3_path = functools.partial(os.path.join, ns3_path)
 out_dir = os.sep.join([ns3_path, "build"])
 lock_file = os.sep.join([ns3_path, ".lock-ns3_%s_build" % sys.platform])
 
@@ -466,17 +468,17 @@ def clean_cmake_artifacts(dry_run=False):
         dirname = os.path.dirname(cmake_cache_file)
         remove_dir(dirname, dry_run, "CMake cache")
 
-    dirs_to_remove = [os.path.join(ns3_path, "testpy-output"),
-                      os.path.join(ns3_path, "__pycache__")
+    dirs_to_remove = ["testpy-output",
+                      "__pycache__"
                       ]
-    for dir_to_remove in dirs_to_remove:
+    for dir_to_remove in map(append_to_ns3_path, dirs_to_remove):
         remove_dir(dir_to_remove, dry_run)
 
     remove_file(lock_file, dry_run)
 
 
 def clean_docs_and_tests_artifacts(dry_run=False):
-    docs_dir = os.path.join(ns3_path, 'doc')
+    docs_dir = append_to_ns3_path('doc')
 
     file_artifacts = ["doxygen.log",
                       "doxygen.warnings.log",
@@ -499,16 +501,16 @@ def clean_docs_and_tests_artifacts(dry_run=False):
 
 
 def clean_pip_packaging_artifacts(dry_run=False):
-    pip_dirs = [os.path.join(ns3_path, "dist"),
-                os.path.join(ns3_path, "nsnam.egg-info"),
-                os.path.join(ns3_path, "wheelhouse")
+    pip_dirs = ["dist",
+                "nsnam.egg-info",
+                "wheelhouse"
                 ]
-    for directory in pip_dirs:
+    for directory in map(append_to_ns3_path, pip_dirs):
         remove_dir(directory, dry_run)
 
 
 def clean_vcpkg_artifacts(dry_run=False):
-    remove_dir(os.path.join(ns3_path, "vcpkg"), dry_run)
+    remove_dir(append_to_ns3_path("vcpkg"), dry_run)
 
 
 def search_cmake_cache(build_profile):
@@ -746,7 +748,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
 
 def update_scratches_list(current_cmake_cache_folder):
     # Store list of scratches to trigger a reconfiguration step if needed
-    current_scratch_sources = glob.glob(os.path.join(ns3_path, "scratch", "**", "*.cc"), recursive=True)
+    current_scratch_sources = glob.glob(append_to_ns3_path("scratch", "**", "*.cc"), recursive=True)
     with open(os.path.join(current_cmake_cache_folder, "ns3scratches"), "w") as f:
         f.write("\n".join(current_scratch_sources))
 
@@ -788,7 +790,7 @@ def get_program_shortcuts(build_profile, ns3_version):
         # Check if there is a .cc file for that specific program
         source_file_path = os.sep.join(temp_path) + ".cc"
         source_shortcut = False
-        if os.path.exists(os.path.join(ns3_path, source_file_path)):
+        if os.path.exists(append_to_ns3_path(source_file_path)):
             source_shortcut = True
 
         program = program.strip()
@@ -833,7 +835,7 @@ def get_program_shortcuts(build_profile, ns3_version):
         ns3_program_map[colliding_shortcut] = longest_shortcuts
 
     if programs_dict["ns3_runnable_scripts"]:
-        scratch_scripts = glob.glob(os.path.join(ns3_path, "scratch", "*.py"), recursive=True)
+        scratch_scripts = glob.glob(append_to_ns3_path("scratch", "*.py"), recursive=True)
         programs_dict["ns3_runnable_scripts"].extend(scratch_scripts)
 
     for program in programs_dict["ns3_runnable_scripts"]:
@@ -1316,7 +1318,7 @@ def show_build_version(build_version_string, exit_early=True):
     if build_version_string is None:
         project_not_configured()
 
-    if build_version_string == '' and shutil.which("git") and os.path.exists(os.path.join(ns3_path, ".git")):
+    if build_version_string == '' and shutil.which("git") and os.path.exists(append_to_ns3_path(".git")):
         try:
             build_version_string = subprocess.check_output(["git", "describe", "--dirty"], cwd=ns3_path).decode()
             build_version_string += ("Reconfigure with './ns3 configure --enable-build-version' "
@@ -1422,7 +1424,7 @@ def main():
 
     # If pybindgen exists in the parent directory
     # (e.g. ns3-all-in-one), add it to the PYTHONPATH
-    pybindgen_dir = glob.glob(os.path.abspath(os.path.join(ns3_path, "..", "pybindgen*")))
+    pybindgen_dir = glob.glob(os.path.abspath(append_to_ns3_path("..", "pybindgen*")))
     if pybindgen_dir:
         if "PYTHONPATH" not in os.environ:
             os.environ["PYTHONPATH"] = ""
@@ -1521,7 +1523,7 @@ def main():
 
         # Check for changes in scratch sources and trigger a reconfiguration if sources changed
         if current_cmake_cache_folder:
-            current_scratch_sources = glob.glob(os.path.join(ns3_path, "scratch", "**", "*.cc"),
+            current_scratch_sources = glob.glob(append_to_ns3_path("scratch", "**", "*.cc"),
                                                 recursive=True)
             scratches_file = os.path.join(current_cmake_cache_folder, "ns3scratches")
             if os.path.exists(scratches_file):
