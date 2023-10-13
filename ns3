@@ -433,7 +433,7 @@ def remove_dir(dir_to_remove, dry_run, directory_qualifier=""):
     dir_to_remove = os.path.abspath(dir_to_remove)
     if os.path.exists(dir_to_remove):
         if (".." in os.path.relpath(dir_to_remove, ns3_path)
-            or os.path.abspath(dir_to_remove) == os.path.abspath(ns3_path)):
+                or os.path.abspath(dir_to_remove) == os.path.abspath(ns3_path)):
             # In case the directory to remove isn't within
             # the current ns-3 directory, print an error
             # message for the dry-run case
