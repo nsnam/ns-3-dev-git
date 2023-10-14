@@ -169,7 +169,8 @@ BlockAckAgreement::GetBlockAckType() const
     auto it = lengths.lower_bound(m_bufferSize);
     NS_ASSERT_MSG(it != lengths.cend(), "Buffer size too large: " << m_bufferSize);
     // Multi-TID Block Ack is not currently supported
-    return {BlockAckType::COMPRESSED, {static_cast<uint8_t>(*it / 8)}};
+    return {m_gcrGroupAddress ? BlockAckType::GCR : BlockAckType::COMPRESSED,
+            {static_cast<uint8_t>(*it / 8)}};
 }
 
 BlockAckReqType
