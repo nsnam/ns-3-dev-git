@@ -40,6 +40,7 @@ Release 3-dev
 - (wifi) - Fix agreement not always properly torn down when Block Ack inactivity timeout is elapsed
 - (wifi) - Stop A-MSDU aggregation when an A-MSDU is found in the queue
 - (lr-wpan) !1769 - `DoDispose` SIGSEGV and beacon fixes
+- (wifi) - ReportAmpduTxStatus called twice when sending explicit BAR upon missed BlockAck
 
 Release 3.40
 ------------

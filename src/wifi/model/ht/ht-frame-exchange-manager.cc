@@ -1363,8 +1363,6 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
     else
     {
         isBar = false;
-        GetWifiRemoteStationManager()
-            ->ReportAmpduTxStatus(recipient, 0, psdu->GetNMpdus(), 0, 0, txVector);
         std::set<uint8_t> tids = psdu->GetTids();
         NS_ABORT_MSG_IF(tids.size() > 1, "Multi-TID A-MPDUs not handled here");
         NS_ASSERT(!tids.empty());
@@ -1423,6 +1421,8 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
     else
     {
         // we have to retransmit the data frames, if needed
+        GetWifiRemoteStationManager()
+            ->ReportAmpduTxStatus(recipient, 0, psdu->GetNMpdus(), 0, 0, txVector);
         if (!GetWifiRemoteStationManager()->NeedRetransmission(*psdu->begin()))
         {
             NS_LOG_DEBUG("Missed Block Ack, do not retransmit the data frames");
