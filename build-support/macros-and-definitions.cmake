@@ -251,6 +251,13 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
         CACHE BOOL "Precompile module headers to speed up compilation" FORCE
     )
   endif()
+  if((CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "12.1.0")
+          AND (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "12.3.2")
+  )
+    # Disable warnings-as-errors for certain versions of GCC when C++20 is
+    # enabled https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105545
+    add_compile_options(-Wno-restrict)
+  endif()
   set(GCC TRUE)
   add_definitions(-fno-semantic-interposition)
   if(${NS3_COLORED_OUTPUT} OR "$ENV{CLICOLOR}")
