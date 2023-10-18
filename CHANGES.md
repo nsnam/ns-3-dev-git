@@ -31,6 +31,7 @@ Changes from ns-3.40 to ns-3-dev
 * In preparation to enable C++20, the following actions have been taken due to compiler issues:
   * Precompiled headers have been disabled in GCC versions >= 12.2.
   * The `restrict` warning has been disabled in GCC versions 12.1-12.3.1.
+* Raised minimum CMake version to 3.12.
 
 ### Changed behavior
 

@@ -858,16 +858,18 @@ def parse_version(version_str):
 
 def cmake_check_version():
     # Check CMake version
+    minimum_cmake_version = "3.12.0"
     cmake3 = shutil.which("cmake3")
     cmake = cmake3 if cmake3 else shutil.which("cmake")
     if not cmake:
-        print("Error:  CMake not found; please install version 3.10 or greater, or modify", path_variable)
+        print(
+            f"Error:  CMake not found; please install version {minimum_cmake_version} or greater, or modify {path_variable}")
         exit(1)
     cmake = cmake.replace(".EXE", "").replace(".exe", "")  # Trim cmake executable extension
     cmake_output = subprocess.check_output([cmake, "--version"]).decode("utf-8")
     version = re.findall("version (.*)", cmake_output)[0]
-    if parse_version(version) < parse_version("3.10.0"):
-        print("Error:  CMake found at %s but version %s is older than 3.10" % (cmake, version))
+    if parse_version(version) < parse_version(minimum_cmake_version):
+        print(f"Error:  CMake found at {cmake} but version {version} is older than {minimum_cmake_version}")
         exit(1)
     return cmake, version
 
