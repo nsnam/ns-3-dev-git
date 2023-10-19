@@ -59,14 +59,15 @@ class MacRxMiddle : public SimpleRefCount<MacRxMiddle>
     friend class MacRxMiddleTest;
     /**
      * Look up for OriginatorRxStatus associated with the sender address
-     * (by looking at ADDR2 field in the header).
+     * (by looking at ADDR2 field in the header) for unicast. For groupcast,
+     * the (nonconcealed) group address is used instead.
      * The method creates a new OriginatorRxStatus if one is not already presented.
      *
-     * @param hdr the MAC header
+     * @param mpdu the received MPDU
      *
      * @return OriginatorRxStatus
      */
-    OriginatorRxStatus& Lookup(const WifiMacHeader& hdr);
+    OriginatorRxStatus& Lookup(Ptr<const WifiMpdu> mpdu);
     /**
      * Check if we have already received the packet from the sender before
      * (by looking at the sequence control field).

@@ -161,15 +161,26 @@ MacRxMiddle::SetForwardCallback(ForwardUpCallback callback)
 }
 
 OriginatorRxStatus&
-MacRxMiddle::Lookup(const WifiMacHeader& hdr)
+MacRxMiddle::Lookup(Ptr<const WifiMpdu> mpdu)
 {
-    NS_LOG_FUNCTION(hdr);
+    NS_LOG_FUNCTION(*mpdu);
+    const auto& hdr = mpdu->GetOriginal()->GetHeader();
     const auto source = hdr.GetAddr2();
-    if (hdr.IsQosData() && !source.IsGroup())
+    const auto dest = hdr.GetAddr1();
+    if (hdr.IsQosData() && !dest.IsGroup())
     {
-        /* only for QoS data non-broadcast frames */
+        /* only for QoS data unicast frames */
         const auto key = std::make_pair(source, hdr.GetQosTid());
         auto [it, inserted] = m_qosOriginatorStatus.try_emplace(key);
+        return it->second;
+    }
+    else if (hdr.IsQosData() && dest.IsGroup())
+    {
+        /* for QoS data groupcast frames: use the (nonconcealed) group address as key */
+        const auto groupAddress =
+            hdr.IsQosAmsdu() ? mpdu->begin()->second.GetDestinationAddr() : hdr.GetAddr1();
+        const auto key = std::make_pair(groupAddress, hdr.GetQosTid());
+        auto [it, inserted] = m_qosOriginatorStatus.insert({key, {}});
         return it->second;
     }
     /* - management frames
@@ -256,7 +267,7 @@ MacRxMiddle::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     const auto& hdr = mpdu->GetOriginal()->GetHeader();
     NS_ASSERT(hdr.IsData() || hdr.IsMgt());
 
-    auto& originator = Lookup(hdr);
+    auto& originator = Lookup(mpdu);
     /**
      * The check below is really unneeded because it can fail in a lot of
      * normal cases. Specifically, it is possible for sequence numbers to
