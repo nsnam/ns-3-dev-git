@@ -776,9 +776,9 @@ Ptr<T>::operator*()
 template <typename T>
 Ptr<T>::operator Tester*() const // NS_DEPRECATED_3_37
 {
-    if (m_ptr == 0)
+    if (m_ptr == nullptr)
     {
-        return 0;
+        return nullptr;
     }
     static Tester test;
     return &test;
