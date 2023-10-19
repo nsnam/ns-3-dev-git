@@ -1711,7 +1711,7 @@ LrWpanMac::CheckQueue()
     }
 }
 
-SuperframeField
+uint16_t
 LrWpanMac::GetSuperframeField()
 {
     SuperframeField sfrmSpec;
@@ -1736,7 +1736,7 @@ LrWpanMac::GetSuperframeField()
         sfrmSpec.SetAssocPermit(true);
     }
 
-    return sfrmSpec;
+    return sfrmSpec.GetSuperframe();
 }
 
 GtsFields
@@ -2184,8 +2184,8 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                         // beginning of an Association).
                         m_csmaCa->Cancel();
 
-                        SuperframeField incomingSuperframe;
-                        incomingSuperframe = receivedMacPayload.GetSuperframeSpecField();
+                        SuperframeField incomingSuperframe(
+                            receivedMacPayload.GetSuperframeSpecField());
 
                         m_incomingBeaconOrder = incomingSuperframe.GetBeaconOrder();
                         m_incomingSuperframeOrder = incomingSuperframe.GetFrameOrder();

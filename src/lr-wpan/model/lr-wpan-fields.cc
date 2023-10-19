@@ -35,6 +35,11 @@ SuperframeField::SuperframeField()
     SetAssocPermit(false);
 }
 
+SuperframeField::SuperframeField(uint16_t bitmap)
+{
+    SetSuperframe(bitmap);
+}
+
 void
 SuperframeField::SetSuperframe(uint16_t superFrmSpec)
 {
@@ -154,28 +159,6 @@ SuperframeField::GetSuperframe() const
     superframe |= (m_sspecAssocPermit << 15) & (0x01 << 15); // Bit 15
 
     return superframe;
-}
-
-uint32_t
-SuperframeField::GetSerializedSize() const
-{
-    return 2; // 2 Octets (superframeSpec)
-}
-
-Buffer::Iterator
-SuperframeField::Serialize(Buffer::Iterator i) const
-{
-    i.WriteHtolsbU16(GetSuperframe());
-    return i;
-}
-
-Buffer::Iterator
-SuperframeField::Deserialize(Buffer::Iterator i)
-{
-    uint16_t superframe = i.ReadLsbtohU16();
-    SetSuperframe(superframe);
-
-    return i;
 }
 
 std::ostream&

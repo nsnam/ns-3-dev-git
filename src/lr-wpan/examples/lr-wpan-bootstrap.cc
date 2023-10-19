@@ -105,7 +105,8 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
             }
 
             // Only request association if the coordinator is permitting association at this moment.
-            if (params.m_panDescList[panDescIndex].m_superframeSpec.IsAssocPermit())
+            SuperframeField superframe(params.m_panDescList[panDescIndex].m_superframeSpec);
+            if (superframe.IsAssocPermit())
             {
                 std::string addressing;
                 if (params.m_panDescList[panDescIndex].m_coorAddrMode == SHORT_ADDR)

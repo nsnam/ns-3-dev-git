@@ -21,6 +21,7 @@ Release 3-dev
 ### New user-visible features
 
 - (lr-wpan) !1686 Change CapabilityField to standard bitmap
+- (lr-wpan) !1698 Change SuperframeField to standard bitmap
 
 ### Bugs fixed
 

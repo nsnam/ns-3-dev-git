@@ -384,12 +384,12 @@ struct PanDescriptor
                                   //!< coordinator address mode.
     uint8_t m_logCh{11};          //!< The current channel number occupied by the network.
     uint8_t m_logChPage{0};       //!< The current channel page occupied by the network.
-    SuperframeField m_superframeSpec; //!< The superframe specification as specified in the received
-                                      //!< beacon frame.
-    bool m_gtsPermit{false};          //!< TRUE if the beacon is from the PAN coordinator
-                                      //!< that is accepting GTS requests.
-    uint8_t m_linkQuality{0};         //!< The LQI at which the network beacon was received.
-                                      //!< Lower values represent lower LQI.
+    uint16_t m_superframeSpec{0}; //!< The superframe specification as specified in the received
+                                  //!< beacon frame.
+    bool m_gtsPermit{false};      //!< TRUE if the beacon is from the PAN coordinator
+                                  //!< that is accepting GTS requests.
+    uint8_t m_linkQuality{0};     //!< The LQI at which the network beacon was received.
+                                  //!< Lower values represent lower LQI.
     Time m_timeStamp; //!< Beacon frame reception time. Used as Time data type in ns-3 to avoid
                       //!< precision problems.
 };
@@ -1830,9 +1830,9 @@ class LrWpanMac : public Object
      * Constructs a Superframe specification field from the local information,
      * the superframe Specification field is necessary to create a beacon frame.
      *
-     * \returns the Superframe specification field
+     * \returns the Superframe specification field (bitmap)
      */
-    SuperframeField GetSuperframeField();
+    uint16_t GetSuperframeField();
 
     /**
      * Constructs the Guaranteed Time Slots (GTS) Fields from local information.

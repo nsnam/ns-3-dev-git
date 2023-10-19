@@ -55,7 +55,7 @@ uint32_t
 BeaconPayloadHeader::GetSerializedSize() const
 {
     uint32_t size = 0;
-    size += m_superframeField.GetSerializedSize();
+    size += sizeof(m_superframeField);
     size += m_gtsFields.GetSerializedSize();
     size += m_pndAddrFields.GetSerializedSize();
 
@@ -66,7 +66,7 @@ void
 BeaconPayloadHeader::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
-    i = m_superframeField.Serialize(i);
+    i.WriteU16(m_superframeField);
     i = m_gtsFields.Serialize(i);
     i = m_pndAddrFields.Serialize(i);
 }
@@ -75,7 +75,7 @@ uint32_t
 BeaconPayloadHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
-    i = m_superframeField.Deserialize(i);
+    m_superframeField = i.ReadU16();
     i = m_gtsFields.Deserialize(i);
     i = m_pndAddrFields.Deserialize(i);
 
@@ -91,7 +91,7 @@ BeaconPayloadHeader::Print(std::ostream& os) const
 }
 
 void
-BeaconPayloadHeader::SetSuperframeSpecField(SuperframeField sf)
+BeaconPayloadHeader::SetSuperframeSpecField(uint16_t sf)
 {
     m_superframeField = sf;
 }
@@ -108,7 +108,7 @@ BeaconPayloadHeader::SetPndAddrFields(PendingAddrFields pndAddrFields)
     m_pndAddrFields = pndAddrFields;
 }
 
-SuperframeField
+uint16_t
 BeaconPayloadHeader::GetSuperframeSpecField() const
 {
     return m_superframeField;

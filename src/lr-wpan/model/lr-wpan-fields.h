@@ -54,6 +54,14 @@ class SuperframeField
 {
   public:
     SuperframeField();
+
+    /**
+     * Create a superframe Specification Information field with
+     * the information specified in the bitmap.
+     *
+     * \param bitmap The superframe in bitmap form
+     */
+    SuperframeField(uint16_t bitmap);
     /**
      * Set the whole Superframe Specification Information field.
      * \param superFrm The Superframe Specification information field.
@@ -127,24 +135,6 @@ class SuperframeField
      * \return the Superframe Specification Information field bits.
      */
     uint16_t GetSuperframe() const;
-    /**
-     * Get the size of the serialized Superframe specification information field.
-     * \return the size of the serialized field.
-     */
-    uint32_t GetSerializedSize() const;
-    /**
-     * Serialize the entire superframe specification field.
-     * \param i an iterator which points to where the superframe specification field should be
-     * written.
-     * \return an iterator.
-     */
-    Buffer::Iterator Serialize(Buffer::Iterator i) const;
-    /**
-     * Deserialize the entire superframe specification field.
-     * \param i an iterator which points to where the superframe specification field should be read.
-     * \return an iterator.
-     */
-    Buffer::Iterator Deserialize(Buffer::Iterator i);
 
   private:
     // Superframe Specification field

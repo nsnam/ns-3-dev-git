@@ -50,9 +50,9 @@ class BeaconPayloadHeader : public Header
     void Print(std::ostream& os) const override;
     /**
      * Set the superframe specification field to the beacon payload header.
-     * \param sfrmField The superframe specification field
+     * \param sfrmField The superframe specification field (bitmap)
      */
-    void SetSuperframeSpecField(SuperframeField sfrmField);
+    void SetSuperframeSpecField(uint16_t sfrmField);
     /**
      * Set the superframe Guaranteed Time Slot (GTS) fields to the beacon payload header.
      * \param gtsFields The GTS fields.
@@ -65,9 +65,9 @@ class BeaconPayloadHeader : public Header
     void SetPndAddrFields(PendingAddrFields pndAddrFields);
     /**
      * Get the superframe specification field from the beacon payload header.
-     * \return The superframe specification field
+     * \return The superframe specification field (bitmap)
      */
-    SuperframeField GetSuperframeSpecField() const;
+    uint16_t GetSuperframeSpecField() const;
     /**
      * Get the Guaranteed Time Slots (GTS) fields from the beacon payload header.
      * \return The GTS fields.
@@ -83,7 +83,7 @@ class BeaconPayloadHeader : public Header
     /**
      * Superframe Specification Field
      */
-    SuperframeField m_superframeField;
+    uint16_t m_superframeField;
     /**
      * GTS Fields
      */
