@@ -26,4 +26,4 @@ PackConstructorInitializers: Never
 PointerAlignment: Left
 QualifierAlignment: Left
 SeparateDefinitionBlocks: Always
-Standard: "c++17"
+Standard: "c++20"
