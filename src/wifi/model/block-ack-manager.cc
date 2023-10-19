@@ -706,25 +706,6 @@ BlockAckManager::InactivityTimeout(const Mac48Address& recipient, uint8_t tid)
 }
 
 void
-BlockAckManager::NotifyOriginatorAgreementEstablished(const Mac48Address& recipient,
-                                                      uint8_t tid,
-                                                      uint16_t startingSeq)
-{
-    NS_LOG_FUNCTION(this << recipient << +tid << startingSeq);
-    auto it = m_originatorAgreements.find({recipient, tid});
-    NS_ASSERT(it != m_originatorAgreements.end());
-    if (!it->second.first.IsEstablished())
-    {
-        m_originatorAgreementState(Simulator::Now(),
-                                   recipient,
-                                   tid,
-                                   OriginatorBlockAckAgreement::ESTABLISHED);
-    }
-    it->second.first.SetState(OriginatorBlockAckAgreement::ESTABLISHED);
-    it->second.first.SetStartingSequence(startingSeq);
-}
-
-void
 BlockAckManager::NotifyOriginatorAgreementRejected(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << +tid);

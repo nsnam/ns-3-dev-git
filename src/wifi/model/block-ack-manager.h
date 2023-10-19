@@ -236,17 +236,6 @@ class BlockAckManager : public Object
     /**
      * @param recipient Address of peer station involved in block ack mechanism.
      * @param tid Traffic ID of transmitted packet.
-     * @param startingSeq starting sequence field
-     *
-     * Puts corresponding originator agreement in established state and updates number of packets
-     * and starting sequence field. Invoked typically after a block ack refresh.
-     */
-    void NotifyOriginatorAgreementEstablished(const Mac48Address& recipient,
-                                              uint8_t tid,
-                                              uint16_t startingSeq);
-    /**
-     * @param recipient Address of peer station involved in block ack mechanism.
-     * @param tid Traffic ID of transmitted packet.
      *
      * Marks an originator agreement as rejected. This happens if <i>recipient</i> station reject
      * block ack setup by an ADDBA Response frame with a failure status code. For now we assume
