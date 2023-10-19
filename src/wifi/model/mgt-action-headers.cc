@@ -1182,6 +1182,10 @@ void
 MgtDelBaHeader::Print(std::ostream& os) const
 {
     os << "Initiator=" << m_initiator << " TID=" << +m_tid;
+    if (m_gcrGroupAddress.has_value())
+    {
+        os << " GCR group address=" << m_gcrGroupAddress.value();
+    }
 }
 
 uint32_t
@@ -1190,6 +1194,11 @@ MgtDelBaHeader::GetSerializedSize() const
     uint32_t size = 0;
     size += 2; // DelBa parameter set
     size += 2; // Reason code
+    if (m_gcrGroupAddress)
+    {
+        // a GCR Group Address element has to be added
+        size += GcrGroupAddress().GetSerializedSize();
+    }
     return size;
 }
 
@@ -1199,6 +1208,12 @@ MgtDelBaHeader::Serialize(Buffer::Iterator start) const
     Buffer::Iterator i = start;
     i.WriteHtolsbU16(GetParameterSet());
     i.WriteHtolsbU16(m_reasonCode);
+    if (m_gcrGroupAddress)
+    {
+        GcrGroupAddress gcrGroupAddr;
+        gcrGroupAddr.m_gcrGroupAddress = *m_gcrGroupAddress;
+        i = gcrGroupAddr.Serialize(i);
+    }
 }
 
 uint32_t
@@ -1207,6 +1222,14 @@ MgtDelBaHeader::Deserialize(Buffer::Iterator start)
     Buffer::Iterator i = start;
     SetParameterSet(i.ReadLsbtohU16());
     m_reasonCode = i.ReadLsbtohU16();
+    m_gcrGroupAddress.reset();
+    GcrGroupAddress gcrGroupAddr;
+    auto tmp = i;
+    i = gcrGroupAddr.DeserializeIfPresent(i);
+    if (i.GetDistanceFrom(tmp) != 0)
+    {
+        m_gcrGroupAddress = gcrGroupAddr.m_gcrGroupAddress;
+    }
     return i.GetDistanceFrom(start);
 }
 
@@ -1241,6 +1264,18 @@ MgtDelBaHeader::SetTid(uint8_t tid)
 {
     NS_ASSERT(tid < 16);
     m_tid = static_cast<uint16_t>(tid);
+}
+
+void
+MgtDelBaHeader::SetGcrGroupAddress(const Mac48Address& address)
+{
+    m_gcrGroupAddress = address;
+}
+
+std::optional<Mac48Address>
+MgtDelBaHeader::GetGcrGroupAddress() const
+{
+    return m_gcrGroupAddress;
 }
 
 uint16_t

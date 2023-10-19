@@ -604,6 +604,16 @@ class MgtDelBaHeader : public Header
      * Un-set the initiator bit in the DELBA.
      */
     void SetByRecipient();
+    /**
+     * Set the GCR Group address.
+     *
+     * @param address the GCR Group Address
+     */
+    void SetGcrGroupAddress(const Mac48Address& address);
+    /**
+     * @return the GCR Group Address, if present
+     */
+    std::optional<Mac48Address> GetGcrGroupAddress() const;
 
   private:
     /**
@@ -622,6 +632,7 @@ class MgtDelBaHeader : public Header
     uint16_t m_initiator{0};  //!< initiator
     uint16_t m_tid{0};        //!< Traffic ID
     uint16_t m_reasonCode{1}; //!< Not used for now. Always set to 1: "Unspecified reason"
+    std::optional<Mac48Address> m_gcrGroupAddress; //!< GCR Group Address (optional)
 };
 
 /**
