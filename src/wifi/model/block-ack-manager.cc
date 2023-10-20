@@ -676,7 +676,6 @@ void
 BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);
-
     if (!mpdu->GetHeader().IsQosData())
     {
         NS_LOG_DEBUG("Not a QoS Data frame");
@@ -691,14 +690,37 @@ BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
 
     const auto recipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
     const auto tid = mpdu->GetHeader().GetQosTid();
-    auto it = GetOriginatorBaAgreement(recipient, tid);
-    if (it == m_originatorAgreements.end() || !it->second.first.IsEstablished())
+    if (!recipient.IsGroup())
+    {
+        auto it = GetOriginatorBaAgreement(recipient, tid);
+        HandleDiscardedMpdu(mpdu, it);
+    }
+    else
+    {
+        const auto groupAddress = mpdu->GetOriginal()->GetHeader().GetAddr1();
+        for (auto it = m_originatorAgreements.begin(); it != m_originatorAgreements.end(); ++it)
+        {
+            if (it->first.second != tid || !it->second.first.GetGcrGroupAddress().has_value() ||
+                it->second.first.GetGcrGroupAddress().value() != groupAddress)
+            {
+                continue;
+            }
+            HandleDiscardedMpdu(mpdu, it);
+        }
+    }
+}
+
+void
+BlockAckManager::HandleDiscardedMpdu(Ptr<const WifiMpdu> mpdu, OriginatorAgreementsI iter)
+{
+    if (iter == m_originatorAgreements.end() || !iter->second.first.IsEstablished())
     {
         NS_LOG_DEBUG("No established Block Ack agreement");
         return;
     }
 
-    if (const auto currStartingSeq = it->second.first.GetStartingSequence();
+    auto& [baAgreement, packetQueue] = iter->second;
+    if (const auto currStartingSeq = baAgreement.GetStartingSequence();
         QosUtilsIsOldPacket(currStartingSeq, mpdu->GetHeader().GetSequenceNumber()))
     {
         NS_LOG_DEBUG("Discarded an old frame");
@@ -706,13 +728,13 @@ BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
     }
 
     // actually advance the transmit window
-    it->second.first.NotifyDiscardedMpdu(mpdu);
+    baAgreement.NotifyDiscardedMpdu(mpdu);
 
     // remove old MPDUs from the EDCA queue and from the in flight queue
     // (including the given MPDU which became old after advancing the transmit window)
-    for (auto mpduIt = it->second.second.begin(); mpduIt != it->second.second.end();)
+    for (auto mpduIt = iter->second.second.begin(); mpduIt != iter->second.second.end();)
     {
-        if (it->second.first.GetDistance((*mpduIt)->GetHeader().GetSequenceNumber()) >=
+        if (baAgreement.GetDistance((*mpduIt)->GetHeader().GetSequenceNumber()) >=
             SEQNO_SPACE_HALF_SIZE)
         {
             NS_LOG_DEBUG("Dropping old MPDU: " << **mpduIt);
@@ -721,7 +743,7 @@ BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
             {
                 m_droppedOldMpduCallback(*mpduIt);
             }
-            mpduIt = it->second.second.erase(mpduIt);
+            mpduIt = packetQueue.erase(mpduIt);
         }
         else
         {
@@ -729,20 +751,25 @@ BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
         }
     }
 
-    // schedule a BlockAckRequest
-    NS_LOG_DEBUG("Schedule a Block Ack Request for agreement (" << recipient << ", " << +tid
-                                                                << ")");
+    // TODO: GCR-BA not supported yet
+    if (!baAgreement.GetGcrGroupAddress())
+    {
+        // schedule a BlockAckRequest
+        const auto [recipient, tid] = iter->first;
+        NS_LOG_DEBUG("Schedule a Block Ack Request for agreement (" << recipient << ", " << +tid
+                                                                    << ")");
 
-    WifiMacHeader hdr;
-    hdr.SetType(WIFI_MAC_CTL_BACKREQ);
-    hdr.SetAddr1(recipient);
-    hdr.SetAddr2(mpdu->GetOriginal()->GetHeader().GetAddr2());
-    hdr.SetDsNotTo();
-    hdr.SetDsNotFrom();
-    hdr.SetNoRetry();
-    hdr.SetNoMoreFragments();
+        WifiMacHeader hdr;
+        hdr.SetType(WIFI_MAC_CTL_BACKREQ);
+        hdr.SetAddr1(recipient);
+        hdr.SetAddr2(mpdu->GetOriginal()->GetHeader().GetAddr2());
+        hdr.SetDsNotTo();
+        hdr.SetDsNotFrom();
+        hdr.SetNoRetry();
+        hdr.SetNoMoreFragments();
 
-    ScheduleBar(GetBlockAckReqHeader(recipient, tid), hdr);
+        ScheduleBar(GetBlockAckReqHeader(recipient, tid), hdr);
+    }
 }
 
 void

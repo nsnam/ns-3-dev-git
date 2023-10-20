@@ -484,11 +484,11 @@ class BlockAckManager : public Object
     /**
      * typedef for a list of WifiMpdu.
      */
-    typedef std::list<Ptr<WifiMpdu>> PacketQueue;
+    using PacketQueue = std::list<Ptr<WifiMpdu>>;
     /**
      * typedef for an iterator for PacketQueue.
      */
-    typedef std::list<Ptr<WifiMpdu>>::iterator PacketQueueI;
+    using PacketQueueI = std::list<Ptr<WifiMpdu>>::iterator;
 
     /// AgreementKey-indexed map of originator block ack agreements
     using OriginatorAgreements =
@@ -573,6 +573,17 @@ class BlockAckManager : public Object
                                     MpduStatus status,
                                     const OriginatorAgreementsI& it,
                                     const Time& now);
+
+    /**
+     * Handle discarded MPDU by making the transmit window advance beyond the discarded frame.
+     * This also involves (i) the removal of frames that consequently become old from the
+     * retransmit queue and from the queue of the block ack agreement, and (ii) the
+     * scheduling of a BlockAckRequest.
+     *
+     * @param mpdu the discarded MPDU
+     * @param iter an iterator to the corresponding agreement
+     */
+    void HandleDiscardedMpdu(Ptr<const WifiMpdu> mpdu, OriginatorAgreementsI iter);
 
     /**
      * This data structure contains, for each originator block ack agreement (recipient, TID),
