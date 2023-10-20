@@ -157,6 +157,14 @@ class AttributeObjectTest : public Object
         TEST_C  //!< Test value C.
     };
 
+    /// Test enumerator.
+    enum class Test_ec
+    {
+        TEST_D, //!< Test value D.
+        TEST_E, //!< Test value E.
+        TEST_F  //!< Test value F.
+    };
+
     /**
      * \brief Get the type ID.
      * \return The object TypeId.
@@ -211,6 +219,27 @@ class AttributeObjectTest : public Object
                               MakeEnumAccessor<Test_e>(&AttributeObjectTest::DoSetEnum,
                                                        &AttributeObjectTest::DoGetEnum),
                               MakeEnumChecker(TEST_A, "TestA", TEST_B, "TestB", TEST_C, "TestC"))
+                .AddAttribute("TestEnumClass",
+                              "help text",
+                              EnumValue(Test_ec::TEST_D),
+                              MakeEnumAccessor<Test_ec>(&AttributeObjectTest::m_enumclass),
+                              MakeEnumChecker(Test_ec::TEST_D,
+                                              "TestD",
+                                              Test_ec::TEST_E,
+                                              "TestE",
+                                              Test_ec::TEST_F,
+                                              "TestF"))
+                .AddAttribute("TestEnumClassSetGet",
+                              "help text",
+                              EnumValue(Test_ec::TEST_E),
+                              MakeEnumAccessor<Test_ec>(&AttributeObjectTest::DoSetEnumClass,
+                                                        &AttributeObjectTest::DoGetEnumClass),
+                              MakeEnumChecker(Test_ec::TEST_D,
+                                              "TestD",
+                                              Test_ec::TEST_E,
+                                              "TestE",
+                                              Test_ec::TEST_F,
+                                              "TestF"))
                 .AddAttribute("TestRandom",
                               "help text",
                               StringValue("ns3::ConstantRandomVariable[Constant=1.0]"),
@@ -493,6 +522,26 @@ class AttributeObjectTest : public Object
         return m_enumSetGet;
     }
 
+    /**
+     * Set the m_enumClassSetGet value.
+     * \param v The value to set.
+     * \return true.
+     */
+    bool DoSetEnumClass(Test_ec v)
+    {
+        m_enumClassSetGet = v;
+        return true;
+    }
+
+    /**
+     * Get the m_enumClassSetGet value.
+     * \return the value of m_enumSetGet.
+     */
+    Test_ec DoGetEnumClass() const
+    {
+        return m_enumClassSetGet;
+    }
+
     bool m_boolTestA;                        //!< Boolean test A.
     bool m_boolTest;                         //!< Boolean test.
     bool m_boolTestDeprecated;               //!< Boolean test deprecated.
@@ -503,6 +552,8 @@ class AttributeObjectTest : public Object
     float m_float;                           //!< float.
     Test_e m_enum;                           //!< Enum.
     Test_e m_enumSetGet;                     //!< Enum set-get.
+    Test_ec m_enumclass;                     //!< Enum class.
+    Test_ec m_enumClassSetGet;               //!< Enum class set-get.
     Ptr<RandomVariableStream> m_random;      //!< Random number generator.
     std::vector<Ptr<Derived>> m_vector1;     //!< First vector of derived objects.
     std::vector<Ptr<Derived>> m_vector2;     //!< Second vector of derived objects.
@@ -605,10 +656,7 @@ template <>
 void
 AttributeTestCase<BooleanValue>::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
@@ -619,7 +667,7 @@ AttributeTestCase<BooleanValue>::DoRun()
     p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
-    ok = CheckGetCodePaths(p, "TestBoolName", "true", BooleanValue(true));
+    bool ok = CheckGetCodePaths(p, "TestBoolName", "true", BooleanValue(true));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Attribute not set properly by default value");
 
     std::string expected("Attribute 'TestDeprecated' is deprecated: DEPRECATED test working.\n");
@@ -706,17 +754,14 @@ template <>
 void
 AttributeTestCase<IntegerValue>::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
     // When the object is first created, the Attribute should have the default
     // value.
     //
-    ok = CheckGetCodePaths(p, "TestInt16", "-2", IntegerValue(-2));
+    bool ok = CheckGetCodePaths(p, "TestInt16", "-2", IntegerValue(-2));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Attribute not set properly by default value");
 
     //
@@ -841,17 +886,14 @@ template <>
 void
 AttributeTestCase<UintegerValue>::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
     // When the object is first created, the Attribute should have the default
     // value.
     //
-    ok = CheckGetCodePaths(p, "TestUint8", "1", UintegerValue(1));
+    bool ok = CheckGetCodePaths(p, "TestUint8", "1", UintegerValue(1));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Attribute not set properly by default value");
 
     //
@@ -924,17 +966,14 @@ template <>
 void
 AttributeTestCase<DoubleValue>::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
     // When the object is first created, the Attribute should have the default
     // value.
     //
-    ok = CheckGetCodePaths(p, "TestFloat", "-1.1", DoubleValue(-1.1F));
+    bool ok = CheckGetCodePaths(p, "TestFloat", "-1.1", DoubleValue(-1.1F));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Attribute not set properly by default value");
 
     //
@@ -953,17 +992,14 @@ template <>
 void
 AttributeTestCase<EnumValue<AttributeObjectTest::Test_e>>::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
     // When the object is first created, the Attribute should have the default
     // value.
     //
-    ok = CheckGetCodePaths(p, "TestEnum", "TestA", EnumValue(AttributeObjectTest::TEST_A));
+    bool ok = CheckGetCodePaths(p, "TestEnum", "TestA", EnumValue(AttributeObjectTest::TEST_A));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Attribute not set properly by default value");
 
     //
@@ -1029,12 +1065,106 @@ AttributeTestCase<EnumValue<AttributeObjectTest::Test_e>>::DoRun()
 
 template <>
 void
+AttributeTestCase<EnumValue<AttributeObjectTest::Test_ec>>::DoRun()
+{
+    auto p = CreateObject<AttributeObjectTest>();
+    NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
+
+    //
+    // When the object is first created, the Attribute should have the default
+    // value.
+    //
+    bool ok = CheckGetCodePaths(p,
+                                "TestEnumClass",
+                                "TestD",
+                                EnumValue(AttributeObjectTest::Test_ec::TEST_D));
+    NS_TEST_ASSERT_MSG_EQ(ok, true, "Attribute not set properly by default value");
+
+    //
+    // Set the Attribute using the EnumValue type.
+    //
+    ok = p->SetAttributeFailSafe("TestEnumClass", EnumValue(AttributeObjectTest::Test_ec::TEST_F));
+    NS_TEST_ASSERT_MSG_EQ(ok, true, "Could not SetAttributeFailSafe() to TEST_F");
+
+    ok = CheckGetCodePaths(p,
+                           "TestEnumClass",
+                           "TestF",
+                           EnumValue(AttributeObjectTest::Test_ec::TEST_F));
+    NS_TEST_ASSERT_MSG_EQ(ok,
+                          true,
+                          "Attribute not set properly by SetAttributeFailSafe() via EnumValue");
+
+    //
+    // When the object is first created, the Attribute should have the default
+    // value.
+    //
+    ok = CheckGetCodePaths(p,
+                           "TestEnumClassSetGet",
+                           "TestE",
+                           EnumValue(AttributeObjectTest::Test_ec::TEST_E));
+    NS_TEST_ASSERT_MSG_EQ(ok, true, "Attribute not set properly by default value");
+
+    //
+    // Set the Attribute using the EnumValue type.
+    //
+    ok = p->SetAttributeFailSafe("TestEnumClassSetGet",
+                                 EnumValue(AttributeObjectTest::Test_ec::TEST_F));
+    NS_TEST_ASSERT_MSG_EQ(ok, true, "Could not SetAttributeFailSafe() to TEST_F");
+
+    ok = CheckGetCodePaths(p,
+                           "TestEnumClassSetGet",
+                           "TestF",
+                           EnumValue(AttributeObjectTest::Test_ec::TEST_F));
+    NS_TEST_ASSERT_MSG_EQ(ok,
+                          true,
+                          "Attribute not set properly by SetAttributeFailSafe() via EnumValue");
+
+    //
+    // Set the Attribute using the StringValue type.
+    //
+    ok = p->SetAttributeFailSafe("TestEnumClass", StringValue("TestE"));
+    NS_TEST_ASSERT_MSG_EQ(ok, true, "Could not SetAttributeFailSafe() to TEST_E");
+
+    ok = CheckGetCodePaths(p,
+                           "TestEnumClass",
+                           "TestE",
+                           EnumValue(AttributeObjectTest::Test_ec::TEST_E));
+    NS_TEST_ASSERT_MSG_EQ(ok,
+                          true,
+                          "Attribute not set properly by SetAttributeFailSafe() via StringValue");
+
+    //
+    // Try to set the Attribute to a bogus enum using the StringValue type
+    // throws a fatal error.
+    //
+    //  ok = p->SetAttributeFailSafe ("TestEnumClass", StringValue ("TestG"));
+    //  NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() to TEST_G"); //
+
+    ok = CheckGetCodePaths(p,
+                           "TestEnumClass",
+                           "TestE",
+                           EnumValue(AttributeObjectTest::Test_ec::TEST_E));
+    NS_TEST_ASSERT_MSG_EQ(ok, true, "Error in SetAttributeFailSafe() but value changes");
+
+    //
+    // Try to set the Attribute to a bogus enum using an integer implicit conversion
+    // and make sure the underlying value doesn't change.
+    //
+    ok = p->SetAttributeFailSafe("TestEnumClass", EnumValue(5));
+    NS_TEST_ASSERT_MSG_EQ(ok, false, "Unexpectedly could SetAttributeFailSafe() to 5");
+
+    ok = CheckGetCodePaths(p,
+                           "TestEnumClass",
+                           "TestE",
+                           EnumValue(AttributeObjectTest::Test_ec::TEST_E));
+    NS_TEST_ASSERT_MSG_EQ(ok, true, "Error in SetAttributeFailSafe() but value changes");
+}
+
+template <>
+void
 AttributeTestCase<TimeValue>::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     // The test vectors assume ns resolution
@@ -1043,7 +1173,7 @@ AttributeTestCase<TimeValue>::DoRun()
     //
     // Set value
     //
-    ok = p->SetAttributeFailSafe("TestTimeWithBounds", TimeValue(Seconds(5)));
+    bool ok = p->SetAttributeFailSafe("TestTimeWithBounds", TimeValue(Seconds(5)));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Could not SetAttributeFailSafe() via TimeValue to 5s");
 
     ok = CheckGetCodePaths(p, "TestTimeWithBounds", "+5e+09ns", TimeValue(Seconds(5)));
@@ -1169,17 +1299,14 @@ RandomVariableStreamAttributeTestCase::RandomVariableStreamAttributeTestCase(
 void
 RandomVariableStreamAttributeTestCase::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
     // Try to set a UniformRandomVariable
     //
-    ok = p->SetAttributeFailSafe("TestRandom",
-                                 StringValue("ns3::UniformRandomVariable[Min=0.|Max=1.]"));
+    bool ok = p->SetAttributeFailSafe("TestRandom",
+                                      StringValue("ns3::UniformRandomVariable[Min=0.|Max=1.]"));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Could not SetAttributeFailSafe() a UniformRandomVariable");
 
     //
@@ -1222,10 +1349,9 @@ ObjectVectorAttributeTestCase::ObjectVectorAttributeTestCase(std::string descrip
 void
 ObjectVectorAttributeTestCase::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
     ObjectVectorValue vector;
 
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
@@ -1307,10 +1433,9 @@ ObjectMapAttributeTestCase::ObjectMapAttributeTestCase(std::string description)
 void
 ObjectMapAttributeTestCase::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
     ObjectMapValue map;
 
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
@@ -1424,11 +1549,9 @@ IntegerTraceSourceAttributeTestCase::IntegerTraceSourceAttributeTestCase(std::st
 void
 IntegerTraceSourceAttributeTestCase::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
     IntegerValue iv;
-    bool ok;
 
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
@@ -1441,7 +1564,7 @@ IntegerTraceSourceAttributeTestCase::DoRun()
     //
     // Set the Attribute to a positive value through an IntegerValue.
     //
-    ok = p->SetAttributeFailSafe("IntegerTraceSource1", IntegerValue(5));
+    bool ok = p->SetAttributeFailSafe("IntegerTraceSource1", IntegerValue(5));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Could not SetAttributeFailSafe() via IntegerValue to 5");
 
     p->GetAttribute("IntegerTraceSource1", iv);
@@ -1549,10 +1672,7 @@ IntegerTraceSourceTestCase::IntegerTraceSourceTestCase(std::string description)
 void
 IntegerTraceSourceTestCase::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
@@ -1561,7 +1681,7 @@ IntegerTraceSourceTestCase::DoRun()
     //
     m_got1 = 1234;
 
-    ok = p->SetAttributeFailSafe("IntegerTraceSource1", IntegerValue(-1));
+    bool ok = p->SetAttributeFailSafe("IntegerTraceSource1", IntegerValue(-1));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Could not SetAttributeFailSafe() via IntegerValue to -1");
 
     //
@@ -1652,10 +1772,7 @@ TracedCallbackTestCase::TracedCallbackTestCase(std::string description)
 void
 TracedCallbackTestCase::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
@@ -1681,8 +1798,9 @@ TracedCallbackTestCase::DoRun()
     // Now, wire the TracedCallback up to a trace sink.  This sink will just set
     // m_got2 to the first argument.
     //
-    ok = p->TraceConnectWithoutContext("Source2",
-                                       MakeCallback(&TracedCallbackTestCase::NotifySource2, this));
+    bool ok =
+        p->TraceConnectWithoutContext("Source2",
+                                      MakeCallback(&TracedCallbackTestCase::NotifySource2, this));
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Could not TraceConnectWithoutContext() to NotifySource2");
 
     //
@@ -1753,10 +1871,7 @@ PointerAttributeTestCase::PointerAttributeTestCase(std::string description)
 void
 PointerAttributeTestCase::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
@@ -1777,7 +1892,7 @@ PointerAttributeTestCase::DoRun()
     // to that object.  We can then set the PointerValue Attribute to that Ptr.
     //
     derived = Create<Derived>();
-    ok = p->SetAttributeFailSafe("Pointer", PointerValue(derived));
+    bool ok = p->SetAttributeFailSafe("Pointer", PointerValue(derived));
     NS_TEST_ASSERT_MSG_EQ(ok,
                           true,
                           "Could not SetAttributeFailSafe() a PointerValue of the correct type");
@@ -1911,10 +2026,7 @@ CallbackValueTestCase::CallbackValueTestCase(std::string description)
 void
 CallbackValueTestCase::DoRun()
 {
-    Ptr<AttributeObjectTest> p;
-    bool ok;
-
-    p = CreateObject<AttributeObjectTest>();
+    auto p = CreateObject<AttributeObjectTest>();
     NS_TEST_ASSERT_MSG_NE(p, nullptr, "Unable to CreateObject");
 
     //
@@ -1939,7 +2051,7 @@ CallbackValueTestCase::DoRun()
 
     NS_TEST_ASSERT_MSG_EQ(m_gotCbValue, 1, "Callback unexpectedly fired");
 
-    ok = p->SetAttributeFailSafe("Callback", cbValue);
+    bool ok = p->SetAttributeFailSafe("Callback", cbValue);
     NS_TEST_ASSERT_MSG_EQ(ok, true, "Could not SetAttributeFailSafe() a CallbackValue");
 
     //
@@ -1984,6 +2096,9 @@ AttributesTestSuite::AttributesTestSuite()
                 TestCase::QUICK);
     AddTestCase(new AttributeTestCase<EnumValue<AttributeObjectTest::Test_e>>(
                     "Check Attributes of type EnumValue"),
+                TestCase::QUICK);
+    AddTestCase(new AttributeTestCase<EnumValue<AttributeObjectTest::Test_ec>>(
+                    "Check Attributes of type EnumValue (wrapping an enum class)"),
                 TestCase::QUICK);
     AddTestCase(new AttributeTestCase<TimeValue>("Check Attributes of type TimeValue"),
                 TestCase::QUICK);
