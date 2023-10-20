@@ -24,6 +24,18 @@ Changes from ns-3.40 to ns-3-dev
 
 ### Changes to existing API
 
+* (core) Attributes that wrap enums must update the syntax for the `MakeEnumAccessor` method call. Where you once were able to write, for example (from attribute-test-suite.cc):
+
+  ```cpp
+  MakeEnumAccessor(&AttributeObjectTest::m_enum),
+  ```
+
+  you must now write it with a template parameter such as:
+
+  ```cpp
+  MakeEnumAccessor<Test_e>(&AttributeObjectTest::m_enum),
+  ```
+
 * The spelling of the following files, classes, functions, constants, defines and enumerated values was corrected; this will affect existing users who were using them with the misspelling.
   * (lte) Struct member `fdbetsFlowPerf_t::lastTtiBytesTrasmitted` in file `fdbet-ff-mac-scheduler.h` was renamed `fdbetsFlowPerf_t::lastTtiBytesTransmitted`.
   * (lte) Struct member `tdbetsFlowPerf_t::lastTtiBytesTrasmitted` in file `tdbet-ff-mac-scheduler.h` was renamed `fdbetsFlowPerf_t::lastTtiBytesTransmitted`.
