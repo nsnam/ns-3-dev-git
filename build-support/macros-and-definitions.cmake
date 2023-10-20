@@ -529,18 +529,6 @@ macro(process_options)
     if("${CLANG_TIDY}" STREQUAL "CLANG_TIDY-NOTFOUND")
       message(FATAL_ERROR "Clang-tidy was not found")
     else()
-      if((${CMAKE_VERSION} VERSION_LESS "3.12.0") AND ${NS3_CCACHE}
-         AND (NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
-      )
-        # CMake <3.12 puts CMAKE_CXX_COMPILER_LAUNCHER in the incorrect place
-        # and CCache ends up being unable to cache anything if calling
-        # clang-tidy https://gitlab.kitware.com/cmake/cmake/-/issues/18266
-        message(
-          FATAL_ERROR
-            "The current CMake ${CMAKE_VERSION} won't ccache objects correctly when running with clang-tidy."
-            "Update CMake to at least version 3.12, or disable either ccache or clang-tidy to continue."
-        )
-      endif()
       set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY}")
     endif()
   else()
@@ -893,27 +881,7 @@ macro(process_options)
   set(Python3_FOUND FALSE)
   set(Python3_INCLUDE_DIRS)
   if(${NS3_PYTHON_BINDINGS})
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12.0")
-      find_package(Python3 COMPONENTS Interpreter Development)
-    else()
-      # cmake-format: off
-      set(Python_ADDITIONAL_VERSIONS 3.6 3.7 3.8 3.9 3.10 3.11)
-      # cmake-format: on
-      find_package(PythonInterp)
-      find_package(PythonLibs)
-
-      # Move deprecated results into the FindPython3 resulting variables
-      set(Python3_Interpreter_FOUND ${PYTHONINTERP_FOUND})
-      set(Python3_Development_FOUND ${PYTHONLIBS_FOUND})
-      if(${PYTHONINTERP_FOUND})
-        set(Python3_EXECUTABLE ${PYTHON_EXECUTABLE})
-        set(Python3_FOUND TRUE)
-      endif()
-      if(${PYTHONLIBS_FOUND})
-        set(Python3_LIBRARIES ${PYTHON_LIBRARIES})
-        set(Python3_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS})
-      endif()
-    endif()
+    find_package(Python3 COMPONENTS Interpreter Development)
   else()
     # If Python was not set yet, use the version found by check_deps
     check_deps("" "python3" python3_deps)
