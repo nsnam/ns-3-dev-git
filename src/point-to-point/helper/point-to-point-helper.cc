@@ -197,7 +197,7 @@ PointToPointHelper::EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
     uint32_t deviceid = nd->GetIfIndex();
     std::ostringstream oss;
 
-    oss << "/NodeList/" << nd->GetNode()->GetId() << "/DeviceList/" << deviceid
+    oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid
         << "/$ns3::PointToPointNetDevice/MacRx";
     Config::Connect(oss.str(),
                     MakeBoundCallback(&AsciiTraceHelper::DefaultReceiveSinkWithContext, stream));
