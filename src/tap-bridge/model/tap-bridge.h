@@ -459,7 +459,7 @@ class TapBridge : public NetDevice
      * whether or not ns-3 is connected to the underlying TAP device
      * with a file descriptor.
      */
-    bool m_linkUp;
+    bool m_linkUp{false};
 
     /**
      * Flag indicating whether or not the link is up.  In this case,
