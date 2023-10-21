@@ -2002,9 +2002,15 @@ def run_tests():
                             post = contents.find("</Result>")
                             contents = contents[:pre] + "VALGR" + contents[post:]
                         f_to.write(contents)
-                        et = ET.parse(job.tmp_file_name)
-                        if et.find("Result").text in ["PASS", "SKIP"]:
-                            failed_jobs.pop()
+                        # When running with sanitizers, the program may
+                        # crash before ever writing the expected xml
+                        # output file
+                        try:
+                            et = ET.parse(job.tmp_file_name)
+                            if et.find("Result").text in ["PASS", "SKIP"]:
+                                failed_jobs.pop()
+                        except:
+                            pass
                 else:
                     with open(xml_results_file, "a", encoding="utf-8") as f:
                         f.write("<Test>\n")
