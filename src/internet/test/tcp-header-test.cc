@@ -206,12 +206,12 @@ TcpHeaderWithRFC793OptionTestCase::CheckCorrectDeserialize()
 {
     TcpHeader source;
     TcpHeader destination;
-    TcpOptionNOP temp;
+    auto temp = CreateObject<TcpOptionNOP>();
     Buffer buffer;
     buffer.AddAtStart(40);
 
     Buffer::Iterator i = buffer.Begin();
-    source.AppendOption(&temp);
+    source.AppendOption(temp);
 
     source.Serialize(i);
 
