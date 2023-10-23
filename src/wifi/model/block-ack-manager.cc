@@ -62,14 +62,50 @@ BlockAckManager::DoDispose()
     m_queue = nullptr;
 }
 
-BlockAckManager::OriginatorAgreementOptConstRef
-BlockAckManager::GetAgreementAsOriginator(const Mac48Address& recipient, uint8_t tid) const
+BlockAckManager::OriginatorAgreementsI
+BlockAckManager::GetOriginatorBaAgreement(const Mac48Address& recipient,
+                                          uint8_t tid,
+                                          std::optional<Mac48Address> gcrGroupAddr)
 {
-    if (auto it = m_originatorAgreements.find({recipient, tid}); it != m_originatorAgreements.end())
+    auto [first, last] = m_originatorAgreements.equal_range({recipient, tid});
+    for (auto it = first; it != last; ++it)
+    {
+        [[maybe_unused]] const auto& [baAgreement, packetQueue] = it->second;
+        if (baAgreement.GetGcrGroupAddress() == gcrGroupAddr)
+        {
+            return it;
+        }
+    }
+    return m_originatorAgreements.end();
+}
+
+BlockAckManager::OriginatorAgreementsCI
+BlockAckManager::GetOriginatorBaAgreement(const Mac48Address& recipient,
+                                          uint8_t tid,
+                                          std::optional<Mac48Address> gcrGroupAddr) const
+{
+    const auto [first, last] = m_originatorAgreements.equal_range({recipient, tid});
+    for (auto it = first; it != last; ++it)
+    {
+        [[maybe_unused]] const auto& [baAgreement, packetQueue] = it->second;
+        if (baAgreement.GetGcrGroupAddress() == gcrGroupAddr)
+        {
+            return it;
+        }
+    }
+    return m_originatorAgreements.cend();
+}
+
+BlockAckManager::OriginatorAgreementOptConstRef
+BlockAckManager::GetAgreementAsOriginator(const Mac48Address& recipient,
+                                          uint8_t tid,
+                                          std::optional<Mac48Address> gcrGroupAddr) const
+{
+    if (const auto it = GetOriginatorBaAgreement(recipient, tid, gcrGroupAddr);
+        it != m_originatorAgreements.cend())
     {
         return std::cref(it->second.first);
     }
-
     return std::nullopt;
 }
 
@@ -112,17 +148,35 @@ BlockAckManager::CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
         agreement.SetGcrGroupAddress(*gcrGroupAddr);
     }
     agreement.SetState(OriginatorBlockAckAgreement::PENDING);
+
     m_originatorAgreementState(Simulator::Now(),
                                recipient,
                                tid,
                                OriginatorBlockAckAgreement::PENDING);
-    if (auto existingAgreement = GetAgreementAsOriginator(recipient, tid))
+
+    if (auto it = GetOriginatorBaAgreement(recipient, tid, reqHdr.GetGcrGroupAddress());
+        it != m_originatorAgreements.end())
     {
-        NS_ASSERT_MSG(existingAgreement->get().IsReset(),
-                      "Existing agreement must be in RESET state");
+        NS_ASSERT_MSG(it->second.first.IsReset(), "Existing agreement must be in RESET state");
+        it->second = std::make_pair(std::move(agreement), PacketQueue{});
     }
-    m_originatorAgreements.insert_or_assign({recipient, tid},
-                                            std::make_pair(std::move(agreement), PacketQueue{}));
+    else
+    {
+        m_originatorAgreements.emplace(std::make_pair(recipient, tid),
+                                       std::make_pair(std::move(agreement), PacketQueue{}));
+    }
+
+    const auto [first, last] = m_originatorAgreements.equal_range({recipient, tid});
+    NS_ASSERT_MSG(std::count_if(first,
+                                last,
+                                [&reqHdr](const auto& elem) {
+                                    return elem.second.first.GetGcrGroupAddress() ==
+                                           reqHdr.GetGcrGroupAddress();
+                                }) == 1,
+                  "There exists more than one "
+                      << (reqHdr.GetGcrGroupAddress().has_value() ? "GCR " : " ")
+                      << "Block Ack agreement for recipient " << recipient << " and tid " << +tid);
+
     m_blockPackets(recipient, tid);
 }
 
@@ -130,8 +184,7 @@ void
 BlockAckManager::DestroyOriginatorAgreement(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << tid);
-    auto it = m_originatorAgreements.find({recipient, tid});
-    if (it != m_originatorAgreements.end())
+    if (auto it = GetOriginatorBaAgreement(recipient, tid); it != m_originatorAgreements.end())
     {
         m_originatorAgreements.erase(it);
     }
@@ -143,9 +196,9 @@ BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader& respHdr
                                            uint16_t startingSeq)
 {
     NS_LOG_FUNCTION(this << respHdr << recipient << startingSeq);
-    uint8_t tid = respHdr.GetTid();
-    auto it = m_originatorAgreements.find({recipient, tid});
-    if (it != m_originatorAgreements.end())
+    const auto tid = respHdr.GetTid();
+    if (auto it = GetOriginatorBaAgreement(recipient, tid, respHdr.GetGcrGroupAddress());
+        it != m_originatorAgreements.end())
     {
         OriginatorBlockAckAgreement& agreement = it->second.first;
         agreement.SetBufferSize(respHdr.GetBufferSize());
@@ -240,10 +293,10 @@ BlockAckManager::StorePacket(Ptr<WifiMpdu> mpdu)
     NS_LOG_FUNCTION(this << *mpdu);
     NS_ASSERT(mpdu->GetHeader().IsQosData());
 
-    uint8_t tid = mpdu->GetHeader().GetQosTid();
-    Mac48Address recipient = mpdu->GetHeader().GetAddr1();
+    const auto tid = mpdu->GetHeader().GetQosTid();
+    const auto recipient = mpdu->GetHeader().GetAddr1();
 
-    auto agreementIt = m_originatorAgreements.find({recipient, tid});
+    auto agreementIt = GetOriginatorBaAgreement(recipient, tid);
     NS_ASSERT(agreementIt != m_originatorAgreements.end());
 
     uint16_t mpduDist =
@@ -284,12 +337,8 @@ BlockAckManager::StorePacket(Ptr<WifiMpdu> mpdu)
 uint32_t
 BlockAckManager::GetNBufferedPackets(const Mac48Address& recipient, uint8_t tid) const
 {
-    auto it = m_originatorAgreements.find({recipient, tid});
-    if (it == m_originatorAgreements.end())
-    {
-        return 0;
-    }
-    return it->second.second.size();
+    const auto it = GetOriginatorBaAgreement(recipient, tid);
+    return (it != m_originatorAgreements.cend()) ? it->second.second.size() : 0;
 }
 
 void
@@ -370,10 +419,10 @@ BlockAckManager::NotifyGotAck(uint8_t linkId, Ptr<const WifiMpdu> mpdu)
     NS_LOG_FUNCTION(this << linkId << *mpdu);
     NS_ASSERT(mpdu->GetHeader().IsQosData());
 
-    Mac48Address recipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
-    uint8_t tid = mpdu->GetHeader().GetQosTid();
+    const auto recipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
+    const auto tid = mpdu->GetHeader().GetQosTid();
 
-    auto it = m_originatorAgreements.find({recipient, tid});
+    auto it = GetOriginatorBaAgreement(recipient, tid);
     NS_ASSERT(it != m_originatorAgreements.end());
     NS_ASSERT(it->second.first.IsEstablished());
 
@@ -401,10 +450,10 @@ BlockAckManager::NotifyMissedAck(uint8_t linkId, Ptr<WifiMpdu> mpdu)
     NS_LOG_FUNCTION(this << linkId << *mpdu);
     NS_ASSERT(mpdu->GetHeader().IsQosData());
 
-    Mac48Address recipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
-    uint8_t tid = mpdu->GetHeader().GetQosTid();
+    const auto recipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
+    const auto tid = mpdu->GetHeader().GetQosTid();
 
-    auto it = m_originatorAgreements.find({recipient, tid});
+    auto it = GetOriginatorBaAgreement(recipient, tid);
     NS_ASSERT(it != m_originatorAgreements.end());
     NS_ASSERT(it->second.first.IsEstablished());
 
@@ -441,7 +490,7 @@ BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
         tid = *tids.begin();
     }
 
-    auto it = m_originatorAgreements.find({recipient, tid});
+    auto it = GetOriginatorBaAgreement(recipient, tid);
     if (it == m_originatorAgreements.end() || !it->second.first.IsEstablished())
     {
         return {0, 0};
@@ -518,13 +567,13 @@ BlockAckManager::NotifyMissedBlockAck(uint8_t linkId, const Mac48Address& recipi
 {
     NS_LOG_FUNCTION(this << linkId << recipient << tid);
 
-    auto it = m_originatorAgreements.find({recipient, tid});
+    auto it = GetOriginatorBaAgreement(recipient, tid);
     if (it == m_originatorAgreements.end() || !it->second.first.IsEstablished())
     {
         return;
     }
 
-    Time now = Simulator::Now();
+    const auto now = Simulator::Now();
 
     // remove all packets from the queue of outstanding packets (they will be
     // re-inserted if retransmitted)
@@ -558,17 +607,17 @@ BlockAckManager::NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu)
         return;
     }
 
-    Mac48Address recipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
-    uint8_t tid = mpdu->GetHeader().GetQosTid();
-    auto it = m_originatorAgreements.find({recipient, tid});
+    const auto recipient = mpdu->GetOriginal()->GetHeader().GetAddr1();
+    const auto tid = mpdu->GetHeader().GetQosTid();
+    auto it = GetOriginatorBaAgreement(recipient, tid);
     if (it == m_originatorAgreements.end() || !it->second.first.IsEstablished())
     {
         NS_LOG_DEBUG("No established Block Ack agreement");
         return;
     }
 
-    uint16_t currStartingSeq = it->second.first.GetStartingSequence();
-    if (QosUtilsIsOldPacket(currStartingSeq, mpdu->GetHeader().GetSequenceNumber()))
+    if (const auto currStartingSeq = it->second.first.GetStartingSequence();
+        QosUtilsIsOldPacket(currStartingSeq, mpdu->GetHeader().GetSequenceNumber()))
     {
         NS_LOG_DEBUG("Discarded an old frame");
         return;
@@ -647,7 +696,7 @@ BlockAckManager::NotifyGotMpdu(Ptr<const WifiMpdu> mpdu)
 CtrlBAckRequestHeader
 BlockAckManager::GetBlockAckReqHeader(const Mac48Address& recipient, uint8_t tid) const
 {
-    auto it = m_originatorAgreements.find({recipient, tid});
+    auto it = GetOriginatorBaAgreement(recipient, tid);
     NS_ASSERT(it != m_originatorAgreements.end());
     CtrlBAckRequestHeader reqHdr;
     reqHdr.SetType((*it).second.first.GetBlockAckReqType());
@@ -725,7 +774,7 @@ void
 BlockAckManager::NotifyOriginatorAgreementRejected(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << tid);
-    auto it = m_originatorAgreements.find({recipient, tid});
+    auto it = GetOriginatorBaAgreement(recipient, tid);
     NS_ASSERT(it != m_originatorAgreements.end());
     if (!it->second.first.IsRejected())
     {
@@ -742,7 +791,7 @@ void
 BlockAckManager::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << tid);
-    auto it = m_originatorAgreements.find({recipient, tid});
+    auto it = GetOriginatorBaAgreement(recipient, tid);
     NS_ASSERT(it != m_originatorAgreements.end());
     if (!it->second.first.IsNoReply())
     {
@@ -759,7 +808,7 @@ void
 BlockAckManager::NotifyOriginatorAgreementReset(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << tid);
-    auto it = m_originatorAgreements.find({recipient, tid});
+    auto it = GetOriginatorBaAgreement(recipient, tid);
     NS_ASSERT(it != m_originatorAgreements.end());
     if (!it->second.first.IsReset())
     {
@@ -781,7 +830,7 @@ BlockAckManager::SetQueue(const Ptr<WifiMacQueue> queue)
 bool
 BlockAckManager::NeedBarRetransmission(uint8_t tid, const Mac48Address& recipient)
 {
-    auto it = m_originatorAgreements.find({recipient, tid});
+    auto it = GetOriginatorBaAgreement(recipient, tid);
     if (it == m_originatorAgreements.end() || !it->second.first.IsEstablished())
     {
         // If the inactivity timer has expired, QosTxop::SendDelbaFrame has been called and
@@ -789,7 +838,7 @@ BlockAckManager::NeedBarRetransmission(uint8_t tid, const Mac48Address& recipien
         return false;
     }
 
-    Time now = Simulator::Now();
+    const auto now = Simulator::Now();
 
     // A BAR needs to be retransmitted if there is at least a non-expired in flight MPDU
     for (auto mpduIt = it->second.second.begin(); mpduIt != it->second.second.end();)
@@ -849,25 +898,15 @@ BlockAckManager::SetDroppedOldMpduCallback(DroppedOldMpdu callback)
 uint16_t
 BlockAckManager::GetRecipientBufferSize(const Mac48Address& recipient, uint8_t tid) const
 {
-    uint16_t size = 0;
-    auto it = m_originatorAgreements.find({recipient, tid});
-    if (it != m_originatorAgreements.end())
-    {
-        size = it->second.first.GetBufferSize();
-    }
-    return size;
+    const auto it = GetOriginatorBaAgreement(recipient, tid);
+    return (it != m_originatorAgreements.cend()) ? it->second.first.GetBufferSize() : 0;
 }
 
 uint16_t
 BlockAckManager::GetOriginatorStartingSequence(const Mac48Address& recipient, uint8_t tid) const
 {
-    uint16_t seqNum = 0;
-    auto it = m_originatorAgreements.find({recipient, tid});
-    if (it != m_originatorAgreements.end())
-    {
-        seqNum = it->second.first.GetStartingSequence();
-    }
-    return seqNum;
+    const auto it = GetOriginatorBaAgreement(recipient, tid);
+    return (it != m_originatorAgreements.cend()) ? it->second.first.GetStartingSequence() : 0;
 }
 
 } // namespace ns3

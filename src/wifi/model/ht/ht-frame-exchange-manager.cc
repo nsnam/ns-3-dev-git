@@ -806,14 +806,21 @@ HtFrameExchangeManager::NotifyPacketDiscarded(Ptr<const WifiMpdu> mpdu)
         if (actionHdr.GetCategory() == WifiActionHeader::BLOCK_ACK &&
             actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
         {
-            uint8_t tid = GetTid(mpdu->GetPacket(), mpdu->GetHeader());
+            const auto tid = GetTid(mpdu->GetPacket(), mpdu->GetHeader());
             auto recipient = mpdu->GetHeader().GetAddr1();
             // if the recipient is an MLD, use its MLD address
             if (auto mldAddr = GetWifiRemoteStationManager()->GetMldAddress(recipient))
             {
                 recipient = *mldAddr;
             }
-            if (auto agreement = GetBaManager(tid)->GetAgreementAsOriginator(recipient, tid);
+            auto p = mpdu->GetPacket()->Copy();
+            p->RemoveHeader(actionHdr);
+            MgtAddBaRequestHeader addBa;
+            p->PeekHeader(addBa);
+            if (auto agreement =
+                    GetBaManager(tid)->GetAgreementAsOriginator(recipient,
+                                                                tid,
+                                                                addBa.GetGcrGroupAddress());
                 agreement && agreement->get().IsPending())
             {
                 NS_LOG_DEBUG("No ACK after ADDBA request");

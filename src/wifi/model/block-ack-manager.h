@@ -74,13 +74,17 @@ class BlockAckManager : public Object
     /**
      * @param recipient MAC address of the recipient
      * @param tid Traffic ID
+     * @param gcrGroupAddr the GCR Group Address (only if it is a GCR Block Ack agreement)
      *
      * @return a const reference to the block ack agreement with the given recipient, if it exists
      *
      * Check if we are the originator of an existing block ack agreement with the given recipient.
      */
-    OriginatorAgreementOptConstRef GetAgreementAsOriginator(const Mac48Address& recipient,
-                                                            uint8_t tid) const;
+    OriginatorAgreementOptConstRef GetAgreementAsOriginator(
+        const Mac48Address& recipient,
+        uint8_t tid,
+        std::optional<Mac48Address> gcrGroupAddr = std::nullopt) const;
+
     /**
      * @param originator MAC address of the originator
      * @param tid Traffic ID
@@ -440,12 +444,38 @@ class BlockAckManager : public Object
 
     /// AgreementKey-indexed map of originator block ack agreements
     using OriginatorAgreements =
-        std::map<AgreementKey, std::pair<OriginatorBlockAckAgreement, PacketQueue>>;
+        std::multimap<AgreementKey, std::pair<OriginatorBlockAckAgreement, PacketQueue>>;
     /// typedef for an iterator for Agreements
     using OriginatorAgreementsI = OriginatorAgreements::iterator;
+    /// typedef for a const iterator for Agreements
+    using OriginatorAgreementsCI = OriginatorAgreements::const_iterator;
 
     /// AgreementKey-indexed map of recipient block ack agreements
     using RecipientAgreements = std::map<AgreementKey, RecipientBlockAckAgreement>;
+
+    /**
+     * @param recipient MAC address of the recipient
+     * @param tid Traffic ID
+     * @param gcrGroupAddr the GCR Group Address (only if it is a GCR Block Ack agreement)
+     *
+     * @return an iterator to the block ack agreement
+     */
+    OriginatorAgreementsI GetOriginatorBaAgreement(
+        const Mac48Address& recipient,
+        uint8_t tid,
+        std::optional<Mac48Address> gcrGroupAddr = std::nullopt);
+
+    /**
+     * @param recipient MAC address of the recipient
+     * @param tid Traffic ID
+     * @param gcrGroupAddr the GCR Group Address (only if it is a GCR Block Ack agreement)
+     *
+     * @return a const iterator to the block ack agreement
+     */
+    OriginatorAgreementsCI GetOriginatorBaAgreement(
+        const Mac48Address& recipient,
+        uint8_t tid,
+        std::optional<Mac48Address> gcrGroupAddr = std::nullopt) const;
 
     /**
      * Handle the given in flight MPDU based on its given status. If the status is
