@@ -79,7 +79,6 @@ class BuildingsPenetrationLossesTestCase : public TestCase
         Vector m_positionA; //!< the position of the first node
         Vector m_positionB; //!< the position of the second node
         double m_frequency; //!< carrier frequency in Hz
-        bool m_isLos;       //!< LOS probability
         TypeId m_condModel; //!< the type ID of the channel condition model to be used
         TypeId m_propModel; //!< the type ID of the propagation loss model to be used
         double m_pt;        //!< transmitted power in dBm
