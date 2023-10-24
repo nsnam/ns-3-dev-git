@@ -111,11 +111,14 @@ class BlockAckManager : public Object
     /**
      * @param recipient Address of peer station involved in block ack mechanism.
      * @param tid traffic ID of transmitted packet.
+     * @param gcrGroupAddr the GCR Group Address (only if it a GCR Block Ack agreement)
      *
      * Invoked when a recipient reject a block ack agreement or when a DELBA frame
      * is Received/Transmitted.
      */
-    void DestroyOriginatorAgreement(const Mac48Address& recipient, uint8_t tid);
+    void DestroyOriginatorAgreement(const Mac48Address& recipient,
+                                    uint8_t tid,
+                                    std::optional<Mac48Address> gcrGroupAddr);
     /**
      * @param respHdr Relative Add block ack response (action frame).
      * @param recipient Address of peer station involved in block ack mechanism.
@@ -152,8 +155,11 @@ class BlockAckManager : public Object
      *
      * @param originator the originator MAC address
      * @param tid the TID associated with the Block Ack agreement
+     * @param gcrGroupAddr the GCR Group Address (only if it a GCR Block Ack agreement)
      */
-    void DestroyRecipientAgreement(const Mac48Address& originator, uint8_t tid);
+    void DestroyRecipientAgreement(const Mac48Address& originator,
+                                   uint8_t tid,
+                                   std::optional<Mac48Address> gcrGroupAddr);
 
     /**
      * @param mpdu MPDU to store.
@@ -246,29 +252,38 @@ class BlockAckManager : public Object
     /**
      * @param recipient Address of peer station involved in block ack mechanism.
      * @param tid Traffic ID of transmitted packet.
+     * @param gcrGroupAddr the GCR Group Address (only if it a GCR Block Ack agreement)
      *
      * Marks an originator agreement as rejected. This happens if <i>recipient</i> station reject
      * block ack setup by an ADDBA Response frame with a failure status code. For now we assume
      * that every QoS station accepts a block ack setup.
      */
-    void NotifyOriginatorAgreementRejected(const Mac48Address& recipient, uint8_t tid);
+    void NotifyOriginatorAgreementRejected(const Mac48Address& recipient,
+                                           uint8_t tid,
+                                           std::optional<Mac48Address> gcrGroupAddr);
     /**
      * @param recipient Address of peer station involved in block ack mechanism.
      * @param tid Traffic ID of transmitted packet.
+     * @param gcrGroupAddr the GCR Group Address (only if it a GCR Block Ack agreement)
      *
      * Marks an originator agreement after not receiving response to ADDBA request. During this
      * state any packets in queue will be transmitted using normal MPDU. This also unblocks
      * recipient address.
      */
-    void NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid);
+    void NotifyOriginatorAgreementNoReply(const Mac48Address& recipient,
+                                          uint8_t tid,
+                                          std::optional<Mac48Address> gcrGroupAddr);
     /**
      * @param recipient Address of peer station involved in block ack mechanism.
      * @param tid Traffic ID of transmitted packet.
+     * @param gcrGroupAddr the GCR Group Address (only if it a GCR Block Ack agreement)
      *
      * Set Originator BA agreement to a transitory state to reset it after not receiving response
      * to ADDBA request.
      */
-    void NotifyOriginatorAgreementReset(const Mac48Address& recipient, uint8_t tid);
+    void NotifyOriginatorAgreementReset(const Mac48Address& recipient,
+                                        uint8_t tid,
+                                        std::optional<Mac48Address> gcrGroupAddr);
     /**
      * @param nPackets Minimum number of packets for use of block ack.
      *
@@ -287,7 +302,8 @@ class BlockAckManager : public Object
      * Set block ack inactivity callback
      * @param callback the block ack inactivity callback function
      */
-    void SetBlockAckInactivityCallback(Callback<void, Mac48Address, uint8_t, bool> callback);
+    void SetBlockAckInactivityCallback(
+        Callback<void, Mac48Address, uint8_t, bool, std::optional<Mac48Address>> callback);
     /**
      * Set block destination callback
      * @param callback the block destination callback
@@ -456,11 +472,14 @@ class BlockAckManager : public Object
 
   private:
     /**
-     * Inactivity timeout function
+     * Inactivity timeout function for a Block Ack agreement
      * @param recipient the recipient MAC address
      * @param tid Traffic ID
+     * @param gcrGroupAddr the GCR Group Address (only if it a GCR Block Ack agreement)
      */
-    void InactivityTimeout(const Mac48Address& recipient, uint8_t tid);
+    void InactivityTimeout(const Mac48Address& recipient,
+                           uint8_t tid,
+                           std::optional<Mac48Address> gcrGroupAddr);
 
     /**
      * typedef for a list of WifiMpdu.
@@ -569,7 +588,7 @@ class BlockAckManager : public Object
 
     uint8_t m_blockAckThreshold; ///< block ack threshold
     Ptr<WifiMacQueue> m_queue;   ///< queue
-    Callback<void, Mac48Address, uint8_t, bool>
+    Callback<void, Mac48Address, uint8_t, bool, std::optional<Mac48Address>>
         m_blockAckInactivityTimeout;                      ///< BlockAck inactivity timeout callback
     Callback<void, Mac48Address, uint8_t> m_blockPackets; ///< block packets callback
     Callback<void, Mac48Address, uint8_t> m_unblockPackets; ///< unblock packets callback

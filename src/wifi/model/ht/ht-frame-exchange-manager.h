@@ -138,8 +138,12 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * @param addr address of the recipient.
      * @param tid traffic ID.
      * @param byOriginator flag to indicate whether this is set by the originator.
+     * @param gcrGroupAddr the GCR Group Address (only if it a GCR Block Ack agreement)
      */
-    void SendDelbaFrame(Mac48Address addr, uint8_t tid, bool byOriginator);
+    void SendDelbaFrame(Mac48Address addr,
+                        uint8_t tid,
+                        bool byOriginator,
+                        std::optional<Mac48Address> gcrGroupAddr);
 
     /**
      * Get the next BlockAckRequest or MU-BAR Trigger Frame to send, if any. If TID and recipient

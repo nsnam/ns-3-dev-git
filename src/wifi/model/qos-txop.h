@@ -143,22 +143,29 @@ class QosTxop : public Txop
      *
      * @param recipient the intended recipient of the ADDBA_REQUEST frame
      * @param tid the TID
+     * @param gcrGroupAddr the GCR Group Address (only if it a GCR Block Ack agreement)
      */
-    void NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid);
+    void NotifyOriginatorAgreementNoReply(const Mac48Address& recipient,
+                                          uint8_t tid,
+                                          std::optional<Mac48Address> gcrGroupAddr);
     /**
      * Callback when ADDBA response is not received after timeout.
      *
      * @param recipient MAC address of recipient
      * @param tid traffic ID
+     * @param gcrGroupAddr the GCR Group Address (only if it a GCR Block Ack agreement)
      */
-    void AddBaResponseTimeout(Mac48Address recipient, uint8_t tid);
+    void AddBaResponseTimeout(Mac48Address recipient,
+                              uint8_t tid,
+                              std::optional<Mac48Address> gcrGroupAddr);
     /**
      * Reset BA agreement after BA negotiation failed.
      *
      * @param recipient MAC address of recipient
      * @param tid traffic ID
+     * @param gcrGroupAddr the GCR Group Address (only if it a GCR Block Ack agreement)
      */
-    void ResetBa(Mac48Address recipient, uint8_t tid);
+    void ResetBa(Mac48Address recipient, uint8_t tid, std::optional<Mac48Address> gcrGroupAddr);
 
     /**
      * Set threshold for block ack mechanism. If number of packets in the

@@ -286,7 +286,8 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader& reqHdr,
                                 this,
                                 originator,
                                 tid,
-                                false);
+                                false,
+                                reqHdr.GetGcrGroupAddress());
     }
 
     auto mpdu = Create<WifiMpdu>(packet, hdr);
@@ -320,9 +321,12 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader& reqHdr,
 }
 
 void
-HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr, uint8_t tid, bool byOriginator)
+HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr,
+                                       uint8_t tid,
+                                       bool byOriginator,
+                                       std::optional<Mac48Address> gcrGroupAddr)
 {
-    NS_LOG_FUNCTION(this << addr << +tid << byOriginator);
+    NS_LOG_FUNCTION(this << addr << +tid << byOriginator << gcrGroupAddr.has_value());
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_MGT_ACTION);
     // use the remote link address if addr is an MLD address
@@ -335,6 +339,10 @@ HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr, uint8_t tid, bool byOr
     MgtDelBaHeader delbaHdr;
     delbaHdr.SetTid(tid);
     byOriginator ? delbaHdr.SetByOriginator() : delbaHdr.SetByRecipient();
+    if (gcrGroupAddr.has_value())
+    {
+        delbaHdr.SetGcrGroupAddress(gcrGroupAddr.value());
+    }
 
     WifiActionHeader actionHdr;
     WifiActionHeader::ActionValue action;
@@ -725,11 +733,15 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
                 auto tid = delBa.GetTid();
                 if (delBa.IsByOriginator())
                 {
-                    GetBaManager(tid)->DestroyOriginatorAgreement(address, tid);
+                    GetBaManager(tid)->DestroyOriginatorAgreement(address,
+                                                                  tid,
+                                                                  delBa.GetGcrGroupAddress());
                 }
                 else
                 {
-                    GetBaManager(tid)->DestroyRecipientAgreement(address, tid);
+                    GetBaManager(tid)->DestroyRecipientAgreement(address,
+                                                                 tid,
+                                                                 delBa.GetGcrGroupAddress());
                 }
             }
             else if (actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
@@ -742,7 +754,8 @@ HtFrameExchangeManager::NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu)
                                     &QosTxop::AddBaResponseTimeout,
                                     edca,
                                     address,
-                                    addBa.GetTid());
+                                    addBa.GetTid(),
+                                    addBa.GetGcrGroupAddress());
             }
             else if (actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE)
             {
@@ -828,12 +841,15 @@ HtFrameExchangeManager::NotifyPacketDiscarded(Ptr<const WifiMpdu> mpdu)
             {
                 NS_LOG_DEBUG("No ACK after ADDBA request");
                 Ptr<QosTxop> qosTxop = m_mac->GetQosTxop(tid);
-                qosTxop->NotifyOriginatorAgreementNoReply(recipient, tid);
+                qosTxop->NotifyOriginatorAgreementNoReply(recipient,
+                                                          tid,
+                                                          addBa.GetGcrGroupAddress());
                 Simulator::Schedule(qosTxop->GetFailedAddBaTimeout(),
                                     &QosTxop::ResetBa,
                                     qosTxop,
                                     recipient,
-                                    tid);
+                                    tid,
+                                    addBa.GetGcrGroupAddress());
             }
         }
     }
@@ -1769,7 +1785,9 @@ HtFrameExchangeManager::ReceiveMgtAction(Ptr<const WifiMpdu> mpdu, const WifiTxV
                 // agreement exists in BlockAckManager and we need to
                 // destroy it.
                 GetBaManager(delBaHdr.GetTid())
-                    ->DestroyRecipientAgreement(recipient, delBaHdr.GetTid());
+                    ->DestroyRecipientAgreement(recipient,
+                                                delBaHdr.GetTid(),
+                                                delBaHdr.GetGcrGroupAddress());
             }
             else
             {

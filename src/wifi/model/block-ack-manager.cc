@@ -215,10 +215,13 @@ BlockAckManager::CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
 }
 
 void
-BlockAckManager::DestroyOriginatorAgreement(const Mac48Address& recipient, uint8_t tid)
+BlockAckManager::DestroyOriginatorAgreement(const Mac48Address& recipient,
+                                            uint8_t tid,
+                                            std::optional<Mac48Address> gcrGroupAddr)
 {
-    NS_LOG_FUNCTION(this << recipient << tid);
-    if (auto it = GetOriginatorBaAgreement(recipient, tid); it != m_originatorAgreements.end())
+    NS_LOG_FUNCTION(this << recipient << tid << gcrGroupAddr.has_value());
+    if (auto it = GetOriginatorBaAgreement(recipient, tid, gcrGroupAddr);
+        it != m_originatorAgreements.end())
     {
         m_originatorAgreements.erase(it);
     }
@@ -267,7 +270,8 @@ BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader& respHdr
                                                               &BlockAckManager::InactivityTimeout,
                                                               this,
                                                               recipient,
-                                                              tid);
+                                                              tid,
+                                                              respHdr.GetGcrGroupAddress());
         }
     }
     m_unblockPackets(recipient, tid);
@@ -327,10 +331,13 @@ BlockAckManager::CreateRecipientAgreement(const MgtAddBaResponseHeader& respHdr,
 }
 
 void
-BlockAckManager::DestroyRecipientAgreement(const Mac48Address& originator, uint8_t tid)
+BlockAckManager::DestroyRecipientAgreement(const Mac48Address& originator,
+                                           uint8_t tid,
+                                           std::optional<Mac48Address> gcrGroupAddr)
 {
-    NS_LOG_FUNCTION(this << originator << tid);
-    if (auto it = GetRecipientBaAgreement(originator, tid); it != m_recipientAgreements.end())
+    NS_LOG_FUNCTION(this << originator << tid << gcrGroupAddr.has_value());
+    if (auto it = GetRecipientBaAgreement(originator, tid, gcrGroupAddr);
+        it != m_recipientAgreements.end())
     {
         // forward up the buffered MPDUs before destroying the agreement
         it->second.Flush();
@@ -558,7 +565,12 @@ BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
         it->second.first.m_inactivityEvent.Cancel();
         Time timeout = MicroSeconds(1024 * it->second.first.GetTimeout());
         it->second.first.m_inactivityEvent =
-            Simulator::Schedule(timeout, &BlockAckManager::InactivityTimeout, this, recipient, tid);
+            Simulator::Schedule(timeout,
+                                &BlockAckManager::InactivityTimeout,
+                                this,
+                                recipient,
+                                tid,
+                                std::nullopt);
     }
 
     NS_ASSERT(blockAck.IsCompressed() || blockAck.IsExtendedCompressed() || blockAck.IsMultiSta());
@@ -818,17 +830,21 @@ BlockAckManager::RemoveFromSendBarIfDataQueuedList(const Mac48Address& recipient
 }
 
 void
-BlockAckManager::InactivityTimeout(const Mac48Address& recipient, uint8_t tid)
+BlockAckManager::InactivityTimeout(const Mac48Address& recipient,
+                                   uint8_t tid,
+                                   std::optional<Mac48Address> gcrGroupAddr)
 {
-    NS_LOG_FUNCTION(this << recipient << tid);
-    m_blockAckInactivityTimeout(recipient, tid, true);
+    NS_LOG_FUNCTION(this << recipient << tid << gcrGroupAddr.has_value());
+    m_blockAckInactivityTimeout(recipient, tid, true, gcrGroupAddr);
 }
 
 void
-BlockAckManager::NotifyOriginatorAgreementRejected(const Mac48Address& recipient, uint8_t tid)
+BlockAckManager::NotifyOriginatorAgreementRejected(const Mac48Address& recipient,
+                                                   uint8_t tid,
+                                                   std::optional<Mac48Address> gcrGroupAddr)
 {
-    NS_LOG_FUNCTION(this << recipient << tid);
-    auto it = GetOriginatorBaAgreement(recipient, tid);
+    NS_LOG_FUNCTION(this << recipient << tid << gcrGroupAddr.has_value());
+    auto it = GetOriginatorBaAgreement(recipient, tid, gcrGroupAddr);
     NS_ASSERT(it != m_originatorAgreements.end());
     if (!it->second.first.IsRejected())
     {
@@ -842,10 +858,12 @@ BlockAckManager::NotifyOriginatorAgreementRejected(const Mac48Address& recipient
 }
 
 void
-BlockAckManager::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid)
+BlockAckManager::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient,
+                                                  uint8_t tid,
+                                                  std::optional<Mac48Address> gcrGroupAddr)
 {
-    NS_LOG_FUNCTION(this << recipient << tid);
-    auto it = GetOriginatorBaAgreement(recipient, tid);
+    NS_LOG_FUNCTION(this << recipient << tid << gcrGroupAddr.has_value());
+    auto it = GetOriginatorBaAgreement(recipient, tid, gcrGroupAddr);
     NS_ASSERT(it != m_originatorAgreements.end());
     if (!it->second.first.IsNoReply())
     {
@@ -859,10 +877,12 @@ BlockAckManager::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient,
 }
 
 void
-BlockAckManager::NotifyOriginatorAgreementReset(const Mac48Address& recipient, uint8_t tid)
+BlockAckManager::NotifyOriginatorAgreementReset(const Mac48Address& recipient,
+                                                uint8_t tid,
+                                                std::optional<Mac48Address> gcrGroupAddr)
 {
-    NS_LOG_FUNCTION(this << recipient << tid);
-    auto it = GetOriginatorBaAgreement(recipient, tid);
+    NS_LOG_FUNCTION(this << recipient << tid << gcrGroupAddr.has_value());
+    auto it = GetOriginatorBaAgreement(recipient, tid, gcrGroupAddr);
     NS_ASSERT(it != m_originatorAgreements.end());
     if (!it->second.first.IsReset())
     {
@@ -911,7 +931,8 @@ BlockAckManager::NeedBarRetransmission(uint8_t tid, const Mac48Address& recipien
 }
 
 void
-BlockAckManager::SetBlockAckInactivityCallback(Callback<void, Mac48Address, uint8_t, bool> callback)
+BlockAckManager::SetBlockAckInactivityCallback(
+    Callback<void, Mac48Address, uint8_t, bool, std::optional<Mac48Address>> callback)
 {
     NS_LOG_FUNCTION(this << &callback);
     m_blockAckInactivityTimeout = callback;
