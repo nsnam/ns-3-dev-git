@@ -118,7 +118,6 @@ TcpBbr::TcpBbr(const TcpBbr& sock)
       m_uv(sock.m_uv),
       m_delivered(sock.m_delivered),
       m_appLimited(sock.m_appLimited),
-      m_txItemDelivered(sock.m_txItemDelivered),
       m_extraAckedGain(sock.m_extraAckedGain),
       m_extraAckedWinRtt(sock.m_extraAckedWinRtt),
       m_extraAckedWinRttLength(sock.m_extraAckedWinRttLength),
@@ -701,7 +700,6 @@ TcpBbr::CongControl(Ptr<TcpSocketState> tcb,
 {
     NS_LOG_FUNCTION(this << tcb << rs);
     m_delivered = rc.m_delivered;
-    m_txItemDelivered = rc.m_txItemDelivered;
     UpdateModelAndState(tcb, rs);
     UpdateControlParameters(tcb, rs);
 }

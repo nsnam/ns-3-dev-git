@@ -390,8 +390,6 @@ class TcpBbr : public TcpCongestionOps
     uint64_t m_delivered{0}; //!< The total amount of data in bytes delivered so far
     uint32_t m_appLimited{
         0}; //!< The index of the last transmitted packet marked as application-limited
-    uint32_t m_txItemDelivered{
-        0}; //!< The number of bytes already delivered at the time of new packet transmission
     uint32_t m_extraAckedGain{1};         //!< Gain factor for adding extra ack to cwnd
     uint32_t m_extraAcked[2]{0, 0};       //!< Maximum excess data acked in epoch
     uint32_t m_extraAckedWinRtt{0};       //!< Age of extra acked in rtt
