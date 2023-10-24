@@ -293,7 +293,7 @@ class TcpBbr : public TcpCongestionOps
      * \param tcb the socket state.
      * \param rs rate sample.
      */
-    void UpdateBtlBw(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
+    void UpdateBottleneckBandwidth(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs);
 
     /**
      * \brief Updates control parameters congestion windowm, pacing rate, send quantum.

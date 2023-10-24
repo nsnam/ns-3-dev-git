@@ -611,7 +611,7 @@ TcpBbr::UpdateRound(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs
 }
 
 void
-TcpBbr::UpdateBtlBw(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs)
+TcpBbr::UpdateBottleneckBandwidth(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs)
 {
     NS_LOG_FUNCTION(this << tcb << rs);
 
@@ -632,7 +632,7 @@ void
 TcpBbr::UpdateModelAndState(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs)
 {
     NS_LOG_FUNCTION(this << tcb << rs);
-    UpdateBtlBw(tcb, rs);
+    UpdateBottleneckBandwidth(tcb, rs);
     UpdateAckAggregation(tcb, rs);
     CheckCyclePhase(tcb, rs);
     CheckFullPipe(rs);
