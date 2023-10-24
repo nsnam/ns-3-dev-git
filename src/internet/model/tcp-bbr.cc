@@ -58,7 +58,7 @@ TcpBbr::GetTypeId()
             .AddAttribute("RttWindowLength",
                           "Length of RTT windowed filter",
                           TimeValue(Seconds(10)),
-                          MakeTimeAccessor(&TcpBbr::m_rtPropFilterLen),
+                          MakeTimeAccessor(&TcpBbr::m_minRttFilterLen),
                           MakeTimeChecker())
             .AddAttribute("ProbeRttDuration",
                           "Time to be spent in PROBE_RTT phase",
@@ -107,13 +107,13 @@ TcpBbr::TcpBbr(const TcpBbr& sock)
       m_targetCWnd(sock.m_targetCWnd),
       m_fullBandwidth(sock.m_fullBandwidth),
       m_fullBandwidthCount(sock.m_fullBandwidthCount),
-      m_rtProp(Time::Max()),
+      m_minRtt(Time::Max()),
       m_sendQuantum(sock.m_sendQuantum),
       m_cycleStamp(sock.m_cycleStamp),
       m_cycleIndex(sock.m_cycleIndex),
-      m_rtPropExpired(sock.m_rtPropExpired),
-      m_rtPropFilterLen(sock.m_rtPropFilterLen),
-      m_rtPropStamp(sock.m_rtPropStamp),
+      m_minRttExpired(sock.m_minRttExpired),
+      m_minRttFilterLen(sock.m_minRttFilterLen),
+      m_minRttStamp(sock.m_minRttStamp),
       m_isInitialized(sock.m_isInitialized),
       m_uv(sock.m_uv),
       m_delivered(sock.m_delivered),
@@ -237,12 +237,12 @@ uint32_t
 TcpBbr::InFlight(Ptr<TcpSocketState> tcb, double gain)
 {
     NS_LOG_FUNCTION(this << tcb << gain);
-    if (m_rtProp == Time::Max())
+    if (m_minRtt == Time::Max())
     {
         return tcb->m_initialCWnd * tcb->m_segmentSize;
     }
     double quanta = 3 * m_sendQuantum;
-    double estimatedBdp = m_maxBwFilter.GetBest() * m_rtProp / 8.0;
+    double estimatedBdp = m_maxBwFilter.GetBest() * m_minRtt / 8.0;
 
     if (m_state == BbrMode_t::BBR_PROBE_BW && m_cycleIndex == 0)
     {
@@ -264,7 +264,7 @@ bool
 TcpBbr::IsNextCyclePhase(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs)
 {
     NS_LOG_FUNCTION(this << tcb << rs);
-    bool isFullLength = (Simulator::Now() - m_cycleStamp) > m_rtProp;
+    bool isFullLength = (Simulator::Now() - m_cycleStamp) > m_minRtt;
     if (m_pacingGain == 1)
     {
         return isFullLength;
@@ -355,11 +355,11 @@ void
 TcpBbr::UpdateRTprop(Ptr<TcpSocketState> tcb)
 {
     NS_LOG_FUNCTION(this << tcb);
-    m_rtPropExpired = Simulator::Now() > (m_rtPropStamp + m_rtPropFilterLen);
-    if (tcb->m_lastRtt >= Seconds(0) && (tcb->m_lastRtt <= m_rtProp || m_rtPropExpired))
+    m_minRttExpired = Simulator::Now() > (m_minRttStamp + m_minRttFilterLen);
+    if (tcb->m_lastRtt >= Seconds(0) && (tcb->m_lastRtt <= m_minRtt || m_minRttExpired))
     {
-        m_rtProp = tcb->m_lastRtt;
-        m_rtPropStamp = Simulator::Now();
+        m_minRtt = tcb->m_lastRtt;
+        m_minRttStamp = Simulator::Now();
     }
 }
 
@@ -429,7 +429,7 @@ TcpBbr::HandleProbeRTT(Ptr<TcpSocketState> tcb)
         }
         if (m_probeRttRoundDone && Simulator::Now() > m_probeRttDoneStamp)
         {
-            m_rtPropStamp = Simulator::Now();
+            m_minRttStamp = Simulator::Now();
             RestoreCwnd(tcb);
             ExitProbeRTT();
         }
@@ -440,7 +440,7 @@ void
 TcpBbr::CheckProbeRTT(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs)
 {
     NS_LOG_FUNCTION(this << tcb);
-    if (m_state != BbrMode_t::BBR_PROBE_RTT && m_rtPropExpired && !m_idleRestart)
+    if (m_state != BbrMode_t::BBR_PROBE_RTT && m_minRttExpired && !m_idleRestart)
     {
         EnterProbeRTT();
         SaveCwnd(tcb);
@@ -711,8 +711,8 @@ TcpBbr::CongestionStateSet(Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCon
     if (newState == TcpSocketState::CA_OPEN && !m_isInitialized)
     {
         NS_LOG_DEBUG("CongestionStateSet triggered to CA_OPEN :: " << newState);
-        m_rtProp = tcb->m_lastRtt.Get() != Time::Max() ? tcb->m_lastRtt.Get() : Time::Max();
-        m_rtPropStamp = Simulator::Now();
+        m_minRtt = tcb->m_lastRtt.Get() != Time::Max() ? tcb->m_lastRtt.Get() : Time::Max();
+        m_minRttStamp = Simulator::Now();
         m_priorCwnd = tcb->m_cWnd;
         tcb->m_ssThresh = tcb->m_initialSsThresh;
         m_targetCWnd = tcb->m_cWnd;
@@ -771,7 +771,7 @@ TcpBbr::CwndEvent(Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t ev
         {
             if (m_probeRttRoundDone && Simulator::Now() > m_probeRttDoneStamp)
             {
-                m_rtPropStamp = Simulator::Now();
+                m_minRttStamp = Simulator::Now();
                 RestoreCwnd(tcb);
                 ExitProbeRTT();
             }
