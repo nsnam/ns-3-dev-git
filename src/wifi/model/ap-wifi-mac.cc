@@ -2745,4 +2745,15 @@ ApWifiMac::GetMaxBufferStatus(Mac48Address address) const
     return 255;
 }
 
+bool
+ApWifiMac::IsGcrBaAgreementEstablishedWithAllMembers(const Mac48Address& groupAddress,
+                                                     uint8_t tid) const
+{
+    NS_ASSERT(m_gcrManager);
+    return GetQosTxop(tid)->GetBaManager()->IsGcrAgreementEstablished(
+        groupAddress,
+        tid,
+        m_gcrManager->GetMemberStasForGroupAddress(groupAddress));
+}
+
 } // namespace ns3

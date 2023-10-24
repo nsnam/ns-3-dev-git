@@ -185,6 +185,18 @@ class ApWifiMac : public WifiMac
      */
     bool UseGcr(const WifiMacHeader& hdr) const;
 
+    /**
+     * Check if a GCR Block Ack agreement has been successfully established with all members of
+     * its group.
+     *
+     * @param groupAddress the GCR group address.
+     * @param tid the traffic ID.
+     * @return true if a GCR Block Ack agreement has been successfully established with all members
+     * of its group, false otherwise.
+     */
+    bool IsGcrBaAgreementEstablishedWithAllMembers(const Mac48Address& groupAddress,
+                                                   uint8_t tid) const;
+
     /// ACI-indexed map of access parameters of type unsigned integer (CWmin, CWmax and AIFSN)
     using UintAccessParamsMap = std::map<AcIndex, std::vector<uint64_t>>;
 

@@ -10,6 +10,7 @@
 #define BLOCK_ACK_MANAGER_H
 
 #include "block-ack-type.h"
+#include "gcr-manager.h"
 #include "originator-block-ack-agreement.h"
 #include "recipient-block-ack-agreement.h"
 #include "wifi-mac-header.h"
@@ -466,6 +467,20 @@ class BlockAckManager : public Object
      * @returns the starting sequence number of the transmit window (WinStartO)
      */
     uint16_t GetGcrStartingSequence(const Mac48Address& groupAddress, uint8_t tid) const;
+
+    /**
+     * Check if a GCR Block Ack agreement has been successfully established with all members of
+     * the group.
+     *
+     * @param gcrGroupAddress the GCR Group Address.
+     * @param tid the traffic ID.
+     * @param members members of the group.
+     * @return true if a GCR Block Ack agreement has been successfully established with all members
+     * of the group, false otherwise.
+     */
+    bool IsGcrAgreementEstablished(const Mac48Address& gcrGroupAddress,
+                                   uint8_t tid,
+                                   const GcrManager::GcrMembers& members) const;
 
   protected:
     void DoDispose() override;

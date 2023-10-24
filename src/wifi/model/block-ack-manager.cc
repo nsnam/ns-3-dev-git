@@ -1078,4 +1078,21 @@ BlockAckManager::GetGcrBufferSize(const Mac48Address& groupAddress, uint8_t tid)
     return gcrBufferSize;
 }
 
+bool
+BlockAckManager::IsGcrAgreementEstablished(const Mac48Address& gcrGroupAddress,
+                                           uint8_t tid,
+                                           const GcrManager::GcrMembers& members) const
+{
+    NS_ASSERT(!members.empty());
+    for (const auto& member : members)
+    {
+        if (const auto agreement = GetAgreementAsOriginator(member, tid, gcrGroupAddress);
+            !agreement || !agreement->get().IsEstablished())
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 } // namespace ns3
