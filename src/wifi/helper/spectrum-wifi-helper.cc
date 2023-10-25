@@ -148,7 +148,7 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
         }
         InstallPhyInterfaces(i, phy);
         phy->SetChannelSwitchedCallback(
-            MakeCallback(&SpectrumWifiPhyHelper::SpectrumChannelSwitched, this).Bind(phy));
+            MakeCallback(&SpectrumWifiPhyHelper::SpectrumChannelSwitched).Bind(phy));
         phy->SetDevice(device);
         phy->SetMobility(node->GetObject<MobilityModel>());
         ret.emplace_back(phy);
@@ -178,9 +178,8 @@ SpectrumWifiPhyHelper::InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy>
 }
 
 void
-SpectrumWifiPhyHelper::SpectrumChannelSwitched(Ptr<SpectrumWifiPhy> phy) const
+SpectrumWifiPhyHelper::SpectrumChannelSwitched(Ptr<SpectrumWifiPhy> phy)
 {
-    NS_LOG_FUNCTION(this << phy);
     for (const auto& otherPhy : phy->GetDevice()->GetPhys())
     {
         auto spectrumPhy = DynamicCast<SpectrumWifiPhy>(otherPhy);
