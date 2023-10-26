@@ -104,9 +104,7 @@ function(build_lib)
       )
     endif()
 
-    if((NOT FILESYSTEM_LIBRARY_IS_LINKED) OR (${GCC} AND ${GCC8}))
-      # The GCC8 alternative is necessary since when installed alongside newer
-      # releases, the incorrect shared library can end up being linked.
+    if(NOT FILESYSTEM_LIBRARY_IS_LINKED)
       list(APPEND BLIB_LIBRARIES_TO_LINK -lstdc++fs)
     endif()
 
