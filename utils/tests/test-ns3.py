@@ -1253,14 +1253,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             else:
                 self.assertEqual(return_code, 1)
 
-        # Now test them in CMake 3.10
         run_ns3("clean")
-        with DockerContainerManager(self, "ubuntu:18.04") as container:
+        with DockerContainerManager(self, "ubuntu:20.04") as container:
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake g++-8 ninja-build")
+            container.execute("apt-get install -y python3 cmake g++ ninja-build")
             try:
                 container.execute(
-                    "./ns3 configure --enable-modules=core,network,internet -- -DCMAKE_CXX_COMPILER=/usr/bin/g++-8")
+                    "./ns3 configure --enable-modules=core,network,internet -- -DCMAKE_CXX_COMPILER=/usr/bin/g++")
             except DockerException as e:
                 self.fail()
             for path in test_files:
@@ -1280,12 +1279,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 continue
             filename = os.path.basename(path).replace(".cc", "")
             executable_absolute_path = os.path.dirname(os.path.join(ns3_path, "build", path))
-            executable_name = list(filter(lambda x: filename in x,
-                                          os.listdir(executable_absolute_path)
-                                          )
-                                   )[0]
+            if os.path.exists(executable_absolute_path):
+                executable_name = list(filter(lambda x: filename in x,
+                                              os.listdir(executable_absolute_path)
+                                              )
+                                       )[0]
 
-            os.remove(os.path.join(executable_absolute_path, executable_name))
+                os.remove(os.path.join(executable_absolute_path, executable_name))
             if not os.listdir(os.path.dirname(path)):
                 os.rmdir(os.path.dirname(source_absolute_path))
 
@@ -1823,17 +1823,6 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
 
         run_ns3("clean")
-        # Ubuntu 18.04 ships with:
-        # - cmake 3.10: does not support PCH
-        # - ccache 3.4: incompatible with pch
-        with DockerContainerManager(self, "ubuntu:18.04") as container:
-            container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake ccache clang-10")
-            try:
-                container.execute("./ns3 configure -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10")
-            except DockerException as e:
-                self.assertIn("does not support precompiled headers", e.stderr)
-        run_ns3("clean")
 
         # Ubuntu 20.04 ships with:
         # - cmake 3.16: does support PCH
@@ -2155,9 +2144,9 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
             # Test the multiple ways of importing ns-3 libraries
             for import_method in ns3_import_methods:
                 test_cmake_project = """
-                                     cmake_minimum_required(VERSION 3.10..3.10)
+                                     cmake_minimum_required(VERSION 3.12..3.12)
                                      project(ns3_consumer CXX)
-                                     set(CMAKE_CXX_STANDARD 17)
+                                     set(CMAKE_CXX_STANDARD 20)
                                      set(CMAKE_CXX_STANDARD_REQUIRED ON)
                                      add_executable(test main.cpp)
                                      """ + import_method
@@ -2828,6 +2817,9 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         """
         if shutil.which("lldb") is None:
             self.skipTest("Missing lldb")
+
+        return_code, stdout, stderr = run_ns3("build scratch-simulator")
+        self.assertEqual(return_code, 0)
 
         return_code, stdout, stderr = run_ns3("run scratch-simulator --lldb --verbose --no-build")
         self.assertEqual(return_code, 0)
