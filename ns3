@@ -878,7 +878,7 @@ def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=F
     cmake, version = cmake_check_version()
 
     # Older CMake versions don't accept the number of jobs directly
-    jobs_part = ("-j %d" % jobs) if parse_version(version) >= parse_version("3.12.0") else ""
+    jobs_part = ("-j %d" % jobs)
     target_part = (" --target %s" % target) if target else ""
     cmake_build_command = "%s --build . %s%s" % (cmake, jobs_part, target_part)
 
