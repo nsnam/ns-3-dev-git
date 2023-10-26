@@ -668,8 +668,9 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address re
         // already assigned waiting to be retransmitted (or being transmitted on another link)
         // when the Add BA Response is received. In this case, the starting sequence number shall
         // be set equal to the sequence number of such packet.
-        uint16_t startingSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress(tid, recipient);
-        auto peekedItem = m_queue->PeekByTidAndAddress(tid, recipient);
+        const auto queueRecipient = respHdr.GetGcrGroupAddress().value_or(recipient);
+        auto startingSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress(tid, queueRecipient);
+        auto peekedItem = m_queue->PeekByTidAndAddress(tid, queueRecipient);
         if (peekedItem && peekedItem->HasSeqNoAssigned())
         {
             startingSeq = peekedItem->GetHeader().GetSequenceNumber();
