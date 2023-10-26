@@ -348,6 +348,8 @@ enum LrWpanMacPibAttributeIdentifier
     macShortAddress = 2,
     macExtendedAddress = 3,
     macPanId = 4,
+    pCurrentChannel = 100,
+    pCurrentPage = 101,
     unsupported = 255
     // TODO: complete other MAC pib attributes
 };
@@ -363,7 +365,9 @@ struct LrWpanMacPibAttributes : public SimpleRefCount<LrWpanMacPibAttributes>
     uint8_t macBeaconPayloadLength{0}; //!< The length in octets of the beacon payload.
     Mac16Address macShortAddress;      //!< The 16 bit mac short address
     Mac64Address macExtendedAddress;   //!< The EUI-64 bit address
-    uint16_t macPanId;                 //!< The identifier of the PAN
+    uint16_t macPanId{0xffff};         //!< The identifier of the PAN
+    uint8_t pCurrentChannel{11};       //!< The current logical channel in used in the PHY
+    uint8_t pCurrentPage{0};           //!< The current logical page in use in the PHY
     // TODO: complete other MAC pib attributes
 };
 

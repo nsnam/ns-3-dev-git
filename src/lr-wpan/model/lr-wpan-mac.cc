@@ -964,6 +964,12 @@ LrWpanMac::MlmeGetRequest(LrWpanMacPibAttributeIdentifier id)
     case macPanId:
         attributes->macPanId = m_macPanId;
         break;
+    case pCurrentChannel:
+        attributes->pCurrentChannel = m_phy->GetCurrentChannelNum();
+        break;
+    case pCurrentPage:
+        attributes->pCurrentPage = m_phy->GetCurrentPage();
+        break;
     default:
         status = MLMEGET_UNSUPPORTED_ATTRIBUTE;
         break;
