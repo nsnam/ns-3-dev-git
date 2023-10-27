@@ -134,10 +134,6 @@ static ns3::GlobalValue g_rate("VRCrate",
 ./src/internet/model/global-route-manager-impl.h:555
     typedef std::list<SPFVertex*> ListOfSPFVertex_t; //!< container of SPFVertexes
 
-./utils/tests/test-ns3.py
-        destination_src = os.path.join(ns3_path, "src/test-src-dependant-on-contrib")
-        shutil.copytree(os.path.join(ns3_path, "build-support/test-files/test-src-dependant-on-contrib"),
-
 ./CHANGES.md:
   * (dsr) Class `DsrOptionRerrUnsupportHeader` from `dsr-option-header.h` was renamed `DsrOptionRerrUnsupportedHeader`.
   * (internet) Enumerated value `IPV6_EXT_AUTHENTIFICATION` from `ipv6-header.h` was renamed `IPV6_EXT_AUTHENTICATION`.

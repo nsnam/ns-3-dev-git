@@ -2370,7 +2370,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
             self.skipTest("Missing git")
 
         destination_contrib = os.path.join(ns3_path, "contrib/test-contrib-dependency")
-        destination_src = os.path.join(ns3_path, "src/test-src-dependant-on-contrib")
+        destination_src = os.path.join(ns3_path, "src/test-src-dependent-on-contrib")
         # Remove pre-existing directories
         if os.path.exists(destination_contrib):
             shutil.rmtree(destination_contrib)
@@ -2380,7 +2380,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Always use a fresh copy
         shutil.copytree(os.path.join(ns3_path, "build-support/test-files/test-contrib-dependency"),
                         destination_contrib)
-        shutil.copytree(os.path.join(ns3_path, "build-support/test-files/test-src-dependant-on-contrib"),
+        shutil.copytree(os.path.join(ns3_path, "build-support/test-files/test-src-dependent-on-contrib"),
                         destination_src)
 
         # Then configure
