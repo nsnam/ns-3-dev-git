@@ -2956,6 +2956,7 @@ class NS3QualityControlTestCase(unittest.TestCase):
                             "https://www.nsnam.org/releases/ns-3-x",
                             "https://www.nsnam.org/releases/ns-allinone-3.(x-1",
                             "https://www.nsnam.org/releases/ns-allinone-3.x.tar.bz2",
+                            "https://ns-buildmaster.ee.washington.edu:8010/",
                             # split due to command-line formatting
                             "https://cmake.org/cmake/help/latest/manual/cmake-",
                             "http://www.ieeeghn.org/wiki/index.php/First-Hand:Digital_Television:_The_",
@@ -2969,6 +2970,11 @@ class NS3QualityControlTestCase(unittest.TestCase):
                             # historical links
                             "http://www.research.att.com/info/kpv/",
                             "http://www.research.att.com/~gsf/",
+                            "http://nsnam.isi.edu/nsnam/index.php/Contributed_Code",
+                            "http://scan5.coverity.com/cgi-bin/upload.py",
+                            # terminal output
+                            "https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-x86_64.tar.gz-",
+                            "http://mirrors.kernel.org/fedora/releases/11/Everything/i386/os/Packages/",
                             }
 
         # Scan for all URLs in all files we can parse

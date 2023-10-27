@@ -119,6 +119,9 @@ static ns3::GlobalValue g_rate("VRCrate",
 ./src/lte/model/lte-mi-error-model.h:23:
  *      for mobIlE Video AppLications) project, which is a
 
+./src/traffic-control/doc/tbf.rst:84:
+.. [Ref2] J. Vehent; Journey to the Center of the Linux Kernel: Traffic Control, Shaping and QoS; Available online at `<https://web.archive.org/web/20190930031243/http://wiki.linuxwall.info/doku.php/en:ressources:dossiers:networking:traffic_control#tbf_-_token_bucket_filter>`_.
+
 ./src/traffic-control/model/codel-queue-disc.h:17:
  * Codel, the COntrolled DELay Queueing discipline
 

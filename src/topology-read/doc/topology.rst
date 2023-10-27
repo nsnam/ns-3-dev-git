@@ -53,7 +53,7 @@ used create a rescaled version of the topology, thus being the most effective wa
 Examples can be found in the directory ``src/topology-read/examples/``
 
 .. _Orbis: https://web.archive.org/web/20181102004219/http://sysnet.ucsd.edu/~pmahadevan/topo_research/topo.html
-.. _Inet: http://topology.eecs.umich.edu/inet/
+.. _Inet: https://web.archive.org/web/20210308100536/http://topology.eecs.umich.edu/inet/
 .. _RocketFuel: http://www.cs.washington.edu/research/networking/rocketfuel/
 .. _Archipelago: http://www.caida.org/projects/ark/
 .. _Measurements: http://data.caida.org/datasets/topology/ipv4.allpref24-aslinks/

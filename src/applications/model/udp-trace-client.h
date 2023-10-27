@@ -41,7 +41,7 @@ class Packet;
  *
  * Sends UDP packets based on a trace file of a MPEG4 stream.
  * Trace files can be downloaded from:
- * http://trace.eas.asu.edu/mpeg4/index.html
+ * https://web.archive.org/web/20210113211420/http://trace.eas.asu.edu/mpeg4/index.html
  * (the 2 first lines of the file should be removed) A valid trace file is a file with 4 columns:
  * \li -1- the first one represents the frame index
  * \li -2- the second one indicates the type of the frame: I, P or B

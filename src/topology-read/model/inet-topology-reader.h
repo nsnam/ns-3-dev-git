@@ -43,7 +43,7 @@ namespace ns3
  * the information needed to build the topology
  * (i.e.number of nodes, links and links structure).
  * It have been tested with Inet 3.0
- * http://topology.eecs.umich.edu/inet/
+ * https://web.archive.org/web/20210308100536/http://topology.eecs.umich.edu/inet/
  *
  * It might set a link attribute named "Weight", corresponding to
  * the euclidean distance between two nodes, the nodes being randomly positioned.

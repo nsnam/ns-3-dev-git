@@ -248,7 +248,7 @@ the entire topology. Then, for each router in the topology, the
 GlobalRouteManager executes the OSPF shortest path first (SPF) computation on
 the database, and populates the routing tables on each node.
 
-The quagga (`<http://www.quagga.net>`_) OSPF implementation was used as the
+The quagga (`<https://www.nongnu.org/quagga/>`_) OSPF implementation was used as the
 basis for the routing computation logic. One benefit of following an existing
 OSPF SPF implementation is that OSPF already has defined link state
 advertisements for all common types of network links:

@@ -14,7 +14,8 @@
  * Currently there are three models:
  * - ns3::OrbisTopologyReader for Orbis 0.7 traces
  * (https://web.archive.org/web/20181102004219/http://sysnet.ucsd.edu/~pmahadevan/topo_research/topo.html)
- * - ns3::InetTopologyReader for Inet 3.0 traces (http://topology.eecs.umich.edu/inet/)
+ * - ns3::InetTopologyReader for Inet 3.0 traces
+ * (https://web.archive.org/web/20210308100536/http://topology.eecs.umich.edu/inet/)
  * - ns3::RocketfuelTopologyReader for Rocketfuel traces
  * (http://www.cs.washington.edu/research/networking/rocketfuel/)
  *

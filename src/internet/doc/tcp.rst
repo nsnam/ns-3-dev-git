@@ -57,7 +57,7 @@ Model history
 +++++++++++++
 
 Until the ns-3.10 release, |ns3| contained a port of the TCP model from `GTNetS
-<http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/index.html>`_,
+<https://web.archive.org/web/20210928123443/http://griley.ece.gatech.edu/MANIACS/GTNetS/index.html>`_,
 developed initially by George Riley and ported to |ns3| by Raj Bhattacharjea.
 This implementation was substantially rewritten by Adriam Tam for ns-3.10.
 In 2015, the TCP module was redesigned in order to create a better

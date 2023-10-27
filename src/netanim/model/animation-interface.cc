@@ -15,7 +15,7 @@
  * Author: George F. Riley<riley@ece.gatech.edu>
  * Modified by: John Abraham <john.abraham@gatech.edu>
  * Contributions: Eugene Kalishenko <ydginster@gmail.com> (Open Source and Linux Laboratory
- * http://dev.osll.ru/) Tommaso Pecorella <tommaso.pecorella@unifi.it> Pavel Vasilyev
+ * http://wiki.osll.ru/doku.php/start) Tommaso Pecorella <tommaso.pecorella@unifi.it> Pavel Vasilyev
  * <pavel.vasilyev@sredasolutions.com>
  */
 

@@ -591,7 +591,8 @@ TxDurationTest::DoRun()
                              WIFI_PREAMBLE_LONG,
                              MicroSeconds(8208 + 192));
 
-    // values from http://mailman.isi.edu/pipermail/ns-developers/2009-July/006226.html
+    // values from
+    // https://web.archive.org/web/20100711002639/http://mailman.isi.edu/pipermail/ns-developers/2009-July/006226.html
     retval = retval && CheckTxDuration(14,
                                        DsssPhy::GetDsssRate1Mbps(),
                                        22,

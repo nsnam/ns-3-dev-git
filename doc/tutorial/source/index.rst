@@ -8,7 +8,7 @@ follows:
 
 * Several guides that are version controlled for each release (the
   `latest release <https://www.nsnam.org/documentation/latest/>`_) and
-  `development tree <https://www.nsnam.org/ns-3-dev/documentation/>`_:
+  `development tree <https://www.nsnam.org/documentation/development-tree/>`_:
 
   * Tutorial *(this document)*
   * Installation Guide

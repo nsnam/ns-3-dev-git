@@ -467,7 +467,7 @@ Performance Profilers
 .. _Perf : https://perf.wiki.kernel.org/index.php/Tutorial
 .. _Hotspot : https://github.com/KDAB/hotspot
 .. _AMD uProf : https://www.amd.com/en/developer/uprof.html
-.. _Intel VTune : https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-vtune/top.html
+.. _Intel VTune : https://www.intel.com/content/www/us/en/docs/vtune-profiler/get-started-guide/2023-1/overview.html
 .. _Windows Performance Toolkit : https://docs.microsoft.com/en-us/windows-hardware/test/wpt/
 .. _Sysprof : https://wiki.gnome.org/Apps/Sysprof
 .. _Oprofile : https://oprofile.sourceforge.io/faq/
