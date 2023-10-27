@@ -306,6 +306,17 @@ macro(process_options)
         ${PROJECT_SOURCE_DIR}/build-support/cmake-format-modules.yaml -i
         ${MODULES_CMAKE_FILES}
     )
+    add_custom_target(
+      cmake-format-check
+      COMMAND
+        ${CMAKE_FORMAT_PROGRAM} -c
+        ${PROJECT_SOURCE_DIR}/build-support/cmake-format.yaml --check
+        ${INTERNAL_CMAKE_FILES}
+      COMMAND
+        ${CMAKE_FORMAT_PROGRAM} -c
+        ${PROJECT_SOURCE_DIR}/build-support/cmake-format-modules.yaml --check
+        ${MODULES_CMAKE_FILES}
+    )
     unset(MODULES_CMAKE_FILES)
     unset(INTERNAL_CMAKE_FILES)
   endif()
