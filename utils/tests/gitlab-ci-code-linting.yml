@@ -119,3 +119,14 @@ spell-check:
     # Check source code and commit messages
     - codespell -f -C0 ./
   timeout: 1h
+
+# Check cmake format
+cmake-format:
+  stage: .pre
+  image: python:latest
+  before_script:
+    - pip install pyyaml cmake cmake-format ninja
+  script:
+    - ./ns3 configure --enable-modules=core
+    - ./ns3 build cmake-format-check
+  timeout: 1h
