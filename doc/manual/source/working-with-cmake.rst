@@ -2950,7 +2950,7 @@ manage dependencies. Here is an example for Doxygen:
 
   # This custom macro checks for dependencies CMake find_package and program
   # dependencies and return the missing dependencies in the third argument
-  check_deps("" "doxygen;dot;dia" doxygen_docs_missing_deps)
+  check_deps(doxygen_docs_missing_deps EXECUTABLES doxygen dot dia python3)
 
   # If the variable contains missing dependencies, we stop processing doxygen targets
   if(doxygen_docs_missing_deps)

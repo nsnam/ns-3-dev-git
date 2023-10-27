@@ -15,6 +15,80 @@
 #
 # Author: Gabriel Ferreira <gabrielcarvfer@gmail.com>
 
+add_custom_target(copy_all_headers)
+function(copy_headers_before_building_lib libname outputdir headers visibility)
+  foreach(header ${headers})
+    # Copy header to output directory on changes -> too darn slow
+    # configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${header} ${outputdir}/
+    # COPYONLY)
+
+    get_filename_component(
+      header_name ${CMAKE_CURRENT_SOURCE_DIR}/${header} NAME
+    )
+
+    # If output directory does not exist, create it
+    if(NOT (EXISTS ${outputdir}))
+      file(MAKE_DIRECTORY ${outputdir})
+    endif()
+
+    # If header already exists, skip symlinking/stub header creation
+    if(EXISTS ${outputdir}/${header_name})
+      continue()
+    endif()
+
+    # Create a stub header in the output directory, including the real header
+    # inside their respective module
+    get_filename_component(
+      ABSOLUTE_HEADER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${header}" ABSOLUTE
+    )
+    file(WRITE ${outputdir}/${header_name}
+         "#include \"${ABSOLUTE_HEADER_PATH}\"\n"
+    )
+  endforeach()
+endfunction(copy_headers_before_building_lib)
+
+function(remove_lib_prefix prefixed_library library)
+  # Check if there is a lib prefix
+  string(FIND "${prefixed_library}" "lib" lib_pos)
+
+  # If there is a lib prefix, try to remove it
+  if(${lib_pos} EQUAL 0)
+    # Check if we still have something remaining after removing the "lib" prefix
+    string(LENGTH ${prefixed_library} len)
+    if(${len} LESS 4)
+      message(FATAL_ERROR "Invalid library name: ${prefixed_library}")
+    endif()
+
+    # Remove lib prefix from module name (e.g. libcore -> core)
+    string(SUBSTRING "${prefixed_library}" 3 -1 unprefixed_library)
+  else()
+    set(unprefixed_library ${prefixed_library})
+  endif()
+
+  # Save the unprefixed library name to the parent scope
+  set(${library} ${unprefixed_library} PARENT_SCOPE)
+endfunction()
+
+function(check_for_missing_libraries output_variable_name libraries)
+  set(missing_dependencies)
+  foreach(lib ${libraries})
+    # skip check for ns-3 modules if its a path to a library
+    if(EXISTS ${lib})
+      continue()
+    endif()
+
+    # check if the example depends on disabled modules
+    remove_lib_prefix("${lib}" lib)
+
+    # Check if the module exists in the ns-3 modules list or if it is a
+    # 3rd-party library
+    if(NOT (${lib} IN_LIST ns3-all-enabled-modules))
+      list(APPEND missing_dependencies ${lib})
+    endif()
+  endforeach()
+  set(${output_variable_name} ${missing_dependencies} PARENT_SCOPE)
+endfunction()
+
 # cmake-format: off
 #
 # This macro processes a ns-3 module

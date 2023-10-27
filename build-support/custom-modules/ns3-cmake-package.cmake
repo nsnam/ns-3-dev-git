@@ -15,6 +15,27 @@
 #
 # Author: Gabriel Ferreira <gabrielcarvfer@gmail.com>
 
+include(GNUInstallDirs)
+
+# Set RPATH not too need LD_LIBRARY_PATH after installing
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib:$ORIGIN/:$ORIGIN/../lib")
+
+# Add the 64 suffix to the library path when manually requested with the
+# -DNS3_USE_LIB64=ON flag. May be necessary depending on the target platform.
+# This is used to properly build the manylinux pip wheel.
+if(${NS3_USE_LIB64})
+  link_directories(${CMAKE_OUTPUT_DIRECTORY}/lib64)
+  set(CMAKE_INSTALL_RPATH
+      "${CMAKE_INSTALL_RPATH}:${CMAKE_INSTALL_PREFIX}/lib64:$ORIGIN/:$ORIGIN/../lib64"
+  )
+endif()
+
+# cmake-format: off
+# You are a wizard, Harry!
+# source: https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling
+# cmake-format: on
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 function(build_required_and_libs_lists module_name visibility libraries
          all_ns3_libraries
 )

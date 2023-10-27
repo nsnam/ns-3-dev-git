@@ -48,6 +48,13 @@ additional_commands:
             LIBRARY_NAMES : '*'
             PATH_SUFFIXES : '*'
             SEARCH_PATHS : '*'
+    check_deps:
+        pargs:
+            nargs: 1
+        kwargs:
+            CMAKE_PACKAGES : '*'
+            EXECUTABLES : '*'
+            PYTHON_PACKAGES : '*'
 
 format:
   tab_size: 2
