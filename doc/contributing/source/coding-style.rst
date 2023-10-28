@@ -1522,3 +1522,45 @@ explained here.
 
     // Avoid repeating the type name "MyClass" in std::less<>
     std::map<MyClass, int, std::less<MyClass>> myMap;
+
+
+CMake file formatting
+*********************
+
+The ``CMakeLists.txt`` and other ``*.cmake`` files follow the formatting rules defined in
+``build-support/cmake-format.yaml`` and ``build-support/cmake-format-modules.yaml``.
+
+The first set of rules applies to CMake files in all directories that are not modules,
+while the second one applies to files within modules.
+
+.. _cmake-format: https://cmake-format.readthedocs.io/en/latest/cmake-format.html
+
+Those rules are enforced via the `cmake-format`_ tool, that can be installed via Pip.
+
+.. sourcecode:: console
+
+    pip install cmake-format pyyaml
+
+After installing cmake-format, it can be called to fix the formatting of a CMake file
+with the following command:
+
+.. sourcecode:: console
+
+    cmake-format -c ./build-support/cmake-format.yaml CMakeLists.txt
+
+To check the formatting, add the `--check` option to the command, before specifying
+the list of CMake files.
+
+Instead of calling this command for every single CMake file, it is recommended to use
+the ``ns3`` script to run the custom targets that do that automatically.
+
+.. sourcecode:: console
+
+    # Check CMake formatting
+    ./ns3 build cmake-format-check
+
+    # Check and fix CMake formatting
+    ./ns3 build cmake-format
+
+Custom functions and macros need to be explicitly configured in the ``cmake-format.yaml`` files,
+otherwise their formatting will be broken.
