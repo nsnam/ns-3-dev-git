@@ -132,3 +132,22 @@ cmake-format:
     - ./ns3 configure --enable-modules=core
     - ./ns3 build cmake-format-check
   timeout: 1h
+
+# Check Python format
+.python-format:
+  stage: .pre
+  image: python:slim
+  before_script:
+    - pip install black isort
+  script:
+    - black --check .
+    - isort --check .
+  timeout: 1h
+
+python-format-latest:
+  extends: .python-format
+  image: python:slim
+
+python-format-3.6:
+  extends: .python-format
+  image: python:3.6-slim
