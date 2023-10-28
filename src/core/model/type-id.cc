@@ -383,7 +383,8 @@ IidManager::AllocateUid(std::string name)
 {
     NS_LOG_FUNCTION(IID << name);
     // Type names are definitive: equal names are equal types
-    NS_ASSERT_MSG(m_namemap.count(name) == 0, "Trying to allocate twice the same uid: " << name);
+    NS_ABORT_MSG_UNLESS(m_namemap.count(name) == 0,
+                        "Trying to allocate twice the same uid: " << name);
 
     TypeId::hash_t hash = Hasher(name) & (~HashChainFlag);
     if (m_hashmap.count(hash) == 1)
