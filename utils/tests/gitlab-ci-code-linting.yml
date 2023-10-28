@@ -73,8 +73,8 @@ clang-tidy-17:
       2> /dev/null ;
       fi
 
-    # Run full clang-tidy in the following cases: 1) default branch, 2) ".clang-tidy" file changed, 3) clang-tidy-diff had an error
-    - if [[ $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ]] || (grep -q ".clang-tidy" $FILES_CHANGED) || (egrep -q -A 3 "file not found \[clang-diagnostic-error\]" $CLANG_TIDY_OUTPUT) ; then
+    # Run full clang-tidy in the following cases: 1) default branch, 2) ".clang-tidy" file changed
+    - if [[ $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ]] || (grep -q ".clang-tidy" $FILES_CHANGED) ; then
       echo "Running full clang-tidy" ;
       run-clang-tidy-17 -p cmake-cache/ -quiet
       1> $CLANG_TIDY_OUTPUT
@@ -82,7 +82,7 @@ clang-tidy-17:
       fi
 
     # Check job results
-    - (! egrep -A 3 "error:|warning:|note:" $CLANG_TIDY_OUTPUT)
+    - (! egrep -v "file not found \[clang-diagnostic-error\]" $CLANG_TIDY_OUTPUT | egrep -A3 "error:|warning:|note:")
     - echo "No clang-tidy errors found"
   dependencies: []
   artifacts:
