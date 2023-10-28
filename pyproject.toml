@@ -14,3 +14,11 @@ local_scheme = "no-local-version"
 
 [tool.cibuildwheel]
 build-frontend = "build"
+
+[tool.black]
+line-length = 100
+include = "\\bns3$|\\.py$"
+
+[tool.isort]
+profile = "black"
+line_length = 100
