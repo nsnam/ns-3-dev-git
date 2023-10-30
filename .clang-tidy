@@ -47,7 +47,6 @@ Checks: >
   readability-static-accessed-through-instance,
   readability-static-definition-in-anonymous-namespace,
   readability-string-compare,
-  readability-uppercase-literal-suffix,
 
 CheckOptions:
   - key: performance-unnecessary-copy-initialization.AllowedTypes
