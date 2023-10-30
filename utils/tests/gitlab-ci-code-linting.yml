@@ -65,6 +65,7 @@ clang-tidy-16:
       git diff -U0 upstream/$CI_DEFAULT_BRANCH |
       clang-tidy-diff-16.py -path cmake-cache/ -p1 -quiet -use-color
       -iregex "(contrib|examples|src|scratch|utils)\/.+\.(cpp|cc|cxx|c|h|hpp)"
+      -extra-arg=-Wno-unknown-warning-option
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null ;
       fi
