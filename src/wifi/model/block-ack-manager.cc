@@ -211,7 +211,7 @@ BlockAckManager::CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
                       << (reqHdr.GetGcrGroupAddress().has_value() ? "GCR " : " ")
                       << "Block Ack agreement for recipient " << recipient << " and tid " << +tid);
 
-    m_blockPackets(recipient, tid);
+    m_blockPackets(reqHdr.GetGcrGroupAddress().value_or(recipient), tid);
 }
 
 void
@@ -274,7 +274,26 @@ BlockAckManager::UpdateOriginatorAgreement(const MgtAddBaResponseHeader& respHdr
                                                               respHdr.GetGcrGroupAddress());
         }
     }
-    m_unblockPackets(recipient, tid);
+    if (!respHdr.GetGcrGroupAddress().has_value())
+    {
+        m_unblockPackets(recipient, tid);
+    }
+    else
+    {
+        for (const auto& agreement : m_originatorAgreements)
+        {
+            if (agreement.second.first.GetGcrGroupAddress() != respHdr.GetGcrGroupAddress())
+            {
+                continue;
+            }
+            if (!agreement.second.first.IsEstablished())
+            {
+                return;
+            }
+        }
+        // established with all members so we can unblock
+        m_unblockPackets(respHdr.GetGcrGroupAddress().value(), tid);
+    }
 }
 
 void
@@ -854,7 +873,10 @@ BlockAckManager::NotifyOriginatorAgreementRejected(const Mac48Address& recipient
                                    OriginatorBlockAckAgreement::REJECTED);
     }
     it->second.first.SetState(OriginatorBlockAckAgreement::REJECTED);
-    m_unblockPackets(recipient, tid);
+    if (!gcrGroupAddr.has_value())
+    {
+        m_unblockPackets(recipient, tid);
+    }
 }
 
 void
@@ -873,7 +895,10 @@ BlockAckManager::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient,
                                    OriginatorBlockAckAgreement::NO_REPLY);
     }
     it->second.first.SetState(OriginatorBlockAckAgreement::NO_REPLY);
-    m_unblockPackets(recipient, tid);
+    if (!gcrGroupAddr.has_value())
+    {
+        m_unblockPackets(recipient, tid);
+    }
 }
 
 void
@@ -892,6 +917,10 @@ BlockAckManager::NotifyOriginatorAgreementReset(const Mac48Address& recipient,
                                    OriginatorBlockAckAgreement::RESET);
     }
     it->second.first.SetState(OriginatorBlockAckAgreement::RESET);
+    if (gcrGroupAddr.has_value())
+    {
+        m_unblockPackets(gcrGroupAddr.value(), tid);
+    }
 }
 
 void
