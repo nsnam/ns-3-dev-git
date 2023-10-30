@@ -63,7 +63,7 @@ clang-tidy-16:
     - if !([[ $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ]] || (grep -q ".clang-tidy" $FILES_CHANGED)) ; then
       echo "Running clang-tidy-diff" ;
       git diff -U0 upstream/$CI_DEFAULT_BRANCH |
-      clang-tidy-diff-16.py -path cmake-cache/ -p1 -quiet -use-color -extra-arg=-Wno-unknown-warning-option
+      clang-tidy-diff-16.py -path cmake-cache/ -p1 -quiet -use-color
       -iregex "(contrib|examples|src|scratch|utils)\/.+\.(cpp|cc|cxx|c|h|hpp)"
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null ;
@@ -72,7 +72,7 @@ clang-tidy-16:
     # Run full clang-tidy in the following cases: 1) default branch, 2) ".clang-tidy" file changed, 3) clang-tidy-diff had an error
     - if [[ $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ]] || (grep -q ".clang-tidy" $FILES_CHANGED) || (egrep -q -A 3 "file not found \[clang-diagnostic-error\]" $CLANG_TIDY_OUTPUT) ; then
       echo "Running full clang-tidy" ;
-      run-clang-tidy-16 -p cmake-cache/ -quiet -extra-arg=-Wno-unknown-warning-option
+      run-clang-tidy-16 -p cmake-cache/ -quiet
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null ;
       fi
