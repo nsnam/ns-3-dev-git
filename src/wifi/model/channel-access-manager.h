@@ -158,6 +158,26 @@ class ChannelAccessManager : public Object
     Time GetAccessGrantStart(bool ignoreNav = false) const;
 
     /**
+     * Return the time when the backoff procedure
+     * started for the given Txop.
+     *
+     * \param txop the Txop
+     *
+     * \return the time when the backoff procedure started
+     */
+    Time GetBackoffStartFor(Ptr<Txop> txop) const;
+
+    /**
+     * Return the time when the backoff procedure
+     * ended (or will end) for the given Txop.
+     *
+     * \param txop the Txop
+     *
+     * \return the time when the backoff procedure ended (or will end)
+     */
+    Time GetBackoffEndFor(Ptr<Txop> txop) const;
+
+    /**
      * \param qosTxop a QosTxop that needs to be disabled
      * \param duration the amount of time during which the QosTxop is disabled
      *
@@ -393,24 +413,6 @@ class ChannelAccessManager : public Object
      */
     Time GetBackoffEndFor(Ptr<Txop> txop, Time accessGrantStart) const;
 
-    /**
-     * Return the time when the backoff procedure
-     * started for the given Txop.
-     *
-     * \param txop the Txop
-     *
-     * \return the time when the backoff procedure started
-     */
-    Time GetBackoffStartFor(Ptr<Txop> txop);
-    /**
-     * Return the time when the backoff procedure
-     * ended (or will end) for the given Txop.
-     *
-     * \param txop the Txop
-     *
-     * \return the time when the backoff procedure ended (or will end)
-     */
-    Time GetBackoffEndFor(Ptr<Txop> txop);
     /**
      * This method determines whether the medium has been idle during a period (of
      * non-null duration) immediately preceding the time this method is called. If

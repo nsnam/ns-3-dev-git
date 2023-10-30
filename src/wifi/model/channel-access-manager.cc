@@ -632,7 +632,7 @@ ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
 }
 
 Time
-ChannelAccessManager::GetBackoffStartFor(Ptr<Txop> txop)
+ChannelAccessManager::GetBackoffStartFor(Ptr<Txop> txop) const
 {
     return GetBackoffStartFor(txop, GetAccessGrantStart());
 }
@@ -651,7 +651,7 @@ ChannelAccessManager::GetBackoffStartFor(Ptr<Txop> txop, Time accessGrantStart) 
 }
 
 Time
-ChannelAccessManager::GetBackoffEndFor(Ptr<Txop> txop)
+ChannelAccessManager::GetBackoffEndFor(Ptr<Txop> txop) const
 {
     return GetBackoffEndFor(txop, GetAccessGrantStart());
 }
