@@ -1895,12 +1895,15 @@ WifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr [[maybe_unused]]) cons
 }
 
 WifiMac::OriginatorAgreementOptConstRef
-WifiMac::GetBaAgreementEstablishedAsOriginator(Mac48Address recipient, uint8_t tid) const
+WifiMac::GetBaAgreementEstablishedAsOriginator(Mac48Address recipient,
+                                               uint8_t tid,
+                                               std::optional<Mac48Address> gcrGroupAddr) const
 {
     // BA agreements are indexed by the MLD address if ML setup was performed
     recipient = GetMldAddress(recipient).value_or(recipient);
 
-    auto agreement = GetQosTxop(tid)->GetBaManager()->GetAgreementAsOriginator(recipient, tid);
+    auto agreement =
+        GetQosTxop(tid)->GetBaManager()->GetAgreementAsOriginator(recipient, tid, gcrGroupAddr);
     if (!agreement || !agreement->get().IsEstablished())
     {
         return std::nullopt;
