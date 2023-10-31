@@ -359,6 +359,22 @@ class BlockAckManager : public Object
      * @returns true if BAR retransmission needed
      */
     bool NeedBarRetransmission(uint8_t tid, const Mac48Address& recipient);
+
+    /**
+     * This function returns true if a GCR block ack agreement is established with the given
+     * recipient, for the given TID, for the given GCR group address and there is at least an
+     * outstanding MPDU for such agreement whose lifetime is not expired.
+     *
+     * @param gcrGroupAddress the GCR group address
+     * @param tid Traffic ID
+     * @param recipient MAC address of the recipient
+     *
+     * @returns true if BAR retransmission needed
+     */
+    bool NeedGcrBarRetransmission(const Mac48Address& gcrGroupAddress,
+                                  const Mac48Address& recipient,
+                                  uint8_t tid) const;
+
     /**
      * This function returns the buffer size negotiated with the recipient.
      *

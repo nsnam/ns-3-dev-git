@@ -1156,6 +1156,15 @@ BlockAckManager::NeedBarRetransmission(uint8_t tid, const Mac48Address& recipien
     return false;
 }
 
+bool
+BlockAckManager::NeedGcrBarRetransmission(const Mac48Address& gcrGroupAddress,
+                                          const Mac48Address& recipient,
+                                          uint8_t tid) const
+{
+    const auto it = GetOriginatorBaAgreement(recipient, tid, gcrGroupAddress);
+    return (it != m_originatorAgreements.cend() && it->second.first.IsEstablished());
+}
+
 void
 BlockAckManager::SetBlockAckInactivityCallback(
     Callback<void, Mac48Address, uint8_t, bool, std::optional<Mac48Address>> callback)
