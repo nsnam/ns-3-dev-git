@@ -55,7 +55,7 @@ CheckOptions:
   - key: readability-simplify-boolean-expr.SimplifyDeMorgan
     value: false
 
-ExtraArgs:
+ExtraArgsBefore:
   - -Wno-unknown-warning-option
 
 FormatStyle: "file"
