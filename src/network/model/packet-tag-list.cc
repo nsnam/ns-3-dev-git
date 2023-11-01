@@ -266,7 +266,8 @@ PacketTagList::Add(const Tag& tag) const
     for (TagData* cur = m_next; cur != nullptr; cur = cur->next)
     {
         NS_ASSERT_MSG(cur->tid != tag.GetInstanceTypeId(),
-                      "Error: cannot add the same kind of tag twice.");
+                      "Error: cannot add the same kind of tag twice. The tag type is "
+                          << tag.GetInstanceTypeId().GetName());
     }
     TagData* head = CreateTagData(tag.GetSerializedSize());
     head->count = 1;
