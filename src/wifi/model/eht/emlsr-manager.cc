@@ -514,28 +514,26 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId, bool noSwitchDelay)
                   "We should not ask the main PHY to switch channel while transmitting");
 
     // request the main PHY to switch channel
-    Simulator::ScheduleNow([=, this]() {
-        auto delay = mainPhy->GetChannelSwitchDelay();
-        NS_ASSERT_MSG(noSwitchDelay || delay <= m_lastAdvTransitionDelay,
-                      "Transition delay (" << m_lastAdvTransitionDelay.As(Time::US)
-                                           << ") should exceed the channel switch delay ("
-                                           << delay.As(Time::US) << ")");
-        if (noSwitchDelay)
-        {
-            mainPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
-        }
-        mainPhy->SetOperatingChannel(newMainPhyChannel);
-        // restore previous channel switch delay
-        if (noSwitchDelay)
-        {
-            mainPhy->SetAttribute("ChannelSwitchDelay", TimeValue(delay));
-        }
-        // re-enable short time slot, if needed
-        if (m_staMac->GetWifiRemoteStationManager(linkId)->GetShortSlotTimeEnabled())
-        {
-            mainPhy->SetSlot(MicroSeconds(9));
-        }
-    });
+    auto delay = mainPhy->GetChannelSwitchDelay();
+    NS_ASSERT_MSG(noSwitchDelay || delay <= m_lastAdvTransitionDelay,
+                  "Transition delay (" << m_lastAdvTransitionDelay.As(Time::US)
+                                       << ") should exceed the channel switch delay ("
+                                       << delay.As(Time::US) << ")");
+    if (noSwitchDelay)
+    {
+        mainPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Seconds(0)));
+    }
+    mainPhy->SetOperatingChannel(newMainPhyChannel);
+    // restore previous channel switch delay
+    if (noSwitchDelay)
+    {
+        mainPhy->SetAttribute("ChannelSwitchDelay", TimeValue(delay));
+    }
+    // re-enable short time slot, if needed
+    if (m_staMac->GetWifiRemoteStationManager(linkId)->GetShortSlotTimeEnabled())
+    {
+        mainPhy->SetSlot(MicroSeconds(9));
+    }
 
     SetCcaEdThresholdOnLinkSwitch(mainPhy, linkId);
     NotifyMainPhySwitch(*currMainPhyLinkId, linkId);
@@ -557,14 +555,12 @@ EmlsrManager::SwitchAuxPhy(uint8_t currLinkId, uint8_t nextLinkId)
         ->GetChannelAccessManager(currLinkId)
         ->NotifySwitchingEmlsrLink(auxPhy, newAuxPhyChannel, nextLinkId);
 
-    Simulator::ScheduleNow([=, this]() {
-        auxPhy->SetOperatingChannel(newAuxPhyChannel);
-        // re-enable short time slot, if needed
-        if (m_staMac->GetWifiRemoteStationManager(nextLinkId)->GetShortSlotTimeEnabled())
-        {
-            auxPhy->SetSlot(MicroSeconds(9));
-        }
-    });
+    auxPhy->SetOperatingChannel(newAuxPhyChannel);
+    // re-enable short time slot, if needed
+    if (m_staMac->GetWifiRemoteStationManager(nextLinkId)->GetShortSlotTimeEnabled())
+    {
+        auxPhy->SetSlot(MicroSeconds(9));
+    }
 
     SetCcaEdThresholdOnLinkSwitch(auxPhy, nextLinkId);
 }
