@@ -324,16 +324,6 @@ HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr, uint8_t tid, bool byOr
 
     MgtDelBaHeader delbaHdr;
     delbaHdr.SetTid(tid);
-    if (byOriginator)
-    {
-        delbaHdr.SetByOriginator();
-        GetBaManager(tid)->DestroyOriginatorAgreement(addr, tid);
-    }
-    else
-    {
-        delbaHdr.SetByRecipient();
-        GetBaManager(tid)->DestroyRecipientAgreement(addr, tid);
-    }
 
     WifiActionHeader actionHdr;
     WifiActionHeader::ActionValue action;
