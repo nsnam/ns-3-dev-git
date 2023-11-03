@@ -10,10 +10,12 @@
 #include "wifi-default-assoc-manager.h"
 
 #include "sta-wifi-mac.h"
+#include "wifi-net-device.h"
 #include "wifi-phy.h"
 
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/vht-configuration.h"
 
 #include <algorithm>
 
@@ -201,8 +203,15 @@ WifiDefaultAssocManager::EndScanning()
                     // switching channel while a PHY is in sleep state fails
                     phy->ResumeFromSleep();
                 }
-                // switch this link to using the channel used by a reported AP
-                // TODO check if the STA only supports a narrower channel width
+                // switch this link to using the channel used by a reported AP (or its primary80
+                // in case the reported AP is using a 160 MHz and the non-AP MLD does not support
+                // 160 MHz operations)
+                if (apChannel.GetTotalWidth() > 80 &&
+                    !phy->GetDevice()->GetVhtConfiguration()->Get160MHzOperationSupported())
+                {
+                    apChannel = apChannel.GetPrimaryChannel(80);
+                }
+
                 NS_LOG_DEBUG("Switch link " << +linkId << " to using " << apChannel);
                 phy->SetOperatingChannel(apChannel);
                 // actual channel switching may be delayed, thus setup a channel switch timer
