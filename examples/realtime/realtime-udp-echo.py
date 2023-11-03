@@ -23,7 +23,14 @@
 # - DropTail queues
 # - Tracing of queues and packet receptions to file "udp-echo.tr"
 
-from ns import ns
+try:
+    from ns import ns
+except ModuleNotFoundError:
+    raise SystemExit(
+        "Error: ns3 Python module not found;"
+        " Python bindings may not be enabled"
+        " or your PYTHONPATH might not be properly configured"
+    )
 
 def main(argv):
   #

@@ -20,7 +20,14 @@
 #  Demonstrates the discharge behavior of a NIMH battery discharged with a
 #  constant current of 6.5 A (1C)
 
-from ns import ns
+try:
+    from ns import ns
+except ModuleNotFoundError:
+    raise SystemExit(
+        "Error: ns3 Python module not found;"
+        " Python bindings may not be enabled"
+        " or your PYTHONPATH might not be properly configured"
+    )
 
 def main(argv):
     """The main function in this Battery discharge example

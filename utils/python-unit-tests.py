@@ -19,7 +19,14 @@
 # Author: Gustavo J. A. M. Carneiro <gjc@inescporto.pt>
 
 import unittest
-from ns import ns
+try:
+    from ns import ns
+except ModuleNotFoundError:
+    raise SystemExit(
+        "Error: ns3 Python module not found;"
+        " Python bindings may not be enabled"
+        " or your PYTHONPATH might not be properly configured"
+    )
 import sys
 
 UINT32_MAX = 0xFFFFFFFF

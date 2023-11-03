@@ -19,7 +19,14 @@
 from __future__ import print_function
 import sys
 
-from ns import ns
+try:
+    from ns import ns
+except ModuleNotFoundError:
+    raise SystemExit(
+        "Error: ns3 Python module not found;"
+        " Python bindings may not be enabled"
+        " or your PYTHONPATH might not be properly configured"
+    )
 
 DISTANCE = 20 # (m)
 NUM_NODES_SIDE = 3
