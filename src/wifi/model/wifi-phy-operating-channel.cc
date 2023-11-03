@@ -715,6 +715,34 @@ WifiPhyOperatingChannel::GetPrimaryChannelNumber(MHz_u primaryChannelWidth,
     return primaryChanIt->number;
 }
 
+WifiPhyOperatingChannel
+WifiPhyOperatingChannel::GetPrimaryChannel(MHz_u primaryChannelWidth) const
+{
+    NS_ASSERT_MSG(IsSet(), "No channel set");
+    NS_ASSERT_MSG(primaryChannelWidth <= GetTotalWidth(),
+                  "Requested primary channel width ("
+                      << primaryChannelWidth << " MHz) exceeds total width (" << GetTotalWidth()
+                      << " MHz)");
+
+    if (primaryChannelWidth == GetTotalWidth())
+    {
+        return *this;
+    }
+
+    const auto frequency = GetPrimaryChannelCenterFrequency(primaryChannelWidth);
+    auto primaryChanIt =
+        FindFirst(0, frequency, primaryChannelWidth, WIFI_STANDARD_UNSPECIFIED, GetPhyBand());
+    NS_ABORT_MSG_IF(primaryChanIt == m_frequencyChannels.end(), "Primary channel number not found");
+
+    WifiPhyOperatingChannel primaryChannel(primaryChanIt);
+
+    const auto primaryIndex = m_primary20Index - (GetPrimaryChannelIndex(primaryChannelWidth) *
+                                                  (primaryChannelWidth / 20));
+    primaryChannel.SetPrimary20Index(primaryIndex);
+
+    return primaryChannel;
+}
+
 std::set<uint8_t>
 WifiPhyOperatingChannel::GetAll20MHzChannelIndicesInPrimary(MHz_u width) const
 {

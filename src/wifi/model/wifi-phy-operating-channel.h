@@ -372,6 +372,15 @@ class WifiPhyOperatingChannel
     uint8_t GetPrimaryChannelNumber(MHz_u primaryChannelWidth, WifiStandard standard) const;
 
     /**
+     * Get a WifiPhyOperatingChannel object corresponding to the primary channel of the given width.
+     *
+     * \param primaryChannelWidth the width of the primary channel in MHz
+     * \return a WifiPhyOperatingChannel object corresponding to the primary channel of the given
+     *         width
+     */
+    WifiPhyOperatingChannel GetPrimaryChannel(MHz_u primaryChannelWidth) const;
+
+    /**
      * Get the channel indices of the minimum subset of 20 MHz channels containing the given RU.
      *
      * \param ru the given RU
