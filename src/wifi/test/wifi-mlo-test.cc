@@ -30,6 +30,7 @@
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
+#include "ns3/vht-configuration.h"
 #include "ns3/wifi-acknowledgment.h"
 #include "ns3/wifi-assoc-manager.h"
 #include "ns3/wifi-mac-header.h"
@@ -1083,13 +1084,15 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
      * \param apNegSupport TID-to-Link Mapping negotiation supported by the AP MLD (0, 1, or 3)
      * \param dlTidToLinkMapping DL TID-to-Link Mapping for EHT configuration of non-AP MLD
      * \param ulTidToLinkMapping UL TID-to-Link Mapping for EHT configuration of non-AP MLD
+     * \param support160MHzOp whether non-AP MLDs support 160 MHz operations
      */
     MultiLinkSetupTest(const BaseParams& baseParams,
                        WifiScanType scanType,
                        const std::vector<uint8_t>& setupLinks,
                        WifiTidToLinkMappingNegSupport apNegSupport,
                        const std::string& dlTidToLinkMapping,
-                       const std::string& ulTidToLinkMapping);
+                       const std::string& ulTidToLinkMapping,
+                       bool support160MHzOp = true);
     ~MultiLinkSetupTest() override = default;
 
   protected:
@@ -1144,13 +1147,18 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
     void CheckAssocResponse(Ptr<WifiMpdu> mpdu, uint8_t linkId);
 
     /**
-     * Check that QoS data frames are sent on links their TID is mapped to.
+     * Check that QoS data frames are sent on links their TID is mapped to and with the
+     * correct TX width.
      *
      * \param mpdu the given QoS data frame
+     * \param txvector the TXVECTOR used to send the QoS data frame
      * \param linkId the ID of the link on which the QoS data frame was transmitted
      * \param index index of the QoS data frame in the vector of transmitted PSDUs
      */
-    void CheckQosData(Ptr<WifiMpdu> mpdu, uint8_t linkId, std::size_t index);
+    void CheckQosData(Ptr<WifiMpdu> mpdu,
+                      const WifiTxVector& txvector,
+                      uint8_t linkId,
+                      std::size_t index);
 
     const std::vector<uint8_t> m_setupLinks; //!< IDs of the expected links to setup
     WifiScanType m_scanType;                 //!< the scan type (active or passive)
@@ -1170,7 +1178,8 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
     std::vector<std::size_t>
         m_qosFrames1; //!< indices of QoS frames of the first set in the vector of TX PSDUs
     std::vector<std::size_t>
-        m_qosFrames2; //!< indices of QoS frames of the optional set in the vector of TX PSDUs
+        m_qosFrames2;       //!< indices of QoS frames of the optional set in the vector of TX PSDUs
+    bool m_support160MHzOp; //!< whether non-AP MLDs support 160 MHz operations
 };
 
 MultiLinkSetupTest::MultiLinkSetupTest(const BaseParams& baseParams,
@@ -1178,14 +1187,16 @@ MultiLinkSetupTest::MultiLinkSetupTest(const BaseParams& baseParams,
                                        const std::vector<uint8_t>& setupLinks,
                                        WifiTidToLinkMappingNegSupport apNegSupport,
                                        const std::string& dlTidToLinkMapping,
-                                       const std::string& ulTidToLinkMapping)
+                                       const std::string& ulTidToLinkMapping,
+                                       bool support160MHzOp)
     : MultiLinkOperationsTestBase("Check correctness of Multi-Link Setup", 1, baseParams),
       m_setupLinks(setupLinks),
       m_scanType(scanType),
       m_nProbeResp(0),
       m_apNegSupport(apNegSupport),
       m_dlTidLinkMappingStr(dlTidToLinkMapping),
-      m_ulTidLinkMappingStr(ulTidToLinkMapping)
+      m_ulTidLinkMappingStr(ulTidToLinkMapping),
+      m_support160MHzOp(support160MHzOp)
 {
 }
 
@@ -1291,6 +1302,19 @@ MultiLinkSetupTest::DoSetup()
             mac->SetAttribute(attrName, UintegerValue(100));
         }
     }
+
+    // configure support for 160 MHz operations and set the channels again to check that they
+    // are compatible
+    for (auto staMac : m_staMacs)
+    {
+        staMac->GetVhtConfiguration()->SetAttribute("Support160MHzOperation",
+                                                    BooleanValue(m_support160MHzOp));
+        uint8_t linkId = 0;
+        for (const auto& str : m_staChannels)
+        {
+            staMac->GetWifiPhy(linkId++)->SetAttribute("ChannelSettings", StringValue(str));
+        }
+    }
 }
 
 void
@@ -1367,7 +1391,7 @@ MultiLinkSetupTest::DoRun()
             break;
 
         case WIFI_MAC_QOSDATA:
-            CheckQosData(mpdu, linkId, index);
+            CheckQosData(mpdu, frameInfo.txVector, linkId, index);
             break;
 
         default:
@@ -1790,26 +1814,37 @@ MultiLinkSetupTest::CheckMlSetup()
                               true,
                               "STA " << staAddr << " not found in list of associated STAs");
 
-        // STA of non-AP MLD operate on the same channel as the AP
-        NS_TEST_EXPECT_MSG_EQ(
-            +m_staMacs[0]->GetWifiPhy(staLinkId)->GetOperatingChannel().GetNumber(),
-            +m_apMac->GetWifiPhy(apLinkId)->GetOperatingChannel().GetNumber(),
-            "Incorrect operating channel number for STA on link " << +staLinkId);
-        NS_TEST_EXPECT_MSG_EQ(
-            m_staMacs[0]->GetWifiPhy(staLinkId)->GetOperatingChannel().GetFrequency(),
-            m_apMac->GetWifiPhy(apLinkId)->GetOperatingChannel().GetFrequency(),
-            "Incorrect operating channel frequency for STA on link " << +staLinkId);
-        NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetWifiPhy(staLinkId)->GetOperatingChannel().GetWidth(),
-                              m_apMac->GetWifiPhy(apLinkId)->GetOperatingChannel().GetWidth(),
+        // STA of non-AP MLD operate on the same channel as the AP (or on its primary80 if the AP
+        // operates on a 160 MHz channel and non-AP MLD does not support 160 MHz operations)
+        const auto& staChannel = m_staMacs[0]->GetWifiPhy(staLinkId)->GetOperatingChannel();
+        const auto& apChannel = m_apMac->GetWifiPhy(apLinkId)->GetOperatingChannel();
+
+        auto width = apChannel.GetTotalWidth();
+        auto primary20 = apChannel.GetPrimaryChannelIndex(20);
+
+        if (width > 80 && !m_support160MHzOp)
+        {
+            width = 80;
+            primary20 -= apChannel.GetPrimaryChannelIndex(80) * 4;
+        }
+
+        NS_TEST_EXPECT_MSG_EQ(+staChannel.GetNumber(),
+                              +apChannel.GetPrimaryChannelNumber(width, WIFI_STANDARD_80211be),
+                              "Incorrect operating channel number for STA on link " << +staLinkId);
+        NS_TEST_EXPECT_MSG_EQ(staChannel.GetFrequency(),
+                              apChannel.GetPrimaryChannelCenterFrequency(width),
+                              "Incorrect operating channel frequency for STA on link "
+                                  << +staLinkId);
+        NS_TEST_EXPECT_MSG_EQ(staChannel.GetWidth(),
+                              width,
                               "Incorrect operating channel width for STA on link " << +staLinkId);
-        NS_TEST_EXPECT_MSG_EQ(
-            +m_staMacs[0]->GetWifiPhy(staLinkId)->GetOperatingChannel().GetPhyBand(),
-            +m_apMac->GetWifiPhy(apLinkId)->GetOperatingChannel().GetPhyBand(),
-            "Incorrect operating PHY band for STA on link " << +staLinkId);
-        NS_TEST_EXPECT_MSG_EQ(
-            +m_staMacs[0]->GetWifiPhy(staLinkId)->GetOperatingChannel().GetPrimaryChannelIndex(20),
-            +m_apMac->GetWifiPhy(apLinkId)->GetOperatingChannel().GetPrimaryChannelIndex(20),
-            "Incorrect operating primary channel index for STA on link " << +staLinkId);
+        NS_TEST_EXPECT_MSG_EQ(+staChannel.GetPhyBand(),
+                              +apChannel.GetPhyBand(),
+                              "Incorrect operating PHY band for STA on link " << +staLinkId);
+        NS_TEST_EXPECT_MSG_EQ(+staChannel.GetPrimaryChannelIndex(20),
+                              +primary20,
+                              "Incorrect operating primary channel index for STA on link "
+                                  << +staLinkId);
     }
 
     // lambda to check the link mapping stored at wifi MAC
@@ -1890,26 +1925,42 @@ MultiLinkSetupTest::CheckDisabledLinks()
 }
 
 void
-MultiLinkSetupTest::CheckQosData(Ptr<WifiMpdu> mpdu, uint8_t linkId, std::size_t index)
+MultiLinkSetupTest::CheckQosData(Ptr<WifiMpdu> mpdu,
+                                 const WifiTxVector& txvector,
+                                 uint8_t linkId,
+                                 std::size_t index)
 {
     WifiDirection dir;
     const auto& hdr = mpdu->GetHeader();
 
     NS_TEST_ASSERT_MSG_EQ(hdr.IsQosData(), true, "Expected a QoS data frame");
 
+    // check TX width
+    // STA of non-AP MLD operate on the same channel as the AP (or on its primary80 if the AP
+    // operates on a 160 MHz channel and non-AP MLD does not support 160 MHz operations)
+    MHz_u width;
+
     if (!hdr.IsToDs() && hdr.IsFromDs())
     {
         dir = WifiDirection::DOWNLINK;
+        width = m_apMac->GetWifiPhy(linkId)->GetOperatingChannel().GetTotalWidth();
     }
     else if (hdr.IsToDs() && !hdr.IsFromDs())
     {
         dir = WifiDirection::UPLINK;
+        width = m_staMacs[0]->GetWifiPhy(linkId)->GetOperatingChannel().GetTotalWidth();
     }
     else
     {
         NS_ABORT_MSG("Invalid combination for QoS data frame: ToDS(" << hdr.IsToDs() << ") FromDS("
                                                                      << hdr.IsFromDs() << ")");
     }
+
+    if (width > 80 && !m_support160MHzOp)
+    {
+        width = 80;
+    }
+    NS_TEST_EXPECT_MSG_EQ(txvector.GetChannelWidth(), width, "Unexpected TX width");
 
     const auto& tid1 = (dir == WifiDirection::DOWNLINK) ? m_dlTid1 : m_ulTid1;
     const auto& tid2 = (dir == WifiDirection::DOWNLINK) ? m_dlTid2 : m_ulTid2;
@@ -3605,6 +3656,22 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     AddTestCase(
         new AidAssignmentTest(
             std::vector<std::set<uint8_t>>{{0, 1, 2}, {1, 2}, {0, 1}, {0, 2}, {0}, {1}, {2}}),
+        TestCase::Duration::QUICK);
+
+    // check that the selection of channels in ML setup accounts for the inability of a
+    // non-AP MLD to operate on a 160 MHz channel
+    AddTestCase(
+        new MultiLinkSetupTest(
+            MultiLinkOperationsTestBase::BaseParams{
+                {"{42, 80, BAND_5GHZ, 2}", "{5, 40, BAND_2_4GHZ, 0}", "{7, 80, BAND_6GHZ, 0}"},
+                {"{3, 40, BAND_2_4GHZ, 0}", "{15, 160, BAND_6GHZ, 7}", "{50, 160, BAND_5GHZ, 2}"},
+                {}},
+            WifiScanType::PASSIVE,
+            {0, 1, 2},
+            WifiTidToLinkMappingNegSupport::ANY_LINK_SET,
+            "",
+            "",
+            false),
         TestCase::Duration::QUICK);
 
     for (const auto& [baseParams,
