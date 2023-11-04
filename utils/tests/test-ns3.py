@@ -43,9 +43,13 @@ os.chdir(ns3_path)
 
 # Cmake commands
 num_threads = max(1, os.cpu_count() - 1)
-cmake_build_project_command = "cmake --build . -j".format(ns3_path=ns3_path)
-cmake_build_target_command = partial("cmake --build . -j {jobs} --target {target}".format,
-                                     jobs=num_threads
+cmake_build_project_command = "cmake --build {cmake_cache} -j".format(
+    ns3_path=ns3_path,
+    cmake_cache=os.path.abspath(os.path.join(ns3_path, "cmake-cache"))
+)
+cmake_build_target_command = partial("cmake --build {cmake_cache} -j {jobs} --target {target}".format,
+                                     jobs=num_threads,
+                                     cmake_cache=os.path.abspath(os.path.join(ns3_path, "cmake-cache"))
                                      )
 win32 = sys.platform == "win32"
 platform_makefiles = "MinGW Makefiles" if win32 else "Unix Makefiles"

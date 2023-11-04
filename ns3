@@ -601,7 +601,7 @@ def project_configured(current_cmake_cache_folder):
 
 def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_generator, output, dry_run=False):
     # Aggregate all flags to configure CMake
-    cmake_args = [cmake]
+    cmake_args = [cmake, "-S", ns3_path]
 
     if not project_configured(current_cmake_cache_folder):
         # Create a new cmake_cache folder if one does not exist
@@ -626,6 +626,8 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
             cmake_args.append(f"-DPython3_LIBRARY_DIRS={sysconfig.get_config_var('LIBDIR')}")
             cmake_args.append(f"-DPython3_INCLUDE_DIRS={sysconfig.get_config_var('INCLUDEPY')}")
             cmake_args.append(f"-DPython3_EXECUTABLE={sys.executable}")
+
+    cmake_args.extend(["-B", current_cmake_cache_folder])
 
     # C++ standard
     if args.cxx_standard is not None:
@@ -728,20 +730,13 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
     # Append CMake flags passed using the -- separator
     cmake_args.extend(args.program_args)
 
-    # Configure cmake
-    cmake_args.append("..")  # for now, assuming the cmake_cache directory is inside the ns-3-dev folder
-
     # Echo out the configure command
-    print_and_buffer("cd %s; %s ; cd %s" % (os.path.relpath(current_cmake_cache_folder, ns3_path),
-                                            " ".join(cmake_args),
-                                            os.path.relpath(ns3_path, current_cmake_cache_folder)
-                                            )
-                     )
+    print_and_buffer(" ".join(cmake_args))
 
     # Run cmake
     if not dry_run:
         proc_env = os.environ.copy()
-        ret = subprocess.run(cmake_args, cwd=current_cmake_cache_folder, stdout=output, env=proc_env)
+        ret = subprocess.run(cmake_args, stdout=output, env=proc_env)
         if ret.returncode != 0:
             exit(ret.returncode)
 
@@ -877,15 +872,14 @@ def cmake_check_version():
 def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=False, build_verbose=False):
     cmake, version = cmake_check_version()
 
-    jobs_part = ("-j %d" % jobs)
-    target_part = (" --target %s" % target) if target else ""
-    cmake_build_command = "%s --build . %s%s" % (cmake, jobs_part, target_part)
+    cmake_args = [cmake, "--build", current_cmake_cache_folder]
+    if jobs:
+        cmake_args.extend(["-j", str(jobs)])
 
-    print_and_buffer("cd %s; %s ; cd %s" % (os.path.relpath(current_cmake_cache_folder, ns3_path),
-                                            cmake_build_command,
-                                            os.path.relpath(ns3_path, current_cmake_cache_folder)
-                                            )
-                     )
+    if target:
+        cmake_args.extend(["--target", target])
+
+    print_and_buffer(" ".join(cmake_args))
     if not dry_run:
         # Assume quiet is not enabled, and print things normally
         kwargs = {"stdout": None,
@@ -903,8 +897,7 @@ def cmake_build(current_cmake_cache_folder, output, jobs, target=None, dry_run=F
             kwargs["stdout"] = subprocess.PIPE
             kwargs["stderr"] = subprocess.PIPE
 
-        ret = subprocess.run(cmake_build_command.split(),
-                             cwd=current_cmake_cache_folder,
+        ret = subprocess.run(cmake_args,
                              env=proc_env,
                              **kwargs,
                              )
