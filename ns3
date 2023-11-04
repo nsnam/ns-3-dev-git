@@ -858,7 +858,7 @@ def parse_version(version_str):
 
 def cmake_check_version():
     # Check CMake version
-    minimum_cmake_version = "3.12.0"
+    minimum_cmake_version = "3.13.0"
     cmake3 = shutil.which("cmake3")
     cmake = cmake3 if cmake3 else shutil.which("cmake")
     if not cmake:
