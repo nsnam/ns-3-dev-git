@@ -125,7 +125,7 @@ BlockAckManager::CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
 void
 BlockAckManager::DestroyOriginatorAgreement(const Mac48Address& recipient, uint8_t tid)
 {
-    NS_LOG_FUNCTION(this << recipient << +tid);
+    NS_LOG_FUNCTION(this << recipient << tid);
     auto it = m_originatorAgreements.find({recipient, tid});
     if (it != m_originatorAgreements.end())
     {
@@ -283,7 +283,7 @@ BlockAckManager::GetNBufferedPackets(const Mac48Address& recipient, uint8_t tid)
 void
 BlockAckManager::SetBlockAckThreshold(uint8_t nPackets)
 {
-    NS_LOG_FUNCTION(this << +nPackets);
+    NS_LOG_FUNCTION(this << nPackets);
     m_blockAckThreshold = nPackets;
 }
 
@@ -294,7 +294,7 @@ BlockAckManager::HandleInFlightMpdu(uint8_t linkId,
                                     const OriginatorAgreementsI& it,
                                     const Time& now)
 {
-    NS_LOG_FUNCTION(this << linkId << **mpduIt << +static_cast<uint8_t>(status));
+    NS_LOG_FUNCTION(this << linkId << **mpduIt << static_cast<uint8_t>(status));
 
     if (!(*mpduIt)->IsQueued())
     {
@@ -500,7 +500,7 @@ BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
 void
 BlockAckManager::NotifyMissedBlockAck(uint8_t linkId, const Mac48Address& recipient, uint8_t tid)
 {
-    NS_LOG_FUNCTION(this << linkId << recipient << +tid);
+    NS_LOG_FUNCTION(this << linkId << recipient << tid);
 
     auto it = m_originatorAgreements.find({recipient, tid});
     if (it == m_originatorAgreements.end() || !it->second.first.IsEstablished())
@@ -701,14 +701,14 @@ BlockAckManager::RemoveFromSendBarIfDataQueuedList(const Mac48Address& recipient
 void
 BlockAckManager::InactivityTimeout(const Mac48Address& recipient, uint8_t tid)
 {
-    NS_LOG_FUNCTION(this << recipient << +tid);
+    NS_LOG_FUNCTION(this << recipient << tid);
     m_blockAckInactivityTimeout(recipient, tid, true);
 }
 
 void
 BlockAckManager::NotifyOriginatorAgreementRejected(const Mac48Address& recipient, uint8_t tid)
 {
-    NS_LOG_FUNCTION(this << recipient << +tid);
+    NS_LOG_FUNCTION(this << recipient << tid);
     auto it = m_originatorAgreements.find({recipient, tid});
     NS_ASSERT(it != m_originatorAgreements.end());
     if (!it->second.first.IsRejected())
@@ -725,7 +725,7 @@ BlockAckManager::NotifyOriginatorAgreementRejected(const Mac48Address& recipient
 void
 BlockAckManager::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid)
 {
-    NS_LOG_FUNCTION(this << recipient << +tid);
+    NS_LOG_FUNCTION(this << recipient << tid);
     auto it = m_originatorAgreements.find({recipient, tid});
     NS_ASSERT(it != m_originatorAgreements.end());
     if (!it->second.first.IsNoReply())
@@ -742,7 +742,7 @@ BlockAckManager::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient,
 void
 BlockAckManager::NotifyOriginatorAgreementReset(const Mac48Address& recipient, uint8_t tid)
 {
-    NS_LOG_FUNCTION(this << recipient << +tid);
+    NS_LOG_FUNCTION(this << recipient << tid);
     auto it = m_originatorAgreements.find({recipient, tid});
     NS_ASSERT(it != m_originatorAgreements.end());
     if (!it->second.first.IsReset())
