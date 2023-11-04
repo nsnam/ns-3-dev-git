@@ -19,9 +19,6 @@ if(${GTK3_FOUND})
         -Wl,--allow-shlib-undefined
     )
   endif()
-  if(${GCC})
-    add_definitions(-Wno-parentheses)
-  endif()
 endif()
 
 if(${LIBXML2_FOUND})
