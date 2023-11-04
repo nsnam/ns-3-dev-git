@@ -297,17 +297,9 @@ function(build_lib)
   )
 
   if(NOT ${XCODE})
-    # Since linking libraries to object libraries in not allowed in older CMake
-    # releases, we need to import each of their include directories. Otherwise,
-    # include directories won't be properly propagated
-    set(temp)
-    foreach(target ${ns_libraries_to_link})
-      list(APPEND temp
-           "$<TARGET_PROPERTY:${target},INTERFACE_INCLUDE_DIRECTORIES>"
-      )
-    endforeach()
-    target_include_directories(${lib${BLIB_LIBNAME}}-obj PRIVATE ${temp})
-    unset(temp)
+    target_link_libraries(
+      ${lib${BLIB_LIBNAME}}-obj PRIVATE ${ns_libraries_to_link}
+    )
   endif()
 
   # set output name of library
