@@ -1293,15 +1293,10 @@ class Visualizer(GObject.GObject):
         bounds_x1, bounds_y1 = self.canvas.convert_from_pixels(hadj.get_value(), vadj.get_value())
         bounds_x2, bounds_y2 = self.canvas.convert_from_pixels(hadj.get_value() + hadj.get_page_size(),
                                                                vadj.get_value() + vadj.get_page_size())
-        try:
-            pos1_x, pos1_y, pos2_x, pos2_y = ns.PyViz.LineClipping(bounds_x1, bounds_y1,
-                                                               bounds_x2, bounds_y2,
-                                                               pos1_x, pos1_y,
-                                                               pos2_x, pos2_y)
-        except:
-            res = (0,0,0,0)
-        pos1_x, pos1_y, pos2_x, pos2_y = res
-        return (pos1_x + pos2_x)/2, (pos1_y + pos2_y)/2
+        ns.PyViz.LineClipping(bounds_x1, bounds_y1,
+                              bounds_x2, bounds_y2,
+                              pos1_x, pos1_y, pos2_x, pos2_y)
+        return (pos1_x.value + pos2_x.value)/2, (pos1_y.value + pos2_y.value)/2
 
     def _update_transmissions_view(self):
         transmissions_average = {}
