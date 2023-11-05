@@ -58,11 +58,6 @@ class OriginatorRxStatus
         m_defragmenting = false;
     }
 
-    ~OriginatorRxStatus()
-    {
-        m_fragments.clear();
-    }
-
     /**
      * Check if we are de-fragmenting packets.
      *
@@ -167,16 +162,6 @@ MacRxMiddle::MacRxMiddle()
 MacRxMiddle::~MacRxMiddle()
 {
     NS_LOG_FUNCTION_NOARGS();
-    for (auto i = m_originatorStatus.begin(); i != m_originatorStatus.end(); i++)
-    {
-        delete (*i).second;
-    }
-    m_originatorStatus.erase(m_originatorStatus.begin(), m_originatorStatus.end());
-    for (auto i = m_qosOriginatorStatus.begin(); i != m_qosOriginatorStatus.end(); i++)
-    {
-        delete (*i).second;
-    }
-    m_qosOriginatorStatus.erase(m_qosOriginatorStatus.begin(), m_qosOriginatorStatus.end());
 }
 
 void
@@ -186,63 +171,51 @@ MacRxMiddle::SetForwardCallback(ForwardUpCallback callback)
     m_callback = callback;
 }
 
-OriginatorRxStatus*
-MacRxMiddle::Lookup(const WifiMacHeader* hdr)
+OriginatorRxStatus&
+MacRxMiddle::Lookup(const WifiMacHeader& hdr)
 {
     NS_LOG_FUNCTION(hdr);
-    OriginatorRxStatus* originator;
-    Mac48Address source = hdr->GetAddr2();
-    if (hdr->IsQosData() && !hdr->GetAddr2().IsGroup())
+    const auto source = hdr.GetAddr2();
+    if (hdr.IsQosData() && !source.IsGroup())
     {
         /* only for QoS data non-broadcast frames */
-        originator = m_qosOriginatorStatus[std::make_pair(source, hdr->GetQosTid())];
-        if (originator == nullptr)
-        {
-            originator = new OriginatorRxStatus();
-            m_qosOriginatorStatus[std::make_pair(source, hdr->GetQosTid())] = originator;
-        }
+        const auto key = std::make_pair(source, hdr.GetQosTid());
+        auto [it, inserted] = m_qosOriginatorStatus.try_emplace(key);
+        return it->second;
     }
-    else
-    {
-        /* - management frames
-         * - QoS data broadcast frames
-         * - non-QoS data frames
-         * see section 7.1.3.4.1
-         */
-        originator = m_originatorStatus[source];
-        if (originator == nullptr)
-        {
-            originator = new OriginatorRxStatus();
-            m_originatorStatus[source] = originator;
-        }
-    }
-    return originator;
+    /* - management frames
+     * - QoS data broadcast frames
+     * - non-QoS data frames
+     * see section 7.1.3.4.1
+     */
+    auto [it, inserted] = m_originatorStatus.try_emplace(source);
+    return it->second;
 }
 
 bool
-MacRxMiddle::IsDuplicate(const WifiMacHeader* hdr, OriginatorRxStatus* originator) const
+MacRxMiddle::IsDuplicate(const WifiMacHeader& hdr, const OriginatorRxStatus& originator) const
 {
-    NS_LOG_FUNCTION(hdr << originator);
-    return hdr->IsRetry() && originator->GetLastSequenceControl() == hdr->GetSequenceControl();
+    NS_LOG_FUNCTION(hdr << &originator);
+    return hdr.IsRetry() && originator.GetLastSequenceControl() == hdr.GetSequenceControl();
 }
 
 Ptr<const Packet>
 MacRxMiddle::HandleFragments(Ptr<const Packet> packet,
-                             const WifiMacHeader* hdr,
-                             OriginatorRxStatus* originator)
+                             const WifiMacHeader& hdr,
+                             OriginatorRxStatus& originator)
 {
-    NS_LOG_FUNCTION(packet << hdr << originator);
-    if (originator->IsDeFragmenting())
+    NS_LOG_FUNCTION(packet << hdr << &originator);
+    if (originator.IsDeFragmenting())
     {
-        if (hdr->IsMoreFragments())
+        if (hdr.IsMoreFragments())
         {
-            if (originator->IsNextFragment(hdr->GetSequenceControl()))
+            if (originator.IsNextFragment(hdr.GetSequenceControl()))
             {
-                NS_LOG_DEBUG("accumulate fragment seq=" << hdr->GetSequenceNumber()
-                                                        << ", frag=" << +hdr->GetFragmentNumber()
+                NS_LOG_DEBUG("accumulate fragment seq=" << hdr.GetSequenceNumber()
+                                                        << ", frag=" << +hdr.GetFragmentNumber()
                                                         << ", size=" << packet->GetSize());
-                originator->AccumulateFragment(packet);
-                originator->SetSequenceControl(hdr->GetSequenceControl());
+                originator.AccumulateFragment(packet);
+                originator.SetSequenceControl(hdr.GetSequenceControl());
             }
             else
             {
@@ -252,13 +225,13 @@ MacRxMiddle::HandleFragments(Ptr<const Packet> packet,
         }
         else
         {
-            if (originator->IsNextFragment(hdr->GetSequenceControl()))
+            if (originator.IsNextFragment(hdr.GetSequenceControl()))
             {
-                NS_LOG_DEBUG("accumulate last fragment seq="
-                             << hdr->GetSequenceNumber() << ", frag=" << +hdr->GetFragmentNumber()
-                             << ", size=" << hdr->GetSize());
-                Ptr<Packet> p = originator->AccumulateLastFragment(packet);
-                originator->SetSequenceControl(hdr->GetSequenceControl());
+                NS_LOG_DEBUG("accumulate last fragment seq=" << hdr.GetSequenceNumber() << ", frag="
+                                                             << +hdr.GetFragmentNumber()
+                                                             << ", size=" << hdr.GetSize());
+                Ptr<Packet> p = originator.AccumulateLastFragment(packet);
+                originator.SetSequenceControl(hdr.GetSequenceControl());
                 return p;
             }
             else
@@ -270,13 +243,13 @@ MacRxMiddle::HandleFragments(Ptr<const Packet> packet,
     }
     else
     {
-        if (hdr->IsMoreFragments())
+        if (hdr.IsMoreFragments())
         {
-            NS_LOG_DEBUG("accumulate first fragment seq=" << hdr->GetSequenceNumber()
-                                                          << ", frag=" << +hdr->GetFragmentNumber()
+            NS_LOG_DEBUG("accumulate first fragment seq=" << hdr.GetSequenceNumber()
+                                                          << ", frag=" << +hdr.GetFragmentNumber()
                                                           << ", size=" << packet->GetSize());
-            originator->AccumulateFirstFragment(packet);
-            originator->SetSequenceControl(hdr->GetSequenceControl());
+            originator.AccumulateFirstFragment(packet);
+            originator.SetSequenceControl(hdr.GetSequenceControl());
             return nullptr;
         }
         else
@@ -291,10 +264,10 @@ MacRxMiddle::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(*mpdu << +linkId);
     // consider the MAC header of the original MPDU (makes a difference for data frames only)
-    const WifiMacHeader* hdr = &mpdu->GetOriginal()->GetHeader();
-    NS_ASSERT(hdr->IsData() || hdr->IsMgt());
+    const auto& hdr = mpdu->GetOriginal()->GetHeader();
+    NS_ASSERT(hdr.IsData() || hdr.IsMgt());
 
-    OriginatorRxStatus* originator = Lookup(hdr);
+    auto& originator = Lookup(hdr);
     /**
      * The check below is really unneeded because it can fail in a lot of
      * normal cases. Specifically, it is possible for sequence numbers to
@@ -304,18 +277,18 @@ MacRxMiddle::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
      * So, this check cannot be used to discard old duplicate frames. It is
      * thus here only for documentation purposes.
      */
-    if (!(SequenceNumber16(originator->GetLastSequenceControl()) <
-          SequenceNumber16(hdr->GetSequenceControl())))
+    if (!(SequenceNumber16(originator.GetLastSequenceControl()) <
+          SequenceNumber16(hdr.GetSequenceControl())))
     {
         NS_LOG_DEBUG("Sequence numbers have looped back. last recorded="
-                     << originator->GetLastSequenceControl()
-                     << " currently seen=" << hdr->GetSequenceControl());
+                     << originator.GetLastSequenceControl()
+                     << " currently seen=" << hdr.GetSequenceControl());
     }
     // filter duplicates.
     if (IsDuplicate(hdr, originator))
     {
-        NS_LOG_DEBUG("duplicate from=" << hdr->GetAddr2() << ", seq=" << hdr->GetSequenceNumber()
-                                       << ", frag=" << +hdr->GetFragmentNumber());
+        NS_LOG_DEBUG("duplicate from=" << hdr.GetAddr2() << ", seq=" << hdr.GetSequenceNumber()
+                                       << ", frag=" << +hdr.GetFragmentNumber());
         return;
     }
     Ptr<const Packet> aggregate = HandleFragments(mpdu->GetPacket(), hdr, originator);
@@ -323,11 +296,11 @@ MacRxMiddle::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     {
         return;
     }
-    NS_LOG_DEBUG("forwarding data from=" << hdr->GetAddr2() << ", seq=" << hdr->GetSequenceNumber()
-                                         << ", frag=" << +hdr->GetFragmentNumber());
-    if (!hdr->GetAddr1().IsGroup())
+    NS_LOG_DEBUG("forwarding data from=" << hdr.GetAddr2() << ", seq=" << hdr.GetSequenceNumber()
+                                         << ", frag=" << +hdr.GetFragmentNumber());
+    if (!hdr.GetAddr1().IsGroup())
     {
-        originator->SetSequenceControl(hdr->GetSequenceControl());
+        originator.SetSequenceControl(hdr.GetSequenceControl());
     }
     if (aggregate == mpdu->GetPacket())
     {
@@ -339,7 +312,7 @@ MacRxMiddle::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         // A-MSDUs saves us the time to deaggregate the A-MSDU in MSDUs (which are
         // kept separate in the received mpdu) and allows us to pass the originally
         // transmitted packets (i.e., with the same UID) to the receiver.
-        m_callback(Create<WifiMpdu>(aggregate, *hdr), linkId);
+        m_callback(Create<WifiMpdu>(aggregate, hdr), linkId);
     }
 }
 

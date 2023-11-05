@@ -45,7 +45,7 @@ class MacRxMiddle : public SimpleRefCount<MacRxMiddle>
     /**
      * typedef for callback
      */
-    typedef Callback<void, Ptr<const WifiMpdu>, uint8_t /* link ID */> ForwardUpCallback;
+    using ForwardUpCallback = Callback<void, Ptr<const WifiMpdu>, uint8_t /* link ID */>;
 
     MacRxMiddle();
     ~MacRxMiddle();
@@ -77,7 +77,7 @@ class MacRxMiddle : public SimpleRefCount<MacRxMiddle>
      *
      * \return OriginatorRxStatus
      */
-    OriginatorRxStatus* Lookup(const WifiMacHeader* hdr);
+    OriginatorRxStatus& Lookup(const WifiMacHeader& hdr);
     /**
      * Check if we have already received the packet from the sender before
      * (by looking at the sequence control field).
@@ -88,7 +88,7 @@ class MacRxMiddle : public SimpleRefCount<MacRxMiddle>
      * \return true if we already received the packet previously,
      *         false otherwise
      */
-    bool IsDuplicate(const WifiMacHeader* hdr, OriginatorRxStatus* originator) const;
+    bool IsDuplicate(const WifiMacHeader& hdr, const OriginatorRxStatus& originator) const;
     /**
      * Check if the received packet is a fragment and handle it appropriately.
      * If the packet is not a fragment, the method returns the packet.
@@ -105,27 +105,30 @@ class MacRxMiddle : public SimpleRefCount<MacRxMiddle>
      *         0 if we failed to reassemble the packet (e.g. missing fragments/out-of-order).
      */
     Ptr<const Packet> HandleFragments(Ptr<const Packet> packet,
-                                      const WifiMacHeader* hdr,
-                                      OriginatorRxStatus* originator);
+                                      const WifiMacHeader& hdr,
+                                      OriginatorRxStatus& originator);
 
     /**
      * typedef for a map between address and OriginatorRxStatus
      */
-    typedef std::map<Mac48Address, OriginatorRxStatus*, std::less<>> Originators;
+    using Originators = std::map<Mac48Address, OriginatorRxStatus, std::less<>>;
+
     /**
      * typedef for a map between address, OriginatorRxStatus, and Traffic ID
      */
-    typedef std::map<std::pair<Mac48Address, uint8_t>, OriginatorRxStatus*, std::less<>>
-        QosOriginators;
+    using QosOriginators =
+        std::map<std::pair<Mac48Address, uint8_t>, OriginatorRxStatus, std::less<>>;
+
     /**
      * typedef for an iterator for Originators
      */
-    typedef std::map<Mac48Address, OriginatorRxStatus*, std::less<>>::iterator OriginatorsI;
+    using OriginatorsI = std::map<Mac48Address, OriginatorRxStatus, std::less<>>::iterator;
+
     /**
      * typedef for an iterator for QosOriginators
      */
-    typedef std::map<std::pair<Mac48Address, uint8_t>, OriginatorRxStatus*, std::less<>>::iterator
-        QosOriginatorsI;
+    using QosOriginatorsI =
+        std::map<std::pair<Mac48Address, uint8_t>, OriginatorRxStatus, std::less<>>::iterator;
 
     Originators m_originatorStatus;       ///< originator status
     QosOriginators m_qosOriginatorStatus; ///< QOS originator status
