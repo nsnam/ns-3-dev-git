@@ -739,6 +739,9 @@ MgtAddBaRequestHeader::GetInstanceTypeId() const
 void
 MgtAddBaRequestHeader::Print(std::ostream& os) const
 {
+    os << "A-MSDU support=" << m_amsduSupport << " Policy=" << +m_policy << " TID=" << +m_tid
+       << " Buffer size=" << m_bufferSize << " Timeout=" << m_timeoutValue
+       << " Starting seq=" << m_startingSeq;
 }
 
 uint32_t
@@ -928,7 +931,8 @@ MgtAddBaResponseHeader::GetInstanceTypeId() const
 void
 MgtAddBaResponseHeader::Print(std::ostream& os) const
 {
-    os << "status code=" << m_code;
+    os << "Status code=" << m_code << "A-MSDU support=" << m_amsduSupport << " Policy=" << +m_policy
+       << " TID=" << +m_tid << " Buffer size=" << m_bufferSize << " Timeout=" << m_timeoutValue;
 }
 
 uint32_t
@@ -1106,6 +1110,7 @@ MgtDelBaHeader::GetInstanceTypeId() const
 void
 MgtDelBaHeader::Print(std::ostream& os) const
 {
+    os << "Initiator=" << m_initiator << " TID=" << +m_tid;
 }
 
 uint32_t
