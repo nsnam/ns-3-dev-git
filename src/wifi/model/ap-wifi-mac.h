@@ -80,6 +80,7 @@ class ApWifiMac : public WifiMac
     bool SupportsSendFrom() const override;
     Ptr<WifiMacQueue> GetTxopQueue(AcIndex ac) const override;
     void ConfigureStandard(WifiStandard standard) override;
+    int64_t AssignStreams(int64_t stream) override;
 
     /**
      * \param interval the interval between two beacon transmissions.
@@ -89,17 +90,6 @@ class ApWifiMac : public WifiMac
      * \return the interval between two beacon transmissions.
      */
     Time GetBeaconInterval() const;
-
-    /**
-     * Assign a fixed random variable stream number to the random variables
-     * used by this model.  Return the number of streams (possibly zero) that
-     * have been assigned.
-     *
-     * \param stream first stream index to use
-     *
-     * \return the number of stream indices assigned by this model
-     */
-    int64_t AssignStreams(int64_t stream);
 
     /**
      * Get a const reference to the map of associated stations on the given link.

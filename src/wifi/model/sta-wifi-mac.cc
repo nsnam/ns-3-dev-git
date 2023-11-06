@@ -237,7 +237,9 @@ StaWifiMac::AssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this << stream);
     m_probeDelay->SetStream(stream);
-    return 1;
+    auto currentStream = stream + 1;
+    currentStream += WifiMac::AssignStreams(currentStream);
+    return (currentStream - stream);
 }
 
 void

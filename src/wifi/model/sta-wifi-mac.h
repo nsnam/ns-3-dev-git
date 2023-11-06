@@ -196,6 +196,7 @@ class StaWifiMac : public WifiMac
      */
     void Enqueue(Ptr<Packet> packet, Mac48Address to) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
+    int64_t AssignStreams(int64_t stream) override;
 
     /**
      * \param phys the physical layers attached to this MAC.
@@ -327,17 +328,6 @@ class StaWifiMac : public WifiMac
      * \param reason the reason for unblocking transmissions on the given link
      */
     void UnblockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason);
-
-    /**
-     * Assign a fixed random variable stream number to the random variables
-     * used by this model.  Return the number of streams (possibly zero) that
-     * have been assigned.
-     *
-     * \param stream first stream index to use
-     *
-     * \return the number of stream indices assigned by this model
-     */
-    int64_t AssignStreams(int64_t stream);
 
   protected:
     /**

@@ -165,7 +165,7 @@ int64_t
 MeshWifiInterfaceMac::AssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this << stream);
-    int64_t currentStream = stream;
+    int64_t currentStream = stream + WifiMac::AssignStreams(stream);
     m_coefficient->SetStream(currentStream++);
     for (auto i = m_plugins.begin(); i < m_plugins.end(); i++)
     {

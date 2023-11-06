@@ -347,6 +347,18 @@ WifiMac::GetTypeId()
     return tid;
 }
 
+int64_t
+WifiMac::AssignStreams(int64_t stream)
+{
+    NS_LOG_FUNCTION(this << stream);
+    if (GetNLinks() > 1)
+    {
+        m_shuffleLinkIdsGen.GetRv()->SetStream(stream);
+        return 1;
+    }
+    return 0;
+}
+
 void
 WifiMac::DoInitialize()
 {
@@ -1436,15 +1448,22 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                  const Mac48Address& address,
                                  const std::set<uint8_t>& linkIds)
 {
+    NS_ASSERT(m_scheduler);
+
+    // shuffle link IDs not to unblock links always in the same order
+    std::vector<uint8_t> shuffledLinkIds(linkIds.cbegin(), linkIds.cend());
+    std::shuffle(shuffledLinkIds.begin(), shuffledLinkIds.end(), m_shuffleLinkIdsGen);
+
     std::stringstream ss;
     if (g_log.IsEnabled(ns3::LOG_FUNCTION))
     {
-        std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
+        std::copy(shuffledLinkIds.cbegin(),
+                  shuffledLinkIds.cend(),
+                  std::ostream_iterator<uint16_t>(ss, " "));
     }
     NS_LOG_FUNCTION(this << reason << address << ss.str());
-    NS_ASSERT(m_scheduler);
 
-    for (const auto linkId : linkIds)
+    for (const auto linkId : shuffledLinkIds)
     {
         auto& link = GetLink(linkId);
         auto linkAddr = link.stationManager->GetAffiliatedStaAddress(address).value_or(address);
