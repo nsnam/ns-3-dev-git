@@ -21,7 +21,7 @@
  */
 
 #include "tcp-compound.h"
-#include "ns3/tcp-socket-base.h"
+#include "tcp-socket-base.h"
 #include "ns3/log.h"
 
  #include "math.h"
@@ -344,7 +344,7 @@ TcpCompound::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
               uint32_t dwndInPackets = static_cast<uint32_t> (m_dwnd / tcb->m_segmentSize);
               dwndInPackets = static_cast<uint32_t> (std::max (0.0, static_cast<double> (dwndInPackets) - m_eta * diff));
               m_dwnd = dwndInPackets * tcb->m_segmentSize;
-
+              //uint32_t awnd=tcb->AdvertisedWindowSize(0);
               tcb->m_cWnd = m_lwnd + m_dwnd;
             }
 
@@ -367,9 +367,9 @@ TcpCompound::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
        * target cwnd is throughput / minRtt
        */
 
-      double tmp = m_baseRtt.GetSeconds () / m_srtt.GetSeconds ();
-      expectedRenoCwnd = actualRenoCwnd * tmp;
-      NS_LOG_DEBUG ("Calculated expectedRenoCwnd = " << expectedRenoCwnd);
+      double tmp = m_baseRtt.GetSeconds () / m_minRtt.GetSeconds ();
+      expectedRenoCwnd = static_cast<uint32_t>(actualRenoCwnd * tmp);
+      NS_LOG_DEBUG("Calculated expectedRenoCwnd = " << expectedRenoCwnd);
       NS_ASSERT (actualRenoCwnd >= expectedRenoCwnd); // implies baseRtt <= minRtt
 
       m_diffReno = expectedRenoCwnd - actualRenoCwnd;
