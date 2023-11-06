@@ -71,9 +71,9 @@ WifiRemoteStationManager::GetTypeId()
                           "If the size of the PSDU is bigger than this value, we use an RTS/CTS "
                           "handshake before sending the data frame."
                           "This value will not have any effect on some rate control algorithms.",
-                          UintegerValue(65535),
+                          UintegerValue(4692480),
                           MakeUintegerAccessor(&WifiRemoteStationManager::SetRtsCtsThreshold),
-                          MakeUintegerChecker<uint32_t>())
+                          MakeUintegerChecker<uint32_t>(0, 4692480))
             .AddAttribute(
                 "FragmentationThreshold",
                 "If the size of the PSDU is bigger than this value, we fragment it such that the "
