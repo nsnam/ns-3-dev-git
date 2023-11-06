@@ -600,16 +600,18 @@ EhtFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxV
             continue;
         }
 
+        std::set<uint8_t> linkIds;
         for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
         {
             if (linkId != m_linkId &&
                 m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
             {
-                m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-                                               *mldAddress,
-                                               {linkId});
+                linkIds.insert(linkId);
             }
         }
+        m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                       *mldAddress,
+                                       linkIds);
     }
 
     HeFrameExchangeManager::CtsAfterMuRtsTimeout(muRts, txVector);
