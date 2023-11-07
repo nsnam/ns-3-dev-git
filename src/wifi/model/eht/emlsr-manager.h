@@ -187,8 +187,12 @@ class EmlsrManager : public Object
      * Notify the end of a TXOP on the given link.
      *
      * \param linkId the ID of the given link
+     * \param ulTxopNotStarted whether this is a notification of the end of an UL TXOP that did
+     *                      not even start (no frame transmitted)
+     * \param ongoingDlTxop whether a DL TXOP is ongoing on the given link (if true, this is
+     *                      a notification of the end of an UL TXOP)
      */
-    void NotifyTxopEnd(uint8_t linkId);
+    void NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted = false, bool ongoingDlTxop = false);
 
     /**
      * Check whether the MediumSyncDelay timer is running for the STA operating on the given link.
@@ -472,6 +476,9 @@ class EmlsrManager : public Object
         m_mainPhyChannels; //!< link ID-indexed map of operating channels for the main PHY
     std::map<uint8_t, WifiPhyOperatingChannel>
         m_auxPhyChannels; //!< link ID-indexed map of operating channels for the aux PHYs
+    std::map<uint8_t, EventId> m_ulMainPhySwitch; //!< link ID-indexed map of timers started when
+                                                  //!< an aux PHY gains an UL TXOP and schedules
+                                                  //!< a channel switch for the main PHY
 };
 
 } // namespace ns3

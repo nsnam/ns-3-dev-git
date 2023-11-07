@@ -434,26 +434,57 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId, std::optional<Time> timeToCtsEnd
 
         NS_ASSERT(delay.IsPositive());
         NS_LOG_DEBUG("Schedule main Phy switch in " << delay.As(Time::US));
-        Simulator::Schedule(delay,
-                            &EmlsrManager::SwitchMainPhy,
-                            this,
-                            linkId,
-                            false,
-                            RESET_BACKOFF,
-                            DONT_REQUEST_ACCESS);
+        m_ulMainPhySwitch[linkId] = Simulator::Schedule(delay,
+                                                        &EmlsrManager::SwitchMainPhy,
+                                                        this,
+                                                        linkId,
+                                                        false,
+                                                        RESET_BACKOFF,
+                                                        DONT_REQUEST_ACCESS);
     }
 
     DoNotifyUlTxopStart(linkId);
 }
 
 void
-EmlsrManager::NotifyTxopEnd(uint8_t linkId)
+EmlsrManager::NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted, bool ongoingDlTxop)
 {
-    NS_LOG_FUNCTION(this << linkId);
+    NS_LOG_FUNCTION(this << linkId << ulTxopNotStarted << ongoingDlTxop);
 
     if (!m_staMac->IsEmlsrLink(linkId))
     {
         NS_LOG_DEBUG("EMLSR is not enabled on link " << +linkId);
+        return;
+    }
+
+    // If the main PHY has been scheduled to switch to this link, cancel the channel switch.
+    // This happens, e.g., when an aux PHY sent an RTS to start an UL TXOP but it did not
+    // receive a CTS response.
+    if (auto it = m_ulMainPhySwitch.find(linkId); it != m_ulMainPhySwitch.end())
+    {
+        if (it->second.IsRunning())
+        {
+            NS_LOG_DEBUG("Cancelling main PHY channel switch event on link " << +linkId);
+            it->second.Cancel();
+        }
+        m_ulMainPhySwitch.erase(it);
+    }
+
+    // Unblock the other EMLSR links and start the MediumSyncDelay timer, provided that the TXOP
+    // included the transmission of at least a frame and there is no ongoing DL TXOP on this link.
+    // Indeed, the UL TXOP may have ended because the transmission of a frame failed and the
+    // corresponding TX timeout (leading to this call) may have occurred after the reception on
+    // this link of an ICF starting a DL TXOP. If the EMLSR Manager unblocked the other EMLSR
+    // links, another TXOP could be started on another EMLSR link (possibly leading to a crash)
+    // while the DL TXOP on this link is ongoing.
+    if (ongoingDlTxop)
+    {
+        NS_LOG_DEBUG("DL TXOP ongoing");
+        return;
+    }
+    if (ulTxopNotStarted)
+    {
+        NS_LOG_DEBUG("TXOP did not even start");
         return;
     }
 
