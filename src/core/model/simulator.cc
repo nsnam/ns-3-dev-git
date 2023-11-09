@@ -190,11 +190,12 @@ Simulator::Stop()
     GetImpl()->Stop();
 }
 
-void
+EventId
 Simulator::Stop(const Time& delay)
 {
     NS_LOG_FUNCTION(delay);
     m_stopEvent = GetImpl()->Stop(delay);
+    return m_stopEvent;
 }
 
 EventId

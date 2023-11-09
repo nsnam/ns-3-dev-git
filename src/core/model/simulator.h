@@ -166,12 +166,14 @@ class Simulator
      * or equal to the stop time.  The stop time is relative to the
      * current simulation time.
      * @param [in] delay The stop time, relative to the current time.
+     * @return The stop EventId.
      */
-    static void Stop(const Time& delay);
+    static EventId Stop(const Time& delay);
 
     /**
      * Returns the Stop Event, or an invalid event if the simulation
      * does not have a scheduled stop time.
+     * @return The stop EventId.
      */
     static EventId GetStopEvent();
 
