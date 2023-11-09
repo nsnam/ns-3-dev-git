@@ -497,11 +497,11 @@ RealtimeSimulatorImpl::Stop()
     m_stop = true;
 }
 
-void
+EventId
 RealtimeSimulatorImpl::Stop(const Time& delay)
 {
     NS_LOG_FUNCTION(this << delay);
-    Simulator::Schedule(delay, &Simulator::Stop);
+    return Simulator::Schedule(delay, &Simulator::Stop);
 }
 
 //

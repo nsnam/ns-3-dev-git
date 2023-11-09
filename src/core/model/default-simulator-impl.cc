@@ -209,11 +209,11 @@ DefaultSimulatorImpl::Stop()
     m_stop = true;
 }
 
-void
+EventId
 DefaultSimulatorImpl::Stop(const Time& delay)
 {
     NS_LOG_FUNCTION(this << delay.GetTimeStep());
-    Simulator::Schedule(delay, &Simulator::Stop);
+    return Simulator::Schedule(delay, &Simulator::Stop);
 }
 
 //

@@ -170,6 +170,12 @@ class Simulator
     static void Stop(const Time& delay);
 
     /**
+     * Returns the Stop Event, or an invalid event if the simulation
+     * does not have a scheduled stop time.
+     */
+    static EventId GetStopEvent();
+
+    /**
      * Get the current simulation context.
      *
      * The simulation context is the ns-3 notion of a Logical Process.
@@ -519,6 +525,11 @@ class Simulator
      * @return The EventId.
      */
     static EventId DoScheduleDestroy(EventImpl* event);
+
+    /**
+     * Stop event (if present)
+     */
+    static EventId m_stopEvent;
 
 }; // class Simulator
 

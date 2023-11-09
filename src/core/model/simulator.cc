@@ -54,6 +54,8 @@ namespace ns3
 // of causing recursions leading to stack overflow
 NS_LOG_COMPONENT_DEFINE("Simulator");
 
+EventId Simulator::m_stopEvent;
+
 /**
  * \ingroup simulator
  * \anchor GlobalValueSimulatorImplementationType
@@ -192,7 +194,13 @@ void
 Simulator::Stop(const Time& delay)
 {
     NS_LOG_FUNCTION(delay);
-    GetImpl()->Stop(delay);
+    m_stopEvent = GetImpl()->Stop(delay);
+}
+
+EventId
+Simulator::GetStopEvent()
+{
+    return m_stopEvent;
 }
 
 Time
