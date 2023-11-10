@@ -256,6 +256,7 @@ set(header_files
     model/rng-stream.h
     model/scheduler.h
     model/show-progress.h
+    model/shuffle.h
     model/simple-ref-count.h
     model/simulation-singleton.h
     model/simulator-impl.h
