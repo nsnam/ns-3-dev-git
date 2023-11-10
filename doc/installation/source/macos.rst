@@ -77,6 +77,11 @@ Recommended
   ``$PATH`` variable.
 
 .. note::
+  Likewise, when using MacPorts, the ``clang-tidy`` and ``clang-format`` binaries will be
+  placed in ``/opt/local/libexec/llvm-XX/bin`` (where ``XX` is the installed version number
+  such as ``16``), so you will need to add this to your ``$PATH`` variable.
+
+.. note::
   For debugging, ``lldb`` is the default debugger for llvm.  Memory checkers such as
   Memory Graph exist for macOS, but the ns-3 team doesn't have experience with it as a
   substitution for ``valgrind`` (which is reported to not work on M1 Macs).
