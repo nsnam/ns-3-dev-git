@@ -45,7 +45,9 @@
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 
+#include <iterator>
 #include <numeric>
+#include <sstream>
 
 namespace ns3
 {
@@ -309,7 +311,12 @@ StaWifiMac::GetCurrentChannel(uint8_t linkId) const
 void
 StaWifiMac::NotifyEmlsrModeChanged(const std::set<uint8_t>& linkIds)
 {
-    NS_LOG_FUNCTION(this << linkIds.size());
+    std::stringstream ss;
+    if (g_log.IsEnabled(ns3::LOG_FUNCTION))
+    {
+        std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
+    }
+    NS_LOG_FUNCTION(this << ss.str());
 
     for (const auto& [linkId, lnk] : GetLinks())
     {

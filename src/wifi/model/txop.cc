@@ -249,7 +249,7 @@ Txop::SetMinCws(std::vector<uint32_t> minCws)
 void
 Txop::SetMinCw(uint32_t minCw, uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << minCw << +linkId);
+    NS_LOG_FUNCTION(this << minCw << linkId);
     auto& link = GetLink(linkId);
     bool changed = (link.cwMin != minCw);
     link.cwMin = minCw;
@@ -279,7 +279,7 @@ Txop::SetMaxCws(std::vector<uint32_t> maxCws)
 void
 Txop::SetMaxCw(uint32_t maxCw, uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << maxCw << +linkId);
+    NS_LOG_FUNCTION(this << maxCw << linkId);
     auto& link = GetLink(linkId);
     bool changed = (link.cwMax != maxCw);
     link.cwMax = maxCw;
@@ -298,7 +298,7 @@ Txop::GetCw(uint8_t linkId) const
 void
 Txop::ResetCw(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << linkId);
     auto& link = GetLink(linkId);
     link.cw = GetMinCw(linkId);
     m_cwTrace(link.cw, linkId);
@@ -307,7 +307,7 @@ Txop::ResetCw(uint8_t linkId)
 void
 Txop::UpdateFailedCw(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << linkId);
     auto& link = GetLink(linkId);
     // see 802.11-2012, section 9.19.2.5
     link.cw = std::min(2 * (link.cw + 1) - 1, GetMaxCw(linkId));
@@ -331,7 +331,7 @@ Txop::GetBackoffStart(uint8_t linkId) const
 void
 Txop::UpdateBackoffSlotsNow(uint32_t nSlots, Time backoffUpdateBound, uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << nSlots << backoffUpdateBound << +linkId);
+    NS_LOG_FUNCTION(this << nSlots << backoffUpdateBound << linkId);
     auto& link = GetLink(linkId);
 
     link.backoffSlots -= nSlots;
@@ -342,7 +342,7 @@ Txop::UpdateBackoffSlotsNow(uint32_t nSlots, Time backoffUpdateBound, uint8_t li
 void
 Txop::StartBackoffNow(uint32_t nSlots, uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << nSlots << +linkId);
+    NS_LOG_FUNCTION(this << nSlots << linkId);
     auto& link = GetLink(linkId);
 
     if (link.backoffSlots != 0)
@@ -377,7 +377,7 @@ Txop::SetAifsns(std::vector<uint8_t> aifsns)
 void
 Txop::SetAifsn(uint8_t aifsn, uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << +aifsn << +linkId);
+    NS_LOG_FUNCTION(this << aifsn << linkId);
     GetLink(linkId).aifsn = aifsn;
 }
 
@@ -404,7 +404,7 @@ Txop::SetTxopLimits(const std::vector<Time>& txopLimits)
 void
 Txop::SetTxopLimit(Time txopLimit, uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << txopLimit << +linkId);
+    NS_LOG_FUNCTION(this << txopLimit << linkId);
     NS_ASSERT_MSG((txopLimit.GetMicroSeconds() % 32 == 0),
                   "The TXOP limit must be expressed in multiple of 32 microseconds!");
     GetLink(linkId).txopLimit = txopLimit;
@@ -511,7 +511,7 @@ Txop::HasFramesToTransmit(uint8_t linkId)
 {
     m_queue->WipeAllExpiredMpdus();
     bool ret = static_cast<bool>(m_queue->Peek(linkId));
-    NS_LOG_FUNCTION(this << +linkId << ret);
+    NS_LOG_FUNCTION(this << linkId << ret);
     return ret;
 }
 
@@ -567,11 +567,17 @@ Txop::AssignStreams(int64_t stream)
 void
 Txop::StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool checkMediumBusy)
 {
-    NS_LOG_FUNCTION(this << +linkId << hadFramesToTransmit << checkMediumBusy);
+    NS_LOG_FUNCTION(this << linkId << hadFramesToTransmit << checkMediumBusy);
 
-    if (GetLink(linkId).access != NOT_REQUESTED || !HasFramesToTransmit(linkId))
+    if (GetLink(linkId).access != NOT_REQUESTED)
     {
-        NS_LOG_DEBUG("No need to request channel access on link " << +linkId);
+        NS_LOG_DEBUG("Channel access already requested or granted on link " << +linkId);
+        return;
+    }
+
+    if (!HasFramesToTransmit(linkId))
+    {
+        NS_LOG_DEBUG("No frames to transmit on link " << +linkId);
         return;
     }
 
@@ -605,21 +611,21 @@ Txop::GetAccessStatus(uint8_t linkId) const
 void
 Txop::NotifyAccessRequested(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << +linkId);
+    NS_LOG_FUNCTION(this << linkId);
     GetLink(linkId).access = REQUESTED;
 }
 
 void
 Txop::NotifyChannelAccessed(uint8_t linkId, Time txopDuration)
 {
-    NS_LOG_FUNCTION(this << +linkId << txopDuration);
+    NS_LOG_FUNCTION(this << linkId << txopDuration);
     GetLink(linkId).access = GRANTED;
 }
 
 void
 Txop::NotifyChannelReleased(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << +linkId);
+    NS_LOG_FUNCTION(this << linkId);
     GetLink(linkId).access = NOT_REQUESTED;
     GenerateBackoff(linkId);
     if (HasFramesToTransmit(linkId))
@@ -631,7 +637,7 @@ Txop::NotifyChannelReleased(uint8_t linkId)
 void
 Txop::RequestAccess(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << +linkId);
+    NS_LOG_FUNCTION(this << linkId);
     if (GetLink(linkId).access == NOT_REQUESTED)
     {
         m_mac->GetChannelAccessManager(linkId)->RequestAccess(this);
@@ -641,8 +647,8 @@ Txop::RequestAccess(uint8_t linkId)
 void
 Txop::GenerateBackoff(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << +linkId);
     uint32_t backoff = m_rng->GetInteger(0, GetCw(linkId));
+    NS_LOG_FUNCTION(this << linkId << backoff);
     m_backoffTrace(backoff, linkId);
     StartBackoffNow(backoff, linkId);
 }
@@ -650,7 +656,7 @@ Txop::GenerateBackoff(uint8_t linkId)
 void
 Txop::NotifySleep(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << +linkId);
+    NS_LOG_FUNCTION(this << linkId);
 }
 
 void
@@ -663,7 +669,7 @@ Txop::NotifyOff()
 void
 Txop::NotifyWakeUp(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << +linkId);
+    NS_LOG_FUNCTION(this << linkId);
     // before wake up, no packet can be transmitted
     StartAccessAfterEvent(linkId, DIDNT_HAVE_FRAMES_TO_TRANSMIT, DONT_CHECK_MEDIUM_BUSY);
 }

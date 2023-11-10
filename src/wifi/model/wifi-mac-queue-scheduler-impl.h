@@ -26,9 +26,11 @@
 
 #include <algorithm>
 #include <functional>
+#include <iterator>
 #include <list>
 #include <map>
 #include <numeric>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 
@@ -473,7 +475,12 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoBlockQueues(
     const std::set<uint8_t>& tids,
     const std::set<uint8_t>& linkIds)
 {
-    NS_LOG_FUNCTION(this << block << reason << ac << rxAddress << txAddress);
+    std::stringstream ss;
+    if (g_log.IsEnabled(ns3::LOG_FUNCTION))
+    {
+        std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
+    }
+    NS_LOG_FUNCTION(this << block << reason << ac << rxAddress << txAddress << ss.str());
     std::list<WifiMacHeader> headers;
 
     for (const auto queueType : types)

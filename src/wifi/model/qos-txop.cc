@@ -330,10 +330,14 @@ QosTxop::HasFramesToTransmit(uint8_t linkId)
 {
     // remove MSDUs with expired lifetime starting from the head of the queue
     m_queue->WipeAllExpiredMpdus();
-    bool queueIsNotEmpty = (bool)(m_queue->PeekFirstAvailable(linkId));
+    auto hasFramesToTransmit = static_cast<bool>(m_queue->PeekFirstAvailable(linkId));
 
-    NS_LOG_FUNCTION(this << queueIsNotEmpty);
-    return queueIsNotEmpty;
+    // Print the number of packets that are actually in the queue (which might not be
+    // eligible for transmission for some reason, e.g., TID not mapped to the link, etc.)
+    NS_LOG_DEBUG(m_ac << " on link " << +linkId << (hasFramesToTransmit ? " has" : " has not")
+                      << " frames to transmit with " << m_queue->GetNPackets()
+                      << " packets in the queue");
+    return hasFramesToTransmit;
 }
 
 uint16_t

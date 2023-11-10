@@ -31,6 +31,9 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy-state-helper.h"
 
+#include <iterator>
+#include <sstream>
+
 namespace ns3
 {
 
@@ -290,7 +293,12 @@ EmlsrManager::GetMediumSyncMaxNTxops() const
 void
 EmlsrManager::SetEmlsrLinks(const std::set<uint8_t>& linkIds)
 {
-    NS_LOG_FUNCTION(this);
+    std::stringstream ss;
+    if (g_log.IsEnabled(ns3::LOG_FUNCTION))
+    {
+        std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
+    }
+    NS_LOG_FUNCTION(this << ss.str());
     NS_ABORT_MSG_IF(linkIds.size() == 1, "Cannot enable EMLSR mode on a single link");
 
     if (linkIds != m_emlsrLinks)

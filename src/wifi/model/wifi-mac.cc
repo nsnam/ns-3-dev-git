@@ -39,6 +39,8 @@
 #include "ns3/vht-configuration.h"
 
 #include <algorithm>
+#include <iterator>
+#include <sstream>
 
 namespace ns3
 {
@@ -1388,7 +1390,12 @@ WifiMac::BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                const Mac48Address& address,
                                const std::set<uint8_t>& linkIds)
 {
-    NS_LOG_FUNCTION(this << reason << address);
+    std::stringstream ss;
+    if (g_log.IsEnabled(ns3::LOG_FUNCTION))
+    {
+        std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
+    }
+    NS_LOG_FUNCTION(this << reason << address << ss.str());
     NS_ASSERT(m_scheduler);
 
     for (const auto linkId : linkIds)
@@ -1429,7 +1436,12 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                  const Mac48Address& address,
                                  const std::set<uint8_t>& linkIds)
 {
-    NS_LOG_FUNCTION(this << reason << address);
+    std::stringstream ss;
+    if (g_log.IsEnabled(ns3::LOG_FUNCTION))
+    {
+        std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
+    }
+    NS_LOG_FUNCTION(this << reason << address << ss.str());
     NS_ASSERT(m_scheduler);
 
     for (const auto linkId : linkIds)
