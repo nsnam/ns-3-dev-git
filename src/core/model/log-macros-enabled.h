@@ -189,7 +189,9 @@
             NS_LOG_APPEND_CONTEXT;                                                                 \
             NS_LOG_APPEND_FUNC_PREFIX;                                                             \
             NS_LOG_APPEND_LEVEL_PREFIX(level);                                                     \
+            auto flags = std::clog.setf(std::ios_base::boolalpha);                                 \
             std::clog << msg << std::endl;                                                         \
+            std::clog.flags(flags);                                                                \
         }                                                                                          \
     } while (false)
 
@@ -245,7 +247,9 @@
             NS_LOG_APPEND_NODE_PREFIX;                                                             \
             NS_LOG_APPEND_CONTEXT;                                                                 \
             std::clog << g_log.Name() << ":" << __FUNCTION__ << "(";                               \
+            auto flags = std::clog.setf(std::ios_base::boolalpha);                                 \
             ns3::ParameterLogger(std::clog) << parameters;                                         \
+            std::clog.flags(flags);                                                                \
             std::clog << ")" << std::endl;                                                         \
         }                                                                                          \
     } while (false)
@@ -261,7 +265,9 @@
     NS_LOG_CONDITION                                                                               \
     do                                                                                             \
     {                                                                                              \
+        auto flags = std::clog.setf(std::ios_base::boolalpha);                                     \
         std::clog << msg << std::endl;                                                             \
+        std::clog.flags(flags);                                                                    \
     } while (false)
 
 #endif /* NS3_LOG_ENABLE */
