@@ -461,9 +461,8 @@ HePhy::DoGetEvent(Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW
     // detection window. If a preamble is received after the preamble detection window, it is stored
     // anyway because this is needed for HE TB PPDUs in order to properly update the received power
     // in InterferenceHelper. The map is cleaned anyway at the end of the current reception.
-    const auto uidPreamblePair = std::make_pair(ppdu->GetUid(), ppdu->GetPreamble());
     const auto& currentPreambleEvents = GetCurrentPreambleEvents();
-    const auto it = currentPreambleEvents.find(uidPreamblePair);
+    const auto it = currentPreambleEvents.find({ppdu->GetUid(), ppdu->GetPreamble()});
     if (const auto isResponseToTrigger = (m_previouslyTxPpduUid == ppdu->GetUid());
         ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU || isResponseToTrigger)
     {
@@ -836,8 +835,8 @@ HePhy::DoStartReceivePayload(Ptr<Event> event)
     {
         NS_LOG_DEBUG("Receiving PSDU in HE TB PPDU");
         uint16_t staId = GetStaId(ppdu);
-        m_signalNoiseMap.insert({std::make_pair(ppdu->GetUid(), staId), SignalNoiseDbm()});
-        m_statusPerMpduMap.insert({std::make_pair(ppdu->GetUid(), staId), std::vector<bool>()});
+        m_signalNoiseMap.insert({{ppdu->GetUid(), staId}, SignalNoiseDbm()});
+        m_statusPerMpduMap.insert({{ppdu->GetUid(), staId}, std::vector<bool>()});
         // for HE TB PPDUs, ScheduleEndOfMpdus and EndReceive are scheduled by
         // StartReceiveMuPayload
         NS_ASSERT(!m_beginMuPayloadRxEvents.empty());
@@ -959,8 +958,8 @@ HePhy::StartReceiveMuPayload(Ptr<Event> event)
     m_endRxPayloadEvents.push_back(
         Simulator::Schedule(payloadDuration, &HePhy::EndReceivePayload, this, event));
     uint16_t staId = GetStaId(ppdu);
-    m_signalNoiseMap.insert({std::make_pair(ppdu->GetUid(), staId), SignalNoiseDbm()});
-    m_statusPerMpduMap.insert({std::make_pair(ppdu->GetUid(), staId), std::vector<bool>()});
+    m_signalNoiseMap.insert({{ppdu->GetUid(), staId}, SignalNoiseDbm()});
+    m_statusPerMpduMap.insert({{ppdu->GetUid(), staId}, std::vector<bool>()});
     // Notify the MAC about the start of a new HE TB PPDU, so that it can reschedule the timeout
     NotifyPayloadBegin(ppdu->GetTxVector(), payloadDuration);
 }
@@ -990,14 +989,12 @@ HePhy::GetRuBandForTx(const WifiTxVector& txVector, uint16_t staId) const
         channelWidth,
         ru.GetRuType(),
         ru.GetPhyIndex(channelWidth, m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
-    HeRu::SubcarrierRange subcarrierRange =
-        std::make_pair(group.front().first, group.back().second);
     // for a TX spectrum, the guard bandwidth is a function of the transmission channel width
     // and the spectrum width equals the transmission channel width (hence bandIndex equals 0)
     auto indices = ConvertHeRuSubcarriers(channelWidth,
                                           GetGuardBandwidth(channelWidth),
                                           m_wifiPhy->GetSubcarrierSpacing(),
-                                          subcarrierRange,
+                                          {group.front().first, group.back().second},
                                           0);
     auto frequencies = m_wifiPhy->ConvertIndicesToFrequencies(indices);
     return {indices, frequencies};
@@ -1014,15 +1011,13 @@ HePhy::GetRuBandForRx(const WifiTxVector& txVector, uint16_t staId) const
         channelWidth,
         ru.GetRuType(),
         ru.GetPhyIndex(channelWidth, m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
-    HeRu::SubcarrierRange subcarrierRange =
-        std::make_pair(group.front().first, group.back().second);
     // for an RX spectrum, the guard bandwidth is a function of the operating channel width
     // and the spectrum width equals the operating channel width
     auto indices = ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
         m_wifiPhy->GetSubcarrierSpacing(),
-        subcarrierRange,
+        {group.front().first, group.back().second},
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
     auto frequencies = m_wifiPhy->ConvertIndicesToFrequencies(indices);
     return {indices, frequencies};
@@ -1047,13 +1042,11 @@ HePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) const
         nonOfdmaRu.GetRuType(),
         nonOfdmaRu.GetPhyIndex(channelWidth,
                                m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(20)));
-    HeRu::SubcarrierRange subcarrierRange =
-        std::make_pair(groupPreamble.front().first, groupPreamble.back().second);
     auto indices = ConvertHeRuSubcarriers(
         channelWidth,
         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
         m_wifiPhy->GetSubcarrierSpacing(),
-        subcarrierRange,
+        {groupPreamble.front().first, groupPreamble.back().second},
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
     auto frequencies = m_wifiPhy->ConvertIndicesToFrequencies(indices);
     return {indices, frequencies};
@@ -1764,7 +1757,7 @@ HePhy::GetWifiConstPsduMap(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVecto
         staId = txVector.GetHeMuUserInfoMap().begin()->first;
     }
 
-    return WifiConstPsduMap({std::make_pair(staId, psdu)});
+    return WifiConstPsduMap({{staId, psdu}});
 }
 
 uint32_t

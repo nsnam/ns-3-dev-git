@@ -816,7 +816,7 @@ InterferenceHelper::GetPreviousPosition(Time moment, NiChangesPerBand::iterator 
 InterferenceHelper::NiChanges::iterator
 InterferenceHelper::AddNiChangeEvent(Time moment, NiChange change, NiChangesPerBand::iterator niIt)
 {
-    return niIt->second.insert(GetNextPosition(moment, niIt), std::make_pair(moment, change));
+    return niIt->second.insert(GetNextPosition(moment, niIt), {moment, change});
 }
 
 void
