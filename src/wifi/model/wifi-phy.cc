@@ -422,10 +422,6 @@ WifiPhy::DoDispose()
     m_random = nullptr;
     m_state = nullptr;
     m_currentEvent = nullptr;
-    for (auto& preambleEvent : m_currentPreambleEvents)
-    {
-        preambleEvent.second = nullptr;
-    }
     m_currentPreambleEvents.clear();
 
     for (auto& phyEntity : m_phyEntities)
