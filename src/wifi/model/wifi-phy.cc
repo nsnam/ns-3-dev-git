@@ -1396,7 +1396,6 @@ void
 WifiPhy::ResumeFromSleep()
 {
     NS_LOG_FUNCTION(this);
-    m_currentPreambleEvents.clear();
     switch (m_state->GetState())
     {
     case WifiPhyState::TX:
