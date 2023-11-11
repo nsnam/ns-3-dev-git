@@ -437,11 +437,9 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      */
     bool NoEndPreambleDetectionEvents() const;
     /**
-     * Cancel and eventually clear all end preamble detection events.
-     *
-     * \param clear whether to clear the end preamble detection events' list
+     * Cancel all end preamble detection events.
      */
-    void CancelRunningEndPreambleDetectionEvents(bool clear = false);
+    void CancelRunningEndPreambleDetectionEvents();
 
     /**
      * Return the STA ID that has been assigned to the station this PHY belongs to.

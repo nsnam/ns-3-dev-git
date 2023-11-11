@@ -999,7 +999,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
         // A bit convoluted but it enables to sync all PHYs
         for (auto& it : m_wifiPhy->m_phyEntities)
         {
-            it.second->CancelRunningEndPreambleDetectionEvents(true);
+            it.second->CancelRunningEndPreambleDetectionEvents();
         }
 
         for (auto it = m_wifiPhy->m_currentPreambleEvents.begin();
@@ -1089,11 +1089,7 @@ void
 PhyEntity::CancelAllEvents()
 {
     NS_LOG_FUNCTION(this);
-    for (auto& endPreambleDetectionEvent : m_endPreambleDetectionEvents)
-    {
-        endPreambleDetectionEvent.Cancel();
-    }
-    m_endPreambleDetectionEvents.clear();
+    CancelRunningEndPreambleDetectionEvents();
     for (auto& endRxPayloadEvent : m_endRxPayloadEvents)
     {
         endRxPayloadEvent.Cancel();
@@ -1113,17 +1109,14 @@ PhyEntity::NoEndPreambleDetectionEvents() const
 }
 
 void
-PhyEntity::CancelRunningEndPreambleDetectionEvents(bool clear /* = false */)
+PhyEntity::CancelRunningEndPreambleDetectionEvents()
 {
-    NS_LOG_FUNCTION(this << clear);
+    NS_LOG_FUNCTION(this);
     for (auto& endPreambleDetectionEvent : m_endPreambleDetectionEvents)
     {
         endPreambleDetectionEvent.Cancel();
     }
-    if (clear)
-    {
-        m_endPreambleDetectionEvents.clear();
-    }
+    m_endPreambleDetectionEvents.clear();
 }
 
 void
