@@ -8,6 +8,7 @@
 
 #include "wifi-utils.h"
 
+#include "ap-wifi-mac.h"
 #include "ctrl-headers.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
@@ -173,6 +174,13 @@ bool
 IsGroupcast(const Mac48Address& adr)
 {
     return adr.IsGroup() && !adr.IsBroadcast();
+}
+
+bool
+IsGcr(Ptr<WifiMac> mac, const WifiMacHeader& hdr)
+{
+    auto apMac = DynamicCast<ApWifiMac>(mac);
+    return apMac && apMac->UseGcr(hdr);
 }
 
 } // namespace ns3
