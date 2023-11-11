@@ -1104,31 +1104,28 @@ WifiPhy::SetOperatingChannel(const ChannelTuple& channelTuple)
         return;
     }
 
-    Time delay = Seconds(0);
-
     if (IsInitialized())
     {
-        delay = GetDelayUntilChannelSwitch();
-    }
-
-    if (delay.IsStrictlyNegative())
-    {
-        // switching channel is not possible now
-        return;
-    }
-    if (delay.IsStrictlyPositive())
-    {
-        // switching channel has been postponed
-        void (WifiPhy::*fp)(const ChannelTuple&) = &WifiPhy::SetOperatingChannel;
-        Simulator::Schedule(delay, fp, this, channelTuple);
-        return;
+        const auto delay = GetDelayUntilChannelSwitch();
+        if (!delay.has_value())
+        {
+            // switching channel is not possible now
+            return;
+        }
+        if (delay.value().IsStrictlyPositive())
+        {
+            // switching channel has been postponed
+            void (WifiPhy::*fp)(const ChannelTuple&) = &WifiPhy::SetOperatingChannel;
+            Simulator::Schedule(delay.value(), fp, this, channelTuple);
+            return;
+        }
     }
 
     // channel can be switched now.
     DoChannelSwitch();
 }
 
-Time
+std::optional<Time>
 WifiPhy::GetDelayUntilChannelSwitch()
 {
     if (!IsInitialized())
@@ -1138,14 +1135,14 @@ WifiPhy::GetDelayUntilChannelSwitch()
         return Seconds(0);
     }
 
-    Time delay = Seconds(0);
-
     NS_ASSERT(!IsStateSwitching());
+    std::optional<Time> delay;
     switch (m_state->GetState())
     {
     case WifiPhyState::RX:
         NS_LOG_DEBUG("drop packet because of channel switching while reception");
         AbortCurrentReception(CHANNEL_SWITCHING);
+        delay = Seconds(0);
         break;
     case WifiPhyState::TX:
         NS_LOG_DEBUG("channel switching postponed until end of current transmission");
@@ -1154,10 +1151,10 @@ WifiPhy::GetDelayUntilChannelSwitch()
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::IDLE:
         Reset();
+        delay = Seconds(0);
         break;
     case WifiPhyState::SLEEP:
         NS_LOG_DEBUG("channel switching ignored in sleep mode");
-        delay = Seconds(-1); // negative value to indicate switching not possible
         break;
     default:
         NS_ASSERT(false);

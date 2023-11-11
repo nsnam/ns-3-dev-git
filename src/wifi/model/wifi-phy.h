@@ -1220,12 +1220,10 @@ class WifiPhy : public Object
      * Perform any actions necessary when user changes operating channel after
      * initialization.
      *
-     * \return zero if the PHY can immediately switch channel, a positive value
-     *         indicating the amount of time to wait until the channel switch can
-     *         be performed or a negative value indicating that channel switch is
-     *         currently not possible (i.e., the radio is in sleep mode)
+     * \return the amount of time to wait until the channel switch can be performed or
+     * std::nullopt if channel switch is currently not possible (i.e., the radio is in sleep mode)
      */
-    Time GetDelayUntilChannelSwitch();
+    std::optional<Time> GetDelayUntilChannelSwitch();
     /**
      * Actually switch channel based on the stored channel settings.
      */
