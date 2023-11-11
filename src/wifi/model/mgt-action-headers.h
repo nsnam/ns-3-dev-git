@@ -410,7 +410,7 @@ class MgtAddBaRequestHeader : public Header
     void SetStartingSequenceControl(uint16_t seqControl);
 
     uint8_t m_dialogToken{1};   //!< Not used for now
-    uint8_t m_amsduSupport{1};  //!< Flag if A-MSDU is supported
+    bool m_amsduSupport{true};  //!< Flag if A-MSDU is supported
     uint8_t m_policy{1};        //!< Block Ack policy
     uint8_t m_tid{0};           //!< Traffic ID
     uint16_t m_bufferSize{0};   //!< Buffer size
@@ -528,7 +528,7 @@ class MgtAddBaResponseHeader : public Header
 
     uint8_t m_dialogToken{1};   //!< Not used for now
     StatusCode m_code{};        //!< Status code
-    uint8_t m_amsduSupport{1};  //!< Flag if A-MSDU is supported
+    bool m_amsduSupport{true};  //!< Flag if A-MSDU is supported
     uint8_t m_policy{1};        //!< Block ACK policy
     uint8_t m_tid{0};           //!< Traffic ID
     uint16_t m_bufferSize{0};   //!< Buffer size

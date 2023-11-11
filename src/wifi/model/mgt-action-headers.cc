@@ -869,7 +869,7 @@ MgtAddBaRequestHeader::GetBufferSize() const
 bool
 MgtAddBaRequestHeader::IsAmsduSupported() const
 {
-    return m_amsduSupport == 1;
+    return m_amsduSupport;
 }
 
 uint16_t
@@ -887,8 +887,7 @@ MgtAddBaRequestHeader::GetStartingSequenceControl() const
 uint16_t
 MgtAddBaRequestHeader::GetParameterSet() const
 {
-    uint16_t res = 0;
-    res |= m_amsduSupport;
+    uint16_t res = m_amsduSupport ? 1 : 0;
     res |= m_policy << 1;
     res |= m_tid << 2;
     res |= (m_bufferSize % 1024) << 6;
@@ -898,7 +897,7 @@ MgtAddBaRequestHeader::GetParameterSet() const
 void
 MgtAddBaRequestHeader::SetParameterSet(uint16_t params)
 {
-    m_amsduSupport = params & 0x01;
+    m_amsduSupport = ((params & 0x01) == 1);
     m_policy = (params >> 1) & 0x01;
     m_tid = (params >> 2) & 0x0f;
     m_bufferSize = (params >> 6) & 0x03ff;
@@ -1060,14 +1059,13 @@ MgtAddBaResponseHeader::GetBufferSize() const
 bool
 MgtAddBaResponseHeader::IsAmsduSupported() const
 {
-    return m_amsduSupport == 1;
+    return m_amsduSupport;
 }
 
 uint16_t
 MgtAddBaResponseHeader::GetParameterSet() const
 {
-    uint16_t res = 0;
-    res |= m_amsduSupport;
+    uint16_t res = m_amsduSupport ? 1 : 0;
     res |= m_policy << 1;
     res |= m_tid << 2;
     res |= (m_bufferSize % 1024) << 6;
@@ -1077,7 +1075,7 @@ MgtAddBaResponseHeader::GetParameterSet() const
 void
 MgtAddBaResponseHeader::SetParameterSet(uint16_t params)
 {
-    m_amsduSupport = params & 0x01;
+    m_amsduSupport = ((params & 0x01) == 1);
     m_policy = (params >> 1) & 0x01;
     m_tid = (params >> 2) & 0x0f;
     m_bufferSize = (params >> 6) & 0x03ff;
