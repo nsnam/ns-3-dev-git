@@ -90,8 +90,10 @@ class Axes(object):
         dx_over_ndiv = dx / ndiv
         for n in range(5): # iterate 5 times to find optimum division size
             #/* div: length of each division */
-            tbe = math.log10(dx_over_ndiv)#;   /* looking for approx. 'ndiv' divisions in a length 'dx' */
-            div = pow(10, rint(tbe))#;         /* div: power of 10 closest to dx/ndiv */
+            #/* looking for approx. 'ndiv' divisions in a length 'dx' */
+            tbe = math.log10(dx_over_ndiv)
+            #/* div: power of 10 closest to dx/ndiv */
+            div = pow(10, rint(tbe))
             if math.fabs(div/2 - dx_over_ndiv) < math.fabs(div - dx_over_ndiv): #/* test if div/2 is closer to dx/ndiv */
                 div /= 2
             elif math.fabs(div*2 - dx_over_ndiv) < math.fabs(div - dx_over_ndiv):

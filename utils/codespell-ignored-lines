@@ -33,8 +33,8 @@ if [ "$filterin" != "" ] ; then
     echo "$filterin"
 
 #./src/visualizer/visualizer/hud.py:93-94
-            tbe = math.log10(dx_over_ndiv)#;   /* looking for approx. 'ndiv' divisions in a length 'dx' */
-            div = pow(10, rint(tbe))#;         /* div: power of 10 closest to dx/ndiv */
+            tbe = math.log10(dx_over_ndiv)
+            div = pow(10, rint(tbe))
 
 #./utils/tests/test-ns3.py:2944
             'convert {image} -colorspace HSI -channel b -separate +channel -scale 1x1 -format "%[fx:100*u]" info:'
