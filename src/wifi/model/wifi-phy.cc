@@ -1869,6 +1869,8 @@ WifiPhy::Reset()
     {
         phyEntity.second->CancelAllEvents();
     }
+    m_endPhyRxEvent.Cancel();
+    m_endTxEvent.Cancel();
     SwitchMaybeToCcaBusy(nullptr);
 }
 
