@@ -10,6 +10,7 @@
 
 #include "ap-wifi-mac.h"
 #include "ctrl-headers.h"
+#include "gcr-manager.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
 
@@ -181,6 +182,19 @@ IsGcr(Ptr<WifiMac> mac, const WifiMacHeader& hdr)
 {
     auto apMac = DynamicCast<ApWifiMac>(mac);
     return apMac && apMac->UseGcr(hdr);
+}
+
+Mac48Address
+GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac, const WifiMacHeader& hdr)
+{
+    const auto isGcr = IsGcr(mac, hdr);
+    const auto addr1 = hdr.GetAddr1();
+    if (!isGcr)
+    {
+        return addr1;
+    }
+    auto apMac = DynamicCast<ApWifiMac>(mac);
+    return apMac->GetGcrManager()->GetIndividuallyAddressedRecipient(addr1);
 }
 
 } // namespace ns3
