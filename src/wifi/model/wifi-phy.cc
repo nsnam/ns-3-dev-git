@@ -402,12 +402,9 @@ void
 WifiPhy::DoDispose()
 {
     NS_LOG_FUNCTION(this);
-    m_endTxEvent.Cancel();
-    m_endPhyRxEvent.Cancel();
-    for (auto& phyEntity : m_phyEntities)
-    {
-        phyEntity.second->CancelAllEvents();
-    }
+
+    Reset();
+
     m_device = nullptr;
     m_mobility = nullptr;
     m_frameCaptureModel = nullptr;
@@ -421,8 +418,6 @@ WifiPhy::DoDispose()
     m_interference = nullptr;
     m_random = nullptr;
     m_state = nullptr;
-    m_currentEvent = nullptr;
-    m_currentPreambleEvents.clear();
 
     for (auto& phyEntity : m_phyEntities)
     {
@@ -1162,11 +1157,7 @@ WifiPhy::GetDelayUntilChannelSwitch()
         break;
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::IDLE:
-        m_endPhyRxEvent.Cancel();
-        for (auto& phyEntity : m_phyEntities)
-        {
-            phyEntity.second->CancelAllEvents();
-        }
+        Reset();
         break;
     case WifiPhyState::SLEEP:
         NS_LOG_DEBUG("channel switching ignored in sleep mode");
@@ -1383,12 +1374,7 @@ WifiPhy::SetOffMode()
     NS_LOG_FUNCTION(this);
     m_powerRestricted = false;
     m_channelAccessRequested = false;
-    m_endPhyRxEvent.Cancel();
-    m_endTxEvent.Cancel();
-    for (auto& phyEntity : m_phyEntities)
-    {
-        phyEntity.second->CancelAllEvents();
-    }
+    Reset();
     m_state->SwitchToOff();
 }
 
@@ -2142,7 +2128,7 @@ WifiPhy::AbortCurrentReception(WifiPhyRxfailureReason reason)
         }
         if (reason == RECEPTION_ABORTED_BY_TX)
         {
-            m_currentPreambleEvents.clear();
+            Reset();
         }
         else
         {
@@ -2155,8 +2141,8 @@ WifiPhy::AbortCurrentReception(WifiPhyRxfailureReason reason)
                     break;
                 }
             }
+            m_currentEvent = nullptr;
         }
-        m_currentEvent = nullptr;
     }
 }
 
