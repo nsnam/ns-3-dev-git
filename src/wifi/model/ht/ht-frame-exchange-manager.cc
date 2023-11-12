@@ -150,6 +150,8 @@ HtFrameExchangeManager::NeedSetupGcrBlockAck(const WifiMacHeader& header)
     auto qosTxop = m_mac->GetQosTxop(tid);
     const auto maxMpduSize =
         m_mpduAggregator->GetMaxAmpduSize(groupAddress, tid, WIFI_MOD_CLASS_HT);
+    const auto isGcrBa = (m_apMac->GetGcrManager()->GetRetransmissionPolicy() ==
+                          GroupAddressRetransmissionPolicy::GCR_BLOCK_ACK);
     WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WIFI_GROUPCAST, groupAddress, tid};
 
     for (const auto& recipients =
@@ -165,7 +167,8 @@ HtFrameExchangeManager::NeedSetupGcrBlockAck(const WifiMacHeader& header)
 
         const auto packets = qosTxop->GetWifiMacQueue()->GetNPackets(queueId);
         const auto establish =
-            ((qosTxop->GetBlockAckThreshold() > 0 && packets >= qosTxop->GetBlockAckThreshold()) ||
+            (isGcrBa ||
+             (qosTxop->GetBlockAckThreshold() > 0 && packets >= qosTxop->GetBlockAckThreshold()) ||
              (maxMpduSize > 0 && packets > 1));
         NS_LOG_FUNCTION(this << groupAddress << +tid << establish);
         if (establish)
