@@ -1131,10 +1131,6 @@ WifiPhy::SetOperatingChannel(const ChannelTuple& channelTuple)
 Time
 WifiPhy::GetDelayUntilChannelSwitch()
 {
-    m_powerRestricted = false;
-    m_channelAccessRequested = false;
-    m_currentEvent = nullptr;
-    m_currentPreambleEvents.clear();
     if (!IsInitialized())
     {
         // this is not channel switch, this is initialization
@@ -1175,6 +1171,9 @@ void
 WifiPhy::DoChannelSwitch()
 {
     NS_LOG_FUNCTION(this);
+
+    m_powerRestricted = false;
+    m_channelAccessRequested = false;
 
     // Update unspecified parameters with default values
     {
