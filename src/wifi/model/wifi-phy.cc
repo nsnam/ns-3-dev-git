@@ -1789,13 +1789,6 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
         AbortCurrentReception(RECEPTION_ABORTED_BY_TX);
     }
 
-    for (auto& it : m_phyEntities)
-    {
-        it.second->CancelRunningEndPreambleDetectionEvents();
-    }
-    m_currentPreambleEvents.clear();
-    m_endPhyRxEvent.Cancel();
-
     if (m_powerRestricted)
     {
         NS_LOG_DEBUG("Transmitting with power restriction for " << txDuration.As(Time::NS));
@@ -2146,12 +2139,20 @@ WifiPhy::AbortCurrentReception(WifiPhyRxfailureReason reason)
         {
             m_state->SwitchFromRxAbort(GetChannelWidth());
         }
-        for (auto it = m_currentPreambleEvents.begin(); it != m_currentPreambleEvents.end(); ++it)
+        if (reason == RECEPTION_ABORTED_BY_TX)
         {
-            if (it->second == m_currentEvent)
+            m_currentPreambleEvents.clear();
+        }
+        else
+        {
+            for (auto it = m_currentPreambleEvents.begin(); it != m_currentPreambleEvents.end();
+                 ++it)
             {
-                it = m_currentPreambleEvents.erase(it);
-                break;
+                if (it->second == m_currentEvent)
+                {
+                    it = m_currentPreambleEvents.erase(it);
+                    break;
+                }
             }
         }
         m_currentEvent = nullptr;
