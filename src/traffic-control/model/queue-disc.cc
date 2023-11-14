@@ -512,7 +512,7 @@ QueueDisc::SetMaxSize(QueueSize size)
 }
 
 QueueSize
-QueueDisc::GetCurrentSize()
+QueueDisc::GetCurrentSize() const
 {
     NS_LOG_FUNCTION(this);
 

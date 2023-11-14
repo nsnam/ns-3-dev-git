@@ -335,7 +335,7 @@ class QueueDisc : public Object
      *
      * \returns The queue disc size in bytes or packets.
      */
-    QueueSize GetCurrentSize();
+    QueueSize GetCurrentSize() const;
 
     /**
      * \brief Retrieve all the collected statistics.
