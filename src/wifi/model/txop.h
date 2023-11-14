@@ -25,6 +25,7 @@
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/traced-value.h"
+#include "ns3/uniform-random-bit-generator.h"
 
 #include <map>
 #include <memory>
@@ -555,11 +556,12 @@ class Txop : public Object
      */
     const std::map<uint8_t, std::unique_ptr<LinkEntity>>& GetLinks() const;
 
-    DroppedMpdu m_droppedMpduCallback; //!< the dropped MPDU callback
-    Ptr<WifiMacQueue> m_queue;         //!< the wifi MAC queue
-    Ptr<MacTxMiddle> m_txMiddle;       //!< the MacTxMiddle
-    Ptr<WifiMac> m_mac;                //!< the wifi MAC
-    Ptr<UniformRandomVariable> m_rng;  //!< the random stream
+    DroppedMpdu m_droppedMpduCallback;             //!< the dropped MPDU callback
+    Ptr<WifiMacQueue> m_queue;                     //!< the wifi MAC queue
+    Ptr<MacTxMiddle> m_txMiddle;                   //!< the MacTxMiddle
+    Ptr<WifiMac> m_mac;                            //!< the wifi MAC
+    Ptr<UniformRandomVariable> m_rng;              //!< the random stream
+    UniformRandomBitGenerator m_shuffleLinkIdsGen; //!< random number generator to shuffle link IDs
 
     /// TracedCallback for backoff trace value typedef
     typedef TracedCallback<uint32_t /* value */, uint8_t /* linkId */> BackoffValueTracedCallback;

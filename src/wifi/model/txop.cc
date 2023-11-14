@@ -29,9 +29,11 @@
 #include "ns3/attribute-container.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
-#include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/socket.h"
+
+#include <iterator>
+#include <sstream>
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT WIFI_TXOP_NS_LOG_APPEND_CONTEXT
@@ -137,7 +139,7 @@ Txop::Txop(Ptr<WifiMacQueue> queue)
     : m_queue(queue)
 {
     NS_LOG_FUNCTION(this);
-    m_rng = CreateObject<UniformRandomVariable>();
+    m_rng = m_shuffleLinkIdsGen.GetRv();
 }
 
 Txop::~Txop()
@@ -529,8 +531,21 @@ void
 Txop::Queue(Ptr<WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);
-    const auto linkIds = m_mac->GetMacQueueScheduler()->GetLinkIds(m_queue->GetAc(), mpdu);
+    auto linkIds = m_mac->GetMacQueueScheduler()->GetLinkIds(m_queue->GetAc(), mpdu);
     std::map<uint8_t, bool> hasFramesToTransmit;
+
+    // ignore the links for which a channel access request event is already running
+    for (auto it = linkIds.begin(); it != linkIds.end();)
+    {
+        if (const auto& event = GetLink(*it).accessRequest.event; event.IsRunning())
+        {
+            it = linkIds.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 
     // save the status of the AC queues before enqueuing the MPDU (required to determine if
     // backoff is needed)
@@ -539,20 +554,31 @@ Txop::Queue(Ptr<WifiMpdu> mpdu)
         hasFramesToTransmit[linkId] = HasFramesToTransmit(linkId);
     }
     m_queue->Enqueue(mpdu);
-    for (const auto linkId : linkIds)
+
+    // shuffle link IDs not to request channel access on links always in the same order
+    std::vector<uint8_t> shuffledLinkIds(linkIds.cbegin(), linkIds.cend());
+    std::shuffle(shuffledLinkIds.begin(), shuffledLinkIds.end(), m_shuffleLinkIdsGen);
+
+    if (!linkIds.empty() && g_log.IsEnabled(ns3::LOG_DEBUG))
+    {
+        std::stringstream ss;
+        std::copy(shuffledLinkIds.cbegin(),
+                  shuffledLinkIds.cend(),
+                  std::ostream_iterator<uint16_t>(ss, " "));
+        NS_LOG_DEBUG("Request channel access on link IDs: " << ss.str());
+    }
+
+    for (const auto linkId : shuffledLinkIds)
     {
         // schedule a call to StartAccessIfNeeded() to request channel access after that all the
         // packets of a burst have been enqueued, instead of requesting channel access right after
         // the first packet. The call to StartAccessIfNeeded() is scheduled only after the first
         // packet
-        if (auto& event = GetLink(linkId).accessRequest.event; !event.IsRunning())
-        {
-            event = Simulator::ScheduleNow(&Txop::StartAccessAfterEvent,
-                                           this,
-                                           linkId,
-                                           hasFramesToTransmit.at(linkId),
-                                           CHECK_MEDIUM_BUSY);
-        }
+        GetLink(linkId).accessRequest.event = Simulator::ScheduleNow(&Txop::StartAccessAfterEvent,
+                                                                     this,
+                                                                     linkId,
+                                                                     hasFramesToTransmit.at(linkId),
+                                                                     CHECK_MEDIUM_BUSY);
     }
 }
 
