@@ -463,7 +463,7 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId)
         // unblock transmissions and resume medium access on other EMLSR links
         for (auto id : m_staMac->GetLinkIds())
         {
-            if (m_staMac->IsEmlsrLink(id))
+            if ((id != linkId) && m_staMac->IsEmlsrLink(id))
             {
                 m_staMac->UnblockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
                 m_staMac->GetChannelAccessManager(id)->NotifyStopUsingOtherEmlsrLink();
