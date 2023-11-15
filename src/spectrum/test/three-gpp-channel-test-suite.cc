@@ -234,7 +234,7 @@ ThreeGppChannelMatrixComputationTest::DoRun()
     // the receive antenna elements"
     double t = (sampleMean - txAntennaElements[0] * txAntennaElements[1] * rxAntennaElements[0] *
                                  rxAntennaElements[1]) /
-               (sampleMean / std::sqrt(numIt));
+               (sampleStd / std::sqrt(numIt));
 
     // Using a significance level of 0.05, we reject the null hypothesis if |t| is
     // greater than the critical value from a t-distribution with df = numIt-1
