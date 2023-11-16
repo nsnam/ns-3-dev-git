@@ -126,7 +126,7 @@ DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId,
         // the Aux PHY is not actually switching (hence no switching delay)
         GetStaMac()->NotifySwitchingEmlsrLink(m_auxPhyToReconnect, currLinkId, Seconds(0));
         // resume aux PHY from sleep (once reconnected to its original link)
-        Simulator::ScheduleNow(&WifiPhy::ResumeFromSleep, m_auxPhyToReconnect);
+        m_auxPhyToReconnect->ResumeFromSleep();
         SetCcaEdThresholdOnLinkSwitch(m_auxPhyToReconnect, currLinkId);
         m_auxPhyToReconnect = nullptr;
     }
@@ -138,9 +138,9 @@ DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId,
 
         if (m_auxPhyToSleep)
         {
-            // the main PHY is switching to takeover a TXOP; the aux PHY does not switch,
-            // so it can be put into sleep mode
-            Simulator::Schedule(duration, &WifiPhy::SetSleepMode, m_auxPhyToReconnect);
+            // aux PHY can be put into sleep mode when the main PHY completes the channel switch
+            m_auxPhyToSleepEvent =
+                Simulator::Schedule(duration, &WifiPhy::SetSleepMode, m_auxPhyToReconnect);
         }
     }
 }
@@ -171,15 +171,17 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
         // switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
         // is not received and the UL TXOP ends before the main PHY channel switch is completed.
         // In such cases, wait until the main PHY channel switch is completed before requesting
-        // a new channel switch.
+        // a new channel switch and cancel the event to put the aux PHY to sleep.
         // Backoff shall not be reset on the link left by the main PHY because a TXOP ended and
         // a new backoff value must be generated.
+        // a new channel switch and cancel the event to put the aux PHY to sleep.
         if (!mainPhy->IsStateSwitching())
         {
             SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
         }
         else
         {
+            m_auxPhyToSleepEvent.Cancel();
             Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
                 // request the main PHY to switch back to the primary link only if in the meantime
                 // no TXOP started on another link (which will require the main PHY to switch link)
