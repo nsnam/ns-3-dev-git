@@ -1067,14 +1067,18 @@ StaWifiMac::BlockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
 }
 
 void
-StaWifiMac::UnblockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
+StaWifiMac::UnblockTxOnLink(std::set<uint8_t> linkIds, WifiQueueBlockedReason reason)
 {
-    NS_LOG_FUNCTION(this << linkId << reason);
+    std::stringstream ss;
+    std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
+    NS_LOG_FUNCTION(this << ss.str() << reason);
 
-    auto bssid = GetBssid(linkId);
-    auto apAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(bssid).value_or(bssid);
+    const auto linkId = *linkIds.cbegin();
+    const auto bssid = GetBssid(linkId);
+    const auto apAddress =
+        GetWifiRemoteStationManager(linkId)->GetMldAddress(bssid).value_or(bssid);
 
-    UnblockUnicastTxOnLinks(reason, apAddress, {linkId});
+    UnblockUnicastTxOnLinks(reason, apAddress, linkIds);
     // the only type of broadcast frames that a non-AP STA can send are management frames
     for (const auto& [acIndex, ac] : wifiAcList)
     {
@@ -1084,7 +1088,7 @@ StaWifiMac::UnblockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
                                               Mac48Address::GetBroadcast(),
                                               GetFrameExchangeManager(linkId)->GetAddress(),
                                               {},
-                                              {linkId});
+                                              linkIds);
     }
 }
 

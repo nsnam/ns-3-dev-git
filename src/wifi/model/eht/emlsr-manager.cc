@@ -461,14 +461,16 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId)
 
     Simulator::ScheduleNow([=, this]() {
         // unblock transmissions and resume medium access on other EMLSR links
+        std::set<uint8_t> linkIds;
         for (auto id : m_staMac->GetLinkIds())
         {
             if ((id != linkId) && m_staMac->IsEmlsrLink(id))
             {
-                m_staMac->UnblockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
                 m_staMac->GetChannelAccessManager(id)->NotifyStopUsingOtherEmlsrLink();
+                linkIds.insert(id);
             }
         }
+        m_staMac->UnblockTxOnLink(linkIds, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
 
         StartMediumSyncDelayTimer(linkId);
     });

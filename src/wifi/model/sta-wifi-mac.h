@@ -322,12 +322,12 @@ class StaWifiMac : public WifiMac
     void BlockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason);
 
     /**
-     * Unblock transmissions on the given link for the given reason.
+     * Unblock transmissions on the given links for the given reason.
      *
-     * \param linkId the ID of the given link
-     * \param reason the reason for unblocking transmissions on the given link
+     * \param linkIds the IDs of the given links
+     * \param reason the reason for unblocking transmissions on the given links
      */
-    void UnblockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason);
+    void UnblockTxOnLink(std::set<uint8_t> linkIds, WifiQueueBlockedReason reason);
 
   protected:
     /**
