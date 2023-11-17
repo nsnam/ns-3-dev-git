@@ -139,6 +139,23 @@ class IdealWifiManager : public WifiRemoteStationManager
                               uint8_t nss) const;
 
     /**
+     * Check whether a given modulation class is supported by both the node and the peer
+     * \param mc the modulation class
+     * \param station the peer station
+     * \return true if the modulation class can be used, false otherwise
+     */
+    bool IsModulationClassSupported(WifiModulationClass mc, IdealWifiRemoteStation* station);
+
+    /**
+     * Check whether a given modulation class is supported and that there are no higher modulation
+     * classes that should instead be candidates
+     * \param mc the modulation class
+     * \param station the peer station
+     * \return true if the modulation class is a candidate, false otherwise
+     */
+    bool IsCandidateModulationClass(WifiModulationClass mc, IdealWifiRemoteStation* station);
+
+    /**
      * A vector of <snr, WifiTxVector> pair holding the minimum SNR for the
      * WifiTxVector
      */
