@@ -285,8 +285,18 @@ class EmlsrManager : public Object
      *
      * \param linkId the ID of the link on which the main PHY has to operate
      * \param noSwitchDelay whether switching delay should be zero
+     * \param resetBackoff whether backoff should be reset on the link on which the main PHY
+     *                     is operating
+     * \param requestAccess whether channel access should be requested on the link on which the
+     *                      main PHY is moving onto
      */
-    void SwitchMainPhy(uint8_t linkId, bool noSwitchDelay);
+    void SwitchMainPhy(uint8_t linkId, bool noSwitchDelay, bool resetBackoff, bool requestAccess);
+
+    static constexpr bool RESET_BACKOFF = true;       //!< reset backoff on main PHY switch
+    static constexpr bool DONT_RESET_BACKOFF = false; //!< do not reset backoff on main PHY switch
+    static constexpr bool REQUEST_ACCESS = true; //!< request channel access when PHY switch ends
+    static constexpr bool DONT_REQUEST_ACCESS =
+        false; //!< do not request channel access when PHY switch ends
 
     /**
      * Switch channel on the Aux PHY operating on the given current link so that it operates

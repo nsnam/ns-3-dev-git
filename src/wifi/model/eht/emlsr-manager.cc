@@ -372,7 +372,10 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
     }
 
     Simulator::ScheduleNow([=, this]() {
-        SwitchMainPhy(linkId, true); // channel switch should occur instantaneously
+        SwitchMainPhy(linkId,
+                      true, // channel switch should occur instantaneously
+                      RESET_BACKOFF,
+                      DONT_REQUEST_ACCESS);
 
         // aux PHY received the ICF but main PHY will send the response
         auto uid = auxPhy->GetPreviouslyRxPpduUid();
@@ -423,7 +426,13 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId, std::optional<Time> timeToCtsEnd
 
         NS_ASSERT(delay.IsPositive());
         NS_LOG_DEBUG("Schedule main Phy switch in " << delay.As(Time::US));
-        Simulator::Schedule(delay, &EmlsrManager::SwitchMainPhy, this, linkId, false);
+        Simulator::Schedule(delay,
+                            &EmlsrManager::SwitchMainPhy,
+                            this,
+                            linkId,
+                            false,
+                            RESET_BACKOFF,
+                            DONT_REQUEST_ACCESS);
     }
 
     DoNotifyUlTxopStart(linkId);
@@ -487,9 +496,12 @@ EmlsrManager::SetCcaEdThresholdOnLinkSwitch(Ptr<WifiPhy> phy, uint8_t linkId)
 }
 
 void
-EmlsrManager::SwitchMainPhy(uint8_t linkId, bool noSwitchDelay)
+EmlsrManager::SwitchMainPhy(uint8_t linkId,
+                            bool noSwitchDelay,
+                            bool resetBackoff,
+                            bool requestAccess)
 {
-    NS_LOG_FUNCTION(this << linkId << noSwitchDelay);
+    NS_LOG_FUNCTION(this << linkId << noSwitchDelay << resetBackoff << requestAccess);
 
     auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
 
@@ -535,6 +547,28 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId, bool noSwitchDelay)
         mainPhy->SetSlot(MicroSeconds(9));
     }
 
+    if (resetBackoff)
+    {
+        // reset the backoffs on the link left by the main PHY
+        m_staMac->GetChannelAccessManager(*currMainPhyLinkId)->ResetAllBackoffs();
+    }
+
+    const auto timeToSwitchEnd = noSwitchDelay ? Seconds(0) : mainPhy->GetChannelSwitchDelay();
+
+    if (requestAccess)
+    {
+        // schedule channel access request on the new link when switch is completed
+        Simulator::Schedule(timeToSwitchEnd, [=, this]() {
+            for (const auto& [acIndex, ac] : wifiAcList)
+            {
+                m_staMac->GetQosTxop(acIndex)->StartAccessAfterEvent(
+                    linkId,
+                    Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                    Txop::CHECK_MEDIUM_BUSY);
+            }
+        });
+    }
+
     SetCcaEdThresholdOnLinkSwitch(mainPhy, linkId);
     NotifyMainPhySwitch(*currMainPhyLinkId, linkId);
 }
@@ -561,6 +595,17 @@ EmlsrManager::SwitchAuxPhy(uint8_t currLinkId, uint8_t nextLinkId)
     {
         auxPhy->SetSlot(MicroSeconds(9));
     }
+
+    // schedule channel access request on the new link when switch is completed
+    Simulator::Schedule(auxPhy->GetChannelSwitchDelay(), [=, this]() {
+        for (const auto& [acIndex, ac] : wifiAcList)
+        {
+            m_staMac->GetQosTxop(acIndex)->StartAccessAfterEvent(
+                nextLinkId,
+                Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                Txop::CHECK_MEDIUM_BUSY);
+        }
+    });
 
     SetCcaEdThresholdOnLinkSwitch(auxPhy, nextLinkId);
 }

@@ -153,9 +153,11 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
         // is not received and the UL TXOP ends before the main PHY channel switch is completed.
         // In such cases, wait until the main PHY channel switch is completed before requesting
         // a new channel switch.
+        // Backoff shall not be reset on the link left by the main PHY because a TXOP ended and
+        // a new backoff value must be generated.
         if (!mainPhy->IsStateSwitching())
         {
-            SwitchMainPhy(GetMainPhyId(), false);
+            SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
         }
         else
         {
@@ -163,7 +165,9 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
                                 &DefaultEmlsrManager::SwitchMainPhy,
                                 this,
                                 GetMainPhyId(),
-                                false);
+                                false,
+                                DONT_RESET_BACKOFF,
+                                REQUEST_ACCESS);
         }
         return;
     }
