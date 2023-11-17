@@ -28,10 +28,7 @@ build_lib(
     helper/tap-bridge-helper.h
     model/tap-bridge.h
     model/tap-encode-decode.h
-  LIBRARIES_TO_LINK
-    ${libcore}
-    ${libinternet}
-    ${libnetwork}
+  LIBRARIES_TO_LINK ${libinternet}
 )
 
 add_definitions(

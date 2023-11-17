@@ -33,12 +33,7 @@ build_lib(
     model/lr-wpan-phy.h
     model/lr-wpan-spectrum-signal-parameters.h
     model/lr-wpan-spectrum-value-helper.h
-  LIBRARIES_TO_LINK
-    ${libnetwork}
-    ${libcore}
-    ${libmobility}
-    ${libspectrum}
-    ${libpropagation}
+  LIBRARIES_TO_LINK ${libspectrum}
   TEST_SOURCES
     test/lr-wpan-ack-test.cc
     test/lr-wpan-cca-test.cc

@@ -51,7 +51,6 @@ build_lib(
     model/config-store.h
   LIBRARIES_TO_LINK
     ${libcore}
-    ${libnetwork}
     ${xml2_libraries}
     ${gtk_libraries}
 )

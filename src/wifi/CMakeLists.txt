@@ -324,12 +324,8 @@ build_lib(
   SOURCE_FILES ${source_files}
   HEADER_FILES ${header_files}
   LIBRARIES_TO_LINK
-    ${libnetwork}
-    ${libpropagation}
     ${libenergy}
     ${libspectrum}
-    ${libantenna}
-    ${libmobility}
     ${gsl_libraries}
   TEST_SOURCES
     test/block-ack-test-suite.cc

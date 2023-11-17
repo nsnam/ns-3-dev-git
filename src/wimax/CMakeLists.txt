@@ -100,11 +100,8 @@ build_lib(
   LIBNAME wimax
   SOURCE_FILES ${source_files}
   HEADER_FILES ${header_files}
-  LIBRARIES_TO_LINK
-    ${libnetwork}
-    ${libinternet}
-    ${libpropagation}
-    ${libmobility}
+  LIBRARIES_TO_LINK ${libinternet}
+                    ${libpropagation}
   TEST_SOURCES
     test/mac-messages-test.cc
     test/phy-test.cc

@@ -30,8 +30,7 @@ build_lib(
     model/oh-buildings-propagation-loss-model.h
     model/random-walk-2d-outdoor-mobility-model.h
     model/three-gpp-v2v-channel-condition-model.h
-  LIBRARIES_TO_LINK ${libmobility}
-                    ${libpropagation}
+  LIBRARIES_TO_LINK ${libpropagation}
   TEST_SOURCES
     test/buildings-channel-condition-model-test.cc
     test/buildings-helper-test.cc

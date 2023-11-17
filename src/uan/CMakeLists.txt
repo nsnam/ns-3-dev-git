@@ -48,10 +48,8 @@ build_lib(
     model/uan-transducer-hd.h
     model/uan-transducer.h
     model/uan-tx-mode.h
-  LIBRARIES_TO_LINK
-    ${libnetwork}
-    ${libmobility}
-    ${libenergy}
+  LIBRARIES_TO_LINK ${libmobility}
+                    ${libenergy}
   TEST_SOURCES test/uan-energy-model-test.cc
                test/uan-test.cc
 )

@@ -50,9 +50,7 @@ build_lib(
   SOURCE_FILES helper/brite-topology-helper.cc
   HEADER_FILES helper/brite-topology-helper.h
   LIBRARIES_TO_LINK
-    ${libnetwork}
-    ${libcore}
-    ${libinternet}
+    ${libapplications}
     ${libpoint-to-point}
     ${brite_LIBRARIES}
   TEST_SOURCES test/brite-test-topology.cc

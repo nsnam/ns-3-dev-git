@@ -19,5 +19,4 @@ build_lib(
     model/ipv6-flow-classifier.h
     model/ipv6-flow-probe.h
   LIBRARIES_TO_LINK ${libinternet}
-                    ${libstats}
 )

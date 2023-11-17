@@ -340,10 +340,7 @@ build_lib(
   SOURCE_FILES ${source_files}
   HEADER_FILES ${header_files}
   PRIVATE_HEADER_FILES ${private_header_files}
-  LIBRARIES_TO_LINK
-    ${libnetwork}
-    ${libcore}
-    ${libbridge}
-    ${libtraffic-control}
+  LIBRARIES_TO_LINK ${libbridge}
+                    ${libtraffic-control}
   TEST_SOURCES ${test_sources}
 )

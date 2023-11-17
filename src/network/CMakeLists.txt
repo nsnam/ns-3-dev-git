@@ -154,8 +154,7 @@ build_lib(
   LIBNAME network
   SOURCE_FILES ${source_files}
   HEADER_FILES ${header_files}
-  LIBRARIES_TO_LINK ${libcore}
-                    ${libstats}
+  LIBRARIES_TO_LINK ${libstats}
   TEST_SOURCES
     test/bit-serializer-test.cc
     test/buffer-test.cc

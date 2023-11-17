@@ -18,15 +18,9 @@ build_lib(
   HEADER_FILES model/pyviz.h
   LIBRARIES_TO_LINK
     ${python_libraries}
-    ${libcore}
     ${libinternet}
     ${libwifi}
     ${libpoint-to-point}
-    ${libcsma}
-    ${libbridge}
-    ${libwimax}
-    ${liblte}
-    ${libmesh}
 )
 
 # move visualizer folder to build/bindings/python, which allows us to add only

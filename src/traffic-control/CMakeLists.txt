@@ -37,7 +37,6 @@ build_lib(
     model/tbf-queue-disc.h
     model/traffic-control-layer.h
   LIBRARIES_TO_LINK ${libnetwork}
-                    ${libcore}
   TEST_SOURCES
     test/adaptive-red-queue-disc-test-suite.cc
     test/cobalt-queue-disc-test-suite.cc

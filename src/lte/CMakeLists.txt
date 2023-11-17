@@ -349,15 +349,11 @@ build_lib(
   HEADER_FILES ${header_files}
   LIBRARIES_TO_LINK
     ${emu_libraries}
-    ${libcore}
-    ${libnetwork}
     ${libspectrum}
-    ${libstats}
     ${libbuildings}
     ${libvirtual-net-device}
     ${libpoint-to-point}
     ${libapplications}
-    ${libinternet}
     ${libcsma}
     ${libconfig-store}
   TEST_SOURCES ${test_sources}

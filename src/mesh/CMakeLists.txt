@@ -65,8 +65,8 @@ build_lib(
     model/mesh-wifi-beacon.h
     model/mesh-wifi-interface-mac-plugin.h
     model/mesh-wifi-interface-mac.h
-  LIBRARIES_TO_LINK ${libinternet}
-                    ${libwifi}
+  LIBRARIES_TO_LINK ${libwifi}
+                    ${libapplications}
   TEST_SOURCES
     test/dot11s/dot11s-test-suite.cc
     test/dot11s/hwmp-proactive-regression.cc

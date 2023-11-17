@@ -18,8 +18,10 @@ build_lib(
     model/aodv-routing-protocol.h
     model/aodv-rqueue.h
     model/aodv-rtable.h
-  LIBRARIES_TO_LINK ${libinternet}
-                    ${libwifi}
+  LIBRARIES_TO_LINK
+    ${libapplications}
+    ${libinternet-apps}
+    ${libwifi}
   TEST_SOURCES
     test/aodv-id-cache-test-suite.cc
     test/aodv-regression.cc
