@@ -97,16 +97,24 @@ macro(clear_global_cached_variables)
   # clear cache variables
   unset(build_profile CACHE)
   unset(build_profile_suffix CACHE)
-  unset(lib-ns3-static-objs CACHE)
-  unset(ns3-contrib-libs CACHE)
-  unset(ns3-example-folders CACHE)
-  unset(ns3-execs CACHE)
-  unset(ns3-execs-clean CACHE)
-  unset(ns3-execs-py CACHE)
-  unset(ns3-external-libs CACHE)
-  unset(ns3-headers-to-module-map CACHE)
-  unset(ns3-libs CACHE)
-  unset(ns3-libs-tests CACHE)
+  set(lib-ns3-static-objs
+      ""
+      CACHE
+        INTERNAL
+        "list of object files from module used by NS3_STATIC and NS3_MONOLIB"
+  )
+  set(ns3-contrib-libs "" CACHE INTERNAL "list of processed contrib modules")
+  set(ns3-example-folders "" CACHE INTERNAL "list of example folders")
+  set(ns3-execs "" CACHE INTERNAL "list of c++ executables")
+  set(ns3-execs-clean "" CACHE INTERNAL "list of c++ executables")
+  set(ns3-execs-py "" CACHE INTERNAL "list of python scripts")
+  set(ns3-external-libs ""
+      CACHE INTERNAL
+            "list of non-ns libraries to link to NS3_STATIC and NS3_MONOLIB"
+  )
+  set(ns3-libs "" CACHE INTERNAL "list of processed upstream modules")
+  set(ns3-libs-tests "" CACHE INTERNAL "list of test libraries")
+
   mark_as_advanced(
     build_profile
     build_profile_suffix
@@ -117,7 +125,6 @@ macro(clear_global_cached_variables)
     ns3-execs-clean
     ns3-execs-py
     ns3-external-libs
-    ns3-headers-to-module-map
     ns3-libs
     ns3-libs-tests
   )
