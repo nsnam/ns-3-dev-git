@@ -428,7 +428,7 @@ class PacketMetadata
         /** number of references to this struct Data instance. */
         uint32_t m_count;
         /** size (in bytes) of m_data buffer below */
-        uint16_t m_size;
+        uint32_t m_size;
         /** max of the m_used field over all objects which reference this struct Data instance */
         uint16_t m_dirtyEnd;
         /** variable-sized buffer of bytes */
@@ -697,7 +697,7 @@ class PacketMetadata
      */
     uint16_t m_head;      //!< list head
     uint16_t m_tail;      //!< list tail
-    uint16_t m_used;      //!< used portion
+    uint32_t m_used;      //!< used portion
     uint64_t m_packetUid; //!< packet Uid
 };
 

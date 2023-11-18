@@ -493,7 +493,7 @@ PacketMetadata::ReplaceTail(PacketMetadata::SmallItem* item,
         AppendValue(extraItem->fragmentEnd, buffer);
         buffer += fragEndSize;
         Append32(extraItem->packetUid, buffer);
-        m_used = std::max(m_used, (uint16_t)(buffer - &m_data->m_data[0]));
+        m_used = std::max(m_used, static_cast<uint32_t>(buffer - &m_data->m_data[0]));
         m_data->m_dirtyEnd = m_used;
         return;
     }
