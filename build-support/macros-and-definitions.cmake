@@ -339,7 +339,7 @@ macro(process_options)
   endif()
 
   # If the user has not set a CXX standard version, assume the minimum
-  if(NOT "${CMAKE_CXX_STANDARD}")
+  if(NOT (DEFINED CMAKE_CXX_STANDARD))
     set(CMAKE_CXX_STANDARD ${CMAKE_CXX_STANDARD_MINIMUM})
   endif()
 
