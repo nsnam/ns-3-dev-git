@@ -42,7 +42,7 @@ if(${ENABLE_EMU})
     SOURCE_FILES lena-simple-epc-emu.cc
     LIBRARIES_TO_LINK
       ${liblte}
-      ${fd-net-device}
+      ${libfd-net-device}
       ${libconfig-store}
   )
 endif()
