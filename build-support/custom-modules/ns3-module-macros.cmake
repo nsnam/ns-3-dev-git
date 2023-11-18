@@ -532,8 +532,9 @@ function(build_lib_example)
 
   if((NOT missing_dependencies) AND ${filtered_in})
     # Convert boolean into text to forward argument
+    set(IGNORE_PCH)
     if(${BLIB_EXAMPLE_IGNORE_PCH})
-      set(IGNORE_PCH IGNORE_PCH)
+      set(IGNORE_PCH "IGNORE_PCH")
     endif()
     # Create executable with sources and headers
     # cmake-format: off

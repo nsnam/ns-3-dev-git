@@ -1373,8 +1373,9 @@ macro(build_example)
 
   if((NOT missing_dependencies) AND ${filtered_in})
     # Convert boolean into text to forward argument
+    set(IGNORE_PCH)
     if(${EXAMPLE_IGNORE_PCH})
-      set(IGNORE_PCH IGNORE_PCH)
+      set(IGNORE_PCH "IGNORE_PCH")
     endif()
     # Create example library with sources and headers
     # cmake-format: off
