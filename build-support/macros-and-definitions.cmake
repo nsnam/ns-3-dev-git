@@ -114,6 +114,7 @@ macro(clear_global_cached_variables)
   )
   set(ns3-libs "" CACHE INTERNAL "list of processed upstream modules")
   set(ns3-libs-tests "" CACHE INTERNAL "list of test libraries")
+  set(optional_visualizer_lib "" CACHE INTERNAL "visualizer library name")
 
   mark_as_advanced(
     build_profile
@@ -127,6 +128,7 @@ macro(clear_global_cached_variables)
     ns3-external-libs
     ns3-libs
     ns3-libs-tests
+    optional_visualizer_lib
   )
 endmacro()
 
@@ -1180,9 +1182,10 @@ macro(process_options)
     set(lib${libname}-obj ${targetname}-obj CACHE INTERNAL "")
   endforeach()
 
-  unset(optional_visualizer_lib)
   if(${ENABLE_VISUALIZER} AND (visualizer IN_LIST libs_to_build))
-    set(optional_visualizer_lib ${libvisualizer})
+    set(optional_visualizer_lib "${libvisualizer}"
+        CACHE INTERNAL "visualizer library name"
+    )
   endif()
 
   set(PRECOMPILE_HEADERS_ENABLED OFF)
