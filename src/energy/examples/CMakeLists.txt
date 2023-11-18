@@ -5,7 +5,7 @@ build_lib_example(
                     ${libenergy}
 )
 
-build_example(
+build_lib_example(
   NAME generic-battery-wifiradio-example
   SOURCE_FILES generic-battery-wifiradio-example.cc
   LIBRARIES_TO_LINK
