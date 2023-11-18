@@ -129,7 +129,6 @@ set(source_files
 )
 
 set(header_files
-    ${header_files}
     helper/internet-stack-helper.h
     helper/internet-trace-helper.h
     helper/ipv4-address-helper.h
