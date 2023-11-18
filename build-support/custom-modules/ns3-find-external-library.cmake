@@ -262,7 +262,7 @@ function(find_external_library)
 
     find_file(${name}_header_internal_${header} ${header}
               HINTS ${header_search_paths} # directory (e.g. /usr/)
-                    ${header_skip_system_prefix} PATH_SUFFIXES ${suffixes}
+              PATH_SUFFIXES ${suffixes}
     )
 
     # Print tested paths to the searched header and if it was found
@@ -278,8 +278,6 @@ function(find_external_library)
         ${header_search_paths}
         SEARCH_SUFFIXES
         ${suffixes}
-        SEARCH_SYSTEM_PREFIX
-        ${header_skip_system_prefix}
       )
     endif()
 
@@ -310,7 +308,6 @@ function(find_external_library)
   if((NOT not_found_libraries) AND (NOT not_found_headers))
     set(${name}_INCLUDE_DIRS "${include_dirs}" PARENT_SCOPE)
     set(${name}_LIBRARIES "${libraries}" PARENT_SCOPE)
-    set(${name}_HEADER ${${name}_header_internal} PARENT_SCOPE)
     set(${name}_FOUND TRUE PARENT_SCOPE)
     if(NOT ${FIND_LIB_QUIET})
       message(STATUS "find_external_library: ${name} was found.")
@@ -318,7 +315,6 @@ function(find_external_library)
   else()
     set(${name}_INCLUDE_DIRS PARENT_SCOPE)
     set(${name}_LIBRARIES PARENT_SCOPE)
-    set(${name}_HEADER PARENT_SCOPE)
     set(${name}_FOUND FALSE PARENT_SCOPE)
     if(NOT ${FIND_LIB_QUIET})
       message(

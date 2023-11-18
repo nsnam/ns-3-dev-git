@@ -76,7 +76,6 @@ function(write_lock)
   string(REPLACE ";" "', '" PATH_LIST "${PATH_LIST}")
   string(APPEND lock_contents "NS3_MODULE_PATH = ['${PATH_LIST}']\n")
 
-  cache_cmake_flag(ENABLE_REALTIME "ENABLE_REAL_TIME" lock_contents)
   cache_cmake_flag(ENABLE_EXAMPLES "ENABLE_EXAMPLES" lock_contents)
   cache_cmake_flag(ENABLE_TESTS "ENABLE_TESTS" lock_contents)
   cache_cmake_flag(NS3_OPENFLOW "ENABLE_OPENFLOW" lock_contents)
