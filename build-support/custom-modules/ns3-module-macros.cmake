@@ -168,6 +168,7 @@ function(build_lib)
   add_library(ns3::${lib${BLIB_LIBNAME}} ALIAS ${lib${BLIB_LIBNAME}})
 
   # Associate public headers with library for installation purposes
+  set(config_headers)
   if("${BLIB_LIBNAME}" STREQUAL "core")
     set(config_headers ${CMAKE_HEADER_OUTPUT_DIRECTORY}/config-store-config.h
                        ${CMAKE_HEADER_OUTPUT_DIRECTORY}/core-config.h

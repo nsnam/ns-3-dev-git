@@ -1,3 +1,6 @@
+set(gtk3_sources)
+set(gtk3_headers)
+set(gtk_libraries)
 if(${GTK3_FOUND})
   set(gtk3_sources
       model/display-functions.cc
@@ -21,6 +24,8 @@ if(${GTK3_FOUND})
   endif()
 endif()
 
+set(xml2_sources)
+set(xml2_libraries)
 if(${LIBXML2_FOUND})
   set(xml2_sources
       model/xml-config.cc

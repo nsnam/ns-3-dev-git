@@ -71,6 +71,9 @@ elseif(
   )
 endif()
 
+set(example_as_test_sources)
+set(example_as_test_headers)
+set(example_as_test_suite)
 if(${ENABLE_EXAMPLES})
   set(example_as_test_sources
       model/example-as-test.cc

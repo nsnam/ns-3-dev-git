@@ -1,6 +1,6 @@
 set(sqlite_sources)
 set(sqlite_headers)
-set(private_sqlite_header)
+set(private_sqlite_headers)
 set(sqlite_libraries)
 if(${ENABLE_SQLITE})
   set(sqlite_sources

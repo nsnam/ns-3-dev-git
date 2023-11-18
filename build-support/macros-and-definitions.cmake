@@ -542,6 +542,7 @@ macro(process_options)
 
   # GTK3 Don't search for it if you don't have it installed, as it take an
   # insane amount of time
+  set(GTK3_FOUND FALSE)
   if(${NS3_GTK3})
     disable_cmake_warnings()
     find_package(HarfBuzz QUIET)
@@ -609,6 +610,7 @@ macro(process_options)
   set(Python3_EXECUTABLE)
   set(Python3_FOUND FALSE)
   set(Python3_INCLUDE_DIRS)
+  set(Python3_Interpreter_FOUND FALSE)
   if(${NS3_PYTHON_BINDINGS})
     find_package(Python3 COMPONENTS Interpreter Development)
   else()

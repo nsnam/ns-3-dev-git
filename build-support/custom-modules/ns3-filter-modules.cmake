@@ -95,15 +95,16 @@ function(recursive_dependency module_name)
   endif()
 
   # cmake-format: off
-    # Scan dependencies required by this module examples
-    #if(${ENABLE_EXAMPLES})
-    #  string(REPLACE "${module_name}" "${module_name}/examples" examples_cmakelists ${examples_cmakelists})
-    #  if(EXISTS ${examples_cmakelists})
-    #    file(READ ${examples_cmakelists} cmakelists_content)
-    #    filter_libraries(${cmakelists_content} example_matches)
-    #  endif()
-    #endif()
-    # cmake-format: on
+  # Scan dependencies required by this module examples
+  set(example_matches)
+  #if(${ENABLE_EXAMPLES})
+  #  string(REPLACE "${module_name}" "${module_name}/examples" examples_cmakelists ${examples_cmakelists})
+  #  if(EXISTS ${examples_cmakelists})
+  #    file(READ ${examples_cmakelists} cmakelists_content)
+  #    filter_libraries(${cmakelists_content} example_matches)
+  #  endif()
+  #endif()
+  # cmake-format: on
 
   # For each dependency, call this same function
   set(matches "${matches};${example_matches}")
