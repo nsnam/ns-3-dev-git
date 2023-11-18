@@ -24,6 +24,14 @@ list(APPEND CMAKE_MODULE_PATH
 )
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/3rd-party")
 
+macro(disable_cmake_warnings)
+  set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE BOOL "" FORCE)
+endmacro()
+
+macro(enable_cmake_warnings)
+  set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 0 CACHE BOOL "" FORCE)
+endmacro()
+
 # Set options that are not really meant to be changed
 include(ns3-hidden-settings)
 
