@@ -1493,13 +1493,17 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         cmake_performance_trace.log file
         @return None
         """
+        cmake_performance_trace_log = os.path.join(ns3_path, "cmake_performance_trace.log")
+        if os.path.exists(cmake_performance_trace_log):
+            os.remove(cmake_performance_trace_log)
+
         return_code, stdout, stderr = run_ns3("configure --trace-performance")
         self.assertEqual(return_code, 0)
         if win32:
             self.assertIn("--profiling-format=google-trace --profiling-output=", stdout)
         else:
-            self.assertIn("--profiling-format=google-trace --profiling-output=../cmake_performance_trace.log", stdout)
-        self.assertTrue(os.path.exists(os.path.join(ns3_path, "cmake_performance_trace.log")))
+            self.assertIn("--profiling-format=google-trace --profiling-output=./cmake_performance_trace.log", stdout)
+        self.assertTrue(os.path.exists(cmake_performance_trace_log))
 
     def test_18_CheckBuildVersionAndVersionCache(self):
         """!

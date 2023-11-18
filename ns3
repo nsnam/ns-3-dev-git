@@ -722,7 +722,7 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
         cmake_args.extend(["-G", args.G])
 
     if args.trace_cmake_perf:
-        cmake_performance_trace = os.path.join(os.path.relpath(ns3_path, current_cmake_cache_folder),
+        cmake_performance_trace = os.path.join(os.path.relpath(ns3_path, ns3_path),
                                                "cmake_performance_trace.log")
         cmake_args.extend(["--profiling-format=google-trace",
                            "--profiling-output=" + cmake_performance_trace])
