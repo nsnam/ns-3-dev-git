@@ -114,7 +114,7 @@ macro(clear_global_cached_variables)
   )
   set(ns3-libs "" CACHE INTERNAL "list of processed upstream modules")
   set(ns3-libs-tests "" CACHE INTERNAL "list of test libraries")
-  set(optional_visualizer_lib "" CACHE INTERNAL "visualizer library name")
+  set(ns3-optional-visualizer-lib "" CACHE INTERNAL "visualizer library name")
 
   mark_as_advanced(
     build_profile
@@ -128,7 +128,7 @@ macro(clear_global_cached_variables)
     ns3-external-libs
     ns3-libs
     ns3-libs-tests
-    optional_visualizer_lib
+    ns3-optional-visualizer-lib
   )
 endmacro()
 
@@ -1183,7 +1183,7 @@ macro(process_options)
   endforeach()
 
   if(${ENABLE_VISUALIZER} AND (visualizer IN_LIST libs_to_build))
-    set(optional_visualizer_lib "${libvisualizer}"
+    set(ns3-optional-visualizer-lib "${libvisualizer}"
         CACHE INTERNAL "visualizer library name"
     )
   endif()
@@ -1382,7 +1382,7 @@ macro(build_example)
             EXECNAME ${EXAMPLE_NAME}
             SOURCE_FILES ${EXAMPLE_SOURCE_FILES}
             HEADER_FILES ${EXAMPLE_HEADER_FILES}
-            LIBRARIES_TO_LINK ${EXAMPLE_LIBRARIES_TO_LINK} ${optional_visualizer_lib}
+            LIBRARIES_TO_LINK ${EXAMPLE_LIBRARIES_TO_LINK} ${ns3-optional-visualizer-lib}
             EXECUTABLE_DIRECTORY_PATH
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples/${examplefolder}/
             ${IGNORE_PCH}

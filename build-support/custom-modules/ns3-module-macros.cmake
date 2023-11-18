@@ -543,7 +543,7 @@ function(build_lib_example)
       HEADER_FILES ${BLIB_EXAMPLE_HEADER_FILES}
       LIBRARIES_TO_LINK
         ${lib${BLIB_LIBNAME}} ${BLIB_EXAMPLE_LIBRARIES_TO_LINK}
-        ${optional_visualizer_lib}
+        ${ns3-optional-visualizer-lib}
       EXECUTABLE_DIRECTORY_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/
       ${IGNORE_PCH}
     )

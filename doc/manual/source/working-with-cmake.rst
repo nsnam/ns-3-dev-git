@@ -2269,7 +2269,7 @@ listed by ``./ns3 show targets`` or your IDE, check if all its dependencies were
          EXECNAME ${EXAMPLE_NAME}
          SOURCE_FILES ${EXAMPLE_SOURCE_FILES}
          HEADER_FILES ${EXAMPLE_HEADER_FILES}
-         LIBRARIES_TO_LINK ${EXAMPLE_LIBRARIES_TO_LINK} ${optional_visualizer_lib}
+         LIBRARIES_TO_LINK ${EXAMPLE_LIBRARIES_TO_LINK} ${ns3-optional-visualizer-lib}
          EXECUTABLE_DIRECTORY_PATH
            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/examples/${examplefolder}/
          ${IGNORE_PCH}
@@ -2741,8 +2741,8 @@ Then we check if the |ns3| modules required by the example are enabled to be bui
 If the list ``missing_dependencies`` is empty, we create the example. Otherwise, we skip it.
 The example can be linked to the current module (``${lib${BLIB_EXAMPLE_LIBNAME}}``) and
 other libraries to link (``${BLIB_EXAMPLE_LIBRARIES_TO_LINK}``) and optionally to the visualizer
-module (``${optional_visualizer_lib}``).
-If the visualizer module is not enabled, ``optional_visualizer_lib`` is empty.
+module (``${ns3-optional-visualizer-lib}``).
+If the visualizer module is not enabled, ``ns3-optional-visualizer-lib`` is empty.
 
 The example can also be linked to a single |ns3| shared library (``lib-ns3-monolib``) or
 a single |ns3| static library (``lib-ns3-static``), if either ``NS3_MONOLIB=ON`` or ``NS3_STATIC=ON``.
@@ -2776,7 +2776,7 @@ Note that both of these options are handled by the ``build_exec`` macro.
          HEADER_FILES ${BLIB_EXAMPLE_HEADER_FILES}
          LIBRARIES_TO_LINK
            ${lib${BLIB_EXAMPLE_LIBNAME}} ${BLIB_EXAMPLE_LIBRARIES_TO_LINK}
-           ${optional_visualizer_lib}
+           ${ns3-optional-visualizer-lib}
          EXECUTABLE_DIRECTORY_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/
          ${IGNORE_PCH}
        )
