@@ -1,3 +1,4 @@
+disable_cmake_warnings()
 set(3RD_PARTY_FIND_PROGRAM_HINTS
     # find_program HINTS for Doxygen
     # https://gitlab.kitware.com/cmake/cmake/-/blob/master/Modules/FindDoxygen.cmake
@@ -18,3 +19,4 @@ set(3RD_PARTY_FIND_PROGRAM_HINTS
     /Applications/Graphviz.app/Contents/MacOS
     /Applications/Utilities/Graphviz.app/Contents/MacOS
 )
+enable_cmake_warnings()

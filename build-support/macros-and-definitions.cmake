@@ -517,7 +517,9 @@ macro(process_options)
 
   set(ENABLE_EIGEN False)
   if(${NS3_EIGEN})
+    disable_cmake_warnings()
     find_package(Eigen3 QUIET)
+    enable_cmake_warnings()
 
     if(${EIGEN3_FOUND})
       set(ENABLE_EIGEN True)
@@ -532,15 +534,17 @@ macro(process_options)
   # GTK3 Don't search for it if you don't have it installed, as it take an
   # insane amount of time
   if(${NS3_GTK3})
+    disable_cmake_warnings()
     find_package(HarfBuzz QUIET)
+    enable_cmake_warnings()
     if(NOT ${HarfBuzz_FOUND})
       message(${HIGHLIGHTED_STATUS}
               "Harfbuzz is required by GTK3 and was not found."
       )
     else()
-      set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE BOOL "")
+      disable_cmake_warnings()
       find_package(GTK3 QUIET)
-      unset(CMAKE_SUPPRESS_DEVELOPER_WARNINGS CACHE)
+      enable_cmake_warnings()
       if(NOT ${GTK3_FOUND})
         message(${HIGHLIGHTED_STATUS}
                 "GTK3 was not found. Continuing without it."

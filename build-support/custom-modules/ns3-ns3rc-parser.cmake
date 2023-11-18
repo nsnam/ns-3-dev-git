@@ -20,9 +20,11 @@ macro(parse_ns3rc enabled_modules disabled_modules examples_enabled
       tests_enabled
 )
   # Try to find .ns3rc
+  disable_cmake_warnings()
   find_file(NS3RC .ns3rc PATHS /etc $ENV{HOME} $ENV{USERPROFILE}
                                ${PROJECT_SOURCE_DIR} NO_CACHE
   )
+  enable_cmake_warnings()
 
   # Set variables with default values (all modules, no examples nor tests)
   set(${enabled_modules} "")

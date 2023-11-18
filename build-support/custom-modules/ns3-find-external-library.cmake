@@ -100,6 +100,7 @@ function(find_external_library)
   set(project_parent_dirs ${parent_project_dir} ${grandparent_project_dir})
 
   # Paths and suffixes where libraries will be searched on
+  disable_cmake_warnings()
   set(library_search_paths
       ${search_paths}
       ${project_parent_dirs}
@@ -110,6 +111,7 @@ function(find_external_library)
       # directories
       $ENV{PATH} # Search for libraries in PATH directories
   )
+  enable_cmake_warnings()
   # cmake-format: off
     #
     # Split : separated entries from environment variables
