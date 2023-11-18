@@ -1379,6 +1379,20 @@ macro(build_example)
     if(${EXAMPLE_IGNORE_PCH})
       set(IGNORE_PCH "IGNORE_PCH")
     endif()
+
+    set(current_directory ${CMAKE_CURRENT_SOURCE_DIR})
+    string(REPLACE "${PROJECT_SOURCE_DIR}" "" current_directory
+                   "${current_directory}"
+    )
+    if("${current_directory}" MATCHES ".*/(src|contrib)/.*")
+      message(
+        FATAL_ERROR
+          "build_example() macro is meant for ns-3-dev/examples, and not for modules. Use build_lib_example() instead."
+      )
+    endif()
+
+    get_filename_component(examplefolder ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+
     # Create example library with sources and headers
     # cmake-format: off
     build_exec(
