@@ -19,9 +19,7 @@
 # of missing dependencies in the list whose name is stored in missing_deps
 function(check_deps missing_deps)
   set(multiValueArgs CMAKE_PACKAGES EXECUTABLES PYTHON_PACKAGES)
-  cmake_parse_arguments(
-    "DEPS" "" "${OUTPUT_VAR_NAME}" "${multiValueArgs}" ${ARGN}
-  )
+  cmake_parse_arguments("DEPS" "" "" "${multiValueArgs}" ${ARGN})
 
   set(local_missing_deps)
   # Search for package dependencies
