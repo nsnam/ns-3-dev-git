@@ -45,8 +45,7 @@ stack = ns.internet.InternetStackHelper()
 stack.Install(nodes)
 
 address = ns.internet.Ipv4AddressHelper()
-address.SetBase(ns.network.Ipv4Address("10.1.1.0"),
-                ns.network.Ipv4Mask("255.255.255.0"))
+address.SetBase(ns.network.Ipv4Address("10.1.1.0"), ns.network.Ipv4Mask("255.255.255.0"))
 
 interfaces = address.Assign(devices)
 
@@ -68,4 +67,3 @@ clientApps.Stop(ns.core.Seconds(10.0))
 
 ns.core.Simulator.Run()
 ns.core.Simulator.Destroy()
-

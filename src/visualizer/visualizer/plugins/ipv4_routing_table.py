@@ -5,6 +5,7 @@ try:
 except ModuleNotFoundError:
     from visualizer.base import InformationWindow
 
+
 ## ShowIpv4RoutingTable class
 class ShowIpv4RoutingTable(InformationWindow):
     ## @var win
@@ -41,9 +42,11 @@ class ShowIpv4RoutingTable(InformationWindow):
         @param node_index the node index
         """
         InformationWindow.__init__(self)
-        self.win = Gtk.Dialog(parent=visualizer.window,
-                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                              buttons=("_Close", Gtk.ResponseType.CLOSE))
+        self.win = Gtk.Dialog(
+            parent=visualizer.window,
+            flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            buttons=("_Close", Gtk.ResponseType.CLOSE),
+        )
         self.win.connect("response", self._response_cb)
         self.win.set_title("IPv4 routing table for node %i" % node_index)
         self.visualizer = visualizer
@@ -54,36 +57,34 @@ class ShowIpv4RoutingTable(InformationWindow):
         treeview = Gtk.TreeView(self.table_model)
         treeview.show()
         sw = Gtk.ScrolledWindow()
-        sw.set_properties(hscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
-                          vscrollbar_policy=Gtk.PolicyType.AUTOMATIC)
+        sw.set_properties(
+            hscrollbar_policy=Gtk.PolicyType.AUTOMATIC, vscrollbar_policy=Gtk.PolicyType.AUTOMATIC
+        )
         sw.show()
         sw.add(treeview)
         self.win.vbox.add(sw)
         self.win.set_default_size(600, 300)
 
         # Dest.
-        column = Gtk.TreeViewColumn('Destination', Gtk.CellRendererText(),
-                                    text=self.COLUMN_DESTINATION)
+        column = Gtk.TreeViewColumn(
+            "Destination", Gtk.CellRendererText(), text=self.COLUMN_DESTINATION
+        )
         treeview.append_column(column)
 
         # Next hop
-        column = Gtk.TreeViewColumn('Next hop', Gtk.CellRendererText(),
-                                    text=self.COLUMN_NEXT_HOP)
+        column = Gtk.TreeViewColumn("Next hop", Gtk.CellRendererText(), text=self.COLUMN_NEXT_HOP)
         treeview.append_column(column)
 
         # Interface
-        column = Gtk.TreeViewColumn('Interface', Gtk.CellRendererText(),
-                                    text=self.COLUMN_INTERFACE)
+        column = Gtk.TreeViewColumn("Interface", Gtk.CellRendererText(), text=self.COLUMN_INTERFACE)
         treeview.append_column(column)
 
         # Type
-        column = Gtk.TreeViewColumn('Type', Gtk.CellRendererText(),
-                                    text=self.COLUMN_TYPE)
+        column = Gtk.TreeViewColumn("Type", Gtk.CellRendererText(), text=self.COLUMN_TYPE)
         treeview.append_column(column)
 
         # Prio
-        column = Gtk.TreeViewColumn('Prio', Gtk.CellRendererText(),
-                                    text=self.COLUMN_PRIO)
+        column = Gtk.TreeViewColumn("Prio", Gtk.CellRendererText(), text=self.COLUMN_PRIO)
         treeview.append_column(column)
 
         self.visualizer.add_information_window(self)
@@ -112,7 +113,7 @@ class ShowIpv4RoutingTable(InformationWindow):
         if routing is None:
             return
 
-        routing_protocols = [] # list of (protocol, type_string, priority)
+        routing_protocols = []  # list of (protocol, type_string, priority)
 
         if isinstance(routing, ns.Ipv4StaticRouting):
             ipv4_routing = routing_protocols.append((routing, "static", 0))
@@ -134,17 +135,24 @@ class ShowIpv4RoutingTable(InformationWindow):
                 tree_iter = self.table_model.append()
                 netdevice = ipv4.GetNetDevice(route.GetInterface())
                 if netdevice is None:
-                    interface_name = 'lo'
+                    interface_name = "lo"
                 else:
                     interface_name = ns.Names.FindName(netdevice)
                     if not interface_name:
                         interface_name = "(interface %i)" % route.GetInterface()
-                self.table_model.set(tree_iter,
-                                     self.COLUMN_DESTINATION, str(route.GetDest()),
-                                     self.COLUMN_NEXT_HOP, str(route.GetGateway()),
-                                     self.COLUMN_INTERFACE, interface_name,
-                                     self.COLUMN_TYPE, type_string,
-                                     self.COLUMN_PRIO, prio)
+                self.table_model.set(
+                    tree_iter,
+                    self.COLUMN_DESTINATION,
+                    str(route.GetDest()),
+                    self.COLUMN_NEXT_HOP,
+                    str(route.GetGateway()),
+                    self.COLUMN_INTERFACE,
+                    interface_name,
+                    self.COLUMN_TYPE,
+                    type_string,
+                    self.COLUMN_PRIO,
+                    prio,
+                )
 
 
 def populate_node_menu(viz, node, menu):
@@ -156,6 +164,7 @@ def populate_node_menu(viz, node, menu):
 
     menu_item.connect("activate", _show_ipv4_routing_table)
     menu.add(menu_item)
+
 
 def register(viz):
     viz.connect("populate-node-menu", populate_node_menu)

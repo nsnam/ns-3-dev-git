@@ -7,7 +7,7 @@
 #
 # See test.py for more information.
 cpp_examples = [
-    ("tap-wifi-dumbbell", "False", "True"), # Requires manual configuration
+    ("tap-wifi-dumbbell", "False", "True"),  # Requires manual configuration
 ]
 
 # A list of Python examples to run in order to ensure that they remain
@@ -17,6 +17,6 @@ cpp_examples = [
 #
 # See test.py for more information.
 python_examples = [
-    ("tap-csma-virtual-machine.py", "False"), # requires enable-sudo
-    ("tap-wifi-virtual-machine.py", "False"), # requires enable-sudo
+    ("tap-csma-virtual-machine.py", "False"),  # requires enable-sudo
+    ("tap-wifi-virtual-machine.py", "False"),  # requires enable-sudo
 ]

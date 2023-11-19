@@ -13,6 +13,7 @@ class StatisticsCollector(object):
     """
     Collects interface statistics for all nodes.
     """
+
     ## @var node_statistics
     #  node statistics
     ## @var visualizer
@@ -21,8 +22,16 @@ class StatisticsCollector(object):
     ## NetDevStats class
     class NetDevStats(object):
         ## class members
-        __slots__ = ['rxPackets', 'rxBytes', 'txPackets', 'txBytes',
-                     'rxPacketRate', 'rxBitRate', 'txPacketRate', 'txBitRate']
+        __slots__ = [
+            "rxPackets",
+            "rxBytes",
+            "txPackets",
+            "txBytes",
+            "rxPacketRate",
+            "rxBitRate",
+            "txPacketRate",
+            "txBitRate",
+        ]
 
     def __init__(self, visualizer):
         """!
@@ -30,7 +39,7 @@ class StatisticsCollector(object):
         @param self this object
         @param visualizer visualizer object
         """
-        self.node_statistics = {} # nodeid -> list(raw statistics)
+        self.node_statistics = {}  # nodeid -> list(raw statistics)
         self.visualizer = visualizer
 
     def simulation_periodic_update(self, viz):
@@ -66,7 +75,7 @@ class StatisticsCollector(object):
         if len(raw_stats_list) < NODE_STATISTICS_MEMORY:
             return []
         assert len(raw_stats_list) == NODE_STATISTICS_MEMORY
-        tx_packets1 = [] # transmitted packets, one value per interface
+        tx_packets1 = []  # transmitted packets, one value per interface
         rx_packets1 = []
         tx_bytes1 = []
         rx_bytes1 = []
@@ -78,7 +87,7 @@ class StatisticsCollector(object):
 
         retval = []
 
-        k = self.visualizer.sample_period*(NODE_STATISTICS_MEMORY-1)
+        k = self.visualizer.sample_period * (NODE_STATISTICS_MEMORY - 1)
         for iface, stats in enumerate(raw_stats_list[-1]):
             outStat = self.NetDevStats()
             outStat.txPackets = stats.transmittedPackets
@@ -86,10 +95,10 @@ class StatisticsCollector(object):
             outStat.rxPackets = stats.receivedPackets
             outStat.rxBytes = stats.receivedBytes
 
-            outStat.txPacketRate = (stats.transmittedPackets - tx_packets1[iface])/k
-            outStat.rxPacketRate = (stats.receivedPackets - rx_packets1[iface])/k
-            outStat.txBitRate = (stats.transmittedBytes - tx_bytes1[iface])*8/k
-            outStat.rxBitRate = (stats.receivedBytes - rx_bytes1[iface])*8/k
+            outStat.txPacketRate = (stats.transmittedPackets - tx_packets1[iface]) / k
+            outStat.rxPacketRate = (stats.receivedPackets - rx_packets1[iface]) / k
+            outStat.txBitRate = (stats.transmittedBytes - tx_bytes1[iface]) * 8 / k
+            outStat.rxBitRate = (stats.receivedBytes - rx_bytes1[iface]) * 8 / k
             retval.append(outStat)
         return retval
 
@@ -110,17 +119,14 @@ class ShowInterfaceStatistics(InformationWindow):
     #  table model
     (
         COLUMN_INTERFACE,
-
         COLUMN_TX_PACKETS,
         COLUMN_TX_BYTES,
         COLUMN_TX_PACKET_RATE,
         COLUMN_TX_BIT_RATE,
-
         COLUMN_RX_PACKETS,
         COLUMN_RX_BYTES,
         COLUMN_RX_PACKET_RATE,
         COLUMN_RX_BIT_RATE,
-
     ) = range(9)
 
     def __init__(self, visualizer, node_index, statistics_collector):
@@ -132,9 +138,11 @@ class ShowInterfaceStatistics(InformationWindow):
         @param statistics_collector statistics collector class
         """
         InformationWindow.__init__(self)
-        self.win = Gtk.Dialog(parent=visualizer.window,
-                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
-                              buttons=("_Close", Gtk.ResponseType.CLOSE))
+        self.win = Gtk.Dialog(
+            parent=visualizer.window,
+            flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            buttons=("_Close", Gtk.ResponseType.CLOSE),
+        )
         self.win.connect("response", self._response_cb)
         self.win.set_title("Statistics for node %i" % node_index)
         self.visualizer = visualizer
@@ -142,7 +150,7 @@ class ShowInterfaceStatistics(InformationWindow):
         self.node_index = node_index
         self.viz_node = visualizer.get_node(node_index)
 
-        self.table_model = Gtk.ListStore(*([str]*13))
+        self.table_model = Gtk.ListStore(*([str] * 13))
 
         treeview = Gtk.TreeView(self.table_model)
         treeview.show()
@@ -193,23 +201,30 @@ class ShowInterfaceStatistics(InformationWindow):
             interface_name = ns.Names.FindName(netdevice)
             if not interface_name:
                 interface_name = "(interface %i)" % iface
-            self.table_model.set(tree_iter,
-                                 self.COLUMN_INTERFACE, interface_name,
-
-                                 self.COLUMN_TX_PACKETS, str(stats.txPackets),
-                                 self.COLUMN_TX_BYTES, str(stats.txBytes),
-                                 self.COLUMN_TX_PACKET_RATE, str(stats.txPacketRate),
-                                 self.COLUMN_TX_BIT_RATE, str(stats.txBitRate),
-
-                                 self.COLUMN_RX_PACKETS, str(stats.rxPackets),
-                                 self.COLUMN_RX_BYTES, str(stats.rxBytes),
-                                 self.COLUMN_RX_PACKET_RATE, str(stats.rxPacketRate),
-                                 self.COLUMN_RX_BIT_RATE, str(stats.rxBitRate)
-                                 )
+            self.table_model.set(
+                tree_iter,
+                self.COLUMN_INTERFACE,
+                interface_name,
+                self.COLUMN_TX_PACKETS,
+                str(stats.txPackets),
+                self.COLUMN_TX_BYTES,
+                str(stats.txBytes),
+                self.COLUMN_TX_PACKET_RATE,
+                str(stats.txPacketRate),
+                self.COLUMN_TX_BIT_RATE,
+                str(stats.txBitRate),
+                self.COLUMN_RX_PACKETS,
+                str(stats.rxPackets),
+                self.COLUMN_RX_BYTES,
+                str(stats.rxBytes),
+                self.COLUMN_RX_PACKET_RATE,
+                str(stats.rxPacketRate),
+                self.COLUMN_RX_BIT_RATE,
+                str(stats.rxBitRate),
+            )
 
 
 def populate_node_menu(viz, node, menu, statistics_collector):
-
     menu_item = Gtk.MenuItem("Show Interface Statistics")
     menu_item.show()
 

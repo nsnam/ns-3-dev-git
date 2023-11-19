@@ -34,17 +34,21 @@ except ModuleNotFoundError:
         " or your PYTHONPATH might not be properly configured"
     )
 
+
 ## Example function - triggered at a random time.
 ## \return None.
 def RandomFunction():
-    print ("RandomFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s")
+    print("RandomFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s")
+
 
 ## Example function - triggered if an event is canceled (should not be called).
 ## \return None.
 def CancelledEvent():
-    print ("I should never be called... ")
+    print("I should never be called... ")
 
-ns.cppyy.cppdef("""
+
+ns.cppyy.cppdef(
+    """
     #include "CPyCppyy/API.h"
 
     using namespace ns3;
@@ -106,7 +110,8 @@ ns.cppyy.cppdef("""
     {
         return MakeEvent(&CancelledFunctionCpp);
     }
-   """)
+   """
+)
 
 
 def main(argv):
@@ -132,6 +137,8 @@ def main(argv):
 
     ns.core.Simulator.Destroy()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import sys
+
     main(sys.argv)

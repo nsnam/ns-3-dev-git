@@ -24,6 +24,7 @@ except ModuleNotFoundError:
         " or your PYTHONPATH might not be properly configured"
     )
 import sys
+from ctypes import c_bool, c_int
 
 # // Default Network Topology
 # //
@@ -36,7 +37,7 @@ import sys
 # //                                   ================
 # //                                     LAN 10.1.2.0
 
-from ctypes import c_bool, c_int
+
 nCsma = c_int(3)
 verbose = c_bool(True)
 nWifi = c_int(3)
@@ -89,22 +90,40 @@ phy = ns.wifi.YansWifiPhyHelper()
 phy.SetChannel(channel.Create())
 
 mac = ns.wifi.WifiMacHelper()
-ssid = ns.wifi.Ssid ("ns-3-ssid")
+ssid = ns.wifi.Ssid("ns-3-ssid")
 
 wifi = ns.wifi.WifiHelper()
 
-mac.SetType ("ns3::StaWifiMac", "Ssid", ns.wifi.SsidValue(ssid), "ActiveProbing", ns.core.BooleanValue(False))
+mac.SetType(
+    "ns3::StaWifiMac", "Ssid", ns.wifi.SsidValue(ssid), "ActiveProbing", ns.core.BooleanValue(False)
+)
 staDevices = wifi.Install(phy, mac, wifiStaNodes)
 
-mac.SetType("ns3::ApWifiMac","Ssid", ns.wifi.SsidValue (ssid))
+mac.SetType("ns3::ApWifiMac", "Ssid", ns.wifi.SsidValue(ssid))
 apDevices = wifi.Install(phy, mac, wifiApNode)
 
 mobility = ns.mobility.MobilityHelper()
-mobility.SetPositionAllocator("ns3::GridPositionAllocator", "MinX", ns.core.DoubleValue(0.0),
-                              "MinY", ns.core.DoubleValue (0.0), "DeltaX", ns.core.DoubleValue(5.0), "DeltaY", ns.core.DoubleValue(10.0),
-                              "GridWidth", ns.core.UintegerValue(3), "LayoutType", ns.core.StringValue("RowFirst"))
+mobility.SetPositionAllocator(
+    "ns3::GridPositionAllocator",
+    "MinX",
+    ns.core.DoubleValue(0.0),
+    "MinY",
+    ns.core.DoubleValue(0.0),
+    "DeltaX",
+    ns.core.DoubleValue(5.0),
+    "DeltaY",
+    ns.core.DoubleValue(10.0),
+    "GridWidth",
+    ns.core.UintegerValue(3),
+    "LayoutType",
+    ns.core.StringValue("RowFirst"),
+)
 
-mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel", "Bounds", ns.mobility.RectangleValue(ns.mobility.Rectangle (-50, 50, -50, 50)))
+mobility.SetMobilityModel(
+    "ns3::RandomWalk2dMobilityModel",
+    "Bounds",
+    ns.mobility.RectangleValue(ns.mobility.Rectangle(-50, 50, -50, 50)),
+)
 mobility.Install(wifiStaNodes)
 
 mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel")
@@ -132,12 +151,14 @@ serverApps = echoServer.Install(csmaNodes.Get(nCsma.value))
 serverApps.Start(ns.core.Seconds(1.0))
 serverApps.Stop(ns.core.Seconds(10.0))
 
-echoClient = ns.applications.UdpEchoClientHelper(csmaInterfaces.GetAddress(nCsma.value).ConvertTo(), 9)
+echoClient = ns.applications.UdpEchoClientHelper(
+    csmaInterfaces.GetAddress(nCsma.value).ConvertTo(), 9
+)
 echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(1))
-echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds (1.0)))
+echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds(1.0)))
 echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))
 
-clientApps = echoClient.Install(wifiStaNodes.Get (nWifi.value - 1))
+clientApps = echoClient.Install(wifiStaNodes.Get(nWifi.value - 1))
 clientApps.Start(ns.core.Seconds(2.0))
 clientApps.Stop(ns.core.Seconds(10.0))
 
@@ -147,10 +168,9 @@ ns.core.Simulator.Stop(ns.core.Seconds(10.0))
 
 if tracing.value:
     phy.SetPcapDataLinkType(phy.DLT_IEEE802_11_RADIO)
-    pointToPoint.EnablePcapAll ("third")
-    phy.EnablePcap ("third", apDevices.Get (0))
-    csma.EnablePcap ("third", csmaDevices.Get (0), True)
+    pointToPoint.EnablePcapAll("third")
+    phy.EnablePcap("third", apDevices.Get(0))
+    csma.EnablePcap("third", csmaDevices.Get(0), True)
 
 ns.core.Simulator.Run()
 ns.core.Simulator.Destroy()
-

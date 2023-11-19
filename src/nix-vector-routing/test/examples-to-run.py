@@ -8,7 +8,7 @@
 # See test.py for more information.
 cpp_examples = [
     ("nix-simple", "True", "True"),
-    ("nms-p2p-nix", "False", "True"), # Takes too long to run
+    ("nms-p2p-nix", "False", "True"),  # Takes too long to run
 ]
 
 # A list of Python examples to run in order to ensure that they remain

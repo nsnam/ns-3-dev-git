@@ -1,4 +1,5 @@
 import math
+
 try:
     from ns import ns
 except ModuleNotFoundError:
@@ -13,6 +14,7 @@ try:
     from ns3.visualizer.base import Link, transform_distance_canvas_to_simulation
 except ModuleNotFoundError:
     from visualizer.base import Link, transform_distance_canvas_to_simulation
+
 
 ## WifiLink class
 class WifiLink(Link):
@@ -38,15 +40,19 @@ class WifiLink(Link):
         super(WifiLink, self).__init__()
         self.node1 = sta
         self.dev = dev
-        self.node2 = None # ap
+        self.node2 = None  # ap
         self.canvas_item = GooCanvas.CanvasGroup(parent=parent_canvas_item)
-        self.invisible_line = GooCanvas.CanvasPolyline(parent=self.canvas_item,
-                                                 line_width=25.0,
-                                                 visibility=GooCanvas.CanvasItemVisibility.HIDDEN)
-        self.visible_line = GooCanvas.CanvasPolyline(parent=self.canvas_item,
-                                              line_width=1.0,
-                                              stroke_color_rgba=0xC00000FF,
-                                              line_dash=GooCanvas.CanvasLineDash.newv([2.0, 2.0 ]))
+        self.invisible_line = GooCanvas.CanvasPolyline(
+            parent=self.canvas_item,
+            line_width=25.0,
+            visibility=GooCanvas.CanvasItemVisibility.HIDDEN,
+        )
+        self.visible_line = GooCanvas.CanvasPolyline(
+            parent=self.canvas_item,
+            line_width=1.0,
+            stroke_color_rgba=0xC00000FF,
+            line_dash=GooCanvas.CanvasLineDash.newv([2.0, 2.0]),
+        )
         # self.invisible_line.set_property("pointer-events", (GooCanvas.CanvasPointerEvents.STROKE_MASK
         #                                             |GooCanvas.CanvasPointerEvents.FILL_MASK
         #                                             |GooCanvas.CanvasPointerEvents.PAINTED_MASK))
@@ -106,13 +112,17 @@ class WifiLink(Link):
         pos2_x, pos2_y = self.node2.get_position()
         dx = pos2_x - pos1_x
         dy = pos2_y - pos1_y
-        d = transform_distance_canvas_to_simulation(math.sqrt(dx*dx + dy*dy))
+        d = transform_distance_canvas_to_simulation(math.sqrt(dx * dx + dy * dy))
         mac = self.dev.GetMac()
-        tooltip.set_text(("WiFi link between STA Node %i and AP Node %i; distance=%.2f m.\n"
-                          "SSID: %s\n"
-                          "BSSID: %s")
-                         % (self.node1.node_index, self.node2.node_index, d,
-                            mac.GetSsid(), mac.GetBssid()))
+        tooltip.set_text(
+            (
+                "WiFi link between STA Node %i and AP Node %i; distance=%.2f m.\n"
+                "SSID: %s\n"
+                "BSSID: %s"
+            )
+            % (self.node1.node_index, self.node2.node_index, d, mac.GetSsid(), mac.GetBssid())
+        )
+
 
 ## WifiLinkMonitor class
 class WifiLinkMonitor(object):
@@ -125,8 +135,8 @@ class WifiLinkMonitor(object):
         @param self The object pointer.
         @param dummy_viz A dummy visualizer
         """
-        self.access_points = {} # bssid -> node
-        self.stations = [] # list of (sta_netdevice, viz_node, wifi_link)
+        self.access_points = {}  # bssid -> node
+        self.stations = []  # list of (sta_netdevice, viz_node, wifi_link)
 
     def scan_nodes(self, viz):
         """! Scan nodes function.
@@ -134,7 +144,7 @@ class WifiLinkMonitor(object):
         @param viz The visualizer object
         @return none
         """
-        for (sta_netdevice, viz_node, wifi_link) in self.stations:
+        for sta_netdevice, viz_node, wifi_link in self.stations:
             wifi_link.destroy()
 
         self.access_points = {}
@@ -153,8 +163,8 @@ class WifiLinkMonitor(object):
                 elif isinstance(wifi_mac, ns.wifi.ApWifiMac):
                     bssid = ns.network.Mac48Address.ConvertFrom(dev.GetAddress())
                     self.access_points[str(bssid)] = node
-        #print "APs: ", self.access_points
-        #print "STAs: ", self.stations
+        # print "APs: ", self.access_points
+        # print "STAs: ", self.stations
 
     def simulation_periodic_update(self, viz):
         """! Simulation Periodic Update function.
@@ -162,12 +172,12 @@ class WifiLinkMonitor(object):
         @param viz The visualizer object
         @return none
         """
-        for (sta_netdevice, viz_node, wifi_link) in self.stations:
+        for sta_netdevice, viz_node, wifi_link in self.stations:
             if not sta_netdevice.IsLinkUp():
                 wifi_link.set_ap(None)
                 continue
             bssid = str(sta_netdevice.GetMac().GetBssid())
-            if bssid == '00:00:00:00:00:00':
+            if bssid == "00:00:00:00:00:00":
                 wifi_link.set_ap(None)
                 continue
             ap = self.access_points[bssid]
@@ -179,7 +189,7 @@ class WifiLinkMonitor(object):
         @param viz The visualizer object
         @return none
         """
-        for (dummy_sta_netdevice, dummy_viz_node, wifi_link) in self.stations:
+        for dummy_sta_netdevice, dummy_viz_node, wifi_link in self.stations:
             if wifi_link is not None:
                 wifi_link.update_points()
 

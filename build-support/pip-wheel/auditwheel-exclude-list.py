@@ -8,4 +8,4 @@ for variant in ["lib", "lib64"]:
         continue
     for lib in os.listdir(lib_dir):
         if "libns3" in lib:
-            print(f"--exclude {lib}", end=' ')
+            print(f"--exclude {lib}", end=" ")

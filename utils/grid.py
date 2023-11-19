@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import cairo
-import sys
 import re
+import sys
+
+import cairo
 import gtk
 
 
@@ -14,7 +15,7 @@ class DataRange:
     #  end
     ## @var value
     #  value
-    def __init__(self, start=0, end=0, value=''):
+    def __init__(self, start=0, end=0, value=""):
         """! Initializer
         @param self this object
         @param start start
@@ -24,13 +25,15 @@ class DataRange:
         self.start = start
         self.end = end
         self.value = value
+
+
 ## EventString class
 class EventString:
     ## @var at
     #  at
     ## @var value
     #  value
-    def __init__(self, at=0, value=''):
+    def __init__(self, at=0, value=""):
         """! Initializer
         @param self this object
         @param at you
@@ -38,6 +41,8 @@ class EventString:
         """
         self.at = at
         self.value = value
+
+
 ## EventFloat class
 class EventFloat:
     ## @var at
@@ -52,6 +57,8 @@ class EventFloat:
         """
         self.at = at
         self.value = value
+
+
 ## EventInt class
 class EventInt:
     ## @var at
@@ -66,6 +73,8 @@ class EventInt:
         """
         self.at = at
         self.value = value
+
+
 def ranges_cmp(a, b):
     diff = a.start - b.start
     if diff < 0:
@@ -74,6 +83,8 @@ def ranges_cmp(a, b):
         return +1
     else:
         return 0
+
+
 def events_cmp(a, b):
     diff = a.at - b.at
     if diff < 0:
@@ -82,13 +93,15 @@ def events_cmp(a, b):
         return +1
     else:
         return 0
+
+
 ## TimelineDataRange
 class TimelineDataRange:
     ## @var name
     #  name
     ## @var ranges
     #  ranges
-    def __init__(self, name=''):
+    def __init__(self, name=""):
         """! Initializer
         @param self this object
         @param name name
@@ -96,6 +109,7 @@ class TimelineDataRange:
         self.name = name
         self.ranges = []
         return
+
     def __search(self, key):
         """! Search
         @param self this object
@@ -103,7 +117,7 @@ class TimelineDataRange:
         @return index if found or -1 if not found
         """
         l = 0
-        u = len(self.ranges)-1
+        u = len(self.ranges) - 1
         while l <= u:
             i = int((l + u) / 2)
             if key >= self.ranges[i].start and key <= self.ranges[i].end:
@@ -113,7 +127,8 @@ class TimelineDataRange:
             else:
                 # key > self.ranges[i].end
                 l = i + 1
-        return - 1
+        return -1
+
     def add_range(self, range):
         """! Add range
         @param self this object
@@ -121,12 +136,14 @@ class TimelineDataRange:
         @return none
         """
         self.ranges.append(range)
+
     def get_all(self):
         """! Get all ranges
         @param self this object
         @return the ranges
         """
         return self.ranges
+
     def get_ranges(self, start, end):
         """! Get selected ranges
         @param self this object
@@ -139,11 +156,12 @@ class TimelineDataRange:
         if s == -1 and e == -1:
             return []
         elif s == -1:
-            return self.ranges[0:e + 1]
+            return self.ranges[0 : e + 1]
         elif e == -1:
-            return self.ranges[s:len(self.ranges)]
+            return self.ranges[s : len(self.ranges)]
         else:
-            return self.ranges[s:e + 1]
+            return self.ranges[s : e + 1]
+
     def get_ranges_bounds(self, start, end):
         """! Get ranges bounds
         @param self this object
@@ -161,12 +179,14 @@ class TimelineDataRange:
             return (s, len(self.ranges))
         else:
             return (s, e + 1)
+
     def sort(self):
         """! Sort ranges
         @param self this object
         @return none
         """
         self.ranges.sort(ranges_cmp)
+
     def get_bounds(self):
         """! Get bounds
         @param self this object
@@ -174,23 +194,26 @@ class TimelineDataRange:
         """
         if len(self.ranges) > 0:
             lo = self.ranges[0].start
-            hi = self.ranges[len(self.ranges)-1].end
+            hi = self.ranges[len(self.ranges) - 1].end
             return (lo, hi)
         else:
             return (0, 0)
+
+
 ## TimelineEvent class
 class TimelineEvent:
     ## @var name
     #  name
     ## @var events
     #  events
-    def __init__(self, name=''):
+    def __init__(self, name=""):
         """! Get ranges bounds
         @param self this object
         @param name name
         """
         self.name = name
         self.events = []
+
     def __search(self, key):
         """! Search function
         @param self this object
@@ -198,7 +221,7 @@ class TimelineEvent:
         @return event index
         """
         l = 0
-        u = len(self.events)-1
+        u = len(self.events) - 1
         while l <= u:
             i = int((l + u) / 2)
             if key == self.events[i].at:
@@ -209,6 +232,7 @@ class TimelineEvent:
                 # key > self.events[i].at
                 l = i + 1
         return l
+
     def add_event(self, event):
         """! Add Event
         @param self this object
@@ -216,6 +240,7 @@ class TimelineEvent:
         @return none
         """
         self.events.append(event)
+
     def get_events(self, start, end):
         """! Get Events
         @param self this object
@@ -225,7 +250,8 @@ class TimelineEvent:
         """
         s = self.__search(start)
         e = self.__search(end)
-        return self.events[s:e + 1]
+        return self.events[s : e + 1]
+
     def get_events_bounds(self, start, end):
         """! Get Events Bounds
         @param self this object
@@ -236,12 +262,14 @@ class TimelineEvent:
         s = self.__search(start)
         e = self.__search(end)
         return (s, e + 1)
+
     def sort(self):
         """! Sort function
         @param self this object
         @return none
         """
         self.events.sort(events_cmp)
+
     def get_bounds(self):
         """! Get Bounds
         @param self this object
@@ -254,6 +282,7 @@ class TimelineEvent:
         else:
             return (0, 0)
 
+
 ## Timeline class
 class Timeline:
     ## @var name
@@ -264,7 +293,7 @@ class Timeline:
     #  event string
     ## @var event_int
     #  event int
-    def __init__(self, name=''):
+    def __init__(self, name=""):
         """! Initializer
         @param self this object
         @param name name
@@ -273,6 +302,7 @@ class Timeline:
         self.event_str = []
         self.event_int = []
         self.name = name
+
     def get_range(self, name):
         """! Get range
         @param self this object
@@ -285,6 +315,7 @@ class Timeline:
         timeline = TimelineDataRange(name)
         self.ranges.append(timeline)
         return timeline
+
     def get_event_str(self, name):
         """! Get Event String
         @param self this object
@@ -297,6 +328,7 @@ class Timeline:
         timeline = TimelineEvent(name)
         self.event_str.append(timeline)
         return timeline
+
     def get_event_int(self, name):
         """! Get Event Int
         @param self this object
@@ -309,24 +341,28 @@ class Timeline:
         timeline = TimelineEvent(name)
         self.event_int.append(timeline)
         return timeline
+
     def get_ranges(self):
         """! Get Ranges
         @param self this object
         @return the ranges
         """
         return self.ranges
+
     def get_events_str(self):
         """! Get Events string
         @param self this object
         @return event string
         """
         return self.event_str
+
     def get_events_int(self):
         """! Get Events int
         @param self this object
         @return evrnt int
         """
         return self.event_int
+
     def sort(self):
         """! Sort the ranges and events
         @param self this object
@@ -338,6 +374,7 @@ class Timeline:
             event.sort()
         for event in self.event_str:
             event.sort()
+
     def get_bounds(self):
         """! Get Bounds
         @param self this object
@@ -365,15 +402,17 @@ class Timeline:
                 hi = ev_hi
         return (lo, hi)
 
+
 ## Timelines class
 class Timelines:
     ## @var timelines
     #  timelines
     def __init__(self):
-        """ Initializer
+        """Initializer
         @param self: this object
         """
         self.timelines = []
+
     def get(self, name):
         """! Get Timeline
         @param self this object
@@ -386,12 +425,14 @@ class Timelines:
         timeline = Timeline(name)
         self.timelines.append(timeline)
         return timeline
+
     def get_all(self):
         """! Get All Timeline
         @param self this object
         @return all timelines
         """
         return self.timelines
+
     def sort(self):
         """! Sort the timelines
         @param self this object
@@ -399,6 +440,7 @@ class Timelines:
         """
         for timeline in self.timelines:
             timeline.sort()
+
     def get_bounds(self):
         """! Get Bounds
         @param self this object
@@ -413,6 +455,7 @@ class Timelines:
             if t_hi > hi:
                 hi = t_hi
         return (lo, hi)
+
     def get_all_range_values(self):
         """! Get All Ranges
         @param self this object
@@ -424,6 +467,7 @@ class Timelines:
                 for ran in ranges.get_all():
                     range_values[ran.value] = 1
         return range_values.keys()
+
 
 ## Color class
 class Color:
@@ -443,6 +487,7 @@ class Color:
         self.r = r
         self.g = g
         self.b = b
+
     def set(self, r, g, b):
         """! Set color
         @param self: this object
@@ -455,6 +500,7 @@ class Color:
         self.g = g
         self.b = b
 
+
 ## Colors class
 class Colors:
     ## @var __colors
@@ -462,12 +508,21 @@ class Colors:
     ## @var default_colors
     #  default colors
     ## XXX add more
-    default_colors = [Color(1, 0, 0), Color(0, 1, 0), Color(0, 0, 1), Color(1, 1, 0), Color(1, 0, 1), Color(0, 1, 1)]
+    default_colors = [
+        Color(1, 0, 0),
+        Color(0, 1, 0),
+        Color(0, 0, 1),
+        Color(1, 1, 0),
+        Color(1, 0, 1),
+        Color(0, 1, 1),
+    ]
+
     def __init__(self):
         """! Initializer
         @param self this object
         """
         self.__colors = {}
+
     def add(self, name, color):
         """! Add
         @param self this object
@@ -476,6 +531,7 @@ class Colors:
         @return none
         """
         self.__colors[name] = color
+
     def lookup(self, name):
         """! Lookup name
         @param self this object
@@ -485,6 +541,7 @@ class Colors:
         if not self.__colors.has_key(name):
             self.add(name, self.default_colors.pop())
         return self.__colors.get(name)
+
 
 ## TopLegendRenderer class
 class TopLegendRenderer:
@@ -503,6 +560,7 @@ class TopLegendRenderer:
         @param self this object
         """
         self.__padding = 10
+
     def set_padding(self, padding):
         """! Set padding
         @param self this object
@@ -510,6 +568,7 @@ class TopLegendRenderer:
         @return none
         """
         self.__padding = padding
+
     def set_legends(self, legends, colors):
         """! Set padding
         @param self this object
@@ -519,6 +578,7 @@ class TopLegendRenderer:
         """
         self.__legends = legends
         self.__colors = colors
+
     def layout(self, width):
         """! Set padding
         @param self this object
@@ -552,6 +612,7 @@ class TopLegendRenderer:
         @return height
         """
         return self.__height
+
     def draw(self, ctx):
         """! Set padding
         @param self this object
@@ -578,14 +639,13 @@ class TopLegendRenderer:
             ctx.set_source_rgb(0, 0, 0)
             ctx.set_line_width(2)
             ctx.stroke_preserve()
-            ctx.set_source_rgb(self.__colors[i].r,
-                               self.__colors[i].g,
-                               self.__colors[i].b)
+            ctx.set_source_rgb(self.__colors[i].r, self.__colors[i].g, self.__colors[i].b)
             ctx.fill()
-            ctx.move_to(x + self.__padding*2, total_height + t_height)
+            ctx.move_to(x + self.__padding * 2, total_height + t_height)
             ctx.set_source_rgb(0, 0, 0)
             ctx.show_text(legend)
             i += 1
+
 
 ## TimelinesRenderer class
 class TimelinesRenderer:
@@ -617,12 +677,14 @@ class TimelinesRenderer:
         """
         self.padding = 10
         return
+
     def get_height(self):
         """! Get Height
         @param self this object
         @return height
         """
         return self.height
+
     def set_timelines(self, timelines, colors):
         """! Set Timelines
         @param self this object
@@ -632,6 +694,7 @@ class TimelinesRenderer:
         """
         self.timelines = timelines
         self.colors = colors
+
     def set_render_range(self, start, end):
         """! Set Render Range
         @param self this object
@@ -641,12 +704,16 @@ class TimelinesRenderer:
         """
         self.start = start
         self.end = end
+
     def get_data_x_start(self):
         """! Get Data X Start
         @param self: this object
         @return X start
         """
-        return self.padding / 2 + self.left_width + self.padding + self.right_width + self.padding / 2
+        return (
+            self.padding / 2 + self.left_width + self.padding + self.right_width + self.padding / 2
+        )
+
     def layout(self, width):
         """! Get Data X Start
         @param self this object
@@ -655,7 +722,9 @@ class TimelinesRenderer:
         """
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1, 1)
         ctx = cairo.Context(surface)
-        max_text_height = ctx.text_extents("ABCDEFGHIJKLMNOPQRSTUVWXYZabcedefghijklmnopqrstuvwxyz0123456789")[3]
+        max_text_height = ctx.text_extents(
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcedefghijklmnopqrstuvwxyz0123456789"
+        )[3]
 
         left_width = 0
         right_width = 0
@@ -694,6 +763,7 @@ class TimelinesRenderer:
         self.max_text_height = max_text_height
         self.width = width
         self.height = height + self.padding
+
     def draw_line(self, ctx, x, y, width, height):
         """! Draw Line
         @param self this object
@@ -711,6 +781,7 @@ class TimelinesRenderer:
         ctx.set_line_width(1.0)
         ctx.set_source_rgb(0, 0, 0)
         ctx.stroke()
+
     def draw_events(self, ctx, events, x, y, width, height):
         """! Draw Event
         @param self this object
@@ -723,8 +794,7 @@ class TimelinesRenderer:
         @return none
         """
         if (self.grey_background % 2) == 0:
-            ctx.rectangle(x, y - self.padding / 2,
-                          width, height + self.padding)
+            ctx.rectangle(x, y - self.padding / 2, width, height + self.padding)
             ctx.set_source_rgb(0.9, 0.9, 0.9)
             ctx.fill()
         last_x_drawn = int(x)
@@ -740,6 +810,7 @@ class TimelinesRenderer:
                 ctx.show_text(str(event.value))
                 last_x_drawn = real_x
         self.grey_background += 1
+
     def draw_ranges(self, ctx, ranges, x, y, width, height):
         """! Draw Ranges
         @param self this object
@@ -752,8 +823,7 @@ class TimelinesRenderer:
         @return none
         """
         if (self.grey_background % 2) == 0:
-            ctx.rectangle(x, y - self.padding / 2,
-                          width, height + self.padding)
+            ctx.rectangle(x, y - self.padding / 2, width, height + self.padding)
             ctx.set_source_rgb(0.9, 0.9, 0.9)
             ctx.fill()
         last_x_drawn = int(x - 1)
@@ -800,34 +870,51 @@ class TimelinesRenderer:
                 (y_bearing, t_width, t_height) = ctx.text_extents(events_int.name)[1:4]
                 ctx.move_to(right_x_start, cur_y + self.max_text_height - (t_height + y_bearing))
                 ctx.show_text(events_int.name)
-                self.draw_events(ctx, events_int, data_x_start, cur_y, data_width, self.max_text_height + 5)
+                self.draw_events(
+                    ctx, events_int, data_x_start, cur_y, data_width, self.max_text_height + 5
+                )
                 cur_y += self.max_text_height + 5 + self.padding
-                self.draw_line(ctx, right_x_start - self.padding / 2, cur_y - self.padding / 2,
-                               self.right_width + self.padding, 0)
+                self.draw_line(
+                    ctx,
+                    right_x_start - self.padding / 2,
+                    cur_y - self.padding / 2,
+                    self.right_width + self.padding,
+                    0,
+                )
 
             for events_str in timeline.get_events_str():
                 (y_bearing, t_width, t_height) = ctx.text_extents(events_str.name)[1:4]
                 ctx.move_to(right_x_start, cur_y + self.max_text_height - (t_height + y_bearing))
                 ctx.show_text(events_str.name)
-                self.draw_events(ctx, events_str, data_x_start, cur_y, data_width, self.max_text_height + 5)
+                self.draw_events(
+                    ctx, events_str, data_x_start, cur_y, data_width, self.max_text_height + 5
+                )
                 cur_y += self.max_text_height + 5 + self.padding
-                self.draw_line(ctx, right_x_start - self.padding / 2, cur_y - self.padding / 2,
-                               self.right_width + self.padding, 0)
+                self.draw_line(
+                    ctx,
+                    right_x_start - self.padding / 2,
+                    cur_y - self.padding / 2,
+                    self.right_width + self.padding,
+                    0,
+                )
             for ranges in timeline.get_ranges():
                 (y_bearing, t_width, t_height) = ctx.text_extents(ranges.name)[1:4]
                 ctx.move_to(right_x_start, cur_y + self.max_text_height - (t_height + y_bearing))
                 ctx.show_text(ranges.name)
                 self.draw_ranges(ctx, ranges, data_x_start, cur_y, data_width, 10)
                 cur_y += self.max_text_height + self.padding
-                self.draw_line(ctx, right_x_start - self.padding / 2, cur_y - self.padding / 2,
-                               self.right_width + self.padding, 0)
-            self.draw_line(ctx, 0, cur_y - self.padding / 2,
-                           self.width, 0)
+                self.draw_line(
+                    ctx,
+                    right_x_start - self.padding / 2,
+                    cur_y - self.padding / 2,
+                    self.right_width + self.padding,
+                    0,
+                )
+            self.draw_line(ctx, 0, cur_y - self.padding / 2, self.width, 0)
         bot_y = cur_y - self.padding / 2
-        self.draw_line(ctx, left_x_end + self.padding / 2, 0,
-                       0, bot_y)
-        self.draw_line(ctx, right_x_end + self.padding / 2, 0,
-                       0, bot_y)
+        self.draw_line(ctx, left_x_end + self.padding / 2, 0, 0, bot_y)
+        self.draw_line(ctx, right_x_end + self.padding / 2, 0, 0, bot_y)
+
 
 ## ScaleRenderer class
 class ScaleRenderer:
@@ -851,6 +938,7 @@ class ScaleRenderer:
         """
         self.__top = 0
         return
+
     def set_bounds(self, lo, hi):
         """! Set Bounds
         @param self this object
@@ -860,6 +948,7 @@ class ScaleRenderer:
         """
         self.__lo = lo
         self.__hi = hi
+
     def get_position(self, x):
         """! Get Position
         @param self this object
@@ -868,18 +957,21 @@ class ScaleRenderer:
         """
         real_x = (x - self.__lo) * self.__width / (self.__hi - self.__lo)
         return real_x
+
     def set_top(self):
         """! Set Top
         @param self this object
         @return none
         """
         self.__top = 1
+
     def set_bot(self):
         """! Set Bottom
         @param self this object
         @return none
         """
         self.__top = 0
+
     def layout(self, width):
         """! Layout
         @param self this object
@@ -892,7 +984,7 @@ class ScaleRenderer:
         # calculate scale delta
         data_delta = self.__hi - self.__lo
         closest = 1
-        while (closest*10) < data_delta:
+        while (closest * 10) < data_delta:
             closest *= 10
         if (data_delta / closest) == 0:
             delta = closest
@@ -907,7 +999,9 @@ class ScaleRenderer:
         self.__width = width
 
         # calculate text height
-        max_text_height = ctx.text_extents("ABCDEFGHIJKLMNOPQRSTUVWXYZabcedefghijklmnopqrstuvwxyz0123456789")[3]
+        max_text_height = ctx.text_extents(
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcedefghijklmnopqrstuvwxyz0123456789"
+        )[3]
         self.max_text_height = max_text_height
         height = max_text_height + 10
         self.__height = height
@@ -918,6 +1012,7 @@ class ScaleRenderer:
         @return height
         """
         return self.__height
+
     def draw(self, ctx):
         """! Draw
         @param self this object
@@ -939,7 +1034,7 @@ class ScaleRenderer:
         for x in ticks:
             real_x = (x - self.__lo) * self.__width / (self.__hi - self.__lo)
             ctx.move_to(real_x, 0)
-            ctx.line_to(real_x, 5*s)
+            ctx.line_to(real_x, 5 * s)
             ctx.close_path()
             ctx.stroke()
             (t_y_bearing, t_width, t_height) = ctx.text_extents(str(x))[1:4]
@@ -947,7 +1042,7 @@ class ScaleRenderer:
                 text_delta = t_height + t_y_bearing
             else:
                 text_delta = -t_y_bearing
-            ctx.move_to(real_x - t_width / 2, (5 + 5 + text_delta)*s)
+            ctx.move_to(real_x - t_width / 2, (5 + 5 + text_delta) * s)
             ctx.show_text(str(x))
         # draw subticks
         delta /= 10
@@ -957,7 +1052,7 @@ class ScaleRenderer:
             for x in range(int(start), int(end + delta), int(delta)):
                 real_x = (x - self.__lo) * self.__width / (self.__hi - self.__lo)
                 ctx.move_to(real_x, 0)
-                ctx.line_to(real_x, 3*s)
+                ctx.line_to(real_x, 3 * s)
                 ctx.close_path()
                 ctx.stroke()
 
@@ -1001,18 +1096,21 @@ class GraphicRenderer:
         self.__bot_scale.set_bot()
         self.__width = 1
         self.__height = 1
+
     def get_width(self):
         """! Get Width
         @param self: this object
         @return width
         """
         return self.__width
+
     def get_height(self):
         """! Get Height
         @param self this object
         @return height
         """
         return self.__height
+
     # return x, y, width, height
     def get_data_rectangle(self):
         """! Get Data Rectangle
@@ -1022,6 +1120,7 @@ class GraphicRenderer:
         y_start = self.__top_legend.get_height()
         x_start = self.__data.get_data_x_start()
         return (x_start, y_start, self.__width - x_start, self.__data.get_height())
+
     def scale_data(self, x):
         """! Get Data Rectangle
         @param self this object
@@ -1031,17 +1130,24 @@ class GraphicRenderer:
         x_start = self.__data.get_data_x_start()
         x_scaled = x / (self.__width - x_start) * (self.__r_end - self.__r_start)
         return x_scaled
+
     # return x, y, width, height
     def get_selection_rectangle(self):
         """! Get Selection Rectangle
         @param self this object
         @return rectangle
         """
-        y_start = self.__top_legend.get_height() + self.__data.get_height() + self.__mid_scale.get_height() + 20
+        y_start = (
+            self.__top_legend.get_height()
+            + self.__data.get_height()
+            + self.__mid_scale.get_height()
+            + 20
+        )
         y_height = self.__bot_scale.get_height() + 20
         x_start = self.__bot_scale.get_position(self.__r_start)
         x_end = self.__bot_scale.get_position(self.__r_end)
         return (x_start, y_start, x_end - x_start, y_height)
+
     def scale_selection(self, x):
         """! Scale Selection
         @param self this object
@@ -1050,6 +1156,7 @@ class GraphicRenderer:
         """
         x_scaled = x / self.__width * (self.__end - self.__start)
         return x_scaled
+
     def set_range(self, start, end):
         """! Set Range
         @param self this object
@@ -1066,12 +1173,14 @@ class GraphicRenderer:
         self.__data.set_render_range(start, end)
         self.__mid_scale.set_bounds(start, end)
         self.layout(self.__width, self.__height)
+
     def get_range(self):
         """! Get Range
         @param self this object
         @return range
         """
         return (self.__r_start, self.__r_end)
+
     def set_data(self, data):
         """! Set Date
         @param self this object
@@ -1079,6 +1188,7 @@ class GraphicRenderer:
         @return none
         """
         self.__data = data
+
     def set_top_legend(self, top_legend):
         """! Set Top Legend
         @param self this object
@@ -1086,6 +1196,7 @@ class GraphicRenderer:
         @return none
         """
         self.__top_legend = top_legend
+
     def layout(self, width, height):
         """! Set Layout
         @param self this object
@@ -1101,6 +1212,7 @@ class GraphicRenderer:
         self.__mid_scale.layout(width - self.__data.get_data_x_start())
         self.__bot_scale.layout(width)
         return
+
     def __x_pixel(self, x, width):
         """! X Pixel
         @param self this object
@@ -1140,15 +1252,16 @@ class GraphicRenderer:
 
         # data
         ctx.save()
-        ctx.translate(0,
-                      top_legend_height)
+        ctx.translate(0, top_legend_height)
         self.__data.draw(ctx)
         ctx.restore()
 
         # scale below data
         ctx.save()
-        ctx.translate(self.__data.get_data_x_start(),
-                      top_legend_height + self.__data.get_height() + self.__mid_scale.get_height())
+        ctx.translate(
+            self.__data.get_data_x_start(),
+            top_legend_height + self.__data.get_height() + self.__mid_scale.get_height(),
+        )
         self.__mid_scale.draw(ctx)
         ctx.restore()
 
@@ -1202,13 +1315,8 @@ class GraphicRenderer:
         unused_start = self.__bot_scale.get_position(self.__r_start)
         unused_end = self.__bot_scale.get_position(self.__r_end)
         unused_height = self.__bot_scale.get_height() + 20
-        ctx.rectangle(0, height_used,
-                      unused_start,
-                      unused_height)
-        ctx.rectangle(unused_end,
-                      height_used,
-                      self.__width - unused_end,
-                      unused_height)
+        ctx.rectangle(0, height_used, unused_start, unused_height)
+        ctx.rectangle(unused_end, height_used, self.__width - unused_end, unused_height)
         ctx.set_source_rgb(0.9, 0.9, 0.9)
         ctx.fill()
 
@@ -1247,6 +1355,7 @@ class GraphicRenderer:
         ctx.translate(0, height_used)
         self.__bot_scale.draw(ctx)
         ctx.restore()
+
 
 ## GtkGraphicRenderer class
 class GtkGraphicRenderer(gtk.DrawingArea):
@@ -1296,19 +1405,21 @@ class GtkGraphicRenderer(gtk.DrawingArea):
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.add_events(gtk.gdk.BUTTON_RELEASE_MASK)
         self.connect("expose_event", self.expose)
-        self.connect('size-allocate', self.size_allocate)
-        self.connect('motion-notify-event', self.motion_notify)
-        self.connect('button-press-event', self.button_press)
-        self.connect('button-release-event', self.button_release)
+        self.connect("size-allocate", self.size_allocate)
+        self.connect("motion-notify-event", self.motion_notify)
+        self.connect("button-press-event", self.button_press)
+        self.connect("button-release-event", self.button_release)
+
     def set_smaller_zoom(self):
         """! Set Smaller Zoom
         @param self this object
         @return none
         """
         (start, end) = self.__data.get_range()
-        self.__data.set_range(start, start + (end - start)*2)
+        self.__data.set_range(start, start + (end - start) * 2)
         self.__force_full_redraw = True
         self.queue_draw()
+
     def set_bigger_zoom(self):
         """! Set Bigger Zoom
         @param self this object
@@ -1318,18 +1429,20 @@ class GtkGraphicRenderer(gtk.DrawingArea):
         self.__data.set_range(start, start + (end - start) / 2)
         self.__force_full_redraw = True
         self.queue_draw()
+
     def output_png(self, filename):
         """! Output PNG
         @param self this object
         @param filename file name
         @return none
         """
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                     self.__data.get_width(),
-                                     self.__data.get_height())
+        surface = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32, self.__data.get_width(), self.__data.get_height()
+        )
         ctx = cairo.Context(self.__buffer_surface)
         self.__data.draw(ctx)
         surface.write_to_png(filename)
+
     def button_press(self, widget, event):
         """! Button Press
         @param self this object
@@ -1358,6 +1471,7 @@ class GtkGraphicRenderer(gtk.DrawingArea):
                 self.__moving_top_cur = event.x
                 return True
         return False
+
     def button_release(self, widget, event):
         """! Button Release
         @param self this object
@@ -1392,6 +1506,7 @@ class GtkGraphicRenderer(gtk.DrawingArea):
         if self.__moving_top:
             self.__moving_top = False
         return False
+
     def motion_notify(self, widget, event):
         """! Motion Notify
         @param self this object
@@ -1420,7 +1535,7 @@ class GtkGraphicRenderer(gtk.DrawingArea):
             return True
         if self.__moving_both:
             cur_e = self.__width - (x + width - self.__moving_both_start)
-            cur_s = (self.__moving_both_start - x)
+            cur_s = self.__moving_both_start - x
             if event.x < cur_s:
                 self.__moving_both_cur = cur_s
             elif event.x > cur_e:
@@ -1452,6 +1567,7 @@ class GtkGraphicRenderer(gtk.DrawingArea):
                 return True
         widget.window.set_cursor(None)
         return False
+
     def size_allocate(self, widget, allocation):
         """! Size Allocate
         @param self this object
@@ -1464,6 +1580,7 @@ class GtkGraphicRenderer(gtk.DrawingArea):
         self.__data.layout(allocation.width, allocation.height)
         self.__force_full_redraw = True
         self.queue_draw()
+
     def expose(self, widget, event):
         """! Expose
         @param self this object
@@ -1472,15 +1589,14 @@ class GtkGraphicRenderer(gtk.DrawingArea):
         @return false
         """
         if self.__force_full_redraw:
-            self.__buffer_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                                       self.__data.get_width(),
-                                                       self.__data.get_height())
+            self.__buffer_surface = cairo.ImageSurface(
+                cairo.FORMAT_ARGB32, self.__data.get_width(), self.__data.get_height()
+            )
             ctx = cairo.Context(self.__buffer_surface)
             self.__data.draw(ctx)
             self.__force_full_redraw = False
         ctx = widget.window.cairo_create()
-        ctx.rectangle(event.area.x, event.area.y,
-                      event.area.width, event.area.height)
+        ctx.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
         ctx.clip()
         ctx.set_source_surface(self.__buffer_surface)
         ctx.paint()
@@ -1513,6 +1629,7 @@ class GtkGraphicRenderer(gtk.DrawingArea):
             ctx.stroke()
         return False
 
+
 ## MainWindow class
 class MainWindow:
     ## @var __window
@@ -1526,6 +1643,7 @@ class MainWindow:
         @param self this object
         """
         return
+
     def run(self, graphic):
         """! Run function
         @param self this object
@@ -1551,10 +1669,11 @@ class MainWindow:
         output_png = gtk.Button("Output Png")
         output_png.connect("clicked", self.__output_png_cb)
         hbox.pack_start(output_png)
-        window.connect('destroy', gtk.main_quit)
+        window.connect("destroy", gtk.main_quit)
         window.show_all()
-        #gtk.bindings_activate(gtk.main_quit, 'q', 0)
+        # gtk.bindings_activate(gtk.main_quit, 'q', 0)
         gtk.main()
+
     def __set_smaller_cb(self, widget):
         """! Set Smaller Callback
         @param self this object
@@ -1562,6 +1681,7 @@ class MainWindow:
         @return none
         """
         self.__render.set_smaller_zoom()
+
     def __set_bigger_cb(self, widget):
         """! Set Bigger Callback
         @param self this object
@@ -1569,18 +1689,21 @@ class MainWindow:
         @return none
         """
         self.__render.set_bigger_zoom()
+
     def __output_png_cb(self, widget):
         """! Output PNG Callback
         @param self this object
         @param widget widget
         @return none
         """
-        dialog = gtk.FileChooserDialog("Output Png", self.__window,
-                                       gtk.FILE_CHOOSER_ACTION_SAVE, ("Save", 1))
+        dialog = gtk.FileChooserDialog(
+            "Output Png", self.__window, gtk.FILE_CHOOSER_ACTION_SAVE, ("Save", 1)
+        )
         self.__dialog = dialog
         dialog.set_default_response(1)
         dialog.connect("response", self.__dialog_response_cb)
         dialog.show()
+
     def __dialog_response_cb(self, widget, response):
         """! Dialog Response Callback
         @param self this object
@@ -1598,12 +1721,12 @@ class MainWindow:
 def read_data(filename):
     timelines = Timelines()
     colors = Colors()
-    m1 = re.compile('range ([^ ]+) ([^ ]+) ([^ ]+) ([0-9]+) ([0-9]+)')
-    m2 = re.compile('event-str ([^ ]+) ([^ ]+) ([^ ]+) ([0-9]+)')
-    m3 = re.compile('event-int ([^ ]+) ([^ ]+) ([0-9]+) ([0-9]+)')
-    m4 = re.compile('color ([^ ]+) #([a-fA-F0-9]{2,2})([a-fA-F0-9]{2,2})([a-fA-F0-9]{2,2})')
+    m1 = re.compile("range ([^ ]+) ([^ ]+) ([^ ]+) ([0-9]+) ([0-9]+)")
+    m2 = re.compile("event-str ([^ ]+) ([^ ]+) ([^ ]+) ([0-9]+)")
+    m3 = re.compile("event-int ([^ ]+) ([^ ]+) ([0-9]+) ([0-9]+)")
+    m4 = re.compile("color ([^ ]+) #([a-fA-F0-9]{2,2})([a-fA-F0-9]{2,2})([a-fA-F0-9]{2,2})")
 
-    with open(filename, encoding='utf-8') as fh:
+    with open(filename, encoding="utf-8") as fh:
         for line in fh.readlines():
             m = m1.match(line)
             if m:
@@ -1658,8 +1781,7 @@ def main():
     range_colors = []
     for range_value in range_values:
         range_colors.append(colors.lookup(range_value))
-    top_legend.set_legends(range_values,
-                           range_colors)
+    top_legend.set_legends(range_values, range_colors)
     graphic.set_top_legend(top_legend)
     data = TimelinesRenderer()
     data.set_timelines(timelines, colors)

@@ -21,7 +21,11 @@ cpp_examples = [
     ("adaptive-red-tests --testNumber=13", "True", "True"),
     ("adaptive-red-tests --testNumber=14", "True", "True"),
     ("adaptive-red-tests --testNumber=15", "True", "True"),
-    ("codel-vs-pfifo-asymmetric --routerWanQueueDiscType=PfifoFast --simDuration=10", "True", "True"),
+    (
+        "codel-vs-pfifo-asymmetric --routerWanQueueDiscType=PfifoFast --simDuration=10",
+        "True",
+        "True",
+    ),
     ("codel-vs-pfifo-asymmetric --routerWanQueueDiscType=CoDel --simDuration=10", "True", "False"),
     ("codel-vs-pfifo-basic-test --queueDiscType=PfifoFast --simDuration=10", "True", "False"),
     ("codel-vs-pfifo-basic-test --queueDiscType=CoDel --simDuration=10", "True", "False"),

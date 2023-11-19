@@ -95,7 +95,7 @@ serverApps.Stop(ns.Seconds(5.0))
 
 echoClient = ns.UdpEchoClientHelper(serverInterfaces.GetAddress(0).ConvertTo(), 9)
 echoClient.SetAttribute("MaxPackets", ns.UintegerValue(1))
-echoClient.SetAttribute("Interval", ns.TimeValue(ns.Seconds(1.)))
+echoClient.SetAttribute("Interval", ns.TimeValue(ns.Seconds(1.0)))
 echoClient.SetAttribute("PacketSize", ns.UintegerValue(1024))
 
 clientApps = echoClient.Install(client.Get(0))

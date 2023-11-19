@@ -1,13 +1,12 @@
 #! /usr/bin/env python3
-import sys
 import argparse
 import os
 import re
 import shutil
-
+import sys
 from pathlib import Path
 
-CMAKELISTS_TEMPLATE = '''\
+CMAKELISTS_TEMPLATE = """\
 check_include_file_cxx(stdint.h HAVE_STDINT_H)
 if(HAVE_STDINT_H)
     add_definitions(-DHAVE_STDINT_H)
@@ -30,10 +29,10 @@ build_lib(
     TEST_SOURCES test/{MODULE}-test-suite.cc
                  ${{examples_as_tests_sources}}
 )
-'''
+"""
 
 
-MODEL_CC_TEMPLATE = '''\
+MODEL_CC_TEMPLATE = """\
 #include "{MODULE}.h"
 
 namespace ns3
@@ -42,10 +41,10 @@ namespace ns3
 /* ... */
 
 }}
-'''
+"""
 
 
-MODEL_H_TEMPLATE = '''\
+MODEL_H_TEMPLATE = """\
 #ifndef {INCLUDE_GUARD}
 #define {INCLUDE_GUARD}
 
@@ -66,10 +65,10 @@ namespace ns3
 }}
 
 #endif /* {INCLUDE_GUARD} */
-'''
+"""
 
 
-HELPER_CC_TEMPLATE = '''\
+HELPER_CC_TEMPLATE = """\
 #include "{MODULE}-helper.h"
 
 namespace ns3
@@ -78,10 +77,10 @@ namespace ns3
 /* ... */
 
 }}
-'''
+"""
 
 
-HELPER_H_TEMPLATE = '''\
+HELPER_H_TEMPLATE = """\
 #ifndef {INCLUDE_GUARD}
 #define {INCLUDE_GUARD}
 
@@ -98,18 +97,18 @@ namespace ns3
 }}
 
 #endif /* {INCLUDE_GUARD} */
-'''
+"""
 
 
-EXAMPLES_CMAKELISTS_TEMPLATE = '''\
+EXAMPLES_CMAKELISTS_TEMPLATE = """\
 build_lib_example(
     NAME {MODULE}-example
     SOURCE_FILES {MODULE}-example.cc
     LIBRARIES_TO_LINK ${{lib{MODULE}}}
 )
-'''
+"""
 
-EXAMPLE_CC_TEMPLATE = '''\
+EXAMPLE_CC_TEMPLATE = """\
 #include "ns3/core-module.h"
 #include "ns3/{MODULE}-helper.h"
 
@@ -137,10 +136,10 @@ main(int argc, char* argv[])
     Simulator::Destroy();
     return 0;
 }}
-'''
+"""
 
 
-TEST_CC_TEMPLATE = '''\
+TEST_CC_TEMPLATE = """\
 
 // Include a header file from your module to test.
 #include "ns3/{MODULE}.h"
@@ -227,10 +226,10 @@ class {CAPITALIZED}TestSuite : public TestSuite
  * Static variable for test initialization
  */
 static {CAPITALIZED}TestSuite s{COMPOUND}TestSuite;
-'''
+"""
 
 
-DOC_RST_TEMPLATE = '''Example Module Documentation
+DOC_RST_TEMPLATE = """Example Module Documentation
 ----------------------------
 
 .. include:: replace.txt
@@ -328,18 +327,19 @@ Validation
 Describe how the model has been tested/validated.  What tests run in the
 test suite?  How much API and code is covered by the tests?  Again,
 references to outside published work may help here.
-'''
+"""
+
 
 def create_file(path, template, **kwargs):
     artifact_path = Path(path)
 
-    #open file for (w)rite and in (t)ext mode
+    # open file for (w)rite and in (t)ext mode
     with artifact_path.open("wt", encoding="utf-8") as f:
         f.write(template.format(**kwargs))
 
 
 def make_cmakelists(moduledir, modname):
-    path = Path(moduledir, 'CMakeLists.txt')
+    path = Path(moduledir, "CMakeLists.txt")
     macro = "build_lib"
     create_file(path, CMAKELISTS_TEMPLATE, MODULE=modname)
 
@@ -350,14 +350,12 @@ def make_model(moduledir, modname):
     modelpath = Path(moduledir, "model")
     modelpath.mkdir(parents=True)
 
-    srcfile_path = modelpath.joinpath(modname).with_suffix('.cc')
+    srcfile_path = modelpath.joinpath(modname).with_suffix(".cc")
     create_file(srcfile_path, MODEL_CC_TEMPLATE, MODULE=modname)
 
-    hfile_path = modelpath.joinpath(modname).with_suffix('.h')
-    guard = "{}_H".format(modname.replace('-', '_').upper())
-    create_file(hfile_path, MODEL_H_TEMPLATE,
-                MODULE=modname,
-                INCLUDE_GUARD=guard)
+    hfile_path = modelpath.joinpath(modname).with_suffix(".h")
+    guard = "{}_H".format(modname.replace("-", "_").upper())
+    create_file(hfile_path, MODEL_H_TEMPLATE, MODULE=modname, INCLUDE_GUARD=guard)
 
     return True
 
@@ -366,11 +364,17 @@ def make_test(moduledir, modname):
     testpath = Path(moduledir, "test")
     testpath.mkdir(parents=True)
 
-    file_path = testpath.joinpath(modname+'-test-suite').with_suffix('.cc')
-    name_parts = modname.split('-')
-    create_file(file_path, TEST_CC_TEMPLATE, MODULE=modname,
-                CAPITALIZED=''.join([word.capitalize() for word in name_parts]),
-                COMPOUND=''.join([word.capitalize() if index > 0 else word for index, word in enumerate(name_parts)]))
+    file_path = testpath.joinpath(modname + "-test-suite").with_suffix(".cc")
+    name_parts = modname.split("-")
+    create_file(
+        file_path,
+        TEST_CC_TEMPLATE,
+        MODULE=modname,
+        CAPITALIZED="".join([word.capitalize() for word in name_parts]),
+        COMPOUND="".join(
+            [word.capitalize() if index > 0 else word for index, word in enumerate(name_parts)]
+        ),
+    )
 
     return True
 
@@ -379,11 +383,11 @@ def make_helper(moduledir, modname):
     helperpath = Path(moduledir, "helper")
     helperpath.mkdir(parents=True)
 
-    srcfile_path = helperpath.joinpath(modname+'-helper').with_suffix('.cc')
+    srcfile_path = helperpath.joinpath(modname + "-helper").with_suffix(".cc")
     create_file(srcfile_path, HELPER_CC_TEMPLATE, MODULE=modname)
 
-    h_file_path = helperpath.joinpath(modname+'-helper').with_suffix('.h')
-    guard = "{}_HELPER_H".format(modname.replace('-', '_').upper())
+    h_file_path = helperpath.joinpath(modname + "-helper").with_suffix(".h")
+    guard = "{}_HELPER_H".format(modname.replace("-", "_").upper())
     create_file(h_file_path, HELPER_H_TEMPLATE, MODULE=modname, INCLUDE_GUARD=guard)
 
     return True
@@ -393,10 +397,10 @@ def make_examples(moduledir, modname):
     examplespath = Path(moduledir, "examples")
     examplespath.mkdir(parents=True)
 
-    cmakelistspath = Path(examplespath, 'CMakeLists.txt')
+    cmakelistspath = Path(examplespath, "CMakeLists.txt")
     create_file(cmakelistspath, EXAMPLES_CMAKELISTS_TEMPLATE, MODULE=modname)
 
-    examplesfile_path = examplespath.joinpath(modname+'-example').with_suffix('.cc')
+    examplesfile_path = examplespath.joinpath(modname + "-example").with_suffix(".cc")
     create_file(examplesfile_path, EXAMPLE_CC_TEMPLATE, MODULE=modname)
 
     return True
@@ -406,11 +410,11 @@ def make_doc(moduledir, modname):
     docpath = Path(moduledir, "doc")
     docpath.mkdir(parents=True)
 
-    #the module_dir template parameter must be a relative path
-    #instead of an absolute path
+    # the module_dir template parameter must be a relative path
+    # instead of an absolute path
     mod_relpath = os.path.relpath(str(moduledir))
 
-    file_name = '{}.rst'.format(modname)
+    file_name = "{}.rst".format(modname)
     file_path = Path(docpath, file_name)
     create_file(file_path, DOC_RST_TEMPLATE, MODULE=modname, MODULE_DIR=mod_relpath)
 
@@ -426,8 +430,7 @@ def make_module(modpath, modname):
 
     print("Creating module {}".format(modulepath))
 
-    functions = (make_cmakelists, make_model, make_test,
-                 make_helper, make_examples, make_doc)
+    functions = (make_cmakelists, make_model, make_test, make_helper, make_examples, make_doc)
 
     try:
         modulepath.mkdir(parents=True)
@@ -446,6 +449,7 @@ def make_module(modpath, modname):
         return False
 
     return True
+
 
 def create_argument_parser():
     description = """Generate scaffolding for ns-3 modules
@@ -525,24 +529,35 @@ project directory.
 
     formatter = argparse.RawDescriptionHelpFormatter
 
-    parser = argparse.ArgumentParser(description=description,
-                                     epilog=epilog,
-                                     formatter_class=formatter)
+    parser = argparse.ArgumentParser(
+        description=description, epilog=epilog, formatter_class=formatter
+    )
 
-    parser.add_argument('--project', default='',
-                        help=("Specify a relative path under the contrib directory "
-                            "where the new modules will be generated. The path "
-                            "will be created if it does not exist."))
+    parser.add_argument(
+        "--project",
+        default="",
+        help=(
+            "Specify a relative path under the contrib directory "
+            "where the new modules will be generated. The path "
+            "will be created if it does not exist."
+        ),
+    )
 
-    parser.add_argument('modnames', nargs='+',
-                        help=("One or more modules to generate.  Module names "
-                            "are limited to the following: letters, numbers, -, "
-                            "_. Modules are generated under the contrib directory "
-                            "except when the module name starts with src/. Modules "
-                            "that start with src/ are generated under the src "
-                            "directory."))
+    parser.add_argument(
+        "modnames",
+        nargs="+",
+        help=(
+            "One or more modules to generate.  Module names "
+            "are limited to the following: letters, numbers, -, "
+            "_. Modules are generated under the contrib directory "
+            "except when the module name starts with src/. Modules "
+            "that start with src/ are generated under the src "
+            "directory."
+        ),
+    )
 
     return parser
+
 
 def main(argv):
     parser = create_argument_parser()
@@ -554,46 +569,47 @@ def main(argv):
 
     base_path = Path.cwd()
 
-    src_path = base_path.joinpath('src')
-    contrib_path = base_path.joinpath('contrib')
+    src_path = base_path.joinpath("src")
+    contrib_path = base_path.joinpath("contrib")
 
     for p in (src_path, contrib_path):
         if not p.is_dir():
-            parser.error("Cannot find the directory '{}'.\nPlease run this "
-                        "script from the top level of the ns3 directory".format(
-                            p))
+            parser.error(
+                "Cannot find the directory '{}'.\nPlease run this "
+                "script from the top level of the ns3 directory".format(p)
+            )
 
     #
     # Error check the arguments
     #
 
     # Alphanumeric and '-' only
-    allowedRE = re.compile('^(\w|-)+$')
+    allowedRE = re.compile("^(\w|-)+$")
 
     project_path = None
 
     if project:
-        #project may be a path in the form a/b/c
-        #remove any leading or trailing path separators
+        # project may be a path in the form a/b/c
+        # remove any leading or trailing path separators
         project_path = Path(project)
 
         if project_path.is_absolute():
-            #remove leading separator
+            # remove leading separator
             project_path = project_path.relative_to(os.sep)
 
         if not all(allowedRE.match(part) for part in project_path.parts):
-            parser.error('Project path may only contain the characters [a-zA-Z0-9_-].')
+            parser.error("Project path may only contain the characters [a-zA-Z0-9_-].")
     #
     # Create each module, if it doesn't exist
     #
     modules = []
     for name in modnames:
         if name:
-            #remove any leading or trailing directory separators
+            # remove any leading or trailing directory separators
             name = name.strip(os.sep)
 
         if not name:
-            #skip empty modules
+            # skip empty modules
             continue
 
         name_path = Path(name)
@@ -602,33 +618,41 @@ def main(argv):
             print("Skipping {}: module name can not be a path".format(name))
             continue
 
-        #default target directory is contrib
+        # default target directory is contrib
         modpath = contrib_path
 
-        if name_path.parts[0] == 'src':
+        if name_path.parts[0] == "src":
             if project:
-                parser.error("{}: Cannot specify src/ in a module name when --project option is used".format(name))
+                parser.error(
+                    "{}: Cannot specify src/ in a module name when --project option is used".format(
+                        name
+                    )
+                )
 
             modpath = src_path
 
-            #create a new path without the src part
-            name_path = name_path.relative_to('src')
+            # create a new path without the src part
+            name_path = name_path.relative_to("src")
 
-        elif name_path.parts[0] == 'contrib':
+        elif name_path.parts[0] == "contrib":
             modpath = contrib_path
 
-            #create a new path without the contrib part
-            name_path = name_path.relative_to('contrib')
+            # create a new path without the contrib part
+            name_path = name_path.relative_to("contrib")
 
         if project_path:
-            #if a project path was specified, that overrides other paths
-            #project paths are always relative to the contrib path
+            # if a project path was specified, that overrides other paths
+            # project paths are always relative to the contrib path
             modpath = contrib_path.joinpath(project_path)
 
         modname = name_path.parts[0]
 
         if not allowedRE.match(modname):
-            print("Skipping {}: module name may only contain the characters [a-zA-Z0-9_-]".format(modname))
+            print(
+                "Skipping {}: module name may only contain the characters [a-zA-Z0-9_-]".format(
+                    modname
+                )
+            )
             continue
 
         modules.append((modpath, modname))
@@ -640,7 +664,8 @@ def main(argv):
 
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     return_value = 0
     try:
         return_value = main(sys.argv)

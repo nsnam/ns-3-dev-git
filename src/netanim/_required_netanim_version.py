@@ -6,4 +6,4 @@
 # on 'git describe --tags' command.  Example, if the latest release was 3.108,
 # and 'git describe --tags' reports "netanim-3.108-6-g8e7c0a9", then write the
 # version string below as 'netanim-3.108.post6+ng8e7c0a9'
-__required_netanim_version__ = 'netanim-3.109'
+__required_netanim_version__ = "netanim-3.109"
