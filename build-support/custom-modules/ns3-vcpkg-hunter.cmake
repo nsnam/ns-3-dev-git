@@ -134,10 +134,12 @@ function(setup_vcpkg)
     execute_process(COMMAND chmod +x ${VCPKG_DIR}/${VCPKG_EXEC})
   endif()
 
+  disable_cmake_warnings()
   set(CMAKE_PREFIX_PATH
       "${VCPKG_DIR}/installed/${VCPKG_TRIPLET}/;${CMAKE_PREFIX_PATH}"
       PARENT_SCOPE
   )
+  enable_cmake_warnings()
 
   # Install packages in manifest mode
   if(EXISTS ${VCPKG_MANIFEST})
@@ -195,4 +197,6 @@ endfunction()
 
 if(${NS3_VCPKG})
   setup_vcpkg()
+  include_directories(${VCPKG_DIR}/installed/${VCPKG_TRIPLET}/include)
+  link_directories(${VCPKG_DIR}/installed/${VCPKG_TRIPLET}/lib)
 endif()
