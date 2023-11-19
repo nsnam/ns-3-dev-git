@@ -70,7 +70,7 @@ endfunction()
 function(find_external_library)
   # Parse arguments
   set(options QUIET)
-  set(oneValueArgs DEPENDENCY_NAME HEADER_NAME LIBRARY_NAME)
+  set(oneValueArgs DEPENDENCY_NAME HEADER_NAME LIBRARY_NAME OUTPUT_VARIABLE)
   set(multiValueArgs HEADER_NAMES LIBRARY_NAMES PATH_SUFFIXES SEARCH_PATHS)
   cmake_parse_arguments(
     "FIND_LIB" "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
@@ -316,10 +316,23 @@ function(find_external_library)
     set(${name}_INCLUDE_DIRS PARENT_SCOPE)
     set(${name}_LIBRARIES PARENT_SCOPE)
     set(${name}_FOUND FALSE PARENT_SCOPE)
+
+    set(missing_components
+        "Missing headers: \"${not_found_headers}\" and missing libraries: \"${not_found_libraries}\""
+    )
+
+    # Propagate missing components to the specified variable
+    if(DEFINED FIND_LIB_OUTPUT_VARIABLE)
+      mark_as_advanced(${FIND_LIB_OUTPUT_VARIABLE})
+      set(${FIND_LIB_OUTPUT_VARIABLE} "${missing_components}" CACHE INTERNAL "")
+      return()
+    endif()
+
+    # If no variable is specified, log it instead
     if(NOT ${FIND_LIB_QUIET})
       message(
         ${HIGHLIGHTED_STATUS}
-        "find_external_library: ${name} was not found. Missing headers: \"${not_found_headers}\" and missing libraries: \"${not_found_libraries}\"."
+        "find_external_library: ${name} was not found. ${missing_components}."
       )
     endif()
   endif()
