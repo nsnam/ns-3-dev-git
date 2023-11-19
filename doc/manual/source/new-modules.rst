@@ -419,7 +419,7 @@ depend on ``ns3`` configuration variables.  For example,
 
 .. sourcecode:: python
 
-    ("realtime-udp-echo.py", "ENABLE_REAL_TIME == False"),
+    ("brite-generic-example", "ENABLE_BRITE == True", "False"),
 
 
 Step 8 - Configure and Build

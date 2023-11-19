@@ -60,7 +60,6 @@ interesting_config_items = [
     "NS3_ENABLED_MODULES",
     "NS3_ENABLED_CONTRIBUTED_MODULES",
     "NS3_MODULE_PATH",
-    "ENABLE_REAL_TIME",
     "ENABLE_EXAMPLES",
     "ENABLE_TESTS",
     "EXAMPLE_DIRECTORIES",
@@ -75,7 +74,6 @@ interesting_config_items = [
     "VALGRIND_FOUND",
 ]
 
-ENABLE_REAL_TIME = False
 ENABLE_EXAMPLES = True
 ENABLE_TESTS = True
 NSCLICK = False
@@ -198,7 +196,7 @@ def parse_examples_to_run_file(
     # Note that the condition is a Python statement that can
     # depend on ns3 configuration variables.  For example,
     #
-    #     ("realtime-udp-echo.py", "ENABLE_REAL_TIME == True"),
+    #     ("brite-generic-example", "ENABLE_BRITE == True", "False"),
     #
     python_examples = get_list_from_file(examples_to_run_path, "python_examples")
     for example_name, do_run in python_examples:
