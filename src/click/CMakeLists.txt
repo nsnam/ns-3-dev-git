@@ -17,6 +17,7 @@ find_external_library(
   PATH_SUFFIXES userlevel
                 ns
   SEARCH_PATHS ${NS3_WITH_CLICK}
+  OUTPUT_VARIABLE "NS3_CLICK_REASON"
 )
 
 if((NOT

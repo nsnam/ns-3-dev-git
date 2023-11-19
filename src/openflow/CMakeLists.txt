@@ -14,6 +14,7 @@ find_external_library(
   HEADER_NAME openflow.h
   LIBRARY_NAME openflow
   SEARCH_PATHS ${NS3_WITH_OPENFLOW}
+  OUTPUT_VARIABLE "NS3_OPENFLOW_REASON"
 )
 
 if((NOT

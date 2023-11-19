@@ -14,6 +14,7 @@ find_external_library(
   HEADER_NAME Brite.h
   LIBRARY_NAME brite
   SEARCH_PATHS ${NS3_WITH_BRITE}
+  OUTPUT_VARIABLE "NS3_BRITE_REASON"
 )
 
 if((NOT

@@ -512,15 +512,16 @@ macro(process_options)
     # find_package(SQLite3 QUIET) # unsupported in CMake 3.10 We emulate the
     # behavior of find_package below
     find_external_library(
-      DEPENDENCY_NAME SQLite3 HEADER_NAME sqlite3.h LIBRARY_NAME sqlite3
+      DEPENDENCY_NAME SQLite3
+      HEADER_NAME sqlite3.h
+      LIBRARY_NAME sqlite3
+      OUTPUT_VARIABLE "ENABLE_SQLITE_REASON"
     )
 
     if(${SQLite3_FOUND})
       set(ENABLE_SQLITE True)
       add_definitions(-DHAVE_SQLITE3)
       include_directories(${SQLite3_INCLUDE_DIRS})
-    else()
-      message(${HIGHLIGHTED_STATUS} "SQLite was not found")
     endif()
   endif()
 
@@ -536,7 +537,7 @@ macro(process_options)
       add_definitions(-DEIGEN_MPL2_ONLY)
       include_directories(${EIGEN3_INCLUDE_DIR})
     else()
-      message(${HIGHLIGHTED_STATUS} "Eigen was not found")
+      set(ENABLE_EIGEN_REASON "Eigen was not found")
     endif()
   endif()
 
@@ -548,25 +549,20 @@ macro(process_options)
     find_package(HarfBuzz QUIET)
     enable_cmake_warnings()
     if(NOT ${HarfBuzz_FOUND})
-      message(${HIGHLIGHTED_STATUS}
-              "Harfbuzz is required by GTK3 and was not found."
-      )
+      set(GTK3_FOUND_REASON "Harfbuzz is required by GTK3 and was not found")
     else()
       disable_cmake_warnings()
       find_package(GTK3 QUIET)
       enable_cmake_warnings()
       if(NOT ${GTK3_FOUND})
-        message(${HIGHLIGHTED_STATUS}
-                "GTK3 was not found. Continuing without it."
-        )
+        set(GTK3_FOUND_REASON "GTK3 was not found")
       else()
         if(${GTK3_VERSION} VERSION_LESS 3.22)
           set(GTK3_FOUND FALSE)
-          message(${HIGHLIGHTED_STATUS}
-                  "GTK3 found with incompatible version ${GTK3_VERSION}"
+          set(GTK3_FOUND_REASON
+              "GTK3 found with incompatible version ${GTK3_VERSION}"
           )
         else()
-          message(STATUS "GTK3 was found.")
           include_directories(${GTK3_INCLUDE_DIRS} ${HarfBuzz_INCLUDE_DIRS})
         endif()
       endif()
@@ -590,11 +586,8 @@ macro(process_options)
   else()
     find_package(LibXml2 QUIET)
     if(NOT ${LIBXML2_FOUND})
-      message(${HIGHLIGHTED_STATUS}
-              "LibXML2 was not found. Continuing without it."
-      )
+      set(LIBXML2_FOUND_REASON "LibXML2 was not found")
     else()
-      message(STATUS "LibXML2 was found.")
       add_definitions(-DHAVE_LIBXML2)
       include_directories(${LIBXML2_INCLUDE_DIR})
     endif()
@@ -785,9 +778,6 @@ macro(process_options)
     else()
       set(ENABLE_VISUALIZER_REASON "Python Bindings are disabled")
     endif()
-    if(ENABLE_VISUALIZER_REASON)
-      message(${HIGHLIGHTED_STATUS} "Visualizer: ${ENABLE_VISUALIZER_REASON}")
-    endif()
   endif()
 
   if(${NS3_COVERAGE} AND (NOT ${ENABLE_TESTS} OR NOT ${ENABLE_EXAMPLES}))
@@ -840,10 +830,11 @@ macro(process_options)
     set(CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIRS})
   endif()
 
+  set(GSL_FOUND FALSE)
   if(${NS3_GSL})
     find_package(GSL QUIET)
     if(NOT ${GSL_FOUND})
-      message(${HIGHLIGHTED_STATUS} "GSL was not found. Continuing without it.")
+      set(GSL_FOUND_REASON "GSL was not found")
     else()
       message(STATUS "GSL was found.")
       add_definitions(-DHAVE_GSL)
