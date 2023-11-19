@@ -597,6 +597,8 @@ IdealWifiManager::IsModulationClassSupported(WifiModulationClass mc,
         return (GetVhtSupported() && GetVhtSupported(station));
     case WIFI_MOD_CLASS_HE:
         return (GetHeSupported() && GetHeSupported(station));
+    case WIFI_MOD_CLASS_EHT:
+        return (GetEhtSupported() && GetEhtSupported(station));
     default:
         NS_ABORT_MSG("Unknown modulation class: " << mc);
     }
@@ -627,6 +629,13 @@ IdealWifiManager::IsCandidateModulationClass(WifiModulationClass mc,
         }
         [[fallthrough]];
     case WIFI_MOD_CLASS_HE:
+        // If the node and peer are both EHT capable, skip non-EHT modes
+        if (GetEhtSupported() && GetEhtSupported(station))
+        {
+            return false;
+        }
+        break;
+    case WIFI_MOD_CLASS_EHT:
         break;
     default:
         NS_ABORT_MSG("Unknown modulation class: " << mc);
