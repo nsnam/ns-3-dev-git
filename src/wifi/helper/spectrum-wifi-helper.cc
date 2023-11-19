@@ -200,7 +200,8 @@ SpectrumWifiPhyHelper::SpectrumChannelSwitched(Ptr<SpectrumWifiPhy> phy)
             // no interface attached to that channel
             continue;
         }
-        spectrumPhy->ConfigureInterface(phy->GetFrequency(), phy->GetChannelWidth());
+        spectrumPhy->ConfigureInterface(phy->GetOperatingChannel().GetFrequencies(),
+                                        phy->GetChannelWidth());
     }
 }
 

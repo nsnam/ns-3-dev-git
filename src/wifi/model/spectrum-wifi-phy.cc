@@ -404,9 +404,14 @@ SpectrumWifiPhy::NotifyChannelSwitched()
 }
 
 void
-SpectrumWifiPhy::ConfigureInterface(uint16_t frequency, ChannelWidthMhz width)
+SpectrumWifiPhy::ConfigureInterface(const std::vector<uint16_t>& frequencies, ChannelWidthMhz width)
 {
-    NS_LOG_FUNCTION(this << frequency << width);
+    std::stringstream ss;
+    for (const auto& centerFrequency : frequencies)
+    {
+        ss << centerFrequency << " ";
+    }
+    NS_LOG_FUNCTION(this << ss.str() << width);
 
     if (!m_trackSignalsInactiveInterfaces)
     {
@@ -414,25 +419,39 @@ SpectrumWifiPhy::ConfigureInterface(uint16_t frequency, ChannelWidthMhz width)
         return;
     }
 
-    auto spectrumPhyInterface = GetInterfaceCoveringChannelBand(frequency, width);
-
-    NS_ABORT_MSG_IF(!spectrumPhyInterface,
-                    "No spectrum channel covers frequency range ["
-                        << frequency - (width / 2) << " MHz - " << frequency + (width / 2)
-                        << " MHz]");
+    Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface;
+    const auto numSegments = frequencies.size();
+    const auto segmentWidth = width / numSegments;
+    for (std::size_t i = 0; i < numSegments; ++i)
+    {
+        auto interfaceCoveringBand =
+            GetInterfaceCoveringChannelBand(frequencies.at(i), segmentWidth);
+        NS_ABORT_MSG_IF(!interfaceCoveringBand,
+                        "No spectrum channel covers frequency range ["
+                            << frequencies.at(i) - (segmentWidth / 2) << " MHz - "
+                            << frequencies.at(i) + (segmentWidth / 2) << " MHz]");
+        if (!spectrumPhyInterface)
+        {
+            spectrumPhyInterface = interfaceCoveringBand;
+        }
+        else
+        {
+            NS_ABORT_MSG_IF(interfaceCoveringBand != spectrumPhyInterface,
+                            "All segments are not covered by the same spectrum channel");
+        }
+    }
 
     NS_ABORT_MSG_IF(spectrumPhyInterface == m_currentSpectrumPhyInterface,
                     "This method should not be called for the current interface");
 
-    if (!spectrumPhyInterface->GetCenterFrequencies().empty() &&
-        (frequency == spectrumPhyInterface->GetCenterFrequencies().front()) &&
+    if ((frequencies == spectrumPhyInterface->GetCenterFrequencies()) &&
         (width == spectrumPhyInterface->GetChannelWidth()))
     {
         NS_LOG_DEBUG("Same RF channel as before on that interface, do nothing");
         return;
     }
 
-    ResetSpectrumModel(spectrumPhyInterface, {frequency}, width);
+    ResetSpectrumModel(spectrumPhyInterface, frequencies, width);
 }
 
 bool

@@ -135,16 +135,16 @@ class SpectrumWifiPhy : public WifiPhy
                                           Time duration);
 
     /**
-     * Configure a non-active spectrum PHY interface to operate on a given frequency with a given
-     * width. The function searches for the non-active PHY interface that operates on the frequency
-     * range corresponding to the spectrum portion specified by the caller. It takes care to
-     * configure the RX spectrum model of the PHY interface and to update the bands tracked in
-     * interference helper.
+     * Configure a non-active spectrum PHY interface to operate on a given frequency (or several
+     * frequencies for non-contiguous) with a given total width. The function searches for the
+     * non-active PHY interface that operates on the frequency range corresponding to the spectrum
+     * portion specified by the caller. It takes care to configure the RX spectrum model of the PHY
+     * interface and to update the bands tracked in interference helper.
      *
-     * \param frequency the center frequency in MHz the PHY interface should use
-     * \param width the channel width in MHz the PHY interface should use
+     * \param frequencies the center frequency of each segment in MHz the PHY interface should use
+     * \param width the total channel width in MHz the PHY interface should use
      */
-    void ConfigureInterface(uint16_t frequency, ChannelWidthMhz width);
+    void ConfigureInterface(const std::vector<uint16_t>& frequencies, ChannelWidthMhz width);
 
     /**
      * This function is sending the signal to the Spectrum channel
