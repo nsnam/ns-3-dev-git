@@ -63,7 +63,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ns-3 project'
-copyright = u'2006-2019'
+copyright = u'2006-2019, ns-3 project'
 #author = u'test'
 
 # The version info for the project you're documenting, acts as replacement for
