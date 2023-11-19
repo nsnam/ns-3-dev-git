@@ -35,11 +35,11 @@ def find_ns3_lock() -> str:
 SYSTEM_LIBRARY_DIRECTORIES = (DEFAULT_LIB_DIR,
                               os.path.dirname(DEFAULT_LIB_DIR),
                               "/usr/lib64",
-                              "/usr/lib"
+                              "/usr/lib",
                               )
 DYNAMIC_LIBRARY_EXTENSIONS = {"linux": "so",
                               "win32": "dll",
-                              "darwin": "dylib"
+                              "darwin": "dylib",
                               }
 LIBRARY_EXTENSION = DYNAMIC_LIBRARY_EXTENSIONS[sys.platform]
 
@@ -158,8 +158,7 @@ def extract_linked_libraries(library_name: str, prefix: str) -> tuple:
         with open(os.path.abspath(library_path), "rb") as f:
             linked_libs = re.findall(b"\x00(lib.*?.%b)" % LIBRARY_EXTENSION.encode("utf-8"), f.read())
     except Exception as e:
-        print("Failed to extract libraries used by {library} with exception:{exception}"
-              .format(library=library_path, exception=e))
+        print(f"Failed to extract libraries used by {library_path} with exception:{e}")
         exit(-1)
     return library_path, lib, list(map(lambda x: x.decode("utf-8"), linked_libs))
 
@@ -182,8 +181,7 @@ def extract_library_include_dirs(library_name: str, prefix: str) -> tuple:
         # Raise error in case the library can't be found
         if len(linked_library_path) == 0:
             raise Exception(
-                "Failed to find {library}. Make sure its library directory is in LD_LIBRARY_PATH.".format(
-                    library=linked_library))
+                f"Failed to find {linked_library}. Make sure its library directory is in LD_LIBRARY_PATH.")
 
         # Get path with the shortest length
         linked_library_path = sorted(linked_library_path, key=lambda x: len(x))[0]
@@ -239,7 +237,7 @@ def find_ns3_from_lock_file(lock_file: str) -> (str, list, str):
     def filter_in_matching_ns3_libraries(libraries_to_filter: dict,
                                          modules_to_filter: list,
                                          version: str,
-                                         suffix: str) -> dict:
+                                         suffix: str,) -> dict:
         suffix = [suffix[1:]] if len(suffix) > 1 else []
         filtered_in_modules = []
         for module in modules_to_filter:
@@ -255,13 +253,9 @@ def find_ns3_from_lock_file(lock_file: str) -> (str, list, str):
     # When we have the lock file, we assemble the correct library names
     libraries_to_load = []
     for module in modules:
-        library_name = "libns{version}-{module}{suffix}".format(
-            version=version,
-            module=module,
-            suffix=suffix
-        )
+        library_name = f"libns{version}-{module}{suffix}"
         if library_name not in libraries:
-            raise Exception("Missing library %s\n" % library_name,
+            raise Exception(f"Missing library {library_name}\n",
                             "Build all modules with './ns3 build'"
                             )
         libraries_to_load.append(libraries[library_name])
@@ -351,8 +345,7 @@ def find_ns3_from_search() -> (str, list, str):
             else:
                 newest_version_found = get_newest_version([newest_version, newest_version_found])
                 if newest_version != newest_version_found:
-                    raise Exception("Incompatible versions of the ns-3 module '%s' were found: %s != %s."
-                                    % (module, newest_version, newest_version_found))
+                    raise Exception(f"Incompatible versions of the ns-3 module '{module}' were found: {newest_version} != {newest_version_found}.")
 
             for conflicting_library in list(conflicting_libraries):
                 if "-".join([newest_version, module]) not in conflicting_library:
@@ -360,8 +353,7 @@ def find_ns3_from_search() -> (str, list, str):
                     conflicting_libraries.remove(conflicting_library)
 
             if len(conflicting_libraries) > 1:
-                raise Exception("There are multiple build profiles for module '%s'.\nDelete one to continue: %s"
-                                % (module, ", ".join(conflicting_libraries)))
+                raise Exception(f"There are multiple build profiles for module '{module}'.\nDelete one to continue: {', '.join(conflicting_libraries)}")
 
         return libraries_to_filter, newest_version_found
 

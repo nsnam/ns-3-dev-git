@@ -15,12 +15,22 @@ class ShowIpv4RoutingTable(InformationWindow):
     #  node index
     ## @var table_model
     #  table model
+    ## @var COLUMN_DESTINATION
+    #  column destination
+    ## @var COLUMN_NEXT_HOP
+    #  column hop
+    ## @var COLUMN_INTERFACE
+    #  column interface
+    ## @var COLUMN_TYPE
+    #  column type
+    ## @var COLUMN_PRIO
+    #  column priority
     (
         COLUMN_DESTINATION,
         COLUMN_NEXT_HOP,
         COLUMN_INTERFACE,
         COLUMN_TYPE,
-        COLUMN_PRIO
+        COLUMN_PRIO,
     ) = range(5)
 
     def __init__(self, visualizer, node_index):

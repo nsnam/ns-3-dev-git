@@ -63,11 +63,11 @@ class IterableIPShell:
   #  colors
   ## @var raw_input
   #  raw input
-  ## Constructor
+
   def __init__(self, argv=[], user_ns=None, user_global_ns=None,
                cin=None, cout=None, cerr=None, input_func=None):
-    """! Initializer
-
+    """!
+    Constructor for the IterableIPShell class
     @param self: this object
     @param argv: Command line options for IPython
     @param user_ns: User namespace.

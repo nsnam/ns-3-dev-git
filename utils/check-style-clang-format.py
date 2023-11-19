@@ -677,28 +677,28 @@ if __name__ == '__main__':
         'non-zero code. When used in "fix mode", this script automatically fixes the files.')
 
     parser.add_argument('paths', action='store', type=str, nargs='+',
-                        help='List of paths to the files to check')
+                        help='List of paths to the files to check',)
 
     parser.add_argument('--no-include-prefixes', action='store_true',
-                        help='Do not check / fix #include headers from the same module with the "ns3/" prefix')
+                        help='Do not check / fix #include headers from the same module with the "ns3/" prefix',)
 
     parser.add_argument('--no-formatting', action='store_true',
-                        help='Do not check / fix code formatting')
+                        help='Do not check / fix code formatting',)
 
     parser.add_argument('--no-whitespace', action='store_true',
-                        help='Do not check / fix trailing whitespace')
+                        help='Do not check / fix trailing whitespace',)
 
     parser.add_argument('--no-tabs', action='store_true',
-                        help='Do not check / fix tabs')
+                        help='Do not check / fix tabs',)
 
     parser.add_argument('--fix', action='store_true',
-                        help='Fix coding style issues detected in the files')
+                        help='Fix coding style issues detected in the files',)
 
     parser.add_argument('-v', '--verbose', action='store_true',
-                        help='Show the lines that are not well-formatted')
+                        help='Show the lines that are not well-formatted',)
 
     parser.add_argument('-j', '--jobs', type=int, default=max(1, os.cpu_count() - 1),
-                        help='Number of parallel jobs')
+                        help='Number of parallel jobs',)
 
     args = parser.parse_args()
 
