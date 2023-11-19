@@ -714,7 +714,7 @@ class NS3BaseTestCase(unittest.TestCase):
         Check if configuration for release mode worked normally
         @param return_code: return code from CMake
         @param stdout: output from CMake.
-        @param stdout: error from CMake.
+        @param stderr: error from CMake.
         @return None
         """
         self.assertEqual(return_code, 0)
@@ -1871,6 +1871,27 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3('configure --enable-tests')
         self.assertEqual(return_code, 0)
         self.assertTrue(os.path.exists(test_module_cache))
+
+    def test_25_CheckBareConfig(self):
+        """!
+        Check for regressions in a bare ns-3 configuration.
+        @return None
+        """
+
+        run_ns3("clean")
+
+        with DockerContainerManager(self, "ubuntu:20.04") as container:
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 cmake g++")
+            return_code = 0
+            stdout = ""
+            try:
+                stdout = container.execute("./ns3 configure -d release")
+            except DockerException as e:
+                return_code = 1
+            self.config_ok(return_code, stdout, stdout)
+
+        run_ns3("clean")
 
 
 class NS3BuildBaseTestCase(NS3BaseTestCase):
