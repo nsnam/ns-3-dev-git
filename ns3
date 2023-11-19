@@ -727,6 +727,9 @@ def configure_cmake(cmake, args, current_cmake_cache_folder, current_cmake_gener
         cmake_args.extend(["--profiling-format=google-trace",
                            "--profiling-output=" + cmake_performance_trace])
 
+    # Enable warnings for uninitialized variable usage
+    cmake_args.append("--warn-uninitialized")
+
     # Append CMake flags passed using the -- separator
     cmake_args.extend(args.program_args)
 

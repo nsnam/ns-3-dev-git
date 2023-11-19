@@ -709,16 +709,18 @@ class NS3BaseTestCase(unittest.TestCase):
     Generic test case with basic function inherited by more complex tests.
     """
 
-    def config_ok(self, return_code, stdout):
+    def config_ok(self, return_code, stdout, stderr):
         """!
         Check if configuration for release mode worked normally
         @param return_code: return code from CMake
         @param stdout: output from CMake.
+        @param stdout: error from CMake.
         @return None
         """
         self.assertEqual(return_code, 0)
         self.assertIn("Build profile                 : release", stdout)
         self.assertIn("Build files have been written to", stdout)
+        self.assertNotIn("uninitialized variable", stderr)
 
     def setUp(self):
         """!
@@ -735,7 +737,7 @@ class NS3BaseTestCase(unittest.TestCase):
         # Reconfigure from scratch before each test
         run_ns3("clean")
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" -d release --enable-verbose")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # Check if .lock-ns3 exists, then read to get list of executables.
         self.assertTrue(os.path.exists(ns3_lock_filename))
@@ -768,7 +770,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --enable-examples")
 
         # This just tests if we didn't break anything, not that we actually have enabled anything.
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # If nothing went wrong, we should have more executables in the list after enabling the examples.
         self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
@@ -777,7 +779,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --disable-examples")
 
         # This just tests if we didn't break anything, not that we actually have enabled anything.
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # Then check if they went back to the original list.
         self.assertEqual(len(get_programs_list()), len(self.ns3_executables))
@@ -789,7 +791,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         # Try enabling tests
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --enable-tests")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # Then try building the libcore test
         return_code, stdout, stderr = run_ns3("build core-test")
@@ -800,7 +802,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         # Now we disabled the tests
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --disable-tests")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # Now building the library test should fail
         return_code, stdout, stderr = run_ns3("build core-test")
@@ -816,7 +818,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         # Try filtering enabled modules to network+Wi-Fi and their dependencies
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --enable-modules='network;wifi'")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # At this point we should have fewer modules
         enabled_modules = get_enabled_modules()
@@ -826,12 +828,12 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         # Try enabling only core
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --enable-modules='core'")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
         self.assertIn("ns3-core", get_enabled_modules())
 
         # Try cleaning the list of enabled modules to reset to the normal configuration.
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --enable-modules=''")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # At this point we should have the same amount of modules that we had when we started.
         self.assertEqual(len(get_enabled_modules()), len(self.ns3_modules))
@@ -843,7 +845,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         # Try filtering disabled modules to disable lte and modules that depend on it.
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --disable-modules='lte;wimax'")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # At this point we should have fewer modules.
         enabled_modules = get_enabled_modules()
@@ -853,7 +855,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         # Try cleaning the list of enabled modules to reset to the normal configuration.
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --disable-modules=''")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # At this point we should have the same amount of modules that we had when we started.
         self.assertEqual(len(get_enabled_modules()), len(self.ns3_modules))
@@ -865,7 +867,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         # Try filtering enabled modules to network+Wi-Fi and their dependencies.
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --enable-modules='network,wifi'")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # At this point we should have fewer modules.
         enabled_modules = get_enabled_modules()
@@ -875,7 +877,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         # Try cleaning the list of enabled modules to reset to the normal configuration.
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --enable-modules=''")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # At this point we should have the same amount of modules that we had when we started.
         self.assertEqual(len(get_enabled_modules()), len(self.ns3_modules))
@@ -887,7 +889,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         # Try filtering disabled modules to disable lte and modules that depend on it.
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --disable-modules='lte,mpi'")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # At this point we should have fewer modules.
         enabled_modules = get_enabled_modules()
@@ -897,7 +899,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         # Try cleaning the list of enabled modules to reset to the normal configuration.
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --disable-modules=''")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # At this point we should have the same amount of modules that we had when we started.
         self.assertEqual(len(get_enabled_modules()), len(self.ns3_modules))
@@ -966,7 +968,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
             # Reconfigure.
             return_code, stdout, stderr = run_ns3("configure -G \"{generator}\"")
-            self.config_ok(return_code, stdout)
+            self.config_ok(return_code, stdout, stderr)
 
             # Check.
             enabled_modules = get_enabled_modules()
@@ -981,7 +983,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
             # Reconfigure
             return_code, stdout, stderr = run_ns3("configure -G \"{generator}\"")
-            self.config_ok(return_code, stdout)
+            self.config_ok(return_code, stdout, stderr)
 
             # Check
             enabled_modules = get_enabled_modules()
@@ -996,7 +998,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
             # Reconfigure
             return_code, stdout, stderr = run_ns3("configure -G \"{generator}\"")
-            self.config_ok(return_code, stdout)
+            self.config_ok(return_code, stdout, stderr)
 
             # Check
             enabled_modules = get_enabled_modules()
@@ -1022,7 +1024,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                             )
             # Reconfigure
             return_code, stdout, stderr = run_ns3("configure -G \"{generator}\"")
-            self.config_ok(return_code, stdout)
+            self.config_ok(return_code, stdout, stderr)
 
             # Check
             enabled_modules = get_enabled_modules()
@@ -1039,7 +1041,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
             # Reconfigure
             return_code, stdout, stderr = run_ns3("configure -G \"{generator}\"")
-            self.config_ok(return_code, stdout)
+            self.config_ok(return_code, stdout, stderr)
 
             # Check
             self.assertEqual(len(get_enabled_modules()), len(self.ns3_modules))
@@ -1593,14 +1595,14 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         # Try filtering enabled modules to core+network and their dependencies
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --enable-examples --enable-tests")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         modules_before_filtering = get_enabled_modules()
         programs_before_filtering = get_programs_list()
 
         return_code, stdout, stderr = run_ns3(
             "configure -G \"{generator}\" --filter-module-examples-and-tests='core;network'")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         modules_after_filtering = get_enabled_modules()
         programs_after_filtering = get_programs_list()
@@ -1613,7 +1615,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Try filtering in only core
         return_code, stdout, stderr = run_ns3(
             "configure -G \"{generator}\" --filter-module-examples-and-tests='core'")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # At this point we should have the same number of modules
         self.assertEqual(len(get_enabled_modules()), len(modules_after_filtering))
@@ -1623,7 +1625,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Try cleaning the list of enabled modules to reset to the normal configuration.
         return_code, stdout, stderr = run_ns3(
             "configure -G \"{generator}\" --disable-examples --disable-tests --filter-module-examples-and-tests=''")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # At this point we should have the same amount of modules that we had when we started.
         self.assertEqual(len(get_enabled_modules()), len(self.ns3_modules))
@@ -1960,7 +1962,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
         # Reconfigure.
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\"")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # Build.
         return_code, stdout, stderr = run_ns3("build")
@@ -2018,7 +2020,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         relative_path = os.sep.join(["build", "release"])
         for different_out_dir in [absolute_path, relative_path]:
             return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --out=%s" % different_out_dir)
-            self.config_ok(return_code, stdout)
+            self.config_ok(return_code, stdout, stderr)
             self.assertIn("Build directory               : %s" % absolute_path.replace(os.sep, '/'), stdout)
 
             # Build
@@ -2042,7 +2044,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
         # Restore original output directory.
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --out=''")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
         self.assertIn("Build directory               : %s" % usual_outdir.replace(os.sep, '/'), stdout)
 
         # Try re-building.
@@ -2080,7 +2082,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Reconfigure setting the installation folder to ns-3-dev/build/install.
         install_prefix = os.sep.join([ns3_path, "build", "install"])
         return_code, stdout, stderr = run_ns3("configure -G \"{generator}\" --prefix=%s" % install_prefix)
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # Build.
         run_ns3("build")
@@ -2421,7 +2423,7 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         # On top of the release build configured by NS3ConfigureTestCase, also enable examples, tests and docs.
         return_code, stdout, stderr = run_ns3(
             "configure -d release -G \"{generator}\" --enable-examples --enable-tests")
-        self.config_ok(return_code, stdout)
+        self.config_ok(return_code, stdout, stderr)
 
         # Check if .lock-ns3 exists, then read to get list of executables.
         self.assertTrue(os.path.exists(ns3_lock_filename))
