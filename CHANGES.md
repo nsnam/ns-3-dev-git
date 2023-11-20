@@ -18,6 +18,8 @@ Changes from ns-3.40 to ns-3-dev
 
 ### New API
 
+* (spectrum) `SpectrumSignalParameters` is extended to include two new members called: `spectrumChannelMatrix` and `precodingMatrix` which are the key information needed to support MIMO simulations.
+
 ### Changes to existing API
 
 * The spelling of the following files, classes, functions, constants, defines and enumerated values was corrected; this will affect existing users who were using them with the misspelling.
@@ -29,6 +31,9 @@ Changes from ns-3.40 to ns-3-dev
 * (lr-wpan) Create a new abstract class that defines the form of any Lr-wpan MAC layers (`LrWpanMacBase`).
 * (wifi) The `HeConfiguration::MpduBufferSize` attribute is now obsolete. Use the `WifiMac::MpduBufferSize` attribute instead.
 * (wifi) The `LinkSetupCanceled` trace source of `StaWifiMac` has been obsoleted because disassociation does not occur at link level for non-AP MLDs.
+* (antenna) `UniformPlannarArray` has new attributes `NumVerticalPorts`, `NumHorizontalPorts`, and `IsDualPolarized`.
+* (antenna) `GetNumberOfElements` is renamed to `GetNumElems` for the sake of simplifying the long lines of code that use complex mathematical expressions.
+* (spectrum) `PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity` return type is changed from `Ptr<SpectrumValue>` to `Ptr<SpectrumSignalParameters>` to support MIMO, because when multiple transmit and receive antenna ports are present, it is not enough to have a single PSD (represented by `Ptr<SpectrumValue>`) but also the 3D channel matrix is needed per receive and transmit antenna port. Notice that `CalcRxPowerSpectralDensity` is typically called from within `MultiModelSpectrumChannel`, but if some external ns-3 module is calling directly this function, it can still access to its original return value through `Ptr<SpectrumSignalParameters>` which contains `Ptr<SpectrumValue>`.
 
 ### Changes to build system
 

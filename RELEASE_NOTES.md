@@ -24,6 +24,8 @@ Release 3-dev
 - (lr-wpan) !1698 - Change SuperframeField to standard bitmap
 - (lr-wpan) !1706 - Create MAC layer abstraction (decoupling, alternative MACs)
 - (wifi) Added support for BlockAck buffer size of up to 1024 MPDUs (EHT STAs only)
+- (antenna) !1337 - `UniformPlanarArray` is extended to support multiple horizontal and vertical antenna ports, and dual-polarized antennas.
+- (spectrum)!1337 - `ThreeGppSpectrumPropagationLossModel` and `ThreeGppChannelModel` are extended to support multi-port and dual-polarized antenna arrays which is a basis for enabling 3GPP MIMO simulations in ns-3.
 
 ### Bugs fixed
 
