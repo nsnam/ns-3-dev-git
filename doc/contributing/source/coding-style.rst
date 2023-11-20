@@ -1565,3 +1565,66 @@ the ``ns3`` script to run the custom targets that do that automatically.
 
 Custom functions and macros need to be explicitly configured in the ``cmake-format.yaml`` files,
 otherwise their formatting will be broken.
+
+Python file formatting
+**********************
+
+.. _Black: https://black.readthedocs.io/en/stable/index.html
+.. _Isort: https://pycqa.github.io/isort/index.html
+.. _Black current style: https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html
+
+Python format style and rule enforcement is based on the default settings for the `Black`_
+formatter tool and `Isort`_ import sorter tool. Black default format is detailed in `Black current style`_.
+
+The custom settings for both tools are set in the ``pyproject.toml`` file.
+
+These tools that can be installed via Pip, using the following command:
+
+.. sourcecode:: console
+
+    pip install black isort
+
+To check the formatting, add the `--check` option to the command:
+
+.. sourcecode:: console
+
+    black --check .
+    isort --check .
+
+To check and fix the formatting, run the commands as follows:
+
+.. sourcecode:: console
+
+    black .
+    isort .
+
+.. _MS Black formatter: https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter
+.. _MS Isort: https://marketplace.visualstudio.com/items?itemName=ms-python.isort
+
+For VS Code users, `MS Black formatter`_ and `MS Isort`_ extensions, which repackage
+Black and Isort for VS Code, can be installed to apply fixes regularly.
+To configure VS Code to automatically format code when saving, editing or pasting code,
+add the following configuration to ``.vscode/settings.json``:
+
+.. sourcecode:: json
+
+    {
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "[python]": {
+            "editor.defaultFormatter": "ms-python.black-formatter",
+            "editor.codeActionsOnSave": {
+                "source.organizeImports": true,
+            },
+        },
+        "black-formatter.args": [
+            "--config",
+            "pyproject.toml",
+        ],
+        "isort.check": true,
+        "isort.args": [
+            "--sp",
+            "pyproject.toml",
+        ],
+    }
