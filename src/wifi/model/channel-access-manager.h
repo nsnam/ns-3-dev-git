@@ -330,6 +330,11 @@ class ChannelAccessManager : public Object
     void ResetBackoff(Ptr<Txop> txop);
 
     /**
+     * Reset the backoff for all the DCF/EDCAF. Additionally, cancel the access timeout event.
+     */
+    void ResetAllBackoffs();
+
+    /**
      * Notify that the given PHY is about to switch to the given operating channel, which is
      * used by the given link. This notification is sent by the EMLSR Manager when a PHY object
      * switches operating channel to operate on another link.

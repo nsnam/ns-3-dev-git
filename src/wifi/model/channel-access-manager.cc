@@ -996,6 +996,18 @@ ChannelAccessManager::ResetBackoff(Ptr<Txop> txop)
 }
 
 void
+ChannelAccessManager::ResetAllBackoffs()
+{
+    NS_LOG_FUNCTION(this);
+
+    for (const auto& txop : m_txops)
+    {
+        ResetBackoff(txop);
+    }
+    m_accessTimeout.Cancel();
+}
+
+void
 ChannelAccessManager::NotifySleepNow()
 {
     NS_LOG_FUNCTION(this);
