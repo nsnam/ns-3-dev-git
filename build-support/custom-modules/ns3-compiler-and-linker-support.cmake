@@ -76,8 +76,8 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 endif()
 unset(below_minimum_msg)
 
-set(LIB_AS_NEEDED_PRE)
-set(LIB_AS_NEEDED_POST)
+set(LIB_AS_NEEDED_PRE "")
+set(LIB_AS_NEEDED_POST "")
 set(STATIC_LINK_FLAGS -static -static-libstdc++ -static-libgcc)
 if(${GCC} AND NOT APPLE)
   # using GCC
@@ -90,9 +90,9 @@ endif()
 
 if(${CLANG} AND APPLE)
   # using Clang set(LIB_AS_NEEDED_PRE -all_load)
-  set(LIB_AS_NEEDED_POST)
+  set(LIB_AS_NEEDED_POST "")
   set(LIB_AS_NEEDED_PRE_STATIC -Wl,-all_load)
-  set(STATIC_LINK_FLAGS)
+  set(STATIC_LINK_FLAGS "")
 endif()
 
 if(${NS3_FAST_LINKERS})
