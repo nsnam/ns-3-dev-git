@@ -129,7 +129,7 @@ MpduAggregator::GetMaxAmpduSize(Mac48Address recipient,
 
     if (maxAmpduSize == 0)
     {
-        NS_LOG_DEBUG("A-MPDU Aggregation is disabled on this station for AC " << ac);
+        NS_LOG_DEBUG("A-MPDU Aggregation is disabled on this station for " << ac);
         return 0;
     }
 

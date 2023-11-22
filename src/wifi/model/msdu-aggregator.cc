@@ -167,7 +167,7 @@ MsduAggregator::GetMaxAmsduSize(Mac48Address recipient,
 
     if (maxAmsduSize == 0)
     {
-        NS_LOG_DEBUG("A-MSDU Aggregation is disabled on this station for AC " << ac);
+        NS_LOG_DEBUG("A-MSDU Aggregation is disabled on this station for " << ac);
         return 0;
     }
 
