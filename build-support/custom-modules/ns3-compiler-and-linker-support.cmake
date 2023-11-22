@@ -122,7 +122,7 @@ if(${NS3_FAST_LINKERS})
     add_link_options("-fuse-ld=lld")
     if(WIN32)
       # Clear unsupported linker flags on Windows
-      set(LIB_AS_NEEDED_PRE)
+      set(LIB_AS_NEEDED_PRE "")
     endif()
   endif()
 endif()
