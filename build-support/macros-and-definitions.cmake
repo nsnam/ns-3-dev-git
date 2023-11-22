@@ -1139,6 +1139,7 @@ macro(process_options)
   if(APPLE OR WSLv1 OR WIN32)
     set(ENABLE_TAP OFF)
     set(ENABLE_EMU OFF)
+    set(ENABLE_FDNETDEV FALSE)
     list(REMOVE_ITEM libs_to_build fd-net-device)
     message(
       STATUS
