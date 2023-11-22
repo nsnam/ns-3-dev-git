@@ -121,12 +121,25 @@ QosTxop::QosTxop(AcIndex ac)
         }));
     m_baManager->SetUnblockDestinationCallback(
         Callback<void, Mac48Address, uint8_t>([this](Mac48Address recipient, uint8_t tid) {
+            // save the status of AC queues before unblocking the transmissions to the recipient
+            std::map<uint8_t, bool> hasFramesToTransmit;
+            for (const auto& [id, link] : GetLinks())
+            {
+                hasFramesToTransmit[id] = HasFramesToTransmit(id);
+            }
+
             m_mac->GetMacQueueScheduler()->UnblockQueues(WifiQueueBlockedReason::WAITING_ADDBA_RESP,
                                                          m_ac,
                                                          {WIFI_QOSDATA_QUEUE},
                                                          recipient,
                                                          m_mac->GetLocalAddress(recipient),
                                                          {tid});
+
+            // start access (if needed) on all the links
+            for (const auto& [id, link] : GetLinks())
+            {
+                StartAccessAfterEvent(id, hasFramesToTransmit.at(id), true);
+            }
         }));
     m_queue->TraceConnectWithoutContext(
         "Expired",
@@ -638,14 +651,6 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address re
     NS_LOG_FUNCTION(this << respHdr << recipient);
     uint8_t tid = respHdr.GetTid();
 
-    // save the status of the AC queues before unblocking the transmissions to the recipient
-    // (performed by the calls to the BlockAckManager below)
-    std::map<uint8_t, bool> hasFramesToTransmit;
-    for (const auto& [id, link] : GetLinks())
-    {
-        hasFramesToTransmit[id] = HasFramesToTransmit(id);
-    }
-
     if (respHdr.GetStatusCode().IsSuccess())
     {
         NS_LOG_DEBUG("block ack agreement established with " << recipient << " tid " << +tid);
@@ -669,11 +674,6 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address re
         NS_LOG_DEBUG("discard ADDBA response" << recipient);
         m_baManager->NotifyOriginatorAgreementRejected(recipient, tid);
     }
-
-    for (const auto& [id, link] : GetLinks())
-    {
-        StartAccessAfterEvent(id, hasFramesToTransmit.at(id), true);
-    }
 }
 
 void
@@ -688,22 +688,7 @@ void
 QosTxop::NotifyOriginatorAgreementNoReply(const Mac48Address& recipient, uint8_t tid)
 {
     NS_LOG_FUNCTION(this << recipient << tid);
-
-    // save the status of the AC queues before unblocking the transmissions to the recipient
-    // (performed by the call to the BlockAckManager below)
-    std::map<uint8_t, bool> hasFramesToTransmit;
-    for (const auto& [id, link] : GetLinks())
-    {
-        hasFramesToTransmit[id] = HasFramesToTransmit(id);
-    }
-
     m_baManager->NotifyOriginatorAgreementNoReply(recipient, tid);
-    // the recipient has been "unblocked" and transmissions can resume using normal
-    // acknowledgment, hence start access (if needed) on all the links
-    for (const auto& [id, link] : GetLinks())
-    {
-        StartAccessAfterEvent(id, hasFramesToTransmit.at(id), true);
-    }
 }
 
 void
