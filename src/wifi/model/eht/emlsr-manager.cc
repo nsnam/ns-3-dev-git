@@ -926,19 +926,23 @@ EmlsrManager::ApplyMaxChannelWidthAndModClassOnAuxPhys()
         auto cam = m_staMac->GetChannelAccessManager(linkId);
         cam->NotifySwitchingEmlsrLink(auxPhy, channel, linkId);
 
-        void (WifiPhy::*fp)(const WifiPhyOperatingChannel&) = &WifiPhy::SetOperatingChannel;
-        Simulator::ScheduleNow(fp, auxPhy, channel);
+        auxPhy->SetOperatingChannel(channel);
 
         // the way the ChannelAccessManager handles EMLSR link switch implies that a PHY listener
         // is removed when the channel switch starts and another one is attached when the channel
-        // switch ends. In the meantime, no PHY is connected to the ChannelAccessManager. Inform
-        // the ChannelAccessManager that this channel switch is related to EMLSR operations, so
-        // that the ChannelAccessManager does not complain if events requiring access to the PHY
-        // occur during the channel switch.
-        cam->NotifyStartUsingOtherEmlsrLink();
-        Simulator::Schedule(auxPhy->GetChannelSwitchDelay(),
-                            &ChannelAccessManager::NotifyStopUsingOtherEmlsrLink,
-                            cam);
+        // switch ends. In the meantime, no PHY is connected to the ChannelAccessManager. Thus,
+        // reset all backoffs (so that access timeout is also cancelled) when the channel switch
+        // starts and request channel access (if needed) when the channel switch ends.
+        cam->ResetAllBackoffs();
+        Simulator::Schedule(auxPhy->GetChannelSwitchDelay(), [=, this]() {
+            for (const auto& [acIndex, ac] : wifiAcList)
+            {
+                m_staMac->GetQosTxop(acIndex)->StartAccessAfterEvent(
+                    linkId,
+                    Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                    Txop::CHECK_MEDIUM_BUSY);
+            }
+        });
     }
 }
 
