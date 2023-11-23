@@ -186,13 +186,13 @@ PhyEntity::GetDuration(WifiPpduField field, const WifiTxVector& txVector) const
     {
         NS_FATAL_ERROR("Unsupported PPDU field");
     }
-    return MicroSeconds(0); // should be overloaded
+    return Time(); // should be overloaded
 }
 
 Time
 PhyEntity::CalculatePhyPreambleAndHeaderDuration(const WifiTxVector& txVector) const
 {
-    Time duration = MicroSeconds(0);
+    Time duration;
     for (uint8_t field = WIFI_PPDU_FIELD_PREAMBLE; field < WIFI_PPDU_FIELD_DATA; ++field)
     {
         duration += GetDuration(static_cast<WifiPpduField>(field), txVector);
@@ -249,7 +249,7 @@ PhyEntity::GetDurationUpToField(WifiPpduField field, const WifiTxVector& txVecto
     {
         return CalculatePhyPreambleAndHeaderDuration(txVector);
     }
-    const auto& sections = GetPhyHeaderSections(txVector, NanoSeconds(0));
+    const auto& sections = GetPhyHeaderSections(txVector, Time());
     auto it = sections.find(field);
     NS_ASSERT(it != sections.end());
     const auto& startStopTimes = it->second.first;
@@ -589,8 +589,8 @@ PhyEntity::ScheduleEndOfMpdus(Ptr<Event> event)
     Ptr<const WifiPsdu> psdu = GetAddressedPsduInPpdu(ppdu);
     const auto& txVector = event->GetPpdu()->GetTxVector();
     uint16_t staId = GetStaId(ppdu);
-    Time endOfMpduDuration = NanoSeconds(0);
-    Time relativeStart = NanoSeconds(0);
+    Time endOfMpduDuration;
+    Time relativeStart;
     Time psduDuration = ppdu->GetTxDuration() - CalculatePhyPreambleAndHeaderDuration(txVector);
     Time remainingAmpduDuration = psduDuration;
     size_t nMpdus = psdu->GetNMpdus();

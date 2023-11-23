@@ -341,7 +341,7 @@ InterferenceHelper::GetEnergyDuration(Watt_u energy, const WifiSpectrumBandInfo&
             break;
         }
     }
-    return end > now ? end - now : MicroSeconds(0);
+    return end > now ? end - now : Time{0};
 }
 
 void
@@ -659,7 +659,7 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr(
     auto j = niIt.begin();
 
     NS_ASSERT(!phyHeaderSections.empty());
-    Time stopLastSection = Seconds(0);
+    Time stopLastSection;
     for (const auto& section : phyHeaderSections)
     {
         stopLastSection = Max(stopLastSection, section.second.first.second);
