@@ -31,6 +31,7 @@ Release 3-dev
 ### Bugs fixed
 
 - (lr-wpan) !1673 - Fixes PHY BUSY_RX -> RX_ON operation
+- (wifi) - Fix agreement not always properly torn down when Block Ack inactivity timeout is elapsed
 
 Release 3.40
 ------------
