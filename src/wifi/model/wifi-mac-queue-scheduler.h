@@ -135,9 +135,13 @@ class WifiMacQueueScheduler : public Object
      *
      * \param ac the given Access Category
      * \param mpdu the given MPDU
+     * \param ignoredReasons list of reasons for blocking a link that are ignored
      * \return the list of the IDs of the links the given MPDU can be sent over
      */
-    virtual std::list<uint8_t> GetLinkIds(AcIndex ac, Ptr<const WifiMpdu> mpdu) = 0;
+    virtual std::list<uint8_t> GetLinkIds(
+        AcIndex ac,
+        Ptr<const WifiMpdu> mpdu,
+        const std::list<WifiQueueBlockedReason>& ignoredReasons = {}) = 0;
 
     /**
      * Block the given set of links for the container queues of the given types and
