@@ -531,8 +531,14 @@ void
 Txop::Queue(Ptr<WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);
-    auto linkIds = m_mac->GetMacQueueScheduler()->GetLinkIds(m_queue->GetAc(), mpdu);
-    std::map<uint8_t, bool> hasFramesToTransmit;
+
+    // channel access can be requested on a blocked link, if the reason for blocking the link
+    // is temporary
+    auto linkIds = m_mac->GetMacQueueScheduler()->GetLinkIds(
+        m_queue->GetAc(),
+        mpdu,
+        {WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+         WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY});
 
     // ignore the links for which a channel access request event is already running
     for (auto it = linkIds.begin(); it != linkIds.end();)
@@ -549,6 +555,7 @@ Txop::Queue(Ptr<WifiMpdu> mpdu)
 
     // save the status of the AC queues before enqueuing the MPDU (required to determine if
     // backoff is needed)
+    std::map<uint8_t, bool> hasFramesToTransmit;
     for (const auto linkId : linkIds)
     {
         hasFramesToTransmit[linkId] = HasFramesToTransmit(linkId);
