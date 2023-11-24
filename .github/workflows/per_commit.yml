@@ -50,7 +50,7 @@ jobs:
   CodeQL:
     runs-on: ubuntu-latest
     needs: Ubuntu
-    if: needs.Ubuntu.outputs.cache_misses != '0'
+    if: ${{ (needs.Ubuntu.outputs.cache_misses != '0') && (github.repository == ‘nsnam/ns-3-dev-git’) }}
     strategy:
       fail-fast: false
     steps:
