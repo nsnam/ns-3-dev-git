@@ -1409,7 +1409,7 @@ WifiPhy::ResumeFromSleep()
     case WifiPhyState::SLEEP: {
         NS_LOG_DEBUG("resuming from sleep mode");
         m_state->SwitchFromSleep();
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
         break;
     }
     default: {
@@ -1437,7 +1437,7 @@ WifiPhy::ResumeFromOff()
     case WifiPhyState::OFF: {
         NS_LOG_DEBUG("resuming from off mode");
         m_state->SwitchFromOff();
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
         break;
     }
     default: {
@@ -1836,6 +1836,8 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
     m_powerRestricted = false;
 
     Simulator::Schedule(txDuration, &WifiPhy::Reset, this);
+
+    Simulator::Schedule(txDuration, &WifiPhy::SwitchMaybeToCcaBusy, this, nullptr);
 }
 
 uint64_t
@@ -1863,7 +1865,6 @@ WifiPhy::Reset()
     }
     m_endPhyRxEvent.Cancel();
     m_endTxEvent.Cancel();
-    SwitchMaybeToCcaBusy(nullptr);
 }
 
 void
@@ -1885,7 +1886,7 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
         // structure)
         NS_LOG_DEBUG("Unsupported modulation received (" << modulation << "), consider as noise");
         m_interference->Add(ppdu, rxDuration, rxPowersW);
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
     }
 }
 
@@ -2104,7 +2105,7 @@ WifiPhy::GetLastRxEndTime() const
 }
 
 void
-WifiPhy::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu)
+WifiPhy::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu /* = nullptr */)
 {
     NS_LOG_FUNCTION(this);
     GetLatestPhyEntity()->SwitchMaybeToCcaBusy(ppdu);

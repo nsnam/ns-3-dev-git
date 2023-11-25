@@ -1237,7 +1237,7 @@ class WifiPhy : public Object
      *
      * \param ppdu the incoming PPDU or nullptr for any signal
      */
-    void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu);
+    void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu = nullptr);
     /**
      * Notify PHY state helper to switch to CCA busy state,
      *
