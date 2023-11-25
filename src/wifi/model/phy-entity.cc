@@ -414,17 +414,6 @@ PhyEntity::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
     }
 
     Time endRx = Simulator::Now() + rxDuration;
-    if (m_state->GetState() == WifiPhyState::OFF)
-    {
-        NS_LOG_DEBUG("Cannot start RX because device is OFF");
-        if (endRx > (Simulator::Now() + m_state->GetDelayUntilIdle()))
-        {
-            m_wifiPhy->SwitchMaybeToCcaBusy(nullptr);
-        }
-        DropPreambleEvent(ppdu, WifiPhyRxfailureReason::POWERED_OFF, endRx);
-        return;
-    }
-
     if (ppdu->IsTruncatedTx())
     {
         NS_LOG_DEBUG("Packet reception stopped because transmitter has been switched off");
@@ -511,6 +500,10 @@ PhyEntity::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
     case WifiPhyState::SLEEP:
         NS_LOG_DEBUG("Drop packet because in sleep mode");
         DropPreambleEvent(ppdu, SLEEPING, endRx);
+        break;
+    case WifiPhyState::OFF:
+        NS_LOG_DEBUG("Drop packet because in switched off");
+        DropPreambleEvent(ppdu, WifiPhyRxfailureReason::POWERED_OFF, endRx);
         break;
     default:
         NS_FATAL_ERROR("Invalid WifiPhy state.");
