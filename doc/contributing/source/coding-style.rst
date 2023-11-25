@@ -821,7 +821,6 @@ file (``*.cc``).
 When declaring variables that are easily deducible from context, prefer to declare them
 with ``auto`` instead of repeating the type name. Not only does this improve code readability,
 by making lines shorter, but it also facilitates future code refactoring.
-When declaring variables, prefer to use direct-initialization, to avoid repeating the type name.
 
 .. sourcecode:: cpp
 
@@ -835,11 +834,73 @@ When declaring variables, prefer to use direct-initialization, to avoid repeatin
   auto* ptr = new int[10];
   auto m = static_cast<uint8_t>(97 + (i % 26));
 
+
+Initialization
+==============
+
+When declaring variables, prefer to use direct-initialization, to avoid repeating the type name.
+
+.. sourcecode:: cpp
+
   // Avoid splitting the declaration and initialization of variables
   Ipv4Address ipv4Address = Ipv4Address("192.168.0.1")
 
   // Prefer to use direct-initialization
   Ipv4Address ipv4Address("192.168.0.1")
+
+Variables with no default constructor or of primitive types should be initialized when declared.
+
+Variables with default constructors do not need to be explicitly initialized, since the compiler
+already does that. An example of this is the ``ns3::Time`` class, which will initialize to zero.
+
+Member variables of structs and classes should be initialized unless the member has a default
+constructor that guarantees initialization.  Preferably, variables should be initialized together
+with the declaration (in the header file). Alternatively, they can be initialized in the default
+constructor (in the implementation file), and you may see instances of this in the codebase, but
+direct initialization upon declaration is preferred going forward.
+
+If all member variables of a class / struct are directly initialized (see above), they do not
+require explicit default initialization. But if not all variables are initialized, those
+non-initialized variables will contain garbage. Therefore, initializing the class object with
+``{}`` allows all member variables to always be initialized -- either with the provided default
+initialization or with the primitive type's default value (typically 0).
+
+C++ supports two syntax choices for direct initialization, either ``()`` or ``{}``.  There are
+various tradeoffs in the choices for more complicated types (consult the C++ literature on
+brace vs. parentheses initialization), but for the fundamental types like ``double``, either is
+acceptable (please use consistently within files).
+
+Regarding ``ns3::Time``, do not initialize to non-zero integer values as follows, assuming
+that it will be converted to nanoseconds:
+
+.. sourcecode:: cpp
+
+  Time t{1000000};  // This is disallowed
+
+The value will be interpreted according to the current resolution, which is ambiguous.  A
+user's program may have already changed the resolution from the default of nanoseconds to
+something else by the time of this initialization, and it will be instead interpreted according
+to 10^6 * the new resolution unit.
+
+Time initialization to raw floating-point values is additionally fraught, because of rounding.  Doing
+so with small values has led to bugs in practice such as timer timeout values of zero time.
+
+When declaring or manipulating ``Time`` objects with known values, prefer to use integer-based representations and
+arguments over floating-point fractions, where possible, because integer-based is faster.
+This means preferring the use of ``NanoSeconds``, ``MicroSeconds``, and ``MilliSeconds`` over
+``Seconds``.  For example, to represent a tenth of a second, prefer ``MilliSeconds(100)``
+to ``Seconds(0.1)``.
+
+To summarize Time declaration and initialization, consider the following examples and comments:
+
+.. sourcecode:: cpp
+
+  Time t;  // OK, will be value-initialized to integer zero
+  Time t{MilliSeconds(100)};  // OK, fastest, no floating point involved
+  Time t{"100ms"}; // OK, will perform a string conversion; integer would be faster
+  Time t{Seconds(0.1)};  // OK, will invoke Seconds(double); integer would be faster
+  Time t{100000000}; // NOT OK, is interpreted differently when ``Time::SetResolution()`` called
+  Time t{0.1}; // NOT OK, will round to zero; see above and also merge request !2007
 
 Comments
 ========
@@ -1494,6 +1555,18 @@ Miscellaneous items
     {
         ...
     };
+
+- When checking whether a Time value is zero, use ``Time::IsZero()`` rather than comparing it to a zero-valued time object with ``operator==``, to avoid construction of a temporary.  Similar guidance applies to the related functions ``Time::IsPositive()``, ``Time::IsNegative()``, ``Time::IsStrictlyPositive``, and ``Time::IsStrictlyNegative()``.
+
+  .. sourcecode:: cpp
+
+    Time t = ...;
+    // prefer the below:
+    if (t.IsStrictlyPositive())
+    {...}
+    // to this alternative:
+    if (t > Seconds(0))
+    {...}
 
 Clang-tidy rules
 ================
