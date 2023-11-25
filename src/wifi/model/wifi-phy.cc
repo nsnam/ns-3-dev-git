@@ -2138,10 +2138,7 @@ WifiPhy::AbortCurrentReception(WifiPhyRxfailureReason reason)
         {
             phyEntity.second->CancelAllEvents();
         }
-        if (m_endPhyRxEvent.IsRunning())
-        {
-            m_endPhyRxEvent.Cancel();
-        }
+        m_endPhyRxEvent.Cancel();
         m_interference->NotifyRxEnd(Simulator::Now(), GetCurrentFrequencyRange());
         if (!m_currentEvent)
         {

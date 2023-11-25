@@ -1125,10 +1125,7 @@ PhyEntity::CancelRunningEndPreambleDetectionEvents(bool clear /* = false */)
     NS_LOG_FUNCTION(this << clear);
     for (auto& endPreambleDetectionEvent : m_endPreambleDetectionEvents)
     {
-        if (endPreambleDetectionEvent.IsRunning())
-        {
-            endPreambleDetectionEvent.Cancel();
-        }
+        endPreambleDetectionEvent.Cancel();
     }
     if (clear)
     {
