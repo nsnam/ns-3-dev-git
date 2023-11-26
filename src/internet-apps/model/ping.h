@@ -213,6 +213,8 @@ class Ping : public Application
     uint32_t m_size{56};
     /// The socket we send packets from
     Ptr<Socket> m_socket;
+    /// The Type of Service carried by ICMP ECHOs
+    uint8_t m_tos;
     /// ICMP ECHO sequence number
     uint16_t m_seq{0};
     /// Callbacks for tracing the packet Tx events

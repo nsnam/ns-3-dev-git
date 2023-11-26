@@ -103,6 +103,12 @@ Ping::GetTypeId()
                           TimeValue(Seconds(1)),
                           MakeTimeAccessor(&Ping::m_timeout),
                           MakeTimeChecker())
+            .AddAttribute("Tos",
+                          "The Type of Service used to send the ICMP Echo Requests. "
+                          "All 8 bits of the TOS byte are set (including ECN bits).",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&Ping::m_tos),
+                          MakeUintegerChecker<uint8_t>())
             .AddTraceSource("Tx",
                             "The sequence number and ICMP echo response packet.",
                             MakeTraceSourceAccessor(&Ping::m_txTrace),
@@ -455,8 +461,9 @@ Ping::Send()
             header.EnableChecksum();
         }
         p->AddHeader(header);
-        returnValue =
-            m_socket->SendTo(p, 0, InetSocketAddress(Ipv4Address::ConvertFrom(m_destination), 0));
+        auto dest = InetSocketAddress(Ipv4Address::ConvertFrom(m_destination), 0);
+        dest.SetTos(m_tos);
+        returnValue = m_socket->SendTo(p, 0, dest);
     }
     else
     {

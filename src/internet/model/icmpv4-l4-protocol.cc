@@ -222,14 +222,18 @@ void
 Icmpv4L4Protocol::HandleEcho(Ptr<Packet> p,
                              Icmpv4Header header,
                              Ipv4Address source,
-                             Ipv4Address destination)
+                             Ipv4Address destination,
+                             uint8_t tos)
 {
-    NS_LOG_FUNCTION(this << p << header << source << destination);
+    NS_LOG_FUNCTION(this << p << header << source << destination << tos);
 
     Ptr<Packet> reply = Create<Packet>();
     Icmpv4Echo echo;
     p->RemoveHeader(echo);
     reply->AddHeader(echo);
+    SocketIpTosTag ipTosTag;
+    ipTosTag.SetTos(tos);
+    reply->ReplacePacketTag(ipTosTag);
     SendMessage(reply, destination, source, Icmpv4Header::ICMPV4_ECHO_REPLY, 0, nullptr);
 }
 
@@ -327,7 +331,7 @@ Icmpv4L4Protocol::Receive(Ptr<Packet> p,
                 }
             }
         }
-        HandleEcho(p, icmp, header.GetSource(), dst);
+        HandleEcho(p, icmp, header.GetSource(), dst, header.GetTos());
         break;
     }
     case Icmpv4Header::ICMPV4_DEST_UNREACH:

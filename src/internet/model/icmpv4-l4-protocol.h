@@ -143,11 +143,13 @@ class Icmpv4L4Protocol : public IpL4Protocol
      * \param header the IP header
      * \param source the source address
      * \param destination the destination address
+     * \param tos the type of service
      */
     void HandleEcho(Ptr<Packet> p,
                     Icmpv4Header header,
                     Ipv4Address source,
-                    Ipv4Address destination);
+                    Ipv4Address destination,
+                    uint8_t tos);
     /**
      * \brief Handles an incoming ICMP Destination Unreachable packet
      * \param p the packet
