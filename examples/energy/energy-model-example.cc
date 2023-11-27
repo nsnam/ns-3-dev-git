@@ -17,7 +17,6 @@
  * Author: Sidharth Nabar <snabar@uw.edu>, He Wu <mdzz@u.washington.edu>
  */
 
-#include "ns3/config-store-module.h"
 #include "ns3/core-module.h"
 #include "ns3/energy-module.h"
 #include "ns3/internet-module.h"

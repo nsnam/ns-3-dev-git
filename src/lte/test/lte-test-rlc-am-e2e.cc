@@ -23,7 +23,6 @@
 #include "lte-simple-helper.h"
 #include "lte-test-entities.h"
 
-#include "ns3/config-store.h"
 #include "ns3/config.h"
 #include "ns3/error-model.h"
 #include "ns3/log.h"

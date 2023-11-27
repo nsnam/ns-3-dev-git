@@ -24,7 +24,6 @@
 #include "ns3/radio-bearer-stats-calculator.h"
 #include "ns3/string.h"
 #include <ns3/boolean.h>
-#include <ns3/config-store-module.h>
 #include <ns3/constant-position-mobility-model.h>
 #include <ns3/enum.h>
 #include <ns3/eps-bearer.h>
