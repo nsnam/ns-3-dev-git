@@ -48,7 +48,6 @@ class Event : public SimpleRefCount<Event>
      * \param rxPower the received power per band (W)
      */
     Event(Ptr<const WifiPpdu> ppdu, Time duration, RxPowerWattPerChannelBand&& rxPower);
-    ~Event();
 
     /**
      * Return the PPDU.

@@ -53,12 +53,6 @@ Event::Event(Ptr<const WifiPpdu> ppdu, Time duration, RxPowerWattPerChannelBand&
 {
 }
 
-Event::~Event()
-{
-    m_ppdu = nullptr;
-    m_rxPowerW.clear();
-}
-
 Ptr<const WifiPpdu>
 Event::GetPpdu() const
 {

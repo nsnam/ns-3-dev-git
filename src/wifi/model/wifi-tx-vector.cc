@@ -123,11 +123,6 @@ WifiTxVector::WifiTxVector(const WifiTxVector& txVector)
     }
 }
 
-WifiTxVector::~WifiTxVector()
-{
-    m_muUserInfos.clear();
-}
-
 bool
 WifiTxVector::GetModeInitialized() const
 {

@@ -114,7 +114,6 @@ class WifiTxVector
         HeMuUserInfoMap;
 
     WifiTxVector();
-    ~WifiTxVector();
     /**
      * Create a TXVECTOR with the given parameters.
      *
