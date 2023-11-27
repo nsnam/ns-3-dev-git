@@ -1353,6 +1353,32 @@ If a developer would like to propose to raise this bar to include more
 features than this, please email the developers list. We will move this
 language support forward as our minimally supported compiler moves forward.
 
+Guidelines for using maps
+=========================
+
+Maps (associative containers) are used heavily in ns-3 models to store
+key/value pairs.  The C++ standard, over time, has added various methods to
+insert elements to maps, and the ns-3 codebase has made use of most or all
+of these constructs.  For the sake of uniformity and readability, the
+following guidelines are recommended for any new code.
+
+Prefer the use of ``std::map`` to ``std::unordered_map`` unless there is
+a measurable performance advantage.  Use ``std::unordered_map`` only for
+use cases in which the map does not need to be iterated or the iteration
+order does not affect the results of the operation (because different
+implementations of the hash function may lead to different iteration orders
+on different systems).
+
+Keep in mind that C++ now allows several methods to insert values into
+maps, and the behavior can be different when a value already exists for
+a key.  If the intended behavior is that the insertion should not overwrite
+an existing value for the key, ``try_emplace()`` can be a good choice.  If
+the intention is to allow the overwriting of a key/value pair,
+``insert_or_assign()`` can be a good choice.  Both of the above methods
+provide return values that can be checked-- in the case of ``try_emplace()``,
+whether the insertion succeeded or did not occur, and in the case of
+``insert_or_assign()``, whether an insertion or assignment occurred.
+
 Miscellaneous items
 ===================
 
