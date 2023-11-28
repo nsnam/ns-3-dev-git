@@ -1470,7 +1470,7 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                    GetQosTxop(acIndex),
                                    linkId,
                                    hasFramesToTransmit,
-                                   true); // generate backoff if medium busy
+                                   Txop::CHECK_MEDIUM_BUSY); // generate backoff if medium busy
         }
     }
 }

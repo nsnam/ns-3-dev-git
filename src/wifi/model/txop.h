@@ -412,6 +412,15 @@ class Txop : public Object
      */
     void StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool checkMediumBusy);
 
+    static constexpr bool HAD_FRAMES_TO_TRANSMIT =
+        true; //!< packets available for transmission were in the queue
+    static constexpr bool DIDNT_HAVE_FRAMES_TO_TRANSMIT =
+        false; //!< no packet available for transmission was in the queue
+    static constexpr bool CHECK_MEDIUM_BUSY =
+        true; //!< generation of backoff (also) depends on the busy/idle state of the medium
+    static constexpr bool DONT_CHECK_MEDIUM_BUSY =
+        false; //!< generation of backoff is independent of the busy/idle state of the medium
+
     /**
      * \param nSlots the number of slots of the backoff.
      * \param linkId the ID of the given link

@@ -138,7 +138,7 @@ QosTxop::QosTxop(AcIndex ac)
             // start access (if needed) on all the links
             for (const auto& [id, link] : GetLinks())
             {
-                StartAccessAfterEvent(id, hasFramesToTransmit.at(id), true);
+                StartAccessAfterEvent(id, hasFramesToTransmit.at(id), CHECK_MEDIUM_BUSY);
             }
         }));
     m_queue->TraceConnectWithoutContext(

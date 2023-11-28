@@ -555,7 +555,7 @@ Txop::Queue(Ptr<WifiMpdu> mpdu)
                                            this,
                                            linkId,
                                            hasFramesToTransmit.at(linkId),
-                                           true);
+                                           CHECK_MEDIUM_BUSY);
         }
     }
 }
@@ -669,7 +669,7 @@ Txop::NotifyWakeUp(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << +linkId);
     // before wake up, no packet can be transmitted
-    StartAccessAfterEvent(linkId, false, false);
+    StartAccessAfterEvent(linkId, DIDNT_HAVE_FRAMES_TO_TRANSMIT, DONT_CHECK_MEDIUM_BUSY);
 }
 
 void
@@ -679,7 +679,7 @@ Txop::NotifyOn()
     for (const auto& [id, link] : m_links)
     {
         // before being turned on, no packet can be transmitted
-        StartAccessAfterEvent(id, false, false);
+        StartAccessAfterEvent(id, DIDNT_HAVE_FRAMES_TO_TRANSMIT, DONT_CHECK_MEDIUM_BUSY);
     }
 }
 

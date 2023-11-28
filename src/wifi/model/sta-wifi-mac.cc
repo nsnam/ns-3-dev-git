@@ -1452,13 +1452,17 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         {
             if (const auto txop = GetTxop())
             {
-                txop->StartAccessAfterEvent(id, false, true);
+                txop->StartAccessAfterEvent(id,
+                                            Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                                            Txop::CHECK_MEDIUM_BUSY);
             }
             for (const auto [acIndex, ac] : wifiAcList)
             {
                 if (const auto edca = GetQosTxop(acIndex))
                 {
-                    edca->StartAccessAfterEvent(id, false, true);
+                    edca->StartAccessAfterEvent(id,
+                                                Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                                                Txop::CHECK_MEDIUM_BUSY);
                 }
             }
         }
