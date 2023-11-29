@@ -189,6 +189,8 @@ Some implementation choices that are not imposed by the standard are listed belo
 * OperationalRateSet is assumed to contain all mandatory rates (see
   `issue 183 <https://gitlab.com/nsnam/ns-3-dev/-/issues/183>`_)
 * The wifi manager always selects the lowest basic rate for management frames.
+* If a STA (AP or non-AP) supports VHT, a Block Ack agreement is always setup once
+  a first packet is enqueued regardless of whether it will be transmitted in an A-MPDU.
 
 Design Details
 **************
