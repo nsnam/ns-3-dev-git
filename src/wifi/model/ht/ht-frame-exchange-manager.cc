@@ -27,6 +27,7 @@
 #include "ns3/recipient-block-ack-agreement.h"
 #include "ns3/snr-tag.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/vht-configuration.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-utils.h"
 
@@ -109,7 +110,7 @@ HtFrameExchangeManager::NeedSetupBlockAck(Mac48Address recipient, uint8_t tid)
     Ptr<QosTxop> qosTxop = m_mac->GetQosTxop(tid);
     bool establish;
 
-    if (!GetWifiRemoteStationManager()->GetHtSupported(recipient))
+    if (!m_mac->GetHtSupported(recipient))
     {
         establish = false;
     }
@@ -126,7 +127,7 @@ HtFrameExchangeManager::NeedSetupBlockAck(Mac48Address recipient, uint8_t tid)
             ((qosTxop->GetBlockAckThreshold() > 0 && packets >= qosTxop->GetBlockAckThreshold()) ||
              (m_mpduAggregator->GetMaxAmpduSize(recipient, tid, WIFI_MOD_CLASS_HT) > 0 &&
               packets > 1) ||
-             GetWifiRemoteStationManager()->GetVhtSupported());
+             m_mac->GetVhtConfiguration());
     }
 
     NS_LOG_FUNCTION(this << recipient << +tid << establish);
