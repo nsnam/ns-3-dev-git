@@ -290,6 +290,13 @@ WifiMac::GetTypeId()
                 UintegerValue(0),
                 MakeUintegerAccessor(&WifiMac::SetBkBlockAckInactivityTimeout),
                 MakeUintegerChecker<uint16_t>())
+            .AddAttribute("RobustAVStreamingSupported",
+                          "Whether or not Robust Audio Video Streaming is supported (only allowed "
+                          "for AP STAs or non-AP that are HT capable).",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&WifiMac::SetRobustAVStreamingSupported,
+                                              &WifiMac::GetRobustAVStreamingSupported),
+                          MakeBooleanChecker())
             .AddTraceSource(
                 "MacTx",
                 "A packet has been received by the WifiNetDevice and is about to be enqueued; "
@@ -2560,6 +2567,21 @@ WifiMac::GetMaxAmsduSize(AcIndex ac) const
         return 0;
     }
     return maxSize;
+}
+
+void
+WifiMac::SetRobustAVStreamingSupported(bool enable)
+{
+    NS_LOG_FUNCTION(this << enable);
+    m_robustAVStreamingSupported = enable;
+}
+
+bool
+WifiMac::GetRobustAVStreamingSupported() const
+{
+    NS_ASSERT_MSG(!m_robustAVStreamingSupported || GetDevice()->GetHtConfiguration(),
+                  "Robust AV Streaming requires STA to be HT-capable");
+    return m_robustAVStreamingSupported;
 }
 
 } // namespace ns3

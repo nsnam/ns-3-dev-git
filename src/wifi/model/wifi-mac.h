@@ -650,6 +650,19 @@ class WifiMac : public Object
     bool GetEhtSupported(const Mac48Address& address) const;
 
     /**
+     * Enable or disable Robust AV Streaming support for the device.
+     *
+     * @param enable whether Robust AV Streaming is supported
+     */
+    void SetRobustAVStreamingSupported(bool enable);
+    /**
+     * Return whether the device supports Robust AV Streaming.
+     *
+     * @return true if Robust AV Streaming is supported, false otherwise
+     */
+    bool GetRobustAVStreamingSupported() const;
+
+    /**
      * Return the maximum A-MPDU size of the given Access Category.
      *
      * @param ac Access Category index
@@ -1232,6 +1245,8 @@ class WifiMac : public Object
     uint32_t m_frameRetryLimit; //!< the frame retry limit
 
     UniformRandomBitGenerator m_shuffleLinkIdsGen; //!< random number generator to shuffle link IDs
+
+    bool m_robustAVStreamingSupported; ///< flag whether robust AV streaming is supported
 
     /// @brief DL TID-to-Link Mapping negotiated with an MLD (identified by its MLD address)
     std::unordered_map<Mac48Address, WifiTidLinkMapping, WifiAddressHash> m_dlTidLinkMappings;
