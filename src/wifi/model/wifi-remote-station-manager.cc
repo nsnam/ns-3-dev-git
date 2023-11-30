@@ -1555,6 +1555,16 @@ WifiRemoteStationManager::AddStationHtCapabilities(Mac48Address from,
 }
 
 void
+WifiRemoteStationManager::AddStationExtendedCapabilities(
+    Mac48Address from,
+    const ExtendedCapabilities& extendedCapabilities)
+{
+    NS_LOG_FUNCTION(this << from << extendedCapabilities);
+    auto state = LookupState(from);
+    state->m_extendedCapabilities = Create<const ExtendedCapabilities>(extendedCapabilities);
+}
+
+void
 WifiRemoteStationManager::AddStationVhtCapabilities(Mac48Address from,
                                                     const VhtCapabilities& vhtCapabilities)
 {
@@ -1684,6 +1694,12 @@ Ptr<const HtCapabilities>
 WifiRemoteStationManager::GetStationHtCapabilities(Mac48Address from)
 {
     return LookupState(from)->m_htCapabilities;
+}
+
+Ptr<const ExtendedCapabilities>
+WifiRemoteStationManager::GetStationExtendedCapabilities(const Mac48Address& from)
+{
+    return LookupState(from)->m_extendedCapabilities;
 }
 
 Ptr<const VhtCapabilities>

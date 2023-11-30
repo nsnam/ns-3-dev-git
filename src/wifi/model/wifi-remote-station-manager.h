@@ -9,6 +9,7 @@
 #ifndef WIFI_REMOTE_STATION_MANAGER_H
 #define WIFI_REMOTE_STATION_MANAGER_H
 
+#include "extended-capabilities.h"
 #include "qos-utils.h"
 #include "wifi-mode.h"
 #include "wifi-remote-station-info.h"
@@ -104,7 +105,9 @@ struct WifiRemoteStationState
     bool m_dsssSupported;              //!< Flag if DSSS is supported by the remote station
     bool m_erpOfdmSupported;           //!< Flag if ERP OFDM is supported by the remote station
     bool m_ofdmSupported;              //!< Flag if OFDM is supported by the remote station
-    Ptr<const HtCapabilities> m_htCapabilities;   //!< remote station HT capabilities
+    Ptr<const HtCapabilities> m_htCapabilities; //!< remote station HT capabilities
+    Ptr<const ExtendedCapabilities>
+        m_extendedCapabilities;                   //!< remote station extended capabilities
     Ptr<const VhtCapabilities> m_vhtCapabilities; //!< remote station VHT capabilities
     Ptr<const HeCapabilities> m_heCapabilities;   //!< remote station HE capabilities
     Ptr<const He6GhzBandCapabilities>
@@ -251,6 +254,14 @@ class WifiRemoteStationManager : public Object
      */
     void AddStationHtCapabilities(Mac48Address from, const HtCapabilities& htCapabilities);
     /**
+     * Records extended capabilities of the remote station.
+     *
+     * @param from the address of the station being recorded
+     * @param extendedCapabilities the extended capabilities of the station
+     */
+    void AddStationExtendedCapabilities(Mac48Address from,
+                                        const ExtendedCapabilities& extendedCapabilities);
+    /**
      * Records VHT capabilities of the remote station.
      *
      * @param from the address of the station being recorded
@@ -295,6 +306,13 @@ class WifiRemoteStationManager : public Object
      * @return the HT capabilities sent by the remote station
      */
     Ptr<const HtCapabilities> GetStationHtCapabilities(Mac48Address from);
+    /**
+     * Return the extended capabilities sent by the remote station.
+     *
+     * @param from the address of the remote station
+     * @return the extended capabilities sent by the remote station
+     */
+    Ptr<const ExtendedCapabilities> GetStationExtendedCapabilities(const Mac48Address& from);
     /**
      * Return the VHT capabilities sent by the remote station.
      *
