@@ -594,7 +594,7 @@ EhtCapabilities::SetSupportedTxEhtMcsAndNss(EhtMcsAndNssSet::EhtMcsMapType mapTy
 }
 
 uint8_t
-EhtCapabilities::GetHighestSupportedRxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType)
+EhtCapabilities::GetHighestSupportedRxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType) const
 {
     const auto it = m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.find(mapType);
     if (it == m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.cend())
@@ -629,7 +629,7 @@ EhtCapabilities::GetHighestSupportedRxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType
 }
 
 uint8_t
-EhtCapabilities::GetHighestSupportedTxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType)
+EhtCapabilities::GetHighestSupportedTxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType) const
 {
     const auto it = m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.find(mapType);
     if (it == m_supportedEhtMcsAndNssSet.supportedEhtMcsAndNssSet.cend())

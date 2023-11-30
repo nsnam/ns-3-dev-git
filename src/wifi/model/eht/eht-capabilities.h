@@ -308,14 +308,14 @@ class EhtCapabilities : public WifiInformationElement
      * @param mapType the EHT-MCS map type
      * @return the highest supported RX MCS for the given EHT-MCS map type
      */
-    uint8_t GetHighestSupportedRxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType);
+    uint8_t GetHighestSupportedRxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType) const;
     /**
      * Get the highest supported TX MCS for a given EHT-MCS map type.
      *
      * @param mapType the EHT-MCS map type
      * @return the highest supported TX MCS for the given EHT-MCS map type
      */
-    uint8_t GetHighestSupportedTxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType);
+    uint8_t GetHighestSupportedTxMcs(EhtMcsAndNssSet::EhtMcsMapType mapType) const;
 
     /**
      * Set the EHT PPE threshold info subfield
