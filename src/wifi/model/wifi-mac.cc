@@ -2194,6 +2194,7 @@ ExtendedCapabilities
 WifiMac::GetExtendedCapabilities() const
 {
     ExtendedCapabilities capabilities;
+    capabilities.m_robustAvStreaming = GetRobustAVStreamingSupported();
     return capabilities;
 }
 
