@@ -25,6 +25,7 @@
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
 #include "wifi-mac.h"
+#include "wifi-phy.h"
 
 #include "ns3/attribute-container.h"
 #include "ns3/log.h"
@@ -601,6 +602,12 @@ void
 Txop::StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool checkMediumBusy)
 {
     NS_LOG_FUNCTION(this << linkId << hadFramesToTransmit << checkMediumBusy);
+
+    if (!m_mac->GetWifiPhy(linkId))
+    {
+        NS_LOG_DEBUG("No PHY operating on link " << +linkId);
+        return;
+    }
 
     if (GetLink(linkId).access != NOT_REQUESTED)
     {
