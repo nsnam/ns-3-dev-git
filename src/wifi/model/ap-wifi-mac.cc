@@ -2170,7 +2170,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         if (GetHtSupported(linkId))
         {
             const auto& htCapabilities = frame.template Get<HtCapabilities>();
-            if (htCapabilities.has_value() && htCapabilities->IsSupportedMcs(0))
+            if (htCapabilities.has_value())
             {
                 remoteStationManager->AddStationHtCapabilities(from, *htCapabilities);
             }
