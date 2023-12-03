@@ -114,6 +114,10 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
             Create<WifiMpdu>(msdu->GetPacket(), msdu->GetHeader(), msdu->GetTimestamp());
         gcrAmsdu->Aggregate(nullptr);
         queue->Replace(msdu, gcrAmsdu);
+        if (msdu->GetHeader().IsRetry())
+        {
+            gcrAmsdu->AssignSeqNo(msdu->GetHeader().GetSequenceNumber());
+        }
         return m_htFem->CreateAliasIfNeeded(gcrAmsdu);
     }
     else if (IsGroupcast(recipient))
