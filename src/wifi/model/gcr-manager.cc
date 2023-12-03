@@ -144,6 +144,29 @@ GcrManager::GetGcrConcealmentAddress() const
 }
 
 bool
+GcrManager::UseConcealment(const WifiMacHeader& header) const
+{
+    NS_ASSERT_MSG(header.IsQosData() && IsGroupcast(header.GetAddr1()),
+                  "GCR service is only for QoS groupcast data frames");
+    NS_ASSERT_MSG(m_retransmissionPolicy != GroupAddressRetransmissionPolicy::NO_ACK_NO_RETRY,
+                  "GCR service is not enabled");
+    NS_ASSERT_MSG(!m_staMembers.empty(), "GCR service should not be used");
+
+    // Only GCR capable STAs, hence concealment is always used
+    if (m_nonGcrStas.empty())
+    {
+        return true;
+    }
+    // If A-MSDU is used, that means previous transmission was already concealed
+    if (header.IsQosAmsdu())
+    {
+        return true;
+    }
+    // Otherwise, use concealment except for the first transmission (hence when it is a retry)
+    return header.IsRetry();
+}
+
+bool
 GcrManager::KeepGroupcastQueued(Ptr<WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);

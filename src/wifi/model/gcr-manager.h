@@ -93,6 +93,15 @@ class GcrManager : public Object
     const Mac48Address& GetGcrConcealmentAddress() const;
 
     /**
+     * Indicate whether a group addressed packet should be transmitted to the GCR concealment
+     * address.
+     *
+     * @param header the header of the groupcast packet
+     * @return whether GCR concealment should be used
+     */
+    bool UseConcealment(const WifiMacHeader& header) const;
+
+    /**
      * This function indicates whether a groupcast MPDU should be kept for next retransmission.
      *
      * @param mpdu the groupcast MPDU
