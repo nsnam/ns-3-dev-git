@@ -1736,7 +1736,7 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
     NS_ASSERT(!m_state->IsStateTx() && !m_state->IsStateSwitching());
     NS_ASSERT(m_endTxEvent.IsExpired());
 
-    if (!txVector.IsValid())
+    if (!txVector.IsValid(m_band))
     {
         NS_FATAL_ERROR("TX-VECTOR is invalid!");
     }

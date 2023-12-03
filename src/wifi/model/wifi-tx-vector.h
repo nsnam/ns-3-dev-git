@@ -22,6 +22,7 @@
 #define WIFI_TX_VECTOR_H
 
 #include "wifi-mode.h"
+#include "wifi-phy-band.h"
 #include "wifi-phy-common.h"
 
 #include "ns3/he-ru.h"
@@ -356,10 +357,13 @@ class WifiTxVector
      * The standard disallows certain combinations of WifiMode, number of
      * spatial streams, and channel widths.  This method can be used to
      * check whether this WifiTxVector contains an invalid combination.
+     * If a PHY band is specified, it is checked that the PHY band is appropriate for
+     * the modulation class of the TXVECTOR, in case the latter is OFDM or ERP-OFDM.
      *
+     * \param band the PHY band
      * \return true if the WifiTxVector parameters are allowed by the standard
      */
-    bool IsValid() const;
+    bool IsValid(WifiPhyBand band = WIFI_PHY_BAND_UNSPECIFIED) const;
     /**
      * \return true if this TX vector is used for a multi-user (OFDMA and/or MU-MIMO) transmission
      */

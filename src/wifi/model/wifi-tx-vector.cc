@@ -446,7 +446,7 @@ WifiTxVector::GetEhtPpduType() const
 }
 
 bool
-WifiTxVector::IsValid() const
+WifiTxVector::IsValid(WifiPhyBand band) const
 {
     if (!GetModeInitialized())
     {
@@ -517,6 +517,16 @@ WifiTxVector::IsValid() const
             return false;
         }
     }
+
+    if (band != WIFI_PHY_BAND_UNSPECIFIED)
+    {
+        NS_ABORT_MSG_IF(GetModulationClass() == WIFI_MOD_CLASS_OFDM && band == WIFI_PHY_BAND_2_4GHZ,
+                        "Cannot use OFDM modulation class in the 2.4 GHz band");
+        NS_ABORT_MSG_IF(GetModulationClass() == WIFI_MOD_CLASS_ERP_OFDM &&
+                            band != WIFI_PHY_BAND_2_4GHZ,
+                        "ERP-OFDM modulation class can only be used in the 2.4 GHz band");
+    }
+
     return true;
 }
 
