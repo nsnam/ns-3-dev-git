@@ -1999,6 +1999,11 @@ WifiRemoteStationManager::GetGroupcastTxVector(const WifiMacHeader& header, MHz_
         return groupcastTxVector;
     }
 
+    if (!gcrManager->UseConcealment(header))
+    {
+        return groupcastTxVector;
+    }
+
     // If we are here, that means the mode will be used for the transmission of a groupcast frame
     // using the GCR service. We should loop over each member STA that is going to receive the
     // groupcast frame and select the highest possible mode over all STAs.
