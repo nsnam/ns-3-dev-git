@@ -1137,9 +1137,12 @@ HtFrameExchangeManager::SendPsdu()
                     for (const auto& mpdu : *PeekPointer(psdu))
                     {
                         mpdu->ResetInFlight(m_linkId);
-                        mpdu->GetHeader().SetRetry();
                         // restore addr1 to the group address instead of the concealment address
-                        mpdu->GetHeader().SetAddr1(mpdu->begin()->second.GetDestinationAddr());
+                        if (m_apMac->GetGcrManager()->UseConcealment(mpdu->GetHeader()))
+                        {
+                            mpdu->GetHeader().SetAddr1(mpdu->begin()->second.GetDestinationAddr());
+                        }
+                        mpdu->GetHeader().SetRetry();
                     }
                 });
             }
@@ -1278,7 +1281,8 @@ HtFrameExchangeManager::FinalizeMacHeader(Ptr<const WifiPsdu> psdu)
                 hdr.SetQosQueueSize(queueSizeForTid[tid].value());
             }
 
-            if (m_mac->GetTypeOfStation() == AP && m_apMac->UseGcr(hdr))
+            if (m_mac->GetTypeOfStation() == AP && m_apMac->UseGcr(hdr) &&
+                m_apMac->GetGcrManager()->UseConcealment(mpdu->GetHeader()))
             {
                 const auto& gcrConcealmentAddress =
                     m_apMac->GetGcrManager()->GetGcrConcealmentAddress();

@@ -109,6 +109,13 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
     // if GCR, A-MSDU is always used with a single A-MSDU subframe
     if (IsGcr(m_mac, header))
     {
+        auto apMac = DynamicCast<ApWifiMac>(m_mac);
+        NS_ASSERT(apMac);
+        auto gcrManager = apMac->GetGcrManager();
+        if (!gcrManager->UseConcealment(peekedItem->GetHeader()))
+        {
+            return nullptr;
+        }
         auto msdu = peekedItem->GetOriginal();
         auto gcrAmsdu =
             Create<WifiMpdu>(msdu->GetPacket(), msdu->GetHeader(), msdu->GetTimestamp());

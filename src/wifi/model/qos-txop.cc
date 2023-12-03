@@ -14,6 +14,7 @@
 #include "ap-wifi-mac.h"
 #include "channel-access-manager.h"
 #include "ctrl-headers.h"
+#include "gcr-manager.h"
 #include "mac-tx-middle.h"
 #include "mgt-action-headers.h"
 #include "mpdu-aggregator.h"
@@ -556,10 +557,14 @@ QosTxop::GetNextMpdu(uint8_t linkId,
                       GetBaBufferSize(peekedItem->GetOriginal()->GetHeader().GetAddr1(), tid)));
 
         // try A-MSDU aggregation if the MPDU does not contain an A-MSDU and does not already
-        // have a sequence number assigned (may be a retransmission)
-        if (m_mac->GetHtConfiguration() && !recipient.IsBroadcast() &&
-            !peekedItem->GetHeader().IsQosAmsdu() && !peekedItem->HasSeqNoAssigned() &&
-            !peekedItem->IsFragment())
+        // have a sequence number assigned (may be a retransmission) unless it is a concealed GCR
+        // MPDU:
+        if (auto apMac = DynamicCast<ApWifiMac>(m_mac);
+            m_mac->GetHtConfiguration() && !recipient.IsBroadcast() &&
+            !peekedItem->GetHeader().IsQosAmsdu() && !peekedItem->IsFragment() &&
+            (!peekedItem->HasSeqNoAssigned() ||
+             (IsGcr(m_mac, peekedItem->GetHeader()) &&
+              (apMac->GetGcrManager()->UseConcealment(peekedItem->GetHeader())))))
         {
             auto htFem = StaticCast<HtFrameExchangeManager>(qosFem);
             mpdu = htFem->GetMsduAggregator()->GetNextAmsdu(peekedItem, txParams, availableTime);
