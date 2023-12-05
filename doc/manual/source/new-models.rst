@@ -324,9 +324,8 @@ Second, each class must implement a static public member function called
 Third, it is a good idea to implement constructors and destructors rather than
 to let the compiler generate them, and to make the destructor virtual. In C++,
 note also that copy assignment operator and copy constructors are auto-generated
-if they are not defined, so if you do not want those, you should implement those
-as private members. This aspect of C++ is discussed in Scott Meyers' Effective
-C++ book. item 45.
+if they are not defined, so if you do not want those, you should declare them
+as ``= delete``.
 
 Let's now look at some corresponding skeletal implementation code in the .cc
 file.::
