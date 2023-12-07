@@ -32,7 +32,7 @@
 // here we just need a forward declaration.
 namespace brite
 {
-struct Topology;
+class Topology;
 };
 
 namespace ns3
