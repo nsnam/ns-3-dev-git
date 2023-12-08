@@ -1615,7 +1615,7 @@ add the following configuration to ``.vscode/settings.json``:
         "[python]": {
             "editor.defaultFormatter": "ms-python.black-formatter",
             "editor.codeActionsOnSave": {
-                "source.organizeImports": true,
+                "source.organizeImports": "explicit",
             },
         },
         "black-formatter.args": [
