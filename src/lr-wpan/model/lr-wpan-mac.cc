@@ -48,6 +48,45 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("LrWpanMac");
 NS_OBJECT_ENSURE_REGISTERED(LrWpanMac);
 
+std::ostream&
+operator<<(std::ostream& os, const LrWpanMacState& state)
+{
+    switch (state)
+    {
+    case LrWpanMacState::MAC_IDLE:
+        os << "MAC IDLE";
+        break;
+    case LrWpanMacState::MAC_CSMA:
+        os << "CSMA";
+        break;
+    case LrWpanMacState::MAC_SENDING:
+        os << "SENDING";
+        break;
+    case LrWpanMacState::MAC_ACK_PENDING:
+        os << "ACK PENDING";
+        break;
+    case LrWpanMacState::CHANNEL_ACCESS_FAILURE:
+        os << "CHANNEL_ACCESS_FAILURE";
+        break;
+    case LrWpanMacState::CHANNEL_IDLE:
+        os << "CHANNEL IDLE";
+        break;
+    case LrWpanMacState::SET_PHY_TX_ON:
+        os << "SET PHY to TX ON";
+        break;
+    case LrWpanMacState::MAC_GTS:
+        os << "MAC GTS PERIOD";
+        break;
+    case LrWpanMacState::MAC_INACTIVE:
+        os << "SUPERFRAME INACTIVE PERIOD";
+        break;
+    case LrWpanMacState::MAC_CSMA_DEFERRED:
+        os << "CSMA DEFERRED TO NEXT PERIOD";
+        break;
+    }
+    return os;
+};
+
 TypeId
 LrWpanMac::GetTypeId()
 {
@@ -254,16 +293,12 @@ LrWpanMac::DoDispose()
     for (uint32_t i = 0; i < m_txQueue.size(); i++)
     {
         m_txQueue[i]->txQPkt = nullptr;
-        m_txQueue[i]->txQMsduHandle = 0;
     }
     m_txQueue.clear();
 
     for (uint32_t i = 0; i < m_indTxQueue.size(); i++)
     {
         m_indTxQueue[i]->txQPkt = nullptr;
-        m_indTxQueue[i]->seqNum = 0;
-        m_indTxQueue[i]->dstExtAddress = nullptr;
-        m_indTxQueue[i]->dstShortAddress = nullptr;
     }
     m_indTxQueue.clear();
 
@@ -2119,35 +2154,44 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                         m_incomingSuperframeOrder = incomingSuperframe.GetFrameOrder();
                         m_incomingFnlCapSlot = incomingSuperframe.GetFinalCapSlot();
 
-                        m_incomingBeaconInterval =
-                            (static_cast<uint32_t>(1 << m_incomingBeaconOrder)) *
-                            lrwpan::aBaseSuperframeDuration;
-                        m_incomingSuperframeDuration =
-                            lrwpan::aBaseSuperframeDuration *
-                            (static_cast<uint32_t>(1 << m_incomingSuperframeOrder));
-
-                        if (incomingSuperframe.IsBattLifeExt())
+                        if (m_incomingBeaconOrder < 15)
                         {
-                            m_csmaCa->SetBatteryLifeExtension(true);
+                            // Start Beacon-enabled mode
+                            m_csmaCa->SetSlottedCsmaCa();
+                            m_incomingBeaconInterval =
+                                (static_cast<uint32_t>(1 << m_incomingBeaconOrder)) *
+                                lrwpan::aBaseSuperframeDuration;
+                            m_incomingSuperframeDuration =
+                                lrwpan::aBaseSuperframeDuration *
+                                (static_cast<uint32_t>(1 << m_incomingSuperframeOrder));
+
+                            if (incomingSuperframe.IsBattLifeExt())
+                            {
+                                m_csmaCa->SetBatteryLifeExtension(true);
+                            }
+                            else
+                            {
+                                m_csmaCa->SetBatteryLifeExtension(false);
+                            }
+
+                            // TODO: get Incoming frame GTS Fields here
+
+                            // Begin CAP on the current device using info from
+                            // the Incoming superframe
+                            NS_LOG_DEBUG("Incoming superframe Active Portion "
+                                         << "(Beacon + CAP + CFP): " << m_incomingSuperframeDuration
+                                         << " symbols");
+
+                            m_incCapEvent = Simulator::ScheduleNow(&LrWpanMac::StartCAP,
+                                                                   this,
+                                                                   SuperframeType::INCOMING);
                         }
                         else
                         {
-                            m_csmaCa->SetBatteryLifeExtension(false);
+                            // Start non-beacon enabled mode
+                            m_csmaCa->SetUnSlottedCsmaCa();
                         }
 
-                        if (m_incomingBeaconOrder < 15 && !m_csmaCa->IsSlottedCsmaCa())
-                        {
-                            m_csmaCa->SetSlottedCsmaCa();
-                        }
-
-                        // TODO: get Incoming frame GTS Fields here
-
-                        // Begin CAP on the current device using info from the Incoming superframe
-                        NS_LOG_DEBUG("Incoming superframe Active Portion (Beacon + CAP + CFP): "
-                                     << m_incomingSuperframeDuration << " symbols");
-                        m_incCapEvent = Simulator::ScheduleNow(&LrWpanMac::StartCAP,
-                                                               this,
-                                                               SuperframeType::INCOMING);
                         m_setMacState =
                             Simulator::ScheduleNow(&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
                     }

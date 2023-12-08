@@ -83,6 +83,15 @@ enum LrWpanMacState
 };
 
 /**
+ *  Overloaded operator to print the value of a LrWpanMacState.
+ *
+ *  \param os The output stream
+ *  \param state The text value of the PHY state
+ *  \return The output stream with text value of the MAC state
+ */
+std::ostream& operator<<(std::ostream& os, const LrWpanMacState& state);
+
+/**
  * \ingroup lr-wpan
  *
  * Superframe status
