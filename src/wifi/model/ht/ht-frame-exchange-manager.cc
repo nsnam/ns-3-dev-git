@@ -1838,6 +1838,12 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         ReceiveMgtAction(mpdu, txVector);
     }
 
+    if (IsGroupcast(hdr.GetAddr1()) && hdr.IsQosData() && hdr.IsQosAmsdu() &&
+        !m_mac->GetRobustAVStreamingSupported())
+    {
+        return;
+    }
+
     QosFrameExchangeManager::ReceiveMpdu(mpdu, rxSignalInfo, txVector, inAmpdu);
 }
 
