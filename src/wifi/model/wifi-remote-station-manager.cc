@@ -1453,6 +1453,8 @@ WifiRemoteStation*
 WifiRemoteStationManager::Lookup(Mac48Address address) const
 {
     NS_LOG_FUNCTION(this << address);
+    NS_ASSERT(!address.IsGroup());
+    NS_ASSERT(address != m_wifiMac->GetAddress());
     auto stationIt = m_stations.find(address);
 
     if (stationIt != m_stations.end())
