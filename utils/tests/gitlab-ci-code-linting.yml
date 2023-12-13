@@ -136,7 +136,6 @@ cmake-format:
 # Check Python format
 .python-format:
   stage: .pre
-  image: python:slim
   before_script:
     - pip install black isort
   script:
@@ -146,8 +145,8 @@ cmake-format:
 
 python-format-latest:
   extends: .python-format
-  image: python:slim
+  image: python:latest
 
 python-format-3.6:
   extends: .python-format
-  image: python:3.6-slim
+  image: python:3.6
