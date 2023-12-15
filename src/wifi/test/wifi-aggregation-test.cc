@@ -217,6 +217,10 @@ AmpduAggregationTest::DoSetup()
     m_mac = CreateObjectWithAttributes<StaWifiMac>("QosSupported", BooleanValue(true));
     m_mac->SetDevice(m_device);
     m_mac->SetWifiRemoteStationManagers(m_managers);
+    for (uint8_t i = 0; i < m_params.nLinks; i++)
+    {
+        m_managers.at(i)->SetupMac(m_mac);
+    }
     m_mac->SetAddress(Mac48Address("00:00:00:00:00:01"));
     m_device->SetMac(m_mac);
     m_mac->SetWifiPhys(m_phys);
