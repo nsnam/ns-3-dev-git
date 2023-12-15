@@ -417,11 +417,15 @@ class NS3DependenciesTestCase(unittest.TestCase):
 
             # Separate list of source files and header files
             for line in cmake_contents:
-                base_name = os.path.basename(line[:-1])
-                if not os.path.exists(os.path.join(path, line.strip())):
+                source_file_path = re.findall(r"\b(?:[^\s]+\.[ch]{1,2})\b", line.strip())
+                if not source_file_path:
+                    continue
+                source_file_path = source_file_path[0]
+                base_name = os.path.basename(source_file_path)
+                if not os.path.exists(os.path.join(path, source_file_path)):
                     continue
 
-                if ".h" in line:
+                if ".h" in source_file_path:
                     # Register all module headers as module headers and sources
                     modules[module_name_nodir]["headers"].add(base_name)
                     modules[module_name_nodir]["sources"].add(base_name)
@@ -429,13 +433,13 @@ class NS3DependenciesTestCase(unittest.TestCase):
                     # Register the header as part of the current module
                     headers_to_modules[base_name] = module_name_nodir
 
-                if ".cc" in line:
+                if ".cc" in source_file_path:
                     # Register the source file as part of the current module
                     modules[module_name_nodir]["sources"].add(base_name)
 
-                if ".cc" in line or ".h" in line:
+                if ".cc" in source_file_path or ".h" in source_file_path:
                     # Extract includes from headers and source files and then add to a list of included headers
-                    source_file = os.path.join(ns3_path, module_name, line.strip())
+                    source_file = os.path.join(ns3_path, module_name, source_file_path)
                     with open(source_file, "r", encoding="utf-8") as f:
                         source_contents = f.read()
                     modules[module_name_nodir]["included_headers"].update(
@@ -448,7 +452,14 @@ class NS3DependenciesTestCase(unittest.TestCase):
 
             # Extract libraries linked to the module
             modules[module_name_nodir]["libraries"].update(
-                re.findall("\\${lib(.*)}", "".join(cmake_contents))
+                re.findall("\${lib(.*?)}", "".join(cmake_contents))
+            )
+            modules[module_name_nodir]["libraries"] = list(
+                filter(
+                    lambda x: x
+                    not in ["raries_to_link", module_name_nodir, module_name_nodir + "-obj"],
+                    modules[module_name_nodir]["libraries"],
+                )
             )
 
         # Now that we have all the information we need, check if we have all the included libraries linked
@@ -466,17 +477,62 @@ class NS3DependenciesTestCase(unittest.TestCase):
             ).difference({module})
 
             diff = modules[module]["included_libraries"].difference(modules[module]["libraries"])
-            if len(diff) > 0:
-                print(
-                    "Module %s includes modules that are not linked: %s"
-                    % (module, ", ".join(list(diff))),
-                    file=sys.stderr,
-                )
-                sys.stderr.flush()
-            # Uncomment this to turn into a real test
-            # self.assertEqual(len(diff), 0,
-            #                 msg="Module %s includes modules that are not linked: %s" % (module, ", ".join(list(diff)))
-            #                 )
+
+        # Find graph with least amount of edges based on included_libraries
+        def recursive_check_dependencies(checked_module):
+            # Remove direct explicit dependencies
+            for module_to_link in modules[checked_module]["included_libraries"]:
+                modules[checked_module]["included_libraries"] = set(
+                    modules[checked_module]["included_libraries"]
+                ) - set(modules[module_to_link]["included_libraries"])
+
+            for module_to_link in modules[checked_module]["included_libraries"]:
+                recursive_check_dependencies(module_to_link)
+
+            # Remove unnecessary implicit dependencies
+            def is_implicitly_linked(searched_module, current_module):
+                if len(modules[current_module]["included_libraries"]) == 0:
+                    return False
+                if searched_module in modules[current_module]["included_libraries"]:
+                    return True
+                for module in modules[current_module]["included_libraries"]:
+                    if is_implicitly_linked(searched_module, module):
+                        return True
+                return False
+
+            from itertools import combinations
+
+            implicitly_linked = set()
+            for dep1, dep2 in combinations(modules[checked_module]["included_libraries"], 2):
+                if is_implicitly_linked(dep1, dep2):
+                    implicitly_linked.add(dep1)
+                if is_implicitly_linked(dep2, dep1):
+                    implicitly_linked.add(dep2)
+
+            modules[checked_module]["included_libraries"] = (
+                set(modules[checked_module]["included_libraries"]) - implicitly_linked
+            )
+
+        for module in modules:
+            recursive_check_dependencies(module)
+
+        # Print findings
+        for module in sorted(modules):
+            if module == "test":
+                continue
+            minimal_linking_set = ", ".join(modules[module]["included_libraries"])
+            unnecessarily_linked = ", ".join(
+                set(modules[module]["libraries"]) - set(modules[module]["included_libraries"])
+            )
+            missing_linked = ", ".join(
+                set(modules[module]["included_libraries"]) - set(modules[module]["libraries"])
+            )
+            if unnecessarily_linked:
+                print(f"Module '{module}' unnecessarily linked: {unnecessarily_linked}.")
+            if missing_linked:
+                print(f"Module '{module}' missing linked: {missing_linked}.")
+            if unnecessarily_linked or missing_linked:
+                print(f"Module '{module}' minimal linking set: {minimal_linking_set}.")
         self.assertTrue(True)
 
 
