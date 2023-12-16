@@ -44,6 +44,7 @@ Changes from ns-3.40 to ns-3-dev
   * The `restrict` warning has been disabled in GCC versions 12.1-12.3.1.
 * Raised minimum CMake version to 3.13.
 * Raised minimum C++ version to C++20.
+* Added guard rails for scratch targets missing or containing more than one `main` function.
 
 ### Changed behavior
 

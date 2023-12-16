@@ -14,13 +14,23 @@ function(create_scratch source_files)
     file(READ ${source_file} source_file_contents)
     string(REGEX MATCHALL "main[(| (]" main_position "${source_file_contents}")
     if(CMAKE_MATCH_0)
-      set(scratch_src ${source_file})
+      list(APPEND scratch_src ${source_file})
     endif()
   endforeach()
 
-  if(NOT scratch_src)
-    return()
+  list(LENGTH scratch_src scratch_src_len)
+
+  # If there is no main function, raise an error
+  if(${scratch_src_len} EQUAL 0)
+    message(FATAL_ERROR "The following scratch source files do not contain a main function: ${source_files}")
   endif()
+
+  # If there are multiple main functions, raise an error
+  if(${scratch_src_len} GREATER 1)
+    message(FATAL_ERROR "The following scratch source files contain ${scratch_src_len} files with a main function: ${scratch_src}")
+  endif()
+
+  # If there is a single main function, continue normally
 
   # Get parent directory name
   get_filename_component(scratch_dirname ${scratch_src} DIRECTORY)
@@ -69,10 +79,9 @@ foreach(scratch_src ${single_source_file_scratches})
   create_scratch(${scratch_src})
 endforeach()
 
-# Scan *.cc files in ns-3-dev/scratch subdirectories and build a target for each
-# subdirectory
+# Scan ns-3-dev/scratch subdirectories
 file(
-  GLOB_RECURSE scratch_subdirectories
+  GLOB scratch_subdirectories
   CONFIGURE_DEPENDS
   LIST_DIRECTORIES true
   ${CMAKE_CURRENT_SOURCE_DIR}/**
@@ -84,6 +93,7 @@ foreach(entry ${scratch_subdirectories})
   endif()
 endforeach()
 
+# Build scratches per directory or following CMakeLists.txt instructions
 foreach(subdir ${scratch_subdirectories})
   if(EXISTS ${subdir}/CMakeLists.txt)
     # If the subdirectory contains a CMakeLists.txt file
