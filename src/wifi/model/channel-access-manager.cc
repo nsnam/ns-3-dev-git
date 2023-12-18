@@ -199,7 +199,6 @@ ChannelAccessManager::ChannelAccessManager()
       m_lastRxReceivedOk(true),
       m_lastTxEnd(0),
       m_lastSwitchingEnd(0),
-      m_usingOtherEmlsrLink(false),
       m_sleeping(false),
       m_off(false),
       m_linkId(0)
@@ -1130,20 +1129,6 @@ ChannelAccessManager::NotifyCtsTimeoutResetNow()
     NS_LOG_FUNCTION(this);
     m_lastCtsTimeoutEnd = Simulator::Now();
     DoRestartAccessTimeoutIfNeeded();
-}
-
-void
-ChannelAccessManager::NotifyStartUsingOtherEmlsrLink()
-{
-    NS_LOG_FUNCTION(this);
-    m_usingOtherEmlsrLink = true;
-}
-
-void
-ChannelAccessManager::NotifyStopUsingOtherEmlsrLink()
-{
-    NS_LOG_FUNCTION(this);
-    m_usingOtherEmlsrLink = false;
 }
 
 void
