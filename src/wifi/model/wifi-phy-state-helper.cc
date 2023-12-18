@@ -67,7 +67,7 @@ WifiPhyStateHelper::GetTypeId()
 }
 
 WifiPhyStateHelper::WifiPhyStateHelper()
-    : NS_LOG_TEMPLATE_DEFINE("Queue"),
+    : NS_LOG_TEMPLATE_DEFINE("WifiPhyStateHelper"),
       m_sleeping(false),
       m_isOff(false),
       m_endTx(Seconds(0)),
