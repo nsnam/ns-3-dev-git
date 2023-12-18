@@ -170,6 +170,21 @@ class EmlsrManager : public Object
     bool GetAuxPhyTxCapable() const;
 
     /**
+     * Set the member variable indicating whether in-device interference is such that a PHY cannot
+     * decode anything and cannot decrease the backoff counter when another PHY is transmitting.
+     *
+     * \param enable whether in-device interference is such that a PHY cannot decode anything
+     *               and cannot decrease the backoff counter when another PHY is transmitting
+     */
+    void SetInDeviceInterference(bool enable);
+
+    /**
+     * \return whether in-device interference is such that a PHY cannot decode anything and cannot
+     *         decrease the backoff counter when another PHY is transmitting
+     */
+    bool GetInDeviceInterference() const;
+
+    /**
      * Notify the reception of a management frame addressed to us.
      *
      * \param mpdu the received MPDU
@@ -493,6 +508,9 @@ class EmlsrManager : public Object
     EventId m_transitionTimeoutEvent; /**< Timer started after the successful transmission of an
                                            EML Operating Mode Notification frame */
     bool m_resetCamState; //!< whether to reset the state of CAM when main PHY switches channel
+    bool m_inDeviceInterference; //!< whether in-device interference is such that a PHY cannot
+                                 //!< decode anything  and cannot decrease the backoff counter
+                                 //!< when another PHY is transmitting
     std::map<uint8_t, WifiPhyOperatingChannel>
         m_mainPhyChannels; //!< link ID-indexed map of operating channels for the main PHY
     std::map<uint8_t, WifiPhyOperatingChannel>

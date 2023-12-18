@@ -26,9 +26,11 @@
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/log.h"
 #include "ns3/mgt-action-headers.h"
+#include "ns3/spectrum-signal-parameters.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-spectrum-phy-interface.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT WIFI_FEM_NS_LOG_APPEND_CONTEXT
@@ -448,6 +450,21 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
             }
         }
     }
+    else if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
+             m_staMac->GetEmlsrManager()->GetInDeviceInterference())
+    {
+        for (const auto linkId : m_staMac->GetLinkIds())
+        {
+            if (auto phy = m_mac->GetWifiPhy(linkId);
+                phy && linkId != m_linkId && m_staMac->IsEmlsrLink(linkId))
+            {
+                auto txPowerDbm = phy->GetPowerDbm(txVector.GetTxPowerLevel()) + phy->GetTxGain();
+                // generate in-device interference on the other EMLSR link for the duration of this
+                // transmission
+                GenerateInDeviceInterference(linkId, txDuration, DbmToW(txPowerDbm));
+            }
+        }
+    }
 }
 
 void
@@ -483,6 +500,49 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
             }
         }
     }
+    else if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
+             m_staMac->GetEmlsrManager()->GetInDeviceInterference())
+    {
+        for (const auto linkId : m_staMac->GetLinkIds())
+        {
+            if (auto phy = m_mac->GetWifiPhy(linkId);
+                phy && linkId != m_linkId && m_staMac->IsEmlsrLink(linkId))
+            {
+                auto txPowerDbm = phy->GetPowerDbm(txVector.GetTxPowerLevel()) + phy->GetTxGain();
+                // generate in-device interference on the other EMLSR link for the duration of this
+                // transmission
+                GenerateInDeviceInterference(linkId, txDuration, DbmToW(txPowerDbm));
+            }
+        }
+    }
+}
+
+void
+EhtFrameExchangeManager::GenerateInDeviceInterference(uint8_t linkId, Time duration, double txPower)
+{
+    NS_LOG_FUNCTION(this << linkId << duration.As(Time::US) << txPower);
+
+    auto rxPhy = DynamicCast<SpectrumWifiPhy>(m_mac->GetWifiPhy(linkId));
+
+    if (!rxPhy)
+    {
+        NS_LOG_DEBUG("No spectrum PHY operating on link " << +linkId);
+        return;
+    }
+
+    auto txPhy = DynamicCast<SpectrumWifiPhy>(m_phy);
+    NS_ASSERT(txPhy);
+
+    auto psd = Create<SpectrumValue>(rxPhy->GetCurrentInterface()->GetRxSpectrumModel());
+    *psd = txPower;
+
+    auto spectrumSignalParams = Create<SpectrumSignalParameters>();
+    spectrumSignalParams->duration = duration;
+    spectrumSignalParams->txPhy = txPhy->GetCurrentInterface();
+    spectrumSignalParams->txAntenna = txPhy->GetAntenna();
+    spectrumSignalParams->psd = psd;
+
+    rxPhy->StartRx(spectrumSignalParams, rxPhy->GetCurrentInterface());
 }
 
 void

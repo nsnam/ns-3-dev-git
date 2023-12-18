@@ -147,6 +147,16 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     bool CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr, const WifiTxVector& txVector);
 
     /**
+     * Generate an in-device interference of the given power on the given link for the given
+     * duration.
+     *
+     * \param linkId the ID of the link on which in-device interference is generated
+     * \param duration the duration of the in-device interference
+     * \param txPower the TX power in Watts
+     */
+    void GenerateInDeviceInterference(uint8_t linkId, Time duration, double txPower);
+
+    /**
      * Update the TXOP end timer when starting a frame transmission.
      *
      * \param txDuration the TX duration of the frame being transmitted
