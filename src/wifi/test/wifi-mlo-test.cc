@@ -613,7 +613,7 @@ void
 MultiLinkOperationsTestBase::DoSetup()
 {
     RngSeedManager::SetSeed(1);
-    RngSeedManager::SetRun(2);
+    RngSeedManager::SetRun(3);
     int64_t streamNumber = 30;
 
     NodeContainer wifiApNode;

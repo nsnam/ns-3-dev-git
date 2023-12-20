@@ -992,40 +992,45 @@ WifiHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
     for (auto i = c.Begin(); i != c.End(); ++i)
     {
         netDevice = (*i);
-        Ptr<WifiNetDevice> wifi = DynamicCast<WifiNetDevice>(netDevice);
-        if (wifi)
+        if (auto wifi = DynamicCast<WifiNetDevice>(netDevice))
         {
             // Handle any random numbers in the PHY objects.
-            currentStream += wifi->GetPhy()->AssignStreams(currentStream);
+            for (auto& phy : wifi->GetPhys())
+            {
+                currentStream += phy->AssignStreams(currentStream);
+            }
 
             // Handle any random numbers in the station managers.
-            currentStream += wifi->GetRemoteStationManager()->AssignStreams(currentStream);
+            for (auto& manager : wifi->GetRemoteStationManagers())
+            {
+                currentStream += manager->AssignStreams(currentStream);
+            }
 
             // Handle any random numbers in the MAC objects.
-            Ptr<WifiMac> mac = wifi->GetMac();
+            auto mac = wifi->GetMac();
             PointerValue ptr;
             if (!mac->GetQosSupported())
             {
                 mac->GetAttribute("Txop", ptr);
-                Ptr<Txop> txop = ptr.Get<Txop>();
+                auto txop = ptr.Get<Txop>();
                 currentStream += txop->AssignStreams(currentStream);
             }
             else
             {
                 mac->GetAttribute("VO_Txop", ptr);
-                Ptr<QosTxop> vo_txop = ptr.Get<QosTxop>();
+                auto vo_txop = ptr.Get<QosTxop>();
                 currentStream += vo_txop->AssignStreams(currentStream);
 
                 mac->GetAttribute("VI_Txop", ptr);
-                Ptr<QosTxop> vi_txop = ptr.Get<QosTxop>();
+                auto vi_txop = ptr.Get<QosTxop>();
                 currentStream += vi_txop->AssignStreams(currentStream);
 
                 mac->GetAttribute("BE_Txop", ptr);
-                Ptr<QosTxop> be_txop = ptr.Get<QosTxop>();
+                auto be_txop = ptr.Get<QosTxop>();
                 currentStream += be_txop->AssignStreams(currentStream);
 
                 mac->GetAttribute("BK_Txop", ptr);
-                Ptr<QosTxop> bk_txop = ptr.Get<QosTxop>();
+                auto bk_txop = ptr.Get<QosTxop>();
                 currentStream += bk_txop->AssignStreams(currentStream);
             }
 
