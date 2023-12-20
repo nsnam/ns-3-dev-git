@@ -485,6 +485,8 @@ class ChannelAccessManager : public Object
                                   //!< right to start a TXOP but it does not transmit any frame
                                   //!< (e.g., due to constraints associated with EMLSR operations),
                                   //!< provided that the queue is not actually empty
+    bool m_proactiveBackoff; //!< whether a new backoff value is generated when a CCA busy period
+                             //!< starts and the backoff counter is zero
 
     /// Information associated with each PHY that is going to operate on another EMLSR link
     struct EmlsrLinkSwitchInfo
