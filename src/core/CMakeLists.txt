@@ -282,6 +282,7 @@ set(header_files
     model/type-name.h
     model/type-traits.h
     model/uinteger.h
+    model/uniform-random-bit-generator.h
     model/unused.h
     model/valgrind.h
     model/vector.h
