@@ -703,6 +703,12 @@ HePhy::SetObssPdAlgorithm(const Ptr<ObssPdAlgorithm> algorithm)
     m_obssPdAlgorithm = algorithm;
 }
 
+Ptr<ObssPdAlgorithm>
+HePhy::GetObssPdAlgorithm() const
+{
+    return m_obssPdAlgorithm;
+}
+
 void
 HePhy::SetEndOfHeSigACallback(EndOfHeSigACallback callback)
 {

@@ -233,6 +233,13 @@ class HePhy : public VhtPhy
     void SetObssPdAlgorithm(const Ptr<ObssPdAlgorithm> algorithm);
 
     /**
+     * Gets the OBSS-PD algorithm.
+     *
+     * \return the OBSS-PD algorithm
+     */
+    Ptr<ObssPdAlgorithm> GetObssPdAlgorithm() const;
+
+    /**
      * Set a callback for a end of HE-SIG-A.
      *
      * \param callback the EndOfHeSigACallback to set
