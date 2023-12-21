@@ -23,7 +23,7 @@
 //
 //  The geometry is as follows:
 //
-//                STA1          STA1
+//                STA1          STA2
 //                 |              |
 //              d1 |              |d2
 //                 |       d3     |
@@ -81,6 +81,9 @@
 //  benefits of spatial reuse in this scenario. This can, for
 //  instance, be accomplished by setting --interval=0.0001.
 //
+//  Spatial reuse reset events are traced in two text files:
+//  - wifi-spatial-reuse-resets-bss-1.txt (for STA 1)
+//  - wifi-spatial-reuse-resets-bss-2.txt (for STA 2)
 
 #include "ns3/abort.h"
 #include "ns3/ap-wifi-mac.h"
@@ -89,8 +92,10 @@
 #include "ns3/config.h"
 #include "ns3/double.h"
 #include "ns3/he-configuration.h"
+#include "ns3/he-phy.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
+#include "ns3/obss-pd-algorithm.h"
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet-socket-server.h"
@@ -102,6 +107,8 @@
 using namespace ns3;
 
 std::vector<uint32_t> bytesReceived(4);
+std::ofstream g_resetFile1;
+std::ofstream g_resetFile2;
 
 uint32_t
 ContextToNodeId(std::string context)
@@ -116,6 +123,34 @@ SocketRx(std::string context, Ptr<const Packet> p, const Address& addr)
 {
     uint32_t nodeId = ContextToNodeId(context);
     bytesReceived[nodeId] += p->GetSize();
+}
+
+void
+ResetTrace(std::string context,
+           uint8_t bssColor,
+           double rssiDbm,
+           bool powerRestricted,
+           double txPowerMaxDbmSiso,
+           double txPowerMaxDbmMimo)
+{
+    if (context == "1")
+    {
+        g_resetFile1 << Simulator::Now().GetSeconds() << " bssColor: " << +bssColor
+                     << " rssiDbm: " << rssiDbm << " powerRestricted: " << powerRestricted
+                     << " txPowerMaxDbmSiso: " << txPowerMaxDbmSiso
+                     << " txPowerMaxDbmMimo: " << txPowerMaxDbmMimo << std::endl;
+    }
+    else if (context == "2")
+    {
+        g_resetFile2 << Simulator::Now().GetSeconds() << " bssColor: " << +bssColor
+                     << " rssiDbm: " << rssiDbm << " powerRestricted: " << powerRestricted
+                     << " txPowerMaxDbmSiso: " << txPowerMaxDbmSiso
+                     << " txPowerMaxDbmMimo: " << txPowerMaxDbmMimo << std::endl;
+    }
+    else
+    {
+        NS_FATAL_ERROR("Unknown context " << context);
+    }
 }
 
 int
@@ -163,6 +198,9 @@ main(int argc, char* argv[])
     cmd.AddValue("obssPdThreshold", "Threshold for the OBSS PD Algorithm", obssPdThreshold);
     cmd.AddValue("mcs", "The constant MCS value to transmit HE PPDUs", mcs);
     cmd.Parse(argc, argv);
+
+    g_resetFile1.open("wifi-spatial-reuse-resets-bss-1.txt", std::ofstream::out);
+    g_resetFile2.open("wifi-spatial-reuse-resets-bss-2.txt", std::ofstream::out);
 
     NodeContainer wifiStaNodes;
     wifiStaNodes.Create(2);
@@ -318,6 +356,18 @@ main(int argc, char* argv[])
     Config::Connect("/NodeList/*/ApplicationList/*/$ns3::PacketSocketServer/Rx",
                     MakeCallback(&SocketRx));
 
+    // Obtain pointers to the ObssPdAlgorithm objects and hook trace sinks
+    // to the Reset trace source on each STA.  Note that this trace connection
+    // cannot be done through the Config path system, so pointers are used.
+    auto deviceA = staDeviceA.Get(0)->GetObject<WifiNetDevice>();
+    auto hePhyA = DynamicCast<HePhy>(deviceA->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    // Pass in the context string "1" to allow the trace to distinguish objects
+    hePhyA->GetObssPdAlgorithm()->TraceConnect("Reset", "1", MakeCallback(&ResetTrace));
+    auto deviceB = staDeviceB.Get(0)->GetObject<WifiNetDevice>();
+    auto hePhyB = DynamicCast<HePhy>(deviceB->GetPhy()->GetPhyEntity(WIFI_MOD_CLASS_HE));
+    // Pass in the context string "2" to allow the trace to distinguish objects
+    hePhyB->GetObssPdAlgorithm()->TraceConnect("Reset", "2", MakeCallback(&ResetTrace));
+
     Simulator::Stop(Seconds(duration));
     Simulator::Run();
 
@@ -328,6 +378,9 @@ main(int argc, char* argv[])
         double throughput = static_cast<double>(bytesReceived[2 + i]) * 8 / 1000 / 1000 / duration;
         std::cout << "Throughput for BSS " << i + 1 << ": " << throughput << " Mbit/s" << std::endl;
     }
+
+    g_resetFile1.close();
+    g_resetFile2.close();
 
     return 0;
 }
