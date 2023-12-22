@@ -1146,6 +1146,65 @@ You can open the source files you want, put some breakpoints and then click debu
 
 .. figure:: ../figures/vscode/debugging.png
 
+Note: If you are running on Windows, you need to manually add your ns-3 library directory
+to the ``PATH`` environment variable. This can be accomplished in two ways.
+
+The first, is to set VSCode's ``settings.json`` file to include the following:
+
+.. sourcecode:: json
+
+  "cmake.environment": {
+        "PATH": "${env:PATH};${workspaceFolder}/build/lib"
+    }
+
+The second, a more permanent solution, with the following command:
+
+.. sourcecode:: terminal
+
+  > echo %PATH%
+  C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;
+  C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Program Files\PuTTY\;C:\Program Files\VSCodium\bin;
+  C:\Program Files\Meld\;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\system32;C:\Windows;
+  C:\Windows\System32\Wbem;C:\Windows\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Program Files\PuTTY\;
+  C:\Program Files\VSCodium\bin;C:\Program Files\Meld\;C:\Users\username\AppData\Local\Microsoft\WindowsApps;
+
+  > setx PATH "%PATH%;C:\path\to\ns-3-dev\build\lib"
+
+  SUCCESS: Specified value was saved.
+
+  > echo %PATH%
+  C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;
+  ...
+  C:\Program Files\VSCodium\bin;C:\Program Files\Meld\;C:\Users\username\AppData\Local\Microsoft\WindowsApps;
+  C:\tools\source\ns-3-dev\build\lib;
+
+If you do not setup your ``PATH`` environment variable, you may end up having problems to debug that
+look like the following:
+
+.. sourcecode:: console
+
+  =thread-group-added,id="i1"
+  GNU gdb (GDB) 14.1
+  Copyright (C) 2023 Free Software Foundation, Inc.
+  License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+  ...
+  ERROR: Unable to start debugging. GDB exited unexpectedly.
+  The program 'C:\tools\source\ns-3-dev\build\examples\wireless\ns3-dev-wifi-he-network-debug.exe' has exited with code 0 (0x00000000).
+
+  ERROR: During startup program exited with code 0xc0000135.
+
+Or
+
+.. sourcecode:: console
+
+  =thread-group-added,id="i1"
+  GNU gdb (GDB) 14.1
+  Copyright (C) 2023 Free Software Foundation, Inc.
+  License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+  ...
+  ERROR: Unable to start debugging. Unexpected GDB output from command "-exec-run". During startup program exited with code 0xc0000135.
+  The program 'C:\tools\source\ns-3-dev\build\examples\wireless\ns3-dev-wifi-he-network-debug.exe' has exited with code 0 (0x00000000).
+
 JetBrains CLion
 ===============
 
