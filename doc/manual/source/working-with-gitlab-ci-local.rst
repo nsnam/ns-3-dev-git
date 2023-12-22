@@ -167,3 +167,15 @@ Artifacts built by the CI jobs will be stored in separate subfolders
 based on the job name.
 
 ``~/ns-3-dev/.gitlab-ci-local/artifacts/jobname``
+
+Note: some jobs may access the ``CI_DEFAULT_BRANCH`` environment variable,
+which is set by default to ``main`` instead of ``master``. To change that, we need
+to create a file ``~/.gitlab-ci-local/variables.yml`` containing the following:
+
+.. sourcecode:: YAML
+
+  global:
+    CI_DEFAULT_BRANCH: "master"
+
+In case you are using Docker with root, you need to create this file in
+``/root/.gitlab-ci-local/variables.yml``.
