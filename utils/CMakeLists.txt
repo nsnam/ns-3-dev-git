@@ -33,13 +33,11 @@ if(${ENABLE_TESTS})
 
     if(${NS3_MONOLIB})
       target_link_libraries(
-        test-runner ${LIB_AS_NEEDED_PRE} ${ns3-libs-tests} ${LIB_AS_NEEDED_POST}
-        ${lib-ns3-monolib} ${ns3-contrib-libs}
+        test-runner ${LIB_AS_NEEDED_PRE} ${ns3-libs-tests} ${lib-ns3-monolib} ${ns3-contrib-libs} ${LIB_AS_NEEDED_POST}
       )
     else()
       target_link_libraries(
-        test-runner ${LIB_AS_NEEDED_PRE} ${ns3-libs-tests} ${LIB_AS_NEEDED_POST}
-        ${ns3-libs} ${ns3-contrib-libs}
+        test-runner ${LIB_AS_NEEDED_PRE} ${ns3-libs-tests} ${ns3-libs} ${ns3-contrib-libs} ${LIB_AS_NEEDED_POST}
       )
     endif()
   endif()
