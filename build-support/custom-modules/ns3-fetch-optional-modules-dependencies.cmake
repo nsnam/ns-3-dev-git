@@ -18,8 +18,9 @@ ExternalProject_Add(
   PREFIX click_dep
   BUILD_IN_SOURCE TRUE
   UPDATE_DISCONNECTED TRUE
-  CONFIGURE_COMMAND ./configure --disable-linuxmodule --enable-nsclick
-                    --enable-wifi --prefix ${CMAKE_OUTPUT_DIRECTORY}
+  CONFIGURE_COMMAND
+    ./configure --disable-linuxmodule --enable-nsclick --enable-wifi --prefix
+    ${CMAKE_OUTPUT_DIRECTORY} --libdir ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
   BUILD_COMMAND make -j${NumThreads}
   INSTALL_COMMAND make install
 )
@@ -56,11 +57,12 @@ install(
   USE_SOURCE_PERMISSIONS
   PATTERN "boost/*"
 )
+
 install(
-  DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/lib/
+  DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/${libdir}/
   DESTINATION ${CMAKE_INSTALL_LIBDIR}
   USE_SOURCE_PERMISSIONS
-  PATTERN "lib/*"
+  PATTERN "${libdir}/*"
 )
 
 macro(add_dependency_to_optional_modules_dependencies)

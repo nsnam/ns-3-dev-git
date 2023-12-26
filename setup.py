@@ -24,7 +24,6 @@ setuptools.setup(
                 "-DNS3_BINDINGS_INSTALL_DIR:STRING=INSTALL_PREFIX",
                 "-DNS3_FETCH_OPTIONAL_COMPONENTS:BOOL=ON",
                 "-DNS3_PIP_PACKAGING:BOOL=ON",
-                "-DNS3_USE_LIB64:BOOL=ON",
                 # Make CMake find python components from the currently running python
                 # https://catherineh.github.io/programming/2021/11/16/python-binary-distributions-whls-with-c17-cmake-auditwheel-and-manylinux
                 f"-DPython3_LIBRARY_DIRS={sysconfig.get_config_var('LIBDIR')}",

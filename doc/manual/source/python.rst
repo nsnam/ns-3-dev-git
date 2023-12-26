@@ -632,7 +632,7 @@ in the ``ns-3-dev/setup.py`` file.
 .. sourcecode:: yaml
 
       # Configure and build wheel
-      - $PYTHON setup.py bdist_wheel build_ext "-DNS3_USE_LIB64=TRUE"
+      - $PYTHON setup.py bdist_wheel build_ext
 
 At this point, we have a wheel that only works in the current system,
 since external libraries are not shipped.

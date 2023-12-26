@@ -39,11 +39,13 @@ include(ns3-hidden-settings)
 # as possible
 include(colored-messages)
 
+# Get installation folder default values
+include(GNUInstallDirs)
+
 # Define output directories
 include(ns3-output-directory)
 
-# Get installation folder default values for each platform and include package
-# configuration macro
+# Configure packaging related settings
 include(ns3-cmake-package)
 
 # Windows, Linux and Mac related checks

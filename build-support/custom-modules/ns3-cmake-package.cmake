@@ -15,21 +15,12 @@
 #
 # Author: Gabriel Ferreira <gabrielcarvfer@gmail.com>
 
-include(GNUInstallDirs)
-
-# Set RPATH not too need LD_LIBRARY_PATH after installing
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib:$ORIGIN/:$ORIGIN/../lib")
-
-# Add the 64 suffix to the library path when manually requested with the
-# -DNS3_USE_LIB64=ON flag. May be necessary depending on the target platform.
-# This is used to properly build the manylinux pip wheel.
-set(NS3_USE_LIB64 FALSE)
-if(${NS3_USE_LIB64})
-  link_directories(${CMAKE_OUTPUT_DIRECTORY}/lib64)
-  set(CMAKE_INSTALL_RPATH
-      "${CMAKE_INSTALL_RPATH}:${CMAKE_INSTALL_PREFIX}/lib64:$ORIGIN/:$ORIGIN/../lib64"
-  )
-endif()
+# Set RPATH not too need LD_LIBRARY_PATH after installing. Add the lib64 variant
+# to support all platforms, such as alma linux, used to build the manylinux pip
+# wheel.
+set(CMAKE_INSTALL_RPATH
+    "${CMAKE_INSTALL_PREFIX}/lib:$ORIGIN/:$ORIGIN/../lib:${CMAKE_INSTALL_PREFIX}/lib64:$ORIGIN/:$ORIGIN/../lib64"
+)
 
 # cmake-format: off
 # You are a wizard, Harry!
