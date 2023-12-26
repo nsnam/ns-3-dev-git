@@ -2,13 +2,11 @@ include(ExternalProject)
 
 ExternalProject_Add(
   brite_dep
-  URL https://code.nsnam.org/BRITE/archive/30338f4f63b9.zip
-  URL_HASH MD5=b36ecf8f6b5f2cfae936ba1f1bfcff5c
+  GIT_REPOSITORY https://gitlab.com/nsnam/BRITE.git
+  GIT_TAG 29c301e828d2a4f303b3d0c69360c987b02d0745
   PREFIX brite_dep
   BUILD_IN_SOURCE TRUE
-  CONFIGURE_COMMAND make
-  BUILD_COMMAND make
-  INSTALL_COMMAND make install PREFIX=${CMAKE_OUTPUT_DIRECTORY}
+  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_OUTPUT_DIRECTORY}
 )
 
 ExternalProject_Add(
