@@ -773,6 +773,25 @@ which would be ignored otherwise. This is illustrated in Figure :ref:`fig-cca-ch
 
    Illustration of signals tracking upon channel switching
 
+MU-MIMO PHY support
+###################
+
+There is a basic support for MU-MIMO at the PHY layer that has been introduced in release
+ns-3.40. The current model can be used for both downlink and uplink MU-MIMO transmissions.
+
+The use of OFDMA and MU-MIMO for Multi-User transmissions depends on how the TXVECTOR
+is filled in by the MAC layer (not implemented yet). Since mixed OFDMA and MU-MIMO
+configurations are not supported, the TXVECTOR determines it carries information for
+MU-MIMO if all users are assigned the same RU, otherwise it corresponds to an OFDMA
+transmission.
+
+At the PHY layer, OFDMA and MU-MIMO transmissions are handled in a similar way, the main difference
+lies in MU-MIMO having the same spectrum shared simultaneously with multiple transmitters (for
+the uplink direction). The current PHY abstraction model assumes perfect conditions where the
+interference helper is able to detect signals belonging to the same MU-MIMO transmission and make
+sure they do not interfere with each others. Interference with other signals, including other
+MU-MIMO transmissions, is still supported by the model.
+
 The MAC model
 =============
 
