@@ -409,7 +409,7 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
 }
 
 Time
-EmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId)
+EmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId, AcIndex aci)
 {
     auto phy = m_staMac->GetWifiPhy(linkId);
     NS_ASSERT_MSG(phy, "No PHY operating on link " << +linkId);
@@ -432,7 +432,7 @@ EmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId)
     // whether the aux PHY is TX capable or not
     if (!m_auxPhyTxCapable)
     {
-        SwitchMainPhyIfTxopGainedByAuxPhy(linkId);
+        SwitchMainPhyIfTxopGainedByAuxPhy(linkId, aci);
         // if the aux PHY is not TX capable, we don't have to request channel access: if the main
         // PHY switches link, the UL TXOP will be started; if the main PHY does not switch, it is
         // because it is going to start an UL TXOP on another link and this link will be restarted

@@ -279,7 +279,9 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
         const auto mainPhySwitching = mainPhy->IsStateSwitching();
 
         // let EMLSR manager decide whether to prevent or allow this UL TXOP
-        if (auto delay = emlsrManager->GetDelayUntilAccessRequest(m_linkId);
+        if (auto delay = emlsrManager->GetDelayUntilAccessRequest(
+                m_linkId,
+                DynamicCast<QosTxop>(edca)->GetAccessCategory());
             delay.IsStrictlyPositive())
         {
             NotifyChannelReleased(edca);

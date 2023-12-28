@@ -142,14 +142,15 @@ class EmlsrManager : public Object
     bool GetCamStateReset() const;
 
     /**
-     * Notify that an UL TXOP is gained on the given link. This method has to determine whether to
-     * start the UL TXOP or release the channel.
+     * Notify that an UL TXOP is gained on the given link by the given AC. This method has to
+     * determine whether to start the UL TXOP or release the channel.
      *
      * \param linkId the ID of the given link
+     * \param aci the index of the given AC
      * \return zero, if the UL TXOP can be started, or the delay after which the EMLSR client
      *         restarts channel access, otherwise
      */
-    Time GetDelayUntilAccessRequest(uint8_t linkId);
+    Time GetDelayUntilAccessRequest(uint8_t linkId, AcIndex aci);
 
     /**
      * Set the member variable indicating whether Aux PHYs are capable of transmitting PPDUs.
@@ -363,13 +364,14 @@ class EmlsrManager : public Object
 
     /**
      * Subclasses have to provide an implementation for this method, that is called by the base
-     * class when the EMLSR client gets channel access on the given link, on which an aux PHY that
-     * is not TX capable is operating. This method has to request the main PHY to switch to the
-     * given link to take over the TXOP, unless it is decided to give up the TXOP.
+     * class when the given AC of the EMLSR client gets channel access on the given link, on which
+     * an aux PHY that is not TX capable is operating. This method has to request the main PHY to
+     * switch to the given link to take over the TXOP, unless it is decided to give up the TXOP.
      *
      * \param linkId the ID of the given link
+     * \param aci the index of the given AC
      */
-    virtual void SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId) = 0;
+    virtual void SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex aci) = 0;
 
     /**
      * Subclasses have to provide an implementation for this method, that is called by the base

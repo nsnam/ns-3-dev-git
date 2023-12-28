@@ -229,9 +229,9 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
 }
 
 void
-DefaultEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId)
+DefaultEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex aci)
 {
-    NS_LOG_FUNCTION(this << linkId);
+    NS_LOG_FUNCTION(this << linkId << aci);
 
     NS_ASSERT_MSG(!m_auxPhyTxCapable,
                   "This function should only be called if aux PHY is not TX capable");
@@ -239,9 +239,12 @@ DefaultEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId)
     // the aux PHY is not TX capable; check if main PHY has to switch to the aux PHY's link
     auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
 
-    // if the main PHY is idle, check whether the remaining backoff counter on at least an AC with
-    // queued packets is greater than the main PHY channel switch delay
-    auto backoffGreaterThanSwitchDelay = false;
+    // if the main PHY is idle, switch main PHY if we expect the main PHY to get channel access on
+    // this link more quicky, i.e., if ALL the ACs with queued frames and with priority higher than
+    // or equal to that of the AC for which Aux PHY gained TXOP have their backoff counter greater
+    // than the channel switch delay plus PIFS
+
+    auto requestSwitch = false;
 
     if (mainPhy->IsStateIdle())
     {
@@ -255,19 +258,23 @@ DefaultEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId)
                                     Txop::HAD_FRAMES_TO_TRANSMIT,
                                     Txop::CHECK_MEDIUM_BUSY);
 
-        for (const auto& [aci, ac] : wifiAcList)
+        for (const auto& [acIndex, ac] : wifiAcList)
         {
-            if (auto edca = GetStaMac()->GetQosTxop(aci); edca->HasFramesToTransmit(linkId))
+            if (auto edca = GetStaMac()->GetQosTxop(acIndex);
+                acIndex >= aci && edca->HasFramesToTransmit(linkId))
             {
+                requestSwitch = true;
+
                 auto backoffEnd =
                     GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetBackoffEndFor(edca);
-                NS_LOG_DEBUG("Backoff end for " << aci
+                NS_LOG_DEBUG("Backoff end for " << acIndex
                                                 << " on primary link: " << backoffEnd.As(Time::US));
 
-                if (backoffEnd > Simulator::Now() + mainPhy->GetChannelSwitchDelay() +
-                                     GetStaMac()->GetWifiPhy(linkId)->GetPifs())
+                if (backoffEnd <= Simulator::Now() + mainPhy->GetChannelSwitchDelay() +
+                                      GetStaMac()->GetWifiPhy(linkId)->GetPifs() &&
+                    edca->HasFramesToTransmit(*mainPhyLinkId))
                 {
-                    backoffGreaterThanSwitchDelay = true;
+                    requestSwitch = false;
                     break;
                 }
             }
@@ -275,7 +282,7 @@ DefaultEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId)
     }
 
     if ((mainPhy->IsStateCcaBusy() && !mainPhy->IsReceivingPhyHeader()) ||
-        (mainPhy->IsStateIdle() && backoffGreaterThanSwitchDelay))
+        (mainPhy->IsStateIdle() && requestSwitch))
     {
         // switch main PHY
         SwitchMainPhy(linkId, false, RESET_BACKOFF, REQUEST_ACCESS);
