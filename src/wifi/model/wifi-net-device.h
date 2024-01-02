@@ -25,6 +25,7 @@
 #include "ns3/net-device.h"
 #include "ns3/traced-callback.h"
 
+#include <optional>
 #include <vector>
 
 namespace ns3
@@ -238,6 +239,20 @@ class WifiNetDevice : public NetDevice
      * connecting all lower components (e.g. MAC, WifiRemoteStation) together.
      */
     void CompleteConfig();
+
+    /**
+     * Send a packet
+     *
+     * \param packet packet sent from upper layers
+     * \param source source mac address (if provided)
+     * \param dest destination mac address
+     * \param protocolNumber type of payload contained in this packet
+     * \returns true if successful, false otherwise
+     */
+    bool DoSend(Ptr<Packet> packet,
+                std::optional<Address> source,
+                const Address& dest,
+                uint16_t protocolNumber);
 
     Ptr<Node> m_node;                                             //!< the node
     std::vector<Ptr<WifiPhy>> m_phys;                             //!< the phy objects

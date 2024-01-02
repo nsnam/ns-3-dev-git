@@ -478,17 +478,7 @@ bool
 WifiNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
     NS_LOG_FUNCTION(this << packet << dest << protocolNumber);
-    NS_ASSERT(Mac48Address::IsMatchingType(dest));
-
-    Mac48Address realTo = Mac48Address::ConvertFrom(dest);
-
-    LlcSnapHeader llc;
-    llc.SetType(protocolNumber);
-    packet->AddHeader(llc);
-
-    m_mac->NotifyTx(packet);
-    m_mac->Enqueue(packet, realTo);
-    return true;
+    return DoSend(packet, std::nullopt, dest, protocolNumber);
 }
 
 Ptr<Node>
@@ -579,18 +569,41 @@ WifiNetDevice::SendFrom(Ptr<Packet> packet,
                         uint16_t protocolNumber)
 {
     NS_LOG_FUNCTION(this << packet << source << dest << protocolNumber);
-    NS_ASSERT(Mac48Address::IsMatchingType(dest));
-    NS_ASSERT(Mac48Address::IsMatchingType(source));
+    return DoSend(packet, source, dest, protocolNumber);
+}
 
-    Mac48Address realTo = Mac48Address::ConvertFrom(dest);
-    Mac48Address realFrom = Mac48Address::ConvertFrom(source);
+bool
+WifiNetDevice::DoSend(Ptr<Packet> packet,
+                      std::optional<Address> source,
+                      const Address& dest,
+                      uint16_t protocolNumber)
+{
+    NS_LOG_FUNCTION(this << packet << dest << protocolNumber << source.value_or(Address()));
+
+    if (source)
+    {
+        NS_ASSERT_MSG(Mac48Address::IsMatchingType(*source),
+                      *source << " is not compatible with a Mac48Address");
+    }
+    NS_ASSERT_MSG(Mac48Address::IsMatchingType(dest),
+                  dest << " is not compatible with a Mac48Address");
+
+    auto realTo = Mac48Address::ConvertFrom(dest);
 
     LlcSnapHeader llc;
     llc.SetType(protocolNumber);
     packet->AddHeader(llc);
 
     m_mac->NotifyTx(packet);
-    m_mac->Enqueue(packet, realTo, realFrom);
+    if (source)
+    {
+        auto realFrom = Mac48Address::ConvertFrom(*source);
+        m_mac->Enqueue(packet, realTo, realFrom);
+    }
+    else
+    {
+        m_mac->Enqueue(packet, realTo);
+    }
 
     return true;
 }
