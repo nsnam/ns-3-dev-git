@@ -17,6 +17,7 @@ build_lib(
     model/seq-ts-size-header.cc
     model/sink-application.cc
     model/source-application.cc
+    model/tgax-video-traffic.cc
     model/three-gpp-http-client.cc
     model/three-gpp-http-header.cc
     model/three-gpp-http-server.cc
@@ -43,6 +44,7 @@ build_lib(
     model/seq-ts-size-header.h
     model/sink-application.h
     model/source-application.h
+    model/tgax-video-traffic.h
     model/three-gpp-http-client.h
     model/three-gpp-http-header.h
     model/three-gpp-http-server.h
