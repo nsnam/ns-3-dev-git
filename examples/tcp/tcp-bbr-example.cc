@@ -71,15 +71,18 @@ static void
 TraceThroughput(Ptr<FlowMonitor> monitor)
 {
     FlowMonitor::FlowStatsContainer stats = monitor->GetFlowStats();
-    auto itr = stats.begin();
-    Time curTime = Now();
-    std::ofstream thr(dir + "/throughput.dat", std::ios::out | std::ios::app);
-    thr << curTime << " "
-        << 8 * (itr->second.txBytes - prev) /
-               (1000 * 1000 * (curTime.GetSeconds() - prevTime.GetSeconds()))
-        << std::endl;
-    prevTime = curTime;
-    prev = itr->second.txBytes;
+    if (!stats.empty())
+    {
+        auto itr = stats.begin();
+        Time curTime = Now();
+        std::ofstream thr(dir + "/throughput.dat", std::ios::out | std::ios::app);
+        thr << curTime << " "
+            << 8 * (itr->second.txBytes - prev) /
+                   (1000 * 1000 * (curTime.GetSeconds() - prevTime.GetSeconds()))
+            << std::endl;
+        prevTime = curTime;
+        prev = itr->second.txBytes;
+    }
     Simulator::Schedule(Seconds(0.2), &TraceThroughput, monitor);
 }
 
