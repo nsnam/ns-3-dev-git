@@ -435,12 +435,14 @@ Ipv6Interface::Send(Ptr<Packet> p, const Ipv6Header& hdr, Ipv6Address dest)
         if (dest == it->first.GetAddress())
         {
             p->AddHeader(hdr);
-            m_tc->Receive(m_device,
-                          p,
-                          Ipv6L3Protocol::PROT_NUMBER,
-                          m_device->GetBroadcast(),
-                          m_device->GetBroadcast(),
-                          NetDevice::PACKET_HOST);
+            Simulator::ScheduleNow(&TrafficControlLayer::Receive,
+                                   m_tc,
+                                   m_device,
+                                   p,
+                                   Ipv6L3Protocol::PROT_NUMBER,
+                                   m_device->GetBroadcast(),
+                                   m_device->GetBroadcast(),
+                                   NetDevice::PACKET_HOST);
             return;
         }
     }

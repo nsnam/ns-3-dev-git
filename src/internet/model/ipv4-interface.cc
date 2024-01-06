@@ -237,12 +237,14 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
         if (dest == (*i).GetLocal())
         {
             p->AddHeader(hdr);
-            m_tc->Receive(m_device,
-                          p,
-                          Ipv4L3Protocol::PROT_NUMBER,
-                          m_device->GetBroadcast(),
-                          m_device->GetBroadcast(),
-                          NetDevice::PACKET_HOST);
+            Simulator::ScheduleNow(&TrafficControlLayer::Receive,
+                                   m_tc,
+                                   m_device,
+                                   p,
+                                   Ipv4L3Protocol::PROT_NUMBER,
+                                   m_device->GetBroadcast(),
+                                   m_device->GetBroadcast(),
+                                   NetDevice::PACKET_HOST);
             return;
         }
     }
