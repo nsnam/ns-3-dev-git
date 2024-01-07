@@ -613,6 +613,20 @@ WeibullRandomVariable::GetBound() const
 }
 
 double
+WeibullRandomVariable::GetMean(double scale, double shape)
+{
+    NS_LOG_FUNCTION(scale << shape);
+    return scale * std::tgamma(1 + (1 / shape));
+}
+
+double
+WeibullRandomVariable::GetMean() const
+{
+    NS_LOG_FUNCTION(this);
+    return GetMean(m_scale, m_shape);
+}
+
+double
 WeibullRandomVariable::GetValue(double scale, double shape, double bound)
 {
     NS_LOG_FUNCTION(this << scale << shape << bound);

@@ -863,6 +863,19 @@ class WeibullRandomVariable : public RandomVariableStream
     double GetBound() const;
 
     /**
+     * \brief Returns the mean value for the Weibull distribution returned by this RNG stream.
+     * \return The mean value for the Weibull distribution returned by this RNG stream.
+     */
+    double GetMean() const;
+
+    /**
+     * \copydoc GetMean()
+     * \param [in] scale Scale parameter for the Weibull distribution.
+     * \param [in] shape Shape parameter for the Weibull distribution.
+     */
+    static double GetMean(double scale, double shape);
+
+    /**
      * \copydoc GetValue()
      * \param [in] scale Scale parameter for the Weibull distribution.
      * \param [in] shape Shape parameter for the Weibull distribution.
