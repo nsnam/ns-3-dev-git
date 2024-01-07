@@ -1242,12 +1242,12 @@ WeibullTestCase::DoRun()
     SetTestSuiteSeed();
 
     auto generator = RngGenerator<WeibullRandomVariable>();
-    double sum = ChiSquaredsAverage(&generator, N_RUNS);
-    double maxStatistic = gsl_cdf_chisq_Qinv(0.05, N_BINS);
+    const auto sum = ChiSquaredsAverage(&generator, N_RUNS);
+    const auto maxStatistic = gsl_cdf_chisq_Qinv(0.05, N_BINS);
     NS_TEST_ASSERT_MSG_LT(sum, maxStatistic, "Chi-squared statistic out of range");
 
-    double scale = 5.0;
-    double shape = 1.0;
+    const auto scale = 5.0;
+    const auto shape = 1.0;
 
     // Create the RNG with the specified range.
     Ptr<WeibullRandomVariable> x = CreateObject<WeibullRandomVariable>();
@@ -1255,7 +1255,7 @@ WeibullTestCase::DoRun()
     x->SetAttribute("Shape", DoubleValue(shape));
 
     // Calculate the mean of these values.
-    double valueMean = Average(x);
+    const auto measuredMean = Average(x);
 
     // The expected value for the mean of the values returned by a
     // Weibull distributed random variable is
@@ -1279,13 +1279,17 @@ WeibullTestCase::DoRun()
     //
     //     E[value]  =  scale  .
     //
-    double expectedMean = scale;
+    const auto expectedMean = scale;
+
+    // Test calculated and expected mean values are identical.
+    const auto valueMean = x->GetMean();
+    NS_TEST_ASSERT_MSG_EQ(valueMean, expectedMean, "Wrong calculated mean value.");
 
     // Test that values have approximately the right mean value.
-    NS_TEST_ASSERT_MSG_EQ_TOL(valueMean,
+    NS_TEST_ASSERT_MSG_EQ_TOL(measuredMean,
                               expectedMean,
                               expectedMean * TOLERANCE,
-                              "Wrong mean value.");
+                              "Wrong measured mean value.");
 }
 
 /**
