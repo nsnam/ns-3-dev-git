@@ -22,6 +22,7 @@ if(applications
   )
     # cmake-format: off
     set(applications_sources
+        ns3tcp/ns3tcp-cubic-test-suite.cc
         ns3tcp/ns3tcp-loss-test-suite.cc
         ns3tcp/ns3tcp-no-delay-test-suite.cc
         ns3tcp/ns3tcp-socket-test-suite.cc
