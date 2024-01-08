@@ -1159,44 +1159,44 @@ expressions in if statements and variable declarations.
 
 For instance, the following code:
 
-  .. sourcecode:: cpp
+.. sourcecode:: cpp
 
-    bool IsPositive(int n)
-    {
-        if (n > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+  bool IsPositive(int n)
+  {
+      if (n > 0)
+      {
+          return true;
+      }
+      else
+      {
+          return false;
+      }
+  }
 
-    void ProcessNumber(int n)
-    {
-        if (IsPositive(n) == true)
-        {
-            ...
-        }
-    }
+  void ProcessNumber(int n)
+  {
+      if (IsPositive(n) == true)
+      {
+          ...
+      }
+  }
 
 can be rewritten as:
 
-  .. sourcecode:: cpp
+.. sourcecode:: cpp
 
-    bool IsPositive(int n)
-    {
-        return n > 0;
-    }
+  bool IsPositive(int n)
+  {
+      return n > 0;
+  }
 
-    void ProcessNumber(int n)
-    {
-        if (IsPositive(n))
-        {
-            ...
-        }
-    }
+  void ProcessNumber(int n)
+  {
+      if (IsPositive(n))
+      {
+          ...
+      }
+  }
 
 Smart pointer boolean comparisons
 =================================
@@ -1608,23 +1608,23 @@ add the following configuration to ``.vscode/settings.json``:
 
 .. sourcecode:: json
 
-    {
-        "editor.formatOnPaste": true,
-        "editor.formatOnSave": true,
-        "editor.formatOnType": true,
-        "[python]": {
-            "editor.defaultFormatter": "ms-python.black-formatter",
-            "editor.codeActionsOnSave": {
-                "source.organizeImports": "explicit",
-            },
-        },
-        "black-formatter.args": [
-            "--config",
-            "pyproject.toml",
-        ],
-        "isort.check": true,
-        "isort.args": [
-            "--sp",
-            "pyproject.toml",
-        ],
-    }
+  {
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.codeActionsOnSave": {
+          "source.organizeImports": "explicit",
+      },
+    },
+    "black-formatter.args": [
+      "--config",
+      "pyproject.toml",
+    ],
+    "isort.check": true,
+    "isort.args": [
+      "--sp",
+      "pyproject.toml",
+    ],
+  }

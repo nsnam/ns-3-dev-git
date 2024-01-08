@@ -511,8 +511,8 @@ with one or more bound arguments::
 
   template <typename T, typename ARG, typename BOUND_ARG>
   class SpecificFunctor : public Functor
-   {
-   public:
+  {
+    public:
       SpecificFunctor(T* p, int (T::*_pmi)(ARG arg), BOUND_ARG boundArg)
       {
         m_p = p;
@@ -524,11 +524,11 @@ with one or more bound arguments::
       {
         (*m_p.*m_pmi)(m_boundArg, arg);
       }
-  private:
+    private:
       void (T::*m_pmi)(ARG arg);
       T* m_p;
       BOUND_ARG m_boundArg;
-   };
+  };
 
 You can see that when the specific functor is created, the bound argument is saved
 in the functor / callback object itself.  When the ``operator()`` is invoked with

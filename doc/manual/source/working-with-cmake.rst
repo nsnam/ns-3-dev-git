@@ -73,13 +73,13 @@ print the configuration options:
   ~$ cd ns-3-dev
   ~/ns-3-dev$ ./ns3 configure --help
   usage: ns3 configure [-h] [-d {debug,release,optimized}] [-G G]
-                     [--cxx-standard CXX_STANDARD] [--enable-asserts]
-                     [--disable-asserts] [--enable-examples]
-                     [--disable-examples] [--enable-logs]
-                     [--disable-logs] [--enable-tests]
-                     [--disable-tests] [--enable-verbose]
-                     [--disable-verbose]
-                     ...
+                       [--cxx-standard CXX_STANDARD] [--enable-asserts]
+                       [--disable-asserts] [--enable-examples]
+                       [--disable-examples] [--enable-logs]
+                       [--disable-logs] [--enable-tests]
+                       [--disable-tests] [--enable-verbose]
+                       [--disable-verbose]
+                       ...
 
   positional arguments:
     configure
