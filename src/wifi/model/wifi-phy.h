@@ -55,6 +55,7 @@ class WifiRadioEnergyModel;
 class UniformRandomVariable;
 class InterferenceHelper;
 class ErrorRateModel;
+class WifiMacHeader;
 
 /**
  * \brief 802.11 PHY layer model
@@ -765,6 +766,17 @@ class WifiPhy : public Object
      */
     typedef void (*PhyRxPpduDropTracedCallback)(Ptr<const WifiPpdu> ppdu,
                                                 WifiPhyRxfailureReason reason);
+
+    /**
+     * TracedCallback signature for end of MAC header reception events.
+     *
+     * \param macHdr the MAC header of the MPDU being received
+     * \param txVector the TXVECTOR used to transmit the PSDU
+     * \param psduDuration the remaining duration of the PSDU
+     */
+    typedef void (*PhyRxMacHeaderEndTracedCallback)(const WifiMacHeader& macHdr,
+                                                    const WifiTxVector& txVector,
+                                                    Time psduDuration);
 
     /**
      * Assign a fixed random variable stream number to the random variables
@@ -1506,6 +1518,17 @@ class WifiPhy : public Object
     TracedCallback<WifiTxVector, Time> m_phyRxPayloadBeginTrace;
 
     /**
+     * The trace source fired when the reception of a MAC header ends.
+     *
+     * This traced callback models the behavior of real PHYs that are able to decode the MAC
+     * header of an MPDU being received and make the information therein available to the MAC
+     * as soon as the reception of the MAC header ends.
+     *
+     * \see class CallBackTraceSource
+     */
+    TracedCallback<const WifiMacHeader&, const WifiTxVector&, Time> m_phyRxMacHeaderEndTrace;
+
+    /**
      * The trace source fired when a packet ends the reception process from
      * the medium.
      *
@@ -1624,6 +1647,7 @@ class WifiPhy : public Object
     Ptr<WifiRadioEnergyModel> m_wifiRadioEnergyModel;     //!< Wifi radio energy model
     Ptr<ErrorModel> m_postReceptionErrorModel;            //!< Error model for receive packet events
     Time m_timeLastPreambleDetected; //!< Record the time the last preamble was detected
+    bool m_notifyRxMacHeaderEnd;     //!< whether the PHY is capable of notifying MAC header RX end
 
     Callback<void> m_capabilitiesChangedCallback; //!< Callback when PHY capabilities changed
 };

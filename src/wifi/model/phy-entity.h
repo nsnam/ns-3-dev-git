@@ -954,7 +954,8 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     std::list<WifiMode> m_modeList; //!< the list of supported modes
 
     std::vector<EventId> m_endPreambleDetectionEvents; //!< the end of preamble detection events
-    std::vector<EventId> m_endOfMpduEvents; //!< the end of MPDU events (only used for A-MPDUs)
+    std::vector<EventId> m_endOfMpduEvents;   //!< the end of MPDU events (only used for A-MPDUs)
+    std::vector<EventId> m_endOfMacHdrEvents; //!< the end of MAC header events
 
     std::vector<EventId>
         m_endRxPayloadEvents; //!< the end of receive events (only one unless UL MU reception)

@@ -304,6 +304,12 @@ WifiPhy::GetTypeId()
                           DoubleValue(100.0), // set to a high value so as to have no effect
                           MakeDoubleAccessor(&WifiPhy::m_powerDensityLimit),
                           MakeDoubleChecker<double>())
+            .AddAttribute("NotifyMacHdrRxEnd",
+                          "Whether the PHY is capable of notifying the MAC about the end of "
+                          "the reception of the MAC header of every MPDU.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&WifiPhy::m_notifyRxMacHeaderEnd),
+                          MakeBooleanChecker())
             .AddTraceSource("PhyTxBegin",
                             "Trace source indicating a packet "
                             "has begun transmitting over the channel medium",
@@ -335,6 +341,11 @@ WifiPhy::GetTypeId()
                             "payload of a PPDU has begun",
                             MakeTraceSourceAccessor(&WifiPhy::m_phyRxPayloadBeginTrace),
                             "ns3::WifiPhy::PhyRxPayloadBeginTracedCallback")
+            .AddTraceSource("PhyRxMacHeaderEnd",
+                            "Trace source indicating the MAC header of an MPDU has been "
+                            "completely received.",
+                            MakeTraceSourceAccessor(&WifiPhy::m_phyRxMacHeaderEndTrace),
+                            "ns3::WifiPhy::PhyRxMacHeaderEndTracedCallback")
             .AddTraceSource("PhyRxEnd",
                             "Trace source indicating a packet "
                             "has been completely received from the channel medium "

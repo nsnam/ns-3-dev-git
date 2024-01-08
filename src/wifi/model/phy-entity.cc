@@ -31,6 +31,7 @@
 #include "wifi-utils.h"
 
 #include "ns3/assert.h"
+#include "ns3/data-rate.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
@@ -611,6 +612,34 @@ PhyEntity::ScheduleEndOfMpdus(Ptr<Event> event)
     auto mpdu = psdu->begin();
     for (size_t i = 0; i < nMpdus && mpdu != psdu->end(); ++mpdu)
     {
+        if (m_wifiPhy->m_notifyRxMacHeaderEnd)
+        {
+            // calculate MAC header size (including A-MPDU subframe header, if present)
+            auto macHdrSize =
+                (*mpdu)->GetHeader().GetSerializedSize() + (mpduType == NORMAL_MPDU ? 0 : 4);
+            // calculate the (approximate) duration of the MAC header TX
+            auto macHdrDuration = DataRate(txVector.GetMode(staId).GetDataRate(txVector, staId))
+                                      .CalculateBytesTxTime(macHdrSize);
+            const auto widthBand = GetChannelWidthAndBand(txVector, staId);
+            const auto snrPer = m_wifiPhy->m_interference->CalculatePayloadSnrPer(
+                event,
+                widthBand.first,
+                widthBand.second,
+                staId,
+                {relativeStart, relativeStart + macHdrDuration});
+            if (GetRandomValue() > snrPer.per)
+            {
+                // interference level should permit to correctly decode the MAC header
+                m_endOfMacHdrEvents.push_back(
+                    Simulator::Schedule(endOfMpduDuration + macHdrDuration, [=, this]() {
+                        m_wifiPhy->m_phyRxMacHeaderEndTrace((*mpdu)->GetHeader(),
+                                                            txVector,
+                                                            remainingAmpduDuration -
+                                                                macHdrDuration);
+                    }));
+            }
+        }
+
         uint32_t size = (mpduType == NORMAL_MPDU) ? psdu->GetSize() : psdu->GetAmpduSubframeSize(i);
         Time mpduDuration = m_wifiPhy->GetPayloadDuration(size,
                                                           txVector,
@@ -925,6 +954,11 @@ PhyEntity::NotifyInterferenceRxEndAndClear(bool reset)
         NS_ASSERT(endOfMpduEvent.IsExpired());
     }
     m_endOfMpduEvents.clear();
+    for (const auto& endOfMacHdrEvent : m_endOfMacHdrEvents)
+    {
+        NS_ASSERT(endOfMacHdrEvent.IsExpired());
+    }
+    m_endOfMacHdrEvents.clear();
     if (reset)
     {
         m_wifiPhy->Reset();
@@ -1122,6 +1156,11 @@ PhyEntity::CancelAllEvents()
         endMpduEvent.Cancel();
     }
     m_endOfMpduEvents.clear();
+    for (auto& endMacHdrEvent : m_endOfMacHdrEvents)
+    {
+        endMacHdrEvent.Cancel();
+    }
+    m_endOfMacHdrEvents.clear();
 }
 
 bool
@@ -1160,6 +1199,11 @@ PhyEntity::DoAbortCurrentReception(WifiPhyRxfailureReason reason)
             endMpduEvent.Cancel();
         }
         m_endOfMpduEvents.clear();
+        for (auto& endMacHdrEvent : m_endOfMacHdrEvents)
+        {
+            endMacHdrEvent.Cancel();
+        }
+        m_endOfMacHdrEvents.clear();
     }
 }
 
