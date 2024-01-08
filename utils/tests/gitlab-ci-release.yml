@@ -1,0 +1,25 @@
+# ns-3 CI/CD script GitLab Releases
+#
+# Contains jobs to generate automatic GitLab releases of stable ns-3 versions.
+
+gitlab-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: $CI_COMMIT_TAG
+
+  script:
+    - echo "Creating a new release for tag $CI_COMMIT_TAG"
+
+  release:
+    name: $CI_COMMIT_TAG
+    description: "$CI_COMMIT_TAG release"
+    tag_name: $CI_COMMIT_TAG
+    assets:
+      links:
+        - name: Official Releases (nsnam.org)
+          url: https://www.nsnam.org/releases/
+        - name: RELEASE_NOTES.md
+          url: $CI_PROJECT_URL/-/blob/$CI_DEFAULT_BRANCH/RELEASE_NOTES.md
+        - name: CHANGES.md
+          url: $CI_PROJECT_URL/-/blob/$CI_DEFAULT_BRANCH/CHANGES.md
