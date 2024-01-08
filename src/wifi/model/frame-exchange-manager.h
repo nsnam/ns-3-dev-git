@@ -37,6 +37,9 @@
 
 #include "ns3/object.h"
 
+#include <functional>
+#include <optional>
+
 #define WIFI_FEM_NS_LOG_APPEND_CONTEXT                                                             \
     std::clog << "[link=" << +m_linkId << "][mac=" << m_self << "] "
 
@@ -98,6 +101,31 @@ class FrameExchangeManager : public Object
                  RxSignalInfo rxSignalInfo,
                  WifiTxVector txVector,
                  std::vector<bool> perMpduStatus);
+
+    /**
+     * Information about the MPDU being received. The TXVECTOR is populated upon
+     * PHY-RXSTART indication; the MAC header is populated when notified by the PHY.
+     */
+    struct OngoingRxInfo
+    {
+        std::optional<WifiMacHeader> macHdr; //!< MAC header of the MPDU being received
+        WifiTxVector txVector;               //!< TXVECTOR of the MPDU being received
+        Time endOfPsduRx;                    //!< time when reception of PSDU ends
+    };
+
+    /**
+     * \return the information about the MPDU being received by the PHY, if any. This information
+     *         is available from the time the PHY-RXSTART.indication is received until the end
+     *         of PSDU reception
+     */
+    std::optional<std::reference_wrapper<const OngoingRxInfo>> GetOngoingRxInfo() const;
+
+    /**
+     * \return the information about the MAC header of the MPDU being received by the PHY, if any.
+     *         The MAC header is available from the time its reception is completed until the end
+     *         of PSDU reception
+     */
+    std::optional<std::reference_wrapper<const WifiMacHeader>> GetReceivedMacHdr() const;
 
     /**
      * Set the ID of the link this Frame Exchange Manager is associated with.
@@ -650,6 +678,17 @@ class FrameExchangeManager : public Object
      */
     virtual void RxStartIndication(WifiTxVector txVector, Time psduDuration);
 
+    /**
+     * Store information about the MAC header of the MPDU being received.
+     *
+     * \param macHdr the MAC header of the MPDU being received
+     * \param txVector the TXVECTOR used to transmit the PSDU
+     * \param psduDuration the remaining duration of the PSDU
+     */
+    virtual void ReceivedMacHdr(const WifiMacHeader& macHdr,
+                                const WifiTxVector& txVector,
+                                Time psduDuration);
+
   private:
     /**
      * Send the current MPDU, which can be acknowledged by a Normal Ack.
@@ -662,6 +701,9 @@ class FrameExchangeManager : public Object
     bool m_moreFragments;           //!< true if a fragment has to be sent after a SIFS
     Ptr<WifiProtectionManager> m_protectionManager; //!< Protection manager
     Ptr<WifiAckManager> m_ackManager;               //!< Acknowledgment manager
+
+    OngoingRxInfo
+        m_ongoingRxInfo{}; //!< information about the MAC header of the MPDU being received
 };
 
 } // namespace ns3
