@@ -89,6 +89,10 @@ Recovery algorithm.
 In the ns-3.34 release, the default congestion control algorithm was set
 to CUBIC from NewReno.
 
+CUBIC was extended to support Reno-friendliness (see RFC 9438 Section 4.3) in
+the ns-3.41 release.  This feature is called 'TCP friendliness' in earlier
+versions of the CUBIC RFCs, and in the Linux and ns-3 implementations.
+
 Acknowledgments
 +++++++++++++++
 
@@ -417,11 +421,10 @@ algorithm uses observations of delay increases in the slow start
 phase of window growth to try to exit slow start before window growth
 causes queue overflow.
 
-CUBIC is documented in :rfc:`8312`, and the |ns3| implementation is based
-on the RFC more so than the Linux implementation, although the Linux 4.4
-kernel implementation (through the Direct Code Execution environment) has
-been used to validate the behavior and is fairly well aligned (see below
-section on validation).
+CUBIC is documented in :rfc:`9438`, and the |ns3| implementation is patterned
+partly on the Linux implementation and partly on the RFC, although the Linux
+4.4 kernel implementation (through the Direct Code Execution environment) has
+been used to validate the behavior.
 
 Linux Reno
 ^^^^^^^^^^

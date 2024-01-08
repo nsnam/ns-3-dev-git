@@ -65,6 +65,7 @@ Changes from ns-3.40 to ns-3-dev
 * Added guard rails for scratch targets missing or containing more than one `main` function.
 
 ### Changed behavior
+* (internet) TCP Cubic (the default congestion control in ns-3) now supports TCP-friendliness by default (see RFC 9438 Section 4.3), making the congestion window growth somewhat more aggressive.  This follows the default Linux behavior.
 
 * (wifi) Increase the duration of the timer started when waiting for an ADDBA_RESPONSE from 1ms to 5ms to better account for the time required by the recipient to access the medium and complete the frame exchange (which may involve protection with (MU-)RTS/CTS).
 

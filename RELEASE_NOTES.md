@@ -21,6 +21,7 @@ Release 3-dev
 ### New user-visible features
 
 - (core) !1364 - The `MakeEnumAccessor` was changed to support `enum class` types
+- (internet) #1001 - TCP Cubic now supports Reno-friendly operation by default.
 - (lr-wpan) !1686 - Change CapabilityField to standard bitmap
 - (lr-wpan) !1698 - Change SuperframeField to standard bitmap
 - (lr-wpan) !1706 - Create MAC layer abstraction (decoupling, alternative MACs)
