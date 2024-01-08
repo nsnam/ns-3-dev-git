@@ -45,6 +45,11 @@ TcpCubic::GetTypeId()
                           BooleanValue(true),
                           MakeBooleanAccessor(&TcpCubic::m_fastConvergence),
                           MakeBooleanChecker())
+            .AddAttribute("TcpFriendliness",
+                          "Enable (true) or disable (false) TCP friendliness",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&TcpCubic::m_tcpFriendliness),
+                          MakeBooleanChecker())
             .AddAttribute("Beta",
                           "Beta for multiplicative decrease",
                           DoubleValue(0.7),
@@ -209,7 +214,7 @@ TcpCubic::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
     if (tcb->m_cWnd >= tcb->m_ssThresh && segmentsAcked > 0)
     {
         m_cWndCnt += segmentsAcked;
-        uint32_t cnt = Update(tcb);
+        uint32_t cnt = Update(tcb, segmentsAcked);
 
         /* According to RFC 6356 even once the new cwnd is
          * calculated you must compare this to the number of ACKs received since
@@ -232,19 +237,24 @@ TcpCubic::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 }
 
 uint32_t
-TcpCubic::Update(Ptr<TcpSocketState> tcb)
+TcpCubic::Update(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 {
     NS_LOG_FUNCTION(this);
     Time t;
     uint32_t delta;
     uint32_t bicTarget;
     uint32_t cnt = 0;
+    uint32_t maxCnt;
     double offs;
     uint32_t segCwnd = tcb->GetCwndInSegments();
+
+    m_ackCnt += segmentsAcked;
 
     if (m_epochStart == Time::Min())
     {
         m_epochStart = Simulator::Now(); // record the beginning of an epoch
+        m_ackCnt = segmentsAcked;
+        m_tcpCwnd = segCwnd;
 
         if (m_lastMaxCwnd <= segCwnd)
         {
@@ -309,6 +319,26 @@ TcpCubic::Update(Ptr<TcpSocketState> tcb)
     if (m_lastMaxCwnd == 0 && cnt > m_cntClamp)
     {
         cnt = m_cntClamp;
+    }
+
+    if (m_tcpFriendliness)
+    {
+        auto scale = static_cast<uint32_t>(8 * (1024 + m_beta * 1024) / 3 / (1024 - m_beta * 1024));
+        delta = (segCwnd * scale) >> 3;
+        while (m_ackCnt > delta)
+        {
+            m_ackCnt -= delta;
+            m_tcpCwnd++;
+        }
+        if (m_tcpCwnd > segCwnd)
+        {
+            delta = m_tcpCwnd - segCwnd;
+            maxCnt = segCwnd / delta;
+            if (cnt > maxCnt)
+            {
+                cnt = maxCnt;
+            }
+        }
     }
 
     // The maximum rate of cwnd increase CUBIC allows is 1 packet per
@@ -463,6 +493,8 @@ TcpCubic::CubicReset(Ptr<const TcpSocketState> tcb)
     m_lastMaxCwnd = 0;
     m_bicOriginPoint = 0;
     m_bicK = 0;
+    m_ackCnt = 0;
+    m_tcpCwnd = 0;
     m_delayMin = Time::Min();
     m_found = false;
 }

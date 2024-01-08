@@ -104,6 +104,7 @@ class TcpCubic : public TcpCongestionOps
 
   private:
     bool m_fastConvergence; //!< Enable or disable fast convergence algorithm
+    bool m_tcpFriendliness; //!< Enable or disable TCP-friendliness heuristic
     double m_beta;          //!< Beta for cubic multiplicative increase
 
     bool m_hystart;                        //!< Enable or disable HyStart algorithm
@@ -134,6 +135,8 @@ class TcpCubic : public TcpCongestionOps
     Time m_cubicDelta;         //!<  Time to wait after recovery before update
     Time m_currRtt;            //!<  Current Rtt
     uint32_t m_sampleCnt;      //!<  Count of samples for HyStart
+    uint32_t m_ackCnt;         //!<  Count the number of ACKed packets
+    uint32_t m_tcpCwnd;        //!<  Estimated tcp cwnd (for Reno-friendliness)
 
   private:
     /**
@@ -151,9 +154,10 @@ class TcpCubic : public TcpCongestionOps
     /**
      * \brief Cubic window update after a new ack received
      * \param tcb Transmission Control Block of the connection
+     * \param segmentsAcked Segments acked
      * \returns the congestion window update counter
      */
-    uint32_t Update(Ptr<TcpSocketState> tcb);
+    uint32_t Update(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
 
     /**
      * \brief Update HyStart parameters

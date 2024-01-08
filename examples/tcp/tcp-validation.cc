@@ -663,6 +663,9 @@ main(int argc, char* argv[])
     Config::SetDefault("ns3::TcpSocket::InitialCwnd", UintegerValue(10));
     Config::SetDefault("ns3::TcpL4Protocol::RecoveryType",
                        TypeIdValue(TcpPrrRecovery::GetTypeId()));
+    // Validation criteria were written for TCP Cubic without Reno-friendly behavior, so disable it
+    // for these tests
+    Config::SetDefault("ns3::TcpCubic::TcpFriendliness", BooleanValue(false));
 
     ////////////////////////////////////////////////////////////
     // command-line argument parsing                          //
