@@ -34,36 +34,6 @@ NS_LOG_COMPONENT_DEFINE("Mac64Address");
 
 ATTRIBUTE_HELPER_CPP(Mac64Address);
 
-#define ASCII_a (0x41)
-#define ASCII_z (0x5a)
-#define ASCII_A (0x61)
-#define ASCII_Z (0x7a)
-#define ASCII_COLON (0x3a)
-#define ASCII_ZERO (0x30)
-
-/**
- * Converts a char to lower case.
- * \param c the char
- * \returns the lower case
- */
-static char
-AsciiToLowCase(char c)
-{
-    NS_LOG_FUNCTION(c);
-    if (c >= ASCII_a && c <= ASCII_z)
-    {
-        return c;
-    }
-    else if (c >= ASCII_A && c <= ASCII_Z)
-    {
-        return c + (ASCII_a - ASCII_A);
-    }
-    else
-    {
-        return c;
-    }
-}
-
 uint64_t Mac64Address::m_allocationIndex = 0;
 
 Mac64Address::Mac64Address()
@@ -79,17 +49,17 @@ Mac64Address::Mac64Address(const char* str)
     while (*str != 0 && i < 8)
     {
         uint8_t byte = 0;
-        while (*str != ASCII_COLON && *str != 0)
+        while (*str != ':' && *str != 0)
         {
             byte <<= 4;
-            char low = AsciiToLowCase(*str);
-            if (low >= ASCII_a)
+            char low = std::tolower(*str);
+            if (low >= 'a')
             {
-                byte |= low - ASCII_a + 10;
+                byte |= low - 'a' + 10;
             }
             else
             {
-                byte |= low - ASCII_ZERO;
+                byte |= low - '0';
             }
             str++;
         }

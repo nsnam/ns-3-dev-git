@@ -197,6 +197,7 @@ if(${ENABLE_FDNETDEV})
         helper/creator-utils.cc
         helper/encode-decode.cc
         helper/tap-device-creator.cc
+      LIBRARIES_TO_LINK ${libnetwork}
       EXECUTABLE_DIRECTORY_PATH
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/src/fd-net-device/
       INSTALL_DIRECTORY_PATH ${CMAKE_INSTALL_LIBEXECDIR}/ns3
