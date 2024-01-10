@@ -586,65 +586,59 @@ Buffer::Serialize(uint8_t* buffer, uint32_t maxSize) const
     uint32_t size = 0;
 
     // Add the zero data length
-    if (size + 4 <= maxSize)
-    {
-        size += 4;
-        *p++ = m_zeroAreaEnd - m_zeroAreaStart;
-    }
-    else
+    size += 4;
+
+    if (size > maxSize)
     {
         return 0;
     }
+
+    *p++ = m_zeroAreaEnd - m_zeroAreaStart;
 
     // Add the length of actual start data
-    uint32_t dataStartLength = m_zeroAreaStart - m_start;
-    if (size + 4 <= maxSize)
-    {
-        size += 4;
-        *p++ = dataStartLength;
-    }
-    else
+    size += 4;
+
+    if (size > maxSize)
     {
         return 0;
     }
 
+    uint32_t dataStartLength = m_zeroAreaStart - m_start;
+    *p++ = dataStartLength;
+
     // Add the actual data
-    if (size + ((dataStartLength + 3) & (~3)) <= maxSize)
-    {
-        size += (dataStartLength + 3) & (~3);
-        memcpy(p, m_data->m_data + m_start, dataStartLength);
-        p += (((dataStartLength + 3) & (~3)) / 4); // Advance p, insuring 4 byte boundary
-    }
-    else
+    size += (dataStartLength + 3) & (~3);
+
+    if (size > maxSize)
     {
         return 0;
     }
+
+    memcpy(p, m_data->m_data + m_start, dataStartLength);
+    p += (((dataStartLength + 3) & (~3)) / 4); // Advance p, insuring 4 byte boundary
 
     // Add the length of the actual end data
-    uint32_t dataEndLength = m_end - m_zeroAreaEnd;
-    if (size + 4 <= maxSize)
-    {
-        size += 4;
-        *p++ = dataEndLength;
-    }
-    else
+    size += 4;
+
+    if (size > maxSize)
     {
         return 0;
     }
 
+    uint32_t dataEndLength = m_end - m_zeroAreaEnd;
+    *p++ = dataEndLength;
+
     // Add the actual data
-    if (size + ((dataEndLength + 3) & (~3)) <= maxSize)
-    {
-        // The following line is unnecessary.
-        // size += (dataEndLength + 3) & (~3);
-        memcpy(p, m_data->m_data + m_zeroAreaStart, dataEndLength);
-        // The following line is unnecessary.
-        // p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
-    }
-    else
+    size += (dataEndLength + 3) & (~3);
+
+    if (size > maxSize)
     {
         return 0;
     }
+
+    memcpy(p, m_data->m_data + m_zeroAreaStart, dataEndLength);
+    // The following line is unnecessary.
+    // p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
 
     // Serialized everything successfully
     return 1;

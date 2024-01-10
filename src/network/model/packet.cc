@@ -669,149 +669,130 @@ Packet::Serialize(uint8_t* buffer, uint32_t maxSize) const
     if (m_nixVector)
     {
         uint32_t nixSize = m_nixVector->GetSerializedSize();
-        if (size + nixSize <= maxSize)
-        {
-            // put the total length of nix-vector in the
-            // buffer. this includes 4-bytes for total
-            // length itself
-            *p++ = nixSize + 4;
-            size += nixSize;
-
-            // serialize the nix-vector
-            uint32_t serialized = m_nixVector->Serialize(p, nixSize);
-            if (serialized)
-            {
-                // increment p by nixSize bytes
-                // ensuring 4-byte boundary
-                p += ((nixSize + 3) & (~3)) / 4;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        else
+        size += nixSize;
+        if (size > maxSize)
         {
             return 0;
         }
+
+        // put the total length of nix-vector in the
+        // buffer. this includes 4-bytes for total
+        // length itself
+        *p++ = nixSize + 4;
+
+        // serialize the nix-vector
+        uint32_t serialized = m_nixVector->Serialize(p, nixSize);
+        if (!serialized)
+        {
+            return 0;
+        }
+
+        // increment p by nixSize bytes
+        // ensuring 4-byte boundary
+        p += ((nixSize + 3) & (~3)) / 4;
     }
     else
     {
         // no nix vector, set zero length,
         // ie 4-bytes, since it must include
         // length for itself
-        if (size + 4 <= maxSize)
-        {
-            size += 4;
-            *p++ = 4;
-        }
-        else
+        size += 4;
+        if (size > maxSize)
         {
             return 0;
         }
+
+        *p++ = 4;
     }
 
     // Serialize byte tag list
     uint32_t byteTagSize = m_byteTagList.GetSerializedSize();
-    if (size + byteTagSize <= maxSize)
-    {
-        // put the total length of byte tag list in the
-        // buffer. this includes 4-bytes for total
-        // length itself
-        *p++ = byteTagSize + 4;
-        size += byteTagSize;
-
-        // serialize the byte tag list
-        uint32_t serialized = m_byteTagList.Serialize(p, byteTagSize);
-        if (serialized)
-        {
-            // increment p by byteTagSize bytes
-            // ensuring 4-byte boundary
-            p += ((byteTagSize + 3) & (~3)) / 4;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
+    size += byteTagSize;
+    if (size > maxSize)
     {
         return 0;
     }
+
+    // put the total length of byte tag list in the
+    // buffer. this includes 4-bytes for total
+    // length itself
+    *p++ = byteTagSize + 4;
+
+    // serialize the byte tag list
+    uint32_t serialized = m_byteTagList.Serialize(p, byteTagSize);
+    if (!serialized)
+    {
+        return 0;
+    }
+
+    // increment p by byteTagSize bytes
+    // ensuring 4-byte boundary
+    p += ((byteTagSize + 3) & (~3)) / 4;
 
     // Serialize packet tag list
     uint32_t packetTagSize = m_packetTagList.GetSerializedSize();
-    if (size + packetTagSize <= maxSize)
-    {
-        // put the total length of packet tag list in the
-        // buffer. this includes 4-bytes for total
-        // length itself
-        *p++ = packetTagSize + 4;
-        size += packetTagSize;
-
-        // serialize the packet tag list
-        uint32_t serialized = m_packetTagList.Serialize(p, packetTagSize);
-        if (serialized)
-        {
-            // increment p by packetTagSize bytes
-            // ensuring 4-byte boundary
-            p += ((packetTagSize + 3) & (~3)) / 4;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
+    size += packetTagSize;
+    if (size > maxSize)
     {
         return 0;
     }
+
+    // put the total length of packet tag list in the
+    // buffer. this includes 4-bytes for total
+    // length itself
+    *p++ = packetTagSize + 4;
+
+    // serialize the packet tag list
+    serialized = m_packetTagList.Serialize(p, packetTagSize);
+    if (!serialized)
+    {
+        return 0;
+    }
+
+    // increment p by packetTagSize bytes
+    // ensuring 4-byte boundary
+    p += ((packetTagSize + 3) & (~3)) / 4;
 
     // Serialize Metadata
     uint32_t metaSize = m_metadata.GetSerializedSize();
-    if (size + metaSize <= maxSize)
-    {
-        // put the total length of metadata in the
-        // buffer. this includes 4-bytes for total
-        // length itself
-        *p++ = metaSize + 4;
-        size += metaSize;
-
-        // serialize the metadata
-        uint32_t serialized = m_metadata.Serialize(reinterpret_cast<uint8_t*>(p), metaSize);
-        if (serialized)
-        {
-            // increment p by metaSize bytes
-            // ensuring 4-byte boundary
-            p += ((metaSize + 3) & (~3)) / 4;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
+    size += metaSize;
+    if (size > maxSize)
     {
         return 0;
     }
 
+    // put the total length of metadata in the
+    // buffer. this includes 4-bytes for total
+    // length itself
+    *p++ = metaSize + 4;
+
+    // serialize the metadata
+    serialized = m_metadata.Serialize(reinterpret_cast<uint8_t*>(p), metaSize);
+    if (!serialized)
+    {
+        return 0;
+    }
+
+    // increment p by metaSize bytes
+    // ensuring 4-byte boundary
+    p += ((metaSize + 3) & (~3)) / 4;
+
     // Serialize the packet contents
     uint32_t bufSize = m_buffer.GetSerializedSize();
-    if (size + bufSize <= maxSize)
+    size += bufSize;
+    if (size > maxSize)
     {
-        // put the total length of the buffer in the
-        // buffer. this includes 4-bytes for total
-        // length itself
-        *p++ = bufSize + 4;
-
-        // serialize the buffer
-        uint32_t serialized = m_buffer.Serialize(reinterpret_cast<uint8_t*>(p), bufSize);
-        if (!serialized)
-        {
-            return 0;
-        }
+        return 0;
     }
-    else
+
+    // put the total length of the buffer in the
+    // buffer. this includes 4-bytes for total
+    // length itself
+    *p++ = bufSize + 4;
+
+    // serialize the buffer
+    serialized = m_buffer.Serialize(reinterpret_cast<uint8_t*>(p), bufSize);
+    if (!serialized)
     {
         return 0;
     }

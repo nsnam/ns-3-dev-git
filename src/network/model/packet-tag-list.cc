@@ -336,59 +336,53 @@ PacketTagList::Serialize(uint32_t* buffer, uint32_t maxSize) const
     uint32_t* p = buffer;
     uint32_t size = 0;
 
-    uint32_t* numberOfTags = nullptr;
+    size += 4;
 
-    if (size + 4 <= maxSize)
-    {
-        numberOfTags = p;
-        *p++ = 0;
-        size += 4;
-    }
-    else
+    if (size > maxSize)
     {
         return 0;
     }
 
+    uint32_t* numberOfTags = p;
+    *p++ = 0;
+
     for (TagData* cur = m_next; cur != nullptr; cur = cur->next)
     {
-        if (size + 4 <= maxSize)
-        {
-            *p++ = cur->size;
-            size += 4;
-        }
-        else
+        size += 4;
+
+        if (size > maxSize)
         {
             return 0;
         }
+
+        *p++ = cur->size;
 
         NS_LOG_INFO("Serializing tag id " << cur->tid);
 
         // ensure size is multiple of 4 bytes for 4 byte boundaries
         uint32_t hashSize = (sizeof(TypeId::hash_t) + 3) & (~3);
-        if (size + hashSize <= maxSize)
-        {
-            TypeId::hash_t tid = cur->tid.GetHash();
-            memcpy(p, &tid, sizeof(TypeId::hash_t));
-            p += hashSize / 4;
-            size += hashSize;
-        }
-        else
+        size += hashSize;
+
+        if (size > maxSize)
         {
             return 0;
         }
 
+        TypeId::hash_t tid = cur->tid.GetHash();
+        memcpy(p, &tid, sizeof(TypeId::hash_t));
+        p += hashSize / 4;
+
         // ensure size is multiple of 4 bytes for 4 byte boundaries
         uint32_t tagWordSize = (cur->size + 3) & (~3);
-        if (size + tagWordSize <= maxSize)
-        {
-            memcpy(p, cur->data, cur->size);
-            size += tagWordSize;
-            p += tagWordSize / 4;
-        }
-        else
+        size += tagWordSize;
+
+        if (size > maxSize)
         {
             return 0;
         }
+
+        memcpy(p, cur->data, cur->size);
+        p += tagWordSize / 4;
 
         (*numberOfTags)++;
     }

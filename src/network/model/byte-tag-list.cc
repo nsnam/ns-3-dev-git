@@ -470,18 +470,15 @@ ByteTagList::Serialize(uint32_t* buffer, uint32_t maxSize) const
     uint32_t* p = buffer;
     uint32_t size = 0;
 
-    uint32_t* numberOfTags = nullptr;
+    size += 4;
 
-    if (size + 4 <= maxSize)
-    {
-        numberOfTags = p;
-        *p++ = 0;
-        size += 4;
-    }
-    else
+    if (size > maxSize)
     {
         return 0;
     }
+
+    uint32_t* numberOfTags = p;
+    *p++ = 0;
 
     ByteTagList::Iterator i = BeginAll();
     while (i.HasNext())
@@ -492,61 +489,55 @@ ByteTagList::Serialize(uint32_t* buffer, uint32_t maxSize) const
 
         // ensure size is multiple of 4 bytes for 4 byte boundaries
         uint32_t hashSize = (sizeof(TypeId::hash_t) + 3) & (~3);
-        if (size + hashSize <= maxSize)
-        {
-            TypeId::hash_t tid = item.tid.GetHash();
-            memcpy(p, &tid, sizeof(TypeId::hash_t));
-            p += hashSize / 4;
-            size += hashSize;
-        }
-        else
+        size += hashSize;
+
+        if (size > maxSize)
         {
             return 0;
         }
 
-        if (size + 4 <= maxSize)
-        {
-            *p++ = item.size;
-            size += 4;
-        }
-        else
+        TypeId::hash_t tid = item.tid.GetHash();
+        memcpy(p, &tid, sizeof(TypeId::hash_t));
+        p += hashSize / 4;
+
+        size += 4;
+
+        if (size > maxSize)
         {
             return 0;
         }
 
-        if (size + 4 <= maxSize)
-        {
-            *p++ = item.start;
-            size += 4;
-        }
-        else
+        *p++ = item.size;
+
+        size += 4;
+
+        if (size > maxSize)
         {
             return 0;
         }
 
-        if (size + 4 <= maxSize)
-        {
-            *p++ = item.end;
-            size += 4;
-        }
-        else
+        *p++ = item.start;
+
+        size += 4;
+
+        if (size > maxSize)
         {
             return 0;
         }
+
+        *p++ = item.end;
 
         // ensure size is multiple of 4 bytes for 4 byte boundaries
         uint32_t tagWordSize = (item.size + 3) & (~3);
+        size += tagWordSize;
 
-        if (size + tagWordSize <= maxSize)
-        {
-            item.buf.Read(reinterpret_cast<uint8_t*>(p), item.size);
-            size += tagWordSize;
-            p += tagWordSize / 4;
-        }
-        else
+        if (size > maxSize)
         {
             return 0;
         }
+
+        item.buf.Read(reinterpret_cast<uint8_t*>(p), item.size);
+        p += tagWordSize / 4;
 
         (*numberOfTags)++;
     }
