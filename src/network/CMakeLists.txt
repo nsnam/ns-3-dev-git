@@ -1,5 +1,6 @@
 set(source_files
     helper/application-container.cc
+    helper/application-helper.cc
     helper/delay-jitter-estimation.cc
     helper/net-device-container.cc
     helper/node-container.cc
@@ -73,6 +74,7 @@ set(source_files
 
 set(header_files
     helper/application-container.h
+    helper/application-helper.h
     helper/delay-jitter-estimation.h
     helper/net-device-container.h
     helper/node-container.h
