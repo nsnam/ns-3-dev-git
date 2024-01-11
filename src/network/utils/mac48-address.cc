@@ -36,42 +36,26 @@ ATTRIBUTE_HELPER_CPP(Mac48Address);
 
 uint64_t Mac48Address::m_allocationIndex = 0;
 
-Mac48Address::Mac48Address()
-{
-    NS_LOG_FUNCTION(this);
-    std::memset(m_address, 0, 6);
-}
-
 Mac48Address::Mac48Address(const char* str)
 {
     NS_LOG_FUNCTION(this << str);
-    int i = 0;
-    while (*str != 0 && i < 6)
-    {
-        uint8_t byte = 0;
-        while (*str != ':' && *str != 0)
-        {
-            byte <<= 4;
-            char low = std::tolower(*str);
-            if (low >= 'a')
-            {
-                byte |= low - 'a' + 10;
-            }
-            else
-            {
-                byte |= low - '0';
-            }
-            str++;
-        }
-        m_address[i] = byte;
-        i++;
-        if (*str == 0)
-        {
-            break;
-        }
-        str++;
-    }
-    NS_ASSERT(i == 6);
+    NS_ASSERT_MSG(strlen(str) <= 17, "Mac48Address: illegal string (too long) " << str);
+
+    unsigned int bytes[6];
+    int charsRead = 0;
+
+    int i = sscanf(str,
+                   "%02x:%02x:%02x:%02x:%02x:%02x%n",
+                   bytes,
+                   bytes + 1,
+                   bytes + 2,
+                   bytes + 3,
+                   bytes + 4,
+                   bytes + 5,
+                   &charsRead);
+    NS_ASSERT_MSG(i == 6 && !str[charsRead], "Mac48Address: illegal string " << str);
+
+    std::copy(std::begin(bytes), std::end(bytes), std::begin(m_address));
 }
 
 void

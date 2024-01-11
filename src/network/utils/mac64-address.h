@@ -45,7 +45,7 @@ class Address;
 class Mac64Address
 {
   public:
-    Mac64Address();
+    Mac64Address() = default;
     /**
      * \param str a string representing the new Mac64Address
      *
@@ -180,7 +180,7 @@ class Mac64Address
     friend std::istream& operator>>(std::istream& is, Mac64Address& address);
 
     static uint64_t m_allocationIndex; //!< Address allocation index
-    uint8_t m_address[8];              //!< address value
+    uint8_t m_address[8]{0};           //!< Address value
 };
 
 /**

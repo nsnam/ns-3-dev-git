@@ -37,42 +37,18 @@ ATTRIBUTE_HELPER_CPP(Mac16Address);
 
 uint64_t Mac16Address::m_allocationIndex = 0;
 
-Mac16Address::Mac16Address()
-{
-    NS_LOG_FUNCTION(this);
-    memset(m_address, 0, 2);
-}
-
 Mac16Address::Mac16Address(const char* str)
 {
     NS_LOG_FUNCTION(this << str);
-    int i = 0;
-    while (*str != 0 && i < 2)
-    {
-        uint8_t byte = 0;
-        while (*str != ':' && *str != 0)
-        {
-            byte <<= 4;
-            char low = std::tolower(*str);
-            if (low >= 'a')
-            {
-                byte |= low - 'a' + 10;
-            }
-            else
-            {
-                byte |= low - '0';
-            }
-            str++;
-        }
-        m_address[i] = byte;
-        i++;
-        if (*str == 0)
-        {
-            break;
-        }
-        str++;
-    }
-    NS_ASSERT(i == 2);
+    NS_ASSERT_MSG(strlen(str) <= 5, "Mac16Address: illegal string (too long) " << str);
+
+    unsigned int bytes[2];
+    int charsRead = 0;
+
+    int i = sscanf(str, "%02x:%02x%n", bytes, bytes + 1, &charsRead);
+    NS_ASSERT_MSG(i == 2 && !str[charsRead], "Mac16Address: illegal string " << str);
+
+    std::copy(std::begin(bytes), std::end(bytes), std::begin(m_address));
 }
 
 Mac16Address::Mac16Address(uint16_t addr)

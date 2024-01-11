@@ -43,8 +43,7 @@ class Address;
 class Mac8Address
 {
   public:
-    /** Constructor */
-    Mac8Address();
+    Mac8Address() = default;
     /**
      * Create Mac8Address object with address addr.
      *
@@ -132,7 +131,7 @@ class Mac8Address
 
   private:
     static uint8_t m_allocationIndex; //!< Address allocation index
-    uint8_t m_address;                //!< The address.
+    uint8_t m_address{255};           //!< The address.
 
     /**
      * Get the Mac8Address type.

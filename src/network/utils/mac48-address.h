@@ -45,7 +45,7 @@ class Address;
 class Mac48Address
 {
   public:
-    Mac48Address();
+    Mac48Address() = default;
     /**
      * \param str a string representing the new Mac48Address
      *
@@ -213,7 +213,7 @@ class Mac48Address
     friend std::istream& operator>>(std::istream& is, Mac48Address& address);
 
     static uint64_t m_allocationIndex; //!< Address allocation index
-    uint8_t m_address[6];              //!< address value
+    uint8_t m_address[6]{0};           //!< Address value
 };
 
 ATTRIBUTE_HELPER_HEADER(Mac48Address);

@@ -30,11 +30,6 @@ NS_LOG_COMPONENT_DEFINE("Mac8Address");
 
 uint8_t Mac8Address::m_allocationIndex = 0;
 
-Mac8Address::Mac8Address()
-{
-    m_address = 255;
-}
-
 Mac8Address::Mac8Address(uint8_t addr)
     : m_address(addr)
 {

@@ -43,10 +43,11 @@ class Address;
 class Mac16Address
 {
   public:
-    Mac16Address();
+    Mac16Address() = default;
     /**
      * \param str a string representing the new Mac16Address
      *
+     * The format of the string is "xx:xx"
      */
     Mac16Address(const char* str);
 
@@ -228,7 +229,7 @@ class Mac16Address
     friend std::istream& operator>>(std::istream& is, Mac16Address& address);
 
     static uint64_t m_allocationIndex; //!< Address allocation index
-    uint8_t m_address[2];              //!< address value
+    uint8_t m_address[2]{0};           //!< Address value
 };
 
 ATTRIBUTE_HELPER_HEADER(Mac16Address);

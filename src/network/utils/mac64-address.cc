@@ -36,42 +36,28 @@ ATTRIBUTE_HELPER_CPP(Mac64Address);
 
 uint64_t Mac64Address::m_allocationIndex = 0;
 
-Mac64Address::Mac64Address()
-{
-    NS_LOG_FUNCTION(this);
-    std::memset(m_address, 0, 8);
-}
-
 Mac64Address::Mac64Address(const char* str)
 {
     NS_LOG_FUNCTION(this << str);
-    int i = 0;
-    while (*str != 0 && i < 8)
-    {
-        uint8_t byte = 0;
-        while (*str != ':' && *str != 0)
-        {
-            byte <<= 4;
-            char low = std::tolower(*str);
-            if (low >= 'a')
-            {
-                byte |= low - 'a' + 10;
-            }
-            else
-            {
-                byte |= low - '0';
-            }
-            str++;
-        }
-        m_address[i] = byte;
-        i++;
-        if (*str == 0)
-        {
-            break;
-        }
-        str++;
-    }
-    NS_ASSERT(i == 8);
+    NS_ASSERT_MSG(strlen(str) <= 23, "Mac64Address: illegal string (too long) " << str);
+
+    unsigned int bytes[8];
+    int charsRead = 0;
+
+    int i = sscanf(str,
+                   "%02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x%n",
+                   bytes,
+                   bytes + 1,
+                   bytes + 2,
+                   bytes + 3,
+                   bytes + 4,
+                   bytes + 5,
+                   bytes + 6,
+                   bytes + 7,
+                   &charsRead);
+    NS_ASSERT_MSG(i == 8 && !str[charsRead], "Mac64Address: illegal string " << str);
+
+    std::copy(std::begin(bytes), std::end(bytes), std::begin(m_address));
 }
 
 Mac64Address::Mac64Address(uint64_t addr)
