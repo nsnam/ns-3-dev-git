@@ -97,29 +97,28 @@ UdpClientServerTestCase::DoRun()
     Ipv4InterfaceContainer i = ipv4.Assign(d);
 
     uint16_t port = 4000;
-    UdpServerHelper server(port);
-    ApplicationContainer apps = server.Install(n.Get(1));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    UdpServerHelper serverHelper(port);
+    auto serverApp = serverHelper.Install(n.Get(1));
+    serverApp.Start(Seconds(1.0));
+    serverApp.Stop(Seconds(10.0));
 
     uint32_t MaxPacketSize = 1024;
     Time interPacketInterval = Seconds(1.);
     uint32_t maxPacketCount = 10;
-    UdpClientHelper client(i.GetAddress(1), port);
-    client.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
-    client.SetAttribute("Interval", TimeValue(interPacketInterval));
-    client.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
-    apps = client.Install(n.Get(0));
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
+    UdpClientHelper clientHelper(i.GetAddress(1), port);
+    clientHelper.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    clientHelper.SetAttribute("Interval", TimeValue(interPacketInterval));
+    clientHelper.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
+    auto clientApp = clientHelper.Install(n.Get(0));
+    clientApp.Start(Seconds(2.0));
+    clientApp.Stop(Seconds(10.0));
 
     Simulator::Run();
     Simulator::Destroy();
 
-    NS_TEST_ASSERT_MSG_EQ(server.GetServer()->GetLost(), 0, "Packets were lost !");
-    NS_TEST_ASSERT_MSG_EQ(server.GetServer()->GetReceived(),
-                          8,
-                          "Did not receive expected number of packets !");
+    auto server = DynamicCast<UdpServer>(serverApp.Get(0));
+    NS_TEST_ASSERT_MSG_EQ(server->GetLost(), 0, "Packets were lost !");
+    NS_TEST_ASSERT_MSG_EQ(server->GetReceived(), 8, "Did not receive expected number of packets !");
 }
 
 /**
@@ -173,23 +172,24 @@ UdpTraceClientServerTestCase::DoRun()
     Ipv4InterfaceContainer i = ipv4.Assign(d);
 
     uint16_t port = 4000;
-    UdpServerHelper server(port);
-    ApplicationContainer apps = server.Install(n.Get(1));
-    apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(10.0));
+    UdpServerHelper serverHelper(port);
+    auto serverApp = serverHelper.Install(n.Get(1));
+    serverApp.Start(Seconds(1.0));
+    serverApp.Stop(Seconds(10.0));
 
     uint32_t MaxPacketSize = 1400 - 28; // ip/udp header
-    UdpTraceClientHelper client(i.GetAddress(1), port, "");
-    client.SetAttribute("MaxPacketSize", UintegerValue(MaxPacketSize));
-    apps = client.Install(n.Get(0));
-    apps.Start(Seconds(2.0));
-    apps.Stop(Seconds(10.0));
+    UdpTraceClientHelper clientHelper(i.GetAddress(1), port);
+    clientHelper.SetAttribute("MaxPacketSize", UintegerValue(MaxPacketSize));
+    auto clientApp = clientHelper.Install(n.Get(0));
+    clientApp.Start(Seconds(2.0));
+    clientApp.Stop(Seconds(10.0));
 
     Simulator::Run();
     Simulator::Destroy();
 
-    NS_TEST_ASSERT_MSG_EQ(server.GetServer()->GetLost(), 0, "Packets were lost !");
-    NS_TEST_ASSERT_MSG_EQ(server.GetServer()->GetReceived(),
+    auto server = DynamicCast<UdpServer>(serverApp.Get(0));
+    NS_TEST_ASSERT_MSG_EQ(server->GetLost(), 0, "Packets were lost !");
+    NS_TEST_ASSERT_MSG_EQ(server->GetReceived(),
                           247,
                           "Did not receive expected number of packets !");
 }

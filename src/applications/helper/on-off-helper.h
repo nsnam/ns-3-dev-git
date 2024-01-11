@@ -16,31 +16,24 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #ifndef ON_OFF_HELPER_H
 #define ON_OFF_HELPER_H
 
-#include "ns3/address.h"
-#include "ns3/application-container.h"
-#include "ns3/attribute.h"
-#include "ns3/net-device.h"
-#include "ns3/node-container.h"
-#include "ns3/object-factory.h"
-#include "ns3/onoff-application.h"
+#include <ns3/application-helper.h>
+#include <ns3/data-rate.h>
 
 #include <stdint.h>
-#include <string>
 
 namespace ns3
 {
-
-class DataRate;
 
 /**
  * \ingroup onoff
  * \brief A helper to make it easier to instantiate an ns3::OnOffApplication
  * on a set of nodes.
  */
-class OnOffHelper
+class OnOffHelper : public ApplicationHelper
 {
   public:
     /**
@@ -53,15 +46,7 @@ class OnOffHelper
      * \param address the address of the remote node to send traffic
      *        to.
      */
-    OnOffHelper(std::string protocol, Address address);
-
-    /**
-     * Helper function used to set the underlying application attributes.
-     *
-     * \param name the name of the application attribute to set
-     * \param value the value of the application attribute to set
-     */
-    void SetAttribute(std::string name, const AttributeValue& value);
+    OnOffHelper(const std::string& protocol, const Address& address);
 
     /**
      * Helper function to set a constant rate source.  Equivalent to
@@ -72,59 +57,6 @@ class OnOffHelper
      * \param packetSize size in bytes of the packet payloads generated
      */
     void SetConstantRate(DataRate dataRate, uint32_t packetSize = 512);
-
-    /**
-     * Install an ns3::OnOffApplication on each node of the input container
-     * configured with all the attributes set with SetAttribute.
-     *
-     * \param c NodeContainer of the set of nodes on which an OnOffApplication
-     * will be installed.
-     * \returns Container of Ptr to the applications installed.
-     */
-    ApplicationContainer Install(NodeContainer c) const;
-
-    /**
-     * Install an ns3::OnOffApplication on the node configured with all the
-     * attributes set with SetAttribute.
-     *
-     * \param node The node on which an OnOffApplication will be installed.
-     * \returns Container of Ptr to the applications installed.
-     */
-    ApplicationContainer Install(Ptr<Node> node) const;
-
-    /**
-     * Install an ns3::OnOffApplication on the node configured with all the
-     * attributes set with SetAttribute.
-     *
-     * \param nodeName The node on which an OnOffApplication will be installed.
-     * \returns Container of Ptr to the applications installed.
-     */
-    ApplicationContainer Install(std::string nodeName) const;
-
-    /**
-     * Assign a fixed random variable stream number to the random variables
-     * used by this model.  Return the number of streams (possibly zero) that
-     * have been assigned.  The Install() method should have previously been
-     * called by the user.
-     *
-     * \param stream first stream index to use
-     * \param c NodeContainer of the set of nodes for which the OnOffApplication
-     *          should be modified to use a fixed stream
-     * \return the number of stream indices assigned by this helper
-     */
-    int64_t AssignStreams(NodeContainer c, int64_t stream);
-
-  private:
-    /**
-     * Install an ns3::OnOffApplication on the node configured with all the
-     * attributes set with SetAttribute.
-     *
-     * \param node The node on which an OnOffApplication will be installed.
-     * \returns Ptr to the application installed.
-     */
-    Ptr<Application> InstallPriv(Ptr<Node> node) const;
-
-    ObjectFactory m_factory; //!< Object factory.
 };
 
 } // namespace ns3
