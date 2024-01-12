@@ -397,16 +397,28 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
     void CheckPmModeAfterAssociation(const Mac48Address& address);
 
     /**
-     * Check that appropriate actions are taken by the AP MLD transmitting an EML Operating Mode
+     * Check that appropriate actions are taken when the AP MLD transmits an EML Operating Mode
      * Notification response frame to an EMLSR client on the given link.
      *
      * \param mpdu the MPDU carrying the EML Operating Mode Notification frame
      * \param txVector the TXVECTOR used to send the PPDU
      * \param linkId the ID of the given link
      */
-    void CheckEmlNotificationFrame(Ptr<const WifiMpdu> mpdu,
-                                   const WifiTxVector& txVector,
-                                   uint8_t linkId);
+    void CheckApEmlNotificationFrame(Ptr<const WifiMpdu> mpdu,
+                                     const WifiTxVector& txVector,
+                                     uint8_t linkId);
+
+    /**
+     * Check that appropriate actions are taken when an EMLSR client transmits an EML Operating
+     * Mode Notification frame to the AP MLD on the given link.
+     *
+     * \param mpdu the MPDU carrying the EML Operating Mode Notification frame
+     * \param txVector the TXVECTOR used to send the PPDU
+     * \param linkId the ID of the given link
+     */
+    void CheckStaEmlNotificationFrame(Ptr<const WifiMpdu> mpdu,
+                                      const WifiTxVector& txVector,
+                                      uint8_t linkId);
 
     /**
      * Check that appropriate actions are taken by the AP MLD transmitting an initial

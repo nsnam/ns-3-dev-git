@@ -757,11 +757,12 @@ EmlsrDlTxopTest::Transmit(Ptr<WifiMac> mac,
     case WIFI_MAC_MGT_ACTION: {
         auto [category, action] = WifiActionHeader::Peek(psdu->GetPayload(0));
 
-        if (nodeId == 0 && category == WifiActionHeader::PROTECTED_EHT &&
-            action.protectedEhtAction ==
-                WifiActionHeader::PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION)
+        if ((category == WifiActionHeader::PROTECTED_EHT) &&
+            (action.protectedEhtAction ==
+             WifiActionHeader::PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION))
         {
-            CheckEmlNotificationFrame(*psdu->begin(), txVector, linkId);
+            nodeId == 0 ? CheckApEmlNotificationFrame(*psdu->begin(), txVector, linkId)
+                        : CheckStaEmlNotificationFrame(*psdu->begin(), txVector, linkId);
         }
         else if (category == WifiActionHeader::BLOCK_ACK &&
                  action.blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
@@ -1613,9 +1614,9 @@ EmlsrDlTxopTest::CheckPmModeAfterAssociation(const Mac48Address& address)
 }
 
 void
-EmlsrDlTxopTest::CheckEmlNotificationFrame(Ptr<const WifiMpdu> mpdu,
-                                           const WifiTxVector& txVector,
-                                           uint8_t linkId)
+EmlsrDlTxopTest::CheckApEmlNotificationFrame(Ptr<const WifiMpdu> mpdu,
+                                             const WifiTxVector& txVector,
+                                             uint8_t linkId)
 {
     // the AP is replying to a received EMLSR Notification frame
     auto pkt = mpdu->GetPacket()->Copy();
@@ -1700,6 +1701,126 @@ EmlsrDlTxopTest::CheckEmlNotificationFrame(Ptr<const WifiMpdu> mpdu,
                     "Checking links on AP MLD after EMLSR mode is disabled on EMLSR client " +
                         std::to_string(*staId),
                     false);
+            }
+        }
+    });
+}
+
+void
+EmlsrDlTxopTest::CheckStaEmlNotificationFrame(Ptr<const WifiMpdu> mpdu,
+                                              const WifiTxVector& txVector,
+                                              uint8_t linkId)
+{
+    // an EMLSR client is sending an EMLSR Notification frame
+    auto pkt = mpdu->GetPacket()->Copy();
+    const auto& hdr = mpdu->GetHeader();
+    WifiActionHeader::Remove(pkt);
+    MgtEmlOmn frame;
+    pkt->RemoveHeader(frame);
+
+    std::optional<std::size_t> staId;
+    for (std::size_t id = 0; id < m_nEmlsrStations; id++)
+    {
+        if (m_staMacs.at(id)->GetFrameExchangeManager(linkId)->GetAddress() == hdr.GetAddr2())
+        {
+            staId = id;
+            break;
+        }
+    }
+    NS_TEST_ASSERT_MSG_EQ(staId.has_value(),
+                          true,
+                          "Not an address of an EMLSR client " << hdr.GetAddr1());
+
+    auto phy = m_staMacs.at(*staId)->GetWifiPhy(linkId);
+    auto txDuration = WifiPhy::CalculateTxDuration(mpdu->GetSize(), txVector, phy->GetPhyBand());
+    auto ackTxVector =
+        m_apMac->GetWifiRemoteStationManager(linkId)->GetAckTxVector(hdr.GetAddr2(), txVector);
+    auto ackDuration = WifiPhy::CalculateTxDuration(GetAckSize(), ackTxVector, phy->GetPhyBand());
+    auto cfEndDuration = WifiPhy::CalculateTxDuration(
+        Create<WifiPsdu>(Create<Packet>(), WifiMacHeader(WIFI_MAC_CTL_END)),
+        m_staMacs.at(*staId)->GetWifiRemoteStationManager(linkId)->GetRtsTxVector(
+            Mac48Address::GetBroadcast(),
+            txVector.GetChannelWidth()),
+        phy->GetPhyBand());
+
+    if (frame.m_emlControl.emlsrMode != 0)
+    {
+        return;
+    }
+
+    // EMLSR mode disabled
+    auto timeToCfEnd = txDuration + phy->GetSifs() + ackDuration + phy->GetSifs() + cfEndDuration;
+
+    // before the end of the CF-End frame, this link only is not blocked on both the
+    // EMLSR client and the AP MLD
+    Simulator::Schedule(timeToCfEnd - MicroSeconds(1), [=, this]() {
+        for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+        {
+            CheckBlockedLink(m_staMacs.at(*staId),
+                             m_apMac->GetAddress(),
+                             id,
+                             WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                             id != linkId && m_staMacs.at(*staId)->IsEmlsrLink(id),
+                             "Checking links on EMLSR client " + std::to_string(*staId) +
+                                 " before the end of CF-End frame");
+            CheckBlockedLink(m_apMac,
+                             m_staMacs.at(*staId)->GetAddress(),
+                             id,
+                             WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                             id != linkId && m_staMacs.at(*staId)->IsEmlsrLink(id),
+                             "Checking links of EMLSR client " + std::to_string(*staId) +
+                                 " on the AP MLD before the end of CF-End frame");
+        }
+    });
+    // after the end of the CF-End frame, all links for the EMLSR client are blocked on the
+    // AP MLD
+    Simulator::Schedule(timeToCfEnd + MicroSeconds(1), [=, this]() {
+        for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+        {
+            if (m_staMacs.at(*staId)->IsEmlsrLink(id))
+            {
+                CheckBlockedLink(
+                    m_apMac,
+                    m_staMacs.at(*staId)->GetAddress(),
+                    id && m_staMacs.at(*staId)->IsEmlsrLink(id),
+                    WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                    true,
+                    "Checking links of EMLSR client " + std::to_string(*staId) +
+                        " are all blocked on the AP MLD right after the end of CF-End");
+            }
+        }
+    });
+    // before the end of the transition delay, all links for the EMLSR client are still
+    // blocked on the AP MLD
+    Simulator::Schedule(timeToCfEnd + m_transitionDelay.at(*staId) - MicroSeconds(1), [=, this]() {
+        for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+        {
+            if (m_staMacs.at(*staId)->IsEmlsrLink(id))
+            {
+                CheckBlockedLink(m_apMac,
+                                 m_staMacs.at(*staId)->GetAddress(),
+                                 id,
+                                 WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                                 true,
+                                 "Checking links of EMLSR client " + std::to_string(*staId) +
+                                     " are all blocked on the AP MLD before the end of "
+                                     "transition delay");
+            }
+        }
+    });
+    // immediately after the transition delay, all links for the EMLSR client are unblocked
+    Simulator::Schedule(timeToCfEnd + m_transitionDelay.at(*staId) + MicroSeconds(1), [=, this]() {
+        for (uint8_t id = 0; id < m_apMac->GetNLinks(); id++)
+        {
+            if (m_staMacs.at(*staId)->IsEmlsrLink(id))
+            {
+                CheckBlockedLink(m_apMac,
+                                 m_staMacs.at(*staId)->GetAddress(),
+                                 id,
+                                 WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                                 false,
+                                 "Checking links of EMLSR client " + std::to_string(*staId) +
+                                     " are all unblocked on the AP MLD after the transition delay");
             }
         }
     });
