@@ -124,13 +124,6 @@ UdpClient::SetRemote(Address addr)
 }
 
 void
-UdpClient::DoDispose()
-{
-    NS_LOG_FUNCTION(this);
-    Application::DoDispose();
-}
-
-void
 UdpClient::StartApplication()
 {
     NS_LOG_FUNCTION(this);

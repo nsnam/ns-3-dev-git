@@ -130,9 +130,6 @@ class UdpEchoClient : public Application
      */
     void SetFill(uint8_t* fill, uint32_t fillSize, uint32_t dataSize);
 
-  protected:
-    void DoDispose() override;
-
   private:
     void StartApplication() override;
     void StopApplication() override;

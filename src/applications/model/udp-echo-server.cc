@@ -81,13 +81,6 @@ UdpEchoServer::~UdpEchoServer()
 }
 
 void
-UdpEchoServer::DoDispose()
-{
-    NS_LOG_FUNCTION(this);
-    Application::DoDispose();
-}
-
-void
 UdpEchoServer::StartApplication()
 {
     NS_LOG_FUNCTION(this);

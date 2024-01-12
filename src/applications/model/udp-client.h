@@ -71,9 +71,6 @@ class UdpClient : public Application
      */
     uint64_t GetTotalTx() const;
 
-  protected:
-    void DoDispose() override;
-
   private:
     void StartApplication() override;
     void StopApplication() override;

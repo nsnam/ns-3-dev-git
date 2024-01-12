@@ -132,13 +132,6 @@ UdpEchoClient::SetRemote(Address addr)
 }
 
 void
-UdpEchoClient::DoDispose()
-{
-    NS_LOG_FUNCTION(this);
-    Application::DoDispose();
-}
-
-void
 UdpEchoClient::StartApplication()
 {
     NS_LOG_FUNCTION(this);

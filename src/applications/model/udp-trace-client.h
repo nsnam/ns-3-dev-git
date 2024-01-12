@@ -124,9 +124,6 @@ class UdpTraceClient : public Application
      */
     void SetTraceLoop(bool traceLoop);
 
-  protected:
-    void DoDispose() override;
-
   private:
     void StartApplication() override;
     void StopApplication() override;

@@ -52,9 +52,6 @@ class UdpEchoServer : public Application
     UdpEchoServer();
     ~UdpEchoServer() override;
 
-  protected:
-    void DoDispose() override;
-
   private:
     void StartApplication() override;
     void StopApplication() override;

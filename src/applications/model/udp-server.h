@@ -82,9 +82,6 @@ class UdpServer : public Application
      */
     void SetPacketWindowSize(uint16_t size);
 
-  protected:
-    void DoDispose() override;
-
   private:
     void StartApplication() override;
     void StopApplication() override;

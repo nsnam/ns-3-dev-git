@@ -182,13 +182,6 @@ UdpTraceClient::GetMaxPacketSize()
 }
 
 void
-UdpTraceClient::DoDispose()
-{
-    NS_LOG_FUNCTION(this);
-    Application::DoDispose();
-}
-
-void
 UdpTraceClient::LoadTrace(std::string filename)
 {
     NS_LOG_FUNCTION(this << filename);

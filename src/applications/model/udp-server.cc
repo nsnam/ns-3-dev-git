@@ -119,13 +119,6 @@ UdpServer::GetReceived() const
 }
 
 void
-UdpServer::DoDispose()
-{
-    NS_LOG_FUNCTION(this);
-    Application::DoDispose();
-}
-
-void
 UdpServer::StartApplication()
 {
     NS_LOG_FUNCTION(this);
