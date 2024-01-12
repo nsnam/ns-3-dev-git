@@ -159,7 +159,7 @@ SpectrumChannel::AddSpectrumTransmitFilter(Ptr<SpectrumTransmitFilter> filter)
     m_filter = filter;
 }
 
-Ptr<const SpectrumTransmitFilter>
+Ptr<SpectrumTransmitFilter>
 SpectrumChannel::GetSpectrumTransmitFilter() const
 {
     return m_filter;
@@ -173,21 +173,19 @@ SpectrumChannel::SetPropagationDelayModel(Ptr<PropagationDelayModel> delay)
 }
 
 Ptr<SpectrumPropagationLossModel>
-SpectrumChannel::GetSpectrumPropagationLossModel()
+SpectrumChannel::GetSpectrumPropagationLossModel() const
 {
-    NS_LOG_FUNCTION(this);
     return m_spectrumPropagationLoss;
 }
 
 Ptr<PhasedArraySpectrumPropagationLossModel>
-SpectrumChannel::GetPhasedArraySpectrumPropagationLossModel()
+SpectrumChannel::GetPhasedArraySpectrumPropagationLossModel() const
 {
-    NS_LOG_FUNCTION(this);
     return m_phasedArraySpectrumPropagationLoss;
 }
 
 Ptr<PropagationLossModel>
-SpectrumChannel::GetPropagationLossModel()
+SpectrumChannel::GetPropagationLossModel() const
 {
     return m_propagationLoss;
 }

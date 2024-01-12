@@ -104,20 +104,20 @@ class SpectrumChannel : public Channel
      * Get the frequency-dependent propagation loss model.
      * \returns a pointer to the propagation loss model.
      */
-    Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel();
+    Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel() const;
 
     /**
      * Get the frequency-dependent propagation loss model that is
      * compatible with the phased antenna arrays at TX and RX
      * \returns a pointer to the propagation loss model.
      */
-    Ptr<PhasedArraySpectrumPropagationLossModel> GetPhasedArraySpectrumPropagationLossModel();
+    Ptr<PhasedArraySpectrumPropagationLossModel> GetPhasedArraySpectrumPropagationLossModel() const;
 
     /**
      * Get the propagation loss model.
      * \returns a pointer to the propagation loss model.
      */
-    Ptr<PropagationLossModel> GetPropagationLossModel();
+    Ptr<PropagationLossModel> GetPropagationLossModel() const;
 
     /**
      * Get the propagation delay model that has been set on the channel.
@@ -140,7 +140,7 @@ class SpectrumChannel : public Channel
      * if more than one is present.
      * \returns a pointer to the transmit filter.
      */
-    Ptr<const SpectrumTransmitFilter> GetSpectrumTransmitFilter() const;
+    Ptr<SpectrumTransmitFilter> GetSpectrumTransmitFilter() const;
 
     /**
      * Used by attached PHY instances to transmit signals on the channel
