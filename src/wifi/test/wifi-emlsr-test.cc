@@ -1483,12 +1483,13 @@ EmlsrDlTxopTest::CheckResults()
      */
 
     // for each EMLSR client, there should be a frame exchange with ICF and no data frame
-    // (ICF protects the EML Notification response) and two frame exchanges with data frames
+    // (ICF protects the EML Notification response) if the EML Notification response is sent
+    // while EMLSR mode is still enabled and two frame exchanges with data frames
     for (std::size_t i = 0; i < m_nEmlsrStations; i++)
     {
         // the default EMLSR Manager requests to send EML Notification frames on the link where
-        // the main PHY is operating, hence this link is an EMLSR link and the EML Notification
-        // frame is protected by an ICF
+        // the main PHY is operating; if EMLSR mode is still enabled on this link when the AP MLD
+        // sends the EML Notification response, the latter is protected by an ICF
         auto exchangeIt = frameExchanges.at(i).cbegin();
 
         auto linkIdOpt = m_staMacs[i]->GetLinkForPhy(m_mainPhyId);
@@ -1496,17 +1497,16 @@ EmlsrDlTxopTest::CheckResults()
                               true,
                               "Didn't find a link on which the main PHY is operating");
 
-        NS_TEST_EXPECT_MSG_EQ(IsTrigger(exchangeIt->front()->psduMap),
-                              true,
-                              "Expected an MU-RTS TF as ICF of first frame exchange sequence");
-        NS_TEST_EXPECT_MSG_EQ(+exchangeIt->front()->linkId,
-                              +linkIdOpt.value(),
-                              "ICF was not sent on the expected link");
-        NS_TEST_EXPECT_MSG_EQ(exchangeIt->size(),
-                              1,
-                              "Expected no data frame in the first frame exchange sequence");
-
-        frameExchanges.at(i).pop_front();
+        if (IsTrigger(exchangeIt->front()->psduMap))
+        {
+            NS_TEST_EXPECT_MSG_EQ(+exchangeIt->front()->linkId,
+                                  +linkIdOpt.value(),
+                                  "ICF was not sent on the expected link");
+            NS_TEST_EXPECT_MSG_EQ(exchangeIt->size(),
+                                  1,
+                                  "Expected no data frame in the first frame exchange sequence");
+            frameExchanges.at(i).pop_front();
+        }
 
         NS_TEST_EXPECT_MSG_GT_OR_EQ(frameExchanges.at(i).size(),
                                     2,

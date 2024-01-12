@@ -156,8 +156,10 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     /**
      * Take actions when a TXOP (of which we are not the holder) ends.
+     *
+     * \param txopHolder the holder of the TXOP (if any)
      */
-    void TxopEnd();
+    void TxopEnd(const std::optional<Mac48Address>& txopHolder);
 
     EventId m_ongoingTxopEnd; //!< event indicating the possible end of the current TXOP (of which
                               //!< we are not the holder)

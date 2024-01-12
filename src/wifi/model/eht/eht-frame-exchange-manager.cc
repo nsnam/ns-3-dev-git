@@ -840,7 +840,8 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
             auto delay =
                 m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
             NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
-            m_ongoingTxopEnd = Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this);
+            m_ongoingTxopEnd =
+                Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this, m_txopHolder);
         }
         else
         {
@@ -991,7 +992,8 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + m_phy->GetSifs()).As(Time::S));
             m_ongoingTxopEnd = Simulator::Schedule(m_phy->GetSifs() + NanoSeconds(1),
                                                    &EhtFrameExchangeManager::TxopEnd,
-                                                   this);
+                                                   this,
+                                                   hdr.GetAddr2());
         }
     }
 
@@ -1015,9 +1017,9 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 }
 
 void
-EhtFrameExchangeManager::TxopEnd()
+EhtFrameExchangeManager::TxopEnd(const std::optional<Mac48Address>& txopHolder)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << txopHolder.has_value());
 
     if (m_phy->IsReceivingPhyHeader())
     {
@@ -1028,7 +1030,8 @@ EhtFrameExchangeManager::TxopEnd()
         NS_LOG_DEBUG("PHY is decoding the PHY header of PPDU, postpone TXOP end");
         m_ongoingTxopEnd = Simulator::Schedule(MicroSeconds(WAIT_FOR_RXSTART_DELAY_USEC),
                                                &EhtFrameExchangeManager::TxopEnd,
-                                               this);
+                                               this,
+                                               txopHolder);
         return;
     }
 
@@ -1036,11 +1039,10 @@ EhtFrameExchangeManager::TxopEnd()
     {
         m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId);
     }
-    else if (m_apMac && m_txopHolder &&
-             GetWifiRemoteStationManager()->GetEmlsrEnabled(*m_txopHolder))
+    else if (m_apMac && txopHolder && GetWifiRemoteStationManager()->GetEmlsrEnabled(*txopHolder))
     {
         // EMLSR client terminated its TXOP and is back to listening operation
-        EmlsrSwitchToListening(*m_txopHolder, Seconds(0));
+        EmlsrSwitchToListening(*txopHolder, Seconds(0));
     }
 }
 
@@ -1083,7 +1085,8 @@ EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration, Time durationId
     }
 
     NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
-    m_ongoingTxopEnd = Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this);
+    m_ongoingTxopEnd =
+        Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this, m_txopHolder);
 }
 
 void
@@ -1101,8 +1104,10 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxStartIndication(Time psduDuration)
     m_ongoingTxopEnd.Cancel();
 
     NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + psduDuration).As(Time::S));
-    m_ongoingTxopEnd =
-        Simulator::Schedule(psduDuration + NanoSeconds(1), &EhtFrameExchangeManager::TxopEnd, this);
+    m_ongoingTxopEnd = Simulator::Schedule(psduDuration + NanoSeconds(1),
+                                           &EhtFrameExchangeManager::TxopEnd,
+                                           this,
+                                           m_txopHolder);
 }
 
 void
@@ -1123,7 +1128,7 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxEnd(Time durationId)
     if (durationId <= m_phy->GetSifs())
     {
         NS_LOG_DEBUG("Assume TXOP ended based on Duration/ID value");
-        TxopEnd();
+        TxopEnd(m_txopHolder);
         return;
     }
 
@@ -1131,7 +1136,8 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxEnd(Time durationId)
     // Postpone the TXOP end by considering the latter (which takes longer)
     auto delay = m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
     NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
-    m_ongoingTxopEnd = Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this);
+    m_ongoingTxopEnd =
+        Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this, m_txopHolder);
 }
 
 } // namespace ns3
