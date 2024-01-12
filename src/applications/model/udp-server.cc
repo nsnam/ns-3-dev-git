@@ -79,10 +79,10 @@ UdpServer::GetTypeId()
 }
 
 UdpServer::UdpServer()
-    : m_lossCounter(0)
+    : m_received(0),
+      m_lossCounter(0)
 {
     NS_LOG_FUNCTION(this);
-    m_received = 0;
 }
 
 UdpServer::~UdpServer()
