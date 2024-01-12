@@ -178,6 +178,7 @@ ChannelListPriv::Add(Ptr<Channel> channel)
     NS_LOG_FUNCTION(this << channel);
     uint32_t index = m_channels.size();
     m_channels.push_back(channel);
+    Simulator::Schedule(TimeStep(0), &Channel::Initialize, channel);
     return index;
 }
 
