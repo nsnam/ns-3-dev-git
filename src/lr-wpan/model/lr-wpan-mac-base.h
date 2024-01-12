@@ -28,8 +28,64 @@
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
 
+#include <cstdint>
+
 namespace ns3
 {
+
+/**
+ * \ingroup lr-wpan
+ *
+ * The status of a confirm or an indication primitive as a result of a previous request.
+ * Represent the value of status in IEEE 802.15.4-2011 primitives.
+ * (Tables 6, 12, 18, 20, 31, 33, 35, 37, 39, 47)
+ *
+ * Status codes values only appear in IEEE 802.15.4-2006, Table 78
+ * See also NXP JN5169 IEEE 802.15.4 Stack User Guide
+ * (Table 6: Status Enumerations and Section 6.1.23)
+ *
+ */
+enum class LrWpanMacStatus : std::uint8_t
+{
+    SUCCESS = 0,              //!< The operation was completed successfully.
+    FULL_CAPACITY = 0x01,     //!< PAN at capacity. Association Status field (std. 2006, Table 83)
+    ACCESS_DENIED = 0x02,     //!< PAN access denied. Association Status field (std. 2006, Table 83)
+    COUNTER_ERROR = 0xdb,     //!< The frame counter of the received frame is invalid.
+    IMPROPER_KEY_TYPE = 0xdc, //!< The key is not allowed to be used with that frame type.
+    IMPROPER_SECURITY_LEVEL = 0xdd, //!< Insufficient security level expected by the recipient.
+    UNSUPPORTED_LEGACY = 0xde,      //!< Deprecated security used in IEEE 802.15.4-2003
+    UNSUPPORTED_SECURITY = 0xdf,    //!< The security applied is not supported.
+    BEACON_LOSS = 0xe0,             //!< The beacon was lost following a synchronization request.
+    CHANNEL_ACCESS_FAILURE = 0xe1,  //!< A Tx could not take place due to activity in the CH.
+    DENIED = 0xe2,                  //!< The GTS request has been denied by the PAN coordinator.
+    DISABLE_TRX_FAILURE = 0xe3,     //!< The attempt to disable the transceier has failed.
+    SECURITY_ERROR = 0xe4,      // Cryptographic process of the frame failed(FAILED_SECURITY_CHECK).
+    FRAME_TOO_LONG = 0xe5,      //!< Frame more than aMaxPHYPacketSize or too large for CAP or GTS.
+    INVALID_GTS = 0xe6,         //!< Missing GTS transmit or undefined direction.
+    INVALID_HANDLE = 0xe7,      //!< When purging from TX queue handle was not found.
+    INVALID_PARAMETER = 0xe8,   //!< Primitive parameter not supported or out of range.
+    NO_ACK = 0xe9,              //!< No acknowledgment was received after macMaxFrameRetries.
+    NO_BEACON = 0xea,           //!< A scan operation failed to find any network beacons.
+    NO_DATA = 0xeb,             //!<  No response data were available following a request.
+    NO_SHORT_ADDRESS = 0xec,    //!< Failure due to unallocated 16-bit short address.
+    OUT_OF_CAP = 0xed,          //!< (Deprecated) See IEEE 802.15.4-2003
+    PAN_ID_CONFLICT = 0xee,     //!<  PAN id conflict detected and informed to the coordinator.
+    REALIGMENT = 0xef,          //!< A coordinator realigment command has been received.
+    TRANSACTION_EXPIRED = 0xf0, //!< The transaction expired and its information discarded.
+    TRANSACTION_OVERFLOW = 0xf1,  //!< There is no capacity to store the transaction.
+    TX_ACTIVE = 0xf2,             //!< The transceiver was already enabled.
+    UNAVAILABLE_KEY = 0xf3,       //!< Unavailable key, unknown or blacklisted.
+    UNSUPPORTED_ATTRIBUTE = 0xf4, //!< SET/GET request issued with a non supported ID.
+    INVALID_ADDRESS = 0xf5,       //!< Invalid source or destination address.
+    ON_TIME_TOO_LONG = 0xf6,      //!< RX enable request fail due to syms. longer than Bcn. interval
+    PAST_TIME = 0xf7,             //!< Rx enable request fail due to lack of time in superframe.
+    TRACKING_OFF = 0xf8,          //!< This device is currently not tracking beacons.
+    INVALID_INDEX = 0xf9,     //!< A MAC PIB write failed because specified index is out of range.
+    LIMIT_REACHED = 0xfa,     //!< PAN descriptors stored reached max capacity.
+    READ_ONLY = 0xfb,         //!< SET/GET request issued for a read only attribute.
+    SCAN_IN_PROGRESS = 0xfc,  //!< Scan failed because already performing another scan.
+    SUPERFRAME_OVERLAP = 0xfd //!< Coordinator sperframe and this device superframe tx overlap.
+};
 
 /**
  * \ingroup lr-wpan
@@ -42,20 +98,6 @@ enum LrWpanAddressMode
     ADDR_MODE_RESERVED = 1,
     SHORT_ADDR = 2,
     EXT_ADDR = 3
-};
-
-/**
- * \ingroup lr-wpan
- *
- * table 83 of 802.15.4
- */
-enum LrWpanAssociationStatus
-{
-    ASSOCIATED = 0,
-    PAN_AT_CAPACITY = 1,
-    PAN_ACCESS_DENIED = 2,
-    ASSOCIATED_WITHOUT_ADDRESS = 0xfe,
-    DISASSOCIATED = 0xff
 };
 
 /**
@@ -160,8 +202,9 @@ struct MlmeAssociateResponseParams
     Mac64Address m_extDevAddr;     //!< The extended address of the device requesting association
     Mac16Address m_assocShortAddr; //!< The short address allocated by the coordinator on successful
                                    //!< assoc. FF:FF = Unsuccessful
-    LrWpanAssociationStatus m_status{DISASSOCIATED}; //!< The status of the association attempt (As
-                                                     //!< defined on Table 83 IEEE 802.15.4-2006)
+    LrWpanMacStatus m_status{
+        LrWpanMacStatus::ACCESS_DENIED}; //!< The status of the association
+                                         //!< attempt (As defined on Table 83 IEEE 802.15.4-2006)
 };
 
 /**
@@ -241,35 +284,13 @@ struct LrWpanMacPibAttributes : public SimpleRefCount<LrWpanMacPibAttributes>
 /**
  * \ingroup lr-wpan
  *
- * Table 42 of 802.15.4-2006
- */
-enum LrWpanMcpsDataConfirmStatus
-{
-    IEEE_802_15_4_SUCCESS = 0,
-    IEEE_802_15_4_TRANSACTION_OVERFLOW = 1,
-    IEEE_802_15_4_TRANSACTION_EXPIRED = 2,
-    IEEE_802_15_4_CHANNEL_ACCESS_FAILURE = 3,
-    IEEE_802_15_4_INVALID_ADDRESS = 4,
-    IEEE_802_15_4_INVALID_GTS = 5,
-    IEEE_802_15_4_NO_ACK = 6,
-    IEEE_802_15_4_COUNTER_ERROR = 7,
-    IEEE_802_15_4_FRAME_TOO_LONG = 8,
-    IEEE_802_15_4_UNAVAILABLE_KEY = 9,
-    IEEE_802_15_4_UNSUPPORTED_SECURITY = 10,
-    IEEE_802_15_4_INVALID_PARAMETER = 11
-};
-
-/**
- * \ingroup lr-wpan
- *
  * MCPS-DATA.confirm params. See 7.1.1.2
  */
 struct McpsDataConfirmParams
 {
-    uint8_t m_msduHandle{0}; //!< MSDU handle
-    LrWpanMcpsDataConfirmStatus m_status{
-        IEEE_802_15_4_INVALID_PARAMETER}; //!< The status
-                                          //!< of the last MSDU transmission
+    uint8_t m_msduHandle{0};                                      //!< MSDU handle
+    LrWpanMacStatus m_status{LrWpanMacStatus::INVALID_PARAMETER}; //!< The status
+                                                                  //!< of the last MSDU transmission
 };
 
 /**
@@ -308,23 +329,6 @@ struct MlmeAssociateIndicationParams
 /**
  * \ingroup lr-wpan
  *
- * Table 18 of IEEE 802.15.4-2011
- */
-enum LrWpanMlmeCommStatus
-{
-    MLMECOMMSTATUS_SUCCESS = 0,
-    MLMECOMMSTATUS_TRANSACTION_OVERFLOW = 1,
-    MLMECOMMSTATUS_TRANSACTION_EXPIRED = 2,
-    MLMECOMMSTATUS_CHANNEL_ACCESS_FAILURE = 3,
-    MLMECOMMSTATUS_NO_ACK = 4,
-    MLMECOMMSTATUS_COUNTER_ERROR = 5,
-    MLMECOMMSTATUS_FRAME_TOO_LONG = 6,
-    MLMECOMMSTATUS_INVALID_PARAMETER = 7
-};
-
-/**
- * \ingroup lr-wpan
- *
  * MLME-COMM-STATUS.indication params. See  802.15.4-2011   Section 6.2.4.2 Table 18
  */
 struct MlmeCommStatusIndicationParams
@@ -341,7 +345,7 @@ struct MlmeCommStatusIndicationParams
                                        //!< which the frame was intended.
     Mac64Address m_dstExtAddr;         //!< The extended address of the device for
                                        //!< which the frame was intended.
-    LrWpanMlmeCommStatus m_status{MLMECOMMSTATUS_INVALID_PARAMETER}; //!< The communication status
+    LrWpanMacStatus m_status{LrWpanMacStatus::INVALID_PARAMETER}; //!< The communication status
 };
 
 /**
@@ -357,49 +361,12 @@ struct MlmeOrphanIndicationParams
 /**
  * \ingroup lr-wpan
  *
- * Table 35 of IEEE 802.15.4-2011
- */
-enum LrWpanMlmeStartConfirmStatus
-{
-    MLMESTART_SUCCESS = 0,
-    MLMESTART_NO_SHORT_ADDRESS = 1,
-    MLMESTART_SUPERFRAME_OVERLAP = 2,
-    MLMESTART_TRACKING_OFF = 3,
-    MLMESTART_INVALID_PARAMETER = 4,
-    MLMESTART_COUNTER_ERROR = 5,
-    MLMESTART_FRAME_TOO_LONG = 6,
-    MLMESTART_UNAVAILABLE_KEY = 7,
-    MLMESTART_UNSUPPORTED_SECURITY = 8,
-    MLMESTART_CHANNEL_ACCESS_FAILURE = 9
-};
-
-/**
- * \ingroup lr-wpan
- *
  * MLME-START.confirm params. See  802.15.4-2011   Section 6.2.12.2
  */
 struct MlmeStartConfirmParams
 {
-    LrWpanMlmeStartConfirmStatus m_status{MLMESTART_INVALID_PARAMETER}; //!< The status of
-                                                                        //!< a MLME-start.request
-};
-
-/**
- * \ingroup lr-wpan
- *
- * Table 31 of IEEE 802.15.4-2011
- */
-enum LrWpanMlmeScanConfirmStatus
-{
-    MLMESCAN_SUCCESS = 0,
-    MLMESCAN_LIMIT_REACHED = 1,
-    MLMESCAN_NO_BEACON = 2,
-    MLMESCAN_SCAN_IN_PROGRESS = 3,
-    MLMESCAN_COUNTER_ERROR = 4,
-    MLMESCAN_FRAME_TOO_LONG = 5,
-    MLMESCAN_UNAVAILABLE_KEY = 6,
-    MLMESCAN_UNSUPPORTED_SECURITY = 7,
-    MLMESCAN_INVALID_PARAMETER = 8
+    LrWpanMacStatus m_status{LrWpanMacStatus::INVALID_PARAMETER}; //!< The status of
+                                                                  //!< a MLME-start.request
 };
 
 /**
@@ -436,38 +403,20 @@ struct PanDescriptor
  */
 struct MlmeScanConfirmParams
 {
-    LrWpanMlmeScanConfirmStatus m_status{MLMESCAN_INVALID_PARAMETER}; //!< The status the request.
-    LrWpanMlmeScanType m_scanType{MLMESCAN_PASSIVE}; //!< Indicates the type of scan
-                                                     //!<  performed (ED,ACTIVE,PASSIVE,ORPHAN).
-    uint32_t m_chPage{0};                 //!< The channel page on which the scan was performed.
-    std::vector<uint8_t> m_unscannedCh;   //!< A list of channels given in the request which
-                                          //!<  were not scanned (Not valid for ED scans).
-    uint8_t m_resultListSize{0};          //!< The number of elements returned in the appropriate
-                                          //!<  result list. (Not valid for Orphan scan).
-    std::vector<uint8_t> m_energyDetList; //!< A list of energy measurements, one for each
-                                          //!< channel searched during ED scan
-                                          //!< (Not valid for Active, Passive or Orphan Scans)
+    LrWpanMacStatus m_status{
+        LrWpanMacStatus::INVALID_PARAMETER}; //!< The status of the scan request.
+    uint8_t m_scanType{MLMESCAN_PASSIVE};    //!< Indicates the type of scan
+                                             //!<  performed (ED,ACTIVE,PASSIVE,ORPHAN).
+    uint32_t m_chPage{0};                    //!< The channel page on which the scan was performed.
+    std::vector<uint8_t> m_unscannedCh;      //!< A list of channels given in the request which
+                                             //!<  were not scanned (Not valid for ED scans).
+    uint8_t m_resultListSize{0};             //!< The number of elements returned in the appropriate
+                                             //!<  result list. (Not valid for Orphan scan).
+    std::vector<uint8_t> m_energyDetList;    //!< A list of energy measurements, one for each
+                                             //!< channel searched during ED scan
+                                             //!< (Not valid for Active, Passive or Orphan Scans)
     std::vector<PanDescriptor> m_panDescList; //!< A list of PAN descriptor, one for each beacon
                                               //!< found (Not valid for ED and Orphan scans).
-};
-
-/**
- * \ingroup lr-wpan
- *
- * Table 12 of IEEE 802.15.4-2011
- */
-enum LrWpanMlmeAssociateConfirmStatus
-{
-    MLMEASSOC_SUCCESS = 0,
-    MLMEASSOC_FULL_CAPACITY = 1,
-    MLMEASSOC_ACCESS_DENIED = 2,
-    MLMEASSOC_CHANNEL_ACCESS_FAILURE = 3,
-    MLMEASSOC_NO_ACK = 4,
-    MLMEASSOC_NO_DATA = 5,
-    MLMEASSOC_COUNTER_ERROR = 6,
-    MLMEASSOC_FRAME_TOO_LONG = 7,
-    MLMEASSOC_UNSUPPORTED_LEGACY = 8,
-    MLMEASSOC_INVALID_PARAMETER = 9
 };
 
 /**
@@ -478,8 +427,8 @@ enum LrWpanMlmeAssociateConfirmStatus
 struct MlmeAssociateConfirmParams
 {
     Mac16Address m_assocShortAddr; //!< The short address used in the association request
-    LrWpanMlmeAssociateConfirmStatus m_status{MLMEASSOC_INVALID_PARAMETER};
-    //!< The status of a MLME-associate.request
+    LrWpanMacStatus m_status{LrWpanMacStatus::INVALID_PARAMETER}; //!< The status of
+                                                                  //!< a MLME-associate.request
 };
 
 /**
@@ -498,25 +447,12 @@ struct MlmeBeaconNotifyIndicationParams
 /**
  * \ingroup lr-wpan
  *
- * Table 37 of IEEE 802.15.4-2011
- */
-enum LrWpanSyncLossReason
-{
-    MLMESYNCLOSS_PAN_ID_CONFLICT = 0,
-    MLMESYNCLOSS_REALIGMENT = 1,
-    MLMESYNCLOSS_BEACON_LOST = 2,
-    MLMESYNCLOSS_SUPERFRAME_OVERLAP = 3
-};
-
-/**
- * \ingroup lr-wpan
- *
  * MLME-SYNC-LOSS.indication params. See  802.15.4-2011   Section 6.2.13.2, Table 37
  */
 struct MlmeSyncLossIndicationParams
 {
-    LrWpanSyncLossReason m_lossReason{MLMESYNCLOSS_PAN_ID_CONFLICT}; //!< The reason for the lost
-                                                                     //!< of synchronization.
+    LrWpanMacStatus m_lossReason{LrWpanMacStatus::PAN_ID_CONFLICT}; //!< The reason for the lost
+                                                                    //!< of synchronization.
     uint16_t m_panId{0}; //!< The PAN identifier with which the device lost synchronization or to
                          //!< which it was realigned.
     uint8_t m_logCh{11}; //!< The channel number on which the device lost synchronization or to
@@ -526,57 +462,14 @@ struct MlmeSyncLossIndicationParams
 /**
  * \ingroup lr-wpan
  *
- * Table 33 of IEEE 802.15.4-2011
- */
-enum LrWpanMlmeSetConfirmStatus
-{
-    MLMESET_SUCCESS = 0,
-    MLMESET_READ_ONLY = 1,
-    MLMESET_UNSUPPORTED_ATTRIBUTE = 2,
-    MLMESET_INVALID_INDEX = 3,
-    MLMESET_INVALID_PARAMETER = 4
-};
-
-/**
- * \ingroup lr-wpan
- *
- * Table 20 of IEEE 802.15.4-2011
- */
-enum LrWpanMlmeGetConfirmStatus
-{
-    MLMEGET_SUCCESS = 0,
-    MLMEGET_UNSUPPORTED_ATTRIBUTE = 1
-};
-
-/**
- * \ingroup lr-wpan
- *
  * MLME-SET.confirm params. See  802.15.4-2011   Section 6.2.11.2
  */
 struct MlmeSetConfirmParams
 {
-    LrWpanMlmeSetConfirmStatus m_status{MLMESET_UNSUPPORTED_ATTRIBUTE}; //!< The result of
-                                                                        //!< the request to write
-                                                                        //!< the PIB attribute.
+    LrWpanMacStatus m_status{LrWpanMacStatus::UNSUPPORTED_ATTRIBUTE}; //!< The result of
+                                                                      //!< the request to write
+                                                                      //!< the PIB attribute.
     LrWpanMacPibAttributeIdentifier id; //!< The id of the PIB attribute that was written.
-};
-
-/**
- * \ingroup lr-wpan
- *
- * Table 39 of IEEE 802.15.4-2011
- */
-enum LrWpanMlmePollConfirmStatus
-{
-    MLMEPOLL_SUCCESS = 0,
-    MLMEPOLL_CHANNEL_ACCESS_FAILURE = 2,
-    MLMEPOLL_NO_ACK = 3,
-    MLMEPOLL_NO_DATA = 4,
-    MLMEPOLL_COUNTER_ERROR = 5,
-    MLMEPOLL_FRAME_TOO_LONG = 6,
-    MLMEPOLL_UNAVAILABLE_KEY = 7,
-    MLMEPOLL_UNSUPPORTED_SECURITY = 8,
-    MLMEPOLL_INVALID_PARAMETER = 9
 };
 
 /**
@@ -586,9 +479,9 @@ enum LrWpanMlmePollConfirmStatus
  */
 struct MlmePollConfirmParams
 {
-    LrWpanMlmePollConfirmStatus m_status{MLMEPOLL_INVALID_PARAMETER}; //!< The confirmation
-                                                                      //!< status resulting from a
-                                                                      //!< MLME-poll.request.
+    LrWpanMacStatus m_status{LrWpanMacStatus::INVALID_PARAMETER}; //!< The confirmation
+                                                                  //!< status resulting from a
+                                                                  //!< MLME-poll.request.
 };
 
 /**
@@ -708,10 +601,8 @@ using MlmeSetConfirmCallback = Callback<void, MlmeSetConfirmParams>;
  * the higher layer to get a PIB. It returns a status of the outcome of the
  * write attempt.
  */
-using MlmeGetConfirmCallback = Callback<void,
-                                        LrWpanMlmeGetConfirmStatus,
-                                        LrWpanMacPibAttributeIdentifier,
-                                        Ptr<LrWpanMacPibAttributes>>;
+using MlmeGetConfirmCallback =
+    Callback<void, LrWpanMacStatus, LrWpanMacPibAttributeIdentifier, Ptr<LrWpanMacPibAttributes>>;
 
 /**
  * \ingroup lr-wpan

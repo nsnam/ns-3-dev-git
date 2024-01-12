@@ -360,20 +360,6 @@ class LrWpanMac : public LrWpanMacBase
     void SetLrWpanMacState(LrWpanMacState macState);
 
     /**
-     * Get the current association status.
-     *
-     * \return current association status
-     */
-    LrWpanAssociationStatus GetAssociationStatus() const;
-
-    /**
-     * Set the current association status.
-     *
-     * \param status new association status
-     */
-    void SetAssociationStatus(LrWpanAssociationStatus status);
-
-    /**
      * Set the max size of the transmit queue.
      *
      * \param queueSize The transmit queue size.
@@ -1159,11 +1145,6 @@ class LrWpanMac : public LrWpanMacBase
      * The current period of the outgoing superframe.
      */
     TracedValue<SuperframeStatus> m_outSuperframeStatus;
-
-    /**
-     * The current association status of the MAC layer.
-     */
-    LrWpanAssociationStatus m_associationStatus;
 
     /**
      * The packet which is currently being sent by the MAC layer.

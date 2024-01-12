@@ -64,7 +64,7 @@ TransEndIndication(McpsDataConfirmParams params)
 {
     // In the case of transmissions with the Ack flag activated, the transaction is only
     // successful if the Ack was received.
-    if (params.m_status == LrWpanMcpsDataConfirmStatus::IEEE_802_15_4_SUCCESS)
+    if (params.m_status == LrWpanMacStatus::SUCCESS)
     {
         NS_LOG_UNCOND(Simulator::Now().GetSeconds() << " secs | Transmission successfully sent");
     }
@@ -80,7 +80,7 @@ DataIndicationCoordinator(McpsDataIndicationParams params, Ptr<Packet> p)
 void
 StartConfirm(MlmeStartConfirmParams params)
 {
-    if (params.m_status == MLMESTART_SUCCESS)
+    if (params.m_status == LrWpanMacStatus::SUCCESS)
     {
         NS_LOG_UNCOND(Simulator::Now().GetSeconds() << "Beacon status SUCCESSFUL");
     }

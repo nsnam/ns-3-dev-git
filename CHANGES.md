@@ -37,6 +37,7 @@ Changes from ns-3.40 to ns-3-dev
 * (wifi) The default value for `WifiRemoteStationManager::RtsCtsThreshold` has been increased from 65535 to 4692480.
 * (lr-wpan) Add the capability to see the enum values of the MAC transition states in log prints for easier debugging.
 * (sixlowpan) Remove `ForceEtherType` and `EtherType` attributes, and use RFC 7973 EtherType for interfaces supporting an EtherType.
+* (lr-wpan) Group MAC status enumerations into a single `LrWpanMacStatus` enumeration in `lr-wpan-mac-base.h.`
 
 ### Changes to build system
 

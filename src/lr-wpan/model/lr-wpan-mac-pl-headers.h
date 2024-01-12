@@ -123,17 +123,6 @@ class CommandPayloadHeader : public Header
         CMD_RESERVED = 0xff          //!< Reserved
     };
 
-    /**
-     *  Association Status Field values.
-     *  See IEEE 802.15.4-2011, Table 6
-     */
-    enum AssocStatus
-    {
-        SUCCESSFUL = 0x00,    //!< Association successful
-        FULL_CAPACITY = 0x01, //!< PAN at capacity
-        ACCESS_DENIED = 0x02  //!< PAN access denied
-    };
-
     CommandPayloadHeader();
     /**
      * Constructor
@@ -192,7 +181,7 @@ class CommandPayloadHeader : public Header
      * Set status resulting from the association attempt (Association Response Command).
      * \param status The status resulting from the association attempt
      */
-    void SetAssociationStatus(AssocStatus status);
+    void SetAssociationStatus(uint8_t status);
     /**
      * Get the Short address assigned by the coordinator
      * (Association Response and Coordinator Realigment commands).
@@ -203,7 +192,7 @@ class CommandPayloadHeader : public Header
      * Get the status resulting from an association request (Association Response Command).
      * \return The resulting status from an association request
      */
-    AssocStatus GetAssociationStatus() const;
+    uint8_t GetAssociationStatus() const;
     /**
      * Get the command frame type ID
      * \return The command type ID from the command payload header
@@ -247,7 +236,7 @@ class CommandPayloadHeader : public Header
     uint16_t m_panid;              //!< The PAN identifier (Coordinator realigment command)
     uint8_t m_logCh;               //!< The channel number (Coordinator realigment command)
     uint8_t m_logChPage;           //!< The channel page number (Coordinator realigment command)
-    AssocStatus m_assocStatus;     //!< Association Status (Association Response Command)
+    uint8_t m_assocStatus;         //!< Association Status (Association Response Command)
 };
 
 } // namespace ns3

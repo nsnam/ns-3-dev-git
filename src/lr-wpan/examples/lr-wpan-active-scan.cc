@@ -56,7 +56,7 @@ using namespace ns3;
 static void
 ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
 {
-    if (params.m_status == MLMESCAN_SUCCESS)
+    if (params.m_status == LrWpanMacStatus::SUCCESS)
     {
         std::cout << Simulator::Now().As(Time::S) << "| Active scan status SUCCESSFUL (Completed)"
                   << "\n";

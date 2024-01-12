@@ -103,11 +103,11 @@ TestRxOffWhenIdleAfterCsmaFailure::DataIndication(McpsDataIndicationParams param
 void
 TestRxOffWhenIdleAfterCsmaFailure::DataConfirm(McpsDataConfirmParams params)
 {
-    if (params.m_status == LrWpanMcpsDataConfirmStatus::IEEE_802_15_4_SUCCESS)
+    if (params.m_status == LrWpanMacStatus::SUCCESS)
     {
         NS_LOG_DEBUG("LrWpanMcpsDataConfirmStatus = Success");
     }
-    else if (params.m_status == LrWpanMcpsDataConfirmStatus::IEEE_802_15_4_CHANNEL_ACCESS_FAILURE)
+    else if (params.m_status == LrWpanMacStatus::CHANNEL_ACCESS_FAILURE)
     {
         NS_LOG_DEBUG("LrWpanMcpsDataConfirmStatus =  Channel Access Failure");
     }
@@ -336,7 +336,7 @@ TestActiveScanPanDescriptors::~TestActiveScanPanDescriptors()
 void
 TestActiveScanPanDescriptors::ScanConfirm(MlmeScanConfirmParams params)
 {
-    if (params.m_status == MLMESCAN_SUCCESS)
+    if (params.m_status == LrWpanMacStatus::SUCCESS)
     {
         m_panDescriptorList = params.m_panDescList;
     }
@@ -573,7 +573,7 @@ TestOrphanScan::~TestOrphanScan()
 void
 TestOrphanScan::ScanConfirm(MlmeScanConfirmParams params)
 {
-    if (params.m_status == MLMESCAN_SUCCESS)
+    if (params.m_status == LrWpanMacStatus::SUCCESS)
     {
         m_orphanScanSuccess = true;
     }

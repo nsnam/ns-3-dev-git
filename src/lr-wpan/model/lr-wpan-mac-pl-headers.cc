@@ -244,7 +244,7 @@ CommandPayloadHeader::Deserialize(Buffer::Iterator start)
         break;
     case ASSOCIATION_RESP:
         ReadFrom(i, m_shortAddr);
-        m_assocStatus = static_cast<AssocStatus>(i.ReadU8());
+        m_assocStatus = i.ReadU8();
         break;
     case DISASSOCIATION_NOTIF:
         break;
@@ -394,7 +394,7 @@ CommandPayloadHeader::SetShortAddr(Mac16Address shortAddr)
 }
 
 void
-CommandPayloadHeader::SetAssociationStatus(AssocStatus status)
+CommandPayloadHeader::SetAssociationStatus(uint8_t status)
 {
     NS_ASSERT(m_cmdFrameId == ASSOCIATION_RESP);
     m_assocStatus = status;
@@ -406,7 +406,7 @@ CommandPayloadHeader::GetShortAddr() const
     return m_shortAddr;
 }
 
-CommandPayloadHeader::AssocStatus
+uint8_t
 CommandPayloadHeader::GetAssociationStatus() const
 {
     NS_ASSERT(m_cmdFrameId == ASSOCIATION_RESP);

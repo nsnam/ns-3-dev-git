@@ -29,6 +29,7 @@ Release 3-dev
 - (wifi) - Align default RTS threshold to 802.11-2020
 - (wifi) - Added EHT support for Ideal rate manager
 - (wifi) - Reduce error rate model precision to fix infinite loop when Ideal rate manager is used with EHT
+- (lr-wpan) !1794 - Group MAC primitives status enumerations into a single enumeration
 
 ### Bugs fixed
 
