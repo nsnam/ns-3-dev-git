@@ -19,6 +19,7 @@
 
 #include "spectrum-channel.h"
 
+#include <ns3/abort.h>
 #include <ns3/double.h>
 #include <ns3/log.h>
 #include <ns3/pointer.h>
@@ -167,7 +168,7 @@ SpectrumChannel::GetSpectrumTransmitFilter() const
 void
 SpectrumChannel::SetPropagationDelayModel(Ptr<PropagationDelayModel> delay)
 {
-    NS_ASSERT(!m_propagationDelay);
+    NS_ABORT_MSG_IF(m_propagationDelay, "Error, called SetPropagationDelayModel() twice");
     m_propagationDelay = delay;
 }
 
@@ -189,6 +190,12 @@ Ptr<PropagationLossModel>
 SpectrumChannel::GetPropagationLossModel()
 {
     return m_propagationLoss;
+}
+
+Ptr<PropagationDelayModel>
+SpectrumChannel::GetPropagationDelayModel() const
+{
+    return m_propagationDelay;
 }
 
 } // namespace ns3

@@ -92,7 +92,10 @@ class SpectrumChannel : public Channel
         Ptr<PhasedArraySpectrumPropagationLossModel> loss);
 
     /**
-     * Set the propagation delay model to be used
+     * Set the propagation delay model to be used.  This method will abort
+     * the simulation if there exists a previously set propagation delay model
+     * (i.e., unlike propagation loss models, multiple of which can be chained
+     * together, there is only one propagation delay model).
      * \param delay Ptr to the propagation delay model to be used.
      */
     void SetPropagationDelayModel(Ptr<PropagationDelayModel> delay);
@@ -115,6 +118,12 @@ class SpectrumChannel : public Channel
      * \returns a pointer to the propagation loss model.
      */
     Ptr<PropagationLossModel> GetPropagationLossModel();
+
+    /**
+     * Get the propagation delay model that has been set on the channel.
+     * \returns a pointer to the propagation delay model.
+     */
+    Ptr<PropagationDelayModel> GetPropagationDelayModel() const;
 
     /**
      * Add the transmit filter to be used to filter possible signal receptions
