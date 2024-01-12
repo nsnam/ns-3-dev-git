@@ -62,6 +62,13 @@ class PhasedArraySpectrumPropagationLossModel : public Object
     void SetNext(Ptr<PhasedArraySpectrumPropagationLossModel> next);
 
     /**
+     * Return the pointer to the next PhasedArraySpectrumPropagationLossModel, if any.
+     *
+     * @return Pointer to the next model, if any
+     */
+    Ptr<PhasedArraySpectrumPropagationLossModel> GetNext() const;
+
+    /**
      * This method is to be called to calculate
      *
      * @param txPsd the spectrum signal parameters.

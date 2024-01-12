@@ -59,6 +59,12 @@ SpectrumPropagationLossModel::SetNext(Ptr<SpectrumPropagationLossModel> next)
     m_next = next;
 }
 
+Ptr<SpectrumPropagationLossModel>
+SpectrumPropagationLossModel::GetNext() const
+{
+    return m_next;
+}
+
 Ptr<SpectrumValue>
 SpectrumPropagationLossModel::CalcRxPowerSpectralDensity(Ptr<const SpectrumSignalParameters> params,
                                                          Ptr<const MobilityModel> a,

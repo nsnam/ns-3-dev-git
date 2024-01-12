@@ -60,6 +60,13 @@ class SpectrumPropagationLossModel : public Object
     void SetNext(Ptr<SpectrumPropagationLossModel> next);
 
     /**
+     * Return the pointer to the next SpectrumPropagationLossModel, if any.
+     *
+     * @return Pointer to the next model, if any.
+     */
+    Ptr<SpectrumPropagationLossModel> GetNext() const;
+
+    /**
      * This method is to be called to calculate
      *
      * @param params the spectrum signal parameters.

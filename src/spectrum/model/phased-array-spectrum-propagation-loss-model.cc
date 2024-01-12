@@ -60,6 +60,12 @@ PhasedArraySpectrumPropagationLossModel::SetNext(Ptr<PhasedArraySpectrumPropagat
     m_next = next;
 }
 
+Ptr<PhasedArraySpectrumPropagationLossModel>
+PhasedArraySpectrumPropagationLossModel::GetNext() const
+{
+    return m_next;
+}
+
 Ptr<SpectrumSignalParameters>
 PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity(
     Ptr<const SpectrumSignalParameters> params,
