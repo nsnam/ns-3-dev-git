@@ -489,19 +489,17 @@ ThreeGppSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
     Ptr<const PhasedArrayModel> aPhasedArrayModel,
     Ptr<const PhasedArrayModel> bPhasedArrayModel) const
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << spectrumSignalParams << a << b << aPhasedArrayModel
+                         << bPhasedArrayModel);
+
+    if (a->GetPosition() == b->GetPosition())
+    {
+        return spectrumSignalParams->Copy();
+    }
     uint32_t aId = a->GetObject<Node>()->GetId(); // id of the node a
     uint32_t bId = b->GetObject<Node>()->GetId(); // id of the node b
-
-    NS_ASSERT(aId != bId);
-    NS_ASSERT_MSG(a->GetDistanceFrom(b) > 0.0,
-                  "The position of a and b devices cannot be the same");
-
-    // retrieve the antenna of device a
     NS_ASSERT_MSG(aPhasedArrayModel, "Antenna not found for node " << aId);
-    NS_LOG_DEBUG("a node " << a->GetObject<Node>() << " antenna " << aPhasedArrayModel);
-
-    // retrieve the antenna of the device b
+    NS_LOG_DEBUG("a node " << aId << " antenna " << aPhasedArrayModel);
     NS_ASSERT_MSG(bPhasedArrayModel, "Antenna not found for node " << bId);
     NS_LOG_DEBUG("b node " << bId << " antenna " << bPhasedArrayModel);
 
