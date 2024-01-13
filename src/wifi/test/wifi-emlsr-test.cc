@@ -3585,6 +3585,12 @@ EmlsrLinkSwitchTest::CheckResults()
     // m_txPsdusPos points to ADDBA_RESPONSE, then ACK and then ICF
     auto psduIt = std::next(m_txPsdus.cbegin(), m_txPsdusPos + 2);
 
+    // skip first PSDU if it contains a Beacon frame
+    if (psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsBeacon())
+    {
+        psduIt++;
+    }
+
     for (std::size_t i = 0; i < nRxOk; i++)
     {
         NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.size() == 1 &&

@@ -19,6 +19,8 @@
 
 #include "default-emlsr-manager.h"
 
+#include "eht-frame-exchange-manager.h"
+
 #include "ns3/boolean.h"
 #include "ns3/channel-access-manager.h"
 #include "ns3/log.h"
@@ -161,13 +163,14 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
         }
         else
         {
-            Simulator::Schedule(mainPhy->GetDelayUntilIdle(),
-                                &DefaultEmlsrManager::SwitchMainPhy,
-                                this,
-                                GetMainPhyId(),
-                                false,
-                                DONT_RESET_BACKOFF,
-                                REQUEST_ACCESS);
+            Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
+                // request the main PHY to switch back to the primary link only if in the meantime
+                // no TXOP started on another link (which will require the main PHY to switch link)
+                if (!GetEhtFem(linkId)->UsingOtherEmlsrLink())
+                {
+                    SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
+                }
+            });
         }
         return;
     }
