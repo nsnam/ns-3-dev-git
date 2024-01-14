@@ -274,7 +274,7 @@ class BulkSendTestSuite : public TestSuite
 };
 
 BulkSendTestSuite::BulkSendTestSuite()
-    : TestSuite("bulk-send-application", Type::UNIT)
+    : TestSuite("applications-bulk-send", Type::UNIT)
 {
     AddTestCase(new BulkSendBasicTestCase, TestCase::Duration::QUICK);
     AddTestCase(new BulkSendSeqTsSizeTestCase, TestCase::Duration::QUICK);

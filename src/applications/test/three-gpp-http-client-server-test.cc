@@ -799,7 +799,7 @@ class ThreeGppHttpClientServerTestSuite : public TestSuite
   public:
     /// Instantiate the test suite.
     ThreeGppHttpClientServerTestSuite()
-        : TestSuite("three-gpp-http-client-server-test", Type::SYSTEM)
+        : TestSuite("applications-three-gpp-http-client-server", Type::SYSTEM)
     {
         // LogComponentEnable ("ThreeGppHttpClientServerTest", LOG_INFO);
         // LogComponentEnable ("ThreeGppHttpClient", LOG_INFO);
