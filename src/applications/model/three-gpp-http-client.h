@@ -393,6 +393,8 @@ class ThreeGppHttpClient : public Application
     Address m_remoteServerAddress;
     /// The `RemoteServerPort` attribute.
     uint16_t m_remoteServerPort;
+    /// The `Tos` attribute.
+    uint8_t m_tos;
 
     // TRACE SOURCES
 

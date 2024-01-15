@@ -80,6 +80,12 @@ ThreeGppHttpClient::GetTypeId()
                           UintegerValue(80), // the default HTTP port
                           MakeUintegerAccessor(&ThreeGppHttpClient::m_remoteServerPort),
                           MakeUintegerChecker<uint16_t>())
+            .AddAttribute("Tos",
+                          "The Type of Service used to send packets. "
+                          "All 8 bits of the TOS byte are set (including ECN bits).",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&ThreeGppHttpClient::m_tos),
+                          MakeUintegerChecker<uint8_t>())
             .AddTraceSource("RxPage",
                             "A page has been received.",
                             MakeTraceSourceAccessor(&ThreeGppHttpClient::m_rxPageTrace),
@@ -375,6 +381,7 @@ ThreeGppHttpClient::OpenConnection()
             InetSocketAddress inetSocket = InetSocketAddress(ipv4, m_remoteServerPort);
             NS_LOG_INFO(this << " Connecting to " << ipv4 << " port " << m_remoteServerPort << " / "
                              << inetSocket << ".");
+            m_socket->SetIpTos(m_tos);
             ret = m_socket->Connect(inetSocket);
             NS_LOG_DEBUG(this << " Connect() return value= " << ret
                               << " GetErrNo= " << m_socket->GetErrno() << ".");

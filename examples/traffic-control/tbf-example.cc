@@ -133,9 +133,9 @@ main(int argc, char* argv[])
     ApplicationContainer apps;
 
     InetSocketAddress rmt(interfaces.GetAddress(0), port);
-    rmt.SetTos(0xb8);
-    AddressValue remoteAddress(rmt);
-    onoff.SetAttribute("Remote", remoteAddress);
+    onoff.SetAttribute("Remote", AddressValue(rmt));
+    onoff.SetAttribute("Tos", UintegerValue(0xb8));
+
     apps.Add(onoff.Install(nodes.Get(1)));
     apps.Start(Seconds(1.0));
     apps.Stop(Seconds(simulationTime + 0.1));

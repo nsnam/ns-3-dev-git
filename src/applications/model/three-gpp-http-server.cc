@@ -81,6 +81,12 @@ ThreeGppHttpServer::GetTypeId()
                           UintegerValue(80), // the default HTTP port
                           MakeUintegerAccessor(&ThreeGppHttpServer::m_localPort),
                           MakeUintegerChecker<uint16_t>())
+            .AddAttribute("Tos",
+                          "The Type of Service used to send packets. "
+                          "All 8 bits of the TOS byte are set (including ECN bits).",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&ThreeGppHttpServer::m_tos),
+                          MakeUintegerChecker<uint8_t>())
             .AddAttribute("Mtu",
                           "Maximum transmission unit (in bytes) of the TCP sockets "
                           "used in this application, excluding the compulsory 40 "
@@ -214,6 +220,8 @@ ThreeGppHttpServer::StartApplication()
                 int ret [[maybe_unused]] = m_initialSocket->Bind(inetSocket);
                 NS_LOG_DEBUG(this << " Bind() return value= " << ret
                                   << " GetErrNo= " << m_initialSocket->GetErrno() << ".");
+
+                m_initialSocket->SetIpTos(m_tos); // Affects only IPv4 sockets.
             }
             else if (Ipv6Address::IsMatchingType(m_localAddress))
             {
@@ -224,6 +232,10 @@ ThreeGppHttpServer::StartApplication()
                 int ret [[maybe_unused]] = m_initialSocket->Bind(inet6Socket);
                 NS_LOG_DEBUG(this << " Bind() return value= " << ret
                                   << " GetErrNo= " << m_initialSocket->GetErrno() << ".");
+            }
+            else
+            {
+                NS_ABORT_MSG("Incompatible local address");
             }
 
             int ret [[maybe_unused]] = m_initialSocket->Listen();

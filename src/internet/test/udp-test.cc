@@ -490,10 +490,8 @@ UdpSocketImplTest::DoRun()
                                               MakeCallback(&UdpSocketImplTest::SentPkt, this));
 
     // The socket is not connected.
-    txSocket->SetIpTos(0x28); // AF11
     txSocket->SetPriority(6); // Interactive
     // Send a packet to a specified destination:
-    // - for not connected sockets, the tos specified in the destination address (0) is used
     // - since the tos is zero, the priority set for the socket is used
     SendDataTo(txSocket, "10.0.0.1");
     NS_TEST_EXPECT_MSG_EQ(m_receivedPacket->GetSize(), 123, "trivial");
@@ -504,7 +502,7 @@ UdpSocketImplTest::DoRun()
     m_receivedPacket->RemoveAllByteTags();
 
     InetSocketAddress dest("10.0.0.1", 1234);
-    dest.SetTos(0xb8); // EF
+    txSocket->SetIpTos(0xb8); // EF
     // the connect operation sets the tos (and priority) for the socket
     NS_TEST_EXPECT_MSG_EQ(txSocket->Connect(dest), 0, "the connect operation failed");
 

@@ -462,7 +462,6 @@ Ping::Send()
         }
         p->AddHeader(header);
         auto dest = InetSocketAddress(Ipv4Address::ConvertFrom(m_destination), 0);
-        dest.SetTos(m_tos);
         returnValue = m_socket->SendTo(p, 0, dest);
     }
     else
@@ -563,6 +562,7 @@ Ping::StartApplication()
         NS_ASSERT_MSG(m_socket, "Ping::StartApplication: can not create socket.");
         m_socket->SetAttribute("Protocol", UintegerValue(1)); // icmp
         m_socket->SetRecvCallback(MakeCallback(&Ping::Receive, this));
+        m_socket->SetIpTos(m_tos);
         m_useIpv6 = false;
 
         Ipv4Address dst = Ipv4Address::ConvertFrom(m_destination);

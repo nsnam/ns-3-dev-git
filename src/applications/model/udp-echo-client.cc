@@ -65,6 +65,12 @@ UdpEchoClient::GetTypeId()
                           UintegerValue(0),
                           MakeUintegerAccessor(&UdpEchoClient::m_peerPort),
                           MakeUintegerChecker<uint16_t>())
+            .AddAttribute("Tos",
+                          "The Type of Service used to send IPv4 packets. "
+                          "All 8 bits of the TOS byte are set (including ECN bits).",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&UdpEchoClient::m_tos),
+                          MakeUintegerChecker<uint8_t>())
             .AddAttribute(
                 "PacketSize",
                 "Size of echo data in outbound packets",
@@ -147,6 +153,7 @@ UdpEchoClient::StartApplication()
             {
                 NS_FATAL_ERROR("Failed to bind socket");
             }
+            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
             m_socket->Connect(
                 InetSocketAddress(Ipv4Address::ConvertFrom(m_peerAddress), m_peerPort));
         }
@@ -165,6 +172,7 @@ UdpEchoClient::StartApplication()
             {
                 NS_FATAL_ERROR("Failed to bind socket");
             }
+            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
             m_socket->Connect(m_peerAddress);
         }
         else if (Inet6SocketAddress::IsMatchingType(m_peerAddress))

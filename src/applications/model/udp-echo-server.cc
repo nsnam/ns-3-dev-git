@@ -51,6 +51,12 @@ UdpEchoServer::GetTypeId()
                           UintegerValue(9),
                           MakeUintegerAccessor(&UdpEchoServer::m_port),
                           MakeUintegerChecker<uint16_t>())
+            .AddAttribute("Tos",
+                          "The Type of Service used to send IPv4 packets. "
+                          "All 8 bits of the TOS byte are set (including ECN bits).",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&UdpEchoServer::m_tos),
+                          MakeUintegerChecker<uint8_t>())
             .AddTraceSource("Rx",
                             "A packet has been received",
                             MakeTraceSourceAccessor(&UdpEchoServer::m_rxTrace),
@@ -134,6 +140,7 @@ UdpEchoServer::StartApplication()
         }
     }
 
+    m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
     m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));
     m_socket6->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));
 }

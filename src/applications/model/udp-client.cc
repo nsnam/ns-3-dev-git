@@ -71,6 +71,12 @@ UdpClient::GetTypeId()
                           UintegerValue(100),
                           MakeUintegerAccessor(&UdpClient::m_peerPort),
                           MakeUintegerChecker<uint16_t>())
+            .AddAttribute("Tos",
+                          "The Type of Service used to send IPv4 packets. "
+                          "All 8 bits of the TOS byte are set (including ECN bits).",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&UdpClient::m_tos),
+                          MakeUintegerChecker<uint8_t>())
             .AddAttribute("PacketSize",
                           "Size of packets generated. The minimum packet size is 12 bytes which is "
                           "the size of the header carrying the sequence number and the time stamp.",
@@ -139,6 +145,7 @@ UdpClient::StartApplication()
             {
                 NS_FATAL_ERROR("Failed to bind socket");
             }
+            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
             m_socket->Connect(
                 InetSocketAddress(Ipv4Address::ConvertFrom(m_peerAddress), m_peerPort));
         }
@@ -157,6 +164,7 @@ UdpClient::StartApplication()
             {
                 NS_FATAL_ERROR("Failed to bind socket");
             }
+            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
             m_socket->Connect(m_peerAddress);
         }
         else if (Inet6SocketAddress::IsMatchingType(m_peerAddress))

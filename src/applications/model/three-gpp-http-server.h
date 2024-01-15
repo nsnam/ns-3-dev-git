@@ -272,6 +272,8 @@ class ThreeGppHttpServer : public Application
     Address m_localAddress;
     /// The `LocalPort` attribute.
     uint16_t m_localPort;
+    /// The `Tos` attribute.
+    uint8_t m_tos;
     /// The `Mtu` attribute.
     uint32_t m_mtuSize;
 

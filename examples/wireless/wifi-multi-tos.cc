@@ -151,7 +151,6 @@ main(int argc, char* argv[])
             auto ipv4 = wifiApNode.Get(0)->GetObject<Ipv4>();
             const auto address = ipv4->GetAddress(1, 0).GetLocal();
             InetSocketAddress sinkSocket(address, portNumber++);
-            sinkSocket.SetTos(tosValue);
             OnOffHelper onOffHelper("ns3::UdpSocketFactory", sinkSocket);
             onOffHelper.SetAttribute("OnTime",
                                      StringValue("ns3::ConstantRandomVariable[Constant=1]"));
@@ -159,6 +158,7 @@ main(int argc, char* argv[])
                                      StringValue("ns3::ConstantRandomVariable[Constant=0]"));
             onOffHelper.SetAttribute("DataRate", DataRateValue(50000000 / nWifi));
             onOffHelper.SetAttribute("PacketSize", UintegerValue(1472)); // bytes
+            onOffHelper.SetAttribute("Tos", UintegerValue(tosValue));
             sourceApplications.Add(onOffHelper.Install(wifiStaNodes.Get(index)));
             PacketSinkHelper packetSinkHelper("ns3::UdpSocketFactory", sinkSocket);
             sinkApplications.Add(packetSinkHelper.Install(wifiApNode.Get(0)));

@@ -20,6 +20,9 @@ Changes from ns-3.41 to ns-3-dev
 
 ### Changes to existing API
 
+* `InetSocketAddress::SetTos()` and `InetSocketAddress::GetTos()` have been removed.
+Applications have a new Attribute to set the IPv4 ToS field.
+
 ### Changes to build system
 
 * Removed support of the `experimental/filesystem` library, in favor of the official `filesystem` library.

@@ -779,9 +779,11 @@ class Socket : public Object
      * \brief Manually set IP Type of Service field
      *
      * This method corresponds to using setsockopt () IP_TOS of
-     * real network or BSD sockets. This option is for IPv4 only.
+     * real network or BSD sockets.
      * Setting the IP TOS also changes the socket priority as
      * stated in the man page.
+     * This option affects only IPv4 sockets, it has no effect
+     * on IPv6 sockets.
      *
      * \param ipTos The desired TOS value for IP headers
      */

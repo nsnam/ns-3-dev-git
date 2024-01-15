@@ -54,6 +54,12 @@ UdpServer::GetTypeId()
                           UintegerValue(100),
                           MakeUintegerAccessor(&UdpServer::m_port),
                           MakeUintegerChecker<uint16_t>())
+            .AddAttribute("Tos",
+                          "The Type of Service used to send IPv4 packets. "
+                          "All 8 bits of the TOS byte are set (including ECN bits).",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&UdpServer::m_tos),
+                          MakeUintegerChecker<uint8_t>())
             .AddAttribute("PacketWindowSize",
                           "The size of the window used to compute the packet loss. This value "
                           "should be a multiple of 8.",
@@ -135,6 +141,7 @@ UdpServer::StartApplication()
         }
     }
 
+    m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
     m_socket->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
 
     if (!m_socket6)

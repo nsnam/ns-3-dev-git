@@ -98,6 +98,7 @@ class UdpClient : public Application
     Ptr<Socket> m_socket;  //!< Socket
     Address m_peerAddress; //!< Remote peer address
     uint16_t m_peerPort;   //!< Remote peer port
+    uint8_t m_tos;         //!< The packets Type of Service
     EventId m_sendEvent;   //!< Event to send the next packet
 
 #ifdef NS3_LOG_ENABLE

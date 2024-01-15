@@ -202,7 +202,6 @@ Ipv4RawSocketImpl::Connect(const Address& address)
     }
     InetSocketAddress ad = InetSocketAddress::ConvertFrom(address);
     m_dst = ad.GetIpv4();
-    SetIpTos(ad.GetTos());
     NotifyConnectionSucceeded();
 
     return 0;
@@ -228,7 +227,6 @@ Ipv4RawSocketImpl::Send(Ptr<Packet> p, uint32_t flags)
 {
     NS_LOG_FUNCTION(this << p << flags);
     InetSocketAddress to = InetSocketAddress(m_dst, m_protocol);
-    to.SetTos(GetIpTos());
     return SendTo(p, flags, to);
 }
 
@@ -250,7 +248,7 @@ Ipv4RawSocketImpl::SendTo(Ptr<Packet> p, uint32_t flags, const Address& toAddres
     Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4>();
     Ipv4Address dst = ad.GetIpv4();
     Ipv4Address src = m_src;
-    uint8_t tos = ad.GetTos();
+    uint8_t tos = GetIpTos();
 
     uint8_t priority = GetPriority();
     if (tos)

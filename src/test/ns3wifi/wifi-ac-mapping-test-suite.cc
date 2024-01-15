@@ -206,9 +206,9 @@ WifiAcMappingTest::DoRun()
 
     // The packet source is an on-off application on the AP device
     InetSocketAddress dest(staNodeInterface.GetAddress(0), udpPort);
-    dest.SetTos(m_tos);
     OnOffHelper onoff("ns3::UdpSocketFactory", dest);
     onoff.SetConstantRate(DataRate("5kbps"), 500);
+    onoff.SetAttribute("Tos", UintegerValue(m_tos));
     ApplicationContainer sourceApp = onoff.Install(ap.Get(0));
     sourceApp.Start(Seconds(1.0));
     sourceApp.Stop(Seconds(4.0));

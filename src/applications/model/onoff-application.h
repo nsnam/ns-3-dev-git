@@ -163,6 +163,7 @@ class OnOffApplication : public Application
     Address m_peer;                      //!< Peer address
     Address m_local;                     //!< Local address to bind to
     bool m_connected;                    //!< True if connected
+    uint8_t m_tos;                       //!< The packets Type of Service
     Ptr<RandomVariableStream> m_onTime;  //!< rng for On Time
     Ptr<RandomVariableStream> m_offTime; //!< rng for Off Time
     DataRate m_cbrRate;                  //!< Rate that data is generated
