@@ -26,30 +26,12 @@
 
 #include <algorithm>
 #include <ctime>
+#include <filesystem>
 #include <regex>
 #include <sstream>
 #include <tuple>
 
-// Some compilers such as GCC < 8 (Ubuntu 18.04
-// ships with GCC 7) do not ship with the
-// std::filesystem header,  but with the
-// std::experimental::filesystem header.
-// Since Clang reuses these headers and the libstdc++
-// from GCC, we need to either use the experimental
-// version or require a more up-to-date GCC.
-// we use the "fs" namespace to prevent collisions
-// with musl libc.
-#ifdef __has_include
-#if __has_include(<filesystem>)
-#include <filesystem>
 namespace fs = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#else
-#error "No support for filesystem library"
-#endif
-#endif
 
 #ifdef __APPLE__
 #include <mach-o/dyld.h>

@@ -22,6 +22,8 @@ Changes from ns-3.41 to ns-3-dev
 
 ### Changes to build system
 
+* Removed support of the `experimental/filesystem` library, in favor of the official `filesystem` library.
+
 ### Changed behavior
 
 Changes from ns-3.40 to ns-3.41
