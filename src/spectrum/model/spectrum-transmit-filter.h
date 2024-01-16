@@ -74,8 +74,30 @@ class SpectrumTransmitFilter : public Object
      */
     bool Filter(Ptr<const SpectrumSignalParameters> params, Ptr<const SpectrumPhy> receiverPhy);
 
+    /**
+     * If this loss model uses objects of type RandomVariableStream,
+     * set the stream numbers to the integers starting with the offset
+     * 'stream'. Return the number of streams (possibly zero) that
+     * have been assigned.  If there are SpectrumTransmitFilters chained
+     * together, this method will also assign streams to the
+     * downstream models.
+     *
+     * \param stream the stream index offset start
+     * \return the number of stream indices assigned by this model
+     */
+    int64_t AssignStreams(int64_t stream);
+
   protected:
     void DoDispose() override;
+    /**
+     * Assign a fixed random variable stream number to the random variables used by this model.
+     *
+     * This should be overridden by subclasses that use random variables.
+     *
+     * \param stream first stream index to use
+     * \return the number of stream indices assigned by this model
+     */
+    virtual int64_t DoAssignStreams(int64_t stream);
 
   private:
     /**
