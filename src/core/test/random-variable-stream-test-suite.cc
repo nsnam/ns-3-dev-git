@@ -34,6 +34,7 @@
 #include <fstream>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_histogram.h>
+#include <gsl/gsl_randist.h>
 #include <gsl/gsl_sf_zeta.h>
 
 using namespace ns3;
@@ -2567,6 +2568,312 @@ NormalCachingTestCase::DoRun()
 
 /**
  * \ingroup rng-tests
+ * Test case for bernoulli distribution random variable stream generator
+ */
+class BernoulliTestCase : public TestCaseBase
+{
+  public:
+    // Constructor
+    BernoulliTestCase();
+
+    // Inherited
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
+
+  private:
+    // Inherited
+    void DoRun() override;
+
+    /** Tolerance for testing rng values against expectation, in rms. */
+    static constexpr double TOLERANCE{5};
+};
+
+BernoulliTestCase::BernoulliTestCase()
+    : TestCaseBase("Bernoulli Random Variable Stream Generator")
+{
+}
+
+double
+BernoulliTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
+{
+    gsl_histogram* h = gsl_histogram_alloc(2);
+    auto range = UniformHistogramBins(h, 0, 1);
+
+    double p = 0.5;
+    std::vector<double> expected = {N_MEASUREMENTS * (1 - p), N_MEASUREMENTS * p};
+
+    double chiSquared = ChiSquared(h, expected, rng);
+
+    gsl_histogram_free(h);
+    return chiSquared;
+}
+
+void
+BernoulliTestCase::DoRun()
+{
+    NS_LOG_FUNCTION(this);
+    SetTestSuiteSeed();
+
+    auto generator = RngGenerator<BernoulliRandomVariable>();
+    double sum = ChiSquaredsAverage(&generator, N_RUNS);
+    double maxStatistic = gsl_cdf_chisq_Qinv(0.05, 1);
+    NS_TEST_ASSERT_MSG_LT(sum, maxStatistic, "Chi-squared statistic out of range");
+
+    double probability = 0.5;
+
+    // Create the RNG with the specified range.
+    Ptr<BernoulliRandomVariable> x = CreateObject<BernoulliRandomVariable>();
+    x->SetAttribute("Probability", DoubleValue(probability));
+
+    // Calculate the mean of these values.
+    double mean = probability;
+    double valueMean = Average(x);
+    double expectedMean = mean;
+    double expectedRms = std::sqrt(mean / N_MEASUREMENTS);
+
+    // Test that values have approximately the right mean value.
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueMean,
+                              expectedMean,
+                              expectedRms * TOLERANCE,
+                              "Wrong mean value.");
+}
+
+/**
+ * \ingroup rng-tests
+ * Test case for antithetic bernoulli distribution random variable stream generator
+ */
+class BernoulliAntitheticTestCase : public TestCaseBase
+{
+  public:
+    // Constructor
+    BernoulliAntitheticTestCase();
+
+    // Inherited
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
+
+  private:
+    // Inherited
+    void DoRun() override;
+
+    /** Tolerance for testing rng values against expectation, in rms. */
+    static constexpr double TOLERANCE{5};
+};
+
+BernoulliAntitheticTestCase::BernoulliAntitheticTestCase()
+    : TestCaseBase("Antithetic Bernoulli Random Variable Stream Generator")
+{
+}
+
+double
+BernoulliAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
+{
+    gsl_histogram* h = gsl_histogram_alloc(2);
+    auto range = UniformHistogramBins(h, 0, 1);
+
+    double p = 0.5;
+    std::vector<double> expected = {N_MEASUREMENTS * (1 - p), N_MEASUREMENTS * p};
+
+    double chiSquared = ChiSquared(h, expected, rng);
+
+    gsl_histogram_free(h);
+    return chiSquared;
+}
+
+void
+BernoulliAntitheticTestCase::DoRun()
+{
+    NS_LOG_FUNCTION(this);
+    SetTestSuiteSeed();
+
+    auto generator = RngGenerator<BernoulliRandomVariable>(true);
+    double sum = ChiSquaredsAverage(&generator, N_RUNS);
+    double maxStatistic = gsl_cdf_chisq_Qinv(0.05, 1);
+    NS_TEST_ASSERT_MSG_LT(sum, maxStatistic, "Chi-squared statistic out of range");
+
+    double probability = 0.5;
+
+    // Create the RNG with the specified range.
+    Ptr<BernoulliRandomVariable> x = CreateObject<BernoulliRandomVariable>();
+    x->SetAttribute("Probability", DoubleValue(probability));
+
+    // Make this generate antithetic values.
+    x->SetAttribute("Antithetic", BooleanValue(true));
+
+    // Calculate the mean of these values.
+    double mean = probability;
+    double valueMean = Average(x);
+    double expectedMean = mean;
+    double expectedRms = std::sqrt(mean / N_MEASUREMENTS);
+
+    // Test that values have approximately the right mean value.
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueMean,
+                              expectedMean,
+                              expectedRms * TOLERANCE,
+                              "Wrong mean value.");
+}
+
+/**
+ * \ingroup rng-tests
+ * Test case for binomial distribution random variable stream generator
+ */
+class BinomialTestCase : public TestCaseBase
+{
+  public:
+    // Constructor
+    BinomialTestCase();
+
+    // Inherited
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
+
+  private:
+    // Inherited
+    void DoRun() override;
+
+    /** Tolerance for testing rng values against expectation, in rms. */
+    static constexpr double TOLERANCE{5};
+};
+
+BinomialTestCase::BinomialTestCase()
+    : TestCaseBase("Binomial Random Variable Stream Generator")
+{
+}
+
+double
+BinomialTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
+{
+    uint32_t trials = 10;
+    double probability = 0.5;
+
+    gsl_histogram* h = gsl_histogram_alloc(trials + 1);
+    auto range = UniformHistogramBins(h, 0, trials);
+
+    std::vector<double> expected(trials + 1);
+    for (std::size_t i = 0; i < trials + 1; ++i)
+    {
+        expected[i] = N_MEASUREMENTS * gsl_ran_binomial_pdf(i, probability, trials);
+    }
+
+    double chiSquared = ChiSquared(h, expected, rng);
+
+    gsl_histogram_free(h);
+    return chiSquared;
+}
+
+void
+BinomialTestCase::DoRun()
+{
+    NS_LOG_FUNCTION(this);
+    SetTestSuiteSeed();
+
+    uint32_t trials = 10;
+    double probability = 0.5;
+
+    auto generator = RngGenerator<BinomialRandomVariable>();
+    double sum = ChiSquaredsAverage(&generator, N_RUNS);
+    double maxStatistic = gsl_cdf_chisq_Qinv(0.05, trials);
+    NS_TEST_ASSERT_MSG_LT(sum, maxStatistic, "Chi-squared statistic out of range");
+
+    // Create the RNG with the specified range.
+    Ptr<BinomialRandomVariable> x = CreateObject<BinomialRandomVariable>();
+    x->SetAttribute("Trials", IntegerValue(trials));
+    x->SetAttribute("Probability", DoubleValue(probability));
+
+    // Calculate the mean of these values.
+    double mean = trials * probability;
+    double valueMean = Average(x);
+    double expectedMean = mean;
+    double expectedRms = std::sqrt(mean / N_MEASUREMENTS);
+
+    // Test that values have approximately the right mean value.
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueMean,
+                              expectedMean,
+                              expectedRms * TOLERANCE,
+                              "Wrong mean value.");
+}
+
+/**
+ * \ingroup rng-tests
+ * Test case for antithetic binomial distribution random variable stream generator
+ */
+class BinomialAntitheticTestCase : public TestCaseBase
+{
+  public:
+    // Constructor
+    BinomialAntitheticTestCase();
+
+    // Inherited
+    double ChiSquaredTest(Ptr<RandomVariableStream> rng) const override;
+
+  private:
+    // Inherited
+    void DoRun() override;
+
+    /** Tolerance for testing rng values against expectation, in rms. */
+    static constexpr double TOLERANCE{5};
+};
+
+BinomialAntitheticTestCase::BinomialAntitheticTestCase()
+    : TestCaseBase("Antithetic Binomial Random Variable Stream Generator")
+{
+}
+
+double
+BinomialAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
+{
+    uint32_t trials = 10;
+    double probability = 0.5;
+
+    gsl_histogram* h = gsl_histogram_alloc(trials + 1);
+    auto range = UniformHistogramBins(h, 0, trials);
+
+    std::vector<double> expected(trials + 1);
+    for (std::size_t i = 0; i < trials + 1; ++i)
+    {
+        expected[i] = N_MEASUREMENTS * gsl_ran_binomial_pdf(i, probability, trials);
+    }
+
+    double chiSquared = ChiSquared(h, expected, rng);
+
+    gsl_histogram_free(h);
+    return chiSquared;
+}
+
+void
+BinomialAntitheticTestCase::DoRun()
+{
+    NS_LOG_FUNCTION(this);
+    SetTestSuiteSeed();
+
+    uint32_t trials = 10;
+    double probability = 0.5;
+
+    auto generator = RngGenerator<BinomialRandomVariable>(true);
+    double sum = ChiSquaredsAverage(&generator, N_RUNS);
+    double maxStatistic = gsl_cdf_chisq_Qinv(0.05, trials);
+    NS_TEST_ASSERT_MSG_LT(sum, maxStatistic, "Chi-squared statistic out of range");
+
+    // Create the RNG with the specified range.
+    Ptr<BinomialRandomVariable> x = CreateObject<BinomialRandomVariable>();
+    x->SetAttribute("Trials", IntegerValue(trials));
+    x->SetAttribute("Probability", DoubleValue(probability));
+
+    // Make this generate antithetic values.
+    x->SetAttribute("Antithetic", BooleanValue(true));
+
+    // Calculate the mean of these values.
+    double mean = trials * probability;
+    double valueMean = Average(x);
+    double expectedMean = mean;
+    double expectedRms = std::sqrt(mean / N_MEASUREMENTS);
+
+    // Test that values have approximately the right mean value.
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueMean,
+                              expectedMean,
+                              expectedRms * TOLERANCE,
+                              "Wrong mean value.");
+}
+
+/**
+ * \ingroup rng-tests
  * RandomVariableStream test suite, covering all random number variable
  * stream generator types.
  */
@@ -2617,6 +2924,10 @@ RandomVariableSuite::RandomVariableSuite()
     AddTestCase(new EmpiricalAntitheticTestCase);
     /// Issue #302:  NormalRandomVariable produces stale values
     AddTestCase(new NormalCachingTestCase);
+    AddTestCase(new BernoulliTestCase);
+    AddTestCase(new BernoulliAntitheticTestCase);
+    AddTestCase(new BinomialTestCase);
+    AddTestCase(new BinomialAntitheticTestCase);
 }
 
 static RandomVariableSuite randomVariableSuite; //!< Static variable for test initialization

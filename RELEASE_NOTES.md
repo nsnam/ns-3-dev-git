@@ -30,6 +30,7 @@ Release 3-dev
 - (wifi) - Added EHT support for Ideal rate manager
 - (wifi) - Reduce error rate model precision to fix infinite loop when Ideal rate manager is used with EHT
 - (lr-wpan) !1794 - Group MAC primitives status enumerations into a single enumeration
+- (core) !1802 - Added support for Bernoulli and Binomial random variables (`BernoulliRandomVariable`, `BinomialRandomVariable`)
 
 ### Bugs fixed
 

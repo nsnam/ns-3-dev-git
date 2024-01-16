@@ -1738,4 +1738,123 @@ EmpiricalRandomVariable::Validate()
     m_validated = true;
 }
 
+NS_OBJECT_ENSURE_REGISTERED(BinomialRandomVariable);
+
+TypeId
+BinomialRandomVariable::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::BinomialRandomVariable")
+            .SetParent<RandomVariableStream>()
+            .SetGroupName("Core")
+            .AddConstructor<BinomialRandomVariable>()
+            .AddAttribute("Trials",
+                          "The number of trials.",
+                          IntegerValue(10),
+                          MakeIntegerAccessor(&BinomialRandomVariable::m_trials),
+                          MakeIntegerChecker<uint32_t>(0))
+            .AddAttribute("Probability",
+                          "The probability of success in each trial.",
+                          DoubleValue(0.5),
+                          MakeDoubleAccessor(&BinomialRandomVariable::m_probability),
+                          MakeDoubleChecker<double>(0));
+    return tid;
+}
+
+BinomialRandomVariable::BinomialRandomVariable()
+{
+    // m_trials and m_probability are initialized after constructor by attributes
+    NS_LOG_FUNCTION(this);
+}
+
+double
+BinomialRandomVariable::GetValue(uint32_t trials, double probability)
+{
+    NS_LOG_FUNCTION(this << trials << probability);
+
+    double successes = 0;
+
+    for (uint32_t i = 0; i < trials; ++i)
+    {
+        double v = Peek()->RandU01();
+        if (IsAntithetic())
+        {
+            v = (1 - v);
+        }
+
+        if (v <= probability)
+        {
+            successes += 1;
+        }
+    }
+
+    return successes;
+}
+
+uint32_t
+BinomialRandomVariable::GetInteger(uint32_t trials, uint32_t probability)
+{
+    NS_LOG_FUNCTION(this << trials << probability);
+    return static_cast<uint32_t>(GetValue(trials, probability));
+}
+
+double
+BinomialRandomVariable::GetValue()
+{
+    NS_LOG_FUNCTION(this);
+    return GetValue(m_trials, m_probability);
+}
+
+NS_OBJECT_ENSURE_REGISTERED(BernoulliRandomVariable);
+
+TypeId
+BernoulliRandomVariable::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::BernoulliRandomVariable")
+            .SetParent<RandomVariableStream>()
+            .SetGroupName("Core")
+            .AddConstructor<BernoulliRandomVariable>()
+            .AddAttribute("Probability",
+                          "The probability of the random variable returning a value of 1.",
+                          DoubleValue(0.5),
+                          MakeDoubleAccessor(&BernoulliRandomVariable::m_probability),
+                          MakeDoubleChecker<double>(0));
+    return tid;
+}
+
+BernoulliRandomVariable::BernoulliRandomVariable()
+{
+    // m_probability is initialized after constructor by attributes
+    NS_LOG_FUNCTION(this);
+}
+
+double
+BernoulliRandomVariable::GetValue(double probability)
+{
+    NS_LOG_FUNCTION(this << probability);
+
+    double v = Peek()->RandU01();
+    if (IsAntithetic())
+    {
+        v = (1 - v);
+    }
+
+    return (v <= probability) ? 1.0 : 0.0;
+}
+
+uint32_t
+BernoulliRandomVariable::GetInteger(uint32_t probability)
+{
+    NS_LOG_FUNCTION(this << probability);
+    return static_cast<uint32_t>(GetValue(probability));
+}
+
+double
+BernoulliRandomVariable::GetValue()
+{
+    NS_LOG_FUNCTION(this);
+    return GetValue(m_probability);
+}
+
 } // namespace ns3

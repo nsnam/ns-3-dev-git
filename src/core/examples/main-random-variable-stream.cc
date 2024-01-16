@@ -556,6 +556,37 @@ main(int argc, char* argv[])
     }
 
     {
+        std::cout << "BinomialRandomVariable......." << std::flush;
+        Gnuplot plot;
+        plot.SetTitle("BinomialRandomVariable");
+        plot.AppendExtra("set yrange [0:10]");
+
+        auto x = CreateObject<BinomialRandomVariable>();
+        x->SetAttribute("Trials", IntegerValue(10));
+        x->SetAttribute("Probability", DoubleValue(0.5));
+
+        plot.AddDataset(Histogram(x, probes, precision, "BinomialRandomVariable n=10 p=0.5"));
+
+        gnuplots.AddPlot(plot);
+        std::cout << "done" << std::endl;
+    }
+
+    {
+        std::cout << "BernoulliRandomVariable......." << std::flush;
+        Gnuplot plot;
+        plot.SetTitle("BernoulliRandomVariable");
+        plot.AppendExtra("set yrange [0:1]");
+
+        auto x = CreateObject<BernoulliRandomVariable>();
+        x->SetAttribute("Probability", DoubleValue(0.5));
+
+        plot.AddDataset(Histogram(x, probes, precision, "BernoulliRandomVariable p=0.5"));
+
+        gnuplots.AddPlot(plot);
+        std::cout << "done" << std::endl;
+    }
+
+    {
         std::string gnuFile = plotFile + ".plt";
         std::cout << "Writing Gnuplot file: " << gnuFile << "..." << std::flush;
         std::ofstream gnuStream(gnuFile);
