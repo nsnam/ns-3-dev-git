@@ -834,19 +834,13 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
     {
         if (!m_ongoingTxopEnd.IsRunning())
         {
-            // an EMLSR client has started an UL TXOP. We may send a response after a SIFS or
-            // we may receive another frame after a SIFS. Postpone the TXOP end by considering
-            // the latter (which takes longer)
-            auto delay =
-                m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
-            NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
+            // an EMLSR client has started an UL TXOP. Start the ongoingTxopEnd timer so that
+            // the next call to UpdateTxopEndOnRxEnd does its job
             m_ongoingTxopEnd =
-                Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this, m_txopHolder);
+                Simulator::ScheduleNow(&EhtFrameExchangeManager::TxopEnd, this, m_txopHolder);
         }
-        else
-        {
-            UpdateTxopEndOnRxEnd(psdu->GetDuration());
-        }
+
+        UpdateTxopEndOnRxEnd(psdu->GetDuration());
     }
 
     if (m_staMac && m_ongoingTxopEnd.IsRunning())
