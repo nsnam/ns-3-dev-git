@@ -44,6 +44,24 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
 
     Time GetDelayUntilAccessRequest(uint8_t linkId) override;
 
+  protected:
+    void DoDispose() override;
+    void DoSetWifiMac(Ptr<StaWifiMac> mac) override;
+
+    /**
+     * Possibly take actions when notified of the MAC header of the MPDU being received by the
+     * given PHY.
+     *
+     * \param phy the given PHY
+     * \param macHdr the MAC header of the MPDU being received
+     * \param txVector the TXVECTOR used to transmit the PSDU
+     * \param psduDuration the remaining duration of the PSDU
+     */
+    void ReceivedMacHdr(Ptr<WifiPhy> phy,
+                        const WifiMacHeader& macHdr,
+                        const WifiTxVector& txVector,
+                        Time psduDuration);
+
   private:
     bool m_useNotifiedMacHdr; //!< whether to use the information about the MAC header of
                               //!< the MPDU being received (if notified by the PHY)

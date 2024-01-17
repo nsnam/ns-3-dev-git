@@ -177,6 +177,13 @@ EmlsrManager::SetWifiMac(Ptr<StaWifiMac> mac)
     m_staMac->TraceConnectWithoutContext("AckedMpdu", MakeCallback(&EmlsrManager::TxOk, this));
     m_staMac->TraceConnectWithoutContext("DroppedMpdu",
                                          MakeCallback(&EmlsrManager::TxDropped, this));
+    DoSetWifiMac(mac);
+}
+
+void
+EmlsrManager::DoSetWifiMac(Ptr<StaWifiMac> mac)
+{
+    NS_LOG_FUNCTION(this << mac);
 }
 
 void

@@ -281,6 +281,13 @@ class EmlsrManager : public Object
     void DoDispose() override;
 
     /**
+     * Allow subclasses to take actions when the MAC is set.
+     *
+     * \param mac the wifi MAC
+     */
+    virtual void DoSetWifiMac(Ptr<StaWifiMac> mac);
+
+    /**
      * \return the MAC of the non-AP MLD managed by this EMLSR Manager.
      */
     Ptr<StaWifiMac> GetStaMac() const;

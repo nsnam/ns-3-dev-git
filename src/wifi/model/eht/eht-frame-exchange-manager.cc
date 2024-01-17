@@ -1163,6 +1163,12 @@ EhtFrameExchangeManager::CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr,
     return true;
 }
 
+EventId&
+EhtFrameExchangeManager::GetOngoingTxopEndEvent()
+{
+    return m_ongoingTxopEnd;
+}
+
 void
 EhtFrameExchangeManager::PsduRxError(Ptr<const WifiPsdu> psdu)
 {

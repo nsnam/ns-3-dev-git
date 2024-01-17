@@ -67,6 +67,32 @@ AdvancedEmlsrManager::~AdvancedEmlsrManager()
     NS_LOG_FUNCTION_NOARGS();
 }
 
+void
+AdvancedEmlsrManager::DoDispose()
+{
+    NS_LOG_FUNCTION(this);
+    for (auto phy : GetStaMac()->GetDevice()->GetPhys())
+    {
+        phy->TraceDisconnectWithoutContext(
+            "PhyRxMacHeaderEnd",
+            MakeCallback(&AdvancedEmlsrManager::ReceivedMacHdr, this).Bind(phy));
+    }
+    DefaultEmlsrManager::DoDispose();
+}
+
+void
+AdvancedEmlsrManager::DoSetWifiMac(Ptr<StaWifiMac> mac)
+{
+    NS_LOG_FUNCTION(this << mac);
+
+    for (auto phy : GetStaMac()->GetDevice()->GetPhys())
+    {
+        phy->TraceConnectWithoutContext(
+            "PhyRxMacHeaderEnd",
+            MakeCallback(&AdvancedEmlsrManager::ReceivedMacHdr, this).Bind(phy));
+    }
+}
+
 Time
 AdvancedEmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId)
 {
@@ -160,6 +186,38 @@ AdvancedEmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId)
     }
 
     return Time{0};
+}
+
+void
+AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
+                                     const WifiMacHeader& macHdr,
+                                     const WifiTxVector& txVector,
+                                     Time psduDuration)
+{
+    auto linkId = GetStaMac()->GetLinkForPhy(phy);
+    if (!linkId.has_value())
+    {
+        return;
+    }
+    NS_LOG_FUNCTION(this << *linkId << macHdr << txVector << psduDuration.As(Time::MS));
+
+    auto& ongoingTxopEnd = GetEhtFem(*linkId)->GetOngoingTxopEndEvent();
+
+    if (m_useNotifiedMacHdr && ongoingTxopEnd.IsPending() &&
+        macHdr.GetAddr1() != GetEhtFem(*linkId)->GetAddress() && !macHdr.GetAddr1().IsBroadcast() &&
+        !(macHdr.IsCts() && macHdr.GetAddr1() == GetEhtFem(*linkId)->GetBssid() /* CTS-to-self */))
+    {
+        // the EMLSR client is no longer involved in the TXOP and switching to listening mode
+        ongoingTxopEnd.Cancel();
+        // this method is a callback connected to the PhyRxMacHeaderEnd trace source of WifiPhy
+        // and is called within a for loop that executes all the callbacks. The call to NotifyTxop
+        // below leads the main PHY to be connected back to the primary link, thus
+        // the ResetPhy() method of the FEM on the non-primary link is called, which disconnects
+        // another callback (FEM::ReceivedMacHdr) from the PhyRxMacHeaderEnd trace source of
+        // the main PHY, thus invalidating the list of callbacks on which the for loop iterates.
+        // Hence, schedule the call to NotifyTxopEnd to execute it outside such for loop.
+        Simulator::ScheduleNow(&AdvancedEmlsrManager::NotifyTxopEnd, this, *linkId, false, false);
+    }
 }
 
 } // namespace ns3

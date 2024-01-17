@@ -126,6 +126,12 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      */
     void EmlsrSwitchToListening(const Mac48Address& address, const Time& delay);
 
+    /**
+     * \return a reference to the event indicating the possible end of the current TXOP (of
+     *         which this device is not the holder)
+     */
+    EventId& GetOngoingTxopEndEvent();
+
   protected:
     void DoDispose() override;
     void RxStartIndication(WifiTxVector txVector, Time psduDuration) override;
