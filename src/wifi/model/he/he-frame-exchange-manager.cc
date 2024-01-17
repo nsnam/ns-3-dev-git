@@ -2099,19 +2099,20 @@ HeFrameExchangeManager::IntraBssNavResetTimeout()
     m_channelAccessManager->NotifyNavResetNow(basicNav);
 }
 
-void
-HeFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+std::optional<Mac48Address>
+HeFrameExchangeManager::FindTxopHolder(const WifiMacHeader& hdr, const WifiTxVector& txVector)
 {
-    NS_LOG_FUNCTION(this << psdu << txVector);
+    NS_LOG_FUNCTION(this << hdr << txVector);
 
-    if (psdu->GetHeader(0).IsTrigger() && psdu->GetAddr2() == m_bssid)
+    if (hdr.IsTrigger() && hdr.GetAddr2() == m_bssid)
     {
-        m_txopHolder = m_bssid;
+        return m_bssid;
     }
-    else if (!txVector.IsUlMu()) // the sender of a TB PPDU is not the TXOP holder
+    if (!txVector.IsUlMu()) // the sender of a TB PPDU is not the TXOP holder
     {
-        VhtFrameExchangeManager::SetTxopHolder(psdu, txVector);
+        return VhtFrameExchangeManager::FindTxopHolder(hdr, txVector);
     }
+    return std::nullopt;
 }
 
 bool

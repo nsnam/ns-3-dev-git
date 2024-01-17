@@ -704,8 +704,16 @@ void
 QosFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << psdu << txVector);
+    if (auto txopHolder = FindTxopHolder(psdu->GetHeader(0), txVector))
+    {
+        m_txopHolder = *txopHolder;
+    }
+}
 
-    const WifiMacHeader& hdr = psdu->GetHeader(0);
+std::optional<Mac48Address>
+QosFrameExchangeManager::FindTxopHolder(const WifiMacHeader& hdr, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << hdr << txVector);
 
     // A STA shall save the TXOP holder address for the BSS in which it is associated.
     // The TXOP holder address is the MAC address from the Address 2 field of the frame
@@ -714,12 +722,13 @@ QosFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVec
     if ((hdr.IsQosData() || hdr.IsMgt() || hdr.IsRts()) &&
         (hdr.GetAddr1() == m_bssid || hdr.GetAddr2() == m_bssid))
     {
-        m_txopHolder = psdu->GetAddr2();
+        return hdr.GetAddr2();
     }
-    else if (hdr.IsCts() && hdr.GetAddr1() == m_bssid)
+    if (hdr.IsCts() && hdr.GetAddr1() == m_bssid)
     {
-        m_txopHolder = psdu->GetAddr1();
+        return hdr.GetAddr1();
     }
+    return std::nullopt;
 }
 
 void

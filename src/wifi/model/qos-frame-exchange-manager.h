@@ -171,12 +171,14 @@ class QosFrameExchangeManager : public FrameExchangeManager
     virtual bool SendCfEndIfNeeded();
 
     /**
-     * Set the TXOP holder, if needed, based on the received frame
+     * Determine the holder of the TXOP, if possible, based on the received frame
      *
-     * \param psdu the received PSDU
+     * \param hdr the MAC header of an MPDU included in the received PSDU
      * \param txVector TX vector of the received PSDU
+     * \return the holder of the TXOP, if one was found
      */
-    virtual void SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector);
+    virtual std::optional<Mac48Address> FindTxopHolder(const WifiMacHeader& hdr,
+                                                       const WifiTxVector& txVector);
 
     /**
      * Clear the TXOP holder if the NAV counted down to zero (includes the case of NAV reset).
@@ -189,6 +191,14 @@ class QosFrameExchangeManager : public FrameExchangeManager
                                                    QoS Control field of QoS data frames */
 
   private:
+    /**
+     * Set the TXOP holder, if needed, based on the received frame
+     *
+     * \param psdu the received PSDU
+     * \param txVector TX vector of the received PSDU
+     */
+    void SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector);
+
     /**
      * Cancel the PIFS recovery event and have the EDCAF attempting PIFS recovery
      * release the channel.

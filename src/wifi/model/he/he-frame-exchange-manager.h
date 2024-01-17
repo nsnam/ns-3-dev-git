@@ -79,7 +79,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     void SetWifiMac(const Ptr<WifiMac> mac) override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
     void CalculateProtectionTime(WifiProtection* protection) const override;
-    void SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
+    std::optional<Mac48Address> FindTxopHolder(const WifiMacHeader& hdr,
+                                               const WifiTxVector& txVector) override;
     bool VirtualCsMediumIdle() const override;
 
     /**
