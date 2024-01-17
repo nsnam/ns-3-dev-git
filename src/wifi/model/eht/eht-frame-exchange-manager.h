@@ -133,6 +133,19 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
   private:
     /**
+     * Check if the frame received (or being received) is sent by an EMLSR client to start an
+     * UL TXOP. If so, take the appropriate actions (e.g., block transmission to the EMLSR client
+     * on the other links). This method is intended to be called when an MPDU (possibly within
+     * an A-MPDU) is received or when the reception of the MAC header in an MPDU is notified.
+     *
+     * \param hdr the MAC header of the received (or being received) MPDU
+     * \param txVector the TXVECTOR used to transmit the frame received (or being received)
+     * \return whether the frame received (or being received) is sent by an EMLSR client to start
+     *         an UL TXOP
+     */
+    bool CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr, const WifiTxVector& txVector);
+
+    /**
      * Update the TXOP end timer when starting a frame transmission.
      *
      * \param txDuration the TX duration of the frame being transmitted

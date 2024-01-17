@@ -858,6 +858,68 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
     }
 }
 
+bool
+EhtFrameExchangeManager::CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr,
+                                                      const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this);
+
+    auto sender = hdr.GetAddr2();
+
+    if (m_ongoingTxopEnd.IsRunning())
+    {
+        NS_LOG_DEBUG("A TXOP is already ongoing");
+        return false;
+    }
+
+    if (auto holder = FindTxopHolder(hdr, txVector); holder != sender)
+    {
+        NS_LOG_DEBUG("Sender (" << sender << ") differs from the TXOP holder ("
+                                << (holder ? Address(*holder) : Address()) << ")");
+        return false;
+    }
+
+    if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(sender))
+    {
+        NS_LOG_DEBUG("Sender (" << sender << ") is not an EMLSR client");
+        return false;
+    }
+
+    NS_LOG_DEBUG("EMLSR client " << sender << " is starting a TXOP");
+
+    // Block transmissions for this EMLSR client on other links
+    auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(sender);
+    NS_ASSERT(mldAddress);
+
+    for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); ++linkId)
+    {
+        if (linkId != m_linkId &&
+            m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
+        {
+            m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                         *mldAddress,
+                                         {linkId});
+        }
+    }
+
+    // Make sure that transmissions for this EMLSR client are not blocked on this link
+    // (the AP MLD may have sent an ICF on another link right before receiving this MPDU,
+    // thus transmissions on this link may have been blocked)
+    m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                   *mldAddress,
+                                   {m_linkId});
+
+    // Stop the transition delay timer for this EMLSR client, if any is running
+    if (auto it = m_transDelayTimer.find(*mldAddress);
+        it != m_transDelayTimer.end() && it->second.IsRunning())
+    {
+        it->second.PeekEventImpl()->Invoke();
+        it->second.Cancel();
+    }
+
+    return true;
+}
+
 void
 EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                      RxSignalInfo rxSignalInfo,
@@ -869,38 +931,11 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
     const auto& hdr = mpdu->GetHeader();
 
-    if (m_apMac && GetWifiRemoteStationManager()->GetEmlsrEnabled(hdr.GetAddr2()))
+    if (m_apMac)
     {
-        // the AP MLD received an MPDU from an EMLSR client, which is now involved in an UL TXOP,
-        // hence block transmissions for this EMLSR client on other links
-        auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(hdr.GetAddr2());
-        NS_ASSERT(mldAddress);
-
-        for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
-        {
-            if (linkId != m_linkId &&
-                m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
-            {
-                m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-                                             *mldAddress,
-                                             {linkId});
-            }
-        }
-
-        // Make sure that transmissions for this EMLSR client are not blocked on this link
-        // (the AP MLD may have sent an ICF on another link right before receiving this MPDU,
-        // thus transmissions on this link may have been blocked)
-        m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-                                       *mldAddress,
-                                       {m_linkId});
-
-        // Stop the transition delay timer for this EMLSR client, if any is running
-        if (auto it = m_transDelayTimer.find(*mldAddress);
-            it != m_transDelayTimer.end() && it->second.IsRunning())
-        {
-            it->second.PeekEventImpl()->Invoke();
-            it->second.Cancel();
-        }
+        // if the AP MLD received an MPDU from an EMLSR client that is starting an UL TXOP,
+        // block transmissions to the EMLSR client on other links
+        CheckEmlsrClientStartingTxop(hdr, txVector);
     }
 
     bool icfReceived = false;
