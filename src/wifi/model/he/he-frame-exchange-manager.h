@@ -214,6 +214,17 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     virtual void CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector);
 
     /**
+     * Called when no CTS frame is received after an MU-RTS.
+     *
+     * \param muRts the MU-RTS that solicited CTS responses
+     * \param txVector the TXVECTOR used to transmit the MU-RTS frame
+     * \param updateFailedCw whether to update CW in case of retransmission after TX failure
+     */
+    void DoCtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts,
+                                const WifiTxVector& txVector,
+                                bool updateFailedCw);
+
+    /**
      * Send CTS after receiving an MU-RTS.
      *
      * \param muRtsHdr the MAC header of the received MU-RTS

@@ -33,6 +33,8 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-spectrum-phy-interface.h"
 
+#include <algorithm>
+
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT WIFI_FEM_NS_LOG_APPEND_CONTEXT
 
@@ -803,6 +805,10 @@ EhtFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxV
 {
     NS_LOG_FUNCTION(this << *muRts << txVector);
 
+    // check if all the clients solicited by the MU-RTS are EMLSR clients that have sent (or
+    // are sending) a frame to the AP
+    auto crossLinkCollision = true;
+
     // we blocked transmissions on the other EMLSR links for the EMLSR clients we sent the ICF to.
     // Given that no client responded, we can unblock transmissions for a client if there is no
     // ongoing UL TXOP held by that client
@@ -810,33 +816,61 @@ EhtFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxV
     {
         if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
         {
+            crossLinkCollision = false;
             continue;
         }
 
         auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
         NS_ASSERT(mldAddress);
 
-        if (m_ongoingTxopEnd.IsPending() && m_txopHolder &&
-            m_mac->GetMldAddress(*m_txopHolder) == mldAddress)
-        {
-            continue;
-        }
-
-        std::set<uint8_t> linkIds;
+        std::set<uint8_t> linkIds; // all EMLSR links of EMLSR client
         for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
         {
-            if (linkId != m_linkId &&
-                m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
+            if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
             {
                 linkIds.insert(linkId);
             }
         }
+
+        if (std::any_of(linkIds.cbegin(),
+                        linkIds.cend(),
+                        /* lambda returning true if an UL TXOP is ongoing on the given link ID */
+                        [=, this](uint8_t id) {
+                            auto ehtFem = StaticCast<EhtFrameExchangeManager>(
+                                m_mac->GetFrameExchangeManager(id));
+                            return ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
+                                   m_mac->GetMldAddress(ehtFem->m_txopHolder.value()) == mldAddress;
+                        }))
+        {
+            // an UL TXOP is ongoing on one EMLSR link, do not unblock links
+            continue;
+        }
+
+        // no UL TXOP is ongoing on any EMLSR link; if the EMLSR client is not transmitting a
+        // frame to the AP on any EMLSR link, then the lack of response to the MU-RTS was not
+        // caused by a simultaneous UL transmission
+        if (std::none_of(linkIds.cbegin(),
+                         linkIds.cend(),
+                         /* lambda returning true if an MPDU from the EMLSR client is being received
+                            on the given link ID */
+                         [=, this](uint8_t id) {
+                             auto macHdr = m_mac->GetFrameExchangeManager(id)->GetReceivedMacHdr();
+                             return macHdr.has_value() &&
+                                    m_mac->GetMldAddress(macHdr->get().GetAddr2()) == mldAddress;
+                         }))
+        {
+            crossLinkCollision = false;
+        }
+
+        linkIds.erase(m_linkId);
         m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
                                        *mldAddress,
                                        linkIds);
     }
 
-    HeFrameExchangeManager::CtsAfterMuRtsTimeout(muRts, txVector);
+    auto updateFailedCw =
+        crossLinkCollision ? m_apMac->GetApEmlsrManager()->UpdateCwAfterFailedIcf() : true;
+    DoCtsAfterMuRtsTimeout(muRts, txVector, updateFailedCw);
 }
 
 void

@@ -60,4 +60,10 @@ DefaultApEmlsrManager::GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
     return WifiPhy::CalculateTxDuration(psdu, txVector, band);
 }
 
+bool
+DefaultApEmlsrManager::UpdateCwAfterFailedIcf()
+{
+    return true;
+}
+
 } // namespace ns3

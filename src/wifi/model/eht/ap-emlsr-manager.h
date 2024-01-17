@@ -85,6 +85,13 @@ class ApEmlsrManager : public Object
                                              const WifiTxVector& txVector,
                                              WifiPhyBand band) = 0;
 
+    /**
+     * \return whether the AP MLD shall double the CW upon CTS timeout after an MU-RTS in case
+     *         all the clients solicited by the MU-RTS are EMLSR clients that have sent (or
+     *         are sending) a frame to the AP
+     */
+    virtual bool UpdateCwAfterFailedIcf() = 0;
+
   protected:
     void DoDispose() override;
 

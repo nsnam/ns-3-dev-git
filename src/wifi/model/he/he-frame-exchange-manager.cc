@@ -399,6 +399,15 @@ void
 HeFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << *muRts << txVector);
+    DoCtsAfterMuRtsTimeout(muRts, txVector, true);
+}
+
+void
+HeFrameExchangeManager::DoCtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts,
+                                               const WifiTxVector& txVector,
+                                               bool updateFailedCw)
+{
+    NS_LOG_FUNCTION(this << *muRts << txVector << updateFailedCw);
 
     if (m_psduMap.empty())
     {
@@ -446,7 +455,10 @@ HeFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVe
     else
     {
         NS_LOG_DEBUG("Missed CTS, retransmit MPDUs");
-        m_edca->UpdateFailedCw(m_linkId);
+        if (updateFailedCw)
+        {
+            m_edca->UpdateFailedCw(m_linkId);
+        }
     }
     // Make the sequence numbers of the MPDUs available again if the MPDUs have never
     // been transmitted, both in case the MPDUs have been discarded and in case the
