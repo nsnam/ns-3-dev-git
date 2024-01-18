@@ -63,7 +63,14 @@ AdvancedApEmlsrManager::GetTypeId()
                 "transition delay timer for the EMLSR client that sent the failed PSDU.",
                 BooleanValue(true),
                 MakeBooleanAccessor(&AdvancedApEmlsrManager::m_waitTransDelayOnPsduRxError),
-                MakeBooleanChecker());
+                MakeBooleanChecker())
+            .AddAttribute("UpdateCwAfterFailedIcf",
+                          "Whether the AP MLD shall double the CW upon CTS timeout after an "
+                          "MU-RTS in case all the clients solicited by the MU-RTS are EMLSR "
+                          "clients that have sent (or are sending) a frame to the AP",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&AdvancedApEmlsrManager::m_updateCwAfterFailedIcf),
+                          MakeBooleanChecker());
     return tid;
 }
 
@@ -191,6 +198,12 @@ AdvancedApEmlsrManager::GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
                       ((psdu->GetNMpdus() > 1 || psdu->IsSingle()) ? 4 : 0);
     // return the duration of the MAC header TX
     return DataRate(txVector.GetMode().GetDataRate(txVector)).CalculateBytesTxTime(macHdrSize);
+}
+
+bool
+AdvancedApEmlsrManager::UpdateCwAfterFailedIcf()
+{
+    return m_updateCwAfterFailedIcf;
 }
 
 } // namespace ns3

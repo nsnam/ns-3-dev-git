@@ -56,6 +56,7 @@ class AdvancedApEmlsrManager : public DefaultApEmlsrManager
     Time GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
                                      const WifiTxVector& txVector,
                                      WifiPhyBand band) override;
+    bool UpdateCwAfterFailedIcf() override;
 
   protected:
     void DoDispose() override;
@@ -86,6 +87,9 @@ class AdvancedApEmlsrManager : public DefaultApEmlsrManager
     bool m_waitTransDelayOnPsduRxError; //!< Whether the AP MLD waits for a response timeout after a
                                         //!< PSDU reception error before starting the transition
                                         //!< delay
+    bool m_updateCwAfterFailedIcf;      //!< Whether the AP MLD shall double the CW upon CTS timeout
+                                   //!< after an MU-RTS in case all the clients solicited by the
+                                   //!< MU-RTS are EMLSR clients that have sent a frame to the AP
 };
 
 } // namespace ns3
