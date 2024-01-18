@@ -19,6 +19,7 @@
 
 #include "wifi-mac-helper.h"
 
+#include "ns3/ap-emlsr-manager.h"
 #include "ns3/boolean.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/emlsr-manager.h"
@@ -59,6 +60,7 @@ WifiMacHelper::WifiMacHelper()
     m_protectionManager.SetTypeId("ns3::WifiDefaultProtectionManager");
     m_ackManager.SetTypeId("ns3::WifiDefaultAckManager");
     m_emlsrManager.SetTypeId("ns3::DefaultEmlsrManager");
+    m_apEmlsrManager.SetTypeId("ns3::DefaultApEmlsrManager");
 }
 
 WifiMacHelper::~WifiMacHelper()
@@ -165,6 +167,16 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     {
         auto emlsrManager = m_emlsrManager.Create<EmlsrManager>();
         staMac->SetEmlsrManager(emlsrManager);
+    }
+
+    // create and install the AP EMLSR Manager if this is an EHT AP MLD with EMLSR activated
+    if (BooleanValue emlsrActivated;
+        standard >= WIFI_STANDARD_80211be && apMac && apMac->GetNLinks() > 1 &&
+        device->GetEhtConfiguration()->GetAttributeFailSafe("EmlsrActivated", emlsrActivated) &&
+        emlsrActivated.Get())
+    {
+        auto apEmlsrManager = m_apEmlsrManager.Create<ApEmlsrManager>();
+        apMac->SetApEmlsrManager(apEmlsrManager);
     }
 
     return mac;

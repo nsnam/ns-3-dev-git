@@ -170,6 +170,16 @@ class WifiMacHelper
     void SetEmlsrManager(std::string type, Args&&... args);
 
     /**
+     * Helper function used to set the AP EMLSR Manager that can be installed on an EHT AP MLD.
+     *
+     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * \param type the type of AP EMLSR Manager
+     * \param args A sequence of name-value pairs of the attributes to set.
+     */
+    template <typename... Args>
+    void SetApEmlsrManager(std::string type, Args&&... args);
+
+    /**
      * \param device the device within which the MAC object will reside
      * \param standard the standard to configure during installation
      * \returns a new MAC object.
@@ -190,6 +200,7 @@ class WifiMacHelper
     ObjectFactory m_ackManager;           ///< Factory to create an acknowledgment manager
     ObjectFactory m_muScheduler;          ///< Multi-user Scheduler object factory
     ObjectFactory m_emlsrManager;         ///< EMLSR Manager object factory
+    ObjectFactory m_apEmlsrManager;       ///< AP EMLSR Manager object factory
 };
 
 } // namespace ns3
@@ -285,6 +296,14 @@ WifiMacHelper::SetEmlsrManager(std::string type, Args&&... args)
 {
     m_emlsrManager.SetTypeId(type);
     m_emlsrManager.Set(args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetApEmlsrManager(std::string type, Args&&... args)
+{
+    m_apEmlsrManager.SetTypeId(type);
+    m_apEmlsrManager.Set(args...);
 }
 
 } // namespace ns3

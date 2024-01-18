@@ -35,6 +35,7 @@
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 
+#include "ns3/ap-emlsr-manager.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/eht-frame-exchange-manager.h"
 #include "ns3/he-configuration.h"
@@ -235,6 +236,11 @@ ApWifiMac::DoDispose()
     m_beaconTxop->Dispose();
     m_beaconTxop = nullptr;
     m_enableBeaconGeneration = false;
+    if (m_apEmlsrManager)
+    {
+        m_apEmlsrManager->Dispose();
+    }
+    m_apEmlsrManager = nullptr;
     WifiMac::DoDispose();
 }
 
@@ -254,6 +260,20 @@ ApWifiMac::ApLinkEntity&
 ApWifiMac::GetLink(uint8_t linkId) const
 {
     return static_cast<ApLinkEntity&>(WifiMac::GetLink(linkId));
+}
+
+void
+ApWifiMac::SetApEmlsrManager(Ptr<ApEmlsrManager> apEmlsrManager)
+{
+    NS_LOG_FUNCTION(this << apEmlsrManager);
+    m_apEmlsrManager = apEmlsrManager;
+    m_apEmlsrManager->SetWifiMac(this);
+}
+
+Ptr<ApEmlsrManager>
+ApWifiMac::GetApEmlsrManager() const
+{
+    return m_apEmlsrManager;
 }
 
 void

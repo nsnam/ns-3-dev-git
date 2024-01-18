@@ -53,6 +53,7 @@ class MgtAssocRequestHeader;
 class MgtReassocRequestHeader;
 class MgtAssocResponseHeader;
 class MgtEmlOmn;
+class ApEmlsrManager;
 
 /// variant holding a  reference to a (Re)Association Request
 using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHeader>,
@@ -86,6 +87,18 @@ class ApWifiMac : public WifiMac
     bool SupportsSendFrom() const override;
     Ptr<WifiMacQueue> GetTxopQueue(AcIndex ac) const override;
     int64_t AssignStreams(int64_t stream) override;
+
+    /**
+     * Set the AP EMLSR Manager.
+     *
+     * \param apEmlsrManager the AP EMLSR Manager
+     */
+    void SetApEmlsrManager(Ptr<ApEmlsrManager> apEmlsrManager);
+
+    /**
+     * \return the AP EMLSR Manager
+     */
+    Ptr<ApEmlsrManager> GetApEmlsrManager() const;
 
     /**
      * \param interval the interval between two beacon transmissions.
@@ -580,6 +593,7 @@ class ApWifiMac : public WifiMac
     Time m_bsrLifetime;            //!< Lifetime of Buffer Status Reports
     /// transition timeout events running for EMLSR clients
     std::map<Mac48Address, EventId> m_transitionTimeoutEvents;
+    Ptr<ApEmlsrManager> m_apEmlsrManager; ///< AP EMLSR Manager
 
     UintAccessParamsMap m_cwMinsForSta;     //!< Per-AC CW min values to advertise to stations
     UintAccessParamsMap m_cwMaxsForSta;     //!< Per-AC CW max values to advertise to stations
