@@ -88,7 +88,6 @@ main(int argc, char** argv)
     NetDeviceContainer d1 = csma.Install(net1);
 
     SixLowPanHelper sixlowpan;
-    sixlowpan.SetDeviceAttribute("ForceEtherType", BooleanValue(true));
     NetDeviceContainer six1 = sixlowpan.Install(d1);
 
     NS_LOG_INFO("Create networks and assign IPv6 Addresses.");

@@ -83,16 +83,6 @@ SixLowPanNetDevice::GetTypeId()
                           UintegerValue(0x0),
                           MakeUintegerAccessor(&SixLowPanNetDevice::m_compressionThreshold),
                           MakeUintegerChecker<uint32_t>())
-            .AddAttribute("ForceEtherType",
-                          "Force a specific EtherType in L2 frames.",
-                          BooleanValue(false),
-                          MakeBooleanAccessor(&SixLowPanNetDevice::m_forceEtherType),
-                          MakeBooleanChecker())
-            .AddAttribute("EtherType",
-                          "The specific EtherType to be used in L2 frames.",
-                          UintegerValue(0xFFFF),
-                          MakeUintegerAccessor(&SixLowPanNetDevice::m_etherType),
-                          MakeUintegerChecker<uint16_t>())
             .AddAttribute("UseMeshUnder",
                           "Use a mesh-under routing protocol.",
                           BooleanValue(false),
@@ -158,10 +148,13 @@ SixLowPanNetDevice::SetNetDevice(Ptr<NetDevice> device)
 
     NS_LOG_DEBUG("RegisterProtocolHandler for " << device->GetInstanceTypeId().GetName());
 
-    uint16_t protocolType = 0;
-    if (m_forceEtherType)
+    uint16_t protocolType = PROT_NUMBER;
+    if (device->GetInstanceTypeId().GetName() == "ns3::LrWpanNetDevice")
     {
-        protocolType = m_etherType;
+        // LrWpanNetDevice does not have a protocol number in the frame.
+        // Hence, we must register for any protocol, and assume that any
+        // packet is 6LoWPAN.
+        protocolType = 0;
     }
     m_node->RegisterProtocolHandler(MakeCallback(&SixLowPanNetDevice::ReceiveFromDevice, this),
                                     protocolType,
@@ -596,10 +589,7 @@ SixLowPanNetDevice::DoSend(Ptr<Packet> packet,
 
     bool useMesh = m_meshUnder;
 
-    if (m_forceEtherType)
-    {
-        protocolNumber = m_etherType;
-    }
+    protocolNumber = PROT_NUMBER;
 
     if (m_useIphc)
     {

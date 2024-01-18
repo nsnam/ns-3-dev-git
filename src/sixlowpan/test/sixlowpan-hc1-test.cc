@@ -142,7 +142,6 @@ SixlowpanHc1ImplTest::DoRun()
         rxNode->AddDevice(rxDev);
 
         Ptr<SixLowPanNetDevice> rxSix = CreateObject<SixLowPanNetDevice>();
-        rxSix->SetAttribute("ForceEtherType", BooleanValue(true));
         rxSix->SetAttribute("Rfc6282", BooleanValue(false));
         rxNode->AddDevice(rxSix);
         rxSix->SetNetDevice(rxDev);
@@ -166,7 +165,6 @@ SixlowpanHc1ImplTest::DoRun()
         txNode->AddDevice(txDev);
 
         Ptr<SixLowPanNetDevice> txSix = CreateObject<SixLowPanNetDevice>();
-        txSix->SetAttribute("ForceEtherType", BooleanValue(true));
         txSix->SetAttribute("Rfc6282", BooleanValue(false));
         txNode->AddDevice(txSix);
         txSix->SetNetDevice(txDev);

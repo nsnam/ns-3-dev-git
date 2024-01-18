@@ -289,7 +289,6 @@ SixlowpanFragmentationTest::DoRun()
         serverNode->AddDevice(serverDev);
 
         Ptr<SixLowPanNetDevice> serverSix = CreateObject<SixLowPanNetDevice>();
-        serverSix->SetAttribute("ForceEtherType", BooleanValue(true));
         serverNode->AddDevice(serverSix);
         serverSix->SetNetDevice(serverDev);
 
@@ -320,7 +319,6 @@ SixlowpanFragmentationTest::DoRun()
         clientNode->AddDevice(clientDev);
 
         Ptr<SixLowPanNetDevice> clientSix = CreateObject<SixLowPanNetDevice>();
-        clientSix->SetAttribute("ForceEtherType", BooleanValue(true));
         clientNode->AddDevice(clientSix);
         clientSix->SetNetDevice(clientDev);
 

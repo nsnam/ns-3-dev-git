@@ -86,6 +86,11 @@ class SixLowPanNetDevice : public NetDevice
     };
 
     /**
+     * \brief The protocol number for 6LoWPAN (0xA0ED) - see \RFC{7973}.
+     */
+    static constexpr uint16_t PROT_NUMBER{0xA0ED};
+
+    /**
      * \brief Get the type ID.
      * \return The object TypeId.
      */
@@ -626,14 +631,6 @@ class SixLowPanNetDevice : public NetDevice
     Ptr<NetDevice> m_netDevice; //!< Smart pointer to the underlying NetDevice.
     uint32_t m_ifIndex;         //!< Interface index.
 
-    /**
-     * \brief Force the EtherType number.
-     * Also implying that the underlying NetDevice is using 48-bit Addresses, e.g., Ethernet, Wi-Fi,
-     * etc.
-     */
-    bool m_forceEtherType;
-
-    uint16_t m_etherType;   //!< EtherType number (used only if m_forceEtherType is true).
     bool m_omitUdpChecksum; //!< Omit UDP checksum in NC1 encoding.
 
     uint32_t m_compressionThreshold; //!< Minimum L2 payload size.

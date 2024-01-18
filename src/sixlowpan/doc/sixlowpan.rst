@@ -52,8 +52,6 @@ The attributes are:
 * FragmentReassemblyListSize (integer, default 0), indicating the number of packets that can be reassembled at the same time. If the limit is reached, the oldest packet is discarded. Zero means infinite.
 * FragmentExpirationTimeout (Time, default 60 seconds), being the timeout to wait for further fragments before discarding a partial packet.
 * CompressionThreshold (unsigned 32 bits integer, default 0), minimum compressed payload size.
-* ForceEtherType (boolean, default false).
-* EtherType (unsigned 16 bits integer, default 0xFFFF), to force a particular L2 EtherType.
 * UseMeshUnder (boolean, default false), it enables mesh-under flood routing.
 * MeshUnderRadius (unsigned 8 bits integer, default 10), the maximum number of hops that a packet will be forwarded.
 * MeshCacheLength (unsigned 16 bits integer, default 10), the length of the cache for each source.
@@ -65,23 +63,8 @@ used (plus one byte for the correct dispatch header).
 This option is useful when a MAC requires a minimum frame size (e.g., ContikiMAC) and the
 compression would violate the requirement.
 
-The last two attributes are needed to use the module with a NetDevice other than 802.15.4, as
-neither IANA or IEEE did reserve an EtherType for 6LoWPAN. As a consequence there might be a
-conflict with the L2 multiplexer/demultiplexer which is based on EtherType. The default
-value is 0xFFFF, which is reserved by IEEE (see [IANA802]_ and [Ethertype]_).
-The default module behaviour is to not change the EtherType, however this would not work with
-any NetDevice actually understanding and using the EtherType.
-
-Note that the `ForceEtherType` parameter have also a direct effect on the MAC address kind the
-module is expecting to handle:
-* ForceEtherType true: Mac48Address (Ethernet, WiFi, etc.).
-* ForceEtherType false: Mac16Address or Mac64Address (IEEE 802.15.4).
-
-Note that using 6LoWPAN over any NetDevice other than 802.15.4 will produce valid .pcap files,
-but they will not be correctly dissected by Wireshark.
-The reason lies on the fact that 6LoWPAN was really meant to be used only over 802.15.4, so
-Wireshark dissectors will not even try to decode 6LoWPAN headers on top of protocols other than
-802.15.4.
+Note that 6LoWPAN will use an EtherType equal to 0xA0ED, as mandated by :rfc:`7973`.
+If the device does not support EtherTypes (e.g., 802.15.4), this value is discarded.
 
 The Trace sources are:
 
