@@ -25,6 +25,7 @@
 #include "ns3/boolean.h"
 #include "ns3/log.h"
 #include "ns3/wifi-phy.h"
+#include "ns3/wifi-psdu.h"
 
 namespace ns3
 {
@@ -46,6 +47,13 @@ AdvancedApEmlsrManager::GetTypeId()
                           "being received, if notified by the PHY.",
                           BooleanValue(true),
                           MakeBooleanAccessor(&AdvancedApEmlsrManager::m_useNotifiedMacHdr),
+                          MakeBooleanChecker())
+            .AddAttribute("EarlySwitchToListening",
+                          "Whether the AP MLD assumes that an EMLSR client is able to detect at "
+                          "the end of the MAC header that a PSDU is not addressed to it and "
+                          "immediately starts switching to listening mode.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&AdvancedApEmlsrManager::m_earlySwitchToListening),
                           MakeBooleanChecker())
             .AddAttribute(
                 "WaitTransDelayOnPsduRxError",
@@ -164,6 +172,25 @@ AdvancedApEmlsrManager::NotifyPsduRxError(uint8_t linkId, Ptr<const WifiPsdu> ps
     GetApMac()->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
                                         *mldAddress,
                                         linkIds);
+}
+
+Time
+AdvancedApEmlsrManager::GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
+                                                    const WifiTxVector& txVector,
+                                                    WifiPhyBand band)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector << band);
+
+    if (!m_earlySwitchToListening)
+    {
+        return DefaultApEmlsrManager::GetDelayOnTxPsduNotForEmlsr(psdu, txVector, band);
+    }
+
+    // EMLSR clients switch back to listening operation at the end of MAC header RX
+    auto macHdrSize = (*psdu->begin())->GetHeader().GetSerializedSize() +
+                      ((psdu->GetNMpdus() > 1 || psdu->IsSingle()) ? 4 : 0);
+    // return the duration of the MAC header TX
+    return DataRate(txVector.GetMode().GetDataRate(txVector)).CalculateBytesTxTime(macHdrSize);
 }
 
 } // namespace ns3

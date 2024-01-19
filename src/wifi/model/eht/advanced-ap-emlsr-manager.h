@@ -53,6 +53,9 @@ class AdvancedApEmlsrManager : public DefaultApEmlsrManager
 
     void NotifyPsduRxOk(uint8_t linkId, Ptr<const WifiPsdu> psdu) override;
     void NotifyPsduRxError(uint8_t linkId, Ptr<const WifiPsdu> psdu) override;
+    Time GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
+                                     const WifiTxVector& txVector,
+                                     WifiPhyBand band) override;
 
   protected:
     void DoDispose() override;
@@ -73,9 +76,13 @@ class AdvancedApEmlsrManager : public DefaultApEmlsrManager
 
   private:
     std::set<uint8_t>
-        m_blockedLinksOnMacHdrRx; //!< links that have been blocked upon receiving a MAC header
-    bool m_useNotifiedMacHdr;     //!< whether to use the information about the MAC header of
-                                  //!< the MPDU being received (if notified by the PHY)
+        m_blockedLinksOnMacHdrRx;  //!< links that have been blocked upon receiving a MAC header
+    bool m_useNotifiedMacHdr;      //!< whether to use the information about the MAC header of
+                                   //!< the MPDU being received (if notified by the PHY)
+    bool m_earlySwitchToListening; //!< Whether the AP MLD assumes that an EMLSR client is able to
+                                   //!< detect at the end of the MAC header that a PSDU is not
+                                   //!< addressed to it and immediately starts switching to
+                                   //!< listening mode
     bool m_waitTransDelayOnPsduRxError; //!< Whether the AP MLD waits for a response timeout after a
                                         //!< PSDU reception error before starting the transition
                                         //!< delay
