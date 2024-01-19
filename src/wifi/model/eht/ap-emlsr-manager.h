@@ -21,13 +21,16 @@
 #define AP_EMLSR_MANAGER_H
 
 #include "ns3/object.h"
+#include "ns3/wifi-phy-band.h"
 
 namespace ns3
 {
 
 class ApWifiMac;
 class EhtFrameExchangeManager;
+class Time;
 class WifiPsdu;
+class WifiTxVector;
 
 /**
  * \ingroup wifi
@@ -68,6 +71,19 @@ class ApEmlsrManager : public Object
      * \param psdu the PSDU whose reception failed
      */
     virtual void NotifyPsduRxError(uint8_t linkId, Ptr<const WifiPsdu> psdu);
+
+    /**
+     * This method is intended to be called when the AP MLD starts transmitting an SU frame that
+     * is not addressed to EMLSR clients that were previously involved in the ongoing DL TXOP.
+     *
+     * \param psdu the PSDU being transmitted
+     * \param txVector the TXVECTOR used to transmit the PSDU
+     * \param band the PHY band in which the PSDU is being transmitted
+     * \return the delay after which the AP MLD starts the transition delay for the EMLSR client
+     */
+    virtual Time GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
+                                             const WifiTxVector& txVector,
+                                             WifiPhyBand band) = 0;
 
   protected:
     void DoDispose() override;

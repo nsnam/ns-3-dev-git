@@ -20,6 +20,8 @@
 #include "default-ap-emlsr-manager.h"
 
 #include "ns3/log.h"
+#include "ns3/wifi-phy.h"
+#include "ns3/wifi-psdu.h"
 
 namespace ns3
 {
@@ -46,6 +48,16 @@ DefaultApEmlsrManager::DefaultApEmlsrManager()
 DefaultApEmlsrManager::~DefaultApEmlsrManager()
 {
     NS_LOG_FUNCTION_NOARGS();
+}
+
+Time
+DefaultApEmlsrManager::GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
+                                                   const WifiTxVector& txVector,
+                                                   WifiPhyBand band)
+{
+    NS_LOG_FUNCTION(this << psdu << txVector << band);
+    // EMLSR clients switch back to listening operation at the end of the PPDU
+    return WifiPhy::CalculateTxDuration(psdu, txVector, band);
 }
 
 } // namespace ns3

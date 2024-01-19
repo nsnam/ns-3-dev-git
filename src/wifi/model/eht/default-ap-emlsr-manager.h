@@ -41,6 +41,10 @@ class DefaultApEmlsrManager : public ApEmlsrManager
 
     DefaultApEmlsrManager();
     ~DefaultApEmlsrManager() override;
+
+    Time GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
+                                     const WifiTxVector& txVector,
+                                     WifiPhyBand band) override;
 };
 
 } // namespace ns3

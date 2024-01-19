@@ -428,10 +428,13 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
     HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
     UpdateTxopEndOnTxStart(txDuration, psdu->GetDuration());
 
-    if (m_apMac)
+    if (m_apMac && m_apMac->GetApEmlsrManager())
     {
-        // check if the EMLSR clients shall switch back to listening operation at the end of this
-        // PPDU
+        auto delay = m_apMac->GetApEmlsrManager()->GetDelayOnTxPsduNotForEmlsr(psdu,
+                                                                               txVector,
+                                                                               m_phy->GetPhyBand());
+
+        // check if the EMLSR clients shall switch back to listening operation
         for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
         {
             auto aid = GetWifiRemoteStationManager()->GetAssociationId(*clientIt);
@@ -439,7 +442,7 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
             if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt) &&
                 GetEmlsrSwitchToListening(psdu, aid, *clientIt))
             {
-                EmlsrSwitchToListening(*clientIt, txDuration);
+                EmlsrSwitchToListening(*clientIt, delay);
                 // this client is no longer involved in the current TXOP
                 clientIt = m_protectedStas.erase(clientIt);
             }
