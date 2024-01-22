@@ -42,18 +42,6 @@ class ExtendedCapabilities : public WifiInformationElement
     void SerializeInformationField(Buffer::Iterator start) const override;
     uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
     void Print(std::ostream& os) const override;
-    /**
-     * Set the HT Supported flag.
-     *
-     * \param htSupported flag whether HT is supported
-     */
-    void SetHtSupported(uint8_t htSupported);
-    /**
-     * Set the VHT Supported flag.
-     *
-     * \param vhtSupported flag whether VHT is supported
-     */
-    void SetVhtSupported(uint8_t vhtSupported);
 
     /**
      * Set the first byte in the Extended Capabilities information element.
@@ -160,7 +148,6 @@ class ExtendedCapabilities : public WifiInformationElement
     uint8_t m_psmpCapability;                        ///< PSMP Capability
     uint8_t m_spsmpSupport;                          ///< S-PSMP Support
 
-    // fields if VHT supported
     uint8_t m_event;                           ///< Event
     uint8_t m_diagnostics;                     ///< Diagnostics
     uint8_t m_multicastDiagnostics;            ///< Multicast Diagnostics
@@ -220,11 +207,6 @@ class ExtendedCapabilities : public WifiInformationElement
     uint8_t m_tdlsWiderBandwidth;         ///< TDLS Wider Bandwidth
     uint8_t m_operatingModeNotification;  ///< Operating Mode Notification
     uint8_t m_maxNumberOfMsdusInAmsdu;    ///< Max Number Of MSDUs In A-MSDU
-
-    uint8_t m_htSupported;  ///< Flag to indicate HT is supported in order to decide whether this
-                            ///< element should be added to the frame or not
-    uint8_t m_vhtSupported; ///< Flag to indicate VHT is supported in order to decide whether this
-                            ///< element should be added to the frame or not
 };
 
 } // namespace ns3

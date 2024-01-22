@@ -2093,8 +2093,6 @@ WifiMac::GetExtendedCapabilities() const
 {
     NS_LOG_FUNCTION(this);
     ExtendedCapabilities capabilities;
-    capabilities.SetHtSupported(GetHtSupported(SINGLE_LINK_OP_ID));
-    capabilities.SetVhtSupported(GetVhtSupported(SINGLE_LINK_OP_ID));
     // TODO: to be completed
     return capabilities;
 }
