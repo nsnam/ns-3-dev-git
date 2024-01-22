@@ -145,24 +145,7 @@ class MatrixArray : public ValArray<T>
      * \param values std::valarray<T> that will be used to initialize elements of 3D array
      */
     MatrixArray(size_t numRows, size_t numCols, size_t numPages, std::valarray<T>&& values);
-    /** instruct the compiler to generate the implicitly declared destructor*/
-    ~MatrixArray() override = default;
-    /** instruct the compiler to generate the implicitly declared copy constructor*/
-    MatrixArray(const MatrixArray<T>&) = default;
-    /**
-     * \brief Copy assignment operator.
-     * Instruct the compiler to generate the implicitly declared copy assignment operator.
-     * \return a reference to the result of the assignment
-     */
-    MatrixArray<T>& operator=(const MatrixArray<T>&) = default;
-    /** instruct the compiler to generate the implicitly declared move constructor*/
-    MatrixArray(MatrixArray<T>&&) = default;
-    /**
-     * \brief Move assignment operator.
-     * Instruct the compiler to generate the implicitly declared move assignment operator.
-     * \return a reference to the result of the assignment
-     */
-    MatrixArray<T>& operator=(MatrixArray<T>&&) = default;
+
     /**
      * \brief Element-wise multiplication with a scalar value.
      * \param rhs is a scalar value of type T
