@@ -657,21 +657,22 @@ RipNg::Lookup(Ipv6Address dst, bool setSource, Ptr<NetDevice> interface)
 
                     if (setSource)
                     {
-                        if (route->GetGateway().IsAny())
+                        // GetGateway().IsAny() means that the destination is reachable without a
+                        // gateway (is on-link). GetDest().IsAny() means that the route is the
+                        // default route. Having both true is very strange, but possible.
+                        // If the RT entry is specific for a destination, use that as a hint for the
+                        // source address to be used. Else, use the destination or the prefix to be
+                        // used stated in the RT entry.
+                        if (!route->GetDest().IsAny())
                         {
                             rtentry->SetSource(
                                 m_ipv6->SourceAddressSelection(interfaceIdx, route->GetDest()));
                         }
-                        else if (route->GetDest().IsAny()) /* default route */
+                        else
                         {
                             rtentry->SetSource(m_ipv6->SourceAddressSelection(
                                 interfaceIdx,
                                 route->GetPrefixToUse().IsAny() ? dst : route->GetPrefixToUse()));
-                        }
-                        else
-                        {
-                            rtentry->SetSource(
-                                m_ipv6->SourceAddressSelection(interfaceIdx, route->GetDest()));
                         }
                     }
 
