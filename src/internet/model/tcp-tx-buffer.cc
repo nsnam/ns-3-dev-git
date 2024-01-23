@@ -926,8 +926,6 @@ TcpTxBuffer::IsLost(const SequenceNumber32& seq) const
 {
     NS_LOG_FUNCTION(this << seq);
 
-    SequenceNumber32 beginOfCurrentPacket = m_firstByteSeq;
-
     if (seq >= m_highestSack.second)
     {
         return false;
@@ -938,7 +936,7 @@ TcpTxBuffer::IsLost(const SequenceNumber32& seq) const
     for (auto it = m_sentList.begin(); it != m_sentList.end(); ++it)
     {
         // Search for the right iterator before calling IsLost()
-        if (beginOfCurrentPacket >= seq)
+        if ((*it)->m_startSeq <= seq && seq < (*it)->m_startSeq + (*it)->m_packet->GetSize())
         {
             if ((*it)->m_lost)
             {
@@ -952,8 +950,6 @@ TcpTxBuffer::IsLost(const SequenceNumber32& seq) const
                 return false;
             }
         }
-
-        beginOfCurrentPacket += (*it)->m_packet->GetSize();
     }
 
     return false;
