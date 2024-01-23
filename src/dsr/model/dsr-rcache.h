@@ -345,40 +345,14 @@ class DsrRouteCacheEntry
     void Print(std::ostream& os) const;
 
     /**
-     * \brief Compare the route cache entry
+     * \brief Compare the route cache entry. Only the paths are compared.
      * \param o entry to compare
-     * \return true if equal
+     * \return true if both route cache entries are equal
      */
     bool operator==(const DsrRouteCacheEntry& o) const
     {
-        if (m_path.size() != o.m_path.size())
-        {
-            NS_ASSERT(false);
-            return false;
-        }
-        auto j = o.m_path.begin();
-        for (auto i = m_path.begin(); i != m_path.end(); i++, j++)
-        {
-            /*
-             * Verify if neither the entry are not 0 and they equal to each other
-             */
-            if (((*i) == nullptr) || ((*j) == nullptr))
-            {
-                return false;
-            }
-            else if (!((*i) == (*j)))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        return false;
+        return m_path == o.m_path;
     }
-
-    // \}
 
   private:
     Timer m_ackTimer;             ///< RREP_ACK timer
