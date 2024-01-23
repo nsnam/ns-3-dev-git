@@ -1778,8 +1778,8 @@ TcpSocketBase::DupAck(uint32_t currentDelivered)
         // (2) If DupAcks < DupThresh but IsLost (HighACK + 1) returns true
         // (indicating at least three segments have arrived above the current
         // cumulative acknowledgment point, which is taken to indicate loss)
-        // go to step (4).
-        else if (m_txBuffer->IsLost(m_highRxAckMark + m_tcb->m_segmentSize))
+        // go to step (4).  Note that m_highRxAckMark is (HighACK + 1)
+        else if (m_txBuffer->IsLost(m_highRxAckMark))
         {
             EnterRecovery(currentDelivered);
             NS_ASSERT(m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
