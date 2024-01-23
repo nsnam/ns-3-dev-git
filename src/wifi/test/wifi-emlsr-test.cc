@@ -197,6 +197,8 @@ EmlsrOperationsTestBase::DoSetup()
     mac.SetType("ns3::StaWifiMac",
                 "Ssid",
                 SsidValue(Ssid("wrong-ssid")),
+                "MaxMissedBeacons",
+                UintegerValue(1e6), // do not deassociate
                 "ActiveProbing",
                 BooleanValue(false));
     mac.SetEmlsrManager("ns3::DefaultEmlsrManager",
@@ -379,6 +381,8 @@ EmlsrOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
         }
         // all stations associated; start traffic if needed
         StartTraffic();
+        // stop generation of beacon frames in order to avoid interference
+        m_apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
     });
 }
 
@@ -3579,17 +3583,11 @@ EmlsrLinkSwitchTest::CheckResults()
     const std::size_t nRxOk = 4; // successfully received ICFs
 
     NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(),
-                                m_txPsdusPos + 3 + nRxOk * 4,
+                                m_txPsdusPos + 2 + nRxOk * 4,
                                 "Insufficient number of TX PSDUs");
 
     // m_txPsdusPos points to ADDBA_RESPONSE, then ACK and then ICF
     auto psduIt = std::next(m_txPsdus.cbegin(), m_txPsdusPos + 2);
-
-    // skip first PSDU if it contains a Beacon frame
-    if (psduIt->psduMap.at(SU_STA_ID)->GetHeader(0).IsBeacon())
-    {
-        psduIt++;
-    }
 
     for (std::size_t i = 0; i < nRxOk; i++)
     {
