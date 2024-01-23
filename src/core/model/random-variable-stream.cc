@@ -33,6 +33,7 @@
 #include "rng-seed-manager.h"
 #include "rng-stream.h"
 #include "string.h"
+#include "uinteger.h"
 
 #include <algorithm> // upper_bound
 #include <cmath>
@@ -1869,6 +1870,113 @@ BernoulliRandomVariable::GetValue()
 {
     NS_LOG_FUNCTION(this);
     return GetValue(m_probability);
+}
+
+NS_OBJECT_ENSURE_REGISTERED(LaplacianRandomVariable);
+
+TypeId
+LaplacianRandomVariable::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::LaplacianRandomVariable")
+            .SetParent<RandomVariableStream>()
+            .SetGroupName("Core")
+            .AddConstructor<LaplacianRandomVariable>()
+            .AddAttribute("Location",
+                          "The location parameter for the Laplacian distribution returned by this "
+                          "RNG stream.",
+                          DoubleValue(0.0),
+                          MakeDoubleAccessor(&LaplacianRandomVariable::m_location),
+                          MakeDoubleChecker<double>())
+            .AddAttribute(
+                "Scale",
+                "The scale parameter for the Laplacian distribution returned by this RNG stream.",
+                DoubleValue(1.0),
+                MakeDoubleAccessor(&LaplacianRandomVariable::m_scale),
+                MakeDoubleChecker<double>())
+            .AddAttribute("Bound",
+                          "The bound on the values returned by this RNG stream.",
+                          DoubleValue(0.0),
+                          MakeDoubleAccessor(&LaplacianRandomVariable::m_bound),
+                          MakeDoubleChecker<double>());
+    return tid;
+}
+
+LaplacianRandomVariable::LaplacianRandomVariable()
+{
+    NS_LOG_FUNCTION(this);
+}
+
+double
+LaplacianRandomVariable::GetLocation() const
+{
+    return m_location;
+}
+
+double
+LaplacianRandomVariable::GetScale() const
+{
+    return m_scale;
+}
+
+double
+LaplacianRandomVariable::GetBound() const
+{
+    return m_bound;
+}
+
+double
+LaplacianRandomVariable::GetValue(double location, double scale, double bound)
+{
+    NS_LOG_FUNCTION(this << location << scale << bound);
+    NS_ABORT_MSG_IF(scale <= 0, "Scale parameter should be larger than 0");
+
+    while (true)
+    {
+        // Get a uniform random variable in [-0.5,0.5].
+        auto v = (Peek()->RandU01() - 0.5);
+        if (IsAntithetic())
+        {
+            v = (1 - v);
+        }
+
+        // Calculate the laplacian random variable.
+        const auto sgn = (v > 0) ? 1 : ((v < 0) ? -1 : 0);
+        const auto r = location - (scale * sgn * std::log(1.0 - (2.0 * std::abs(v))));
+
+        // Use this value if it's acceptable.
+        if (bound == 0.0 || std::fabs(r - location) <= bound)
+        {
+            return r;
+        }
+    }
+}
+
+uint32_t
+LaplacianRandomVariable::GetInteger(uint32_t location, uint32_t scale, uint32_t bound)
+{
+    NS_LOG_FUNCTION(this << location << scale << bound);
+    return static_cast<uint32_t>(GetValue(location, scale, bound));
+}
+
+double
+LaplacianRandomVariable::GetValue()
+{
+    NS_LOG_FUNCTION(this);
+    return GetValue(m_location, m_scale, m_bound);
+}
+
+double
+LaplacianRandomVariable::GetVariance(double scale)
+{
+    NS_LOG_FUNCTION(scale);
+    return 2.0 * std::pow(scale, 2.0);
+}
+
+double
+LaplacianRandomVariable::GetVariance() const
+{
+    return GetVariance(m_scale);
 }
 
 } // namespace ns3

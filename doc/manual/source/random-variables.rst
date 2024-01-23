@@ -263,6 +263,7 @@ can also create their own custom random variables by deriving from class
 * class :cpp:class:`EmpiricalRandomVariable`
 * class :cpp:class:`BinomialRandomVariable`
 * class :cpp:class:`BernoulliRandomVariable`
+* class :cpp:class:`LaplacianRandomVariable`
 
 Semantics of RandomVariableStream objects
 *****************************************
