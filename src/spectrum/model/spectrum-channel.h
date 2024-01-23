@@ -150,6 +150,20 @@ class SpectrumChannel : public Channel
     virtual void StartTx(Ptr<SpectrumSignalParameters> params) = 0;
 
     /**
+     * This method calls AssignStreams() on any/all of the PropagationLossModel,
+     * PropagationDelayModel, SpectrumPropagationLossModel,
+     * PhasedArraySpectrumPropagationLossModel, and SpectrumTransmitFilter
+     * objects that have been added to this channel.  If any of those
+     * objects are chained together (e.g., multiple PropagationDelayModel
+     * objects), the base class of that object is responsible for ensuring
+     * that all models in the chain have AssignStreams recursively called.
+     *
+     * \param stream the stream index offset start
+     * \return the number of stream indices assigned by this model
+     */
+    int64_t AssignStreams(int64_t stream);
+
+    /**
      * \brief Remove a SpectrumPhy from a channel
      *
      * This method is used to detach a SpectrumPhy instance from a
@@ -215,6 +229,15 @@ class SpectrumChannel : public Channel
     typedef void (*SignalParametersTracedCallback)(Ptr<SpectrumSignalParameters> params);
 
   protected:
+    /**
+     * This provides a base class implementation that may be subclassed
+     * if needed by subclasses that might need additional stream assignments.
+     *
+     * \param stream first stream index to use
+     * \return the number of stream indices assigned by this model
+     */
+    virtual int64_t DoAssignStreams(int64_t stream);
+
     /**
      * The `PathLoss` trace source. Exporting the pointers to the Tx and Rx
      * SpectrumPhy and a pathloss value, in dB.

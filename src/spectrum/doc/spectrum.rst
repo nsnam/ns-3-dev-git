@@ -292,7 +292,11 @@ Here are some notes on how the spectrum module is expected to be used.
    type it can attempt to receive. If not, the signal is normally
    expected to be considered as interference.
 
-
+*  Many propagation loss and delay models can be added to these channels.
+   The base class ``SpectrumChannel`` provides an ``AssignStreams()`` method
+   to allow the deterministic configuration of random variable stream numbers
+   with a single API call.  See the ns-3 Manual chapter on random variables
+   for more information.
 
 
 Helpers
