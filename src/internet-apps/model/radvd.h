@@ -96,12 +96,12 @@ class Radvd : public Application
     int64_t AssignStreams(int64_t stream);
 
   protected:
-    /**
-     * \brief Dispose the instance.
-     */
     void DoDispose() override;
 
   private:
+    void StartApplication() override;
+    void StopApplication() override;
+
     /// Container: Ptr to RadvdInterface
     typedef std::list<Ptr<RadvdInterface>> RadvdInterfaceList;
     /// Container Iterator: Ptr to RadvdInterface
@@ -122,16 +122,6 @@ class Radvd : public Application
     typedef std::map<uint32_t, Ptr<Socket>>::iterator SocketMapI;
     /// Container Const Iterator: interface number, Socket
     typedef std::map<uint32_t, Ptr<Socket>>::const_iterator SocketMapCI;
-
-    /**
-     * \brief Start the application.
-     */
-    void StartApplication() override;
-
-    /**
-     * \brief Stop the application.
-     */
-    void StopApplication() override;
 
     /**
      * \brief Send a packet.

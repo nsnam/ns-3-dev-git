@@ -68,6 +68,9 @@ class DhcpServer : public Application
     void DoDispose() override;
 
   private:
+    void StartApplication() override;
+    void StopApplication() override;
+
     static const int PORT = 67; //!< Port number of DHCP server
 
     /**
@@ -96,16 +99,6 @@ class DhcpServer : public Application
      * \brief Modifies the remaining lease time of addresses
      */
     void TimerHandler();
-
-    /**
-     * \brief Starts the DHCP Server application
-     */
-    void StartApplication() override;
-
-    /**
-     * \brief Stops the DHCP client application
-     */
-    void StopApplication() override;
 
     Ptr<Socket> m_socket;      //!< The socket bound to port 67
     Ipv4Address m_poolAddress; //!< The network address available to the server

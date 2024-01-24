@@ -147,7 +147,13 @@ class Ping : public Application
      */
     typedef void (*ReportTrace)(const PingReport& report);
 
+  protected:
+    void DoDispose() override;
+
   private:
+    void StartApplication() override;
+    void StopApplication() override;
+
     /**
      * \brief Writes data to buffer in little-endian format.
      *
@@ -165,11 +171,6 @@ class Ping : public Application
      * \return the read data
      */
     uint64_t Read64(const uint8_t* buffer);
-
-    // inherited from Application base class.
-    void StartApplication() override;
-    void StopApplication() override;
-    void DoDispose() override;
 
     /**
      * \brief Return the application signatiure.

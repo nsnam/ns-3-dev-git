@@ -188,14 +188,12 @@ class ThreeGppHttpClient : public Application
                                          uint32_t numBytes);
 
   protected:
-    // Inherited from Object base class.
     void DoDispose() override;
 
-    // Inherited from Application base class.
+  private:
     void StartApplication() override;
     void StopApplication() override;
 
-  private:
     // SOCKET CALLBACK METHODS
 
     /**

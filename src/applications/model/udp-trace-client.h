@@ -128,6 +128,9 @@ class UdpTraceClient : public Application
     void DoDispose() override;
 
   private:
+    void StartApplication() override;
+    void StopApplication() override;
+
     /**
      * \brief Load a trace file
      * \param filename the trace file path
@@ -137,8 +140,6 @@ class UdpTraceClient : public Application
      * \brief Load the default trace
      */
     void LoadDefaultTrace();
-    void StartApplication() override;
-    void StopApplication() override;
 
     /**
      * \brief Send a packet

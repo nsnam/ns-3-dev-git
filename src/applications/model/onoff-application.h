@@ -135,9 +135,8 @@ class OnOffApplication : public Application
     void DoDispose() override;
 
   private:
-    // inherited from Application base class.
-    void StartApplication() override; // Called at time specified by Start
-    void StopApplication() override;  // Called at time specified by Stop
+    void StartApplication() override;
+    void StopApplication() override;
 
     // helpers
     /**

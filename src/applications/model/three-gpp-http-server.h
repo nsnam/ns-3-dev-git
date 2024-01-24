@@ -148,14 +148,12 @@ class ThreeGppHttpServer : public Application
                                                   Ptr<Socket> socket);
 
   protected:
-    // Inherited from Object base class
     void DoDispose() override;
 
-    // Inherited from Application base class
+  private:
     void StartApplication() override;
     void StopApplication() override;
 
-  private:
     // SOCKET CALLBACK METHODS
 
     /**

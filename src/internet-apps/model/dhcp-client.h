@@ -94,6 +94,9 @@ class DhcpClient : public Application
     void DoDispose() override;
 
   private:
+    void StartApplication() override;
+    void StopApplication() override;
+
     /// client states
     enum States
     {
@@ -103,16 +106,6 @@ class DhcpClient : public Application
     };
 
     static const int DHCP_PEER_PORT = 67; //!< DHCP server port
-
-    /*
-     * \brief Starts the DHCP client application
-     */
-    void StartApplication() override;
-
-    /*
-     * \brief Stops the DHCP client application
-     */
-    void StopApplication() override;
 
     /**
      * \brief Handles changes in LinkState

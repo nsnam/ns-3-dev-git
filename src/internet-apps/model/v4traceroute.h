@@ -63,10 +63,13 @@ class V4TraceRoute : public Application
      */
     void Print(Ptr<OutputStreamWrapper> stream);
 
+  protected:
+    void DoDispose() override;
+
   private:
     void StartApplication() override;
     void StopApplication() override;
-    void DoDispose() override;
+
     /**
      * \brief Return the application ID in the node.
      * \returns the application id
