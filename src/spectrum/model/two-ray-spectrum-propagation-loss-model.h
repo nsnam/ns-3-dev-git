@@ -163,15 +163,6 @@ class TwoRaySpectrumPropagationLossModel : public PhasedArraySpectrumPropagation
     void SetFrequency(double f);
 
     /**
-     * \brief Assign a fixed random variable stream number to the random variables
-     * used by this model.
-     *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
-     */
-    int64_t AssignStreams(int64_t stream);
-
-    /**
      * \brief Compute the received PSD.
      *
      * This function computes the received PSD by applying the Fluctuating Two-Ray (FTR)
@@ -194,6 +185,9 @@ class TwoRaySpectrumPropagationLossModel : public PhasedArraySpectrumPropagation
         Ptr<const MobilityModel> b,
         Ptr<const PhasedArrayModel> aPhasedArrayModel,
         Ptr<const PhasedArrayModel> bPhasedArrayModel) const override;
+
+  protected:
+    int64_t DoAssignStreams(int64_t stream) override;
 
   private:
     /**

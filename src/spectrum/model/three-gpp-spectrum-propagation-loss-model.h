@@ -244,6 +244,8 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
         uint8_t numRxPorts,
         bool isReverse) const;
 
+    int64_t DoAssignStreams(int64_t stream) override;
+
     mutable std::unordered_map<uint64_t, Ptr<const LongTerm>>
         m_longTermMap;                           //!< map containing the long term components
     Ptr<MatrixBasedChannelModel> m_channelModel; //!< the model to generate the channel matrix

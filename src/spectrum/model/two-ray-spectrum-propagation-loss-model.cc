@@ -1165,7 +1165,7 @@ TwoRaySpectrumPropagationLossModel::SearchClosestFc(const std::vector<double>& f
 }
 
 int64_t
-TwoRaySpectrumPropagationLossModel::AssignStreams(int64_t stream)
+TwoRaySpectrumPropagationLossModel::DoAssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this << stream);
     m_normalRv->SetStream(stream);

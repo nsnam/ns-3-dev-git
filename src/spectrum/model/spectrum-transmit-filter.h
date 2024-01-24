@@ -92,12 +92,12 @@ class SpectrumTransmitFilter : public Object
     /**
      * Assign a fixed random variable stream number to the random variables used by this model.
      *
-     * This should be overridden by subclasses that use random variables.
+     * Subclasses must implement this; those not using random variables can return zero.
      *
      * \param stream first stream index to use
      * \return the number of stream indices assigned by this model
      */
-    virtual int64_t DoAssignStreams(int64_t stream);
+    virtual int64_t DoAssignStreams(int64_t stream) = 0;
 
   private:
     /**

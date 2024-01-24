@@ -96,14 +96,7 @@ SpectrumTransmitFilter::AssignStreams(int64_t stream)
     {
         currentStream += m_next->AssignStreams(currentStream);
     }
-    NS_LOG_DEBUG("SpectrumTransmitFilter objects used " << currentStream - stream << " streams");
     return (currentStream - stream);
-}
-
-int64_t
-SpectrumTransmitFilter::DoAssignStreams(int64_t stream)
-{
-    return 0;
 }
 
 } // namespace ns3

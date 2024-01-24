@@ -527,4 +527,10 @@ ThreeGppSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
                                isReverse);
 }
 
+int64_t
+ThreeGppSpectrumPropagationLossModel::DoAssignStreams(int64_t stream)
+{
+    return 0;
+}
+
 } // namespace ns3

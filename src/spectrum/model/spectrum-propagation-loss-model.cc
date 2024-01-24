@@ -78,4 +78,16 @@ SpectrumPropagationLossModel::CalcRxPowerSpectralDensity(Ptr<const SpectrumSigna
     return rxPsd;
 }
 
+int64_t
+SpectrumPropagationLossModel::AssignStreams(int64_t stream)
+{
+    auto currentStream = stream;
+    currentStream += DoAssignStreams(stream);
+    if (m_next)
+    {
+        currentStream += m_next->AssignStreams(currentStream);
+    }
+    return (currentStream - stream);
+}
+
 } // namespace ns3

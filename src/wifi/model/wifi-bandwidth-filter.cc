@@ -137,4 +137,10 @@ WifiBandwidthFilter::DoFilter(Ptr<const SpectrumSignalParameters> params,
     return filter;
 }
 
+int64_t
+WifiBandwidthFilter::DoAssignStreams(int64_t stream)
+{
+    return 0;
+}
+
 } // namespace ns3

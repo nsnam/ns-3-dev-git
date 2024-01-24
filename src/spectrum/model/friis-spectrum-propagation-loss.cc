@@ -94,4 +94,10 @@ FriisSpectrumPropagationLossModel::CalculateLoss(double f, double d) const
     return loss;
 }
 
+int64_t
+FriisSpectrumPropagationLossModel::DoAssignStreams(int64_t stream)
+{
+    return 0;
+}
+
 } // namespace ns3

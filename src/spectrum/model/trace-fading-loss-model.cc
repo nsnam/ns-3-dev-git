@@ -238,7 +238,7 @@ TraceFadingLossModel::DoCalcRxPowerSpectralDensity(Ptr<const SpectrumSignalParam
 }
 
 int64_t
-TraceFadingLossModel::AssignStreams(int64_t stream)
+TraceFadingLossModel::DoAssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this << stream);
     NS_ASSERT(m_streamsAssigned == false);

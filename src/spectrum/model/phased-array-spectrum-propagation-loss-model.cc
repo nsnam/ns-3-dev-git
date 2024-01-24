@@ -88,4 +88,17 @@ PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity(
     return rxParams;
 }
 
+int64_t
+PhasedArraySpectrumPropagationLossModel::AssignStreams(int64_t stream)
+{
+    NS_LOG_FUNCTION(this << stream);
+    auto currentStream = stream;
+    currentStream += DoAssignStreams(stream);
+    if (m_next)
+    {
+        currentStream += m_next->AssignStreams(currentStream);
+    }
+    return (currentStream - stream);
+}
+
 } // namespace ns3

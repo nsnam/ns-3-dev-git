@@ -65,6 +65,9 @@ class FriisSpectrumPropagationLossModel : public SpectrumPropagationLossModel
      * @return if Prx < Ptx then return Prx; else return Ptx
      */
     double CalculateLoss(double f, double d) const;
+
+  protected:
+    int64_t DoAssignStreams(int64_t stream) override;
 };
 
 } // namespace ns3

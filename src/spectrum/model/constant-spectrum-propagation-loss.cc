@@ -99,4 +99,10 @@ ConstantSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
     return rxPsd;
 }
 
+int64_t
+ConstantSpectrumPropagationLossModel::DoAssignStreams(int64_t stream)
+{
+    return 0;
+}
+
 } // namespace ns3

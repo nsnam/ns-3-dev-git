@@ -57,8 +57,10 @@ class ConstantSpectrumPropagationLossModel : public SpectrumPropagationLossModel
     double GetLossDb() const;
 
   protected:
+    int64_t DoAssignStreams(int64_t stream) override;
     double m_lossDb;     //!< Propagation loss [dB]
     double m_lossLinear; //!< Propagation loss (linear)
+
   private:
 };
 

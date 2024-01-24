@@ -45,6 +45,9 @@ class WifiBandwidthFilter : public SpectrumTransmitFilter
 
     bool DoFilter(Ptr<const SpectrumSignalParameters> params,
                   Ptr<const SpectrumPhy> receiverPhy) override;
+
+  protected:
+    int64_t DoAssignStreams(int64_t stream) override;
 };
 
 } // namespace ns3
