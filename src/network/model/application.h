@@ -106,6 +106,15 @@ class Application : public Object
     void SetNode(Ptr<Node> node);
 
     /**
+     * \brief Assign a fixed random variable stream number to the random variables
+     * used by this Application object.
+     *
+     * \param stream first stream index to use
+     * \return the number of stream indices assigned by this Application object
+     */
+    virtual int64_t AssignStreams(int64_t stream);
+
+    /**
      * \brief Common callback signature for packet delay and address.
      *
      * \param delay The packet delay.

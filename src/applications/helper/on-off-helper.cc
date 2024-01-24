@@ -87,11 +87,7 @@ OnOffHelper::AssignStreams(NodeContainer c, int64_t stream)
         node = (*i);
         for (uint32_t j = 0; j < node->GetNApplications(); j++)
         {
-            Ptr<OnOffApplication> onoff = DynamicCast<OnOffApplication>(node->GetApplication(j));
-            if (onoff)
-            {
-                currentStream += onoff->AssignStreams(currentStream);
-            }
+            currentStream += node->GetApplication(j)->AssignStreams(currentStream);
         }
     }
     return (currentStream - stream);

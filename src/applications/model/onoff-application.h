@@ -122,14 +122,7 @@ class OnOffApplication : public Application
      */
     Ptr<Socket> GetSocket() const;
 
-    /**
-     * \brief Assign a fixed random variable stream number to the random variables
-     * used by this model.
-     *
-     * \param stream first stream index to use
-     * \return the number of stream indices assigned by this model
-     */
-    int64_t AssignStreams(int64_t stream);
+    int64_t AssignStreams(int64_t stream) override;
 
   protected:
     void DoDispose() override;

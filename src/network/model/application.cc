@@ -132,4 +132,11 @@ Application::StopApplication()
     NS_LOG_FUNCTION(this);
 }
 
+int64_t
+Application::AssignStreams(int64_t stream)
+{
+    NS_LOG_FUNCTION(this << stream);
+    return 0;
+}
+
 } // namespace ns3
