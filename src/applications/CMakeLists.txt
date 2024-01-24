@@ -27,6 +27,7 @@ build_lib(
     model/udp-server.cc
     model/udp-trace-client.cc
     model/video-traffic.cc
+    model/voip-traffic.cc
   HEADER_FILES
     helper/bulk-send-helper.h
     helper/on-off-helper.h
@@ -54,6 +55,7 @@ build_lib(
     model/udp-server.h
     model/udp-trace-client.h
     model/video-traffic.h
+    model/voip-traffic.h
   LIBRARIES_TO_LINK ${libinternet}
   TEST_SOURCES
     test/three-gpp-http-client-server-test.cc
