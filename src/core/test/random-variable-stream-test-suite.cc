@@ -29,6 +29,7 @@
 #include "ns3/shuffle.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
+#include "ns3/uinteger.h"
 
 #include <cmath>
 #include <ctime>
@@ -138,6 +139,25 @@ class TestCaseBase : public TestCase
         }
         double valueMean = sum / N_MEASUREMENTS;
         return valueMean;
+    }
+
+    /**
+     * Compute the variance of a random variable.
+     * \param [in] rng The random variable to sample.
+     * \param [in] average The previously calculated average value.
+     * \returns The variance of \c N_MEASUREMENTS samples.
+     */
+    double Variance(Ptr<RandomVariableStream> rng, double average) const
+    {
+        NS_LOG_FUNCTION(this << rng);
+        auto sum = 0.0;
+        for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
+        {
+            const auto value = rng->GetValue();
+            sum += std::pow(value - average, 2);
+        }
+        const auto valueVariance = sum / N_MEASUREMENTS;
+        return valueVariance;
     }
 
     /** A factory base class to create new instances of a random variable. */
@@ -2944,6 +2964,86 @@ ShuffleElementsTest::DoRun()
 
 /**
  * \ingroup rng-tests
+ * Test case for laplacian distribution random variable stream generator
+ */
+class LaplacianTestCase : public TestCaseBase
+{
+  public:
+    LaplacianTestCase();
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Tolerance for testing rng values against expectation,
+     * as a fraction of mean value.
+     */
+    static constexpr double TOLERANCE{1e-2};
+};
+
+LaplacianTestCase::LaplacianTestCase()
+    : TestCaseBase("Laplacian Random Variable Stream Generator")
+{
+}
+
+void
+LaplacianTestCase::DoRun()
+{
+    NS_LOG_FUNCTION(this);
+    SetTestSuiteSeed();
+
+    double mu = -5.0;
+    double scale = 4.0;
+    double bound = 20.0;
+
+    // Create unbounded RNG with the specified range.
+    auto x1 = CreateObject<LaplacianRandomVariable>();
+    x1->SetAttribute("Location", DoubleValue(mu));
+    x1->SetAttribute("Scale", DoubleValue(scale));
+
+    // Calculate the mean of these values.
+    auto valueMean = Average(x1);
+
+    // Calculate the variance of these values.
+    auto valueVariance = Variance(x1, valueMean);
+
+    // Test that values have approximately the right mean value.
+    const auto expectedMean = mu;
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
+
+    // Test that values have approximately the right variance value.
+    const auto expectedVariance = LaplacianRandomVariable::GetVariance(scale);
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueVariance,
+                              expectedVariance,
+                              TOLERANCE * expectedVariance,
+                              "Wrong variance value.");
+
+    // Create bounded RNG with the specified range.
+    auto x2 = CreateObject<LaplacianRandomVariable>();
+    x2->SetAttribute("Location", DoubleValue(mu));
+    x2->SetAttribute("Scale", DoubleValue(scale));
+    x2->SetAttribute("Bound", DoubleValue(bound));
+
+    // Calculate the mean of these values.
+    valueMean = Average(x2);
+
+    // Test that values have approximately the right mean value.
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
+
+    // Check that only the correct values are returned
+    const auto lowerBound = mu - bound;
+    const auto upperBound = mu + bound;
+    for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
+    {
+        const auto value = x2->GetValue();
+        NS_TEST_EXPECT_MSG_EQ((value >= lowerBound) || (value <= upperBound),
+                              true,
+                              "Value not in expected boundaries.");
+    }
+}
+
+/**
+ * \ingroup rng-tests
  * RandomVariableStream test suite, covering all random number variable
  * stream generator types.
  */
@@ -2999,6 +3099,7 @@ RandomVariableSuite::RandomVariableSuite()
     AddTestCase(new BinomialTestCase);
     AddTestCase(new BinomialAntitheticTestCase);
     AddTestCase(new ShuffleElementsTest);
+    AddTestCase(new LaplacianTestCase);
 }
 
 static RandomVariableSuite randomVariableSuite; //!< Static variable for test initialization
