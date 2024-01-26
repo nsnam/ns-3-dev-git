@@ -34,6 +34,7 @@
 #include "ns3/he-configuration.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/log.h"
+#include "ns3/object-vector.h"
 #include "ns3/packet.h"
 #include "ns3/pointer.h"
 #include "ns3/shuffle.h"
@@ -136,6 +137,12 @@ WifiMac::GetTypeId()
                           PointerValue(),
                           MakePointerAccessor(&WifiMac::GetBKQueue, &WifiMac::SetBkQueue),
                           MakePointerChecker<QosTxop>())
+            .AddAttribute(
+                "ChannelAccessManagers",
+                "The Channel Access Manager(s) attached to this device.",
+                ObjectVectorValue(),
+                MakeObjectVectorAccessor(&WifiMac::GetChannelAccessManager, &WifiMac::GetNLinks),
+                MakeObjectVectorChecker<ChannelAccessManager>())
             .AddAttribute(
                 "MpduBufferSize",
                 "The size (in number of MPDUs) of the buffer used for each BlockAck "
