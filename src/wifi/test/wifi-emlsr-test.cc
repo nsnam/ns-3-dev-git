@@ -181,6 +181,9 @@ EmlsrOperationsTestBase::DoSetup()
                 SsidValue(Ssid("ns-3-ssid")),
                 "BeaconGeneration",
                 BooleanValue(true));
+    mac.SetApEmlsrManager("ns3::AdvancedApEmlsrManager",
+                          "WaitTransDelayOnPsduRxError",
+                          BooleanValue(true));
 
     NetDeviceContainer apDevice = wifi.Install(phyHelper, mac, wifiApNode);
 
@@ -2434,6 +2437,7 @@ EmlsrUlTxopTest::DoSetup()
     // Channel switch delay should be less than RTS TX time + SIFS + CTS TX time, otherwise
     // UL TXOPs cannot be initiated by aux PHYs
     Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(75)));
+    Config::SetDefault("ns3::WifiPhy::NotifyMacHdrRxEnd", BooleanValue(true));
 
     EmlsrOperationsTestBase::DoSetup();
 
@@ -2652,6 +2656,12 @@ EmlsrUlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
         // check that other EMLSR links are now blocked on the EMLSR client and on the AP MLD
         // after this QoS data frame is received
         Simulator::ScheduleNow([=, this]() {
+            auto phyHdrTxTime = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
+            auto macHdrSize = (*psduMap.at(SU_STA_ID)->begin())->GetHeader().GetSerializedSize() +
+                              4 /* A-MPDU subframe header size */;
+            auto macHdrTxTime =
+                DataRate(txVector.GetMode().GetDataRate(txVector)).CalculateBytesTxTime(macHdrSize);
+
             for (auto id : m_staMacs[0]->GetLinkIds())
             {
                 CheckBlockedLink(
@@ -2663,6 +2673,17 @@ EmlsrUlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
                     "Checking EMLSR links on EMLSR client while sending the first data frame",
                     false);
 
+                Simulator::Schedule(phyHdrTxTime + macHdrTxTime + MicroSeconds(1), [=, this]() {
+                    CheckBlockedLink(m_apMac,
+                                     m_staMacs[0]->GetAddress(),
+                                     id,
+                                     WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                     id != m_staMacs[0]->GetLinkForPhy(m_mainPhyId) &&
+                                         m_staMacs[0]->IsEmlsrLink(id),
+                                     "Checking EMLSR links on AP MLD right after receiving the MAC "
+                                     "header of the first data frame");
+                });
+
                 Simulator::Schedule(
                     txDuration + MicroSeconds(MAX_PROPAGATION_DELAY_USEC),
                     [=, this]() {
@@ -2673,7 +2694,7 @@ EmlsrUlTxopTest::CheckQosFrames(const WifiConstPsduMap& psduMap,
                             WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
                             id != m_staMacs[0]->GetLinkForPhy(m_mainPhyId) &&
                                 m_staMacs[0]->IsEmlsrLink(id),
-                            "Checking EMLSR links on AP MLD while sending the first data frame");
+                            "Checking EMLSR links on AP MLD after sending the first data frame");
                     });
             }
         });

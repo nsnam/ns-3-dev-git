@@ -132,11 +132,10 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     mac->SetMacQueueScheduler(queueScheduler);
 
     // create and install the Multi User Scheduler if this is an HE AP
-    Ptr<ApWifiMac> apMac;
-    if (standard >= WIFI_STANDARD_80211ax && m_muScheduler.IsTypeIdSet() &&
-        (apMac = DynamicCast<ApWifiMac>(mac)))
+    auto apMac = DynamicCast<ApWifiMac>(mac);
+    if (standard >= WIFI_STANDARD_80211ax && m_muScheduler.IsTypeIdSet() && apMac)
     {
-        Ptr<MultiUserScheduler> muScheduler = m_muScheduler.Create<MultiUserScheduler>();
+        auto muScheduler = m_muScheduler.Create<MultiUserScheduler>();
         apMac->AggregateObject(muScheduler);
     }
 
