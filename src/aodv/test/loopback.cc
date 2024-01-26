@@ -36,7 +36,6 @@
 #include "ns3/udp-echo-helper.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/uinteger.h"
-#include "ns3/v4ping.h"
 #include "ns3/yans-wifi-helper.h"
 
 #include <sstream>

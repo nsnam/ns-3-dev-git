@@ -41,7 +41,6 @@
 #include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/uinteger.h"
-#include "ns3/v4ping-helper.h"
 
 using namespace ns3;
 

@@ -37,7 +37,6 @@
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
-#include "ns3/v4ping-helper.h"
 #include "ns3/yans-wifi-helper.h"
 
 #include <sstream>
