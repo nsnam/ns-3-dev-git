@@ -28,6 +28,10 @@
 namespace ns3
 {
 
+/// aRxPHYStartDelay value to use when waiting for a new frame in the context of EMLSR operations
+/// (Sec. 35.3.17 of 802.11be D3.1)
+extern const Time EMLSR_RX_PHY_START_DELAY;
+
 class MgtEmlOmn;
 
 /**

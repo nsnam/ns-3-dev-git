@@ -22,8 +22,17 @@
 
 #include "default-ap-emlsr-manager.h"
 
+#include "ns3/nstime.h"
+
+#include <set>
+
 namespace ns3
 {
+
+class ApWifiMac;
+class WifiMacHeader;
+class WifiPsdu;
+class WifiTxVector;
 
 /**
  * \ingroup wifi
@@ -41,6 +50,35 @@ class AdvancedApEmlsrManager : public DefaultApEmlsrManager
 
     AdvancedApEmlsrManager();
     ~AdvancedApEmlsrManager() override;
+
+    void NotifyPsduRxOk(uint8_t linkId, Ptr<const WifiPsdu> psdu) override;
+    void NotifyPsduRxError(uint8_t linkId, Ptr<const WifiPsdu> psdu) override;
+
+  protected:
+    void DoDispose() override;
+    void DoSetWifiMac(Ptr<ApWifiMac> mac) override;
+
+    /**
+     * Store information about the MAC header of the MPDU being received on the given link.
+     *
+     * \param linkId the ID of the given link
+     * \param macHdr the MAC header of the MPDU being received
+     * \param txVector the TXVECTOR used to transmit the PSDU
+     * \param psduDuration the remaining duration of the PSDU
+     */
+    void ReceivedMacHdr(uint8_t linkId,
+                        const WifiMacHeader& macHdr,
+                        const WifiTxVector& txVector,
+                        Time psduDuration);
+
+  private:
+    std::set<uint8_t>
+        m_blockedLinksOnMacHdrRx; //!< links that have been blocked upon receiving a MAC header
+    bool m_useNotifiedMacHdr;     //!< whether to use the information about the MAC header of
+                                  //!< the MPDU being received (if notified by the PHY)
+    bool m_waitTransDelayOnPsduRxError; //!< Whether the AP MLD waits for a response timeout after a
+                                        //!< PSDU reception error before starting the transition
+                                        //!< delay
 };
 
 } // namespace ns3

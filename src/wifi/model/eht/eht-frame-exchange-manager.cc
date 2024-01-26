@@ -39,9 +39,7 @@
 namespace ns3
 {
 
-/// aRxPHYStartDelay value to use when waiting for a new frame in the context of EMLSR operations
-/// (Sec. 35.3.17 of 802.11be D3.1)
-static constexpr uint8_t RX_PHY_START_DELAY_USEC = 20;
+const Time EMLSR_RX_PHY_START_DELAY = MicroSeconds(20);
 
 /**
  * Additional time (exceeding 20 us) to wait for a PHY-RXSTART.indication when the PHY is
@@ -1364,8 +1362,7 @@ EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration, Time durationId
         // transmitting a CTS after ICS). The TXOP holder may transmit a frame a SIFS
         // after the end of this PPDU, hence we need to postpone the TXOP end in order to
         // get the PHY-RXSTART.indication
-        delay = txDuration + m_phy->GetSifs() + m_phy->GetSlot() +
-                MicroSeconds(RX_PHY_START_DELAY_USEC);
+        delay = txDuration + m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_RX_PHY_START_DELAY;
     }
 
     NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
@@ -1418,7 +1415,7 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxEnd(Time durationId)
 
     // we may send a response after a SIFS or we may receive another frame after a SIFS.
     // Postpone the TXOP end by considering the latter (which takes longer)
-    auto delay = m_phy->GetSifs() + m_phy->GetSlot() + MicroSeconds(RX_PHY_START_DELAY_USEC);
+    auto delay = m_phy->GetSifs() + m_phy->GetSlot() + EMLSR_RX_PHY_START_DELAY;
     NS_LOG_DEBUG("Expected TXOP end=" << (Simulator::Now() + delay).As(Time::S));
     m_ongoingTxopEnd =
         Simulator::Schedule(delay, &EhtFrameExchangeManager::TxopEnd, this, m_txopHolder);
