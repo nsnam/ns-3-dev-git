@@ -1030,6 +1030,13 @@ environment. Some differences were noted:
   them back-to-back. Currently, ns-3 paces out all packets eligible to
   be sent in the same manner.
 
+It is important to also note that the current model does not implement
+Section 3.5 of RFC 8257 regarding the handling of packet loss.  This
+requirement states that DCTCP must react to lost packets in the same way
+as does a conventional TCP (as specified in RFC 5681).  The current
+DCTCP model does not implement this, and should therefore only be used
+in simulations that do not involve any packet loss on the DCTCP flows.
+
 More information about DCTCP is available in the RFC 8257:
 https://tools.ietf.org/html/rfc8257
 

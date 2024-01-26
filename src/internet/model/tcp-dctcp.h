@@ -33,7 +33,10 @@ namespace ns3
  * \ingroup tcp
  *
  * \brief An implementation of DCTCP. This model implements all of the
- * endpoint capabilities mentioned in the DCTCP SIGCOMM paper.
+ * endpoint capabilities mentioned in the DCTCP SIGCOMM paper.  Note that
+ * this model presently will not do any fallback to RFC 5681 congestion
+ * avoidance as specified in RFC 8257 Section 3.5, so it should only be
+ * used in a simulation that does not involve packet loss.
  */
 
 class TcpDctcp : public TcpLinuxReno
