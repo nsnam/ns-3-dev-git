@@ -10,6 +10,7 @@ All rights reserved. This program and the accompanying materials are made
 available under the terms of the BSD which accompanies this distribution, and
 is available at U{http://www.opensource.org/licenses/bsd-license.php}
 """
+
 # this file is a modified version of source code from the Accerciser project
 # https://wiki.gnome.org/Apps/Accerciser
 

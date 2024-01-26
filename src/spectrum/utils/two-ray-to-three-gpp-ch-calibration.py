@@ -349,7 +349,7 @@ def fit_ftr_to_reference(
             np.linspace(start=m_and_k_lb, stop=m_and_k_ub, endpoint=True, num=num_params),
         ),
         # delta must be in [0, 1]
-        "delta": np.linspace(start=0.0, stop=1.0, endpoint=True, num=num_params)
+        "delta": np.linspace(start=0.0, stop=1.0, endpoint=True, num=num_params),
         # sigma determined from k, due to the unit-mean constraint
     }
 
@@ -395,7 +395,7 @@ def fit_ftr_to_reference(
                 stop=min(1, best_params.delta + delta_step),
                 endpoint=True,
                 num=num_params,
-            )
+            ),
             # sigma determined from k, due to the unit-mean constraint
         }
 
