@@ -70,6 +70,13 @@ ApEmlsrManager::SetWifiMac(Ptr<ApWifiMac> mac)
     NS_ABORT_MSG_IF(m_apMac->GetNLinks() <= 1, "ApEmlsrManager can only be installed on MLDs");
     NS_ABORT_MSG_IF(m_apMac->GetTypeOfStation() != AP,
                     "ApEmlsrManager can only be installed on AP MLDs");
+    DoSetWifiMac(mac);
+}
+
+void
+ApEmlsrManager::DoSetWifiMac(Ptr<ApWifiMac> mac)
+{
+    NS_LOG_FUNCTION(this << mac);
 }
 
 Ptr<ApWifiMac>
@@ -82,6 +89,18 @@ Ptr<EhtFrameExchangeManager>
 ApEmlsrManager::GetEhtFem(uint8_t linkId) const
 {
     return StaticCast<EhtFrameExchangeManager>(m_apMac->GetFrameExchangeManager(linkId));
+}
+
+void
+ApEmlsrManager::NotifyPsduRxOk(uint8_t linkId, Ptr<const WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << linkId << *psdu);
+}
+
+void
+ApEmlsrManager::NotifyPsduRxError(uint8_t linkId, Ptr<const WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << linkId << *psdu);
 }
 
 } // namespace ns3

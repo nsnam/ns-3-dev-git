@@ -97,6 +97,31 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      */
     bool UsingOtherEmlsrLink() const;
 
+    /**
+     * Check if the frame received (or being received) is sent by an EMLSR client to start an
+     * UL TXOP. If so, take the appropriate actions (e.g., block transmission to the EMLSR client
+     * on the other links). This method is intended to be called when an MPDU (possibly within
+     * an A-MPDU) is received or when the reception of the MAC header in an MPDU is notified.
+     *
+     * \param hdr the MAC header of the received (or being received) MPDU
+     * \param txVector the TXVECTOR used to transmit the frame received (or being received)
+     * \return whether the frame received (or being received) is sent by an EMLSR client to start
+     *         an UL TXOP
+     */
+    bool CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr, const WifiTxVector& txVector);
+
+    /**
+     * This method is intended to be called when an AP MLD detects that an EMLSR client previously
+     * involved in the current TXOP will start waiting for the transition delay interval (to switch
+     * back to listening operation) after the given delay.
+     * This method blocks the transmissions on all the EMLSR links of the given EMLSR client until
+     * the transition delay advertised by the EMLSR client expires.
+     *
+     * \param address the link MAC address of the given EMLSR client
+     * \param delay the given delay
+     */
+    void EmlsrSwitchToListening(const Mac48Address& address, const Time& delay);
+
   protected:
     void DoDispose() override;
     void RxStartIndication(WifiTxVector txVector, Time psduDuration) override;
@@ -119,33 +144,9 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void NavResetTimeout() override;
     void IntraBssNavResetTimeout() override;
     void SendCtsAfterRts(const WifiMacHeader& rtsHdr, WifiMode rtsTxMode, double rtsSnr) override;
-
-    /**
-     * This method is intended to be called when an AP MLD detects that an EMLSR client previously
-     * involved in the current TXOP will start waiting for the transition delay interval (to switch
-     * back to listening operation) after the given delay.
-     * This method blocks the transmissions on all the EMLSR links of the given EMLSR client until
-     * the transition delay advertised by the EMLSR client expires.
-     *
-     * \param address the link MAC address of the given EMLSR client
-     * \param delay the given delay
-     */
-    void EmlsrSwitchToListening(const Mac48Address& address, const Time& delay);
+    void PsduRxError(Ptr<const WifiPsdu> psdu) override;
 
   private:
-    /**
-     * Check if the frame received (or being received) is sent by an EMLSR client to start an
-     * UL TXOP. If so, take the appropriate actions (e.g., block transmission to the EMLSR client
-     * on the other links). This method is intended to be called when an MPDU (possibly within
-     * an A-MPDU) is received or when the reception of the MAC header in an MPDU is notified.
-     *
-     * \param hdr the MAC header of the received (or being received) MPDU
-     * \param txVector the TXVECTOR used to transmit the frame received (or being received)
-     * \return whether the frame received (or being received) is sent by an EMLSR client to start
-     *         an UL TXOP
-     */
-    bool CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr, const WifiTxVector& txVector);
-
     /**
      * Generate an in-device interference of the given power on the given link for the given
      * duration.

@@ -27,6 +27,7 @@ namespace ns3
 
 class ApWifiMac;
 class EhtFrameExchangeManager;
+class WifiPsdu;
 
 /**
  * \ingroup wifi
@@ -52,8 +53,31 @@ class ApEmlsrManager : public Object
      */
     void SetWifiMac(Ptr<ApWifiMac> mac);
 
+    /**
+     * This method is called when the reception of a PSDU succeeds on the given link.
+     *
+     * \param linkId the ID of the given link
+     * \param psdu the PSDU whose reception succeeded
+     */
+    virtual void NotifyPsduRxOk(uint8_t linkId, Ptr<const WifiPsdu> psdu);
+
+    /**
+     * This method is called when the reception of a PSDU fails on the given link.
+     *
+     * \param linkId the ID of the given link
+     * \param psdu the PSDU whose reception failed
+     */
+    virtual void NotifyPsduRxError(uint8_t linkId, Ptr<const WifiPsdu> psdu);
+
   protected:
     void DoDispose() override;
+
+    /**
+     * Allow subclasses to take actions when the MAC is set.
+     *
+     * \param mac the wifi MAC
+     */
+    virtual void DoSetWifiMac(Ptr<ApWifiMac> mac);
 
     /**
      * \return the MAC of the AP MLD managed by this AP EMLSR Manager.

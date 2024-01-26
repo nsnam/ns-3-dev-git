@@ -19,6 +19,7 @@
 
 #include "eht-frame-exchange-manager.h"
 
+#include "ap-emlsr-manager.h"
 #include "eht-phy.h"
 #include "emlsr-manager.h"
 
@@ -1068,6 +1069,11 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
 
     HeFrameExchangeManager::PostProcessFrame(psdu, txVector);
 
+    if (m_apMac && m_apMac->GetApEmlsrManager())
+    {
+        m_apMac->GetApEmlsrManager()->NotifyPsduRxOk(m_linkId, psdu);
+    }
+
     if (m_apMac && m_txopHolder == psdu->GetAddr2() &&
         GetWifiRemoteStationManager()->GetEmlsrEnabled(*m_txopHolder))
     {
@@ -1157,6 +1163,17 @@ EhtFrameExchangeManager::CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr,
     }
 
     return true;
+}
+
+void
+EhtFrameExchangeManager::PsduRxError(Ptr<const WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << psdu);
+
+    if (m_apMac && m_apMac->GetApEmlsrManager())
+    {
+        m_apMac->GetApEmlsrManager()->NotifyPsduRxError(m_linkId, psdu);
+    }
 }
 
 void

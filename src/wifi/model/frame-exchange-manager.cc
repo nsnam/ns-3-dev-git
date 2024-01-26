@@ -176,6 +176,7 @@ FrameExchangeManager::SetWifiPhy(Ptr<WifiPhy> phy)
     m_phy->TraceConnectWithoutContext("PhyRxMacHeaderEnd",
                                       MakeCallback(&FrameExchangeManager::ReceivedMacHdr, this));
     m_phy->SetReceiveOkCallback(MakeCallback(&FrameExchangeManager::Receive, this));
+    m_phy->SetReceiveErrorCallback(MakeCallback(&FrameExchangeManager::PsduRxError, this));
 }
 
 void
@@ -197,6 +198,7 @@ FrameExchangeManager::ResetPhy()
                                                          RxSignalInfo,
                                                          WifiTxVector,
                                                          std::vector<bool>>());
+            m_phy->SetReceiveErrorCallback(MakeNullCallback<void, Ptr<const WifiPsdu>>());
         }
         m_phy = nullptr;
         m_ongoingRxInfo.macHdr.reset();
@@ -1140,6 +1142,12 @@ FrameExchangeManager::NotifyOffNow()
 {
     NS_LOG_DEBUG("Device is switched off. Cancelling MAC pending events");
     Reset();
+}
+
+void
+FrameExchangeManager::PsduRxError(Ptr<const WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << psdu);
 }
 
 void

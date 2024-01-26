@@ -361,6 +361,13 @@ class FrameExchangeManager : public Object
     virtual void NavResetTimeout();
 
     /**
+     * This method is called when the reception of a PSDU fails.
+     *
+     * \param psdu the PSDU whose reception failed
+     */
+    virtual void PsduRxError(Ptr<const WifiPsdu> psdu);
+
+    /**
      * This method handles the reception of an MPDU (possibly included in an A-MPDU)
      *
      * \param mpdu the received MPDU
