@@ -27,6 +27,7 @@ set(source_files
     model/channel-access-manager.cc
     model/ctrl-headers.cc
     model/edca-parameter-set.cc
+    model/eht/advanced-ap-emlsr-manager.cc
     model/eht/advanced-emlsr-manager.cc
     model/eht/ap-emlsr-manager.cc
     model/eht/default-ap-emlsr-manager.cc
@@ -189,6 +190,7 @@ set(header_files
     model/channel-access-manager.h
     model/ctrl-headers.h
     model/edca-parameter-set.h
+    model/eht/advanced-ap-emlsr-manager.h
     model/eht/advanced-emlsr-manager.h
     model/eht/ap-emlsr-manager.h
     model/eht/default-ap-emlsr-manager.h

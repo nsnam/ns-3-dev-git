@@ -885,6 +885,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("AarfWifiManager", logLevel);
     LogComponentEnable("AarfcdWifiManager", logLevel);
     LogComponentEnable("AdhocWifiMac", logLevel);
+    LogComponentEnable("AdvancedApEmlsrManager", logLevel);
     LogComponentEnable("AdvancedEmlsrManager", logLevel);
     LogComponentEnable("AmrrWifiManager", logLevel);
     LogComponentEnable("ApEmlsrManager", logLevel);
