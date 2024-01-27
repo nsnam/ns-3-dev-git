@@ -21,6 +21,7 @@
 #define PING6_HELPER_H
 
 #include "ns3/application-container.h"
+#include "ns3/deprecated.h"
 #include "ns3/ipv6-address.h"
 #include "ns3/node-container.h"
 #include "ns3/object-factory.h"

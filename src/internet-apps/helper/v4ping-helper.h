@@ -21,6 +21,7 @@
 #define V4PING_HELPER_H
 
 #include "ns3/application-container.h"
+#include "ns3/deprecated.h"
 #include "ns3/node-container.h"
 #include "ns3/object-factory.h"
 

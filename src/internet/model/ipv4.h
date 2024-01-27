@@ -23,6 +23,7 @@
 #include "ipv4-route.h"
 
 #include "ns3/callback.h"
+#include "ns3/deprecated.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/object.h"
 #include "ns3/socket.h"

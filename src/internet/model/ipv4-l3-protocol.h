@@ -24,6 +24,7 @@
 #include "ipv4-routing-protocol.h"
 #include "ipv4.h"
 
+#include "ns3/deprecated.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/net-device.h"
 #include "ns3/nstime.h"

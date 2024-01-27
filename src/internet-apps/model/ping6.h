@@ -21,6 +21,7 @@
 #define PING6_H
 
 #include "ns3/application.h"
+#include "ns3/deprecated.h"
 #include "ns3/ipv6-address.h"
 #include "ns3/ipv6-l3-protocol.h"
 

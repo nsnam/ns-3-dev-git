@@ -21,6 +21,7 @@
 #ifndef IPV4_L3_CLICK_PROTOCOL_H
 #define IPV4_L3_CLICK_PROTOCOL_H
 
+#include "ns3/deprecated.h"
 #include "ns3/ipv4-interface.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4.h"

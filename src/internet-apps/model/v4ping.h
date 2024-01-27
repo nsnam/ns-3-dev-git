@@ -18,6 +18,7 @@
 
 #include "ns3/application.h"
 #include "ns3/average.h"
+#include "ns3/deprecated.h"
 #include "ns3/traced-callback.h"
 
 #include <map>
