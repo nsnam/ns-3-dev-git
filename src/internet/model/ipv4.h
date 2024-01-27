@@ -220,9 +220,9 @@ class Ipv4 : public Object
      * a multicast group that the host has joined (and the incoming device
      * is acceptable), or if address corresponds to a broadcast address.
      *
-     * If the Ipv4 attribute WeakEsModel is true, the unicast address may
-     * match any of the Ipv4 addresses on any interface.  If the attribute is
-     * false, the address must match one assigned to the incoming device.
+     * If the Ipv4 attribute StrongEndSystemModel is true, the address must match one assigned to
+     * the incoming device. If the attribute is false, the unicast address may match any of the Ipv4
+     * addresses on any interface.
      */
     virtual bool IsDestinationAddress(Ipv4Address address, uint32_t iif) const = 0;
 
@@ -455,19 +455,39 @@ class Ipv4 : public Object
     virtual bool GetIpForward() const = 0;
 
     /**
-     * \brief Set or unset the Weak Es Model
-     *
-     * RFC1122 term for whether host accepts datagram with a dest. address on another interface
-     * \param model true for Weak Es Model
-     */
-    virtual void SetWeakEsModel(bool model) = 0;
-    /**
      * \brief Get the Weak Es Model status
      *
      * RFC1122 term for whether host accepts datagram with a dest. address on another interface
      * \returns true for Weak Es Model activated
+     * \deprecated Deprecated since ns-3.41. Use SetStrongEndSystemModel instead.
      */
+    NS_DEPRECATED_3_41("Use GetStrongEndSystemModel instead")
     virtual bool GetWeakEsModel() const = 0;
+
+    /**
+     * \brief Set or unset the Weak Es Model
+     *
+     * RFC1122 term for whether host accepts datagram with a dest. address on another interface
+     * \param model true for Weak Es Model
+     * \deprecated Deprecated since ns-3.41. Use SetStrongEndSystemModel instead.
+     */
+    NS_DEPRECATED_3_41("Use SetStrongEndSystemModel instead")
+    virtual void SetWeakEsModel(bool model) = 0;
+
+    /**
+     * \brief Set or unset the Strong End System Model
+     *
+     * RFC1122 term for whether host rejects datagram with a dest. address on another interface
+     * \param model true for Strong End System Model
+     */
+    virtual void SetStrongEndSystemModel(bool model) = 0;
+    /**
+     * \brief Get the Strong End System Model status
+     *
+     * RFC1122 term for whether host rejects datagram with a dest. address on another interface
+     * \returns true for Strong End System Model activated
+     */
+    virtual bool GetStrongEndSystemModel() const = 0;
 };
 
 } // namespace ns3

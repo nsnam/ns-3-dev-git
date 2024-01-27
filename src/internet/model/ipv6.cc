@@ -47,7 +47,14 @@ Ipv6::GetTypeId()
                           "If disabled, every interface will have its MTU set to 1280 bytes.",
                           BooleanValue(true),
                           MakeBooleanAccessor(&Ipv6::SetMtuDiscover, &Ipv6::GetMtuDiscover),
-                          MakeBooleanChecker());
+                          MakeBooleanChecker())
+            .AddAttribute(
+                "StrongEndSystemModel",
+                "Reject packets for an address not configured on the interface they're "
+                "coming from (RFC1122, section 3.3.4.2).",
+                BooleanValue(true),
+                MakeBooleanAccessor(&Ipv6::SetStrongEndSystemModel, &Ipv6::GetStrongEndSystemModel),
+                MakeBooleanChecker());
     return tid;
 }
 

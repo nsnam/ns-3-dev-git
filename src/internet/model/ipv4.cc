@@ -23,6 +23,7 @@
 #include "ns3/boolean.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
+#include "ns3/warnings.h"
 
 namespace ns3
 {
@@ -34,6 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED(Ipv4);
 TypeId
 Ipv4::GetTypeId()
 {
+    NS_WARNING_PUSH_DEPRECATED;
     static TypeId tid =
         TypeId("ns3::Ipv4")
             .SetParent<Object>()
@@ -49,7 +51,16 @@ Ipv4::GetTypeId()
                           "another interface",
                           BooleanValue(true),
                           MakeBooleanAccessor(&Ipv4::SetWeakEsModel, &Ipv4::GetWeakEsModel),
-                          MakeBooleanChecker())
+                          MakeBooleanChecker(),
+                          TypeId::DEPRECATED,
+                          "DEPRECATED since ns-3.41. Use the StrongEndSystemModel attribute.")
+            .AddAttribute(
+                "StrongEndSystemModel",
+                "Reject packets for an address not configured on the interface they're "
+                "coming from (RFC1122, section 3.3.4.2).",
+                BooleanValue(false),
+                MakeBooleanAccessor(&Ipv4::SetStrongEndSystemModel, &Ipv4::GetStrongEndSystemModel),
+                MakeBooleanChecker())
 #if 0
     .AddAttribute ("MtuDiscover", "If enabled, every outgoing ip packet will have the DF flag set.",
                    BooleanValue (false),
@@ -58,6 +69,7 @@ Ipv4::GetTypeId()
                    MakeBooleanChecker ())
 #endif
         ;
+    NS_WARNING_POP;
     return tid;
 }
 

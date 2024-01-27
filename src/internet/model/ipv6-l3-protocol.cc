@@ -88,12 +88,6 @@ Ipv6L3Protocol::GetTypeId()
                           MakeBooleanAccessor(&Ipv6L3Protocol::SetSendIcmpv6Redirect,
                                               &Ipv6L3Protocol::GetSendIcmpv6Redirect),
                           MakeBooleanChecker())
-            .AddAttribute("StrongEndSystemModel",
-                          "Reject packets for an address not configured on the interface they're "
-                          "coming from (RFC1122, section 3.3.4.2).",
-                          BooleanValue(true),
-                          MakeBooleanAccessor(&Ipv6L3Protocol::m_strongEndSystemModel),
-                          MakeBooleanChecker())
             .AddTraceSource("Tx",
                             "Send IPv6 packet to outgoing interface.",
                             MakeTraceSourceAccessor(&Ipv6L3Protocol::m_txTrace),
@@ -1169,20 +1163,22 @@ Ipv6L3Protocol::Receive(Ptr<NetDevice> device,
                     LocalDeliver(packet, hdr, interface);
                     return;
                 }
-                else if (!m_strongEndSystemModel)
+                else if (!GetStrongEndSystemModel())
                 {
                     NS_LOG_LOGIC("For me (destination "
-                                 << addr << " match) on another interface with Weak ES Model"
+                                 << addr
+                                 << " match) on another interface with Weak End System Model"
                                  << hdr.GetDestination());
                     LocalDeliver(packet, hdr, interface);
                     return;
                 }
                 else
                 {
-                    NS_LOG_LOGIC("For me (destination "
-                                 << addr
-                                 << " match) on another interface with Strong ES Model - discarding"
-                                 << hdr.GetDestination());
+                    NS_LOG_LOGIC(
+                        "For me (destination "
+                        << addr
+                        << " match) on another interface with Strong End System Model - discarding"
+                        << hdr.GetDestination());
                     m_dropTrace(hdr, packet, DROP_NO_ROUTE, this, interface);
                     return;
                 }
@@ -1837,6 +1833,20 @@ Ipv6L3Protocol::ReachabilityHint(uint32_t ipInterfaceIndex, Ipv6Address address)
     }
 
     return true;
+}
+
+void
+Ipv6L3Protocol::SetStrongEndSystemModel(bool model)
+{
+    NS_LOG_FUNCTION(this << model);
+    m_strongEndSystemModel = model;
+}
+
+bool
+Ipv6L3Protocol::GetStrongEndSystemModel() const
+{
+    NS_LOG_FUNCTION(this);
+    return m_strongEndSystemModel;
 }
 
 } /* namespace ns3 */

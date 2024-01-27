@@ -546,7 +546,7 @@ Ipv4L3Protocol::IsDestinationAddress(Ipv4Address address, uint32_t iif) const
         return true;
     }
 
-    if (GetWeakEsModel()) // Check other interfaces
+    if (!GetStrongEndSystemModel()) // Check other interfaces
     {
         for (uint32_t j = 0; j < GetNInterfaces(); j++)
         {
@@ -1441,14 +1441,28 @@ void
 Ipv4L3Protocol::SetWeakEsModel(bool model)
 {
     NS_LOG_FUNCTION(this << model);
-    m_weakEsModel = model;
+    m_strongEndSystemModel = !model;
 }
 
 bool
 Ipv4L3Protocol::GetWeakEsModel() const
 {
     NS_LOG_FUNCTION(this);
-    return m_weakEsModel;
+    return !m_strongEndSystemModel;
+}
+
+void
+Ipv4L3Protocol::SetStrongEndSystemModel(bool model)
+{
+    NS_LOG_FUNCTION(this << model);
+    m_strongEndSystemModel = model;
+}
+
+bool
+Ipv4L3Protocol::GetStrongEndSystemModel() const
+{
+    NS_LOG_FUNCTION(this);
+    return m_strongEndSystemModel;
 }
 
 void

@@ -707,6 +707,9 @@ class Ipv6L3Protocol : public Ipv6
      */
     virtual bool GetSendIcmpv6Redirect() const;
 
+    void SetStrongEndSystemModel(bool model) override;
+    bool GetStrongEndSystemModel() const override;
+
     /**
      * \brief Node attached to stack.
      */

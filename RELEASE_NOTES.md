@@ -31,6 +31,7 @@ Release 3-dev
 - (wifi) - Reduce error rate model precision to fix infinite loop when Ideal rate manager is used with EHT
 - (lr-wpan) !1794 - Group MAC primitives status enumerations into a single enumeration
 - (core) !1802 - Added support for Bernoulli and Binomial random variables (`BernoulliRandomVariable`, `BinomialRandomVariable`)
+- (internet) !1817 - Resolved inconsistency in behavior regarding the Strong End System Model between IPv4 and IPv6. Attributes `Ipv6L3Protocol::StrongEndSystemModel` and `Ipv4::WeakEsModel` have been aligned to provide a consistent user experience and avoid confusion
 
 ### Bugs fixed
 

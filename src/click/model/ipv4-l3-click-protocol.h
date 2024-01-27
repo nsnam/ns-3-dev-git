@@ -266,8 +266,14 @@ class Ipv4L3ClickProtocol : public Ipv4
 
     void SetIpForward(bool forward) override;
     bool GetIpForward() const override;
+
+    NS_DEPRECATED_3_41("Use SetStrongEndSystemModel instead")
     void SetWeakEsModel(bool model) override;
+    NS_DEPRECATED_3_41("Use GetStrongEndSystemModel instead")
     bool GetWeakEsModel() const override;
+
+    void SetStrongEndSystemModel(bool model) override;
+    bool GetStrongEndSystemModel() const override;
 
     /**
      * \brief List of IPv4 interfaces.
@@ -296,7 +302,7 @@ class Ipv4L3ClickProtocol : public Ipv4
 
     Ptr<Ipv4RoutingProtocol> m_routingProtocol; //!< IPv4 routing protocol
     bool m_ipForward;                           //!< Whether IP forwarding is enabled
-    bool m_weakEsModel;                         //!< Whether to use weak Es model
+    bool m_strongEndSystemModel;                //!< Whether to use Strong End System Model
     L4List_t m_protocols;                       //!< List of IPv4 L4 protocols
     Ipv4InterfaceList m_interfaces;             //!< List of interfaces
     Ipv4InterfaceReverseContainer

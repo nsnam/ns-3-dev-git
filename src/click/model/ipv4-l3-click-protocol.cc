@@ -238,7 +238,7 @@ Ipv4L3ClickProtocol::IsDestinationAddress(Ipv4Address address, uint32_t iif) con
         return true;
     }
 
-    if (GetWeakEsModel()) // Check other interfaces
+    if (!GetStrongEndSystemModel()) // Check other interfaces
     {
         for (uint32_t j = 0; j < GetNInterfaces(); j++)
         {
@@ -287,13 +287,25 @@ Ipv4L3ClickProtocol::GetIpForward() const
 void
 Ipv4L3ClickProtocol::SetWeakEsModel(bool model)
 {
-    m_weakEsModel = model;
+    m_strongEndSystemModel = !model;
 }
 
 bool
 Ipv4L3ClickProtocol::GetWeakEsModel() const
 {
-    return m_weakEsModel;
+    return !m_strongEndSystemModel;
+}
+
+void
+Ipv4L3ClickProtocol::SetStrongEndSystemModel(bool model)
+{
+    m_strongEndSystemModel = model;
+}
+
+bool
+Ipv4L3ClickProtocol::GetStrongEndSystemModel() const
+{
+    return m_strongEndSystemModel;
 }
 
 Ptr<NetDevice>

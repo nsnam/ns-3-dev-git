@@ -295,8 +295,14 @@ class Ipv4L3Protocol : public Ipv4
     // class Ipv4 attributes
     void SetIpForward(bool forward) override;
     bool GetIpForward() const override;
+
+    NS_DEPRECATED_3_41("Use SetStrongEndSystemModel instead")
     void SetWeakEsModel(bool model) override;
+    NS_DEPRECATED_3_41("Use GetStrongEndSystemModel instead")
     bool GetWeakEsModel() const override;
+
+    void SetStrongEndSystemModel(bool model) override;
+    bool GetStrongEndSystemModel() const override;
 
     /**
      * \brief Decrease the identification value for a dropped or recursed packet
@@ -460,7 +466,7 @@ class Ipv4L3Protocol : public Ipv4
     typedef std::map<L4ListKey_t, Ptr<IpL4Protocol>> L4List_t;
 
     bool m_ipForward;               //!< Forwarding packets (i.e. router mode) state.
-    bool m_weakEsModel;             //!< Weak ES model state
+    bool m_strongEndSystemModel;    //!< Strong End System Model state
     L4List_t m_protocols;           //!< List of transport protocol.
     Ipv4InterfaceList m_interfaces; //!< List of IPv4 interfaces.
     Ipv4InterfaceReverseContainer
