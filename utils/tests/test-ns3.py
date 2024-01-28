@@ -858,6 +858,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         self.config_ok(return_code, stdout, stderr)
 
         # If nothing went wrong, we should have more executables in the list after enabling the examples.
+        ## ns3_executables
         self.assertGreater(len(get_programs_list()), len(self.ns3_executables))
 
         # Now we disabled them back.
@@ -909,6 +910,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         # At this point we should have fewer modules
         enabled_modules = get_enabled_modules()
+        ## ns3_modules
         self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
         self.assertIn("ns3-network", enabled_modules)
         self.assertIn("ns3-wifi", enabled_modules)
@@ -1032,6 +1034,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             ns3rc_templates = {"python": ns3rc_python_template, "cmake": ns3rc_cmake_template}
 
             def __init__(self, type_ns3rc):
+                ## type contains the ns3rc variant type (deprecated python-based or current cmake-based)
                 self.type = type_ns3rc
 
             def format(self, **args):

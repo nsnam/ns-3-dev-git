@@ -117,6 +117,26 @@ class ShowInterfaceStatistics(InformationWindow):
     #  visualizer node
     ## @var table_model
     #  table model
+    ## @var _response_cb
+    #  _response_cb function
+    ## @var COLUMN_INTERFACE
+    #  COLUMN_INTERFACE constant
+    ## @var COLUMN_TX_PACKETS
+    #  COLUMN_TX_PACKETS constant
+    ## @var COLUMN_TX_BYTES
+    #  COLUMN_TX_BYTES constant
+    ## @var COLUMN_TX_PACKET_RATE
+    #  COLUMN_TX_PACKET_RATE constant
+    ## @var COLUMN_TX_BIT_RATE
+    #  COLUMN_TX_BIT_RATE constant
+    ## @var COLUMN_RX_PACKETS
+    #  COLUMN_RX_PACKETS constant
+    ## @var COLUMN_RX_BYTES
+    #  COLUMN_RX_BYTES constant
+    ## @var COLUMN_RX_PACKET_RATE
+    #  COLUMN_RX_PACKET_RATE constant
+    ## @var COLUMN_RX_BIT_RATE
+    #  COLUMN_RX_BIT_RATE constant
     (
         COLUMN_INTERFACE,
         COLUMN_TX_PACKETS,

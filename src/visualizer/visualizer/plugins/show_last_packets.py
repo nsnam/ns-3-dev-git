@@ -43,6 +43,9 @@ class ShowLastPackets(InformationWindow):
     #  AND button
     ## @var op_OR_button
     #  OR button
+    ## @var _response_cb
+    #  _response_cb function
+
     class PacketList(Gtk.ScrolledWindow):
         """
         PacketList class
@@ -50,6 +53,14 @@ class ShowLastPackets(InformationWindow):
 
         ## @var table_model
         #  table model
+        ## @var COLUMN_TIME
+        #  COLUMN_TIME constant
+        ## @var COLUMN_INTERFACE
+        #  COLUMN_INTERFACE constant
+        ## @var COLUMN_SIZE
+        #  COLUMN_SIZE constant
+        ## @var COLUMN_CONTENTS
+        #  COLUMN_CONTENTS constant
         (
             COLUMN_TIME,
             COLUMN_INTERFACE,

@@ -16,6 +16,16 @@ class ShowOlsrRoutingTable(InformationWindow):
     #  node index
     ## @var table_model
     #  table model
+    ## @var _response_cb
+    #  _response_cb function
+    ## @var COLUMN_DESTINATION
+    #  COLUMN_DESTINATION constant
+    ## @var COLUMN_NEXT_HOP
+    #  COLUMN_NEXT_HOP constant
+    ## @var COLUMN_INTERFACE
+    #  COLUMN_INTERFACE constant
+    ## @var COLUMN_NUM_HOPS
+    #  COLUMN_NUM_HOPS constant
     (
         COLUMN_DESTINATION,
         COLUMN_NEXT_HOP,

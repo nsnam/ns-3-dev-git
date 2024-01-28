@@ -16,16 +16,18 @@ class ShowIpv4RoutingTable(InformationWindow):
     #  node index
     ## @var table_model
     #  table model
+    ## @var _response_cb
+    #  _response_cb function
     ## @var COLUMN_DESTINATION
-    #  column destination
+    #  COLUMN_DESTINATION constant
     ## @var COLUMN_NEXT_HOP
-    #  column hop
+    #  COLUMN_NEXT_HOP constant
     ## @var COLUMN_INTERFACE
-    #  column interface
+    #  COLUMN_INTERFACE constant
     ## @var COLUMN_TYPE
-    #  column type
+    #  COLUMN_TYPE constant
     ## @var COLUMN_PRIO
-    #  column priority
+    #  COLUMN_PRIO constant
     (
         COLUMN_DESTINATION,
         COLUMN_NEXT_HOP,

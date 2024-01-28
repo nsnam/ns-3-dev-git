@@ -414,6 +414,7 @@ class TestSimulator(unittest.TestCase):
                 return None
                 """
                 super().__init__()
+                ## __python_owns__ flag indicates that Cppyy should not manage the lifetime of this variable
                 self.__python_owns__ = False  # Let C++ destroy this on Simulator::Destroy
                 ## Listen port for the server
                 self.port = port

@@ -1388,7 +1388,17 @@ class GtkGraphicRenderer(gtk.DrawingArea):
     ## @var __height
     #  height
     ## @var __buffer_surface
-    #  buffer surface
+    # __buffer_surface
+    ## @var expose
+    #  expose function
+    ## @var size_allocate
+    #  size_allocate function
+    ## @var motion_notify
+    #  motion_notify function
+    ## @var button_press
+    #  button_press function
+    ## @var button_release
+    #  button_release function
     def __init__(self, data):
         """! Initializer
         @param self this object
@@ -1638,6 +1648,14 @@ class MainWindow:
     #  render
     ## @var __dialog
     #  dialog
+    ## @var __set_smaller_cb
+    #  __set_smaller_cb function
+    ## @var __set_bigger_cb
+    #  __set_bigger_cb function
+    ## @var __output_png_cb
+    #  __output_png_cb function
+    ## @var __dialog_response_cb
+    #  __dialog_response_cb function
     def __init__(self):
         """! Initializer
         @param self this object

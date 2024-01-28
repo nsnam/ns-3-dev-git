@@ -127,6 +127,10 @@ class Node(PyVizObject):
     #  highlighted property
     ## @var selected
     #  selected property
+    ## @var on_enter_notify_event
+    #  on_enter_notify_event function
+    ## @var on_leave_notify_event
+    #  on_leave_notify_event function
 
     ## signal emitted whenever a tooltip is about to be shown for the node
     ## the first signal parameter is a python list of strings, to which

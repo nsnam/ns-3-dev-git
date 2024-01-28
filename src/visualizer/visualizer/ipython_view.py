@@ -356,6 +356,19 @@ class ConsoleView(Gtk.TextView):
     #  color pattern
     ## @var line_start
     #  line start
+    ## @var onKeyPress
+    #  onKeyPress function
+    ## @var _write
+    #  _write function
+    ## @var _showPrompt
+    #  _showPrompt function
+    ## @var _changeLine
+    #  _changeLine function
+    ## @var _showReturned
+    #  _showReturned function
+    ## @var prompt
+    #  prompt function
+
     """
     Specialized text view for console-like workflow.
 
