@@ -36,20 +36,6 @@ UdpServerHelper::UdpServerHelper(uint16_t port)
     SetAttribute("Port", UintegerValue(port));
 }
 
-Ptr<Application>
-UdpServerHelper::DoInstall(Ptr<Node> node)
-{
-    m_server = m_factory.Create<UdpServer>();
-    node->AddApplication(m_server);
-    return m_server;
-}
-
-Ptr<UdpServer>
-UdpServerHelper::GetServer()
-{
-    return m_server;
-}
-
 UdpClientHelper::UdpClientHelper()
     : ApplicationHelper(UdpClient::GetTypeId())
 {

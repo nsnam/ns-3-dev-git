@@ -52,20 +52,6 @@ class UdpServerHelper : public ApplicationHelper
      * \param port The port the server will wait on for incoming packets
      */
     UdpServerHelper(uint16_t port);
-
-    /**
-     * \brief Return the last created server.
-     *
-     * This function is mainly used for testing.
-     *
-     * \returns a Ptr to the last created server application
-     */
-    Ptr<UdpServer> GetServer();
-
-  private:
-    Ptr<Application> DoInstall(Ptr<Node> node) override;
-
-    Ptr<UdpServer> m_server; //!< The last created server application
 };
 
 /**
