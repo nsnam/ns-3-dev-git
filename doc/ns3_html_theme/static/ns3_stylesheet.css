@@ -353,4 +353,16 @@ div.sphinxsidebar a {
         background-color: #ceccca;
         padding: 3px;
     }
+
+    #ns3_home1 img {
+        background-color: transparent;
+    }
+
+    img.footer {
+        background-color: transparent;
+    }
+
+    #nav-sync img {
+        background-color: transparent;
+    }
 }
