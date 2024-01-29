@@ -37,6 +37,7 @@
 #include "ns3/ssid.h"
 #include "ns3/string.h"
 #include "ns3/udp-client-server-helper.h"
+#include "ns3/udp-server.h"
 #include "ns3/waveform-generator-helper.h"
 #include "ns3/waveform-generator.h"
 #include "ns3/wifi-net-device.h"

@@ -31,6 +31,7 @@
 #include "ns3/test.h"
 #include "ns3/udp-client-server-helper.h"
 #include "ns3/udp-echo-helper.h"
+#include "ns3/udp-server.h"
 #include "ns3/uinteger.h"
 
 #include <fstream>

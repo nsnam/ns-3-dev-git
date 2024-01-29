@@ -36,6 +36,7 @@
 #include "ns3/ssid.h"
 #include "ns3/string.h"
 #include "ns3/udp-client-server-helper.h"
+#include "ns3/udp-server.h"
 #include "ns3/uinteger.h"
 #include "ns3/wifi-acknowledgment.h"
 #include "ns3/yans-wifi-channel.h"

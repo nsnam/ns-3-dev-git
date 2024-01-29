@@ -28,6 +28,7 @@
 #include "ns3/ssid.h"
 #include "ns3/string.h"
 #include "ns3/udp-client-server-helper.h"
+#include "ns3/udp-server.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/yans-wifi-channel.h"

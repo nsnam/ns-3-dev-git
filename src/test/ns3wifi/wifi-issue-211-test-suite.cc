@@ -33,6 +33,7 @@
 #include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/udp-client-server-helper.h"
+#include "ns3/udp-server.h"
 #include "ns3/wifi-net-device.h"
 
 using namespace ns3;
