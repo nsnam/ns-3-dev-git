@@ -987,7 +987,11 @@ EmlsrManager::ApplyMaxChannelWidthAndModClassOnAuxPhys()
         auto cam = m_staMac->GetChannelAccessManager(linkId);
         cam->NotifySwitchingEmlsrLink(auxPhy, channel, linkId);
 
+        // apply channel width limitation assuming an instantaneous channel switch
+        const auto delay = auxPhy->GetChannelSwitchDelay();
+        auxPhy->SetAttribute("ChannelSwitchDelay", TimeValue(Time{0}));
         auxPhy->SetOperatingChannel(channel);
+        auxPhy->SetAttribute("ChannelSwitchDelay", TimeValue(delay));
 
         // the way the ChannelAccessManager handles EMLSR link switch implies that a PHY listener
         // is removed when the channel switch starts and another one is attached when the channel
@@ -995,7 +999,7 @@ EmlsrManager::ApplyMaxChannelWidthAndModClassOnAuxPhys()
         // reset all backoffs (so that access timeout is also cancelled) when the channel switch
         // starts and request channel access (if needed) when the channel switch ends.
         cam->ResetAllBackoffs();
-        Simulator::Schedule(auxPhy->GetChannelSwitchDelay(), [=, this]() {
+        Simulator::ScheduleNow([=, this]() {
             for (const auto& [acIndex, ac] : wifiAcList)
             {
                 m_staMac->GetQosTxop(acIndex)->StartAccessAfterEvent(
