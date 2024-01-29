@@ -370,7 +370,7 @@ class RandomDiscPositionAllocator : public PositionAllocator
  *
  * \note using UniformDiscPositionAllocator is not equivalent to using
  * a RandomDiscPositionAllocator with a uniformly-distributed radius,
- * since doing that would results in a point distribution which is
+ * since doing that would result in a point distribution which is
  * more dense towards the center of the disc.
  */
 class UniformDiscPositionAllocator : public PositionAllocator
