@@ -94,6 +94,11 @@ div.sphinxsidebar a {
     z-index: 10000;
 }
 
+#projectrow
+{
+	height: 56px;
+}
+
 #projectlogo {
     color: white;
     margin: 10px;
