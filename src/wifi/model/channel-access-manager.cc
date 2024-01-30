@@ -419,8 +419,9 @@ ChannelAccessManager::NeedBackoffUponAccess(Ptr<Txop> txop,
 {
     NS_LOG_FUNCTION(this << txop << hadFramesToTransmit << checkMediumBusy);
 
-    // No backoff needed if in sleep mode or off
-    if (m_sleeping || m_off)
+    // No backoff needed if in sleep mode or off. Checking if m_phy is nullptr is a workaround
+    // needed for EMLSR and may be removed in the future
+    if (m_sleeping || m_off || !m_phy)
     {
         return false;
     }
@@ -479,8 +480,9 @@ ChannelAccessManager::RequestAccess(Ptr<Txop> txop)
     {
         m_phy->NotifyChannelAccessRequested();
     }
-    // Deny access if in sleep mode or off
-    if (m_sleeping || m_off)
+    // Deny access if in sleep mode or off. Checking if m_phy is nullptr is a workaround
+    // needed for EMLSR and may be removed in the future
+    if (m_sleeping || m_off || !m_phy)
     {
         return;
     }
