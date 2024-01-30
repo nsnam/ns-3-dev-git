@@ -352,11 +352,14 @@ class WifiPhyStateHelper : public Object
     Time m_endRx;                   ///< end receive
     Time m_endCcaBusy;              ///< end CCA busy
     Time m_endSwitching;            ///< end switching
+    Time m_endSleep;                ///< end sleep
+    Time m_endOff;                  ///< end off
     Time m_startTx;                 ///< start transmit
     Time m_startRx;                 ///< start receive
     Time m_startCcaBusy;            ///< start CCA busy
     Time m_startSwitching;          ///< start switching
     Time m_startSleep;              ///< start sleep
+    Time m_startOff;                ///< start off
     Time m_previousStateChangeTime; ///< previous state change time
 
     Listeners m_listeners; ///< listeners

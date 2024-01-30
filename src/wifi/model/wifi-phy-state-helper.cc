@@ -70,16 +70,19 @@ WifiPhyStateHelper::WifiPhyStateHelper()
     : NS_LOG_TEMPLATE_DEFINE("WifiPhyStateHelper"),
       m_sleeping(false),
       m_isOff(false),
-      m_endTx(Seconds(0)),
-      m_endRx(Seconds(0)),
-      m_endCcaBusy(Seconds(0)),
-      m_endSwitching(Seconds(0)),
-      m_startTx(Seconds(0)),
-      m_startRx(Seconds(0)),
-      m_startCcaBusy(Seconds(0)),
-      m_startSwitching(Seconds(0)),
-      m_startSleep(Seconds(0)),
-      m_previousStateChangeTime(Seconds(0))
+      m_endTx(Time{0}),
+      m_endRx(Time{0}),
+      m_endCcaBusy(Time{0}),
+      m_endSwitching(Time{0}),
+      m_endSleep(Time{0}),
+      m_endOff(Time{0}),
+      m_startTx(Time{0}),
+      m_startRx(Time{0}),
+      m_startCcaBusy(Time{0}),
+      m_startSwitching(Time{0}),
+      m_startSleep(Time{0}),
+      m_startOff(Time{0}),
+      m_previousStateChangeTime(Time{0})
 {
     NS_LOG_FUNCTION(this);
 }
@@ -198,6 +201,7 @@ WifiPhyStateHelper::GetLastRxEndTime() const
 WifiPhyState
 WifiPhyStateHelper::GetState() const
 {
+    const auto now = Simulator::Now();
     if (m_isOff)
     {
         return WifiPhyState::OFF;
@@ -206,19 +210,19 @@ WifiPhyStateHelper::GetState() const
     {
         return WifiPhyState::SLEEP;
     }
-    else if (m_endTx > Simulator::Now())
+    else if (m_endTx > now)
     {
         return WifiPhyState::TX;
     }
-    else if (m_endRx > Simulator::Now())
+    else if (m_endRx > now)
     {
         return WifiPhyState::RX;
     }
-    else if (m_endSwitching > Simulator::Now())
+    else if (m_endSwitching > now)
     {
         return WifiPhyState::SWITCHING;
     }
-    else if (m_endCcaBusy > Simulator::Now())
+    else if (m_endCcaBusy > now)
     {
         return WifiPhyState::CCA_BUSY;
     }
@@ -500,6 +504,7 @@ WifiPhyStateHelper::SwitchFromSleep()
     m_stateLogger(m_startSleep, now - m_startSleep, WifiPhyState::SLEEP);
     m_previousStateChangeTime = now;
     m_sleeping = false;
+    m_endSleep = now;
     NotifyListeners(&WifiPhyListener::NotifyWakeup);
 }
 
@@ -556,6 +561,7 @@ WifiPhyStateHelper::SwitchToOff()
     }
     m_previousStateChangeTime = now;
     m_isOff = true;
+    m_startOff = now;
     NotifyListeners(&WifiPhyListener::NotifyOff);
     NS_ASSERT(IsStateOff());
 }
@@ -568,6 +574,7 @@ WifiPhyStateHelper::SwitchFromOff()
     Time now = Simulator::Now();
     m_previousStateChangeTime = now;
     m_isOff = false;
+    m_endOff = now;
     NotifyListeners(&WifiPhyListener::NotifyOn);
 }
 
