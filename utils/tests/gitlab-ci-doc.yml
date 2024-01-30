@@ -48,6 +48,8 @@ doxygen:
     # Just need to check doc/introspected-command-line.h and doc/introspected-doxygen.h
     - python3 utils/check-style-clang-format.py --no-formatting --no-tabs doc/introspected-doxygen.h doc/introspected-command-line.h
     - ./ns3 clean
+    # print the doxygen version - just to double check what has been used.
+    - doxygen -v
     # - doxygen doc/doxygen.conf
     # - mv doc/html/ public/doxygen
   cache:
