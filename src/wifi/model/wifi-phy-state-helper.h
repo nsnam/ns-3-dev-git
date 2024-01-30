@@ -170,6 +170,12 @@ class WifiPhyStateHelper : public Object
     Time GetLastRxEndTime() const;
 
     /**
+     * \param states a set of PHY states
+     * \return the last time the PHY has been in any of the given states
+     */
+    Time GetLastTime(std::initializer_list<WifiPhyState> states) const;
+
+    /**
      * Switch state to TX for the given duration.
      *
      * \param txDuration the duration of the PPDU to transmit
@@ -354,6 +360,7 @@ class WifiPhyStateHelper : public Object
     Time m_endSwitching;            ///< end switching
     Time m_endSleep;                ///< end sleep
     Time m_endOff;                  ///< end off
+    Time m_endIdle;                 ///< end idle
     Time m_startTx;                 ///< start transmit
     Time m_startRx;                 ///< start receive
     Time m_startCcaBusy;            ///< start CCA busy

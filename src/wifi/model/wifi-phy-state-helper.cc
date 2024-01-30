@@ -76,6 +76,7 @@ WifiPhyStateHelper::WifiPhyStateHelper()
       m_endSwitching(Time{0}),
       m_endSleep(Time{0}),
       m_endOff(Time{0}),
+      m_endIdle(Time{0}),
       m_startTx(Time{0}),
       m_startRx(Time{0}),
       m_startCcaBusy(Time{0}),
@@ -198,6 +199,50 @@ WifiPhyStateHelper::GetLastRxEndTime() const
     return m_endRx;
 }
 
+Time
+WifiPhyStateHelper::GetLastTime(std::initializer_list<WifiPhyState> states) const
+{
+    Time last{0};
+    auto currentState = GetState();
+
+    for (auto state : states)
+    {
+        if (state == currentState)
+        {
+            return Simulator::Now();
+        }
+
+        switch (state)
+        {
+        case WifiPhyState::RX:
+            last = std::max(last, m_endRx);
+            break;
+        case WifiPhyState::TX:
+            last = std::max(last, m_endTx);
+            break;
+        case WifiPhyState::CCA_BUSY:
+            last = std::max(last, m_endCcaBusy);
+            break;
+        case WifiPhyState::SWITCHING:
+            last = std::max(last, m_endSwitching);
+            break;
+        case WifiPhyState::SLEEP:
+            last = std::max(last, m_endSleep);
+            break;
+        case WifiPhyState::OFF:
+            last = std::max(last, m_endOff);
+            break;
+        case WifiPhyState::IDLE:
+            last = std::max(last, m_endIdle);
+            break;
+        default:
+            NS_FATAL_ERROR("Invalid WifiPhy state " << state);
+        }
+    }
+    NS_ASSERT(last <= Simulator::Now());
+    return last;
+}
+
 WifiPhyState
 WifiPhyStateHelper::GetState() const
 {
@@ -246,6 +291,7 @@ WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates()
     }
     else if (state == WifiPhyState::IDLE)
     {
+        m_endIdle = now;
         const auto endAllButCcaBusy =
             std::max({m_endRx, m_endTx, m_endSwitching, m_endSleep, m_endOff});
         const auto idleStart = std::max(m_endCcaBusy, endAllButCcaBusy);
