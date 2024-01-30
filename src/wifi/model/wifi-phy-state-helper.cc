@@ -236,28 +236,30 @@ void
 WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates()
 {
     NS_LOG_FUNCTION(this);
-    Time now = Simulator::Now();
+    const auto now = Simulator::Now();
     WifiPhyState state = GetState();
     if (state == WifiPhyState::CCA_BUSY)
     {
-        Time ccaStart = std::max({m_endRx, m_endTx, m_startCcaBusy, m_endSwitching});
+        const auto ccaStart =
+            std::max({m_endRx, m_endTx, m_startCcaBusy, m_endSwitching, m_endSleep, m_endOff});
         m_stateLogger(ccaStart, now - ccaStart, WifiPhyState::CCA_BUSY);
     }
     else if (state == WifiPhyState::IDLE)
     {
-        Time idleStart = std::max({m_endCcaBusy, m_endRx, m_endTx, m_endSwitching});
+        const auto endAllButCcaBusy =
+            std::max({m_endRx, m_endTx, m_endSwitching, m_endSleep, m_endOff});
+        const auto idleStart = std::max(m_endCcaBusy, endAllButCcaBusy);
         NS_ASSERT(idleStart <= now);
-        if (m_endCcaBusy > m_endRx && m_endCcaBusy > m_endSwitching && m_endCcaBusy > m_endTx)
+        if (m_endCcaBusy > endAllButCcaBusy)
         {
-            Time ccaBusyStart = std::max({m_endTx, m_endRx, m_startCcaBusy, m_endSwitching});
-            Time ccaBusyDuration = idleStart - ccaBusyStart;
-            if (ccaBusyDuration.IsStrictlyPositive())
+            const auto ccaBusyStart = std::max(m_startCcaBusy, endAllButCcaBusy);
+            if (const auto ccaBusyDuration = idleStart - ccaBusyStart;
+                ccaBusyDuration.IsStrictlyPositive())
             {
                 m_stateLogger(ccaBusyStart, ccaBusyDuration, WifiPhyState::CCA_BUSY);
             }
         }
-        Time idleDuration = now - idleStart;
-        if (idleDuration.IsStrictlyPositive())
+        if (const auto idleDuration = now - idleStart; idleDuration.IsStrictlyPositive())
         {
             m_stateLogger(idleStart, idleDuration, WifiPhyState::IDLE);
         }
