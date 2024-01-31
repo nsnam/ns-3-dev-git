@@ -623,7 +623,10 @@ QosTxop::NotifyChannelReleased(uint8_t linkId)
         (!m_queue->IsEmpty() && m_mac->GetChannelAccessManager(linkId)->GetGenerateBackoffOnNoTx()))
     {
         GenerateBackoff(linkId);
-        Simulator::ScheduleNow(&QosTxop::RequestAccess, this, linkId);
+        if (!m_queue->IsEmpty())
+        {
+            Simulator::ScheduleNow(&QosTxop::RequestAccess, this, linkId);
+        }
     }
     link.startTxop.reset();
     GetLink(linkId).access = NOT_REQUESTED;
