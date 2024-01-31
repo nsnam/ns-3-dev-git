@@ -191,7 +191,7 @@ main(int argc, char* argv[])
     }
     else
     {
-        NS_LOG_ERROR("Obtained throughput is 0!");
+        std::cout << "Obtained throughput is 0!" << std::endl;
         exit(1);
     }
 
