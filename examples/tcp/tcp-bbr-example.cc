@@ -60,9 +60,15 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/traffic-control-module.h"
 
+#include <filesystem>
+
 using namespace ns3;
+using namespace ns3::SystemPath;
 
 std::string dir;
+std::ofstream throughput;
+std::ofstream queueSize;
+
 uint32_t prev = 0;
 Time prevTime = Seconds(0);
 
@@ -75,11 +81,9 @@ TraceThroughput(Ptr<FlowMonitor> monitor)
     {
         auto itr = stats.begin();
         Time curTime = Now();
-        std::ofstream thr(dir + "/throughput.dat", std::ios::out | std::ios::app);
-        thr << curTime << " "
-            << 8 * (itr->second.txBytes - prev) /
-                   (1000 * 1000 * (curTime.GetSeconds() - prevTime.GetSeconds()))
-            << std::endl;
+        throughput << curTime << " "
+                   << 8 * (itr->second.txBytes - prev) / ((curTime - prevTime).ToDouble(Time::US))
+                   << std::endl;
         prevTime = curTime;
         prev = itr->second.txBytes;
     }
@@ -92,9 +96,7 @@ CheckQueueSize(Ptr<QueueDisc> qd)
 {
     uint32_t qsize = qd->GetCurrentSize().GetValue();
     Simulator::Schedule(Seconds(0.2), &CheckQueueSize, qd);
-    std::ofstream q(dir + "/queueSize.dat", std::ios::out | std::ios::app);
-    q << Simulator::Now().GetSeconds() << " " << qsize << std::endl;
-    q.close();
+    queueSize << Simulator::Now().GetSeconds() << " " << qsize << std::endl;
 }
 
 // Trace congestion window
@@ -146,6 +148,10 @@ main(int argc, char* argv[])
     queueDisc = std::string("ns3::") + queueDisc;
 
     Config::SetDefault("ns3::TcpL4Protocol::SocketType", StringValue("ns3::" + tcpTypeId));
+
+    // The maximum send buffer size is set to 4194304 bytes (4MB) and the
+    // maximum receive buffer size is set to 6291456 bytes (6MB) in the Linux
+    // kernel. The same buffer sizes are used as default in this example.
     Config::SetDefault("ns3::TcpSocket::SndBufSize", UintegerValue(4194304));
     Config::SetDefault("ns3::TcpSocket::RcvBufSize", UintegerValue(6291456));
     Config::SetDefault("ns3::TcpSocket::InitialCwnd", UintegerValue(10));
@@ -228,23 +234,20 @@ main(int argc, char* argv[])
 
     // Create a new directory to store the output of the program
     dir = "bbr-results/" + currentTime + "/";
-    std::string dirToSave = "mkdir -p " + dir;
-    if (system(dirToSave.c_str()) == -1)
-    {
-        exit(1);
-    }
+    MakeDirectories(dir);
 
     // The plotting scripts are provided in the following repository, if needed:
     // https://github.com/mohittahiliani/BBR-Validation/
     //
     // Download 'PlotScripts' directory (which is inside ns-3 scripts directory)
     // from the link given above and place it in the ns-3 root directory.
-    // Uncomment the following three lines to generate plots for Congestion
-    // Window, sender side throughput and queue occupancy on the bottleneck link.
+    // Uncomment the following three lines to copy plot scripts for
+    // Congestion Window, sender side throughput and queue occupancy on the
+    // bottleneck link into the output directory.
     //
-    // system (("cp -R PlotScripts/gnuplotScriptCwnd " + dir).c_str ());
-    // system (("cp -R PlotScripts/gnuplotScriptThroughput " + dir).c_str ());
-    // system (("cp -R PlotScripts/gnuplotScriptQueueSize " + dir).c_str ());
+    // std::filesystem::copy("PlotScripts/gnuplotScriptCwnd", dir);
+    // std::filesystem::copy("PlotScripts/gnuplotScriptThroughput", dir);
+    // std::filesystem::copy("PlotScripts/gnuplotScriptQueueSize", dir);
 
     // Trace the queue occupancy on the second interface of R1
     tch.Uninstall(routers.Get(0)->GetDevice(1));
@@ -255,12 +258,16 @@ main(int argc, char* argv[])
     // Generate PCAP traces if it is enabled
     if (enablePcap)
     {
-        if (system((dirToSave + "/pcap/").c_str()) == -1)
-        {
-            exit(1);
-        }
+        MakeDirectories(dir + "pcap/");
         bottleneckLink.EnablePcapAll(dir + "/pcap/bbr", true);
     }
+
+    // Open files for writing throughput traces and queue size
+    throughput.open(dir + "/throughput.dat", std::ios::out);
+    queueSize.open(dir + "/queueSize.dat", std::ios::out);
+
+    NS_ASSERT_MSG(throughput.is_open(), "Throughput file was not opened correctly");
+    NS_ASSERT_MSG(queueSize.is_open(), "Queue size file was not opened correctly");
 
     // Check for dropped packets using Flow Monitor
     FlowMonitorHelper flowmon;
@@ -270,6 +277,9 @@ main(int argc, char* argv[])
     Simulator::Stop(stopTime + TimeStep(1));
     Simulator::Run();
     Simulator::Destroy();
+
+    throughput.close();
+    queueSize.close();
 
     return 0;
 }

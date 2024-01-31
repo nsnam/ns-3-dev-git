@@ -52,6 +52,9 @@ std::string dir = "results/";
 Time stopTime = Seconds(60);
 uint32_t segmentSize = 524;
 
+std::ofstream fPlotQueue;
+std::ofstream fPlotCwnd;
+
 // Function to check queue length of Router 1
 void
 CheckQueueSize(Ptr<QueueDisc> queue)
@@ -60,19 +63,14 @@ CheckQueueSize(Ptr<QueueDisc> queue)
 
     // Check queue size every 1/100 of a second
     Simulator::Schedule(Seconds(0.001), &CheckQueueSize, queue);
-    std::ofstream fPlotQueue(std::stringstream(dir + "queue-size.dat").str(),
-                             std::ios::out | std::ios::app);
     fPlotQueue << Simulator::Now().GetSeconds() << " " << qSize << std::endl;
-    fPlotQueue.close();
 }
 
 // Function to trace change in cwnd at n0
 static void
 CwndChange(uint32_t oldCwnd, uint32_t newCwnd)
 {
-    std::ofstream fPlotQueue(dir + "cwndTraces/n0.dat", std::ios::out | std::ios::app);
-    fPlotQueue << Simulator::Now().GetSeconds() << " " << newCwnd / segmentSize << std::endl;
-    fPlotQueue.close();
+    fPlotCwnd << Simulator::Now().GetSeconds() << " " << newCwnd / segmentSize << std::endl;
 }
 
 // Function to calculate drops in a particular Queue
@@ -228,15 +226,11 @@ main(int argc, char* argv[])
         retVal = system(dirToRemove.c_str());
         NS_ASSERT_MSG(retVal == 0, "Error in return value");
     }
-    std::string dirToSave = "mkdir -p " + dir;
-    retVal = system(dirToSave.c_str());
-    NS_ASSERT_MSG(retVal == 0, "Error in return value");
-    retVal = system((dirToSave + "/pcap/").c_str());
-    NS_ASSERT_MSG(retVal == 0, "Error in return value");
-    retVal = system((dirToSave + "/queueTraces/").c_str());
-    NS_ASSERT_MSG(retVal == 0, "Error in return value");
-    retVal = system((dirToSave + "/cwndTraces/").c_str());
-    NS_ASSERT_MSG(retVal == 0, "Error in return value");
+
+    SystemPath::MakeDirectories(dir);
+    SystemPath::MakeDirectories(dir + "/pcap/");
+    SystemPath::MakeDirectories(dir + "/queueTraces/");
+    SystemPath::MakeDirectories(dir + "/cwndTraces/");
 
     // Set default parameters for queue discipline
     Config::SetDefault(qdiscTypeId + "::MaxSize", QueueSizeValue(QueueSize("100p")));
@@ -250,6 +244,10 @@ main(int argc, char* argv[])
 
     // Enable BQL
     tch.SetQueueLimits("ns3::DynamicQueueLimits");
+
+    // Open files for writing queue size and cwnd traces
+    fPlotQueue.open(dir + "queue-size.dat", std::ios::out);
+    fPlotCwnd.open(dir + "cwndTraces/n0.dat", std::ios::out);
 
     // Calls function to check queue size
     Simulator::ScheduleNow(&CheckQueueSize, qd.Get(0));
@@ -298,6 +296,9 @@ main(int argc, char* argv[])
     myfile.close();
 
     Simulator::Destroy();
+
+    fPlotQueue.close();
+    fPlotCwnd.close();
 
     return 0;
 }
