@@ -972,16 +972,11 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             }
 
             /**
-             * It might happen that the AP MLD has not yet received a data frame being transmitted
-             * by us on another link and starts sending an ICF on this link. The transmission of
-             * the ICF might be long enough to terminate after the subsequent acknowledgment, which
-             * terminates the TXOP on the other link. Consequently, no TXOP is ongoing when the
-             * reception of the ICF ends, hence the ICF is not dropped and a DL TXOP can start on
-             * this link. However, even if the aux PHY is able to receive the ICF, we need to allow
-             * enough time for the main PHY to switch to this link. Therefore, we assume that the
-             * ICF is successfully received (by an aux PHY) if the TXOP on the other link ended
-             * before the padding of the ICF. In order to determine when the TXOP ended, we can
-             * determine when the medium sync delay timer started on this link.
+             * It might happen that, while the aux PHY is receiving an ICF, the main PHY is
+             * completing a TXOP on another link or is returning to the primary link after a TXOP
+             * is completed on another link. In order to respond to the ICF, it is necessary that
+             * the main PHY has enough time to switch and be ready to operate on this link by the
+             * end of the ICF padding.
              *
              *                        TXOP end
              *                            │
@@ -991,28 +986,32 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
              *   EMLSR     │   QoS   │    │                            main PHY
              *   client    │  Data   │    │
              *             └─────────┘    │
-             *                            │- medium sync delay timer -│
              *                      ┌─────┬───┐                           this
              *   AP MLD             │ ICF │pad│                           link
              *  ────────────────────┴─────┴───┴───────────────────────────────────
              *                                                          aux PHY
              */
 
-            if (auto elapsed =
-                    m_staMac->GetEmlsrManager()->GetElapsedMediumSyncDelayTimer(m_linkId))
-            {
-                TimeValue padding;
-                m_staMac->GetEmlsrManager()->GetAttribute("EmlsrPaddingDelay", padding);
+            auto emlsrManager = m_staMac->GetEmlsrManager();
+            NS_ASSERT(emlsrManager);
 
-                if (*elapsed < padding.Get())
+            if (auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
+                mainPhy != m_phy)
+            {
+                const auto delay = mainPhy->GetChannelSwitchDelay();
+
+                if (mainPhy->GetState()->GetLastTime({WifiPhyState::TX,
+                                                      // WifiPhyState::RX, comment out for now
+                                                      WifiPhyState::SWITCHING,
+                                                      WifiPhyState::SLEEP}) >
+                    Simulator::Now() - delay)
                 {
                     NS_LOG_DEBUG("Drop ICF due to not enough time for the main PHY to switch link");
                     return;
                 }
             }
 
-            NS_ASSERT(m_staMac->GetEmlsrManager());
-            m_staMac->GetEmlsrManager()->NotifyIcfReceived(m_linkId);
+            emlsrManager->NotifyIcfReceived(m_linkId);
             icfReceived = true;
 
             // we just got involved in a DL TXOP. Check if we are still involved in the TXOP in a

@@ -795,6 +795,12 @@ EmlsrDlTxopTest::Transmit(Ptr<WifiMac> mac,
 void
 EmlsrDlTxopTest::DoSetup()
 {
+    // Channel switch delay should be less than the ICF padding duration, otherwise
+    // DL TXOPs cannot be initiated on non-primary links
+    auto delay = std::min(MicroSeconds(100),
+                          *std::min_element(m_paddingDelay.cbegin(), m_paddingDelay.cend()));
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(75)));
+
     EmlsrOperationsTestBase::DoSetup();
 
     m_errorModel = CreateObject<ListErrorModel>();
