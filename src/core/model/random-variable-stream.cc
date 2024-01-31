@@ -38,6 +38,7 @@
 #include <algorithm> // upper_bound
 #include <cmath>
 #include <iostream>
+#include <numbers>
 
 /**
  * \file
@@ -1975,6 +1976,108 @@ LaplacianRandomVariable::GetVariance(double scale)
 
 double
 LaplacianRandomVariable::GetVariance() const
+{
+    return GetVariance(m_scale);
+}
+
+NS_OBJECT_ENSURE_REGISTERED(LargestExtremeValueRandomVariable);
+
+TypeId
+LargestExtremeValueRandomVariable::GetTypeId()
+{
+    static TypeId tid =
+        TypeId("ns3::LargestExtremeValueRandomVariable")
+            .SetParent<RandomVariableStream>()
+            .SetGroupName("Core")
+            .AddConstructor<LargestExtremeValueRandomVariable>()
+            .AddAttribute("Location",
+                          "The location parameter for the Largest Extreme Value distribution "
+                          "returned by this RNG stream.",
+                          DoubleValue(0.0),
+                          MakeDoubleAccessor(&LargestExtremeValueRandomVariable::m_location),
+                          MakeDoubleChecker<double>())
+            .AddAttribute("Scale",
+                          "The scale parameter for the Largest Extreme Value distribution "
+                          "returned by this RNG stream.",
+                          DoubleValue(1.0),
+                          MakeDoubleAccessor(&LargestExtremeValueRandomVariable::m_scale),
+                          MakeDoubleChecker<double>());
+    return tid;
+}
+
+LargestExtremeValueRandomVariable::LargestExtremeValueRandomVariable()
+{
+    NS_LOG_FUNCTION(this);
+}
+
+double
+LargestExtremeValueRandomVariable::GetLocation() const
+{
+    return m_location;
+}
+
+double
+LargestExtremeValueRandomVariable::GetScale() const
+{
+    return m_scale;
+}
+
+double
+LargestExtremeValueRandomVariable::GetValue(double location, double scale)
+{
+    NS_LOG_FUNCTION(this << location << scale);
+    NS_ABORT_MSG_IF(scale <= 0, "Scale parameter should be larger than 0");
+
+    // Get a uniform random variable in [0,1].
+    auto v = Peek()->RandU01();
+    if (IsAntithetic())
+    {
+        v = (1 - v);
+    }
+
+    // Calculate the largest extreme value random variable.
+    const auto t = std::log(v) * (-1.0);
+    const auto r = location - (scale * std::log(t));
+
+    return r;
+}
+
+uint32_t
+LargestExtremeValueRandomVariable::GetInteger(uint32_t location, uint32_t scale)
+{
+    NS_LOG_FUNCTION(this << location << scale);
+    return static_cast<uint32_t>(GetValue(location, scale));
+}
+
+double
+LargestExtremeValueRandomVariable::GetValue()
+{
+    NS_LOG_FUNCTION(this);
+    return GetValue(m_location, m_scale);
+}
+
+double
+LargestExtremeValueRandomVariable::GetMean(double location, double scale)
+{
+    NS_LOG_FUNCTION(location << scale);
+    return (location + (scale * std::numbers::egamma));
+}
+
+double
+LargestExtremeValueRandomVariable::GetMean() const
+{
+    return GetMean(m_location, m_scale);
+}
+
+double
+LargestExtremeValueRandomVariable::GetVariance(double scale)
+{
+    NS_LOG_FUNCTION(scale);
+    return std::pow((scale * std::numbers::pi), 2) / 6.0;
+}
+
+double
+LargestExtremeValueRandomVariable::GetVariance() const
 {
     return GetVariance(m_scale);
 }
