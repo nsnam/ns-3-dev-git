@@ -3044,6 +3044,62 @@ LaplacianTestCase::DoRun()
 
 /**
  * \ingroup rng-tests
+ * Test case for largest extreme value distribution random variable stream generator
+ */
+class LargestExtremeValueTestCase : public TestCaseBase
+{
+  public:
+    LargestExtremeValueTestCase();
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Tolerance for testing rng values against expectation,
+     * as a fraction of mean value.
+     */
+    static constexpr double TOLERANCE{1e-2};
+};
+
+LargestExtremeValueTestCase::LargestExtremeValueTestCase()
+    : TestCaseBase("Largest Extreme Value Random Variable Stream Generator")
+{
+}
+
+void
+LargestExtremeValueTestCase::DoRun()
+{
+    NS_LOG_FUNCTION(this);
+    SetTestSuiteSeed();
+
+    double mu = 2.0;
+    double scale = 1.0;
+
+    // Create RNG with the specified range.
+    auto x = CreateObject<LargestExtremeValueRandomVariable>();
+    x->SetAttribute("Location", DoubleValue(mu));
+    x->SetAttribute("Scale", DoubleValue(scale));
+
+    // Calculate the mean of these values.
+    auto valueMean = Average(x);
+
+    // Calculate the variance of these values.
+    auto valueVariance = Variance(x, valueMean);
+
+    // Test that values have approximately the right mean value.
+    const auto expectedMean = LargestExtremeValueRandomVariable::GetMean(mu, scale);
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
+
+    // Test that values have approximately the right variance value.
+    const auto expectedVariance = LargestExtremeValueRandomVariable::GetVariance(scale);
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueVariance,
+                              expectedVariance,
+                              TOLERANCE * expectedVariance,
+                              "Wrong variance value.");
+}
+
+/**
+ * \ingroup rng-tests
  * RandomVariableStream test suite, covering all random number variable
  * stream generator types.
  */
@@ -3100,6 +3156,7 @@ RandomVariableSuite::RandomVariableSuite()
     AddTestCase(new BinomialAntitheticTestCase);
     AddTestCase(new ShuffleElementsTest);
     AddTestCase(new LaplacianTestCase);
+    AddTestCase(new LargestExtremeValueTestCase);
 }
 
 static RandomVariableSuite randomVariableSuite; //!< Static variable for test initialization
