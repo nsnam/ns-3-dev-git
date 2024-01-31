@@ -41,6 +41,7 @@ Release 3-dev
 - (wifi) - Stop A-MSDU aggregation when an A-MSDU is found in the queue
 - (lr-wpan) !1769 - `DoDispose` SIGSEGV and beacon fixes
 - (wifi) - ReportAmpduTxStatus called twice when sending explicit BAR upon missed BlockAck
+- (wifi) - Fix regression causing BlockAckReq frames to be sent with data rates instead of control rates
 
 Release 3.40
 ------------

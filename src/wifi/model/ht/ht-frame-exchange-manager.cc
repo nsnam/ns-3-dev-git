@@ -570,6 +570,12 @@ HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
         return false;
     }
 
+    NS_ABORT_IF(txParams.m_acknowledgment->method != WifiAcknowledgment::BLOCK_ACK);
+
+    // the BlockAckReq frame is sent using the same TXVECTOR as the BlockAck frame
+    auto blockAcknowledgment = static_cast<WifiBlockAck*>(txParams.m_acknowledgment.get());
+    txParams.m_txVector = blockAcknowledgment->blockAckTxVector;
+
     // we can transmit the BlockAckReq frame
     SendPsduWithProtection(GetWifiPsdu(mpdu, txParams.m_txVector), txParams);
     return true;
