@@ -292,10 +292,8 @@ EnumChecker<T>::GetName(T value) const
         return v.first == value;
     });
 
-    using type = typename std::
-        conditional_t<std::is_enum_v<T>, std::underlying_type<T>, std::type_identity<T>>::type;
     NS_ASSERT_MSG(it != m_valueSet.end(),
-                  "invalid enum value " << static_cast<type>(value)
+                  "invalid enum value " << static_cast<int>(value)
                                         << "! Missed entry in MakeEnumChecker?");
     return it->second;
 }
