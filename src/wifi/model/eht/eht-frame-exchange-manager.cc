@@ -642,6 +642,50 @@ EhtFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxV
     HeFrameExchangeManager::CtsAfterMuRtsTimeout(muRts, txVector);
 }
 
+void
+EhtFrameExchangeManager::SendCtsAfterRts(const WifiMacHeader& rtsHdr,
+                                         WifiMode rtsTxMode,
+                                         double rtsSnr)
+{
+    NS_LOG_FUNCTION(this << rtsHdr << rtsTxMode << rtsSnr);
+
+    if (m_apMac && GetWifiRemoteStationManager()->GetEmlsrEnabled(rtsHdr.GetAddr2()))
+    {
+        // we are going to send a CTS to an EMLSR client, transmissions to such EMLSR client
+        // must be blocked on the other EMLSR links
+
+        auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(rtsHdr.GetAddr2());
+        NS_ASSERT_MSG(mldAddress, "MLD address not found for " << rtsHdr.GetAddr2());
+
+        for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); ++linkId)
+        {
+            if (linkId != m_linkId &&
+                m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
+            {
+                // check that other links are blocked as expected
+                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *mldAddress, 0);
+                auto mask =
+                    m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
+                NS_ASSERT_MSG(mask, "No mask for client " << *mldAddress << " on link " << +linkId);
+                if (!mask->test(
+                        static_cast<std::size_t>(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK)))
+                {
+                    NS_ASSERT_MSG(false,
+                                  "Transmissions to " << *mldAddress << " on link " << +linkId
+                                                      << " are not blocked");
+                    // in case asserts are disabled, block transmissions on the other links because
+                    // this is what we need
+                    m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                                 *mldAddress,
+                                                 {linkId});
+                }
+            }
+        }
+    }
+
+    HeFrameExchangeManager::SendCtsAfterRts(rtsHdr, rtsTxMode, rtsSnr);
+}
+
 bool
 EhtFrameExchangeManager::GetEmlsrSwitchToListening(Ptr<const WifiPsdu> psdu,
                                                    uint16_t aid,

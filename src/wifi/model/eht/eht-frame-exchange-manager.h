@@ -118,6 +118,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
                      bool inAmpdu) override;
     void NavResetTimeout() override;
     void IntraBssNavResetTimeout() override;
+    void SendCtsAfterRts(const WifiMacHeader& rtsHdr, WifiMode rtsTxMode, double rtsSnr) override;
 
     /**
      * This method is intended to be called when an AP MLD detects that an EMLSR client previously
