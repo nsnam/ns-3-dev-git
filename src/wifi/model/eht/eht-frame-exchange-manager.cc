@@ -177,6 +177,71 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
 {
     NS_LOG_FUNCTION(this << edca << allowedWidth);
 
+    if (m_apMac)
+    {
+        for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+        {
+            if (linkId == m_linkId)
+            {
+                continue;
+            }
+
+            // EMLSR clients involved in a DL or UL TXOP on another link
+            std::set<Mac48Address> emlsrClients;
+
+            // check if an EMLSR client is the holder of an UL TXOP on the other link
+            if (auto ehtFem =
+                    StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
+                ehtFem->m_ongoingTxopEnd.IsRunning() && ehtFem->m_txopHolder &&
+                m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(
+                    ehtFem->m_txopHolder.value()))
+            {
+                emlsrClients.insert(ehtFem->m_txopHolder.value());
+            }
+
+            // check if EMLSR clients are involved in a DL TXOP on another link
+            for (const auto& address : m_protectedStas)
+            {
+                if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(address))
+                {
+                    emlsrClients.insert(address);
+                }
+            }
+
+            for (const auto& address : emlsrClients)
+            {
+                auto mldAddress =
+                    m_mac->GetWifiRemoteStationManager(linkId)->GetMldAddress(address);
+                NS_ASSERT_MSG(mldAddress, "MLD address not found for " << address);
+
+                if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(*mldAddress))
+                {
+                    // EMLSR client did not enable EMLSR mode on this link, we can transmit to it
+                    continue;
+                }
+
+                // check that this link is blocked as expected
+                WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *mldAddress, 0);
+                auto mask =
+                    m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
+                NS_ASSERT_MSG(mask,
+                              "No mask for client " << *mldAddress << " on link " << +m_linkId);
+                if (!mask->test(
+                        static_cast<std::size_t>(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK)))
+                {
+                    NS_ASSERT_MSG(false,
+                                  "Transmissions to " << *mldAddress << " on link " << +m_linkId
+                                                      << " are not blocked");
+                    // in case asserts are disabled, block transmissions on the other links because
+                    // this is what we need
+                    m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                                 *mldAddress,
+                                                 {m_linkId});
+                }
+            }
+        }
+    }
+
     std::optional<Time> timeToCtsEnd;
 
     if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
