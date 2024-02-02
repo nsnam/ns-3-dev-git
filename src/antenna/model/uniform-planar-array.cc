@@ -359,7 +359,7 @@ UniformPlanarArray::ArrayIndexFromPortIndex(uint16_t portIndex, uint16_t subElem
     auto firstPolPortIdx = portIndex;
     auto polarizationOffset = 0;
     auto arraySize = GetNumHorizontalPorts() * GetNumVerticalPorts();
-    if (firstPolPortIdx > arraySize)
+    if (firstPolPortIdx >= arraySize)
     {
         firstPolPortIdx = portIndex - arraySize;
         polarizationOffset = GetNumColumns() * GetNumRows();
