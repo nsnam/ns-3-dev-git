@@ -164,3 +164,6 @@ static ns3::GlobalValue g_rate("VRCrate",
   * (lte) Struct member `pfsFlowPerf_t::lastTtiBytesTrasmitted` in file `pf-ff-mac-scheduler.h` was renamed `fdbetsFlowPerf_t::lastTtiBytesTransmitted`.
 * The spelling of the attribute `IntialCellVoltage` from `LiIonEnergySource` was corrected to `InitialCellVoltage`; this will affect existing users who were using the attribute with the misspelling.
 * The attribute `Recievers` in class `YansWifiPhy` was misspelled, so this has been corrected to `Receivers`.
+
+./doc/manual/source/working-with-docker.rst
+    067a8b748816715d93ede9099132d943c04b13fcc23b3b8a7e21d23c1096cc2a

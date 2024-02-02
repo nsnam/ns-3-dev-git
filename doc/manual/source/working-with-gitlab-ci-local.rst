@@ -1,6 +1,7 @@
 .. include:: replace.txt
 .. highlight:: bash
 
+.. _Working with gitlab-ci-local:
 
 Working with gitlab-ci-local
 ----------------------------
@@ -11,13 +12,13 @@ Working with gitlab-ci-local
 .. _crypto miners abuse : https://about.gitlab.com/blog/2021/05/17/prevent-crypto-mining-abuse/
 .. _GitLab-CI-local : https://github.com/firecow/gitlab-ci-local
 .. _GitLab CI : https://docs.gitlab.com/ee/ci/
-.. _Docker : https://docs.docker.com/desktop/
-.. _rootless mode : https://docs.docker.com/engine/security/rootless/
 
 The ns-3 project repository is currently hosted in GitLab, which includes
 `continuous integration (CI)`_ tools to automate build, tests, packaging and
 distribution of software. The CI works based on jobs, that are defined
-on YAML files.
+in YAML files and run inside containers.
+
+See :ref:`Working with Docker` for more information about containers in general.
 
 The ns-3 GitLab CI files are located in ``ns-3-dev/utils/tests/``.
 The main GitLab CI file is ``gitlab-ci.yml``. The different jobs
@@ -44,16 +45,16 @@ and pipelines without requiring pushes to test repositories or main
 repositories that fill up the CI job queues with failed jobs due to
 script errors.
 
-GitLab-CI-local relies on `Docker`_ to setup the environment to execute
-the jobs.
+GitLab-CI-local relies on :ref:`Docker containers`
+to setup the environment to execute the jobs.
 
 Note: Docker is usually setup in root mode, requiring
 frequent use of administrative permissions/sudo. However,
 this is highly discouraged. You can configure Docker to run
-in `rootless mode`_. From this point onwards, we assume Docker is configured
-in `rootless mode`_.
+in :ref:`Docker rootless mode <Install Docker>`. From this point onwards, we assume Docker is configured
+in :ref:`Docker rootless mode <Install Docker>`.
 
-After installing both `Docker`_ in `rootless mode`_ and `GitLab-CI-local`_,
+After installing both :ref:`Docker <Docker containers>` and `GitLab-CI-local`_,
 the ns-3 jobs can be listed using the following command:
 
 .. sourcecode:: bash
