@@ -13,34 +13,52 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
-Release 3-dev
--------------
+Release 3.41
+------------
 
 ### Supported platforms
 
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-9 or later, or LLVM/clang++-10 or later
+- Python 3.6 or later
+- CMake 3.13 or later
+- (macOS only) Xcode 11 or later
+- (Windows only) Msys2/MinGW64 toolchain or WSL2
+
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and works for Linux only.  Specifically, avoid Cppyy version 3; stay with version 2.4.2 for this release.
+
 ### New user-visible features
 
+- (antenna) !1337 - `UniformPlanarArray` is extended to support multiple horizontal and vertical antenna ports, and dual-polarized antennas.
 - (core) !1364 - The `MakeEnumAccessor` was changed to support `enum class` types
+- (core) !1802 - Added support for Bernoulli and Binomial random variables (`BernoulliRandomVariable`, `BinomialRandomVariable`)
 - (internet) #1001 - TCP Cubic now supports Reno-friendly operation by default.
+- (internet) !1817 - Resolved inconsistency in behavior regarding the Strong End System Model between IPv4 and IPv6. Attributes `Ipv6L3Protocol::StrongEndSystemModel` and `Ipv4::WeakEsModel` have been aligned to provide a consistent user experience and avoid confusion
 - (lr-wpan) !1686 - Change CapabilityField to standard bitmap
 - (lr-wpan) !1698 - Change SuperframeField to standard bitmap
-- (lr-wpan) !1706 - Create MAC layer abstraction (decoupling, alternative MACs)
-- (wifi) Added support for BlockAck buffer size of up to 1024 MPDUs (EHT STAs only)
-- (antenna) !1337 - `UniformPlanarArray` is extended to support multiple horizontal and vertical antenna ports, and dual-polarized antennas.
-- (spectrum)!1337 - `ThreeGppSpectrumPropagationLossModel` and `ThreeGppChannelModel` are extended to support multi-port and dual-polarized antenna arrays which is a basis for enabling 3GPP MIMO simulations in ns-3.
-- (wifi) - Align default RTS threshold to 802.11-2020
-- (wifi) - Added EHT support for Ideal rate manager
-- (wifi) - Reduce error rate model precision to fix infinite loop when Ideal rate manager is used with EHT
+- (lr-wpan) !1711 - Add `pCurrentPage` and `pCurrentChannel` attributes to MLME-GET.request primitive
+- (lr-wpan) !1706 - Create MAC layer abstraction (decoupling, alternative MACs) via a new `LrWpanBase` class
 - (lr-wpan) !1794 - Group MAC primitives status enumerations into a single enumeration
-- (core) !1802 - Added support for Bernoulli and Binomial random variables (`BernoulliRandomVariable`, `BinomialRandomVariable`)
-- (internet) !1817 - Resolved inconsistency in behavior regarding the Strong End System Model between IPv4 and IPv6. Attributes `Ipv6L3Protocol::StrongEndSystemModel` and `Ipv4::WeakEsModel` have been aligned to provide a consistent user experience and avoid confusion
+- (spectrum)!1337 - `ThreeGppSpectrumPropagationLossModel` and `ThreeGppChannelModel` are extended to support multi-port and dual-polarized antenna arrays which is a basis for enabling 3GPP MIMO simulations in ns-3.
+- (wifi) - Added support for BlockAck buffer size of up to 1024 MPDUs (EHT STAs only)
+- (wifi) - Aligned default RTS threshold to 802.11-2020
+- (wifi) - Added EHT support for Ideal rate manager
 
 ### Bugs fixed
 
 - (lr-wpan) !1673 - Fixes PHY BUSY_RX -> RX_ON operation
+- (lr-wpan) !1769 - `DoDispose` SIGSEGV and beacon fixes
+- (network) !1746 - `PacketSocketClient` not scheduling `Send()` for packet bursts
+- (network) !1793 - Fix string to MAC address parsing logic
+- (tap-bridge) !1540 - Update examples to support modern Wi-Fi standards
+- (tcp) !1788, !1825 - Fix several small issues with `examples/tcp/tcp-bbr-example.cc` and `examples/tcp/tcp-linux-reno.cc`
+- (tcp) !1812 - Several small fixes to TCP retransmission logic were added, based on trace comparison with OMNeT++
+- (tcp) #1026 - TcpRateLinux (delivery rate estimation) had an incorrect update to the rate sample
+- (visualizer) !1730 - Fix label positioning in PyViz
 - (wifi) - Fix agreement not always properly torn down when Block Ack inactivity timeout is elapsed
 - (wifi) - Stop A-MSDU aggregation when an A-MSDU is found in the queue
-- (lr-wpan) !1769 - `DoDispose` SIGSEGV and beacon fixes
 - (wifi) - ReportAmpduTxStatus called twice when sending explicit BAR upon missed BlockAck
 - (wifi) - Fix regression causing BlockAckReq frames to be sent with data rates instead of control rates
 
