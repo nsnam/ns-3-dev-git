@@ -26,8 +26,8 @@ class LaplacianRandomVariable;
 class Socket;
 
 /**
- * \ingroup applications
- * \brief Generate VoIP traffic.
+ * @ingroup applications
+ * @brief Generate VoIP traffic.
  *
  * This voip traffic generator follows requirements from IEEE 802.11-14/0571r12 - 11ax Evaluation
  * Methodology.
@@ -52,8 +52,8 @@ class VoipTraffic : public SourceApplication
 {
   public:
     /**
-     * \brief Get the type ID.
-     * \return the object TypeId
+     * @brief Get the type ID.
+     * @return the object TypeId
      */
     static TypeId GetTypeId();
 
@@ -93,7 +93,7 @@ class VoipTraffic : public SourceApplication
     void SetInactiveExponentialMean(Time mean);
 
     /**
-     * \brief Cancel all pending events.
+     * @brief Cancel all pending events.
      */
     void CancelEvents();
 
@@ -185,16 +185,16 @@ class VoipTraffic : public SourceApplication
     /**
      * TracedCallback signature for packet and jitter.
      *
-     * \param [in] packet The packet.
-     * \param [in] jitter The networking jitter.
+     * @param [in] packet The packet.
+     * @param [in] jitter The networking jitter.
      */
     typedef void (*TxTracedCallback)(Ptr<const Packet> packet, Time jitter);
 
     /**
      * TracedCallback signature for state change.
      *
-     * \param [in] state The new state.
-     * \param [in] duration The duration of the state.
+     * @param [in] state The new state.
+     * @param [in] duration The duration of the state.
      */
     typedef void (*StateUpdatedCallback)(VoiceActivityState state, Time duration);
 
@@ -211,9 +211,9 @@ class VoipTraffic : public SourceApplication
 /**
  * Serialize voice activity state to ostream in a human-readable form.
  *
- * \param os std::ostream
- * \param state the voice activity state
- * \return std::ostream
+ * @param os std::ostream
+ * @param state the voice activity state
+ * @return std::ostream
  */
 std::ostream& operator<<(std::ostream& os, VoipTraffic::VoiceActivityState state);
 

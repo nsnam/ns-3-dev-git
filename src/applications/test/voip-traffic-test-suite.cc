@@ -372,7 +372,7 @@ VoipTrafficTestCase::DoRun()
  * @ingroup applications-test
  * @ingroup tests
  *
- * \brief VoipTraffic TestSuite
+ * @brief VoipTraffic TestSuite
  */
 class VoipTrafficTestSuite : public TestSuite
 {

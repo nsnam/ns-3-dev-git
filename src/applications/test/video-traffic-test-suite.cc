@@ -381,7 +381,7 @@ VideoTrafficTestCase::DoRun()
  * @ingroup applications-test
  * @ingroup tests
  *
- * \brief VideoTraffic TestSuite
+ * @brief VideoTraffic TestSuite
  */
 class VideoTrafficTestSuite : public TestSuite
 {

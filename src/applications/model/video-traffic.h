@@ -27,8 +27,8 @@ class WeibullRandomVariable;
 class GammaRandomVariable;
 
 /**
- * \ingroup applications
- * \brief Generate video traffic.
+ * @ingroup applications
+ * @brief Generate video traffic.
  *
  * This video traffic generator follows requirements from IEEE 802.11-14/0571r12 - 11ax Evaluation
  * Methodology.
@@ -190,8 +190,8 @@ class VideoTraffic : public SourceApplication
     /**
      * TracedCallback signature for packet and latency.
      *
-     * \param [in] packet The packet.
-     * \param [in] latency The networking latency.
+     * @param [in] packet The packet.
+     * @param [in] latency The networking latency.
      */
     typedef void (*TxTracedCallback)(Ptr<const Packet> packet, Time latency);
 
