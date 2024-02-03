@@ -404,7 +404,6 @@ class TestInterferenceHelper : public InterferenceHelper
   public:
     using InterferenceHelper::CalculatePayloadChunkSuccessRate;
     using InterferenceHelper::CalculateSnr;
-    using InterferenceHelper::InterferenceHelper;
 };
 
 /**

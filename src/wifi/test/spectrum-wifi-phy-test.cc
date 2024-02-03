@@ -56,7 +56,6 @@ static const uint16_t GUARD_WIDTH =
 class ExtSpectrumWifiPhy : public SpectrumWifiPhy
 {
   public:
-    using SpectrumWifiPhy::SpectrumWifiPhy;
     using WifiPhy::GetBand;
 };
 
