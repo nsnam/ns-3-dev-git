@@ -465,10 +465,25 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
 {
     NS_LOG_FUNCTION(this << address << delay.As(Time::US));
 
+    auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
+    NS_ASSERT_MSG(mldAddress, "MLD address not found for " << address);
+    NS_ASSERT_MSG(m_apMac, "This function shall only be called by AP MLDs");
+
+    for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); ++linkId)
+    {
+        if (auto ehtFem =
+                StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
+            ehtFem->m_ongoingTxopEnd.IsRunning() && ehtFem->m_txopHolder &&
+            m_mac->GetWifiRemoteStationManager(linkId)->GetMldAddress(*ehtFem->m_txopHolder) ==
+                mldAddress)
+        {
+            // this EMLSR client is the holder of an UL TXOP, do not unblock links
+            return;
+        }
+    }
+
     // this EMLSR client switches back to listening operation a transition delay
     // after the given delay
-    auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
-    NS_ASSERT(mldAddress);
     auto emlCapabilities = GetWifiRemoteStationManager()->GetStationEmlCapabilities(address);
     NS_ASSERT(emlCapabilities);
 
