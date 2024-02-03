@@ -351,6 +351,12 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
         m_staMac->GetEmlsrManager()->NotifyUlTxopStart(m_linkId, timeToCtsEnd);
     }
 
+    if (started)
+    {
+        // we are starting a new TXOP, hence consider the previous ongoing TXOP as terminated
+        m_ongoingTxopEnd.Cancel();
+    }
+
     return started;
 }
 
