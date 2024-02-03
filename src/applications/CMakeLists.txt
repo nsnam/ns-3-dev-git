@@ -65,4 +65,5 @@ build_lib(
     test/udp-client-server-test.cc
     test/video-traffic-test-suite.cc
     test/voip-traffic-test-suite.cc
+    test/mobile-gaming-test-suite.cc
 )
