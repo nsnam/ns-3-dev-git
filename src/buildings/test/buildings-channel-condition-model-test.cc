@@ -31,7 +31,6 @@ NS_LOG_COMPONENT_DEFINE("BuildingsChannelConditionModelsTest");
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Test case for the class BuildingsChannelConditionModel. It checks if the
  * channel condition is correctly determined when a building is deployed in the
@@ -148,7 +147,6 @@ BuildingsChannelConditionModelTestCase::DoRun()
 
 /**
  * \ingroup building-test
- * \ingroup tests
  * Test suite for the buildings channel condition model
  */
 class BuildingsChannelConditionModelsTestSuite : public TestSuite

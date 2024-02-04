@@ -31,12 +31,18 @@
 using namespace ns3;
 
 /**
+ * \ingroup click
+ * \defgroup click-tests click module tests
+ */
+
+/**
  * \file
  * \ingroup click-tests
  * Click test suite.
  */
 
 /**
+ * \ingroup click-tests
  * Add Click Internet stack.
  *
  * \param node Node.
@@ -50,6 +56,7 @@ AddClickInternetStack(Ptr<Node> node)
 }
 
 /**
+ * \ingroup click-tests
  * Add network device.
  *
  * \param node Node.

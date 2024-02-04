@@ -36,6 +36,7 @@ class ShadowingLossModel;
 class JakesFadingLossModel;
 
 /**
+ * \ingroup buildings
  * \ingroup propagation
  *
  *  This model provides means for simulating the following propagation

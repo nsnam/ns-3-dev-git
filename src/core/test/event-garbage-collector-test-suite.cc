@@ -24,7 +24,7 @@
  * \file
  * \ingroup core-tests
  * \ingroup events
- * \ingroup events-garbage-tests
+ * \ingroup event-garbage-tests
  * EventGarbageCollector test suite.
  */
 

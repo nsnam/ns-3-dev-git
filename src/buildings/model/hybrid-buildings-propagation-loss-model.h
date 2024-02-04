@@ -36,6 +36,7 @@ class ItuR1238PropagationLossModel;
 class Kun2600MhzPropagationLossModel;
 
 /**
+ * \ingroup buildings
  * \ingroup propagation
  *
  *  \brief The HybridBuildingsPropagationModel is a compound of different models able to evaluate

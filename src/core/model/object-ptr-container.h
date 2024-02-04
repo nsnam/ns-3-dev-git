@@ -31,6 +31,11 @@
  * ns3::ObjectPtrContainerValue attribute value declarations and template implementations.
  */
 
+/**
+ * \ingroup attributes
+ * \defgroup attribute_ObjectPtrContainer ObjectPtrContainer Attribute
+ * AttributeValue implementation for ObjectPtrContainer
+ */
 namespace ns3
 {
 
@@ -41,6 +46,12 @@ namespace ns3
  *
  * This class it used to get attribute access to an array of
  * ns3::Object pointers.
+ *
+ * \see AttributeValue
+ *
+ * Call graph was not generated because of its size.
+ * \hidecallergraph
+ * \hidecallgraph
  */
 class ObjectPtrContainerValue : public AttributeValue
 {
@@ -146,6 +157,12 @@ template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor> MakeObjectPtrContainerAccessor(INDEX (T::*getN)() const,
                                                             Ptr<U> (T::*get)(INDEX) const);
 
+/**
+ * \ingroup attribute_ObjectPtrContainer
+ *
+ * AttributeChecker implementation for ObjectPtrContainerValue.
+ * \see AttributeChecker
+ */
 class ObjectPtrContainerChecker : public AttributeChecker
 {
   public:
@@ -156,22 +173,28 @@ class ObjectPtrContainerChecker : public AttributeChecker
     virtual TypeId GetItemTypeId() const = 0;
 };
 
+/**
+ * \ingroup attribute_ObjectPtrContainer
+ * \returns The AttributeChecker.
+ * \see AttributeChecker
+ */
 template <typename T>
 Ptr<const AttributeChecker> MakeObjectPtrContainerChecker();
 
 } // namespace ns3
 
-/***************************************************************
- *        The implementation of the above functions.
- ***************************************************************/
+//
+// The implementation of the above functions.
+//
 
 namespace ns3
 {
 
 namespace internal
 {
-
-/** ObjectPtrContainerChecker implementation class. */
+/**
+ * ObjectPtrContainerChecker implementation class.
+ */
 template <typename T>
 class ObjectPtrContainerChecker : public ns3::ObjectPtrContainerChecker
 {

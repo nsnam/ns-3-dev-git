@@ -34,6 +34,8 @@ class MobilityModel;
 class Building;
 
 /**
+ * \ingroup buildings
+ *
  * Helper used to install a MobilityBuildingInfo into a set of nodes.
  */
 class BuildingsHelper

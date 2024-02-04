@@ -36,7 +36,9 @@ namespace ns3
 {
 
 /**
+ * \ingroup buildings
  * \ingroup mobility
+ *
  * \brief 2D random walk mobility model which avoids buildings.
  *
  * This class reuses most of the code of RandomWalk2dMobilityModel,

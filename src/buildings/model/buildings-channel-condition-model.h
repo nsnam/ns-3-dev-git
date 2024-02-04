@@ -30,6 +30,7 @@ class MobilityModel;
 
 /**
  * \ingroup buildings
+ * \ingroup propagation
  *
  * \brief Determines the channel condition based on the buildings deployed in the
  * scenario

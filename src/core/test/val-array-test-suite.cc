@@ -22,6 +22,19 @@
 #include "ns3/val-array.h"
 
 /**
+ * \defgroup valArray-tests ValArray tests
+ * \ingroup core-tests
+ * \ingroup Matrices
+ */
+
+/**
+ * \file
+ * \ingroup valArray-tests
+ * ValArray test suite
+ */
+
+/**
+ * \file
  * \ingroup core-tests
  */
 
@@ -33,6 +46,8 @@ namespace tests
 NS_LOG_COMPONENT_DEFINE("ValArrayTest");
 
 /**
+ * @ingroup valArray-tests
+ *
  * @brief ValArray test case for testing ValArray class
  *
  * @tparam T the template parameter that can be a complex number, double or int

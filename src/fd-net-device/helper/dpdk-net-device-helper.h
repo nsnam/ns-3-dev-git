@@ -27,10 +27,9 @@ namespace ns3
 {
 
 /**
- * \ingroup dpdk-net-device
+ * \ingroup fd-net-device
  * \brief build a DpdkNetDevice object attached to a physical network
  * interface
- *
  */
 class DpdkNetDeviceHelper : public EmuFdNetDeviceHelper
 {

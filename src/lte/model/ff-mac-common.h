@@ -405,11 +405,13 @@ struct SpsConfig_s
  */
 struct SrConfig_s
 {
-    enum SetupRelease_e m_action
+    /// Actions
+    enum SetupRelease_e
     {
         setup
-    }; ///< action
+    };
 
+    SetupRelease_e m_action;            ///< action
     uint8_t m_schedInterval{UINT8_MAX}; ///< sched interval
     uint8_t m_dsrTransMax{UINT8_MAX};   ///< trans max
 };
@@ -419,11 +421,13 @@ struct SrConfig_s
  */
 struct CqiConfig_s
 {
-    enum SetupRelease_e m_action
+    /// Actions
+    enum SetupRelease_e
     {
         setup
-    }; ///< action
+    };
 
+    SetupRelease_e m_action;                 ///< CQI action
     uint16_t m_cqiSchedInterval{UINT16_MAX}; ///< CQI schedule interval
     uint8_t m_riSchedInterval{UINT8_MAX};    ///< RI schedule interval
 };

@@ -36,6 +36,8 @@ namespace ns3
 
 /**
  * \ingroup buildings
+ * \ingroup mobility
+
  * \brief mobility buildings information (to be used by mobility models)
  *
  * This model implements the management of scenarios where users might be

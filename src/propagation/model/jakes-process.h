@@ -31,7 +31,7 @@ class PropagationLossModel;
 class JakesPropagationLossModel;
 
 /**
- * \ingroup fading
+ * \ingroup propagation
  *
  * \brief Implementation for a single path Stationary Jakes propagation loss model.
  *
@@ -45,9 +45,8 @@ class JakesPropagationLossModel;
  * \f[ X_s(t) = \frac{2}{\sqrt{M}}\sum_{n=1}^{M}\sin(\psi_n)\cos(\omega_d t\cos(\alpha_n)+\phi_n)\f]
  * with
  * \f[ \alpha_n = \frac{2\pi n - \pi + \theta}{4M},  n=1,2, \ldots,M\f]
- * where
- *\f$\theta\f$, \f$\phi\f$, and \f$\psi_n\f$ are statically independent and uniformly distributed
- *over \f$[-\pi, \pi)\f$ for all \f$n\f$.
+ * where \f$\theta\f$, \f$\phi\f$, and \f$\psi_n\f$ are
+ * statically independent and uniformly distributed over \f$[-\pi, \pi)\f$ for all \f$n\f$.
  *
  *
  * [1] Y. R. Zheng and C. Xiao, "Simulation Models With Correct

@@ -32,7 +32,6 @@ NS_LOG_COMPONENT_DEFINE("BuildingsHelperTest");
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * \brief Struct representing a position in a building
  */
@@ -59,7 +58,6 @@ PositionInBuilding::PositionInBuilding()
 
 /**
  * \ingroup building-test
- * \ingroup tests
 
  * Data to construct a Building object. We don't want to pass Building
  * objects to the TestCase constructor because otherwise BuildingList
@@ -96,7 +94,6 @@ BuildingData::BuildingData()
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * \brief BuildingsHelper test
  */
@@ -197,7 +194,6 @@ BuildingsHelperOneTestCase::DoRun()
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * \brief BuildingsHelper TestSuite
  */

@@ -34,10 +34,18 @@
 namespace ns3
 {
 
+/*!
+ * \ingroup attributes
+ * \addtogroup attribute_AttributeContainer AttributeContainer Attribute
+ * AttributeValue implementation for AttributeContainer
+ */
+
 class AttributeChecker;
 
 // A = attribute value type, C = container type to return
 /**
+ * \ingroup attribute_AttributeContainer
+ *
  * A container for one type of attribute.
  *
  * The container uses \p A to parse items into elements.
@@ -191,6 +199,13 @@ class AttributeContainerValue : public AttributeValue
     container_type m_container; //!< Internal container
 };
 
+/*!
+ * \ingroup attribute_AttributeContainer
+ *
+ * \class  ns3::AttributeContainerChecker "attribute-container.h"
+ * AttributeChecker implementation for AttributeContainerValue.
+ * \see AttributeChecker
+ */
 class AttributeContainerChecker : public AttributeChecker
 {
   public:
@@ -207,6 +222,8 @@ class AttributeContainerChecker : public AttributeChecker
 };
 
 /**
+ * \ingroup attribute_AttributeContainer
+ *
  * Make AttributeContainerChecker from AttributeContainerValue.
  * @tparam A \deduced AttributeValue type in container.
  * @tparam Sep \deduced Character separator between elements for parsing.
@@ -219,6 +236,8 @@ Ptr<AttributeChecker> MakeAttributeContainerChecker(
     const AttributeContainerValue<A, Sep, C>& value);
 
 /**
+ * \ingroup attribute_AttributeContainer
+ *
  * Make AttributeContainerChecker using explicit types, initialize item checker.
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
@@ -230,6 +249,8 @@ template <class A, char Sep = ',', template <class...> class C = std::list>
 Ptr<const AttributeChecker> MakeAttributeContainerChecker(Ptr<const AttributeChecker> itemchecker);
 
 /**
+ * \ingroup attribute_AttributeContainer
+ *
  * Make uninitialized AttributeContainerChecker using explicit types.
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
@@ -240,6 +261,8 @@ template <class A, char Sep = ',', template <class...> class C = std::list>
 Ptr<AttributeChecker> MakeAttributeContainerChecker();
 
 /**
+ * \ingroup attribute_AttributeContainer
+ *
  * Make AttributeContainerAccessor  using explicit types.
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
@@ -254,6 +277,8 @@ template <typename A, char Sep = ',', template <typename...> class C = std::list
 Ptr<const AttributeAccessor> MakeAttributeContainerAccessor(T1 a1);
 
 /**
+ * \ingroup attribute_AttributeContainer
+ *
  * Make AttributeContainerAccessor  using explicit types.
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
@@ -287,7 +312,10 @@ namespace internal
 {
 
 /**
+ * \ingroup attribute_AttributeContainer
+ *
  * \internal
+ *
  * Templated AttributeContainerChecker class that is instantiated
  * in MakeAttributeContainerChecker. The non-templated base ns3::AttributeContainerChecker
  * is returned from that function. This is the same pattern as ObjectPtrContainer.

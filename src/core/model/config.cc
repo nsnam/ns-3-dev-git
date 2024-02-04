@@ -30,10 +30,14 @@
 
 /**
  * \file
- * \ingroup config
+ * \ingroup config-impl
  * ns3::Config implementations.
  */
 
+/**
+ * \defgroup config-impl Config implementations
+ * \ingroup config
+ */
 namespace ns3
 {
 

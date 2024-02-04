@@ -30,6 +30,11 @@ namespace ns3
 {
 
 /**
+ * \defgroup Matrices Classes to do efficient math operations on arrays
+ * \ingroup core
+ */
+
+/**
  * \ingroup Matrices
  *
  * \brief ValArray is a class to efficiently store 3D array. The class is general

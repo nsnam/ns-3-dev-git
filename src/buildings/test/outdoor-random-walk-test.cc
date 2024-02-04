@@ -35,7 +35,6 @@ NS_LOG_COMPONENT_DEFINE("OutdoorRandomWalkTest");
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Test case for the class OutdoorRandomWalkTestCase. It checks if the
  * positions visited by the user are outside buildings
@@ -164,7 +163,6 @@ OutdoorRandomWalkTestCase::DoRun()
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Test suite for the buildings channel condition model
  */

@@ -40,7 +40,7 @@ namespace ns3
 {
 
 /**
- * \ingroup NeighborCacheHelper
+ * \ingroup internet
  *
  * @brief A helper class to populate neighbor cache.
  *

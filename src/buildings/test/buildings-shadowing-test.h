@@ -32,7 +32,6 @@ using namespace ns3;
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Shadowing compound test
  *
@@ -47,7 +46,6 @@ class BuildingsShadowingTestSuite : public TestSuite
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Shadowing test
  */

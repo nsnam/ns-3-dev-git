@@ -31,7 +31,13 @@ namespace ns3
 {
 
 /**
- * \ingroup mobility
+ * \defgroup buildings Buildings
+ *
+ * The models to define 3d buildings, associated channel models, and mobility.
+ */
+
+/**
+ * \ingroup buildings
  * \brief a 3d building block
  */
 class Building : public Object

@@ -22,9 +22,13 @@
 #include "ns3/test.h"
 
 /**
- * \file
+ * \defgroup matrixArray-tests MatrixArray tests
  * \ingroup core-tests
- * \ingroup matrixArray
+ * \ingroup Matrices
+ */
+
+/**
+ * \file
  * \ingroup matrixArray-tests
  * MatrixArray test suite
  */

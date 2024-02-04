@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE("TcpRateOpsTestSuite");
 class MimicCongControl;
 
 /**
- * \ingroup internet-tests
+ * \ingroup internet-test
  * \ingroup tests
  *
  * \brief The TcpRateLinux Basic Test
@@ -217,7 +217,7 @@ MimicCongControl::GetTypeId()
 }
 
 /**
- * \ingroup internet-tests
+ * \ingroup internet-test
  * \ingroup tests
  *
  * \brief The TcpRateLinux Test uses sender-receiver model to test its functionality.
@@ -435,7 +435,7 @@ TcpRateLinuxWithSocketsTest::FinalChecks()
 }
 
 /**
- * \ingroup internet-tests
+ * \ingroup internet-test
  * \ingroup tests
  *
  * \brief The TcpRateLinuxWithBufferTest tests rate sample functionality with arbitrary SACK

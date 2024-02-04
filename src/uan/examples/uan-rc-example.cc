@@ -19,7 +19,8 @@
 
 /**
  * \file uan-rc-example.cc
- * \ingroup UAN
+ * \ingroup uan
+ *
  * This example uses UanMacRc and UanMacRcGw which combined form a system
  * using what is referred to as RC-MAC.  Details of RC-MAC will be published
  * soon.  In brief terms, RC-MAC is a dual channel protocol wherein the

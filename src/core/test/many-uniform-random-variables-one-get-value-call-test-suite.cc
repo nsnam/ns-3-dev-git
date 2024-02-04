@@ -28,7 +28,7 @@
  * \file
  * \ingroup core-tests
  * \ingroup randomvariable
- * \ingroup randomvariable-tests
+ * \ingroup rng-tests
  * Test for many uniform random variable streams.
  */
 
@@ -39,15 +39,13 @@ namespace tests
 {
 
 /**
- * \ingroup randomvariable-tests
+ * \ingroup rng-tests
  * Test case for many uniform distribution random variable stream generators
  */
 class ManyUniformRandomVariablesOneGetValueCallTestCase : public TestCase
 {
   public:
-    /** Constructor. */
     ManyUniformRandomVariablesOneGetValueCallTestCase();
-    /** Destructor. */
     ~ManyUniformRandomVariablesOneGetValueCallTestCase() override;
 
   private:
@@ -89,13 +87,12 @@ ManyUniformRandomVariablesOneGetValueCallTestCase::DoRun()
 }
 
 /**
- * \ingroup randomvariable-tests
+ * \ingroup rng-tests
  * Test suite for many uniform distribution random variable stream generators
  */
 class ManyUniformRandomVariablesOneGetValueCallTestSuite : public TestSuite
 {
   public:
-    /** Constructor. */
     ManyUniformRandomVariablesOneGetValueCallTestSuite();
 };
 
@@ -107,7 +104,7 @@ ManyUniformRandomVariablesOneGetValueCallTestSuite::
 }
 
 /**
- * \ingroup randomvariable-tests
+ * \ingroup rng-tests
  * ManuUniformRandomVariablesOneGetValueCallTestSuite instance variable.
  */
 static ManyUniformRandomVariablesOneGetValueCallTestSuite

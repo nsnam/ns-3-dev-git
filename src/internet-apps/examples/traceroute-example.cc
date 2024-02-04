@@ -18,8 +18,6 @@
  *
  *
  * TraceRoute application example using AODV routing protocol.
- *
- *
  */
 
 #include "ns3/aodv-module.h"

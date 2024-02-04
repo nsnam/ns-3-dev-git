@@ -367,7 +367,6 @@ TestMultiUserScheduler::ComputeUlMuInfo()
 
 /**
  * \ingroup wifi-test
- * \ingroup tests
  * The scenarios
  */
 enum class WifiOfdmaScenario : uint8_t

@@ -21,7 +21,7 @@
 
 /**
  * \file
- * \ingroup access
+ * \ingroup singleton
  * ns3::Singleton declaration and template implementation.
  */
 
@@ -29,7 +29,14 @@ namespace ns3
 {
 
 /**
- * \ingroup access
+ * \ingroup core
+ * \defgroup singleton Singleton
+ *
+ * Template class implementing the Singleton design pattern.
+ */
+
+/**
+ * \ingroup singleton
  * \brief A template singleton
  *
  * This template class can be used to implement the singleton pattern.

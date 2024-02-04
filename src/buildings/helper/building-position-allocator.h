@@ -32,6 +32,8 @@ class Building;
 class UniformRandomVariable;
 
 /**
+ * \ingroup buildings
+ *
  * Allocate each position by randomly choosing a building from the list
  * of all buildings, and then randomly choosing a position inside the building.
  */

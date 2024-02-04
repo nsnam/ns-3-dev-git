@@ -27,7 +27,6 @@ using namespace ns3;
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Test 1.1 BuildingsPathlossModel Pathloss compound test
  *
@@ -42,7 +41,6 @@ class BuildingsPathlossTestSuite : public TestSuite
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Test 1.1 BuildingsPathlossModel Pathloss test
  *

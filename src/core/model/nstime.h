@@ -1414,9 +1414,9 @@ ATTRIBUTE_VALUE_DEFINE(Time);
 ATTRIBUTE_ACCESSOR_DEFINE(Time);
 
 /**
- *  \ingroup attribute_time
- *  Helper to make a Time checker with bounded range.
- *  Both limits are inclusive
+ * \ingroup attribute_Time
+ * Helper to make a Time checker with bounded range.
+ * Both limits are inclusive
  *
  * \param [in] min Minimum allowed value.
  * \param [in] max Maximum allowed value.
@@ -1425,7 +1425,7 @@ ATTRIBUTE_ACCESSOR_DEFINE(Time);
 Ptr<const AttributeChecker> MakeTimeChecker(const Time min, const Time max);
 
 /**
- * \ingroup attribute_time
+ * \ingroup attribute_Time
  * Helper to make an unbounded Time checker.
  *
  * \return The AttributeChecker
@@ -1437,7 +1437,7 @@ MakeTimeChecker()
 }
 
 /**
- * \ingroup attribute_time
+ * \ingroup attribute_Time
  * Helper to make a Time checker with a lower bound.
  *
  * \param [in] min Minimum allowed value.

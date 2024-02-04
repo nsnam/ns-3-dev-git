@@ -29,7 +29,6 @@
 
 /**
  * \file
- * \ingroup core
  * \ingroup csvreader
  *
  * ns3::CsvReader declaration

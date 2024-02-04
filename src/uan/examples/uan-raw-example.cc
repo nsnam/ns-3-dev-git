@@ -32,6 +32,7 @@
 using namespace ns3;
 
 /**
+ * \ingroup uan
  *
  * This example shows the usage of raw packets transfer data.
  * Two nodes are sending their remaining energy percentage (1 byte)

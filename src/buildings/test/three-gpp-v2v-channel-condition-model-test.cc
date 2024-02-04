@@ -38,7 +38,6 @@ NS_LOG_COMPONENT_DEFINE("ThreeGppV2vChannelConditionModelsTest");
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Test case for the classes ThreeGppV2vUrbanChannelConditionModel,
  * and ThreeGppV2vHighwayChannelConditionModel to test their code to
@@ -511,7 +510,6 @@ ThreeGppV2vHighwayLosNlosvChCondModelTestCase::DoRun()
 
 /**
  * \ingroup building-test
- * \ingroup tests
  *
  * Test suite for the 3GPP V2V channel condition model
  *

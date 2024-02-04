@@ -34,6 +34,12 @@
 using namespace ns3;
 
 /**
+ * \defgroup aodv-examples AODV Examples
+ * \ingroup aodv
+ * \ingroup examples
+ */
+
+/**
  * \ingroup aodv-examples
  * \ingroup examples
  * \brief Test script.

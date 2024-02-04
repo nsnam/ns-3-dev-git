@@ -41,7 +41,7 @@ class GlobalValueTestCase;
 }
 
 /**
- * \ingroup Core
+ * \ingroup core
  *
  * \brief Hold a so-called 'global value'.
  *

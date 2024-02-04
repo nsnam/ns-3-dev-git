@@ -17,9 +17,13 @@
  * Author: Gary Pei <guangyu.pei@boeing.com>
  */
 
-/*
+/**
+ * \file
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * This program is used to generate plots found in the paper
- * G. Pei and Tom Henderson, "Validation of ns-3 802.11b PHY model",
+ * Guangyu Pei and Tom Henderson, "Validation of ns-3 802.11b PHY model",
  * available online at http://www.nsnam.org/~pei/80211b.pdf
  *
  * It can be compiled as a C program and relies on a library installation of
@@ -33,6 +37,13 @@
  *   gnuplot 80211b.plt
  */
 
+/**
+ * \ingroup wifi
+ * \defgroup wifi-test wifi module tests
+ */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_math.h>
@@ -43,17 +54,6 @@
 #define WLAN_SIR_perfect 10.0   // if SIR > 10dB, perfect reception
 #define WLAN_SIR_impossible 0.1 // if SIR < -10dB, impossible to receive
 
-/**
- * \ingroup wifi
- * \defgroup wifi-test wifi module tests
- */
-
-/**
- * \ingroup wifi-test
- * \ingroup tests
- *
- * \brief fn_parameter_t structure
- */
 typedef struct fn_parameter_t
 {
     double beta; ///< beta
@@ -284,3 +284,5 @@ main(int argc, char* argv[])
     }
     return 0;
 }
+
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */

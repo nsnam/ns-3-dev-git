@@ -32,6 +32,7 @@ using namespace ns3;
 
 /**
  * \ingroup core-tests
+ * \ingroup testing
  * \defgroup examples-as-tests Examples as tests test suite
  *
  * Runs several examples as tests in order to test ExampleAsTestSuite and ExampleAsTestCase.
@@ -114,14 +115,14 @@ ExamplesAsTestsTestSuite::ExamplesAsTestsTestSuite()
 }
 
 /**
- * \ingroup examples-tests
+ * \ingroup examples-as-tests
  * ExampleAsTestsTestSuite instance variable.
  * Tests multiple examples in a single TestSuite using AddTestCase to add the examples to the suite.
  */
 static ExamplesAsTestsTestSuite g_examplesAsTestsTestSuite;
 
 /**
- * \ingroup examples-tests
+ * \ingroup examples-as-tests
  * ExampleTestSuite instance variables.
  *
  * Tests ExampleTestSuite which runs a single example as test suite as specified in constructor

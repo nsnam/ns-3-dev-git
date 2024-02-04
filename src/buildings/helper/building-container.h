@@ -30,6 +30,8 @@ namespace ns3
 {
 
 /**
+ * \ingroup buildings
+ *
  * \brief keep track of a set of building pointers.
  *
  * Some ns-3 helpers operate on more than one building at a time.  For example

@@ -32,6 +32,8 @@ namespace ns3
 class Building;
 
 /**
+ * \ingroup buildings
+ *
  * Container for Building class
  */
 class BuildingList

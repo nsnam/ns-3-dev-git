@@ -29,9 +29,13 @@
 #include <map>
 
 /**
- * \file
- * \ingroup core-examples randomvariable
  * \defgroup empirical-rng-example Core example: Empirical random variables use.
+ * \ingroup core-examples randomvariable
+ */
+
+/**
+ * \file
+ * \ingroup empirical-rng-example
  *
  * Example program illustrating use of ns3::EmpiricalRandomVariable
  *

@@ -1439,9 +1439,6 @@ PrintAttributeImplementations(std::ostream& os)
       { "Mac48Address",   "Mac48Address",   true,  "mac48-address.h"    },
       { "Mac64Address",   "Mac64Address",   true,  "mac64-address.h"    },
       { "ObjectFactory",  "ObjectFactory",  true,  "object-factory.h"   },
-      { "OrganizationIdentifier",
-                          "OrganizationIdentifier",
-                                            true,  "vendor-specific-action.h" },
       { "Priomap",        "Priomap",        true,  "prio-queue-disc.h"  },
       { "QueueSize",      "QueueSize",      true,  "queue-size.h"       },
       { "Rectangle",      "Rectangle",      true,  "rectangle.h"        },
@@ -1480,12 +1477,13 @@ PrintAttributeImplementations(std::ostream& os)
     PrintAttributeValueSection(os, "EmptyAttribute", false);
     PrintAttributeValueWithName(os, "EmptyAttribute", "EmptyAttribute", "attribute.h");
 
-    PrintAttributeValueSection(os, "ObjectPtrContainer", false);
-    PrintAttributeValueWithName(os,
-                                "ObjectPtrContainer",
-                                "ObjectPtrContainer",
-                                "object-ptr-container.h");
-    PrintMakeChecker(os, "ObjectPtrContainer", "object-ptr-container.h");
+    // ObjectPtrContainer is already documented.
+    // PrintAttributeValueSection(os, "ObjectPtrContainer", false);
+    // PrintAttributeValueWithName(os,
+    //                             "ObjectPtrContainer",
+    //                             "ObjectPtrContainer",
+    //                             "object-ptr-container.h");
+    // PrintMakeChecker(os, "ObjectPtrContainer", "object-ptr-container.h");
 
     PrintAttributeValueSection(os, "ObjectVector", false);
     PrintMakeAccessors(os, "ObjectVector");
@@ -1507,7 +1505,7 @@ PrintAttributeImplementations(std::ostream& os)
     // PrintAttributeValueSection  (os, "AttributeContainer", false);
     // PrintAttributeValueWithName (os, "AttributeContainer", "AttributeContainer",
     // "attribute-container.h");
-    PrintMakeChecker(os, "AttributeContainer", "attribute-container.h");
+    // PrintMakeChecker(os, "AttributeContainer", "attribute-container.h");
 } // PrintAttributeImplementations ()
 
 /***************************************************************

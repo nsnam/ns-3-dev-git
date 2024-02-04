@@ -79,9 +79,7 @@ static constexpr bool WRITE_GNUPLOT = false; //!< Set to true to write out gnupl
 
 /**
  * \ingroup system-tests-tcp
- */
-
-/**
+ *
  * Add sample trace values to data structures
  * \param gnuplotTimeSeries Gnuplot data structure
  * \param timeSeries time series of cwnd changes
@@ -101,6 +99,7 @@ CubicCwndTracer(Gnuplot2dDataset* gnuplotTimeSeries,
 }
 
 /**
+ * \ingroup system-tests-tcp
  * Test Cubic response
  */
 class Ns3TcpCubicTestCase : public TestCase
@@ -403,7 +402,7 @@ Ns3TcpCubicTestCase::DoRun()
 }
 
 /**
- * \ingroup tcp-cubic-tests
+ * \ingroup system-tests-tcp
  * TestSuite for module tcp-cubic
  */
 class Ns3TcpCubicTestSuite : public TestSuite
@@ -461,7 +460,6 @@ Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
 }
 
 /**
- * \ingroup tcp-cubic-tests
  * Static variable for test initialization
  */
 static Ns3TcpCubicTestSuite ns3TcpCubicTestSuite;

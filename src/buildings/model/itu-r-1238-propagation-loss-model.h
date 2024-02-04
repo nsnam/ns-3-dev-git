@@ -29,6 +29,9 @@ namespace ns3
 {
 
 /**
+ * \ingroup buildings
+ * \ingroup propagation
+ *
  * This class implements the ITU-R 1238 propagation loss model.
  *
  */

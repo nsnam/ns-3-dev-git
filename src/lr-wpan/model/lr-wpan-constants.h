@@ -34,7 +34,7 @@ namespace lrwpan
 {
 
 /**
- * \defgroup LrWpanConstants
+ * \defgroup LrWpanConstants LR-WPAN common parameters
  * \ingroup lr-wpan
  *
  * Contains common parameters about LR-WPAN that can be reused in multiple files.

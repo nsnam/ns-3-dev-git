@@ -33,6 +33,7 @@ class MobilityModel;
 
 /**
  * \ingroup buildings
+ * \ingroup propagation
  *
  * \brief Computes the channel condition for the V2V Urban scenario
  *
