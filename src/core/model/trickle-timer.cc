@@ -21,6 +21,7 @@
 
 #include "log.h"
 
+#include <bit>
 #include <limits>
 
 namespace ns3
@@ -116,20 +117,7 @@ TrickleTimer::GetDoublings() const
         return 0;
     }
 
-    // Here we assume that m_ticks is a power of 2.
-    // This could have been way more elegant by using
-    // std::countl_zero() defined in the <bit> header
-    // which is c++20 - so not yet widely available.
-
-    uint64_t ticks = m_ticks;
-    uint8_t doublings = 0;
-    while (ticks != 1)
-    {
-        ticks >>= 1;
-        doublings++;
-    }
-
-    return doublings;
+    return std::countr_zero(m_ticks);
 }
 
 uint16_t

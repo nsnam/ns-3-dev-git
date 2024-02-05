@@ -85,6 +85,9 @@ Network Animator nam.  It is not possible to run a simulation
 ./src/core/examples/hash-example.cc
 6ed21de2  brand-newness       peripherial
 
+./src/core/model/trickle-timer.cc:120
+    return std::countr_zero(m_ticks);
+
 ./src/dsr/model/dsr-routing.cc:243, 246, 3360, 3363
             .AddAttribute("GratReplyHoldoff",
                           MakeTimeAccessor(&DsrRouting::m_gratReplyHoldoff),
