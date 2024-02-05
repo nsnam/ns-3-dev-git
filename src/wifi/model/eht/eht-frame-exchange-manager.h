@@ -183,6 +183,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
                            const CtrlTriggerHeader& trigger,
                            double muRtsSnr) override;
+    bool StartTransmission(Ptr<QosTxop> edca, Time txopDuration) override;
     void TransmissionSucceeded() override;
     void TransmissionFailed(bool forceCurrentCw = false) override;
     void NotifyChannelReleased(Ptr<Txop> txop) override;
@@ -261,6 +262,20 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      * @param clients the given set of clients
      */
     void SwitchToListeningOrUnblockLinks(const std::set<Mac48Address>& clients);
+
+    /**
+     * Use Genie information (if requested) to determine whether to block transmissions to EMLSR
+     * clients. Call this method if this device is an AP.
+     */
+    void ApUseGenieInformation();
+
+    /**
+     * Use Genie information (if requested) to determine whether to start the TXOP. Call this
+     * method if this device is an EMLSR client.
+     *
+     * \return the time to wait to retry channel access; zero indicates to start the TXOP
+     */
+    Time StaUseGenieInformation();
 
     /**
      * Generate an in-device interference of the given power on the given link for the given

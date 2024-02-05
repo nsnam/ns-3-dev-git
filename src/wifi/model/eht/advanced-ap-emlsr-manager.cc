@@ -60,6 +60,16 @@ AdvancedApEmlsrManager::GetTypeId()
                           "another link.",
                           BooleanValue(true),
                           MakeBooleanAccessor(&AdvancedApEmlsrManager::m_updateCwAfterFailedIcf),
+                          MakeBooleanChecker())
+            .AddAttribute("GenieMode",
+                          "Whether to use Genie information.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&AdvancedApEmlsrManager::m_genieMode),
+                          MakeBooleanChecker())
+            .AddAttribute("IncludeSameLinkGenieMode",
+                          "Whether to include same link information when using Genie mode.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&AdvancedApEmlsrManager::m_includeSameLinkGenieMode),
                           MakeBooleanChecker());
     return tid;
 }

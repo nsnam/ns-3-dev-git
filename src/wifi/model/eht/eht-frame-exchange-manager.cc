@@ -48,6 +48,15 @@ const Time EMLSR_RX_PHY_START_DELAY = MicroSeconds(20);
  */
 static constexpr uint8_t WAIT_FOR_RXSTART_DELAY_USEC = 52;
 
+/**
+ * Store information about every ICF/RTS being transmitted:
+ * - sender MLD address
+ * - receiver MLD address
+ * - end TX time
+ * - link ID
+ */
+static std::map<std::pair<Mac48Address, Mac48Address>, std::pair<Time, uint8_t>> g_genieInfo;
+
 NS_LOG_COMPONENT_DEFINE("EhtFrameExchangeManager");
 
 NS_OBJECT_ENSURE_REGISTERED(EhtFrameExchangeManager);
@@ -162,6 +171,157 @@ EhtFrameExchangeManager::UsingOtherEmlsrLink() const
     auto mask = m_staMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
     NS_ASSERT_MSG(mask, "No mask for AP " << *apAddress << " on link " << m_linkId);
     return mask->test(static_cast<std::size_t>(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK));
+}
+
+void
+EhtFrameExchangeManager::ApUseGenieInformation()
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT_MSG(m_apMac, "This method must be called on an AP");
+
+    // AP uses Genie information if requested
+    BooleanValue value;
+
+    if (auto apEmlsrManager = m_apMac->GetApEmlsrManager();
+        !apEmlsrManager || !apEmlsrManager->GetAttributeFailSafe("GenieMode", value) ||
+        !value.Get())
+    {
+        return; // not using Genie information, start the TXOP
+    }
+
+    const auto now = Simulator::Now();
+
+    // block transmissions to EMLSR clients that started sending RTS/DATA
+    for (const auto& info : g_genieInfo)
+    {
+        const auto& sender = info.first.first;
+        const auto& receiver = info.first.second;
+        const auto& endTime = info.second.first;
+        const auto linkId = info.second.second;
+
+        if (receiver != m_apMac->GetAddress() /* not for us */
+            || !m_apMac->IsAssociated(sender) /* sender not associated */ ||
+            !GetWifiRemoteStationManager()->GetEmlsrEnabled(sender))
+        {
+            continue;
+        }
+
+        auto emlCapabilities = GetWifiRemoteStationManager()->GetStationEmlCapabilities(sender);
+        NS_ASSERT(emlCapabilities);
+        auto transDelay = CommonInfoBasicMle::DecodeEmlsrTransitionDelay(
+            emlCapabilities->get().emlsrTransitionDelay);
+
+        if (m_apMac->GetApEmlsrManager()->GetAttributeFailSafe("IncludeSameLinkGenieMode", value) &&
+            !value.Get() && linkId == m_linkId)
+        {
+            // configuration prevents us from using information on frame sent on same link
+            continue;
+        }
+
+        if (endTime + transDelay < now) // more than transition delay past the response timeout
+        {
+            continue;
+        }
+
+        // block transmissions to EMLSR client
+        m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                     sender,
+                                     {m_linkId});
+
+        // unblock transmissions at end of TX timer, unless the EMLSR client is the TXOP
+        // holder on a link
+        Simulator::Schedule(Max(endTime + transDelay - now, TimeStep(1)), [=, this]() {
+            for (uint8_t id = 0; id < m_apMac->GetNLinks(); ++id)
+            {
+                if (auto ehtFem =
+                        StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(id));
+                    ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
+                    m_mac->GetWifiRemoteStationManager(id)->GetMldAddress(*ehtFem->m_txopHolder) ==
+                        sender)
+                {
+                    return;
+                }
+            }
+            m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                           sender,
+                                           {m_linkId});
+        });
+        break;
+    }
+}
+
+Time
+EhtFrameExchangeManager::StaUseGenieInformation()
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT_MSG(m_staMac, "This method must be called on a non-AP STA");
+
+    // non-AP STA uses Genie information if requested
+    BooleanValue value;
+
+    if (auto emlsrManager = m_staMac->GetEmlsrManager();
+        !emlsrManager || !emlsrManager->GetAttributeFailSafe("GenieMode", value) || !value.Get())
+    {
+        return Time{0}; // not using Genie information, start the TXOP
+    }
+
+    const auto now = Simulator::Now();
+
+    for (const auto& info : g_genieInfo)
+    {
+        const auto& sender = info.first.first;
+        const auto& receiver = info.first.second;
+        const auto& endTime = info.second.first;
+        const auto linkId = info.second.second;
+
+        if (endTime < now /* MPDU not being transmitted now */
+            || receiver != m_staMac->GetAddress() /* not for us */ ||
+            sender !=
+                GetWifiRemoteStationManager()->GetMldAddress(m_bssid) /* not sent by our AP MLD */)
+        {
+            continue;
+        }
+        if (m_staMac->GetEmlsrManager()->GetAttributeFailSafe("IncludeSameLinkGenieMode", value) &&
+            !value.Get() && linkId == m_linkId)
+        {
+            // configuration prevents us from using information on frame sent on same link
+            continue;
+        }
+        // retry channel access at the end of ICF
+        const auto delay = Max(endTime - now, TimeStep(1));
+        NS_LOG_DEBUG("Give up TXOP, retry in " << delay.As(Time::NS));
+        return delay;
+    }
+
+    return Time{0};
+}
+
+bool
+EhtFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
+{
+    NS_LOG_FUNCTION(this << edca << txopDuration.As(Time::MS));
+
+    if (m_apMac)
+    {
+        ApUseGenieInformation();
+    }
+    else if (m_staMac)
+    {
+        if (auto delay = StaUseGenieInformation(); delay.IsStrictlyPositive())
+        {
+            NS_LOG_DEBUG("Give up TXOP based on Genie information");
+            Simulator::Schedule(delay,
+                                &Txop::StartAccessAfterEvent,
+                                edca,
+                                m_linkId,
+                                Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                                Txop::DONT_CHECK_MEDIUM_BUSY);
+            NotifyChannelReleased(edca);
+            return false;
+        }
+    }
+
+    return HeFrameExchangeManager::StartTransmission(edca, txopDuration);
 }
 
 bool
@@ -346,6 +506,24 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
 
     auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
 
+    // Information for Genie mode start
+    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) && psdu->GetAddr1() == m_bssid &&
+        (psdu->GetHeader(0).IsRts() || psdu->GetHeader(0).IsQosData()))
+    {
+        const auto now = Simulator::Now();
+        NS_ASSERT(m_edca);
+        // only store information if the frame is starting a TXOP
+        if (auto txopStart = m_edca->GetTxopStartTime(m_linkId); !txopStart || txopStart == now)
+        {
+            auto raMld = GetWifiRemoteStationManager()->GetMldAddress(m_bssid);
+            NS_ASSERT(raMld);
+            const auto delay = m_txTimer.GetDelayLeft();
+            NS_ASSERT(delay.IsStrictlyPositive());
+            g_genieInfo[{m_mac->GetAddress(), *raMld}] = {now + delay, m_linkId};
+        }
+    }
+    // Information for Genie mode end
+
     if (m_apMac && psdu->GetHeader(0).IsTrigger())
     {
         for (const auto& client : m_sentRtsTo)
@@ -368,6 +546,12 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
                                                  {linkId});
                 }
             }
+
+            // Information for Genie mode start
+            const auto delay = m_txTimer.GetDelayLeft();
+            NS_ASSERT(delay.IsStrictlyPositive());
+            g_genieInfo[{m_mac->GetAddress(), *clientMld}] = {Simulator::Now() + delay, m_linkId};
+            // Information for Genie mode end
         }
     }
 
@@ -1353,6 +1537,12 @@ EhtFrameExchangeManager::CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr,
     auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(sender);
     NS_ASSERT(mldAddress);
 
+    if (hdr.IsRts() || hdr.IsQosData())
+    {
+        NS_ASSERT_MSG(g_genieInfo.count({mldAddress.value(), m_mac->GetAddress()}) == 1,
+                      "MPDU received from EMLSR client, must be noted in Genie information");
+    }
+
     for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); ++linkId)
     {
         if (linkId != m_linkId &&
@@ -1447,6 +1637,11 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         if ((trigger.IsMuRts() || trigger.IsBsrp()) && !m_ongoingTxopEnd.IsPending() &&
             m_staMac->IsEmlsrLink(m_linkId))
         {
+            NS_ASSERT_MSG(g_genieInfo.count(
+                              {GetWifiRemoteStationManager()->GetMldAddress(hdr.GetAddr2()).value(),
+                               m_mac->GetAddress()}) == 1,
+                          "ICF received, must be noted in Genie information");
+
             // this is an initial Control frame
             if (DropReceivedIcf())
             {

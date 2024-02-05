@@ -141,7 +141,17 @@ AdvancedEmlsrManager::GetTypeId()
                           "expires, the main PHY is switched back to the preferred link.",
                           TimeValue(MilliSeconds(5)),
                           MakeTimeAccessor(&AdvancedEmlsrManager::m_switchMainPhyBackDelay),
-                          MakeTimeChecker());
+                          MakeTimeChecker())
+            .AddAttribute("GenieMode",
+                          "Whether to use Genie information.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&AdvancedEmlsrManager::m_genieMode),
+                          MakeBooleanChecker())
+            .AddAttribute("IncludeSameLinkGenieMode",
+                          "Whether to include same link information when using Genie mode.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&AdvancedEmlsrManager::m_includeSameLinkGenieMode),
+                          MakeBooleanChecker());
     return tid;
 }
 

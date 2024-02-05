@@ -79,6 +79,8 @@ class AdvancedApEmlsrManager : public DefaultApEmlsrManager
     bool m_updateCwAfterFailedIcf;      //!< Whether the AP MLD shall double the CW upon CTS timeout
                                    //!< after an MU-RTS in case all the clients solicited by the
                                    //!< MU-RTS are EMLSR clients that have sent a frame to the AP
+    bool m_genieMode;                //!< whether to use Genie information
+    bool m_includeSameLinkGenieMode; //!< whether to consider same link information in Genie mode
 };
 
 } // namespace ns3

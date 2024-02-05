@@ -136,7 +136,9 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
                                       //!< preceding/following the main PHY switch end
     std::shared_ptr<WifiPhyListener>
         m_phyListener; //!< PHY listener connected to the main PHY while operating on the link of
-                       //!< an aux PHY that is not TX capable
+    //!< an aux PHY that is not TX capable
+    bool m_genieMode;                //!< whether to use Genie information
+    bool m_includeSameLinkGenieMode; //!< whether to consider same link information in Genie mode
 };
 
 /**
