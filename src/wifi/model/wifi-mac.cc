@@ -359,7 +359,14 @@ WifiMac::GetTypeId()
                 "a SU frame or aggregated to PSDUs in the DL MU PPDU), a Basic Trigger Frame or "
                 "a BSRP Trigger Frame.",
                 MakeTraceSourceAccessor(&WifiMac::m_psduMapResponseTimeoutCallback),
-                "ns3::WifiMac::PsduMapResponseTimeoutCallback");
+                "ns3::WifiMac::PsduMapResponseTimeoutCallback")
+            .AddTraceSource("IcfDropReason",
+                            "An ICF is dropped by an EMLSR client for the given reason on the "
+                            "link with the given ID. This trace source is actually fed by the "
+                            "EHT Frame Exchange Manager through the m_icfDropCallback member "
+                            "variable.",
+                            MakeTraceSourceAccessor(&WifiMac::m_icfDropCallback),
+                            "ns3::WifiMac::IcfDropCallback");
     return tid;
 }
 
@@ -975,6 +982,11 @@ WifiMac::SetFrameExchangeManagers(const std::vector<Ptr<FrameExchangeManager>>& 
             MakeCallback(&DroppedMpduTracedCallback::operator(), &m_droppedMpduCallback));
         link->feManager->SetAckedMpduCallback(
             MakeCallback(&MpduTracedCallback::operator(), &m_ackedMpduCallback));
+        if (auto ehtFem = DynamicCast<EhtFrameExchangeManager>(link->feManager))
+        {
+            ehtFem->m_icfDropCallback.ConnectWithoutContext(
+                MakeCallback(&IcfDropTracedCallback::operator(), &m_icfDropCallback));
+        }
     }
 
     CompleteConfig();

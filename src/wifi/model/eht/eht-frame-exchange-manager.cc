@@ -1334,6 +1334,7 @@ EhtFrameExchangeManager::DropReceivedIcf()
             // started before the reception of the ICF ended. We drop this ICF and let the
             // UL TXOP continue.
             NS_LOG_DEBUG("Drop ICF because another EMLSR link is being used");
+            m_icfDropCallback(WifiIcfDrop::USING_OTHER_LINK, m_linkId);
             return true;
         }
     }
@@ -1362,22 +1363,28 @@ EhtFrameExchangeManager::DropReceivedIcf()
     {
         const auto delay = mainPhy->GetChannelSwitchDelay();
         auto lastTime = mainPhy->GetState()->GetLastTime({WifiPhyState::TX});
+        auto reason = WifiIcfDrop::NOT_ENOUGH_TIME_TX;
 
         if (auto lastSwitch = mainPhy->GetState()->GetLastTime({WifiPhyState::SWITCHING});
             lastSwitch > lastTime)
         {
             lastTime = lastSwitch;
+            reason = WifiIcfDrop::NOT_ENOUGH_TIME_SWITCH;
         }
         if (auto lastSleep = mainPhy->GetState()->GetLastTime({WifiPhyState::SLEEP});
             lastSleep > lastTime)
         {
             lastTime = lastSleep;
+            reason = WifiIcfDrop::NOT_ENOUGH_TIME_SLEEP;
         }
         // ignore RX state for now
 
         if (lastTime > Simulator::Now() - delay)
         {
-            NS_LOG_DEBUG("Drop ICF due to not enough time for the main PHY to switch link");
+            NS_LOG_DEBUG(
+                "Drop ICF due to not enough time for the main PHY to switch link; reason = "
+                << reason);
+            m_icfDropCallback(reason, m_linkId);
             return true;
         }
     }
