@@ -20,13 +20,9 @@
 #ifndef RADVD_HELPER_H
 #define RADVD_HELPER_H
 
-#include "ns3/application-container.h"
-#include "ns3/ipv6-address.h"
-#include "ns3/node-container.h"
-#include "ns3/object-factory.h"
 #include "ns3/radvd-interface.h"
+#include <ns3/application-helper.h>
 
-#include <list>
 #include <map>
 #include <stdint.h>
 
@@ -37,7 +33,7 @@ namespace ns3
  * \ingroup radvd
  * \brief Radvd application helper.
  */
-class RadvdHelper
+class RadvdHelper : public ApplicationHelper
 {
   public:
     /**
@@ -51,7 +47,7 @@ class RadvdHelper
      * \param prefix announced IPv6 prefix
      * \param prefixLength announced IPv6 prefix length
      */
-    void AddAnnouncedPrefix(uint32_t interface, Ipv6Address prefix, uint32_t prefixLength);
+    void AddAnnouncedPrefix(uint32_t interface, const Ipv6Address& prefix, uint32_t prefixLength);
 
     /**
      * \brief Enable the router as default router for the interface.
@@ -80,25 +76,8 @@ class RadvdHelper
      */
     void ClearPrefixes();
 
-    /**
-     * \brief Set some attributes.
-     * \param name attribute name
-     * \param value attribute value
-     */
-    void SetAttribute(std::string name, const AttributeValue& value);
-
-    /**
-     * \brief Install the application in a Node.
-     * \param node the Node
-     * \return application container
-     */
-    ApplicationContainer Install(Ptr<Node> node);
-
   private:
-    /**
-     * \brief An object factory.
-     */
-    ObjectFactory m_factory;
+    Ptr<Application> DoInstall(Ptr<Node> node) override;
 
     /// Container: interface index, RadvdInterface
     typedef std::map<uint32_t, Ptr<RadvdInterface>> RadvdInterfaceMap;

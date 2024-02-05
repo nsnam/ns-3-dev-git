@@ -25,14 +25,8 @@
 #ifndef PING_HELPER_H
 #define PING_HELPER_H
 
-#include "ns3/application-container.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/ipv6-address.h"
-#include "ns3/node-container.h"
-#include "ns3/object-factory.h"
 #include "ns3/ping.h"
-
-#include <stdint.h>
+#include <ns3/application-helper.h>
 
 namespace ns3
 {
@@ -44,7 +38,7 @@ namespace ns3
  * This class creates one or multiple instances of ns3::Ping and associates
  * it/them to one/multiple node(s).
  */
-class PingHelper
+class PingHelper : public ApplicationHelper
 {
   public:
     /**
@@ -60,55 +54,7 @@ class PingHelper
      * \param remote The address which should be pinged
      * \param local The source address
      */
-    PingHelper(Address remote, Address local = Address());
-
-    /**
-     * Install a Ping application on each Node in the provided NodeContainer.
-     *
-     * \param nodes The NodeContainer containing all of the nodes to get a Ping
-     *              application.
-     *
-     * \returns A list of Ping applications, one for each input node
-     */
-    ApplicationContainer Install(NodeContainer nodes) const;
-
-    /**
-     * Install a Ping application on the provided Node.  The Node is specified
-     * directly by a Ptr<Node>
-     *
-     * \param node The node to install the Ping application on.
-     *
-     * \returns An ApplicationContainer holding the Ping application created.
-     */
-    ApplicationContainer Install(Ptr<Node> node) const;
-
-    /**
-     * Install a Ping application on the provided Node.  The Node is specified
-     * by a string that must have previously been associated with a Node using the
-     * Object Name Service.
-     *
-     * \param nodeName The node to install the Ping application on.
-     *
-     * \returns An ApplicationContainer holding the Ping application created.
-     */
-    ApplicationContainer Install(std::string nodeName) const;
-
-    /**
-     * \brief Configure ping applications attribute
-     * \param name   attribute's name
-     * \param value  attribute's value
-     */
-    void SetAttribute(std::string name, const AttributeValue& value);
-
-  private:
-    /**
-     * \brief Do the actual application installation in the node
-     * \param node the node
-     * \returns a Smart pointer to the installed application
-     */
-    Ptr<Application> InstallPriv(Ptr<Node> node) const;
-    /// Object factory
-    ObjectFactory m_factory;
+    PingHelper(const Address& remote, const Address& local = Address());
 };
 
 } // namespace ns3

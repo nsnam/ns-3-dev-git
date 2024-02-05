@@ -22,13 +22,12 @@
 #ifndef V4TRACEROUTE_HELPER_H
 #define V4TRACEROUTE_HELPER_H
 
-#include "ns3/application-container.h"
-#include "ns3/node-container.h"
-#include "ns3/object-factory.h"
-#include "ns3/output-stream-wrapper.h"
+#include <ns3/application-helper.h>
 
 namespace ns3
 {
+
+class OutputStreamWrapper;
 
 /**
  * \ingroup v4traceroute
@@ -37,7 +36,7 @@ namespace ns3
  * This class creates one or multiple instances of ns3::V4TraceRoute and associates
  * it/them to one/multiple node(s).
  */
-class V4TraceRouteHelper
+class V4TraceRouteHelper : public ApplicationHelper
 {
   public:
     /**
@@ -46,61 +45,14 @@ class V4TraceRouteHelper
      *
      * \param remote The address which should be traced
      */
-    V4TraceRouteHelper(Ipv4Address remote);
+    V4TraceRouteHelper(const Ipv4Address& remote);
 
-    /**
-     * Install a TraceRoute application on each Node in the provided NodeContainer.
-     *
-     * \param nodes The NodeContainer containing all of the nodes to get a V4TraceRoute
-     *              application.
-     *
-     * \returns A list of TraceRoute applications, one for each input node
-     */
-    ApplicationContainer Install(NodeContainer nodes) const;
-
-    /**
-     * Install a TraceRoute application on the provided Node.  The Node is specified
-     * directly by a Ptr<Node>
-     *
-     * \param node The node to install the V4TraceRouteApplication on.
-     *
-     * \returns An ApplicationContainer holding the TraceRoute application created.
-     */
-    ApplicationContainer Install(Ptr<Node> node) const;
-
-    /**
-     * Install a TraceRoute application on the provided Node.  The Node is specified
-     * by a string that must have previously been associated with a Node using the
-     * Object Name Service.
-     *
-     * \param nodeName The node to install the V4TraceRouteApplication on.
-     *
-     * \returns An ApplicationContainer holding the TraceRoute application created.
-     */
-    ApplicationContainer Install(std::string nodeName) const;
-
-    /**
-     * \brief Configure traceRoute applications attribute
-     * \param name   attribute's name
-     * \param value  attribute's value
-     */
-    void SetAttribute(std::string name, const AttributeValue& value);
     /**
      * \brief Print the resulting trace routes from given node.
      * \param node The origin node where the traceroute is initiated.
      * \param stream The outputstream used to print the resulting traced routes.
      */
     static void PrintTraceRouteAt(Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
-
-  private:
-    /**
-     * \brief Do the actual application installation in the node
-     * \param node the node
-     * \returns a Smart pointer to the installed application
-     */
-    Ptr<Application> InstallPriv(Ptr<Node> node) const;
-    /// Object factory
-    ObjectFactory m_factory;
 };
 
 } // namespace ns3

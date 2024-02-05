@@ -31,12 +31,14 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("RadvdHelper");
 
 RadvdHelper::RadvdHelper()
+    : ApplicationHelper(Radvd::GetTypeId())
 {
-    m_factory.SetTypeId(Radvd::GetTypeId());
 }
 
 void
-RadvdHelper::AddAnnouncedPrefix(uint32_t interface, Ipv6Address prefix, uint32_t prefixLength)
+RadvdHelper::AddAnnouncedPrefix(uint32_t interface,
+                                const Ipv6Address& prefix,
+                                uint32_t prefixLength)
 {
     NS_LOG_FUNCTION(this << int(interface) << prefix << int(prefixLength));
     if (prefixLength != 64)
@@ -109,27 +111,19 @@ RadvdHelper::ClearPrefixes()
     m_radvdInterfaces.clear();
 }
 
-void
-RadvdHelper::SetAttribute(std::string name, const AttributeValue& value)
+Ptr<Application>
+RadvdHelper::DoInstall(Ptr<Node> node)
 {
-    m_factory.Set(name, value);
-}
-
-ApplicationContainer
-RadvdHelper::Install(Ptr<Node> node)
-{
-    ApplicationContainer apps;
-    Ptr<Radvd> radvd = m_factory.Create<Radvd>();
-    for (auto iter = m_radvdInterfaces.begin(); iter != m_radvdInterfaces.end(); iter++)
+    auto radvd = m_factory.Create<Radvd>();
+    for (auto [index, interface] : m_radvdInterfaces)
     {
-        if (!iter->second->GetPrefixes().empty())
+        if (!interface->GetPrefixes().empty())
         {
-            radvd->AddConfiguration(iter->second);
+            radvd->AddConfiguration(interface);
         }
     }
     node->AddApplication(radvd);
-    apps.Add(radvd);
-    return apps;
+    return radvd;
 }
 
 } /* namespace ns3 */
