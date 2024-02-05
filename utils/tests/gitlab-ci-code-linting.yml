@@ -74,7 +74,7 @@ clang-tidy-17:
       echo "Running clang-tidy-diff" ;
       git diff -U0 upstream/$CI_DEFAULT_BRANCH |
       clang-tidy-diff-17.py -path cmake-cache/ -p1 -quiet -use-color
-      -iregex "(contrib|examples|src|scratch|utils)\/.+\.(cpp|cc|cxx|c|h|hpp)"
+      -iregex "(contrib|examples|src|scratch|utils)\/.+\.(cpp|cc|cxx|h|hpp)"
       1> $CLANG_TIDY_OUTPUT
       2> /dev/null ;
       fi
