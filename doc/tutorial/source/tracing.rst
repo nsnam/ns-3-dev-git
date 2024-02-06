@@ -558,7 +558,7 @@ could have used this ``Ptr<Node>`` to call a Connect method
 directly::
 
   Ptr<Object> theObject = wifiStaNodes.Get(nWifi - 1);
-  theObject->TraceConnectWithoutContext("CourseChange", MakeCallback(&CourseChange));
+  theObject->GetObject<MobilityModel>()->TraceConnectWithoutContext("CourseChange", MakeCallback(&CourseChange));
 
 In the ``third.cc`` example, we actually wanted an additional "context"
 to be delivered along with the Callback parameters (which will be
@@ -566,7 +566,7 @@ explained below) so we could actually use the following equivalent
 code::
 
   Ptr<Object> theObject = wifiStaNodes.Get(nWifi - 1);
-  theObject->TraceConnect("CourseChange", MakeCallback(&CourseChange));
+  theObject->GetObject<MobilityModel>()->TraceConnect("CourseChange", MakeCallback(&CourseChange));
 
 It turns out that the internal code for
 ``Config::ConnectWithoutContext`` and ``Config::Connect`` actually
