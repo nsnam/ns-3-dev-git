@@ -183,7 +183,7 @@ TcpRateLinux::SkbDelivered(TcpTxItem* skb)
 
     if (m_rateSample.m_priorDelivered == 0 || skbInfo.m_delivered > m_rateSample.m_priorDelivered)
     {
-        m_rateSample.m_ackElapsed = Simulator::Now() - m_rateSample.m_priorTime;
+        m_rateSample.m_ackElapsed = Simulator::Now() - skbInfo.m_deliveredTime;
         m_rateSample.m_priorDelivered = skbInfo.m_delivered;
         m_rateSample.m_priorTime = skbInfo.m_deliveredTime;
         m_rateSample.m_isAppLimited = skbInfo.m_isAppLimited;
