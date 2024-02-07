@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 
 #include <cmath>
+#include <numbers>
 
 #ifdef HAVE_GSL
 #include <gsl/gsl_cdf.h>
@@ -44,7 +45,7 @@ double
 DsssErrorRateModel::DqpskFunction(double x)
 {
     NS_LOG_FUNCTION_NOARGS();
-    return ((std::sqrt(2.0) + 1.0) / std::sqrt(8.0 * M_PI * std::sqrt(2.0))) *
+    return ((std::sqrt(2.0) + 1.0) / std::sqrt(8.0 * std::numbers::pi * std::sqrt(2.0))) *
            (1.0 / std::sqrt(x)) * std::exp(-(2.0 - std::sqrt(2.0)) * x);
 }
 
@@ -145,7 +146,7 @@ IntegralFunction(double x, void* params)
     double beta = ((FunctionParameters*)params)->beta;
     double n = ((FunctionParameters*)params)->n;
     double IntegralFunction = std::pow(2 * gsl_cdf_ugaussian_P(x + beta) - 1, n - 1) *
-                              std::exp(-x * x / 2.0) / std::sqrt(2.0 * M_PI);
+                              std::exp(-x * x / 2.0) / std::sqrt(2.0 * std::numbers::pi);
     return IntegralFunction;
 }
 
