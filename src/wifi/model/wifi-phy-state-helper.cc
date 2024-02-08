@@ -285,6 +285,7 @@ WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates()
     WifiPhyState state = GetState();
     if (state == WifiPhyState::CCA_BUSY)
     {
+        m_endCcaBusy = now;
         const auto ccaStart =
             std::max({m_endRx, m_endTx, m_startCcaBusy, m_endSwitching, m_endSleep, m_endOff});
         m_stateLogger(ccaStart, now - ccaStart, WifiPhyState::CCA_BUSY);
