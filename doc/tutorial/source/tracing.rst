@@ -589,7 +589,7 @@ One of the predefined namespaces in the config system is "NodeList"
 which is a list of all of the nodes in the simulation.  Items in the
 list are referred to by indices into the list, so "/NodeList/7" refers
 to the eighth Node in the list of nodes created during the simulation
-(recall indices start at `0').  This reference is actually a
+(recall indices start at '0').  This reference is actually a
 ``Ptr<Node>`` and so is a subclass of an ``ns3::Object``.
 
 As described in the Object Model section of the |ns3| Manual, we make
