@@ -1247,15 +1247,6 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         if (trigger.IsMuRts() && m_staMac->IsEmlsrLink(m_linkId))
         {
             // this is an initial Control frame
-            if (UsingOtherEmlsrLink())
-            {
-                // we received an ICF on a link that is blocked because another EMLSR link is
-                // being used. This is likely because transmission on the other EMLSR link
-                // started before the reception of the ICF ended. We drop this ICF and let the
-                // UL TXOP continue.
-                NS_LOG_DEBUG("Drop ICF because another EMLSR link is being used");
-                return;
-            }
 
             /**
              * It might happen that, while the aux PHY is receiving an ICF, the main PHY is
@@ -1281,8 +1272,50 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             auto emlsrManager = m_staMac->GetEmlsrManager();
             NS_ASSERT(emlsrManager);
 
-            if (auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
-                mainPhy != m_phy)
+            if (UsingOtherEmlsrLink())
+            {
+                // we received an ICF on a link that is blocked because another EMLSR link is
+                // being used. Check if there is an ongoing DL TXOP on the other EMLSR link
+                auto apMldAddress = GetWifiRemoteStationManager()->GetMldAddress(m_bssid);
+                NS_ASSERT_MSG(apMldAddress, "MLD address not found for " << m_bssid);
+
+                if (auto it = std::find_if(
+                        m_staMac->GetLinkIds().cbegin(),
+                        m_staMac->GetLinkIds().cend(),
+                        /* lambda to find an EMLSR link on which there is an ongoing DL TXOP */
+                        [=, this](uint8_t linkId) {
+                            auto ehtFem = StaticCast<EhtFrameExchangeManager>(
+                                m_mac->GetFrameExchangeManager(linkId));
+                            return linkId != m_linkId && m_staMac->IsEmlsrLink(linkId) &&
+                                   ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
+                                   m_mac->GetWifiRemoteStationManager(linkId)->GetMldAddress(
+                                       *ehtFem->m_txopHolder) == apMldAddress;
+                        });
+                    it != m_staMac->GetLinkIds().cend())
+                {
+                    // AP is not expected to send ICFs on two links. If an ICF
+                    // has been received on this link, it means that the DL TXOP
+                    // on the other link terminated (e.g., the AP did not
+                    // receive our response)
+                    StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(*it))
+                        ->m_ongoingTxopEnd.Cancel();
+                    // we are going to start a TXOP on this link; unblock
+                    // transmissions on this link, the other links will be
+                    // blocked subsequently
+                    m_staMac->UnblockTxOnLink({*it},
+                                              WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
+                }
+                else
+                {
+                    // We get here likely because transmission on the other EMLSR link
+                    // started before the reception of the ICF ended. We drop this ICF and let the
+                    // UL TXOP continue.
+                    NS_LOG_DEBUG("Drop ICF because another EMLSR link is being used");
+                    return;
+                }
+            }
+            else if (auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
+                     mainPhy != m_phy)
             {
                 const auto delay = mainPhy->GetChannelSwitchDelay();
 
