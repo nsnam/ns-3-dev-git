@@ -1086,6 +1086,8 @@ Multiple RF interfaces configuration
 EMLSR configuration
 +++++++++++++++++++
 
+**DISCLAIMER** EMLSR support is still experimental. Simulations with EMLSR activated may crash unexpectedly.
+
 Proper EMLSR operations require the configuration of multiple RF interfaces, as illustrated above.
 Therefore, in order to configure EMLSR operations, we can start from the configuration shown above
 and apply the changes described in the following. Firstly, we need to activate EMLSR on both the
