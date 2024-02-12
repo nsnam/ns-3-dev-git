@@ -357,7 +357,7 @@ LteRlcUm::DoNotifyTxOpportunity(LteMacSapUser::TxOpportunityParameters txOpParam
             firstSegment = m_txBuffer.begin()->m_pdu->Copy();
             firstSegmentTime = m_txBuffer.begin()->m_waitingSince;
             m_txBufferSize -= firstSegment->GetSize();
-            m_txBuffer.erase(m_txBuffer.begin());
+            m_txBuffer.pop_front();
             NS_LOG_LOGIC("        txBufferSize = " << m_txBufferSize);
         }
     }
