@@ -224,7 +224,7 @@ VirtualNetDevice::IsBroadcast() const
 Address
 VirtualNetDevice::GetBroadcast() const
 {
-    return Mac48Address("ff:ff:ff:ff:ff:ff");
+    return Mac48Address::GetBroadcast();
 }
 
 bool
@@ -236,13 +236,13 @@ VirtualNetDevice::IsMulticast() const
 Address
 VirtualNetDevice::GetMulticast(Ipv4Address multicastGroup) const
 {
-    return Mac48Address("ff:ff:ff:ff:ff:ff");
+    return Mac48Address::GetBroadcast();
 }
 
 Address
 VirtualNetDevice::GetMulticast(Ipv6Address addr) const
 {
-    return Mac48Address("ff:ff:ff:ff:ff:ff");
+    return Mac48Address::GetBroadcast();
 }
 
 bool

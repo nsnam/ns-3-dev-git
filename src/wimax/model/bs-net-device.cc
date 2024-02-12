@@ -831,7 +831,7 @@ BaseStationNetDevice::DoReceive(Ptr<Packet> packet)
                 C_Packet->RemoveHeader(llc);
                 source = m_ssManager->GetMacAddress(cid);
                 m_bsRxTrace(packet);
-                ForwardUp(packet->Copy(), source, Mac48Address("ff:ff:ff:ff:ff:ff"));
+                ForwardUp(packet->Copy(), source, Mac48Address::GetBroadcast());
             }
             else
             {
@@ -861,7 +861,7 @@ BaseStationNetDevice::DoReceive(Ptr<Packet> packet)
                     NS_LOG_INFO("\t fullPacket size = " << fullPacket->GetSize() << std::endl);
                     source = m_ssManager->GetMacAddress(cid);
                     m_bsRxTrace(fullPacket);
-                    ForwardUp(fullPacket->Copy(), source, Mac48Address("ff:ff:ff:ff:ff:ff"));
+                    ForwardUp(fullPacket->Copy(), source, Mac48Address::GetBroadcast());
                 }
                 else
                 {

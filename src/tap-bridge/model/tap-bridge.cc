@@ -799,7 +799,7 @@ TapBridge::ForwardToBridgedDevice(uint8_t* buf, ssize_t len)
         //
         // Packets we are going to forward should not be from a broadcast src
         //
-        NS_ASSERT_MSG(Mac48Address::ConvertFrom(src) != Mac48Address("ff:ff:ff:ff:ff:ff"),
+        NS_ASSERT_MSG(Mac48Address::ConvertFrom(src) != Mac48Address::GetBroadcast(),
                       "TapBridge::ForwardToBridgedDevice:  Source addr is broadcast");
         if (!m_ns3AddressRewritten)
         {
@@ -1156,7 +1156,7 @@ Address
 TapBridge::GetBroadcast() const
 {
     NS_LOG_FUNCTION(this);
-    return Mac48Address("ff:ff:ff:ff:ff:ff");
+    return Mac48Address::GetBroadcast();
 }
 
 bool

@@ -752,7 +752,7 @@ FdNetDevice::SetIsBroadcast(bool broadcast)
 Address
 FdNetDevice::GetBroadcast() const
 {
-    return Mac48Address("ff:ff:ff:ff:ff:ff");
+    return Mac48Address::GetBroadcast();
 }
 
 bool

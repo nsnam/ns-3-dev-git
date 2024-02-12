@@ -283,7 +283,7 @@ Address
 OpenFlowSwitchNetDevice::GetBroadcast() const
 {
     NS_LOG_FUNCTION_NOARGS();
-    return Mac48Address("ff:ff:ff:ff:ff:ff");
+    return Mac48Address::GetBroadcast();
 }
 
 bool
