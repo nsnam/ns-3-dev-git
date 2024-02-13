@@ -305,7 +305,7 @@ class WifiRadioEnergyModel : public DeviceEnergyModel
      *
      * \returns the time the radio can stay in that state based on the remaining energy.
      */
-    Time GetMaximumTimeInState(int state) const;
+    Time GetMaximumTimeInState(WifiPhyState state) const;
 
     /**
      * \brief Handles energy depletion.
@@ -340,7 +340,7 @@ class WifiRadioEnergyModel : public DeviceEnergyModel
      * \param state the wifi state
      * \returns draw of device in Amperes, at given state.
      */
-    double GetStateA(int state) const;
+    double GetStateA(WifiPhyState state) const;
 
     /**
      * \returns Current draw of device in Amperes, at current state.

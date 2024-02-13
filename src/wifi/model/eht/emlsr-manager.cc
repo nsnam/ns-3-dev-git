@@ -413,7 +413,7 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId, std::optional<Time> timeToCtsEnd
     {
         auto stateHelper = m_staMac->GetWifiPhy(linkId)->GetState();
         NS_ASSERT(stateHelper);
-        NS_ASSERT_MSG(stateHelper->GetState() == TX,
+        NS_ASSERT_MSG(stateHelper->GetState() == WifiPhyState::TX,
                       "Expecting the aux PHY to be transmitting (an RTS frame)");
         NS_ASSERT_MSG(timeToCtsEnd.has_value(),
                       "Aux PHY is sending RTS, expected to get the time to CTS end");

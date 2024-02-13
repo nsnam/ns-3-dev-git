@@ -765,8 +765,8 @@ class WifiPhyCcaIndicationTest : public TestCase
      */
     struct StateCheckPoint
     {
-        Time timePoint{Seconds(0)};          //!< time at which the check will performed
-        WifiPhyState expectedPhyState{IDLE}; //!< expected PHY state
+        Time timePoint{Seconds(0)}; //!< time at which the check will performed
+        WifiPhyState expectedPhyState{WifiPhyState::IDLE}; //!< expected PHY state
     };
 
     /**
