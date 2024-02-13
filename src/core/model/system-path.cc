@@ -31,8 +31,6 @@
 #include <sstream>
 #include <tuple>
 
-namespace fs = std::filesystem;
-
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif /* __APPLE__ */
@@ -89,13 +87,13 @@ ReadFilesNoThrow(std::string path)
 {
     NS_LOG_FUNCTION(path);
     std::list<std::string> files;
-    if (!fs::exists(path))
+    if (!std::filesystem::exists(path))
     {
         return std::make_tuple(files, true);
     }
-    for (auto& it : fs::directory_iterator(path))
+    for (auto& it : std::filesystem::directory_iterator(path))
     {
-        if (!fs::is_directory(it.path()))
+        if (!std::filesystem::is_directory(it.path()))
         {
             files.push_back(it.path().filename().string());
         }
@@ -334,9 +332,9 @@ MakeDirectories(std::string path)
     NS_LOG_FUNCTION(path);
 
     std::error_code ec;
-    if (!fs::exists(path))
+    if (!std::filesystem::exists(path))
     {
-        fs::create_directories(path, ec);
+        std::filesystem::create_directories(path, ec);
     }
 
     if (ec.value())
