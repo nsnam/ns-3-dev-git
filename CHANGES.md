@@ -52,6 +52,7 @@ Changes from ns-3.40 to ns-3.41
   ```cpp
   MakeEnumAccessor<Test_e>(&AttributeObjectTest::m_enum),
   ```
+
 * (internet) Deprecated `Ipv4::WeakEsModel` and `Ipv4::GetWeakEsModel()`, `Ipv4::SetWeakEsModel(bool)` methods. Moved `Ipv6L3Protocol::StrongEndSystemModel` to `Ipv6::StrongEndSystemModel` and added `Ipv4::StrongEndSystemModel` with corresponding `GetStrongEndSystemModel()` and `SetStrongEndSystemModel(bool)` methods to improve end system model configuration options.
 * (lr-wpan) Change the CapabilityField parameter in `LrWpanMac::MlmeAssociateRequest` and `LrWpanMac::MlmeAssociateIndication` to a standard bitmap.
 * (lr-wpan) Change the MAC SuperframeField usage to a standard bitmap, this change impact parameters in the `BeaconPayloadHeader`.
@@ -79,6 +80,7 @@ Changes from ns-3.40 to ns-3.41
 * Added guard rails for scratch targets missing or containing more than one `main` function.
 
 ### Changed behavior
+
 * (sixlowpan) Now uses RFC 7973 Ethertype by default
 * (spectrum) SpectrumChannel objects and the loss/delay models attached are now automatically initialized (Object::Initialize) at time zero
 * (tcp) TCP Cubic (the default congestion control in ns-3) now supports TCP-friendliness by default (see RFC 9438 Section 4.3), making the congestion window growth somewhat more aggressive.  This follows the default Linux behavior.
