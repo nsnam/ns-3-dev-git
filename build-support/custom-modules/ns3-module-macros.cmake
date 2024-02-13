@@ -179,10 +179,6 @@ function(build_lib)
       )
     endif()
 
-    if(NOT FILESYSTEM_LIBRARY_IS_LINKED)
-      list(APPEND BLIB_LIBRARIES_TO_LINK -lstdc++fs)
-    endif()
-
     # Enable examples as tests suites
     if(${ENABLE_EXAMPLES} AND ${ENABLE_TESTS})
       if(NOT ${XCODE})
