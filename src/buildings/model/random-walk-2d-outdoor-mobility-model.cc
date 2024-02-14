@@ -115,8 +115,8 @@ RandomWalk2dOutdoorMobilityModel::DoInitializePrivate()
     m_helper.Update();
     double speed = m_speed->GetValue();
     double direction = m_direction->GetValue();
-    Vector vector(std::cos(direction) * speed, std::sin(direction) * speed, 0.0);
-    m_helper.SetVelocity(vector);
+    Vector velocity(std::cos(direction) * speed, std::sin(direction) * speed, 0.0);
+    m_helper.SetVelocity(velocity);
     m_helper.Unpause();
 
     Time delayLeft;
@@ -142,10 +142,10 @@ RandomWalk2dOutdoorMobilityModel::DoWalk(Time delayLeft)
     NS_LOG_FUNCTION(this << delayLeft.GetSeconds());
 
     Vector position = m_helper.GetCurrentPosition();
-    Vector speed = m_helper.GetVelocity();
+    Vector velocity = m_helper.GetVelocity();
     Vector nextPosition = position;
-    nextPosition.x += speed.x * delayLeft.GetSeconds();
-    nextPosition.y += speed.y * delayLeft.GetSeconds();
+    nextPosition.x += velocity.x * delayLeft.GetSeconds();
+    nextPosition.y += velocity.y * delayLeft.GetSeconds();
     m_event.Cancel();
 
     // check if the nextPosition is inside a building, or if the line
@@ -170,13 +170,13 @@ RandomWalk2dOutdoorMobilityModel::DoWalk(Time delayLeft)
 
             double delaySecondsX = std::numeric_limits<double>::max();
             double delaySecondsY = std::numeric_limits<double>::max();
-            if (speed.x != 0)
+            if (velocity.x != 0)
             {
-                delaySecondsX = std::abs((nextPosition.x - position.x) / speed.x);
+                delaySecondsX = std::abs((nextPosition.x - position.x) / velocity.x);
             }
-            if (speed.y != 0)
+            if (velocity.y != 0)
             {
-                delaySecondsY = std::abs((nextPosition.y - position.y) / speed.y);
+                delaySecondsY = std::abs((nextPosition.y - position.y) / velocity.y);
             }
             Time delay = Seconds(std::min(delaySecondsX, delaySecondsY));
             m_event = Simulator::Schedule(delay,
@@ -189,7 +189,7 @@ RandomWalk2dOutdoorMobilityModel::DoWalk(Time delayLeft)
     else
     {
         NS_LOG_LOGIC("Out of bounding box");
-        nextPosition = m_bounds.CalculateIntersection(position, speed);
+        nextPosition = m_bounds.CalculateIntersection(position, velocity);
         // check that this nextPosition is outdoor
         auto outdoorBuilding = IsLineClearOfBuildings(position, nextPosition);
         bool outdoor = std::get<0>(outdoorBuilding);
@@ -198,15 +198,15 @@ RandomWalk2dOutdoorMobilityModel::DoWalk(Time delayLeft)
         if (outdoor)
         {
             double delaySeconds = std::numeric_limits<double>::max();
-            if (speed.x != 0)
+            if (velocity.x != 0)
             {
                 delaySeconds =
-                    std::min(delaySeconds, std::abs((nextPosition.x - position.x) / speed.x));
+                    std::min(delaySeconds, std::abs((nextPosition.x - position.x) / velocity.x));
             }
-            else if (speed.y != 0)
+            else if (velocity.y != 0)
             {
                 delaySeconds =
-                    std::min(delaySeconds, std::abs((nextPosition.y - position.y) / speed.y));
+                    std::min(delaySeconds, std::abs((nextPosition.y - position.y) / velocity.y));
             }
             else
             {
@@ -228,15 +228,15 @@ RandomWalk2dOutdoorMobilityModel::DoWalk(Time delayLeft)
 
             double delaySecondsX = std::numeric_limits<double>::max();
             double delaySecondsY = std::numeric_limits<double>::max();
-            if (speed.x != 0)
+            if (velocity.x != 0)
             {
                 delaySecondsX =
-                    std::min(delaySecondsX, std::abs((nextPosition.x - position.x) / speed.x));
+                    std::min(delaySecondsX, std::abs((nextPosition.x - position.x) / velocity.x));
             }
-            if (speed.y != 0)
+            if (velocity.y != 0)
             {
                 delaySecondsY =
-                    std::min(delaySecondsY, std::abs((nextPosition.y - position.y) / speed.y));
+                    std::min(delaySecondsY, std::abs((nextPosition.y - position.y) / velocity.y));
             }
             if (delaySecondsX == std::numeric_limits<double>::max() &&
                 delaySecondsY == std::numeric_limits<double>::max())
@@ -381,30 +381,29 @@ RandomWalk2dOutdoorMobilityModel::Rebound(Time delayLeft)
     NS_LOG_FUNCTION(this << delayLeft.GetSeconds());
     m_helper.UpdateWithBounds(m_bounds);
     Vector position = m_helper.GetCurrentPosition();
-    Vector speed = m_helper.GetVelocity();
+    Vector velocity = m_helper.GetVelocity();
     switch (m_bounds.GetClosestSideOrCorner(position))
     {
     case Rectangle::RIGHTSIDE:
     case Rectangle::LEFTSIDE:
         NS_LOG_DEBUG("The closest side is RIGHT or LEFT");
-        speed.x = -speed.x;
+        velocity.x = -velocity.x;
         break;
     case Rectangle::TOPSIDE:
     case Rectangle::BOTTOMSIDE:
         NS_LOG_DEBUG("The closest side is TOP or BOTTOM");
-        speed.y = -speed.y;
+        velocity.y = -velocity.y;
         break;
     case Rectangle::TOPRIGHTCORNER:
     case Rectangle::BOTTOMRIGHTCORNER:
     case Rectangle::TOPLEFTCORNER:
     case Rectangle::BOTTOMLEFTCORNER:
         NS_LOG_DEBUG("The closest side is a corner");
-        auto temp = speed.x;
-        speed.x = -speed.y;
-        speed.y = -temp;
+        velocity.x = -velocity.x;
+        velocity.y = -velocity.y;
         break;
     }
-    m_helper.SetVelocity(speed);
+    m_helper.SetVelocity(velocity);
     m_helper.Unpause();
     DoWalk(delayLeft);
 }

@@ -26,6 +26,9 @@ Changes from ns-3.41 to ns-3-dev
 
 ### Changed behavior
 
+* Fixed the corner rebound direction in `RandomWalk2d[Outdoor]MobilityModel` and the
+initial direction in case of node starting from a border or corner.
+
 Changes from ns-3.40 to ns-3.41
 -------------------------------
 
