@@ -1064,7 +1064,10 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                 f.write(ns3rc_template.format(modules="'lte'", examples="False", tests="True"))
 
             # Reconfigure.
-            return_code, stdout, stderr = run_ns3('configure -G "{generator}"')
+            run_ns3("clean")
+            return_code, stdout, stderr = run_ns3(
+                'configure -G "{generator}" -d release --enable-verbose'
+            )
             self.config_ok(return_code, stdout, stderr)
 
             # Check.

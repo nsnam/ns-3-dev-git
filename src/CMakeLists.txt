@@ -21,6 +21,38 @@ foreach(libname ${libs})
   endif()
 endforeach()
 
+# Scan for disabled modules that define settings prefixed with NS3_ or ENABLE_
+# so that we can initialize them as turned off (setting as temporary variables
+# not to affect the cached variables that are set when normally processed)
+subdirlist(modules ${CMAKE_CURRENT_SOURCE_DIR})
+foreach(libname ${modules})
+  if(NOT (${libname} IN_LIST libs))
+    # Skip module directories without CMakeLists.txt files
+    if(NOT (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${libname}/CMakeLists.txt))
+      continue()
+    endif()
+
+    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/${libname}/CMakeLists.txt
+         lib_cmakelists_contents
+    )
+    string(REGEX MATCHALL "(NS3_[a-zA-Z0-9_]*)|(ENABLE_[a-zA-Z0-9_]*)" flags
+                 "${lib_cmakelists_contents}"
+    )
+    foreach(flag ${flags})
+      # Skip reason flags
+      if(${flag} MATCHES "REASON")
+        continue()
+      endif()
+      # Skip flags already defined
+      if(DEFINED ${flag})
+        continue()
+      endif()
+      # Set flag to off
+      set(${flag} OFF PARENT_SCOPE)
+    endforeach()
+  endif()
+endforeach()
+
 # Prevents link errors due to symbol collisions if the same library is linked
 # multiple times
 list(REMOVE_DUPLICATES ns3-external-libs)
