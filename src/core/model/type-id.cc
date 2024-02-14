@@ -457,7 +457,8 @@ IidManager::IidInformation*
 IidManager::LookupInformation(uint16_t uid) const
 {
     NS_LOG_FUNCTION(IID << uid);
-    NS_ASSERT(uid <= m_information.size() && uid != 0);
+    NS_ASSERT_MSG(uid <= m_information.size() && uid != 0,
+                  "The uid " << uid << " for this TypeId is invalid");
     NS_LOG_LOGIC(IIDL << m_information[uid - 1].name);
     return const_cast<IidInformation*>(&m_information[uid - 1]);
 }

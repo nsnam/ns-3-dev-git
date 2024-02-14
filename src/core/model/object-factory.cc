@@ -93,6 +93,9 @@ Ptr<Object>
 ObjectFactory::Create() const
 {
     NS_LOG_FUNCTION(this);
+    NS_ASSERT_MSG(
+        m_tid.GetUid(),
+        "ObjectFactory::Create - can't use an ObjectFactory without setting a TypeId first.");
     Callback<ObjectBase*> cb = m_tid.GetConstructor();
     ObjectBase* base = cb();
     auto derived = dynamic_cast<Object*>(base);
