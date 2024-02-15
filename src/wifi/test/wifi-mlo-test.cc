@@ -939,7 +939,7 @@ MultiLinkSetupTest::DoSetup()
     // also advertises 0) or 1 (the AP MLD is discarded if it advertises a support of 3)
     auto staEhtConfig = m_staMacs[0]->GetEhtConfiguration();
     staEhtConfig->SetAttribute("TidToLinkMappingNegSupport",
-                               EnumValue(WIFI_TID_TO_LINK_MAPPING_ANY_LINK_SET));
+                               EnumValue(WifiTidToLinkMappingNegSupport::ANY_LINK_SET));
     staEhtConfig->SetAttribute("TidToLinkMappingDl", StringValue(m_dlTidLinkMappingStr));
     staEhtConfig->SetAttribute("TidToLinkMappingUl", StringValue(m_ulTidLinkMappingStr));
 

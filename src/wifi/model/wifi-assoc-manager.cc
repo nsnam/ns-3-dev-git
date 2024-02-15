@@ -314,7 +314,8 @@ WifiAssocManager::CanSetupMultiLink(OptMleConstRef& mle, OptRnrConstRef& rnr)
         // mapping negotiation with the TID-To-Link Mapping Negotiation Support subfield of the
         // MLD Capabilities field of the Basic Multi-Link element it transmits to at least 1.
         // (Sec. 35.3.7.1.1 of 802.11be D3.1)
-        if (mldCapabilities->tidToLinkMappingSupport > 0 && negSupport.Get() == 0)
+        if (mldCapabilities->tidToLinkMappingSupport > 0 &&
+            negSupport.Get() == WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
         {
             NS_LOG_DEBUG("AP MLD supports TID-to-Link Mapping negotiation, while we don't");
             return false;

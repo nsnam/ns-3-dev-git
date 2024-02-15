@@ -484,7 +484,7 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
     EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
     ehtConfiguration->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
 
-    mldCapabilities->tidToLinkMappingSupport = negSupport.Get();
+    mldCapabilities->tidToLinkMappingSupport = static_cast<uint8_t>(negSupport.Get());
     mldCapabilities->freqSepForStrApMld = 0; // not supported yet
     mldCapabilities->aarSupport = 0;         // not supported yet
 
@@ -532,7 +532,7 @@ StaWifiMac::GetTidToLinkMappingElements(uint8_t apNegSupport)
     EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
     ehtConfig->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
 
-    NS_ABORT_MSG_IF(negSupport.Get() == 0,
+    NS_ABORT_MSG_IF(negSupport.Get() == WifiTidToLinkMappingNegSupport::NOT_SUPPORTED,
                     "Cannot request TID-to-Link Mapping if negotiation is not supported");
 
     // store the mappings, so that we can enforce them when the AP MLD accepts them
@@ -542,7 +542,8 @@ StaWifiMac::GetTidToLinkMappingElements(uint8_t apNegSupport)
     bool mappingValidForNegType1 = TidToLinkMappingValidForNegType1(m_dlTidLinkMappingInAssocReq,
                                                                     m_ulTidLinkMappingInAssocReq);
     NS_ABORT_MSG_IF(
-        negSupport.Get() == 1 && !mappingValidForNegType1,
+        negSupport.Get() == WifiTidToLinkMappingNegSupport::SAME_LINK_SET &&
+            !mappingValidForNegType1,
         "Mapping TIDs to distinct link sets is incompatible with negotiation support of 1");
 
     if (apNegSupport == 1 && !mappingValidForNegType1)
