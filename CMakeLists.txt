@@ -107,21 +107,6 @@ set(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS
       "List of modules that should have their examples and tests built (e.g. lte;wifi)"
 )
 
-if(${NS3_CCACHE})
-  # Use ccache if available
-  mark_as_advanced(CCACHE)
-  find_program(CCACHE ccache)
-  if(NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
-    message(STATUS "CCache is enabled.")
-    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
-    execute_process(
-      COMMAND
-        ${CCACHE} --set-config
-        sloppiness=pch_defines,time_macros,include_file_mtime,include_file_ctime
-    )
-  endif()
-endif()
-
 # Include macros used below
 include(build-support/macros-and-definitions.cmake)
 
@@ -142,6 +127,21 @@ filter_enabled_and_disabled_modules(
   libs_to_build contrib_libs_to_build NS3_ENABLED_MODULES NS3_DISABLED_MODULES
   ns3rc_enabled_modules ns3rc_disabled_modules
 )
+
+if(${NS3_CCACHE})
+  # Use ccache if available
+  mark_as_advanced(CCACHE)
+  find_program(CCACHE ccache)
+  if(NOT ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
+    message(STATUS "CCache is enabled.")
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+    execute_process(
+      COMMAND
+        ${CCACHE} --set-config
+        sloppiness=pch_defines,time_macros,include_file_mtime,include_file_ctime
+    )
+  endif()
+endif()
 
 # ##############################################################################
 # Process options                     #
