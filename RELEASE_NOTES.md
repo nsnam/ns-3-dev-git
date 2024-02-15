@@ -20,6 +20,8 @@ Release 3-dev
 
 ### New user-visible features
 
+- (network) !1828 - Added a common helper to create and install applications
+
 ### Bugs fixed
 
 Release 3.41

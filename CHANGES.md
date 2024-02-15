@@ -19,6 +19,9 @@ Changes from ns-3.41 to ns-3-dev
 ### New API
 
 * Objects now can be aggregated to multiple objects though the `Object::UnidirectionalAggregateObject` function. Objects aggregated in such a way can not use `GetObject` to access the objects they are aggregated to.
+* (network) Added `ApplicationHelper` helper class to create and install applications, removing
+redundant code in existing helpers and reducing the burden to add yet another helper when a new
+application model is added.
 
 ### Changes to existing API
 
