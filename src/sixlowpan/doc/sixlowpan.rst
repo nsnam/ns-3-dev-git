@@ -134,22 +134,19 @@ Using 6LoWPAN with IPv4 (or other L3 protocols)
 ###############################################
 
 As the name implies, 6LoWPAN can handle only IPv6 packets. Any other protocol will be discarded.
-Moreover, 6LoWPAN assumes that the network is uniform, as is all the devices connected by the
-same same channel are using 6LoWPAN. Mixed environments are not supported by the standard.
-The reason is simple: 802.15.4 frame doesn't have a "protocol" field. As a consequence,
-there is no demultiplexing at MAC layer and the protocol carried by L2 frames must be known
-in advance.
 
-In the |ns3| implementation it is possible, but not advisable, to violate this requirement
-if the underlying NetDevice is capable of discriminating different protocols. As an example,
-CsmaNetDevice can carry IPv4 and 6LoWPAN at the same time. However, this configuration has
-not been tested.
+6LoWPAN can be used alongside other L3 protocols in networks supporting an EtherType (e.g.,
+Ethernet, WiFi, etc.). If the network does not have an EtherType in the frame header
+(like in the case of 802.15.4), then the network must be uniform, as is all the devices
+connected by the same same channel must use 6LoWPAN.
+
+The reason is simple: if the L2 frame doesn't have a "EtherType" field, then there is no
+demultiplexing at MAC layer and the protocol carried by L2 frames must be known
+in advance.
 
 References
 ==========
 
-.. [IANA802] IANA, assigned IEEE 802 numbers: http://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xml
-.. [Ethertype] IEEE Ethertype numbers: http://standards.ieee.org/develop/regauth/ethertype/eth.txt
 .. [Shelby] Z. Shelby and C. Bormann, 6LoWPAN: The Wireless Embedded Internet. Wiley, 2011. [Online]. Available: https://books.google.it/books?id=3Nm7ZCxscMQC
 
 Usage
