@@ -174,8 +174,7 @@ InterferenceHelper::NiChange::GetEvent() const
 
 InterferenceHelper::InterferenceHelper()
     : m_errorRateModel(nullptr),
-      m_numRxAntennas(1),
-      m_rxing(false)
+      m_numRxAntennas(1)
 {
     NS_LOG_FUNCTION(this);
 }
@@ -212,15 +211,18 @@ Ptr<Event>
 InterferenceHelper::Add(Ptr<const WifiPpdu> ppdu,
                         Time duration,
                         RxPowerWattPerChannelBand& rxPowerW,
+                        const FrequencyRange& freqRange,
                         bool isStartHePortionRxing)
 {
     Ptr<Event> event = Create<Event>(ppdu, duration, std::move(rxPowerW));
-    AppendEvent(event, isStartHePortionRxing);
+    AppendEvent(event, freqRange, isStartHePortionRxing);
     return event;
 }
 
 void
-InterferenceHelper::AddForeignSignal(Time duration, RxPowerWattPerChannelBand& rxPowerW)
+InterferenceHelper::AddForeignSignal(Time duration,
+                                     RxPowerWattPerChannelBand& rxPowerW,
+                                     const FrequencyRange& freqRange)
 {
     // Parameters other than duration and rxPowerW are unused for this type
     // of signal, so we provide dummy versions
@@ -230,7 +232,7 @@ InterferenceHelper::AddForeignSignal(Time duration, RxPowerWattPerChannelBand& r
     Ptr<WifiPpdu> fakePpdu = Create<WifiPpdu>(Create<WifiPsdu>(Create<Packet>(0), hdr),
                                               WifiTxVector(),
                                               WifiPhyOperatingChannel());
-    Add(fakePpdu, duration, rxPowerW);
+    Add(fakePpdu, duration, rxPowerW, freqRange);
 }
 
 bool
@@ -344,9 +346,11 @@ InterferenceHelper::GetEnergyDuration(double energyW, const WifiSpectrumBandInfo
 }
 
 void
-InterferenceHelper::AppendEvent(Ptr<Event> event, bool isStartHePortionRxing)
+InterferenceHelper::AppendEvent(Ptr<Event> event,
+                                const FrequencyRange& freqRange,
+                                bool isStartHePortionRxing)
 {
-    NS_LOG_FUNCTION(this << event << isStartHePortionRxing);
+    NS_LOG_FUNCTION(this << event << freqRange << isStartHePortionRxing);
     for (const auto& [band, power] : event->GetRxPowerWPerBand())
     {
         auto niIt = m_niChanges.find(band);
@@ -356,7 +360,7 @@ InterferenceHelper::AppendEvent(Ptr<Event> event, bool isStartHePortionRxing)
         auto previousPowerPosition = GetPreviousPosition(event->GetStartTime(), niIt);
         previousPowerStart = previousPowerPosition->second.GetPower();
         previousPowerEnd = GetPreviousPosition(event->GetEndTime(), niIt)->second.GetPower();
-        if (!m_rxing)
+        if (const auto rxing = (m_rxing.contains(freqRange) && m_rxing.at(freqRange)); !rxing)
         {
             m_firstPowers.find(band)->second = previousPowerStart;
             // Always leave the first zero power noise event in the list
@@ -814,17 +818,17 @@ InterferenceHelper::AddNiChangeEvent(Time moment, NiChange change, NiChangesPerB
 }
 
 void
-InterferenceHelper::NotifyRxStart()
+InterferenceHelper::NotifyRxStart(const FrequencyRange& freqRange)
 {
-    NS_LOG_FUNCTION(this);
-    m_rxing = true;
+    NS_LOG_FUNCTION(this << freqRange);
+    m_rxing[freqRange] = true;
 }
 
 void
 InterferenceHelper::NotifyRxEnd(Time endTime, const FrequencyRange& freqRange)
 {
     NS_LOG_FUNCTION(this << endTime << freqRange);
-    m_rxing = false;
+    m_rxing.at(freqRange) = false;
     // Update m_firstPowers for frame capture
     for (auto niIt = m_niChanges.begin(); niIt != m_niChanges.end(); ++niIt)
     {

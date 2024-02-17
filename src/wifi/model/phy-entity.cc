@@ -874,7 +874,11 @@ PhyEntity::CreateInterferenceEvent(Ptr<const WifiPpdu> ppdu,
                                    RxPowerWattPerChannelBand& rxPower,
                                    bool isStartHePortionRxing /* = false */)
 {
-    return m_wifiPhy->m_interference->Add(ppdu, duration, rxPower, isStartHePortionRxing);
+    return m_wifiPhy->m_interference->Add(ppdu,
+                                          duration,
+                                          rxPower,
+                                          m_wifiPhy->GetCurrentFrequencyRange(),
+                                          isStartHePortionRxing);
 }
 
 void
@@ -941,8 +945,9 @@ PhyEntity::StartPreambleDetectionPeriod(Ptr<Event> event)
 {
     NS_LOG_FUNCTION(this << *event);
     NS_LOG_DEBUG("Sync to signal (power=" << WToDbm(GetRxPowerWForPpdu(event)) << "dBm)");
-    m_wifiPhy->m_interference
-        ->NotifyRxStart(); // We need to notify it now so that it starts recording events
+    m_wifiPhy->m_interference->NotifyRxStart(
+        m_wifiPhy->GetCurrentFrequencyRange()); // We need to notify it now so that it starts
+                                                // recording events
     m_endPreambleDetectionEvents.push_back(
         Simulator::Schedule(m_wifiPhy->GetPreambleDetectionDuration(),
                             &PhyEntity::EndPreambleDetectionPeriod,
@@ -991,7 +996,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
         m_wifiPhy->m_interference->NotifyRxEnd(maxEvent->GetStartTime(),
                                                m_wifiPhy->GetCurrentFrequencyRange());
         // Make sure InterferenceHelper keeps recording events
-        m_wifiPhy->m_interference->NotifyRxStart();
+        m_wifiPhy->m_interference->NotifyRxStart(m_wifiPhy->GetCurrentFrequencyRange());
         return;
     }
 
@@ -1048,7 +1053,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
         }
 
         // Make sure InterferenceHelper keeps recording events
-        m_wifiPhy->m_interference->NotifyRxStart();
+        m_wifiPhy->m_interference->NotifyRxStart(m_wifiPhy->GetCurrentFrequencyRange());
 
         m_wifiPhy->NotifyRxBegin(GetAddressedPsduInPpdu(m_wifiPhy->m_currentEvent->GetPpdu()),
                                  m_wifiPhy->m_currentEvent->GetRxPowerWPerBand());

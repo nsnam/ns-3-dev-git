@@ -208,6 +208,7 @@ class InterferenceHelper : public Object
      * \param ppdu the PPDU
      * \param duration the PPDU duration
      * \param rxPower received power per band (W)
+     * \param freqRange the frequency range in which the received signal is detected
      * \param isStartHePortionRxing flag whether the event corresponds to the start of the HE
      * portion reception (only used for MU)
      *
@@ -216,14 +217,18 @@ class InterferenceHelper : public Object
     Ptr<Event> Add(Ptr<const WifiPpdu> ppdu,
                    Time duration,
                    RxPowerWattPerChannelBand& rxPower,
+                   const FrequencyRange& freqRange,
                    bool isStartHePortionRxing = false);
 
     /**
      * Add a non-Wifi signal to interference helper.
      * \param duration the duration of the signal
      * \param rxPower received power per band (W)
+     * \param freqRange the frequency range in which the received signal is detected
      */
-    void AddForeignSignal(Time duration, RxPowerWattPerChannelBand& rxPower);
+    void AddForeignSignal(Time duration,
+                          RxPowerWattPerChannelBand& rxPower,
+                          const FrequencyRange& freqRange);
     /**
      * Calculate the SNIR at the start of the payload and accumulate
      * all SNIR changes in the SNIR vector for each MPDU of an A-MPDU.
@@ -277,13 +282,14 @@ class InterferenceHelper : public Object
 
     /**
      * Notify that RX has started.
+     * \param freqRange the frequency range in which the received signal event is detected
      */
-    void NotifyRxStart();
+    void NotifyRxStart(const FrequencyRange& freqRange);
     /**
      * Notify that RX has ended.
      *
      * \param endTime the end time of the signal
-     * \param freqRange the frequency range in which the received signal event had been detected
+     * \param freqRange the frequency range in which the received signal event was detected
      */
     void NotifyRxEnd(Time endTime, const FrequencyRange& freqRange);
 
@@ -422,10 +428,11 @@ class InterferenceHelper : public Object
      * Append the given Event.
      *
      * \param event the event to be appended
+     * \param freqRange the frequency range in which the received signal event is detected
      * \param isStartHePortionRxing flag whether event corresponds to the start of the HE portion
      * reception (only used for MU)
      */
-    void AppendEvent(Ptr<Event> event, bool isStartHePortionRxing);
+    void AppendEvent(Ptr<Event> event, const FrequencyRange& freqRange, bool isStartHePortionRxing);
 
     /**
      * Calculate noise and interference power in W.
@@ -511,7 +518,8 @@ class InterferenceHelper : public Object
     uint8_t m_numRxAntennas;         //!< the number of RX antennas in the corresponding receiver
     NiChangesPerBand m_niChanges;    //!< NI Changes for each band
     FirstPowerPerBand m_firstPowers; //!< first power of each band in watts
-    bool m_rxing;                    //!< flag whether it is in receiving state
+    std::map<FrequencyRange, bool>
+        m_rxing; //!< flag whether it is in receiving state for a given FrequencyRange
 
     /**
      * Returns an iterator to the first NiChange that is later than moment
