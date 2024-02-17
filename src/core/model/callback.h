@@ -805,18 +805,12 @@ namespace ns3
 class CallbackValue : public AttributeValue
 {
   public:
-    /** Constructor */
     CallbackValue();
-    /**
-     * Copy constructor
-     * \param [in] base Callback to copy
-     */
-    CallbackValue(const CallbackBase& base);
-    /** Destructor */
+    CallbackValue(const CallbackBase& value);
     ~CallbackValue() override;
-    /** \param [in] base The CallbackBase to use */
-    void Set(CallbackBase base);
-    /* Documented by print-introspected-doxygen.cc */
+    // Documented by print-introspected-doxygen.cc
+    void Set(const CallbackBase& value);
+    CallbackBase Get();
     template <typename T>
     bool GetAccessor(T& value) const;
     /** \return A copy of this CallBack */

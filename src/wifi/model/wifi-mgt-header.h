@@ -325,9 +325,9 @@ class MgtHeaderInPerStaProfile<Derived, std::tuple<Elems...>>
                                                          to the Per-STA Profile subelement */
 };
 
-/**
- * Implementation of the templates declared above.
- */
+//
+// Implementation of the templates declared above.
+//
 
 template <typename Derived, typename... Elems>
 template <typename T, std::enable_if_t<(std::is_same_v<std::vector<T>, Elems> + ...) == 0, int>>

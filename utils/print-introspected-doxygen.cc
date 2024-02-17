@@ -1227,15 +1227,7 @@ PrintAttributeValueSection(std::ostream& os, const std::string& name, const bool
        << "AttributeValue implementation for " << name << "\n";
     if (seeBase)
     {
-        // Some classes don't live in ns3::.  Yuck
-        if (name != "IeMeshId")
-        {
-            os << seeAlso << "ns3::" << name << "\n";
-        }
-        else
-        {
-            os << seeAlso << "ns3::dot11s::" << name << "\n";
-        }
+        os << seeAlso << "ns3::" << name << "\n";
     }
     os << commentStop;
 
@@ -1271,20 +1263,12 @@ PrintAttributeValueWithName(std::ostream& os,
     os << seeAlso << "AttributeValue" << std::endl;
     os << commentStop;
 
-    // Copy ctor: <name>Value::<name>Value
-    os << commentStart << functionStart << name << qualClass << "::" << valClass;
-    if ((name == "EmptyAttribute") || (name == "ObjectPtrContainer"))
-    {
-        // Just default constructors.
-        os << "()\n";
-    }
-    else
-    {
-        // Copy constructors
-        os << "(const " << type << " & value)\n"
-           << "Copy constructor.\n"
-           << argument << "[in] value The " << name << " value to copy.\n";
-    }
+    // Ctor: <name>Value::<name>Value
+    os << commentStart << functionStart << qualClass << "::" << valClass;
+    // Constructors
+    os << "(const " << type << " & value)\n"
+       << "Constructor.\n"
+       << argument << "[in] value The " << name << " value to use.\n";
     os << commentStop;
 
     // <name>Value::Get () const
@@ -1430,7 +1414,6 @@ PrintAttributeImplementations(std::ostream& os)
       { "Box",            "Box",            true,  "box.h"              },
       { "DataRate",       "DataRate",       true,  "data-rate.h"        },
       { "Length",         "Length",         true,  "length.h"           },
-      { "IeMeshId",       "IeMeshId",       true,  "ie-dot11s-id.h"     },
       { "Ipv4Address",    "Ipv4Address",    true,  "ipv4-address.h"     },
       { "Ipv4Mask",       "Ipv4Mask",       true,  "ipv4-address.h"     },
       { "Ipv6Address",    "Ipv6Address",    true,  "ipv6-address.h"     },
@@ -1446,7 +1429,6 @@ PrintAttributeImplementations(std::ostream& os)
       { "TypeId",         "TypeId",         true,  "type-id.h"          },
       { "UanModesList",   "UanModesList",   true,  "uan-tx-mode.h"      },
       { "ValueClassTest", "ValueClassTest", false, "attribute-test-suite.cc" /* core/test/ */  },
-      { "Vector",         "Vector",         true,  "vector.h"           },
       { "Vector2D",       "Vector2D",       true,  "vector.h"           },
       { "Vector3D",       "Vector3D",       true,  "vector.h"           },
       { "Waypoint",       "Waypoint",       true,  "waypoint.h"         },
@@ -1454,11 +1436,10 @@ PrintAttributeImplementations(std::ostream& os)
 
       // All three (Value, Access and Checkers) defined, but custom
       { "Boolean",        "bool",           false, "boolean.h"          },
-      { "Callback",       "Callback",       true,  "callback.h"         },
+      { "Callback",       "CallbackBase",   true,  "callback.h"         },
       { "Double",         "double",         false, "double.h"           },
-      { "Enum",           "int",            false, "enum.h"             },
+      { "Enum",           "T",              false, "enum.h"             },
       { "Integer",        "int64_t",        false, "integer.h"          },
-      { "Pointer",        "Pointer",        false, "pointer.h"          },
       { "String",         "std::string",    false, "string.h"           },
       { "Time",           "Time",           true,  "nstime.h"           },
       { "Uinteger",       "uint64_t",       false, "uinteger.h"         },
@@ -1473,18 +1454,6 @@ PrintAttributeImplementations(std::ostream& os)
         ++i;
     }
 
-    // Special cases
-    PrintAttributeValueSection(os, "EmptyAttribute", false);
-    PrintAttributeValueWithName(os, "EmptyAttribute", "EmptyAttribute", "attribute.h");
-
-    // ObjectPtrContainer is already documented.
-    // PrintAttributeValueSection(os, "ObjectPtrContainer", false);
-    // PrintAttributeValueWithName(os,
-    //                             "ObjectPtrContainer",
-    //                             "ObjectPtrContainer",
-    //                             "object-ptr-container.h");
-    // PrintMakeChecker(os, "ObjectPtrContainer", "object-ptr-container.h");
-
     PrintAttributeValueSection(os, "ObjectVector", false);
     PrintMakeAccessors(os, "ObjectVector");
     PrintMakeChecker(os, "ObjectVector", "object-vector.h");
@@ -1493,19 +1462,6 @@ PrintAttributeImplementations(std::ostream& os)
     PrintMakeAccessors(os, "ObjectMap");
     PrintMakeChecker(os, "ObjectMap", "object-map.h");
 
-    PrintAttributeValueSection(os, "Pair", false);
-    PrintAttributeValueWithName(os, "Pair", "std::pair<A, B>", "pair.h");
-    PrintMakeChecker(os, "Pair", "pair.h");
-
-    PrintAttributeValueSection(os, "Tuple", false);
-    PrintAttributeValueWithName(os, "Tuple", "std::tuple<Args...>", "tuple.h");
-    PrintMakeChecker(os, "Tuple", "tuple.h");
-
-    // AttributeContainer is already documented.
-    // PrintAttributeValueSection  (os, "AttributeContainer", false);
-    // PrintAttributeValueWithName (os, "AttributeContainer", "AttributeContainer",
-    // "attribute-container.h");
-    // PrintMakeChecker(os, "AttributeContainer", "attribute-container.h");
 } // PrintAttributeImplementations ()
 
 /***************************************************************

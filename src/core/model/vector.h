@@ -318,47 +318,53 @@ ATTRIBUTE_HELPER_HEADER(Vector3D);
 ATTRIBUTE_HELPER_HEADER(Vector2D);
 
 /**
+ * \ingroup attribute_Vector3D
  * \relates Vector3D
  * Vector alias typedef for compatibility with mobility models
  */
 typedef Vector3D Vector;
 
 /**
+ * \ingroup attribute_Vector3D
  * \relates Vector3D
  * Vector alias typedef for compatibility with mobility models
  */
 typedef Vector3DValue VectorValue;
 
 /**
+ * \ingroup attribute_Vector3D
  * \relates Vector3D
  * Vector alias typedef for compatibility with mobility models
  */
 typedef Vector3DChecker VectorChecker;
 
-// Document these by hand so they go in group attribute_Vector3D
-/**
- * \relates Vector3D
- * \fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1)
- * \copydoc ns3::MakeAccessorHelper(T1)
- * \see AttributeAccessor
- */
-
-/**
- * \relates Vector3D
- * \fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1, T2 a2)
- * \copydoc ns3::MakeAccessorHelper(T1,T2)
- * \see AttributeAccessor
- */
-
 ATTRIBUTE_ACCESSOR_DEFINE(Vector);
 
-/**
- * \relates Vector3D
- * \returns The AttributeChecker.
- * \see AttributeChecker
- */
 Ptr<const AttributeChecker> MakeVectorChecker();
 
 } // namespace ns3
+
+// Document these by hand so they go in group attribute_Vector3D
+
+/*!
+\ingroup attribute_Vector3D
+\fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1)
+\copydoc ns3::MakeAccessorHelper(T1)
+\see AttributeAccessor
+*/
+
+/*!
+\ingroup attribute_Vector3D
+\fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1, T2 a2)
+\copydoc ns3::MakeAccessorHelper(T1,T2)
+\see AttributeAccessor
+*/
+
+/*!
+\ingroup attribute_Vector3D
+\fn ns3::Ptr<const ns3::AttributeChecker> ns3::MakeVectorChecker ()
+\returns The AttributeChecker.
+\see AttributeChecker
+*/
 
 #endif /* NS3_VECTOR_H */

@@ -38,8 +38,8 @@ CallbackValue::CallbackValue()
     NS_LOG_FUNCTION(this);
 }
 
-CallbackValue::CallbackValue(const CallbackBase& base)
-    : m_value(base)
+CallbackValue::CallbackValue(const CallbackBase& value)
+    : m_value(value)
 {
 }
 
@@ -49,11 +49,17 @@ CallbackValue::~CallbackValue()
 }
 
 void
-CallbackValue::Set(CallbackBase base)
+CallbackValue::Set(const CallbackBase& value)
 {
-    NS_LOG_FUNCTION(&base);
+    NS_LOG_FUNCTION(&value);
+    m_value = value;
+}
 
-    m_value = base;
+CallbackBase
+CallbackValue::Get()
+{
+    NS_LOG_FUNCTION(this);
+    return m_value;
 }
 
 Ptr<AttributeValue>

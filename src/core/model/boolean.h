@@ -37,12 +37,7 @@ class BooleanValue : public AttributeValue
 {
   public:
     BooleanValue();
-    /**
-     * Construct from an explicit value.
-     *
-     * \param [in] value The boolean value to begin with.
-     */
-    BooleanValue(bool value);
+    BooleanValue(const bool& value);
     void Set(bool value);
     bool Get() const;
     template <typename T>

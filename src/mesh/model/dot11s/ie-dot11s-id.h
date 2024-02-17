@@ -32,7 +32,6 @@ namespace dot11s
 
 /**
  * \brief a IEEE 802.11 Mesh ID element (Section 8.4.2.101 of IEEE 802.11-2012)
- * \see attribute_IeMeshId
  */
 class IeMeshId : public WifiInformationElement
 {

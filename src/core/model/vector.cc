@@ -27,7 +27,7 @@
 
 /**
  * \file
- * \ingroup attribute_Vector
+ * \ingroup geometry
  * ns3::Vector, ns3::Vector2D and ns3::Vector3D attribute value implementations.
  */
 

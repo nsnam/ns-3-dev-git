@@ -226,9 +226,17 @@ class AttributeChecker : public SimpleRefCount<AttributeChecker>
 };
 
 /**
+ * \ingroup attributes
+ * \defgroup attribute_EmptyAttribute EmptyAttribute Attribute
+ * AttributeValue implementation for EmptyAttribute
+ */
+
+/**
  * \brief A class for an empty attribute value.
  *
- * \ingroup attributes
+ * \ingroup attribute_EmptyAttribute
+ *
+ * \see AttributeValue
  */
 class EmptyAttributeValue : public AttributeValue
 {
@@ -262,6 +270,8 @@ class EmptyAttributeValue : public AttributeValue
 /**
  * \brief An accessor for EmptyAttributeValue
  *
+ * \ingroup attribute_EmptyAttribute
+ *
  * Does nothing, since every EmptyAttributeValue is the same.
  */
 class EmptyAttributeAccessor : public AttributeAccessor
@@ -276,7 +286,7 @@ class EmptyAttributeAccessor : public AttributeAccessor
 };
 
 /**
- * \ingroup attributes
+ * \ingroup attribute_EmptyAttribute
  *
  * \brief Create an empty AttributeAccessor.
  *
@@ -290,6 +300,8 @@ MakeEmptyAttributeAccessor()
 
 /**
  * \brief A checker for EmptyAttributeValue
+ *
+ * \ingroup attribute_EmptyAttribute
  *
  * Does nothing, since every EmptyAttributeValue does not contain anything and
  * is, of course, valid.
@@ -308,7 +320,7 @@ class EmptyAttributeChecker : public AttributeChecker
 };
 
 /**
- * \ingroup attributes
+ * \ingroup attribute_EmptyAttribute
  *
  * \brief Create an empty AttributeChecker.
  *

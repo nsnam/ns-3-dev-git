@@ -24,7 +24,7 @@
 /**
  * \file
  * \ingroup attribute_Boolean
- * ns3::BooleanValue attribute value implementaation.
+ * ns3::BooleanValue attribute value implementation.
  */
 
 namespace ns3
@@ -38,7 +38,7 @@ BooleanValue::BooleanValue()
     NS_LOG_FUNCTION(this);
 }
 
-BooleanValue::BooleanValue(bool value)
+BooleanValue::BooleanValue(const bool& value)
     : m_value(value)
 {
     NS_LOG_FUNCTION(this << value);

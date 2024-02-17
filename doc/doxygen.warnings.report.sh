@@ -248,10 +248,10 @@ REappend filter_blacklistRE "cairo-wideint"
 
 #   Functions with varying numbers of arguments
 #   Explicit template instantiation declaration
-REappend filter_blacklistRE "MakeCallback< ObjectBase \\* >(ObjectBase \\*"
+# REappend filter_blacklistRE "MakeCallback< ObjectBase \\* >(ObjectBase \\*"
 
 #   ATTRIBUTE_HELPER_CPP( and _HEADER(
-REappend filter_blacklistRE "ATTRIBUTE_HELPER_\\(CPP\\|HEADER\\)"
+# REappend filter_blacklistRE "ATTRIBUTE_HELPER_\\(CPP\\|HEADER\\)"
 
 # Filter out regular expression for black list, -e, -t and -F
 filter_outRE=""

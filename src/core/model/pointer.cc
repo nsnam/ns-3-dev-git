@@ -40,7 +40,7 @@ PointerValue::PointerValue()
     NS_LOG_FUNCTION(this);
 }
 
-PointerValue::PointerValue(Ptr<Object> object)
+PointerValue::PointerValue(const Ptr<Object>& object)
     : m_value(object)
 {
     NS_LOG_FUNCTION(object);

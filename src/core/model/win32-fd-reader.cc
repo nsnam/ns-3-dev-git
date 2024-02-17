@@ -41,7 +41,10 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("FdReader");
 
+// conditional compilation to avoid Doxygen errors
+#ifdef __WIN32__
 bool FdReader::winsock_initialized = false;
+#endif
 
 FdReader::FdReader()
     : m_fd(-1),
