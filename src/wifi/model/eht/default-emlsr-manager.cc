@@ -145,6 +145,13 @@ DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId,
     }
 }
 
+Time
+DefaultEmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+    return Time{0}; // start the TXOP
+}
+
 void
 DefaultEmlsrManager::DoNotifyIcfReceived(uint8_t linkId)
 {

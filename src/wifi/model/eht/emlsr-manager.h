@@ -148,6 +148,16 @@ class EmlsrManager : public Object
     bool GetCamStateReset() const;
 
     /**
+     * Notify that a TXOP is gained on the given link. This method has to determine whether to
+     * start the TXOP or release the channel.
+     *
+     * \param linkId the ID of the given link
+     * \return zero, if the TXOP can be started, or the delay after which the EMLSR restarts
+     *         channel access, otherwise
+     */
+    virtual Time GetDelayUntilAccessRequest(uint8_t linkId) = 0;
+
+    /**
      * Set the member variable indicating whether Aux PHYs are capable of transmitting PPDUs.
      *
      * \param capable whether Aux PHYs are capable of transmitting PPDUs

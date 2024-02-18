@@ -46,6 +46,12 @@ class DefaultEmlsrManager : public EmlsrManager
 
     bool SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId) override;
 
+    /**
+     * \param linkId the ID of the link on which TXOP is gained
+     * \return zero, indicating that the TXOP can be started
+     */
+    Time GetDelayUntilAccessRequest(uint8_t linkId) override;
+
   protected:
     uint8_t GetLinkToSendEmlOmn() override;
     std::optional<uint8_t> ResendNotification(Ptr<const WifiMpdu> mpdu) override;

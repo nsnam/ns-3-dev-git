@@ -281,6 +281,21 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, ChannelWidthMhz allow
             return false;
         }
 
+        // let EMLSR manager decide whether to prevent or allow this UL TXOP
+        if (auto delay = emlsrManager->GetDelayUntilAccessRequest(m_linkId);
+            delay.IsStrictlyPositive())
+        {
+            NotifyChannelReleased(edca);
+            Simulator::Schedule(delay,
+                                &Txop::StartAccessAfterEvent,
+                                edca,
+                                m_linkId,
+                                Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be
+                                                                     // transmitted until RX ends
+                                Txop::CHECK_MEDIUM_BUSY); // generate backoff if medium busy
+            return false;
+        }
+
         if (auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
             mainPhy != m_phy)
         {
@@ -325,11 +340,7 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, ChannelWidthMhz allow
                 return false;
             }
 
-            // Note that we do not prevent a (main or aux) PHY from starting a TXOP when
-            // an(other) aux PHY is receiving a PPDU. The reason is that if the aux PHY is
-            // receiving a Beacon frame, the aux PHY will not be affected by the start of
-            // a TXOP; if the aux PHY is receiving an ICF, the ICF will be dropped by
-            // ReceiveMpdu because another EMLSR link is being used.
+            // we have to check whether the main PHY can switch to take over the UL TXOP
 
             const auto rtsTxVector =
                 GetWifiRemoteStationManager()->GetRtsTxVector(m_bssid, allowedWidth);
@@ -349,32 +360,30 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, ChannelWidthMhz allow
 
             switch (mainPhy->GetState()->GetState())
             {
-            case WifiPhyState::RX:
             case WifiPhyState::SWITCHING:
-                // the main PHY is receiving or switching (to another link), hence the remaining
-                // time to the end of the current reception/channel switch needs to be added up
+                // the main PHY is switching (to another link), hence the remaining time to
+                // the end of the current channel switch needs to be added up
                 switchingTime += mainPhy->GetDelayUntilIdle();
                 [[fallthrough]];
+            case WifiPhyState::RX:
             case WifiPhyState::IDLE:
             case WifiPhyState::CCA_BUSY:
-                if (!mainPhy->IsReceivingPhyHeader() && switchingTime <= timeToCtsEnd)
+                if (switchingTime <= timeToCtsEnd)
                 {
                     break; // start TXOP
                 }
-                // release channel
-                if (mainPhy->IsReceivingPhyHeader())
-                {
-                    NS_LOG_DEBUG(
-                        "Aux PHY cannot start TXOP because main PHY is receiving a PHY header");
-                }
-                else
-                {
-                    // switching takes longer than RTS/CTS exchange, do not transmit anything to
-                    // avoid that the main PHY is requested to switch while already switching
-                    NS_LOG_DEBUG("Not enough time for main PHY to switch link (main PHY state: "
-                                 << mainPhy->GetState() << ")");
-                }
+                // switching takes longer than RTS/CTS exchange, release channel
+                NS_LOG_DEBUG("Not enough time for main PHY to switch link (main PHY state: "
+                             << mainPhy->GetState() << ")");
+                // retry channel access when the CTS was expected to be received
                 NotifyChannelReleased(edca);
+                Simulator::Schedule(*timeToCtsEnd,
+                                    &Txop::StartAccessAfterEvent,
+                                    edca,
+                                    m_linkId,
+                                    Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be
+                                                                         // transmitted now
+                                    Txop::CHECK_MEDIUM_BUSY); // generate backoff if medium busy
                 return false;
             default:
                 NS_ABORT_MSG("Main PHY cannot be in state " << mainPhy->GetState());
