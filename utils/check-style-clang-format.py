@@ -60,10 +60,12 @@ CLANG_FORMAT_GUARD_OFF = "// clang-format off"
 DIRECTORIES_TO_SKIP = [
     "__pycache__",
     ".git",
+    ".venv",
     "bindings",
     "build",
     "cmake-cache",
     "testpy-output",
+    "venv",
 ]
 
 # List of files entirely copied from elsewhere that should not be checked,
@@ -80,51 +82,55 @@ FILE_EXTENSIONS_TO_CHECK_FORMATTING = [
 
 FILE_EXTENSIONS_TO_CHECK_INCLUDE_PREFIXES = FILE_EXTENSIONS_TO_CHECK_FORMATTING
 
-FILE_EXTENSIONS_TO_CHECK_WHITESPACE = [
+FILE_EXTENSIONS_TO_CHECK_TABS = [
     ".c",
     ".cc",
-    ".click",
     ".cmake",
-    ".conf",
     ".css",
-    ".dot",
-    ".gnuplot",
-    ".gp",
     ".h",
     ".html",
     ".js",
     ".json",
     ".m",
     ".md",
+    ".pl",
+    ".py",
+    ".rst",
+    ".sh",
+    ".toml",
+    ".yml",
+]
+
+FILES_TO_CHECK_TABS = [
+    ".clang-format",
+    ".clang-tidy",
+    ".codespellrc",
+    "CMakeLists.txt",
+    "codespell-ignored-lines",
+    "codespell-ignored-words",
+    "ns3",
+]
+
+FILE_EXTENSIONS_TO_CHECK_WHITESPACE = FILE_EXTENSIONS_TO_CHECK_TABS + [
+    ".click",
+    ".cfg",
+    ".conf",
+    ".dot",
+    ".gnuplot",
+    ".gp",
     ".mob",
     ".ns_params",
     ".ns_movements",
     ".params",
-    ".pl",
     ".plt",
-    ".py",
-    ".rst",
     ".seqdiag",
-    ".sh",
     ".txt",
-    ".yml",
 ]
 
-FILES_TO_CHECK_WHITESPACE = [
+FILES_TO_CHECK_WHITESPACE = FILES_TO_CHECK_TABS + [
     "Makefile",
-    "ns3",
 ]
 
-FILE_EXTENSIONS_TO_CHECK_TABS = [
-    ".c",
-    ".cc",
-    ".h",
-    ".md",
-    ".py",
-    ".rst",
-    ".sh",
-    ".yml",
-]
 TAB_SIZE = 4
 
 
@@ -141,9 +147,7 @@ def should_analyze_directory(dirpath: str) -> bool:
 
     _, directory = os.path.split(dirpath)
 
-    return not (
-        directory in DIRECTORIES_TO_SKIP or (directory.startswith(".") and directory != ".")
-    )
+    return directory not in DIRECTORIES_TO_SKIP
 
 
 def should_analyze_file(
@@ -165,9 +169,9 @@ def should_analyze_file(
     if filename in FILES_TO_SKIP:
         return False
 
-    basename, extension = os.path.splitext(filename)
+    extension = os.path.splitext(filename)[1]
 
-    return basename in files_to_check or extension in file_extensions_to_check
+    return filename in files_to_check or extension in file_extensions_to_check
 
 
 def find_files_to_check_style(
@@ -220,7 +224,7 @@ def find_files_to_check_style(
         if should_analyze_file(f, FILES_TO_CHECK_WHITESPACE, FILE_EXTENSIONS_TO_CHECK_WHITESPACE):
             files_to_check_whitespace.append(f)
 
-        if should_analyze_file(f, [], FILE_EXTENSIONS_TO_CHECK_TABS):
+        if should_analyze_file(f, FILES_TO_CHECK_TABS, FILE_EXTENSIONS_TO_CHECK_TABS):
             files_to_check_tabs.append(f)
 
     return (
