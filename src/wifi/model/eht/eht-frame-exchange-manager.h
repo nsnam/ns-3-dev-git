@@ -146,6 +146,12 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
   private:
     /**
+     * \return whether the received ICF must be dropped because we are unable to process it
+     *         (e.g., another EMLSR link is being used or there is no time for main PHY switch)
+     */
+    bool DropReceivedIcf();
+
+    /**
      * Generate an in-device interference of the given power on the given link for the given
      * duration.
      *
