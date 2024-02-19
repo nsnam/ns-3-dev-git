@@ -7,30 +7,7 @@
 # We support CLANG versions 10 through 16
 # We test only CLANG 10 on Ubuntu 20.04 and CLANG 16 on Ubuntu 23.04
 
-.weekly-clang-ubuntu20.04:
-  image: ubuntu:20.04
-  extends: .base-build
-  rules:
-    - if: $RELEASE == "weekly"
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      allow_failure: true
-  before_script:
-    - apt update
-    - apt upgrade -y
-    - DEBIAN_FRONTEND=noninteractive apt install -y
-      clang-$CLANG cmake ninja-build ccache build-essential
-      libboost-all-dev
-      libgtk-3-0 libgtk-3-dev
-      libgsl-dev $LIBGSL gsl-bin
-      libsqlite3-dev sqlite3
-      libxml2 libxml2-dev
-      ssh
-  variables:
-    COMPILER: clang++-$CLANG
-    LIBGSL: libgsl23
-
-.weekly-clang-ubuntu23.04:
-  image: ubuntu:23.04
+.weekly-clang-ubuntu:
   extends: .base-build
   rules:
     - if: $RELEASE == "weekly"
@@ -50,6 +27,18 @@
       ssh
   variables:
     COMPILER: clang++-$CLANG
+
+.weekly-clang-ubuntu20.04:
+  image: ubuntu:20.04
+  extends: .weekly-clang-ubuntu
+  variables:
+    LIBGSL: libgsl23
+    EXTRA_OPTIONS: --disable-eigen
+
+.weekly-clang-ubuntu23.04:
+  image: ubuntu:23.04
+  extends: .weekly-clang-ubuntu
+  variables:
     LIBGSL: libgsl27
 
 weekly-clang:
