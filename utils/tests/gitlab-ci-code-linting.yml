@@ -14,6 +14,7 @@
   script:
     - python3 utils/check-style-clang-format.py --verbose .
   timeout: 1h
+  interruptible: true
 
 check-style-clang-format-17:
   extends: .check-style-clang-format
@@ -103,6 +104,7 @@ emacs-line:
       exit 0 ;
       fi
   timeout: 1h
+  interruptible: true
 
 # Spell checking
 spell-check:
@@ -121,6 +123,7 @@ spell-check:
     # Check source code and commit messages
     - codespell -f -C0 ./
   timeout: 1h
+  interruptible: true
 
 # Check cmake format
 cmake-format:
@@ -132,6 +135,7 @@ cmake-format:
     - ./ns3 configure --enable-modules=core
     - ./ns3 build cmake-format-check
   timeout: 1h
+  interruptible: true
 
 # Check Python format
 .python-format:
@@ -142,6 +146,7 @@ cmake-format:
     - black --check .
     - isort --check .
   timeout: 1h
+  interruptible: true
 
 python-format-latest:
   extends: .python-format

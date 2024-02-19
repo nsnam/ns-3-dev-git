@@ -78,6 +78,7 @@ workflow:
     key: "ccache-$CI_JOB_NAME"
     paths:
       - $CCACHE_BASEDIR_VALUE/
+  interruptible: true
   timeout: 12h
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage

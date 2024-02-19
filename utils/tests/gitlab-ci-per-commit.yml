@@ -8,7 +8,6 @@
       - $CPPYY == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
-  interruptible: true
   image: archlinux
   before_script:
     - pacman-key --init
