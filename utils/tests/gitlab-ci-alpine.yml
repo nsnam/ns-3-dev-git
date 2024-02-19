@@ -21,7 +21,7 @@
       bash
       iproute2 linux-headers
       openmpi openmpi-dev
-      openssh
+      openssh git
   variables:
     COMPILER: g++
 

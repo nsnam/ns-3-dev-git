@@ -16,7 +16,7 @@
       python
       boost gsl gtk3 openmpi
       glibc-debug
-      openssh
+      openssh git
   script:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}

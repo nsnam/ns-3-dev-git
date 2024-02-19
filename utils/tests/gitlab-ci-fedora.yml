@@ -28,6 +28,7 @@
       python python-devel
       pygobject3-devel python3-gobject gobject-introspection-devel
       graphviz-devel graphviz ipython
+      git
     - source /etc/profile.d/modules.sh
     - module load mpi/openmpi-x86_64
   variables:

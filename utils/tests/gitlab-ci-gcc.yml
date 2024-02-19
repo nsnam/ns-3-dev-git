@@ -36,7 +36,7 @@
       libsqlite3-dev sqlite3
       libeigen3-dev
       qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
-      ssh
+      ssh git
 
 weekly-gcc:
   rules:

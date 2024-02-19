@@ -15,7 +15,7 @@
       base-devel gcc clang libc++ cmake ninja ccache
       python
       boost gsl gtk3 openmpi
-      openssh
+      openssh git
 
 # Build stage
 per-commit-clang-optimized-libc++:
