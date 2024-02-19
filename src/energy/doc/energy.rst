@@ -41,7 +41,7 @@ Energy Source Models
 
 An energy source represents a power supply. In |ns3|, nodes can
 have one or more energy sources. Likewise, energy sources can be
-connected to multiple energy consuption models (Device energy models).
+connected to multiple energy consumption models (Device energy models).
 Connecting an energy source to a device energy model implies that the
 corresponding device draws power from the source.
 When energy is completely drained from the energy source, it notifies to the device energy models on
@@ -67,11 +67,11 @@ Harvester update triggers an update to the connected Energy Source.
 
 The ``EnergySource`` base class keeps a list of devices (``DeviceEnergyModel`` objects) and energy harvesters (``EnergyHarvester`` objects) that are using the particular Energy Source as power supply. When energy is completely drained, the Energy Source will notify all devices on this list. Each device can then handle this event independently, based on the desired behavior that should be followed in case of power outage.
 
-Generic Batttery Model
-######################
+Generic Battery Model
+#####################
 
 The Generic battery model is able to represent 4 basic types of batteries
-chemestries: Lithium-Ion (LiIon) or Lithium Polymer (LiPo), Nickel Cadmium (NiCd),
+chemistries: Lithium-Ion (LiIon) or Lithium Polymer (LiPo), Nickel Cadmium (NiCd),
 Lead Acid, and Nickel-metal hydride (NiMH). The main difference between these batteries
 is the shape of the discharge curves when using constant discharge current and that
 NiCd and NiMh batteries hysteresis phenomenon is also modeled. Peurket effect, aging,
@@ -81,7 +81,7 @@ arqueotipes must be chosen.
 
 The Generic Battery Model is directly based by the works of Trembley et al.
 Tremblay's model on itself is based on a popular battery model created by Shepherd.
-Tremblay's model consist in visually identify a set of points from batteries manufacters'
+Tremblay's model consist in visually identify a set of points from batteries manufacturers'
 discharge curves datasheets.
 
 .. _fig-dischargeCurve:
@@ -108,7 +108,7 @@ Additionally, it is also necessary to set the values of:
 * :math:`cutoffVoltage:` Required if we desired to inform connected energy consumption models that the battery has reached its discharged point.
 * :math:`i:` The discharge current used to discharge the battery. This value is provided by the energy consumption model attached to the battery.
 
-The value of :math:`R` is typically included in the datatsheets, however, because :math:`R` variability is not modeled in |ns3| (The resistance is fixed), it is necessary
+The value of :math:`R` is typically included in the datasheets, however, because :math:`R` variability is not modeled in |ns3| (The resistance is fixed), it is necessary
 to discretely adjust its value to obtain the desired discharge curves. The value :math:`i_{typical}` can
 be obtained by inferring its value from the discharged curves shown in datasheets. When modeling
 the behavior of a new battery, it is important to chose values that satisfies more than one curve,
@@ -285,7 +285,7 @@ object.
 **Generic Battery Model Helper:**
 
 The ``GenericBatteryModelHelper`` can be used to easily install an energy source into a
-node or node container of one of four types of chemestries (Li-Ion,Lead Acid, NiCd,NiMH).
+node or node container of one of four types of chemistries (Li-Ion,Lead Acid, NiCd,NiMH).
 Users must use one of the available presets that represent an specific battery.
 
 .. sourcecode:: cpp
@@ -395,7 +395,7 @@ The following tests have been written, which can be found in ``src/energy/tests/
 Validation
 **********
 
-The RV battery model is validated by comparing results with what was presented in the original RV battery model paper. The generic battery model is validated by superimposing the obtained discharge curves with manufacters's datasheets plots. The following shows the results of the ``generic-battery-discharge-example.cc`` superimposed to manufacter's datasheets charts:
+The RV battery model is validated by comparing results with what was presented in the original RV battery model paper. The generic battery model is validated by superimposing the obtained discharge curves with manufacturer's datasheets plots. The following shows the results of the ``generic-battery-discharge-example.cc`` superimposed to manufacturer's datasheets charts:
 
 
 .. _fig-leadacid:
@@ -436,7 +436,7 @@ Future Work
 ===========
 
 * Support of device energy models for PHY layers (lr-wpan, WiMax, etc) and other pieces of hardware (UAV, sensors, CPU).
-* Support for realistical charging batteries in the ``GenericBatteryModule``.
+* Support for realistic charging batteries in the ``GenericBatteryModule``.
 * Support for device capable of charging batteries (e.g. chargers with CCCV capabilities).
 * Implement an energy harvester that recharges the energy sources according to the power levels defined in a user customizable dataset of real measurements.
 
