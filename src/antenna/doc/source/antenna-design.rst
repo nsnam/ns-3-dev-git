@@ -174,7 +174,7 @@ and vertical elements can be configured through the attributes "AntennaHorizonta
 and "AntennaVerticalSpacing".
 
 UniformPlannarArray supports the concept of antenna ports following the sub-array partition
-model for TXRU virtualization, as described in Section 5.2.2 of 3GPP TR 36.897 [36897]_.
+model for TXRU virtualization, as described in Section 5.2.2 of 3GPP TR 36.897 [3GPP_TR36897]_.
 The number of antenna ports in vertical and horizontal directions can be configured through
 the attributes "NumVerticalPorts" and "NumHorizontalPorts", respectively. For example,
 if "NumRows" and "NumColumns" are configured to 2 and 4, and the number of
@@ -210,5 +210,5 @@ as described in [38901]_ (i.e., :math:`{\zeta}`).
 
 .. [Mailloux] Robert J. Mailloux, "Phased Array Antenna Handbook", Artech House, 2nd Ed.
 
-.. [TR36897] 3GPP. 2015. TR 36.897. Study on elevation beamforming / Full-Dimension (FD)
+.. [3GPP_TR36897] 3GPP. 2015. TR 36.897. Study on elevation beamforming / Full-Dimension (FD)
    Multiple Input Multiple Output (MIMO) for LTE. V13.0.0. (2015-06)

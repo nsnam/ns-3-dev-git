@@ -84,7 +84,7 @@ Tremblay's model on itself is based on a popular battery model created by Shephe
 Tremblay's model consist in visually identify a set of points from batteries manufacters'
 discharge curves datasheets.
 
-.. _fig-energyFramework:
+.. _fig-dischargeCurve:
 
 .. figure:: figures/dischargeCurve.*
 

@@ -175,7 +175,7 @@ To install it with the network installer, start by creating a texlive folder and
 texlive configuration profile below. You can change the installation directory (starting with
 ``C:/texlive/2022``).
 
-.. sourcecode:: raw
+.. sourcecode:: text
 
     selected_scheme scheme-custom
     TEXDIR C:/texlive/2022

@@ -181,14 +181,14 @@ Enable examples and tests that depend on a set of modules using |ns3|
 As seen above, the following command only builds the requested modules (core and wifi),
 plus any modules that are implicitly needed (e.g., network), and the resulting compatible examples and tests:
 
-.. sourcecode:: terminal
+.. sourcecode:: console
 
   ./ns3 configure --enable-modules="wifi;core" --enable-examples --enable-tests
 
 However, when developing a new module, you may prefer to use the following alternative, which builds
 all module libraries, but will filter out any examples and tests from modules that are not explicitly listed.
 
-.. sourcecode:: terminal
+.. sourcecode:: console
 
   ./ns3 configure --filter-module-examples-and-tests="wifi;core" --enable-examples --enable-tests
 

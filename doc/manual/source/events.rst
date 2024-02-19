@@ -81,7 +81,7 @@ monotonically increasing counter) will be handled first.
 In other words tied events are handled in FIFO order.
 
 Note that concurrent events (events that happen at the very same time)
-are unlikely in a real system - not to say impossible. In |ns-3|
+are unlikely in a real system - not to say impossible. In |ns3|
 concurrent events are common for a number of reasons, one of them
 being the time representation. While developing a model this must
 be carefully taken into account.
@@ -289,7 +289,7 @@ for example::
 
 or by using a command line argument
 
-.. sourcecode:: terminal
+.. sourcecode:: console
 
   $ ./ns3 run "...  --SimulatorImplementationType=ns3::DistributedSimulatorImpl"
 

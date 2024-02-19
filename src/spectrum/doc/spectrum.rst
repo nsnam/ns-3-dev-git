@@ -743,7 +743,7 @@ returns a 3D long term channel matrix whose dimensions are the number of the
 receive antenna ports, the number transmit antenna ports, and
 the number of clusters. When multiple ports are being configured note that
 the sub-array partition model is adopted for TXRU virtualization, as described
-in Section 5.2.2 of 3GPP TR 36.897[TR36897]_, and so equal beam weights are used for all the ports.
+in Section 5.2.2 of 3GPP TR 36.897 [TR36897]_, and so equal beam weights are used for all the ports.
 Support of the full-connection model for TXRU virtualization would need extensions.
 To reduce the computational load, the long term
 components associated to the different channels are stored in the m_longTermMap

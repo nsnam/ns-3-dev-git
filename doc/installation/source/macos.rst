@@ -64,7 +64,7 @@ Recommended
   +=============================+========================+===================================+
   | Compiler cache optimization | ``ccache``             | ``ccache``                        |
   +-----------------------------+------------------------+-----------------------------------+
-  | Code linting                | ``clang-format llvm``  |  clang-format included with       |
+  | Code linting                | ``clang-format llvm``  | clang-format included with        |
   |                             |                        | ``clang``, need to select         |
   |                             |                        | ``clang-XX llvm-XX`` versions     |
   +-----------------------------+------------------------+-----------------------------------+

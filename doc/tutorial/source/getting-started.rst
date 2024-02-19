@@ -1159,7 +1159,7 @@ The first, is to set VSCode's ``settings.json`` file to include the following:
 
 The second, a more permanent solution, with the following command:
 
-.. sourcecode:: terminal
+.. sourcecode:: console
 
   > echo %PATH%
   C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;
