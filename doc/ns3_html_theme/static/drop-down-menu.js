@@ -30,9 +30,9 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-var timeout	= 250;
-var closetimer	= 0;
-var ddmenuitem	= 0;
+var timeout = 250;
+var closetimer = 0;
+var ddmenuitem = 0;
 
 // open hidden layer
 function mopen(id)

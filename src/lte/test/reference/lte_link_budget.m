@@ -7,7 +7,7 @@ close all;
 f = 2160e6;  % carrier freq Hz, EARFCN = 500 (downlink)
 nrbs = 25; % tx bandwidth configuration in number of RBs
 bw = nrbs * 180000; % bandwidth in Hz, note that this is smaller than
-		    % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
+                    % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
 kT = -174; % noise PSD in dBm / Hz
 n = kT + 10*log10(bw);  % noise power dBm
 p = 30;  % tx power dBm

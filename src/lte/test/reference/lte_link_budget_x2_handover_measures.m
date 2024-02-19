@@ -7,7 +7,7 @@ close all;
 f = 2160e6;  % carrier freq Hz, EARFCN = 500 (downlink)
 nrbs = 25; % tx bandwidth configuration in number of RBs
 bw = nrbs * 180000; % bandwidth in Hz, note that this is smaller than
-		    % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
+                    % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
 kT = -174; % noise PSD in dBm / Hz
 n = kT + 10*log10(bw);  % noise power dBm
 p = 20;  % tx power dBm
@@ -20,9 +20,9 @@ nW = 10.^((n+nf-30)./10); % noise power in W
 %%d = logspace (0,5,100);
 x = linspace (0,4000,100);
 g1 = gain_freespace(abs (x-1000),f); % propagation gain from
-				% eNB 1
+                                     % eNB 1
 g2 = gain_freespace(abs (x-2000),f); % propagation gain from
-				% eNB 2
+                                     % eNB 2
 
 sinr1 = 10.*log10 (pW .* g1 ./ (nW + pW .* g2)); %dB
 sinr2 = 10.*log10 (pW .* g2 ./ (nW + pW .* g1)); %dB

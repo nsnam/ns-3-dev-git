@@ -9,11 +9,11 @@ ful = 1930e6;  % UL carrier freq Hz, EARFCN = 18100
 
 nrbsControl = 25; % tx bandwidth configuration in number of RBs
 bwControl = nrbsControl * 180000; % bandwidth in Hz, note that this is smaller than
-		    % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
+                                  % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
 
 nrbsData = 12; % tx bandwidth configuration in number of RBs
 bwData = nrbsData * 180000; % bandwidth in Hz, note that this is smaller than
-		    % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
+                            % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
 
 kT = -174; % noise PSD in dBm / Hz
 ndBmData = kT + 10*log10(bwData);  % noise power dBm

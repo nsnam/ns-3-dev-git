@@ -8,7 +8,7 @@ fdl = 2120e6;  % DL carrier freq Hz, EARFCN = 100
 ful = 1930e6;  % UL carrier freq Hz, EARFCN = 18100
 nrbs = 25; % tx bandwidth configuration in number of RBs
 bw = nrbs * 180000; % bandwidth in Hz, note that this is smaller than
-		    % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
+                    % the nominal Channel Bandwidth, see TS 36.101 fig 5.6-1
 kT = -174; % noise PSD in dBm / Hz
 ndBm = kT + 10*log10(bw);  % noise power dBm
 

@@ -28,11 +28,11 @@ for run = 1:2
       print_C_vector (activeRbs, arname);
 
       printf("SpectrumValue %s (LteSpectrumValueHelper::GetSpectrumModel (%d, %d));\n",
-	     svname, earfcn, nrbs);
+             svname, earfcn, nrbs);
       print_C_vector (txpsd, svname);
 
       printf("AddTestCase (new LteTxPsdTestCase (\"%s\", %d, %d, %f, %s, %s));\n\n",
-	     basename, earfcn, nrbs, txpowdBm, arname, svname);
+             basename, earfcn, nrbs, txpowdBm, arname, svname);
 
     endfor
 

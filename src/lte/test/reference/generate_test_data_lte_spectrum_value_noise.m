@@ -16,7 +16,7 @@ for nrbs = [6 15]
     npsdv = ones (1,nrbs) * (noise_psd * 10.^(noise_figure_dB/10));
 
     printf("SpectrumValue %s (LteSpectrumValueHelper::GetSpectrumModel (%d, %d));\n",
-	   name, earfcn, nrbs);
+           name, earfcn, nrbs);
 
     print_C_vector (npsdv, name);
     printf("AddTestCase (new LteNoisePsdTestCase (\"%s\", %d, %d, %f, %s));\n\n", name, earfcn, nrbs, noise_figure_dB, name);

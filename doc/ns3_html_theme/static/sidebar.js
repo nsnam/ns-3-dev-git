@@ -98,9 +98,9 @@ $(function() {
     // find the height of the viewport to center the '<<' in the page
     var viewport_height;
     if (window.innerHeight)
- 	  viewport_height = window.innerHeight;
+      viewport_height = window.innerHeight;
     else
-	  viewport_height = $(window).height();
+      viewport_height = $(window).height();
     sidebarbutton.find('span').css({
         'display': 'block',
         'margin-top': (viewport_height - sidebar.position().top - 20) / 2
