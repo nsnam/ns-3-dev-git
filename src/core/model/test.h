@@ -1271,7 +1271,7 @@ class TestSuite : public TestCase
      * \enum Type
      * \brief Type of test.
      */
-    enum Type
+    enum class Type
     {
         ALL = 0,    //!<
         UNIT,       //!< This test suite implements a Unit Test
@@ -1280,13 +1280,24 @@ class TestSuite : public TestCase
         PERFORMANCE //!< This test suite implements a Performance Test
     };
 
+    NS_DEPRECATED_3_42("Use Type::ALL instead")
+    static constexpr auto ALL = Type::ALL; //!< @deprecated See Type::ALL.
+    NS_DEPRECATED_3_42("Use Type::UNIT instead")
+    static constexpr auto UNIT = Type::UNIT; //!< @deprecated See Type::UNIT.
+    NS_DEPRECATED_3_42("Use Type::SYSTEM instead")
+    static constexpr auto SYSTEM = Type::SYSTEM; //!< @deprecated See Type::SYSTEM.
+    NS_DEPRECATED_3_42("Use Type::EXAMPLE instead")
+    static constexpr auto EXAMPLE = Type::EXAMPLE; //!< @deprecated See Type::EXAMPLE.
+    NS_DEPRECATED_3_42("Use Type::PERFORMANCE instead")
+    static constexpr auto PERFORMANCE = Type::PERFORMANCE; //!< @deprecated See Type::PERFORMANCE.
+
     /**
      * \brief Construct a new test suite.
      *
      * \param [in] name The name of the test suite.
      * \param [in] type The TestType of the test suite (defaults to UNIT test).
      */
-    TestSuite(std::string name, Type type = UNIT);
+    TestSuite(std::string name, Type type = Type::UNIT);
 
     /**
      * \brief get the kind of test this test suite implements
@@ -1415,6 +1426,14 @@ TestVectors<T>::Get(std::size_t i) const
     NS_ABORT_MSG_UNLESS(m_vectors.size() > i, "TestVectors::Get(): Bad index");
     return m_vectors[i];
 }
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os The reference to the output stream.
+ * @param [in] type The TestSuite::Type.
+ * @return The reference to the output stream.
+ */
+std::ostream& operator<<(std::ostream& os, TestSuite::Type type);
 
 /**
  * @brief Stream insertion operator.

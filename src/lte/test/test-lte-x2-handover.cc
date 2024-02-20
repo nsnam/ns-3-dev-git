@@ -673,7 +673,7 @@ class LteX2HandoverTestSuite : public TestSuite
 };
 
 LteX2HandoverTestSuite::LteX2HandoverTestSuite()
-    : TestSuite("lte-x2-handover", SYSTEM)
+    : TestSuite("lte-x2-handover", Type::SYSTEM)
 {
     // in the following:
     // fwd means handover from enb 0 to enb 1

@@ -321,7 +321,7 @@ class WifiTransmitMaskTestSuite : public TestSuite
 static WifiTransmitMaskTestSuite g_WifiTransmitMaskTestSuite;
 
 WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
-    : TestSuite("wifi-transmit-mask", UNIT)
+    : TestSuite("wifi-transmit-mask", Type::UNIT)
 {
     // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
     // LogComponentEnable ("WifiTransmitMaskTest", logLevel);

@@ -334,7 +334,7 @@ class UanEnergyModelTestSuite : public TestSuite
 };
 
 UanEnergyModelTestSuite::UanEnergyModelTestSuite()
-    : TestSuite("uan-energy-model", UNIT)
+    : TestSuite("uan-energy-model", Type::UNIT)
 {
     AddTestCase(new AcousticModemEnergyTestCase, TestCase::Duration::QUICK);
     AddTestCase(new AcousticModemEnergyDepletionTestCase, TestCase::Duration::QUICK);

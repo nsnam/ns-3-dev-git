@@ -267,7 +267,7 @@ class TcpSlowStartTestSuite : public TestSuite
 {
   public:
     TcpSlowStartTestSuite()
-        : TestSuite("tcp-slow-start-test", UNIT)
+        : TestSuite("tcp-slow-start-test", Type::UNIT)
     {
         // This test have less packets to transmit than SsTh
         std::list<TypeId> types = {

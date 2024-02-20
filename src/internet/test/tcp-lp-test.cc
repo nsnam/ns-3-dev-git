@@ -262,7 +262,7 @@ class TcpLpTestSuite : public TestSuite
 {
   public:
     TcpLpTestSuite()
-        : TestSuite("tcp-lp-test", UNIT)
+        : TestSuite("tcp-lp-test", Type::UNIT)
     {
         AddTestCase(new TcpLpToNewReno(4 * 1446,
                                        1446,

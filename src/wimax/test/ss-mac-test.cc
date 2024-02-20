@@ -166,7 +166,7 @@ class Ns3WimaxSSMacTestSuite : public TestSuite
 };
 
 Ns3WimaxSSMacTestSuite::Ns3WimaxSSMacTestSuite()
-    : TestSuite("wimax-ss-mac-layer", UNIT)
+    : TestSuite("wimax-ss-mac-layer", Type::UNIT)
 {
     AddTestCase(new Ns3WimaxNetworkEntryTestCase, TestCase::Duration::QUICK);
     AddTestCase(new Ns3WimaxManagementConnectionsTestCase, TestCase::Duration::QUICK);

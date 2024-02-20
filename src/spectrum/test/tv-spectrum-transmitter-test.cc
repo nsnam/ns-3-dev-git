@@ -181,7 +181,7 @@ class TvSpectrumTransmitterTestSuite : public TestSuite
 };
 
 TvSpectrumTransmitterTestSuite::TvSpectrumTransmitterTestSuite()
-    : TestSuite("tv-spectrum-transmitter", UNIT)
+    : TestSuite("tv-spectrum-transmitter", Type::UNIT)
 {
     NS_LOG_INFO("creating TvSpectrumTransmitterTestSuite");
     for (double startFreq = 100; startFreq < 1e15; startFreq *= 10)

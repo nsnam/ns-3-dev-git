@@ -364,7 +364,7 @@ class TcpYeahTestSuite : public TestSuite
 {
   public:
     TcpYeahTestSuite()
-        : TestSuite("tcp-yeah-test", UNIT)
+        : TestSuite("tcp-yeah-test", Type::UNIT)
     {
         AddTestCase(new TcpYeahIncrementTest(20 * 1446,
                                              25 * 1446,

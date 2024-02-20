@@ -1160,7 +1160,7 @@ class FqPieQueueDiscTestSuite : public TestSuite
 };
 
 FqPieQueueDiscTestSuite::FqPieQueueDiscTestSuite()
-    : TestSuite("fq-pie-queue-disc", UNIT)
+    : TestSuite("fq-pie-queue-disc", Type::UNIT)
 {
     AddTestCase(new FqPieQueueDiscNoSuitableFilter, TestCase::Duration::QUICK);
     AddTestCase(new FqPieQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::Duration::QUICK);

@@ -173,7 +173,7 @@ class OutdoorRandomWalkTestSuite : public TestSuite
 };
 
 OutdoorRandomWalkTestSuite::OutdoorRandomWalkTestSuite()
-    : TestSuite("outdoor-random-walk-model", UNIT)
+    : TestSuite("outdoor-random-walk-model", Type::UNIT)
 {
     AddTestCase(new OutdoorRandomWalkTestCase, TestCase::Duration::QUICK);
 }

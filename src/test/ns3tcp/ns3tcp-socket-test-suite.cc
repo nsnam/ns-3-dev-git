@@ -309,7 +309,7 @@ class Ns3TcpSocketTestSuite : public TestSuite
 };
 
 Ns3TcpSocketTestSuite::Ns3TcpSocketTestSuite()
-    : TestSuite("ns3-tcp-socket", SYSTEM)
+    : TestSuite("ns3-tcp-socket", Type::SYSTEM)
 {
     AddTestCase(new Ns3TcpSocketTestCaseP2P, TestCase::Duration::QUICK);
     AddTestCase(new Ns3TcpSocketTestCaseCsma, TestCase::Duration::QUICK);

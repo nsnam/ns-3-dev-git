@@ -546,7 +546,7 @@ static class TbfQueueDiscTestSuite : public TestSuite
 {
   public:
     TbfQueueDiscTestSuite()
-        : TestSuite("tbf-queue-disc", UNIT)
+        : TestSuite("tbf-queue-disc", Type::UNIT)
     {
         AddTestCase(new TbfQueueDiscTestCase(), TestCase::Duration::QUICK);
     }

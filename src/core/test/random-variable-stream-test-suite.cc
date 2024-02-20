@@ -2885,7 +2885,7 @@ class RandomVariableSuite : public TestSuite
 };
 
 RandomVariableSuite::RandomVariableSuite()
-    : TestSuite("random-variable-stream-generators", UNIT)
+    : TestSuite("random-variable-stream-generators", Type::UNIT)
 {
     AddTestCase(new UniformTestCase);
     AddTestCase(new UniformAntitheticTestCase);

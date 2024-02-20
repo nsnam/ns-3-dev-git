@@ -144,7 +144,7 @@ class ItuR1411NlosOverRooftopPropagationLossModelTestSuite : public TestSuite
 
 ItuR1411NlosOverRooftopPropagationLossModelTestSuite::
     ItuR1411NlosOverRooftopPropagationLossModelTestSuite()
-    : TestSuite("itu-r-1411-nlos-over-rooftop", SYSTEM)
+    : TestSuite("itu-r-1411-nlos-over-rooftop", Type::SYSTEM)
 {
     LogComponentEnable("ItuR1411NlosOverRooftopPropagationLossModelTest", LOG_LEVEL_ALL);
 

@@ -223,7 +223,7 @@ class SixlowpanIphcTestSuite : public TestSuite
 };
 
 SixlowpanIphcTestSuite::SixlowpanIphcTestSuite()
-    : TestSuite("sixlowpan-iphc", UNIT)
+    : TestSuite("sixlowpan-iphc", Type::UNIT)
 {
     AddTestCase(new SixlowpanIphcImplTest(), TestCase::Duration::QUICK);
 }

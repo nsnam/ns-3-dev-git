@@ -80,7 +80,7 @@ LteTestUlSchedulingCallback(CarrierAggregationTestCase* testcase,
 }
 
 TestCarrierAggregationSuite::TestCarrierAggregationSuite()
-    : TestSuite("lte-carrier-aggregation", SYSTEM)
+    : TestSuite("lte-carrier-aggregation", Type::SYSTEM)
 {
     NS_LOG_INFO("creating CarrierAggregationTestCase");
 

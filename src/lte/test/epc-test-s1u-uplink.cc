@@ -508,7 +508,7 @@ class EpcS1uUlTestSuite : public TestSuite
 } g_epcS1uUlTestSuiteInstance;
 
 EpcS1uUlTestSuite::EpcS1uUlTestSuite()
-    : TestSuite("epc-s1u-uplink", SYSTEM)
+    : TestSuite("epc-s1u-uplink", Type::SYSTEM)
 {
     std::vector<EnbUlTestData> v1;
     EnbUlTestData e1;

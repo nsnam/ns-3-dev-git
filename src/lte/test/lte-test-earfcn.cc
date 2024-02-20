@@ -166,7 +166,7 @@ class LteEarfcnTestSuite : public TestSuite
 static LteEarfcnTestSuite g_lteEarfcnTestSuite;
 
 LteEarfcnTestSuite::LteEarfcnTestSuite()
-    : TestSuite("lte-earfcn", UNIT)
+    : TestSuite("lte-earfcn", Type::UNIT)
 {
     NS_LOG_FUNCTION(this);
 

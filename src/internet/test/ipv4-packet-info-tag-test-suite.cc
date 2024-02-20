@@ -220,7 +220,7 @@ class Ipv4PacketInfoTagTestSuite : public TestSuite
 };
 
 Ipv4PacketInfoTagTestSuite::Ipv4PacketInfoTagTestSuite()
-    : TestSuite("ipv4-packet-info-tag", UNIT)
+    : TestSuite("ipv4-packet-info-tag", Type::UNIT)
 {
     AddTestCase(new Ipv4PacketInfoTagTest(), TestCase::Duration::QUICK);
 }

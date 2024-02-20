@@ -597,7 +597,7 @@ class TwoRaySplmTestSuite : public TestSuite
 };
 
 TwoRaySplmTestSuite::TwoRaySplmTestSuite()
-    : TestSuite("two-ray-splm-suite", UNIT)
+    : TestSuite("two-ray-splm-suite", Type::UNIT)
 {
     // Test the GetFtrFastFading function of the TwoRaySpectrumPropagationLossModel class
     AddTestCase(new FtrFadingModelAverageTest, TestCase::Duration::QUICK);

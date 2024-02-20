@@ -98,7 +98,7 @@ class ManyUniformRandomVariablesOneGetValueCallTestSuite : public TestSuite
 
 ManyUniformRandomVariablesOneGetValueCallTestSuite::
     ManyUniformRandomVariablesOneGetValueCallTestSuite()
-    : TestSuite("many-uniform-random-variables-one-get-value-call", PERFORMANCE)
+    : TestSuite("many-uniform-random-variables-one-get-value-call", Type::PERFORMANCE)
 {
     AddTestCase(new ManyUniformRandomVariablesOneGetValueCallTestCase);
 }

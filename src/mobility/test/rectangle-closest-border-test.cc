@@ -93,7 +93,7 @@ class RectangleClosestBorderTestCase : public TestCase
  */
 
 RectangleClosestBorderTestSuite::RectangleClosestBorderTestSuite()
-    : TestSuite("rectangle-closest-border", UNIT)
+    : TestSuite("rectangle-closest-border", Type::UNIT)
 {
     // Rectangle in the positive x-plane to check the intersection with.
     Rectangle rectangle = Rectangle(0.0, 10.0, 0.0, 10.0);

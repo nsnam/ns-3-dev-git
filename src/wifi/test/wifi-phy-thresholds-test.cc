@@ -499,7 +499,7 @@ class WifiPhyThresholdsTestSuite : public TestSuite
 };
 
 WifiPhyThresholdsTestSuite::WifiPhyThresholdsTestSuite()
-    : TestSuite("wifi-phy-thresholds", UNIT)
+    : TestSuite("wifi-phy-thresholds", Type::UNIT)
 {
     AddTestCase(new WifiPhyThresholdsWeakWifiSignalTest, TestCase::Duration::QUICK);
     AddTestCase(new WifiPhyThresholdsWeakForeignSignalTest, TestCase::Duration::QUICK);

@@ -248,7 +248,7 @@ static class AnimationInterfaceTestSuite : public TestSuite
 {
   public:
     AnimationInterfaceTestSuite()
-        : TestSuite("animation-interface", UNIT)
+        : TestSuite("animation-interface", Type::UNIT)
     {
         AddTestCase(new AnimationInterfaceTestCase(), TestCase::Duration::QUICK);
         AddTestCase(new AnimationRemainingEnergyTestCase(), TestCase::Duration::QUICK);

@@ -592,7 +592,7 @@ static class QueueDiscTracesTestSuite : public TestSuite
 {
   public:
     QueueDiscTracesTestSuite()
-        : TestSuite("queue-disc-traces", UNIT)
+        : TestSuite("queue-disc-traces", Type::UNIT)
     {
         AddTestCase(new QueueDiscTracesTestCase(), TestCase::Duration::QUICK);
     }

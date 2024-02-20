@@ -1281,7 +1281,7 @@ class PacketTestSuite : public TestSuite
 };
 
 PacketTestSuite::PacketTestSuite()
-    : TestSuite("packet", UNIT)
+    : TestSuite("packet", Type::UNIT)
 {
     AddTestCase(new PacketTest, TestCase::Duration::QUICK);
     AddTestCase(new PacketTagListTest, TestCase::Duration::QUICK);

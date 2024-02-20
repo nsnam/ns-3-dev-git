@@ -364,7 +364,7 @@ class LrWpanCcaTestSuite : public TestSuite
 };
 
 LrWpanCcaTestSuite::LrWpanCcaTestSuite()
-    : TestSuite("lr-wpan-clear-channel-assessment", UNIT)
+    : TestSuite("lr-wpan-clear-channel-assessment", Type::UNIT)
 {
     AddTestCase(new LrWpanCcaTestCase, TestCase::Duration::QUICK);
 }

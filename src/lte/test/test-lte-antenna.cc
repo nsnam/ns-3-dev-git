@@ -273,7 +273,7 @@ class LteAntennaTestSuite : public TestSuite
 };
 
 LteAntennaTestSuite::LteAntennaTestSuite()
-    : TestSuite("lte-antenna", SYSTEM)
+    : TestSuite("lte-antenna", Type::SYSTEM)
 {
     NS_LOG_FUNCTION(this);
 

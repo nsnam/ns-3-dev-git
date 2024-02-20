@@ -249,7 +249,7 @@ class TcpRttEstimationTestSuite : public TestSuite
 {
   public:
     TcpRttEstimationTestSuite()
-        : TestSuite("tcp-rtt-estimation-test", UNIT)
+        : TestSuite("tcp-rtt-estimation-test", Type::UNIT)
     {
         AddTestCase(new TcpRttEstimationTest("RTT estimation, ts, no data", true, 0),
                     TestCase::Duration::QUICK);

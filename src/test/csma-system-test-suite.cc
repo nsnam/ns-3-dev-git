@@ -1243,7 +1243,7 @@ class CsmaSystemTestSuite : public TestSuite
 };
 
 CsmaSystemTestSuite::CsmaSystemTestSuite()
-    : TestSuite("csma-system", UNIT)
+    : TestSuite("csma-system", Type::UNIT)
 {
     AddTestCase(new CsmaBridgeTestCase, TestCase::Duration::QUICK);
     AddTestCase(new CsmaBroadcastTestCase, TestCase::Duration::QUICK);

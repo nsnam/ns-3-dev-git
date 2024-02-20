@@ -1230,7 +1230,7 @@ class NeighborCacheTestSuite : public TestSuite
 {
   public:
     NeighborCacheTestSuite()
-        : TestSuite("neighbor-cache", UNIT)
+        : TestSuite("neighbor-cache", Type::UNIT)
     {
         AddTestCase(new DynamicNeighborCacheTest, TestCase::Duration::QUICK);
         AddTestCase(new ChannelTest, TestCase::Duration::QUICK);

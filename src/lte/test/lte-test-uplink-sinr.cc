@@ -43,7 +43,7 @@ NS_LOG_COMPONENT_DEFINE("LteUplinkSinrTest");
  * TestSuite
  */
 LteUplinkSinrTestSuite::LteUplinkSinrTestSuite()
-    : TestSuite("lte-uplink-sinr", SYSTEM)
+    : TestSuite("lte-uplink-sinr", Type::SYSTEM)
 {
     /**
      * Build Spectrum Model values for the TX signal

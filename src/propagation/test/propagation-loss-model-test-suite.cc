@@ -508,7 +508,7 @@ class PropagationLossModelsTestSuite : public TestSuite
 };
 
 PropagationLossModelsTestSuite::PropagationLossModelsTestSuite()
-    : TestSuite("propagation-loss-model", UNIT)
+    : TestSuite("propagation-loss-model", Type::UNIT)
 {
     AddTestCase(new FriisPropagationLossModelTestCase, TestCase::Duration::QUICK);
     AddTestCase(new TwoRayGroundPropagationLossModelTestCase, TestCase::Duration::QUICK);

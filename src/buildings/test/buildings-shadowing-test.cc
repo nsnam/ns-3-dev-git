@@ -45,7 +45,7 @@ NS_LOG_COMPONENT_DEFINE("BuildingsShadowingTest");
  */
 
 BuildingsShadowingTestSuite::BuildingsShadowingTestSuite()
-    : TestSuite("buildings-shadowing-test", SYSTEM)
+    : TestSuite("buildings-shadowing-test", Type::SYSTEM)
 {
     LogComponentEnable("BuildingsShadowingTest", LOG_LEVEL_ALL);
 

@@ -92,7 +92,7 @@ class LiIonEnergySourceTestSuite : public TestSuite
 };
 
 LiIonEnergySourceTestSuite::LiIonEnergySourceTestSuite()
-    : TestSuite("li-ion-energy-source", UNIT)
+    : TestSuite("li-ion-energy-source", Type::UNIT)
 {
     AddTestCase(new LiIonEnergyTestCase, TestCase::Duration::QUICK);
 }

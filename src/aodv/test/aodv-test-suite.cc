@@ -739,7 +739,7 @@ class AodvTestSuite : public TestSuite
 {
   public:
     AodvTestSuite()
-        : TestSuite("routing-aodv", UNIT)
+        : TestSuite("routing-aodv", Type::UNIT)
     {
         AddTestCase(new NeighborTest, TestCase::Duration::QUICK);
         AddTestCase(new TypeHeaderTest, TestCase::Duration::QUICK);

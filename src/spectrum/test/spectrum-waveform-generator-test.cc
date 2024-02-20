@@ -127,7 +127,7 @@ class WaveformGeneratorTestSuite : public TestSuite
 };
 
 WaveformGeneratorTestSuite::WaveformGeneratorTestSuite()
-    : TestSuite("waveform-generator", SYSTEM)
+    : TestSuite("waveform-generator", Type::SYSTEM)
 {
     NS_LOG_INFO("creating WaveformGeneratorTestSuite");
 

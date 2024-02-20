@@ -408,7 +408,7 @@ class BufferTestSuite : public TestSuite
 };
 
 BufferTestSuite::BufferTestSuite()
-    : TestSuite("buffer", UNIT)
+    : TestSuite("buffer", Type::UNIT)
 {
     AddTestCase(new BufferTest, TestCase::Duration::QUICK);
 }

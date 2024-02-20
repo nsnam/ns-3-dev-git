@@ -155,7 +155,7 @@ class TcpHyblaTestSuite : public TestSuite
 {
   public:
     TcpHyblaTestSuite()
-        : TestSuite("tcp-hybla-test", UNIT)
+        : TestSuite("tcp-hybla-test", Type::UNIT)
     {
         AddTestCase(new TcpHyblaIncrementTest(1000,
                                               0xFFFFFFFF,

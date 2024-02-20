@@ -48,7 +48,7 @@ NS_LOG_COMPONENT_DEFINE("LteRlcUmE2eTest");
  */
 
 LteRlcUmE2eTestSuite::LteRlcUmE2eTestSuite()
-    : TestSuite("lte-rlc-um-e2e", SYSTEM)
+    : TestSuite("lte-rlc-um-e2e", Type::SYSTEM)
 {
     // NS_LOG_INFO ("Creating LteRlcUmE2eTestSuite");
 

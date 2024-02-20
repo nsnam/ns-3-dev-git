@@ -514,7 +514,7 @@ class TcpRtoTestSuite : public TestSuite
 {
   public:
     TcpRtoTestSuite()
-        : TestSuite("tcp-rto-test", UNIT)
+        : TestSuite("tcp-rto-test", Type::UNIT)
     {
         std::list<TypeId> types = {
             TcpNewReno::GetTypeId(),

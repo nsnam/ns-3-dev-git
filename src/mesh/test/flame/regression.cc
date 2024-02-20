@@ -32,7 +32,7 @@ class FlameRegressionSuite : public TestSuite
 {
   public:
     FlameRegressionSuite()
-        : TestSuite("devices-mesh-flame-regression", SYSTEM)
+        : TestSuite("devices-mesh-flame-regression", Type::SYSTEM)
     {
         // We do not use NS_TEST_SOURCEDIR variable here since mesh/test has
         // subdirectories

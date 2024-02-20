@@ -309,7 +309,7 @@ class RadvdTestSuite : public TestSuite
 };
 
 RadvdTestSuite::RadvdTestSuite()
-    : TestSuite("radvd", UNIT)
+    : TestSuite("radvd", Type::UNIT)
 {
     AddTestCase(new RadvdTestCase, TestCase::Duration::QUICK);
 }

@@ -702,7 +702,7 @@ class Ipv6RipngTestSuite : public TestSuite
 {
   public:
     Ipv6RipngTestSuite()
-        : TestSuite("ipv6-ripng", UNIT)
+        : TestSuite("ipv6-ripng", Type::UNIT)
     {
         AddTestCase(new Ipv6RipngTest, TestCase::Duration::QUICK);
         AddTestCase(new Ipv6RipngCountToInfinityTest, TestCase::Duration::QUICK);

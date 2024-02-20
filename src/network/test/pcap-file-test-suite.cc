@@ -1388,7 +1388,7 @@ class PcapFileTestSuite : public TestSuite
 };
 
 PcapFileTestSuite::PcapFileTestSuite()
-    : TestSuite("pcap-file", UNIT)
+    : TestSuite("pcap-file", Type::UNIT)
 {
     SetDataDir(NS_TEST_SOURCEDIR);
     AddTestCase(new WriteModeCreateTestCase, TestCase::Duration::QUICK);

@@ -537,7 +537,7 @@ class TracedCallbackTypedefTestSuite : public TestSuite
 };
 
 TracedCallbackTypedefTestSuite::TracedCallbackTypedefTestSuite()
-    : TestSuite("traced-callback-typedef", SYSTEM)
+    : TestSuite("traced-callback-typedef", Type::SYSTEM)
 {
     AddTestCase(new TracedCallbackTypedefTestCase, TestCase::Duration::QUICK);
 }

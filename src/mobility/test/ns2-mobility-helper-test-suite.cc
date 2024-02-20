@@ -328,7 +328,7 @@ class Ns2MobilityHelperTestSuite : public TestSuite
 {
   public:
     Ns2MobilityHelperTestSuite()
-        : TestSuite("mobility-ns2-trace-helper", UNIT)
+        : TestSuite("mobility-ns2-trace-helper", Type::UNIT)
     {
         SetDataDir(NS_TEST_SOURCEDIR);
 

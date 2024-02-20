@@ -5838,7 +5838,7 @@ class WifiPhyOfdmaTestSuite : public TestSuite
 };
 
 WifiPhyOfdmaTestSuite::WifiPhyOfdmaTestSuite()
-    : TestSuite("wifi-phy-ofdma", UNIT)
+    : TestSuite("wifi-phy-ofdma", Type::UNIT)
 {
     AddTestCase(new TestDlOfdmaPhyTransmission, TestCase::Duration::QUICK);
     AddTestCase(new TestDlOfdmaPhyPuncturing, TestCase::Duration::QUICK);

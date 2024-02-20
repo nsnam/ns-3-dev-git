@@ -274,7 +274,7 @@ static class FifoQueueDiscTestSuite : public TestSuite
 {
   public:
     FifoQueueDiscTestSuite()
-        : TestSuite("fifo-queue-disc", UNIT)
+        : TestSuite("fifo-queue-disc", Type::UNIT)
     {
         AddTestCase(new FifoQueueDiscTestCase(), TestCase::Duration::QUICK);
     }

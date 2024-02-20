@@ -170,7 +170,7 @@ class TcpScalableTestSuite : public TestSuite
 {
   public:
     TcpScalableTestSuite()
-        : TestSuite("tcp-scalable-test", UNIT)
+        : TestSuite("tcp-scalable-test", Type::UNIT)
     {
         AddTestCase(
             new TcpScalableIncrementTest(

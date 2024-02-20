@@ -2283,7 +2283,7 @@ class WifiMacOfdmaTestSuite : public TestSuite
 };
 
 WifiMacOfdmaTestSuite::WifiMacOfdmaTestSuite()
-    : TestSuite("wifi-mac-ofdma", UNIT)
+    : TestSuite("wifi-mac-ofdma", Type::UNIT)
 {
     using MuEdcaParams = std::initializer_list<OfdmaAckSequenceTest::MuEdcaParameterSet>;
 

@@ -209,7 +209,7 @@ class TcpVegasTestSuite : public TestSuite
 {
   public:
     TcpVegasTestSuite()
-        : TestSuite("tcp-vegas-test", UNIT)
+        : TestSuite("tcp-vegas-test", Type::UNIT)
     {
         AddTestCase(
             new TcpVegasTest(38 * 1446,

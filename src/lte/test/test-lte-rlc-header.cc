@@ -193,7 +193,7 @@ class LteRlcHeaderTestSuite : public TestSuite
 } staticLteRlcHeaderTestSuiteInstance; ///< the test suite
 
 LteRlcHeaderTestSuite::LteRlcHeaderTestSuite()
-    : TestSuite("lte-rlc-header", UNIT)
+    : TestSuite("lte-rlc-header", Type::UNIT)
 {
     NS_LOG_FUNCTION(this);
 

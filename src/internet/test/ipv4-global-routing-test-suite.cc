@@ -1323,7 +1323,7 @@ class Ipv4GlobalRoutingTestSuite : public TestSuite
 };
 
 Ipv4GlobalRoutingTestSuite::Ipv4GlobalRoutingTestSuite()
-    : TestSuite("ipv4-global-routing", UNIT)
+    : TestSuite("ipv4-global-routing", Type::UNIT)
 {
     AddTestCase(new LinkTest, TestCase::Duration::QUICK);
     AddTestCase(new LanTest, TestCase::Duration::QUICK);

@@ -62,7 +62,7 @@ namespace ns3
 {
 
 LenaTestBearerDeactivateSuite::LenaTestBearerDeactivateSuite()
-    : TestSuite("lte-test-deactivate-bearer", SYSTEM)
+    : TestSuite("lte-test-deactivate-bearer", Type::SYSTEM)
 {
     NS_LOG_INFO("creating LenaTestPssFfMacSchedulerSuite");
 

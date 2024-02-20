@@ -403,7 +403,7 @@ class NixVectorRoutingTestSuite : public TestSuite
 {
   public:
     NixVectorRoutingTestSuite()
-        : TestSuite("nix-vector-routing", UNIT)
+        : TestSuite("nix-vector-routing", Type::UNIT)
     {
         AddTestCase(new NixVectorRoutingTest(), TestCase::Duration::QUICK);
     }

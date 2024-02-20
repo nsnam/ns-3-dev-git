@@ -178,7 +178,7 @@ class TcpPktsAckedTestSuite : public TestSuite
 {
   public:
     TcpPktsAckedTestSuite()
-        : TestSuite("tcp-pkts-acked-test", UNIT)
+        : TestSuite("tcp-pkts-acked-test", Type::UNIT)
     {
         AddTestCase(new TcpPktsAckedOpenTest("PktsAcked check while in OPEN state"),
                     TestCase::Duration::QUICK);

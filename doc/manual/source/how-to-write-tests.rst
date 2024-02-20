@@ -61,7 +61,7 @@ is called "router" such as here:
 ::
 
   RouterTestSuite::RouterTestSuite()
-    : TestSuite("router", UNIT)
+    : TestSuite("router", Type::UNIT)
 
 Try this command:
 

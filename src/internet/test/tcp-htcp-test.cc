@@ -165,7 +165,7 @@ class TcpHtcpTestSuite : public TestSuite
 {
   public:
     TcpHtcpTestSuite()
-        : TestSuite("tcp-htcp-test", UNIT)
+        : TestSuite("tcp-htcp-test", Type::UNIT)
     {
         AddTestCase(new TcpHtcpIncrementTest(38 * 536,
                                              536,

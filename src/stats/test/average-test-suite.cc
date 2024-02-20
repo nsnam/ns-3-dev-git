@@ -317,7 +317,7 @@ class AverageTestSuite : public TestSuite
 };
 
 AverageTestSuite::AverageTestSuite()
-    : TestSuite("average", UNIT)
+    : TestSuite("average", Type::UNIT)
 {
     AddTestCase(new OneIntegerAverageTestCase, TestCase::Duration::QUICK);
     AddTestCase(new FiveIntegersAverageTestCase, TestCase::Duration::QUICK);

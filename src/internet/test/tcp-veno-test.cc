@@ -306,7 +306,7 @@ class TcpVenoTestSuite : public TestSuite
 {
   public:
     TcpVenoTestSuite()
-        : TestSuite("tcp-veno-test", UNIT)
+        : TestSuite("tcp-veno-test", Type::UNIT)
     {
         AddTestCase(new TcpVenoTest(38 * 1446,
                                     1446,

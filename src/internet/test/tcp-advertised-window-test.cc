@@ -473,7 +473,7 @@ class TcpAdvertisedWindowTestSuite : public TestSuite
 {
   public:
     TcpAdvertisedWindowTestSuite()
-        : TestSuite("tcp-advertised-window-test", UNIT)
+        : TestSuite("tcp-advertised-window-test", Type::UNIT)
     {
         AddTestCase(new TcpAdvertisedWindowTest("TCP advertised window size, small seg + no loss",
                                                 500,

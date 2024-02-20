@@ -53,7 +53,7 @@ NS_LOG_COMPONENT_DEFINE("LteDownlinkPowerControlTest");
  */
 
 LteDownlinkPowerControlTestSuite::LteDownlinkPowerControlTestSuite()
-    : TestSuite("lte-downlink-power-control", SYSTEM)
+    : TestSuite("lte-downlink-power-control", Type::SYSTEM)
 {
     //  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_DEBUG);
     //  LogComponentEnable ("LteDownlinkPowerControlTest", logLevel);

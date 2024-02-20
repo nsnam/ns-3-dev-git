@@ -218,7 +218,7 @@ class DsdvTestSuite : public TestSuite
 {
   public:
     DsdvTestSuite()
-        : TestSuite("routing-dsdv", UNIT)
+        : TestSuite("routing-dsdv", Type::UNIT)
     {
         AddTestCase(new DsdvHeaderTestCase(), TestCase::Duration::QUICK);
         AddTestCase(new DsdvTableTestCase(), TestCase::Duration::QUICK);

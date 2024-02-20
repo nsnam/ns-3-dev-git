@@ -501,7 +501,7 @@ static class TcFlowControlTestSuite : public TestSuite
 {
   public:
     TcFlowControlTestSuite()
-        : TestSuite("tc-flow-control", UNIT)
+        : TestSuite("tc-flow-control", Type::UNIT)
     {
         AddTestCase(new TcFlowControlTestCase(QueueSizeUnit::PACKETS, 1, 10),
                     TestCase::Duration::QUICK);

@@ -218,7 +218,7 @@ class Ipv6ForwardingTestSuite : public TestSuite
 {
   public:
     Ipv6ForwardingTestSuite()
-        : TestSuite("ipv6-forwarding", UNIT)
+        : TestSuite("ipv6-forwarding", Type::UNIT)
     {
         AddTestCase(new Ipv6ForwardingTest, TestCase::Duration::QUICK);
     }

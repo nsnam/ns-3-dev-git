@@ -267,7 +267,7 @@ class EpcS1uDlTestSuite : public TestSuite
 } g_epcS1uDlTestSuiteInstance;
 
 EpcS1uDlTestSuite::EpcS1uDlTestSuite()
-    : TestSuite("epc-s1u-downlink", SYSTEM)
+    : TestSuite("epc-s1u-downlink", Type::SYSTEM)
 {
     std::vector<EnbDlTestData> v1;
     EnbDlTestData e1;

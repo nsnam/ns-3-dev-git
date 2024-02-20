@@ -84,7 +84,7 @@ RecvMeasurementReportCallback(LteUeMeasurementsTestCase* testcase,
  */
 
 LteUeMeasurementsTestSuite::LteUeMeasurementsTestSuite()
-    : TestSuite("lte-ue-measurements", SYSTEM)
+    : TestSuite("lte-ue-measurements", Type::SYSTEM)
 {
     AddTestCase(new LteUeMeasurementsTestCase("d1=10, d2=10000",
                                               10.000000,
@@ -452,7 +452,7 @@ operator<<(std::vector<uint8_t>& v, const uint8_t& range)
  */
 
 LteUeMeasurementsPiecewiseTestSuite1::LteUeMeasurementsPiecewiseTestSuite1()
-    : TestSuite("lte-ue-measurements-piecewise-1", SYSTEM)
+    : TestSuite("lte-ue-measurements-piecewise-1", Type::SYSTEM)
 {
     std::vector<Time> expectedTime;
     std::vector<uint8_t> expectedRsrp;
@@ -956,7 +956,7 @@ LteUeMeasurementsPiecewiseTestCase1::TeleportVeryFar()
  */
 
 LteUeMeasurementsPiecewiseTestSuite2::LteUeMeasurementsPiecewiseTestSuite2()
-    : TestSuite("lte-ue-measurements-piecewise-2", SYSTEM)
+    : TestSuite("lte-ue-measurements-piecewise-2", Type::SYSTEM)
 {
     std::vector<Time> expectedTime;
     std::vector<uint8_t> expectedRsrp;
@@ -1695,7 +1695,7 @@ LteUeMeasurementsPiecewiseTestCase2::TeleportVeryFar()
  */
 
 LteUeMeasurementsPiecewiseTestSuite3::LteUeMeasurementsPiecewiseTestSuite3()
-    : TestSuite("lte-ue-measurements-piecewise-3", SYSTEM)
+    : TestSuite("lte-ue-measurements-piecewise-3", Type::SYSTEM)
 {
     std::vector<Time> expectedTime;
 
@@ -1960,7 +1960,7 @@ LteUeMeasurementsPiecewiseTestCase3::TeleportEnbNear()
  */
 
 LteUeMeasurementsHandoverTestSuite::LteUeMeasurementsHandoverTestSuite()
-    : TestSuite("lte-ue-measurements-handover", SYSTEM)
+    : TestSuite("lte-ue-measurements-handover", Type::SYSTEM)
 {
     std::list<LteRrcSap::ReportConfigEutra> sourceConfigList;
     std::list<LteRrcSap::ReportConfigEutra> targetConfigList;

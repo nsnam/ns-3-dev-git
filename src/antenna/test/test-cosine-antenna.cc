@@ -151,7 +151,7 @@ class CosineAntennaModelTestSuite : public TestSuite
 };
 
 CosineAntennaModelTestSuite::CosineAntennaModelTestSuite()
-    : TestSuite("cosine-antenna-model", UNIT)
+    : TestSuite("cosine-antenna-model", Type::UNIT)
 {
     // to calculate the azimut angle offset for a given gain in db:
     // phideg = (2*acos(10^(targetgaindb/(20*n))))*180/pi

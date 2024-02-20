@@ -1329,7 +1329,7 @@ static class CoDelQueueDiscTestSuite : public TestSuite
 {
   public:
     CoDelQueueDiscTestSuite()
-        : TestSuite("codel-queue-disc", UNIT)
+        : TestSuite("codel-queue-disc", Type::UNIT)
     {
         // Test 1: simple enqueue/dequeue with no drops
         AddTestCase(new CoDelQueueDiscBasicEnqueueDequeue(QueueSizeUnit::PACKETS),

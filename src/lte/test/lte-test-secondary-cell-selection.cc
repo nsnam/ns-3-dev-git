@@ -49,7 +49,7 @@ NS_LOG_COMPONENT_DEFINE("LteSecondaryCellSelectionTest");
  */
 
 LteSecondaryCellSelectionTestSuite::LteSecondaryCellSelectionTestSuite()
-    : TestSuite("lte-secondary-cell-selection", SYSTEM)
+    : TestSuite("lte-secondary-cell-selection", Type::SYSTEM)
 {
     // REAL RRC PROTOCOL, either 2 or 4 UEs connecting to 2 or 4 component carriers
 

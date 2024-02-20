@@ -484,7 +484,7 @@ class MobilityTestSuite : public TestSuite
 };
 
 MobilityTestSuite::MobilityTestSuite()
-    : TestSuite("mobility", UNIT)
+    : TestSuite("mobility", Type::UNIT)
 {
     AddTestCase(new WaypointLazyNotifyFalse, TestCase::Duration::QUICK);
     AddTestCase(new WaypointLazyNotifyTrue, TestCase::Duration::QUICK);

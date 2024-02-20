@@ -359,7 +359,7 @@ class UdpClientServerTestSuite : public TestSuite
 };
 
 UdpClientServerTestSuite::UdpClientServerTestSuite()
-    : TestSuite("udp-client-server", UNIT)
+    : TestSuite("udp-client-server", Type::UNIT)
 {
     AddTestCase(new UdpTraceClientServerTestCase, TestCase::Duration::QUICK);
     AddTestCase(new UdpClientServerTestCase, TestCase::Duration::QUICK);

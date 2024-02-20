@@ -156,7 +156,7 @@ class BuildingsChannelConditionModelsTestSuite : public TestSuite
 };
 
 BuildingsChannelConditionModelsTestSuite::BuildingsChannelConditionModelsTestSuite()
-    : TestSuite("buildings-channel-condition-model", UNIT)
+    : TestSuite("buildings-channel-condition-model", Type::UNIT)
 {
     AddTestCase(new BuildingsChannelConditionModelTestCase, TestCase::Duration::QUICK);
 }

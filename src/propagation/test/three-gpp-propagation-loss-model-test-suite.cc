@@ -1325,7 +1325,7 @@ class ThreeGppPropagationLossModelsTestSuite : public TestSuite
 };
 
 ThreeGppPropagationLossModelsTestSuite::ThreeGppPropagationLossModelsTestSuite()
-    : TestSuite("three-gpp-propagation-loss-model", UNIT)
+    : TestSuite("three-gpp-propagation-loss-model", Type::UNIT)
 {
     AddTestCase(new ThreeGppRmaPropagationLossModelTestCase, TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppUmaPropagationLossModelTestCase, TestCase::Duration::QUICK);

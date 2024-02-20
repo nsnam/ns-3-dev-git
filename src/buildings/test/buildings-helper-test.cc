@@ -204,7 +204,7 @@ class BuildingsHelperTestSuite : public TestSuite
 };
 
 BuildingsHelperTestSuite::BuildingsHelperTestSuite()
-    : TestSuite("buildings-helper", UNIT)
+    : TestSuite("buildings-helper", Type::UNIT)
 {
     NS_LOG_FUNCTION(this);
 

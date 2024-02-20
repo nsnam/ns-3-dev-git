@@ -547,7 +547,7 @@ class AttributeContainerTestSuite : public TestSuite
 };
 
 AttributeContainerTestSuite::AttributeContainerTestSuite()
-    : TestSuite("attribute-container-test-suite", UNIT)
+    : TestSuite("attribute-container-test-suite", Type::UNIT)
 {
     AddTestCase(new AttributeContainerTestCase(), TestCase::Duration::QUICK);
     AddTestCase(new AttributeContainerSerializationTestCase(), TestCase::Duration::QUICK);

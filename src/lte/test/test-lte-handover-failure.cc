@@ -373,7 +373,7 @@ static class LteHandoverFailureTestSuite : public TestSuite
 {
   public:
     LteHandoverFailureTestSuite()
-        : TestSuite("lte-handover-failure", TestSuite::SYSTEM)
+        : TestSuite("lte-handover-failure", Type::SYSTEM)
     {
         // Argument sequence for all test cases: useIdealRrc, handoverTime, simulationDuration,
         // numberOfRaPreambles, preambleTransMax, raResponseWindowSize,

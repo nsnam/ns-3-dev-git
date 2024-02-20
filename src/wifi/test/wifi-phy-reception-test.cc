@@ -4861,7 +4861,7 @@ class WifiPhyReceptionTestSuite : public TestSuite
 };
 
 WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite()
-    : TestSuite("wifi-phy-reception", UNIT)
+    : TestSuite("wifi-phy-reception", Type::UNIT)
 {
     AddTestCase(new TestThresholdPreambleDetectionWithoutFrameCapture, TestCase::Duration::QUICK);
     AddTestCase(new TestThresholdPreambleDetectionWithFrameCapture, TestCase::Duration::QUICK);

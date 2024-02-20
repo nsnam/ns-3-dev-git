@@ -146,7 +146,7 @@ class OkumuraHataPropagationLossModelTestSuite : public TestSuite
 };
 
 OkumuraHataPropagationLossModelTestSuite::OkumuraHataPropagationLossModelTestSuite()
-    : TestSuite("okumura-hata", SYSTEM)
+    : TestSuite("okumura-hata", Type::SYSTEM)
 {
     LogComponentEnable("OkumuraHataPropagationLossModelTest", LOG_LEVEL_ALL);
     // reference values obtained with the octave scripts in src/propagation/test/reference/

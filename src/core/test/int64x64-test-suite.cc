@@ -1557,7 +1557,7 @@ class Int64x64TestSuite : public TestSuite
 {
   public:
     Int64x64TestSuite()
-        : TestSuite("int64x64", UNIT)
+        : TestSuite("int64x64", Type::UNIT)
     {
         AddTestCase(new Int64x64ImplTestCase(), TestCase::Duration::QUICK);
         AddTestCase(new Int64x64HiLoTestCase(), TestCase::Duration::QUICK);

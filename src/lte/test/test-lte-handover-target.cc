@@ -391,7 +391,7 @@ class LteHandoverTargetTestSuite : public TestSuite
 };
 
 LteHandoverTargetTestSuite::LteHandoverTargetTestSuite()
-    : TestSuite("lte-handover-target", SYSTEM)
+    : TestSuite("lte-handover-target", Type::SYSTEM)
 {
     // LogComponentEnable ("LteHandoverTargetTest", LOG_PREFIX_ALL);
     // LogComponentEnable ("LteHandoverTargetTest", LOG_LEVEL_ALL);

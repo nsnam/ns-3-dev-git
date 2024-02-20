@@ -769,7 +769,7 @@ class UdpTestSuite : public TestSuite
 {
   public:
     UdpTestSuite()
-        : TestSuite("udp", UNIT)
+        : TestSuite("udp", Type::UNIT)
     {
         AddTestCase(new UdpSocketImplTest, TestCase::Duration::QUICK);
         AddTestCase(new UdpSocketLoopbackTest, TestCase::Duration::QUICK);

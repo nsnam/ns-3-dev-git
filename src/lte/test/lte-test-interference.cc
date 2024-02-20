@@ -65,7 +65,7 @@ LteTestUlSchedulingCallback(LteInterferenceTestCase* testcase,
  */
 
 LteInterferenceTestSuite::LteInterferenceTestSuite()
-    : TestSuite("lte-interference", SYSTEM)
+    : TestSuite("lte-interference", Type::SYSTEM)
 {
     // these two first test cases have a spectral efficiency that corresponds to CQI=0 (out of
     // range)

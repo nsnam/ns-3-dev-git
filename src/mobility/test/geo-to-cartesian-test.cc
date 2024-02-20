@@ -1800,7 +1800,7 @@ class GeoToCartesianTestSuite : public TestSuite
 };
 
 GeoToCartesianTestSuite::GeoToCartesianTestSuite()
-    : TestSuite("geo-to-cartesian", UNIT)
+    : TestSuite("geo-to-cartesian", Type::UNIT)
 {
     NS_LOG_INFO("creating GeoToCartesianTestSuite");
     int i = 0; // iteration number

@@ -41,7 +41,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteRlcAmE2eTest");
 
 LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite()
-    : TestSuite("lte-rlc-am-e2e", SYSTEM)
+    : TestSuite("lte-rlc-am-e2e", Type::SYSTEM)
 {
     // NS_LOG_INFO ("Creating LteRlcAmE2eTestSuite");
 

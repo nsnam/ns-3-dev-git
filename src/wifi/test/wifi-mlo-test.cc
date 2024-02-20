@@ -3115,7 +3115,7 @@ class WifiMultiLinkOperationsTestSuite : public TestSuite
 };
 
 WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
-    : TestSuite("wifi-mlo", UNIT)
+    : TestSuite("wifi-mlo", Type::UNIT)
 {
     using ParamsTuple = std::tuple<MultiLinkOperationsTestBase::BaseParams, // base config params
                                    std::vector<uint8_t>,           // link ID of setup links

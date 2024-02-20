@@ -94,7 +94,7 @@ class IsotropicAntennaModelTestSuite : public TestSuite
 };
 
 IsotropicAntennaModelTestSuite::IsotropicAntennaModelTestSuite()
-    : TestSuite("isotropic-antenna-model", UNIT)
+    : TestSuite("isotropic-antenna-model", Type::UNIT)
 {
     AddTestCase(new IsotropicAntennaModelTestCase(Angles(0, 0), 0.0), TestCase::Duration::QUICK);
     AddTestCase(new IsotropicAntennaModelTestCase(Angles(0, M_PI), 0.0), TestCase::Duration::QUICK);

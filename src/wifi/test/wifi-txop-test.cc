@@ -848,7 +848,7 @@ class WifiTxopTestSuite : public TestSuite
 };
 
 WifiTxopTestSuite::WifiTxopTestSuite()
-    : TestSuite("wifi-txop", UNIT)
+    : TestSuite("wifi-txop", Type::UNIT)
 {
     AddTestCase(new WifiTxopTest(true), TestCase::Duration::QUICK);
     AddTestCase(new WifiTxopTest(false), TestCase::Duration::QUICK);

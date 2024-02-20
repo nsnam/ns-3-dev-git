@@ -1372,7 +1372,7 @@ class WifiEhtInfoElemsTestSuite : public TestSuite
 };
 
 WifiEhtInfoElemsTestSuite::WifiEhtInfoElemsTestSuite()
-    : TestSuite("wifi-eht-info-elems", UNIT)
+    : TestSuite("wifi-eht-info-elems", Type::UNIT)
 {
     AddTestCase(new BasicMultiLinkElementTest(), TestCase::Duration::QUICK);
     AddTestCase(new ReducedNeighborReportTest(), TestCase::Duration::QUICK);

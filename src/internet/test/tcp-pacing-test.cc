@@ -372,7 +372,7 @@ class TcpPacingTestSuite : public TestSuite
 {
   public:
     TcpPacingTestSuite()
-        : TestSuite("tcp-pacing-test", UNIT)
+        : TestSuite("tcp-pacing-test", Type::UNIT)
     {
         uint16_t pacingSsRatio = 200;
         uint16_t pacingCaRatio = 120;

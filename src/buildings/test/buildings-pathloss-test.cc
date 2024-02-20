@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE("BuildingsPathlossTest");
  * several communication scenarios
  */
 BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
-    : TestSuite("buildings-pathloss-test", SYSTEM)
+    : TestSuite("buildings-pathloss-test", Type::SYSTEM)
 {
     LogComponentEnable("BuildingsPathlossTest", LOG_LEVEL_ALL);
 

@@ -336,7 +336,7 @@ class LrWpanAckTestSuite : public TestSuite
 };
 
 LrWpanAckTestSuite::LrWpanAckTestSuite()
-    : TestSuite("lr-wpan-ack", UNIT)
+    : TestSuite("lr-wpan-ack", Type::UNIT)
 {
     AddTestCase(new LrWpanAckTestCase("short-unicast", LrWpanAckTestCase::SHORT_ADDRESS_UNICAST),
                 TestCase::Duration::QUICK);

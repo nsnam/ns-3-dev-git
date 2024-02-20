@@ -203,7 +203,7 @@ class TcpOptionTestSuite : public TestSuite
 {
   public:
     TcpOptionTestSuite()
-        : TestSuite("tcp-option", UNIT)
+        : TestSuite("tcp-option", Type::UNIT)
     {
         for (uint8_t i = 0; i < 15; ++i)
         {

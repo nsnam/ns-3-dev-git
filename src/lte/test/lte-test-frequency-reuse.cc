@@ -57,7 +57,7 @@ NS_LOG_COMPONENT_DEFINE("LteFrequencyReuseTest");
  */
 
 LteFrequencyReuseTestSuite::LteFrequencyReuseTestSuite()
-    : TestSuite("lte-frequency-reuse", SYSTEM)
+    : TestSuite("lte-frequency-reuse", Type::SYSTEM)
 {
     //  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_DEBUG);
     //  LogComponentEnable ("LteFrequencyReuseTest", logLevel);

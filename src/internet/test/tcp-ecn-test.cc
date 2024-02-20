@@ -585,7 +585,7 @@ class TcpEcnTestSuite : public TestSuite
 {
   public:
     TcpEcnTestSuite()
-        : TestSuite("tcp-ecn-test", UNIT)
+        : TestSuite("tcp-ecn-test", Type::UNIT)
     {
         AddTestCase(new TcpEcnTest(
                         1,

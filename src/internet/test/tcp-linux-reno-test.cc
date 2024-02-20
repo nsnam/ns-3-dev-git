@@ -377,7 +377,7 @@ class TcpLinuxRenoTestSuite : public TestSuite
 {
   public:
     TcpLinuxRenoTestSuite()
-        : TestSuite("tcp-linux-reno-test", UNIT)
+        : TestSuite("tcp-linux-reno-test", Type::UNIT)
     {
         TypeId cong_control_type = TcpLinuxReno::GetTypeId();
         // Test the behavior of Slow Start phase with small segment size

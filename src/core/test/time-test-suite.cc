@@ -542,7 +542,7 @@ static class TimeTestSuite : public TestSuite
 {
   public:
     TimeTestSuite()
-        : TestSuite("time", UNIT)
+        : TestSuite("time", Type::UNIT)
     {
         AddTestCase(new TimeWithSignTestCase(), TestCase::Duration::QUICK);
         AddTestCase(new TimeInputOutputTestCase(), TestCase::Duration::QUICK);

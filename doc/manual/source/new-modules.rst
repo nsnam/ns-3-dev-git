@@ -162,7 +162,7 @@ which declares a new unit test named ``new-module``,
 with a single test case consisting of the class ``NewModuleTestCase1``::
 
   NewModuleTestSuite::NewModuleTestSuite()
-    : TestSuite("new-module", UNIT)
+    : TestSuite("new-module", Type::UNIT)
   {
     AddTestCase(new NewModuleTestCase1);
   }

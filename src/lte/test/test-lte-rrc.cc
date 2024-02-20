@@ -773,7 +773,7 @@ class LteRrcTestSuite : public TestSuite
 };
 
 LteRrcTestSuite::LteRrcTestSuite()
-    : TestSuite("lte-rrc", SYSTEM)
+    : TestSuite("lte-rrc", Type::SYSTEM)
 {
     //  LogComponentEnableAll (LOG_PREFIX_ALL);
     //  LogComponentEnable ("LteRrcTest", LOG_LEVEL_ALL);

@@ -2084,7 +2084,7 @@ class AttributesTestSuite : public TestSuite
 };
 
 AttributesTestSuite::AttributesTestSuite()
-    : TestSuite("attributes", UNIT)
+    : TestSuite("attributes", Type::UNIT)
 {
     AddTestCase(new AttributeTestCase<BooleanValue>("Check Attributes of type BooleanValue"),
                 TestCase::Duration::QUICK);

@@ -664,7 +664,7 @@ class IcmpTestSuite : public TestSuite
 };
 
 IcmpTestSuite::IcmpTestSuite()
-    : TestSuite("icmp", UNIT)
+    : TestSuite("icmp", Type::UNIT)
 {
     AddTestCase(new IcmpEchoReplyTestCase, TestCase::Duration::QUICK);
     AddTestCase(new IcmpTimeExceedTestCase, TestCase::Duration::QUICK);

@@ -723,7 +723,7 @@ class LrWpanMacTestSuite : public TestSuite
 };
 
 LrWpanMacTestSuite::LrWpanMacTestSuite()
-    : TestSuite("lr-wpan-mac-test", UNIT)
+    : TestSuite("lr-wpan-mac-test", Type::UNIT)
 {
     AddTestCase(new TestRxOffWhenIdleAfterCsmaFailure, TestCase::Duration::QUICK);
     AddTestCase(new TestActiveScanPanDescriptors, TestCase::Duration::QUICK);

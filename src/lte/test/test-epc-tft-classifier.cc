@@ -222,7 +222,7 @@ class EpcTftClassifierTestSuite : public TestSuite
 static EpcTftClassifierTestSuite g_lteTftClassifierTestSuite;
 
 EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
-    : TestSuite("eps-tft-classifier", UNIT)
+    : TestSuite("eps-tft-classifier", Type::UNIT)
 {
     NS_LOG_FUNCTION(this);
 

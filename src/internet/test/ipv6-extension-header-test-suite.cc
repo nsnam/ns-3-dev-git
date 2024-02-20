@@ -279,7 +279,7 @@ class Ipv6ExtensionHeaderTestSuite : public TestSuite
 {
   public:
     Ipv6ExtensionHeaderTestSuite()
-        : TestSuite("ipv6-extension-header", UNIT)
+        : TestSuite("ipv6-extension-header", Type::UNIT)
     {
         AddTestCase(new TestEmptyOptionField, TestCase::Duration::QUICK);
         AddTestCase(new TestOptionWithoutAlignment, TestCase::Duration::QUICK);

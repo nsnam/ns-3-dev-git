@@ -289,7 +289,7 @@ class Ipv4AddressHelperTestSuite : public TestSuite
 };
 
 Ipv4AddressHelperTestSuite::Ipv4AddressHelperTestSuite()
-    : TestSuite("ipv4-address-helper", UNIT)
+    : TestSuite("ipv4-address-helper", Type::UNIT)
 {
     AddTestCase(new NetworkAllocatorHelperTestCase(), TestCase::Duration::QUICK);
     AddTestCase(new AddressAllocatorHelperTestCase(), TestCase::Duration::QUICK);

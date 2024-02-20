@@ -261,7 +261,7 @@ class BasicDataCalculatorsTestSuite : public TestSuite
 };
 
 BasicDataCalculatorsTestSuite::BasicDataCalculatorsTestSuite()
-    : TestSuite("basic-data-calculators", UNIT)
+    : TestSuite("basic-data-calculators", Type::UNIT)
 {
     AddTestCase(new OneIntegerTestCase, TestCase::Duration::QUICK);
     AddTestCase(new FiveIntegersTestCase, TestCase::Duration::QUICK);

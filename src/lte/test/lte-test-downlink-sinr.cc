@@ -46,7 +46,7 @@ NS_LOG_COMPONENT_DEFINE("LteDownlinkSinrTest");
  */
 
 LteDownlinkSinrTestSuite::LteDownlinkSinrTestSuite()
-    : TestSuite("lte-downlink-sinr", SYSTEM)
+    : TestSuite("lte-downlink-sinr", Type::SYSTEM)
 {
     /**
      * Build Spectrum Model values for the TX signal

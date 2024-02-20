@@ -412,7 +412,7 @@ class Ns3TcpCubicTestSuite : public TestSuite
 };
 
 Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
-    : TestSuite("ns3-tcp-cubic", UNIT)
+    : TestSuite("ns3-tcp-cubic", Type::UNIT)
 {
     // Test Cubic with no fast convergence or TCP friendliness enabled
     // This results in a cwnd plot that has only the concave portion of

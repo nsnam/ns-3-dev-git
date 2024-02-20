@@ -510,7 +510,7 @@ class Ns3TcpLossTestSuite : public TestSuite
 };
 
 Ns3TcpLossTestSuite::Ns3TcpLossTestSuite()
-    : TestSuite("ns3-tcp-loss", SYSTEM)
+    : TestSuite("ns3-tcp-loss", Type::SYSTEM)
 {
     // We can't use NS_TEST_SOURCEDIR variable here because we use subdirectories
     SetDataDir("src/test/ns3tcp/response-vectors");

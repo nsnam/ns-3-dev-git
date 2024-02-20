@@ -363,7 +363,7 @@ class Ipv4AddressGeneratorTestSuite : public TestSuite
 };
 
 Ipv4AddressGeneratorTestSuite::Ipv4AddressGeneratorTestSuite()
-    : TestSuite("ipv4-address-generator", UNIT)
+    : TestSuite("ipv4-address-generator", Type::UNIT)
 {
     AddTestCase(new NetworkNumberAllocatorTestCase(), TestCase::Duration::QUICK);
     AddTestCase(new AddressAllocatorTestCase(), TestCase::Duration::QUICK);

@@ -123,7 +123,7 @@ class PbbTestSuite : public TestSuite
 };
 
 PbbTestSuite::PbbTestSuite()
-    : TestSuite("packetbb-test-suite", UNIT)
+    : TestSuite("packetbb-test-suite", Type::UNIT)
 {
     /* Test 1
      *    ,------------------

@@ -215,7 +215,7 @@ class UniformPlanarArrayTestSuite : public TestSuite
 };
 
 UniformPlanarArrayTestSuite::UniformPlanarArrayTestSuite()
-    : TestSuite("uniform-planar-array-test", UNIT)
+    : TestSuite("uniform-planar-array-test", Type::UNIT)
 {
     Ptr<AntennaModel> isotropic = CreateObject<IsotropicAntennaModel>();
     Ptr<AntennaModel> tgpp = CreateObject<ThreeGppAntennaModel>();

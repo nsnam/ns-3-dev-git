@@ -218,7 +218,7 @@ class WifiMsduAggregatorTestSuite : public TestSuite
 };
 
 WifiMsduAggregatorTestSuite::WifiMsduAggregatorTestSuite()
-    : TestSuite("wifi-msdu-aggregator", SYSTEM)
+    : TestSuite("wifi-msdu-aggregator", Type::SYSTEM)
 {
     AddTestCase(new WifiMsduAggregatorThroughputTest, TestCase::Duration::QUICK);
 }

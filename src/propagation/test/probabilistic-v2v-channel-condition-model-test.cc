@@ -519,7 +519,7 @@ class ProbabilisticV2vChCondModelsTestSuite : public TestSuite
 };
 
 ProbabilisticV2vChCondModelsTestSuite::ProbabilisticV2vChCondModelsTestSuite()
-    : TestSuite("probabilistic-v2v-channel-condition-model", SYSTEM)
+    : TestSuite("probabilistic-v2v-channel-condition-model", Type::SYSTEM)
 {
     AddTestCase(new V2vUrbanProbChCondModelTestCase,
                 TestCase::Duration::QUICK); // test for a fully probabilistic model (NLOS vs LOS

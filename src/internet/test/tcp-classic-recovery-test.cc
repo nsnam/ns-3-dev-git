@@ -126,7 +126,7 @@ class ClassicRecoveryTestSuite : public TestSuite
 {
   public:
     ClassicRecoveryTestSuite()
-        : TestSuite("tcp-classic-recovery-test", UNIT)
+        : TestSuite("tcp-classic-recovery-test", Type::UNIT)
     {
         AddTestCase(new ClassicRecoveryTest(3000,
                                             500,

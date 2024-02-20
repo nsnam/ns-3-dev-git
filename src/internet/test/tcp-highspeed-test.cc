@@ -183,7 +183,7 @@ class TcpHighSpeedTestSuite : public TestSuite
 {
   public:
     TcpHighSpeedTestSuite()
-        : TestSuite("tcp-highspeed-test", UNIT)
+        : TestSuite("tcp-highspeed-test", Type::UNIT)
     {
         std::stringstream ss;
 

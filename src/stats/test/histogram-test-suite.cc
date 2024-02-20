@@ -83,7 +83,7 @@ class HistogramTestSuite : public TestSuite
 };
 
 HistogramTestSuite::HistogramTestSuite()
-    : TestSuite("histogram", UNIT)
+    : TestSuite("histogram", Type::UNIT)
 {
     AddTestCase(new HistogramTestCase, TestCase::Duration::QUICK);
 }

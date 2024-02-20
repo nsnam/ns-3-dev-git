@@ -152,7 +152,7 @@ class PrrRecoveryTestSuite : public TestSuite
 {
   public:
     PrrRecoveryTestSuite()
-        : TestSuite("tcp-prr-recovery-test", UNIT)
+        : TestSuite("tcp-prr-recovery-test", Type::UNIT)
     {
         AddTestCase(new PrrRecoveryTest(
                         3000,

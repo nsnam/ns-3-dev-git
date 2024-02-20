@@ -60,7 +60,7 @@ NS_LOG_COMPONENT_DEFINE("LteCellSelectionTest");
  */
 
 LteCellSelectionTestSuite::LteCellSelectionTestSuite()
-    : TestSuite("lte-cell-selection", SYSTEM)
+    : TestSuite("lte-cell-selection", Type::SYSTEM)
 {
     std::vector<LteCellSelectionTestCase::UeSetup_t> w;
 

@@ -1046,7 +1046,7 @@ class WifiNonHtDuplicateTestSuite : public TestSuite
 };
 
 WifiNonHtDuplicateTestSuite::WifiNonHtDuplicateTestSuite()
-    : TestSuite("wifi-non-ht-dup", UNIT)
+    : TestSuite("wifi-non-ht-dup", Type::UNIT)
 {
     /**
      * Channel map:

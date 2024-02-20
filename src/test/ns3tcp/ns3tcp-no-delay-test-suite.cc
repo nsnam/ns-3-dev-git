@@ -223,7 +223,7 @@ class Ns3TcpNoDelayTestSuite : public TestSuite
 };
 
 Ns3TcpNoDelayTestSuite::Ns3TcpNoDelayTestSuite()
-    : TestSuite("ns3-tcp-no-delay", SYSTEM)
+    : TestSuite("ns3-tcp-no-delay", Type::SYSTEM)
 {
     AddTestCase(new Ns3TcpNoDelayTestCase(true), TestCase::Duration::QUICK);
     AddTestCase(new Ns3TcpNoDelayTestCase(false), TestCase::Duration::QUICK);

@@ -397,7 +397,7 @@ class CarrierAggregationConfigTestSuite : public TestSuite
 };
 
 CarrierAggregationConfigTestSuite::CarrierAggregationConfigTestSuite()
-    : TestSuite("lte-carrier-aggregation-configuration", SYSTEM)
+    : TestSuite("lte-carrier-aggregation-configuration", Type::SYSTEM)
 {
     std::vector<ConfigToCheck> configToCheck;
 

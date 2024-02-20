@@ -352,7 +352,7 @@ class TcpIllinoisTestSuite : public TestSuite
 {
   public:
     TcpIllinoisTestSuite()
-        : TestSuite("tcp-illinois-test", UNIT)
+        : TestSuite("tcp-illinois-test", Type::UNIT)
     {
         AddTestCase(new TcpIllinoisTest(38 * 1446,
                                         40 * 1446,

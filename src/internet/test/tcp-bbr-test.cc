@@ -192,7 +192,7 @@ class TcpBbrTestSuite : public TestSuite
      * \brief constructor
      */
     TcpBbrTestSuite()
-        : TestSuite("tcp-bbr-test", UNIT)
+        : TestSuite("tcp-bbr-test", Type::UNIT)
     {
         AddTestCase(new TcpBbrPacingEnableTest(true, "BBR must keep pacing feature on"),
                     TestCase::Duration::QUICK);

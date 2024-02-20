@@ -360,7 +360,7 @@ class Ipv6DualStackTestSuite : public TestSuite
 {
   public:
     Ipv6DualStackTestSuite()
-        : TestSuite("ipv6-dual-stack", UNIT)
+        : TestSuite("ipv6-dual-stack", Type::UNIT)
     {
         AddTestCase(new DualStackTestCase(), TestCase::Duration::QUICK);
     }

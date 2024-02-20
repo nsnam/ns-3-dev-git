@@ -49,7 +49,7 @@ NS_LOG_COMPONENT_DEFINE("LtePrimaryCellChangeTest");
  */
 
 LtePrimaryCellChangeTestSuite::LtePrimaryCellChangeTestSuite()
-    : TestSuite("lte-primary-cell-change", SYSTEM)
+    : TestSuite("lte-primary-cell-change", Type::SYSTEM)
 {
     // Test that handover from eNB to eNB with one carrier works within this framework.
     AddTestCase(new LtePrimaryCellChangeTestCase("ideal RRC, RngRun=1", true, 1, 1, 0, 1),

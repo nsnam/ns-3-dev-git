@@ -259,7 +259,7 @@ WaypointMobilityModelAddWaypointTest::CourseChangeCallback(Ptr<const MobilityMod
 static struct WaypointMobilityModelTestSuite : public TestSuite
 {
     WaypointMobilityModelTestSuite()
-        : TestSuite("waypoint-mobility-model", UNIT)
+        : TestSuite("waypoint-mobility-model", Type::UNIT)
     {
         AddTestCase(new WaypointMobilityModelNotifyTest(true), TestCase::Duration::QUICK);
         AddTestCase(new WaypointMobilityModelNotifyTest(false), TestCase::Duration::QUICK);

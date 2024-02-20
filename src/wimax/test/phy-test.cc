@@ -188,7 +188,7 @@ class Ns3WimaxPhyTestSuite : public TestSuite
 };
 
 Ns3WimaxPhyTestSuite::Ns3WimaxPhyTestSuite()
-    : TestSuite("wimax-phy-layer", UNIT)
+    : TestSuite("wimax-phy-layer", Type::UNIT)
 {
     AddTestCase(new Ns3WimaxSNRtoBLERTestCase, TestCase::Duration::QUICK);
     AddTestCase(new Ns3WimaxSimpleOFDMTestCase, TestCase::Duration::QUICK);

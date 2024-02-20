@@ -89,7 +89,7 @@ LteTestUlSchedulingCallback2(LteCqiGenerationDlPowerControlTestCase* testcase,
  */
 
 LteCqiGenerationTestSuite::LteCqiGenerationTestSuite()
-    : TestSuite("lte-cqi-generation", SYSTEM)
+    : TestSuite("lte-cqi-generation", Type::SYSTEM)
 {
     //  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_DEBUG);
     //  LogComponentEnable ("LteCqiGenerationTest", logLevel);

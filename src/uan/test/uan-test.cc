@@ -323,7 +323,7 @@ class UanTestSuite : public TestSuite
 };
 
 UanTestSuite::UanTestSuite()
-    : TestSuite("devices-uan", UNIT)
+    : TestSuite("devices-uan", Type::UNIT)
 {
     AddTestCase(new UanTest, TestCase::Duration::QUICK);
 }

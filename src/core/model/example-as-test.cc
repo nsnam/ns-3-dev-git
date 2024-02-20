@@ -155,7 +155,7 @@ ExampleAsTestSuite::ExampleAsTestSuite(const std::string name,
                                        const std::string args /* = "" */,
                                        const Duration duration /* =QUICK */,
                                        const bool shouldNotErr /* = true */)
-    : TestSuite(name, EXAMPLE)
+    : TestSuite(name, Type::EXAMPLE)
 {
     NS_LOG_FUNCTION(this << name << program << dataDir << args << duration << shouldNotErr);
     AddTestCase(new ExampleAsTestCase(name, program, dataDir, args, shouldNotErr), duration);

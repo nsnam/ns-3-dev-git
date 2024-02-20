@@ -419,7 +419,7 @@ static class AredQueueDiscTestSuite : public TestSuite
 {
   public:
     AredQueueDiscTestSuite()
-        : TestSuite("adaptive-red-queue-disc", UNIT)
+        : TestSuite("adaptive-red-queue-disc", Type::UNIT)
     {
         AddTestCase(new AredQueueDiscTestCase(), TestCase::Duration::QUICK);
     }

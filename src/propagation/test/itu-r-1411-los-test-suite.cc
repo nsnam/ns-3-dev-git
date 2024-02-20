@@ -129,7 +129,7 @@ class ItuR1411LosPropagationLossModelTestSuite : public TestSuite
 };
 
 ItuR1411LosPropagationLossModelTestSuite::ItuR1411LosPropagationLossModelTestSuite()
-    : TestSuite("itu-r-1411-los", SYSTEM)
+    : TestSuite("itu-r-1411-los", Type::SYSTEM)
 {
     LogComponentEnable("ItuR1411LosPropagationLossModelTest", LOG_LEVEL_ALL);
 

@@ -153,7 +153,7 @@ class BitSerializerTestSuite : public TestSuite
 };
 
 BitSerializerTestSuite::BitSerializerTestSuite()
-    : TestSuite("bit-serializer", UNIT)
+    : TestSuite("bit-serializer", Type::UNIT)
 {
     AddTestCase(new BitSerializerTest, TestCase::Duration::QUICK);
     AddTestCase(new BitDeserializerTest, TestCase::Duration::QUICK);

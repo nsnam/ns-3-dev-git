@@ -105,7 +105,7 @@ class SpectrumValueTestSuite : public TestSuite
 };
 
 SpectrumValueTestSuite::SpectrumValueTestSuite()
-    : TestSuite("spectrum-value", UNIT)
+    : TestSuite("spectrum-value", Type::UNIT)
 {
     // NS_LOG_INFO("creating SpectrumValueTestSuite");
 
@@ -290,7 +290,7 @@ class SpectrumConverterTestSuite : public TestSuite
 };
 
 SpectrumConverterTestSuite::SpectrumConverterTestSuite()
-    : TestSuite("spectrum-converter", UNIT)
+    : TestSuite("spectrum-converter", Type::UNIT)
 {
     double f;
 

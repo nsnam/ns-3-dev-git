@@ -52,7 +52,7 @@ class AodvRegressionTestSuite : public TestSuite
 {
   public:
     AodvRegressionTestSuite()
-        : TestSuite("routing-aodv-regression", SYSTEM)
+        : TestSuite("routing-aodv-regression", Type::SYSTEM)
     {
         SetDataDir(NS_TEST_SOURCEDIR);
         // General RREQ-RREP-RRER test case

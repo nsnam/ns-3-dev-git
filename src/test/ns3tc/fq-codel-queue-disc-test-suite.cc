@@ -1768,7 +1768,7 @@ class FqCoDelQueueDiscTestSuite : public TestSuite
 };
 
 FqCoDelQueueDiscTestSuite::FqCoDelQueueDiscTestSuite()
-    : TestSuite("fq-codel-queue-disc", UNIT)
+    : TestSuite("fq-codel-queue-disc", Type::UNIT)
 {
     AddTestCase(new FqCoDelQueueDiscNoSuitableFilter, TestCase::Duration::QUICK);
     AddTestCase(new FqCoDelQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::Duration::QUICK);

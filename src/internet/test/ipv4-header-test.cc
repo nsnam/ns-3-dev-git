@@ -299,7 +299,7 @@ class Ipv4HeaderTestSuite : public TestSuite
 {
   public:
     Ipv4HeaderTestSuite()
-        : TestSuite("ipv4-header", UNIT)
+        : TestSuite("ipv4-header", Type::UNIT)
     {
         AddTestCase(new Ipv4HeaderTest, TestCase::Duration::QUICK);
     }

@@ -1370,7 +1370,7 @@ class WifiPrimaryChannelsTestSuite : public TestSuite
 };
 
 WifiPrimaryChannelsTestSuite::WifiPrimaryChannelsTestSuite()
-    : TestSuite("wifi-primary-channels", UNIT)
+    : TestSuite("wifi-primary-channels", Type::UNIT)
 {
     // Test cases for 20 MHz can be added, but are not that useful (there would be a single BSS)
     AddTestCase(new WifiPrimaryChannelsTest(40, true), TestCase::Duration::QUICK);

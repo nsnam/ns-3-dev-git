@@ -1051,7 +1051,7 @@ class WifiErrorRateModelsTestSuite : public TestSuite
 };
 
 WifiErrorRateModelsTestSuite::WifiErrorRateModelsTestSuite()
-    : TestSuite("wifi-error-rate-models", UNIT)
+    : TestSuite("wifi-error-rate-models", Type::UNIT)
 {
     AddTestCase(new WifiErrorRateModelsTestCaseDsss, TestCase::Duration::QUICK);
     AddTestCase(new WifiErrorRateModelsTestCaseNist, TestCase::Duration::QUICK);

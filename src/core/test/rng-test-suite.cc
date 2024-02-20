@@ -488,7 +488,7 @@ class RngTestSuite : public TestSuite
 };
 
 RngTestSuite::RngTestSuite()
-    : TestSuite("random-number-generators", UNIT)
+    : TestSuite("random-number-generators", Type::UNIT)
 {
     AddTestCase(new RngUniformTestCase, TestCase::Duration::QUICK);
     AddTestCase(new RngNormalTestCase, TestCase::Duration::QUICK);

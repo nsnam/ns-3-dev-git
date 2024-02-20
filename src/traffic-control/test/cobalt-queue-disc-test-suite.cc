@@ -1196,7 +1196,7 @@ static class CobaltQueueDiscTestSuite : public TestSuite
 {
   public:
     CobaltQueueDiscTestSuite()
-        : TestSuite("cobalt-queue-disc", UNIT)
+        : TestSuite("cobalt-queue-disc", Type::UNIT)
     {
         // Test 1: simple enqueue/dequeue with no drops
         AddTestCase(new CobaltQueueDiscBasicEnqueueDequeue(PACKETS), TestCase::Duration::QUICK);

@@ -1228,7 +1228,7 @@ class ThreeGppChannelTestSuite : public TestSuite
 };
 
 ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
-    : TestSuite("three-gpp-channel", UNIT)
+    : TestSuite("three-gpp-channel", Type::UNIT)
 {
     AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 1, 1), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 1, 1), TestCase::Duration::QUICK);

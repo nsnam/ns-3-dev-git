@@ -51,7 +51,7 @@ NS_LOG_COMPONENT_DEFINE("LteInterferenceFrTest");
  */
 
 LteInterferenceFrTestSuite::LteInterferenceFrTestSuite()
-    : TestSuite("lte-interference-fr", SYSTEM)
+    : TestSuite("lte-interference-fr", Type::SYSTEM)
 {
     //  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_DEBUG);
     //  LogComponentEnable ("LteInterferenceFrTest", logLevel);

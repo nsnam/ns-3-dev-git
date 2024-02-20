@@ -378,7 +378,7 @@ class Ipv4RawTestSuite : public TestSuite
 {
   public:
     Ipv4RawTestSuite()
-        : TestSuite("ipv4-raw", UNIT)
+        : TestSuite("ipv4-raw", Type::UNIT)
     {
         AddTestCase(new Ipv4RawSocketImplTest, TestCase::Duration::QUICK);
     }

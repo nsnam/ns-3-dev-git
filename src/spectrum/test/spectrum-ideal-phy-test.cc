@@ -240,7 +240,7 @@ class SpectrumIdealPhyTestSuite : public TestSuite
 };
 
 SpectrumIdealPhyTestSuite::SpectrumIdealPhyTestSuite()
-    : TestSuite("spectrum-ideal-phy", SYSTEM)
+    : TestSuite("spectrum-ideal-phy", Type::SYSTEM)
 {
     NS_LOG_INFO("creating SpectrumIdealPhyTestSuite");
 

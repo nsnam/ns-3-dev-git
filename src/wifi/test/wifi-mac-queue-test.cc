@@ -441,7 +441,7 @@ class WifiMacQueueTestSuite : public TestSuite
 };
 
 WifiMacQueueTestSuite::WifiMacQueueTestSuite()
-    : TestSuite("wifi-mac-queue", UNIT)
+    : TestSuite("wifi-mac-queue", Type::UNIT)
 {
     AddTestCase(new WifiMacQueueDropOldestTest, TestCase::Duration::QUICK);
     AddTestCase(new WifiExtractExpiredMpdusTest, TestCase::Duration::QUICK);

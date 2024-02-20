@@ -296,7 +296,7 @@ class AnglesTestSuite : public TestSuite
 };
 
 AnglesTestSuite::AnglesTestSuite()
-    : TestSuite("angles", UNIT)
+    : TestSuite("angles", Type::UNIT)
 {
     AddTestCase(new OneVectorConstructorTestCase(Vector(1, 0, 0), Angles(0, M_PI_2)),
                 TestCase::Duration::QUICK);

@@ -703,7 +703,7 @@ class Ipv4RipTestSuite : public TestSuite
 {
   public:
     Ipv4RipTestSuite()
-        : TestSuite("ipv4-rip", UNIT)
+        : TestSuite("ipv4-rip", Type::UNIT)
     {
         AddTestCase(new Ipv4RipTest, TestCase::Duration::QUICK);
         AddTestCase(new Ipv4RipCountToInfinityTest, TestCase::Duration::QUICK);

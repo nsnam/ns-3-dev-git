@@ -543,7 +543,7 @@ class TcpTestSuite : public TestSuite
 {
   public:
     TcpTestSuite()
-        : TestSuite("tcp", UNIT)
+        : TestSuite("tcp", Type::UNIT)
     {
         // Arguments to these test cases are 1) totalStreamSize,
         // 2) source write size, 3) source read size

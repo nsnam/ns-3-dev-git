@@ -58,7 +58,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteTestMimo");
 
 LenaTestMimoSuite::LenaTestMimoSuite()
-    : TestSuite("lte-mimo", SYSTEM)
+    : TestSuite("lte-mimo", Type::SYSTEM)
 {
     NS_LOG_INFO("creating LenaMimoTestCase");
 

@@ -430,7 +430,7 @@ class WifiDynamicBwOpTestSuite : public TestSuite
 };
 
 WifiDynamicBwOpTestSuite::WifiDynamicBwOpTestSuite()
-    : TestSuite("wifi-dynamic-bw-op", UNIT)
+    : TestSuite("wifi-dynamic-bw-op", Type::UNIT)
 {
     /**
      *                    primary20

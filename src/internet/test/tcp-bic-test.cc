@@ -310,7 +310,7 @@ class TcpBicTestSuite : public TestSuite
 {
   public:
     TcpBicTestSuite()
-        : TestSuite("tcp-bic-test", UNIT)
+        : TestSuite("tcp-bic-test", Type::UNIT)
     {
         AddTestCase(
             new TcpBicIncrementTest(10 * 536,

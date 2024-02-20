@@ -1718,7 +1718,7 @@ class FqCobaltQueueDiscTestSuite : public TestSuite
 };
 
 FqCobaltQueueDiscTestSuite::FqCobaltQueueDiscTestSuite()
-    : TestSuite("fq-cobalt-queue-disc", UNIT)
+    : TestSuite("fq-cobalt-queue-disc", Type::UNIT)
 {
     AddTestCase(new FqCobaltQueueDiscNoSuitableFilter, TestCase::Duration::QUICK);
     AddTestCase(new FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::Duration::QUICK);

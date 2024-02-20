@@ -152,7 +152,7 @@ class SpectrumInterferenceTestSuite : public TestSuite
 };
 
 SpectrumInterferenceTestSuite::SpectrumInterferenceTestSuite()
-    : TestSuite("spectrum-interference", UNIT)
+    : TestSuite("spectrum-interference", Type::UNIT)
 {
     NS_LOG_INFO("creating SpectrumInterferenceTestSuite");
 

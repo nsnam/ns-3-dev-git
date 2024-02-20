@@ -169,7 +169,7 @@ class TcpDataSentCbTestSuite : public TestSuite
 {
   public:
     TcpDataSentCbTestSuite()
-        : TestSuite("tcp-datasentcb", UNIT)
+        : TestSuite("tcp-datasentcb", Type::UNIT)
     {
         AddTestCase(new TcpDataSentCbTestCase("Check the data sent callback", 500, 10),
                     TestCase::Duration::QUICK);

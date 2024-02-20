@@ -56,7 +56,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LenaTestHarq");
 
 LenaTestHarqSuite::LenaTestHarqSuite()
-    : TestSuite("lte-harq", SYSTEM)
+    : TestSuite("lte-harq", Type::SYSTEM)
 {
     NS_LOG_INFO("creating LenaTestHarqTestCase");
 

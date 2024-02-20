@@ -235,7 +235,7 @@ class BuildingPositionAllocatorTestSuite : public TestSuite
 };
 
 BuildingPositionAllocatorTestSuite::BuildingPositionAllocatorTestSuite()
-    : TestSuite("building-position-allocator", UNIT)
+    : TestSuite("building-position-allocator", Type::UNIT)
 {
     NS_LOG_FUNCTION(this);
 

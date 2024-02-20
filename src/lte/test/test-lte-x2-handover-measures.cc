@@ -749,7 +749,7 @@ class LteX2HandoverMeasuresTestSuite : public TestSuite
 };
 
 LteX2HandoverMeasuresTestSuite::LteX2HandoverMeasuresTestSuite()
-    : TestSuite("lte-x2-handover-measures", SYSTEM)
+    : TestSuite("lte-x2-handover-measures", Type::SYSTEM)
 {
     Time checkInterval = Seconds(1);
 

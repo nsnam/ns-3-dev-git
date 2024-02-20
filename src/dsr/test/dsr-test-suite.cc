@@ -630,7 +630,7 @@ class DsrTestSuite : public TestSuite
 {
   public:
     DsrTestSuite()
-        : TestSuite("routing-dsr", UNIT)
+        : TestSuite("routing-dsr", Type::UNIT)
     {
         AddTestCase(new DsrFsHeaderTest, TestCase::Duration::QUICK);
         AddTestCase(new DsrRreqHeaderTest, TestCase::Duration::QUICK);

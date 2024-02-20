@@ -85,7 +85,7 @@ class LrWpanSpectrumValueHelperTestSuite : public TestSuite
 };
 
 LrWpanSpectrumValueHelperTestSuite::LrWpanSpectrumValueHelperTestSuite()
-    : TestSuite("lr-wpan-spectrum-value-helper", UNIT)
+    : TestSuite("lr-wpan-spectrum-value-helper", Type::UNIT)
 {
     AddTestCase(new LrWpanSpectrumValueHelperTestCase, TestCase::Duration::QUICK);
 }

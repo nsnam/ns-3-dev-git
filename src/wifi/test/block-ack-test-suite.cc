@@ -2018,7 +2018,7 @@ class BlockAckTestSuite : public TestSuite
 };
 
 BlockAckTestSuite::BlockAckTestSuite()
-    : TestSuite("wifi-block-ack", UNIT)
+    : TestSuite("wifi-block-ack", Type::UNIT)
 {
     AddTestCase(new PacketBufferingCaseA, TestCase::Duration::QUICK);
     AddTestCase(new PacketBufferingCaseB, TestCase::Duration::QUICK);

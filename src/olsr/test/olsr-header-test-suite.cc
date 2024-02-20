@@ -339,7 +339,7 @@ class OlsrTestSuite : public TestSuite
 };
 
 OlsrTestSuite::OlsrTestSuite()
-    : TestSuite("routing-olsr-header", UNIT)
+    : TestSuite("routing-olsr-header", Type::UNIT)
 {
     AddTestCase(new OlsrHnaTestCase(), TestCase::Duration::QUICK);
     AddTestCase(new OlsrTcTestCase(), TestCase::Duration::QUICK);

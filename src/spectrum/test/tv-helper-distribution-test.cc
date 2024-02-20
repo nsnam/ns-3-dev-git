@@ -144,7 +144,7 @@ class TvHelperDistributionTestSuite : public TestSuite
 };
 
 TvHelperDistributionTestSuite::TvHelperDistributionTestSuite()
-    : TestSuite("tv-helper-distribution", UNIT)
+    : TestSuite("tv-helper-distribution", Type::UNIT)
 {
     NS_LOG_INFO("creating TvHelperDistributionTestSuite");
     for (uint32_t maxNumTransmitters = 3; maxNumTransmitters <= 203; maxNumTransmitters += 10)

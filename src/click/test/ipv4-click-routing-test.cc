@@ -250,7 +250,7 @@ class ClickIfidFromNameTestSuite : public TestSuite
 {
   public:
     ClickIfidFromNameTestSuite()
-        : TestSuite("routing-click", UNIT)
+        : TestSuite("routing-click", Type::UNIT)
     {
         AddTestCase(new ClickTrivialTest, TestCase::Duration::QUICK);
         AddTestCase(new ClickIfidFromNameTest, TestCase::Duration::QUICK);

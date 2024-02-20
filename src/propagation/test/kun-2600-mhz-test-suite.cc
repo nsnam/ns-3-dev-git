@@ -123,7 +123,7 @@ class Kun2600MhzPropagationLossModelTestSuite : public TestSuite
 };
 
 Kun2600MhzPropagationLossModelTestSuite::Kun2600MhzPropagationLossModelTestSuite()
-    : TestSuite("kun-2600-mhz", SYSTEM)
+    : TestSuite("kun-2600-mhz", Type::SYSTEM)
 {
     LogComponentEnable("Kun2600MhzPropagationLossModelTest", LOG_LEVEL_ALL);
 

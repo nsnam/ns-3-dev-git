@@ -224,7 +224,7 @@ class LteSpectrumValueHelperTestSuite : public TestSuite
 static LteSpectrumValueHelperTestSuite g_lteSpectrumValueHelperTestSuite;
 
 LteSpectrumValueHelperTestSuite::LteSpectrumValueHelperTestSuite()
-    : TestSuite("lte-spectrum-value-helper", UNIT)
+    : TestSuite("lte-spectrum-value-helper", Type::UNIT)
 {
     //   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
     //   LogComponentEnable ("LteSpectrumModelTestCase", logLevel);

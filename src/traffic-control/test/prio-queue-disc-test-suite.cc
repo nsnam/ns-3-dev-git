@@ -322,7 +322,7 @@ static class PrioQueueDiscTestSuite : public TestSuite
 {
   public:
     PrioQueueDiscTestSuite()
-        : TestSuite("prio-queue-disc", UNIT)
+        : TestSuite("prio-queue-disc", Type::UNIT)
     {
         AddTestCase(new PrioQueueDiscTestCase(), TestCase::Duration::QUICK);
     }

@@ -380,7 +380,7 @@ class LteEpcE2eDataTestSuite : public TestSuite
 } g_lteEpcE2eDataTestSuite; ///< the test suite
 
 LteEpcE2eDataTestSuite::LteEpcE2eDataTestSuite()
-    : TestSuite("lte-epc-e2e-data", SYSTEM)
+    : TestSuite("lte-epc-e2e-data", Type::SYSTEM)
 {
     std::vector<EnbTestData> v1;
     EnbTestData e1;

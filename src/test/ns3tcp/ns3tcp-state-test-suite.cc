@@ -531,7 +531,7 @@ class Ns3TcpStateTestSuite : public TestSuite
 };
 
 Ns3TcpStateTestSuite::Ns3TcpStateTestSuite()
-    : TestSuite("ns3-tcp-state", SYSTEM)
+    : TestSuite("ns3-tcp-state", Type::SYSTEM)
 {
     // We can't use NS_TEST_SOURCEDIR variable here because we use subdirectories
     SetDataDir("src/test/ns3tcp/response-vectors");

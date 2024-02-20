@@ -659,7 +659,7 @@ class TcpDctcpTestSuite : public TestSuite
 {
   public:
     TcpDctcpTestSuite()
-        : TestSuite("tcp-dctcp-test", UNIT)
+        : TestSuite("tcp-dctcp-test", Type::UNIT)
     {
         AddTestCase(new TcpDctcpToLinuxReno(2 * 1446,
                                             1446,

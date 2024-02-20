@@ -120,7 +120,7 @@ class LrWpanPacketTestSuite : public TestSuite
 };
 
 LrWpanPacketTestSuite::LrWpanPacketTestSuite()
-    : TestSuite("lr-wpan-packet", UNIT)
+    : TestSuite("lr-wpan-packet", Type::UNIT)
 {
     AddTestCase(new LrWpanPacketTestCase, TestCase::Duration::QUICK);
 }

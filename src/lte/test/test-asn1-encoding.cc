@@ -1256,7 +1256,7 @@ class Asn1EncodingSuite : public TestSuite
 };
 
 Asn1EncodingSuite::Asn1EncodingSuite()
-    : TestSuite("test-asn1-encoding", UNIT)
+    : TestSuite("test-asn1-encoding", Type::UNIT)
 {
     NS_LOG_FUNCTION(this);
     AddTestCase(new RrcConnectionRequestTestCase(), TestCase::Duration::QUICK);

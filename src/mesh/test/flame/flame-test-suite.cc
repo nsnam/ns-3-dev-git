@@ -151,7 +151,7 @@ class FlameTestSuite : public TestSuite
 };
 
 FlameTestSuite::FlameTestSuite()
-    : TestSuite("devices-mesh-flame", UNIT)
+    : TestSuite("devices-mesh-flame", Type::UNIT)
 {
     AddTestCase(new FlameHeaderTest, TestCase::Duration::QUICK);
     AddTestCase(new FlameRtableTest, TestCase::Duration::QUICK);

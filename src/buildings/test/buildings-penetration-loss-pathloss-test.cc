@@ -271,7 +271,7 @@ class BuildingsPenetrationLossesTestSuite : public TestSuite
 };
 
 BuildingsPenetrationLossesTestSuite::BuildingsPenetrationLossesTestSuite()
-    : TestSuite("buildings-penetration-losses", UNIT)
+    : TestSuite("buildings-penetration-losses", Type::UNIT)
 {
     AddTestCase(new BuildingsPenetrationLossesTestCase, TestCase::Duration::QUICK);
 }

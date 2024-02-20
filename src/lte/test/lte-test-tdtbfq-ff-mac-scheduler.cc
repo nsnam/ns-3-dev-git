@@ -63,7 +63,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LenaTestTdTbfqFfMacScheduler");
 
 LenaTestTdTbfqFfMacSchedulerSuite::LenaTestTdTbfqFfMacSchedulerSuite()
-    : TestSuite("lte-tdtbfq-ff-mac-scheduler", SYSTEM)
+    : TestSuite("lte-tdtbfq-ff-mac-scheduler", Type::SYSTEM)
 {
     NS_LOG_INFO("creating LenaTestTdTbfqFfMacSchedulerSuite");
 

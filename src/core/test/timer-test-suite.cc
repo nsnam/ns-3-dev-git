@@ -229,7 +229,7 @@ class TimerTestSuite : public TestSuite
 {
   public:
     TimerTestSuite()
-        : TestSuite("timer", UNIT)
+        : TestSuite("timer", Type::UNIT)
     {
         AddTestCase(new TimerStateTestCase(), TestCase::Duration::QUICK);
         AddTestCase(new TimerTemplateTestCase(), TestCase::Duration::QUICK);

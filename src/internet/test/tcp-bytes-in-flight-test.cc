@@ -289,7 +289,7 @@ class TcpBytesInFlightTestSuite : public TestSuite
 {
   public:
     TcpBytesInFlightTestSuite()
-        : TestSuite("tcp-bytes-in-flight-test", UNIT)
+        : TestSuite("tcp-bytes-in-flight-test", Type::UNIT)
     {
         std::vector<uint32_t> toDrop;
         AddTestCase(new TcpBytesInFlightTest("BytesInFlight value, no drop", toDrop),

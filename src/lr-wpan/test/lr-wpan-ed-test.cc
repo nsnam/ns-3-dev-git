@@ -266,7 +266,7 @@ class LrWpanEdTestSuite : public TestSuite
 };
 
 LrWpanEdTestSuite::LrWpanEdTestSuite()
-    : TestSuite("lr-wpan-energy-detection", UNIT)
+    : TestSuite("lr-wpan-energy-detection", Type::UNIT)
 {
     AddTestCase(new LrWpanEdTestCase, TestCase::Duration::QUICK);
 }

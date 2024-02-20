@@ -211,7 +211,7 @@ class PairValueTestSuite : public TestSuite
 };
 
 PairValueTestSuite::PairValueTestSuite()
-    : TestSuite("pair-value-test-suite", UNIT)
+    : TestSuite("pair-value-test-suite", Type::UNIT)
 {
     AddTestCase(new PairValueTestCase(), TestCase::Duration::QUICK);
     AddTestCase(new PairValueSettingsTestCase(), TestCase::Duration::QUICK);

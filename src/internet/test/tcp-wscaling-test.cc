@@ -232,7 +232,7 @@ class TcpWScalingTestSuite : public TestSuite
 {
   public:
     TcpWScalingTestSuite()
-        : TestSuite("tcp-wscaling", UNIT)
+        : TestSuite("tcp-wscaling", Type::UNIT)
     {
         AddTestCase(
             new WScalingTestCase(WScalingTestCase::ENABLED, 200000, 65535, "WS only server"),

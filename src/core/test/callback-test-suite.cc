@@ -1190,7 +1190,7 @@ class CallbackTestSuite : public TestSuite
 };
 
 CallbackTestSuite::CallbackTestSuite()
-    : TestSuite("callback", UNIT)
+    : TestSuite("callback", Type::UNIT)
 {
     AddTestCase(new BasicCallbackTestCase, TestCase::Duration::QUICK);
     AddTestCase(new MakeCallbackTestCase, TestCase::Duration::QUICK);

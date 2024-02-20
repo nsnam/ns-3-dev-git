@@ -152,7 +152,7 @@ class ParabolicAntennaModelTestSuite : public TestSuite
 };
 
 ParabolicAntennaModelTestSuite::ParabolicAntennaModelTestSuite()
-    : TestSuite("parabolic-antenna-model", UNIT)
+    : TestSuite("parabolic-antenna-model", Type::UNIT)
 {
     // with a 60 deg beamwidth, gain is -20dB at +-77.460 degrees from boresight
     //                                                                         phi, theta,

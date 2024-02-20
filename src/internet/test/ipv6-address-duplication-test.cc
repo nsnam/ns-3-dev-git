@@ -124,7 +124,7 @@ class Ipv6DadTestSuite : public TestSuite
 {
   public:
     Ipv6DadTestSuite()
-        : TestSuite("ipv6-duplicate-address-detection", UNIT)
+        : TestSuite("ipv6-duplicate-address-detection", Type::UNIT)
     {
         AddTestCase(new Ipv6DadTest, TestCase::Duration::QUICK);
     }

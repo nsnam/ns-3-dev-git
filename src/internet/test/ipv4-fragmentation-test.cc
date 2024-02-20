@@ -587,7 +587,7 @@ class Ipv4FragmentationTestSuite : public TestSuite
 };
 
 Ipv4FragmentationTestSuite::Ipv4FragmentationTestSuite()
-    : TestSuite("ipv4-fragmentation", UNIT)
+    : TestSuite("ipv4-fragmentation", Type::UNIT)
 {
     AddTestCase(new Ipv4FragmentationTest(false), TestCase::Duration::QUICK);
     AddTestCase(new Ipv4FragmentationTest(true), TestCase::Duration::QUICK);

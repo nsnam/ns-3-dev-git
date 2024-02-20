@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE("LteRlcAmTransmitterTest");
  */
 
 LteRlcAmTransmitterTestSuite::LteRlcAmTransmitterTestSuite()
-    : TestSuite("lte-rlc-am-transmitter", SYSTEM)
+    : TestSuite("lte-rlc-am-transmitter", Type::SYSTEM)
 {
     // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
     // LogComponentEnable ("LteRlcAmTransmitterTest", logLevel);

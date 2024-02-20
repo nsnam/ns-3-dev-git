@@ -439,7 +439,7 @@ class TcpTxBufferTestSuite : public TestSuite
 {
   public:
     TcpTxBufferTestSuite()
-        : TestSuite("tcp-tx-buffer", UNIT)
+        : TestSuite("tcp-tx-buffer", Type::UNIT)
     {
         AddTestCase(new TcpTxBufferTestCase, TestCase::Duration::QUICK);
     }

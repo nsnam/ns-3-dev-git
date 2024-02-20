@@ -1801,7 +1801,7 @@ class TxDurationTestSuite : public TestSuite
 };
 
 TxDurationTestSuite::TxDurationTestSuite()
-    : TestSuite("wifi-devices-tx-duration", UNIT)
+    : TestSuite("wifi-devices-tx-duration", Type::UNIT)
 {
     AddTestCase(new TxDurationTest, TestCase::Duration::QUICK);
 

@@ -295,7 +295,7 @@ static class LteHandoverDelayTestSuite : public TestSuite
 {
   public:
     LteHandoverDelayTestSuite()
-        : TestSuite("lte-handover-delay", TestSuite::SYSTEM)
+        : TestSuite("lte-handover-delay", Type::SYSTEM)
     {
         // LogComponentEnable ("LteHandoverDelayTest", LOG_PREFIX_TIME);
         // LogComponentEnable ("LteHandoverDelayTest", LOG_DEBUG);

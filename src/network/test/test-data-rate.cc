@@ -282,7 +282,7 @@ class DataRateTestSuite : public TestSuite
 };
 
 DataRateTestSuite::DataRateTestSuite()
-    : TestSuite("data-rate", UNIT)
+    : TestSuite("data-rate", Type::UNIT)
 {
     AddTestCase(new DataRateTestCase1(), TestCase::Duration::QUICK);
     AddTestCase(new DataRateTestCase2(), TestCase::Duration::QUICK);

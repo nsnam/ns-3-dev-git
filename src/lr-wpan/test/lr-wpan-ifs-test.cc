@@ -418,7 +418,7 @@ class LrWpanIfsTestSuite : public TestSuite
 };
 
 LrWpanIfsTestSuite::LrWpanIfsTestSuite()
-    : TestSuite("lr-wpan-ifs-test", UNIT)
+    : TestSuite("lr-wpan-ifs-test", Type::UNIT)
 {
     AddTestCase(new LrWpanDataIfsTestCase, TestCase::Duration::QUICK);
 }

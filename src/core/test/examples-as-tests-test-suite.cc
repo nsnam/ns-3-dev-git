@@ -102,7 +102,7 @@ class ExamplesAsTestsTestSuite : public TestSuite
 };
 
 ExamplesAsTestsTestSuite::ExamplesAsTestsTestSuite()
-    : TestSuite("examples-as-tests-test-suite", UNIT)
+    : TestSuite("examples-as-tests-test-suite", Type::UNIT)
 {
     AddTestCase(
         new ExampleAsTestCase("core-example-simulator", "sample-simulator", NS_TEST_SOURCEDIR));

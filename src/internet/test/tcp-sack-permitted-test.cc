@@ -213,7 +213,7 @@ class TcpSackPermittedTestSuite : public TestSuite
   public:
     /** \brief Constructor */
     TcpSackPermittedTestSuite()
-        : TestSuite("tcp-sack-permitted", UNIT)
+        : TestSuite("tcp-sack-permitted", Type::UNIT)
     {
         AddTestCase(new SackPermittedTestCase(SackPermittedTestCase::DISABLED),
                     TestCase::Duration::QUICK);

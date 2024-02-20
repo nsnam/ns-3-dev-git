@@ -258,7 +258,7 @@ class Issue211TestSuite : public TestSuite
 };
 
 Issue211TestSuite::Issue211TestSuite()
-    : TestSuite("wifi-issue-211", UNIT)
+    : TestSuite("wifi-issue-211", Type::UNIT)
 {
     AddTestCase(new Issue211Test, TestCase::Duration::QUICK);
 }

@@ -53,7 +53,7 @@ NS_LOG_COMPONENT_DEFINE("LteUplinkPowerControlTest");
  */
 
 LteUplinkPowerControlTestSuite::LteUplinkPowerControlTestSuite()
-    : TestSuite("lte-uplink-power-control", SYSTEM)
+    : TestSuite("lte-uplink-power-control", Type::SYSTEM)
 {
     //  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_DEBUG);
     //  LogComponentEnable ("LteUplinkPowerControlTest", logLevel);

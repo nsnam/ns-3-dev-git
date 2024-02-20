@@ -182,7 +182,7 @@ class TcpLossTestSuite : public TestSuite
 {
   public:
     TcpLossTestSuite()
-        : TestSuite("tcp-loss-test", UNIT)
+        : TestSuite("tcp-loss-test", Type::UNIT)
     {
         // For large transfer tests, the three sequence numbers passed in
         // are the segment (i.e. not byte) number that should be dropped first,

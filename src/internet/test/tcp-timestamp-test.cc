@@ -296,7 +296,7 @@ class TcpTimestampTestSuite : public TestSuite
 {
   public:
     TcpTimestampTestSuite()
-        : TestSuite("tcp-timestamp", UNIT)
+        : TestSuite("tcp-timestamp", Type::UNIT)
     {
         AddTestCase(new TimestampTestCase(TimestampTestCase::DISABLED), TestCase::Duration::QUICK);
         AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED_RECEIVER),

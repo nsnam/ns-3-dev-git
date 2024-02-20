@@ -187,7 +187,7 @@ class TcpRenoCongAvoidTestSuite : public TestSuite
 {
   public:
     TcpRenoCongAvoidTestSuite()
-        : TestSuite("tcp-cong-avoid-test", UNIT)
+        : TestSuite("tcp-cong-avoid-test", Type::UNIT)
     {
         std::list<TypeId> types = {
             TcpNewReno::GetTypeId(),

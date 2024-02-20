@@ -343,7 +343,7 @@ class TcpLedbatTestSuite : public TestSuite
 {
   public:
     TcpLedbatTestSuite()
-        : TestSuite("tcp-ledbat-test", UNIT)
+        : TestSuite("tcp-ledbat-test", Type::UNIT)
     {
         AddTestCase(new TcpLedbatToNewReno(2 * 1446,
                                            1446,

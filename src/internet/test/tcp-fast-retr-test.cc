@@ -437,7 +437,7 @@ class TcpFastRetrTestSuite : public TestSuite
 {
   public:
     TcpFastRetrTestSuite()
-        : TestSuite("tcp-fast-retr-test", UNIT)
+        : TestSuite("tcp-fast-retr-test", Type::UNIT)
     {
         std::list<TypeId> types;
         types.insert(types.begin(), TcpWestwoodPlus::GetTypeId());

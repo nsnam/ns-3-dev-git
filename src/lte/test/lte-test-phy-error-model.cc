@@ -57,7 +57,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("LteTestPhyErrorModel");
 
 LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite()
-    : TestSuite("lte-phy-error-model", SYSTEM)
+    : TestSuite("lte-phy-error-model", Type::SYSTEM)
 {
     NS_LOG_INFO("creating LenaTestPhyErrorModelTestCase");
 

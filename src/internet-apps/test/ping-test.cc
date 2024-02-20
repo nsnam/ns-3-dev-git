@@ -567,7 +567,7 @@ class PingTestSuite : public TestSuite
 };
 
 PingTestSuite::PingTestSuite()
-    : TestSuite("ping", UNIT)
+    : TestSuite("ping", Type::UNIT)
 {
     // 1. Unlimited pings, no losses, StopApplication () with no packets in flight
     //    Configuration:  Ping::Count = 0,  Ping::Interval = 1s, Ping start

@@ -443,7 +443,7 @@ class TypeIdTestSuite : public TestSuite
 };
 
 TypeIdTestSuite::TypeIdTestSuite()
-    : TestSuite("type-id", UNIT)
+    : TestSuite("type-id", Type::UNIT)
 {
     // Turn on logging, so we see the result of collisions
     LogComponentEnable("TypeId", ns3::LogLevel(LOG_ERROR | LOG_PREFIX_FUNC));
@@ -472,7 +472,7 @@ class TypeIdPerformanceSuite : public TestSuite
 };
 
 TypeIdPerformanceSuite::TypeIdPerformanceSuite()
-    : TestSuite("type-id-perf", PERFORMANCE)
+    : TestSuite("type-id-perf", Type::PERFORMANCE)
 {
     AddTestCase(new LookupTimeTestCase, Duration::QUICK);
 }

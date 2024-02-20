@@ -31,7 +31,7 @@ using namespace ns3;
  */
 
 BoxLineIntersectionTestSuite::BoxLineIntersectionTestSuite()
-    : TestSuite("box-line-intersection", UNIT)
+    : TestSuite("box-line-intersection", Type::UNIT)
 {
     // Box in the positive x-plane to check the intersection with.
     Box box = Box(890.0, 990.0, 840.0, 870.0, 0.0, 6.0);

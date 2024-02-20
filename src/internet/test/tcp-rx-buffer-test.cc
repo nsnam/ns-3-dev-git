@@ -302,7 +302,7 @@ class TcpRxBufferTestSuite : public TestSuite
 {
   public:
     TcpRxBufferTestSuite()
-        : TestSuite("tcp-rx-buffer", UNIT)
+        : TestSuite("tcp-rx-buffer", Type::UNIT)
     {
         AddTestCase(new TcpRxBufferTestCase, TestCase::Duration::QUICK);
     }

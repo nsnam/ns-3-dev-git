@@ -133,7 +133,7 @@ class BasicEnergyHarvesterTestSuite : public TestSuite
 };
 
 BasicEnergyHarvesterTestSuite::BasicEnergyHarvesterTestSuite()
-    : TestSuite("basic-energy-harvester", UNIT)
+    : TestSuite("basic-energy-harvester", Type::UNIT)
 {
     AddTestCase(new BasicEnergyHarvesterTestCase, TestCase::Duration::QUICK);
 }

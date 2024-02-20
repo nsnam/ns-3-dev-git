@@ -537,7 +537,7 @@ class ThreeGppV2vChCondModelsTestSuite : public TestSuite
 };
 
 ThreeGppV2vChCondModelsTestSuite::ThreeGppV2vChCondModelsTestSuite()
-    : TestSuite("three-gpp-v2v-channel-condition-model", SYSTEM)
+    : TestSuite("three-gpp-v2v-channel-condition-model", Type::SYSTEM)
 {
     AddTestCase(new ThreeGppV2vBuildingsChCondModelTestCase,
                 TestCase::Duration::QUICK); // test for the deterministic procedure (NLOS vs

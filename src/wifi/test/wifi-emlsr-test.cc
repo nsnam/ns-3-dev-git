@@ -3490,7 +3490,7 @@ EmlsrLinkSwitchTest::CheckResults()
 }
 
 WifiEmlsrTestSuite::WifiEmlsrTestSuite()
-    : TestSuite("wifi-emlsr", UNIT)
+    : TestSuite("wifi-emlsr", Type::UNIT)
 {
     AddTestCase(new EmlOperatingModeNotificationTest(), TestCase::Duration::QUICK);
     AddTestCase(new EmlOmnExchangeTest({1, 2}, MicroSeconds(0)), TestCase::Duration::QUICK);

@@ -138,7 +138,7 @@ class DegreesRadiansTestSuite : public TestSuite
 };
 
 DegreesRadiansTestSuite::DegreesRadiansTestSuite()
-    : TestSuite("degrees-radians", UNIT)
+    : TestSuite("degrees-radians", Type::UNIT)
 {
     AddTestCase(new DegreesToRadiansTestCase(0, 0), TestCase::Duration::QUICK);
     AddTestCase(new DegreesToRadiansTestCase(90, M_PI_2), TestCase::Duration::QUICK);

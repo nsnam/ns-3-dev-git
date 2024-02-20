@@ -601,7 +601,7 @@ class TcpRateOpsTestSuite : public TestSuite
 {
   public:
     TcpRateOpsTestSuite()
-        : TestSuite("tcp-rate-ops", UNIT)
+        : TestSuite("tcp-rate-ops", Type::UNIT)
     {
         AddTestCase(new TcpRateLinuxBasicTest(1000,
                                               SequenceNumber32(20),

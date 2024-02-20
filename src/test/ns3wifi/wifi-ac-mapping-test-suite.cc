@@ -333,7 +333,7 @@ class WifiAcMappingTestSuite : public TestSuite
 };
 
 WifiAcMappingTestSuite::WifiAcMappingTestSuite()
-    : TestSuite("wifi-ac-mapping", SYSTEM)
+    : TestSuite("wifi-ac-mapping", Type::SYSTEM)
 {
     AddTestCase(new WifiAcMappingTest(0xb8, 2), TestCase::Duration::QUICK); // EF in AC_VI
     AddTestCase(new WifiAcMappingTest(0x28, 1), TestCase::Duration::QUICK); // AF11 in AC_BK
