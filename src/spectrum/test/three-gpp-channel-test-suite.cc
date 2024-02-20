@@ -1230,20 +1230,24 @@ class ThreeGppChannelTestSuite : public TestSuite
 ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     : TestSuite("three-gpp-channel", UNIT)
 {
-    AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 1, 1), TestCase::QUICK);
-    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 1, 1), TestCase::QUICK);
-    AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 2, 2), TestCase::QUICK);
-    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 4, 2, 2), TestCase::QUICK);
-    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 2, 1), TestCase::QUICK);
-    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 4, 1, 1), TestCase::QUICK);
-    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 2, 1, 1), TestCase::QUICK);
-    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 4, 2, 2), TestCase::QUICK);
-    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 2, 2, 2), TestCase::QUICK);
-    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 1, 1), TestCase::QUICK);
-    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 2, 2), TestCase::QUICK);
-    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 2), TestCase::QUICK);
-    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 1), TestCase::QUICK);
-    AddTestCase(new ThreeGppCalcLongTermMultiPortTest(), TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 1, 1), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 1, 1), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 2, 2), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 4, 2, 2), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 2, 1), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 4, 1, 1), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 2, 1, 1), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 4, 2, 2), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 2, 2, 2), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 1, 1),
+                TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 2, 2),
+                TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 2),
+                TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 1),
+                TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppCalcLongTermMultiPortTest(), TestCase::Duration::QUICK);
 
     /**
      *  The TX and RX antennas are configured face-to-face.
@@ -1263,7 +1267,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                                                  MimoPolarizationAntennaParams(false, 0, M_PI),
                                                  testChannel1,
                                                  0.9),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     /**
      *  The TX and RX antennas are configured face-to-face.
@@ -1282,7 +1286,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                                          MimoPolarizationAntennaParams(false, 0, M_PI),
                                          {5, 5, 3, 3, 5, 5, 3, 3, 3, 3, -5, -5, 3, 3, -5, -5},
                                          0.8),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     /**
      *  The TX and RX antennas are configured face-to-face.
@@ -1301,7 +1305,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                                          MimoPolarizationAntennaParams(false, 0, M_PI),
                                          {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, -4, -4, 4, 4, -4, -4},
                                          0.7),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     /**
      *  The TX and RX antennas are configured face-to-face.
@@ -1320,7 +1324,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                     MimoPolarizationAntennaParams(false, 0, M_PI),
                     {0, 0, 5.8, 5.8, 0, 0, 5.8, 5.8, 5.9, 5.9, 0, 0, 5.9, 5.9, 0, 0},
                     0.9),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     /**
      *  The TX and RX antennas are face to face. We test the configuration of
@@ -1344,7 +1348,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                                          MimoPolarizationAntennaParams(false, 0, -(M_PI / 4) * 3),
                                          testChannel1,
                                          0.9),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     /**
      *  The TX and RX antenna have different height.
@@ -1379,7 +1383,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                      {-2.4, 4},
                      {-2.4, 4}},
                     0.5),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

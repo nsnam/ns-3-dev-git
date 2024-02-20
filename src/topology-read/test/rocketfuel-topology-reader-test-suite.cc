@@ -147,8 +147,8 @@ class RocketfuelTopologyReaderTestSuite : public TestSuite
 RocketfuelTopologyReaderTestSuite::RocketfuelTopologyReaderTestSuite()
     : TestSuite("rocketfuel-topology-reader", UNIT)
 {
-    AddTestCase(new RocketfuelTopologyReaderWeightsTest(), TestCase::QUICK);
-    AddTestCase(new RocketfuelTopologyReaderMapsTest(), TestCase::QUICK);
+    AddTestCase(new RocketfuelTopologyReaderWeightsTest(), TestCase::Duration::QUICK);
+    AddTestCase(new RocketfuelTopologyReaderMapsTest(), TestCase::Duration::QUICK);
 }
 
 /**

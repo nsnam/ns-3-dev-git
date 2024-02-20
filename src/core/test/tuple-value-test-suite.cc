@@ -323,7 +323,7 @@ class TupleValueTestSuite : public TestSuite
 TupleValueTestSuite::TupleValueTestSuite()
     : TestSuite("tuple-value-test-suite", UNIT)
 {
-    AddTestCase(new TupleValueTestCase(), TestCase::QUICK);
+    AddTestCase(new TupleValueTestCase(), TestCase::Duration::QUICK);
 }
 
 static TupleValueTestSuite g_tupleValueTestSuite; //!< Static variable for test initialization

@@ -590,28 +590,28 @@ class TcpEcnTestSuite : public TestSuite
         AddTestCase(new TcpEcnTest(
                         1,
                         "ECN Negotiation Test : ECN incapable sender and ECN incapable receiver"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(
             new TcpEcnTest(2,
                            "ECN Negotiation Test : ECN capable sender and ECN incapable receiver"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(
             new TcpEcnTest(3,
                            "ECN Negotiation Test : ECN incapable sender and ECN capable receiver"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(
             new TcpEcnTest(4, "ECN Negotiation Test : ECN capable sender and ECN capable receiver"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(
             new TcpEcnTest(
                 5,
                 "ECE and CWR Functionality Test: ECN capable sender and ECN capable receiver"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(
             new TcpEcnTest(
                 6,
                 "Congestion Window Reduction Test :ECN capable sender and ECN capable receiver"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
     }
 };
 

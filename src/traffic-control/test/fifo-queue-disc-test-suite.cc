@@ -276,6 +276,6 @@ static class FifoQueueDiscTestSuite : public TestSuite
     FifoQueueDiscTestSuite()
         : TestSuite("fifo-queue-disc", UNIT)
     {
-        AddTestCase(new FifoQueueDiscTestCase(), TestCase::QUICK);
+        AddTestCase(new FifoQueueDiscTestCase(), TestCase::Duration::QUICK);
     }
 } g_fifoQueueTestSuite; ///< the test suite

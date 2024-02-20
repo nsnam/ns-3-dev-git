@@ -150,7 +150,7 @@ class InternetStackHelperTestSuite : public TestSuite
     InternetStackHelperTestSuite()
         : TestSuite("internet-stack-helper", UNIT)
     {
-        AddTestCase(new InternetStackHelperTestCase(), TestCase::QUICK);
+        AddTestCase(new InternetStackHelperTestCase(), TestCase::Duration::QUICK);
     }
 };
 

@@ -239,8 +239,8 @@ BuildingPositionAllocatorTestSuite::BuildingPositionAllocatorTestSuite()
 {
     NS_LOG_FUNCTION(this);
 
-    AddTestCase(new RandomRoomPositionAllocatorTestCase, TestCase::QUICK);
-    AddTestCase(new SameRoomPositionAllocatorTestCase, TestCase::QUICK);
+    AddTestCase(new RandomRoomPositionAllocatorTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new SameRoomPositionAllocatorTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

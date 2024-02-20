@@ -231,8 +231,8 @@ class TimerTestSuite : public TestSuite
     TimerTestSuite()
         : TestSuite("timer", UNIT)
     {
-        AddTestCase(new TimerStateTestCase(), TestCase::QUICK);
-        AddTestCase(new TimerTemplateTestCase(), TestCase::QUICK);
+        AddTestCase(new TimerStateTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new TimerTemplateTestCase(), TestCase::Duration::QUICK);
     }
 };
 

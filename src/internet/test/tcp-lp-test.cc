@@ -270,7 +270,7 @@ class TcpLpTestSuite : public TestSuite
                                        2 * 1446,
                                        MilliSeconds(100),
                                        "LP falls to New Reno if the cwd is within threshold"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         AddTestCase(new TcpLpInferenceTest1(
                         2 * 1446,
@@ -278,7 +278,7 @@ class TcpLpTestSuite : public TestSuite
                         2,
                         MilliSeconds(100),
                         "LP enters Inference phase when cwd exceeds threshold for the first time"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         AddTestCase(new TcpLpInferenceTest2(
                         2 * 1446,
@@ -286,7 +286,7 @@ class TcpLpTestSuite : public TestSuite
                         2,
                         MilliSeconds(100),
                         "LP reduces cWnd to 1 if cwd exceeds threshold in inference phase"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

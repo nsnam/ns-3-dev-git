@@ -96,15 +96,21 @@ class IsotropicAntennaModelTestSuite : public TestSuite
 IsotropicAntennaModelTestSuite::IsotropicAntennaModelTestSuite()
     : TestSuite("isotropic-antenna-model", UNIT)
 {
-    AddTestCase(new IsotropicAntennaModelTestCase(Angles(0, 0), 0.0), TestCase::QUICK);
-    AddTestCase(new IsotropicAntennaModelTestCase(Angles(0, M_PI), 0.0), TestCase::QUICK);
-    AddTestCase(new IsotropicAntennaModelTestCase(Angles(0, M_PI_2), 0.0), TestCase::QUICK);
-    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI, 0), 0.0), TestCase::QUICK);
-    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI, M_PI), 0.0), TestCase::QUICK);
-    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI, M_PI_2), 0.0), TestCase::QUICK);
-    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI_2, 0), 0.0), TestCase::QUICK);
-    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI_2, M_PI), 0.0), TestCase::QUICK);
-    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI_2, M_PI_2), 0.0), TestCase::QUICK);
+    AddTestCase(new IsotropicAntennaModelTestCase(Angles(0, 0), 0.0), TestCase::Duration::QUICK);
+    AddTestCase(new IsotropicAntennaModelTestCase(Angles(0, M_PI), 0.0), TestCase::Duration::QUICK);
+    AddTestCase(new IsotropicAntennaModelTestCase(Angles(0, M_PI_2), 0.0),
+                TestCase::Duration::QUICK);
+    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI, 0), 0.0), TestCase::Duration::QUICK);
+    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI, M_PI), 0.0),
+                TestCase::Duration::QUICK);
+    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI, M_PI_2), 0.0),
+                TestCase::Duration::QUICK);
+    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI_2, 0), 0.0),
+                TestCase::Duration::QUICK);
+    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI_2, M_PI), 0.0),
+                TestCase::Duration::QUICK);
+    AddTestCase(new IsotropicAntennaModelTestCase(Angles(M_PI_2, M_PI_2), 0.0),
+                TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

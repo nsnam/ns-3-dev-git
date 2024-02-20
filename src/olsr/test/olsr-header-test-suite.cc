@@ -341,11 +341,11 @@ class OlsrTestSuite : public TestSuite
 OlsrTestSuite::OlsrTestSuite()
     : TestSuite("routing-olsr-header", UNIT)
 {
-    AddTestCase(new OlsrHnaTestCase(), TestCase::QUICK);
-    AddTestCase(new OlsrTcTestCase(), TestCase::QUICK);
-    AddTestCase(new OlsrHelloTestCase(), TestCase::QUICK);
-    AddTestCase(new OlsrMidTestCase(), TestCase::QUICK);
-    AddTestCase(new OlsrEmfTestCase(), TestCase::QUICK);
+    AddTestCase(new OlsrHnaTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new OlsrTcTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new OlsrHelloTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new OlsrMidTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new OlsrEmfTestCase(), TestCase::Duration::QUICK);
 }
 
 static OlsrTestSuite g_olsrTestSuite; //!< Static variable for test initialization

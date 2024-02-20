@@ -54,16 +54,16 @@ LteSecondaryCellSelectionTestSuite::LteSecondaryCellSelectionTestSuite()
     // REAL RRC PROTOCOL, either 2 or 4 UEs connecting to 2 or 4 component carriers
 
     AddTestCase(new LteSecondaryCellSelectionTestCase("EPC, real RRC, RngRun=1", false, 1U, 2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteSecondaryCellSelectionTestCase("EPC, real RRC, RngRun=1", false, 1U, 4),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // IDEAL RRC PROTOCOL, either 2 or 4 UEs connecting to 2 or 4 component carriers
 
     AddTestCase(new LteSecondaryCellSelectionTestCase("EPC, ideal RRC, RngRun=1", true, 1U, 2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteSecondaryCellSelectionTestCase("EPC, ideal RRC, RngRun=1", true, 1U, 4),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
 } // end of LteSecondaryCellSelectionTestSuite::LteSecondaryCellSelectionTestSuite ()
 

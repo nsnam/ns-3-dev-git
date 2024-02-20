@@ -299,224 +299,231 @@ AnglesTestSuite::AnglesTestSuite()
     : TestSuite("angles", UNIT)
 {
     AddTestCase(new OneVectorConstructorTestCase(Vector(1, 0, 0), Angles(0, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(-1, 0, 0), Angles(M_PI, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(0, 1, 0), Angles(M_PI_2, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(0, -1, 0), Angles(-M_PI_2, M_PI_2)),
-                TestCase::QUICK);
-    AddTestCase(new OneVectorConstructorTestCase(Vector(0, 0, 1), Angles(0, 0)), TestCase::QUICK);
+                TestCase::Duration::QUICK);
+    AddTestCase(new OneVectorConstructorTestCase(Vector(0, 0, 1), Angles(0, 0)),
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(0, 0, -1), Angles(0, M_PI)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new OneVectorConstructorTestCase(Vector(2, 0, 0), Angles(0, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(-2, 0, 0), Angles(M_PI, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(0, 2, 0), Angles(M_PI_2, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(0, -2, 0), Angles(-M_PI_2, M_PI_2)),
-                TestCase::QUICK);
-    AddTestCase(new OneVectorConstructorTestCase(Vector(0, 0, 2), Angles(0, 0)), TestCase::QUICK);
+                TestCase::Duration::QUICK);
+    AddTestCase(new OneVectorConstructorTestCase(Vector(0, 0, 2), Angles(0, 0)),
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(0, 0, -2), Angles(0, M_PI)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new OneVectorConstructorTestCase(Vector(1, 0, 1), Angles(0, M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(1, 0, -1), Angles(0, 3 * M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(1, 1, 0), Angles(M_PI_4, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(1, -1, 0), Angles(-M_PI_4, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(-1, 0, 1), Angles(M_PI, M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(-1, 0, -1), Angles(M_PI, 3 * M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(-1, 1, 0), Angles(3 * M_PI_4, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(-1, -1, 0), Angles(-3 * M_PI_4, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(0, 1, 1), Angles(M_PI_2, M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(0, 1, -1), Angles(M_PI_2, 3 * M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(0, -1, 1), Angles(-M_PI_2, M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OneVectorConstructorTestCase(Vector(0, -1, -1), Angles(-M_PI_2, 3 * M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(
         new OneVectorConstructorTestCase(Vector(1, 1, std::sqrt(2)), Angles(M_PI_4, M_PI_4)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new OneVectorConstructorTestCase(Vector(1, 1, -std::sqrt(2)), Angles(M_PI_4, 3 * M_PI_4)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new OneVectorConstructorTestCase(Vector(1, -1, std::sqrt(2)), Angles(-M_PI_4, M_PI_4)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new OneVectorConstructorTestCase(Vector(-1, 1, std::sqrt(2)), Angles(3 * M_PI_4, M_PI_4)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(1, 0, 0), Vector(0, 0, 0), Angles(0, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(-1, 0, 0), Vector(0, 0, 0), Angles(M_PI, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(0, 1, 0), Vector(0, 0, 0), Angles(M_PI_2, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(0, -1, 0),
                                                   Vector(0, 0, 0),
                                                   Angles(-M_PI_2, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(0, 0, 1), Vector(0, 0, 0), Angles(0, 0)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(0, 0, -1), Vector(0, 0, 0), Angles(0, M_PI)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(2, 0, 0), Vector(0, 0, 0), Angles(0, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(-2, 0, 0), Vector(0, 0, 0), Angles(M_PI, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(0, 2, 0), Vector(0, 0, 0), Angles(M_PI_2, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(0, -2, 0),
                                                   Vector(0, 0, 0),
                                                   Angles(-M_PI_2, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(0, 0, 2), Vector(0, 0, 0), Angles(0, 0)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(0, 0, -2), Vector(0, 0, 0), Angles(0, M_PI)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(1, 0, 1), Vector(0, 0, 0), Angles(0, M_PI_4)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(1, 0, -1), Vector(0, 0, 0), Angles(0, 3 * M_PI_4)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(1, 1, 0), Vector(0, 0, 0), Angles(M_PI_4, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(1, -1, 0),
                                                   Vector(0, 0, 0),
                                                   Angles(-M_PI_4, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(-1, 0, 1), Vector(0, 0, 0), Angles(M_PI, M_PI_4)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(-1, 0, -1),
                                                   Vector(0, 0, 0),
                                                   Angles(M_PI, 3 * M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(-1, 1, 0),
                                                   Vector(0, 0, 0),
                                                   Angles(3 * M_PI_4, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(-1, -1, 0),
                                                   Vector(0, 0, 0),
                                                   Angles(-3 * M_PI_4, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(0, 1, 1), Vector(0, 0, 0), Angles(M_PI_2, M_PI_4)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(0, 1, -1),
                                                   Vector(0, 0, 0),
                                                   Angles(M_PI_2, 3 * M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(0, -1, 1),
                                                   Vector(0, 0, 0),
                                                   Angles(-M_PI_2, M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(0, -1, -1),
                                                   Vector(0, 0, 0),
                                                   Angles(-M_PI_2, 3 * M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(1, 1, std::sqrt(2)),
                                                   Vector(0, 0, 0),
                                                   Angles(M_PI_4, M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(1, 1, -std::sqrt(2)),
                                                   Vector(0, 0, 0),
                                                   Angles(M_PI_4, 3 * M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(1, -1, std::sqrt(2)),
                                                   Vector(0, 0, 0),
                                                   Angles(-M_PI_4, M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(-1, 1, std::sqrt(2)),
                                                   Vector(0, 0, 0),
                                                   Angles(3 * M_PI_4, M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(3, 2, 2), Vector(2, 2, 2), Angles(0, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(1, 2, 2), Vector(2, 2, 2), Angles(M_PI, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(2, 3, 2), Vector(2, 2, 2), Angles(M_PI_2, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(-1, 2, 2),
                                                   Vector(-1, 3, 2),
                                                   Angles(-M_PI_2, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(4, -2, 7), Vector(4, -2, 6), Angles(0, 0)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(0, -5, -1), Vector(0, -5, 0), Angles(0, M_PI)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(-2, 2, -1), Vector(-4, 2, -1), Angles(0, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(2, 2, 0), Vector(4, 2, 0), Angles(M_PI, M_PI_2)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     AddTestCase(
         new TwoVectorsConstructorTestCase(Vector(-1, 4, 4), Vector(-2, 4, 3), Angles(0, M_PI_4)),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(0, -2, -6),
                                                   Vector(-1, -2, -5),
                                                   Angles(0, 3 * M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(77, 3, 43),
                                                   Vector(78, 2, 43),
                                                   Angles(3 * M_PI_4, M_PI_2)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(24, -2, -6 - std::sqrt(2)),
                                                   Vector(23, -3, -6),
                                                   Angles(M_PI_4, 3 * M_PI_4)),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TwoVectorsConstructorTestCase(Vector(0.5, 11.45, std::sqrt(2) - 1),
                                                   Vector(-0.5, 12.45, -1),
                                                   Angles(-M_PI_4, M_PI_4)),
-                TestCase::QUICK);
-    AddTestCase(new WrapToRangeTestCase(WrapTo180, -180, 180), TestCase::QUICK);
-    AddTestCase(new WrapToRangeTestCase(WrapToPi, -M_PI, M_PI), TestCase::QUICK);
-    AddTestCase(new WrapToRangeTestCase(WrapTo360, 0, 360), TestCase::QUICK);
-    AddTestCase(new WrapToRangeTestCase(WrapTo2Pi, 0, 2 * M_PI), TestCase::QUICK);
-    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo180, -182.2, 177.8), TestCase::QUICK);
-    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo180, -179, -179), TestCase::QUICK);
-    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo180, 181, -179), TestCase::QUICK);
-    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo180, 360.6, 0.6), TestCase::QUICK);
-    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo360, -182.8, 177.2), TestCase::QUICK);
-    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo360, -179, 181), TestCase::QUICK);
-    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo360, 181, 181), TestCase::QUICK);
-    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo360, 360.2, 0.2), TestCase::QUICK);
+                TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeTestCase(WrapTo180, -180, 180), TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeTestCase(WrapToPi, -M_PI, M_PI), TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeTestCase(WrapTo360, 0, 360), TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeTestCase(WrapTo2Pi, 0, 2 * M_PI), TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo180, -182.2, 177.8),
+                TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo180, -179, -179),
+                TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo180, 181, -179), TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo180, 360.6, 0.6),
+                TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo360, -182.8, 177.2),
+                TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo360, -179, 181), TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo360, 181, 181), TestCase::Duration::QUICK);
+    AddTestCase(new WrapToRangeFunctionalTestCase(WrapTo360, 360.2, 0.2),
+                TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

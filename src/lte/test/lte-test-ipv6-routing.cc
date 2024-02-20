@@ -389,7 +389,7 @@ class LteIpv6RoutingTestSuite : public TestSuite
 LteIpv6RoutingTestSuite::LteIpv6RoutingTestSuite()
     : TestSuite("lte-ipv6-routing-test", UNIT)
 {
-    AddTestCase(new LteIpv6RoutingTestCase, TestCase::QUICK);
+    AddTestCase(new LteIpv6RoutingTestCase, TestCase::Duration::QUICK);
 }
 
 /**

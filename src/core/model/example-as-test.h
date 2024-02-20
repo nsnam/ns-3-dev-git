@@ -218,7 +218,7 @@ class ExampleAsTestSuite : public TestSuite
                        const std::string program,
                        const std::string dataDir,
                        const std::string args = "",
-                       const TestDuration duration = QUICK,
+                       const Duration duration = Duration::QUICK,
                        const bool shouldNotErr = true);
 }; // class ExampleAsTestSuite
 

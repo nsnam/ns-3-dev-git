@@ -2020,15 +2020,15 @@ class BlockAckTestSuite : public TestSuite
 BlockAckTestSuite::BlockAckTestSuite()
     : TestSuite("wifi-block-ack", UNIT)
 {
-    AddTestCase(new PacketBufferingCaseA, TestCase::QUICK);
-    AddTestCase(new PacketBufferingCaseB, TestCase::QUICK);
-    AddTestCase(new OriginatorBlockAckWindowTest, TestCase::QUICK);
-    AddTestCase(new CtrlBAckResponseHeaderTest, TestCase::QUICK);
-    AddTestCase(new BlockAckRecipientBufferTest(0), TestCase::QUICK);
-    AddTestCase(new BlockAckRecipientBufferTest(4090), TestCase::QUICK);
-    AddTestCase(new MultiStaCtrlBAckResponseHeaderTest, TestCase::QUICK);
-    AddTestCase(new BlockAckAggregationDisabledTest(false), TestCase::QUICK);
-    AddTestCase(new BlockAckAggregationDisabledTest(true), TestCase::QUICK);
+    AddTestCase(new PacketBufferingCaseA, TestCase::Duration::QUICK);
+    AddTestCase(new PacketBufferingCaseB, TestCase::Duration::QUICK);
+    AddTestCase(new OriginatorBlockAckWindowTest, TestCase::Duration::QUICK);
+    AddTestCase(new CtrlBAckResponseHeaderTest, TestCase::Duration::QUICK);
+    AddTestCase(new BlockAckRecipientBufferTest(0), TestCase::Duration::QUICK);
+    AddTestCase(new BlockAckRecipientBufferTest(4090), TestCase::Duration::QUICK);
+    AddTestCase(new MultiStaCtrlBAckResponseHeaderTest, TestCase::Duration::QUICK);
+    AddTestCase(new BlockAckAggregationDisabledTest(false), TestCase::Duration::QUICK);
+    AddTestCase(new BlockAckAggregationDisabledTest(true), TestCase::Duration::QUICK);
 }
 
 static BlockAckTestSuite g_blockAckTestSuite; ///< the test suite

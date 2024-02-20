@@ -201,14 +201,14 @@ LteRlcHeaderTestSuite::LteRlcHeaderTestSuite()
         SequenceNumber10 ackSn(8);
         std::list<SequenceNumber10> nackSnList;
         std::string hex("0020");
-        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::QUICK);
+        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::Duration::QUICK);
     }
 
     {
         SequenceNumber10 ackSn(873);
         std::list<SequenceNumber10> nackSnList;
         std::string hex("0da4");
-        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::QUICK);
+        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::Duration::QUICK);
     }
 
     {
@@ -217,7 +217,7 @@ LteRlcHeaderTestSuite::LteRlcHeaderTestSuite()
             SequenceNumber10(873),
         };
         std::string hex("000bb480");
-        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::QUICK);
+        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::Duration::QUICK);
     }
 
     {
@@ -227,7 +227,7 @@ LteRlcHeaderTestSuite::LteRlcHeaderTestSuite()
             SequenceNumber10(754),
         };
         std::string hex("000bfed790");
-        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::QUICK);
+        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::Duration::QUICK);
     }
 
     {
@@ -238,7 +238,7 @@ LteRlcHeaderTestSuite::LteRlcHeaderTestSuite()
             SequenceNumber10(947),
         };
         std::string hex("000bfed795d980");
-        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::QUICK);
+        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::Duration::QUICK);
     }
 
     {
@@ -250,7 +250,7 @@ LteRlcHeaderTestSuite::LteRlcHeaderTestSuite()
             SequenceNumber10(347),
         };
         std::string hex("000bfed795d9cad8");
-        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::QUICK);
+        AddTestCase(new RlcAmStatusPduTestCase(ackSn, nackSnList, hex), TestCase::Duration::QUICK);
     }
 }
 

@@ -117,47 +117,47 @@ RectangleClosestBorderTestSuite::RectangleClosestBorderTestSuite()
      */
     // Left side (1 and 15)
     AddTestCase(new RectangleClosestBorderTestCase(-5, 5, rectangle, Rectangle::LEFTSIDE),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new RectangleClosestBorderTestCase(2, 5, rectangle, Rectangle::LEFTSIDE),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     // Right side (5 and 17)
     AddTestCase(new RectangleClosestBorderTestCase(17, 5, rectangle, Rectangle::RIGHTSIDE),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new RectangleClosestBorderTestCase(7, 5, rectangle, Rectangle::RIGHTSIDE),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     // Bottom side (8 and 14)
     AddTestCase(new RectangleClosestBorderTestCase(5, -7, rectangle, Rectangle::BOTTOMSIDE),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new RectangleClosestBorderTestCase(5, 1, rectangle, Rectangle::BOTTOMSIDE),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     // Top side (3 and 16)
     AddTestCase(new RectangleClosestBorderTestCase(5, 15, rectangle, Rectangle::TOPSIDE),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new RectangleClosestBorderTestCase(5, 7, rectangle, Rectangle::TOPSIDE),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     // Left-Bottom corner (9 and 10)
     AddTestCase(new RectangleClosestBorderTestCase(-1, -1, rectangle, Rectangle::BOTTOMLEFTCORNER),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new RectangleClosestBorderTestCase(0, 0, rectangle, Rectangle::BOTTOMLEFTCORNER),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     // Right-Bottom corner (7 and 13)
     AddTestCase(new RectangleClosestBorderTestCase(11, -1, rectangle, Rectangle::BOTTOMRIGHTCORNER),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new RectangleClosestBorderTestCase(9, 1, rectangle, Rectangle::BOTTOMRIGHTCORNER),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     // Left-Top corner (2 and 11)
     AddTestCase(new RectangleClosestBorderTestCase(-1, 11, rectangle, Rectangle::TOPLEFTCORNER),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new RectangleClosestBorderTestCase(1, 9, rectangle, Rectangle::TOPLEFTCORNER),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     // Right-Top corner (4 and 12)
     AddTestCase(new RectangleClosestBorderTestCase(11, 11, rectangle, Rectangle::TOPRIGHTCORNER),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new RectangleClosestBorderTestCase(9, 9, rectangle, Rectangle::TOPRIGHTCORNER),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     // Central position (18)
     AddTestCase(new RectangleClosestBorderTestCase(5, 5, rectangle, Rectangle::TOPSIDE),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**

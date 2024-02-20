@@ -159,8 +159,10 @@ class TcpEndpointBug2211TestSuite : public TestSuite
     TcpEndpointBug2211TestSuite()
         : TestSuite("tcp-endpoint-bug2211-test", UNIT)
     {
-        AddTestCase(new TcpEndPointBug2211Test("Bug 2211 testcase IPv4", false), TestCase::QUICK);
-        AddTestCase(new TcpEndPointBug2211Test("Bug 2211 testcase IPv6", true), TestCase::QUICK);
+        AddTestCase(new TcpEndPointBug2211Test("Bug 2211 testcase IPv4", false),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new TcpEndPointBug2211Test("Bug 2211 testcase IPv6", true),
+                    TestCase::Duration::QUICK);
     }
 };
 

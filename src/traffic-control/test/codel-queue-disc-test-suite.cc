@@ -1332,20 +1332,24 @@ static class CoDelQueueDiscTestSuite : public TestSuite
         : TestSuite("codel-queue-disc", UNIT)
     {
         // Test 1: simple enqueue/dequeue with no drops
-        AddTestCase(new CoDelQueueDiscBasicEnqueueDequeue(QueueSizeUnit::PACKETS), TestCase::QUICK);
-        AddTestCase(new CoDelQueueDiscBasicEnqueueDequeue(QueueSizeUnit::BYTES), TestCase::QUICK);
+        AddTestCase(new CoDelQueueDiscBasicEnqueueDequeue(QueueSizeUnit::PACKETS),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new CoDelQueueDiscBasicEnqueueDequeue(QueueSizeUnit::BYTES),
+                    TestCase::Duration::QUICK);
         // Test 2: enqueue with drops due to queue overflow
-        AddTestCase(new CoDelQueueDiscBasicOverflow(QueueSizeUnit::PACKETS), TestCase::QUICK);
-        AddTestCase(new CoDelQueueDiscBasicOverflow(QueueSizeUnit::BYTES), TestCase::QUICK);
+        AddTestCase(new CoDelQueueDiscBasicOverflow(QueueSizeUnit::PACKETS),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new CoDelQueueDiscBasicOverflow(QueueSizeUnit::BYTES),
+                    TestCase::Duration::QUICK);
         // Test 3: test NewtonStep() against explicit port of Linux implementation
-        AddTestCase(new CoDelQueueDiscNewtonStepTest(), TestCase::QUICK);
+        AddTestCase(new CoDelQueueDiscNewtonStepTest(), TestCase::Duration::QUICK);
         // Test 4: test ControlLaw() against explicit port of Linux implementation
-        AddTestCase(new CoDelQueueDiscControlLawTest(), TestCase::QUICK);
+        AddTestCase(new CoDelQueueDiscControlLawTest(), TestCase::Duration::QUICK);
         // Test 5: enqueue/dequeue with drops according to CoDel algorithm
-        AddTestCase(new CoDelQueueDiscBasicDrop(QueueSizeUnit::PACKETS), TestCase::QUICK);
-        AddTestCase(new CoDelQueueDiscBasicDrop(QueueSizeUnit::BYTES), TestCase::QUICK);
+        AddTestCase(new CoDelQueueDiscBasicDrop(QueueSizeUnit::PACKETS), TestCase::Duration::QUICK);
+        AddTestCase(new CoDelQueueDiscBasicDrop(QueueSizeUnit::BYTES), TestCase::Duration::QUICK);
         // Test 6: enqueue/dequeue with marks according to CoDel algorithm
-        AddTestCase(new CoDelQueueDiscBasicMark(QueueSizeUnit::PACKETS), TestCase::QUICK);
-        AddTestCase(new CoDelQueueDiscBasicMark(QueueSizeUnit::BYTES), TestCase::QUICK);
+        AddTestCase(new CoDelQueueDiscBasicMark(QueueSizeUnit::PACKETS), TestCase::Duration::QUICK);
+        AddTestCase(new CoDelQueueDiscBasicMark(QueueSizeUnit::BYTES), TestCase::Duration::QUICK);
     }
 } g_coDelQueueTestSuite; ///< the test suite

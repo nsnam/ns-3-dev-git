@@ -537,15 +537,15 @@ Ns3TcpStateTestSuite::Ns3TcpStateTestSuite()
     SetDataDir("src/test/ns3tcp/response-vectors");
     Packet::EnablePrinting(); // Enable packet metadata for all test cases
 
-    AddTestCase(new Ns3TcpStateTestCase(0), TestCase::QUICK);
-    AddTestCase(new Ns3TcpStateTestCase(1), TestCase::QUICK);
-    AddTestCase(new Ns3TcpStateTestCase(2), TestCase::QUICK);
-    AddTestCase(new Ns3TcpStateTestCase(3), TestCase::QUICK);
-    AddTestCase(new Ns3TcpStateTestCase(4), TestCase::QUICK);
-    AddTestCase(new Ns3TcpStateTestCase(5), TestCase::QUICK);
-    AddTestCase(new Ns3TcpStateTestCase(6), TestCase::QUICK);
-    AddTestCase(new Ns3TcpStateTestCase(7), TestCase::QUICK);
-    AddTestCase(new Ns3TcpStateTestCase(8), TestCase::QUICK);
+    AddTestCase(new Ns3TcpStateTestCase(0), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpStateTestCase(1), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpStateTestCase(2), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpStateTestCase(3), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpStateTestCase(4), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpStateTestCase(5), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpStateTestCase(6), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpStateTestCase(7), TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpStateTestCase(8), TestCase::Duration::QUICK);
 }
 
 /// Do not forget to allocate an instance of this TestSuite.

@@ -101,7 +101,7 @@ LteLinkAdaptationTestSuite::LteLinkAdaptationTestSuite()
                                                   snrEfficiencyMcs[i].snrDb,
                                                   lossDb,
                                                   snrEfficiencyMcs[i].mcsIndex),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 }
 

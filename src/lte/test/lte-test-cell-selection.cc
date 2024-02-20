@@ -77,7 +77,7 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite()
     };
 
     AddTestCase(new LteCellSelectionTestCase("EPC, real RRC", true, false, 60.0 /* isd */, w),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // IDEAL RRC PROTOCOL
 
@@ -92,7 +92,7 @@ LteCellSelectionTestSuite::LteCellSelectionTestSuite()
     };
 
     AddTestCase(new LteCellSelectionTestCase("EPC, ideal RRC", true, true, 60.0 /* isd */, w),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
 } // end of LteCellSelectionTestSuite::LteCellSelectionTestSuite ()
 

@@ -291,7 +291,7 @@ class ChannelConditionModelsTestSuite : public TestSuite
 ChannelConditionModelsTestSuite::ChannelConditionModelsTestSuite()
     : TestSuite("propagation-channel-condition-model", UNIT)
 {
-    AddTestCase(new ThreeGppChannelConditionModelTestCase, TestCase::QUICK);
+    AddTestCase(new ThreeGppChannelConditionModelTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

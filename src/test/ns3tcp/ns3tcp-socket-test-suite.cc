@@ -311,8 +311,8 @@ class Ns3TcpSocketTestSuite : public TestSuite
 Ns3TcpSocketTestSuite::Ns3TcpSocketTestSuite()
     : TestSuite("ns3-tcp-socket", SYSTEM)
 {
-    AddTestCase(new Ns3TcpSocketTestCaseP2P, TestCase::QUICK);
-    AddTestCase(new Ns3TcpSocketTestCaseCsma, TestCase::QUICK);
+    AddTestCase(new Ns3TcpSocketTestCaseP2P, TestCase::Duration::QUICK);
+    AddTestCase(new Ns3TcpSocketTestCaseCsma, TestCase::Duration::QUICK);
 }
 
 /// Do not forget to allocate an instance of this TestSuite.

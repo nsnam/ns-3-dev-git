@@ -523,7 +523,7 @@ class TcpRtoTestSuite : public TestSuite
         for (const auto& t : types)
         {
             AddTestCase(new TcpRtoTest(t, t.GetName() + " RTO retransmit testing"),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
 
             constexpr uint32_t seqToDrop = 25001;
 
@@ -532,7 +532,7 @@ class TcpRtoTestSuite : public TestSuite
                                                seqToDrop,
                                                Seconds(0.5),
                                                t.GetName() + " RTO ssthresh testing, set to 2*MSL"),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
 
             // With RTO of 0.005 seconds, FlightSize/2 > 2*SMSS
             AddTestCase(new TcpSsThreshRtoTest(
@@ -540,10 +540,10 @@ class TcpRtoTestSuite : public TestSuite
                             seqToDrop,
                             Seconds(0.005),
                             t.GetName() + " RTO ssthresh testing, set to half of BytesInFlight"),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
 
             AddTestCase(new TcpTimeRtoTest(t, t.GetName() + " RTO timing testing"),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
         }
     }
 };

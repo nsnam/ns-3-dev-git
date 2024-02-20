@@ -419,7 +419,7 @@ CarrierAggregationConfigTestSuite::CarrierAggregationConfigTestSuite()
                                                      numberOfComponentCarriers,
                                                      configToCheck,
                                                      simulationDuration),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     //   configToCheck.erase(configToCheck.begin(), configToCheck.end());
     configToCheck.clear();
@@ -446,7 +446,7 @@ CarrierAggregationConfigTestSuite::CarrierAggregationConfigTestSuite()
                                                      numberOfComponentCarriers,
                                                      configToCheck,
                                                      simulationDuration),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**

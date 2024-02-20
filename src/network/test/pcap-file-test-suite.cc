@@ -1391,13 +1391,13 @@ PcapFileTestSuite::PcapFileTestSuite()
     : TestSuite("pcap-file", UNIT)
 {
     SetDataDir(NS_TEST_SOURCEDIR);
-    AddTestCase(new WriteModeCreateTestCase, TestCase::QUICK);
-    AddTestCase(new ReadModeCreateTestCase, TestCase::QUICK);
-    // AddTestCase (new AppendModeCreateTestCase, TestCase::QUICK);
-    AddTestCase(new FileHeaderTestCase, TestCase::QUICK);
-    AddTestCase(new RecordHeaderTestCase, TestCase::QUICK);
-    AddTestCase(new ReadFileTestCase, TestCase::QUICK);
-    AddTestCase(new DiffTestCase, TestCase::QUICK);
+    AddTestCase(new WriteModeCreateTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ReadModeCreateTestCase, TestCase::Duration::QUICK);
+    // AddTestCase (new AppendModeCreateTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new FileHeaderTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new RecordHeaderTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ReadFileTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new DiffTestCase, TestCase::Duration::QUICK);
 }
 
 static PcapFileTestSuite pcapFileTestSuite; //!< Static variable for test initialization

@@ -1199,18 +1199,18 @@ static class CobaltQueueDiscTestSuite : public TestSuite
         : TestSuite("cobalt-queue-disc", UNIT)
     {
         // Test 1: simple enqueue/dequeue with no drops
-        AddTestCase(new CobaltQueueDiscBasicEnqueueDequeue(PACKETS), TestCase::QUICK);
-        AddTestCase(new CobaltQueueDiscBasicEnqueueDequeue(BYTES), TestCase::QUICK);
+        AddTestCase(new CobaltQueueDiscBasicEnqueueDequeue(PACKETS), TestCase::Duration::QUICK);
+        AddTestCase(new CobaltQueueDiscBasicEnqueueDequeue(BYTES), TestCase::Duration::QUICK);
         // Test 2: Drop test
-        AddTestCase(new CobaltQueueDiscDropTest(), TestCase::QUICK);
+        AddTestCase(new CobaltQueueDiscDropTest(), TestCase::Duration::QUICK);
         // Test 3: Mark test
-        AddTestCase(new CobaltQueueDiscMarkTest(PACKETS), TestCase::QUICK);
-        AddTestCase(new CobaltQueueDiscMarkTest(BYTES), TestCase::QUICK);
+        AddTestCase(new CobaltQueueDiscMarkTest(PACKETS), TestCase::Duration::QUICK);
+        AddTestCase(new CobaltQueueDiscMarkTest(BYTES), TestCase::Duration::QUICK);
         // Test 4: CE threshold marking test
-        AddTestCase(new CobaltQueueDiscCeThresholdTest(PACKETS), TestCase::QUICK);
-        AddTestCase(new CobaltQueueDiscCeThresholdTest(BYTES), TestCase::QUICK);
+        AddTestCase(new CobaltQueueDiscCeThresholdTest(PACKETS), TestCase::Duration::QUICK);
+        AddTestCase(new CobaltQueueDiscCeThresholdTest(BYTES), TestCase::Duration::QUICK);
         // Test 4: Blue enhancement test
-        AddTestCase(new CobaltQueueDiscEnhancedBlueTest(PACKETS), TestCase::QUICK);
-        AddTestCase(new CobaltQueueDiscEnhancedBlueTest(BYTES), TestCase::QUICK);
+        AddTestCase(new CobaltQueueDiscEnhancedBlueTest(PACKETS), TestCase::Duration::QUICK);
+        AddTestCase(new CobaltQueueDiscEnhancedBlueTest(BYTES), TestCase::Duration::QUICK);
     }
 } g_cobaltQueueTestSuite; ///< the test suite

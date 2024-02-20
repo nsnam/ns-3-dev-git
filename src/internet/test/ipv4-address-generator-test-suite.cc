@@ -365,11 +365,11 @@ class Ipv4AddressGeneratorTestSuite : public TestSuite
 Ipv4AddressGeneratorTestSuite::Ipv4AddressGeneratorTestSuite()
     : TestSuite("ipv4-address-generator", UNIT)
 {
-    AddTestCase(new NetworkNumberAllocatorTestCase(), TestCase::QUICK);
-    AddTestCase(new AddressAllocatorTestCase(), TestCase::QUICK);
-    AddTestCase(new NetworkAndAddressTestCase(), TestCase::QUICK);
-    AddTestCase(new ExampleAddressGeneratorTestCase(), TestCase::QUICK);
-    AddTestCase(new AddressCollisionTestCase(), TestCase::QUICK);
+    AddTestCase(new NetworkNumberAllocatorTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new AddressAllocatorTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new NetworkAndAddressTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new ExampleAddressGeneratorTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new AddressCollisionTestCase(), TestCase::Duration::QUICK);
 }
 
 static Ipv4AddressGeneratorTestSuite

@@ -490,10 +490,10 @@ class RngTestSuite : public TestSuite
 RngTestSuite::RngTestSuite()
     : TestSuite("random-number-generators", UNIT)
 {
-    AddTestCase(new RngUniformTestCase, TestCase::QUICK);
-    AddTestCase(new RngNormalTestCase, TestCase::QUICK);
-    AddTestCase(new RngExponentialTestCase, TestCase::QUICK);
-    AddTestCase(new RngParetoTestCase, TestCase::QUICK);
+    AddTestCase(new RngUniformTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new RngNormalTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new RngExponentialTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new RngParetoTestCase, TestCase::Duration::QUICK);
 }
 
 static RngTestSuite g_rngTestSuite; //!< Static variable for test initialization

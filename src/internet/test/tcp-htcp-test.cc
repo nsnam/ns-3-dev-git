@@ -175,7 +175,7 @@ class TcpHtcpTestSuite : public TestSuite
                                              ns3::MilliSeconds(1000),
                                              20383,
                                              "TcpHtcp increment test on cWnd "),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpHtcpIncrementTest(38,
                                              1,
                                              100,
@@ -184,7 +184,7 @@ class TcpHtcpTestSuite : public TestSuite
                                              ns3::MilliSeconds(1100),
                                              40,
                                              "TcpHtcp increment test on cWnd "),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpHtcpIncrementTest(53 * 1446,
                                              1446,
                                              50,
@@ -193,7 +193,7 @@ class TcpHtcpTestSuite : public TestSuite
                                              ns3::MilliSeconds(1500),
                                              76671,
                                              "TcpHtcp increment test on cWnd "),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

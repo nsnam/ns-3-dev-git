@@ -212,7 +212,7 @@ class ProbeTestSuite : public TestSuite
 ProbeTestSuite::ProbeTestSuite()
     : TestSuite("double-probe", UNIT)
 {
-    AddTestCase(new ProbeTestCase1, TestCase::QUICK);
+    AddTestCase(new ProbeTestCase1, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

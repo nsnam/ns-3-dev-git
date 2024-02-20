@@ -1720,14 +1720,14 @@ class FqCobaltQueueDiscTestSuite : public TestSuite
 FqCobaltQueueDiscTestSuite::FqCobaltQueueDiscTestSuite()
     : TestSuite("fq-cobalt-queue-disc", UNIT)
 {
-    AddTestCase(new FqCobaltQueueDiscNoSuitableFilter, TestCase::QUICK);
-    AddTestCase(new FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::QUICK);
-    AddTestCase(new FqCobaltQueueDiscDeficit, TestCase::QUICK);
-    AddTestCase(new FqCobaltQueueDiscTCPFlowsSeparation, TestCase::QUICK);
-    AddTestCase(new FqCobaltQueueDiscUDPFlowsSeparation, TestCase::QUICK);
-    AddTestCase(new FqCobaltQueueDiscEcnMarking, TestCase::QUICK);
-    AddTestCase(new FqCobaltQueueDiscSetLinearProbing, TestCase::QUICK);
-    AddTestCase(new FqCobaltQueueDiscL4sMode, TestCase::QUICK);
+    AddTestCase(new FqCobaltQueueDiscNoSuitableFilter, TestCase::Duration::QUICK);
+    AddTestCase(new FqCobaltQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::Duration::QUICK);
+    AddTestCase(new FqCobaltQueueDiscDeficit, TestCase::Duration::QUICK);
+    AddTestCase(new FqCobaltQueueDiscTCPFlowsSeparation, TestCase::Duration::QUICK);
+    AddTestCase(new FqCobaltQueueDiscUDPFlowsSeparation, TestCase::Duration::QUICK);
+    AddTestCase(new FqCobaltQueueDiscEcnMarking, TestCase::Duration::QUICK);
+    AddTestCase(new FqCobaltQueueDiscSetLinearProbing, TestCase::Duration::QUICK);
+    AddTestCase(new FqCobaltQueueDiscL4sMode, TestCase::Duration::QUICK);
 }
 
 /// Do not forget to allocate an instance of this TestSuite.

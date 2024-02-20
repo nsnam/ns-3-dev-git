@@ -624,6 +624,6 @@ static class RedQueueDiscTestSuite : public TestSuite
     RedQueueDiscTestSuite()
         : TestSuite("red-queue-disc", UNIT)
     {
-        AddTestCase(new RedQueueDiscTestCase(), TestCase::QUICK);
+        AddTestCase(new RedQueueDiscTestCase(), TestCase::Duration::QUICK);
     }
 } g_redQueueTestSuite; ///< the test suite

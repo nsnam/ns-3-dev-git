@@ -721,15 +721,15 @@ class SimulatorTestSuite : public TestSuite
         ObjectFactory factory;
         factory.SetTypeId(ListScheduler::GetTypeId());
 
-        AddTestCase(new SimulatorEventsTestCase(factory), TestCase::QUICK);
+        AddTestCase(new SimulatorEventsTestCase(factory), TestCase::Duration::QUICK);
         factory.SetTypeId(MapScheduler::GetTypeId());
-        AddTestCase(new SimulatorEventsTestCase(factory), TestCase::QUICK);
+        AddTestCase(new SimulatorEventsTestCase(factory), TestCase::Duration::QUICK);
         factory.SetTypeId(HeapScheduler::GetTypeId());
-        AddTestCase(new SimulatorEventsTestCase(factory), TestCase::QUICK);
+        AddTestCase(new SimulatorEventsTestCase(factory), TestCase::Duration::QUICK);
         factory.SetTypeId(CalendarScheduler::GetTypeId());
-        AddTestCase(new SimulatorEventsTestCase(factory), TestCase::QUICK);
+        AddTestCase(new SimulatorEventsTestCase(factory), TestCase::Duration::QUICK);
         factory.SetTypeId(PriorityQueueScheduler::GetTypeId());
-        AddTestCase(new SimulatorEventsTestCase(factory), TestCase::QUICK);
+        AddTestCase(new SimulatorEventsTestCase(factory), TestCase::Duration::QUICK);
     }
 };
 

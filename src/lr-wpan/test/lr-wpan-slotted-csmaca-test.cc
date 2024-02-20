@@ -353,7 +353,7 @@ class LrWpanSlottedCsmacaTestSuite : public TestSuite
 LrWpanSlottedCsmacaTestSuite::LrWpanSlottedCsmacaTestSuite()
     : TestSuite("lr-wpan-slotted-csmaca", UNIT)
 {
-    AddTestCase(new LrWpanSlottedCsmacaTestCase, TestCase::QUICK);
+    AddTestCase(new LrWpanSlottedCsmacaTestCase, TestCase::Duration::QUICK);
 }
 
 static LrWpanSlottedCsmacaTestSuite

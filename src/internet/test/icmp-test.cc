@@ -666,10 +666,10 @@ class IcmpTestSuite : public TestSuite
 IcmpTestSuite::IcmpTestSuite()
     : TestSuite("icmp", UNIT)
 {
-    AddTestCase(new IcmpEchoReplyTestCase, TestCase::QUICK);
-    AddTestCase(new IcmpTimeExceedTestCase, TestCase::QUICK);
-    AddTestCase(new IcmpV6EchoReplyTestCase, TestCase::QUICK);
-    AddTestCase(new IcmpV6TimeExceedTestCase, TestCase::QUICK);
+    AddTestCase(new IcmpEchoReplyTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new IcmpTimeExceedTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new IcmpV6EchoReplyTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new IcmpV6TimeExceedTestCase, TestCase::Duration::QUICK);
 }
 
 static IcmpTestSuite icmpTestSuite; //!< Static variable for test initialization

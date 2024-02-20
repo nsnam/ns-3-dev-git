@@ -501,10 +501,10 @@ class WifiPhyThresholdsTestSuite : public TestSuite
 WifiPhyThresholdsTestSuite::WifiPhyThresholdsTestSuite()
     : TestSuite("wifi-phy-thresholds", UNIT)
 {
-    AddTestCase(new WifiPhyThresholdsWeakWifiSignalTest, TestCase::QUICK);
-    AddTestCase(new WifiPhyThresholdsWeakForeignSignalTest, TestCase::QUICK);
-    AddTestCase(new WifiPhyThresholdsStrongWifiSignalTest, TestCase::QUICK);
-    AddTestCase(new WifiPhyThresholdsStrongForeignSignalTest, TestCase::QUICK);
+    AddTestCase(new WifiPhyThresholdsWeakWifiSignalTest, TestCase::Duration::QUICK);
+    AddTestCase(new WifiPhyThresholdsWeakForeignSignalTest, TestCase::Duration::QUICK);
+    AddTestCase(new WifiPhyThresholdsStrongWifiSignalTest, TestCase::Duration::QUICK);
+    AddTestCase(new WifiPhyThresholdsStrongForeignSignalTest, TestCase::Duration::QUICK);
 }
 
 static WifiPhyThresholdsTestSuite wifiPhyThresholdsTestSuite; ///< the test suite

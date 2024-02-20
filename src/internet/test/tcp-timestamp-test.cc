@@ -298,15 +298,18 @@ class TcpTimestampTestSuite : public TestSuite
     TcpTimestampTestSuite()
         : TestSuite("tcp-timestamp", UNIT)
     {
-        AddTestCase(new TimestampTestCase(TimestampTestCase::DISABLED), TestCase::QUICK);
-        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED_RECEIVER), TestCase::QUICK);
-        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED_SENDER), TestCase::QUICK);
-        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED), TestCase::QUICK);
-        AddTestCase(new TimestampValueTestCase(0.0, 0.01, "Value Check"), TestCase::QUICK);
-        AddTestCase(new TimestampValueTestCase(3.0, 0.5, "Value Check"), TestCase::QUICK);
-        AddTestCase(new TimestampValueTestCase(5.5, 1.0, "Value Check"), TestCase::QUICK);
-        AddTestCase(new TimestampValueTestCase(6.0, 2.0, "Value Check"), TestCase::QUICK);
-        AddTestCase(new TimestampValueTestCase(2.4, 0.7, "Value Check"), TestCase::QUICK);
+        AddTestCase(new TimestampTestCase(TimestampTestCase::DISABLED), TestCase::Duration::QUICK);
+        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED_RECEIVER),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED_SENDER),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new TimestampTestCase(TimestampTestCase::ENABLED), TestCase::Duration::QUICK);
+        AddTestCase(new TimestampValueTestCase(0.0, 0.01, "Value Check"),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new TimestampValueTestCase(3.0, 0.5, "Value Check"), TestCase::Duration::QUICK);
+        AddTestCase(new TimestampValueTestCase(5.5, 1.0, "Value Check"), TestCase::Duration::QUICK);
+        AddTestCase(new TimestampValueTestCase(6.0, 2.0, "Value Check"), TestCase::Duration::QUICK);
+        AddTestCase(new TimestampValueTestCase(2.4, 0.7, "Value Check"), TestCase::Duration::QUICK);
     }
 };
 

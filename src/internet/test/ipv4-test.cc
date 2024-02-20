@@ -131,7 +131,7 @@ class IPv4L3ProtocolTestSuite : public TestSuite
     IPv4L3ProtocolTestSuite()
         : TestSuite("ipv4-protocol", UNIT)
     {
-        AddTestCase(new Ipv4L3ProtocolTestCase(), TestCase::QUICK);
+        AddTestCase(new Ipv4L3ProtocolTestCase(), TestCase::Duration::QUICK);
     }
 };
 

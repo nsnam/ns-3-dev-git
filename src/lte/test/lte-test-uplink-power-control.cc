@@ -59,13 +59,14 @@ LteUplinkPowerControlTestSuite::LteUplinkPowerControlTestSuite()
     //  LogComponentEnable ("LteUplinkPowerControlTest", logLevel);
     NS_LOG_INFO("Creating LteUplinkPowerControlTestSuite");
 
-    AddTestCase(new LteUplinkOpenLoopPowerControlTestCase("OpenLoopTest1"), TestCase::QUICK);
+    AddTestCase(new LteUplinkOpenLoopPowerControlTestCase("OpenLoopTest1"),
+                TestCase::Duration::QUICK);
     AddTestCase(
         new LteUplinkClosedLoopPowerControlAbsoluteModeTestCase("ClosedLoopAbsoluteModeTest1"),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new LteUplinkClosedLoopPowerControlAccumulatedModeTestCase(
                     "ClosedLoopAccumulatedModeTest1"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**

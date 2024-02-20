@@ -2944,8 +2944,8 @@ class WifiPhyCcaTestSuite : public TestSuite
 WifiPhyCcaTestSuite::WifiPhyCcaTestSuite()
     : TestSuite("wifi-phy-cca", UNIT)
 {
-    AddTestCase(new WifiPhyCcaThresholdsTest, TestCase::QUICK);
-    AddTestCase(new WifiPhyCcaIndicationTest, TestCase::QUICK);
+    AddTestCase(new WifiPhyCcaThresholdsTest, TestCase::Duration::QUICK);
+    AddTestCase(new WifiPhyCcaIndicationTest, TestCase::Duration::QUICK);
 }
 
 static WifiPhyCcaTestSuite WifiPhyCcaTestSuite; ///< the test suite

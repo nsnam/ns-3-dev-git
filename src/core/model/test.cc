@@ -238,7 +238,7 @@ class TestRunnerImpl : public Singleton<TestRunnerImpl>
      */
     std::list<TestCase*> FilterTests(std::string testName,
                                      TestSuite::Type testType,
-                                     TestCase::TestDuration maximumTestDuration);
+                                     TestCase::Duration maximumTestDuration);
 
     /** Container type for the test. */
     typedef std::vector<TestSuite*> TestSuiteVector;
@@ -279,7 +279,7 @@ TestCase::TestCase(std::string name)
       m_runner(nullptr),
       m_result(nullptr),
       m_name(name),
-      m_duration(TestCase::QUICK)
+      m_duration(TestCase::Duration::QUICK)
 {
     NS_LOG_FUNCTION(this << name);
 }
@@ -298,7 +298,7 @@ TestCase::~TestCase()
 }
 
 void
-TestCase::AddTestCase(TestCase* testCase, TestCase::TestDuration duration)
+TestCase::AddTestCase(TestCase* testCase, TestCase::Duration duration)
 {
     NS_LOG_FUNCTION(&testCase << duration);
 
@@ -833,7 +833,7 @@ TestRunnerImpl::PrintTestTypeList() const
 std::list<TestCase*>
 TestRunnerImpl::FilterTests(std::string testName,
                             TestSuite::Type testType,
-                            TestCase::TestDuration maximumTestDuration)
+                            TestCase::Duration maximumTestDuration)
 {
     NS_LOG_FUNCTION(this << testName << testType);
     std::list<TestCase*> tests;
@@ -894,7 +894,7 @@ TestRunnerImpl::Run(int argc, char* argv[])
     bool printTestTypeList = false;
     bool printTestNameList = false;
     bool printTestTypeAndName = false;
-    TestCase::TestDuration maximumTestDuration = TestCase::QUICK;
+    TestCase::Duration maximumTestDuration = TestCase::Duration::QUICK;
     char* progname = argv[0];
 
     char** argi = argv;
@@ -976,15 +976,15 @@ TestRunnerImpl::Run(int argc, char* argv[])
             // Set the maximum test length allowed.
             if (fullness == "QUICK")
             {
-                maximumTestDuration = TestCase::QUICK;
+                maximumTestDuration = TestCase::Duration::QUICK;
             }
             else if (fullness == "EXTENSIVE")
             {
-                maximumTestDuration = TestCase::EXTENSIVE;
+                maximumTestDuration = TestCase::Duration::EXTENSIVE;
             }
             else if (fullness == "TAKES_FOREVER")
             {
-                maximumTestDuration = TestCase::TAKES_FOREVER;
+                maximumTestDuration = TestCase::Duration::TAKES_FOREVER;
             }
             else
             {
@@ -1142,6 +1142,21 @@ TestRunner::Run(int argc, char* argv[])
 {
     NS_LOG_FUNCTION(argc << argv);
     return TestRunnerImpl::Get()->Run(argc, argv);
+}
+
+std::ostream&
+operator<<(std::ostream& os, TestCase::Duration duration)
+{
+    switch (duration)
+    {
+    case TestCase::Duration::QUICK:
+        return os << "QUICK";
+    case TestCase::Duration::EXTENSIVE:
+        return os << "EXTENSIVE";
+    case TestCase::Duration::TAKES_FOREVER:
+        return os << "TAKES_FOREVER";
+    };
+    return os << "UNKNOWN(" << static_cast<uint32_t>(duration) << ")";
 }
 
 } // namespace ns3

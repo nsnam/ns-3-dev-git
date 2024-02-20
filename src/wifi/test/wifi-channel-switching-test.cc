@@ -317,7 +317,7 @@ class WifiChannelSwitchingTestSuite : public TestSuite
 WifiChannelSwitchingTestSuite::WifiChannelSwitchingTestSuite()
     : TestSuite("wifi-channel-switching", UNIT)
 {
-    AddTestCase(new WifiChannelSwitchingTest, TestCase::QUICK);
+    AddTestCase(new WifiChannelSwitchingTest, TestCase::Duration::QUICK);
 }
 
 static WifiChannelSwitchingTestSuite g_issue211TestSuite; ///< the test suite

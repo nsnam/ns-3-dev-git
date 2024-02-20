@@ -1162,13 +1162,13 @@ class FqPieQueueDiscTestSuite : public TestSuite
 FqPieQueueDiscTestSuite::FqPieQueueDiscTestSuite()
     : TestSuite("fq-pie-queue-disc", UNIT)
 {
-    AddTestCase(new FqPieQueueDiscNoSuitableFilter, TestCase::QUICK);
-    AddTestCase(new FqPieQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::QUICK);
-    AddTestCase(new FqPieQueueDiscDeficit, TestCase::QUICK);
-    AddTestCase(new FqPieQueueDiscTCPFlowsSeparation, TestCase::QUICK);
-    AddTestCase(new FqPieQueueDiscUDPFlowsSeparation, TestCase::QUICK);
-    AddTestCase(new FqPieQueueDiscSetLinearProbing, TestCase::QUICK);
-    AddTestCase(new FqPieQueueDiscL4sMode, TestCase::QUICK);
+    AddTestCase(new FqPieQueueDiscNoSuitableFilter, TestCase::Duration::QUICK);
+    AddTestCase(new FqPieQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::Duration::QUICK);
+    AddTestCase(new FqPieQueueDiscDeficit, TestCase::Duration::QUICK);
+    AddTestCase(new FqPieQueueDiscTCPFlowsSeparation, TestCase::Duration::QUICK);
+    AddTestCase(new FqPieQueueDiscUDPFlowsSeparation, TestCase::Duration::QUICK);
+    AddTestCase(new FqPieQueueDiscSetLinearProbing, TestCase::Duration::QUICK);
+    AddTestCase(new FqPieQueueDiscL4sMode, TestCase::Duration::QUICK);
 }
 
 /// Do not forget to allocate an instance of this TestSuite.

@@ -227,7 +227,7 @@ class SixlowpanHc1TestSuite : public TestSuite
 SixlowpanHc1TestSuite::SixlowpanHc1TestSuite()
     : TestSuite("sixlowpan-hc1", UNIT)
 {
-    AddTestCase(new SixlowpanHc1ImplTest(), TestCase::QUICK);
+    AddTestCase(new SixlowpanHc1ImplTest(), TestCase::Duration::QUICK);
 }
 
 static SixlowpanHc1TestSuite g_sixlowpanHc1TestSuite; //!< Static variable for test initialization

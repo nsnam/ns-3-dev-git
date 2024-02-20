@@ -315,7 +315,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "2.2.3.4",
@@ -325,7 +325,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  5,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "6.2.3.4",
@@ -335,7 +335,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::DOWNLINK,
                                                  "3.3.3.4",
@@ -345,7 +345,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::DOWNLINK,
                                                  "3.3.4.4",
@@ -355,7 +355,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "3.3.3.4",
@@ -365,7 +365,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         // test remote port
         AddTestCase(new EpcTftClassifierTestCase(c1,
@@ -377,7 +377,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -387,7 +387,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -397,7 +397,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -407,7 +407,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -417,7 +417,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -427,7 +427,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -437,7 +437,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         // test local port
         AddTestCase(new EpcTftClassifierTestCase(c1,
@@ -449,7 +449,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -459,7 +459,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -469,7 +469,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -479,7 +479,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -489,7 +489,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -499,7 +499,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -509,7 +509,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -519,7 +519,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -529,7 +529,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c1,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -539,7 +539,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         ///////////////////////////
         // check default TFT
@@ -561,7 +561,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::UPLINK,
                                                  "2.2.3.4",
@@ -571,7 +571,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  5,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::UPLINK,
                                                  "6.2.3.4",
@@ -581,7 +581,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::DOWNLINK,
                                                  "3.3.3.4",
@@ -591,7 +591,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::DOWNLINK,
                                                  "3.3.4.4",
@@ -601,7 +601,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::UPLINK,
                                                  "3.3.3.4",
@@ -611,7 +611,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         // test remote port
         AddTestCase(new EpcTftClassifierTestCase(c2,
@@ -623,7 +623,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -633,7 +633,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -643,7 +643,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -653,7 +653,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -663,7 +663,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -673,7 +673,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -683,7 +683,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         // test local port
         AddTestCase(new EpcTftClassifierTestCase(c2,
@@ -695,7 +695,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -705,7 +705,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -715,7 +715,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -725,7 +725,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -735,7 +735,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c2,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -745,7 +745,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         ///////////////////////////////////////////
         // check default TFT plus dedicated ones
@@ -768,7 +768,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::UPLINK,
                                                  "2.2.3.4",
@@ -778,7 +778,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  5,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::UPLINK,
                                                  "6.2.3.4",
@@ -788,7 +788,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::DOWNLINK,
                                                  "3.3.3.4",
@@ -798,7 +798,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::DOWNLINK,
                                                  "3.3.4.4",
@@ -808,7 +808,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::UPLINK,
                                                  "3.3.3.4",
@@ -818,7 +818,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         // test remote port
         AddTestCase(new EpcTftClassifierTestCase(c3,
@@ -830,7 +830,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  3,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -840,7 +840,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  3,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -850,7 +850,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  3,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -860,7 +860,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -870,7 +870,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -880,7 +880,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -890,7 +890,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         // test local port
         AddTestCase(new EpcTftClassifierTestCase(c3,
@@ -902,7 +902,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -912,7 +912,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -922,7 +922,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -932,7 +932,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  3,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -942,7 +942,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  3,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c3,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -952,7 +952,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  3,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         ///////////////////////////////////////////
         // check two TFTs with different ports
@@ -974,7 +974,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  0,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c4,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -984,7 +984,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c4,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -994,7 +994,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  1,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c4,
                                                  EpcTft::UPLINK,
                                                  "9.1.1.1",
@@ -1004,7 +1004,7 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new EpcTftClassifierTestCase(c4,
                                                  EpcTft::DOWNLINK,
                                                  "9.1.1.1",
@@ -1014,6 +1014,6 @@ EpcTftClassifierTestSuite::EpcTftClassifierTestSuite()
                                                  0,
                                                  2,
                                                  useIpv6),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 }

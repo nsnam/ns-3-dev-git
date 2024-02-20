@@ -161,7 +161,7 @@ class LolipopCounterTestSuite : public TestSuite
 LolipopCounterTestSuite::LolipopCounterTestSuite()
     : TestSuite("lollipop-counter", UNIT)
 {
-    AddTestCase(new LollipopCounterTest(), TestCase::QUICK);
+    AddTestCase(new LollipopCounterTest(), TestCase::Duration::QUICK);
 }
 
 static LolipopCounterTestSuite

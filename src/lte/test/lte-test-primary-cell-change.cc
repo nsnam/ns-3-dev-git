@@ -53,47 +53,47 @@ LtePrimaryCellChangeTestSuite::LtePrimaryCellChangeTestSuite()
 {
     // Test that handover from eNB to eNB with one carrier works within this framework.
     AddTestCase(new LtePrimaryCellChangeTestCase("ideal RRC, RngRun=1", true, 1, 1, 0, 1),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LtePrimaryCellChangeTestCase("real RRC, RngRun=1", false, 1, 1, 0, 1),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test that handover between first carriers of eNBs works.
     AddTestCase(new LtePrimaryCellChangeTestCase("ideal RRC, RngRun=1", true, 1, 2, 0, 2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LtePrimaryCellChangeTestCase("real RRC, RngRun=1", false, 1, 2, 0, 2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test that handover from second carrier of first eNB to first carrier of second eNB works.
     AddTestCase(new LtePrimaryCellChangeTestCase("ideal RRC, RngRun=1", true, 1, 2, 1, 2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LtePrimaryCellChangeTestCase("real RRC, RngRun=1", false, 1, 2, 1, 2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test that handover from first carrier of first eNB to first carrier of second eNB works.
     AddTestCase(new LtePrimaryCellChangeTestCase("ideal RRC, RngRun=1", true, 1, 2, 0, 3),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LtePrimaryCellChangeTestCase("real RRC, RngRun=1", false, 1, 2, 0, 3),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test that handover from second carrier of first eNB to second carrier of second eNB works.
     AddTestCase(new LtePrimaryCellChangeTestCase("ideal RRC, RngRun=1", true, 1, 2, 1, 3),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LtePrimaryCellChangeTestCase("real RRC, RngRun=1", false, 1, 2, 1, 3),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test intra-eNB inter-frequency handover.
     AddTestCase(new LtePrimaryCellChangeTestCase("ideal RRC, RngRun=1", true, 1, 2, 0, 1),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LtePrimaryCellChangeTestCase("real RRC, RngRun=1", false, 1, 2, 0, 1),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LtePrimaryCellChangeTestCase("ideal RRC, RngRun=1", true, 1, 2, 1, 0),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LtePrimaryCellChangeTestCase("real RRC, RngRun=1", false, 1, 2, 1, 0),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LtePrimaryCellChangeTestCase("ideal RRC, RngRun=1", true, 1, 4, 3, 1),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LtePrimaryCellChangeTestCase("real RRC, RngRun=1", false, 1, 4, 3, 1),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 } // end of LtePrimaryCellChangeTestSuite::LtePrimaryCellChangeTestSuite ()
 
 /**

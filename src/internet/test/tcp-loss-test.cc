@@ -192,13 +192,13 @@ class TcpLossTestSuite : public TestSuite
         // the TCP logic should correctly pass this case (no sequence wrapping).
         AddTestCase(
             new TcpLargeTransferLossTest(1000, 2000, 2500, "large-transfer-loss-without-wrap"),
-            TestCase::EXTENSIVE);
+            TestCase::Duration::EXTENSIVE);
         // If we force a loss at packet 1000 and then much later at 3294967, the
         // second sequence number will evaluate to less than 1000 considering
         // the sequence space wrap, so check this case also.
         AddTestCase(
             new TcpLargeTransferLossTest(1000, 3294967, 3295100, "large-transfer-loss-with-wrap"),
-            TestCase::EXTENSIVE);
+            TestCase::Duration::EXTENSIVE);
     }
 };
 

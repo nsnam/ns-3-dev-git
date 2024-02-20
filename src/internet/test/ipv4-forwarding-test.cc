@@ -240,7 +240,7 @@ class Ipv4ForwardingTestSuite : public TestSuite
 Ipv4ForwardingTestSuite::Ipv4ForwardingTestSuite()
     : TestSuite("ipv4-forwarding", UNIT)
 {
-    AddTestCase(new Ipv4ForwardingTest, TestCase::QUICK);
+    AddTestCase(new Ipv4ForwardingTest, TestCase::Duration::QUICK);
 }
 
 static Ipv4ForwardingTestSuite

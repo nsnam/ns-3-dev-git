@@ -73,16 +73,19 @@ LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite()
 
         // 1 interfering eNB SINR -2.0 BLER 0.007 TB size 217
         AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(2, 1078, 0.007, 9, Seconds(0.04), rngRun),
-                    (rngRun == 1) ? TestCase::QUICK : TestCase::TAKES_FOREVER);
+                    (rngRun == 1) ? TestCase::Duration::QUICK : TestCase::Duration::TAKES_FOREVER);
         // 2 interfering eNBs SINR -4.0 BLER 0.037 TB size 217
         AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(3, 1040, 0.045, 21, Seconds(0.04), rngRun),
-                    (rngRun == 1) ? TestCase::EXTENSIVE : TestCase::TAKES_FOREVER);
+                    (rngRun == 1) ? TestCase::Duration::EXTENSIVE
+                                  : TestCase::Duration::TAKES_FOREVER);
         // 3 interfering eNBs SINR -6.0 BLER 0.21 TB size 133
         AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(4, 1250, 0.206, 40, Seconds(0.12), rngRun),
-                    (rngRun == 1) ? TestCase::EXTENSIVE : TestCase::TAKES_FOREVER);
+                    (rngRun == 1) ? TestCase::Duration::EXTENSIVE
+                                  : TestCase::Duration::TAKES_FOREVER);
         // 4 interfering eNBs SINR -7.0 BLER 0.34 TB size 133
         AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(5, 1260, 0.343, 47, Seconds(0.12), rngRun),
-                    (rngRun == 1) ? TestCase::EXTENSIVE : TestCase::TAKES_FOREVER);
+                    (rngRun == 1) ? TestCase::Duration::EXTENSIVE
+                                  : TestCase::Duration::TAKES_FOREVER);
 
         // Tests on DL Data channels (PDSCH)
         // the tolerance is calculated with the following octave code:
@@ -94,23 +97,28 @@ LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite()
 
         // MCS 2 TB size of 256 bits BLER 0.33 SINR -5.51
         AddTestCase(new LenaDataPhyErrorModelTestCase(4, 1800, 0.33, 39, Seconds(0.04), rngRun),
-                    (rngRun == 1) ? TestCase::QUICK : TestCase::TAKES_FOREVER);
+                    (rngRun == 1) ? TestCase::Duration::QUICK : TestCase::Duration::TAKES_FOREVER);
         // MCS 2 TB size of 528 bits BLER 0.11 SINR -5.51
         AddTestCase(new LenaDataPhyErrorModelTestCase(2, 1800, 0.11, 26, Seconds(0.04), rngRun),
-                    (rngRun == 1) ? TestCase::EXTENSIVE : TestCase::TAKES_FOREVER);
+                    (rngRun == 1) ? TestCase::Duration::EXTENSIVE
+                                  : TestCase::Duration::TAKES_FOREVER);
         // MCS 2 TB size of 1088 bits BLER 0.02 SINR -5.51
         AddTestCase(new LenaDataPhyErrorModelTestCase(1, 1800, 0.02, 33, Seconds(0.04), rngRun),
-                    (rngRun == 1) ? TestCase::EXTENSIVE : TestCase::TAKES_FOREVER);
+                    (rngRun == 1) ? TestCase::Duration::EXTENSIVE
+                                  : TestCase::Duration::TAKES_FOREVER);
         // MCS 12 TB size of 4800 bits  BLER 0.3  SINR 4.43
         AddTestCase(new LenaDataPhyErrorModelTestCase(1, 600, 0.3, 38, Seconds(0.04), rngRun),
-                    (rngRun == 1) ? TestCase::EXTENSIVE : TestCase::TAKES_FOREVER);
+                    (rngRun == 1) ? TestCase::Duration::EXTENSIVE
+                                  : TestCase::Duration::TAKES_FOREVER);
         // MCS 12 TB size of 1632 bits  BLER 0.55  SINR 4.43
         AddTestCase(new LenaDataPhyErrorModelTestCase(3, 600, 0.55, 40, Seconds(0.04), rngRun),
-                    (rngRun == 1) ? TestCase::EXTENSIVE : TestCase::TAKES_FOREVER);
+                    (rngRun == 1) ? TestCase::Duration::EXTENSIVE
+                                  : TestCase::Duration::TAKES_FOREVER);
         // MCS 16 TB size of 7272 bits (3648 x 3584) BLER 0.14 SINR 8.48
         // BLER 0.14 = 1 - ((1-0.075)*(1-0.075))
         AddTestCase(new LenaDataPhyErrorModelTestCase(1, 470, 0.14, 29, Seconds(0.04), rngRun),
-                    (rngRun == 1) ? TestCase::EXTENSIVE : TestCase::TAKES_FOREVER);
+                    (rngRun == 1) ? TestCase::Duration::EXTENSIVE
+                                  : TestCase::Duration::TAKES_FOREVER);
     }
 }
 

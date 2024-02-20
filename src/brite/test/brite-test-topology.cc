@@ -217,8 +217,8 @@ class BriteTestSuite : public TestSuite
     BriteTestSuite()
         : TestSuite("brite-testing", UNIT)
     {
-        AddTestCase(new BriteTopologyStructureTestCase, TestCase::QUICK);
-        AddTestCase(new BriteTopologyFunctionTestCase, TestCase::QUICK);
+        AddTestCase(new BriteTopologyStructureTestCase, TestCase::Duration::QUICK);
+        AddTestCase(new BriteTopologyFunctionTestCase, TestCase::Duration::QUICK);
     }
 };
 

@@ -413,7 +413,7 @@ class TcpLinuxRenoTestSuite : public TestSuite
                                    cong_control_type,
                                    "Slow Start MSS = 524, socket send size = 524, delack = 1 " +
                                        cong_control_type.GetName()),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         // Next, enabling delayed acks should not have an effect on the final
         // cWnd achieved
@@ -427,7 +427,7 @@ class TcpLinuxRenoTestSuite : public TestSuite
                                    cong_control_type,
                                    "Slow Start MSS = 524, socket send size = 524, delack = 2 " +
                                        cong_control_type.GetName()),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         // Test the behavior of Slow Start phase with standard segment size
         // (1500 bytes) and delayed acknowledgement of 1 and 2 segments
@@ -443,7 +443,7 @@ class TcpLinuxRenoTestSuite : public TestSuite
                                    cong_control_type,
                                    "Slow Start MSS = 1500, socket send size = 524, delack = 1 " +
                                        cong_control_type.GetName()),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         // Enable delayed acks; we still expect m_cWnd to end up at 9 segments
         AddTestCase(
@@ -456,7 +456,7 @@ class TcpLinuxRenoTestSuite : public TestSuite
                                    cong_control_type,
                                    "Slow Start MSS = 1500, socket send size = 524, delack = 2 " +
                                        cong_control_type.GetName()),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         // Test the behavior of Congestion Avoidance phase with small segment size
         // (524 bytes) and delayed acknowledgement of 1 and 2.  One important thing
@@ -497,7 +497,7 @@ class TcpLinuxRenoTestSuite : public TestSuite
                         cong_control_type,
                         "Congestion Avoidance MSS = 524, socket send size = 524, delack = 1 " +
                             cong_control_type.GetName()),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         // Repeat with delayed acks enabled:  should result in same final cWnd
         // Expected data pattern starting at simulation time 10:
@@ -527,7 +527,7 @@ class TcpLinuxRenoTestSuite : public TestSuite
                         cong_control_type,
                         "Congestion Avoidance MSS = 524, socket send size = 524, delack = 2 " +
                             cong_control_type.GetName()),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         // Test the behavior of Congestion Avoidance phase with standard segment size (i.e 1500
         // bytes) and delayed acknowledgement of 1 and 2 Test the behavior of Congestion Avoidance
@@ -545,7 +545,7 @@ class TcpLinuxRenoTestSuite : public TestSuite
                         cong_control_type,
                         "Congestion Avoidance MSS = 1500, socket send size = 1500, delack = 1 " +
                             cong_control_type.GetName()),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         AddTestCase(new TcpLinuxRenoCongAvoidTest(
                         1500,     // segment size
@@ -558,7 +558,7 @@ class TcpLinuxRenoTestSuite : public TestSuite
                         cong_control_type,
                         "Congestion Avoidance MSS = 1500, socket send size = 1500, delack = 2 " +
                             cong_control_type.GetName()),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

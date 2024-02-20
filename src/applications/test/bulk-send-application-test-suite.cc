@@ -276,8 +276,8 @@ class BulkSendTestSuite : public TestSuite
 BulkSendTestSuite::BulkSendTestSuite()
     : TestSuite("bulk-send-application", UNIT)
 {
-    AddTestCase(new BulkSendBasicTestCase, TestCase::QUICK);
-    AddTestCase(new BulkSendSeqTsSizeTestCase, TestCase::QUICK);
+    AddTestCase(new BulkSendBasicTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new BulkSendSeqTsSizeTestCase, TestCase::Duration::QUICK);
 }
 
 static BulkSendTestSuite g_bulkSendTestSuite; //!< Static variable for test initialization

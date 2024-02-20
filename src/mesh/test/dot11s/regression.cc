@@ -41,10 +41,10 @@ class Dot11sRegressionSuite : public TestSuite
         // We do not use NS_TEST_SOURCEDIR variable here since mesh/test has
         // subdirectories
         SetDataDir(std::string("src/mesh/test/dot11s"));
-        AddTestCase(new PeerManagementProtocolRegressionTest, TestCase::QUICK);
-        AddTestCase(new HwmpSimplestRegressionTest, TestCase::QUICK);
-        AddTestCase(new HwmpReactiveRegressionTest, TestCase::QUICK);
-        AddTestCase(new HwmpProactiveRegressionTest, TestCase::QUICK);
-        AddTestCase(new HwmpDoRfRegressionTest, TestCase::QUICK);
+        AddTestCase(new PeerManagementProtocolRegressionTest, TestCase::Duration::QUICK);
+        AddTestCase(new HwmpSimplestRegressionTest, TestCase::Duration::QUICK);
+        AddTestCase(new HwmpReactiveRegressionTest, TestCase::Duration::QUICK);
+        AddTestCase(new HwmpProactiveRegressionTest, TestCase::Duration::QUICK);
+        AddTestCase(new HwmpDoRfRegressionTest, TestCase::Duration::QUICK);
     }
 } g_dot11sRegressionSuite; ///< the test suite

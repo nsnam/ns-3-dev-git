@@ -311,7 +311,7 @@ class RadvdTestSuite : public TestSuite
 RadvdTestSuite::RadvdTestSuite()
     : TestSuite("radvd", UNIT)
 {
-    AddTestCase(new RadvdTestCase, TestCase::QUICK);
+    AddTestCase(new RadvdTestCase, TestCase::Duration::QUICK);
 }
 
 static RadvdTestSuite radvdTestSuite; //!< Static variable for test initialization

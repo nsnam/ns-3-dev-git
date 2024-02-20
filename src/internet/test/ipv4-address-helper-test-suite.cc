@@ -291,10 +291,10 @@ class Ipv4AddressHelperTestSuite : public TestSuite
 Ipv4AddressHelperTestSuite::Ipv4AddressHelperTestSuite()
     : TestSuite("ipv4-address-helper", UNIT)
 {
-    AddTestCase(new NetworkAllocatorHelperTestCase(), TestCase::QUICK);
-    AddTestCase(new AddressAllocatorHelperTestCase(), TestCase::QUICK);
-    AddTestCase(new ResetAllocatorHelperTestCase(), TestCase::QUICK);
-    AddTestCase(new IpAddressHelperTestCasev4(), TestCase::QUICK);
+    AddTestCase(new NetworkAllocatorHelperTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new AddressAllocatorHelperTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new ResetAllocatorHelperTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new IpAddressHelperTestCasev4(), TestCase::Duration::QUICK);
 }
 
 static Ipv4AddressHelperTestSuite

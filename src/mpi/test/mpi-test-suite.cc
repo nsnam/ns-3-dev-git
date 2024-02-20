@@ -116,7 +116,7 @@ class MpiTestSuite : public TestSuite
                  const std::string dataDir,
                  const int ranks,
                  const std::string args = "",
-                 const TestDuration duration = QUICK,
+                 const Duration duration = Duration::QUICK,
                  const bool shouldNotErr = true)
         : TestSuite(name, EXAMPLE)
     {

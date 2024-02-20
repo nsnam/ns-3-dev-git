@@ -522,11 +522,11 @@ ProbabilisticV2vChCondModelsTestSuite::ProbabilisticV2vChCondModelsTestSuite()
     : TestSuite("probabilistic-v2v-channel-condition-model", SYSTEM)
 {
     AddTestCase(new V2vUrbanProbChCondModelTestCase,
-                TestCase::QUICK); // test for a fully probabilistic model (NLOS vs LOS vs NLOSv), in
-                                  // V2V urban scenario
+                TestCase::Duration::QUICK); // test for a fully probabilistic model (NLOS vs LOS
+                                            // vs NLOSv), in V2V urban scenario
     AddTestCase(new V2vHighwayProbChCondModelTestCase,
-                TestCase::QUICK); // test for a fully probabilistic model (NLOS vs LOS vs NLOSv), in
-                                  // V2V highway scenario*/
+                TestCase::Duration::QUICK); // test for a fully probabilistic model (NLOS vs LOS
+                                            // vs NLOSv), in V2V highway scenario*/
 }
 
 /// Static variable for test initialization

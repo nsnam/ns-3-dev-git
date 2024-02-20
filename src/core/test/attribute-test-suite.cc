@@ -2087,41 +2087,41 @@ AttributesTestSuite::AttributesTestSuite()
     : TestSuite("attributes", UNIT)
 {
     AddTestCase(new AttributeTestCase<BooleanValue>("Check Attributes of type BooleanValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new AttributeTestCase<IntegerValue>("Check Attributes of type IntegerValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new AttributeTestCase<UintegerValue>("Check Attributes of type UintegerValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new AttributeTestCase<DoubleValue>("Check Attributes of type DoubleValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new AttributeTestCase<EnumValue<AttributeObjectTest::Test_e>>(
                     "Check Attributes of type EnumValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new AttributeTestCase<EnumValue<AttributeObjectTest::Test_ec>>(
                     "Check Attributes of type EnumValue (wrapping an enum class)"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new AttributeTestCase<TimeValue>("Check Attributes of type TimeValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new RandomVariableStreamAttributeTestCase("Check Attributes of type RandomVariableStream"),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new ObjectVectorAttributeTestCase("Check Attributes of type ObjectVectorValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new ObjectMapAttributeTestCase("Check Attributes of type ObjectMapValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new PointerAttributeTestCase("Check Attributes of type PointerValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new CallbackValueTestCase("Check Attributes of type CallbackValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new IntegerTraceSourceAttributeTestCase(
                     "Ensure TracedValue<uint8_t> can be set like IntegerValue"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new IntegerTraceSourceTestCase("Ensure TracedValue<uint8_t> also works as trace source"),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TracedCallbackTestCase(
                     "Ensure TracedCallback<double, int, float> works as trace source"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 static AttributesTestSuite g_attributesTestSuite; //!< Static variable for test initialization

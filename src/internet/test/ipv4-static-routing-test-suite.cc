@@ -221,7 +221,7 @@ class Ipv4StaticRoutingTestSuite : public TestSuite
 Ipv4StaticRoutingTestSuite::Ipv4StaticRoutingTestSuite()
     : TestSuite("ipv4-static-routing", UNIT)
 {
-    AddTestCase(new Ipv4StaticRoutingSlash32TestCase, TestCase::QUICK);
+    AddTestCase(new Ipv4StaticRoutingSlash32TestCase, TestCase::Duration::QUICK);
 }
 
 static Ipv4StaticRoutingTestSuite

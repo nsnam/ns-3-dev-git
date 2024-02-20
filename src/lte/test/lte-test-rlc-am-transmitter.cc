@@ -40,11 +40,14 @@ LteRlcAmTransmitterTestSuite::LteRlcAmTransmitterTestSuite()
     // LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
     // LogComponentEnable ("LteRlcAmTransmitterTest", logLevel);
 
-    AddTestCase(new LteRlcAmTransmitterOneSduTestCase("One SDU, one PDU"), TestCase::QUICK);
-    AddTestCase(new LteRlcAmTransmitterSegmentationTestCase("Segmentation"), TestCase::QUICK);
-    AddTestCase(new LteRlcAmTransmitterConcatenationTestCase("Concatenation"), TestCase::QUICK);
+    AddTestCase(new LteRlcAmTransmitterOneSduTestCase("One SDU, one PDU"),
+                TestCase::Duration::QUICK);
+    AddTestCase(new LteRlcAmTransmitterSegmentationTestCase("Segmentation"),
+                TestCase::Duration::QUICK);
+    AddTestCase(new LteRlcAmTransmitterConcatenationTestCase("Concatenation"),
+                TestCase::Duration::QUICK);
     AddTestCase(new LteRlcAmTransmitterReportBufferStatusTestCase("ReportBufferStatus primitive"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**

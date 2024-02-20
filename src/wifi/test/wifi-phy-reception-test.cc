@@ -4863,22 +4863,22 @@ class WifiPhyReceptionTestSuite : public TestSuite
 WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite()
     : TestSuite("wifi-phy-reception", UNIT)
 {
-    AddTestCase(new TestThresholdPreambleDetectionWithoutFrameCapture, TestCase::QUICK);
-    AddTestCase(new TestThresholdPreambleDetectionWithFrameCapture, TestCase::QUICK);
-    AddTestCase(new TestSimpleFrameCaptureModel, TestCase::QUICK);
-    AddTestCase(new TestPhyHeadersReception, TestCase::QUICK);
-    AddTestCase(new TestAmpduReception, TestCase::QUICK);
-    AddTestCase(new TestUnsupportedModulationReception(), TestCase::QUICK);
-    AddTestCase(new TestUnsupportedBandwidthReception(), TestCase::QUICK);
-    AddTestCase(new TestPrimary20CoveredByPpdu(), TestCase::QUICK);
+    AddTestCase(new TestThresholdPreambleDetectionWithoutFrameCapture, TestCase::Duration::QUICK);
+    AddTestCase(new TestThresholdPreambleDetectionWithFrameCapture, TestCase::Duration::QUICK);
+    AddTestCase(new TestSimpleFrameCaptureModel, TestCase::Duration::QUICK);
+    AddTestCase(new TestPhyHeadersReception, TestCase::Duration::QUICK);
+    AddTestCase(new TestAmpduReception, TestCase::Duration::QUICK);
+    AddTestCase(new TestUnsupportedModulationReception(), TestCase::Duration::QUICK);
+    AddTestCase(new TestUnsupportedBandwidthReception(), TestCase::Duration::QUICK);
+    AddTestCase(new TestPrimary20CoveredByPpdu(), TestCase::Duration::QUICK);
     // The below three test cases are related.  The test involves a receiver tuned to
     // channel 36 and a transmitter sending on channels 36, 40, and 44, respectively.
     // The second argument corresponds to the number of signals expected to be received.
     // Signals on channel 36 and 40 will fall within the receiver bandwidth, while
     // a signal on channel 44 will fall completely outside and will be filtered.
-    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(36, 1), TestCase::QUICK);
-    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(40, 1), TestCase::QUICK);
-    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(44, 0), TestCase::QUICK);
+    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(36, 1), TestCase::Duration::QUICK);
+    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(40, 1), TestCase::Duration::QUICK);
+    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(44, 0), TestCase::Duration::QUICK);
 }
 
 static WifiPhyReceptionTestSuite wifiPhyReceptionTestSuite; ///< the test suite

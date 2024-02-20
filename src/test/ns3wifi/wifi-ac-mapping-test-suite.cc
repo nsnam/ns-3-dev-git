@@ -335,10 +335,10 @@ class WifiAcMappingTestSuite : public TestSuite
 WifiAcMappingTestSuite::WifiAcMappingTestSuite()
     : TestSuite("wifi-ac-mapping", SYSTEM)
 {
-    AddTestCase(new WifiAcMappingTest(0xb8, 2), TestCase::QUICK); // EF in AC_VI
-    AddTestCase(new WifiAcMappingTest(0x28, 1), TestCase::QUICK); // AF11 in AC_BK
-    AddTestCase(new WifiAcMappingTest(0x70, 0), TestCase::QUICK); // AF32 in AC_BE
-    AddTestCase(new WifiAcMappingTest(0xc0, 3), TestCase::QUICK); // CS7 in AC_VO
+    AddTestCase(new WifiAcMappingTest(0xb8, 2), TestCase::Duration::QUICK); // EF in AC_VI
+    AddTestCase(new WifiAcMappingTest(0x28, 1), TestCase::Duration::QUICK); // AF11 in AC_BK
+    AddTestCase(new WifiAcMappingTest(0x70, 0), TestCase::Duration::QUICK); // AF32 in AC_BE
+    AddTestCase(new WifiAcMappingTest(0xc0, 3), TestCase::Duration::QUICK); // CS7 in AC_VO
 }
 
 static WifiAcMappingTestSuite wifiAcMappingTestSuite;

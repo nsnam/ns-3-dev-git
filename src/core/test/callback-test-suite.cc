@@ -1192,12 +1192,12 @@ class CallbackTestSuite : public TestSuite
 CallbackTestSuite::CallbackTestSuite()
     : TestSuite("callback", UNIT)
 {
-    AddTestCase(new BasicCallbackTestCase, TestCase::QUICK);
-    AddTestCase(new MakeCallbackTestCase, TestCase::QUICK);
-    AddTestCase(new MakeBoundCallbackTestCase, TestCase::QUICK);
-    AddTestCase(new CallbackEqualityTestCase, TestCase::QUICK);
-    AddTestCase(new NullifyCallbackTestCase, TestCase::QUICK);
-    AddTestCase(new MakeCallbackTemplatesTestCase, TestCase::QUICK);
+    AddTestCase(new BasicCallbackTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new MakeCallbackTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new MakeBoundCallbackTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new CallbackEqualityTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new NullifyCallbackTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new MakeCallbackTemplatesTestCase, TestCase::Duration::QUICK);
 }
 
 static CallbackTestSuite g_gallbackTestSuite; //!< Static variable for test initialization

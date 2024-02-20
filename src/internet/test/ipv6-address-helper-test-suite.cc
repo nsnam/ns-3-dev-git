@@ -181,7 +181,7 @@ class Ipv6AddressHelperTestSuite : public TestSuite
 Ipv6AddressHelperTestSuite::Ipv6AddressHelperTestSuite()
     : TestSuite("ipv6-address-helper", UNIT)
 {
-    AddTestCase(new IpAddressHelperTestCasev6, TestCase::QUICK);
+    AddTestCase(new IpAddressHelperTestCasev6, TestCase::Duration::QUICK);
 }
 
 static Ipv6AddressHelperTestSuite

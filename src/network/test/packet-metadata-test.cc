@@ -896,7 +896,7 @@ class PacketMetadataTestSuite : public TestSuite
 PacketMetadataTestSuite::PacketMetadataTestSuite()
     : TestSuite("packet-metadata", UNIT)
 {
-    AddTestCase(new PacketMetadataTest, TestCase::QUICK);
+    AddTestCase(new PacketMetadataTest, TestCase::Duration::QUICK);
 }
 
 static PacketMetadataTestSuite g_packetMetadataTest; //!< Static variable for test initialization

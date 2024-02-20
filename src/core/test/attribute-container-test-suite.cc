@@ -549,9 +549,9 @@ class AttributeContainerTestSuite : public TestSuite
 AttributeContainerTestSuite::AttributeContainerTestSuite()
     : TestSuite("attribute-container-test-suite", UNIT)
 {
-    AddTestCase(new AttributeContainerTestCase(), TestCase::QUICK);
-    AddTestCase(new AttributeContainerSerializationTestCase(), TestCase::QUICK);
-    AddTestCase(new AttributeContainerSetGetTestCase(), TestCase::QUICK);
+    AddTestCase(new AttributeContainerTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new AttributeContainerSerializationTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new AttributeContainerSetGetTestCase(), TestCase::Duration::QUICK);
 }
 
 static AttributeContainerTestSuite

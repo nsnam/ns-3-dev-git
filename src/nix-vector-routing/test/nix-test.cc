@@ -405,7 +405,7 @@ class NixVectorRoutingTestSuite : public TestSuite
     NixVectorRoutingTestSuite()
         : TestSuite("nix-vector-routing", UNIT)
     {
-        AddTestCase(new NixVectorRoutingTest(), TestCase::QUICK);
+        AddTestCase(new NixVectorRoutingTest(), TestCase::Duration::QUICK);
     }
 };
 

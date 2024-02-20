@@ -162,25 +162,25 @@ class TcpHyblaTestSuite : public TestSuite
                                               500,
                                               MilliSeconds(55),
                                               "Rho=1.1, slow start"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpHyblaIncrementTest(1000,
                                               0xFFFFFFFF,
                                               500,
                                               MilliSeconds(100),
                                               "Rho=2, slow start"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpHyblaIncrementTest(1000,
                                               0xFFFFFFFF,
                                               500,
                                               MilliSeconds(750),
                                               "Rho=30, slow start"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpHyblaIncrementTest(1000, 500, 500, Seconds(0.55), "Rho=1.1, cong avoid"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpHyblaIncrementTest(1000, 500, 500, Seconds(0.1), "Rho=2, cong avoid"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpHyblaIncrementTest(1000, 500, 500, Seconds(0.75), "Rho=30, cong avoid"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

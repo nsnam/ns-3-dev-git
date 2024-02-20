@@ -374,7 +374,7 @@ class TcpYeahTestSuite : public TestSuite
                                              1,
                                              MilliSeconds(105),
                                              "YeAH test on cWnd when in slow start"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpYeahIncrementTest(30 * 1446,
                                              25 * 1446,
                                              1446,
@@ -383,7 +383,7 @@ class TcpYeahTestSuite : public TestSuite
                                              30,
                                              MilliSeconds(105),
                                              "YeAH test on cWnd when in Fast mode"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpYeahIncrementTest(
                         40 * 356,
                         30 * 356,
@@ -393,7 +393,7 @@ class TcpYeahTestSuite : public TestSuite
                         1,
                         MilliSeconds(120),
                         "YeAH test on cWnd when in slow mode without precautionary decongestion"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpYeahIncrementTest(
                         100 * 356,
                         70 * 356,
@@ -403,7 +403,7 @@ class TcpYeahTestSuite : public TestSuite
                         1,
                         MilliSeconds(600),
                         "YeAH test on cWnd when in slow mode with precautionary decongestion"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpYeahDecrementTest(
                         40 * 1446,
                         30 * 1446,
@@ -413,7 +413,7 @@ class TcpYeahTestSuite : public TestSuite
                         MilliSeconds(120),
                         UintegerValue(0),
                         "YeAH test on ssThresh upon loss while competing with Reno flows"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpYeahDecrementTest(
                         57 * 1446,
                         42 * 1446,
@@ -423,7 +423,7 @@ class TcpYeahTestSuite : public TestSuite
                         MilliSeconds(200),
                         UintegerValue(2),
                         "YeAH test on ssThresh upon loss while not competing with Reno flows"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

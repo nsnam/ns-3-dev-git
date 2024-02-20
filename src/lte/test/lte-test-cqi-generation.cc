@@ -96,52 +96,52 @@ LteCqiGenerationTestSuite::LteCqiGenerationTestSuite()
     NS_LOG_INFO("Creating LteCqiGenerationTestSuite");
 
     AddTestCase(new LteCqiGenerationTestCase("UsePdcchForCqiGeneration", false, 4, 2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteCqiGenerationTestCase("UsePdschForCqiGeneration", true, 28, 2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new LteCqiGenerationDlPowerControlTestCase("CqiGenerationWithDlPowerControl",
                                                            LteRrcSap::PdschConfigDedicated::dB0,
                                                            LteRrcSap::PdschConfigDedicated::dB0,
                                                            4,
                                                            2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteCqiGenerationDlPowerControlTestCase("CqiGenerationWithDlPowerControl",
                                                            LteRrcSap::PdschConfigDedicated::dB0,
                                                            LteRrcSap::PdschConfigDedicated::dB_3,
                                                            8,
                                                            2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteCqiGenerationDlPowerControlTestCase("CqiGenerationWithDlPowerControl",
                                                            LteRrcSap::PdschConfigDedicated::dB0,
                                                            LteRrcSap::PdschConfigDedicated::dB_6,
                                                            10,
                                                            2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteCqiGenerationDlPowerControlTestCase("CqiGenerationWithDlPowerControl",
                                                            LteRrcSap::PdschConfigDedicated::dB1,
                                                            LteRrcSap::PdschConfigDedicated::dB_6,
                                                            12,
                                                            2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteCqiGenerationDlPowerControlTestCase("CqiGenerationWithDlPowerControl",
                                                            LteRrcSap::PdschConfigDedicated::dB2,
                                                            LteRrcSap::PdschConfigDedicated::dB_6,
                                                            14,
                                                            2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteCqiGenerationDlPowerControlTestCase("CqiGenerationWithDlPowerControl",
                                                            LteRrcSap::PdschConfigDedicated::dB3,
                                                            LteRrcSap::PdschConfigDedicated::dB_6,
                                                            14,
                                                            2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteCqiGenerationDlPowerControlTestCase("CqiGenerationWithDlPowerControl",
                                                            LteRrcSap::PdschConfigDedicated::dB3,
                                                            LteRrcSap::PdschConfigDedicated::dB0,
                                                            8,
                                                            2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**

@@ -213,8 +213,8 @@ class PairValueTestSuite : public TestSuite
 PairValueTestSuite::PairValueTestSuite()
     : TestSuite("pair-value-test-suite", UNIT)
 {
-    AddTestCase(new PairValueTestCase(), TestCase::QUICK);
-    AddTestCase(new PairValueSettingsTestCase(), TestCase::QUICK);
+    AddTestCase(new PairValueTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new PairValueSettingsTestCase(), TestCase::Duration::QUICK);
 }
 
 static PairValueTestSuite g_pairValueTestSuite; //!< Static variable for test initialization

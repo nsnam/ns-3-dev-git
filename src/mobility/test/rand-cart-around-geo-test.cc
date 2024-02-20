@@ -201,7 +201,7 @@ RandCartAroundGeoTestSuite::RandCartAroundGeoTestSuite()
                                                           50, // 50 points generated
                                                           maxDistFromOrigin,
                                                           uniRand),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
             }
         }
     }

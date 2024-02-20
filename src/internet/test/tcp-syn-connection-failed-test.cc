@@ -105,9 +105,9 @@ class TcpSynConnectionFailedTestSuite : public TestSuite
         : TestSuite("tcp-syn-connection-failed-test", UNIT)
     {
         AddTestCase(new TcpSynConnectionFailedTest("TCP SYN connection failed test no ECN", false),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpSynConnectionFailedTest("TCP SYN connection failed test with ECN", true),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

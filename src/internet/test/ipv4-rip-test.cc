@@ -705,11 +705,14 @@ class Ipv4RipTestSuite : public TestSuite
     Ipv4RipTestSuite()
         : TestSuite("ipv4-rip", UNIT)
     {
-        AddTestCase(new Ipv4RipTest, TestCase::QUICK);
-        AddTestCase(new Ipv4RipCountToInfinityTest, TestCase::QUICK);
-        AddTestCase(new Ipv4RipSplitHorizonStrategyTest(Rip::POISON_REVERSE), TestCase::QUICK);
-        AddTestCase(new Ipv4RipSplitHorizonStrategyTest(Rip::SPLIT_HORIZON), TestCase::QUICK);
-        AddTestCase(new Ipv4RipSplitHorizonStrategyTest(Rip::NO_SPLIT_HORIZON), TestCase::QUICK);
+        AddTestCase(new Ipv4RipTest, TestCase::Duration::QUICK);
+        AddTestCase(new Ipv4RipCountToInfinityTest, TestCase::Duration::QUICK);
+        AddTestCase(new Ipv4RipSplitHorizonStrategyTest(Rip::POISON_REVERSE),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new Ipv4RipSplitHorizonStrategyTest(Rip::SPLIT_HORIZON),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new Ipv4RipSplitHorizonStrategyTest(Rip::NO_SPLIT_HORIZON),
+                    TestCase::Duration::QUICK);
     }
 };
 

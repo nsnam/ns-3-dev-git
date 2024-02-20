@@ -194,32 +194,32 @@ class TcpHighSpeedTestSuite : public TestSuite
                 new TcpHighSpeedIncrementTest(highSpeedImportantValues[i].cwnd,
                                               1,
                                               "Highspeed increment test on cWnd " + ss.str()),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
             AddTestCase(
                 new TcpHighSpeedIncrementTest(highSpeedImportantValues[i].cwnd * 536,
                                               536,
                                               "Highspeed increment test on cWnd " + ss.str()),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
             AddTestCase(
                 new TcpHighSpeedIncrementTest(highSpeedImportantValues[i].cwnd * 1446,
                                               1446,
                                               "Highspeed increment test on cWnd " + ss.str()),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
             AddTestCase(
                 new TcpHighSpeedDecrementTest(highSpeedImportantValues[i].cwnd,
                                               1,
                                               "Highspeed Decrement test on cWnd " + ss.str()),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
             AddTestCase(
                 new TcpHighSpeedDecrementTest(highSpeedImportantValues[i].cwnd * 536,
                                               536,
                                               "Highspeed Decrement test on cWnd " + ss.str()),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
             AddTestCase(
                 new TcpHighSpeedDecrementTest(highSpeedImportantValues[i].cwnd * 1446,
                                               1446,
                                               "Highspeed Decrement test on cWnd " + ss.str()),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
             ss.flush();
         }
     }

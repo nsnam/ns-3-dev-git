@@ -353,7 +353,7 @@ class TcpLedbatTestSuite : public TestSuite
                                            SequenceNumber32(3216),
                                            MilliSeconds(100),
                                            "LEDBAT falls to New Reno for slowstart"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpLedbatToNewReno(4 * 1446,
                                            1446,
                                            2 * 1446,
@@ -362,7 +362,7 @@ class TcpLedbatTestSuite : public TestSuite
                                            SequenceNumber32(3216),
                                            MilliSeconds(100),
                                            "LEDBAT falls to New Reno if timestamps are not found"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpLedbatIncrementTest(2 * 1446,
                                                1446,
                                                4 * 1446,
@@ -371,7 +371,7 @@ class TcpLedbatTestSuite : public TestSuite
                                                SequenceNumber32(3216),
                                                MilliSeconds(100),
                                                "LEDBAT increment test"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpLedbatDecrementTest(2 * 1446,
                                                1446,
                                                4 * 1446,
@@ -380,7 +380,7 @@ class TcpLedbatTestSuite : public TestSuite
                                                SequenceNumber32(3216),
                                                MilliSeconds(100),
                                                "LEDBAT decrement test"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

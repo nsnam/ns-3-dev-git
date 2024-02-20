@@ -1245,14 +1245,14 @@ class CsmaSystemTestSuite : public TestSuite
 CsmaSystemTestSuite::CsmaSystemTestSuite()
     : TestSuite("csma-system", UNIT)
 {
-    AddTestCase(new CsmaBridgeTestCase, TestCase::QUICK);
-    AddTestCase(new CsmaBroadcastTestCase, TestCase::QUICK);
-    AddTestCase(new CsmaMulticastTestCase, TestCase::QUICK);
-    AddTestCase(new CsmaOneSubnetTestCase, TestCase::QUICK);
-    AddTestCase(new CsmaPacketSocketTestCase, TestCase::QUICK);
-    AddTestCase(new CsmaPingTestCase, TestCase::QUICK);
-    AddTestCase(new CsmaRawIpSocketTestCase, TestCase::QUICK);
-    AddTestCase(new CsmaStarTestCase, TestCase::QUICK);
+    AddTestCase(new CsmaBridgeTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new CsmaBroadcastTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new CsmaMulticastTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new CsmaOneSubnetTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new CsmaPacketSocketTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new CsmaPingTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new CsmaRawIpSocketTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new CsmaStarTestCase, TestCase::Duration::QUICK);
 }
 
 /// Do not forget to allocate an instance of this TestSuite

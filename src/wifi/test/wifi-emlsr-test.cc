@@ -3492,39 +3492,40 @@ EmlsrLinkSwitchTest::CheckResults()
 WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     : TestSuite("wifi-emlsr", UNIT)
 {
-    AddTestCase(new EmlOperatingModeNotificationTest(), TestCase::QUICK);
-    AddTestCase(new EmlOmnExchangeTest({1, 2}, MicroSeconds(0)), TestCase::QUICK);
-    AddTestCase(new EmlOmnExchangeTest({1, 2}, MicroSeconds(2048)), TestCase::QUICK);
-    AddTestCase(new EmlOmnExchangeTest({0, 1, 2, 3}, MicroSeconds(0)), TestCase::QUICK);
-    AddTestCase(new EmlOmnExchangeTest({0, 1, 2, 3}, MicroSeconds(2048)), TestCase::QUICK);
+    AddTestCase(new EmlOperatingModeNotificationTest(), TestCase::Duration::QUICK);
+    AddTestCase(new EmlOmnExchangeTest({1, 2}, MicroSeconds(0)), TestCase::Duration::QUICK);
+    AddTestCase(new EmlOmnExchangeTest({1, 2}, MicroSeconds(2048)), TestCase::Duration::QUICK);
+    AddTestCase(new EmlOmnExchangeTest({0, 1, 2, 3}, MicroSeconds(0)), TestCase::Duration::QUICK);
+    AddTestCase(new EmlOmnExchangeTest({0, 1, 2, 3}, MicroSeconds(2048)),
+                TestCase::Duration::QUICK);
     for (const auto& emlsrLinks :
          {std::set<uint8_t>{0, 1, 2}, std::set<uint8_t>{1, 2}, std::set<uint8_t>{0, 1}})
     {
         AddTestCase(
             new EmlsrDlTxopTest(
                 {1, 0, emlsrLinks, {MicroSeconds(32)}, {MicroSeconds(32)}, MicroSeconds(512)}),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(
             new EmlsrDlTxopTest(
                 {1, 1, emlsrLinks, {MicroSeconds(64)}, {MicroSeconds(64)}, MicroSeconds(512)}),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(new EmlsrDlTxopTest({2,
                                          2,
                                          emlsrLinks,
                                          {MicroSeconds(128), MicroSeconds(256)},
                                          {MicroSeconds(128), MicroSeconds(256)},
                                          MicroSeconds(512)}),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 
     for (auto genBackoffIfTxopWithoutTx : {true, false})
     {
         AddTestCase(new EmlsrUlTxopTest(
                         {{0, 1, 2}, 40, 20, MicroSeconds(5504), 3, genBackoffIfTxopWithoutTx}),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(
             new EmlsrUlTxopTest({{0, 1}, 40, 20, MicroSeconds(5504), 1, genBackoffIfTxopWithoutTx}),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
     }
 
     for (bool switchAuxPhy : {true, false})
@@ -3535,7 +3536,7 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
             {
                 AddTestCase(
                     new EmlsrLinkSwitchTest({switchAuxPhy, resetCamState, auxPhyMaxChWidth}),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
             }
         }
     }

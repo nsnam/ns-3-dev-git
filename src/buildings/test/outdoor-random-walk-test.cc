@@ -175,7 +175,7 @@ class OutdoorRandomWalkTestSuite : public TestSuite
 OutdoorRandomWalkTestSuite::OutdoorRandomWalkTestSuite()
     : TestSuite("outdoor-random-walk-model", UNIT)
 {
-    AddTestCase(new OutdoorRandomWalkTestCase, TestCase::QUICK);
+    AddTestCase(new OutdoorRandomWalkTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

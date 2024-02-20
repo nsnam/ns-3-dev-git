@@ -161,8 +161,8 @@ class TcpTcpCloseTestSuite : public TestSuite
     TcpTcpCloseTestSuite()
         : TestSuite("tcp-close", UNIT)
     {
-        AddTestCase(new TcpCloseWithLossTestCase(true), TestCase::QUICK);
-        AddTestCase(new TcpCloseWithLossTestCase(false), TestCase::QUICK);
+        AddTestCase(new TcpCloseWithLossTestCase(true), TestCase::Duration::QUICK);
+        AddTestCase(new TcpCloseWithLossTestCase(false), TestCase::Duration::QUICK);
     }
 };
 

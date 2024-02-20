@@ -54,7 +54,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               LargeCity,
                                               137.93,
                                               "OH Urban Large city"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new BuildingsPathlossTestCase(freq,
                                               1,
@@ -63,7 +63,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               SmallCity,
                                               137.88,
                                               "OH Urban small city"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new BuildingsPathlossTestCase(freq,
                                               1,
@@ -72,7 +72,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               LargeCity,
                                               128.03,
                                               "loss OH SubUrban"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new BuildingsPathlossTestCase(freq,
                                               1,
@@ -81,7 +81,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               LargeCity,
                                               110.21,
                                               "loss OH OpenAreas"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test #2 COST231 Model (1500 < freq < 2000~2170 MHz) (Macro<->UE)
 
@@ -94,7 +94,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               LargeCity,
                                               148.55,
                                               "COST231 Urban Large city"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new BuildingsPathlossTestCase(freq,
                                               1,
@@ -103,7 +103,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               SmallCity,
                                               150.64,
                                               "COST231 Urban small city and suburban"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test #3 2.6 GHz model (Macro<->UE)
 
@@ -116,7 +116,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               SmallCity,
                                               121.83,
                                               "2.6GHz model"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test #4 ITU1411 LOS model (Macro<->UE)
 
@@ -128,7 +128,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               LargeCity,
                                               81.00,
                                               "ITU1411 LOS"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test #5 ITU1411 NLOS model (Macro<->UE)
 
@@ -141,14 +141,14 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               LargeCity,
                                               143.69,
                                               "ITU1411 NLOS"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test #6 ITUP1238 (HeNB <-> UE)
 
     freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
     AddTestCase(
         new BuildingsPathlossTestCase(freq, 5, 6, UrbanEnvironment, LargeCity, 88.3855, "ITUP1238"),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // Test #7 Outdoor -> Indoor OkumuraHata (Macro<->UE)
 
@@ -162,7 +162,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               LargeCity,
                                               155.55,
                                               "Okumura Hata Outdoor -> Indoor"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test #8 Outdoor -> Indoor ITU1411 (Macro<->UE)
     freq = 2.1140e9; // E_UTRA BAND #1 see table 5.5-1 of 36.101
@@ -175,7 +175,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               LargeCity,
                                               88.000,
                                               "ITU1411 LOS Outdoor -> Indoor"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test #9 Indoor -> Outdoor LOS (HeNB <-> UE)
 
@@ -190,7 +190,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               LargeCity,
                                               84.838,
                                               "ITU1411 LOS Indoor -> Outdoor"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test #10 Indoor -> Outdoor NLOS (HeNB <-> UE)
 
@@ -205,7 +205,7 @@ BuildingsPathlossTestSuite::BuildingsPathlossTestSuite()
                                               LargeCity,
                                               183.90,
                                               "ITU1411 NLOS Indoor -> Outdoor"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

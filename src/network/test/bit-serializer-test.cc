@@ -155,8 +155,8 @@ class BitSerializerTestSuite : public TestSuite
 BitSerializerTestSuite::BitSerializerTestSuite()
     : TestSuite("bit-serializer", UNIT)
 {
-    AddTestCase(new BitSerializerTest, TestCase::QUICK);
-    AddTestCase(new BitDeserializerTest, TestCase::QUICK);
+    AddTestCase(new BitSerializerTest, TestCase::Duration::QUICK);
+    AddTestCase(new BitDeserializerTest, TestCase::Duration::QUICK);
 }
 
 static BitSerializerTestSuite g_bitSerializerTest; //!< Static variable for test initialization

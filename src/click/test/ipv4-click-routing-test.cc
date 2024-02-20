@@ -252,9 +252,9 @@ class ClickIfidFromNameTestSuite : public TestSuite
     ClickIfidFromNameTestSuite()
         : TestSuite("routing-click", UNIT)
     {
-        AddTestCase(new ClickTrivialTest, TestCase::QUICK);
-        AddTestCase(new ClickIfidFromNameTest, TestCase::QUICK);
-        AddTestCase(new ClickIpMacAddressFromNameTest, TestCase::QUICK);
+        AddTestCase(new ClickTrivialTest, TestCase::Duration::QUICK);
+        AddTestCase(new ClickIfidFromNameTest, TestCase::Duration::QUICK);
+        AddTestCase(new ClickIpMacAddressFromNameTest, TestCase::Duration::QUICK);
     }
 };
 

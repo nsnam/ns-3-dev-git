@@ -220,7 +220,7 @@ class Ipv6ForwardingTestSuite : public TestSuite
     Ipv6ForwardingTestSuite()
         : TestSuite("ipv6-forwarding", UNIT)
     {
-        AddTestCase(new Ipv6ForwardingTest, TestCase::QUICK);
+        AddTestCase(new Ipv6ForwardingTest, TestCase::Duration::QUICK);
     }
 };
 

@@ -293,20 +293,20 @@ class TcpBytesInFlightTestSuite : public TestSuite
     {
         std::vector<uint32_t> toDrop;
         AddTestCase(new TcpBytesInFlightTest("BytesInFlight value, no drop", toDrop),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         toDrop.push_back(4001);
         AddTestCase(new TcpBytesInFlightTest("BytesInFlight value, one drop", toDrop),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         toDrop.push_back(4001);
         AddTestCase(
             new TcpBytesInFlightTest("BytesInFlight value, two drop of same segment", toDrop),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         toDrop.pop_back();
         toDrop.push_back(4501);
         AddTestCase(
             new TcpBytesInFlightTest("BytesInFlight value, two drop of consecutive segments",
                                      toDrop),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
     }
 };
 

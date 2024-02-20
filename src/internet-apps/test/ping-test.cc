@@ -586,7 +586,7 @@ PingTestSuite::PingTestSuite()
     testcase1v4->CheckReportReceived(5);
     testcase1v4->CheckTraceTx(5);
     testcase1v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
-    AddTestCase(testcase1v4, TestCase::QUICK);
+    AddTestCase(testcase1v4, TestCase::Duration::QUICK);
 
     auto testcase1v6 = new PingTestCase(
         "1. Unlimited pings, no losses, StopApplication () with no packets in flight IPv6",
@@ -598,7 +598,7 @@ PingTestSuite::PingTestSuite()
     testcase1v6->CheckReportReceived(5);
     testcase1v6->CheckTraceTx(5);
     testcase1v6->SetDestinationAddress(Ipv6Address("2001:1::200:ff:fe00:2"));
-    AddTestCase(testcase1v6, TestCase::QUICK);
+    AddTestCase(testcase1v6, TestCase::Duration::QUICK);
 
     // 2. Unlimited pings, no losses, StopApplication () with 1 packet in flight
     // Configuration:  Ping::Count = 0,  Ping::Interval = 1s, Ping start time =
@@ -617,7 +617,7 @@ PingTestSuite::PingTestSuite()
     testcase2v4->CheckReportTransmitted(1);
     testcase2v4->CheckReportReceived(0);
     testcase1v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
-    AddTestCase(testcase2v4, TestCase::QUICK);
+    AddTestCase(testcase2v4, TestCase::Duration::QUICK);
 
     auto testcase2v6 = new PingTestCase(
         "2. Unlimited pings, no losses, StopApplication () with 1 packet in flight IPv6",
@@ -628,7 +628,7 @@ PingTestSuite::PingTestSuite()
     testcase2v6->CheckReportTransmitted(1);
     testcase2v6->CheckReportReceived(0);
     testcase2v6->SetDestinationAddress(Ipv6Address("2001:1::200:ff:fe00:2"));
-    AddTestCase(testcase2v6, TestCase::QUICK);
+    AddTestCase(testcase2v6, TestCase::Duration::QUICK);
 
     // 3. Test for operation of count attribute and the resulting StopApplication time after all
     // pings were received. Limited pings, no losses, StopApplication () with no packet in flight
@@ -657,7 +657,7 @@ PingTestSuite::PingTestSuite()
     testcase3v4->CheckReportTime(MicroSeconds(2020001));
     testcase3v4->CheckTraceTx(expectedTx);
     testcase3v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
-    AddTestCase(testcase3v4, TestCase::QUICK);
+    AddTestCase(testcase3v4, TestCase::Duration::QUICK);
 
     auto testcase3v6 = new PingTestCase("3. Test for operation of count attribute and exit "
                                         "time after all pings were received, IPv6",
@@ -671,7 +671,7 @@ PingTestSuite::PingTestSuite()
     testcase3v6->CheckReportTime(MicroSeconds(2020001));
     testcase3v6->CheckTraceTx(expectedTx);
     testcase3v6->SetDestinationAddress(Ipv6Address("2001:1::200:ff:fe00:2"));
-    AddTestCase(testcase3v6, TestCase::QUICK);
+    AddTestCase(testcase3v6, TestCase::Duration::QUICK);
 
     // 4. Test for the operation of interval attribute for IPv4
     // Unlimited pings, no losses, StopApplication () with no packet in flight
@@ -692,7 +692,7 @@ PingTestSuite::PingTestSuite()
     testcase4v4->CheckReportTransmitted(2);
     testcase4v4->CheckReportReceived(2);
     testcase4v4->SetDestinationAddress(Ipv4Address("10.0.0.2"));
-    AddTestCase(testcase4v4, TestCase::QUICK);
+    AddTestCase(testcase4v4, TestCase::Duration::QUICK);
 
     auto testcase4v6 =
         new PingTestCase("4. Test for the operation of interval attribute for IPv6", USEIPV6_TRUE);
@@ -703,7 +703,7 @@ PingTestSuite::PingTestSuite()
     testcase4v6->CheckReportTransmitted(2);
     testcase4v6->CheckReportReceived(2);
     testcase4v6->SetDestinationAddress(Ipv6Address("2001:1::200:ff:fe00:2"));
-    AddTestCase(testcase4v6, TestCase::QUICK);
+    AddTestCase(testcase4v6, TestCase::Duration::QUICK);
 
     // 5. Test for behavior of pinging an unreachable host when the
     //    network does not send an ICMP unreachable message.
@@ -730,7 +730,7 @@ PingTestSuite::PingTestSuite()
     testcase5v4->CheckReportTransmitted(5);
     testcase5v4->CheckReportReceived(0);
     testcase5v4->CheckReportLoss(100);
-    AddTestCase(testcase5v4, TestCase::QUICK);
+    AddTestCase(testcase5v4, TestCase::Duration::QUICK);
 
     auto testcase5v6 =
         new PingTestCase("5. Test for behavior of ping to unreachable IPv6 address", USEIPV6_TRUE);
@@ -740,7 +740,7 @@ PingTestSuite::PingTestSuite()
     testcase5v6->CheckReportTransmitted(5);
     testcase5v6->CheckReportReceived(0);
     testcase5v6->CheckReportLoss(100);
-    AddTestCase(testcase5v6, TestCase::QUICK);
+    AddTestCase(testcase5v6, TestCase::Duration::QUICK);
 
     // 6. Test for behavior of pinging an broadcast (or multicast) address.
     // Limited pings, no losses, StopApplication () with no packet in flight
@@ -763,7 +763,7 @@ PingTestSuite::PingTestSuite()
     testcase6v4->CheckReportTransmitted(5);
     testcase6v4->CheckReportReceived(5);
     testcase6v4->CheckReportLoss(0);
-    AddTestCase(testcase6v4, TestCase::QUICK);
+    AddTestCase(testcase6v4, TestCase::Duration::QUICK);
 
     auto testcase6v6 =
         new PingTestCase("6. Test for behavior of ping to all-nodes multicast IPv6 address",
@@ -774,7 +774,7 @@ PingTestSuite::PingTestSuite()
     testcase6v6->CheckReportTransmitted(5);
     testcase6v6->CheckReportReceived(5);
     testcase6v6->CheckReportLoss(0);
-    AddTestCase(testcase6v6, TestCase::QUICK);
+    AddTestCase(testcase6v6, TestCase::Duration::QUICK);
 
     // 7. Test behavior of first reply lost in a count-limited configuration.
     // Limited pings, no losses, StopApplication () with no packet in flight
@@ -803,7 +803,7 @@ PingTestSuite::PingTestSuite()
     testcase7v4->CheckReportReceived(2);
     testcase7v4->CheckReportLoss(33); // 33%
     testcase7v4->CheckReportTime(MicroSeconds(3040000));
-    AddTestCase(testcase7v4, TestCase::QUICK);
+    AddTestCase(testcase7v4, TestCase::Duration::QUICK);
 
     auto testcase7v6 = new PingTestCase(
         "7. Test behavior of first reply lost in a count-limited configuration, IPv6",
@@ -819,7 +819,7 @@ PingTestSuite::PingTestSuite()
     testcase7v6->CheckReportReceived(2);
     testcase7v6->CheckReportLoss(33); // 33%
     testcase7v6->CheckReportTime(MicroSeconds(3040000));
-    AddTestCase(testcase7v6, TestCase::QUICK);
+    AddTestCase(testcase7v6, TestCase::Duration::QUICK);
 
     // 8. Test behavior of second reply lost in a count-limited configuration.
     // Limited pings, no losses, StopApplication () with no packet in flight
@@ -848,7 +848,7 @@ PingTestSuite::PingTestSuite()
     testcase8v4->CheckReportReceived(2);
     testcase8v4->CheckReportLoss(33); // 33%
     testcase8v4->CheckReportTime(MicroSeconds(3040000));
-    AddTestCase(testcase8v4, TestCase::QUICK);
+    AddTestCase(testcase8v4, TestCase::Duration::QUICK);
 
     auto testcase8v6 = new PingTestCase(
         "8. Test behavior of second reply lost in a count-limited configuration, IPv6",
@@ -864,7 +864,7 @@ PingTestSuite::PingTestSuite()
     testcase8v6->CheckReportReceived(2);
     testcase8v6->CheckReportLoss(33); // 33%
     testcase8v6->CheckReportTime(MicroSeconds(3040000));
-    AddTestCase(testcase8v6, TestCase::QUICK);
+    AddTestCase(testcase8v6, TestCase::Duration::QUICK);
 
     // 9. Test behavior of last reply lost in a count-limited configuration.
     // Limited pings, no losses, StopApplication () with no packet in flight
@@ -893,7 +893,7 @@ PingTestSuite::PingTestSuite()
     testcase9v4->CheckReportReceived(2);
     testcase9v4->CheckReportLoss(33); // 33%
     testcase9v4->CheckReportTime(MicroSeconds(3040000));
-    AddTestCase(testcase9v4, TestCase::QUICK);
+    AddTestCase(testcase9v4, TestCase::Duration::QUICK);
 
     auto testcase9v6 = new PingTestCase(
         "9. Test behavior of last reply lost in a count-limited configuration, IPv6",
@@ -909,7 +909,7 @@ PingTestSuite::PingTestSuite()
     testcase9v6->CheckReportReceived(2);
     testcase9v6->CheckReportLoss(33); // 33%
     testcase9v6->CheckReportTime(MicroSeconds(3040000));
-    AddTestCase(testcase9v6, TestCase::QUICK);
+    AddTestCase(testcase9v6, TestCase::Duration::QUICK);
 
 #ifdef NOTYET
     //
@@ -933,7 +933,7 @@ PingTestSuite::PingTestSuite()
     testcase10v4->CheckReportTransmitted(1);
     testcase10v4->CheckReportReceived(1);
     testcase10v4->CheckReportTime(MicroSeconds(1020028));
-    AddTestCase(testcase10v4, TestCase::QUICK);
+    AddTestCase(testcase10v4, TestCase::Duration::QUICK);
 #endif
 }
 

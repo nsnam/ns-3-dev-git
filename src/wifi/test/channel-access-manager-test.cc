@@ -1540,7 +1540,7 @@ class TxopTestSuite : public TestSuite
 TxopTestSuite::TxopTestSuite()
     : TestSuite("wifi-devices-dcf", UNIT)
 {
-    AddTestCase(new ChannelAccessManagerTest<Txop>, TestCase::QUICK);
+    AddTestCase(new ChannelAccessManagerTest<Txop>, TestCase::Duration::QUICK);
 }
 
 static TxopTestSuite g_dcfTestSuite;
@@ -1560,7 +1560,7 @@ class QosTxopTestSuite : public TestSuite
 QosTxopTestSuite::QosTxopTestSuite()
     : TestSuite("wifi-devices-edca", UNIT)
 {
-    AddTestCase(new ChannelAccessManagerTest<QosTxop>, TestCase::QUICK);
+    AddTestCase(new ChannelAccessManagerTest<QosTxop>, TestCase::Duration::QUICK);
 }
 
 static QosTxopTestSuite g_edcaTestSuite;
@@ -1580,7 +1580,7 @@ class ChannelAccessManagerTestSuite : public TestSuite
 ChannelAccessManagerTestSuite::ChannelAccessManagerTestSuite()
     : TestSuite("wifi-channel-access-manager", UNIT)
 {
-    AddTestCase(new LargestIdlePrimaryChannelTest, TestCase::QUICK);
+    AddTestCase(new LargestIdlePrimaryChannelTest, TestCase::Duration::QUICK);
 }
 
 static ChannelAccessManagerTestSuite g_camTestSuite;

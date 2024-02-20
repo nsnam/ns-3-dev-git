@@ -366,7 +366,7 @@ class LrWpanCcaTestSuite : public TestSuite
 LrWpanCcaTestSuite::LrWpanCcaTestSuite()
     : TestSuite("lr-wpan-clear-channel-assessment", UNIT)
 {
-    AddTestCase(new LrWpanCcaTestCase, TestCase::QUICK);
+    AddTestCase(new LrWpanCcaTestCase, TestCase::Duration::QUICK);
 }
 
 static LrWpanCcaTestSuite g_lrWpanCcaTestSuite; //!< Static variable for test initialization

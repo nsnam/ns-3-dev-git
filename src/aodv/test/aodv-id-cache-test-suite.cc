@@ -120,7 +120,7 @@ class IdCacheTestSuite : public TestSuite
     IdCacheTestSuite()
         : TestSuite("aodv-routing-id-cache", UNIT)
     {
-        AddTestCase(new IdCacheTest, TestCase::QUICK);
+        AddTestCase(new IdCacheTest, TestCase::Duration::QUICK);
     }
 } g_idCacheTestSuite; ///< the test suite
 

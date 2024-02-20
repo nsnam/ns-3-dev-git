@@ -195,37 +195,37 @@ class TcpBbrTestSuite : public TestSuite
         : TestSuite("tcp-bbr-test", UNIT)
     {
         AddTestCase(new TcpBbrPacingEnableTest(true, "BBR must keep pacing feature on"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         AddTestCase(new TcpBbrPacingEnableTest(false, "BBR must turn on pacing feature"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         AddTestCase(
             new TcpBbrCheckGainValuesTest(
                 TcpBbr::BBR_STARTUP,
                 4,
                 "BBR should enter to STARTUP phase and set cwnd and pacing gain accordingly"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         AddTestCase(new TcpBbrCheckGainValuesTest(
                         TcpBbr::BBR_DRAIN,
                         4,
                         "BBR should enter to DRAIN phase and set cwnd and pacing gain accordingly"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         AddTestCase(
             new TcpBbrCheckGainValuesTest(
                 TcpBbr::BBR_PROBE_BW,
                 4,
                 "BBR should enter to BBR_PROBE_BW phase and set cwnd and pacing gain accordingly"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
 
         AddTestCase(
             new TcpBbrCheckGainValuesTest(
                 TcpBbr::BBR_PROBE_RTT,
                 4,
                 "BBR should enter to BBR_PROBE_RTT phase and set cwnd and pacing gain accordingly"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
     }
 };
 

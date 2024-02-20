@@ -423,7 +423,7 @@ Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
                                         false,
                                         MilliSeconds(5),
                                         false),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test Cubic with fast convergence but no TCP friendliness enabled
     // This results in a cwnd plot that has concave and convex regions, as
@@ -434,7 +434,7 @@ Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
                                         false,
                                         MilliSeconds(5),
                                         false),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test Cubic with fast convergence but no TCP friendliness enabled
     // with a higher RTT (20ms) and a step change in capacity at time 10s.
@@ -445,7 +445,7 @@ Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
                                         false,
                                         MilliSeconds(20),
                                         true),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test Cubic with fast convergence but with TCP friendliness enabled
     // with a higher RTT (20ms) and a step change in capacity at time 10s.
@@ -456,7 +456,7 @@ Ns3TcpCubicTestSuite::Ns3TcpCubicTestSuite()
                                         true,
                                         MilliSeconds(20),
                                         true),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**

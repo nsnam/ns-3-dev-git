@@ -284,21 +284,21 @@ class TcpSlowStartTestSuite : public TestSuite
                                                    10,
                                                    t,
                                                    "slow start 500 byte, " + typeName),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
             AddTestCase(new TcpSlowStartNormalTest(1000,
                                                    1000,
                                                    10000,
                                                    9,
                                                    t,
                                                    "slow start 1000 byte, " + typeName),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
             AddTestCase(new TcpSlowStartNormalTest(500,
                                                    250,
                                                    10000,
                                                    10,
                                                    t,
                                                    "slow start small packets, " + typeName),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
             AddTestCase(
                 new TcpSlowStartAttackerTest(500,
                                              500,
@@ -306,7 +306,7 @@ class TcpSlowStartTestSuite : public TestSuite
                                              10,
                                              t,
                                              "slow start ack attacker, 500 byte, " + typeName),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
             AddTestCase(
                 new TcpSlowStartAttackerTest(1000,
                                              1000,
@@ -314,7 +314,7 @@ class TcpSlowStartTestSuite : public TestSuite
                                              9,
                                              t,
                                              "slow start ack attacker, 1000 byte, " + typeName),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
         }
     }
 };

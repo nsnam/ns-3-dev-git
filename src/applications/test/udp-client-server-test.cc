@@ -361,10 +361,10 @@ class UdpClientServerTestSuite : public TestSuite
 UdpClientServerTestSuite::UdpClientServerTestSuite()
     : TestSuite("udp-client-server", UNIT)
 {
-    AddTestCase(new UdpTraceClientServerTestCase, TestCase::QUICK);
-    AddTestCase(new UdpClientServerTestCase, TestCase::QUICK);
-    AddTestCase(new PacketLossCounterTestCase, TestCase::QUICK);
-    AddTestCase(new UdpEchoClientSetFillTestCase, TestCase::QUICK);
+    AddTestCase(new UdpTraceClientServerTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new UdpClientServerTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new PacketLossCounterTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new UdpEchoClientSetFillTestCase, TestCase::Duration::QUICK);
 }
 
 static UdpClientServerTestSuite

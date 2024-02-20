@@ -1815,13 +1815,13 @@ GeoToCartesianTestSuite::GeoToCartesianTestSuite()
                                                        altitude,
                                                        GeographicPositions::SPHERE,
                                                        i),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
                 AddTestCase(new CartesianToGeoTestCase(latitude,
                                                        longitude,
                                                        altitude,
                                                        GeographicPositions::SPHERE,
                                                        i),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
                 ++i;
             }
         }
@@ -1838,13 +1838,13 @@ GeoToCartesianTestSuite::GeoToCartesianTestSuite()
                                                        altitude,
                                                        GeographicPositions::GRS80,
                                                        i),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
                 AddTestCase(new CartesianToGeoTestCase(latitude,
                                                        longitude,
                                                        altitude,
                                                        GeographicPositions::GRS80,
                                                        i),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
                 ++i;
             }
         }
@@ -1861,13 +1861,13 @@ GeoToCartesianTestSuite::GeoToCartesianTestSuite()
                                                        altitude,
                                                        GeographicPositions::WGS84,
                                                        i),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
                 AddTestCase(new CartesianToGeoTestCase(latitude,
                                                        longitude,
                                                        altitude,
                                                        GeographicPositions::WGS84,
                                                        i),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
                 ++i;
             }
         }

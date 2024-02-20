@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE("EpcGtpuTest");
 EpsGtpuTestSuite::EpsGtpuTestSuite()
     : TestSuite("epc-gtpu", SYSTEM)
 {
-    AddTestCase(new EpsGtpuHeaderTestCase(), TestCase::QUICK);
+    AddTestCase(new EpsGtpuHeaderTestCase(), TestCase::Duration::QUICK);
 }
 
 static EpsGtpuTestSuite epsGtpuTestSuite;

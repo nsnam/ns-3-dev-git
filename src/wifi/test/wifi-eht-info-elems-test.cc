@@ -1374,29 +1374,29 @@ class WifiEhtInfoElemsTestSuite : public TestSuite
 WifiEhtInfoElemsTestSuite::WifiEhtInfoElemsTestSuite()
     : TestSuite("wifi-eht-info-elems", UNIT)
 {
-    AddTestCase(new BasicMultiLinkElementTest(), TestCase::QUICK);
-    AddTestCase(new ReducedNeighborReportTest(), TestCase::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 20), TestCase::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(true, 20), TestCase::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 80), TestCase::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(true, 40), TestCase::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(true, 80), TestCase::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 160), TestCase::QUICK);
-    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 320), TestCase::QUICK);
+    AddTestCase(new BasicMultiLinkElementTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ReducedNeighborReportTest(), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 20), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(true, 20), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 80), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(true, 40), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(true, 80), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 160), TestCase::Duration::QUICK);
+    AddTestCase(new WifiEhtCapabilitiesIeTest(false, 320), TestCase::Duration::QUICK);
     AddTestCase(
         new TidToLinkMappingElementTest(WifiDirection::DOWNLINK, std::nullopt, std::nullopt, {}),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TidToLinkMappingElementTest(WifiDirection::UPLINK,
                                                 MicroSeconds(500 * 1024),
                                                 MicroSeconds(300 * 1024),
                                                 {{3, std::set<uint8_t>{0, 4, 6}}}),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TidToLinkMappingElementTest(
                     WifiDirection::BOTH_DIRECTIONS,
                     std::nullopt,
                     MicroSeconds(100 * 1024),
                     {{3, std::set<uint8_t>{0, 4, 6}}, {6, std::set<uint8_t>{3, 7, 11, 14}}}),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TidToLinkMappingElementTest(WifiDirection::DOWNLINK,
                                                 MicroSeconds(100 * 1024),
                                                 std::nullopt,
@@ -1408,9 +1408,9 @@ WifiEhtInfoElemsTestSuite::WifiEhtInfoElemsTestSuite()
                                                  {5, std::set<uint8_t>{14}},
                                                  {6, std::set<uint8_t>{1, 3, 6}},
                                                  {7, std::set<uint8_t>{11, 14}}}),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new EhtOperationElementTest({0, 0, 0, 0, 0}, 1, 2, 3, 4, 5, 6, 7, 8, std::nullopt),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new EhtOperationElementTest({1, 0, 0, 1, 0},
                                             1,
                                             2,
@@ -1421,7 +1421,7 @@ WifiEhtInfoElemsTestSuite::WifiEhtInfoElemsTestSuite()
                                             7,
                                             8,
                                             EhtOperation::EhtOpInfo{{1}, 3, 5}),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new EhtOperationElementTest({1, 1, 1, 1, 2},
                                             1,
                                             2,
@@ -1432,7 +1432,7 @@ WifiEhtInfoElemsTestSuite::WifiEhtInfoElemsTestSuite()
                                             7,
                                             8,
                                             EhtOperation::EhtOpInfo{{2}, 4, 6, 3000}),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 static WifiEhtInfoElemsTestSuite g_wifiEhtInfoElemsTestSuite; ///< the test suite

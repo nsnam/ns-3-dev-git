@@ -251,32 +251,32 @@ SpectrumIdealPhyTestSuite::SpectrumIdealPhyTestSuite()
                                                  static_cast<uint64_t>(achievableRate * 0.1),
                                                  true,
                                                  "ns3::SingleModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new SpectrumIdealPhyTestCase(snr,
                                                  static_cast<uint64_t>(achievableRate * 0.5),
                                                  true,
                                                  "ns3::SingleModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new SpectrumIdealPhyTestCase(snr,
                                                  static_cast<uint64_t>(achievableRate * 0.95),
                                                  true,
                                                  "ns3::SingleModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new SpectrumIdealPhyTestCase(snr,
                                                  static_cast<uint64_t>(achievableRate * 1.05),
                                                  false,
                                                  "ns3::SingleModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new SpectrumIdealPhyTestCase(snr,
                                                  static_cast<uint64_t>(achievableRate * 2),
                                                  false,
                                                  "ns3::SingleModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new SpectrumIdealPhyTestCase(snr,
                                                  static_cast<uint64_t>(achievableRate * 4),
                                                  false,
                                                  "ns3::SingleModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
     for (double snr = 0.01; snr <= 10; snr *= 10)
     {
@@ -285,32 +285,32 @@ SpectrumIdealPhyTestSuite::SpectrumIdealPhyTestSuite()
                                                  static_cast<uint64_t>(achievableRate * 0.1),
                                                  true,
                                                  "ns3::MultiModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new SpectrumIdealPhyTestCase(snr,
                                                  static_cast<uint64_t>(achievableRate * 0.5),
                                                  true,
                                                  "ns3::MultiModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new SpectrumIdealPhyTestCase(snr,
                                                  static_cast<uint64_t>(achievableRate * 0.95),
                                                  true,
                                                  "ns3::MultiModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new SpectrumIdealPhyTestCase(snr,
                                                  static_cast<uint64_t>(achievableRate * 1.05),
                                                  false,
                                                  "ns3::MultiModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new SpectrumIdealPhyTestCase(snr,
                                                  static_cast<uint64_t>(achievableRate * 2),
                                                  false,
                                                  "ns3::MultiModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new SpectrumIdealPhyTestCase(snr,
                                                  static_cast<uint64_t>(achievableRate * 4),
                                                  false,
                                                  "ns3::MultiModelSpectrumChannel"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 }
 

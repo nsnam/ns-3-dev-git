@@ -594,6 +594,6 @@ static class QueueDiscTracesTestSuite : public TestSuite
     QueueDiscTracesTestSuite()
         : TestSuite("queue-disc-traces", UNIT)
     {
-        AddTestCase(new QueueDiscTracesTestCase(), TestCase::QUICK);
+        AddTestCase(new QueueDiscTracesTestCase(), TestCase::Duration::QUICK);
     }
 } g_queueDiscTracesTestSuite; ///< the test suite

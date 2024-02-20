@@ -133,37 +133,37 @@ class ClassicRecoveryTestSuite : public TestSuite
                                             2500,
                                             3,
                                             "Classic recovery test with 500 bytes segmentSize"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new ClassicRecoveryTest(3000,
                                             1000,
                                             2500,
                                             3,
                                             "Classic recovery test with 1000 bytes segmentSize"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new ClassicRecoveryTest(3000,
                                             500,
                                             2500,
                                             4,
                                             "Classic recovery test with 4 DupAck threshold"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new ClassicRecoveryTest(3000,
                                             500,
                                             1000,
                                             3,
                                             "Classic recovery test with 1000 bytes ssThresh"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new ClassicRecoveryTest(2500,
                                             500,
                                             2500,
                                             3,
                                             "Classic recovery test with same cWnd and ssThresh"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new ClassicRecoveryTest(1000,
                                             500,
                                             2500,
                                             3,
                                             "Classic recovery test with cWnd lesser than ssThresh"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

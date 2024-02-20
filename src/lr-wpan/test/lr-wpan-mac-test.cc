@@ -725,9 +725,9 @@ class LrWpanMacTestSuite : public TestSuite
 LrWpanMacTestSuite::LrWpanMacTestSuite()
     : TestSuite("lr-wpan-mac-test", UNIT)
 {
-    AddTestCase(new TestRxOffWhenIdleAfterCsmaFailure, TestCase::QUICK);
-    AddTestCase(new TestActiveScanPanDescriptors, TestCase::QUICK);
-    AddTestCase(new TestOrphanScan, TestCase::QUICK);
+    AddTestCase(new TestRxOffWhenIdleAfterCsmaFailure, TestCase::Duration::QUICK);
+    AddTestCase(new TestActiveScanPanDescriptors, TestCase::Duration::QUICK);
+    AddTestCase(new TestOrphanScan, TestCase::Duration::QUICK);
 }
 
 static LrWpanMacTestSuite g_lrWpanMacTestSuite; //!< Static variable for test initialization

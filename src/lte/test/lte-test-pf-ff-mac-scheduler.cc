@@ -77,15 +77,15 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite()
     // 12 users -> 3 PRB at Itbs 26 -> 277 bytes * 8/12 UE/TTI -> 184670 bytes/sec
     // 15 users -> 3 PRB at Itbs 26 -> 277 bytes * 8/15 UE/TTI -> 147730 bytes/sec
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(1, 0, 2196000, 2292000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(3, 0, 732000, 749000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(6, 0, 366000, 373000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(12, 0, 183000, 184670, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(15, 0, 146400, 147730, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
 
     // DOWNLINK - DISTANCE 4800 -> MCS 22 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
     // 1 user -> 24 PRB at Itbs 15 -> 1383 -> 1383000 bytes/sec
@@ -101,15 +101,15 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite()
     // 12 users -> 3 PRB at Itbs 13 -> 93  bytes * 8/12 UE/TTI  -> 62000 bytes/sec
     // 15 users -> 3 PRB at Itbs 13 -> 93  bytes * 8/15 UE/TTI  -> 49600 bytes/sec
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(1, 4800, 1383000, 807000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(3, 4800, 461000, 253000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(6, 4800, 230500, 125000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(12, 4800, 115250, 62000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(15, 4800, 92200, 49600, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
 
     // DOWNLINK - DISTANCE 6000 -> MCS 20 -> Itbs 18 (from table 7.1.7.2.1-1 of 36.213)
     // 1 user -> 24 PRB at Itbs 20 -> 1191 -> 1191000 bytes/sec
@@ -125,15 +125,15 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite()
     // 12 users -> 3 PRB at Itbs 11 -> 73 bytes * 8/12 UE/TTI -> 48667 bytes/sec
     // 15 users -> 3 PRB at Itbs 11 -> 73 bytes * 8/15 UE/TTI -> 38993 bytes/sec
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(1, 6000, 1191000, 621000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(3, 6000, 397000, 201000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(6, 6000, 198500, 97000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(12, 6000, 99250, 48667, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(15, 6000, 79400, 38993, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
 
     // DOWNLINK - DISTANCE 10000 -> MCS 14 -> Itbs 13 (from table 7.1.7.2.1-1 of 36.213)
     // 1 user -> 24 PRB at Itbs 13 -> 871 -> 775000 bytes/sec
@@ -149,15 +149,15 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite()
     // 12 users -> 3 PRB at Itbs 8 -> 49 bytes * 8/12 UE/TTI -> 32667 bytes/sec
     // 15 users -> 3 PRB at Itbs 8 -> 49 bytes * 8/15 UE/TTI -> 26133 bytes/sec
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(1, 10000, 775000, 437000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(3, 10000, 258333, 137000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(6, 10000, 129167, 67000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(12, 10000, 64583, 32667, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(15, 10000, 51667, 26133, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
 
     // DONWLINK - DISTANCE 20000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
     // 1 user -> 24 PRB at Itbs 8 -> 421 -> 421000 bytes/sec
@@ -173,19 +173,20 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite()
     // 12 users -> 3 PRB at Itbs 2 -> 26 bytes * 8/12 UE/TTI -> 12000 bytes/sec
     // 15 users -> 3 PRB at Itbs 2 -> 26 bytes * 8/15 UE/TTI -> 9600 bytes/sec
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(1, 20000, 421000, 137000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(3, 20000, 140333, 41000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(6, 20000, 70167, 22000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(12, 20000, 35083, 12000, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
     AddTestCase(new LenaPfFfMacSchedulerTestCase1(15, 20000, 28067, 9600, errorModel),
-                TestCase::EXTENSIVE);
+                TestCase::Duration::EXTENSIVE);
 
     // DOWNLINK - DISTANCE 100000 -> CQI == 0 -> out of range -> 0 bytes/sec
     // UPLINK - DISTANCE 100000 -> CQI == 0 -> out of range -> 0 bytes/sec
-    AddTestCase(new LenaPfFfMacSchedulerTestCase1(1, 100000, 0, 0, errorModel), TestCase::QUICK);
+    AddTestCase(new LenaPfFfMacSchedulerTestCase1(1, 100000, 0, 0, errorModel),
+                TestCase::Duration::QUICK);
 
     // Test Case 2: fairness check
 
@@ -208,7 +209,7 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite()
     estThrPfUl.push_back(85000);  // User 3 estimated TTI throughput from PF
     estThrPfUl.push_back(26000);  // User 4 estimated TTI throughput from PF
     AddTestCase(new LenaPfFfMacSchedulerTestCase2(dist, estThrPfDl, estThrPfUl, errorModel),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**

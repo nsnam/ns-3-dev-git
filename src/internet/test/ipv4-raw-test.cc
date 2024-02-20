@@ -380,7 +380,7 @@ class Ipv4RawTestSuite : public TestSuite
     Ipv4RawTestSuite()
         : TestSuite("ipv4-raw", UNIT)
     {
-        AddTestCase(new Ipv4RawSocketImplTest, TestCase::QUICK);
+        AddTestCase(new Ipv4RawSocketImplTest, TestCase::Duration::QUICK);
     }
 };
 

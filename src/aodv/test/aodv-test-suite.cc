@@ -741,16 +741,16 @@ class AodvTestSuite : public TestSuite
     AodvTestSuite()
         : TestSuite("routing-aodv", UNIT)
     {
-        AddTestCase(new NeighborTest, TestCase::QUICK);
-        AddTestCase(new TypeHeaderTest, TestCase::QUICK);
-        AddTestCase(new RreqHeaderTest, TestCase::QUICK);
-        AddTestCase(new RrepHeaderTest, TestCase::QUICK);
-        AddTestCase(new RrepAckHeaderTest, TestCase::QUICK);
-        AddTestCase(new RerrHeaderTest, TestCase::QUICK);
-        AddTestCase(new QueueEntryTest, TestCase::QUICK);
-        AddTestCase(new AodvRqueueTest, TestCase::QUICK);
-        AddTestCase(new AodvRtableEntryTest, TestCase::QUICK);
-        AddTestCase(new AodvRtableTest, TestCase::QUICK);
+        AddTestCase(new NeighborTest, TestCase::Duration::QUICK);
+        AddTestCase(new TypeHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new RreqHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new RrepHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new RrepAckHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new RerrHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new QueueEntryTest, TestCase::Duration::QUICK);
+        AddTestCase(new AodvRqueueTest, TestCase::Duration::QUICK);
+        AddTestCase(new AodvRtableEntryTest, TestCase::Duration::QUICK);
+        AddTestCase(new AodvRtableTest, TestCase::Duration::QUICK);
     }
 } g_aodvTestSuite; ///< the test suite
 

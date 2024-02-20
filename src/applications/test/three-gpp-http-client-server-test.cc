@@ -873,14 +873,14 @@ class ThreeGppHttpClientServerTestSuite : public TestSuite
         }
 
         // Assign higher fullness for tests with higher RngRun.
-        TestCase::TestDuration testDuration = TestCase::QUICK;
+        TestCase::Duration testDuration = TestCase::Duration::QUICK;
         if (rngRun > 20)
         {
-            testDuration = TestCase::EXTENSIVE;
+            testDuration = TestCase::Duration::EXTENSIVE;
         }
         if (rngRun > 50)
         {
-            testDuration = TestCase::TAKES_FOREVER;
+            testDuration = TestCase::Duration::TAKES_FOREVER;
         }
 
         AddTestCase(new ThreeGppHttpObjectTestCase(name.str(),

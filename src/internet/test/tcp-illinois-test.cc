@@ -363,7 +363,7 @@ class TcpIllinoisTestSuite : public TestSuite
                                         SequenceNumber32(2893),
                                         SequenceNumber32(5785),
                                         "Illinois test on cWnd and ssThresh when in slow start"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpIllinoisTest(
                         60 * 346,
                         40 * 346,
@@ -374,7 +374,7 @@ class TcpIllinoisTestSuite : public TestSuite
                         SequenceNumber32(2893),
                         SequenceNumber32(5785),
                         "Illinois test on cWnd and ssThresh when avg queueing delay is at minimum"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpIllinoisTest(
                         38 * 1446,
                         40 * 1446,
@@ -385,7 +385,7 @@ class TcpIllinoisTestSuite : public TestSuite
                         SequenceNumber32(2893),
                         SequenceNumber32(5785),
                         "Illinois test on cWnd and ssThresh when avg queueing delay is at maximum"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpIllinoisTest(40 * 1446,
                                         38 * 1446,
                                         1446,
@@ -396,7 +396,7 @@ class TcpIllinoisTestSuite : public TestSuite
                                         SequenceNumber32(5785),
                                         "Illinois test on cWnd and ssThresh when avg queueing "
                                         "delay is in between its min & max"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

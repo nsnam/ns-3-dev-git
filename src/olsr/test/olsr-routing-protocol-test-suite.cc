@@ -189,7 +189,7 @@ class OlsrProtocolTestSuite : public TestSuite
 OlsrProtocolTestSuite::OlsrProtocolTestSuite()
     : TestSuite("routing-olsr", UNIT)
 {
-    AddTestCase(new OlsrMprTestCase(), TestCase::QUICK);
+    AddTestCase(new OlsrMprTestCase(), TestCase::Duration::QUICK);
 }
 
 static OlsrProtocolTestSuite g_olsrProtocolTestSuite; //!< Static variable for test initialization

@@ -225,7 +225,7 @@ class SixlowpanIphcTestSuite : public TestSuite
 SixlowpanIphcTestSuite::SixlowpanIphcTestSuite()
     : TestSuite("sixlowpan-iphc", UNIT)
 {
-    AddTestCase(new SixlowpanIphcImplTest(), TestCase::QUICK);
+    AddTestCase(new SixlowpanIphcImplTest(), TestCase::Duration::QUICK);
 }
 
 static SixlowpanIphcTestSuite g_sixlowpanIphcTestSuite; //!< Static variable for test initialization

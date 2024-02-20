@@ -1325,14 +1325,14 @@ class Ipv4GlobalRoutingTestSuite : public TestSuite
 Ipv4GlobalRoutingTestSuite::Ipv4GlobalRoutingTestSuite()
     : TestSuite("ipv4-global-routing", UNIT)
 {
-    AddTestCase(new LinkTest, TestCase::QUICK);
-    AddTestCase(new LanTest, TestCase::QUICK);
-    AddTestCase(new TwoLinkTest, TestCase::QUICK);
-    AddTestCase(new TwoLanTest, TestCase::QUICK);
-    AddTestCase(new BridgeTest, TestCase::QUICK);
-    AddTestCase(new TwoBridgeTest, TestCase::QUICK);
-    AddTestCase(new Ipv4DynamicGlobalRoutingTestCase, TestCase::QUICK);
-    AddTestCase(new Ipv4GlobalRoutingSlash32TestCase, TestCase::QUICK);
+    AddTestCase(new LinkTest, TestCase::Duration::QUICK);
+    AddTestCase(new LanTest, TestCase::Duration::QUICK);
+    AddTestCase(new TwoLinkTest, TestCase::Duration::QUICK);
+    AddTestCase(new TwoLanTest, TestCase::Duration::QUICK);
+    AddTestCase(new BridgeTest, TestCase::Duration::QUICK);
+    AddTestCase(new TwoBridgeTest, TestCase::Duration::QUICK);
+    AddTestCase(new Ipv4DynamicGlobalRoutingTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new Ipv4GlobalRoutingSlash32TestCase, TestCase::Duration::QUICK);
 }
 
 static Ipv4GlobalRoutingTestSuite

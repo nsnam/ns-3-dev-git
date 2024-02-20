@@ -319,7 +319,7 @@ class TcpBicTestSuite : public TestSuite
                                     11,
                                     0,
                                     "Bic increment test: under lowCwnd & enough ACKs received"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(new TcpBicIncrementTest(
                         10 * 536,
                         536,
@@ -327,7 +327,7 @@ class TcpBicTestSuite : public TestSuite
                         8,
                         0,
                         "Bic increment test: under lowCwnd but not enough ACKs received"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpBicIncrementTest(
                         18 * 1446,
                         1446,
@@ -335,7 +335,7 @@ class TcpBicTestSuite : public TestSuite
                         5,
                         90,
                         "Bic increment test: linear increase when distance exceeds S_max"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(
             new TcpBicIncrementTest(18 * 1446,
                                     1446,
@@ -343,21 +343,21 @@ class TcpBicTestSuite : public TestSuite
                                     24,
                                     20,
                                     "Bic increment test: binary search increase with smooth part"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(new TcpBicIncrementTest(19 * 1,
                                             1,
                                             17 * 1,
                                             2,
                                             83,
                                             "Bic increment test: binary search increase"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpBicIncrementTest(15 * 536,
                                             536,
                                             9 * 536,
                                             19,
                                             13,
                                             "Bic increment test: slow start AMD linear increase"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(
             new TcpBicIncrementTest(22 * 1000,
                                     1000,
@@ -365,7 +365,7 @@ class TcpBicTestSuite : public TestSuite
                                     9,
                                     16,
                                     "Bic increment test: slow start but not enough ACKs received"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(new TcpBicIncrementTest(
                         65 * 1000,
                         1000,
@@ -373,7 +373,7 @@ class TcpBicTestSuite : public TestSuite
                         2,
                         16,
                         "Bic increment test: linear incrase but not enough ACKs received"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         AddTestCase(new TcpBicDecrementTest(
                         5 * 1446,
@@ -381,14 +381,14 @@ class TcpBicTestSuite : public TestSuite
                         true,
                         10,
                         "Bic decrement test: fast convergence & cwnd less than lowWindow"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpBicDecrementTest(
                         5 * 1446,
                         1446,
                         false,
                         10,
                         "Bic decrement test: not in fast convergence & cwnd less than lowWindow"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(
             new TcpBicDecrementTest(
                 15 * 1446,
@@ -396,7 +396,7 @@ class TcpBicTestSuite : public TestSuite
                 false,
                 10,
                 "Bic decrement test: not in fast convergence & cwnd greater than lowWindow"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
     }
 };
 

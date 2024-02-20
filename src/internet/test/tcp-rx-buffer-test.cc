@@ -304,7 +304,7 @@ class TcpRxBufferTestSuite : public TestSuite
     TcpRxBufferTestSuite()
         : TestSuite("tcp-rx-buffer", UNIT)
     {
-        AddTestCase(new TcpRxBufferTestCase, TestCase::QUICK);
+        AddTestCase(new TcpRxBufferTestCase, TestCase::Duration::QUICK);
     }
 };
 

@@ -236,42 +236,42 @@ class TcpWScalingTestSuite : public TestSuite
     {
         AddTestCase(
             new WScalingTestCase(WScalingTestCase::ENABLED, 200000, 65535, "WS only server"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(new WScalingTestCase(WScalingTestCase::ENABLED,
                                          65535,
                                          65535,
                                          "Window scaling not used, all enabled"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new WScalingTestCase(WScalingTestCase::DISABLED, 65535, 65535, "WS disabled"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new WScalingTestCase(WScalingTestCase::ENABLED_SENDER,
                                          65535,
                                          65535,
                                          "WS enabled client"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new WScalingTestCase(WScalingTestCase::ENABLED_RECEIVER,
                                          65535,
                                          65535,
                                          "WS disabled client"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         AddTestCase(
             new WScalingTestCase(WScalingTestCase::ENABLED, 65535, 200000, "WS only client"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(
             new WScalingTestCase(WScalingTestCase::ENABLED, 131072, 65535, "WS only server"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(
             new WScalingTestCase(WScalingTestCase::ENABLED, 65535, 131072, "WS only client"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(
             new WScalingTestCase(WScalingTestCase::ENABLED, 4000, 4000, "WS small window, all"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(new WScalingTestCase(WScalingTestCase::ENABLED_SENDER,
                                          4000,
                                          4000,
                                          "WS small window, sender"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

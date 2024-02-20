@@ -240,8 +240,8 @@ class Ipv6ListRoutingTestSuite : public TestSuite
     Ipv6ListRoutingTestSuite()
         : TestSuite("ipv6-list-routing", UNIT)
     {
-        AddTestCase(new Ipv6ListRoutingPositiveTestCase(), TestCase::QUICK);
-        AddTestCase(new Ipv6ListRoutingNegativeTestCase(), TestCase::QUICK);
+        AddTestCase(new Ipv6ListRoutingPositiveTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Ipv6ListRoutingNegativeTestCase(), TestCase::Duration::QUICK);
     }
 };
 

@@ -494,7 +494,7 @@ class SixlowpanFragmentationTestSuite : public TestSuite
 SixlowpanFragmentationTestSuite::SixlowpanFragmentationTestSuite()
     : TestSuite("sixlowpan-fragmentation", UNIT)
 {
-    AddTestCase(new SixlowpanFragmentationTest(), TestCase::QUICK);
+    AddTestCase(new SixlowpanFragmentationTest(), TestCase::Duration::QUICK);
 }
 
 static SixlowpanFragmentationTestSuite

@@ -1327,13 +1327,13 @@ class ThreeGppPropagationLossModelsTestSuite : public TestSuite
 ThreeGppPropagationLossModelsTestSuite::ThreeGppPropagationLossModelsTestSuite()
     : TestSuite("three-gpp-propagation-loss-model", UNIT)
 {
-    AddTestCase(new ThreeGppRmaPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppUmaPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppUmiPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppIndoorOfficePropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppV2vUrbanPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppV2vHighwayPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new ThreeGppShadowingTestCase, TestCase::QUICK);
+    AddTestCase(new ThreeGppRmaPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppUmaPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppUmiPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppIndoorOfficePropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppV2vUrbanPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppV2vHighwayPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppShadowingTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

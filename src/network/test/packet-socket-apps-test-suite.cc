@@ -132,7 +132,7 @@ class PacketSocketAppsTestSuite : public TestSuite
     PacketSocketAppsTestSuite()
         : TestSuite("packet-socket-apps", UNIT)
     {
-        AddTestCase(new PacketSocketAppsTest, TestCase::QUICK);
+        AddTestCase(new PacketSocketAppsTest, TestCase::Duration::QUICK);
     }
 };
 

@@ -1053,58 +1053,58 @@ class WifiErrorRateModelsTestSuite : public TestSuite
 WifiErrorRateModelsTestSuite::WifiErrorRateModelsTestSuite()
     : TestSuite("wifi-error-rate-models", UNIT)
 {
-    AddTestCase(new WifiErrorRateModelsTestCaseDsss, TestCase::QUICK);
-    AddTestCase(new WifiErrorRateModelsTestCaseNist, TestCase::QUICK);
-    AddTestCase(new WifiErrorRateModelsTestCaseMimo, TestCase::QUICK);
+    AddTestCase(new WifiErrorRateModelsTestCaseDsss, TestCase::Duration::QUICK);
+    AddTestCase(new WifiErrorRateModelsTestCaseNist, TestCase::Duration::QUICK);
+    AddTestCase(new WifiErrorRateModelsTestCaseMimo, TestCase::Duration::QUICK);
     AddTestCase(new TableBasedErrorRateTestCase("DefaultTableBasedHtMcs0-1458bytes",
                                                 HtPhy::GetHtMcs0(),
                                                 1458),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new TableBasedErrorRateTestCase("DefaultTableBasedHtMcs0-32bytes", HtPhy::GetHtMcs0(), 32),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TableBasedErrorRateTestCase("DefaultTableBasedHtMcs0-1000bytes",
                                                 HtPhy::GetHtMcs0(),
                                                 1000),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new TableBasedErrorRateTestCase("DefaultTableBasedHtMcs0-1byte", HtPhy::GetHtMcs0(), 1),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TableBasedErrorRateTestCase("DefaultTableBasedHtMcs0-2000bytes",
                                                 HtPhy::GetHtMcs0(),
                                                 2000),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TableBasedErrorRateTestCase("DefaultTableBasedHtMcs7-1500bytes",
                                                 HtPhy::GetHtMcs7(),
                                                 1500),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TableBasedErrorRateTestCase("DefaultTableBasedVhtMcs0-1458bytes",
                                                 VhtPhy::GetVhtMcs0(),
                                                 1458),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TableBasedErrorRateTestCase("DefaultTableBasedVhtMcs0-32bytes",
                                                 VhtPhy::GetVhtMcs0(),
                                                 32),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TableBasedErrorRateTestCase("DefaultTableBasedVhtMcs0-1000bytes",
                                                 VhtPhy::GetVhtMcs0(),
                                                 1000),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new TableBasedErrorRateTestCase("DefaultTableBasedVhtMcs0-1byte", VhtPhy::GetVhtMcs0(), 1),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
     AddTestCase(new TableBasedErrorRateTestCase("DefaultTableBasedVhtMcs0-2000bytes",
                                                 VhtPhy::GetVhtMcs0(),
                                                 2000),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TableBasedErrorRateTestCase("DefaultTableBasedVhtMcs8-1500bytes",
                                                 VhtPhy::GetVhtMcs8(),
                                                 1500),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new TableBasedErrorRateTestCase("FallbackTableBasedHeMcs11-1458bytes",
                                                 HePhy::GetHeMcs11(),
                                                 1458),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 static WifiErrorRateModelsTestSuite wifiErrorRateModelsTestSuite; ///< the test suite

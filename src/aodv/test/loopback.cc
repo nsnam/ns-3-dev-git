@@ -201,7 +201,7 @@ class AodvLoopbackTestSuite : public TestSuite
     {
         SetDataDir(NS_TEST_SOURCEDIR);
         // UDP Echo loopback test case
-        AddTestCase(new LoopbackTestCase(), TestCase::QUICK);
+        AddTestCase(new LoopbackTestCase(), TestCase::Duration::QUICK);
     }
 } g_aodvLoopbackTestSuite; ///< the test suite
 

@@ -220,7 +220,7 @@ class TcpVegasTestSuite : public TestSuite
                              SequenceNumber32(2893),
                              SequenceNumber32(5785),
                              "Vegas test on cWnd and ssThresh when in slow start and diff > gamma"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(
             new TcpVegasTest(5 * 536,
                              536,
@@ -230,7 +230,7 @@ class TcpVegasTestSuite : public TestSuite
                              SequenceNumber32(3216),
                              SequenceNumber32(3753),
                              "Vegas test on cWnd and ssThresh when in slow start and diff < gamma"),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(new TcpVegasTest(60 * 346,
                                      346,
                                      40 * 346,
@@ -239,7 +239,7 @@ class TcpVegasTestSuite : public TestSuite
                                      SequenceNumber32(20761),
                                      SequenceNumber32(21107),
                                      "Vegas test on cWnd and ssThresh when diff > beta"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpVegasTest(15 * 1446,
                                      1446,
                                      10 * 1446,
@@ -248,7 +248,7 @@ class TcpVegasTestSuite : public TestSuite
                                      SequenceNumber32(21691),
                                      SequenceNumber32(24583),
                                      "Vegas test on cWnd and ssThresh when diff < alpha"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpVegasTest(20 * 746,
                                      746,
                                      10 * 746,
@@ -257,7 +257,7 @@ class TcpVegasTestSuite : public TestSuite
                                      SequenceNumber32(14921),
                                      SequenceNumber32(15667),
                                      "Vegas test on cWnd and ssThresh when alpha <= diff <= beta"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

@@ -852,6 +852,6 @@ static class PieQueueDiscTestSuite : public TestSuite
     PieQueueDiscTestSuite()
         : TestSuite("pie-queue-disc", UNIT)
     {
-        AddTestCase(new PieQueueDiscTestCase(), TestCase::QUICK);
+        AddTestCase(new PieQueueDiscTestCase(), TestCase::Duration::QUICK);
     }
 } g_pieQueueTestSuite; ///< the test suite

@@ -1605,8 +1605,8 @@ class LengthTestSuite : public TestSuite
 LengthTestSuite::LengthTestSuite()
     : TestSuite("length")
 {
-    AddTestCase(new LengthTestCase(), TestCase::QUICK);
-    AddTestCase(new LengthValueTestCase(), TestCase::QUICK);
+    AddTestCase(new LengthTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new LengthValueTestCase(), TestCase::Duration::QUICK);
 }
 
 /**

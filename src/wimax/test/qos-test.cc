@@ -313,8 +313,8 @@ class Ns3WimaxQoSTestSuite : public TestSuite
 Ns3WimaxQoSTestSuite::Ns3WimaxQoSTestSuite()
     : TestSuite("wimax-qos", SYSTEM)
 {
-    AddTestCase(new Ns3WimaxSFTypeTestCase, TestCase::QUICK);
-    AddTestCase(new Ns3WimaxSchedulingTestCase, TestCase::QUICK);
+    AddTestCase(new Ns3WimaxSFTypeTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new Ns3WimaxSchedulingTestCase, TestCase::Duration::QUICK);
 }
 
 static Ns3WimaxQoSTestSuite ns3WimaxQoSTestSuite; ///< the test suite

@@ -281,10 +281,10 @@ class Ipv6ExtensionHeaderTestSuite : public TestSuite
     Ipv6ExtensionHeaderTestSuite()
         : TestSuite("ipv6-extension-header", UNIT)
     {
-        AddTestCase(new TestEmptyOptionField, TestCase::QUICK);
-        AddTestCase(new TestOptionWithoutAlignment, TestCase::QUICK);
-        AddTestCase(new TestOptionWithAlignment, TestCase::QUICK);
-        AddTestCase(new TestFulfilledAlignment, TestCase::QUICK);
+        AddTestCase(new TestEmptyOptionField, TestCase::Duration::QUICK);
+        AddTestCase(new TestOptionWithoutAlignment, TestCase::Duration::QUICK);
+        AddTestCase(new TestOptionWithAlignment, TestCase::Duration::QUICK);
+        AddTestCase(new TestFulfilledAlignment, TestCase::Duration::QUICK);
     }
 };
 

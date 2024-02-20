@@ -273,7 +273,7 @@ class BuildingsPenetrationLossesTestSuite : public TestSuite
 BuildingsPenetrationLossesTestSuite::BuildingsPenetrationLossesTestSuite()
     : TestSuite("buildings-penetration-losses", UNIT)
 {
-    AddTestCase(new BuildingsPenetrationLossesTestCase, TestCase::QUICK);
+    AddTestCase(new BuildingsPenetrationLossesTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

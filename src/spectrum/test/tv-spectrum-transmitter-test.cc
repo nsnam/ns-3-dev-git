@@ -194,7 +194,7 @@ TvSpectrumTransmitterTestSuite::TvSpectrumTransmitterTestSuite()
                                                               bandwidth,
                                                               psd,
                                                               TvSpectrumTransmitter::TVTYPE_8VSB),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
             }
         }
     }
@@ -208,7 +208,7 @@ TvSpectrumTransmitterTestSuite::TvSpectrumTransmitterTestSuite()
                                                               bandwidth,
                                                               psd,
                                                               TvSpectrumTransmitter::TVTYPE_COFDM),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
             }
         }
     }
@@ -222,7 +222,7 @@ TvSpectrumTransmitterTestSuite::TvSpectrumTransmitterTestSuite()
                                                               bandwidth,
                                                               psd,
                                                               TvSpectrumTransmitter::TVTYPE_ANALOG),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
             }
         }
     }

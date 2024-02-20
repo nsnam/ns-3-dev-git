@@ -420,7 +420,7 @@ class LrWpanIfsTestSuite : public TestSuite
 LrWpanIfsTestSuite::LrWpanIfsTestSuite()
     : TestSuite("lr-wpan-ifs-test", UNIT)
 {
-    AddTestCase(new LrWpanDataIfsTestCase, TestCase::QUICK);
+    AddTestCase(new LrWpanDataIfsTestCase, TestCase::Duration::QUICK);
 }
 
 static LrWpanIfsTestSuite lrWpanIfsTestSuite; //!< Static variable for test initialization

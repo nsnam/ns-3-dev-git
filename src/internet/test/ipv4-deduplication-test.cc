@@ -559,10 +559,10 @@ class Ipv4DeduplicationTestSuite : public TestSuite
 Ipv4DeduplicationTestSuite::Ipv4DeduplicationTestSuite()
     : TestSuite("ipv4-deduplication", UNIT)
 {
-    AddTestCase(new Ipv4DeduplicationTest(true), TestCase::QUICK);
-    AddTestCase(new Ipv4DeduplicationTest(false), TestCase::QUICK);
+    AddTestCase(new Ipv4DeduplicationTest(true), TestCase::Duration::QUICK);
+    AddTestCase(new Ipv4DeduplicationTest(false), TestCase::Duration::QUICK);
     // degenerate case is enabled RFC but with too short an expiry
-    AddTestCase(new Ipv4DeduplicationTest(true, MicroSeconds(50)), TestCase::QUICK);
+    AddTestCase(new Ipv4DeduplicationTest(true, MicroSeconds(50)), TestCase::Duration::QUICK);
 }
 
 static Ipv4DeduplicationTestSuite
@@ -739,7 +739,7 @@ class Ipv4DeduplicationPerformanceTestSuite : public TestSuite
 Ipv4DeduplicationPerformanceTestSuite::Ipv4DeduplicationPerformanceTestSuite()
     : TestSuite("ipv4-deduplication-performance", PERFORMANCE)
 {
-    AddTestCase(new Ipv4DeduplicationPerformanceTest, TestCase::EXTENSIVE);
+    AddTestCase(new Ipv4DeduplicationPerformanceTest, TestCase::Duration::EXTENSIVE);
 }
 
 static Ipv4DeduplicationPerformanceTestSuite

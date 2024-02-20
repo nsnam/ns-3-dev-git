@@ -1138,13 +1138,13 @@ class WifiAggregationTestSuite : public TestSuite
 WifiAggregationTestSuite::WifiAggregationTestSuite()
     : TestSuite("wifi-aggregation", UNIT)
 {
-    AddTestCase(new AmpduAggregationTest, TestCase::QUICK);
-    AddTestCase(new TwoLevelAggregationTest, TestCase::QUICK);
-    AddTestCase(new HeAggregationTest(64), TestCase::QUICK);
-    AddTestCase(new HeAggregationTest(256), TestCase::QUICK);
-    AddTestCase(new EhtAggregationTest(512), TestCase::QUICK);
-    AddTestCase(new EhtAggregationTest(1024), TestCase::QUICK);
-    AddTestCase(new PreservePacketsInAmpdus, TestCase::QUICK);
+    AddTestCase(new AmpduAggregationTest, TestCase::Duration::QUICK);
+    AddTestCase(new TwoLevelAggregationTest, TestCase::Duration::QUICK);
+    AddTestCase(new HeAggregationTest(64), TestCase::Duration::QUICK);
+    AddTestCase(new HeAggregationTest(256), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(512), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(1024), TestCase::Duration::QUICK);
+    AddTestCase(new PreservePacketsInAmpdus, TestCase::Duration::QUICK);
 }
 
 static WifiAggregationTestSuite g_wifiAggregationTestSuite; ///< the test suite

@@ -99,7 +99,7 @@ class DropTailQueueTestSuite : public TestSuite
     DropTailQueueTestSuite()
         : TestSuite("drop-tail-queue", UNIT)
     {
-        AddTestCase(new DropTailQueueTestCase(), TestCase::QUICK);
+        AddTestCase(new DropTailQueueTestCase(), TestCase::Duration::QUICK);
     }
 };
 

@@ -287,9 +287,9 @@ class Dot11sTestSuite : public TestSuite
 Dot11sTestSuite::Dot11sTestSuite()
     : TestSuite("devices-mesh-dot11s", UNIT)
 {
-    AddTestCase(new MeshHeaderTest, TestCase::QUICK);
-    AddTestCase(new HwmpRtableTest, TestCase::QUICK);
-    AddTestCase(new PeerLinkFrameStartTest, TestCase::QUICK);
+    AddTestCase(new MeshHeaderTest, TestCase::Duration::QUICK);
+    AddTestCase(new HwmpRtableTest, TestCase::Duration::QUICK);
+    AddTestCase(new PeerLinkFrameStartTest, TestCase::Duration::QUICK);
 }
 
 static Dot11sTestSuite g_dot11sTestSuite; ///< the test suite

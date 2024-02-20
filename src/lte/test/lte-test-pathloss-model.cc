@@ -137,7 +137,7 @@ LtePathlossModelTestSuite::LtePathlossModelTestSuite()
         name << " snr= " << sinrDb << " dB, "
              << " mcs= " << snrEfficiencyMcs[i].mcsIndex;
         AddTestCase(new LtePathlossModelSystemTestCase(name.str(), sinrDb, dist[i], mcs),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 }
 

@@ -3123,8 +3123,8 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                                    std::string,                    // DL TID-to-Link Mapping
                                    std::string>;                   // UL TID-to-Link Mapping
 
-    AddTestCase(new GetRnrLinkInfoTest(), TestCase::QUICK);
-    AddTestCase(new MldSwapLinksTest(), TestCase::QUICK);
+    AddTestCase(new GetRnrLinkInfoTest(), TestCase::Duration::QUICK);
+    AddTestCase(new MldSwapLinksTest(), TestCase::Duration::QUICK);
 
     for (const auto& [baseParams,
                       setupLinks,
@@ -3235,14 +3235,14 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                                            apNegSupport,
                                            dlTidLinkMapping,
                                            ulTidLinkMapping),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new MultiLinkSetupTest(baseParams,
                                            WifiScanType::ACTIVE,
                                            setupLinks,
                                            apNegSupport,
                                            dlTidLinkMapping,
                                            ulTidLinkMapping),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         for (const auto& trafficPattern : {WifiTrafficPattern::STA_TO_STA,
                                            WifiTrafficPattern::STA_TO_AP,
@@ -3256,7 +3256,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                                             WifiBaEnabled::NO,
                                             WifiUseBarAfterMissedBa::NO,
                                             1),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
             for (const auto& useBarAfterMissedBa :
                  {WifiUseBarAfterMissedBa::YES, WifiUseBarAfterMissedBa::NO})
             {
@@ -3266,14 +3266,14 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                                                 WifiBaEnabled::YES,
                                                 useBarAfterMissedBa,
                                                 1),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
                 // Block Ack agreement with nMaxInflight=2
                 AddTestCase(new MultiLinkTxTest(baseParams,
                                                 trafficPattern,
                                                 WifiBaEnabled::YES,
                                                 useBarAfterMissedBa,
                                                 2),
-                            TestCase::QUICK);
+                            TestCase::Duration::QUICK);
             }
         }
 
@@ -3288,16 +3288,16 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
                 // Block Ack agreement with nMaxInflight=1
                 AddTestCase(
                     new MultiLinkMuTxTest(baseParams, muTrafficPattern, useBarAfterMissedBa, 1),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
                 // Block Ack agreement with nMaxInflight=2
                 AddTestCase(
                     new MultiLinkMuTxTest(baseParams, muTrafficPattern, useBarAfterMissedBa, 2),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
             }
         }
     }
 
-    AddTestCase(new ReleaseSeqNoAfterCtsTimeoutTest(), TestCase::QUICK);
+    AddTestCase(new ReleaseSeqNoAfterCtsTimeoutTest(), TestCase::Duration::QUICK);
 }
 
 static WifiMultiLinkOperationsTestSuite g_wifiMultiLinkOperationsTestSuite; ///< the test suite

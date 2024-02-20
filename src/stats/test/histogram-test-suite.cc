@@ -85,7 +85,7 @@ class HistogramTestSuite : public TestSuite
 HistogramTestSuite::HistogramTestSuite()
     : TestSuite("histogram", UNIT)
 {
-    AddTestCase(new HistogramTestCase, TestCase::QUICK);
+    AddTestCase(new HistogramTestCase, TestCase::Duration::QUICK);
 }
 
 static HistogramTestSuite g_HistogramTestSuite; //!< Static variable for test initialization

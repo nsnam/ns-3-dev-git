@@ -1232,13 +1232,13 @@ class NeighborCacheTestSuite : public TestSuite
     NeighborCacheTestSuite()
         : TestSuite("neighbor-cache", UNIT)
     {
-        AddTestCase(new DynamicNeighborCacheTest, TestCase::QUICK);
-        AddTestCase(new ChannelTest, TestCase::QUICK);
-        AddTestCase(new NetDeviceContainerTest, TestCase::QUICK);
-        AddTestCase(new InterfaceContainerTest, TestCase::QUICK);
-        AddTestCase(new FlushTest, TestCase::QUICK);
-        AddTestCase(new DuplicateTest, TestCase::QUICK);
-        AddTestCase(new DynamicPartialTest, TestCase::QUICK);
+        AddTestCase(new DynamicNeighborCacheTest, TestCase::Duration::QUICK);
+        AddTestCase(new ChannelTest, TestCase::Duration::QUICK);
+        AddTestCase(new NetDeviceContainerTest, TestCase::Duration::QUICK);
+        AddTestCase(new InterfaceContainerTest, TestCase::Duration::QUICK);
+        AddTestCase(new FlushTest, TestCase::Duration::QUICK);
+        AddTestCase(new DuplicateTest, TestCase::Duration::QUICK);
+        AddTestCase(new DynamicPartialTest, TestCase::Duration::QUICK);
     }
 };
 

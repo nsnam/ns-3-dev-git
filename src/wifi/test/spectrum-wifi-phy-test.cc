@@ -1604,12 +1604,12 @@ class SpectrumWifiPhyTestSuite : public TestSuite
 SpectrumWifiPhyTestSuite::SpectrumWifiPhyTestSuite()
     : TestSuite("wifi-spectrum-wifi-phy", UNIT)
 {
-    AddTestCase(new SpectrumWifiPhyBasicTest, TestCase::QUICK);
-    AddTestCase(new SpectrumWifiPhyListenerTest, TestCase::QUICK);
-    AddTestCase(new SpectrumWifiPhyFilterTest, TestCase::QUICK);
-    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(false), TestCase::QUICK);
-    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(true), TestCase::QUICK);
-    AddTestCase(new SpectrumWifiPhyInterfacesHelperTest, TestCase::QUICK);
+    AddTestCase(new SpectrumWifiPhyBasicTest, TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyListenerTest, TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyFilterTest, TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(false), TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(true), TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyInterfacesHelperTest, TestCase::Duration::QUICK);
 }
 
 static SpectrumWifiPhyTestSuite spectrumWifiPhyTestSuite; ///< the test suite

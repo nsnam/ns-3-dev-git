@@ -632,14 +632,14 @@ class DsrTestSuite : public TestSuite
     DsrTestSuite()
         : TestSuite("routing-dsr", UNIT)
     {
-        AddTestCase(new DsrFsHeaderTest, TestCase::QUICK);
-        AddTestCase(new DsrRreqHeaderTest, TestCase::QUICK);
-        AddTestCase(new DsrRrepHeaderTest, TestCase::QUICK);
-        AddTestCase(new DsrSRHeaderTest, TestCase::QUICK);
-        AddTestCase(new DsrRerrHeaderTest, TestCase::QUICK);
-        AddTestCase(new DsrAckReqHeaderTest, TestCase::QUICK);
-        AddTestCase(new DsrAckHeaderTest, TestCase::QUICK);
-        AddTestCase(new DsrCacheEntryTest, TestCase::QUICK);
-        AddTestCase(new DsrSendBuffTest, TestCase::QUICK);
+        AddTestCase(new DsrFsHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new DsrRreqHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new DsrRrepHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new DsrSRHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new DsrRerrHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new DsrAckReqHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new DsrAckHeaderTest, TestCase::Duration::QUICK);
+        AddTestCase(new DsrCacheEntryTest, TestCase::Duration::QUICK);
+        AddTestCase(new DsrSendBuffTest, TestCase::Duration::QUICK);
     }
 } g_dsrTestSuite;

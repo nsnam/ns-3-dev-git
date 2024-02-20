@@ -85,13 +85,13 @@ LteUplinkSinrTestSuite::LteUplinkSinrTestSuite()
                                               rxPsd2,
                                               theoreticalSinr1,
                                               "sdBm = [-46 -inf] and [-inf -48]"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new LteUplinkSrsSinrTestCase(rxPsd1,
                                              rxPsd2,
                                              theoreticalSinr1,
                                              "sdBm = [-46 -inf] and [-inf -48]"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     /**
      * TX signals #2: Power Spectral Density of the signals of interest = [-63 -inf] and [-inf -61]
@@ -113,13 +113,13 @@ LteUplinkSinrTestSuite::LteUplinkSinrTestSuite()
                                               rxPsd4,
                                               theoreticalSinr2,
                                               "sdBm = [-63 -inf] and [-inf -61]"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     AddTestCase(new LteUplinkSrsSinrTestCase(rxPsd3,
                                              rxPsd4,
                                              theoreticalSinr2,
                                              "sdBm = [-63 -inf] and [-inf -61]"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**

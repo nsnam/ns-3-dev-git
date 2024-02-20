@@ -18,6 +18,7 @@
 #ifndef NS3_TEST_H
 #define NS3_TEST_H
 
+#include "deprecated.h"
 #include "system-wall-clock-ms.h"
 
 #include <fstream>
@@ -1060,12 +1061,23 @@ class TestCase
 {
   public:
     /** \brief How long the test takes to execute. */
-    enum TestDuration
+    enum class Duration
     {
         QUICK = 1,        //!< Fast test.
         EXTENSIVE = 2,    //!< Medium length test.
         TAKES_FOREVER = 3 //!< Very long running test.
     };
+
+    NS_DEPRECATED_3_42("Use Duration::QUICK instead")
+    static constexpr auto QUICK = Duration::QUICK; //!< @deprecated See Duration::QUICK.
+    NS_DEPRECATED_3_42("Use Duration::EXTENSIVE instead")
+    static constexpr auto EXTENSIVE = Duration::EXTENSIVE; //!< @deprecated See Duration::EXTENSIVE.
+    NS_DEPRECATED_3_42("Use Duration::TAKES_FOREVER instead")
+    static constexpr auto TAKES_FOREVER =
+        Duration::TAKES_FOREVER; //!< @deprecated See Duration::TAKES_FOREVER.
+
+    using TestDuration NS_DEPRECATED_3_42("Use Duration instead") =
+        Duration; //!< @deprecated See Duration.
 
     /**
      *  Destructor
@@ -1096,7 +1108,7 @@ class TestCase
      * \param [in] duration Amount of time this test takes to execute
      *             (defaults to QUICK).
      */
-    void AddTestCase(TestCase* testCase, TestDuration duration = QUICK);
+    void AddTestCase(TestCase* testCase, Duration duration = Duration::QUICK);
 
     /**
      * \brief Set the data directory where reference trace files can be
@@ -1242,7 +1254,7 @@ class TestCase
     TestRunnerImpl* m_runner;          //!< Pointer to the TestRunner
     Result* m_result;                  //!< Results data
     std::string m_name;                //!< TestCase name
-    TestDuration m_duration;           //!< TestCase duration
+    Duration m_duration;               //!< TestCase duration
 };
 
 /**
@@ -1403,6 +1415,14 @@ TestVectors<T>::Get(std::size_t i) const
     NS_ABORT_MSG_UNLESS(m_vectors.size() > i, "TestVectors::Get(): Bad index");
     return m_vectors[i];
 }
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os The reference to the output stream.
+ * @param [in] duration The TestCase::Duration.
+ * @return The reference to the output stream.
+ */
+std::ostream& operator<<(std::ostream& os, TestCase::Duration duration);
 
 } // namespace ns3
 

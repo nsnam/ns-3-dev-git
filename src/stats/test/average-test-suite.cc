@@ -319,9 +319,9 @@ class AverageTestSuite : public TestSuite
 AverageTestSuite::AverageTestSuite()
     : TestSuite("average", UNIT)
 {
-    AddTestCase(new OneIntegerAverageTestCase, TestCase::QUICK);
-    AddTestCase(new FiveIntegersAverageTestCase, TestCase::QUICK);
-    AddTestCase(new FiveDoublesAverageTestCase, TestCase::QUICK);
+    AddTestCase(new OneIntegerAverageTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new FiveIntegersAverageTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new FiveDoublesAverageTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

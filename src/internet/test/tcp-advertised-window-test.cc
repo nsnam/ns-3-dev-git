@@ -479,33 +479,33 @@ class TcpAdvertisedWindowTestSuite : public TestSuite
                                                 500,
                                                 100,
                                                 0.0),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpAdvertisedWindowTest("TCP advertised window size, small seg + loss",
                                                 500,
                                                 100,
                                                 0.1),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpAdvertisedWindowTest("TCP advertised window size, large seg + no loss",
                                                 1000,
                                                 100,
                                                 0.0),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(
             new TcpAdvertisedWindowTest("TCP advertised window size, large seg + small loss",
                                         1000,
                                         100,
                                         0.1),
-            TestCase::QUICK);
+            TestCase::Duration::QUICK);
         AddTestCase(new TcpAdvertisedWindowTest("TCP advertised window size, large seg + big loss",
                                                 1000,
                                                 100,
                                                 0.3),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpAdvertisedWindowTest("TCP advertised window size, complete loss",
                                                 1000,
                                                 100,
                                                 1.0),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         std::vector<uint32_t> toDrop;
         toDrop.push_back(8001);

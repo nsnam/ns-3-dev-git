@@ -396,7 +396,7 @@ class TcpPacingTestSuite : public TestSuite
                                       delAckMaxCount,
                                       tid,
                                       description),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         paceInitialWindow = true;
         description = std::string("Pacing case 2: Slow start only, initial pacing");
@@ -410,7 +410,7 @@ class TcpPacingTestSuite : public TestSuite
                                       delAckMaxCount,
                                       tid,
                                       description),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         // set ssThresh to some smaller value to check that pacing
         // slows down in second half of slow start, then transitions to CA
@@ -429,7 +429,7 @@ class TcpPacingTestSuite : public TestSuite
                                       delAckMaxCount,
                                       tid,
                                       description),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         // Repeat tests, but with more typical delAckMaxCount == 2
         delAckMaxCount = 2;
@@ -448,7 +448,7 @@ class TcpPacingTestSuite : public TestSuite
                                       delAckMaxCount,
                                       tid,
                                       description),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         paceInitialWindow = true;
         description = std::string("Pacing case 5: Slow start only, initial pacing, delayed ACKs");
@@ -462,7 +462,7 @@ class TcpPacingTestSuite : public TestSuite
                                       delAckMaxCount,
                                       tid,
                                       description),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
 
         description = std::string("Pacing case 6: Slow start, followed by transition to Congestion "
                                   "avoidance, no initial pacing, delayed ACKs");
@@ -479,7 +479,7 @@ class TcpPacingTestSuite : public TestSuite
                                       delAckMaxCount,
                                       tid,
                                       description),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

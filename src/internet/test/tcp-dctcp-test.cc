@@ -669,20 +669,20 @@ class TcpDctcpTestSuite : public TestSuite
                                             SequenceNumber32(3216),
                                             MilliSeconds(100),
                                             "DCTCP falls to New Reno for slowstart"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpDctcpCodePointsTest(1,
                                                "ECT Test : Check if ECT is set on Syn, Syn+Ack, "
                                                "Ack and Data packets for DCTCP packets"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpDctcpCodePointsTest(
                         2,
                         "ECT Test : Check if ECT is not set on Syn, Syn+Ack and Ack but set on "
                         "Data packets for non-DCTCP but ECN enabled traffic"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpDctcpCodePointsTest(3,
                                                "ECE Functionality Test: ECE should only be sent by "
                                                "receiver when it receives CE flags"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

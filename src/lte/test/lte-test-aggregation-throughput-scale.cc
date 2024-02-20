@@ -51,7 +51,7 @@ LteAggregationThroughputScaleTestSuite::LteAggregationThroughputScaleTestSuite()
     : TestSuite("lte-aggregation-throughput-scale", SYSTEM)
 {
     AddTestCase(new LteAggregationThroughputScaleTestCase("Carrier aggregation throughput scale"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**

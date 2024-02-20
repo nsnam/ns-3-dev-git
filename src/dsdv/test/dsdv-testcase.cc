@@ -220,7 +220,7 @@ class DsdvTestSuite : public TestSuite
     DsdvTestSuite()
         : TestSuite("routing-dsdv", UNIT)
     {
-        AddTestCase(new DsdvHeaderTestCase(), TestCase::QUICK);
-        AddTestCase(new DsdvTableTestCase(), TestCase::QUICK);
+        AddTestCase(new DsdvHeaderTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new DsdvTableTestCase(), TestCase::Duration::QUICK);
     }
 } g_dsdvTestSuite; ///< the test suite

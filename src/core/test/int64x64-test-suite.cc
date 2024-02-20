@@ -1559,18 +1559,18 @@ class Int64x64TestSuite : public TestSuite
     Int64x64TestSuite()
         : TestSuite("int64x64", UNIT)
     {
-        AddTestCase(new Int64x64ImplTestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64HiLoTestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64IntRoundTestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64ArithmeticTestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64CompareTestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64InputTestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64InputOutputTestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64Bug455TestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64Bug863TestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64Bug1786TestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64InvertTestCase(), TestCase::QUICK);
-        AddTestCase(new Int64x64DoubleTestCase(), TestCase::QUICK);
+        AddTestCase(new Int64x64ImplTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64HiLoTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64IntRoundTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64ArithmeticTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64CompareTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64InputTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64InputOutputTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64Bug455TestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64Bug863TestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64Bug1786TestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64InvertTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new Int64x64DoubleTestCase(), TestCase::Duration::QUICK);
     }
 };
 

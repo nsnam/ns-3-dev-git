@@ -301,7 +301,7 @@ class Ipv4HeaderTestSuite : public TestSuite
     Ipv4HeaderTestSuite()
         : TestSuite("ipv4-header", UNIT)
     {
-        AddTestCase(new Ipv4HeaderTest, TestCase::QUICK);
+        AddTestCase(new Ipv4HeaderTest, TestCase::Duration::QUICK);
     }
 };
 

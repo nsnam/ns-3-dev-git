@@ -1803,9 +1803,9 @@ class TxDurationTestSuite : public TestSuite
 TxDurationTestSuite::TxDurationTestSuite()
     : TestSuite("wifi-devices-tx-duration", UNIT)
 {
-    AddTestCase(new TxDurationTest, TestCase::QUICK);
+    AddTestCase(new TxDurationTest, TestCase::Duration::QUICK);
 
-    AddTestCase(new PhyHeaderSectionsTest, TestCase::QUICK);
+    AddTestCase(new PhyHeaderSectionsTest, TestCase::Duration::QUICK);
 
     // 20 MHz band, HeSigBDurationTest::OFDMA, even number of users per HE-SIG-B content channel
     AddTestCase(new HeSigBDurationTest(
@@ -1816,7 +1816,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {96},
                     std::make_pair(2, 0), // both users in HE-SIG-B content channel 1
                     MicroSeconds(4)),     // one OFDM symbol;
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 40 MHz band, HeSigBDurationTest::OFDMA, even number of users per HE-SIG-B content channel
     AddTestCase(
@@ -1833,7 +1833,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                std::make_pair(2, 4), // two users in HE-SIG-B content channel 1 and
                                                      // four users in HE-SIG-B content channel 2
                                MicroSeconds(4)),     // one OFDM symbol;
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 40 MHz band, HeSigBDurationTest::OFDMA, odd number of users per HE-SIG-B content channel
     AddTestCase(
@@ -1851,7 +1851,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                std::make_pair(2, 5), // two users in HE-SIG-B content channel 1 and
                                                      // five users in HE-SIG-B content channel 2
                                MicroSeconds(8)),     // two OFDM symbols
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 80 MHz band, OFDMA
     AddTestCase(
@@ -1871,7 +1871,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                std::make_pair(3, 6), // three users in HE-SIG-B content channel 1
                                                      // and six users in HE-SIG-B content channel 2
                                MicroSeconds(16)),    // four OFDM symbols
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 160 MHz band, OFDMA
     AddTestCase(
@@ -1892,7 +1892,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                std::make_pair(4, 7), // four users in HE-SIG-B content channel 1 and
                                                      // seven users in HE-SIG-B content channel 2
                                MicroSeconds(20)),    // five OFDM symbols
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 20 MHz band, HeSigBDurationTest::OFDMA, one unallocated RU at the middle
     AddTestCase(
@@ -1910,7 +1910,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                {0},
                                std::make_pair(9, 0), // 9 users in HE-SIG-B content channel 1
                                MicroSeconds(8)),     // two OFDM symbols
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 40 MHz band, HeSigBDurationTest::OFDMA, unallocated RUs at the begin and at the end of the
     // first 20 MHz subband and in the middle of the second 20 MHz subband
@@ -1925,7 +1925,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                {112, 112},
                                std::make_pair(4, 4), // 4 users in both HE-SIG-B content channels
                                MicroSeconds(4)),     // two OFDM symbols
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 40 MHz band, HeSigBDurationTest::OFDMA, one unallocated RUs in the first 20 MHz subband and
     // two unallocated RUs in second 20 MHz subband
@@ -1941,7 +1941,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                {112, 112},
                                std::make_pair(4, 4), // 4 users in both HE-SIG-B content channels
                                MicroSeconds(4)),     // two OFDM symbols
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 20 MHz band, MU-MIMO, 2 users
     AddTestCase(new HeSigBDurationTest(
@@ -1952,7 +1952,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {192},
                     std::make_pair(2, 0), // both users in HE-SIG-B content channel 1
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 20 MHz band, MU-MIMO, 3 users
     AddTestCase(
@@ -1965,7 +1965,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                {192},
                                std::make_pair(3, 0), // all users in HE-SIG-B content channel 1
                                MicroSeconds(4)),     // one OFDM symbol
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 20 MHz band, MU-MIMO, 4 users
     AddTestCase(
@@ -1979,7 +1979,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                {192},
                                std::make_pair(4, 0), // all users in HE-SIG-B content channel 1
                                MicroSeconds(4)),     // one OFDM symbol
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 20 MHz band, MU-MIMO, 6 users
     AddTestCase(
@@ -1995,7 +1995,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                {192},
                                std::make_pair(6, 0), // all users in HE-SIG-B content channel 1
                                MicroSeconds(4)),     // one OFDM symbol
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 20 MHz band, MU-MIMO, 8 users
     AddTestCase(
@@ -2013,7 +2013,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                                {192},
                                std::make_pair(8, 0), // all users in HE-SIG-B content channel 1
                                MicroSeconds(8)),     // two OFDM symbols
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 40 MHz band, MU-MIMO, 2 users
     AddTestCase(new HeSigBDurationTest(
@@ -2024,7 +2024,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {200, 200},
                     std::make_pair(1, 1), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 40 MHz band, MU-MIMO, 3 users
     AddTestCase(
@@ -2038,7 +2038,7 @@ TxDurationTestSuite::TxDurationTestSuite()
             {200, 200},
             std::make_pair(2, 1), // 2 users in content channel 1 and 1 user in content channel 2
             MicroSeconds(4)),     // one OFDM symbol
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 40 MHz band, MU-MIMO, 4 users
     AddTestCase(new HeSigBDurationTest(
@@ -2052,7 +2052,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {200, 200},
                     std::make_pair(2, 2), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 40 MHz band, MU-MIMO, 6 users
     AddTestCase(new HeSigBDurationTest(
@@ -2068,7 +2068,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {200, 200},
                     std::make_pair(3, 3), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 40 MHz band, MU-MIMO, 8 users
     AddTestCase(new HeSigBDurationTest(
@@ -2086,7 +2086,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {200, 200},
                     std::make_pair(4, 4), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 80 MHz band, MU-MIMO, 2 users
     AddTestCase(new HeSigBDurationTest(
@@ -2097,7 +2097,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {208, 208, 208, 208},
                     std::make_pair(1, 1), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 80 MHz band, MU-MIMO, 3 users
     AddTestCase(
@@ -2111,7 +2111,7 @@ TxDurationTestSuite::TxDurationTestSuite()
             {208, 208, 208, 208},
             std::make_pair(2, 1), // 2 users in content channel 1 and 1 user in content channel 2
             MicroSeconds(4)),     // one OFDM symbol
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 80 MHz band, MU-MIMO, 4 users
     AddTestCase(new HeSigBDurationTest(
@@ -2125,7 +2125,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {208, 208, 208, 208},
                     std::make_pair(2, 2), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 80 MHz band, MU-MIMO, 6 users
     AddTestCase(new HeSigBDurationTest(
@@ -2141,7 +2141,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {208, 208, 208, 208},
                     std::make_pair(3, 3), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 80 MHz band, MU-MIMO, 8 users
     AddTestCase(new HeSigBDurationTest(
@@ -2159,7 +2159,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {208, 208, 208, 208},
                     std::make_pair(4, 4), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 160 MHz band, MU-MIMO, 2 users
     AddTestCase(
@@ -2171,7 +2171,7 @@ TxDurationTestSuite::TxDurationTestSuite()
             {208, 208, 208, 208, 208, 208, 208, 208},
             std::make_pair(1, 1), // users equally split between the two content channels
             MicroSeconds(4)),     // one OFDM symbol
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 160 MHz band, MU-MIMO, 3 users
     AddTestCase(
@@ -2185,7 +2185,7 @@ TxDurationTestSuite::TxDurationTestSuite()
             {208, 208, 208, 208, 208, 208, 208, 208},
             std::make_pair(2, 1), // 2 users in content channel 1 and 1 user in content channel 2
             MicroSeconds(4)),     // one OFDM symbol
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 
     // 160 MHz band, MU-MIMO, 4 users
     AddTestCase(new HeSigBDurationTest(
@@ -2199,7 +2199,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {208, 208, 208, 208, 208, 208, 208, 208},
                     std::make_pair(2, 2), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 160 MHz band, MU-MIMO, 6 users
     AddTestCase(new HeSigBDurationTest(
@@ -2215,7 +2215,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {208, 208, 208, 208, 208, 208, 208, 208},
                     std::make_pair(3, 3), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // 160 MHz band, MU-MIMO, 8 users
     AddTestCase(new HeSigBDurationTest(
@@ -2233,7 +2233,7 @@ TxDurationTestSuite::TxDurationTestSuite()
                     {208, 208, 208, 208, 208, 208, 208, 208},
                     std::make_pair(4, 4), // users equally split between the two content channels
                     MicroSeconds(4)),     // one OFDM symbol
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 static TxDurationTestSuite g_txDurationTestSuite; ///< the test suite

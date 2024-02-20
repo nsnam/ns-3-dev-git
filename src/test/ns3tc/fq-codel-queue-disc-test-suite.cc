@@ -1770,14 +1770,14 @@ class FqCoDelQueueDiscTestSuite : public TestSuite
 FqCoDelQueueDiscTestSuite::FqCoDelQueueDiscTestSuite()
     : TestSuite("fq-codel-queue-disc", UNIT)
 {
-    AddTestCase(new FqCoDelQueueDiscNoSuitableFilter, TestCase::QUICK);
-    AddTestCase(new FqCoDelQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::QUICK);
-    AddTestCase(new FqCoDelQueueDiscDeficit, TestCase::QUICK);
-    AddTestCase(new FqCoDelQueueDiscTCPFlowsSeparation, TestCase::QUICK);
-    AddTestCase(new FqCoDelQueueDiscUDPFlowsSeparation, TestCase::QUICK);
-    AddTestCase(new FqCoDelQueueDiscECNMarking, TestCase::QUICK);
-    AddTestCase(new FqCoDelQueueDiscSetLinearProbing, TestCase::QUICK);
-    AddTestCase(new FqCoDelQueueDiscL4sMode, TestCase::QUICK);
+    AddTestCase(new FqCoDelQueueDiscNoSuitableFilter, TestCase::Duration::QUICK);
+    AddTestCase(new FqCoDelQueueDiscIPFlowsSeparationAndPacketLimit, TestCase::Duration::QUICK);
+    AddTestCase(new FqCoDelQueueDiscDeficit, TestCase::Duration::QUICK);
+    AddTestCase(new FqCoDelQueueDiscTCPFlowsSeparation, TestCase::Duration::QUICK);
+    AddTestCase(new FqCoDelQueueDiscUDPFlowsSeparation, TestCase::Duration::QUICK);
+    AddTestCase(new FqCoDelQueueDiscECNMarking, TestCase::Duration::QUICK);
+    AddTestCase(new FqCoDelQueueDiscSetLinearProbing, TestCase::Duration::QUICK);
+    AddTestCase(new FqCoDelQueueDiscL4sMode, TestCase::Duration::QUICK);
 }
 
 /// Do not forget to allocate an instance of this TestSuite.

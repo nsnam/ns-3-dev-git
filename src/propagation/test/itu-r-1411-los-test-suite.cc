@@ -140,14 +140,14 @@ ItuR1411LosPropagationLossModelTestSuite::ItuR1411LosPropagationLossModelTestSui
                                                             1,
                                                             81.005,
                                                             "freq=2114MHz, dist=100m"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new ItuR1411LosPropagationLossModelTestCase(1999e6,
                                                             200,
                                                             30,
                                                             1,
                                                             87.060,
                                                             "freq=1999MHz, dist=200m"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

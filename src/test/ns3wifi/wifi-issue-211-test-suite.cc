@@ -260,7 +260,7 @@ class Issue211TestSuite : public TestSuite
 Issue211TestSuite::Issue211TestSuite()
     : TestSuite("wifi-issue-211", UNIT)
 {
-    AddTestCase(new Issue211Test, TestCase::QUICK);
+    AddTestCase(new Issue211Test, TestCase::Duration::QUICK);
 }
 
 static Issue211TestSuite g_issue211TestSuite; ///< the test suite

@@ -311,7 +311,7 @@ class ThreadedSimulatorTestSuite : public TestSuite
                     factory.SetTypeId(schedulerType);
                     AddTestCase(
                         new ThreadedSimulatorEventsTestCase(factory, simulatorType, threadCount),
-                        TestCase::QUICK);
+                        TestCase::Duration::QUICK);
                 }
             }
         }

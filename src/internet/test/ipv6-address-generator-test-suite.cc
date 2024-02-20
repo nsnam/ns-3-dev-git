@@ -352,11 +352,11 @@ class Ipv6AddressGeneratorTestSuite : public TestSuite
     Ipv6AddressGeneratorTestSuite()
         : TestSuite("ipv6-address-generator")
     {
-        AddTestCase(new NetworkNumber6AllocatorTestCase(), TestCase::QUICK);
-        AddTestCase(new AddressAllocator6TestCase(), TestCase::QUICK);
-        AddTestCase(new NetworkAndAddress6TestCase(), TestCase::QUICK);
-        AddTestCase(new ExampleAddress6GeneratorTestCase(), TestCase::QUICK);
-        AddTestCase(new AddressCollision6TestCase(), TestCase::QUICK);
+        AddTestCase(new NetworkNumber6AllocatorTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new AddressAllocator6TestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new NetworkAndAddress6TestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new ExampleAddress6GeneratorTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new AddressCollision6TestCase(), TestCase::Duration::QUICK);
     }
 };
 

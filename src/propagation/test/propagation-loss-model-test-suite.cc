@@ -510,11 +510,11 @@ class PropagationLossModelsTestSuite : public TestSuite
 PropagationLossModelsTestSuite::PropagationLossModelsTestSuite()
     : TestSuite("propagation-loss-model", UNIT)
 {
-    AddTestCase(new FriisPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new TwoRayGroundPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new LogDistancePropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new MatrixPropagationLossModelTestCase, TestCase::QUICK);
-    AddTestCase(new RangePropagationLossModelTestCase, TestCase::QUICK);
+    AddTestCase(new FriisPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new TwoRayGroundPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new LogDistancePropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new MatrixPropagationLossModelTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new RangePropagationLossModelTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

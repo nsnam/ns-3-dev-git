@@ -24,6 +24,7 @@ Changes from ns-3.41 to ns-3-dev
 
 * `InetSocketAddress::SetTos()` and `InetSocketAddress::GetTos()` have been removed.
 Applications have a new Attribute to set the IPv4 ToS field.
+* (core) Deprecated enum `TestDuration` in `TestCase` class. It has been replaced by enum class `Duration`.
 * (wifi) Deprecated `WIFI_TID_TO_LINK_MAPPING_{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`. They have been replaced by `WifiTidToLinkMappingNegSupport::{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`, respectively.
 
 ### Changes to build system

@@ -771,10 +771,10 @@ class UdpTestSuite : public TestSuite
     UdpTestSuite()
         : TestSuite("udp", UNIT)
     {
-        AddTestCase(new UdpSocketImplTest, TestCase::QUICK);
-        AddTestCase(new UdpSocketLoopbackTest, TestCase::QUICK);
-        AddTestCase(new Udp6SocketImplTest, TestCase::QUICK);
-        AddTestCase(new Udp6SocketLoopbackTest, TestCase::QUICK);
+        AddTestCase(new UdpSocketImplTest, TestCase::Duration::QUICK);
+        AddTestCase(new UdpSocketLoopbackTest, TestCase::Duration::QUICK);
+        AddTestCase(new Udp6SocketImplTest, TestCase::Duration::QUICK);
+        AddTestCase(new Udp6SocketLoopbackTest, TestCase::Duration::QUICK);
     }
 };
 

@@ -51,15 +51,15 @@ BuildingsShadowingTestSuite::BuildingsShadowingTestSuite()
 
     // Test #1 Outdoor Model
     AddTestCase(new BuildingsShadowingTestCase(1, 2, 148.86, 7.0, "Outdoor Shadowing"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test #2 Indoor model
     AddTestCase(new BuildingsShadowingTestCase(5, 6, 88.5724, 8.0, "Indoor Shadowing"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     // Test #3 Indoor -> Outdoor
     AddTestCase(new BuildingsShadowingTestCase(9, 10, 85.0012, 8.6, "Indoor -> Outdoor Shadowing"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

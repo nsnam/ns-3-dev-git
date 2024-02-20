@@ -160,7 +160,7 @@ OkumuraHataPropagationLossModelTestSuite::OkumuraHataPropagationLossModelTestSui
                                                             LargeCity,
                                                             137.93,
                                                             "original OH Urban Large city"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OkumuraHataPropagationLossModelTestCase(freq,
                                                             2000,
                                                             30,
@@ -169,7 +169,7 @@ OkumuraHataPropagationLossModelTestSuite::OkumuraHataPropagationLossModelTestSui
                                                             SmallCity,
                                                             137.88,
                                                             "original OH Urban small city"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OkumuraHataPropagationLossModelTestCase(freq,
                                                             2000,
                                                             30,
@@ -178,7 +178,7 @@ OkumuraHataPropagationLossModelTestSuite::OkumuraHataPropagationLossModelTestSui
                                                             LargeCity,
                                                             128.03,
                                                             "original OH SubUrban"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new OkumuraHataPropagationLossModelTestCase(freq,
                                                             2000,
                                                             30,
@@ -187,7 +187,7 @@ OkumuraHataPropagationLossModelTestSuite::OkumuraHataPropagationLossModelTestSui
                                                             LargeCity,
                                                             110.21,
                                                             "original OH OpenAreas"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 
     freq = 2.1140e9; // this will use the extended COST231 OH model
     AddTestCase(new OkumuraHataPropagationLossModelTestCase(freq,
@@ -198,7 +198,7 @@ OkumuraHataPropagationLossModelTestSuite::OkumuraHataPropagationLossModelTestSui
                                                             LargeCity,
                                                             148.55,
                                                             "COST231 OH Urban Large city"),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(
         new OkumuraHataPropagationLossModelTestCase(freq,
                                                     2000,
@@ -208,7 +208,7 @@ OkumuraHataPropagationLossModelTestSuite::OkumuraHataPropagationLossModelTestSui
                                                     SmallCity,
                                                     150.64,
                                                     "COST231 OH Urban small city and suburban"),
-        TestCase::QUICK);
+        TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

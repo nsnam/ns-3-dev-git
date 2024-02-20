@@ -5840,13 +5840,13 @@ class WifiPhyOfdmaTestSuite : public TestSuite
 WifiPhyOfdmaTestSuite::WifiPhyOfdmaTestSuite()
     : TestSuite("wifi-phy-ofdma", UNIT)
 {
-    AddTestCase(new TestDlOfdmaPhyTransmission, TestCase::QUICK);
-    AddTestCase(new TestDlOfdmaPhyPuncturing, TestCase::QUICK);
-    AddTestCase(new TestUlOfdmaPpduUid, TestCase::QUICK);
-    AddTestCase(new TestMultipleHeTbPreambles, TestCase::QUICK);
-    AddTestCase(new TestUlOfdmaPhyTransmission, TestCase::QUICK);
-    AddTestCase(new TestPhyPaddingExclusion, TestCase::QUICK);
-    AddTestCase(new TestUlOfdmaPowerControl, TestCase::QUICK);
+    AddTestCase(new TestDlOfdmaPhyTransmission, TestCase::Duration::QUICK);
+    AddTestCase(new TestDlOfdmaPhyPuncturing, TestCase::Duration::QUICK);
+    AddTestCase(new TestUlOfdmaPpduUid, TestCase::Duration::QUICK);
+    AddTestCase(new TestMultipleHeTbPreambles, TestCase::Duration::QUICK);
+    AddTestCase(new TestUlOfdmaPhyTransmission, TestCase::Duration::QUICK);
+    AddTestCase(new TestPhyPaddingExclusion, TestCase::Duration::QUICK);
+    AddTestCase(new TestUlOfdmaPowerControl, TestCase::Duration::QUICK);
 }
 
 static WifiPhyOfdmaTestSuite wifiPhyOfdmaTestSuite; ///< the test suite

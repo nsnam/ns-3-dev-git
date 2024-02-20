@@ -443,7 +443,7 @@ WifiDynamicBwOpTestSuite::WifiDynamicBwOpTestSuite()
      *          └────────┘
      */
     AddTestCase(new WifiUseAvailBwTest({"{54, 40, BAND_5GHZ, 1}", "{52, 20, BAND_5GHZ, 0}"}, 20),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     /**
      *           ─── primary 40 ───
      *           primary20
@@ -457,7 +457,7 @@ WifiDynamicBwOpTestSuite::WifiDynamicBwOpTestSuite()
      *                                      primary20
      */
     AddTestCase(new WifiUseAvailBwTest({"{58, 80, BAND_5GHZ, 0}", "{62, 40, BAND_5GHZ, 1}"}, 40),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     /**
      *                                               ─────────── primary 80 ───────────
      *                                                       primary20
@@ -471,7 +471,7 @@ WifiDynamicBwOpTestSuite::WifiDynamicBwOpTestSuite()
      *                             primary20
      */
     AddTestCase(new WifiUseAvailBwTest({"{50, 160, BAND_5GHZ, 5}", "{42, 80, BAND_5GHZ, 2}"}, 80),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 static WifiDynamicBwOpTestSuite g_wifiDynamicBwOpTestSuite; ///< the test suite

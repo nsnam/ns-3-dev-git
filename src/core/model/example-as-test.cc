@@ -153,7 +153,7 @@ ExampleAsTestSuite::ExampleAsTestSuite(const std::string name,
                                        const std::string program,
                                        const std::string dataDir,
                                        const std::string args /* = "" */,
-                                       const TestDuration duration /* =QUICK */,
+                                       const Duration duration /* =QUICK */,
                                        const bool shouldNotErr /* = true */)
     : TestSuite(name, EXAMPLE)
 {

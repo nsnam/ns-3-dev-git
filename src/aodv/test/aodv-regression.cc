@@ -56,13 +56,14 @@ class AodvRegressionTestSuite : public TestSuite
     {
         SetDataDir(NS_TEST_SOURCEDIR);
         // General RREQ-RREP-RRER test case
-        AddTestCase(new ChainRegressionTest("aodv-chain-regression-test"), TestCase::QUICK);
+        AddTestCase(new ChainRegressionTest("aodv-chain-regression-test"),
+                    TestCase::Duration::QUICK);
         // \bugid{606} test case, should crash if bug is not fixed
         AddTestCase(new ChainRegressionTest("bug-606-test", Seconds(10), 3, Seconds(1)),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         // \bugid{772} UDP test case
         AddTestCase(new Bug772ChainTest("udp-chain-test", "ns3::UdpSocketFactory", Seconds(3), 10),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 } g_aodvRegressionTestSuite; ///< the test suite
 

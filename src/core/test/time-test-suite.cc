@@ -544,10 +544,10 @@ static class TimeTestSuite : public TestSuite
     TimeTestSuite()
         : TestSuite("time", UNIT)
     {
-        AddTestCase(new TimeWithSignTestCase(), TestCase::QUICK);
-        AddTestCase(new TimeInputOutputTestCase(), TestCase::QUICK);
+        AddTestCase(new TimeWithSignTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new TimeInputOutputTestCase(), TestCase::Duration::QUICK);
         // This should be last, since it changes the resolution
-        AddTestCase(new TimeSimpleTestCase(), TestCase::QUICK);
+        AddTestCase(new TimeSimpleTestCase(), TestCase::Duration::QUICK);
     }
 }
 /** \brief Member variable for time test suite */

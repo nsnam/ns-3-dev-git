@@ -71,9 +71,9 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
     // range)
     // TODO: update the test conditions to handle out-of-range correctly
     // AddTestCase (new LteInterferenceTestCase ("d1=50, d2=10",  50.000000, 10.000000,  0.040000,
-    // 0.040000,  0.010399, 0.010399, 0, 0), TestCase::QUICK); AddTestCase (new
+    // 0.040000,  0.010399, 0.010399, 0, 0), TestCase::Duration::QUICK); AddTestCase (new
     // LteInterferenceTestCase ("d1=50, d2=20",  50.000000, 20.000000,  0.160000, 0.159998,
-    // 0.041154, 0.041153, 0, 0), TestCase::QUICK);
+    // 0.041154, 0.041153, 0, 0), TestCase::Duration::QUICK);
 
     AddTestCase(new LteInterferenceTestCase("d1=3000, d2=6000",
                                             3000.000000,
@@ -84,7 +84,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             0.389662,
                                             6,
                                             4),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteInterferenceTestCase("d1=50, d2=50",
                                             50.000000,
                                             50.000000,
@@ -94,7 +94,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             0.239808,
                                             2,
                                             2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteInterferenceTestCase("d1=50, d2=100",
                                             50.000000,
                                             100.000000,
@@ -104,7 +104,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             0.785042,
                                             6,
                                             6),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteInterferenceTestCase("d1=50, d2=200",
                                             50.000000,
                                             200.000000,
@@ -114,7 +114,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             1.959533,
                                             14,
                                             14),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteInterferenceTestCase("d1=50, d2=500",
                                             50.000000,
                                             500.000000,
@@ -124,7 +124,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             4.241793,
                                             22,
                                             22),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteInterferenceTestCase("d1=50, d2=1000",
                                             50.000000,
                                             1000.000000,
@@ -134,7 +134,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             6.144825,
                                             28,
                                             28),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteInterferenceTestCase("d1=50, d2=10000",
                                             50.000000,
                                             10000.000000,
@@ -144,7 +144,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             10.588084,
                                             28,
                                             28),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteInterferenceTestCase("d1=50, d2=100000",
                                             50.000000,
                                             100000.000000,
@@ -154,7 +154,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             10.928917,
                                             28,
                                             28),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteInterferenceTestCase("d1=50, d2=1000000",
                                             50.000000,
                                             1000000.000000,
@@ -164,7 +164,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             10.932767,
                                             28,
                                             28),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteInterferenceTestCase("d1=4500, d2=12600",
                                             4500.000000,
                                             12600.000000,
@@ -174,7 +174,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             0.270399,
                                             8,
                                             2),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
     AddTestCase(new LteInterferenceTestCase("d1=5400, d2=12600",
                                             5400.000000,
                                             12600.000000,
@@ -184,7 +184,7 @@ LteInterferenceTestSuite::LteInterferenceTestSuite()
                                             0.193019,
                                             6,
                                             0),
-                TestCase::QUICK);
+                TestCase::Duration::QUICK);
 }
 
 /**

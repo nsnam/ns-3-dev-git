@@ -362,7 +362,7 @@ class Ipv6DualStackTestSuite : public TestSuite
     Ipv6DualStackTestSuite()
         : TestSuite("ipv6-dual-stack", UNIT)
     {
-        AddTestCase(new DualStackTestCase(), TestCase::QUICK);
+        AddTestCase(new DualStackTestCase(), TestCase::Duration::QUICK);
     }
 };
 

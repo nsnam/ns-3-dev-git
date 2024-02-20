@@ -216,8 +216,8 @@ class {CAPITALIZED}TestSuite : public TestSuite
 {CAPITALIZED}TestSuite::{CAPITALIZED}TestSuite()
     : TestSuite("{MODULE}", UNIT)
 {{
-    // TestDuration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
-    AddTestCase(new {CAPITALIZED}TestCase1, TestCase::QUICK);
+    // Duration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
+    AddTestCase(new {CAPITALIZED}TestCase1, TestCase::Duration::QUICK);
 }}
 
 // Do not forget to allocate an instance of this TestSuite

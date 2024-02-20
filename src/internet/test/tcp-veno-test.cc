@@ -315,7 +315,7 @@ class TcpVenoTestSuite : public TestSuite
                                     1,
                                     1,
                                     "Veno test on cWnd in slow start and non-congestive loss"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpVenoTest(30 * 536,
                                     536,
                                     20 * 536,
@@ -323,7 +323,7 @@ class TcpVenoTestSuite : public TestSuite
                                     1,
                                     1,
                                     "Veno test on cWnd with diff < beta"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
         AddTestCase(new TcpVenoTest(60 * 536,
                                     536,
                                     40 * 536,
@@ -331,7 +331,7 @@ class TcpVenoTestSuite : public TestSuite
                                     1,
                                     3,
                                     "Veno increment test on cWnd with diff > beta"),
-                    TestCase::QUICK);
+                    TestCase::Duration::QUICK);
     }
 };
 

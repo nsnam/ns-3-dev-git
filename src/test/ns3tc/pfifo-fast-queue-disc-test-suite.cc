@@ -399,10 +399,10 @@ class PfifoFastQueueDiscTestSuite : public TestSuite
 PfifoFastQueueDiscTestSuite::PfifoFastQueueDiscTestSuite()
     : TestSuite("pfifo-fast-queue-disc", UNIT)
 {
-    AddTestCase(new PfifoFastQueueDiscTosPrioritization, TestCase::QUICK);
-    AddTestCase(new PfifoFastQueueDiscDscpPrioritization, TestCase::QUICK);
-    AddTestCase(new PfifoFastQueueDiscOverflow, TestCase::QUICK);
-    AddTestCase(new PfifoFastQueueDiscNoPriority, TestCase::QUICK);
+    AddTestCase(new PfifoFastQueueDiscTosPrioritization, TestCase::Duration::QUICK);
+    AddTestCase(new PfifoFastQueueDiscDscpPrioritization, TestCase::Duration::QUICK);
+    AddTestCase(new PfifoFastQueueDiscOverflow, TestCase::Duration::QUICK);
+    AddTestCase(new PfifoFastQueueDiscNoPriority, TestCase::Duration::QUICK);
 }
 
 /// Do not forget to allocate an instance of this TestSuite.
