@@ -69,62 +69,37 @@ doxygen:
   #   - nsnam
   #   - linux
 
-manual:
+.sphinx-doc:
   extends: .doc
   script:
-    # - mkdir -p public/manual
-    - cd doc/manual
+    # - mkdir -p public/$DOC_DIR
+    - cd doc/$DOC_DIR
     - make html
     - make latexpdf
-    # - mv build/html ../../public/manual
-    # - mv build/latex/ns-3-manual.pdf ../../public/
-  # only:
-  #   - master
+    # - mv build/html ../../public/$DOC_DIR
+    # - mv build/latex/ns-3-$DOC_DIR.pdf ../../public/
+
+manual:
+  extends: .sphinx-doc
+  variables:
+    DOC_DIR: manual
 
 tutorial:
-  extends: .doc
-  script:
-    # - mkdir -p public/manual
-    - cd doc/tutorial
-    - make html
-    - make latexpdf
-    # - mv build/html ../../public/manual
-    # - mv build/latex/ns-3-tutorial.pdf ../../public/
-  # only:
-  #   - master
+  extends: .sphinx-doc
+  variables:
+    DOC_DIR: tutorial
 
 models:
-  extends: .doc
-  script:
-    # - mkdir -p public/models
-    - cd doc/models
-    - make html
-    - make latexpdf
-    # - mv build/html ../../public/models
-    # - mv build/latex/ns-3-model-library.pdf ../../public
-  # only:
-  #   - master
+  extends: .sphinx-doc
+  variables:
+    DOC_DIR: models
 
 contributing:
-  extends: .doc
-  script:
-    # - mkdir -p public/contributing
-    - cd doc/contributing
-    - make html
-    - make latexpdf
-    # - mv build/html ../../public/manual
-    # - mv build/latex/ns-3-manual.pdf ../../public/
-  # only:
-  #   - master
+  extends: .sphinx-doc
+  variables:
+    DOC_DIR: contributing
 
 installation:
-  extends: .doc
-  script:
-    # - mkdir -p public/installation
-    - cd doc/installation
-    - make html
-    - make latexpdf
-    # - mv build/html ../../public/manual
-    # - mv build/latex/ns-3-manual.pdf ../../public/
-  # only:
-  #   - master
+  extends: .sphinx-doc
+  variables:
+    DOC_DIR: installation
