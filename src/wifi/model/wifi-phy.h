@@ -1390,6 +1390,12 @@ class WifiPhy : public Object
     void AbortCurrentReception(WifiPhyRxfailureReason reason);
 
     /**
+     * Callback function when a transmission is completed
+     * \param psdus the PSDUs that have been sent
+     */
+    void TxDone(const WifiConstPsduMap& psdus);
+
+    /**
      * Get the PSDU addressed to that PHY in a PPDU (useful for MU PPDU).
      *
      * \param ppdu the PPDU to extract the PSDU from

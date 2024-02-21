@@ -1842,17 +1842,23 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
     }
 
     m_endTxEvent =
-        Simulator::Schedule(txDuration, &WifiPhy::NotifyTxEnd, this, psdus); // TODO: fix for MU
+        Simulator::Schedule(txDuration, &WifiPhy::TxDone, this, psdus); // TODO: fix for MU
 
     StartTx(ppdu);
     ppdu->ResetTxVector();
 
     m_channelAccessRequested = false;
     m_powerRestricted = false;
+}
 
-    Simulator::Schedule(txDuration, &WifiPhy::Reset, this);
-
-    Simulator::Schedule(txDuration, &WifiPhy::SwitchMaybeToCcaBusy, this, nullptr);
+void
+WifiPhy::TxDone(const WifiConstPsduMap& psdus)
+{
+    NS_LOG_FUNCTION(this << psdus);
+    NotifyTxEnd(psdus);
+    Reset();
+    // we might have received signals during TX
+    SwitchMaybeToCcaBusy();
 }
 
 uint64_t
