@@ -413,8 +413,6 @@ WifiPhy::DoDispose()
 {
     NS_LOG_FUNCTION(this);
 
-    Reset();
-
     m_device = nullptr;
     m_mobility = nullptr;
     m_frameCaptureModel = nullptr;
@@ -429,6 +427,9 @@ WifiPhy::DoDispose()
     m_random = nullptr;
     m_state = nullptr;
 
+    Reset();
+
+    // this should be done after calling the Reset function
     for (auto& phyEntity : m_phyEntities)
     {
         phyEntity.second = nullptr;
@@ -1879,6 +1880,10 @@ WifiPhy::Reset()
 {
     NS_LOG_FUNCTION(this);
     m_currentPreambleEvents.clear();
+    if (m_currentEvent && m_interference)
+    {
+        m_interference->NotifyRxEnd(Simulator::Now(), GetCurrentFrequencyRange());
+    }
     m_currentEvent = nullptr;
     for (auto& phyEntity : m_phyEntities)
     {
