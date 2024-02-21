@@ -189,6 +189,12 @@ UdpHeader::Serialize(Buffer::Iterator start) const
 
             i = start;
             i.Next(6);
+
+            // RFC 768: If the computed checksum is zero, it is transmitted as all ones
+            if (checksum == 0)
+            {
+                checksum = 0xffff;
+            }
             i.WriteU16(checksum);
         }
     }
@@ -207,7 +213,24 @@ UdpHeader::Deserialize(Buffer::Iterator start)
     m_payloadSize = i.ReadNtohU16() - GetSerializedSize();
     m_checksum = i.ReadU16();
 
-    if (m_calcChecksum)
+    // RFC 768: An all zero transmitted checksum value means that the
+    // transmitter generated  no checksum (for debugging or for higher
+    // level protocols that don't care).
+    //
+    // This is common in IPv4, while IPv6 requires UDP to use its checksum.
+    //
+    // As strange as it might sound, flipping from 0x0000 to 0xffff does not
+    // change anything in the verification.
+    //
+    // According to RFC 1141, the following holds:
+    // ~C' = ~(C + (-m) + m') = ~C + (m - m') = ~C + m + ~m'
+    // If ~C (the original CRC) is zero, m (the CRC field) is zero, and m' is 0xffff,
+    // then, according to the formula, we have that ~C' is zero.
+    // I.e., changing the CRC from 0 to 0xffff has no effect on the Rx verification.
+    //
+    // Fun fact: if you take an IPv4 header with an Identification field set to zero
+    // and you change it to 0xffff, the checksum will not change (~_^)
+    if (m_calcChecksum && m_checksum)
     {
         uint16_t headerChecksum = CalculateHeaderChecksum(start.GetSize());
         i = start;
