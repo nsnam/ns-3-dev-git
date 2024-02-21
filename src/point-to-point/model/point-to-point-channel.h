@@ -197,14 +197,9 @@ class PointToPointChannel : public Channel
         /** \brief Create the link, it will be in INITIALIZING state
          *
          */
-        Link()
-            : m_state(INITIALIZING),
-              m_src(nullptr),
-              m_dst(nullptr)
-        {
-        }
+        Link() = default;
 
-        WireState m_state;                //!< State of the link
+        WireState m_state{INITIALIZING};  //!< State of the link
         Ptr<PointToPointNetDevice> m_src; //!< First NetDevice
         Ptr<PointToPointNetDevice> m_dst; //!< Second NetDevice
     };
