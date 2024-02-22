@@ -245,6 +245,10 @@ operator<(const Address& a, const Address& b)
 std::ostream&
 operator<<(std::ostream& os, const Address& address)
 {
+    if (address.m_len == 0)
+    {
+        return os;
+    }
     os.setf(std::ios::hex, std::ios::basefield);
     os.fill('0');
     os << std::setw(2) << (uint32_t)address.m_type << "-" << std::setw(2) << (uint32_t)address.m_len
