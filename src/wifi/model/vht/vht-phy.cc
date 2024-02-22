@@ -583,8 +583,6 @@ VhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType chan
 PhyEntity::CcaIndication
 VhtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
 {
-    NS_LOG_FUNCTION(this);
-
     if (m_wifiPhy->GetChannelWidth() < 80)
     {
         return HtPhy::GetCcaIndication(ppdu);

@@ -753,7 +753,6 @@ WifiPhy::GetPhyEntityForPpdu(const Ptr<const WifiPpdu> ppdu) const
 void
 WifiPhy::AddStaticPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
 {
-    NS_LOG_FUNCTION(modulation);
     NS_ASSERT_MSG(GetStaticPhyEntities().find(modulation) == GetStaticPhyEntities().end(),
                   "The PHY entity has already been added. The setting should only be done once per "
                   "modulation class");

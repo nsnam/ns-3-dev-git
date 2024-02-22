@@ -821,7 +821,6 @@ HtPhy::GetMaxPsduSize() const
 PhyEntity::CcaIndication
 HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
 {
-    NS_LOG_FUNCTION(this);
     if (m_wifiPhy->GetChannelWidth() < 40)
     {
         return OfdmPhy::GetCcaIndication(ppdu);
