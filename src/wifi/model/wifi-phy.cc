@@ -630,6 +630,7 @@ WifiPhy::GetMobility() const
 void
 WifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
 {
+    NS_LOG_FUNCTION(this << helper);
     m_interference = helper;
     m_interference->SetNoiseFigure(DbToRatio(m_noiseFigureDb));
     m_interference->SetNumberOfReceiveAntennas(m_numberOfAntennas);
@@ -638,6 +639,7 @@ WifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
 void
 WifiPhy::SetErrorRateModel(const Ptr<ErrorRateModel> model)
 {
+    NS_LOG_FUNCTION(this << model);
     NS_ASSERT(m_interference);
     m_interference->SetErrorRateModel(model);
 }
