@@ -47,6 +47,9 @@
 
 #include <algorithm>
 
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT WIFI_PHY_NS_LOG_APPEND_CONTEXT(Ptr(this))
+
 namespace ns3
 {
 
@@ -348,7 +351,8 @@ WifiPhy::GetTypeId()
 }
 
 WifiPhy::WifiPhy()
-    : m_txMpduReferenceNumber(0xffffffff),
+    : m_phyId(0),
+      m_txMpduReferenceNumber(0xffffffff),
       m_rxMpduReferenceNumber(0xffffffff),
       m_endPhyRxEvent(),
       m_endTxEvent(),
@@ -625,6 +629,19 @@ Ptr<MobilityModel>
 WifiPhy::GetMobility() const
 {
     return m_mobility;
+}
+
+void
+WifiPhy::SetPhyId(uint8_t phyId)
+{
+    NS_LOG_FUNCTION(this << phyId);
+    m_phyId = phyId;
+}
+
+uint8_t
+WifiPhy::GetPhyId() const
+{
+    return m_phyId;
 }
 
 void

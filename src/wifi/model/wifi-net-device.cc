@@ -254,6 +254,7 @@ WifiNetDevice::SetPhy(const Ptr<WifiPhy> phy)
 {
     m_phys.clear();
     m_phys.push_back(phy);
+    phy->SetPhyId(0);
     m_linkUp = true;
     CompleteConfig();
 }
@@ -264,6 +265,10 @@ WifiNetDevice::SetPhys(const std::vector<Ptr<WifiPhy>>& phys)
     NS_ABORT_MSG_IF(phys.size() > 1 && !m_ehtConfiguration,
                     "Multiple PHYs only allowed for 11be multi-link devices");
     m_phys = phys;
+    for (std::size_t id = 0; id < phys.size(); ++id)
+    {
+        m_phys.at(id)->SetPhyId(id);
+    }
     m_linkUp = true;
     CompleteConfig();
 }

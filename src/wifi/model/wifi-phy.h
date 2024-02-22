@@ -30,6 +30,18 @@
 
 #include <limits>
 
+#define WIFI_PHY_NS_LOG_APPEND_CONTEXT(phy)                                                        \
+    {                                                                                              \
+        if (DynamicCast<const WifiPhy>(phy))                                                       \
+        {                                                                                          \
+            std::clog << "[index=" << +phy->GetPhyId() << "][channel="                             \
+                      << (phy->GetOperatingChannel().IsSet()                                       \
+                              ? std::to_string(+phy->GetOperatingChannel().GetNumber())            \
+                              : "UNKNOWN")                                                         \
+                      << "][band=" << phy->GetPhyBand() << "] ";                                   \
+        }                                                                                          \
+    }
+
 namespace ns3
 {
 
@@ -987,6 +999,20 @@ class WifiPhy : public Object
     bool GetShortPhyPreambleSupported() const;
 
     /**
+     * Set the index allocated to this PHY
+     *
+     * \param phyId the ID allocated to this PHY
+     */
+    void SetPhyId(uint8_t phyId);
+
+    /**
+     * Get the index allocated to this PHY
+     *
+     * \return the ID allocated to this PHY
+     */
+    uint8_t GetPhyId() const;
+
+    /**
      * Sets the interference helper.
      *
      * \param helper the interference helper
@@ -1255,6 +1281,8 @@ class WifiPhy : public Object
      * \param phyEntity the PHY entity
      */
     void AddPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity);
+
+    uint8_t m_phyId; //!< the index of the PHY in the vector of PHYs held by the WifiNetDevice
 
     Ptr<InterferenceHelper>
         m_interference; //!< Pointer to a helper responsible for interference computations
