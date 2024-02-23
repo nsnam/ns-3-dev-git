@@ -800,8 +800,8 @@ def make_paths():
 # no longer needed.  If it is needed again in the future, define the
 # below variable again, and remove the alternative definition to None
 #
-# VALGRIND_SUPPRESSIONS_FILE = "testpy.supp"
-VALGRIND_SUPPRESSIONS_FILE = None
+VALGRIND_SUPPRESSIONS_FILE = ".ns3.supp"
+# VALGRIND_SUPPRESSIONS_FILE = None
 
 
 def run_job_synchronously(shell_command, directory, valgrind, is_python, build_path=""):
