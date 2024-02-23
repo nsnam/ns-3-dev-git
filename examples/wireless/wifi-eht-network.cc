@@ -287,9 +287,10 @@ main(int argc, char* argv[])
         double previous = 0;
         uint16_t maxChannelWidth =
             (frequency != 2.4 && frequency2 != 2.4 && frequency3 != 2.4) ? 160 : 40;
+        int minGi = enableUlOfdma ? 1600 : 800;
         for (int channelWidth = 20; channelWidth <= maxChannelWidth;) // MHz
         {
-            for (int gi = 3200; gi >= 800;) // Nanoseconds
+            for (int gi = 3200; gi >= minGi;) // Nanoseconds
             {
                 if (!udp)
                 {
