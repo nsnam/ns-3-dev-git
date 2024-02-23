@@ -1412,6 +1412,9 @@ def run_step(args, target_to_run, target_args):
             debugging_software.extend(
                 [check_program_installed("valgrind"), "--leak-check=full", "--show-leak-kinds=all"]
             )
+            suppressions_file = os.path.join(ns3_path, ".ns3.supp")
+            if os.path.exists(suppressions_file):
+                debugging_software.append(f"--suppressions={suppressions_file}")
 
         # running gdb?
         if args.gdb:
