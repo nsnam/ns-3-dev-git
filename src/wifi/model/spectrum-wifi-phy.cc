@@ -457,15 +457,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         {
             double rxPowerPerBandW =
                 WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, band.indices);
-            NS_LOG_DEBUG("Signal power received (watts) before antenna gain for RU with type "
-                         << ru.GetRuType() << " and index " << ru.GetIndex() << " -> ("
-                         << band.indices.first << "; " << band.indices.second
-                         << "): " << rxPowerPerBandW);
             rxPowerPerBandW *= rxGainRatio;
-            NS_LOG_DEBUG("Signal power received after antenna gain for RU with type "
-                         << ru.GetRuType() << " and index " << ru.GetIndex() << " -> ("
-                         << band.indices.first << "; " << band.indices.second << "): "
-                         << rxPowerPerBandW << " W (" << WToDbm(rxPowerPerBandW) << " dBm)");
             rxPowerW.insert({band, rxPowerPerBandW});
         }
     }
