@@ -493,7 +493,8 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     if (m_trackSignalsInactiveInterfaces && interface &&
         (interface != m_currentSpectrumPhyInterface))
     {
-        NS_LOG_INFO("Received Wi-Fi signal from a non-active PHY interface");
+        NS_LOG_INFO("Received Wi-Fi signal from a non-active PHY interface "
+                    << interface->GetFrequencyRange());
         m_interference->AddForeignSignal(rxDuration, rxPowerW);
         SwitchMaybeToCcaBusy(nullptr);
         return;
