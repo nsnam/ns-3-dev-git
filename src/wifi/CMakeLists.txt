@@ -344,6 +344,7 @@ build_lib(
     test/wifi-eht-info-elems-test.cc
     test/wifi-emlsr-test.cc
     test/wifi-error-rate-models-test.cc
+    test/wifi-fils-frame-test.cc
     test/wifi-ie-fragment-test.cc
     test/wifi-mac-ofdma-test.cc
     test/wifi-mac-queue-test.cc
