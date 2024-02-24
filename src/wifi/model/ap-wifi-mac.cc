@@ -85,6 +85,25 @@ ApWifiMac::GetTypeId()
                           BooleanValue(true),
                           MakeBooleanAccessor(&ApWifiMac::SetBeaconGeneration),
                           MakeBooleanChecker())
+            .AddAttribute("FdBeaconInterval6GHz",
+                          "Time between a Beacon frame and a FILS Discovery (FD) frame or between "
+                          "two FD frames to be sent on a 6GHz link. A value of zero disables the "
+                          "transmission of FD frames.",
+                          TimeValue(Time{0}),
+                          MakeTimeAccessor(&ApWifiMac::m_fdBeaconInterval6GHz),
+                          MakeTimeChecker())
+            .AddAttribute("FdBeaconIntervalNon6GHz",
+                          "Time between a Beacon frame and a FILS Discovery (FD) frame or between "
+                          "two FD frames to be sent on a non-6GHz link. A value of zero disables "
+                          "the transmission of FD frames.",
+                          TimeValue(Time{0}),
+                          MakeTimeAccessor(&ApWifiMac::m_fdBeaconIntervalNon6GHz),
+                          MakeTimeChecker())
+            .AddAttribute("SendUnsolProbeResp",
+                          "Send unsolicited broadcast Probe Response instead of FILS Discovery",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&ApWifiMac::m_sendUnsolProbeResp),
+                          MakeBooleanChecker())
             .AddAttribute("EnableNonErpProtection",
                           "Whether or not protection mechanism should be used when non-ERP STAs "
                           "are present within the BSS."
@@ -1550,6 +1569,8 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
     link.beaconEvent =
         Simulator::Schedule(GetBeaconInterval(), &ApWifiMac::SendOneBeacon, this, linkId);
 
+    ScheduleFilsDiscOrUnsolProbeRespFrames(linkId);
+
     // If a STA that does not support Short Slot Time associates,
     // the AP shall use long slot time beginning at the first Beacon
     // subsequent to the association of the long slot time STA.
@@ -1564,6 +1585,76 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
         {
             // Disable short slot time
             GetWifiPhy(linkId)->SetSlot(MicroSeconds(20));
+        }
+    }
+}
+
+Ptr<WifiMpdu>
+ApWifiMac::GetFilsDiscovery(uint8_t linkId) const
+{
+    WifiMacHeader hdr(WIFI_MAC_MGT_ACTION);
+    hdr.SetAddr1(Mac48Address::GetBroadcast());
+    auto& link = GetLink(linkId);
+    hdr.SetAddr2(link.feManager->GetAddress());
+    hdr.SetAddr3(link.feManager->GetAddress());
+    hdr.SetDsNotFrom();
+    hdr.SetDsNotTo();
+
+    WifiActionHeader actionHdr;
+    WifiActionHeader::ActionValue action;
+    action.publicAction = WifiActionHeader::FILS_DISCOVERY;
+    actionHdr.SetAction(WifiActionHeader::PUBLIC, action);
+
+    FilsDiscHeader fils;
+    fils.SetSsid(GetSsid().PeekString());
+    fils.m_beaconInt = (m_beaconInterval / WIFI_TU).GetHigh();
+
+    fils.m_fdCap = FilsDiscHeader::FdCapability{};
+    fils.m_fdCap->SetOpChannelWidth(link.phy->GetChannelWidth());
+    fils.m_fdCap->SetMaxNss(std::min(link.phy->GetMaxSupportedTxSpatialStreams(),
+                                     link.phy->GetMaxSupportedRxSpatialStreams()));
+    fils.m_fdCap->SetStandard(link.phy->GetStandard());
+
+    fils.SetLengthSubfield();
+    fils.m_rnr = GetReducedNeighborReport(linkId);
+
+    auto packet = Create<Packet>();
+    packet->AddHeader(fils);
+    packet->AddHeader(actionHdr);
+
+    return Create<WifiMpdu>(packet, hdr);
+}
+
+void
+ApWifiMac::ScheduleFilsDiscOrUnsolProbeRespFrames(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+    auto phy = GetLink(linkId).phy;
+
+    auto fdBeaconInterval = (phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ) ? m_fdBeaconInterval6GHz
+                                                                      : m_fdBeaconIntervalNon6GHz;
+
+    if (!fdBeaconInterval.IsStrictlyPositive())
+    {
+        NS_LOG_DEBUG("Sending FILS Discovery/unsolicited Probe Response disabled");
+        return;
+    }
+
+    // Schedule FD or unsolicited Probe Response frames (IEEE Std 802.11ax-2021 26.17.2.3.2)
+    for (uint8_t count = 1; count < (m_beaconInterval / fdBeaconInterval).GetHigh(); ++count)
+    {
+        if (m_sendUnsolProbeResp)
+        {
+            Simulator::Schedule(fdBeaconInterval * count,
+                                &ApWifiMac::SendProbeResp,
+                                this,
+                                Mac48Address::GetBroadcast(),
+                                linkId);
+        }
+        else
+        {
+            Simulator::Schedule(fdBeaconInterval * count,
+                                [=, this]() { m_beaconTxop->Queue(GetFilsDiscovery(linkId)); });
         }
     }
 }

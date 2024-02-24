@@ -409,6 +409,22 @@ class ApWifiMac : public WifiMac
     void SendOneBeacon(uint8_t linkId);
 
     /**
+     * Get the FILS Discovery frame to send on the given link.
+     *
+     * \param linkId the ID of the given link
+     * \return the FILS Discovery frame to send on the given link
+     */
+    Ptr<WifiMpdu> GetFilsDiscovery(uint8_t linkId) const;
+
+    /**
+     * Schedule the transmission of FILS Discovery frames or unsolicited Probe Response frames
+     * on the given link
+     *
+     * \param linkId the ID of the given link
+     */
+    void ScheduleFilsDiscOrUnsolProbeRespFrames(uint8_t linkId);
+
+    /**
      * Process the Power Management bit in the Frame Control field of an MPDU
      * successfully received on the given link.
      *
@@ -585,6 +601,12 @@ class ApWifiMac : public WifiMac
     UintAccessParamsMap m_cwMaxsForSta;     //!< Per-AC CW max values to advertise to stations
     UintAccessParamsMap m_aifsnsForSta;     //!< Per-AC AIFS values to advertise to stations
     TimeAccessParamsMap m_txopLimitsForSta; //!< Per-AC TXOP limits values to advertise to stations
+
+    Time m_fdBeaconInterval6GHz;    //!< Time elapsing between a beacon and FILS Discovery (FD)
+                                    //!< frame or between two FD frames on 6GHz links
+    Time m_fdBeaconIntervalNon6GHz; //!< Time elapsing between a beacon and FILS Discovery (FD)
+                                    //!< frame or between two FD frames on 2.4GHz and 5GHz links
+    bool m_sendUnsolProbeResp;      //!< send unsolicited Probe Response instead of FILS Discovery
 
     /// store value and timestamp for each Buffer Status Report
     struct BsrType
