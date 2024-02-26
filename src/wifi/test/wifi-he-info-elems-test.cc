@@ -1,0 +1,101 @@
+/*
+ * Copyright (c) 2024 Universita' degli Studi di Napoli Federico II
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Stefano Avallone <stavallo@unina.it>
+ */
+
+#include "ns3/he-operation.h"
+#include "ns3/header-serialization-test.h"
+#include "ns3/log.h"
+#include "ns3/simulator.h"
+
+using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE("WifiHeInfoElemsTest");
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Test HE Operation information element serialization and deserialization
+ */
+class HeOperationElementTest : public HeaderSerializationTestCase
+{
+  public:
+    HeOperationElementTest();
+
+  private:
+    void DoRun() override;
+};
+
+HeOperationElementTest::HeOperationElementTest()
+    : HeaderSerializationTestCase(
+          "Check serialization and deserialization of HE Operation elements")
+{
+}
+
+void
+HeOperationElementTest::DoRun()
+{
+    HeOperation heOperation;
+
+    heOperation.m_heOpParams.m_defaultPeDuration = 6;
+    heOperation.m_heOpParams.m_twtRequired = 1;
+    heOperation.m_heOpParams.m_txopDurRtsThresh = 1000;
+    heOperation.m_heOpParams.m_erSuDisable = 1;
+
+    heOperation.m_bssColorInfo.m_bssColor = 44;
+    heOperation.m_bssColorInfo.m_bssColorDisabled = 1;
+
+    heOperation.SetMaxHeMcsPerNss(8, 7);
+    heOperation.SetMaxHeMcsPerNss(6, 8);
+    heOperation.SetMaxHeMcsPerNss(4, 9);
+    heOperation.SetMaxHeMcsPerNss(2, 10);
+    heOperation.SetMaxHeMcsPerNss(1, 11);
+
+    TestHeaderSerialization(heOperation);
+
+    heOperation.m_6GHzOpInfo = HeOperation::OpInfo6GHz{};
+    heOperation.m_6GHzOpInfo->m_primCh = 191;
+    heOperation.m_6GHzOpInfo->m_chWid = 2;
+    heOperation.m_6GHzOpInfo->m_dupBeacon = 1;
+    heOperation.m_6GHzOpInfo->m_regInfo = 6;
+    heOperation.m_6GHzOpInfo->m_chCntrFreqSeg0 = 157;
+    heOperation.m_6GHzOpInfo->m_chCntrFreqSeg1 = 201;
+    heOperation.m_6GHzOpInfo->m_minRate = 211;
+
+    TestHeaderSerialization(heOperation);
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief wifi HE Information Elements Test Suite
+ */
+class WifiHeInfoElemsTestSuite : public TestSuite
+{
+  public:
+    WifiHeInfoElemsTestSuite();
+};
+
+WifiHeInfoElemsTestSuite::WifiHeInfoElemsTestSuite()
+    : TestSuite("wifi-he-info-elems", Type::UNIT)
+{
+    AddTestCase(new HeOperationElementTest, TestCase::Duration::QUICK);
+}
+
+static WifiHeInfoElemsTestSuite g_wifiHeInfoElemsTestSuite; ///< the test suite
