@@ -81,6 +81,7 @@ Network Animator nam.  It is not possible to run a simulation
  * Copyright (c) 2022 Universita' degli Studi di Napoli Federico II
  * Copyright (c) 2022 Universita' degli Studi di Napoli "Federico II"
  * Copyright (c) 2023 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2024 Universita' degli Studi di Napoli Federico II
 
 ./src/core/examples/hash-example.cc
 6ed21de2  brand-newness       peripherial

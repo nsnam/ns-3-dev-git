@@ -295,6 +295,7 @@ set(header_files
     model/wifi-mpdu-type.h
     model/wifi-mpdu.h
     model/wifi-net-device.h
+    model/wifi-opt-field.h
     model/wifi-phy-band.h
     model/wifi-phy-common.h
     model/wifi-phy-listener.h
