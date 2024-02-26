@@ -1057,7 +1057,7 @@ ApWifiMac::GetHeOperation(uint8_t linkId) const
             nss,
             11); // TBD: hardcode to 11 for now since we assume all MCS values are supported
     }
-    operation.SetBssColor(GetHeConfiguration()->GetBssColor());
+    operation.m_bssColorInfo.m_bssColor = GetHeConfiguration()->GetBssColor();
 
     return operation;
 }

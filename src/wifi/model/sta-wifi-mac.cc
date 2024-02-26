@@ -1769,8 +1769,9 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
             if (const auto& heOperation = frame.template Get<HeOperation>();
                 heOperation.has_value())
             {
-                GetHeConfiguration()->SetAttribute("BssColor",
-                                                   UintegerValue(heOperation->GetBssColor()));
+                GetHeConfiguration()->SetAttribute(
+                    "BssColor",
+                    UintegerValue(heOperation->m_bssColorInfo.m_bssColor));
             }
         }
 
