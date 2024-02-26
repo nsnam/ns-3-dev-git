@@ -1396,7 +1396,8 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
         }
     }
 
-    Simulator::Stop(Seconds(30));
+    delay += Seconds(1);
+    Simulator::Stop(delay);
     Simulator::Run();
 }
 
