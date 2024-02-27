@@ -142,12 +142,12 @@ GenerateTraffic(Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pk
 int
 main(int argc, char* argv[])
 {
-    std::string phyMode("DsssRate1Mbps");
-    double rss = -80;           // -dBm
-    uint32_t packetSize = 1000; // bytes
-    uint32_t numPackets = 1;
-    Time interval = Seconds(1.0);
-    bool verbose = false;
+    std::string phyMode{"DsssRate1Mbps"};
+    double rss{-80};           // -dBm
+    uint32_t packetSize{1000}; // bytes
+    uint32_t numPackets{1};
+    Time interval{"1s"};
+    bool verbose{false};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("phyMode", "Wifi Phy mode", phyMode);

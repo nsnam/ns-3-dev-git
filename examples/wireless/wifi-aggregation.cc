@@ -59,7 +59,7 @@
 //
 // The user can select the distance between the stations and the APs and can enable/disable the
 // RTS/CTS mechanism. Example: ./ns3 run "wifi-aggregation --distance=10 --enableRts=0
-// --simulationTime=20"
+// --simulationTime=20s"
 //
 // The output prints the throughput measured for the 4 cases/networks described above. When default
 // aggregation parameters are enabled, the maximum A-MPDU size is 65 kB and the throughput is
@@ -82,17 +82,17 @@ NS_LOG_COMPONENT_DEFINE("SimpleMpduAggregation");
 int
 main(int argc, char* argv[])
 {
-    uint32_t payloadSize = 1472; // bytes
-    double simulationTime = 10;  // seconds
-    double distance = 5;         // meters
-    bool enableRts = false;
-    bool enablePcap = false;
-    bool verifyResults = false; // used for regression
+    uint32_t payloadSize{1472}; // bytes
+    Time simulationTime{"10s"};
+    double distance{5}; // meters
+    bool enableRts{false};
+    bool enablePcap{false};
+    bool verifyResults{false}; // used for regression
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("payloadSize", "Payload size in bytes", payloadSize);
     cmd.AddValue("enableRts", "Enable or disable RTS/CTS", enableRts);
-    cmd.AddValue("simulationTime", "Simulation time in seconds", simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
                  distance);
@@ -282,7 +282,7 @@ main(int argc, char* argv[])
     UdpServerHelper serverA(port);
     ApplicationContainer serverAppA = serverA.Install(wifiStaNodes.Get(0));
     serverAppA.Start(Seconds(0.0));
-    serverAppA.Stop(Seconds(simulationTime + 1));
+    serverAppA.Stop(simulationTime + Seconds(1.0));
 
     UdpClientHelper clientA(StaInterfaceA.GetAddress(0), port);
     clientA.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -291,12 +291,12 @@ main(int argc, char* argv[])
 
     ApplicationContainer clientAppA = clientA.Install(wifiApNodes.Get(0));
     clientAppA.Start(Seconds(1.0));
-    clientAppA.Stop(Seconds(simulationTime + 1));
+    clientAppA.Stop(simulationTime + Seconds(1.0));
 
     UdpServerHelper serverB(port);
     ApplicationContainer serverAppB = serverB.Install(wifiStaNodes.Get(1));
     serverAppB.Start(Seconds(0.0));
-    serverAppB.Stop(Seconds(simulationTime + 1));
+    serverAppB.Stop(simulationTime + Seconds(1.0));
 
     UdpClientHelper clientB(StaInterfaceB.GetAddress(0), port);
     clientB.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -305,12 +305,12 @@ main(int argc, char* argv[])
 
     ApplicationContainer clientAppB = clientB.Install(wifiApNodes.Get(1));
     clientAppB.Start(Seconds(1.0));
-    clientAppB.Stop(Seconds(simulationTime + 1));
+    clientAppB.Stop(simulationTime + Seconds(1.0));
 
     UdpServerHelper serverC(port);
     ApplicationContainer serverAppC = serverC.Install(wifiStaNodes.Get(2));
     serverAppC.Start(Seconds(0.0));
-    serverAppC.Stop(Seconds(simulationTime + 1));
+    serverAppC.Stop(simulationTime + Seconds(1.0));
 
     UdpClientHelper clientC(StaInterfaceC.GetAddress(0), port);
     clientC.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -319,12 +319,12 @@ main(int argc, char* argv[])
 
     ApplicationContainer clientAppC = clientC.Install(wifiApNodes.Get(2));
     clientAppC.Start(Seconds(1.0));
-    clientAppC.Stop(Seconds(simulationTime + 1));
+    clientAppC.Stop(simulationTime + Seconds(1.0));
 
     UdpServerHelper serverD(port);
     ApplicationContainer serverAppD = serverD.Install(wifiStaNodes.Get(3));
     serverAppD.Start(Seconds(0.0));
-    serverAppD.Stop(Seconds(simulationTime + 1));
+    serverAppD.Stop(simulationTime + Seconds(1.0));
 
     UdpClientHelper clientD(StaInterfaceD.GetAddress(0), port);
     clientD.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -333,7 +333,7 @@ main(int argc, char* argv[])
 
     ApplicationContainer clientAppD = clientD.Install(wifiApNodes.Get(3));
     clientAppD.Start(Seconds(1.0));
-    clientAppD.Stop(Seconds(simulationTime + 1));
+    clientAppD.Stop(simulationTime + Seconds(1.0));
 
     if (enablePcap)
     {
@@ -347,18 +347,18 @@ main(int argc, char* argv[])
         phy.EnablePcap("STA_D", staDeviceD.Get(0));
     }
 
-    Simulator::Stop(Seconds(simulationTime + 1));
+    Simulator::Stop(simulationTime + Seconds(1.0));
     Simulator::Run();
 
     // Show results
-    uint64_t totalPacketsThroughA = DynamicCast<UdpServer>(serverAppA.Get(0))->GetReceived();
-    uint64_t totalPacketsThroughB = DynamicCast<UdpServer>(serverAppB.Get(0))->GetReceived();
-    uint64_t totalPacketsThroughC = DynamicCast<UdpServer>(serverAppC.Get(0))->GetReceived();
-    uint64_t totalPacketsThroughD = DynamicCast<UdpServer>(serverAppD.Get(0))->GetReceived();
+    double totalPacketsThroughA = DynamicCast<UdpServer>(serverAppA.Get(0))->GetReceived();
+    double totalPacketsThroughB = DynamicCast<UdpServer>(serverAppB.Get(0))->GetReceived();
+    double totalPacketsThroughC = DynamicCast<UdpServer>(serverAppC.Get(0))->GetReceived();
+    double totalPacketsThroughD = DynamicCast<UdpServer>(serverAppD.Get(0))->GetReceived();
 
     Simulator::Destroy();
 
-    double throughput = totalPacketsThroughA * payloadSize * 8 / (simulationTime * 1000000.0);
+    auto throughput = totalPacketsThroughA * payloadSize * 8 / simulationTime.GetMicroSeconds();
     std::cout << "Throughput with default configuration (A-MPDU aggregation enabled, 65kB): "
               << throughput << " Mbit/s" << '\n';
     if (verifyResults && (throughput < 59.0 || throughput > 60.0))
@@ -367,7 +367,7 @@ main(int argc, char* argv[])
         exit(1);
     }
 
-    throughput = totalPacketsThroughB * payloadSize * 8 / (simulationTime * 1000000.0);
+    throughput = totalPacketsThroughB * payloadSize * 8 / simulationTime.GetMicroSeconds();
     std::cout << "Throughput with aggregation disabled: " << throughput << " Mbit/s" << '\n';
     if (verifyResults && (throughput < 30 || throughput > 31))
     {
@@ -375,7 +375,7 @@ main(int argc, char* argv[])
         exit(1);
     }
 
-    throughput = totalPacketsThroughC * payloadSize * 8 / (simulationTime * 1000000.0);
+    throughput = totalPacketsThroughC * payloadSize * 8 / simulationTime.GetMicroSeconds();
     std::cout << "Throughput with A-MPDU disabled and A-MSDU enabled (8kB): " << throughput
               << " Mbit/s" << '\n';
     if (verifyResults && (throughput < 51 || throughput > 52))
@@ -384,7 +384,7 @@ main(int argc, char* argv[])
         exit(1);
     }
 
-    throughput = totalPacketsThroughD * payloadSize * 8 / (simulationTime * 1000000.0);
+    throughput = totalPacketsThroughD * payloadSize * 8 / simulationTime.GetMicroSeconds();
     std::cout << "Throughput with A-MPDU enabled (32kB) and A-MSDU enabled (4kB): " << throughput
               << " Mbit/s" << '\n';
     if (verifyResults && (throughput < 58 || throughput > 59))

@@ -71,17 +71,17 @@ main(int argc, char* argv[])
         "HtMcs24", "HtMcs25", "HtMcs26", "HtMcs27", "HtMcs28", "HtMcs29", "HtMcs30", "HtMcs31",
     };
 
-    bool udp = true;
-    double simulationTime = 5; // seconds
-    double frequency = 5.0;    // whether 2.4 or 5.0 GHz
-    double step = 5;           // meters
-    bool shortGuardInterval = false;
-    bool channelBonding = false;
-    bool preambleDetection = true;
+    bool udp{true};
+    Time simulationTime{"5s"};
+    double frequency{5.0}; // whether 2.4 or 5.0 GHz
+    double step{5};        // meters
+    bool shortGuardInterval{false};
+    bool channelBonding{false};
+    bool preambleDetection{true};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("step", "Granularity of the results to be plotted in meters", step);
-    cmd.AddValue("simulationTime", "Simulation time per step (in seconds)", simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time per step", simulationTime);
     cmd.AddValue("channelBonding",
                  "Enable/disable channel bonding (channel width = 20 MHz if false, channel width = "
                  "40 MHz if true)",
@@ -226,7 +226,7 @@ main(int argc, char* argv[])
                 UdpServerHelper server(port);
                 serverApp = server.Install(wifiStaNode.Get(0));
                 serverApp.Start(Seconds(0.0));
-                serverApp.Stop(Seconds(simulationTime + 1));
+                serverApp.Stop(simulationTime + Seconds(1.0));
                 const auto packetInterval = payloadSize * 8.0 / maxLoad;
 
                 UdpClientHelper client(staNodeInterface.GetAddress(0), port);
@@ -235,7 +235,7 @@ main(int argc, char* argv[])
                 client.SetAttribute("PacketSize", UintegerValue(payloadSize));
                 ApplicationContainer clientApp = client.Install(wifiApNode.Get(0));
                 clientApp.Start(Seconds(1.0));
-                clientApp.Stop(Seconds(simulationTime + 1));
+                clientApp.Stop(simulationTime + Seconds(1.0));
             }
             else
             {
@@ -245,7 +245,7 @@ main(int argc, char* argv[])
                 PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", localAddress);
                 serverApp = packetSinkHelper.Install(wifiStaNode.Get(0));
                 serverApp.Start(Seconds(0.0));
-                serverApp.Stop(Seconds(simulationTime + 1));
+                serverApp.Stop(simulationTime + Seconds(1.0));
 
                 OnOffHelper onoff("ns3::TcpSocketFactory", Ipv4Address::GetAny());
                 onoff.SetAttribute("OnTime",
@@ -258,29 +258,29 @@ main(int argc, char* argv[])
                 onoff.SetAttribute("Remote", remoteAddress);
                 ApplicationContainer clientApp = onoff.Install(wifiApNode.Get(0));
                 clientApp.Start(Seconds(1.0));
-                clientApp.Stop(Seconds(simulationTime + 1));
+                clientApp.Stop(simulationTime + Seconds(1.0));
             }
 
             Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-            Simulator::Stop(Seconds(simulationTime + 1));
+            Simulator::Stop(simulationTime + Seconds(1.0));
             Simulator::Run();
 
             double throughput = 0;
             if (udp)
             {
                 // UDP
-                uint64_t totalPacketsThrough =
+                double totalPacketsThrough =
                     DynamicCast<UdpServer>(serverApp.Get(0))->GetReceived();
-                throughput =
-                    totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0); // Mbit/s
+                throughput = totalPacketsThrough * payloadSize * 8 /
+                             simulationTime.GetMicroSeconds(); // Mbit/s
             }
             else
             {
                 // TCP
-                uint64_t totalPacketsThrough =
+                double totalPacketsThrough =
                     DynamicCast<PacketSink>(serverApp.Get(0))->GetTotalRx();
-                throughput = totalPacketsThrough * 8 / (simulationTime * 1000000.0); // Mbit/s
+                throughput = totalPacketsThrough * 8 / simulationTime.GetMicroSeconds(); // Mbit/s
             }
             dataset.Add(d, throughput);
             std::cout << throughput << " Mbit/s" << std::endl;

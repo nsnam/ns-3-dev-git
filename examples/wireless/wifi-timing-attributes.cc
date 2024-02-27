@@ -57,16 +57,16 @@ NS_LOG_COMPONENT_DEFINE("wifi-timing-attributes");
 int
 main(int argc, char* argv[])
 {
-    uint32_t slot = 9;          // slot time in microseconds
-    uint32_t sifs = 10;         // SIFS duration in microseconds
-    uint32_t pifs = 19;         // PIFS duration in microseconds
-    double simulationTime = 10; // simulation time in seconds
+    uint32_t slot{9};           // slot time in microseconds
+    uint32_t sifs{10};          // SIFS duration in microseconds
+    uint32_t pifs{19};          // PIFS duration in microseconds
+    Time simulationTime{"10s"}; // Simulation time
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("slot", "Slot time in microseconds", slot);
     cmd.AddValue("sifs", "SIFS duration in microseconds", sifs);
     cmd.AddValue("pifs", "PIFS duration in microseconds", pifs);
-    cmd.AddValue("simulationTime", "Simulation time in seconds", simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.Parse(argc, argv);
 
     // Since default reference loss is defined for 5 GHz, it needs to be changed when operating
@@ -146,7 +146,7 @@ main(int argc, char* argv[])
     UdpServerHelper server(port);
     ApplicationContainer serverApp = server.Install(wifiStaNode.Get(0));
     serverApp.Start(Seconds(0.0));
-    serverApp.Stop(Seconds(simulationTime + 1));
+    serverApp.Stop(simulationTime + Seconds(1.0));
 
     UdpClientHelper client(staNodeInterface.GetAddress(0), port);
     client.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -155,18 +155,18 @@ main(int argc, char* argv[])
 
     ApplicationContainer clientApp = client.Install(wifiApNode.Get(0));
     clientApp.Start(Seconds(1.0));
-    clientApp.Stop(Seconds(simulationTime + 1));
+    clientApp.Stop(simulationTime + Seconds(1.0));
 
     // Populate routing table
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // Set simulation time and launch simulation
-    Simulator::Stop(Seconds(simulationTime + 1));
+    Simulator::Stop(simulationTime + Seconds(1.0));
     Simulator::Run();
 
     // Get and print results
-    uint64_t totalPacketsThrough = DynamicCast<UdpServer>(serverApp.Get(0))->GetReceived();
-    double throughput = totalPacketsThrough * 1472 * 8 / (simulationTime * 1000000.0); // Mbit/s
+    double totalPacketsThrough = DynamicCast<UdpServer>(serverApp.Get(0))->GetReceived();
+    auto throughput = totalPacketsThrough * 1472 * 8 / simulationTime.GetMicroSeconds(); // Mbit/s
     std::cout << "Throughput: " << throughput << " Mbit/s" << std::endl;
 
     Simulator::Destroy();

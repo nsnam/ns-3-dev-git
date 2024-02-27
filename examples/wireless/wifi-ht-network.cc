@@ -64,14 +64,14 @@ NS_LOG_COMPONENT_DEFINE("ht-wifi-network");
 int
 main(int argc, char* argv[])
 {
-    bool udp = true;
-    bool useRts = false;
-    double simulationTime = 10; // seconds
-    double distance = 1.0;      // meters
-    double frequency = 5.0;     // whether 2.4 or 5.0 GHz
-    int mcs = -1;               // -1 indicates an unset value
-    double minExpectedThroughput = 0;
-    double maxExpectedThroughput = 0;
+    bool udp{true};
+    bool useRts{false};
+    Time simulationTime{"10s"};
+    double distance{1.0}; // meters
+    double frequency{5};  // whether 2.4 or 5 GHz
+    int mcs{-1};          // -1 indicates an unset value
+    double minExpectedThroughput{0.0};
+    double maxExpectedThroughput{0.0};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("frequency",
@@ -80,7 +80,7 @@ main(int argc, char* argv[])
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
                  distance);
-    cmd.AddValue("simulationTime", "Simulation time in seconds", simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("udp", "UDP if set to 1, TCP otherwise", udp);
     cmd.AddValue("useRts", "Enable/disable RTS/CTS", useRts);
     cmd.AddValue("mcs", "if set, limit testing to a specific MCS (0-7)", mcs);
@@ -240,7 +240,7 @@ main(int argc, char* argv[])
                     streamNumber += server.AssignStreams(wifiStaNode.Get(0), streamNumber);
 
                     serverApp.Start(Seconds(0.0));
-                    serverApp.Stop(Seconds(simulationTime + 1));
+                    serverApp.Stop(simulationTime + Seconds(1.0));
                     const auto packetInterval = payloadSize * 8.0 / maxLoad;
 
                     UdpClientHelper client(staNodeInterface.GetAddress(0), port);
@@ -251,7 +251,7 @@ main(int argc, char* argv[])
                     streamNumber += client.AssignStreams(wifiApNode.Get(0), streamNumber);
 
                     clientApp.Start(Seconds(1.0));
-                    clientApp.Stop(Seconds(simulationTime + 1));
+                    clientApp.Stop(simulationTime + Seconds(1.0));
                 }
                 else
                 {
@@ -264,7 +264,7 @@ main(int argc, char* argv[])
                         packetSinkHelper.AssignStreams(wifiStaNode.Get(0), streamNumber);
 
                     serverApp.Start(Seconds(0.0));
-                    serverApp.Stop(Seconds(simulationTime + 1));
+                    serverApp.Stop(simulationTime + Seconds(1.0));
 
                     OnOffHelper onoff("ns3::TcpSocketFactory", Ipv4Address::GetAny());
                     onoff.SetAttribute("OnTime",
@@ -280,15 +280,15 @@ main(int argc, char* argv[])
                     streamNumber += onoff.AssignStreams(wifiApNode.Get(0), streamNumber);
 
                     clientApp.Start(Seconds(1.0));
-                    clientApp.Stop(Seconds(simulationTime + 1));
+                    clientApp.Stop(simulationTime + Seconds(1.0));
                 }
 
                 Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-                Simulator::Stop(Seconds(simulationTime + 1));
+                Simulator::Stop(simulationTime + Seconds(1.0));
                 Simulator::Run();
 
-                uint64_t rxBytes = 0;
+                auto rxBytes = 0.0;
                 if (udp)
                 {
                     rxBytes = payloadSize * DynamicCast<UdpServer>(serverApp.Get(0))->GetReceived();
@@ -297,7 +297,7 @@ main(int argc, char* argv[])
                 {
                     rxBytes = DynamicCast<PacketSink>(serverApp.Get(0))->GetTotalRx();
                 }
-                double throughput = (rxBytes * 8) / (simulationTime * 1000000.0); // Mbit/s
+                auto throughput = (rxBytes * 8) / simulationTime.GetMicroSeconds(); // Mbit/s
 
                 Simulator::Destroy();
 

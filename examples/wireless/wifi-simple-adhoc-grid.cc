@@ -149,31 +149,29 @@ GenerateTraffic(Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pk
 int
 main(int argc, char* argv[])
 {
-    std::string phyMode("DsssRate1Mbps");
-    double distance = 100;      // m
-    uint32_t packetSize = 1000; // bytes
-    uint32_t numPackets = 1;
-    uint32_t numNodes = 25; // by default, 5x5
-    uint32_t sinkNode = 0;
-    uint32_t sourceNode = 24;
-    double interval = 1.0; // seconds
-    bool verbose = false;
-    bool tracing = false;
+    std::string phyMode{"DsssRate1Mbps"};
+    double distance{100};      // m
+    uint32_t packetSize{1000}; // bytes
+    uint32_t numPackets{1};
+    uint32_t numNodes{25}; // by default, 5x5
+    uint32_t sinkNode{0};
+    uint32_t sourceNode{24};
+    Time interPacketInterval{"1s"};
+    bool verbose{false};
+    bool tracing{false};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("phyMode", "Wifi Phy mode", phyMode);
     cmd.AddValue("distance", "distance (m)", distance);
     cmd.AddValue("packetSize", "size of application packet sent", packetSize);
     cmd.AddValue("numPackets", "number of packets generated", numPackets);
-    cmd.AddValue("interval", "interval (seconds) between packets", interval);
+    cmd.AddValue("interval", "interval (seconds) between packets", interPacketInterval);
     cmd.AddValue("verbose", "turn on all WifiNetDevice log components", verbose);
     cmd.AddValue("tracing", "turn on ascii and pcap tracing", tracing);
     cmd.AddValue("numNodes", "number of nodes", numNodes);
     cmd.AddValue("sinkNode", "Receiver node number", sinkNode);
     cmd.AddValue("sourceNode", "Sender node number", sourceNode);
     cmd.Parse(argc, argv);
-    // Convert to time object
-    Time interPacketInterval = Seconds(interval);
 
     // Fix non-unicast data rate to be the same as that of unicast
     Config::SetDefault("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue(phyMode));

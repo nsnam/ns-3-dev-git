@@ -113,17 +113,17 @@ ConvertStringToStandardAndBand(std::string version)
 int
 main(int argc, char* argv[])
 {
-    uint32_t payloadSize = 1472; // bytes
-    double simulationTime = 10;  // seconds
-    std::string apVersion = "80211a";
-    std::string staVersion = "80211n_5GHZ";
-    std::string apRaa = "Minstrel";
-    std::string staRaa = "MinstrelHt";
-    bool apHasTraffic = false;
-    bool staHasTraffic = true;
+    uint32_t payloadSize{1472}; // bytes
+    Time simulationTime{"10s"};
+    std::string apVersion{"80211a"};
+    std::string staVersion{"80211n_5GHZ"};
+    std::string apRaa{"Minstrel"};
+    std::string staRaa{"MinstrelHt"};
+    bool apHasTraffic{false};
+    bool staHasTraffic{true};
 
     CommandLine cmd(__FILE__);
-    cmd.AddValue("simulationTime", "Simulation time in seconds", simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("apVersion",
                  "The standard version used by the AP: 80211a, 80211b, 80211g, 80211p, "
                  "80211n_2_4GHZ, 80211n_5GHZ, 80211ac, 80211ax_2_4GHZ or 80211ax_5GHZ",
@@ -204,12 +204,12 @@ main(int argc, char* argv[])
     UdpServerHelper apServer(9);
     ApplicationContainer apServerApp = apServer.Install(wifiApNode.Get(0));
     apServerApp.Start(Seconds(0.0));
-    apServerApp.Stop(Seconds(simulationTime + 1));
+    apServerApp.Stop(simulationTime + Seconds(1.0));
 
     UdpServerHelper staServer(5001);
     ApplicationContainer staServerApp = staServer.Install(wifiStaNode.Get(0));
     staServerApp.Start(Seconds(0.0));
-    staServerApp.Stop(Seconds(simulationTime + 1));
+    staServerApp.Stop(simulationTime + Seconds(1.0));
 
     if (apHasTraffic)
     {
@@ -219,7 +219,7 @@ main(int argc, char* argv[])
         apClient.SetAttribute("PacketSize", UintegerValue(payloadSize)); // bytes
         ApplicationContainer apClientApp = apClient.Install(wifiApNode.Get(0));
         apClientApp.Start(Seconds(1.0));
-        apClientApp.Stop(Seconds(simulationTime + 1));
+        apClientApp.Stop(simulationTime + Seconds(1.0));
     }
 
     if (staHasTraffic)
@@ -230,21 +230,21 @@ main(int argc, char* argv[])
         staClient.SetAttribute("PacketSize", UintegerValue(payloadSize)); // bytes
         ApplicationContainer staClientApp = staClient.Install(wifiStaNode.Get(0));
         staClientApp.Start(Seconds(1.0));
-        staClientApp.Stop(Seconds(simulationTime + 1));
+        staClientApp.Stop(simulationTime + Seconds(1.0));
     }
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-    Simulator::Stop(Seconds(simulationTime + 1));
+    Simulator::Stop(simulationTime + Seconds(1.0));
     Simulator::Run();
 
-    uint64_t rxBytes;
+    double rxBytes;
     double throughput;
     bool error = false;
     if (apHasTraffic)
     {
         rxBytes = payloadSize * DynamicCast<UdpServer>(staServerApp.Get(0))->GetReceived();
-        throughput = (rxBytes * 8) / (simulationTime * 1000000.0); // Mbit/s
+        throughput = (rxBytes * 8) / simulationTime.GetMicroSeconds(); // Mbit/s
         std::cout << "AP Throughput: " << throughput << " Mbit/s" << std::endl;
         if (throughput == 0)
         {
@@ -254,7 +254,7 @@ main(int argc, char* argv[])
     if (staHasTraffic)
     {
         rxBytes = payloadSize * DynamicCast<UdpServer>(apServerApp.Get(0))->GetReceived();
-        throughput = (rxBytes * 8) / (simulationTime * 1000000.0); // Mbit/s
+        throughput = (rxBytes * 8) / simulationTime.GetMicroSeconds(); // Mbit/s
         std::cout << "STA Throughput: " << throughput << " Mbit/s" << std::endl;
         if (throughput == 0)
         {

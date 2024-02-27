@@ -160,22 +160,22 @@ GenerateTraffic(Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pk
 int
 main(int argc, char* argv[])
 {
-    std::string phyMode("DsssRate1Mbps");
-    double Prss = -80;           // -dBm
-    double Irss = -95;           // -dBm
-    double delta = 0;            // microseconds
-    uint32_t PpacketSize = 1000; // bytes
-    uint32_t IpacketSize = 1000; // bytes
-    bool verbose = false;
+    std::string phyMode{"DsssRate1Mbps"};
+    double Prss{-80};           // -dBm
+    double Irss{-95};           // -dBm
+    double delta{0};            // microseconds
+    uint32_t PpacketSize{1000}; // bytes
+    uint32_t IpacketSize{1000}; // bytes
+    bool verbose{false};
 
     // these are not command line arguments for this version
-    uint32_t numPackets = 1;
-    double interval = 1.0;       // seconds
-    double startTime = 10.0;     // seconds
-    double distanceToRx = 100.0; // meters
+    uint32_t numPackets{1};
+    Time interPacketInterval{"1s"};
+    Time startTime{"10s"};
+    double distanceToRx{100.0}; // meters
 
-    double offset = 91; // This is a magic number used to set the
-                        // transmit power, based on other configuration
+    double offset{91}; // This is a magic number used to set the
+                       // transmit power, based on other configuration
     CommandLine cmd(__FILE__);
     cmd.AddValue("phyMode", "Wifi Phy mode", phyMode);
     cmd.AddValue("Prss", "Intended primary received signal strength (dBm)", Prss);
@@ -185,8 +185,6 @@ main(int argc, char* argv[])
     cmd.AddValue("IpacketSize", "size of interfering packet sent", IpacketSize);
     cmd.AddValue("verbose", "turn on all WifiNetDevice log components", verbose);
     cmd.Parse(argc, argv);
-    // Convert to time object
-    Time interPacketInterval = Seconds(interval);
 
     // Fix non-unicast data rate to be the same as that of unicast
     Config::SetDefault("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue(phyMode));
@@ -269,7 +267,7 @@ main(int argc, char* argv[])
                                         << " dBm at time offset=" << delta << " ms");
 
     Simulator::ScheduleWithContext(source->GetNode()->GetId(),
-                                   Seconds(startTime),
+                                   startTime,
                                    &GenerateTraffic,
                                    source,
                                    PpacketSize,
@@ -277,7 +275,7 @@ main(int argc, char* argv[])
                                    interPacketInterval);
 
     Simulator::ScheduleWithContext(interferer->GetNode()->GetId(),
-                                   Seconds(startTime + delta / 1000000.0),
+                                   startTime + Seconds(delta / 1000000.0),
                                    &GenerateTraffic,
                                    interferer,
                                    IpacketSize,

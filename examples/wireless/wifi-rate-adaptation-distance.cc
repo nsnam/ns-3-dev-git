@@ -185,21 +185,21 @@ RateCallback(uint64_t oldRate, uint64_t newRate)
 int
 main(int argc, char* argv[])
 {
-    uint32_t rtsThreshold = 65535;
-    std::string staManager = "ns3::MinstrelHtWifiManager";
-    std::string apManager = "ns3::MinstrelHtWifiManager";
-    std::string standard = "802.11n-5GHz";
-    std::string outputFileName = "minstrelHT";
-    uint32_t BeMaxAmpduSize = 65535;
-    bool shortGuardInterval = false;
-    uint32_t chWidth = 20;
-    int ap1_x = 0;
-    int ap1_y = 0;
-    int sta1_x = 5;
-    int sta1_y = 0;
-    int steps = 100;
-    int stepsSize = 1;
-    int stepsTime = 1;
+    uint32_t rtsThreshold{65535};
+    std::string staManager{"ns3::MinstrelHtWifiManager"};
+    std::string apManager{"ns3::MinstrelHtWifiManager"};
+    std::string standard{"802.11n-5GHz"};
+    std::string outputFileName{"minstrelHT"};
+    uint32_t BeMaxAmpduSize{65535};
+    bool shortGuardInterval{false};
+    uint32_t chWidth{20};
+    int ap1_x{0};
+    int ap1_y{0};
+    int sta1_x{5};
+    int sta1_y{0};
+    int steps{100};
+    int stepsSize{1};
+    int stepsTime{1};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("staManager", "Rate adaptation manager of the STA", staManager);

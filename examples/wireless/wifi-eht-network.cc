@@ -109,7 +109,7 @@ PrintIntermediateTput(std::vector<uint64_t>& rxBytes,
                       const ApplicationContainer& serverApp,
                       uint32_t payloadSize,
                       Time tputInterval,
-                      double simulationTime)
+                      Time simulationTime)
 {
     auto newRxBytes = GetRxBytes(udp, serverApp, payloadSize);
     Time now = Simulator::Now();
@@ -126,9 +126,9 @@ PrintIntermediateTput(std::vector<uint64_t>& rxBytes,
 
     rxBytes.swap(newRxBytes);
 
-    if (now < Seconds(simulationTime) - NanoSeconds(1))
+    if (now < (simulationTime - NanoSeconds(1)))
     {
-        Simulator::Schedule(Min(tputInterval, Seconds(simulationTime) - now - NanoSeconds(1)),
+        Simulator::Schedule(Min(tputInterval, simulationTime - now - NanoSeconds(1)),
                             &PrintIntermediateTput,
                             rxBytes,
                             udp,
@@ -153,9 +153,9 @@ main(int argc, char* argv[])
     bool switchAuxPhy{true};
     uint16_t auxPhyChWidth{20};
     bool auxPhyTxCapable{true};
-    double simulationTime{10}; // seconds
-    double distance{1.0};      // meters
-    double frequency{5};       // whether the first link operates in the 2.4, 5 or 6 GHz
+    Time simulationTime{"10s"};
+    double distance{1.0}; // meters
+    double frequency{5};  // whether the first link operates in the 2.4, 5 or 6 GHz
     double frequency2{0}; // whether the second link operates in the 2.4, 5 or 6 GHz (0 means no
                           // second link exists)
     double frequency3{
@@ -212,7 +212,7 @@ main(int argc, char* argv[])
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
                  distance);
-    cmd.AddValue("simulationTime", "Simulation time in seconds", simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("udp", "UDP if set to 1, TCP otherwise", udp);
     cmd.AddValue("downlink",
                  "Generate downlink flows if set to 1, uplink flows otherwise",
@@ -503,7 +503,7 @@ main(int argc, char* argv[])
                     streamNumber += server.AssignStreams(serverNodes.get(), streamNumber);
 
                     serverApp.Start(Seconds(0.0));
-                    serverApp.Stop(Seconds(simulationTime + 1));
+                    serverApp.Stop(simulationTime + Seconds(1.0));
                     const auto packetInterval = payloadSize * 8.0 / maxLoad;
 
                     for (std::size_t i = 0; i < nStations; i++)
@@ -516,7 +516,7 @@ main(int argc, char* argv[])
                         streamNumber += client.AssignStreams(clientNodes.Get(i), streamNumber);
 
                         clientApp.Start(Seconds(1.0));
-                        clientApp.Stop(Seconds(simulationTime + 1));
+                        clientApp.Stop(simulationTime + Seconds(1.0));
                     }
                 }
                 else
@@ -529,7 +529,7 @@ main(int argc, char* argv[])
                     streamNumber += packetSinkHelper.AssignStreams(serverNodes.get(), streamNumber);
 
                     serverApp.Start(Seconds(0.0));
-                    serverApp.Stop(Seconds(simulationTime + 1));
+                    serverApp.Stop(simulationTime + Seconds(1.0));
 
                     for (std::size_t i = 0; i < nStations; i++)
                     {
@@ -547,7 +547,7 @@ main(int argc, char* argv[])
                         streamNumber += onoff.AssignStreams(clientNodes.Get(i), streamNumber);
 
                         clientApp.Start(Seconds(1.0));
-                        clientApp.Stop(Seconds(simulationTime + 1));
+                        clientApp.Stop(simulationTime + Seconds(1.0));
                     }
                 }
 
@@ -563,20 +563,20 @@ main(int argc, char* argv[])
                                         serverApp,
                                         payloadSize,
                                         tputInterval,
-                                        simulationTime + 1);
+                                        simulationTime + Seconds(1.0));
                 }
 
-                Simulator::Stop(Seconds(simulationTime + 1));
+                Simulator::Stop(simulationTime + Seconds(1.0));
                 Simulator::Run();
 
                 // When multiple stations are used, there are chances that association requests
                 // collide and hence the throughput may be lower than expected. Therefore, we relax
                 // the check that the throughput cannot decrease by introducing a scaling factor (or
                 // tolerance)
-                double tolerance = 0.10;
+                auto tolerance = 0.10;
                 cumulRxBytes = GetRxBytes(udp, serverApp, payloadSize);
-                uint64_t rxBytes = std::accumulate(cumulRxBytes.cbegin(), cumulRxBytes.cend(), 0);
-                double throughput = (rxBytes * 8) / (simulationTime * 1000000.0); // Mbit/s
+                auto rxBytes = std::accumulate(cumulRxBytes.cbegin(), cumulRxBytes.cend(), 0.0);
+                auto throughput = (rxBytes * 8) / simulationTime.GetMicroSeconds(); // Mbit/s
 
                 Simulator::Destroy();
 

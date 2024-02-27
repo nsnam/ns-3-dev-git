@@ -110,22 +110,20 @@ int
 main(int argc, char* argv[])
 {
     std::string phyMode("DsssRate1Mbps");
-    double rss = -80;           // -dBm
-    uint32_t packetSize = 1000; // bytes
-    uint32_t numPackets = 1;
-    double interval = 1.0; // seconds
-    bool verbose = false;
+    double rss{-80};           // -dBm
+    uint32_t packetSize{1000}; // bytes
+    uint32_t numPackets{1};
+    Time interPacketInterval{"1s"};
+    bool verbose{false};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("phyMode", "Wifi Phy mode", phyMode);
     cmd.AddValue("rss", "received signal strength", rss);
     cmd.AddValue("packetSize", "size of application packet sent", packetSize);
     cmd.AddValue("numPackets", "number of packets generated", numPackets);
-    cmd.AddValue("interval", "interval (seconds) between packets", interval);
+    cmd.AddValue("interval", "interval between packets", interPacketInterval);
     cmd.AddValue("verbose", "turn on all WifiNetDevice log components", verbose);
     cmd.Parse(argc, argv);
-    // Convert to time object
-    Time interPacketInterval = Seconds(interval);
 
     // Fix non-unicast data rate to be the same as that of unicast
     Config::SetDefault("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue(phyMode));

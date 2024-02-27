@@ -456,22 +456,22 @@ main(int argc, char* argv[])
 {
     // LogComponentEnable("ConstantRateWifiManager", LOG_LEVEL_FUNCTION);
 
-    double maxPower = 17;
-    double minPower = 0;
-    uint32_t powerLevels = 18;
+    double maxPower{17};
+    double minPower{0};
+    uint32_t powerLevels{18};
 
-    uint32_t rtsThreshold = 2346;
-    std::string manager = "ns3::ParfWifiManager";
-    std::string outputFileName = "parf";
-    int ap1_x = 0;
-    int ap1_y = 0;
-    int sta1_x = 10;
-    int sta1_y = 0;
-    int ap2_x = 200;
-    int ap2_y = 0;
-    int sta2_x = 180;
-    int sta2_y = 0;
-    uint32_t simuTime = 100;
+    uint32_t rtsThreshold{2346};
+    std::string manager{"ns3::ParfWifiManager"};
+    std::string outputFileName{"parf"};
+    int ap1_x{0};
+    int ap1_y{0};
+    int sta1_x{10};
+    int sta1_y{0};
+    int ap2_x{200};
+    int ap2_y{0};
+    int sta2_x{180};
+    int sta2_y{0};
+    Time simuTime{"100s"};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("manager", "PRC Manager", manager);
@@ -603,7 +603,7 @@ main(int argc, char* argv[])
     apps_source.Add(onoff1.Install(wifiApNodes.Get(1)));
 
     apps_sink.Start(Seconds(0.5));
-    apps_sink.Stop(Seconds(simuTime));
+    apps_sink.Stop(simuTime);
 
     //------------------------------------------------------------
     //-- Setup stats and data collection
@@ -662,7 +662,7 @@ main(int argc, char* argv[])
     FlowMonitorHelper flowmon;
     Ptr<FlowMonitor> monitor = flowmon.InstallAll();
 
-    Simulator::Stop(Seconds(simuTime));
+    Simulator::Stop(simuTime);
     Simulator::Run();
 
     Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier>(flowmon.GetClassifier());
@@ -686,7 +686,7 @@ main(int argc, char* argv[])
                                            << "\n");
             NS_LOG_INFO("  Mean jitter:   "
                         << i->second.jitterSum.GetSeconds() / (i->second.rxPackets - 1) << "\n");
-            NS_LOG_INFO("  Tx Opp: " << 1 - (statisticsAp0.GetBusyTime() / simuTime));
+            NS_LOG_INFO("  Tx Opp: " << 1 - (statisticsAp0.GetBusyTime() / simuTime.GetSeconds()));
         }
         if (t.sourceAddress == "10.1.1.4" && t.destinationAddress == "10.1.1.2")
         {
@@ -704,7 +704,7 @@ main(int argc, char* argv[])
                                            << "\n");
             NS_LOG_INFO("  Mean jitter:   "
                         << i->second.jitterSum.GetSeconds() / (i->second.rxPackets - 1) << "\n");
-            NS_LOG_INFO("  Tx Opp: " << 1 - (statisticsAp1.GetBusyTime() / simuTime));
+            NS_LOG_INFO("  Tx Opp: " << 1 - (statisticsAp1.GetBusyTime() / simuTime.GetSeconds()));
         }
     }
 

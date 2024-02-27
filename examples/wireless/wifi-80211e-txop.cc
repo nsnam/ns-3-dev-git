@@ -55,7 +55,7 @@
 //
 // The user can select the distance between the stations and the APs, can enable/disable the RTS/CTS
 // mechanism and can choose the payload size and the simulation duration. Example: ./ns3 run
-// "wifi-80211e-txop --distance=10 --simulationTime=20 --payloadSize=1000"
+// "wifi-80211e-txop --distance=10 --simulationTime=20s --payloadSize=1000"
 //
 // The output prints the throughput measured for the 4 cases/networks described above. When TXOP is
 // enabled, results show increased throughput since the channel is granted for a longer duration.
@@ -94,16 +94,16 @@ TxopDurationTracer::Trace(Time startTime, Time duration, uint8_t linkId)
 int
 main(int argc, char* argv[])
 {
-    uint32_t payloadSize = 1472; // bytes
-    double simulationTime = 10;  // seconds
-    double distance = 5;         // meters
-    bool enablePcap = false;
-    bool verifyResults = false; // used for regression
-    Time txopLimit = MicroSeconds(4096);
+    uint32_t payloadSize{1472}; // bytes
+    Time simulationTime{"10s"};
+    double distance{5}; // meters
+    bool enablePcap{false};
+    bool verifyResults{false}; // used for regression
+    Time txopLimit{"4096us"};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("payloadSize", "Payload size in bytes", payloadSize);
-    cmd.AddValue("simulationTime", "Simulation time in seconds", simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
                  distance);
@@ -296,7 +296,7 @@ main(int argc, char* argv[])
     UdpServerHelper serverA(port);
     ApplicationContainer serverAppA = serverA.Install(wifiApNodes.Get(0));
     serverAppA.Start(Seconds(0.0));
-    serverAppA.Stop(Seconds(simulationTime + 1));
+    serverAppA.Stop(simulationTime + Seconds(1.0));
 
     InetSocketAddress destA(ApInterfaceA.GetAddress(0), port);
 
@@ -309,12 +309,12 @@ main(int argc, char* argv[])
 
     ApplicationContainer clientAppA = clientA.Install(wifiStaNodes.Get(0));
     clientAppA.Start(Seconds(1.0));
-    clientAppA.Stop(Seconds(simulationTime + 1));
+    clientAppA.Stop(simulationTime + Seconds(1.0));
 
     UdpServerHelper serverB(port);
     ApplicationContainer serverAppB = serverB.Install(wifiApNodes.Get(1));
     serverAppB.Start(Seconds(0.0));
-    serverAppB.Stop(Seconds(simulationTime + 1));
+    serverAppB.Stop(simulationTime + Seconds(1.0));
 
     InetSocketAddress destB(ApInterfaceB.GetAddress(0), port);
 
@@ -327,12 +327,12 @@ main(int argc, char* argv[])
 
     ApplicationContainer clientAppB = clientB.Install(wifiStaNodes.Get(1));
     clientAppB.Start(Seconds(1.0));
-    clientAppB.Stop(Seconds(simulationTime + 1));
+    clientAppB.Stop(simulationTime + Seconds(1.0));
 
     UdpServerHelper serverC(port);
     ApplicationContainer serverAppC = serverC.Install(wifiApNodes.Get(2));
     serverAppC.Start(Seconds(0.0));
-    serverAppC.Stop(Seconds(simulationTime + 1));
+    serverAppC.Stop(simulationTime + Seconds(1.0));
 
     InetSocketAddress destC(ApInterfaceC.GetAddress(0), port);
 
@@ -345,12 +345,12 @@ main(int argc, char* argv[])
 
     ApplicationContainer clientAppC = clientC.Install(wifiStaNodes.Get(2));
     clientAppC.Start(Seconds(1.0));
-    clientAppC.Stop(Seconds(simulationTime + 1));
+    clientAppC.Stop(simulationTime + Seconds(1.0));
 
     UdpServerHelper serverD(port);
     ApplicationContainer serverAppD = serverD.Install(wifiApNodes.Get(3));
     serverAppD.Start(Seconds(0.0));
-    serverAppD.Stop(Seconds(simulationTime + 1));
+    serverAppD.Stop(simulationTime + Seconds(1.0));
 
     InetSocketAddress destD(ApInterfaceD.GetAddress(0), port);
 
@@ -363,7 +363,7 @@ main(int argc, char* argv[])
 
     ApplicationContainer clientAppD = clientD.Install(wifiStaNodes.Get(3));
     clientAppD.Start(Seconds(1.0));
-    clientAppD.Stop(Seconds(simulationTime + 1));
+    clientAppD.Stop(simulationTime + Seconds(1.0));
 
     if (enablePcap)
     {
@@ -377,18 +377,18 @@ main(int argc, char* argv[])
         phy.EnablePcap("STA_D", staDeviceD.Get(0));
     }
 
-    Simulator::Stop(Seconds(simulationTime + 1));
+    Simulator::Stop(simulationTime + Seconds(1.0));
     Simulator::Run();
 
     /* Show results */
-    uint64_t totalPacketsThroughA = DynamicCast<UdpServer>(serverAppA.Get(0))->GetReceived();
-    uint64_t totalPacketsThroughB = DynamicCast<UdpServer>(serverAppB.Get(0))->GetReceived();
-    uint64_t totalPacketsThroughC = DynamicCast<UdpServer>(serverAppC.Get(0))->GetReceived();
-    uint64_t totalPacketsThroughD = DynamicCast<UdpServer>(serverAppD.Get(0))->GetReceived();
+    double totalPacketsThroughA = DynamicCast<UdpServer>(serverAppA.Get(0))->GetReceived();
+    double totalPacketsThroughB = DynamicCast<UdpServer>(serverAppB.Get(0))->GetReceived();
+    double totalPacketsThroughC = DynamicCast<UdpServer>(serverAppC.Get(0))->GetReceived();
+    double totalPacketsThroughD = DynamicCast<UdpServer>(serverAppD.Get(0))->GetReceived();
 
     Simulator::Destroy();
 
-    double throughput = totalPacketsThroughA * payloadSize * 8 / (simulationTime * 1000000.0);
+    auto throughput = totalPacketsThroughA * payloadSize * 8 / simulationTime.GetMicroSeconds();
     std::cout << "AC_BE with default TXOP limit (0ms): " << '\n'
               << "  Throughput = " << throughput << " Mbit/s" << '\n';
     if (verifyResults && (throughput < 28 || throughput > 29))
@@ -397,7 +397,7 @@ main(int argc, char* argv[])
         exit(1);
     }
 
-    throughput = totalPacketsThroughB * payloadSize * 8 / (simulationTime * 1000000.0);
+    throughput = totalPacketsThroughB * payloadSize * 8 / simulationTime.GetMicroSeconds();
     std::cout << "AC_BE with non-default TXOP limit (4.096ms): " << '\n'
               << "  Throughput = " << throughput << " Mbit/s" << '\n';
     if (verifyResults && (throughput < 36.5 || throughput > 37))
@@ -415,7 +415,7 @@ main(int argc, char* argv[])
         exit(1);
     }
 
-    throughput = totalPacketsThroughC * payloadSize * 8 / (simulationTime * 1000000.0);
+    throughput = totalPacketsThroughC * payloadSize * 8 / simulationTime.GetMicroSeconds();
     std::cout << "AC_VI with default TXOP limit (4.096ms): " << '\n'
               << "  Throughput = " << throughput << " Mbit/s" << '\n';
     if (verifyResults && (throughput < 36.5 || throughput > 37.5))
@@ -433,7 +433,7 @@ main(int argc, char* argv[])
         exit(1);
     }
 
-    throughput = totalPacketsThroughD * payloadSize * 8 / (simulationTime * 1000000.0);
+    throughput = totalPacketsThroughD * payloadSize * 8 / simulationTime.GetMicroSeconds();
     std::cout << "AC_VI with non-default TXOP limit (0ms): " << '\n'
               << "  Throughput = " << throughput << " Mbit/s" << '\n';
     if (verifyResults && (throughput < 31.5 || throughput > 32.5))

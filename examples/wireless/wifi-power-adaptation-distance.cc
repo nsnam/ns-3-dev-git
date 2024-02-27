@@ -171,7 +171,7 @@ class NodeStatistics
      * \param stepsSize The step size.
      * \param stepsTime Time on each step.
      */
-    void AdvancePosition(Ptr<Node> node, int stepsSize, int stepsTime);
+    void AdvancePosition(Ptr<Node> node, int stepsSize, Time stepsTime);
     /**
      * \brief Get the Position of a node.
      *
@@ -325,12 +325,12 @@ NodeStatistics::GetPosition(Ptr<Node> node)
 }
 
 void
-NodeStatistics::AdvancePosition(Ptr<Node> node, int stepsSize, int stepsTime)
+NodeStatistics::AdvancePosition(Ptr<Node> node, int stepsSize, Time stepsTime)
 {
     Vector pos = GetPosition(node);
-    double mbs = ((m_bytesTotal * 8.0) / (1000000 * stepsTime));
+    double mbs = ((m_bytesTotal * 8.0) / stepsTime.GetMicroSeconds());
     m_bytesTotal = 0;
-    double atp = m_totalEnergy / stepsTime;
+    double atp = m_totalEnergy / stepsTime.GetSeconds();
     m_totalEnergy = 0;
     m_totalTime = 0;
     m_output_power.Add(pos.x, atp);
@@ -339,7 +339,7 @@ NodeStatistics::AdvancePosition(Ptr<Node> node, int stepsSize, int stepsTime)
     SetPosition(node, pos);
     NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " sec; setting new position to "
                            << pos);
-    Simulator::Schedule(Seconds(stepsTime),
+    Simulator::Schedule(stepsTime,
                         &NodeStatistics::AdvancePosition,
                         this,
                         node,
@@ -392,20 +392,20 @@ RateCallback(std::string path, DataRate oldRate, DataRate newRate, Mac48Address 
 int
 main(int argc, char* argv[])
 {
-    double maxPower = 17;
-    double minPower = 0;
-    uint32_t powerLevels = 18;
+    double maxPower{17};
+    double minPower{0};
+    uint32_t powerLevels{18};
 
-    uint32_t rtsThreshold = 2346;
-    std::string manager = "ns3::ParfWifiManager";
-    std::string outputFileName = "parf";
-    int ap1_x = 0;
-    int ap1_y = 0;
-    int sta1_x = 5;
-    int sta1_y = 0;
-    uint32_t steps = 200;
-    uint32_t stepsSize = 1;
-    uint32_t stepsTime = 1;
+    uint32_t rtsThreshold{2346};
+    std::string manager{"ns3::ParfWifiManager"};
+    std::string outputFileName{"parf"};
+    int ap1_x{0};
+    int ap1_y{0};
+    int sta1_x{5};
+    int sta1_y{0};
+    uint32_t steps{200};
+    uint32_t stepsSize{1};
+    Time stepsTime{"1s"};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("manager", "PRC Manager", manager);
@@ -431,7 +431,7 @@ main(int argc, char* argv[])
         std::cout << "Exiting without running simulation; steps value of 0" << std::endl;
     }
 
-    uint32_t simuTime = (steps + 1) * stepsTime;
+    Time simuTime = (steps + 1) * stepsTime;
 
     // Define the APs
     NodeContainer wifiApNodes;
@@ -498,7 +498,7 @@ main(int argc, char* argv[])
     NodeStatistics statistics = NodeStatistics(wifiApDevices, wifiStaDevices);
 
     // Move the STA by stepsSize meters every stepsTime seconds
-    Simulator::Schedule(Seconds(0.5 + stepsTime),
+    Simulator::Schedule(Seconds(0.5) + stepsTime,
                         &NodeStatistics::AdvancePosition,
                         &statistics,
                         wifiStaNodes.Get(0),
@@ -522,11 +522,11 @@ main(int argc, char* argv[])
     OnOffHelper onoff("ns3::UdpSocketFactory", InetSocketAddress(sinkAddress, port));
     onoff.SetConstantRate(DataRate("54Mb/s"), packetSize);
     onoff.SetAttribute("StartTime", TimeValue(Seconds(0.5)));
-    onoff.SetAttribute("StopTime", TimeValue(Seconds(simuTime)));
+    onoff.SetAttribute("StopTime", TimeValue(simuTime));
     ApplicationContainer apps_source = onoff.Install(wifiApNodes.Get(0));
 
     apps_sink.Start(Seconds(0.5));
-    apps_sink.Stop(Seconds(simuTime));
+    apps_sink.Stop(simuTime);
 
     //------------------------------------------------------------
     //-- Setup stats and data collection
@@ -555,7 +555,7 @@ main(int argc, char* argv[])
                         manager + "/RateChange",
                     MakeCallback(RateCallback));
 
-    Simulator::Stop(Seconds(simuTime));
+    Simulator::Stop(simuTime);
     Simulator::Run();
 
     std::ofstream outfile("throughput-" + outputFileName + ".plt");

@@ -109,23 +109,23 @@ PhyStateTrace(std::string context, Time start, Time duration, WifiPhyState state
 int
 main(int argc, char* argv[])
 {
-    std::string dataRate = "1Mbps";
-    uint32_t packetSize = 1000; // bytes
-    double duration = 10.0;     // seconds
-    double initialEnergy = 7.5; // joule
-    double voltage = 3.0;       // volts
-    double txPowerStart = 0.0;  // dbm
-    double txPowerEnd = 15.0;   // dbm
-    uint32_t nTxPowerLevels = 16;
-    uint32_t txPowerLevel = 0;
-    double idleCurrent = 0.273; // Ampere
-    double txCurrent = 0.380;   // Ampere
-    bool verbose = false;
+    std::string dataRate{"1Mbps"};
+    uint32_t packetSize{1000}; // bytes
+    Time duration{"10s"};
+    double initialEnergy{7.5}; // joule
+    double voltage{3.0};       // volts
+    double txPowerStart{0.0};  // dbm
+    double txPowerEnd{15.0};   // dbm
+    uint32_t nTxPowerLevels{16};
+    uint32_t txPowerLevel{0};
+    double idleCurrent{0.273}; // Ampere
+    double txCurrent{0.380};   // Ampere
+    bool verbose{false};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("dataRate", "Data rate", dataRate);
     cmd.AddValue("packetSize", "size of application packet sent", packetSize);
-    cmd.AddValue("duration", "duration (seconds) of the experiment", duration);
+    cmd.AddValue("duration", "duration of the experiment", duration);
     cmd.AddValue("initialEnergy", "Initial Energy (Joule) of each node", initialEnergy);
     cmd.AddValue("voltage", "Supply voltage (Joule)", voltage);
     cmd.AddValue("txPowerStart", "Minimum available transmission level (dbm)", txPowerStart);
@@ -196,13 +196,13 @@ main(int argc, char* argv[])
     apps = onOff.Install(c.Get(0));
 
     apps.Start(Seconds(0.01));
-    apps.Stop(Seconds(duration));
+    apps.Stop(duration);
 
     // Create a packet sink to receive these packets
     PacketSinkHelper sink(transportProto, InetSocketAddress(Ipv4Address::GetAny(), 9001));
     apps = sink.Install(c.Get(1));
     apps.Start(Seconds(0.01));
-    apps.Stop(Seconds(duration));
+    apps.Stop(duration);
 
     // Energy sources
     EnergySourceContainer eSources;
@@ -255,7 +255,7 @@ main(int argc, char* argv[])
     Config::Connect("/NodeList/0/DeviceList/*/Phy/State/State", MakeCallback(&PhyStateTrace<0>));
     Config::Connect("/NodeList/1/DeviceList/*/Phy/State/State", MakeCallback(&PhyStateTrace<1>));
 
-    Simulator::Stop(Seconds(duration + 1));
+    Simulator::Stop(duration + Seconds(1.0));
 
     Simulator::Run();
     Simulator::Destroy();

@@ -73,9 +73,9 @@ main(int argc, char* argv[])
     bool downlink{true};
     bool useRts{false};
     bool useExtendedBlockAck{false};
-    double simulationTime{10}; // seconds
-    double distance{1.0};      // meters
-    double frequency{5};       // whether 2.4, 5 or 6 GHz
+    Time simulationTime{"10s"};
+    double distance{1.0}; // meters
+    double frequency{5};  // whether 2.4, 5 or 6 GHz
     std::size_t nStations{1};
     std::string dlAckSeqType{"NO-OFDMA"};
     bool enableUlOfdma{false};
@@ -95,7 +95,7 @@ main(int argc, char* argv[])
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
                  distance);
-    cmd.AddValue("simulationTime", "Simulation time in seconds", simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("udp", "UDP if set to 1, TCP otherwise", udp);
     cmd.AddValue("downlink",
                  "Generate downlink flows if set to 1, uplink flows otherwise",
@@ -376,7 +376,7 @@ main(int argc, char* argv[])
                     streamNumber += server.AssignStreams(serverNodes.get(), streamNumber);
 
                     serverApp.Start(Seconds(0.0));
-                    serverApp.Stop(Seconds(simulationTime + 1));
+                    serverApp.Stop(simulationTime + Seconds(1.0));
                     const auto packetInterval = payloadSize * 8.0 / maxLoad;
 
                     for (std::size_t i = 0; i < nStations; i++)
@@ -389,7 +389,7 @@ main(int argc, char* argv[])
                         streamNumber += client.AssignStreams(clientNodes.Get(i), streamNumber);
 
                         clientApp.Start(Seconds(1.0));
-                        clientApp.Stop(Seconds(simulationTime + 1));
+                        clientApp.Stop(simulationTime + Seconds(1.0));
                     }
                 }
                 else
@@ -402,7 +402,7 @@ main(int argc, char* argv[])
                     streamNumber += packetSinkHelper.AssignStreams(serverNodes.get(), streamNumber);
 
                     serverApp.Start(Seconds(0.0));
-                    serverApp.Stop(Seconds(simulationTime + 1));
+                    serverApp.Stop(simulationTime + Seconds(1.0));
 
                     for (std::size_t i = 0; i < nStations; i++)
                     {
@@ -420,21 +420,21 @@ main(int argc, char* argv[])
                         streamNumber += onoff.AssignStreams(clientNodes.Get(i), streamNumber);
 
                         clientApp.Start(Seconds(1.0));
-                        clientApp.Stop(Seconds(simulationTime + 1));
+                        clientApp.Stop(simulationTime + Seconds(1.0));
                     }
                 }
 
                 Simulator::Schedule(Seconds(0), &Ipv4GlobalRoutingHelper::PopulateRoutingTables);
 
-                Simulator::Stop(Seconds(simulationTime + 1));
+                Simulator::Stop(simulationTime + Seconds(1.0));
                 Simulator::Run();
 
                 // When multiple stations are used, there are chances that association requests
                 // collide and hence the throughput may be lower than expected. Therefore, we relax
                 // the check that the throughput cannot decrease by introducing a scaling factor (or
                 // tolerance)
-                double tolerance = 0.10;
-                uint64_t rxBytes = 0;
+                auto tolerance = 0.10;
+                auto rxBytes = 0.0;
                 if (udp)
                 {
                     for (uint32_t i = 0; i < serverApp.GetN(); i++)
@@ -450,7 +450,7 @@ main(int argc, char* argv[])
                         rxBytes += DynamicCast<PacketSink>(serverApp.Get(i))->GetTotalRx();
                     }
                 }
-                double throughput = (rxBytes * 8) / (simulationTime * 1000000.0); // Mbit/s
+                auto throughput = (rxBytes * 8) / simulationTime.GetMicroSeconds(); // Mbit/s
 
                 Simulator::Destroy();
 

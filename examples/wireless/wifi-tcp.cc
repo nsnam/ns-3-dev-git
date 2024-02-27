@@ -72,12 +72,12 @@ CalculateThroughput()
 int
 main(int argc, char* argv[])
 {
-    uint32_t payloadSize = 1472;           /* Transport layer payload size in bytes. */
-    std::string dataRate = "100Mbps";      /* Application layer datarate. */
-    std::string tcpVariant = "TcpNewReno"; /* TCP variant type. */
-    std::string phyRate = "HtMcs7";        /* Physical layer bitrate. */
-    double simulationTime = 10;            /* Simulation time in seconds. */
-    bool pcapTracing = false;              /* PCAP Tracing is enabled or not. */
+    uint32_t payloadSize{1472};           /* Transport layer payload size in bytes. */
+    std::string dataRate{"100Mbps"};      /* Application layer datarate. */
+    std::string tcpVariant{"TcpNewReno"}; /* TCP variant type. */
+    std::string phyRate{"HtMcs7"};        /* Physical layer bitrate. */
+    Time simulationTime{"10s"};           /* Simulation time. */
+    bool pcapTracing{false};              /* PCAP Tracing is enabled or not. */
 
     /* Command line argument parser setup. */
     CommandLine cmd(__FILE__);
@@ -194,10 +194,11 @@ main(int argc, char* argv[])
     }
 
     /* Start Simulation */
-    Simulator::Stop(Seconds(simulationTime + 1));
+    Simulator::Stop(simulationTime + Seconds(1.0));
     Simulator::Run();
 
-    double averageThroughput = ((sink->GetTotalRx() * 8) / (1e6 * simulationTime));
+    auto averageThroughput =
+        (static_cast<double>(sink->GetTotalRx() * 8) / simulationTime.GetMicroSeconds());
 
     Simulator::Destroy();
 

@@ -81,7 +81,7 @@ struct Parameters
     bool nHasTraffic;              //!< True if 802.11n stations generate traffic
     bool isUdp;                    //!< True to generate UDP traffic
     uint32_t payloadSize;          //!< Payload size in bytes
-    double simulationTime;         //!< Simulation time in seconds
+    Time simulationTime;           //!< Simulation time
 };
 
 class Experiment
@@ -130,7 +130,7 @@ Experiment::Run(Parameters params)
     uint32_t nWifiB = params.nWifiB;
     uint32_t nWifiG = params.nWifiG;
     uint32_t nWifiN = params.nWifiN;
-    double simulationTime = params.simulationTime;
+    auto simulationTime = params.simulationTime;
     uint32_t payloadSize = params.payloadSize;
 
     NodeContainer wifiBStaNodes;
@@ -277,7 +277,7 @@ Experiment::Run(Parameters params)
         UdpServerHelper server(port);
         ApplicationContainer serverApp = server.Install(wifiApNode);
         serverApp.Start(Seconds(0.0));
-        serverApp.Stop(Seconds(simulationTime + 1));
+        serverApp.Stop(simulationTime + Seconds(1.0));
 
         UdpClientHelper client(ApInterface.GetAddress(0), port);
         client.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -298,13 +298,13 @@ Experiment::Run(Parameters params)
             clientApps.Add(client.Install(wifiNStaNodes));
         }
         clientApps.Start(Seconds(1.0));
-        clientApps.Stop(Seconds(simulationTime + 1));
+        clientApps.Stop(simulationTime + Seconds(1.0));
 
-        Simulator::Stop(Seconds(simulationTime + 1));
+        Simulator::Stop(simulationTime + Seconds(1.0));
         Simulator::Run();
 
-        uint64_t totalPacketsThrough = DynamicCast<UdpServer>(serverApp.Get(0))->GetReceived();
-        throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+        double totalPacketsThrough = DynamicCast<UdpServer>(serverApp.Get(0))->GetReceived();
+        throughput = totalPacketsThrough * payloadSize * 8 / simulationTime.GetMicroSeconds();
     }
     else
     {
@@ -314,7 +314,7 @@ Experiment::Run(Parameters params)
 
         ApplicationContainer serverApp = packetSinkHelper.Install(wifiApNode.Get(0));
         serverApp.Start(Seconds(0.0));
-        serverApp.Stop(Seconds(simulationTime + 1));
+        serverApp.Stop(simulationTime + Seconds(1.0));
 
         OnOffHelper onoff("ns3::TcpSocketFactory", Ipv4Address::GetAny());
         onoff.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
@@ -339,13 +339,13 @@ Experiment::Run(Parameters params)
             clientApps.Add(onoff.Install(wifiNStaNodes));
         }
         clientApps.Start(Seconds(1.0));
-        clientApps.Stop(Seconds(simulationTime + 1));
+        clientApps.Stop(simulationTime + Seconds(1.0));
 
-        Simulator::Stop(Seconds(simulationTime + 1));
+        Simulator::Stop(simulationTime + Seconds(1.0));
         Simulator::Run();
 
-        uint64_t totalPacketsThrough = DynamicCast<PacketSink>(serverApp.Get(0))->GetTotalRx();
-        throughput += totalPacketsThrough * 8 / (simulationTime * 1000000.0);
+        double totalPacketsThrough = DynamicCast<PacketSink>(serverApp.Get(0))->GetTotalRx();
+        throughput += totalPacketsThrough * 8 / simulationTime.GetMicroSeconds();
     }
     Simulator::Destroy();
     return throughput;
@@ -368,14 +368,14 @@ main(int argc, char* argv[])
     params.nWifiN = 0;
     params.nHasTraffic = false;
     params.isUdp = true;
-    params.payloadSize = 1472;  // bytes
-    params.simulationTime = 10; // seconds
+    params.payloadSize = 1472; // bytes
+    params.simulationTime = Seconds(10);
 
     bool verifyResults = false; // used for regression
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("payloadSize", "Payload size in bytes", params.payloadSize);
-    cmd.AddValue("simulationTime", "Simulation time in seconds", params.simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time", params.simulationTime);
     cmd.AddValue("isUdp", "UDP if set to 1, TCP otherwise", params.isUdp);
     cmd.AddValue("verifyResults",
                  "Enable/disable results verification at the end of the simulation",

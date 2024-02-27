@@ -47,20 +47,20 @@ NS_LOG_COMPONENT_DEFINE("WifiMultiTos");
 int
 main(int argc, char* argv[])
 {
-    uint32_t nWifi = 4;
-    double simulationTime = 10; // seconds
-    double distance = 1.0;      // meters
-    uint16_t mcs = 7;
-    uint8_t channelWidth = 20; // MHz
-    bool useShortGuardInterval = false;
-    bool useRts = false;
+    uint32_t nWifi{4};
+    Time simulationTime{"10s"};
+    double distance{1.0}; // meters
+    uint16_t mcs{7};
+    uint8_t channelWidth{20}; // MHz
+    bool useShortGuardInterval{false};
+    bool useRts{false};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("nWifi", "Number of stations", nWifi);
     cmd.AddValue("distance",
                  "Distance in meters between the stations and the access point",
                  distance);
-    cmd.AddValue("simulationTime", "Simulation time in seconds", simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("useRts", "Enable/disable RTS/CTS", useRts);
     cmd.AddValue("mcs", "MCS value (0 - 7)", mcs);
     cmd.AddValue("channelWidth", "Channel width in MHz", channelWidth);
@@ -166,21 +166,21 @@ main(int argc, char* argv[])
     }
 
     sinkApplications.Start(Seconds(0.0));
-    sinkApplications.Stop(Seconds(simulationTime + 1));
+    sinkApplications.Stop(simulationTime + Seconds(1.0));
     sourceApplications.Start(Seconds(1.0));
-    sourceApplications.Stop(Seconds(simulationTime + 1));
+    sourceApplications.Stop(simulationTime + Seconds(1.0));
 
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-    Simulator::Stop(Seconds(simulationTime + 1));
+    Simulator::Stop(simulationTime + Seconds(1.0));
     Simulator::Run();
 
     double throughput = 0;
     for (uint32_t index = 0; index < sinkApplications.GetN(); ++index)
     {
-        uint64_t totalPacketsThrough =
+        double totalPacketsThrough =
             DynamicCast<PacketSink>(sinkApplications.Get(index))->GetTotalRx();
-        throughput += ((totalPacketsThrough * 8) / (simulationTime * 1000000.0)); // Mbit/s
+        throughput += ((totalPacketsThrough * 8) / simulationTime.GetMicroSeconds()); // Mbit/s
     }
 
     Simulator::Destroy();

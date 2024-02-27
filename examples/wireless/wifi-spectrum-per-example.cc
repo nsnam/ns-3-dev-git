@@ -64,7 +64,7 @@
 // Users may vary the following command-line arguments in addition to the
 // attributes, global values, and default values typically available:
 //
-//    --simulationTime:  Simulation time in seconds [10]
+//    --simulationTime:  Simulation time [10s]
 //    --udp:             UDP if set to 1, TCP otherwise [true]
 //    --distance:        meters separation between nodes [50]
 //    --index:           restrict index to single value between 0 and 31 [256]
@@ -128,17 +128,17 @@ NS_LOG_COMPONENT_DEFINE("WifiSpectrumPerExample");
 int
 main(int argc, char* argv[])
 {
-    bool udp = true;
-    double distance = 50;
-    double simulationTime = 10; // seconds
-    uint16_t index = 256;
-    std::string wifiType = "ns3::SpectrumWifiPhy";
-    std::string errorModelType = "ns3::NistErrorRateModel";
-    bool enablePcap = false;
-    const uint32_t tcpPacketSize = 1448;
+    bool udp{true};
+    double distance{50};
+    Time simulationTime{"10s"};
+    uint16_t index{256};
+    std::string wifiType{"ns3::SpectrumWifiPhy"};
+    std::string errorModelType{"ns3::NistErrorRateModel"};
+    bool enablePcap{false};
+    const uint32_t tcpPacketSize{1448};
 
     CommandLine cmd(__FILE__);
-    cmd.AddValue("simulationTime", "Simulation time in seconds", simulationTime);
+    cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("udp", "UDP if set to 1, TCP otherwise", udp);
     cmd.AddValue("distance", "meters separation between nodes", distance);
     cmd.AddValue("index", "restrict index to single value between 0 and 31", index);
@@ -473,7 +473,7 @@ main(int argc, char* argv[])
             UdpServerHelper server(port);
             serverApp = server.Install(wifiStaNode.Get(0));
             serverApp.Start(Seconds(0.0));
-            serverApp.Stop(Seconds(simulationTime + 1));
+            serverApp.Stop(simulationTime + Seconds(1.0));
             const auto packetInterval = payloadSize * 8.0 / (datarate * 1e6);
 
             UdpClientHelper client(staNodeInterface.GetAddress(0), port);
@@ -482,7 +482,7 @@ main(int argc, char* argv[])
             client.SetAttribute("PacketSize", UintegerValue(payloadSize));
             ApplicationContainer clientApp = client.Install(wifiApNode.Get(0));
             clientApp.Start(Seconds(1.0));
-            clientApp.Stop(Seconds(simulationTime + 1));
+            clientApp.Stop(simulationTime + Seconds(1.0));
         }
         else
         {
@@ -492,7 +492,7 @@ main(int argc, char* argv[])
             PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", localAddress);
             serverApp = packetSinkHelper.Install(wifiStaNode.Get(0));
             serverApp.Start(Seconds(0.0));
-            serverApp.Stop(Seconds(simulationTime + 1));
+            serverApp.Stop(simulationTime + Seconds(1.0));
 
             OnOffHelper onoff("ns3::TcpSocketFactory", Ipv4Address::GetAny());
             onoff.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
@@ -503,7 +503,7 @@ main(int argc, char* argv[])
             onoff.SetAttribute("Remote", remoteAddress);
             ApplicationContainer clientApp = onoff.Install(wifiApNode.Get(0));
             clientApp.Start(Seconds(1.0));
-            clientApp.Stop(Seconds(simulationTime + 1));
+            clientApp.Stop(simulationTime + Seconds(1.0));
         }
 
         Config::ConnectWithoutContext("/NodeList/0/DeviceList/*/Phy/MonitorSnifferRx",
@@ -520,24 +520,24 @@ main(int argc, char* argv[])
         g_noiseDbmAvg = 0;
         g_samples = 0;
 
-        Simulator::Stop(Seconds(simulationTime + 1));
+        Simulator::Stop(simulationTime + Seconds(1.0));
         Simulator::Run();
 
-        double throughput = 0;
-        uint64_t totalPacketsThrough = 0;
+        auto throughput = 0.0;
+        auto totalPacketsThrough = 0.0;
         if (udp)
         {
             // UDP
             totalPacketsThrough = DynamicCast<UdpServer>(serverApp.Get(0))->GetReceived();
             throughput =
-                totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0); // Mbit/s
+                totalPacketsThrough * payloadSize * 8 / simulationTime.GetMicroSeconds(); // Mbit/s
         }
         else
         {
             // TCP
-            uint64_t totalBytesRx = DynamicCast<PacketSink>(serverApp.Get(0))->GetTotalRx();
+            auto totalBytesRx = DynamicCast<PacketSink>(serverApp.Get(0))->GetTotalRx();
             totalPacketsThrough = totalBytesRx / tcpPacketSize;
-            throughput = totalBytesRx * 8 / (simulationTime * 1000000.0); // Mbit/s
+            throughput = totalBytesRx * 8 / simulationTime.GetMicroSeconds(); // Mbit/s
         }
         std::cout << std::setw(5) << i << std::setw(6) << (i % 8) << std::setprecision(2)
                   << std::fixed << std::setw(10) << datarate << std::setw(12) << throughput
