@@ -235,6 +235,8 @@ typedef uint8_t WifiInformationElementId;
 
 #define IE_EXT_NON_INHERITANCE ((WifiInformationElementId)56)
 
+#define IE_EXT_HE_6GHZ_CAPABILITIES ((WifiInformationElementId)59)
+
 #define IE_EXT_EHT_OPERATION ((WifiInformationElementId)106)
 #define IE_EXT_MULTI_LINK_ELEMENT ((WifiInformationElementId)107)
 #define IE_EXT_EHT_CAPABILITIES ((WifiInformationElementId)108)

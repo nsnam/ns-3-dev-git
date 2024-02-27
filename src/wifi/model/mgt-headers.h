@@ -35,6 +35,7 @@
 #include "ns3/eht-capabilities.h"
 #include "ns3/eht-operation.h"
 #include "ns3/erp-information.h"
+#include "ns3/he-6ghz-band-capabilities.h"
 #include "ns3/he-capabilities.h"
 #include "ns3/he-operation.h"
 #include "ns3/ht-capabilities.h"
@@ -96,6 +97,7 @@ using ProbeRequestElems = std::tuple<Ssid,
                                      std::optional<ExtendedCapabilities>,
                                      std::optional<VhtCapabilities>,
                                      std::optional<HeCapabilities>,
+                                     std::optional<He6GhzBandCapabilities>,
                                      std::optional<EhtCapabilities>>;
 
 /// List of Information Elements included in Probe Response frames
@@ -114,6 +116,7 @@ using ProbeResponseElems = std::tuple<Ssid,
                                       std::optional<HeCapabilities>,
                                       std::optional<HeOperation>,
                                       std::optional<MuEdcaParameterSet>,
+                                      std::optional<He6GhzBandCapabilities>,
                                       std::optional<MultiLinkElement>,
                                       std::optional<EhtCapabilities>,
                                       std::optional<EhtOperation>,
@@ -127,6 +130,7 @@ using AssocRequestElems = std::tuple<Ssid,
                                      std::optional<ExtendedCapabilities>,
                                      std::optional<VhtCapabilities>,
                                      std::optional<HeCapabilities>,
+                                     std::optional<He6GhzBandCapabilities>,
                                      std::optional<MultiLinkElement>,
                                      std::optional<EhtCapabilities>,
                                      std::vector<TidToLinkMapping>>;
@@ -143,6 +147,7 @@ using AssocResponseElems = std::tuple<SupportedRates,
                                       std::optional<HeCapabilities>,
                                       std::optional<HeOperation>,
                                       std::optional<MuEdcaParameterSet>,
+                                      std::optional<He6GhzBandCapabilities>,
                                       std::optional<MultiLinkElement>,
                                       std::optional<EhtCapabilities>,
                                       std::optional<EhtOperation>,

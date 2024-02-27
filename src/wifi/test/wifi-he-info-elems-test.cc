@@ -17,6 +17,7 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
+#include "ns3/he-6ghz-band-capabilities.h"
 #include "ns3/he-operation.h"
 #include "ns3/header-serialization-test.h"
 #include "ns3/log.h"
@@ -84,6 +85,43 @@ HeOperationElementTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test HE 6 GHz Band Capabilities information element serialization and deserialization
+ */
+class He6GhzBandCapabilitiesTest : public HeaderSerializationTestCase
+{
+  public:
+    He6GhzBandCapabilitiesTest();
+
+  private:
+    void DoRun() override;
+};
+
+He6GhzBandCapabilitiesTest::He6GhzBandCapabilitiesTest()
+    : HeaderSerializationTestCase(
+          "Check serialization and deserialization of HE 6 GHz Band Capabilities elements")
+{
+}
+
+void
+He6GhzBandCapabilitiesTest::DoRun()
+{
+    He6GhzBandCapabilities he6GhzBandCapabilities;
+
+    he6GhzBandCapabilities.m_capabilitiesInfo.m_minMpduStartSpacing = 5;
+    he6GhzBandCapabilities.SetMaxAmpduLength((static_cast<uint32_t>(1) << 18) - 1);
+    he6GhzBandCapabilities.SetMaxMpduLength(11454);
+    he6GhzBandCapabilities.m_capabilitiesInfo.m_smPowerSave = 3;
+    he6GhzBandCapabilities.m_capabilitiesInfo.m_rdResponder = 1;
+    he6GhzBandCapabilities.m_capabilitiesInfo.m_rxAntennaPatternConsistency = 1;
+    he6GhzBandCapabilities.m_capabilitiesInfo.m_txAntennaPatternConsistency = 1;
+
+    TestHeaderSerialization(he6GhzBandCapabilities);
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi HE Information Elements Test Suite
  */
 class WifiHeInfoElemsTestSuite : public TestSuite
@@ -96,6 +134,7 @@ WifiHeInfoElemsTestSuite::WifiHeInfoElemsTestSuite()
     : TestSuite("wifi-he-info-elems", Type::UNIT)
 {
     AddTestCase(new HeOperationElementTest, TestCase::Duration::QUICK);
+    AddTestCase(new He6GhzBandCapabilitiesTest, TestCase::Duration::QUICK);
 }
 
 static WifiHeInfoElemsTestSuite g_wifiHeInfoElemsTestSuite; ///< the test suite

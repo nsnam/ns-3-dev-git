@@ -42,6 +42,7 @@ set(source_files
     model/frame-capture-model.cc
     model/frame-exchange-manager.cc
     model/he/constant-obss-pd-algorithm.cc
+    model/he/he-6ghz-band-capabilities.cc
     model/he/he-capabilities.cc
     model/he/he-configuration.cc
     model/he/he-frame-exchange-manager.cc
@@ -197,6 +198,7 @@ set(header_files
     model/frame-capture-model.h
     model/frame-exchange-manager.h
     model/he/constant-obss-pd-algorithm.h
+    model/he/he-6ghz-band-capabilities.h
     model/he/he-capabilities.h
     model/he/he-configuration.h
     model/he/he-frame-exchange-manager.h
