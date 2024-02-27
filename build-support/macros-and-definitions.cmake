@@ -159,6 +159,9 @@ macro(process_options)
                                                         STREQUAL "default"
   )
     set(cmakeBuildType relwithdebinfo)
+    string(REPLACE "-O2" "-Os" CMAKE_CXX_FLAGS_RELWITHDEBINFO
+                   "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
+    )
     set(CMAKE_CXX_FLAGS_DEFAULT ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
     add_definitions(-DNS3_BUILD_PROFILE_DEBUG)
   elseif(${cmakeBuildType} STREQUAL "release")

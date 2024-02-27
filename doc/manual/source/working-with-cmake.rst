@@ -173,7 +173,7 @@ The mapping of the ``ns3`` build profiles into the CMake build types is the foll
 +=========================+========================+===============================+=================================+
 | debug                   | debug                  |                               | -g                              |
 +-------------------------+------------------------+-------------------------------+---------------------------------+
-| default                 | default                |                               | -O2 -g                          |
+| default                 | default                |                               | -Os -g                          |
 +-------------------------+------------------------+-------------------------------+---------------------------------+
 | release                 | release                |                               | -O3                             |
 +-------------------------+------------------------+-------------------------------+---------------------------------+
@@ -235,9 +235,9 @@ build types and output executable and libraries names, which will receive a suff
 +==================+===================+
 | DEBUG            | -g                |
 +------------------+-------------------+
-| DEFAULT          | -O2 -g -DNDEBUG   |
+| DEFAULT          | -Os -g -DNDEBUG   |
 +------------------+-------------------+
-| RELWITHDEBINFO   | -O2 -g -DNDEBUG   |
+| RELWITHDEBINFO   | -Os -g -DNDEBUG   |
 +------------------+-------------------+
 | RELEASE          | -O3 -DNDEBUG      |
 +------------------+-------------------+
@@ -1965,7 +1965,7 @@ Installing the packages can take a while, and it can look like it hanged.
   --
   -- Copying /ns-3-dev/cmake-build-release/_deps/armadillo-src/include/ to /ns-3-dev/cmake-build-release/_deps/armadillo-build/tmp/include/
   -- Generating /ns-3-dev/cmake-build-release/_deps/armadillo-build/tmp/include/config.hpp
-  -- CMAKE_CXX_FLAGS           =  -fsanitize=address,leak,undefined -O2
+  -- CMAKE_CXX_FLAGS           =  -fsanitize=address,leak,undefined -Os
   -- CMAKE_SHARED_LINKER_FLAGS =  -Wl,--no-as-needed
   -- CMAKE_REQUIRED_INCLUDES   = /usr/include;/usr/include/superlu
   --
