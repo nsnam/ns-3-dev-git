@@ -187,6 +187,7 @@ MsduAggregator::GetMaxAmsduSize(Mac48Address recipient,
 
     // Retrieve the Capabilities elements advertised by the recipient
     auto ehtCapabilities = stationManager->GetStationEhtCapabilities(recipient);
+    auto he6GhzCapabilities = stationManager->GetStationHe6GhzCapabilities(recipient);
     auto vhtCapabilities = stationManager->GetStationVhtCapabilities(recipient);
     auto htCapabilities = stationManager->GetStationHtCapabilities(recipient);
 
@@ -199,12 +200,16 @@ MsduAggregator::GetMaxAmsduSize(Mac48Address recipient,
     {
         maxMpduSize = ehtCapabilities->GetMaxMpduLength();
     }
+    else if (he6GhzCapabilities && m_mac->Is6GhzBand(m_linkId))
+    {
+        maxMpduSize = he6GhzCapabilities->GetMaxMpduLength();
+    }
     else if (vhtCapabilities && m_mac->GetWifiPhy(m_linkId)->GetPhyBand() != WIFI_PHY_BAND_2_4GHZ)
     {
         maxMpduSize = vhtCapabilities->GetMaxMpduLength();
     }
 
-    if (!htCapabilities)
+    if (!htCapabilities && !he6GhzCapabilities)
     {
         /* "A non-DMG STA shall not transmit an A-MSDU to a STA from which it has
          * not received a frame containing an HT Capabilities element" (Section

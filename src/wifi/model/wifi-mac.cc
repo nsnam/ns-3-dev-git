@@ -471,7 +471,7 @@ void
 WifiMac::SetDevice(const Ptr<WifiNetDevice> device)
 {
     m_device = device;
-    if (GetHtSupported())
+    if (device->GetHtConfiguration())
     {
         // the configured BlockAck buffer size can now be capped
         m_mpduBufferSize = std::min(m_mpduBufferSize, GetMaxBaBufferSize());
@@ -1899,16 +1899,18 @@ WifiMac::GetEhtConfiguration() const
 }
 
 bool
-WifiMac::GetHtSupported() const
+WifiMac::GetHtSupported(uint8_t linkId) const
 {
-    return bool(GetDevice()->GetHtConfiguration());
+    return (GetDevice()->GetHtConfiguration() &&
+            GetWifiPhy(linkId)->GetPhyBand() != WIFI_PHY_BAND_6GHZ);
 }
 
 bool
 WifiMac::GetVhtSupported(uint8_t linkId) const
 {
     return (GetDevice()->GetVhtConfiguration() &&
-            GetWifiPhy(linkId)->GetPhyBand() != WIFI_PHY_BAND_2_4GHZ);
+            GetWifiPhy(linkId)->GetPhyBand() != WIFI_PHY_BAND_2_4GHZ &&
+            GetWifiPhy(linkId)->GetPhyBand() != WIFI_PHY_BAND_6GHZ);
 }
 
 bool
@@ -1986,7 +1988,7 @@ WifiMac::GetMaxBaBufferSize(std::optional<Mac48Address> address) const
     {
         return 256;
     }
-    NS_ASSERT(address ? GetHtSupported(*address) : GetHtSupported());
+    NS_ASSERT(address ? GetHtSupported(*address) : static_cast<bool>(GetHtConfiguration()));
     return 64;
 }
 
@@ -2090,7 +2092,7 @@ WifiMac::GetExtendedCapabilities() const
 {
     NS_LOG_FUNCTION(this);
     ExtendedCapabilities capabilities;
-    capabilities.SetHtSupported(GetHtSupported());
+    capabilities.SetHtSupported(GetHtSupported(SINGLE_LINK_OP_ID));
     capabilities.SetVhtSupported(GetVhtSupported(SINGLE_LINK_OP_ID));
     // TODO: to be completed
     return capabilities;
@@ -2100,7 +2102,7 @@ HtCapabilities
 WifiMac::GetHtCapabilities(uint8_t linkId) const
 {
     NS_LOG_FUNCTION(this << +linkId);
-    NS_ASSERT(GetHtSupported());
+    NS_ASSERT(GetHtSupported(linkId));
     HtCapabilities capabilities;
 
     auto phy = GetWifiPhy(linkId);

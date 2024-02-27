@@ -371,7 +371,7 @@ StaWifiMac::SendProbeRequest(uint8_t linkId)
     auto supportedRates = GetSupportedRates(linkId);
     probe.Get<SupportedRates>() = supportedRates.rates;
     probe.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         probe.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
         probe.Get<HtCapabilities>() = GetHtCapabilities(linkId);
@@ -437,7 +437,7 @@ StaWifiMac::GetAssociationRequest(bool isReassoc, uint8_t linkId) const
         frame.template Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
         frame.Capabilities() = GetCapabilities(linkId);
         frame.SetListenInterval(0);
-        if (GetHtSupported())
+        if (GetHtSupported(linkId))
         {
             frame.template Get<ExtendedCapabilities>() = GetExtendedCapabilities();
             frame.template Get<HtCapabilities>() = GetHtCapabilities(linkId);
@@ -1714,26 +1714,22 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
         }
         GetWifiRemoteStationManager(linkId)->SetQosSupport(apAddr, qosSupported);
 
-        if (!GetHtSupported())
+        if (GetHtSupported(linkId))
         {
-            return;
-        }
-        /* HT station */
-        if (const auto& htCapabilities = frame.template Get<HtCapabilities>();
-            htCapabilities.has_value())
-        {
-            if (!htCapabilities->IsSupportedMcs(0))
-            {
-                GetWifiRemoteStationManager(linkId)->RemoveAllSupportedMcs(apAddr);
-            }
-            else
+            /* HT station */
+            if (const auto& htCapabilities = frame.template Get<HtCapabilities>();
+                htCapabilities.has_value())
             {
                 GetWifiRemoteStationManager(linkId)->AddStationHtCapabilities(apAddr,
                                                                               *htCapabilities);
             }
+            else
+            {
+                GetWifiRemoteStationManager(linkId)->RemoveAllSupportedMcs(apAddr);
+            }
+            // TODO: process ExtendedCapabilities
+            // ExtendedCapabilities extendedCapabilities = frame.GetExtendedCapabilities ();
         }
-        // TODO: process ExtendedCapabilities
-        // ExtendedCapabilities extendedCapabilities = frame.GetExtendedCapabilities ();
 
         // we do not return if VHT is not supported because HE STAs operating in
         // the 2.4 GHz band do not support VHT
@@ -1966,7 +1962,7 @@ StaWifiMac::GetSupportedRates(uint8_t linkId) const
         NS_LOG_DEBUG("Adding supported rate of " << modeDataRate);
         rates.AddSupportedRate(modeDataRate);
     }
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         for (const auto& selector : GetWifiPhy(linkId)->GetBssMembershipSelectorList())
         {

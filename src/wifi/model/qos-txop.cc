@@ -35,6 +35,7 @@
 #include "wifi-psdu.h"
 #include "wifi-tx-parameters.h"
 
+#include "ns3/ht-configuration.h"
 #include "ns3/ht-frame-exchange-manager.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
@@ -541,7 +542,7 @@ QosTxop::GetNextMpdu(uint8_t linkId,
 
         // try A-MSDU aggregation if the MPDU does not contain an A-MSDU and does not already
         // have a sequence number assigned (may be a retransmission)
-        if (m_mac->GetHtSupported() && !recipient.IsBroadcast() &&
+        if (m_mac->GetHtConfiguration() && !recipient.IsBroadcast() &&
             !peekedItem->GetHeader().IsQosAmsdu() && !peekedItem->HasSeqNoAssigned() &&
             !peekedItem->IsFragment())
         {

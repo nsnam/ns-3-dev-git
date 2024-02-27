@@ -260,7 +260,8 @@ bool
 WifiRemoteStationManager::GetVhtSupported() const
 {
     return (m_wifiPhy->GetDevice()->GetVhtConfiguration() &&
-            m_wifiPhy->GetPhyBand() != WIFI_PHY_BAND_2_4GHZ);
+            m_wifiPhy->GetPhyBand() != WIFI_PHY_BAND_2_4GHZ &&
+            m_wifiPhy->GetPhyBand() != WIFI_PHY_BAND_6GHZ);
 }
 
 bool
@@ -2054,7 +2055,7 @@ WifiRemoteStationManager::GetQosSupported(const WifiRemoteStation* station) cons
 bool
 WifiRemoteStationManager::GetHtSupported(const WifiRemoteStation* station) const
 {
-    return bool(station->m_state->m_htCapabilities);
+    return station->m_state->m_htCapabilities || station->m_state->m_he6GhzBandCapabilities;
 }
 
 bool
@@ -2169,7 +2170,8 @@ WifiRemoteStationManager::GetOfdmSupported(const Mac48Address& address) const
 bool
 WifiRemoteStationManager::GetHtSupported(Mac48Address address) const
 {
-    return bool(LookupState(address)->m_htCapabilities);
+    const auto state = LookupState(address);
+    return state->m_htCapabilities || state->m_he6GhzBandCapabilities;
 }
 
 bool

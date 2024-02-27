@@ -78,7 +78,7 @@ AdhocWifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
     if (GetWifiRemoteStationManager()->IsBrandNew(to))
     {
         // In ad hoc mode, we assume that every destination supports all the rates we support.
-        if (GetHtSupported())
+        if (GetHtSupported(SINGLE_LINK_OP_ID))
         {
             GetWifiRemoteStationManager()->AddAllSupportedMcs(to);
             GetWifiRemoteStationManager()->AddStationHtCapabilities(
@@ -145,7 +145,7 @@ AdhocWifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
         hdr.SetType(WIFI_MAC_DATA);
     }
 
-    if (GetHtSupported())
+    if (GetHtSupported(SINGLE_LINK_OP_ID))
     {
         hdr.SetNoOrder(); // explicitly set to 0 for the time being since HT control field is not
                           // yet implemented (set it to 1 when implemented)
@@ -191,7 +191,7 @@ AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     if (GetWifiRemoteStationManager()->IsBrandNew(from))
     {
         // In ad hoc mode, we assume that every destination supports all the rates we support.
-        if (GetHtSupported())
+        if (GetHtSupported(SINGLE_LINK_OP_ID))
         {
             GetWifiRemoteStationManager()->AddAllSupportedMcs(from);
             GetWifiRemoteStationManager()->AddStationHtCapabilities(

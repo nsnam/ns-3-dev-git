@@ -565,7 +565,7 @@ ApWifiMac::GetSupportedRates(uint8_t linkId) const
     // must have its MSB set to 1 (must be treated as a Basic Rate)
     // Also the standard mentioned that at least 1 element should be included in the SupportedRates
     // the rest can be in the ExtendedSupportedRates
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         for (const auto& selector : GetWifiPhy(linkId)->GetBssMembershipSelectorList())
         {
@@ -889,7 +889,7 @@ HtOperation
 ApWifiMac::GetHtOperation(uint8_t linkId) const
 {
     NS_LOG_FUNCTION(this << +linkId);
-    NS_ASSERT(GetHtSupported());
+    NS_ASSERT(GetHtSupported(linkId));
     HtOperation operation;
     auto phy = GetWifiPhy(linkId);
     auto remoteStationManager = GetWifiRemoteStationManager(linkId);
@@ -1136,7 +1136,7 @@ ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
     {
         probe.Get<EdcaParameterSet>() = GetEdcaParameterSet(linkId);
     }
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         probe.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
         probe.Get<HtCapabilities>() = GetHtCapabilities(linkId);
@@ -1239,7 +1239,7 @@ ApWifiMac::GetAssocResp(Mac48Address to, uint8_t linkId)
     {
         assoc.Get<EdcaParameterSet>() = GetEdcaParameterSet(linkId);
     }
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         assoc.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
         assoc.Get<HtCapabilities>() = GetHtCapabilities(linkId);
@@ -1535,7 +1535,7 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
     {
         beacon.Get<EdcaParameterSet>() = GetEdcaParameterSet(linkId);
     }
-    if (GetHtSupported())
+    if (GetHtSupported(linkId))
     {
         beacon.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
         beacon.Get<HtCapabilities>() = GetHtCapabilities(linkId);
@@ -2109,7 +2109,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
             return failure("STA's supported rate set not compatible with our Basic Rate set");
         }
 
-        if (GetHtSupported())
+        if (GetHtSupported(linkId))
         {
             // check whether the HT STA supports all MCSs in Basic MCS Set
             const auto& htCapabilities = frame.template Get<HtCapabilities>();
@@ -2283,7 +2283,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         {
             remoteStationManager->AddSupportedErpSlotTime(from, true);
         }
-        if (GetHtSupported())
+        if (GetHtSupported(linkId))
         {
             const auto& htCapabilities = frame.template Get<HtCapabilities>();
             if (htCapabilities.has_value() && htCapabilities->IsSupportedMcs(0))

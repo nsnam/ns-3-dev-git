@@ -579,11 +579,12 @@ class WifiMac : public Object
      */
     bool GetDsssSupported(uint8_t linkId) const;
     /**
-     * Return whether the device supports HT.
+     * Return whether the device supports HT on the given link.
      *
+     * \param linkId the ID of the given link.
      * \return true if HT is supported, false otherwise
      */
-    bool GetHtSupported() const;
+    bool GetHtSupported(uint8_t linkId) const;
     /**
      * Return whether the device supports VHT on the given link.
      *
