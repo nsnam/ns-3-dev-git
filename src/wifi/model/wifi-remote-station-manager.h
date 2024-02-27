@@ -27,6 +27,7 @@
 
 #include "ns3/data-rate.h"
 #include "ns3/eht-capabilities.h"
+#include "ns3/he-6ghz-band-capabilities.h"
 #include "ns3/he-capabilities.h"
 #include "ns3/ht-capabilities.h"
 #include "ns3/mac48-address.h"
@@ -112,6 +113,8 @@ struct WifiRemoteStationState
     Ptr<const HtCapabilities> m_htCapabilities;   //!< remote station HT capabilities
     Ptr<const VhtCapabilities> m_vhtCapabilities; //!< remote station VHT capabilities
     Ptr<const HeCapabilities> m_heCapabilities;   //!< remote station HE capabilities
+    Ptr<const He6GhzBandCapabilities>
+        m_he6GhzBandCapabilities;                 //!< remote station HE 6GHz band capabilities
     Ptr<const EhtCapabilities> m_ehtCapabilities; //!< remote station EHT capabilities
     /// remote station Multi-Link Element Common Info
     std::shared_ptr<CommonInfoBasicMle> m_mleCommonInfo;
@@ -262,6 +265,14 @@ class WifiRemoteStationManager : public Object
      */
     void AddStationHeCapabilities(Mac48Address from, HeCapabilities heCapabilities);
     /**
+     * Records HE 6 GHz Band Capabilities of a remote station
+     *
+     * \param from the address of the remote station
+     * \param he6GhzCapabilities the HE 6 GHz Band Capabilities of the remote station
+     */
+    void AddStationHe6GhzCapabilities(const Mac48Address& from,
+                                      const He6GhzBandCapabilities& he6GhzCapabilities);
+    /**
      * Records EHT capabilities of the remote station.
      *
      * \param from the address of the station being recorded
@@ -298,6 +309,13 @@ class WifiRemoteStationManager : public Object
      * \return the HE capabilities sent by the remote station
      */
     Ptr<const HeCapabilities> GetStationHeCapabilities(Mac48Address from);
+    /**
+     * Return the HE 6 GHz Band Capabilities sent by a remote station.
+     *
+     * \param from the address of the remote station
+     * \return the HE 6 GHz Band capabilities sent by the remote station
+     */
+    Ptr<const He6GhzBandCapabilities> GetStationHe6GhzCapabilities(const Mac48Address& from) const;
     /**
      * Return the EHT capabilities sent by the remote station.
      *

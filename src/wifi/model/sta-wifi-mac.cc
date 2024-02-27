@@ -383,6 +383,10 @@ StaWifiMac::SendProbeRequest(uint8_t linkId)
     if (GetHeSupported())
     {
         probe.Get<HeCapabilities>() = GetHeCapabilities(linkId);
+        if (Is6GhzBand(linkId))
+        {
+            probe.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
+        }
     }
     if (GetEhtSupported())
     {
@@ -445,6 +449,10 @@ StaWifiMac::GetAssociationRequest(bool isReassoc, uint8_t linkId) const
         if (GetHeSupported())
         {
             frame.template Get<HeCapabilities>() = GetHeCapabilities(linkId);
+            if (Is6GhzBand(linkId))
+            {
+                frame.template Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
+            }
         }
         if (GetEhtSupported())
         {
@@ -1802,6 +1810,16 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
                                  muEdcaParameters->GetMuAifsn(AC_VO),
                                  muEdcaParameters->GetMuEdcaTimer(AC_VO)},
                                 linkId);
+        }
+
+        if (Is6GhzBand(linkId))
+        {
+            if (const auto& he6GhzCapabilities = frame.template Get<He6GhzBandCapabilities>())
+            {
+                GetWifiRemoteStationManager(linkId)->AddStationHe6GhzCapabilities(
+                    apAddr,
+                    *he6GhzCapabilities);
+            }
         }
 
         if (!GetEhtSupported())

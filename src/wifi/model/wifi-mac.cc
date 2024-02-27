@@ -40,6 +40,7 @@
 #include "ns3/vht-configuration.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <sstream>
 
@@ -1199,6 +1200,14 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
     }
 }
 
+bool
+WifiMac::Is6GhzBand(uint8_t linkId) const
+{
+    auto phy = GetLink(linkId).phy;
+    NS_ASSERT(phy);
+    return phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ;
+}
+
 void
 WifiMac::UpdateTidToLinkMapping(const Mac48Address& mldAddr,
                                 WifiDirection dir,
@@ -2282,6 +2291,41 @@ WifiMac::GetHeCapabilities(uint8_t linkId) const
     }
     capabilities.SetHighestMcsSupported(maxMcs);
     capabilities.SetHighestNssSupported(phy->GetMaxSupportedTxSpatialStreams());
+
+    return capabilities;
+}
+
+He6GhzBandCapabilities
+WifiMac::GetHe6GhzBandCapabilities(uint8_t linkId) const
+{
+    auto phy = GetLink(linkId).phy;
+    NS_ASSERT_MSG(phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ,
+                  "Getting HE 6 GHz band capabilities on band different than 6 GHz");
+
+    He6GhzBandCapabilities capabilities;
+
+    // Set Maximum MPDU Length subfield
+    const auto maxAmsduSize =
+        std::max({m_voMaxAmsduSize, m_viMaxAmsduSize, m_beMaxAmsduSize, m_bkMaxAmsduSize});
+    if (maxAmsduSize <= 3839)
+    {
+        capabilities.SetMaxMpduLength(3895);
+    }
+    else if (maxAmsduSize <= 7935)
+    {
+        capabilities.SetMaxMpduLength(7991);
+    }
+    else
+    {
+        capabilities.SetMaxMpduLength(11454);
+    }
+
+    auto maxAmpduLength =
+        std::max({m_voMaxAmpduSize, m_viMaxAmpduSize, m_beMaxAmpduSize, m_bkMaxAmpduSize});
+    // round to the next power of two minus one
+    maxAmpduLength = (1UL << static_cast<uint32_t>(std::ceil(std::log2(maxAmpduLength + 1)))) - 1;
+    // The maximum A-MPDU length in HE 6 GHz Band Capabilities elements ranges from 2^13-1 to 2^20-1
+    capabilities.SetMaxAmpduLength(std::min(std::max(maxAmpduLength, 8191U), 1048575U));
 
     return capabilities;
 }

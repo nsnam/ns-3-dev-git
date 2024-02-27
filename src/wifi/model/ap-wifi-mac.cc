@@ -1151,9 +1151,13 @@ ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
     {
         probe.Get<HeCapabilities>() = GetHeCapabilities(linkId);
         probe.Get<HeOperation>() = GetHeOperation(linkId);
-        if (auto muEdcaParameterSet = GetMuEdcaParameterSet(); muEdcaParameterSet.has_value())
+        if (auto muEdcaParameterSet = GetMuEdcaParameterSet())
         {
             probe.Get<MuEdcaParameterSet>() = std::move(*muEdcaParameterSet);
+        }
+        if (Is6GhzBand(linkId))
+        {
+            probe.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
         }
     }
     if (GetEhtSupported())
@@ -1253,6 +1257,10 @@ ApWifiMac::GetAssocResp(Mac48Address to, uint8_t linkId)
         if (auto muEdcaParameterSet = GetMuEdcaParameterSet(); muEdcaParameterSet.has_value())
         {
             assoc.Get<MuEdcaParameterSet>() = std::move(*muEdcaParameterSet);
+        }
+        if (Is6GhzBand(linkId))
+        {
+            assoc.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
         }
     }
     if (GetEhtSupported())
@@ -1545,6 +1553,10 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
         if (auto muEdcaParameterSet = GetMuEdcaParameterSet(); muEdcaParameterSet.has_value())
         {
             beacon.Get<MuEdcaParameterSet>() = std::move(*muEdcaParameterSet);
+        }
+        if (Is6GhzBand(linkId))
+        {
+            beacon.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(linkId);
         }
     }
     if (GetEhtSupported())
@@ -2142,6 +2154,13 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
                     {
                         return failure("HE STA does not support all MCSs in Basic MCS Set");
                     }
+                }
+            }
+            if (Is6GhzBand(linkId))
+            {
+                if (const auto& he6GhzCapabilities = frame.template Get<He6GhzBandCapabilities>())
+                {
+                    remoteStationManager->AddStationHe6GhzCapabilities(from, *he6GhzCapabilities);
                 }
             }
         }

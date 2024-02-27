@@ -198,6 +198,14 @@ class WifiMac : public Object
     std::optional<uint8_t> GetLinkForPhy(std::size_t phyId) const;
 
     /**
+     * Indicate if a given link is on the 6 GHz band.
+     *
+     * \param linkId the ID of the given link
+     * \return whether the given link is on the 6 GHz band
+     */
+    bool Is6GhzBand(uint8_t linkId) const;
+
+    /**
      * \param remoteAddr the (MLD or link) address of a remote device
      * \return the MLD address of the remote device having the given (MLD or link) address, if
      *         the remote device is an MLD.
@@ -535,6 +543,13 @@ class WifiMac : public Object
      * \return the HE capabilities that we support
      */
     HeCapabilities GetHeCapabilities(uint8_t linkId) const;
+    /**
+     * Return the HE 6GHz band capabilities of the device for the given 6 GHz link.
+     *
+     * \param linkId the ID of the given 6 GHz link
+     * \return the HE 6GHz band capabilities that we support
+     */
+    He6GhzBandCapabilities GetHe6GhzBandCapabilities(uint8_t linkId) const;
     /**
      * Return the EHT capabilities of the device for the given link.
      *

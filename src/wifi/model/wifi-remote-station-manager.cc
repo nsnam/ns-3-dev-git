@@ -1601,6 +1601,18 @@ WifiRemoteStationManager::AddStationHeCapabilities(Mac48Address from, HeCapabili
 }
 
 void
+WifiRemoteStationManager::AddStationHe6GhzCapabilities(
+    const Mac48Address& from,
+    const He6GhzBandCapabilities& he6GhzCapabilities)
+{
+    // Used by all stations to record HE 6GHz band capabilities of remote stations
+    NS_LOG_FUNCTION(this << from << he6GhzCapabilities);
+    auto state = LookupState(from);
+    state->m_he6GhzBandCapabilities = Create<const He6GhzBandCapabilities>(he6GhzCapabilities);
+    SetQosSupport(from, true);
+}
+
+void
 WifiRemoteStationManager::AddStationEhtCapabilities(Mac48Address from,
                                                     EhtCapabilities ehtCapabilities)
 {
@@ -1651,6 +1663,12 @@ Ptr<const HeCapabilities>
 WifiRemoteStationManager::GetStationHeCapabilities(Mac48Address from)
 {
     return LookupState(from)->m_heCapabilities;
+}
+
+Ptr<const He6GhzBandCapabilities>
+WifiRemoteStationManager::GetStationHe6GhzCapabilities(const Mac48Address& from) const
+{
+    return LookupState(from)->m_he6GhzBandCapabilities;
 }
 
 Ptr<const EhtCapabilities>
