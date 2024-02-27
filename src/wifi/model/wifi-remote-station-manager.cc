@@ -2006,10 +2006,14 @@ WifiRemoteStationManager::GetAggregation(const WifiRemoteStation* station) const
 uint8_t
 WifiRemoteStationManager::GetNumberOfSupportedStreams(const WifiRemoteStation* station) const
 {
-    Ptr<const HtCapabilities> htCapabilities = station->m_state->m_htCapabilities;
+    const auto htCapabilities = station->m_state->m_htCapabilities;
 
     if (!htCapabilities)
     {
+        if (const auto heCapabilities = station->m_state->m_heCapabilities)
+        {
+            return heCapabilities->GetHighestNssSupported();
+        }
         return 1;
     }
     return htCapabilities->GetRxHighestSupportedAntennas();
