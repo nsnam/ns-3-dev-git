@@ -1562,12 +1562,19 @@ Ipv6L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv6Header& ip, uin
                 p->RemoveAtStart(nextHeaderPosition);
                 /* protocol->Receive (p, src, dst, incomingInterface); */
 
+                // Options have been processed, and the packet is good.
+                // We need to adjust the IP header fields
+                Ipv6Header newIpHeader = ip;
+                newIpHeader.SetNextHeader(nextHeader);
+                newIpHeader.SetPayloadLength(p->GetSize());
+
                 /* L4 protocol */
                 Ptr<Packet> copy = p->Copy();
 
-                m_localDeliverTrace(ip, p, iif);
+                m_localDeliverTrace(newIpHeader, p, iif);
 
-                IpL4Protocol::RxStatus status = protocol->Receive(p, ip, GetInterface(iif));
+                IpL4Protocol::RxStatus status =
+                    protocol->Receive(p, newIpHeader, GetInterface(iif));
 
                 switch (status)
                 {
@@ -1578,16 +1585,16 @@ Ipv6L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv6Header& ip, uin
                 case IpL4Protocol::RX_ENDPOINT_CLOSED:
                     break;
                 case IpL4Protocol::RX_ENDPOINT_UNREACH:
-                    if (ip.GetDestination().IsMulticast())
+                    if (newIpHeader.GetDestination().IsMulticast())
                     {
                         /* do not rely on multicast address */
                         break;
                     }
 
-                    copy->AddHeader(ip);
+                    copy->AddHeader(newIpHeader);
                     GetIcmpv6()->SendErrorDestinationUnreachable(
                         copy,
-                        ip.GetSource(),
+                        newIpHeader.GetSource(),
                         Icmpv6Header::ICMPV6_PORT_UNREACHABLE);
                 }
             }
