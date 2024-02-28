@@ -133,6 +133,7 @@ PacketSink::StartApplication() // Called at time specified by Start
     if (!m_socket)
     {
         m_socket = Socket::CreateSocket(GetNode(), m_tid);
+        NS_ABORT_MSG_IF(m_local.IsInvalid(), "'Local' attribute not properly set");
         if (m_socket->Bind(m_local) == -1)
         {
             NS_FATAL_ERROR("Failed to bind socket");

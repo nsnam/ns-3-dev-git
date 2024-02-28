@@ -368,7 +368,8 @@ ThreeGppHttpClient::OpenConnection()
         m_state == PARSING_MAIN_OBJECT || m_state == READING)
     {
         m_socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
-
+        NS_ABORT_MSG_IF(m_remoteServerAddress.IsInvalid(),
+                        "'RemoteServerAddress' attribute not properly set");
         if (Ipv4Address::IsMatchingType(m_remoteServerAddress))
         {
             int ret [[maybe_unused]];

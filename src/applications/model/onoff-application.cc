@@ -192,6 +192,8 @@ OnOffApplication::StartApplication() // Called at time specified by Start
         m_socket = Socket::CreateSocket(GetNode(), m_tid);
         int ret = -1;
 
+        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "'Remote' attribute not properly set");
+
         if (!m_local.IsInvalid())
         {
             NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&

@@ -128,6 +128,8 @@ V4TraceRoute::StartApplication()
     NS_LOG_LOGIC("Application started");
     m_started = Simulator::Now();
 
+    NS_ABORT_MSG_IF(!m_remote.IsInitialized(), "'Remote' attribute not properly set");
+
     if (m_verbose)
     {
         NS_LOG_UNCOND("Traceroute to " << m_remote << ", " << m_maxTtl << " hops Max, " << m_size

@@ -211,6 +211,9 @@ ThreeGppHttpServer::StartApplication()
             m_initialSocket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
             m_initialSocket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
 
+            NS_ABORT_MSG_IF(m_localAddress.IsInvalid(),
+                            "'LocalAddress' attribute not properly set");
+
             if (Ipv4Address::IsMatchingType(m_localAddress))
             {
                 const Ipv4Address ipv4 = Ipv4Address::ConvertFrom(m_localAddress);

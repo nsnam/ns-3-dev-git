@@ -159,6 +159,8 @@ BulkSendApplication::StartApplication() // Called at time specified by Start
                            "In other words, use TCP instead of UDP.");
         }
 
+        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "'Remote' attribute not properly set");
+
         if (!m_local.IsInvalid())
         {
             NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
