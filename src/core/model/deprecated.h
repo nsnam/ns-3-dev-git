@@ -53,7 +53,8 @@
  * 2.  Typically only the declaration needs to be deprecated,
  *
  *     \code
- *     NS_DEPRECATED_3_XX ("see TheNewWay") void SomethingUseful ();
+ *     NS_DEPRECATED_3_XX("see TheNewWay")
+ *     void SomethingUseful();
  *     \endcode
  *
  *     but it's helpful to put the same macro as a comment
@@ -61,9 +62,9 @@
  *     all the bits which eventually have to be removed:
  *
  *     \code
- *     \/\* NS_DEPRECATED_3_XX ("see TheNewWay") *\\/
- *     void SomethingUseful () { ... }
- *     \endcode.
+ *     // NS_DEPRECATED_3_XX("see TheNewWay")
+ *     void SomethingUseful() { ... }
+ *     \endcode
  *
  * \note Sometimes it is necessary to silence a deprecation warning.
  * Even though this is highly discouraged, if necessary it is possible to use:
