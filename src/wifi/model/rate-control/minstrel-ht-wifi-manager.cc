@@ -35,11 +35,13 @@
 
 #include "minstrel-ht-wifi-manager.h"
 
+#include "ns3/ht-configuration.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
 
 #include <iomanip>
@@ -192,7 +194,7 @@ MinstrelHtWifiManager::DoInitialize()
      * station.
      */
 
-    if (GetHtSupported())
+    if (GetPhy()->GetDevice()->GetHtConfiguration())
     {
         m_numGroups = MAX_HT_SUPPORTED_STREAMS * MAX_HT_STREAM_GROUPS;
         m_numRates = MAX_HT_GROUP_RATES;
@@ -513,7 +515,7 @@ MinstrelHtWifiManager::DoCreateStation() const
 
     // Use the variable in the station to indicate whether the device supports HT.
     // When correct information available it will be checked.
-    station->m_isHt = GetHtSupported();
+    station->m_isHt = static_cast<bool>(GetPhy()->GetDevice()->GetHtConfiguration());
 
     return station;
 }
@@ -533,7 +535,7 @@ MinstrelHtWifiManager::CheckInit(MinstrelHtWifiRemoteStation* station)
          *  the station will not support HT either.
          *  We save from using another check and variable.
          */
-        if (!GetHtSupported(station))
+        if (!GetHtSupported(station) && !GetStationHe6GhzCapabilities(station->m_state->m_address))
         {
             NS_LOG_INFO("non-HT station " << station);
             station->m_isHt = false;
@@ -975,7 +977,7 @@ MinstrelHtWifiManager::UpdateRateAfterAllowedWidth(uint16_t txRate, uint16_t all
         return txRate;
     }
 
-    NS_ASSERT(GetHtSupported());
+    NS_ASSERT(GetPhy()->GetDevice()->GetHtConfiguration() != nullptr);
     NS_ASSERT(group.chWidth % 20 == 0);
     // try halving the channel width and check if the group with the same number of
     // streams and same GI is supported, until either a supported group is found or

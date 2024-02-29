@@ -930,7 +930,8 @@ ApWifiMac::GetHtOperation(uint8_t linkId) const
     uint8_t nMcs = mcsList.size();
     for (const auto& sta : GetLink(linkId).staList)
     {
-        if (remoteStationManager->GetHtSupported(sta.second))
+        if (remoteStationManager->GetHtSupported(sta.second) ||
+            remoteStationManager->GetStationHe6GhzCapabilities(sta.second))
         {
             uint64_t maxSupportedRateByHtSta = 0; // in bit/s
             auto itMcs = mcsList.begin();
@@ -1410,7 +1411,8 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdS
                 {
                     link.numNonErpStations++;
                 }
-                if (!remoteStationManager->GetHtSupported(staAddr))
+                if (!remoteStationManager->GetHtSupported(staAddr) &&
+                    !remoteStationManager->GetStationHe6GhzCapabilities(staAddr))
                 {
                     link.numNonHtStations++;
                 }
@@ -2037,7 +2039,9 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                         {
                             GetLink(linkId).numNonErpStations--;
                         }
-                        if (!GetWifiRemoteStationManager(linkId)->GetHtSupported(from))
+                        if (!GetWifiRemoteStationManager(linkId)->GetHtSupported(from) &&
+                            !GetWifiRemoteStationManager(linkId)->GetStationHe6GhzCapabilities(
+                                from))
                         {
                             GetLink(linkId).numNonHtStations--;
                         }

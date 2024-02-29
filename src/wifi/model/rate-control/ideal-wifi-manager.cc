@@ -19,7 +19,9 @@
 
 #include "ideal-wifi-manager.h"
 
+#include "ns3/ht-configuration.h"
 #include "ns3/log.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
 
 #include <algorithm>
@@ -130,7 +132,7 @@ IdealWifiManager::BuildSnrThresholds()
         AddSnrThreshold(txVector, GetPhy()->CalculateSnr(txVector, m_ber));
     }
     // Add all MCSes
-    if (GetHtSupported())
+    if (GetPhy()->GetDevice()->GetHtConfiguration())
     {
         for (const auto& mode : GetPhy()->GetMcsList())
         {
@@ -360,7 +362,8 @@ IdealWifiManager::DoGetDataTxVector(WifiRemoteStation* st, uint16_t allowedWidth
     }
     else
     {
-        if (GetHtSupported() && GetHtSupported(st))
+        if (GetPhy()->GetDevice()->GetHtConfiguration() &&
+            (GetHtSupported(st) || GetStationHe6GhzCapabilities(st->m_state->m_address)))
         {
             for (uint8_t i = 0; i < GetNMcsSupported(station); i++)
             {

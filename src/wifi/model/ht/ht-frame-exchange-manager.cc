@@ -19,6 +19,8 @@
 
 #include "ht-frame-exchange-manager.h"
 
+#include "ht-configuration.h"
+
 #include "ns3/abort.h"
 #include "ns3/assert.h"
 #include "ns3/ctrl-headers.h"
@@ -29,6 +31,7 @@
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/wifi-mac-queue.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/wifi-utils.h"
 
 #include <array>
@@ -257,8 +260,9 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr,
     {
         originator = *originatorMld;
     }
-    bool htSupported = GetWifiRemoteStationManager()->GetHtSupported() &&
-                       GetWifiRemoteStationManager()->GetHtSupported(originator);
+    bool htSupported = m_mac->GetDevice()->GetHtConfiguration() &&
+                       (GetWifiRemoteStationManager()->GetHtSupported(originator) ||
+                        GetWifiRemoteStationManager()->GetStationHe6GhzCapabilities(originator));
     GetBaManager(tid)->CreateRecipientAgreement(respHdr,
                                                 originator,
                                                 reqHdr->GetStartingSequence(),

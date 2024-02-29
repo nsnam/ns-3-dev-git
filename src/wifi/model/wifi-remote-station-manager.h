@@ -336,13 +336,17 @@ class WifiRemoteStationManager : public Object
     std::optional<std::reference_wrapper<CommonInfoBasicMle::MldCapabilities>>
     GetStationMldCapabilities(const Mac48Address& from);
     /**
-     * Return whether the device has HT capability support enabled.
+     * Return whether the device has HT capability support enabled on the link this manager is
+     * associated with. Note that this means that this function returns false if this is a
+     * 6 GHz link.
      *
      * \return true if HT capability support is enabled, false otherwise
      */
     bool GetHtSupported() const;
     /**
-     * Return whether the device has VHT capability support enabled.
+     * Return whether the device has VHT capability support enabled on the link this manager is
+     * associated with. Note that this means that this function returns false if this is a
+     * 2.4 or 6 GHz link.
      *
      * \return true if VHT capability support is enabled, false otherwise
      */
