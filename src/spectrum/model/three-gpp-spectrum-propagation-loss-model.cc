@@ -404,6 +404,7 @@ ThreeGppSpectrumPropagationLossModel::GenSpectrumChannelMatrix(
     {
         if ((*vit) != 0.00)
         {
+            auto sqrtVit = sqrt(*vit);
             for (auto rxPortIdx = 0; rxPortIdx < numRxPorts; rxPortIdx++)
             {
                 for (auto txPortIdx = 0; txPortIdx < numTxPorts; txPortIdx++)
@@ -417,7 +418,7 @@ ThreeGppSpectrumPropagationLossModel::GenSpectrumChannelMatrix(
                     }
                     // Multiply with the square root of the input PSD so that the norm (absolute
                     // value squared) of chanSpct will be the output PSD
-                    chanSpct->Elem(rxPortIdx, txPortIdx, iRb) = sqrt(*vit) * subsbandGain;
+                    chanSpct->Elem(rxPortIdx, txPortIdx, iRb) = sqrtVit * subsbandGain;
                 }
             }
         }
