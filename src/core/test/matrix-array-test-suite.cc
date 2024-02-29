@@ -41,6 +41,27 @@ namespace tests
 NS_LOG_COMPONENT_DEFINE("MatrixArrayTest");
 
 /**
+ * \brief Function casts an input valArray "in" (type IN) to an output valArray "out" (type T)
+ * \param in Input valarray to be casted
+ * \param out Output valarray to receive casted values
+ */
+template <typename IN, typename T>
+void
+CastStdValarray(const std::valarray<IN>& in, std::valarray<T>& out)
+{
+    // Ensure output valarray is the right size
+    if (out.size() != in.size())
+    {
+        out.resize(in.size());
+    }
+
+    // Perform the cast operation
+    std::transform(std::begin(in), std::end(in), std::begin(out), [](IN i) {
+        return static_cast<T>(i);
+    });
+}
+
+/**
  * \ingroup matrixArray-tests
  *  MatrixArray test case for testing constructors, operators and other functions
  */
@@ -443,6 +464,154 @@ MatrixArrayTestCase<T>::DoRun()
     MatrixArray<T> m27 = MatrixArray<T>(std::move(jCasted));
     NS_LOG_INFO("m27.GetSize ()" << m27.GetSize());
     NS_TEST_ASSERT_MSG_EQ(jCastedSize, m27.GetSize(), "The number of elements are not equal.");
+
+    // test determinant
+    {
+        std::vector<std::pair<std::valarray<int>, T>> detTestCases{
+            // right-wraparound
+            {{1, 0, 7, 4, 2, 0, 6, 5, 3}, 62},
+            // left-wraparound
+            {{1, 4, 6, 0, 2, 5, 7, 0, 3}, 62},
+            // identity rank 3
+            {{1, 0, 0, 0, 1, 0, 0, 0, 1}, 1},
+            // identity rank 4
+            {{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}, 1},
+            // permutation matrix rank 4
+            {{0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0}, -1},
+            // positive det matrix rank 2
+            {{36, -5, -5, 43}, 1523},
+            // single value matrix rank 1
+            {{1}, 1},
+        };
+        for (const auto& [detVal, detRef] : detTestCases)
+        {
+            std::valarray<T> detCast(detVal.size());
+            CastStdValarray(detVal, detCast);
+            auto side = sqrt(detVal.size());
+            MatrixArray<T> detMat = MatrixArray<T>(side, side, std::move(detCast));
+            NS_TEST_ASSERT_MSG_EQ(detMat.Determinant()(0),
+                                  static_cast<T>(detRef),
+                                  "The determinants are not equal.");
+        }
+    }
+    // clang-format off
+    std::valarray<int> multiPageMatrixValues{
+            // page 0: identity matrix
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1,
+            // page 1: permutation matrix
+            0, 0, 1,
+            0, 1, 0,
+            1, 0, 0,
+            // page 2: random matrix
+            1, 4, 6,
+            0, 2, 5,
+            7, 0, 3,
+            // page 3: upper triangular
+            5, -9, 2,
+            0, -4, -10,
+            0, 0, -3,
+            // page 4: lower triangular
+            -7, 0, 0,
+            -1, -9, 0,
+            -5, 6, -5,
+            // page 5: zero diagonal
+            0, 1, 2,
+            1, 0, 1,
+            2, 1, 0,
+            // page 6: zero bidiagonal
+            0, 1, 0,
+            1, 0, 1,
+            0, 1, 0
+    };
+    // clang-format on
+    std::valarray<T> castMultiPageMatrixValues(multiPageMatrixValues.size());
+    CastStdValarray(multiPageMatrixValues, castMultiPageMatrixValues);
+    MatrixArray<T> multiPageMatrix = MatrixArray<T>(3,
+                                                    3,
+                                                    multiPageMatrixValues.size() / 9,
+                                                    std::move(castMultiPageMatrixValues));
+    // test the determinant in a multi-page MatrixArray
+    std::vector<int> determinants = {1, -1, 62, 60, -315, 4, 0};
+    auto det = multiPageMatrix.Determinant();
+    for (size_t page = 0; page < multiPageMatrix.GetNumPages(); page++)
+    {
+        NS_TEST_ASSERT_MSG_EQ(det(page),
+                              static_cast<T>(determinants[page]),
+                              "The determinants from the page " << std::to_string(page)
+                                                                << " are not equal.");
+    }
+
+    // test Frobenius norm in a multi-page MatrixArray
+    std::vector<double> fnorms = {sqrt(3), sqrt(3), 11.8322, 15.3297, 14.7309, 3.4641, 2};
+    auto frob = multiPageMatrix.FrobeniusNorm();
+    for (size_t page = 0; page < multiPageMatrix.GetNumPages(); page++)
+    {
+        NS_TEST_ASSERT_MSG_EQ_TOL(std::abs(frob(page)),
+                                  std::abs(static_cast<T>(fnorms[page])),
+                                  0.0001,
+                                  "The Frobenius norm from the page " << std::to_string(page)
+                                                                      << " are not equal.");
+    }
+
+    // test page copying
+    for (size_t noOfCopies = 1; noOfCopies < 4; noOfCopies++)
+    {
+        auto copies = m27.MakeNCopies(noOfCopies);
+        NS_TEST_ASSERT_MSG_EQ(copies.GetNumPages(),
+                              noOfCopies,
+                              "Creating " << std::to_string(noOfCopies) << " copies failed.");
+        NS_TEST_ASSERT_MSG_EQ(copies.GetNumRows(),
+                              m27.GetNumRows(),
+                              "The copy doesn't have the same number of rows as the original.");
+        NS_TEST_ASSERT_MSG_EQ(copies.GetNumCols(),
+                              m27.GetNumCols(),
+                              "The copy doesn't have the same number of columns as the original.");
+        for (size_t page = 0; page < copies.GetNumPages(); page++)
+        {
+            T diff{};
+            for (size_t row = 0; row < copies.GetNumRows(); row++)
+            {
+                for (size_t col = 0; col < copies.GetNumCols(); col++)
+                {
+                    diff += m27(row, col, 0) - copies(row, col, page);
+                }
+            }
+            NS_TEST_ASSERT_MSG_EQ(diff, T{}, "Mismatch in copied values.");
+        }
+    }
+
+    // test page 1 and 0 extraction
+    std::vector<MatrixArray<T>> pages{multiPageMatrix.ExtractPage(1),
+                                      multiPageMatrix.ExtractPage(0)};
+
+    // test page 1 and 0 joining
+    auto jointPagesMatrix = MatrixArray<T>::JoinPages(pages);
+    NS_TEST_ASSERT_MSG_EQ(jointPagesMatrix.GetNumPages(), 2, "Mismatch in number of join pages.");
+    for (size_t page = 0; page < jointPagesMatrix.GetNumPages(); page++)
+    {
+        T diff{};
+        for (size_t row = 0; row < jointPagesMatrix.GetNumRows(); row++)
+        {
+            for (size_t col = 0; col < jointPagesMatrix.GetNumCols(); col++)
+            {
+                diff += multiPageMatrix(row, col, 1 - page) - jointPagesMatrix(row, col, page);
+            }
+        }
+        NS_TEST_ASSERT_MSG_EQ(diff, T{}, "Mismatching pages.");
+    }
+
+    // test identity matrix
+    auto identityRank3Reference = multiPageMatrix.ExtractPage(0);
+    auto identityRank3 = MatrixArray<T>::IdentityMatrix(3);
+    NS_TEST_ASSERT_MSG_EQ(identityRank3, identityRank3Reference, "Mismatch in identity matrices.");
+
+    identityRank3 = MatrixArray<T>::IdentityMatrix(3, 10).ExtractPage(9);
+    NS_TEST_ASSERT_MSG_EQ(identityRank3, identityRank3Reference, "Mismatch in identity matrices.");
+
+    identityRank3 = MatrixArray<T>::IdentityMatrix(identityRank3Reference);
+    NS_TEST_ASSERT_MSG_EQ(identityRank3, identityRank3Reference, "Mismatch in identity matrices.");
 }
 
 /**

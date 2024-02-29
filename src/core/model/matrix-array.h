@@ -190,6 +190,16 @@ class MatrixArray : public ValArray<T>
      */
     MatrixArray Transpose() const;
     /**
+     * \brief This operator calculates a vector o determinants, one for each page
+     * \return The resulting MatrixArray with the determinants for each page.
+     */
+    MatrixArray Determinant() const;
+    /**
+     * \brief This operator calculates a vector of Frobenius norm, one for each page
+     * \return The resulting MatrixArray with the Frobenius norm for each page.
+     */
+    MatrixArray FrobeniusNorm() const;
+    /**
      *\brief Multiply each matrix in the array by the left and the right matrix.
      * For each page of this MatrixArray the operation performed is
      * lMatrix * matrix(pageIndex) * rMatrix, and the resulting MatrixArray<T>
@@ -228,6 +238,40 @@ class MatrixArray : public ValArray<T>
     template <bool EnableBool = true,
               typename = std::enable_if_t<(std::is_same_v<T, std::complex<double>> && EnableBool)>>
     MatrixArray<T> HermitianTranspose() const;
+
+    /**
+     * \brief Function that copies the current 1-page matrix into a new matrix with n copies of the
+     * original matrix
+     * \param nCopies Number of copies to make of the input 1-page MatrixArray
+     * \return Returns a new matrix with n page copies
+     */
+    MatrixArray<T> MakeNCopies(size_t nCopies) const;
+    /**
+     * \brief Function extracts a page from a MatrixArray
+     * \param page Index of the page to be extracted from the n-page MatrixArray
+     * \return Returns an extracted page of the original MatrixArray
+     */
+    MatrixArray<T> ExtractPage(size_t page) const;
+    /**
+     * \brief Function joins multiple pages into a single MatrixArray
+     * \param pages Vector containing n 1-page MatrixArrays to be merged into a n-page MatrixArray
+     * \return Returns a joint MatrixArray
+     */
+    static MatrixArray<T> JoinPages(const std::vector<MatrixArray<T>>& pages);
+    /**
+     * \brief Function produces an identity MatrixArray with the specified size
+     * \param size Size of the output identity matrix
+     * \param pages Number of copies of the identity matrix
+     * \return Returns an identity MatrixArray
+     */
+    static MatrixArray<T> IdentityMatrix(const size_t size, const size_t pages = 1);
+    /**
+     * \brief Function produces an identity MatrixArray with the same size
+     * as the input MatrixArray
+     * \param likeme Input matrix used to determine the size of the identity matrix
+     * \return Returns an identity MatrixArray
+     */
+    static MatrixArray<T> IdentityMatrix(const MatrixArray& likeme);
 
   protected:
     // To simplify functions in MatrixArray that are using members from the template base class
