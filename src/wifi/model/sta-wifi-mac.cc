@@ -1456,7 +1456,7 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                                             Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
                                             Txop::CHECK_MEDIUM_BUSY);
             }
-            for (const auto [acIndex, ac] : wifiAcList)
+            for (const auto& [acIndex, ac] : wifiAcList)
             {
                 if (const auto edca = GetQosTxop(acIndex))
                 {
