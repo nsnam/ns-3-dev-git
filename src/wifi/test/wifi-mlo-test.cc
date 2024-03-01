@@ -364,6 +364,16 @@ class MultiLinkOperationsTestBase : public TestCase
                           double txPowerW);
 
     /**
+     * Check that the expected Capabilities information elements are present in the given
+     * management frame based on the band in which the given link is operating.
+     *
+     * \param mpdu the given management frame
+     * \param mac the MAC transmitting the management frame
+     * \param phyId the ID of the PHY transmitting the management frame
+     */
+    void CheckCapabilities(Ptr<WifiMpdu> mpdu, Ptr<WifiMac> mac, uint8_t phyId);
+
+    /**
      * Function to trace packets received by the server application
      * \param nodeId the ID of the node that received the packet
      * \param p the packet
@@ -581,8 +591,89 @@ MultiLinkOperationsTestBase::Transmit(Ptr<WifiMac> mac,
             ss << "} TID = " << +psdu->GetHeader(0).GetQosTid();
         }
         NS_LOG_INFO(ss.str());
+
+        CheckCapabilities(*psdu->begin(), mac, phyId);
     }
     NS_LOG_INFO("TXVECTOR = " << txVector << "\n");
+}
+
+void
+MultiLinkOperationsTestBase::CheckCapabilities(Ptr<WifiMpdu> mpdu, Ptr<WifiMac> mac, uint8_t phyId)
+{
+    auto band = mac->GetDevice()->GetPhy(phyId)->GetPhyBand();
+    bool hasHtCapabilities;
+    bool hasVhtCapabilities;
+    bool hasHeCapabilities;
+    bool hasHe6GhzCapabilities;
+    bool hasEhtCapabilities;
+
+    auto findCapabilities = [&](auto&& frame) {
+        hasHtCapabilities = frame.template Get<HtCapabilities>().has_value();
+        hasVhtCapabilities = frame.template Get<VhtCapabilities>().has_value();
+        hasHeCapabilities = frame.template Get<HeCapabilities>().has_value();
+        hasHe6GhzCapabilities = frame.template Get<He6GhzBandCapabilities>().has_value();
+        hasEhtCapabilities = frame.template Get<EhtCapabilities>().has_value();
+    };
+
+    switch (mpdu->GetHeader().GetType())
+    {
+    case WIFI_MAC_MGT_BEACON: {
+        MgtBeaconHeader beacon;
+        mpdu->GetPacket()->PeekHeader(beacon);
+        findCapabilities(beacon);
+    }
+    break;
+
+    case WIFI_MAC_MGT_PROBE_REQUEST: {
+        MgtProbeRequestHeader probeReq;
+        mpdu->GetPacket()->PeekHeader(probeReq);
+        findCapabilities(probeReq);
+    }
+    break;
+
+    case WIFI_MAC_MGT_PROBE_RESPONSE: {
+        MgtProbeResponseHeader probeResp;
+        mpdu->GetPacket()->PeekHeader(probeResp);
+        findCapabilities(probeResp);
+    }
+    break;
+
+    case WIFI_MAC_MGT_ASSOCIATION_REQUEST: {
+        MgtAssocRequestHeader assocReq;
+        mpdu->GetPacket()->PeekHeader(assocReq);
+        findCapabilities(assocReq);
+    }
+    break;
+
+    case WIFI_MAC_MGT_ASSOCIATION_RESPONSE: {
+        MgtAssocResponseHeader assocResp;
+        mpdu->GetPacket()->PeekHeader(assocResp);
+        findCapabilities(assocResp);
+    }
+    break;
+
+    default:
+        return;
+    }
+
+    NS_TEST_EXPECT_MSG_EQ(
+        hasHtCapabilities,
+        (band != WIFI_PHY_BAND_6GHZ),
+        "HT Capabilities should not be present in a mgt frame sent in 6 GHz band");
+    NS_TEST_EXPECT_MSG_EQ(
+        hasVhtCapabilities,
+        (band == WIFI_PHY_BAND_5GHZ),
+        "VHT Capabilities should only be present in a mgt frame sent in 5 GHz band");
+    NS_TEST_EXPECT_MSG_EQ(hasHeCapabilities,
+                          true,
+                          "HE Capabilities should always be present in a mgt frame");
+    NS_TEST_EXPECT_MSG_EQ(
+        hasHe6GhzCapabilities,
+        (band == WIFI_PHY_BAND_6GHZ),
+        "HE 6GHz Band Capabilities should only be present in a mgt frame sent in 6 GHz band");
+    NS_TEST_EXPECT_MSG_EQ(hasEhtCapabilities,
+                          true,
+                          "EHT Capabilities should always be present in a mgt frame");
 }
 
 void
