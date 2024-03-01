@@ -1225,7 +1225,7 @@ def get_target_to_build(program_path, ns3_version, build_profile):
         print("Target to build does not exist: %s" % program_path)
         exit(1)
 
-    if "scratch" in program_path:
+    if "scratch" in os.path.relpath(program_path, ns3_path):
         # Get the path to the program and replace slashes with underlines
         # to get unique targets for CMake, preventing collisions with modules examples
         return program_name.replace(out_dir, "").replace("/", "_")[1:]
