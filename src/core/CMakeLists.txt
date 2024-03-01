@@ -137,7 +137,6 @@ set(source_files
     model/timer.cc
     model/watchdog.cc
     model/synchronizer.cc
-    model/make-event.cc
     model/environment-variable.cc
     model/log.cc
     model/breakpoint.cc
