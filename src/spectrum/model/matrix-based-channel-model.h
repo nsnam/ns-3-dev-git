@@ -158,6 +158,19 @@ class MatrixBasedChannelModel : public Object
         std::pair<uint32_t, uint32_t> m_nodeIds;
 
         /**
+         * Auxiliary variable to m_cachedDelaySincos
+         *
+         * It is used to determine RB width (12*SCS) changes due to numerology,
+         * in case the number of the RBs in the channel remains constant.
+         */
+        mutable double m_cachedRbWidth = 0.0;
+
+        /**
+         * Matrix array that holds the precomputed delay sincos
+         */
+        mutable ComplexMatrixArray m_cachedDelaySincos;
+
+        /**
          * Destructor for ChannelParams
          */
         virtual ~ChannelParams() = default;

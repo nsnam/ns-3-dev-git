@@ -368,31 +368,52 @@ ThreeGppSpectrumPropagationLossModel::GenSpectrumChannelMatrix(
     Ptr<MatrixBasedChannelModel::Complex3DVector> chanSpct =
         Create<MatrixBasedChannelModel::Complex3DVector>(numRxPorts, numTxPorts, (uint16_t)numRb);
 
+    // Precompute the delay until numRb, numCluster or RB width changes
+    // Whenever the channelParams is updated, the number of numRbs, numClusters
+    // and RB width (12*SCS) are reset, ensuring these values are updated too
+    double rbWidth = inPsd->ConstBandsBegin()->fh - inPsd->ConstBandsBegin()->fl;
+
+    if (channelParams->m_cachedDelaySincos.GetNumRows() != numRb ||
+        channelParams->m_cachedDelaySincos.GetNumCols() != numCluster ||
+        channelParams->m_cachedRbWidth != rbWidth)
+    {
+        channelParams->m_cachedRbWidth = rbWidth;
+        channelParams->m_cachedDelaySincos = ComplexMatrixArray(numRb, numCluster);
+        auto sbit = inPsd->ConstBandsBegin(); // band iterator
+        for (unsigned i = 0; i < numRb; i++)
+        {
+            double fsb = (*sbit).fc; // center frequency of the sub-band
+            for (std::size_t cIndex = 0; cIndex < numCluster; cIndex++)
+            {
+                double delay = -2 * M_PI * fsb * (channelParams->m_delay[cIndex]);
+                channelParams->m_cachedDelaySincos(i, cIndex) =
+                    std::complex<double>(cos(delay), sin(delay));
+            }
+            sbit++;
+        }
+    }
+
     // If "params" (ChannelMatrix) and longTerm were computed for the reverse direction (e.g. this
     // is a DL transmission but params and longTerm were last updated during UL), then the elements
     // in longTerm start from different offsets.
 
-    auto vit = inPsd->ValuesBegin();      // psd iterator
-    auto sbit = inPsd->ConstBandsBegin(); // band iterator
+    auto vit = inPsd->ValuesBegin(); // psd iterator
     size_t iRb = 0;
     // Compute the frequency-domain channel matrix
     while (vit != inPsd->ValuesEnd())
     {
         if ((*vit) != 0.00)
         {
-            double fsb = (*sbit).fc; // center frequency of the sub-band
             for (auto rxPortIdx = 0; rxPortIdx < numRxPorts; rxPortIdx++)
             {
                 for (auto txPortIdx = 0; txPortIdx < numTxPorts; txPortIdx++)
                 {
                     std::complex<double> subsbandGain(0.0, 0.0);
-
                     for (size_t cIndex = 0; cIndex < numCluster; cIndex++)
                     {
-                        double delay = -2 * M_PI * fsb * (channelParams->m_delay[cIndex]);
                         subsbandGain += directionalLongTerm(rxPortIdx, txPortIdx, cIndex) *
                                         doppler[cIndex] *
-                                        std::complex<double>(cos(delay), sin(delay));
+                                        channelParams->m_cachedDelaySincos(iRb, cIndex);
                     }
                     // Multiply with the square root of the input PSD so that the norm (absolute
                     // value squared) of chanSpct will be the output PSD
@@ -401,7 +422,6 @@ ThreeGppSpectrumPropagationLossModel::GenSpectrumChannelMatrix(
             }
         }
         vit++;
-        sbit++;
         iRb++;
     }
     return chanSpct;
