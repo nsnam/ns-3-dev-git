@@ -333,7 +333,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
     NS_ABORT_IF(channelNumber == 0 || frequency == 0);
 
     WifiPhyOperatingChannel channel;
-    channel.Set({channelNumber, frequency, width, band}, WIFI_STANDARD_UNSPECIFIED);
+    channel.Set({{channelNumber, frequency, width, band}}, WIFI_STANDARD_UNSPECIFIED);
 
     uint16_t channelLowestFreq = frequency - width / 2;
     uint16_t primaryChannelLowestFreq = primaryChannelCenterFrequency - 10;

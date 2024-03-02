@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <sstream>
 
 namespace ns3
 {
@@ -309,37 +310,52 @@ WifiPhyOperatingChannel::IsSet() const
 }
 
 void
-WifiPhyOperatingChannel::Set(const FrequencyChannelInfo& info, WifiStandard standard)
+WifiPhyOperatingChannel::Set(const std::vector<FrequencyChannelInfo>& segments,
+                             WifiStandard standard)
 {
-    NS_LOG_FUNCTION(this << +info.number << info.frequency << info.width << standard << info.band);
-
-    if (const auto channelIt =
-            FindFirst(info.number, info.frequency, info.width, standard, info.band);
-        channelIt != m_frequencyChannels.cend() &&
-        FindFirst(info.number,
-                  info.frequency,
-                  info.width,
-                  standard,
-                  info.band,
-                  std::next(channelIt)) == m_frequencyChannels.cend())
+    std::stringstream ss;
+    for (const auto& segment : segments)
     {
-        // a unique channel matches the specified criteria
-        m_channelIts.resize(1);
-        m_channelIts.front() = channelIt;
-        m_primary20Index = 0;
-        return;
+        ss << segment;
+    }
+    NS_LOG_FUNCTION(this << ss.str() << standard);
+
+    NS_ASSERT_MSG(!segments.empty(), "At least one frequency segment has to be provided");
+
+    std::vector<ConstIterator> channelIts{};
+    for (const auto& segment : segments)
+    {
+        if (const auto channelIt =
+                FindFirst(segment.number, segment.frequency, segment.width, standard, segment.band);
+            channelIt != m_frequencyChannels.cend() &&
+            FindFirst(segment.number,
+                      segment.frequency,
+                      segment.width,
+                      standard,
+                      segment.band,
+                      std::next(channelIt)) == m_frequencyChannels.cend())
+        {
+            // a unique channel matches the specified criteria
+            channelIts.push_back(channelIt);
+        }
     }
 
-    // if a unique channel was not found, throw an exception (mainly for unit testing this code)
-    throw std::runtime_error(
-        "WifiPhyOperatingChannel: No unique channel found given the specified criteria");
+    if (channelIts.size() != segments.size())
+    {
+        // if a unique channel was not found, throw an exception (mainly for unit testing this code)
+        throw std::runtime_error(
+            "WifiPhyOperatingChannel: No unique channel found given the specified criteria");
+    }
+
+    m_channelIts = channelIts;
+    m_primary20Index = 0;
 }
 
 void
 WifiPhyOperatingChannel::SetDefault(ChannelWidthMhz width, WifiStandard standard, WifiPhyBand band)
 {
     NS_LOG_FUNCTION(this << width << standard << band);
-    Set({GetDefaultChannelNumber(width, standard, band), 0, width, band}, standard);
+    Set({{GetDefaultChannelNumber(width, standard, band), 0, width, band}}, standard);
 }
 
 uint8_t
