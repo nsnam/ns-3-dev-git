@@ -82,7 +82,7 @@ main(int argc, char** argv)
     cmd.AddValue("printRoutingTables",
                  "Print routing tables at 30, 60 and 90 seconds",
                  printRoutingTables);
-    cmd.AddValue("showPings", "Show Ping6 reception", showPings);
+    cmd.AddValue("showPings", "Show Ping reception", showPings);
     cmd.AddValue("splitHorizonStrategy",
                  "Split Horizon strategy to use (NoSplitHorizon, SplitHorizon, PoisonReverse)",
                  SplitHorizon);

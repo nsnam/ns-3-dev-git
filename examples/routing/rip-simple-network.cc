@@ -82,7 +82,7 @@ main(int argc, char** argv)
     cmd.AddValue("printRoutingTables",
                  "Print routing tables at 30, 60 and 90 seconds",
                  printRoutingTables);
-    cmd.AddValue("showPings", "Show Ping6 reception", showPings);
+    cmd.AddValue("showPings", "Show Ping reception", showPings);
     cmd.AddValue("splitHorizonStrategy",
                  "Split Horizon strategy to use (NoSplitHorizon, SplitHorizon, PoisonReverse)",
                  SplitHorizon);
@@ -102,15 +102,15 @@ main(int argc, char** argv)
 
     if (SplitHorizon == "NoSplitHorizon")
     {
-        Config::SetDefault("ns3::Rip::SplitHorizon", EnumValue(RipNg::NO_SPLIT_HORIZON));
+        Config::SetDefault("ns3::Rip::SplitHorizon", EnumValue(Rip::NO_SPLIT_HORIZON));
     }
     else if (SplitHorizon == "SplitHorizon")
     {
-        Config::SetDefault("ns3::Rip::SplitHorizon", EnumValue(RipNg::SPLIT_HORIZON));
+        Config::SetDefault("ns3::Rip::SplitHorizon", EnumValue(Rip::SPLIT_HORIZON));
     }
     else
     {
-        Config::SetDefault("ns3::Rip::SplitHorizon", EnumValue(RipNg::POISON_REVERSE));
+        Config::SetDefault("ns3::Rip::SplitHorizon", EnumValue(Rip::POISON_REVERSE));
     }
 
     NS_LOG_INFO("Create nodes.");
