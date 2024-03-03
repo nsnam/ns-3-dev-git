@@ -19,6 +19,7 @@
 #include "address-utils.h"
 
 #include "inet-socket-address.h"
+#include "inet6-socket-address.h"
 
 #include "ns3/log.h"
 
@@ -146,7 +147,23 @@ IsMulticast(const Address& ad)
         Ipv4Address ipv4 = inetAddr.GetIpv4();
         return ipv4.IsMulticast();
     }
-    // IPv6 case can go here, in future
+    else if (Ipv4Address::IsMatchingType(ad))
+    {
+        Ipv4Address ipv4 = Ipv4Address::ConvertFrom(ad);
+        return ipv4.IsMulticast();
+    }
+    else if (Inet6SocketAddress::IsMatchingType(ad))
+    {
+        Inet6SocketAddress inetAddr = Inet6SocketAddress::ConvertFrom(ad);
+        Ipv6Address ipv6 = inetAddr.GetIpv6();
+        return ipv6.IsMulticast();
+    }
+    else if (Ipv6Address::IsMatchingType(ad))
+    {
+        Ipv6Address ipv6 = Ipv6Address::ConvertFrom(ad);
+        return ipv6.IsMulticast();
+    }
+
     return false;
 }
 
