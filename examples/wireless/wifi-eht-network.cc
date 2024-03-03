@@ -214,7 +214,7 @@ main(int argc, char* argv[])
     cmd.AddValue("mpduBufferSize",
                  "Size (in number of MPDUs) of the BlockAck buffer",
                  mpduBufferSize);
-    cmd.AddValue("nStations", "Number of non-AP HE stations", nStations);
+    cmd.AddValue("nStations", "Number of non-AP EHT stations", nStations);
     cmd.AddValue("dlAckType",
                  "Ack sequence type for DL OFDMA (NO-OFDMA, ACK-SU-FORMAT, MU-BAR, AGGR-MU-BAR)",
                  dlAckSeqType);
