@@ -530,6 +530,8 @@ LogDistancePropagationLossModel::DoCalcRxPower(double txPowerDbm,
     double distance = a->GetDistanceFrom(b);
     if (distance <= m_referenceDistance)
     {
+        NS_LOG_DEBUG("distance=" << distance << "m, reference-attenuation=" << -m_referenceLoss
+                                 << "dB, no further attenuation");
         return txPowerDbm - m_referenceLoss;
     }
     /**
