@@ -479,13 +479,13 @@ void
 WifiPhy::SetRxSensitivity(double threshold)
 {
     NS_LOG_FUNCTION(this << threshold);
-    m_rxSensitivityW = DbmToW(threshold);
+    m_rxSensitivityDbm = threshold;
 }
 
 double
 WifiPhy::GetRxSensitivity() const
 {
-    return WToDbm(m_rxSensitivityW);
+    return m_rxSensitivityDbm;
 }
 
 void
