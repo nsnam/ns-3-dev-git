@@ -190,11 +190,6 @@ class int64x64_t
         _v <<= 64;
     }
 
-    inline int64x64_t(const int128_t v)
-        : _v(v)
-    {
-    }
-
     /**@}*/
 
     /**
@@ -403,7 +398,9 @@ class int64x64_t
 
     friend inline int64x64_t operator-(const int64x64_t& lhs)
     {
-        return int64x64_t(-lhs._v);
+        int64x64_t res;
+        res._v = -lhs._v;
+        return res;
     }
 
     friend inline int64x64_t operator!(const int64x64_t& lhs)
