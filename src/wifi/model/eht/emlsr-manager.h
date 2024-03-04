@@ -337,10 +337,11 @@ class EmlsrManager : public Object
      * Switch channel on the Aux PHY operating on the given current link so that it operates
      * on the given next link.
      *
+     * \param auxPhy the Aux PHY
      * \param currLinkId the ID of the link on which the aux PHY is currently operating
      * \param nextLinkId the ID of the link on which the aux PHY will be operating
      */
-    void SwitchAuxPhy(uint8_t currLinkId, uint8_t nextLinkId);
+    void SwitchAuxPhy(Ptr<WifiPhy> auxPhy, uint8_t currLinkId, uint8_t nextLinkId);
 
     /**
      * Set the CCA ED threshold (if needed) on the given PHY that is switching channel to

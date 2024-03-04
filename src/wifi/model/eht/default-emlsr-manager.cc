@@ -101,7 +101,17 @@ DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId,
     {
         // switch channel on Aux PHY so that it operates on the link on which the main PHY was
         // operating
-        SwitchAuxPhy(nextLinkId, currLinkId);
+        auto auxPhy = GetStaMac()->GetWifiPhy(nextLinkId);
+
+        NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") operating on link " << +nextLinkId
+                                 << " will switch to link " << +currLinkId << " in "
+                                 << duration.As(Time::US));
+        Simulator::Schedule(duration,
+                            &DefaultEmlsrManager::SwitchAuxPhy,
+                            this,
+                            auxPhy,
+                            nextLinkId,
+                            currLinkId);
         return;
     }
 

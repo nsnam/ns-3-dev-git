@@ -637,11 +637,9 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
 }
 
 void
-EmlsrManager::SwitchAuxPhy(uint8_t currLinkId, uint8_t nextLinkId)
+EmlsrManager::SwitchAuxPhy(Ptr<WifiPhy> auxPhy, uint8_t currLinkId, uint8_t nextLinkId)
 {
-    NS_LOG_FUNCTION(this << currLinkId << nextLinkId);
-
-    auto auxPhy = GetStaMac()->GetWifiPhy(currLinkId);
+    NS_LOG_FUNCTION(this << auxPhy << currLinkId << nextLinkId);
 
     auto newAuxPhyChannel = GetChannelForAuxPhy(nextLinkId);
 
