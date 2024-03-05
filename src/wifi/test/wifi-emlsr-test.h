@@ -669,9 +669,10 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
  * - the first one on the link used for ML setup, hence no PHY switch occurs
  * - the second one on another link, thus causing the main PHY to switch link
  * - the third one on the remaining link, thus causing the main PHY to switch link again
- * - the fourth one on the link used for ML setup; if the aux PHYs switches link, there is
- *   one aux PHY listening on such a link and the main PHY switches to this link, otherwise
- *   no PHY is listening on such a link and there is no response to the ICF sent by the AP MLD
+ * - the fourth one on the link used for ML setup
+ *
+ * Afterwards, the EMLSR client transmits 2 QoS data frames; the first one on the link used for
+ * ML setup (hence, no RTS is sent), the second one on another link.
  */
 class EmlsrLinkSwitchTest : public EmlsrOperationsTestBase
 {
@@ -741,9 +742,12 @@ class EmlsrLinkSwitchTest : public EmlsrOperationsTestBase
                                the Main PHY was operating before moving to the link of Aux PHY */
     bool m_resetCamState; /**< whether to reset the state of the ChannelAccessManager associated
                                with the link on which the main PHY has just switched to */
-    MHz_u m_auxPhyMaxChWidth;     //!< max channel width supported by aux PHYs
-    std::size_t m_countQoSframes; //!< counter for QoS data frames
-    std::size_t m_txPsdusPos;     //!< a position in the vector of TX PSDUs
+    MHz_u m_auxPhyMaxChWidth;         //!< max channel width supported by aux PHYs
+    std::size_t m_countQoSframes;     //!< counter for QoS data frames
+    std::size_t m_countIcfFrames;     //!< counter for ICF frames
+    std::size_t m_countRtsFrames;     //!< counter for RTS frames
+    std::size_t m_txPsdusPos;         //!< position in the vector of TX PSDUs of the first ICF
+    Ptr<ListErrorModel> m_errorModel; ///< error rate model to corrupt packets at AP MLD
 };
 
 /**
