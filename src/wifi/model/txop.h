@@ -30,6 +30,12 @@
 #include <memory>
 #include <vector>
 
+#define WIFI_TXOP_NS_LOG_APPEND_CONTEXT                                                            \
+    if (m_mac)                                                                                     \
+    {                                                                                              \
+        std::clog << "[mac=" << m_mac->GetAddress() << "] ";                                       \
+    }
+
 class EmlsrUlTxopTest;
 
 namespace ns3

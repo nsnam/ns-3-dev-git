@@ -34,11 +34,7 @@
 #include "ns3/socket.h"
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT                                                                      \
-    if (m_mac)                                                                                     \
-    {                                                                                              \
-        std::clog << "[mac=" << m_mac->GetAddress() << "] ";                                       \
-    }
+#define NS_LOG_APPEND_CONTEXT WIFI_TXOP_NS_LOG_APPEND_CONTEXT
 
 namespace ns3
 {
