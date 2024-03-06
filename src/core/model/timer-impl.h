@@ -35,6 +35,9 @@
 namespace ns3
 {
 
+namespace internal
+{
+
 /**
  * \ingroup timer
  * The timer implementation underlying Timer and Watchdog.
@@ -67,14 +70,9 @@ class TimerImpl
     virtual void Invoke() = 0;
 };
 
-} // namespace ns3
-
 /********************************************************************
  *  Implementation of TimerImpl implementation functions.
  ********************************************************************/
-
-namespace ns3
-{
 
 /**
  * \ingroup timer
@@ -209,6 +207,8 @@ TimerImpl::SetArgs(Args... args)
     }
     impl->SetArguments(args...);
 }
+
+} // namespace internal
 
 } // namespace ns3
 

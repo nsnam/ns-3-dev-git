@@ -33,7 +33,12 @@
 namespace ns3
 {
 
+namespace internal
+{
+
 class TimerImpl;
+
+} // namespace internal
 
 /**
  * \ingroup timer
@@ -230,7 +235,7 @@ class TrickleTimer
      * The timer implementation, which contains the bound callback
      * function and arguments.
      */
-    TimerImpl* m_impl;
+    internal::TimerImpl* m_impl;
 
     /** The future event scheduled to expire the timer. */
     EventId m_timerExpiration;
@@ -265,7 +270,7 @@ void
 TrickleTimer::SetFunction(FN fn)
 {
     delete m_impl;
-    m_impl = MakeTimerImpl(fn);
+    m_impl = internal::MakeTimerImpl(fn);
 }
 
 template <typename MEM_PTR, typename OBJ_PTR>
@@ -273,7 +278,7 @@ void
 TrickleTimer::SetFunction(MEM_PTR memPtr, OBJ_PTR objPtr)
 {
     delete m_impl;
-    m_impl = MakeTimerImpl(memPtr, objPtr);
+    m_impl = internal::MakeTimerImpl(memPtr, objPtr);
 }
 
 template <typename... Ts>

@@ -31,7 +31,12 @@
 namespace ns3
 {
 
+namespace internal
+{
+
 class TimerImpl;
+
+} // namespace internal
 
 /**
  * \ingroup timer
@@ -115,7 +120,7 @@ class Watchdog
      * The timer implementation, which contains the bound callback
      * function and arguments.
      */
-    TimerImpl* m_impl;
+    internal::TimerImpl* m_impl;
     /** The future event scheduled to expire the timer. */
     EventId m_event;
     /** The absolute time when the timer will expire. */
@@ -138,7 +143,7 @@ void
 Watchdog::SetFunction(FN fn)
 {
     delete m_impl;
-    m_impl = MakeTimerImpl(fn);
+    m_impl = internal::MakeTimerImpl(fn);
 }
 
 template <typename MEM_PTR, typename OBJ_PTR>
@@ -146,7 +151,7 @@ void
 Watchdog::SetFunction(MEM_PTR memPtr, OBJ_PTR objPtr)
 {
     delete m_impl;
-    m_impl = MakeTimerImpl(memPtr, objPtr);
+    m_impl = internal::MakeTimerImpl(memPtr, objPtr);
 }
 
 template <typename... Ts>
