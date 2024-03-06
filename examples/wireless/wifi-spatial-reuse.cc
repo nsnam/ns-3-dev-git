@@ -375,7 +375,7 @@ main(int argc, char* argv[])
 
     for (uint32_t i = 0; i < 2; i++)
     {
-        double throughput = static_cast<double>(bytesReceived[2 + i]) * 8 / 1000 / 1000 / duration;
+        const auto throughput = bytesReceived[2 + i] * 8.0 / 1000 / 1000 / duration;
         std::cout << "Throughput for BSS " << i + 1 << ": " << throughput << " Mbit/s" << std::endl;
     }
 

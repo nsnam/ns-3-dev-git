@@ -367,6 +367,7 @@ main(int argc, char* argv[])
                     clientNodes.Add(downlink ? wifiApNode.Get(0) : wifiStaNodes.Get(i));
                 }
 
+                const auto maxLoad = HePhy::GetDataRate(mcs, channelWidth, gi, 1) / nStations;
                 if (udp)
                 {
                     // UDP flow
@@ -375,12 +376,13 @@ main(int argc, char* argv[])
                     serverApp = server.Install(serverNodes.get());
                     serverApp.Start(Seconds(0.0));
                     serverApp.Stop(Seconds(simulationTime + 1));
+                    const auto packetInterval = payloadSize * 8.0 / maxLoad;
 
                     for (std::size_t i = 0; i < nStations; i++)
                     {
                         UdpClientHelper client(serverInterfaces.GetAddress(i), port);
                         client.SetAttribute("MaxPackets", UintegerValue(4294967295U));
-                        client.SetAttribute("Interval", TimeValue(Time("0.00001"))); // packets/s
+                        client.SetAttribute("Interval", TimeValue(Seconds(packetInterval)));
                         client.SetAttribute("PacketSize", UintegerValue(payloadSize));
                         ApplicationContainer clientApp = client.Install(clientNodes.Get(i));
                         clientApp.Start(Seconds(1.0));
@@ -405,7 +407,7 @@ main(int argc, char* argv[])
                         onoff.SetAttribute("OffTime",
                                            StringValue("ns3::ConstantRandomVariable[Constant=0]"));
                         onoff.SetAttribute("PacketSize", UintegerValue(payloadSize));
-                        onoff.SetAttribute("DataRate", DataRateValue(1000000000)); // bit/s
+                        onoff.SetAttribute("DataRate", DataRateValue(maxLoad));
                         AddressValue remoteAddress(
                             InetSocketAddress(serverInterfaces.GetAddress(i), port));
                         onoff.SetAttribute("Remote", remoteAddress);

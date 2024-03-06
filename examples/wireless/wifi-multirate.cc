@@ -480,7 +480,7 @@ Experiment::ApplicationSetup(Ptr<Node> client, Ptr<Node> server, double start, d
     // Equipping the source  node with OnOff Application used for sending
     OnOffHelper onoff("ns3::UdpSocketFactory",
                       Address(InetSocketAddress(Ipv4Address("10.0.0.1"), m_port)));
-    onoff.SetConstantRate(DataRate(60000000));
+    onoff.SetConstantRate(DataRate(54000000));
     onoff.SetAttribute("PacketSize", UintegerValue(m_packetSize));
     onoff.SetAttribute("Remote", AddressValue(InetSocketAddress(ipv4AddrServer, m_port)));
 
