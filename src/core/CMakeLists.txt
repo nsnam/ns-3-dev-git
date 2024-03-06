@@ -227,7 +227,6 @@ set(header_files
     model/hash-murmur3.h
     model/hash.h
     model/heap-scheduler.h
-    model/int-to-type.h
     model/int64x64-double.h
     model/int64x64.h
     model/integer.h
