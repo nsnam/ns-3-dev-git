@@ -393,6 +393,16 @@ ThreeGppSpectrumPropagationLossModel::GenSpectrumChannelMatrix(
         }
     }
 
+    // Compute the product between the doppler and the delay sincos
+    auto delaySincosCopy = channelParams->m_cachedDelaySincos;
+    for (size_t iRb = 0; iRb < inPsd->GetValuesN(); iRb++)
+    {
+        for (std::size_t cIndex = 0; cIndex < numCluster; cIndex++)
+        {
+            delaySincosCopy(iRb, cIndex) *= doppler[cIndex];
+        }
+    }
+
     // If "params" (ChannelMatrix) and longTerm were computed for the reverse direction (e.g. this
     // is a DL transmission but params and longTerm were last updated during UL), then the elements
     // in longTerm start from different offsets.
@@ -413,8 +423,7 @@ ThreeGppSpectrumPropagationLossModel::GenSpectrumChannelMatrix(
                     for (size_t cIndex = 0; cIndex < numCluster; cIndex++)
                     {
                         subsbandGain += directionalLongTerm(rxPortIdx, txPortIdx, cIndex) *
-                                        doppler[cIndex] *
-                                        channelParams->m_cachedDelaySincos(iRb, cIndex);
+                                        delaySincosCopy(iRb, cIndex);
                     }
                     // Multiply with the square root of the input PSD so that the norm (absolute
                     // value squared) of chanSpct will be the output PSD
