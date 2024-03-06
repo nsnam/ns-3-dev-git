@@ -423,6 +423,8 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     double totalRxPowerW = 0;
     RxPowerWattPerChannelBand rxPowerW;
 
+    const auto rxGainRatio = DbToRatio(GetRxGain());
+
     std::size_t index = 0;
     uint16_t prevBw = 0;
     for (const auto& band : bands)
@@ -434,7 +436,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
             WifiSpectrumValueHelper::GetBandPowerW(receivedSignalPsd, band.indices);
         NS_LOG_DEBUG("Signal power received (watts) before antenna gain for "
                      << bw << " MHz channel band " << index << ": " << band);
-        rxPowerPerBandW *= DbToRatio(GetRxGain());
+        rxPowerPerBandW *= rxGainRatio;
         rxPowerW.insert({band, rxPowerPerBandW});
         NS_LOG_DEBUG("Signal power received after antenna gain for "
                      << bw << " MHz channel band " << index << ": " << rxPowerPerBandW << " W ("
@@ -459,7 +461,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
                          << ru.GetRuType() << " and index " << ru.GetIndex() << " -> ("
                          << band.indices.first << "; " << band.indices.second
                          << "): " << rxPowerPerBandW);
-            rxPowerPerBandW *= DbToRatio(GetRxGain());
+            rxPowerPerBandW *= rxGainRatio;
             NS_LOG_DEBUG("Signal power received after antenna gain for RU with type "
                          << ru.GetRuType() << " and index " << ru.GetIndex() << " -> ("
                          << band.indices.first << "; " << band.indices.second << "): "
