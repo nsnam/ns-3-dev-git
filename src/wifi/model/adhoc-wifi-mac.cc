@@ -222,7 +222,7 @@ AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         }
         else
         {
-            ForwardUp(mpdu->GetPacket()->Copy(), from, to);
+            ForwardUp(mpdu->GetPacket(), from, to);
         }
         return;
     }
