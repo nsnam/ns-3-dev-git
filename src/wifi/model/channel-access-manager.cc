@@ -958,6 +958,12 @@ ChannelAccessManager::NotifySwitchingStartNow(PhyListener* phyListener, Time dur
 
     ResetState();
 
+    // Cancel timeout
+    if (m_accessTimeout.IsPending())
+    {
+        m_accessTimeout.Cancel();
+    }
+
     // Reset backoffs
     for (const auto& txop : m_txops)
     {
@@ -985,12 +991,6 @@ ChannelAccessManager::ResetState()
     m_lastCtsTimeoutEnd = std::min(m_lastCtsTimeoutEnd, now);
 
     InitLastBusyStructs();
-
-    // Cancel timeout
-    if (m_accessTimeout.IsPending())
-    {
-        m_accessTimeout.Cancel();
-    }
 }
 
 void
