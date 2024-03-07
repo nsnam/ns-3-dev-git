@@ -3,7 +3,7 @@ include(ExternalProject)
 ExternalProject_Add(
   brite_dep
   GIT_REPOSITORY https://gitlab.com/nsnam/BRITE.git
-  GIT_TAG 29c301e828d2a4f303b3d0c69360c987b02d0745
+  GIT_TAG 2a665ae11740a11afec1b068c2a45f21d901cf55
   PREFIX brite_dep
   BUILD_IN_SOURCE TRUE
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_OUTPUT_DIRECTORY}
