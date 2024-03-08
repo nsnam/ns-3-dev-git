@@ -401,6 +401,9 @@ struct CallbackTraits<Ptr<T>>
     }
 };
 
+namespace internal
+{
+
 // Duplicate of struct EventMemberImplObjTraits<T> as defined in make-event.h
 // We repeat it here to declare a specialization on Ptr<T>
 // without making this header dependent on make-event.h
@@ -427,6 +430,8 @@ struct EventMemberImplObjTraits<Ptr<T>>
         return *PeekPointer(p);
     }
 };
+
+} // namespace internal
 
 } // namespace ns3
 

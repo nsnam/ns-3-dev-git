@@ -94,6 +94,9 @@ EventImpl* MakeEvent(T function);
 namespace ns3
 {
 
+namespace internal
+{
+
 /**
  * \ingroup events
  * Helper for the MakeEvent functions which take a class method.
@@ -130,6 +133,8 @@ struct EventMemberImplObjTraits<T*>
     }
 };
 
+} // namespace internal
+
 template <typename MEM, typename OBJ, typename... Ts>
 std::enable_if_t<std::is_member_pointer_v<MEM>, EventImpl*>
 MakeEvent(MEM mem_ptr, OBJ obj, Ts... args)
@@ -154,7 +159,8 @@ MakeEvent(MEM mem_ptr, OBJ obj, Ts... args)
         {
             std::apply(
                 [this](Ts... args) {
-                    (EventMemberImplObjTraits<OBJ>::GetReference(m_obj).*m_function)(args...);
+                    (internal::EventMemberImplObjTraits<OBJ>::GetReference(m_obj).*
+                     m_function)(args...);
                 },
                 m_arguments);
         }
