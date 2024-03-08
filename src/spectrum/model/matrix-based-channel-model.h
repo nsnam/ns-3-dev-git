@@ -139,6 +139,12 @@ class MatrixBasedChannelModel : public Object
         Double2DVector m_angle;
 
         /**
+         * Sin/cos of cluster angle angle[direction][n], where direction = 0(AOA), 1(ZOA), 2(AOD),
+         * 3(ZOD) in degree.
+         */
+        std::vector<std::vector<std::pair<double, double>>> m_cachedAngleSincos;
+
+        /**
          * Alpha term per cluster as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3
          * for calculating doppler.
          */

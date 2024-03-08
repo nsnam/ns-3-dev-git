@@ -237,31 +237,19 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
     NS_ASSERT(numCluster <= longTerm->GetNumPages());
 
     // check if channelParams structure is generated in direction s-to-u or u-to-s
-    bool isSameDirection = (channelParams->m_nodeIds == channelMatrix->m_nodeIds);
-
-    MatrixBasedChannelModel::DoubleVector zoa;
-    MatrixBasedChannelModel::DoubleVector zod;
-    MatrixBasedChannelModel::DoubleVector aoa;
-    MatrixBasedChannelModel::DoubleVector aod;
+    bool isSameDir = (channelParams->m_nodeIds == channelMatrix->m_nodeIds);
 
     // if channel params is generated in the same direction in which we
     // generate the channel matrix, angles and zenith of departure and arrival are ok,
     // just set them to corresponding variable that will be used for the generation
     // of channel matrix, otherwise we need to flip angles and zeniths of departure and arrival
-    if (isSameDirection)
-    {
-        zoa = channelParams->m_angle[MatrixBasedChannelModel::ZOA_INDEX];
-        zod = channelParams->m_angle[MatrixBasedChannelModel::ZOD_INDEX];
-        aoa = channelParams->m_angle[MatrixBasedChannelModel::AOA_INDEX];
-        aod = channelParams->m_angle[MatrixBasedChannelModel::AOD_INDEX];
-    }
-    else
-    {
-        zod = channelParams->m_angle[MatrixBasedChannelModel::ZOA_INDEX];
-        zoa = channelParams->m_angle[MatrixBasedChannelModel::ZOD_INDEX];
-        aod = channelParams->m_angle[MatrixBasedChannelModel::AOA_INDEX];
-        aoa = channelParams->m_angle[MatrixBasedChannelModel::AOD_INDEX];
-    }
+    using DPV = std::vector<std::pair<double, double>>;
+    using MBCM = MatrixBasedChannelModel;
+    const auto& cachedAngleSincos = channelParams->m_cachedAngleSincos;
+    const DPV& zoa = cachedAngleSincos[isSameDir ? MBCM::ZOA_INDEX : MBCM::ZOD_INDEX];
+    const DPV& zod = cachedAngleSincos[isSameDir ? MBCM::ZOD_INDEX : MBCM::ZOA_INDEX];
+    const DPV& aoa = cachedAngleSincos[isSameDir ? MBCM::AOA_INDEX : MBCM::AOD_INDEX];
+    const DPV& aod = cachedAngleSincos[isSameDir ? MBCM::AOD_INDEX : MBCM::AOA_INDEX];
 
     for (size_t cIndex = 0; cIndex < numCluster; cIndex++)
     {
@@ -281,13 +269,12 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
 
         // cluster angle angle[direction][n], where direction = 0(aoa), 1(zoa).
         double tempDoppler =
-            factor * ((sin(zoa[cIndex] * M_PI / 180) * cos(aoa[cIndex] * M_PI / 180) * uSpeed.x +
-                       sin(zoa[cIndex] * M_PI / 180) * sin(aoa[cIndex] * M_PI / 180) * uSpeed.y +
-                       cos(zoa[cIndex] * M_PI / 180) * uSpeed.z) +
-                      (sin(zod[cIndex] * M_PI / 180) * cos(aod[cIndex] * M_PI / 180) * sSpeed.x +
-                       sin(zod[cIndex] * M_PI / 180) * sin(aod[cIndex] * M_PI / 180) * sSpeed.y +
-                       cos(zod[cIndex] * M_PI / 180) * sSpeed.z) +
-                      2 * alpha * D);
+            factor *
+            ((zoa[cIndex].first * aoa[cIndex].second * uSpeed.x +
+              zoa[cIndex].first * aoa[cIndex].first * uSpeed.y + zoa[cIndex].second * uSpeed.z) +
+             (zod[cIndex].first * aod[cIndex].second * sSpeed.x +
+              zod[cIndex].first * aod[cIndex].first * sSpeed.y + zod[cIndex].second * sSpeed.z) +
+             2 * alpha * D);
         doppler[cIndex] = std::complex<double>(cos(tempDoppler), sin(tempDoppler));
     }
 

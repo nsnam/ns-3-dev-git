@@ -42,6 +42,9 @@ NS_LOG_COMPONENT_DEFINE("ThreeGppChannelModel");
 
 NS_OBJECT_ENSURE_REGISTERED(ThreeGppChannelModel);
 
+/// Conversion factor: degrees to radians
+static constexpr double DEG2RAD = M_PI / 180.0;
+
 /// The ray offset angles within a cluster, given for rms angle spread normalized to 1.
 /// (Table 7.5-3)
 static const double offSetAlpha[20] = {
@@ -1783,6 +1786,20 @@ ThreeGppChannelModel::GenerateChannelParameters(const Ptr<const ChannelCondition
     channelParams->m_angle.push_back(clusterZoa);
     channelParams->m_angle.push_back(clusterAod);
     channelParams->m_angle.push_back(clusterZod);
+
+    // Precompute angles sincos
+    channelParams->m_cachedAngleSincos.resize(channelParams->m_angle.size());
+    for (size_t direction = 0; direction < channelParams->m_angle.size(); direction++)
+    {
+        channelParams->m_cachedAngleSincos[direction].resize(
+            channelParams->m_angle[direction].size());
+        for (size_t cluster = 0; cluster < channelParams->m_angle[direction].size(); cluster++)
+        {
+            channelParams->m_cachedAngleSincos[direction][cluster] = {
+                sin(channelParams->m_angle[direction][cluster] * DEG2RAD),
+                cos(channelParams->m_angle[direction][cluster] * DEG2RAD)};
+        }
+    }
 
     // Compute alpha and D as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3
     // These terms account for an additional Doppler contribution due to the
