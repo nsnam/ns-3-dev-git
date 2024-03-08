@@ -928,7 +928,6 @@ ChannelAccessManager::NotifySwitchingStartNow(PhyListener* phyListener, Time dur
 
     Time now = Simulator::Now();
     NS_ASSERT(m_lastTxEnd <= now);
-    NS_ASSERT(m_lastSwitchingEnd <= now);
 
     if (phyListener) // to make tests happy
     {

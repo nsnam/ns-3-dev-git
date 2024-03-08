@@ -393,6 +393,9 @@ WifiPhyStateHelper::SwitchToChannelSwitching(Time switchingDuration)
     case WifiPhyState::IDLE:
         LogPreviousIdleAndCcaBusyStates();
         break;
+    case WifiPhyState::SWITCHING:
+        // do nothing
+        break;
     default:
         NS_FATAL_ERROR("Invalid WifiPhy state.");
         break;

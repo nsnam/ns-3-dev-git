@@ -1188,7 +1188,6 @@ WifiPhy::GetDelayUntilChannelSwitch()
         return Seconds(0);
     }
 
-    NS_ASSERT(!IsStateSwitching());
     std::optional<Time> delay;
     switch (m_state->GetState())
     {
@@ -1204,6 +1203,9 @@ WifiPhy::GetDelayUntilChannelSwitch()
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::IDLE:
         Reset();
+        delay = Seconds(0);
+        break;
+    case WifiPhyState::SWITCHING:
         delay = Seconds(0);
         break;
     case WifiPhyState::SLEEP:
