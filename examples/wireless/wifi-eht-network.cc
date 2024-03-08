@@ -158,11 +158,13 @@ main(int argc, char* argv[])
     bool enableBsrp{false};
     std::string mcsStr;
     std::vector<uint64_t> mcsValues;
+    int channelWidth{-1};  // in MHz, -1 indicates an unset value
+    int guardInterval{-1}; // in nanoseconds, -1 indicates an unset value
     uint32_t payloadSize =
         700; // must fit in the max TX duration when transmitting at MCS 0 over an RU of 26 tones
     Time tputInterval{0}; // interval for detailed throughput measurement
-    double minExpectedThroughput{0};
-    double maxExpectedThroughput{0};
+    double minExpectedThroughput{0.0};
+    double maxExpectedThroughput{0.0};
     Time accessReqInterval{0};
 
     CommandLine cmd(__FILE__);
@@ -233,6 +235,14 @@ main(int argc, char* argv[])
         "mcs",
         "list of comma separated MCS values to test; if unset, all MCS values (0-13) are tested",
         mcsStr);
+    cmd.AddValue("channelWidth",
+                 "if set, limit testing to a specific channel width expressed in MHz (20, 40, 80 "
+                 "or 160 MHz)",
+                 channelWidth);
+    cmd.AddValue("guardInterval",
+                 "if set, limit testing to a specific guard interval duration expressed in "
+                 "nanoseconds (800, 1600 or 3200 ns)",
+                 guardInterval);
     cmd.AddValue("payloadSize", "The application payload size in bytes", payloadSize);
     cmd.AddValue("tputInterval", "duration of intervals for throughput measurement", tputInterval);
     cmd.AddValue("minExpectedThroughput",
@@ -299,19 +309,31 @@ main(int argc, char* argv[])
         std::sort(mcsValues.begin(), mcsValues.end());
     }
 
+    int minChannelWidth = 20;
+    int maxChannelWidth = (frequency != 2.4 && frequency2 != 2.4 && frequency3 != 2.4) ? 160 : 40;
+    if (channelWidth >= minChannelWidth && channelWidth <= maxChannelWidth)
+    {
+        minChannelWidth = channelWidth;
+        maxChannelWidth = channelWidth;
+    }
+    int minGi = enableUlOfdma ? 1600 : 800;
+    int maxGi = 3200;
+    if (guardInterval >= minGi && guardInterval <= maxGi)
+    {
+        minGi = guardInterval;
+        maxGi = guardInterval;
+    }
+
     for (const auto mcs : mcsValues)
     {
         uint8_t index = 0;
         double previous = 0;
-        uint16_t maxChannelWidth =
-            (frequency != 2.4 && frequency2 != 2.4 && frequency3 != 2.4) ? 160 : 40;
-        int minGi = enableUlOfdma ? 1600 : 800;
-        for (int channelWidth = 20; channelWidth <= maxChannelWidth;) // MHz
+        for (int width = minChannelWidth; width <= maxChannelWidth; width *= 2) // MHz
         {
-            const auto is80Plus80 = (use80Plus80 && (channelWidth == 160));
-            const std::string widthStr = is80Plus80 ? "80+80" : std::to_string(channelWidth);
+            const auto is80Plus80 = (use80Plus80 && (width == 160));
+            const std::string widthStr = is80Plus80 ? "80+80" : std::to_string(width);
             const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
-            for (int gi = 3200; gi >= minGi;) // Nanoseconds
+            for (int gi = maxGi; gi >= minGi; gi /= 2) // Nanoseconds
             {
                 if (!udp)
                 {
@@ -506,7 +528,7 @@ main(int argc, char* argv[])
                 }
 
                 const auto maxLoad =
-                    nLinks * EhtPhy::GetDataRate(mcs, channelWidth, NanoSeconds(gi), 1) / nStations;
+                    nLinks * EhtPhy::GetDataRate(mcs, width, NanoSeconds(gi), 1) / nStations;
                 if (udp)
                 {
                     // UDP flow
@@ -598,7 +620,7 @@ main(int argc, char* argv[])
                           << " Mbit/s" << std::endl;
 
                 // test first element
-                if (mcs == minMcs && channelWidth == 20 && gi == 3200)
+                if (mcs == minMcs && width == 20 && gi == 3200)
                 {
                     if (throughput * (1 + tolerance) < minExpectedThroughput)
                     {
@@ -607,7 +629,7 @@ main(int argc, char* argv[])
                     }
                 }
                 // test last element
-                if (mcs == maxMcs && channelWidth == maxChannelWidth && gi == 800)
+                if (mcs == maxMcs && width == maxChannelWidth && gi == 800)
                 {
                     if (maxExpectedThroughput > 0 &&
                         throughput > maxExpectedThroughput * (1 + tolerance))
@@ -637,9 +659,7 @@ main(int argc, char* argv[])
                     exit(1);
                 }
                 index++;
-                gi /= 2;
             }
-            channelWidth *= 2;
         }
     }
     return 0;
