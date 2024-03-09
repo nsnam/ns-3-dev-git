@@ -18,6 +18,7 @@ build_lib(
     model/sink-application.cc
     model/source-application.cc
     model/tgax-video-traffic.cc
+    model/tgax-virtual-desktop.cc
     model/tgax-voip-traffic.cc
     model/three-gpp-http-client.cc
     model/three-gpp-http-header.cc
@@ -46,6 +47,7 @@ build_lib(
     model/sink-application.h
     model/source-application.h
     model/tgax-video-traffic.h
+    model/tgax-virtual-desktop.h
     model/tgax-voip-traffic.h
     model/three-gpp-http-client.h
     model/three-gpp-http-header.h
