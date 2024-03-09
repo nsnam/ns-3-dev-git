@@ -28,6 +28,7 @@ build_lib(
     model/udp-server.cc
     model/udp-trace-client.cc
     model/video-traffic.cc
+    model/virtual-desktop.cc
     model/voip-traffic.cc
   HEADER_FILES
     helper/bulk-send-helper.h
@@ -57,6 +58,7 @@ build_lib(
     model/udp-server.h
     model/udp-trace-client.h
     model/video-traffic.h
+    model/virtual-desktop.h
     model/voip-traffic.h
   LIBRARIES_TO_LINK ${libinternet}
   TEST_SOURCES
