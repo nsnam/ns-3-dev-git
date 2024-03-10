@@ -58,6 +58,7 @@ struct UanProtocolBits
  * prtcl=1 (IPv4)
  * prtcl=2 (ARP)
  * prtcl=3 (IPv6)
+ * prtcl=4 (6LoWPAN)
  *
  * type: The type field is MAC protocol specific
  */

@@ -24,6 +24,7 @@
 static const uint16_t ARP_PROT_NUMBER = 0x0806;
 static const uint16_t IPV4_PROT_NUMBER = 0x0800;
 static const uint16_t IPV6_PROT_NUMBER = 0x86DD;
+static const uint16_t SIXLOWPAN_PROT_NUMBER = 0xA0ED;
 
 namespace ns3
 {
@@ -103,6 +104,10 @@ UanHeaderCommon::SetProtocolNumber(uint16_t protocolNumber)
     {
         m_uanProtocolBits.m_protocolNumber = 3;
     }
+    else if (protocolNumber == SIXLOWPAN_PROT_NUMBER)
+    {
+        m_uanProtocolBits.m_protocolNumber = 4;
+    }
     else
     {
         NS_ASSERT_MSG(false, "UanHeaderCommon::SetProtocolNumber(): Protocol not supported");
@@ -141,6 +146,10 @@ UanHeaderCommon::GetProtocolNumber() const
     if (m_uanProtocolBits.m_protocolNumber == 3)
     {
         return IPV6_PROT_NUMBER;
+    }
+    if (m_uanProtocolBits.m_protocolNumber == 4)
+    {
+        return SIXLOWPAN_PROT_NUMBER;
     }
     return 0;
 }
