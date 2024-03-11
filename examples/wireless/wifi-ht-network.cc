@@ -32,6 +32,7 @@
 #include "ns3/on-off-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/packet-sink.h"
+#include "ns3/rng-seed-manager.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
 #include "ns3/tuple.h"
@@ -197,6 +198,12 @@ main(int argc, char* argv[])
                 NetDeviceContainer apDevice;
                 apDevice = wifi.Install(phy, mac, wifiApNode);
 
+                RngSeedManager::SetSeed(1);
+                RngSeedManager::SetRun(1);
+                int64_t streamNumber = 150;
+                streamNumber += wifi.AssignStreams(apDevice, streamNumber);
+                streamNumber += wifi.AssignStreams(staDevice, streamNumber);
+
                 // mobility.
                 MobilityHelper mobility;
                 Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
@@ -214,6 +221,8 @@ main(int argc, char* argv[])
                 InternetStackHelper stack;
                 stack.Install(wifiApNode);
                 stack.Install(wifiStaNode);
+                streamNumber += stack.AssignStreams(wifiApNode, streamNumber);
+                streamNumber += stack.AssignStreams(wifiStaNode, streamNumber);
 
                 Ipv4AddressHelper address;
                 address.SetBase("192.168.1.0", "255.255.255.0");
@@ -232,6 +241,8 @@ main(int argc, char* argv[])
                     uint16_t port = 9;
                     UdpServerHelper server(port);
                     serverApp = server.Install(wifiStaNode.Get(0));
+                    streamNumber += server.AssignStreams(wifiStaNode.Get(0), streamNumber);
+
                     serverApp.Start(Seconds(0.0));
                     serverApp.Stop(Seconds(simulationTime + 1));
                     const auto packetInterval = payloadSize * 8.0 / maxLoad;
@@ -241,6 +252,8 @@ main(int argc, char* argv[])
                     client.SetAttribute("Interval", TimeValue(Seconds(packetInterval)));
                     client.SetAttribute("PacketSize", UintegerValue(payloadSize));
                     ApplicationContainer clientApp = client.Install(wifiApNode.Get(0));
+                    streamNumber += client.AssignStreams(wifiApNode.Get(0), streamNumber);
+
                     clientApp.Start(Seconds(1.0));
                     clientApp.Stop(Seconds(simulationTime + 1));
                 }
@@ -251,6 +264,9 @@ main(int argc, char* argv[])
                     Address localAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
                     PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", localAddress);
                     serverApp = packetSinkHelper.Install(wifiStaNode.Get(0));
+                    streamNumber +=
+                        packetSinkHelper.AssignStreams(wifiStaNode.Get(0), streamNumber);
+
                     serverApp.Start(Seconds(0.0));
                     serverApp.Stop(Seconds(simulationTime + 1));
 
@@ -265,6 +281,8 @@ main(int argc, char* argv[])
                         InetSocketAddress(staNodeInterface.GetAddress(0), port));
                     onoff.SetAttribute("Remote", remoteAddress);
                     ApplicationContainer clientApp = onoff.Install(wifiApNode.Get(0));
+                    streamNumber += onoff.AssignStreams(wifiApNode.Get(0), streamNumber);
+
                     clientApp.Start(Seconds(1.0));
                     clientApp.Stop(Seconds(simulationTime + 1));
                 }

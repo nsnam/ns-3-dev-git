@@ -346,6 +346,8 @@ main(int argc, char* argv[])
                 InternetStackHelper stack;
                 stack.Install(wifiApNode);
                 stack.Install(wifiStaNodes);
+                streamNumber += stack.AssignStreams(wifiApNode, streamNumber);
+                streamNumber += stack.AssignStreams(wifiStaNodes, streamNumber);
 
                 Ipv4AddressHelper address;
                 address.SetBase("192.168.1.0", "255.255.255.0");
@@ -374,6 +376,8 @@ main(int argc, char* argv[])
                     uint16_t port = 9;
                     UdpServerHelper server(port);
                     serverApp = server.Install(serverNodes.get());
+                    streamNumber += server.AssignStreams(serverNodes.get(), streamNumber);
+
                     serverApp.Start(Seconds(0.0));
                     serverApp.Stop(Seconds(simulationTime + 1));
                     const auto packetInterval = payloadSize * 8.0 / maxLoad;
@@ -385,6 +389,8 @@ main(int argc, char* argv[])
                         client.SetAttribute("Interval", TimeValue(Seconds(packetInterval)));
                         client.SetAttribute("PacketSize", UintegerValue(payloadSize));
                         ApplicationContainer clientApp = client.Install(clientNodes.Get(i));
+                        streamNumber += client.AssignStreams(clientNodes.Get(i), streamNumber);
+
                         clientApp.Start(Seconds(1.0));
                         clientApp.Stop(Seconds(simulationTime + 1));
                     }
@@ -396,6 +402,8 @@ main(int argc, char* argv[])
                     Address localAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
                     PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", localAddress);
                     serverApp = packetSinkHelper.Install(serverNodes.get());
+                    streamNumber += packetSinkHelper.AssignStreams(serverNodes.get(), streamNumber);
+
                     serverApp.Start(Seconds(0.0));
                     serverApp.Stop(Seconds(simulationTime + 1));
 
@@ -412,6 +420,8 @@ main(int argc, char* argv[])
                             InetSocketAddress(serverInterfaces.GetAddress(i), port));
                         onoff.SetAttribute("Remote", remoteAddress);
                         ApplicationContainer clientApp = onoff.Install(clientNodes.Get(i));
+                        streamNumber += onoff.AssignStreams(clientNodes.Get(i), streamNumber);
+
                         clientApp.Start(Seconds(1.0));
                         clientApp.Stop(Seconds(simulationTime + 1));
                     }
