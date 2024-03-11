@@ -42,6 +42,12 @@ AdvancedEmlsrManager::GetTypeId()
                           "If this attribute is true, the PPDU may be dropped.",
                           BooleanValue(false),
                           MakeBooleanAccessor(&AdvancedEmlsrManager::m_allowUlTxopInRx),
+                          MakeBooleanChecker())
+            .AddAttribute("InterruptSwitch",
+                          "Whether the main PHY can be interrupted while switching to start "
+                          "switching to another link.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&AdvancedEmlsrManager::m_interruptSwitching),
                           MakeBooleanChecker());
     return tid;
 }
@@ -206,6 +212,62 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
         // the main PHY, thus invalidating the list of callbacks on which the for loop iterates.
         // Hence, schedule the call to NotifyTxopEnd to execute it outside such for loop.
         Simulator::ScheduleNow(&AdvancedEmlsrManager::NotifyTxopEnd, this, *linkId, false, false);
+    }
+}
+
+void
+AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+
+    if (m_switchAuxPhy && (!mainPhy->IsStateSwitching() || !m_interruptSwitching))
+    {
+        NS_LOG_DEBUG("SwitchAuxPhy true, nothing to do");
+        return;
+    }
+
+    if (!m_switchAuxPhy && !m_auxPhyToReconnect)
+    {
+        NS_LOG_DEBUG("SwitchAuxPhy false, nothing to do");
+        return;
+    }
+
+    // we get here if:
+    // - SwitchAuxPhy is true, the main PHY is switching and switching can be interrupted
+    // or
+    // - SwitchAuxPhy is false and there is an aux PHY to reconnect
+
+    // Note that the main PHY may be switching at the end of a TXOP when, e.g., the main PHY
+    // starts switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
+    // is not received and the UL TXOP ends before the main PHY channel switch is completed.
+    // In such cases, wait until the main PHY channel switch is completed (unless the channel
+    // switching can be interrupted) before requesting a new channel switch. Given that the
+    // TXOP ended, the event to put the aux PHY to sleep can be cancelled.
+    // Backoff shall not be reset on the link left by the main PHY because a TXOP ended and
+    // a new backoff value must be generated.
+    m_auxPhyToSleepEvent.Cancel();
+
+    if (m_switchAuxPhy || !mainPhy->IsStateSwitching() || m_interruptSwitching)
+    {
+        NS_ASSERT_MSG(
+            !m_switchAuxPhy || m_mainPhySwitchInfo.end >= Simulator::Now(),
+            "Aux PHY next link ID should have a value when interrupting a main PHY switch");
+        uint8_t nextLinkId = m_switchAuxPhy ? m_mainPhySwitchInfo.from : GetMainPhyId();
+        SwitchMainPhy(nextLinkId, false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
+    }
+    else
+    {
+        // delay link switch until current channel switching is completed
+        Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
+            // request the main PHY to switch back to the primary link only if in the meantime
+            // no TXOP started on another link (which will require the main PHY to switch link)
+            if (!GetEhtFem(linkId)->UsingOtherEmlsrLink())
+            {
+                SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
+            }
+        });
     }
 }
 

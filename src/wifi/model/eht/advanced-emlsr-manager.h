@@ -52,10 +52,14 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
                         Time psduDuration);
 
   private:
-    bool m_useNotifiedMacHdr; //!< whether to use the information about the MAC header of
-                              //!< the MPDU being received (if notified by the PHY)
-    bool m_allowUlTxopInRx;   //!< whether a (main or aux) PHY is allowed to start an UL
-                              //!< TXOP if another PHY is receiving a PPDU
+    void DoNotifyTxopEnd(uint8_t linkId) override;
+
+    bool m_useNotifiedMacHdr;        //!< whether to use the information about the MAC header of
+                                     //!< the MPDU being received (if notified by the PHY)
+    bool m_allowUlTxopInRx;          //!< whether a (main or aux) PHY is allowed to start an UL
+                                     //!< TXOP if another PHY is receiving a PPDU
+    bool m_interruptSwitching;       //!< whether a main PHY switching can be interrupted to start
+                                     //!< switching to another link
 };
 
 } // namespace ns3
