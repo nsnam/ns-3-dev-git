@@ -466,11 +466,13 @@ class EmlsrManager : public Object
     /**
      * Notify subclass that the main PHY is switching channel to operate on another link.
      *
-     * \param currLinkId the ID of the link on which the main PHY is operating
+     * \param currLinkId the ID of the link on which the main PHY is operating (if any)
      * \param nextLinkId the ID of the link on which the main PHY will be operating
      * \param duration the channel switch duration
      */
-    virtual void NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId, Time duration) = 0;
+    virtual void NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
+                                     uint8_t nextLinkId,
+                                     Time duration) = 0;
 
     /**
      * Information about the status of the MediumSyncDelay timer associated with a link.

@@ -53,6 +53,7 @@ DefaultEmlsrManager::GetTypeId()
 }
 
 DefaultEmlsrManager::DefaultEmlsrManager()
+    : m_mainPhySwitchInfo{}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -93,29 +94,49 @@ DefaultEmlsrManager::NotifyEmlsrModeChanged()
 }
 
 void
-DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId, Time duration)
+DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
+                                         uint8_t nextLinkId,
+                                         Time duration)
 {
-    NS_LOG_FUNCTION(this << currLinkId << nextLinkId << duration.As(Time::US));
+    NS_LOG_FUNCTION(this << (currLinkId ? std::to_string(*currLinkId) : "") << nextLinkId
+                         << duration.As(Time::US));
+
+    // if currLinkId has no value (i.e., the main PHY is not operating on any link), it means that
+    // the main PHY is switching
+    const auto now = Simulator::Now();
+    NS_ASSERT_MSG(currLinkId || m_mainPhySwitchInfo.end >= now,
+                  "No current link ID provided nor valid main PHY switch information stored");
+    m_mainPhySwitchInfo.from = currLinkId.value_or(m_mainPhySwitchInfo.from);
+    m_mainPhySwitchInfo.end = now + duration;
 
     if (m_switchAuxPhy)
     {
-        // switch channel on Aux PHY so that it operates on the link on which the main PHY was
+        // cancel any previously requested aux PHY switch
+        m_auxPhySwitchEvent.Cancel();
+
+        if (nextLinkId == m_mainPhySwitchInfo.from)
+        {
+            // the main PHY is now switching to the link where it is coming from; nothing else
+            // needs to be done
+            return;
+        }
+
+        // schedule Aux PHY switch so that it operates on the link on which the main PHY was
         // operating
         auto auxPhy = GetStaMac()->GetWifiPhy(nextLinkId);
 
         NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") operating on link " << +nextLinkId
-                                 << " will switch to link " << +currLinkId << " in "
+                                 << " will switch to link " << +currLinkId.value() << " in "
                                  << duration.As(Time::US));
-        Simulator::Schedule(duration,
-                            &DefaultEmlsrManager::SwitchAuxPhy,
-                            this,
-                            auxPhy,
-                            nextLinkId,
-                            currLinkId);
+
+        m_auxPhySwitchEvent =
+            Simulator::Schedule(duration, [=, this, prevLinkId = m_mainPhySwitchInfo.from]() {
+                SwitchAuxPhy(auxPhy, nextLinkId, prevLinkId);
+            });
         return;
     }
 
-    if (currLinkId != GetMainPhyId())
+    if (currLinkId.has_value() && currLinkId != GetMainPhyId())
     {
         // the main PHY is leaving a non-primary link, hence an aux PHY needs to be reconnected
         NS_ASSERT_MSG(
@@ -123,12 +144,18 @@ DefaultEmlsrManager::NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId,
             "There should be an aux PHY to reconnect when the main PHY leaves a non-primary link");
 
         // the Aux PHY is not actually switching (hence no switching delay)
-        GetStaMac()->NotifySwitchingEmlsrLink(m_auxPhyToReconnect, currLinkId, Seconds(0));
+        GetStaMac()->NotifySwitchingEmlsrLink(m_auxPhyToReconnect, *currLinkId, Seconds(0));
         // resume aux PHY from sleep (once reconnected to its original link)
         m_auxPhyToReconnect->ResumeFromSleep();
-        SetCcaEdThresholdOnLinkSwitch(m_auxPhyToReconnect, currLinkId);
-        m_auxPhyToReconnect = nullptr;
+        SetCcaEdThresholdOnLinkSwitch(m_auxPhyToReconnect, *currLinkId);
     }
+
+    // if currLinkId has no value, it means that the main PHY switch is interrupted, hence reset
+    // the aux PHY to reconnect and cancel the event to put the aux PHY to sleep. Doing so when
+    // the main PHY is leaving the primary link makes no harm (the aux PHY to reconnect and the
+    // event to put the aux PHY to sleep are set below), thus no need to add an 'if' condition
+    m_auxPhyToReconnect = nullptr;
+    m_auxPhyToSleepEvent.Cancel();
 
     if (nextLinkId != GetMainPhyId())
     {

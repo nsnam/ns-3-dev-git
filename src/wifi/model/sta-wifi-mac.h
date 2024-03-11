@@ -585,21 +585,23 @@ class StaWifiMac : public WifiMac
     void DoInitialize() override;
     void DoDispose() override;
 
-    MacState m_state;                       ///< MAC state
-    uint16_t m_aid;                         ///< Association AID
-    Ptr<WifiAssocManager> m_assocManager;   ///< Association Manager
-    Ptr<EmlsrManager> m_emlsrManager;       ///< EMLSR Manager
-    Time m_waitBeaconTimeout;               ///< wait beacon timeout
-    Time m_probeRequestTimeout;             ///< probe request timeout
-    Time m_assocRequestTimeout;             ///< association request timeout
-    EventId m_assocRequestEvent;            ///< association request event
-    uint32_t m_maxMissedBeacons;            ///< maximum missed beacons
-    EventId m_beaconWatchdog;               //!< beacon watchdog
-    Time m_beaconWatchdogEnd{0};            //!< beacon watchdog end
-    bool m_activeProbing;                   ///< active probing
-    Ptr<RandomVariableStream> m_probeDelay; ///< RandomVariable used to randomize the time
-                                            ///< of the first Probe Response on each channel
-    Time m_pmModeSwitchTimeout;             ///< PM mode switch timeout
+    MacState m_state;                             ///< MAC state
+    uint16_t m_aid;                               ///< Association AID
+    Ptr<WifiAssocManager> m_assocManager;         ///< Association Manager
+    Ptr<EmlsrManager> m_emlsrManager;             ///< EMLSR Manager
+    Time m_waitBeaconTimeout;                     ///< wait beacon timeout
+    Time m_probeRequestTimeout;                   ///< probe request timeout
+    Time m_assocRequestTimeout;                   ///< association request timeout
+    EventId m_assocRequestEvent;                  ///< association request event
+    uint32_t m_maxMissedBeacons;                  ///< maximum missed beacons
+    EventId m_beaconWatchdog;                     //!< beacon watchdog
+    Time m_beaconWatchdogEnd{0};                  //!< beacon watchdog end
+    bool m_activeProbing;                         ///< active probing
+    Ptr<RandomVariableStream> m_probeDelay;       ///< RandomVariable used to randomize the time
+                                                  ///< of the first Probe Response on each channel
+    Time m_pmModeSwitchTimeout;                   ///< PM mode switch timeout
+    std::map<uint8_t, EventId> m_emlsrLinkSwitch; ///< maps PHY ID to the event scheduled to switch
+                                                  ///< the corresponding PHY to a new EMLSR link
 
     /// store the DL TID-to-Link Mapping included in the Association Request frame
     WifiTidLinkMapping m_dlTidLinkMappingInAssocReq;

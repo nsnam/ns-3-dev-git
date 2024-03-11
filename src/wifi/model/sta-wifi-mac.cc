@@ -190,6 +190,11 @@ StaWifiMac::DoDispose()
         m_emlsrManager->Dispose();
     }
     m_emlsrManager = nullptr;
+    for (auto& [phyId, event] : m_emlsrLinkSwitch)
+    {
+        event.Cancel();
+    }
+    m_emlsrLinkSwitch.clear();
     WifiMac::DoDispose();
 }
 
@@ -2042,6 +2047,13 @@ StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time dela
         newLink.stationManager->SetupPhy(phy);
     };
 
+    // cancel any pending event for the given PHY to switch link
+    if (auto eventIt = m_emlsrLinkSwitch.find(phy->GetPhyId()); eventIt != m_emlsrLinkSwitch.end())
+    {
+        eventIt->second.Cancel();
+        m_emlsrLinkSwitch.erase(eventIt);
+    }
+
     // if there is no PHY operating on the new link, connect the PHY to the new link now.
     // Otherwise, wait until the channel switch is completed, so that the PHY operating on the new
     // link can possibly continue receiving frames in the meantime.
@@ -2051,7 +2063,7 @@ StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time dela
     }
     else
     {
-        Simulator::Schedule(delay, connectPhy);
+        m_emlsrLinkSwitch.emplace(phy->GetPhyId(), Simulator::Schedule(delay, connectPhy));
     }
 }
 

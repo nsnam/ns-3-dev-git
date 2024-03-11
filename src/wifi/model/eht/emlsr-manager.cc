@@ -562,24 +562,24 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     NS_ASSERT_MSG(mainPhy != m_staMac->GetWifiPhy(linkId),
                   "Main PHY is already operating on link " << +linkId);
 
-    if (mainPhy->IsStateSwitching())
-    {
-        NS_LOG_DEBUG("Main PHY is already switching, ignore new switching request");
-        return;
-    }
-
     // find the link on which the main PHY is operating
     auto currMainPhyLinkId = m_staMac->GetLinkForPhy(mainPhy);
-    NS_ASSERT_MSG(currMainPhyLinkId, "Current link ID for main PHY not found");
 
-    auto newMainPhyChannel = GetChannelForMainPhy(linkId);
+    NS_ASSERT_MSG(currMainPhyLinkId.has_value() || mainPhy->IsStateSwitching(),
+                  "If the main PHY is not operating on a link, it must be switching");
+
+    const auto newMainPhyChannel = GetChannelForMainPhy(linkId);
 
     NS_LOG_DEBUG("Main PHY (" << mainPhy << ") is about to switch to " << newMainPhyChannel
                               << " to operate on link " << +linkId);
 
-    // notify the channel access manager of the upcoming channel switch(es)
-    m_staMac->GetChannelAccessManager(*currMainPhyLinkId)
-        ->NotifySwitchingEmlsrLink(mainPhy, newMainPhyChannel, linkId);
+    // if the main PHY is operating on a link, notify the channel access manager of the upcoming
+    // channel switch
+    if (currMainPhyLinkId.has_value())
+    {
+        m_staMac->GetChannelAccessManager(*currMainPhyLinkId)
+            ->NotifySwitchingEmlsrLink(mainPhy, newMainPhyChannel, linkId);
+    }
 
     // this assert also ensures that the actual channel switch is not delayed
     NS_ASSERT_MSG(!mainPhy->GetState()->IsStateTx(),
@@ -610,13 +610,20 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
         mainPhy->SetSlot(MicroSeconds(9));
     }
 
-    if (resetBackoff)
+    const auto timeToSwitchEnd = noSwitchDelay ? Seconds(0) : delay;
+
+    // if the main PHY is not operating on any link (because it was switching), it is not connected
+    // to a channel access manager, hence we must notify the MAC of the new link switch
+    if (!currMainPhyLinkId.has_value())
+    {
+        m_staMac->NotifySwitchingEmlsrLink(mainPhy, linkId, timeToSwitchEnd);
+    }
+
+    if (resetBackoff && currMainPhyLinkId.has_value())
     {
         // reset the backoffs on the link left by the main PHY
         m_staMac->GetChannelAccessManager(*currMainPhyLinkId)->ResetAllBackoffs();
     }
-
-    const auto timeToSwitchEnd = noSwitchDelay ? Seconds(0) : mainPhy->GetChannelSwitchDelay();
 
     if (requestAccess)
     {
@@ -633,7 +640,7 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     }
 
     SetCcaEdThresholdOnLinkSwitch(mainPhy, linkId);
-    NotifyMainPhySwitch(*currMainPhyLinkId, linkId, timeToSwitchEnd);
+    NotifyMainPhySwitch(currMainPhyLinkId, linkId, timeToSwitchEnd);
 }
 
 void

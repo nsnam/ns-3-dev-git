@@ -45,13 +45,12 @@ class DefaultEmlsrManager : public EmlsrManager
     uint8_t GetLinkToSendEmlOmn() override;
     std::optional<uint8_t> ResendNotification(Ptr<const WifiMpdu> mpdu) override;
 
-  private:
-    void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
-    void NotifyEmlsrModeChanged() override;
-    void NotifyMainPhySwitch(uint8_t currLinkId, uint8_t nextLinkId, Time duration) override;
-    void DoNotifyIcfReceived(uint8_t linkId) override;
-    void DoNotifyUlTxopStart(uint8_t linkId) override;
-    void DoNotifyTxopEnd(uint8_t linkId) override;
+    /// Store information about a main PHY switch.
+    struct MainPhySwitchInfo
+    {
+        Time end;     //!< end of channel switching
+        uint8_t from; //!< ID of the link which the main PHY is/has been leaving
+    };
 
     bool m_switchAuxPhy;  /**< whether Aux PHY should switch channel to operate on the link on which
                                the Main PHY was operating before moving to the link of the Aux PHY */
@@ -61,6 +60,18 @@ class DefaultEmlsrManager : public EmlsrManager
     Ptr<WifiPhy> m_auxPhyToReconnect; //!< Aux PHY the ChannelAccessManager of the link on which
                                       //!< the main PHY is operating has to connect a listener to
                                       //!< when the main PHY is back operating on its previous link
+    EventId m_auxPhySwitchEvent;      //!< event scheduled for an aux PHY to switch link
+    MainPhySwitchInfo m_mainPhySwitchInfo; //!< main PHY switch info
+
+  private:
+    void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
+    void NotifyEmlsrModeChanged() override;
+    void NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
+                             uint8_t nextLinkId,
+                             Time duration) override;
+    void DoNotifyIcfReceived(uint8_t linkId) override;
+    void DoNotifyUlTxopStart(uint8_t linkId) override;
+    void DoNotifyTxopEnd(uint8_t linkId) override;
 };
 
 } // namespace ns3
