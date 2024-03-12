@@ -205,7 +205,11 @@ Ptr<T>
 ObjectFactory::Create() const
 {
     Ptr<Object> object = Create();
-    return object->GetObject<T>();
+    auto obj = object->GetObject<T>();
+    NS_ASSERT_MSG(obj != nullptr,
+                  "ObjectFactory::Create error: incompatible types ("
+                      << T::GetTypeId().GetName() << " and " << object->GetInstanceTypeId() << ")");
+    return obj;
 }
 
 template <typename... Args>
