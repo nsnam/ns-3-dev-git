@@ -232,6 +232,21 @@ class WifiPhyStateHelper : public Object
      * \param snr the SNR of the received PSDU in linear scale
      */
     void NotifyRxPsduFailed(Ptr<const WifiPsdu> psdu, double snr);
+
+    /**
+     * Handle the outcome of a reception of a PPDU.
+     *
+     * \param ppdu the received PPDU
+     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * \param txVector TXVECTOR of the PSDU
+     * \param staId the station ID of the PSDU (only used for MU)
+     * \param statusPerMpdu reception status per MPDU
+     */
+    void NotifyRxPpduOutcome(Ptr<const WifiPpdu> ppdu,
+                             RxSignalInfo rxSignalInfo,
+                             const WifiTxVector& txVector,
+                             uint16_t staId,
+                             const std::vector<bool>& statusPerMpdu);
     /**
      * Switch from RX after the reception was successful.
      */
@@ -297,6 +312,22 @@ class WifiPhyStateHelper : public Object
                                        double snr,
                                        WifiMode mode,
                                        WifiPreamble preamble);
+
+    /**
+     * TracedCallback signature for the outcome of a received packet.
+     *
+     * \param [in] psdu The received PSDU (Physical Layer Service Data Unit).
+     * \param [in] signalInfo Information about the received signal, including its power and other
+     * characteristics.
+     * \param [in] txVector The transmission vector used for the packet, detailing
+     * the transmission parameters.
+     * \param [in] outcomes A vector of boolean values indicating the
+     * success or failure of receiving individual MPDUs within the PSDU.
+     */
+    typedef void (*RxOutcomeTracedCallback)(Ptr<const WifiPsdu> psdu,
+                                            RxSignalInfo signalInfo,
+                                            const WifiTxVector& txVector,
+                                            const std::vector<bool>& outcomes);
 
     /**
      * TracedCallback signature for receive end error event.
@@ -373,7 +404,9 @@ class WifiPhyStateHelper : public Object
 
     Listeners m_listeners; ///< listeners
     TracedCallback<Ptr<const Packet>, double, WifiMode, WifiPreamble>
-        m_rxOkTrace;                                          ///< receive OK trace callback
+        m_rxOkTrace; ///< receive OK trace callback
+    TracedCallback<Ptr<const WifiPpdu>, RxSignalInfo, const WifiTxVector&, const std::vector<bool>&>
+        m_rxOutcomeTrace;                                     ///< receive OK trace callback
     TracedCallback<Ptr<const Packet>, double> m_rxErrorTrace; ///< receive error trace callback
     TracedCallback<Ptr<const Packet>, WifiMode, WifiPreamble, uint8_t>
         m_txTrace;                     ///< transmit trace callback

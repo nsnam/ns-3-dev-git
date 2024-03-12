@@ -533,14 +533,14 @@ HePhy::HandleRxPpduWithSameContent(Ptr<Event> event,
         (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
     {
         NS_LOG_DEBUG("Drop packet because already receiving another HE TB PPDU");
-        m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), RXING);
+        m_wifiPhy->NotifyRxPpduDrop(ppdu, RXING);
     }
     else if (const auto isResponseToTrigger = (m_previouslyTxPpduUid == ppdu->GetUid());
              isResponseToTrigger && GetCurrentEvent() &&
              (GetCurrentEvent()->GetPpdu()->GetUid() != ppdu->GetUid()))
     {
         NS_LOG_DEBUG("Drop packet because already receiving another response to a trigger frame");
-        m_wifiPhy->NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), RXING);
+        m_wifiPhy->NotifyRxPpduDrop(ppdu, RXING);
     }
 }
 

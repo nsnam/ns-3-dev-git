@@ -428,7 +428,8 @@ enum WifiPhyRxfailureReason
     PPDU_TOO_LATE,
     FILTERED,
     DMG_HEADER_FAILURE,
-    DMG_ALLOCATION_ENDED
+    DMG_ALLOCATION_ENDED,
+    SIGNAL_DETECTION_ABORTED_BY_TX
 };
 
 /**
@@ -489,6 +490,8 @@ operator<<(std::ostream& os, const WifiPhyRxfailureReason& reason)
         return (os << "DMG_HEADER_FAILURE");
     case DMG_ALLOCATION_ENDED:
         return (os << "DMG_ALLOCATION_ENDED");
+    case SIGNAL_DETECTION_ABORTED_BY_TX:
+        return (os << "SIGNAL_DETECTION_ABORTED_BY_TX");
     case UNKNOWN:
     default:
         NS_FATAL_ERROR("Unknown reason");

@@ -55,6 +55,11 @@ WifiPhyStateHelper::GetTypeId()
                             "A packet has been received successfully.",
                             MakeTraceSourceAccessor(&WifiPhyStateHelper::m_rxOkTrace),
                             "ns3::WifiPhyStateHelper::RxOkTracedCallback")
+            .AddTraceSource(
+                "RxOutcome",
+                "The outcome of the decoding of the PPDU, including MPDU decoding status",
+                MakeTraceSourceAccessor(&WifiPhyStateHelper::m_rxOutcomeTrace),
+                "ns3::WifiPhyStateHelper::RxOutcomeTracedCallback")
             .AddTraceSource("RxError",
                             "A packet has been received unsuccessfuly.",
                             MakeTraceSourceAccessor(&WifiPhyStateHelper::m_rxErrorTrace),
@@ -462,6 +467,16 @@ WifiPhyStateHelper::NotifyRxPsduFailed(Ptr<const WifiPsdu> psdu, double snr)
     {
         m_rxErrorCallback(psdu);
     }
+}
+
+void
+WifiPhyStateHelper::NotifyRxPpduOutcome(Ptr<const WifiPpdu> ppdu,
+                                        RxSignalInfo rxSignalInfo,
+                                        const WifiTxVector& txVector,
+                                        uint16_t staId,
+                                        const std::vector<bool>& statusPerMpdu)
+{
+    m_rxOutcomeTrace(ppdu, rxSignalInfo, txVector, statusPerMpdu);
 }
 
 void

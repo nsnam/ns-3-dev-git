@@ -341,6 +341,11 @@ WifiPhy::GetTypeId()
                             "has been dropped by the device during reception",
                             MakeTraceSourceAccessor(&WifiPhy::m_phyRxDropTrace),
                             "ns3::Packet::TracedCallback")
+            .AddTraceSource("PhyRxPpduDrop",
+                            "Trace source indicating a ppdu "
+                            "has been dropped by the device during reception",
+                            MakeTraceSourceAccessor(&WifiPhy::m_phyRxPpduDropTrace),
+                            "ns3::WifiPhy::PhyRxPpduDropTracedCallback")
             .AddTraceSource("MonitorSnifferRx",
                             "Trace source simulating a wifi device in monitor mode "
                             "sniffing all received frames",
@@ -1644,6 +1649,13 @@ WifiPhy::NotifyRxDrop(Ptr<const WifiPsdu> psdu, WifiPhyRxfailureReason reason)
 }
 
 void
+WifiPhy::NotifyRxPpduDrop(Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason)
+{
+    NotifyRxDrop(GetAddressedPsduInPpdu(ppdu), reason);
+    m_phyRxPpduDropTrace(ppdu, reason);
+}
+
+void
 WifiPhy::NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
                               uint16_t channelFreqMhz,
                               WifiTxVector txVector,
@@ -1809,7 +1821,14 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
         noEndPreambleDetectionEvent =
             noEndPreambleDetectionEvent && entity->NoEndPreambleDetectionEvents();
     }
-    if (!noEndPreambleDetectionEvent || m_currentEvent)
+    if (!noEndPreambleDetectionEvent && !m_currentEvent)
+    {
+        // PHY is in the initial few microseconds during which the
+        // start of RX has occurred but the preamble detection period
+        // has not elapsed
+        AbortCurrentReception(SIGNAL_DETECTION_ABORTED_BY_TX);
+    }
+    else if (!noEndPreambleDetectionEvent || m_currentEvent)
     {
         AbortCurrentReception(RECEPTION_ABORTED_BY_TX);
     }
@@ -2166,6 +2185,14 @@ WifiPhy::AbortCurrentReception(WifiPhyRxfailureReason reason)
     if (reason != OBSS_PD_CCA_RESET ||
         m_currentEvent) // Otherwise abort has already been called previously
     {
+        if (reason == SIGNAL_DETECTION_ABORTED_BY_TX)
+        {
+            for (auto signalDetectEvent : m_currentPreambleEvents)
+            {
+                NotifyRxPpduDrop(signalDetectEvent.second->GetPpdu(),
+                                 SIGNAL_DETECTION_ABORTED_BY_TX);
+            }
+        }
         for (auto& phyEntity : m_phyEntities)
         {
             phyEntity.second->CancelAllEvents();
@@ -2176,7 +2203,7 @@ WifiPhy::AbortCurrentReception(WifiPhyRxfailureReason reason)
         {
             return;
         }
-        NotifyRxDrop(GetAddressedPsduInPpdu(m_currentEvent->GetPpdu()), reason);
+        NotifyRxPpduDrop(m_currentEvent->GetPpdu(), reason);
         if (reason == OBSS_PD_CCA_RESET)
         {
             m_state->SwitchFromRxAbort(GetChannelWidth());

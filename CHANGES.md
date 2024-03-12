@@ -18,6 +18,7 @@ Changes from ns-3.41 to ns-3-dev
 
 ### New API
 * (wifi) New trace sources `SpectrumWifiPhy::SignalTransmission`, `YansWifiPhy::SignalArrival`, and `YansWifiPhy::SignalTransmission`
+* (wifi) New trace sources `WifiPhyStateHelper::RxOutcome` and`WifiPhy::PhyRxPpduDrop`, to support additional tracing.
 
 * Objects now can be aggregated to multiple objects though the `Object::UnidirectionalAggregateObject` function. Objects aggregated in such a way can not use `GetObject` to access the objects they are aggregated to.
 * (network) Added `ApplicationHelper` helper class to create and install applications, removing
@@ -37,6 +38,7 @@ Applications have a new Attribute to set the IPv4 ToS field.
 * (core) Deprecated enum `TestDuration` in `TestCase` class. It has been replaced by enum class `Duration`.
 * (core) In `TestSuite` class, deprecated `ALL`, `UNIT`, `SYSTEM`, `EXAMPLE` and `PERFORMANCE`. They have been replaced by `Type::ALL`, `Type::UNIT`, `Type::SYSTEM`, `Type::EXAMPLE` and `Type::PERFORMANCE`, respectively.
 * (core) Deprecated `EventId::IsRunning()`. It has been replaced with `EventId::IsPending()`.
+* (wifi) `WifiPhyRxfailureReason` enum has a new drop reason `SIGNAL_DETECTION_ABORTED_BY_TX` to account for PPDUs dropped during the initial reception phase
 * (wifi) Deprecated `WIFI_TID_TO_LINK_MAPPING_{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`. They have been replaced by `WifiTidToLinkMappingNegSupport::{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`, respectively.
 * (wifi) Deprecated `{IDLE, CCA_BUSY, TX, RX, SWITCHING, SLEEP, OFF}`. They have been replaced by `WifiPhyState::{IDLE, CCA_BUSY, TX, RX, SWITCHING, SLEEP, OFF}`, respectively.
 * (lr-wpan) `MacPibAttributeIdentifier` attribute ids are now standard compliant.

@@ -4706,12 +4706,15 @@ class TestSpectrumChannelWithBandwidthFilter : public TestCase
     /**
      * Callback invoked when the PHY model starts to process a signal
      *
-     * \param signalType whether signal is WiFi (true) or foreign (false)
+     * \param signal the arriving signal
      * \param senderNodeId node Id of the sender of the signal
      * \param rxPower received signal power (dBm)
      * \param duration signal duration
      */
-    void RxBegin(bool signalType, uint32_t senderNodeId, double rxPower, Time duration);
+    void RxBegin(Ptr<const SpectrumSignalParameters> signal,
+                 uint32_t senderNodeId,
+                 double rxPower,
+                 Time duration);
 
     /**
      * Send function (sends a single packet)
@@ -4768,12 +4771,13 @@ TestSpectrumChannelWithBandwidthFilter::CheckRxPacketCount(uint16_t expectedValu
 }
 
 void
-TestSpectrumChannelWithBandwidthFilter::RxBegin(bool signalType [[maybe_unused]],
+TestSpectrumChannelWithBandwidthFilter::RxBegin(Ptr<const SpectrumSignalParameters> signal
+                                                [[maybe_unused]],
                                                 uint32_t senderNodeId [[maybe_unused]],
                                                 double rxPower [[maybe_unused]],
                                                 Time duration [[maybe_unused]])
 {
-    NS_LOG_FUNCTION(this << signalType << senderNodeId << rxPower << duration);
+    NS_LOG_FUNCTION(this << signal << senderNodeId << rxPower << duration);
     m_countRxBegin++;
 }
 
@@ -4852,6 +4856,174 @@ TestSpectrumChannelWithBandwidthFilter::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief This test verifies that the WifiPhyRxfailureReason distinguishes between two cases:  1) a
+ * drop due to transmitting during the signal detection interval, and 2) a drop due to transmitting
+ * after the receiver has detected a preamble but is waiting for the end of the preamble. 2
+ * SpectrumWifiPhy are setup and connected on the same spectrum channel. The test will send a packet
+ * over the channel and after a controlled amount of transmit delay (to check both cases) the
+ * receiver of the packet will send its own packet. If delay is less than preamble detection period,
+ * the signal detection should be aborted by transmission. If delay is greater than preamble
+ * detection period, the signal reception should be aborted by transmission.
+ */
+class TestPhyDropDueToTx : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     *
+     * \param delay delay in microseconds to send second packet
+     * \param expectedReason expected failure reason
+     */
+    TestPhyDropDueToTx(Time delay, WifiPhyRxfailureReason expectedReason);
+
+  protected:
+    void DoSetup() override;
+    void DoTeardown() override;
+
+  private:
+    /**
+     * RX dropped function
+     * \param p the packet
+     * \param reason the reason
+     */
+    void PhyDropTraceSink(Ptr<const Packet> p, WifiPhyRxfailureReason reason);
+
+    /**
+     * Send function (sends a single packet)
+     * \param phy the WifiPhy object to send the packet
+     */
+    void Send(Ptr<WifiPhy> phy) const;
+
+    /**
+     * Event scheduled at end of simulation for validation
+     */
+    void CheckDropReason();
+
+    void DoRun() override;
+
+    Ptr<SpectrumWifiPhy> m_phyA{nullptr}; ///< transmit function
+    Ptr<SpectrumWifiPhy> m_phyB{nullptr}; ///< transmit/receive function
+
+    Time m_delay; ///< delay between transmissions in MicroSeconds
+
+    WifiPhyRxfailureReason m_expectedReason; ///< expected WifiPhyRxfailureReason
+    WifiPhyRxfailureReason m_observedReason; ///< observed WifiPhyRxfailureReason
+};
+
+TestPhyDropDueToTx::TestPhyDropDueToTx(Time delay, WifiPhyRxfailureReason expectedReason)
+    : TestCase("Test for correct WifiPhyRxfailureReason from PhyRxDrop trace"),
+      m_delay(delay),
+      m_expectedReason(expectedReason)
+{
+}
+
+void
+TestPhyDropDueToTx::Send(Ptr<WifiPhy> phy) const
+{
+    const auto txVector =
+        WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
+
+    auto pkt = Create<Packet>(1000);
+    WifiMacHeader hdr;
+
+    hdr.SetType(WIFI_MAC_QOSDATA);
+    hdr.SetQosTid(0);
+
+    auto psdu = Create<WifiPsdu>(pkt, hdr);
+    phy->Send(psdu, txVector);
+}
+
+void
+TestPhyDropDueToTx::CheckDropReason()
+{
+    NS_TEST_ASSERT_MSG_EQ(m_expectedReason,
+                          m_observedReason,
+                          "Packet was dropped due to the wrong drop reason reported ");
+}
+
+void
+TestPhyDropDueToTx::PhyDropTraceSink(Ptr<const Packet> p, WifiPhyRxfailureReason reason)
+{
+    NS_LOG_FUNCTION(this << p << reason);
+    m_observedReason = reason;
+}
+
+void
+TestPhyDropDueToTx::DoSetup()
+{
+    NS_LOG_FUNCTION(this);
+    auto channel = CreateObject<SingleModelSpectrumChannel>();
+
+    auto node = CreateObject<Node>();
+    auto devA = CreateObject<WifiNetDevice>();
+    m_phyA = CreateObject<SpectrumWifiPhy>();
+    m_phyA->SetDevice(devA);
+    m_phyA->SetTxPowerStart(20);
+    m_phyA->SetTxPowerEnd(20);
+
+    auto nodeRx = CreateObject<Node>();
+    auto devB = CreateObject<WifiNetDevice>();
+    m_phyB = CreateObject<SpectrumWifiPhy>();
+    m_phyB->SetDevice(devB);
+    m_phyB->SetTxPowerStart(20);
+    m_phyB->SetTxPowerEnd(20);
+
+    auto interferenceTx = CreateObject<InterferenceHelper>();
+    m_phyA->SetInterferenceHelper(interferenceTx);
+    auto errorTx = CreateObject<NistErrorRateModel>();
+    m_phyA->SetErrorRateModel(errorTx);
+
+    auto interferenceRx = CreateObject<InterferenceHelper>();
+    m_phyB->SetInterferenceHelper(interferenceRx);
+    auto errorRx = CreateObject<NistErrorRateModel>();
+    m_phyB->SetErrorRateModel(errorRx);
+
+    m_phyA->AddChannel(channel);
+    m_phyB->AddChannel(channel);
+
+    m_phyA->ConfigureStandard(WIFI_STANDARD_80211ax);
+    m_phyA->SetOperatingChannel(WifiPhy::ChannelTuple{36, 0, WIFI_PHY_BAND_5GHZ, 0});
+
+    m_phyB->ConfigureStandard(WIFI_STANDARD_80211ax);
+    m_phyB->SetOperatingChannel(WifiPhy::ChannelTuple{36, 0, WIFI_PHY_BAND_5GHZ, 0});
+
+    devA->SetPhy(m_phyA);
+    node->AddDevice(devA);
+    devB->SetPhy(m_phyB);
+    nodeRx->AddDevice(devB);
+
+    m_phyB->TraceConnectWithoutContext("PhyRxDrop",
+                                       MakeCallback(&TestPhyDropDueToTx::PhyDropTraceSink, this));
+}
+
+void
+TestPhyDropDueToTx::DoTeardown()
+{
+    m_phyA->Dispose();
+    m_phyB->Dispose();
+}
+
+void
+TestPhyDropDueToTx::DoRun()
+{
+    NS_LOG_FUNCTION(this);
+
+    Simulator::ScheduleNow(&TestPhyDropDueToTx::Send, this, m_phyA);
+    Simulator::Schedule(m_delay, &TestPhyDropDueToTx::Send, this, m_phyB);
+
+    // Upon transmitting the second packet from m_phyB, the reception from
+    // m_phyA will be immediately dropped.  Check the drop reason a short
+    // while later (1 ns is sufficient)
+    Simulator::Schedule(m_delay + NanoSeconds(1), &TestPhyDropDueToTx::CheckDropReason, this);
+
+    Simulator::Run();
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi PHY reception Test Suite
  */
 class WifiPhyReceptionTestSuite : public TestSuite
@@ -4879,6 +5051,15 @@ WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite()
     AddTestCase(new TestSpectrumChannelWithBandwidthFilter(36, 1), TestCase::Duration::QUICK);
     AddTestCase(new TestSpectrumChannelWithBandwidthFilter(40, 1), TestCase::Duration::QUICK);
     AddTestCase(new TestSpectrumChannelWithBandwidthFilter(44, 0), TestCase::Duration::QUICK);
+    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(36, 1), TestCase::Duration::QUICK);
+    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(40, 1), TestCase::Duration::QUICK);
+    AddTestCase(new TestSpectrumChannelWithBandwidthFilter(44, 0), TestCase::Duration::QUICK);
+    // 4 Microseconds is just less than the preamble detection period since there is no
+    // propagation delay model
+    AddTestCase(new TestPhyDropDueToTx(MicroSeconds(4), SIGNAL_DETECTION_ABORTED_BY_TX),
+                TestCase::Duration::QUICK);
+    AddTestCase(new TestPhyDropDueToTx(MicroSeconds(5), RECEPTION_ABORTED_BY_TX),
+                TestCase::Duration::QUICK);
 }
 
 static WifiPhyReceptionTestSuite wifiPhyReceptionTestSuite; ///< the test suite

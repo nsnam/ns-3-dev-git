@@ -2167,6 +2167,8 @@ PhyRxDropTrace(std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason 
     case OBSS_PD_CCA_RESET:
         NS_FATAL_ERROR("Unexpected CCA reset!");
         break;
+    case SIGNAL_DETECTION_ABORTED_BY_TX:
+        break;
     case UNKNOWN:
     default:
         NS_FATAL_ERROR("Unknown drop reason!");
