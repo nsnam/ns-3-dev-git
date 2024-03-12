@@ -33,8 +33,13 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <functional>
 #include <numeric>
+#include <unistd.h>
+#include <vector>
 
 // This is a simple example in order to show how to configure an IEEE 802.11be Wi-Fi network.
 //
@@ -130,6 +135,98 @@ PrintIntermediateTput(std::vector<uint64_t>& rxBytes,
     }
 }
 
+/**
+ * Validate throughput obtained for a given combination.
+ * \param mcs the MCS selected for that combination
+ * \param minMcs the minimum MCS selected to run the example
+ * \param maxMcs the maximum MCS selected to run the example
+ * \param width the selected width in MHz for that combination
+ * \param minWidth the minimum width in MHz selected to run the example
+ * \param maxWidth the maximum width in MHz selected to run the example
+ * \param gi the selected guard interval duration in nanoseconds for that combination
+ * \param minGi the minimum guard interval duration in nanoseconds selected to run the example
+ * \param maxGi the maximum guard interval duration in nanoseconds selected to run the example
+ * \param throughput the obtained throughput in Mbit/s to validate
+ * \param minExpectedThroughput the minimum expected throughput in Mbit/s
+ * \param maxExpectedThroughput the maximum expected throughput in Mbit/s
+ * \param prevThroughputSameMcs the previously validated throughput in Mbit/s at the same MCS
+ * \param prevThroughputSameWidthAndGi the previously validated throughput in Mbit/s for the same
+ * (channel width, guard interval) combination
+ * \param print flag to indicate whether throughput
+ * result should be printed
+ */
+void
+validateThroughput(uint8_t mcs,
+                   uint8_t minMcs,
+                   uint8_t maxMcs,
+                   uint16_t width,
+                   uint16_t minWidth,
+                   uint16_t maxWidth,
+                   uint16_t gi,
+                   uint16_t minGi,
+                   uint16_t maxGi,
+                   double throughput,
+                   double minExpectedThroughput,
+                   double maxExpectedThroughput,
+                   double& prevThroughputSameMcs,
+                   double& prevThroughputSameWidthAndGi,
+                   bool print = true)
+{
+    if (print)
+    {
+        std::cout << +mcs << "\t\t\t" << width << " MHz\t\t\t" << gi << " ns\t\t\t" << throughput
+                  << " Mbit/s" << std::endl;
+    }
+
+    // When multiple stations are used, there are chances that association requests
+    // collide and hence the throughput may be lower than expected. Therefore, we relax
+    // the check that the throughput cannot decrease by introducing a scaling factor (or
+    // tolerance)
+    double tolerance = 0.10;
+
+    // test first element
+    if (mcs == minMcs && width == minWidth && gi == maxGi)
+    {
+        if (throughput * (1 + tolerance) < minExpectedThroughput)
+        {
+            NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
+            exit(1);
+        }
+    }
+
+    // test last element
+    if (mcs == maxMcs && width == maxWidth && gi == minGi)
+    {
+        if (maxExpectedThroughput > 0 && throughput > maxExpectedThroughput * (1 + tolerance))
+        {
+            NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
+            exit(1);
+        }
+    }
+
+    // test previous throughput is smaller (for the same mcs)
+    if (throughput * (1 + tolerance) > prevThroughputSameMcs)
+    {
+        prevThroughputSameMcs = throughput;
+    }
+    else if (throughput > 0)
+    {
+        NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
+        exit(1);
+    }
+
+    // test previous throughput is smaller (for the same channel width and GI)
+    if (throughput * (1 + tolerance) > prevThroughputSameWidthAndGi)
+    {
+        prevThroughputSameWidthAndGi = throughput;
+    }
+    else if (throughput > 0)
+    {
+        NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
+        exit(1);
+    }
+}
+
 int
 main(int argc, char* argv[])
 {
@@ -167,6 +264,9 @@ main(int argc, char* argv[])
     double minExpectedThroughput{0.0};
     double maxExpectedThroughput{0.0};
     Time accessReqInterval{0};
+    bool multiProcessing{false};
+    unsigned int numParallelJobs{1}; // if unset, keep default of parallel scheduler
+    std::string fileName{""};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue(
@@ -251,6 +351,11 @@ main(int argc, char* argv[])
     cmd.AddValue("maxExpectedThroughput",
                  "if set, simulation fails if the highest throughput is above this value",
                  maxExpectedThroughput);
+    cmd.AddValue("multiProcessing", "Enable/disable multiprocessing", multiProcessing);
+    cmd.AddValue("numParallelJobs",
+                 "the number of jobs to execute in parallel (keep default if unset)",
+                 numParallelJobs);
+    cmd.AddValue("fileName", "if specified, results will be written to that file", fileName);
     cmd.Parse(argc, argv);
 
     if (useRts)
@@ -280,15 +385,31 @@ main(int argc, char* argv[])
                      "AGGR-MU-BAR)");
     }
 
-    double prevThroughput[12] = {0};
+    std::vector<std::tuple<uint8_t /* MCS */,
+                           uint16_t /* width */,
+                           uint16_t /* GI */,
+                           std::string /* filename */>>
+        runs{};
+    std::string tmpDir{""};
+    if (multiProcessing)
+    {
+        char dirTemplate[] = "/tmp/ns3-wifi-eht-network-XXXXXX";
+        tmpDir = mkdtemp(dirTemplate);
+        tmpDir.append("/");
+    }
+    const std::string inputFileName{tmpDir + "inputFile.txt"};
+    const std::string validationFileName{tmpDir + "outputFile.txt"};
 
-    std::cout << "MCS value"
-              << "\t\t"
-              << "Channel width"
-              << "\t\t"
-              << "GI"
-              << "\t\t\t"
-              << "Throughput" << '\n';
+    std::ofstream inputFile;
+    if (multiProcessing)
+    {
+        inputFile.open(inputFileName, std::ofstream::out);
+        if (inputFile.fail())
+        {
+            NS_FATAL_ERROR("File " << inputFileName << " not found");
+        }
+    }
+
     uint8_t minMcs = 0;
     uint8_t maxMcs = 13;
 
@@ -324,10 +445,15 @@ main(int argc, char* argv[])
         maxGi = guardInterval;
     }
 
+    uint8_t index{0};
+    double prevThroughput{0.0};
+    const auto maxNumWidthCombinations = 4;
+    const auto maxNumGiCombinations = 3;
+    std::array<double, maxNumGiCombinations * maxNumWidthCombinations> prevThroughputs{0.0};
     for (const auto mcs : mcsValues)
     {
-        uint8_t index = 0;
-        double previous = 0;
+        index = 0;
+        prevThroughput = 0.0;
         for (int width = minChannelWidth; width <= maxChannelWidth; width *= 2) // MHz
         {
             const auto is80Plus80 = (use80Plus80 && (width == 160));
@@ -335,6 +461,34 @@ main(int argc, char* argv[])
             const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
             for (int gi = maxGi; gi >= minGi; gi /= 2) // Nanoseconds
             {
+                if (multiProcessing)
+                {
+                    auto command = cmd.GetName() +
+                                   " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
+                                   " --channelWidth=" + std::to_string(width) +
+                                   " --guardInterval=" + std::to_string(gi) + " ";
+                    std::vector<std::string> programArguments(argv + 1, argv + argc);
+                    for (const auto& argument : programArguments)
+                    {
+                        if (argument.starts_with("--multiProcessing") ||
+                            argument.starts_with("--fileName") ||
+                            argument.starts_with("--minExpectedThroughput") ||
+                            argument.starts_with("--maxExpectedThroughput"))
+                        {
+                            continue;
+                        }
+                        command += argument + " ";
+                    }
+                    inputFile << command;
+
+                    std::string outputFileName{tmpDir + "mcs=" + std::to_string(mcs) +
+                                               "-width=" + std::to_string(width) +
+                                               "-gi=" + std::to_string(gi) + ".dat"};
+                    inputFile << "--fileName=" << outputFileName << std::endl;
+                    runs.emplace_back(mcs, width, gi, outputFileName);
+                    continue;
+                }
+
                 if (!udp)
                 {
                     Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue(payloadSize));
@@ -608,63 +762,129 @@ main(int argc, char* argv[])
                 Simulator::Stop(simulationTime + Seconds(1));
                 Simulator::Run();
 
-                // When multiple stations are used, there are chances that association requests
-                // collide and hence the throughput may be lower than expected. Therefore, we relax
-                // the check that the throughput cannot decrease by introducing a scaling factor (or
-                // tolerance)
-                auto tolerance = 0.10;
                 cumulRxBytes = GetRxBytes(udp, serverApp, payloadSize);
                 auto rxBytes = std::accumulate(cumulRxBytes.cbegin(), cumulRxBytes.cend(), 0.0);
                 auto throughput = (rxBytes * 8) / simulationTime.GetMicroSeconds(); // Mbit/s
 
                 Simulator::Destroy();
 
-                std::cout << +mcs << "\t\t\t" << widthStr << " MHz\t\t"
-                          << (widthStr.size() > 3 ? "" : "\t") << gi << " ns\t\t\t" << throughput
-                          << " Mbit/s" << std::endl;
+                auto printResult{true};
+                if (!fileName.empty())
+                {
+                    std::ofstream file;
+                    file.open(fileName, std::ofstream::out);
+                    if (file.fail())
+                    {
+                        NS_FATAL_ERROR("File " << fileName << " not found");
+                    }
+                    file << throughput << std::endl;
+                    file.close();
+                    printResult = false;
+                }
 
-                // test first element
-                if (mcs == minMcs && width == 20 && gi == 3200)
-                {
-                    if (throughput * (1 + tolerance) < minExpectedThroughput)
-                    {
-                        NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
-                        exit(1);
-                    }
-                }
-                // test last element
-                if (mcs == maxMcs && width == maxChannelWidth && gi == 800)
-                {
-                    if (maxExpectedThroughput > 0 &&
-                        throughput > maxExpectedThroughput * (1 + tolerance))
-                    {
-                        NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
-                        exit(1);
-                    }
-                }
-                // test previous throughput is smaller (for the same mcs)
-                if (throughput * (1 + tolerance) > previous)
-                {
-                    previous = throughput;
-                }
-                else if (throughput > 0)
-                {
-                    NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
-                    exit(1);
-                }
-                // test previous throughput is smaller (for the same channel width and GI)
-                if (throughput * (1 + tolerance) > prevThroughput[index])
-                {
-                    prevThroughput[index] = throughput;
-                }
-                else if (throughput > 0)
-                {
-                    NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
-                    exit(1);
-                }
-                index++;
+                validateThroughput(mcs,
+                                   minMcs,
+                                   maxMcs,
+                                   width,
+                                   minChannelWidth,
+                                   maxChannelWidth,
+                                   gi,
+                                   minGi,
+                                   maxGi,
+                                   throughput,
+                                   minExpectedThroughput,
+                                   maxExpectedThroughput,
+                                   prevThroughput,
+                                   prevThroughputs.at(index++),
+                                   printResult);
             }
         }
     }
+
+    if (multiProcessing)
+    {
+        inputFile.close();
+
+        // ns3 executable might not be in the current path (e.g. if ran from test.py)
+        std::string execPathName = "ns3";
+        std::string checkExecPresentCmd = "./" + execPathName + " --dry-run > /dev/null 2>&1";
+        while (std::system(checkExecPresentCmd.c_str()))
+        {
+            execPathName = "../" + execPathName;
+            checkExecPresentCmd = "./" + execPathName + " --dry-run > /dev/null 2>&1";
+        }
+
+        const auto numParallelJobsOption =
+            (numParallelJobs > 1) ? " --numParallelJobs=" + std::to_string(numParallelJobs) : "";
+        const auto parallelCommand =
+            "./" + execPathName +
+            " run --no-build \"parallel-scheduler --inputFileName=" + inputFileName +
+            numParallelJobsOption + "\"";
+        const auto ret = std::system(parallelCommand.c_str());
+        std::filesystem::remove(inputFileName);
+        if (ret)
+        {
+            std::filesystem::remove_all(tmpDir);
+            exit(1);
+        }
+
+        std::vector<std::tuple<uint8_t, uint16_t, uint16_t, double>> results{};
+        for (const auto& [mcs, width, gi, resultFileName] : runs)
+        {
+            std::ifstream resultFile;
+            resultFile.open(resultFileName, std::ios::in);
+            if (resultFile.fail())
+            {
+                NS_FATAL_ERROR("File " << resultFileName << " not found");
+            }
+            double throughput{0.0};
+            while (!resultFile.eof())
+            {
+                std::string line;
+                getline(resultFile, line);
+                if (!line.empty())
+                {
+                    throughput = std::stod(line);
+                }
+            }
+            results.emplace_back(mcs, width, gi, throughput);
+            std::filesystem::remove(resultFileName);
+        }
+        std::filesystem::remove_all(tmpDir);
+
+        std::cout << "MCS value"
+                  << "\t\t"
+                  << "Channel width"
+                  << "\t\t"
+                  << "GI"
+                  << "\t\t\t"
+                  << "Throughput" << '\n';
+
+        uint8_t prevMcs = minMcs;
+        for (const auto& [mcs, width, gi, throughput] : results)
+        {
+            if (mcs != prevMcs)
+            {
+                index = 0;
+                prevThroughput = 0;
+                prevMcs = mcs;
+            }
+            validateThroughput(mcs,
+                               minMcs,
+                               maxMcs,
+                               width,
+                               minChannelWidth,
+                               maxChannelWidth,
+                               gi,
+                               minGi,
+                               maxGi,
+                               throughput,
+                               minExpectedThroughput,
+                               maxExpectedThroughput,
+                               prevThroughput,
+                               prevThroughputs.at(index++));
+        }
+    }
+
     return 0;
 }
