@@ -1233,6 +1233,15 @@ class WifiPhy : public Object
      */
     uint32_t GetSubcarrierSpacing() const;
 
+    /**
+     * Callback invoked when the PHY model starts to transmit a signal
+     *
+     * \param ppdu The PPDU being transmitted
+     * \param txVector txVector used for transmitting the PPDU
+     */
+    typedef void (*SignalTransmissionCallback)(Ptr<const WifiPpdu> ppdu,
+                                               const WifiTxVector& txVector);
+
   protected:
     void DoInitialize() override;
     void DoDispose() override;
@@ -1324,6 +1333,9 @@ class WifiPhy : public Object
      * WifiMode::IsMandatory() is true.
      */
     std::map<WifiModulationClass, Ptr<PhyEntity>> m_phyEntities;
+
+    TracedCallback<Ptr<const WifiPpdu>, const WifiTxVector&>
+        m_signalTransmissionCb; //!< Signal Transmission callback
 
   private:
     /**

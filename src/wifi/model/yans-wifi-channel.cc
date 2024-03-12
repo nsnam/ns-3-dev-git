@@ -135,6 +135,7 @@ YansWifiChannel::Receive(Ptr<YansWifiPhy> phy, Ptr<const WifiPpdu> ppdu, double 
 {
     NS_LOG_FUNCTION(phy << ppdu << rxPowerDbm);
     const auto totalRxPowerDbm = rxPowerDbm + phy->GetRxGain();
+    phy->TraceSignalArrival(ppdu, totalRxPowerDbm, ppdu->GetTxDuration());
     // Do no further processing if signal is too weak
     // Current implementation assumes constant RX power over the PPDU duration
     // Compare received TX power per MHz to normalized RX sensitivity

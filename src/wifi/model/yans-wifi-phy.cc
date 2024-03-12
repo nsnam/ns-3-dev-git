@@ -36,10 +36,15 @@ NS_OBJECT_ENSURE_REGISTERED(YansWifiPhy);
 TypeId
 YansWifiPhy::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::YansWifiPhy")
-                            .SetParent<WifiPhy>()
-                            .SetGroupName("Wifi")
-                            .AddConstructor<YansWifiPhy>();
+    static TypeId tid =
+        TypeId("ns3::YansWifiPhy")
+            .SetParent<WifiPhy>()
+            .SetGroupName("Wifi")
+            .AddConstructor<YansWifiPhy>()
+            .AddTraceSource("SignalArrival",
+                            "Trace start of all signal arrivals, including weak signals",
+                            MakeTraceSourceAccessor(&YansWifiPhy::m_signalArrivalCb),
+                            "ns3::YansWifiPhy::SignalArrivalCallback");
     return tid;
 }
 
@@ -89,7 +94,15 @@ YansWifiPhy::StartTx(Ptr<const WifiPpdu> ppdu)
     NS_LOG_FUNCTION(this << ppdu);
     NS_LOG_DEBUG("Start transmission: signal power before antenna gain="
                  << GetPowerDbm(ppdu->GetTxVector().GetTxPowerLevel()) << "dBm");
+    m_signalTransmissionCb(ppdu, ppdu->GetTxVector());
     m_channel->Send(this, ppdu, GetTxPowerForTransmission(ppdu) + GetTxGain());
+}
+
+void
+YansWifiPhy::TraceSignalArrival(Ptr<const WifiPpdu> ppdu, double rxPowerDbm, Time duration)
+{
+    NS_LOG_FUNCTION(this << ppdu);
+    m_signalArrivalCb(ppdu, rxPowerDbm, ppdu->GetTxDuration());
 }
 
 uint16_t

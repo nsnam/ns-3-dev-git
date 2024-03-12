@@ -73,11 +73,35 @@ class YansWifiPhy : public WifiPhy
      */
     void SetChannel(const Ptr<YansWifiChannel> channel);
 
+    /**
+     * Logs the arrival of a PPDU, including its power and duration.
+     * This will also trace PPDUs below WifiPhy::RxSensitivity
+     *
+     * \param [in] ppdu The PPDU being traced upon its arrival.
+     * \param [in] rxPowerDbm The received power of the PPDU in dBm.
+     * \param [in] duration The duration of the PPDU signal.
+     */
+    void TraceSignalArrival(Ptr<const WifiPpdu> ppdu, double rxPowerDbm, Time duration);
+
+    /**
+     * Callback invoked when the PHY model starts to process a signal
+     *
+     * \param ppdu The PPDU being processed
+     * \param rxPowerDbm received signal power (dBm)
+     * \param duration Signal duration
+     */
+    typedef void (*SignalArrivalCallback)(Ptr<const WifiPpdu> ppdu,
+                                          double rxPowerDbm,
+                                          Time duration);
+
   protected:
     void DoDispose() override;
 
   private:
     Ptr<YansWifiChannel> m_channel; //!< YansWifiChannel that this YansWifiPhy is connected to
+
+    TracedCallback<Ptr<const WifiPpdu>, double, Time>
+        m_signalArrivalCb; //!< Signal Arrival callback
 };
 
 } // namespace ns3

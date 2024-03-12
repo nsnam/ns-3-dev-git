@@ -88,10 +88,11 @@ SpectrumWifiPhy::GetTypeId()
                 DoubleValue(-40.0),
                 MakeDoubleAccessor(&SpectrumWifiPhy::m_txMaskOuterBandMaximumRejection),
                 MakeDoubleChecker<double>())
-            .AddTraceSource("SignalArrival",
-                            "Signal arrival",
-                            MakeTraceSourceAccessor(&SpectrumWifiPhy::m_signalCb),
-                            "ns3::SpectrumWifiPhy::SignalArrivalCallback");
+            .AddTraceSource(
+                "SignalArrival",
+                "Trace start of all signal arrivals, including weak and foreign signals",
+                MakeTraceSourceAccessor(&SpectrumWifiPhy::m_signalCb),
+                "ns3::SpectrumWifiPhy::SignalArrivalCallback");
     return tid;
 }
 
@@ -478,7 +479,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         DynamicCast<WifiSpectrumSignalParameters>(rxParams);
 
     // Log the signal arrival to the trace source
-    m_signalCb(bool(wifiRxParams), senderNodeId, WToDbm(totalRxPowerW), rxDuration);
+    m_signalCb(rxParams, senderNodeId, WToDbm(totalRxPowerW), rxDuration);
 
     if (!wifiRxParams)
     {
@@ -571,6 +572,7 @@ void
 SpectrumWifiPhy::StartTx(Ptr<const WifiPpdu> ppdu)
 {
     NS_LOG_FUNCTION(this << ppdu);
+    m_signalTransmissionCb(ppdu, ppdu->GetTxVector());
     GetPhyEntity(ppdu->GetModulation())->StartTx(ppdu);
 }
 

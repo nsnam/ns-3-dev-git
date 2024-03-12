@@ -124,12 +124,11 @@ class SpectrumWifiPhy : public WifiPhy
     /**
      * Callback invoked when the PHY model starts to process a signal
      *
-     * \param signalType Whether signal is WiFi (true) or foreign (false)
      * \param senderNodeId Node Id of the sender of the signal
      * \param rxPower received signal power (dBm)
      * \param duration Signal duration
      */
-    typedef void (*SignalArrivalCallback)(bool signalType,
+    typedef void (*SignalArrivalCallback)(Ptr<const SpectrumSignalParameters> signal,
                                           uint32_t senderNodeId,
                                           double rxPower,
                                           Time duration);
@@ -286,7 +285,8 @@ class SpectrumWifiPhy : public WifiPhy
     bool m_trackSignalsInactiveInterfaces; //!< flag whether signals coming from inactive spectrum
                                            //!< PHY interfaces are tracked
 
-    TracedCallback<bool, uint32_t, double, Time> m_signalCb; //!< Signal callback
+    TracedCallback<Ptr<const SpectrumSignalParameters>, uint32_t, double, Time>
+        m_signalCb; //!< Signal callback
 
     double m_txMaskInnerBandMinimumRejection; //!< The minimum rejection (in dBr) for the inner band
                                               //!< of the transmit spectrum mask
