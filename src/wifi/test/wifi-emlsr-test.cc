@@ -190,7 +190,7 @@ EmlsrOperationsTestBase::DoSetup()
                 UintegerValue(1e6), // do not deassociate
                 "ActiveProbing",
                 BooleanValue(false));
-    mac.SetEmlsrManager("ns3::DefaultEmlsrManager",
+    mac.SetEmlsrManager("ns3::AdvancedEmlsrManager",
                         "EmlsrLinkSet",
                         AttributeContainerValue<UintegerValue>(m_linksToEnableEmlsrOn),
                         "MainPhyId",
@@ -3478,13 +3478,13 @@ EmlsrUlTxopTest::CheckResults()
 }
 
 EmlsrLinkSwitchTest::EmlsrLinkSwitchTest(const Params& params)
-    : EmlsrOperationsTestBase(std::string("Check EMLSR link switching (switchAuxPhy=") +
-                              std::to_string(params.switchAuxPhy) +
-                              ", resetCamState=" + std::to_string(params.resetCamState) +
-                              ", auxPhyMaxChWidth=" + std::to_string(params.auxPhyMaxChWidth) +
-                              "MHz )"),
+    : EmlsrOperationsTestBase(
+          std::string("Check EMLSR link switching (switchAuxPhy=") +
+          std::to_string(params.switchAuxPhy) + ", resetCamStateAndInterruptSwitch=" +
+          std::to_string(params.resetCamStateAndInterruptSwitch) +
+          ", auxPhyMaxChWidth=" + std::to_string(params.auxPhyMaxChWidth) + "MHz )"),
       m_switchAuxPhy(params.switchAuxPhy),
-      m_resetCamState(params.resetCamState),
+      m_resetCamStateAndInterruptSwitch(params.resetCamStateAndInterruptSwitch),
       m_auxPhyMaxChWidth(params.auxPhyMaxChWidth),
       m_countQoSframes(0),
       m_countIcfFrames(0),
@@ -3561,24 +3561,7 @@ EmlsrLinkSwitchTest::Transmit(Ptr<WifiMac> mac,
         break;
 
     case WIFI_MAC_CTL_RTS:
-        // corrupt the first RTS frame (sent by the EMLSR client)
-        if (++m_countRtsFrames == 1)
-        {
-            m_errorModel->SetList({psdu->GetPacket()->GetUid()});
-        }
-        // block transmissions on all other links at non-AP MLD side
-        {
-            std::set<uint8_t> links{0, 1, 2};
-            links.erase(linkId);
-            m_staMacs[0]->GetMacQueueScheduler()->BlockQueues(
-                WifiQueueBlockedReason::TID_NOT_MAPPED,
-                AC_BE,
-                {WIFI_QOSDATA_QUEUE},
-                m_apMac->GetAddress(),
-                m_staMacs[0]->GetAddress(),
-                {0},
-                links);
-        }
+        CheckRtsFrame(psduMap, txVector, linkId);
         break;
 
     default:;
@@ -3589,7 +3572,10 @@ void
 EmlsrLinkSwitchTest::DoSetup()
 {
     Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(m_switchAuxPhy));
-    Config::SetDefault("ns3::EmlsrManager::ResetCamState", BooleanValue(m_resetCamState));
+    Config::SetDefault("ns3::EmlsrManager::ResetCamState",
+                       BooleanValue(m_resetCamStateAndInterruptSwitch));
+    Config::SetDefault("ns3::AdvancedEmlsrManager::InterruptSwitch",
+                       BooleanValue(m_resetCamStateAndInterruptSwitch));
     Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth", UintegerValue(m_auxPhyMaxChWidth));
     Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(75)));
     Config::SetDefault("ns3::EhtConfiguration::MediumSyncDuration", TimeValue(Time{0}));
@@ -3922,6 +3908,62 @@ EmlsrLinkSwitchTest::CheckInitialControlFrame(const WifiConstPsduMap& psduMap,
 }
 
 void
+EmlsrLinkSwitchTest::CheckRtsFrame(const WifiConstPsduMap& psduMap,
+                                   const WifiTxVector& txVector,
+                                   uint8_t linkId)
+{
+    // corrupt the first RTS frame (sent by the EMLSR client)
+    if (++m_countRtsFrames == 1)
+    {
+        auto psdu = psduMap.begin()->second;
+        m_errorModel->SetList({psdu->GetPacket()->GetUid()});
+
+        // check that when CTS timeout occurs, the main PHY is switching
+        Simulator::Schedule(
+            m_staMacs[0]->GetFrameExchangeManager(linkId)->GetWifiTxTimer().GetDelayLeft(),
+            [=, this]() {
+                auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+                NS_TEST_EXPECT_MSG_EQ(mainPhy->IsStateSwitching(),
+                                      true,
+                                      "Main PHY expected to be in SWITCHING state instead of "
+                                          << mainPhy->GetState()->GetState());
+
+                // If main PHY channel switch can be interrupted, the main PHY should be back
+                // operating on the primary link after a channel switch delay. Otherwise, it
+                // will be operating on the primary link, if SwitchAuxPhy is false, or on the
+                // link used to send the RTS, if SwitchAuxPhy is true, after the remaining
+                // channel switching time plus the channel switch delay.
+                auto newLinkId =
+                    (m_resetCamStateAndInterruptSwitch || !m_switchAuxPhy) ? m_mainPhyId : linkId;
+                auto delay = mainPhy->GetChannelSwitchDelay();
+                if (!m_resetCamStateAndInterruptSwitch)
+                {
+                    delay += mainPhy->GetDelayUntilIdle();
+                }
+                Simulator::Schedule(delay + TimeStep(1), [=, this]() {
+                    auto id = m_staMacs[0]->GetLinkForPhy(mainPhy);
+                    NS_TEST_EXPECT_MSG_EQ(id.has_value(),
+                                          true,
+                                          "Expected main PHY to operate on a link");
+                    NS_TEST_EXPECT_MSG_EQ(*id,
+                                          newLinkId,
+                                          "Main PHY is operating on an unexpected link");
+                });
+            });
+    }
+    // block transmissions on all other links at non-AP MLD side
+    std::set<uint8_t> links{0, 1, 2};
+    links.erase(linkId);
+    m_staMacs[0]->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                      AC_BE,
+                                                      {WIFI_QOSDATA_QUEUE},
+                                                      m_apMac->GetAddress(),
+                                                      m_staMacs[0]->GetAddress(),
+                                                      {0},
+                                                      links);
+}
+
+void
 EmlsrLinkSwitchTest::CheckResults()
 {
     NS_TEST_ASSERT_MSG_NE(m_txPsdusPos, 0, "BA agreement establishment not completed");
@@ -3937,14 +3979,18 @@ EmlsrLinkSwitchTest::CheckResults()
     //  8. (DL) ICF + CTS + ADDBA_RESP + ACK
     //  9. (UL) DATA + BA
     // 10. (UL) RTS - CTS timeout
-    // 11. (UL) (RTS + CTS if SwitchAuxPhy is false + ) DATA + BA
+    // 11. (UL) (RTS + CTS + ) DATA + BA
+
+    // frame exchange 11 is protected if SwitchAuxPhy is false or (SwitchAuxPhy is true and) the
+    // main PHY switch can be interrupted
+    bool fe11protected = !m_switchAuxPhy || m_resetCamStateAndInterruptSwitch;
 
     NS_TEST_EXPECT_MSG_EQ(m_countIcfFrames, 6, "Unexpected number of ICFs sent");
 
     // frame exchanges without RTS because the EMLSR client sent the initial frame through main PHY
-    const std::size_t nFrameExchNoRts = m_switchAuxPhy ? 4 : 3;
+    const std::size_t nFrameExchNoRts = fe11protected ? 3 : 4;
 
-    const std::size_t nFrameExchWithRts = m_switchAuxPhy ? 0 : 1;
+    const std::size_t nFrameExchWithRts = fe11protected ? 1 : 0;
 
     NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(),
                                 m_txPsdusPos +
@@ -3962,7 +4008,7 @@ EmlsrLinkSwitchTest::CheckResults()
 
     for (std::size_t i = 1; i <= nFrameExchanges; ++i)
     {
-        if (i == 1 || (i >= 3 && i <= 6) || i == 8 || i == 10 || (i == 11 && !m_switchAuxPhy))
+        if (i == 1 || (i >= 3 && i <= 6) || i == 8 || i == 10 || (i == 11 && fe11protected))
         {
             // frame exchanges with protection
             NS_TEST_EXPECT_MSG_EQ((psduIt->psduMap.size() == 1 &&
@@ -4051,13 +4097,13 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
 
     for (bool switchAuxPhy : {true, false})
     {
-        for (bool resetCamState : {true, false})
+        for (bool resetCamStateAndInterruptSwitch : {true, false})
         {
             for (MHz_u auxPhyMaxChWidth : {20, 40, 80, 160})
             {
-                AddTestCase(
-                    new EmlsrLinkSwitchTest({switchAuxPhy, resetCamState, auxPhyMaxChWidth}),
-                    TestCase::Duration::QUICK);
+                AddTestCase(new EmlsrLinkSwitchTest(
+                                {switchAuxPhy, resetCamStateAndInterruptSwitch, auxPhyMaxChWidth}),
+                            TestCase::Duration::QUICK);
             }
         }
     }
