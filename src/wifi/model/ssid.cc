@@ -33,7 +33,7 @@ Ssid::Ssid()
 
 Ssid::Ssid(std::string s)
 {
-    NS_ASSERT(s.size() < 32);
+    NS_ASSERT(s.size() <= 32);
     const char* ssid = s.c_str();
     uint8_t len = 0;
     while (*ssid != 0 && len < 32)
