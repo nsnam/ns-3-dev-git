@@ -17,6 +17,7 @@ Changes from ns-3.41 to ns-3-dev
 --------------------------------
 
 ### New API
+* (wifi) New trace helper `WifiPhyRxTraceHelper` for detailed tracing of Wi-Fi Phy reception events
 * (wifi) New trace sources `SpectrumWifiPhy::SignalTransmission`, `YansWifiPhy::SignalArrival`, and `YansWifiPhy::SignalTransmission`
 * (wifi) New trace sources `WifiPhyStateHelper::RxOutcome` and`WifiPhy::PhyRxPpduDrop`, to support additional tracing.
 

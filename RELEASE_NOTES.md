@@ -24,7 +24,7 @@ Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.
 been tested on Linux. The latest known version to work with ns-3 is cppyy==3.1.2.
 
 ### New user-visible features
-
+- (wifi) 1901! - Added WifiPhyRxTraceHelper for Wi-Fi Phy tracing
 - (network) !1828 - Added a common helper to create and install applications
 - (lr-wpan) !1915 - Use MAC and PHY standard attribute ids
 - (lr-wpan) !1924 - Adds MAC attribute identifiers
