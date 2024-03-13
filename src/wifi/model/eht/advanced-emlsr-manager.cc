@@ -89,7 +89,7 @@ AdvancedEmlsrManager::DoSetWifiMac(Ptr<StaWifiMac> mac)
 }
 
 Time
-AdvancedEmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId)
+AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
 

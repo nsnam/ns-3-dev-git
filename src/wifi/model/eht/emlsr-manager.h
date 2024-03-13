@@ -137,14 +137,14 @@ class EmlsrManager : public Object
     bool GetCamStateReset() const;
 
     /**
-     * Notify that a TXOP is gained on the given link. This method has to determine whether to
-     * start the TXOP or release the channel.
+     * Notify that an UL TXOP is gained on the given link. This method has to determine whether to
+     * start the UL TXOP or release the channel.
      *
      * \param linkId the ID of the given link
-     * \return zero, if the TXOP can be started, or the delay after which the EMLSR restarts
-     *         channel access, otherwise
+     * \return zero, if the UL TXOP can be started, or the delay after which the EMLSR client
+     *         restarts channel access, otherwise
      */
-    virtual Time GetDelayUntilAccessRequest(uint8_t linkId) = 0;
+    Time GetDelayUntilAccessRequest(uint8_t linkId);
 
     /**
      * Set the member variable indicating whether Aux PHYs are capable of transmitting PPDUs.
@@ -192,10 +192,8 @@ class EmlsrManager : public Object
      * Notify the start of an UL TXOP on the given link
      *
      * \param linkId the ID of the given link
-     * \param timeToCtsEnd time remaining to the end of CTS reception, in case the UL TXOP is
-     *                     started by an aux PHY
      */
-    void NotifyUlTxopStart(uint8_t linkId, std::optional<Time> timeToCtsEnd);
+    void NotifyUlTxopStart(uint8_t linkId);
 
     /**
      * Notify the end of a TXOP on the given link.
@@ -207,16 +205,6 @@ class EmlsrManager : public Object
      *                      a notification of the end of an UL TXOP)
      */
     void NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted = false, bool ongoingDlTxop = false);
-
-    /**
-     * This method is intended to notify the EMLSR Manager that an aux PHY that is NOT TX capable
-     * has gained a TXOP on a given link and returns whether the main PHY has been requested to
-     * switch to the given link to take over the TXOP.
-     *
-     * \param linkId the ID of the given link
-     * \return whether main PHY has been requested to switch
-     */
-    virtual bool SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId) = 0;
 
     /**
      * Check whether the MediumSyncDelay timer is running for the STA operating on the given link.
@@ -357,12 +345,49 @@ class EmlsrManager : public Object
      */
     MgtEmlOmn GetEmlOmn();
 
+    /**
+     * Subclasses have to provide an implementation for this method, that is called by the base
+     * class when the EMLSR client gets channel access on the given link. This method has to
+     * check possible reasons to give up the TXOP that apply to both main PHY and aux PHYs.
+     *
+     * \param linkId the ID of the given link
+     * \return zero, if the UL TXOP can be started, or the delay after which the EMLSR client
+     *         restarts channel access, otherwise
+     */
+    virtual Time DoGetDelayUntilAccessRequest(uint8_t linkId) = 0;
+
+    /**
+     * Subclasses have to provide an implementation for this method, that is called by the base
+     * class when the EMLSR client gets channel access on the given link, on which an aux PHY that
+     * is not TX capable is operating. This method has to request the main PHY to switch to the
+     * given link to take over the TXOP, unless it is decided to give up the TXOP.
+     *
+     * \param linkId the ID of the given link
+     */
+    virtual void SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId) = 0;
+
+    /**
+     * Subclasses have to provide an implementation for this method, that is called by the base
+     * class when the EMLSR client gets channel access on the given link, on which an aux PHY that
+     * is TX capable is operating. This method has to request the main PHY to switch to the
+     * given link to take over the TXOP, if possible, or determine the delay after which the
+     * EMLSR client restarts channel access on the given link, otherwise.
+     *
+     * \param linkId the ID of the given link
+     * \return zero, if the UL TXOP can be started, or the delay after which the EMLSR client
+     *         restarts channel access, otherwise
+     */
+    virtual Time GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId) = 0;
+
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
     uint8_t m_mainPhyId; //!< ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
     MHz_u m_auxPhyMaxWidth;                  //!< max channel width supported by aux PHYs
     WifiModulationClass m_auxPhyMaxModClass; //!< max modulation class supported by aux PHYs
     bool m_auxPhyTxCapable;                  //!< whether Aux PHYs are capable of transmitting PPDUs
+    std::map<uint8_t, EventId> m_ulMainPhySwitch; //!< link ID-indexed map of timers started when
+                                                  //!< an aux PHY gains an UL TXOP and schedules
+                                                  //!< a channel switch for the main PHY
 
   private:
     /**
@@ -514,9 +539,6 @@ class EmlsrManager : public Object
         m_mainPhyChannels; //!< link ID-indexed map of operating channels for the main PHY
     std::map<uint8_t, WifiPhyOperatingChannel>
         m_auxPhyChannels; //!< link ID-indexed map of operating channels for the aux PHYs
-    std::map<uint8_t, EventId> m_ulMainPhySwitch; //!< link ID-indexed map of timers started when
-                                                  //!< an aux PHY gains an UL TXOP and schedules
-                                                  //!< a channel switch for the main PHY
 };
 
 } // namespace ns3

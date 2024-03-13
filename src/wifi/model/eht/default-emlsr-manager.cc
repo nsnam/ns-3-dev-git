@@ -172,7 +172,7 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
 }
 
 Time
-DefaultEmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId)
+DefaultEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
     return Time{0}; // start the TXOP
@@ -228,7 +228,7 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     }
 }
 
-bool
+void
 DefaultEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
@@ -280,7 +280,7 @@ DefaultEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId)
         // switch main PHY
         SwitchMainPhy(linkId, false, RESET_BACKOFF, REQUEST_ACCESS);
 
-        return true;
+        return;
     }
 
     // Determine if and when we need to request channel access again for the aux PHY based on
@@ -307,7 +307,7 @@ DefaultEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId)
     if (!mainPhy->IsStateSwitching() && !mainPhy->IsStateCcaBusy())
     {
         NS_LOG_DEBUG("Main PHY state is " << mainPhy->GetState()->GetState() << ". Do nothing");
-        return false;
+        return;
     }
 
     auto delay = mainPhy->GetDelayUntilIdle();
@@ -329,8 +329,78 @@ DefaultEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId)
             }
         }
     });
+}
 
-    return false;
+Time
+DefaultEmlsrManager::GetTimeToCtsEnd(uint8_t linkId) const
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto phy = GetStaMac()->GetWifiPhy(linkId);
+    NS_ASSERT_MSG(phy, "No PHY operating on link " << +linkId);
+
+    // we have to check whether the main PHY can switch to take over the UL TXOP
+    const auto stationManager = GetStaMac()->GetWifiRemoteStationManager(linkId);
+    const auto bssid = GetEhtFem(linkId)->GetBssid();
+    const auto allowedWidth = GetEhtFem(linkId)->GetAllowedWidth();
+
+    const auto rtsTxVector = stationManager->GetRtsTxVector(bssid, allowedWidth);
+    const auto rtsTxTime = phy->CalculateTxDuration(GetRtsSize(), rtsTxVector, phy->GetPhyBand());
+    const auto ctsTxVector = stationManager->GetCtsTxVector(bssid, rtsTxVector.GetMode());
+    const auto ctsTxTime = phy->CalculateTxDuration(GetCtsSize(), ctsTxVector, phy->GetPhyBand());
+
+    // the main PHY shall terminate the channel switch at the end of CTS reception;
+    // the time remaining to the end of CTS reception includes two propagation delays
+    return rtsTxTime + phy->GetSifs() + ctsTxTime + MicroSeconds(2 * MAX_PROPAGATION_DELAY_USEC);
+}
+
+Time
+DefaultEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+    auto timeToCtsEnd = GetTimeToCtsEnd(linkId);
+    auto switchingTime = mainPhy->GetChannelSwitchDelay();
+
+    switch (mainPhy->GetState()->GetState())
+    {
+    case WifiPhyState::SWITCHING:
+        // the main PHY is switching (to another link), hence the remaining time to
+        // the end of the current channel switch needs to be added up
+        switchingTime += mainPhy->GetDelayUntilIdle();
+        [[fallthrough]];
+    case WifiPhyState::RX:
+    case WifiPhyState::IDLE:
+    case WifiPhyState::CCA_BUSY:
+        if (switchingTime > timeToCtsEnd)
+        {
+            // switching takes longer than RTS/CTS exchange, release channel
+            NS_LOG_DEBUG("Not enough time for main PHY to switch link (main PHY state: "
+                         << mainPhy->GetState()->GetState() << ")");
+            // retry channel access when the CTS was expected to be received
+            return timeToCtsEnd;
+        }
+        break;
+    default:
+        NS_ABORT_MSG("Main PHY cannot be in state " << mainPhy->GetState()->GetState());
+    }
+
+    // TXOP can be started, schedule main PHY switch. Main PHY shall terminate the channel switch
+    // at the end of CTS reception
+    const auto delay = timeToCtsEnd - mainPhy->GetChannelSwitchDelay();
+
+    NS_ASSERT(delay.IsPositive());
+    NS_LOG_DEBUG("Schedule main Phy switch in " << delay.As(Time::US));
+    m_ulMainPhySwitch[linkId] = Simulator::Schedule(delay,
+                                                    &DefaultEmlsrManager::SwitchMainPhy,
+                                                    this,
+                                                    linkId,
+                                                    false,
+                                                    RESET_BACKOFF,
+                                                    DONT_REQUEST_ACCESS);
+
+    return Time{0};
 }
 
 } // namespace ns3

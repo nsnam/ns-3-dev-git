@@ -408,8 +408,43 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
     });
 }
 
+Time
+EmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId)
+{
+    auto phy = m_staMac->GetWifiPhy(linkId);
+    NS_ASSERT_MSG(phy, "No PHY operating on link " << +linkId);
+
+    auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
+
+    // check possible reasons to give up the TXOP that apply to both main PHY and aux PHYs
+    if (auto delay = DoGetDelayUntilAccessRequest(linkId); delay.IsStrictlyPositive())
+    {
+        return delay;
+    }
+
+    if (phy == mainPhy)
+    {
+        // no more constraints to check if medium was gained by main PHY
+        return Time{0};
+    }
+
+    // an aux PHY is operating on the given link; call the appropriate method depending on
+    // whether the aux PHY is TX capable or not
+    if (!m_auxPhyTxCapable)
+    {
+        SwitchMainPhyIfTxopGainedByAuxPhy(linkId);
+        // if the aux PHY is not TX capable, we don't have to request channel access: if the main
+        // PHY switches link, the UL TXOP will be started; if the main PHY does not switch, it is
+        // because it is going to start an UL TXOP on another link and this link will be restarted
+        // at the end of that UL TXOP when this link will be unblocked
+        return Time{0};
+    }
+
+    return GetDelayUnlessMainPhyTakesOverUlTxop(linkId);
+}
+
 void
-EmlsrManager::NotifyUlTxopStart(uint8_t linkId, std::optional<Time> timeToCtsEnd)
+EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
 
@@ -426,35 +461,6 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId, std::optional<Time> timeToCtsEnd
         {
             m_staMac->BlockTxOnLink(id, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
         }
-    }
-
-    // if this TXOP is being started by an aux PHY, schedule a channel switch for the main PHY
-    // such that the channel switch is completed by the time the CTS response is received. The
-    // delay has been passed by the FEM.
-    if (m_staMac->GetLinkForPhy(m_mainPhyId) != linkId)
-    {
-        auto stateHelper = m_staMac->GetWifiPhy(linkId)->GetState();
-        NS_ASSERT(stateHelper);
-        NS_ASSERT_MSG(stateHelper->GetState() == WifiPhyState::TX,
-                      "Expecting the aux PHY to be transmitting (an RTS frame)");
-        NS_ASSERT_MSG(timeToCtsEnd.has_value(),
-                      "Aux PHY is sending RTS, expected to get the time to CTS end");
-
-        auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
-
-        // the main PHY shall terminate the channel switch at the end of CTS reception;
-        // the time remaining to the end of CTS reception includes two propagation delays
-        const auto delay = *timeToCtsEnd - mainPhy->GetChannelSwitchDelay();
-
-        NS_ASSERT(delay.IsPositive());
-        NS_LOG_DEBUG("Schedule main Phy switch in " << delay.As(Time::US));
-        m_ulMainPhySwitch[linkId] = Simulator::Schedule(delay,
-                                                        &EmlsrManager::SwitchMainPhy,
-                                                        this,
-                                                        linkId,
-                                                        false,
-                                                        RESET_BACKOFF,
-                                                        DONT_REQUEST_ACCESS);
     }
 
     DoNotifyUlTxopStart(linkId);

@@ -33,17 +33,21 @@ class DefaultEmlsrManager : public EmlsrManager
     DefaultEmlsrManager();
     ~DefaultEmlsrManager() override;
 
-    bool SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId) override;
-
-    /**
-     * \param linkId the ID of the link on which TXOP is gained
-     * \return zero, indicating that the TXOP can be started
-     */
-    Time GetDelayUntilAccessRequest(uint8_t linkId) override;
-
   protected:
     uint8_t GetLinkToSendEmlOmn() override;
     std::optional<uint8_t> ResendNotification(Ptr<const WifiMpdu> mpdu) override;
+    Time DoGetDelayUntilAccessRequest(uint8_t linkId) override;
+    void SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId) override;
+    Time GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId) override;
+
+    /**
+     * This function is intended to be called when an aux PHY is about to transmit an RTS on
+     * the given link to calculate the time remaining to the end of the CTS reception.
+     *
+     * \param linkId the ID of the given link
+     * \return the time remaining to the end of the CTS reception
+     */
+    Time GetTimeToCtsEnd(uint8_t linkId) const;
 
     /// Store information about a main PHY switch.
     struct MainPhySwitchInfo

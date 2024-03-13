@@ -201,6 +201,10 @@ class FrameExchangeManager : public Object
      */
     Mac48Address GetBssid() const;
     /**
+     * \return the width of the channel that the FEM is allowed to use for the current transmission
+     */
+    MHz_u GetAllowedWidth() const;
+    /**
      * Set the callback to invoke when an MPDU is dropped.
      *
      * \param callback the callback to invoke when an MPDU is dropped

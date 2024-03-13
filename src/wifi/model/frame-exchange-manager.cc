@@ -226,6 +226,12 @@ FrameExchangeManager::GetBssid() const
     return m_bssid;
 }
 
+MHz_u
+FrameExchangeManager::GetAllowedWidth() const
+{
+    return m_allowedWidth;
+}
+
 void
 FrameExchangeManager::SetDroppedMpduCallback(DroppedMpdu callback)
 {
