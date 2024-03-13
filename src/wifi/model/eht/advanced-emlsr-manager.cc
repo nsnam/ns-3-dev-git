@@ -271,4 +271,50 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     }
 }
 
+Time
+AdvancedEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    if (!m_interruptSwitching)
+    {
+        return DefaultEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(linkId);
+    }
+
+    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+    auto state = mainPhy->GetState()->GetState();
+
+    NS_ABORT_MSG_UNLESS(state == WifiPhyState::SWITCHING || state == WifiPhyState::RX ||
+                            state == WifiPhyState::IDLE || state == WifiPhyState::CCA_BUSY,
+                        "Main PHY cannot be in state " << state);
+
+    auto timeToCtsEnd = GetTimeToCtsEnd(linkId);
+    auto switchingTime = mainPhy->GetChannelSwitchDelay();
+
+    if (switchingTime > timeToCtsEnd)
+    {
+        // switching takes longer than RTS/CTS exchange, release channel
+        NS_LOG_DEBUG("Not enough time for main PHY to switch link (main PHY state: "
+                     << mainPhy->GetState()->GetState() << ")");
+        // retry channel access when the CTS was expected to be received
+        return timeToCtsEnd;
+    }
+
+    // TXOP can be started, schedule main PHY switch. Main PHY shall terminate the channel switch
+    // at the end of CTS reception
+    const auto delay = timeToCtsEnd - switchingTime;
+
+    NS_ASSERT(delay.IsPositive());
+    NS_LOG_DEBUG("Schedule main Phy switch in " << delay.As(Time::US));
+    m_ulMainPhySwitch[linkId] = Simulator::Schedule(delay,
+                                                    &AdvancedEmlsrManager::SwitchMainPhy,
+                                                    this,
+                                                    linkId,
+                                                    false,
+                                                    RESET_BACKOFF,
+                                                    DONT_REQUEST_ACCESS);
+
+    return Time{0};
+}
+
 } // namespace ns3
