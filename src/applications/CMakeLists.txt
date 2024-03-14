@@ -68,4 +68,5 @@ build_lib(
     test/video-traffic-test-suite.cc
     test/voip-traffic-test-suite.cc
     test/mobile-gaming-test-suite.cc
+    test/virtual-desktop-test-suite.cc
 )
