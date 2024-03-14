@@ -65,4 +65,5 @@ build_lib(
     test/udp-client-server-test.cc
     test/tgax-video-traffic-test-suite.cc
     test/tgax-voip-traffic-test-suite.cc
+    test/tgax-virtual-desktop-test-suite.cc
 )
