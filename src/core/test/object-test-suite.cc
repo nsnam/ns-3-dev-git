@@ -466,6 +466,74 @@ AggregateObjectTestCase::DoRun()
 
 /**
  * \ingroup object-tests
+ * Test we can aggregate Objects.
+ */
+class UnidirectionalAggregateObjectTestCase : public TestCase
+{
+  public:
+    /** Constructor. */
+    UnidirectionalAggregateObjectTestCase();
+    /** Destructor. */
+    ~UnidirectionalAggregateObjectTestCase() override;
+
+  private:
+    void DoRun() override;
+};
+
+UnidirectionalAggregateObjectTestCase::UnidirectionalAggregateObjectTestCase()
+    : TestCase("Check Object unidirectional aggregation functionality")
+{
+}
+
+UnidirectionalAggregateObjectTestCase::~UnidirectionalAggregateObjectTestCase()
+{
+}
+
+void
+UnidirectionalAggregateObjectTestCase::DoRun()
+{
+    Ptr<BaseA> baseAOne = CreateObject<BaseA>();
+    NS_TEST_ASSERT_MSG_NE(baseAOne, nullptr, "Unable to CreateObject<BaseA>");
+    Ptr<BaseA> baseATwo = CreateObject<BaseA>();
+    NS_TEST_ASSERT_MSG_NE(baseATwo, nullptr, "Unable to CreateObject<BaseA>");
+
+    Ptr<BaseB> baseB = CreateObject<BaseB>();
+    NS_TEST_ASSERT_MSG_NE(baseB, nullptr, "Unable to CreateObject<BaseB>");
+
+    //
+    // Make an unidirectional aggregation of a BaseA object and a BaseB object.
+    //
+    baseAOne->UnidirectionalAggregateObject(baseB);
+    baseATwo->UnidirectionalAggregateObject(baseB);
+
+    //
+    // We should be able to ask the aggregation (through baseA) for the BaseB part
+    // on either BaseA objects
+    //
+    NS_TEST_ASSERT_MSG_NE(baseAOne->GetObject<BaseB>(),
+                          nullptr,
+                          "Cannot GetObject (through baseAOne) for BaseB Object");
+
+    NS_TEST_ASSERT_MSG_NE(baseATwo->GetObject<BaseB>(),
+                          nullptr,
+                          "Cannot GetObject (through baseATwo) for BaseB Object");
+
+    NS_TEST_ASSERT_MSG_EQ(
+        baseAOne->GetObject<BaseB>(),
+        baseATwo->GetObject<BaseB>(),
+        "GetObject (through baseAOne and baseATwo) for BaseB Object are not equal");
+
+    //
+    // We should not be able to ask the aggregation (through baseB) for the BaseA part
+    // of the aggregation.
+    //
+    NS_TEST_ASSERT_MSG_NE(!baseB->GetObject<BaseA>(),
+                          0,
+                          "Can GetObject (through baseB) for BaseA Object");
+}
+
+/**
+ * \ingroup object-tests
  * Test an Object factory can create Objects
  */
 class ObjectFactoryTestCase : public TestCase
@@ -565,6 +633,7 @@ ObjectTestSuite::ObjectTestSuite()
 {
     AddTestCase(new CreateObjectTestCase);
     AddTestCase(new AggregateObjectTestCase);
+    AddTestCase(new UnidirectionalAggregateObjectTestCase);
     AddTestCase(new ObjectFactoryTestCase);
 }
 

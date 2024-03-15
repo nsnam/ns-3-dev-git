@@ -18,6 +18,8 @@ Changes from ns-3.41 to ns-3-dev
 
 ### New API
 
+* Objects now can be aggregated to multiple objects though the `Object::UnidirectionalAggregateObject` function. Objects aggregated in such a way can not use `GetObject` to access the objects they are aggregated to.
+
 ### Changes to existing API
 
 * `InetSocketAddress::SetTos()` and `InetSocketAddress::GetTos()` have been removed.
@@ -30,8 +32,7 @@ Applications have a new Attribute to set the IPv4 ToS field.
 
 ### Changed behavior
 
-* Fixed the corner rebound direction in `RandomWalk2d[Outdoor]MobilityModel` and the
-initial direction in case of node starting from a border or corner.
+* Fixed the corner rebound direction in `RandomWalk2d[Outdoor]MobilityModel` and the initial direction in case of node starting from a border or corner.
 
 Changes from ns-3.40 to ns-3.41
 -------------------------------

@@ -137,6 +137,8 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
         AggregateIterator(Ptr<const Object> object);
         Ptr<const Object> m_object; //!< Parent Object.
         uint32_t m_current;         //!< Current position in parent's aggregates.
+        /// Iterator to the unidirectional aggregates.
+        std::vector<Ptr<Object>>::const_iterator m_uniAggrIter;
     };
 
     /** Constructor. */
@@ -198,6 +200,44 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      * \sa NotifyNewAggregate()
      */
     void AggregateObject(Ptr<Object> other);
+
+    /**
+     * Aggregate an Object to another Object.
+     *
+     * \param [in] other The other Object pointer
+     *
+     * This method aggregates the an object to another Object:
+     * after this method returns, it becomes possible to call GetObject()
+     * on the aggregating Object to get the other, but not vice-versa.
+     *
+     * This method calls the virtual method NotifyNewAggregates() to
+     * notify all aggregated Objects that they have been aggregated
+     * together.
+     *
+     * This method is useful only if there is the need to aggregate an
+     * object to more than one object at the same time, and should be avoided
+     * if not strictly necessary.
+     * In particular, objects aggregated with this method should be destroyed
+     * only after making sure that the objects they are aggregated to are
+     * destroyed as well. However, the destruction of the aggregating objects
+     * will take care of the unidirectional aggregated objects gracefully.
+     *
+     * Beware that an object aggregated to another with this function
+     * behaves differently than other aggregates in the following ways.
+     * Suppose that Object B is aggregated unidirectionally:
+     *   - It can be aggregated unidirectionally to more than one objects
+     *     (e.g., A1 and A2).
+     *   - It is not possible to call GetObject on B to find an aggregate of
+     *     object A1 or A2.
+     *   - When A1 or A2 are initialized, B is initialized, whichever happens first.
+     *   - When A1 or A2 are destroyed, B is destroyed, whichever happens last.
+     *   - If B is initialized, A1 and A2 are unaffected.
+     *   - If B is forcefully destroyed, A1 and A2 are unaffected.
+     *
+     *
+     * \sa AggregateObject()
+     */
+    void UnidirectionalAggregateObject(Ptr<Object> other);
 
     /**
      * Get an iterator to the Objects aggregated to this one.
@@ -436,6 +476,17 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      * so the size of the array is indirectly a reference count.
      */
     Aggregates* m_aggregates;
+
+    /**
+     * An array of unidirectional aggregates, i.e., objects that are
+     * aggregated to the current object, but not vice-versa.
+     *
+     * This is useful (and suggested) only for Objects that should
+     * be aggregated to multiple other Objects, where the normal
+     * Aggregation would create an issue.
+     */
+    std::vector<Ptr<Object>> m_unidirectionalAggregates;
+
     /**
      * The number of times the Object was accessed with a
      * call to GetObject().
