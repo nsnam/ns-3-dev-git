@@ -309,3 +309,9 @@ build_example(
     ${libapplications}
     ${libinternet}
 )
+
+build_example(
+  NAME parallel-scheduler
+  SOURCE_FILES parallel-scheduler.cc
+  LIBRARIES_TO_LINK ${libcore}
+)
