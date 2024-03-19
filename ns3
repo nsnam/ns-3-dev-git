@@ -1054,6 +1054,8 @@ def get_program_shortcuts(build_profile, ns3_version):
 
 
 def parse_version(version_str):
+    if "-" in version_str:
+    	version_str = version_str.split("-")[0]
     version = version_str.split(".")
     version = tuple(map(int, version))
     return version
