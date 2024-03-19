@@ -315,3 +315,9 @@ build_example(
   SOURCE_FILES parallel-scheduler.cc
   LIBRARIES_TO_LINK ${libcore}
 )
+
+build_example(
+  NAME wifi-network-validator
+  SOURCE_FILES wifi-network-validator.cc
+  LIBRARIES_TO_LINK ${libcore}
+)
