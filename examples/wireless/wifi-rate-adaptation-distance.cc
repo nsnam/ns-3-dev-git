@@ -24,7 +24,7 @@
  * highlighting the power adaptation.
  *
  * This simulation consist of 2 nodes, one AP and one STA.
- * The AP generates UDP traffic with a CBR of 54 Mbps to the STA.
+ * The AP generates UDP traffic with a CBR of 400 Mbps to the STA.
  * The AP can use any power and rate control mechanism and the STA uses
  * only Minstrel rate control.
  * The STA can be configured to move away from (or towards to) the AP.
