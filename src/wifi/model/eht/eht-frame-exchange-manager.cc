@@ -780,7 +780,7 @@ EhtFrameExchangeManager::PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxV
             // is switching to listening operation by checking whether the AP is expecting a
             // response from it.
             if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt) && !txVector.IsUlMu() &&
-                m_txTimer.GetStasExpectedToRespond().count(*clientIt) == 0)
+                !m_txTimer.GetStasExpectedToRespond().contains(*clientIt))
             {
                 EmlsrSwitchToListening(*clientIt, Seconds(0));
                 // this client is no longer involved in the current TXOP

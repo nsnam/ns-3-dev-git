@@ -313,7 +313,7 @@ ChannelAccessManager::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy,
                                                uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << phy << channel << linkId);
-    NS_ASSERT_MSG(m_switchingEmlsrLinks.count(phy) == 0,
+    NS_ASSERT_MSG(!m_switchingEmlsrLinks.contains(phy),
                   "The given PHY is already expected to switch channel");
     m_switchingEmlsrLinks.emplace(phy, EmlsrLinkSwitchInfo{channel, linkId});
 }

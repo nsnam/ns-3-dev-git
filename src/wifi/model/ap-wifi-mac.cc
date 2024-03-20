@@ -2378,7 +2378,7 @@ ApWifiMac::GetNextAssociationId(std::list<uint8_t> linkIds)
     {
         if (std::all_of(linkIds.begin(), linkIds.end(), [&](auto&& linkId) {
                 auto& staList = GetLink(linkId).staList;
-                return staList.find(nextAid) == staList.end();
+                return !staList.contains(nextAid);
             }))
         {
             return nextAid;

@@ -160,7 +160,7 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
 void
 SpectrumWifiPhyHelper::InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy> phy) const
 {
-    if (m_interfacesMap.count(linkId) == 0)
+    if (!m_interfacesMap.contains(linkId))
     {
         // default setup: set all interfaces to this link
         for (const auto& [freqRange, channel] : m_channels)
@@ -195,7 +195,7 @@ SpectrumWifiPhyHelper::SpectrumChannelSwitched(Ptr<SpectrumWifiPhy> phy)
             continue;
         }
         if (const auto& interfaces = spectrumPhy->GetSpectrumPhyInterfaces();
-            interfaces.count(phy->GetCurrentFrequencyRange()) == 0)
+            !interfaces.contains(phy->GetCurrentFrequencyRange()))
         {
             // no interface attached to that channel
             continue;

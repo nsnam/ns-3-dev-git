@@ -89,7 +89,7 @@ EhtPpdu::SetEhtPhyHeader(const WifiTxVector& txVector)
 WifiPpduType
 EhtPpdu::GetType() const
 {
-    if (m_psdus.count(SU_STA_ID) > 0)
+    if (m_psdus.contains(SU_STA_ID))
     {
         return WIFI_PPDU_TYPE_SU;
     }
@@ -108,13 +108,13 @@ EhtPpdu::GetType() const
 bool
 EhtPpdu::IsDlMu() const
 {
-    return (m_preamble == WIFI_PREAMBLE_EHT_MU) && (m_psdus.count(SU_STA_ID) == 0);
+    return (m_preamble == WIFI_PREAMBLE_EHT_MU) && !m_psdus.contains(SU_STA_ID);
 }
 
 bool
 EhtPpdu::IsUlMu() const
 {
-    return (m_preamble == WIFI_PREAMBLE_EHT_TB) && (m_psdus.count(SU_STA_ID) == 0);
+    return (m_preamble == WIFI_PREAMBLE_EHT_TB) && !m_psdus.contains(SU_STA_ID);
 }
 
 void

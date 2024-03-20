@@ -770,7 +770,7 @@ WifiPhy::GetPhyEntityForPpdu(const Ptr<const WifiPpdu> ppdu) const
 void
 WifiPhy::AddStaticPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
 {
-    NS_ASSERT_MSG(GetStaticPhyEntities().find(modulation) == GetStaticPhyEntities().end(),
+    NS_ASSERT_MSG(!GetStaticPhyEntities().contains(modulation),
                   "The PHY entity has already been added. The setting should only be done once per "
                   "modulation class");
     GetStaticPhyEntities()[modulation] = phyEntity;
@@ -780,7 +780,7 @@ void
 WifiPhy::AddPhyEntity(WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
 {
     NS_LOG_FUNCTION(this << modulation);
-    NS_ABORT_MSG_IF(GetStaticPhyEntities().find(modulation) == GetStaticPhyEntities().end(),
+    NS_ABORT_MSG_IF(!GetStaticPhyEntities().contains(modulation),
                     "Cannot add an unimplemented PHY to supported list. Update the former first.");
     NS_ASSERT_MSG(m_phyEntities.find(modulation) == m_phyEntities.end(),
                   "The PHY entity has already been added. The setting should only be done once per "

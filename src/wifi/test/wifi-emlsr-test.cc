@@ -2284,7 +2284,7 @@ EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
                     "This test requires at least two links to be configured as EMLSR links");
     for (uint8_t id = 0; id < 3; id++)
     {
-        if (m_emlsrLinks.count(id) == 0)
+        if (!m_emlsrLinks.contains(id))
         {
             // non-EMLSR link found
             m_nonEmlsrLink = id;

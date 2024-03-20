@@ -536,8 +536,7 @@ HeFrameExchangeManager::SendPsduMap()
         // schedule the transmission of required BlockAckReq frames
         for (const auto& psdu : m_psduMap)
         {
-            if (acknowledgment->stationsSendBlockAckReqTo.find(psdu.second->GetAddr1()) !=
-                acknowledgment->stationsSendBlockAckReqTo.end())
+            if (acknowledgment->stationsSendBlockAckReqTo.contains(psdu.second->GetAddr1()))
             {
                 // the receiver of this PSDU will receive a BlockAckReq
                 std::set<uint8_t> tids = psdu.second->GetTids();
@@ -2184,7 +2183,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         auto acknowledgment = static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
         std::size_t index = acknowledgment->baType.m_bitmapLen.size();
 
-        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
+        if (!m_txTimer.GetStasExpectedToRespond().contains(sender))
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;
@@ -2273,7 +2272,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     {
         const auto& sender = hdr.GetAddr2();
 
-        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
+        if (!m_txTimer.GetStasExpectedToRespond().contains(sender))
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;
@@ -2404,7 +2403,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                                                                m_txParams.m_txVector);
 
             // remove the sender from the set of stations that are expected to send a BlockAck
-            if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
+            if (!m_txTimer.GetStasExpectedToRespond().contains(sender))
             {
                 NS_LOG_WARN("Received a BlockAck from an unexpected stations: " << sender);
                 return;
@@ -2657,7 +2656,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
         auto acknowledgment = static_cast<WifiUlMuMultiStaBa*>(m_txParams.m_acknowledgment.get());
         std::size_t index = acknowledgment->baType.m_bitmapLen.size();
 
-        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
+        if (!m_txTimer.GetStasExpectedToRespond().contains(sender))
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;
@@ -2730,7 +2729,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
     {
         Mac48Address sender = psdu->GetAddr2();
 
-        if (m_txTimer.GetStasExpectedToRespond().count(sender) == 0)
+        if (!m_txTimer.GetStasExpectedToRespond().contains(sender))
         {
             NS_LOG_WARN("Received a TB PPDU from an unexpected station: " << sender);
             return;

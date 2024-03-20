@@ -205,7 +205,7 @@ WifiTxVector::GetNss(uint16_t staId) const
     if (IsMu())
     {
         NS_ABORT_MSG_IF(staId > 2048, "STA-ID should be correctly set for MU (" << staId << ")");
-        NS_ASSERT(m_muUserInfos.find(staId) != m_muUserInfos.end());
+        NS_ASSERT(m_muUserInfos.contains(staId));
         return m_muUserInfos.at(staId).nss;
     }
     return m_nss;
@@ -605,7 +605,7 @@ WifiTxVector::GetNumStasInRu(const HeRu::RuSpec& ru) const
 bool
 WifiTxVector::IsAllocated(uint16_t staId) const
 {
-    return m_muUserInfos.count(staId) > 0;
+    return m_muUserInfos.contains(staId);
 }
 
 HeRu::RuSpec

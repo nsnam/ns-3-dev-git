@@ -628,7 +628,7 @@ WifiMac::SetupEdcaQueue(AcIndex ac)
 
     // Our caller shouldn't be attempting to setup a queue that is
     // already configured.
-    NS_ASSERT(m_edca.find(ac) == m_edca.end());
+    NS_ASSERT(!m_edca.contains(ac));
 
     Ptr<QosTxop> edca = CreateObject<QosTxop>(ac);
     edca->SetTxMiddle(m_txMiddle);
@@ -1011,7 +1011,7 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
         }
 
         std::unique_ptr<LinkEntity> linkToMove;
-        NS_ASSERT(m_links.find(from) != m_links.cend());
+        NS_ASSERT(m_links.contains(from));
         linkToMove.swap(m_links.at(from)); // from is now out of m_links
         auto empty = from;                 // track empty cell in m_links
 

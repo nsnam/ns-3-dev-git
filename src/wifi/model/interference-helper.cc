@@ -242,15 +242,15 @@ InterferenceHelper::HasBands() const
 bool
 InterferenceHelper::HasBand(const WifiSpectrumBandInfo& band) const
 {
-    return (m_niChanges.count(band) > 0);
+    return m_niChanges.contains(band);
 }
 
 void
 InterferenceHelper::AddBand(const WifiSpectrumBandInfo& band)
 {
     NS_LOG_FUNCTION(this << band);
-    NS_ASSERT(m_niChanges.count(band) == 0);
-    NS_ASSERT(m_firstPowers.count(band) == 0);
+    NS_ASSERT(!m_niChanges.contains(band));
+    NS_ASSERT(!m_firstPowers.contains(band));
     NiChanges niChanges;
     auto result = m_niChanges.insert({band, niChanges});
     NS_ASSERT(result.second);
@@ -589,7 +589,7 @@ InterferenceHelper::CalculatePayloadPer(Ptr<const Event> event,
     }
     Time windowStart = phyPayloadStart + window.first;
     Time windowEnd = phyPayloadStart + window.second;
-    NS_ABORT_IF(m_firstPowers.count(band) == 0);
+    NS_ABORT_IF(!m_firstPowers.contains(band));
     double noiseInterferenceW = m_firstPowers.at(band);
     double powerW = event->GetRxPowerW(band);
     while (++j != niIt.cend())
@@ -663,7 +663,7 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr(
     }
 
     Time previous = j->first;
-    NS_ABORT_IF(m_firstPowers.count(band) == 0);
+    NS_ABORT_IF(!m_firstPowers.contains(band));
     double noiseInterferenceW = m_firstPowers.at(band);
     double powerW = event->GetRxPowerW(band);
     while (++j != niIt.end())

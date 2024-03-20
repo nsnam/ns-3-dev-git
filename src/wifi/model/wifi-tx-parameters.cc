@@ -200,8 +200,7 @@ WifiTxParameters::GetSizeIfAggregateMsdu(Ptr<const WifiMpdu> msdu) const
                   "The MPDU being built for this receiver must be a QoS data frame");
     NS_ASSERT_MSG(infoIt->second.header.GetQosTid() == msdu->GetHeader().GetQosTid(),
                   "The MPDU being built must belong to the same TID as the MSDU to aggregate");
-    NS_ASSERT_MSG(infoIt->second.seqNumbers.find(msdu->GetHeader().GetQosTid()) !=
-                      infoIt->second.seqNumbers.end(),
+    NS_ASSERT_MSG(infoIt->second.seqNumbers.contains(msdu->GetHeader().GetQosTid()),
                   "At least one MPDU with the same TID must have been added previously");
 
     // all checks passed

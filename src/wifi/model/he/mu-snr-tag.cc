@@ -57,7 +57,7 @@ MuSnrTag::Set(uint16_t staId, double snr)
 bool
 MuSnrTag::IsPresent(uint16_t staId) const
 {
-    return (m_snrMap.find(staId) != m_snrMap.end());
+    return m_snrMap.contains(staId);
 }
 
 double

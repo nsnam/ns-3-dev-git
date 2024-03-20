@@ -302,7 +302,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     // only consider stations that have setup the current link
     WifiTxVector txVector = GetTxVectorForUlMu([this](const MasterInfo& info) {
         const auto& staList = m_apMac->GetStaList(m_linkId);
-        return staList.find(info.aid) != staList.cend();
+        return staList.contains(info.aid);
     });
 
     if (txVector.GetHeMuUserInfoMap().empty())
@@ -390,8 +390,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
     // reported a null queue size
     WifiTxVector txVector = GetTxVectorForUlMu([this](const MasterInfo& info) {
         const auto& staList = m_apMac->GetStaList(m_linkId);
-        return staList.find(info.aid) != staList.cend() &&
-               m_apMac->GetMaxBufferStatus(info.address) > 0;
+        return staList.contains(info.aid) && m_apMac->GetMaxBufferStatus(info.address) > 0;
     });
 
     if (txVector.GetHeMuUserInfoMap().empty())

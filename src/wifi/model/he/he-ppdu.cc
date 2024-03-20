@@ -466,7 +466,7 @@ HePpdu::UpdateTxVectorForUlMu(const std::optional<WifiTxVector>& trigVector) con
     // HE TB PPDU reception needs information from the TRIGVECTOR to be able to receive the PPDU
     const auto staId = GetStaId();
     if (trigVector.has_value() && trigVector->IsUlMu() &&
-        (trigVector->GetHeMuUserInfoMap().count(staId) > 0))
+        (trigVector->GetHeMuUserInfoMap().contains(staId)))
     {
         // These information are not carried in HE-SIG-A for a HE TB PPDU,
         // but they are carried in the Trigger frame soliciting the HE TB PPDU

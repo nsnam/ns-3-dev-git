@@ -182,7 +182,7 @@ WifiAssocManager::StartScanning(WifiScanParams&& scanParams)
     for (auto ap = m_apList.begin(); ap != m_apList.end();)
     {
         if (!MatchScanParams(*ap) ||
-            (!m_allowedLinks.empty() && m_allowedLinks.count(ap->m_linkId) == 0))
+            (!m_allowedLinks.empty() && !m_allowedLinks.contains(ap->m_linkId)))
         {
             // remove AP info from list
             m_apListIt.erase(ap->m_bssid);
@@ -203,7 +203,7 @@ WifiAssocManager::NotifyApInfo(const StaWifiMac::ApInfo&& apInfo)
     NS_LOG_FUNCTION(this << apInfo);
 
     if (!CanBeInserted(apInfo) || !MatchScanParams(apInfo) ||
-        (!m_allowedLinks.empty() && m_allowedLinks.count(apInfo.m_linkId) == 0))
+        (!m_allowedLinks.empty() && !m_allowedLinks.contains(apInfo.m_linkId)))
     {
         return;
     }

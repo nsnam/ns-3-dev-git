@@ -315,7 +315,7 @@ StaWifiMac::NotifyEmlsrModeChanged(const std::set<uint8_t>& linkIds)
     {
         auto& link = GetStaLink(lnk);
 
-        if (linkIds.count(linkId) > 0)
+        if (linkIds.contains(linkId))
         {
             // EMLSR mode enabled
             link.emlsrEnabled = true;
@@ -1119,7 +1119,7 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         {
             apAddresses.insert(GetBssid(id));
         }
-        if (apAddresses.count(mpdu->GetHeader().GetAddr2()) == 0)
+        if (!apAddresses.contains(mpdu->GetHeader().GetAddr2()))
         {
             NS_LOG_LOGIC("Received data frame not from the BSS we are associated with: ignore");
             NotifyRxDrop(packet);
@@ -1135,7 +1135,7 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         {
             if (hdr->IsQosAmsdu())
             {
-                NS_ASSERT(apAddresses.count(mpdu->GetHeader().GetAddr3()) != 0);
+                NS_ASSERT(apAddresses.contains(mpdu->GetHeader().GetAddr3()));
                 DeaggregateAmsduAndForward(mpdu);
                 packet = nullptr;
             }

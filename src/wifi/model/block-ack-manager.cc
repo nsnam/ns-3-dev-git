@@ -532,7 +532,7 @@ BlockAckManager::NotifyMissedBlockAck(uint8_t linkId, const Mac48Address& recipi
     {
         // MPDUs that were transmitted on another link shall stay inflight
         auto linkIds = (*mpduIt)->GetInFlightLinkIds();
-        if (linkIds.count(linkId) == 0)
+        if (!linkIds.contains(linkId))
         {
             mpduIt = HandleInFlightMpdu(linkId, mpduIt, STAY_INFLIGHT, it, now);
             continue;

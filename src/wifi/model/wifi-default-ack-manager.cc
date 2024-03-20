@@ -113,7 +113,7 @@ WifiDefaultAckManager::GetMaxDistFromStartingSeq(Ptr<const WifiMpdu> mpdu,
 
     const WifiTxParameters::PsduInfo* psduInfo = txParams.GetPsduInfo(receiver);
 
-    if (!psduInfo || psduInfo->seqNumbers.find(tid) == psduInfo->seqNumbers.end())
+    if (!psduInfo || !psduInfo->seqNumbers.contains(tid))
     {
         // there are no aggregated MPDUs (so far)
         return maxDistFromStartingSeq;
@@ -193,7 +193,7 @@ WifiDefaultAckManager::ExistInflightOnSameLink(Ptr<const WifiMpdu> mpdu) const
                         "While searching for given MPDU ("
                             << *mpdu << "), found first another one (" << *item
                             << ") with higher sequence number");
-        if (auto linkIds = item->GetInFlightLinkIds(); linkIds.count(m_linkId) > 0)
+        if (auto linkIds = item->GetInFlightLinkIds(); linkIds.contains(m_linkId))
         {
             NS_LOG_DEBUG("Found MPDU inflight on the same link");
             return true;
@@ -407,10 +407,8 @@ WifiDefaultAckManager::GetAckInfoIfBarBaSequence(Ptr<const WifiMpdu> mpdu,
         // an MPDU addressed to the same receiver has been already added
         NS_ASSERT(acknowledgment);
 
-        if ((acknowledgment->stationsSendBlockAckReqTo.find(receiver) !=
-             acknowledgment->stationsSendBlockAckReqTo.end()) ||
-            (acknowledgment->stationsReplyingWithBlockAck.find(receiver) !=
-             acknowledgment->stationsReplyingWithBlockAck.end()))
+        if (acknowledgment->stationsSendBlockAckReqTo.contains(receiver) ||
+            acknowledgment->stationsReplyingWithBlockAck.contains(receiver))
         {
             // the receiver either is already listed among the stations that will
             // receive a BlockAckReq frame or is the station that will immediately
@@ -709,8 +707,9 @@ WifiDefaultAckManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
             }
             NS_ABORT_MSG_IF(aid12 == 0 || aid12 > 2007, "Allocation of RA-RUs is not supported");
 
-            NS_ASSERT(apMac->GetStaList(m_linkId).find(aid12) != apMac->GetStaList(m_linkId).end());
-            Mac48Address staAddress = apMac->GetStaList(m_linkId).find(aid12)->second;
+            const auto it = apMac->GetStaList(m_linkId).find(aid12);
+            NS_ASSERT(it != apMac->GetStaList(m_linkId).end());
+            const auto staAddress = it->second;
 
             // find a TID for which a BA agreement exists with the given originator
             uint8_t tid = 0;
