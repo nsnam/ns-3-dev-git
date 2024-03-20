@@ -238,7 +238,12 @@ def find_ns3_from_lock_file(lock_file: str) -> (str, list, str):
     # Should be the case when running from the source directory
     exec(open(lock_file).read(), {}, values)
     suffix = "-" + values["BUILD_PROFILE"] if values["BUILD_PROFILE"] != "release" else ""
-    modules = [module.replace("ns3-", "") for module in values["NS3_ENABLED_MODULES"]]
+    modules = list(
+        map(
+            lambda x: x.replace("ns3-", ""),
+            values["NS3_ENABLED_MODULES"] + values["NS3_ENABLED_CONTRIBUTED_MODULES"],
+        )
+    )
     prefix = values["out_dir"]
     libraries = {
         os.path.splitext(os.path.basename(x))[0]: x for x in os.listdir(os.path.join(prefix, "lib"))
