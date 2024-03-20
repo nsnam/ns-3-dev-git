@@ -133,6 +133,12 @@ WifiMac::GetTypeId()
                 MakeObjectVectorAccessor(&WifiMac::GetChannelAccessManager, &WifiMac::GetNLinks),
                 MakeObjectVectorChecker<ChannelAccessManager>())
             .AddAttribute(
+                "FrameExchangeManagers",
+                "The Frame Exchange Manager(s) attached to this device.",
+                ObjectVectorValue(),
+                MakeObjectVectorAccessor(&WifiMac::GetFrameExchangeManager, &WifiMac::GetNLinks),
+                MakeObjectVectorChecker<FrameExchangeManager>())
+            .AddAttribute(
                 "MpduBufferSize",
                 "The size (in number of MPDUs) of the buffer used for each BlockAck "
                 "agreement in which this node is a recipient. The provided value is "
