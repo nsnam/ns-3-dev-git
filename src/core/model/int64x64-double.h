@@ -43,21 +43,11 @@ class int64x64_t
 {
     /// Mask for fraction part
     static const uint64_t HP_MASK_LO = 0xffffffffffffffffULL;
-    /**
-     * Floating point value of HP_MASK_LO + 1
-     * We really want:
-     * \code
-     *   static const long double HP_MAX_64 = std:pow (2.0L, 64);
-     * \endcode
-     * but we can't call functions in const definitions,
-     * We could make this a static and initialize in int64x64-double.cc or
-     * int64x64.cc, but this requires handling static initialization order
-     * when most of the implementation is inline.  Instead, we resort to
-     * this define.
-     */
-#define HP_MAX_64 (std::pow(2.0L, 64))
 
   public:
+    /// Floating point value of HP_MASK_LO + 1
+    static constexpr long double HP_MAX_64 = (static_cast<uint64_t>(1) << 63) * 2.0L;
+
     /**
      * Type tag for the underlying implementation.
      *

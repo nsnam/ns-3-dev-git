@@ -182,7 +182,8 @@ Int64x64HiLoTestCase::DoRun()
     if (int64x64_t::implementation == int64x64_t::ld_impl)
     {
         // Darwin 12.5.0 (Mac 10.8.5) g++ 4.2.1
-        low = static_cast<uint64_t>(HP_MAX_64 * std::numeric_limits<long double>::epsilon());
+        low = static_cast<uint64_t>(int64x64_t::HP_MAX_64 *
+                                    std::numeric_limits<long double>::epsilon());
     }
 
     Check(0, 0);
