@@ -41,8 +41,22 @@
  * When deprecating a feature, please update the documentation
  * with information for users on how to update their code.
  *
- * For example,
- * \snippet src/core/doc/deprecated-example.h doxygen snippet
+ * The following snippet shows an example of how to deprecate the function SomethingUseful()
+ * in favor of the new function TheNewWay().
+ * Note: in the following snippet, the Doxygen blocks are not following the ns-3 style.
+ * This allows the code to be safely embedded in the documentation.
+ *
+ * \code
+ * /// Do something useful.
+ * ///
+ * /// \deprecated This method will go away in future versions of ns-3.
+ * /// See instead TheNewWay().
+ * NS_DEPRECATED_3_XX("see TheNewWay")
+ * void SomethingUseful();
+ *
+ * /// Do something more useful.
+ * void TheNewWay();
+ * \endcode
  *
  * Please follow these two guidelines to ease future maintenance
  * (primarily the eventual removal of the deprecated code):
