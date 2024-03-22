@@ -309,26 +309,12 @@ class EpsBearer : public ObjectBase
     /**
      * @brief Retrieve requirements for Rel. 11
      * @return the BearerRequirementsMap for Release 11
-     *
-     * It returns a pointer to a non-const static data. That is not thread-safe,
-     * nor safe to do in general. However, a const-correct version would have
-     * to initialize two static maps, and then returning either one or the other.
-     * But that's a huge memory increase, and EpsBearer is used everywhere.
-     *
-     * To be revisited when GCC 4.9 will not be supported anymore.
      */
     static const BearerRequirementsMap& GetRequirementsRel11();
 
     /**
      * @brief Retrieve requirements for Rel. 15
      * @return the BearerRequirementsMap for Release 15
-     *
-     * It returns a pointer to a non-const static data. That is not thread-safe,
-     * nor safe to do in general. However, a const-correct version would have
-     * to initialize two static maps, and then returning either one or the other.
-     * But that's a huge memory increase, and EpsBearer is used everywhere.
-     *
-     * To be revisited when GCC 4.9 will not be supported anymore.
      */
     static const BearerRequirementsMap& GetRequirementsRel15();
 
@@ -338,12 +324,7 @@ class EpsBearer : public ObjectBase
      */
     static const BearerRequirementsMap& GetRequirementsRel18();
 
-    /**
-     * @brief Requirements pointer per bearer
-     *
-     * It will point to a static map.
-     */
-    BearerRequirementsMap m_requirements;
+    BearerRequirementsMap m_requirements; //!< Map of requirements per bearer
 
     uint8_t m_release{30}; //!< Release (10 or 15 or 18)
 };
