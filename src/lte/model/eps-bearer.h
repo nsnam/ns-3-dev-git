@@ -243,34 +243,13 @@ class EpsBearer : public ObjectBase
 
   private:
     /**
-     * \brief Hashing QCI
-     *
-     * Qci are just uint8_t, so that's how we calculate the hash. Unfortunately,
-     * we have to provide this struct because gcc 4.9 would not compile otherwise.
-     */
-    struct QciHash
-    {
-        /**
-         * \brief Hash the QCI like a normal uint8_t
-         * \param s Qci to hash
-         * \return Hash of Qci
-         */
-        std::size_t operator()(const Qci& s) const noexcept
-        {
-            return std::hash<uint8_t>{}(s);
-        }
-    };
-
-    /**
      * \brief Map between QCI and requirements
      *
      * The tuple is formed by: resource type, priority, packet delay budget, packet error rate,
      *  default maximum data burst, default averaging window (0 when does not apply)
      */
-    typedef std::unordered_map<Qci,
-                               std::tuple<uint8_t, uint8_t, uint16_t, double, uint32_t, uint32_t>,
-                               QciHash>
-        BearerRequirementsMap;
+    using BearerRequirementsMap =
+        std::unordered_map<Qci, std::tuple<uint8_t, uint8_t, uint16_t, double, uint32_t, uint32_t>>;
 
     /**
      * \brief Get the resource type (NON-GBR, GBR, DC-GBR) of the selected QCI
