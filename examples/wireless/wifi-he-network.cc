@@ -33,7 +33,6 @@
 #include "ns3/yans-wifi-helper.h"
 
 #include <algorithm>
-#include <array>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -63,97 +62,27 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("he-wifi-network");
 
+namespace
+{
+
 /**
- * Validate throughput obtained for a given combination.
- * \param mcs the MCS selected for that combination
- * \param minMcs the minimum MCS selected to run the example
- * \param maxMcs the maximum MCS selected to run the example
- * \param width the selected width in MHz for that combination
- * \param minWidth the minimum width in MHz selected to run the example
- * \param maxWidth the maximum width in MHz selected to run the example
- * \param gi the selected guard interval duration in nanoseconds for that combination
- * \param minGi the minimum guard interval duration in nanoseconds selected to run the example
- * \param maxGi the maximum guard interval duration in nanoseconds selected to run the example
- * \param throughput the obtained throughput in Mbit/s to validate
- * \param minExpectedThroughput the minimum expected throughput in Mbit/s
- * \param maxExpectedThroughput the maximum expected throughput in Mbit/s
- * \param prevThroughputSameMcs the previously validated throughput in Mbit/s at the same MCS
- * \param prevThroughputSameWidthAndGi the previously validated throughput in Mbit/s for the same
- * (channel width, guard interval) combination
- * \param print flag to indicate whether throughput
- * result should be printed
+ * Run a given system command and validate exit code.
+ * \param command the command to run
+ * \param directory the temporary directory used to run the commands
  */
 void
-validateThroughput(uint8_t mcs,
-                   uint8_t minMcs,
-                   uint8_t maxMcs,
-                   uint16_t width,
-                   uint16_t minWidth,
-                   uint16_t maxWidth,
-                   uint16_t gi,
-                   uint16_t minGi,
-                   uint16_t maxGi,
-                   double throughput,
-                   double minExpectedThroughput,
-                   double maxExpectedThroughput,
-                   double& prevThroughputSameMcs,
-                   double& prevThroughputSameWidthAndGi,
-                   bool print = true)
+RunCommandAndValidate(const std::string& command, const std::string& directory)
 {
-    if (print)
+    // TODO: find an alternative to std::system since there is no guarantee on its output value.
+    // For all supported cases, std::system returns the exit code of the invoked program.
+    if (std::system(command.c_str()))
     {
-        std::cout << +mcs << "\t\t\t" << width << " MHz\t\t\t" << gi << " ns\t\t\t" << throughput
-                  << " Mbit/s" << std::endl;
-    }
-
-    // When multiple stations are used, there are chances that association requests
-    // collide and hence the throughput may be lower than expected. Therefore, we relax
-    // the check that the throughput cannot decrease by introducing a scaling factor (or
-    // tolerance)
-    double tolerance = 0.10;
-
-    // test first element
-    if (mcs == minMcs && width == minWidth && gi == maxGi)
-    {
-        if (throughput * (1 + tolerance) < minExpectedThroughput)
-        {
-            NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
-            exit(1);
-        }
-    }
-
-    // test last element
-    if (mcs == maxMcs && width == maxWidth && gi == minGi)
-    {
-        if (maxExpectedThroughput > 0 && throughput > maxExpectedThroughput * (1 + tolerance))
-        {
-            NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
-            exit(1);
-        }
-    }
-
-    // test previous throughput is smaller (for the same mcs)
-    if (throughput * (1 + tolerance) > prevThroughputSameMcs)
-    {
-        prevThroughputSameMcs = throughput;
-    }
-    else if (throughput > 0)
-    {
-        NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
-        exit(1);
-    }
-
-    // test previous throughput is smaller (for the same channel width and GI)
-    if (throughput * (1 + tolerance) > prevThroughputSameWidthAndGi)
-    {
-        prevThroughputSameWidthAndGi = throughput;
-    }
-    else if (throughput > 0)
-    {
-        NS_LOG_ERROR("Obtained throughput " << throughput << " is not expected!");
+        std::filesystem::remove_all(directory);
         exit(1);
     }
 }
+
+} // namespace
 
 int
 main(int argc, char* argv[])
@@ -281,13 +210,8 @@ main(int argc, char* argv[])
         phyModel = "Spectrum";
     }
 
-    std::vector<std::tuple<uint8_t /* MCS */,
-                           uint16_t /* width */,
-                           uint16_t /* GI */,
-                           std::string /* filename */>>
-        runs{};
     std::string tmpDir{""};
-    if (multiProcessing)
+    if (fileName.empty() || multiProcessing)
     {
         char dirTemplate[] = "/tmp/ns3-wifi-eht-network-XXXXXX";
         tmpDir = mkdtemp(dirTemplate);
@@ -297,6 +221,7 @@ main(int argc, char* argv[])
     const std::string validationFileName{tmpDir + "outputFile.txt"};
 
     std::ofstream inputFile;
+    std::ofstream validationFile;
     if (multiProcessing)
     {
         inputFile.open(inputFileName, std::ofstream::out);
@@ -305,6 +230,21 @@ main(int argc, char* argv[])
             NS_FATAL_ERROR("File " << inputFileName << " not found");
         }
     }
+
+    if (fileName.empty() || multiProcessing)
+    {
+        validationFile.open(validationFileName, std::ofstream::out);
+        if (validationFile.fail())
+        {
+            NS_FATAL_ERROR("File " << validationFileName << " not found");
+        }
+    }
+
+    // When multiple stations are used, there are chances that association requests
+    // collide and hence the throughput may be lower than expected. Therefore, we relax
+    // the check that the throughput cannot decrease by introducing a scaling factor (or
+    // tolerance)
+    double tolerance = 0.10;
 
     uint8_t minMcs = 0;
     uint8_t maxMcs = 11;
@@ -341,15 +281,9 @@ main(int argc, char* argv[])
         maxGi = guardInterval;
     }
 
-    uint8_t index{0};
-    double prevThroughput{0.0};
-    const auto maxNumWidthCombinations = 4;
-    const auto maxNumGiCombinations = 3;
-    std::array<double, maxNumGiCombinations * maxNumWidthCombinations> prevThroughputs{0.0};
+    bool isFirst{true};
     for (const auto mcs : mcsValues)
     {
-        index = 0;
-        prevThroughput = 0.0;
         for (int width = minChannelWidth; width <= maxChannelWidth; width *= 2) // MHz
         {
             const auto is80Plus80 = (use80Plus80 && (width == 160));
@@ -357,7 +291,8 @@ main(int argc, char* argv[])
             const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
             for (int gi = maxGi; gi >= minGi; gi /= 2) // Nanoseconds
             {
-                if (multiProcessing)
+                std::string outputFileName{""};
+                if (fileName.empty() || multiProcessing)
                 {
                     auto command = cmd.GetName() +
                                    " --multiProcessing=0 --mcs=" + std::to_string(mcs) +
@@ -377,11 +312,17 @@ main(int argc, char* argv[])
                     }
                     inputFile << command;
 
-                    std::string outputFileName{tmpDir + "mcs=" + std::to_string(mcs) +
-                                               "-width=" + std::to_string(width) +
-                                               "-gi=" + std::to_string(gi) + ".dat"};
+                    outputFileName = tmpDir + "mcs=" + std::to_string(mcs) +
+                                     "-width=" + std::to_string(width) +
+                                     "-gi=" + std::to_string(gi) + ".dat";
                     inputFile << "--fileName=" << outputFileName << std::endl;
-                    runs.emplace_back(mcs, width, gi, outputFileName);
+                    const auto validationFileContent = std::to_string(mcs) + " " +
+                                                       std::to_string(width) + " " +
+                                                       std::to_string(gi) + " " + outputFileName;
+                    validationFile << validationFileContent << std::endl;
+                }
+                if (multiProcessing)
+                {
                     continue;
                 }
 
@@ -639,41 +580,46 @@ main(int argc, char* argv[])
 
                 Simulator::Destroy();
 
-                auto printResult{true};
-                if (!fileName.empty())
+                std::ofstream file;
+                std::string name{};
+                if (multiProcessing || !fileName.empty())
                 {
-                    std::ofstream file;
                     file.open(fileName, std::ofstream::out);
-                    if (file.fail())
-                    {
-                        NS_FATAL_ERROR("File " << fileName << " not found");
-                    }
-                    file << throughput << std::endl;
-                    file.close();
-                    printResult = false;
+                    name = fileName;
                 }
+                else
+                {
+                    file.open(outputFileName, std::ofstream::out);
+                    name = outputFileName;
+                }
+                if (file.fail())
+                {
+                    NS_FATAL_ERROR("File " << name << " not found");
+                }
+                file << throughput << std::endl;
+                file.close();
 
-                validateThroughput(mcs,
-                                   minMcs,
-                                   maxMcs,
-                                   width,
-                                   minChannelWidth,
-                                   maxChannelWidth,
-                                   gi,
-                                   minGi,
-                                   maxGi,
-                                   throughput,
-                                   minExpectedThroughput,
-                                   maxExpectedThroughput,
-                                   prevThroughput,
-                                   prevThroughputs.at(index++),
-                                   printResult);
+                if (!multiProcessing && fileName.empty())
+                {
+                    const auto validationCommand =
+                        "./ns3 run --no-build \"wifi-network-validator --resultsFile=" +
+                        validationFileName + " --tolerance=" + std::to_string(tolerance) +
+                        " --minExpectedThroughput=" + std::to_string(minExpectedThroughput) +
+                        " --maxExpectedThroughput=" + std::to_string(maxExpectedThroughput) +
+                        " --printLastOnly=1 --printResultBanner=" + std::to_string(isFirst) + "\"";
+                    RunCommandAndValidate(validationCommand, tmpDir);
+                }
+                if (isFirst)
+                {
+                    isFirst = false;
+                }
             }
         }
     }
 
     if (multiProcessing)
     {
+        validationFile.close();
         inputFile.close();
 
         // ns3 executable might not be in the current path (e.g. if ran from test.py)
@@ -691,71 +637,18 @@ main(int argc, char* argv[])
             "./" + execPathName +
             " run --no-build \"parallel-scheduler --inputFileName=" + inputFileName +
             numParallelJobsOption + "\"";
-        const auto ret = std::system(parallelCommand.c_str());
+        RunCommandAndValidate(parallelCommand, tmpDir);
         std::filesystem::remove(inputFileName);
-        if (ret)
-        {
-            std::filesystem::remove_all(tmpDir);
-            exit(1);
-        }
 
-        std::vector<std::tuple<uint8_t, uint16_t, uint16_t, double>> results{};
-        for (const auto& [mcs, width, gi, resultFileName] : runs)
-        {
-            std::ifstream resultFile;
-            resultFile.open(resultFileName, std::ios::in);
-            if (resultFile.fail())
-            {
-                NS_FATAL_ERROR("File " << resultFileName << " not found");
-            }
-            double throughput{0.0};
-            while (!resultFile.eof())
-            {
-                std::string line;
-                getline(resultFile, line);
-                if (!line.empty())
-                {
-                    throughput = std::stod(line);
-                }
-            }
-            results.emplace_back(mcs, width, gi, throughput);
-            std::filesystem::remove(resultFileName);
-        }
-        std::filesystem::remove_all(tmpDir);
-
-        std::cout << "MCS value"
-                  << "\t\t"
-                  << "Channel width"
-                  << "\t\t"
-                  << "GI"
-                  << "\t\t\t"
-                  << "Throughput" << '\n';
-
-        uint8_t prevMcs = minMcs;
-        for (const auto& [mcs, width, gi, throughput] : results)
-        {
-            if (mcs != prevMcs)
-            {
-                index = 0;
-                prevThroughput = 0;
-                prevMcs = mcs;
-            }
-            validateThroughput(mcs,
-                               minMcs,
-                               maxMcs,
-                               width,
-                               minChannelWidth,
-                               maxChannelWidth,
-                               gi,
-                               minGi,
-                               maxGi,
-                               throughput,
-                               minExpectedThroughput,
-                               maxExpectedThroughput,
-                               prevThroughput,
-                               prevThroughputs.at(index++));
-        }
+        const auto validationCommand =
+            "./" + execPathName +
+            " run --no-build \"wifi-network-validator --resultsFile=" + validationFileName +
+            " --tolerance=" + std::to_string(tolerance) +
+            " --minExpectedThroughput=" + std::to_string(minExpectedThroughput) +
+            " --maxExpectedThroughput=" + std::to_string(maxExpectedThroughput) + "\"";
+        RunCommandAndValidate(validationCommand, tmpDir);
     }
 
+    std::filesystem::remove_all(tmpDir);
     return 0;
 }
