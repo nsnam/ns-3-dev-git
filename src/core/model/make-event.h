@@ -180,9 +180,7 @@ MakeEvent(void (*f)(Us...), Ts... args)
     class EventFunctionImpl : public EventImpl
     {
       public:
-        using F = void (*)(Us...);
-
-        EventFunctionImpl(F function, Ts... args)
+        EventFunctionImpl(void (*function)(Us...), Ts... args)
             : m_function(function),
               m_arguments(args...)
         {
@@ -199,7 +197,7 @@ MakeEvent(void (*f)(Us...), Ts... args)
             std::apply([this](Ts... args) { (*m_function)(args...); }, m_arguments);
         }
 
-        F m_function;
+        void (*m_function)(Us...);
         std::tuple<std::remove_reference_t<Ts>...> m_arguments;
     }* ev = new EventFunctionImpl(f, args...);
 
