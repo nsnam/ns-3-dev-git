@@ -50,6 +50,13 @@
 
 /**
  * \ingroup warnings
+ * \def NS_WARNING_SILENCE_MAYBE_UNINITIALIZED
+ * Silences GCC "-Wmaybe-uninitialized" warnings.
+ * \sa NS_WARNING_POP
+ */
+
+/**
+ * \ingroup warnings
  * \def NS_WARNING_PUSH_DEPRECATED
  * Save the current warning list and disables the ones about deprecated functions and classes.
  *
@@ -62,7 +69,28 @@
  *   NS_WARNING_POP;
  * \endcode
  *
+ * This macro is equivalent to
+ * \code
+ *   NS_WARNING_PUSH;
+ *   NS_WARNING_SILENCE_DEPRECATED;
+ * \endcode
+ *
  * Its use is, of course, not suggested unless strictly necessary.
+ */
+
+/**
+ * \ingroup warnings
+ * \def NS_WARNING_PUSH_MAYBE_UNINITIALIZED
+ * Save the current warning list and disables the ones about possible uninitialized variables.
+ *
+ *
+ * This macro is equivalent to
+ * \code
+ *   NS_WARNING_PUSH;
+ *   NS_WARNING_SILENCE_MAYBE_UNINITIALIZED;
+ * \endcode
+ *
+ * \sa NS_WARNING_PUSH_DEPRECATED
  */
 
 #if defined(_MSC_VER)
@@ -86,8 +114,20 @@
 
 #endif
 
+// GCC-specific - Apple's clang pretends to be both...
+#if defined(__GNUC__) && !defined(__clang__)
+#define NS_WARNING_SILENCE_MAYBE_UNINITIALIZED                                                     \
+    _Pragma("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+#else
+#define NS_WARNING_SILENCE_MAYBE_UNINITIALIZED
+#endif
+
 #define NS_WARNING_PUSH_DEPRECATED                                                                 \
     NS_WARNING_PUSH;                                                                               \
     NS_WARNING_SILENCE_DEPRECATED
+
+#define NS_WARNING_PUSH_MAYBE_UNINITIALIZED                                                        \
+    NS_WARNING_PUSH;                                                                               \
+    NS_WARNING_SILENCE_MAYBE_UNINITIALIZED
 
 #endif /* NS3_WARNINGS_H */
