@@ -4,8 +4,8 @@
 # "RELEASE", that has a value "weekly". Also, a variable "CLANG" should be set
 # to True.
 
-# We support CLANG versions 10 through 16
-# We test only CLANG 10 on Ubuntu 20.04 and CLANG 16 on Ubuntu 23.04
+# We support CLANG versions 10 through 18
+# We test only CLANG 10 on Ubuntu 20.04 and CLANG 18 on Ubuntu 24.04
 
 .weekly-clang-ubuntu:
   extends: .base-build
@@ -35,8 +35,8 @@
     LIBGSL: libgsl23
     EXTRA_OPTIONS: --disable-eigen
 
-.weekly-clang-ubuntu23.04:
-  image: ubuntu:23.04
+.weekly-clang-ubuntu24.04:
+  image: ubuntu:24.04
   extends: .weekly-clang-ubuntu
   variables:
     LIBGSL: libgsl27
@@ -96,47 +96,47 @@ weekly-test-clang-10-optimized:
     CLANG: 10
     MODE: optimized
 
-# CLANG 16
-weekly-build-clang-16-debug:
-  extends: .weekly-clang-ubuntu23.04
+# CLANG 18
+weekly-build-clang-18-debug:
+  extends: .weekly-clang-ubuntu24.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 16
+    CLANG: 18
     MODE: debug
 
-weekly-build-clang-16-default:
-  extends: .weekly-clang-ubuntu23.04
+weekly-build-clang-18-default:
+  extends: .weekly-clang-ubuntu24.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 16
+    CLANG: 18
     MODE: default
 
-weekly-build-clang-16-optimized:
-  extends: .weekly-clang-ubuntu23.04
+weekly-build-clang-18-optimized:
+  extends: .weekly-clang-ubuntu24.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 16
+    CLANG: 18
     MODE: optimized
 
-weekly-test-clang-16-default:
-  extends: .weekly-clang-ubuntu23.04
+weekly-test-clang-18-default:
+  extends: .weekly-clang-ubuntu24.04
   stage: test
-  needs: ["weekly-build-clang-16-default"]
+  needs: ["weekly-build-clang-18-default"]
   dependencies:
-    - weekly-build-clang-16-default
+    - weekly-build-clang-18-default
   variables:
-    CLANG: 16
+    CLANG: 18
     MODE: default
 
-weekly-test-clang-16-optimized:
-  extends: .weekly-clang-ubuntu23.04
+weekly-test-clang-18-optimized:
+  extends: .weekly-clang-ubuntu24.04
   stage: test
-  needs: ["weekly-build-clang-16-optimized"]
+  needs: ["weekly-build-clang-18-optimized"]
   dependencies:
-    - weekly-build-clang-16-optimized
+    - weekly-build-clang-18-optimized
   variables:
-    CLANG: 16
+    CLANG: 18
     MODE: optimized
