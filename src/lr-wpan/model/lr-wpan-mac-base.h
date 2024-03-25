@@ -248,18 +248,19 @@ struct MlmePollRequestParams
 /**
  * \ingroup lr-wpan
  *
- * IEEE802.15.4-2011 MAC PIB Attribute Identifiers Table 52 in section 6.4.2
- *
+ * IEEE 802.15.4-2006 PHY and MAC PIB Attribute Identifiers Table 23 and Table 86.
+ * Note: Attribute identifiers use standardized values.
  */
 enum LrWpanMacPibAttributeIdentifier
 {
-    macBeaconPayload = 0,
-    macBeaconPayloadLength = 1,
-    macShortAddress = 2,
-    macExtendedAddress = 3,
-    macPanId = 4,
-    pCurrentChannel = 100,
-    pCurrentPage = 101,
+    pCurrentChannel = 0x00,        //!< RF channel used for transmissions and receptions.
+    pCurrentPage = 0x04,           //!< The current channel page.
+    macBeaconPayload = 0x45,       //!< The contents of the beacon payload.
+    macBeaconPayloadLength = 0x46, //!< The length in octets of the beacon payload.
+    macExtendedAddress = 3, //!< The extended address of the device (64 bit address) (No compliant).
+    macPanId = 0x50,        //!< The 16-bit identifier of the Personal Area Network (PAN).
+    macRxOnWhenIdle = 0x52, //!< Indication of whether the MAC is enabled during idle periods.
+    macShortAddress = 0x53, //!< The short address of the device (16 bit address).
     unsupported = 255
     // TODO: complete other MAC pib attributes
 };

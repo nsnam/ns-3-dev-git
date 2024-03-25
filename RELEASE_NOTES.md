@@ -21,6 +21,7 @@ Release 3-dev
 ### New user-visible features
 
 - (network) !1828 - Added a common helper to create and install applications
+- (lr-wpan) !1915 - Use MAC and PHY standard attribute ids
 
 ### Bugs fixed
 
