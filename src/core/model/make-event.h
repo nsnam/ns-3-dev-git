@@ -19,6 +19,8 @@
 #ifndef MAKE_EVENT_H
 #define MAKE_EVENT_H
 
+#include "warnings.h"
+
 #include <type_traits>
 
 /**
@@ -142,6 +144,8 @@ MakeEvent(MEM mem_ptr, OBJ obj, Ts... args)
     class EventMemberImpl : public EventImpl
     {
       public:
+        EventMemberImpl() = delete;
+
         EventMemberImpl(OBJ obj, MEM function, Ts... args)
             : m_obj(obj),
               m_function(function),
@@ -157,12 +161,14 @@ MakeEvent(MEM mem_ptr, OBJ obj, Ts... args)
       private:
         void Notify() override
         {
+            NS_WARNING_PUSH_MAYBE_UNINITIALIZED;
             std::apply(
                 [this](Ts... args) {
                     (internal::EventMemberImplObjTraits<OBJ>::GetReference(m_obj).*
                      m_function)(args...);
                 },
                 m_arguments);
+            NS_WARNING_POP;
         }
 
         OBJ m_obj;
