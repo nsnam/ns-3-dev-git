@@ -232,13 +232,22 @@ class EpsBearer : public ObjectBase
 
   private:
     /**
-     * @brief Map between QCI and requirements
-     *
-     * The tuple is formed by: resource type, priority, packet delay budget, packet error rate,
-     *  default maximum data burst, default averaging window (0 when does not apply)
+     * @brief Struct containing bearer requirements
      */
-    using BearerRequirementsMap =
-        std::unordered_map<Qci, std::tuple<uint8_t, uint8_t, uint16_t, double, uint32_t, uint32_t>>;
+    struct BearerRequirements
+    {
+        uint8_t resourceType{0};         //!< resource type
+        uint8_t priority{0};             //!< priority
+        uint16_t packetDelayBudgetMs{0}; //!< packet delay budget in ms
+        double packetErrorLossRate{0.0}; //!< packet error rate
+        uint32_t maxDataBurst{0};        //!< default maximum data burst
+        uint32_t avgWindow{0};           //!< default averaging window (0 when does not apply)
+    };
+
+    /**
+     * @brief Map between QCI and requirements
+     */
+    using BearerRequirementsMap = std::unordered_map<Qci, BearerRequirements>;
 
     /**
      * @brief Get the resource type (NON-GBR, GBR, DC-GBR) of the selected QCI
@@ -248,7 +257,7 @@ class EpsBearer : public ObjectBase
      */
     static uint8_t GetResourceType(const BearerRequirementsMap& map, Qci qci)
     {
-        return std::get<0>(map.at(qci));
+        return map.at(qci).resourceType;
     }
 
     /**
@@ -259,7 +268,7 @@ class EpsBearer : public ObjectBase
      */
     static uint8_t GetPriority(const BearerRequirementsMap& map, Qci qci)
     {
-        return std::get<1>(map.at(qci));
+        return map.at(qci).priority;
     }
 
     /**
@@ -270,7 +279,7 @@ class EpsBearer : public ObjectBase
      */
     static uint16_t GetPacketDelayBudgetMs(const BearerRequirementsMap& map, Qci qci)
     {
-        return std::get<2>(map.at(qci));
+        return map.at(qci).packetDelayBudgetMs;
     }
 
     /**
@@ -281,7 +290,7 @@ class EpsBearer : public ObjectBase
      */
     static double GetPacketErrorLossRate(const BearerRequirementsMap& map, Qci qci)
     {
-        return std::get<3>(map.at(qci));
+        return map.at(qci).packetErrorLossRate;
     }
 
     /**
@@ -292,7 +301,7 @@ class EpsBearer : public ObjectBase
      */
     static uint32_t GetMaxDataBurst(const BearerRequirementsMap& map, Qci qci)
     {
-        return std::get<4>(map.at(qci));
+        return map.at(qci).maxDataBurst;
     }
 
     /**
@@ -303,7 +312,7 @@ class EpsBearer : public ObjectBase
      */
     static uint32_t GetAvgWindow(const BearerRequirementsMap& map, Qci qci)
     {
-        return std::get<5>(map.at(qci));
+        return map.at(qci).avgWindow;
     }
 
     /**
