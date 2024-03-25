@@ -36,6 +36,7 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/pointer.h"
+#include "ns3/string.h"
 #include "ns3/vht-configuration.h"
 
 #include <algorithm>
@@ -644,7 +645,7 @@ WifiMac::SetupEdcaQueue(AcIndex ac)
     // already configured.
     NS_ASSERT(!m_edca.contains(ac));
 
-    Ptr<QosTxop> edca = CreateObject<QosTxop>(ac);
+    auto edca = CreateObjectWithAttributes<QosTxop>("AcIndex", EnumValue<AcIndex>(ac));
     edca->SetTxMiddle(m_txMiddle);
     edca->GetBaManager()->SetTxOkCallback(
         MakeCallback(&MpduTracedCallback::operator(), &m_ackedMpduCallback));
@@ -1215,7 +1216,7 @@ WifiMac::SetQosSupported(bool enable)
     if (!m_qosSupported)
     {
         // create a non-QoS TXOP
-        m_txop = CreateObject<Txop>();
+        m_txop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"));
         m_txop->SetTxMiddle(m_txMiddle);
         m_txop->SetDroppedMpduCallback(
             MakeCallback(&DroppedMpduTracedCallback::operator(), &m_droppedMpduCallback));

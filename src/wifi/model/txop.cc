@@ -54,6 +54,27 @@ Txop::GetTypeId()
             .SetParent<ns3::Object>()
             .SetGroupName("Wifi")
             .AddConstructor<Txop>()
+            .AddAttribute("AcIndex",
+                          "The AC index of the packets contained in the wifi MAC queue of this "
+                          "Txop object.",
+                          EnumValue(AcIndex::AC_UNDEF),
+                          MakeEnumAccessor<AcIndex>(&Txop::CreateQueue),
+                          MakeEnumChecker(AC_BE,
+                                          "AC_BE",
+                                          AC_BK,
+                                          "AC_BK",
+                                          AC_VI,
+                                          "AC_VI",
+                                          AC_VO,
+                                          "AC_VO",
+                                          AC_BE_NQOS,
+                                          "AC_BE_NQOS",
+                                          AC_VI,
+                                          "AC_VI",
+                                          AC_BEACON,
+                                          "AC_BEACON",
+                                          AC_UNDEF,
+                                          "AC_UNDEF"))
             .AddAttribute("MinCw",
                           "The minimum value of the contention window (just for the first link, "
                           "in case of 11be multi-link devices).",
@@ -132,12 +153,6 @@ Txop::GetTypeId()
 }
 
 Txop::Txop()
-    : Txop(CreateObject<WifiMacQueue>(AC_BE_NQOS))
-{
-}
-
-Txop::Txop(Ptr<WifiMacQueue> queue)
-    : m_queue(queue)
 {
     NS_LOG_FUNCTION(this);
     m_rng = m_shuffleLinkIdsGen.GetRv();
@@ -157,6 +172,14 @@ Txop::DoDispose()
     m_rng = nullptr;
     m_txMiddle = nullptr;
     m_links.clear();
+}
+
+void
+Txop::CreateQueue(AcIndex aci)
+{
+    NS_LOG_FUNCTION(this << aci);
+    NS_ABORT_MSG_IF(m_queue, "Wifi MAC queue can only be created once");
+    m_queue = CreateObject<WifiMacQueue>(aci);
 }
 
 std::unique_ptr<Txop::LinkEntity>

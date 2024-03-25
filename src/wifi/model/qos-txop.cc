@@ -99,12 +99,18 @@ QosTxop::GetTypeId()
     return tid;
 }
 
-QosTxop::QosTxop(AcIndex ac)
-    : Txop(CreateObject<WifiMacQueue>(ac)),
-      m_ac(ac)
+QosTxop::QosTxop()
 {
     NS_LOG_FUNCTION(this);
     m_baManager = CreateObject<BlockAckManager>();
+}
+
+void
+QosTxop::CreateQueue(AcIndex aci)
+{
+    NS_LOG_FUNCTION(this << aci);
+    Txop::CreateQueue(aci);
+    m_ac = aci;
     m_baManager->SetQueue(m_queue);
     m_baManager->SetBlockDestinationCallback(
         Callback<void, Mac48Address, uint8_t>([this](Mac48Address recipient, uint8_t tid) {

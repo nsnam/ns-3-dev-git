@@ -112,7 +112,7 @@ ApWifiMac::ApWifiMac()
     : m_enableBeaconGeneration(false)
 {
     NS_LOG_FUNCTION(this);
-    m_beaconTxop = CreateObject<Txop>(CreateObject<WifiMacQueue>(AC_BEACON));
+    m_beaconTxop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BEACON"));
     m_beaconTxop->SetTxMiddle(m_txMiddle);
 
     // Let the lower layers know that we are acting as an AP.

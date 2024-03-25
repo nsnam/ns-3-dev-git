@@ -32,6 +32,7 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/socket.h"
+#include "ns3/string.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/wifi-mac-queue-scheduler.h"
 #include "ns3/wifi-mac-queue.h"
@@ -611,7 +612,7 @@ MeshWifiInterfaceMac::ConfigureContentionWindow(uint32_t cwMin, uint32_t cwMax)
     // We use the single DCF provided by WifiMac for the purpose of
     // Beacon transmission. For this we need to reconfigure the channel
     // access parameters slightly, and do so here.
-    m_txop = CreateObject<Txop>();
+    m_txop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"));
     m_txop->SetWifiMac(this);
     GetLink(0).channelAccessManager->Add(m_txop);
     m_txop->SetTxMiddle(m_txMiddle);

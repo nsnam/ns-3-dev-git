@@ -79,13 +79,7 @@ class QosTxop : public Txop
      */
     static TypeId GetTypeId();
 
-    /**
-     * Constructor
-     *
-     * \param ac the Access Category
-     */
-    QosTxop(AcIndex ac = AC_UNDEF);
-
+    QosTxop();
     ~QosTxop() override;
 
     bool IsQosTxop() const override;
@@ -439,6 +433,7 @@ class QosTxop : public Txop
     };
 
     void DoDispose() override;
+    void CreateQueue(AcIndex aci) override;
 
     /**
      * Get a reference to the link associated with the given ID.

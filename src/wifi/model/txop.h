@@ -51,6 +51,7 @@ class WifiMpdu;
 class UniformRandomVariable;
 class CtrlBAckResponseHeader;
 class WifiMac;
+enum AcIndex : uint8_t;           // opaque enum declaration
 enum WifiMacDropReason : uint8_t; // opaque enum declaration
 
 /**
@@ -81,14 +82,6 @@ class Txop : public Object
 {
   public:
     Txop();
-
-    /**
-     * Constructor
-     *
-     * \param queue the wifi MAC queue
-     */
-    Txop(Ptr<WifiMacQueue> queue);
-
     ~Txop() override;
 
     /**
@@ -461,6 +454,13 @@ class Txop : public Object
 
     void DoDispose() override;
     void DoInitialize() override;
+
+    /**
+     * Create a wifi MAC queue containing packets of the given AC
+     *
+     * \param aci the index of the given AC
+     */
+    virtual void CreateQueue(AcIndex aci);
 
     /* Txop notifications forwarded here */
     /**
