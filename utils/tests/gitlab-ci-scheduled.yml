@@ -23,7 +23,7 @@
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     - export MPI_CI=1
     # missing the flag --disable-python
-    - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-mpi --disable-gtk
+    - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-mpi --disable-gtk $EXTRA_OPTIONS
     - if [[ "$CI_JOB_STAGE" == "build" ]];
       then ./ns3 build;
       fi
@@ -128,6 +128,24 @@ daily-test-optimized:
     - daily-build-optimized
   variables:
     MODE: optimized
+
+### Sanitizer tests
+weekly-build-test-debug-sanitizers:
+  extends: .base-test
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  stage: build
+  needs: ["weekly-slow-jobs"]
+  dependencies: []
+  variables:
+    MODE: optimized
+    EXTRA_OPTIONS: --enable-sanitizers
+    FORCE_TESTS: Force
+  tags:
+    - nsnam
+    - linux
 
 ### Valgrind tests
 # Run the test.py script with files compiled in optimized mode + valgrind (daily)
