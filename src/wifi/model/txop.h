@@ -146,14 +146,16 @@ class Txop : public Object
     void SetMinCw(uint32_t minCw);
     /**
      * Set the minimum contention window size for each link.
-     * Note that the size of <i>minCws</i> must match the number
+     * Note that an empty <i>minCws</i> is ignored, otherwise its size must match the number
      * of links.
      *
-     * \param minCws the minimum contention window size values.
+     * \param minCws the minimum contention window size for each link (links are sorted in
+     *               increasing order of link ID).
      */
-    void SetMinCws(std::vector<uint32_t> minCws);
+    void SetMinCws(const std::vector<uint32_t>& minCws);
     /**
-     * Set the minimum contention window size for the given link.
+     * Set the minimum contention window size for the given link. Note that this function can
+     * only be called after that links have been created.
      *
      * \param minCw the minimum contention window size.
      * \param linkId the ID of the given link
@@ -168,14 +170,16 @@ class Txop : public Object
     void SetMaxCw(uint32_t maxCw);
     /**
      * Set the maximum contention window size for each link.
-     * Note that the size of <i>maxCws</i> must match the number
+     * Note that an empty <i>maxCws</i> is ignored, otherwise its size must match the number
      * of links.
      *
-     * \param maxCws the maximum contention window size values.
+     * \param maxCws the maximum contention window size for each link (links are sorted in
+     *               increasing order of link ID).
      */
-    void SetMaxCws(std::vector<uint32_t> maxCws);
+    void SetMaxCws(const std::vector<uint32_t>& maxCws);
     /**
-     * Set the maximum contention window size for the given link.
+     * Set the maximum contention window size for the given link. Note that this function can
+     * only be called after that links have been created.
      *
      * \param maxCw the maximum contention window size.
      * \param linkId the ID of the given link
@@ -190,14 +194,16 @@ class Txop : public Object
     void SetAifsn(uint8_t aifsn);
     /**
      * Set the number of slots that make up an AIFS for each link.
-     * Note that the size of <i>aifsns</i> must match the number
+     * Note that an empty <i>aifsns</i> is ignored, otherwise its size must match the number
      * of links.
      *
-     * \param aifsns the number of slots that make up an AIFS for each link.
+     * \param aifsns the number of slots that make up an AIFS for each link (links are sorted in
+     *               increasing order of link ID).
      */
-    void SetAifsns(std::vector<uint8_t> aifsns);
+    void SetAifsns(const std::vector<uint8_t>& aifsns);
     /**
-     * Set the number of slots that make up an AIFS for the given link.
+     * Set the number of slots that make up an AIFS for the given link. Note that this function
+     * can only be called after that links have been created.
      *
      * \param aifsn the number of slots that make up an AIFS.
      * \param linkId the ID of the given link
@@ -212,17 +218,18 @@ class Txop : public Object
     void SetTxopLimit(Time txopLimit);
     /**
      * Set the TXOP limit for each link.
-     * Note that the size of <i>txopLimits</i> must match the number
+     * Note that an empty <i>txopLimits</i> is ignored, otherwise its size must match the number
      * of links.
      *
-     * \param txopLimits the TXOP limit for each link.
+     * \param txopLimits the TXOP limit for each link (links are sorted in increasing order of
+     *                   link ID).
      */
     void SetTxopLimits(const std::vector<Time>& txopLimits);
     /**
-     * Set the TXOP limit for the given link.
+     * Set the TXOP limit for the given link. Note that this function can only be called after
+     * that links have been created.
      *
-     * \param txopLimit the TXOP limit.
-     *        Value zero corresponds to default Txop.
+     * \param txopLimit the TXOP limit (must not be negative)
      * \param linkId the ID of the given link
      */
     void SetTxopLimit(Time txopLimit, uint8_t linkId);
@@ -447,6 +454,25 @@ class Txop : public Object
      */
     void SwapLinks(std::map<uint8_t, uint8_t> links);
 
+    /**
+     * DCF/EDCA access parameters for all the links provided by users via this class' attributes
+     * or the corresponding setter methods. For each access parameter, values are sorted in
+     * increasing order of link ID. If user provides access parameters, they are used by WifiMac
+     * instead of the default values specified by Table 9-155 of 802.11-2020.
+     */
+    struct UserDefinedAccessParams
+    {
+        std::vector<uint32_t> cwMins; //!< the minimum contention window values for all the links
+        std::vector<uint32_t> cwMaxs; //!< the maximum contention window values for all the links
+        std::vector<uint8_t> aifsns;  //!< the AIFSN values for all the links
+        std::vector<Time> txopLimits; //!< TXOP limit values for all the links
+    };
+
+    /**
+     * \return a const reference to user-provided access parameters
+     */
+    const UserDefinedAccessParams& GetUserAccessParams() const;
+
   protected:
     ///< ChannelAccessManager associated class
     friend class ChannelAccessManager;
@@ -581,6 +607,8 @@ class Txop : public Object
 
     std::map<uint8_t, std::unique_ptr<LinkEntity>>
         m_links; //!< ID-indexed map of LinkEntity objects
+
+    UserDefinedAccessParams m_userAccessParams; //!< user-defined DCF/EDCA access parameters
 };
 
 } // namespace ns3

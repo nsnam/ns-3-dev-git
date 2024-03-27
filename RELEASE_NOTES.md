@@ -43,6 +43,7 @@ been tested on Linux. The latest known version to work with ns-3 is cppyy==3.1.2
 - (bindings, core) - Introduced a helper class to manage static initialization of Time as a workaround for Cppyy3 static initialization problems.
 - (bindings, lte, wifi) - Relocated statically initialized variables from header files to source files for Cppyy3 compatibility.
 - (tests) - Enhanced error handling in test.py to avoid attempts to open non-existent XML files following early test termination by sanitizers.
+- (wifi) #1072 - Support configuration of custom EDCA parameters via Txop attributes before device installation
 
 Release 3.41
 ------------

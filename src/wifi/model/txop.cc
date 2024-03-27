@@ -87,8 +87,11 @@ Txop::GetTypeId()
                           "Use MinCws attribute instead of MinCw")
             .AddAttribute(
                 "MinCws",
-                "The minimum values of the contention window for all the links",
-                TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
+                "The minimum values of the contention window for all the links (sorted in "
+                "increasing order of link ID). An empty vector is ignored and the default value "
+                "as per Table 9-155 of the IEEE 802.11-2020 standard will be used. Note that, if "
+                "this is a non-AP STA, these values could be overridden by values advertised by "
+                "the AP through EDCA Parameter Set elements.",
                 AttributeContainerValue<UintegerValue>(),
                 MakeAttributeContainerAccessor<UintegerValue>(&Txop::SetMinCws, &Txop::GetMinCws),
                 MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint32_t>()))
@@ -104,8 +107,11 @@ Txop::GetTypeId()
                           "Use MaxCws attribute instead of MaxCw")
             .AddAttribute(
                 "MaxCws",
-                "The maximum values of the contention window for all the links",
-                TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
+                "The maximum values of the contention window for all the links (sorted in "
+                "increasing order of link ID). An empty vector is ignored and the default value "
+                "as per Table 9-155 of the IEEE 802.11-2020 standard will be used. Note that, if "
+                "this is a non-AP STA, these values could be overridden by values advertised by "
+                "the AP through EDCA Parameter Set elements.",
                 AttributeContainerValue<UintegerValue>(),
                 MakeAttributeContainerAccessor<UintegerValue>(&Txop::SetMaxCws, &Txop::GetMaxCws),
                 MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint32_t>()))
@@ -122,8 +128,11 @@ Txop::GetTypeId()
                 "Use Aifsns attribute instead of Aifsn")
             .AddAttribute(
                 "Aifsns",
-                "The values of AIFSN for all the links",
-                TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
+                "The values of AIFSN for all the links (sorted in increasing order "
+                "of link ID). An empty vector is ignored and the default value as per "
+                "Table 9-155 of the IEEE 802.11-2020 standard will be used. Note that, if "
+                "this is a non-AP STA, these values could be overridden by values advertised by "
+                "the AP through EDCA Parameter Set elements.",
                 AttributeContainerValue<UintegerValue>(),
                 MakeAttributeContainerAccessor<UintegerValue>(&Txop::SetAifsns, &Txop::GetAifsns),
                 MakeAttributeContainerChecker<UintegerValue>(MakeUintegerChecker<uint8_t>()))
@@ -137,13 +146,17 @@ Txop::GetTypeId()
                           MakeTimeChecker(),
                           TypeId::OBSOLETE,
                           "Use TxopLimits attribute instead of TxopLimit")
-            .AddAttribute("TxopLimits",
-                          "The values of TXOP limit for all the links",
-                          TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time
-                          AttributeContainerValue<TimeValue>(),
-                          MakeAttributeContainerAccessor<TimeValue>(&Txop::SetTxopLimits,
-                                                                    &Txop::GetTxopLimits),
-                          MakeAttributeContainerChecker<TimeValue>(MakeTimeChecker()))
+            .AddAttribute(
+                "TxopLimits",
+                "The values of TXOP limit for all the links (sorted in increasing order "
+                "of link ID). An empty vector is ignored and the default value as per "
+                "Table 9-155 of the IEEE 802.11-2020 standard will be used. Note that, if "
+                "this is a non-AP STA, these values could be overridden by values advertised by "
+                "the AP through EDCA Parameter Set elements.",
+                AttributeContainerValue<TimeValue>(),
+                MakeAttributeContainerAccessor<TimeValue>(&Txop::SetTxopLimits,
+                                                          &Txop::GetTxopLimits),
+                MakeAttributeContainerChecker<TimeValue>(MakeTimeChecker()))
             .AddAttribute("Queue",
                           "The WifiMacQueue object",
                           PointerValue(),
@@ -270,9 +283,20 @@ Txop::SetMinCw(uint32_t minCw)
 }
 
 void
-Txop::SetMinCws(std::vector<uint32_t> minCws)
+Txop::SetMinCws(const std::vector<uint32_t>& minCws)
 {
-    NS_ABORT_IF(minCws.size() != m_links.size());
+    if (minCws.empty())
+    {
+        // an empty vector is passed to use the default values specified by the standard
+        return;
+    }
+
+    NS_ABORT_MSG_IF(!m_links.empty() && minCws.size() != m_links.size(),
+                    "The size of the given vector (" << minCws.size()
+                                                     << ") does not match the number of links ("
+                                                     << m_links.size() << ")");
+    m_userAccessParams.cwMins = minCws;
+
     std::size_t i = 0;
     for (const auto& [id, link] : m_links)
     {
@@ -284,6 +308,8 @@ void
 Txop::SetMinCw(uint32_t minCw, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << minCw << linkId);
+    NS_ASSERT_MSG(!m_links.empty(),
+                  "This function can only be called after that links have been created");
     auto& link = GetLink(linkId);
     bool changed = (link.cwMin != minCw);
     link.cwMin = minCw;
@@ -300,9 +326,20 @@ Txop::SetMaxCw(uint32_t maxCw)
 }
 
 void
-Txop::SetMaxCws(std::vector<uint32_t> maxCws)
+Txop::SetMaxCws(const std::vector<uint32_t>& maxCws)
 {
-    NS_ABORT_IF(maxCws.size() != m_links.size());
+    if (maxCws.empty())
+    {
+        // an empty vector is passed to use the default values specified by the standard
+        return;
+    }
+
+    NS_ABORT_MSG_IF(!m_links.empty() && maxCws.size() != m_links.size(),
+                    "The size of the given vector (" << maxCws.size()
+                                                     << ") does not match the number of links ("
+                                                     << m_links.size() << ")");
+    m_userAccessParams.cwMaxs = maxCws;
+
     std::size_t i = 0;
     for (const auto& [id, link] : m_links)
     {
@@ -314,6 +351,8 @@ void
 Txop::SetMaxCw(uint32_t maxCw, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << maxCw << linkId);
+    NS_ASSERT_MSG(!m_links.empty(),
+                  "This function can only be called after that links have been created");
     auto& link = GetLink(linkId);
     bool changed = (link.cwMax != maxCw);
     link.cwMax = maxCw;
@@ -398,9 +437,20 @@ Txop::SetAifsn(uint8_t aifsn)
 }
 
 void
-Txop::SetAifsns(std::vector<uint8_t> aifsns)
+Txop::SetAifsns(const std::vector<uint8_t>& aifsns)
 {
-    NS_ABORT_IF(aifsns.size() != m_links.size());
+    if (aifsns.empty())
+    {
+        // an empty vector is passed to use the default values specified by the standard
+        return;
+    }
+
+    NS_ABORT_MSG_IF(!m_links.empty() && aifsns.size() != m_links.size(),
+                    "The size of the given vector (" << aifsns.size()
+                                                     << ") does not match the number of links ("
+                                                     << m_links.size() << ")");
+    m_userAccessParams.aifsns = aifsns;
+
     std::size_t i = 0;
     for (const auto& [id, link] : m_links)
     {
@@ -412,6 +462,8 @@ void
 Txop::SetAifsn(uint8_t aifsn, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << aifsn << linkId);
+    NS_ASSERT_MSG(!m_links.empty(),
+                  "This function can only be called after that links have been created");
     GetLink(linkId).aifsn = aifsn;
 }
 
@@ -424,10 +476,18 @@ Txop::SetTxopLimit(Time txopLimit)
 void
 Txop::SetTxopLimits(const std::vector<Time>& txopLimits)
 {
-    NS_ABORT_MSG_IF(txopLimits.size() != m_links.size(),
+    if (txopLimits.empty())
+    {
+        // an empty vector is passed to use the default values specified by the standard
+        return;
+    }
+
+    NS_ABORT_MSG_IF(!m_links.empty() && txopLimits.size() != m_links.size(),
                     "The size of the given vector (" << txopLimits.size()
                                                      << ") does not match the number of links ("
                                                      << m_links.size() << ")");
+    m_userAccessParams.txopLimits = txopLimits;
+
     std::size_t i = 0;
     for (const auto& [id, link] : m_links)
     {
@@ -439,9 +499,18 @@ void
 Txop::SetTxopLimit(Time txopLimit, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << txopLimit << linkId);
+    NS_ASSERT_MSG(txopLimit.IsPositive(), "TXOP limit cannot be negative");
     NS_ASSERT_MSG((txopLimit.GetMicroSeconds() % 32 == 0),
                   "The TXOP limit must be expressed in multiple of 32 microseconds!");
+    NS_ASSERT_MSG(!m_links.empty(),
+                  "This function can only be called after that links have been created");
     GetLink(linkId).txopLimit = txopLimit;
+}
+
+const Txop::UserDefinedAccessParams&
+Txop::GetUserAccessParams() const
+{
+    return m_userAccessParams;
 }
 
 uint32_t

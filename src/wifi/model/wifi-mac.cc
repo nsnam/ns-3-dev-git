@@ -824,23 +824,33 @@ WifiMac::ConfigureDcf(Ptr<Txop> dcf,
         break;
     }
 
-    std::vector<uint32_t> cwValues(m_links.size());
-    std::vector<uint8_t> aifsnValues(m_links.size());
-    std::vector<Time> txopLimitValues(m_links.size());
+    const auto& userDefinedParams = dcf->GetUserAccessParams();
 
-    std::fill(cwValues.begin(), cwValues.end(), cwMinValue);
-    dcf->SetMinCws(cwValues);
-    std::fill(cwValues.begin(), cwValues.end(), cwMaxValue);
-    dcf->SetMaxCws(cwValues);
-    std::fill(aifsnValues.begin(), aifsnValues.end(), aifsnValue);
-    dcf->SetAifsns(aifsnValues);
-    std::transform(isDsss.begin(),
-                   isDsss.end(),
-                   txopLimitValues.begin(),
-                   [&txopLimitDsss, &txopLimitNoDsss](bool dsss) {
-                       return (dsss ? txopLimitDsss : txopLimitNoDsss);
-                   });
-    dcf->SetTxopLimits(txopLimitValues);
+    dcf->SetMinCws(!userDefinedParams.cwMins.empty()
+                       ? userDefinedParams.cwMins
+                       : std::vector<uint32_t>(m_links.size(), cwMinValue));
+    dcf->SetMaxCws(!userDefinedParams.cwMaxs.empty()
+                       ? userDefinedParams.cwMaxs
+                       : std::vector<uint32_t>(m_links.size(), cwMaxValue));
+    dcf->SetAifsns(!userDefinedParams.aifsns.empty()
+                       ? userDefinedParams.aifsns
+                       : std::vector<uint8_t>(m_links.size(), aifsnValue));
+
+    if (!userDefinedParams.txopLimits.empty())
+    {
+        dcf->SetTxopLimits(userDefinedParams.txopLimits);
+    }
+    else
+    {
+        std::vector<Time> txopLimitValues(m_links.size());
+        std::transform(isDsss.begin(),
+                       isDsss.end(),
+                       txopLimitValues.begin(),
+                       [&txopLimitDsss, &txopLimitNoDsss](bool dsss) {
+                           return (dsss ? txopLimitDsss : txopLimitNoDsss);
+                       });
+        dcf->SetTxopLimits(txopLimitValues);
+    }
 }
 
 void
