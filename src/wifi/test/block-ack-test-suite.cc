@@ -18,6 +18,7 @@
  */
 
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/config.h"
 #include "ns3/ctrl-headers.h"
@@ -1903,6 +1904,14 @@ BlockAckAggregationDisabledTest::DoRun()
                 "BeaconGeneration",
                 BooleanValue(true));
 
+    if (m_txop)
+    {
+        // set the TXOP limit on BE AC
+        mac.SetEdca(AC_BE,
+                    "TxopLimits",
+                    AttributeContainerValue<TimeValue>(std::list{MicroSeconds(4800)}));
+    }
+
     NetDeviceContainer apDevices;
     apDevices = wifi.Install(phy, mac, wifiApNode);
 
@@ -1931,10 +1940,6 @@ BlockAckAggregationDisabledTest::DoRun()
         ptr.Get<QosTxop>()->TraceConnectWithoutContext(
             "TxopTrace",
             MakeCallback(&TxopDurationTracer::Trace, &txopTracer));
-
-        // set the TXOP limit on BE AC
-        ap_device->GetMac()->GetAttribute("BE_Txop", ptr);
-        ptr.Get<QosTxop>()->SetTxopLimit(MicroSeconds(4800));
     }
 
     PacketSocketAddress socket;

@@ -173,6 +173,8 @@ main(int argc, char* argv[])
                 SsidValue(ssid),
                 "EnableBeaconJitter",
                 BooleanValue(false));
+    // Modify EDCA configuration (TXOP limit) for AC_BE
+    mac.SetEdca(AC_BE, "TxopLimits", StringValue(std::to_string(txopLimit) + "us"));
     apDeviceA = wifi.Install(phy, mac, wifiApNodes.Get(0));
 
     // Modify EDCA configuration (TXOP limit) for AC_BE
@@ -182,7 +184,6 @@ main(int argc, char* argv[])
     Ptr<QosTxop> edca;
     wifi_dev->GetMac()->GetAttribute("BE_Txop", ptr);
     edca = ptr.Get<QosTxop>();
-    edca->SetTxopLimit(MicroSeconds(txopLimit));
 
     // Trace TXOP duration for BE on AP A
     TxopDurationTracer netA;
@@ -205,6 +206,8 @@ main(int argc, char* argv[])
                 SsidValue(ssid),
                 "EnableBeaconJitter",
                 BooleanValue(false));
+    // Modify EDCA configuration (TXOP limit) for AC_BE
+    mac.SetEdca(AC_BE, "TxopLimits", StringValue(std::to_string(txopLimit) + "us"));
     apDeviceB = wifi.Install(phy, mac, wifiApNodes.Get(1));
 
     // Disable A-MPDU
@@ -212,10 +215,8 @@ main(int argc, char* argv[])
     wifi_dev = DynamicCast<WifiNetDevice>(dev);
     wifi_dev->GetMac()->SetAttribute("BE_MaxAmpduSize", UintegerValue(0));
 
-    // Modify EDCA configuration (TXOP limit) for AC_BE
     wifi_dev->GetMac()->GetAttribute("BE_Txop", ptr);
     edca = ptr.Get<QosTxop>();
-    edca->SetTxopLimit(MicroSeconds(txopLimit));
 
     // Trace TXOP duration for BE on AP B
     TxopDurationTracer netB;
@@ -240,6 +241,8 @@ main(int argc, char* argv[])
                 SsidValue(ssid),
                 "EnableBeaconJitter",
                 BooleanValue(false));
+    // Modify EDCA configuration (TXOP limit) for AC_BE
+    mac.SetEdca(AC_BE, "TxopLimits", StringValue(std::to_string(txopLimit) + "us"));
     apDeviceC = wifi.Install(phy, mac, wifiApNodes.Get(2));
 
     // Disable A-MPDU and enable A-MSDU with the highest maximum size allowed by the standard (7935
@@ -249,10 +252,8 @@ main(int argc, char* argv[])
     wifi_dev->GetMac()->SetAttribute("BE_MaxAmpduSize", UintegerValue(0));
     wifi_dev->GetMac()->SetAttribute("BE_MaxAmsduSize", UintegerValue(7935));
 
-    // Modify EDCA configuration (TXOP limit) for AC_BE
     wifi_dev->GetMac()->GetAttribute("BE_Txop", ptr);
     edca = ptr.Get<QosTxop>();
-    edca->SetTxopLimit(MicroSeconds(txopLimit));
 
     // Trace TXOP duration for BE on AP C
     TxopDurationTracer netC;
@@ -277,6 +278,8 @@ main(int argc, char* argv[])
                 SsidValue(ssid),
                 "EnableBeaconJitter",
                 BooleanValue(false));
+    // Modify EDCA configuration (TXOP limit) for AC_BE
+    mac.SetEdca(AC_BE, "TxopLimits", StringValue(std::to_string(txopLimit) + "us"));
     apDeviceD = wifi.Install(phy, mac, wifiApNodes.Get(3));
 
     // Enable A-MPDU with a smaller size than the default one and
@@ -286,10 +289,8 @@ main(int argc, char* argv[])
     wifi_dev->GetMac()->SetAttribute("BE_MaxAmpduSize", UintegerValue(32768));
     wifi_dev->GetMac()->SetAttribute("BE_MaxAmsduSize", UintegerValue(3839));
 
-    // Modify EDCA configuration (TXOP limit) for AC_BE
     wifi_dev->GetMac()->GetAttribute("BE_Txop", ptr);
     edca = ptr.Get<QosTxop>();
-    edca->SetTxopLimit(MicroSeconds(txopLimit));
 
     // Trace TXOP duration for BE on AP D
     TxopDurationTracer netD;
