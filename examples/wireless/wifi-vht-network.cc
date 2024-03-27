@@ -29,7 +29,6 @@
 #include "ns3/on-off-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/packet-sink.h"
-#include "ns3/rng-seed-manager.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
 #include "ns3/udp-client-server-helper.h"
@@ -179,8 +178,6 @@ main(int argc, char* argv[])
                 NetDeviceContainer apDevice;
                 apDevice = wifi.Install(phy, mac, wifiApNode);
 
-                RngSeedManager::SetSeed(1);
-                RngSeedManager::SetRun(1);
                 int64_t streamNumber = 150;
                 streamNumber += wifi.AssignStreams(apDevice, streamNumber);
                 streamNumber += wifi.AssignStreams(staDevice, streamNumber);
