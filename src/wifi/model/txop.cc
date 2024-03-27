@@ -82,7 +82,9 @@ Txop::GetTypeId()
                           UintegerValue(15),
                           MakeUintegerAccessor((void(Txop::*)(uint32_t)) & Txop::SetMinCw,
                                                (uint32_t(Txop::*)() const) & Txop::GetMinCw),
-                          MakeUintegerChecker<uint32_t>())
+                          MakeUintegerChecker<uint32_t>(),
+                          TypeId::OBSOLETE,
+                          "Use MinCws attribute instead of MinCw")
             .AddAttribute(
                 "MinCws",
                 "The minimum values of the contention window for all the links",
@@ -97,7 +99,9 @@ Txop::GetTypeId()
                           UintegerValue(1023),
                           MakeUintegerAccessor((void(Txop::*)(uint32_t)) & Txop::SetMaxCw,
                                                (uint32_t(Txop::*)() const) & Txop::GetMaxCw),
-                          MakeUintegerChecker<uint32_t>())
+                          MakeUintegerChecker<uint32_t>(),
+                          TypeId::OBSOLETE,
+                          "Use MaxCws attribute instead of MaxCw")
             .AddAttribute(
                 "MaxCws",
                 "The maximum values of the contention window for all the links",
@@ -113,7 +117,9 @@ Txop::GetTypeId()
                 UintegerValue(2),
                 MakeUintegerAccessor((void(Txop::*)(uint8_t)) & Txop::SetAifsn,
                                      (uint8_t(Txop::*)() const) & Txop::GetAifsn),
-                MakeUintegerChecker<uint8_t>())
+                MakeUintegerChecker<uint8_t>(),
+                TypeId::OBSOLETE,
+                "Use Aifsns attribute instead of Aifsn")
             .AddAttribute(
                 "Aifsns",
                 "The values of AIFSN for all the links",
@@ -128,7 +134,9 @@ Txop::GetTypeId()
                           TimeValue(MilliSeconds(0)),
                           MakeTimeAccessor((void(Txop::*)(Time)) & Txop::SetTxopLimit,
                                            (Time(Txop::*)() const) & Txop::GetTxopLimit),
-                          MakeTimeChecker())
+                          MakeTimeChecker(),
+                          TypeId::OBSOLETE,
+                          "Use TxopLimits attribute instead of TxopLimit")
             .AddAttribute("TxopLimits",
                           "The values of TXOP limit for all the links",
                           TypeId::ATTR_GET | TypeId::ATTR_SET, // do not set at construction time

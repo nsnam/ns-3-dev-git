@@ -39,7 +39,7 @@ Applications have a new Attribute to set the IPv4 ToS field.
 * (lr-wpan) In the MAC layer, renamed `m_selfExt` to the variable `m_macExtendedAddress` to make it consistent with the standard specification.
 * (lr-wpan) The Lr-wpan module now uses the namespace `lrwpan`.
 * (lr-wpan) The `LrWpan` prefix of variables, structs and enumerations in the PHY and MAC was shorten to reflect the recent namespace change.
-
+* (wifi) Obsoleted **Txop** attributes `MinCw`, `MaxCw`, `Aifsn` and `TxopLimit`. The corresponding attributes for multi-link devices (`MinCws`, `MaxCws`, `Aifsns` and `TxopLimits`) can be used instead.
 
 ### Changes to build system
 
