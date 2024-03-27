@@ -349,7 +349,7 @@ TapFdNetDeviceHelper::CreateFileDescriptor() const
         // an "ancillary element" but the msghdr uses the control message termimology
         // so we call it "control."
         //
-        size_t msg_size = sizeof(int);
+        constexpr size_t msg_size = sizeof(int);
         char control[CMSG_SPACE(msg_size)];
 
         //

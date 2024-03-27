@@ -53,6 +53,7 @@
 #include "ns3/yans-wifi-helper.h"
 
 #include <fstream>
+#include <vector>
 
 /// Avoid std::numbers::pi because it's C++20
 #define PI 3.1415926535
@@ -2972,7 +2973,7 @@ main(int argc, char* argv[])
     Experiment experiment;
     WifiMacHelper wifiMac;
     double averageThroughput;
-    double throughputArray[trials];
+    std::vector<double> throughputArray(trials);
     for (uint32_t n = nMinStas; n <= nMaxStas; n += nStepSize)
     {
         averageThroughput = 0;

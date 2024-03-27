@@ -34,6 +34,8 @@
 #include "ns3/header.h"
 #include "ns3/log.h"
 
+#include <vector>
+
 namespace ns3
 {
 
@@ -174,9 +176,9 @@ DsrFsHeader::Deserialize(Buffer::Iterator start)
     m_destId = i.ReadU16();
     m_payloadLen = i.ReadU16();
 
-    uint32_t dataLength = GetPayloadLength();
-    uint8_t data[dataLength];
-    i.Read(data, dataLength);
+    const uint32_t dataLength = GetPayloadLength();
+    std::vector<uint8_t> data(dataLength);
+    i.Read(data.data(), dataLength);
 
     if (dataLength > m_data.GetSize())
     {
@@ -188,7 +190,7 @@ DsrFsHeader::Deserialize(Buffer::Iterator start)
     }
 
     i = m_data.Begin();
-    i.Write(data, dataLength);
+    i.Write(data.data(), data.size());
 
     return GetSerializedSize();
 }
@@ -233,11 +235,11 @@ DsrOptionField::Serialize(Buffer::Iterator start) const
 uint32_t
 DsrOptionField::Deserialize(Buffer::Iterator start, uint32_t length)
 {
-    uint8_t buf[length];
-    start.Read(buf, length);
+    std::vector<uint8_t> buf(length);
+    start.Read(buf.data(), length);
     m_optionData = Buffer();
     m_optionData.AddAtEnd(length);
-    m_optionData.Begin().Write(buf, length);
+    m_optionData.Begin().Write(buf.data(), buf.size());
     return length;
 }
 

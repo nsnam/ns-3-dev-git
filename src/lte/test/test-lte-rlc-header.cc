@@ -27,6 +27,7 @@
 #include <bitset>
 #include <iomanip>
 #include <list>
+#include <vector>
 
 NS_LOG_COMPONENT_DEFINE("TestLteRlcHeader");
 
@@ -48,13 +49,12 @@ class TestUtils
      */
     static std::string sprintPacketContentsHex(Ptr<Packet> pkt)
     {
-        uint32_t psize = pkt->GetSize();
-        uint8_t buffer[psize];
+        std::vector<uint8_t> buffer(pkt->GetSize());
         std::ostringstream oss(std::ostringstream::out);
-        pkt->CopyData(buffer, psize);
-        for (uint32_t i = 0; i < psize; i++)
+        pkt->CopyData(buffer.data(), buffer.size());
+        for (auto b : buffer)
         {
-            oss << std::setfill('0') << std::setw(2) << std::hex << (uint32_t)buffer[i];
+            oss << std::setfill('0') << std::setw(2) << std::hex << (uint32_t)b;
         }
         return oss.str();
     }
@@ -66,13 +66,12 @@ class TestUtils
      */
     static std::string sprintPacketContentsBin(Ptr<Packet> pkt)
     {
-        uint32_t psize = pkt->GetSize();
-        uint8_t buffer[psize];
+        std::vector<uint8_t> buffer(pkt->GetSize());
         std::ostringstream oss(std::ostringstream::out);
-        pkt->CopyData(buffer, psize);
-        for (uint32_t i = 0; i < psize; i++)
+        pkt->CopyData(buffer.data(), buffer.size());
+        for (auto b : buffer)
         {
-            oss << (std::bitset<8>(buffer[i]));
+            oss << (std::bitset<8>(b));
         }
         return std::string(oss.str() + "\n");
     }

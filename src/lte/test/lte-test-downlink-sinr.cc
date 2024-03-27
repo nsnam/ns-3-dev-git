@@ -157,10 +157,10 @@ LteDownlinkDataSinrTestCase::DoRun()
      */
 
     // Number of packet bursts (1 data + 4 interferences)
-    const int numOfPbs = 5;
+    constexpr int numOfPbs = 5;
 
     // Number of packets in the packet bursts
-    const int numOfPkts = 10;
+    constexpr int numOfPkts = 10;
 
     // Packet bursts
     Ptr<PacketBurst> packetBursts[numOfPbs];

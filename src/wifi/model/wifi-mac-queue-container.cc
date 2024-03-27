@@ -25,6 +25,8 @@
 #include "ns3/mac48-address.h"
 #include "ns3/simulator.h"
 
+#include <vector>
+
 namespace ns3
 {
 
@@ -209,14 +211,14 @@ std::hash<ns3::WifiContainerQueueId>::operator()(ns3::WifiContainerQueueId queue
     auto [type, addrType, address, tid] = queueId;
     const std::size_t size = tid.has_value() ? 8 : 7;
 
-    uint8_t buffer[size];
+    std::vector<uint8_t> buffer(size);
     buffer[0] = type;
-    address.CopyTo(buffer + 1);
+    address.CopyTo(&buffer[1]);
     if (tid.has_value())
     {
         buffer[7] = *tid;
     }
 
-    std::string s(buffer, buffer + size);
+    std::string s(buffer.begin(), buffer.end());
     return std::hash<std::string>{}(s);
 }

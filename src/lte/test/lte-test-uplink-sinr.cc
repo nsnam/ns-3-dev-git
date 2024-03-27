@@ -177,12 +177,12 @@ LteUplinkDataSinrTestCase::DoRun()
      */
 
     // Number of packet bursts (2 data + 4 interferences)
-    const int numOfDataPbs = 2;
-    const int numOfIntfPbs = 4;
-    const int numOfPbs = numOfDataPbs + numOfIntfPbs;
+    constexpr int numOfDataPbs = 2;
+    constexpr int numOfIntfPbs = 4;
+    constexpr int numOfPbs = numOfDataPbs + numOfIntfPbs;
 
     // Number of packets in the packet bursts
-    const int numOfPkts = 10;
+    constexpr int numOfPkts = 10;
 
     // Packet bursts
     Ptr<PacketBurst> packetBursts[numOfPbs];
@@ -382,9 +382,9 @@ LteUplinkSrsSinrTestCase::DoRun()
      */
 
     // Number of packet bursts (2 data + 4 interferences)
-    int numOfDataSignals = 2;
-    int numOfIntfSignals = 4;
-    int numOfSignals = numOfDataSignals + numOfIntfSignals;
+    constexpr int numOfDataSignals = 2;
+    constexpr int numOfIntfSignals = 4;
+    constexpr int numOfSignals = numOfDataSignals + numOfIntfSignals;
 
     uint16_t pbCellId[numOfSignals];
 
