@@ -291,7 +291,7 @@ main(int argc, char* argv[])
                           << sgi << "\t\t\t" << throughput << " Mbit/s" << std::endl;
 
                 // test first element
-                if (mcs == 0 && channelWidth == 20 && !sgi)
+                if (mcs == minMcs && channelWidth == 20 && !sgi)
                 {
                     if (throughput < minExpectedThroughput)
                     {
@@ -299,7 +299,7 @@ main(int argc, char* argv[])
                     }
                 }
                 // test last element
-                if (mcs == 7 && channelWidth == 40 && sgi)
+                if (mcs == maxMcs && channelWidth == 40 && sgi)
                 {
                     if (maxExpectedThroughput > 0 && throughput > maxExpectedThroughput)
                     {

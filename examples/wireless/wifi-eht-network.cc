@@ -566,7 +566,7 @@ main(int argc, char* argv[])
                           << throughput << " Mbit/s" << std::endl;
 
                 // test first element
-                if (mcs == 0 && channelWidth == 20 && gi == 3200)
+                if (mcs == minMcs && channelWidth == 20 && gi == 3200)
                 {
                     if (throughput * (1 + tolerance) < minExpectedThroughput)
                     {
@@ -575,7 +575,7 @@ main(int argc, char* argv[])
                     }
                 }
                 // test last element
-                if (mcs == 11 && channelWidth == 160 && gi == 800)
+                if (mcs == maxMcs && channelWidth == maxChannelWidth && gi == 800)
                 {
                     if (maxExpectedThroughput > 0 &&
                         throughput > maxExpectedThroughput * (1 + tolerance))
