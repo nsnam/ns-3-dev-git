@@ -159,8 +159,7 @@ main(int argc, char* argv[])
                 }
                 else
                 {
-                    std::cout << "Wrong frequency value!" << std::endl;
-                    return 0;
+                    NS_FATAL_ERROR("Wrong frequency value!");
                 }
 
                 auto nonHtRefRateMbps = HtPhy::GetNonHtReferenceRate(mcs) / 1e6;

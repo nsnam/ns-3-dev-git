@@ -318,8 +318,7 @@ main(int argc, char* argv[])
                 if (frequency2 == frequency || frequency3 == frequency ||
                     (frequency3 != 0 && frequency3 == frequency2))
                 {
-                    std::cout << "Frequency values must be unique!" << std::endl;
-                    return 0;
+                    NS_FATAL_ERROR("Frequency values must be unique!");
                 }
 
                 for (auto freq : {frequency, frequency2, frequency3})
@@ -370,8 +369,7 @@ main(int argc, char* argv[])
                     }
                     else
                     {
-                        std::cout << "Wrong frequency value!" << std::endl;
-                        return 0;
+                        NS_FATAL_ERROR("Wrong frequency value!");
                     }
                     nLinks++;
                 }
