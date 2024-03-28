@@ -49,6 +49,15 @@ class DefaultEmlsrManager : public EmlsrManager
      */
     Time GetTimeToCtsEnd(uint8_t linkId) const;
 
+    /**
+     * This method can only be called when aux PHYs do not switch link. Switch the main PHY back
+     * to the primary link and reconnect the aux PHY that was operating on the link left by the
+     * main PHY.
+     *
+     * \param linkId the ID of the link that the main PHY is leaving
+     */
+    void SwitchMainPhyBackToPrimaryLink(uint8_t linkId);
+
     /// Store information about a main PHY switch.
     struct MainPhySwitchInfo
     {

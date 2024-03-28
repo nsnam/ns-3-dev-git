@@ -196,35 +196,48 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     NS_LOG_FUNCTION(this << linkId);
 
     // switch main PHY to the previous link, if needed
-    if (!m_switchAuxPhy && m_auxPhyToReconnect)
+    if (!m_switchAuxPhy)
     {
-        auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+        SwitchMainPhyBackToPrimaryLink(linkId);
+    }
+}
 
-        // the main PHY may be switching at the end of a TXOP when, e.g., the main PHY starts
-        // switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
-        // is not received and the UL TXOP ends before the main PHY channel switch is completed.
-        // In such cases, wait until the main PHY channel switch is completed before requesting
-        // a new channel switch and cancel the event to put the aux PHY to sleep.
-        // Backoff shall not be reset on the link left by the main PHY because a TXOP ended and
-        // a new backoff value must be generated.
-        // a new channel switch and cancel the event to put the aux PHY to sleep.
-        if (!mainPhy->IsStateSwitching())
-        {
-            SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
-        }
-        else
-        {
-            m_auxPhyToSleepEvent.Cancel();
-            Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
-                // request the main PHY to switch back to the primary link only if in the meantime
-                // no TXOP started on another link (which will require the main PHY to switch link)
-                if (!GetEhtFem(linkId)->UsingOtherEmlsrLink())
-                {
-                    SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
-                }
-            });
-        }
+void
+DefaultEmlsrManager::SwitchMainPhyBackToPrimaryLink(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    NS_ABORT_MSG_IF(m_switchAuxPhy, "This method can only be called when SwitchAuxPhy is false");
+
+    if (!m_auxPhyToReconnect)
+    {
         return;
+    }
+
+    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+
+    // the main PHY may be switching at the end of a TXOP when, e.g., the main PHY starts
+    // switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
+    // is not received and the UL TXOP ends before the main PHY channel switch is completed.
+    // In such cases, wait until the main PHY channel switch is completed before requesting
+    // a new channel switch and cancel the event to put the aux PHY to sleep.
+    // Backoff shall not be reset on the link left by the main PHY because a TXOP ended and
+    // a new backoff value must be generated.
+    if (!mainPhy->IsStateSwitching())
+    {
+        SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
+    }
+    else
+    {
+        m_auxPhyToSleepEvent.Cancel();
+        Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
+            // request the main PHY to switch back to the primary link only if in the meantime
+            // no TXOP started on another link (which will require the main PHY to switch link)
+            if (!GetEhtFem(linkId)->UsingOtherEmlsrLink())
+            {
+                SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
+            }
+        });
     }
 }
 
