@@ -210,16 +210,12 @@ Ipv4L3Protocol::Remove(Ptr<IpL4Protocol> protocol, uint32_t interfaceIndex)
 Ptr<IpL4Protocol>
 Ipv4L3Protocol::GetProtocol(int protocolNumber) const
 {
-    NS_LOG_FUNCTION(this << protocolNumber);
-
     return GetProtocol(protocolNumber, -1);
 }
 
 Ptr<IpL4Protocol>
 Ipv4L3Protocol::GetProtocol(int protocolNumber, int32_t interfaceIndex) const
 {
-    NS_LOG_FUNCTION(this << protocolNumber << interfaceIndex);
-
     if (interfaceIndex >= 0)
     {
         // try the interface-specific protocol.
@@ -306,7 +302,6 @@ Ipv4L3Protocol::SetRoutingProtocol(Ptr<Ipv4RoutingProtocol> routingProtocol)
 Ptr<Ipv4RoutingProtocol>
 Ipv4L3Protocol::GetRoutingProtocol() const
 {
-    NS_LOG_FUNCTION(this);
     return m_routingProtocol;
 }
 
@@ -442,7 +437,6 @@ Ipv4L3Protocol::AddIpv4Interface(Ptr<Ipv4Interface> interface)
 Ptr<Ipv4Interface>
 Ipv4L3Protocol::GetInterface(uint32_t index) const
 {
-    NS_LOG_FUNCTION(this << index);
     if (index < m_interfaces.size())
     {
         return m_interfaces[index];
@@ -453,14 +447,12 @@ Ipv4L3Protocol::GetInterface(uint32_t index) const
 uint32_t
 Ipv4L3Protocol::GetNInterfaces() const
 {
-    NS_LOG_FUNCTION(this);
     return m_interfaces.size();
 }
 
 int32_t
 Ipv4L3Protocol::GetInterfaceForAddress(Ipv4Address address) const
 {
-    NS_LOG_FUNCTION(this << address);
     int32_t interface = 0;
     for (auto i = m_interfaces.begin(); i != m_interfaces.end(); i++, interface++)
     {
@@ -479,7 +471,6 @@ Ipv4L3Protocol::GetInterfaceForAddress(Ipv4Address address) const
 int32_t
 Ipv4L3Protocol::GetInterfaceForPrefix(Ipv4Address address, Ipv4Mask mask) const
 {
-    NS_LOG_FUNCTION(this << address << mask);
     int32_t interface = 0;
     for (auto i = m_interfaces.begin(); i != m_interfaces.end(); i++, interface++)
     {
@@ -498,8 +489,6 @@ Ipv4L3Protocol::GetInterfaceForPrefix(Ipv4Address address, Ipv4Mask mask) const
 int32_t
 Ipv4L3Protocol::GetInterfaceForDevice(Ptr<const NetDevice> device) const
 {
-    NS_LOG_FUNCTION(this << device);
-
     auto iter = m_reverseInterfacesContainer.find(device);
     if (iter != m_reverseInterfacesContainer.end())
     {
@@ -512,7 +501,6 @@ Ipv4L3Protocol::GetInterfaceForDevice(Ptr<const NetDevice> device) const
 bool
 Ipv4L3Protocol::IsDestinationAddress(Ipv4Address address, uint32_t iif) const
 {
-    NS_LOG_FUNCTION(this << address << iif);
     // First check the incoming interface for a unicast address match
     for (uint32_t i = 0; i < GetNAddresses(iif); i++)
     {
@@ -681,7 +669,6 @@ Ipv4L3Protocol::Receive(Ptr<NetDevice> device,
 Ptr<Icmpv4L4Protocol>
 Ipv4L3Protocol::GetIcmp() const
 {
-    NS_LOG_FUNCTION(this);
     Ptr<IpL4Protocol> prot = GetProtocol(Icmpv4L4Protocol::GetStaticProtocolNumber());
     if (prot)
     {
@@ -696,8 +683,6 @@ Ipv4L3Protocol::GetIcmp() const
 bool
 Ipv4L3Protocol::IsUnicast(Ipv4Address ad) const
 {
-    NS_LOG_FUNCTION(this << ad);
-
     if (ad.IsBroadcast() || ad.IsMulticast())
     {
         return false;
@@ -726,7 +711,6 @@ Ipv4L3Protocol::IsUnicast(Ipv4Address ad) const
 bool
 Ipv4L3Protocol::IsUnicast(Ipv4Address ad, Ipv4Mask interfaceMask) const
 {
-    NS_LOG_FUNCTION(this << ad << interfaceMask);
     return !ad.IsMulticast() && !ad.IsSubnetDirectedBroadcast(interfaceMask);
 }
 
@@ -1180,7 +1164,6 @@ Ipv4L3Protocol::AddAddress(uint32_t i, Ipv4InterfaceAddress address)
 Ipv4InterfaceAddress
 Ipv4L3Protocol::GetAddress(uint32_t interfaceIndex, uint32_t addressIndex) const
 {
-    NS_LOG_FUNCTION(this << interfaceIndex << addressIndex);
     Ptr<Ipv4Interface> interface = GetInterface(interfaceIndex);
     return interface->GetAddress(addressIndex);
 }
@@ -1188,7 +1171,6 @@ Ipv4L3Protocol::GetAddress(uint32_t interfaceIndex, uint32_t addressIndex) const
 uint32_t
 Ipv4L3Protocol::GetNAddresses(uint32_t interface) const
 {
-    NS_LOG_FUNCTION(this << interface);
     Ptr<Ipv4Interface> iface = GetInterface(interface);
     return iface->GetNAddresses();
 }
@@ -1333,7 +1315,6 @@ Ipv4L3Protocol::SetMetric(uint32_t i, uint16_t metric)
 uint16_t
 Ipv4L3Protocol::GetMetric(uint32_t i) const
 {
-    NS_LOG_FUNCTION(this << i);
     Ptr<Ipv4Interface> interface = GetInterface(i);
     return interface->GetMetric();
 }
@@ -1341,7 +1322,6 @@ Ipv4L3Protocol::GetMetric(uint32_t i) const
 uint16_t
 Ipv4L3Protocol::GetMtu(uint32_t i) const
 {
-    NS_LOG_FUNCTION(this << i);
     Ptr<Ipv4Interface> interface = GetInterface(i);
     return interface->GetDevice()->GetMtu();
 }
@@ -1349,7 +1329,6 @@ Ipv4L3Protocol::GetMtu(uint32_t i) const
 bool
 Ipv4L3Protocol::IsUp(uint32_t i) const
 {
-    NS_LOG_FUNCTION(this << i);
     Ptr<Ipv4Interface> interface = GetInterface(i);
     return interface->IsUp();
 }
@@ -1398,7 +1377,6 @@ Ipv4L3Protocol::SetDown(uint32_t ifaceIndex)
 bool
 Ipv4L3Protocol::IsForwarding(uint32_t i) const
 {
-    NS_LOG_FUNCTION(this << i);
     Ptr<Ipv4Interface> interface = GetInterface(i);
     NS_LOG_LOGIC("Forwarding state: " << interface->IsForwarding());
     return interface->IsForwarding();
@@ -1415,7 +1393,6 @@ Ipv4L3Protocol::SetForwarding(uint32_t i, bool val)
 Ptr<NetDevice>
 Ipv4L3Protocol::GetNetDevice(uint32_t i)
 {
-    NS_LOG_FUNCTION(this << i);
     return GetInterface(i)->GetDevice();
 }
 
@@ -1433,7 +1410,6 @@ Ipv4L3Protocol::SetIpForward(bool forward)
 bool
 Ipv4L3Protocol::GetIpForward() const
 {
-    NS_LOG_FUNCTION(this);
     return m_ipForward;
 }
 
@@ -1447,7 +1423,6 @@ Ipv4L3Protocol::SetWeakEsModel(bool model)
 bool
 Ipv4L3Protocol::GetWeakEsModel() const
 {
-    NS_LOG_FUNCTION(this);
     return !m_strongEndSystemModel;
 }
 
@@ -1461,7 +1436,6 @@ Ipv4L3Protocol::SetStrongEndSystemModel(bool model)
 bool
 Ipv4L3Protocol::GetStrongEndSystemModel() const
 {
-    NS_LOG_FUNCTION(this);
     return m_strongEndSystemModel;
 }
 
