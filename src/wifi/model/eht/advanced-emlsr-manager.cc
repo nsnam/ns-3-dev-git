@@ -15,6 +15,8 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
 
+#include <algorithm>
+
 namespace ns3
 {
 
@@ -48,7 +50,24 @@ AdvancedEmlsrManager::GetTypeId()
                           "switching to another link.",
                           BooleanValue(false),
                           MakeBooleanAccessor(&AdvancedEmlsrManager::m_interruptSwitching),
-                          MakeBooleanChecker());
+                          MakeBooleanChecker())
+            .AddAttribute("UseAuxPhyCca",
+                          "Whether the CCA performed in the last PIFS interval by a non-TX "
+                          "capable aux PHY should be used when the main PHY ends switching to "
+                          "the aux PHY's link to determine whether TX can start or not (and what "
+                          "bandwidth can be used for transmission) independently of whether the "
+                          "aux PHY bandwidth is smaller than the main PHY bandwidth or not.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&AdvancedEmlsrManager::m_useAuxPhyCca),
+                          MakeBooleanChecker())
+            .AddAttribute("SwitchMainPhyBackDelay",
+                          "Duration of the timer started in case of non-TX capable aux PHY (that "
+                          "does not switch link) when medium is sensed busy during the PIFS "
+                          "interval preceding/following the main PHY switch end. When the timer "
+                          "expires, the main PHY is switched back to the primary link.",
+                          TimeValue(MilliSeconds(5)),
+                          MakeTimeAccessor(&AdvancedEmlsrManager::m_switchMainPhyBackDelay),
+                          MakeTimeChecker());
     return tid;
 }
 
@@ -318,112 +337,264 @@ AdvancedEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
 }
 
 void
+AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, Ptr<QosTxop> edca)
+{
+    NS_LOG_FUNCTION(this << phy->GetPhyId() << linkId << edca->GetAccessCategory());
+
+    const auto caManager = GetStaMac()->GetChannelAccessManager(linkId);
+    const auto pifs = phy->GetSifs() + phy->GetSlot();
+
+    const auto isBusy = caManager->IsBusy(); // check NAV and CCA on primary20
+    // check CCA on the entire channel
+    auto width = caManager->GetLargestIdlePrimaryChannel(pifs, Simulator::Now());
+
+    if (!isBusy && width > 0)
+    {
+        // medium idle, start TXOP
+        width = std::min(width, GetChannelForMainPhy(linkId).GetTotalWidth());
+
+        // if this function is called at the end of the main PHY switch, it is executed before the
+        // main PHY is connected to this link in order to use the CCA information of the aux PHY.
+        // Schedule now the TXOP start so that we first connect the main PHY to this link.
+        m_ccaLastPifs = Simulator::ScheduleNow([=, this]() {
+            if (GetEhtFem(linkId)->HeFrameExchangeManager::StartTransmission(edca, width))
+            {
+                NotifyUlTxopStart(linkId);
+            }
+            else if (!m_switchAuxPhy)
+            {
+                // switch main PHY back to primary link if SwitchAuxPhy is false
+                SwitchMainPhyBackToPrimaryLink(linkId);
+            }
+        });
+    }
+    else
+    {
+        // medium busy, restart channel access
+        NS_LOG_DEBUG("Medium busy in the last PIFS interval");
+        edca->NotifyChannelReleased(linkId); // to set access to NOT_REQUESTED
+        edca->StartAccessAfterEvent(linkId,
+                                    Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                                    Txop::CHECK_MEDIUM_BUSY);
+
+        // the main PHY must stay for some time on this link to check if it gets channel access.
+        // The timer is stopped if a DL or UL TXOP is started. When the timer expires, the main PHY
+        // switches back to the preferred link if SwitchAuxPhy is false
+        m_switchMainPhyBackEvent = Simulator::Schedule(m_switchMainPhyBackDelay, [this, linkId]() {
+            if (!m_switchAuxPhy)
+            {
+                SwitchMainPhyBackToPrimaryLink(linkId);
+            }
+        });
+    }
+}
+
+void
+AdvancedEmlsrManager::DoNotifyIcfReceived(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+    m_switchMainPhyBackEvent.Cancel();
+    m_ccaLastPifs.Cancel();
+}
+
+void
+AdvancedEmlsrManager::DoNotifyUlTxopStart(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+    m_switchMainPhyBackEvent.Cancel();
+    m_ccaLastPifs.Cancel();
+}
+
+bool
+AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci)
+{
+    NS_LOG_FUNCTION(this << linkId << aci);
+
+    // the aux PHY is not TX capable; check if main PHY has to switch to the aux PHY's link
+    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+    const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy);
+
+    // if main PHY is not operating on a link, it is switching, hence do not request another switch
+    if (!mainPhyLinkId.has_value())
+    {
+        NS_LOG_DEBUG("Main PHY is not operating on any link");
+        return false;
+    }
+
+    // if the main PHY is already trying to get access on a link, do not request another switch
+    if (m_ccaLastPifs.IsPending() || m_switchMainPhyBackEvent.IsPending())
+    {
+        NS_LOG_DEBUG("Main PHY is trying to get access on another link");
+        return false;
+    }
+
+    switch (mainPhy->GetState()->GetState())
+    {
+    case WifiPhyState::IDLE:
+        // proceed to try requesting main PHY to switch
+        break;
+    case WifiPhyState::CCA_BUSY:
+        // if the main PHY is receiving the PHY header of a PPDU, we decide to proceed or give up
+        // based on the AllowUlTxopInRx attribute
+        if (mainPhy->IsReceivingPhyHeader() && !m_allowUlTxopInRx)
+        {
+            NS_LOG_DEBUG("Main PHY receiving PHY header and AllowUlTxopInRx is false");
+            return false;
+        }
+        break;
+    case WifiPhyState::RX:
+        if (auto macHdr = GetEhtFem(*mainPhyLinkId)->GetReceivedMacHdr())
+        {
+            // information on the MAC header of the PSDU being received is available; if we cannot
+            // use it or the main PHY is receiving an ICF, give up requesting main PHY to switch
+            if (const auto& hdr = macHdr->get();
+                !m_useNotifiedMacHdr ||
+                (hdr.IsTrigger() && (hdr.GetAddr1().IsBroadcast() ||
+                                     hdr.GetAddr1() == GetEhtFem(*mainPhyLinkId)->GetAddress())))
+            {
+                NS_LOG_DEBUG("Receiving an ICF or cannot use MAC header information");
+                return false;
+            }
+        }
+        // information on the MAC header of the PSDU being received is not available, we decide to
+        // proceed or give up based on the AllowUlTxopInRx attribute
+        else if (!m_allowUlTxopInRx)
+        {
+            NS_LOG_DEBUG("Receiving PSDU, no MAC header information, AllowUlTxopInRx is false");
+            return false;
+        }
+        break;
+    default:
+        NS_LOG_DEBUG("Cannot request main PHY to switch when in state "
+                     << mainPhy->GetState()->GetState());
+        return false;
+    }
+
+    // request to switch main PHY if we expect the main PHY to get channel access on this link
+    // more quickly, i.e., if ALL the ACs with queued frames (that can be transmitted on the link
+    // on which the main PHY is currently operating) and with priority higher than or equal to
+    // that of the AC for which Aux PHY gained TXOP have their backoff counter greater than the
+    // channel switch delay plus PIFS
+
+    auto requestSwitch = false;
+    const auto now = Simulator::Now();
+
+    for (const auto& [acIndex, ac] : wifiAcList)
+    {
+        if (auto edca = GetStaMac()->GetQosTxop(acIndex);
+            acIndex >= aci && edca->HasFramesToTransmit(linkId))
+        {
+            requestSwitch = true;
+
+            const auto backoffEnd =
+                GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetBackoffEndFor(edca);
+            NS_LOG_DEBUG("Backoff end for " << acIndex
+                                            << " on primary link: " << backoffEnd.As(Time::US));
+
+            if (backoffEnd <= now + mainPhy->GetChannelSwitchDelay() +
+                                  GetStaMac()->GetWifiPhy(linkId)->GetPifs() &&
+                edca->HasFramesToTransmit(*mainPhyLinkId))
+            {
+                requestSwitch = false;
+                break;
+            }
+        }
+    }
+
+    return requestSwitch;
+}
+
+void
 AdvancedEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex aci)
 {
     NS_LOG_FUNCTION(this << linkId << aci);
 
     NS_ASSERT_MSG(!m_auxPhyTxCapable,
                   "This function should only be called if aux PHY is not TX capable");
-
-    // the aux PHY is not TX capable; check if main PHY has to switch to the aux PHY's link
     auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
 
-    // if the main PHY is idle, switch main PHY if we expect the main PHY to get channel access on
-    // this link more quicky, i.e., if ALL the ACs with queued frames and with priority higher than
-    // or equal to that of the AC for which Aux PHY gained TXOP have their backoff counter greater
-    // than the channel switch delay plus PIFS
-
-    auto requestSwitch = false;
-
-    if (mainPhy->IsStateIdle())
+    if (RequestMainPhyToSwitch(linkId, aci))
     {
-        auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy);
-        NS_ASSERT(mainPhyLinkId.has_value());
+        const auto auxPhy = GetStaMac()->GetWifiPhy(linkId);
+        const auto pifs = auxPhy->GetSifs() + auxPhy->GetSlot();
 
-        // update backoff on main PHY link for all ACs
-        GetStaMac()
-            ->GetChannelAccessManager(*mainPhyLinkId)
-            ->NeedBackoffUponAccess(GetStaMac()->GetQosTxop(AC_BE),
-                                    Txop::HAD_FRAMES_TO_TRANSMIT,
-                                    Txop::CHECK_MEDIUM_BUSY);
-
-        for (const auto& [acIndex, ac] : wifiAcList)
+        // schedule actions to take based on CCA sensing for a PIFS
+        if (m_useAuxPhyCca || GetChannelForAuxPhy(linkId).GetTotalWidth() >=
+                                  GetChannelForMainPhy(linkId).GetTotalWidth())
         {
-            if (auto edca = GetStaMac()->GetQosTxop(acIndex);
-                acIndex >= aci && edca->HasFramesToTransmit(linkId))
-            {
-                requestSwitch = true;
-
-                auto backoffEnd =
-                    GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetBackoffEndFor(edca);
-                NS_LOG_DEBUG("Backoff end for " << acIndex
-                                                << " on primary link: " << backoffEnd.As(Time::US));
-
-                if (backoffEnd <= Simulator::Now() + mainPhy->GetChannelSwitchDelay() +
-                                      GetStaMac()->GetWifiPhy(linkId)->GetPifs() &&
-                    edca->HasFramesToTransmit(*mainPhyLinkId))
-                {
-                    requestSwitch = false;
-                    break;
-                }
-            }
+            // use aux PHY CCA in the last PIFS interval before main PHY switch end
+            NS_LOG_DEBUG("Schedule CCA check at the end of main PHY switch");
+            m_ccaLastPifs = Simulator::Schedule(mainPhy->GetChannelSwitchDelay(),
+                                                &AdvancedEmlsrManager::CheckNavAndCcaLastPifs,
+                                                this,
+                                                auxPhy,
+                                                linkId,
+                                                GetStaMac()->GetQosTxop(aci));
         }
-    }
+        else
+        {
+            // use main PHY CCA in the last PIFS interval after main PHY switch end
+            NS_LOG_DEBUG("Schedule CCA check a PIFS after the end of main PHY switch");
+            m_ccaLastPifs = Simulator::Schedule(mainPhy->GetChannelSwitchDelay() + pifs,
+                                                &AdvancedEmlsrManager::CheckNavAndCcaLastPifs,
+                                                this,
+                                                mainPhy,
+                                                linkId,
+                                                GetStaMac()->GetQosTxop(aci));
+        }
 
-    if ((mainPhy->IsStateCcaBusy() && !mainPhy->IsReceivingPhyHeader()) ||
-        (mainPhy->IsStateIdle() && requestSwitch))
-    {
         // switch main PHY
-        SwitchMainPhy(linkId, false, RESET_BACKOFF, REQUEST_ACCESS);
-
+        SwitchMainPhy(linkId, false, RESET_BACKOFF, DONT_REQUEST_ACCESS);
         return;
     }
 
     // Determine if and when we need to request channel access again for the aux PHY based on
     // the main PHY state.
     // Note that, if we have requested the main PHY to switch (above), the function has returned
-    // and the EHT FEM will start a TXOP if the medium is idle for a PIFS interval following
+    // and the EHT FEM will start a TXOP if medium is idle for a PIFS interval preceding/following
     // the end of the main PHY channel switch.
-    // If the state is switching, but we have not requested the main PHY to switch, then we
-    // request channel access again for the aux PHY a PIFS after that the main PHY state is back
-    // to IDLE (to avoid stealing the main PHY from the non-primary link which the main PHY is
-    // switching to), and then we will determine if the main PHY has to switch link.
-    // If the state is CCA_BUSY, the medium is busy but the main PHY is not receiving a PPDU.
-    // In this case, we request channel access again for the aux PHY a PIFS after that the main
-    // PHY state is back to IDLE, and then we will determine if the main PHY has to switch link.
-    // If the state is TX or RX, it means that the main PHY is involved in a TXOP. In this
-    // case, do nothing because the channel access will be requested when unblocking links
-    // at the end of the TXOP.
+    // If the main PHY has been requested to switch by another aux PHY, this aux PHY will request
+    // channel access again when we have completed the CCA assessment on the other link.
+    // If the state is switching, CCA_BUSY or RX, then we request channel access again for the
+    // aux PHY when the main PHY state is back to IDLE.
+    // If the state is TX, it means that the main PHY is involved in a TXOP. Do nothing because
+    // the channel access will be requested when unblocking links at the end of the TXOP.
     // If the state is IDLE, then either no AC has traffic to send or the backoff on the link
     // of the main PHY is shorter than the channel switch delay. In the former case, do
     // nothing because channel access will be triggered when new packets arrive; in the latter
     // case, do nothing because the main PHY will start a TXOP and at the end of such TXOP
     // links will be unblocked and the channel access requested on all links
 
-    if (!mainPhy->IsStateSwitching() && !mainPhy->IsStateCcaBusy())
+    Time delay{};
+
+    if (m_ccaLastPifs.IsPending() || m_switchMainPhyBackEvent.IsPending())
     {
-        NS_LOG_DEBUG("Main PHY state is " << mainPhy->GetState()->GetState() << ". Do nothing");
+        delay = std::max(Simulator::GetDelayLeft(m_ccaLastPifs),
+                         Simulator::GetDelayLeft(m_switchMainPhyBackEvent));
+    }
+    else if (mainPhy->IsStateSwitching() || mainPhy->IsStateCcaBusy() || mainPhy->IsStateRx())
+    {
+        delay = mainPhy->GetDelayUntilIdle();
+        NS_ASSERT(delay.IsStrictlyPositive());
+    }
+
+    NS_LOG_DEBUG("Main PHY state is " << mainPhy->GetState()->GetState());
+
+    if (delay.IsZero())
+    {
+        NS_LOG_DEBUG("Do nothing");
         return;
     }
 
-    auto delay = mainPhy->GetDelayUntilIdle();
-    NS_ASSERT(delay.IsStrictlyPositive());
-    delay += mainPhy->GetSifs() + mainPhy->GetSlot();
+    auto edca = GetStaMac()->GetQosTxop(aci);
+    edca->NotifyChannelReleased(linkId); // to set access to NOT_REQUESTED
 
-    NS_LOG_DEBUG("Main PHY state is " << mainPhy->GetState()->GetState()
-                                      << ". Schedule channel access request on link " << +linkId
-                                      << " at time " << (Simulator::Now() + delay).As(Time::NS));
-    Simulator::Schedule(delay, [=, this]() {
-        for (const auto& [aci, ac] : wifiAcList)
-        {
-            auto edca = GetStaMac()->GetQosTxop(aci);
-            if (edca->GetAccessStatus(linkId) != Txop::REQUESTED &&
-                edca->HasFramesToTransmit(linkId))
-            {
-                NS_LOG_DEBUG("Request channel access on link " << +linkId << " for " << aci);
-                GetStaMac()->GetChannelAccessManager(linkId)->RequestAccess(edca);
-            }
-        }
+    NS_LOG_DEBUG("Schedule channel access request on link "
+                 << +linkId << " at time " << (Simulator::Now() + delay).As(Time::NS));
+    Simulator::Schedule(delay, [=]() {
+        edca->StartAccessAfterEvent(linkId,
+                                    Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                                    Txop::CHECK_MEDIUM_BUSY);
     });
 }
 

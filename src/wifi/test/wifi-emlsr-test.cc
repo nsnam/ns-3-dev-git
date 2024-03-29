@@ -2386,7 +2386,8 @@ EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
       m_countQoSframes(0),
       m_countBlockAck(0),
       m_countRtsframes(0),
-      m_genBackoffIfTxopWithoutTx(params.genBackoffIfTxopWithoutTx)
+      m_genBackoffIfTxopWithoutTx(params.genBackoffAndUseAuxPhyCca),
+      m_useAuxPhyCca(params.genBackoffAndUseAuxPhyCca)
 {
     m_nEmlsrStations = 1;
     m_nNonEmlsrStations = 0;
@@ -2419,6 +2420,7 @@ EmlsrUlTxopTest::DoSetup()
     Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth",
                        UintegerValue(m_auxPhyChannelWidth));
     Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(false));
+    Config::SetDefault("ns3::AdvancedEmlsrManager::UseAuxPhyCca", BooleanValue(m_useAuxPhyCca));
     Config::SetDefault("ns3::EhtConfiguration::MediumSyncDuration",
                        TimeValue(m_mediumSyncDuration));
     Config::SetDefault("ns3::EhtConfiguration::MsdMaxNTxops", UintegerValue(m_msdMaxNTxops));
@@ -2956,11 +2958,11 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                 }
 
                 // if the backoff on a link has expired before the end of the main PHY channel
-                // switch, the main PHY will be requested to switch again a PIFS after the end
-                // of the channel switch. Otherwise, it will be requested to switch when the
-                // backoff expires.
+                // switch, the main PHY will be requested to switch again at the first slot
+                // boundary after the end of the channel switch. Otherwise, it will be requested
+                // to switch when the backoff expires.
                 auto expected2ndSwitchDelay = (minBackoff <= Simulator::Now())
-                                                  ? mainPhy->GetSifs() + mainPhy->GetSlot()
+                                                  ? mainPhy->GetSlot()
                                                   : (minBackoff - Simulator::Now());
 
                 // check that the main PHY is requested to switch to a non-primary link after
@@ -2987,11 +2989,13 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                             ->GetChannelAccessManager(*nonPrimLinkId)
                             ->NeedBackoffUponAccess(acBe, true, true);
                         // record the time the transmission of the QoS data frames must have
-                        // started: a PIFS after end of channel switch, if the backoff counter
-                        // on the non-primary link is null; when the backoff expires, otherwise
+                        // started: (a PIFS after) end of channel switch, if the backoff counter
+                        // on the non-primary link is null and UseAuxPhyCca is true (false); when
+                        // the backoff expires, otherwise
                         if (auto slots = acBe->GetBackoffSlots(*nonPrimLinkId); slots == 0)
                         {
-                            m_5thQosFrameTxTime = Simulator::Now() + mainPhy->GetPifs();
+                            m_5thQosFrameTxTime =
+                                Simulator::Now() + (m_useAuxPhyCca ? Time{0} : mainPhy->GetPifs());
                         }
                         else
                         {
@@ -3463,8 +3467,8 @@ EmlsrUlTxopTest::CheckResults()
                           +m_mainPhyId,
                           "Fifth QoS data frame should be transmitted on a non-primary link");
     NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetChannelWidth(),
-                          m_channelWidth,
-                          "Fifth data frame not transmitted on the channel width used by main PHY");
+                          (m_useAuxPhyCca ? m_auxPhyChannelWidth : m_channelWidth),
+                          "Fifth data frame not transmitted on the correct channel width");
     // Do not check the start transmission time if a backoff is generated even when no
     // transmission is done (if the backoff expires while the main PHY is switching, a new
     // backoff is generated and, before this backoff expires, the main PHY may be requested
@@ -4300,13 +4304,13 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
                     TestCase::Duration::QUICK);
     }
 
-    for (auto genBackoffIfTxopWithoutTx : {true, false})
+    for (auto genBackoffAndUseAuxPhyCca : {true, false})
     {
         AddTestCase(new EmlsrUlTxopTest(
-                        {{0, 1, 2}, 40, 20, MicroSeconds(5504), 3, genBackoffIfTxopWithoutTx}),
+                        {{0, 1, 2}, 40, 20, MicroSeconds(5504), 3, genBackoffAndUseAuxPhyCca}),
                     TestCase::Duration::QUICK);
         AddTestCase(
-            new EmlsrUlTxopTest({{0, 1}, 40, 20, MicroSeconds(5504), 1, genBackoffIfTxopWithoutTx}),
+            new EmlsrUlTxopTest({{0, 1}, 40, 20, MicroSeconds(5504), 1, genBackoffAndUseAuxPhyCca}),
             TestCase::Duration::QUICK);
     }
 

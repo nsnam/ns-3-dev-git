@@ -275,9 +275,6 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
             return false;
         }
 
-        auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
-        const auto mainPhySwitching = mainPhy->IsStateSwitching();
-
         // let EMLSR manager decide whether to prevent or allow this UL TXOP
         if (auto delay = emlsrManager->GetDelayUntilAccessRequest(
                 m_linkId,
@@ -297,41 +294,10 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
 
         // in case of aux PHY that is not TX capable, the main PHY can transmit if the medium is
         // sensed idle for a PIFS after the end of channel switch (assuming main PHY is switching)
-        if (m_phy != mainPhy && !emlsrManager->GetAuxPhyTxCapable())
+        if (auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
+            m_phy != mainPhy && !emlsrManager->GetAuxPhyTxCapable())
         {
             NS_LOG_DEBUG("Aux PHY is not capable of transmitting a PPDU");
-
-            if (!mainPhySwitching && mainPhy->IsStateSwitching())
-            {
-                // main PHY switch has been requested by GetDelayUntilAccessRequest
-                const auto pifs = m_phy->GetSifs() + m_phy->GetSlot();
-                auto checkMediumLastPifs = [=, this]() {
-                    // check if the medium has been idle for the last PIFS interval
-                    auto width =
-                        m_staMac->GetChannelAccessManager(m_linkId)->GetLargestIdlePrimaryChannel(
-                            pifs,
-                            Simulator::Now());
-
-                    if (width == 0)
-                    {
-                        NS_LOG_DEBUG("Medium busy in the last PIFS after channel switch end");
-                        edca->StartAccessAfterEvent(m_linkId,
-                                                    Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
-                                                    Txop::CHECK_MEDIUM_BUSY);
-                        return;
-                    }
-
-                    // medium idle, start a TXOP
-                    if (HeFrameExchangeManager::StartTransmission(edca, width))
-                    {
-                        // notify the EMLSR Manager of the UL TXOP start on an EMLSR link
-                        emlsrManager->NotifyUlTxopStart(m_linkId);
-                    }
-                };
-                Simulator::Schedule(mainPhy->GetDelayUntilIdle() + pifs, checkMediumLastPifs);
-            }
-
-            NotifyChannelReleased(edca);
             return false;
         }
     }

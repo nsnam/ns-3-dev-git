@@ -536,9 +536,13 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
         uint8_t msdMaxNTxops;           //!< Max number of TXOPs that an EMLSR client is allowed
                                         //!< to attempt to initiate while the MediumSyncDelay
                                         //!< timer is running (zero indicates no limit)
-        bool genBackoffIfTxopWithoutTx; //!< whether the backoff should be invoked when the AC
-                                        //!< gains the right to start a TXOP but it does not
-                                        //!< transmit any frame
+        bool genBackoffAndUseAuxPhyCca; //!< this variable controls two boolean values that are
+                                        //!< either both set to true or both set to false;
+                                        //!< the first value controls whether the backoff should be
+                                        //!< invoked when the AC gains the right to start a TXOP
+                                        //!< but it does not transmit any frame, the second value
+                                        //!< controls whether CCA info from aux PHY is used when
+                                        //!< aux PHY is not TX capable
     };
 
     /**
@@ -653,6 +657,8 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
     bool m_genBackoffIfTxopWithoutTx;     //!< whether the backoff should be invoked when the AC
                                           //!< gains the right to start a TXOP but it does not
                                           //!< transmit any frame
+    bool m_useAuxPhyCca;                  //!< whether CCA info from aux PHY is used when
+                                          //!< aux PHY is not TX capable
     std::optional<bool> m_corruptCts;     //!< whether the transmitted CTS must be corrupted
     Time m_5thQosFrameTxTime;             //!< start transmission time of the 5th QoS data frame
 };
