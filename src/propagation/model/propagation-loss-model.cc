@@ -161,9 +161,10 @@ FriisPropagationLossModel::GetTypeId()
                                    &FriisPropagationLossModel::GetFrequency),
                 MakeDoubleChecker<double>())
             .AddAttribute("SystemLoss",
-                          "The system loss",
+                          "The system loss (linear factor >= 1, not in dB)",
                           DoubleValue(1.0),
-                          MakeDoubleAccessor(&FriisPropagationLossModel::m_systemLoss),
+                          MakeDoubleAccessor(&FriisPropagationLossModel::SetSystemLoss,
+                                             &FriisPropagationLossModel::GetSystemLoss),
                           MakeDoubleChecker<double>())
             .AddAttribute("MinLoss",
                           "The minimum value (dB) of the total loss, used at short ranges.",
@@ -181,6 +182,7 @@ FriisPropagationLossModel::FriisPropagationLossModel()
 void
 FriisPropagationLossModel::SetSystemLoss(double systemLoss)
 {
+    NS_ABORT_MSG_UNLESS(systemLoss >= 1, "System loss less than 1 corresponds to gain");
     m_systemLoss = systemLoss;
 }
 
@@ -308,9 +310,10 @@ TwoRayGroundPropagationLossModel::GetTypeId()
                                    &TwoRayGroundPropagationLossModel::GetFrequency),
                 MakeDoubleChecker<double>())
             .AddAttribute("SystemLoss",
-                          "The system loss",
+                          "The system loss (linear factor >= 1, not in dB)",
                           DoubleValue(1.0),
-                          MakeDoubleAccessor(&TwoRayGroundPropagationLossModel::m_systemLoss),
+                          MakeDoubleAccessor(&TwoRayGroundPropagationLossModel::SetSystemLoss,
+                                             &TwoRayGroundPropagationLossModel::GetSystemLoss),
                           MakeDoubleChecker<double>())
             .AddAttribute(
                 "MinDistance",
@@ -334,6 +337,7 @@ TwoRayGroundPropagationLossModel::TwoRayGroundPropagationLossModel()
 void
 TwoRayGroundPropagationLossModel::SetSystemLoss(double systemLoss)
 {
+    NS_ABORT_MSG_UNLESS(systemLoss >= 1, "System loss less than 1 corresponds to gain");
     m_systemLoss = systemLoss;
 }
 

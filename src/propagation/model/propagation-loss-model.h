@@ -271,9 +271,11 @@ class FriisPropagationLossModel : public PropagationLossModel
      */
     void SetFrequency(double frequency);
     /**
-     * \param systemLoss (dimension-less)
+     * \param systemLoss (linear factor, dimension-less)
      *
      * Set the system loss used by the Friis propagation model.
+     * Value should be greater than or equal to 1; the default of 1
+     * corresponds to no system loss.
      */
     void SetSystemLoss(double systemLoss);
 
@@ -295,7 +297,7 @@ class FriisPropagationLossModel : public PropagationLossModel
      */
     double GetFrequency() const;
     /**
-     * \returns the current system loss (dimension-less)
+     * \returns the current system loss (linear factor, dimension-less)
      */
     double GetSystemLoss() const;
 
@@ -321,7 +323,7 @@ class FriisPropagationLossModel : public PropagationLossModel
 
     double m_lambda;     //!< the carrier wavelength
     double m_frequency;  //!< the carrier frequency
-    double m_systemLoss; //!< the system loss
+    double m_systemLoss; //!< the system loss (linear factor)
     double m_minLoss;    //!< the minimum loss
 };
 
@@ -376,9 +378,11 @@ class TwoRayGroundPropagationLossModel : public PropagationLossModel
     void SetFrequency(double frequency);
 
     /**
-     * \param systemLoss (dimension-less)
+     * \param systemLoss (linear factor, dimension-less)
      *
      * Set the system loss used by the TwoRayGround propagation model.
+     * Value should be greater than or equal to 1; the default of 1
+     * corresponds to no system loss.
      */
     void SetSystemLoss(double systemLoss);
     /**
@@ -399,7 +403,7 @@ class TwoRayGroundPropagationLossModel : public PropagationLossModel
     double GetFrequency() const;
 
     /**
-     * \returns the current system loss (dimension-less)
+     * \returns the current system loss (linear factor, dimension-less)
      */
     double GetSystemLoss() const;
     /**
@@ -431,7 +435,7 @@ class TwoRayGroundPropagationLossModel : public PropagationLossModel
 
     double m_lambda;       //!< the carrier wavelength
     double m_frequency;    //!< the carrier frequency
-    double m_systemLoss;   //!< the system loss
+    double m_systemLoss;   //!< the system loss (linear factor)
     double m_minDistance;  //!< minimum distance for the model
     double m_heightAboveZ; //!< antenna height above the node's Z coordinate
 };
