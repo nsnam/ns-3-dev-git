@@ -230,6 +230,9 @@ main(int argc, char* argv[])
     uint32_t maxSlrc = 7;
     uint32_t maxSsrc = 7;
 
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(2);
+
     CommandLine cmd(__FILE__);
     cmd.AddValue("maxSsrc",
                  "The maximum number of retransmission attempts for a RTS packet",
@@ -673,10 +676,8 @@ main(int argc, char* argv[])
         clientDevice = wifi.Install(wifiPhy, wifiMac, clientNode);
     }
 
-    RngSeedManager::SetSeed(1);
-    RngSeedManager::SetRun(2);
     wifi.AssignStreams(serverDevice, 100);
-    wifi.AssignStreams(clientDevice, 100);
+    wifi.AssignStreams(clientDevice, 200);
 
     Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize",
                 UintegerValue(maxAmpduSize));
