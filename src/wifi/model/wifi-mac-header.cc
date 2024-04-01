@@ -57,30 +57,10 @@ enum
     SUBTYPE_CTL_END_ACK = 15
 };
 
-WifiMacHeader::WifiMacHeader()
-    : m_ctrlMoreFrag(0),
-      m_ctrlRetry(0),
-      m_ctrlPowerManagement(0),
-      m_ctrlMoreData(0),
-      m_ctrlWep(0),
-      m_ctrlOrder(0),
-      m_duration(0),
-      m_seqFrag(0),
-      m_seqSeq(0),
-      m_qosEosp(0),
-      m_qosAckPolicy(0), // Normal Ack
-      m_amsduPresent(0)
-{
-}
-
 WifiMacHeader::WifiMacHeader(WifiMacType type)
     : WifiMacHeader()
 {
     SetType(type);
-}
-
-WifiMacHeader::~WifiMacHeader()
-{
 }
 
 void

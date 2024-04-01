@@ -119,14 +119,13 @@ class WifiMacHeader : public Header
         ADDR4
     };
 
-    WifiMacHeader();
+    WifiMacHeader() = default;
     /**
      * Construct a MAC header of the given type
      *
      * \param type the MAC header type
      */
     WifiMacHeader(WifiMacType type);
-    ~WifiMacHeader() override;
 
     /**
      * \brief Get the type ID.
@@ -674,30 +673,30 @@ class WifiMacHeader : public Header
      */
     void PrintFrameControl(std::ostream& os) const;
 
-    uint8_t m_ctrlType;            ///< control type
-    uint8_t m_ctrlSubtype;         ///< control subtype
-    uint8_t m_ctrlToDs;            ///< control to DS
-    uint8_t m_ctrlFromDs;          ///< control from DS
-    uint8_t m_ctrlMoreFrag;        ///< control more fragments
-    uint8_t m_ctrlRetry;           ///< control retry
-    uint8_t m_ctrlPowerManagement; ///< control power management
-    uint8_t m_ctrlMoreData;        ///< control more data
-    uint8_t m_ctrlWep;             ///< control WEP
-    uint8_t m_ctrlOrder;  ///< control order (set to 1 for QoS Data and Management frames to signify
-                          ///< that HT/VHT/HE control field is present, knowing that the latter are
-                          ///< not implemented yet)
-    uint16_t m_duration;  ///< duration
-    Mac48Address m_addr1; ///< address 1
-    Mac48Address m_addr2; ///< address 2
-    Mac48Address m_addr3; ///< address 3
-    uint8_t m_seqFrag;    ///< sequence fragment
-    uint16_t m_seqSeq;    ///< sequence sequence
-    Mac48Address m_addr4; ///< address 4
-    uint8_t m_qosTid;     ///< QoS TID
-    uint8_t m_qosEosp;    ///< QoS EOSP
-    uint8_t m_qosAckPolicy; ///< QoS Ack policy
-    uint8_t m_amsduPresent; ///< A-MSDU present
-    uint8_t m_qosStuff;     ///< QoS stuff
+    uint8_t m_ctrlType{0};            ///< control type
+    uint8_t m_ctrlSubtype{0};         ///< control subtype
+    uint8_t m_ctrlToDs{0};            ///< control to DS
+    uint8_t m_ctrlFromDs{0};          ///< control from DS
+    uint8_t m_ctrlMoreFrag{0};        ///< control more fragments
+    uint8_t m_ctrlRetry{0};           ///< control retry
+    uint8_t m_ctrlPowerManagement{0}; ///< control power management
+    uint8_t m_ctrlMoreData{0};        ///< control more data
+    uint8_t m_ctrlWep{0};             ///< control WEP
+    uint8_t m_ctrlOrder{0}; ///< control order (set to 1 for QoS Data and Management frames to
+                            ///< signify that HT/VHT/HE control field is present, knowing that the
+                            ///< latter are not implemented yet)
+    uint16_t m_duration{0}; ///< duration
+    Mac48Address m_addr1{}; ///< address 1
+    Mac48Address m_addr2{}; ///< address 2
+    Mac48Address m_addr3{}; ///< address 3
+    uint8_t m_seqFrag{0};   ///< sequence fragment
+    uint16_t m_seqSeq{0};   ///< sequence sequence
+    Mac48Address m_addr4{}; ///< address 4
+    uint8_t m_qosTid{0};    ///< QoS TID
+    uint8_t m_qosEosp{0};   ///< QoS EOSP
+    uint8_t m_qosAckPolicy{0}; ///< QoS Ack policy
+    uint8_t m_amsduPresent{0}; ///< A-MSDU present
+    uint8_t m_qosStuff{0};     ///< QoS stuff
 };
 
 } // namespace ns3
