@@ -132,10 +132,11 @@ void
 AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << +linkId);
-    const WifiMacHeader* hdr = &mpdu->GetHeader();
-    NS_ASSERT(!hdr->IsCtl());
-    Mac48Address from = hdr->GetAddr2();
-    Mac48Address to = hdr->GetAddr1();
+    const auto& hdr = mpdu->GetHeader();
+    NS_ASSERT(!hdr.IsCtl());
+    const auto from = hdr.GetAddr2();
+    const auto to = hdr.GetAddr1();
+    auto packet = mpdu->GetPacket();
     if (GetWifiRemoteStationManager()->IsBrandNew(from))
     {
         // In ad hoc mode, we assume that every destination supports all the rates we support.
@@ -167,16 +168,22 @@ AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         GetWifiRemoteStationManager()->AddAllSupportedModes(from);
         GetWifiRemoteStationManager()->RecordDisassociated(from);
     }
-    if (hdr->IsData())
+    if (hdr.IsData())
     {
-        if (hdr->IsQosData() && hdr->IsQosAmsdu())
+        if (hdr.IsFromDs() || hdr.IsToDs())
+        {
+            NS_LOG_LOGIC("Received data frame not part of an ad-hoc network: ignore");
+            NotifyRxDrop(packet);
+            return;
+        }
+        if (hdr.IsQosData() && hdr.IsQosAmsdu())
         {
             NS_LOG_DEBUG("Received A-MSDU from" << from);
             DeaggregateAmsduAndForward(mpdu);
         }
         else
         {
-            ForwardUp(mpdu->GetPacket(), from, to);
+            ForwardUp(packet, from, to);
         }
         return;
     }
