@@ -24,9 +24,6 @@
 namespace ns3
 {
 
-/// HE SIG-B Content Channels
-constexpr size_t WIFI_MAX_NUM_HE_SIGB_CONTENT_CHANNELS = 2;
-
 class WifiPsdu;
 
 /**
