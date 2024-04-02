@@ -1174,7 +1174,6 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             auto emlsrManager = m_staMac->GetEmlsrManager();
             NS_ASSERT(emlsrManager);
 
-            emlsrManager->NotifyIcfReceived(m_linkId);
             icfReceived = true;
 
             // we just got involved in a DL TXOP. Check if we are still involved in the TXOP in a
@@ -1205,6 +1204,11 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     }
 
     HeFrameExchangeManager::ReceiveMpdu(mpdu, rxSignalInfo, txVector, inAmpdu);
+
+    if (icfReceived)
+    {
+        m_staMac->GetEmlsrManager()->NotifyIcfReceived(m_linkId);
+    }
 }
 
 bool

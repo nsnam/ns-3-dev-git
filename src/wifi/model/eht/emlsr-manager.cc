@@ -388,13 +388,9 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
     auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
     auto auxPhy = m_staMac->GetWifiPhy(linkId);
 
-    if (m_staMac->GetWifiPhy(linkId) == mainPhy)
+    if (m_staMac->GetWifiPhy(linkId) != mainPhy)
     {
-        // nothing to do, we received an ICF from the main PHY
-        return;
-    }
-
-    Simulator::ScheduleNow([=, this]() {
+        // an aux PHY received the ICF
         SwitchMainPhy(linkId,
                       true, // channel switch should occur instantaneously
                       RESET_BACKOFF,
@@ -403,9 +399,9 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
         // aux PHY received the ICF but main PHY will send the response
         auto uid = auxPhy->GetPreviouslyRxPpduUid();
         mainPhy->SetPreviouslyRxPpduUid(uid);
+    }
 
-        DoNotifyIcfReceived(linkId);
-    });
+    DoNotifyIcfReceived(linkId);
 }
 
 Time
