@@ -21,6 +21,7 @@
 
 #include "warnings.h"
 
+#include <tuple>
 #include <type_traits>
 
 /**
