@@ -516,7 +516,9 @@ def load_modules():
     # To maintain compatibility with pybindgen scripts,
     # we set an attribute per module that just redirects to the upper object
     for module in modules:
-        setattr(cppyy.gbl.ns3, module.replace("-", "_"), cppyy.gbl.ns3)
+        moduleNamespace = module.replace("-", "_")
+        if moduleNamespace not in dir(cppyy.gbl.ns3):
+            setattr(cppyy.gbl.ns3, moduleNamespace, cppyy.gbl.ns3)
 
     # Set up a few tricks
     cppyy.cppdef(
