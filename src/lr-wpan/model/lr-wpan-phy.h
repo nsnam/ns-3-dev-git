@@ -599,7 +599,7 @@ class LrWpanPhy : public SpectrumPhy
 
     /**
      * Finish the transmission of a frame. This is called at the end of a frame
-     * transmission, applying possibly pending PHY state changes and fireing the
+     * transmission, applying possibly pending PHY state changes and firing the
      * appropriate trace sources and confirm callbacks to the MAC.
      */
     void EndTx();
@@ -612,7 +612,7 @@ class LrWpanPhy : public SpectrumPhy
 
     /**
      * Finish the reception of a frame. This is called at the end of a frame
-     * reception, applying possibly pending PHY state changes and fireing the
+     * reception, applying possibly pending PHY state changes and firing the
      * appropriate trace sources and indication callbacks to the MAC. A frame
      * destroyed by noise/interference is dropped here, but not during reception.
      * This method is also called for every packet which only contributes to

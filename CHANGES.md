@@ -32,6 +32,7 @@ Applications have a new Attribute to set the IPv4 ToS field.
 * (wifi) Deprecated `WIFI_TID_TO_LINK_MAPPING_{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`. They have been replaced by `WifiTidToLinkMappingNegSupport::{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`, respectively.
 * (wifi) Deprecated `{IDLE, CCA_BUSY, TX, RX, SWITCHING, SLEEP, OFF}`. They have been replaced by `WifiPhyState::{IDLE, CCA_BUSY, TX, RX, SWITCHING, SLEEP, OFF}`, respectively.
 * `LrWpanMacPibAttributeIdentifier` attribute ids are now standard compliant.
+* Multiple new identifiers added to `LrWpanMacPibAttributeIdentifier`.
 
 ### Changes to build system
 

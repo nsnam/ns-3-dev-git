@@ -253,14 +253,48 @@ struct MlmePollRequestParams
  */
 enum LrWpanMacPibAttributeIdentifier
 {
-    pCurrentChannel = 0x00,        //!< RF channel used for transmissions and receptions.
-    pCurrentPage = 0x04,           //!< The current channel page.
+    pCurrentChannel = 0x00,      //!< RF channel used for transmissions and receptions.
+    pCurrentPage = 0x04,         //!< The current channel page.
+    macAckWaitDuration = 0x40,   //!< Maximum number of symbols to wait for an acknowledgment.
+    macAssociationPermit = 0x41, //!< Indication of whether a coordinator is allowing association.
+    macAutoRequest = 0x42, //!< Indication of whether a device automatically sends a data request
+                           //!< command if its address is listed in a beacon frame.
+    macBattLifeExt = 0x43, //!< Indication of whether BLE, through the reduction of coordinator
+                           //!< receiver operation time during the CAP, is enabled.
+    macBattLifeExtPeriods = 0x44,  //!< In BLE mode, the number of backoff periods during which the
+                                   //!< the receiver is enabled after the IFS following a beacon.
     macBeaconPayload = 0x45,       //!< The contents of the beacon payload.
     macBeaconPayloadLength = 0x46, //!< The length in octets of the beacon payload.
-    macExtendedAddress = 3, //!< The extended address of the device (64 bit address) (No compliant).
+    macBeaconOrder = 0x47,  //!< Specification of how often the coordinator transmits its beacon.
+    macBeaconTxTime = 0x48, //!< The time that the device transmitted its last beacome frame,
+                            //!< in symbol periods.
+    macBsn = 0x49,          //!< The sequence number added to the transmitted beacon frame.
+    macCoordExtendedAddress = 0x4a, //!< The 64-bit address of the coordinator through which
+                                    //!< the device is associated.
+    macCoordShortAddress = 0x4b, //!< The 16-bit short address assigned to the coordinator through
+                                 //!< which the device is associated. 0xFFFE = Ext address mode
+                                 //!< 0xFFFF = Unknown.
+    macDSN = 0x4c, //!< The sequence number added to the transmitted data or MAC command frame.
+    macGTSPermit = 0x4d,      //!< True if the PAN coordinator is to accept GTS requests.
+    macMaxCSMABackoff = 0x4e, //!< The maximum number of backoffs the CSMA-CA algorithm
+                              //!< will attempt before declaring a channel access failure.
+    macMinBE = 0x4f, //!< The minimum value of the backoff exponent (BE) in the CSMA-CA algorithm.
+    macExtendedAddress = 3, //!< The extended address of the device (64 bit address)(No compliant).
     macPanId = 0x50,        //!< The 16-bit identifier of the Personal Area Network (PAN).
-    macRxOnWhenIdle = 0x52, //!< Indication of whether the MAC is enabled during idle periods.
-    macShortAddress = 0x53, //!< The short address of the device (16 bit address).
+    macPromiscuousMode = 0x51, //!< Indication of whether the MAC sublayer is in a promiscuous
+                               //!< mode. True indicates that the MAC sublayer accepts all frames.
+    macRxOnWhenIdle = 0x52,    //!< Indication of whether the MAC is enabled during idle periods.
+    macShortAddress = 0x53,    //!< The short address of the device (16 bit address).
+    macSuperframeOrder = 0x54, //!< The length of the active portion of the outgoing superframe,
+                               //!< including the beacon frame.
+    macTransactionPersistenceTime = 0x55, //!< The maximum time (in unit periods) that a
+                                          //!< transaction is stored by a coordinator and
+                                          //!< indicated in its beacon.
+    macMaxFrameRetries = 0x59,  //!< The maximum number of retries allowed after a transmission
+                                //!< failure.
+    macResponseWaitTime = 0x5a, //!< The maximum time in multiples of aBaseSuperframeDuration, a
+                                //!< device shall wait for a response command frame to be
+                                //!< available following a request command frame.
     unsupported = 255
     // TODO: complete other MAC pib attributes
 };
