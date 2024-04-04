@@ -23,6 +23,7 @@
 #include <vector>
 
 class EmlsrUlTxopTest;
+class EmlsrCcaBusyTest;
 
 namespace ns3
 {
@@ -51,6 +52,7 @@ class ChannelAccessManager : public Object
 {
     /// Allow test cases to access private members
     friend class ::EmlsrUlTxopTest;
+    friend class ::EmlsrCcaBusyTest;
 
   public:
     ChannelAccessManager();

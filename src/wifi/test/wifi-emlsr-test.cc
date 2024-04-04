@@ -4056,6 +4056,221 @@ EmlsrLinkSwitchTest::CheckResults()
     }
 }
 
+EmlsrCcaBusyTest::EmlsrCcaBusyTest(uint16_t auxPhyMaxChWidth)
+    : EmlsrOperationsTestBase(std::string("Check EMLSR link switching (auxPhyMaxChWidth=") +
+                              std::to_string(auxPhyMaxChWidth) + "MHz )"),
+      m_auxPhyMaxChWidth(auxPhyMaxChWidth),
+      m_channelSwitchDelay(MicroSeconds(75)),
+      m_currMainPhyLinkId(0),
+      m_nextMainPhyLinkId(0)
+{
+    m_nEmlsrStations = 1;
+    m_nNonEmlsrStations = 1;
+    m_linksToEnableEmlsrOn = {0, 1, 2}; // enable EMLSR on all links right after association
+    m_mainPhyId = 1;
+    m_establishBaUl = true;
+    m_duration = Seconds(1.0);
+    m_transitionDelay = {MicroSeconds(128)};
+}
+
+void
+EmlsrCcaBusyTest::DoRun()
+{
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    Simulator::Destroy();
+}
+
+void
+EmlsrCcaBusyTest::DoSetup()
+{
+    Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(true));
+    Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth", UintegerValue(m_auxPhyMaxChWidth));
+    Config::SetDefault("ns3::EmlsrManager::AuxPhyMaxModClass", StringValue("EHT"));
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(m_channelSwitchDelay));
+
+    EmlsrOperationsTestBase::DoSetup();
+
+    // use channels of different widths
+    for (auto mac : std::initializer_list<Ptr<WifiMac>>{m_apMac, m_staMacs[0], m_staMacs[1]})
+    {
+        mac->GetWifiPhy(0)->SetOperatingChannel(
+            WifiPhy::ChannelTuple{4, 40, WIFI_PHY_BAND_2_4GHZ, 0});
+        mac->GetWifiPhy(1)->SetOperatingChannel(
+            WifiPhy::ChannelTuple{58, 80, WIFI_PHY_BAND_5GHZ, 0});
+        mac->GetWifiPhy(2)->SetOperatingChannel(
+            WifiPhy::ChannelTuple{79, 160, WIFI_PHY_BAND_6GHZ, 0});
+    }
+}
+
+void
+EmlsrCcaBusyTest::TransmitPacketToAp(uint8_t linkId)
+{
+    m_staMacs[1]->GetDevice()->GetNode()->AddApplication(GetApplication(UPLINK, 1, 1, 2000));
+
+    // force the transmission of the packet to happen now on the given link.
+    // Multiple ScheduleNow calls are needed because Node::AddApplication() schedules a call to
+    // Application::Initialize(), which schedules a call to Application::StartApplication(), which
+    // schedules a call to PacketSocketClient::Send(), which finally generates the packet
+    Simulator::ScheduleNow([=, this]() {
+        Simulator::ScheduleNow([=, this]() {
+            Simulator::ScheduleNow([=, this]() {
+                m_staMacs[1]->GetFrameExchangeManager(linkId)->StartTransmission(
+                    m_staMacs[1]->GetQosTxop(AC_BE),
+                    m_staMacs[1]->GetWifiPhy(linkId)->GetChannelWidth());
+            });
+        });
+    });
+
+    // check that the other MLD started transmitting on the correct link
+    Simulator::Schedule(TimeStep(1), [=, this]() {
+        NS_TEST_EXPECT_MSG_EQ(m_staMacs[1]->GetWifiPhy(linkId)->IsStateTx(),
+                              true,
+                              "At time " << Simulator::Now().As(Time::NS)
+                                         << ", other MLD did not start transmitting on link "
+                                         << +linkId);
+    });
+}
+
+void
+EmlsrCcaBusyTest::StartTraffic()
+{
+    auto currMainPhyLinkId = m_staMacs[0]->GetLinkForPhy(m_mainPhyId);
+    NS_TEST_ASSERT_MSG_EQ(currMainPhyLinkId.has_value(),
+                          true,
+                          "Main PHY is not operating on any link");
+    m_currMainPhyLinkId = *currMainPhyLinkId;
+    m_nextMainPhyLinkId = (m_currMainPhyLinkId + 1) % 2;
+
+    // request the main PHY to switch to another link
+    m_staMacs[0]->GetEmlsrManager()->SwitchMainPhy(m_nextMainPhyLinkId,
+                                                   false,
+                                                   EmlsrManager::DONT_RESET_BACKOFF,
+                                                   EmlsrManager::DONT_REQUEST_ACCESS);
+
+    // the other MLD transmits a packet to the AP
+    TransmitPacketToAp(m_nextMainPhyLinkId);
+
+    // schedule another packet transmission slightly (10 us) before the end of aux PHY switch
+    Simulator::Schedule(m_channelSwitchDelay - MicroSeconds(10),
+                        &EmlsrCcaBusyTest::TransmitPacketToAp,
+                        this,
+                        m_currMainPhyLinkId);
+
+    // first checkpoint is after that the preamble of the PPDU has been received
+    Simulator::Schedule(MicroSeconds(8), &EmlsrCcaBusyTest::CheckPoint1, this);
+}
+
+/**
+ *                               ┌───────────────┐
+ *  [link X]                     │  other to AP  │CP3
+ * ──────────────────────────────┴───────────────┴──────────────────────────────────────────────
+ *  |------ main PHY ------|                  |------------------- aux PHY ---------------------
+ *                         .\_              _/
+ *                         .  \_          _/
+ *                         .    \_      _/
+ *                         .      \_  _/
+ *  [link Y]               . CP1    \/ CP2
+ *                         .┌───────────────┐
+ *                         .│  other to AP  │
+ * ─────────────────────────┴───────────────┴────────────────────────────────────────────────────
+ *  |------------ aux PHY ----------|---------------------- main PHY ----------------------------
+ *
+ */
+
+void
+EmlsrCcaBusyTest::CheckPoint1()
+{
+    // first checkpoint is after that the preamble of the first PPDU has been received
+    auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
+
+    // 1. Main PHY is switching
+    NS_TEST_EXPECT_MSG_EQ(mainPhy->IsStateSwitching(), true, "Main PHY is not switching");
+
+    auto auxPhy = m_staMacs[0]->GetWifiPhy(m_nextMainPhyLinkId);
+    NS_TEST_EXPECT_MSG_NE(mainPhy, auxPhy, "Main PHY is operating on an unexpected link");
+
+    // 2. Aux PHY is receiving the PHY header
+    NS_TEST_EXPECT_MSG_EQ(auxPhy->IsReceivingPhyHeader(),
+                          true,
+                          "Aux PHY is not receiving a PHY header");
+
+    // 3. Main PHY dropped the preamble because it is switching
+    NS_TEST_EXPECT_MSG_EQ(mainPhy->IsReceivingPhyHeader(),
+                          false,
+                          "Main PHY is receiving a PHY header");
+
+    // 4. Channel access manager on destination link (Y) has been notified of CCA busy, but not
+    // until the end of transmission (main PHY dropped the preamble and notified CCA busy until
+    // end of transmission but the channel access manager on link Y does not yet have a listener
+    // attached to the main PHY; aux PHY notified CCA busy until the end of the PHY header field
+    // being received)
+    const auto caManager = m_staMacs[0]->GetChannelAccessManager(m_nextMainPhyLinkId);
+    const auto endTxTime = m_staMacs[1]->GetChannelAccessManager(m_nextMainPhyLinkId)->m_lastTxEnd;
+    NS_TEST_ASSERT_MSG_EQ(caManager->m_lastBusyEnd.contains(WIFI_CHANLIST_PRIMARY),
+                          true,
+                          "No CCA information for primary20 channel");
+    NS_TEST_EXPECT_MSG_GT_OR_EQ(
+        caManager->m_lastBusyEnd[WIFI_CHANLIST_PRIMARY],
+        Simulator::Now(),
+        "ChannelAccessManager on destination link not notified of CCA busy");
+    NS_TEST_EXPECT_MSG_LT(
+        caManager->m_lastBusyEnd[WIFI_CHANLIST_PRIMARY],
+        endTxTime,
+        "ChannelAccessManager on destination link notified of CCA busy until end of transmission");
+
+    // second checkpoint is after that the main PHY completed the link switch
+    Simulator::Schedule(mainPhy->GetDelayUntilIdle() + TimeStep(1),
+                        &EmlsrCcaBusyTest::CheckPoint2,
+                        this);
+}
+
+void
+EmlsrCcaBusyTest::CheckPoint2()
+{
+    // second checkpoint is after that the main PHY completed the link switch. The channel access
+    // manager on destination link (Y) is expected to be notified by the main PHY that medium is
+    // busy until the end of the ongoing transmission
+    const auto caManager = m_staMacs[0]->GetChannelAccessManager(m_nextMainPhyLinkId);
+    const auto endTxTime = m_staMacs[1]->GetChannelAccessManager(m_nextMainPhyLinkId)->m_lastTxEnd;
+    NS_TEST_ASSERT_MSG_EQ(caManager->m_lastBusyEnd.contains(WIFI_CHANLIST_PRIMARY),
+                          true,
+                          "No CCA information for primary20 channel");
+    NS_TEST_EXPECT_MSG_GT_OR_EQ(
+        caManager->m_lastBusyEnd[WIFI_CHANLIST_PRIMARY],
+        Simulator::Now(),
+        "ChannelAccessManager on destination link not notified of CCA busy");
+    NS_TEST_EXPECT_MSG_GT_OR_EQ(caManager->m_lastBusyEnd[WIFI_CHANLIST_PRIMARY],
+                                endTxTime,
+                                "ChannelAccessManager on destination link not notified of CCA busy "
+                                "until end of transmission");
+
+    // third checkpoint is after that the aux PHY completed the link switch
+    Simulator::Schedule(m_channelSwitchDelay, &EmlsrCcaBusyTest::CheckPoint3, this);
+}
+
+void
+EmlsrCcaBusyTest::CheckPoint3()
+{
+    // third checkpoint is after that the aux PHY completed the link switch. The channel access
+    // manager on source link (X) is expected to be notified by the aux PHY that medium is
+    // busy until the end of the ongoing transmission (even if the aux PHY was not listening to
+    // link X when transmission started, its interface on link X recorded the transmission)
+    const auto caManager = m_staMacs[0]->GetChannelAccessManager(m_currMainPhyLinkId);
+    const auto endTxTime = m_staMacs[1]->GetChannelAccessManager(m_currMainPhyLinkId)->m_lastTxEnd;
+    NS_TEST_ASSERT_MSG_EQ(caManager->m_lastBusyEnd.contains(WIFI_CHANLIST_PRIMARY),
+                          true,
+                          "No CCA information for primary20 channel");
+    NS_TEST_EXPECT_MSG_GT_OR_EQ(caManager->m_lastBusyEnd[WIFI_CHANLIST_PRIMARY],
+                                Simulator::Now(),
+                                "ChannelAccessManager on source link not notified of CCA busy");
+    NS_TEST_EXPECT_MSG_GT_OR_EQ(caManager->m_lastBusyEnd[WIFI_CHANLIST_PRIMARY],
+                                endTxTime,
+                                "ChannelAccessManager on source link not notified of CCA busy "
+                                "until end of transmission");
+}
+
 WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     : TestSuite("wifi-emlsr", Type::UNIT)
 {
@@ -4107,6 +4322,9 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
             }
         }
     }
+
+    AddTestCase(new EmlsrCcaBusyTest(20), TestCase::Duration::QUICK);
+    AddTestCase(new EmlsrCcaBusyTest(80), TestCase::Duration::QUICK);
 }
 
 static WifiEmlsrTestSuite g_wifiEmlsrTestSuite; ///< the test suite

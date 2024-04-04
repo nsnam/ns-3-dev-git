@@ -19,6 +19,8 @@
 #include <optional>
 #include <set>
 
+class EmlsrCcaBusyTest;
+
 namespace ns3
 {
 
@@ -34,6 +36,9 @@ class WifiMpdu;
  */
 class EmlsrManager : public Object
 {
+    /// Allow test cases to access private members
+    friend class ::EmlsrCcaBusyTest;
+
   public:
     /**
      * \brief Get the type ID.

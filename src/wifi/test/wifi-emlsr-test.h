@@ -781,4 +781,70 @@ class WifiEmlsrTestSuite : public TestSuite
     WifiEmlsrTestSuite();
 };
 
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Test CCA busy notifications on EMLSR clients.
+ *
+ * SwitchAuxPhy is set to true, so that the aux PHY starts switching when the main PHY switch is
+ * completed.
+ *
+ * - Main PHY switches to a link on which an aux PHY is operating. Right after the start of the
+ *   channel switch, the AP transmits a frame to another device on the aux PHY link. Verify that,
+ *   once the main PHY is operating on the new link, the channel access manager on that link is
+ *   notified of CCA busy until the end of the transmission
+ * - When the main PHY switch is completed, the aux PHY switches to a link on which no PHY is
+ *   operating. Before the aux PHY starts switching, the AP starts transmitting a frame to another
+ *   device on the link on which no PHY is operating. Verify that, once the aux PHY is operating
+ *   on the new link, the channel access manager on that link is notified of CCA busy until the
+ *   end of the transmission
+ */
+class EmlsrCcaBusyTest : public EmlsrOperationsTestBase
+{
+  public:
+    /**
+     * Constructor
+     *
+     * \param auxPhyMaxChWidth max channel width (MHz) supported by aux PHYs
+     */
+    EmlsrCcaBusyTest(uint16_t auxPhyMaxChWidth);
+
+    ~EmlsrCcaBusyTest() override = default;
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+
+  private:
+    void StartTraffic() override;
+
+    /**
+     * Make the other MLD transmit a packet to the AP on the given link.
+     *
+     * \param linkId the ID of the given link
+     */
+    void TransmitPacketToAp(uint8_t linkId);
+
+    /**
+     * Perform checks after that the preamble of the first PPDU has been received.
+     */
+    void CheckPoint1();
+
+    /**
+     * Perform checks after that the main PHY completed the link switch.
+     */
+    void CheckPoint2();
+
+    /**
+     * Perform checks after that the aux PHY completed the link switch.
+     */
+    void CheckPoint3();
+
+    uint16_t m_auxPhyMaxChWidth; //!< max channel width (MHz) supported by aux PHYs
+    Time m_channelSwitchDelay;   //!< the PHY channel switch delay
+    uint8_t m_currMainPhyLinkId; //!< the ID of the link the main PHY switches from
+    uint8_t m_nextMainPhyLinkId; //!< the ID of the link the main PHY switches to
+};
+
 #endif /* WIFI_EMLSR_TEST_H */
