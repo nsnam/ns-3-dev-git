@@ -1445,6 +1445,12 @@ class WifiPhy : public Object
     Ptr<const WifiPsdu> GetAddressedPsduInPpdu(Ptr<const WifiPpdu> ppdu) const;
 
     /**
+     * Method that can be overridden by subclasses to perform operations after the channel is
+     * actually switched but before the MAC is notified of the channel switch.
+     */
+    virtual void FinalizeChannelSwitch() = 0;
+
+    /**
      * The trace source fired when a packet begins the transmission process on
      * the medium.
      *

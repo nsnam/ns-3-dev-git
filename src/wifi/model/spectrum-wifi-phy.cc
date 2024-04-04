@@ -98,7 +98,9 @@ SpectrumWifiPhy::GetTypeId()
 
 SpectrumWifiPhy::SpectrumWifiPhy()
     : m_spectrumPhyInterfaces{},
-      m_currentSpectrumPhyInterface{nullptr}
+      m_currentSpectrumPhyInterface{nullptr},
+      m_frequencyBeforeSwitch{0},
+      m_widthBeforeSwitch{0}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -291,12 +293,18 @@ void
 SpectrumWifiPhy::DoChannelSwitch()
 {
     NS_LOG_FUNCTION(this);
-    const auto frequencyBefore = GetOperatingChannel().IsSet() ? GetFrequency() : 0;
-    const auto widthBefore = GetOperatingChannel().IsSet() ? GetChannelWidth() : 0;
+    m_frequencyBeforeSwitch = GetOperatingChannel().IsSet() ? GetFrequency() : 0;
+    m_widthBeforeSwitch = GetOperatingChannel().IsSet() ? GetChannelWidth() : 0;
     WifiPhy::DoChannelSwitch();
+}
+
+void
+SpectrumWifiPhy::FinalizeChannelSwitch()
+{
+    NS_LOG_FUNCTION(this);
     const auto frequencyAfter = GetFrequency();
     const auto widthAfter = GetChannelWidth();
-    if ((frequencyBefore == frequencyAfter) && (widthBefore == widthAfter))
+    if ((m_frequencyBeforeSwitch == frequencyAfter) && (m_widthBeforeSwitch == widthAfter))
     {
         NS_LOG_DEBUG("Same RF channel as before, do nothing");
         if (IsInitialized())
@@ -349,10 +357,12 @@ SpectrumWifiPhy::DoChannelSwitch()
 
     if (IsInitialized())
     {
-        SwitchMaybeToCcaBusy(nullptr);
+        NotifyChannelSwitched();
     }
-
-    Simulator::ScheduleNow(&SpectrumWifiPhy::NotifyChannelSwitched, this);
+    else
+    {
+        Simulator::ScheduleNow(&SpectrumWifiPhy::NotifyChannelSwitched, this);
+    }
 }
 
 void

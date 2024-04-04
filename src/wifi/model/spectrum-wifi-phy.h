@@ -196,6 +196,8 @@ class SpectrumWifiPhy : public WifiPhy
                                        //!< reasons)
 
   private:
+    void FinalizeChannelSwitch() override;
+
     /**
      * Perform run-time spectrum model change
      * \param spectrumPhyInterface the spectrum PHY interface for which the spectrum model should be
@@ -284,6 +286,8 @@ class SpectrumWifiPhy : public WifiPhy
     bool m_disableWifiReception;           //!< forces this PHY to fail to sync on any signal
     bool m_trackSignalsInactiveInterfaces; //!< flag whether signals coming from inactive spectrum
                                            //!< PHY interfaces are tracked
+    uint16_t m_frequencyBeforeSwitch;      //!< center frequency before channel switch
+    ChannelWidthMhz m_widthBeforeSwitch;   //!< channel width before channel switch
 
     TracedCallback<Ptr<const SpectrumSignalParameters>, uint32_t, double, Time>
         m_signalCb; //!< Signal callback

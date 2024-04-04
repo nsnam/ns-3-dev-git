@@ -1299,6 +1299,8 @@ WifiPhy::DoChannelSwitch()
         ConfigureStandard(m_standard);
     }
 
+    FinalizeChannelSwitch();
+
     if (IsInitialized())
     {
         // notify channel switching
@@ -1310,6 +1312,7 @@ WifiPhy::DoChannelSwitch()
          * state are added to the event list and are employed later to figure
          * out the state of the medium after the switching.
          */
+        SwitchMaybeToCcaBusy(nullptr);
     }
 }
 

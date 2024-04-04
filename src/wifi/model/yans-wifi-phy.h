@@ -98,6 +98,8 @@ class YansWifiPhy : public WifiPhy
     void DoDispose() override;
 
   private:
+    void FinalizeChannelSwitch() override;
+
     Ptr<YansWifiChannel> m_channel; //!< YansWifiChannel that this YansWifiPhy is connected to
 
     TracedCallback<Ptr<const WifiPpdu>, double, Time>

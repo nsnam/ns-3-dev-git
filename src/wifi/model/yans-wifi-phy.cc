@@ -137,4 +137,10 @@ YansWifiPhy::ConvertIndicesToFrequencies(const WifiSpectrumBandIndices& /*indice
     return {0, 0};
 }
 
+void
+YansWifiPhy::FinalizeChannelSwitch()
+{
+    NS_LOG_FUNCTION(this);
+}
+
 } // namespace ns3
