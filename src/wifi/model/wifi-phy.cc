@@ -484,6 +484,11 @@ void
 WifiPhy::RegisterListener(const std::shared_ptr<WifiPhyListener>& listener)
 {
     m_state->RegisterListener(listener);
+    if (IsInitialized())
+    {
+        // provide CCA busy information upon registering a PHY listener
+        SwitchMaybeToCcaBusy(nullptr);
+    }
 }
 
 void

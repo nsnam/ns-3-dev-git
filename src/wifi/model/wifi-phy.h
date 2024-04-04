@@ -86,7 +86,7 @@ class WifiPhy : public Object
      * \param listener the new listener
      *
      * Add the input listener to the list of objects to be notified of
-     * PHY-level events.
+     * PHY-level events. The input listener is notified of CCA busy information.
      */
     void RegisterListener(const std::shared_ptr<WifiPhyListener>& listener);
     /**

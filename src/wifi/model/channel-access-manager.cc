@@ -246,19 +246,24 @@ ChannelAccessManager::SetupPhyListener(Ptr<WifiPhy> phy)
 {
     NS_LOG_FUNCTION(this << phy);
 
-    if (auto phyListener = GetPhyListener(phy))
+    auto phyListener = GetPhyListener(phy);
+
+    if (phyListener)
     {
         // a PHY listener for the given PHY already exists, it must be inactive
         NS_ASSERT_MSG(!phyListener->IsActive(),
                       "There is already an active listener registered for given PHY");
         NS_ASSERT_MSG(!m_phy, "Cannot reactivate a listener if another PHY is active");
         phyListener->SetActive(true);
+        // if a PHY listener already exists, the PHY was disconnected and now reconnected to the
+        // channel access manager; unregister the listener and register again (below) to get
+        // updated CCA busy information
+        phy->UnregisterListener(phyListener);
     }
     else
     {
         phyListener = std::make_shared<PhyListener>(this);
         m_phyListeners.emplace(phy, phyListener);
-        phy->RegisterListener(phyListener);
     }
     if (m_phy)
     {
@@ -266,6 +271,7 @@ ChannelAccessManager::SetupPhyListener(Ptr<WifiPhy> phy)
     }
     m_phy = phy; // this is the new active PHY
     InitLastBusyStructs();
+    phy->RegisterListener(phyListener);
     if (phy->IsStateSwitching())
     {
         auto duration = phy->GetDelayUntilIdle();
