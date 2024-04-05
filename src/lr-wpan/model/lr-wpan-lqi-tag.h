@@ -24,6 +24,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 /**
  * \ingroup lr-wpan
@@ -83,5 +85,6 @@ class LrWpanLqiTag : public Tag
     uint8_t m_lqi;
 };
 
+} // namespace lrwpan
 } // namespace ns3
 #endif /* LR_WPAN_LQI_TAG_H */

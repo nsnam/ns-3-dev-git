@@ -25,6 +25,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_LOG_COMPONENT_DEFINE("LrWpanSpectrumValueHelper");
 
@@ -152,4 +154,5 @@ LrWpanSpectrumValueHelper::TotalAvgPower(Ptr<const SpectrumValue> psd, uint32_t 
     return totalAvgPower;
 }
 
+} // namespace lrwpan
 } // namespace ns3

@@ -65,6 +65,7 @@
 #include <vector>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 uint32_t g_packetsReceived = 0; //!< number of packets received
 

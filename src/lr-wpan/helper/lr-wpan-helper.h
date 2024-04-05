@@ -99,7 +99,7 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
      * \param phy the physical device
      * \param m the mobility model
      */
-    void AddMobility(Ptr<LrWpanPhy> phy, Ptr<MobilityModel> m);
+    void AddMobility(Ptr<lrwpan::LrWpanPhy> phy, Ptr<MobilityModel> m);
 
     /**
      * \brief Install a LrWpanNetDevice and the associated structures (e.g., channel) in the nodes.
@@ -137,14 +137,14 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
      * \param e the LrWpanPhyEnumeration
      * \return a string
      */
-    static std::string LrWpanPhyEnumerationPrinter(LrWpanPhyEnumeration e);
+    static std::string LrWpanPhyEnumerationPrinter(lrwpan::LrWpanPhyEnumeration e);
 
     /**
      * \brief Transform the LrWpanMacState enumeration into a printable string.
      * \param e the LrWpanMacState
      * \return a string
      */
-    static std::string LrWpanMacStatePrinter(LrWpanMacState e);
+    static std::string LrWpanMacStatePrinter(lrwpan::LrWpanMacState e);
 
     /**
      * Assign a fixed random variable stream number to the random variables

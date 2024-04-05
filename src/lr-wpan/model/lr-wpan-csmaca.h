@@ -33,6 +33,9 @@ namespace ns3
 
 class UniformRandomVariable;
 
+namespace lrwpan
+{
+
 /**
  * \ingroup lr-wpan
  *
@@ -331,6 +334,7 @@ class LrWpanCsmaCa : public Object
     bool m_coorDest;
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 // namespace ns-3

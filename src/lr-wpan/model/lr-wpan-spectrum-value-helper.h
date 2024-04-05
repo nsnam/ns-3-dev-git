@@ -26,6 +26,9 @@ namespace ns3
 
 class SpectrumValue;
 
+namespace lrwpan
+{
+
 /**
  * \ingroup lr-wpan
  *
@@ -76,6 +79,7 @@ class LrWpanSpectrumValueHelper
     double m_noiseFactor;
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /*  LR_WPAN_SPECTRUM_VALUE_HELPER_H */

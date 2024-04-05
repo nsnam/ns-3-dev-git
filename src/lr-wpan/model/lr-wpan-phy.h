@@ -35,8 +35,6 @@ namespace ns3
 
 class Packet;
 class SpectrumValue;
-class LrWpanErrorModel;
-struct LrWpanSpectrumSignalParameters;
 class MobilityModel;
 class SpectrumChannel;
 class SpectrumModel;
@@ -44,6 +42,12 @@ class AntennaModel;
 class NetDevice;
 class UniformRandomVariable;
 class ErrorModel;
+
+namespace lrwpan
+{
+
+class LrWpanErrorModel;
+struct LrWpanSpectrumSignalParameters;
 
 /**
  * \ingroup lr-wpan
@@ -962,6 +966,7 @@ class LrWpanPhy : public SpectrumPhy
     Ptr<ErrorModel> m_postReceptionErrorModel; //!< Error model for receive packet events
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_PHY_H */

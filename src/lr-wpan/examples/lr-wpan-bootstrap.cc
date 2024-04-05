@@ -49,6 +49,7 @@
 #include <iostream>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 NodeContainer nodes;
 NodeContainer coordinators;

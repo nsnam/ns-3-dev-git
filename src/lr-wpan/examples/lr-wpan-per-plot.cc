@@ -43,6 +43,7 @@
 #include <ns3/spectrum-module.h>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 uint32_t g_packetsReceived = 0; //!< number of packets received
 

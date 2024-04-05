@@ -45,6 +45,7 @@
 #include <iostream>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 void
 BeaconIndication(MlmeBeaconNotifyIndicationParams params)

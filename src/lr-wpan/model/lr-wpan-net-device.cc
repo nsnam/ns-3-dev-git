@@ -35,9 +35,10 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_LOG_COMPONENT_DEFINE("LrWpanNetDevice");
-
 NS_OBJECT_ENSURE_REGISTERED(LrWpanNetDevice);
 
 TypeId
@@ -559,4 +560,5 @@ LrWpanNetDevice::AssignStreams(int64_t stream)
     return (streamIndex - stream);
 }
 
+} // namespace lrwpan
 } // namespace ns3

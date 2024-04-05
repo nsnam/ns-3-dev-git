@@ -24,6 +24,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_LOG_COMPONENT_DEFINE("LrWpanMacBase");
 NS_OBJECT_ENSURE_REGISTERED(LrWpanMacBase);
@@ -117,4 +119,5 @@ LrWpanMacBase::SetMlmePollConfirmCallback(MlmePollConfirmCallback c)
     m_mlmePollConfirmCallback = c;
 }
 
+} // namespace lrwpan
 } // namespace ns3

@@ -171,9 +171,9 @@ TYPENAME(Ipv4L3Protocol::TxRxTracedCallback);
 TYPENAME(Ipv6L3Protocol::DropTracedCallback);
 TYPENAME(Ipv6L3Protocol::SentTracedCallback);
 TYPENAME(Ipv6L3Protocol::TxRxTracedCallback);
-TYPENAME(LrWpanMac::SentTracedCallback);
-TYPENAME(LrWpanMac::StateTracedCallback);
-TYPENAME(LrWpanPhy::StateTracedCallback);
+TYPENAME(lrwpan::LrWpanMac::SentTracedCallback);
+TYPENAME(lrwpan::LrWpanMac::StateTracedCallback);
+TYPENAME(lrwpan::LrWpanPhy::StateTracedCallback);
 TYPENAME(LteEnbMac::DlSchedulingTracedCallback);
 TYPENAME(LteEnbMac::UlSchedulingTracedCallback);
 TYPENAME(LteEnbPhy::ReportInterferenceTracedCallback);
@@ -382,11 +382,14 @@ TracedCallbackTypedefTestCase::DoRun()
 
     CHECK(Ipv6L3Protocol::TxRxTracedCallback, Ptr<const Packet>, Ptr<Ipv6>, uint32_t);
 
-    CHECK(LrWpanMac::SentTracedCallback, Ptr<const Packet>, uint8_t, uint8_t);
+    CHECK(lrwpan::LrWpanMac::SentTracedCallback, Ptr<const Packet>, uint8_t, uint8_t);
 
-    CHECK(LrWpanMac::StateTracedCallback, LrWpanMacState, LrWpanMacState);
+    CHECK(lrwpan::LrWpanMac::StateTracedCallback, lrwpan::LrWpanMacState, lrwpan::LrWpanMacState);
 
-    CHECK(LrWpanPhy::StateTracedCallback, Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration);
+    CHECK(lrwpan::LrWpanPhy::StateTracedCallback,
+          Time,
+          lrwpan::LrWpanPhyEnumeration,
+          lrwpan::LrWpanPhyEnumeration);
 
     CHECK(LteEnbMac::DlSchedulingTracedCallback,
           uint32_t,

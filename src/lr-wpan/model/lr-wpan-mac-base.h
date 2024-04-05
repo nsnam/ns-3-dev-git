@@ -32,6 +32,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 /**
  * \ingroup lr-wpan
@@ -975,6 +977,7 @@ class LrWpanMacBase : public Object
     MlmePollConfirmCallback m_mlmePollConfirmCallback;
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_MAC_BASE_H*/

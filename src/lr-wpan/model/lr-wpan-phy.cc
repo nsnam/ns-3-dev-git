@@ -45,9 +45,10 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_LOG_COMPONENT_DEFINE("LrWpanPhy");
-
 NS_OBJECT_ENSURE_REGISTERED(LrWpanPhy);
 
 /**
@@ -1910,4 +1911,5 @@ LrWpanPhy::SetPostReceptionErrorModel(const Ptr<ErrorModel> em)
     m_postReceptionErrorModel = em;
 }
 
+} // namespace lrwpan
 } // namespace ns3

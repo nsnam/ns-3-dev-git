@@ -23,6 +23,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 /**
  * \ingroup lr-wpan
@@ -58,7 +60,7 @@ class LrWpanErrorModel : public Object
      */
     double m_binomialCoefficients[17];
 };
-
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_ERROR_MODEL_H */

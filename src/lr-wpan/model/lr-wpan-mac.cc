@@ -44,6 +44,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_LOG_COMPONENT_DEFINE("LrWpanMac");
 NS_OBJECT_ENSURE_REGISTERED(LrWpanMac);
@@ -3862,4 +3864,5 @@ LrWpanMac::isTxAckReq()
     return macHdr.IsAckReq();
 }
 
+} // namespace lrwpan
 } // namespace ns3

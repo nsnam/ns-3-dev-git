@@ -30,6 +30,9 @@ namespace ns3
 
 class Packet;
 
+namespace lrwpan
+{
+
 /**
  * \ingroup lr-wpan
  *
@@ -120,6 +123,7 @@ class LrWpanMacTrailer : public Trailer
     bool m_calcFcs;
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_MAC_TRAILER_H */

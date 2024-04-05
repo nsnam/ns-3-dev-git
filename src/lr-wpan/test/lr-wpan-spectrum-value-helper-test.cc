@@ -24,6 +24,7 @@
 #include <cmath>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 /**
  * \ingroup lr-wpan-test

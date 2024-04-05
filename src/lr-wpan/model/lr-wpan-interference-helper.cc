@@ -25,6 +25,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_LOG_COMPONENT_DEFINE("LrWpanInterferenceHelper");
 
@@ -106,4 +108,5 @@ LrWpanInterferenceHelper::GetSignalPsd() const
     return m_signal->Copy();
 }
 
+} // namespace lrwpan
 } // namespace ns3

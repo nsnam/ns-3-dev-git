@@ -43,6 +43,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 /**
  * \ingroup lr-wpan
@@ -449,6 +451,7 @@ class LrWpanMacHeader : public Header
 
 }; // LrWpanMacHeader
 
-}; // namespace ns3
+} // namespace lrwpan
+} // namespace ns3
 
 #endif /* LR_WPAN_MAC_HEADER_H */

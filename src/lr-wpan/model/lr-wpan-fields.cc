@@ -24,6 +24,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 SuperframeField::SuperframeField()
 {
@@ -587,4 +589,5 @@ operator<<(std::ostream& os, const CapabilityField& capabilityField)
     return os;
 }
 
+} // namespace lrwpan
 } // namespace ns3

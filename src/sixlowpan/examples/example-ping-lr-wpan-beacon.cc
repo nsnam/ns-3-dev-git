@@ -29,6 +29,7 @@
 #include <fstream>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 static void
 DataSentMacConfirm(Ptr<LrWpanNetDevice> device, McpsDataConfirmParams params)

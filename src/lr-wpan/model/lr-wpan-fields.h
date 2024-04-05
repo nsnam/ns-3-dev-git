@@ -34,6 +34,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 /**
  * \ingroup lr-wpan
@@ -458,6 +460,7 @@ class CapabilityField
 
 std::ostream& operator<<(std::ostream& os, const CapabilityField& capabilityField);
 
-} // end namespace ns3
+} // namespace lrwpan
+} // namespace ns3
 
 #endif /* LR_WPAN_FIELDS_H */

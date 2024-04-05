@@ -1008,14 +1008,14 @@ AnimationInterface::LrWpanPhyTxBeginTrace(std::string context, Ptr<const Packet>
 
     Ptr<NetDevice> ndev = GetNetDeviceFromContext(context);
     NS_ASSERT(ndev);
-    Ptr<LrWpanNetDevice> netDevice = DynamicCast<LrWpanNetDevice>(ndev);
+    Ptr<lrwpan::LrWpanNetDevice> netDevice = DynamicCast<lrwpan::LrWpanNetDevice>(ndev);
 
     Ptr<Node> n = ndev->GetNode();
     NS_ASSERT(n);
 
     UpdatePosition(n);
 
-    LrWpanMacHeader hdr;
+    lrwpan::LrWpanMacHeader hdr;
     if (!p->PeekHeader(hdr))
     {
         NS_LOG_WARN("LrWpanMacHeader not present");

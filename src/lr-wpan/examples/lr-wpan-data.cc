@@ -37,6 +37,7 @@
 #include <iostream>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 /**
  * Function called when a Data indication is invoked

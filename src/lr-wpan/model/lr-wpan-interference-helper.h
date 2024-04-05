@@ -31,6 +31,9 @@ namespace ns3
 class SpectrumValue;
 class SpectrumModel;
 
+namespace lrwpan
+{
+
 /**
  * \ingroup lr-wpan
  *
@@ -120,6 +123,7 @@ class LrWpanInterferenceHelper : public SimpleRefCount<LrWpanInterferenceHelper>
     mutable bool m_dirty;
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_INTERFERENCE_HELPER_H */

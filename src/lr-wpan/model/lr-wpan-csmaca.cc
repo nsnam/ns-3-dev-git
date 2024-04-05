@@ -37,9 +37,10 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_LOG_COMPONENT_DEFINE("LrWpanCsmaCa");
-
 NS_OBJECT_ENSURE_REGISTERED(LrWpanCsmaCa);
 
 TypeId
@@ -571,4 +572,5 @@ LrWpanCsmaCa::GetBatteryLifeExtension() const
     return m_macBattLifeExt;
 }
 
+} // namespace lrwpan
 } // namespace ns3

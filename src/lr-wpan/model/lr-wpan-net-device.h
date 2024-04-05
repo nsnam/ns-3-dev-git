@@ -30,10 +30,14 @@
 namespace ns3
 {
 
-class LrWpanPhy;
-class LrWpanCsmaCa;
 class SpectrumChannel;
 class Node;
+
+namespace lrwpan
+{
+
+class LrWpanPhy;
+class LrWpanCsmaCa;
 
 /**
  * \ingroup lr-wpan
@@ -316,6 +320,7 @@ class LrWpanNetDevice : public NetDevice
     PseudoMacAddressMode_e m_pseudoMacMode;
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_NET_DEVICE_H */

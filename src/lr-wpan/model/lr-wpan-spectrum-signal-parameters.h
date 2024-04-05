@@ -27,6 +27,9 @@ namespace ns3
 
 class PacketBurst;
 
+namespace lrwpan
+{
+
 /**
  * \ingroup lr-wpan
  *
@@ -53,6 +56,7 @@ struct LrWpanSpectrumSignalParameters : public SpectrumSignalParameters
     Ptr<PacketBurst> packetBurst;
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_SPECTRUM_SIGNAL_PARAMETERS_H */

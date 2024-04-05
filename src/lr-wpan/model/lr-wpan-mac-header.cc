@@ -22,6 +22,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_OBJECT_ENSURE_REGISTERED(LrWpanMacHeader);
 
@@ -746,4 +748,5 @@ LrWpanMacHeader::Deserialize(Buffer::Iterator start)
     return i.GetDistanceFrom(start);
 }
 
+} // namespace lrwpan
 } // namespace ns3

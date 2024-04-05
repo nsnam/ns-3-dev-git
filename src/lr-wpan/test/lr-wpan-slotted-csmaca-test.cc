@@ -29,6 +29,7 @@
 #include <ns3/single-model-spectrum-channel.h>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 NS_LOG_COMPONENT_DEFINE("lr-wpan-slotted-csma-test");
 

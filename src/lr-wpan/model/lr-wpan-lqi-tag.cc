@@ -23,6 +23,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_OBJECT_ENSURE_REGISTERED(LrWpanLqiTag);
 
@@ -93,4 +95,5 @@ LrWpanLqiTag::Get() const
     return m_lqi;
 }
 
+} // namespace lrwpan
 } // namespace ns3

@@ -22,6 +22,7 @@
 #include <iostream>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 int
 main(int argc, char* argv[])

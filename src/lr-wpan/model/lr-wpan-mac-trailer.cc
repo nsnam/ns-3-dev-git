@@ -25,6 +25,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_OBJECT_ENSURE_REGISTERED(LrWpanMacTrailer);
 
@@ -159,4 +161,5 @@ LrWpanMacTrailer::GenerateCrc16(uint8_t* data, int length)
     return accumulator;
 }
 
+} // namespace lrwpan
 } // namespace ns3

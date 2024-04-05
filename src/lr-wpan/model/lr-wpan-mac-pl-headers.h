@@ -28,6 +28,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 /**
  * \ingroup lr-wpan
@@ -239,6 +241,7 @@ class CommandPayloadHeader : public Header
     uint8_t m_assocStatus;         //!< Association Status (Association Response Command)
 };
 
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_MAC_PL_HEADERS_H */

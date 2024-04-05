@@ -23,6 +23,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_LOG_COMPONENT_DEFINE("LrWpanSpectrumSignalParameters");
 
@@ -46,4 +48,5 @@ LrWpanSpectrumSignalParameters::Copy() const
     return Create<LrWpanSpectrumSignalParameters>(*this);
 }
 
+} // namespace lrwpan
 } // namespace ns3

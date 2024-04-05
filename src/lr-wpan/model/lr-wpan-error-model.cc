@@ -24,9 +24,10 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 NS_LOG_COMPONENT_DEFINE("LrWpanErrorModel");
-
 NS_OBJECT_ENSURE_REGISTERED(LrWpanErrorModel);
 
 TypeId
@@ -76,5 +77,5 @@ LrWpanErrorModel::GetChunkSuccessRate(double snr, uint32_t nbits) const
     double retval = pow(1.0 - ber, nbits);
     return retval;
 }
-
+} // namespace lrwpan
 } // namespace ns3

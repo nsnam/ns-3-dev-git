@@ -39,8 +39,11 @@
 
 namespace ns3
 {
-
 class Packet;
+
+namespace lrwpan
+{
+
 class LrWpanCsmaCa;
 
 /**
@@ -1322,6 +1325,7 @@ class LrWpanMac : public LrWpanMacBase
      */
     EventId m_scanEnergyEvent;
 };
+} // namespace lrwpan
 } // namespace ns3
 
 #endif /* LR_WPAN_MAC_H */

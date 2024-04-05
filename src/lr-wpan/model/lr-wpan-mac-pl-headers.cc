@@ -24,6 +24,8 @@
 
 namespace ns3
 {
+namespace lrwpan
+{
 
 /***********************************************************
  *                Beacon MAC Payload
@@ -448,4 +450,5 @@ CommandPayloadHeader::GetPanId() const
     return m_panid;
 }
 
+} // namespace lrwpan
 } // namespace ns3

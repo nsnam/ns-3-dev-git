@@ -27,6 +27,7 @@
 #include <ns3/test.h>
 
 using namespace ns3;
+using namespace ns3::lrwpan;
 
 /**
  * Function called when a the PHY state change is confirmed
