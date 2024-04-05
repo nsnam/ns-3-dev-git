@@ -21,6 +21,7 @@
 
 #include "warnings.h"
 
+#include <functional>
 #include <tuple>
 #include <type_traits>
 
@@ -148,9 +149,7 @@ MakeEvent(MEM mem_ptr, OBJ obj, Ts... args)
         EventMemberImpl() = delete;
 
         EventMemberImpl(OBJ obj, MEM function, Ts... args)
-            : m_obj(obj),
-              m_function(function),
-              m_arguments(args...)
+            : m_function(std::bind(function, obj, args...))
         {
         }
 
@@ -162,19 +161,10 @@ MakeEvent(MEM mem_ptr, OBJ obj, Ts... args)
       private:
         void Notify() override
         {
-            NS_WARNING_PUSH_MAYBE_UNINITIALIZED;
-            std::apply(
-                [this](Ts... args) {
-                    (internal::EventMemberImplObjTraits<OBJ>::GetReference(m_obj).*
-                     m_function)(args...);
-                },
-                m_arguments);
-            NS_WARNING_POP;
+            m_function();
         }
 
-        OBJ m_obj;
-        MEM m_function;
-        std::tuple<std::remove_reference_t<Ts>...> m_arguments;
+        std::function<void()> m_function;
     }* ev = new EventMemberImpl(obj, mem_ptr, args...);
 
     return ev;
