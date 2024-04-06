@@ -31,8 +31,11 @@ Applications have a new Attribute to set the IPv4 ToS field.
 * (core) In `TestSuite` class, deprecated `ALL`, `UNIT`, `SYSTEM`, `EXAMPLE` and `PERFORMANCE`. They have been replaced by `Type::ALL`, `Type::UNIT`, `Type::SYSTEM`, `Type::EXAMPLE` and `Type::PERFORMANCE`, respectively.
 * (wifi) Deprecated `WIFI_TID_TO_LINK_MAPPING_{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`. They have been replaced by `WifiTidToLinkMappingNegSupport::{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`, respectively.
 * (wifi) Deprecated `{IDLE, CCA_BUSY, TX, RX, SWITCHING, SLEEP, OFF}`. They have been replaced by `WifiPhyState::{IDLE, CCA_BUSY, TX, RX, SWITCHING, SLEEP, OFF}`, respectively.
-* `LrWpanMacPibAttributeIdentifier` attribute ids are now standard compliant.
-* Multiple new identifiers added to `LrWpanMacPibAttributeIdentifier`.
+* (lr-wpan) `LrWpanMacPibAttributeIdentifier` attribute ids are now standard compliant.
+* (lr-wpan) Multiple new identifiers added to `LrWpanMacPibAttributeIdentifier`.
+* (lr-wpan) Adds standard version comments to `MLME-GET.request` function.
+* (lr-wpan) In the MAC layer, renamed `m_selfExt` to the variable `m_macExtendedAddress` to make it consistent with the standard specification.
+
 
 ### Changes to build system
 

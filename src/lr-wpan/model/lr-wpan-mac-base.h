@@ -279,8 +279,11 @@ enum LrWpanMacPibAttributeIdentifier
     macMaxCSMABackoff = 0x4e, //!< The maximum number of backoffs the CSMA-CA algorithm
                               //!< will attempt before declaring a channel access failure.
     macMinBE = 0x4f, //!< The minimum value of the backoff exponent (BE) in the CSMA-CA algorithm.
-    macExtendedAddress = 3, //!< The extended address of the device (64 bit address)(No compliant).
-    macPanId = 0x50,        //!< The 16-bit identifier of the Personal Area Network (PAN).
+    macExtendedAddress = 0x6f, //!< The extended address of the device (64 bit address). The id
+                               //!< is not compliant for 2003 and 2006 versions, but this attribute
+                               //!< is later on added to the Pib attributes in 2011 and subsequent
+                               //!< editions of the standard.
+    macPanId = 0x50,           //!< The 16-bit identifier of the Personal Area Network (PAN).
     macPromiscuousMode = 0x51, //!< Indication of whether the MAC sublayer is in a promiscuous
                                //!< mode. True indicates that the MAC sublayer accepts all frames.
     macRxOnWhenIdle = 0x52,    //!< Indication of whether the MAC is enabled during idle periods.
@@ -758,9 +761,11 @@ class LrWpanMacBase : public Object
                                 Ptr<LrWpanMacPibAttributes> attribute) = 0;
 
     /**
-     * IEEE 802.15.4-2011, section 6.2.5.1
+     * IEEE 802.15.4-2006, section 7.1.6.1
      * MLME-GET.request
      * Request information about a given PIB attribute.
+     * Note: The PibAttributeIndex parameter is not included because
+     * attributes that represent tables are not supported.
      *
      * \param id the attribute identifier
      */

@@ -1167,7 +1167,7 @@ class LrWpanMac : public LrWpanMacBase
     /**
      * The extended 64 address (IEEE EUI-64) used by this MAC.
      */
-    Mac64Address m_selfExt;
+    Mac64Address m_macExtendedAddress;
 
     /**
      * The transmit queue used by the MAC.

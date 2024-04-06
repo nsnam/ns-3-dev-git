@@ -40,7 +40,7 @@
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT                                                                      \
-    std::clog << "[address " << m_shortAddress << " | " << m_selfExt << "] ";
+    std::clog << "[address " << m_shortAddress << " | " << m_macExtendedAddress << "] ";
 
 namespace ns3
 {
@@ -214,7 +214,7 @@ LrWpanMac::LrWpanMac()
     m_macCoordShortAddress = Mac16Address("ff:ff");
     m_macCoordExtendedAddress = Mac64Address("ff:ff:ff:ff:ff:ff:ff:ed");
     m_deviceCapability = DeviceType::FFD;
-    m_selfExt = Mac64Address::Allocate();
+    m_macExtendedAddress = Mac64Address::Allocate();
     m_macPromiscuousMode = false;
     m_macMaxFrameRetries = 3;
     m_retransmission = 0;
@@ -363,7 +363,7 @@ void
 LrWpanMac::SetExtendedAddress(Mac64Address address)
 {
     NS_LOG_FUNCTION(this << address);
-    m_selfExt = address;
+    m_macExtendedAddress = address;
 }
 
 Mac16Address
@@ -377,7 +377,7 @@ Mac64Address
 LrWpanMac::GetExtendedAddress() const
 {
     NS_LOG_FUNCTION(this);
-    return m_selfExt;
+    return m_macExtendedAddress;
 }
 
 void
@@ -976,7 +976,7 @@ LrWpanMac::MlmeGetRequest(LrWpanMacPibAttributeIdentifier id)
         attributes->macShortAddress = m_shortAddress;
         break;
     case macExtendedAddress:
-        attributes->macExtendedAddress = m_selfExt;
+        attributes->macExtendedAddress = m_macExtendedAddress;
         break;
     case macPanId:
         attributes->macPanId = m_macPanId;
@@ -1221,7 +1221,7 @@ LrWpanMac::SendDataRequestCommand()
 
     // Mac Header values (Section 5.3.5)
     macHdr.SetSrcAddrMode(LrWpanMacHeader::EXTADDR);
-    macHdr.SetSrcAddrFields(0xffff, m_selfExt);
+    macHdr.SetSrcAddrFields(0xffff, m_macExtendedAddress);
 
     if (m_macCoordShortAddress == Mac16Address("ff:fe"))
     {
@@ -1942,7 +1942,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
 
             if (acceptFrame && (receivedMacHdr.GetDstAddrMode() == EXT_ADDR))
             {
-                acceptFrame = (receivedMacHdr.GetExtDstAddr() == m_selfExt);
+                acceptFrame = (receivedMacHdr.GetExtDstAddr() == m_macExtendedAddress);
             }
 
             if (acceptFrame && m_scanEvent.IsRunning())

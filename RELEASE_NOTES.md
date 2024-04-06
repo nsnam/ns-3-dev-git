@@ -23,6 +23,7 @@ Release 3-dev
 - (network) !1828 - Added a common helper to create and install applications
 - (lr-wpan) !1915 - Use MAC and PHY standard attribute ids
 - (lr-wpan) !1924 - Adds MAC attribute identifiers
+- (lr-wpan) !1927 - Adds standard version comments to MLME-GET.request function
 
 ### Bugs fixed
 
