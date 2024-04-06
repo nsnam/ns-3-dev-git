@@ -677,6 +677,8 @@ MultiLinkOperationsTestBase::DoSetup()
 
     WifiMacHelper mac;
     mac.SetType("ns3::StaWifiMac", // default SSID
+                "MaxMissedBeacons",
+                UintegerValue(1e6), // do not deassociate
                 "ActiveProbing",
                 BooleanValue(false));
 
@@ -806,6 +808,9 @@ MultiLinkOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
         m_staMacs[aid]->SetSsid(Ssid("ns-3-ssid"));
         return;
     }
+    // stop generation of beacon frames in order to avoid interference
+    m_apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
+
     // wait some time (5ms) to allow the completion of association before generating traffic
     Simulator::Schedule(MilliSeconds(5), &MultiLinkOperationsTestBase::StartTraffic, this);
 }
