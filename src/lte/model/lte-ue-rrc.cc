@@ -43,6 +43,7 @@
 
 namespace ns3
 {
+const Time UE_MEASUREMENT_REPORT_DELAY = MicroSeconds(1);
 
 NS_LOG_COMPONENT_DEFINE("LteUeRrc");
 
