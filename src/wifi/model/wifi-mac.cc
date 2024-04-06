@@ -1314,6 +1314,12 @@ WifiMac::TidMappedOnLink(Mac48Address mldAddr, WifiDirection dir, uint8_t tid, u
     NS_ABORT_MSG_IF(dir == WifiDirection::BOTH_DIRECTIONS,
                     "Cannot request TID-to-Link mapping for both directions");
 
+    if (!GetWifiRemoteStationManager(linkId)->GetMldAddress(mldAddr).has_value())
+    {
+        // the link has not been setup
+        return false;
+    }
+
     const auto& mappings =
         (dir == WifiDirection::DOWNLINK ? m_dlTidLinkMappings : m_ulTidLinkMappings);
 
@@ -1322,7 +1328,7 @@ WifiMac::TidMappedOnLink(Mac48Address mldAddr, WifiDirection dir, uint8_t tid, u
     if (it == mappings.cend())
     {
         // TID-to-link mapping was not negotiated, TIDs are mapped to all setup links
-        return GetWifiRemoteStationManager(linkId)->GetMldAddress(mldAddr).has_value();
+        return true;
     }
 
     auto linkSetIt = it->second.find(tid);
@@ -1331,7 +1337,7 @@ WifiMac::TidMappedOnLink(Mac48Address mldAddr, WifiDirection dir, uint8_t tid, u
     {
         // If there is no successfully negotiated TID-to-link mapping for a TID, then the TID
         // is mapped to all setup links for DL and UL (Sec. 35.3.7.1.3 of 802.11be D3.1)
-        return GetWifiRemoteStationManager(linkId)->GetMldAddress(mldAddr).has_value();
+        return true;
     }
 
     return std::find(linkSetIt->second.cbegin(), linkSetIt->second.cend(), linkId) !=
