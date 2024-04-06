@@ -79,6 +79,29 @@ struct CanBeInPerStaProfile<Ssid> : std::false_type
 {
 };
 
+/// List of Information Elements included in Probe Response frames
+using BeaconElems = std::tuple<Ssid,
+                               SupportedRates,
+                               std::optional<DsssParameterSet>,
+                               std::optional<ErpInformation>,
+                               std::optional<ExtendedSupportedRatesIE>,
+                               std::optional<EdcaParameterSet>,
+                               std::optional<HtCapabilities>,
+                               std::optional<HtOperation>,
+                               std::optional<ExtendedCapabilities>,
+                               std::optional<VhtCapabilities>,
+                               std::optional<VhtOperation>,
+                               std::optional<ReducedNeighborReport>,
+                               std::optional<HeCapabilities>,
+                               std::optional<HeOperation>,
+                               std::optional<MuEdcaParameterSet>,
+                               std::optional<He6GhzBandCapabilities>,
+                               std::optional<MultiLinkElement>,
+                               std::optional<EhtCapabilities>,
+                               std::optional<EhtOperation>,
+                               std::vector<TidToLinkMapping>,
+                               std::optional<UhrCapabilities>>;
+
 /// List of Information Elements included in Probe Request frames
 using ProbeRequestElems = std::tuple<Ssid,
                                      SupportedRates,
@@ -460,8 +483,10 @@ class MgtProbeResponseHeader
  * @ingroup wifi
  * Implement the header for management frames of type beacon.
  */
-class MgtBeaconHeader : public MgtProbeResponseHeader
+class MgtBeaconHeader : public WifiMgtHeader<MgtBeaconHeader, BeaconElems>
 {
+    friend class WifiMgtHeader<MgtBeaconHeader, BeaconElems>;
+
   public:
     ~MgtBeaconHeader() override = default;
 
@@ -470,6 +495,26 @@ class MgtBeaconHeader : public MgtProbeResponseHeader
      * @return The TypeId.
      */
     static TypeId GetTypeId();
+
+    /// @copydoc Header::GetInstanceTypeId
+    TypeId GetInstanceTypeId() const override;
+
+    /// @return the time stamp
+    uint64_t GetTimestamp() const;
+
+    uint64_t m_beaconInterval{0};       //!< Beacon interval (microseconds)
+    CapabilityInformation m_capability; //!< Capability information
+
+  protected:
+    /// @copydoc Header::GetSerializedSize
+    uint32_t GetSerializedSizeImpl() const;
+    /// @copydoc Header::Serialize
+    void SerializeImpl(Buffer::Iterator start) const;
+    /// @copydoc Header::Deserialize
+    uint32_t DeserializeImpl(Buffer::Iterator start);
+
+  private:
+    uint64_t m_timestamp{0}; //!< Timestamp (microseconds)
 };
 
 } // namespace ns3

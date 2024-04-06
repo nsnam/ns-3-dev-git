@@ -131,6 +131,49 @@ MgtBeaconHeader::GetTypeId()
     return tid;
 }
 
+TypeId
+MgtBeaconHeader::GetInstanceTypeId() const
+{
+    return GetTypeId();
+}
+
+uint64_t
+MgtBeaconHeader::GetTimestamp() const
+{
+    return m_timestamp;
+}
+
+uint32_t
+MgtBeaconHeader::GetSerializedSizeImpl() const
+{
+    uint32_t size = 8 /* timestamp */ + 2 /* beacon interval */;
+    size += m_capability.GetSerializedSize();
+    size += WifiMgtHeader<MgtBeaconHeader, BeaconElems>::GetSerializedSizeImpl();
+    return size;
+}
+
+void
+MgtBeaconHeader::SerializeImpl(Buffer::Iterator start) const
+{
+    Buffer::Iterator i = start;
+    i.WriteHtolsbU64(Simulator::Now().GetMicroSeconds());
+    i.WriteHtolsbU16(static_cast<uint16_t>(m_beaconInterval / 1024));
+    i = m_capability.Serialize(i);
+    WifiMgtHeader<MgtBeaconHeader, BeaconElems>::SerializeImpl(i);
+}
+
+uint32_t
+MgtBeaconHeader::DeserializeImpl(Buffer::Iterator start)
+{
+    Buffer::Iterator i = start;
+    m_timestamp = i.ReadLsbtohU64();
+    m_beaconInterval = i.ReadLsbtohU16();
+    m_beaconInterval *= 1024;
+    i = m_capability.Deserialize(i);
+    auto distance = i.GetDistanceFrom(start);
+    return distance + WifiMgtHeader<MgtBeaconHeader, BeaconElems>::DeserializeImpl(i);
+}
+
 /***********************************************************
  *          Assoc Request
  ***********************************************************/
