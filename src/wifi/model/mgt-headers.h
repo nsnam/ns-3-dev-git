@@ -18,6 +18,7 @@
 #include "ssid.h"
 #include "status-code.h"
 #include "supported-rates.h"
+#include "tim.h"
 #include "wifi-mgt-header.h"
 
 #include "ns3/dsss-parameter-set.h"
@@ -61,6 +62,12 @@ struct CanBeInPerStaProfile<ReducedNeighborReport> : std::false_type
 {
 };
 
+/// @copydoc CanBeInPerStaProfile
+template <>
+struct CanBeInPerStaProfile<Tim> : std::false_type
+{
+};
+
 /** @copydoc CanBeInPerStaProfile */
 template <>
 struct CanBeInPerStaProfile<TidToLinkMapping> : std::false_type
@@ -83,6 +90,7 @@ struct CanBeInPerStaProfile<Ssid> : std::false_type
 using BeaconElems = std::tuple<Ssid,
                                SupportedRates,
                                std::optional<DsssParameterSet>,
+                               std::optional<Tim>,
                                std::optional<ErpInformation>,
                                std::optional<ExtendedSupportedRatesIE>,
                                std::optional<EdcaParameterSet>,

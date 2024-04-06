@@ -9,6 +9,7 @@
 #include "mesh-wifi-beacon.h"
 
 #include "ns3/nstime.h"
+#include "ns3/tim.h"
 #include "ns3/wifi-mac-header.h"
 
 namespace ns3
@@ -19,6 +20,7 @@ MeshWifiBeacon::MeshWifiBeacon(Ssid ssid, AllSupportedRates rates, uint64_t us)
     m_header.Get<Ssid>() = ssid;
     m_header.Get<SupportedRates>() = rates.rates;
     m_header.Get<ExtendedSupportedRatesIE>() = rates.extendedRates;
+    m_header.Get<Tim>() = Tim{};
     m_header.m_beaconInterval = us;
 }
 

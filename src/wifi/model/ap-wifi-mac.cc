@@ -35,6 +35,9 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
+#include "ns3/uinteger.h"
+
+#include <algorithm>
 
 namespace ns3
 {
@@ -69,6 +72,11 @@ ApWifiMac::GetTypeId()
                           BooleanValue(true),
                           MakeBooleanAccessor(&ApWifiMac::m_enableBeaconJitter),
                           MakeBooleanChecker())
+            .AddAttribute("DtimPeriod",
+                          "The DTIM Period, in number of beacons",
+                          UintegerValue(3),
+                          MakeUintegerAccessor(&ApWifiMac::m_dtimPeriod),
+                          MakeUintegerChecker<uint8_t>(1))
             .AddAttribute("BeaconGeneration",
                           "Whether or not beacons are generated.",
                           BooleanValue(true),
@@ -603,6 +611,171 @@ ApWifiMac::GetCapabilities(uint8_t linkId) const
     capabilities.SetEss();
     capabilities.SetCriticalUpdate(GetLink(linkId).criticalUpdate);
     return capabilities;
+}
+
+Ptr<WifiMpdu>
+ApWifiMac::GetBufferedDataFor(Mac48Address address, uint8_t linkId) const
+{
+    if (!GetQosSupported())
+    {
+        const WifiContainerQueueId queueId(WIFI_DATA_QUEUE, WIFI_UNICAST, address, std::nullopt);
+        return GetTxopQueue(AC_BE_NQOS)->PeekByQueueId(queueId);
+    }
+
+    const auto singleLink = !GetMldAddress(address).has_value();
+
+    for (uint8_t tid = 0; tid < 8; ++tid)
+    {
+        auto mpdu = GetTxopQueue(QosUtilsMapTidToAc(tid))->PeekByTidAndAddress(tid, address);
+
+        if (!mpdu)
+        {
+            continue; // queue empty, look for another TID
+        }
+
+        if (linkId != WIFI_LINKID_UNDEFINED && !singleLink &&
+            !TidMappedOnLink(address, WifiDirection::DOWNLINK, tid, linkId))
+        {
+            continue; // this TID is not mapped on the link for which we want a buffered unit
+        }
+
+        // (Sec. 35.3.12.4 802.11be D6.0) An AP MLD shall buffer a BU with a TID at the AP MLD if
+        // the TID is not mapped to any link on which the corresponding non-AP STA affiliated with
+        // a non-AP MLD is in active mode
+        if (std::none_of(GetLinks().cbegin(), GetLinks().cend(), [=, this](const auto& pair) {
+                const auto lnkId = pair.first;
+                const auto& link = pair.second;
+                // return true if the STA operating on this link is in active mode and the TID is
+                // mapped on this link (or the STA is a single link device)
+                return link->stationManager->IsAssociated(address) &&
+                       !link->stationManager->IsInPsMode(address) &&
+                       (singleLink ||
+                        TidMappedOnLink(address, WifiDirection::DOWNLINK, tid, lnkId));
+            }))
+        {
+            NS_LOG_DEBUG("Found BU: " << *mpdu << " for STA " << address << " and TID=" << +tid);
+            return mpdu;
+        }
+    }
+    return nullptr;
+}
+
+Ptr<WifiMpdu>
+ApWifiMac::GetBufferedMmpduFor(Mac48Address address, uint8_t linkId) const
+{
+    // TODO: 802.11be specs (Sec. 35.3.12.4 of D6.0) allow an AP MLD to avoid buffering an
+    // MMPDU if a non-AP STA is in active mode, even if the non-AP STA is not the intended
+    // receiver of the MMPDU. In case the MMPDU is sent on a link other than the one on which
+    // the intended receiver is operating, the MMPDU shall carry the MLO Link Info element.
+    // Until this mechanism is supported, an MMPDU is buffered if the intended receiver is
+    // in powersave mode
+    const auto acList = GetQosSupported() ? std::list<AcIndex>{AC_VI, AC_VO, AC_BE, AC_BK}
+                                          : std::list<AcIndex>{AC_BE_NQOS};
+    const auto linkIds = (linkId == WIFI_LINKID_UNDEFINED ? GetLinkIds() : std::set{linkId});
+
+    for (const auto& id : linkIds)
+    {
+        auto& link = GetLink(id);
+        if (!link.stationManager->IsInPsMode(address))
+        {
+            continue; // STA on this link is not in PS mode
+        }
+        for (const auto& aci : acList)
+        {
+            WifiContainerQueueId queueId(
+                WIFI_MGT_QUEUE,
+                WIFI_UNICAST,
+                link.stationManager->GetAffiliatedStaAddress(address).value_or(address),
+                std::nullopt);
+
+            if (auto mpdu = GetTxopQueue(aci)->PeekByQueueId(queueId))
+            {
+                NS_LOG_DEBUG("Found MMPDU: " << *mpdu << " for STA " << address << " on link "
+                                             << +id);
+                return mpdu;
+            }
+        }
+    }
+    return nullptr;
+}
+
+bool
+ApWifiMac::HasBufferedGroupcast(uint8_t linkId) const
+{
+    auto acList = GetQosSupported() ? std::list<AcIndex>{AC_VI, AC_VO, AC_BE, AC_BK}
+                                    : std::list<AcIndex>{AC_BE_NQOS};
+
+    return std::any_of(acList.cbegin(), acList.cend(), [=, this](const auto aci) {
+        auto queueId = m_scheduler->GetNext(aci, std::nullopt);
+
+        while (queueId)
+        {
+            const auto addrType = std::get<1>(*queueId);
+            const auto& address = std::get<2>(*queueId);
+            if ((addrType == WIFI_BROADCAST || addrType == WIFI_GROUPCAST) &&
+                address == GetFrameExchangeManager(linkId)->GetAddress())
+            {
+                NS_LOG_DEBUG("Found some group addressed frames for link " << +linkId);
+                return true;
+            }
+            queueId = m_scheduler->GetNext(aci, std::nullopt, *queueId);
+        }
+        return false;
+    });
+}
+
+Tim
+ApWifiMac::GetTim(uint8_t linkId) const
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    Tim tim;
+    tim.m_dtimCount = GetLink(linkId).beaconDtimCount;
+    tim.m_dtimPeriod = m_dtimPeriod;
+
+    // Iterate over the list of associated non-AP STAs or MLDs
+    for (const auto& [aid, address] : m_aidToMldOrLinkAddress)
+    {
+        if (GetStaList(linkId).contains(aid) &&
+            (GetBufferedDataFor(address) || GetBufferedMmpduFor(address)))
+        {
+            tim.AddAid(aid);
+        }
+    }
+
+    // Check for group addressed frames, but only if this is a DTIM
+    if (tim.m_dtimCount == 0)
+    {
+        tim.m_hasMulticastPending = HasBufferedGroupcast(linkId);
+
+        /**
+         * Sec. 35.3.15.1 of 802.11be D7.0:
+         * The bits 1 to N of the bitmap in the Partial Virtual Bitmap field are for the AP MLD
+         * where N is equal to 2^(Group Addressed BU Indication Exponent + 1) – 1.
+         * The first n bits of N bits are used to indicate that one or more group addressed frames
+         * are buffered for each AP of the other AP(s) that are affiliated with the same AP MLD by
+         * setting the corresponding bit value to 1 in an increasing order of their link IDs. The
+         * remaining (N – n) bits are set to 0.
+         */
+        if (GetNLinks() > 1)
+        {
+            uint16_t aid = MIN_AID;
+            for (uint8_t id = 0; id < GetNLinks(); ++id)
+            {
+                if (id == linkId)
+                {
+                    continue;
+                }
+                if (HasBufferedGroupcast(id))
+                {
+                    tim.AddAid(aid);
+                }
+                ++aid;
+            }
+        }
+    }
+
+    return tim;
 }
 
 ErpInformation
@@ -1558,6 +1731,7 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
     beacon.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
     beacon.m_beaconInterval = GetBeaconInterval().GetMicroSeconds();
     beacon.m_capability = GetCapabilities(linkId);
+    beacon.Get<Tim>() = GetTim(linkId);
     GetWifiRemoteStationManager(linkId)->SetShortPreambleEnabled(link.shortPreambleEnabled);
     GetWifiRemoteStationManager(linkId)->SetShortSlotTimeEnabled(link.shortSlotTimeEnabled);
     if (GetDsssSupported(linkId))
@@ -1662,6 +1836,10 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
             GetWifiPhy(linkId)->SetSlot(MicroSeconds(20));
         }
     }
+
+    // Update the DTIM Count
+    auto& dtimCount = GetLink(linkId).beaconDtimCount;
+    dtimCount = dtimCount == 0 ? (m_dtimPeriod - 1) : (dtimCount - 1);
 }
 
 Ptr<WifiMpdu>

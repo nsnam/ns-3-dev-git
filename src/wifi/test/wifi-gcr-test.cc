@@ -1374,7 +1374,7 @@ GcrBaTest::GcrBaTest(const std::string& testName,
       m_lastTxSeq{-1},
       m_nTxGcrBarsInCurrentTxop{0}
 {
-    m_rngRun = 5;
+    m_rngRun = 8;
 }
 
 void

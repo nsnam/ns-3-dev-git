@@ -11,6 +11,7 @@
 #ifndef AP_WIFI_MAC_H
 #define AP_WIFI_MAC_H
 
+#include "tim.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac.h"
 
@@ -142,6 +143,42 @@ class ApWifiMac : public WifiMac
      *         of the STA having the given AID, if any
      */
     std::optional<Mac48Address> GetMldOrLinkAddressByAid(uint16_t aid) const;
+
+    /**
+     * Check whether the AP MLD has buffered (QoS) data frame(s) for the given destination
+     * because non-AP STAs operating on links where those (QoS) data frames could be transmitted
+     * are in powersave mode. If a link ID is defined, it must be possible for the returned buffered
+     * (QoS) data frame to be transmitted on that link (e.g., the TID of the data frame is mapped to
+     * that link).
+     *
+     * @param address the MLD address, if the destination is an MLD, or the MAC address, otherwise
+     * @param linkId the ID of the link for which we check buffered (QoS) data frames
+     * @return a buffered (QoS) data frame for the given destination
+     */
+    Ptr<WifiMpdu> GetBufferedDataFor(Mac48Address address,
+                                     uint8_t linkId = WIFI_LINKID_UNDEFINED) const;
+
+    /**
+     * Check whether the AP MLD has buffered MMPDUs for the given destination because non-AP STAs
+     * operating on links where those MMPDUs could be transmitted are in powersave mode. If a link
+     * ID is defined, it must be possible for the returned buffered MMPDU to be transmitted on that
+     * link.
+     *
+     * @param address the MLD address, if the destination is an MLD, or the MAC address, otherwise
+     * @param linkId the ID of the link for which we check buffered (QoS) data frames
+     * @return a buffered MMPDUs for the given destination
+     */
+    Ptr<WifiMpdu> GetBufferedMmpduFor(Mac48Address address,
+                                      uint8_t linkId = WIFI_LINKID_UNDEFINED) const;
+
+    /**
+     * Check whether the AP MLD has buffered frames with a destination groupcast address to be sent
+     * on the given link.
+     *
+     * @param linkId the ID of the given link
+     * @return whether the AP MLD has buffered frames with a destination groupcast address
+     */
+    bool HasBufferedGroupcast(uint8_t linkId) const;
 
     /**
      * Return the value of the Queue Size subfield of the last QoS Data or QoS Null
@@ -499,6 +536,15 @@ class ApWifiMac : public WifiMac
      * @return the Capability information that we support
      */
     CapabilityInformation GetCapabilities(uint8_t linkId) const;
+
+    /**
+     * Return the TIM for the current AP to transmit on the given link.
+     *
+     * @param linkId the ID of the given link
+     * @return the TIM based on the current status of the queues
+     */
+    Tim GetTim(uint8_t linkId) const;
+
     /**
      * Return the ERP information of the current AP for the given link.
      *
@@ -645,6 +691,7 @@ class ApWifiMac : public WifiMac
     Ptr<UniformRandomVariable>
         m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
     bool m_enableBeaconJitter; //!< Flag whether the first beacon should be generated at random time
+    uint8_t m_dtimPeriod;      //!< DTIM Period
     bool m_enableNonErpProtection; //!< Flag whether protection mechanism is used or not when
                                    //!< non-ERP STAs are present within the BSS
     Time m_bsrLifetime;            //!< Lifetime of Buffer Status Reports

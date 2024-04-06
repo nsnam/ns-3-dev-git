@@ -322,23 +322,23 @@ TestInterBssConstantObssPdAlgo::SetupSimulation()
                         ap_device2,
                         sta_device2,
                         m_payloadSize2);
-    Simulator::Schedule(Seconds(2) + MicroSeconds(10),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(9),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         ap_device2,
                         WifiPhyState::TX);
     // All other PHYs should have stay idle until 4us (preamble detection time).
-    Simulator::Schedule(Seconds(2) + MicroSeconds(11),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(10),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         sta_device1,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(2) + MicroSeconds(11),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(10),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         sta_device2,
                         WifiPhyState::IDLE);
-    Simulator::Schedule(Seconds(2) + MicroSeconds(11),
+    Simulator::Schedule(Seconds(2) + MicroSeconds(10),
                         &TestInterBssConstantObssPdAlgo::CheckPhyState,
                         this,
                         ap_device1,

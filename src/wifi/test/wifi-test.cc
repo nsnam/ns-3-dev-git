@@ -2244,6 +2244,7 @@ class Bug2470TestCase : public TestCase
     uint16_t
         m_addbaNoReplyCount;    ///< Count number of times ADDBA state machine is in no_reply state
     uint16_t m_addbaResetCount; ///< Count number of times ADDBA state machine is in reset state
+    Time m_2ndPktSetStart;      ///< time the second set of packets is generated
 };
 
 Bug2470TestCase::Bug2470TestCase()
@@ -2255,7 +2256,8 @@ Bug2470TestCase::Bug2470TestCase()
       m_addbaPendingCount(0),
       m_addbaRejectedCount(0),
       m_addbaNoReplyCount(0),
-      m_addbaResetCount(0)
+      m_addbaResetCount(0),
+      m_2ndPktSetStart(Seconds(0.85))
 {
 }
 
@@ -2302,7 +2304,7 @@ Bug2470TestCase::TxCallback(Ptr<ListErrorModel> rxErrorModel,
     // The sender is transmitting an ADDBA_REQUEST or ADDBA_RESPONSE frame. If this is
     // the first attempt at establishing a BA agreement (i.e., before the second set of packets
     // is generated), make the reception of the frame fail at the receiver.
-    if (psdu->GetHeader(0).GetType() == WIFI_MAC_MGT_ACTION && Simulator::Now() < Seconds(0.8))
+    if (psdu->GetHeader(0).GetType() == WIFI_MAC_MGT_ACTION && Simulator::Now() < m_2ndPktSetStart)
     {
         auto uid = psdu->GetPayload(0)->GetUid();
         rxErrorModel->SetList({uid});
@@ -2445,13 +2447,13 @@ Bug2470TestCase::RunSubtest(TypeOfStation rcvErrorType)
                         4,
                         apDevice.Get(0),
                         staDevice.Get(0)->GetAddress());
-    Simulator::Schedule(Seconds(0.8),
+    Simulator::Schedule(m_2ndPktSetStart,
                         &Bug2470TestCase::SendPacketBurst,
                         this,
                         1,
                         apDevice.Get(0),
                         staDevice.Get(0)->GetAddress());
-    Simulator::Schedule(Seconds(0.8) + MicroSeconds(5),
+    Simulator::Schedule(m_2ndPktSetStart + MicroSeconds(5),
                         &Bug2470TestCase::SendPacketBurst,
                         this,
                         4,
