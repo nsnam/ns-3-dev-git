@@ -1952,14 +1952,14 @@ RoutingProtocol::AddHostNetworkAssociation(Ipv4Address networkAddr, Ipv4Mask net
     }
     // If the tuple does not already exist, add it to the list of local HNA associations.
     NS_LOG_INFO("Adding HNA association for network " << networkAddr << "/" << netmask << ".");
-    m_state.InsertAssociation((Association){networkAddr, netmask});
+    m_state.InsertAssociation(Association{networkAddr, netmask});
 }
 
 void
 RoutingProtocol::RemoveHostNetworkAssociation(Ipv4Address networkAddr, Ipv4Mask netmask)
 {
     NS_LOG_INFO("Removing HNA association for network " << networkAddr << "/" << netmask << ".");
-    m_state.EraseAssociation((Association){networkAddr, netmask});
+    m_state.EraseAssociation(Association{networkAddr, netmask});
 }
 
 void

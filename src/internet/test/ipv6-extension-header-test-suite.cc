@@ -170,7 +170,7 @@ class OptionWithAlignmentHeader : public Ipv6OptionHeader
 
     Alignment GetAlignment() const override
     {
-        return (Alignment){4, 0};
+        return Alignment{4, 0};
     }
 };
 

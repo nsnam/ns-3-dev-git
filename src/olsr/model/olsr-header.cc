@@ -604,7 +604,7 @@ MessageHeader::Hna::Deserialize(Buffer::Iterator start, uint32_t messageSize)
     {
         Ipv4Address address(i.ReadNtohU32());
         Ipv4Mask mask(i.ReadNtohU32());
-        this->associations.push_back((Association){address, mask});
+        this->associations.push_back(Association{address, mask});
     }
     return messageSize;
 }

@@ -169,7 +169,7 @@ FindSelfDirectory()
     {
         //  LPTSTR = char *
         DWORD size = 1024;
-        LPTSTR lpFilename = (LPTSTR)malloc(sizeof(TCHAR) * size);
+        auto lpFilename = (LPTSTR)malloc(sizeof(TCHAR) * size);
         DWORD status = GetModuleFileName(nullptr, lpFilename, size);
         while (status == size)
         {

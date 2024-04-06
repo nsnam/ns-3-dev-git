@@ -150,14 +150,14 @@ OptionField::~OptionField()
 uint32_t
 OptionField::GetSerializedSize() const
 {
-    return m_optionData.GetSize() + CalculatePad((Ipv6OptionHeader::Alignment){8, 0});
+    return m_optionData.GetSize() + CalculatePad(Ipv6OptionHeader::Alignment{8, 0});
 }
 
 void
 OptionField::Serialize(Buffer::Iterator start) const
 {
     start.Write(m_optionData.Begin(), m_optionData.End());
-    uint32_t fill = CalculatePad((Ipv6OptionHeader::Alignment){8, 0});
+    uint32_t fill = CalculatePad(Ipv6OptionHeader::Alignment{8, 0});
     NS_LOG_LOGIC("fill with " << fill << " bytes padding");
     switch (fill)
     {

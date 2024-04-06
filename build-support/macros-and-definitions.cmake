@@ -220,7 +220,7 @@ macro(process_options)
         add_compile_options(/WX)
       endif()
     else()
-      add_compile_options(-Wall) # -Wextra
+      add_compile_options(-Wall -Wpedantic) # -Wextra
       if(${NS3_WARNINGS_AS_ERRORS})
         add_compile_options(-Werror -Wno-error=deprecated-declarations)
       endif()

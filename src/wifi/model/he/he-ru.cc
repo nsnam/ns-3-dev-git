@@ -393,25 +393,29 @@ std::vector<HeRu::RuSpec>
 HeRu::GetRuSpecs(uint8_t ruAllocation)
 {
     std::optional<std::size_t> idx;
-    switch (ruAllocation)
+    if (((ruAllocation >= 0) && (ruAllocation <= 15)) || (ruAllocation == 112))
     {
-    case 0 ... 15:
-    case 112:
         idx = ruAllocation;
-        break;
-    case 16 ... 95:
-    case 192 ... 215:
+    }
+    else if (((ruAllocation >= 16) && (ruAllocation <= 95)) ||
+             ((ruAllocation >= 192) && (ruAllocation <= 215)))
+    {
         idx = ruAllocation & 0xF8;
-        break;
-    case 96 ... 111:
+    }
+    else if ((ruAllocation >= 96) && (ruAllocation <= 111))
+    {
         idx = ruAllocation & 0xF0;
-        break;
-    case 113 ... 115:
-        break;
-    case 128 ... 191:
+    }
+    else if ((ruAllocation >= 113) && (ruAllocation <= 115))
+    {
+        // Do not set idx to return an undefined RU allocation
+    }
+    else if ((ruAllocation >= 128) && (ruAllocation <= 191))
+    {
         idx = ruAllocation & 0xC0;
-        break;
-    default:
+    }
+    else
+    {
         NS_FATAL_ERROR("Reserved RU allocation " << +ruAllocation);
     }
     return idx.has_value() ? m_heRuAllocations.at(idx.value()) : std::vector<HeRu::RuSpec>{};
