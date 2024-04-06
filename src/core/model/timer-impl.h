@@ -104,8 +104,6 @@ MakeTimerImpl(U(fn)(Ts...))
 {
     struct FnTimerImpl : public TimerImplX<const std::remove_cvref_t<Ts>&...>
     {
-        using FN = U (*)(Ts...);
-
         FnTimerImpl(void (*fn)(Ts...))
             : m_fn(fn)
         {
@@ -128,7 +126,7 @@ MakeTimerImpl(U(fn)(Ts...))
             std::apply([this](Ts... args) { (m_fn)(args...); }, m_arguments);
         }
 
-        FN m_fn;
+        decltype(fn) m_fn;
         std::tuple<std::remove_cvref_t<Ts>...> m_arguments;
     }* function = new FnTimerImpl(fn);
 
@@ -153,11 +151,8 @@ MakeTimerImpl(U (V::*memPtr)(Ts...), OBJ_PTR objPtr)
 {
     struct MemFnTimerImpl : public TimerImplX<const std::remove_cvref_t<Ts>&...>
     {
-        using MEM_PTR = U (V::*)(Ts...);
-
-        MemFnTimerImpl(MEM_PTR memPtr, OBJ_PTR objPtr)
-            : m_memPtr(memPtr),
-              m_objPtr(objPtr)
+        MemFnTimerImpl(decltype(memPtr) memPtr, OBJ_PTR objPtr)
+            : m_memPtr(std::bind_front(memPtr, objPtr))
         {
         }
 
@@ -170,18 +165,17 @@ MakeTimerImpl(U (V::*memPtr)(Ts...), OBJ_PTR objPtr)
         {
             return std::apply(
                 [&, this](Ts... args) {
-                    return Simulator::Schedule(delay, m_memPtr, m_objPtr, args...);
+                    return Simulator::Schedule(delay, std::bind(m_memPtr, args...));
                 },
                 m_arguments);
         }
 
         void Invoke() override
         {
-            std::apply([this](Ts... args) { ((*m_objPtr).*m_memPtr)(args...); }, m_arguments);
+            std::apply(m_memPtr, m_arguments);
         }
 
-        MEM_PTR m_memPtr;
-        OBJ_PTR m_objPtr;
+        std::function<U(Ts...)> m_memPtr;
         std::tuple<std::remove_cvref_t<Ts>...> m_arguments;
     }* function = new MemFnTimerImpl(memPtr, objPtr);
 
