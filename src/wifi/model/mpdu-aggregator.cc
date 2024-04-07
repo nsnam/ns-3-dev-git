@@ -147,13 +147,14 @@ MpduAggregator::GetMaxAmpduSize(Mac48Address recipient,
     // format used to transmit the A-MPDU
     if (modulation >= WIFI_MOD_CLASS_EHT)
     {
-        NS_ABORT_MSG_IF(!ehtCapabilities, "EHT Capabilities element not received");
+        NS_ABORT_MSG_IF(!ehtCapabilities,
+                        "EHT Capabilities element not received for " << recipient);
 
         maxAmpduSize = std::min(maxAmpduSize, ehtCapabilities->GetMaxAmpduLength());
     }
     else if (modulation >= WIFI_MOD_CLASS_HE)
     {
-        NS_ABORT_MSG_IF(!heCapabilities, "HE Capabilities element not received");
+        NS_ABORT_MSG_IF(!heCapabilities, "HE Capabilities element not received for " << recipient);
 
         maxAmpduSize = std::min(maxAmpduSize, heCapabilities->GetMaxAmpduLength());
         if (he6GhzCapabilities)
@@ -163,13 +164,14 @@ MpduAggregator::GetMaxAmpduSize(Mac48Address recipient,
     }
     else if (modulation == WIFI_MOD_CLASS_VHT)
     {
-        NS_ABORT_MSG_IF(!vhtCapabilities, "VHT Capabilities element not received");
+        NS_ABORT_MSG_IF(!vhtCapabilities,
+                        "VHT Capabilities element not received for " << recipient);
 
         maxAmpduSize = std::min(maxAmpduSize, vhtCapabilities->GetMaxAmpduLength());
     }
     else if (modulation == WIFI_MOD_CLASS_HT)
     {
-        NS_ABORT_MSG_IF(!htCapabilities, "HT Capabilities element not received");
+        NS_ABORT_MSG_IF(!htCapabilities, "HT Capabilities element not received for " << recipient);
 
         maxAmpduSize = std::min(maxAmpduSize, htCapabilities->GetMaxAmpduLength());
     }
