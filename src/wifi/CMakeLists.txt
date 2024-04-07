@@ -101,6 +101,7 @@ set(source_files
     model/rate-control/thompson-sampling-wifi-manager.cc
     model/recipient-block-ack-agreement.cc
     model/reduced-neighbor-report.cc
+    model/reference/error-rate-tables.cc
     model/simple-frame-capture-model.cc
     model/snr-tag.cc
     model/spectrum-wifi-phy.cc
