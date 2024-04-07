@@ -20,6 +20,7 @@
 #ifndef WIFI_PHY_STATE_HELPER_H
 #define WIFI_PHY_STATE_HELPER_H
 
+#include "phy-entity.h"
 #include "wifi-phy-common.h"
 #include "wifi-phy-state.h"
 #include "wifi-ppdu.h"
