@@ -164,46 +164,52 @@ AdhocWifiMac::CanForwardPacketsTo(Mac48Address to) const
 }
 
 void
+AdhocWifiMac::SetAllCapabilities(const Mac48Address& address)
+{
+    // In ad hoc mode, we assume that every destination supports all the rates we support.
+    if (GetHtSupported(SINGLE_LINK_OP_ID))
+    {
+        GetWifiRemoteStationManager()->AddAllSupportedMcs(address);
+        GetWifiRemoteStationManager()->AddStationHtCapabilities(
+            address,
+            GetHtCapabilities(SINGLE_LINK_OP_ID));
+    }
+    if (GetVhtSupported(SINGLE_LINK_OP_ID))
+    {
+        GetWifiRemoteStationManager()->AddStationVhtCapabilities(
+            address,
+            GetVhtCapabilities(SINGLE_LINK_OP_ID));
+    }
+    if (GetHeSupported())
+    {
+        GetWifiRemoteStationManager()->AddStationHeCapabilities(
+            address,
+            GetHeCapabilities(SINGLE_LINK_OP_ID));
+        if (Is6GhzBand(SINGLE_LINK_OP_ID))
+        {
+            GetWifiRemoteStationManager()->AddStationHe6GhzCapabilities(
+                address,
+                GetHe6GhzBandCapabilities(SINGLE_LINK_OP_ID));
+        }
+    }
+    if (GetEhtSupported())
+    {
+        GetWifiRemoteStationManager()->AddStationEhtCapabilities(
+            address,
+            GetEhtCapabilities(SINGLE_LINK_OP_ID));
+    }
+    GetWifiRemoteStationManager()->AddAllSupportedModes(address);
+    GetWifiRemoteStationManager()->RecordDisassociated(address);
+}
+
+void
 AdhocWifiMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from)
 {
     NS_LOG_FUNCTION(this << *mpdu << to << from);
 
     if (GetWifiRemoteStationManager()->IsBrandNew(to))
     {
-        // In ad hoc mode, we assume that every destination supports all the rates we support.
-        if (GetHtSupported(SINGLE_LINK_OP_ID))
-        {
-            GetWifiRemoteStationManager()->AddAllSupportedMcs(to);
-            GetWifiRemoteStationManager()->AddStationHtCapabilities(
-                to,
-                GetHtCapabilities(SINGLE_LINK_OP_ID));
-        }
-        if (GetVhtSupported(SINGLE_LINK_OP_ID))
-        {
-            GetWifiRemoteStationManager()->AddStationVhtCapabilities(
-                to,
-                GetVhtCapabilities(SINGLE_LINK_OP_ID));
-        }
-        if (GetHeSupported())
-        {
-            GetWifiRemoteStationManager()->AddStationHeCapabilities(
-                to,
-                GetHeCapabilities(SINGLE_LINK_OP_ID));
-            if (Is6GhzBand(SINGLE_LINK_OP_ID))
-            {
-                GetWifiRemoteStationManager()->AddStationHe6GhzCapabilities(
-                    to,
-                    GetHe6GhzBandCapabilities(SINGLE_LINK_OP_ID));
-            }
-        }
-        if (GetEhtSupported())
-        {
-            GetWifiRemoteStationManager()->AddStationEhtCapabilities(
-                to,
-                GetEhtCapabilities(SINGLE_LINK_OP_ID));
-        }
-        GetWifiRemoteStationManager()->AddAllSupportedModes(to);
-        GetWifiRemoteStationManager()->RecordDisassociated(to);
+        SetAllCapabilities(to);
     }
 
     auto& hdr = mpdu->GetHeader();
@@ -307,34 +313,7 @@ AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     auto packet = mpdu->GetPacket();
     if (GetWifiRemoteStationManager()->IsBrandNew(from))
     {
-        // In ad hoc mode, we assume that every destination supports all the rates we support.
-        if (GetHtSupported(SINGLE_LINK_OP_ID))
-        {
-            GetWifiRemoteStationManager()->AddAllSupportedMcs(from);
-            GetWifiRemoteStationManager()->AddStationHtCapabilities(
-                from,
-                GetHtCapabilities(SINGLE_LINK_OP_ID));
-        }
-        if (GetVhtSupported(SINGLE_LINK_OP_ID))
-        {
-            GetWifiRemoteStationManager()->AddStationVhtCapabilities(
-                from,
-                GetVhtCapabilities(SINGLE_LINK_OP_ID));
-        }
-        if (GetHeSupported())
-        {
-            GetWifiRemoteStationManager()->AddStationHeCapabilities(
-                from,
-                GetHeCapabilities(SINGLE_LINK_OP_ID));
-        }
-        if (GetEhtSupported())
-        {
-            GetWifiRemoteStationManager()->AddStationEhtCapabilities(
-                from,
-                GetEhtCapabilities(SINGLE_LINK_OP_ID));
-        }
-        GetWifiRemoteStationManager()->AddAllSupportedModes(from);
-        GetWifiRemoteStationManager()->RecordDisassociated(from);
+        SetAllCapabilities(from);
     }
     if (hdr.IsData())
     {

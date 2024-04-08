@@ -83,6 +83,13 @@ class AdhocWifiMac : public WifiMac
     void SendOneBeacon();
 
     /**
+     * Fill in the same capabilities as this device for a given new peer.
+     *
+     * \param address the MAC address of the peer
+     */
+    void SetAllCapabilities(const Mac48Address& address);
+
+    /**
      * Return an instance of SupportedRates that contains all rates that we support
      * (including HT rates).
      *
