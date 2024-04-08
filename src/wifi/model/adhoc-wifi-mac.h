@@ -106,6 +106,13 @@ class AdhocWifiMac : public WifiMac
     void ReceiveBeacon(Ptr<const WifiMpdu> mpdu, linkId_t linkId);
 
     /**
+     * Fill in the same capabilities as this device for a given new peer.
+     *
+     * @param address the MAC address of the peer
+     */
+    void SetAllCapabilities(Mac48Address address);
+
+    /**
      * Return an instance of SupportedRates that contains all rates that we support
      * (including HT rates).
      *
