@@ -445,11 +445,12 @@ InterferenceHelper::CalculateNoiseInterferenceW(Ptr<Event> event,
     double noiseInterferenceW = firstPower_it->second;
     auto niIt = m_niChanges.find(band);
     NS_ABORT_IF(niIt == m_niChanges.end());
+    const auto now = Simulator::Now();
     auto it = niIt->second.find(event->GetStartTime());
     double muMimoPowerW = (event->GetPpdu()->GetType() == WIFI_PPDU_TYPE_UL_MU)
                               ? CalculateMuMimoPowerW(event, band)
                               : 0.0;
-    for (; it != niIt->second.end() && it->first < Simulator::Now(); ++it)
+    for (; it != niIt->second.end() && it->first < now; ++it)
     {
         if (IsSameMuMimoTransmission(event, it->second.GetEvent()) &&
             (event != it->second.GetEvent()))
