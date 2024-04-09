@@ -117,7 +117,7 @@ inline Ptr<const AttributeAccessor> MakeAccessorHelper(T1 a1, T2 a2);
  *  Implementation of the templates declared above.
  ***************************************************************/
 
-#include "type-traits.h"
+#include <type_traits>
 
 namespace ns3
 {
@@ -133,7 +133,7 @@ template <typename T>
 struct AccessorTrait
 {
     /** The non-const, non reference type. */
-    typedef typename TypeTraits<typename TypeTraits<T>::ReferencedType>::NonConstType Result;
+    using Result = std::remove_cvref_t<T>;
 };
 
 /**

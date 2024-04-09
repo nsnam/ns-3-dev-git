@@ -26,6 +26,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <type_traits>
 // Ipv6L3Protocol, Ipv6PacketProbe
 #include "ns3/lr-wpan-mac.h"      // LrWpanMac
 #include "ns3/lte-module.h"       // PhyReceptionStatParameters,
@@ -282,7 +283,7 @@ class TracedCallbackTypedefTestCase::Checker : public Object
     ~Checker() override{};
 
     /// Arguments of the TracedCallback.
-    std::tuple<typename TypeTraits<Ts>::BaseType...> m_items;
+    std::tuple<std::remove_pointer_t<std::remove_cvref_t<Ts>>...> m_items;
 
     /// Number of arguments of the TracedCallback.
     const std::size_t m_nItems = sizeof...(Ts);
