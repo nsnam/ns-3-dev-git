@@ -31,8 +31,7 @@ namespace ns3
  */
 
 WifiAcknowledgment::WifiAcknowledgment(Method m)
-    : method(m),
-      acknowledgmentTime(Time::Min()) // uninitialized
+    : method(m)
 {
 }
 

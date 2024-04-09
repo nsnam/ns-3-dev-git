@@ -359,7 +359,7 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
     NS_LOG_DEBUG("protection time=" << *protectionTime);
 
     // check if adding the given MPDU requires a different acknowledgment method
-    Time acknowledgmentTime = Time::Min(); // uninitialized
+    std::optional<Time> acknowledgmentTime; // uninitialized
     if (txParams.m_acknowledgment)
     {
         acknowledgmentTime = txParams.m_acknowledgment->acknowledgmentTime;
@@ -379,13 +379,13 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
         txParams.m_acknowledgment.swap(acknowledgment);
         acknowledgmentSwapped = true;
     }
-    NS_ASSERT(acknowledgmentTime != Time::Min());
-    NS_LOG_DEBUG("acknowledgment time=" << acknowledgmentTime);
+    NS_ASSERT(acknowledgmentTime.has_value());
+    NS_LOG_DEBUG("acknowledgment time=" << *acknowledgmentTime);
 
     Time ppduDurationLimit = Time::Min();
     if (availableTime != Time::Min())
     {
-        ppduDurationLimit = availableTime - *protectionTime - acknowledgmentTime;
+        ppduDurationLimit = availableTime - *protectionTime - *acknowledgmentTime;
     }
 
     if (!IsWithinLimitsIfAddMpdu(mpdu, txParams, ppduDurationLimit))
@@ -483,7 +483,7 @@ QosFrameExchangeManager::GetFrameDurationId(const WifiMacHeader& header,
     }
 
     NS_ASSERT(txParams.m_acknowledgment &&
-              txParams.m_acknowledgment->acknowledgmentTime != Time::Min());
+              txParams.m_acknowledgment->acknowledgmentTime.has_value());
 
     // under multiple protection settings, if the TXOP limit is not null, Duration/ID
     // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
@@ -491,7 +491,7 @@ QosFrameExchangeManager::GetFrameDurationId(const WifiMacHeader& header,
     // of 802.11-2016)
     return std::max(m_edca->GetRemainingTxop(m_linkId) -
                         m_phy->CalculateTxDuration(size, txParams.m_txVector, m_phy->GetPhyBand()),
-                    txParams.m_acknowledgment->acknowledgmentTime);
+                    *txParams.m_acknowledgment->acknowledgmentTime);
 }
 
 Time

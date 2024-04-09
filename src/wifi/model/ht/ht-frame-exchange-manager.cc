@@ -885,8 +885,8 @@ HtFrameExchangeManager::GetPsduDurationId(Time txDuration, const WifiTxParameter
     if (m_edca->GetTxopLimit(m_linkId).IsZero())
     {
         NS_ASSERT(txParams.m_acknowledgment &&
-                  txParams.m_acknowledgment->acknowledgmentTime != Time::Min());
-        return txParams.m_acknowledgment->acknowledgmentTime;
+                  txParams.m_acknowledgment->acknowledgmentTime.has_value());
+        return *txParams.m_acknowledgment->acknowledgmentTime;
     }
 
     // under multiple protection settings, if the TXOP limit is not null, Duration/ID
@@ -920,7 +920,7 @@ HtFrameExchangeManager::SendPsduWithProtection(Ptr<WifiPsdu> psdu, WifiTxParamet
     // and SendCtsToSelf() can reuse this value.
     NS_ASSERT(m_txParams.m_acknowledgment);
 
-    if (m_txParams.m_acknowledgment->acknowledgmentTime == Time::Min())
+    if (!m_txParams.m_acknowledgment->acknowledgmentTime.has_value())
     {
         CalculateAcknowledgmentTime(m_txParams.m_acknowledgment.get());
     }
@@ -1232,7 +1232,7 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
 
     // check if aggregating the given MSDU requires a different acknowledgment method
     NS_ASSERT(txParams.m_acknowledgment);
-    Time acknowledgmentTime = txParams.m_acknowledgment->acknowledgmentTime;
+    auto acknowledgmentTime = txParams.m_acknowledgment->acknowledgmentTime;
 
     std::unique_ptr<WifiAcknowledgment> acknowledgment;
     acknowledgment = GetAckManager()->TryAggregateMsdu(msdu, txParams);
@@ -1248,12 +1248,12 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
         txParams.m_acknowledgment.swap(acknowledgment);
         acknowledgmentSwapped = true;
     }
-    NS_ASSERT(acknowledgmentTime != Time::Min());
+    NS_ASSERT(acknowledgmentTime.has_value());
 
     Time ppduDurationLimit = Time::Min();
     if (availableTime != Time::Min())
     {
-        ppduDurationLimit = availableTime - *protectionTime - acknowledgmentTime;
+        ppduDurationLimit = availableTime - *protectionTime - *acknowledgmentTime;
     }
 
     if (!IsWithinLimitsIfAggregateMsdu(msdu, txParams, ppduDurationLimit))

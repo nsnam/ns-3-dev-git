@@ -194,7 +194,7 @@ TestMultiUserScheduler::SelectTxFormat()
             (m_availableTime != Time::Min() &&
              *m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // TF tx time
                      + m_apMac->GetWifiPhy()->GetSifs() + duration +
-                     m_txParams.m_acknowledgment->acknowledgmentTime >
+                     *m_txParams.m_acknowledgment->acknowledgmentTime >
                  m_availableTime))
         {
             NS_LOG_DEBUG("Remaining TXOP duration is not enough for BSRP TF exchange");

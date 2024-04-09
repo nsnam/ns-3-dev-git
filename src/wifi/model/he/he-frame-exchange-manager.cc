@@ -212,7 +212,7 @@ HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxPar
     // can reuse this value.
     NS_ASSERT(m_txParams.m_acknowledgment);
 
-    if (m_txParams.m_acknowledgment->acknowledgmentTime == Time::Min())
+    if (!m_txParams.m_acknowledgment->acknowledgmentTime.has_value())
     {
         CalculateAcknowledgmentTime(m_txParams.m_acknowledgment.get());
     }
@@ -233,7 +233,7 @@ HeFrameExchangeManager::SendPsduMapWithProtection(WifiPsduMap psduMap, WifiTxPar
                                          << ") incompatible with BSRP Trigger Frame");
         // Add a SIFS and the TB PPDU duration to the acknowledgment time of the Trigger Frame
         auto txVector = trigger.GetHeTbTxVector(trigger.begin()->GetAid12());
-        m_txParams.m_acknowledgment->acknowledgmentTime +=
+        *m_txParams.m_acknowledgment->acknowledgmentTime +=
             m_phy->GetSifs() + HePhy::ConvertLSigLengthToHeTbPpduDuration(trigger.GetUlLength(),
                                                                           txVector,
                                                                           m_phy->GetPhyBand());
@@ -361,11 +361,12 @@ HeFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
     auto mpdu = Create<WifiMpdu>(payload, hdr);
 
     NS_ASSERT(txParams.m_txDuration.has_value());
+    NS_ASSERT(txParams.m_acknowledgment->acknowledgmentTime.has_value());
     mpdu->GetHeader().SetDuration(
         GetMuRtsDurationId(mpdu->GetSize(),
                            protection->muRtsTxVector,
                            *txParams.m_txDuration,
-                           txParams.m_acknowledgment->acknowledgmentTime));
+                           *txParams.m_acknowledgment->acknowledgmentTime));
 
     // Get the TXVECTOR used by one station to send the CTS response. This is used
     // to compute the preamble duration, so it does not matter which station we choose
@@ -624,7 +625,7 @@ HeFrameExchangeManager::SendPsduMap()
                                                          acknowledgment->muBarTxVector,
                                                          m_phy->GetPhyBand());
             // update acknowledgmentTime to correctly set the Duration/ID
-            acknowledgment->acknowledgmentTime -= (m_phy->GetSifs() + txDuration);
+            *acknowledgment->acknowledgmentTime -= (m_phy->GetSifs() + txDuration);
             m_triggerFrame->GetHeader().SetDuration(GetPsduDurationId(txDuration, m_txParams));
 
             responseTxVector =

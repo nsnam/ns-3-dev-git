@@ -29,6 +29,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 namespace ns3
 {
@@ -101,8 +102,8 @@ struct WifiAcknowledgment
      */
     virtual void Print(std::ostream& os) const = 0;
 
-    const Method method;     //!< acknowledgment method
-    Time acknowledgmentTime; //!< time required by the acknowledgment method
+    const Method method;                    //!< acknowledgment method
+    std::optional<Time> acknowledgmentTime; //!< time required by the acknowledgment method
 
   private:
     /**

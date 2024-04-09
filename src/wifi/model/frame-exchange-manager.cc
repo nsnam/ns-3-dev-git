@@ -401,7 +401,7 @@ FrameExchangeManager::SendMpduWithProtection(Ptr<WifiMpdu> mpdu, WifiTxParameter
     // and SendCtsToSelf() can reuse this value.
     NS_ASSERT(m_txParams.m_acknowledgment);
 
-    if (m_txParams.m_acknowledgment->acknowledgmentTime == Time::Min())
+    if (!m_txParams.m_acknowledgment->acknowledgmentTime.has_value())
     {
         CalculateAcknowledgmentTime(m_txParams.m_acknowledgment.get());
     }
@@ -648,8 +648,8 @@ FrameExchangeManager::GetFrameDurationId(const WifiMacHeader& header,
     NS_LOG_FUNCTION(this << header << size << &txParams << fragmentedPacket);
 
     NS_ASSERT(txParams.m_acknowledgment &&
-              txParams.m_acknowledgment->acknowledgmentTime != Time::Min());
-    Time durationId = txParams.m_acknowledgment->acknowledgmentTime;
+              txParams.m_acknowledgment->acknowledgmentTime.has_value());
+    auto durationId = *txParams.m_acknowledgment->acknowledgmentTime;
 
     // if the current frame is a fragment followed by another fragment, we have to
     // update the Duration/ID to cover the next fragment and the corresponding Ack
@@ -706,9 +706,10 @@ FrameExchangeManager::SendRts(const WifiTxParameters& txParams)
     auto rtsCtsProtection = static_cast<WifiRtsCtsProtection*>(txParams.m_protection.get());
 
     NS_ASSERT(txParams.m_txDuration.has_value());
+    NS_ASSERT(txParams.m_acknowledgment->acknowledgmentTime.has_value());
     rts.SetDuration(GetRtsDurationId(rtsCtsProtection->rtsTxVector,
                                      *txParams.m_txDuration,
-                                     txParams.m_acknowledgment->acknowledgmentTime));
+                                     *txParams.m_acknowledgment->acknowledgmentTime));
     Ptr<WifiMpdu> mpdu = Create<WifiMpdu>(Create<Packet>(), rts);
 
     // After transmitting an RTS frame, the STA shall wait for a CTSTimeout interval with
@@ -807,9 +808,10 @@ FrameExchangeManager::SendCtsToSelf(const WifiTxParameters& txParams)
     auto ctsToSelfProtection = static_cast<WifiCtsToSelfProtection*>(txParams.m_protection.get());
 
     NS_ASSERT(txParams.m_txDuration.has_value());
+    NS_ASSERT(txParams.m_acknowledgment->acknowledgmentTime.has_value());
     cts.SetDuration(GetCtsToSelfDurationId(ctsToSelfProtection->ctsTxVector,
                                            *txParams.m_txDuration,
-                                           txParams.m_acknowledgment->acknowledgmentTime));
+                                           *txParams.m_acknowledgment->acknowledgmentTime));
 
     ForwardMpduDown(Create<WifiMpdu>(Create<Packet>(), cts), ctsToSelfProtection->ctsTxVector);
 
