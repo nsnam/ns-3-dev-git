@@ -346,13 +346,12 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     if (m_availableTime != Time::Min())
     {
         // TryAddMpdu only considers the time to transmit the Trigger Frame
-        NS_ASSERT(m_txParams.m_protection &&
-                  m_txParams.m_protection->protectionTime != Time::Min());
+        NS_ASSERT(m_txParams.m_protection && m_txParams.m_protection->protectionTime.has_value());
         NS_ASSERT(m_txParams.m_acknowledgment &&
                   m_txParams.m_acknowledgment->acknowledgmentTime.IsZero());
         NS_ASSERT(m_txParams.m_txDuration.has_value());
 
-        if (m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // BSRP TF tx time
+        if (*m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // BSRP TF tx time
                 + m_apMac->GetWifiPhy(m_linkId)->GetSifs() + qosNullTxDuration >
             m_availableTime)
         {
@@ -457,14 +456,13 @@ RrMultiUserScheduler::TrySendingBasicTf()
     if (m_availableTime != Time::Min())
     {
         // TryAddMpdu only considers the time to transmit the Trigger Frame
-        NS_ASSERT(m_txParams.m_protection &&
-                  m_txParams.m_protection->protectionTime != Time::Min());
+        NS_ASSERT(m_txParams.m_protection && m_txParams.m_protection->protectionTime.has_value());
         NS_ASSERT(m_txParams.m_acknowledgment &&
                   m_txParams.m_acknowledgment->acknowledgmentTime != Time::Min());
         NS_ASSERT(m_txParams.m_txDuration.has_value());
 
         maxDuration = Min(maxDuration,
-                          m_availableTime - m_txParams.m_protection->protectionTime -
+                          m_availableTime - *m_txParams.m_protection->protectionTime -
                               *m_txParams.m_txDuration - m_apMac->GetWifiPhy(m_linkId)->GetSifs() -
                               m_txParams.m_acknowledgment->acknowledgmentTime);
         if (maxDuration.IsNegative())

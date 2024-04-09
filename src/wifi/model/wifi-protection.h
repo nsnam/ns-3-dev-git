@@ -26,6 +26,7 @@
 #include "ns3/nstime.h"
 
 #include <memory>
+#include <optional>
 
 namespace ns3
 {
@@ -70,8 +71,8 @@ struct WifiProtection
      */
     virtual void Print(std::ostream& os) const = 0;
 
-    const Method method; //!< protection method
-    Time protectionTime; //!< time required by the protection method
+    const Method method;                //!< protection method
+    std::optional<Time> protectionTime; //!< time required by the protection method
 };
 
 /**

@@ -29,8 +29,7 @@ namespace ns3
  */
 
 WifiProtection::WifiProtection(Method m)
-    : method(m),
-      protectionTime(Time::Min()) // uninitialized
+    : method(m)
 {
 }
 

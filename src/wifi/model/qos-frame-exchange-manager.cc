@@ -335,7 +335,7 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
     NS_LOG_FUNCTION(this << *mpdu << &txParams << availableTime);
 
     // check if adding the given MPDU requires a different protection method
-    Time protectionTime = Time::Min(); // uninitialized
+    std::optional<Time> protectionTime; // uninitialized
     if (txParams.m_protection)
     {
         protectionTime = txParams.m_protection->protectionTime;
@@ -355,8 +355,8 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
         txParams.m_protection.swap(protection);
         protectionSwapped = true;
     }
-    NS_ASSERT(protectionTime != Time::Min());
-    NS_LOG_DEBUG("protection time=" << protectionTime);
+    NS_ASSERT(protectionTime.has_value());
+    NS_LOG_DEBUG("protection time=" << *protectionTime);
 
     // check if adding the given MPDU requires a different acknowledgment method
     Time acknowledgmentTime = Time::Min(); // uninitialized
@@ -385,7 +385,7 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
     Time ppduDurationLimit = Time::Min();
     if (availableTime != Time::Min())
     {
-        ppduDurationLimit = availableTime - protectionTime - acknowledgmentTime;
+        ppduDurationLimit = availableTime - *protectionTime - acknowledgmentTime;
     }
 
     if (!IsWithinLimitsIfAddMpdu(mpdu, txParams, ppduDurationLimit))

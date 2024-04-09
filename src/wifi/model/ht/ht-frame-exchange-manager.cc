@@ -1212,7 +1212,7 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
 
     // check if aggregating the given MSDU requires a different protection method
     NS_ASSERT(txParams.m_protection);
-    Time protectionTime = txParams.m_protection->protectionTime;
+    auto protectionTime = txParams.m_protection->protectionTime;
 
     std::unique_ptr<WifiProtection> protection;
     protection = GetProtectionManager()->TryAggregateMsdu(msdu, txParams);
@@ -1228,7 +1228,7 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
         txParams.m_protection.swap(protection);
         protectionSwapped = true;
     }
-    NS_ASSERT(protectionTime != Time::Min());
+    NS_ASSERT(protectionTime.has_value());
 
     // check if aggregating the given MSDU requires a different acknowledgment method
     NS_ASSERT(txParams.m_acknowledgment);
@@ -1253,7 +1253,7 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
     Time ppduDurationLimit = Time::Min();
     if (availableTime != Time::Min())
     {
-        ppduDurationLimit = availableTime - protectionTime - acknowledgmentTime;
+        ppduDurationLimit = availableTime - *protectionTime - acknowledgmentTime;
     }
 
     if (!IsWithinLimitsIfAggregateMsdu(msdu, txParams, ppduDurationLimit))
