@@ -27,6 +27,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 
 namespace ns3
@@ -78,7 +79,7 @@ class WifiTxParameters
     WifiTxVector m_txVector;                              //!< TXVECTOR of the frame being prepared
     std::unique_ptr<WifiProtection> m_protection;         //!< protection method
     std::unique_ptr<WifiAcknowledgment> m_acknowledgment; //!< acknowledgment method
-    Time m_txDuration{Time::Min()};                       //!< TX duration of the frame
+    std::optional<Time> m_txDuration;                     //!< TX duration of the frame
 
     /**
      * Reset the TX parameters.

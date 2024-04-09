@@ -75,7 +75,7 @@ WifiTxParameters::Clear()
     m_txVector = WifiTxVector();
     m_protection.reset(nullptr);
     m_acknowledgment.reset(nullptr);
-    m_txDuration = Time::Min();
+    m_txDuration.reset();
 }
 
 const WifiTxParameters::PsduInfo*

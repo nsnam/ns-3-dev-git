@@ -192,7 +192,7 @@ TestMultiUserScheduler::SelectTxFormat()
 
         if (!GetHeFem(SINGLE_LINK_OP_ID)->TryAddMpdu(item, m_txParams, m_availableTime) ||
             (m_availableTime != Time::Min() &&
-             m_txParams.m_protection->protectionTime + m_txParams.m_txDuration // TF tx time
+             m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // TF tx time
                      + m_apMac->GetWifiPhy()->GetSifs() + duration +
                      m_txParams.m_acknowledgment->acknowledgmentTime >
                  m_availableTime))

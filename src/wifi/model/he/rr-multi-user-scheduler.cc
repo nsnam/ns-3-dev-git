@@ -350,9 +350,9 @@ RrMultiUserScheduler::TrySendingBsrpTf()
                   m_txParams.m_protection->protectionTime != Time::Min());
         NS_ASSERT(m_txParams.m_acknowledgment &&
                   m_txParams.m_acknowledgment->acknowledgmentTime.IsZero());
-        NS_ASSERT(m_txParams.m_txDuration != Time::Min());
+        NS_ASSERT(m_txParams.m_txDuration.has_value());
 
-        if (m_txParams.m_protection->protectionTime + m_txParams.m_txDuration // BSRP TF tx time
+        if (m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // BSRP TF tx time
                 + m_apMac->GetWifiPhy(m_linkId)->GetSifs() + qosNullTxDuration >
             m_availableTime)
         {
@@ -461,11 +461,11 @@ RrMultiUserScheduler::TrySendingBasicTf()
                   m_txParams.m_protection->protectionTime != Time::Min());
         NS_ASSERT(m_txParams.m_acknowledgment &&
                   m_txParams.m_acknowledgment->acknowledgmentTime != Time::Min());
-        NS_ASSERT(m_txParams.m_txDuration != Time::Min());
+        NS_ASSERT(m_txParams.m_txDuration.has_value());
 
         maxDuration = Min(maxDuration,
                           m_availableTime - m_txParams.m_protection->protectionTime -
-                              m_txParams.m_txDuration - m_apMac->GetWifiPhy(m_linkId)->GetSifs() -
+                              *m_txParams.m_txDuration - m_apMac->GetWifiPhy(m_linkId)->GetSifs() -
                               m_txParams.m_acknowledgment->acknowledgmentTime);
         if (maxDuration.IsNegative())
         {
@@ -943,9 +943,10 @@ RrMultiUserScheduler::ComputeDlMuInfo()
         }
     }
 
+    NS_ASSERT(dlMuInfo.txParams.m_txDuration.has_value());
     AcIndex primaryAc = m_edca->GetAccessCategory();
     UpdateCredits(m_staListDl[primaryAc],
-                  dlMuInfo.txParams.m_txDuration,
+                  *dlMuInfo.txParams.m_txDuration,
                   dlMuInfo.txParams.m_txVector);
 
     NS_LOG_DEBUG("Next station to serve has AID=" << m_staListDl[primaryAc].front().aid);

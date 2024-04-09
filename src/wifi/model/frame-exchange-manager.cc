@@ -705,9 +705,9 @@ FrameExchangeManager::SendRts(const WifiTxParameters& txParams)
     NS_ASSERT(txParams.m_protection && txParams.m_protection->method == WifiProtection::RTS_CTS);
     auto rtsCtsProtection = static_cast<WifiRtsCtsProtection*>(txParams.m_protection.get());
 
-    NS_ASSERT(txParams.m_txDuration != Time::Min());
+    NS_ASSERT(txParams.m_txDuration.has_value());
     rts.SetDuration(GetRtsDurationId(rtsCtsProtection->rtsTxVector,
-                                     txParams.m_txDuration,
+                                     *txParams.m_txDuration,
                                      txParams.m_acknowledgment->acknowledgmentTime));
     Ptr<WifiMpdu> mpdu = Create<WifiMpdu>(Create<Packet>(), rts);
 
@@ -806,9 +806,9 @@ FrameExchangeManager::SendCtsToSelf(const WifiTxParameters& txParams)
               txParams.m_protection->method == WifiProtection::CTS_TO_SELF);
     auto ctsToSelfProtection = static_cast<WifiCtsToSelfProtection*>(txParams.m_protection.get());
 
-    NS_ASSERT(txParams.m_txDuration != Time::Min());
+    NS_ASSERT(txParams.m_txDuration.has_value());
     cts.SetDuration(GetCtsToSelfDurationId(ctsToSelfProtection->ctsTxVector,
-                                           txParams.m_txDuration,
+                                           *txParams.m_txDuration,
                                            txParams.m_acknowledgment->acknowledgmentTime));
 
     ForwardMpduDown(Create<WifiMpdu>(Create<Packet>(), cts), ctsToSelfProtection->ctsTxVector);

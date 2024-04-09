@@ -360,11 +360,11 @@ HeFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
 
     auto mpdu = Create<WifiMpdu>(payload, hdr);
 
-    NS_ASSERT(txParams.m_txDuration != Time::Min());
+    NS_ASSERT(txParams.m_txDuration.has_value());
     mpdu->GetHeader().SetDuration(
         GetMuRtsDurationId(mpdu->GetSize(),
                            protection->muRtsTxVector,
-                           txParams.m_txDuration,
+                           *txParams.m_txDuration,
                            txParams.m_acknowledgment->acknowledgmentTime));
 
     // Get the TXVECTOR used by one station to send the CTS response. This is used
@@ -1248,7 +1248,7 @@ HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
                                                    m_phy->GetPhyBand(),
                                                    staId);
 
-    return std::max(psduDuration, txParams.m_txDuration);
+    return txParams.m_txDuration ? std::max(psduDuration, *txParams.m_txDuration) : psduDuration;
 }
 
 void
