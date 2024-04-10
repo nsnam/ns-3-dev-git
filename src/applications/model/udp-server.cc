@@ -38,6 +38,12 @@ UdpServer::GetTypeId()
             .SetParent<Application>()
             .SetGroupName("Applications")
             .AddConstructor<UdpServer>()
+            .AddAttribute("Local",
+                          "The Address on which to Bind the rx socket. "
+                          "If it is not specified, it will listen to any address.",
+                          AddressValue(),
+                          MakeAddressAccessor(&UdpServer::m_local),
+                          MakeAddressChecker())
             .AddAttribute("Port",
                           "Port on which we listen for incoming packets.",
                           UintegerValue(100),
@@ -68,8 +74,10 @@ UdpServer::GetTypeId()
 }
 
 UdpServer::UdpServer()
-    : m_received(0),
-      m_lossCounter(0)
+    : m_socket{nullptr},
+      m_socket6{nullptr},
+      m_received{0},
+      m_lossCounter{0}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -114,30 +122,34 @@ UdpServer::StartApplication()
 
     if (!m_socket)
     {
-        TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");
+        auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
         m_socket = Socket::CreateSocket(GetNode(), tid);
-        InetSocketAddress local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
+        auto local = m_local;
+        if (local.IsInvalid())
+        {
+            local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
+        }
         if (m_socket->Bind(local) == -1)
         {
             NS_FATAL_ERROR("Failed to bind socket");
         }
+        m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
+        m_socket->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
     }
 
-    m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-    m_socket->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
-
-    if (!m_socket6)
+    if (m_local.IsInvalid() && !m_socket6)
     {
-        TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");
+        // local address is not specified, so create another socket to also listen to all IPv6
+        // addresses
+        auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
         m_socket6 = Socket::CreateSocket(GetNode(), tid);
-        Inet6SocketAddress local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
+        auto local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
         if (m_socket6->Bind(local) == -1)
         {
             NS_FATAL_ERROR("Failed to bind socket");
         }
+        m_socket6->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
     }
-
-    m_socket6->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
 }
 
 void
@@ -149,26 +161,29 @@ UdpServer::StopApplication()
     {
         m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
     }
+    if (m_socket6)
+    {
+        m_socket6->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
+    }
 }
 
 void
 UdpServer::HandleRead(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
-    Ptr<Packet> packet;
     Address from;
-    Address localAddress;
-    while ((packet = socket->RecvFrom(from)))
+    while (auto packet = socket->RecvFrom(from))
     {
+        Address localAddress;
         socket->GetSockName(localAddress);
         m_rxTrace(packet);
         m_rxTraceWithAddresses(packet, from, localAddress);
         if (packet->GetSize() > 0)
         {
-            uint32_t receivedSize = packet->GetSize();
+            const auto receivedSize = packet->GetSize();
             SeqTsHeader seqTs;
             packet->RemoveHeader(seqTs);
-            uint32_t currentSequenceNumber = seqTs.GetSeq();
+            const auto currentSequenceNumber = seqTs.GetSeq();
             if (InetSocketAddress::IsMatchingType(from))
             {
                 NS_LOG_INFO("TraceDelay: RX " << receivedSize << " bytes from "

@@ -41,6 +41,14 @@ class UdpServerHelper : public ApplicationHelper
      * \param port The port the server will wait on for incoming packets
      */
     UdpServerHelper(uint16_t port);
+
+    /**
+     * Create UdpServerHelper which will make life easier for people trying
+     * to set up simulations with udp-client-server application.
+     *
+     * \param address The address the server will bind to
+     */
+    UdpServerHelper(const Address& address);
 };
 
 /**

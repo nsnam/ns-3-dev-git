@@ -26,6 +26,12 @@ UdpServerHelper::UdpServerHelper(uint16_t port)
     SetAttribute("Port", UintegerValue(port));
 }
 
+UdpServerHelper::UdpServerHelper(const Address& address)
+    : UdpServerHelper()
+{
+    SetAttribute("Local", AddressValue(address));
+}
+
 UdpClientHelper::UdpClientHelper()
     : ApplicationHelper(UdpClient::GetTypeId())
 {

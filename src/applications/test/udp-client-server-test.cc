@@ -162,7 +162,7 @@ UdpTraceClientServerTestCase::DoRun()
     Ipv4InterfaceContainer i = ipv4.Assign(d);
 
     uint16_t port = 4000;
-    UdpServerHelper serverHelper(port);
+    UdpServerHelper serverHelper(InetSocketAddress(Ipv4Address::GetAny(), port));
     auto serverApp = serverHelper.Install(n.Get(1));
     serverApp.Start(Seconds(1.0));
     serverApp.Stop(Seconds(10.0));
