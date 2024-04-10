@@ -1233,13 +1233,14 @@ HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
         txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_AGGREGATE_TF)
     {
         // we need to account for the size of the aggregated MU-BAR Trigger Frame
-        auto acknowledgment = static_cast<WifiDlMuAggregateTf*>(txParams.m_acknowledgment.get());
+        auto psduInfo = txParams.GetPsduInfo(receiver);
+        NS_ASSERT_MSG(psduInfo, "No information for " << receiver << " in TX params");
+        NS_ASSERT_MSG(!psduInfo->seqNumbers.empty(), "No sequence number for " << receiver);
+        const auto tid = psduInfo->seqNumbers.cbegin()->first;
 
-        const auto& info = acknowledgment->stationsReplyingWithBlockAck.find(receiver);
-        NS_ASSERT(info != acknowledgment->stationsReplyingWithBlockAck.end());
-
-        ppduPayloadSize =
-            MpduAggregator::GetSizeIfAggregated(info->second.muBarSize, ppduPayloadSize);
+        ppduPayloadSize = MpduAggregator::GetSizeIfAggregated(
+            GetMuBarSize({m_mac->GetBarTypeAsOriginator(receiver, tid)}),
+            ppduPayloadSize);
     }
 
     uint16_t staId = (txParams.m_txVector.IsDlMu() ? m_apMac->GetAssociationId(receiver, m_linkId)
@@ -1877,9 +1878,9 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
         // frames might fail because MPDU aggregation is disabled by default for VO
         // and BK. Therefore, we skip the check on max A-MPDU size and only update the
         // TX parameters below.
-        txParams.m_acknowledgment = GetAckManager()->TryAddMpdu(mpdu, txParams);
         txParams.AddMpdu(mpdu);
         UpdateTxDuration(mpdu->GetHeader().GetAddr1(), txParams);
+        txParams.m_acknowledgment = GetAckManager()->TryAddMpdu(mpdu, txParams);
         mpduList.push_back(mpdu);
         header.SetQosTid(++tid);
     }

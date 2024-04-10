@@ -1143,9 +1143,9 @@ HtFrameExchangeManager::IsWithinLimitsIfAddMpdu(Ptr<const WifiMpdu> mpdu,
     NS_LOG_FUNCTION(this << *mpdu << &txParams << ppduDurationLimit);
 
     Mac48Address receiver = mpdu->GetHeader().GetAddr1();
-    uint32_t ampduSize = txParams.GetSizeIfAddMpdu(mpdu);
+    uint32_t ampduSize = txParams.GetSize(receiver);
 
-    if (txParams.GetSize(receiver) > 0)
+    if (!txParams.LastAddedIsFirstMpdu(receiver))
     {
         // we are attempting to perform A-MPDU aggregation, hence we have to check
         // that we meet the limit on the max A-MPDU size

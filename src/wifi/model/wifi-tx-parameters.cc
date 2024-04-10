@@ -115,13 +115,29 @@ WifiTxParameters::AddMpdu(Ptr<const WifiMpdu> mpdu)
         }
 
         // Insert the info about the given frame
-        m_info.emplace(hdr.GetAddr1(), PsduInfo{hdr, mpdu->GetPacketSize(), 0, seqNumbers});
+        const auto [it, inserted] =
+            m_info.emplace(hdr.GetAddr1(), PsduInfo{hdr, mpdu->GetPacketSize(), 0, seqNumbers});
+        NS_ASSERT(inserted);
+
+        // store information to undo the addition of this MPDU
+        m_lastInfoIt = it;
+        m_undoInfo = PsduInfo{WifiMacHeader{}, 0, 0, {}};
         return;
     }
 
     // a PSDU for the receiver of the given MPDU is already being built
     NS_ASSERT_MSG((hdr.IsQosData() && !hdr.HasData()) || infoIt->second.amsduSize > 0,
                   "An MPDU can only be aggregated to an existing (A-)MPDU");
+
+    // store information to undo the addition of this MPDU
+    m_lastInfoIt = infoIt;
+    m_undoInfo =
+        PsduInfo{infoIt->second.header, infoIt->second.amsduSize, infoIt->second.ampduSize, {}};
+    if (hdr.IsQosData())
+    {
+        m_undoInfo.seqNumbers = {
+            {hdr.GetQosTid(), {hdr.GetSequenceNumber()}}}; // seq number to remove
+    }
 
     // The (A-)MSDU being built is included in an A-MPDU subframe
     infoIt->second.ampduSize = MpduAggregator::GetSizeIfAggregated(
@@ -132,15 +148,57 @@ WifiTxParameters::AddMpdu(Ptr<const WifiMpdu> mpdu)
 
     if (hdr.IsQosData())
     {
-        auto ret = infoIt->second.seqNumbers.emplace(hdr.GetQosTid(),
-                                                     std::set<uint16_t>{hdr.GetSequenceNumber()});
+        const auto [it, inserted] =
+            infoIt->second.seqNumbers.emplace(hdr.GetQosTid(),
+                                              std::set<uint16_t>{hdr.GetSequenceNumber()});
 
-        if (!ret.second)
+        if (!inserted)
         {
             // insertion did not happen because an entry with the same TID already exists
-            ret.first->second.insert(hdr.GetSequenceNumber());
+            it->second.insert(hdr.GetSequenceNumber());
         }
     }
+}
+
+void
+WifiTxParameters::UndoAddMpdu()
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(m_lastInfoIt.has_value());
+
+    if (m_undoInfo.amsduSize == 0 && m_undoInfo.ampduSize == 0)
+    {
+        // the last MPDU was the first one being added for its receiver
+        m_info.erase(*m_lastInfoIt);
+        m_lastInfoIt.reset();
+        return;
+    }
+
+    auto& lastInfo = (*m_lastInfoIt)->second;
+    lastInfo.header = m_undoInfo.header;
+    lastInfo.amsduSize = m_undoInfo.amsduSize;
+    lastInfo.ampduSize = m_undoInfo.ampduSize;
+    // if the MPDU to remove is not a QoS data frame or it is the first QoS data frame added for
+    // a given receiver, no sequence number information is stored
+    if (!m_undoInfo.seqNumbers.empty())
+    {
+        NS_ASSERT(m_undoInfo.seqNumbers.size() == 1);
+        const auto tid = m_undoInfo.seqNumbers.cbegin()->first;
+        auto& seqNoSet = m_undoInfo.seqNumbers.cbegin()->second;
+        NS_ASSERT(seqNoSet.size() == 1);
+        NS_ASSERT(lastInfo.seqNumbers.contains(tid));
+        lastInfo.seqNumbers.at(tid).erase(*seqNoSet.cbegin());
+    }
+    m_lastInfoIt.reset();
+}
+
+bool
+WifiTxParameters::LastAddedIsFirstMpdu(Mac48Address receiver) const
+{
+    auto infoIt = m_info.find(receiver);
+    NS_ASSERT_MSG(infoIt != m_info.cend(), "No frame added for receiver " << receiver);
+    NS_ASSERT_MSG(m_lastInfoIt == infoIt, "Last MPDU not addressed to " << receiver);
+    return (m_undoInfo.amsduSize == 0 && m_undoInfo.ampduSize == 0);
 }
 
 uint32_t

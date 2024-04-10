@@ -347,10 +347,10 @@ FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, uint16_t allowedWidth)
     WifiTxParameters txParams;
     txParams.m_txVector =
         GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
-    txParams.m_protection = m_protectionManager->TryAddMpdu(mpdu, txParams);
-    txParams.m_acknowledgment = m_ackManager->TryAddMpdu(mpdu, txParams);
     txParams.AddMpdu(mpdu);
     UpdateTxDuration(mpdu->GetHeader().GetAddr1(), txParams);
+    txParams.m_protection = m_protectionManager->TryAddMpdu(mpdu, txParams);
+    txParams.m_acknowledgment = m_ackManager->TryAddMpdu(mpdu, txParams);
 
     SendMpduWithProtection(mpdu, txParams);
 

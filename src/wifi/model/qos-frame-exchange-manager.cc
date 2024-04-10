@@ -311,6 +311,8 @@ QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
     {
         WifiTxParameters fragmentTxParams;
         fragmentTxParams.m_txVector = txParams.m_txVector;
+        fragmentTxParams.AddMpdu(item);
+        UpdateTxDuration(item->GetHeader().GetAddr1(), fragmentTxParams);
         txParams.m_protection = GetProtectionManager()->TryAddMpdu(item, fragmentTxParams);
         NS_ASSERT(txParams.m_protection);
     }
@@ -333,6 +335,11 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
 {
     NS_ASSERT(mpdu);
     NS_LOG_FUNCTION(this << *mpdu << &txParams << availableTime);
+
+    // tentatively add the given MPDU
+    auto prevTxDuration = txParams.m_txDuration;
+    txParams.AddMpdu(mpdu);
+    UpdateTxDuration(mpdu->GetHeader().GetAddr1(), txParams);
 
     // check if adding the given MPDU requires a different protection method
     std::optional<Time> protectionTime; // uninitialized
@@ -390,8 +397,10 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
 
     if (!IsWithinLimitsIfAddMpdu(mpdu, txParams, ppduDurationLimit))
     {
-        // adding MPDU failed, restore protection and acknowledgment methods
-        // if they were swapped
+        // adding MPDU failed, undo the addition of the MPDU and restore protection and
+        // acknowledgment methods if they were swapped
+        txParams.UndoAddMpdu();
+        txParams.m_txDuration = prevTxDuration;
         if (protectionSwapped)
         {
             txParams.m_protection.swap(protection);
@@ -402,10 +411,6 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
         }
         return false;
     }
-
-    // the given MPDU can be added, hence update the txParams
-    txParams.AddMpdu(mpdu);
-    UpdateTxDuration(mpdu->GetHeader().GetAddr1(), txParams);
 
     return true;
 }
