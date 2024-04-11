@@ -129,10 +129,9 @@ class WifiTxParameters
      * Get the size in bytes of the frame in case the given MSDU is aggregated.
      *
      * \param msdu the given MSDU
-     * \return a pair (size in bytes of the current A-MSDU, size in bytes of the frame)
-               in case the given MSDU is aggregated
+     * \return size in bytes of the frame in case the given MSDU is aggregated
      */
-    std::pair<uint32_t, uint32_t> GetSizeIfAggregateMsdu(Ptr<const WifiMpdu> msdu) const;
+    uint32_t GetSizeIfAggregateMsdu(Ptr<const WifiMpdu> msdu) const;
 
     /**
      * Get the size in bytes of the (A-)MPDU addressed to the given receiver.

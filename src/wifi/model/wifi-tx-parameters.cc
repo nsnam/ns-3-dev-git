@@ -241,11 +241,11 @@ WifiTxParameters::AggregateMsdu(Ptr<const WifiMpdu> msdu)
     m_undoInfo =
         PsduInfo{infoIt->second.header, infoIt->second.amsduSize, infoIt->second.ampduSize, {}};
 
-    infoIt->second.amsduSize = GetSizeIfAggregateMsdu(msdu).first;
+    infoIt->second.amsduSize = GetSizeIfAggregateMsdu(msdu);
     infoIt->second.header.SetQosAmsdu();
 }
 
-std::pair<uint32_t, uint32_t>
+uint32_t
 WifiTxParameters::GetSizeIfAggregateMsdu(Ptr<const WifiMpdu> msdu) const
 {
     NS_LOG_FUNCTION(this << *msdu);
@@ -275,17 +275,7 @@ WifiTxParameters::GetSizeIfAggregateMsdu(Ptr<const WifiMpdu> msdu) const
         currAmsduSize = MsduAggregator::GetSizeIfAggregated(currAmsduSize, 0);
     }
 
-    uint32_t newAmsduSize =
-        MsduAggregator::GetSizeIfAggregated(msdu->GetPacket()->GetSize(), currAmsduSize);
-    uint32_t newMpduSize = infoIt->second.header.GetSize() + newAmsduSize + WIFI_MAC_FCS_LENGTH;
-
-    if (infoIt->second.ampduSize > 0 || m_txVector.GetModulationClass() >= WIFI_MOD_CLASS_VHT)
-    {
-        return {newAmsduSize,
-                MpduAggregator::GetSizeIfAggregated(newMpduSize, infoIt->second.ampduSize)};
-    }
-
-    return {newAmsduSize, newMpduSize};
+    return MsduAggregator::GetSizeIfAggregated(msdu->GetPacket()->GetSize(), currAmsduSize);
 }
 
 uint32_t
