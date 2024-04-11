@@ -454,7 +454,8 @@ QosFrameExchangeManager::IsWithinSizeAndTimeLimits(uint32_t ppduPayloadSize,
     // Get the maximum PPDU Duration based on the preamble type
     Time maxPpduDuration = GetPpduMaxTime(txParams.m_txVector.GetPreambleType());
 
-    Time txTime = GetTxDuration(ppduPayloadSize, receiver, txParams);
+    NS_ASSERT_MSG(txParams.m_txDuration, "TX duration not yet computed");
+    auto txTime = txParams.m_txDuration.value();
     NS_LOG_DEBUG("PPDU duration: " << txTime.As(Time::MS));
 
     if ((ppduDurationLimit.IsStrictlyPositive() && txTime > ppduDurationLimit) ||

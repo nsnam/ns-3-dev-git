@@ -1830,8 +1830,7 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
         return;
     }
 
-    WifiMacHeader header;
-    header.SetType(WIFI_MAC_QOSDATA_NULL);
+    WifiMacHeader header(WIFI_MAC_QOSDATA_NULL);
     header.SetAddr1(hdr.GetAddr2());
     header.SetAddr2(m_self);
     header.SetAddr3(hdr.GetAddr2());
@@ -1853,36 +1852,38 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
                                                                    m_phy->GetPhyBand());
     header.SetDuration(hdr.GetDuration() - m_phy->GetSifs() - ppduDuration);
 
-    Ptr<WifiMpdu> mpdu;
     std::vector<Ptr<WifiMpdu>> mpduList;
-    uint8_t tid = 0;
-    header.SetQosTid(tid);
 
-    while (tid < 8 &&
-           IsWithinSizeAndTimeLimits(
-               txParams.GetSizeIfAddMpdu(mpdu = Create<WifiMpdu>(Create<Packet>(), header)),
-               hdr.GetAddr2(),
-               txParams,
-               ppduDuration))
+    for (uint8_t tid = 0; tid < 8; ++tid)
     {
         if (!m_mac->GetBaAgreementEstablishedAsOriginator(hdr.GetAddr2(), tid))
         {
             NS_LOG_DEBUG("Skipping tid=" << +tid << " because no agreement established");
-            header.SetQosTid(++tid);
             continue;
         }
 
-        NS_LOG_DEBUG("Aggregating a QoS Null frame with tid=" << +tid);
-        // We could call TryAddMpdu instead of IsWithinSizeAndTimeLimits above in order to
+        // We could call TryAddMpdu instead of IsWithinSizeAndTimeLimits below in order to
         // get the TX parameters updated automatically. However, aggregating the QoS Null
         // frames might fail because MPDU aggregation is disabled by default for VO
         // and BK. Therefore, we skip the check on max A-MPDU size and only update the
         // TX parameters below.
+        header.SetQosTid(tid);
+        auto mpdu = Create<WifiMpdu>(Create<Packet>(), header);
         txParams.AddMpdu(mpdu);
-        UpdateTxDuration(mpdu->GetHeader().GetAddr1(), txParams);
+        UpdateTxDuration(header.GetAddr1(), txParams);
+
+        if (!IsWithinSizeAndTimeLimits(txParams.GetSize(header.GetAddr1()),
+                                       hdr.GetAddr2(),
+                                       txParams,
+                                       ppduDuration))
+        {
+            txParams.UndoAddMpdu();
+            break;
+        }
+
+        NS_LOG_DEBUG("Aggregating a QoS Null frame with tid=" << +tid);
         txParams.m_acknowledgment = GetAckManager()->TryAddMpdu(mpdu, txParams);
         mpduList.push_back(mpdu);
-        header.SetQosTid(++tid);
     }
 
     if (mpduList.empty())
