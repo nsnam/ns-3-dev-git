@@ -1210,6 +1210,11 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
     NS_ASSERT(msdu && msdu->GetHeader().IsQosData());
     NS_LOG_FUNCTION(this << *msdu << &txParams << availableTime);
 
+    // tentatively aggregate the given MPDU
+    auto prevTxDuration = txParams.m_txDuration;
+    txParams.AggregateMsdu(msdu);
+    UpdateTxDuration(msdu->GetHeader().GetAddr1(), txParams);
+
     // check if aggregating the given MSDU requires a different protection method
     NS_ASSERT(txParams.m_protection);
     auto protectionTime = txParams.m_protection->protectionTime;
@@ -1258,8 +1263,10 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
 
     if (!IsWithinLimitsIfAggregateMsdu(msdu, txParams, ppduDurationLimit))
     {
-        // adding MPDU failed, restore protection and acknowledgment methods
-        // if they were swapped
+        // adding MPDU failed, undo the addition of the MPDU and restore protection and
+        // acknowledgment methods if they were swapped
+        txParams.UndoAddMpdu();
+        txParams.m_txDuration = prevTxDuration;
         if (protectionSwapped)
         {
             txParams.m_protection.swap(protection);
@@ -1270,10 +1277,6 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
         }
         return false;
     }
-
-    // the given MPDU can be added, hence update the txParams
-    txParams.AggregateMsdu(msdu);
-    UpdateTxDuration(msdu->GetHeader().GetAddr1(), txParams);
 
     return true;
 }
@@ -1286,10 +1289,11 @@ HtFrameExchangeManager::IsWithinLimitsIfAggregateMsdu(Ptr<const WifiMpdu> msdu,
     NS_ASSERT(msdu && msdu->GetHeader().IsQosData());
     NS_LOG_FUNCTION(this << *msdu << &txParams << ppduDurationLimit);
 
-    std::pair<uint16_t, uint32_t> ret = txParams.GetSizeIfAggregateMsdu(msdu);
-    Mac48Address receiver = msdu->GetHeader().GetAddr1();
-    uint8_t tid = msdu->GetHeader().GetQosTid();
-    WifiModulationClass modulation = txParams.m_txVector.GetModulationClass();
+    auto receiver = msdu->GetHeader().GetAddr1();
+    auto tid = msdu->GetHeader().GetQosTid();
+    auto modulation = txParams.m_txVector.GetModulationClass();
+    auto psduInfo = txParams.GetPsduInfo(receiver);
+    NS_ASSERT_MSG(psduInfo, "No PSDU info for receiver " << receiver);
 
     // Check that the limit on A-MSDU size is met
     uint16_t maxAmsduSize = m_msduAggregator->GetMaxAmsduSize(receiver, tid, modulation);
@@ -1300,7 +1304,7 @@ HtFrameExchangeManager::IsWithinLimitsIfAggregateMsdu(Ptr<const WifiMpdu> msdu,
         return false;
     }
 
-    if (ret.first > maxAmsduSize)
+    if (psduInfo->amsduSize > maxAmsduSize)
     {
         NS_LOG_DEBUG("No other MSDU can be aggregated: maximum A-MSDU size (" << maxAmsduSize
                                                                               << ") reached ");
@@ -1309,18 +1313,19 @@ HtFrameExchangeManager::IsWithinLimitsIfAggregateMsdu(Ptr<const WifiMpdu> msdu,
 
     const WifiTxParameters::PsduInfo* info = txParams.GetPsduInfo(msdu->GetHeader().GetAddr1());
     NS_ASSERT(info);
+    auto ampduSize = txParams.GetSize(receiver);
 
     if (info->ampduSize > 0)
     {
         // the A-MSDU being built is aggregated to other MPDUs in an A-MPDU.
         // Check that the limit on A-MPDU size is met.
-        if (!IsWithinAmpduSizeLimit(ret.second, receiver, tid, modulation))
+        if (!IsWithinAmpduSizeLimit(ampduSize, receiver, tid, modulation))
         {
             return false;
         }
     }
 
-    return IsWithinSizeAndTimeLimits(ret.second, receiver, txParams, ppduDurationLimit);
+    return IsWithinSizeAndTimeLimits(ampduSize, receiver, txParams, ppduDurationLimit);
 }
 
 void

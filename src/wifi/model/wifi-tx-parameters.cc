@@ -236,6 +236,11 @@ WifiTxParameters::AggregateMsdu(Ptr<const WifiMpdu> msdu)
     NS_ASSERT_MSG(infoIt != m_info.end(),
                   "There must be already an MPDU addressed to the same receiver");
 
+    // store information to undo the addition of this MSDU
+    m_lastInfoIt = infoIt;
+    m_undoInfo =
+        PsduInfo{infoIt->second.header, infoIt->second.amsduSize, infoIt->second.ampduSize, {}};
+
     infoIt->second.amsduSize = GetSizeIfAggregateMsdu(msdu).first;
     infoIt->second.header.SetQosAmsdu();
 }

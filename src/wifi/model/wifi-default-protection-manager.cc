@@ -159,7 +159,7 @@ WifiDefaultProtectionManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
 
     std::unique_ptr<WifiProtection> protection;
     protection = GetPsduProtection(msdu->GetHeader(),
-                                   txParams.GetSizeIfAggregateMsdu(msdu).second,
+                                   txParams.GetSize(msdu->GetHeader().GetAddr1()),
                                    txParams.m_txVector);
 
     // the protection method may still be none
