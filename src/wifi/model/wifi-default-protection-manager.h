@@ -57,13 +57,12 @@ class WifiDefaultProtectionManager : public WifiProtectionManager
      * Select the protection method for a single PSDU.
      *
      * \param hdr the MAC header of the PSDU
-     * \param size the size in bytes of the PSDU
-     * \param txVector the TxVector used to transmit the PSDU
+     * \param txParams the TX parameters describing the PSDU
      * \return the selected protection method
      */
-    virtual std::unique_ptr<WifiProtection> GetPsduProtection(const WifiMacHeader& hdr,
-                                                              uint32_t size,
-                                                              const WifiTxVector& txVector) const;
+    virtual std::unique_ptr<WifiProtection> GetPsduProtection(
+        const WifiMacHeader& hdr,
+        const WifiTxParameters& txParams) const;
 
   private:
     /**

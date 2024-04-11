@@ -49,6 +49,7 @@ class WifiMacHeader;
 class Packet;
 class WifiMpdu;
 class WifiTxVector;
+class WifiTxParameters;
 
 struct WifiRemoteStationState;
 struct RxSignalInfo;
@@ -955,13 +956,13 @@ class WifiRemoteStationManager : public Object
     void ReportRxOk(Mac48Address address, RxSignalInfo rxSignalInfo, WifiTxVector txVector);
 
     /**
-     * \param header MAC header
-     * \param size the size of the frame to send in bytes
+     * \param header MAC header of the data frame to send
+     * \param txParams the TX parameters for the data frame to send
      *
      * \return true if we want to use an RTS/CTS handshake for this
      *         frame before sending it, false otherwise.
      */
-    bool NeedRts(const WifiMacHeader& header, uint32_t size);
+    bool NeedRts(const WifiMacHeader& header, const WifiTxParameters& txParams);
     /**
      * Return if we need to do CTS-to-self before sending a DATA.
      *
@@ -1494,6 +1495,7 @@ class WifiRemoteStationManager : public Object
     uint32_t m_maxSsrc;                //!< Maximum STA short retry count (SSRC)
     uint32_t m_maxSlrc;                //!< Maximum STA long retry count (SLRC)
     uint32_t m_rtsCtsThreshold;        //!< Threshold for RTS/CTS
+    Time m_rtsCtsTxDurationThresh;     //!< TX duration threshold for RTS/CTS
     uint32_t m_fragmentationThreshold; //!< Current threshold for fragmentation
     uint8_t m_defaultTxPowerLevel;     //!< Default transmission power level
     WifiMode m_nonUnicastMode;         //!< Transmission mode for non-unicast Data frames

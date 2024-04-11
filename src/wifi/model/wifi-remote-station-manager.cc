@@ -26,6 +26,7 @@
 #include "wifi-mpdu.h"
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
+#include "wifi-tx-parameters.h"
 
 #include "ns3/boolean.h"
 #include "ns3/eht-configuration.h"
@@ -74,6 +75,13 @@ WifiRemoteStationManager::GetTypeId()
                           UintegerValue(4692480),
                           MakeUintegerAccessor(&WifiRemoteStationManager::SetRtsCtsThreshold),
                           MakeUintegerChecker<uint32_t>(0, 4692480))
+            .AddAttribute("RtsCtsTxDurationThresh",
+                          "If this threshold is a strictly positive value and the TX duration of "
+                          "the PSDU is greater than or equal to this threshold, we use an RTS/CTS "
+                          "handshake before sending the data frame.",
+                          TimeValue(Time{0}),
+                          MakeTimeAccessor(&WifiRemoteStationManager::m_rtsCtsTxDurationThresh),
+                          MakeTimeChecker())
             .AddAttribute(
                 "FragmentationThreshold",
                 "If the size of the PSDU is bigger than this value, we fragment it such that the "
@@ -1119,12 +1127,11 @@ WifiRemoteStationManager::ReportAmpduTxStatus(Mac48Address address,
 }
 
 bool
-WifiRemoteStationManager::NeedRts(const WifiMacHeader& header, uint32_t size)
+WifiRemoteStationManager::NeedRts(const WifiMacHeader& header, const WifiTxParameters& txParams)
 {
-    NS_LOG_FUNCTION(this << header << size);
-    Mac48Address address = header.GetAddr1();
-    WifiTxVector txVector = GetDataTxVector(header, m_wifiPhy->GetChannelWidth());
-    const auto modulationClass = txVector.GetModulationClass();
+    NS_LOG_FUNCTION(this << header << &txParams);
+    auto address = header.GetAddr1();
+    const auto modulationClass = txParams.m_txVector.GetModulationClass();
     if (address.IsGroup())
     {
         return false;
@@ -1146,7 +1153,11 @@ WifiRemoteStationManager::NeedRts(const WifiMacHeader& header, uint32_t size)
         NS_LOG_DEBUG("WifiRemoteStationManager::NeedRTS returning true to protect non-HT stations");
         return true;
     }
-    bool normally = (size > m_rtsCtsThreshold);
+    NS_ASSERT(txParams.m_txDuration.has_value());
+    auto size = txParams.GetSize(header.GetAddr1());
+    bool normally =
+        (size > m_rtsCtsThreshold) || (m_rtsCtsTxDurationThresh.IsStrictlyPositive() &&
+                                       *txParams.m_txDuration >= m_rtsCtsTxDurationThresh);
     return DoNeedRts(Lookup(address), size, normally);
 }
 

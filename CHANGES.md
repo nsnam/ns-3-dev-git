@@ -23,6 +23,7 @@ Changes from ns-3.41 to ns-3-dev
 redundant code in existing helpers and reducing the burden to add yet another helper when a new
 application model is added.
 * (wifi) Added a new **SingleRtsPerTxop** attribute to `WifiDefaultProtectionManager`, which, if set to true, prevents to use protection mechanisms (RTS or MU-RTS) more than once in a TXOP (unless required for specific purposes, such as transmitting an Initial Control Frame to an EMLSR client).
+* (wifi) Added a new **RtsCtsTxDurationThresh** to `WifiRemoteStationManager` to enable RTS/CTS protection based on the TX duration of the data frame. Both the value of this attribute and the value of the existing **RtsCtsThreshold** attribute are evaluated: if either of the thresholds (or both) is exceeded, RTS/CTS is used.
 
 ### Changes to existing API
 
