@@ -513,13 +513,14 @@ ChannelAccessManager::DoGrantDcfAccess()
 {
     NS_LOG_FUNCTION(this);
     uint32_t k = 0;
-    Time now = Simulator::Now();
+    const auto now = Simulator::Now();
+    const auto accessGrantStart = GetAccessGrantStart();
     for (auto i = m_txops.begin(); i != m_txops.end(); k++)
     {
         Ptr<Txop> txop = *i;
         if (txop->GetAccessStatus(m_linkId) == Txop::REQUESTED &&
             (!txop->IsQosTxop() || !StaticCast<QosTxop>(txop)->EdcaDisabled(m_linkId)) &&
-            GetBackoffEndFor(txop) <= now)
+            GetBackoffEndFor(txop, accessGrantStart) <= now)
         {
             /**
              * This is the first Txop we find with an expired backoff and which
@@ -534,7 +535,7 @@ ChannelAccessManager::DoGrantDcfAccess()
             {
                 Ptr<Txop> otherTxop = *j;
                 if (otherTxop->GetAccessStatus(m_linkId) == Txop::REQUESTED &&
-                    GetBackoffEndFor(otherTxop) <= now)
+                    GetBackoffEndFor(otherTxop, accessGrantStart) <= now)
                 {
                     NS_LOG_DEBUG(
                         "dcf " << k << " needs access. backoff expired. internal collision. slots="
@@ -602,58 +603,47 @@ ChannelAccessManager::AccessTimeout()
 Time
 ChannelAccessManager::GetAccessGrantStart(bool ignoreNav) const
 {
-    NS_LOG_FUNCTION(this);
-    const Time& sifs = GetSifs();
-    Time rxAccessStart = m_lastRx.end + sifs;
+    NS_LOG_FUNCTION(this << ignoreNav);
+    auto rxAccessStart = m_lastRx.end;
     if ((m_lastRx.end <= Simulator::Now()) && !m_lastRxReceivedOk)
     {
         rxAccessStart += GetEifsNoDifs();
     }
     // an EDCA TXOP is obtained based solely on activity of the primary channel
     // (Sec. 10.23.2.5 of IEEE 802.11-2020)
-    Time busyAccessStart = m_lastBusyEnd.at(WIFI_CHANLIST_PRIMARY) + sifs;
-    Time txAccessStart = m_lastTxEnd + sifs;
-    Time navAccessStart = m_lastNavEnd + sifs;
-    Time ackTimeoutAccessStart = m_lastAckTimeoutEnd + sifs;
-    Time ctsTimeoutAccessStart = m_lastCtsTimeoutEnd + sifs;
-    Time switchingAccessStart = m_lastSwitchingEnd + sifs;
-    Time accessGrantedStart;
-    if (ignoreNav)
-    {
-        accessGrantedStart = std::max({rxAccessStart,
-                                       busyAccessStart,
-                                       txAccessStart,
-                                       ackTimeoutAccessStart,
-                                       ctsTimeoutAccessStart,
-                                       switchingAccessStart});
-    }
-    else
-    {
-        accessGrantedStart = std::max({rxAccessStart,
-                                       busyAccessStart,
-                                       txAccessStart,
-                                       navAccessStart,
-                                       ackTimeoutAccessStart,
-                                       ctsTimeoutAccessStart,
-                                       switchingAccessStart});
-    }
-    NS_LOG_INFO("access grant start=" << accessGrantedStart.As(Time::US)
-                                      << ", rx access start=" << rxAccessStart.As(Time::US)
-                                      << ", busy access start=" << busyAccessStart.As(Time::US)
-                                      << ", tx access start=" << txAccessStart.As(Time::US)
-                                      << ", nav access start=" << navAccessStart.As(Time::US)
-                                      << ", switching access start="
-                                      << switchingAccessStart.As(Time::US));
-    return accessGrantedStart;
+    const auto busyAccessStart = m_lastBusyEnd.at(WIFI_CHANLIST_PRIMARY);
+    const auto navAccessStart = ignoreNav ? Time{0} : m_lastNavEnd;
+
+    const auto accessGrantedStart = std::max({rxAccessStart,
+                                              busyAccessStart,
+                                              m_lastTxEnd,
+                                              navAccessStart,
+                                              m_lastAckTimeoutEnd,
+                                              m_lastCtsTimeoutEnd,
+                                              m_lastSwitchingEnd});
+
+    NS_LOG_INFO("access grant start="
+                << accessGrantedStart.As(Time::US)
+                << ", rx access start=" << rxAccessStart.As(Time::US) << ", busy access start="
+                << busyAccessStart.As(Time::US) << ", tx access start=" << m_lastTxEnd.As(Time::US)
+                << ", nav access start=" << navAccessStart.As(Time::US)
+                << ", switching access start=" << m_lastSwitchingEnd.As(Time::US));
+    return accessGrantedStart + GetSifs();
 }
 
 Time
 ChannelAccessManager::GetBackoffStartFor(Ptr<Txop> txop)
 {
-    NS_LOG_FUNCTION(this << txop);
-    Time mostRecentEvent =
+    return GetBackoffStartFor(txop, GetAccessGrantStart());
+}
+
+Time
+ChannelAccessManager::GetBackoffStartFor(Ptr<Txop> txop, Time accessGrantStart) const
+{
+    NS_LOG_FUNCTION(this << txop << accessGrantStart.As(Time::S));
+    const auto mostRecentEvent =
         std::max({txop->GetBackoffStart(m_linkId),
-                  GetAccessGrantStart() + (txop->GetAifsn(m_linkId) * GetSlot())});
+                  accessGrantStart + (txop->GetAifsn(m_linkId) * GetSlot())});
     NS_LOG_DEBUG("Backoff start for " << txop->GetWifiMacQueue()->GetAc() << ": "
                                       << mostRecentEvent.As(Time::US));
 
@@ -663,8 +653,15 @@ ChannelAccessManager::GetBackoffStartFor(Ptr<Txop> txop)
 Time
 ChannelAccessManager::GetBackoffEndFor(Ptr<Txop> txop)
 {
+    return GetBackoffEndFor(txop, GetAccessGrantStart());
+}
+
+Time
+ChannelAccessManager::GetBackoffEndFor(Ptr<Txop> txop, Time accessGrantStart) const
+{
     NS_LOG_FUNCTION(this << txop);
-    Time backoffEnd = GetBackoffStartFor(txop) + (txop->GetBackoffSlots(m_linkId) * GetSlot());
+    Time backoffEnd =
+        GetBackoffStartFor(txop, accessGrantStart) + (txop->GetBackoffSlots(m_linkId) * GetSlot());
     NS_LOG_DEBUG("Backoff end for " << txop->GetWifiMacQueue()->GetAc() << ": "
                                     << backoffEnd.As(Time::US));
 
@@ -676,9 +673,10 @@ ChannelAccessManager::UpdateBackoff()
 {
     NS_LOG_FUNCTION(this);
     uint32_t k = 0;
+    const auto accessGrantStart = GetAccessGrantStart();
     for (auto txop : m_txops)
     {
-        Time backoffStart = GetBackoffStartFor(txop);
+        Time backoffStart = GetBackoffStartFor(txop, accessGrantStart);
         if (backoffStart <= Simulator::Now())
         {
             uint32_t nIntSlots = ((Simulator::Now() - backoffStart) / GetSlot()).GetHigh();
@@ -715,12 +713,13 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded()
      * if there is one, how many slots for AIFS+backoff does it require ?
      */
     bool accessTimeoutNeeded = false;
-    Time expectedBackoffEnd = Simulator::GetMaximumSimulationTime();
+    auto expectedBackoffEnd = Simulator::GetMaximumSimulationTime();
+    const auto accessGrantStart = GetAccessGrantStart();
     for (auto txop : m_txops)
     {
         if (txop->GetAccessStatus(m_linkId) == Txop::REQUESTED)
         {
-            Time tmp = GetBackoffEndFor(txop);
+            Time tmp = GetBackoffEndFor(txop, accessGrantStart);
             if (tmp > Simulator::Now())
             {
                 accessTimeoutNeeded = true;

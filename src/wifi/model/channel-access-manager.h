@@ -359,15 +359,40 @@ class ChannelAccessManager : public Object
      * \return the current registered listener for PHY events on the given PHY
      */
     std::shared_ptr<PhyListener> GetPhyListener(Ptr<WifiPhy> phy) const;
+
     /**
      * Initialize the structures holding busy end times per channel type (primary,
      * secondary, etc.) and per 20 MHz channel.
      */
     void InitLastBusyStructs();
+
     /**
      * Update backoff slots for all Txops.
      */
     void UpdateBackoff();
+
+    /**
+     * This overload is provided to enable caching the value returned by GetAccessGrantStart(),
+     * which is independent of the given Txop object.
+     *
+     * \param txop the Txop
+     * \param accessGrantStart the value returned by GetAccessGrantStart()
+     *
+     * \return the time when the backoff procedure started
+     */
+    Time GetBackoffStartFor(Ptr<Txop> txop, Time accessGrantStart) const;
+
+    /**
+     * This overload is provided to enable caching the value returned by GetAccessGrantStart(),
+     * which is independent of the given Txop object.
+     *
+     * \param txop the Txop
+     * \param accessGrantStart the value returned by GetAccessGrantStart()
+     *
+     * \return the time when the backoff procedure ended (or will ended)
+     */
+    Time GetBackoffEndFor(Ptr<Txop> txop, Time accessGrantStart) const;
+
     /**
      * Return the time when the backoff procedure
      * started for the given Txop.
@@ -404,6 +429,7 @@ class ChannelAccessManager : public Object
      * (e.g. backoff procedure expired).
      */
     void AccessTimeout();
+
     /**
      * Grant access to Txop using DCF/EDCF contention rules
      */
@@ -415,12 +441,14 @@ class ChannelAccessManager : public Object
      * \return the SIFS duration
      */
     virtual Time GetSifs() const;
+
     /**
      * Return the slot duration for this PHY.
      *
      * \return the slot duration
      */
     virtual Time GetSlot() const;
+
     /**
      * Return the EIFS duration minus a DIFS.
      *
