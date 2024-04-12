@@ -142,6 +142,7 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/PhyEntityHierarchy.dia \
 	$(SRC)/wifi/doc/source/figures/WifiPpduHierarchy.dia \
 	$(SRC)/wifi/doc/source/figures/FemHierarchy.dia \
+	$(SRC)/wifi/doc/source/figures/wifi-phy-rx-trace-helper.dia \
 	$(SRC)/wifi/doc/source/figures/snir.dia \
 	$(SRC)/wifi/doc/source/figures/ack-su-format.pdf \
 	$(SRC)/wifi/doc/source/figures/ack-su-format.png \
@@ -389,6 +390,7 @@ IMAGES_EPS = \
 	$(FIGURES)/PhyEntityHierarchy.eps \
 	$(FIGURES)/WifiPpduHierarchy.eps \
 	$(FIGURES)/FemHierarchy.eps \
+	$(FIGURES)/wifi-phy-rx-trace-helper.eps \
 	$(FIGURES)/snir.eps \
 	$(FIGURES)/WimaxArchitecture.eps \
 	$(FIGURES)/epc-ctrl-arch.eps \

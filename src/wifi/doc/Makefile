@@ -13,7 +13,8 @@ IMAGES_DIA = \
 	$(FIGURES)/WifiArchitecture.dia \
 	$(FIGURES)/PhyEntityHierarchy.dia \
 	$(FIGURES)/WifiPpduHierarchy.dia \
-	$(FIGURES)/FemHierarchy.dia
+	$(FIGURES)/FemHierarchy.dia \
+	$(FIGURES)/wifi-phy-rx-trace-helper.dia
 
 # specify eps figures from which .png and .pdf figures need to be built
 
@@ -23,6 +24,7 @@ IMAGES_EPS = \
 	$(FIGURES)/PhyEntityHierarchy.eps \
 	$(FIGURES)/WifiPpduHierarchy.eps \
 	$(FIGURES)/FemHierarchy.eps \
+	$(FIGURES)/wifi-phy-rx-trace-helper.eps \
         $(FIGURES)/assoc-manager.eps \
         $(FIGURES)/clear-channel.eps \
         $(FIGURES)/emlsr-dl-txop.eps \
