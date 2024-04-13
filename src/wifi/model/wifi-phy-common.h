@@ -22,11 +22,11 @@
 #ifndef WIFI_PHY_COMMON_H
 #define WIFI_PHY_COMMON_H
 
+#include "wifi-spectrum-value-helper.h"
 #include "wifi-standards.h"
 
 #include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
-#include "ns3/wifi-spectrum-value-helper.h"
 
 #include <ostream>
 

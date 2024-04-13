@@ -36,7 +36,6 @@ set(source_files
     model/trace-fading-loss-model.cc
     model/tv-spectrum-transmitter.cc
     model/waveform-generator.cc
-    model/wifi-spectrum-value-helper.cc
 )
 
 set(header_files
@@ -77,7 +76,6 @@ set(header_files
     model/trace-fading-loss-model.h
     model/tv-spectrum-transmitter.h
     model/waveform-generator.h
-    model/wifi-spectrum-value-helper.h
     test/spectrum-test.h
 )
 

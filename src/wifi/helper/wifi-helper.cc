@@ -968,6 +968,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("WifiRemoteStationManager", logLevel);
     LogComponentEnable("WifiSpectrumPhyInterface", logLevel);
     LogComponentEnable("WifiSpectrumSignalParameters", logLevel);
+    LogComponentEnable("WifiSpectrumValueHelper", logLevel);
     LogComponentEnable("WifiTxCurrentModel", logLevel);
     LogComponentEnable("WifiTxParameters", logLevel);
     LogComponentEnable("WifiTxTimer", logLevel);
@@ -979,9 +980,6 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("WifiHelper", logLevel);
     LogComponentEnable("SpectrumWifiHelper", logLevel);
     LogComponentEnable("YansWifiHelper", logLevel);
-
-    // From Spectrum
-    LogComponentEnable("WifiSpectrumValueHelper", logLevel);
 }
 
 int64_t

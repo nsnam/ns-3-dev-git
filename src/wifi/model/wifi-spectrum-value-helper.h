@@ -22,7 +22,7 @@
 #ifndef WIFI_SPECTRUM_VALUE_HELPER_H
 #define WIFI_SPECTRUM_VALUE_HELPER_H
 
-#include "spectrum-value.h"
+#include <ns3/spectrum-value.h>
 
 namespace ns3
 {
