@@ -185,7 +185,20 @@ ChannelAccessManager::GetTypeId()
                           "and subsequently the medium becomes busy.",
                           BooleanValue(false),
                           MakeBooleanAccessor(&ChannelAccessManager::m_proactiveBackoff),
-                          MakeBooleanChecker());
+                          MakeBooleanChecker())
+            .AddAttribute("NSlotsLeft",
+                          "Fire the NSlotsLeftAlert trace source when the backoff counter with "
+                          "the minimum value among all ACs reaches this value or it is started "
+                          "with a value less than this attribute. If this value is zero, the "
+                          "trace source is never fired.",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&ChannelAccessManager::m_nSlotsLeft),
+                          MakeUintegerChecker<uint8_t>())
+            .AddTraceSource("NSlotsLeftAlert",
+                            "The backoff counter of the AC with the given index reached the "
+                            "threshold set through the NSlotsLeft attribute.",
+                            MakeTraceSourceAccessor(&ChannelAccessManager::m_nSlotsLeftCallback),
+                            "ns3::ChannelAccessManager::NSlotsLeftCallback");
     return tid;
 }
 
@@ -754,26 +767,43 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded()
      * Is there a Txop which needs to access the medium, and,
      * if there is one, how many slots for AIFS+backoff does it require ?
      */
-    bool accessTimeoutNeeded = false;
+    Ptr<Txop> nextTxop;
     auto expectedBackoffEnd = Simulator::GetMaximumSimulationTime();
     const auto accessGrantStart = GetAccessGrantStart();
+    const auto now = Simulator::Now();
     for (auto txop : m_txops)
     {
         if (txop->GetAccessStatus(m_linkId) == Txop::REQUESTED)
         {
-            Time tmp = GetBackoffEndFor(txop, accessGrantStart);
-            if (tmp > Simulator::Now())
+            if (auto backoffEnd = GetBackoffEndFor(txop, accessGrantStart);
+                backoffEnd > now && backoffEnd < expectedBackoffEnd)
             {
-                accessTimeoutNeeded = true;
-                expectedBackoffEnd = std::min(expectedBackoffEnd, tmp);
+                expectedBackoffEnd = backoffEnd;
+                nextTxop = txop;
             }
         }
     }
-    NS_LOG_DEBUG("Access timeout needed: " << accessTimeoutNeeded);
-    if (accessTimeoutNeeded)
+    NS_LOG_DEBUG("Access timeout needed: " << (nextTxop != nullptr));
+    if (nextTxop)
     {
-        NS_LOG_DEBUG("expected backoff end=" << expectedBackoffEnd);
-        Time expectedBackoffDelay = expectedBackoffEnd - Simulator::Now();
+        const auto aci = nextTxop->GetWifiMacQueue()->GetAc();
+        NS_LOG_DEBUG("expected backoff end=" << expectedBackoffEnd << " by " << aci);
+        auto expectedBackoffDelay = expectedBackoffEnd - now;
+
+        if (m_nSlotsLeft > 0)
+        {
+            if (const auto slots = m_nSlotsLeft * GetSlot(); expectedBackoffDelay > slots)
+            {
+                // make the timer expire when the specified number of slots are left
+                expectedBackoffDelay -= slots;
+            }
+            else
+            {
+                // notify that a number of slots less than or equal to the specified value are left
+                m_nSlotsLeftCallback(m_linkId, aci, expectedBackoffDelay);
+            }
+        }
+
         if (m_accessTimeout.IsPending() &&
             Simulator::GetDelayLeft(m_accessTimeout) > expectedBackoffDelay)
         {

@@ -15,6 +15,7 @@
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/traced-callback.h"
 
 #include <algorithm>
 #include <map>
@@ -32,6 +33,7 @@ class WifiPhy;
 class PhyListener;
 class Txop;
 class FrameExchangeManager;
+enum AcIndex : uint8_t; // opaque enum declaration
 
 /**
  * \brief Manage a set of ns3::Txop
@@ -501,6 +503,23 @@ class ChannelAccessManager : public Object
     Ptr<WifiPhy> m_phy;                    //!< pointer to the unique active PHY
     Ptr<FrameExchangeManager> m_feManager; //!< pointer to the Frame Exchange Manager
     uint8_t m_linkId;                      //!< the ID of the link this object is associated with
+    uint8_t m_nSlotsLeft;                  //!< fire the NSlotsLeftAlert trace source when the
+                                           //!< backoff counter with the minimum value among all
+                                           //!< ACs reaches this value
+
+    /**
+     * TracedCallback signature for NSlotsLeft alerts.
+     *
+     * \param linkId the ID of this link
+     * \param aci the index of the AC that triggered the NSlotsLeft alert
+     * \param backoffDelay delay until backoff counts down to zero
+     */
+    typedef void (*NSlotsLeftCallback)(uint8_t linkId, AcIndex aci, const Time& backoffDelay);
+
+    /// TracedCallback for NSlotsLeft alerts typedef
+    using NSlotsLeftTracedCallback = TracedCallback<uint8_t, AcIndex, const Time&>;
+
+    NSlotsLeftTracedCallback m_nSlotsLeftCallback; //!< traced callback for NSlotsLeft alerts
 };
 
 } // namespace ns3
