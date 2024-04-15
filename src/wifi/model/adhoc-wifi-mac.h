@@ -16,6 +16,16 @@
 namespace ns3
 {
 
+struct AllSupportedRates;
+class DsssParameterSet;
+class CapabilityInformation;
+class ErpInformation;
+class EdcaParameterSet;
+class HtOperation;
+class VhtOperation;
+class HeOperation;
+class EhtOperation;
+
 /**
  * @ingroup wifi
  *
@@ -40,6 +50,70 @@ class AdhocWifiMac : public WifiMac
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     void DoCompleteConfig() override;
     void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) override;
+
+    /**
+     * Return an instance of SupportedRates that contains all rates that we support
+     * (including HT rates).
+     *
+     * \return all rates that we support for the given link
+     */
+    AllSupportedRates GetSupportedRates() const;
+
+    /**
+     * Return the DSSS Parameter Set that we support
+     *
+     * \return the DSSS Parameter Set that we support
+     */
+    DsssParameterSet GetDsssParameterSet() const;
+
+    /**
+     * Return the Capability information of the IBSS.
+     *
+     * \return the Capability information that we support
+     */
+    CapabilityInformation GetCapabilities() const;
+
+    /**
+     * Return the ERP information of the IBSS.
+     *
+     * \return the ERP information that we support
+     */
+    ErpInformation GetErpInformation() const;
+
+    /**
+     * Return the EDCA Parameter Set of the IBSS.
+     *
+     * \return the EDCA Parameter Set that we support
+     */
+    EdcaParameterSet GetEdcaParameterSet() const;
+
+    /**
+     * Return the HT operation of the IBSS.
+     *
+     * \return the HT operation that we support
+     */
+    HtOperation GetHtOperation() const;
+
+    /**
+     * Return the VHT operation of the IBSS.
+     *
+     * \return the VHT operation that we support
+     */
+    VhtOperation GetVhtOperation() const;
+
+    /**
+     * Return the HE operation of the IBSS.
+     *
+     * \return the HE operation that we support
+     */
+    HeOperation GetHeOperation() const;
+
+    /**
+     * Return the EHT operation of the IBSS.
+     *
+     * \return the EHT operation that we support
+     */
+    EhtOperation GetEhtOperation() const;
 };
 
 } // namespace ns3
