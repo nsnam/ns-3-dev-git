@@ -10,14 +10,26 @@
 
 #include "adhoc-wifi-mac.h"
 
+#include "capability-information.h"
+#include "edca-parameter-set.h"
 #include "qos-txop.h"
+#include "supported-rates.h"
+#include "wifi-phy.h"
 
+#include "ns3/dsss-parameter-set.h"
 #include "ns3/eht-capabilities.h"
+#include "ns3/eht-operation.h"
+#include "ns3/erp-information.h"
 #include "ns3/he-capabilities.h"
+#include "ns3/he-configuration.h"
+#include "ns3/he-operation.h"
 #include "ns3/ht-capabilities.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/ht-operation.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/vht-capabilities.h"
+#include "ns3/vht-operation.h"
 
 namespace ns3
 {
@@ -190,6 +202,219 @@ AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 
     // Invoke the receive handler of our parent class to deal with any other frames
     WifiMac::Receive(mpdu, linkId);
+}
+
+AllSupportedRates
+AdhocWifiMac::GetSupportedRates() const
+{
+    AllSupportedRates rates;
+    for (const auto& mode : GetWifiPhy()->GetModeList())
+    {
+        uint64_t modeDataRate = mode.GetDataRate(GetWifiPhy()->GetChannelWidth());
+        NS_LOG_DEBUG("Adding supported rate of " << modeDataRate);
+        rates.AddSupportedRate(modeDataRate);
+    }
+    if (GetHtSupported(SINGLE_LINK_OP_ID))
+    {
+        for (const auto& selector : GetWifiPhy()->GetBssMembershipSelectorList())
+        {
+            rates.AddBssMembershipSelectorRate(selector);
+        }
+    }
+    return rates;
+}
+
+DsssParameterSet
+AdhocWifiMac::GetDsssParameterSet() const
+{
+    NS_ASSERT(GetDsssSupported(SINGLE_LINK_OP_ID));
+    DsssParameterSet dsssParameters;
+    dsssParameters.SetCurrentChannel(GetWifiPhy()->GetChannelNumber());
+    return dsssParameters;
+}
+
+CapabilityInformation
+AdhocWifiMac::GetCapabilities() const
+{
+    CapabilityInformation capabilities;
+    capabilities.SetShortPreamble(GetWifiPhy()->GetShortPhyPreambleSupported() ||
+                                  GetErpSupported(SINGLE_LINK_OP_ID));
+    capabilities.SetShortSlotTime(GetShortSlotTimeSupported() &&
+                                  GetErpSupported(SINGLE_LINK_OP_ID));
+    capabilities.SetIbss();
+    return capabilities;
+}
+
+ErpInformation
+AdhocWifiMac::GetErpInformation() const
+{
+    NS_ASSERT(GetErpSupported(SINGLE_LINK_OP_ID));
+    ErpInformation information;
+    return information;
+}
+
+EdcaParameterSet
+AdhocWifiMac::GetEdcaParameterSet() const
+{
+    NS_ASSERT(GetQosSupported());
+    EdcaParameterSet edcaParameters;
+
+    Ptr<QosTxop> edca;
+    Time txopLimit;
+
+    edca = GetQosTxop(AC_BE);
+    txopLimit = edca->GetTxopLimit(SINGLE_LINK_OP_ID);
+    edcaParameters.SetBeAci(0);
+    edcaParameters.SetBeCWmin(edca->GetMinCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBeCWmax(edca->GetMaxCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBeAifsn(edca->GetAifsn(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBeTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
+
+    edca = GetQosTxop(AC_BK);
+    txopLimit = edca->GetTxopLimit(SINGLE_LINK_OP_ID);
+    edcaParameters.SetBkAci(1);
+    edcaParameters.SetBkCWmin(edca->GetMinCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBkCWmax(edca->GetMaxCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBkAifsn(edca->GetAifsn(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBkTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
+
+    edca = GetQosTxop(AC_VI);
+    txopLimit = edca->GetTxopLimit(SINGLE_LINK_OP_ID);
+    edcaParameters.SetViAci(2);
+    edcaParameters.SetViCWmin(edca->GetMinCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetViCWmax(edca->GetMaxCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetViAifsn(edca->GetAifsn(SINGLE_LINK_OP_ID));
+    edcaParameters.SetViTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
+
+    edca = GetQosTxop(AC_VO);
+    txopLimit = edca->GetTxopLimit(SINGLE_LINK_OP_ID);
+    edcaParameters.SetVoAci(3);
+    edcaParameters.SetVoCWmin(edca->GetMinCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetVoCWmax(edca->GetMaxCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetVoAifsn(edca->GetAifsn(SINGLE_LINK_OP_ID));
+    edcaParameters.SetVoTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
+
+    edcaParameters.SetQosInfo(0);
+
+    return edcaParameters;
+}
+
+HtOperation
+AdhocWifiMac::GetHtOperation() const
+{
+    NS_ASSERT(GetHtSupported(SINGLE_LINK_OP_ID));
+
+    HtOperation operation;
+
+    operation.SetPrimaryChannel(GetWifiPhy()->GetPrimaryChannelNumber(20));
+    if (GetWifiPhy()->GetChannelWidth() > 20)
+    {
+        operation.SetSecondaryChannelOffset(1);
+        operation.SetStaChannelWidth(1);
+    }
+    uint64_t maxSupportedRate = 0; // in bit/s
+    for (const auto& mcs : GetWifiPhy()->GetMcsList(WIFI_MOD_CLASS_HT))
+    {
+        uint8_t nss = (mcs.GetMcsValue() / 8) + 1;
+        NS_ASSERT(nss > 0 && nss < 5);
+        uint64_t dataRate =
+            mcs.GetDataRate(GetWifiPhy()->GetChannelWidth(),
+                            NanoSeconds(GetHtConfiguration()->m_sgiSupported ? 400 : 800),
+                            nss);
+        if (dataRate > maxSupportedRate)
+        {
+            maxSupportedRate = dataRate;
+            NS_LOG_DEBUG("Updating maxSupportedRate to " << maxSupportedRate);
+        }
+    }
+    operation.SetRxHighestSupportedDataRate(
+        static_cast<uint16_t>(maxSupportedRate / 1e6)); // in Mbit/s
+    operation.SetTxMcsSetDefined(!GetWifiPhy()->GetMcsList(WIFI_MOD_CLASS_HT).empty());
+    operation.SetTxMaxNSpatialStreams(GetWifiPhy()->GetMaxSupportedTxSpatialStreams());
+
+    return operation;
+}
+
+VhtOperation
+AdhocWifiMac::GetVhtOperation() const
+{
+    NS_ASSERT(GetVhtSupported(SINGLE_LINK_OP_ID));
+
+    VhtOperation operation;
+
+    const auto bssBandwidth = GetWifiPhy()->GetChannelWidth();
+    // Set to 0 for 20 MHz or 40 MHz BSS bandwidth.
+    // Set to 1 for 80 MHz, 160 MHz or 80+80 MHz BSS bandwidth.
+    operation.SetChannelWidth((bssBandwidth > 40) ? 1 : 0);
+    // For 20, 40, or 80 MHz BSS bandwidth, indicates the channel center frequency
+    // index for the 20, 40, or 80 MHz channel on which the VHT BSS operates.
+    // For 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
+    // indicates the channel center frequency index of the 80 MHz channel
+    // segment that contains the primary channel.
+    operation.SetChannelCenterFrequencySegment0((bssBandwidth == 160)
+                                                    ? GetWifiPhy()->GetPrimaryChannelNumber(80)
+                                                    : GetWifiPhy()->GetChannelNumber());
+    // For a 20, 40, or 80 MHz BSS bandwidth, this subfield is set to 0.
+    // For a 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
+    // indicates the channel center frequency index of the 160 MHz channel on
+    // which the VHT BSS operates.
+    operation.SetChannelCenterFrequencySegment1(
+        (bssBandwidth == 160) ? GetWifiPhy()->GetChannelNumber() : 0);
+    for (uint8_t nss = 1; nss <= GetWifiPhy()->GetMaxSupportedRxSpatialStreams(); nss++)
+    {
+        uint8_t maxMcs =
+            9; // TBD: hardcode to 9 for now since we assume all MCS values are supported
+        operation.SetMaxVhtMcsPerNss(nss, maxMcs);
+    }
+
+    return operation;
+}
+
+HeOperation
+AdhocWifiMac::GetHeOperation() const
+{
+    NS_ASSERT(GetHeSupported());
+    HeOperation operation;
+
+    const auto maxSpatialStream = GetWifiPhy()->GetMaxSupportedRxSpatialStreams();
+    for (uint8_t nss = 1; nss <= maxSpatialStream; nss++)
+    {
+        operation.SetMaxHeMcsPerNss(
+            nss,
+            11); // TBD: hardcode to 11 for now since we assume all MCS values are supported
+    }
+    operation.m_bssColorInfo.m_bssColor = GetHeConfiguration()->m_bssColor;
+
+    if (GetWifiPhy()->GetPhyBand() == WIFI_PHY_BAND_6GHZ)
+    {
+        HeOperation::OpInfo6GHz op6Ghz;
+        const auto bw = GetWifiPhy()->GetChannelWidth();
+        const auto ch = GetWifiPhy()->GetOperatingChannel();
+        op6Ghz.m_chWid = (bw == 20) ? 0 : (bw == 40) ? 1 : (bw == 80) ? 2 : 3;
+        op6Ghz.m_primCh = ch.GetPrimaryChannelNumber(20, WIFI_STANDARD_80211ax);
+        op6Ghz.m_chCntrFreqSeg0 =
+            (bw == 160) ? ch.GetPrimaryChannelNumber(80, WIFI_STANDARD_80211ax) : ch.GetNumber();
+        // TODO: for 80+80 MHz channels, set this field to the secondary 80 MHz segment number
+        op6Ghz.m_chCntrFreqSeg1 = (bw == 160) ? ch.GetNumber() : 0;
+
+        operation.m_6GHzOpInfo = op6Ghz;
+    }
+
+    return operation;
+}
+
+EhtOperation
+AdhocWifiMac::GetEhtOperation() const
+{
+    NS_ASSERT(GetEhtSupported());
+
+    EhtOperation operation;
+
+    const auto maxSpatialStream = GetWifiPhy()->GetMaxSupportedRxSpatialStreams();
+    operation.SetMaxRxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
+    operation.SetMaxTxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
+
+    return operation;
 }
 
 } // namespace ns3
