@@ -90,6 +90,11 @@ SingleModelSpectrumChannel::AddRx(Ptr<SpectrumPhy> phy)
     {
         m_phyList.push_back(phy);
     }
+    else
+    {
+        // PHY has switched its channel, reset m_spectrumModel
+        m_spectrumModel = nullptr;
+    }
 }
 
 void
