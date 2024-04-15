@@ -107,6 +107,7 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
     NS_ASSERT_MSG(currLinkId || m_mainPhySwitchInfo.end >= now,
                   "No current link ID provided nor valid main PHY switch information stored");
     m_mainPhySwitchInfo.from = currLinkId.value_or(m_mainPhySwitchInfo.from);
+    m_mainPhySwitchInfo.to = nextLinkId;
     m_mainPhySwitchInfo.end = now + duration;
 
     if (m_switchAuxPhy)

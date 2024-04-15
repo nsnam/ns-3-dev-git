@@ -37,6 +37,7 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
     std::pair<bool, Time> DoGetDelayUntilAccessRequest(uint8_t linkId) override;
     std::pair<bool, Time> GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId) override;
     void SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex aci) override;
+    void NotifyEmlsrModeChanged() override;
 
     /**
      * Possibly take actions when notified of the MAC header of the MPDU being received by the
@@ -66,13 +67,28 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
 
     /**
      * Determine whether the main PHY shall be requested to switch to the link of an aux PHY that
-     * has gained channel access through the given AC but it is not TX capable.
+     * is expected to gain channel access through the given AC in the given delay but it is not
+     * TX capable.
      *
      * \param linkId the ID of the link on which the aux PHY is operating
      * \param aci the index of the given AC
+     * \param delay the delay after which the given AC is expected to gain channel access. Zero
+     *              indicates that channel access has been actually gained
      * \return whether the main PHY shall be requested to switch to the link of the aux PHY
      */
-    bool RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci);
+    bool RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const Time& delay);
+
+    /**
+     * This method is called when the given AC of the EMLSR client is expected to get channel
+     * access in the given delay on the given link, on which an aux PHY that is not TX capable
+     * is operating. This method has to decide whether to request the main PHY to switch to the
+     * given link to try to start a TXOP.
+     *
+     * \param linkId the ID of the given link
+     * \param aci the index of the given AC
+     * \param delay the delay after which the given AC is expected to gain channel access
+     */
+    void SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId, AcIndex aci, const Time& delay);
 
   private:
     void DoNotifyTxopEnd(uint8_t linkId) override;
