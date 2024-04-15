@@ -440,6 +440,7 @@ build_lib(
     test/wifi-test.cc
     test/wifi-transmit-mask-test.cc
     test/wifi-txop-test.cc
+    test/wifi-p2p-test.cc
     test/wifi-phy-cca-test.cc
     test/wifi-non-ht-dup-test.cc
     test/wifi-phy-mu-mimo-test.cc
