@@ -497,8 +497,9 @@ class WifiHelper
 
     /**
      * Helper to enable all WifiNetDevice log components with one statement
+     * \param logLevel (optional) log level setting
      */
-    static void EnableLogComponents();
+    static void EnableLogComponents(LogLevel logLevel = LOG_LEVEL_ALL);
 
     /**
      * Assign a fixed random variable stream number to the random variables
