@@ -61,6 +61,20 @@ class WifiTxParameters
      */
     WifiTxParameters& operator=(const WifiTxParameters& txParams);
 
+    /**
+     * Move constructor. Must define it manually because copy constructor is explicit.
+     * \param txParams the WifiTxParameters to copy
+     */
+    WifiTxParameters(WifiTxParameters&& txParams) = default;
+
+    /**
+     * Move assignment operator. Must define it manually because copy assignment
+     * operator is explicit.
+     * \param txParams the TX parameters to assign to this object
+     * \return the reference to this object
+     */
+    WifiTxParameters& operator=(WifiTxParameters&& txParams) = default;
+
     WifiTxVector m_txVector;                              //!< TXVECTOR of the frame being prepared
     std::unique_ptr<WifiProtection> m_protection;         //!< protection method
     std::unique_ptr<WifiAcknowledgment> m_acknowledgment; //!< acknowledgment method
