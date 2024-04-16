@@ -335,6 +335,18 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
     bool ChannelMatrixNeedsUpdate(Ptr<const ThreeGppChannelParams> channelParams,
                                   Ptr<const ChannelMatrix> channelMatrix);
 
+    /**
+     * Check if the channel matrix has to be updated due to
+     * changes in the number of antenna ports
+     * \param aAntenna the antenna array of node a
+     * \param bAntenna the antenna array of node b
+     * \param channelMatrix channel matrix structure
+     * \return true if the channel matrix has to be updated, false otherwise
+     */
+    bool AntennaSetupChanged(Ptr<const PhasedArrayModel> aAntenna,
+                             Ptr<const PhasedArrayModel> bAntenna,
+                             Ptr<const ChannelMatrix> channelMatrix);
+
     std::unordered_map<uint64_t, Ptr<ChannelMatrix>>
         m_channelMatrixMap; //!< map containing the channel realizations per pair of
                             //!< PhasedAntennaArray instances, the key of this map is reciprocal

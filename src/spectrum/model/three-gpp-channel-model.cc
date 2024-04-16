@@ -1090,6 +1090,21 @@ ThreeGppChannelModel::ChannelMatrixNeedsUpdate(Ptr<const ThreeGppChannelParams> 
     return channelParams->m_generatedTime > channelMatrix->m_generatedTime;
 }
 
+bool
+ThreeGppChannelModel::AntennaSetupChanged(Ptr<const PhasedArrayModel> aAntenna,
+                                          Ptr<const PhasedArrayModel> bAntenna,
+                                          Ptr<const ChannelMatrix> channelMatrix)
+{
+    // This allows changing the number of antenna ports during execution,
+    // which is used by nr's initial association.
+    size_t sAntNumElems = aAntenna->GetNumElems();
+    size_t uAntNumElems = bAntenna->GetNumElems();
+    size_t chanNumRows = channelMatrix->m_channel.GetNumRows();
+    size_t chanNumCols = channelMatrix->m_channel.GetNumCols();
+    return ((uAntNumElems != chanNumRows) || (sAntNumElems != chanNumCols)) &&
+           ((uAntNumElems != chanNumCols) || (sAntNumElems != chanNumRows));
+}
+
 Ptr<const MatrixBasedChannelModel::ChannelMatrix>
 ThreeGppChannelModel::GetChannel(Ptr<const MobilityModel> aMob,
                                  Ptr<const MobilityModel> bMob,
@@ -1162,6 +1177,7 @@ ThreeGppChannelModel::GetChannel(Ptr<const MobilityModel> aMob,
         NS_LOG_DEBUG("channel matrix present in the map");
         channelMatrix = m_channelMatrixMap[channelMatrixKey];
         updateMatrix = ChannelMatrixNeedsUpdate(channelParams, channelMatrix);
+        updateMatrix |= AntennaSetupChanged(aAntenna, bAntenna, channelMatrix);
     }
     else
     {
