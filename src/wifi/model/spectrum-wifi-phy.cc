@@ -406,6 +406,12 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     NS_LOG_FUNCTION(this << rxParams << interface);
     Time rxDuration = rxParams->duration;
     Ptr<SpectrumValue> receivedSignalPsd = rxParams->psd;
+    if (interface)
+    {
+        NS_ASSERT_MSG(receivedSignalPsd->GetValuesN() ==
+                          interface->GetRxSpectrumModel()->GetNumBands(),
+                      "Use multi model spectrum channel if PHYs have different spectrum models!");
+    }
     NS_LOG_DEBUG("Received signal with PSD " << *receivedSignalPsd << " and duration "
                                              << rxDuration.As(Time::NS));
     uint32_t senderNodeId = 0;
