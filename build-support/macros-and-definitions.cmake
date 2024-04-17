@@ -159,9 +159,13 @@ macro(process_options)
                                                         STREQUAL "default"
   )
     set(cmakeBuildType relwithdebinfo)
-    string(REPLACE "-O2" "-Os" CMAKE_CXX_FLAGS_RELWITHDEBINFO
-                   "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
-    )
+    # Do not use optimized for size builds on MacOS See issue #1065:
+    # https://gitlab.com/nsnam/ns-3-dev/-/issues/1065
+    if(NOT (DEFINED APPLE))
+      string(REPLACE "-O2" "-Os" CMAKE_CXX_FLAGS_RELWITHDEBINFO
+                     "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
+      )
+    endif()
     set(CMAKE_CXX_FLAGS_DEFAULT ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
     add_definitions(-DNS3_BUILD_PROFILE_DEBUG)
   elseif(${cmakeBuildType} STREQUAL "release")
