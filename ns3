@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import sys
 
-ns3_path = os.path.dirname(os.path.abspath(__file__))
+ns3_path = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 append_to_ns3_path = functools.partial(os.path.join, ns3_path)
 out_dir = os.sep.join([ns3_path, "build"])
 lock_file = os.sep.join([ns3_path, ".lock-ns3_%s_build" % sys.platform])
@@ -618,7 +618,7 @@ def print_and_buffer(message):
 
 
 def remove_dir(dir_to_remove, dry_run, directory_qualifier=""):
-    dir_to_remove = os.path.abspath(dir_to_remove)
+    dir_to_remove = os.path.realpath(os.path.abspath(dir_to_remove))
     if os.path.exists(dir_to_remove):
         if ".." in os.path.relpath(dir_to_remove, ns3_path) or os.path.abspath(
             dir_to_remove
@@ -645,6 +645,7 @@ def remove_dir(dir_to_remove, dry_run, directory_qualifier=""):
 
 
 def remove_file(file_to_remove, dry_run):
+    file_to_remove = os.path.realpath(file_to_remove)
     if os.path.exists(file_to_remove):
         print_and_buffer("rm -R %s" % os.path.relpath(file_to_remove, ns3_path))
         if not dry_run:
