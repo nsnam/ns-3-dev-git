@@ -20,6 +20,7 @@
 #include "ns3/he-phy.h" //includes OFDM PHY
 #include "ns3/interference-helper.h"
 #include "ns3/log.h"
+#include "ns3/mobility-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/ofdm-ppdu.h"
@@ -823,13 +824,22 @@ SpectrumWifiPhyFilterTest::DoRun()
 class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
 {
   public:
+    /// Enumeration for channel switching scenarios
+    enum class ChannelSwitchScenario : uint8_t
+    {
+        BEFORE_TX = 0, //!< start TX after channel switch is completed
+        BETWEEN_TX_RX  //!< perform channel switch during propagation delay (after TX and before RX)
+    };
+
     /**
      * Constructor
      *
      * \param trackSignalsInactiveInterfaces flag to indicate whether signals coming from inactive
      * spectrum PHY interfaces shall be tracked during the test
+     * \param chanSwitchScenario the channel switching scenario to consider for the test
      */
-    SpectrumWifiPhyMultipleInterfacesTest(bool trackSignalsInactiveInterfaces);
+    SpectrumWifiPhyMultipleInterfacesTest(bool trackSignalsInactiveInterfaces,
+                                          ChannelSwitchScenario chanSwitchScenario);
 
   private:
     void DoSetup() override;
@@ -940,8 +950,12 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
      * \param expectedCcaBusyIndication flag to indicate whether a CCA BUSY notification is expected
      * \param switchingDelay delay between the TX has started and the time RX switched to the TX
      * channel
+     * \param propagationDelay the propagation delay
      */
-    void CheckCcaIndication(std::size_t index, bool expectedCcaBusyIndication, Time switchingDelay);
+    void CheckCcaIndication(std::size_t index,
+                            bool expectedCcaBusyIndication,
+                            Time switchingDelay,
+                            Time propagationDelay);
 
     /**
      * Verify rxing state of the interference helper
@@ -960,7 +974,8 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     bool
         m_trackSignalsInactiveInterfaces; //!< flag to indicate whether signals coming from inactive
                                           //!< spectrum PHY interfaces are tracked during the test
-
+    ChannelSwitchScenario
+        m_chanSwitchScenario; //!< the channel switch scenario to consider for the test
     std::vector<Ptr<MultiModelSpectrumChannel>> m_spectrumChannels; //!< Spectrum channels
     std::vector<Ptr<SpectrumWifiPhy>> m_txPhys{};                   //!< TX PHYs
     std::vector<Ptr<SpectrumWifiPhy>> m_rxPhys{};                   //!< RX PHYs
@@ -978,9 +993,11 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
 };
 
 SpectrumWifiPhyMultipleInterfacesTest::SpectrumWifiPhyMultipleInterfacesTest(
-    bool trackSignalsInactiveInterfaces)
+    bool trackSignalsInactiveInterfaces,
+    ChannelSwitchScenario chanSwitchScenario)
     : TestCase{"SpectrumWifiPhy test operation with multiple RF interfaces"},
-      m_trackSignalsInactiveInterfaces{trackSignalsInactiveInterfaces}
+      m_trackSignalsInactiveInterfaces{trackSignalsInactiveInterfaces},
+      m_chanSwitchScenario{chanSwitchScenario}
 {
 }
 
@@ -1147,11 +1164,13 @@ SpectrumWifiPhyMultipleInterfacesTest::CheckResults(
 void
 SpectrumWifiPhyMultipleInterfacesTest::CheckCcaIndication(std::size_t index,
                                                           bool expectedCcaBusyIndication,
-                                                          Time switchingDelay)
+                                                          Time switchingDelay,
+                                                          Time propagationDelay)
 {
     const auto expectedCcaBusyStart =
         expectedCcaBusyIndication ? m_lastTxStart + switchingDelay : Seconds(0);
-    const auto expectedCcaBusyEnd = expectedCcaBusyIndication ? m_lastTxEnd : Seconds(0);
+    const auto expectedCcaBusyEnd =
+        expectedCcaBusyIndication ? m_lastTxEnd + propagationDelay : Seconds(0);
     NS_LOG_FUNCTION(this << index << expectedCcaBusyIndication << expectedCcaBusyStart
                          << expectedCcaBusyEnd);
     auto& listener = m_listeners.at(index);
@@ -1264,6 +1283,8 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
                                                  WIFI_STANDARD_80211be,
                                                  interfaces.at(i).band));
 
+        auto delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
+        spectrumChannel->SetPropagationDelayModel(delayModel);
         std::ostringstream oss;
         oss << "{" << +interfaces.at(i).number << ", 0, " << interfaces.at(i).bandName << ", 0}";
         phyHelper.Set(i, "ChannelSettings", StringValue(oss.str()));
@@ -1282,15 +1303,34 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
                   BooleanValue(m_trackSignalsInactiveInterfaces));
     auto staDevice = wifi.Install(phyHelper, mac, wifiStaNode.Get(0));
 
+    MobilityHelper mobility;
+    auto positionAlloc = CreateObject<ListPositionAllocator>();
+
+    positionAlloc->Add(Vector(0.0, 0.0, 0.0));
+    positionAlloc->Add(Vector(10.0, 0.0, 0.0));
+    mobility.SetPositionAllocator(positionAlloc);
+
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(wifiApNode);
+    mobility.Install(wifiStaNode);
+
     for (std::size_t i = 0; i < interfaces.size(); ++i)
     {
         auto txPhy =
             DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(apDevice.Get(0))->GetPhy(i));
+        if (m_chanSwitchScenario == ChannelSwitchScenario::BETWEEN_TX_RX)
+        {
+            txPhy->SetAttribute("ChannelSwitchDelay", TimeValue(NanoSeconds(1)));
+        }
         m_txPhys.push_back(txPhy);
 
         const auto index = m_rxPhys.size();
         auto rxPhy =
             DynamicCast<SpectrumWifiPhy>(DynamicCast<WifiNetDevice>(staDevice.Get(0))->GetPhy(i));
+        if (m_chanSwitchScenario == ChannelSwitchScenario::BETWEEN_TX_RX)
+        {
+            rxPhy->SetAttribute("ChannelSwitchDelay", TimeValue(NanoSeconds(1)));
+        }
         rxPhy->TraceConnectWithoutContext(
             "PhyRxBegin",
             MakeCallback(&SpectrumWifiPhyMultipleInterfacesTest::RxCallback, this).Bind(index));
@@ -1336,8 +1376,10 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
 
     const auto ccaEdThresholdDbm = -62.0; ///< CCA-ED threshold in dBm
     const auto txAfterChannelSwitchDelay =
-        Seconds(0.25); ///< delay in seconds between channel switch is triggered and a transmission
-                       ///< gets started
+        MicroSeconds((m_chanSwitchScenario == ChannelSwitchScenario::BEFORE_TX)
+                         ? 250
+                         : 0); ///< delay in seconds between channel switch is triggered and a
+                               ///< transmission gets started
     const auto checkResultsDelay =
         Seconds(0.5); ///< delay in seconds between start of test and moment results are verified
     const auto flushResultsDelay =
@@ -1345,6 +1387,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
     const auto txOngoingAfterTxStartedDelay =
         MicroSeconds(50); ///< delay in microseconds between a transmission has started and a point
                           ///< in time the transmission is ongoing
+    const auto propagationDelay = NanoSeconds(33); // propagation delay for the test scenario
 
     Time delay{0};
 
@@ -1548,7 +1591,8 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                             this,
                             k,
                             expectCcaBusyIndication,
-                            txOngoingAfterTxStartedDelay);
+                            txOngoingAfterTxStartedDelay,
+                            propagationDelay);
                     }
                     Simulator::Schedule(delay + flushResultsDelay,
                                         &SpectrumWifiPhyMultipleInterfacesTest::Reset,
@@ -1970,8 +2014,18 @@ SpectrumWifiPhyTestSuite::SpectrumWifiPhyTestSuite()
     AddTestCase(new SpectrumWifiPhyBasicTest, TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyListenerTest, TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyFilterTest, TestCase::Duration::QUICK);
-    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(false), TestCase::Duration::QUICK);
-    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(true), TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(
+                    false,
+                    SpectrumWifiPhyMultipleInterfacesTest::ChannelSwitchScenario::BEFORE_TX),
+                TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(
+                    true,
+                    SpectrumWifiPhyMultipleInterfacesTest::ChannelSwitchScenario::BEFORE_TX),
+                TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(
+                    true,
+                    SpectrumWifiPhyMultipleInterfacesTest::ChannelSwitchScenario::BETWEEN_TX_RX),
+                TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyInterfacesHelperTest, TestCase::Duration::QUICK);
 }
 
