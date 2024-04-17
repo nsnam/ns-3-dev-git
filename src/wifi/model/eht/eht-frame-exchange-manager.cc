@@ -276,28 +276,24 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
         }
 
         // let EMLSR manager decide whether to prevent or allow this UL TXOP
-        if (auto delay = emlsrManager->GetDelayUntilAccessRequest(
+        if (const auto [startTxop, delay] = emlsrManager->GetDelayUntilAccessRequest(
                 m_linkId,
                 DynamicCast<QosTxop>(edca)->GetAccessCategory());
-            delay.IsStrictlyPositive())
-        {
-            NotifyChannelReleased(edca);
-            Simulator::Schedule(delay,
-                                &Txop::StartAccessAfterEvent,
-                                edca,
-                                m_linkId,
-                                Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be
-                                                                     // transmitted until RX ends
-                                Txop::CHECK_MEDIUM_BUSY); // generate backoff if medium busy
-            return false;
-        }
+            !startTxop)
 
-        // in case of aux PHY that is not TX capable, the main PHY can transmit if the medium is
-        // sensed idle for a PIFS after the end of channel switch (assuming main PHY is switching)
-        if (auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
-            m_phy != mainPhy && !emlsrManager->GetAuxPhyTxCapable())
         {
-            NS_LOG_DEBUG("Aux PHY is not capable of transmitting a PPDU");
+            if (delay.IsStrictlyPositive())
+            {
+                NotifyChannelReleased(edca);
+                Simulator::Schedule(
+                    delay,
+                    &Txop::StartAccessAfterEvent,
+                    edca,
+                    m_linkId,
+                    Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be
+                                                         // transmitted until RX ends
+                    Txop::CHECK_MEDIUM_BUSY);            // generate backoff if medium busy
+            }
             return false;
         }
     }

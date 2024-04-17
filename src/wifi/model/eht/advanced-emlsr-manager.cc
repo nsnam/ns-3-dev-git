@@ -107,7 +107,7 @@ AdvancedEmlsrManager::DoSetWifiMac(Ptr<StaWifiMac> mac)
     }
 }
 
-Time
+std::pair<bool, Time>
 AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
@@ -131,7 +131,7 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
                     hdr.IsTrigger() &&
                     (hdr.GetAddr1().IsBroadcast() || hdr.GetAddr1() == GetEhtFem(id)->GetAddress()))
                 {
-                    return phy->GetDelayUntilIdle();
+                    return {false, phy->GetDelayUntilIdle()};
                 }
                 continue;
             }
@@ -143,7 +143,7 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
                 if (!m_allowUlTxopInRx)
                 {
                     // retry channel access after the end of the current PHY header field
-                    return phy->GetDelayUntilIdle();
+                    return {false, phy->GetDelayUntilIdle()};
                 }
                 continue;
             }
@@ -157,7 +157,7 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
                     if (!m_useNotifiedMacHdr)
                     {
                         // restart channel access at the end of PSDU reception
-                        return phy->GetDelayUntilIdle();
+                        return {false, phy->GetDelayUntilIdle()};
                     }
 
                     // retry channel access after the expected end of the MAC header reception
@@ -192,14 +192,14 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
                                               .CalculateBytesTxTime(macHdrSize);
                     const auto timeSinceRxStart =
                         Simulator::Now() - phy->GetState()->GetLastTime({WifiPhyState::CCA_BUSY});
-                    return Max(macHdrDuration - timeSinceRxStart, Time{0});
+                    return {false, Max(macHdrDuration - timeSinceRxStart, Time{0})};
                 }
                 continue;
             }
         }
     }
 
-    return Time{0};
+    return {true, Time{0}};
 }
 
 void
@@ -290,7 +290,7 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     }
 }
 
-Time
+std::pair<bool, Time>
 AdvancedEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
@@ -316,7 +316,7 @@ AdvancedEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
         NS_LOG_DEBUG("Not enough time for main PHY to switch link (main PHY state: "
                      << mainPhy->GetState()->GetState() << ")");
         // retry channel access when the CTS was expected to be received
-        return timeToCtsEnd;
+        return {false, timeToCtsEnd};
     }
 
     // TXOP can be started, schedule main PHY switch. Main PHY shall terminate the channel switch
@@ -333,7 +333,7 @@ AdvancedEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
                                                     RESET_BACKOFF,
                                                     DONT_REQUEST_ACCESS);
 
-    return Time{0};
+    return {true, Time{0}};
 }
 
 void

@@ -171,11 +171,11 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
     }
 }
 
-Time
+std::pair<bool, Time>
 DefaultEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
-    return Time{0}; // start the TXOP
+    return {true, Time{0}}; // start the TXOP
 }
 
 void
@@ -271,7 +271,7 @@ DefaultEmlsrManager::GetTimeToCtsEnd(uint8_t linkId) const
     return rtsTxTime + phy->GetSifs() + ctsTxTime + MicroSeconds(2 * MAX_PROPAGATION_DELAY_USEC);
 }
 
-Time
+std::pair<bool, Time>
 DefaultEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
@@ -296,7 +296,7 @@ DefaultEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
             NS_LOG_DEBUG("Not enough time for main PHY to switch link (main PHY state: "
                          << mainPhy->GetState()->GetState() << ")");
             // retry channel access when the CTS was expected to be received
-            return timeToCtsEnd;
+            return {false, timeToCtsEnd};
         }
         break;
     default:
@@ -317,7 +317,7 @@ DefaultEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
                                                     RESET_BACKOFF,
                                                     DONT_REQUEST_ACCESS);
 
-    return Time{0};
+    return {true, Time{0}};
 }
 
 } // namespace ns3

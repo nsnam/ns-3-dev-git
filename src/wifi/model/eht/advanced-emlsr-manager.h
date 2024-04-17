@@ -34,8 +34,8 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
   protected:
     void DoDispose() override;
     void DoSetWifiMac(Ptr<StaWifiMac> mac) override;
-    Time DoGetDelayUntilAccessRequest(uint8_t linkId) override;
-    Time GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId) override;
+    std::pair<bool, Time> DoGetDelayUntilAccessRequest(uint8_t linkId) override;
+    std::pair<bool, Time> GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId) override;
     void SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex aci) override;
 
     /**

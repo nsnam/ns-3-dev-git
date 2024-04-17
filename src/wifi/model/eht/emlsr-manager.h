@@ -18,6 +18,7 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <utility>
 
 class EmlsrCcaBusyTest;
 
@@ -147,10 +148,11 @@ class EmlsrManager : public Object
      *
      * \param linkId the ID of the given link
      * \param aci the index of the given AC
-     * \return zero, if the UL TXOP can be started, or the delay after which the EMLSR client
-     *         restarts channel access, otherwise
+     * \return a pair consisting of a boolean value indicating whether the UL TXOP can be started
+     *         and a Time value indicating the delay after which the EMLSR client must restart
+     *         channel access (if needed) in case the UL TXOP is not started
      */
-    Time GetDelayUntilAccessRequest(uint8_t linkId, AcIndex aci);
+    std::pair<bool, Time> GetDelayUntilAccessRequest(uint8_t linkId, AcIndex aci);
 
     /**
      * Set the member variable indicating whether Aux PHYs are capable of transmitting PPDUs.
@@ -357,10 +359,11 @@ class EmlsrManager : public Object
      * check possible reasons to give up the TXOP that apply to both main PHY and aux PHYs.
      *
      * \param linkId the ID of the given link
-     * \return zero, if the UL TXOP can be started, or the delay after which the EMLSR client
-     *         restarts channel access, otherwise
+     * \return a pair consisting of a boolean value indicating whether the UL TXOP can be started
+     *         and a Time value indicating the delay after which the EMLSR client must restart
+     *         channel access (if needed) in case the UL TXOP is not started
      */
-    virtual Time DoGetDelayUntilAccessRequest(uint8_t linkId) = 0;
+    virtual std::pair<bool, Time> DoGetDelayUntilAccessRequest(uint8_t linkId) = 0;
 
     /**
      * Subclasses have to provide an implementation for this method, that is called by the base
@@ -381,10 +384,11 @@ class EmlsrManager : public Object
      * EMLSR client restarts channel access on the given link, otherwise.
      *
      * \param linkId the ID of the given link
-     * \return zero, if the UL TXOP can be started, or the delay after which the EMLSR client
-     *         restarts channel access, otherwise
+     * \return a pair consisting of a boolean value indicating whether the UL TXOP can be started
+     *         and a Time value indicating the delay after which the EMLSR client must restart
+     *         channel access (if needed) in case the UL TXOP is not started
      */
-    virtual Time GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId) = 0;
+    virtual std::pair<bool, Time> GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId) = 0;
 
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay

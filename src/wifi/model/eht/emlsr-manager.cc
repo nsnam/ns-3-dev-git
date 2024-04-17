@@ -404,7 +404,7 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
     DoNotifyIcfReceived(linkId);
 }
 
-Time
+std::pair<bool, Time>
 EmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId, AcIndex aci)
 {
     auto phy = m_staMac->GetWifiPhy(linkId);
@@ -413,15 +413,15 @@ EmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId, AcIndex aci)
     auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
 
     // check possible reasons to give up the TXOP that apply to both main PHY and aux PHYs
-    if (auto delay = DoGetDelayUntilAccessRequest(linkId); delay.IsStrictlyPositive())
+    if (const auto [startTxop, delay] = DoGetDelayUntilAccessRequest(linkId); !startTxop)
     {
-        return delay;
+        return {false, delay};
     }
 
     if (phy == mainPhy)
     {
         // no more constraints to check if medium was gained by main PHY
-        return Time{0};
+        return {true, Time{0}};
     }
 
     // an aux PHY is operating on the given link; call the appropriate method depending on
@@ -433,7 +433,8 @@ EmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId, AcIndex aci)
         // PHY switches link, the UL TXOP will be started; if the main PHY does not switch, it is
         // because it is going to start an UL TXOP on another link and this link will be restarted
         // at the end of that UL TXOP when this link will be unblocked
-        return Time{0};
+        NS_LOG_DEBUG("Aux PHY is not capable of transmitting a PPDU");
+        return {false, Time{0}};
     }
 
     return GetDelayUnlessMainPhyTakesOverUlTxop(linkId);

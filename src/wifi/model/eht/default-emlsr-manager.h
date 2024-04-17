@@ -36,9 +36,9 @@ class DefaultEmlsrManager : public EmlsrManager
   protected:
     uint8_t GetLinkToSendEmlOmn() override;
     std::optional<uint8_t> ResendNotification(Ptr<const WifiMpdu> mpdu) override;
-    Time DoGetDelayUntilAccessRequest(uint8_t linkId) override;
+    std::pair<bool, Time> DoGetDelayUntilAccessRequest(uint8_t linkId) override;
     void SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex aci) override;
-    Time GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId) override;
+    std::pair<bool, Time> GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId) override;
 
     /**
      * This function is intended to be called when an aux PHY is about to transmit an RTS on
