@@ -213,7 +213,7 @@ class CqaFfMacScheduler : public FfMacScheduler
     void DoSchedUlCqiInfoReq(const FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params);
 
     /**
-     * Get RGB Size
+     * Get RBG Size
      * \param dlbandwidth the DL bandwidth
      * \returns the size
      */

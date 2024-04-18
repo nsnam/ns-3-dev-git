@@ -96,16 +96,16 @@ class LteFfrDistributedAlgorithm : public LteFfrAlgorithm
      */
     void SetUplinkConfiguration(uint16_t cellId, uint8_t bandwidth);
     /**
-     * Initialize down link RGB maps function
+     * Initialize down link RBG maps function
      */
     void InitializeDownlinkRbgMaps();
     /**
-     * Initialize up link RGB maps function
+     * Initialize up link RBG maps function
      */
     void InitializeUplinkRbgMaps();
 
     /**
-     * Initialize up link RGB maps function
+     * Initialize up link RBG maps function
      *
      * \param rnti the RNTI
      * \param cellId the cell ID

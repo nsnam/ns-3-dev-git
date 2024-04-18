@@ -47,10 +47,10 @@ NS_LOG_COMPONENT_DEFINE("CqaFfMacScheduler");
 
 /// CGA Type 0 Allocation
 static const int CqaType0AllocationRbg[4] = {
-    10,  // RGB size 1
-    26,  // RGB size 2
-    63,  // RGB size 3
-    110, // RGB size 4
+    10,  // RBG size 1
+    26,  // RBG size 2
+    63,  // RBG size 3
+    110, // RBG size 4
 };       // see table 7.1.6.1-1 of 36.213
 
 NS_OBJECT_ENSURE_REGISTERED(CqaFfMacScheduler);
@@ -1571,8 +1571,8 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
             lcActives = 1;
         }
         // NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " rbg " << lcActives);
-        uint16_t RgbPerRnti = (*itMap).second.size();
-        double doubleRBgPerRnti = RgbPerRnti;
+        uint16_t RbgPerRnti = (*itMap).second.size();
+        double doubleRBgPerRnti = RbgPerRnti;
         double doubleRbgNum = numberOfRBGs;
         double rrRatio = doubleRBgPerRnti / doubleRbgNum;
         m_rnti_per_ratio.insert(std::pair<uint16_t, double>((*itMap).first, rrRatio));
@@ -1588,7 +1588,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq(
         }
 
         newDci.m_mcs.push_back(m_amc->GetMcsFromCqi(worstCqi));
-        int tbSize = (m_amc->GetDlTbSizeFromMcs(newDci.m_mcs.at(0), RgbPerRnti * rbgSize) /
+        int tbSize = (m_amc->GetDlTbSizeFromMcs(newDci.m_mcs.at(0), RbgPerRnti * rbgSize) /
                       8); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
         newDci.m_tbsSize.push_back(tbSize);
         newDci.m_resAlloc = 0; // only allocation type 0 at this stage

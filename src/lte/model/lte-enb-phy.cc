@@ -882,10 +882,10 @@ LteEnbPhy::DoSetBandwidth(uint16_t ulBandwidth, uint16_t dlBandwidth)
     m_dlBandwidth = dlBandwidth;
 
     static const int Type0AllocationRbg[4] = {
-        10,  // RGB size 1
-        26,  // RGB size 2
-        63,  // RGB size 3
-        110, // RGB size 4
+        10,  // RBG size 1
+        26,  // RBG size 2
+        63,  // RBG size 3
+        110, // RBG size 4
     };       // see table 7.1.6.1-1 of 36.213
     for (int i = 0; i < 4; i++)
     {
