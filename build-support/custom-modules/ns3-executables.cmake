@@ -102,15 +102,33 @@ function(build_exec)
     )
   endif()
 
+  # Check if library is not a ns-3 module library, and if it is, link when
+  # building static or monolib builds
+  set(libraries_to_always_link)
+  set(modules "${libs_to_build};${contrib_libs_to_build}")
+  foreach(lib ${BEXEC_LIBRARIES_TO_LINK})
+    # Remove the lib prefix if one exists
+    set(libless ${lib})
+    string(SUBSTRING "${libless}" 0 3 prefix)
+    if(prefix STREQUAL "lib")
+      string(SUBSTRING "${libless}" 3 -1 libless)
+    endif()
+    # Check if the library is not a ns-3 module
+    if(libless IN_LIST modules)
+      continue()
+    endif()
+    list(APPEND libraries_to_always_link ${lib})
+  endforeach()
+
   if(${NS3_STATIC} AND (NOT BEXEC_STANDALONE))
     target_link_libraries(
-      ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} ${LIB_AS_NEEDED_PRE_STATIC}
-      ${lib-ns3-static}
+      ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} ${libraries_to_always_link}
+      ${LIB_AS_NEEDED_PRE_STATIC} ${lib-ns3-static}
     )
   elseif(${NS3_MONOLIB} AND (NOT BEXEC_STANDALONE))
     target_link_libraries(
-      ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} ${LIB_AS_NEEDED_PRE}
-      ${lib-ns3-monolib} ${LIB_AS_NEEDED_POST}
+      ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} ${libraries_to_always_link}
+      ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib} ${LIB_AS_NEEDED_POST}
     )
   else()
     target_link_libraries(

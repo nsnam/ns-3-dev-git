@@ -40,6 +40,7 @@ Applications have a new Attribute to set the IPv4 ToS field.
 ### Changes to build system
 
 * Removed support of the `experimental/filesystem` library, in favor of the official `filesystem` library.
+* Fixed static and monolib builds when linking to a non ns-3 module library.
 
 ### Changed behavior
 
