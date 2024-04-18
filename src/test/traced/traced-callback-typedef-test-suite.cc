@@ -384,12 +384,12 @@ TracedCallbackTypedefTestCase::DoRun()
 
     CHECK(lrwpan::LrWpanMac::SentTracedCallback, Ptr<const Packet>, uint8_t, uint8_t);
 
-    CHECK(lrwpan::LrWpanMac::StateTracedCallback, lrwpan::LrWpanMacState, lrwpan::LrWpanMacState);
+    CHECK(lrwpan::LrWpanMac::StateTracedCallback, lrwpan::MacState, lrwpan::MacState);
 
     CHECK(lrwpan::LrWpanPhy::StateTracedCallback,
           Time,
-          lrwpan::LrWpanPhyEnumeration,
-          lrwpan::LrWpanPhyEnumeration);
+          lrwpan::PhyEnumeration,
+          lrwpan::PhyEnumeration);
 
     CHECK(LteEnbMac::DlSchedulingTracedCallback,
           uint32_t,

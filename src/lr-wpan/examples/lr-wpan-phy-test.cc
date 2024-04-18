@@ -34,7 +34,7 @@ using namespace ns3::lrwpan;
  * \param status PHY state
  */
 void
-GetSetTRXStateConfirm(LrWpanPhyEnumeration status)
+GetSetTRXStateConfirm(PhyEnumeration status)
 {
     NS_LOG_UNCOND("At: " << Simulator::Now() << " Received Set TRX Confirm: " << status);
 }

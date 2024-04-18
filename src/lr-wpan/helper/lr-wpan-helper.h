@@ -137,14 +137,14 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
      * \param e the LrWpanPhyEnumeration
      * \return a string
      */
-    static std::string LrWpanPhyEnumerationPrinter(lrwpan::LrWpanPhyEnumeration e);
+    static std::string LrWpanPhyEnumerationPrinter(lrwpan::PhyEnumeration e);
 
     /**
      * \brief Transform the LrWpanMacState enumeration into a printable string.
      * \param e the LrWpanMacState
      * \return a string
      */
-    static std::string LrWpanMacStatePrinter(lrwpan::LrWpanMacState e);
+    static std::string LrWpanMacStatePrinter(lrwpan::MacState e);
 
     /**
      * Assign a fixed random variable stream number to the random variables

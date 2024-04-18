@@ -67,8 +67,8 @@ class TestRxOffWhenIdleAfterCsmaFailure : public TestCase
      */
     void StateChangeNotificationDev0(std::string context,
                                      Time now,
-                                     LrWpanPhyEnumeration oldState,
-                                     LrWpanPhyEnumeration newState);
+                                     PhyEnumeration oldState,
+                                     PhyEnumeration newState);
     /**
      * Function called when a the PHY state changes in Dev2 [00:03]
      * \param context context
@@ -78,12 +78,12 @@ class TestRxOffWhenIdleAfterCsmaFailure : public TestCase
      */
     void StateChangeNotificationDev2(std::string context,
                                      Time now,
-                                     LrWpanPhyEnumeration oldState,
-                                     LrWpanPhyEnumeration newState);
+                                     PhyEnumeration oldState,
+                                     PhyEnumeration newState);
 
     void DoRun() override;
 
-    LrWpanPhyEnumeration m_dev0State; //!< Stores the PHY state of device 0 [00:01]
+    PhyEnumeration m_dev0State; //!< Stores the PHY state of device 0 [00:01]
 };
 
 TestRxOffWhenIdleAfterCsmaFailure::TestRxOffWhenIdleAfterCsmaFailure()
@@ -104,11 +104,11 @@ TestRxOffWhenIdleAfterCsmaFailure::DataIndication(McpsDataIndicationParams param
 void
 TestRxOffWhenIdleAfterCsmaFailure::DataConfirm(McpsDataConfirmParams params)
 {
-    if (params.m_status == LrWpanMacStatus::SUCCESS)
+    if (params.m_status == MacStatus::SUCCESS)
     {
         NS_LOG_DEBUG("LrWpanMcpsDataConfirmStatus = Success");
     }
-    else if (params.m_status == LrWpanMacStatus::CHANNEL_ACCESS_FAILURE)
+    else if (params.m_status == MacStatus::CHANNEL_ACCESS_FAILURE)
     {
         NS_LOG_DEBUG("LrWpanMcpsDataConfirmStatus =  Channel Access Failure");
     }
@@ -117,8 +117,8 @@ TestRxOffWhenIdleAfterCsmaFailure::DataConfirm(McpsDataConfirmParams params)
 void
 TestRxOffWhenIdleAfterCsmaFailure::StateChangeNotificationDev0(std::string context,
                                                                Time now,
-                                                               LrWpanPhyEnumeration oldState,
-                                                               LrWpanPhyEnumeration newState)
+                                                               PhyEnumeration oldState,
+                                                               PhyEnumeration newState)
 {
     NS_LOG_DEBUG(Simulator::Now().As(Time::S)
                  << context << "PHY state change at " << now.As(Time::S) << " from "
@@ -131,8 +131,8 @@ TestRxOffWhenIdleAfterCsmaFailure::StateChangeNotificationDev0(std::string conte
 void
 TestRxOffWhenIdleAfterCsmaFailure::StateChangeNotificationDev2(std::string context,
                                                                Time now,
-                                                               LrWpanPhyEnumeration oldState,
-                                                               LrWpanPhyEnumeration newState)
+                                                               PhyEnumeration oldState,
+                                                               PhyEnumeration newState)
 {
     NS_LOG_DEBUG(Simulator::Now().As(Time::S)
                  << context << "PHY state change at " << now.As(Time::S) << " from "
@@ -284,7 +284,7 @@ TestRxOffWhenIdleAfterCsmaFailure::DoRun()
     Simulator::Run();
 
     NS_TEST_EXPECT_MSG_EQ(m_dev0State,
-                          LrWpanPhyEnumeration::IEEE_802_15_4_PHY_TRX_OFF,
+                          PhyEnumeration::IEEE_802_15_4_PHY_TRX_OFF,
                           "Error, dev0 [00:01] PHY should be in TRX_OFF after CSMA failure");
 
     Simulator::Destroy();
@@ -337,7 +337,7 @@ TestActiveScanPanDescriptors::~TestActiveScanPanDescriptors()
 void
 TestActiveScanPanDescriptors::ScanConfirm(MlmeScanConfirmParams params)
 {
-    if (params.m_status == LrWpanMacStatus::SUCCESS)
+    if (params.m_status == MacStatus::SUCCESS)
     {
         m_panDescriptorList = params.m_panDescList;
     }
@@ -456,9 +456,9 @@ TestActiveScanPanDescriptors::DoRun()
     // PAN coordinator N2 (PAN 7) is set to channel 14 in non-beacon mode but answer to beacon
     // requests. The second coordinator includes a beacon payload of 25 bytes using the
     // MLME-SET.request primitive.
-    Ptr<LrWpanMacPibAttributes> pibAttribute = Create<LrWpanMacPibAttributes>();
+    Ptr<MacPibAttributes> pibAttribute = Create<MacPibAttributes>();
     pibAttribute->macBeaconPayload = Create<Packet>(25);
-    coord2NetDevice->GetMac()->MlmeSetRequest(LrWpanMacPibAttributeIdentifier::macBeaconPayload,
+    coord2NetDevice->GetMac()->MlmeSetRequest(MacPibAttributeIdentifier::macBeaconPayload,
                                               pibAttribute);
 
     MlmeStartRequestParams params2;
@@ -574,7 +574,7 @@ TestOrphanScan::~TestOrphanScan()
 void
 TestOrphanScan::ScanConfirm(MlmeScanConfirmParams params)
 {
-    if (params.m_status == LrWpanMacStatus::SUCCESS)
+    if (params.m_status == MacStatus::SUCCESS)
     {
         m_orphanScanSuccess = true;
     }

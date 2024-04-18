@@ -47,7 +47,7 @@ namespace lrwpan
  * (Table 6: Status Enumerations and Section 6.1.23)
  *
  */
-enum class LrWpanMacStatus : std::uint8_t
+enum class MacStatus : std::uint8_t
 {
     SUCCESS = 0,              //!< The operation was completed successfully.
     FULL_CAPACITY = 0x01,     //!< PAN at capacity. Association Status field (std. 2006, Table 83)
@@ -86,7 +86,7 @@ enum class LrWpanMacStatus : std::uint8_t
     LIMIT_REACHED = 0xfa,     //!< PAN descriptors stored reached max capacity.
     READ_ONLY = 0xfb,         //!< SET/GET request issued for a read only attribute.
     SCAN_IN_PROGRESS = 0xfc,  //!< Scan failed because already performing another scan.
-    SUPERFRAME_OVERLAP = 0xfd //!< Coordinator sperframe and this device superframe tx overlap.
+    SUPERFRAME_OVERLAP = 0xfd //!< Coordinator superframe and this device superframe tx overlap.
 };
 
 /**
@@ -94,7 +94,7 @@ enum class LrWpanMacStatus : std::uint8_t
  *
  * table 80 of 802.15.4
  */
-enum LrWpanAddressMode
+enum AddressMode
 {
     NO_PANID_ADDR = 0,
     ADDR_MODE_RESERVED = 1,
@@ -107,7 +107,7 @@ enum LrWpanAddressMode
  *
  * Table 30 of IEEE 802.15.4-2011
  */
-enum LrWpanMlmeScanType
+enum MlmeScanType
 {
     MLMESCAN_ED = 0x00,
     MLMESCAN_ACTIVE = 0x01,
@@ -122,13 +122,13 @@ enum LrWpanMlmeScanType
  */
 struct McpsDataRequestParams
 {
-    LrWpanAddressMode m_srcAddrMode{SHORT_ADDR}; //!< Source address mode
-    LrWpanAddressMode m_dstAddrMode{SHORT_ADDR}; //!< Destination address mode
-    uint16_t m_dstPanId{0};                      //!< Destination PAN identifier
-    Mac16Address m_dstAddr;                      //!< Destination address
-    Mac64Address m_dstExtAddr;                   //!< Destination extended address
-    uint8_t m_msduHandle{0};                     //!< MSDU handle
-    uint8_t m_txOptions{0};                      //!< Tx Options (bitfield)
+    AddressMode m_srcAddrMode{SHORT_ADDR}; //!< Source address mode
+    AddressMode m_dstAddrMode{SHORT_ADDR}; //!< Destination address mode
+    uint16_t m_dstPanId{0};                //!< Destination PAN identifier
+    Mac16Address m_dstAddr;                //!< Destination address
+    Mac64Address m_dstExtAddr;             //!< Destination extended address
+    uint8_t m_msduHandle{0};               //!< MSDU handle
+    uint8_t m_txOptions{0};                //!< Tx Options (bitfield)
 };
 
 /**
@@ -162,11 +162,11 @@ struct MlmeStartRequestParams
  */
 struct MlmeScanRequestParams
 {
-    LrWpanMlmeScanType m_scanType{MLMESCAN_PASSIVE}; //!< Indicates the type of scan performed as
-                                                     //!< described in IEEE 802.15.4-2011 (5.1.2.1).
-    uint32_t m_scanChannels{0x7FFF800};              //!< The channel numbers to be scanned.
-                                                     //!< Default: (0x7FFF800 = Ch11-Ch26)
-                                                     //!< 27 LSB (b0,b1,...,b26) = channels
+    MlmeScanType m_scanType{MLMESCAN_PASSIVE}; //!< Indicates the type of scan performed as
+                                               //!< described in IEEE 802.15.4-2011 (5.1.2.1).
+    uint32_t m_scanChannels{0x7FFF800};        //!< The channel numbers to be scanned.
+                                               //!< Default: (0x7FFF800 = Ch11-Ch26)
+                                               //!< 27 LSB (b0,b1,...,b26) = channels
     uint8_t m_scanDuration{14}; //!< The factor (0-14) used to calculate the length of time
                                 //!< to spend scanning.
                                 //!< scanDurationSymbols =
@@ -204,9 +204,9 @@ struct MlmeAssociateResponseParams
     Mac64Address m_extDevAddr;     //!< The extended address of the device requesting association
     Mac16Address m_assocShortAddr; //!< The short address allocated by the coordinator on successful
                                    //!< assoc. FF:FF = Unsuccessful
-    LrWpanMacStatus m_status{
-        LrWpanMacStatus::ACCESS_DENIED}; //!< The status of the association
-                                         //!< attempt (As defined on Table 83 IEEE 802.15.4-2006)
+    MacStatus m_status{
+        MacStatus::ACCESS_DENIED}; //!< The status of the association
+                                   //!< attempt (As defined on Table 83 IEEE 802.15.4-2006)
 };
 
 /**
@@ -240,8 +240,8 @@ struct MlmeSyncRequestParams
  */
 struct MlmePollRequestParams
 {
-    LrWpanAddressMode m_coorAddrMode{SHORT_ADDR}; //!< The addressing mode of the coordinator
-                                                  //!< to which the pool is intended.
+    AddressMode m_coorAddrMode{SHORT_ADDR}; //!< The addressing mode of the coordinator
+                                            //!< to which the pool is intended.
     uint16_t m_coorPanId{0};      //!< The PAN id of the coordinator to which the poll is intended.
     Mac16Address m_coorShortAddr; //!< Coordinator short address.
     Mac64Address m_coorExtAddr;   //!< Coordinator extended address.
@@ -253,7 +253,7 @@ struct MlmePollRequestParams
  * IEEE 802.15.4-2006 PHY and MAC PIB Attribute Identifiers Table 23 and Table 86.
  * Note: Attribute identifiers use standardized values.
  */
-enum LrWpanMacPibAttributeIdentifier
+enum MacPibAttributeIdentifier
 {
     pCurrentChannel = 0x00,      //!< RF channel used for transmissions and receptions.
     pCurrentPage = 0x04,         //!< The current channel page.
@@ -309,7 +309,7 @@ enum LrWpanMacPibAttributeIdentifier
  *
  * IEEE802.15.4-2011 PHY PIB Attributes Table 52 in section 6.4.2
  */
-struct LrWpanMacPibAttributes : public SimpleRefCount<LrWpanMacPibAttributes>
+struct MacPibAttributes : public SimpleRefCount<MacPibAttributes>
 {
     Ptr<Packet> macBeaconPayload;      //!< The contents of the beacon payload.
     uint8_t macBeaconPayloadLength{0}; //!< The length in octets of the beacon payload.
@@ -328,9 +328,9 @@ struct LrWpanMacPibAttributes : public SimpleRefCount<LrWpanMacPibAttributes>
  */
 struct McpsDataConfirmParams
 {
-    uint8_t m_msduHandle{0};                                      //!< MSDU handle
-    LrWpanMacStatus m_status{LrWpanMacStatus::INVALID_PARAMETER}; //!< The status
-                                                                  //!< of the last MSDU transmission
+    uint8_t m_msduHandle{0};                          //!< MSDU handle
+    MacStatus m_status{MacStatus::INVALID_PARAMETER}; //!< The status
+                                                      //!< of the last MSDU transmission
 };
 
 /**
@@ -385,7 +385,7 @@ struct MlmeCommStatusIndicationParams
                                        //!< which the frame was intended.
     Mac64Address m_dstExtAddr;         //!< The extended address of the device for
                                        //!< which the frame was intended.
-    LrWpanMacStatus m_status{LrWpanMacStatus::INVALID_PARAMETER}; //!< The communication status
+    MacStatus m_status{MacStatus::INVALID_PARAMETER}; //!< The communication status
 };
 
 /**
@@ -405,8 +405,8 @@ struct MlmeOrphanIndicationParams
  */
 struct MlmeStartConfirmParams
 {
-    LrWpanMacStatus m_status{LrWpanMacStatus::INVALID_PARAMETER}; //!< The status of
-                                                                  //!< a MLME-start.request
+    MacStatus m_status{MacStatus::INVALID_PARAMETER}; //!< The status of
+                                                      //!< a MLME-start.request
 };
 
 /**
@@ -416,10 +416,10 @@ struct MlmeStartConfirmParams
  */
 struct PanDescriptor
 {
-    LrWpanAddressMode m_coorAddrMode{SHORT_ADDR}; //!< The coordinator addressing mode corresponding
-                                                  //!< to the received beacon frame.
-    uint16_t m_coorPanId{0xffff};                 //!< The PAN ID of the coordinator as specified in
-                                                  //!<  the received beacon frame.
+    AddressMode m_coorAddrMode{SHORT_ADDR}; //!< The coordinator addressing mode corresponding
+                                            //!< to the received beacon frame.
+    uint16_t m_coorPanId{0xffff};           //!< The PAN ID of the coordinator as specified in
+                                            //!<  the received beacon frame.
     Mac16Address m_coorShortAddr; //!< The coordinator short address as specified in the coordinator
                                   //!< address mode.
     Mac64Address m_coorExtAddr;   //!< The coordinator extended address as specified in the
@@ -443,18 +443,17 @@ struct PanDescriptor
  */
 struct MlmeScanConfirmParams
 {
-    LrWpanMacStatus m_status{
-        LrWpanMacStatus::INVALID_PARAMETER}; //!< The status of the scan request.
-    uint8_t m_scanType{MLMESCAN_PASSIVE};    //!< Indicates the type of scan
-                                             //!<  performed (ED,ACTIVE,PASSIVE,ORPHAN).
-    uint32_t m_chPage{0};                    //!< The channel page on which the scan was performed.
-    std::vector<uint8_t> m_unscannedCh;      //!< A list of channels given in the request which
-                                             //!<  were not scanned (Not valid for ED scans).
-    uint8_t m_resultListSize{0};             //!< The number of elements returned in the appropriate
-                                             //!<  result list. (Not valid for Orphan scan).
-    std::vector<uint8_t> m_energyDetList;    //!< A list of energy measurements, one for each
-                                             //!< channel searched during ED scan
-                                             //!< (Not valid for Active, Passive or Orphan Scans)
+    MacStatus m_status{MacStatus::INVALID_PARAMETER}; //!< The status of the scan request.
+    uint8_t m_scanType{MLMESCAN_PASSIVE};             //!< Indicates the type of scan
+                                                      //!<  performed (ED,ACTIVE,PASSIVE,ORPHAN).
+    uint32_t m_chPage{0};                 //!< The channel page on which the scan was performed.
+    std::vector<uint8_t> m_unscannedCh;   //!< A list of channels given in the request which
+                                          //!<  were not scanned (Not valid for ED scans).
+    uint8_t m_resultListSize{0};          //!< The number of elements returned in the appropriate
+                                          //!<  result list. (Not valid for Orphan scan).
+    std::vector<uint8_t> m_energyDetList; //!< A list of energy measurements, one for each
+                                          //!< channel searched during ED scan
+                                          //!< (Not valid for Active, Passive or Orphan Scans)
     std::vector<PanDescriptor> m_panDescList; //!< A list of PAN descriptor, one for each beacon
                                               //!< found (Not valid for ED and Orphan scans).
 };
@@ -467,8 +466,8 @@ struct MlmeScanConfirmParams
 struct MlmeAssociateConfirmParams
 {
     Mac16Address m_assocShortAddr; //!< The short address used in the association request
-    LrWpanMacStatus m_status{LrWpanMacStatus::INVALID_PARAMETER}; //!< The status of
-                                                                  //!< a MLME-associate.request
+    MacStatus m_status{MacStatus::INVALID_PARAMETER}; //!< The status of
+                                                      //!< a MLME-associate.request
 };
 
 /**
@@ -491,8 +490,8 @@ struct MlmeBeaconNotifyIndicationParams
  */
 struct MlmeSyncLossIndicationParams
 {
-    LrWpanMacStatus m_lossReason{LrWpanMacStatus::PAN_ID_CONFLICT}; //!< The reason for the lost
-                                                                    //!< of synchronization.
+    MacStatus m_lossReason{MacStatus::PAN_ID_CONFLICT}; //!< The reason for the lost
+                                                        //!< of synchronization.
     uint16_t m_panId{0}; //!< The PAN identifier with which the device lost synchronization or to
                          //!< which it was realigned.
     uint8_t m_logCh{11}; //!< The channel number on which the device lost synchronization or to
@@ -506,10 +505,10 @@ struct MlmeSyncLossIndicationParams
  */
 struct MlmeSetConfirmParams
 {
-    LrWpanMacStatus m_status{LrWpanMacStatus::UNSUPPORTED_ATTRIBUTE}; //!< The result of
-                                                                      //!< the request to write
-                                                                      //!< the PIB attribute.
-    LrWpanMacPibAttributeIdentifier id; //!< The id of the PIB attribute that was written.
+    MacStatus m_status{MacStatus::UNSUPPORTED_ATTRIBUTE}; //!< The result of
+                                                          //!< the request to write
+                                                          //!< the PIB attribute.
+    MacPibAttributeIdentifier id; //!< The id of the PIB attribute that was written.
 };
 
 /**
@@ -519,9 +518,9 @@ struct MlmeSetConfirmParams
  */
 struct MlmePollConfirmParams
 {
-    LrWpanMacStatus m_status{LrWpanMacStatus::INVALID_PARAMETER}; //!< The confirmation
-                                                                  //!< status resulting from a
-                                                                  //!< MLME-poll.request.
+    MacStatus m_status{MacStatus::INVALID_PARAMETER}; //!< The confirmation
+                                                      //!< status resulting from a
+                                                      //!< MLME-poll.request.
 };
 
 /**
@@ -642,7 +641,7 @@ using MlmeSetConfirmCallback = Callback<void, MlmeSetConfirmParams>;
  * write attempt.
  */
 using MlmeGetConfirmCallback =
-    Callback<void, LrWpanMacStatus, LrWpanMacPibAttributeIdentifier, Ptr<LrWpanMacPibAttributes>>;
+    Callback<void, MacStatus, MacPibAttributeIdentifier, Ptr<MacPibAttributes>>;
 
 /**
  * \ingroup lr-wpan
@@ -759,8 +758,7 @@ class LrWpanMacBase : public Object
      * \param id the attributed identifier
      * \param attribute the attribute value
      */
-    virtual void MlmeSetRequest(LrWpanMacPibAttributeIdentifier id,
-                                Ptr<LrWpanMacPibAttributes> attribute) = 0;
+    virtual void MlmeSetRequest(MacPibAttributeIdentifier id, Ptr<MacPibAttributes> attribute) = 0;
 
     /**
      * IEEE 802.15.4-2006, section 7.1.6.1
@@ -771,7 +769,7 @@ class LrWpanMacBase : public Object
      *
      * \param id the attribute identifier
      */
-    virtual void MlmeGetRequest(LrWpanMacPibAttributeIdentifier id) = 0;
+    virtual void MlmeGetRequest(MacPibAttributeIdentifier id) = 0;
 
     /**
      * Set the callback for the confirmation of a data transmission request.

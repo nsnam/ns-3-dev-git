@@ -79,7 +79,7 @@ LrWpanCsmaCa::~LrWpanCsmaCa()
 void
 LrWpanCsmaCa::DoDispose()
 {
-    m_lrWpanMacStateCallback = MakeNullCallback<void, LrWpanMacState>();
+    m_lrWpanMacStateCallback = MakeNullCallback<void, MacState>();
     m_lrWpanMacTransCostCallback = MakeNullCallback<void, uint32_t>();
 
     Cancel();
@@ -254,7 +254,7 @@ LrWpanCsmaCa::Start()
         }
 
         // m_coorDest to decide between incoming and outgoing superframes times
-        m_coorDest = m_mac->isCoordDest();
+        m_coorDest = m_mac->IsCoordDest();
 
         // Locate backoff period boundary. (i.e. a time delay to align with the next backoff period
         // boundary)
@@ -406,7 +406,7 @@ LrWpanCsmaCa::CanProceed()
 
     transactionSymbols = ccaSymbols + m_mac->GetTxPacketSymbols();
 
-    if (m_mac->isTxAckReq())
+    if (m_mac->IsTxAckReq())
     {
         NS_LOG_DEBUG("ACK duration symbols: " << m_mac->GetMacAckWaitDuration());
         transactionSymbols += m_mac->GetMacAckWaitDuration();
@@ -461,7 +461,7 @@ LrWpanCsmaCa::DeferCsmaTimeout()
 }
 
 void
-LrWpanCsmaCa::PlmeCcaConfirm(LrWpanPhyEnumeration status)
+LrWpanCsmaCa::PlmeCcaConfirm(PhyEnumeration status)
 {
     NS_LOG_FUNCTION(this << status);
 

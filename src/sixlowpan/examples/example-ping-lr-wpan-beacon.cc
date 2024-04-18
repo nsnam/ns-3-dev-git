@@ -36,7 +36,7 @@ DataSentMacConfirm(Ptr<LrWpanNetDevice> device, McpsDataConfirmParams params)
 {
     // In the case of transmissions with the Ack flag activated, the transaction is only
     // successful if the Ack was received.
-    if (params.m_status == LrWpanMacStatus::SUCCESS)
+    if (params.m_status == MacStatus::SUCCESS)
     {
         std::cout << Simulator::Now().As(Time::S) << " | Node " << device->GetNode()->GetId()
                   << " | Transmission successfully sent\n";

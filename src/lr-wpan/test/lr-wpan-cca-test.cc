@@ -57,7 +57,7 @@ class LrWpanCcaTestCase : public TestCase
      */
     static void PlmeCcaConfirm(LrWpanCcaTestCase* testcase,
                                Ptr<LrWpanNetDevice> device,
-                               LrWpanPhyEnumeration status);
+                               PhyEnumeration status);
     /**
      * \brief Function called when PhyTxBegin is hit.
      * \param testcase The TestCase.
@@ -108,7 +108,7 @@ class LrWpanCcaTestCase : public TestCase
 
     void DoRun() override;
 
-    LrWpanPhyEnumeration m_status; //!< PHY status.
+    PhyEnumeration m_status; //!< PHY status.
 };
 
 LrWpanCcaTestCase::LrWpanCcaTestCase()
@@ -120,7 +120,7 @@ LrWpanCcaTestCase::LrWpanCcaTestCase()
 void
 LrWpanCcaTestCase::PlmeCcaConfirm(LrWpanCcaTestCase* testcase,
                                   Ptr<LrWpanNetDevice> device,
-                                  LrWpanPhyEnumeration status)
+                                  PhyEnumeration status)
 {
     std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(9) << "["
               << Simulator::Now().As(Time::S) << "] " << device->GetMac()->GetShortAddress()

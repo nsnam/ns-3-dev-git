@@ -55,10 +55,10 @@ class LrWpanEdTestCase : public TestCase
      * \param status The PHY status.
      * \param level The ED level.
      */
-    void PlmeEdConfirm(LrWpanPhyEnumeration status, uint8_t level);
+    void PlmeEdConfirm(PhyEnumeration status, uint8_t level);
 
-    LrWpanPhyEnumeration m_status; //!< PHY status.
-    uint8_t m_level;               //!< ED level.
+    PhyEnumeration m_status; //!< PHY status.
+    uint8_t m_level;         //!< ED level.
 };
 
 LrWpanEdTestCase::LrWpanEdTestCase()
@@ -69,7 +69,7 @@ LrWpanEdTestCase::LrWpanEdTestCase()
 }
 
 void
-LrWpanEdTestCase::PlmeEdConfirm(LrWpanPhyEnumeration status, uint8_t level)
+LrWpanEdTestCase::PlmeEdConfirm(PhyEnumeration status, uint8_t level)
 {
     NS_LOG_UNCOND("Energy Detection completed with status "
                   << LrWpanHelper::LrWpanPhyEnumerationPrinter(status) << " and energy level "

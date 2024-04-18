@@ -70,8 +70,8 @@ DataConfirm(McpsDataConfirmParams params)
 static void
 StateChangeNotification(std::string context,
                         Time now,
-                        LrWpanPhyEnumeration oldState,
-                        LrWpanPhyEnumeration newState)
+                        PhyEnumeration oldState,
+                        PhyEnumeration newState)
 {
     NS_LOG_UNCOND(context << " state change at " << now.As(Time::S) << " from "
                           << LrWpanHelper::LrWpanPhyEnumerationPrinter(oldState) << " to "

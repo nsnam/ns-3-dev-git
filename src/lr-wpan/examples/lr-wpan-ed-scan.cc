@@ -57,7 +57,7 @@ using namespace ns3::lrwpan;
 static void
 ScanConfirm(MlmeScanConfirmParams params)
 {
-    if (params.m_status == LrWpanMacStatus::SUCCESS && params.m_scanType == MLMESCAN_ED)
+    if (params.m_status == MacStatus::SUCCESS && params.m_scanType == MLMESCAN_ED)
     {
         std::cout << Simulator::Now().As(Time::S) << "| Scan status SUCCESSFUL\n";
         std::cout << "Results for Energy Scan:"

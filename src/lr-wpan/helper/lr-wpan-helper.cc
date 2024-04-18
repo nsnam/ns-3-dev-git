@@ -116,7 +116,7 @@ LrWpanHelper::EnableLogComponents()
 }
 
 std::string
-LrWpanHelper::LrWpanPhyEnumerationPrinter(lrwpan::LrWpanPhyEnumeration e)
+LrWpanHelper::LrWpanPhyEnumerationPrinter(lrwpan::PhyEnumeration e)
 {
     switch (e)
     {
@@ -152,7 +152,7 @@ LrWpanHelper::LrWpanPhyEnumerationPrinter(lrwpan::LrWpanPhyEnumeration e)
 }
 
 std::string
-LrWpanHelper::LrWpanMacStatePrinter(lrwpan::LrWpanMacState e)
+LrWpanHelper::LrWpanMacStatePrinter(lrwpan::MacState e)
 {
     switch (e)
     {

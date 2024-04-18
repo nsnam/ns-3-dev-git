@@ -69,7 +69,7 @@ using namespace ns3::lrwpan;
 static void
 ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
 {
-    if (params.m_status == LrWpanMacStatus::SUCCESS)
+    if (params.m_status == MacStatus::SUCCESS)
     {
         std::cout << Simulator::Now().As(Time::S) << " Node " << device->GetNode()->GetId() << " ["
                   << device->GetMac()->GetShortAddress() << " | "
@@ -77,7 +77,7 @@ ScanConfirm(Ptr<LrWpanNetDevice> device, MlmeScanConfirmParams params)
                   << "] MLME-SCAN.confirm: Active scan status SUCCESSFUL "
                   << "(Coordinator found and address assigned) \n";
     }
-    else if (params.m_status == LrWpanMacStatus::NO_BEACON)
+    else if (params.m_status == MacStatus::NO_BEACON)
     {
         std::cout << Simulator::Now().As(Time::S) << " Node " << device->GetNode()->GetId() << " ["
                   << device->GetMac()->GetShortAddress() << " | "
