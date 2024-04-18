@@ -220,7 +220,12 @@ macro(process_options)
         add_compile_options(/WX)
       endif()
     else()
-      add_compile_options(-Wall -Wpedantic) # -Wextra
+      add_compile_options(-Wall) # -Wextra
+      # Pedantic checks in GCC < 10 include extra semicolon, which we use a lot
+      # to make macros look like function calls
+      if(NOT (DEFINED GCC_PEDANTIC_SEMICOLON))
+        add_compile_options(-Wpedantic)
+      endif()
       if(${NS3_WARNINGS_AS_ERRORS})
         add_compile_options(-Werror -Wno-error=deprecated-declarations)
       endif()
