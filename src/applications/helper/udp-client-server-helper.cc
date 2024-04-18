@@ -8,6 +8,7 @@
 
 #include "udp-client-server-helper.h"
 
+#include <ns3/address-utils.h>
 #include <ns3/string.h>
 #include <ns3/uinteger.h>
 
@@ -33,13 +34,12 @@ UdpClientHelper::UdpClientHelper()
 UdpClientHelper::UdpClientHelper(const Address& address)
     : UdpClientHelper()
 {
-    SetAttribute("RemoteAddress", AddressValue(address));
+    SetAttribute("Remote", AddressValue(address));
 }
 
 UdpClientHelper::UdpClientHelper(const Address& address, uint16_t port)
-    : UdpClientHelper(address)
+    : UdpClientHelper(addressUtils::ConvertToSocketAddress(address, port))
 {
-    SetAttribute("RemotePort", UintegerValue(port));
 }
 
 UdpTraceClientHelper::UdpTraceClientHelper()

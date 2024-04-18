@@ -94,7 +94,8 @@ UdpClientServerTestCase::DoRun()
     uint32_t MaxPacketSize = 1024;
     Time interPacketInterval = Seconds(1.);
     uint32_t maxPacketCount = 10;
-    UdpClientHelper clientHelper(i.GetAddress(1), port);
+    // This voluntarily invokes the c'tor not doing conversion
+    UdpClientHelper clientHelper(InetSocketAddress(i.GetAddress(1), port));
     clientHelper.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
     clientHelper.SetAttribute("Interval", TimeValue(interPacketInterval));
     clientHelper.SetAttribute("PacketSize", UintegerValue(MaxPacketSize));
