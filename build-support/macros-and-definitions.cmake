@@ -579,6 +579,7 @@ macro(process_options)
     endif()
   endif()
 
+  set(LIBXML2_FOUND FALSE)
   if(${NS3_STATIC})
     # Warn users that they may be using shared libraries, which won't produce a
     # standalone static library
