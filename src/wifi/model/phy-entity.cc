@@ -161,7 +161,7 @@ PhyEntity::GetSigMode(WifiPpduField field, const WifiTxVector& txVector) const
 WifiPpduField
 PhyEntity::GetNextField(WifiPpduField currentField, WifiPreamble preamble) const
 {
-    auto ppduFormats = GetPpduFormats();
+    const auto& ppduFormats = GetPpduFormats();
     const auto itPpdu = ppduFormats.find(preamble);
     if (itPpdu != ppduFormats.end())
     {
@@ -371,7 +371,7 @@ PhyEntity::DoStartReceiveField(WifiPpduField field, Ptr<Event> event)
     NS_LOG_FUNCTION(this << field << *event);
     NS_ASSERT(field != WIFI_PPDU_FIELD_PREAMBLE &&
               field != WIFI_PPDU_FIELD_DATA); // handled apart for the time being
-    auto ppduFormats = GetPpduFormats();
+    const auto& ppduFormats = GetPpduFormats();
     auto itFormat = ppduFormats.find(event->GetPpdu()->GetPreamble());
     if (itFormat != ppduFormats.end())
     {
