@@ -1634,6 +1634,7 @@ ThreeGppChannelModel::GenerateChannelParameters(const Ptr<const ChannelCondition
         DoubleVector(table3gpp->m_raysPerCluster,
                      0)); // rayZodRadian[n][m], where n is cluster index, m is ray index
 
+    const double pow10_uLgZSD = pow(10, table3gpp->m_uLgZSD);
     for (uint8_t nInd = 0; nInd < channelParams->m_reducedClusterNumber; nInd++)
     {
         for (uint8_t mInd = 0; mInd < table3gpp->m_raysPerCluster; mInd++)
@@ -1643,9 +1644,8 @@ ThreeGppChannelModel::GenerateChannelParameters(const Ptr<const ChannelCondition
             std::tie(rayAoaRadian[nInd][mInd], rayZoaRadian[nInd][mInd]) =
                 WrapAngles(DegreesToRadians(tempAoa), DegreesToRadians(tempZoa));
 
-            double tempAod = clusterAod[nInd] + table3gpp->m_cASD * offSetAlpha[mInd]; //(7.5-13)
-            double tempZod = clusterZod[nInd] +
-                             0.375 * pow(10, table3gpp->m_uLgZSD) * offSetAlpha[mInd]; //(7.5-20)
+            double tempAod = clusterAod[nInd] + table3gpp->m_cASD * offSetAlpha[mInd];    //(7.5-13)
+            double tempZod = clusterZod[nInd] + 0.375 * pow10_uLgZSD * offSetAlpha[mInd]; //(7.5-20)
             std::tie(rayAodRadian[nInd][mInd], rayZodRadian[nInd][mInd]) =
                 WrapAngles(DegreesToRadians(tempAod), DegreesToRadians(tempZod));
         }
@@ -1667,34 +1667,35 @@ ThreeGppChannelModel::GenerateChannelParameters(const Ptr<const ChannelCondition
 
     // Step 9: Generate the cross polarization power ratios
     // Step 10: Draw initial phases
-    Double2DVector crossPolarizationPowerRatios; // vector containing the cross polarization power
-                                                 // ratios, as defined by 7.5-21
-    Double3DVector clusterPhase; // rayAoaRadian[n][m], where n is cluster index, m is ray index
+
+    // vector containing the cross polarization power ratios, as defined by 7.5-21
+    auto& crossPolarizationPowerRatios = channelParams->m_crossPolarizationPowerRatios;
+    // rayAoaRadian[n][m], where n is cluster index, m is ray index
+    auto& clusterPhase = channelParams->m_clusterPhase;
+
+    const double uXprLinear = pow(10, table3gpp->m_uXpr / 10.0);     // convert to linear
+    const double sigXprLinear = pow(10, table3gpp->m_sigXpr / 10.0); // convert to linear
+
+    // store the PHI values for all the possible combination of polarization
+    clusterPhase.resize(channelParams->m_reducedClusterNumber);
+    crossPolarizationPowerRatios.resize(channelParams->m_reducedClusterNumber);
     for (uint8_t nInd = 0; nInd < channelParams->m_reducedClusterNumber; nInd++)
     {
-        DoubleVector temp; // used to store the XPR values
-        Double2DVector
-            temp2; // used to store the PHI values for all the possible combination of polarization
+        clusterPhase[nInd].resize(table3gpp->m_raysPerCluster);
+        crossPolarizationPowerRatios[nInd].resize(table3gpp->m_raysPerCluster);
         for (uint8_t mInd = 0; mInd < table3gpp->m_raysPerCluster; mInd++)
         {
-            double uXprLinear = pow(10, table3gpp->m_uXpr / 10.0);     // convert to linear
-            double sigXprLinear = pow(10, table3gpp->m_sigXpr / 10.0); // convert to linear
-
-            temp.push_back(
-                std::pow(10, (m_normalRv->GetValue() * sigXprLinear + uXprLinear) / 10.0));
-            DoubleVector temp3; // used to store the PHI values
+            clusterPhase[nInd][mInd].resize(4);
+            // used to store the XPR values
+            crossPolarizationPowerRatios[nInd][mInd] =
+                std::pow(10, (m_normalRv->GetValue() * sigXprLinear + uXprLinear) / 10.0);
             for (uint8_t pInd = 0; pInd < 4; pInd++)
             {
-                temp3.push_back(m_uniformRv->GetValue(-1 * M_PI, M_PI));
+                // used to store the PHI values
+                clusterPhase[nInd][mInd][pInd] = m_uniformRv->GetValue(-1 * M_PI, M_PI);
             }
-            temp2.push_back(temp3);
         }
-        crossPolarizationPowerRatios.push_back(temp);
-        clusterPhase.push_back(temp2);
     }
-    // store the cluster phase
-    channelParams->m_clusterPhase = clusterPhase;
-    channelParams->m_crossPolarizationPowerRatios = crossPolarizationPowerRatios;
 
     uint8_t cluster1st = 0;
     uint8_t cluster2nd = 0; // first and second strongest cluster;
