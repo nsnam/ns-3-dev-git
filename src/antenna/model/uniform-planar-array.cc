@@ -212,10 +212,12 @@ UniformPlanarArray::GetElementFieldPattern(Angles a, uint8_t polIndex) const
 
     // convert the theta and phi angles from GCS to LCS using eq. 7.1-7 and 7.1-8 in 3GPP TR 38.901
     // NOTE we assume a fixed slant angle of 0 degrees
-    double cosIncl = cos(a.GetInclination());
-    double sinIncl = sin(a.GetInclination());
-    double cosAzim = cos(a.GetAzimuth() - m_alpha);
-    double sinAzim = sin(a.GetAzimuth() - m_alpha);
+    double inclination = a.GetInclination();
+    double azimuth = a.GetAzimuth();
+    double cosIncl = cos(inclination);
+    double sinIncl = sin(inclination);
+    double cosAzim = cos(azimuth - m_alpha);
+    double sinAzim = sin(azimuth - m_alpha);
     double thetaPrime = std::acos(m_cosBeta * cosIncl + m_sinBeta * cosAzim * sinIncl);
     double phiPrime =
         std::arg(std::complex<double>(m_cosBeta * sinIncl * cosAzim - m_sinBeta * cosIncl,
