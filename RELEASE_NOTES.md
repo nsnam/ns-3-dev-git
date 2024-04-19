@@ -16,6 +16,8 @@ and references prefixed by '!' refer to a
 Release 3-dev
 -------------
 
+In this release, we have introduced pedantic warnings to enhance C++ standard conformance and improve portability.
+
 ### Supported platforms
 
 ### New user-visible features
@@ -27,6 +29,16 @@ Release 3-dev
 - (lr-wpan) !1926 - Adds namespace lrwpan and prefix shortening
 
 ### Bugs fixed
+
+- (build) #1048 - Resolved an issue with static and monolithic builds incorrectly linking to non-ns-3 libraries.
+- (build) #1058 - Corrected the behavior of the ./ns3 clean command in symlinked directories.
+- (build) #1065 - Rolled back the -Os optimization setting as the default on MacOS to address lld compatibility issues.
+- (bindings) - Preventing module namespace collision by checking if namespace exists before injecting it.
+- (core) #1060 - Addressed a stack overflow problem in MakeEvent.
+- (bindings, core) #1059 - Resolved potential initialization issues in TimerImpl and ensured compatibility with Cppyy3.
+- (bindings, core) - Introduced a helper class to manage static initialization of Time as a workaround for Cppyy3 static initialization problems.
+- (bindings, lte, wifi) - Relocated statically initialized variables from header files to source files for Cppyy3 compatibility.
+- (tests) - Enhanced error handling in test.py to avoid attempts to open non-existent XML files following early test termination by sanitizers.
 
 Release 3.41
 ------------
