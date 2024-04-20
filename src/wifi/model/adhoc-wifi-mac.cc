@@ -160,13 +160,13 @@ AdhocWifiMac::DoCompleteConfig()
 bool
 AdhocWifiMac::CanForwardPacketsTo(Mac48Address to) const
 {
-    return true;
+    return (!m_enableBeaconGeneration || !GetWifiRemoteStationManager()->IsBrandNew(to));
 }
 
 void
 AdhocWifiMac::SetAllCapabilities(const Mac48Address& address)
 {
-    // In ad hoc mode, we assume that every destination supports all the rates we support.
+    // assume the destination supports all the capabilities we support
     if (GetHtSupported(SINGLE_LINK_OP_ID))
     {
         GetWifiRemoteStationManager()->AddAllSupportedMcs(address);
@@ -209,7 +209,16 @@ AdhocWifiMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from)
 
     if (GetWifiRemoteStationManager()->IsBrandNew(to))
     {
-        SetAllCapabilities(to);
+        if (m_enableBeaconGeneration)
+        {
+            NS_LOG_LOGIC("Capabilities for " << to << " are unknown: drop packet");
+            NotifyTxDrop(mpdu->GetPacket());
+            return;
+        }
+        else
+        {
+            SetAllCapabilities(to);
+        }
     }
 
     auto& hdr = mpdu->GetHeader();
@@ -311,7 +320,7 @@ AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     const auto from = hdr.GetAddr2();
     const auto to = hdr.GetAddr1();
     auto packet = mpdu->GetPacket();
-    if (GetWifiRemoteStationManager()->IsBrandNew(from))
+    if (GetWifiRemoteStationManager()->IsBrandNew(from) && !m_enableBeaconGeneration)
     {
         SetAllCapabilities(from);
     }
