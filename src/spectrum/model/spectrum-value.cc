@@ -394,12 +394,20 @@ std::ostream&
 operator<<(std::ostream& os, const SpectrumValue& pvf)
 {
     auto it1 = pvf.ConstValuesBegin();
+    bool first = true;
     while (it1 != pvf.ConstValuesEnd())
     {
-        os << *it1 << " ";
+        if (!first)
+        {
+            os << " ";
+        }
+        else
+        {
+            first = false;
+        }
+        os << *it1;
         ++it1;
     }
-    os << std::endl;
     return os;
 }
 
