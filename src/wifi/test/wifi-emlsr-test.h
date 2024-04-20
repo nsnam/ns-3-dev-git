@@ -511,11 +511,11 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
  *   link, stays in sleep mode until the TXOP ends and is resumed from sleep mode right after the
  *   end of the DL/UL TXOP.
  * - When an aux PHY that is not TX capable gains a TXOP, it checks whether the main PHY can switch
- *   to the non-primary link a start an UL TXOP. If the main PHY is switching, the aux PHY waits
+ *   to the auxiliary link a start an UL TXOP. If the main PHY is switching, the aux PHY waits
  *   until the channel switch is completed and checks again; if the remaining backoff time on the
- *   primary link is greater than the channel switch delay, the main PHY is requested to switch to
- *   the non-primary link of the aux PHY. When the channel switch is completed, if the medium is
- *   idle on the non-primary link and the backoff is zero, the main PHY starts an UL TXOP after a
+ *   preferred link is greater than the channel switch delay, the main PHY is requested to switch to
+ *   the auxiliary link of the aux PHY. When the channel switch is completed, if the medium is
+ *   idle on the auxiliary link and the backoff is zero, the main PHY starts an UL TXOP after a
  *   PIFS period; otherwise, the main PHY starts an UL TXOP when the backoff timer counts down to
  *   zero. The QoS data frame sent by the main PHY is not protected by RTS and the bandwidth it
  *   occupies is not affected by possible limitations on the aux PHY TX bandwidth capabilities.

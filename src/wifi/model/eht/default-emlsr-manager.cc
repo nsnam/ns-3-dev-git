@@ -139,10 +139,10 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
 
     if (currLinkId.has_value() && currLinkId != GetMainPhyId())
     {
-        // the main PHY is leaving a non-primary link, hence an aux PHY needs to be reconnected
+        // the main PHY is leaving an auxiliary link, hence an aux PHY needs to be reconnected
         NS_ASSERT_MSG(
             m_auxPhyToReconnect,
-            "There should be an aux PHY to reconnect when the main PHY leaves a non-primary link");
+            "There should be an aux PHY to reconnect when the main PHY leaves an auxiliary link");
 
         // the Aux PHY is not actually switching (hence no switching delay)
         GetStaMac()->NotifySwitchingEmlsrLink(m_auxPhyToReconnect, *currLinkId, Seconds(0));
@@ -153,14 +153,14 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
 
     // if currLinkId has no value, it means that the main PHY switch is interrupted, hence reset
     // the aux PHY to reconnect and cancel the event to put the aux PHY to sleep. Doing so when
-    // the main PHY is leaving the primary link makes no harm (the aux PHY to reconnect and the
+    // the main PHY is leaving the preferred link makes no harm (the aux PHY to reconnect and the
     // event to put the aux PHY to sleep are set below), thus no need to add an 'if' condition
     m_auxPhyToReconnect = nullptr;
     m_auxPhyToSleepEvent.Cancel();
 
     if (nextLinkId != GetMainPhyId())
     {
-        // the main PHY is moving to a non-primary link and the aux PHY does not switch link
+        // the main PHY is moving to an auxiliary link and the aux PHY does not switch link
         m_auxPhyToReconnect = GetStaMac()->GetWifiPhy(nextLinkId);
 
         if (m_auxPhyToSleep)
@@ -199,12 +199,12 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     // switch main PHY to the previous link, if needed
     if (!m_switchAuxPhy)
     {
-        SwitchMainPhyBackToPrimaryLink(linkId);
+        SwitchMainPhyBackToPreferredLink(linkId);
     }
 }
 
 void
-DefaultEmlsrManager::SwitchMainPhyBackToPrimaryLink(uint8_t linkId)
+DefaultEmlsrManager::SwitchMainPhyBackToPreferredLink(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
 
@@ -232,7 +232,7 @@ DefaultEmlsrManager::SwitchMainPhyBackToPrimaryLink(uint8_t linkId)
     {
         m_auxPhyToSleepEvent.Cancel();
         Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
-            // request the main PHY to switch back to the primary link only if in the meantime
+            // request the main PHY to switch back to the preferred link only if in the meantime
             // no TXOP started on another link (which will require the main PHY to switch link)
             if (!GetEhtFem(linkId)->UsingOtherEmlsrLink())
             {

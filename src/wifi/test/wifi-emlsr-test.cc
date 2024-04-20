@@ -786,7 +786,7 @@ void
 EmlsrDlTxopTest::DoSetup()
 {
     // Channel switch delay should be less than the ICF padding duration, otherwise
-    // DL TXOPs cannot be initiated on non-primary links
+    // DL TXOPs cannot be initiated on auxiliary links
     auto delay = std::min(MicroSeconds(100),
                           *std::min_element(m_paddingDelay.cbegin(), m_paddingDelay.cend()));
     Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(75)));
@@ -2915,19 +2915,19 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
         m_staMacs[0]->GetEmlsrManager()->SetAuxPhyTxCapable(false);
         if (!m_nonEmlsrLink)
         {
-            // if there are two non-primary links, set MediumSyncDuration to zero so that the
+            // if there are two auxiliary links, set MediumSyncDuration to zero so that the
             // next UL QoS data frame is not protected also in case it is transmitted on the
-            // non-primary link other than the one on which the last frame exchange occurred
+            // auxiliary link other than the one on which the last frame exchange occurred
             m_staMacs[0]->GetEmlsrManager()->SetMediumSyncDuration(Seconds(0));
         }
 
-        // generate a very large backoff for the primary link, so that when an aux PHY gains a
+        // generate a very large backoff for the preferred link, so that when an aux PHY gains a
         // TXOP, it requests the main PHY to switch to its link to transmit the frames
         m_staMacs[0]->GetQosTxop(AC_BE)->StartBackoffNow(100, m_mainPhyId);
 
         // events to be scheduled at the end of the BlockAck response
         Simulator::Schedule(txDuration + NanoSeconds(1), [=, this]() {
-            // check that the main PHY switches to its primary link
+            // check that the main PHY switches to its preferred link
             auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
             auto mainPhyLinkid = m_staMacs[0]->GetLinkForPhy(mainPhy);
 
@@ -2940,13 +2940,13 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                   "Main PHY should be operating on a link");
             NS_TEST_EXPECT_MSG_EQ(+mainPhyLinkid.value(),
                                   +m_mainPhyId,
-                                  "Main PHY expected to operate on the primary link");
+                                  "Main PHY expected to operate on the preferred link");
 
             // events to be scheduled when the first main PHY channel switch is completed
             Simulator::Schedule(mainPhy->GetChannelSwitchDelay(), [=, this]() {
                 auto acBe = m_staMacs[0]->GetQosTxop(AC_BE);
 
-                // find the min remaining backoff time on non-primary links for AC BE
+                // find the min remaining backoff time on auxiliary links for AC BE
                 auto minBackoff = Time::Max();
                 Time slot{0};
                 for (uint8_t id = 0; id < m_staMacs[0]->GetNLinks(); id++)
@@ -2976,7 +2976,7 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                         ? Max(minBackoff - m_nSlotsLeftAlert * slot - Simulator::Now(), Time{0})
                         : (minBackoff - Simulator::Now());
 
-                // check that the main PHY is requested to switch to a non-primary link after
+                // check that the main PHY is requested to switch to an auxiliary link after
                 // the expected delay
                 Simulator::Schedule(expected2ndSwitchDelay + NanoSeconds(1), [=, this]() {
                     NS_TEST_EXPECT_MSG_EQ(mainPhy->IsStateSwitching(),
@@ -2986,22 +2986,22 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                     NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetLinkForPhy(mainPhy).has_value(),
                                           false,
                                           "Main PHY should not be operating on a link because it "
-                                          "should be switching to a non-primary link");
+                                          "should be switching to an auxiliary link");
 
-                    // events to be scheduled when main PHY finishes switching to non-primary link
+                    // events to be scheduled when main PHY finishes switching to auxiliary link
                     Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
                         auto nonPrimLinkId = m_staMacs[0]->GetLinkForPhy(mainPhy);
 
                         NS_TEST_ASSERT_MSG_EQ(nonPrimLinkId.has_value(),
                                               true,
                                               "Main PHY should have completed switching");
-                        // update backoff on the non-primary link on which main PHY is operating
+                        // update backoff on the auxiliary link on which main PHY is operating
                         m_staMacs[0]
                             ->GetChannelAccessManager(*nonPrimLinkId)
                             ->NeedBackoffUponAccess(acBe, true, true);
                         // record the time the transmission of the QoS data frames must have
                         // started: (a PIFS after) end of channel switch, if the backoff counter
-                        // on the non-primary link is null and UseAuxPhyCca is true (false); when
+                        // on the auxiliary link is null and UseAuxPhyCca is true (false); when
                         // the backoff expires, otherwise
                         if (auto slots = acBe->GetBackoffSlots(*nonPrimLinkId); slots == 0)
                         {
@@ -3255,15 +3255,15 @@ EmlsrUlTxopTest::CheckResults()
      * For both scenarios, after the last frame exchange on the main PHY link, we have the
      * following frame exchanges on an EMLSR link where an aux PHY is operating on. After the
      * first frame exchange, aux PHYs are configured as non-TX capable. Note that the two frame
-     * exchanges may occur on distinct non-primary EMLSR links.
+     * exchanges may occur on distinct auxiliary EMLSR links.
      *
-     *                                             | main PHY || main PHY  |
-     *  [ link ]   ┌───┐         ┌───┐         ┌──┐| switches ||switches to|             ┌──┐
-     *  [0 or 2]   │CTS│         │CTS│         │BA│|to primary||non-primary|PIFS|        │BA│
-     *  ──────┬───┬┴───X────┬───┬┴───┴┬───┬───┬┴──┴─────────────────────────────┬───┬───┬┴──┴────
-     *        │RTS│         │RTS│     │QoS│QoS│                                 │QoS│QoS│
-     *        └───┘         └───┘     │ X │ Y │                                 │ Z │ W │
-     *                                └───┴───┘                                 └───┴───┘
+     *                                             | main PHY  || main PHY  |
+     *  [ link ]   ┌───┐         ┌───┐         ┌──┐|switches to||switches to|             ┌──┐
+     *  [0 or 2]   │CTS│         │CTS│         │BA│| preferred ||auxiliary  |PIFS|        │BA│
+     *  ──────┬───┬┴───X────┬───┬┴───┴┬───┬───┬┴──┴──────────────────────────────┬───┬───┬┴──┴───
+     *        │RTS│         │RTS│     │QoS│QoS│                                  │QoS│QoS│
+     *        └───┘         └───┘     │ X │ Y │                                  │ Z │ W │
+     *                                └───┴───┘                                  └───┴───┘
      * For all EMLSR links scenario, X=10, Y=11, Z=12, W=13
      * For the scenario with a non-EMLSR link, X=12, Y=13, Z=14, W=15
      */
@@ -3462,7 +3462,7 @@ EmlsrUlTxopTest::CheckResults()
     psduIt++;
     jumpToQosDataOrMuRts();
 
-    // the fifth QoS data frame is transmitted by the main PHY on a non-primary link because
+    // the fifth QoS data frame is transmitted by the main PHY on an auxiliary link because
     // the aux PHY is not TX capable. The QoS data frame is not protected by RTS
     // QoS Data
     NS_TEST_ASSERT_MSG_EQ((psduIt != m_txPsdus.cend()),
@@ -3476,7 +3476,7 @@ EmlsrUlTxopTest::CheckResults()
                           "Fifth QoS data frame should be transmitted by the main PHY");
     NS_TEST_EXPECT_MSG_NE(+psduIt->linkId,
                           +m_mainPhyId,
-                          "Fifth QoS data frame should be transmitted on a non-primary link");
+                          "Fifth QoS data frame should be transmitted on an auxiliary link");
     NS_TEST_EXPECT_MSG_EQ(
         psduIt->txVector.GetChannelWidth(),
         (m_useAuxPhyCca && m_nSlotsLeftAlert == 0 ? m_auxPhyChannelWidth : m_channelWidth),
@@ -3484,7 +3484,7 @@ EmlsrUlTxopTest::CheckResults()
     // Do not check the start transmission time if a backoff is generated even when no
     // transmission is done (if the backoff expires while the main PHY is switching, a new
     // backoff is generated and, before this backoff expires, the main PHY may be requested
-    // to switch to another non-primary link; this may happen multiple times...)
+    // to switch to another auxiliary link; this may happen multiple times...)
     if (!m_genBackoffIfTxopWithoutTx)
     {
         NS_TEST_EXPECT_MSG_LT_OR_EQ(psduIt->startTx,
@@ -3945,8 +3945,8 @@ EmlsrLinkSwitchTest::CheckRtsFrame(const WifiConstPsduMap& psduMap,
                                           << mainPhy->GetState()->GetState());
 
                 // If main PHY channel switch can be interrupted, the main PHY should be back
-                // operating on the primary link after a channel switch delay. Otherwise, it
-                // will be operating on the primary link, if SwitchAuxPhy is false, or on the
+                // operating on the preferred link after a channel switch delay. Otherwise, it
+                // will be operating on the preferred link, if SwitchAuxPhy is false, or on the
                 // link used to send the RTS, if SwitchAuxPhy is true, after the remaining
                 // channel switching time plus the channel switch delay.
                 auto newLinkId =

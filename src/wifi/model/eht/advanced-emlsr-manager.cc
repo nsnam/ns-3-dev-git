@@ -64,7 +64,7 @@ AdvancedEmlsrManager::GetTypeId()
                           "Duration of the timer started in case of non-TX capable aux PHY (that "
                           "does not switch link) when medium is sensed busy during the PIFS "
                           "interval preceding/following the main PHY switch end. When the timer "
-                          "expires, the main PHY is switched back to the primary link.",
+                          "expires, the main PHY is switched back to the preferred link.",
                           TimeValue(MilliSeconds(5)),
                           MakeTimeAccessor(&AdvancedEmlsrManager::m_switchMainPhyBackDelay),
                           MakeTimeChecker());
@@ -259,8 +259,8 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
         ongoingTxopEnd.Cancel();
         // this method is a callback connected to the PhyRxMacHeaderEnd trace source of WifiPhy
         // and is called within a for loop that executes all the callbacks. The call to NotifyTxop
-        // below leads the main PHY to be connected back to the primary link, thus
-        // the ResetPhy() method of the FEM on the non-primary link is called, which disconnects
+        // below leads the main PHY to be connected back to the preferred link, thus
+        // the ResetPhy() method of the FEM on the auxiliary link is called, which disconnects
         // another callback (FEM::ReceivedMacHdr) from the PhyRxMacHeaderEnd trace source of
         // the main PHY, thus invalidating the list of callbacks on which the for loop iterates.
         // Hence, schedule the call to NotifyTxopEnd to execute it outside such for loop.
@@ -314,7 +314,7 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     {
         // delay link switch until current channel switching is completed
         Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
-            // request the main PHY to switch back to the primary link only if in the meantime
+            // request the main PHY to switch back to the preferred link only if in the meantime
             // no TXOP started on another link (which will require the main PHY to switch link)
             if (!GetEhtFem(linkId)->UsingOtherEmlsrLink())
             {
@@ -397,8 +397,8 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
             }
             else if (!m_switchAuxPhy)
             {
-                // switch main PHY back to primary link if SwitchAuxPhy is false
-                SwitchMainPhyBackToPrimaryLink(linkId);
+                // switch main PHY back to preferred link if SwitchAuxPhy is false
+                SwitchMainPhyBackToPreferredLink(linkId);
             }
         });
     }
@@ -418,7 +418,7 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
         m_switchMainPhyBackEvent = Simulator::Schedule(m_switchMainPhyBackDelay, [this, linkId]() {
             if (!m_switchAuxPhy)
             {
-                SwitchMainPhyBackToPrimaryLink(linkId);
+                SwitchMainPhyBackToPreferredLink(linkId);
             }
         });
     }
@@ -524,7 +524,7 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
             const auto backoffEnd =
                 GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetBackoffEndFor(edca);
             NS_LOG_DEBUG("Backoff end for " << acIndex
-                                            << " on primary link: " << backoffEnd.As(Time::US));
+                                            << " on preferred link: " << backoffEnd.As(Time::US));
 
             if (const auto minDelay = std::max(delay,
                                                mainPhy->GetChannelSwitchDelay() +
@@ -723,7 +723,7 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
         Simulator::Schedule(minDelay + m_switchMainPhyBackDelay, [this, linkId]() {
             if (!m_switchAuxPhy)
             {
-                SwitchMainPhyBackToPrimaryLink(linkId);
+                SwitchMainPhyBackToPreferredLink(linkId);
             }
         });
 }
