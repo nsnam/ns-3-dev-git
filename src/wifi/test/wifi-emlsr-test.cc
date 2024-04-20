@@ -2374,7 +2374,9 @@ EmlsrDlTxopTest::DoRun()
 }
 
 EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
-    : EmlsrOperationsTestBase("Check EML UL TXOP transmissions"),
+    : EmlsrOperationsTestBase("Check EML UL TXOP transmissions (genBackoffAndUseAuxPhyCca=" +
+                              std::to_string(params.genBackoffAndUseAuxPhyCca) +
+                              ", nSlotsLeftAlert=" + std::to_string(params.nSlotsLeftAlert)),
       m_emlsrLinks(params.linksToEnableEmlsrOn),
       m_channelWidth(params.channelWidth),
       m_auxPhyChannelWidth(params.auxPhyChannelWidth),
@@ -2388,7 +2390,8 @@ EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
       m_countBlockAck(0),
       m_countRtsframes(0),
       m_genBackoffIfTxopWithoutTx(params.genBackoffAndUseAuxPhyCca),
-      m_useAuxPhyCca(params.genBackoffAndUseAuxPhyCca)
+      m_useAuxPhyCca(params.genBackoffAndUseAuxPhyCca),
+      m_nSlotsLeftAlert(params.nSlotsLeftAlert)
 {
     m_nEmlsrStations = 1;
     m_nNonEmlsrStations = 0;
@@ -2427,6 +2430,7 @@ EmlsrUlTxopTest::DoSetup()
     Config::SetDefault("ns3::EhtConfiguration::MsdMaxNTxops", UintegerValue(m_msdMaxNTxops));
     Config::SetDefault("ns3::ChannelAccessManager::GenerateBackoffIfTxopWithoutTx",
                        BooleanValue(m_genBackoffIfTxopWithoutTx));
+    Config::SetDefault("ns3::ChannelAccessManager::NSlotsLeft", UintegerValue(m_nSlotsLeftAlert));
     // Channel switch delay should be less than RTS TX time + SIFS + CTS TX time, otherwise
     // UL TXOPs cannot be initiated by aux PHYs
     Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(75)));
@@ -2944,27 +2948,33 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
 
                 // find the min remaining backoff time on non-primary links for AC BE
                 auto minBackoff = Time::Max();
+                Time slot{0};
                 for (uint8_t id = 0; id < m_staMacs[0]->GetNLinks(); id++)
                 {
-                    // update backoff
-                    m_staMacs[0]->GetChannelAccessManager(id)->NeedBackoffUponAccess(acBe,
-                                                                                     true,
-                                                                                     true);
+                    if (!m_staMacs[0]->GetWifiPhy(id))
+                    {
+                        continue; // no PHY on this link
+                    }
+
                     if (auto backoff =
                             m_staMacs[0]->GetChannelAccessManager(id)->GetBackoffEndFor(acBe);
                         id != m_mainPhyId && m_staMacs[0]->IsEmlsrLink(id) && backoff < minBackoff)
                     {
                         minBackoff = backoff;
+                        slot = m_staMacs[0]->GetWifiPhy(id)->GetSlot();
                     }
                 }
 
                 // if the backoff on a link has expired before the end of the main PHY channel
-                // switch, the main PHY will be requested to switch again at the first slot
-                // boundary after the end of the channel switch. Otherwise, it will be requested
-                // to switch when the backoff expires.
-                auto expected2ndSwitchDelay = (minBackoff <= Simulator::Now())
-                                                  ? mainPhy->GetSlot()
-                                                  : (minBackoff - Simulator::Now());
+                // switch, the main PHY will be requested to switch again no later than the first
+                // slot boundary after the end of the channel switch. Otherwise, it will be
+                // requested to switch when the backoff expires or when the backoff counter reaches
+                // the configured number of slots
+                auto expected2ndSwitchDelay =
+                    (minBackoff <= Simulator::Now()) ? mainPhy->GetSlot()
+                    : m_nSlotsLeftAlert > 0
+                        ? Max(minBackoff - m_nSlotsLeftAlert * slot - Simulator::Now(), Time{0})
+                        : (minBackoff - Simulator::Now());
 
                 // check that the main PHY is requested to switch to a non-primary link after
                 // the expected delay
@@ -3467,9 +3477,10 @@ EmlsrUlTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_NE(+psduIt->linkId,
                           +m_mainPhyId,
                           "Fifth QoS data frame should be transmitted on a non-primary link");
-    NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetChannelWidth(),
-                          (m_useAuxPhyCca ? m_auxPhyChannelWidth : m_channelWidth),
-                          "Fifth data frame not transmitted on the correct channel width");
+    NS_TEST_EXPECT_MSG_EQ(
+        psduIt->txVector.GetChannelWidth(),
+        (m_useAuxPhyCca && m_nSlotsLeftAlert == 0 ? m_auxPhyChannelWidth : m_channelWidth),
+        "Fifth data frame not transmitted on the correct channel width");
     // Do not check the start transmission time if a backoff is generated even when no
     // transmission is done (if the backoff expires while the main PHY is switching, a new
     // backoff is generated and, before this backoff expires, the main PHY may be requested
@@ -4307,12 +4318,21 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
 
     for (auto genBackoffAndUseAuxPhyCca : {true, false})
     {
-        AddTestCase(new EmlsrUlTxopTest(
-                        {{0, 1, 2}, 40, 20, MicroSeconds(5504), 3, genBackoffAndUseAuxPhyCca}),
-                    TestCase::Duration::QUICK);
-        AddTestCase(
-            new EmlsrUlTxopTest({{0, 1}, 40, 20, MicroSeconds(5504), 1, genBackoffAndUseAuxPhyCca}),
-            TestCase::Duration::QUICK);
+        for (auto nSlotsLeft : std::initializer_list<uint8_t>{0, 4})
+        {
+            AddTestCase(new EmlsrUlTxopTest({{0, 1, 2},
+                                             40,
+                                             20,
+                                             MicroSeconds(5504),
+                                             3,
+                                             genBackoffAndUseAuxPhyCca,
+                                             nSlotsLeft}),
+                        TestCase::Duration::QUICK);
+            AddTestCase(
+                new EmlsrUlTxopTest(
+                    {{0, 1}, 40, 20, MicroSeconds(5504), 1, genBackoffAndUseAuxPhyCca, nSlotsLeft}),
+                TestCase::Duration::QUICK);
+        }
     }
 
     for (bool switchAuxPhy : {true, false})

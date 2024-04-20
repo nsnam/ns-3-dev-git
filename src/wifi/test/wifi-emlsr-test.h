@@ -543,6 +543,8 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
                                         //!< but it does not transmit any frame, the second value
                                         //!< controls whether CCA info from aux PHY is used when
                                         //!< aux PHY is not TX capable
+        uint8_t nSlotsLeftAlert;        //!< value to set the ChannelAccessManager NSlotsLeft
+                                        //!< attribute to
     };
 
     /**
@@ -659,6 +661,7 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
                                           //!< transmit any frame
     bool m_useAuxPhyCca;                  //!< whether CCA info from aux PHY is used when
                                           //!< aux PHY is not TX capable
+    uint8_t m_nSlotsLeftAlert;            //!< value for ChannelAccessManager NSlotsLeft attribute
     std::optional<bool> m_corruptCts;     //!< whether the transmitted CTS must be corrupted
     Time m_5thQosFrameTxTime;             //!< start transmission time of the 5th QoS data frame
 };
