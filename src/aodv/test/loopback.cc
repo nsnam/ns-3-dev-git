@@ -17,7 +17,6 @@
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
 #include "ns3/names.h"
-#include "ns3/pcap-file.h"
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/string.h"

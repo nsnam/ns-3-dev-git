@@ -19,8 +19,6 @@
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/pcap-file.h"
-#include "ns3/pcap-test.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simulator.h"
