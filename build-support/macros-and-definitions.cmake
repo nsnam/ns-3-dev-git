@@ -383,7 +383,9 @@ macro(process_options)
   endif()
 
   if(${NS3_SANITIZE})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,leak,undefined")
+    set(CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} -fsanitize=address,leak,undefined -fno-sanitize-recover=all"
+    )
   endif()
 
   if(${NS3_SANITIZE_MEMORY})
