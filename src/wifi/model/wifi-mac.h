@@ -102,6 +102,10 @@ class WifiMac : public Object
     WifiMac(const WifiMac&) = delete;
     WifiMac& operator=(const WifiMac&) = delete;
 
+    /// type of the management frames
+    using MgtFrameType =
+        std::variant<MgtBeaconHeader, MgtProbeResponseHeader, MgtAssocResponseHeader>;
+
     /**
      * Assign a fixed random variable stream number to the random variables
      * used by this model.  Return the number of streams (possibly zero) that
@@ -982,6 +986,15 @@ class WifiMac : public Object
     void UpdateTidToLinkMapping(const Mac48Address& mldAddr,
                                 WifiDirection dir,
                                 const WifiTidLinkMapping& mapping);
+
+    /**
+     * Update capabilities information from the given management frame.
+     *
+     * @param frame the body of the given management frame
+     * @param addr MAC address of the sender
+     * @param linkId ID of the link the management frame was received over
+     */
+    void RecordCapabilities(const MgtFrameType& frame, const Mac48Address& addr, uint8_t linkId);
 
     UniformRandomBitGenerator m_shuffleLinkIdsGen; //!< random number generator to shuffle link IDs
 

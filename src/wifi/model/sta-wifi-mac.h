@@ -149,10 +149,6 @@ class StaWifiMac : public WifiMac
     friend class ::MultiLinkOperationsTestBase;
     friend class ::ProbeExchTest;
 
-    /// type of the management frames used to get info about APs
-    using MgtFrameType =
-        std::variant<MgtBeaconHeader, MgtProbeResponseHeader, MgtAssocResponseHeader>;
-
     /**
      * Struct to hold information regarding observed AP through
      * active/passive scanning

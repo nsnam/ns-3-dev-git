@@ -2590,4 +2590,91 @@ WifiMac::GetRobustAVStreamingSupported() const
     return m_robustAVStreamingSupported;
 }
 
+void
+WifiMac::RecordCapabilities(const MgtFrameType& frame, const Mac48Address& from, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << frame.index() << from << linkId);
+    auto remoteStationManager = GetWifiRemoteStationManager(linkId);
+    auto phy = GetWifiPhy(linkId);
+
+    // lambda processing Information Elements included in all frame types
+    auto recordFromIes = [&](auto&& frame) {
+        NS_ASSERT(frame.template Get<SupportedRates>());
+        const auto rates = AllSupportedRates{*frame.template Get<SupportedRates>(),
+                                             frame.template Get<ExtendedSupportedRatesIE>()};
+        for (const auto& mode : phy->GetModeList())
+        {
+            if (rates.IsSupportedRate(mode.GetDataRate(phy->GetChannelWidth())))
+            {
+                remoteStationManager->AddSupportedMode(from, mode);
+                if (rates.IsBasicRate(mode.GetDataRate(phy->GetChannelWidth())))
+                {
+                    remoteStationManager->AddBasicMode(mode);
+                }
+            }
+        }
+
+        // we do not return if HT is not supported because HE STAs operating in
+        // the 6 GHz band do not support VHT
+        if (GetHtSupported(linkId))
+        {
+            /* HT station */
+            if (const auto& htCapabilities = frame.template Get<HtCapabilities>())
+            {
+                remoteStationManager->AddStationHtCapabilities(from, *htCapabilities);
+            }
+            if (const auto& extendedCapabilities = frame.template Get<ExtendedCapabilities>())
+            {
+                remoteStationManager->AddStationExtendedCapabilities(from, *extendedCapabilities);
+            }
+        }
+
+        // we do not return if VHT is not supported because HE STAs operating in
+        // the 2.4 GHz or 6 GHz band do not support VHT
+        if (GetVhtSupported(linkId))
+        {
+            const auto& vhtCapabilities = frame.template Get<VhtCapabilities>();
+            // we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used
+            // to check whether it supports VHT
+            if (vhtCapabilities.has_value() &&
+                vhtCapabilities->GetRxHighestSupportedLgiDataRate() > 0)
+            {
+                remoteStationManager->AddStationVhtCapabilities(from, *vhtCapabilities);
+            }
+        }
+
+        if (!GetHeSupported())
+        {
+            return;
+        }
+
+        const auto& heCapabilities = frame.template Get<HeCapabilities>();
+        if (heCapabilities.has_value() && heCapabilities->GetSupportedMcsAndNss() != 0)
+        {
+            remoteStationManager->AddStationHeCapabilities(from, *heCapabilities);
+        }
+
+        if (Is6GhzBand(linkId))
+        {
+            if (const auto& he6GhzCapabilities = frame.template Get<He6GhzBandCapabilities>())
+            {
+                remoteStationManager->AddStationHe6GhzCapabilities(from, *he6GhzCapabilities);
+            }
+        }
+
+        if (!GetEhtSupported())
+        {
+            return;
+        }
+
+        if (const auto& ehtCapabilities = frame.template Get<EhtCapabilities>())
+        {
+            remoteStationManager->AddStationEhtCapabilities(from, *ehtCapabilities);
+        }
+    };
+
+    // process Information Elements included in the current frame variant
+    std::visit(recordFromIes, frame);
+}
+
 } // namespace ns3
