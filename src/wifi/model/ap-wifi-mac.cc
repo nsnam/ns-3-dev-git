@@ -2145,18 +2145,15 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         return false;
     };
 
-    // lambda to process received (Re)Association Request
-    auto recvAssocRequest = [&](auto&& frameRefWrapper) -> bool {
+    // lambda to verify received (Re)Association Request
+    auto verifyAssocRequest = [&](auto&& frameRefWrapper) -> bool {
         const auto& frame = frameRefWrapper.get();
 
         // first, verify that the the station's supported
         // rate set is compatible with our Basic Rate set
-        const CapabilityInformation& capabilities = frame.Capabilities();
-        remoteStationManager->AddSupportedPhyPreamble(from, capabilities.IsShortPreamble());
         NS_ASSERT(frame.template Get<SupportedRates>());
         const auto rates = AllSupportedRates{*frame.template Get<SupportedRates>(),
                                              frame.template Get<ExtendedSupportedRatesIE>()};
-
         if (rates.GetNRates() == 0)
         {
             return failure("STA's supported rate set not compatible with our Basic Rate set");
@@ -2207,13 +2204,6 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
                     {
                         return failure("HE STA does not support all MCSs in Basic MCS Set");
                     }
-                }
-            }
-            if (Is6GhzBand(linkId))
-            {
-                if (const auto& he6GhzCapabilities = frame.template Get<He6GhzBandCapabilities>())
-                {
-                    remoteStationManager->AddStationHe6GhzCapabilities(from, *he6GhzCapabilities);
                 }
             }
         }
@@ -2319,90 +2309,37 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
             }
         }
 
-        // The association request from the station can be accepted.
-        // Record all its supported modes in its associated WifiRemoteStation
-        auto phy = GetWifiPhy(linkId);
-
-        for (const auto& mode : phy->GetModeList())
-        {
-            if (rates.IsSupportedRate(mode.GetDataRate(phy->GetChannelWidth())))
-            {
-                remoteStationManager->AddSupportedMode(from, mode);
-            }
-        }
-        if (GetErpSupported(linkId) && remoteStationManager->GetErpOfdmSupported(from) &&
-            capabilities.IsShortSlotTime())
-        {
-            remoteStationManager->AddSupportedErpSlotTime(from, true);
-        }
-        if (GetHtSupported(linkId))
-        {
-            const auto& htCapabilities = frame.template Get<HtCapabilities>();
-            if (htCapabilities.has_value())
-            {
-                remoteStationManager->AddStationHtCapabilities(from, *htCapabilities);
-            }
-            const auto& extendedCapabilities = frame.template Get<ExtendedCapabilities>();
-            if (extendedCapabilities.has_value())
-            {
-                remoteStationManager->AddStationExtendedCapabilities(from, *extendedCapabilities);
-            }
-        }
-        if (GetVhtSupported(linkId))
-        {
-            const auto& vhtCapabilities = frame.template Get<VhtCapabilities>();
-            // we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used
-            // to check whether it supports VHT
-            if (vhtCapabilities.has_value() &&
-                vhtCapabilities->GetRxHighestSupportedLgiDataRate() > 0)
-            {
-                remoteStationManager->AddStationVhtCapabilities(from, *vhtCapabilities);
-                for (const auto& mcs : phy->GetMcsList(WIFI_MOD_CLASS_VHT))
-                {
-                    if (vhtCapabilities->IsSupportedTxMcs(mcs.GetMcsValue()))
-                    {
-                        remoteStationManager->AddSupportedMcs(from, mcs);
-                        // here should add a control to add basic MCS when it is implemented
-                    }
-                }
-            }
-        }
-        if (GetHeSupported())
-        {
-            const auto& heCapabilities = frame.template Get<HeCapabilities>();
-            if (heCapabilities.has_value() && heCapabilities->GetSupportedMcsAndNss() != 0)
-            {
-                remoteStationManager->AddStationHeCapabilities(from, *heCapabilities);
-                for (const auto& mcs : phy->GetMcsList(WIFI_MOD_CLASS_HE))
-                {
-                    if (heCapabilities->IsSupportedTxMcs(mcs.GetMcsValue()))
-                    {
-                        remoteStationManager->AddSupportedMcs(from, mcs);
-                        // here should add a control to add basic MCS when it is implemented
-                    }
-                }
-            }
-        }
-        if (GetEhtSupported())
-        {
-            if (const auto& ehtCapabilities = frame.template Get<EhtCapabilities>())
-            {
-                remoteStationManager->AddStationEhtCapabilities(from, *ehtCapabilities);
-            }
-            for (const auto& mcs : phy->GetMcsList(WIFI_MOD_CLASS_EHT))
-            {
-                // TODO: Add check whether MCS is supported from the capabilities
-                remoteStationManager->AddSupportedMcs(from, mcs);
-                // here should add a control to add basic MCS when it is implemented
-            }
-        }
-
         NS_LOG_DEBUG("Association Request from " << from << " accepted");
         remoteStationManager->RecordWaitAssocTxOk(from);
         return true;
     };
 
-    return std::visit(recvAssocRequest, assoc);
+    if (!std::visit(verifyAssocRequest, assoc))
+    {
+        return false;
+    }
+
+    // The association request from the station can be accepted.
+    // Record all its supported modes in its associated WifiRemoteStation
+    auto phy = GetWifiPhy(linkId);
+
+    // lambda to record capabilities from received (Re)Association Request
+    auto recordCapabilities = [&](auto&& frameRefWrapper) {
+        const auto& frame = frameRefWrapper.get();
+        RecordCapabilities(frame, from, linkId);
+
+        const CapabilityInformation& capabilities = frame.Capabilities();
+        remoteStationManager->AddSupportedPhyPreamble(from, capabilities.IsShortPreamble());
+
+        if (GetErpSupported(linkId) && remoteStationManager->GetErpOfdmSupported(from) &&
+            capabilities.IsShortSlotTime())
+        {
+            remoteStationManager->AddSupportedErpSlotTime(from, true);
+        }
+    };
+    std::visit(recordCapabilities, assoc);
+
+    return true;
 }
 
 void
