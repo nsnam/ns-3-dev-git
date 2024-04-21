@@ -51,6 +51,14 @@ WifiDefaultProtectionManager::GetTypeId()
                           "If enabled, always protect a DL/UL MU frame exchange with MU-RTS/CTS.",
                           BooleanValue(false),
                           MakeBooleanAccessor(&WifiDefaultProtectionManager::m_sendMuRts),
+                          MakeBooleanChecker())
+            .AddAttribute("SingleRtsPerTxop",
+                          "If enabled, a protection mechanism (RTS or MU-RTS) is normally used no "
+                          "more than once in a TXOP, regardless of the destination of the data "
+                          "frame (unless required for specific purposes, such as transmitting an "
+                          "Initial Control Frame to an EMLSR client).",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&WifiDefaultProtectionManager::m_singleRtsPerTxop),
                           MakeBooleanChecker());
     return tid;
 }
@@ -184,8 +192,10 @@ WifiDefaultProtectionManager::GetPsduProtection(const WifiMacHeader& hdr,
         return std::make_unique<WifiNoProtection>();
     }
 
-    // no need to use protection if destination already received an RTS in this TXOP
-    if (m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas().count(hdr.GetAddr1()) == 1)
+    // no need to use protection if destination already received an RTS in this TXOP or
+    // SingleRtsPerTxop is true and a protection mechanism has been already used in this TXOP
+    if (const auto& protectedStas = m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas();
+        protectedStas.contains(hdr.GetAddr1()) || (m_singleRtsPerTxop && !protectedStas.empty()))
     {
         return std::make_unique<WifiNoProtection>();
     }
@@ -244,11 +254,13 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
         dlMuPpdu || isEmlsrDestination ||
         (txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS));
 
-    auto isProtected =
-        m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas().count(receiver) == 1;
+    const auto& protectedStas = m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas();
+    const auto isProtected = protectedStas.contains(receiver);
     bool needMuRts =
         (txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS) ||
-        (dlMuPpdu && m_sendMuRts && !isProtected) || (isEmlsrDestination && !isProtected);
+        (dlMuPpdu && m_sendMuRts && !isProtected &&
+         (!m_singleRtsPerTxop || protectedStas.empty())) ||
+        (isEmlsrDestination && !isProtected);
 
     if (!needMuRts)
     {
@@ -364,6 +376,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     NS_ABORT_MSG_IF(m_mac->GetTypeOfStation() != AP, "HE APs only can send DL MU PPDUs");
     const auto& staList = StaticCast<ApWifiMac>(m_mac)->GetStaList(m_linkId);
 
+    const auto& protectedStas = m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas();
     bool allProtected = true;
     bool isUnprotectedEmlsrDst = false;
 
@@ -375,8 +388,7 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
         auto staIt = staList.find(userInfo.GetAid12());
         NS_ASSERT(staIt != staList.cend());
         AddUserInfoToMuRts(protection->muRts, txWidth, staIt->second);
-        bool isProtected =
-            m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas().count(staIt->second) == 1;
+        const auto isProtected = protectedStas.contains(staIt->second);
         allProtected = allProtected && isProtected;
 
         isUnprotectedEmlsrDst =
@@ -384,7 +396,9 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
             (!isProtected && GetWifiRemoteStationManager()->GetEmlsrEnabled(staIt->second));
     }
 
-    bool needMuRts = (m_sendMuRts && !allProtected) || isUnprotectedEmlsrDst;
+    bool needMuRts =
+        (m_sendMuRts && !allProtected && (!m_singleRtsPerTxop || protectedStas.empty())) ||
+        isUnprotectedEmlsrDst;
 
     if (!needMuRts)
     {

@@ -99,7 +99,8 @@ class WifiDefaultProtectionManager : public WifiProtectionManager
     virtual std::unique_ptr<WifiProtection> TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
                                                                 const WifiTxParameters& txParams);
 
-    bool m_sendMuRts; //!< true for sending an MU-RTS to protect DL MU PPDUs
+    bool m_sendMuRts;        //!< true for sending an MU-RTS to protect DL MU PPDUs
+    bool m_singleRtsPerTxop; //!< true for using protection only once in a TXOP
 };
 
 } // namespace ns3

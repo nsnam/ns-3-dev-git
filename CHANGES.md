@@ -22,6 +22,7 @@ Changes from ns-3.41 to ns-3-dev
 * (network) Added `ApplicationHelper` helper class to create and install applications, removing
 redundant code in existing helpers and reducing the burden to add yet another helper when a new
 application model is added.
+* (wifi) Added a new **SingleRtsPerTxop** attribute to `WifiDefaultProtectionManager`, which, if set to true, prevents to use protection mechanisms (RTS or MU-RTS) more than once in a TXOP (unless required for specific purposes, such as transmitting an Initial Control Frame to an EMLSR client).
 
 ### Changes to existing API
 
