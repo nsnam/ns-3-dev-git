@@ -486,6 +486,18 @@ AdhocWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, linkId_t linkId)
     {
         CancelPendingBeacon();
     }
+
+    if (!GetWifiRemoteStationManager()->IsBrandNew(from))
+    {
+        // capabilities already learnt: nothing to do
+        return;
+    }
+
+    // store capabilities from received beacon
+    RecordCapabilities(beacon, from, linkId);
+
+    NS_LOG_INFO("Peer " << from << " changed from undiscovered to discovered");
+    GetWifiRemoteStationManager()->RecordDisassociated(from);
 }
 
 AllSupportedRates
