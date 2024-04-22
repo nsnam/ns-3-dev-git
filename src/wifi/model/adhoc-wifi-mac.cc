@@ -344,8 +344,51 @@ AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         return;
     }
 
-    // Invoke the receive handler of our parent class to deal with any other frames
-    WifiMac::Receive(mpdu, linkId);
+    switch (hdr.GetType())
+    {
+    case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
+    case WIFI_MAC_MGT_REASSOCIATION_REQUEST:
+    case WIFI_MAC_MGT_ASSOCIATION_RESPONSE:
+    case WIFI_MAC_MGT_REASSOCIATION_RESPONSE:
+        // This is a frame not aimed for IBSS, so we can safely ignore it.
+        NotifyRxDrop(packet);
+        break;
+
+    case WIFI_MAC_MGT_BEACON:
+        ReceiveBeacon(mpdu, linkId);
+        break;
+
+    default:
+        // Invoke the receive handler of our parent class to deal with any
+        // other frames. Specifically, this will handle Block Ack-related
+        // Management Action frames.
+        WifiMac::Receive(mpdu, linkId);
+    }
+}
+
+void
+AdhocWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << *mpdu << +linkId);
+    const WifiMacHeader& hdr = mpdu->GetHeader();
+    NS_ASSERT(hdr.IsBeacon());
+
+    const auto from = hdr.GetAddr2();
+    NS_LOG_DEBUG("Beacon received from " << from);
+
+    if (!GetWifiRemoteStationManager()->IsBrandNew(from))
+    {
+        // capabilities already learnt: nothing to do
+        return;
+    }
+
+    // store capabilities from received beacon
+    MgtBeaconHeader beacon;
+    mpdu->GetPacket()->PeekHeader(beacon);
+    RecordCapabilities(beacon, from, linkId);
+
+    // change state of the STA to ensure it is no longer considered as unknown
+    GetWifiRemoteStationManager()->RecordDisassociated(from);
 }
 
 AllSupportedRates

@@ -83,6 +83,14 @@ class AdhocWifiMac : public WifiMac
     void SendOneBeacon();
 
     /**
+     * Process the Beacon frame received on the given link.
+     *
+     * \param mpdu the MPDU containing the Beacon frame
+     * \param linkId the ID of the given link
+     */
+    void ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+
+    /**
      * Fill in the same capabilities as this device for a given new peer.
      *
      * \param address the MAC address of the peer
