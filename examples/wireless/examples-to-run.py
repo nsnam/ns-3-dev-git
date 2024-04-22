@@ -180,7 +180,7 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-eht-network --simulationTime=0.2s --udp=0 --downlink=0 --useRts=0 --nStations=4 --dlAckType=AGGR-MU-BAR --enableUlOfdma=1 --enableBsrp=1 --mpduBufferSize=1024 --mcs=7 --muSchedAccessReqInterval=45ms --frequency2=6 --minExpectedThroughput=70 --maxExpectedThroughput=550",
+        "wifi-eht-network --simulationTime=0.25s --udp=0 --downlink=0 --useRts=0 --nStations=4 --dlAckType=AGGR-MU-BAR --enableUlOfdma=1 --enableBsrp=1 --mpduBufferSize=1024 --mcs=7 --muSchedAccessReqInterval=45ms --frequency2=6 --minExpectedThroughput=70 --maxExpectedThroughput=550",
         "True",
         "True",
     ),
