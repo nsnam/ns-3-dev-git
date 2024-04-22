@@ -20,6 +20,9 @@ In this release, we have introduced pedantic warnings to enhance C++ standard co
 
 ### Supported platforms
 
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
+been tested on Linux. The latest known version to work with ns-3 is cppyy==3.1.2.
+
 ### New user-visible features
 
 - (network) !1828 - Added a common helper to create and install applications

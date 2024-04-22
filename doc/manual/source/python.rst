@@ -111,11 +111,11 @@ simple modules in python, jump to the `Using the pip wheel`_ section.
 Using the bindings from the ns-3 source
 =======================================
 
-The main prerequisite is to install `cppyy`, with version no later than 2.4.2.
+The main prerequisite is to install `cppyy`, with version 3.1.2.
 Depending on how you may manage
 Python extensions, the installation instructions may vary, but you can first
 check if it installed by seeing if the `cppyy` module can be
-successfully imported and the version is no later than 2.4.2:
+successfully imported and the version 3.1.2:
 
 .. sourcecode:: bash
 
@@ -125,7 +125,7 @@ successfully imported and the version is no later than 2.4.2:
   Type "help", "copyright", "credits" or "license" for more information.
   >>> import cppyy
   >>> print("%s" % cppyy.__version)
-  2.4.2
+  3.1.2
   >>>
 
 If not, you may try to install via `pip` or whatever other manager you are
@@ -133,7 +133,7 @@ using; e.g.:
 
 .. sourcecode:: bash
 
-  $ python3 -m pip install --user cppyy==2.4.2
+  $ python3 -m pip install --user cppyy==3.1.2
 
 First, we need to enable the build of Python bindings:
 

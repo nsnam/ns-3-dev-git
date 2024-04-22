@@ -5,7 +5,7 @@ requires = [
     "setuptools>=45",
     "setuptools_scm[toml]>=6.0",
     "cmake-build-extension>=0.4",
-    "cppyy==2.4.2",
+    "cppyy==3.1.2",
 ]
 
 [tool.setuptools_scm]
