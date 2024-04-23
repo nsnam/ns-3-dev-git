@@ -56,7 +56,7 @@ class WifiRadioEnergyModelPhyListener : public WifiPhyListener
      *
      * \param callback Change state callback.
      */
-    void SetChangeStateCallback(DeviceEnergyModel::ChangeStateCallback callback);
+    void SetChangeStateCallback(energy::DeviceEnergyModel::ChangeStateCallback callback);
 
     /**
      * \brief Sets the update TX current callback.
@@ -88,7 +88,7 @@ class WifiRadioEnergyModelPhyListener : public WifiPhyListener
      * Change state callback used to notify the WifiRadioEnergyModel of a state
      * change.
      */
-    DeviceEnergyModel::ChangeStateCallback m_changeStateCallback;
+    energy::DeviceEnergyModel::ChangeStateCallback m_changeStateCallback;
 
     /**
      * Callback used to update the TX current stored in WifiRadioEnergyModel based on
@@ -148,7 +148,7 @@ class WifiRadioEnergyModelPhyListener : public WifiPhyListener
  * transmit power can also be achieved through a wifi TX current model.
  *
  */
-class WifiRadioEnergyModel : public DeviceEnergyModel
+class WifiRadioEnergyModel : public energy::DeviceEnergyModel
 {
   public:
     /**
@@ -176,7 +176,7 @@ class WifiRadioEnergyModel : public DeviceEnergyModel
      *
      * Implements DeviceEnergyModel::SetEnergySource.
      */
-    void SetEnergySource(const Ptr<EnergySource> source) override;
+    void SetEnergySource(const Ptr<energy::EnergySource> source) override;
 
     /**
      * \returns Total energy consumption of the wifi device in watts.
@@ -357,7 +357,7 @@ class WifiRadioEnergyModel : public DeviceEnergyModel
      */
     void SetWifiRadioState(const WifiPhyState state);
 
-    Ptr<EnergySource> m_source; ///< energy source
+    Ptr<energy::EnergySource> m_source; ///< energy source
 
     // Member variables for current draw in different radio modes.
     double m_txCurrentA;                      ///< transmit current in Amperes

@@ -30,6 +30,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 /**
  * \ingroup energy
@@ -181,6 +183,7 @@ class EnergySourceContainer : public Object
     std::vector<Ptr<EnergySource>> m_sources; //!< Energy source container
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* ENERGY_SOURCE_CONTAINER_H */

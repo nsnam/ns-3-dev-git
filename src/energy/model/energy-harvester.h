@@ -32,6 +32,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 class EnergySource;
 
@@ -130,6 +132,7 @@ class EnergyHarvester : public Object
   protected:
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* defined(ENERGY_HARVESTER_H) */

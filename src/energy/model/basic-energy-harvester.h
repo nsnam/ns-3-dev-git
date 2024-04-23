@@ -33,6 +33,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 /**
  * \ingroup energy
@@ -128,6 +130,7 @@ class BasicEnergyHarvester : public EnergyHarvester
     Time m_harvestedPowerUpdateInterval;   //!< harvestable energy update interval
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* defined(BASIC_ENERGY_HARVESTER) */

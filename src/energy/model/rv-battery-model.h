@@ -28,6 +28,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 /**
  * \ingroup energy
@@ -263,6 +265,7 @@ class RvBatteryModel : public EnergySource
     TracedValue<Time> m_lifetime; //!< time of death of the battery
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* RV_BATTERY_MODEL_H */

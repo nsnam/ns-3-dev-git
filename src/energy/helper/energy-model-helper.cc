@@ -32,31 +32,31 @@ EnergySourceHelper::~EnergySourceHelper()
 {
 }
 
-EnergySourceContainer
+energy::EnergySourceContainer
 EnergySourceHelper::Install(Ptr<Node> node) const
 {
     return Install(NodeContainer(node));
 }
 
-EnergySourceContainer
+energy::EnergySourceContainer
 EnergySourceHelper::Install(NodeContainer c) const
 {
-    EnergySourceContainer container;
+    energy::EnergySourceContainer container;
     for (auto i = c.Begin(); i != c.End(); ++i)
     {
-        Ptr<EnergySource> src = DoInstall(*i);
+        Ptr<energy::EnergySource> src = DoInstall(*i);
         container.Add(src);
         /*
          * Check if EnergySourceContainer is already aggregated to target node. If
          * not, create a new EnergySourceContainer and aggregate it to node.
          */
-        Ptr<EnergySourceContainer> EnergySourceContainerOnNode =
-            (*i)->GetObject<EnergySourceContainer>();
+        Ptr<energy::EnergySourceContainer> EnergySourceContainerOnNode =
+            (*i)->GetObject<energy::EnergySourceContainer>();
         if (!EnergySourceContainerOnNode)
         {
             ObjectFactory fac;
             fac.SetTypeId("ns3::EnergySourceContainer");
-            EnergySourceContainerOnNode = fac.Create<EnergySourceContainer>();
+            EnergySourceContainerOnNode = fac.Create<energy::EnergySourceContainer>();
             EnergySourceContainerOnNode->Add(src);
             (*i)->AggregateObject(EnergySourceContainerOnNode);
         }
@@ -68,14 +68,14 @@ EnergySourceHelper::Install(NodeContainer c) const
     return container;
 }
 
-EnergySourceContainer
+energy::EnergySourceContainer
 EnergySourceHelper::Install(std::string nodeName) const
 {
     Ptr<Node> node = Names::Find<Node>(nodeName);
     return Install(node);
 }
 
-EnergySourceContainer
+energy::EnergySourceContainer
 EnergySourceHelper::InstallAll() const
 {
     return Install(NodeContainer::GetGlobal());
@@ -88,30 +88,30 @@ DeviceEnergyModelHelper::~DeviceEnergyModelHelper()
 {
 }
 
-DeviceEnergyModelContainer
-DeviceEnergyModelHelper::Install(Ptr<NetDevice> device, Ptr<EnergySource> source) const
+energy::DeviceEnergyModelContainer
+DeviceEnergyModelHelper::Install(Ptr<NetDevice> device, Ptr<energy::EnergySource> source) const
 {
     NS_ASSERT(device);
     NS_ASSERT(source);
     // check to make sure source and net device are on the same node
     NS_ASSERT(device->GetNode() == source->GetNode());
-    DeviceEnergyModelContainer container(DoInstall(device, source));
+    energy::DeviceEnergyModelContainer container(DoInstall(device, source));
     return container;
 }
 
-DeviceEnergyModelContainer
+energy::DeviceEnergyModelContainer
 DeviceEnergyModelHelper::Install(NetDeviceContainer deviceContainer,
-                                 EnergySourceContainer sourceContainer) const
+                                 energy::EnergySourceContainer sourceContainer) const
 {
     NS_ASSERT(deviceContainer.GetN() <= sourceContainer.GetN());
-    DeviceEnergyModelContainer container;
+    energy::DeviceEnergyModelContainer container;
     auto dev = deviceContainer.Begin();
     auto src = sourceContainer.Begin();
     while (dev != deviceContainer.End())
     {
         // check to make sure source and net device are on the same node
         NS_ASSERT((*dev)->GetNode() == (*src)->GetNode());
-        Ptr<DeviceEnergyModel> model = DoInstall(*dev, *src);
+        Ptr<energy::DeviceEnergyModel> model = DoInstall(*dev, *src);
         container.Add(model);
         dev++;
         src++;

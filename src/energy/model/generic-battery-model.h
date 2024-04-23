@@ -31,6 +31,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 /**
  * \ingroup energy
@@ -309,6 +311,7 @@ class GenericBatteryModel : public EnergySource
     GenericBatteryType m_batteryType; //!< Indicates the battery type used by the model
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* GENERIC_BATTERY_MODEL_H */

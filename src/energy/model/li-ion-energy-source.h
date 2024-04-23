@@ -29,6 +29,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 /**
  * \ingroup energy
@@ -215,6 +217,7 @@ class LiIonEnergySource : public EnergySource
     double m_minVoltTh;          //!< minimum threshold voltage to consider the battery depleted
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* LI_ION_ENERGY_SOURCE_H */

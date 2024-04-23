@@ -219,7 +219,8 @@ class UanPhy : public Object
      *
      * \param callback The DeviceEnergyModel change state callback.
      */
-    virtual void SetEnergyModelCallback(DeviceEnergyModel::ChangeStateCallback callback) = 0;
+    virtual void SetEnergyModelCallback(
+        energy::DeviceEnergyModel::ChangeStateCallback callback) = 0;
     /**
      * Handle the energy depletion event.
      */

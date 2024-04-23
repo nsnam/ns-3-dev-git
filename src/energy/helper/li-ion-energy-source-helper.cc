@@ -41,11 +41,11 @@ LiIonEnergySourceHelper::Set(std::string name, const AttributeValue& v)
     m_liIonEnergySource.Set(name, v);
 }
 
-Ptr<EnergySource>
+Ptr<energy::EnergySource>
 LiIonEnergySourceHelper::DoInstall(Ptr<Node> node) const
 {
     NS_ASSERT(node);
-    Ptr<EnergySource> source = m_liIonEnergySource.Create<EnergySource>();
+    Ptr<energy::EnergySource> source = m_liIonEnergySource.Create<energy::EnergySource>();
     NS_ASSERT(source);
     source->SetNode(node);
     return source;

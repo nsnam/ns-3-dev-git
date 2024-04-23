@@ -55,8 +55,9 @@ AcousticModemEnergyModelHelper::SetDepletionCallback(
  * Private function starts here.
  */
 
-Ptr<DeviceEnergyModel>
-AcousticModemEnergyModelHelper::DoInstall(Ptr<NetDevice> device, Ptr<EnergySource> source) const
+Ptr<energy::DeviceEnergyModel>
+AcousticModemEnergyModelHelper::DoInstall(Ptr<NetDevice> device,
+                                          Ptr<energy::EnergySource> source) const
 {
     NS_ASSERT(device);
     NS_ASSERT(source);
@@ -83,8 +84,8 @@ AcousticModemEnergyModelHelper::DoInstall(Ptr<NetDevice> device, Ptr<EnergySourc
     // set node pointer
     source->SetNode(node);
     // create and install energy model callback
-    DeviceEnergyModel::ChangeStateCallback cb;
-    cb = MakeCallback(&DeviceEnergyModel::ChangeState, model);
+    energy::DeviceEnergyModel::ChangeStateCallback cb;
+    cb = MakeCallback(&energy::DeviceEnergyModel::ChangeState, model);
     uanPhy->SetEnergyModelCallback(cb);
 
     return model;

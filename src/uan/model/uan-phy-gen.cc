@@ -631,7 +631,7 @@ UanPhyGen::GetTypeId()
 }
 
 void
-UanPhyGen::SetEnergyModelCallback(DeviceEnergyModel::ChangeStateCallback cb)
+UanPhyGen::SetEnergyModelCallback(energy::DeviceEnergyModel::ChangeStateCallback cb)
 {
     NS_LOG_FUNCTION(this);
     m_energyCallback = cb;

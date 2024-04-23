@@ -25,6 +25,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 NS_OBJECT_ENSURE_REGISTERED(EnergySourceContainer);
 
@@ -141,4 +143,5 @@ EnergySourceContainer::DoInitialize()
     }
 }
 
+} // namespace energy
 } // namespace ns3

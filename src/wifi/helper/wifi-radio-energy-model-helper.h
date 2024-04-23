@@ -86,8 +86,8 @@ class WifiRadioEnergyModelHelper : public DeviceEnergyModelHelper
      *
      * Implements DeviceEnergyModel::Install.
      */
-    Ptr<DeviceEnergyModel> DoInstall(Ptr<NetDevice> device,
-                                     Ptr<EnergySource> source) const override;
+    Ptr<energy::DeviceEnergyModel> DoInstall(Ptr<NetDevice> device,
+                                             Ptr<energy::EnergySource> source) const override;
 
   private:
     ObjectFactory m_radioEnergy; ///< radio energy

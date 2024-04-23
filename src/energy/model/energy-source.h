@@ -35,6 +35,10 @@
 
 namespace ns3
 {
+namespace energy
+{
+
+class EnergyHarvester;
 
 /**
  * \defgroup energy Energy Models
@@ -80,9 +84,6 @@ namespace ns3
  * energy in different units (eg. kWh), a simple converter function should
  * suffice.
  */
-
-class EnergyHarvester;
-
 class EnergySource : public Object
 {
   public:
@@ -253,6 +254,7 @@ class EnergySource : public Object
     void BreakDeviceEnergyModelRefCycle();
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* ENERGY_SOURCE_H */

@@ -25,6 +25,7 @@
 #include "ns3/simulator.h"
 
 using namespace ns3;
+using namespace ns3::energy;
 
 /**
  * In this simple example, we show how to create and drain energy from a

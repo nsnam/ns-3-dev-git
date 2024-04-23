@@ -30,6 +30,7 @@
 #include "ns3/uan-helper.h"
 
 using namespace ns3;
+using namespace ns3::energy;
 
 /**
  * \ingroup uan

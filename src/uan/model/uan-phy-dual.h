@@ -90,7 +90,7 @@ class UanPhyDual : public UanPhy
     static TypeId GetTypeId();
 
     // Inherited methods:
-    void SetEnergyModelCallback(DeviceEnergyModel::ChangeStateCallback callback) override;
+    void SetEnergyModelCallback(energy::DeviceEnergyModel::ChangeStateCallback callback) override;
     void EnergyDepletionHandler() override;
     void EnergyRechargeHandler() override;
     void SendPacket(Ptr<Packet> pkt, uint32_t modeNum) override;

@@ -24,9 +24,10 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 NS_LOG_COMPONENT_DEFINE("EnergyHarvester");
-
 NS_OBJECT_ENSURE_REGISTERED(EnergyHarvester);
 
 TypeId
@@ -100,4 +101,5 @@ EnergyHarvester::DoGetPower() const
     return 0.0;
 }
 
+} // namespace energy
 } // namespace ns3

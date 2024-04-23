@@ -278,7 +278,7 @@ class UanPhyGen : public UanPhy
     static TypeId GetTypeId();
 
     // Inherited methods
-    void SetEnergyModelCallback(DeviceEnergyModel::ChangeStateCallback cb) override;
+    void SetEnergyModelCallback(energy::DeviceEnergyModel::ChangeStateCallback cb) override;
     void EnergyDepletionHandler() override;
     void EnergyRechargeHandler() override;
     void SendPacket(Ptr<Packet> pkt, uint32_t modeNum) override;
@@ -352,7 +352,7 @@ class UanPhyGen : public UanPhy
     Ptr<UniformRandomVariable> m_pg;
 
     /** Energy model callback. */
-    DeviceEnergyModel::ChangeStateCallback m_energyCallback;
+    energy::DeviceEnergyModel::ChangeStateCallback m_energyCallback;
     /** A packet destined for this Phy was received without error. */
     ns3::TracedCallback<Ptr<const Packet>, double, UanTxMode> m_rxOkLogger;
     /** A packet destined for this Phy was received with error. */

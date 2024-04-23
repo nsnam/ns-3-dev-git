@@ -71,8 +71,8 @@ class AcousticModemEnergyModelHelper : public DeviceEnergyModelHelper
      * \param source Pointer to EnergySource installed on node.
      * \return The energy model.
      */
-    Ptr<DeviceEnergyModel> DoInstall(Ptr<NetDevice> device,
-                                     Ptr<EnergySource> source) const override;
+    Ptr<energy::DeviceEnergyModel> DoInstall(Ptr<NetDevice> device,
+                                             Ptr<energy::EnergySource> source) const override;
 
   private:
     /** Energy model factory. */

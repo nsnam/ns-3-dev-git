@@ -29,6 +29,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 class EnergyHarvester;
 
@@ -188,6 +190,7 @@ class EnergyHarvesterContainer : public Object
     std::vector<Ptr<EnergyHarvester>> m_harvesters; //!< Harvester container
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* defined(ENERGY_HARVESTER_CONTAINER_H) */

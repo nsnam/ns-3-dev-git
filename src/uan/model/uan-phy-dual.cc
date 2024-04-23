@@ -251,7 +251,7 @@ UanPhyDual::GetTypeId()
 }
 
 void
-UanPhyDual::SetEnergyModelCallback(DeviceEnergyModel::ChangeStateCallback callback)
+UanPhyDual::SetEnergyModelCallback(energy::DeviceEnergyModel::ChangeStateCallback callback)
 {
     NS_LOG_DEBUG("Not Implemented");
 }

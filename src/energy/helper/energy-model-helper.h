@@ -62,7 +62,7 @@ class EnergySourceHelper
      *
      * This function installs an EnergySource onto a node.
      */
-    EnergySourceContainer Install(Ptr<Node> node) const;
+    energy::EnergySourceContainer Install(Ptr<Node> node) const;
 
     /**
      * \param c List of nodes where EnergySource will be installed.
@@ -70,7 +70,7 @@ class EnergySourceHelper
      *
      * This function installs an EnergySource onto a list of nodes.
      */
-    EnergySourceContainer Install(NodeContainer c) const;
+    energy::EnergySourceContainer Install(NodeContainer c) const;
 
     /**
      * \param nodeName Name of node where EnergySource will be installed.
@@ -78,14 +78,14 @@ class EnergySourceHelper
      *
      * This function installs an EnergySource onto a node.
      */
-    EnergySourceContainer Install(std::string nodeName) const;
+    energy::EnergySourceContainer Install(std::string nodeName) const;
 
     /**
      * \brief This function installs an EnergySource on all nodes in simulation.
      *
      * \returns An EnergySourceContainer which contains all the EnergySources.
      */
-    EnergySourceContainer InstallAll() const;
+    energy::EnergySourceContainer InstallAll() const;
 
   private:
     /**
@@ -97,7 +97,7 @@ class EnergySourceHelper
      * the installation process (eg. installing EnergySource on set of nodes) is
      * implemented in the EnergySourceHelper base class.
      */
-    virtual Ptr<EnergySource> DoInstall(Ptr<Node> node) const = 0;
+    virtual Ptr<energy::EnergySource> DoInstall(Ptr<Node> node) const = 0;
 };
 
 /**
@@ -132,7 +132,8 @@ class DeviceEnergyModelHelper
      * Installs an DeviceEnergyModel with a specified EnergySource onto a
      * xNetDevice.
      */
-    DeviceEnergyModelContainer Install(Ptr<NetDevice> device, Ptr<EnergySource> source) const;
+    energy::DeviceEnergyModelContainer Install(Ptr<NetDevice> device,
+                                               Ptr<energy::EnergySource> source) const;
 
     /**
      * \param deviceContainer List of NetDevices to be install DeviceEnergyModel
@@ -144,8 +145,8 @@ class DeviceEnergyModelHelper
      * Installs DeviceEnergyModels with specified EnergySources onto a list of
      * NetDevices.
      */
-    DeviceEnergyModelContainer Install(NetDeviceContainer deviceContainer,
-                                       EnergySourceContainer sourceContainer) const;
+    energy::DeviceEnergyModelContainer Install(NetDeviceContainer deviceContainer,
+                                               energy::EnergySourceContainer sourceContainer) const;
 
   private:
     /**
@@ -158,8 +159,8 @@ class DeviceEnergyModelHelper
      * node. The rest of the installation process (eg. installing EnergySource on
      * set of nodes) is implemented in the DeviceEnergyModelHelper base class.
      */
-    virtual Ptr<DeviceEnergyModel> DoInstall(Ptr<NetDevice> device,
-                                             Ptr<EnergySource> source) const = 0;
+    virtual Ptr<energy::DeviceEnergyModel> DoInstall(Ptr<NetDevice> device,
+                                                     Ptr<energy::EnergySource> source) const = 0;
 };
 
 } // namespace ns3

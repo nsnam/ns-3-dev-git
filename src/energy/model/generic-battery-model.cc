@@ -32,9 +32,10 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 NS_LOG_COMPONENT_DEFINE("GenericBatteryModel");
-
 NS_OBJECT_ENSURE_REGISTERED(GenericBatteryModel);
 
 TypeId
@@ -435,4 +436,5 @@ GenericBatteryModel::GetVoltage(double i)
     return V;
 }
 
+} // namespace energy
 } // namespace ns3

@@ -28,9 +28,10 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 NS_LOG_COMPONENT_DEFINE("EnergySource");
-
 NS_OBJECT_ENSURE_REGISTERED(EnergySource);
 
 TypeId
@@ -237,4 +238,5 @@ EnergySource::BreakDeviceEnergyModelRefCycle()
     m_node = nullptr;
 }
 
+} // namespace energy
 } // namespace ns3

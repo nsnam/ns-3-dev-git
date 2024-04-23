@@ -42,7 +42,7 @@ class BasicEnergyHarvesterHelper : public EnergyHarvesterHelper
     void Set(std::string name, const AttributeValue& v) override;
 
   private:
-    Ptr<EnergyHarvester> DoInstall(Ptr<EnergySource> source) const override;
+    Ptr<energy::EnergyHarvester> DoInstall(Ptr<energy::EnergySource> source) const override;
 
   private:
     ObjectFactory m_basicEnergyHarvester; //!< Energy source factory

@@ -52,7 +52,7 @@ namespace ns3
  *     in In Proc. IEEE OCEANS05 Conf, 2005.
  *     URL: http://ieeexplore.ieee.org/iel5/10918/34367/01639901.pdf
  */
-class AcousticModemEnergyModel : public DeviceEnergyModel
+class AcousticModemEnergyModel : public energy::DeviceEnergyModel
 {
   public:
     /** Callback type for energy depletion handling. */
@@ -87,7 +87,7 @@ class AcousticModemEnergyModel : public DeviceEnergyModel
     virtual Ptr<Node> GetNode() const;
 
     // Inherited methods.
-    void SetEnergySource(Ptr<EnergySource> source) override;
+    void SetEnergySource(Ptr<energy::EnergySource> source) override;
     double GetTotalEnergyConsumption() const override;
 
     /**
@@ -216,8 +216,8 @@ class AcousticModemEnergyModel : public DeviceEnergyModel
     void SetMicroModemState(const int state);
 
   private:
-    Ptr<Node> m_node;           //!< The node hosting this transducer.
-    Ptr<EnergySource> m_source; //!< The energy source.
+    Ptr<Node> m_node;                   //!< The node hosting this transducer.
+    Ptr<energy::EnergySource> m_source; //!< The energy source.
 
     // Member variables for power consumption in different modem states.
     double m_txPowerW;    //!< The transmitter power, in watts.

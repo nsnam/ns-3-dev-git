@@ -61,8 +61,8 @@ WifiRadioEnergyModelHelper::SetRechargedCallback(
  * Private function starts here.
  */
 
-Ptr<DeviceEnergyModel>
-WifiRadioEnergyModelHelper::DoInstall(Ptr<NetDevice> device, Ptr<EnergySource> source) const
+Ptr<energy::DeviceEnergyModel>
+WifiRadioEnergyModelHelper::DoInstall(Ptr<NetDevice> device, Ptr<energy::EnergySource> source) const
 {
     NS_ASSERT(device);
     NS_ASSERT(source);

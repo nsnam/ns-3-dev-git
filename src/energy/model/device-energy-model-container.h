@@ -29,6 +29,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 /**
  * \ingroup energy
@@ -173,6 +175,7 @@ class DeviceEnergyModelContainer
     std::vector<Ptr<DeviceEnergyModel>> m_models; //!< Container of Energy models
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* DEVICE_ENERGY_MODEL_CONTAINER_H */

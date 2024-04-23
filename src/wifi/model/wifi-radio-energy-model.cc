@@ -114,7 +114,7 @@ WifiRadioEnergyModel::~WifiRadioEnergyModel()
 }
 
 void
-WifiRadioEnergyModel::SetEnergySource(const Ptr<EnergySource> source)
+WifiRadioEnergyModel::SetEnergySource(const Ptr<energy::EnergySource> source)
 {
     NS_LOG_FUNCTION(this << source);
     NS_ASSERT(source);
@@ -486,7 +486,7 @@ WifiRadioEnergyModelPhyListener::~WifiRadioEnergyModelPhyListener()
 
 void
 WifiRadioEnergyModelPhyListener::SetChangeStateCallback(
-    DeviceEnergyModel::ChangeStateCallback callback)
+    energy::DeviceEnergyModel::ChangeStateCallback callback)
 {
     NS_LOG_FUNCTION(this << &callback);
     NS_ASSERT(!callback.IsNull());

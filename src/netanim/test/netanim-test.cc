@@ -32,6 +32,7 @@
 #include <iostream>
 
 using namespace ns3;
+using namespace ns3::energy;
 
 /**
  * \ingroup netanim

@@ -28,6 +28,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 /**
  * \ingroup energy
@@ -155,6 +157,7 @@ class BasicEnergySource : public EnergySource
     Time m_energyUpdateInterval;            //!< energy update interval
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* BASIC_ENERGY_SOURCE_H */

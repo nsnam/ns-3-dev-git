@@ -55,7 +55,7 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * \param c The node container
      * \returns An EnergySourceContainer which contains all the EnergySources.
      */
-    Ptr<EnergySourceContainer> Install(NodeContainer c) const;
+    Ptr<energy::EnergySourceContainer> Install(NodeContainer c) const;
 
     /**
      * This function installs an energy source (battery) into a node.
@@ -64,7 +64,7 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * \param bm The battery model that will be install to the node.
      * \returns A pointer to the energy source object used.
      */
-    Ptr<EnergySource> Install(Ptr<Node> node, BatteryModel bm) const;
+    Ptr<energy::EnergySource> Install(Ptr<Node> node, energy::BatteryModel bm) const;
 
     /**
      * This function installs energy sources in a group of nodes in a
@@ -74,7 +74,7 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * \param bm The battery model that will be install to the nodes in the node container.
      * \returns An EnergySourceContainer which contains all the EnergySources.
      */
-    EnergySourceContainer Install(NodeContainer c, BatteryModel bm) const;
+    energy::EnergySourceContainer Install(NodeContainer c, energy::BatteryModel bm) const;
 
     /**
      * This function takes an existing energy source and transform its values to form
@@ -86,7 +86,9 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * \param series The number of cells connected in series.
      * \param parallel The number of cells connected in parallel.
      */
-    void SetCellPack(Ptr<EnergySource> energySource, uint8_t series, uint8_t parallel) const;
+    void SetCellPack(Ptr<energy::EnergySource> energySource,
+                     uint8_t series,
+                     uint8_t parallel) const;
 
     /**
      * This function takes an existing energy source container and transform the values
@@ -99,7 +101,7 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * \param series The number of cells connected in series.
      * \param parallel The number of cells connected in parallel.
      */
-    void SetCellPack(EnergySourceContainer energySourceContainer,
+    void SetCellPack(energy::EnergySourceContainer energySourceContainer,
                      uint8_t series,
                      uint8_t parallel) const;
 
@@ -113,7 +115,7 @@ class GenericBatteryModelHelper : public EnergySourceHelper
      * \param node Pointer to node where the energy source is to be installed.
      * \returns Pointer to the created EnergySource.
      */
-    Ptr<EnergySource> DoInstall(Ptr<Node> node) const override;
+    Ptr<energy::EnergySource> DoInstall(Ptr<Node> node) const override;
 
   private:
     ObjectFactory m_batteryModel; //!< The energy source (battery) used by this helper.

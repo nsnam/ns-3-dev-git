@@ -33,32 +33,32 @@ EnergyHarvesterHelper::~EnergyHarvesterHelper()
 {
 }
 
-EnergyHarvesterContainer
-EnergyHarvesterHelper::Install(Ptr<EnergySource> source) const
+energy::EnergyHarvesterContainer
+EnergyHarvesterHelper::Install(Ptr<energy::EnergySource> source) const
 {
-    return Install(EnergySourceContainer(source));
+    return Install(energy::EnergySourceContainer(source));
 }
 
-EnergyHarvesterContainer
-EnergyHarvesterHelper::Install(EnergySourceContainer sourceContainer) const
+energy::EnergyHarvesterContainer
+EnergyHarvesterHelper::Install(energy::EnergySourceContainer sourceContainer) const
 {
-    EnergyHarvesterContainer container;
+    energy::EnergyHarvesterContainer container;
     for (auto i = sourceContainer.Begin(); i != sourceContainer.End(); ++i)
     {
-        Ptr<EnergyHarvester> harvester = DoInstall(*i);
+        Ptr<energy::EnergyHarvester> harvester = DoInstall(*i);
         container.Add(harvester);
         Ptr<Node> node = (*i)->GetNode();
         /*
          * Check if EnergyHarvesterContainer is already aggregated to target node. If
          * not, create a new EnergyHarvesterContainer and aggregate it to the node.
          */
-        Ptr<EnergyHarvesterContainer> EnergyHarvesterContainerOnNode =
-            node->GetObject<EnergyHarvesterContainer>();
+        Ptr<energy::EnergyHarvesterContainer> EnergyHarvesterContainerOnNode =
+            node->GetObject<energy::EnergyHarvesterContainer>();
         if (!EnergyHarvesterContainerOnNode)
         {
             ObjectFactory fac;
             fac.SetTypeId("ns3::EnergyHarvesterContainer");
-            EnergyHarvesterContainerOnNode = fac.Create<EnergyHarvesterContainer>();
+            EnergyHarvesterContainerOnNode = fac.Create<energy::EnergyHarvesterContainer>();
             EnergyHarvesterContainerOnNode->Add(harvester);
             node->AggregateObject(EnergyHarvesterContainerOnNode);
         }
@@ -70,10 +70,10 @@ EnergyHarvesterHelper::Install(EnergySourceContainer sourceContainer) const
     return container;
 }
 
-EnergyHarvesterContainer
+energy::EnergyHarvesterContainer
 EnergyHarvesterHelper::Install(std::string sourceName) const
 {
-    Ptr<EnergySource> source = Names::Find<EnergySource>(sourceName);
+    Ptr<energy::EnergySource> source = Names::Find<energy::EnergySource>(sourceName);
     return Install(source);
 }
 

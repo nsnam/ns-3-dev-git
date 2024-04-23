@@ -27,6 +27,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 /**
  * \ingroup energy
@@ -141,6 +143,7 @@ class SimpleDeviceEnergyModel : public DeviceEnergyModel
     TracedValue<double> m_totalEnergyConsumption; //!< Total energy consumption trace
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* SIMPLE_DEVICE_ENERGY_MODEL_H */

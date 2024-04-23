@@ -27,9 +27,10 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 NS_LOG_COMPONENT_DEFINE("SimpleDeviceEnergyModel");
-
 NS_OBJECT_ENSURE_REGISTERED(SimpleDeviceEnergyModel);
 
 TypeId
@@ -132,4 +133,5 @@ SimpleDeviceEnergyModel::DoGetCurrentA() const
     return m_actualCurrentA;
 }
 
+} // namespace energy
 } // namespace ns3

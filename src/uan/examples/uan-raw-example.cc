@@ -131,11 +131,11 @@ UanExperiment::SetupCommunications()
     Ptr<UanChannel> channel = CreateObject<UanChannel>();
     UanHelper uanHelper;
     NetDeviceContainer netDeviceContainer = uanHelper.Install(m_nodes, channel);
-    EnergySourceContainer energySourceContainer;
+    energy::EnergySourceContainer energySourceContainer;
     auto node = m_nodes.Begin();
     while (node != m_nodes.End())
     {
-        energySourceContainer.Add((*node)->GetObject<EnergySourceContainer>()->Get(0));
+        energySourceContainer.Add((*node)->GetObject<energy::EnergySourceContainer>()->Get(0));
         node++;
     }
     AcousticModemEnergyModelHelper acousticModemEnergyModelHelper;
@@ -194,7 +194,8 @@ UanExperiment::SendPackets()
     while (node != m_nodes.End())
     {
         uint8_t energy =
-            ((*node)->GetObject<EnergySourceContainer>()->Get(0)->GetEnergyFraction()) * 100;
+            ((*node)->GetObject<energy::EnergySourceContainer>()->Get(0)->GetEnergyFraction()) *
+            100;
 
         Ptr<Packet> pkt = Create<Packet>(&energy, 1);
 

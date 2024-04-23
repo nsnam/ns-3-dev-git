@@ -27,6 +27,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 class EnergySource;
 
@@ -121,6 +123,7 @@ class DeviceEnergyModel : public Object
     virtual double DoGetCurrentA() const;
 };
 
+} // namespace energy
 } // namespace ns3
 
 #endif /* DEVICE_ENERGY_MODEL_H */

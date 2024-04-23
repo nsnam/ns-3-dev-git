@@ -39,11 +39,11 @@ BasicEnergySourceHelper::Set(std::string name, const AttributeValue& v)
     m_basicEnergySource.Set(name, v);
 }
 
-Ptr<EnergySource>
+Ptr<energy::EnergySource>
 BasicEnergySourceHelper::DoInstall(Ptr<Node> node) const
 {
     NS_ASSERT(node);
-    Ptr<EnergySource> source = m_basicEnergySource.Create<EnergySource>();
+    Ptr<energy::EnergySource> source = m_basicEnergySource.Create<energy::EnergySource>();
     NS_ASSERT(source);
     source->SetNode(node);
     return source;

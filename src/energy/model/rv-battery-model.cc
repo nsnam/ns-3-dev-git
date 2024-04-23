@@ -29,9 +29,10 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 NS_LOG_COMPONENT_DEFINE("RvBatteryModel");
-
 NS_OBJECT_ENSURE_REGISTERED(RvBatteryModel);
 
 TypeId
@@ -379,4 +380,5 @@ RvBatteryModel::RvModelAFunction(Time t, Time sk, Time sk_1, double beta)
     return delta + 2 * sum;
 }
 
+} // namespace energy
 } // namespace ns3

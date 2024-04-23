@@ -27,9 +27,10 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 NS_LOG_COMPONENT_DEFINE("BasicEnergySource");
-
 NS_OBJECT_ENSURE_REGISTERED(BasicEnergySource);
 
 TypeId
@@ -231,4 +232,5 @@ BasicEnergySource::CalculateRemainingEnergy()
     NS_LOG_DEBUG("BasicEnergySource:Remaining energy = " << m_remainingEnergyJ);
 }
 
+} // namespace energy
 } // namespace ns3

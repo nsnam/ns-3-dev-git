@@ -26,6 +26,8 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 NS_LOG_COMPONENT_DEFINE("DeviceEnergyModelContainer");
 
@@ -119,4 +121,5 @@ DeviceEnergyModelContainer::Clear()
     m_models.clear();
 }
 
+} // namespace energy
 } // namespace ns3

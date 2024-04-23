@@ -29,9 +29,10 @@
 
 namespace ns3
 {
+namespace energy
+{
 
 NS_LOG_COMPONENT_DEFINE("LiIonEnergySource");
-
 NS_OBJECT_ENSURE_REGISTERED(LiIonEnergySource);
 
 TypeId
@@ -317,4 +318,5 @@ LiIonEnergySource::GetVoltage(double i) const
     return V;
 }
 
+} // namespace energy
 } // namespace ns3

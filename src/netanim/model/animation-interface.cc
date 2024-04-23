@@ -680,7 +680,7 @@ AnimationInterface::RemainingEnergyTrace(std::string context,
 
     NS_LOG_INFO("Remaining energy on one of sources on node " << nodeId << ": " << currentEnergy);
 
-    const Ptr<EnergySource> energySource = node->GetObject<EnergySource>();
+    const Ptr<energy::EnergySource> energySource = node->GetObject<energy::EnergySource>();
 
     NS_ASSERT(energySource);
     // Don't call GetEnergyFraction () because of recursion
@@ -2063,7 +2063,7 @@ AnimationInterface::WriteNodeEnergies()
     for (auto i = NodeList::Begin(); i != NodeList::End(); ++i)
     {
         Ptr<Node> n = *i;
-        if (NodeList::GetNode(n->GetId())->GetObject<EnergySource>())
+        if (NodeList::GetNode(n->GetId())->GetObject<energy::EnergySource>())
         {
             UpdateNodeCounter(m_remainingEnergyCounterId, n->GetId(), 1);
         }

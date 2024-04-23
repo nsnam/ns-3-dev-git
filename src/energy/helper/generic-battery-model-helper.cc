@@ -37,20 +37,21 @@ GenericBatteryModelHelper::Set(std::string name, const AttributeValue& v)
     m_batteryModel.Set(name, v);
 }
 
-Ptr<EnergySource>
+Ptr<energy::EnergySource>
 GenericBatteryModelHelper::DoInstall(Ptr<Node> node) const
 {
     NS_ASSERT(node != nullptr);
-    Ptr<EnergySource> energySource = m_batteryModel.Create<EnergySource>();
+    Ptr<energy::EnergySource> energySource = m_batteryModel.Create<energy::EnergySource>();
     NS_ASSERT(energySource != nullptr);
     energySource->SetNode(node);
     return energySource;
 }
 
-Ptr<EnergySourceContainer>
+Ptr<energy::EnergySourceContainer>
 GenericBatteryModelHelper::Install(NodeContainer c) const
 {
-    Ptr<EnergySourceContainer> batteryContainer = CreateObject<EnergySourceContainer>();
+    Ptr<energy::EnergySourceContainer> batteryContainer =
+        CreateObject<energy::EnergySourceContainer>();
     for (auto i = c.Begin(); i != c.End(); i++)
     {
         batteryContainer->Add(DoInstall(*i));
@@ -58,48 +59,50 @@ GenericBatteryModelHelper::Install(NodeContainer c) const
     return batteryContainer;
 }
 
-Ptr<EnergySource>
-GenericBatteryModelHelper::Install(Ptr<Node> node, BatteryModel bm) const
+Ptr<energy::EnergySource>
+GenericBatteryModelHelper::Install(Ptr<Node> node, energy::BatteryModel bm) const
 {
     NS_ASSERT(node != nullptr);
-    Ptr<EnergySource> energySource = m_batteryModel.Create<EnergySource>();
+    Ptr<energy::EnergySource> energySource = m_batteryModel.Create<energy::EnergySource>();
     NS_ASSERT(energySource != nullptr);
 
-    energySource->SetAttribute("FullVoltage", DoubleValue(g_batteryPreset[bm].vFull));
-    energySource->SetAttribute("MaxCapacity", DoubleValue(g_batteryPreset[bm].qMax));
+    energySource->SetAttribute("FullVoltage", DoubleValue(energy::g_batteryPreset[bm].vFull));
+    energySource->SetAttribute("MaxCapacity", DoubleValue(energy::g_batteryPreset[bm].qMax));
 
-    energySource->SetAttribute("NominalVoltage", DoubleValue(g_batteryPreset[bm].vNom));
-    energySource->SetAttribute("NominalCapacity", DoubleValue(g_batteryPreset[bm].qNom));
+    energySource->SetAttribute("NominalVoltage", DoubleValue(energy::g_batteryPreset[bm].vNom));
+    energySource->SetAttribute("NominalCapacity", DoubleValue(energy::g_batteryPreset[bm].qNom));
 
-    energySource->SetAttribute("ExponentialVoltage", DoubleValue(g_batteryPreset[bm].vExp));
-    energySource->SetAttribute("ExponentialCapacity", DoubleValue(g_batteryPreset[bm].qExp));
+    energySource->SetAttribute("ExponentialVoltage", DoubleValue(energy::g_batteryPreset[bm].vExp));
+    energySource->SetAttribute("ExponentialCapacity",
+                               DoubleValue(energy::g_batteryPreset[bm].qExp));
 
     energySource->SetAttribute("InternalResistance",
-                               DoubleValue(g_batteryPreset[bm].internalResistance));
+                               DoubleValue(energy::g_batteryPreset[bm].internalResistance));
     energySource->SetAttribute("TypicalDischargeCurrent",
-                               DoubleValue(g_batteryPreset[bm].typicalCurrent));
-    energySource->SetAttribute("CutoffVoltage", DoubleValue(g_batteryPreset[bm].cuttoffVoltage));
+                               DoubleValue(energy::g_batteryPreset[bm].typicalCurrent));
+    energySource->SetAttribute("CutoffVoltage",
+                               DoubleValue(energy::g_batteryPreset[bm].cuttoffVoltage));
 
-    energySource->SetAttribute("BatteryType", EnumValue(g_batteryPreset[bm].batteryType));
+    energySource->SetAttribute("BatteryType", EnumValue(energy::g_batteryPreset[bm].batteryType));
 
     energySource->SetNode(node);
     return energySource;
 }
 
-EnergySourceContainer
-GenericBatteryModelHelper::Install(NodeContainer c, BatteryModel bm) const
+energy::EnergySourceContainer
+GenericBatteryModelHelper::Install(NodeContainer c, energy::BatteryModel bm) const
 {
-    EnergySourceContainer batteryContainer;
+    energy::EnergySourceContainer batteryContainer;
     for (auto i = c.Begin(); i != c.End(); i++)
     {
-        Ptr<EnergySource> energySource = Install(*i, bm);
+        Ptr<energy::EnergySource> energySource = Install(*i, bm);
         batteryContainer.Add(energySource);
     }
     return batteryContainer;
 }
 
 void
-GenericBatteryModelHelper::SetCellPack(Ptr<EnergySource> energySource,
+GenericBatteryModelHelper::SetCellPack(Ptr<energy::EnergySource> energySource,
                                        uint8_t series,
                                        uint8_t parallel) const
 {
@@ -141,7 +144,7 @@ GenericBatteryModelHelper::SetCellPack(Ptr<EnergySource> energySource,
 }
 
 void
-GenericBatteryModelHelper::SetCellPack(EnergySourceContainer energySourceContainer,
+GenericBatteryModelHelper::SetCellPack(energy::EnergySourceContainer energySourceContainer,
                                        uint8_t series,
                                        uint8_t parallel) const
 {

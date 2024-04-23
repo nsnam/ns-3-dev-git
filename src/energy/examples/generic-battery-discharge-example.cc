@@ -26,6 +26,7 @@
 #include <string>
 
 using namespace ns3;
+using namespace ns3::energy;
 
 /**
  * This example shows the use of batteries in ns-3.

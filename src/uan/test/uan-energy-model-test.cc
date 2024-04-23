@@ -36,6 +36,7 @@
 #include "ns3/uan-prop-model-ideal.h"
 
 using namespace ns3;
+using namespace ns3::energy;
 
 NS_LOG_COMPONENT_DEFINE("UanEnergyModelTestSuite");
 

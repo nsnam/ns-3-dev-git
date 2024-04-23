@@ -40,7 +40,7 @@ AcousticModemEnergyModel::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::AcousticModemEnergyModel")
-            .SetParent<DeviceEnergyModel>()
+            .SetParent<energy::DeviceEnergyModel>()
             .AddConstructor<AcousticModemEnergyModel>()
             .AddAttribute("TxPowerW",
                           "The modem Tx power in Watts",
@@ -103,7 +103,7 @@ AcousticModemEnergyModel::GetNode() const
 }
 
 void
-AcousticModemEnergyModel::SetEnergySource(Ptr<EnergySource> source)
+AcousticModemEnergyModel::SetEnergySource(Ptr<energy::EnergySource> source)
 {
     NS_LOG_FUNCTION(this << source);
     NS_ASSERT(source);
