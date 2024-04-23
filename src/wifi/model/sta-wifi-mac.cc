@@ -1656,6 +1656,8 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
 {
     NS_LOG_FUNCTION(this << frame.index() << apAddr << bssid << +linkId);
 
+    RecordCapabilities(frame, apAddr, linkId);
+
     // ERP Information is not present in Association Response frames
     const std::optional<ErpInformation>* erpInformation = nullptr;
 
@@ -1668,24 +1670,9 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
         erpInformation = &probe->Get<ErpInformation>();
     }
 
-    // lambda processing Information Elements included in all frame types
-    auto commonOps = [&](auto&& frame) {
+    // lambda processing Information Elements included in all frame types sent by APs
+    auto processOtherIes = [&](auto&& frame) {
         const auto& capabilities = frame.Capabilities();
-        NS_ASSERT(frame.template Get<SupportedRates>());
-        const auto rates = AllSupportedRates{*frame.template Get<SupportedRates>(),
-                                             frame.template Get<ExtendedSupportedRatesIE>()};
-        for (const auto& mode : GetWifiPhy(linkId)->GetModeList())
-        {
-            if (rates.IsSupportedRate(mode.GetDataRate(GetWifiPhy(linkId)->GetChannelWidth())))
-            {
-                GetWifiRemoteStationManager(linkId)->AddSupportedMode(apAddr, mode);
-                if (rates.IsBasicRate(mode.GetDataRate(GetWifiPhy(linkId)->GetChannelWidth())))
-                {
-                    GetWifiRemoteStationManager(linkId)->AddBasicMode(mode);
-                }
-            }
-        }
-
         bool isShortPreambleEnabled = capabilities.IsShortPreamble();
         if (erpInformation && erpInformation->has_value() && GetErpSupported(linkId))
         {
@@ -1756,39 +1743,9 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
         {
             /* HT station */
             if (const auto& htCapabilities = frame.template Get<HtCapabilities>();
-                htCapabilities.has_value())
-            {
-                GetWifiRemoteStationManager(linkId)->AddStationHtCapabilities(apAddr,
-                                                                              *htCapabilities);
-            }
-            else
+                !htCapabilities.has_value())
             {
                 GetWifiRemoteStationManager(linkId)->RemoveAllSupportedMcs(apAddr);
-            }
-            // TODO: process ExtendedCapabilities
-            // ExtendedCapabilities extendedCapabilities = frame.GetExtendedCapabilities ();
-        }
-
-        // we do not return if VHT is not supported because HE STAs operating in
-        // the 2.4 GHz band do not support VHT
-        if (GetVhtSupported(linkId))
-        {
-            const auto& vhtCapabilities = frame.template Get<VhtCapabilities>();
-            // we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used
-            // to check whether it supports VHT
-            if (vhtCapabilities.has_value() &&
-                vhtCapabilities->GetRxHighestSupportedLgiDataRate() > 0)
-            {
-                GetWifiRemoteStationManager(linkId)->AddStationVhtCapabilities(apAddr,
-                                                                               *vhtCapabilities);
-                // const auto& vhtOperation = frame.GetVhtOperation ();
-                for (const auto& mcs : GetWifiPhy(linkId)->GetMcsList(WIFI_MOD_CLASS_VHT))
-                {
-                    if (vhtCapabilities->IsSupportedRxMcs(mcs.GetMcsValue()))
-                    {
-                        GetWifiRemoteStationManager(linkId)->AddSupportedMcs(apAddr, mcs);
-                    }
-                }
             }
         }
 
@@ -1797,22 +1754,9 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
             return;
         }
         /* HE station */
-        const auto& heCapabilities = frame.template Get<HeCapabilities>();
-        if (heCapabilities.has_value() && heCapabilities->GetSupportedMcsAndNss() != 0)
+        if (const auto& heOperation = frame.template Get<HeOperation>())
         {
-            GetWifiRemoteStationManager(linkId)->AddStationHeCapabilities(apAddr, *heCapabilities);
-            for (const auto& mcs : GetWifiPhy(linkId)->GetMcsList(WIFI_MOD_CLASS_HE))
-            {
-                if (heCapabilities->IsSupportedRxMcs(mcs.GetMcsValue()))
-                {
-                    GetWifiRemoteStationManager(linkId)->AddSupportedMcs(apAddr, mcs);
-                }
-            }
-            if (const auto& heOperation = frame.template Get<HeOperation>();
-                heOperation.has_value())
-            {
-                GetHeConfiguration()->m_bssColor = heOperation->m_bssColorInfo.m_bssColor;
-            }
+            GetHeConfiguration()->m_bssColor = heOperation->m_bssColorInfo.m_bssColor;
         }
 
         const auto& muEdcaParameters = frame.template Get<MuEdcaParameterSet>();
@@ -1844,26 +1788,11 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
                                 linkId);
         }
 
-        if (Is6GhzBand(linkId))
-        {
-            if (const auto& he6GhzCapabilities = frame.template Get<He6GhzBandCapabilities>())
-            {
-                GetWifiRemoteStationManager(linkId)->AddStationHe6GhzCapabilities(
-                    apAddr,
-                    *he6GhzCapabilities);
-            }
-        }
-
         if (!GetEhtSupported())
         {
             return;
         }
         /* EHT station */
-        const auto& ehtCapabilities = frame.template Get<EhtCapabilities>();
-        // TODO: once we support non constant rate managers, we should add checks here whether EHT
-        // is supported by the peer
-        GetWifiRemoteStationManager(linkId)->AddStationEhtCapabilities(apAddr, *ehtCapabilities);
-
         if (const auto& mle = frame.template Get<MultiLinkElement>(); mle && m_emlsrManager)
         {
             if (mle->HasEmlCapabilities())
@@ -1880,7 +1809,7 @@ StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
     };
 
     // process Information Elements included in the current frame variant
-    std::visit(commonOps, frame);
+    std::visit(processOtherIes, frame);
 }
 
 void
