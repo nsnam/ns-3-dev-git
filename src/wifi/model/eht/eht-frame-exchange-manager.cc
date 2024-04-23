@@ -1207,6 +1207,27 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     }
 }
 
+void
+EhtFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
+                                         const RxSignalInfo& rxSignalInfo,
+                                         const WifiTxVector& txVector,
+                                         const std::vector<bool>& perMpduStatus)
+{
+    NS_LOG_FUNCTION(
+        this << *psdu << rxSignalInfo << txVector << perMpduStatus.size()
+             << std::all_of(perMpduStatus.begin(), perMpduStatus.end(), [](bool v) { return v; }));
+
+    // In our model, we make the assumption that an aux PHY is not able to receive an A-MPDU
+    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
+        m_mac->GetLinkForPhy(m_staMac->GetEmlsrManager()->GetMainPhyId()) != m_linkId)
+    {
+        NS_LOG_DEBUG("Dropping " << *psdu << " received by an aux PHY on link " << +m_linkId);
+        return;
+    }
+
+    HeFrameExchangeManager::EndReceiveAmpdu(psdu, rxSignalInfo, txVector, perMpduStatus);
+}
+
 bool
 EhtFrameExchangeManager::DropReceivedIcf()
 {
