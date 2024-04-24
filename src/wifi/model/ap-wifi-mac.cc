@@ -261,6 +261,7 @@ ApWifiMac::DoCompleteConfig()
 {
     NS_LOG_FUNCTION(this);
     m_beaconTxop->SetWifiMac(this);
+    // DCF behavior may be edited here; the default is PIFS access with zero backoff
     m_beaconTxop->SetAifsns(std::vector<uint8_t>(GetNLinks(), 1));
     m_beaconTxop->SetMinCws(std::vector<uint32_t>(GetNLinks(), 0));
     m_beaconTxop->SetMaxCws(std::vector<uint32_t>(GetNLinks(), 0));

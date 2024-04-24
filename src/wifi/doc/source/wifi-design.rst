@@ -948,6 +948,14 @@ Station Manager. As a result, PPDUs are transmitted on the largest idle primary 
 For example, if a STA is operating on a 40 MHz channel and the secondary20 channel
 is indicated to be busy, transmissions will occur on the primary20 channel.
 
+In |ns3|, by default, beacons for both QoS and non-QoS APs access the channel after a PIFS interval (SIFS
+plus one slot time), and with zero backoff (CWmin and CWmax both set to zero), giving
+them higher priority than other access categories.  Beacons are given a
+separate Txop from data frames.  The DCF parameters described above are non-standard,
+but appear to be what some vendors have implemented in their products.  To change the
+DCF parameters for |ns3| access points, the ``ApWifiMac::DoCompleteConfig()`` method
+must be manually edited.
+
 The higher-level MAC functions are implemented in a set of other C++ classes and
 deal with:
 

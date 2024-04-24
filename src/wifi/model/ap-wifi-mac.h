@@ -63,7 +63,11 @@ using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHe
  * \ingroup wifi
  *
  * Handle association, dis-association and authentication,
- * of STAs within an infrastructure BSS.
+ * of STAs within an infrastructure BSS.  By default, beacons are
+ * sent with PIFS access, zero backoff, and are generated roughly
+ * every 102.4 ms by default (configurable by an attribute) and
+ * with some jitter to de-synchronize beacon transmissions in
+ * multi-BSS scenarios.
  */
 class ApWifiMac : public WifiMac
 {
