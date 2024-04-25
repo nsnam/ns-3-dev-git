@@ -50,7 +50,9 @@
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT                                                                      \
     WIFI_PHY_NS_LOG_APPEND_CONTEXT(                                                                \
-        (m_device && m_device->GetPhy(m_phyId) ? m_device->GetPhy(m_phyId) : nullptr))
+        (m_device && (m_device->GetNPhys() > m_phyId) && m_device->GetPhy(m_phyId)                 \
+             ? m_device->GetPhy(m_phyId)                                                           \
+             : nullptr))
 
 namespace ns3
 {
