@@ -143,7 +143,7 @@ EpcMmeApplication::DoInitialUeMessage(uint64_t mmeUeS1Id,
          bit != it->second->bearersToBeActivated.end();
          ++bit)
     {
-        GtpcCreateSessionRequestMessage::BearerContextToBeCreated bearerContext;
+        GtpcCreateSessionRequestMessage::BearerContextToBeCreated bearerContext{};
         bearerContext.epsBearerId = bit->bearerId;
         bearerContext.tft = bit->tft;
         bearerContext.bearerLevelQos = bit->bearer;

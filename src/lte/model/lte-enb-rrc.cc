@@ -576,7 +576,7 @@ UeManager::ReleaseDataRadioBearer(uint8_t drbid)
     rrcd.physicalConfigDedicated = m_physicalConfigDedicated;
 
     // populating RRCConnectionReconfiguration message as per 3GPP TS 36.331 version 9.2.0 Release 9
-    LteRrcSap::RrcConnectionReconfiguration msg;
+    LteRrcSap::RrcConnectionReconfiguration msg{};
     msg.haveMeasConfig = false;
     msg.haveMobilityControlInfo = false;
     msg.radioResourceConfigDedicated = rrcd;
@@ -1593,7 +1593,7 @@ LteRrcSap::RrcConnectionReconfiguration
 UeManager::BuildRrcConnectionReconfiguration()
 {
     NS_LOG_FUNCTION(this);
-    LteRrcSap::RrcConnectionReconfiguration msg;
+    LteRrcSap::RrcConnectionReconfiguration msg{};
     msg.rrcTransactionIdentifier = GetNewRrcTransactionIdentifier();
     msg.haveRadioResourceConfigDedicated = true;
     msg.radioResourceConfigDedicated = BuildRadioResourceConfigDedicated();

@@ -560,7 +560,7 @@ RrcConnectionReconfigurationTestCase::DoRun()
     packet = Create<Packet>();
     NS_LOG_DEBUG("============= RrcConnectionReconfigurationTestCase ===========");
 
-    LteRrcSap::RrcConnectionReconfiguration msg;
+    LteRrcSap::RrcConnectionReconfiguration msg{};
     msg.rrcTransactionIdentifier = 2;
 
     msg.haveMeasConfig = true;

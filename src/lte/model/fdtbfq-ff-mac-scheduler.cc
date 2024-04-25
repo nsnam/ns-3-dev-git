@@ -2381,7 +2381,7 @@ void
 FdTbfqFfMacScheduler::TransmissionModeConfigurationUpdate(uint16_t rnti, uint8_t txMode)
 {
     NS_LOG_FUNCTION(this << " RNTI " << rnti << " txMode " << (uint16_t)txMode);
-    FfMacCschedSapUser::CschedUeConfigUpdateIndParameters params;
+    FfMacCschedSapUser::CschedUeConfigUpdateIndParameters params{};
     params.m_rnti = rnti;
     params.m_transmissionMode = txMode;
     m_cschedSapUser->CschedUeConfigUpdateInd(params);

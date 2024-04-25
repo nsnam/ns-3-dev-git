@@ -5878,7 +5878,7 @@ RrcConnectionReconfigurationHeader::SetMessage(LteRrcSap::RrcConnectionReconfigu
 LteRrcSap::RrcConnectionReconfiguration
 RrcConnectionReconfigurationHeader::GetMessage() const
 {
-    LteRrcSap::RrcConnectionReconfiguration msg;
+    LteRrcSap::RrcConnectionReconfiguration msg{};
 
     msg.rrcTransactionIdentifier = m_rrcTransactionIdentifier;
     msg.haveMeasConfig = m_haveMeasConfig;
