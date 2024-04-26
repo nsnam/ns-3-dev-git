@@ -50,7 +50,20 @@ NS_LOG_COMPONENT_DEFINE("WifiTxopTest");
  *
  * \brief Test TXOP rules
  *
- *
+ * A BSS consisting of an AP and 3 non-AP STAs is considered in this test. Both non-HT (802.11a)
+ * and HE devices are tested. Two TXOPs are simulated in this test:
+ * - In the first TXOP, the AP sends a QoS data frame to each of the three STAs. The Ack in
+ *   response to the initial frame is corrupted, hence the AP terminates the TXOP and tries again
+ *   when a new TXOP is gained. In the new TXOP, the initial frame sent to STA 1 is successfully
+ *   received, while the second frame to STA 2 is corrupted. It is checked that the AP performs
+ *   PIFS recovery or invokes backoff depending on the value of the PifsRecovery attribute. All
+ *   QoS data frames transmitted have a length/duration that does not exceed the length/duration
+ *   based RTS/CTS threshold, hence RTS/CTS is never used.
+ * - In the second TXOP, the AP sends a QoS data frame, in case of non-HT devices, or an A-MPDU
+ *   consisting of 2 MPDUs, in case of HE devices, to each of the three STAs. All PSDUs transmitted
+ *   have a length/duration that exceeds the length/duration based RTS/CTS threshold, hence RTS/CTS
+ *   is used to protect every PSDU, unless the SingleRtsPerTxop attribute is set to true, in which
+ *   case only the initial frame in the TXOP is protected by RTS/CTS.
  */
 class WifiTxopTest : public TestCase
 {
@@ -61,6 +74,8 @@ class WifiTxopTest : public TestCase
         bool nonHt;        //!< use 802.11a standard if true, 802.11ax standard otherwise
         bool pifsRecovery; //!< whether PIFS recovery is used after failure of a non-initial frame
         bool singleRtsPerTxop; //!< whether protection mechanism is used no more than once per TXOP
+        bool lengthBasedRtsCtsThresh; //!< if true, use length based RTS/CTS threshold; if false,
+                                      //!< use TX duration based RTS/CTS threshold
     };
 
     /**
@@ -120,6 +135,7 @@ class WifiTxopTest : public TestCase
     WifiMode m_mode;                     ///< wifi mode used to transmit data frames
     bool m_pifsRecovery;                 ///< whether to use PIFS recovery
     bool m_singleRtsPerTxop;             ///< whether to use single RTS per TXOP
+    bool m_lengthBasedRtsCtsThresh;      ///< whether to use length based RTS/CTS threshold
     Ptr<ListErrorModel> m_apErrorModel;  ///< error model to install on the AP
     Ptr<ListErrorModel> m_staErrorModel; ///< error model to install on a STA
     bool m_apCorrupted;  ///< whether the frame to be corrupted by the AP has been corrupted
@@ -138,6 +154,7 @@ WifiTxopTest::WifiTxopTest(const Params& params)
       m_mode(m_nonHt ? OfdmPhy::GetOfdmRate12Mbps() : HePhy::GetHeMcs0()),
       m_pifsRecovery(params.pifsRecovery),
       m_singleRtsPerTxop(params.singleRtsPerTxop),
+      m_lengthBasedRtsCtsThresh(params.lengthBasedRtsCtsThresh),
       m_apErrorModel(CreateObject<ListErrorModel>()),
       m_staErrorModel(CreateObject<ListErrorModel>()),
       m_apCorrupted(false),
@@ -239,8 +256,17 @@ WifiTxopTest::DoRun()
     Config::SetDefault("ns3::QosFrameExchangeManager::PifsRecovery", BooleanValue(m_pifsRecovery));
     Config::SetDefault("ns3::WifiDefaultProtectionManager::SingleRtsPerTxop",
                        BooleanValue(m_singleRtsPerTxop));
-    Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold",
-                       UintegerValue(m_payloadSizeRtsOn * (m_nonHt ? 1 : 2)));
+    if (m_lengthBasedRtsCtsThresh)
+    {
+        Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold",
+                           UintegerValue(m_payloadSizeRtsOn * (m_nonHt ? 1 : 2)));
+    }
+    else
+    {
+        Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsTxDurationThresh",
+                           TimeValue(Seconds(m_payloadSizeRtsOn * (m_nonHt ? 1 : 2) * 8.0 /
+                                             m_mode.GetDataRate(20))));
+    }
 
     WifiHelper wifi;
     wifi.SetStandard(m_nonHt ? WIFI_STANDARD_80211a : WIFI_STANDARD_80211ax);
@@ -436,6 +462,8 @@ WifiTxopTest::CheckResults()
     TypeId::AttributeInformation info;
     WifiRemoteStationManager::GetTypeId().LookupAttributeByName("RtsCtsThreshold", &info);
     const uint32_t rtsCtsThreshold = DynamicCast<const UintegerValue>(info.initialValue)->Get();
+    WifiRemoteStationManager::GetTypeId().LookupAttributeByName("RtsCtsTxDurationThresh", &info);
+    const Time rtsCtsTxDurationThresh = DynamicCast<const TimeValue>(info.initialValue)->Get();
 
     // lambda to round Duration/ID (in microseconds) up to the next higher integer
     auto RoundDurationId = [](Time t) {
@@ -477,9 +505,19 @@ WifiTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[0].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(0))->GetMac()->GetAddress(),
                           "Expected a frame sent by the AP to the first station");
-    NS_TEST_EXPECT_MSG_LT(m_txPsdus[0].size,
-                          rtsCtsThreshold,
-                          "PSDU size expected not to exceed length based RTS/CTS threshold");
+    if (m_lengthBasedRtsCtsThresh)
+    {
+        NS_TEST_EXPECT_MSG_LT(m_txPsdus[0].size,
+                              rtsCtsThreshold,
+                              "PSDU size expected not to exceed length based RTS/CTS threshold");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_LT(
+            m_txPsdus[0].txDuration,
+            rtsCtsTxDurationThresh,
+            "PSDU duration expected not to exceed duration based RTS/CTS threshold");
+    }
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[0].header.GetDuration(),
                           RoundDurationId(m_txopLimit - m_txPsdus[0].txDuration),
                           "Duration/ID of the first frame must cover the whole TXOP");
@@ -526,9 +564,19 @@ WifiTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[2].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(0))->GetMac()->GetAddress(),
                           "Expected to retransmit a frame to the first station");
-    NS_TEST_EXPECT_MSG_LT(m_txPsdus[2].size,
-                          rtsCtsThreshold,
-                          "PSDU size expected not to exceed length based RTS/CTS threshold");
+    if (m_lengthBasedRtsCtsThresh)
+    {
+        NS_TEST_EXPECT_MSG_LT(m_txPsdus[2].size,
+                              rtsCtsThreshold,
+                              "PSDU size expected not to exceed length based RTS/CTS threshold");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_LT(
+            m_txPsdus[2].txDuration,
+            rtsCtsTxDurationThresh,
+            "PSDU duration expected not to exceed duration based RTS/CTS threshold");
+    }
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[2].header.GetDuration(),
                           RoundDurationId(m_txopLimit - m_txPsdus[2].txDuration),
                           "Duration/ID of the retransmitted frame must cover the whole TXOP");
@@ -560,9 +608,19 @@ WifiTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[4].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(1))->GetMac()->GetAddress(),
                           "Expected a frame sent by the AP to the second station");
-    NS_TEST_EXPECT_MSG_LT(m_txPsdus[4].size,
-                          rtsCtsThreshold,
-                          "PSDU size expected not to exceed length based RTS/CTS threshold");
+    if (m_lengthBasedRtsCtsThresh)
+    {
+        NS_TEST_EXPECT_MSG_LT(m_txPsdus[4].size,
+                              rtsCtsThreshold,
+                              "PSDU size expected not to exceed length based RTS/CTS threshold");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_LT(
+            m_txPsdus[4].txDuration,
+            rtsCtsTxDurationThresh,
+            "PSDU duration expected not to exceed duration based RTS/CTS threshold");
+    }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[4].header.GetDuration(),
         RoundDurationId(m_txopLimit - (m_txPsdus[4].txStart - txopStart) - m_txPsdus[4].txDuration),
@@ -599,9 +657,19 @@ WifiTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[5].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(1))->GetMac()->GetAddress(),
                           "Expected a frame sent by the AP to the second station");
-    NS_TEST_EXPECT_MSG_LT(m_txPsdus[5].size,
-                          rtsCtsThreshold,
-                          "PSDU size expected not to exceed length based RTS/CTS threshold");
+    if (m_lengthBasedRtsCtsThresh)
+    {
+        NS_TEST_EXPECT_MSG_LT(m_txPsdus[5].size,
+                              rtsCtsThreshold,
+                              "PSDU size expected not to exceed length based RTS/CTS threshold");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_LT(
+            m_txPsdus[5].txDuration,
+            rtsCtsTxDurationThresh,
+            "PSDU duration expected not to exceed duration based RTS/CTS threshold");
+    }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[5].header.GetDuration(),
         RoundDurationId(m_txopLimit - (m_txPsdus[5].txStart - txopStart) - m_txPsdus[5].txDuration),
@@ -636,9 +704,19 @@ WifiTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[7].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(2))->GetMac()->GetAddress(),
                           "Expected a frame sent by the AP to the third station");
-    NS_TEST_EXPECT_MSG_LT(m_txPsdus[7].size,
-                          rtsCtsThreshold,
-                          "PSDU size expected not to exceed length based RTS/CTS threshold");
+    if (m_lengthBasedRtsCtsThresh)
+    {
+        NS_TEST_EXPECT_MSG_LT(m_txPsdus[7].size,
+                              rtsCtsThreshold,
+                              "PSDU size expected not to exceed length based RTS/CTS threshold");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_LT(
+            m_txPsdus[7].txDuration,
+            rtsCtsTxDurationThresh,
+            "PSDU duration expected not to exceed duration based RTS/CTS threshold");
+    }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[7].header.GetDuration(),
         RoundDurationId(m_txopLimit - (m_txPsdus[7].txStart - txopStart) - m_txPsdus[7].txDuration),
@@ -686,9 +764,19 @@ WifiTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[10].header.GetAddr1(),
                           apDev->GetMac()->GetAddress(),
                           "Expected a frame sent by the first station to the AP");
-    NS_TEST_EXPECT_MSG_LT(m_txPsdus[10].size,
-                          rtsCtsThreshold,
-                          "PSDU size expected not to exceed length based RTS/CTS threshold");
+    if (m_lengthBasedRtsCtsThresh)
+    {
+        NS_TEST_EXPECT_MSG_LT(m_txPsdus[10].size,
+                              rtsCtsThreshold,
+                              "PSDU size expected not to exceed length based RTS/CTS threshold");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_LT(
+            m_txPsdus[10].txDuration,
+            rtsCtsTxDurationThresh,
+            "PSDU duration expected not to exceed duration based RTS/CTS threshold");
+    }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[10].header.GetDuration(),
         RoundDurationId(m_txopLimit - m_txPsdus[10].txDuration),
@@ -785,9 +873,18 @@ WifiTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[15].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(0))->GetMac()->GetAddress(),
                           "Expected a frame sent by the AP to the first station");
-    NS_TEST_EXPECT_MSG_GT(m_txPsdus[15].size,
-                          rtsCtsThreshold,
-                          "PSDU size expected to exceed length based RTS/CTS threshold");
+    if (m_lengthBasedRtsCtsThresh)
+    {
+        NS_TEST_EXPECT_MSG_GT(m_txPsdus[15].size,
+                              rtsCtsThreshold,
+                              "PSDU size expected to exceed length based RTS/CTS threshold");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_GT(m_txPsdus[15].txDuration,
+                              rtsCtsTxDurationThresh,
+                              "PSDU duration expected to exceed duration based RTS/CTS threshold");
+    }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[15].header.GetDuration(),
         RoundDurationId(m_txopLimit - (m_txPsdus[15].txStart - txopStart) -
@@ -871,9 +968,18 @@ WifiTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[idx].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(1))->GetMac()->GetAddress(),
                           "Expected a frame sent by the AP to the second station");
-    NS_TEST_EXPECT_MSG_GT(m_txPsdus[idx].size,
-                          rtsCtsThreshold,
-                          "PSDU size expected to exceed length based RTS/CTS threshold");
+    if (m_lengthBasedRtsCtsThresh)
+    {
+        NS_TEST_EXPECT_MSG_GT(m_txPsdus[idx].size,
+                              rtsCtsThreshold,
+                              "PSDU size expected to exceed length based RTS/CTS threshold");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_GT(m_txPsdus[idx].txDuration,
+                              rtsCtsTxDurationThresh,
+                              "PSDU duration expected to exceed duration based RTS/CTS threshold");
+    }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[idx].header.GetDuration(),
         RoundDurationId(m_txopLimit - (m_txPsdus[idx].txStart - txopStart) -
@@ -955,9 +1061,18 @@ WifiTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[idx].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(2))->GetMac()->GetAddress(),
                           "Expected a frame sent by the AP to the third station");
-    NS_TEST_EXPECT_MSG_GT(m_txPsdus[idx].size,
-                          rtsCtsThreshold,
-                          "PSDU size expected to exceed length based RTS/CTS threshold");
+    if (m_lengthBasedRtsCtsThresh)
+    {
+        NS_TEST_EXPECT_MSG_GT(m_txPsdus[idx].size,
+                              rtsCtsThreshold,
+                              "PSDU size expected to exceed length based RTS/CTS threshold");
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_GT(m_txPsdus[idx].txDuration,
+                              rtsCtsTxDurationThresh,
+                              "PSDU duration expected to exceed duration based RTS/CTS threshold");
+    }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[idx].header.GetDuration(),
         RoundDurationId(m_txopLimit - (m_txPsdus[idx].txStart - txopStart) -
@@ -1027,12 +1142,21 @@ WifiTxopTestSuite::WifiTxopTestSuite()
 {
     for (const auto nonHt : {true, false})
     {
-        AddTestCase(
-            new WifiTxopTest({.nonHt = nonHt, .pifsRecovery = true, .singleRtsPerTxop = false}),
-            TestCase::Duration::QUICK);
-        AddTestCase(
-            new WifiTxopTest({.nonHt = nonHt, .pifsRecovery = false, .singleRtsPerTxop = true}),
-            TestCase::Duration::QUICK);
+        AddTestCase(new WifiTxopTest({.nonHt = nonHt,
+                                      .pifsRecovery = true,
+                                      .singleRtsPerTxop = false,
+                                      .lengthBasedRtsCtsThresh = false}),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new WifiTxopTest({.nonHt = nonHt,
+                                      .pifsRecovery = false,
+                                      .singleRtsPerTxop = true,
+                                      .lengthBasedRtsCtsThresh = false}),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new WifiTxopTest({.nonHt = nonHt,
+                                      .pifsRecovery = true,
+                                      .singleRtsPerTxop = true,
+                                      .lengthBasedRtsCtsThresh = true}),
+                    TestCase::Duration::QUICK);
     }
 }
 
