@@ -55,14 +55,14 @@ namespace ns3
  * the Ptr<>, we don't bother and just expect the user to Get a saved pointer
  * to an ostream and dereference it him or herself.  As in:
  *
- * \verbatim
- *   void
- *   TraceSink (Ptr<OutputStreamWrapper> streamWrapper, Ptr<const Packet> packet)
- *   {
- *     std::ostream *stream = streamWrapper->GetStream ();
+ * \code{.cpp}
+ * void
+ * TraceSink(Ptr<OutputStreamWrapper> streamWrapper, Ptr<const Packet> packet)
+ * {
+ *     std::ostream *stream = streamWrapper->GetStream();
  *     *stream << "got packet" << std::endl;
- *   }
- * \endverbatim
+ * }
+ * \endcode
  *
  *
  * This class uses a basic ns-3 reference counting base class but is not
