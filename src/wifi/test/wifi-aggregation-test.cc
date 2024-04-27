@@ -214,7 +214,17 @@ AmpduAggregationTest::DoSetup()
     /*
      * Create and configure mac layer.
      */
-    m_mac = CreateObjectWithAttributes<StaWifiMac>("QosSupported", BooleanValue(true));
+    m_mac = CreateObjectWithAttributes<StaWifiMac>(
+        "QosSupported",
+        BooleanValue(true),
+        "BE_Txop",
+        PointerValue(CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue("AC_BE"))),
+        "BK_Txop",
+        PointerValue(CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue("AC_BK"))),
+        "VI_Txop",
+        PointerValue(CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue("AC_VI"))),
+        "VO_Txop",
+        PointerValue(CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue("AC_VO"))));
     m_mac->SetDevice(m_device);
     m_mac->SetWifiRemoteStationManagers(m_managers);
     for (uint8_t i = 0; i < m_params.nLinks; i++)

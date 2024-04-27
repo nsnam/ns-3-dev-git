@@ -22,13 +22,17 @@
 #include "ns3/boolean.h"
 #include "ns3/eht-configuration.h"
 #include "ns3/emlsr-manager.h"
+#include "ns3/enum.h"
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/multi-user-scheduler.h"
+#include "ns3/pointer.h"
 #include "ns3/wifi-ack-manager.h"
 #include "ns3/wifi-assoc-manager.h"
 #include "ns3/wifi-mac-queue-scheduler.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-protection-manager.h"
+
+#include <sstream>
 
 namespace ns3
 {
@@ -38,6 +42,12 @@ WifiMacHelper::WifiMacHelper()
     // By default, we create an AdHoc MAC layer (without QoS).
     SetType("ns3::AdhocWifiMac");
 
+    m_dcf.SetTypeId("ns3::Txop");
+    for (const auto& [aci, ac] : wifiAcList)
+    {
+        auto [it, inserted] = m_edca.try_emplace(aci);
+        it->second.SetTypeId("ns3::QosTxop");
+    }
     m_assocManager.SetTypeId("ns3::WifiDefaultAssocManager");
     m_queueScheduler.SetTypeId("ns3::FcfsWifiQueueScheduler");
     m_protectionManager.SetTypeId("ns3::WifiDefaultProtectionManager");
@@ -59,6 +69,23 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     if (standard >= WIFI_STANDARD_80211n)
     {
         macObjectFactory.Set("QosSupported", BooleanValue(true));
+    }
+
+    // do not create a Txop if the standard is at least 802.11n
+    if (standard < WIFI_STANDARD_80211n)
+    {
+        auto dcf = m_dcf; // create a copy because this is a const method
+        dcf.Set("AcIndex", EnumValue<AcIndex>(AC_BE_NQOS));
+        macObjectFactory.Set("Txop", PointerValue(dcf.Create<Txop>()));
+    }
+    // create (Qos)Txop objects
+    for (auto [aci, edca] : m_edca)
+    {
+        edca.Set("AcIndex", EnumValue<AcIndex>(aci));
+        std::stringstream ss;
+        ss << aci << "_Txop";
+        auto s = ss.str().substr(3); // discard "AC "
+        macObjectFactory.Set(s, PointerValue(edca.Create<QosTxop>()));
     }
 
     Ptr<WifiMac> mac = macObjectFactory.Create<WifiMac>();

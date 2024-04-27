@@ -100,28 +100,38 @@ WifiMac::GetTypeId()
                 MakeBooleanChecker())
             .AddAttribute("Txop",
                           "The Txop object.",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           PointerValue(),
-                          MakePointerAccessor(&WifiMac::GetTxop),
+                          MakePointerAccessor(&WifiMac::GetTxop, &WifiMac::SetTxop),
                           MakePointerChecker<Txop>())
             .AddAttribute("VO_Txop",
                           "Queue that manages packets belonging to AC_VO access class.",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           PointerValue(),
-                          MakePointerAccessor(&WifiMac::GetVOQueue),
+                          MakePointerAccessor(&WifiMac::GetVOQueue, &WifiMac::SetVoQueue),
                           MakePointerChecker<QosTxop>())
             .AddAttribute("VI_Txop",
                           "Queue that manages packets belonging to AC_VI access class.",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           PointerValue(),
-                          MakePointerAccessor(&WifiMac::GetVIQueue),
+                          MakePointerAccessor(&WifiMac::GetVIQueue, &WifiMac::SetViQueue),
                           MakePointerChecker<QosTxop>())
             .AddAttribute("BE_Txop",
                           "Queue that manages packets belonging to AC_BE access class.",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           PointerValue(),
-                          MakePointerAccessor(&WifiMac::GetBEQueue),
+                          MakePointerAccessor(&WifiMac::GetBEQueue, &WifiMac::SetBeQueue),
                           MakePointerChecker<QosTxop>())
             .AddAttribute("BK_Txop",
                           "Queue that manages packets belonging to AC_BK access class.",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                           PointerValue(),
-                          MakePointerAccessor(&WifiMac::GetBKQueue),
+                          MakePointerAccessor(&WifiMac::GetBKQueue, &WifiMac::SetBkQueue),
                           MakePointerChecker<QosTxop>())
             .AddAttribute(
                 "MpduBufferSize",
@@ -361,6 +371,23 @@ WifiMac::AssignStreams(int64_t stream)
 }
 
 void
+WifiMac::NotifyConstructionCompleted()
+{
+    NS_LOG_FUNCTION(this);
+
+    if (!m_qosSupported)
+    {
+        SetupDcfQueue();
+        return;
+    }
+
+    for (const auto& [aci, ac] : wifiAcList)
+    {
+        SetupEdcaQueue(aci);
+    }
+}
+
+void
 WifiMac::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
@@ -504,10 +531,60 @@ WifiMac::SetPromisc()
     }
 }
 
+void
+WifiMac::SetTxop(Ptr<Txop> dcf)
+{
+    NS_LOG_FUNCTION(this << dcf);
+    if (!m_qosSupported)
+    {
+        m_txop = dcf;
+    }
+}
+
 Ptr<Txop>
 WifiMac::GetTxop() const
 {
     return m_txop;
+}
+
+void
+WifiMac::SetVoQueue(Ptr<QosTxop> edca)
+{
+    NS_LOG_FUNCTION(this << edca);
+    if (m_qosSupported)
+    {
+        m_edca.emplace(AC_VO, edca);
+    }
+}
+
+void
+WifiMac::SetViQueue(Ptr<QosTxop> edca)
+{
+    NS_LOG_FUNCTION(this << edca);
+    if (m_qosSupported)
+    {
+        m_edca.emplace(AC_VI, edca);
+    }
+}
+
+void
+WifiMac::SetBeQueue(Ptr<QosTxop> edca)
+{
+    NS_LOG_FUNCTION(this << edca);
+    if (m_qosSupported)
+    {
+        m_edca.emplace(AC_BE, edca);
+    }
+}
+
+void
+WifiMac::SetBkQueue(Ptr<QosTxop> edca)
+{
+    NS_LOG_FUNCTION(this << edca);
+    if (m_qosSupported)
+    {
+        m_edca.emplace(AC_BK, edca);
+    }
 }
 
 Ptr<QosTxop>
@@ -637,24 +714,31 @@ WifiMac::NotifyRxDrop(Ptr<const Packet> packet)
 }
 
 void
+WifiMac::SetupDcfQueue()
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(m_txop);
+
+    m_txop->SetTxMiddle(m_txMiddle);
+    m_txop->SetDroppedMpduCallback(
+        MakeCallback(&DroppedMpduTracedCallback::operator(), &m_droppedMpduCallback));
+}
+
+void
 WifiMac::SetupEdcaQueue(AcIndex ac)
 {
     NS_LOG_FUNCTION(this << ac);
 
-    // Our caller shouldn't be attempting to setup a queue that is
-    // already configured.
-    NS_ASSERT(!m_edca.contains(ac));
+    auto edcaIt = m_edca.find(ac);
+    NS_ASSERT(edcaIt != m_edca.cend());
 
-    auto edca = CreateObjectWithAttributes<QosTxop>("AcIndex", EnumValue<AcIndex>(ac));
-    edca->SetTxMiddle(m_txMiddle);
-    edca->GetBaManager()->SetTxOkCallback(
+    edcaIt->second->SetTxMiddle(m_txMiddle);
+    edcaIt->second->GetBaManager()->SetTxOkCallback(
         MakeCallback(&MpduTracedCallback::operator(), &m_ackedMpduCallback));
-    edca->GetBaManager()->SetTxFailedCallback(
+    edcaIt->second->GetBaManager()->SetTxFailedCallback(
         MakeCallback(&MpduTracedCallback::operator(), &m_nackedMpduCallback));
-    edca->SetDroppedMpduCallback(
+    edcaIt->second->SetDroppedMpduCallback(
         MakeCallback(&DroppedMpduTracedCallback::operator(), &m_droppedMpduCallback));
-
-    m_edca.insert(std::make_pair(ac, edca));
 }
 
 void
@@ -1212,25 +1296,6 @@ WifiMac::SetQosSupported(bool enable)
     NS_LOG_FUNCTION(this << enable);
     NS_ABORT_IF(IsInitialized());
     m_qosSupported = enable;
-
-    if (!m_qosSupported)
-    {
-        // create a non-QoS TXOP
-        m_txop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"));
-        m_txop->SetTxMiddle(m_txMiddle);
-        m_txop->SetDroppedMpduCallback(
-            MakeCallback(&DroppedMpduTracedCallback::operator(), &m_droppedMpduCallback));
-    }
-    else
-    {
-        // Construct the EDCAFs. The ordering is important - highest
-        // priority (Table 9-1 UP-to-AC mapping; IEEE 802.11-2012) must be created
-        // first.
-        SetupEdcaQueue(AC_VO);
-        SetupEdcaQueue(AC_VI);
-        SetupEdcaQueue(AC_BE);
-        SetupEdcaQueue(AC_BK);
-    }
 }
 
 bool

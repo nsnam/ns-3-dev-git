@@ -29,12 +29,15 @@
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/node.h"
 #include "ns3/non-communicating-net-device.h"
+#include "ns3/pointer.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simulator.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
+#include "ns3/txop.h"
 #include "ns3/waveform-generator.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
@@ -870,7 +873,9 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
 
     auto apNode = CreateObject<Node>();
     auto apDev = CreateObject<WifiNetDevice>();
-    auto apMac = CreateObject<ApWifiMac>();
+    auto apMac = CreateObjectWithAttributes<ApWifiMac>(
+        "Txop",
+        PointerValue(CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"))));
     apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
     apDev->SetMac(apMac);
     m_phyAp = CreateObject<MuRtsCtsSpectrumWifiPhy>();

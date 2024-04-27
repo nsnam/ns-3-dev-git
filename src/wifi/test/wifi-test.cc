@@ -159,7 +159,9 @@ WifiTest::CreateOne(Vector pos, Ptr<YansWifiChannel> channel)
     auto manager = m_manager.Create<WifiRemoteStationManager>();
     dev->SetRemoteStationManager(manager);
 
-    Ptr<WifiMac> mac = m_mac.Create<WifiMac>();
+    auto txop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"));
+    m_mac.Set("Txop", PointerValue(txop));
+    auto mac = m_mac.Create<WifiMac>();
     mac->SetDevice(dev);
     mac->SetAddress(Mac48Address::Allocate());
     dev->SetMac(mac);
@@ -352,7 +354,9 @@ InterferenceHelperSequenceTest::CreateOne(Vector pos, Ptr<YansWifiChannel> chann
     auto manager = m_manager.Create<WifiRemoteStationManager>();
     dev->SetRemoteStationManager(manager);
 
-    Ptr<WifiMac> mac = m_mac.Create<WifiMac>();
+    auto txop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"));
+    m_mac.Set("Txop", PointerValue(txop));
+    auto mac = m_mac.Create<WifiMac>();
     mac->SetDevice(dev);
     mac->SetAddress(Mac48Address::Allocate());
     dev->SetMac(mac);
@@ -570,6 +574,8 @@ DcfImmediateAccessBroadcastTestCase::DoRun()
     txDev->SetRemoteStationManager(m_manager.Create<WifiRemoteStationManager>());
     txNode->AddDevice(txDev);
 
+    auto txop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"));
+    m_mac.Set("Txop", PointerValue(txop));
     auto txMac = m_mac.Create<WifiMac>();
     txMac->SetDevice(txDev);
     txMac->SetAddress(Mac48Address::Allocate());
@@ -1849,7 +1855,13 @@ Bug2831TestCase::DoRun()
     mac.SetTypeId("ns3::ApWifiMac");
     mac.Set("EnableBeaconJitter", BooleanValue(false));
     mac.Set("QosSupported", BooleanValue(true));
-    Ptr<WifiMac> apMac = mac.Create<WifiMac>();
+    for (const std::string ac : {"BE", "BK", "VI", "VO"})
+    {
+        auto qosTxop =
+            CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue(std::string("AC_") + ac));
+        mac.Set(ac + "_Txop", PointerValue(qosTxop));
+    }
+    auto apMac = mac.Create<WifiMac>();
     apMac->SetDevice(apDev);
     apMac->SetAddress(Mac48Address::Allocate());
     apDev->SetMac(apMac);
@@ -1887,6 +1899,12 @@ Bug2831TestCase::DoRun()
     m_staPhy->SetOperatingChannel(WifiPhy::ChannelTuple{36, 20, WIFI_PHY_BAND_5GHZ, 0});
 
     mac.SetTypeId("ns3::StaWifiMac");
+    for (const std::string ac : {"BE", "BK", "VI", "VO"})
+    {
+        auto qosTxop =
+            CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue(std::string("AC_") + ac));
+        mac.Set(ac + "_Txop", PointerValue(qosTxop));
+    }
     auto staMac = mac.Create<WifiMac>();
     staDev->SetMac(staMac);
     staMac->SetDevice(staDev);

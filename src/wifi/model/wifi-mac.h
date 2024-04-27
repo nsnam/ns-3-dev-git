@@ -744,6 +744,7 @@ class WifiMac : public Object
   protected:
     void DoInitialize() override;
     void DoDispose() override;
+    void NotifyConstructionCompleted() override;
 
     /**
      * \param cwMin the minimum contention window size
@@ -753,15 +754,6 @@ class WifiMac : public Object
      * contention window size.
      */
     virtual void ConfigureContentionWindow(uint32_t cwMin, uint32_t cwMax);
-
-    /**
-     * Enable or disable QoS support for the device. Construct a Txop object
-     * or QosTxop objects accordingly. This method can only be called before
-     * initialization.
-     *
-     * \param enable whether QoS is supported
-     */
-    void SetQosSupported(bool enable);
 
     /**
      * Enable or disable short slot time feature.
@@ -933,6 +925,60 @@ class WifiMac : public Object
      * \param linkId the ID of the given link
      */
     void ConfigurePhyDependentParameters(uint8_t linkId);
+
+    /**
+     * Enable or disable QoS support for the device. Construct a Txop object or QosTxop objects
+     * accordingly. This method is private so that it is only used while constructing this object.
+     *
+     * \param enable whether QoS is supported
+     */
+    void SetQosSupported(bool enable);
+
+    /**
+     * Set the Txop object.
+     * This method is private so that it is only used while constructing this object.
+     *
+     * \param dcf the Txop object
+     */
+    void SetTxop(Ptr<Txop> dcf);
+
+    /**
+     * Set the AC_VO channel access function
+     * This method is private so that it is only used while constructing this object.
+     *
+     * \param edca the QosTxop object for AC_VO
+     */
+    void SetVoQueue(Ptr<QosTxop> edca);
+
+    /**
+     * Set the AC_VI channel access function
+     * This method is private so that it is only used while constructing this object.
+     *
+     * \param edca the QosTxop object for AC_VI
+     */
+    void SetViQueue(Ptr<QosTxop> edca);
+
+    /**
+     * Set the AC_BE channel access function
+     * This method is private so that it is only used while constructing this object.
+     *
+     * \param edca the QosTxop object for AC_BE
+     */
+    void SetBeQueue(Ptr<QosTxop> edca);
+
+    /**
+     * Set the AC_BK channel access function
+     * This method is private so that it is only used while constructing this object.
+     *
+     * \param edca the QosTxop object for AC_BK
+     */
+    void SetBkQueue(Ptr<QosTxop> edca);
+
+    /**
+     * This method is a private utility invoked to configure the channel
+     * access function for devices that do not support QoS.
+     */
+    void SetupDcfQueue();
 
     /**
      * This method is a private utility invoked to configure the channel

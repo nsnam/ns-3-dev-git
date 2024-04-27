@@ -41,6 +41,7 @@
 #include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/threshold-preamble-detection-model.h"
+#include "ns3/txop.h"
 #include "ns3/waveform-generator.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
@@ -2501,7 +2502,9 @@ TestMultipleHeTbPreambles::DoSetup()
     m_phy = CreateObject<OfdmaSpectrumWifiPhy>(0);
     Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper>();
     Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel>();
-    Ptr<ApWifiMac> mac = CreateObject<ApWifiMac>();
+    auto mac = CreateObjectWithAttributes<ApWifiMac>(
+        "Txop",
+        PointerValue(CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"))));
     mac->SetAttribute("BeaconGeneration", BooleanValue(false));
     dev->SetMac(mac);
     m_phy->SetInterferenceHelper(interferenceHelper);
@@ -3716,7 +3719,9 @@ TestUlOfdmaPhyTransmission::DoSetup()
     Ptr<Node> apNode = CreateObject<Node>();
     Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice>();
     apDev->SetStandard(WIFI_STANDARD_80211ax);
-    Ptr<ApWifiMac> apMac = CreateObject<ApWifiMac>();
+    auto apMac = CreateObjectWithAttributes<ApWifiMac>(
+        "Txop",
+        PointerValue(CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"))));
     apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
     apDev->SetMac(apMac);
     m_phyAp = CreateObject<OfdmaSpectrumWifiPhy>(0);
@@ -5074,7 +5079,9 @@ TestPhyPaddingExclusion::DoSetup()
 
     Ptr<Node> apNode = CreateObject<Node>();
     Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice>();
-    Ptr<ApWifiMac> apMac = CreateObject<ApWifiMac>();
+    auto apMac = CreateObjectWithAttributes<ApWifiMac>(
+        "Txop",
+        PointerValue(CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"))));
     apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
     apDev->SetMac(apMac);
     m_phyAp = CreateObject<OfdmaSpectrumWifiPhy>(0);

@@ -27,6 +27,7 @@
 #include "ns3/minstrel-wifi-manager.h"
 #include "ns3/pointer.h"
 #include "ns3/simulator.h"
+#include "ns3/string.h"
 #include "ns3/wifi-default-ack-manager.h"
 #include "ns3/wifi-default-protection-manager.h"
 #include "ns3/wifi-helper.h"
@@ -120,6 +121,13 @@ MeshHelper::CreateInterface(const WifiPhyHelper& phyHelper,
     // this is a const method, but we need to force the correct QoS setting
     ObjectFactory macObjectFactory = m_mac;
     macObjectFactory.Set("QosSupported", BooleanValue(true)); // a mesh station is a QoS station
+    // create (Qos)Txop objects
+    for (const std::string ac : {"BE", "BK", "VI", "VO"})
+    {
+        auto qosTxop =
+            CreateObjectWithAttributes<QosTxop>("AcIndex", StringValue(std::string("AC_") + ac));
+        macObjectFactory.Set(ac + "_Txop", PointerValue(qosTxop));
+    }
     std::vector<Ptr<WifiPhy>> phys = phyHelper.Create(node, device);
     NS_ABORT_IF(phys.size() != 1);
     node->AddDevice(device);

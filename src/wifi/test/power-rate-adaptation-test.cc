@@ -23,7 +23,9 @@
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/interference-helper.h"
 #include "ns3/node.h"
+#include "ns3/pointer.h"
 #include "ns3/simulator.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/wifi-default-ack-manager.h"
 #include "ns3/wifi-default-protection-manager.h"
@@ -115,7 +117,9 @@ PowerRateAdaptationTest::ConfigureNode()
     /*
      * Create mac layer. We use Adhoc because association is not needed to get supported rates.
      */
-    Ptr<AdhocWifiMac> mac = CreateObject<AdhocWifiMac>();
+    auto mac = CreateObjectWithAttributes<AdhocWifiMac>(
+        "Txop",
+        PointerValue(CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BE_NQOS"))));
     mac->SetDevice(dev);
     mac->SetAddress(Mac48Address::Allocate());
     dev->SetMac(mac);
