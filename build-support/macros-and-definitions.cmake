@@ -221,9 +221,7 @@ macro(process_options)
       endif()
     else()
       add_compile_options(-Wall) # -Wextra
-      # Pedantic checks in GCC < 10 include extra semicolon, which we use a lot
-      # to make macros look like function calls
-      if(NOT (DEFINED GCC_PEDANTIC_SEMICOLON))
+      if(${GCC_WORKING_PEDANTIC_SEMICOLON})
         add_compile_options(-Wpedantic)
       endif()
       if(${NS3_WARNINGS_AS_ERRORS})
