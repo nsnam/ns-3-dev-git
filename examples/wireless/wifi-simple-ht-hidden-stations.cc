@@ -138,6 +138,10 @@ main(int argc, char* argv[])
     Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize",
                 UintegerValue(maxAmpduSize));
 
+    int64_t streamNumber = 20;
+    streamNumber += wifi.AssignStreams(apDevice, streamNumber);
+    streamNumber += wifi.AssignStreams(staDevices, streamNumber);
+
     // Setting mobility model
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
@@ -159,6 +163,8 @@ main(int argc, char* argv[])
     InternetStackHelper stack;
     stack.Install(wifiApNode);
     stack.Install(wifiStaNodes);
+    streamNumber += stack.AssignStreams(wifiApNode, streamNumber);
+    streamNumber += stack.AssignStreams(wifiStaNodes, streamNumber);
 
     Ipv4AddressHelper address;
     address.SetBase("192.168.1.0", "255.255.255.0");
@@ -173,6 +179,7 @@ main(int argc, char* argv[])
     ApplicationContainer serverApp = server.Install(wifiApNode);
     serverApp.Start(Seconds(0.0));
     serverApp.Stop(Seconds(simulationTime + 1));
+    streamNumber += server.AssignStreams(wifiApNode, streamNumber);
 
     UdpClientHelper client(ApInterface.GetAddress(0), port);
     client.SetAttribute("MaxPackets", UintegerValue(4294967295U));
@@ -183,6 +190,7 @@ main(int argc, char* argv[])
     ApplicationContainer clientApp1 = client.Install(wifiStaNodes);
     clientApp1.Start(Seconds(1.0));
     clientApp1.Stop(Seconds(simulationTime + 1));
+    streamNumber += client.AssignStreams(wifiStaNodes, streamNumber);
 
     phy.EnablePcap("SimpleHtHiddenStations_Ap", apDevice.Get(0));
     phy.EnablePcap("SimpleHtHiddenStations_Sta1", staDevices.Get(0));
