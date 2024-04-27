@@ -477,7 +477,7 @@ class DsrMaintainBuffer
 
     /**
      * Set maintain buffer timeout
-     * \param t the maintain buffer timeoout
+     * \param t the maintain buffer timeout
      */
     void SetMaintainBufferTimeout(Time t)
     {

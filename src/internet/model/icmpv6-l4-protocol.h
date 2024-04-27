@@ -395,7 +395,7 @@ class Icmpv6L4Protocol : public IpL4Protocol
 
     /**
      * \brief Create a neighbor cache.
-     * \param device thet NetDevice
+     * \param device the NetDevice
      * \param interface the IPv6 interface
      * \return a smart pointer of NdCache or 0 if problem
      */
@@ -642,7 +642,7 @@ class Icmpv6L4Protocol : public IpL4Protocol
     /**
      * \brief Multicast RS retransmissions counter [\RFC{7559}].
      *
-     * Zero indicate a first transmission, greater than zero means retranmsisisons.
+     * Zero indicate a first transmission, greater than zero means retransmissions.
      */
     uint32_t m_rsRetransmissionCount{0};
 

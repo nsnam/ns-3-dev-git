@@ -373,7 +373,7 @@ class DsrRreqTable : public Object
     Time MaxRequestPeriod;
     /// The original request period
     Time RequestPeriod;
-    /// The non-propagaton request timeout
+    /// The non-propagation request timeout
     Time NonpropRequestTimeout;
     /// The source route entry expire time
     Time m_rreqEntryExpire;

@@ -110,7 +110,7 @@ enum WifiPowerManagementMode : uint8_t
      │                │ ┌─────────────────────────────────────┐  │    │
      │                │ │                                     │  │    │
      │  ┌─────────────▼─▼──┐       ┌──────────────┐       ┌───┴──▼────┴───────────────────┐
-     └──►   Unassociated   ├───────►   Scanning   ├───────►   Wait AssociationiResponse   │
+     └──►   Unassociated   ├───────►   Scanning   ├───────►   Wait Association Response   │
         └──────────────────┘       └──────┬──▲────┘       └───────────────┬──▲────────────┘
                                           │  │                            │  │
                                           │  │                            │  │

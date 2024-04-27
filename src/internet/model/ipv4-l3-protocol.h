@@ -575,7 +575,7 @@ class Ipv4L3Protocol : public Ipv4
 
         /**
          * \brief Get the complete part of the packet.
-         * \return the part we have comeplete
+         * \return the part we have complete
          */
         Ptr<Packet> GetPartialPacket() const;
 

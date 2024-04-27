@@ -384,7 +384,7 @@ class DsrOptionRreqHeader : public DsrOptionHeader
      */
     Ipv4Address m_target;
     /**
-     * Ipv4 address to write when desearizing the packet
+     * Ipv4 address to write when deserializing the packet
      */
     Ipv4Address m_address;
     /**
@@ -673,7 +673,7 @@ class DsrOptionSRHeader : public DsrOptionHeader
 
   private:
     /**
-     * \brief The ip address header deserilize to
+     * \brief The ip address header deserialize to
      */
     Ipv4Address m_address;
     /**
@@ -681,7 +681,7 @@ class DsrOptionSRHeader : public DsrOptionHeader
      */
     uint8_t m_segmentsLeft;
     /**
-     * \brief Number of savlage times for a packet.
+     * \brief Number of salvage times for a packet.
      */
     uint8_t m_salvage;
     /**
@@ -821,7 +821,7 @@ class DsrOptionRerrHeader : public DsrOptionHeader
      */
     uint8_t m_errorType;
     /**
-     * \brief The salavage field
+     * \brief The salvage field
      */
     uint8_t m_salvage;
     /**
@@ -976,7 +976,7 @@ class DsrOptionRerrUnreachHeader : public DsrOptionRerrHeader
      */
     uint8_t m_errorType;
     /**
-     * \brief The salavage field
+     * \brief The salvage field
      */
     uint8_t m_salvage;
     /**
@@ -1122,7 +1122,7 @@ class DsrOptionRerrUnsupportedHeader : public DsrOptionRerrHeader
      */
     uint8_t m_errorType;
     /**
-     * \brief The salavage field
+     * \brief The salvage field
      */
     uint8_t m_salvage;
     /**

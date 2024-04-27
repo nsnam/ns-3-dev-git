@@ -261,7 +261,7 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device,
                 else
                 {
                     // ignore this reply which might well be an attempt
-                    // at poisening my arp cache.
+                    // at poisoning my arp cache.
                     NS_LOG_LOGIC("node=" << m_node->GetId() << ", got reply from "
                                          << arp.GetSourceIpv4Address()
                                          << " for non-waiting entry -- drop");

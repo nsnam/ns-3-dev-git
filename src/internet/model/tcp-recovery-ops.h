@@ -95,7 +95,7 @@ class TcpRecoveryOps : public Object
      * The function is called when the TcpSocketState is changed to CA_RECOVERY.
      *
      * \param tcb internal congestion state
-     * \param dupAckCount duplicate acknowldgement count
+     * \param dupAckCount duplicate acknowledgement count
      * \param unAckDataCount total bytes of data unacknowledged
      * \param deliveredBytes bytes (S)ACKed in the last (S)ACK
      */

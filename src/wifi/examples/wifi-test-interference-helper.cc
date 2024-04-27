@@ -44,7 +44,7 @@
 // Note that the program checks the consistency between the selected standard
 // the selected preamble type.
 //
-// The output of the program displays InterfenceHelper and SpectrumWifiPhy trace
+// The output of the program displays InterferenceHelper and SpectrumWifiPhy trace
 // logs associated to the chosen scenario.
 //
 

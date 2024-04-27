@@ -799,7 +799,7 @@ DsrRouteCache::DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
         auto i = m_nodeCache.find(errorSrc);
         if (i == m_nodeCache.end())
         {
-            NS_LOG_LOGIC("Update the node stability unsuccessfuly");
+            NS_LOG_LOGIC("Update the node stability unsuccessfully");
         }
         else
         {
@@ -808,7 +808,7 @@ DsrRouteCache::DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
         i = m_nodeCache.find(unreachNode);
         if (i == m_nodeCache.end())
         {
-            NS_LOG_LOGIC("Update the node stability unsuccessfuly");
+            NS_LOG_LOGIC("Update the node stability unsuccessfully");
         }
         else
         {

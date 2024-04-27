@@ -1461,7 +1461,7 @@ Ipv4L3Protocol::DoFragmentation(Ptr<Packet> packet,
     // BEWARE: here we do assume that the header options are not present.
     // a much more complex handling is necessary in case there are options.
     // If (when) IPv4 option headers will be implemented, the following code shall be changed.
-    // Of course also the reassemby code shall be changed as well.
+    // Of course also the reassembly code shall be changed as well.
 
     NS_LOG_FUNCTION(this << *packet << outIfaceMtu << &listFragments);
 

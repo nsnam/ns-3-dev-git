@@ -136,7 +136,7 @@ DsrRouting::GetTypeId()
             .AddAttribute(
                 "PassiveBuffer",
                 "The passive buffer to manage "
-                "promisucously received passive ack.",
+                "promiscuously received passive ack.",
                 PointerValue(nullptr),
                 MakePointerAccessor(&DsrRouting::SetPassiveBuffer, &DsrRouting::GetPassiveBuffer),
                 MakePointerChecker<DsrPassiveBuffer>())
@@ -1122,7 +1122,7 @@ DsrRouting::PromiscReceive(Ptr<NetDevice> device,
     /*
      * Message type 2 means the data packet, we will further process the data
      * packet for delivery notification, safely ignore control packet
-     * Another check here is our own address, if this is the data destinated for us,
+     * Another check here is our own address, if this is the data destined for us,
      * process it further, otherwise, just ignore it
      */
     Ipv4Address ourAddress = m_ipv4->GetAddress(1, 0).GetLocal();

@@ -106,7 +106,7 @@ TcpRateLinux::GenerateSample(uint32_t delivered,
 
     /* Normally we expect m_interval >= minRtt.
      * Note that rate may still be over-estimated when a spuriously
-     * retransmistted skb was first (s)acked because "interval_us"
+     * retransmitted skb was first (s)acked because "interval_us"
      * is under-estimated (up to an RTT). However continuously
      * measuring the delivery rate during loss recovery is crucial
      * for connections suffer heavy or prolonged losses.

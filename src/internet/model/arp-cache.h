@@ -314,7 +314,7 @@ class ArpCache : public Object
         Address m_macAddress;         //!< entry's MAC address
         Ipv4Address m_ipv4Address;    //!< entry's IP address
         std::list<Ipv4PayloadHeaderPair> m_pending; //!< list of pending packets for the entry's IP
-        uint32_t m_retries;                         //!< rerty counter
+        uint32_t m_retries;                         //!< retry counter
     };
 
   private:

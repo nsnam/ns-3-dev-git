@@ -866,8 +866,8 @@ TcpTxBuffer::Update(const TcpOptionSack::SackList& list, const Callback<void, Tc
 
     NS_ASSERT((*(m_sentList.begin()))->m_sacked == false);
     NS_ASSERT_MSG(m_sentSize >= m_sackedOut + m_lostOut, *this);
-    // NS_ASSERT (list.size () == 0 || modified);   // Assert for duplicated SACK or
-    //  impossiblity to map the option into the sent blocks
+    // Assert for duplicated SACK or impossibility to map the option into the sent blocks
+    // NS_ASSERT (list.size () == 0 || modified);
     ConsistencyCheck();
     return bytesSacked;
 }

@@ -128,7 +128,7 @@ SPFVertex::~SPFVertex()
     NS_LOG_FUNCTION(this);
 
     NS_LOG_LOGIC("Children vertices - " << m_children);
-    NS_LOG_LOGIC("Parent verteices - " << m_parents);
+    NS_LOG_LOGIC("Parent vertices - " << m_parents);
 
     // find this node from all its parents and remove the entry of this node
     // from all its parents
@@ -284,7 +284,7 @@ SPFVertex::SetRootExitDirection(Ipv4Address nextHop, int32_t id)
     // always maintain only one root's exit
     m_ecmpRootExits.clear();
     m_ecmpRootExits.emplace_back(nextHop, id);
-    // update the following in order to be backward compatitable with
+    // update the following in order to be backward compatible with
     // GetNextHop and GetOutgoingInterface methods
     m_nextHop = nextHop;
     m_rootOif = id;
@@ -1023,7 +1023,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation(SPFVertex* v,
             //
             // In the case of point-to-point links, the link data field (m_linkData) of a
             // Global Router Link Record contains the local IP address.  If we look at the
-            // link record describing the link from the perspecive of <w> (the remote
+            // link record describing the link from the perspective of <w> (the remote
             // node from the viewpoint of <v>) back to the root node, we can discover the
             // IP address of the router to which <v> is adjacent.  This is a distinguished
             // address -- the next hop address to get from <v> to <w> and all networks
@@ -1972,7 +1972,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter(SPFVertex* v)
             //
             // Iterate through the link records on the vertex to which we're going to add
             // routes.  To make sure we're being clear, we're going to add routing table
-            // entries to the tables on the node corresping to the root of the SPF tree.
+            // entries to the tables on the node corresponding to the root of the SPF tree.
             // These entries will have routes to the IP addresses we find from looking at
             // the local side of the point-to-point links found on the node described by
             // the vertex <v>.
