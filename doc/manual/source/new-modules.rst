@@ -372,33 +372,38 @@ two lists of C++ and Python examples:
   # A list of C++ examples to run in order to ensure that they remain
   # buildable and runnable over time.  Each tuple in the list contains
   #
-  #     (example_name, do_run, do_valgrind_run).
+  #     (example_name, do_run, do_valgrind_run, fullness).
   #
   # See test.py for more information.
   cpp_examples = [
-      ("adhoc-aloha-ideal-phy", "True", "True"),
-      ("adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
-      ("adhoc-aloha-ideal-phy-matrix-propagation-loss-model", "True", "True"),
+      ("adhoc-aloha-ideal-phy", "True", "True", "QUICK"),
+      ("adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True", "QUICK"),
+      ("adhoc-aloha-ideal-phy-matrix-propagation-loss-model", "True", "True", "QUICK"),
   ]
 
   # A list of Python examples to run in order to ensure that they remain
   # runnable over time.  Each tuple in the list contains
   #
-  #     (example_name, do_run).
+  #     (example_name, do_run, fullness).
   #
   # See test.py for more information.
   python_examples = [
-      ("sample-simulator.py", "True"),
+      ("sample-simulator.py", "True", "QUICK"),
   ]
 
 As indicated in the comment, each entry in the C++ list of examples to run
-contains the tuple ``(example_name, do_run, do_valgrind_run)``, where
+contains the tuple ``(example_name, do_run, do_valgrind_run, fullness)``, where
 
 * ``example_name`` is the executable to be run,
 * ``do_run`` is a condition under which to run the example, and
 * ``do_valgrind_run`` is a condition under which to run the example
   under valgrind.  (This is needed because NSC causes illegal instruction
   crashes with some tests when they are run under valgrind.)
+* ``fullness`` is the optional classification of how long the example takes to
+  run, like the :doc:`Tests <tests>` fullness specifier. from
+  fastest to slowest the possible options are: ``"QUICK"``,
+  ``"EXTENSIVE"``, and ``"TAKES_FOREVER"``. If no value is
+  provided, ``"QUICK"`` is used.
 
 Note that the two conditions are Python statements that
 can depend on ``ns3`` configuration variables.  For example, using the
@@ -406,20 +411,22 @@ NSC_ENABLED variable that was defined up until ns-3.35:
 
 .. sourcecode:: python
 
-    ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False"),
+    ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False", "QUICK"),
 
 Each entry in the Python list of examples to run contains the tuple
-``(example_name, do_run)``, where, as for the C++ examples,
+``(example_name, do_run, fullness)``, where, as for the C++ examples,
 
 * ``example_name`` is the Python script to be run, and
 * ``do_run`` is a condition under which to run the example.
+* ``fullness`` is the same as ``fullness`` for C++ examples.
+  If no value is provided, ``"QUICK"`` is used
 
 Again, the condition is a Python statement that can
 depend on ``ns3`` configuration variables.  For example,
 
 .. sourcecode:: python
 
-    ("brite-generic-example", "ENABLE_BRITE == True", "False"),
+    ("brite-generic-example.py", "ENABLE_BRITE == True", "QUICK"),
 
 
 Step 8 - Configure and Build

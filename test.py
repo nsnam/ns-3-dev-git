@@ -169,10 +169,39 @@ def parse_examples_to_run_file(
     # can depend on ns3 configuration variables.  For example,
     # when NSC was in the codebase, we could write:
     #
-    #     ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False"),
+    #     ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False", "QUICK"),
     #
     cpp_examples = get_list_from_file(examples_to_run_path, "cpp_examples")
-    for example_name, do_run, do_valgrind_run in cpp_examples:
+    for cpp_example in cpp_examples:
+        # Old example specification did not include
+        # 'fullness', so for compatibility,
+        # allow 3 components, & set the 'fullness' to QUICK
+        if len(cpp_example) == 3:
+            example_name, do_run, do_valgrind_run = cpp_example
+            fullness = "QUICK"
+        elif len(cpp_example) == 4:
+            example_name, do_run, do_valgrind_run, fullness = cpp_example
+            fullness: str = fullness.upper()
+
+            if fullness != "QUICK" and fullness != "EXTENSIVE" and fullness != "TAKES_FOREVER":
+                raise ValueError(
+                    f"Invalid value provided for example '{example_name}' "
+                    + f"expected 'QUICK', 'EXTENSIVE', or 'TAKES_FOREVER', got: '{fullness}'"
+                )
+        else:
+            # If we have the name of the example we're error-ing for, provide it
+            # Otherwise, just give a generic message
+            if len(cpp_example) >= 1:
+                raise RuntimeError(
+                    f"Incorrect number of fields declaration of example '{cpp_example[0]}', "
+                    + f"expected 3, or 4 got: {len(cpp_example)}"
+                )
+            else:
+                raise RuntimeError(
+                    f"Incorrect number of fields declaration of example, "
+                    + f"expected 3, or 4 got: {len(cpp_example)}"
+                )
+
         # Separate the example name from its arguments.
         example_name_original = example_name
         example_name_parts = example_name.split(" ", 1)
@@ -200,12 +229,12 @@ def parse_examples_to_run_file(
                 example_name = "%s %s" % (example_name, example_arguments)
 
             # Add this example.
-            example_tests.append((example_name, example_path, do_run, do_valgrind_run))
+            example_tests.append((example_name, example_path, do_run, do_valgrind_run, fullness))
             example_names_original.append(example_name_original)
 
     # Each tuple in the Python list of examples to run contains
     #
-    #     (example_name, do_run)
+    #     (example_name, do_run, fullness)
     #
     # where example_name is the Python script to be run and
     # do_run is a condition under which to run the example.
@@ -213,10 +242,32 @@ def parse_examples_to_run_file(
     # Note that the condition is a Python statement that can
     # depend on ns3 configuration variables.  For example,
     #
-    #     ("brite-generic-example", "ENABLE_BRITE == True", "False"),
+    #     ("brite-generic-example.py", "ENABLE_BRITE == True", "QUICK"),
     #
     python_examples = get_list_from_file(examples_to_run_path, "python_examples")
-    for example_name, do_run in python_examples:
+    # Old example specification did not include
+    # 'fullness', so for compatibility,
+    # allow 2 components, & set the 'fullness' to QUICK
+    for python_example in python_examples:
+        if len(python_example) == 2:
+            example_name, do_run = python_example
+            fullness = "QUICK"
+        elif len(python_example) == 3:
+            example_name, do_run, fullness = python_example
+        else:
+            # If we have the name of the example we're error-ing for, provide it
+            # Otherwise, just give a generic message
+            if len(python_example) >= 1:
+                raise RuntimeError(
+                    f"Incorrect number of fields declaration of example '{python_example[0]}', "
+                    + f"expected 2, or 3 got: {len(python_example)}"
+                )
+            else:
+                raise RuntimeError(
+                    f"Incorrect number of fields declaration of example, "
+                    + f"expected 2, or 3 got: {len(python_example)}"
+                )
+
         # Separate the example name from its arguments.
         example_name_parts = example_name.split(" ", 1)
         if len(example_name_parts) == 1:
@@ -237,7 +288,7 @@ def parse_examples_to_run_file(
                 example_path = "%s %s" % (example_path, example_arguments)
 
             # Add this example.
-            python_tests.append((example_path, do_run))
+            python_tests.append((example_path, do_run, fullness))
 
 
 #
@@ -1657,7 +1708,7 @@ def run_tests():
     if len(args.suite) == 0 and len(args.example) == 0 and len(args.pyexample) == 0:
         if len(args.constrain) == 0 or args.constrain == "example":
             if ENABLE_EXAMPLES:
-                for name, test, do_run, do_valgrind_run in example_tests:
+                for name, test, do_run, do_valgrind_run, fullness in example_tests:
                     # Remove any arguments and directory names from test.
                     test_name = test.split(" ", 1)[0]
                     test_name = os.path.basename(test_name)
@@ -1690,6 +1741,22 @@ def run_tests():
 
                             if args.verbose:
                                 print("Queue %s" % test)
+
+                            if args.fullness == "QUICK" and fullness != "QUICK":
+                                job.set_is_skip(True)
+                                job.set_skip_reason(
+                                    f"skip {fullness} examples when QUICK run selected"
+                                )
+                            elif (
+                                args.fullness == "EXTENSIVE"
+                                and fullness != "EXTENSIVE"
+                                and fullness != "QUICK"
+                            ):
+                                job.set_is_skip(True)
+                                job.set_skip_reason(
+                                    f"skip {fullness} examples when EXTENSIVE run selected"
+                                )
+                            # TAKES_FOREVER includes everything, so no need to exclude anything
 
                             input_queue.put(job)
                             jobs = jobs + 1
@@ -1755,7 +1822,7 @@ def run_tests():
     #
     if len(args.suite) == 0 and len(args.example) == 0 and len(args.pyexample) == 0:
         if len(args.constrain) == 0 or args.constrain == "pyexample":
-            for test, do_run in python_tests:
+            for test, do_run, fullness in python_tests:
                 # Remove any arguments and directory names from test.
                 test_name = test.split(" ", 1)[0]
                 test_name = os.path.basename(test_name)
@@ -1796,6 +1863,20 @@ def run_tests():
 
                         if args.verbose:
                             print("Queue %s" % test)
+
+                        if args.fullness == "QUICK" and fullness != "QUICK":
+                            job.set_is_skip(True)
+                            job.set_skip_reason(f"skip {fullness} examples when QUICK run selected")
+                        elif (
+                            args.fullness == "EXTENSIVE"
+                            and fullness != "EXTENSIVE"
+                            and fullness != "QUICK"
+                        ):
+                            job.set_is_skip(True)
+                            job.set_skip_reason(
+                                f"skip {fullness} examples when EXTENSIVE run selected"
+                            )
+                        # TAKES_FOREVER includes everything, so no need to exclude anything
 
                         input_queue.put(job)
                         jobs = jobs + 1
@@ -1932,6 +2013,7 @@ def run_tests():
                     f.write("  <Result>VALGR</Result>\n")
                 elif status == "SKIP":
                     f.write("  <Result>SKIP</Result>\n")
+                    f.write("  <Reason>%s</Reason>\n" % job.skip_reason)
                 else:
                     f.write("  <Result>CRASH</Result>\n")
 
