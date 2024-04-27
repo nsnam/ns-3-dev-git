@@ -479,4 +479,6 @@ main(int argc, char* argv[])
 
     // No need to Simulator::Run (); this is a configuration example
     Simulator::Destroy();
+
+    return 0;
 }
