@@ -1279,6 +1279,11 @@ StaWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     if (capabilities.IsIbss() && m_enableP2pLinks)
     {
         NS_LOG_LOGIC("Beacon is from IBSS");
+        if (GetWifiRemoteStationManager(linkId)->IsBrandNew(from))
+        {
+            // enqueue a probe request to that Adhoc STA to inform about our capabilities
+            EnqueueProbeRequest(GetProbeRequest(linkId), linkId, from);
+        }
         UpdateApInfo(apInfo.m_frame, from, bssid, linkId);
         GetWifiRemoteStationManager(linkId)->RecordAdhocPeer(from);
         return;
