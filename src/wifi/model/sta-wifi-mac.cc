@@ -1137,56 +1137,66 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << +linkId);
     // consider the MAC header of the original MPDU (makes a difference for data frames only)
-    const WifiMacHeader* hdr = &mpdu->GetOriginal()->GetHeader();
+    const auto& hdr = mpdu->GetOriginal()->GetHeader();
     Ptr<const Packet> packet = mpdu->GetPacket();
-    NS_ASSERT(!hdr->IsCtl());
-    Mac48Address myAddr = hdr->IsData() ? Mac48Address::ConvertFrom(GetDevice()->GetAddress())
-                                        : GetFrameExchangeManager(linkId)->GetAddress();
-    if (hdr->GetAddr3() == myAddr)
+    NS_ASSERT(!hdr.IsCtl());
+    Mac48Address myAddr = hdr.IsData() ? Mac48Address::ConvertFrom(GetDevice()->GetAddress())
+                                       : GetFrameExchangeManager(linkId)->GetAddress();
+    if (hdr.GetAddr3() == myAddr)
     {
         NS_LOG_LOGIC("packet sent by us.");
         return;
     }
-    if (hdr->GetAddr1() != myAddr && !hdr->GetAddr1().IsGroup())
+    if (hdr.GetAddr1() != myAddr && !hdr.GetAddr1().IsGroup())
     {
         NS_LOG_LOGIC("packet is not for us");
         NotifyRxDrop(packet);
         return;
     }
-    if (hdr->IsData())
+    if (hdr.IsData())
     {
-        if (!IsAssociated())
+        const auto isP2p = !hdr.IsFromDs() && !hdr.IsToDs();
+        if (!m_enableP2pLinks && isP2p)
+        {
+            NS_LOG_LOGIC("Received frame from adhoc peer while P2P is not enabled");
+            NotifyRxDrop(packet);
+            return;
+        }
+        if (!IsAssociated() && !isP2p)
         {
             NS_LOG_LOGIC("Received data frame while not associated: ignore");
             NotifyRxDrop(packet);
             return;
         }
-        if (!(hdr->IsFromDs() && !hdr->IsToDs()))
+        if (!(hdr.IsFromDs() && !hdr.IsToDs()) && !isP2p)
         {
             NS_LOG_LOGIC("Received data frame not from the DS: ignore");
             NotifyRxDrop(packet);
             return;
         }
         std::set<Mac48Address> apAddresses; // link addresses of AP
-        for (auto id : GetSetupLinkIds())
+        if (!isP2p)
         {
-            apAddresses.insert(GetBssid(id));
+            for (auto id : GetSetupLinkIds())
+            {
+                apAddresses.insert(GetBssid(id));
+            }
+            if (!apAddresses.contains(mpdu->GetHeader().GetAddr2()))
+            {
+                NS_LOG_LOGIC("Received data frame not from the BSS we are associated with: ignore");
+                NotifyRxDrop(packet);
+                return;
+            }
         }
-        if (!apAddresses.contains(mpdu->GetHeader().GetAddr2()))
-        {
-            NS_LOG_LOGIC("Received data frame not from the BSS we are associated with: ignore");
-            NotifyRxDrop(packet);
-            return;
-        }
-        if (!hdr->HasData())
+        if (!hdr.HasData())
         {
             NS_LOG_LOGIC("Received (QoS) Null Data frame: ignore");
             NotifyRxDrop(packet);
             return;
         }
-        if (hdr->IsQosData())
+        if (hdr.IsQosData())
         {
-            if (hdr->IsQosAmsdu())
+            if (hdr.IsQosAmsdu())
             {
                 NS_ASSERT(apAddresses.contains(mpdu->GetHeader().GetAddr3()));
                 DeaggregateAmsduAndForward(mpdu);
@@ -1194,17 +1204,17 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             }
             else
             {
-                ForwardUp(packet, hdr->GetAddr3(), hdr->GetAddr1());
+                ForwardUp(packet, hdr.GetAddr3(), hdr.GetAddr1());
             }
         }
         else
         {
-            ForwardUp(packet, hdr->GetAddr3(), hdr->GetAddr1());
+            ForwardUp(packet, hdr.GetAddr3(), hdr.GetAddr1());
         }
         return;
     }
 
-    switch (hdr->GetType())
+    switch (hdr.GetType())
     {
     case WIFI_MAC_MGT_PROBE_REQUEST:
     case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
