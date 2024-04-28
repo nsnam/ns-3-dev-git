@@ -51,12 +51,18 @@ using namespace ns3;
 class WifiTxopTest : public TestCase
 {
   public:
+    /// Parameters for this test
+    struct Params
+    {
+        bool pifsRecovery; //!< whether PIFS recovery is used after failure of a non-initial frame
+        bool singleRtsPerTxop; //!< whether protection mechanism is used no more than once per TXOP
+    };
+
     /**
      * Constructor
-     * \param pifsRecovery whether PIFS recovery is used after failure of a non-initial frame
+     * \param params parameters for the Wi-Fi TXOP test
      */
-    WifiTxopTest(bool pifsRecovery);
-    ~WifiTxopTest() override;
+    WifiTxopTest(const Params& params);
 
     /**
      * Function to trace packets received by the server application
@@ -102,18 +108,16 @@ class WifiTxopTest : public TestCase
     uint32_t m_cwMin;                 ///< CWmin for BE
     uint16_t m_received;              ///< number of packets received by the stations
     bool m_pifsRecovery;              ///< whether to use PIFS recovery
+    bool m_singleRtsPerTxop;          ///< whether to use single RTS per TXOP
 };
 
-WifiTxopTest::WifiTxopTest(bool pifsRecovery)
+WifiTxopTest::WifiTxopTest(const Params& params)
     : TestCase("Check correct operation within TXOPs"),
       m_nStations(3),
       m_txopLimit(MicroSeconds(4768)),
       m_received(0),
-      m_pifsRecovery(pifsRecovery)
-{
-}
-
-WifiTxopTest::~WifiTxopTest()
+      m_pifsRecovery(params.pifsRecovery),
+      m_singleRtsPerTxop(params.singleRtsPerTxop)
 {
 }
 
@@ -175,6 +179,8 @@ WifiTxopTest::DoRun()
     phy.SetChannel(spectrumChannel);
 
     Config::SetDefault("ns3::QosFrameExchangeManager::PifsRecovery", BooleanValue(m_pifsRecovery));
+    Config::SetDefault("ns3::WifiDefaultProtectionManager::SingleRtsPerTxop",
+                       BooleanValue(m_singleRtsPerTxop));
     Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue(1900));
 
     WifiHelper wifi;
@@ -373,7 +379,11 @@ WifiTxopTest::CheckResults()
      *   To: STA1   [AP]           STA1    AP   [STA2]              STA2    AP    STA3    AP     all
      */
 
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus.size(), 25, "Expected 25 transmitted frames");
+    // We expect 25 frames to be transmitted if SingleRtsPerTxop is false and 22 frames (2 RTS
+    // less, 2 CTS less, 1 more CF-End)
+    NS_TEST_ASSERT_MSG_EQ(m_txPsdus.size(),
+                          (m_singleRtsPerTxop ? 22 : 25),
+                          "Unexpected number of transmitted frames");
 
     // the first frame sent after 400ms is a QoS data frame sent by the AP to STA1
     txopStart = m_txPsdus[0].txStart;
@@ -604,7 +614,7 @@ WifiTxopTest::CheckResults()
     /*
      * Verify that the Duration/ID of RTS/CTS frames is set correctly, that the TXOP holder is
      * kept and allows stations to ignore NAV properly and that the CF-End Frame is not sent if
-     * not enough time remains
+     * not enough time remains. If SingleRtsPerTxop is set to true, only one RTS/CTS is sent.
      *
      *          |---------------------------------------------NAV---------------------------------->|
      *          | |-----------------------------------------NAV------------------------------->| |
@@ -690,59 +700,71 @@ WifiTxopTest::CheckResults()
         RoundDurationId(m_txPsdus[15].header.GetDuration() - sifs - m_txPsdus[16].txDuration),
         "Duration/ID of the Ack must be derived from that of the previous frame");
 
-    // An RTS frame is sent by the AP to STA2
-    tEnd = m_txPsdus[16].txStart + m_txPsdus[16].txDuration;
-    tStart = m_txPsdus[17].txStart;
+    std::size_t idx = 16;
 
-    NS_TEST_ASSERT_MSG_LT(tEnd + sifs, tStart, "Second RTS frame sent too early");
-    NS_TEST_ASSERT_MSG_LT(tStart, tEnd + sifs + tolerance, "Second RTS frame sent too late");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[17].header.IsRts(), true, "Expected an RTS frame");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[17].header.GetAddr1(),
-                          DynamicCast<WifiNetDevice>(m_staDevices.Get(1))->GetMac()->GetAddress(),
-                          "Expected an RTS frame sent by the AP to the second station");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[17].header.GetDuration(),
-                          RoundDurationId(m_txopLimit - (m_txPsdus[17].txStart - txopStart) -
-                                          m_txPsdus[17].txDuration),
-                          "Duration/ID of the second RTS frame must cover the whole TXOP");
+    if (!m_singleRtsPerTxop)
+    {
+        // An RTS frame is sent by the AP to STA2
+        tEnd = m_txPsdus[idx].txStart + m_txPsdus[idx].txDuration;
+        ++idx;
+        tStart = m_txPsdus[idx].txStart;
 
-    // a CTS is sent by STA2 (which ignores the NAV)
-    tEnd = m_txPsdus[17].txStart + m_txPsdus[17].txDuration;
-    tStart = m_txPsdus[18].txStart;
+        NS_TEST_ASSERT_MSG_LT(tEnd + sifs, tStart, "Second RTS frame sent too early");
+        NS_TEST_ASSERT_MSG_LT(tStart, tEnd + sifs + tolerance, "Second RTS frame sent too late");
+        NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx].header.IsRts(), true, "Expected an RTS frame");
+        NS_TEST_ASSERT_MSG_EQ(
+            m_txPsdus[idx].header.GetAddr1(),
+            DynamicCast<WifiNetDevice>(m_staDevices.Get(1))->GetMac()->GetAddress(),
+            "Expected an RTS frame sent by the AP to the second station");
+        NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx].header.GetDuration(),
+                              RoundDurationId(m_txopLimit - (m_txPsdus[idx].txStart - txopStart) -
+                                              m_txPsdus[idx].txDuration),
+                              "Duration/ID of the second RTS frame must cover the whole TXOP");
 
-    NS_TEST_ASSERT_MSG_LT(tEnd + sifs,
-                          tStart,
-                          "CTS in response to the second RTS frame sent too early");
-    NS_TEST_ASSERT_MSG_LT(tStart,
-                          tEnd + sifs + tolerance,
-                          "CTS in response to the second RTS frame sent too late");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[18].header.IsCts(), true, "Expected a CTS");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[18].header.GetAddr1(),
-                          DynamicCast<WifiNetDevice>(m_apDevices.Get(0))->GetMac()->GetAddress(),
-                          "Expected a CTS frame sent to the AP");
-    NS_TEST_ASSERT_MSG_EQ(
-        m_txPsdus[18].header.GetDuration(),
-        RoundDurationId(m_txPsdus[17].header.GetDuration() - sifs - m_txPsdus[18].txDuration),
-        "Duration/ID of the CTS frame must be derived from that of the RTS frame");
+        // a CTS is sent by STA2 (which ignores the NAV)
+        tEnd = m_txPsdus[idx].txStart + m_txPsdus[idx].txDuration;
+        tStart = m_txPsdus[idx + 1].txStart;
+
+        NS_TEST_ASSERT_MSG_LT(tEnd + sifs,
+                              tStart,
+                              "CTS in response to the second RTS frame sent too early");
+        NS_TEST_ASSERT_MSG_LT(tStart,
+                              tEnd + sifs + tolerance,
+                              "CTS in response to the second RTS frame sent too late");
+        NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx + 1].header.IsCts(), true, "Expected a CTS");
+        NS_TEST_ASSERT_MSG_EQ(
+            m_txPsdus[idx + 1].header.GetAddr1(),
+            DynamicCast<WifiNetDevice>(m_apDevices.Get(0))->GetMac()->GetAddress(),
+            "Expected a CTS frame sent to the AP");
+        NS_TEST_ASSERT_MSG_EQ(
+            m_txPsdus[idx + 1].header.GetDuration(),
+            RoundDurationId(m_txPsdus[idx].header.GetDuration() - sifs -
+                            m_txPsdus[idx + 1].txDuration),
+            "Duration/ID of the CTS frame must be derived from that of the RTS frame");
+
+        ++idx;
+    }
 
     // the AP sends a frame to STA2
-    tEnd = m_txPsdus[18].txStart + m_txPsdus[18].txDuration;
-    tStart = m_txPsdus[19].txStart;
+    tEnd = m_txPsdus[idx].txStart + m_txPsdus[idx].txDuration;
+    ++idx;
+    tStart = m_txPsdus[idx].txStart;
 
     NS_TEST_ASSERT_MSG_LT(tEnd + sifs, tStart, "Second QoS data frame sent too early");
     NS_TEST_ASSERT_MSG_LT(tStart, tEnd + sifs + tolerance, "Second QoS data frame sent too late");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[19].header.IsQosData(), true, "Expected a QoS data frame");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[19].header.GetAddr1(),
+    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx].header.IsQosData(), true, "Expected a QoS data frame");
+    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(1))->GetMac()->GetAddress(),
                           "Expected a frame sent by the AP to the second station");
     NS_TEST_ASSERT_MSG_EQ(
-        m_txPsdus[19].header.GetDuration(),
-        RoundDurationId(m_txopLimit - (m_txPsdus[19].txStart - txopStart) -
-                        m_txPsdus[19].txDuration),
+        m_txPsdus[idx].header.GetDuration(),
+        RoundDurationId(m_txopLimit - (m_txPsdus[idx].txStart - txopStart) -
+                        m_txPsdus[idx].txDuration),
         "Duration/ID of the second QoS data frame does not cover the remaining TXOP");
 
     // a Normal Ack is then sent by STA2
-    tEnd = m_txPsdus[19].txStart + m_txPsdus[19].txDuration;
-    tStart = m_txPsdus[20].txStart;
+    tEnd = m_txPsdus[idx].txStart + m_txPsdus[idx].txDuration;
+    tStart = m_txPsdus[idx + 1].txStart;
 
     NS_TEST_ASSERT_MSG_LT(tEnd + sifs,
                           tStart,
@@ -750,68 +772,78 @@ WifiTxopTest::CheckResults()
     NS_TEST_ASSERT_MSG_LT(tStart,
                           tEnd + sifs + tolerance,
                           "Ack in response to the second QoS data frame sent too late");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[20].header.IsAck(), true, "Expected a Normal Ack");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[20].header.GetAddr1(),
+    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx + 1].header.IsAck(), true, "Expected a Normal Ack");
+    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx + 1].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_apDevices.Get(0))->GetMac()->GetAddress(),
                           "Expected a Normal Ack sent to the AP");
     NS_TEST_ASSERT_MSG_EQ(
-        m_txPsdus[20].header.GetDuration(),
-        RoundDurationId(m_txPsdus[19].header.GetDuration() - sifs - m_txPsdus[20].txDuration),
+        m_txPsdus[idx + 1].header.GetDuration(),
+        RoundDurationId(m_txPsdus[idx].header.GetDuration() - sifs - m_txPsdus[idx + 1].txDuration),
         "Duration/ID of the Ack must be derived from that of the previous frame");
+    ++idx;
 
-    // An RTS frame is sent by the AP to STA3
-    tEnd = m_txPsdus[20].txStart + m_txPsdus[20].txDuration;
-    tStart = m_txPsdus[21].txStart;
+    if (!m_singleRtsPerTxop)
+    {
+        // An RTS frame is sent by the AP to STA3
+        tEnd = m_txPsdus[idx].txStart + m_txPsdus[idx].txDuration;
+        ++idx;
+        tStart = m_txPsdus[idx].txStart;
 
-    NS_TEST_ASSERT_MSG_LT(tEnd + sifs, tStart, "Third RTS frame sent too early");
-    NS_TEST_ASSERT_MSG_LT(tStart, tEnd + sifs + tolerance, "Third RTS frame sent too late");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[21].header.IsRts(), true, "Expected an RTS frame");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[21].header.GetAddr1(),
-                          DynamicCast<WifiNetDevice>(m_staDevices.Get(2))->GetMac()->GetAddress(),
-                          "Expected an RTS frame sent by the AP to the third station");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[21].header.GetDuration(),
-                          RoundDurationId(m_txopLimit - (m_txPsdus[21].txStart - txopStart) -
-                                          m_txPsdus[21].txDuration),
-                          "Duration/ID of the third RTS frame must cover the whole TXOP");
+        NS_TEST_ASSERT_MSG_LT(tEnd + sifs, tStart, "Third RTS frame sent too early");
+        NS_TEST_ASSERT_MSG_LT(tStart, tEnd + sifs + tolerance, "Third RTS frame sent too late");
+        NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx].header.IsRts(), true, "Expected an RTS frame");
+        NS_TEST_ASSERT_MSG_EQ(
+            m_txPsdus[idx].header.GetAddr1(),
+            DynamicCast<WifiNetDevice>(m_staDevices.Get(2))->GetMac()->GetAddress(),
+            "Expected an RTS frame sent by the AP to the third station");
+        NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx].header.GetDuration(),
+                              RoundDurationId(m_txopLimit - (m_txPsdus[idx].txStart - txopStart) -
+                                              m_txPsdus[idx].txDuration),
+                              "Duration/ID of the third RTS frame must cover the whole TXOP");
 
-    // a CTS is sent by STA3 (which ignores the NAV)
-    tEnd = m_txPsdus[21].txStart + m_txPsdus[21].txDuration;
-    tStart = m_txPsdus[22].txStart;
+        // a CTS is sent by STA3 (which ignores the NAV)
+        tEnd = m_txPsdus[idx].txStart + m_txPsdus[idx].txDuration;
+        tStart = m_txPsdus[idx + 1].txStart;
 
-    NS_TEST_ASSERT_MSG_LT(tEnd + sifs,
-                          tStart,
-                          "CTS in response to the third RTS frame sent too early");
-    NS_TEST_ASSERT_MSG_LT(tStart,
-                          tEnd + sifs + tolerance,
-                          "CTS in response to the third RTS frame sent too late");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[22].header.IsCts(), true, "Expected a CTS");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[22].header.GetAddr1(),
-                          DynamicCast<WifiNetDevice>(m_apDevices.Get(0))->GetMac()->GetAddress(),
-                          "Expected a CTS frame sent to the AP");
-    NS_TEST_ASSERT_MSG_EQ(
-        m_txPsdus[22].header.GetDuration(),
-        RoundDurationId(m_txPsdus[21].header.GetDuration() - sifs - m_txPsdus[22].txDuration),
-        "Duration/ID of the CTS frame must be derived from that of the RTS frame");
+        NS_TEST_ASSERT_MSG_LT(tEnd + sifs,
+                              tStart,
+                              "CTS in response to the third RTS frame sent too early");
+        NS_TEST_ASSERT_MSG_LT(tStart,
+                              tEnd + sifs + tolerance,
+                              "CTS in response to the third RTS frame sent too late");
+        NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx + 1].header.IsCts(), true, "Expected a CTS");
+        NS_TEST_ASSERT_MSG_EQ(
+            m_txPsdus[idx + 1].header.GetAddr1(),
+            DynamicCast<WifiNetDevice>(m_apDevices.Get(0))->GetMac()->GetAddress(),
+            "Expected a CTS frame sent to the AP");
+        NS_TEST_ASSERT_MSG_EQ(
+            m_txPsdus[idx + 1].header.GetDuration(),
+            RoundDurationId(m_txPsdus[idx].header.GetDuration() - sifs -
+                            m_txPsdus[idx + 1].txDuration),
+            "Duration/ID of the CTS frame must be derived from that of the RTS frame");
+        ++idx;
+    }
 
     // the AP sends a frame to STA3
-    tEnd = m_txPsdus[22].txStart + m_txPsdus[22].txDuration;
-    tStart = m_txPsdus[23].txStart;
+    tEnd = m_txPsdus[idx].txStart + m_txPsdus[idx].txDuration;
+    ++idx;
+    tStart = m_txPsdus[idx].txStart;
 
     NS_TEST_ASSERT_MSG_LT(tEnd + sifs, tStart, "Third QoS data frame sent too early");
     NS_TEST_ASSERT_MSG_LT(tStart, tEnd + sifs + tolerance, "Third QoS data frame sent too late");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[23].header.IsQosData(), true, "Expected a QoS data frame");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[23].header.GetAddr1(),
+    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx].header.IsQosData(), true, "Expected a QoS data frame");
+    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(2))->GetMac()->GetAddress(),
                           "Expected a frame sent by the AP to the third station");
     NS_TEST_ASSERT_MSG_EQ(
-        m_txPsdus[23].header.GetDuration(),
-        RoundDurationId(m_txopLimit - (m_txPsdus[23].txStart - txopStart) -
-                        m_txPsdus[23].txDuration),
+        m_txPsdus[idx].header.GetDuration(),
+        RoundDurationId(m_txopLimit - (m_txPsdus[idx].txStart - txopStart) -
+                        m_txPsdus[idx].txDuration),
         "Duration/ID of the third QoS data frame does not cover the remaining TXOP");
 
     // a Normal Ack is then sent by STA3
-    tEnd = m_txPsdus[23].txStart + m_txPsdus[23].txDuration;
-    tStart = m_txPsdus[24].txStart;
+    tEnd = m_txPsdus[idx].txStart + m_txPsdus[idx].txDuration;
+    tStart = m_txPsdus[idx + 1].txStart;
 
     NS_TEST_ASSERT_MSG_LT(tEnd + sifs,
                           tStart,
@@ -819,17 +851,31 @@ WifiTxopTest::CheckResults()
     NS_TEST_ASSERT_MSG_LT(tStart,
                           tEnd + sifs + tolerance,
                           "Ack in response to the third QoS data frame sent too late");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[24].header.IsAck(), true, "Expected a Normal Ack");
-    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[24].header.GetAddr1(),
+    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx + 1].header.IsAck(), true, "Expected a Normal Ack");
+    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx + 1].header.GetAddr1(),
                           DynamicCast<WifiNetDevice>(m_apDevices.Get(0))->GetMac()->GetAddress(),
                           "Expected a Normal Ack sent to the AP");
     NS_TEST_ASSERT_MSG_EQ(
-        m_txPsdus[24].header.GetDuration(),
-        RoundDurationId(m_txPsdus[23].header.GetDuration() - sifs - m_txPsdus[24].txDuration),
+        m_txPsdus[idx + 1].header.GetDuration(),
+        RoundDurationId(m_txPsdus[idx].header.GetDuration() - sifs - m_txPsdus[idx + 1].txDuration),
         "Duration/ID of the Ack must be derived from that of the previous frame");
+    ++idx;
 
-    // there is no time remaining for sending a CF-End frame. This is verified by checking
-    // that 25 frames are transmitted (done at the beginning of this method)
+    // there is no time remaining for sending a CF-End frame if SingleRtsPerTxop is false. This is
+    // verified by checking that 25 frames are transmitted (done at the beginning of this method)
+    if (m_singleRtsPerTxop)
+    {
+        tEnd = m_txPsdus[idx].txStart + m_txPsdus[idx].txDuration;
+        ++idx;
+        tStart = m_txPsdus[idx].txStart;
+
+        NS_TEST_ASSERT_MSG_LT(tEnd + sifs, tStart, "CF-End sent too early");
+        NS_TEST_ASSERT_MSG_LT(tStart, tEnd + sifs + tolerance, "CF-End sent too late");
+        NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx].header.IsCfEnd(), true, "Expected a CF-End frame");
+        NS_TEST_ASSERT_MSG_EQ(m_txPsdus[idx].header.GetDuration(),
+                              Seconds(0),
+                              "Duration/ID must be set to 0 for CF-End frames");
+    }
 
     // 3 DL packets (without RTS/CTS), 1 UL packet and 3 DL packets (with RTS/CTS)
     NS_TEST_ASSERT_MSG_EQ(m_received, 7, "Unexpected number of packets received");
@@ -850,8 +896,10 @@ class WifiTxopTestSuite : public TestSuite
 WifiTxopTestSuite::WifiTxopTestSuite()
     : TestSuite("wifi-txop", Type::UNIT)
 {
-    AddTestCase(new WifiTxopTest(true), TestCase::Duration::QUICK);
-    AddTestCase(new WifiTxopTest(false), TestCase::Duration::QUICK);
+    AddTestCase(new WifiTxopTest({.pifsRecovery = true, .singleRtsPerTxop = false}),
+                TestCase::Duration::QUICK);
+    AddTestCase(new WifiTxopTest({.pifsRecovery = false, .singleRtsPerTxop = true}),
+                TestCase::Duration::QUICK);
 }
 
 static WifiTxopTestSuite g_wifiTxopTestSuite; ///< the test suite
