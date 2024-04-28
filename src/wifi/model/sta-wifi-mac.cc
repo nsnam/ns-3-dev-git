@@ -107,6 +107,11 @@ StaWifiMac::GetTypeId()
                           TimeValue(Seconds(0.1)),
                           MakeTimeAccessor(&StaWifiMac::m_pmModeSwitchTimeout),
                           MakeTimeChecker())
+            .AddAttribute("EnableP2pLinks",
+                          "Whether or not P2P link is allowed for this STA.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&StaWifiMac::m_enableP2pLinks),
+                          MakeBooleanChecker())
             .AddTraceSource("Assoc",
                             "Associated with an access point. If this is an MLD that associated "
                             "with an AP MLD, the AP MLD address is provided.",

@@ -649,6 +649,8 @@ class StaWifiMac : public WifiMac
     /// store the UL TID-to-Link Mapping included in the Association Request frame
     WifiTidLinkMapping m_ulTidLinkMappingInAssocReq;
 
+    bool m_enableP2pLinks; ///< flag whether P2P link is allowed for this STA
+
     TracedCallback<Mac48Address> m_assocLogger;                    ///< association logger
     TracedCallback<uint8_t, Mac48Address> m_setupCompleted;        ///< link setup completed logger
     TracedCallback<Mac48Address> m_deAssocLogger;                  ///< disassociation logger
