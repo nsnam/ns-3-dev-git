@@ -15,9 +15,11 @@
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet-socket-server.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/sta-wifi-mac.h"
 #include "ns3/test.h"
 #include "ns3/wifi-helper.h"
 #include "ns3/wifi-mac-helper.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/yans-wifi-helper.h"
 
@@ -27,6 +29,37 @@
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiP2pTest");
+
+namespace
+{
+
+constexpr uint16_t P2P_STA_TO_ADHOC_PROTOCOL{
+    1}; ///< protocol to create socket for P2P transmission from P2P STA to ADHOC
+constexpr uint16_t ADHOC_TO_P2P_STA_PROTOCOL{
+    2}; ///< protocol to create socket for P2P transmission from ADHOC to P2P STA
+constexpr uint16_t P2P_STA_TO_STA_PROTOCOL{
+    3}; ///< protocol to create socket for P2P transmission from P2P STA to STA
+constexpr uint16_t STA_TO_P2P_STA_PROTOCOL{
+    4}; ///< protocol to create socket for P2P transmission from STA to P2P STA
+constexpr uint16_t AP_TO_P2P_STA_PROTOCOL{
+    5}; ///< protocol to create socket for downlink transmission from AP to P2P STA
+constexpr uint16_t P2P_STA_TO_AP_PROTOCOL{
+    6}; ///< protocol to create socket for uplink transmission from P2P STA to AP
+
+constexpr uint32_t ADHOC_TO_P2P_STA_PAYLOAD_SIZE{
+    500}; ///< payload size in bytes to use for transmission from ADHOC to P2P STA
+constexpr uint32_t P2P_STA_TO_ADHOC_PAYLOAD_SIZE{
+    510}; ///< payload size in bytes to use for transmission from P2P STA to ADHOC
+constexpr uint32_t P2P_STA_TO_STA_PAYLOAD_SIZE{
+    750}; ///< payload size in bytes to use for transmission from P2P STA to STA
+constexpr uint32_t STA_TO_P2P_STA_PAYLOAD_SIZE{
+    760}; ///< payload size in bytes to use for transmission from STA to P2P STA
+constexpr uint32_t AP_TO_P2P_STA_PAYLOAD_SIZE{
+    1000}; ///< payload size in bytes to use for transmission from AP to P2P STA
+constexpr uint32_t P2P_STA_TO_AP_PAYLOAD_SIZE{
+    1100}; ///< payload size in bytes to use for transmission from P2P STA to AP
+
+} // namespace
 
 /**
  * \ingroup wifi-test
@@ -438,7 +471,7 @@ IbssCapabilitiesTest::DoSetup()
     socketAddr.SetPhysicalAddress(ibssDevices.Get(1)->GetAddress());
 
     auto client = CreateObject<PacketSocketClient>();
-    client->SetAttribute("PacketSize", UintegerValue(1000));
+    client->SetAttribute("PacketSize", UintegerValue(AP_TO_P2P_STA_PAYLOAD_SIZE));
     client->SetAttribute("MaxPackets", UintegerValue(m_nPackets));
     client->SetAttribute("Interval", TimeValue(Seconds(0.5)));
     client->SetRemote(socketAddr);
@@ -480,6 +513,537 @@ IbssCapabilitiesTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test P2P support.
+ *
+ * In this test, there is one AP and one STA associated to the AP, and an adhoc station.
+ * The STA has P2P turned on at the beginning on the test, which allows to verify communication
+ * between the STA and the adhoc station via the P2P link. Then, P2P is turned off on the STA to
+ * verify no communication occurs between the STA and the adhoc station. During that period, packets
+ * enqueued at the STA for the adhoc station should be forwarded to the AP. At the end of the test,
+ * P2P is turned on again to verify communication between the STA and the adhoc station is restored.
+ * For the duration of the test, the AP and the STA exchange packets with each others
+ * (bidirectional) to verify P2P does not alter usual infrastructure operations. Similarly, the STA
+ * and the adhoc station also exchange packets with each others (bidirectional) for the whole
+ * duration of the test. For the sake of the test, we limit the traffic to a packet per second.
+ */
+class P2pTest : public TestCase
+{
+  public:
+    /**
+     * The period a given mode is activated
+     */
+    struct ActivatedPeriod
+    {
+        Time start{}; //!< start time of the period
+        Time stop{};  //!< stop time of the period
+    };
+
+    /**
+     * Configuration parameters for P2P tests
+     */
+    struct P2pTestParams
+    {
+        std::vector<ActivatedPeriod> p2pActivatedPeriods{}; //!< periods the P2P link is enabled
+        std::vector<ActivatedPeriod>
+            infrastructureActivatedPeriods{}; //!< periods the STA is associated with the AP
+    };
+
+    /**
+     * Constructor
+     *
+     * \param name the name of the configuration
+     * \param params the configuration parameters
+     */
+    P2pTest(const std::string& name, const P2pTestParams& params);
+
+  private:
+    void DoSetup() override;
+    void DoRun() override;
+
+    /**
+     * Set the SSID of the AP the STA should attempt to associate with.
+     *
+     * \param ssid the SSID
+     */
+    void SetStaSsid(Ssid ssid);
+
+    /**
+     * Turn on or off P2P capabilities at runtime.
+     *
+     * \param enable flag whether P2P should be enabled
+     */
+    void SetP2pEnabled(bool enable);
+
+    /**
+     * Create traffic flowing between two devices.
+     * It will generate packets every second, starting at the specified time.
+     *
+     * \param txNode the TX node
+     * \param rxNode the RX node
+     * \param protocol the protocol to identify the flow
+     * \param payloadSize the size for the payload in bytes
+     * \param start the starting time
+     */
+    void CreateTraffic(Ptr<Node> txNode,
+                       Ptr<Node> rxNode,
+                       uint16_t protocol,
+                       uint32_t payloadSize,
+                       Time start);
+
+    /**
+     * Callback invoked when a packet is received by the packet socket server.
+     *
+     * \param pkt the packet
+     * \param addr the address
+     */
+    void Receive(Ptr<const Packet> pkt, const Address& addr);
+
+    /**
+     * Callback invoked when a packet to enqueue has been dropped by the MAC layer.
+     *
+     * \param packet the packet
+     */
+    void MacTxDrop(Ptr<const Packet> packet);
+
+    /**
+     * Callback invoked when a received packet has been dropped by the MAC layer.
+     *
+     * \param packet the packet
+     */
+    void MacRxDrop(Ptr<const Packet> packet);
+
+    /**
+     * Check that the simulation produced the expected results.
+     */
+    void CheckResults();
+
+    P2pTestParams m_params; ///< the configuration parameters
+
+    Time m_testDuration{};    ///< duration of the test
+    Ptr<StaWifiMac> m_p2pSta; ///< the P2P STA MAC
+
+    std::size_t m_countP2pStaToAdhocPackets; ///< count packets flowing from P2P STA to ADHOC
+    std::size_t m_countAdhocToP2pStaPackets; ///< count packets flowing from ADHOC to P2P STA
+    std::size_t m_countP2pStaToStaPackets;   ///< count packets flowing from P2P STA to STA
+    std::size_t m_countStaToP2pStaPackets;   ///< count packets flowing from STA to P2P STA
+    std::size_t m_countP2pStaToApPackets;    ///< count packets flowing from P2P STA to AP
+    std::size_t m_countApToP2pStaPackets;    ///< count packets flowing from AP to P2P STA
+
+    std::size_t m_countP2pStaToAdhocDroppedPackets; ///< count dropped packets from P2P STA to ADHOC
+    std::size_t m_countAdhocToP2pStaDroppedPackets; ///< count dropped packets from ADHOC to P2P STA
+    std::size_t m_countP2pStaToStaDroppedPackets;   ///< count dropped packets from P2P STA to STA
+    std::size_t m_countStaToP2pStaDroppedPackets;   ///< count dropped packets from STA to P2P STA
+    std::size_t m_countP2pStaToApDroppedPackets;    ///< count dropped packets from P2P STA to AP
+    std::size_t m_countApToP2pStaDroppedPackets;    ///< count dropped packets from AP to P2P STA
+};
+
+P2pTest::P2pTest(const std::string& name, const P2pTestParams& params)
+    : TestCase{name},
+      m_params{params},
+      m_countP2pStaToAdhocPackets{0},
+      m_countAdhocToP2pStaPackets{0},
+      m_countP2pStaToStaPackets{0},
+      m_countStaToP2pStaPackets{0},
+      m_countP2pStaToApPackets{0},
+      m_countApToP2pStaPackets{0},
+      m_countP2pStaToAdhocDroppedPackets{0},
+      m_countAdhocToP2pStaDroppedPackets{0},
+      m_countP2pStaToStaDroppedPackets{0},
+      m_countStaToP2pStaDroppedPackets{0},
+      m_countP2pStaToApDroppedPackets{0},
+      m_countApToP2pStaDroppedPackets{0}
+{
+    NS_ASSERT_MSG(!m_params.p2pActivatedPeriods.empty(),
+                  "P2P should be activated at least once in the test");
+}
+
+void
+P2pTest::Receive(Ptr<const Packet> pkt, const Address& addr)
+{
+    const auto sockAddr = PacketSocketAddress::ConvertFrom(addr);
+    NS_LOG_FUNCTION(this << pkt << pkt->GetSize() << addr << sockAddr.GetProtocol());
+    if (sockAddr.GetProtocol() == P2P_STA_TO_ADHOC_PROTOCOL)
+    {
+        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
+                              P2P_STA_TO_ADHOC_PAYLOAD_SIZE,
+                              "Unexpected packet size from P2P STA to ADHOC");
+        ++m_countP2pStaToAdhocPackets;
+    }
+    else if (sockAddr.GetProtocol() == ADHOC_TO_P2P_STA_PROTOCOL)
+    {
+        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
+                              ADHOC_TO_P2P_STA_PAYLOAD_SIZE,
+                              "Unexpected packet size from ADHOC to P2P STA");
+        ++m_countAdhocToP2pStaPackets;
+    }
+    else if (sockAddr.GetProtocol() == P2P_STA_TO_STA_PROTOCOL)
+    {
+        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
+                              P2P_STA_TO_STA_PAYLOAD_SIZE,
+                              "Unexpected packet size from P2P STA to STA");
+        ++m_countP2pStaToStaPackets;
+    }
+    else if (sockAddr.GetProtocol() == STA_TO_P2P_STA_PROTOCOL)
+    {
+        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
+                              STA_TO_P2P_STA_PAYLOAD_SIZE,
+                              "Unexpected packet size from STA to P2P STA");
+        ++m_countStaToP2pStaPackets;
+    }
+    else if (sockAddr.GetProtocol() == P2P_STA_TO_AP_PROTOCOL)
+    {
+        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
+                              P2P_STA_TO_AP_PAYLOAD_SIZE,
+                              "Unexpected packet size from P2P STA to AP");
+        ++m_countP2pStaToApPackets;
+    }
+    else if (sockAddr.GetProtocol() == AP_TO_P2P_STA_PROTOCOL)
+    {
+        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
+                              AP_TO_P2P_STA_PAYLOAD_SIZE,
+                              "Unexpected packet size from AP to P2P STA");
+        ++m_countApToP2pStaPackets;
+    }
+    else
+    {
+        NS_ASSERT_MSG(false, "Unexpected packet received");
+    }
+}
+
+void
+P2pTest::MacTxDrop(Ptr<const Packet> packet)
+{
+    const auto payloadSize = packet->GetSize() - 8 /* LLC */;
+    NS_LOG_FUNCTION(this << packet << payloadSize);
+    if (payloadSize == P2P_STA_TO_ADHOC_PAYLOAD_SIZE)
+    {
+        ++m_countP2pStaToAdhocDroppedPackets;
+    }
+    else if (payloadSize == ADHOC_TO_P2P_STA_PAYLOAD_SIZE)
+    {
+        ++m_countAdhocToP2pStaDroppedPackets;
+    }
+    else if (payloadSize == P2P_STA_TO_STA_PAYLOAD_SIZE)
+    {
+        ++m_countP2pStaToStaDroppedPackets;
+    }
+    else if (payloadSize == STA_TO_P2P_STA_PAYLOAD_SIZE)
+    {
+        ++m_countStaToP2pStaDroppedPackets;
+    }
+    else if (payloadSize == P2P_STA_TO_AP_PAYLOAD_SIZE)
+    {
+        ++m_countP2pStaToApDroppedPackets;
+    }
+    else if (payloadSize == AP_TO_P2P_STA_PAYLOAD_SIZE)
+    {
+        ++m_countApToP2pStaDroppedPackets;
+    }
+}
+
+void
+P2pTest::MacRxDrop(Ptr<const Packet> packet)
+{
+    const auto payloadSize = packet->GetSize() - 8 /* LLC */;
+    NS_LOG_FUNCTION(this << packet << payloadSize);
+    if (payloadSize == P2P_STA_TO_ADHOC_PAYLOAD_SIZE)
+    {
+        ++m_countP2pStaToAdhocDroppedPackets;
+    }
+    else if (payloadSize == ADHOC_TO_P2P_STA_PAYLOAD_SIZE)
+    {
+        ++m_countAdhocToP2pStaDroppedPackets;
+    }
+    else if (payloadSize == P2P_STA_TO_STA_PAYLOAD_SIZE)
+    {
+        ++m_countP2pStaToStaDroppedPackets;
+    }
+    else if (payloadSize == STA_TO_P2P_STA_PAYLOAD_SIZE)
+    {
+        ++m_countStaToP2pStaDroppedPackets;
+    }
+    else if (payloadSize == P2P_STA_TO_AP_PAYLOAD_SIZE)
+    {
+        ++m_countP2pStaToApDroppedPackets;
+    }
+    else if (payloadSize == AP_TO_P2P_STA_PAYLOAD_SIZE)
+    {
+        ++m_countApToP2pStaDroppedPackets;
+    }
+}
+
+void
+P2pTest::SetStaSsid(Ssid ssid)
+{
+    NS_LOG_FUNCTION(this << ssid);
+    m_p2pSta->SetSsid(ssid);
+}
+
+void
+P2pTest::SetP2pEnabled(bool enable)
+{
+    NS_LOG_FUNCTION(this << enable);
+    m_p2pSta->SetAttribute("EnableP2pLinks", BooleanValue(enable));
+}
+
+void
+P2pTest::CheckResults()
+{
+    const std::size_t packetsPerSeconds = 1;
+    const auto maxPacketsPerDirection = packetsPerSeconds * m_testDuration.GetSeconds();
+
+    const auto infrastructureDuration =
+        m_params.infrastructureActivatedPeriods.empty()
+            ? Time()
+            : std::accumulate(
+                  m_params.infrastructureActivatedPeriods.cbegin(),
+                  m_params.infrastructureActivatedPeriods.cend(),
+                  Time(),
+                  [](auto sum, const auto& period) { return sum + (period.stop - period.start); });
+    const auto expectedPacketsInfrastructure =
+        packetsPerSeconds * infrastructureDuration.GetSeconds();
+    NS_TEST_EXPECT_MSG_EQ(m_countApToP2pStaPackets,
+                          expectedPacketsInfrastructure,
+                          "Unexpected amount of packets sent from AP to P2P STA");
+    NS_TEST_EXPECT_MSG_EQ(m_countP2pStaToApPackets,
+                          expectedPacketsInfrastructure,
+                          "Unexpected amount of packets sent from P2P STA to AP");
+    NS_TEST_EXPECT_MSG_EQ(m_countStaToP2pStaPackets,
+                          expectedPacketsInfrastructure,
+                          "Unexpected amount of packets sent from STA to P2P STA");
+    NS_TEST_EXPECT_MSG_EQ(m_countP2pStaToStaPackets,
+                          expectedPacketsInfrastructure,
+                          "Unexpected amount of packets sent from P2P STA to STA");
+
+    const auto p2pDuration = std::accumulate(
+        m_params.p2pActivatedPeriods.cbegin(),
+        m_params.p2pActivatedPeriods.cend(),
+        Time(),
+        [](auto sum, const auto& period) { return sum + (period.stop - period.start); });
+    const auto expectedPacketsP2p = packetsPerSeconds * p2pDuration.GetSeconds();
+    NS_TEST_EXPECT_MSG_EQ(expectedPacketsP2p,
+                          expectedPacketsP2p,
+                          "Unexpected amount of packets sent from P2P STA to ADHOC");
+    NS_TEST_EXPECT_MSG_EQ(expectedPacketsP2p,
+                          expectedPacketsP2p,
+                          "Unexpected amount of packets sent from ADHOC to P2P STA");
+
+    const auto expectedDroppedPacketsInfrastructure =
+        maxPacketsPerDirection - expectedPacketsInfrastructure;
+    NS_TEST_EXPECT_MSG_EQ(m_countApToP2pStaDroppedPackets,
+                          expectedDroppedPacketsInfrastructure,
+                          "Unexpected amount of dropped packet sent from AP to P2P STA");
+    NS_TEST_EXPECT_MSG_EQ(m_countP2pStaToApDroppedPackets,
+                          expectedDroppedPacketsInfrastructure,
+                          "Unexpected amount of dropped packet sent from P2P STA to AP");
+
+    // when P2P is disabled, the adhoc stations also transmits packets to the STA, but these
+    // should be dropped by the STA since its P2P capabilities are turned off
+    const auto expectedDroppedPacketsP2p = maxPacketsPerDirection - expectedPacketsP2p;
+    NS_TEST_EXPECT_MSG_EQ(
+        m_countAdhocToP2pStaDroppedPackets,
+        expectedDroppedPacketsP2p,
+        "Unexpected amount of dropped packet sent from ADHOC to P2P STA (dropped by P2P STA)");
+}
+
+void
+P2pTest::CreateTraffic(Ptr<Node> txNode,
+                       Ptr<Node> rxNode,
+                       uint16_t protocol,
+                       uint32_t payloadSize,
+                       Time start)
+{
+    PacketSocketAddress socketAddr;
+    socketAddr.SetSingleDevice(txNode->GetDevice(0)->GetIfIndex());
+    socketAddr.SetPhysicalAddress(rxNode->GetDevice(0)->GetAddress());
+    socketAddr.SetProtocol(protocol);
+
+    auto client = CreateObject<PacketSocketClient>();
+    client->SetAttribute("PacketSize", UintegerValue(payloadSize));
+    client->SetAttribute("MaxPackets", UintegerValue(5));
+    client->SetAttribute("Interval", TimeValue(Seconds(1.0)));
+    client->SetRemote(socketAddr);
+    txNode->AddApplication(client);
+    client->SetStartTime(start);
+    client->SetStopTime(m_testDuration);
+
+    auto server = CreateObject<PacketSocketServer>();
+    server->SetLocal(socketAddr);
+    rxNode->AddApplication(server);
+    server->SetStartTime(Seconds(0.0));
+    server->SetStopTime(m_testDuration);
+}
+
+void
+P2pTest::DoSetup()
+{
+    // LogComponentEnableAll(LOG_PREFIX_TIME);
+    // LogComponentEnableAll(LOG_PREFIX_NODE);
+    // WifiHelper::EnableLogComponents();
+    // LogComponentEnable("WifiP2pTest", LOG_LEVEL_ALL);
+
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+    int64_t streamNumber = 100;
+
+    NodeContainer wifiApNode(1);
+    NodeContainer wifiStaNodes(2);
+    NodeContainer wifiAdhocNode(1);
+
+    auto channel = YansWifiChannelHelper::Default();
+    YansWifiPhyHelper phy;
+    phy.SetChannel(channel.Create());
+    phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+
+    WifiHelper wifi;
+    wifi.SetStandard(WIFI_STANDARD_80211ax);
+
+    WifiMacHelper mac;
+
+    mac.SetType("ns3::ApWifiMac",
+                "Ssid",
+                SsidValue(Ssid("bss-ssid")),
+                "BeaconGeneration",
+                BooleanValue(true),
+                "EnableBeaconJitter",
+                BooleanValue(true));
+    auto apDevice = wifi.Install(phy, mac, wifiApNode.Get(0));
+    streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
+
+    mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(Ssid("bss-ssid")));
+    auto staDevices = wifi.Install(phy, mac, wifiStaNodes.Get(0));
+
+    mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(Ssid("wrong-ssid")));
+    staDevices.Add(wifi.Install(phy, mac, wifiStaNodes.Get(1)));
+
+    streamNumber += WifiHelper::AssignStreams(staDevices, streamNumber);
+    m_p2pSta = DynamicCast<StaWifiMac>(DynamicCast<WifiNetDevice>(staDevices.Get(1))->GetMac());
+
+    mac.SetType("ns3::AdhocWifiMac",
+                "Ssid",
+                SsidValue(Ssid("ibss-ssid")),
+                "BeaconGeneration",
+                BooleanValue(true));
+
+    auto adhocDevice = wifi.Install(phy, mac, wifiAdhocNode.Get(0));
+    streamNumber += WifiHelper::AssignStreams(adhocDevice, streamNumber);
+
+    // Uncomment the lines below to write PCAP files
+    // phy.EnablePcap("wifi-p2p_AP", apDevice);
+    // phy.EnablePcap("wifi-p2p_STA", staDevices.Get(0));
+    // phy.EnablePcap("wifi-p2p_P2P_STA", staDevices.Get(1));
+    // phy.EnablePcap("wifi-p2p_ADHOC", adhocDevice);
+
+    MobilityHelper mobility;
+    auto positionAlloc = CreateObject<ListPositionAllocator>();
+
+    positionAlloc->Add(Vector(0.0, 0.0, 0.0));
+    positionAlloc->Add(Vector(1.0, 0.0, 0.0));
+    positionAlloc->Add(Vector(2.0, 0.0, 0.0));
+    mobility.SetPositionAllocator(positionAlloc);
+
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(wifiApNode);
+    mobility.Install(wifiStaNodes);
+    mobility.Install(wifiAdhocNode);
+
+    PacketSocketHelper packetSocket;
+    packetSocket.Install(wifiApNode);
+    packetSocket.Install(wifiStaNodes);
+    packetSocket.Install(wifiAdhocNode);
+
+    m_testDuration = m_params.p2pActivatedPeriods.back().stop;
+    if (!m_params.infrastructureActivatedPeriods.empty())
+    {
+        m_testDuration =
+            std::max(m_testDuration, m_params.infrastructureActivatedPeriods.back().stop);
+    }
+
+    // traffic from P2P STA to ADHOC
+    CreateTraffic(wifiStaNodes.Get(1),
+                  wifiAdhocNode.Get(0),
+                  P2P_STA_TO_ADHOC_PROTOCOL,
+                  P2P_STA_TO_ADHOC_PAYLOAD_SIZE,
+                  Seconds(0.2));
+
+    // traffic from ADHOC to P2P STA
+    CreateTraffic(wifiAdhocNode.Get(0),
+                  wifiStaNodes.Get(1),
+                  ADHOC_TO_P2P_STA_PROTOCOL,
+                  ADHOC_TO_P2P_STA_PAYLOAD_SIZE,
+                  Seconds(0.3));
+
+    // traffic from P2P STA to STA
+    CreateTraffic(wifiStaNodes.Get(1),
+                  wifiStaNodes.Get(0),
+                  P2P_STA_TO_STA_PROTOCOL,
+                  P2P_STA_TO_STA_PAYLOAD_SIZE,
+                  Seconds(0.4));
+
+    // traffic from STA to P2P STA
+    CreateTraffic(wifiStaNodes.Get(0),
+                  wifiStaNodes.Get(1),
+                  STA_TO_P2P_STA_PROTOCOL,
+                  STA_TO_P2P_STA_PAYLOAD_SIZE,
+                  Seconds(0.5));
+
+    // traffic from AP to P2P STA
+    CreateTraffic(wifiApNode.Get(0),
+                  wifiStaNodes.Get(1),
+                  AP_TO_P2P_STA_PROTOCOL,
+                  AP_TO_P2P_STA_PAYLOAD_SIZE,
+                  Seconds(0.7));
+
+    // traffic from P2P STA to AP
+    CreateTraffic(wifiStaNodes.Get(1),
+                  wifiApNode.Get(0),
+                  P2P_STA_TO_AP_PROTOCOL,
+                  P2P_STA_TO_AP_PAYLOAD_SIZE,
+                  Seconds(0.8));
+
+    Config::ConnectWithoutContext("/NodeList/*/ApplicationList/*/$ns3::PacketSocketServer/Rx",
+                                  MakeCallback(&P2pTest::Receive, this));
+
+    Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTxDrop",
+                                  MakeCallback(&P2pTest::MacTxDrop, this));
+
+    Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRxDrop",
+                                  MakeCallback(&P2pTest::MacRxDrop, this));
+}
+
+void
+P2pTest::DoRun()
+{
+    for (const auto& infrastructureActivatedPeriod : m_params.infrastructureActivatedPeriods)
+    {
+        Simulator::Schedule(infrastructureActivatedPeriod.start,
+                            &P2pTest::SetStaSsid,
+                            this,
+                            Ssid("bss-ssid"));
+        Simulator::Schedule(infrastructureActivatedPeriod.stop,
+                            &P2pTest::SetStaSsid,
+                            this,
+                            Ssid("wrong-ssid"));
+    }
+
+    for (const auto& p2pActivatedPeriod : m_params.p2pActivatedPeriods)
+    {
+        Simulator::Schedule(p2pActivatedPeriod.start, &P2pTest::SetP2pEnabled, this, true);
+        Simulator::Schedule(p2pActivatedPeriod.stop, &P2pTest::SetP2pEnabled, this, false);
+    }
+
+    Simulator::Stop(m_testDuration);
+    Simulator::Run();
+
+    CheckResults();
+
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi P2P test suite
  */
 class WifiP2pTestSuite : public TestSuite
@@ -502,6 +1066,15 @@ WifiP2pTestSuite::WifiP2pTestSuite()
             AddTestCase(new IbssCapabilitiesTest(txStandard, rxStandard, beaconing),
                         TestCase::Duration::QUICK);
         }
+    }
+
+    for (const auto& [name, params] : std::vector<std::pair<std::string, P2pTest::P2pTestParams>>{
+             {"Check P2P operation when STA is associated with AP",
+              {{{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}}, {{Seconds(0), Seconds(5)}}}},
+             {"Check P2P operation when STA is not associated with AP",
+              {{{Seconds(0), Seconds(5)}}, {}}}})
+    {
+        AddTestCase(new P2pTest(name, params), TestCase::Duration::QUICK);
     }
 }
 
