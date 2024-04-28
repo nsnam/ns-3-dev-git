@@ -1031,6 +1031,10 @@ StaWifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr) const
 bool
 StaWifiMac::CanForwardPacketsTo(Mac48Address to) const
 {
+    if (GetLinkIdForPeer(to))
+    {
+        return true;
+    }
     return IsAssociated();
 }
 
