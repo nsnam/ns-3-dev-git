@@ -475,21 +475,20 @@ WifiTxopTest::CheckResults()
      * fails. Also, verify that a CF-end frame is sent if enough time remains in the TXOP.
      * The destination of failed frames is put in square brackets below.
      *
-     *          |---NAV-----till end TXOP--------->|
-     *          |      |----NAV--till end TXOP---->|
-     *          |      | |---------------------------NAV---------------------------------->| | | |
-     * |--------------------------NAV---------------------------->| |      |              |      |
-     * |------------------------NAV----------------------->| |      |              |      |      |
-     * |-------------NAV--------------->| Start|      |         Start|      |      | |
-     * |----------NAV----------->| TXOP |      |         TXOP |      |      |   Ack            | |
-     * |-------NAV------->| |   |      |          |   |      |      | Timeout          |      | |
-     * |---NAV---->|
-     *      |---|  |---|-backoff->|---|  |---|  |---|   |-PIFS or->|---|  |---|  |---|  |---|
-     * |-----| |QoS|  |Ack|          |QoS|  |Ack|  |QoS|   |-backoff->|QoS|  |Ack|  |QoS|  |Ack|
-     * |CFend|
-     * ----------------------------------------------------------------------------------------------------
-     * From:  AP    STA1            AP    STA1    AP                 AP    STA2    AP    STA3    AP
-     *   To: STA1   [AP]           STA1    AP   [STA2]              STA2    AP    STA3    AP     all
+     *          |--NAV----till end TXOP-------->|
+     *          |     |---NAV--till end TXOP--->|
+     *          |     |              |-------------------------NAV------------------------------>|
+     *          |     |              |     |------------------------NAV------------------------->|
+     *          |     |              |     |     |-----------------------NAV-------------------->|
+     *          |     |              |     |     |                  |-----------NAV------------->|
+     *     Start|     |         Start|     |     |                  |     |--------NAV---------->|
+     *     TXOP |     |         TXOP |     |     |   Ack            |     |     |------NAV------>|
+     *      |   |     |          |   |     |     | Timeout          |     |     |     |---NAV--->|
+     *      |---| |---|-backoff->|---| |---| |---|   |-PIFS or->|---| |---| |---| |---| |-----|
+     *      |QoS| |Ack|          |QoS| |Ack| |QoS|   |-backoff->|QoS| |Ack| |QoS| |Ack| |CFend|
+     * --------------------------------------------------------------------------------------------
+     * From:  AP   STA1            AP   STA1   AP                 AP   STA2   AP   STA3   AP
+     *   To: STA1  [AP]           STA1   AP  [STA2]              STA2   AP   STA3   AP    all
      */
 
     // We expect 25 frames to be transmitted if SingleRtsPerTxop is false and 22 frames (2 RTS
