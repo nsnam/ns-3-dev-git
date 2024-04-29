@@ -22,7 +22,7 @@ VERBLOG="$DIR/doxygen.verbose.log"
 # Options ------------------------------
 #
 
-# One line sysnopsis, continue
+# One line synopsis, continue
 function synopsis_short
 {
     echo "Usage: $me [-beithv] [-s <log-file> | -l | -w] [-m <module>] [-f <regex>] [-F <regex>]"
@@ -305,6 +305,12 @@ if [ $skip_doxy -eq 1 ]; then
 
 else
 
+    # We're going to modify doxygen.conf
+    # In case the user ^C's out of this we need to restore
+    # doxygen.conf, otherwise weird things happen.
+    # function restore_doxygen_conf defined below
+    trap restore_doxygen_conf INT
+
     # Modify doxygen.conf to generate all the warnings
     # We keep dot active to generate graphs in the documentation
     # (see for example PacketTagList) and warn about ill-formed
@@ -333,6 +339,14 @@ else
     DIRECTORY_GRAPH = no
 EOF
 
+    # Swap back to original config
+    function restore_doxygen_conf()
+    {
+        if [ -e $conf.bak ]; then
+            rm -f $conf
+            mv -f $conf.bak $conf
+        fi
+    }
 
     intro_h="introspected-doxygen.h"
     if [ $skip_intro -eq 1 ]; then
@@ -350,17 +364,11 @@ EOF
         status_report $? "./ns3 run print-introspected-doxygen"
     fi
 
-    # Waf insists on writing cruft to stdout
-    sed -i.bak -E '/^Waf:/d' doc/$intro_h
-    rm doc/$intro_h.bak
-
     verbose -n "Rebuilding doxygen docs with full errors"
     (cd "$ROOT" && ./ns3 docs doxygen-no-build >&6 2>&6 )
     status_report $? "./ns3 docs doxygen-no-build"
 
-    # Swap back to original config
-    rm -f $conf
-    mv -f $conf.bak $conf
+    restore_doxygen_conf
 fi
 
 # Filter log file
