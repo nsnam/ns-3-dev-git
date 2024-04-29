@@ -854,11 +854,18 @@ WifiMac::ConfigureDcf(Ptr<Txop> dcf,
 }
 
 void
-WifiMac::ConfigureStandard(WifiStandard standard)
+WifiMac::CompleteConfig()
 {
-    NS_LOG_FUNCTION(this << standard);
-    NS_ABORT_IF(standard >= WIFI_STANDARD_80211n && !m_qosSupported);
-    NS_ABORT_MSG_IF(m_links.empty(), "No PHY configured yet");
+    NS_ASSERT_MSG(!m_links.empty(), "CompleteConfig cannot be called before creating links");
+
+    const auto& link = *m_links.cbegin()->second;
+
+    if (!link.phy || !link.stationManager || !link.channelAccessManager || !link.feManager)
+    {
+        return;
+    }
+
+    NS_LOG_FUNCTION(this);
 
     for (auto& [id, link] : m_links)
     {
@@ -893,6 +900,8 @@ WifiMac::ConfigureStandard(WifiStandard standard)
 
         ConfigurePhyDependentParameters(id);
     }
+
+    DoCompleteConfig();
 }
 
 void
@@ -962,6 +971,8 @@ WifiMac::SetFrameExchangeManagers(const std::vector<Ptr<FrameExchangeManager>>& 
         link->feManager->SetAckedMpduCallback(
             MakeCallback(&MpduTracedCallback::operator(), &m_ackedMpduCallback));
     }
+
+    CompleteConfig();
 }
 
 Ptr<FrameExchangeManager>
@@ -988,6 +999,8 @@ WifiMac::SetChannelAccessManagers(const std::vector<Ptr<ChannelAccessManager>>& 
         link->channelAccessManager = *managerIt++;
         link->channelAccessManager->SetLinkId(id);
     }
+
+    CompleteConfig();
 }
 
 Ptr<ChannelAccessManager>
@@ -1022,6 +1035,8 @@ WifiMac::SetWifiRemoteStationManagers(
     {
         link->stationManager = *managerIt++;
     }
+
+    CompleteConfig();
 }
 
 Ptr<WifiRemoteStationManager>
@@ -1282,6 +1297,8 @@ WifiMac::SetWifiPhys(const std::vector<Ptr<WifiPhy>>& phys)
     {
         link->phy = *phyIt++;
     }
+
+    CompleteConfig();
 }
 
 Ptr<WifiPhy>

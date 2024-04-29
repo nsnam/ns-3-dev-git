@@ -50,6 +50,7 @@ class AdhocWifiMac : public WifiMac
 
   private:
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
+    void DoCompleteConfig() override;
 };
 
 } // namespace ns3

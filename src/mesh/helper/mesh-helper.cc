@@ -156,7 +156,6 @@ MeshHelper::CreateInterface(const WifiPhyHelper& phyHelper,
     Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager>();
     ackManager->SetWifiMac(mac);
     fem->SetAckManager(ackManager);
-    mac->ConfigureStandard(m_standard);
     mac->SwitchFrequencyChannel(channelId);
 
     return device;

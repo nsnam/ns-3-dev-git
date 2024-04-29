@@ -492,16 +492,6 @@ class WifiMac : public Object
     void NotifyRxDrop(Ptr<const Packet> packet);
 
     /**
-     * \param standard the wifi standard to be configured
-     *
-     * This method completes the configuration process for a requested PHY standard
-     * by creating the Frame Exchange Manager and the Channel Access Manager and
-     * configuring the PHY dependent parameters.
-     * This method can only be called after a configured PHY has been set.
-     */
-    virtual void ConfigureStandard(WifiStandard standard);
-
-    /**
      * \return pointer to HtConfiguration if it exists
      */
     Ptr<HtConfiguration> GetHtConfiguration() const;
@@ -914,6 +904,16 @@ class WifiMac : public Object
     Callback<void> m_linkDown; //!< Callback when a link is down
 
   private:
+    /**
+     * Complete the configuration of the MAC layer components.
+     */
+    void CompleteConfig();
+
+    /**
+     * Allow subclasses to complete the configuration of the MAC layer components.
+     */
+    virtual void DoCompleteConfig() = 0;
+
     /**
      * \param dcf the DCF to be configured
      * \param cwmin the minimum contention window for the DCF

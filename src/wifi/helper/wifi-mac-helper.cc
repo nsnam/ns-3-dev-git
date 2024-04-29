@@ -132,7 +132,6 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     }
 
     mac->SetFrameExchangeManagers(feManagers);
-    mac->ConfigureStandard(standard);
 
     Ptr<WifiMacQueueScheduler> queueScheduler = m_queueScheduler.Create<WifiMacQueueScheduler>();
     mac->SetMacQueueScheduler(queueScheduler);

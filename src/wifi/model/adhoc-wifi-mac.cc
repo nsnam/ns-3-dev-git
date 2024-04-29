@@ -59,6 +59,12 @@ AdhocWifiMac::~AdhocWifiMac()
     NS_LOG_FUNCTION(this);
 }
 
+void
+AdhocWifiMac::DoCompleteConfig()
+{
+    NS_LOG_FUNCTION(this);
+}
+
 bool
 AdhocWifiMac::CanForwardPacketsTo(Mac48Address to) const
 {

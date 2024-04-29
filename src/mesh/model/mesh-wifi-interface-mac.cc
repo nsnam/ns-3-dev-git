@@ -76,7 +76,6 @@ MeshWifiInterfaceMac::GetTypeId()
 }
 
 MeshWifiInterfaceMac::MeshWifiInterfaceMac()
-    : m_standard(WIFI_STANDARD_80211a)
 {
     NS_LOG_FUNCTION(this);
 
@@ -598,11 +597,9 @@ MeshWifiInterfaceMac::ResetStats()
 }
 
 void
-MeshWifiInterfaceMac::ConfigureStandard(WifiStandard standard)
+MeshWifiInterfaceMac::DoCompleteConfig()
 {
     NS_ABORT_IF(!GetQosSupported());
-    WifiMac::ConfigureStandard(standard);
-    m_standard = standard;
 }
 
 void

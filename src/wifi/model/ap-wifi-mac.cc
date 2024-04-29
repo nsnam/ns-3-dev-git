@@ -238,10 +238,9 @@ ApWifiMac::GetLink(uint8_t linkId) const
 }
 
 void
-ApWifiMac::ConfigureStandard(WifiStandard standard)
+ApWifiMac::DoCompleteConfig()
 {
-    NS_LOG_FUNCTION(this << standard);
-    WifiMac::ConfigureStandard(standard);
+    NS_LOG_FUNCTION(this);
     m_beaconTxop->SetWifiMac(this);
     m_beaconTxop->SetAifsns(std::vector<uint8_t>(GetNLinks(), 1));
     m_beaconTxop->SetMinCws(std::vector<uint32_t>(GetNLinks(), 0));

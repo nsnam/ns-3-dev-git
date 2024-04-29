@@ -126,7 +126,6 @@ PowerRateAdaptationTest::ConfigureNode()
     mac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     mac->SetFrameExchangeManagers({CreateObject<FrameExchangeManager>()});
     mac->GetFrameExchangeManager(SINGLE_LINK_OP_ID)->SetAddress(mac->GetAddress());
-    mac->ConfigureStandard(WIFI_STANDARD_80211a);
     mac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager();
 

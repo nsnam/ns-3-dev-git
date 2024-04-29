@@ -83,7 +83,6 @@ class ApWifiMac : public WifiMac
     void Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
     bool SupportsSendFrom() const override;
     Ptr<WifiMacQueue> GetTxopQueue(AcIndex ac) const override;
-    void ConfigureStandard(WifiStandard standard) override;
     int64_t AssignStreams(int64_t stream) override;
 
     /**
@@ -262,6 +261,7 @@ class ApWifiMac : public WifiMac
     std::unique_ptr<LinkEntity> CreateLinkEntity() const override;
     Mac48Address DoGetLocalAddress(const Mac48Address& remoteAddr) const override;
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
+    void DoCompleteConfig() override;
 
     /**
      * Check whether the supported rate set included in the received (Re)Association

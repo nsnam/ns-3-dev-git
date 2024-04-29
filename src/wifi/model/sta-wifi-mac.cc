@@ -209,6 +209,12 @@ StaWifiMac::~StaWifiMac()
     NS_LOG_FUNCTION(this);
 }
 
+void
+StaWifiMac::DoCompleteConfig()
+{
+    NS_LOG_FUNCTION(this);
+}
+
 StaWifiMac::StaLinkEntity::~StaLinkEntity()
 {
     NS_LOG_FUNCTION_NOARGS();

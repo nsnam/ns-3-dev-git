@@ -167,7 +167,6 @@ WifiTest::CreateOne(Vector pos, Ptr<YansWifiChannel> channel)
     dev->SetMac(mac);
     mac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     mac->SetFrameExchangeManagers({CreateObject<FrameExchangeManager>()});
-    mac->ConfigureStandard(WIFI_STANDARD_80211a);
     if (mac->GetTypeOfStation() == STA)
     {
         StaticCast<StaWifiMac>(mac)->SetAssocManager(CreateObject<WifiDefaultAssocManager>());
@@ -365,7 +364,6 @@ InterferenceHelperSequenceTest::CreateOne(Vector pos, Ptr<YansWifiChannel> chann
     dev->SetMac(mac);
     mac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     mac->SetFrameExchangeManagers({CreateObject<FrameExchangeManager>()});
-    mac->ConfigureStandard(WIFI_STANDARD_80211a);
     mac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager();
     fem->SetAddress(mac->GetAddress());
@@ -588,7 +586,6 @@ DcfImmediateAccessBroadcastTestCase::DoRun()
     txDev->SetMac(txMac);
     txMac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     txMac->SetFrameExchangeManagers({CreateObject<FrameExchangeManager>()});
-    txMac->ConfigureStandard(WIFI_STANDARD_80211a);
     txMac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     auto fem = txMac->GetFrameExchangeManager();
     fem->SetAddress(txMac->GetAddress());
@@ -1876,7 +1873,6 @@ Bug2831TestCase::DoRun()
     apDev->SetMac(apMac);
     apMac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     apMac->SetFrameExchangeManagers({CreateObject<HeFrameExchangeManager>()});
-    apMac->ConfigureStandard(WIFI_STANDARD_80211ax);
     apMac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     Ptr<FrameExchangeManager> fem = apMac->GetFrameExchangeManager();
     fem->SetAddress(apMac->GetAddress());
@@ -1923,7 +1919,6 @@ Bug2831TestCase::DoRun()
     staMac->SetAddress(Mac48Address::Allocate());
     staMac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     staMac->SetFrameExchangeManagers({CreateObject<HeFrameExchangeManager>()});
-    staMac->ConfigureStandard(WIFI_STANDARD_80211ax);
     StaticCast<StaWifiMac>(staMac)->SetAssocManager(CreateObject<WifiDefaultAssocManager>());
     staMac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     fem = staMac->GetFrameExchangeManager();

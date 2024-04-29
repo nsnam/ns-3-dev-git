@@ -258,7 +258,6 @@ AmpduAggregationTest::DoSetup()
         fem->SetAddress(m_mac->GetAddress());
     }
     m_mac->SetFrameExchangeManagers(feManagers);
-    m_mac->ConfigureStandard(m_params.standard);
     m_mac->SetState(StaWifiMac::ASSOCIATED);
     if (m_params.nLinks > 1)
     {

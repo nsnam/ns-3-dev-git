@@ -380,6 +380,8 @@ class StaWifiMac : public WifiMac
     };
 
   private:
+    void DoCompleteConfig() override;
+
     /**
      * Enable or disable active probing.
      *
