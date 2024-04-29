@@ -8,10 +8,13 @@
 #define UDP_ECHO_CLIENT_H
 
 #include "ns3/application.h"
+#include "ns3/deprecated.h"
 #include "ns3/event-id.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
+
+#include <optional>
 
 namespace ns3
 {
@@ -35,20 +38,23 @@ class UdpEchoClient : public Application
     static TypeId GetTypeId();
 
     UdpEchoClient();
-
     ~UdpEchoClient() override;
+
+    static constexpr uint16_t DEFAULT_PORT{0}; //!< default port
 
     /**
      * \brief set the remote address and port
      * \param ip remote IP address
      * \param port remote port
      */
-    void SetRemote(Address ip, uint16_t port);
+    NS_DEPRECATED_3_44("Use SetRemote without port parameter instead")
+    void SetRemote(const Address& ip, uint16_t port);
+
     /**
      * \brief set the remote address
      * \param addr remote address
      */
-    void SetRemote(Address addr);
+    void SetRemote(const Address& addr);
 
     /**
      * Set the data size of the packet (the number of bytes that are sent as data
@@ -124,6 +130,24 @@ class UdpEchoClient : public Application
     void StopApplication() override;
 
     /**
+     * \brief Set the remote port (temporary function until deprecated attributes are removed)
+     * \param port remote port
+     */
+    void SetPort(uint16_t port);
+
+    /**
+     * \brief Get the remote port (temporary function until deprecated attributes are removed)
+     * \return the remote port
+     */
+    uint16_t GetPort() const;
+
+    /**
+     * \brief Get the remote address (temporary function until deprecated attributes are removed)
+     * \return the remote address
+     */
+    Address GetRemote() const;
+
+    /**
      * \brief Schedule the next packet transmission
      * \param dt time interval between packets.
      */
@@ -149,12 +173,12 @@ class UdpEchoClient : public Application
     uint32_t m_dataSize; //!< packet payload size (must be equal to m_size)
     uint8_t* m_data;     //!< packet payload data
 
-    uint32_t m_sent;       //!< Counter for sent packets
-    Ptr<Socket> m_socket;  //!< Socket
-    Address m_peerAddress; //!< Remote peer address
-    uint16_t m_peerPort;   //!< Remote peer port
-    uint8_t m_tos;         //!< The packets Type of Service
-    EventId m_sendEvent;   //!< Event to send the next packet
+    uint32_t m_sent;                    //!< Counter for sent packets
+    Ptr<Socket> m_socket;               //!< Socket
+    Address m_peer;                     //!< Remote peer address
+    std::optional<uint16_t> m_peerPort; //!< Remote peer port (deprecated) // NS_DEPRECATED_3_44
+    uint8_t m_tos;                      //!< The packets Type of Service
+    EventId m_sendEvent;                //!< Event to send the next packet
 
     /// Callbacks for tracing the packet Tx events
     TracedCallback<Ptr<const Packet>> m_txTrace;

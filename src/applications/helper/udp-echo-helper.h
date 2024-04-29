@@ -49,6 +49,7 @@ class UdpEchoClientHelper : public ApplicationHelper
      * \param port The port number of the remote udp echo server
      */
     UdpEchoClientHelper(const Address& ip, uint16_t port);
+
     /**
      * Create UdpEchoClientHelper which will make life easier for people trying
      * to set up simulations with echos. Use this variant with addresses that do

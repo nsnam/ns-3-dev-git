@@ -314,7 +314,7 @@ UdpEchoClientSetFillTestCase::DoRun()
     ApplicationContainer serverApps = echoServer.Install(nodes.Get(1));
     serverApps.Start(Seconds(1.0));
     serverApps.Stop(Seconds(10.0));
-    UdpEchoClientHelper echoClient(interfaces.GetAddress(1), port);
+    UdpEchoClientHelper echoClient(InetSocketAddress(interfaces.GetAddress(1), port));
     echoClient.SetAttribute("MaxPackets", UintegerValue(1));
     echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
     echoClient.SetAttribute("PacketSize", UintegerValue(1024));
