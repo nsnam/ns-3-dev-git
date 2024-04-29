@@ -35,7 +35,7 @@ UdpClient::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::UdpClient")
-            .SetParent<Application>()
+            .SetParent<SourceApplication>()
             .SetGroupName("Applications")
             .AddConstructor<UdpClient>()
             .AddAttribute(
@@ -67,27 +67,6 @@ UdpClient::GetTypeId()
                           MakeUintegerChecker<uint16_t>(),
                           TypeId::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
-            .AddAttribute("Remote",
-                          "The address of the destination",
-                          AddressValue(),
-                          MakeAddressAccessor(
-                              (void(UdpClient::*)(const Address&)) &
-                                  UdpClient::SetRemote, // this is needed to indicate which version
-                                                        // of the function overload to use
-                              &UdpClient::GetRemote),
-                          MakeAddressChecker())
-            .AddAttribute("Local",
-                          "The Address on which to bind the socket. If not set, it is generated "
-                          "automatically.",
-                          AddressValue(),
-                          MakeAddressAccessor(&UdpClient::m_local),
-                          MakeAddressChecker())
-            .AddAttribute("Tos",
-                          "The Type of Service used to send IPv4 packets. "
-                          "All 8 bits of the TOS byte are set (including ECN bits).",
-                          UintegerValue(0),
-                          MakeUintegerAccessor(&UdpClient::m_tos),
-                          MakeUintegerChecker<uint8_t>())
             .AddAttribute("PacketSize",
                           "Size of packets generated. The minimum packet size is 12 bytes which is "
                           "the size of the header carrying the sequence number and the time stamp.",
@@ -109,7 +88,6 @@ UdpClient::UdpClient()
     : m_sent{0},
       m_totalTx{0},
       m_socket{nullptr},
-      m_peer{},
       m_peerPort{},
       m_sendEvent{}
 {

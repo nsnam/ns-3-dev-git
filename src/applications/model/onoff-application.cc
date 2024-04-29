@@ -12,7 +12,6 @@
 
 #include "onoff-application.h"
 
-#include "ns3/address.h"
 #include "ns3/boolean.h"
 #include "ns3/data-rate.h"
 #include "ns3/inet-socket-address.h"
@@ -44,7 +43,7 @@ OnOffApplication::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::OnOffApplication")
-            .SetParent<Application>()
+            .SetParent<SourceApplication>()
             .SetGroupName("Applications")
             .AddConstructor<OnOffApplication>()
             .AddAttribute("DataRate",
@@ -57,23 +56,6 @@ OnOffApplication::GetTypeId()
                           UintegerValue(512),
                           MakeUintegerAccessor(&OnOffApplication::m_pktSize),
                           MakeUintegerChecker<uint32_t>(1))
-            .AddAttribute("Remote",
-                          "The address of the destination",
-                          AddressValue(),
-                          MakeAddressAccessor(&OnOffApplication::m_peer),
-                          MakeAddressChecker())
-            .AddAttribute("Local",
-                          "The Address on which to bind the socket. If not set, it is generated "
-                          "automatically.",
-                          AddressValue(),
-                          MakeAddressAccessor(&OnOffApplication::m_local),
-                          MakeAddressChecker())
-            .AddAttribute("Tos",
-                          "The Type of Service used to send IPv4 packets. "
-                          "All 8 bits of the TOS byte are set (including ECN bits).",
-                          UintegerValue(0),
-                          MakeUintegerAccessor(&OnOffApplication::m_tos),
-                          MakeUintegerChecker<uint8_t>())
             .AddAttribute("OnTime",
                           "A RandomVariableStream used to pick the duration of the 'On' state.",
                           StringValue("ns3::ConstantRandomVariable[Constant=1.0]"),

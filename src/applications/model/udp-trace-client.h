@@ -10,7 +10,8 @@
 #ifndef UDP_TRACE_CLIENT_H
 #define UDP_TRACE_CLIENT_H
 
-#include "ns3/application.h"
+#include "source-application.h"
+
 #include "ns3/event-id.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
@@ -50,7 +51,7 @@ class Packet;
  *
  * The latter behavior can be changed through the "TraceLoop" attribute.
  */
-class UdpTraceClient : public Application
+class UdpTraceClient : public SourceApplication
 {
   public:
     /**
@@ -71,12 +72,7 @@ class UdpTraceClient : public Application
      */
     NS_DEPRECATED_3_44("Use SetRemote without port parameter instead")
     void SetRemote(const Address& ip, uint16_t port);
-
-    /**
-     * \brief set the remote address
-     * \param addr remote address
-     */
-    void SetRemote(const Address& addr);
+    void SetRemote(const Address& addr) override;
 
     /**
      * \brief Set the trace file to be used by the application
@@ -162,10 +158,7 @@ class UdpTraceClient : public Application
 
     uint32_t m_sent;                    //!< Counter for sent packets
     Ptr<Socket> m_socket;               //!< Socket
-    Address m_peer;                     //!< Peer address
     std::optional<uint16_t> m_peerPort; //!< Remote peer port (deprecated) // NS_DEPRECATED_3_44
-    Address m_local;                    //!< Local address to bind to
-    uint8_t m_tos;                      //!< The packets Type of Service
     EventId m_sendEvent;                //!< Event to send the next packet
 
     std::vector<TraceEntry> m_entries;    //!< Entries in the trace to send

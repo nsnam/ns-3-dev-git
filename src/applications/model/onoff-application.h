@@ -14,9 +14,8 @@
 #define ONOFF_APPLICATION_H
 
 #include "seq-ts-size-header.h"
+#include "source-application.h"
 
-#include "ns3/address.h"
-#include "ns3/application.h"
 #include "ns3/data-rate.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
@@ -25,7 +24,6 @@
 namespace ns3
 {
 
-class Address;
 class RandomVariableStream;
 class Socket;
 
@@ -82,7 +80,7 @@ class Socket;
  * the header via trace sources.  Note that the continuity of the sequence
  * number may be disrupted across On/Off cycles.
  */
-class OnOffApplication : public Application
+class OnOffApplication : public SourceApplication
 {
   public:
     /**
@@ -92,7 +90,6 @@ class OnOffApplication : public Application
     static TypeId GetTypeId();
 
     OnOffApplication();
-
     ~OnOffApplication() override;
 
     /**
@@ -141,10 +138,7 @@ class OnOffApplication : public Application
     void SendPacket();
 
     Ptr<Socket> m_socket;                //!< Associated socket
-    Address m_peer;                      //!< Peer address
-    Address m_local;                     //!< Local address to bind to
     bool m_connected;                    //!< True if connected
-    uint8_t m_tos;                       //!< The packets Type of Service
     Ptr<RandomVariableStream> m_onTime;  //!< rng for On Time
     Ptr<RandomVariableStream> m_offTime; //!< rng for Off Time
     DataRate m_cbrRate;                  //!< Rate that data is generated

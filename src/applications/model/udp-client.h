@@ -11,7 +11,8 @@
 #ifndef UDP_CLIENT_H
 #define UDP_CLIENT_H
 
-#include "ns3/application.h"
+#include "source-application.h"
+
 #include "ns3/deprecated.h"
 #include "ns3/event-id.h"
 #include "ns3/ipv4-address.h"
@@ -33,7 +34,7 @@ class Packet;
  *  in their payloads
  *
  */
-class UdpClient : public Application
+class UdpClient : public SourceApplication
 {
   public:
     /**
@@ -54,12 +55,7 @@ class UdpClient : public Application
      */
     NS_DEPRECATED_3_44("Use SetRemote without port parameter instead")
     void SetRemote(const Address& ip, uint16_t port);
-
-    /**
-     * \brief set the remote address
-     * \param addr remote address
-     */
-    void SetRemote(const Address& addr);
+    void SetRemote(const Address& addr) override;
 
     /**
      * \return the total bytes sent by this app
@@ -106,10 +102,7 @@ class UdpClient : public Application
     uint32_t m_sent;                    //!< Counter for sent packets
     uint64_t m_totalTx;                 //!< Total bytes sent
     Ptr<Socket> m_socket;               //!< Socket
-    Address m_peer;                     //!< Peer address
     std::optional<uint16_t> m_peerPort; //!< Remote peer port (deprecated) // NS_DEPRECATED_3_44
-    Address m_local;                    //!< Local address to bind to
-    uint8_t m_tos;                      //!< The packets Type of Service
     EventId m_sendEvent;                //!< Event to send the next packet
 
 #ifdef NS3_LOG_ENABLE

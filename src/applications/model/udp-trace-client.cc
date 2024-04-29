@@ -53,7 +53,7 @@ UdpTraceClient::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::UdpTraceClient")
-            .SetParent<Application>()
+            .SetParent<SourceApplication>()
             .SetGroupName("Applications")
             .AddConstructor<UdpTraceClient>()
             .AddAttribute("RemoteAddress",
@@ -78,28 +78,6 @@ UdpTraceClient::GetTypeId()
                 MakeUintegerChecker<uint16_t>(),
                 TypeId::DEPRECATED,
                 "Replaced by Remote in ns-3.44.")
-            .AddAttribute(
-                "Remote",
-                "The address of the destination",
-                AddressValue(),
-                MakeAddressAccessor(
-                    (void(UdpTraceClient::*)(const Address&)) &
-                        UdpTraceClient::SetRemote, // this is needed to indicate which version of
-                                                   // the function overload to use
-                    &UdpTraceClient::GetRemote),
-                MakeAddressChecker())
-            .AddAttribute("Local",
-                          "The Address on which to bind the socket. If not set, it is generated "
-                          "automatically.",
-                          AddressValue(),
-                          MakeAddressAccessor(&UdpTraceClient::m_local),
-                          MakeAddressChecker())
-            .AddAttribute("Tos",
-                          "The Type of Service used to send IPv4 packets. "
-                          "All 8 bits of the TOS byte are set (including ECN bits).",
-                          UintegerValue(0),
-                          MakeUintegerAccessor(&UdpTraceClient::m_tos),
-                          MakeUintegerChecker<uint8_t>())
             .AddAttribute("MaxPacketSize",
                           "The maximum size of a packet (including the SeqTsHeader, 12 bytes).",
                           UintegerValue(1024),
@@ -123,7 +101,6 @@ UdpTraceClient::GetTypeId()
 UdpTraceClient::UdpTraceClient()
     : m_sent{0},
       m_socket{nullptr},
-      m_peer{},
       m_peerPort{},
       m_sendEvent{},
       m_currentEntry{0}

@@ -10,9 +10,8 @@
 #define BULK_SEND_APPLICATION_H
 
 #include "seq-ts-size-header.h"
+#include "source-application.h"
 
-#include "ns3/address.h"
-#include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
@@ -20,7 +19,6 @@
 namespace ns3
 {
 
-class Address;
 class Socket;
 class TcpHeader;
 class TcpSocketBase;
@@ -64,7 +62,7 @@ class TcpSocketBase;
  * (enable its "EnableSeqTsSizeHeader" attribute), or users may extract
  * the header via trace sources.
  */
-class BulkSendApplication : public Application
+class BulkSendApplication : public SourceApplication
 {
   public:
     /**
@@ -74,7 +72,6 @@ class BulkSendApplication : public Application
     static TypeId GetTypeId();
 
     BulkSendApplication();
-
     ~BulkSendApplication() override;
 
     /**
@@ -113,10 +110,7 @@ class BulkSendApplication : public Application
     void SendData(const Address& from, const Address& to);
 
     Ptr<Socket> m_socket;                //!< Associated socket
-    Address m_peer;                      //!< Peer address
-    Address m_local;                     //!< Local address to bind to
     bool m_connected;                    //!< True if connected
-    uint8_t m_tos;                       //!< The packets Type of Service
     uint32_t m_sendSize;                 //!< Size of data to send each time
     uint64_t m_maxBytes;                 //!< Limit total number of bytes sent
     uint64_t m_totBytes;                 //!< Total bytes sent so far

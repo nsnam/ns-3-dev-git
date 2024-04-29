@@ -10,10 +10,10 @@
 #ifndef THREE_GPP_HTTP_CLIENT_H
 #define THREE_GPP_HTTP_CLIENT_H
 
+#include "source-application.h"
 #include "three-gpp-http-header.h"
 
 #include <ns3/address.h>
-#include <ns3/application.h>
 #include <ns3/traced-callback.h>
 
 #include <optional>
@@ -94,7 +94,7 @@ class ThreeGppHttpVariables;
  * and the timestamp when the packet is transmitted (which will be used to
  * compute the delay and RTT of the packet).
  */
-class ThreeGppHttpClient : public Application
+class ThreeGppHttpClient : public SourceApplication
 {
   public:
     /**
@@ -105,6 +105,7 @@ class ThreeGppHttpClient : public Application
      * ThreeGppHttpClientHelper.
      */
     ThreeGppHttpClient();
+    void SetRemote(const Address& addr) override;
 
     /**
      * Returns the object TypeId.
@@ -184,12 +185,6 @@ class ThreeGppHttpClient : public Application
   private:
     void StartApplication() override;
     void StopApplication() override;
-
-    /**
-     * \brief set the remote address (temporary function until deprecated attributes are removed)
-     * \param addr remote address
-     */
-    void SetRemote(const Address& addr);
 
     /**
      * \brief set the remote port (temporary function until deprecated attributes are removed)
@@ -390,14 +385,8 @@ class ThreeGppHttpClient : public Application
 
     /// The `Variables` attribute.
     Ptr<ThreeGppHttpVariables> m_httpVariables;
-    /// The `RemoteServerAddress` attribute. The address of the web server.
-    Address m_peer;
     /// The `RemoteServerPort` attribute.
     std::optional<uint16_t> m_peerPort;
-    /// The `Local` attribute.
-    Address m_local;
-    /// The `Tos` attribute.
-    uint8_t m_tos;
 
     // TRACE SOURCES
 

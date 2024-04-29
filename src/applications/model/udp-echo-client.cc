@@ -27,7 +27,7 @@ UdpEchoClient::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::UdpEchoClient")
-            .SetParent<Application>()
+            .SetParent<SourceApplication>()
             .SetGroupName("Applications")
             .AddConstructor<UdpEchoClient>()
             .AddAttribute(
@@ -60,28 +60,6 @@ UdpEchoClient::GetTypeId()
                           MakeUintegerChecker<uint16_t>(),
                           TypeId::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
-            .AddAttribute(
-                "Remote",
-                "The address of the destination",
-                AddressValue(),
-                MakeAddressAccessor(
-                    (void(UdpEchoClient::*)(const Address&)) &
-                        UdpEchoClient::SetRemote, // this is needed to indicate which version of the
-                                                  // function overload to use
-                    &UdpEchoClient::GetRemote),
-                MakeAddressChecker())
-            .AddAttribute("Local",
-                          "The Address on which to bind the socket. If not set, it is generated "
-                          "automatically.",
-                          AddressValue(),
-                          MakeAddressAccessor(&UdpEchoClient::m_local),
-                          MakeAddressChecker())
-            .AddAttribute("Tos",
-                          "The Type of Service used to send IPv4 packets. "
-                          "All 8 bits of the TOS byte are set (including ECN bits).",
-                          UintegerValue(0),
-                          MakeUintegerAccessor(&UdpEchoClient::m_tos),
-                          MakeUintegerChecker<uint8_t>())
             .AddAttribute(
                 "PacketSize",
                 "Size of echo data in outbound packets",

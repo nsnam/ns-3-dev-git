@@ -51,7 +51,7 @@ ThreeGppHttpClient::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::ThreeGppHttpClient")
-            .SetParent<Application>()
+            .SetParent<SourceApplication>()
             .AddConstructor<ThreeGppHttpClient>()
             .AddAttribute(
                 "Variables",
@@ -73,23 +73,6 @@ ThreeGppHttpClient::GetTypeId()
                           MakeUintegerChecker<uint16_t>(),
                           TypeId::DEPRECATED,
                           "Replaced by Remote in ns-3.44.")
-            .AddAttribute("Remote",
-                          "The address of the destination server",
-                          AddressValue(),
-                          MakeAddressAccessor(&ThreeGppHttpClient::SetRemote),
-                          MakeAddressChecker())
-            .AddAttribute("Local",
-                          "The Address on which to bind the socket. If not set, it is generated "
-                          "automatically.",
-                          AddressValue(),
-                          MakeAddressAccessor(&ThreeGppHttpClient::m_local),
-                          MakeAddressChecker())
-            .AddAttribute("Tos",
-                          "The Type of Service used to send packets. "
-                          "All 8 bits of the TOS byte are set (including ECN bits).",
-                          UintegerValue(0),
-                          MakeUintegerAccessor(&ThreeGppHttpClient::m_tos),
-                          MakeUintegerChecker<uint8_t>())
             .AddTraceSource("RxPage",
                             "A page has been received.",
                             MakeTraceSourceAccessor(&ThreeGppHttpClient::m_rxPageTrace),
@@ -432,6 +415,10 @@ ThreeGppHttpClient::OpenConnection()
             const auto port = Inet6SocketAddress::ConvertFrom(m_peer).GetPort();
             NS_LOG_INFO(this << " Connecting to " << ipv6 << " port " << port << " / " << m_peer
                              << ".");
+        }
+        else
+        {
+            NS_ASSERT_MSG(false, "Incompatible address type: " << m_peer);
         }
 
         const auto ret [[maybe_unused]] = m_socket->Connect(m_peer);

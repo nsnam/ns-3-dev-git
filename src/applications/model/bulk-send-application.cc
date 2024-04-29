@@ -8,7 +8,6 @@
 
 #include "bulk-send-application.h"
 
-#include "ns3/address.h"
 #include "ns3/boolean.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
@@ -34,7 +33,7 @@ BulkSendApplication::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::BulkSendApplication")
-            .SetParent<Application>()
+            .SetParent<SourceApplication>()
             .SetGroupName("Applications")
             .AddConstructor<BulkSendApplication>()
             .AddAttribute("SendSize",
@@ -42,23 +41,6 @@ BulkSendApplication::GetTypeId()
                           UintegerValue(512),
                           MakeUintegerAccessor(&BulkSendApplication::m_sendSize),
                           MakeUintegerChecker<uint32_t>(1))
-            .AddAttribute("Remote",
-                          "The address of the destination",
-                          AddressValue(),
-                          MakeAddressAccessor(&BulkSendApplication::m_peer),
-                          MakeAddressChecker())
-            .AddAttribute("Local",
-                          "The Address on which to bind the socket. If not set, it is generated "
-                          "automatically.",
-                          AddressValue(),
-                          MakeAddressAccessor(&BulkSendApplication::m_local),
-                          MakeAddressChecker())
-            .AddAttribute("Tos",
-                          "The Type of Service used to send IPv4 packets. "
-                          "All 8 bits of the TOS byte are set (including ECN bits).",
-                          UintegerValue(0),
-                          MakeUintegerAccessor(&BulkSendApplication::m_tos),
-                          MakeUintegerChecker<uint8_t>())
             .AddAttribute("MaxBytes",
                           "The total number of bytes to send. "
                           "Once these bytes are sent, "
