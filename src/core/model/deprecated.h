@@ -81,7 +81,7 @@
  * \param msg Optional message to add to the compiler warning.
  *
  */
-#define NS_DEPRECATED(msg) [[deprecated(msg)]]
+#define NS_DEPRECATED(msg) /** \deprecated msg */ [[deprecated(msg)]]
 
 /**
  * \ingroup deprecation
