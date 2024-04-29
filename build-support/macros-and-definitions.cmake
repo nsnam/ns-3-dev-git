@@ -166,6 +166,14 @@ macro(process_options)
                      "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
       )
     endif()
+    # Do not use -Os for gcc 9 default builds due to a bug in gcc that can
+    # result  in extreme memory usage. See MR !1955
+    # https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/1955
+    if(GCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0")
+      string(REPLACE "-Os" "-O2" CMAKE_CXX_FLAGS_RELWITHDEBINFO
+                     "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
+      )
+    endif()
     set(CMAKE_CXX_FLAGS_DEFAULT ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
     add_definitions(-DNS3_BUILD_PROFILE_DEBUG)
   elseif(${cmakeBuildType} STREQUAL "release")
