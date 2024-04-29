@@ -181,6 +181,39 @@ GetDefaultPhyBand(WifiStandard standard)
     }
 }
 
+/**
+ * Get the TypeId name for the FrameExchangeManager corresponding to the given standard.
+ *
+ * \param standard the given standard
+ * \param qosSupported whether QoS is supported (ignored if standard is at least HT)
+ * \return the TypeId name for the FrameExchangeManager corresponding to the given standard
+ */
+inline std::string
+GetFrameExchangeManagerTypeIdName(WifiStandard standard, bool qosSupported)
+{
+    if (standard >= WIFI_STANDARD_80211be)
+    {
+        return "ns3::EhtFrameExchangeManager";
+    }
+    if (standard >= WIFI_STANDARD_80211ax)
+    {
+        return "ns3::HeFrameExchangeManager";
+    }
+    if (standard >= WIFI_STANDARD_80211ac)
+    {
+        return "ns3::VhtFrameExchangeManager";
+    }
+    if (standard >= WIFI_STANDARD_80211n)
+    {
+        return "ns3::HtFrameExchangeManager";
+    }
+    if (qosSupported)
+    {
+        return "ns3::QosFrameExchangeManager";
+    }
+    return "ns3::FrameExchangeManager";
+}
+
 } // namespace ns3
 
 #endif /* WIFI_STANDARD_H */

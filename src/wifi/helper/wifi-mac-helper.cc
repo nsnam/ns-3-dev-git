@@ -106,38 +106,36 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
     mac->SetAddress(Mac48Address::Allocate());
     device->SetMac(mac);
     mac->SetChannelAccessManagers(caManagers);
-    mac->ConfigureStandard(standard);
 
-    Ptr<WifiMacQueueScheduler> queueScheduler = m_queueScheduler.Create<WifiMacQueueScheduler>();
-    mac->SetMacQueueScheduler(queueScheduler);
-
-    // attach a protection manager and an ack manager to every instance of frame exchange manager
+    // create Frame Exchange Managers, each with an attached protection manager and ack manager
+    std::vector<Ptr<FrameExchangeManager>> feManagers;
+    auto frameExchangeManager = m_frameExchangeManager;
+    frameExchangeManager.SetTypeId(
+        GetFrameExchangeManagerTypeIdName(standard, mac->GetQosSupported()));
     for (uint8_t linkId = 0; linkId < nLinks; ++linkId)
     {
-        auto fem = mac->GetFrameExchangeManager(linkId);
+        auto fem = frameExchangeManager.Create<FrameExchangeManager>();
+        feManagers.emplace_back(fem);
 
-        Ptr<WifiProtectionManager> protectionManager =
-            m_protectionManager.Create<WifiProtectionManager>();
+        auto protectionManager = m_protectionManager.Create<WifiProtectionManager>();
         protectionManager->SetWifiMac(mac);
         protectionManager->SetLinkId(linkId);
         fem->SetProtectionManager(protectionManager);
 
-        Ptr<WifiAckManager> ackManager = m_ackManager.Create<WifiAckManager>();
+        auto ackManager = m_ackManager.Create<WifiAckManager>();
         ackManager->SetWifiMac(mac);
         ackManager->SetLinkId(linkId);
         fem->SetAckManager(ackManager);
 
-        // 11be MLDs require a MAC address to be assigned to each STA. Note that
-        // FrameExchangeManager objects are created by WifiMac::SetupFrameExchangeManager
-        // (which is invoked by WifiMac::ConfigureStandard, which is called above),
-        // which sets the FrameExchangeManager's address to the address held by WifiMac.
-        // Hence, in case the number of PHY objects is 1, the FrameExchangeManager's
-        // address equals the WifiMac's address.
-        if (device->GetNPhys() > 1)
-        {
-            fem->SetAddress(Mac48Address::Allocate());
-        }
+        // 11be MLDs require a MAC address to be assigned to each STA
+        fem->SetAddress(device->GetNPhys() > 1 ? Mac48Address::Allocate() : mac->GetAddress());
     }
+
+    mac->SetFrameExchangeManagers(feManagers);
+    mac->ConfigureStandard(standard);
+
+    Ptr<WifiMacQueueScheduler> queueScheduler = m_queueScheduler.Create<WifiMacQueueScheduler>();
+    mac->SetMacQueueScheduler(queueScheduler);
 
     // create and install the Multi User Scheduler if this is an HE AP
     Ptr<ApWifiMac> apMac;

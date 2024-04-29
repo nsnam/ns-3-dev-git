@@ -144,6 +144,11 @@ class WifiMac : public Object
     Ptr<FrameExchangeManager> GetFrameExchangeManager(uint8_t linkId = SINGLE_LINK_OP_ID) const;
 
     /**
+     * \param feManagers the frame exchange managers attached to this MAC.
+     */
+    void SetFrameExchangeManagers(const std::vector<Ptr<FrameExchangeManager>>& feManagers);
+
+    /**
      * Get the Channel Access Manager associated with the given link
      *
      * \param linkId the ID of the given link
@@ -992,15 +997,6 @@ class WifiMac : public Object
      * \param ac the Access Category of the queue to initialise.
      */
     void SetupEdcaQueue(AcIndex ac);
-
-    /**
-     * Create a Frame Exchange Manager depending on the supported version
-     * of the standard.
-     *
-     * \param standard the supported version of the standard
-     * \return the created Frame Exchange Manager
-     */
-    Ptr<FrameExchangeManager> SetupFrameExchangeManager(WifiStandard standard);
 
     /**
      * If no link has been already created, create the given number links; otherwise, do nothing.

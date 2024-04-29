@@ -144,18 +144,19 @@ MeshHelper::CreateInterface(const WifiPhyHelper& phyHelper,
     device->SetMac(mac);
     mac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     mac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
-    mac->ConfigureStandard(m_standard);
-    Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager();
-    if (fem)
-    {
-        Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager>();
-        protectionManager->SetWifiMac(mac);
-        fem->SetProtectionManager(protectionManager);
+    ObjectFactory femFactory;
+    femFactory.SetTypeId(GetFrameExchangeManagerTypeIdName(m_standard, true));
+    auto fem = femFactory.Create<FrameExchangeManager>();
+    mac->SetFrameExchangeManagers({fem});
+    fem->SetAddress(mac->GetAddress());
+    Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager>();
+    protectionManager->SetWifiMac(mac);
+    fem->SetProtectionManager(protectionManager);
 
-        Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager>();
-        ackManager->SetWifiMac(mac);
-        fem->SetAckManager(ackManager);
-    }
+    Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager>();
+    ackManager->SetWifiMac(mac);
+    fem->SetAckManager(ackManager);
+    mac->ConfigureStandard(m_standard);
     mac->SwitchFrequencyChannel(channelId);
 
     return device;

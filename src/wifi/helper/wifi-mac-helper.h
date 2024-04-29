@@ -100,6 +100,15 @@ class WifiMacHelper
     void SetChannelAccessManager(Args&&... args);
 
     /**
+     * Helper function used to set the Frame Exchange Manager object.
+     *
+     * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * \param args A sequence of name-value pairs of the attributes to set.
+     */
+    template <typename... Args>
+    void SetFrameExchangeManager(Args&&... args);
+
+    /**
      * Helper function used to set the Association Manager.
      *
      * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
@@ -174,6 +183,7 @@ class WifiMacHelper
     ObjectFactory m_dcf;                                     ///< Txop (DCF) object factory
     std::map<AcIndex, ObjectFactory, std::greater<>> m_edca; ///< QosTxop (EDCA) object factories
     ObjectFactory m_channelAccessManager; ///< Channel Access Manager object factory
+    ObjectFactory m_frameExchangeManager; ///< Frame Exchange Manager object factory
     ObjectFactory m_assocManager;         ///< Association Manager
     ObjectFactory m_queueScheduler;       ///< MAC queue scheduler
     ObjectFactory m_protectionManager;    ///< Factory to create a protection manager
@@ -220,6 +230,13 @@ void
 WifiMacHelper::SetChannelAccessManager(Args&&... args)
 {
     m_channelAccessManager.Set(args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetFrameExchangeManager(Args&&... args)
+{
+    m_frameExchangeManager.Set(args...);
 }
 
 template <typename... Args>

@@ -240,19 +240,25 @@ AmpduAggregationTest::DoSetup()
         caManagers.emplace_back(CreateObject<ChannelAccessManager>());
     }
     m_mac->SetChannelAccessManagers(caManagers);
-    m_mac->ConfigureStandard(m_params.standard);
+    ObjectFactory femFactory;
+    femFactory.SetTypeId(GetFrameExchangeManagerTypeIdName(m_params.standard, true));
+    std::vector<Ptr<FrameExchangeManager>> feManagers;
     for (uint8_t i = 0; i < m_params.nLinks; i++)
     {
-        auto fem = m_mac->GetFrameExchangeManager(i);
+        auto fem = femFactory.Create<FrameExchangeManager>();
+        feManagers.emplace_back(fem);
         auto protectionManager = CreateObject<WifiDefaultProtectionManager>();
         protectionManager->SetWifiMac(m_mac);
         fem->SetProtectionManager(protectionManager);
         auto ackManager = CreateObject<WifiDefaultAckManager>();
         ackManager->SetWifiMac(m_mac);
         fem->SetAckManager(ackManager);
-        // here we should assign link addresses in case of MLDs, but we don't actually use link
-        // addresses in this test
+        // here we should assign distinct link addresses in case of MLDs, but we don't actually use
+        // link addresses in this test
+        fem->SetAddress(m_mac->GetAddress());
     }
+    m_mac->SetFrameExchangeManagers(feManagers);
+    m_mac->ConfigureStandard(m_params.standard);
     m_mac->SetState(StaWifiMac::ASSOCIATED);
     if (m_params.nLinks > 1)
     {

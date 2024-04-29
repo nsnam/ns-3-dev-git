@@ -26,7 +26,7 @@
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/error-model.h"
 #include "ns3/fcfs-wifi-queue-scheduler.h"
-#include "ns3/frame-exchange-manager.h"
+#include "ns3/he-frame-exchange-manager.h"
 #include "ns3/header-serialization-test.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/interference-helper.h"
@@ -166,6 +166,7 @@ WifiTest::CreateOne(Vector pos, Ptr<YansWifiChannel> channel)
     mac->SetAddress(Mac48Address::Allocate());
     dev->SetMac(mac);
     mac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
+    mac->SetFrameExchangeManagers({CreateObject<FrameExchangeManager>()});
     mac->ConfigureStandard(WIFI_STANDARD_80211a);
     if (mac->GetTypeOfStation() == STA)
     {
@@ -173,6 +174,7 @@ WifiTest::CreateOne(Vector pos, Ptr<YansWifiChannel> channel)
     }
     mac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager();
+    fem->SetAddress(mac->GetAddress());
     Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager>();
     protectionManager->SetWifiMac(mac);
     fem->SetProtectionManager(protectionManager);
@@ -362,9 +364,11 @@ InterferenceHelperSequenceTest::CreateOne(Vector pos, Ptr<YansWifiChannel> chann
     mac->SetAddress(Mac48Address::Allocate());
     dev->SetMac(mac);
     mac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
+    mac->SetFrameExchangeManagers({CreateObject<FrameExchangeManager>()});
     mac->ConfigureStandard(WIFI_STANDARD_80211a);
     mac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager();
+    fem->SetAddress(mac->GetAddress());
     Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager>();
     protectionManager->SetWifiMac(mac);
     fem->SetProtectionManager(protectionManager);
@@ -583,9 +587,11 @@ DcfImmediateAccessBroadcastTestCase::DoRun()
     txMac->SetAddress(Mac48Address::Allocate());
     txDev->SetMac(txMac);
     txMac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
+    txMac->SetFrameExchangeManagers({CreateObject<FrameExchangeManager>()});
     txMac->ConfigureStandard(WIFI_STANDARD_80211a);
     txMac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     auto fem = txMac->GetFrameExchangeManager();
+    fem->SetAddress(txMac->GetAddress());
     auto protectionManager = CreateObject<WifiDefaultProtectionManager>();
     protectionManager->SetWifiMac(txMac);
     fem->SetProtectionManager(protectionManager);
@@ -1869,9 +1875,11 @@ Bug2831TestCase::DoRun()
     apMac->SetAddress(Mac48Address::Allocate());
     apDev->SetMac(apMac);
     apMac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
+    apMac->SetFrameExchangeManagers({CreateObject<HeFrameExchangeManager>()});
     apMac->ConfigureStandard(WIFI_STANDARD_80211ax);
     apMac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     Ptr<FrameExchangeManager> fem = apMac->GetFrameExchangeManager();
+    fem->SetAddress(apMac->GetAddress());
     Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager>();
     protectionManager->SetWifiMac(apMac);
     fem->SetProtectionManager(protectionManager);
@@ -1914,10 +1922,12 @@ Bug2831TestCase::DoRun()
     staMac->SetDevice(staDev);
     staMac->SetAddress(Mac48Address::Allocate());
     staMac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
+    staMac->SetFrameExchangeManagers({CreateObject<HeFrameExchangeManager>()});
     staMac->ConfigureStandard(WIFI_STANDARD_80211ax);
     StaticCast<StaWifiMac>(staMac)->SetAssocManager(CreateObject<WifiDefaultAssocManager>());
     staMac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     fem = staMac->GetFrameExchangeManager();
+    fem->SetAddress(staMac->GetAddress());
     protectionManager = CreateObject<WifiDefaultProtectionManager>();
     protectionManager->SetWifiMac(staMac);
     fem->SetProtectionManager(protectionManager);

@@ -870,16 +870,15 @@ WifiMac::ConfigureStandard(WifiStandard standard)
         NS_ABORT_MSG_IF(!link->channelAccessManager,
                         "[LinkID " << +id << "] A channel access manager must have been set");
 
-        link->channelAccessManager->SetupPhyListener(link->phy);
+        NS_ABORT_MSG_IF(!link->feManager,
+                        "[LinkID " << +id << "] A frame exchange manager must have been set");
 
-        if (!link->feManager)
-        {
-            link->feManager = SetupFrameExchangeManager(standard);
-        }
-        link->feManager->SetWifiPhy(link->phy);
-        link->feManager->SetWifiMac(this);
-        link->feManager->SetLinkId(id);
+        link->channelAccessManager->SetupPhyListener(link->phy);
         link->channelAccessManager->SetupFrameExchangeManager(link->feManager);
+
+        link->feManager->SetWifiPhy(link->phy);
+        link->feManager->SetMacTxMiddle(m_txMiddle);
+        link->feManager->SetMacRxMiddle(m_rxMiddle);
 
         if (m_txop)
         {
@@ -930,55 +929,39 @@ WifiMac::CreateLinksIfNeeded(std::size_t nLinks)
     return true;
 }
 
-Ptr<FrameExchangeManager>
-WifiMac::SetupFrameExchangeManager(WifiStandard standard)
+void
+WifiMac::SetFrameExchangeManagers(const std::vector<Ptr<FrameExchangeManager>>& feManagers)
 {
-    NS_LOG_FUNCTION(this << standard);
-    NS_ABORT_MSG_IF(standard == WIFI_STANDARD_UNSPECIFIED, "Wifi standard not set");
-    Ptr<FrameExchangeManager> feManager;
+    NS_LOG_FUNCTION(this);
 
-    if (standard >= WIFI_STANDARD_80211be)
+    if (!CreateLinksIfNeeded(feManagers.size()))
     {
-        feManager = CreateObject<EhtFrameExchangeManager>();
-    }
-    else if (standard >= WIFI_STANDARD_80211ax)
-    {
-        feManager = CreateObject<HeFrameExchangeManager>();
-    }
-    else if (standard >= WIFI_STANDARD_80211ac)
-    {
-        feManager = CreateObject<VhtFrameExchangeManager>();
-    }
-    else if (standard >= WIFI_STANDARD_80211n)
-    {
-        feManager = CreateObject<HtFrameExchangeManager>();
-    }
-    else if (m_qosSupported)
-    {
-        feManager = CreateObject<QosFrameExchangeManager>();
-    }
-    else
-    {
-        feManager = CreateObject<FrameExchangeManager>();
+        NS_ABORT_MSG_IF(feManagers.size() != m_links.size(),
+                        "The number of provided Frame Exchange Manager objects ("
+                            << feManagers.size() << ") must match the number of existing links ("
+                            << m_links.size() << ")");
     }
 
-    feManager->SetMacTxMiddle(m_txMiddle);
-    feManager->SetMacRxMiddle(m_rxMiddle);
-    feManager->SetAddress(GetAddress());
-    feManager->GetWifiTxTimer().SetMpduResponseTimeoutCallback(
-        MakeCallback(&MpduResponseTimeoutTracedCallback::operator(),
-                     &m_mpduResponseTimeoutCallback));
-    feManager->GetWifiTxTimer().SetPsduResponseTimeoutCallback(
-        MakeCallback(&PsduResponseTimeoutTracedCallback::operator(),
-                     &m_psduResponseTimeoutCallback));
-    feManager->GetWifiTxTimer().SetPsduMapResponseTimeoutCallback(
-        MakeCallback(&PsduMapResponseTimeoutTracedCallback::operator(),
-                     &m_psduMapResponseTimeoutCallback));
-    feManager->SetDroppedMpduCallback(
-        MakeCallback(&DroppedMpduTracedCallback::operator(), &m_droppedMpduCallback));
-    feManager->SetAckedMpduCallback(
-        MakeCallback(&MpduTracedCallback::operator(), &m_ackedMpduCallback));
-    return feManager;
+    for (auto managerIt = feManagers.cbegin(); auto& [id, link] : m_links)
+    {
+        link->feManager = *managerIt++;
+        link->feManager->SetWifiMac(this);
+        link->feManager->SetLinkId(id);
+        // connect callbacks
+        link->feManager->GetWifiTxTimer().SetMpduResponseTimeoutCallback(
+            MakeCallback(&MpduResponseTimeoutTracedCallback::operator(),
+                         &m_mpduResponseTimeoutCallback));
+        link->feManager->GetWifiTxTimer().SetPsduResponseTimeoutCallback(
+            MakeCallback(&PsduResponseTimeoutTracedCallback::operator(),
+                         &m_psduResponseTimeoutCallback));
+        link->feManager->GetWifiTxTimer().SetPsduMapResponseTimeoutCallback(
+            MakeCallback(&PsduMapResponseTimeoutTracedCallback::operator(),
+                         &m_psduMapResponseTimeoutCallback));
+        link->feManager->SetDroppedMpduCallback(
+            MakeCallback(&DroppedMpduTracedCallback::operator(), &m_droppedMpduCallback));
+        link->feManager->SetAckedMpduCallback(
+            MakeCallback(&MpduTracedCallback::operator(), &m_ackedMpduCallback));
+    }
 }
 
 Ptr<FrameExchangeManager>
