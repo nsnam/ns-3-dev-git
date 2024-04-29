@@ -867,12 +867,9 @@ WifiMac::ConfigureStandard(WifiStandard standard)
             "[LinkID " << +id
                        << "] PHY must have been set and an operating channel must have been set");
 
-        // do not create a ChannelAccessManager and a FrameExchangeManager if they
-        // already exist (this function may be called after ResetWifiPhys)
-        if (!link->channelAccessManager)
-        {
-            link->channelAccessManager = CreateObject<ChannelAccessManager>();
-        }
+        NS_ABORT_MSG_IF(!link->channelAccessManager,
+                        "[LinkID " << +id << "] A channel access manager must have been set");
+
         link->channelAccessManager->SetupPhyListener(link->phy);
 
         if (!link->feManager)
@@ -882,7 +879,6 @@ WifiMac::ConfigureStandard(WifiStandard standard)
         link->feManager->SetWifiPhy(link->phy);
         link->feManager->SetWifiMac(this);
         link->feManager->SetLinkId(id);
-        link->channelAccessManager->SetLinkId(id);
         link->channelAccessManager->SetupFrameExchangeManager(link->feManager);
 
         if (m_txop)
@@ -989,6 +985,26 @@ Ptr<FrameExchangeManager>
 WifiMac::GetFrameExchangeManager(uint8_t linkId) const
 {
     return GetLink(linkId).feManager;
+}
+
+void
+WifiMac::SetChannelAccessManagers(const std::vector<Ptr<ChannelAccessManager>>& caManagers)
+{
+    NS_LOG_FUNCTION(this);
+
+    if (!CreateLinksIfNeeded(caManagers.size()))
+    {
+        NS_ABORT_MSG_IF(caManagers.size() != m_links.size(),
+                        "The number of provided Channel Access Manager objects ("
+                            << caManagers.size() << ") must match the number of existing links ("
+                            << m_links.size() << ")");
+    }
+
+    for (auto managerIt = caManagers.cbegin(); auto& [id, link] : m_links)
+    {
+        link->channelAccessManager = *managerIt++;
+        link->channelAccessManager->SetLinkId(id);
+    }
 }
 
 Ptr<ChannelAccessManager>

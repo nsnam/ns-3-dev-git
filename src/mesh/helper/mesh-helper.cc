@@ -143,6 +143,7 @@ MeshHelper::CreateInterface(const WifiPhyHelper& phyHelper,
     mac->SetAddress(Mac48Address::Allocate());
     device->SetMac(mac);
     mac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
+    mac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     mac->ConfigureStandard(m_standard);
     Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager();
     if (fem)

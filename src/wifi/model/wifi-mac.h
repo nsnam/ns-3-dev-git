@@ -152,6 +152,11 @@ class WifiMac : public Object
     Ptr<ChannelAccessManager> GetChannelAccessManager(uint8_t linkId = SINGLE_LINK_OP_ID) const;
 
     /**
+     * \param caManagers the channel access managers attached to this MAC.
+     */
+    void SetChannelAccessManagers(const std::vector<Ptr<ChannelAccessManager>>& caManagers);
+
+    /**
      * Get the number of links (can be greater than 1 for 11be devices only).
      *
      * \return the number of links used by this MAC

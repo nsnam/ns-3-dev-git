@@ -165,6 +165,7 @@ WifiTest::CreateOne(Vector pos, Ptr<YansWifiChannel> channel)
     mac->SetDevice(dev);
     mac->SetAddress(Mac48Address::Allocate());
     dev->SetMac(mac);
+    mac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     mac->ConfigureStandard(WIFI_STANDARD_80211a);
     if (mac->GetTypeOfStation() == STA)
     {
@@ -360,6 +361,7 @@ InterferenceHelperSequenceTest::CreateOne(Vector pos, Ptr<YansWifiChannel> chann
     mac->SetDevice(dev);
     mac->SetAddress(Mac48Address::Allocate());
     dev->SetMac(mac);
+    mac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     mac->ConfigureStandard(WIFI_STANDARD_80211a);
     mac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager();
@@ -580,6 +582,7 @@ DcfImmediateAccessBroadcastTestCase::DoRun()
     txMac->SetDevice(txDev);
     txMac->SetAddress(Mac48Address::Allocate());
     txDev->SetMac(txMac);
+    txMac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     txMac->ConfigureStandard(WIFI_STANDARD_80211a);
     txMac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     auto fem = txMac->GetFrameExchangeManager();
@@ -1865,6 +1868,7 @@ Bug2831TestCase::DoRun()
     apMac->SetDevice(apDev);
     apMac->SetAddress(Mac48Address::Allocate());
     apDev->SetMac(apMac);
+    apMac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     apMac->ConfigureStandard(WIFI_STANDARD_80211ax);
     apMac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     Ptr<FrameExchangeManager> fem = apMac->GetFrameExchangeManager();
@@ -1909,6 +1913,7 @@ Bug2831TestCase::DoRun()
     staDev->SetMac(staMac);
     staMac->SetDevice(staDev);
     staMac->SetAddress(Mac48Address::Allocate());
+    staMac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     staMac->ConfigureStandard(WIFI_STANDARD_80211ax);
     StaticCast<StaWifiMac>(staMac)->SetAssocManager(CreateObject<WifiDefaultAssocManager>());
     staMac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());

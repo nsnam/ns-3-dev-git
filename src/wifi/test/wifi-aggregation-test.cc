@@ -234,6 +234,12 @@ AmpduAggregationTest::DoSetup()
     m_mac->SetAddress(Mac48Address("00:00:00:00:00:01"));
     m_device->SetMac(m_mac);
     m_mac->SetWifiPhys(m_phys);
+    std::vector<Ptr<ChannelAccessManager>> caManagers;
+    for (uint8_t i = 0; i < m_params.nLinks; i++)
+    {
+        caManagers.emplace_back(CreateObject<ChannelAccessManager>());
+    }
+    m_mac->SetChannelAccessManagers(caManagers);
     m_mac->ConfigureStandard(m_params.standard);
     for (uint8_t i = 0; i < m_params.nLinks; i++)
     {

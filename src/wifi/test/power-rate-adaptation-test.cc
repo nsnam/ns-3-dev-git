@@ -123,6 +123,7 @@ PowerRateAdaptationTest::ConfigureNode()
     mac->SetDevice(dev);
     mac->SetAddress(Mac48Address::Allocate());
     dev->SetMac(mac);
+    mac->SetChannelAccessManagers({CreateObject<ChannelAccessManager>()});
     mac->ConfigureStandard(WIFI_STANDARD_80211a);
     mac->SetMacQueueScheduler(CreateObject<FcfsWifiQueueScheduler>());
     Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager();

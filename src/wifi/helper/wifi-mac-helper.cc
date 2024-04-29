@@ -33,6 +33,7 @@
 #include "ns3/wifi-protection-manager.h"
 
 #include <sstream>
+#include <vector>
 
 namespace ns3
 {
@@ -48,6 +49,7 @@ WifiMacHelper::WifiMacHelper()
         auto [it, inserted] = m_edca.try_emplace(aci);
         it->second.SetTypeId("ns3::QosTxop");
     }
+    m_channelAccessManager.SetTypeId("ns3::ChannelAccessManager");
     m_assocManager.SetTypeId("ns3::WifiDefaultAssocManager");
     m_queueScheduler.SetTypeId("ns3::FcfsWifiQueueScheduler");
     m_protectionManager.SetTypeId("ns3::WifiDefaultProtectionManager");
@@ -88,19 +90,29 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
         macObjectFactory.Set(s, PointerValue(edca.Create<QosTxop>()));
     }
 
+    // WaveNetDevice (through ns-3.38) stores PHY entities in a different member than WifiNetDevice,
+    // hence GetNPhys() would return 0
+    auto nLinks = std::max<uint8_t>(device->GetNPhys(), 1);
+
+    // create Channel Access Managers
+    std::vector<Ptr<ChannelAccessManager>> caManagers;
+    for (uint8_t linkId = 0; linkId < nLinks; ++linkId)
+    {
+        caManagers.emplace_back(m_channelAccessManager.Create<ChannelAccessManager>());
+    }
+
     Ptr<WifiMac> mac = macObjectFactory.Create<WifiMac>();
     mac->SetDevice(device);
     mac->SetAddress(Mac48Address::Allocate());
     device->SetMac(mac);
+    mac->SetChannelAccessManagers(caManagers);
     mac->ConfigureStandard(standard);
 
     Ptr<WifiMacQueueScheduler> queueScheduler = m_queueScheduler.Create<WifiMacQueueScheduler>();
     mac->SetMacQueueScheduler(queueScheduler);
 
-    // WaveNetDevice (through ns-3.38) stores PHY entities in a different member than WifiNetDevice,
-    // hence GetNPhys() would return 0. We have to attach a protection manager and an ack manager to
-    // the unique instance of frame exchange manager anyway
-    for (uint8_t linkId = 0; linkId < std::max<uint8_t>(device->GetNPhys(), 1); ++linkId)
+    // attach a protection manager and an ack manager to every instance of frame exchange manager
+    for (uint8_t linkId = 0; linkId < nLinks; ++linkId)
     {
         auto fem = mac->GetFrameExchangeManager(linkId);
 
