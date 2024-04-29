@@ -998,6 +998,14 @@ class WifiMac : public Object
     Ptr<FrameExchangeManager> SetupFrameExchangeManager(WifiStandard standard);
 
     /**
+     * If no link has been already created, create the given number links; otherwise, do nothing.
+     *
+     * \param nLinks the given number of links
+     * \return whether the given number of links have been created
+     */
+    bool CreateLinksIfNeeded(std::size_t nLinks);
+
+    /**
      * Create a LinkEntity object.
      *
      * \return a unique pointer to the created LinkEntity object

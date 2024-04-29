@@ -918,6 +918,22 @@ WifiMac::ConfigurePhyDependentParameters(uint8_t linkId)
     ConfigureContentionWindow(cwmin, cwmax);
 }
 
+bool
+WifiMac::CreateLinksIfNeeded(std::size_t nLinks)
+{
+    if (!m_links.empty())
+    {
+        return false;
+    }
+
+    for (std::size_t i = 0; i < nLinks; i++)
+    {
+        m_links.emplace(i, CreateLinkEntity());
+        m_linkIds.insert(i);
+    }
+    return true;
+}
+
 Ptr<FrameExchangeManager>
 WifiMac::SetupFrameExchangeManager(WifiStandard standard)
 {
@@ -994,20 +1010,18 @@ WifiMac::SetWifiRemoteStationManagers(
 {
     NS_LOG_FUNCTION(this);
 
-    NS_ABORT_MSG_UNLESS(m_links.empty() || m_links.size() == stationManagers.size(),
-                        "If links have been already created, the number of provided "
-                        "Remote Manager objects ("
-                            << stationManagers.size()
-                            << ") must "
-                               "match the number of links ("
-                            << m_links.size() << ")");
-
-    for (std::size_t i = 0; i < stationManagers.size(); i++)
+    if (!CreateLinksIfNeeded(stationManagers.size()))
     {
-        // the link may already exist in case PHY objects were configured first
-        auto [it, inserted] = m_links.emplace(i, CreateLinkEntity());
-        m_linkIds.insert(i);
-        it->second->stationManager = stationManagers[i];
+        NS_ABORT_MSG_IF(stationManagers.size() != m_links.size(),
+                        "The number of provided Remote Manager objects ("
+                            << stationManagers.size()
+                            << ") must match the number of existing links (" << m_links.size()
+                            << ")");
+    }
+
+    for (auto managerIt = stationManagers.cbegin(); auto& [id, link] : m_links)
+    {
+        link->stationManager = *managerIt++;
     }
 }
 
@@ -1257,22 +1271,17 @@ WifiMac::SetWifiPhys(const std::vector<Ptr<WifiPhy>>& phys)
     NS_LOG_FUNCTION(this);
     ResetWifiPhys();
 
-    NS_ABORT_MSG_UNLESS(m_links.empty() || m_links.size() == phys.size(),
-                        "If links have been already created, the number of provided "
-                        "PHY objects ("
-                            << phys.size()
-                            << ") must match the number "
-                               "of links ("
-                            << m_links.size() << ")");
-
-    for (std::size_t i = 0; i < phys.size(); i++)
+    if (!CreateLinksIfNeeded(phys.size()))
     {
-        // the link may already exist in case we are setting new PHY objects
-        // (ResetWifiPhys just nullified the PHY(s) but left the links)
-        // or the remote station managers were configured first
-        auto [it, inserted] = m_links.emplace(i, CreateLinkEntity());
-        m_linkIds.insert(i);
-        it->second->phy = phys[i];
+        NS_ABORT_MSG_IF(phys.size() != m_links.size(),
+                        "The number of provided PHY objects ("
+                            << phys.size() << ") must match the number of existing links ("
+                            << m_links.size() << ")");
+    }
+
+    for (auto phyIt = phys.cbegin(); auto& [id, link] : m_links)
+    {
+        link->phy = *phyIt++;
     }
 }
 
