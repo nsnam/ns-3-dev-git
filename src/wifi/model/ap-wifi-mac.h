@@ -25,6 +25,10 @@
 #include "wifi-mac-header.h"
 #include "wifi-mac.h"
 
+#include "ns3/attribute-container.h"
+#include "ns3/enum.h"
+#include "ns3/pair.h"
+
 #include <unordered_map>
 #include <variant>
 
@@ -160,6 +164,65 @@ class ApWifiMac : public WifiMac
      * \return the maximum among the values of the Queue Size subfields
      */
     uint8_t GetMaxBufferStatus(Mac48Address address) const;
+
+    /// ACI-indexed map of access parameters of type unsigned integer (CWmin, CWmax and AIFSN)
+    using UintAccessParamsMap = std::map<AcIndex, std::vector<uint64_t>>;
+
+    /// ACI-indexed map of access parameters of type Time (TxopLimit)
+    using TimeAccessParamsMap = std::map<AcIndex, std::vector<Time>>;
+
+    /// AttributeValue type of a pair (ACI, access parameters of type unsigned integer)
+    using UintAccessParamsPairValue =
+        PairValue<EnumValue<AcIndex>, AttributeContainerValue<UintegerValue, ',', std::vector>>;
+
+    /// AttributeValue type of a pair (ACI, access parameters of type Time)
+    using TimeAccessParamsPairValue =
+        PairValue<EnumValue<AcIndex>, AttributeContainerValue<TimeValue, ',', std::vector>>;
+
+    /// AttributeValue type of an ACI-indexed map of access parameters of type unsigned integer
+    using UintAccessParamsMapValue = AttributeContainerValue<UintAccessParamsPairValue, ';'>;
+
+    /// AttributeValue type of ACI-indexed map of access parameters of type Time
+    using TimeAccessParamsMapValue = AttributeContainerValue<TimeAccessParamsPairValue, ';'>;
+
+    /**
+     * Get a checker for the CwMinsForSta, CwMaxsForSta and AifsnsForSta attributes, which can
+     * be used to deserialize an ACI-indexed map of access parameters of type unsigned integer
+     * (CWmin, CWmax and AIFSN) from a string:
+     *
+     * \code
+     *   ApWifiMac::UintAccessParamsMapValue value;
+     *   value.DeserializeFromString("BE 31,31; VO 15,15",
+     *                               ApWifiMac::GetUintAccessParamsChecker<uint32_t>());
+     *   auto map = value.Get();
+     * \endcode
+     *
+     * The type of \p map is ApWifiMac::UintAccessParamsMapValue::result_type, which is
+     * std::list<std::pair<AcIndex, std::vector<uint64_t>>>.
+     *
+     * \tparam T \explicit the type of the unsigned integer access parameter
+     * \return a checker for the CwMinsForSta, CwMaxsForSta and AifsnsForSta attributes
+     */
+    template <class T>
+    static Ptr<const AttributeChecker> GetUintAccessParamsChecker();
+
+    /**
+     * Get a checker for the TxopLimitsForSta attribute, which can be used to deserialize an
+     * ACI-indexed map of access parameters of type Time (TxopLimit) from a string:
+     *
+     * \code
+     *   ApWifiMac::TimeAccessParamsMapValue value;
+     *   value.DeserializeFromString("BE 3200us; VO 3232us",
+     *                               ApWifiMac::GetTimeAccessParamsChecker());
+     *   auto map = value.Get();
+     * \endcode
+     *
+     * The type of \p map is ApWifiMac::TimeAccessParamsMapValue::result_type, which is
+     * std::list<std::pair<AcIndex, std::vector<Time>>>.
+     *
+     * \return a checker for the TxopLimitsForSta attribute
+     */
+    static Ptr<const AttributeChecker> GetTimeAccessParamsChecker();
 
   protected:
     /**
@@ -517,6 +580,11 @@ class ApWifiMac : public WifiMac
     Time m_bsrLifetime;            //!< Lifetime of Buffer Status Reports
     /// transition timeout events running for EMLSR clients
     std::map<Mac48Address, EventId> m_transitionTimeoutEvents;
+
+    UintAccessParamsMap m_cwMinsForSta;     //!< Per-AC CW min values to advertise to stations
+    UintAccessParamsMap m_cwMaxsForSta;     //!< Per-AC CW max values to advertise to stations
+    UintAccessParamsMap m_aifsnsForSta;     //!< Per-AC AIFS values to advertise to stations
+    TimeAccessParamsMap m_txopLimitsForSta; //!< Per-AC TXOP limits values to advertise to stations
 
     /// store value and timestamp for each Buffer Status Report
     struct BsrType

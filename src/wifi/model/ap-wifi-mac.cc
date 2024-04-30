@@ -97,6 +97,70 @@ ApWifiMac::GetTypeId()
                           TimeValue(MilliSeconds(20)),
                           MakeTimeAccessor(&ApWifiMac::m_bsrLifetime),
                           MakeTimeChecker())
+            .AddAttribute(
+                "CwMinsForSta",
+                "The CW min values that the AP advertises in EDCA Parameter Set elements and the "
+                "associated stations will use. The value of this attribute is an AC-indexed map "
+                "containing the CW min values for given ACs for all the links (sorted in "
+                "increasing order of link ID). If no values are provided for an AC, the same "
+                "values used by the AP are advertised. In case a string is used to set this "
+                "attribute, the string shall contain the pairs separated by a semicolon (;); "
+                "in every pair, the AC index and the list of values are separated by a blank "
+                "space, and the values of a list are separated by a comma (,) without spaces. "
+                "E.g. \"BE 31,31,31; VI 15,15,15\" defines the CW min values for AC BE and AC VI "
+                "for an AP MLD having three links.",
+                StringValue(""),
+                MakeAttributeContainerAccessor<UintAccessParamsPairValue, ';'>(
+                    &ApWifiMac::m_cwMinsForSta),
+                GetUintAccessParamsChecker<uint32_t>())
+            .AddAttribute(
+                "CwMaxsForSta",
+                "The CW max values that the AP advertises in EDCA Parameter Set elements and the "
+                "associated stations will use. The value of this attribute is an AC-indexed map "
+                "containing the CW max values for given ACs for all the links (sorted in "
+                "increasing order of link ID). If no values are provided for an AC, the same "
+                "values used by the AP are advertised. In case a string is used to set this "
+                "attribute, the string shall contain the pairs separated by a semicolon (;); "
+                "in every pair, the AC index and the list of values are separated by a blank "
+                "space, and the values of a list are separated by a comma (,) without spaces. "
+                "E.g. \"BE 31,31,31; VI 15,15,15\" defines the CW max values for AC BE and AC VI "
+                "for an AP MLD having three links.",
+                StringValue(""),
+                MakeAttributeContainerAccessor<UintAccessParamsPairValue, ';'>(
+                    &ApWifiMac::m_cwMaxsForSta),
+                GetUintAccessParamsChecker<uint32_t>())
+            .AddAttribute(
+                "AifsnsForSta",
+                "The AIFSN values that the AP advertises in EDCA Parameter Set elements and the "
+                "associated stations will use. The value of this attribute is an AC-indexed map "
+                "containing the AIFSN values for given ACs for all the links (sorted in "
+                "increasing order of link ID). If no values are provided for an AC, the same "
+                "values used by the AP are advertised. In case a string is used to set this "
+                "attribute, the string shall contain the pairs separated by a semicolon (;); "
+                "in every pair, the AC index and the list of values are separated by a blank "
+                "space, and the values of a list are separated by a comma (,) without spaces. "
+                "E.g. \"BE 3,3,3; VI 2,2,2\" defines the AIFSN values for AC BE and AC VI "
+                "for an AP MLD having three links.",
+                StringValue(""),
+                MakeAttributeContainerAccessor<UintAccessParamsPairValue, ';'>(
+                    &ApWifiMac::m_aifsnsForSta),
+                GetUintAccessParamsChecker<uint8_t>())
+            .AddAttribute(
+                "TxopLimitsForSta",
+                "The TXOP limit values that the AP advertises in EDCA Parameter Set elements and "
+                "the associated stations will use. The value of this attribute is an AC-indexed "
+                "map containing the TXOP limit values for given ACs for all the links (sorted in "
+                "increasing order of link ID). If no values are provided for an AC, the same "
+                "values used by the AP are advertised. In case a string is used to set this "
+                "attribute, the string shall contain the pairs separated by a semicolon (;); "
+                "in every pair, the AC index and the list of values are separated by a blank "
+                "space, and the values of a list are separated by a comma (,) without spaces. "
+                "E.g. \"BE 3200us,3200us,3200us; VI 2400us,2400us,2400us\" defines the TXOP limit "
+                "values for AC BE and AC VI for an AP MLD having three links.",
+                StringValue(""),
+                MakeAttributeContainerAccessor<TimeAccessParamsPairValue, ';'>(
+                    &ApWifiMac::m_txopLimitsForSta),
+                GetTimeAccessParamsChecker())
             .AddTraceSource("AssociatedSta",
                             "A station associated with this access point.",
                             MakeTraceSourceAccessor(&ApWifiMac::m_assocLogger),
@@ -106,6 +170,27 @@ ApWifiMac::GetTypeId()
                             MakeTraceSourceAccessor(&ApWifiMac::m_deAssocLogger),
                             "ns3::ApWifiMac::AssociationCallback");
     return tid;
+}
+
+template <class T>
+Ptr<const AttributeChecker>
+ApWifiMac::GetUintAccessParamsChecker()
+{
+    return MakeAttributeContainerChecker<UintAccessParamsPairValue, ';'>(
+        MakePairChecker<EnumValue<AcIndex>,
+                        AttributeContainerValue<UintegerValue, ',', std::vector>>(
+            MakeEnumChecker(AC_BE, "BE", AC_BK, "BK", AC_VI, "VI", AC_VO, "VO"),
+            MakeAttributeContainerChecker<UintegerValue, ',', std::vector>(
+                MakeUintegerChecker<T>())));
+}
+
+Ptr<const AttributeChecker>
+ApWifiMac::GetTimeAccessParamsChecker()
+{
+    return MakeAttributeContainerChecker<TimeAccessParamsPairValue, ';'>(
+        MakePairChecker<EnumValue<AcIndex>, AttributeContainerValue<TimeValue, ',', std::vector>>(
+            MakeEnumChecker(AC_BE, "BE", AC_BK, "BK", AC_VI, "VI", AC_VO, "VO"),
+            MakeAttributeContainerChecker<TimeValue, ',', std::vector>(MakeTimeChecker())));
 }
 
 ApWifiMac::ApWifiMac()
@@ -525,35 +610,51 @@ ApWifiMac::GetEdcaParameterSet(uint8_t linkId) const
     Time txopLimit;
 
     edca = GetQosTxop(AC_BE);
-    txopLimit = edca->GetTxopLimit(linkId);
     edcaParameters.SetBeAci(0);
-    edcaParameters.SetBeCWmin(edca->GetMinCw(linkId));
-    edcaParameters.SetBeCWmax(edca->GetMaxCw(linkId));
-    edcaParameters.SetBeAifsn(edca->GetAifsn(linkId));
+    edcaParameters.SetBeCWmin(m_cwMinsForSta.contains(AC_BE) ? m_cwMinsForSta.at(AC_BE).at(linkId)
+                                                             : edca->GetMinCw(linkId));
+    edcaParameters.SetBeCWmax(m_cwMaxsForSta.contains(AC_BE) ? m_cwMaxsForSta.at(AC_BE).at(linkId)
+                                                             : edca->GetMaxCw(linkId));
+    edcaParameters.SetBeAifsn(m_aifsnsForSta.contains(AC_BE) ? m_aifsnsForSta.at(AC_BE).at(linkId)
+                                                             : edca->GetAifsn(linkId));
+    txopLimit = m_txopLimitsForSta.contains(AC_BE) ? m_txopLimitsForSta.at(AC_BE).at(linkId)
+                                                   : edca->GetTxopLimit(linkId);
     edcaParameters.SetBeTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
 
     edca = GetQosTxop(AC_BK);
-    txopLimit = edca->GetTxopLimit(linkId);
     edcaParameters.SetBkAci(1);
-    edcaParameters.SetBkCWmin(edca->GetMinCw(linkId));
-    edcaParameters.SetBkCWmax(edca->GetMaxCw(linkId));
-    edcaParameters.SetBkAifsn(edca->GetAifsn(linkId));
+    edcaParameters.SetBkCWmin(m_cwMinsForSta.contains(AC_BK) ? m_cwMinsForSta.at(AC_BK).at(linkId)
+                                                             : edca->GetMinCw(linkId));
+    edcaParameters.SetBkCWmax(m_cwMaxsForSta.contains(AC_BK) ? m_cwMaxsForSta.at(AC_BK).at(linkId)
+                                                             : edca->GetMaxCw(linkId));
+    edcaParameters.SetBkAifsn(m_aifsnsForSta.contains(AC_BK) ? m_aifsnsForSta.at(AC_BK).at(linkId)
+                                                             : edca->GetAifsn(linkId));
+    txopLimit = m_txopLimitsForSta.contains(AC_BK) ? m_txopLimitsForSta.at(AC_BK).at(linkId)
+                                                   : edca->GetTxopLimit(linkId);
     edcaParameters.SetBkTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
 
     edca = GetQosTxop(AC_VI);
-    txopLimit = edca->GetTxopLimit(linkId);
     edcaParameters.SetViAci(2);
-    edcaParameters.SetViCWmin(edca->GetMinCw(linkId));
-    edcaParameters.SetViCWmax(edca->GetMaxCw(linkId));
-    edcaParameters.SetViAifsn(edca->GetAifsn(linkId));
+    edcaParameters.SetViCWmin(m_cwMinsForSta.contains(AC_VI) ? m_cwMinsForSta.at(AC_VI).at(linkId)
+                                                             : edca->GetMinCw(linkId));
+    edcaParameters.SetViCWmax(m_cwMaxsForSta.contains(AC_VI) ? m_cwMaxsForSta.at(AC_VI).at(linkId)
+                                                             : edca->GetMaxCw(linkId));
+    edcaParameters.SetViAifsn(m_aifsnsForSta.contains(AC_VI) ? m_aifsnsForSta.at(AC_VI).at(linkId)
+                                                             : edca->GetAifsn(linkId));
+    txopLimit = m_txopLimitsForSta.contains(AC_VI) ? m_txopLimitsForSta.at(AC_VI).at(linkId)
+                                                   : edca->GetTxopLimit(linkId);
     edcaParameters.SetViTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
 
     edca = GetQosTxop(AC_VO);
-    txopLimit = edca->GetTxopLimit(linkId);
     edcaParameters.SetVoAci(3);
-    edcaParameters.SetVoCWmin(edca->GetMinCw(linkId));
-    edcaParameters.SetVoCWmax(edca->GetMaxCw(linkId));
-    edcaParameters.SetVoAifsn(edca->GetAifsn(linkId));
+    edcaParameters.SetVoCWmin(m_cwMinsForSta.contains(AC_VO) ? m_cwMinsForSta.at(AC_VO).at(linkId)
+                                                             : edca->GetMinCw(linkId));
+    edcaParameters.SetVoCWmax(m_cwMaxsForSta.contains(AC_VO) ? m_cwMaxsForSta.at(AC_VO).at(linkId)
+                                                             : edca->GetMaxCw(linkId));
+    edcaParameters.SetVoAifsn(m_aifsnsForSta.contains(AC_VO) ? m_aifsnsForSta.at(AC_VO).at(linkId)
+                                                             : edca->GetAifsn(linkId));
+    txopLimit = m_txopLimitsForSta.contains(AC_VO) ? m_txopLimitsForSta.at(AC_VO).at(linkId)
+                                                   : edca->GetTxopLimit(linkId);
     edcaParameters.SetVoTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
 
     edcaParameters.SetQosInfo(0);

@@ -31,6 +31,7 @@ been tested on Linux. The latest known version to work with ns-3 is cppyy==3.1.2
 - (lr-wpan) !1927 - Adds standard version comments to MLME-GET.request function
 - (lr-wpan) !1926 - Adds namespace lrwpan and prefix shortening
 - (wifi) - The `WifiMacHelper` provides a `SetDcf` and a `SetEdca` methods to configure attributes of `Txop` and `QosTxop` objects, respectively
+- (wifi) - The `ApWifiMac` provides new attributes (`CwMinsForSta`, `CwMaxsForSta`, `AifsnsForSta` and `TxopLimitsForSta`) to define the EDCA access parameters to include in the EDCA Parameter Set advertised to associated stations
 
 ### Bugs fixed
 
