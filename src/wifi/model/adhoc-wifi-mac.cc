@@ -454,6 +454,10 @@ AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         ReceiveBeacon(mpdu, linkId);
         break;
 
+    case WIFI_MAC_MGT_PROBE_REQUEST:
+        ReceiveProbeRequest(mpdu, linkId);
+        break;
+
     default:
         // Invoke the receive handler of our parent class to deal with any
         // other frames. Specifically, this will handle Block Ack-related
@@ -495,6 +499,31 @@ AdhocWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, linkId_t linkId)
 
     // store capabilities from received beacon
     RecordCapabilities(beacon, from, linkId);
+
+    NS_LOG_INFO("Peer " << from << " changed from undiscovered to discovered");
+    GetWifiRemoteStationManager()->RecordAdhocPeer(from);
+}
+
+void
+AdhocWifiMac::ReceiveProbeRequest(Ptr<const WifiMpdu> mpdu, linkId_t linkId)
+{
+    NS_LOG_FUNCTION(this << *mpdu << linkId);
+    const WifiMacHeader& hdr = mpdu->GetHeader();
+    NS_ASSERT(hdr.IsProbeReq());
+
+    const auto from = hdr.GetAddr2();
+    NS_LOG_DEBUG("Probe request received from " << hdr.GetAddr2());
+
+    if (!GetWifiRemoteStationManager()->IsBrandNew(from))
+    {
+        // capabilities already learnt: nothing to do
+        return;
+    }
+
+    // store capabilities from probe request
+    MgtProbeRequestHeader probeReq;
+    mpdu->GetPacket()->PeekHeader(probeReq);
+    RecordCapabilities(probeReq, from, linkId);
 
     NS_LOG_INFO("Peer " << from << " changed from undiscovered to discovered");
     GetWifiRemoteStationManager()->RecordAdhocPeer(from);
