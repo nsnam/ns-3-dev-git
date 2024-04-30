@@ -109,7 +109,7 @@ PhyStateTrace(std::string context, Time start, Time duration, WifiPhyState state
 int
 main(int argc, char* argv[])
 {
-    std::string dataRate{"1Mbps"};
+    DataRate dataRate{"1Mb/s"};
     uint32_t packetSize{1000}; // bytes
     Time duration{"10s"};
     double initialEnergy{7.5}; // joule

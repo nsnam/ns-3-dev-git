@@ -73,7 +73,7 @@ int
 main(int argc, char* argv[])
 {
     uint32_t payloadSize{1472};           /* Transport layer payload size in bytes. */
-    std::string dataRate{"100Mbps"};      /* Application layer datarate. */
+    DataRate dataRate{"100Mb/s"};         /* Application layer datarate. */
     std::string tcpVariant{"TcpNewReno"}; /* TCP variant type. */
     std::string phyRate{"HtMcs7"};        /* Physical layer bitrate. */
     Time simulationTime{"10s"};           /* Simulation time. */
