@@ -142,7 +142,8 @@ jobs:
           ./ns3 build coverage_gcc
           cd ./build/coverage
           bash <(curl -s https://codecov.io/bash) -f ns3.info || echo "Codecov did not collect coverage reports"
-
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   Windows_MinGW:
     runs-on: windows-latest
     defaults:
