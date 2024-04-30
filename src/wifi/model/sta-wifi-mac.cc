@@ -1884,7 +1884,9 @@ StaWifiMac::CheckSupportedRates(std::variant<MgtBeaconHeader, MgtProbeResponseHe
 }
 
 void
-StaWifiMac::RecordOperations(const MgtFrameType& frame, const Mac48Address& from, uint8_t linkId)
+StaWifiMac::RecordOperations(const MgtResponseFrameType& frame,
+                             const Mac48Address& from,
+                             linkId_t linkId)
 {
     NS_LOG_FUNCTION(this << frame.index() << from << linkId);
     auto remoteStationManager = GetWifiRemoteStationManager(linkId);
@@ -1940,7 +1942,7 @@ StaWifiMac::RecordOperations(const MgtFrameType& frame, const Mac48Address& from
 }
 
 void
-StaWifiMac::ApplyOperationalSettings(const MgtFrameType& frame,
+StaWifiMac::ApplyOperationalSettings(const MgtResponseFrameType& frame,
                                      const Mac48Address& apAddr,
                                      const Mac48Address& bssid,
                                      uint8_t linkId)
