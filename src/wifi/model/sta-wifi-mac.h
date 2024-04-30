@@ -153,10 +153,10 @@ class StaWifiMac : public WifiMac
             Mac48Address bssid;  ///< BSSID
         };
 
-        Mac48Address m_bssid;  ///< BSSID
-        Mac48Address m_apAddr; ///< AP MAC address
-        double m_snr;          ///< SNR in linear scale
-        MgtFrameType m_frame;  ///< The body of the management frame used to update AP info
+        Mac48Address m_bssid;         ///< BSSID
+        Mac48Address m_apAddr;        ///< AP MAC address
+        double m_snr;                 ///< SNR in linear scale
+        MgtResponseFrameType m_frame; ///< The body of the management frame used to update AP info
         WifiScanParams::Channel m_channel; ///< The channel the management frame was received on
         uint8_t m_linkId;                  ///< ID of the link used to communicate with the AP
         std::list<SetupLinksInfo>
@@ -457,7 +457,7 @@ class StaWifiMac : public WifiMac
      * @param bssid MAC address of BSSID
      * @param linkId ID of the link the management frame was received over
      */
-    void UpdateApInfo(const MgtFrameType& frame,
+    void UpdateApInfo(const MgtResponseFrameType& frame,
                       const Mac48Address& apAddr,
                       const Mac48Address& bssid,
                       uint8_t linkId);

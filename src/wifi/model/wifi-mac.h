@@ -102,9 +102,17 @@ class WifiMac : public Object
     WifiMac(const WifiMac&) = delete;
     WifiMac& operator=(const WifiMac&) = delete;
 
-    /// type of the management frames
-    using MgtFrameType =
+    /// type of the management response frames
+    using MgtResponseFrameType =
         std::variant<MgtBeaconHeader, MgtProbeResponseHeader, MgtAssocResponseHeader>;
+
+    /// type of the management frames
+    using MgtFrameType = std::variant<MgtBeaconHeader,
+                                      MgtProbeResponseHeader,
+                                      MgtAssocResponseHeader,
+                                      MgtAssocRequestHeader,
+                                      MgtReassocRequestHeader,
+                                      MgtProbeRequestHeader>;
 
     /**
      * Assign a fixed random variable stream number to the random variables

@@ -1664,14 +1664,17 @@ StaWifiMac::CheckSupportedRates(std::variant<MgtBeaconHeader, MgtProbeResponseHe
 }
 
 void
-StaWifiMac::UpdateApInfo(const MgtFrameType& frame,
+StaWifiMac::UpdateApInfo(const MgtResponseFrameType& frame,
                          const Mac48Address& apAddr,
                          const Mac48Address& bssid,
                          uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << frame.index() << apAddr << bssid << +linkId);
 
-    RecordCapabilities(frame, apAddr, linkId);
+    auto doRecordCapabilities = [&](auto&& mgtFrame) {
+        RecordCapabilities(mgtFrame, apAddr, linkId);
+    };
+    std::visit(doRecordCapabilities, frame);
 
     // ERP Information is not present in Association Response frames
     const std::optional<ErpInformation>* erpInformation = nullptr;
