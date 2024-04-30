@@ -175,6 +175,8 @@ ThreeGppSpectrumPropagationLossModel::CalculateLongTermComponent(
     // as described in Section 5.2.2 of 3GPP TR 36.897,
     // and so equal beam weights are used for all the ports.
     // Support of the full-connection model for TXRU virtualization would need extensions.
+    const auto uElemsPerPort = uAnt->GetHElemsPerPort();
+    const auto sElemsPerPort = sAnt->GetHElemsPerPort();
     for (size_t tIndex = 0; tIndex < sPortElems; tIndex++, sIndex++)
     {
         std::complex<double> rxSum(0, 0);
@@ -182,21 +184,21 @@ ThreeGppSpectrumPropagationLossModel::CalculateLongTermComponent(
         for (size_t rIndex = 0; rIndex < uPortElems; rIndex++, uIndex++)
         {
             rxSum += uW[uIndex - startU] * params->m_channel(uIndex, sIndex, cIndex);
-            auto testV = (rIndex % uAnt->GetHElemsPerPort());
-            auto ptInc = uAnt->GetHElemsPerPort() - 1;
+            auto testV = (rIndex % uElemsPerPort);
+            auto ptInc = uElemsPerPort - 1;
             if (testV == ptInc)
             {
-                auto incVal = uAnt->GetNumColumns() - uAnt->GetHElemsPerPort();
+                auto incVal = uAnt->GetNumColumns() - uElemsPerPort;
                 uIndex += incVal; // Increment by a factor to reach next column in a port
             }
         }
 
         txSum += sW[sIndex - startS] * rxSum;
-        auto testV = (tIndex % sAnt->GetHElemsPerPort());
-        auto ptInc = sAnt->GetHElemsPerPort() - 1;
+        auto testV = (tIndex % sElemsPerPort);
+        auto ptInc = sElemsPerPort - 1;
         if (testV == ptInc)
         {
-            size_t incVal = sAnt->GetNumColumns() - sAnt->GetHElemsPerPort();
+            size_t incVal = sAnt->GetNumColumns() - sElemsPerPort;
             sIndex += incVal; // Increment by a factor to reach next column in a port
         }
     }
