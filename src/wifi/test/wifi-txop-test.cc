@@ -124,9 +124,11 @@ class WifiTxopTest : public TestCase
     NetDeviceContainer m_staDevices;     ///< container for stations' NetDevices
     NetDeviceContainer m_apDevices;      ///< container for AP's NetDevice
     std::vector<FrameInfo> m_txPsdus;    ///< transmitted PSDUs
-    Time m_txopLimit;                    ///< TXOP limit
-    uint8_t m_aifsn;                     ///< AIFSN for BE
-    uint32_t m_cwMin;                    ///< CWmin for BE
+    Time m_apTxopLimit;                  ///< TXOP limit for AP (AC BE)
+    uint8_t m_staAifsn;                  ///< AIFSN for STAs (AC BE)
+    uint32_t m_staCwMin;                 ///< CWmin for STAs (AC BE)
+    uint32_t m_staCwMax;                 ///< CWmax for STAs (AC BE)
+    Time m_staTxopLimit;                 ///< TXOP limit for STAs (AC BE)
     uint16_t m_received;                 ///< number of packets received by the stations
     bool m_nonHt;                        ///< whether to use 802.11a or 802.11ax
     std::size_t m_payloadSizeRtsOn;      ///< size in bytes of packets protected by RTS
@@ -145,7 +147,11 @@ class WifiTxopTest : public TestCase
 WifiTxopTest::WifiTxopTest(const Params& params)
     : TestCase("Check correct operation within TXOPs"),
       m_nStations(3),
-      m_txopLimit(MicroSeconds(4768)),
+      m_apTxopLimit(MicroSeconds(4768)),
+      m_staAifsn(4),
+      m_staCwMin(63),
+      m_staCwMax(511),
+      m_staTxopLimit(MicroSeconds(3232)),
       m_received(0),
       m_nonHt(params.nonHt),
       m_payloadSizeRtsOn(m_nonHt ? 2000 : 540),
@@ -285,15 +291,27 @@ WifiTxopTest::DoRun()
 
     m_staDevices = wifi.Install(phy, mac, wifiStaNodes);
 
-    mac.SetType("ns3::ApWifiMac",
-                "QosSupported",
-                BooleanValue(true),
-                "Ssid",
-                SsidValue(Ssid("wifi-txop-ssid")),
-                "BeaconInterval",
-                TimeValue(MicroSeconds(102400)),
-                "EnableBeaconJitter",
-                BooleanValue(false));
+    mac.SetType(
+        "ns3::ApWifiMac",
+        "QosSupported",
+        BooleanValue(true),
+        "Ssid",
+        SsidValue(Ssid("wifi-txop-ssid")),
+        "BeaconInterval",
+        TimeValue(MicroSeconds(102400)),
+        "EnableBeaconJitter",
+        BooleanValue(false),
+        "AifsnsForSta",
+        StringValue(std::string("BE ") + std::to_string(m_staAifsn)),
+        "CwMinsForSta",
+        ApWifiMac::UintAccessParamsMapValue(
+            ApWifiMac::UintAccessParamsMap{{AC_BE, std::vector<uint64_t>{m_staCwMin}}}),
+        "CwMaxsForSta",
+        StringValue(std::string("BE ") + std::to_string(m_staCwMax)),
+        "TxopLimitsForSta",
+        StringValue(std::string("BE ") + std::to_string(m_staTxopLimit.GetMicroSeconds()) + "us"));
+
+    mac.SetEdca(AC_BE, "TxopLimits", AttributeContainerValue<TimeValue>(std::list{m_apTxopLimit}));
 
     m_apDevices = wifi.Install(phy, mac, wifiApNode);
 
@@ -327,14 +345,6 @@ WifiTxopTest::DoRun()
     mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobility.Install(wifiApNode);
     mobility.Install(wifiStaNodes);
-
-    // set the TXOP limit on BE AC
-    dev = DynamicCast<WifiNetDevice>(m_apDevices.Get(0));
-    PointerValue ptr;
-    dev->GetMac()->GetAttribute("BE_Txop", ptr);
-    ptr.Get<QosTxop>()->SetTxopLimit(m_txopLimit);
-    m_aifsn = ptr.Get<QosTxop>()->Txop::GetAifsn();
-    m_cwMin = ptr.Get<QosTxop>()->Txop::GetMinCw();
 
     PacketSocketHelper packetSocket;
     packetSocket.Install(wifiApNode);
@@ -451,7 +461,32 @@ WifiTxopTest::DoRun()
 void
 WifiTxopTest::CheckResults()
 {
+    // check that STAs used the access parameters advertised by the AP
+    for (uint32_t i = 0; i < m_staDevices.GetN(); ++i)
+    {
+        auto staEdca = DynamicCast<WifiNetDevice>(m_staDevices.Get(i))->GetMac()->GetQosTxop(AC_BE);
+        NS_TEST_EXPECT_MSG_EQ(staEdca->GetAifsn(SINGLE_LINK_OP_ID),
+                              m_staAifsn,
+                              "Unexpected AIFSN for STA " << i);
+        NS_TEST_EXPECT_MSG_EQ(staEdca->GetMinCw(SINGLE_LINK_OP_ID),
+                              m_staCwMin,
+                              "Unexpected CWmin for STA " << i);
+        NS_TEST_EXPECT_MSG_EQ(staEdca->GetMaxCw(SINGLE_LINK_OP_ID),
+                              m_staCwMax,
+                              "Unexpected CWmax for STA " << i);
+        NS_TEST_EXPECT_MSG_EQ(staEdca->GetTxopLimit(SINGLE_LINK_OP_ID),
+                              m_staTxopLimit,
+                              "Unexpected TXOP limit for STA " << i);
+    }
+
     const auto apDev = DynamicCast<WifiNetDevice>(m_apDevices.Get(0));
+
+    NS_TEST_EXPECT_MSG_EQ(apDev->GetMac()->GetQosTxop(AC_BE)->GetTxopLimit(SINGLE_LINK_OP_ID),
+                          m_apTxopLimit,
+                          "Unexpected TXOP limit for AP");
+
+    const auto aifsn = apDev->GetMac()->GetQosTxop(AC_BE)->GetAifsn(SINGLE_LINK_OP_ID);
+    const auto cwMin = apDev->GetMac()->GetQosTxop(AC_BE)->GetMinCw(SINGLE_LINK_OP_ID);
     Time tEnd;                        // TX end for a frame
     Time tStart;                      // TX start for the next frame
     Time txopStart;                   // TXOP start time
@@ -518,7 +553,7 @@ WifiTxopTest::CheckResults()
             "PSDU duration expected not to exceed duration based RTS/CTS threshold");
     }
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[0].header.GetDuration(),
-                          RoundDurationId(m_txopLimit - m_txPsdus[0].txDuration),
+                          RoundDurationId(m_apTxopLimit - m_txPsdus[0].txDuration),
                           "Duration/ID of the first frame must cover the whole TXOP");
 
     // a Normal Ack is sent by STA1
@@ -551,11 +586,11 @@ WifiTxopTest::CheckResults()
 
     NS_TEST_EXPECT_MSG_GT_OR_EQ(
         tStart - tEnd,
-        eifsNoDifs + sifs + m_aifsn * slot,
+        eifsNoDifs + sifs + aifsn * slot,
         "Less than AIFS elapsed between AckTimeout and the next TXOP start");
     NS_TEST_EXPECT_MSG_LT_OR_EQ(
         tStart - tEnd,
-        eifsNoDifs + sifs + m_aifsn * slot + (2 * (m_cwMin + 1) - 1) * slot,
+        eifsNoDifs + sifs + aifsn * slot + (2 * (cwMin + 1) - 1) * slot,
         "More than AIFS+BO elapsed between AckTimeout and the next TXOP start");
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[2].header.IsQosData(),
                           true,
@@ -577,7 +612,7 @@ WifiTxopTest::CheckResults()
             "PSDU duration expected not to exceed duration based RTS/CTS threshold");
     }
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[2].header.GetDuration(),
-                          RoundDurationId(m_txopLimit - m_txPsdus[2].txDuration),
+                          RoundDurationId(m_apTxopLimit - m_txPsdus[2].txDuration),
                           "Duration/ID of the retransmitted frame must cover the whole TXOP");
 
     // a Normal Ack is then sent by STA1
@@ -620,10 +655,10 @@ WifiTxopTest::CheckResults()
             rtsCtsTxDurationThresh,
             "PSDU duration expected not to exceed duration based RTS/CTS threshold");
     }
-    NS_TEST_EXPECT_MSG_EQ(
-        m_txPsdus[4].header.GetDuration(),
-        RoundDurationId(m_txopLimit - (m_txPsdus[4].txStart - txopStart) - m_txPsdus[4].txDuration),
-        "Duration/ID of the second frame does not cover the remaining TXOP");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[4].header.GetDuration(),
+                          RoundDurationId(m_apTxopLimit - (m_txPsdus[4].txStart - txopStart) -
+                                          m_txPsdus[4].txDuration),
+                          "Duration/ID of the second frame does not cover the remaining TXOP");
 
     // STA2 receives a corrupted frame and hence it does not send the Ack. When the AckTimeout
     // expires, the AP performs PIFS recovery or invoke backoff, without terminating the TXOP,
@@ -645,11 +680,11 @@ WifiTxopTest::CheckResults()
     {
         NS_TEST_EXPECT_MSG_GT_OR_EQ(
             tStart - tEnd,
-            sifs + m_aifsn * slot,
+            sifs + aifsn * slot,
             "Less than AIFS elapsed between AckTimeout and the next transmission");
         NS_TEST_EXPECT_MSG_LT_OR_EQ(
             tStart - tEnd,
-            sifs + m_aifsn * slot + (2 * (m_cwMin + 1) - 1) * slot,
+            sifs + aifsn * slot + (2 * (cwMin + 1) - 1) * slot,
             "More than AIFS+BO elapsed between AckTimeout and the next TXOP start");
     }
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[5].header.IsQosData(), true, "Expected a QoS data frame");
@@ -669,10 +704,10 @@ WifiTxopTest::CheckResults()
             rtsCtsTxDurationThresh,
             "PSDU duration expected not to exceed duration based RTS/CTS threshold");
     }
-    NS_TEST_EXPECT_MSG_EQ(
-        m_txPsdus[5].header.GetDuration(),
-        RoundDurationId(m_txopLimit - (m_txPsdus[5].txStart - txopStart) - m_txPsdus[5].txDuration),
-        "Duration/ID of the second frame does not cover the remaining TXOP");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[5].header.GetDuration(),
+                          RoundDurationId(m_apTxopLimit - (m_txPsdus[5].txStart - txopStart) -
+                                          m_txPsdus[5].txDuration),
+                          "Duration/ID of the second frame does not cover the remaining TXOP");
 
     // a Normal Ack is then sent by STA2
     tEnd = m_txPsdus[5].txStart + m_txPsdus[5].txDuration;
@@ -716,10 +751,10 @@ WifiTxopTest::CheckResults()
             rtsCtsTxDurationThresh,
             "PSDU duration expected not to exceed duration based RTS/CTS threshold");
     }
-    NS_TEST_EXPECT_MSG_EQ(
-        m_txPsdus[7].header.GetDuration(),
-        RoundDurationId(m_txopLimit - (m_txPsdus[7].txStart - txopStart) - m_txPsdus[7].txDuration),
-        "Duration/ID of the third frame does not cover the remaining TXOP");
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[7].header.GetDuration(),
+                          RoundDurationId(m_apTxopLimit - (m_txPsdus[7].txStart - txopStart) -
+                                          m_txPsdus[7].txDuration),
+                          "Duration/ID of the third frame does not cover the remaining TXOP");
 
     // a Normal Ack is then sent by STA3
     tEnd = m_txPsdus[7].txStart + m_txPsdus[7].txDuration;
@@ -754,10 +789,10 @@ WifiTxopTest::CheckResults()
     tStart = m_txPsdus[10].txStart;
 
     NS_TEST_EXPECT_MSG_GT_OR_EQ(tStart - tEnd,
-                                sifs + m_aifsn * slot,
+                                sifs + m_staAifsn * slot,
                                 "Less than AIFS elapsed between two TXOPs");
     NS_TEST_EXPECT_MSG_LT_OR_EQ(tStart - tEnd,
-                                sifs + m_aifsn * slot + m_cwMin * slot + tolerance,
+                                sifs + m_staAifsn * slot + m_staCwMin * slot + tolerance,
                                 "More than AIFS+BO elapsed between two TXOPs");
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[10].header.IsQosData(), true, "Expected a QoS data frame");
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[10].header.GetAddr1(),
@@ -778,7 +813,7 @@ WifiTxopTest::CheckResults()
     }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[10].header.GetDuration(),
-        RoundDurationId(m_txopLimit - m_txPsdus[10].txDuration),
+        RoundDurationId(m_staTxopLimit - m_txPsdus[10].txDuration),
         "Duration/ID of the frame sent by the first station does not cover the remaining TXOP");
 
     // a Normal Ack is then sent by the AP
@@ -840,7 +875,7 @@ WifiTxopTest::CheckResults()
                           DynamicCast<WifiNetDevice>(m_staDevices.Get(0))->GetMac()->GetAddress(),
                           "Expected an RTS frame sent by the AP to the first station");
     NS_TEST_EXPECT_MSG_EQ(m_txPsdus[13].header.GetDuration(),
-                          RoundDurationId(m_txopLimit - m_txPsdus[13].txDuration),
+                          RoundDurationId(m_apTxopLimit - m_txPsdus[13].txDuration),
                           "Duration/ID of the first RTS frame must cover the whole TXOP");
 
     // a CTS is sent by STA1
@@ -886,7 +921,7 @@ WifiTxopTest::CheckResults()
     }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[15].header.GetDuration(),
-        RoundDurationId(m_txopLimit - (m_txPsdus[15].txStart - txopStart) -
+        RoundDurationId(m_apTxopLimit - (m_txPsdus[15].txStart - txopStart) -
                         m_txPsdus[15].txDuration),
         "Duration/ID of the first QoS data frame does not cover the remaining TXOP");
 
@@ -929,7 +964,7 @@ WifiTxopTest::CheckResults()
             DynamicCast<WifiNetDevice>(m_staDevices.Get(1))->GetMac()->GetAddress(),
             "Expected an RTS frame sent by the AP to the second station");
         NS_TEST_EXPECT_MSG_EQ(m_txPsdus[idx].header.GetDuration(),
-                              RoundDurationId(m_txopLimit - (m_txPsdus[idx].txStart - txopStart) -
+                              RoundDurationId(m_apTxopLimit - (m_txPsdus[idx].txStart - txopStart) -
                                               m_txPsdus[idx].txDuration),
                               "Duration/ID of the second RTS frame must cover the whole TXOP");
 
@@ -981,7 +1016,7 @@ WifiTxopTest::CheckResults()
     }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[idx].header.GetDuration(),
-        RoundDurationId(m_txopLimit - (m_txPsdus[idx].txStart - txopStart) -
+        RoundDurationId(m_apTxopLimit - (m_txPsdus[idx].txStart - txopStart) -
                         m_txPsdus[idx].txDuration),
         "Duration/ID of the second QoS data frame does not cover the remaining TXOP");
 
@@ -1023,7 +1058,7 @@ WifiTxopTest::CheckResults()
             DynamicCast<WifiNetDevice>(m_staDevices.Get(2))->GetMac()->GetAddress(),
             "Expected an RTS frame sent by the AP to the third station");
         NS_TEST_EXPECT_MSG_EQ(m_txPsdus[idx].header.GetDuration(),
-                              RoundDurationId(m_txopLimit - (m_txPsdus[idx].txStart - txopStart) -
+                              RoundDurationId(m_apTxopLimit - (m_txPsdus[idx].txStart - txopStart) -
                                               m_txPsdus[idx].txDuration),
                               "Duration/ID of the third RTS frame must cover the whole TXOP");
 
@@ -1074,7 +1109,7 @@ WifiTxopTest::CheckResults()
     }
     NS_TEST_EXPECT_MSG_EQ(
         m_txPsdus[idx].header.GetDuration(),
-        RoundDurationId(m_txopLimit - (m_txPsdus[idx].txStart - txopStart) -
+        RoundDurationId(m_apTxopLimit - (m_txPsdus[idx].txStart - txopStart) -
                         m_txPsdus[idx].txDuration),
         "Duration/ID of the third QoS data frame does not cover the remaining TXOP");
 
