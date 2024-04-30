@@ -91,6 +91,14 @@ class AdhocWifiMac : public WifiMac
     void ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
 
     /**
+     * Process the Probe Request frame received on the given link.
+     *
+     * \param mpdu the MPDU containing the Probe Request frame
+     * \param linkId the ID of the given link
+     */
+    void ReceiveProbeRequest(Ptr<const WifiMpdu> mpdu, uint8_t linkId);
+
+    /**
      * Fill in the same capabilities as this device for a given new peer.
      *
      * \param address the MAC address of the peer
