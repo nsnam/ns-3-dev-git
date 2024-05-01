@@ -16,6 +16,8 @@
 #include <ns3/application.h>
 #include <ns3/traced-callback.h>
 
+#include <optional>
+
 namespace ns3
 {
 
@@ -183,6 +185,18 @@ class ThreeGppHttpClient : public Application
     void StartApplication() override;
     void StopApplication() override;
 
+    /**
+     * \brief set the remote address (temporary function until deprecated attributes are removed)
+     * \param addr remote address
+     */
+    void SetRemote(const Address& addr);
+
+    /**
+     * \brief set the remote port (temporary function until deprecated attributes are removed)
+     * \param port remote port
+     */
+    void SetPort(uint16_t port);
+
     // SOCKET CALLBACK METHODS
 
     /**
@@ -220,7 +234,7 @@ class ThreeGppHttpClient : public Application
 
     /**
      * Initialize #m_socket to connect to the destination web server at
-     * #m_remoteServerAddress and #m_remoteServerPort and set up callbacks to
+     * #m_peer and #m_peerPort and set up callbacks to
      * listen to its event. Invoked upon the start of the application.
      */
     void OpenConnection();
@@ -377,9 +391,9 @@ class ThreeGppHttpClient : public Application
     /// The `Variables` attribute.
     Ptr<ThreeGppHttpVariables> m_httpVariables;
     /// The `RemoteServerAddress` attribute. The address of the web server.
-    Address m_remoteServerAddress;
+    Address m_peer;
     /// The `RemoteServerPort` attribute.
-    uint16_t m_remoteServerPort;
+    std::optional<uint16_t> m_peerPort;
     /// The `Tos` attribute.
     uint8_t m_tos;
 

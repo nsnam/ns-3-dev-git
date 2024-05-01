@@ -11,10 +11,9 @@
 
 #include "three-gpp-http-variables.h"
 
+#include <ns3/address-utils.h>
 #include <ns3/callback.h>
 #include <ns3/double.h>
-#include <ns3/inet-socket-address.h>
-#include <ns3/inet6-socket-address.h>
 #include <ns3/log.h>
 #include <ns3/packet.h>
 #include <ns3/pointer.h>
@@ -31,16 +30,17 @@ namespace ns3
 NS_OBJECT_ENSURE_REGISTERED(ThreeGppHttpClient);
 
 ThreeGppHttpClient::ThreeGppHttpClient()
-    : m_state(NOT_STARTED),
-      m_socket(nullptr),
-      m_objectBytesToBeReceived(0),
-      m_objectClientTs(MilliSeconds(0)),
-      m_objectServerTs(MilliSeconds(0)),
-      m_embeddedObjectsToBeRequested(0),
-      m_pageLoadStartTs(MilliSeconds(0)),
-      m_numberEmbeddedObjectsRequested(0),
-      m_numberBytesPage(0),
-      m_httpVariables(CreateObject<ThreeGppHttpVariables>())
+    : m_state{NOT_STARTED},
+      m_socket{nullptr},
+      m_objectBytesToBeReceived{0},
+      m_objectClientTs{},
+      m_objectServerTs{},
+      m_embeddedObjectsToBeRequested{0},
+      m_pageLoadStartTs{},
+      m_numberEmbeddedObjectsRequested{0},
+      m_numberBytesPage{0},
+      m_httpVariables{CreateObject<ThreeGppHttpVariables>()},
+      m_peerPort{}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -62,13 +62,22 @@ ThreeGppHttpClient::GetTypeId()
             .AddAttribute("RemoteServerAddress",
                           "The address of the destination server.",
                           AddressValue(),
-                          MakeAddressAccessor(&ThreeGppHttpClient::m_remoteServerAddress),
-                          MakeAddressChecker())
+                          MakeAddressAccessor(&ThreeGppHttpClient::SetRemote),
+                          MakeAddressChecker(),
+                          TypeId::DEPRECATED,
+                          "Replaced by Remote in ns-3.44.")
             .AddAttribute("RemoteServerPort",
                           "The destination port of the outbound packets.",
                           UintegerValue(80), // the default HTTP port
-                          MakeUintegerAccessor(&ThreeGppHttpClient::m_remoteServerPort),
-                          MakeUintegerChecker<uint16_t>())
+                          MakeUintegerAccessor(&ThreeGppHttpClient::SetPort),
+                          MakeUintegerChecker<uint16_t>(),
+                          TypeId::DEPRECATED,
+                          "Replaced by Remote in ns-3.44.")
+            .AddAttribute("Remote",
+                          "The address of the destination server",
+                          AddressValue(),
+                          MakeAddressAccessor(&ThreeGppHttpClient::SetRemote),
+                          MakeAddressChecker())
             .AddAttribute("Tos",
                           "The Type of Service used to send packets. "
                           "All 8 bits of the TOS byte are set (including ECN bits).",
@@ -137,6 +146,36 @@ ThreeGppHttpClient::GetTypeId()
                             MakeTraceSourceAccessor(&ThreeGppHttpClient::m_stateTransitionTrace),
                             "ns3::Application::StateTransitionCallback");
     return tid;
+}
+
+void
+ThreeGppHttpClient::SetRemote(const Address& addr)
+{
+    NS_LOG_FUNCTION(this << addr);
+    if (!addr.IsInvalid())
+    {
+        m_peer = addr;
+        if (m_peerPort)
+        {
+            SetPort(*m_peerPort);
+        }
+    }
+}
+
+void
+ThreeGppHttpClient::SetPort(uint16_t port)
+{
+    NS_LOG_FUNCTION(this << port);
+    if (m_peer.IsInvalid())
+    {
+        // save for later
+        m_peerPort = port;
+        return;
+    }
+    if (Ipv4Address::IsMatchingType(m_peer) || Ipv6Address::IsMatchingType(m_peer))
+    {
+        m_peer = addressUtils::ConvertToSocketAddress(m_peer, port);
+    }
 }
 
 Ptr<Socket>
@@ -253,8 +292,7 @@ ThreeGppHttpClient::ConnectionFailedCallback(Ptr<Socket> socket)
     if (m_state == CONNECTING)
     {
         NS_LOG_ERROR("Client failed to connect"
-                     << " to remote address " << m_remoteServerAddress << " port "
-                     << m_remoteServerPort << ".");
+                     << " to remote address " << m_peer);
     }
     else
     {
@@ -301,10 +339,8 @@ ThreeGppHttpClient::ReceivedDataCallback(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
 
-    Ptr<Packet> packet;
     Address from;
-
-    while ((packet = socket->RecvFrom(from)))
+    while (auto packet = socket->RecvFrom(from))
     {
         if (packet->GetSize() == 0)
         {
@@ -357,41 +393,34 @@ ThreeGppHttpClient::OpenConnection()
         m_state == PARSING_MAIN_OBJECT || m_state == READING)
     {
         m_socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
-        NS_ABORT_MSG_IF(m_remoteServerAddress.IsInvalid(),
-                        "'RemoteServerAddress' attribute not properly set");
-        if (Ipv4Address::IsMatchingType(m_remoteServerAddress))
+        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
+        if (InetSocketAddress::IsMatchingType(m_peer))
         {
-            int ret [[maybe_unused]];
-
-            ret = m_socket->Bind();
+            const auto ret [[maybe_unused]] = m_socket->Bind();
             NS_LOG_DEBUG(this << " Bind() return value= " << ret
                               << " GetErrNo= " << m_socket->GetErrno() << ".");
 
-            Ipv4Address ipv4 = Ipv4Address::ConvertFrom(m_remoteServerAddress);
-            InetSocketAddress inetSocket = InetSocketAddress(ipv4, m_remoteServerPort);
-            NS_LOG_INFO(this << " Connecting to " << ipv4 << " port " << m_remoteServerPort << " / "
-                             << inetSocket << ".");
+            const auto ipv4 = InetSocketAddress::ConvertFrom(m_peer).GetIpv4();
+            const auto port = InetSocketAddress::ConvertFrom(m_peer).GetPort();
+            NS_LOG_INFO(this << " Connecting to " << ipv4 << " port " << port << " / " << m_peer
+                             << ".");
             m_socket->SetIpTos(m_tos);
-            ret = m_socket->Connect(inetSocket);
-            NS_LOG_DEBUG(this << " Connect() return value= " << ret
-                              << " GetErrNo= " << m_socket->GetErrno() << ".");
         }
-        else if (Ipv6Address::IsMatchingType(m_remoteServerAddress))
+        else if (Inet6SocketAddress::IsMatchingType(m_peer))
         {
-            int ret [[maybe_unused]];
-
-            ret = m_socket->Bind6();
+            const auto ret [[maybe_unused]] = m_socket->Bind6();
             NS_LOG_DEBUG(this << " Bind6() return value= " << ret
                               << " GetErrNo= " << m_socket->GetErrno() << ".");
 
-            Ipv6Address ipv6 = Ipv6Address::ConvertFrom(m_remoteServerAddress);
-            Inet6SocketAddress inet6Socket = Inet6SocketAddress(ipv6, m_remoteServerPort);
-            NS_LOG_INFO(this << " connecting to " << ipv6 << " port " << m_remoteServerPort << " / "
-                             << inet6Socket << ".");
-            ret = m_socket->Connect(inet6Socket);
-            NS_LOG_DEBUG(this << " Connect() return value= " << ret
-                              << " GetErrNo= " << m_socket->GetErrno() << ".");
+            const auto ipv6 = Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6();
+            const auto port = Inet6SocketAddress::ConvertFrom(m_peer).GetPort();
+            NS_LOG_INFO(this << " Connecting to " << ipv6 << " port " << port << " / " << m_peer
+                             << ".");
         }
+
+        const auto ret [[maybe_unused]] = m_socket->Connect(m_peer);
+        NS_LOG_DEBUG(this << " Connect() return value= " << ret
+                          << " GetErrNo= " << m_socket->GetErrno() << ".");
 
         NS_ASSERT_MSG(m_socket, "Failed creating socket.");
 
@@ -426,13 +455,13 @@ ThreeGppHttpClient::RequestMainObject()
         header.SetContentType(ThreeGppHttpHeader::MAIN_OBJECT);
         header.SetClientTs(Simulator::Now());
 
-        const uint32_t requestSize = m_httpVariables->GetRequestSize();
-        Ptr<Packet> packet = Create<Packet>(requestSize);
+        const auto requestSize = m_httpVariables->GetRequestSize();
+        auto packet = Create<Packet>(requestSize);
         packet->AddHeader(header);
-        const uint32_t packetSize = packet->GetSize();
+        const auto packetSize = packet->GetSize();
         m_txMainObjectRequestTrace(packet);
         m_txTrace(packet);
-        const int actualBytes = m_socket->Send(packet);
+        const auto actualBytes = m_socket->Send(packet);
         NS_LOG_DEBUG(this << " Send() packet " << packet << " of " << packet->GetSize() << " bytes,"
                           << " return value= " << actualBytes << ".");
         if (actualBytes != static_cast<int>(packetSize))
@@ -469,13 +498,13 @@ ThreeGppHttpClient::RequestEmbeddedObject()
             header.SetContentType(ThreeGppHttpHeader::EMBEDDED_OBJECT);
             header.SetClientTs(Simulator::Now());
 
-            const uint32_t requestSize = m_httpVariables->GetRequestSize();
-            Ptr<Packet> packet = Create<Packet>(requestSize);
+            const auto requestSize = m_httpVariables->GetRequestSize();
+            auto packet = Create<Packet>(requestSize);
             packet->AddHeader(header);
-            const uint32_t packetSize = packet->GetSize();
+            const auto packetSize = packet->GetSize();
             m_txEmbeddedObjectRequestTrace(packet);
             m_txTrace(packet);
-            const int actualBytes = m_socket->Send(packet);
+            const auto actualBytes = m_socket->Send(packet);
             NS_LOG_DEBUG(this << " Send() packet " << packet << " of " << packet->GetSize()
                               << " bytes,"
                               << " return value= " << actualBytes << ".");
@@ -667,7 +696,7 @@ ThreeGppHttpClient::Receive(Ptr<Packet> packet)
         m_constructedPacket = packet->Copy();
         m_constructedPacket->AddHeader(httpHeader);
     }
-    uint32_t contentSize = packet->GetSize();
+    auto contentSize = packet->GetSize();
     m_numberBytesPage += contentSize; // increment counter of page size
 
     /* Note that the packet does not contain header at this point.
@@ -689,7 +718,7 @@ ThreeGppHttpClient::Receive(Ptr<Packet> packet)
         m_objectBytesToBeReceived -= contentSize;
         if (!firstPacket)
         {
-            Ptr<Packet> packetCopy = packet->Copy();
+            auto packetCopy = packet->Copy();
             m_constructedPacket->AddAtEnd(packetCopy);
         }
     }
@@ -703,7 +732,7 @@ ThreeGppHttpClient::EnterParsingTime()
 
     if (m_state == EXPECTING_MAIN_OBJECT)
     {
-        const Time parsingTime = m_httpVariables->GetParsingTime();
+        const auto parsingTime = m_httpVariables->GetParsingTime();
         NS_LOG_INFO(this << " The parsing of this main object"
                          << " will complete in " << parsingTime.As(Time::S) << ".");
         m_eventParseMainObject =
@@ -763,7 +792,7 @@ ThreeGppHttpClient::EnterReadingTime()
 
     if (m_state == EXPECTING_EMBEDDED_OBJECT || m_state == PARSING_MAIN_OBJECT)
     {
-        const Time readingTime = m_httpVariables->GetReadingTime();
+        const auto readingTime = m_httpVariables->GetReadingTime();
         NS_LOG_INFO(this << " Client will finish reading this web page in "
                          << readingTime.As(Time::S) << ".");
 
@@ -809,8 +838,8 @@ ThreeGppHttpClient::CancelAllPendingEvents()
 void
 ThreeGppHttpClient::SwitchToState(ThreeGppHttpClient::State_t state)
 {
-    const std::string oldState = GetStateString();
-    const std::string newState = GetStateString(state);
+    const auto oldState = GetStateString();
+    const auto newState = GetStateString(state);
     NS_LOG_FUNCTION(this << oldState << newState);
 
     if ((state == EXPECTING_MAIN_OBJECT) || (state == EXPECTING_EMBEDDED_OBJECT))
