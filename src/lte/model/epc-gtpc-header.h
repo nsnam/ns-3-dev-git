@@ -127,9 +127,9 @@ class GtpcHeader : public Header
     /// FTEID structure
     struct Fteid_t
     {
-        InterfaceType_t interfaceType; //!< Interface type
-        Ipv4Address addr;              //!< IPv4 address
-        uint32_t teid;                 //!< TEID
+        InterfaceType_t interfaceType{}; //!< Interface type
+        Ipv4Address addr;                //!< IPv4 address
+        uint32_t teid;                   //!< TEID
     };
 
     /// Message Type enumeration
