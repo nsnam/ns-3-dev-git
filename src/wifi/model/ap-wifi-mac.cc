@@ -1544,6 +1544,7 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
     }
     packet->AddHeader(beacon);
 
+    NS_LOG_INFO("Generating beacon from " << link.feManager->GetAddress() << " linkID " << +linkId);
     // The beacon has it's own special queue, so we load it in there
     m_beaconTxop->Queue(packet, hdr);
     link.beaconEvent =
