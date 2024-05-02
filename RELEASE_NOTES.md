@@ -33,6 +33,7 @@ been tested on Linux. The latest known version to work with ns-3 is cppyy==3.1.2
 - (wifi) - The `WifiMacHelper` provides a `SetDcf` and a `SetEdca` methods to configure attributes of `Txop` and `QosTxop` objects, respectively
 - (wifi) - The `ApWifiMac` provides new attributes (`CwMinsForSta`, `CwMaxsForSta`, `AifsnsForSta` and `TxopLimitsForSta`) to define the EDCA access parameters to include in the EDCA Parameter Set advertised to associated stations
 - (wifi) - The `WifiMacHelper` provides a `SetChannelAccessManager` and a `SetFrameExchangeManager` methods to configure attributes of `ChannelAccessManager` and `FrameExchangeManager` objects, respectively
+- (wifi) - Simulation duration and data rate parameters of existing wifi examples changed to use Time and DataRate types
 
 ### Bugs fixed
 
