@@ -664,16 +664,16 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address re
     if (respHdr.GetStatusCode().IsSuccess())
     {
         NS_LOG_DEBUG("block ack agreement established with " << recipient << " tid " << +tid);
-        // A (destination, TID) pair is "blocked" (i.e., no more packets are sent)
-        // when an Add BA Request is sent to the destination. However, when the
-        // Add BA Request timer expires, the (destination, TID) pair is "unblocked"
-        // and packets to the destination are sent again (under normal ack policy).
-        // Thus, there may be a packet needing to be retransmitted when the
-        // Add BA Response is received. In this case, the starting sequence number
-        // shall be set equal to the sequence number of such packet.
+        // A (destination, TID) pair is "blocked" (i.e., no more packets are sent) when an
+        // Add BA Request is sent to the destination. However, when the Add BA Request timer
+        // expires, the (destination, TID) pair is "unblocked" and packets to the destination are
+        // sent again (under normal ack policy). Thus, there may be a packet with a sequence number
+        // already assigned waiting to be retransmitted (or being transmitted on another link)
+        // when the Add BA Response is received. In this case, the starting sequence number shall
+        // be set equal to the sequence number of such packet.
         uint16_t startingSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress(tid, recipient);
         auto peekedItem = m_queue->PeekByTidAndAddress(tid, recipient);
-        if (peekedItem && peekedItem->GetHeader().IsRetry())
+        if (peekedItem && peekedItem->HasSeqNoAssigned())
         {
             startingSeq = peekedItem->GetHeader().GetSequenceNumber();
         }
