@@ -30,7 +30,7 @@ TestSuite), these things need to be decided up front:
 * What type of test it will be (Build Verification Test, Unit Test,
   System Test, or Performance Test)
 * Where the test code will live (either in an existing ns-3 module or
-  separately in src/test/ directory).  You will have to edit the wscript
+  separately in src/test/ directory).  You will have to edit the CMakeLists.txt
   file in that directory to compile your new code, if it is a new file.
 
 A program called ``utils/create-module.py`` is a good starting point.
@@ -44,14 +44,14 @@ substitution of "Router" in that file for something pertaining to
 the model that you want to test.  You can also edit things such as a
 more descriptive test case name.
 
-You also need to add a block into your wscript to get this test to
+You also need to add a block into your CMakeLists.txt to get this test to
 compile:
 
-.. sourcecode:: python
+.. sourcecode:: cmake
 
-    module_test.source = [
-        'test/router-test-suite.cc',
-        ]
+    set(test_sources
+        test/router-test-suite.cc
+    )
 
 Before you actually start making this do useful things, it may help
 to try to run the skeleton.  Make sure that ns-3 has been configured with
@@ -137,7 +137,7 @@ framework with a specialized ``TestSuite`` or ``TestCase`` class
 designed to run an example and compare the output with a specified
 known "good" reference file.  To use an example program as a test you
 need to create a test suite file and add it to the appropriate list in
-your module wscript file. The "good" output reference file needs to be
+your module CMakeLists.txt file. The "good" output reference file needs to be
 generated for detecting regressions.
 
 If you are thinking about using this class, strongly consider using a
@@ -164,16 +164,25 @@ and command line arguments for the example.  In the preceding code the
 same example is run twice with different arguments.
 
 You then need to add that newly created test suite file to the list of
-test sources in ``mymodule/wscript``.  Building of examples
+test sources in ``mymodule/CMakeLists.txt``.  Building of examples
 is an option so you need to guard the inclusion of the test suite:
 
-.. sourcecode:: python
+.. sourcecode:: cmake
 
-   if (bld.env['ENABLE_EXAMPLES']):
-      module.source.append('model/mymodule-examples-test-suite.cc')
+   set(example_as_test_suite)
+   if(${ENABLE_EXAMPLES})
+     set(example_as_test_suite
+         test/mymodule-examples-test-suite.cc
+     )
+   endif()
 
-Since you modified a wscript file you need to reconfigure and rebuild
-everything.
+and then later
+
+.. sourcecode:: cmake
+
+   set(test_sources
+      ${example_as_test_suite}
+
 
 You just added new tests so you will need to generate the "good"
 output reference files that will be used to verify the example:
