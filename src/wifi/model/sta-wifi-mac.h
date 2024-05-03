@@ -187,15 +187,6 @@ class StaWifiMac : public WifiMac
     StaWifiMac();
     ~StaWifiMac() override;
 
-    /**
-     * \param packet the packet to send.
-     * \param to the address to which the packet should be sent.
-     *
-     * The packet should be enqueued in a TX queue, and should be
-     * dequeued as soon as the channel access function determines that
-     * access is granted to this MAC.
-     */
-    void Enqueue(Ptr<Packet> packet, Mac48Address to) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
     int64_t AssignStreams(int64_t stream) override;
 

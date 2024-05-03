@@ -98,20 +98,6 @@ MeshWifiInterfaceMac::CanForwardPacketsTo(Mac48Address to) const
     return true;
 }
 
-void
-MeshWifiInterfaceMac::Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from)
-{
-    NS_LOG_FUNCTION(this << packet << to << from);
-    ForwardDown(packet, from, to);
-}
-
-void
-MeshWifiInterfaceMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
-{
-    NS_LOG_FUNCTION(this << packet << to);
-    ForwardDown(packet, GetAddress(), to);
-}
-
 bool
 MeshWifiInterfaceMac::SupportsSendFrom() const
 {
@@ -265,65 +251,6 @@ MeshWifiInterfaceMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address 
     auto tid = hdr.GetQosTid();
     NS_ASSERT(GetQosTxop(tid) != nullptr);
     GetQosTxop(tid)->Queue(Create<WifiMpdu>(packet, hdr));
-}
-
-void
-MeshWifiInterfaceMac::ForwardDown(Ptr<Packet> packet, Mac48Address from, Mac48Address to)
-{
-    WifiMacHeader hdr;
-    hdr.SetType(WIFI_MAC_QOSDATA);
-    hdr.SetAddr2(GetAddress());
-    hdr.SetAddr3(to);
-    hdr.SetAddr4(from);
-    hdr.SetDsFrom();
-    hdr.SetDsTo();
-    // Fill QoS fields:
-    hdr.SetQosAckPolicy(WifiMacHeader::NORMAL_ACK);
-    hdr.SetQosNoEosp();
-    hdr.SetQosNoAmsdu();
-    hdr.SetQosTxopLimit(0);
-    // Address 1 is unknown here. Routing plugin is responsible to correctly set it.
-    hdr.SetAddr1(Mac48Address());
-    // Filter packet through all installed plugins
-    for (auto i = m_plugins.end() - 1; i != m_plugins.begin() - 1; i--)
-    {
-        bool drop = !((*i)->UpdateOutcomingFrame(packet, hdr, from, to));
-        if (drop)
-        {
-            return; // plugin drops frame
-        }
-    }
-    // Assert that address1 is set. Assert will fail e.g. if there is no installed routing plugin.
-    NS_ASSERT(hdr.GetAddr1() != Mac48Address());
-    // Queue frame
-    if (GetWifiRemoteStationManager()->IsBrandNew(hdr.GetAddr1()))
-    {
-        // in adhoc mode, we assume that every destination
-        // supports all the rates we support.
-        for (const auto& mode : GetWifiPhy()->GetModeList())
-        {
-            GetWifiRemoteStationManager()->AddSupportedMode(hdr.GetAddr1(), mode);
-        }
-        GetWifiRemoteStationManager()->RecordDisassociated(hdr.GetAddr1());
-    }
-    // Classify: application may have set a tag, which is removed here
-    AcIndex ac;
-    SocketPriorityTag tag;
-    if (packet->RemovePacketTag(tag))
-    {
-        hdr.SetQosTid(tag.GetPriority());
-        ac = QosUtilsMapTidToAc(tag.GetPriority());
-    }
-    else
-    {
-        // No tag found; set to best effort
-        ac = AC_BE;
-        hdr.SetQosTid(0);
-    }
-    m_stats.sentFrames++;
-    m_stats.sentBytes += packet->GetSize();
-    NS_ASSERT(GetQosTxop(ac) != nullptr);
-    GetQosTxop(ac)->Queue(packet, hdr);
 }
 
 void

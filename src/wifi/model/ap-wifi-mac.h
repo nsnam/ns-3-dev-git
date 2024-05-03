@@ -83,8 +83,6 @@ class ApWifiMac : public WifiMac
 
     void SetLinkUpCallback(Callback<void> linkUp) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
-    void Enqueue(Ptr<Packet> packet, Mac48Address to) override;
-    void Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
     bool SupportsSendFrom() const override;
     Ptr<WifiMacQueue> GetTxopQueue(AcIndex ac) const override;
     int64_t AssignStreams(int64_t stream) override;
@@ -335,24 +333,6 @@ class ApWifiMac : public WifiMac
      * \param mpdu the MPDU containing the A-MSDU.
      */
     void DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu) override;
-    /**
-     * Forward the packet down to DCF/EDCAF (enqueue the packet). This method
-     * is a wrapper for ForwardDown with traffic id.
-     *
-     * \param packet the packet we are forwarding to DCF/EDCAF
-     * \param from the address to be used for Address 3 field in the header
-     * \param to the address to be used for Address 1 field in the header
-     */
-    void ForwardDown(Ptr<Packet> packet, Mac48Address from, Mac48Address to);
-    /**
-     * Forward the packet down to DCF/EDCAF (enqueue the packet).
-     *
-     * \param packet the packet we are forwarding to DCF/EDCAF
-     * \param from the address to be used for Address 3 field in the header
-     * \param to the address to be used for Address 1 field in the header
-     * \param tid the traffic id for the packet
-     */
-    void ForwardDown(Ptr<Packet> packet, Mac48Address from, Mac48Address to, uint8_t tid);
     /**
      * Send a Probe Response in response to a Probe Request received from the STA with the
      * given address on the given link.

@@ -394,135 +394,10 @@ ApWifiMac::UpdateShortPreambleEnabled(uint8_t linkId)
     }
 }
 
-void
-ApWifiMac::ForwardDown(Ptr<Packet> packet, Mac48Address from, Mac48Address to)
-{
-    NS_LOG_FUNCTION(this << packet << from << to);
-    // If we are not a QoS AP then we definitely want to use AC_BE to
-    // transmit the packet. A TID of zero will map to AC_BE (through \c
-    // QosUtilsMapTidToAc()), so we use that as our default here.
-    uint8_t tid = 0;
-
-    // If we are a QoS AP then we attempt to get a TID for this packet
-    if (GetQosSupported())
-    {
-        tid = QosUtilsGetTidForPacket(packet);
-        // Any value greater than 7 is invalid and likely indicates that
-        // the packet had no QoS tag, so we revert to zero, which'll
-        // mean that AC_BE is used.
-        if (tid > 7)
-        {
-            tid = 0;
-        }
-    }
-
-    ForwardDown(packet, from, to, tid);
-}
-
-void
-ApWifiMac::ForwardDown(Ptr<Packet> packet, Mac48Address from, Mac48Address to, uint8_t tid)
-{
-    NS_LOG_FUNCTION(this << packet << from << to << +tid);
-    WifiMacHeader hdr;
-
-    // For now, an AP that supports QoS does not support non-QoS
-    // associations, and vice versa. In future the AP model should
-    // support simultaneously associated QoS and non-QoS STAs, at which
-    // point there will need to be per-association QoS state maintained
-    // by the association state machine, and consulted here.
-    if (GetQosSupported())
-    {
-        hdr.SetType(WIFI_MAC_QOSDATA);
-        hdr.SetQosAckPolicy(WifiMacHeader::NORMAL_ACK);
-        hdr.SetQosNoEosp();
-        hdr.SetQosNoAmsdu();
-        // Transmission of multiple frames in the same Polled TXOP is not supported for now
-        hdr.SetQosTxopLimit(0);
-        // Fill in the QoS control field in the MAC header
-        hdr.SetQosTid(tid);
-    }
-    else
-    {
-        hdr.SetType(WIFI_MAC_DATA);
-    }
-
-    if (GetQosSupported())
-    {
-        hdr.SetNoOrder(); // explicitly set to 0 for the time being since HT control field is not
-                          // yet implemented (set it to 1 when implemented)
-    }
-
-    std::list<Mac48Address> addr2Set;
-    if (to.IsGroup())
-    {
-        // broadcast frames are transmitted on all the links
-        for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
-        {
-            addr2Set.push_back(GetFrameExchangeManager(linkId)->GetAddress());
-        }
-    }
-    else
-    {
-        // the Transmitter Address (TA) is the MLD address only for non-broadcast data frames
-        // exchanged between two MLDs
-        addr2Set = {GetAddress()};
-        auto linkId = IsAssociated(to);
-        NS_ASSERT_MSG(linkId, "Station " << to << "is not associated, cannot send it a frame");
-        if (GetNLinks() == 1 || !GetWifiRemoteStationManager(*linkId)->GetMldAddress(to))
-        {
-            addr2Set = {GetFrameExchangeManager(*linkId)->GetAddress()};
-        }
-    }
-
-    for (const auto& addr2 : addr2Set)
-    {
-        hdr.SetAddr1(to);
-        hdr.SetAddr2(addr2);
-        hdr.SetAddr3(from);
-        hdr.SetDsFrom();
-        hdr.SetDsNotTo();
-
-        if (GetQosSupported())
-        {
-            // Sanity check that the TID is valid
-            NS_ASSERT(tid < 8);
-            GetQosTxop(tid)->Queue(packet, hdr);
-        }
-        else
-        {
-            GetTxop()->Queue(packet, hdr);
-        }
-    }
-}
-
 bool
 ApWifiMac::CanForwardPacketsTo(Mac48Address to) const
 {
     return (to.IsGroup() || IsAssociated(to));
-}
-
-void
-ApWifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from)
-{
-    NS_LOG_FUNCTION(this << packet << to << from);
-    if (CanForwardPacketsTo(to))
-    {
-        ForwardDown(packet, from, to);
-    }
-    else
-    {
-        NotifyTxDrop(packet);
-    }
-}
-
-void
-ApWifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
-{
-    NS_LOG_FUNCTION(this << packet << to);
-    // We're sending this packet with a from address that is our own. We
-    // get that address from the lower MAC and make use of the
-    // from-spoofing Enqueue() method to avoid duplicated code.
-    Enqueue(packet, to, GetAddress());
 }
 
 void
@@ -1985,11 +1860,11 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                 // header...
                 if (hdr->IsQosData())
                 {
-                    ForwardDown(copy, from, to, hdr->GetQosTid());
+                    WifiMac::Enqueue(copy, to, from, hdr->GetQosTid());
                 }
                 else
                 {
-                    ForwardDown(copy, from, to);
+                    WifiMac::Enqueue(copy, to, from);
                 }
                 ForwardUp(packet, from, to);
             }
@@ -2605,7 +2480,7 @@ ApWifiMac::DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu)
         if (to.IsGroup() || IsAssociated(to))
         {
             NS_LOG_DEBUG("forwarding QoS frame from=" << from << ", to=" << to);
-            ForwardDown(i.first->Copy(), from, to, mpdu->GetHeader().GetQosTid());
+            WifiMac::Enqueue(i.first->Copy(), to, from, mpdu->GetHeader().GetQosTid());
         }
 
         ForwardUp(i.first, from, to);

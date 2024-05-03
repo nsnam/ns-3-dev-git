@@ -65,8 +65,6 @@ class MeshWifiInterfaceMac : public WifiMac
     ~MeshWifiInterfaceMac() override;
 
     // Inherited from WifiMac
-    void Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
-    void Enqueue(Ptr<Packet> packet, Mac48Address to) override;
     bool SupportsSendFrom() const override;
     void SetLinkUpCallback(Callback<void> linkUp) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
@@ -233,14 +231,6 @@ class MeshWifiInterfaceMac : public WifiMac
      * \param linkId the ID of the link the frame was received over
      */
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
-    /**
-     * Send frame. Frame is supposed to be tagged by routing information.
-     *
-     * \param packet the packet to forward
-     * \param from the from address
-     * \param to the to address
-     */
-    void ForwardDown(Ptr<Packet> packet, Mac48Address from, Mac48Address to);
     /**
      * Send beacon.
      */

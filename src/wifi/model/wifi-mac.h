@@ -379,7 +379,7 @@ class WifiMac : public Object
      * dequeued as soon as the DCF/EDCA function determines that
      * access is granted to this MAC.
      */
-    virtual void Enqueue(Ptr<Packet> packet, Mac48Address to);
+    void Enqueue(Ptr<Packet> packet, Mac48Address to);
 
     /**
      * \param packet the packet to send.
@@ -392,7 +392,7 @@ class WifiMac : public Object
      * this device to operate in a bridged mode, forwarding received
      * frames without altering the source address.
      */
-    virtual void Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from);
+    void Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from);
 
     /**
      * \param packet the packet to send.

@@ -213,10 +213,6 @@ class MldSwapLinksTest : public TestCase
             return true;
         }
 
-        void Enqueue(Ptr<Packet> packet, Mac48Address to) override
-        {
-        }
-
       private:
         void DoCompleteConfig() override
         {

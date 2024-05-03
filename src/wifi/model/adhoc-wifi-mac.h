@@ -45,7 +45,6 @@ class AdhocWifiMac : public WifiMac
     ~AdhocWifiMac() override;
 
     void SetLinkUpCallback(Callback<void> linkUp) override;
-    void Enqueue(Ptr<Packet> packet, Mac48Address to) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
 
   private:
