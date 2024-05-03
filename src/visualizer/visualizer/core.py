@@ -253,8 +253,8 @@ class Node(PyVizObject):
         self.visualizer.simulation.lock.acquire()
         try:
             ns3_node = ns.NodeList.GetNode(self.node_index)
-            ipv4 = ns.cppyy.gbl.getNodeIpv4(ns3_node)
-            ipv6 = ns.cppyy.gbl.getNodeIpv6(ns3_node)
+            ipv4 = ns3_node.GetObject[ns.Ipv4]().__deref__()
+            ipv6 = ns3_node.GetObject[ns.Ipv6]().__deref__()
 
             name = "<b><u>Node %i</u></b>" % self.node_index
             node_name = ns.Names.FindName(ns3_node)
@@ -266,12 +266,10 @@ class Node(PyVizObject):
 
             self.emit("query-extra-tooltip-info", lines)
 
-            mob = ns.cppyy.gbl.hasMobilityModel(ns3_node)
+            mob = ns3_node.GetObject[ns.MobilityModel]()
             if mob:
-                mobility_model_name = ns.cppyy.gbl.getMobilityModelName(ns3_node)
-                lines.append(
-                    "  <b>Mobility Model</b>: %s" % ns.cppyy.gbl.getMobilityModelName(ns3_node)
-                )
+                mobility_model_name = mob.__deref__().GetInstanceTypeId().GetName()
+                lines.append("  <b>Mobility Model</b>: %s" % mobility_model_name)
 
             for devI in range(ns3_node.GetNDevices()):
                 lines.append("")
@@ -554,7 +552,7 @@ class Node(PyVizObject):
         """
         if self._has_mobility is None:
             node = ns.NodeList.GetNode(self.node_index)
-            self._has_mobility = ns.cppyy.gbl.hasMobilityModel(node)
+            self._has_mobility = node.GetObject[ns.MobilityModel]()
         return self._has_mobility
 
 
@@ -1214,10 +1212,10 @@ class Visualizer(GObject.GObject):
             node_name = "Node %i" % nodeI
             node_view = self.get_node(nodeI)
 
-            mobility = ns.cppyy.gbl.hasMobilityModel(node)
+            mobility = node.GetObject[ns.MobilityModel]()
             if mobility:
                 node_view.set_color("red")
-                pos = ns.cppyy.gbl.getNodePosition(node)
+                pos = node.GetObject[ns.MobilityModel]().__deref__().GetPosition()
                 node_view.set_position(*transform_point_simulation_to_canvas(pos.x, pos.y))
                 # print "node has mobility position -> ", "%f,%f" % (pos.x, pos.y)
             else:
@@ -1323,9 +1321,9 @@ class Visualizer(GObject.GObject):
         for node in self.nodes.values():
             if node.has_mobility:
                 ns3_node = ns.NodeList.GetNode(node.node_index)
-                mobility = ns.cppyy.gbl.hasMobilityModel(ns3_node)
+                mobility = ns3_node.GetObject[ns.MobilityModel]()
                 if mobility:
-                    pos = ns.cppyy.gbl.getNodePosition(ns3_node)
+                    pos = ns3_node.GetObject[ns.MobilityModel]().__deref__().GetPosition()
                     x, y = transform_point_simulation_to_canvas(pos.x, pos.y)
                     node.set_position(x, y)
                     if node is self.follow_node:
@@ -1724,12 +1722,12 @@ class Visualizer(GObject.GObject):
         self.simulation.lock.acquire()
         try:
             ns3_node = ns.NodeList.GetNode(node.node_index)
-            mob = ns.cppyy.gbl.hasMobilityModel(ns3_node)
+            mob = ns3_node.GetObject[ns.MobilityModel]()
             if not mob:
                 return
             if self.node_drag_state is not None:
                 return
-            pos = ns.cppyy.gbl.getNodePosition(ns3_node)
+            pos = ns3_node.GetObject[ns.MobilityModel]().__deref__().GetPosition()
         finally:
             self.simulation.lock.release()
         devpos = self.canvas.get_window().get_device_position(event.device)
@@ -1743,7 +1741,7 @@ class Visualizer(GObject.GObject):
         self.simulation.lock.acquire()
         try:
             ns3_node = ns.NodeList.GetNode(node.node_index)
-            mob = ns.cppyy.gbl.hasMobilityModel(ns3_node)
+            mob = ns3_node.GetObject[ns.MobilityModel]()
             if not mob:
                 return False
             if self.node_drag_state is None:
@@ -1984,7 +1982,14 @@ def set_bounds(x1, y1, x2, y2):
     add_initialization_hook(hook)
 
 
+_run_once = False
+
+
 def start():
+    global _run_once
+    if _run_once:
+        return
+    _run_once = True
     assert Visualizer.INSTANCE is None
     if _import_error is not None:
         import sys

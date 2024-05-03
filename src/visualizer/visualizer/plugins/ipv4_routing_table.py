@@ -110,7 +110,7 @@ class ShowIpv4RoutingTable(InformationWindow):
         @return none
         """
         node = ns.NodeList.GetNode(self.node_index)
-        ipv4 = ns.cppyy.gbl.getNodeIpv4(node)
+        ipv4 = node.GetObject[ns.Ipv4]().__deref__()
         routing = ipv4.GetRoutingProtocol()
         if routing is None:
             return
