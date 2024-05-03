@@ -370,27 +370,43 @@ class WifiMac : public Object
      * \return whether packets can be forwarded to the given destination
      */
     virtual bool CanForwardPacketsTo(Mac48Address to) const = 0;
+
+    /**
+     * \param packet the packet to send.
+     * \param to the address to which the packet should be sent.
+     *
+     * The packet should be enqueued in a TX queue, and should be
+     * dequeued as soon as the DCF/EDCA function determines that
+     * access is granted to this MAC.
+     */
+    virtual void Enqueue(Ptr<Packet> packet, Mac48Address to);
+
     /**
      * \param packet the packet to send.
      * \param to the address to which the packet should be sent.
      * \param from the address from which the packet should be sent.
      *
      * The packet should be enqueued in a TX queue, and should be
-     * dequeued as soon as the DCF function determines that
-     * access it granted to this MAC. The extra parameter "from" allows
+     * dequeued as soon as the DCF/EDCA function determines that
+     * access is granted to this MAC. The extra parameter "from" allows
      * this device to operate in a bridged mode, forwarding received
      * frames without altering the source address.
      */
     virtual void Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from);
+
     /**
      * \param packet the packet to send.
      * \param to the address to which the packet should be sent.
+     * \param from the address from which the packet should be sent.
+     * \param tid the TID to use to send this packet
      *
      * The packet should be enqueued in a TX queue, and should be
-     * dequeued as soon as the DCF function determines that
-     * access it granted to this MAC.
+     * dequeued as soon as the DCF/EDCA function determines that
+     * access is granted to this MAC. The extra parameter "tid" allows
+     * to specify the TID to use in case QoS is supported.
      */
-    virtual void Enqueue(Ptr<Packet> packet, Mac48Address to) = 0;
+    void Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from, uint8_t tid);
+
     /**
      * \return if this MAC supports sending from arbitrary address.
      *
@@ -1113,6 +1129,24 @@ class WifiMac : public Object
      * \param timeout the BK block ack inactivity timeout.
      */
     void SetBkBlockAckInactivityTimeout(uint16_t timeout);
+
+    /**
+     * \param mpdu the MPDU to send.
+     * \param to the address to which the packet should be sent.
+     * \param from the address from which the packet should be sent.
+     *
+     * Subclasses need to implement this method to finalize the MAC header of the MPDU
+     * (MAC addresses and ToDS/FromDS flags) and enqueue the MPDU in a TX queue.
+     */
+    virtual void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) = 0;
+
+    /**
+     * Allow subclasses to take actions when a packet to enqueue has been dropped.
+     *
+     * \param packet the dropped packet
+     * \param to the address to which the packet should have been sent
+     */
+    virtual void NotifyDropPacketToEnqueue(Ptr<Packet> packet, Mac48Address to);
 
     /**
      * This Boolean is set \c true iff this WifiMac is to model

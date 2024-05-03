@@ -264,6 +264,7 @@ class MeshWifiInterfaceMac : public WifiMac
     typedef std::vector<Ptr<MeshWifiInterfaceMacPlugin>> PluginList; ///< PluginList typedef
 
     void DoInitialize() override;
+    void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) override;
 
     /// \name Mesh timing intervals
     ///@{

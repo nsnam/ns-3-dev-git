@@ -410,6 +410,8 @@ class StaWifiMac : public WifiMac
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     std::unique_ptr<LinkEntity> CreateLinkEntity() const override;
     Mac48Address DoGetLocalAddress(const Mac48Address& remoteAddr) const override;
+    void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) override;
+    void NotifyDropPacketToEnqueue(Ptr<Packet> packet, Mac48Address to) override;
 
     /**
      * Process the Beacon frame received on the given link.

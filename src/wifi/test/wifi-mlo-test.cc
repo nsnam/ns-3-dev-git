@@ -221,6 +221,10 @@ class MldSwapLinksTest : public TestCase
         void DoCompleteConfig() override
         {
         }
+
+        void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) override
+        {
+        }
     };
 
   public:

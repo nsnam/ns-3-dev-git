@@ -223,6 +223,51 @@ MeshWifiInterfaceMac::SwitchFrequencyChannel(uint16_t new_id)
 // Forward frame down
 //-----------------------------------------------------------------------------
 void
+MeshWifiInterfaceMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from)
+{
+    NS_LOG_FUNCTION(this << *mpdu << to << from);
+
+    auto& hdr = mpdu->GetHeader();
+    auto packet = mpdu->GetPacket()->Copy();
+
+    hdr.SetAddr2(GetAddress());
+    hdr.SetAddr3(to);
+    hdr.SetAddr4(from);
+    hdr.SetDsFrom();
+    hdr.SetDsTo();
+    // Address 1 is unknown here. Routing plugin is responsible to correctly set it.
+    hdr.SetAddr1(Mac48Address());
+    // Filter packet through all installed plugins
+    for (auto i = m_plugins.end() - 1; i != m_plugins.begin() - 1; i--)
+    {
+        bool drop = !((*i)->UpdateOutcomingFrame(packet, hdr, from, to));
+        if (drop)
+        {
+            return; // plugin drops frame
+        }
+    }
+    // Assert that address1 is set. Assert will fail e.g. if there is no installed routing plugin.
+    NS_ASSERT(hdr.GetAddr1() != Mac48Address());
+    // Queue frame
+    if (GetWifiRemoteStationManager()->IsBrandNew(hdr.GetAddr1()))
+    {
+        // in adhoc mode, we assume that every destination
+        // supports all the rates we support.
+        for (const auto& mode : GetWifiPhy()->GetModeList())
+        {
+            GetWifiRemoteStationManager()->AddSupportedMode(hdr.GetAddr1(), mode);
+        }
+        GetWifiRemoteStationManager()->RecordDisassociated(hdr.GetAddr1());
+    }
+
+    m_stats.sentFrames++;
+    m_stats.sentBytes += packet->GetSize();
+    auto tid = hdr.GetQosTid();
+    NS_ASSERT(GetQosTxop(tid) != nullptr);
+    GetQosTxop(tid)->Queue(Create<WifiMpdu>(packet, hdr));
+}
+
+void
 MeshWifiInterfaceMac::ForwardDown(Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
     WifiMacHeader hdr;

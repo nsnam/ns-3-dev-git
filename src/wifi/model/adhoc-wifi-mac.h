@@ -51,6 +51,7 @@ class AdhocWifiMac : public WifiMac
   private:
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     void DoCompleteConfig() override;
+    void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) override;
 };
 
 } // namespace ns3

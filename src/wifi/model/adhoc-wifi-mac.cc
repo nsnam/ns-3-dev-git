@@ -72,6 +72,62 @@ AdhocWifiMac::CanForwardPacketsTo(Mac48Address to) const
 }
 
 void
+AdhocWifiMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from)
+{
+    NS_LOG_FUNCTION(this << *mpdu << to << from);
+
+    if (GetWifiRemoteStationManager()->IsBrandNew(to))
+    {
+        // In ad hoc mode, we assume that every destination supports all the rates we support.
+        if (GetHtSupported(SINGLE_LINK_OP_ID))
+        {
+            GetWifiRemoteStationManager()->AddAllSupportedMcs(to);
+            GetWifiRemoteStationManager()->AddStationHtCapabilities(
+                to,
+                GetHtCapabilities(SINGLE_LINK_OP_ID));
+        }
+        if (GetVhtSupported(SINGLE_LINK_OP_ID))
+        {
+            GetWifiRemoteStationManager()->AddStationVhtCapabilities(
+                to,
+                GetVhtCapabilities(SINGLE_LINK_OP_ID));
+        }
+        if (GetHeSupported())
+        {
+            GetWifiRemoteStationManager()->AddStationHeCapabilities(
+                to,
+                GetHeCapabilities(SINGLE_LINK_OP_ID));
+            if (Is6GhzBand(SINGLE_LINK_OP_ID))
+            {
+                GetWifiRemoteStationManager()->AddStationHe6GhzCapabilities(
+                    to,
+                    GetHe6GhzBandCapabilities(SINGLE_LINK_OP_ID));
+            }
+        }
+        if (GetEhtSupported())
+        {
+            GetWifiRemoteStationManager()->AddStationEhtCapabilities(
+                to,
+                GetEhtCapabilities(SINGLE_LINK_OP_ID));
+        }
+        GetWifiRemoteStationManager()->AddAllSupportedModes(to);
+        GetWifiRemoteStationManager()->RecordDisassociated(to);
+    }
+
+    auto& hdr = mpdu->GetHeader();
+
+    hdr.SetAddr1(to);
+    hdr.SetAddr2(GetAddress());
+    hdr.SetAddr3(GetBssid(SINGLE_LINK_OP_ID));
+    hdr.SetDsNotFrom();
+    hdr.SetDsNotTo();
+
+    auto txop = hdr.IsQosData() ? StaticCast<Txop>(GetQosTxop(hdr.GetQosTid())) : GetTxop();
+    NS_ASSERT(txop);
+    txop->Queue(mpdu);
+}
+
+void
 AdhocWifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
 {
     NS_LOG_FUNCTION(this << packet << to);

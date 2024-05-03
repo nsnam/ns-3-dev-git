@@ -37,6 +37,7 @@
 #include "ns3/packet.h"
 #include "ns3/pointer.h"
 #include "ns3/shuffle.h"
+#include "ns3/socket.h"
 #include "ns3/string.h"
 #include "ns3/vht-configuration.h"
 
@@ -1618,14 +1619,79 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
 }
 
 void
+WifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
+{
+    NS_LOG_FUNCTION(this << packet << to);
+    // We're sending this packet with a from address that is our own. We
+    // get that address from the lower MAC and make use of the
+    // from-spoofing Enqueue() method to avoid duplicated code.
+    Enqueue(packet, to, GetAddress());
+}
+
+void
 WifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from)
 {
-    // We expect WifiMac subclasses which do support forwarding (e.g.,
-    // AP) to override this method. Therefore, we throw a fatal error if
-    // someone tries to invoke this method on a class which has not done
-    // this.
-    NS_FATAL_ERROR("This MAC entity (" << this << ", " << GetAddress()
-                                       << ") does not support Enqueue() with from address");
+    NS_LOG_FUNCTION(this << packet << to << from);
+
+    // If we are not a QoS AP then we definitely want to use AC_BE to
+    // transmit the packet. A TID of zero will map to AC_BE (through \c
+    // QosUtilsMapTidToAc()), so we use that as our default here.
+    uint8_t tid = 0;
+
+    SocketPriorityTag qos;
+    if (packet->RemovePacketTag(qos) && qos.GetPriority() < 8)
+    {
+        tid = qos.GetPriority();
+    }
+
+    Enqueue(packet, to, from, tid);
+}
+
+void
+WifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from, uint8_t tid)
+{
+    NS_LOG_FUNCTION(this << packet << to << from << tid);
+
+    NS_ABORT_MSG_IF(!SupportsSendFrom() && from != GetAddress(),
+                    "This Mac does not support forwarding frames");
+
+    if (!CanForwardPacketsTo(to))
+    {
+        NotifyTxDrop(packet);
+        NotifyDropPacketToEnqueue(packet, to);
+        return;
+    }
+
+    WifiMacHeader hdr;
+
+    // For now, an AP that supports QoS does not support non-QoS
+    // associations, and vice versa. In future the AP model should
+    // support simultaneously associated QoS and non-QoS STAs, at which
+    // point there will need to be per-association QoS state maintained
+    // by the association state machine, and consulted here.
+    if (GetQosSupported())
+    {
+        hdr.SetType(WIFI_MAC_QOSDATA);
+        hdr.SetQosAckPolicy(WifiMacHeader::NORMAL_ACK);
+        hdr.SetQosNoEosp();
+        hdr.SetQosNoAmsdu();
+        hdr.SetQosTid(tid);
+        hdr.SetNoOrder(); // explicitly set to 0 for the time being since HT control field is not
+                          // yet implemented (set it to 1 when implemented)
+    }
+    else
+    {
+        hdr.SetType(WIFI_MAC_DATA);
+    }
+
+    // create an MPDU and pass it to subclasses to finalize MAC header
+    Enqueue(Create<WifiMpdu>(packet, hdr), to, from);
+}
+
+void
+WifiMac::NotifyDropPacketToEnqueue(Ptr<Packet> packet, Mac48Address to)
+{
+    NS_LOG_FUNCTION(this << packet << to);
 }
 
 void

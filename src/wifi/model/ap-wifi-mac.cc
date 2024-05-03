@@ -525,6 +525,55 @@ ApWifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
     Enqueue(packet, to, GetAddress());
 }
 
+void
+ApWifiMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from)
+{
+    NS_LOG_FUNCTION(this << *mpdu << to << from);
+
+    std::list<Mac48Address> addr2Set;
+    if (to.IsGroup())
+    {
+        // broadcast frames are transmitted on all the links
+        for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
+        {
+            addr2Set.push_back(GetFrameExchangeManager(linkId)->GetAddress());
+        }
+    }
+    else
+    {
+        // the Transmitter Address (TA) is the MLD address only for non-broadcast data frames
+        // exchanged between two MLDs
+        addr2Set = {GetAddress()};
+        auto linkId = IsAssociated(to);
+        NS_ASSERT_MSG(linkId, "Station " << to << "is not associated, cannot send it a frame");
+        if (GetNLinks() == 1 || !GetWifiRemoteStationManager(*linkId)->GetMldAddress(to))
+        {
+            addr2Set = {GetFrameExchangeManager(*linkId)->GetAddress()};
+        }
+    }
+
+    for (auto addr2 = addr2Set.cbegin(); addr2 != addr2Set.cend(); ++addr2)
+    {
+        auto& hdr = mpdu->GetHeader();
+
+        hdr.SetAddr1(to);
+        hdr.SetAddr2(*addr2);
+        hdr.SetAddr3(from);
+        hdr.SetDsFrom();
+        hdr.SetDsNotTo();
+
+        auto txop = hdr.IsQosData() ? StaticCast<Txop>(GetQosTxop(hdr.GetQosTid())) : GetTxop();
+        NS_ASSERT(txop);
+        txop->Queue(mpdu);
+
+        // create another MPDU if needed
+        if (std::next(addr2) != addr2Set.cend())
+        {
+            mpdu = Create<WifiMpdu>(mpdu->GetPacket()->Copy(), hdr);
+        }
+    }
+}
+
 bool
 ApWifiMac::SupportsSendFrom() const
 {

@@ -973,6 +973,38 @@ StaWifiMac::CanForwardPacketsTo(Mac48Address to) const
 }
 
 void
+StaWifiMac::NotifyDropPacketToEnqueue(Ptr<Packet> packet, Mac48Address to)
+{
+    NS_LOG_FUNCTION(this << packet << to);
+    TryToEnsureAssociated();
+}
+
+void
+StaWifiMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from)
+{
+    NS_LOG_FUNCTION(this << *mpdu << to << from);
+
+    auto& hdr = mpdu->GetHeader();
+
+    // the Receiver Address (RA) and the Transmitter Address (TA) are the MLD addresses only for
+    // non-broadcast data frames exchanged between two MLDs
+    auto linkIds = GetSetupLinkIds();
+    NS_ASSERT(!linkIds.empty());
+    uint8_t linkId = *linkIds.begin();
+    const auto apMldAddr = GetWifiRemoteStationManager(linkId)->GetMldAddress(GetBssid(linkId));
+
+    hdr.SetAddr1(apMldAddr.value_or(GetBssid(linkId)));
+    hdr.SetAddr2(apMldAddr ? GetAddress() : GetFrameExchangeManager(linkId)->GetAddress());
+    hdr.SetAddr3(to);
+    hdr.SetDsNotFrom();
+    hdr.SetDsTo();
+
+    auto txop = hdr.IsQosData() ? StaticCast<Txop>(GetQosTxop(hdr.GetQosTid())) : GetTxop();
+    NS_ASSERT(txop);
+    txop->Queue(mpdu);
+}
+
+void
 StaWifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
 {
     NS_LOG_FUNCTION(this << packet << to);

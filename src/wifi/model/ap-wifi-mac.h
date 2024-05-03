@@ -266,6 +266,7 @@ class ApWifiMac : public WifiMac
     Mac48Address DoGetLocalAddress(const Mac48Address& remoteAddr) const override;
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     void DoCompleteConfig() override;
+    void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) override;
 
     /**
      * Check whether the supported rate set included in the received (Re)Association
