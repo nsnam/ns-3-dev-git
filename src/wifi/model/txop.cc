@@ -620,16 +620,6 @@ Txop::HasFramesToTransmit(uint8_t linkId)
 }
 
 void
-Txop::Queue(Ptr<Packet> packet, const WifiMacHeader& hdr)
-{
-    NS_LOG_FUNCTION(this << packet << &hdr);
-    // remove the priority tag attached, if any
-    SocketPriorityTag priorityTag;
-    packet->RemovePacketTag(priorityTag);
-    Queue(Create<WifiMpdu>(packet, hdr));
-}
-
-void
 Txop::Queue(Ptr<WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);

@@ -354,14 +354,6 @@ class Txop : public Object
 
     /* Event handlers */
     /**
-     * \param packet packet to send.
-     * \param hdr header of packet to send.
-     *
-     * Store the packet in the internal queue until it
-     * can be sent safely.
-     */
-    virtual void Queue(Ptr<Packet> packet, const WifiMacHeader& hdr);
-    /**
      * \param mpdu the given MPDU
      *
      * Store the given MPDU in the internal queue until it

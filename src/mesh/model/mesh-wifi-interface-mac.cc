@@ -282,11 +282,11 @@ MeshWifiInterfaceMac::SendManagementFrame(Ptr<Packet> packet, const WifiMacHeade
      */
     if (hdr.GetAddr1() != Mac48Address::GetBroadcast())
     {
-        GetQosTxop(AC_VO)->Queue(packet, header);
+        GetQosTxop(AC_VO)->Queue(Create<WifiMpdu>(packet, header));
     }
     else
     {
-        GetQosTxop(AC_BK)->Queue(packet, header);
+        GetQosTxop(AC_BK)->Queue(Create<WifiMpdu>(packet, header));
     }
 }
 
@@ -405,7 +405,8 @@ MeshWifiInterfaceMac::SendBeacon()
     {
         (*i)->UpdateBeacon(beacon);
     }
-    m_txop->Queue(beacon.CreatePacket(), beacon.CreateHeader(GetAddress(), GetMeshPointAddress()));
+    m_txop->Queue(Create<WifiMpdu>(beacon.CreatePacket(),
+                                   beacon.CreateHeader(GetAddress(), GetMeshPointAddress())));
 
     ScheduleNextBeacon();
 }

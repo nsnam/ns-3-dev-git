@@ -1119,7 +1119,7 @@ ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
 
     if (!GetQosSupported())
     {
-        GetTxop()->Queue(packet, hdr);
+        GetTxop()->Queue(Create<WifiMpdu>(packet, hdr));
     }
     // "A QoS STA that transmits a Management frame determines access category used
     // for medium access in transmission of the Management frame as follows
@@ -1130,11 +1130,11 @@ ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
     //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
     else if (!GetWifiRemoteStationManager(linkId)->GetQosSupported(to))
     {
-        GetBEQueue()->Queue(packet, hdr);
+        GetBEQueue()->Queue(Create<WifiMpdu>(packet, hdr));
     }
     else
     {
-        GetVOQueue()->Queue(packet, hdr);
+        GetVOQueue()->Queue(Create<WifiMpdu>(packet, hdr));
     }
 }
 
@@ -1408,7 +1408,7 @@ ApWifiMac::SendAssocResp(Mac48Address to, bool isReassoc, uint8_t linkId)
 
     if (!GetQosSupported())
     {
-        GetTxop()->Queue(packet, hdr);
+        GetTxop()->Queue(Create<WifiMpdu>(packet, hdr));
     }
     // "A QoS STA that transmits a Management frame determines access category used
     // for medium access in transmission of the Management frame as follows
@@ -1419,11 +1419,11 @@ ApWifiMac::SendAssocResp(Mac48Address to, bool isReassoc, uint8_t linkId)
     //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
     else if (!GetWifiRemoteStationManager(linkId)->GetQosSupported(to))
     {
-        GetBEQueue()->Queue(packet, hdr);
+        GetBEQueue()->Queue(Create<WifiMpdu>(packet, hdr));
     }
     else
     {
-        GetVOQueue()->Queue(packet, hdr);
+        GetVOQueue()->Queue(Create<WifiMpdu>(packet, hdr));
     }
 }
 
@@ -1518,7 +1518,7 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
 
     NS_LOG_INFO("Generating beacon from " << link.feManager->GetAddress() << " linkID " << +linkId);
     // The beacon has it's own special queue, so we load it in there
-    m_beaconTxop->Queue(packet, hdr);
+    m_beaconTxop->Queue(Create<WifiMpdu>(packet, hdr));
     link.beaconEvent =
         Simulator::Schedule(GetBeaconInterval(), &ApWifiMac::SendOneBeacon, this, linkId);
 

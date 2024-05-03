@@ -152,21 +152,6 @@ QosUtilsMapTidToAc(uint8_t tid)
     return AC_UNDEF;
 }
 
-uint8_t
-QosUtilsGetTidForPacket(Ptr<const Packet> packet)
-{
-    SocketPriorityTag qos;
-    uint8_t tid = 8;
-    if (packet->PeekPacketTag(qos))
-    {
-        if (qos.GetPriority() < 8)
-        {
-            tid = qos.GetPriority();
-        }
-    }
-    return tid;
-}
-
 uint32_t
 QosUtilsMapSeqControlToUniqueInteger(uint16_t seqControl, uint16_t endSequence)
 {

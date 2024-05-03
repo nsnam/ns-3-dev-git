@@ -220,18 +220,6 @@ AcIndex QosUtilsMapTidToAc(uint8_t tid);
 
 /**
  * \ingroup wifi
- * If a QoS tag is attached to the packet, returns a value < 8.
- * A value >= 8 is returned otherwise.
- *
- * \param packet the packet to checked for a QoS tag
- *
- * \return a value less than 8 if QoS tag was present, a value >= 8
- *         is returned if no QoS tag was present
- */
-uint8_t QosUtilsGetTidForPacket(Ptr<const Packet> packet);
-
-/**
- * \ingroup wifi
  * Next function is useful to correctly sort buffered packets under block ack.
  * When an BAR is received from originator station, completed "old"
  * (see section 9.10.3 in IEEE 802.11e) packets must be forwarded up before "new" packets.

@@ -396,7 +396,7 @@ StaWifiMac::SendProbeRequest(uint8_t linkId)
 
     if (!GetQosSupported())
     {
-        GetTxop()->Queue(packet, hdr);
+        GetTxop()->Queue(Create<WifiMpdu>(packet, hdr));
     }
     // "A QoS STA that transmits a Management frame determines access category used
     // for medium access in transmission of the Management frame as follows
@@ -407,7 +407,7 @@ StaWifiMac::SendProbeRequest(uint8_t linkId)
     //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
     else
     {
-        GetVOQueue()->Queue(packet, hdr);
+        GetVOQueue()->Queue(Create<WifiMpdu>(packet, hdr));
     }
 }
 
@@ -684,7 +684,7 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
 
     if (!GetQosSupported())
     {
-        GetTxop()->Queue(packet, hdr);
+        GetTxop()->Queue(Create<WifiMpdu>(packet, hdr));
     }
     // "A QoS STA that transmits a Management frame determines access category used
     // for medium access in transmission of the Management frame as follows
@@ -695,11 +695,11 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
     //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
     else if (!GetWifiRemoteStationManager(linkId)->GetQosSupported(*link.bssid))
     {
-        GetBEQueue()->Queue(packet, hdr);
+        GetBEQueue()->Queue(Create<WifiMpdu>(packet, hdr));
     }
     else
     {
-        GetVOQueue()->Queue(packet, hdr);
+        GetVOQueue()->Queue(Create<WifiMpdu>(packet, hdr));
     }
 
     if (m_assocRequestEvent.IsPending())
