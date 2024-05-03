@@ -108,9 +108,12 @@ For MacPorts packages we show the most recent package version available as of ea
   | Building Doxygen            | ``doxygen graphviz imagemagick`` | ``doxygen graphviz``     |
   |                             |                                  | ``ImageMagick``          |
   +-----------------------------+----------------------------------+--------------------------+
-  | Sphinx documentation        | ``sphinx-doc texlive``           | ``texlive``              |
-  |                             |                                  | ``pyXX-sphinx``, with    |
-  |                             |                                  | `XX`` the Python version |
+  | Sphinx documentation        | ``sphinx-doc texlive``           | ``dia texlive``          |
+  |                             |                                  | ``texlive-fonts-extra``  |
+  |                             |                                  | ``texlive-latex-extra``  |
+  |                             |                                  | ``py3XX-sphinx``, with   |
+  |                             |                                  | `XX`` the Python minor   |
+  |                             |                                  | version such as `12`     |
   +-----------------------------+----------------------------------+--------------------------+
   | Eigen3                      | ``eigen``                        | ``eigen3``               |
   +-----------------------------+----------------------------------+--------------------------+
