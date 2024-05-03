@@ -636,6 +636,24 @@ Hotspot was used to identify performance bottlenecks in multiple occasions:
     and inlining TtlExceeded. This resulted in a ~1.02x speedup with the test suite (``./test.py -d``).
     More details on: merge requests `MR681`_ and `MR685`_.
 
+Perf on WSL
+~~~~~~~~~~~
+
+WSLv1 cannot use perf due to the lack of the linux kernel and its performance counters.
+
+WSLv2 users need to manually build perf to profile their programs,
+which can be accomplished with the following commands:
+
+.. sourcecode:: console
+
+    apt install flex bison
+    git clone https://github.com/microsoft/WSL2-Linux-Kernel --depth 1
+    cd WSL2-Linux-Kernel/tools/perf
+    make -j8
+    sudo cp perf /usr/local/bin
+
+Note that hardware `performance counters <https://github.com/microsoft/WSL/issues/4678>`_
+are only available in Windows 11.
 
 AMD uProf
 +++++++++
