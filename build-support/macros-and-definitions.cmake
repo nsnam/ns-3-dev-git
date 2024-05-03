@@ -986,7 +986,7 @@ macro(process_options)
   # return variable
   check_deps(
     sphinx_docs_missing_deps CMAKE_PACKAGES Sphinx
-    EXECUTABLES epstopdf pdflatex latexmk convert dvipng
+    EXECUTABLES epstopdf pdflatex latexmk convert dvipng dia
   )
   if(sphinx_docs_missing_deps)
     message(
