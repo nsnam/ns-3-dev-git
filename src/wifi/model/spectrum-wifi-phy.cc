@@ -477,7 +477,10 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     if (!wifiRxParams)
     {
         NS_LOG_INFO("Received non Wi-Fi signal");
-        m_interference->AddForeignSignal(rxDuration, rxPowerW, GetCurrentFrequencyRange());
+        m_interference->AddForeignSignal(rxDuration,
+                                         rxPowerW,
+                                         interface ? interface->GetFrequencyRange()
+                                                   : GetCurrentFrequencyRange());
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
@@ -485,7 +488,8 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     if (wifiRxParams && m_disableWifiReception)
     {
         NS_LOG_INFO("Received Wi-Fi signal but blocked from syncing");
-        m_interference->AddForeignSignal(rxDuration, rxPowerW, GetCurrentFrequencyRange());
+        NS_ASSERT(interface);
+        m_interference->AddForeignSignal(rxDuration, rxPowerW, interface->GetFrequencyRange());
         SwitchMaybeToCcaBusy(nullptr);
         return;
     }
