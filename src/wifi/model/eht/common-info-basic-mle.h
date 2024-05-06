@@ -61,6 +61,16 @@ struct CommonInfoBasicMle
     };
 
     /**
+     * Extended MLD Capabilities and Operations subfield
+     */
+    struct ExtMldCapabilities
+    {
+        uint8_t opParamUpdateSupp : 1;    ///< Operation Parameter Update Support
+        uint8_t recommMaxSimulLinks : 4;  ///< Recommended Max Simultaneous Links
+        uint8_t nstrStatusUpdateSupp : 1; ///< NSTR Status Update Support
+    };
+
+    /**
      * Subfields
      */
     Mac48Address m_mldMacAddress;                  //!< MLD MAC Address
@@ -70,6 +80,8 @@ struct CommonInfoBasicMle
         m_mediumSyncDelayInfo;                        //!< Medium Synchronization Delay Information
     std::optional<EmlCapabilities> m_emlCapabilities; //!< EML Capabilities
     std::optional<MldCapabilities> m_mldCapabilities; //!< MLD Capabilities
+    std::optional<uint8_t> m_apMldId;                 ///< AP MLD ID
+    std::optional<ExtMldCapabilities> m_extMldCapabilities; ///< Extended MLD Capabilities
 
     /**
      * Get the Presence Bitmap subfield of the Common Info field

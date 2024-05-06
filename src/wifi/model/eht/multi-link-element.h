@@ -36,12 +36,10 @@ using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHe
  * @brief The Multi-Link element
  * @ingroup wifi
  *
- * The 802.11be Multi-Link element (see Sec.9.4.2.312 of 802.11be D1.5)
+ * The 802.11be Multi-Link element (see Sec.9.4.2.312 of 802.11be D5.0)
  *
  * TODO:
- * - Add setters/getters for EML Capabilities and MLD Capabilities subfields of
- *   the Common Info field of the Basic variant of a Multi-Link Element.
- * - Add support for variants other than the Basic one.
+ * - Add support for variants other than the Basic and Probe Request.
  */
 class MultiLinkElement : public WifiInformationElement
 {
@@ -244,6 +242,21 @@ class MultiLinkElement : public WifiInformationElement
      * @return the Transition Timeout
      */
     Time GetTransitionTimeout() const;
+
+    /**
+     * Set the AP MLD ID subfield of Common Info field. Valid variants are Basic and Probe Request.
+     *
+     * @param id AP MLD ID
+     */
+    void SetApMldId(uint8_t id);
+
+    /**
+     * Get the AP MLD ID subfield of Common Info field (if present). Valid variants are Basic and
+     * Probe Request.
+     *
+     * @return the AP MLD ID
+     */
+    std::optional<uint8_t> GetApMldId() const;
 
     mutable ContainingFrame m_containingFrame; //!< reference to the mgt frame containing this MLE
 

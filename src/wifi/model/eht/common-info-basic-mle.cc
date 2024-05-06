@@ -21,7 +21,8 @@ CommonInfoBasicMle::GetPresenceBitmap() const
            (m_bssParamsChangeCount.has_value() ? 0x0002 : 0x0) |
            (m_mediumSyncDelayInfo.has_value() ? 0x0004 : 0x0) |
            (m_emlCapabilities.has_value() ? 0x0008 : 0x0) |
-           (m_mldCapabilities.has_value() ? 0x0010 : 0x0);
+           (m_mldCapabilities.has_value() ? 0x0010 : 0x0) | (m_apMldId.has_value() ? 0x0020 : 0x0) |
+           (m_extMldCapabilities.has_value() ? 0x0040 : 0x0);
 }
 
 uint8_t
@@ -33,6 +34,8 @@ CommonInfoBasicMle::GetSize() const
     ret += (m_mediumSyncDelayInfo.has_value() ? 2 : 0);
     ret += (m_emlCapabilities.has_value() ? 2 : 0);
     ret += (m_mldCapabilities.has_value() ? 2 : 0);
+    ret += (m_apMldId.has_value() ? 1 : 0);
+    ret += (m_extMldCapabilities.has_value() ? 2 : 0);
     return ret;
 }
 
@@ -71,6 +74,17 @@ CommonInfoBasicMle::Serialize(Buffer::Iterator& start) const
             m_mldCapabilities->maxNSimultaneousLinks | (m_mldCapabilities->srsSupport << 4) |
             (m_mldCapabilities->tidToLinkMappingSupport << 5) |
             (m_mldCapabilities->freqSepForStrApMld << 7) | (m_mldCapabilities->aarSupport << 12);
+        start.WriteHtolsbU16(val);
+    }
+    if (m_apMldId.has_value())
+    {
+        start.WriteU8(*m_apMldId);
+    }
+    if (m_extMldCapabilities.has_value())
+    {
+        uint16_t val = m_extMldCapabilities->opParamUpdateSupp |
+                       (m_extMldCapabilities->recommMaxSimulLinks << 1) |
+                       (m_extMldCapabilities->nstrStatusUpdateSupp << 5);
         start.WriteHtolsbU16(val);
     }
 }
@@ -124,6 +138,20 @@ CommonInfoBasicMle::Deserialize(Buffer::Iterator start, uint16_t presence)
         m_mldCapabilities->tidToLinkMappingSupport = (val >> 5) & 0x0003;
         m_mldCapabilities->freqSepForStrApMld = (val >> 7) & 0x001f;
         m_mldCapabilities->aarSupport = (val >> 12) & 0x0001;
+        count += 2;
+    }
+    if ((presence & 0x0020) != 0)
+    {
+        m_apMldId = i.ReadU8();
+        count++;
+    }
+    if ((presence & 0x0040) != 0)
+    {
+        m_extMldCapabilities = ExtMldCapabilities();
+        auto val = i.ReadLsbtohU16();
+        m_extMldCapabilities->opParamUpdateSupp = val & 0x0001;
+        m_extMldCapabilities->recommMaxSimulLinks = (val >> 1) & 0x000f;
+        m_extMldCapabilities->nstrStatusUpdateSupp = (val >> 5) & 0x0001;
         count += 2;
     }
 

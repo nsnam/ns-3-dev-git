@@ -231,6 +231,39 @@ MultiLinkElement::GetTransitionTimeout() const
     return MicroSeconds(1 << (6 + emlCapabilities->transitionTimeout));
 }
 
+void
+MultiLinkElement::SetApMldId(uint8_t id)
+{
+    const auto variant = GetVariant();
+    switch (variant)
+    {
+    case BASIC_VARIANT:
+        std::get<CommonInfoBasicMle>(m_commonInfo).m_apMldId = id;
+        return;
+    case PROBE_REQUEST_VARIANT:
+        std::get<CommonInfoProbeReqMle>(m_commonInfo).m_apMldId = id;
+        return;
+    default:
+        NS_ABORT_MSG("AP MLD ID field not present in input variant " << variant);
+    }
+}
+
+std::optional<uint8_t>
+MultiLinkElement::GetApMldId() const
+{
+    const auto variant = GetVariant();
+    switch (variant)
+    {
+    case BASIC_VARIANT:
+        return std::get<CommonInfoBasicMle>(m_commonInfo).m_apMldId;
+    case PROBE_REQUEST_VARIANT:
+        return std::get<CommonInfoProbeReqMle>(m_commonInfo).m_apMldId;
+    default:
+        NS_LOG_DEBUG("AP MLD ID field not present in input variant");
+    }
+    return std::nullopt;
+}
+
 MultiLinkElement::PerStaProfileSubelement::PerStaProfileSubelement(Variant variant)
     : m_variant(variant),
       m_staControl(0)
