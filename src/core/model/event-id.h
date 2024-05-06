@@ -19,6 +19,7 @@
 #ifndef EVENT_ID_H
 #define EVENT_ID_H
 
+#include "deprecated.h"
 #include "event-impl.h"
 #include "ptr.h"
 
@@ -47,7 +48,7 @@ class EventImpl;
  * The important thing to remember about this class is that
  * every variable of this type is _always_ in a valid state,
  * even when it has not been assigned an EventId coming from a
- * Simulator::Schedule() method:  calling Simulator::Cancel(), IsRunning(),
+ * Simulator::Schedule() method:  calling Simulator::Cancel(), IsPending(),
  * IsExpired() or passing around instances of this object
  * will not result in crashes or memory leaks.
  */
@@ -101,6 +102,14 @@ class EventId
      *
      * \returns \c true if the event has not expired, \c false otherwise.
      */
+    bool IsPending() const;
+
+    /**
+     * This method is syntactic sugar for !IsExpired().
+     *
+     * \returns \c true if the event has not expired, \c false otherwise.
+     */
+    NS_DEPRECATED_3_42("Use IsPending instead")
     bool IsRunning() const;
 
   public:

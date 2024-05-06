@@ -132,7 +132,7 @@ TcpNewRenoCongAvoidNormalTest::CWndTrace(uint32_t oldValue, uint32_t newValue)
         return;
     }
 
-    if (!m_event.IsRunning())
+    if (!m_event.IsPending())
     {
         m_event = Simulator::Schedule(Seconds(1.0), &TcpNewRenoCongAvoidNormalTest::Check, this);
     }

@@ -132,7 +132,7 @@ TrickleTimer::GetDelayLeft() const
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_timerExpiration.IsRunning())
+    if (m_timerExpiration.IsPending())
     {
         return Simulator::GetDelayLeft(m_timerExpiration);
     }
@@ -145,7 +145,7 @@ TrickleTimer::GetIntervalLeft() const
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_intervalExpiration.IsRunning())
+    if (m_intervalExpiration.IsPending())
     {
         return Simulator::GetDelayLeft(m_intervalExpiration);
     }

@@ -169,7 +169,7 @@ BsServiceFlowManager::ScheduleDsaRsp(ServiceFlow* serviceFlow, Cid cid)
     ssRecord->IncrementDsaRspRetries();
     p->AddHeader(ManagementMessageType(ManagementMessageType::MESSAGE_TYPE_DSA_RSP));
 
-    if (m_dsaAckTimeoutEvent.IsRunning())
+    if (m_dsaAckTimeoutEvent.IsPending())
     {
         Simulator::Cancel(m_dsaAckTimeoutEvent);
     }

@@ -361,7 +361,7 @@ Ipv6ExtensionFragment::DoDispose()
 
     m_fragments.clear();
     m_timeoutEventList.clear();
-    if (m_timeoutEvent.IsRunning())
+    if (m_timeoutEvent.IsPending())
     {
         m_timeoutEvent.Cancel();
     }

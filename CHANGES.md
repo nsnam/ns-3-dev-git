@@ -31,6 +31,7 @@ application model is added.
 Applications have a new Attribute to set the IPv4 ToS field.
 * (core) Deprecated enum `TestDuration` in `TestCase` class. It has been replaced by enum class `Duration`.
 * (core) In `TestSuite` class, deprecated `ALL`, `UNIT`, `SYSTEM`, `EXAMPLE` and `PERFORMANCE`. They have been replaced by `Type::ALL`, `Type::UNIT`, `Type::SYSTEM`, `Type::EXAMPLE` and `Type::PERFORMANCE`, respectively.
+* (core) Deprecated `EventId::IsRunning()`. It has been replaced with `EventId::IsPending()`.
 * (wifi) Deprecated `WIFI_TID_TO_LINK_MAPPING_{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`. They have been replaced by `WifiTidToLinkMappingNegSupport::{NOT_SUPPORTED,SAME_LINK_SET,ANY_LINK_SET}`, respectively.
 * (wifi) Deprecated `{IDLE, CCA_BUSY, TX, RX, SWITCHING, SLEEP, OFF}`. They have been replaced by `WifiPhyState::{IDLE, CCA_BUSY, TX, RX, SWITCHING, SLEEP, OFF}`, respectively.
 * (lr-wpan) `MacPibAttributeIdentifier` attribute ids are now standard compliant.

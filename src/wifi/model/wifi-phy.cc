@@ -1930,7 +1930,7 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
 bool
 WifiPhy::IsReceivingPhyHeader() const
 {
-    return m_endPhyRxEvent.IsRunning();
+    return m_endPhyRxEvent.IsPending();
 }
 
 void

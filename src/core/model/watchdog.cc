@@ -52,7 +52,7 @@ Watchdog::Ping(Time delay)
     NS_LOG_FUNCTION(this << delay);
     Time end = Simulator::Now() + delay;
     m_end = std::max(m_end, end);
-    if (m_event.IsRunning())
+    if (m_event.IsPending())
     {
         return;
     }

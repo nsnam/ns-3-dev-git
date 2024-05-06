@@ -656,13 +656,13 @@ UanPhyGen::EnergyDepletionHandler()
                                             << ", stopping rx/tx activities");
 
     m_state = DISABLED;
-    if (m_txEndEvent.IsRunning())
+    if (m_txEndEvent.IsPending())
     {
         Simulator::Cancel(m_txEndEvent);
         NotifyTxDrop(m_pktTx);
         m_pktTx = nullptr;
     }
-    if (m_rxEndEvent.IsRunning())
+    if (m_rxEndEvent.IsPending())
     {
         Simulator::Cancel(m_rxEndEvent);
         NotifyRxDrop(m_pktRx);

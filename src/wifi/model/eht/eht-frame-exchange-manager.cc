@@ -192,7 +192,7 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
             // check if an EMLSR client is the holder of an UL TXOP on the other link
             if (auto ehtFem =
                     StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
-                ehtFem->m_ongoingTxopEnd.IsRunning() && ehtFem->m_txopHolder &&
+                ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
                 m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(
                     ehtFem->m_txopHolder.value()))
             {
@@ -473,7 +473,7 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
     {
         if (auto ehtFem =
                 StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
-            ehtFem->m_ongoingTxopEnd.IsRunning() && ehtFem->m_txopHolder &&
+            ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
             m_mac->GetWifiRemoteStationManager(linkId)->GetMldAddress(*ehtFem->m_txopHolder) ==
                 mldAddress)
         {
@@ -705,7 +705,7 @@ EhtFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxV
         auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
         NS_ASSERT(mldAddress);
 
-        if (m_ongoingTxopEnd.IsRunning() && m_txopHolder &&
+        if (m_ongoingTxopEnd.IsPending() && m_txopHolder &&
             m_mac->GetMldAddress(*m_txopHolder) == mldAddress)
         {
             continue;
@@ -897,7 +897,7 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
         NS_ASSERT(m_staMac->GetEmlsrManager());
         m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId,
                                                    (!txopStart || *txopStart == Simulator::Now()),
-                                                   m_ongoingTxopEnd.IsRunning());
+                                                   m_ongoingTxopEnd.IsPending());
     }
 
     HeFrameExchangeManager::NotifyChannelReleased(txop);
@@ -962,7 +962,7 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
     if (m_apMac && m_txopHolder == psdu->GetAddr2() &&
         GetWifiRemoteStationManager()->GetEmlsrEnabled(*m_txopHolder))
     {
-        if (!m_ongoingTxopEnd.IsRunning())
+        if (!m_ongoingTxopEnd.IsPending())
         {
             // an EMLSR client has started an UL TXOP. Start the ongoingTxopEnd timer so that
             // the next call to UpdateTxopEndOnRxEnd does its job
@@ -973,7 +973,7 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
         UpdateTxopEndOnRxEnd(psdu->GetDuration());
     }
 
-    if (m_staMac && m_ongoingTxopEnd.IsRunning())
+    if (m_staMac && m_ongoingTxopEnd.IsPending())
     {
         if (GetEmlsrSwitchToListening(psdu, m_staMac->GetAssociationId(), m_self))
         {
@@ -996,7 +996,7 @@ EhtFrameExchangeManager::CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr,
 
     auto sender = hdr.GetAddr2();
 
-    if (m_ongoingTxopEnd.IsRunning())
+    if (m_ongoingTxopEnd.IsPending())
     {
         NS_LOG_DEBUG("A TXOP is already ongoing");
         return false;
@@ -1041,7 +1041,7 @@ EhtFrameExchangeManager::CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr,
 
     // Stop the transition delay timer for this EMLSR client, if any is running
     if (auto it = m_transDelayTimer.find(*mldAddress);
-        it != m_transDelayTimer.end() && it->second.IsRunning())
+        it != m_transDelayTimer.end() && it->second.IsPending())
     {
         it->second.PeekEventImpl()->Invoke();
         it->second.Cancel();
@@ -1209,7 +1209,7 @@ EhtFrameExchangeManager::UpdateTxopEndOnTxStart(Time txDuration, Time durationId
 {
     NS_LOG_FUNCTION(this << txDuration.As(Time::MS) << durationId.As(Time::US));
 
-    if (!m_ongoingTxopEnd.IsRunning())
+    if (!m_ongoingTxopEnd.IsPending())
     {
         // nothing to do
         return;
@@ -1252,7 +1252,7 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxStartIndication(Time psduDuration)
 {
     NS_LOG_FUNCTION(this << psduDuration.As(Time::MS));
 
-    if (!m_ongoingTxopEnd.IsRunning() || !psduDuration.IsStrictlyPositive())
+    if (!m_ongoingTxopEnd.IsPending() || !psduDuration.IsStrictlyPositive())
     {
         // nothing to do
         return;
@@ -1273,7 +1273,7 @@ EhtFrameExchangeManager::UpdateTxopEndOnRxEnd(Time durationId)
 {
     NS_LOG_FUNCTION(this << durationId.As(Time::US));
 
-    if (!m_ongoingTxopEnd.IsRunning())
+    if (!m_ongoingTxopEnd.IsPending())
     {
         // nothing to do
         return;

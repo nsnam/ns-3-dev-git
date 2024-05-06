@@ -1749,7 +1749,7 @@ ApWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
             // we can stop the timer and enforce the configuration deriving from the
             // EML Notification frame sent by the EMLSR client
             if (auto eventIt = m_transitionTimeoutEvents.find(hdr.GetAddr1());
-                eventIt != m_transitionTimeoutEvents.cend() && eventIt->second.IsRunning())
+                eventIt != m_transitionTimeoutEvents.cend() && eventIt->second.IsPending())
             {
                 // no need to wait until the expiration of the transition timeout
                 eventIt->second.PeekEventImpl()->Invoke();

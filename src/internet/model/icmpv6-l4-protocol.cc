@@ -421,7 +421,7 @@ Icmpv6L4Protocol::HandleRA(Ptr<Packet> packet,
 {
     NS_LOG_FUNCTION(this << packet << src << dst << interface);
 
-    if (m_handleRsTimeoutEvent.IsRunning())
+    if (m_handleRsTimeoutEvent.IsPending())
     {
         m_handleRsTimeoutEvent.Cancel();
         // We need to update this in case we need to restart RS retransmissions.

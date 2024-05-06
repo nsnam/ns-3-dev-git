@@ -49,7 +49,7 @@ WifiTxTimer::Reschedule(const Time& delay)
 {
     NS_LOG_FUNCTION(this << delay);
 
-    if (m_timeoutEvent.IsRunning())
+    if (m_timeoutEvent.IsPending())
     {
         NS_LOG_DEBUG("Rescheduling " << GetReasonString(m_reason) << " timeout in "
                                      << delay.As(Time::US));
@@ -120,7 +120,7 @@ WifiTxTimer::GetReasonString(Reason reason) const
 bool
 WifiTxTimer::IsRunning() const
 {
-    return m_timeoutEvent.IsRunning();
+    return m_timeoutEvent.IsPending();
 }
 
 void

@@ -182,7 +182,7 @@ SsServiceFlowManager::ScheduleDsaReq(const ServiceFlow* serviceFlow)
     m_dsaReqRetries++;
     p->AddHeader(ManagementMessageType(ManagementMessageType::MESSAGE_TYPE_DSA_REQ));
 
-    if (m_dsaRspTimeoutEvent.IsRunning())
+    if (m_dsaRspTimeoutEvent.IsPending())
     {
         Simulator::Cancel(m_dsaRspTimeoutEvent);
     }

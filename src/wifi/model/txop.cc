@@ -644,7 +644,7 @@ Txop::Queue(Ptr<WifiMpdu> mpdu)
     // ignore the links for which a channel access request event is already running
     for (auto it = linkIds.begin(); it != linkIds.end();)
     {
-        if (const auto& event = GetLink(*it).accessRequest.event; event.IsRunning())
+        if (const auto& event = GetLink(*it).accessRequest.event; event.IsPending())
         {
             it = linkIds.erase(it);
         }

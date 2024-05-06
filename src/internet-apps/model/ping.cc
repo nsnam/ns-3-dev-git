@@ -626,11 +626,11 @@ void
 Ping::StopApplication()
 {
     NS_LOG_FUNCTION(this);
-    if (m_stopEvent.IsRunning())
+    if (m_stopEvent.IsPending())
     {
         m_stopEvent.Cancel();
     }
-    if (m_next.IsRunning())
+    if (m_next.IsPending())
     {
         m_next.Cancel();
     }

@@ -180,7 +180,7 @@ SixLowPanNetDevice::DoDispose()
     m_node = nullptr;
 
     m_timeoutEventList.clear();
-    if (m_timeoutEvent.IsRunning())
+    if (m_timeoutEvent.IsPending())
     {
         m_timeoutEvent.Cancel();
     }

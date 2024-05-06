@@ -450,7 +450,7 @@ BlockAckManager::NotifyGotBlockAck(uint8_t linkId,
     uint16_t nSuccessfulMpdus = 0;
     uint16_t nFailedMpdus = 0;
 
-    if (it->second.first.m_inactivityEvent.IsRunning())
+    if (it->second.first.m_inactivityEvent.IsPending())
     {
         /* Upon reception of a BlockAck frame, the inactivity timer at the
             originator must be reset.

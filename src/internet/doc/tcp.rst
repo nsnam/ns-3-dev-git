@@ -1986,7 +1986,7 @@ processing of the SYN-ACK:
          if (h.GetFlags() & TcpHeader::SYN)
            {
              EventId persistentEvent = GetPersistentEvent(SENDER);
-             NS_TEST_ASSERT_MSG_EQ(persistentEvent.IsRunning(), true,
+             NS_TEST_ASSERT_MSG_EQ(persistentEvent.IsPending(), true,
                                    "Persistent event not started");
            }
        }

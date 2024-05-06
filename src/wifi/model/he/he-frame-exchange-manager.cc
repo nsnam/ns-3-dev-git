@@ -88,7 +88,7 @@ void
 HeFrameExchangeManager::Reset()
 {
     NS_LOG_FUNCTION(this);
-    if (m_intraBssNavResetEvent.IsRunning())
+    if (m_intraBssNavResetEvent.IsPending())
     {
         m_intraBssNavResetEvent.Cancel();
     }
@@ -1273,7 +1273,7 @@ HeFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicit
 
         TransmissionFailed();
     }
-    else if (!m_multiStaBaEvent.IsRunning())
+    else if (!m_multiStaBaEvent.IsPending())
     {
         m_edca->ResetCw(m_linkId);
         TransmissionSucceeded();
@@ -2238,7 +2238,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         }
 
         // Schedule the transmission of a Multi-STA BlockAck frame if needed
-        if (!acknowledgment->stationsReceivingMultiStaBa.empty() && !m_multiStaBaEvent.IsRunning())
+        if (!acknowledgment->stationsReceivingMultiStaBa.empty() && !m_multiStaBaEvent.IsPending())
         {
             m_multiStaBaEvent = Simulator::Schedule(m_phy->GetSifs(),
                                                     &HeFrameExchangeManager::SendMultiStaBlockAck,
@@ -2256,7 +2256,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyAckTimeoutResetNow();
 
-            if (!m_multiStaBaEvent.IsRunning())
+            if (!m_multiStaBaEvent.IsPending())
             {
                 // all of the stations that replied with a TB PPDU sent QoS Null frames.
                 NS_LOG_DEBUG("Continue the TXOP");
@@ -2696,7 +2696,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
         }
 
         // Schedule the transmission of a Multi-STA BlockAck frame if needed
-        if (!acknowledgment->stationsReceivingMultiStaBa.empty() && !m_multiStaBaEvent.IsRunning())
+        if (!acknowledgment->stationsReceivingMultiStaBa.empty() && !m_multiStaBaEvent.IsPending())
         {
             m_multiStaBaEvent = Simulator::Schedule(m_phy->GetSifs(),
                                                     &HeFrameExchangeManager::SendMultiStaBlockAck,
@@ -2714,7 +2714,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyAckTimeoutResetNow();
 
-            if (!m_multiStaBaEvent.IsRunning())
+            if (!m_multiStaBaEvent.IsPending())
             {
                 // all of the stations that replied with a TB PPDU sent QoS Null frames.
                 NS_LOG_DEBUG("Continue the TXOP");

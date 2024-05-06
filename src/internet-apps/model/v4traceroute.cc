@@ -162,12 +162,12 @@ V4TraceRoute::StopApplication()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_next.IsRunning())
+    if (m_next.IsPending())
     {
         m_next.Cancel();
     }
 
-    if (m_waitIcmpReplyTimer.IsRunning())
+    if (m_waitIcmpReplyTimer.IsPending())
     {
         m_waitIcmpReplyTimer.Cancel();
     }
@@ -193,7 +193,7 @@ V4TraceRoute::DoDispose()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_next.IsRunning() || m_waitIcmpReplyTimer.IsRunning())
+    if (m_next.IsPending() || m_waitIcmpReplyTimer.IsPending())
     {
         StopApplication();
     }
@@ -422,7 +422,7 @@ void
 V4TraceRoute::StartWaitReplyTimer()
 {
     NS_LOG_FUNCTION(this);
-    if (!m_waitIcmpReplyTimer.IsRunning())
+    if (!m_waitIcmpReplyTimer.IsPending())
     {
         NS_LOG_LOGIC("Starting WaitIcmpReplyTimer at " << Simulator::Now() << " for "
                                                        << m_waitIcmpReplyTimeout);

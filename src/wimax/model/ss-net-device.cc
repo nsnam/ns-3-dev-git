@@ -854,7 +854,7 @@ SubscriberStationNetDevice::DoReceive(Ptr<Packet> packet)
                     Simulator::Cancel(m_linkManager->GetDlMapSyncTimeoutEvent());
                 }
 
-                if (m_lostDlMapEvent.IsRunning())
+                if (m_lostDlMapEvent.IsPending())
                 {
                     Simulator::Cancel(m_lostDlMapEvent);
                 }
@@ -864,7 +864,7 @@ SubscriberStationNetDevice::DoReceive(Ptr<Packet> packet)
                                                        false,
                                                        m_lostDlMapEvent);
 
-                if (m_dcdWaitTimeoutEvent.IsRunning())
+                if (m_dcdWaitTimeoutEvent.IsPending())
                 {
                     Simulator::Cancel(m_dcdWaitTimeoutEvent);
                 }
@@ -874,7 +874,7 @@ SubscriberStationNetDevice::DoReceive(Ptr<Packet> packet)
                                                        false,
                                                        m_dcdWaitTimeoutEvent);
 
-                if (m_ucdWaitTimeoutEvent.IsRunning())
+                if (m_ucdWaitTimeoutEvent.IsPending())
                 {
                     Simulator::Cancel(m_ucdWaitTimeoutEvent);
                 }
@@ -890,7 +890,7 @@ SubscriberStationNetDevice::DoReceive(Ptr<Packet> packet)
                 break;
             }
             case ManagementMessageType::MESSAGE_TYPE_UL_MAP: {
-                if (m_lostUlMapEvent.IsRunning())
+                if (m_lostUlMapEvent.IsPending())
                 {
                     Simulator::Cancel(m_lostUlMapEvent);
                     m_linkManager->ScheduleScanningRestart(m_lostUlMapInterval,
@@ -908,7 +908,7 @@ SubscriberStationNetDevice::DoReceive(Ptr<Packet> packet)
                 {
                     if (m_linkManager->GetRangingIntervalFound())
                     {
-                        if (m_rangOppWaitTimeoutEvent.IsRunning())
+                        if (m_rangOppWaitTimeoutEvent.IsPending())
                         {
                             Simulator::Cancel(m_rangOppWaitTimeoutEvent);
                         }
@@ -923,7 +923,7 @@ SubscriberStationNetDevice::DoReceive(Ptr<Packet> packet)
                     SetState(SS_STATE_ACQUIRING_PARAMETERS);
                 }
 
-                if (m_dcdWaitTimeoutEvent.IsRunning())
+                if (m_dcdWaitTimeoutEvent.IsPending())
                 {
                     Simulator::Cancel(m_dcdWaitTimeoutEvent);
                     m_linkManager->ScheduleScanningRestart(m_intervalT1,
@@ -950,7 +950,7 @@ SubscriberStationNetDevice::DoReceive(Ptr<Packet> packet)
 
                 ProcessUcd(ucd);
 
-                if (m_ucdWaitTimeoutEvent.IsRunning())
+                if (m_ucdWaitTimeoutEvent.IsPending())
                 {
                     Simulator::Cancel(m_ucdWaitTimeoutEvent);
                     m_linkManager->ScheduleScanningRestart(m_intervalT12,

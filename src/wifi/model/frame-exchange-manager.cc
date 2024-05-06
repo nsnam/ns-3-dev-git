@@ -73,7 +73,7 @@ FrameExchangeManager::Reset()
 {
     NS_LOG_FUNCTION(this);
     m_txTimer.Cancel();
-    if (m_navResetEvent.IsRunning())
+    if (m_navResetEvent.IsPending())
     {
         m_navResetEvent.Cancel();
     }
@@ -273,7 +273,7 @@ FrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDuration
     NS_LOG_FUNCTION(this << "PSDU reception started for " << psduDuration.As(Time::US)
                          << " (txVector: " << txVector << ")");
 
-    NS_ASSERT_MSG(!m_txTimer.IsRunning() || !m_navResetEvent.IsRunning(),
+    NS_ASSERT_MSG(!m_txTimer.IsRunning() || !m_navResetEvent.IsPending(),
                   "The TX timer and the NAV reset event cannot be both running");
 
     // No need to reschedule timeouts if PSDU duration is null. In this case,
@@ -288,7 +288,7 @@ FrameExchangeManager::RxStartIndication(WifiTxVector txVector, Time psduDuration
         m_channelAccessManager->NotifyAckTimeoutResetNow();
     }
 
-    if (m_navResetEvent.IsRunning())
+    if (m_navResetEvent.IsPending())
     {
         m_navResetEvent.Cancel();
     }

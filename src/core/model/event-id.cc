@@ -73,10 +73,16 @@ EventId::IsExpired() const
 }
 
 bool
-EventId::IsRunning() const
+EventId::IsPending() const
 {
     NS_LOG_FUNCTION(this);
     return !IsExpired();
+}
+
+bool
+EventId::IsRunning() const
+{
+    return IsPending();
 }
 
 EventImpl*

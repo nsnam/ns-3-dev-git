@@ -702,7 +702,7 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
         GetVOQueue()->Queue(packet, hdr);
     }
 
-    if (m_assocRequestEvent.IsRunning())
+    if (m_assocRequestEvent.IsPending())
     {
         m_assocRequestEvent.Cancel();
     }
@@ -862,7 +862,7 @@ StaWifiMac::MissedBeacons()
 
     if (m_beaconWatchdogEnd > Simulator::Now())
     {
-        if (m_beaconWatchdog.IsRunning())
+        if (m_beaconWatchdog.IsPending())
         {
             m_beaconWatchdog.Cancel();
         }
@@ -1324,7 +1324,7 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     std::optional<Mac48Address> apMldAddress;
     MgtAssocResponseHeader assocResp;
     mpdu->GetPacket()->PeekHeader(assocResp);
-    if (m_assocRequestEvent.IsRunning())
+    if (m_assocRequestEvent.IsPending())
     {
         m_assocRequestEvent.Cancel();
     }

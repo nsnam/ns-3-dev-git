@@ -333,12 +333,12 @@ Ipv4L3Protocol::DoDispose()
 
     m_fragments.clear();
     m_timeoutEventList.clear();
-    if (m_timeoutEvent.IsRunning())
+    if (m_timeoutEvent.IsPending())
     {
         m_timeoutEvent.Cancel();
     }
 
-    if (m_cleanDpd.IsRunning())
+    if (m_cleanDpd.IsPending())
     {
         m_cleanDpd.Cancel();
     }
@@ -1800,7 +1800,7 @@ Ipv4L3Protocol::UpdateDuplicate(Ptr<const Packet> p, const Ipv4Header& header)
     }
 
     // set cleanup job for new duplicate entries
-    if (!m_cleanDpd.IsRunning() && m_purge.IsStrictlyPositive())
+    if (!m_cleanDpd.IsPending() && m_purge.IsStrictlyPositive())
     {
         m_cleanDpd = Simulator::Schedule(m_expire, &Ipv4L3Protocol::RemoveDuplicates, this);
     }

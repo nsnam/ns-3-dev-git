@@ -149,7 +149,7 @@ void
 QosFrameExchangeManager::CancelPifsRecovery()
 {
     NS_LOG_FUNCTION(this);
-    NS_ASSERT(m_pifsRecoveryEvent.IsRunning());
+    NS_ASSERT(m_pifsRecoveryEvent.IsPending());
     NS_ASSERT(m_edca);
 
     NS_LOG_DEBUG("Cancel PIFS recovery being attempted by EDCAF " << m_edca);
@@ -162,7 +162,7 @@ QosFrameExchangeManager::StartTransmission(Ptr<Txop> edca, uint16_t allowedWidth
 {
     NS_LOG_FUNCTION(this << edca << allowedWidth);
 
-    if (m_pifsRecoveryEvent.IsRunning())
+    if (m_pifsRecoveryEvent.IsPending())
     {
         // Another AC (having AIFS=1 or lower, if the user changed the default settings)
         // gained channel access while performing PIFS recovery. Abort PIFS recovery
@@ -186,7 +186,7 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
 {
     NS_LOG_FUNCTION(this << edca << txopDuration);
 
-    if (m_pifsRecoveryEvent.IsRunning())
+    if (m_pifsRecoveryEvent.IsPending())
     {
         // Another AC (having AIFS=1 or lower, if the user changed the default settings)
         // gained channel access while performing PIFS recovery. Abort PIFS recovery
@@ -641,7 +641,7 @@ QosFrameExchangeManager::TransmissionFailed()
             // we can continue the TXOP if the carrier sense mechanism indicates that
             // the medium is idle in a PIFS
             NS_LOG_DEBUG("TX of a non-initial frame of a TXOP failed: perform PIFS recovery");
-            NS_ASSERT(!m_pifsRecoveryEvent.IsRunning());
+            NS_ASSERT(!m_pifsRecoveryEvent.IsPending());
             m_pifsRecoveryEvent =
                 Simulator::Schedule(m_phy->GetPifs(), &QosFrameExchangeManager::PifsRecovery, this);
         }

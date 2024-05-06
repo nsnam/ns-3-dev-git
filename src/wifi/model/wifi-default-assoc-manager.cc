@@ -240,7 +240,7 @@ WifiDefaultAssocManager::EndScanning()
     }
 
     if (std::none_of(m_channelSwitchInfo.begin(), m_channelSwitchInfo.end(), [](auto&& info) {
-            return info.timer.IsRunning();
+            return info.timer.IsPending();
         }))
     {
         // we are done
@@ -252,13 +252,13 @@ void
 WifiDefaultAssocManager::NotifyChannelSwitched(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << +linkId);
-    if (m_channelSwitchInfo.size() > linkId && m_channelSwitchInfo[linkId].timer.IsRunning())
+    if (m_channelSwitchInfo.size() > linkId && m_channelSwitchInfo[linkId].timer.IsPending())
     {
         // we were waiting for this notification
         m_channelSwitchInfo[linkId].timer.Cancel();
 
         if (std::none_of(m_channelSwitchInfo.begin(), m_channelSwitchInfo.end(), [](auto&& info) {
-                return info.timer.IsRunning();
+                return info.timer.IsPending();
             }))
         {
             // we are done
@@ -282,7 +282,7 @@ WifiDefaultAssocManager::ChannelSwitchTimeout(uint8_t linkId)
     setupLinks.erase(it);
 
     if (std::none_of(m_channelSwitchInfo.begin(), m_channelSwitchInfo.end(), [](auto&& info) {
-            return info.timer.IsRunning();
+            return info.timer.IsPending();
         }))
     {
         // we are done
@@ -293,7 +293,7 @@ WifiDefaultAssocManager::ChannelSwitchTimeout(uint8_t linkId)
 bool
 WifiDefaultAssocManager::CanBeInserted(const StaWifiMac::ApInfo& apInfo) const
 {
-    return (m_waitBeaconEvent.IsRunning() || m_probeRequestEvent.IsRunning());
+    return (m_waitBeaconEvent.IsPending() || m_probeRequestEvent.IsPending());
 }
 
 bool

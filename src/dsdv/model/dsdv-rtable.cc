@@ -312,7 +312,7 @@ RoutingTable::AnyRunningEvent(Ipv4Address address)
         return false;
     }
     event = i->second;
-    return event.IsRunning();
+    return event.IsPending();
 }
 
 bool
@@ -340,7 +340,7 @@ RoutingTable::DeleteIpv4Event(Ipv4Address address)
         return false;
     }
     event = i->second;
-    if (event.IsRunning())
+    if (event.IsPending())
     {
         return false;
     }

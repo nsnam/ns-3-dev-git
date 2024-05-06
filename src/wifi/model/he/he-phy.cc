@@ -832,7 +832,7 @@ HePhy::DoStartReceivePayload(Ptr<Event> event)
             Simulator::Schedule(timeToEndRx, &HePhy::ResetReceive, this, event));
         // Cancel all scheduled events for MU payload reception
         NS_ASSERT(!m_beginMuPayloadRxEvents.empty() &&
-                  m_beginMuPayloadRxEvents.begin()->second.IsRunning());
+                  m_beginMuPayloadRxEvents.begin()->second.IsPending());
         for (auto& beginMuPayloadRxEvent : m_beginMuPayloadRxEvents)
         {
             beginMuPayloadRxEvent.second.Cancel();
@@ -850,7 +850,7 @@ HePhy::DoStartReceivePayload(Ptr<Event> event)
         NS_ASSERT(!m_beginMuPayloadRxEvents.empty());
         for (auto& beginMuPayloadRxEvent : m_beginMuPayloadRxEvents)
         {
-            NS_ASSERT(beginMuPayloadRxEvent.second.IsRunning());
+            NS_ASSERT(beginMuPayloadRxEvent.second.IsPending());
         }
     }
 

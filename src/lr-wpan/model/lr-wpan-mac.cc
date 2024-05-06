@@ -630,7 +630,7 @@ LrWpanMac::MlmeScanRequest(MlmeScanRequestParams params)
     confirmParams.m_scanType = params.m_scanType;
     confirmParams.m_chPage = params.m_chPage;
 
-    if ((m_scanEvent.IsRunning() || m_scanEnergyEvent.IsRunning()) || m_scanOrphanEvent.IsRunning())
+    if ((m_scanEvent.IsPending() || m_scanEnergyEvent.IsPending()) || m_scanOrphanEvent.IsPending())
     {
         if (!m_mlmeScanConfirmCallback.IsNull())
         {
@@ -879,7 +879,7 @@ LrWpanMac::MlmeSyncRequest(MlmeSyncRequestParams params)
     uint64_t searchSymbols;
     Time searchBeaconTime;
 
-    if (m_trackingEvent.IsRunning())
+    if (m_trackingEvent.IsPending())
     {
         m_trackingEvent.Cancel();
     }
@@ -1718,13 +1718,13 @@ LrWpanMac::CheckQueue()
 {
     NS_LOG_FUNCTION(this);
     // Pull a packet from the queue and start sending if we are not already sending.
-    if (m_macState == MAC_IDLE && !m_txQueue.empty() && !m_setMacState.IsRunning())
+    if (m_macState == MAC_IDLE && !m_txQueue.empty() && !m_setMacState.IsPending())
     {
         if (m_csmaCa->IsUnSlottedCsmaCa() || (m_outSuperframeStatus == CAP && m_coor) ||
             m_incSuperframeStatus == CAP)
         {
             // check MAC is not in a IFS
-            if (!m_ifsEvent.IsRunning())
+            if (!m_ifsEvent.IsPending())
             {
                 Ptr<TxQueueElement> txQElement = m_txQueue.front();
                 m_txPkt = txQElement->txQPkt;
@@ -1946,21 +1946,21 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                 acceptFrame = (receivedMacHdr.GetExtDstAddr() == m_macExtendedAddress);
             }
 
-            if (acceptFrame && m_scanEvent.IsRunning())
+            if (acceptFrame && m_scanEvent.IsPending())
             {
                 if (!receivedMacHdr.IsBeacon())
                 {
                     acceptFrame = false;
                 }
             }
-            else if (acceptFrame && m_scanOrphanEvent.IsRunning())
+            else if (acceptFrame && m_scanOrphanEvent.IsPending())
             {
                 if (!receivedMacHdr.IsCommand())
                 {
                     acceptFrame = false;
                 }
             }
-            else if (m_scanEnergyEvent.IsRunning())
+            else if (m_scanEnergyEvent.IsPending())
             {
                 // Reject any frames if energy scan is running
                 acceptFrame = false;
@@ -1985,7 +1985,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                 // Although ACKs do not use CSMA to to be transmitted, we need to make sure
                 // that the transmitted ACK will not collide with the transmission of a beacon
                 // when beacon-enabled mode is running in the coordinator.
-                if (acceptFrame && (m_csmaCa->IsSlottedCsmaCa() && m_capEvent.IsRunning()))
+                if (acceptFrame && (m_csmaCa->IsSlottedCsmaCa() && m_capEvent.IsPending()))
                 {
                     Time timeLeftInCap = Simulator::GetDelayLeft(m_capEvent);
                     uint64_t ackSymbols = lrwpan::aTurnaroundTime + m_phy->GetPhySHRDuration() +
@@ -2123,7 +2123,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                     panDescriptor.m_timeStamp = m_macBeaconRxTime;
 
                     // Process beacon when device belongs to a PAN (associated device)
-                    if (!m_scanEvent.IsRunning() && m_macPanId == receivedMacHdr.GetDstPanId())
+                    if (!m_scanEvent.IsPending() && m_macPanId == receivedMacHdr.GetDstPanId())
                     {
                         // We need to make sure to cancel any possible ongoing unslotted CSMA/CA
                         // operations when receiving a beacon (e.g. Those taking place at the
@@ -2178,7 +2178,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                         m_setMacState =
                             Simulator::ScheduleNow(&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
                     }
-                    else if (!m_scanEvent.IsRunning() && m_macPanId == 0xFFFF)
+                    else if (!m_scanEvent.IsPending() && m_macPanId == 0xFFFF)
                     {
                         NS_LOG_DEBUG(this << " Device not associated, cannot process beacon");
                     }
@@ -2199,7 +2199,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                             }
                         }
 
-                        if (m_scanEvent.IsRunning())
+                        if (m_scanEvent.IsPending())
                         {
                             // Channel scanning is taking place, save only unique PAN descriptors
                             bool descriptorExists = false;
@@ -2236,7 +2236,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                             }
                             return;
                         }
-                        else if (m_trackingEvent.IsRunning())
+                        else if (m_trackingEvent.IsPending())
                         {
                             // check if MLME-SYNC.request was previously issued and running
                             // Sync. is necessary to handle pending messages (indirect
@@ -2318,7 +2318,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                         }
                         break;
                     case CommandPayloadHeader::COOR_REALIGN:
-                        if (m_scanOrphanEvent.IsRunning())
+                        if (m_scanOrphanEvent.IsPending())
                         {
                             // Coordinator located, no need to keep scanning other channels
                             m_scanOrphanEvent.Cancel();
@@ -3298,7 +3298,7 @@ LrWpanMac::PlmeSetTRXStateConfirm(PhyEnumeration status)
         NS_ASSERT(status == IEEE_802_15_4_PHY_RX_ON || status == IEEE_802_15_4_PHY_SUCCESS ||
                   status == IEEE_802_15_4_PHY_TRX_OFF);
 
-        if (status == IEEE_802_15_4_PHY_RX_ON && m_scanEnergyEvent.IsRunning())
+        if (status == IEEE_802_15_4_PHY_RX_ON && m_scanEnergyEvent.IsPending())
         {
             // Kick start Energy Detection Scan
             m_phy->PlmeEdRequest();
@@ -3651,7 +3651,7 @@ LrWpanMac::SetLrWpanMacState(MacState macState)
                 break;
             }
             case CommandPayloadHeader::ORPHAN_NOTIF: {
-                if (m_scanOrphanEvent.IsRunning())
+                if (m_scanOrphanEvent.IsPending())
                 {
                     m_unscannedChannels.emplace_back(m_phy->GetCurrentChannelNum());
                 }
@@ -3660,7 +3660,7 @@ LrWpanMac::SetLrWpanMacState(MacState macState)
                 break;
             }
             case CommandPayloadHeader::BEACON_REQ: {
-                if (m_scanEvent.IsRunning())
+                if (m_scanEvent.IsPending())
                 {
                     m_unscannedChannels.emplace_back(m_phy->GetCurrentChannelNum());
                 }

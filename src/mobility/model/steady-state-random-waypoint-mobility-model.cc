@@ -183,7 +183,7 @@ SteadyStateRandomWaypointMobilityModel::DoInitializePrivate()
         {
             pause = Seconds(u * expectedPauseTime);
         }
-        NS_ASSERT(!m_event.IsRunning());
+        NS_ASSERT(!m_event.IsPending());
         m_event =
             Simulator::Schedule(pause, &SteadyStateRandomWaypointMobilityModel::BeginWalk, this);
     }
@@ -209,7 +209,7 @@ SteadyStateRandomWaypointMobilityModel::DoInitializePrivate()
         double u2 = m_u_r->GetValue(0, 1);
         m_helper.SetPosition(
             Vector(m_minX + u2 * x1 + (1 - u2) * x2, m_minY + u2 * y1 + (1 - u2) * y2, m_z));
-        NS_ASSERT(!m_event.IsRunning());
+        NS_ASSERT(!m_event.IsPending());
         m_event =
             Simulator::ScheduleNow(&SteadyStateRandomWaypointMobilityModel::SteadyStateBeginWalk,
                                    this,

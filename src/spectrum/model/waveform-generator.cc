@@ -53,7 +53,7 @@ WaveformGenerator::DoDispose()
     m_channel = nullptr;
     m_netDevice = nullptr;
     m_mobility = nullptr;
-    if (m_nextWave.IsRunning())
+    if (m_nextWave.IsPending())
     {
         m_nextWave.Cancel();
     }
@@ -202,7 +202,7 @@ void
 WaveformGenerator::Start()
 {
     NS_LOG_FUNCTION(this);
-    if (!m_nextWave.IsRunning())
+    if (!m_nextWave.IsPending())
     {
         NS_LOG_LOGIC("generator was not active, now starting");
         m_startTime = Now();
@@ -214,7 +214,7 @@ void
 WaveformGenerator::Stop()
 {
     NS_LOG_FUNCTION(this);
-    if (m_nextWave.IsRunning())
+    if (m_nextWave.IsPending())
     {
         m_nextWave.Cancel();
     }

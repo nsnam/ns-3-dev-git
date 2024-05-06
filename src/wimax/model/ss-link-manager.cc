@@ -377,7 +377,7 @@ SSLinkManager::PerformRanging(Cid cid, RngRsp rngrsp)
     }
 
     m_nrRngRspsRecvd++;
-    if (m_waitForRngRspEvent.IsRunning())
+    if (m_waitForRngRspEvent.IsPending())
     {
         Simulator::Cancel(m_waitForRngRspEvent);
     }

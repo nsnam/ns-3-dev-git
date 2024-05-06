@@ -369,7 +369,7 @@ Radvd::HandleRead(Ptr<Socket> socket)
                         if (m_solicitedEventIds.find((*it)->GetInterface()) !=
                             m_solicitedEventIds.end())
                         {
-                            if (m_solicitedEventIds[(*it)->GetInterface()].IsRunning())
+                            if (m_solicitedEventIds[(*it)->GetInterface()].IsPending())
                             {
                                 scheduleSingle = false;
                             }

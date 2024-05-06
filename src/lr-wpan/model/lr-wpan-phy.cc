@@ -403,7 +403,7 @@ LrWpanPhy::StartRx(Ptr<SpectrumSignalParameters> spectrumRxParams)
     NS_ASSERT(p);
 
     // Prevent PHY from receiving another packet while switching the transceiver state.
-    if (m_trxState == IEEE_802_15_4_PHY_RX_ON && !m_setTRXState.IsRunning())
+    if (m_trxState == IEEE_802_15_4_PHY_RX_ON && !m_setTRXState.IsPending())
     {
         // The specification doesn't seem to refer to BUSY_RX, but vendor
         // data sheets suggest that this is a substate of the RX_ON state
@@ -646,7 +646,7 @@ LrWpanPhy::PdDataRequest(const uint32_t psduLength, Ptr<Packet> p)
     }
 
     // Prevent PHY from sending a packet while switching the transceiver state.
-    if (!m_setTRXState.IsRunning())
+    if (!m_setTRXState.IsPending())
     {
         if (m_trxState == IEEE_802_15_4_PHY_TX_ON)
         {
@@ -1547,7 +1547,7 @@ LrWpanPhy::EndTx()
     {
         // Only change the state immediately, if the transceiver is not already
         // switching the state.
-        if (!m_setTRXState.IsRunning())
+        if (!m_setTRXState.IsPending())
         {
             NS_LOG_LOGIC("Apply pending state change to " << m_trxStatePending);
             ChangeTrxState(m_trxStatePending);

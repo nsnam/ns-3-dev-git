@@ -1763,7 +1763,7 @@ creating simulation events.
   {
       m_running = false;
 
-      if (m_sendEvent.IsRunning())
+      if (m_sendEvent.IsPending())
       {
           Simulator::Cancel(m_sendEvent);
       }
@@ -1776,7 +1776,7 @@ creating simulation events.
 
 Every time a simulation event is scheduled, an ``Event`` is created.
 If the ``Event`` is pending execution or executing, its method
-``IsRunning`` will return ``true``.  In this code, if ``IsRunning()``
+``IsPending`` will return ``true``.  In this code, if ``IsPending()``
 returns true, we ``Cancel`` the event which removes it from the
 simulator event queue.  By doing this, we break the chain of events
 that the ``Application`` is using to keep sending its ``Packets`` and

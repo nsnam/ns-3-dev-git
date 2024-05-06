@@ -869,7 +869,7 @@ TcpSocketBase::Send(Ptr<Packet> p, uint32_t flags)
         if ((m_state == ESTABLISHED || m_state == CLOSE_WAIT) && AvailableWindow() > 0)
         { // Try to send the data out: Add a little step to allow the application
             // to fill the buffer
-            if (!m_sendPendingDataEvent.IsRunning())
+            if (!m_sendPendingDataEvent.IsPending())
             {
                 m_sendPendingDataEvent = Simulator::Schedule(TimeStep(1),
                                                              &TcpSocketBase::SendPendingData,
@@ -1136,7 +1136,7 @@ TcpSocketBase::CloseAndNotify()
         NotifyNormalClose();
         m_closeNotified = true;
     }
-    if (m_lastAckEvent.IsRunning())
+    if (m_lastAckEvent.IsPending())
     {
         m_lastAckEvent.Cancel();
     }
@@ -1473,7 +1473,7 @@ TcpSocketBase::DoForwardUp(Ptr<Packet> packet, const Address& fromAddress, const
         break;
     }
 
-    if (m_rWnd.Get() != 0 && m_persistEvent.IsRunning())
+    if (m_rWnd.Get() != 0 && m_persistEvent.IsPending())
     { // persist probes end, the other end has increased the window
         NS_ASSERT(m_connected);
         NS_LOG_LOGIC(this << " Leaving zerowindow persist state");

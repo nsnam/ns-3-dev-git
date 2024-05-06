@@ -294,7 +294,7 @@ UanMacRc::Enqueue(Ptr<Packet> packet, uint16_t protocolNumber, const Address& de
         Associate();
         return true;
     case IDLE:
-        if (!m_rtsEvent.IsRunning())
+        if (!m_rtsEvent.IsPending())
         {
             SendRts();
         }
@@ -489,7 +489,7 @@ UanMacRc::ScheduleData(const UanHeaderRcCts& ctsh,
     m_state = IDLE;
     if (!m_pktQueue.empty())
     {
-        if (m_rtsEvent.IsRunning())
+        if (m_rtsEvent.IsPending())
         {
             m_rtsEvent.Cancel();
         }
@@ -625,7 +625,7 @@ UanMacRc::Associate()
         SendPacket(pkt, m_currentRate + m_numRates);
     }
     m_state = GWPSENT;
-    NS_ASSERT(!m_rtsEvent.IsRunning());
+    NS_ASSERT(!m_rtsEvent.IsPending());
     m_ev->SetAttribute("Mean", DoubleValue(1 / m_retryRate));
     double timeout = m_ev->GetValue();
     m_rtsEvent = Simulator::Schedule(Seconds(timeout), &UanMacRc::AssociateTimeout, this);
@@ -659,7 +659,7 @@ UanMacRc::AssociateTimeout()
         SendPacket(pkt, m_currentRate + m_numRates);
         m_resList.push_back(res);
     }
-    NS_ASSERT(!m_rtsEvent.IsRunning());
+    NS_ASSERT(!m_rtsEvent.IsPending());
     m_ev->SetAttribute("Mean", DoubleValue(1 / m_retryRate));
     double timeout = m_ev->GetValue();
     m_rtsEvent = Simulator::Schedule(Seconds(timeout), &UanMacRc::AssociateTimeout, this);
@@ -693,7 +693,7 @@ UanMacRc::SendRts()
         SendPacket(pkt, m_currentRate + m_numRates);
     }
     m_state = RTSSENT;
-    NS_ASSERT(!m_rtsEvent.IsRunning());
+    NS_ASSERT(!m_rtsEvent.IsPending());
     m_ev->SetAttribute("Mean", DoubleValue(1 / m_retryRate));
     double timeout = m_ev->GetValue();
     m_rtsEvent = Simulator::Schedule(Seconds(timeout), &UanMacRc::RtsTimeout, this);
@@ -755,7 +755,7 @@ UanMacRc::RtsTimeout()
         SendPacket(pkt, m_currentRate + m_numRates);
     }
     m_state = RTSSENT;
-    NS_ASSERT(!m_rtsEvent.IsRunning());
+    NS_ASSERT(!m_rtsEvent.IsPending());
     m_ev->SetAttribute("Mean", DoubleValue(1 / m_retryRate));
     double timeout = m_ev->GetValue();
     m_rtsEvent = Simulator::Schedule(Seconds(timeout), &UanMacRc::RtsTimeout, this);

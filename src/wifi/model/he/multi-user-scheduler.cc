@@ -210,7 +210,7 @@ MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
     m_allowedWidth = allowedWidth;
     m_linkId = linkId;
 
-    if (m_accessReqTimer.IsRunning() && m_restartTimerUponAccess)
+    if (m_accessReqTimer.IsPending() && m_restartTimerUponAccess)
     {
         // restart access timer
         m_accessReqTimer.Cancel();

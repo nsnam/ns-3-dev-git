@@ -56,7 +56,7 @@ Timer::~Timer()
     NS_LOG_FUNCTION(this);
     if (m_flags & CHECK_ON_DESTROY)
     {
-        if (m_event.IsRunning())
+        if (m_event.IsPending())
         {
             NS_FATAL_ERROR("Event is still running while destroying.");
         }
@@ -129,7 +129,7 @@ bool
 Timer::IsRunning() const
 {
     NS_LOG_FUNCTION(this);
-    return !IsSuspended() && m_event.IsRunning();
+    return !IsSuspended() && m_event.IsPending();
 }
 
 bool
@@ -170,7 +170,7 @@ Timer::Schedule(Time delay)
 {
     NS_LOG_FUNCTION(this << delay);
     NS_ASSERT(m_impl != nullptr);
-    if (m_event.IsRunning())
+    if (m_event.IsPending())
     {
         NS_FATAL_ERROR("Event is still running while re-scheduling.");
     }

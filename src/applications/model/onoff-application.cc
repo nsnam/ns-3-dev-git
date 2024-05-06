@@ -268,7 +268,7 @@ OnOffApplication::CancelEvents()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_sendEvent.IsRunning() && m_cbrRateFailSafe == m_cbrRate)
+    if (m_sendEvent.IsPending() && m_cbrRateFailSafe == m_cbrRate)
     { // Cancel the pending send packet event
         // Calculate residual bits since last packet sent
         Time delta(Simulator::Now() - m_lastStartTime);

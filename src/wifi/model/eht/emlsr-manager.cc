@@ -231,7 +231,7 @@ std::optional<Time>
 EmlsrManager::GetElapsedMediumSyncDelayTimer(uint8_t linkId) const
 {
     if (const auto statusIt = m_mediumSyncDelayStatus.find(linkId);
-        statusIt != m_mediumSyncDelayStatus.cend() && statusIt->second.timer.IsRunning())
+        statusIt != m_mediumSyncDelayStatus.cend() && statusIt->second.timer.IsPending())
     {
         return m_mediumSyncDuration - Simulator::GetDelayLeft(statusIt->second.timer);
     }
@@ -343,7 +343,7 @@ EmlsrManager::NotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             action.protectedEhtAction ==
                 WifiActionHeader::PROTECTED_EHT_EML_OPERATING_MODE_NOTIFICATION)
         {
-            if (m_transitionTimeoutEvent.IsRunning())
+            if (m_transitionTimeoutEvent.IsPending())
             {
                 // no need to wait until the expiration of the transition timeout
                 m_transitionTimeoutEvent.PeekEventImpl()->Invoke();
@@ -462,7 +462,7 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted, bool ongoingD
     // receive a CTS response.
     if (auto it = m_ulMainPhySwitch.find(linkId); it != m_ulMainPhySwitch.end())
     {
-        if (it->second.IsRunning())
+        if (it->second.IsPending())
         {
             NS_LOG_DEBUG("Cancelling main PHY channel switch event on link " << +linkId);
             it->second.Cancel();
@@ -515,7 +515,7 @@ EmlsrManager::SetCcaEdThresholdOnLinkSwitch(Ptr<WifiPhy> phy, uint8_t linkId)
     // if a MediumSyncDelay timer is running for the link on which the main PHY is going to
     // operate, set the CCA ED threshold to the MediumSyncDelay OFDM ED threshold
     if (auto statusIt = m_mediumSyncDelayStatus.find(linkId);
-        statusIt != m_mediumSyncDelayStatus.cend() && statusIt->second.timer.IsRunning())
+        statusIt != m_mediumSyncDelayStatus.cend() && statusIt->second.timer.IsPending())
     {
         NS_LOG_DEBUG("Setting CCA ED threshold of PHY " << phy << " to " << +m_msdOfdmEdThreshold
                                                         << " on link " << +linkId);
@@ -679,7 +679,7 @@ EmlsrManager::StartMediumSyncDelayTimer(uint8_t linkId)
             // switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
             // is not received and the UL TXOP ends before the main PHY channel switch is
             // completed. The MSD timer is started on the link left "uncovered" by the main PHY
-            if (auto phy = m_staMac->GetWifiPhy(id); phy && !it->second.timer.IsRunning())
+            if (auto phy = m_staMac->GetWifiPhy(id); phy && !it->second.timer.IsPending())
             {
                 NS_LOG_DEBUG("Setting CCA ED threshold on link "
                              << +id << " to " << +m_msdOfdmEdThreshold << " PHY " << phy);
@@ -704,7 +704,7 @@ EmlsrManager::CancelMediumSyncDelayTimer(uint8_t linkId)
 
     auto timerIt = m_mediumSyncDelayStatus.find(linkId);
 
-    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsRunning());
+    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsPending());
 
     timerIt->second.timer.Cancel();
     MediumSyncDelayTimerExpired(linkId);
@@ -717,7 +717,7 @@ EmlsrManager::MediumSyncDelayTimerExpired(uint8_t linkId)
 
     auto timerIt = m_mediumSyncDelayStatus.find(linkId);
 
-    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && !timerIt->second.timer.IsRunning());
+    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && !timerIt->second.timer.IsPending());
 
     // reset the MSD OFDM ED threshold
     auto phy = m_staMac->GetWifiPhy(linkId);
@@ -747,7 +747,7 @@ EmlsrManager::DecrementMediumSyncDelayNTxops(uint8_t linkId)
 
     const auto timerIt = m_mediumSyncDelayStatus.find(linkId);
 
-    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsRunning());
+    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsPending());
     NS_ASSERT(timerIt->second.msdNTxopsLeft != 0);
 
     if (timerIt->second.msdNTxopsLeft)
@@ -763,7 +763,7 @@ EmlsrManager::ResetMediumSyncDelayNTxops(uint8_t linkId)
 
     auto timerIt = m_mediumSyncDelayStatus.find(linkId);
 
-    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsRunning());
+    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsPending());
     timerIt->second.msdNTxopsLeft.reset();
 }
 
@@ -774,7 +774,7 @@ EmlsrManager::MediumSyncDelayNTxopsExceeded(uint8_t linkId)
 
     auto timerIt = m_mediumSyncDelayStatus.find(linkId);
 
-    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsRunning());
+    NS_ASSERT(timerIt != m_mediumSyncDelayStatus.cend() && timerIt->second.timer.IsPending());
     return timerIt->second.msdNTxopsLeft == 0;
 }
 

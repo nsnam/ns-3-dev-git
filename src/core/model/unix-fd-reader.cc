@@ -93,7 +93,7 @@ FdReader::Start(int fd, Callback<void, uint8_t*, ssize_t> readCallback)
     // scheduling a "destroy time" method to make sure the thread exits before
     // proceeding.
     //
-    if (!m_destroyEvent.IsRunning())
+    if (!m_destroyEvent.IsPending())
     {
         // hold a reference to ensure that this object is not
         // deallocated before the destroy-time event fires

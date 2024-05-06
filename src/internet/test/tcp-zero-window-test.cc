@@ -236,7 +236,7 @@ TcpZeroWindowTest::ProcessedAck(const Ptr<const TcpSocketState> tcb,
         if (h.GetFlags() & TcpHeader::SYN)
         {
             EventId persistentEvent = GetPersistentEvent(SENDER);
-            NS_TEST_ASSERT_MSG_EQ(persistentEvent.IsRunning(),
+            NS_TEST_ASSERT_MSG_EQ(persistentEvent.IsPending(),
                                   true,
                                   "Persistent event not started");
         }

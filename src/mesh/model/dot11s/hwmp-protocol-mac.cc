@@ -321,7 +321,7 @@ void
 HwmpProtocolMac::SendMyPreq()
 {
     NS_LOG_FUNCTION(this);
-    if (m_preqTimer.IsRunning())
+    if (m_preqTimer.IsPending())
     {
         return;
     }
@@ -330,7 +330,7 @@ HwmpProtocolMac::SendMyPreq()
         return;
     }
     // reschedule sending PREQ
-    NS_ASSERT(!m_preqTimer.IsRunning());
+    NS_ASSERT(!m_preqTimer.IsPending());
     m_preqTimer =
         Simulator::Schedule(m_protocol->GetPreqMinInterval(), &HwmpProtocolMac::SendMyPreq, this);
     SendPreqVector(m_myPreq);
@@ -466,7 +466,7 @@ void
 HwmpProtocolMac::SendMyPerr()
 {
     NS_LOG_FUNCTION(this);
-    if (m_perrTimer.IsRunning())
+    if (m_perrTimer.IsPending())
     {
         return;
     }
