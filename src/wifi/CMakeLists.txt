@@ -30,6 +30,8 @@ set(source_files
     model/eht/advanced-ap-emlsr-manager.cc
     model/eht/advanced-emlsr-manager.cc
     model/eht/ap-emlsr-manager.cc
+    model/eht/advanced-ap-emlsr-manager.cc
+    model/eht/common-info-basic-mle.cc
     model/eht/default-ap-emlsr-manager.cc
     model/eht/default-emlsr-manager.cc
     model/eht/eht-capabilities.cc
@@ -194,6 +196,7 @@ set(header_files
     model/eht/advanced-ap-emlsr-manager.h
     model/eht/advanced-emlsr-manager.h
     model/eht/ap-emlsr-manager.h
+    model/eht/common-info-basic-mle.h
     model/eht/default-ap-emlsr-manager.h
     model/eht/default-emlsr-manager.h
     model/eht/eht-capabilities.h
