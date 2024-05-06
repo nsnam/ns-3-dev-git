@@ -449,7 +449,6 @@ class Ipv4 : public Object
      *
      * RFC1122 term for whether host accepts datagram with a dest. address on another interface
      * \returns true for Weak Es Model activated
-     * \deprecated Deprecated since ns-3.41. Use SetStrongEndSystemModel instead.
      */
     NS_DEPRECATED_3_41("Use GetStrongEndSystemModel instead")
     virtual bool GetWeakEsModel() const = 0;
@@ -459,7 +458,6 @@ class Ipv4 : public Object
      *
      * RFC1122 term for whether host accepts datagram with a dest. address on another interface
      * \param model true for Weak Es Model
-     * \deprecated Deprecated since ns-3.41. Use SetStrongEndSystemModel instead.
      */
     NS_DEPRECATED_3_41("Use SetStrongEndSystemModel instead")
     virtual void SetWeakEsModel(bool model) = 0;

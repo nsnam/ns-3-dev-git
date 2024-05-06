@@ -1057,16 +1057,21 @@ class TestCase
         TAKES_FOREVER = 3 //!< Very long running test.
     };
 
+    /**
+     * Deprecated test duration simple enums.
+     *
+     * Use the `TestCase::Duration` enum class symbols instead.
+     * @{
+     */
     NS_DEPRECATED_3_42("Use Duration::QUICK instead")
-    static constexpr auto QUICK = Duration::QUICK; //!< @deprecated See Duration::QUICK.
+    static constexpr auto QUICK = Duration::QUICK;
     NS_DEPRECATED_3_42("Use Duration::EXTENSIVE instead")
-    static constexpr auto EXTENSIVE = Duration::EXTENSIVE; //!< @deprecated See Duration::EXTENSIVE.
+    static constexpr auto EXTENSIVE = Duration::EXTENSIVE;
     NS_DEPRECATED_3_42("Use Duration::TAKES_FOREVER instead")
-    static constexpr auto TAKES_FOREVER =
-        Duration::TAKES_FOREVER; //!< @deprecated See Duration::TAKES_FOREVER.
+    static constexpr auto TAKES_FOREVER = Duration::TAKES_FOREVER;
 
-    using TestDuration NS_DEPRECATED_3_42("Use Duration instead") =
-        Duration; //!< @deprecated See Duration.
+    using TestDuration NS_DEPRECATED_3_42("Use Duration instead") = Duration;
+    /**@}*/
 
     /**
      *  Destructor
@@ -1267,23 +1272,30 @@ class TestSuite : public TestCase
      */
     enum class Type
     {
-        ALL = 0,    //!<
+        ALL = 0,    //!< Token to represent all tests.
         UNIT,       //!< This test suite implements a Unit Test
         SYSTEM,     //!< This test suite implements a System Test
         EXAMPLE,    //!< This test suite implements an Example Test
         PERFORMANCE //!< This test suite implements a Performance Test
     };
 
+    /**
+     * Deprecated test type simple enums.
+     *
+     * Use the `TestSuite::Type` enum class symbols instead.
+     * @{
+     */
     NS_DEPRECATED_3_42("Use Type::ALL instead")
-    static constexpr auto ALL = Type::ALL; //!< @deprecated See Type::ALL.
+    static constexpr auto ALL = Type::ALL;
     NS_DEPRECATED_3_42("Use Type::UNIT instead")
-    static constexpr auto UNIT = Type::UNIT; //!< @deprecated See Type::UNIT.
+    static constexpr auto UNIT = Type::UNIT;
     NS_DEPRECATED_3_42("Use Type::SYSTEM instead")
-    static constexpr auto SYSTEM = Type::SYSTEM; //!< @deprecated See Type::SYSTEM.
+    static constexpr auto SYSTEM = Type::SYSTEM;
     NS_DEPRECATED_3_42("Use Type::EXAMPLE instead")
-    static constexpr auto EXAMPLE = Type::EXAMPLE; //!< @deprecated See Type::EXAMPLE.
+    static constexpr auto EXAMPLE = Type::EXAMPLE;
     NS_DEPRECATED_3_42("Use Type::PERFORMANCE instead")
-    static constexpr auto PERFORMANCE = Type::PERFORMANCE; //!< @deprecated See Type::PERFORMANCE.
+    static constexpr auto PERFORMANCE = Type::PERFORMANCE;
+    /**@}*/
 
     /**
      * \brief Construct a new test suite.
