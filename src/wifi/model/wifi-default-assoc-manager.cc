@@ -90,9 +90,12 @@ WifiDefaultAssocManager::DoStartScanning()
         for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
         {
             Simulator::Schedule(GetScanParams().probeDelay,
-                                &StaWifiMac::SendProbeRequest,
+                                &StaWifiMac::EnqueueProbeRequest,
                                 m_mac,
-                                linkId);
+                                m_mac->GetProbeRequest(linkId),
+                                linkId,
+                                Mac48Address::GetBroadcast(),
+                                Mac48Address::GetBroadcast());
         }
         m_probeRequestEvent =
             Simulator::Schedule(GetScanParams().probeDelay + GetScanParams().maxChannelTime,

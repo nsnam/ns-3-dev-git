@@ -204,11 +204,38 @@ class StaWifiMac : public WifiMac
     Ptr<EmlsrManager> GetEmlsrManager() const;
 
     /**
-     * Enqueue a probe request packet for transmission on the given link.
+     * Get the frame body of the Probe Request to transmit on the given link.
      *
      * @param linkId the ID of the given link
+     * @return the Probe Request frame body
      */
-    void SendProbeRequest(uint8_t linkId);
+    MgtProbeRequestHeader GetProbeRequest(uint8_t linkId) const;
+
+    /**
+     * Get the frame body of the Multi-Link Probe Request to transmit on the given link.
+     *
+     * @param linkId the ID of the given link
+     * @param apLinkIds ID of the links on which the requested APs, affiliated with the
+     *                  AP MLD, operate
+     * @param apMldId the AP MLD ID to include in the Common Info field
+     * @return the Multi-Link Probe Request frame body
+     */
+    MgtProbeRequestHeader GetMultiLinkProbeRequest(uint8_t linkId,
+                                                   const std::vector<uint8_t>& apLinkIds,
+                                                   std::optional<uint8_t> apMldId) const;
+
+    /**
+     * Enqueue the given probe request packet for transmission on the given link.
+     *
+     * @param probeReq the given Probe Request frame body
+     * @param linkId the ID of the given link
+     * @param addr1 the MAC address for the Address1 field
+     * @param addr3 the MAC address for the Address3 field
+     */
+    void EnqueueProbeRequest(const MgtProbeRequestHeader& probeReq,
+                             uint8_t linkId,
+                             const Mac48Address& addr1 = Mac48Address::GetBroadcast(),
+                             const Mac48Address& addr3 = Mac48Address::GetBroadcast());
 
     /**
      * This method is called after wait beacon timeout or wait probe request timeout has
@@ -474,6 +501,7 @@ class StaWifiMac : public WifiMac
      * @return true if we are waiting for an association response from an AP, false otherwise
      */
     bool IsWaitAssocResp() const;
+
     /**
      * This method is called after we have not received a beacon from the AP on any link.
      */
@@ -497,14 +525,24 @@ class StaWifiMac : public WifiMac
      */
     AllSupportedRates GetSupportedRates(uint8_t linkId) const;
     /**
-     * Return the Multi-Link Element to include in the management frames transmitted
+     * Return the Basic Multi-Link Element to include in the management frames transmitted
      * on the given link
      *
-     * @param isReassoc whether the Multi-Link Element is included in a Reassociation Request
+     * @param isReassoc whether the Basic Multi-Link Element is included in a Reassociation Request
      * @param linkId the ID of the given link
-     * @return the Multi-Link Element
+     * @return the Basic Multi-Link Element
      */
-    MultiLinkElement GetMultiLinkElement(bool isReassoc, uint8_t linkId) const;
+    MultiLinkElement GetBasicMultiLinkElement(bool isReassoc, uint8_t linkId) const;
+
+    /**
+     * Return the Probe Request Multi-Link Element to include in the management frames to transmit.
+     *
+     * @param apLinkIds ID of the links on which the requested APs operate
+     * @param apMldId the AP MLD ID to include in the Common Info field
+     * @return the Probe Request Multi-Link Element
+     */
+    MultiLinkElement GetProbeReqMultiLinkElement(const std::vector<uint8_t>& apLinkIds,
+                                                 std::optional<uint8_t> apMldId) const;
 
     /**
      * @param apNegSupport the negotiation type supported by the AP MLD

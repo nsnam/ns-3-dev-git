@@ -349,18 +349,9 @@ StaWifiMac::IsEmlsrLink(uint8_t linkId) const
     return GetLink(linkId).emlsrEnabled;
 }
 
-void
-StaWifiMac::SendProbeRequest(uint8_t linkId)
+MgtProbeRequestHeader
+StaWifiMac::GetProbeRequest(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << linkId);
-    WifiMacHeader hdr;
-    hdr.SetType(WIFI_MAC_MGT_PROBE_REQUEST);
-    hdr.SetAddr1(Mac48Address::GetBroadcast());
-    hdr.SetAddr2(GetFrameExchangeManager(linkId)->GetAddress());
-    hdr.SetAddr3(Mac48Address::GetBroadcast());
-    hdr.SetDsNotFrom();
-    hdr.SetDsNotTo();
-    Ptr<Packet> packet = Create<Packet>();
     MgtProbeRequestHeader probe;
     probe.Get<Ssid>() = GetSsid();
     auto supportedRates = GetSupportedRates(linkId);
@@ -387,7 +378,45 @@ StaWifiMac::SendProbeRequest(uint8_t linkId)
     {
         probe.Get<EhtCapabilities>() = GetEhtCapabilities(linkId);
     }
-    packet->AddHeader(probe);
+    return probe;
+}
+
+MgtProbeRequestHeader
+StaWifiMac::GetMultiLinkProbeRequest(uint8_t linkId,
+                                     const std::vector<uint8_t>& apLinkIds,
+                                     std::optional<uint8_t> apMldId) const
+{
+    NS_LOG_FUNCTION(this << linkId << apMldId.has_value());
+    auto req = GetProbeRequest(linkId);
+
+    if (GetNLinks() == 1)
+    {
+        // Single link (non-EHT) device
+        NS_LOG_DEBUG("Single link device does not support Multi-link operation, not including "
+                     "Multi-link Element");
+        return req;
+    }
+
+    req.Get<MultiLinkElement>() = GetProbeReqMultiLinkElement(apLinkIds, apMldId);
+    return req;
+}
+
+void
+StaWifiMac::EnqueueProbeRequest(const MgtProbeRequestHeader& probeReq,
+                                uint8_t linkId,
+                                const Mac48Address& addr1,
+                                const Mac48Address& addr3)
+{
+    NS_LOG_FUNCTION(this << linkId << addr1 << addr3);
+    WifiMacHeader hdr(WIFI_MAC_MGT_PROBE_REQUEST);
+    hdr.SetAddr1(addr1);
+    hdr.SetAddr2(GetFrameExchangeManager(linkId)->GetAddress());
+    hdr.SetAddr3(addr3);
+    hdr.SetDsNotFrom();
+    hdr.SetDsNotTo();
+
+    auto packet = Create<Packet>();
+    packet->AddHeader(probeReq);
 
     if (!GetQosSupported())
     {
@@ -460,7 +489,7 @@ StaWifiMac::GetAssociationRequest(bool isReassoc, uint8_t linkId) const
 }
 
 MultiLinkElement
-StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
+StaWifiMac::GetBasicMultiLinkElement(bool isReassoc, uint8_t linkId) const
 {
     NS_LOG_FUNCTION(this << isReassoc << +linkId);
 
@@ -536,6 +565,30 @@ StaWifiMac::GetMultiLinkElement(bool isReassoc, uint8_t linkId) const
     }
 
     return multiLinkElement;
+}
+
+MultiLinkElement
+StaWifiMac::GetProbeReqMultiLinkElement(const std::vector<uint8_t>& apLinkIds,
+                                        std::optional<uint8_t> apMldId) const
+{
+    // IEEE 802.11be D6.0 9.4.2.321.3
+    MultiLinkElement mle(MultiLinkElement::PROBE_REQUEST_VARIANT);
+    if (apMldId.has_value())
+    {
+        mle.SetApMldId(*apMldId);
+    }
+
+    for (const auto apLinkId : apLinkIds)
+    {
+        mle.AddPerStaProfileSubelement();
+        auto& perStaProfile = mle.GetPerStaProfile(mle.GetNPerStaProfileSubelements() - 1);
+        perStaProfile.SetLinkId(apLinkId);
+        // Current support limited to Complete Profile request per link ID
+        // TODO: Add support for Partial Per-STA Profile request
+        perStaProfile.SetCompleteProfile();
+    };
+
+    return mle;
 }
 
 std::vector<TidToLinkMapping>
@@ -647,7 +700,7 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
         GetWifiRemoteStationManager(linkId)->GetMldAddress(*link.bssid).has_value())
     {
         auto addMle = [&](auto&& frame) {
-            frame.template Get<MultiLinkElement>() = GetMultiLinkElement(isReassoc, linkId);
+            frame.template Get<MultiLinkElement>() = GetBasicMultiLinkElement(isReassoc, linkId);
         };
         std::visit(addMle, frame);
 
