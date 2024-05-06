@@ -93,6 +93,8 @@ MgtProbeResponseHeader::GetTimestamp() const
 uint32_t
 MgtProbeResponseHeader::GetSerializedSizeImpl() const
 {
+    SetMleContainingFrame();
+
     uint32_t size = 8 /* timestamp */ + 2 /* beacon interval */;
     size += m_capability.GetSerializedSize();
     size += WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>::GetSerializedSizeImpl();
@@ -102,6 +104,8 @@ MgtProbeResponseHeader::GetSerializedSizeImpl() const
 void
 MgtProbeResponseHeader::SerializeImpl(Buffer::Iterator start) const
 {
+    SetMleContainingFrame();
+
     Buffer::Iterator i = start;
     i.WriteHtolsbU64(Simulator::Now().GetMicroSeconds());
     i.WriteHtolsbU16(static_cast<uint16_t>(m_beaconInterval / 1024));
@@ -118,7 +122,20 @@ MgtProbeResponseHeader::DeserializeImpl(Buffer::Iterator start)
     m_beaconInterval *= 1024;
     i = m_capability.Deserialize(i);
     auto distance = i.GetDistanceFrom(start);
-    return distance + WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>::DeserializeImpl(i);
+    distance += WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>::DeserializeImpl(i);
+    if (auto& mle = Get<MultiLinkElement>())
+    {
+        for (std::size_t id = 0; id < mle->GetNPerStaProfileSubelements(); ++id)
+        {
+            auto& perStaProfile = mle->GetPerStaProfile(id);
+            if (perStaProfile.HasProbeResponse())
+            {
+                auto& frameInPerStaProfile = perStaProfile.GetProbeResponse();
+                frameInPerStaProfile.CopyIesFromContainingFrame(*this);
+            }
+        }
+    }
+    return distance;
 }
 
 /***********************************************************
@@ -267,6 +284,44 @@ MgtAssocRequestHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
     NS_ASSERT_MSG(distance <= length,
                   "Bytes read (" << distance << ") exceed expected number (" << length << ")");
     return distance + MgtHeaderInPerStaProfile<MgtAssocRequestHeader, AssocRequestElems>::
+                          DeserializeFromPerStaProfileImpl(i, length - distance, frame);
+}
+
+uint32_t
+MgtProbeResponseHeader::GetSerializedSizeInPerStaProfileImpl(
+    const MgtProbeResponseHeader& frame) const
+{
+    uint32_t size = 0;
+    size += m_capability.GetSerializedSize();
+    size +=
+        MgtHeaderInPerStaProfile<MgtProbeResponseHeader,
+                                 ProbeResponseElems>::GetSerializedSizeInPerStaProfileImpl(frame);
+    return size;
+}
+
+void
+MgtProbeResponseHeader::SerializeInPerStaProfileImpl(Buffer::Iterator start,
+                                                     const MgtProbeResponseHeader& frame) const
+{
+    auto i = start;
+    i = m_capability.Serialize(i);
+    MgtHeaderInPerStaProfile<MgtProbeResponseHeader,
+                             ProbeResponseElems>::SerializeInPerStaProfileImpl(i, frame);
+}
+
+uint32_t
+MgtProbeResponseHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
+                                                         uint16_t length,
+                                                         const MgtProbeResponseHeader& frame)
+{
+    auto i = start;
+    m_timestamp = frame.GetTimestamp();
+    m_beaconInterval = frame.GetBeaconIntervalUs();
+    i = m_capability.Deserialize(i);
+    auto distance = i.GetDistanceFrom(start);
+    NS_ASSERT_MSG(distance <= length,
+                  "Bytes read (" << distance << ") exceed expected number (" << length << ")");
+    return distance + MgtHeaderInPerStaProfile<MgtProbeResponseHeader, ProbeResponseElems>::
                           DeserializeFromPerStaProfileImpl(i, length - distance, frame);
 }
 

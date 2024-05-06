@@ -10,6 +10,7 @@
 #define MULTI_LINK_ELEMENT_H
 
 #include "common-info-basic-mle.h"
+#include "common-info-probe-req-mle.h"
 
 #include "ns3/nstime.h"
 #include "ns3/wifi-information-element.h"
@@ -25,6 +26,7 @@ namespace ns3
 class MgtAssocRequestHeader;
 class MgtReassocRequestHeader;
 class MgtAssocResponseHeader;
+class MgtProbeResponseHeader;
 
 /// variant holding a reference to a (Re)Association Request
 using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHeader>,
@@ -56,7 +58,7 @@ class MultiLinkElement : public WifiInformationElement
     enum Variant : uint8_t
     {
         BASIC_VARIANT = 0,
-        // PROBE_REQUEST_VARIANT,
+        PROBE_REQUEST_VARIANT,
         // RECONFIGURATION_VARIANT,
         // TDLS_VARIANT,
         // PRIORITY_ACCESS_VARIANT,
@@ -76,7 +78,8 @@ class MultiLinkElement : public WifiInformationElement
     using ContainingFrame = std::variant<std::monostate,
                                          std::reference_wrapper<const MgtAssocRequestHeader>,
                                          std::reference_wrapper<const MgtReassocRequestHeader>,
-                                         std::reference_wrapper<const MgtAssocResponseHeader>>;
+                                         std::reference_wrapper<const MgtAssocResponseHeader>,
+                                         std::reference_wrapper<const MgtProbeResponseHeader>>;
 
     /**
      * Construct a Multi-Link Element with no variant set.
@@ -389,6 +392,33 @@ class MultiLinkElement : public WifiInformationElement
         MgtAssocResponseHeader& GetAssocResponse() const;
 
         /**
+         * Include the given Probe Response frame body in the STA Profile field
+         * of this Per-STA Profile subelement
+         *
+         * @param probeResp the given Probe Response frame body
+         */
+        void SetProbeResponse(const MgtProbeResponseHeader& probeResp);
+
+        /// @copydoc SetProbeResponse
+        void SetProbeResponse(MgtProbeResponseHeader&& probeResp);
+
+        /**
+         * Return true if a Probe Response frame body is included in the
+         * STA Profile field of this Per-STA Profile subelement
+         *
+         * @return true if a Probe Response frame body is included
+         */
+        bool HasProbeResponse() const;
+
+        /**
+         * Get the Probe Response frame body included in the STA Profile
+         * field of this Per-STA Profile subelement
+         *
+         * @return the Probe Response frame body
+         */
+        MgtProbeResponseHeader& GetProbeResponse() const;
+
+        /**
          * Get the size in bytes of the serialized STA Info Length subfield of
          * the STA Info field
          *
@@ -404,13 +434,24 @@ class MultiLinkElement : public WifiInformationElement
         void SerializeInformationField(Buffer::Iterator start) const override;
         uint16_t DeserializeInformationField(Buffer::Iterator start, uint16_t length) override;
 
+        /**
+         * Deserialize information of Per-STA Profile Subelement in Probe Request Multi-link
+         * Element.
+         *
+         * @param start an iterator which points to where the information should be written
+         * @param length the expected number of octets to read
+         * @return the number of octets read
+         */
+        uint16_t DeserProbeReqMlePerSta(ns3::Buffer::Iterator start, uint16_t length);
+
         Variant m_variant;            //!< Multi-Link element variant
         uint16_t m_staControl;        //!< STA Control field
         Mac48Address m_staMacAddress; //!< STA MAC address
         std::variant<std::monostate,
                      std::unique_ptr<MgtAssocRequestHeader>,
                      std::unique_ptr<MgtReassocRequestHeader>,
-                     std::unique_ptr<MgtAssocResponseHeader>>
+                     std::unique_ptr<MgtAssocResponseHeader>,
+                     std::unique_ptr<MgtProbeResponseHeader>>
             m_staProfile; /**< STA Profile field, containing the frame body of a frame of the
                                same type as the frame containing the Multi-Link Element */
     };
@@ -450,6 +491,7 @@ class MultiLinkElement : public WifiInformationElement
 
     /// Typedef for structure holding a Common Info field
     using CommonInfo = std::variant<CommonInfoBasicMle,
+                                    CommonInfoProbeReqMle,
                                     // TODO Add other variants
                                     std::monostate /* UNSET variant*/>;
 

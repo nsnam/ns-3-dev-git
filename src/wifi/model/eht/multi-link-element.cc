@@ -9,9 +9,12 @@
 #include "multi-link-element.h"
 
 #include "ns3/address-utils.h"
+#include "ns3/log.h"
 #include "ns3/mgt-headers.h"
 
 #include <utility>
+
+NS_LOG_COMPONENT_DEFINE("MultiLinkElement");
 
 namespace ns3
 {
@@ -57,6 +60,9 @@ MultiLinkElement::SetVariant(Variant variant)
     {
     case BASIC_VARIANT:
         m_commonInfo = CommonInfoBasicMle();
+        break;
+    case PROBE_REQUEST_VARIANT:
+        m_commonInfo = CommonInfoProbeReqMle();
         break;
     default:
         NS_ABORT_MSG("Unsupported variant: " << +variant);
@@ -401,9 +407,39 @@ MultiLinkElement::PerStaProfileSubelement::GetAssocResponse() const
     return *std::get<std::unique_ptr<MgtAssocResponseHeader>>(m_staProfile);
 }
 
+void
+MultiLinkElement::PerStaProfileSubelement::SetProbeResponse(const MgtProbeResponseHeader& probeResp)
+{
+    m_staProfile = std::make_unique<MgtProbeResponseHeader>(probeResp);
+}
+
+void
+MultiLinkElement::PerStaProfileSubelement::SetProbeResponse(MgtProbeResponseHeader&& probeResp)
+{
+    m_staProfile = std::make_unique<MgtProbeResponseHeader>(std::move(probeResp));
+}
+
+bool
+MultiLinkElement::PerStaProfileSubelement::HasProbeResponse() const
+{
+    return std::holds_alternative<std::unique_ptr<MgtProbeResponseHeader>>(m_staProfile);
+}
+
+MgtProbeResponseHeader&
+MultiLinkElement::PerStaProfileSubelement::GetProbeResponse() const
+{
+    NS_ABORT_IF(!HasProbeResponse());
+    return *std::get<std::unique_ptr<MgtProbeResponseHeader>>(m_staProfile);
+}
+
 uint8_t
 MultiLinkElement::PerStaProfileSubelement::GetStaInfoLength() const
 {
+    if (m_variant == PROBE_REQUEST_VARIANT)
+    {
+        return 0; // IEEE 802.11be 6.0 Figure 9-1072s
+    }
+
     uint8_t ret = 1; // STA Info Length
 
     if (HasStaMacAddress())
@@ -453,6 +489,13 @@ MultiLinkElement::PerStaProfileSubelement::GetInformationFieldSize() const
 void
 MultiLinkElement::PerStaProfileSubelement::SerializeInformationField(Buffer::Iterator start) const
 {
+    if (m_variant == PROBE_REQUEST_VARIANT)
+    {
+        NS_ASSERT_MSG(IsCompleteProfileSet(), "Encoding of STA Profile not supported");
+        start.WriteHtolsbU16(m_staControl);
+        return;
+    }
+
     start.WriteHtolsbU16(m_staControl);
     start.WriteU8(GetStaInfoLength());
 
@@ -486,6 +529,11 @@ uint16_t
 MultiLinkElement::PerStaProfileSubelement::DeserializeInformationField(Buffer::Iterator start,
                                                                        uint16_t length)
 {
+    if (m_variant == PROBE_REQUEST_VARIANT)
+    {
+        return DeserProbeReqMlePerSta(start, length);
+    }
+
     Buffer::Iterator i = start;
 
     m_staControl = i.ReadLsbtohU16();
@@ -519,6 +567,42 @@ MultiLinkElement::PerStaProfileSubelement::DeserializeInformationField(Buffer::I
     };
     std::visit(staProfileDeserialize, m_containingFrame);
 
+    return count;
+}
+
+uint16_t
+MultiLinkElement::PerStaProfileSubelement::DeserProbeReqMlePerSta(ns3::Buffer::Iterator start,
+                                                                  uint16_t length)
+{
+    NS_ASSERT_MSG(m_variant == PROBE_REQUEST_VARIANT,
+                  "Invalid Multi-link Element variant = " << static_cast<uint8_t>(m_variant));
+    Buffer::Iterator i = start;
+    uint16_t count = 0;
+
+    m_staControl = i.ReadLsbtohU16();
+    count += 2;
+
+    NS_ASSERT_MSG(count <= length,
+                  "Incorrect decoded size count =" << count << ", length=" << length);
+    if (count == length)
+    {
+        return count;
+    }
+
+    // TODO: Support decoding of Partial Per-STA Profile
+    // IEEE 802.11be D5.0 9.4.2.312.3 Probe Request Multi-Link element
+    // If the Complete Profile Requested subfield is set to 0 and the STA Profile field
+    // is present in a Per-STA Profile subelement,
+    // the STA Profile field includes exactly one of the following:
+    // - one Request element (see 9.4.2.9 (Request element)), or
+    // — one Extended Request element (see 9.4.2.10 (Extended Request element)), or
+    // — one Request element and one Extended Request element
+    NS_LOG_DEBUG("Decoding of STA Profile in Per-STA Profile subelement not supported");
+    while (count < length)
+    {
+        i.ReadU8();
+        count++;
+    }
     return count;
 }
 
