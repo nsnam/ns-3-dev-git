@@ -1800,9 +1800,10 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
     Time txDuration = CalculateTxDuration(psdus, txVector, GetPhyBand());
 
     bool noEndPreambleDetectionEvent = true;
-    for (const auto& it : m_phyEntities)
+    for (const auto& [mc, entity] : m_phyEntities)
     {
-        noEndPreambleDetectionEvent &= it.second->NoEndPreambleDetectionEvents();
+        noEndPreambleDetectionEvent =
+            noEndPreambleDetectionEvent && entity->NoEndPreambleDetectionEvents();
     }
     if (!noEndPreambleDetectionEvent || m_currentEvent)
     {
@@ -1884,7 +1885,13 @@ WifiPhy::Reset()
 {
     NS_LOG_FUNCTION(this);
     m_currentPreambleEvents.clear();
-    if (m_currentEvent && m_interference)
+    bool noEndPreambleDetectionEvent = true;
+    for (const auto& [mc, entity] : m_phyEntities)
+    {
+        noEndPreambleDetectionEvent =
+            noEndPreambleDetectionEvent && entity->NoEndPreambleDetectionEvents();
+    }
+    if (m_interference && (m_currentEvent || !noEndPreambleDetectionEvent))
     {
         m_interference->NotifyRxEnd(Simulator::Now(), GetCurrentFrequencyRange());
     }
