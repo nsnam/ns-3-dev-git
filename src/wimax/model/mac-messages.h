@@ -476,15 +476,14 @@ namespace ns3
  * This class implements the DSA-RSP message described by "IEEE Standard for
  * Local and metropolitan area networks Part 16: Air Interface for Fixed Broadband Wireless Access
  * Systems" 6.3.2.3.11 DSA-RSP message, page 63
- *
  * \verbatim
- *   0             7             15            23
- *  +-------------+-------------+-------------+
- *  |Mngt msg type|       Transaction ID      |
- *  +-------------+-------------+-------------+
- *  | Conf Code   | Service Flow TLV          |
- *  +~~~~~~~~~~~~~+~~~~~~~~~~~~~+~~~~~~~~~~~~~+
- * \endverbatim
+   0             7             15            23
+   +-------------+-------------+-------------+
+   |Mngt msg type|       Transaction ID      |
+   +-------------+-------------+-------------+
+   | Conf Code   | Service Flow TLV          |
+   +~~~~~~~~~~~~~+~~~~~~~~~~~~~+~~~~~~~~~~~~~+
+   \endverbatim
  */
 class DsaRsp : public Header
 {

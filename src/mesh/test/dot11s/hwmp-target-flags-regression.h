@@ -30,41 +30,45 @@ using namespace ns3;
  *
  * \brief This is a test for intermediate reply and saving routing
  * information about neighbour. 4 stations and 3 UDP ping streams are initiated.
- * \verbatim
- *  <-----------|----------->   Broadcast frame
- *              |----------->|  Unicast frame
- * (Node ID)   0           1             2            3
- * (MAC addr) 10           11           12           13
- *             |            |<-----------|----------->|             ARP request (12 asks who has 10)
- *             |            |            |<-----------|-----------> ARP request
- *             |<-----------|----------->|            |             ARP request
- * <-----------|----------->|            |            |             PREQ
- *             |<-----------|----------->|            |             PREQ
- *             |            |<-----------|            |             PREP
- *             |<-----------|            |            |             PREP
- *             |----------->|            |            |             ARP reply
- *             |            |----------->|            |             ARP REPLY
- *             |            |<-----------|            |             Data
- *             |............|............|............|
- *             |<-----------|----------->|            |             ARP request (11 asks who has 10)
- *             |............|............|............|
- *             |----------->|            |            |             ARP reply
- *                  ^ Note, that this arp reply goes without route
- *                  discovery procedure, because route is known from
- *                  previous PREQ/PREP exchange
- *             |<-----------|            |            |             DATA
- *             |............|............|............|
- * <-----------|----------->|            |            |             ARP request (10 asks who has 13)
- *             |............|............|............|
- *             |            |            |<-----------|-----------> PREQ (13 asks about 10) DO=0
- * RF=1 |            |            |----------->|             PREP (intermediate reply - 12 knows
- * about 10) |            |<-----------|----------->|             PREQ DO=1 RF=0
- *             |............|............|............|
- *             |----------->|            |            |             PREP
- *             |            |----------->|            |             PREP
- *             |            |            |----------->|             PREP
- * \endverbatim
  */
+// clang-format off
+/**
+ * \verbatim
+   <-----------|----------->   Broadcast frame
+               |----------->|  Unicast frame
+   (Node ID)   0            1            2            3
+   (MAC addr) 10           11           12           13
+               |            |<-----------|----------->|             ARP request (12 asks who has 10)
+               |            |            |<-----------|-----------> ARP request
+               |<-----------|----------->|            |             ARP request
+   <-----------|----------->|            |            |             PREQ
+               |<-----------|----------->|            |             PREQ
+               |            |<-----------|            |             PREP
+               |<-----------|            |            |             PREP
+               |----------->|            |            |             ARP reply
+               |            |----------->|            |             ARP REPLY
+               |            |<-----------|            |             Data
+               |............|............|............|
+               |<-----------|----------->|            |             ARP request (11 asks who has 10)
+               |............|............|............|
+               |----------->|            |            |             ARP reply
+                    ^ Note, that this arp reply goes without route
+                    discovery procedure, because route is known from
+                    previous PREQ/PREP exchange
+               |<-----------|            |            |             DATA
+               |............|............|............|
+   <-----------|----------->|            |            |             ARP request (10 asks who has 13)
+               |............|............|............|
+               |            |            |<-----------|-----------> PREQ (13 asks about 10) DO=0 RF=1
+               |            |            |----------->|             PREP (intermediate reply - 12 knows about 10)
+               |            |<-----------|----------->|             PREQ DO=1 RF=0
+               |............|............|............|
+               |----------->|            |            |             PREP
+               |            |----------->|            |             PREP
+               |            |            |----------->|             PREP
+   \endverbatim
+ */
+// clang-format on
 class HwmpDoRfRegressionTest : public TestCase
 {
   public:

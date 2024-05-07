@@ -41,13 +41,13 @@ namespace ns3
  * \ingroup dhcp
  *
  * \class DhcpHeader
- * \brief BOOTP header with DHCP messages supports the following options:
+ * \brief BOOTP header with DHCP messages.  This supports the following options:
  *        Subnet Mask (1), Address Request (50), Refresh Lease Time (51),
  *        DHCP Message Type (53), DHCP Server ID (54), Renew Time (58),
  *        Rebind Time (59) and End (255) of BOOTP
-
-  \verbatim
-    0                   1                   2                   3
+ *
+ * \verbatim
+   0                   1                   2                   3
    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |     op (1)    |   htype (1)   |   hlen (1)    |   hops (1)    |
@@ -78,8 +78,7 @@ namespace ns3
    |                                                               |
    |                          options (variable)                   |
    +---------------------------------------------------------------+
-  \endverbatim
-
+   \endverbatim
  */
 class DhcpHeader : public Header
 {

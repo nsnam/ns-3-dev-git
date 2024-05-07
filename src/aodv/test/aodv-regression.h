@@ -33,132 +33,131 @@ using namespace ns3;
  * \brief AODV chain regression test
  *
  * This script creates 1-dimensional grid topology and then ping last node from the first one:
- *
- * [10.1.1.1] <-- step --> [10.1.1.2] <-- step --> [10.1.1.3] <-- step --> [10.1.1.4] <-- step -->
-[10.1.1.5]
- *
- * Each node can hear only his right and his left neighbor, if they exist. When one third of total
-time expired,
- * central node moves away. After this, node 3 doesn't hear any packets from other nodes and nobody
-hears his packets.
+ */
+// clang-format off
+/**
+ *     [10.1.1.1] <-- step --> [10.1.1.2] <-- step --> [10.1.1.3] <-- step --> [10.1.1.4] <-- step --> [10.1.1.5]
+ */
+// clang-format on
+/**
+ * Each node can hear only his right and his left neighbor, if they exist.
+ * When one third of total time expired, central node moves away.
+ * After this, node 3 doesn't hear any packets from other nodes and nobody hears his packets.
  * We want to demonstrate in this script
  * 1) route establishing
  * 2) broken link detection both from layer 2 information and hello messages.
  *
+ */
+// clang-format off
+/**
  * \verbatim
- Expected packets time diagram.
+   Expected packets time diagram.
+
            1       2       3       4       5
-    <------|------>|       |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, U=1,
-hop=0, ID=1, org_seqno=1) src = 10.1.1.1
-           |<------|------>|       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, U=1,
-hop=1, ID=1, org_seqno=1) src = 10.1.1.2 |       |<------|------>|       |        RREQ
-(orig 10.1.1.1, dst 10.1.1.5, G=1, U=1, hop=2, ID=1, org_seqno=1) src = 10.1.1.3 |       |
-|<------|------>|        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, U=1, hop=3, ID=1, org_seqno=1) src
-= 10.1.1.4 |       |       |       |<------|------> ARP request. Who has 10.1.1.4? Tell 10.1.1.5 |
-|       |       |======>|        ARP reply |       |       |       |<======|        RREP
-(orig 10.1.1.1, dst 10.1.1.5, hop=0, dst_seqno=0) src=10.1.1.5 |       |       |<------|------>| ARP
-request. Who has 10.1.1.3? Tell 10.1.1.4 |       |       |======>|       |        ARP reply | |
-|<======|       |        RREP (orig 10.1.1.1, dst 10.1.1.5, hop=1, dst_seqno=0) src=10.1.1.4 |
-|<------|------>|       |        ARP request. Who has 10.1.1.2? Tell 10.1.1.3 |       |======>| | |
-ARP reply |       |<======|       |       |        RREP (orig 10.1.1.1, dst 10.1.1.5, hop=2,
-dst_seqno=0) src=10.1.1.3
+   <-------|------>|       |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, U=1, hop=0, ID=1, org_seqno=1) src = 10.1.1.1
+           |<------|------>|       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, U=1, hop=1, ID=1, org_seqno=1) src = 10.1.1.2
+           |       |<------|------>|       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, U=1, hop=2, ID=1, org_seqno=1) src = 10.1.1.3
+           |       |       |<------|------>|        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, U=1, hop=3, ID=1, org_seqno=1) src = 10.1.1.4
+           |       |       |       |<------|------> ARP request. Who has 10.1.1.4? Tell 10.1.1.5
+           |       |       |       |======>|        ARP reply
+           |       |       |       |<======|        RREP (orig 10.1.1.1, dst 10.1.1.5, hop=0, dst_seqno=0) src=10.1.1.5
+           |       |       |<------|------>|        ARP request. Who has 10.1.1.3? Tell 10.1.1.4
+           |       |       |======>|       |        ARP reply
+           |       |       |<======|       |        RREP (orig 10.1.1.1, dst 10.1.1.5, hop=1, dst_seqno=0) src=10.1.1.4
+           |       |<------|------>|       |        ARP request. Who has 10.1.1.2? Tell 10.1.1.3
+           |       |======>|       |       |        ARP reply
+           |       |<======|       |       |        RREP (orig 10.1.1.1, dst 10.1.1.5, hop=2, dst_seqno=0) src=10.1.1.3
            |<------|------>|       |       |        ARP request. Who has 10.1.1.1? Tell 10.1.1.2
            |======>|       |       |       |        ARP reply
-           |<======|       |       |       |        RREP (orig 10.1.1.1, dst 10.1.1.5, hop=3,
-dst_seqno=0) src=10.1.1.2
+           |<======|       |       |       |        RREP (orig 10.1.1.1, dst 10.1.1.5, hop=3, dst_seqno=0) src=10.1.1.2
    <-------|------>|       |       |       |        ARP request. Who has 10.1.1.2? Tell 10.1.1.1
            |<======|       |       |       |
-           |======>|       |       |       |        ICMP (ping) request 0 from 10.1.1.1 to 10.1.1.5;
-src=10.1.1.1 next_hop=10.1.1.2
+           |======>|       |       |       |        ICMP (ping) request 0 from 10.1.1.1 to 10.1.1.5; src=10.1.1.1 next_hop=10.1.1.2
            |<------|------>|       |       |        ARP request. Who has 10.1.1.3? Tell 10.1.1.2
            |       |<======|       |       |        ARP reply
-           |       |======>|       |       |        ICMP (ping) request 0 from 10.1.1.1 to 10.1.1.5;
-src=10.1.1.2 next_hop=10.1.1.3 |       |<------|------>|       |        ARP request. Who
-has 10.1.1.4? Tell 10.1.1.3 |       |       |<======|       |        ARP reply |       | |======>|
-|        ICMP (ping) request 0 from 10.1.1.1 to 10.1.1.5; src=10.1.1.3 next_hop=10.1.1.4 |       |
-|<------|------>|        ARP request. Who has 10.1.1.5? Tell 10.1.1.4 |       |       | |<======|
-ARP reply |       |       |       |======>|        ICMP (ping) request 0; src=10.1.1.4
-next_hop=10.1.1.5 |       |       |       |<======|        ICMP (ping) reply 0; src=10.1.1.5
-next_hop=10.1.1.4 |       |       |<======|       |        ICMP (ping) reply 0; src=10.1.1.4
-next_hop=10.1.1.3 |       |<======|       |       |        ICMP (ping) reply 0; src=10.1.1.3
-next_hop=10.1.1.2
-           |<======|       |       |       |        ICMP (ping) reply 0; src=10.1.1.2
-next_hop=10.1.1.1 |       |       |       |<------|------> Hello
+           |       |======>|       |       |        ICMP (ping) request 0 from 10.1.1.1 to 10.1.1.5; src=10.1.1.2 next_hop=10.1.1.3
+           |       |<------|------>|       |        ARP request. Who has 10.1.1.4? Tell 10.1.1.3
+           |       |       |<======|       |        ARP reply
+           |       |       |======>|       |        ICMP (ping) request 0 from 10.1.1.1 to 10.1.1.5; src=10.1.1.3 next_hop=10.1.1.4
+           |       |       |<------|------>|        ARP request. Who has 10.1.1.5? Tell 10.1.1.4
+           |       |       |       |<======|        ARP reply
+           |       |       |       |======>|        ICMP (ping) request 0; src=10.1.1.4 next_hop=10.1.1.5
+           |       |       |       |<======|        ICMP (ping) reply 0; src=10.1.1.5 next_hop=10.1.1.4
+           |       |       |<======|       |        ICMP (ping) reply 0; src=10.1.1.4 next_hop=10.1.1.3
+           |       |<======|       |       |        ICMP (ping) reply 0; src=10.1.1.3 next_hop=10.1.1.2
+           |<======|       |       |       |        ICMP (ping) reply 0; src=10.1.1.2 next_hop=10.1.1.1
+           |       |       |       |<------|------> Hello
            |<------|------>|       |       |        Hello
-    <------|------>|       |       |       |        Hello
+   <-------|------>|       |       |       |        Hello
            |       |<------|------>|       |        Hello
-           |======>|       |       |       |        ICMP (ping) request 1; src=10.1.1.1
-next_hop=10.1.1.2 |       |       |<------|------>|        Hello |       |======>|       |       |
-ICMP (ping) request 1; src=10.1.1.2 next_hop=10.1.1.3 |       |       |======>|       |        ICMP
-(ping) request 1; src=10.1.1.3 next_hop=10.1.1.4 |       |       |       |======>|        ICMP
-(ping) request 1; src=10.1.1.4 next_hop=10.1.1.5 |       |       |       |<======|        ICMP
-(ping) reply 1; src=10.1.1.5 next_hop=10.1.1.4 |       |       |<======|       |        ICMP (ping)
-reply 1; src=10.1.1.4 next_hop=10.1.1.3 |       |<======|       |       |        ICMP (ping) reply
-11; src=10.1.1.3 next_hop=10.1.1.2
-           |<======|       |       |       |        ICMP (ping) reply 1; src=10.1.1.2
-next_hop=10.1.1.1 |       |       |       |<------|------> Hello
+           |======>|       |       |       |        ICMP (ping) request 1; src=10.1.1.1 next_hop=10.1.1.2
+           |       |       |<------|------>|        Hello
+           |       |======>|       |       |        ICMP (ping) request 1; src=10.1.1.2 next_hop=10.1.1.3
+           |       |       |======>|       |        ICMP (ping) request 1; src=10.1.1.3 next_hop=10.1.1.4
+           |       |       |       |======>|        ICMP (ping) request 1; src=10.1.1.4 next_hop=10.1.1.5
+           |       |       |       |<======|        ICMP (ping) reply 1; src=10.1.1.5 next_hop=10.1.1.4
+           |       |       |<======|       |        ICMP (ping) reply 1; src=10.1.1.4 next_hop=10.1.1.3
+           |       |<======|       |       |        ICMP (ping) reply 11; src=10.1.1.3 next_hop=10.1.1.2
+           |<======|       |       |       |        ICMP (ping) reply 1; src=10.1.1.2 next_hop=10.1.1.1
+           |       |       |       |<------|------> Hello
            |<------|------>|       |       |        Hello
-    <------|------>|       |       |       |        Hello
+   <-------|------>|       |       |       |        Hello
            |       |       |<------|------>|        Hello
            |       |<------|------>|       |        Hello
-           |======>|       |       |       |        ICMP (ping) request 2; src=10.1.1.1
-next_hop=10.1.1.2 |       |======>|       |       |        ICMP (ping) request 2; src=10.1.1.2
-next_hop=10.1.1.3 |       |       |======>|       |        ICMP (ping) request 2; src=10.1.1.3
-next_hop=10.1.1.4 |       |       |       |======>|        ICMP (ping) request 2; src=10.1.1.4
-next_hop=10.1.1.5 |       |       |       |<======|        ICMP (ping) reply 2; src=10.1.1.5
-next_hop=10.1.1.4 |       |       |<======|       |        ICMP (ping) reply 2; src=10.1.1.4
-next_hop=10.1.1.3 |       |<======|       |       |        ICMP (ping) reply 2; src=10.1.1.3
-next_hop=10.1.1.2
-           |<======|       |       |       |        ICMP (ping) reply 2; src=10.1.1.2
-next_hop=10.1.1.1 |       |       |       |<------|------> Hello
-    <------|------>|       |       |       |        Hello
+           |======>|       |       |       |        ICMP (ping) request 2; src=10.1.1.1 next_hop=10.1.1.2
+           |       |======>|       |       |        ICMP (ping) request 2; src=10.1.1.2 next_hop=10.1.1.3
+           |       |       |======>|       |        ICMP (ping) request 2; src=10.1.1.3 next_hop=10.1.1.4
+           |       |       |       |======>|        ICMP (ping) request 2; src=10.1.1.4 next_hop=10.1.1.5
+           |       |       |       |<======|        ICMP (ping) reply 2; src=10.1.1.5 next_hop=10.1.1.4
+           |       |       |<======|       |        ICMP (ping) reply 2; src=10.1.1.4 next_hop=10.1.1.3
+           |       |<======|       |       |        ICMP (ping) reply 2; src=10.1.1.3 next_hop=10.1.1.2
+           |<======|       |       |       |        ICMP (ping) reply 2; src=10.1.1.2 next_hop=10.1.1.1
+           |       |       |       |<------|------> Hello
+   <-------|------>|       |       |       |        Hello
            |       |<------|------>|       |        Hello
            |<------|------>|       |       |        Hello
            |       |       |<------|------>|        Hello
-           |======>|       |       |       |        ICMP (ping) request 3; src=10.1.1.1
-next_hop=10.1.1.2 |       |======>|       |       |        ICMP (ping) request 3; src=10.1.1.2
-next_hop=10.1.1.3 |       |       |======>|       |        ICMP (ping) request 3; src=10.1.1.3
-next_hop=10.1.1.4 |       |       |       |======>|        ICMP (ping) request 3; src=10.1.1.4
-next_hop=10.1.1.5 |       |       |       |<======|        ICMP (ping) reply 3; src=10.1.1.5
-next_hop=10.1.1.4 |       |       |<======|       |        ICMP (ping) reply 3; src=10.1.1.4
-next_hop=10.1.1.3 |       |<======|       |       |        ICMP (ping) reply 3; src=10.1.1.3
-next_hop=10.1.1.2
-           |<======|       |       |       |        ICMP (ping) reply 3; src=10.1.1.2
-next_hop=10.1.1.1 |       |       |       |<------|------> Hello
-    <------|------>|       |       |       |        Hello
+           |======>|       |       |       |        ICMP (ping) request 3; src=10.1.1.1 next_hop=10.1.1.2
+           |       |======>|       |       |        ICMP (ping) request 3; src=10.1.1.2 next_hop=10.1.1.3
+           |       |       |======>|       |        ICMP (ping) request 3; src=10.1.1.3 next_hop=10.1.1.4
+           |       |       |       |======>|        ICMP (ping) request 3; src=10.1.1.4 next_hop=10.1.1.5
+           |       |       |       |<======|        ICMP (ping) reply 3; src=10.1.1.5 next_hop=10.1.1.4
+           |       |       |<======|       |        ICMP (ping) reply 3; src=10.1.1.4 next_hop=10.1.1.3
+           |       |<======|       |       |        ICMP (ping) reply 3; src=10.1.1.3 next_hop=10.1.1.2
+           |<======|       |       |       |        ICMP (ping) reply 3; src=10.1.1.2 next_hop=10.1.1.1
+           |       |       |       |<------|------> Hello
+   <-------|------>|       |       |       |        Hello
            |<------|-->    |       |       |        Hello   |
-           |       |    <--|-->    |       |        Hello   |Node 3 move away => nobody hear his
-packets and node 3 doesn't hear anything ! |       |       |    <--|------>|        Hello   |
-           |======>|       |       |       |        ICMP (ping) request 4; src=10.1.1.1
-next_hop=10.1.1.2 |       |==>    |       |       |        ICMP (ping) request 4; src=10.1.1.2
-next_hop=10.1.1.3.   7 retries.
-           |<======|       |       |       |        RERR (unreachable dst 10.1.1.3 & 10.1.1.5)
-src=10.1.1.2 |       |       |       |<------|------> Hello
-    <------|------>|       |       |       |        Hello
+           |       |    <--|-->    |       |        Hello   |Node 3 move away => nobody hear his packets and node 3 doesn't hear anything !
+           |       |       |    <--|------>|        Hello   |
+           |======>|       |       |       |        ICMP (ping) request 4; src=10.1.1.1 next_hop=10.1.1.2
+           |       |==>    |       |       |        ICMP (ping) request 4; src=10.1.1.2 next_hop=10.1.1.3.   7 retries.
+           |<======|       |       |       |        RERR (unreachable dst 10.1.1.3 & 10.1.1.5) src=10.1.1.2
+           |       |       |       |<------|------> Hello
+   <-------|------>|       |       |       |        Hello
            |<------|-->    |       |       |        Hello
            |       |    <--|-->    |       |        Hello
            |       |       |    <--|------>|        Hello
-    <------|------>|       |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, hop=0,
-ID=2, org_seqno=2) src = 10.1.1.1
-           |<------|-->    |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, hop=1,
-ID=2, org_seqno=2) src = 10.1.1.2 |       |       |       |<------|------> Hello |       |       |
-<--|------>|        Hello |       |    <--|-->    |       |        Hello
-           |<------|-->    |       |       |        Hello
-    <------|------>|       |       |       |        Hello
-           |       |       |       |======>|        RERR (unreachable dst 10.1.1.1 & 10.1.1.3)
-src=10.1.1.4 |       |       |       |<------|------> Hello |       |       |    <--|------>| Hello
+   <-------|------>|       |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, hop=0, ID=2, org_seqno=2) src = 10.1.1.1
+           |<------|-->    |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, hop=1, ID=2, org_seqno=2) src = 10.1.1.2
+           |       |       |       |<------|------> Hello
+           |       |       |    <--|------>|        Hello
            |       |    <--|-->    |       |        Hello
            |<------|-->    |       |       |        Hello
-    <------|------>|       |       |       |        Hello
+   <-------|------>|       |       |       |        Hello
+           |       |       |       |======>|        RERR (unreachable dst 10.1.1.1 & 10.1.1.3) src=10.1.1.4
            |       |       |       |<------|------> Hello
-    <------|------>|       |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, hop=0,
-ID=4, org_seqno=3) src = 10.1.1.1
-           |<------|-->    |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, hop=1,
-ID=4, org_seqno=3) src = 10.1.1.2
-
-..................................................................
- * \endverbatim
+           |       |       |    <--|------>|        Hello
+           |       |    <--|-->    |       |        Hello
+           |<------|-->    |       |       |        Hello
+   <-------|------>|       |       |       |        Hello
+           |       |       |       |<------|------> Hello
+   <-------|------>|       |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, hop=0, ID=4, org_seqno=3) src = 10.1.1.1
+           |<------|-->    |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, hop=1, ID=4, org_seqno=3) src = 10.1.1.2
+   .................................................
+   \endverbatim
  */
+//clang-format on
 class ChainRegressionTest : public TestCase
 {
   public:

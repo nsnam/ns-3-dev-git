@@ -130,7 +130,7 @@ TcpNewReno::~TcpNewReno()
  * > SMSS bytes upon receipt of an ACK covering new data, we RECOMMEND
  * > that TCP implementations increase cwnd, per:
  * >
- * >    cwnd += min (N, SMSS)                      (2)
+ * >     cwnd += min (N, SMSS)                      (2)
  * >
  * > where N is the number of previously unacknowledged bytes acknowledged
  * > in the incoming ACK.

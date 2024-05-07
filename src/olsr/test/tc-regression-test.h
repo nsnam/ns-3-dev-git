@@ -40,59 +40,45 @@ namespace olsr
  * It is expected that only second station will send TC messages.
  *
  * Expected trace (20 seconds, note random b-cast jitter):
-   \verbatim
-         1       2       3
-         |<------|------>|              HELLO (empty) src = 10.1.1.2
-         |       |<------|------>       HELLO (empty) src = 10.1.1.3
-  <------|------>|       |              HELLO (empty) src = 10.1.1.1
-  <------|------>|       |              HELLO (Link Type: Asymmetric, Neighbor: 10.1.1.2) src
- = 10.1.1.1 |       |<------|------>       HELLO (Link Type: Asymmetric, Neighbor: 10.1.1.2) src
- = 10.1.1.3
-         |<------|------>|              HELLO (Link Type: Asymmetric, Neighbor: 10.1.1.3; Link Type:
- Asymmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
-         |<------|------>|              HELLO (Link Type: Asymmetric, Neighbor: 10.1.1.3; Link Type:
- Asymmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
-  <------|------>|       |              HELLO (Link Type: Symmetric, Neighbor: 10.1.1.2) src
- = 10.1.1.1 |       |<------|------>       HELLO (Link Type: Symmetric, Neighbor: 10.1.1.2) src
- = 10.1.1.3
-         |<------|------>|              HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type:
- Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
-  <------|------>|       |              HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.1 |       |<------|------>       HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.3
-         |<------|------>|              HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type:
- Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
-  <------|------>|       |              HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.1 |       |<------|------>       HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.3
-         |<======|======>|              TC (10.1.1.3; 10.1.1.1) + HELLO (Link Type: Symmetric,
- Neighbor: 10.1.1.3; Link Type: Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2 | |<------|------>
- HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.3
-  <------|------>|       |              HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.1
-         |<------|------>|              HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type:
- Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
-  <------|------>|       |              HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.1 |       |<------|------>       HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.3
-  <------|------>|       |              HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.1 |       |<------|------>       HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.3
-         |<------|------>|              HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type:
- Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
-         |<======|======>|              TC (10.1.1.3; 10.1.1.1) src = 10.1.1.2
-         |       |<------|------>       HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.3
-  <------|------>|       |              HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.1
-         |<------|------>|              HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type:
- Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
-  <------|------>|       |              HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.1 |       |<------|------>       HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src
- = 10.1.1.3
-         |<------|------>|              HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type:
- Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2 \endverbatim
  */
+// clang-format off
+/**
+ * \verbatim
+          1       2       3
+          |<------|------>|         HELLO (empty) src = 10.1.1.2
+          |       |<------|------>  HELLO (empty) src = 10.1.1.3
+   <------|------>|       |         HELLO (empty) src = 10.1.1.1
+   <------|------>|       |         HELLO (Link Type: Asymmetric, Neighbor: 10.1.1.2) src = 10.1.1.1
+          |       |<------|------>  HELLO (Link Type: Asymmetric, Neighbor: 10.1.1.2) src = 10.1.1.3
+          |<------|------>|         HELLO (Link Type: Asymmetric, Neighbor: 10.1.1.3; Link Type: Asymmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
+          |<------|------>|         HELLO (Link Type: Asymmetric, Neighbor: 10.1.1.3; Link Type: Asymmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
+   <------|------>|       |         HELLO (Link Type: Symmetric, Neighbor: 10.1.1.2) src = 10.1.1.1
+          |       |<------|------>  HELLO (Link Type: Symmetric, Neighbor: 10.1.1.2) src = 10.1.1.3
+          |<------|------>|         HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type: Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
+   <------|------>|       |         HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.1
+          |       |<------|------>  HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.3
+          |<------|------>|         HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type: Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
+   <------|------>|       |         HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.1
+          |       |<------|------>  HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.3
+          |<======|======>|         TC (10.1.1.3; 10.1.1.1) + HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type: Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
+          |       |<------|------>  HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.3
+   <------|------>|       |         HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.1
+          |<------|------>|         HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type: Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
+   <------|------>|       |         HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.1
+          |       |<------|------>  HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.3
+   <------|------>|       |         HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.1
+          |       |<------|------>  HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.3
+          |<------|------>|         HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type: Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
+          |<======|======>|         TC (10.1.1.3; 10.1.1.1) src = 10.1.1.2
+          |       |<------|------>  HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.3
+   <------|------>|       |         HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.1
+          |<------|------>|         HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type: Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
+   <------|------>|       |         HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.1
+          |       |<------|------>  HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.3
+          |<------|------>|         HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type: Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
+   \endverbatim
+ */
+// clang-format on
 class TcRegressionTest : public TestCase
 {
   public:

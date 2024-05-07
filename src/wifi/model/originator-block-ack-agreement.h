@@ -35,21 +35,29 @@ class WifiMpdu;
  * Maintains the state and information about transmitted MPDUs with Ack Policy set to Block Ack
  * for an originator station. The state diagram is as follows:
  *
-   \verbatim
-    /------------\ send ADDBARequest ----------------
-    |   START    |------------------>|   PENDING    |-------
-    \------------/                   ----------------       \
-          ^            receive     /        |                \
-          |        ADDBAResponse  /         |                 \
-          |          (failure)   v          |                  \
-          |        ---------------          |                   --------------------->
- ---------------- |        |  REJECTED   |          |          receive ADDBAResponse (success)  |
- ESTABLISHED | |        ---------------          |      no            -------------------->
- ---------------- |           receive    ^          | ADDBAResponse     / |        ADDBAResponse \
- |                  / |          (failure)     \        v                 / | ---------------- /
-          |-------------------------|   NO_REPLY   |---------
-            Reset after timeout     ----------------
+ */
+// clang-format off
+/**
+ * \verbatim
+   /------------\ send ADDBARequest ----------------
+   |   START    |------------------>|   PENDING    |-------
+   \------------/                   ----------------       \
+         ^            receive     /        |                \
+         |        ADDBAResponse  /         |                 \
+         |          (failure)   v          |                  \
+         |        ---------------          |                   --------------------->  ----------------
+         |        |  REJECTED   |          |          receive ADDBAResponse (success)  |  ESTABLISHED |
+         |        ---------------          |      no            -------------------->  ----------------
+         |           receive    ^          | ADDBAResponse     /
+         |        ADDBAResponse  \         |                  /
+         |          (failure)     \        v                 /
+         |                         ----------------         /
+         |-------------------------|   NO_REPLY   |---------
+           Reset after timeout     ----------------
    \endverbatim
+*/
+// clang-format on
+/**
  *
  * See also OriginatorBlockAckAgreement::State
  */
