@@ -61,6 +61,40 @@ class ExtSpectrumWifiPhy : public SpectrumWifiPhy
 };
 
 /**
+ * Extended InterferenceHelper class for the purpose of the tests.
+ */
+class ExtInterferenceHelper : public InterferenceHelper
+{
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId()
+    {
+        static TypeId tid = TypeId("ns3::ExtInterferenceHelper")
+                                .SetParent<InterferenceHelper>()
+                                .SetGroupName("Wifi")
+                                .AddConstructor<ExtInterferenceHelper>();
+        return tid;
+    }
+
+    /**
+     * Indicate whether the interference helper is in receiving state
+     *
+     * \return true if the interference helper is in receiving state, false otherwise
+     */
+    bool IsRxing() const
+    {
+        return std::any_of(m_rxing.cbegin(), m_rxing.cend(), [](const auto& rxing) {
+            return rxing.second;
+        });
+    }
+};
+
+NS_OBJECT_ENSURE_REGISTERED(ExtInterferenceHelper);
+
+/**
  * \ingroup wifi-test
  * \ingroup tests
  *
@@ -910,6 +944,15 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     void CheckCcaIndication(std::size_t index, bool expectedCcaBusyIndication, Time switchingDelay);
 
     /**
+     * Verify rxing state of the interference helper
+     *
+     * \param phy the PHY to which the interference helper instance is attached
+     * \param rxingExpected flag whether the interference helper is expected to be in rxing state or
+     * not
+     */
+    void CheckRxingState(Ptr<SpectrumWifiPhy> phy, bool rxingExpected);
+
+    /**
      * Reset function
      */
     void Reset();
@@ -957,6 +1000,11 @@ SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel(Ptr<SpectrumWifiPhy> phy,
         listener->m_ccaBusyEnd = Seconds(0);
     }
     phy->SetOperatingChannel(WifiPhy::ChannelTuple{channelNumber, channelWidth, band, 0});
+    // verify rxing state of interference helper is reset after channel switch
+    Simulator::ScheduleNow(&SpectrumWifiPhyMultipleInterfacesTest::CheckRxingState,
+                           this,
+                           phy,
+                           false);
 }
 
 void
@@ -1118,6 +1166,17 @@ SpectrumWifiPhyMultipleInterfacesTest::CheckCcaIndication(std::size_t index,
 }
 
 void
+SpectrumWifiPhyMultipleInterfacesTest::CheckRxingState(Ptr<SpectrumWifiPhy> phy, bool rxingExpected)
+{
+    NS_LOG_FUNCTION(this << phy << rxingExpected);
+    PointerValue ptr;
+    phy->GetAttribute("InterferenceHelper", ptr);
+    auto interferenceHelper = DynamicCast<ExtInterferenceHelper>(ptr.Get<ExtInterferenceHelper>());
+    NS_ASSERT(interferenceHelper);
+    NS_TEST_ASSERT_MSG_EQ(interferenceHelper->IsRxing(), rxingExpected, "Incorrect rxing state");
+}
+
+void
 SpectrumWifiPhyMultipleInterfacesTest::Reset()
 {
     NS_LOG_FUNCTION(this);
@@ -1169,6 +1228,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoSetup()
     wifi.SetStandard(WIFI_STANDARD_80211be);
 
     SpectrumWifiPhyHelper phyHelper(4);
+    phyHelper.SetInterferenceHelper("ns3::ExtInterferenceHelper");
     phyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
 
     struct SpectrumPhyInterfaceInfo
