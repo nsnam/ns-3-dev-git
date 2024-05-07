@@ -861,7 +861,7 @@ class DsrOptionRerrHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   \endverbatim
 */
-/*
+/**
  * \brief The type-specific info field
  * \verbatim
    |      0        |      1        |      2        |      3        |
@@ -1016,9 +1016,9 @@ class DsrOptionRerrUnreachHeader : public DsrOptionRerrHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   \endverbatim
 */
-/*
+/**
  * \brief The type-specific info field
- * \unsupported option
+ * Unsupported option
  * \verbatim
    |      0        |
    0 1 2 3 4 5 6 7
