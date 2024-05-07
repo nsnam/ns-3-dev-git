@@ -110,8 +110,19 @@ namespace addressUtils
 
 /**
  * \brief Address family-independent test for a multicast address
+ * \param ad the address to test
+ * \return true if the address is a multicast address, false otherwise
  */
 bool IsMulticast(const Address& ad);
+
+/**
+ * \brief Convert IPv4/IPv6 address with port to a socket address
+ * \param address the address to convert
+ * \param port the port
+ * \return the corresponding socket address
+ */
+Address ConvertToSocketAddress(const Address& address, uint16_t port);
+
 }; // namespace addressUtils
 
 }; // namespace ns3

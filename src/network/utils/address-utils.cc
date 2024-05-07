@@ -156,6 +156,28 @@ IsMulticast(const Address& ad)
     return false;
 }
 
+Address
+ConvertToSocketAddress(const Address& address, uint16_t port)
+{
+    NS_LOG_FUNCTION(address << port);
+    Address convertedAddress;
+    if (Ipv4Address::IsMatchingType(address))
+    {
+        convertedAddress = InetSocketAddress(Ipv4Address::ConvertFrom(address), port);
+        NS_LOG_DEBUG("Address converted to " << convertedAddress);
+    }
+    else if (Ipv6Address::IsMatchingType(address))
+    {
+        convertedAddress = Inet6SocketAddress(Ipv6Address::ConvertFrom(address), port);
+        NS_LOG_DEBUG("Address converted to " << convertedAddress);
+    }
+    else
+    {
+        NS_FATAL_ERROR("This function should be called for an IPv4 or an IPv6 address");
+    }
+    return convertedAddress;
+}
+
 } // namespace addressUtils
 
 } // namespace ns3
