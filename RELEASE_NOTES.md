@@ -47,6 +47,7 @@ been tested on Linux. The latest known version to work with ns-3 is cppyy==3.1.2
 - (bindings, lte, wifi) - Relocated statically initialized variables from header files to source files for Cppyy3 compatibility.
 - (tests) - Enhanced error handling in test.py to avoid attempts to open non-existent XML files following early test termination by sanitizers.
 - (wifi) #1072 - Support configuration of custom EDCA parameters via Txop attributes before device installation
+- (wifi) - Fix operation in 6 GHz band (added support for FILS Discovery frames and HE 6GHz Band Capabilities information element, fixed HE Operation information element, fixed NSS selection, fixed HT and VHT not supported on 6GHz links).
 
 Release 3.41
 ------------
