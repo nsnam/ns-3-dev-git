@@ -511,10 +511,6 @@ ThreeGppSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
     NS_LOG_FUNCTION(this << spectrumSignalParams << a << b << aPhasedArrayModel
                          << bPhasedArrayModel);
 
-    if (a->GetPosition() == b->GetPosition())
-    {
-        return spectrumSignalParams->Copy();
-    }
     uint32_t aId = a->GetObject<Node>()->GetId(); // id of the node a
     uint32_t bId = b->GetObject<Node>()->GetId(); // id of the node b
     NS_ASSERT_MSG(aPhasedArrayModel, "Antenna not found for node " << aId);

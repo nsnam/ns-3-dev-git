@@ -210,8 +210,9 @@ Angles::Angles(Vector v)
     // azimuth and inclination angles for zero-length vectors are not defined
     if (v.x == 0.0 && v.y == 0.0 && v.z == 0.0)
     {
-        m_azimuth = NAN;
-        m_inclination = NAN;
+        // assume x and length equals to 1 mm to avoid nans
+        m_azimuth = std::atan2(v.y, 0.001);
+        m_inclination = std::acos(v.z / 0.001);
     }
 
     NormalizeAngles();
