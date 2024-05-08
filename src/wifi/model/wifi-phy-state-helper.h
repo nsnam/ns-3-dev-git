@@ -30,6 +30,7 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 
+#include <algorithm>
 #include <list>
 #include <memory>
 #include <vector>
