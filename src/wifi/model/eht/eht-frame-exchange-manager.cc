@@ -319,6 +319,19 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
 }
 
 void
+EhtFrameExchangeManager::ProtectionCompleted()
+{
+    NS_LOG_FUNCTION(this);
+
+    if (m_staMac && m_staMac->GetEmlsrManager())
+    {
+        m_staMac->GetEmlsrManager()->NotifyProtectionCompleted(m_linkId);
+    }
+
+    HeFrameExchangeManager::ProtectionCompleted();
+}
+
+void
 EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << psdu << txVector);

@@ -296,12 +296,9 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     // starts switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
     // is not received and the UL TXOP ends before the main PHY channel switch is completed.
     // In such cases, wait until the main PHY channel switch is completed (unless the channel
-    // switching can be interrupted) before requesting a new channel switch. Given that the
-    // TXOP ended, the event to put the aux PHY to sleep can be cancelled.
+    // switching can be interrupted) before requesting a new channel switch.
     // Backoff shall not be reset on the link left by the main PHY because a TXOP ended and
     // a new backoff value must be generated.
-    m_auxPhyToSleepEvent.Cancel();
-
     if (m_switchAuxPhy || !mainPhy->IsStateSwitching() || m_interruptSwitching)
     {
         NS_ASSERT_MSG(

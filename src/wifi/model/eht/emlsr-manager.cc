@@ -101,6 +101,16 @@ EmlsrManager::GetTypeId()
                           MakeBooleanAccessor(&EmlsrManager::SetInDeviceInterference,
                                               &EmlsrManager::GetInDeviceInterference),
                           MakeBooleanChecker())
+            .AddAttribute("PutAuxPhyToSleep",
+                          "Whether Aux PHYs should be put into sleep mode while the Main PHY "
+                          "is carrying out a (DL or UL) TXOP. Specifically, for DL TXOPs, aux "
+                          "PHYs are put to sleep after receiving the ICF; for UL TXOPs, aux PHYs "
+                          "are put to sleep when the CTS frame is received, if RTS/CTS is used, "
+                          "or when the transmission of the data frame starts, otherwise. "
+                          "Aux PHYs are resumed from sleep when the TXOP ends.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&EmlsrManager::m_auxPhyToSleep),
+                          MakeBooleanChecker())
             .AddAttribute(
                 "EmlsrLinkSet",
                 "IDs of the links on which EMLSR mode will be enabled. An empty set "
@@ -440,6 +450,12 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
         mainPhy->SetPreviouslyRxPpduUid(uid);
     }
 
+    // a DL TXOP started, set all aux PHYs to sleep
+    if (m_auxPhyToSleep)
+    {
+        SetSleepStateForAllAuxPhys(true);
+    }
+
     DoNotifyIcfReceived(linkId);
 }
 
@@ -503,6 +519,30 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
 }
 
 void
+EmlsrManager::NotifyProtectionCompleted(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    if (m_auxPhyToSleep && m_staMac->IsEmlsrLink(linkId))
+    {
+        if (auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId); mainPhy->IsStateSwitching())
+        {
+            // main PHY is switching to this link to take over the UL TXOP. Postpone aux PHY
+            // sleeping until after the main PHY has completed switching
+            Simulator::Schedule(mainPhy->GetDelayUntilIdle() + TimeStep(1),
+                                &EmlsrManager::SetSleepStateForAllAuxPhys,
+                                this,
+                                true);
+        }
+        else
+        {
+            // put aux PHYs to sleep
+            SetSleepStateForAllAuxPhys(true);
+        }
+    }
+}
+
+void
 EmlsrManager::NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted, bool ongoingDlTxop)
 {
     NS_LOG_FUNCTION(this << linkId << ulTxopNotStarted << ongoingDlTxop);
@@ -542,6 +582,12 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted, bool ongoingD
     {
         NS_LOG_DEBUG("TXOP did not even start");
         return;
+    }
+
+    if (m_auxPhyToSleep)
+    {
+        // TXOP ended, resume all aux PHYs from sleep
+        SetSleepStateForAllAuxPhys(false);
     }
 
     DoNotifyTxopEnd(linkId);
@@ -1138,6 +1184,66 @@ EmlsrManager::GetChannelForAuxPhy(uint8_t linkId) const
     NS_ASSERT_MSG(it != m_auxPhyChannels.end(),
                   "Channel for aux PHY on link ID " << +linkId << " not found");
     return it->second;
+}
+
+void
+EmlsrManager::CancelAllSleepEvents()
+{
+    NS_LOG_FUNCTION(this);
+
+    for (auto& [id, event] : m_auxPhyToSleepEvents)
+    {
+        event.Cancel();
+    }
+    m_auxPhyToSleepEvents.clear();
+}
+
+void
+EmlsrManager::SetSleepStateForAllAuxPhys(bool sleep)
+{
+    NS_LOG_FUNCTION(this << sleep);
+
+    CancelAllSleepEvents();
+
+    for (const auto& phy : m_staMac->GetDevice()->GetPhys())
+    {
+        if (phy->GetPhyId() == m_mainPhyId)
+        {
+            continue; // do not set sleep mode/resume from sleep the main PHY
+        }
+
+        if (auto linkId = m_staMac->GetLinkForPhy(phy);
+            linkId.has_value() && !m_staMac->IsEmlsrLink(*linkId))
+        {
+            continue; // this PHY is not operating on an EMLSR link
+        }
+
+        if (!sleep)
+        {
+            NS_LOG_DEBUG("PHY " << +phy->GetPhyId() << ": Resuming from sleep");
+            phy->ResumeFromSleep();
+            continue;
+        }
+
+        // we force WifiPhy::SetSleepMode() to abort RX and switch immediately to sleep mode in
+        // case the state is RX. If the state is TX or SWITCHING, WifiPhy::SetSleepMode() postpones
+        // setting sleep mode to end of TX or SWITCHING. This is fine, but we schedule events here
+        // to be able to cancel them later if needed
+        std::stringstream ss;
+        auto s = std::string("PHY ") + std::to_string(phy->GetPhyId()) + ": Setting sleep mode";
+        if (phy->IsStateTx() || phy->IsStateSwitching())
+        {
+            const auto delay = phy->GetDelayUntilIdle();
+            NS_LOG_DEBUG(s << " in " << delay.As(Time::US));
+            m_auxPhyToSleepEvents[phy->GetPhyId()] =
+                Simulator::Schedule(delay, &WifiPhy::SetSleepMode, phy, true);
+        }
+        else
+        {
+            NS_LOG_DEBUG(s);
+            phy->SetSleepMode(true);
+        }
+    }
 }
 
 } // namespace ns3

@@ -207,6 +207,14 @@ class EmlsrManager : public Object
     void NotifyUlTxopStart(uint8_t linkId);
 
     /**
+     * Notify that protection (if required) is completed and data frame exchange can start
+     * on the given link.
+     *
+     * \param linkId the ID of the given link
+     */
+    void NotifyProtectionCompleted(uint8_t linkId);
+
+    /**
      * Notify the end of a TXOP on the given link.
      *
      * \param linkId the ID of the given link
@@ -410,12 +418,28 @@ class EmlsrManager : public Object
      */
     virtual std::pair<bool, Time> GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId) = 0;
 
+    /**
+     * Set sleep state or awake state for all aux PHYs.
+     *
+     * \param sleep set sleep state, if true, or awake state, otherwise
+     */
+    void SetSleepStateForAllAuxPhys(bool sleep);
+
+    /**
+     * Cancel all pending events to put aux PHYs into sleep/awake state.
+     */
+    void CancelAllSleepEvents();
+
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
     uint8_t m_mainPhyId; //!< ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
     MHz_u m_auxPhyMaxWidth;                  //!< max channel width supported by aux PHYs
     WifiModulationClass m_auxPhyMaxModClass; //!< max modulation class supported by aux PHYs
     bool m_auxPhyTxCapable;                  //!< whether Aux PHYs are capable of transmitting PPDUs
+    bool m_auxPhyToSleep; //!< whether Aux PHYs should be put into sleep mode while the Main PHY
+                          //!< is carrying out a (DL or UL) TXOP
+    std::map<uint8_t, EventId> m_auxPhyToSleepEvents; //!< PHY ID-indexed map of events scheduled to
+                                                      //!< put an Aux PHY to sleep
     std::map<uint8_t, EventId> m_ulMainPhySwitch; //!< link ID-indexed map of timers started when
                                                   //!< an aux PHY gains an UL TXOP and schedules
                                                   //!< a channel switch for the main PHY

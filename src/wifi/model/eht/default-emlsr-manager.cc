@@ -41,13 +41,6 @@ DefaultEmlsrManager::GetTypeId()
                           "no PHY will be listening on that EMLSR link).",
                           BooleanValue(true),
                           MakeBooleanAccessor(&DefaultEmlsrManager::m_switchAuxPhy),
-                          MakeBooleanChecker())
-            .AddAttribute("PutAuxPhyToSleep",
-                          "Whether Aux PHY should be put into sleep mode while the Main PHY "
-                          "is operating on the same link as the Aux PHY (this only matters "
-                          "when the Aux PHY does not switch channel).",
-                          BooleanValue(true),
-                          MakeBooleanAccessor(&DefaultEmlsrManager::m_auxPhyToSleep),
                           MakeBooleanChecker());
     return tid;
 }
@@ -154,29 +147,18 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
 
         // the Aux PHY is not actually switching (hence no switching delay)
         GetStaMac()->NotifySwitchingEmlsrLink(m_auxPhyToReconnect, *currLinkId, Seconds(0));
-        // resume aux PHY from sleep (once reconnected to its original link)
-        m_auxPhyToReconnect->ResumeFromSleep();
         SetCcaEdThresholdOnLinkSwitch(m_auxPhyToReconnect, *currLinkId);
     }
 
     // if currLinkId has no value, it means that the main PHY switch is interrupted, hence reset
-    // the aux PHY to reconnect and cancel the event to put the aux PHY to sleep. Doing so when
-    // the main PHY is leaving the preferred link makes no harm (the aux PHY to reconnect and the
-    // event to put the aux PHY to sleep are set below), thus no need to add an 'if' condition
+    // the aux PHY to reconnect. Doing so when the main PHY is leaving the preferred link makes
+    // no harm (the aux PHY to reconnect is set below), thus no need to add an 'if' condition
     m_auxPhyToReconnect = nullptr;
-    m_auxPhyToSleepEvent.Cancel();
 
     if (nextLinkId != GetMainPhyId())
     {
         // the main PHY is moving to an auxiliary link and the aux PHY does not switch link
         m_auxPhyToReconnect = GetStaMac()->GetWifiPhy(nextLinkId);
-
-        if (m_auxPhyToSleep)
-        {
-            // aux PHY can be put into sleep mode when the main PHY completes the channel switch
-            m_auxPhyToSleepEvent =
-                Simulator::Schedule(duration, &WifiPhy::SetSleepMode, m_auxPhyToReconnect, false);
-        }
     }
 }
 
@@ -229,7 +211,7 @@ DefaultEmlsrManager::SwitchMainPhyBackToPreferredLink(uint8_t linkId)
     // switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
     // is not received and the UL TXOP ends before the main PHY channel switch is completed.
     // In such cases, wait until the main PHY channel switch is completed before requesting
-    // a new channel switch and cancel the event to put the aux PHY to sleep.
+    // a new channel switch.
     // Backoff shall not be reset on the link left by the main PHY because a TXOP ended and
     // a new backoff value must be generated.
     if (!mainPhy->IsStateSwitching())
@@ -238,7 +220,6 @@ DefaultEmlsrManager::SwitchMainPhyBackToPreferredLink(uint8_t linkId)
     }
     else
     {
-        m_auxPhyToSleepEvent.Cancel();
         Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
             // request the main PHY to switch back to the preferred link only if in the meantime
             // no TXOP started on another link (which will require the main PHY to switch link)

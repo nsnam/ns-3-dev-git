@@ -67,11 +67,8 @@ class DefaultEmlsrManager : public EmlsrManager
         uint8_t to;   //!< ID of the link which the main PHY is moving to
     };
 
-    bool m_switchAuxPhy;  /**< whether Aux PHY should switch channel to operate on the link on which
-                               the Main PHY was operating before moving to the link of the Aux PHY */
-    bool m_auxPhyToSleep; //!< whether Aux PHY should be put into sleep mode while the Main PHY
-                          //!< is operating on the same link as the Aux PHY
-    EventId m_auxPhyToSleepEvent;     //!< the event scheduled to put an Aux PHY into sleep mode
+    bool m_switchAuxPhy; /**< whether Aux PHY should switch channel to operate on the link on which
+                              the Main PHY was operating before moving to the link of the Aux PHY */
     Ptr<WifiPhy> m_auxPhyToReconnect; //!< Aux PHY the ChannelAccessManager of the link on which
                                       //!< the main PHY is operating has to connect a listener to
                                       //!< when the main PHY is back operating on its previous link
