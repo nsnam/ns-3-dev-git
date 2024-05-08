@@ -66,15 +66,19 @@ RandomWaypointMobilityModel::BeginWalk()
     Vector m_current = m_helper.GetCurrentPosition();
     NS_ASSERT_MSG(m_position, "No position allocator added before using this model");
     Vector destination = m_position->GetNext();
+    Vector delta = destination - m_current;
+    double distance = delta.GetLength();
     double speed = m_speed->GetValue();
-    double dx = (destination.x - m_current.x);
-    double dy = (destination.y - m_current.y);
-    double dz = (destination.z - m_current.z);
-    double k = speed / std::sqrt(dx * dx + dy * dy + dz * dz);
 
-    m_helper.SetVelocity(Vector(k * dx, k * dy, k * dz));
+    NS_ASSERT_MSG(speed > 0, "Speed must be strictly positive.");
+
+    // Note: the following two lines are needed to prevent corner cases where
+    // the distance is null (and the Velocity is undefined).
+    double k = distance ? speed / distance : 0;
+    Time travelDelay = distance ? Seconds(distance / speed) : Time(0);
+
+    m_helper.SetVelocity(k * delta);
     m_helper.Unpause();
-    Time travelDelay = Seconds(CalculateDistance(destination, m_current) / speed);
     m_event.Cancel();
     m_event =
         Simulator::Schedule(travelDelay, &RandomWaypointMobilityModel::DoInitializePrivate, this);
