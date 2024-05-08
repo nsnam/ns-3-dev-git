@@ -20,8 +20,9 @@
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/config.h"
 #include "ns3/eht-configuration.h"
-#include "ns3/frame-exchange-manager.h"
+#include "ns3/ht-frame-exchange-manager.h"
 #include "ns3/log.h"
+#include "ns3/mgt-action-headers.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/multi-link-element.h"
@@ -3399,6 +3400,202 @@ ReleaseSeqNoAfterCtsTimeoutTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test update of BA starting sequence number after ADDBA Response timeout in
+ *        multi-link operations
+ *
+ * In this test, an AP MLD and a non-AP MLD setup 2 links. The AP MLD has a QoS data frame to
+ * transmit to the non-AP MLD, which triggers the establishment of a BA agreement. When the ADDBA
+ * Request frame is received by the non-AP MLD, transmissions of the non-AP MLD are blocked to put
+ * the transmission of the ADDBA Response on hold. The goal is to mimic a delay in getting channel
+ * access due to, e.g., other devices grabbing the medium. When the ADDBA Response timer at the AP
+ * MLD expires, transmissions of the non-AP MLD are unblocked, so that the AP MLD sends the QoS data
+ * frame (protected by RTS, but the test works without RTS as well, and using Normal acknowledgment)
+ * on one link and the non-AP MLD sends the ADDBA Response on the other link. The transmission of
+ * the QoS data frame is then corrupted. We verify that:
+ *
+ * - when the AP MLD receives the ADDBA Response, the BA starting sequence number is set to the
+ *   sequence number of the QoS data frame which is inflight
+ * - the QoS data frame is retransmitted and received by the non-AP MLD
+ */
+class StartSeqNoUpdateAfterAddBaTimeoutTest : public MultiLinkOperationsTestBase
+{
+  public:
+    StartSeqNoUpdateAfterAddBaTimeoutTest();
+
+  private:
+    void DoSetup() override;
+    void DoRun() override;
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+    void StartTraffic() override;
+
+    PacketSocketAddress m_sockAddr;      //!< packet socket address
+    std::size_t m_nQosDataCount;         //!< counter for transmitted QoS data frames
+    Ptr<ListErrorModel> m_staErrorModel; //!< error rate model to corrupt frames at the non-AP MLD
+};
+
+StartSeqNoUpdateAfterAddBaTimeoutTest::StartSeqNoUpdateAfterAddBaTimeoutTest()
+    : MultiLinkOperationsTestBase(
+          "Check starting sequence number update after ADDBA Response timeout",
+          1,
+          BaseParams{{"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                     {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                     {}}),
+      m_nQosDataCount(0),
+      m_staErrorModel(CreateObject<ListErrorModel>())
+{
+}
+
+void
+StartSeqNoUpdateAfterAddBaTimeoutTest::DoSetup()
+{
+    // Enable RTS/CTS by setting a threshold lower than packet size (1000)
+    Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue(900));
+
+    MultiLinkOperationsTestBase::DoSetup();
+
+    // install post reception error model on all STAs affiliated with non-AP MLD
+    for (const auto linkId : m_staMacs[0]->GetLinkIds())
+    {
+        m_staMacs[0]->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_staErrorModel);
+    }
+}
+
+void
+StartSeqNoUpdateAfterAddBaTimeoutTest::StartTraffic()
+{
+    m_sockAddr.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
+    m_sockAddr.SetPhysicalAddress(m_staMacs[0]->GetAddress());
+    m_sockAddr.SetProtocol(1);
+
+    // install client application generating 1 packet of 1000 bytes on the AP MLD
+    m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(m_sockAddr, 1, 1000));
+}
+
+void
+StartSeqNoUpdateAfterAddBaTimeoutTest::Transmit(Ptr<WifiMac> mac,
+                                                uint8_t phyId,
+                                                WifiConstPsduMap psduMap,
+                                                WifiTxVector txVector,
+                                                double txPowerW)
+{
+    auto psdu = psduMap.begin()->second;
+    const auto& hdr = psdu->GetHeader(0);
+
+    if (hdr.IsAck())
+    {
+        NS_TEST_ASSERT_MSG_EQ(m_txPsdus.empty(), false, "No frame preceding transmitted Ack");
+
+        auto prevPsdu = m_txPsdus.back().psduMap.begin()->second;
+
+        if (prevPsdu->GetHeader(0).IsAction())
+        {
+            WifiActionHeader actionHdr;
+            (*prevPsdu->begin())->GetPacket()->PeekHeader(actionHdr);
+            if (actionHdr.GetCategory() == WifiActionHeader::BLOCK_ACK &&
+                actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
+            {
+                // non-AP MLD is acknowledging the ADDBA Request sent by the AP MLD. When the
+                // AP MLD receives the Ack, it starts an AddBaResponse timer; when the timer
+                // expires, the AP MLD starts sending data frames with normal acknowledgment.
+                // Block transmissions of the non-AP MLD on the link that has to be used to send
+                // the ADDBA Response from now until the end of the timer.
+
+                m_staMacs[0]->BlockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                    m_apMac->GetAddress(),
+                                                    {phyId});
+
+                auto band = m_apMac->GetWifiPhy(m_txPsdus.back().linkId)->GetPhyBand();
+                auto ackDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, band);
+
+                // After the AddBaResponse timeout, unblock transmissions of the non-AP MLD on the
+                // link on which the ADDBA Response has to be sent and block transmissions of the
+                // AP MLD on the same link, so that we recreate the situation where the AP MLD sends
+                // the QoS data frame on a link while the non-AP MLD is sending the ADDBA Response
+                // frame on another link.
+                Simulator::Schedule(
+                    ackDuration + m_apMac->GetQosTxop(AC_BE)->GetAddBaResponseTimeout(),
+                    [=, this]() {
+                        m_apMac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                                       m_staMacs[0]->GetAddress(),
+                                                       {phyId});
+                        m_staMacs[0]->UnblockUnicastTxOnLinks(
+                            WifiQueueBlockedReason::TID_NOT_MAPPED,
+                            m_apMac->GetAddress(),
+                            {phyId});
+                    });
+            }
+        }
+    }
+
+    MultiLinkOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+
+    if (hdr.IsAction())
+    {
+        WifiActionHeader actionHdr;
+        (*psdu->begin())->GetPacket()->PeekHeader(actionHdr);
+        if (actionHdr.GetCategory() == WifiActionHeader::BLOCK_ACK &&
+            actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE)
+        {
+            auto band = m_staMacs[0]->GetDevice()->GetPhy(phyId)->GetPhyBand();
+            auto addBaRespDuration = WifiPhy::CalculateTxDuration(psduMap, txVector, band);
+
+            Simulator::Schedule(addBaRespDuration + TimeStep(1), [=, this]() {
+                // After the AP MLD has received the ADDBA Response frame:
+                // - check that the AP has one queued QoS data frame that is in flight
+                auto mpdu = m_apMac->GetTxopQueue(AC_BE)->Peek();
+                NS_TEST_ASSERT_MSG_NE(mpdu, nullptr, "Expected an MPDU in the AP MLD queue");
+                NS_TEST_EXPECT_MSG_EQ(mpdu->GetHeader().IsQosData(),
+                                      true,
+                                      "Expected a QoS data frame");
+                NS_TEST_EXPECT_MSG_EQ(
+                    mpdu->IsInFlight(),
+                    true,
+                    "Expected the data frame to be inflight when ADDBA RESP is received");
+
+                // - check that the starting sequence number at the originator (AP MLD) equals
+                //   the sequence number of the inflight MPDU
+                NS_TEST_EXPECT_MSG_EQ(
+                    m_apMac->GetQosTxop(AC_BE)->GetBaStartingSequence(m_staMacs[0]->GetAddress(),
+                                                                      0),
+                    mpdu->GetHeader().GetSequenceNumber(),
+                    "Unexpected BA Starting Sequence Number");
+            });
+        }
+    }
+    else if (hdr.IsQosData())
+    {
+        // corrupt the reception of the data frame the first time it is sent
+        if (m_nQosDataCount++ == 0)
+        {
+            m_staErrorModel->SetList({psdu->GetPacket()->GetUid()});
+        }
+        else
+        {
+            m_staErrorModel->SetList({});
+        }
+    }
+}
+
+void
+StartSeqNoUpdateAfterAddBaTimeoutTest::DoRun()
+{
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(+m_rxPkts[1], 1, "Unexpected number of packets received by STA 0");
+    NS_TEST_EXPECT_MSG_EQ(m_nQosDataCount, 2, "QoS data frame should be transmitted twice");
+
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi 11be MLD Test Suite
  */
 class WifiMultiLinkOperationsTestSuite : public TestSuite
@@ -3595,6 +3792,7 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     }
 
     AddTestCase(new ReleaseSeqNoAfterCtsTimeoutTest(), TestCase::Duration::QUICK);
+    AddTestCase(new StartSeqNoUpdateAfterAddBaTimeoutTest(), TestCase::Duration::QUICK);
 }
 
 static WifiMultiLinkOperationsTestSuite g_wifiMultiLinkOperationsTestSuite; ///< the test suite
