@@ -142,6 +142,8 @@ TrickleTimerTestCase::TestSteadyState(Time unit)
                              expirationFrequency.begin());
     expirationFrequency.erase(expirationFrequency.begin());
 
+    NS_TEST_ASSERT_MSG_EQ(expirationFrequency.empty(), false, "No expiration frequency");
+
     int64x64_t min =
         (*std::min_element(expirationFrequency.begin(), expirationFrequency.end())) / unit;
     int64x64_t max =
