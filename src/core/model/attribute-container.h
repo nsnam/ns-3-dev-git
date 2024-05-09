@@ -194,7 +194,7 @@ class AttributeContainerValue : public AttributeValue
      * \return This object with items copied.
      */
     template <class ITER>
-    Ptr<AttributeContainerValue<A, Sep, C>> CopyFrom(const ITER begin, const ITER end);
+    inline Ptr<AttributeContainerValue<A, Sep, C>> CopyFrom(const ITER begin, const ITER end);
 
     container_type m_container; //!< Internal container
 };
