@@ -145,6 +145,7 @@ main(int argc, char* argv[])
     bool udp{true};
     bool downlink{true};
     bool useRts{false};
+    bool use80Plus80{false};
     uint16_t mpduBufferSize{512};
     std::string emlsrLinks;
     uint16_t paddingDelayUsec{32};
@@ -218,6 +219,7 @@ main(int argc, char* argv[])
                  "Generate downlink flows if set to 1, uplink flows otherwise",
                  downlink);
     cmd.AddValue("useRts", "Enable/disable RTS/CTS", useRts);
+    cmd.AddValue("use80Plus80", "Enable/disable use of 80+80 MHz", use80Plus80);
     cmd.AddValue("mpduBufferSize",
                  "Size (in number of MPDUs) of the BlockAck buffer",
                  mpduBufferSize);
@@ -298,6 +300,9 @@ main(int argc, char* argv[])
         int minGi = enableUlOfdma ? 1600 : 800;
         for (int channelWidth = 20; channelWidth <= maxChannelWidth;) // MHz
         {
+            const auto is80Plus80 = (use80Plus80 && (channelWidth == 160));
+            const std::string widthStr = is80Plus80 ? "80+80" : std::to_string(channelWidth);
+            const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
             for (int gi = 3200; gi >= minGi;) // Nanoseconds
             {
                 if (!udp)
@@ -335,7 +340,7 @@ main(int argc, char* argv[])
                     {
                         break;
                     }
-                    channelStr[nLinks] = "{0, " + std::to_string(channelWidth) + ", ";
+                    channelStr[nLinks] = "{0, " + segmentWidthStr + ", ";
                     if (freq == 6)
                     {
                         channelStr[nLinks] += "BAND_6GHZ, 0}";
@@ -379,6 +384,12 @@ main(int argc, char* argv[])
                     {
                         NS_FATAL_ERROR("Wrong frequency value!");
                     }
+
+                    if (is80Plus80)
+                    {
+                        channelStr[nLinks] += std::string(";") + channelStr[nLinks];
+                    }
+
                     nLinks++;
                 }
 
@@ -389,12 +400,6 @@ main(int argc, char* argv[])
 
                 Ssid ssid = Ssid("ns3-80211be");
 
-                /*
-                 * SingleModelSpectrumChannel cannot be used with 802.11be because two
-                 * spectrum models are required: one with 78.125 kHz bands for HE PPDUs
-                 * and one with 312.5 kHz bands for, e.g., non-HT PPDUs (for more details,
-                 * see issue #408 (CLOSED))
-                 */
                 SpectrumWifiPhyHelper phy(nLinks);
                 phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
                 phy.Set("ChannelSwitchDelay", TimeValue(MicroSeconds(channelSwitchDelayUsec)));
@@ -580,8 +585,9 @@ main(int argc, char* argv[])
 
                 Simulator::Destroy();
 
-                std::cout << mcs << "\t\t\t" << channelWidth << " MHz\t\t\t" << gi << " ns\t\t\t"
-                          << throughput << " Mbit/s" << std::endl;
+                std::cout << +mcs << "\t\t\t" << widthStr << " MHz\t\t"
+                          << (widthStr.size() > 3 ? "" : "\t") << gi << " ns\t\t\t" << throughput
+                          << " Mbit/s" << std::endl;
 
                 // test first element
                 if (mcs == minMcs && channelWidth == 20 && gi == 3200)

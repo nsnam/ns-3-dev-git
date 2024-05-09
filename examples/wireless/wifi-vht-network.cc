@@ -26,9 +26,11 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
+#include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/on-off-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/packet-sink.h"
+#include "ns3/spectrum-wifi-helper.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
 #include "ns3/udp-client-server-helper.h"
@@ -64,9 +66,11 @@ main(int argc, char* argv[])
 {
     bool udp{true};
     bool useRts{false};
+    bool use80Plus80{false};
     Time simulationTime{"10s"};
     double distance{1.0}; // meters
     int mcs{-1};          // -1 indicates an unset value
+    std::string phyModel{"Yans"};
     double minExpectedThroughput{0.0};
     double maxExpectedThroughput{0.0};
 
@@ -77,7 +81,12 @@ main(int argc, char* argv[])
     cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("udp", "UDP if set to 1, TCP otherwise", udp);
     cmd.AddValue("useRts", "Enable/disable RTS/CTS", useRts);
+    cmd.AddValue("use80Plus80", "Enable/disable use of 80+80 MHz", use80Plus80);
     cmd.AddValue("mcs", "if set, limit testing to a specific MCS (0-9)", mcs);
+    cmd.AddValue("phyModel",
+                 "PHY model to use (Yans or Spectrum). If 80+80 MHz is enabled, then Spectrum is "
+                 "automatically selected",
+                 phyModel);
     cmd.AddValue("minExpectedThroughput",
                  "if set, simulation fails if the lowest throughput is below this value",
                  minExpectedThroughput);
@@ -85,6 +94,16 @@ main(int argc, char* argv[])
                  "if set, simulation fails if the highest throughput is above this value",
                  maxExpectedThroughput);
     cmd.Parse(argc, argv);
+
+    if (phyModel != "Yans" && phyModel != "Spectrum")
+    {
+        NS_ABORT_MSG("Invalid PHY model (must be Yans or Spectrum)");
+    }
+    if (use80Plus80)
+    {
+        // SpectrumWifiPhy is required for 80+80 MHz
+        phyModel = "Spectrum";
+    }
 
     if (useRts)
     {
@@ -118,6 +137,9 @@ main(int argc, char* argv[])
                 channelWidth *= 2;
                 continue;
             }
+            const auto is80Plus80 = (use80Plus80 && (channelWidth == 160));
+            const std::string widthStr = is80Plus80 ? "80+80" : std::to_string(channelWidth);
+            const auto segmentWidthStr = is80Plus80 ? "80" : widthStr;
             for (auto sgi : {false, true})
             {
                 uint32_t payloadSize; // 1500 byte IP packet
@@ -136,16 +158,11 @@ main(int argc, char* argv[])
                 NodeContainer wifiApNode;
                 wifiApNode.Create(1);
 
-                YansWifiChannelHelper channel = YansWifiChannelHelper::Default();
-                YansWifiPhyHelper phy;
-                phy.SetChannel(channel.Create());
-
-                phy.Set("ChannelSettings",
-                        StringValue("{0, " + std::to_string(channelWidth) + ", BAND_5GHZ, 0}"));
-
-                WifiHelper wifi;
-                wifi.SetStandard(WIFI_STANDARD_80211ac);
+                NetDeviceContainer apDevice;
+                NetDeviceContainer staDevice;
                 WifiMacHelper mac;
+                WifiHelper wifi;
+                std::string channelStr{"{0, " + segmentWidthStr + ", BAND_5GHZ, 0}"};
 
                 std::ostringstream ossControlMode;
                 auto nonHtRefRateMbps = VhtPhy::GetNonHtReferenceRate(mcs) / 1e6;
@@ -153,6 +170,13 @@ main(int argc, char* argv[])
 
                 std::ostringstream ossDataMode;
                 ossDataMode << "VhtMcs" << mcs;
+
+                if (is80Plus80)
+                {
+                    channelStr += std::string(";") + channelStr;
+                }
+
+                wifi.SetStandard(WIFI_STANDARD_80211ac);
                 wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                              "DataMode",
                                              StringValue(ossDataMode.str()),
@@ -164,19 +188,49 @@ main(int argc, char* argv[])
 
                 Ssid ssid = Ssid("ns3-80211ac");
 
-                mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
+                if (phyModel == "Spectrum")
+                {
+                    auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+                    auto lossModel = CreateObject<LogDistancePropagationLossModel>();
+                    spectrumChannel->AddPropagationLossModel(lossModel);
 
-                NetDeviceContainer staDevice;
-                staDevice = wifi.Install(phy, mac, wifiStaNode);
+                    SpectrumWifiPhyHelper phy;
+                    phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+                    phy.SetChannel(spectrumChannel);
 
-                mac.SetType("ns3::ApWifiMac",
-                            "EnableBeaconJitter",
-                            BooleanValue(false),
-                            "Ssid",
-                            SsidValue(ssid));
+                    phy.Set("ChannelSettings",
+                            StringValue("{0, " + std::to_string(channelWidth) + ", BAND_5GHZ, 0}"));
 
-                NetDeviceContainer apDevice;
-                apDevice = wifi.Install(phy, mac, wifiApNode);
+                    mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
+                    staDevice = wifi.Install(phy, mac, wifiStaNode);
+
+                    mac.SetType("ns3::ApWifiMac",
+                                "EnableBeaconJitter",
+                                BooleanValue(false),
+                                "Ssid",
+                                SsidValue(ssid));
+                    apDevice = wifi.Install(phy, mac, wifiApNode);
+                }
+                else
+                {
+                    auto channel = YansWifiChannelHelper::Default();
+                    YansWifiPhyHelper phy;
+                    phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+                    phy.SetChannel(channel.Create());
+
+                    phy.Set("ChannelSettings",
+                            StringValue("{0, " + std::to_string(channelWidth) + ", BAND_5GHZ, 0}"));
+
+                    mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
+                    staDevice = wifi.Install(phy, mac, wifiStaNode);
+
+                    mac.SetType("ns3::ApWifiMac",
+                                "EnableBeaconJitter",
+                                BooleanValue(false),
+                                "Ssid",
+                                SsidValue(ssid));
+                    apDevice = wifi.Install(phy, mac, wifiApNode);
+                }
 
                 int64_t streamNumber = 150;
                 streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
@@ -283,8 +337,9 @@ main(int argc, char* argv[])
 
                 Simulator::Destroy();
 
-                std::cout << mcs << "\t\t\t" << channelWidth << " MHz\t\t\t" << std::boolalpha
-                          << sgi << "\t\t\t" << throughput << " Mbit/s" << std::endl;
+                std::cout << +mcs << "\t\t\t" << widthStr << " MHz\t\t"
+                          << (widthStr.size() > 3 ? "" : "\t") << (sgi ? "400 ns" : "800 ns")
+                          << "\t\t\t" << throughput << " Mbit/s" << std::endl;
 
                 // test first element
                 if (mcs == minMcs && channelWidth == 20 && !sgi)
