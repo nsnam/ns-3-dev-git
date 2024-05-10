@@ -11,6 +11,7 @@
 
 #include "multi-user-scheduler.h"
 
+#include <functional>
 #include <list>
 
 namespace ns3
@@ -44,6 +45,32 @@ class RrMultiUserScheduler : public MultiUserScheduler
   protected:
     void DoDispose() override;
     void DoInitialize() override;
+
+    /**
+     * Information used to sort stations
+     */
+    struct MasterInfo
+    {
+        uint16_t aid;         //!< station's AID
+        Mac48Address address; //!< station's MAC Address
+        double credits;       //!< credits accumulated by the station
+    };
+
+    /**
+     * Determine whether the given STA can be solicited via a Basic Trigger Frame.
+     *
+     * \param info the information about the given STA
+     * \return whether the given STA can be solicited via a Basic Trigger Frame
+     */
+    virtual bool CanSolicitStaInBasicTf(const MasterInfo& info) const;
+
+    /**
+     * Determine whether the given STA can be solicited via a BSRP Trigger Frame.
+     *
+     * \param info the information about the given STA
+     * \return whether the given STA can be solicited via a BSRP Trigger Frame
+     */
+    virtual bool CanSolicitStaInBsrpTf(const MasterInfo& info) const;
 
   private:
     TxFormat SelectTxFormat() override;
@@ -82,13 +109,11 @@ class RrMultiUserScheduler : public MultiUserScheduler
      * transmissions from suitable stations, i.e., stations that have established a
      * BlockAck agreement with the AP and for which the given predicate returns true.
      *
-     * \tparam Func \deduced the type of the given predicate
      * \param canBeSolicited a predicate returning false for stations that shall not be solicited
      * \return a TXVECTOR that can be used to construct a Trigger Frame to solicit
      *         transmissions from suitable stations
      */
-    template <class Func>
-    WifiTxVector GetTxVectorForUlMu(Func canBeSolicited);
+    virtual WifiTxVector GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> canBeSolicited);
 
     /**
      * Notify the scheduler that a station associated with the AP
@@ -104,16 +129,6 @@ class RrMultiUserScheduler : public MultiUserScheduler
      * \param address the MAC address of the station
      */
     void NotifyStationDeassociated(uint16_t aid, Mac48Address address);
-
-    /**
-     * Information used to sort stations
-     */
-    struct MasterInfo
-    {
-        uint16_t aid;         //!< station's AID
-        Mac48Address address; //!< station's MAC Address
-        double credits;       //!< credits accumulated by the station
-    };
 
     /**
      * Finalize the given TXVECTOR by only including the largest subset of the

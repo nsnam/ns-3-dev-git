@@ -167,9 +167,8 @@ RrMultiUserScheduler::SelectTxFormat()
     return TrySendingDlMuPpdu();
 }
 
-template <class Func>
 WifiTxVector
-RrMultiUserScheduler::GetTxVectorForUlMu(Func canBeSolicited)
+RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> canBeSolicited)
 {
     NS_LOG_FUNCTION(this);
 
@@ -277,6 +276,13 @@ RrMultiUserScheduler::GetTxVectorForUlMu(Func canBeSolicited)
     return txVector;
 }
 
+bool
+RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
+{
+    // only consider stations that have setup the current link
+    return m_apMac->GetStaList(m_linkId).contains(info.aid);
+}
+
 MultiUserScheduler::TxFormat
 RrMultiUserScheduler::TrySendingBsrpTf()
 {
@@ -288,11 +294,8 @@ RrMultiUserScheduler::TrySendingBsrpTf()
         return TxFormat::SU_TX;
     }
 
-    // only consider stations that have setup the current link
-    WifiTxVector txVector = GetTxVectorForUlMu([this](const MasterInfo& info) {
-        const auto& staList = m_apMac->GetStaList(m_linkId);
-        return staList.contains(info.aid);
-    });
+    auto txVector = GetTxVectorForUlMu(
+        std::bind(&RrMultiUserScheduler::CanSolicitStaInBsrpTf, this, std::placeholders::_1));
 
     if (txVector.GetHeMuUserInfoMap().empty())
     {
@@ -361,6 +364,14 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     return UL_MU_TX;
 }
 
+bool
+RrMultiUserScheduler::CanSolicitStaInBasicTf(const MasterInfo& info) const
+{
+    // only consider stations that setup the current link and do not have reported a null queue size
+    return m_apMac->GetStaList(m_linkId).contains(info.aid) &&
+           m_apMac->GetMaxBufferStatus(info.address) > 0;
+}
+
 MultiUserScheduler::TxFormat
 RrMultiUserScheduler::TrySendingBasicTf()
 {
@@ -375,12 +386,8 @@ RrMultiUserScheduler::TrySendingBasicTf()
     // check if an UL OFDMA transmission is possible after a DL OFDMA transmission
     NS_ABORT_MSG_IF(m_ulPsduSize == 0, "The UlPsduSize attribute must be set to a non-null value");
 
-    // only consider stations that have setup the current link and do not have
-    // reported a null queue size
-    WifiTxVector txVector = GetTxVectorForUlMu([this](const MasterInfo& info) {
-        const auto& staList = m_apMac->GetStaList(m_linkId);
-        return staList.contains(info.aid) && m_apMac->GetMaxBufferStatus(info.address) > 0;
-    });
+    auto txVector = GetTxVectorForUlMu(
+        std::bind(&RrMultiUserScheduler::CanSolicitStaInBasicTf, this, std::placeholders::_1));
 
     if (txVector.GetHeMuUserInfoMap().empty())
     {
