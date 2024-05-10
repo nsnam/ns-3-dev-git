@@ -3346,6 +3346,7 @@ EmlsrLinkSwitchTest::DoSetup()
     Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(m_switchAuxPhy));
     Config::SetDefault("ns3::EmlsrManager::ResetCamState", BooleanValue(m_resetCamState));
     Config::SetDefault("ns3::EmlsrManager::AuxPhyChannelWidth", UintegerValue(m_auxPhyMaxChWidth));
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(75)));
 
     EmlsrOperationsTestBase::DoSetup();
 
