@@ -2,6 +2,7 @@ Checks: >
   -*,
   bugprone-argument-comment,
   bugprone-bool-pointer-implicit-conversion,
+  bugprone-branch-clone,
   bugprone-inaccurate-erase,
   bugprone-move-forwarding-reference,
   bugprone-redundant-branch-condition,
