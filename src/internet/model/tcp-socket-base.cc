@@ -1536,13 +1536,13 @@ TcpSocketBase::ProcessEstablished(Ptr<Packet> packet, const TcpHeader& tcpHeader
             ReceivedAck(packet, tcpHeader);
         }
     }
-    else if (tcpflags == TcpHeader::SYN)
-    { // Received SYN, old NS-3 behaviour is to set state to SYN_RCVD and
-      // respond with a SYN+ACK. But it is not a legal state transition as of
-      // RFC793. Thus this is ignored.
-    }
-    else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
-    { // No action for received SYN+ACK, it is probably a duplicated packet
+    else if (tcpflags == TcpHeader::SYN || tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
+    {
+        // (a) Received SYN, old NS-3 behaviour is to set state to SYN_RCVD and
+        // respond with a SYN+ACK. But it is not a legal state transition as of
+        // RFC793. Thus this is ignored.
+
+        // (b) No action for received SYN+ACK, it is probably a duplicated packet
     }
     else if (tcpflags == TcpHeader::FIN || tcpflags == (TcpHeader::FIN | TcpHeader::ACK))
     { // Received FIN or FIN+ACK, bring down this socket nicely

@@ -278,13 +278,10 @@ AparfWifiManager::DoReportDataOk(WifiRemoteStation* st,
     NS_LOG_DEBUG("station=" << station << " data ok success=" << station->m_nSuccess << ", rate="
                             << +station->m_rateIndex << ", power=" << +station->m_powerLevel);
 
-    if ((station->m_aparfState == AparfWifiManager::High) &&
-        (station->m_nSuccess >= station->m_successThreshold))
-    {
-        station->m_aparfState = AparfWifiManager::Spread;
-    }
-    else if ((station->m_aparfState == AparfWifiManager::Low) &&
-             (station->m_nSuccess >= station->m_successThreshold))
+    if ((station->m_aparfState == AparfWifiManager::High ||
+         station->m_aparfState == AparfWifiManager::Low) &&
+        station->m_nSuccess >= station->m_successThreshold)
+
     {
         station->m_aparfState = AparfWifiManager::Spread;
     }

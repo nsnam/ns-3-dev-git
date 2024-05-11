@@ -1029,10 +1029,8 @@ SubscriberStationNetDevice::DoReceive(Ptr<Packet> packet)
             {
             case ManagementMessageType::MESSAGE_TYPE_REG_REQ:
                 // not yet implemented
-                break;
             case ManagementMessageType::MESSAGE_TYPE_REG_RSP:
                 // intended for base station, ignore
-                break;
             case ManagementMessageType::MESSAGE_TYPE_DSA_REQ:
                 /*from other station as DSA initiation
                  by BS is not supported, ignore*/

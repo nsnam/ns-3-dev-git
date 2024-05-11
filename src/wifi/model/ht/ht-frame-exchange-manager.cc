@@ -111,14 +111,10 @@ bool
 HtFrameExchangeManager::NeedSetupBlockAck(Mac48Address recipient, uint8_t tid)
 {
     Ptr<QosTxop> qosTxop = m_mac->GetQosTxop(tid);
+    auto agreement = qosTxop->GetBaManager()->GetAgreementAsOriginator(recipient, tid);
     bool establish;
 
-    if (!m_mac->GetHtSupported(recipient))
-    {
-        establish = false;
-    }
-    else if (auto agreement = qosTxop->GetBaManager()->GetAgreementAsOriginator(recipient, tid);
-             agreement && !agreement->get().IsReset())
+    if (!m_mac->GetHtSupported(recipient) || (agreement && !agreement->get().IsReset()))
     {
         establish = false;
     }

@@ -668,7 +668,8 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
         {
             txPowerW = DbmToW(txPowerMiddleBandMinDbm + ((i - middleBandLeft.first) * middleSlope));
         }
-        else if (i <= flatJunctionLeft.second && i >= flatJunctionLeft.first)
+        else if ((i <= flatJunctionLeft.second && i >= flatJunctionLeft.first) ||
+                 (i <= flatJunctionRight.second && i >= flatJunctionRight.first))
         {
             txPowerW = DbmToW(txPowerInnerBandMinDbm);
         }
@@ -735,10 +736,6 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
                 previousTxPowerW,
                 DbmToW(txPowerRefDbm - ((i - innerBandRight.first + 1) *
                                         innerSlope))); // +1 so as to be symmetric with left slope
-        }
-        else if (i <= flatJunctionRight.second && i >= flatJunctionRight.first)
-        {
-            txPowerW = DbmToW(txPowerInnerBandMinDbm);
         }
         else if (i <= middleBandRight.second && i >= middleBandRight.first)
         {

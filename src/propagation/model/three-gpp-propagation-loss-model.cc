@@ -183,21 +183,10 @@ ThreeGppPropagationLossModel::DoCalcRxPower(double txPowerDbm,
     }
 
     // get o2i losses
-    if (cond->GetO2iCondition() == ChannelCondition::O2iConditionValue::O2I &&
-        m_buildingPenLossesEnabled)
-    {
-        if (IsO2iLowPenetrationLoss(cond))
-        {
-            rxPow -= GetO2iLowPenetrationLoss(a, b, cond->GetLosCondition());
-        }
-        else
-        {
-            rxPow -= GetO2iHighPenetrationLoss(a, b, cond->GetLosCondition());
-        }
-    }
-    else if (cond->GetO2iCondition() == ChannelCondition::O2iConditionValue::I2I &&
-             cond->GetLosCondition() == ChannelCondition::LosConditionValue::NLOS &&
-             m_buildingPenLossesEnabled)
+    if (m_buildingPenLossesEnabled &&
+        ((cond->GetO2iCondition() == ChannelCondition::O2iConditionValue::O2I) ||
+         (cond->GetO2iCondition() == ChannelCondition::O2iConditionValue::I2I &&
+          cond->GetLosCondition() == ChannelCondition::LosConditionValue::NLOS)))
     {
         if (IsO2iLowPenetrationLoss(cond))
         {

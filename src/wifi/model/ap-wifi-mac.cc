@@ -1949,12 +1949,14 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                 ForwardUp(packet, from, to);
             }
         }
+        // NOLINTBEGIN(bugprone-branch-clone)
         else if (hdr->IsFromDs() && hdr->IsToDs())
         {
             // this is an AP-to-AP frame
             // we ignore for now.
             NotifyRxDrop(packet);
         }
+        // NOLINTEND(bugprone-branch-clone)
         else
         {
             // we can ignore these frames since

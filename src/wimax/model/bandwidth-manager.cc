@@ -98,13 +98,9 @@ BandwidthManager::CalculateAllocationSize(const SSRecord* ssRecord, const Servic
         }
     }
     break;
-    case ServiceFlow::SF_TYPE_NRTPS: {
+    case ServiceFlow::SF_TYPE_NRTPS:
         /* nrtPS shall be serviced only if sufficient bandwidth is available after servicing
          UGS and rtPS scheduling types, hence no specific service interval is used */
-
-        allocationSize = bs->GetBwReqOppSize();
-    }
-    break;
     case ServiceFlow::SF_TYPE_BE: {
         /* BE shall be serviced only if sufficient bandwidth is available after servicing
          the rest of three scheduling types, hence no specific service interval is used */

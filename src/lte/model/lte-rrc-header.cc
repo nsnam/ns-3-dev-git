@@ -3983,12 +3983,10 @@ RrcAsn1Header::DeserializeMeasConfig(LteRrcSap::MeasConfig* measConfig, Buffer::
             case 1:
                 // Deserialize measObjectUTRA
                 // ...
-                break;
 
             case 2:
                 // Deserialize measObjectGERAN
                 // ...
-                break;
 
             case 3:
                 // Deserialize measObjectCDMA2000

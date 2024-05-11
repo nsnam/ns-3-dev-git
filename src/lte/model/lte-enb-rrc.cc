@@ -1715,8 +1715,6 @@ UeManager::SwitchToState(State newState)
         break;
 
     case CONNECTION_SETUP:
-        break;
-
     case ATTACH_REQUEST:
         break;
 
@@ -1733,14 +1731,8 @@ UeManager::SwitchToState(State newState)
     break;
 
     case CONNECTION_RECONFIGURATION:
-        break;
-
     case CONNECTION_REESTABLISHMENT:
-        break;
-
     case HANDOVER_LEAVING:
-        break;
-
     default:
         break;
     }

@@ -144,8 +144,6 @@ SixLowPanHc1::GetSerializedSize() const
         serializedSize += 16;
         break;
     case HC1_PIIC:
-        serializedSize += 8;
-        break;
     case HC1_PCII:
         serializedSize += 8;
         break;
@@ -158,8 +156,6 @@ SixLowPanHc1::GetSerializedSize() const
         serializedSize += 16;
         break;
     case HC1_PIIC:
-        serializedSize += 8;
-        break;
     case HC1_PCII:
         serializedSize += 8;
         break;

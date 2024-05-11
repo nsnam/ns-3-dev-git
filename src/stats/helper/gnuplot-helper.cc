@@ -333,7 +333,8 @@ GnuplotHelper::ConnectProbeToAggregator(const std::string& typeId,
     AddTimeSeriesAdaptor(probeContext);
 
     // Connect the probe to the adaptor.
-    if (m_probeMap[probeName].second == "ns3::DoubleProbe")
+    if (m_probeMap[probeName].second == "ns3::DoubleProbe" ||
+        m_probeMap[probeName].second == "ns3::TimeProbe")
     {
         m_probeMap[probeName].first->TraceConnectWithoutContext(
             probeTraceSource,
@@ -347,28 +348,11 @@ GnuplotHelper::ConnectProbeToAggregator(const std::string& typeId,
             MakeCallback(&TimeSeriesAdaptor::TraceSinkBoolean,
                          m_timeSeriesAdaptorMap[probeContext]));
     }
-    else if (m_probeMap[probeName].second == "ns3::PacketProbe")
-    {
-        m_probeMap[probeName].first->TraceConnectWithoutContext(
-            probeTraceSource,
-            MakeCallback(&TimeSeriesAdaptor::TraceSinkUinteger32,
-                         m_timeSeriesAdaptorMap[probeContext]));
-    }
-    else if (m_probeMap[probeName].second == "ns3::ApplicationPacketProbe")
-    {
-        m_probeMap[probeName].first->TraceConnectWithoutContext(
-            probeTraceSource,
-            MakeCallback(&TimeSeriesAdaptor::TraceSinkUinteger32,
-                         m_timeSeriesAdaptorMap[probeContext]));
-    }
-    else if (m_probeMap[probeName].second == "ns3::Ipv4PacketProbe")
-    {
-        m_probeMap[probeName].first->TraceConnectWithoutContext(
-            probeTraceSource,
-            MakeCallback(&TimeSeriesAdaptor::TraceSinkUinteger32,
-                         m_timeSeriesAdaptorMap[probeContext]));
-    }
-    else if (m_probeMap[probeName].second == "ns3::Ipv6PacketProbe")
+    else if (m_probeMap[probeName].second == "ns3::Uinteger32Probe" ||
+             m_probeMap[probeName].second == "ns3::PacketProbe" ||
+             m_probeMap[probeName].second == "ns3::ApplicationPacketProbe" ||
+             m_probeMap[probeName].second == "ns3::Ipv4PacketProbe" ||
+             m_probeMap[probeName].second == "ns3::Ipv6PacketProbe")
     {
         m_probeMap[probeName].first->TraceConnectWithoutContext(
             probeTraceSource,
@@ -387,20 +371,6 @@ GnuplotHelper::ConnectProbeToAggregator(const std::string& typeId,
         m_probeMap[probeName].first->TraceConnectWithoutContext(
             probeTraceSource,
             MakeCallback(&TimeSeriesAdaptor::TraceSinkUinteger16,
-                         m_timeSeriesAdaptorMap[probeContext]));
-    }
-    else if (m_probeMap[probeName].second == "ns3::Uinteger32Probe")
-    {
-        m_probeMap[probeName].first->TraceConnectWithoutContext(
-            probeTraceSource,
-            MakeCallback(&TimeSeriesAdaptor::TraceSinkUinteger32,
-                         m_timeSeriesAdaptorMap[probeContext]));
-    }
-    else if (m_probeMap[probeName].second == "ns3::TimeProbe")
-    {
-        m_probeMap[probeName].first->TraceConnectWithoutContext(
-            probeTraceSource,
-            MakeCallback(&TimeSeriesAdaptor::TraceSinkDouble,
                          m_timeSeriesAdaptorMap[probeContext]));
     }
     else

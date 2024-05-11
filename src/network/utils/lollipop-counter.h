@@ -279,11 +279,7 @@ class LollipopCounter
             return false;
         }
 
-        if (lhs > rhs)
-        {
-            return false;
-        }
-        else if (lhs == rhs)
+        if (lhs > rhs || lhs == rhs)
         {
             return false;
         }

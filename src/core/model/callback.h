@@ -650,18 +650,12 @@ class Callback : public CallbackBase
      */
     bool DoCheckType(Ptr<const CallbackImplBase> other) const
     {
-        if (other && dynamic_cast<const CallbackImpl<R, UArgs...>*>(PeekPointer(other)) != nullptr)
+        if (!other)
         {
             return true;
         }
-        else if (!other)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+
+        return (dynamic_cast<const CallbackImpl<R, UArgs...>*>(PeekPointer(other)) != nullptr);
     }
 };
 

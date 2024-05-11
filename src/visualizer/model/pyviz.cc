@@ -601,21 +601,13 @@ PyViz::TraceNetDevTxWifi(std::string context, Ptr<const Packet> packet)
     WifiMacHeader hdr;
     NS_ABORT_IF(packet->PeekHeader(hdr) == 0);
     Mac48Address destinationAddress;
-    if (hdr.IsToDs() && !hdr.IsFromDs())
+    if (hdr.IsToDs())
     {
         destinationAddress = hdr.GetAddr3();
-    }
-    else if (!hdr.IsToDs() && hdr.IsFromDs())
-    {
-        destinationAddress = hdr.GetAddr1();
-    }
-    else if (!hdr.IsToDs() && !hdr.IsFromDs())
-    {
-        destinationAddress = hdr.GetAddr1();
     }
     else
     {
-        destinationAddress = hdr.GetAddr3();
+        destinationAddress = hdr.GetAddr1();
     }
     TraceNetDevTxCommon(context, packet, destinationAddress);
 }
@@ -769,19 +761,15 @@ PyViz::TraceNetDevRxWifi(std::string context, Ptr<const Packet> packet)
     WifiMacHeader hdr;
     NS_ABORT_IF(packet->PeekHeader(hdr) == 0);
     Mac48Address sourceAddress;
-    if (hdr.IsToDs() && !hdr.IsFromDs())
+    if (!hdr.IsFromDs())
     {
         sourceAddress = hdr.GetAddr2();
     }
-    else if (!hdr.IsToDs() && hdr.IsFromDs())
+    else if (!hdr.IsToDs())
     {
         sourceAddress = hdr.GetAddr3();
     }
-    else if (!hdr.IsToDs() && !hdr.IsFromDs())
-    {
-        sourceAddress = hdr.GetAddr2();
-    }
-    else
+    else // if (hdr.IsToDs())
     {
         sourceAddress = hdr.GetAddr4();
     }

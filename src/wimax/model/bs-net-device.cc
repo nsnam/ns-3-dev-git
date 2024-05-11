@@ -790,7 +790,6 @@ BaseStationNetDevice::DoReceive(Ptr<Packet> packet)
             {
             case ManagementMessageType::MESSAGE_TYPE_REG_REQ:
                 // not yet implemented
-                break;
             case ManagementMessageType::MESSAGE_TYPE_REG_RSP:
                 // from other base station, ignore
                 break;

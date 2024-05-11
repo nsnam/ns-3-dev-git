@@ -730,14 +730,10 @@ MinstrelWifiManager::UpdateStats(MinstrelWifiRemoteStation* station)
     uint8_t index_max_prob = 0;
     for (uint8_t i = 0; i < station->m_nModes; i++)
     {
-        if ((station->m_minstrelTable[i].ewmaProb >= 95 * 180) &&
-            (station->m_minstrelTable[i].throughput >=
-             station->m_minstrelTable[index_max_prob].throughput))
-        {
-            index_max_prob = i;
-            max_prob = station->m_minstrelTable[i].ewmaProb;
-        }
-        else if (station->m_minstrelTable[i].ewmaProb >= max_prob)
+        if ((station->m_minstrelTable[i].ewmaProb >= 95 * 180 &&
+             station->m_minstrelTable[i].throughput >=
+                 station->m_minstrelTable[index_max_prob].throughput) ||
+            (station->m_minstrelTable[i].ewmaProb >= max_prob))
         {
             index_max_prob = i;
             max_prob = station->m_minstrelTable[i].ewmaProb;

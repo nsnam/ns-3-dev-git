@@ -77,7 +77,8 @@ isNumeric(const std::string& s)
 
     for (auto it = s.begin(); it != s.end(); it++)
     {
-        if ((*it == '.') && (decimalPtSeen))
+        if ((*it == '.' && decimalPtSeen) || (*it == 'e' && exponentSeen) ||
+            (*it == '-' && it != s.begin() && last != 'e'))
         {
             return false;
         }
@@ -85,18 +86,10 @@ isNumeric(const std::string& s)
         {
             decimalPtSeen = true;
         }
-        else if ((*it == 'e') && exponentSeen)
-        {
-            return false;
-        }
         else if (*it == 'e')
         {
             exponentSeen = true;
             decimalPtSeen = false;
-        }
-        else if (*it == '-' && it != s.begin() && last != 'e')
-        {
-            return false;
         }
 
         last = *it;

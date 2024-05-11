@@ -206,23 +206,15 @@ TransmissionModesLayers::TxMode2LayerNum(uint8_t txMode)
     switch (txMode)
     {
     case 0: // Tx MODE 1: SISO
-        nLayer = 1;
-        break;
     case 1: // Tx MODE 2: MIMO Tx Diversity
         nLayer = 1;
         break;
     case 2: // Tx MODE 3: MIMO Spatial Multiplexity Open Loop
-        nLayer = 2;
-        break;
     case 3: // Tx MODE 4: MIMO Spatial Multiplexity Closed Loop
-        nLayer = 2;
-        break;
     case 4: // Tx MODE 5: MIMO Multi-User
         nLayer = 2;
         break;
     case 5: // Tx MODE 6: Closer loop single layer percoding
-        nLayer = 1;
-        break;
     case 6: // Tx MODE 7: Single antenna port 5
         nLayer = 1;
         break;

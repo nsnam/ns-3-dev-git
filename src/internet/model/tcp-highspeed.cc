@@ -447,15 +447,14 @@ TcpHighSpeed::TableLookupA(uint32_t w)
     {
         return 73;
     }
-    else
-    {
-        return 73;
-    }
+
+    return 73;
 }
 
 double
 TcpHighSpeed::TableLookupB(uint32_t w)
 {
+    // NOLINTBEGIN(bugprone-branch-clone)
     if (w <= 38)
     {
         return 0.50;
@@ -752,6 +751,7 @@ TcpHighSpeed::TableLookupB(uint32_t w)
     {
         return 0.09;
     }
+    // NOLINTEND(bugprone-branch-clone)
 }
 
 } // namespace ns3

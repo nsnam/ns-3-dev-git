@@ -297,15 +297,9 @@ PieQueueDisc::DropEarly(Ptr<QueueDiscItem> item, uint32_t qSize)
     }
 
     // Safeguard PIE to be work conserving (Section 4.1 of RFC 8033)
-    if ((m_qDelayOld.GetSeconds() < (0.5 * m_qDelayRef.GetSeconds())) && (m_dropProb < 0.2))
-    {
-        return false;
-    }
-    else if (GetMaxSize().GetUnit() == QueueSizeUnit::BYTES && qSize <= 2 * m_meanPktSize)
-    {
-        return false;
-    }
-    else if (GetMaxSize().GetUnit() == QueueSizeUnit::PACKETS && qSize <= 2)
+    if ((m_qDelayOld.GetSeconds() < (0.5 * m_qDelayRef.GetSeconds()) && m_dropProb < 0.2) ||
+        (GetMaxSize().GetUnit() == QueueSizeUnit::BYTES && qSize <= 2 * m_meanPktSize) ||
+        (GetMaxSize().GetUnit() == QueueSizeUnit::PACKETS && qSize <= 2))
     {
         return false;
     }

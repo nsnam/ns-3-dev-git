@@ -444,21 +444,17 @@ Ipv6StaticRouting::LookupStatic(Ipv6Address dst, Ptr<NetDevice> interface)
                 uint32_t interfaceIdx = route->GetInterface();
                 rtentry = Create<Ipv6Route>();
 
-                if (route->GetGateway().IsAny())
+                if (route->GetGateway().IsAny() || !route->GetDest().IsAny())
                 {
                     rtentry->SetSource(
                         m_ipv6->SourceAddressSelection(interfaceIdx, route->GetDest()));
-                }
-                else if (route->GetDest().IsAny()) /* default route */
-                {
-                    rtentry->SetSource(m_ipv6->SourceAddressSelection(
-                        interfaceIdx,
-                        route->GetPrefixToUse().IsAny() ? dst : route->GetPrefixToUse()));
                 }
                 else
                 {
-                    rtentry->SetSource(
-                        m_ipv6->SourceAddressSelection(interfaceIdx, route->GetDest()));
+                    // Default route
+                    rtentry->SetSource(m_ipv6->SourceAddressSelection(
+                        interfaceIdx,
+                        route->GetPrefixToUse().IsAny() ? dst : route->GetPrefixToUse()));
                 }
 
                 rtentry->SetDestination(route->GetDest());

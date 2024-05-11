@@ -299,9 +299,7 @@ WifiActionHeader::GetAction() const
     case MULTIHOP: // not yet supported
         switch (m_actionValue)
         {
-        case PROXY_UPDATE: // not used so far
-            retval.multihopAction = PROXY_UPDATE;
-            break;
+        case PROXY_UPDATE:              // not used so far
         case PROXY_UPDATE_CONFIRMATION: // not used so far
             retval.multihopAction = PROXY_UPDATE;
             break;

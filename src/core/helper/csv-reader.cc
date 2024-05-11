@@ -459,7 +459,6 @@ CsvReader::ParseColumn(std::string::const_iterator begin, std::string::const_ite
         }
         break;
         case State::FIND_DELIMITER:
-            break;
         case State::END:
             break;
         }

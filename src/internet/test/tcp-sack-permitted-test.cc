@@ -101,17 +101,11 @@ SackPermittedTestCase::CreateSenderSocket(Ptr<Node> node)
     switch (m_configuration)
     {
     case DISABLED:
-        socket->SetAttribute("Sack", BooleanValue(false));
-        break;
-
     case ENABLED_RECEIVER:
         socket->SetAttribute("Sack", BooleanValue(false));
         break;
 
     case ENABLED_SENDER:
-        socket->SetAttribute("Sack", BooleanValue(true));
-        break;
-
     case ENABLED:
         socket->SetAttribute("Sack", BooleanValue(true));
         break;

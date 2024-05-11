@@ -438,19 +438,12 @@ SfVectorTlvValue::Deserialize(Buffer::Iterator i, uint64_t valueLen)
             break;
         }
         case ARQ_RETRY_TIMEOUT_Transmitter_Delay:
-            break;
         case ARQ_RETRY_TIMEOUT_Receiver_Delay:
-            break;
         case ARQ_BLOCK_LIFETIME:
-            break;
         case ARQ_SYNC_LOSS:
-            break;
         case ARQ_DELIVER_IN_ORDER:
-            break;
         case ARQ_PURGE_TIMEOUT:
-            break;
         case ARQ_BLOCK_SIZE:
-            break;
         case reserved2:
             break;
         case CS_Specification: {

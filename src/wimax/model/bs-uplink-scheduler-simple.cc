@@ -569,14 +569,11 @@ UplinkSchedulerSimple::SetupServiceFlow(SSRecord* ssRecord, ServiceFlow* service
         serviceFlow->SetUnsolicitedPollingInterval(interval);
     }
     break;
-    case ServiceFlow::SF_TYPE_NRTPS: {
+    case ServiceFlow::SF_TYPE_NRTPS:
         // no real-time guarantees are given to NRTPS, serviced based on available bandwidth
-    }
-    break;
-    case ServiceFlow::SF_TYPE_BE: {
+    case ServiceFlow::SF_TYPE_BE:
         // no real-time guarantees are given to BE, serviced based on available bandwidth
-    }
-    break;
+        break;
     default:
         NS_FATAL_ERROR("Invalid scheduling type");
     }

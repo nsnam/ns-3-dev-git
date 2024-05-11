@@ -348,7 +348,6 @@ HalfDuplexIdealPhy::StartRx(Ptr<SpectrumSignalParameters> spectrumParams)
         {
         case TX:
             // the PHY will not notice this incoming signal
-            break;
 
         case RX:
             // we should check if we should re-sync on a new incoming signal and discard the old one

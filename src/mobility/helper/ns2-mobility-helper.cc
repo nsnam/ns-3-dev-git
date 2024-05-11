@@ -620,7 +620,8 @@ IsVal(const std::string& str, T& ret)
     {
         return false;
     }
-    else if (IsNumber(str))
+
+    if (IsNumber(str))
     {
         std::istringstream s(str);
         s >> ret;
@@ -681,8 +682,6 @@ GetNodeIdInt(ParseResult pr)
         result = pr.ivals[0];
         break;
     case 7: // line like $ns_ at 4 "$node_(0) set X_ 28"
-        result = pr.ivals[3];
-        break;
     case 8: // line like $ns_ at 1 "$node_(0) setdest 2 3 4"
         result = pr.ivals[3];
         break;
@@ -701,7 +700,6 @@ GetNodeIdString(ParseResult pr)
     case 4: // line like $node_(0) set X_ 11
         return pr.svals[0];
     case 7: // line like $ns_ at 4 "$node_(0) set X_ 28"
-        return pr.svals[3];
     case 8: // line like $ns_ at 1 "$node_(0) setdest 2 3 4"
         return pr.svals[3];
     default:

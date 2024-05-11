@@ -468,30 +468,10 @@ main(int argc, char* argv[])
             apDevice = wifi.Install(spectrumPhy, mac, wifiApNode);
         }
 
-        if (i <= 7)
-        {
-            Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/"
-                        "ShortGuardIntervalSupported",
-                        BooleanValue(false));
-        }
-        else if (i > 7 && i <= 15)
-        {
-            Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/"
-                        "ShortGuardIntervalSupported",
-                        BooleanValue(true));
-        }
-        else if (i > 15 && i <= 23)
-        {
-            Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/"
-                        "ShortGuardIntervalSupported",
-                        BooleanValue(false));
-        }
-        else
-        {
-            Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/"
-                        "ShortGuardIntervalSupported",
-                        BooleanValue(true));
-        }
+        bool shortGuardIntervalSupported = (i > 7 && i <= 15) || (i > 23);
+        Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/"
+                    "ShortGuardIntervalSupported",
+                    BooleanValue(shortGuardIntervalSupported));
 
         // mobility.
         MobilityHelper mobility;

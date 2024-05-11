@@ -1178,14 +1178,10 @@ UplinkSchedulerMBQoS::ProcessBandwidthRequest(const BandwidthRequestHeader& bwRe
     switch (serviceFlow->GetSchedulingType())
     {
     case ServiceFlow::SF_TYPE_RTPS:
-        EnqueueJob(UlJob::INTERMEDIATE, job);
-        break;
     case ServiceFlow::SF_TYPE_NRTPS:
         EnqueueJob(UlJob::INTERMEDIATE, job);
         break;
     case ServiceFlow::SF_TYPE_BE:
-        EnqueueJob(UlJob::LOW, job);
-        break;
     default:
         EnqueueJob(UlJob::LOW, job);
         break;

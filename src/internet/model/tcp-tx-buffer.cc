@@ -1103,14 +1103,10 @@ TcpTxBuffer::BytesInFlightRFC() const
         {
             bool isLost = IsLostRFC(beginOfCurrentPkt, it);
             // (a) If IsLost (S1) returns false: Pipe is incremented by 1 octet.
-            if (!isLost)
-            {
-                size += item->m_packet->GetSize();
-            }
             // (b) If S1 <= HighRxt: Pipe is incremented by 1 octet.
             // (NOTE: we use the m_retrans flag instead of keeping and updating
             // another variable). Only if the item is not marked as lost
-            else if (item->m_retrans)
+            if (!isLost || item->m_retrans)
             {
                 size += item->m_packet->GetSize();
             }

@@ -1156,12 +1156,6 @@ WifiMacHeader::Print(std::ostream& os) const
     case WIFI_MAC_MGT_PROBE_RESPONSE:
     case WIFI_MAC_MGT_AUTHENTICATION:
     case WIFI_MAC_MGT_DEAUTHENTICATION:
-        PrintFrameControl(os);
-        os << " Duration/ID=" << m_duration << "us"
-           << ", DA=" << m_addr1 << ", SA=" << m_addr2 << ", BSSID=" << m_addr3
-           << ", FragNumber=" << std::hex << (int)m_seqFrag << std::dec
-           << ", SeqNumber=" << m_seqSeq;
-        break;
     case WIFI_MAC_MGT_ACTION:
     case WIFI_MAC_MGT_ACTION_NO_ACK:
         PrintFrameControl(os);

@@ -1254,12 +1254,8 @@ GlobalRouteManagerImpl::CheckForStubNode(Ipv4Address root)
     for (uint32_t i = 0; i < rlsa->GetNLinkRecords(); i++)
     {
         GlobalRoutingLinkRecord* l = rlsa->GetLinkRecord(i);
-        if (l->GetLinkType() == GlobalRoutingLinkRecord::TransitNetwork)
-        {
-            transits++;
-            transitLink = l;
-        }
-        else if (l->GetLinkType() == GlobalRoutingLinkRecord::PointToPoint)
+        if (l->GetLinkType() == GlobalRoutingLinkRecord::TransitNetwork ||
+            l->GetLinkType() == GlobalRoutingLinkRecord::PointToPoint)
         {
             transits++;
             transitLink = l;

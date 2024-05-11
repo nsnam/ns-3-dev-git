@@ -1242,11 +1242,8 @@ RipNg::DoSendRouteUpdate(bool periodic)
                         rte.SetRouteMetric(rtIter->first->GetRouteMetric());
                     }
                     rte.SetRouteTag(rtIter->first->GetRouteTag());
-                    if (m_splitHorizonStrategy == SPLIT_HORIZON && !splitHorizoning)
-                    {
-                        hdr.AddRte(rte);
-                    }
-                    else if (m_splitHorizonStrategy != SPLIT_HORIZON)
+                    if ((m_splitHorizonStrategy == SPLIT_HORIZON && !splitHorizoning) ||
+                        (m_splitHorizonStrategy != SPLIT_HORIZON))
                     {
                         hdr.AddRte(rte);
                     }

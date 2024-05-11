@@ -58,11 +58,7 @@ LoopbackNetDevice::Receive(Ptr<Packet> packet,
 {
     NS_LOG_FUNCTION(packet << " " << protocol << " " << to << " " << from);
     NetDevice::PacketType packetType;
-    if (to == m_address)
-    {
-        packetType = NetDevice::PACKET_HOST;
-    }
-    else if (to.IsBroadcast())
+    if (to == m_address || to.IsBroadcast())
     {
         packetType = NetDevice::PACKET_HOST;
     }

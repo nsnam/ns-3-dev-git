@@ -737,7 +737,6 @@ StaWifiMac::TryToEnsureAssociated()
            wait until either assoc-request-timeout or until
            we get an association response.
          */
-        break;
     case REFUSED:
         /* we have sent an association request and received a negative
            association response. We wait until someone restarts an

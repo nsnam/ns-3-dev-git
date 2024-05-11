@@ -195,11 +195,8 @@ TcpSocketCongestedRouter::SendDataPacket(SequenceNumber32 seq, uint32_t maxSize,
     if (GetIpTos())
     {
         SocketIpTosTag ipTosTag;
-        if (m_testcase == 5 && (m_dataPacketSent == 1 || m_dataPacketSent == 3))
-        {
-            ipTosTag.SetTos(MarkEcnCe(GetIpTos()));
-        }
-        else if (m_testcase == 6 && (m_dataPacketSent == 4 || m_dataPacketSent == 5))
+        if ((m_testcase == 5 && (m_dataPacketSent == 1 || m_dataPacketSent == 3)) ||
+            (m_testcase == 6 && (m_dataPacketSent == 4 || m_dataPacketSent == 5)))
         {
             ipTosTag.SetTos(MarkEcnCe(GetIpTos()));
         }
@@ -219,11 +216,8 @@ TcpSocketCongestedRouter::SendDataPacket(SequenceNumber32 seq, uint32_t maxSize,
     else
     {
         SocketIpTosTag ipTosTag;
-        if (m_testcase == 5 && (m_dataPacketSent == 1 || m_dataPacketSent == 3))
-        {
-            ipTosTag.SetTos(MarkEcnCe(GetIpTos()));
-        }
-        else if (m_testcase == 6 && (m_dataPacketSent == 4 || m_dataPacketSent == 5))
+        if ((m_testcase == 5 && (m_dataPacketSent == 1 || m_dataPacketSent == 3)) ||
+            (m_testcase == 6 && (m_dataPacketSent == 4 || m_dataPacketSent == 5)))
         {
             ipTosTag.SetTos(MarkEcnCe(GetIpTos()));
         }
@@ -240,11 +234,8 @@ TcpSocketCongestedRouter::SendDataPacket(SequenceNumber32 seq, uint32_t maxSize,
     if (IsManualIpv6Tclass())
     {
         SocketIpv6TclassTag ipTclassTag;
-        if (m_testcase == 5 && (m_dataPacketSent == 1 || m_dataPacketSent == 3))
-        {
-            ipTclassTag.SetTclass(MarkEcnCe(GetIpv6Tclass()));
-        }
-        else if (m_testcase == 6 && (m_dataPacketSent == 4 || m_dataPacketSent == 5))
+        if ((m_testcase == 5 && (m_dataPacketSent == 1 || m_dataPacketSent == 3)) ||
+            (m_testcase == 6 && (m_dataPacketSent == 4 || m_dataPacketSent == 5)))
         {
             ipTclassTag.SetTclass(MarkEcnCe(GetIpv6Tclass()));
         }
@@ -264,11 +255,8 @@ TcpSocketCongestedRouter::SendDataPacket(SequenceNumber32 seq, uint32_t maxSize,
     else
     {
         SocketIpv6TclassTag ipTclassTag;
-        if (m_testcase == 5 && (m_dataPacketSent == 1 || m_dataPacketSent == 3))
-        {
-            ipTclassTag.SetTclass(MarkEcnCe(GetIpv6Tclass()));
-        }
-        else if (m_testcase == 6 && (m_dataPacketSent == 4 || m_dataPacketSent == 5))
+        if ((m_testcase == 5 && (m_dataPacketSent == 1 || m_dataPacketSent == 3)) ||
+            (m_testcase == 6 && (m_dataPacketSent == 4 || m_dataPacketSent == 5)))
         {
             ipTclassTag.SetTclass(MarkEcnCe(GetIpv6Tclass()));
         }

@@ -1102,12 +1102,8 @@ Ipv6L3Protocol::Receive(Ptr<NetDevice> device,
         }
     }
 
-    if (hdr.GetDestination().IsAllNodesMulticast())
-    {
-        LocalDeliver(packet, hdr, interface);
-        return;
-    }
-    else if (hdr.GetDestination().IsAllRoutersMulticast() && ipv6Interface->IsForwarding())
+    if (hdr.GetDestination().IsAllNodesMulticast() ||
+        (hdr.GetDestination().IsAllRoutersMulticast() && ipv6Interface->IsForwarding()))
     {
         LocalDeliver(packet, hdr, interface);
         return;
@@ -1555,9 +1551,7 @@ Ipv6L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv6Header& ip, uin
                 switch (status)
                 {
                 case IpL4Protocol::RX_OK:
-                    break;
                 case IpL4Protocol::RX_CSUM_FAILED:
-                    break;
                 case IpL4Protocol::RX_ENDPOINT_CLOSED:
                     break;
                 case IpL4Protocol::RX_ENDPOINT_UNREACH:

@@ -257,11 +257,13 @@ GetMaximumChannelWidth(WifiModulationClass modulation)
         return 20;
     case WIFI_MOD_CLASS_HT:
         return 40;
+    // NOLINTBEGIN(bugprone-branch-clone)
     case WIFI_MOD_CLASS_VHT:
     case WIFI_MOD_CLASS_HE:
         return 160;
     case WIFI_MOD_CLASS_EHT:
-        return 160; // TODO update when 320 MHz channels are supported
+        return 160; // TODO update when 320 MHz channels are supported and remove clang-tidy guards
+    // NOLINTEND(bugprone-branch-clone)
     default:
         NS_ABORT_MSG("Unknown modulation class: " << modulation);
         return 0;

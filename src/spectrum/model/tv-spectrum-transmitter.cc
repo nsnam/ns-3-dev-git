@@ -507,8 +507,6 @@ TvSpectrumTransmitter::CreateTvPsd()
             case 82:
             case 83:
             case 84:
-                (*psd)[i] = 3.16228e-06 * basePsdWattsHz;
-                break;
             case 85:
             case 86:
             case 87:

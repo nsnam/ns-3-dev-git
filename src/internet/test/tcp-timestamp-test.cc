@@ -103,17 +103,11 @@ TimestampTestCase::CreateSenderSocket(Ptr<Node> node)
     switch (m_configuration)
     {
     case DISABLED:
-        socket->SetAttribute("Timestamp", BooleanValue(false));
-        break;
-
     case ENABLED_RECEIVER:
         socket->SetAttribute("Timestamp", BooleanValue(false));
         break;
 
     case ENABLED_SENDER:
-        socket->SetAttribute("Timestamp", BooleanValue(true));
-        break;
-
     case ENABLED:
         socket->SetAttribute("Timestamp", BooleanValue(true));
         break;
@@ -199,12 +193,12 @@ TimestampTestCase::Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho w
 void
 TimestampTestCase::Rx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who)
 {
-    if (who == SENDER)
-    {
-    }
-    else if (who == RECEIVER)
-    {
-    }
+    // if (who == SENDER)
+    // {
+    // }
+    // else if (who == RECEIVER)
+    // {
+    // }
 }
 
 /**

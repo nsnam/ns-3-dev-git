@@ -1685,33 +1685,24 @@ RoutingProtocol::RecvReply(Ptr<Packet> p, Ipv4Address receiver, Ipv4Address send
     RoutingTableEntry toDst;
     if (m_routingTable.LookupRoute(dst, toDst))
     {
-        /*
-         * The existing entry is updated only in the following circumstances:
-         * (i) the sequence number in the routing table is marked as invalid in route table entry.
-         */
-        if (!toDst.GetValidSeqNo())
-        {
-            m_routingTable.Update(newEntry);
-        }
-        // (ii)the Destination Sequence Number in the RREP is greater than the node's copy of the
-        // destination sequence number and the known value is valid,
-        else if ((int32_t(rrepHeader.GetDstSeqno()) - int32_t(toDst.GetSeqNo())) > 0)
-        {
-            m_routingTable.Update(newEntry);
-        }
-        else
-        {
+        // The existing entry is updated only in the following circumstances:
+        if (
+            // (i) the sequence number in the routing table is marked as invalid in route table
+            // entry.
+            (!toDst.GetValidSeqNo()) ||
+
+            // (ii) the Destination Sequence Number in the RREP is greater than the node's copy of
+            // the destination sequence number and the known value is valid,
+            ((int32_t(rrepHeader.GetDstSeqno()) - int32_t(toDst.GetSeqNo())) > 0) ||
+
             // (iii) the sequence numbers are the same, but the route is marked as inactive.
-            if ((rrepHeader.GetDstSeqno() == toDst.GetSeqNo()) && (toDst.GetFlag() != VALID))
-            {
-                m_routingTable.Update(newEntry);
-            }
-            // (iv)  the sequence numbers are the same, and the New Hop Count is smaller than the
+            (rrepHeader.GetDstSeqno() == toDst.GetSeqNo() && toDst.GetFlag() != VALID) ||
+
+            // (iv) the sequence numbers are the same, and the New Hop Count is smaller than the
             // hop count in route table entry.
-            else if ((rrepHeader.GetDstSeqno() == toDst.GetSeqNo()) && (hop < toDst.GetHop()))
-            {
-                m_routingTable.Update(newEntry);
-            }
+            (rrepHeader.GetDstSeqno() == toDst.GetSeqNo() && hop < toDst.GetHop()))
+        {
+            m_routingTable.Update(newEntry);
         }
     }
     else

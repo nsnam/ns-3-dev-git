@@ -118,17 +118,11 @@ WScalingTestCase::CreateSenderSocket(Ptr<Node> node)
     switch (m_configuration)
     {
     case DISABLED:
-        socket->SetAttribute("WindowScaling", BooleanValue(false));
-        break;
-
     case ENABLED_RECEIVER:
         socket->SetAttribute("WindowScaling", BooleanValue(false));
         break;
 
     case ENABLED_SENDER:
-        socket->SetAttribute("WindowScaling", BooleanValue(true));
-        break;
-
     case ENABLED:
         socket->SetAttribute("WindowScaling", BooleanValue(true));
         break;

@@ -785,20 +785,14 @@ SimpleOfdmWimaxPhy::GetCodedFecBlockSize(WimaxPhy::ModulationType modulationType
         blockSize = 24;
         break;
     case MODULATION_TYPE_QPSK_12:
-        blockSize = 48;
-        break;
     case MODULATION_TYPE_QPSK_34:
         blockSize = 48;
         break;
     case MODULATION_TYPE_QAM16_12:
-        blockSize = 96;
-        break;
     case MODULATION_TYPE_QAM16_34:
         blockSize = 96;
         break;
     case MODULATION_TYPE_QAM64_23:
-        blockSize = 144;
-        break;
     case MODULATION_TYPE_QAM64_34:
         blockSize = 144;
         break;

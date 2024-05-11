@@ -208,14 +208,10 @@ TcpFastRetrTest::Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketWho who
             }
         }
 
-        if (m_sndNextExpSeq.GetValue() == 0)
+        // SYN or Pure ACK in three-way handshake, then we expect data
+        if ((m_sndNextExpSeq.GetValue() == 0) ||
+            (m_sndNextExpSeq.GetValue() == 1 && p->GetSize() == 32))
         {
-            // SYN
-            m_sndNextExpSeq = SequenceNumber32(1);
-        }
-        else if (m_sndNextExpSeq.GetValue() == 1 && p->GetSize() == 32)
-        {
-            // Pure ACK in three-way handshake, then we expect data
             m_sndNextExpSeq = SequenceNumber32(1);
         }
         else

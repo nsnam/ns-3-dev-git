@@ -711,11 +711,8 @@ UanMacRc::IsPhy1Ok()
         Ptr<Packet> pkt = phyDual->GetPhy1PacketRx();
         UanHeaderCommon ch;
         pkt->PeekHeader(ch);
-        if (ch.GetType() == TYPE_CTS || ch.GetType() == TYPE_ACK)
-        {
-            phy1ok = false;
-        }
-        else if (ch.GetDest() == Mac8Address::ConvertFrom(GetAddress()))
+        if (ch.GetType() == TYPE_CTS || ch.GetType() == TYPE_ACK ||
+            ch.GetDest() == Mac8Address::ConvertFrom(GetAddress()))
         {
             phy1ok = false;
         }
