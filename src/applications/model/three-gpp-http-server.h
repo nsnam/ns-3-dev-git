@@ -10,10 +10,10 @@
 #ifndef THREE_GPP_HTTP_SERVER_H
 #define THREE_GPP_HTTP_SERVER_H
 
+#include "sink-application.h"
 #include "three-gpp-http-header.h"
 
 #include <ns3/address.h>
-#include <ns3/application.h>
 #include <ns3/event-id.h>
 #include <ns3/nstime.h>
 #include <ns3/ptr.h>
@@ -55,9 +55,11 @@ class ThreeGppHttpServerTxBuffer;
  * The application accepts connection request from clients. Every connection is
  * kept open until the client disconnects.
  */
-class ThreeGppHttpServer : public Application
+class ThreeGppHttpServer : public SinkApplication
 {
   public:
+    static constexpr uint16_t HTTP_DEFAULT_PORT{80}; //!< default HTTP port
+
     /**
      * Creates a new instance of HTTP server application.
      *
@@ -143,18 +145,8 @@ class ThreeGppHttpServer : public Application
   private:
     void StartApplication() override;
     void StopApplication() override;
-
-    /**
-     * \brief set the local address (temporary function until deprecated attributes are removed)
-     * \param addr local address
-     */
-    void SetLocal(const Address& addr);
-
-    /**
-     * \brief set the server port (temporary function until deprecated attributes are removed)
-     * \param port server port
-     */
-    void SetPort(uint16_t port);
+    void SetLocal(const Address& addr) override;
+    void SetPort(uint32_t port) override;
 
     // SOCKET CALLBACK METHODS
 
@@ -268,10 +260,11 @@ class ThreeGppHttpServer : public Application
 
     /// The `Variables` attribute.
     Ptr<ThreeGppHttpVariables> m_httpVariables;
-    /// The `LocalAddress` attribute.
-    Address m_local;
     /// The `LocalPort` attribute.
-    std::optional<uint16_t> m_port;
+    /// Note: this is a trick needed because we have 2 ports attributes, Port and LocalPort, where
+    /// the latter is deprecated and hence this will actually go away once we can remove deprecated
+    /// attributes and code.
+    std::optional<uint16_t> m_optPort;
     /// The `Tos` attribute.
     uint8_t m_tos;
     /// The `Mtu` attribute.

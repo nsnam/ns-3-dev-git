@@ -32,20 +32,9 @@ UdpEchoServer::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::UdpEchoServer")
-            .SetParent<Application>()
+            .SetParent<SinkApplication>()
             .SetGroupName("Applications")
             .AddConstructor<UdpEchoServer>()
-            .AddAttribute("Local",
-                          "The Address on which to Bind the rx socket. "
-                          "If it is not specified, it will listen to any address.",
-                          AddressValue(),
-                          MakeAddressAccessor(&UdpEchoServer::m_local),
-                          MakeAddressChecker())
-            .AddAttribute("Port",
-                          "Port on which we listen for incoming packets.",
-                          UintegerValue(9),
-                          MakeUintegerAccessor(&UdpEchoServer::m_port),
-                          MakeUintegerChecker<uint16_t>())
             .AddAttribute("Tos",
                           "The Type of Service used to send IPv4 packets. "
                           "All 8 bits of the TOS byte are set (including ECN bits).",
@@ -64,7 +53,8 @@ UdpEchoServer::GetTypeId()
 }
 
 UdpEchoServer::UdpEchoServer()
-    : m_socket{nullptr},
+    : SinkApplication(DEFAULT_PORT),
+      m_socket{nullptr},
       m_socket6{nullptr}
 {
     NS_LOG_FUNCTION(this);

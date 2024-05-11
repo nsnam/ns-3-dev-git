@@ -9,7 +9,6 @@
 #include "packet-sink.h"
 
 #include "ns3/address-utils.h"
-#include "ns3/address.h"
 #include "ns3/boolean.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/inet6-socket-address.h"
@@ -24,7 +23,6 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/udp-socket.h"
-#include "ns3/uinteger.h"
 
 namespace ns3
 {
@@ -38,20 +36,9 @@ PacketSink::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::PacketSink")
-            .SetParent<Application>()
+            .SetParent<SinkApplication>()
             .SetGroupName("Applications")
             .AddConstructor<PacketSink>()
-            .AddAttribute("Local",
-                          "The Address on which to Bind the rx socket. "
-                          "If it is not specified, it will listen to any address.",
-                          AddressValue(),
-                          MakeAddressAccessor(&PacketSink::m_local),
-                          MakeAddressChecker())
-            .AddAttribute("Port",
-                          "Port on which the application listens for incoming packets.",
-                          UintegerValue(0),
-                          MakeUintegerAccessor(&PacketSink::m_port),
-                          MakeUintegerChecker<uint16_t>())
             .AddAttribute("Protocol",
                           "The type id of the protocol to use for the rx socket.",
                           TypeIdValue(UdpSocketFactory::GetTypeId()),

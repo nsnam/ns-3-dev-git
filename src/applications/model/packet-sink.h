@@ -10,9 +10,8 @@
 #define PACKET_SINK_H
 
 #include "seq-ts-size-header.h"
+#include "sink-application.h"
 
-#include "ns3/address.h"
-#include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/inet6-socket-address.h"
@@ -24,7 +23,6 @@
 namespace ns3
 {
 
-class Address;
 class Socket;
 class Packet;
 
@@ -60,7 +58,7 @@ class Packet;
  * enabled, it prints out the size of packets and their address.
  * A tracing source to Receive() is also available.
  */
-class PacketSink : public Application
+class PacketSink : public SinkApplication
 {
   public:
     /**
@@ -68,8 +66,8 @@ class PacketSink : public Application
      * \return the object TypeId
      */
     static TypeId GetTypeId();
-    PacketSink();
 
+    PacketSink();
     ~PacketSink() override;
 
     /**
@@ -175,9 +173,6 @@ class PacketSink : public Application
     };
 
     std::unordered_map<Address, Ptr<Packet>, AddressHash> m_buffer; //!< Buffer for received packets
-
-    Address m_local; //!< Local address to bind to (address and port)
-    uint16_t m_port; //!< Local port to bind to
 
     Ptr<Socket> m_socket;  //!< Socket
     Ptr<Socket> m_socket6; //!< IPv6 Socket (used if only port is specified)

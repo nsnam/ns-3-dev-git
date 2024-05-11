@@ -33,11 +33,12 @@ namespace ns3
 NS_OBJECT_ENSURE_REGISTERED(ThreeGppHttpServer);
 
 ThreeGppHttpServer::ThreeGppHttpServer()
-    : m_state{NOT_STARTED},
+    : SinkApplication(HTTP_DEFAULT_PORT),
+      m_state{NOT_STARTED},
       m_initialSocket{nullptr},
       m_txBuffer{Create<ThreeGppHttpServerTxBuffer>()},
       m_httpVariables{CreateObject<ThreeGppHttpVariables>()},
-      m_port{},
+      m_optPort{},
       m_mtuSize{m_httpVariables->GetMtuSize()}
 {
     NS_LOG_FUNCTION(this);
@@ -50,7 +51,7 @@ ThreeGppHttpServer::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::ThreeGppHttpServer")
-            .SetParent<Application>()
+            .SetParent<SinkApplication>()
             .AddConstructor<ThreeGppHttpServer>()
             .AddAttribute("Variables",
                           "Variable collection, which is used to control e.g. processing and "
@@ -73,17 +74,6 @@ ThreeGppHttpServer::GetTypeId()
                           MakeUintegerChecker<uint16_t>(),
                           TypeId::DEPRECATED,
                           "Replaced by Port in ns-3.44.")
-            .AddAttribute("Local",
-                          "The Address on which to Bind the rx socket. "
-                          "If it is not specified, it will listen to any address.",
-                          AddressValue(),
-                          MakeAddressAccessor(&ThreeGppHttpServer::SetLocal),
-                          MakeAddressChecker())
-            .AddAttribute("Port",
-                          "Port on which the application listens for incoming packets.",
-                          UintegerValue(80), // the default HTTP port
-                          MakeUintegerAccessor(&ThreeGppHttpServer::SetPort),
-                          MakeUintegerChecker<uint16_t>())
             .AddAttribute("Tos",
                           "The Type of Service used to send packets. "
                           "All 8 bits of the TOS byte are set (including ECN bits).",
@@ -139,26 +129,30 @@ ThreeGppHttpServer::SetLocal(const Address& addr)
     if (!addr.IsInvalid())
     {
         m_local = addr;
-        if (m_port)
+        if (m_optPort)
         {
-            SetPort(*m_port);
+            SetPort(*m_optPort);
         }
     }
 }
 
 void
-ThreeGppHttpServer::SetPort(uint16_t port)
+ThreeGppHttpServer::SetPort(uint32_t port)
 {
     NS_LOG_FUNCTION(this << port);
+    if (port != INVALID_PORT)
+    {
+        m_port = port;
+    }
     if (m_local.IsInvalid())
     {
         // save for later
-        m_port = port;
+        m_optPort = m_port;
         return;
     }
     if (Ipv4Address::IsMatchingType(m_local) || Ipv6Address::IsMatchingType(m_local))
     {
-        m_local = addressUtils::ConvertToSocketAddress(m_local, port);
+        m_local = addressUtils::ConvertToSocketAddress(m_local, m_port);
     }
 }
 
@@ -249,19 +243,15 @@ ThreeGppHttpServer::StartApplication()
             {
                 const auto ipv4 [[maybe_unused]] =
                     InetSocketAddress::ConvertFrom(m_local).GetIpv4();
-                const auto port [[maybe_unused]] =
-                    InetSocketAddress::ConvertFrom(m_local).GetPort();
                 m_initialSocket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-                NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << port << " / " << m_local
+                NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
                                  << ".");
             }
             else if (Inet6SocketAddress::IsMatchingType(m_local))
             {
                 const auto ipv6 [[maybe_unused]] =
                     Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
-                const auto port [[maybe_unused]] =
-                    Inet6SocketAddress::ConvertFrom(m_local).GetPort();
-                NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << port << " / " << m_local
+                NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
                                  << ".");
             }
             else

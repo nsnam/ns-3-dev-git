@@ -35,20 +35,9 @@ UdpServer::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::UdpServer")
-            .SetParent<Application>()
+            .SetParent<SinkApplication>()
             .SetGroupName("Applications")
             .AddConstructor<UdpServer>()
-            .AddAttribute("Local",
-                          "The Address on which to Bind the rx socket. "
-                          "If it is not specified, it will listen to any address.",
-                          AddressValue(),
-                          MakeAddressAccessor(&UdpServer::m_local),
-                          MakeAddressChecker())
-            .AddAttribute("Port",
-                          "Port on which we listen for incoming packets.",
-                          UintegerValue(100),
-                          MakeUintegerAccessor(&UdpServer::m_port),
-                          MakeUintegerChecker<uint16_t>())
             .AddAttribute("PacketWindowSize",
                           "The size of the window used to compute the packet loss. This value "
                           "should be a multiple of 8.",
@@ -68,7 +57,8 @@ UdpServer::GetTypeId()
 }
 
 UdpServer::UdpServer()
-    : m_socket{nullptr},
+    : SinkApplication(DEFAULT_PORT),
+      m_socket{nullptr},
       m_socket6{nullptr},
       m_received{0},
       m_lossCounter{0}
