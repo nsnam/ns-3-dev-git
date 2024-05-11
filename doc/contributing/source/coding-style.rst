@@ -1550,6 +1550,68 @@ explained here.
     // Avoid repeating the type name "MyClass" in std::less<>
     std::map<MyClass, int, std::less<MyClass>> myMap;
 
+- In conditional control blocks (i.e., if-else and switch-case), avoid declaring multiple
+  branch conditions with the same content to avoid duplicating code.
+
+  In if-else blocks, prefer grouping the identical bodies in a single if condition with a
+  disjunction of the multiple conditions.
+
+  .. sourcecode:: cpp
+
+    if (condition1)
+    {
+        Foo();
+    }
+    else if (condition2)
+    {
+        // Same body as condition 1
+        Foo();
+    }
+    else
+    {
+        Bar();
+    }
+
+    // Prefer grouping the two conditions
+    if (condition1 || condition2)
+    {
+        Foo();
+    }
+    else
+    {
+        Bar();
+    }
+
+  In switch-case blocks, prefer grouping identical ``case`` labels by removing the duplicate
+  bodies of the former ``case`` labels.
+
+  .. sourcecode:: cpp
+
+    switch (condition)
+    {
+    case 1:
+        Foo();
+        break;
+    case 2: // case 2 has the same body as case 1
+        Foo();
+        break;
+    case 3:
+        Bar();
+        break;
+    }
+
+    switch (condition)
+    {
+    // Group identical cases by removing the content of case 1 and letting it fallthrough to case 2
+    case 1:
+    case 2:
+        Foo();
+        break;
+    case 3:
+        Bar();
+        break;
+    }
+
 
 CMake file formatting
 *********************
