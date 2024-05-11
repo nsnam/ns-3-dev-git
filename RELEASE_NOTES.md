@@ -32,6 +32,11 @@ The required Doxygen version for documentation generation is version 1.11.
 
 ### New user-visible features
 
+- (applications) - Attributes `RemoteAddress` and `RemotePort` in UdpClient, UdpTraceClient and UdpEchoClient have been combined into a single `Remote` attribute. Similarly, the `ThreeGppHttpClient::RemoteServerAddress` and `ThreeGppHttpClient::RemoteServerPort` attributes have been combined into a single `ThreeGppHttpClient::Remote` attribute. The constructors of corresponding helper classes have been changed to make use of these new attributes.
+- (applications) - The `ThreeGppHttpServer::LocalAddress` and `ThreeGppHttpServer::LocalPort` attributes have been renamed to `ThreeGppHttpServer::Remote` and `ThreeGppHttpServer::Port`, respectively.
+- (applications) - It is now possible to specify the address on which to bind the listening socket for UdpServer via the `Local` attribute.
+- (applications) - It is now possible to specify a port only for PacketSink to listen to any address (both IPv4 and IPv6).
+
 ### Bugs fixed
 
 ## Release 3.43

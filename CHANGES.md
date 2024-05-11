@@ -16,7 +16,12 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### New API
 
+* (applications) Added two new base classes for source and sink applications, `SourceApplication` and `SinkApplication`, respectively.
+
 ### Changes to existing API
+
+* (applications) Deprecated attributes `RemoteAddress` and `RemotePort` in UdpClient, UdpTraceClient and UdpEchoClient. They have been combined into a single `Remote` attribute.
+* (applications) Deprecated attributes `ThreeGppHttpClient::RemoteServerAddress` and `ThreeGppHttpClient::RemoteServerPort`. They have been combined into a single `ThreeGppHttpClient::Remote` attribute.
 
 ### Changes to build system
 
