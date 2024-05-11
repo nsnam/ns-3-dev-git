@@ -5,6 +5,7 @@
  *
  * Author:  Tom Henderson (tomhend@u.washington.edu)
  */
+
 #include "packet-sink.h"
 
 #include "ns3/address-utils.h"
@@ -23,6 +24,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/udp-socket.h"
+#include "ns3/uinteger.h"
 
 namespace ns3
 {
@@ -40,10 +42,16 @@ PacketSink::GetTypeId()
             .SetGroupName("Applications")
             .AddConstructor<PacketSink>()
             .AddAttribute("Local",
-                          "The Address on which to Bind the rx socket.",
+                          "The Address on which to Bind the rx socket. "
+                          "If it is not specified, it will listen to any address.",
                           AddressValue(),
                           MakeAddressAccessor(&PacketSink::m_local),
                           MakeAddressChecker())
+            .AddAttribute("Port",
+                          "Port on which the application listens for incoming packets.",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&PacketSink::m_port),
+                          MakeUintegerChecker<uint16_t>())
             .AddAttribute("Protocol",
                           "The type id of the protocol to use for the rx socket.",
                           TypeIdValue(UdpSocketFactory::GetTypeId()),
@@ -70,10 +78,14 @@ PacketSink::GetTypeId()
 }
 
 PacketSink::PacketSink()
+    : m_buffer{},
+      m_socket{nullptr},
+      m_socket6{nullptr},
+      m_socketList{},
+      m_totalRx{0},
+      m_enableSeqTsSizeHeader{false}
 {
     NS_LOG_FUNCTION(this);
-    m_socket = nullptr;
-    m_totalRx = 0;
 }
 
 PacketSink::~PacketSink()
@@ -118,50 +130,81 @@ void
 PacketSink::StartApplication() // Called at time specified by Start
 {
     NS_LOG_FUNCTION(this);
+
     // Create the socket if not already
     if (!m_socket)
     {
         m_socket = Socket::CreateSocket(GetNode(), m_tid);
-        NS_ABORT_MSG_IF(m_local.IsInvalid(), "'Local' attribute not properly set");
-        if (m_socket->Bind(m_local) == -1)
+        auto local = m_local;
+        if (local.IsInvalid())
+        {
+            local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
+        }
+        else if (InetSocketAddress::IsMatchingType(local))
+        {
+            m_port = InetSocketAddress::ConvertFrom(local).GetPort();
+        }
+        else if (Inet6SocketAddress::IsMatchingType(local))
+        {
+            m_port = Inet6SocketAddress::ConvertFrom(local).GetPort();
+        }
+        if (m_socket->Bind(local) == -1)
         {
             NS_FATAL_ERROR("Failed to bind socket");
         }
         m_socket->Listen();
         m_socket->ShutdownSend();
-        if (addressUtils::IsMulticast(m_local))
+        if (addressUtils::IsMulticast(local))
         {
-            Ptr<UdpSocket> udpSocket = DynamicCast<UdpSocket>(m_socket);
-            if (udpSocket)
+            if (auto udpSocket = DynamicCast<UdpSocket>(m_socket))
             {
                 // equivalent to setsockopt (MCAST_JOIN_GROUP)
-                udpSocket->MulticastJoinGroup(0, m_local);
+                udpSocket->MulticastJoinGroup(0, local);
             }
             else
             {
                 NS_FATAL_ERROR("Error: joining multicast on a non-UDP socket");
             }
         }
+        m_socket->SetRecvCallback(MakeCallback(&PacketSink::HandleRead, this));
+        m_socket->SetRecvPktInfo(true);
+        m_socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
+                                    MakeCallback(&PacketSink::HandleAccept, this));
+        m_socket->SetCloseCallbacks(MakeCallback(&PacketSink::HandlePeerClose, this),
+                                    MakeCallback(&PacketSink::HandlePeerError, this));
     }
 
-    if (InetSocketAddress::IsMatchingType(m_local))
+    if (m_local.IsInvalid() && !m_socket6)
     {
-        m_localPort = InetSocketAddress::ConvertFrom(m_local).GetPort();
+        // local address is not specified, so create another socket to also listen to all IPv6
+        // addresses
+        m_socket6 = Socket::CreateSocket(GetNode(), m_tid);
+        auto local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
+        if (m_socket6->Bind(local) == -1)
+        {
+            NS_FATAL_ERROR("Failed to bind socket");
+        }
+        m_socket6->Listen();
+        m_socket6->ShutdownSend();
+        if (addressUtils::IsMulticast(local))
+        {
+            if (auto udpSocket = DynamicCast<UdpSocket>(m_socket6))
+            {
+                // equivalent to setsockopt (MCAST_JOIN_GROUP)
+                udpSocket->MulticastJoinGroup(0, local);
+            }
+            else
+            {
+                NS_FATAL_ERROR("Error: joining multicast on a non-UDP socket");
+            }
+        }
+        m_socket6->SetRecvCallback(MakeCallback(&PacketSink::HandleRead, this));
+        m_socket6->SetRecvPktInfo(true);
+        m_socket6->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
+                                     MakeCallback(&PacketSink::HandleAccept, this));
+        m_socket6->SetCloseCallbacks(MakeCallback(&PacketSink::HandlePeerClose, this),
+                                     MakeCallback(&PacketSink::HandlePeerError, this));
     }
-    else if (Inet6SocketAddress::IsMatchingType(m_local))
-    {
-        m_localPort = Inet6SocketAddress::ConvertFrom(m_local).GetPort();
-    }
-    else
-    {
-        m_localPort = 0;
-    }
-    m_socket->SetRecvCallback(MakeCallback(&PacketSink::HandleRead, this));
-    m_socket->SetRecvPktInfo(true);
-    m_socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
-                                MakeCallback(&PacketSink::HandleAccept, this));
-    m_socket->SetCloseCallbacks(MakeCallback(&PacketSink::HandlePeerClose, this),
-                                MakeCallback(&PacketSink::HandlePeerError, this));
 }
 
 void
@@ -170,7 +213,7 @@ PacketSink::StopApplication() // Called at time specified by Stop
     NS_LOG_FUNCTION(this);
     while (!m_socketList.empty()) // these are accepted sockets, close them
     {
-        Ptr<Socket> acceptedSocket = m_socketList.front();
+        auto acceptedSocket = m_socketList.front();
         m_socketList.pop_front();
         acceptedSocket->Close();
     }
@@ -179,16 +222,19 @@ PacketSink::StopApplication() // Called at time specified by Stop
         m_socket->Close();
         m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
     }
+    if (m_socket6)
+    {
+        m_socket6->Close();
+        m_socket6->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
+    }
 }
 
 void
 PacketSink::HandleRead(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
-    Ptr<Packet> packet;
     Address from;
-    Address localAddress;
-    while ((packet = socket->RecvFrom(from)))
+    while (auto packet = socket->RecvFrom(from))
     {
         if (packet->GetSize() == 0)
         { // EOF
@@ -215,15 +261,16 @@ PacketSink::HandleRead(Ptr<Socket> socket)
         if (!m_rxTrace.IsEmpty() || !m_rxTraceWithAddresses.IsEmpty() ||
             (!m_rxTraceWithSeqTsSize.IsEmpty() && m_enableSeqTsSizeHeader))
         {
+            Address localAddress;
             Ipv4PacketInfoTag interfaceInfo;
             Ipv6PacketInfoTag interface6Info;
             if (packet->RemovePacketTag(interfaceInfo))
             {
-                localAddress = InetSocketAddress(interfaceInfo.GetAddress(), m_localPort);
+                localAddress = InetSocketAddress(interfaceInfo.GetAddress(), m_port);
             }
             else if (packet->RemovePacketTag(interface6Info))
             {
-                localAddress = Inet6SocketAddress(interface6Info.GetAddress(), m_localPort);
+                localAddress = Inet6SocketAddress(interface6Info.GetAddress(), m_port);
             }
             else
             {
@@ -243,17 +290,16 @@ PacketSink::HandleRead(Ptr<Socket> socket)
 void
 PacketSink::PacketReceived(const Ptr<Packet>& p, const Address& from, const Address& localAddress)
 {
-    SeqTsSizeHeader header;
-    Ptr<Packet> buffer;
-
     auto itBuffer = m_buffer.find(from);
     if (itBuffer == m_buffer.end())
     {
-        itBuffer = m_buffer.insert(std::make_pair(from, Create<Packet>(0))).first;
+        itBuffer = m_buffer.emplace(from, Create<Packet>(0)).first;
     }
 
-    buffer = itBuffer->second;
+    auto buffer = itBuffer->second;
     buffer->AddAtEnd(p);
+
+    SeqTsSizeHeader header;
     buffer->PeekHeader(header);
 
     NS_ABORT_IF(header.GetSize() == 0);
@@ -262,7 +308,7 @@ PacketSink::PacketReceived(const Ptr<Packet>& p, const Address& from, const Addr
     {
         NS_LOG_DEBUG("Removing packet of size " << header.GetSize() << " from buffer of size "
                                                 << buffer->GetSize());
-        Ptr<Packet> complete = buffer->CreateFragment(0, static_cast<uint32_t>(header.GetSize()));
+        auto complete = buffer->CreateFragment(0, static_cast<uint32_t>(header.GetSize()));
         buffer->RemoveAtStart(static_cast<uint32_t>(header.GetSize()));
 
         complete->RemoveHeader(header);
