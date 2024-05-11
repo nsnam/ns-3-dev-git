@@ -59,19 +59,6 @@ class UdpTraceClient : public Application
     static TypeId GetTypeId();
 
     UdpTraceClient();
-
-    /**
-     * \brief Creates a traceBasedStreamer application
-     * \param ip the destination ip address to which the stream will be sent
-     * \param port the destination udp port to which the stream will be sent
-     * \param traceFile a path to an MPEG4 trace file formatted as follows:
-     *  FrameNo Frametype   Time[ms]    Length [byte]
-     *  FrameNo Frametype   Time[ms]    Length [byte]
-     *  ...
-     *
-     *
-     */
-    UdpTraceClient(Ipv4Address ip, uint16_t port, char* traceFile);
     ~UdpTraceClient() override;
 
     /**
