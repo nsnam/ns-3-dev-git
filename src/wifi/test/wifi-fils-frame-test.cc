@@ -230,7 +230,7 @@ WifiFilsFrameTest::SetupDevice(Ptr<YansWifiChannel>& channel, bool isAp)
     if (isAp && DEFAULT_ENABLE_PCAP)
     {
         auto path = std::filesystem::path(DEFAULT_OUTDIR);
-        phy.EnablePcap(path.append(DEFAULT_PCAP_PREFIX).c_str(), testDevs);
+        phy.EnablePcap(path.append(DEFAULT_PCAP_PREFIX).string(), testDevs);
     }
     return dev;
 }
