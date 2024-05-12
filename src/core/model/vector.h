@@ -172,6 +172,22 @@ class Vector3D
      * \returns The vector difference of \pname{a} and \pname{b}.
      */
     friend Vector3D operator-(const Vector3D& a, const Vector3D& b);
+
+    /**
+     * Scalar multiplication operator.
+     * \param [in] a lhs vector.
+     * \param [in] b rhs scalar.
+     * \returns The vector \pname{a} scaled by \pname{b}.
+     */
+    friend Vector3D operator*(const Vector3D& a, double b);
+
+    /**
+     * Scalar multiplication operator.
+     * \param [in] a lhs scalar.
+     * \param [in] b rhs vector.
+     * \returns The vector \pname{b} scaled by \pname{a}.
+     */
+    friend Vector3D operator*(double a, const Vector3D& b);
 };
 
 /**
@@ -301,6 +317,22 @@ class Vector2D
      * \returns The vector difference of \pname{a} and \pname{b}.
      */
     friend Vector2D operator-(const Vector2D& a, const Vector2D& b);
+
+    /**
+     * Scalar multiplication operator.
+     * \param [in] a lhs vector.
+     * \param [in] b rhs scalar.
+     * \returns The vector \pname{a} scaled by \pname{b}.
+     */
+    friend Vector2D operator*(const Vector2D& a, double b);
+
+    /**
+     * Scalar multiplication operator.
+     * \param [in] a lhs scalar.
+     * \param [in] b rhs vector.
+     * \returns The vector \pname{b} scaled by \pname{a}.
+     */
+    friend Vector2D operator*(double a, const Vector2D& b);
 };
 
 double CalculateDistance(const Vector3D& a, const Vector3D& b);
