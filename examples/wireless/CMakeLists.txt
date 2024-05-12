@@ -321,3 +321,14 @@ build_example(
   SOURCE_FILES wifi-network-validator.cc
   LIBRARIES_TO_LINK ${libcore}
 )
+
+build_example(
+  NAME wifi-p2p
+  SOURCE_FILES wifi-p2p.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libcore}
+    ${libnetwork}
+    ${libapplications}
+    ${libinternet}
+)
