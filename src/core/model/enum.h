@@ -73,7 +73,7 @@ class EnumValue : public AttributeValue
     bool DeserializeFromString(std::string value, Ptr<const AttributeChecker> checker) override;
 
   private:
-    T m_value; //!< The stored value.
+    T m_value{}; //!< The stored value.
 };
 
 template <typename T>
