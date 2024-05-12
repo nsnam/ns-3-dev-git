@@ -192,7 +192,7 @@ WifiMacHeader::QosAckPolicy
 WifiPsdu::GetAckPolicyForTid(uint8_t tid) const
 {
     NS_LOG_FUNCTION(this << +tid);
-    WifiMacHeader::QosAckPolicy policy;
+    WifiMacHeader::QosAckPolicy policy{WifiMacHeader::NORMAL_ACK};
     auto it = m_mpduList.begin();
     bool found = false;
 
