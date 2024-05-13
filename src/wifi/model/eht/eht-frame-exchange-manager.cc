@@ -392,11 +392,13 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
         for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
         {
             auto aid = GetWifiRemoteStationManager()->GetAssociationId(*clientIt);
+            const auto psduMapIt = psduMap.find(aid);
+            const auto aidNotFoundAndNotTf = (psduMapIt == psduMap.cend()) && !IsTrigger(psduMap);
+            // the PSDU to process: the one addressed to the given AID (if any) or the unique one
+            const auto psdu = (psduMapIt != psduMap.cend() ? psduMapIt : psduMap.cbegin())->second;
 
-            if (auto psduMapIt = psduMap.find(aid);
-                GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt) &&
-                (psduMapIt == psduMap.cend() ||
-                 GetEmlsrSwitchToListening(psduMapIt->second, aid, *clientIt)))
+            if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*clientIt) &&
+                (aidNotFoundAndNotTf || GetEmlsrSwitchToListening(psdu, aid, *clientIt)))
             {
                 EmlsrSwitchToListening(*clientIt, txDuration);
                 // this client is no longer involved in the current TXOP
