@@ -1620,6 +1620,25 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
     }
 }
 
+bool
+WifiMac::GetTxBlockedOnLink(AcIndex ac,
+                            const WifiContainerQueueId& queueId,
+                            uint8_t linkId,
+                            WifiQueueBlockedReason reason) const
+{
+    auto mask = m_scheduler->GetQueueLinkMask(ac, queueId, linkId);
+
+    if (!mask.has_value())
+    {
+        return true; // the link may have not been setup
+    }
+    if (reason == WifiQueueBlockedReason::REASONS_COUNT)
+    {
+        return mask->any();
+    }
+    return mask->test(static_cast<std::size_t>(reason));
+}
+
 void
 WifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
 {

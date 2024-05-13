@@ -352,6 +352,22 @@ class WifiMac : public Object
                                  const std::set<uint8_t>& linkIds);
 
     /**
+     * Check whether the transmission of the packets in the given container queue of the given
+     * Access Category are blocked on the given link for the given reason (if any).
+     *
+     * \param ac the given Access Category
+     * \param queueId the given container queue
+     * \param linkId the ID of the given link
+     * \param reason the reason to block transmissions (REASONS_COUNT indicate no reason)
+     * \return whether transmission is blocked
+     */
+    bool GetTxBlockedOnLink(
+        AcIndex ac,
+        const WifiContainerQueueId& queueId,
+        uint8_t linkId,
+        WifiQueueBlockedReason reason = WifiQueueBlockedReason::REASONS_COUNT) const;
+
+    /**
      * Return true if packets can be forwarded to the given destination,
      * false otherwise.
      *
