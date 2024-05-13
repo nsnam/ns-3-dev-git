@@ -286,9 +286,33 @@ RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
         return false;
     }
 
+    auto mldAddr = GetWifiRemoteStationManager(m_linkId)->GetMldAddress(info.address);
+
+    // remaining checks are for MLDs only
+    if (!mldAddr)
+    {
+        return true;
+    }
+
+    // check if at least one TID is mapped on the current link in the UL direction
+    bool mapped = false;
+    for (uint8_t tid = 0; tid < 8; ++tid)
+    {
+        if (m_apMac->TidMappedOnLink(*mldAddr, WifiDirection::UPLINK, tid, m_linkId))
+        {
+            mapped = true;
+            break;
+        }
+    }
+
+    if (!mapped)
+    {
+        NS_LOG_DEBUG("MLD " << *mldAddr << " has not mapped any TID on link " << +m_linkId);
+        return false;
+    }
+
     // check if the station is an EMLSR client that is using another link
-    if (auto mldAddr = GetWifiRemoteStationManager(m_linkId)->GetMldAddress(info.address);
-        mldAddr && GetWifiRemoteStationManager(m_linkId)->GetEmlsrEnabled(info.address) &&
+    if (GetWifiRemoteStationManager(m_linkId)->GetEmlsrEnabled(info.address) &&
         (m_apMac->GetTxBlockedOnLink(AC_BE,
                                      {WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *mldAddr, 0},
                                      m_linkId,
