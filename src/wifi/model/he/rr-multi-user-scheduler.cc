@@ -279,8 +279,30 @@ RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> 
 bool
 RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
 {
-    // only consider stations that have setup the current link
-    return m_apMac->GetStaList(m_linkId).contains(info.aid);
+    // check if station has setup the current link
+    if (!m_apMac->GetStaList(m_linkId).contains(info.aid))
+    {
+        NS_LOG_INFO("STA with AID " << info.aid << " has not setup link " << +m_linkId);
+        return false;
+    }
+
+    // check if the station is an EMLSR client that is using another link
+    if (auto mldAddr = GetWifiRemoteStationManager(m_linkId)->GetMldAddress(info.address);
+        mldAddr && GetWifiRemoteStationManager(m_linkId)->GetEmlsrEnabled(info.address) &&
+        (m_apMac->GetTxBlockedOnLink(AC_BE,
+                                     {WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *mldAddr, 0},
+                                     m_linkId,
+                                     WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK) ||
+         m_apMac->GetTxBlockedOnLink(AC_BE,
+                                     {WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *mldAddr, 0},
+                                     m_linkId,
+                                     WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY)))
+    {
+        NS_LOG_INFO("EMLSR client " << *mldAddr << " is using another link");
+        return false;
+    }
+
+    return true;
 }
 
 MultiUserScheduler::TxFormat
@@ -367,9 +389,14 @@ RrMultiUserScheduler::TrySendingBsrpTf()
 bool
 RrMultiUserScheduler::CanSolicitStaInBasicTf(const MasterInfo& info) const
 {
-    // only consider stations that setup the current link and do not have reported a null queue size
-    return m_apMac->GetStaList(m_linkId).contains(info.aid) &&
-           m_apMac->GetMaxBufferStatus(info.address) > 0;
+    // in addition to the checks performed when sending a BSRP TF, also check if the station
+    // has reported a null queue size
+    if (!CanSolicitStaInBsrpTf(info))
+    {
+        return false;
+    }
+
+    return m_apMac->GetMaxBufferStatus(info.address) > 0;
 }
 
 MultiUserScheduler::TxFormat
