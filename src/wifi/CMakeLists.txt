@@ -151,6 +151,7 @@ set(source_files
     model/wifi-remote-station-manager.cc
     model/wifi-spectrum-phy-interface.cc
     model/wifi-spectrum-signal-parameters.cc
+    model/wifi-standards.cc
     model/wifi-tx-current-model.cc
     model/wifi-tx-parameters.cc
     model/wifi-tx-timer.cc

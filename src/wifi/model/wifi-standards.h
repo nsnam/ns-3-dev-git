@@ -86,17 +86,7 @@ operator<<(std::ostream& os, WifiStandard standard)
 /**
  * \brief map a given standard configured by the user to the allowed PHY bands
  */
-const std::map<WifiStandard, std::list<WifiPhyBand>> wifiStandards = {
-    {WIFI_STANDARD_80211a, {WIFI_PHY_BAND_5GHZ}},
-    {WIFI_STANDARD_80211b, {WIFI_PHY_BAND_2_4GHZ}},
-    {WIFI_STANDARD_80211g, {WIFI_PHY_BAND_2_4GHZ}},
-    {WIFI_STANDARD_80211p, {WIFI_PHY_BAND_5GHZ}},
-    {WIFI_STANDARD_80211n, {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ}},
-    {WIFI_STANDARD_80211ac, {WIFI_PHY_BAND_5GHZ}},
-    {WIFI_STANDARD_80211ad, {WIFI_PHY_BAND_60GHZ}},
-    {WIFI_STANDARD_80211ax, {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ}},
-    {WIFI_STANDARD_80211be, {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ}},
-};
+extern const std::map<WifiStandard, std::list<WifiPhyBand>> wifiStandards;
 
 /**
  * \ingroup wifi
