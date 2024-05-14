@@ -490,13 +490,29 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
 
     for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); ++linkId)
     {
-        if (auto ehtFem =
-                StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
-            ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
+        if (linkId == m_linkId)
+        {
+            continue;
+        }
+
+        auto ehtFem = StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
+
+        if (ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
             m_mac->GetWifiRemoteStationManager(linkId)->GetMldAddress(*ehtFem->m_txopHolder) ==
                 mldAddress)
         {
-            // this EMLSR client is the holder of an UL TXOP, do not unblock links
+            NS_LOG_DEBUG("EMLSR client " << *mldAddress << " is the holder of an UL TXOP on link "
+                                         << +linkId << ", do not unblock links");
+            return;
+        }
+
+        if (auto linkAddr =
+                m_apMac->GetWifiRemoteStationManager(linkId)->GetAffiliatedStaAddress(*mldAddress);
+            linkAddr && (ehtFem->m_sentRtsTo.contains(*linkAddr) ||
+                         ehtFem->m_protectedStas.contains(*linkAddr)))
+        {
+            NS_LOG_DEBUG("EMLSR client " << address
+                                         << " has been sent an ICF, do not unblock links");
             return;
         }
     }
