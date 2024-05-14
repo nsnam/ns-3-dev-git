@@ -1,8 +1,6 @@
 cppyy-22.04:
   stage: test
   image: ubuntu:22.04 # python 3.10
-  rules:
-    - if: $RELEASE == "manual"
   dependencies: []
   before_script:
     - apt update
