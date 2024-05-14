@@ -1947,19 +1947,11 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                 (hdr->IsQosData() && hdr->IsQosAmsdu() && to == mpdu->GetHeader().GetAddr1()))
             {
                 NS_LOG_DEBUG("frame for me from=" << from);
-                if (hdr->IsQosData())
+                if (hdr->IsQosData() && (hdr->IsQosAmsdu()))
                 {
-                    if (hdr->IsQosAmsdu())
-                    {
-                        NS_LOG_DEBUG("Received A-MSDU from=" << from
-                                                             << ", size=" << packet->GetSize());
-                        DeaggregateAmsduAndForward(mpdu);
-                        packet = nullptr;
-                    }
-                    else if (hdr->HasData())
-                    {
-                        ForwardUp(packet, from, GetAddress());
-                    }
+                    NS_LOG_DEBUG("Received A-MSDU from=" << from << ", size=" << packet->GetSize());
+                    DeaggregateAmsduAndForward(mpdu);
+                    packet = nullptr;
                 }
                 else if (hdr->HasData())
                 {
@@ -1986,6 +1978,7 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             }
             else if (hdr->HasData())
             {
+                // Forward to the distribution system
                 ForwardUp(packet, from, to);
             }
         }
