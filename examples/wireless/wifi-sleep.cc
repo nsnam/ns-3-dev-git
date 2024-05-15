@@ -179,7 +179,7 @@ main(int argc, char* argv[])
     std::string transportProto = std::string("ns3::UdpSocketFactory");
     OnOffHelper onOff(transportProto, InetSocketAddress(Ipv4Address("10.1.1.2"), 9000));
 
-    onOff.SetAttribute("DataRate", DataRateValue(DataRate(dataRate)));
+    onOff.SetAttribute("DataRate", DataRateValue(dataRate));
     onOff.SetAttribute("PacketSize", UintegerValue(packetSize));
     onOff.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0.001]"));
 

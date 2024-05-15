@@ -166,7 +166,7 @@ main(int argc, char* argv[])
     server.SetAttribute("PacketSize", UintegerValue(payloadSize));
     server.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
     server.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
-    server.SetAttribute("DataRate", DataRateValue(DataRate(dataRate)));
+    server.SetAttribute("DataRate", DataRateValue(dataRate));
     ApplicationContainer serverApp = server.Install(staWifiNode);
 
     /* Start Applications */
