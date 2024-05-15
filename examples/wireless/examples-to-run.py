@@ -200,6 +200,21 @@ cpp_examples = [
         "True",
     ),
     (
+        "wifi-eht-network --simulationTime=0.2s --frequency=2.4 --frequency2=5 --guardInterval=1600 --udp=0 --downlink=1 --useRts=0 --mpduBufferSize=512 --emlsrLinks=0,1 --emlsrPaddingDelay=32 --emlsrTransitionDelay=32 --channelSwitchDelay=32 --emlsrAuxSwitch=True --emlsrAuxTxCapable=True --minExpectedThroughput=5 --maxExpectedThroughput=200",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-eht-network --simulationTime=0.2s --frequency=2.4 --frequency2=5 --guardInterval=1600 --udp=0 --downlink=1 --useRts=1 --mpduBufferSize=512 --emlsrLinks=0,1 --emlsrPaddingDelay=64 --emlsrTransitionDelay=64 --channelSwitchDelay=64 --emlsrAuxSwitch=False --emlsrAuxTxCapable=True --minExpectedThroughput=5 --maxExpectedThroughput=190",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-eht-network --simulationTime=0.2s --frequency=2.4 --frequency2=5 --guardInterval=1600 --udp=0 --downlink=0 --useRts=0 --mpduBufferSize=512 --emlsrLinks=0,1 --emlsrPaddingDelay=0 --emlsrTransitionDelay=0 --channelSwitchDelay=0 --emlsrAuxSwitch=False --emlsrAuxTxCapable=False --minExpectedThroughput=5 --maxExpectedThroughput=40 --RngRun=2",
+        "True",
+        "True",
+    ),
+    (
         "wifi-simple-ht-hidden-stations --simulationTime=1s --enableRts=0 --nMpdus=32 --minExpectedThroughput=59 --maxExpectedThroughput=60",
         "True",
         "True",
