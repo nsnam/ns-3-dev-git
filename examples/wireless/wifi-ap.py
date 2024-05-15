@@ -93,16 +93,16 @@ ns.cppyy.cppdef(
 
 
 def main(argv):
-    ns.core.CommandLine().Parse(argv)
+    ns.CommandLine().Parse(argv)
 
-    ns.network.Packet.EnablePrinting()
+    ns.Packet.EnablePrinting()
 
-    wifi = ns.wifi.WifiHelper()
-    mobility = ns.mobility.MobilityHelper()
-    stas = ns.network.NodeContainer()
-    ap = ns.network.NodeContainer()
+    wifi = ns.WifiHelper()
+    mobility = ns.MobilityHelper()
+    stas = ns.NodeContainer()
+    ap = ns.NodeContainer()
     # NetDeviceContainer staDevs;
-    packetSocket = ns.network.PacketSocketHelper()
+    packetSocket = ns.PacketSocketHelper()
 
     stas.Create(2)
     ap.Create(1)
@@ -111,45 +111,45 @@ def main(argv):
     packetSocket.Install(stas)
     packetSocket.Install(ap)
 
-    wifiPhy = ns.wifi.YansWifiPhyHelper()
-    wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
+    wifiPhy = ns.YansWifiPhyHelper()
+    wifiChannel = ns.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
 
-    ssid = ns.wifi.Ssid("wifi-default")
-    wifiMac = ns.wifi.WifiMacHelper()
+    ssid = ns.Ssid("wifi-default")
+    wifiMac = ns.WifiMacHelper()
 
     # setup stas.
     wifiMac.SetType(
         "ns3::StaWifiMac",
         "ActiveProbing",
-        ns.core.BooleanValue(True),
+        ns.BooleanValue(True),
         "Ssid",
-        ns.wifi.SsidValue(ssid),
+        ns.SsidValue(ssid),
     )
     staDevs = wifi.Install(wifiPhy, wifiMac, stas)
     # setup ap.
-    wifiMac.SetType("ns3::ApWifiMac", "Ssid", ns.wifi.SsidValue(ssid))
+    wifiMac.SetType("ns3::ApWifiMac", "Ssid", ns.SsidValue(ssid))
     wifi.Install(wifiPhy, wifiMac, ap)
 
     # mobility.
     mobility.Install(stas)
     mobility.Install(ap)
 
-    ns.core.Simulator.Schedule(ns.core.Seconds(1.0), ns.cppyy.gbl.AdvancePosition, ap.Get(0))
+    ns.Simulator.Schedule(ns.Seconds(1.0), ns.cppyy.gbl.AdvancePosition, ap.Get(0))
 
-    socket = ns.network.PacketSocketAddress()
+    socket = ns.PacketSocketAddress()
     socket.SetSingleDevice(staDevs.Get(0).GetIfIndex())
     socket.SetPhysicalAddress(staDevs.Get(1).GetAddress())
     socket.SetProtocol(1)
 
-    onoff = ns.applications.OnOffHelper("ns3::PacketSocketFactory", socket.ConvertTo())
-    onoff.SetConstantRate(ns.network.DataRate("500kb/s"))
+    onoff = ns.OnOffHelper("ns3::PacketSocketFactory", socket.ConvertTo())
+    onoff.SetConstantRate(ns.DataRate("500kb/s"))
 
-    apps = onoff.Install(ns.network.NodeContainer(stas.Get(0)))
-    apps.Start(ns.core.Seconds(0.5))
-    apps.Stop(ns.core.Seconds(43.0))
+    apps = onoff.Install(ns.NodeContainer(stas.Get(0)))
+    apps.Start(ns.Seconds(0.5))
+    apps.Stop(ns.Seconds(43.0))
 
-    ns.core.Simulator.Stop(ns.core.Seconds(44.0))
+    ns.Simulator.Stop(ns.Seconds(44.0))
 
     #   Config::Connect("/NodeList/*/DeviceList/*/Tx", MakeCallback(&DevTxTrace));
     #   Config::Connect("/NodeList/*/DeviceList/*/Rx", MakeCallback(&DevRxTrace));
@@ -158,8 +158,8 @@ def main(argv):
     #   Config::Connect("/NodeList/*/DeviceList/*/Phy/Tx", MakeCallback(&PhyTxTrace));
     #   Config::Connect("/NodeList/*/DeviceList/*/Phy/State", MakeCallback(&PhyStateTrace));
 
-    ns.core.Simulator.Run()
-    ns.core.Simulator.Destroy()
+    ns.Simulator.Run()
+    ns.Simulator.Destroy()
 
     return 0
 

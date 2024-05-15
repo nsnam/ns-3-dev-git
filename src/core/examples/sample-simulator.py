@@ -38,7 +38,7 @@ except ModuleNotFoundError:
 ## Example function - triggered at a random time.
 ## \return None.
 def RandomFunction():
-    print("RandomFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s")
+    print("RandomFunction received event at", ns.Simulator.Now().GetSeconds(), "s")
 
 
 ## Example function - triggered if an event is canceled (should not be called).
@@ -120,22 +120,22 @@ def main(argv):
 
     model = ns.cppyy.gbl.MyModel()
     v = ns.CreateObject("UniformRandomVariable")
-    v.SetAttribute("Min", ns.core.DoubleValue(10))
-    v.SetAttribute("Max", ns.core.DoubleValue(20))
+    v.SetAttribute("Min", ns.DoubleValue(10))
+    v.SetAttribute("Max", ns.DoubleValue(20))
 
     ev = ns.cppyy.gbl.ExampleFunctionEvent(model)
-    ns.core.Simulator.Schedule(ns.core.Seconds(10.0), ev)
+    ns.Simulator.Schedule(ns.Seconds(10.0), ev)
 
     ev2 = ns.cppyy.gbl.RandomFunctionEvent(model)
-    ns.core.Simulator.Schedule(ns.core.Seconds(v.GetValue()), ev2)
+    ns.Simulator.Schedule(ns.Seconds(v.GetValue()), ev2)
 
     ev3 = ns.cppyy.gbl.CancelledFunctionEvent()
-    id = ns.core.Simulator.Schedule(ns.core.Seconds(30.0), ev3)
-    ns.core.Simulator.Cancel(id)
+    id = ns.Simulator.Schedule(ns.Seconds(30.0), ev3)
+    ns.Simulator.Cancel(id)
 
-    ns.core.Simulator.Run()
+    ns.Simulator.Run()
 
-    ns.core.Simulator.Destroy()
+    ns.Simulator.Destroy()
 
 
 if __name__ == "__main__":

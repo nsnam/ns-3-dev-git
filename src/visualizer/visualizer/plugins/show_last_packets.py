@@ -106,7 +106,7 @@ class ShowLastPackets(InformationWindow):
                 if sample.device is None:
                     interface_name = "(unknown)"
                 else:
-                    interface_name = ns.core.Names.FindName(sample.device)
+                    interface_name = ns.Names.FindName(sample.device)
                     if not interface_name:
                         interface_name = "(interface %i)" % sample.device.GetIfIndex()
                 self.table_model.set(
@@ -138,7 +138,7 @@ class ShowLastPackets(InformationWindow):
         self.win.set_title("Last packets for node %i" % node_index)
         self.visualizer = visualizer
         self.viz_node = visualizer.get_node(node_index)
-        self.node = ns.network.NodeList.GetNode(node_index)
+        self.node = ns.NodeList.GetNode(node_index)
 
         def smart_expand(expander, vbox):
             if expander.get_expanded():
@@ -184,7 +184,7 @@ class ShowLastPackets(InformationWindow):
         # Packet Filter
 
         # - options
-        self.packet_capture_options = ns.visualizer.PyViz.PacketCaptureOptions()
+        self.packet_capture_options = ns.PyViz.PacketCaptureOptions()
         self.packet_capture_options.numLastPackets = 100
 
         packet_filter_vbox = Gtk.VBox(False, 4)
@@ -214,10 +214,10 @@ class ShowLastPackets(InformationWindow):
 
         self.packet_filter_list = []  # list of TypeIdConfig instances
 
-        Header = ns.core.TypeId.LookupByName("ns3::Header")
-        Trailer = ns.core.TypeId.LookupByName("ns3::Trailer")
-        for typeid_i in range(ns.core.TypeId.GetRegisteredN()):
-            typeid = ns.core.TypeId.GetRegistered(typeid_i)
+        Header = ns.TypeId.LookupByName("ns3::Header")
+        Trailer = ns.TypeId.LookupByName("ns3::Trailer")
+        for typeid_i in range(ns.TypeId.GetRegisteredN()):
+            typeid = ns.TypeId.GetRegistered(typeid_i)
             # check if this is a header or trailer subtype
             typeid_tmp = typeid
             type_is_good = False
@@ -242,13 +242,9 @@ class ShowLastPackets(InformationWindow):
 
         def update_capture_options():
             if self.op_AND_button.props.active:
-                self.packet_capture_options.mode = (
-                    ns.visualizer.PyViz.PACKET_CAPTURE_FILTER_HEADERS_AND
-                )
+                self.packet_capture_options.mode = ns.PyViz.PACKET_CAPTURE_FILTER_HEADERS_AND
             else:
-                self.packet_capture_options.mode = (
-                    ns.visualizer.PyViz.PACKET_CAPTURE_FILTER_HEADERS_OR
-                )
+                self.packet_capture_options.mode = ns.PyViz.PACKET_CAPTURE_FILTER_HEADERS_OR
             self.packet_capture_options.numLastPackets = 100
             self.packet_capture_options.headers = [
                 c.typeid for c in self.packet_filter_list if c.selected

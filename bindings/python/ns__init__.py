@@ -86,7 +86,9 @@ def _search_libraries() -> dict:
     libraries = []
     for search_path in library_search_paths:
         if os.path.exists(search_path):
-            libraries += glob.glob("%s/**/*.%s*" % (search_path, LIBRARY_EXTENSION), recursive=True)
+            libraries += glob.glob(
+                "%s/**/*.%s*" % (search_path, LIBRARY_EXTENSION), recursive=False
+            )
 
     # Search system library directories (too slow for recursive search)
     for search_path in SYSTEM_LIBRARY_DIRECTORIES:
@@ -512,13 +514,6 @@ def load_modules():
 
     # We expose cppyy to consumers of this module as ns.cppyy
     setattr(cppyy.gbl.ns3, "cppyy", cppyy)
-
-    # To maintain compatibility with pybindgen scripts,
-    # we set an attribute per module that just redirects to the upper object
-    for module in modules:
-        moduleNamespace = module.replace("-", "_")
-        if moduleNamespace not in dir(cppyy.gbl.ns3):
-            setattr(cppyy.gbl.ns3, moduleNamespace, cppyy.gbl.ns3)
 
     # Set up a few tricks
     cppyy.cppdef(

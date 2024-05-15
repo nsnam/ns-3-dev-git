@@ -151,17 +151,17 @@ class WifiLinkMonitor(object):
         self.stations = []
 
         for node in viz.nodes.values():
-            ns3_node = ns.network.NodeList.GetNode(node.node_index)
+            ns3_node = ns.NodeList.GetNode(node.node_index)
             for devI in range(ns3_node.GetNDevices()):
                 dev = ns3_node.GetDevice(devI)
-                if not isinstance(dev, ns.wifi.WifiNetDevice):
+                if not isinstance(dev, ns.WifiNetDevice):
                     continue
                 wifi_mac = dev.GetMac()
-                if isinstance(wifi_mac, ns.wifi.StaWifiMac):
+                if isinstance(wifi_mac, ns.StaWifiMac):
                     wifi_link = WifiLink(viz.links_group, node, dev)
                     self.stations.append((dev, node, wifi_link))
-                elif isinstance(wifi_mac, ns.wifi.ApWifiMac):
-                    bssid = ns.network.Mac48Address.ConvertFrom(dev.GetAddress())
+                elif isinstance(wifi_mac, ns.ApWifiMac):
+                    bssid = ns.Mac48Address.ConvertFrom(dev.GetAddress())
                     self.access_points[str(bssid)] = node
         # print "APs: ", self.access_points
         # print "STAs: ", self.stations

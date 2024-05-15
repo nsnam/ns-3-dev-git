@@ -58,7 +58,7 @@ def main(argv):
     internetv6.Install(all)
 
     # Create channels
-    csma = ns.csma.CsmaHelper()
+    csma = ns.CsmaHelper()
     csma.SetChannelAttribute("DataRate", ns.DataRateValue(ns.DataRate(5000000)))
     csma.SetChannelAttribute("Delay", ns.TimeValue(ns.MilliSeconds(2)))
     d1 = csma.Install(net1)

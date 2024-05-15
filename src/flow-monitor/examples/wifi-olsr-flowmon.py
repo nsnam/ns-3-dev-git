@@ -55,32 +55,28 @@ def main(argv):
     wifi = ns.CreateObject("WifiHelper")
     wifiMac = ns.CreateObject("WifiMacHelper")
     wifiPhy = ns.CreateObject("YansWifiPhyHelper")
-    wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
+    wifiChannel = ns.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
-    ssid = ns.wifi.Ssid("wifi-default")
-    wifiMac.SetType("ns3::AdhocWifiMac", "Ssid", ns.wifi.SsidValue(ssid))
+    ssid = ns.Ssid("wifi-default")
+    wifiMac.SetType("ns3::AdhocWifiMac", "Ssid", ns.SsidValue(ssid))
 
-    internet = ns.internet.InternetStackHelper()
-    list_routing = ns.internet.Ipv4ListRoutingHelper()
-    olsr_routing = ns.olsr.OlsrHelper()
-    static_routing = ns.internet.Ipv4StaticRoutingHelper()
+    internet = ns.InternetStackHelper()
+    list_routing = ns.Ipv4ListRoutingHelper()
+    olsr_routing = ns.OlsrHelper()
+    static_routing = ns.Ipv4StaticRoutingHelper()
     list_routing.Add(static_routing, 0)
     list_routing.Add(olsr_routing, 100)
     internet.SetRoutingHelper(list_routing)
 
-    ipv4Addresses = ns.internet.Ipv4AddressHelper()
-    ipv4Addresses.SetBase(ns.network.Ipv4Address("10.0.0.0"), ns.network.Ipv4Mask("255.255.255.0"))
+    ipv4Addresses = ns.Ipv4AddressHelper()
+    ipv4Addresses.SetBase(ns.Ipv4Address("10.0.0.0"), ns.Ipv4Mask("255.255.255.0"))
 
     port = 9  # Discard port(RFC 863)
-    inetAddress = ns.network.InetSocketAddress(ns.network.Ipv4Address("10.0.0.1"), port)
-    onOffHelper = ns.applications.OnOffHelper("ns3::UdpSocketFactory", inetAddress.ConvertTo())
-    onOffHelper.SetAttribute("DataRate", ns.network.DataRateValue(ns.network.DataRate("100kbps")))
-    onOffHelper.SetAttribute(
-        "OnTime", ns.core.StringValue("ns3::ConstantRandomVariable[Constant=1]")
-    )
-    onOffHelper.SetAttribute(
-        "OffTime", ns.core.StringValue("ns3::ConstantRandomVariable[Constant=0]")
-    )
+    inetAddress = ns.InetSocketAddress(ns.Ipv4Address("10.0.0.1"), port)
+    onOffHelper = ns.OnOffHelper("ns3::UdpSocketFactory", inetAddress.ConvertTo())
+    onOffHelper.SetAttribute("DataRate", ns.DataRateValue(ns.DataRate("100kbps")))
+    onOffHelper.SetAttribute("OnTime", ns.StringValue("ns3::ConstantRandomVariable[Constant=1]"))
+    onOffHelper.SetAttribute("OffTime", ns.StringValue("ns3::ConstantRandomVariable[Constant=0]"))
 
     addresses = []
     nodes = []
@@ -96,11 +92,11 @@ def main(argv):
         for yi in range(num_nodes_side):
             node = nodes.Get(accumulator)
             accumulator += 1
-            container = ns.network.NodeContainer(node)
+            container = ns.NodeContainer(node)
             internet.Install(container)
 
             mobility = ns.CreateObject("ConstantPositionMobilityModel")
-            mobility.SetPosition(ns.core.Vector(xi * DISTANCE, yi * DISTANCE, 0))
+            mobility.SetPosition(ns.Vector(xi * DISTANCE, yi * DISTANCE, 0))
             node.AggregateObject(mobility)
 
             device = wifi.Install(wifiPhy, wifiMac, node)
@@ -112,25 +108,25 @@ def main(argv):
         # print (i, destaddr)
         onOffHelper.SetAttribute(
             "Remote",
-            ns.network.AddressValue(ns.network.InetSocketAddress(destaddr, port).ConvertTo()),
+            ns.AddressValue(ns.InetSocketAddress(destaddr, port).ConvertTo()),
         )
-        container = ns.network.NodeContainer(node)
+        container = ns.NodeContainer(node)
         app = onOffHelper.Install(container)
         urv = ns.CreateObject("UniformRandomVariable")  # ns.cppyy.gbl.get_rng()
         startDelay = ns.Seconds(urv.GetValue(20, 30))
         app.Start(startDelay)
 
     # internet.EnablePcapAll("wifi-olsr")
-    flowmon_helper = ns.flow_monitor.FlowMonitorHelper()
-    # flowmon_helper.SetMonitorAttribute("StartTime", ns.core.TimeValue(ns.core.Seconds(31)))
+    flowmon_helper = ns.FlowMonitorHelper()
+    # flowmon_helper.SetMonitorAttribute("StartTime", ns.TimeValue(ns.Seconds(31)))
     monitor = flowmon_helper.InstallAll()
     monitor = flowmon_helper.GetMonitor()
-    monitor.SetAttribute("DelayBinWidth", ns.core.DoubleValue(0.001))
-    monitor.SetAttribute("JitterBinWidth", ns.core.DoubleValue(0.001))
-    monitor.SetAttribute("PacketSizeBinWidth", ns.core.DoubleValue(20))
+    monitor.SetAttribute("DelayBinWidth", ns.DoubleValue(0.001))
+    monitor.SetAttribute("JitterBinWidth", ns.DoubleValue(0.001))
+    monitor.SetAttribute("PacketSizeBinWidth", ns.DoubleValue(20))
 
-    ns.core.Simulator.Stop(ns.core.Seconds(44.0))
-    ns.core.Simulator.Run()
+    ns.Simulator.Stop(ns.Seconds(44.0))
+    ns.Simulator.Run()
 
     def print_stats(os, st):
         print("  Tx Bytes: ", st.txBytes, file=os)

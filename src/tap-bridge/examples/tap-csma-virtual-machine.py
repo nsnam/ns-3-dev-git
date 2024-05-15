@@ -29,24 +29,22 @@ except ModuleNotFoundError:
 
 
 def main(argv):
-    ns.core.CommandLine().Parse(argv)
+    ns.CommandLine().Parse(argv)
 
     #
     # We are interacting with the outside, real, world.  This means we have to
     # interact in real-time and therefore we have to use the real-time simulator
     # and take the time to calculate checksums.
     #
-    ns.core.GlobalValue.Bind(
-        "SimulatorImplementationType", ns.core.StringValue("ns3::RealtimeSimulatorImpl")
-    )
-    ns.core.GlobalValue.Bind("ChecksumEnabled", ns.core.BooleanValue(True))
+    ns.GlobalValue.Bind("SimulatorImplementationType", ns.StringValue("ns3::RealtimeSimulatorImpl"))
+    ns.GlobalValue.Bind("ChecksumEnabled", ns.BooleanValue(True))
 
     #
     # Create two ghost nodes.  The first will represent the virtual machine host
     # on the left side of the network; and the second will represent the VM on
     # the right side.
     #
-    nodes = ns.network.NodeContainer()
+    nodes = ns.NodeContainer()
     nodes.Create(2)
 
     #
@@ -54,7 +52,7 @@ def main(argv):
     # devices installed on both of the nodes.  The data rate and delay for the
     # channel can be set through the command-line parser.
     #
-    csma = ns.csma.CsmaHelper()
+    csma = ns.CsmaHelper()
     devices = csma.Install(nodes)
 
     #
@@ -65,24 +63,24 @@ def main(argv):
     # only see traffic from one other device on that bridge.  That is the case
     # for this configuration.
     #
-    tapBridge = ns.tap_bridge.TapBridgeHelper()
-    tapBridge.SetAttribute("Mode", ns.core.StringValue("UseLocal"))
-    tapBridge.SetAttribute("DeviceName", ns.core.StringValue("tap-left"))
+    tapBridge = ns.TapBridgeHelper()
+    tapBridge.SetAttribute("Mode", ns.StringValue("UseLocal"))
+    tapBridge.SetAttribute("DeviceName", ns.StringValue("tap-left"))
     tapBridge.Install(nodes.Get(0), devices.Get(0))
 
     #
     # Connect the right side tap to the right side wifi device on the right-side
     # ghost node.
     #
-    tapBridge.SetAttribute("DeviceName", ns.core.StringValue("tap-right"))
+    tapBridge.SetAttribute("DeviceName", ns.StringValue("tap-right"))
     tapBridge.Install(nodes.Get(1), devices.Get(1))
 
     #
     # Run the simulation for ten minutes to give the user time to play around
     #
-    ns.core.Simulator.Stop(ns.core.Seconds(600))
-    ns.core.Simulator.Run()  # signal_check_frequency = -1
-    ns.core.Simulator.Destroy()
+    ns.Simulator.Stop(ns.Seconds(600))
+    ns.Simulator.Run()  # signal_check_frequency = -1
+    ns.Simulator.Destroy()
     return 0
 
 
