@@ -64,7 +64,19 @@ MultiUserScheduler::GetTypeId()
                           "channel access.",
                           BooleanValue(true),
                           MakeBooleanAccessor(&MultiUserScheduler::m_restartTimerUponAccess),
-                          MakeBooleanChecker());
+                          MakeBooleanChecker())
+            .AddAttribute("DefaultTbPpduDuration",
+                          "Default duration of TB PPDUs solicited via a Basic Trigger Frame. "
+                          "This value is used to compute the Duration/ID field of BSRP Trigger "
+                          "Frames sent when the TXOP Limit is zero and the FrameExchangeManager "
+                          "continues the TXOP a SIFS after receiving response to the BSRP TF. "
+                          "This value shall also be used by subclasses when they have no other "
+                          "information available to determine the TX duration of solicited PPDUs. "
+                          "The default value roughly corresponds to half the maximum PPDU TX "
+                          "duration.",
+                          TimeValue(MilliSeconds(2)),
+                          MakeTimeAccessor(&MultiUserScheduler::m_defaultTbPpduDuration),
+                          MakeTimeChecker());
     return tid;
 }
 
@@ -184,6 +196,12 @@ Ptr<HeFrameExchangeManager>
 MultiUserScheduler::GetHeFem(uint8_t linkId) const
 {
     return StaticCast<HeFrameExchangeManager>(m_apMac->GetFrameExchangeManager(linkId));
+}
+
+Time
+MultiUserScheduler::GetExtraTimeForBsrpTfDurationId(uint8_t linkId) const
+{
+    return m_defaultTbPpduDuration;
 }
 
 void

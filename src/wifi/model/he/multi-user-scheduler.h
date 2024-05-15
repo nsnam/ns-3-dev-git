@@ -112,6 +112,23 @@ class MultiUserScheduler : public Object
     UlMuInfo& GetUlMuInfo(uint8_t linkId);
 
     /**
+     * When the TXOP limit is zero and the TXOP continues a SIFS after receiving a response to a
+     * BSRP TF, the Duration/ID field of the BSRP TF should be extended to reserve the medium
+     * for the frame exchange following the BSRP TF. This method is intended to return the estimated
+     * duration of the frame exchange following the BSRP TF (including the SIFS after the responses
+     * to the BSRP TF). Specifically, the base class method simply returns the default duration of
+     * TB PPDUs solicited via a Basic Trigger Frame. Subclasses can override this method to return
+     * a more accurate estimate of the time required by the following frame exchange.
+     *
+     * This method should only be called when the MU scheduler has determined that a BSRP TF has
+     * to be sent on the given link.
+     *
+     * \param linkId the ID of the given link
+     * \return the estimated duration of the frame exchange following the BSRP TF
+     */
+    virtual Time GetExtraTimeForBsrpTfDurationId(uint8_t linkId) const;
+
+    /**
      * Set the duration of the interval between two consecutive requests for channel
      * access made by the MultiUserScheduler.
      *
@@ -177,12 +194,13 @@ class MultiUserScheduler : public Object
     void NotifyNewAggregate() override;
     void DoInitialize() override;
 
-    Ptr<ApWifiMac> m_apMac; //!< the AP wifi MAC
-    Ptr<QosTxop> m_edca;    //!< the AC that gained channel access
-    Time m_availableTime;   //!< the time available for frame exchange
-    bool m_initialFrame;    //!< true if a TXOP is being started
-    MHz_u m_allowedWidth;   //!< the allowed width for the current transmission
-    uint8_t m_linkId;       //!< the ID of the link over which channel access has been granted
+    Ptr<ApWifiMac> m_apMac;       //!< the AP wifi MAC
+    Ptr<QosTxop> m_edca;          //!< the AC that gained channel access
+    Time m_availableTime;         //!< the time available for frame exchange
+    bool m_initialFrame;          //!< true if a TXOP is being started
+    MHz_u m_allowedWidth;         //!< the allowed width for the current transmission
+    uint8_t m_linkId;             //!< the ID of the link over which channel access has been granted
+    Time m_defaultTbPpduDuration; //!< the default duration of TB PPDUs solicited by Basic TFs
 
   private:
     /**

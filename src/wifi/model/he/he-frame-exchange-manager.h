@@ -341,6 +341,14 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      */
     void SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigger, const WifiMacHeader& hdr);
 
+    /**
+     * Perform the actions required when receiving QoS Null frame(s) from the given sender after
+     * a BSRP Trigger Frame.
+     *
+     * \param sender the MAC address of the given sender
+     */
+    void ReceivedQosNullAfterBsrpTf(Mac48Address sender);
+
     Ptr<ApWifiMac> m_apMac;          //!< MAC pointer (null if not an AP)
     Ptr<StaWifiMac> m_staMac;        //!< MAC pointer (null if not a STA)
     WifiTxVector m_trigVector;       //!< the TRIGVECTOR
@@ -381,6 +389,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     EventId m_multiStaBaEvent;             //!< Sending a Multi-STA BlockAck event
     MuSnrTag m_muSnrTag;                   //!< Tag to attach to Multi-STA BlockAck frames
     bool m_triggerFrameInAmpdu;            //!< True if the received A-MPDU contains an MU-BAR
+    bool m_continueTxopAfterBsrpTf; //!< whether to continue a TXOP a SIFS after the reception of
+                                    //!< responses to a BSRP TF when TXOP limit is zero
 };
 
 } // namespace ns3

@@ -54,10 +54,17 @@ IsTrigger(const WifiConstPsduMap& psduMap)
 TypeId
 HeFrameExchangeManager::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::HeFrameExchangeManager")
-                            .SetParent<VhtFrameExchangeManager>()
-                            .AddConstructor<HeFrameExchangeManager>()
-                            .SetGroupName("Wifi");
+    static TypeId tid =
+        TypeId("ns3::HeFrameExchangeManager")
+            .SetParent<VhtFrameExchangeManager>()
+            .AddConstructor<HeFrameExchangeManager>()
+            .SetGroupName("Wifi")
+            .AddAttribute("ContinueTxopAfterBsrp",
+                          "Whether to continue a TXOP a SIFS after the reception of responses "
+                          "to a BSRP Trigger Frame when TXOP limit is zero.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&HeFrameExchangeManager::m_continueTxopAfterBsrpTf),
+                          MakeBooleanChecker());
     return tid;
 }
 
@@ -508,7 +515,25 @@ HeFrameExchangeManager::TransmissionSucceeded()
         m_sentFrameTo.erase(address);
     }
 
-    VhtFrameExchangeManager::TransmissionSucceeded();
+    if (m_continueTxopAfterBsrpTf && m_edca && m_edca->GetTxopLimit(m_linkId).IsZero() &&
+        m_txTimer.IsRunning() && m_txTimer.GetReason() == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF)
+    {
+        NS_LOG_DEBUG("Schedule another transmission in a SIFS after successful BSRP TF");
+        bool (HeFrameExchangeManager::*fp)(Ptr<QosTxop>, Time) =
+            &HeFrameExchangeManager::StartTransmission;
+
+        // TXOP limit is null, hence the txopDuration parameter is unused
+        Simulator::Schedule(m_phy->GetSifs(), fp, this, m_edca, Seconds(0));
+        if (m_protectedIfResponded)
+        {
+            m_protectedStas.merge(m_sentFrameTo);
+        }
+        m_sentFrameTo.clear();
+    }
+    else
+    {
+        VhtFrameExchangeManager::TransmissionSucceeded();
+    }
 }
 
 void
@@ -795,6 +820,15 @@ HeFrameExchangeManager::SendPsduMap()
 
         // Set Duration/ID
         Time durationId = GetPsduDurationId(txDuration, m_txParams);
+
+        if (m_continueTxopAfterBsrpTf && m_edca && m_edca->GetTxopLimit(m_linkId).IsZero() &&
+            timerType == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF)
+        {
+            // add the duration of the following frame exchange to extend the NAV beyond the
+            // responses to the BSRP TF
+            durationId += m_muScheduler->GetExtraTimeForBsrpTfDurationId(m_linkId);
+        }
+
         for (auto& psdu : m_psduMap)
         {
             psdu.second->SetDuration(durationId);
@@ -2310,21 +2344,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         }
 
         NS_LOG_DEBUG("Received a QoS Null frame in a TB PPDU from " << sender);
-
-        // remove the sender from the set of stations that are expected to send a TB PPDU
-        m_txTimer.GotResponseFrom(sender);
-
-        if (m_txTimer.GetStasExpectedToRespond().empty())
-        {
-            // we do not expect any other response
-            m_txTimer.Cancel();
-            m_channelAccessManager->NotifyAckTimeoutResetNow();
-
-            NS_ASSERT(m_edca);
-            m_psduMap.clear();
-            m_edca->ResetCw(m_linkId);
-            TransmissionSucceeded();
-        }
+        ReceivedQosNullAfterBsrpTf(sender);
 
         // the received TB PPDU has been processed
         return;
@@ -2770,21 +2790,7 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
         }
 
         NS_LOG_DEBUG("Received QoS Null frames in a TB PPDU from " << sender);
-
-        // remove the sender from the set of stations that are expected to send a TB PPDU
-        m_txTimer.GotResponseFrom(sender);
-
-        if (m_txTimer.GetStasExpectedToRespond().empty())
-        {
-            // we do not expect any other response
-            m_txTimer.Cancel();
-            m_channelAccessManager->NotifyAckTimeoutResetNow();
-
-            NS_ASSERT(m_edca);
-            m_psduMap.clear();
-            m_edca->ResetCw(m_linkId);
-            TransmissionSucceeded();
-        }
+        ReceivedQosNullAfterBsrpTf(sender);
 
         // the received TB PPDU has been processed
         return;
@@ -2809,6 +2815,32 @@ HeFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
 
     // the received frame cannot be handled here
     VhtFrameExchangeManager::EndReceiveAmpdu(psdu, rxSignalInfo, txVector, perMpduStatus);
+}
+
+void
+HeFrameExchangeManager::ReceivedQosNullAfterBsrpTf(Mac48Address sender)
+{
+    NS_LOG_FUNCTION(this << sender);
+
+    NS_ASSERT(m_txTimer.IsRunning() &&
+              m_txTimer.GetReason() == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF);
+
+    // remove the sender from the set of stations that are expected to send a TB PPDU
+    m_txTimer.GotResponseFrom(sender);
+
+    if (m_txTimer.GetStasExpectedToRespond().empty())
+    {
+        // we do not expect any other response
+        m_channelAccessManager->NotifyAckTimeoutResetNow();
+
+        NS_ASSERT(m_edca);
+        m_psduMap.clear();
+        m_edca->ResetCw(m_linkId);
+        TransmissionSucceeded();
+        // we reset the TX timer after calling TransmissionSucceeded, so that the latter can
+        // check whether the reason for the last timer is WAIT_QOS_NULL_AFTER_BSRP_TF
+        m_txTimer.Cancel();
+    }
 }
 
 } // namespace ns3

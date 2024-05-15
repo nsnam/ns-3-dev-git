@@ -383,6 +383,9 @@ RrMultiUserScheduler::TrySendingBsrpTf()
         qosNullTxDuration = Max(qosNullTxDuration, duration);
     }
 
+    NS_ASSERT(m_txParams.m_txDuration.has_value());
+    m_triggerTxDuration = m_txParams.m_txDuration.value();
+
     if (m_availableTime != Time::Min())
     {
         // TryAddMpdu only considers the time to transmit the Trigger Frame
@@ -390,7 +393,6 @@ RrMultiUserScheduler::TrySendingBsrpTf()
         NS_ASSERT(m_txParams.m_acknowledgment &&
                   m_txParams.m_acknowledgment->acknowledgmentTime.has_value() &&
                   m_txParams.m_acknowledgment->acknowledgmentTime->IsZero());
-        NS_ASSERT(m_txParams.m_txDuration.has_value());
 
         if (*m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // BSRP TF tx time
                 + m_apMac->GetWifiPhy(m_linkId)->GetSifs() + qosNullTxDuration >
@@ -503,13 +505,15 @@ RrMultiUserScheduler::TrySendingBasicTf()
         return NO_TX;
     }
 
+    NS_ASSERT(m_txParams.m_txDuration.has_value());
+    m_triggerTxDuration = m_txParams.m_txDuration.value();
+
     if (m_availableTime != Time::Min())
     {
         // TryAddMpdu only considers the time to transmit the Trigger Frame
         NS_ASSERT(m_txParams.m_protection && m_txParams.m_protection->protectionTime.has_value());
         NS_ASSERT(m_txParams.m_acknowledgment &&
                   m_txParams.m_acknowledgment->acknowledgmentTime.has_value());
-        NS_ASSERT(m_txParams.m_txDuration.has_value());
 
         maxDuration = Min(maxDuration,
                           m_availableTime - *m_txParams.m_protection->protectionTime -
@@ -580,6 +584,49 @@ RrMultiUserScheduler::TrySendingBasicTf()
     UpdateCredits(m_staListUl, maxDuration, txVector);
 
     return UL_MU_TX;
+}
+
+Time
+RrMultiUserScheduler::GetExtraTimeForBsrpTfDurationId(uint8_t linkId) const
+{
+    auto phy = m_apMac->GetWifiPhy(linkId);
+    BlockAckType baType(BlockAckType::MULTI_STA);
+    uint16_t aid{0};
+    Mac48Address staAddress;
+
+    // we assume that a Basic Trigger Frame is sent after a BSRP Trigger Frame. In order to
+    // compute the TX duration of the Multi-STA BlockAck, we need to find the bitmap length
+    // for each STA solicited by the Trigger Frame
+    for (const auto& userInfo : m_trigger)
+    {
+        aid = userInfo.GetAid12();
+        auto it = m_apMac->GetStaList(linkId).find(aid);
+        NS_ASSERT(it != m_apMac->GetStaList(linkId).cend());
+        staAddress = it->second;
+
+        // find a TID for which a BA agreement exists with the given originator
+        uint8_t tid = 0;
+        while (tid < 8 && !m_apMac->GetBaAgreementEstablishedAsRecipient(staAddress, tid))
+        {
+            ++tid;
+        }
+        NS_ASSERT_MSG(tid < 8, "No Block Ack agreement established with originator " << staAddress);
+
+        baType.m_bitmapLen.push_back(
+            m_apMac->GetBaTypeAsRecipient(staAddress, tid).m_bitmapLen.at(0));
+    }
+
+    NS_ASSERT_MSG(aid != 0, "No User Info field in the Trigger Frame");
+
+    auto multiStaBaTxVector =
+        GetWifiRemoteStationManager(linkId)->GetBlockAckTxVector(staAddress,
+                                                                 m_trigger.GetHeTbTxVector(aid));
+
+    auto multiStaBaDuration = WifiPhy::CalculateTxDuration(GetBlockAckSize(baType),
+                                                           multiStaBaTxVector,
+                                                           phy->GetPhyBand());
+
+    return m_triggerTxDuration + m_defaultTbPpduDuration + multiStaBaDuration + 3 * phy->GetSifs();
 }
 
 void

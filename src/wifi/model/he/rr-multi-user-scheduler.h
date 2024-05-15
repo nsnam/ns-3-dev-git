@@ -42,6 +42,8 @@ class RrMultiUserScheduler : public MultiUserScheduler
     RrMultiUserScheduler();
     ~RrMultiUserScheduler() override;
 
+    Time GetExtraTimeForBsrpTfDurationId(uint8_t linkId) const override;
+
   protected:
     void DoDispose() override;
     void DoInitialize() override;
@@ -173,6 +175,7 @@ class RrMultiUserScheduler : public MultiUserScheduler
     Time m_maxCredits;                     //!< Max amount of credits a station can have
     CtrlTriggerHeader m_trigger;           //!< Trigger Frame to send
     WifiMacHeader m_triggerMacHdr;         //!< MAC header for Trigger Frame
+    Time m_triggerTxDuration{0};           //!< Trigger Frame TX duration
     WifiTxParameters m_txParams;           //!< TX parameters
 };
 
