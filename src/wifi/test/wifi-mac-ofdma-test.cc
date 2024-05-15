@@ -396,22 +396,26 @@ class OfdmaAckSequenceTest : public TestCase
     };
 
     /**
-     * Constructor
-     * \param width the PHY channel bandwidth in MHz
-     * \param dlType the DL MU ack sequence type
-     * \param maxAmpduSize the maximum A-MPDU size in bytes
-     * \param txopLimit the TXOP limit in microseconds
-     * \param nPktsPerSta number of packets to send to/receive from each station
-     * \param muEdcaParameterSet the MU EDCA Parameter Set
-     * \param scenario the OFDMA scenario to test
+     * Parameters for the OFDMA acknowledgment sequences test
      */
-    OfdmaAckSequenceTest(MHz_u width,
-                         WifiAcknowledgment::Method dlType,
-                         uint32_t maxAmpduSize,
-                         uint16_t txopLimit,
-                         uint16_t nPktsPerSta,
-                         MuEdcaParameterSet muEdcaParameterSet,
-                         WifiOfdmaScenario scenario);
+    struct Params
+    {
+        MHz_u channelWidth;                     ///< PHY channel bandwidth in MHz
+        WifiAcknowledgment::Method dlMuAckType; ///< DL MU ack sequence type
+        uint32_t maxAmpduSize;                  ///< maximum A-MPDU size in bytes
+        uint16_t txopLimit;                     ///< TXOP limit in microseconds
+        bool continueTxopAfterBsrp; ///< whether to continue TXOP after BSRP TF when TXOP limit is 0
+        uint16_t nPktsPerSta;       ///< number of packets to send to each station
+        MuEdcaParameterSet muEdcaParameterSet; ///< MU EDCA Parameter Set
+        WifiOfdmaScenario scenario;            ///< OFDMA scenario to test
+    };
+
+    /**
+     * Constructor
+     *
+     * \param params parameters for the OFDMA acknowledgment sequences test
+     */
+    OfdmaAckSequenceTest(const Params& params);
     ~OfdmaAckSequenceTest() override;
 
     /**
@@ -470,40 +474,39 @@ class OfdmaAckSequenceTest : public TestCase
     WifiAcknowledgment::Method m_dlMuAckType;   ///< DL MU ack sequence type
     uint32_t m_maxAmpduSize;                    ///< maximum A-MPDU size in bytes
     uint16_t m_txopLimit;                       ///< TXOP limit in microseconds
-    uint16_t m_nPktsPerSta;                     ///< number of packets to send to each station
-    MuEdcaParameterSet m_muEdcaParameterSet;    ///< MU EDCA Parameter Set
-    WifiOfdmaScenario m_scenario;               ///< OFDMA scenario to test
-    WifiPreamble m_dlMuPreamble;                ///< expected preamble type for DL MU PPDUs
-    WifiPreamble m_tbPreamble;                  ///< expected preamble type for TB PPDUs
-    bool m_ulPktsGenerated;           ///< whether UL packets for HE TB PPDUs have been generated
-    uint16_t m_received;              ///< number of packets received by the stations
-    uint16_t m_flushed;               ///< number of DL packets flushed after DL MU PPDU
-    Time m_edcaDisabledStartTime;     ///< time when disabling EDCA started
-    std::vector<uint32_t> m_cwValues; ///< CW used by stations after MU exchange
+    bool
+        m_continueTxopAfterBsrp; ///< whether to continue TXOP after BSRP TF when TXOP limit is zero
+    uint16_t m_nPktsPerSta;      ///< number of packets to send to each station
+    MuEdcaParameterSet m_muEdcaParameterSet; ///< MU EDCA Parameter Set
+    WifiOfdmaScenario m_scenario;            ///< OFDMA scenario to test
+    WifiPreamble m_dlMuPreamble;             ///< expected preamble type for DL MU PPDUs
+    WifiPreamble m_tbPreamble;               ///< expected preamble type for TB PPDUs
+    bool m_ulPktsGenerated;             ///< whether UL packets for HE TB PPDUs have been generated
+    uint16_t m_received;                ///< number of packets received by the stations
+    uint16_t m_flushed;                 ///< number of DL packets flushed after DL MU PPDU
+    Time m_edcaDisabledStartTime;       ///< time when disabling EDCA started
+    std::vector<uint32_t> m_cwValues;   ///< CW used by stations after MU exchange
+    const Time m_defaultTbPpduDuration; ///< default TB PPDU duration
 };
 
-OfdmaAckSequenceTest::OfdmaAckSequenceTest(MHz_u width,
-                                           WifiAcknowledgment::Method dlType,
-                                           uint32_t maxAmpduSize,
-                                           uint16_t txopLimit,
-                                           uint16_t nPktsPerSta,
-                                           MuEdcaParameterSet muEdcaParameterSet,
-                                           WifiOfdmaScenario scenario)
+OfdmaAckSequenceTest::OfdmaAckSequenceTest(const Params& params)
     : TestCase("Check correct operation of DL OFDMA acknowledgment sequences"),
       m_nStations(4),
       m_sockets(m_nStations),
-      m_channelWidth(width),
-      m_dlMuAckType(dlType),
-      m_maxAmpduSize(maxAmpduSize),
-      m_txopLimit(txopLimit),
-      m_nPktsPerSta(nPktsPerSta),
-      m_muEdcaParameterSet(muEdcaParameterSet),
-      m_scenario(scenario),
+      m_channelWidth(params.channelWidth),
+      m_dlMuAckType(params.dlMuAckType),
+      m_maxAmpduSize(params.maxAmpduSize),
+      m_txopLimit(params.txopLimit),
+      m_continueTxopAfterBsrp(params.continueTxopAfterBsrp),
+      m_nPktsPerSta(params.nPktsPerSta),
+      m_muEdcaParameterSet(params.muEdcaParameterSet),
+      m_scenario(params.scenario),
       m_ulPktsGenerated(false),
       m_received(0),
       m_flushed(0),
       m_edcaDisabledStartTime(Seconds(0)),
-      m_cwValues(std::vector<uint32_t>(m_nStations, 2)) // 2 is an invalid CW value
+      m_cwValues(std::vector<uint32_t>(m_nStations, 2)), // 2 is an invalid CW value
+      m_defaultTbPpduDuration(MilliSeconds(2))
 {
     switch (m_scenario)
     {
@@ -725,6 +728,9 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
      * ───┴───┴────┴───┴────┴────┴────┴────┴─────┴───┴────┴───┴────┴─────┴────┴────┴────┴─────┴──
      * From: AP     all       AP        all       AP       all       AP         all       AP
      *   To: all    AP        all       AP        all      AP        all        AP        all
+     *
+     * NOTE: The second MU-RTS is not transmitted if the TXOP limit is not null or
+     *       m_continueTxopAfterBsrp is true
      */
 
     // the first packet sent after 1.5s is an MU-RTS Trigger Frame
@@ -848,6 +854,11 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
     NS_TEST_EXPECT_MSG_LT(tEnd + sifs, tStart, "BSRP Trigger Frame sent too early");
     NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "BSRP Trigger Frame sent too late");
     Time bsrpNavEnd = m_txPsdus[5].endTx + m_txPsdus[5].psduMap[SU_STA_ID]->GetDuration();
+    if (m_continueTxopAfterBsrp && m_txopLimit == 0)
+    {
+        // BSRP TF extends the NAV beyond the responses
+        navEnd += m_defaultTbPpduDuration;
+    }
     // navEnd <= bsrpNavEnd < navEnd + tolerance
     NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, bsrpNavEnd, "Duration/ID in BSRP TF is too short");
     NS_TEST_EXPECT_MSG_LT(bsrpNavEnd, navEnd + tolerance, "Duration/ID in BSRP TF is too long");
@@ -883,7 +894,8 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
     if (m_txopLimit == 0)
     {
         NS_TEST_EXPECT_MSG_EQ(qosNullNavEnd,
-                              m_txPsdus[6].endTx,
+                              m_txPsdus[6].endTx +
+                                  (m_continueTxopAfterBsrp ? m_defaultTbPpduDuration : Time{0}),
                               "Expected null Duration/ID for QoS Null frame in HE TB PPDU");
     }
     // navEnd <= qosNullNavEnd < navEnd + tolerance
@@ -920,7 +932,8 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
     if (m_txopLimit == 0)
     {
         NS_TEST_EXPECT_MSG_EQ(qosNullNavEnd,
-                              m_txPsdus[7].endTx,
+                              m_txPsdus[7].endTx +
+                                  (m_continueTxopAfterBsrp ? m_defaultTbPpduDuration : Time{0}),
                               "Expected null Duration/ID for QoS Null frame in HE TB PPDU");
     }
     // navEnd <= qosNullNavEnd < navEnd + tolerance
@@ -957,7 +970,8 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
     if (m_txopLimit == 0)
     {
         NS_TEST_EXPECT_MSG_EQ(qosNullNavEnd,
-                              m_txPsdus[8].endTx,
+                              m_txPsdus[8].endTx +
+                                  (m_continueTxopAfterBsrp ? m_defaultTbPpduDuration : Time{0}),
                               "Expected null Duration/ID for QoS Null frame in HE TB PPDU");
     }
     // navEnd <= qosNullNavEnd < navEnd + tolerance
@@ -994,29 +1008,43 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
     if (m_txopLimit == 0)
     {
         NS_TEST_EXPECT_MSG_EQ(qosNullNavEnd,
-                              m_txPsdus[9].endTx,
+                              m_txPsdus[9].endTx +
+                                  (m_continueTxopAfterBsrp ? m_defaultTbPpduDuration : Time{0}),
                               "Expected null Duration/ID for QoS Null frame in HE TB PPDU");
     }
     // navEnd <= qosNullNavEnd < navEnd + tolerance
     NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, qosNullNavEnd, "Duration/ID in QoS Null is too short");
     NS_TEST_EXPECT_MSG_LT(qosNullNavEnd, navEnd + tolerance, "Duration/ID in QoS Null is too long");
 
+    // if the TXOP limit is not null or m_continueTxopAfterBsrp is true, MU-RTS protection is not
+    // used because the next transmission is protected by the previous MU-RTS Trigger Frame
+    const auto no2ndMuRts = m_txopLimit > 0 || m_continueTxopAfterBsrp;
+
     tEnd = m_txPsdus[9].endTx;
     tStart = m_txPsdus[10].startTx;
-    NS_TEST_EXPECT_MSG_LT(tEnd + ifs, tStart, "Basic Trigger Frame sent too early");
+    NS_TEST_EXPECT_MSG_LT(tEnd + (no2ndMuRts ? sifs : ifs),
+                          tStart,
+                          (no2ndMuRts ? "Basic Trigger Frame" : "MU-RTS") << " sent too early");
+
     if (m_txopLimit > 0)
     {
         NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "Basic Trigger Frame sent too late");
-        // Duration/ID still protects until the end of the TXOP
-        auto muRtsNavEnd = m_txPsdus[10].endTx + m_txPsdus[10].psduMap[SU_STA_ID]->GetDuration();
-        // navEnd <= muRtsNavEnd < navEnd + tolerance
-        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, muRtsNavEnd, "Duration/ID in MU-RTS is too short");
-        NS_TEST_EXPECT_MSG_LT(muRtsNavEnd, navEnd + tolerance, "Duration/ID in MU-RTS is too long");
+        // Duration/ID of Basic TF still protects until the end of the TXOP
+        auto basicTfNavEnd = m_txPsdus[10].endTx + m_txPsdus[10].psduMap[SU_STA_ID]->GetDuration();
+        // navEnd <= basicTfNavEnd < navEnd + tolerance
+        NS_TEST_EXPECT_MSG_LT_OR_EQ(navEnd, basicTfNavEnd, "Duration/ID in MU-RTS is too short");
+        NS_TEST_EXPECT_MSG_LT(basicTfNavEnd,
+                              navEnd + tolerance,
+                              "Duration/ID in MU-RTS is too long");
+    }
+    else if (m_continueTxopAfterBsrp)
+    {
+        NS_TEST_EXPECT_MSG_LT(tStart, tEnd + sifs + tolerance, "Basic Trigger Frame sent too late");
+        // the Basic TF sets a new NAV
+        navEnd = m_txPsdus[10].endTx + m_txPsdus[10].psduMap[SU_STA_ID]->GetDuration();
     }
 
-    // if the TXOP limit is not null, MU-RTS protection is not used because the next transmission
-    // is protected by the previous MU-RTS Trigger Frame
-    if (m_txopLimit == 0)
+    if (!no2ndMuRts)
     {
         // the AP sends another MU-RTS Trigger Frame to protect the Basic TF
         NS_TEST_ASSERT_MSG_GT_OR_EQ(m_txPsdus.size(),
@@ -2006,7 +2034,6 @@ OfdmaAckSequenceTest::DoRun()
         NS_ABORT_MSG("Invalid channel bandwidth (must be 20, 40, 80 or 160)");
     }
 
-    Config::SetDefault("ns3::WifiDefaultProtectionManager::EnableMuRts", BooleanValue(true));
     Config::SetDefault("ns3::HeConfiguration::MuBeAifsn",
                        UintegerValue(m_muEdcaParameterSet.muAifsn));
     Config::SetDefault("ns3::HeConfiguration::MuBeCwMin",
@@ -2126,10 +2153,16 @@ OfdmaAckSequenceTest::DoRun()
         "AccessReqInterval",
         TimeValue(Seconds(1.5)),
         "DelayAccessReqUponAccess",
-        BooleanValue(false));
+        BooleanValue(false),
+        "DefaultTbPpduDuration",
+        TimeValue(m_defaultTbPpduDuration));
+    mac.SetProtectionManager("ns3::WifiDefaultProtectionManager",
+                             "EnableMuRts",
+                             BooleanValue(true));
     mac.SetAckManager("ns3::WifiDefaultAckManager",
                       "DlMuAckSequenceType",
                       EnumValue(m_dlMuAckType));
+    mac.SetFrameExchangeManager("ContinueTxopAfterBsrp", BooleanValue(m_continueTxopAfterBsrp));
 
     m_apDevice = DynamicCast<WifiNetDevice>(wifi.Install(phy, mac, wifiApNode).Get(0));
 
@@ -2283,53 +2316,59 @@ WifiMacOfdmaTestSuite::WifiMacOfdmaTestSuite()
         for (const auto scenario :
              {WifiOfdmaScenario::HE, WifiOfdmaScenario::HE_EHT, WifiOfdmaScenario::EHT})
         {
-            AddTestCase(new OfdmaAckSequenceTest(20,
-                                                 WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
-                                                 10000,
-                                                 5632,
-                                                 15,
-                                                 muEdcaParameterSet,
-                                                 scenario),
+            AddTestCase(new OfdmaAckSequenceTest({20,
+                                                  WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
+                                                  10000,
+                                                  5632,
+                                                  false, // unused because non-zero TXOP limit
+                                                  15,
+                                                  muEdcaParameterSet,
+                                                  scenario}),
                         TestCase::Duration::QUICK);
-            AddTestCase(new OfdmaAckSequenceTest(20,
-                                                 WifiAcknowledgment::DL_MU_AGGREGATE_TF,
-                                                 10000,
-                                                 5632,
-                                                 15,
-                                                 muEdcaParameterSet,
-                                                 scenario),
+            AddTestCase(new OfdmaAckSequenceTest({20,
+                                                  WifiAcknowledgment::DL_MU_AGGREGATE_TF,
+                                                  10000,
+                                                  5632,
+                                                  false, // unused because non-zero TXOP limit
+                                                  15,
+                                                  muEdcaParameterSet,
+                                                  scenario}),
                         TestCase::Duration::QUICK);
-            AddTestCase(new OfdmaAckSequenceTest(20,
-                                                 WifiAcknowledgment::DL_MU_TF_MU_BAR,
-                                                 10000,
-                                                 5632,
-                                                 15,
-                                                 muEdcaParameterSet,
-                                                 scenario),
+            AddTestCase(new OfdmaAckSequenceTest({20,
+                                                  WifiAcknowledgment::DL_MU_TF_MU_BAR,
+                                                  10000,
+                                                  5632,
+                                                  false, // unused because non-zero TXOP limit
+                                                  15,
+                                                  muEdcaParameterSet,
+                                                  scenario}),
                         TestCase::Duration::QUICK);
-            AddTestCase(new OfdmaAckSequenceTest(40,
-                                                 WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
-                                                 10000,
-                                                 0,
-                                                 15,
-                                                 muEdcaParameterSet,
-                                                 scenario),
+            AddTestCase(new OfdmaAckSequenceTest({40,
+                                                  WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE,
+                                                  10000,
+                                                  0,
+                                                  true,
+                                                  15,
+                                                  muEdcaParameterSet,
+                                                  scenario}),
                         TestCase::Duration::QUICK);
-            AddTestCase(new OfdmaAckSequenceTest(40,
-                                                 WifiAcknowledgment::DL_MU_AGGREGATE_TF,
-                                                 10000,
-                                                 0,
-                                                 15,
-                                                 muEdcaParameterSet,
-                                                 scenario),
+            AddTestCase(new OfdmaAckSequenceTest({40,
+                                                  WifiAcknowledgment::DL_MU_AGGREGATE_TF,
+                                                  10000,
+                                                  0,
+                                                  false,
+                                                  15,
+                                                  muEdcaParameterSet,
+                                                  scenario}),
                         TestCase::Duration::QUICK);
-            AddTestCase(new OfdmaAckSequenceTest(40,
-                                                 WifiAcknowledgment::DL_MU_TF_MU_BAR,
-                                                 10000,
-                                                 0,
-                                                 15,
-                                                 muEdcaParameterSet,
-                                                 scenario),
+            AddTestCase(new OfdmaAckSequenceTest({40,
+                                                  WifiAcknowledgment::DL_MU_TF_MU_BAR,
+                                                  10000,
+                                                  0,
+                                                  true,
+                                                  15,
+                                                  muEdcaParameterSet,
+                                                  scenario}),
                         TestCase::Duration::QUICK);
         }
     }
