@@ -50,6 +50,10 @@ WifiMacHelper::WifiMacHelper()
         it->second.SetTypeId("ns3::QosTxop");
     }
     m_channelAccessManager.SetTypeId("ns3::ChannelAccessManager");
+    // Setting FEM attributes requires setting a TypeId first. We initialize the TypeId to the FEM
+    // of the latest standard, in order to allow users to set the attributes of all the FEMs. The
+    // Create method will set the requested standard before creating the FEM(s).
+    m_frameExchangeManager.SetTypeId(GetFrameExchangeManagerTypeIdName(WIFI_STANDARD_COUNT, true));
     m_assocManager.SetTypeId("ns3::WifiDefaultAssocManager");
     m_queueScheduler.SetTypeId("ns3::FcfsWifiQueueScheduler");
     m_protectionManager.SetTypeId("ns3::WifiDefaultProtectionManager");
