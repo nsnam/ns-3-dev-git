@@ -18,6 +18,7 @@
 #include "ns3/wifi-tx-parameters.h"
 
 #include <unordered_map>
+#include <vector>
 
 namespace ns3
 {
@@ -119,6 +120,11 @@ class MultiUserScheduler : public Object
      */
     void SetAccessReqInterval(Time interval);
 
+    /**
+     * \return the duration of the interval between two consecutive requests for channel access
+     */
+    Time GetAccessReqInterval() const;
+
   protected:
     /**
      * Get the station manager attached to the AP on the given link.
@@ -187,11 +193,13 @@ class MultiUserScheduler : public Object
     void SetWifiMac(Ptr<ApWifiMac> mac);
 
     /**
-     * Perform actions required on expiration of the channel access request timer,
-     * such as requesting channel access (if not requested already) and restarting
+     * Perform actions required on expiration of the channel access request timer associated with
+     * the given link, such as requesting channel access (if not requested already) and restarting
      * the channel access request timer.
+     *
+     * \param linkId the ID of the given link
      */
-    void AccessReqTimeout();
+    void AccessReqTimeout(uint8_t linkId);
 
     /**
      * Select the format of the next transmission.
@@ -232,9 +240,10 @@ class MultiUserScheduler : public Object
     };
 
     std::map<uint8_t, LastTxInfo> m_lastTxInfo; ///< Information about the last transmission
-    EventId m_accessReqTimer;      ///< the timer controlling additional channel access requests
-    Time m_accessReqInterval;      ///< duration of the interval between channel access requests
-    AcIndex m_accessReqAc;         ///< AC we request channel access for
+    std::vector<EventId>
+        m_accessReqTimers;    ///< the per-link timer controlling additional channel access requests
+    Time m_accessReqInterval; ///< duration of the interval between channel access requests
+    AcIndex m_accessReqAc;    ///< AC we request channel access for
     bool m_restartTimerUponAccess; ///< whether the channel access timer has to be restarted
                                    ///< upon channel access
 };

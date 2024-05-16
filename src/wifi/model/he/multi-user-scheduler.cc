@@ -40,7 +40,8 @@ MultiUserScheduler::GetTypeId()
                           "even without DL traffic. A null duration indicates that such "
                           "requests shall not be made.",
                           TimeValue(Seconds(0)),
-                          MakeTimeAccessor(&MultiUserScheduler::m_accessReqInterval),
+                          MakeTimeAccessor(&MultiUserScheduler::SetAccessReqInterval,
+                                           &MultiUserScheduler::GetAccessReqInterval),
                           MakeTimeChecker())
             .AddAttribute("AccessReqAc",
                           "The Access Category for which the MultiUserScheduler makes requests "
@@ -83,7 +84,10 @@ MultiUserScheduler::DoDispose()
     m_apMac = nullptr;
     m_edca = nullptr;
     m_lastTxInfo.clear();
-    m_accessReqTimer.Cancel();
+    for (auto& accessReqTimer : m_accessReqTimers)
+    {
+        accessReqTimer.Cancel();
+    }
     Object::DoDispose();
 }
 
@@ -111,8 +115,15 @@ MultiUserScheduler::DoInitialize()
 
     if (m_accessReqInterval.IsStrictlyPositive())
     {
-        m_accessReqTimer =
-            Simulator::Schedule(m_accessReqInterval, &MultiUserScheduler::AccessReqTimeout, this);
+        NS_ASSERT(m_accessReqTimers.empty());
+        for (uint8_t id = 0; id < m_apMac->GetNLinks(); ++id)
+        {
+            m_accessReqTimers.emplace_back(
+                Simulator::Schedule(m_accessReqInterval,
+                                    &MultiUserScheduler::AccessReqTimeout,
+                                    this,
+                                    id));
+        }
     }
 }
 
@@ -121,12 +132,27 @@ MultiUserScheduler::SetAccessReqInterval(Time interval)
 {
     NS_LOG_FUNCTION(this << interval.As(Time::MS));
     m_accessReqInterval = interval;
-    // start the timer if past initialization
+    // if interval is non-zero, start the timers that are not running if we are past initialization
     if (m_accessReqInterval.IsStrictlyPositive() && IsInitialized())
     {
-        m_accessReqTimer =
-            Simulator::Schedule(m_accessReqInterval, &MultiUserScheduler::AccessReqTimeout, this);
+        m_accessReqTimers.resize(m_apMac->GetNLinks());
+        for (uint8_t id = 0; id < m_apMac->GetNLinks(); ++id)
+        {
+            if (!m_accessReqTimers[id].IsPending())
+            {
+                m_accessReqTimers[id] = Simulator::Schedule(m_accessReqInterval,
+                                                            &MultiUserScheduler::AccessReqTimeout,
+                                                            this,
+                                                            id);
+            }
+        }
     }
+}
+
+Time
+MultiUserScheduler::GetAccessReqInterval() const
+{
+    return m_accessReqInterval;
 }
 
 void
@@ -161,26 +187,26 @@ MultiUserScheduler::GetHeFem(uint8_t linkId) const
 }
 
 void
-MultiUserScheduler::AccessReqTimeout()
+MultiUserScheduler::AccessReqTimeout(uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << linkId);
 
     // request channel access if not requested yet
     auto edca = m_apMac->GetQosTxop(m_accessReqAc);
 
-    for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+    if (edca->GetAccessStatus(linkId) == Txop::NOT_REQUESTED)
     {
-        if (edca->GetAccessStatus(linkId) == Txop::NOT_REQUESTED)
-        {
-            m_apMac->GetChannelAccessManager(linkId)->RequestAccess(edca);
-        }
+        m_apMac->GetChannelAccessManager(linkId)->RequestAccess(edca);
     }
 
     // restart timer
     if (m_accessReqInterval.IsStrictlyPositive())
     {
-        m_accessReqTimer =
-            Simulator::Schedule(m_accessReqInterval, &MultiUserScheduler::AccessReqTimeout, this);
+        NS_ASSERT(m_accessReqTimers.size() > linkId);
+        m_accessReqTimers[linkId] = Simulator::Schedule(m_accessReqInterval,
+                                                        &MultiUserScheduler::AccessReqTimeout,
+                                                        this,
+                                                        linkId);
     }
 }
 
@@ -199,15 +225,17 @@ MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
     m_allowedWidth = allowedWidth;
     m_linkId = linkId;
 
-    if (m_accessReqTimer.IsPending() && m_restartTimerUponAccess)
+    if (m_accessReqTimers.size() > linkId && m_accessReqTimers[linkId].IsPending() &&
+        m_restartTimerUponAccess)
     {
         // restart access timer
-        m_accessReqTimer.Cancel();
+        m_accessReqTimers[linkId].Cancel();
         if (m_accessReqInterval.IsStrictlyPositive())
         {
-            m_accessReqTimer = Simulator::Schedule(m_accessReqInterval,
-                                                   &MultiUserScheduler::AccessReqTimeout,
-                                                   this);
+            m_accessReqTimers[linkId] = Simulator::Schedule(m_accessReqInterval,
+                                                            &MultiUserScheduler::AccessReqTimeout,
+                                                            this,
+                                                            linkId);
         }
     }
 
