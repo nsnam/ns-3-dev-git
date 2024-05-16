@@ -177,6 +177,18 @@ class SpectrumWifiPhy : public WifiPhy
     const std::map<FrequencyRange, Ptr<WifiSpectrumPhyInterface>>& GetSpectrumPhyInterfaces() const;
 
     /**
+     * Determine the number of bands between the two segments if the operating channel is made of
+     * non-contiguous segments, otherwise the function returns zero.
+     *
+     * \param channel the operating channel
+     * \param subcarrierSpacing the subcarrier spacing
+     * \return the number of bands between the two segments if the operating channel is made of
+     * non-contiguous segments, zero otherwise
+     */
+    static uint32_t GetNumBandsBetweenSegments(const WifiPhyOperatingChannel& channel,
+                                               uint32_t subcarrierSpacing);
+
+    /**
      * \param callback the callback to invoke when operating channel has switched.
      */
     void SetChannelSwitchedCallback(Callback<void> callback);

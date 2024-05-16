@@ -647,6 +647,26 @@ SpectrumWifiPhy::GetGuardBandwidth(ChannelWidthMhz currentChannelWidth) const
     return guardBandwidth;
 }
 
+uint32_t
+SpectrumWifiPhy::GetNumBandsBetweenSegments(const WifiPhyOperatingChannel& channel,
+                                            uint32_t subcarrierSpacing)
+{
+    NS_ABORT_MSG_IF(channel.GetNSegments() > 2,
+                    "Only 2 non-contiguous frequency segments are supported");
+    if (channel.GetNSegments() < 2)
+    {
+        return 0;
+    }
+    const auto frequencies = channel.GetFrequencies();
+    const auto lowFrequency = *frequencies.cbegin();
+    const auto highFrequency = *frequencies.crbegin();
+    NS_ASSERT(lowFrequency != highFrequency);
+    // all segments have the same width
+    const auto segmentsWidth = channel.GetWidth(0);
+    const auto widthBetweenSegments = highFrequency - lowFrequency - segmentsWidth;
+    return (widthBetweenSegments * 1e6) / subcarrierSpacing;
+}
+
 WifiSpectrumBandInfo
 SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
                                      ChannelWidthMhz bandWidth,
@@ -656,6 +676,7 @@ SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyIn
     const auto channelWidth = spectrumPhyInterface->GetChannelWidth();
     const auto numBandsInBand = static_cast<size_t>(bandWidth * 1e6 / subcarrierSpacing);
     auto numBandsInChannel = static_cast<size_t>(channelWidth * 1e6 / subcarrierSpacing);
+    const auto numBands = channelWidth / bandWidth;
     if (numBandsInBand % 2 == 0)
     {
         numBandsInChannel += 1; // symmetry around center frequency
@@ -664,9 +685,16 @@ SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyIn
     size_t totalNumBands = rxSpectrumModel->GetNumBands();
     NS_ASSERT_MSG((numBandsInChannel % 2 == 1) && (totalNumBands % 2 == 1),
                   "Should have odd number of bands");
-    NS_ASSERT_MSG((bandIndex * bandWidth) < channelWidth, "Band index is out of bound");
+    NS_ASSERT_MSG(bandIndex < numBands, "Band index is out of bound");
     NS_ASSERT(totalNumBands >= numBandsInChannel);
-    auto startIndex = ((totalNumBands - numBandsInChannel) / 2) + (bandIndex * numBandsInBand);
+    const auto numBandsBetweenSegments =
+        GetNumBandsBetweenSegments(GetOperatingChannel(), GetSubcarrierSpacing());
+    auto startIndex = ((totalNumBands - numBandsInChannel - numBandsBetweenSegments) / 2) +
+                      (bandIndex * numBandsInBand);
+    if (bandIndex >= (numBands / 2))
+    {
+        startIndex += numBandsBetweenSegments;
+    }
     auto stopIndex = startIndex + numBandsInBand - 1;
     auto frequencies =
         ConvertIndicesToFrequenciesForInterface(spectrumPhyInterface, {startIndex, stopIndex});
