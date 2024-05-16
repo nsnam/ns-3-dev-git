@@ -30,7 +30,7 @@
 namespace ns3
 {
 
-const Time WIFI_TU = MicroSeconds(1024);
+const Time WIFI_TU = MicroSeconds(WIFI_TU_US);
 
 double
 DbToRatio(double dB)
