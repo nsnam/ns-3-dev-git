@@ -130,7 +130,7 @@ experiment(bool enableCtsRts, std::string wifiManager)
      * This is a workaround for the lack of perfect ARP, see \bugid{187}
      */
     uint16_t echoPort = 9;
-    UdpEchoClientHelper echoClientHelper(Ipv4Address("10.0.0.2"), echoPort);
+    UdpEchoClientHelper echoClientHelper(InetSocketAddress(Ipv4Address("10.0.0.2"), echoPort));
     echoClientHelper.SetAttribute("MaxPackets", UintegerValue(1));
     echoClientHelper.SetAttribute("Interval", TimeValue(Seconds(0.1)));
     echoClientHelper.SetAttribute("PacketSize", UintegerValue(10));
