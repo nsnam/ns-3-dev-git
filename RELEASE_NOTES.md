@@ -35,6 +35,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 ### New user-visible features
 
 - (lr-wpan) !2082 - MAC SET GET attributes added
+- (core) !1904 - Added support for Laplacian and Largest Extreme Value random variables (`LaplacianRandomVariable`, `LargestExtremeValueRandomVariable`)
 
 ### Bugs fixed
 

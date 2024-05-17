@@ -19,6 +19,7 @@ Changes from ns-3.42 to ns-3-dev
 ### New API
 
 * (tcp) A new trace source `TcpSocketBase::LastRtt` has been added for tracing the last RTT sample observed. The existing trace source `TcpSocketBase::Rtt` is still providing the smoothed RTT, although it had been incorrectly documented as providing the last RTT.
+* (core) Added `LaplacianRandomVariable` class implementing the Laplacian random variable, and `LargestExtremeValueRandomVariable` class implementing the Largest Extreme Value random variable.
 
 ### Changes to existing API
 
