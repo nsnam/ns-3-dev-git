@@ -111,19 +111,31 @@ bool
 HtFrameExchangeManager::NeedSetupBlockAck(Mac48Address recipient, uint8_t tid)
 {
     Ptr<QosTxop> qosTxop = m_mac->GetQosTxop(tid);
-    auto agreement = qosTxop->GetBaManager()->GetAgreementAsOriginator(recipient, tid);
     bool establish;
 
-    if (!m_mac->GetHtSupported(recipient) || (agreement && !agreement->get().IsReset()))
+    // NOLINTBEGIN(bugprone-branch-clone)
+    if (!m_mac->GetHtConfiguration() ||
+        (!GetWifiRemoteStationManager()->GetHtSupported(recipient) &&
+         !GetWifiRemoteStationManager()->GetStationHe6GhzCapabilities(recipient)))
     {
+        // no Block Ack if this device or the recipient are not HT STAs and do not operate
+        // in the 6 GHz band
         establish = false;
     }
+    else if (auto agreement = qosTxop->GetBaManager()->GetAgreementAsOriginator(recipient, tid);
+             agreement && !agreement->get().IsReset())
+    {
+        // Block Ack agreement already established
+        establish = false;
+    }
+    // NOLINTEND(bugprone-branch-clone)
     else
     {
         WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WIFI_UNICAST, recipient, tid};
         uint32_t packets = qosTxop->GetWifiMacQueue()->GetNPackets(queueId);
         establish =
-            ((qosTxop->GetBlockAckThreshold() > 0 && packets >= qosTxop->GetBlockAckThreshold()) ||
+            (m_mac->Is6GhzBand(m_linkId) ||
+             (qosTxop->GetBlockAckThreshold() > 0 && packets >= qosTxop->GetBlockAckThreshold()) ||
              (m_mpduAggregator->GetMaxAmpduSize(recipient, tid, WIFI_MOD_CLASS_HT) > 0 &&
               packets > 1) ||
              m_mac->GetVhtConfiguration());
