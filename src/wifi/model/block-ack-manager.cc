@@ -332,10 +332,8 @@ BlockAckManager::HandleInFlightMpdu(uint8_t linkId,
     if (it->second.first.GetDistance(hdr.GetSequenceNumber()) >= SEQNO_SPACE_HALF_SIZE)
     {
         NS_LOG_DEBUG("Old packet. Remove from the EDCA queue, too");
-        if (!m_droppedOldMpduCallback.IsNull())
-        {
-            m_droppedOldMpduCallback(*mpduIt);
-        }
+        NS_ASSERT(!m_droppedOldMpduCallback.IsNull());
+        m_droppedOldMpduCallback(*mpduIt);
         m_queue->Remove(*mpduIt);
         return it->second.second.erase(mpduIt);
     }

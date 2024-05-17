@@ -810,7 +810,13 @@ HtFrameExchangeManager::NotifyPacketDiscarded(Ptr<const WifiMpdu> mpdu)
             }
         }
     }
-    QosFrameExchangeManager::NotifyPacketDiscarded(mpdu);
+    // the MPDU may have been dropped (and dequeued) by the above call to the NotifyDiscardedMpdu
+    // method of the BlockAckManager with reason WIFI_MAC_DROP_QOS_OLD_PACKET; in such a case, we
+    // must not fire the dropped callback again (with reason WIFI_MAC_DROP_REACHED_RETRY_LIMIT)
+    if (mpdu->IsQueued())
+    {
+        QosFrameExchangeManager::NotifyPacketDiscarded(mpdu);
+    }
 }
 
 void

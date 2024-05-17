@@ -261,10 +261,8 @@ FrameExchangeManager::GetWifiTxTimer() const
 void
 FrameExchangeManager::NotifyPacketDiscarded(Ptr<const WifiMpdu> mpdu)
 {
-    if (!m_droppedMpduCallback.IsNull())
-    {
-        m_droppedMpduCallback(WIFI_MAC_DROP_REACHED_RETRY_LIMIT, mpdu);
-    }
+    NS_ASSERT(!m_droppedMpduCallback.IsNull());
+    m_droppedMpduCallback(WIFI_MAC_DROP_REACHED_RETRY_LIMIT, mpdu);
 }
 
 void
