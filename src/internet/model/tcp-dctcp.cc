@@ -121,6 +121,7 @@ TcpDctcp::Init(Ptr<TcpSocketState> tcb)
     tcb->m_useEcn = TcpSocketState::On;
     tcb->m_ecnMode = TcpSocketState::DctcpEcn;
     tcb->m_ectCodePoint = m_useEct0 ? TcpSocketState::Ect0 : TcpSocketState::Ect1;
+    SetSuppressIncreaseIfCwndLimited(false);
     m_initialized = true;
 }
 

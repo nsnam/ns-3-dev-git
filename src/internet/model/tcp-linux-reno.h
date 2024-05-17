@@ -76,8 +76,25 @@ class TcpLinuxReno : public TcpCongestionOps
      */
     virtual void CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
 
+    /**
+     * TcpSocketBase follows the Linux way of setting a flag 'isCwndLimited'
+     * when BytesInFlight() >= cwnd.  This flag, if true, will suppress
+     * additive increase window updates for this class.  However, some
+     * derived classes using the IncreaseWindow() method may not want this
+     * behavior, so this method exists to allow subclasses to set it to false.
+     *
+     * \param value Value to set whether the isCwndLimited condition
+     *        suppresses window updates
+     */
+    void SetSuppressIncreaseIfCwndLimited(bool value);
+
   private:
     uint32_t m_cWndCnt{0}; //!< Linear increase counter
+    // The below flag exists for classes derived from TcpLinuxReno (such as
+    // TcpDctcp) that may not want to suppress cwnd increase, unlike Linux's
+    // tcp_reno_cong_avoid()
+    bool m_suppressIncreaseIfCwndLimited{
+        true}; //!< Suppress window increase if TCP is not cwnd limited
 };
 
 } // namespace ns3

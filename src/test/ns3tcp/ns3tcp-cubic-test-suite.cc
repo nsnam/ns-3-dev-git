@@ -363,7 +363,7 @@ Ns3TcpCubicTestCase::DoRun()
                               true,
                               "cwnd outside range");
         // Time just before a reduction does not have much variation
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(9), Seconds(9.7), 84, 89),
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(9), Seconds(9.6), 84, 89),
                               true,
                               "cwnd outside range");
     }
@@ -380,20 +380,20 @@ Ns3TcpCubicTestCase::DoRun()
     }
     else if (m_prefix == "ns3-tcp-cubic-no-friendly")
     {
-        // Between time 12 and 16, cwnd should be fairly constant
+        // Between time 11 and 15, cwnd should be fairly constant
         // because without TCP friendliness, Cubic does not respond quickly
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(12), Seconds(16), 107, 123),
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(11), Seconds(15), 107, 123),
                               true,
                               "cwnd outside range");
-        // After time 19.5, cwnd should have grown much higher
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(19.5), Seconds(20), 180, 210),
+        // After time 17.5, cwnd should have grown much higher
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(17.5), Seconds(18.5), 170, 215),
                               true,
                               "cwnd outside range");
     }
     else if (m_prefix == "ns3-tcp-cubic-friendly")
     {
         // In contrast to previous case, cwnd should grow above 150 much sooner
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(12), Seconds(14), 150, 210),
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(13), Seconds(15), 150, 210),
                               true,
                               "cwnd outside range");
     }

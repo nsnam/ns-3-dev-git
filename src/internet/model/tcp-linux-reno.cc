@@ -79,6 +79,13 @@ TcpLinuxReno::CongestionAvoidance(Ptr<TcpSocketState> tcb, uint32_t segmentsAcke
 {
     NS_LOG_FUNCTION(this << tcb << segmentsAcked);
 
+    if (m_suppressIncreaseIfCwndLimited && !tcb->m_isCwndLimited)
+    {
+        NS_LOG_DEBUG("No increase because current cwnd " << tcb->m_cWnd
+                                                         << " is not limiting the flow");
+        return;
+    }
+
     uint32_t w = tcb->m_cWnd / tcb->m_segmentSize;
 
     // Floor w to 1 if w == 0
@@ -148,6 +155,13 @@ Ptr<TcpCongestionOps>
 TcpLinuxReno::Fork()
 {
     return CopyObject<TcpLinuxReno>(this);
+}
+
+void
+TcpLinuxReno::SetSuppressIncreaseIfCwndLimited(bool value)
+{
+    NS_LOG_FUNCTION(this << value);
+    m_suppressIncreaseIfCwndLimited = value;
 }
 
 } // namespace ns3

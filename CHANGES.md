@@ -55,6 +55,7 @@ Applications have a new Attribute to set the IPv4 ToS field.
 ### Changed behavior
 
 * Fixed the corner rebound direction in `RandomWalk2d[Outdoor]MobilityModel` and the initial direction in case of node starting from a border or corner.
+* (tcp) TcpCubic and TcpLinuxReno will no longer grow their congestion window when application-limited, now matching Linux behavior
 
 Changes from ns-3.40 to ns-3.41
 -------------------------------

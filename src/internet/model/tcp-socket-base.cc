@@ -3238,6 +3238,12 @@ TcpSocketBase::SendDataPacket(SequenceNumber32 seq, uint32_t maxSize, bool withA
                      << m_endPoint6->GetPeerAddress() << ". Header " << header);
     }
 
+    // Signal to congestion control whether the cwnd is fully used
+    // This is a simple version of Linux tcp_cwnd_validate() but following
+    // the principle implemented in Linux that limits the updating of cwnd
+    // (in the congestion controls) when flight size is >= cwnd
+    m_tcb->m_isCwndLimited = (BytesInFlight() >= m_tcb->m_cWnd);
+
     UpdateRttHistory(seq, sz, isRetransmission);
 
     // Update bytes sent during recovery phase
