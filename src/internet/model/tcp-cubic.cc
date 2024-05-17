@@ -490,7 +490,6 @@ TcpCubic::CubicReset(Ptr<const TcpSocketState> tcb)
 {
     NS_LOG_FUNCTION(this << tcb);
 
-    m_lastMaxCwnd = 0;
     m_bicOriginPoint = 0;
     m_bicK = 0;
     m_ackCnt = 0;
