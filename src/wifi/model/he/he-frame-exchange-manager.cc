@@ -505,6 +505,7 @@ HeFrameExchangeManager::TransmissionSucceeded()
     {
         NS_LOG_DEBUG(address << " did not respond, hence it is no longer protected");
         m_protectedStas.erase(address);
+        m_sentFrameTo.erase(address);
     }
 
     VhtFrameExchangeManager::TransmissionSucceeded();
@@ -892,6 +893,23 @@ HeFrameExchangeManager::SendPsduMap()
     {
         // clear m_psduMap after sending QoS Null frames following a BSRP Trigger Frame
         Simulator::Schedule(txDuration, &WifiPsduMap::clear, &m_psduMap);
+    }
+
+    if (m_txTimer.IsRunning() && timerType != WifiTxTimer::WAIT_BLOCK_ACK_AFTER_TB_PPDU)
+    {
+        NS_ASSERT(m_sentFrameTo.empty());
+
+        // do not record that a frame is being sent to an EMLSR client unless the AP is sending a
+        // BSRP TF or the EMLSR client is already protected
+        for (const auto& address : staExpectResponseFrom)
+        {
+            if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(address) ||
+                timerType == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF ||
+                m_protectedStas.contains(address))
+            {
+                m_sentFrameTo.insert(address);
+            }
+        }
     }
 }
 

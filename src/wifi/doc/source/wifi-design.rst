@@ -997,6 +997,12 @@ The features supported by every FrameExchangeManager class are as follows:
 * ``HeFrameExchangeManager`` adds support for the transmission and reception of
   multi-user frames via DL OFDMA and UL OFDMA, as detailed below.
 
+FrameExchangeManager classes may have attributes controlling the frame exchange sequences
+they handle. For instance, the ``FrameExchangeManager`` base class has a **ProtectedIfResponded**
+attribute to enable/disable RTS/CTS protection for stations that have already responded to a
+frame requiring acknowledgment in the same TXOP, even if such frame had not been protected by
+RTS/CTS.
+
 .. _wifi-mu-ack-sequences:
 
 MAC queues

@@ -513,12 +513,16 @@ class FrameExchangeManager : public Object
     Mac48Address m_bssid;                             //!< BSSID address (Mac48Address)
     Time m_navEnd;                                    //!< NAV expiration time
     std::set<Mac48Address> m_sentRtsTo; //!< the STA(s) which we sent an RTS to (waiting for CTS)
+    std::set<Mac48Address>
+        m_sentFrameTo; //!< the STA(s) to which we sent a frame requesting a response
     std::set<Mac48Address> m_protectedStas; //!< STAs that have replied to an RTS in this TXOP
-    uint8_t m_linkId;                       //!< the ID of the link this object is associated with
-    MHz_u m_allowedWidth;                   //!< the allowed width for the current transmission
-    bool m_promisc;                         //!< Flag if the device is operating in promiscuous mode
-    DroppedMpdu m_droppedMpduCallback;      //!< the dropped MPDU callback
-    AckedMpdu m_ackedMpduCallback;          //!< the acknowledged MPDU callback
+    bool m_protectedIfResponded;       //!< whether a STA is assumed to be protected if replied to a
+                                       //!< frame requiring acknowledgment
+    uint8_t m_linkId;                  //!< the ID of the link this object is associated with
+    MHz_u m_allowedWidth;              //!< the allowed width for the current transmission
+    bool m_promisc;                    //!< Flag if the device is operating in promiscuous mode
+    DroppedMpdu m_droppedMpduCallback; //!< the dropped MPDU callback
+    AckedMpdu m_ackedMpduCallback;     //!< the acknowledged MPDU callback
 
     /**
      * Finalize the MAC header of the MPDUs in the given PSDU before transmission. Tasks

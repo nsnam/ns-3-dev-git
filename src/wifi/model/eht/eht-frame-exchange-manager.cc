@@ -488,9 +488,37 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
     NS_ASSERT_MSG(mldAddress, "MLD address not found for " << address);
     NS_ASSERT_MSG(m_apMac, "This function shall only be called by AP MLDs");
 
+    /**
+     * Do nothing if the EMLSR client is involved in a DL or UL TXOP on another EMLSR link. This
+     * may happen, e.g., when the AP MLD sent an MU-RTS to multiple stations on this link, some of
+     * which responded, but this EMLSR client did not, e.g., because it concurrently started an UL
+     * TXOP on another link. The AP MLD then started a (long) DL MU transmission on this link,
+     * during which the EMLSR client completed the UL TXOP and started being involved in another
+     * DL or UL TXOP (note that DL TXOP is possible because the AP MLD considered the EMLSR client
+     * unprotected as soon as it detected the start of the previous UL TXOP). A Block Ack timeout
+     * for the EMLSR client occurs at the end of the DL MU transmission (which brings us here) and
+     * it may occur while the EMLSR client is still involved in a DL or UL TXOP.
+     *
+     *          ┌─────────────┐          ┌───────────────┐
+     *          │  MU-RTS to  │          │    Data to    │      BA timeout for us
+     *          │us and others│          │ us and others │        |
+     *  ────────┴─────────────┴┬────────┬┴───────────────┴┬───────┬──────────────
+     *  [this link]            │CTS from│                 │BA from│
+     *                         │ others │                 │ others│
+     *                         └────────┘                 └───────┘
+     *                                          ┌───────┐
+     *                     ┌───┐      ┌──┐      │ MU-RTS│     ┌──────┐
+     *  [other link]       │CTS│      │BA│      │ to us │     │ Data │
+     *  ─────────┬────────┬┴───┴┬────┬┴──┴──────┴───────┴┬───┬┴──────┴┬──┬───────
+     *           │   RTS  │     │Data│                   │CTS│        │BA│
+     *           │from us │     └────┘                   └───┘        └──┘
+     *           └────────┘
+     */
+
     for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); ++linkId)
     {
-        if (linkId == m_linkId)
+        if (linkId == m_linkId ||
+            !m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
         {
             continue;
         }
@@ -508,8 +536,9 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(const Mac48Address& address, con
 
         if (auto linkAddr =
                 m_apMac->GetWifiRemoteStationManager(linkId)->GetAffiliatedStaAddress(*mldAddress);
-            linkAddr && (ehtFem->m_sentRtsTo.contains(*linkAddr) ||
-                         ehtFem->m_protectedStas.contains(*linkAddr)))
+            linkAddr &&
+            (ehtFem->m_sentRtsTo.contains(*linkAddr) || ehtFem->m_sentFrameTo.contains(*linkAddr) ||
+             ehtFem->m_protectedStas.contains(*linkAddr)))
         {
             NS_LOG_DEBUG("EMLSR client " << address
                                          << " has been sent an ICF, do not unblock links");

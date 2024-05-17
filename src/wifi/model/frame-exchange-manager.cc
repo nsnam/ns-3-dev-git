@@ -35,10 +35,19 @@ NS_OBJECT_ENSURE_REGISTERED(FrameExchangeManager);
 TypeId
 FrameExchangeManager::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::FrameExchangeManager")
-                            .SetParent<Object>()
-                            .AddConstructor<FrameExchangeManager>()
-                            .SetGroupName("Wifi");
+    static TypeId tid =
+        TypeId("ns3::FrameExchangeManager")
+            .SetParent<Object>()
+            .AddConstructor<FrameExchangeManager>()
+            .SetGroupName("Wifi")
+            .AddAttribute("ProtectedIfResponded",
+                          "Whether a station is assumed to be protected if replied to a frame "
+                          "requiring acknowledgment. If a station is protected, subsequent "
+                          "transmissions to the same station in the same TXOP are not "
+                          "preceded by protection mechanisms.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&FrameExchangeManager::m_protectedIfResponded),
+                          MakeBooleanChecker());
     return tid;
 }
 
@@ -548,6 +557,12 @@ FrameExchangeManager::SendMpdu()
 
     // transmit the MPDU
     ForwardMpduDown(m_mpdu, m_txParams.m_txVector);
+
+    if (m_txTimer.IsRunning())
+    {
+        NS_ASSERT(m_sentFrameTo.empty());
+        m_sentFrameTo = {m_mpdu->GetHeader().GetAddr1()};
+    }
 }
 
 void
@@ -924,6 +939,7 @@ void
 FrameExchangeManager::TransmissionSucceeded()
 {
     NS_LOG_FUNCTION(this);
+    m_sentFrameTo.clear();
 
     // Upon a transmission success, a non-QoS station transmits the next fragment,
     // if any, or releases the channel, otherwise
@@ -948,6 +964,7 @@ void
 FrameExchangeManager::TransmissionFailed()
 {
     NS_LOG_FUNCTION(this);
+    m_sentFrameTo.clear();
     // A non-QoS station always releases the channel upon a transmission failure
     NotifyChannelReleased(m_dcf);
     m_dcf = nullptr;

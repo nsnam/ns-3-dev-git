@@ -22,6 +22,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 * (applications) Deprecated attributes `RemoteAddress` and `RemotePort` in UdpClient, UdpTraceClient and UdpEchoClient. They have been combined into a single `Remote` attribute.
 * (applications) Deprecated attributes `ThreeGppHttpClient::RemoteServerAddress` and `ThreeGppHttpClient::RemoteServerPort`. They have been combined into a single `ThreeGppHttpClient::Remote` attribute.
+* (wifi) Added a new **ProtectedIfResponded** attribute to `FrameExchangeManager` to disable RTS/CTS protection for stations that have already responded to a frame requiring acknowledgment in the same TXOP, even if such frame had not been protected by RTS/CTS. The default value is true, even though it represents a change with respect to the previous behavior, because it is likely a more realistic choice.
 
 ### Changes to build system
 

@@ -586,6 +586,11 @@ QosFrameExchangeManager::TransmissionSucceeded()
 
         // we are continuing a TXOP, hence the txopDuration parameter is unused
         Simulator::Schedule(m_phy->GetSifs(), fp, this, m_edca, Seconds(0));
+
+        if (m_protectedIfResponded)
+        {
+            m_protectedStas.merge(m_sentFrameTo);
+        }
     }
     else
     {
@@ -593,6 +598,7 @@ QosFrameExchangeManager::TransmissionSucceeded()
         m_edca = nullptr;
     }
     m_initialFrame = false;
+    m_sentFrameTo.clear();
 }
 
 void
@@ -651,6 +657,7 @@ QosFrameExchangeManager::TransmissionFailed()
         }
     }
     m_initialFrame = false;
+    m_sentFrameTo.clear();
 }
 
 void
