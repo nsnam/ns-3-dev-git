@@ -82,12 +82,17 @@ def _search_libraries() -> dict:
         filter(lambda x: x not in SYSTEM_LIBRARY_DIRECTORIES, set(library_search_paths))
     )
 
+    # Exclude injected windows paths in case of WSL
+    # BTW, why Microsoft? Who had this brilliant idea?
+    library_search_paths = list(filter(lambda x: "/mnt/c/" not in x, library_search_paths))
+
     # Search for the core library in the search paths
     libraries = []
     for search_path in library_search_paths:
         if os.path.exists(search_path):
             libraries += glob.glob(
-                "%s/**/*.%s*" % (search_path, LIBRARY_EXTENSION), recursive=False
+                "%s/**/*.%s*" % (search_path, LIBRARY_EXTENSION),
+                recursive=not os.path.exists(os.path.join(search_path, "ns3")),
             )
 
     # Search system library directories (too slow for recursive search)
