@@ -280,7 +280,7 @@ HePpdu::SetHeMuUserInfos(WifiTxVector& txVector,
             }
             const auto ruBw = HeRu::GetBandwidth(ruType);
             auto primary80 = ruAllocIndex < 4;
-            auto num20MhzSubchannelsInRu = (ruBw < 20) ? 1 : (ruBw / 20);
+            const uint8_t num20MhzSubchannelsInRu = (ruBw < 20) ? 1 : (ruBw / 20);
             auto numRuAllocsInContentChannel = std::max(1, num20MhzSubchannelsInRu / 2);
             auto ruIndexOffset = (ruBw < 20) ? (ruSpecs.size() * ruAllocIndex)
                                              : (ruAllocIndex / num20MhzSubchannelsInRu);
@@ -511,10 +511,11 @@ HePpdu::GetNumRusPerHeSigBContentChannel(ChannelWidthMhz channelWidth,
     }
 
     NS_ASSERT_MSG(!ruAllocation.empty(), "RU allocation is not set");
-    NS_ASSERT_MSG(ruAllocation.size() == channelWidth / 20,
+    [[maybe_unused]] const std::size_t num20MhzSubchannels = channelWidth / 20;
+    NS_ASSERT_MSG(ruAllocation.size() == num20MhzSubchannels,
                   "RU allocation is not consistent with packet bandwidth");
 
-    switch (channelWidth)
+    switch (static_cast<uint16_t>(channelWidth))
     {
     case 40:
         chSize.second += HeRu::GetRuSpecs(ruAllocation[1]).size();

@@ -168,7 +168,7 @@ OfdmPhy::GetSigMode(WifiPpduField field, const WifiTxVector& txVector) const
 WifiMode
 OfdmPhy::GetHeaderMode(const WifiTxVector& txVector) const
 {
-    switch (txVector.GetChannelWidth())
+    switch (static_cast<uint16_t>(txVector.GetChannelWidth()))
     {
     case 5:
         return GetOfdmRate1_5MbpsBW5MHz();
@@ -207,7 +207,7 @@ OfdmPhy::GetDuration(WifiPpduField field, const WifiTxVector& txVector) const
 Time
 OfdmPhy::GetPreambleDuration(const WifiTxVector& txVector) const
 {
-    switch (txVector.GetChannelWidth())
+    switch (static_cast<uint16_t>(txVector.GetChannelWidth()))
     {
     case 20:
     default:
@@ -231,7 +231,7 @@ OfdmPhy::GetPreambleDuration(const WifiTxVector& txVector) const
 Time
 OfdmPhy::GetHeaderDuration(const WifiTxVector& txVector) const
 {
-    switch (txVector.GetChannelWidth())
+    switch (static_cast<uint16_t>(txVector.GetChannelWidth()))
     {
     case 20:
     default:
@@ -415,7 +415,7 @@ OfdmPhy::InitializeModes()
 WifiMode
 OfdmPhy::GetOfdmRate(uint64_t rate, ChannelWidthMhz bw)
 {
-    switch (bw)
+    switch (static_cast<uint16_t>(bw))
     {
     case 20:
         switch (rate)

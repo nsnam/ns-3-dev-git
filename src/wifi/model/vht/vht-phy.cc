@@ -479,7 +479,7 @@ VhtPhy::GetDataRate(uint8_t mcsValue,
 uint16_t
 VhtPhy::GetUsableSubcarriers(ChannelWidthMhz channelWidth)
 {
-    switch (channelWidth)
+    switch (static_cast<uint16_t>(channelWidth))
     {
     case 80:
         return 234;

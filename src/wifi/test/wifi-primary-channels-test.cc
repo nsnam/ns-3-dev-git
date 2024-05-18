@@ -341,7 +341,7 @@ WifiPrimaryChannelsTest::DoSetup()
 
     // we create as many stations per BSS as the number of 26-tone RUs in a channel
     // of the configured width
-    switch (m_channelWidth)
+    switch (static_cast<uint16_t>(m_channelWidth))
     {
     case 20:
         m_nStationsPerBss = 9;
@@ -851,7 +851,7 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
     }
     txVector.SetSigBMode(VhtPhy::GetVhtMcs5());
     RuAllocation ruAllocations;
-    auto numRuAllocs = txChannelWidth / 20;
+    const std::size_t numRuAllocs = txChannelWidth / 20;
     ruAllocations.resize(numRuAllocs);
     auto IsOddNum = (nRus / numRuAllocs) % 2 == 1;
     auto ruAlloc = HeRu::GetEqualizedRuAllocation(ruType, IsOddNum);

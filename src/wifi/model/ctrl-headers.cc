@@ -2040,7 +2040,7 @@ CtrlTriggerHeader::GetCsRequired() const
 void
 CtrlTriggerHeader::SetUlBandwidth(ChannelWidthMhz bw)
 {
-    switch (bw)
+    switch (static_cast<uint16_t>(bw))
     {
     case 20:
         m_ulBandwidth = 0;

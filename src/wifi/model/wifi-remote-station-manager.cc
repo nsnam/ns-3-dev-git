@@ -652,7 +652,8 @@ WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, ChannelWi
     }
     // If both the allowed width and the TXVECTOR channel width are integer multiple
     // of 20 MHz, then the TXVECTOR channel width must not exceed the allowed width
-    NS_ASSERT_MSG((txVector.GetChannelWidth() % 20 != 0) || (allowedWidth % 20 != 0) ||
+    NS_ASSERT_MSG((static_cast<uint16_t>(txVector.GetChannelWidth()) % 20 != 0) ||
+                      (static_cast<uint16_t>(allowedWidth) % 20 != 0) ||
                       (txVector.GetChannelWidth() <= allowedWidth),
                   "TXVECTOR channel width (" << txVector.GetChannelWidth()
                                              << " MHz) exceeds allowed width (" << allowedWidth

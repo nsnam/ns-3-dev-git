@@ -665,7 +665,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
     m_candidates.clear();
 
     std::vector<uint8_t> ruAllocations;
-    auto numRuAllocs = m_txParams.m_txVector.GetChannelWidth() / 20;
+    const std::size_t numRuAllocs = m_txParams.m_txVector.GetChannelWidth() / 20;
     ruAllocations.resize(numRuAllocs);
     NS_ASSERT((m_candidates.size() % numRuAllocs) == 0);
 

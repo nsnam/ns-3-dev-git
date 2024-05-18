@@ -314,7 +314,7 @@ TestMultiUserScheduler::ComputeWifiTxVector()
     NS_ABORT_MSG_IF(staList.size() != 4, "There must be 4 associated stations");
 
     HeRu::RuType ruType;
-    switch (bw)
+    switch (static_cast<uint16_t>(bw))
     {
     case 20:
         ruType = HeRu::RU_52_TONE;
@@ -529,7 +529,7 @@ OfdmaAckSequenceTest::OfdmaAckSequenceTest(ChannelWidthMhz width,
         break;
     }
 
-    switch (m_channelWidth)
+    switch (static_cast<uint16_t>(m_channelWidth))
     {
     case 20:
         m_muRtsRuAllocation = 61; // p20 index is 0
@@ -1999,7 +1999,7 @@ OfdmaAckSequenceTest::DoRun()
     phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
     phy.SetErrorRateModel("ns3::NistErrorRateModel");
     phy.SetChannel(spectrumChannel);
-    switch (m_channelWidth)
+    switch (static_cast<uint16_t>(m_channelWidth))
     {
     case 20:
         phy.Set("ChannelSettings", StringValue("{36, 20, BAND_5GHZ, 0}"));

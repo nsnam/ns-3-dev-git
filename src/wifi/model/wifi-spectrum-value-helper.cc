@@ -207,7 +207,7 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(uint16_t centerFrequen
                                     << minOuterBandDbr << lowestPointDbr);
     uint32_t carrierSpacing = 0;
     uint32_t innerSlopeWidth = 0;
-    switch (channelWidth)
+    switch (static_cast<uint16_t>(channelWidth))
     {
     case 20:
         carrierSpacing = 312500;
@@ -529,7 +529,7 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
     std::vector<std::vector<WifiSpectrumBandIndices>> subBandsPerSegment(
         centerFrequencies.size()); // list of data/pilot-containing subBands (sent at 0dBr)
     WifiSpectrumBandIndices maskBand(0, nAllocatedBands + nGuardBands + nUnallocatedBands);
-    switch (channelWidth)
+    switch (static_cast<uint16_t>(channelWidth))
     {
     case 20:
         // 242 subcarriers (234 data + 8 pilot)

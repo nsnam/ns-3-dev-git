@@ -1243,7 +1243,7 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
                 {
                     obssPdLevel = m_obssPdAlgorithm->GetObssPdLevel();
                 }
-                switch (ppduBw)
+                switch (static_cast<uint16_t>(ppduBw))
                 {
                 case 20:
                 case 22:
@@ -1728,7 +1728,7 @@ HePhy::GetDataRate(uint8_t mcsValue,
 uint16_t
 HePhy::GetUsableSubcarriers(ChannelWidthMhz channelWidth)
 {
-    switch (channelWidth)
+    switch (static_cast<uint16_t>(channelWidth))
     {
     case 2: // 26-tone RU
         return 24;
@@ -1878,7 +1878,7 @@ HePhy::ConvertHeRuSubcarriers(ChannelWidthMhz bandWidth,
         bandWidth /= centerFrequencies.size();
     }
     uint32_t centerFrequencyIndex = 0;
-    switch (bandWidth)
+    switch (static_cast<uint16_t>(bandWidth))
     {
     case 20:
         centerFrequencyIndex = (nGuardBands / 2) + 6 + 122;

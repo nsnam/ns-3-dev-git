@@ -58,7 +58,8 @@ GetChannelCenterFrequenciesPerSegment(const ns3::WifiPhyOperatingChannel& channe
     {
         const auto segmentFrequency = channel.GetFrequency(segmentIndex);
         const auto segmentWidth = channel.GetWidth(segmentIndex);
-        const auto segmentOffset = (primarySegmentIndex * (segmentWidth / channelWidth));
+        // segmentOffset has to be an (unsigned) integer to ensure correct calculation
+        const uint8_t segmentOffset = (primarySegmentIndex * (segmentWidth / channelWidth));
         const auto freq =
             segmentFrequency - (segmentWidth / 2.) + (primaryIndex - segmentOffset + 0.5) * width;
         freqs.push_back(freq);

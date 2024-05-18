@@ -301,7 +301,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
                 // frequency channels overlap in the 2.4 GHz band, hence we have to check
                 // that the given primary channel center frequency can be the center frequency
                 // of the primary20 channel of the channel under consideration
-                switch (width)
+                switch (static_cast<uint16_t>(width))
                 {
                 case 20:
                     if (channel.frequency == primaryChannelCenterFrequency)

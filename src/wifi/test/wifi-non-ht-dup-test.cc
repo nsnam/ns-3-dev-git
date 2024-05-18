@@ -479,7 +479,8 @@ TestNonHtDuplicatePhyReception::DoSetup()
                                                                        0,
                                                                        m_apStandard,
                                                                        WIFI_PHY_BAND_5GHZ));
-        NS_ASSERT(m_per20MhzInterference.size() == (channelInfo.width / 20));
+        [[maybe_unused]] const std::size_t num20MhzSubchannels = channelInfo.width / 20;
+        NS_ASSERT(m_per20MhzInterference.size() == num20MhzSubchannels);
         for (std::size_t i = 0; i < m_per20MhzInterference.size(); ++i)
         {
             auto interfererNode = CreateObject<Node>();

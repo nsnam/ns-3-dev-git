@@ -1064,7 +1064,7 @@ WifiEhtCapabilitiesIeTest::DoRun()
 {
     uint8_t maxMcs = 0;
     uint16_t expectedEhtMcsAndNssSetSize = 0;
-    switch (m_channelWidth)
+    switch (static_cast<uint16_t>(m_channelWidth))
     {
     case 20:
         expectedEhtMcsAndNssSetSize = 4;

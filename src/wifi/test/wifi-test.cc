@@ -3020,7 +3020,8 @@ void
 IdealRateManagerChannelWidthTest::ChangeChannelWidth(ChannelWidthMhz channelWidth)
 {
     Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelSettings",
-                StringValue("{0, " + std::to_string(channelWidth) + ", BAND_5GHZ, 0}"));
+                StringValue("{0, " + std::to_string(static_cast<uint16_t>(channelWidth)) +
+                            ", BAND_5GHZ, 0}"));
 }
 
 void

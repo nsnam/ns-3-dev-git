@@ -561,7 +561,8 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
     }
 
     size_t numBands = rxPowersW.size();
-    size_t expectedNumBands = std::max(1, (m_rxChannelWidth / 20));
+    const std::size_t num20MhzSubchannels = m_rxChannelWidth / 20;
+    size_t expectedNumBands = std::max(1UL, num20MhzSubchannels);
     expectedNumBands += (m_rxChannelWidth / 40);
     expectedNumBands += (m_rxChannelWidth / 80);
     expectedNumBands += (m_rxChannelWidth / 160);
@@ -672,7 +673,7 @@ void
 SpectrumWifiPhyFilterTest::RunOne()
 {
     uint16_t txFrequency;
-    switch (m_txChannelWidth)
+    switch (static_cast<uint16_t>(m_txChannelWidth))
     {
     case 20:
     default:
@@ -698,7 +699,7 @@ SpectrumWifiPhyFilterTest::RunOne()
         WifiPhy::ChannelTuple{txChannelNum, m_txChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
     uint16_t rxFrequency;
-    switch (m_rxChannelWidth)
+    switch (static_cast<uint16_t>(m_rxChannelWidth))
     {
     case 20:
     default:

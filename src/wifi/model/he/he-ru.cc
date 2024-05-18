@@ -794,7 +794,7 @@ HeRu::GetBandwidth(RuType ruType)
 HeRu::RuType
 HeRu::GetRuType(ChannelWidthMhz bandwidth)
 {
-    switch (bandwidth)
+    switch (static_cast<uint16_t>(bandwidth))
     {
     case 2:
         return RU_26_TONE;
