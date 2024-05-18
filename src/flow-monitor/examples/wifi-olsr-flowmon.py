@@ -52,9 +52,9 @@ def main(argv):
     cmd.AddValue("Plot", "Plot the results using the matplotlib python module", Plot)
     cmd.Parse(argv)
 
-    wifi = ns.CreateObject("WifiHelper")
-    wifiMac = ns.CreateObject("WifiMacHelper")
-    wifiPhy = ns.CreateObject("YansWifiPhyHelper")
+    wifi = ns.WifiHelper()
+    wifiMac = ns.WifiMacHelper()
+    wifiPhy = ns.YansWifiPhyHelper()
     wifiChannel = ns.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
     ssid = ns.Ssid("wifi-default")
@@ -95,7 +95,7 @@ def main(argv):
             container = ns.NodeContainer(node)
             internet.Install(container)
 
-            mobility = ns.CreateObject("ConstantPositionMobilityModel")
+            mobility = ns.CreateObject[ns.ConstantPositionMobilityModel]()
             mobility.SetPosition(ns.Vector(xi * DISTANCE, yi * DISTANCE, 0))
             node.AggregateObject(mobility)
 
@@ -112,7 +112,7 @@ def main(argv):
         )
         container = ns.NodeContainer(node)
         app = onOffHelper.Install(container)
-        urv = ns.CreateObject("UniformRandomVariable")  # ns.cppyy.gbl.get_rng()
+        urv = ns.CreateObject[ns.UniformRandomVariable]()  # ns.cppyy.gbl.get_rng()
         startDelay = ns.Seconds(urv.GetValue(20, 30))
         app.Start(startDelay)
 
@@ -209,7 +209,7 @@ def main(argv):
         print(res)
 
     if Plot.value:
-        import pylab
+        from matplotlib import pyplot as plt
 
         delays = []
         for flow_id, flow_stats in monitor.GetFlowStats():
@@ -217,10 +217,10 @@ def main(argv):
             if tupl.protocol == 17 and tupl.sourcePort == 698:
                 continue
             delays.append(flow_stats.delaySum.GetSeconds() / flow_stats.rxPackets)
-        pylab.hist(delays, 20)
-        pylab.xlabel("Delay (s)")
-        pylab.ylabel("Number of Flows")
-        pylab.show()
+        plt.hist(delays, 20)
+        plt.xlabel("Delay (s)")
+        plt.ylabel("Number of Flows")
+        plt.show()
 
     return 0
 

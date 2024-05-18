@@ -119,7 +119,7 @@ def main(argv):
     cmd.Parse(argv)
 
     model = ns.cppyy.gbl.MyModel()
-    v = ns.CreateObject("UniformRandomVariable")
+    v = ns.CreateObject[ns.UniformRandomVariable]()
     v.SetAttribute("Min", ns.DoubleValue(10))
     v.SetAttribute("Max", ns.DoubleValue(20))
 

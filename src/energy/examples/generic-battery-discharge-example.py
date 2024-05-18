@@ -40,8 +40,8 @@ def main(argv):
     ns.LogComponentEnable("GenericBatteryModel", ns.LOG_LEVEL_DEBUG)
 
     node = ns.Node()
-    batteryHelper = ns.energy.GenericBatteryModelHelper()
-    batteryModel = ns.CreateObject("GenericBatteryModel")
+    batteryHelper = ns.GenericBatteryModelHelper()
+    batteryModel = ns.CreateObject[ns.energy.GenericBatteryModel]()
     devicesEnergyModel = ns.energy.SimpleDeviceEnergyModel()
 
     batteryModel.SetAttribute("FullVoltage", ns.DoubleValue(1.39))  # Vfull
@@ -57,7 +57,9 @@ def main(argv):
     batteryModel.SetAttribute("TypicalDischargeCurrent", ns.DoubleValue(1.3))  # i typical
     batteryModel.SetAttribute("CutoffVoltage", ns.DoubleValue(1.0))  # End of charge.
 
-    batteryModel.SetAttribute("BatteryType", ns.EnumValue(ns.NIMH_NICD))  # Battery type
+    batteryModel.SetAttribute(
+        "BatteryType", ns.EnumValue[ns.energy.GenericBatteryType](ns.energy.NIMH_NICD)
+    )  # Battery type
 
     devicesEnergyModel.SetEnergySource(batteryModel)
     batteryModel.AppendDeviceEnergyModel(devicesEnergyModel)

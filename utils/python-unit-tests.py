@@ -212,7 +212,7 @@ class TestSimulator(unittest.TestCase):
         """
         nc = ns.NodeContainer(1)
         node = nc.Get(0)
-        internet = ns.CreateObject("InternetStackHelper")
+        internet = ns.InternetStackHelper()
         internet.Install(node)
         self._received_packet = None
 
@@ -251,8 +251,8 @@ class TestSimulator(unittest.TestCase):
         @param self this object
         @return None
         """
-        # Templated class DropTailQueue<Packet> in C++
-        queue = ns.CreateObject("DropTailQueue<Packet>")
+        # Templated class DropTailQueue[ns.Packet] in C++
+        queue = ns.CreateObject[ns.DropTailQueue[ns.Packet]]()
         queueSizeValue = ns.QueueSizeValue(ns.QueueSize("500p"))
         queue.SetAttribute("MaxSize", queueSizeValue)
 
@@ -261,8 +261,8 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(limit.Get(), ns.QueueSize("500p"))
 
         ## -- object pointer values
-        mobility = ns.CreateObject("RandomWaypointMobilityModel")
-        ptr = ns.CreateObject("PointerValue")
+        mobility = ns.CreateObject[ns.RandomWaypointMobilityModel]()
+        ptr = ns.PointerValue()
         mobility.GetAttribute("PositionAllocator", ptr)
         self.assertEqual(ptr.GetObject(), ns.Ptr["Object"](ns.cppyy.nullptr))
 
@@ -270,7 +270,7 @@ class TestSimulator(unittest.TestCase):
         ptr.SetObject(pos)
         mobility.SetAttribute("PositionAllocator", ptr)
 
-        ptr2 = ns.CreateObject("PointerValue")
+        ptr2 = ns.PointerValue()
         mobility.GetAttribute("PositionAllocator", ptr2)
         self.assertNotEqual(ptr.GetObject(), ns.Ptr["Object"](ns.cppyy.nullptr))
 
@@ -282,8 +282,8 @@ class TestSimulator(unittest.TestCase):
         @param self this object
         @return None
         """
-        csma = ns.CreateObject("CsmaNetDevice")
-        channel = ns.CreateObject("CsmaChannel")
+        csma = ns.CreateObject[ns.CsmaNetDevice]()
+        channel = ns.CreateObject[ns.CsmaChannel]()
         csma.Attach(channel)
 
         c1 = csma.GetChannel()

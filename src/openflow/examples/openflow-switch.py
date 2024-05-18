@@ -53,7 +53,7 @@ for i in range(4):
 switchNode = csmaSwitch.Get(0)
 swtch = ns.OpenFlowSwitchHelper()
 controller = ns.ofi.DropController()
-# controller = ns.CreateObject("ns3::ofi::LearningController")
+# controller = ns.CreateObject[ns.ofi.LearningController]()
 swtch.Install(switchNode, switchDevices, controller)
 # controller->SetAttribute("ExpirationTime", TimeValue(timeout))
 

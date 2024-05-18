@@ -47,7 +47,7 @@ def main():
     # mu, var = 100, 225
 
     ## Random number generator.
-    rng = ns.CreateObject("NormalRandomVariable")
+    rng = ns.CreateObject[ns.NormalRandomVariable]()
     rng.SetAttribute("Mean", ns.DoubleValue(100.0))
     rng.SetAttribute("Variance", ns.DoubleValue(225.0))
 
