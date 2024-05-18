@@ -833,13 +833,13 @@ class WifiRemoteStationManager : public Object
 
     /**
      * \param header MAC header
-     * \param allowedWidth the allowed width in MHz to send this packet
+     * \param allowedWidth the allowed width to send this packet
      * \return the TXVECTOR to use to send this packet
      */
     WifiTxVector GetDataTxVector(const WifiMacHeader& header, ChannelWidthMhz allowedWidth);
     /**
      * \param address remote address
-     * \param allowedWidth the allowed width in MHz for the data frame being protected
+     * \param allowedWidth the allowed width for the data frame being protected
      *
      * \return the TXVECTOR to use to send the RTS prior to the
      *         transmission of the data packet itself.

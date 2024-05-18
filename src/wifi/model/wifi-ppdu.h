@@ -225,12 +225,12 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
                             //!< returned WifiTxVector)
     uint8_t m_txAntennas;   //!< the number of antennas used to transmit this PPDU
 
-    uint16_t m_txChannelWidth; /**< The channel width (MHz) used for the transmission of this
+    ChannelWidthMhz m_txChannelWidth; /**< The channel width used for the transmission of this
                                          PPDU. This has to be stored since channel width can not
                                          always be obtained from the PHY headers, especially for
                                          non-HT PPDU, since we do not sense the spectrum to
                                          determine the occupied channel width for simplicity. */
-};                             // class WifiPpdu
+};                                    // class WifiPpdu
 
 /**
  * \brief Stream insertion operator.

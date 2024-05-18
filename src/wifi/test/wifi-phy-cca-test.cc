@@ -750,7 +750,7 @@ class WifiPhyCcaIndicationTest : public TestCase
         Time startTime{Seconds(0)};   //!< time at which transmission will be started
         Time duration{Seconds(0)};    //!< the duration of the transmission
         uint16_t centerFreq{0};       //!< center frequency to use in MHz
-        ChannelWidthMhz bandwidth{0}; //!< bandwidth to use in MHz
+        ChannelWidthMhz bandwidth{0}; //!< bandwidth to use
     };
 
     /**
@@ -761,7 +761,7 @@ class WifiPhyCcaIndicationTest : public TestCase
         double power{0.0};            //!< transmit power to use in dBm
         Time startTime{Seconds(0)};   //!< time at which transmission will be started
         uint16_t centerFreq{0};       //!< center frequency to use in MHz
-        ChannelWidthMhz bandwidth{0}; //!< bandwidth to use in MHz
+        ChannelWidthMhz bandwidth{0}; //!< bandwidth to use
     };
 
     /**
@@ -820,7 +820,7 @@ class WifiPhyCcaIndicationTest : public TestCase
         m_rxPhyStateListener; ///< Listener for PHY state transitions
 
     uint16_t m_frequency;           ///< Operating frequency in MHz
-    ChannelWidthMhz m_channelWidth; ///< Operating channel width in MHz
+    ChannelWidthMhz m_channelWidth; ///< Operating channel width
 };
 
 WifiPhyCcaIndicationTest::WifiPhyCcaIndicationTest()

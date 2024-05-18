@@ -58,11 +58,9 @@ class WifiSpectrumValueHelper
      * 2 * guardBandwidth) MHz of bandwidth).
      *
      * \param centerFrequencies center frequency (MHz) per segment
-     * \param channelWidth total allocated channel width (MHz) over all segments
+     * \param channelWidth total allocated channel width over all segments
      * \param carrierSpacing carrier spacing (Hz)
-     * \param guardBandwidth total width of the guard band (MHz), which will be split over the
-     * segments
-     *
+     * \param guardBandwidth total width of the guard band, which will be split over the segments
      * \return the static SpectrumModel instance corresponding to the
      * given carrier frequency and channel width configuration.
      */
@@ -118,7 +116,7 @@ class WifiSpectrumValueHelper
      * MHz subchannels. Channel width may vary between 20, 40, 80, and 160 MHz.
      *
      * \param centerFrequencies center frequency (MHz) per segment
-     * \param channelWidth total allocated channel width (MHz) over all segments
+     * \param channelWidth total allocated channel width over all segments
      * \param txPowerW  transmit power (W) to allocate
      * \param guardBandwidth width of the guard band
      * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
@@ -145,7 +143,7 @@ class WifiSpectrumValueHelper
      * 20, 40, 80, and 160 MHz.
      *
      * \param centerFrequencies center frequency (MHz) per segment
-     * \param channelWidth total allocated channel width (MHz) over all segments
+     * \param channelWidth total allocated channel width over all segments
      * \param txPowerW  transmit power (W) to allocate
      * \param guardBandwidth width of the guard band
      * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
@@ -170,9 +168,9 @@ class WifiSpectrumValueHelper
      * Channel width may vary between 20, 40, 80, and 160 MHz.
      *
      * \param centerFrequency center frequency (MHz)
-     * \param channelWidth channel width (MHz)
+     * \param channelWidth channel width
      * \param txPowerW transmit power (W) to allocate
-     * \param guardBandwidth width of the guard band (MHz)
+     * \param guardBandwidth width of the guard band
      * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
      * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
      * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band
@@ -197,9 +195,9 @@ class WifiSpectrumValueHelper
      * Channel width may vary between 20, 40, 80, and 160 MHz.
      *
      * \param centerFrequencies center frequency (MHz) per segment
-     * \param channelWidth total allocated channel width (MHz) over all segments
+     * \param channelWidth total allocated channel width over all segments
      * \param txPowerW transmit power (W) to allocate
-     * \param guardBandwidth width of the guard band (MHz)
+     * \param guardBandwidth width of the guard band
      * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
      * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
      * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band
@@ -210,9 +208,9 @@ class WifiSpectrumValueHelper
      */
     static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity(
         const std::vector<uint16_t>& centerFrequencies,
-        uint16_t channelWidth,
+        ChannelWidthMhz channelWidth,
         double txPowerW,
-        uint16_t guardBandwidth,
+        ChannelWidthMhz guardBandwidth,
         double minInnerBandDbr = -20,
         double minOuterbandDbr = -28,
         double lowestPointDbr = -40,
@@ -224,9 +222,9 @@ class WifiSpectrumValueHelper
      * An ideal (i.e. rectangular) spectral mask is considered for the time being.
      *
      * \param centerFrequencies center frequency (MHz) per segment
-     * \param channelWidth total allocated channel width (MHz) over all segments
+     * \param channelWidth total allocated channel width over all segments
      * \param txPowerW  transmit power (W) to allocate
-     * \param guardBandwidth width of the guard band (MHz)
+     * \param guardBandwidth width of the guard band
      * \param ru the RU band used by the STA
      * \return a pointer to a newly allocated SpectrumValue representing the HE OFDM Transmit Power
      * Spectral Density on the RU used by the STA in W/Hz for each Band

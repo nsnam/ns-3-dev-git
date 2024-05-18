@@ -63,9 +63,9 @@ NS_LOG_COMPONENT_DEFINE("WifiPhyOfdmaTest");
 static const uint8_t DEFAULT_CHANNEL_NUMBER = 36;
 static const uint32_t DEFAULT_FREQUENCY = 5180; // MHz
 static const WifiPhyBand DEFAULT_WIFI_BAND = WIFI_PHY_BAND_5GHZ;
-static const ChannelWidthMhz DEFAULT_CHANNEL_WIDTH = 20; // MHz
+static const ChannelWidthMhz DEFAULT_CHANNEL_WIDTH = 20;
 static const ChannelWidthMhz DEFAULT_GUARD_WIDTH =
-    DEFAULT_CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
+    DEFAULT_CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
 
 /**
  * HE PHY slightly modified so as to return a given

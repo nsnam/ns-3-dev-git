@@ -50,9 +50,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("SpectrumWifiPhyTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
-static const ChannelWidthMhz CHANNEL_WIDTH = 20; // MHz
+static const ChannelWidthMhz CHANNEL_WIDTH = 20;
 static const ChannelWidthMhz GUARD_WIDTH =
-    CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
+    CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
 
 /**
  * Extended SpectrumWifiPhy class for the purpose of the tests.
@@ -505,8 +505,8 @@ class SpectrumWifiPhyFilterTest : public TestCase
     Ptr<ExtSpectrumWifiPhy> m_txPhy; ///< TX PHY
     Ptr<ExtSpectrumWifiPhy> m_rxPhy; ///< RX PHY
 
-    ChannelWidthMhz m_txChannelWidth; ///< TX channel width (MHz)
-    ChannelWidthMhz m_rxChannelWidth; ///< RX channel width (MHz)
+    ChannelWidthMhz m_txChannelWidth; ///< TX channel width
+    ChannelWidthMhz m_rxChannelWidth; ///< RX channel width
 };
 
 SpectrumWifiPhyFilterTest::SpectrumWifiPhyFilterTest()
@@ -1256,13 +1256,13 @@ class SpectrumWifiPhy80Plus80Test : public TestCase
      * Run one function
      * \param channelNumbers the channel number for each segment of the operating channel
      * \param interferenceCenterFrequency the center frequency (in MHz) of the interference signal
-     * to generate \param interferenceBandWidth the band width (in MHz) of the interference signal
-     * to generate \param expectSuccess flag to indicate whether reception is expected to be
-     * successful
+     * to generate
+     * \param interferenceBandWidth the band width of the interference signal to generate
+     * \param expectSuccess flag to indicate whether reception is expected to be successful
      */
     void RunOne(const std::vector<uint8_t>& channelNumbers,
                 uint16_t interferenceCenterFrequency,
-                uint16_t interferenceBandWidth,
+                ChannelWidthMhz interferenceBandWidth,
                 bool expectSuccess);
 
     /**
@@ -1485,7 +1485,7 @@ SpectrumWifiPhy80Plus80Test::DoTeardown()
 void
 SpectrumWifiPhy80Plus80Test::RunOne(const std::vector<uint8_t>& channelNumbers,
                                     uint16_t interferenceCenterFrequency,
-                                    uint16_t interferenceBandWidth,
+                                    ChannelWidthMhz interferenceBandWidth,
                                     bool expectSuccess)
 {
     // reset counters

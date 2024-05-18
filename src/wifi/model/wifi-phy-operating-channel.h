@@ -278,7 +278,7 @@ class WifiPhyOperatingChannel
      * primary channel of the given width within the operating channel (0 indicates
      * the 20 MHz subchannel with the lowest center frequency). Otherwise, return 0.
      *
-     * \param primaryChannelWidth the width of the primary channel in MHz
+     * \param primaryChannelWidth the width of the primary channel
      * \return the index of the requested primary channel within the operating channel
      */
     uint8_t GetPrimaryChannelIndex(ChannelWidthMhz primaryChannelWidth) const;
@@ -288,7 +288,7 @@ class WifiPhyOperatingChannel
      * secondary channel of the given width within the operating channel (0 indicates
      * the 20 MHz subchannel with the lowest center frequency). Otherwise, return 0.
      *
-     * \param secondaryChannelWidth the width of the secondary channel in MHz
+     * \param secondaryChannelWidth the width of the secondary channel
      * \return the index of the requested secondary channel within the operating channel
      */
     uint8_t GetSecondaryChannelIndex(ChannelWidthMhz secondaryChannelWidth) const;
@@ -358,7 +358,7 @@ class WifiPhyOperatingChannel
      *
      * \param number the channel number (use 0 to leave it unspecified)
      * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
-     * \param width the channel width in MHz (use 0 to leave it unspecified)
+     * \param width the channel width (use 0 to leave it unspecified)
      * \param standard the standard (use WIFI_STANDARD_UNSPECIFIED not to check whether a
      *                 channel is suitable for a specific standard)
      * \param band the PHY band

@@ -125,7 +125,7 @@ class WifiTxVector
      * \param nTx the number of TX antennas
      * \param nss the number of spatial STBC streams (NSS)
      * \param ness the number of extension spatial streams (NESS)
-     * \param channelWidth the channel width in MHz
+     * \param channelWidth the channel width
      * \param aggregation enable or disable MPDU aggregation
      * \param stbc enable or disable STBC
      * \param ldpc enable or disable LDPC (BCC is used otherwise)
@@ -565,7 +565,7 @@ class WifiTxVector
                                     It is the value that will be passed
                                     to PMD_TXPWRLVL.request */
     WifiPreamble m_preamble;        /**< preamble */
-    ChannelWidthMhz m_channelWidth; /**< channel width in MHz */
+    ChannelWidthMhz m_channelWidth; /**< channel width */
     uint16_t m_guardInterval;       /**< guard interval duration in nanoseconds */
     uint8_t m_nTx;                  /**< number of TX antennas */
     uint8_t m_nss;                  /**< number of spatial streams */

@@ -3903,7 +3903,7 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     {
         for (bool resetCamState : {true, false})
         {
-            for (uint16_t auxPhyMaxChWidth : {20, 40, 80, 160})
+            for (ChannelWidthMhz auxPhyMaxChWidth : {20, 40, 80, 160})
             {
                 AddTestCase(
                     new EmlsrLinkSwitchTest({switchAuxPhy, resetCamState, auxPhyMaxChWidth}),

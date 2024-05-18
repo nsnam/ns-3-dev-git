@@ -62,9 +62,9 @@ NS_LOG_COMPONENT_DEFINE("WifiSpectrumValueHelper");
 struct WifiSpectrumModelId
 {
     std::vector<uint16_t> centerFrequencies; ///< center frequency per segment (in MHz)
-    ChannelWidthMhz channelWidth;            ///< channel width (in MHz)
+    ChannelWidthMhz channelWidth;            ///< channel width
     uint32_t carrierSpacing;                 ///< carrier spacing (in Hz)
-    ChannelWidthMhz guardBandwidth;          ///< guard band width (in MHz)
+    ChannelWidthMhz guardBandwidth;          ///< guard band width
 };
 
 /**
@@ -483,9 +483,9 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
 Ptr<SpectrumValue>
 WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
     const std::vector<uint16_t>& centerFrequencies,
-    uint16_t channelWidth,
+    ChannelWidthMhz channelWidth,
     double txPowerW,
-    uint16_t guardBandwidth,
+    ChannelWidthMhz guardBandwidth,
     double minInnerBandDbr,
     double minOuterBandDbr,
     double lowestPointDbr,
