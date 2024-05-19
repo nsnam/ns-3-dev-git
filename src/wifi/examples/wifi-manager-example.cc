@@ -65,6 +65,7 @@
 #include "ns3/ssid.h"
 #include "ns3/tuple.h"
 #include "ns3/uinteger.h"
+#include "ns3/wifi-mac.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/yans-wifi-helper.h"
 
@@ -799,6 +800,16 @@ main(int argc, char* argv[])
 
     Simulator::Stop(Seconds((steps + 1) * stepTime));
     Simulator::Run();
+
+    if (serverSelectedStandard.m_standard >= WIFI_STANDARD_80211n)
+    {
+        NS_ABORT_MSG_UNLESS(wndClient->GetMac()->GetBaAgreementEstablishedAsOriginator(
+                                wndServer->GetMac()->GetAddress(),
+                                0),
+                            "Expected BA agreement established for standard "
+                                << serverSelectedStandard.m_standard);
+    }
+
     Simulator::Destroy();
 
     gnuplot.AddDataset(rateDataset);
