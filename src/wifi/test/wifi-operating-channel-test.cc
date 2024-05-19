@@ -515,8 +515,15 @@ Ptr<HePpdu>
 WifiPhyChannel80Plus80Test::CreateDummyHePpdu(ChannelWidthMhz bandwidth,
                                               const WifiPhyOperatingChannel& channel)
 {
-    WifiTxVector txVector =
-        WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, bandwidth, false);
+    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
+                                         0,
+                                         WIFI_PREAMBLE_HE_SU,
+                                         NanoSeconds(800),
+                                         1,
+                                         1,
+                                         0,
+                                         bandwidth,
+                                         false);
     Ptr<WifiPsdu> psdu = CreateDummyPsdu();
     return Create<HePpdu>(psdu, txVector, channel, MicroSeconds(100), 0);
 }

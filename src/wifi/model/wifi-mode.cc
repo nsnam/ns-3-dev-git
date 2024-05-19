@@ -84,11 +84,11 @@ WifiMode::IsAllowed(const WifiTxVector& txVector) const
 uint64_t
 WifiMode::GetPhyRate(ChannelWidthMhz channelWidth) const
 {
-    return GetPhyRate(channelWidth, 800, 1);
+    return GetPhyRate(channelWidth, NanoSeconds(800), 1);
 }
 
 uint64_t
-WifiMode::GetPhyRate(ChannelWidthMhz channelWidth, uint16_t guardInterval, uint8_t nss) const
+WifiMode::GetPhyRate(ChannelWidthMhz channelWidth, Time guardInterval, uint8_t nss) const
 {
     WifiTxVector txVector;
     txVector.SetMode(WifiMode(m_uid));
@@ -108,7 +108,7 @@ WifiMode::GetPhyRate(const WifiTxVector& txVector, uint16_t staId) const
 uint64_t
 WifiMode::GetDataRate(ChannelWidthMhz channelWidth) const
 {
-    return GetDataRate(channelWidth, 800, 1);
+    return GetDataRate(channelWidth, NanoSeconds(800), 1);
 }
 
 uint64_t
@@ -119,7 +119,7 @@ WifiMode::GetDataRate(const WifiTxVector& txVector, uint16_t staId) const
 }
 
 uint64_t
-WifiMode::GetDataRate(ChannelWidthMhz channelWidth, uint16_t guardInterval, uint8_t nss) const
+WifiMode::GetDataRate(ChannelWidthMhz channelWidth, Time guardInterval, uint8_t nss) const
 {
     NS_ASSERT(nss <= 8);
     WifiTxVector txVector;

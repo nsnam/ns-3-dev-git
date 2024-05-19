@@ -2117,7 +2117,7 @@ WifiMac::GetHtCapabilities(uint8_t linkId) const
         uint8_t nss = (mcs.GetMcsValue() / 8) + 1;
         NS_ASSERT(nss > 0 && nss < 5);
         uint64_t dataRate = mcs.GetDataRate(htConfiguration->Get40MHzOperationSupported() ? 40 : 20,
-                                            sgiSupported ? 400 : 800,
+                                            NanoSeconds(sgiSupported ? 400 : 800),
                                             nss);
         if (dataRate > maxSupportedRate)
         {
@@ -2247,7 +2247,7 @@ WifiMac::GetHeCapabilities(uint8_t linkId) const
     }
     capabilities.SetChannelWidthSet(channelWidthSet);
     capabilities.SetLdpcCodingInPayload(htConfiguration->GetLdpcSupported());
-    if (heConfiguration->GetGuardInterval() == NanoSeconds(800))
+    if (heConfiguration->GetGuardInterval().GetNanoSeconds() == 800)
     {
         // todo: We assume for now that if we support 800ns GI then 1600ns GI is supported as well
         // todo: Assuming reception support for both 1x HE LTF and 4x HE LTF 800 ns

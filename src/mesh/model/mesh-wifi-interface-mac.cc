@@ -298,14 +298,14 @@ MeshWifiInterfaceMac::GetSupportedRates() const
     AllSupportedRates rates;
     for (const auto& mode : GetWifiPhy()->GetModeList())
     {
-        uint16_t gi = ConvertGuardIntervalToNanoSeconds(mode, GetWifiPhy()->GetDevice());
+        const auto gi = GetGuardIntervalForMode(mode, GetWifiPhy()->GetDevice());
         rates.AddSupportedRate(mode.GetDataRate(GetWifiPhy()->GetChannelWidth(), gi, 1));
     }
     // set the basic rates
     for (uint32_t j = 0; j < GetWifiRemoteStationManager()->GetNBasicModes(); j++)
     {
-        WifiMode mode = GetWifiRemoteStationManager()->GetBasicMode(j);
-        uint16_t gi = ConvertGuardIntervalToNanoSeconds(mode, GetWifiPhy()->GetDevice());
+        const auto mode = GetWifiRemoteStationManager()->GetBasicMode(j);
+        const auto gi = GetGuardIntervalForMode(mode, GetWifiPhy()->GetDevice());
         rates.SetBasicRate(mode.GetDataRate(GetWifiPhy()->GetChannelWidth(), gi, 1));
     }
     return rates;
@@ -316,8 +316,8 @@ MeshWifiInterfaceMac::CheckSupportedRates(AllSupportedRates rates) const
 {
     for (uint32_t i = 0; i < GetWifiRemoteStationManager()->GetNBasicModes(); i++)
     {
-        WifiMode mode = GetWifiRemoteStationManager()->GetBasicMode(i);
-        uint16_t gi = ConvertGuardIntervalToNanoSeconds(mode, GetWifiPhy()->GetDevice());
+        const auto mode = GetWifiRemoteStationManager()->GetBasicMode(i);
+        const auto gi = GetGuardIntervalForMode(mode, GetWifiPhy()->GetDevice());
         if (!rates.IsSupportedRate(mode.GetDataRate(GetWifiPhy()->GetChannelWidth(), gi, 1)))
         {
             return false;
@@ -441,8 +441,8 @@ MeshWifiInterfaceMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 
             for (const auto& mode : GetWifiPhy()->GetModeList())
             {
-                uint16_t gi = ConvertGuardIntervalToNanoSeconds(mode, GetWifiPhy()->GetDevice());
-                uint64_t rate = mode.GetDataRate(GetWifiPhy()->GetChannelWidth(), gi, 1);
+                const auto gi = GetGuardIntervalForMode(mode, GetWifiPhy()->GetDevice());
+                const auto rate = mode.GetDataRate(GetWifiPhy()->GetChannelWidth(), gi, 1);
                 if (rates.IsSupportedRate(rate))
                 {
                     GetWifiRemoteStationManager()->AddSupportedMode(hdr->GetAddr2(), mode);

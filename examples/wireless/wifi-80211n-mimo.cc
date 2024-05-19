@@ -216,7 +216,7 @@ main(int argc, char* argv[])
             /* Setting applications */
             const auto maxLoad = HtPhy::GetDataRate(i,
                                                     channelBonding ? 40 : 20,
-                                                    shortGuardInterval ? 400 : 800,
+                                                    NanoSeconds(shortGuardInterval ? 400 : 800),
                                                     nStreams);
             ApplicationContainer serverApp;
             if (udp)

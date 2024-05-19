@@ -3589,7 +3589,7 @@ class HeRuMcsDataRateTestCase : public TestCase
     bool CheckDataRate(HeRu::RuType ruType,
                        std::string mcs,
                        uint8_t nss,
-                       uint16_t guardInterval,
+                       Time guardInterval,
                        uint16_t expectedDataRate);
     void DoRun() override;
 };
@@ -3603,7 +3603,7 @@ bool
 HeRuMcsDataRateTestCase::CheckDataRate(HeRu::RuType ruType,
                                        std::string mcs,
                                        uint8_t nss,
-                                       uint16_t guardInterval,
+                                       Time guardInterval,
                                        uint16_t expectedDataRate)
 {
     uint8_t staId = 1;
@@ -3641,18 +3641,18 @@ HeRuMcsDataRateTestCase::DoRun()
     bool retval = true;
 
     // 26-tone RU, browse over all MCSs, GIs and Nss's (up to 4, current max)
-    retval = retval && CheckDataRate(HeRu::RU_26_TONE, "HeMcs0", 1, 800, 9) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs1", 1, 1600, 17) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs2", 1, 3200, 23) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs3", 1, 3200, 30) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs4", 2, 1600, 100) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs5", 3, 1600, 200) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs6", 4, 1600, 300) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs7", 4, 3200, 300) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs8", 4, 1600, 400) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs9", 4, 3200, 400) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs10", 4, 1600, 500) &&
-             CheckDataRate(HeRu::RU_26_TONE, "HeMcs11", 4, 3200, 500);
+    retval = retval && CheckDataRate(HeRu::RU_26_TONE, "HeMcs0", 1, NanoSeconds(800), 9) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs1", 1, NanoSeconds(1600), 17) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs2", 1, NanoSeconds(3200), 23) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs3", 1, NanoSeconds(3200), 30) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs4", 2, NanoSeconds(1600), 100) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs5", 3, NanoSeconds(1600), 200) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs6", 4, NanoSeconds(1600), 300) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs7", 4, NanoSeconds(3200), 300) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs8", 4, NanoSeconds(1600), 400) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs9", 4, NanoSeconds(3200), 400) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs10", 4, NanoSeconds(1600), 500) &&
+             CheckDataRate(HeRu::RU_26_TONE, "HeMcs11", 4, NanoSeconds(3200), 500);
 
     NS_TEST_EXPECT_MSG_EQ(
         retval,
@@ -3660,12 +3660,12 @@ HeRuMcsDataRateTestCase::DoRun()
         "26-tone RU  data rate verification for different MCSs, GIs, and Nss's failed");
 
     // Check other RU sizes
-    retval = retval && CheckDataRate(HeRu::RU_52_TONE, "HeMcs2", 1, 1600, 50) &&
-             CheckDataRate(HeRu::RU_106_TONE, "HeMcs9", 1, 800, 500) &&
-             CheckDataRate(HeRu::RU_242_TONE, "HeMcs5", 1, 1600, 650) &&
-             CheckDataRate(HeRu::RU_484_TONE, "HeMcs3", 1, 1600, 650) &&
-             CheckDataRate(HeRu::RU_996_TONE, "HeMcs5", 1, 3200, 2450) &&
-             CheckDataRate(HeRu::RU_2x996_TONE, "HeMcs3", 1, 3200, 2450);
+    retval = retval && CheckDataRate(HeRu::RU_52_TONE, "HeMcs2", 1, NanoSeconds(1600), 50) &&
+             CheckDataRate(HeRu::RU_106_TONE, "HeMcs9", 1, NanoSeconds(800), 500) &&
+             CheckDataRate(HeRu::RU_242_TONE, "HeMcs5", 1, NanoSeconds(1600), 650) &&
+             CheckDataRate(HeRu::RU_484_TONE, "HeMcs3", 1, NanoSeconds(1600), 650) &&
+             CheckDataRate(HeRu::RU_996_TONE, "HeMcs5", 1, NanoSeconds(3200), 2450) &&
+             CheckDataRate(HeRu::RU_2x996_TONE, "HeMcs3", 1, NanoSeconds(3200), 2450);
 
     NS_TEST_EXPECT_MSG_EQ(retval,
                           true,

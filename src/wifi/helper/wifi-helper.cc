@@ -281,7 +281,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE;
     }
 
-    if (txVector.GetGuardInterval() == 400)
+    if (txVector.GetGuardInterval().GetNanoSeconds() == 400)
     {
         frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_GUARD;
     }
@@ -339,7 +339,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         }
 
         mcsKnown |= RadiotapHeader::MCS_KNOWN_GUARD_INTERVAL;
-        if (txVector.GetGuardInterval() == 400)
+        if (txVector.GetGuardInterval().GetNanoSeconds() == 400)
         {
             mcsFlags |= RadiotapHeader::MCS_FLAGS_GUARD_INTERVAL;
         }
@@ -401,7 +401,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         }
 
         vhtKnown |= RadiotapHeader::VHT_KNOWN_GUARD_INTERVAL;
-        if (txVector.GetGuardInterval() == 400)
+        if (txVector.GetGuardInterval().GetNanoSeconds() == 400)
         {
             vhtFlags |= RadiotapHeader::VHT_FLAGS_GUARD_INTERVAL;
         }
@@ -517,11 +517,11 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         {
             data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_160MHZ;
         }
-        if (txVector.GetGuardInterval() == 1600)
+        if (txVector.GetGuardInterval().GetNanoSeconds() == 1600)
         {
             data5 |= RadiotapHeader::HE_DATA5_GI_1_6;
         }
-        else if (txVector.GetGuardInterval() == 3200)
+        else if (txVector.GetGuardInterval().GetNanoSeconds() == 3200)
         {
             data5 |= RadiotapHeader::HE_DATA5_GI_3_2;
         }

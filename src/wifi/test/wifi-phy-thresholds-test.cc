@@ -150,7 +150,7 @@ WifiPhyThresholdsTest::MakeWifiSignal(double txPowerWatts, const WifiPhyOperatin
     WifiTxVector txVector = WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
                                          0,
                                          WIFI_PREAMBLE_LONG,
-                                         800,
+                                         NanoSeconds(800),
                                          1,
                                          1,
                                          0,

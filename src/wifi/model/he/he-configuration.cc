@@ -188,8 +188,8 @@ void
 HeConfiguration::SetGuardInterval(Time guardInterval)
 {
     NS_LOG_FUNCTION(this << guardInterval);
-    NS_ASSERT(guardInterval == NanoSeconds(800) || guardInterval == NanoSeconds(1600) ||
-              guardInterval == NanoSeconds(3200));
+    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
+    NS_ASSERT((gi == 800) || (gi == 1600) || (gi == 3200));
     m_guardInterval = guardInterval;
 }
 

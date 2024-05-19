@@ -316,7 +316,7 @@ HePpdu::GetTxDuration() const
     Time ppduDuration = Seconds(0);
     const auto& txVector = GetTxVector();
     const auto length = m_lSig.GetLength();
-    const auto tSymbol = NanoSeconds(12800 + txVector.GetGuardInterval());
+    const auto tSymbol = HePhy::GetSymbolDuration(txVector.GetGuardInterval());
     const auto preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector);
     NS_ASSERT(m_operatingChannel.IsSet());
     uint8_t sigExtension = (m_operatingChannel.GetPhyBand() == WIFI_PHY_BAND_2_4GHZ) ? 6 : 0;
@@ -735,17 +735,18 @@ HePpdu::GetChannelWidthMhzFromEncoding(uint8_t bandwidth)
 }
 
 uint8_t
-HePpdu::GetGuardIntervalAndNltfEncoding(uint16_t gi, uint8_t nltf)
+HePpdu::GetGuardIntervalAndNltfEncoding(Time guardInterval, uint8_t nltf)
 {
-    if (gi == 800 && nltf == 1)
+    const auto gi = guardInterval.GetNanoSeconds();
+    if ((gi == 800) && (nltf == 1))
     {
         return 0;
     }
-    else if (gi == 800 && nltf == 2)
+    else if ((gi == 800) && (nltf == 2))
     {
         return 1;
     }
-    else if (gi == 1600 && nltf == 2)
+    else if ((gi == 1600) && (nltf == 2))
     {
         return 2;
     }
@@ -755,21 +756,21 @@ HePpdu::GetGuardIntervalAndNltfEncoding(uint16_t gi, uint8_t nltf)
     }
 }
 
-uint16_t
+Time
 HePpdu::GetGuardIntervalFromEncoding(uint8_t giAndNltfSize)
 {
     if (giAndNltfSize == 3)
     {
         // we currently do not consider DCM nor STBC fields
-        return 3200;
+        return NanoSeconds(3200);
     }
     else if (giAndNltfSize == 2)
     {
-        return 1600;
+        return NanoSeconds(1600);
     }
     else
     {
-        return 800;
+        return NanoSeconds(800);
     }
 }
 

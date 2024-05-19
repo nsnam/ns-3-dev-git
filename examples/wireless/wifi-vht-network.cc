@@ -265,7 +265,8 @@ main(int argc, char* argv[])
                 apNodeInterface = address.Assign(apDevice);
 
                 /* Setting applications */
-                const auto maxLoad = VhtPhy::GetDataRate(mcs, channelWidth, sgi ? 400 : 800, 1);
+                const auto maxLoad =
+                    VhtPhy::GetDataRate(mcs, channelWidth, NanoSeconds(sgi ? 400 : 800), 1);
                 ApplicationContainer serverApp;
                 if (udp)
                 {

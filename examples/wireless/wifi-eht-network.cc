@@ -498,7 +498,7 @@ main(int argc, char* argv[])
                 }
 
                 const auto maxLoad =
-                    nLinks * EhtPhy::GetDataRate(mcs, channelWidth, gi, 1) / nStations;
+                    nLinks * EhtPhy::GetDataRate(mcs, channelWidth, NanoSeconds(gi), 1) / nStations;
                 if (udp)
                 {
                     // UDP flow

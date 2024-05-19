@@ -397,14 +397,14 @@ class HtPhy : public OfdmPhy
      *
      * \param mcsValue the HT MCS index
      * \param channelWidth the considered channel width in MHz
-     * \param guardInterval the considered guard interval duration in nanoseconds
+     * \param guardInterval the considered guard interval duration
      * \param nss the considered number of stream
      *
      * \return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRate(uint8_t mcsValue,
                                ChannelWidthMhz channelWidth,
-                               uint16_t guardInterval,
+                               Time guardInterval,
                                uint8_t nss);
     /**
      * Return the PHY rate corresponding to
@@ -442,7 +442,7 @@ class HtPhy : public OfdmPhy
      */
     static uint64_t GetDataRate(uint8_t mcsValue,
                                 ChannelWidthMhz channelWidth,
-                                uint16_t guardInterval,
+                                Time guardInterval,
                                 uint8_t nss);
     /**
      * Calculate the rate in bps of the non-HT Reference Rate corresponding

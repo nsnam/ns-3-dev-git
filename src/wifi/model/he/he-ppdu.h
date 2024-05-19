@@ -269,13 +269,13 @@ class HePpdu : public OfdmPpdu
     static uint8_t GetNstsEncodingFromNss(uint8_t nss);
 
     /**
-     * Convert guard interval (in ns) and NLTF to its encoding in HE-SIG-A.
+     * Convert guard interval and NLTF to its encoding in HE-SIG-A.
      *
-     * \param gi the guard interval in nanoseconds
+     * \param guardInterval the guard interval
      * \param nltf the the number of long training symbols
      * \return the value used to encode the NSTS field in HE-SIG-A
      */
-    static uint8_t GetGuardIntervalAndNltfEncoding(uint16_t gi, uint8_t nltf);
+    static uint8_t GetGuardIntervalAndNltfEncoding(Time guardInterval, uint8_t nltf);
 
     /**
      * Convert number of spatial streams from NSTS field encoding in HE-SIG-A.
@@ -294,12 +294,12 @@ class HePpdu : public OfdmPpdu
     static ChannelWidthMhz GetChannelWidthMhzFromEncoding(uint8_t bandwidth);
 
     /**
-     * Convert guard interval (in ns) from its encoding in HE-SIG-A.
+     * Convert guard interval from its encoding in HE-SIG-A.
      *
      * \param giAndNltfSize the value used to encode the guard interval and NLTF field in HE-SIG-A
-     * \return the guard interval in nanoseconds
+     * \return the guard interval
      */
-    static uint16_t GetGuardIntervalFromEncoding(uint8_t giAndNltfSize);
+    static Time GetGuardIntervalFromEncoding(uint8_t giAndNltfSize);
 
     /**
      * Convert number of MU-MIMO users to its encoding in HE-SIG-A.

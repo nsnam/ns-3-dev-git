@@ -82,7 +82,7 @@ HtPpdu::SetHtSigHeader(HtSigHeader& htSig, const WifiTxVector& txVector, std::si
     htSig.SetChannelWidth(txVector.GetChannelWidth());
     htSig.SetHtLength(psduSize);
     htSig.SetAggregation(txVector.IsAggregation());
-    htSig.SetShortGuardInterval(txVector.GetGuardInterval() == 400);
+    htSig.SetShortGuardInterval(txVector.GetGuardInterval().GetNanoSeconds() == 400);
 }
 
 WifiTxVector
@@ -102,7 +102,7 @@ HtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector,
     txVector.SetMode(HtPhy::GetHtMcs(htSig.GetMcs()));
     txVector.SetChannelWidth(htSig.GetChannelWidth());
     txVector.SetNss(1 + (htSig.GetMcs() / 8));
-    txVector.SetGuardInterval(htSig.GetShortGuardInterval() ? 400 : 800);
+    txVector.SetGuardInterval(NanoSeconds(htSig.GetShortGuardInterval() ? 400 : 800));
     txVector.SetAggregation(htSig.GetAggregation());
 }
 

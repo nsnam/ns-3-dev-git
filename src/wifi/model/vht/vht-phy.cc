@@ -234,7 +234,7 @@ VhtPhy::GetNumberBccEncoders(const WifiTxVector& txVector) const
      * 21-30 to 21-61 of IEEE 802.11-2016.
      * These values are the last values before changing encoders.
      */
-    double maxRatePerCoder = (txVector.GetGuardInterval() == 800) ? 540e6 : 600e6;
+    double maxRatePerCoder = (txVector.GetGuardInterval().GetNanoSeconds() == 800) ? 540e6 : 600e6;
     uint8_t nes = ceil(payloadMode.GetDataRate(txVector) / maxRatePerCoder);
 
     // Handle exceptions to the rule
@@ -430,10 +430,7 @@ VhtPhy::GetConstellationSize(uint8_t mcsValue)
 }
 
 uint64_t
-VhtPhy::GetPhyRate(uint8_t mcsValue,
-                   ChannelWidthMhz channelWidth,
-                   uint16_t guardInterval,
-                   uint8_t nss)
+VhtPhy::GetPhyRate(uint8_t mcsValue, ChannelWidthMhz channelWidth, Time guardInterval, uint8_t nss)
 {
     WifiCodeRate codeRate = GetCodeRate(mcsValue);
     uint64_t dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
@@ -459,17 +456,15 @@ VhtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t /* staId 
 }
 
 uint64_t
-VhtPhy::GetDataRate(uint8_t mcsValue,
-                    ChannelWidthMhz channelWidth,
-                    uint16_t guardInterval,
-                    uint8_t nss)
+VhtPhy::GetDataRate(uint8_t mcsValue, ChannelWidthMhz channelWidth, Time guardInterval, uint8_t nss)
 {
-    NS_ASSERT(guardInterval == 800 || guardInterval == 400);
+    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
+    NS_ASSERT((gi == 800) || (gi == 400));
     NS_ASSERT(nss <= 8);
     NS_ASSERT_MSG(IsCombinationAllowed(mcsValue, channelWidth, nss),
                   "VHT MCS " << +mcsValue << " forbidden at " << channelWidth << " MHz when NSS is "
                              << +nss);
-    return HtPhy::CalculateDataRate(GetSymbolDuration(NanoSeconds(guardInterval)),
+    return HtPhy::CalculateDataRate(GetSymbolDuration(guardInterval),
                                     GetUsableSubcarriers(channelWidth),
                                     static_cast<uint16_t>(log2(GetConstellationSize(mcsValue))),
                                     HtPhy::GetCodeRatio(GetCodeRate(mcsValue)),

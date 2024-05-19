@@ -653,8 +653,7 @@ PhyEntity::ScheduleEndOfMpdus(Ptr<Event> event)
         remainingAmpduDuration -= mpduDuration;
         if (i == (nMpdus - 1) && !remainingAmpduDuration.IsZero()) // no more MPDUs coming
         {
-            if (remainingAmpduDuration <
-                NanoSeconds(txVector.GetGuardInterval())) // enables to ignore padding
+            if (remainingAmpduDuration < txVector.GetGuardInterval()) // enables to ignore padding
             {
                 mpduDuration += remainingAmpduDuration; // apply a correction just in case rounding
                                                         // had induced slight shift

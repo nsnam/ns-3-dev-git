@@ -227,12 +227,12 @@ ThompsonSamplingWifiManager::UpdateNextMode(WifiRemoteStation* st) const
     for (uint32_t i = 0; i < station->m_mcsStats.size(); i++)
     {
         Decay(st, i);
-        const WifiMode mode{station->m_mcsStats.at(i).mode};
+        const auto mode{station->m_mcsStats.at(i).mode};
 
-        uint16_t guardInterval = GetModeGuardInterval(st, mode);
-        double rate = mode.GetDataRate(station->m_mcsStats.at(i).channelWidth,
-                                       guardInterval,
-                                       station->m_mcsStats.at(i).nss);
+        const auto guardInterval = GetModeGuardInterval(st, mode);
+        const auto rate = mode.GetDataRate(station->m_mcsStats.at(i).channelWidth,
+                                           guardInterval,
+                                           station->m_mcsStats.at(i).nss);
 
         // Thompson sampling
         frameSuccessRate = SampleBetaVariable(1.0 + station->m_mcsStats.at(i).success,
@@ -297,7 +297,7 @@ ThompsonSamplingWifiManager::DoReportFinalDataFailed(WifiRemoteStation* station)
     NS_LOG_FUNCTION(this << station);
 }
 
-uint16_t
+Time
 ThompsonSamplingWifiManager::GetModeGuardInterval(WifiRemoteStation* st, WifiMode mode) const
 {
     if (mode.GetModulationClass() == WIFI_MOD_CLASS_HE)
@@ -307,12 +307,12 @@ ThompsonSamplingWifiManager::GetModeGuardInterval(WifiRemoteStation* st, WifiMod
     else if ((mode.GetModulationClass() == WIFI_MOD_CLASS_HT) ||
              (mode.GetModulationClass() == WIFI_MOD_CLASS_VHT))
     {
-        return std::max<uint16_t>(GetShortGuardIntervalSupported(st) ? 400 : 800,
-                                  GetShortGuardIntervalSupported() ? 400 : 800);
+        auto useSgi = GetShortGuardIntervalSupported(st) && GetShortGuardIntervalSupported();
+        return NanoSeconds(useSgi ? 400 : 800);
     }
     else
     {
-        return 800;
+        return NanoSeconds(800);
     }
 }
 
@@ -324,10 +324,10 @@ ThompsonSamplingWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWid
     auto station = static_cast<ThompsonSamplingWifiRemoteStation*>(st);
 
     auto& stats = station->m_mcsStats.at(station->m_nextMode);
-    WifiMode mode = stats.mode;
+    const auto mode = stats.mode;
     const auto channelWidth = std::min(stats.channelWidth, allowedWidth);
-    uint8_t nss = stats.nss;
-    uint16_t guardInterval = GetModeGuardInterval(st, mode);
+    const auto nss = stats.nss;
+    const auto guardInterval = GetModeGuardInterval(st, mode);
 
     station->m_lastMode = station->m_nextMode;
 
@@ -335,7 +335,7 @@ ThompsonSamplingWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWid
                  << " mode=" << mode << " channelWidth=" << channelWidth << " nss=" << +nss
                  << " guardInterval=" << guardInterval);
 
-    uint64_t rate = mode.GetDataRate(channelWidth, guardInterval, nss);
+    const auto rate = mode.GetDataRate(channelWidth, guardInterval, nss);
     if (m_currentRate != rate)
     {
         NS_LOG_DEBUG("New datarate: " << rate);

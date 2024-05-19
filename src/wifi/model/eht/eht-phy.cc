@@ -337,13 +337,10 @@ EhtPhy::GetConstellationSize(uint8_t mcsValue)
 }
 
 uint64_t
-EhtPhy::GetPhyRate(uint8_t mcsValue,
-                   ChannelWidthMhz channelWidth,
-                   uint16_t guardInterval,
-                   uint8_t nss)
+EhtPhy::GetPhyRate(uint8_t mcsValue, ChannelWidthMhz channelWidth, Time guardInterval, uint8_t nss)
 {
-    WifiCodeRate codeRate = GetCodeRate(mcsValue);
-    uint64_t dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
+    const auto codeRate = GetCodeRate(mcsValue);
+    const auto dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
     return HtPhy::CalculatePhyRate(codeRate, dataRate);
 }
 
@@ -376,14 +373,12 @@ EhtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* 
 }
 
 uint64_t
-EhtPhy::GetDataRate(uint8_t mcsValue,
-                    ChannelWidthMhz channelWidth,
-                    uint16_t guardInterval,
-                    uint8_t nss)
+EhtPhy::GetDataRate(uint8_t mcsValue, ChannelWidthMhz channelWidth, Time guardInterval, uint8_t nss)
 {
-    NS_ASSERT(guardInterval == 800 || guardInterval == 1600 || guardInterval == 3200);
+    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
+    NS_ASSERT((gi == 800) || (gi == 1600) || (gi == 3200));
     NS_ASSERT(nss <= 8);
-    return HtPhy::CalculateDataRate(GetSymbolDuration(NanoSeconds(guardInterval)),
+    return HtPhy::CalculateDataRate(GetSymbolDuration(guardInterval),
                                     GetUsableSubcarriers(channelWidth),
                                     static_cast<uint16_t>(log2(GetConstellationSize(mcsValue))),
                                     HtPhy::GetCodeRatio(GetCodeRate(mcsValue)),

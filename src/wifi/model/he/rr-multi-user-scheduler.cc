@@ -201,7 +201,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu(Func canBeSolicited)
     WifiTxVector txVector;
     txVector.SetPreambleType(WIFI_PREAMBLE_HE_TB);
     txVector.SetChannelWidth(m_allowedWidth);
-    txVector.SetGuardInterval(heConfiguration->GetGuardInterval().GetNanoSeconds());
+    txVector.SetGuardInterval(heConfiguration->GetGuardInterval());
     txVector.SetBssColor(heConfiguration->GetBssColor());
 
     // iterate over the associated stations until an enough number of stations is identified
@@ -651,7 +651,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
     m_txParams.Clear();
     m_txParams.m_txVector.SetPreambleType(WIFI_PREAMBLE_HE_MU);
     m_txParams.m_txVector.SetChannelWidth(m_allowedWidth);
-    m_txParams.m_txVector.SetGuardInterval(heConfiguration->GetGuardInterval().GetNanoSeconds());
+    m_txParams.m_txVector.SetGuardInterval(heConfiguration->GetGuardInterval());
     m_txParams.m_txVector.SetBssColor(heConfiguration->GetBssColor());
 
     // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more

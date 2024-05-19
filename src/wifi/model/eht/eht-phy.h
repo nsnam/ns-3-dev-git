@@ -193,14 +193,14 @@ class EhtPhy : public HePhy
      *
      * \param mcsValue the EHT MCS index
      * \param channelWidth the considered channel width in MHz
-     * \param guardInterval the considered guard interval duration in nanoseconds
+     * \param guardInterval the considered guard interval duration
      * \param nss the considered number of stream
      *
      * \return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRate(uint8_t mcsValue,
                                ChannelWidthMhz channelWidth,
-                               uint16_t guardInterval,
+                               Time guardInterval,
                                uint8_t nss);
 
     /**
@@ -233,13 +233,13 @@ class EhtPhy : public HePhy
      *
      * \param mcsValue the EHT MCS index
      * \param channelWidth the channel width in MHz
-     * \param guardInterval the guard interval duration in nanoseconds
+     * \param guardInterval the guard interval duration
      * \param nss the number of spatial streams
      * \return the data bit rate in bps.
      */
     static uint64_t GetDataRate(uint8_t mcsValue,
                                 ChannelWidthMhz channelWidth,
-                                uint16_t guardInterval,
+                                Time guardInterval,
                                 uint8_t nss);
 
     /**

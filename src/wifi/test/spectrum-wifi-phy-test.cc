@@ -194,7 +194,7 @@ SpectrumWifiPhyBasicTest::MakeSignal(double txPowerWatts, const WifiPhyOperating
     WifiTxVector txVector = WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
                                          0,
                                          WIFI_PREAMBLE_LONG,
-                                         800,
+                                         NanoSeconds(800),
                                          1,
                                          1,
                                          0,
@@ -527,7 +527,7 @@ SpectrumWifiPhyFilterTest::SendPpdu()
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
                                          0,
                                          WIFI_PREAMBLE_HE_SU,
-                                         800,
+                                         NanoSeconds(800),
                                          1,
                                          1,
                                          0,
@@ -1357,7 +1357,7 @@ SpectrumWifiPhy80Plus80Test::Send160MhzPpdu()
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
                                          0,
                                          WIFI_PREAMBLE_HE_SU,
-                                         800,
+                                         NanoSeconds(800),
                                          1,
                                          1,
                                          0,
@@ -1825,8 +1825,16 @@ SpectrumWifiPhyMultipleInterfacesTest::SendPpdu(Ptr<SpectrumWifiPhy> phy,
     NS_LOG_FUNCTION(this << phy << txPowerDbm << payloadSize << phy->GetCurrentFrequencyRange()
                          << phy->GetChannelWidth() << phy->GetChannelNumber());
 
-    WifiTxVector txVector =
-        WifiTxVector(HePhy::GetHeMcs11(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false, false);
+    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs11(),
+                                         0,
+                                         WIFI_PREAMBLE_HE_SU,
+                                         NanoSeconds(800),
+                                         1,
+                                         1,
+                                         0,
+                                         20,
+                                         false,
+                                         false);
     Ptr<Packet> pkt = Create<Packet>(payloadSize);
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_QOSDATA);

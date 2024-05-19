@@ -176,8 +176,15 @@ WifiPhyCcaThresholdsTest::CreateDummyPsdu()
 Ptr<OfdmPpdu>
 WifiPhyCcaThresholdsTest::CreateDummyNonHtPpdu(const WifiPhyOperatingChannel& channel)
 {
-    WifiTxVector txVector =
-        WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(), 0, WIFI_PREAMBLE_LONG, 800, 1, 1, 0, 20, false);
+    WifiTxVector txVector = WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
+                                         0,
+                                         WIFI_PREAMBLE_LONG,
+                                         NanoSeconds(800),
+                                         1,
+                                         1,
+                                         0,
+                                         20,
+                                         false);
     Ptr<WifiPsdu> psdu = CreateDummyPsdu();
     return Create<OfdmPpdu>(psdu, txVector, channel, 0);
 }
@@ -186,8 +193,15 @@ Ptr<HtPpdu>
 WifiPhyCcaThresholdsTest::CreateDummyHtPpdu(ChannelWidthMhz bandwidth,
                                             const WifiPhyOperatingChannel& channel)
 {
-    WifiTxVector txVector =
-        WifiTxVector(HtPhy::GetHtMcs0(), 0, WIFI_PREAMBLE_HT_MF, 800, 1, 1, 0, bandwidth, false);
+    WifiTxVector txVector = WifiTxVector(HtPhy::GetHtMcs0(),
+                                         0,
+                                         WIFI_PREAMBLE_HT_MF,
+                                         NanoSeconds(800),
+                                         1,
+                                         1,
+                                         0,
+                                         bandwidth,
+                                         false);
     Ptr<WifiPsdu> psdu = CreateDummyPsdu();
     return Create<HtPpdu>(psdu, txVector, channel, MicroSeconds(100), 0);
 }
@@ -196,8 +210,15 @@ Ptr<VhtPpdu>
 WifiPhyCcaThresholdsTest::CreateDummyVhtPpdu(ChannelWidthMhz bandwidth,
                                              const WifiPhyOperatingChannel& channel)
 {
-    WifiTxVector txVector =
-        WifiTxVector(VhtPhy::GetVhtMcs0(), 0, WIFI_PREAMBLE_VHT_SU, 800, 1, 1, 0, bandwidth, false);
+    WifiTxVector txVector = WifiTxVector(VhtPhy::GetVhtMcs0(),
+                                         0,
+                                         WIFI_PREAMBLE_VHT_SU,
+                                         NanoSeconds(800),
+                                         1,
+                                         1,
+                                         0,
+                                         bandwidth,
+                                         false);
     Ptr<WifiPsdu> psdu = CreateDummyPsdu();
     return Create<VhtPpdu>(psdu, txVector, channel, MicroSeconds(100), 0);
 }
@@ -206,8 +227,15 @@ Ptr<HePpdu>
 WifiPhyCcaThresholdsTest::CreateDummyHePpdu(ChannelWidthMhz bandwidth,
                                             const WifiPhyOperatingChannel& channel)
 {
-    WifiTxVector txVector =
-        WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, bandwidth, false);
+    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
+                                         0,
+                                         WIFI_PREAMBLE_HE_SU,
+                                         NanoSeconds(800),
+                                         1,
+                                         1,
+                                         0,
+                                         bandwidth,
+                                         false);
     Ptr<WifiPsdu> psdu = CreateDummyPsdu();
     return Create<HePpdu>(psdu, txVector, channel, MicroSeconds(100), 0);
 }
@@ -880,8 +908,15 @@ WifiPhyCcaIndicationTest::SendHeSuPpdu(double txPowerDbm,
     m_txPhy->SetOperatingChannel(
         WifiPhy::ChannelTuple{channelNum, bandwidth, WIFI_PHY_BAND_5GHZ, 0});
 
-    WifiTxVector txVector =
-        WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, bandwidth, false);
+    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
+                                         0,
+                                         WIFI_PREAMBLE_HE_SU,
+                                         NanoSeconds(800),
+                                         1,
+                                         1,
+                                         0,
+                                         bandwidth,
+                                         false);
 
     Ptr<Packet> pkt = Create<Packet>(1000);
     WifiMacHeader hdr;

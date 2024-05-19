@@ -81,7 +81,7 @@ operator<<(std::ostream& os, McsGroupType type)
 struct McsGroup
 {
     uint8_t streams;         ///< number of spatial streams
-    uint16_t gi;             ///< guard interval duration (nanoseconds)
+    Time gi;                 ///< guard interval duration
     ChannelWidthMhz chWidth; ///< channel width (MHz)
     McsGroupType type;       ///< identifies the group, \see McsGroupType
     bool isSupported;        ///< flag whether group is  supported
@@ -305,7 +305,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      *
      * \param phy pointer to the wifi PHY
      * \param streams the number of streams
-     * \param gi guard interval duration (nanoseconds)
+     * \param gi guard interval duration
      * \param chWidth the channel width (MHz)
      * \param mode the wifi mode
      * \param mpduType the type of the MPDU
@@ -313,7 +313,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      */
     Time CalculateMpduTxDuration(Ptr<WifiPhy> phy,
                                  uint8_t streams,
-                                 uint16_t gi,
+                                 Time gi,
                                  ChannelWidthMhz chWidth,
                                  WifiMode mode,
                                  MpduType mpduType);
@@ -578,31 +578,31 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * Returns the groupId of an HT MCS with the given number of streams, GI and channel width used.
      *
      * \param txstreams the number of streams
-     * \param gi guard interval duration (nanoseconds)
-     * \param chWidth the channel width (MHz)
+     * \param guardInterval guard interval duration
+     * \param chWidth the channel width
      * \returns the HT group ID
      */
-    uint8_t GetHtGroupId(uint8_t txstreams, uint16_t gi, ChannelWidthMhz chWidth);
+    uint8_t GetHtGroupId(uint8_t txstreams, Time guardInterval, ChannelWidthMhz chWidth);
 
     /**
      * Returns the groupId of a VHT MCS with the given number of streams, GI and channel width used.
      *
      * \param txstreams the number of streams
-     * \param gi guard interval duration (nanoseconds)
-     * \param chWidth the channel width (MHz)
+     * \param guardInterval guard interval duration
+     * \param chWidth the channel width
      * \returns the VHT group ID
      */
-    uint8_t GetVhtGroupId(uint8_t txstreams, uint16_t gi, ChannelWidthMhz chWidth);
+    uint8_t GetVhtGroupId(uint8_t txstreams, Time guardInterval, ChannelWidthMhz chWidth);
 
     /**
      * Returns the groupId of an HE MCS with the given number of streams, GI and channel width used.
      *
      * \param txstreams the number of streams
-     * \param gi guard interval duration (nanoseconds)
-     * \param chWidth the channel width (MHz)
+     * \param guardInterval guard interval duration
+     * \param chWidth the channel width
      * \returns the HE group ID
      */
-    uint8_t GetHeGroupId(uint8_t txstreams, uint16_t gi, ChannelWidthMhz chWidth);
+    uint8_t GetHeGroupId(uint8_t txstreams, Time guardInterval, ChannelWidthMhz chWidth);
 
     /**
      * Returns the lowest global index of the rates supported by the station.

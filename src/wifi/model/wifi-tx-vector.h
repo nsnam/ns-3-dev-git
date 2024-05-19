@@ -26,6 +26,7 @@
 #include "wifi-phy-common.h"
 
 #include "ns3/he-ru.h"
+#include "ns3/nstime.h"
 
 #include <list>
 #include <optional>
@@ -136,7 +137,7 @@ class WifiTxVector
     WifiTxVector(WifiMode mode,
                  uint8_t powerLevel,
                  WifiPreamble preamble,
-                 uint16_t guardInterval,
+                 Time guardInterval,
                  uint8_t nTx,
                  uint8_t nss,
                  uint8_t ness,
@@ -221,13 +222,13 @@ class WifiTxVector
     /**
      * \returns the guard interval duration (in nanoseconds)
      */
-    uint16_t GetGuardInterval() const;
+    Time GetGuardInterval() const;
     /**
      * Sets the guard interval duration (in nanoseconds)
      *
      * \param guardInterval the guard interval duration (in nanoseconds)
      */
-    void SetGuardInterval(uint16_t guardInterval);
+    void SetGuardInterval(Time guardInterval);
     /**
      * \returns the number of TX antennas
      */
@@ -566,7 +567,7 @@ class WifiTxVector
                                     to PMD_TXPWRLVL.request */
     WifiPreamble m_preamble;        /**< preamble */
     ChannelWidthMhz m_channelWidth; /**< channel width */
-    uint16_t m_guardInterval;       /**< guard interval duration in nanoseconds */
+    Time m_guardInterval;           /**< guard interval duration */
     uint8_t m_nTx;                  /**< number of TX antennas */
     uint8_t m_nss;                  /**< number of spatial streams */
     uint8_t m_ness;                 /**< number of spatial streams in beamforming */

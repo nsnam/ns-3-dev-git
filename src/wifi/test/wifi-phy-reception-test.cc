@@ -119,8 +119,15 @@ WifiPhyReceptionTest::WifiPhyReceptionTest(std::string test_name)
 void
 WifiPhyReceptionTest::SendPacket(double rxPowerDbm, uint32_t packetSize, uint8_t mcs)
 {
-    WifiTxVector txVector =
-        WifiTxVector(HePhy::GetHeMcs(mcs), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
+    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs(mcs),
+                                         0,
+                                         WIFI_PREAMBLE_HE_SU,
+                                         NanoSeconds(800),
+                                         1,
+                                         1,
+                                         0,
+                                         20,
+                                         false);
 
     Ptr<Packet> pkt = Create<Packet>(packetSize);
     WifiMacHeader hdr;
@@ -2773,8 +2780,15 @@ TestAmpduReception::CheckPhyState(WifiPhyState expectedState)
 void
 TestAmpduReception::SendAmpduWithThreeMpdus(double rxPowerDbm, uint32_t referencePacketSize)
 {
-    WifiTxVector txVector =
-        WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, true);
+    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
+                                         0,
+                                         WIFI_PREAMBLE_HE_SU,
+                                         NanoSeconds(800),
+                                         1,
+                                         1,
+                                         0,
+                                         20,
+                                         true);
 
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_QOSDATA);
@@ -4300,8 +4314,15 @@ TestUnsupportedBandwidthReception::TestUnsupportedBandwidthReception()
 void
 TestUnsupportedBandwidthReception::SendPpdu(double centerFreqMhz, ChannelWidthMhz bandwidthMhz)
 {
-    auto txVector =
-        WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, bandwidthMhz, false);
+    auto txVector = WifiTxVector(HePhy::GetHeMcs0(),
+                                 0,
+                                 WIFI_PREAMBLE_HE_SU,
+                                 NanoSeconds(800),
+                                 1,
+                                 1,
+                                 0,
+                                 bandwidthMhz,
+                                 false);
 
     auto pkt = Create<Packet>(1000);
     WifiMacHeader hdr;
@@ -4553,7 +4574,7 @@ TestPrimary20CoveredByPpdu::CreatePpdu(double ppduCenterFreqMhz)
     auto txVector = WifiTxVector(HePhy::GetHeMcs7(),
                                  0,
                                  WIFI_PREAMBLE_HE_SU,
-                                 800,
+                                 NanoSeconds(800),
                                  1,
                                  1,
                                  0,
@@ -4756,8 +4777,15 @@ TestSpectrumChannelWithBandwidthFilter::TestSpectrumChannelWithBandwidthFilter(
 void
 TestSpectrumChannelWithBandwidthFilter::Send() const
 {
-    WifiTxVector txVector =
-        WifiTxVector(HePhy::GetHeMcs7(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
+    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
+                                         0,
+                                         WIFI_PREAMBLE_HE_SU,
+                                         NanoSeconds(800),
+                                         1,
+                                         1,
+                                         0,
+                                         20,
+                                         false);
 
     Ptr<Packet> pkt = Create<Packet>(1000);
     WifiMacHeader hdr;
@@ -4927,8 +4955,15 @@ TestPhyDropDueToTx::TestPhyDropDueToTx(Time delay, WifiPhyRxfailureReason expect
 void
 TestPhyDropDueToTx::Send(Ptr<WifiPhy> phy) const
 {
-    const auto txVector =
-        WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false);
+    const auto txVector = WifiTxVector(HePhy::GetHeMcs0(),
+                                       0,
+                                       WIFI_PREAMBLE_HE_SU,
+                                       NanoSeconds(800),
+                                       1,
+                                       1,
+                                       0,
+                                       20,
+                                       false);
 
     auto pkt = Create<Packet>(1000);
     WifiMacHeader hdr;

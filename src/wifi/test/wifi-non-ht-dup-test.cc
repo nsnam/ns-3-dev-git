@@ -339,7 +339,7 @@ TestNonHtDuplicatePhyReception::SendNonHtDuplicatePpdu(ChannelWidthMhz channelWi
     WifiTxVector txVector = WifiTxVector(OfdmPhy::GetOfdmRate24Mbps(),
                                          0,
                                          WIFI_PREAMBLE_LONG,
-                                         800,
+                                         NanoSeconds(800),
                                          1,
                                          1,
                                          0,
@@ -759,7 +759,7 @@ TestMultipleCtsResponsesFromMuRts::TxNonHtDuplicateCts(std::size_t phyIndex)
         WifiTxVector(OfdmPhy::GetOfdmRate54Mbps(), // use less robust modulation for test purpose
                      0,
                      WIFI_PREAMBLE_LONG,
-                     800,
+                     NanoSeconds(800),
                      1,
                      1,
                      0,

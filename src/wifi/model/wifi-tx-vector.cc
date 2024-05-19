@@ -37,7 +37,7 @@ WifiTxVector::WifiTxVector()
     : m_txPowerLevel(1),
       m_preamble(WIFI_PREAMBLE_LONG),
       m_channelWidth(20),
-      m_guardInterval(800),
+      m_guardInterval(NanoSeconds(800)),
       m_nTx(1),
       m_nss(1),
       m_ness(0),
@@ -58,7 +58,7 @@ WifiTxVector::WifiTxVector()
 WifiTxVector::WifiTxVector(WifiMode mode,
                            uint8_t powerLevel,
                            WifiPreamble preamble,
-                           uint16_t guardInterval,
+                           Time guardInterval,
                            uint8_t nTx,
                            uint8_t nss,
                            uint8_t ness,
@@ -187,7 +187,7 @@ WifiTxVector::GetChannelWidth() const
     return m_channelWidth;
 }
 
-uint16_t
+Time
 WifiTxVector::GetGuardInterval() const
 {
     return m_guardInterval;
@@ -315,7 +315,7 @@ WifiTxVector::SetChannelWidth(ChannelWidthMhz channelWidth)
 }
 
 void
-WifiTxVector::SetGuardInterval(uint16_t guardInterval)
+WifiTxVector::SetGuardInterval(Time guardInterval)
 {
     m_guardInterval = guardInterval;
 }

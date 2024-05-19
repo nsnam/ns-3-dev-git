@@ -366,16 +366,17 @@ HtPhy::GetNumberBccEncoders(const WifiTxVector& txVector) const
      * were obtained by observing the rates for which Nes was incremented in tables
      * 19-27 to 19-41 of IEEE 802.11-2016.
      */
-    double maxRatePerCoder = (txVector.GetGuardInterval() == 800) ? 320e6 : 350e6;
+    double maxRatePerCoder = (txVector.GetGuardInterval().GetNanoSeconds() == 800) ? 320e6 : 350e6;
     return ceil(txVector.GetMode().GetDataRate(txVector) / maxRatePerCoder);
 }
 
 Time
 HtPhy::GetSymbolDuration(const WifiTxVector& txVector) const
 {
-    uint16_t gi = txVector.GetGuardInterval();
+    const auto guardInterval = txVector.GetGuardInterval();
+    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
     NS_ASSERT(gi == 400 || gi == 800);
-    return NanoSeconds(3200 + gi);
+    return GetSymbolDuration(guardInterval);
 }
 
 Ptr<WifiPpdu>
@@ -650,13 +651,10 @@ HtPhy::GetConstellationSize(uint8_t mcsValue)
 }
 
 uint64_t
-HtPhy::GetPhyRate(uint8_t mcsValue,
-                  ChannelWidthMhz channelWidth,
-                  uint16_t guardInterval,
-                  uint8_t nss)
+HtPhy::GetPhyRate(uint8_t mcsValue, ChannelWidthMhz channelWidth, Time guardInterval, uint8_t nss)
 {
-    WifiCodeRate codeRate = GetHtCodeRate(mcsValue);
-    uint64_t dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
+    const auto codeRate = GetHtCodeRate(mcsValue);
+    const auto dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
     return CalculatePhyRate(codeRate, dataRate);
 }
 
@@ -697,14 +695,12 @@ HtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t /* staId *
 }
 
 uint64_t
-HtPhy::GetDataRate(uint8_t mcsValue,
-                   ChannelWidthMhz channelWidth,
-                   uint16_t guardInterval,
-                   uint8_t nss)
+HtPhy::GetDataRate(uint8_t mcsValue, ChannelWidthMhz channelWidth, Time guardInterval, uint8_t nss)
 {
-    NS_ASSERT(guardInterval == 800 || guardInterval == 400);
+    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
+    NS_ASSERT((gi == 800) || (gi == 400));
     NS_ASSERT(nss <= 4);
-    return CalculateDataRate(GetSymbolDuration(NanoSeconds(guardInterval)),
+    return CalculateDataRate(GetSymbolDuration(guardInterval),
                              GetUsableSubcarriers(channelWidth),
                              static_cast<uint16_t>(log2(GetHtConstellationSize(mcsValue))),
                              GetCodeRatio(GetHtCodeRate(mcsValue)),

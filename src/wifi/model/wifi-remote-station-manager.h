@@ -121,14 +121,13 @@ struct WifiRemoteStationState
     bool m_emlsrEnabled; //!< whether EMLSR mode is enabled on this link
 
     ChannelWidthMhz m_channelWidth; //!< Channel width (in MHz) supported by the remote station
-    uint16_t m_guardInterval; //!< HE Guard interval duration (in nanoseconds) supported by the
-                              //!< remote station
-    uint8_t m_ness;           //!< Number of extended spatial streams of the remote station
-    bool m_aggregation;       //!< Flag if MPDU aggregation is used by the remote station
-    bool m_shortPreamble;     //!< Flag if short PHY preamble is supported by the remote station
-    bool m_shortSlotTime;     //!< Flag if short ERP slot time is supported by the remote station
-    bool m_qosSupported;      //!< Flag if QoS is supported by the station
-    bool m_isInPsMode;        //!< Flag if the STA is currently in PS mode
+    Time m_guardInterval;           //!< HE Guard interval durationsupported by the remote station
+    uint8_t m_ness;                 //!< Number of extended spatial streams of the remote station
+    bool m_aggregation;             //!< Flag if MPDU aggregation is used by the remote station
+    bool m_shortPreamble; //!< Flag if short PHY preamble is supported by the remote station
+    bool m_shortSlotTime; //!< Flag if short ERP slot time is supported by the remote station
+    bool m_qosSupported;  //!< Flag if QoS is supported by the station
+    bool m_isInPsMode;    //!< Flag if the STA is currently in PS mode
 };
 
 /**
@@ -376,11 +375,11 @@ class WifiRemoteStationManager : public Object
      */
     bool GetShortGuardIntervalSupported() const;
     /**
-     * Return the supported HE guard interval duration (in nanoseconds).
+     * Return the supported HE guard interval duration.
      *
-     * \return the supported HE guard interval duration (in nanoseconds)
+     * \return the supported HE guard interval duration
      */
-    uint16_t GetGuardInterval() const;
+    Time GetGuardInterval() const;
     /**
      * Enable or disable protection for non-ERP stations.
      *
@@ -1249,9 +1248,9 @@ class WifiRemoteStationManager : public Object
      *
      * \param station the station being queried
      *
-     * \return the HE guard interval duration (in nanoseconds) supported by the station
+     * \return the HE guard interval duration supported by the station
      */
-    uint16_t GetGuardInterval(const WifiRemoteStation* station) const;
+    Time GetGuardInterval(const WifiRemoteStation* station) const;
     /**
      * Return whether the given station supports A-MPDU.
      *

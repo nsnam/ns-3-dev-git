@@ -107,13 +107,13 @@ class ThompsonSamplingWifiManager : public WifiRemoteStationManager
     void Decay(WifiRemoteStation* st, size_t i) const;
 
     /**
-     * Returns guard interval in nanoseconds for the given mode.
+     * Returns guard interval for the given mode.
      *
-     * \param st Remote STA.
-     * \param mode The WifiMode.
-     * \return the guard interval in nanoseconds
+     * \param st Remote STA
+     * \param mode The WifiMode
+     * \return the guard interval
      */
-    uint16_t GetModeGuardInterval(WifiRemoteStation* st, WifiMode mode) const;
+    Time GetModeGuardInterval(WifiRemoteStation* st, WifiMode mode) const;
 
     /**
      * Sample beta random variable with given parameters

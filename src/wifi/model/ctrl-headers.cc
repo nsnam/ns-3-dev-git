@@ -1696,8 +1696,8 @@ CtrlTriggerHeader::CtrlTriggerHeader(TriggerFrameType type, const WifiTxVector& 
     m_triggerType = type;
     SetUlBandwidth(txVector.GetChannelWidth());
     SetUlLength(txVector.GetLength());
-    uint16_t gi = txVector.GetGuardInterval();
-    if (gi == 800 || gi == 1600)
+    const auto gi = txVector.GetGuardInterval().GetNanoSeconds();
+    if ((gi == 800) || (gi == 1600))
     {
         m_giAndLtfType = 1;
     }
@@ -2067,17 +2067,18 @@ CtrlTriggerHeader::GetUlBandwidth() const
 }
 
 void
-CtrlTriggerHeader::SetGiAndLtfType(uint16_t guardInterval, uint8_t ltfType)
+CtrlTriggerHeader::SetGiAndLtfType(Time guardInterval, uint8_t ltfType)
 {
-    if (ltfType == 1 && guardInterval == 1600)
+    const auto gi = guardInterval.GetNanoSeconds();
+    if ((ltfType == 1) && (gi == 1600))
     {
         m_giAndLtfType = 0;
     }
-    else if (ltfType == 2 && guardInterval == 1600)
+    else if ((ltfType == 2) && (gi == 1600))
     {
         m_giAndLtfType = 1;
     }
-    else if (ltfType == 4 && guardInterval == 3200)
+    else if ((ltfType == 4) && (gi == 3200))
     {
         m_giAndLtfType = 2;
     }
@@ -2087,16 +2088,16 @@ CtrlTriggerHeader::SetGiAndLtfType(uint16_t guardInterval, uint8_t ltfType)
     }
 }
 
-uint16_t
+Time
 CtrlTriggerHeader::GetGuardInterval() const
 {
     if (m_giAndLtfType == 0 || m_giAndLtfType == 1)
     {
-        return 1600;
+        return NanoSeconds(1600);
     }
     else if (m_giAndLtfType == 2)
     {
-        return 3200;
+        return NanoSeconds(3200);
     }
     else
     {

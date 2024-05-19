@@ -232,12 +232,13 @@ MinstrelHtWifiManager::DoInitialize()
         {
             for (int gi = 800; gi >= 400;)
             {
+                const auto guardInterval = NanoSeconds(gi);
                 for (uint8_t streams = 1; streams <= MAX_HT_SUPPORTED_STREAMS; streams++)
                 {
-                    uint8_t groupId = GetHtGroupId(streams, gi, chWidth);
+                    uint8_t groupId = GetHtGroupId(streams, guardInterval, chWidth);
 
                     m_minstrelGroups[groupId].streams = streams;
-                    m_minstrelGroups[groupId].gi = gi;
+                    m_minstrelGroups[groupId].gi = guardInterval;
                     m_minstrelGroups[groupId].chWidth = chWidth;
                     m_minstrelGroups[groupId].type = WIFI_MINSTREL_GROUP_HT;
                     m_minstrelGroups[groupId].isSupported = false;
@@ -262,7 +263,7 @@ MinstrelHtWifiManager::DoInitialize()
                                                mode,
                                                CalculateMpduTxDuration(GetPhy(),
                                                                        streams,
-                                                                       gi,
+                                                                       guardInterval,
                                                                        chWidth,
                                                                        mode,
                                                                        FIRST_MPDU_IN_AGGREGATE));
@@ -270,13 +271,14 @@ MinstrelHtWifiManager::DoInitialize()
                                           mode,
                                           CalculateMpduTxDuration(GetPhy(),
                                                                   streams,
-                                                                  gi,
+                                                                  guardInterval,
                                                                   chWidth,
                                                                   mode,
                                                                   MIDDLE_MPDU_IN_AGGREGATE));
                         }
                         NS_LOG_DEBUG("Initialized group " << +groupId << ": (" << +streams << ","
-                                                          << gi << "," << chWidth << ")");
+                                                          << guardInterval << "," << chWidth
+                                                          << ")");
                     }
                 }
                 gi /= 2;
@@ -291,12 +293,13 @@ MinstrelHtWifiManager::DoInitialize()
         {
             for (int gi = 800; gi >= 400;)
             {
+                const auto guardInterval = NanoSeconds(gi);
                 for (uint8_t streams = 1; streams <= MAX_VHT_SUPPORTED_STREAMS; streams++)
                 {
-                    uint8_t groupId = GetVhtGroupId(streams, gi, chWidth);
+                    uint8_t groupId = GetVhtGroupId(streams, guardInterval, chWidth);
 
                     m_minstrelGroups[groupId].streams = streams;
-                    m_minstrelGroups[groupId].gi = gi;
+                    m_minstrelGroups[groupId].gi = guardInterval;
                     m_minstrelGroups[groupId].chWidth = chWidth;
                     m_minstrelGroups[groupId].type = WIFI_MINSTREL_GROUP_VHT;
                     m_minstrelGroups[groupId].isSupported = false;
@@ -324,7 +327,7 @@ MinstrelHtWifiManager::DoInitialize()
                                     mode,
                                     CalculateMpduTxDuration(GetPhy(),
                                                             streams,
-                                                            gi,
+                                                            guardInterval,
                                                             chWidth,
                                                             mode,
                                                             FIRST_MPDU_IN_AGGREGATE));
@@ -332,7 +335,7 @@ MinstrelHtWifiManager::DoInitialize()
                                               mode,
                                               CalculateMpduTxDuration(GetPhy(),
                                                                       streams,
-                                                                      gi,
+                                                                      guardInterval,
                                                                       chWidth,
                                                                       mode,
                                                                       MIDDLE_MPDU_IN_AGGREGATE));
@@ -354,18 +357,20 @@ MinstrelHtWifiManager::DoInitialize()
         {
             for (int gi = 3200; gi >= 800;)
             {
+                const auto guardInterval = NanoSeconds(gi);
                 for (uint8_t streams = 1; streams <= MAX_HE_SUPPORTED_STREAMS; streams++)
                 {
-                    uint8_t groupId = GetHeGroupId(streams, gi, chWidth);
+                    uint8_t groupId = GetHeGroupId(streams, guardInterval, chWidth);
 
                     m_minstrelGroups[groupId].streams = streams;
-                    m_minstrelGroups[groupId].gi = gi;
+                    m_minstrelGroups[groupId].gi = guardInterval;
                     m_minstrelGroups[groupId].chWidth = chWidth;
                     m_minstrelGroups[groupId].type = WIFI_MINSTREL_GROUP_HE;
                     m_minstrelGroups[groupId].isSupported = false;
 
                     // Check capabilities of the device
-                    if ((GetGuardInterval() <= gi) /// Is GI supported by the transmitter?
+                    if ((GetGuardInterval() <=
+                         guardInterval) /// Is GI supported by the transmitter?
                         && (GetPhy()->GetChannelWidth() >=
                             chWidth) /// Is channel width supported by the transmitter?
                         && (GetPhy()->GetMaxSupportedTxSpatialStreams() >=
@@ -386,7 +391,7 @@ MinstrelHtWifiManager::DoInitialize()
                                     mode,
                                     CalculateMpduTxDuration(GetPhy(),
                                                             streams,
-                                                            gi,
+                                                            guardInterval,
                                                             chWidth,
                                                             mode,
                                                             FIRST_MPDU_IN_AGGREGATE));
@@ -394,7 +399,7 @@ MinstrelHtWifiManager::DoInitialize()
                                               mode,
                                               CalculateMpduTxDuration(GetPhy(),
                                                                       streams,
-                                                                      gi,
+                                                                      guardInterval,
                                                                       chWidth,
                                                                       mode,
                                                                       MIDDLE_MPDU_IN_AGGREGATE));
@@ -427,7 +432,7 @@ MinstrelHtWifiManager::IsValidMcs(Ptr<WifiPhy> phy,
 Time
 MinstrelHtWifiManager::CalculateMpduTxDuration(Ptr<WifiPhy> phy,
                                                uint8_t streams,
-                                               uint16_t gi,
+                                               Time gi,
                                                ChannelWidthMhz chWidth,
                                                WifiMode mode,
                                                MpduType mpduType)
@@ -1058,7 +1063,7 @@ MinstrelHtWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz 
     // Check consistency of rate selected.
     if (((group.type == WIFI_MINSTREL_GROUP_HE) && (group.gi < GetGuardInterval(station))) ||
         (((group.type == WIFI_MINSTREL_GROUP_HT) || (group.type == WIFI_MINSTREL_GROUP_VHT)) &&
-         (group.gi == 400) && !GetShortGuardIntervalSupported(station)) ||
+         (group.gi.GetNanoSeconds() == 400) && !GetShortGuardIntervalSupported(station)) ||
         (group.chWidth > GetChannelWidth(station)) ||
         (group.streams > GetNumberOfSupportedStreams(station)))
     {
@@ -1067,7 +1072,7 @@ MinstrelHtWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz 
                        << " Station capabilities: (" << GetNumberOfSupportedStreams(station) << ","
                        << ((group.type == WIFI_MINSTREL_GROUP_HE)
                                ? GetGuardInterval(station)
-                               : (GetShortGuardIntervalSupported(station) ? 400 : 800))
+                               : NanoSeconds(GetShortGuardIntervalSupported(station) ? 400 : 800))
                        << "," << GetChannelWidth(station) << ")");
     }
     WifiMode mode = GetMcsSupported(station, mcsIndex);
@@ -1164,7 +1169,7 @@ MinstrelHtWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
             rtsRate,
             GetDefaultTxPowerLevel(),
             GetPreambleForTransmission(rtsRate.GetModulationClass(), GetShortPreambleEnabled()),
-            800,
+            NanoSeconds(800),
             1,
             1,
             0,
@@ -1742,7 +1747,8 @@ MinstrelHtWifiManager::RateInit(MinstrelHtWifiRemoteStation* station)
             }
             if (((m_minstrelGroups[groupId].type == WIFI_MINSTREL_GROUP_HT) ||
                  (m_minstrelGroups[groupId].type == WIFI_MINSTREL_GROUP_VHT)) &&
-                (m_minstrelGroups[groupId].gi == 400) && !GetShortGuardIntervalSupported(station))
+                (m_minstrelGroups[groupId].gi.GetNanoSeconds() == 400) &&
+                !GetShortGuardIntervalSupported(station))
             {
                 // It is a SGI group but the receiver does not support SGI: skip
                 continue;
@@ -2108,20 +2114,20 @@ MinstrelHtWifiManager::GetGroupId(uint16_t index)
 }
 
 uint8_t
-MinstrelHtWifiManager::GetHtGroupId(uint8_t txstreams, uint16_t gi, ChannelWidthMhz chWidth)
+MinstrelHtWifiManager::GetHtGroupId(uint8_t txstreams, Time guardInterval, ChannelWidthMhz chWidth)
 {
-    NS_LOG_FUNCTION(this << +txstreams << gi << chWidth);
-    uint8_t giIndex = (gi == 400) ? 1 : 0;
+    NS_LOG_FUNCTION(this << +txstreams << guardInterval << chWidth);
+    uint8_t giIndex = (guardInterval.GetNanoSeconds() == 400) ? 1 : 0;
     uint8_t widthIndex = (chWidth == 40) ? 1 : 0;
     return (MAX_HT_SUPPORTED_STREAMS * 2 * widthIndex) + (MAX_HT_SUPPORTED_STREAMS * giIndex) +
            txstreams - 1;
 }
 
 uint8_t
-MinstrelHtWifiManager::GetVhtGroupId(uint8_t txstreams, uint16_t gi, ChannelWidthMhz chWidth)
+MinstrelHtWifiManager::GetVhtGroupId(uint8_t txstreams, Time guardInterval, ChannelWidthMhz chWidth)
 {
-    NS_LOG_FUNCTION(this << +txstreams << gi << chWidth);
-    uint8_t giIndex = (gi == 400) ? 1 : 0;
+    NS_LOG_FUNCTION(this << +txstreams << guardInterval << chWidth);
+    uint8_t giIndex = (guardInterval.GetNanoSeconds() == 400) ? 1 : 0;
     uint8_t widthIndex;
     if (chWidth == 160)
     {
@@ -2146,11 +2152,11 @@ MinstrelHtWifiManager::GetVhtGroupId(uint8_t txstreams, uint16_t gi, ChannelWidt
 }
 
 uint8_t
-MinstrelHtWifiManager::GetHeGroupId(uint8_t txstreams, uint16_t gi, ChannelWidthMhz chWidth)
+MinstrelHtWifiManager::GetHeGroupId(uint8_t txstreams, Time guardInterval, ChannelWidthMhz chWidth)
 {
-    NS_LOG_FUNCTION(this << +txstreams << gi << chWidth);
+    NS_LOG_FUNCTION(this << +txstreams << guardInterval << chWidth);
     uint8_t giIndex;
-    if (gi == 800)
+    if (const auto gi = guardInterval.GetNanoSeconds(); gi == 800)
     {
         giIndex = 2;
     }

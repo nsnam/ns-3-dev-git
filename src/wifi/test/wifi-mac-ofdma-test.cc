@@ -301,7 +301,7 @@ TestMultiUserScheduler::ComputeWifiTxVector()
         m_txVector.SetEhtPpduType(0);
     }
     m_txVector.SetChannelWidth(bw);
-    m_txVector.SetGuardInterval(m_apMac->GetHeConfiguration()->GetGuardInterval().GetNanoSeconds());
+    m_txVector.SetGuardInterval(m_apMac->GetHeConfiguration()->GetGuardInterval());
     m_txVector.SetTxPowerLevel(
         GetWifiRemoteStationManager(SINGLE_LINK_OP_ID)->GetDefaultTxPowerLevel());
 

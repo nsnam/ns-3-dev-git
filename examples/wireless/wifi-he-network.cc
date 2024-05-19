@@ -367,7 +367,8 @@ main(int argc, char* argv[])
                     clientNodes.Add(downlink ? wifiApNode.Get(0) : wifiStaNodes.Get(i));
                 }
 
-                const auto maxLoad = HePhy::GetDataRate(mcs, channelWidth, gi, 1) / nStations;
+                const auto maxLoad =
+                    HePhy::GetDataRate(mcs, channelWidth, NanoSeconds(gi), 1) / nStations;
                 if (udp)
                 {
                     // UDP flow
