@@ -339,6 +339,16 @@ cpp_examples = [
         "True",
         "True",
     ),
+    (
+        "wifi-p2p --simulationTime=1s --adhocToStaMinExpectedThroughput=49 --staToAdhocMinExpectedThroughput=49 --staToAdhocMaxExpectedLoss=1.0 --adhocToStaMaxExpectedLoss=1.0",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-p2p --simulationTime=1s --staToAdhocTrafficType=Video --adhocToStaTrafficType=Video --staToAdhocMaxExpectedLatency=2ms --adhocToStaMaxExpectedLatency=2ms",
+        "True",
+        "True",
+    ),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
