@@ -40,5 +40,5 @@ build_lib(
     test/probabilistic-v2v-channel-condition-model-test.cc
     test/propagation-loss-model-test-suite.cc
     test/three-gpp-propagation-loss-model-test-suite.cc
-    test/three-gpp-propagation-loss-model-test-suite.cc
+    test/three-gpp-ntn-propagation-loss-model-test-suite.cc
 )

@@ -24,6 +24,7 @@
 #include "matrix-based-channel-model.h"
 
 #include "ns3/angles.h"
+#include "ns3/deprecated.h"
 #include <ns3/boolean.h>
 #include <ns3/channel-condition-model.h>
 
@@ -250,11 +251,27 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * \param hUT the height of the UT
      * \param distance2D the 2D distance between tx and rx
      * \return the parameters table
+     * \deprecated Use GetThreeGppTable(const Ptr<const MobilityModel> aMob, const Ptr<const
+     *  MobilityModel> bMob, Ptr<const ChannelCondition> channelCondition) instead
      */
-    virtual Ptr<const ParamsTable> GetThreeGppTable(Ptr<const ChannelCondition> channelCondition,
-                                                    double hBS,
-                                                    double hUT,
-                                                    double distance2D) const;
+    NS_DEPRECATED_3_41("Use GetThreeGppTable(const Ptr<const MobilityModel>, const Ptr<const "
+                       "MobilityModel>, Ptr<const ChannelCondition>) instead")
+    Ptr<const ParamsTable> GetThreeGppTable(Ptr<const ChannelCondition> channelCondition,
+                                            double hBS,
+                                            double hUT,
+                                            double distance2D) const;
+
+    /**
+     * Get the parameters needed to apply the channel generation procedure
+     * \param aMob the mobility model of node A
+     * \param bMob the mobility model of node B
+     * \param channelCondition the channel condition
+     * \return the parameters table
+     */
+    virtual Ptr<const ParamsTable> GetThreeGppTable(
+        const Ptr<const MobilityModel> aMob,
+        const Ptr<const MobilityModel> bMob,
+        Ptr<const ChannelCondition> channelCondition) const;
 
     /**
      * Prepare 3gpp channel parameters among the nodes a and b.
@@ -383,6 +400,71 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
         2;                            //!< index of the THETA value in the m_nonSelfBlocking array
     static const uint8_t Y_INDEX = 3; //!< index of the Y value in the m_nonSelfBlocking array
     static const uint8_t R_INDEX = 4; //!< index of the R value in the m_nonSelfBlocking array
+
+    /**
+     * The nested map containing the 3GPP value tables for the NTN Dense
+     * Urban LOS scenario.
+     * The outer key specifies the band (either "S" or "Ka"), while the
+     * inner key represents the quantized elevation angle.
+     * The inner vector collects the table3gpp values.
+     */
+    const std::map<std::string, std::map<int, std::vector<float>>>* m_NTNDenseUrbanLOS;
+
+    /**
+     * The nested map containing the 3GPP value tables for the NTN Dense Urban NLOS scenario.
+     * The outer key specifies the band (either "S" or "Ka"), while the
+     * inner key represents the quantized elevation angle.
+     * The inner vector collects the table3gpp values.
+     */
+    const std::map<std::string, std::map<int, std::vector<float>>>* m_NTNDenseUrbanNLOS;
+
+    /**
+     * The nested map containing the 3GPP value tables for the NTN Urban LOS scenario.
+     * The outer key specifies the band (either "S" or "Ka"), while the
+     * inner key represents the quantized elevation angle.
+     * The inner vector collects the table3gpp values.
+     */
+    const std::map<std::string, std::map<int, std::vector<float>>>* m_NTNUrbanLOS;
+
+    /**
+     * The nested map containing the 3GPP value tables for the NTN Urban NLOS scenario.
+     * The outer key specifies the band (either "S" or "Ka"), while the
+     * inner key represents the quantized elevation angle.
+     * The inner vector collects the table3gpp values.
+     */
+    const std::map<std::string, std::map<int, std::vector<float>>>* m_NTNUrbanNLOS;
+
+    /**
+     * The nested map containing the 3GPP value tables for the NTN Suburban LOS scenario.
+     * The outer key specifies the band (either "S" or "Ka"), while the
+     * inner key represents the quantized elevation angle.
+     * The inner vector collects the table3gpp values.
+     */
+    const std::map<std::string, std::map<int, std::vector<float>>>* m_NTNSuburbanLOS;
+
+    /**
+     * The nested map containing the 3GPP value tables for the NTN Suburban NLOS scenario.
+     * The outer key specifies the band (either "S" or "Ka"), while the
+     * inner key represents the quantized elevation angle.
+     * The inner vector collects the table3gpp values.
+     */
+    const std::map<std::string, std::map<int, std::vector<float>>>* m_NTNSuburbanNLOS;
+
+    /**
+     * The nested map containing the 3GPP value tables for the NTN Rural LOS scenario.
+     * The outer key specifies the band (either "S" or "Ka"), while the
+     * inner key represents the quantized elevation angle.
+     * The inner vector collects the table3gpp values.
+     */
+    const std::map<std::string, std::map<int, std::vector<float>>>* m_NTNRuralLOS;
+
+    /**
+     * The nested map containing the 3GPP value tables for the NTN Rural NLOS scenario
+     *  The outer key specifies the band (either "S" or "Ka"), while the
+     * inner key represents the quantized elevation angle.
+     * The inner vector collects the table3gpp values.
+     */
+    const std::map<std::string, std::map<int, std::vector<float>>>* m_NTNRuralNLOS;
 };
 } // namespace ns3
 

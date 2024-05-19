@@ -65,3 +65,12 @@ build_lib_example(
     ${libmobility}
     ${libspectrum}
 )
+
+build_lib_example(
+  NAME three-gpp-ntn-channel-example
+  SOURCE_FILES three-gpp-ntn-channel-example.cc
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libmobility}
+    ${libspectrum}
+)

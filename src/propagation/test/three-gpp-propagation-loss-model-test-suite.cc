@@ -167,10 +167,8 @@ ThreeGppRmaPropagationLossModelTestCase::DoRun()
         CreateObject<ThreeGppRmaPropagationLossModel>();
     lossModel->SetAttribute("ShadowingEnabled", BooleanValue(false)); // disable the shadow fading
 
-    for (std::size_t i = 0; i < m_testVectors.GetN(); i++)
+    for (const auto& testVector : m_testVectors)
     {
-        TestVector testVector = m_testVectors.Get(i);
-
         Vector posBs = Vector(0.0, 0.0, 35.0);
         Vector posUt = Vector(testVector.m_distance, 0.0, 1.5);
 

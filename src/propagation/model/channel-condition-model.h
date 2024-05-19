@@ -24,6 +24,7 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/vector.h"
 
+#include <map>
 #include <unordered_map>
 
 namespace ns3
@@ -483,6 +484,27 @@ class ThreeGppChannelConditionModel : public ChannelConditionModel
      */
     int64_t AssignStreams(int64_t stream) override;
 
+    /**
+     * Computes and quantizes the elevation angle to a two-digits integer in [10, 90].
+     * Asserts that the provided mobility models are of the expected type, i.e.,
+     * GeocentricConstantPositionMobilityModel, and that the quantized
+     * angle is in the expected range [10, 90].
+     *
+     * \param a mobility model
+     * \param b mobility model
+     * \return the tuple [elevation angle, quantized elevation angle] between a and b
+     */
+    static std::tuple<double, double> GetQuantizedElevationAngle(Ptr<const MobilityModel> a,
+                                                                 Ptr<const MobilityModel> b);
+
+    /**
+     * \brief Computes the 2D distance between two 3D vectors
+     * \param a the first 3D vector
+     * \param b the second 3D vector
+     * \return the 2D distance between a and b
+     */
+    static double Calculate2dDistance(const Vector& a, const Vector& b);
+
   protected:
     void DoDispose() override;
 
@@ -496,14 +518,6 @@ class ThreeGppChannelConditionModel : public ChannelConditionModel
         HIGH,
         INVALID
     };
-
-    /**
-     * \brief Computes the 2D distance between two 3D vectors
-     * \param a the first 3D vector
-     * \param b the second 3D vector
-     * \return the 2D distance between a and b
-     */
-    static double Calculate2dDistance(const Vector& a, const Vector& b);
 
     Ptr<UniformRandomVariable> m_uniformVar; //!< uniform random variable
 
@@ -778,6 +792,154 @@ class ThreeGppIndoorOpenOfficeChannelConditionModel : public ThreeGppChannelCond
      * \param a tx mobility model
      * \param b rx mobility model
      * \return the LOS probability
+     */
+    double ComputePlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+};
+
+/**
+ * \ingroup propagation
+ *
+ * \brief Computes the channel condition for the NTN Dense Urban Scenario
+ *
+ * Computes the channel condition following the specifications for the
+ * Indoor Mixed Office scenario reported in Table 6.6.1-1 of 3GPP TR 38.811
+ */
+class ThreeGppNTNDenseUrbanChannelConditionModel : public ThreeGppChannelConditionModel
+{
+  public:
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId();
+
+    /**
+     * Constructor for the ThreeGppNTNDenseUrbanChannelConditionModel class
+     */
+    ThreeGppNTNDenseUrbanChannelConditionModel() = default;
+
+    /**
+     * Destructor for the ThreeGppNTNDenseUrbanChannelConditionModel class
+     */
+    ~ThreeGppNTNDenseUrbanChannelConditionModel() override = default;
+
+  private:
+    /**
+     * \copydoc ThreeGppChannelConditionModel::ComputePlos
+     *
+     * Compute the LOS probability as specified in Table 6.6.1-1 of 3GPP TR 38.811
+     * for the NTN Dense Urban scenario.
+     */
+    double ComputePlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+};
+
+/**
+ * \ingroup propagation
+ *
+ * \brief Computes the channel condition for the NTN Urban Scenario
+ *
+ * Computes the channel condition following the specifications for the
+ * Indoor Mixed Office scenario reported in Table 6.6.1-1 of 3GPP TR 38.811
+ */
+class ThreeGppNTNUrbanChannelConditionModel : public ThreeGppChannelConditionModel
+{
+  public:
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId();
+
+    /**
+     * Constructor for the ThreeGppNTNUrbanChannelConditionModel class
+     */
+    ThreeGppNTNUrbanChannelConditionModel() = default;
+
+    /**
+     * Destructor for the ThreeGppNTNUrbanChannelConditionModel class
+     */
+    ~ThreeGppNTNUrbanChannelConditionModel() override = default;
+
+  private:
+    /**
+     * \copydoc ThreeGppChannelConditionModel::ComputePlos
+     *
+     * Compute the LOS probability as specified in Table 6.6.1-1 of 3GPP TR 38.811
+     * for the NTN Urban scenario.
+     */
+    double ComputePlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+};
+
+/**
+ * \ingroup propagation
+ *
+ * \brief Computes the channel condition for the NTN Suburban Scenario
+ *
+ * Computes the channel condition following the specifications for the
+ * Indoor Mixed Office scenario reported in Table 6.6.1-1 of 3GPP TR 38.811
+ */
+class ThreeGppNTNSuburbanChannelConditionModel : public ThreeGppChannelConditionModel
+{
+  public:
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId();
+
+    /**
+     * Constructor for the ThreeGppNTNSuburbanChannelConditionModel class
+     */
+    ThreeGppNTNSuburbanChannelConditionModel() = default;
+
+    /**
+     * Destructor for the ThreeGppNTNSuburbanChannelConditionModel class
+     */
+    ~ThreeGppNTNSuburbanChannelConditionModel() override = default;
+
+  private:
+    /**
+     * \copydoc ThreeGppChannelConditionModel::ComputePlos
+     *
+     * Compute the LOS probability as specified in Table 6.6.1-1 of 3GPP TR 38.811
+     * for the NTN Suburban scenario.
+     */
+    double ComputePlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
+};
+
+/**
+ * \ingroup propagation
+ *
+ * \brief Computes the channel condition for the NTN Rural Scenario
+ *
+ * Computes the channel condition following the specifications for the
+ * Indoor Mixed Office scenario reported in Table 6.6.1-1 of 3GPP TR 38.811
+ */
+class ThreeGppNTNRuralChannelConditionModel : public ThreeGppChannelConditionModel
+{
+  public:
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId();
+
+    /**
+     * Constructor for the ThreeGppNTNRuralChannelConditionModel class
+     */
+    ThreeGppNTNRuralChannelConditionModel() = default;
+
+    /**
+     * Destructor for the ThreeGppNTNRuralChannelConditionModel class
+     */
+    ~ThreeGppNTNRuralChannelConditionModel() override = default;
+
+  private:
+    /**
+     * \copydoc ThreeGppChannelConditionModel::ComputePlos
+     *
+     * Compute the LOS probability as specified in Table 6.6.1-1 of 3GPP TR 38.811
+     * for the NTN Rural scenario.
      */
     double ComputePlos(Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 };

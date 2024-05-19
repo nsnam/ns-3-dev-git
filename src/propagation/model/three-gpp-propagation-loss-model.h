@@ -105,31 +105,29 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
     /**
      * \brief Computes the pathloss between a and b
      * \param cond the channel condition
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    double GetLoss(Ptr<ChannelCondition> cond,
-                   double distance2D,
-                   double distance3D,
-                   double hUt,
-                   double hBs) const;
+    double GetLoss(Ptr<ChannelCondition> cond, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
     /**
      * \brief Computes the pathloss between a and b considering that the line of
      *        sight is not obstructed
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    virtual double GetLossLos(double distance2D,
-                              double distance3D,
-                              double hUt,
-                              double hBs) const = 0;
+    virtual double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
+
+    /**
+     * \brief Computes the pathloss between a and b considering that the line of
+     *        sight is obstructed
+     * \param a tx mobility model
+     * \param b rx mobility model
+     * \return pathloss value in dB
+     */
+    virtual double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
 
     /**
      * \brief Returns the minimum of the two independently generated distances
@@ -197,39 +195,13 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
 
     /**
      * \brief Computes the pathloss between a and b considering that the line of
-     *        sight is obstructed
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
-     * \return pathloss value in dB
-     */
-    virtual double GetLossNlos(double distance2D,
-                               double distance3D,
-                               double hUt,
-                               double hBs) const = 0;
-
-    /**
-     * \brief Computes the pathloss between a and b considering that the line of
      *        sight is obstructed by a vehicle. By default it raises an error to
      *        avoid misuse.
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    virtual double GetLossNlosv(double distance2D, double distance3D, double hUt, double hBs) const;
-
-    /**
-     * \brief Determines hUT and hBS. The default implementation assumes that
-     *        the tallest node is the BS and the smallest is the UT. The derived classes
-     * can change the default behavior by overriding this method.
-     * \param za the height of the first node in meters
-     * \param zb the height of the second node in meters
-     * \return std::pair of heights in meters, the first element is hUt and the second is hBs
-     */
-    virtual std::pair<double, double> GetUtAndBsHeights(double za, double zb) const;
+    virtual double GetLossNlosv(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 
     /**
      * \brief Retrieves the shadowing value by looking at m_shadowingMap.
@@ -374,13 +346,11 @@ class ThreeGppRmaPropagationLossModel : public ThreeGppPropagationLossModel
     /**
      * \brief Computes the pathloss between a and b considering that the line of
      *        sight is not obstructed
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    double GetLossLos(double distance2D, double distance3D, double hUt, double hBs) const override;
+    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
      * \brief Returns the minimum of the two independently generated distances
@@ -407,13 +377,11 @@ class ThreeGppRmaPropagationLossModel : public ThreeGppPropagationLossModel
     /**
      * \brief Computes the pathloss between a and b considering that the line of
      *        sight is obstructed
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    double GetLossNlos(double distance2D, double distance3D, double hUt, double hBs) const override;
+    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
      * \brief Returns the shadow fading standard deviation
@@ -491,13 +459,11 @@ class ThreeGppUmaPropagationLossModel : public ThreeGppPropagationLossModel
     /**
      * \brief Computes the pathloss between a and b considering that the line of
      *        sight is not obstructed
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    double GetLossLos(double distance2D, double distance3D, double hUt, double hBs) const override;
+    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
      * \brief Returns the minimum of the two independently generated distances
@@ -516,13 +482,11 @@ class ThreeGppUmaPropagationLossModel : public ThreeGppPropagationLossModel
     /**
      * \brief Computes the pathloss between a and b considering that the line of
      *        sight is obstructed.
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    double GetLossNlos(double distance2D, double distance3D, double hUt, double hBs) const override;
+    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
      * \brief Returns the shadow fading standard deviation
@@ -590,13 +554,11 @@ class ThreeGppUmiStreetCanyonPropagationLossModel : public ThreeGppPropagationLo
     /**
      * \brief Computes the pathloss between a and b considering that the line of
      *        sight is not obstructed
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    double GetLossLos(double distance2D, double distance3D, double hUt, double hBs) const override;
+    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
      * \brief Returns the minimum of the two independently generated distances
@@ -615,13 +577,11 @@ class ThreeGppUmiStreetCanyonPropagationLossModel : public ThreeGppPropagationLo
     /**
      * \brief Computes the pathloss between a and b considering that the line of
      *        sight is obstructed.
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    double GetLossNlos(double distance2D, double distance3D, double hUt, double hBs) const override;
+    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
      * \brief Returns the shadow fading standard deviation
@@ -649,14 +609,6 @@ class ThreeGppUmiStreetCanyonPropagationLossModel : public ThreeGppPropagationLo
      * \return the breakpoint distance in meters
      */
     double GetBpDistance(double hUt, double hBs, double distance2D) const;
-
-    /**
-     * \brief Determines hUT and hBS. Overrides the default implementation.
-     * \param za the height of the first node in meters
-     * \param zb the height of the second node in meters
-     * \return std::pair, the first element is hUt and the second is hBs
-     */
-    std::pair<double, double> GetUtAndBsHeights(double za, double zb) const override;
 };
 
 /**
@@ -694,13 +646,11 @@ class ThreeGppIndoorOfficePropagationLossModel : public ThreeGppPropagationLossM
     /**
      * \brief Computes the pathloss between a and b considering that the line of
      *        sight is not obstructed
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    double GetLossLos(double distance2D, double distance3D, double hUt, double hBs) const override;
+    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
      * \brief Returns the minimum of the two independently generated distances
@@ -719,13 +669,11 @@ class ThreeGppIndoorOfficePropagationLossModel : public ThreeGppPropagationLossM
     /**
      * \brief Computes the pathloss between a and b considering that the line of
      *        sight is obstructed
-     * \param distance2D the 2D distance between tx and rx in meters
-     * \param distance3D the 3D distance between tx and rx in meters
-     * \param hUt the height of the UT in meters
-     * \param hBs the height of the BS in meters
+     * \param a tx mobility model
+     * \param b rx mobility model
      * \return pathloss value in dB
      */
-    double GetLossNlos(double distance2D, double distance3D, double hUt, double hBs) const override;
+    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
 
     /**
      * \brief Returns the shadow fading standard deviation
@@ -744,6 +692,260 @@ class ThreeGppIndoorOfficePropagationLossModel : public ThreeGppPropagationLossM
      * \return shadowing correlation distance in meters
      */
     double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
+};
+
+/**
+ * \ingroup propagation
+ *
+ * \brief Implements the pathloss model defined in 3GPP TR 38.811, Table ????
+ *        for the NTN Dense Urban scenario.
+ */
+class ThreeGppNTNDenseUrbanPropagationLossModel : public ThreeGppPropagationLossModel
+{
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+
+    /**
+     * Constructor
+     */
+    ThreeGppNTNDenseUrbanPropagationLossModel();
+
+    /**
+     * Destructor
+     */
+    ~ThreeGppNTNDenseUrbanPropagationLossModel() override;
+
+    /**
+     * \copydoc ThreeGppPropagationLossModel::GetO2iDistance2dIn
+     *  Does nothing in NTN scenarios.
+     */
+    double GetO2iDistance2dIn() const override;
+
+    /**
+     * \brief Copy constructor
+     *
+     * Deleted in base class
+     */
+    ThreeGppNTNDenseUrbanPropagationLossModel(const ThreeGppNTNDenseUrbanPropagationLossModel&) =
+        delete;
+
+    /**
+     * \brief Copy constructor
+     *
+     * Deleted in base class
+     * \returns the ThreeGppNTNDenseUrbanPropagationLossModel instance
+     */
+    ThreeGppNTNDenseUrbanPropagationLossModel& operator=(
+        const ThreeGppNTNDenseUrbanPropagationLossModel&) = delete;
+
+  private:
+    // Inherited
+    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+    double GetShadowingStd(Ptr<MobilityModel> a,
+                           Ptr<MobilityModel> b,
+                           ChannelCondition::LosConditionValue cond) const override;
+    double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
+
+    /**
+     * \brief The nested map containing the Shadow Fading and
+     *        Clutter Loss values for the NTN Dense Urban scenario
+     */
+    const std::map<int, std::vector<float>>* m_SFCL_DenseUrban;
+};
+
+/**
+ * \ingroup propagation
+ *
+ * \brief Implements the pathloss model defined in 3GPP TR 38.811, Table ????
+ *        for the NTN Urban scenario.
+ */
+class ThreeGppNTNUrbanPropagationLossModel : public ThreeGppPropagationLossModel
+{
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+
+    /**
+     * Constructor
+     */
+    ThreeGppNTNUrbanPropagationLossModel();
+
+    /**
+     * Destructor
+     */
+    ~ThreeGppNTNUrbanPropagationLossModel() override;
+
+    /**
+     * \copydoc ThreeGppPropagationLossModel::GetO2iDistance2dIn
+     *  Does nothing in NTN scenarios.
+     */
+    double GetO2iDistance2dIn() const override;
+
+    /**
+     * \brief Copy constructor
+     *
+     * Deleted in base class
+     */
+    ThreeGppNTNUrbanPropagationLossModel(const ThreeGppNTNUrbanPropagationLossModel&) = delete;
+
+    /**
+     * \brief Copy constructor
+     *
+     * Deleted in base class
+     * \returns the ThreeGppNTNUrbanPropagationLossModel instance
+     */
+    ThreeGppNTNUrbanPropagationLossModel& operator=(const ThreeGppNTNUrbanPropagationLossModel&) =
+        delete;
+
+  private:
+    // Inherited
+    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+    double GetShadowingStd(Ptr<MobilityModel> a,
+                           Ptr<MobilityModel> b,
+                           ChannelCondition::LosConditionValue cond) const override;
+    double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
+
+    /**
+     * \brief The nested map containing the Shadow Fading and
+     *        Clutter Loss values for the NTN Urban scenario
+     */
+    const std::map<int, std::vector<float>>* m_SFCL_Urban;
+};
+
+/**
+ * \ingroup propagation
+ *
+ * \brief Implements the pathloss model defined in 3GPP TR 38.811, Table ????
+ *        for the NTN Suburban scenario.
+ */
+class ThreeGppNTNSuburbanPropagationLossModel : public ThreeGppPropagationLossModel
+{
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+
+    /**
+     * Constructor
+     */
+    ThreeGppNTNSuburbanPropagationLossModel();
+
+    /**
+     * Destructor
+     */
+    ~ThreeGppNTNSuburbanPropagationLossModel() override;
+
+    /**
+     * \copydoc ThreeGppPropagationLossModel::GetO2iDistance2dIn
+     *  Does nothing in NTN scenarios.
+     */
+    double GetO2iDistance2dIn() const override;
+
+    /**
+     * \brief Copy constructor
+     *
+     * Deleted in base class
+     */
+    ThreeGppNTNSuburbanPropagationLossModel(const ThreeGppNTNSuburbanPropagationLossModel&) =
+        delete;
+
+    /**
+     * \brief Copy constructor
+     *
+     * Deleted in base class
+     * \returns the ThreeGppNTNSuburbanPropagationLossModel instance
+     */
+    ThreeGppNTNSuburbanPropagationLossModel& operator=(
+        const ThreeGppNTNSuburbanPropagationLossModel&) = delete;
+
+  private:
+    // Inherited
+    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+    double GetShadowingStd(Ptr<MobilityModel> a,
+                           Ptr<MobilityModel> b,
+                           ChannelCondition::LosConditionValue cond) const override;
+    double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
+
+    /**
+     * \brief The nested map containing the Shadow Fading and
+     *        Clutter Loss values for the NTN Suburban and Rural scenario
+     */
+    const std::map<int, std::vector<float>>* m_SFCL_SuburbanRural;
+};
+
+/**
+ * \ingroup propagation
+ *
+ * \brief Implements the pathloss model defined in 3GPP TR 38.811, Table ????
+ *        for the NTN Rural scenario.
+ */
+class ThreeGppNTNRuralPropagationLossModel : public ThreeGppPropagationLossModel
+{
+  public:
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId();
+
+    /**
+     * Constructor
+     */
+    ThreeGppNTNRuralPropagationLossModel();
+
+    /**
+     * Destructor
+     */
+    ~ThreeGppNTNRuralPropagationLossModel() override;
+
+    /**
+     * \copydoc ThreeGppPropagationLossModel::GetO2iDistance2dIn
+     *  Does nothing in NTN scenarios.
+     */
+    double GetO2iDistance2dIn() const override;
+
+    /**
+     * \brief Copy constructor
+     *
+     * Deleted in base class
+     */
+    ThreeGppNTNRuralPropagationLossModel(const ThreeGppNTNRuralPropagationLossModel&) = delete;
+
+    /**
+     * \brief Copy constructor
+     *
+     * Deleted in base class
+     * \returns the ThreeGppNTNRuralPropagationLossModel instance
+     */
+    ThreeGppNTNRuralPropagationLossModel& operator=(const ThreeGppNTNRuralPropagationLossModel&) =
+        delete;
+
+  private:
+    // Inherited
+    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+    double GetShadowingStd(Ptr<MobilityModel> a,
+                           Ptr<MobilityModel> b,
+                           ChannelCondition::LosConditionValue cond) const override;
+    double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
+
+    /**
+     * \brief The nested map containing the Shadow Fading and
+     *        Clutter Loss values for the NTN Suburban and Rural scenario
+     */
+    const std::map<int, std::vector<float>>* m_SFCL_SuburbanRural;
 };
 
 } // namespace ns3
