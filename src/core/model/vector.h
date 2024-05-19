@@ -188,6 +188,14 @@ class Vector3D
      * \returns The vector \pname{b} scaled by \pname{a}.
      */
     friend Vector3D operator*(double a, const Vector3D& b);
+
+    /**
+     * Dot product operator.
+     * \param [in] a lhs vector.
+     * \param [in] b rhs vector.
+     * \returns The dot product of \pname{a} and \pname{b}.
+     */
+    friend double operator*(const Vector3D& a, const Vector3D& b);
 };
 
 /**
@@ -333,6 +341,14 @@ class Vector2D
      * \returns The vector \pname{b} scaled by \pname{a}.
      */
     friend Vector2D operator*(double a, const Vector2D& b);
+
+    /**
+     * Dot product operator.
+     * \param [in] a lhs vector.
+     * \param [in] b rhs vector.
+     * \returns The dot product of \pname{a} and \pname{b}.
+     */
+    friend double operator*(const Vector2D& a, const Vector2D& b);
 };
 
 double CalculateDistance(const Vector3D& a, const Vector3D& b);

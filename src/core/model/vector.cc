@@ -213,6 +213,12 @@ operator*(double a, const Vector3D& b)
     return Vector3D(b.x * a, b.y * a, b.z * a);
 }
 
+double
+operator*(const Vector3D& a, const Vector3D& b)
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
 std::ostream&
 operator<<(std::ostream& os, const Vector2D& vector)
 {
@@ -290,6 +296,12 @@ Vector2D
 operator*(double a, const Vector2D& b)
 {
     return Vector2D(b.x * a, b.y * a);
+}
+
+double
+operator*(const Vector2D& a, const Vector2D& b)
+{
+    return a.x * b.x + a.y * b.y;
 }
 
 } // namespace ns3
