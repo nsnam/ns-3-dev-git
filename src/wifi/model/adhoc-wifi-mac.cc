@@ -96,6 +96,12 @@ AdhocWifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to)
             GetWifiRemoteStationManager()->AddStationHeCapabilities(
                 to,
                 GetHeCapabilities(SINGLE_LINK_OP_ID));
+            if (Is6GhzBand(SINGLE_LINK_OP_ID))
+            {
+                GetWifiRemoteStationManager()->AddStationHe6GhzCapabilities(
+                    to,
+                    GetHe6GhzBandCapabilities(SINGLE_LINK_OP_ID));
+            }
         }
         if (GetEhtSupported())
         {
