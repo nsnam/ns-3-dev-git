@@ -162,7 +162,7 @@ MpduAggregator::GetMaxAmpduSize(Mac48Address recipient,
 
         maxAmpduSize = std::min(maxAmpduSize, ehtCapabilities->GetMaxAmpduLength());
     }
-    else if (modulation >= WIFI_MOD_CLASS_HE || m_mac->Is6GhzBand(m_linkId))
+    else if (modulation >= WIFI_MOD_CLASS_HE)
     {
         NS_ABORT_MSG_IF(!heCapabilities, "HE Capabilities element not received");
 
