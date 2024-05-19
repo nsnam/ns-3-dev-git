@@ -106,14 +106,12 @@ class BlockAckManager : public Object
     /**
      * \param reqHdr Relative Add block ack request (action frame).
      * \param recipient Address of peer station involved in block ack mechanism.
-     * \param htSupported Whether both originator and recipient support HT
      *
      * Creates a new originator block ack agreement in pending state. When a ADDBA response
      * with a successful status code is received, the relative agreement becomes established.
      */
     void CreateOriginatorAgreement(const MgtAddBaRequestHeader& reqHdr,
-                                   const Mac48Address& recipient,
-                                   bool htSupported = true);
+                                   const Mac48Address& recipient);
     /**
      * \param recipient Address of peer station involved in block ack mechanism.
      * \param tid traffic ID of transmitted packet.
@@ -140,7 +138,6 @@ class BlockAckManager : public Object
      *        mechanism.
      * \param startingSeq Sequence number of the first MPDU of all
      *        packets for which block ack was negotiated.
-     * \param htSupported whether HT support is enabled
      * \param rxMiddle the MAC RX Middle on this station
      *
      * This function is typically invoked only by ns3::WifiMac
@@ -153,7 +150,6 @@ class BlockAckManager : public Object
     void CreateRecipientAgreement(const MgtAddBaResponseHeader& respHdr,
                                   const Mac48Address& originator,
                                   uint16_t startingSeq,
-                                  bool htSupported,
                                   Ptr<MacRxMiddle> rxMiddle);
     /**
      * Destroy a recipient Block Ack agreement.

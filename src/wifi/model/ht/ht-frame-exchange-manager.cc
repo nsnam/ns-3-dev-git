@@ -256,13 +256,9 @@ HtFrameExchangeManager::SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr,
     {
         originator = *originatorMld;
     }
-    bool htSupported = m_mac->GetDevice()->GetHtConfiguration() &&
-                       (GetWifiRemoteStationManager()->GetHtSupported(originator) ||
-                        GetWifiRemoteStationManager()->GetStationHe6GhzCapabilities(originator));
     GetBaManager(tid)->CreateRecipientAgreement(respHdr,
                                                 originator,
                                                 reqHdr->GetStartingSequence(),
-                                                htSupported,
                                                 m_rxMiddle);
 
     auto agreement = GetBaManager(tid)->GetAgreementAsRecipient(originator, tid);
