@@ -113,7 +113,9 @@ pattern.
 ParabolicAntennaModel
 +++++++++++++++++++++
 
-This model is based on the parabolic approximation of the main lobe radiation pattern. It is often used in the context of cellular system to model the radiation pattern of a cell sector, see for instance [R4-092042a]_ and [Calcev]_. The antenna gain in dB is determined as:
+This model is based on the parabolic approximation of the main lobe radiation pattern. It is often
+used in the context of cellular system to model the radiation pattern of a cell sector, see for
+instance [R4-092042a]_ and [Calcev]_. The antenna gain in dB is determined as:
 
 .. math::
 
@@ -192,6 +194,40 @@ are configured through the attribute "PolSlantAngle"; while the antenna elements
 the second polarization have the polarization slant angle minus 90 degrees,
 as described in [38901]_ (i.e., :math:`{\zeta}`).
 
+CircularApertureAntennaModel
+++++++++++++++++++++++++++++
+
+The class CircularApertureAntennaModel implements the radiation pattern described in [38811]_.
+Specifically, the latter represents parabolic antennas, i.e., antennas which are typically used
+for achieving long range communications such as earth-to-satellite links.
+The default boresight orientation is parallel to the positive z-axis, and it can be tuned by
+using the AntennaInclination and AntennaAzimuth parameters.
+This implementation provides an exact characterization of the antenna field pattern, by leveraging
+the standard library Bessel functions implementation introduced with C++17.
+Accordingly, the antenna gain :math:`G` at an angle :math:`\theta` from the boresight main beam
+is evaluated as:
+
+.. math::
+   G \cdot 4\left | \frac{J_{1}\left ( k\cdot a\cdot sin\theta \right )}{k\cdot a\cdot sin\theta} \right
+   |^{2}\;\;\;\;\; for\; 0<\left | \theta \right |\leq 90^{\circ} \\
+   G \cdot 1\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; for\; \theta=0
+
+where :math:`J_{1}()` is the Bessel function of the first kind and first order, and :math:`a` is
+the radius of the antenna's circular aperture.
+The parameter :math:`k` is equal to :math:`k=\frac{2\pi f}{x}`, where :math:`f` is the carrier
+frequency, and :math:`c` is the speed of light in vacuum.
+The parameters :math:`G` (in logarithmic scale), :math:`a` and :math:`f` can be configured by using
+the attributes "AntennaMaxGainDb", "AntennaCircularApertureRadius" and "OperatingFrequency", respectively.
+This type of antennas features a symmetric radiation pattern, meaning that a single angle, measured
+from the boresight direction, is sufficient to characterize the radiation strength along a given direction.
+
+.. _fig-circular-antenna-pattern:
+
+.. figure:: figures/circular-antenna-pattern.png
+   :align: center
+
+   Circular aperture antenna radiation pattern with :math:`G =` 38.5 dB and :math:`a =` 10 :math:`\frac{c}{f}.`
+
 
 .. [Balanis] C.A. Balanis, "Antenna Theory - Analysis and Design",  Wiley, 2nd Ed.
 
@@ -207,6 +243,8 @@ as described in [38901]_ (i.e., :math:`{\zeta}`).
    assumptions and parameters for FDD HeNB RF requirements.
 
 .. [38901] 3GPP. 2018. TR 38.901, Study on channel model for frequencies from 0.5 to 100 GHz, V15.0.0. (2018-06).
+
+.. [38811] 3GPP. 2018. TR 38.811, Study on New Radio (NR) to support non-terrestrial networks, V15.4.0. (2020-09).
 
 .. [Mailloux] Robert J. Mailloux, "Phased Array Antenna Handbook", Artech House, 2nd Ed.
 

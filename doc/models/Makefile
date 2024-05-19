@@ -111,6 +111,7 @@ SOURCEFIGS = \
 	figures/testbed.dia \
 	figures/emulated-channel.dia \
 	$(SRC)/antenna/doc/source/figures/antenna-coordinate-system.dia	\
+	$(SRC)/antenna/doc/source/figures/circular-antenna-pattern.png	\
 	$(SRC)/applications/doc/http-embedded-object-size.png \
 	$(SRC)/applications/doc/http-main-object-size.png \
 	$(SRC)/applications/doc/http-num-of-embedded-objects.png \

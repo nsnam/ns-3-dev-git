@@ -123,7 +123,8 @@ For MacPorts packages we show the most recent package version available as of ea
   | Emulation with virtual      |                                  |                          |
   | machines                    | Not available for macOS          | Not available for macOS  |
   +-----------------------------+----------------------------------+--------------------------+
-  | Support for openflow        | ``boost``                        | ``boost``                |
+  | Support for openflow,       | ``boost``                        | ``boost``                |
+  | CircularApertureAntennaModel|                                  |                          |
   +-----------------------------+----------------------------------+--------------------------+
 
 Caveats and troubleshooting
