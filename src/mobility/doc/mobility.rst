@@ -52,26 +52,30 @@ Coordinate system
 #################
 
 There are many possible coordinate systems and possible translations between
-them.  |ns3| uses the Cartesian coordinate system only, at present.
+them. Currently, |ns3| provides support for the Cartesian, Geocentric Cartesian,
+and Geographic coordinate systems, which are defined as:
 
-The question has arisen as to how to use the mobility models (supporting
-Cartesian coordinates) with different coordinate systems.  This is possible
-if the user performs conversion between the |ns3| Cartesian and the
-other coordinate system.  One possible library to assist is
-the `proj4 <https://proj.org>`_ library for projections and reverse
-projections.
+* **Cartesian coordinates**: They represent a point in 3D space using the set of coordinates (x,y,z).
+  This is the default coordinate system in |ns3|, and it is the most suitable for simulation scenarios whose size is in the order of a few km.
 
-If we support converting between coordinate systems, we must adopt a
-reference.  It has been suggested to use the geocentric Cartesian coordinate
-system as a reference.  Contributions are welcome in this regard.
+  * **Topocentric coordinates**: Cartesian coordinates where a specific reference
+    point on the Earth's surface, such as lat-lon, for the origin is given.
+    This coordinate system is useful for converting to and from Geocentric/Geographic coordinates.
 
-The question has arisen about adding a new mobility model whose motion
-is natively implemented in a different coordinate system (such as an
-orbital mobility model implemented using spherical coordinate system).
-We advise to create a subclass with the APIs desired
-(such as Get/SetSphericalPosition), and new position allocators, and
-implement the motion however desired, but must also support the conversion to
-cartesian (by supporting the cartesian Get/SetPosition).
+  * **Geocentric Cartesian coordinates**: Cartesian coordinate system where the
+    origin is fixed in the Earth's center of mass. The implementation follows the description in Sec. 6.3 of [38811]_.
+
+* **Geographic coordinates**: They represent a point in 3D space by assuming it
+  is located on the surface or in the orbit of the Earth. Positions are uniquely
+  described by three values: latitude, longitude and altitude. The latter reference is the Earth's surface.
+
+At the moment, the geocentric Cartesian coordinates are adopted by the
+GeocentricConstantPositionMobilityModel only.
+This class implements the Get/SetPosition methods, which leverage the
+GeographicPosition class to offer conversions to and from Cartesian coordinates.
+Additionally, users can set the position of a node by its geographical coordinates
+via the methods Get/SetGeographicPosition.
+
 
 Coordinates
 ###########
@@ -112,6 +116,7 @@ MobilityModel Subclasses
 - RandomWaypoint
 - SteadyStateRandomWaypoint
 - Waypoint
+- GeocentricConstantPosition
 
 PositionAllocator
 #################
@@ -198,13 +203,14 @@ See below for additional usage instructions on this helper.
 Scope and Limitations
 =====================
 
-- only cartesian coordinates are presently supported
+- Cartesian, geocentric cartesian, and geographic coordinates are presently supported
 
 References
 ==========
 
 .. [Camp2002] T. Camp, J. Boleng, V. Davies.  "A survey of mobility models for ad hoc network research",
    in Wireless Communications and Mobile Computing, 2002: vol. 2, pp. 2483-2502.
+.. [38811] 3GPP. 2018. TR 38.811, Study on New Radio (NR) to support non-terrestrial networks, V15.4.0. (2020-09).
 
 Usage
 *****

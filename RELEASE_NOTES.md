@@ -36,6 +36,12 @@ been tested on Linux. The latest known version to work with ns-3 is cppyy==3.1.2
 - (wifi) - Simulation duration and data rate parameters of existing wifi examples changed to use Time and DataRate types
 - (mobility) !1986 - Adds simple constant-mobility-example
 - (energy) !1948 - Adds namespace energy
+- (mobility) !1517 - Added the `GeocentricConstantPositionMobilityModel` mobility model and coordinate conversion methods between geocentric and
+topocentric coordinate systems
+- (antenna) !1517 - Added `CircularApertureAntennaModel`, which mimics the reflector antenna with circular aperture described in
+3GPP TR 38.811 v15.4.0, Section 6.4.1
+- (core) !1517 - Added `TestVector` iterators and dot product operator for `Vector2D` and `Vector3D` types
+- (propagation, spectrum) !1517 - Added 3GPP 38.811 Non-Terrestrial Networks channel model
 
 ### Bugs fixed
 

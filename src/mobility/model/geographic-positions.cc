@@ -19,18 +19,15 @@
 
 #include "geographic-positions.h"
 
+#include <ns3/angles.h>
 #include <ns3/log.h>
 
 #include <cmath>
 
 NS_LOG_COMPONENT_DEFINE("GeographicPositions");
 
-namespace ns3
+namespace
 {
-
-/// Earth's radius in meters if modeled as a perfect sphere
-static constexpr double EARTH_RADIUS = 6371e3;
-
 /**
  * GRS80 and WGS84 sources
  *
@@ -42,20 +39,14 @@ static constexpr double EARTH_RADIUS = 6371e3;
  * <https://web.archive.org/web/20200730231853/http://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf>.
  */
 
-/// Earth's semi-major axis in meters as defined by both GRS80 and WGS84
-static constexpr double EARTH_SEMIMAJOR_AXIS = 6378137;
+/**
+ * \brief  Lambda function for computing the curvature
+ */
+auto curvature = [](double e, double ph) { return sqrt(1 - e * e * sin(ph) * sin(ph)); };
+} // namespace
 
-/// Earth's first eccentricity as defined by GRS80
-static constexpr double EARTH_GRS80_ECCENTRICITY = 0.0818191910428158;
-
-/// Earth's first eccentricity as defined by WGS84
-static constexpr double EARTH_WGS84_ECCENTRICITY = 0.0818191908426215;
-
-/// Conversion factor: degrees to radians
-static constexpr double DEG2RAD = M_PI / 180.0;
-
-/// Conversion factor: radians to degrees
-static constexpr double RAD2DEG = 180.0 * M_1_PI;
+namespace ns3
+{
 
 Vector
 GeographicPositions::GeographicToCartesianCoordinates(double latitude,
@@ -64,31 +55,16 @@ GeographicPositions::GeographicToCartesianCoordinates(double latitude,
                                                       EarthSpheroidType sphType)
 {
     NS_LOG_FUNCTION_NOARGS();
-    double latitudeRadians = DEG2RAD * latitude;
-    double longitudeRadians = DEG2RAD * longitude;
-    double a; // semi-major axis of earth
-    double e; // first eccentricity of earth
-    if (sphType == SPHERE)
-    {
-        a = EARTH_RADIUS;
-        e = 0;
-    }
-    else if (sphType == GRS80)
-    {
-        a = EARTH_SEMIMAJOR_AXIS;
-        e = EARTH_GRS80_ECCENTRICITY;
-    }
-    else // if sphType == WGS84
-    {
-        a = EARTH_SEMIMAJOR_AXIS;
-        e = EARTH_WGS84_ECCENTRICITY;
-    }
+    double latitudeRadians = DegreesToRadians(latitude);
+    double longitudeRadians = DegreesToRadians(longitude);
 
-    double Rn = a / (sqrt(1 - pow(e, 2) * pow(sin(latitudeRadians), 2))); // radius of
-                                                                          // curvature
+    // Retrieve radius, first eccentricity and flattening according to the specified Earth's model
+    auto [a, e, f] = GetRadiusEccentFlat(sphType);
+
+    double Rn = a / curvature(e, latitudeRadians); // radius of curvature
     double x = (Rn + altitude) * cos(latitudeRadians) * cos(longitudeRadians);
     double y = (Rn + altitude) * cos(latitudeRadians) * sin(longitudeRadians);
-    double z = ((1 - pow(e, 2)) * Rn + altitude) * sin(latitudeRadians);
+    double z = ((1 - e * e) * Rn + altitude) * sin(latitudeRadians);
     Vector cartesianCoordinates = Vector(x, y, z);
     return cartesianCoordinates;
 }
@@ -98,23 +74,8 @@ GeographicPositions::CartesianToGeographicCoordinates(Vector pos, EarthSpheroidT
 {
     NS_LOG_FUNCTION(pos << sphType);
 
-    double a; // semi-major axis of earth
-    double e; // first eccentricity of earth
-    if (sphType == SPHERE)
-    {
-        a = EARTH_RADIUS;
-        e = 0;
-    }
-    else if (sphType == GRS80)
-    {
-        a = EARTH_SEMIMAJOR_AXIS;
-        e = EARTH_GRS80_ECCENTRICITY;
-    }
-    else // if sphType == WGS84
-    {
-        a = EARTH_SEMIMAJOR_AXIS;
-        e = EARTH_WGS84_ECCENTRICITY;
-    }
+    // Retrieve radius, first eccentricity and flattening according to the specified Earth's model
+    auto [a, e, f] = GetRadiusEccentFlat(sphType);
 
     Vector lla;
     Vector tmp;
@@ -134,10 +95,10 @@ GeographicPositions::CartesianToGeographicCoordinates(Vector pos, EarthSpheroidT
         lla.x = atan2(pos.z, p * (1 - e2 * N / v));
     }
     // 1 m difference is approx 1 / 30 arc seconds = 9.26e-6 deg
-    while (fabs(lla.x - tmp.x) > 0.00000926 * DEG2RAD);
+    while (fabs(lla.x - tmp.x) > DegreesToRadians(0.00000926));
 
-    lla.x *= RAD2DEG;
-    lla.y *= RAD2DEG;
+    lla.x = RadiansToDegrees(lla.x);
+    lla.y = RadiansToDegrees(lla.y);
 
     // canonicalize (latitude) x in [-90, 90] and (longitude) y in [-180, 180)
     if (lla.x > 90.0)
@@ -163,6 +124,84 @@ GeographicPositions::CartesianToGeographicCoordinates(Vector pos, EarthSpheroidT
     NS_ASSERT_MSG(90.0 >= lla.x, "Conversion error: latitude too positive");
 
     return lla;
+}
+
+Vector
+GeographicPositions::GeographicToTopocentricCoordinates(Vector pos,
+                                                        Vector refPoint,
+                                                        EarthSpheroidType sphType)
+{
+    NS_LOG_FUNCTION(pos << sphType);
+
+    double phi = DegreesToRadians(pos.x);
+    double lambda = DegreesToRadians(pos.y);
+    double h = pos.z;
+    double phi0 = DegreesToRadians(refPoint.x);
+    double lambda0 = DegreesToRadians(refPoint.y);
+    double h0 = refPoint.z;
+    // Retrieve radius, first eccentricity and flattening according to the specified Earth's model
+    auto [a, e, f] = GetRadiusEccentFlat(sphType);
+
+    // the radius of curvature in the prime vertical at latitude
+    double v = a / curvature(e, phi);
+    // the radius of curvature in the prime vertical at latitude
+    // of the reference point
+    double v0 = a / curvature(e, phi0);
+
+    double U = (v + h) * cos(phi) * sin(lambda - lambda0);
+    double V = (v + h) * (sin(phi) * cos(phi0) - cos(phi) * sin(phi0) * cos(lambda - lambda0)) +
+               e * e * (v0 * sin(phi0) - v * sin(phi)) * cos(phi0);
+    double W = (v + h) * (sin(phi) * sin(phi0) + cos(phi) * cos(phi0) * cos(lambda - lambda0)) +
+               e * e * (v0 * sin(phi0) - v * sin(phi)) * sin(phi0) - (v0 + h0);
+
+    Vector topocentricCoordinates = Vector(U, V, W);
+    return topocentricCoordinates;
+}
+
+Vector
+GeographicPositions::TopocentricToGeographicCoordinates(Vector pos,
+                                                        Vector refPoint,
+                                                        EarthSpheroidType sphType)
+{
+    NS_LOG_FUNCTION(pos << sphType);
+
+    double U = pos.x;
+    double V = pos.y;
+    double W = pos.z;
+    double phi0 = DegreesToRadians(refPoint.x);
+    double lambda0 = DegreesToRadians(refPoint.y);
+    double h0 = refPoint.z;
+    // Retrieve radius, first eccentricity and flattening according to the specified Earth's model
+    auto [a, e, f] = GetRadiusEccentFlat(sphType);
+
+    // the radius of curvature in the prime vertical at latitude
+    // of the reference point
+    double v0 = a / curvature(e, phi0);
+
+    double X0 = (v0 + h0) * cos(phi0) * cos(lambda0);
+    double Y0 = (v0 + h0) * cos(phi0) * sin(lambda0);
+    double Z0 = ((1 - e * e) * v0 + h0) * sin(phi0);
+
+    double X = X0 - U * sin(lambda0) - V * sin(phi0) * cos(lambda0) + W * cos(phi0) * cos(lambda0);
+    double Y = Y0 + U * cos(lambda0) - V * sin(phi0) * sin(lambda0) + W * cos(phi0) * sin(lambda0);
+    double Z = Z0 + V * cos(phi0) + W * sin(phi0);
+
+    double epsilon = e * e / (1 - e * e);
+    double b = a * (1 - f);
+    double p = sqrt(X * X + Y * Y);
+    double q = atan2((Z * a), (p * b));
+
+    double phi = atan2((Z + epsilon * b * pow(sin(q), 3)), (p - e * e * a * pow(cos(q), 3)));
+    double lambda = atan2(Y, X);
+
+    double v = a / curvature(e, phi);
+    double h = (p / cos(phi)) - v;
+
+    phi = RadiansToDegrees(phi);
+    lambda = RadiansToDegrees(lambda);
+
+    Vector geographicCoordinates = Vector(phi, lambda, h);
+    return geographicCoordinates;
 }
 
 std::list<Vector>
@@ -194,27 +233,28 @@ GeographicPositions::RandCartesianPointsAroundGeographicPoint(double originLatit
         maxAltitude = 0;
     }
 
-    double originLatitudeRadians = originLatitude * DEG2RAD;
-    double originLongitudeRadians = originLongitude * DEG2RAD;
+    double originLatitudeRadians = DegreesToRadians(originLatitude);
+    double originLongitudeRadians = DegreesToRadians(originLongitude);
     double originColatitude = (M_PI_2)-originLatitudeRadians;
 
-    double a = maxDistFromOrigin / EARTH_RADIUS; // maximum alpha allowed
-                                                 // (arc length formula)
+    // maximum alpha allowed (arc length formula)
+    double a = maxDistFromOrigin / EARTH_SPHERE_RADIUS;
     if (a > M_PI)
     {
-        a = M_PI; // pi is largest alpha possible (polar angle from origin that
-                  // points can be generated within)
+        // pi is largest alpha possible (polar angle from origin that
+        // points can be generated within)
+        a = M_PI;
     }
 
     std::list<Vector> generatedPoints;
     for (int i = 0; i < numPoints; i++)
     {
         // random distance from North Pole (towards center of earth)
-        double d = uniRand->GetValue(0, EARTH_RADIUS - EARTH_RADIUS * cos(a));
+        double d = uniRand->GetValue(0, EARTH_SPHERE_RADIUS - EARTH_SPHERE_RADIUS * cos(a));
         // random angle in latitude slice (wrt Prime Meridian), radians
         double phi = uniRand->GetValue(0, M_PI * 2);
         // random angle from Center of Earth (wrt North Pole), radians
-        double alpha = acos((EARTH_RADIUS - d) / EARTH_RADIUS);
+        double alpha = acos((EARTH_SPHERE_RADIUS - d) / EARTH_SPHERE_RADIUS);
 
         // shift coordinate system from North Pole referred to origin point referred
         // reference: http://en.wikibooks.org/wiki/General_Astronomy/Coordinate_Systems
@@ -242,18 +282,48 @@ GeographicPositions::RandCartesianPointsAroundGeographicPoint(double originLatit
         // random altitude above earth's surface
         double randAltitude = uniRand->GetValue(0, maxAltitude);
 
-        Vector pointPosition =
-            GeographicPositions::GeographicToCartesianCoordinates(randPointLatitude * RAD2DEG,
-                                                                  randPointLongitude * RAD2DEG,
-                                                                  randAltitude,
-                                                                  SPHERE);
-        // convert coordinates
-        // from geographic to cartesian
+        // convert coordinates from geographic to cartesian
+        Vector pointPosition = GeographicPositions::GeographicToCartesianCoordinates(
+            RadiansToDegrees(randPointLatitude),
+            RadiansToDegrees(randPointLongitude),
+            randAltitude,
+            SPHERE);
 
-        generatedPoints.push_back(pointPosition); // add generated coordinate
-                                                  // points to list
+        // add generated coordinate points to list
+        generatedPoints.push_back(pointPosition);
     }
     return generatedPoints;
+}
+
+std::tuple<double, double, double>
+GeographicPositions::GetRadiusEccentFlat(EarthSpheroidType type)
+{
+    double a; // radius, in meters
+    double e; // first eccentricity
+    double f; // first flattening
+
+    switch (type)
+    {
+    case SPHERE:
+        a = EARTH_SPHERE_RADIUS;
+        e = EARTH_SPHERE_ECCENTRICITY;
+        f = EARTH_SPHERE_FLATTENING;
+        break;
+    case GRS80:
+        a = EARTH_SEMIMAJOR_AXIS;
+        e = EARTH_GRS80_ECCENTRICITY;
+        f = EARTH_GRS80_FLATTENING;
+        break;
+    case WGS84:
+        a = EARTH_SEMIMAJOR_AXIS;
+        e = EARTH_WGS84_ECCENTRICITY;
+        f = EARTH_WGS84_FLATTENING;
+        break;
+    default:
+        NS_FATAL_ERROR("The specified earth model is not supported!");
+    }
+
+    return std::make_tuple(a, e, f);
 }
 
 } // namespace ns3

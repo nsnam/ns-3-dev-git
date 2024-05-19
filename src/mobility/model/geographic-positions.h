@@ -45,6 +45,37 @@ class GeographicPositions
      * Mapping Agency, 1 Jan. 2000.
      * <https://web.archive.org/web/20200729203634/https://earth-info.nga.mil/GandG/publications/tr8350.2/wgs84fin.pdf>.
      */
+
+    /// Earth's radius in meters if modeled as a perfect sphere
+    static constexpr double EARTH_SPHERE_RADIUS = 6371e3;
+
+    /// Earth's eccentricity if modeled as a perfect sphere
+    static constexpr double EARTH_SPHERE_ECCENTRICITY = 0;
+
+    /// Earth's flattening if modeled as a perfect sphere
+    static constexpr double EARTH_SPHERE_FLATTENING = 0;
+
+    /// <Earth's semi-major axis in meters as defined by both GRS80 and WGS84
+    /// https://en.wikipedia.org/wiki/World_Geodetic_System
+    static constexpr double EARTH_SEMIMAJOR_AXIS = 6378137;
+
+    /// Earth's first eccentricity as defined by GRS80
+    /// https://en.wikipedia.org/wiki/Geodetic_Reference_System_1980
+    static constexpr double EARTH_GRS80_ECCENTRICITY = 0.0818191910428158;
+
+    /// Earth's first flattening as defined by GRS80
+    /// https://en.wikipedia.org/wiki/Geodetic_Reference_System_1980
+    static constexpr double EARTH_GRS80_FLATTENING = 0.003352810681183637418;
+
+    /// Earth's first eccentricity as defined by
+    /// https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84
+    static constexpr double EARTH_WGS84_ECCENTRICITY = 0.0818191908426215;
+
+    /// Earth's first flattening as defined by WGS84
+    /// https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84
+    static constexpr double EARTH_WGS84_FLATTENING = 0.00335281;
+
+    /// The possible Earth spheroid models.  .
     enum EarthSpheroidType
     {
         SPHERE,
@@ -63,7 +94,7 @@ class GeographicPositions
      * @param altitude height of the point (in meters) above earth's surface
      * @param sphType earth spheroid model to use for conversion
      *
-     * @return a vector containing the Cartesian coordinates (x, y, z referenced
+     * @return a vector representing the Cartesian coordinates (x, y, z referenced
      * in meters) of the point (origin (0, 0, 0) is center of earth)
      */
     static Vector GeographicToCartesianCoordinates(double latitude,
@@ -78,7 +109,7 @@ class GeographicPositions
      * geographic coordinates. The residual delta is 1 m, which is approximately
      * 1 / 30 arc seconds or 9.26e-6 deg.
      *
-     * @param pos a vector containing the Cartesian coordinates (x, y, z referenced
+     * @param pos a vector representing the Cartesian coordinates (x, y, z referenced
      * in meters) of the point (origin (0, 0, 0) is center of earth)
      * @param sphType earth spheroid model to use for conversion
      *
@@ -90,6 +121,50 @@ class GeographicPositions
      * <https://gssc.esa.int/navipedia/index.php/Ellipsoidal_and_Cartesian_Coordinates_Conversion>
      */
     static Vector CartesianToGeographicCoordinates(Vector pos, EarthSpheroidType sphType);
+
+    /**
+     * Conversion from geographic to topocentric coordinates.
+     *
+     * Conversion formulas taken from [1, Sec. 4.1.3 "Geographic/topocentric conversions"].
+     * [1] IOGP. Geomatics guidance note 7, part 2: coordinate conversions & transformations
+     * including formulas. IOGP Publication 373-7-2, International Association For Oil And Gas
+     * Producers, Sep. 2019
+     * https://www.iogp.org/bookstore/product/coordinate-conversions-and-transformation-including-formulas/
+     *
+     * @param pos a vector representing the Geographic coordinates (latitude, longitude, altitude)
+     * in degrees (lat/lon) and meters (altitude).
+     * @param refPoint a vector representing the reference point (latitude, longitude, altitude) in
+     * degrees (lat/lon) and meters (altitude). Default is (0,0,0)
+     * @param sphType earth spheroid model to use for conversion
+     *
+     * @return Vector position in meters and using planar Cartesian coordinates, i.e., ns-3's
+     * defaults
+     */
+    static Vector GeographicToTopocentricCoordinates(Vector pos,
+                                                     Vector refPoint,
+                                                     EarthSpheroidType sphType);
+
+    /**
+     * Conversion from topocentric to geographic.
+     *
+     * Conversion formulas taken from [1, Sec. 4.1.3 "Geographic/topocentric conversions"].
+     * [1] IOGP. Geomatics guidance note 7, part 2: coordinate conversions & transformations
+     * including formulas. IOGP Publication 373-7-2, International Association For Oil And Gas
+     * Producers, Sep. 2019
+     * https://www.iogp.org/bookstore/product/coordinate-conversions-and-transformation-including-formulas/
+     *
+     * @param pos a vector representing the topocentric coordinates (u, v, w) in meters, which
+     * represent the cartesian coordinates along the xEast, yNorth and zUp axes, respectively..
+     * @param refPoint a vector representing the reference point (latitude, longitude, altitude) in
+     * degrees (lat/lon) and meters (altitude). Default is (0,0,0)
+     * @param sphType earth spheroid model to use for conversion
+     *
+     * @return Vector position (latitude, longitude, altitude) in degrees (lat/lon) and meters
+     * (altitude) converted to geographic coordinates
+     */
+    static Vector TopocentricToGeographicCoordinates(Vector pos,
+                                                     Vector refPoint,
+                                                     EarthSpheroidType sphType);
 
     /**
      * Generates uniformly distributed random points (in ECEF Cartesian
@@ -123,6 +198,13 @@ class GeographicPositions
         int numPoints,
         double maxDistFromOrigin,
         Ptr<UniformRandomVariable> uniRand);
+
+    /**
+     * @param type the type of model which is used to model the Earth
+     *
+     * @return the corresponding radius (in meters), first eccentricity and first flattening values
+     */
+    static std::tuple<double, double, double> GetRadiusEccentFlat(EarthSpheroidType type);
 };
 
 } // namespace ns3
