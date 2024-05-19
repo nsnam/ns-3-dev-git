@@ -1385,6 +1385,38 @@ class TestVectors
      */
     T Get(std::size_t i) const;
 
+    /**
+     * \return The underlying data structure begin iterator
+     */
+    typename std::vector<T>::iterator begin()
+    {
+        return m_vectors.begin();
+    }
+
+    /**
+     * \return The underlying data structure end iterator
+     */
+    typename std::vector<T>::iterator end()
+    {
+        return m_vectors.end();
+    }
+
+    /**
+     * \return The underlying data structure const begin iterator
+     */
+    typename std::vector<T>::const_iterator begin() const
+    {
+        return m_vectors.begin();
+    }
+
+    /**
+     * \return The underlying data structure const end iterator
+     */
+    typename std::vector<T>::const_iterator end() const
+    {
+        return m_vectors.end();
+    }
+
   private:
     typedef std::vector<T> TestVector; //!< Container type
     TestVector m_vectors;              //!< The list of test vectors
