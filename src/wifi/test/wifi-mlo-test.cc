@@ -941,7 +941,9 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
     void CheckMlSetup();
 
     /**
-     * Check that links that are not setup on the non-AP MLD are disabled.
+     * Check that links that are not setup on the non-AP MLD are disabled. Also, on the AP side,
+     * check that the queue storing QoS data frames destined to the non-AP MLD has a mask for a
+     * link if and only if the link has been setup by the non-AO MLD.
      */
     void CheckDisabledLinks();
 
@@ -1679,6 +1681,25 @@ MultiLinkSetupTest::CheckMlSetup()
 void
 MultiLinkSetupTest::CheckDisabledLinks()
 {
+    if (m_apMac->GetNLinks() > 1)
+    {
+        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
+                                     WIFI_UNICAST,
+                                     m_staMacs[0]->GetAddress(),
+                                     0);
+
+        for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); ++linkId)
+        {
+            auto it = std::find(m_setupLinks.cbegin(), m_setupLinks.cend(), linkId);
+
+            // the queue on the AP should have a mask if and only if the link has been setup
+            auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
+            NS_TEST_EXPECT_MSG_EQ(mask.has_value(),
+                                  (it != m_setupLinks.cend()),
+                                  "Unexpected presence/absence of mask on link " << +linkId);
+        }
+    }
+
     if (m_staMacs[0]->GetNLinks() == 1)
     {
         // no link is disabled on a single link device
