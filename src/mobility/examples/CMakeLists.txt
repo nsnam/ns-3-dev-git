@@ -1,5 +1,6 @@
 set(base_examples
     bonnmotion-ns2-example
+    constant-mobility-example
     main-random-topology
     main-random-walk
     ns2-mobility-trace
