@@ -52,45 +52,45 @@ Here is some example code that is written in Python and that runs |ns3|, which i
 
   from ns import ns
 
-  ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
-  ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
+  ns.LogComponentEnable("UdpEchoClientApplication", ns.LOG_LEVEL_INFO)
+  ns.LogComponentEnable("UdpEchoServerApplication", ns.LOG_LEVEL_INFO)
 
-  nodes = ns.network.NodeContainer()
+  nodes = ns.NodeContainer()
   nodes.Create(2)
 
-  pointToPoint = ns.point_to_point.PointToPointHelper()
-  pointToPoint.SetDeviceAttribute("DataRate", ns.core.StringValue("5Mbps"))
-  pointToPoint.SetChannelAttribute("Delay", ns.core.StringValue("2ms"))
+  pointToPoint = ns.PointToPointHelper()
+  pointToPoint.SetDeviceAttribute("DataRate", ns.StringValue("5Mbps"))
+  pointToPoint.SetChannelAttribute("Delay", ns.StringValue("2ms"))
 
   devices = pointToPoint.Install(nodes)
 
-  stack = ns.internet.InternetStackHelper()
+  stack = ns.InternetStackHelper()
   stack.Install(nodes)
 
-  address = ns.internet.Ipv4AddressHelper()
-  address.SetBase(ns.network.Ipv4Address("10.1.1.0"),
-                  ns.network.Ipv4Mask("255.255.255.0"))
+  address = ns.Ipv4AddressHelper()
+  address.SetBase(ns.Ipv4Address("10.1.1.0"),
+                  ns.Ipv4Mask("255.255.255.0"))
 
   interfaces = address.Assign(devices)
 
-  echoServer = ns.applications.UdpEchoServerHelper(9)
+  echoServer = ns.UdpEchoServerHelper(9)
 
   serverApps = echoServer.Install(nodes.Get(1))
-  serverApps.Start(ns.core.Seconds(1.0))
-  serverApps.Stop(ns.core.Seconds(10.0))
+  serverApps.Start(ns.Seconds(1.0))
+  serverApps.Stop(ns.Seconds(10.0))
 
   address = interfaces.GetAddress(1).ConvertTo()
-  echoClient = ns.applications.UdpEchoClientHelper(address, 9)
-  echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(1))
-  echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds(1.0)))
-  echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))
+  echoClient = ns.UdpEchoClientHelper(address, 9)
+  echoClient.SetAttribute("MaxPackets", ns.UintegerValue(1))
+  echoClient.SetAttribute("Interval", ns.TimeValue(ns.Seconds(1.0)))
+  echoClient.SetAttribute("PacketSize", ns.UintegerValue(1024))
 
   clientApps = echoClient.Install(nodes.Get(0))
-  clientApps.Start(ns.core.Seconds(2.0))
-  clientApps.Stop(ns.core.Seconds(10.0))
+  clientApps.Start(ns.Seconds(2.0))
+  clientApps.Stop(ns.Seconds(10.0))
 
-  ns.core.Simulator.Run()
-  ns.core.Simulator.Destroy()
+  ns.Simulator.Run()
+  ns.Simulator.Destroy()
 
 
 
@@ -226,71 +226,71 @@ After installing it, you can start using ns-3 right away. For example, using the
 
 ::
 
-    from ns import ns
+  from ns import ns
 
-    ns.cppyy.cppdef("""
-            using namespace ns3;
+  ns.cppyy.cppdef("""
+              using namespace ns3;
 
-            Callback<void,Ptr<const Packet>,const Address&,const Address&>
-            make_sinktrace_callback(void(*func)(Ptr<Packet>,Address,Address))
-            {
-                return MakeCallback(func);
-            }
-        """)
+              Callback<void,Ptr<const Packet>,const Address&,const Address&>
+              make_sinktrace_callback(void(*func)(Ptr<const Packet>, const Address&,const Address&))
+              {
+                  return MakeCallback(func);
+              }
+          """)
 
-    # Define the trace callback
-    def SinkTracer(packet: ns.Packet, src_address: ns.Address, dst_address: ns.Address) -> None:
-        print(f"At {ns.Simulator.Now().GetSeconds():.0f}s, '{dst_address}' received packet"
-              f" with {packet.__deref__().GetSerializedSize()} bytes from '{src_address}'")
+  # Define the trace callback
+  def SinkTracer(packet: ns.Packet, src_address: ns.Address, dst_address: ns.Address) -> None:
+      print(f"At {ns.Simulator.Now().GetSeconds():.0f}s, '{dst_address}' received packet"
+            f" with {packet.__deref__().GetSerializedSize()} bytes from '{src_address}'")
 
-    # Create two nodes
-    csmaNodes = ns.network.NodeContainer()
-    csmaNodes.Create(2)
+  # Create two nodes
+  csmaNodes = ns.NodeContainer()
+  csmaNodes.Create(2)
 
-    # Connect the two nodes
-    csma = ns.csma.CsmaHelper()
-    csma.SetChannelAttribute("DataRate", ns.core.StringValue("100Mbps"))
-    csma.SetChannelAttribute("Delay", ns.core.TimeValue(ns.core.NanoSeconds(6560)))
-    csmaDevices = csma.Install(csmaNodes)
+  # Connect the two nodes
+  csma = ns.CsmaHelper()
+  csma.SetChannelAttribute("DataRate", ns.StringValue("100Mbps"))
+  csma.SetChannelAttribute("Delay", ns.TimeValue(ns.NanoSeconds(6560)))
+  csmaDevices = csma.Install(csmaNodes)
 
-    # Install the internet stack
-    stack = ns.internet.InternetStackHelper()
-    stack.Install(csmaNodes)
+  # Install the internet stack
+  stack = ns.InternetStackHelper()
+  stack.Install(csmaNodes)
 
-    # Assign Ipv4 addresses
-    address = ns.internet.Ipv4AddressHelper()
-    address.SetBase(ns.network.Ipv4Address("10.1.2.0"), ns.network.Ipv4Mask("255.255.255.0"))
-    csmaInterfaces = address.Assign(csmaDevices)
+  # Assign Ipv4 addresses
+  address = ns.Ipv4AddressHelper()
+  address.SetBase(ns.Ipv4Address("10.1.2.0"), ns.Ipv4Mask("255.255.255.0"))
+  csmaInterfaces = address.Assign(csmaDevices)
 
-    # Setup applications
-    echoServer = ns.applications.UdpEchoServerHelper(9)
+  # Setup applications
+  echoServer = ns.UdpEchoServerHelper(9)
 
-    serverApps = echoServer.Install(csmaNodes.Get(0))
-    serverApps.Start(ns.core.Seconds(1.0))
-    serverApps.Stop(ns.core.Seconds(10.0))
+  serverApps = echoServer.Install(csmaNodes.Get(0))
+  serverApps.Start(ns.Seconds(1.0))
+  serverApps.Stop(ns.Seconds(10.0))
 
-    echoClient = ns.applications.UdpEchoClientHelper(csmaInterfaces.GetAddress(0).ConvertTo(), 9)
-    echoClient.SetAttribute("MaxPackets", ns.core.UintegerValue(10))
-    echoClient.SetAttribute("Interval", ns.core.TimeValue(ns.core.Seconds(1.0)))
-    echoClient.SetAttribute("PacketSize", ns.core.UintegerValue(1024))
+  echoClient = ns.UdpEchoClientHelper(csmaInterfaces.GetAddress(0).ConvertTo(), 9)
+  echoClient.SetAttribute("MaxPackets", ns.UintegerValue(10))
+  echoClient.SetAttribute("Interval", ns.TimeValue(ns.Seconds(1.0)))
+  echoClient.SetAttribute("PacketSize", ns.UintegerValue(1024))
 
-    clientApps = echoClient.Install(csmaNodes.Get(1))
-    clientApps.Start(ns.core.Seconds(2.0))
-    clientApps.Stop(ns.core.Seconds(10.0))
+  clientApps = echoClient.Install(csmaNodes.Get(1))
+  clientApps.Start(ns.Seconds(2.0))
+  clientApps.Stop(ns.Seconds(10.0))
 
-    # Populate routing tables
-    ns.internet.Ipv4GlobalRoutingHelper.PopulateRoutingTables()
+  # Populate routing tables
+  ns.Ipv4GlobalRoutingHelper.PopulateRoutingTables()
 
-    # Setup the trace callback
-    sinkTraceCallback = ns.cppyy.gbl.make_sinktrace_callback(SinkTracer)
-    serverApps.Get(0).__deref__().TraceConnectWithoutContext("RxWithAddresses", sinkTraceCallback);
+  # Setup the trace callback
+  sinkTraceCallback = ns.cppyy.gbl.make_sinktrace_callback(SinkTracer)
+  serverApps.Get(0).__deref__().TraceConnectWithoutContext("RxWithAddresses", sinkTraceCallback);
 
-    # Set the simulation duration to 11 seconds
-    ns.Simulator.Stop(ns.Seconds(11))
+  # Set the simulation duration to 11 seconds
+  ns.Simulator.Stop(ns.Seconds(11))
 
-    # Run the simulator
-    ns.Simulator.Run()
-    ns.Simulator.Destroy()
+  # Run the simulator
+  ns.Simulator.Run()
+  ns.Simulator.Destroy()
 
 Which should print:
 
@@ -326,31 +326,32 @@ For example, when handling command-line arguments, we could set additional param
 
 .. sourcecode:: python
 
-    # Import the ns-3 C++ modules with Cppyy
-    from ns import ns
+  # Import the ns-3 C++ modules with Cppyy
+  from ns import ns
+  import sys
 
-    # To pass the addresses of the Python variables to c++, we need to use ctypes
-    from ctypes import c_bool, c_int, c_double, c_char_p, create_string_buffer
-    verbose = c_bool(True)
-    nCsma = c_int(3)
-    throughputKbps = c_double(3.1415)
-    BUFFLEN = 4096
-    outputFileBuffer = create_string_buffer(b"default_output_file.xml", BUFFLEN)
-    outputFile = c_char_p(outputFileBuffer.raw)
+  # To pass the addresses of the Python variables to c++, we need to use ctypes
+  from ctypes import c_bool, c_int, c_double, c_char_p, create_string_buffer
+  verbose = c_bool(True)
+  nCsma = c_int(3)
+  throughputKbps = c_double(3.1415)
+  BUFFLEN = 4096
+  outputFileBuffer = create_string_buffer(b"default_output_file.xml", BUFFLEN)
+  outputFile = c_char_p(outputFileBuffer.raw)
 
-    # Cppyy will transform the ctype types into the appropriate reference or raw pointers
-    cmd = ns.CommandLine(__file__)
-    cmd.AddValue("verbose", "Tell echo applications to log if true", verbose)
-    cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", nCsma)
-    cmd.AddValue("throughputKbps", "Throughput of nodes", throughputKbps)
-    cmd.AddValue("outputFile", "Output file name", outputFile, BUFFLEN)
-    cmd.Parse(sys.argv)
+  # Cppyy will transform the ctype types into the appropriate reference or raw pointers
+  cmd = ns.CommandLine(__file__)
+  cmd.AddValue("verbose", "Tell echo applications to log if true", verbose)
+  cmd.AddValue("nCsma", "Number of extra CSMA nodes/devices", nCsma)
+  cmd.AddValue("throughputKbps", "Throughput of nodes", throughputKbps)
+  cmd.AddValue("outputFile", "Output file name", outputFile, BUFFLEN)
+  cmd.Parse(sys.argv)
 
-    # Printing values of the different ctypes passed as arguments post parsing
-    print("Verbose:", verbose.value)
-    print("nCsma:", nCsma.value)
-    print("throughputKbps:", throughputKbps.value)
-    print("outputFile:", outputFile.value)
+  # Printing values of the different ctypes passed as arguments post parsing
+  print("Verbose:", verbose.value)
+  print("nCsma:", nCsma.value)
+  print("throughputKbps:", throughputKbps.value)
+  print("outputFile:", outputFile.value)
 
 Note that the variables are passed as references or raw pointers. Reassigning them on the Python side
 (e.g. ``verbose = verbose.value``) can result in the Python garbage collector destroying the object
@@ -371,62 +372,63 @@ no bounds checking in CommandLine::AddValue variant for ``char*``.
 
 .. sourcecode:: python
 
-    from ns import ns
-    from ctypes import c_char_p, c_char, create_string_buffer, byref, cast
+  from ns import ns
+  from ctypes import c_char_p, c_char, create_string_buffer, byref, cast
 
-    # The following buffer represent the memory contents
-    # of a program containing two adjacent C strings
-    # This could be the result of two subsequent variables
-    # on the stack or dynamically allocated
-    memoryContents = create_string_buffer(b"SHORT_STRING_CONTENTS\0"+b"DoNotWriteHere_"*5+b"\0")
-    lenShortString = len(b"SHORT_STRING_CONTENTS\0")
+  # The following buffer represent the memory contents
+  # of a program containing two adjacent C strings
+  # This could be the result of two subsequent variables
+  # on the stack or dynamically allocated
+  memoryContents = create_string_buffer(b"SHORT_STRING_CONTENTS\0"+b"DoNotWriteHere_"*5+b"\0")
+  lenShortString = len(b"SHORT_STRING_CONTENTS\0")
 
-    # In the next lines, we pick pointers to these two C strings
-    shortStringBuffer = cast(byref(memoryContents, 0), c_char_p)
-    victimBuffer = cast(byref(memoryContents, lenShortString), c_char_p)
+  # In the next lines, we pick pointers to these two C strings
+  shortStringBuffer = cast(byref(memoryContents, 0), c_char_p)
+  victimBuffer = cast(byref(memoryContents, lenShortString), c_char_p)
 
-    cmd = ns.core.CommandLine(__file__)
-    # in the real implementation, the buffer size of 21+1 bytes containing SHORT_STRING_CONTENTS\0 is passed
-    cmd.AddValue("shortString", "", shortStringBuffer)
+  cmd = ns.CommandLine(__file__)
+  # in the real implementation, the buffer size of 21+1 bytes containing SHORT_STRING_CONTENTS\0 is passed
+  # we use the entire size of the memory contents for demonstration purposses
+  cmd.AddValue("shortString", "", shortStringBuffer, 75)
 
-    print("Memory contents before the memory corruption")
-    print("Full Memory contents", memoryContents.raw)
-    print("shortStringBuffer contents: ", shortStringBuffer.value)
-    print("victimBuffer contents: ", victimBuffer.value)
+  print("Memory contents before the memory corruption")
+  print("Full Memory contents", memoryContents.raw)
+  print("shortStringBuffer contents: ", shortStringBuffer.value)
+  print("victimBuffer contents: ", victimBuffer.value)
 
-    # The following block should print to the terminal.
-    # Note that the strings are correctly
-    # identified due to the null terminator (\x00)
-    #
-    # Memory contents before the memory corruption
-    # Full Memory contents b'SHORT_STRING_CONTENTS\x00DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_\x00\x00'
-    # shortStringBuffer size=21, contents: b'SHORT_STRING_CONTENTS'
-    # victimBuffer size=75, contents: b'DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_'
+  # The following block should print to the terminal.
+  # Note that the strings are correctly
+  # identified due to the null terminator (\x00)
+  #
+  # Memory contents before the memory corruption
+  # Full Memory contents b'SHORT_STRING_CONTENTS\x00DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_\x00\x00'
+  # shortStringBuffer size=21, contents: b'SHORT_STRING_CONTENTS'
+  # victimBuffer size=75, contents: b'DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_DoNotWriteHere_'
 
-    # Write a very long string to a small buffer of size lenShortString = 22
-    cmd.Parse(["python", "--shortString="+("OkToWrite"*lenShortString)[:lenShortString]+"CORRUPTED_"*3])
+  # Write a very long string to a small buffer of size lenShortString = 22
+  cmd.Parse(["python", "--shortString="+("OkToWrite"*lenShortString)[:lenShortString]+"CORRUPTED_"*3])
 
-    print("\n\nMemory contents after the memory corruption")
-    print("Full Memory contents", memoryContents.raw)
-    print("shortStringBuffer contents: ", shortStringBuffer.value)
-    print("victimBuffer contents: ", victimBuffer.value)
+  print("\n\nMemory contents after the memory corruption")
+  print("Full Memory contents", memoryContents.raw)
+  print("shortStringBuffer contents: ", shortStringBuffer.value)
+  print("victimBuffer contents: ", victimBuffer.value)
 
-    # The following block should print to the terminal.
-    #
-    # Memory contents after the memory corruption
-    # Full Memory contents b'OkToWriteOkToWriteOkToCORRUPTED_CORRUPTED_CORRUPTED_\x00oNotWriteHere_DoNotWriteHere_DoNotWriteHere_\x00\x00'
-    # shortStringBuffer size=52, contents: b'OkToWriteOkToWriteOkToCORRUPTED_CORRUPTED_CORRUPTED_'
-    # victimBuffer size=30, contents: b'CORRUPTED_CORRUPTED_CORRUPTED_'
-    #
-    # Note that shortStringBuffer invaded the victimBuffer since the
-    # string being written was bigger than the shortStringBuffer.
-    #
-    # Since no bounds checks were performed, the adjacent memory got
-    # overwritten and both buffers are now corrupted.
-    #
-    # We also have a memory leak of the final block in the memory
-    # 'oNotWriteHere_DoNotWriteHere_DoNotWriteHere_\x00\x00', caused
-    # by the null terminator written at the middle of the victimBuffer.
+  # The following block should print to the terminal.
+  #
+  # Memory contents after the memory corruption
+  # Full Memory contents b'OkToWriteOkToWriteOkToCORRUPTED_CORRUPTED_CORRUPTED_\x00oNotWriteHere_DoNotWriteHere_DoNotWriteHere_\x00\x00'
+  # shortStringBuffer size=52, contents: b'OkToWriteOkToWriteOkToCORRUPTED_CORRUPTED_CORRUPTED_'
+  # victimBuffer size=30, contents: b'CORRUPTED_CORRUPTED_CORRUPTED_'
+  #
+  # Note that shortStringBuffer invaded the victimBuffer since the
+  # string being written was bigger than the shortStringBuffer.
+  #
+  # Since no bounds checks were performed, the adjacent memory got
+  # overwritten and both buffers are now corrupted.
+  #
+  # We also have a memory leak of the final block in the memory
+  # 'oNotWriteHere_DoNotWriteHere_DoNotWriteHere_\x00\x00', caused
+  # by the null terminator written at the middle of the victimBuffer.
 
 If you find a segmentation violation, be sure to wait for the stacktrace provided by Cppyy
 and try to find the root cause of the issue. If you have multiple cores, the number of
@@ -443,22 +445,22 @@ module (`ns-3-dev/bindings/python/ns__init__.py`).
 
 .. sourcecode:: python
 
-    # Redefine Time operators
-    cppyy.cppdef("""
-        using namespace ns3;
-        bool Time_ge(Time& a, Time& b){ return a >= b;}
-        bool Time_eq(Time& a, Time& b){ return a == b;}
-        bool Time_ne(Time& a, Time& b){ return a != b;}
-        bool Time_le(Time& a, Time& b){ return a <= b;}
-        bool Time_gt(Time& a, Time& b){ return a > b;}
-        bool Time_lt(Time& a, Time& b){ return a < b;}
-    """)
-    cppyy.gbl.ns3.Time.__ge__ = cppyy.gbl.Time_ge
-    cppyy.gbl.ns3.Time.__eq__ = cppyy.gbl.Time_eq
-    cppyy.gbl.ns3.Time.__ne__ = cppyy.gbl.Time_ne
-    cppyy.gbl.ns3.Time.__le__ = cppyy.gbl.Time_le
-    cppyy.gbl.ns3.Time.__gt__ = cppyy.gbl.Time_gt
-    cppyy.gbl.ns3.Time.__lt__ = cppyy.gbl.Time_lt
+  # Redefine Time operators
+  cppyy.cppdef("""
+      using namespace ns3;
+      bool Time_ge(Time& a, Time& b){ return a >= b;}
+      bool Time_eq(Time& a, Time& b){ return a == b;}
+      bool Time_ne(Time& a, Time& b){ return a != b;}
+      bool Time_le(Time& a, Time& b){ return a <= b;}
+      bool Time_gt(Time& a, Time& b){ return a > b;}
+      bool Time_lt(Time& a, Time& b){ return a < b;}
+  """)
+  cppyy.gbl.ns3.Time.__ge__ = cppyy.gbl.Time_ge
+  cppyy.gbl.ns3.Time.__eq__ = cppyy.gbl.Time_eq
+  cppyy.gbl.ns3.Time.__ne__ = cppyy.gbl.Time_ne
+  cppyy.gbl.ns3.Time.__le__ = cppyy.gbl.Time_le
+  cppyy.gbl.ns3.Time.__gt__ = cppyy.gbl.Time_gt
+  cppyy.gbl.ns3.Time.__lt__ = cppyy.gbl.Time_lt
 
 
 A different operator used by |ns3| is `operator Address()`, used to
@@ -467,8 +469,8 @@ This is not supported by Cppyy and requires explicit conversion.
 
 .. sourcecode:: python
 
-    # Explicitly convert the InetSocketAddress to Address using InetSocketAddress.ConvertTo()
-    sink.Bind(ns.network.InetSocketAddress(ns.network.Ipv4Address.GetAny(), 80).ConvertTo())
+  # Explicitly convert the InetSocketAddress to Address using InetSocketAddress.ConvertTo()
+  sink.Bind(ns.InetSocketAddress(ns.Ipv4Address.GetAny(), 80).ConvertTo())
 
 Most of the missing APIs can be wrapped, given enough time, patience, and expertise, and will likely be wrapped if bug reports are submitted.
 However, don't file a bug report saying "bindings are incomplete", because the project does not have maintainers to maintain every API.
@@ -487,11 +489,11 @@ In Python, the C++ std::ofstream has been minimally wrapped to allow this.  For 
 
 ::
 
-    ascii = ns.ofstream("wifi-ap.tr") # create the file
-    ns.YansWifiPhyHelper.EnableAsciiAll(ascii)
-    ns.Simulator.Run()
-    ns.Simulator.Destroy()
-    ascii.close() # close the file
+  ascii = ns.ofstream("wifi-ap.tr") # create the file
+  ns.YansWifiPhyHelper.EnableAsciiAll(ascii)
+  ns.Simulator.Run()
+  ns.Simulator.Destroy()
+  ascii.close() # close the file
 
 There is one caveat: you must not allow the file object to be garbage collected while |ns3| is still using it.
 That means that the 'ascii' variable above must not be allowed to go out of scope or else the program will crash.
@@ -507,14 +509,14 @@ The python bindings are generated into an 'ns' namespace.  Examples:
 ::
 
   from ns import ns
-  n1 = ns.network.Node()
+  n1 = ns.Node()
 
 or
 
 ::
 
   from ns import*
-  n1 = ns.network.Node()
+  n1 = ns.Node()
 
 The best way to explore the bindings is to look at the various example
 programs provided in |ns3|; some C++ examples have a corresponding Python
@@ -616,23 +618,23 @@ ns-3 (e.g. libxml2, gsl, sqlite, gtk, etc) and for the bindings and packaging
 
 .. sourcecode:: yaml
 
-      # Install minimal toolchain
-      - yum install -y libxml2-devel gsl-devel sqlite-devel gtk3-devel boost-devel
-      # Create Python venv
-      - $PYTHON -m venv ./venv
-      - . ./venv/bin/activate
-      # Upgrade the pip version to reuse the pre-build cppyy
-      - $PYTHON -m pip install pip --upgrade
-      - $PYTHON -m pip install setuptools setuptools_scm --upgrade
-      - $PYTHON -m pip install wheel auditwheel cmake-build-extension cppyy
+  # Install minimal toolchain
+  - yum install -y libxml2-devel gsl-devel sqlite-devel gtk3-devel boost-devel
+  # Create Python venv
+  - $PYTHON -m venv ./venv
+  - . ./venv/bin/activate
+  # Upgrade the pip version to reuse the pre-build cppyy
+  - $PYTHON -m pip install pip --upgrade
+  - $PYTHON -m pip install setuptools setuptools_scm --upgrade
+  - $PYTHON -m pip install wheel auditwheel cmake-build-extension cppyy
 
 The project is then configured loading the configuration settings defined
 in the ``ns-3-dev/setup.py`` file.
 
 .. sourcecode:: yaml
 
-      # Configure and build wheel
-      - $PYTHON setup.py bdist_wheel build_ext
+  # Configure and build wheel
+  - $PYTHON setup.py bdist_wheel build_ext
 
 At this point, we have a wheel that only works in the current system,
 since external libraries are not shipped.
@@ -645,9 +647,9 @@ by the script ``ns-3-dev/build-support/pip-wheel/auditwheel-exclude-list.py``.
 
 .. sourcecode:: yaml
 
-      - export EXCLUDE_INTERNAL_LIBRARIES=`$PYTHON ./build-support/pip-wheel/auditwheel-exclude-list.py`
-      # Bundle in shared libraries that were not explicitly packaged or depended upon
-      - $PYTHON -m auditwheel repair ./dist/*whl -L /lib64 $EXCLUDE_INTERNAL_LIBRARIES
+  - export EXCLUDE_INTERNAL_LIBRARIES=`$PYTHON ./build-support/pip-wheel/auditwheel-exclude-list.py`
+  # Bundle in shared libraries that were not explicitly packaged or depended upon
+  - $PYTHON -m auditwheel repair ./dist/*whl -L /lib64 $EXCLUDE_INTERNAL_LIBRARIES
 
 
 At this point, we should have our final wheel ready, but we need to check if it works
@@ -657,48 +659,48 @@ We first clean the environment and uninstall the packages previously installed.
 
 .. sourcecode:: yaml
 
-      # Clean the build directory
-      - $PYTHON ./ns3 clean
-      # Clean up the environment
-      - deactivate
-      - rm -R ./venv
-      # Delete toolchain to check if required headers/libraries were really packaged
-      - yum remove -y libxml2-devel gsl-devel sqlite-devel gtk3-devel boost-devel
+  # Clean the build directory
+  - $PYTHON ./ns3 clean
+  # Clean up the environment
+  - deactivate
+  - rm -R ./venv
+  # Delete toolchain to check if required headers/libraries were really packaged
+  - yum remove -y libxml2-devel gsl-devel sqlite-devel gtk3-devel boost-devel
 
 
 Then we can install our newly built wheel and test it.
 
 .. sourcecode:: yaml
 
-      # Install wheel
-      - $PYTHON -m pip install ./wheelhouse/*whl
-      - $PYTHON -m pip install matplotlib numpy
-      # Test the bindings
-      - $PYTHON ./utils/python-unit-tests.py
-      - $PYTHON ./examples/realtime/realtime-udp-echo.py
-      - $PYTHON ./examples/routing/simple-routing-ping6.py
-      - $PYTHON ./examples/tutorial/first.py
-      - $PYTHON ./examples/tutorial/second.py
-      - $PYTHON ./examples/tutorial/third.py
-      - $PYTHON ./examples/wireless/wifi-ap.py
-      - $PYTHON ./examples/wireless/mixed-wired-wireless.py
-      - $PYTHON ./src/bridge/examples/csma-bridge.py
-      - $PYTHON ./src/brite/examples/brite-generic-example.py
-      - $PYTHON ./src/core/examples/sample-simulator.py
-      - $PYTHON ./src/core/examples/sample-rng-plot.py --not-blocking
-      - $PYTHON ./src/click/examples/nsclick-simple-lan.py
-      - $PYTHON ./src/flow-monitor/examples/wifi-olsr-flowmon.py
-      - $PYTHON ./src/flow-monitor/examples/flowmon-parse-results.py output.xml
-      - $PYTHON ./src/openflow/examples/openflow-switch.py
+  # Install wheel
+  - $PYTHON -m pip install ./wheelhouse/*whl
+  - $PYTHON -m pip install matplotlib numpy
+  # Test the bindings
+  - $PYTHON ./utils/python-unit-tests.py
+  - $PYTHON ./examples/realtime/realtime-udp-echo.py
+  - $PYTHON ./examples/routing/simple-routing-ping6.py
+  - $PYTHON ./examples/tutorial/first.py
+  - $PYTHON ./examples/tutorial/second.py
+  - $PYTHON ./examples/tutorial/third.py
+  - $PYTHON ./examples/wireless/wifi-ap.py
+  - $PYTHON ./examples/wireless/mixed-wired-wireless.py
+  - $PYTHON ./src/bridge/examples/csma-bridge.py
+  - $PYTHON ./src/brite/examples/brite-generic-example.py
+  - $PYTHON ./src/core/examples/sample-simulator.py
+  - $PYTHON ./src/core/examples/sample-rng-plot.py --not-blocking
+  - $PYTHON ./src/click/examples/nsclick-simple-lan.py
+  - $PYTHON ./src/flow-monitor/examples/wifi-olsr-flowmon.py
+  - $PYTHON ./src/flow-monitor/examples/flowmon-parse-results.py output.xml
+  - $PYTHON ./src/openflow/examples/openflow-switch.py
 
 If all programs finish normally, the bindings are working as expected,
 and will be saved as an artifact.
 
 .. sourcecode:: yaml
 
-    artifacts:
-      paths:
-        - wheelhouse/*.whl
+  artifacts:
+    paths:
+      - wheelhouse/*.whl
 
 One can use ``gitlab-ci-local`` to build the pip wheels locally. After that, the wheels
 will be stored in ``.gitlab-ci-local/artifacts/manylinux-pip-wheel-py3Lg10/wheelhouse``
@@ -730,7 +732,7 @@ Then install the wheel and its dependencies running the following command:
 
 .. sourcecode:: bash
 
-    $ pip install *.whl
+  $ pip install *.whl
 
 Publishing the pip wheel via Pypi
 *********************************
