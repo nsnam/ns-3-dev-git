@@ -58,6 +58,7 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 
   # Check if pedantic throws warning in trailing semicolon after {} scope
   # (frequently used to make macros look like functions)
+  unset(GCC_WORKING_PEDANTIC_SEMICOLON)
   include(CheckCXXSourceCompiles)
   set(CMAKE_REQUIRED_FLAGS "-Wall -Wpedantic -Werror")
   check_cxx_source_compiles(
