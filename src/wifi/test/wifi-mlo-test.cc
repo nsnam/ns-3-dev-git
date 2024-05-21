@@ -1866,6 +1866,23 @@ MultiLinkSetupTest::CheckMlSetup()
                     "Incorrect link mapping stored by "
                         << (mac->GetTypeOfStation() == AP ? "AP" : "non-AP") << " MLD for " << dir
                         << " direction");
+
+                // check correctness of WifiMac::TidMappedOnLink function
+                std::set<uint8_t> setupLinks(m_setupLinks.cbegin(), m_setupLinks.cend());
+                for (uint8_t tid = 0; tid < 8; ++tid)
+                {
+                    const auto& linkSet = mapping.contains(tid) ? mapping.at(tid) : setupLinks;
+
+                    for (const auto linkId : setupLinks)
+                    {
+                        NS_TEST_EXPECT_MSG_EQ(
+                            mac->TidMappedOnLink(dest->GetAddress(), dir, tid, linkId),
+                            linkSet.contains(linkId),
+                            "Incorrect return value on " << (mac == m_apMac ? "AP" : "STA")
+                                                         << " direction " << dir << " TID " << +tid
+                                                         << " linkID " << +linkId);
+                    }
+                }
             }
         };
 
