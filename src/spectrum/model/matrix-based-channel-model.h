@@ -93,11 +93,6 @@ class MatrixBasedChannelModel : public Object
         std::pair<uint32_t, uint32_t> m_nodeIds;
 
         /**
-         * Destructor for ChannelMatrix
-         */
-        virtual ~ChannelMatrix() = default;
-
-        /**
          * Returns true if the ChannelMatrix object was generated
          * considering node b as transmitter and node a as receiver.
          * \param aAntennaId the ID of the antenna array of the a node
