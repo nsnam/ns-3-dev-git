@@ -100,7 +100,7 @@ class HePhy : public VhtPhy
     Time CalculateTxDuration(const WifiConstPsduMap& psduMap,
                              const WifiTxVector& txVector,
                              WifiPhyBand band) const override;
-    void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu) override;
+    void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu = nullptr) override;
     dBm_u GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                           WifiChannelListType channelType) const override;
     void NotifyCcaBusy(const Ptr<const WifiPpdu> ppdu,

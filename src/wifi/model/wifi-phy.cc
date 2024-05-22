@@ -502,7 +502,7 @@ WifiPhy::RegisterListener(const std::shared_ptr<WifiPhyListener>& listener)
     if (IsInitialized())
     {
         // provide CCA busy information upon registering a PHY listener
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
     }
 }
 
@@ -1306,7 +1306,7 @@ WifiPhy::DoChannelSwitch()
          * state are added to the event list and are employed later to figure
          * out the state of the medium after the switching.
          */
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
     }
 }
 

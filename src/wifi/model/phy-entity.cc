@@ -1338,7 +1338,7 @@ PhyEntity::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu)
     }
     if (ppdu)
     {
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
     }
 }
 

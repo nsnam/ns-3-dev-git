@@ -401,7 +401,8 @@ class WIFI_EXPORT PhyEntity
      *
      * @param ppdu the incoming PPDU or nullptr for any signal
      */
-    virtual void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu);
+    virtual void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu = nullptr);
+
     /**
      * Notify PHY state helper to switch to CCA busy state,
      *
