@@ -23,12 +23,14 @@
 #include "ns3/mobility-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/nist-error-rate-model.h"
+#include "ns3/non-communicating-net-device.h"
 #include "ns3/ofdm-ppdu.h"
 #include "ns3/pointer.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
+#include "ns3/waveform-generator.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy-listener.h"
@@ -1252,6 +1254,374 @@ SpectrumWifiPhyTrackedBandsTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test 80+80MHz transmission
+ *
+ * The test verifies that two non-contiguous segments are handled by the spectrum PHY
+ * to transmit 160 MHz PPDUs when the operating channel is configured as 80+80MHz.
+ *
+ * The test first considers a contiguous 160 MHz segment and generate interference on the second
+ * 80 MHz band to verify reception fails in this scenario. Then, a similar interference
+ * is generated when a 80+80MHz operating channel is configured, where the first frequency segment
+ * occupies the first 80 MHz band of the previous 160 MHz operating channel. The reception should
+ * succeed in that scenario, which demonstrates the second 80 MHz band of the operating channel is
+ * no longer occupying that spectrum portion (the interference is hence is the gap between the two
+ * frequency segments). Finally, the test also generates interference on each of the frequency
+ * segments when the operating channel is 80+80MHz, to demonstrate the frequency segments are
+ * positioned as expected.
+ */
+class SpectrumWifiPhy80Plus80Test : public TestCase
+{
+  public:
+    SpectrumWifiPhy80Plus80Test();
+
+  private:
+    void DoSetup() override;
+    void DoTeardown() override;
+    void DoRun() override;
+
+    /**
+     * Run one function
+     * \param channelNumbers the channel number for each segment of the operating channel
+     * \param interferenceCenterFrequency the center frequency (in MHz) of the interference signal
+     * to generate \param interferenceBandWidth the band width (in MHz) of the interference signal
+     * to generate \param expectSuccess flag to indicate whether reception is expected to be
+     * successful
+     */
+    void RunOne(const std::vector<uint8_t>& channelNumbers,
+                uint16_t interferenceCenterFrequency,
+                uint16_t interferenceBandWidth,
+                bool expectSuccess);
+
+    /**
+     * Switch channel function
+     *
+     * \param channelNumbers the channel number for each segment of the operating channel
+     * to switch to
+     */
+    void SwitchChannel(const std::vector<uint8_t>& channelNumbers);
+
+    /**
+     * Send 160MHz PPDU function
+     */
+    void Send160MhzPpdu();
+
+    /**
+     * Generate interference function
+     * \param interferencePsd the PSD of the interference to be generated
+     * \param duration the duration of the interference
+     */
+    void GenerateInterference(Ptr<SpectrumValue> interferencePsd, Time duration);
+
+    /**
+     * Stop interference function
+     */
+    void StopInterference();
+
+    /**
+     * Receive success function for STA
+     * \param psdu the PSDU
+     * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+     * \param txVector the transmit vector
+     * \param statusPerMpdu reception status per MPDU
+     */
+    void RxSuccessSta(Ptr<const WifiPsdu> psdu,
+                      RxSignalInfo rxSignalInfo,
+                      WifiTxVector txVector,
+                      std::vector<bool> statusPerMpdu);
+
+    /**
+     * Receive failure function for STA
+     * \param psdu the PSDU
+     */
+    void RxFailureSta(Ptr<const WifiPsdu> psdu);
+
+    /**
+     * Verify results
+     *
+     * \param expectSuccess flag to indicate whether reception is expected to be successful
+     */
+    void CheckResults(bool expectSuccess);
+
+    Ptr<SpectrumWifiPhy> m_phyAp;           ///< PHY of AP
+    Ptr<SpectrumWifiPhy> m_phySta;          ///< PHY of STA
+    Ptr<WaveformGenerator> m_phyInterferer; ///< PHY of interferer
+
+    uint32_t m_countRxSuccessSta; ///< count RX success for STA
+    uint32_t m_countRxFailureSta; ///< count RX failure for STA
+};
+
+SpectrumWifiPhy80Plus80Test::SpectrumWifiPhy80Plus80Test()
+    : TestCase("SpectrumWifiPhy test 80+80MHz transmission"),
+      m_countRxSuccessSta(0),
+      m_countRxFailureSta(0)
+{
+}
+
+void
+SpectrumWifiPhy80Plus80Test::SwitchChannel(const std::vector<uint8_t>& channelNumbers)
+{
+    NS_LOG_FUNCTION(this);
+    WifiPhy::ChannelSegments channelSegments;
+    for (auto channelNumber : channelNumbers)
+    {
+        const auto& channelInfo = WifiPhyOperatingChannel::FindFirst(channelNumber,
+                                                                     0,
+                                                                     0,
+                                                                     WIFI_STANDARD_80211ax,
+                                                                     WIFI_PHY_BAND_5GHZ);
+        channelSegments.emplace_back(channelInfo->number, channelInfo->width, channelInfo->band, 0);
+    }
+    m_phyAp->SetOperatingChannel(channelSegments);
+    m_phySta->SetOperatingChannel(channelSegments);
+}
+
+void
+SpectrumWifiPhy80Plus80Test::Send160MhzPpdu()
+{
+    NS_LOG_FUNCTION(this);
+
+    WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
+                                         0,
+                                         WIFI_PREAMBLE_HE_SU,
+                                         800,
+                                         1,
+                                         1,
+                                         0,
+                                         160,
+                                         false,
+                                         false,
+                                         false);
+
+    auto pkt = Create<Packet>(1000);
+    WifiMacHeader hdr;
+    hdr.SetType(WIFI_MAC_QOSDATA);
+    auto psdu = Create<WifiPsdu>(pkt, hdr);
+
+    m_phyAp->Send(psdu, txVector);
+}
+
+void
+SpectrumWifiPhy80Plus80Test::GenerateInterference(Ptr<SpectrumValue> interferencePsd, Time duration)
+{
+    m_phyInterferer->SetTxPowerSpectralDensity(interferencePsd);
+    m_phyInterferer->SetPeriod(duration);
+    m_phyInterferer->Start();
+    Simulator::Schedule(duration, &SpectrumWifiPhy80Plus80Test::StopInterference, this);
+}
+
+void
+SpectrumWifiPhy80Plus80Test::StopInterference()
+{
+    m_phyInterferer->Stop();
+}
+
+void
+SpectrumWifiPhy80Plus80Test::RxSuccessSta(Ptr<const WifiPsdu> psdu,
+                                          RxSignalInfo rxSignalInfo,
+                                          WifiTxVector txVector,
+                                          std::vector<bool> /*statusPerMpdu*/)
+{
+    NS_LOG_FUNCTION(this << *psdu << rxSignalInfo << txVector);
+    m_countRxSuccessSta++;
+}
+
+void
+SpectrumWifiPhy80Plus80Test::RxFailureSta(Ptr<const WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << *psdu);
+    m_countRxFailureSta++;
+}
+
+void
+SpectrumWifiPhy80Plus80Test::CheckResults(bool expectSuccess)
+{
+    NS_LOG_FUNCTION(this << expectSuccess);
+    NS_TEST_ASSERT_MSG_EQ(((m_countRxSuccessSta > 0) && (m_countRxFailureSta == 0)),
+                          expectSuccess,
+                          "Reception should be "
+                              << (expectSuccess ? "successful" : "unsuccessful"));
+}
+
+void
+SpectrumWifiPhy80Plus80Test::DoSetup()
+{
+    // WifiHelper::EnableLogComponents();
+    // LogComponentEnable("SpectrumWifiPhyTest", LOG_LEVEL_ALL);
+
+    auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+    auto lossModel = CreateObject<FriisPropagationLossModel>();
+    spectrumChannel->AddPropagationLossModel(lossModel);
+    auto delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
+    spectrumChannel->SetPropagationDelayModel(delayModel);
+
+    auto apNode = CreateObject<Node>();
+    auto apDev = CreateObject<WifiNetDevice>();
+    m_phyAp = CreateObject<SpectrumWifiPhy>();
+    auto apInterferenceHelper = CreateObject<InterferenceHelper>();
+    m_phyAp->SetInterferenceHelper(apInterferenceHelper);
+    auto apErrorModel = CreateObject<NistErrorRateModel>();
+    m_phyAp->SetErrorRateModel(apErrorModel);
+    m_phyAp->SetDevice(apDev);
+    m_phyAp->AddChannel(spectrumChannel);
+    m_phyAp->ConfigureStandard(WIFI_STANDARD_80211ax);
+    auto apMobility = CreateObject<ConstantPositionMobilityModel>();
+    m_phyAp->SetMobility(apMobility);
+    apDev->SetPhy(m_phyAp);
+    apNode->AggregateObject(apMobility);
+    apNode->AddDevice(apDev);
+
+    auto staNode = CreateObject<Node>();
+    auto staDev = CreateObject<WifiNetDevice>();
+    m_phySta = CreateObject<SpectrumWifiPhy>();
+    auto staInterferenceHelper = CreateObject<InterferenceHelper>();
+    m_phySta->SetInterferenceHelper(staInterferenceHelper);
+    auto staErrorModel = CreateObject<NistErrorRateModel>();
+    m_phySta->SetErrorRateModel(staErrorModel);
+    m_phySta->SetDevice(staDev);
+    m_phySta->AddChannel(spectrumChannel);
+    m_phySta->ConfigureStandard(WIFI_STANDARD_80211ax);
+    m_phySta->SetReceiveOkCallback(MakeCallback(&SpectrumWifiPhy80Plus80Test::RxSuccessSta, this));
+    m_phySta->SetReceiveErrorCallback(
+        MakeCallback(&SpectrumWifiPhy80Plus80Test::RxFailureSta, this));
+    auto staMobility = CreateObject<ConstantPositionMobilityModel>();
+    m_phySta->SetMobility(staMobility);
+    staDev->SetPhy(m_phySta);
+    staNode->AggregateObject(staMobility);
+    staNode->AddDevice(staDev);
+
+    auto interfererNode = CreateObject<Node>();
+    auto interfererDev = CreateObject<NonCommunicatingNetDevice>();
+    m_phyInterferer = CreateObject<WaveformGenerator>();
+    m_phyInterferer->SetDevice(interfererDev);
+    m_phyInterferer->SetChannel(spectrumChannel);
+    m_phyInterferer->SetDutyCycle(1);
+    interfererNode->AddDevice(interfererDev);
+}
+
+void
+SpectrumWifiPhy80Plus80Test::DoTeardown()
+{
+    m_phyAp->Dispose();
+    m_phyAp = nullptr;
+    m_phySta->Dispose();
+    m_phySta = nullptr;
+    m_phyInterferer->Dispose();
+    m_phyInterferer = nullptr;
+}
+
+void
+SpectrumWifiPhy80Plus80Test::RunOne(const std::vector<uint8_t>& channelNumbers,
+                                    uint16_t interferenceCenterFrequency,
+                                    uint16_t interferenceBandWidth,
+                                    bool expectSuccess)
+{
+    // reset counters
+    m_countRxSuccessSta = 0;
+    m_countRxFailureSta = 0;
+
+    Simulator::Schedule(Seconds(0),
+                        &SpectrumWifiPhy80Plus80Test::SwitchChannel,
+                        this,
+                        channelNumbers);
+
+    // create info about interference to generate
+    BandInfo bandInfo{.fl = (interferenceCenterFrequency - (interferenceBandWidth / 2)) * 1e6,
+                      .fc = interferenceCenterFrequency * 1e6,
+                      .fh = (interferenceCenterFrequency + (interferenceBandWidth / 2)) * 1e6};
+    auto spectrumInterference = Create<SpectrumModel>(Bands{bandInfo});
+    auto interferencePsd = Create<SpectrumValue>(spectrumInterference);
+    auto interferencePower = 0.1; // watts
+    *interferencePsd = interferencePower / (interferenceBandWidth * 20e6);
+
+    Simulator::Schedule(Seconds(1),
+                        &SpectrumWifiPhy80Plus80Test::GenerateInterference,
+                        this,
+                        interferencePsd,
+                        MilliSeconds(100));
+
+    Simulator::Schedule(Seconds(1), &SpectrumWifiPhy80Plus80Test::Send160MhzPpdu, this);
+
+    Simulator::Schedule(Seconds(2),
+                        &SpectrumWifiPhy80Plus80Test::CheckResults,
+                        this,
+                        expectSuccess);
+
+    Simulator::Run();
+}
+
+void
+SpectrumWifiPhy80Plus80Test::DoRun()
+{
+    // Test transmission over contiguous 160 MHz (channel 50) and interference generated in
+    // the second half of the channel width (channel 58, i.e. center frequency 5290 and bandwidth 80
+    // MHz). The reception should fail because the interference occupies half the channel width used
+    // for the transmission.
+    //                                       ┌──────────────────┐
+    // Interference                          │    channel 58    │
+    //                                       │ 5290 MHz, 80 MHz │
+    //                                       └──────────────────┘
+    //
+    //                   ┌──────────────────────────────────────┐
+    // Operating Channel │             channel 50               │
+    //                   │          5250 MHz, 160 MHz           │
+    //                   └──────────────────────────────────────┘
+    //
+    RunOne({50}, 5290, 80, false);
+
+    // Test transmission over non-contiguous 160 MHz (i.e. 80+80MHz) and same interference as in
+    // previous run. The reception should succeed because the interference is located between the
+    // two segments.
+    //                                       ┌──────────────────┐
+    // Interference                          │    channel 58    │
+    //                                       │ 5290 MHz, 80 MHz │
+    //                                       └──────────────────┘
+    //
+    //                   ┌──────────────────┐                             ┌──────────────────┐
+    // Operating Channel │    channel 42    │                             │   channel 106    │
+    //                   │80+80MHz segment 0│                             │80+80MHz segment 1│
+    //                   └──────────────────┘                             └──────────────────┘
+    //
+    RunOne({42, 106}, 5290, 80, true);
+
+    // Test transmission over non-contiguous 160 MHz (i.e. 80+80MHz) and interference generated on
+    // the first segment of the channel width (channel 42, i.e. center frequency 5210 and bandwidth
+    // 80 MHz). The reception should fail because the interference occupies half the channel width
+    // used for the transmission.
+    //                   ┌──────────────────┐
+    // Interference      │    channel 42    │
+    //                   │ 5210 MHz, 80 MHz │
+    //                   └──────────────────┘
+    //
+    //                   ┌──────────────────┐                             ┌──────────────────┐
+    // Operating Channel │    channel 42    │                             │   channel 106    │
+    //                   │80+80MHz segment 0│                             │80+80MHz segment 1│
+    //                   └──────────────────┘                             └──────────────────┘
+    //
+    RunOne({42, 106}, 5210, 80, false);
+
+    // Test transmission over non-contiguous 160 MHz (i.e. 80+80MHz) and interference generated on
+    // the second segment of the channel width (channel 42, i.e. center frequency 5210 and bandwidth
+    // 80 MHz). The reception should fail because the interference occupies half the channel width
+    // used for the transmission.
+    //                                                                    ┌──────────────────┐
+    // Interference                                                       │    channel 106    │
+    //                                                                    │ 5530 MHz, 80 MHz │
+    //                                                                    └──────────────────┘
+    //
+    //                   ┌──────────────────┐                             ┌──────────────────┐
+    // Operating Channel │    channel 42    │                             │   channel 106    │
+    //                   │80+80MHz segment 0│                             │80+80MHz segment 1│
+    //                   └──────────────────┘                             └──────────────────┘
+    //
+    RunOne({42, 106}, 5530, 80, false);
+
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief Spectrum Wifi Phy Multiple Spectrum Test
  *
  * This test is testing the ability to plug multiple spectrum channels to the spectrum wifi PHY.
@@ -2457,6 +2827,7 @@ SpectrumWifiPhyTestSuite::SpectrumWifiPhyTestSuite()
     AddTestCase(new SpectrumWifiPhyFilterTest, TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyGetBandTest, TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyTrackedBandsTest, TestCase::Duration::QUICK);
+    AddTestCase(new SpectrumWifiPhy80Plus80Test, TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyMultipleInterfacesTest(
                     false,
                     SpectrumWifiPhyMultipleInterfacesTest::ChannelSwitchScenario::BEFORE_TX),
