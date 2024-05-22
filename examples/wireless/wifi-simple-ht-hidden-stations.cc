@@ -66,7 +66,7 @@ main(int argc, char* argv[])
     double maxExpectedThroughput{0};
 
     RngSeedManager::SetSeed(1);
-    RngSeedManager::SetRun(1);
+    RngSeedManager::SetRun(7);
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("nMpdus", "Number of aggregated MPDUs", nMpdus);

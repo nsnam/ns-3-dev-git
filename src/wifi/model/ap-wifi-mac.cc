@@ -341,6 +341,7 @@ ApWifiMac::AssignStreams(int64_t stream)
     NS_LOG_FUNCTION(this << stream);
     m_beaconJitter->SetStream(stream);
     auto currentStream = stream + 1;
+    currentStream += m_beaconTxop->AssignStreams(currentStream);
     currentStream += WifiMac::AssignStreams(currentStream);
     return (currentStream - stream);
 }
