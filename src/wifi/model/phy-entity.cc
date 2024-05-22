@@ -1326,10 +1326,6 @@ PhyEntity::GetDelayUntilCcaEnd(dBm_u threshold, const WifiSpectrumBandInfo& band
 void
 PhyEntity::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu)
 {
-    // We are here because we have received the first bit of a packet and we are
-    // not going to be able to synchronize on it
-    // In this model, CCA becomes busy when the aggregation of all signals as
-    // tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
     const auto ccaIndication = GetCcaIndication(ppdu);
     if (ccaIndication.has_value())
     {
