@@ -1115,7 +1115,7 @@ HePhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType chann
 }
 
 void
-HePhy::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu)
+HePhy::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu /* = nullptr */)
 {
     NS_LOG_FUNCTION(this);
     const auto ccaIndication = GetCcaIndication(ppdu);
@@ -1129,7 +1129,7 @@ HePhy::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu)
     }
     if (ppdu)
     {
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
         return;
     }
     if (per20MHzDurations != m_lastPer20MHzDurations)

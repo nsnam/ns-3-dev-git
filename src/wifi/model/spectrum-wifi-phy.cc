@@ -576,7 +576,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
                                          rxPowers,
                                          interface ? interface->GetFrequencyRange()
                                                    : GetCurrentFrequencyRange());
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
         return;
     }
 
@@ -585,7 +585,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         NS_LOG_INFO("Received Wi-Fi signal but blocked from syncing");
         NS_ASSERT(interface);
         m_interference->AddForeignSignal(rxDuration, rxPowers, interface->GetFrequencyRange());
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
         return;
     }
 
@@ -599,7 +599,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
                     << totalRxPower
                     << ((totalRxPower > Watt_t{0}) ? " (" + WToDbm(totalRxPower).str() + ")" : ""));
         m_interference->Add(ppdu, rxDuration, rxPowers, GetCurrentFrequencyRange());
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
         return;
     }
 
