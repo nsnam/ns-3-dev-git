@@ -30,6 +30,7 @@
 #include "ns3/attribute-container.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/shuffle.h"
 #include "ns3/simulator.h"
 #include "ns3/socket.h"
 
@@ -665,7 +666,7 @@ Txop::Queue(Ptr<WifiMpdu> mpdu)
 
     // shuffle link IDs not to request channel access on links always in the same order
     std::vector<uint8_t> shuffledLinkIds(linkIds.cbegin(), linkIds.cend());
-    std::shuffle(shuffledLinkIds.begin(), shuffledLinkIds.end(), m_shuffleLinkIdsGen);
+    Shuffle(shuffledLinkIds.begin(), shuffledLinkIds.end(), m_shuffleLinkIdsGen.GetRv());
 
     if (!linkIds.empty() && g_log.IsEnabled(ns3::LOG_DEBUG))
     {

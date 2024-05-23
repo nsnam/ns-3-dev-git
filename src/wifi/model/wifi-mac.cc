@@ -36,6 +36,7 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/pointer.h"
+#include "ns3/shuffle.h"
 #include "ns3/string.h"
 #include "ns3/vht-configuration.h"
 
@@ -1562,7 +1563,7 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
 
     // shuffle link IDs not to unblock links always in the same order
     std::vector<uint8_t> shuffledLinkIds(linkIds.cbegin(), linkIds.cend());
-    std::shuffle(shuffledLinkIds.begin(), shuffledLinkIds.end(), m_shuffleLinkIdsGen);
+    Shuffle(shuffledLinkIds.begin(), shuffledLinkIds.end(), m_shuffleLinkIdsGen.GetRv());
 
     std::stringstream ss;
     if (g_log.IsEnabled(ns3::LOG_FUNCTION))

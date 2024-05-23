@@ -2878,6 +2878,8 @@ BinomialAntitheticTestCase::DoRun()
  * \ingroup tests
  *
  * \brief Test the Shuffle function
+ *
+ * Check that the Shuffle function actually shuffles the elements and does so in a portable way.
  */
 class ShuffleElementsTest : public TestCase
 {
@@ -2896,7 +2898,11 @@ ShuffleElementsTest::ShuffleElementsTest()
 void
 ShuffleElementsTest::DoRun()
 {
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
     auto rv = CreateObject<UniformRandomVariable>();
+    rv->SetStream(1);
 
     // test empty vector
     std::vector<uint8_t> vec{};
@@ -2916,7 +2922,6 @@ ShuffleElementsTest::DoRun()
     vec.push_back(1);
 
     Shuffle(vec.begin(), vec.end(), rv);
-    std::sort(vec.begin(), vec.end());
 
     NS_TEST_EXPECT_MSG_EQ((vec == std::vector<uint8_t>{1, 3}), true, "Expected vector {1, 3}");
 
@@ -2927,11 +2932,10 @@ ShuffleElementsTest::DoRun()
     vec.push_back(9);
 
     Shuffle(vec.begin(), vec.end(), rv);
-    std::sort(vec.begin(), vec.end());
 
-    NS_TEST_EXPECT_MSG_EQ((vec == std::vector<uint8_t>{1, 2, 3, 4, 7, 9}),
+    NS_TEST_EXPECT_MSG_EQ((vec == std::vector<uint8_t>{4, 1, 9, 3, 2, 7}),
                           true,
-                          "Expected vector {1, 2, 3, 4, 7, 9}");
+                          "Expected vector {4, 1, 9, 3, 2, 7}");
 }
 
 /**
