@@ -41,6 +41,7 @@ Applications have a new Attribute to set the IPv4 ToS field.
 * (lr-wpan) The Lr-wpan module now uses the namespace `lrwpan`.
 * (lr-wpan) The `LrWpan` prefix of variables, structs and enumerations in the PHY and MAC was shorten to reflect the recent namespace change.
 * (wifi) Obsoleted **Txop** attributes `MinCw`, `MaxCw`, `Aifsn` and `TxopLimit`. The corresponding attributes for multi-link devices (`MinCws`, `MaxCws`, `Aifsns` and `TxopLimits`) can be used instead.
+* (energy) The energy module and all its contents now uses the namespace `energy`.
 
 ### Changes to build system
 

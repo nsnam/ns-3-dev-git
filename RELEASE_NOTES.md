@@ -35,6 +35,7 @@ been tested on Linux. The latest known version to work with ns-3 is cppyy==3.1.2
 - (wifi) - The `WifiMacHelper` provides a `SetChannelAccessManager` and a `SetFrameExchangeManager` methods to configure attributes of `ChannelAccessManager` and `FrameExchangeManager` objects, respectively
 - (wifi) - Simulation duration and data rate parameters of existing wifi examples changed to use Time and DataRate types
 - (mobility) !1986 - Adds simple constant-mobility-example
+- (energy) !1948 - Adds namespace energy
 
 ### Bugs fixed
 
