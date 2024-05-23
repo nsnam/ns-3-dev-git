@@ -372,7 +372,7 @@ class TcpBicTestSuite : public TestSuite
                         9 * 1000,
                         2,
                         16,
-                        "Bic increment test: linear incrase but not enough ACKs received"),
+                        "Bic increment test: linear increase but not enough ACKs received"),
                     TestCase::Duration::QUICK);
 
         AddTestCase(new TcpBicDecrementTest(

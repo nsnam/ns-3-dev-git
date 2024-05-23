@@ -364,12 +364,12 @@ class LteEnbMac : public Object
 
   private:
     /**
-     * \brief UL Info List ELements HARQ Feedback function
+     * \brief UL Info List Elements HARQ Feedback function
      * \param params UlInfoListElement_s
      */
     void DoUlInfoListElementHarqFeedback(UlInfoListElement_s params);
     /**
-     * \brief DL Info List ELements HARQ Feedback function
+     * \brief DL Info List Elements HARQ Feedback function
      * \param params DlInfoListElement_s
      */
     void DoDlInfoListElementHarqFeedback(DlInfoListElement_s params);

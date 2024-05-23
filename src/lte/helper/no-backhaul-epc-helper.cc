@@ -105,7 +105,7 @@ NoBackhaulEpcHelper::NoBackhaulEpcHelper()
     NetDeviceContainer tunDeviceContainer;
     tunDeviceContainer.Add(m_tunDevice);
     // the TUN device is on the same subnet as the UEs, so when a packet
-    // addressed to an UE arrives at the intenet to the WAN interface of
+    // addressed to an UE arrives at the internet to the WAN interface of
     // the PGW it will be forwarded to the TUN device.
     Ipv4InterfaceContainer tunDeviceIpv4IfContainer = AssignUeIpv4Address(tunDeviceContainer);
 

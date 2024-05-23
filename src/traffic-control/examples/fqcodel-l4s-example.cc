@@ -681,7 +681,7 @@ main(int argc, char* argv[])
     }
     else
     {
-        NS_FATAL_ERROR("Fatal error:  scenario unavailble");
+        NS_FATAL_ERROR("Fatal error:  scenario unavailable");
     }
 
     std::ofstream pingOfStream;

@@ -87,7 +87,7 @@ GenericBatteryModel::GetTypeId()
                           MakeDoubleAccessor(&GenericBatteryModel::m_internalResistance),
                           MakeDoubleChecker<double>())
             .AddAttribute("TypicalDischargeCurrent",
-                          "Typical discharge current used in manufacters datasheets (A)",
+                          "Typical discharge current used in manufacturers datasheets (A)",
                           DoubleValue(2.33),
                           MakeDoubleAccessor(&GenericBatteryModel::m_typicalCurrent),
                           MakeDoubleChecker<double>())

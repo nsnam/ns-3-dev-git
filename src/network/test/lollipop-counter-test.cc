@@ -150,19 +150,19 @@ LollipopCounterTest::DoRun()
  *
  * \brief Lollipop Counter TestSuite
  */
-class LolipopCounterTestSuite : public TestSuite
+class LollipopCounterTestSuite : public TestSuite
 {
   public:
-    LolipopCounterTestSuite();
+    LollipopCounterTestSuite();
 
   private:
 };
 
-LolipopCounterTestSuite::LolipopCounterTestSuite()
+LollipopCounterTestSuite::LollipopCounterTestSuite()
     : TestSuite("lollipop-counter", Type::UNIT)
 {
     AddTestCase(new LollipopCounterTest(), TestCase::Duration::QUICK);
 }
 
-static LolipopCounterTestSuite
+static LollipopCounterTestSuite
     g_lollipopCounterTestSuite; //!< Static variable for test initialization

@@ -385,7 +385,7 @@ class TcpBbr : public TcpCongestionOps
                                          //!< filter window, default 10 secs.
     Time m_rtPropStamp{
         Seconds(0)}; //!< The wall clock time at which the current BBR.RTProp sample was obtained
-    bool m_isInitialized{false}; //!< Set to true after first time initializtion variables
+    bool m_isInitialized{false}; //!< Set to true after first time initialization variables
     Ptr<UniformRandomVariable> m_uv{nullptr}; //!< Uniform Random Variable
     uint64_t m_delivered{0}; //!< The total amount of data in bytes delivered so far
     uint32_t m_appLimited{

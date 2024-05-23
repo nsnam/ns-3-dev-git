@@ -96,7 +96,7 @@ class InternetStackHelper : public PcapHelperForIpv4,
      * and global routing by default. The static routing protocol
      * (ns3::Ipv4StaticRouting) and the global routing protocol are
      * stored in an ns3::Ipv4ListRouting protocol with priorities 0, and -10
-     * by default. If you wish to use different priorites and different
+     * by default. If you wish to use different priorities and different
      * routing protocols, you need to use an adhoc ns3::Ipv4RoutingHelper,
      * such as ns3::OlsrHelper
      */

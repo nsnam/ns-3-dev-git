@@ -442,14 +442,14 @@ WimaxHelper::AsciiTxEvent(Ptr<OutputStreamWrapper> stream,
 
 ServiceFlow
 WimaxHelper::CreateServiceFlow(ServiceFlow::Direction direction,
-                               ServiceFlow::SchedulingType schedulinType,
+                               ServiceFlow::SchedulingType schedulingType,
                                IpcsClassifierRecord classifier)
 {
     CsParameters csParam(CsParameters::ADD, classifier);
     ServiceFlow serviceFlow = ServiceFlow(direction);
     serviceFlow.SetConvergenceSublayerParam(csParam);
     serviceFlow.SetCsSpecification(ServiceFlow::IPV4);
-    serviceFlow.SetServiceSchedulingType(schedulinType);
+    serviceFlow.SetServiceSchedulingType(schedulingType);
     serviceFlow.SetMaxSustainedTrafficRate(100);
     serviceFlow.SetMinReservedTrafficRate(1000000);
     serviceFlow.SetMinTolerableTrafficRate(1000000);

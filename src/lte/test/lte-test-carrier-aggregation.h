@@ -71,7 +71,7 @@ class CarrierAggregationTestCase : public TestCase
      */
     void DlScheduling(DlSchedulingCallbackInfo dlInfo);
     /**
-     * UL Scheduling function that is used in this test as callback function of UL sceduling trace
+     * UL Scheduling function that is used in this test as callback function of UL scheduling trace
      * \param frameNo the frame number
      * \param subframeNo the subframe number
      * \param rnti the RNTI

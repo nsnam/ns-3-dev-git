@@ -245,13 +245,13 @@ class WimaxHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
     /**
      * \brief Creates a transport service flow.
      * \param direction the direction of the service flow: UP or DOWN.
-     * \param schedulinType The service scheduling type to be used: UGS, RTPS, NRTPS, BE
+     * \param schedulingType The service scheduling type to be used: UGS, RTPS, NRTPS, BE
      * \param classifier The classifier to be used for this service flow
      * \return ServiceFlow
      *
      */
     ServiceFlow CreateServiceFlow(ServiceFlow::Direction direction,
-                                  ServiceFlow::SchedulingType schedulinType,
+                                  ServiceFlow::SchedulingType schedulingType,
                                   IpcsClassifierRecord classifier);
 
     /**

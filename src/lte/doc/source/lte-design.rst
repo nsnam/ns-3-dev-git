@@ -288,7 +288,7 @@ The control interfaces that are modeled explicitly are the S1-MME, the S11, and 
 interfaces. The X2 interface is also modeled explicitly and it is described in more
 detail in section :ref:`sec-x2`
 
-The S1-MME, the S11 and the S5 interfaces are modeled using procotol data units sent
+The S1-MME, the S11 and the S5 interfaces are modeled using protocol data units sent
 over its respective links. These interfaces use the SCTP protocol as transport protocol
 but currently, the SCTP protocol is not modeled in the ns-3 simulator, so the
 UDP protocol is used instead of the SCTP protocol.

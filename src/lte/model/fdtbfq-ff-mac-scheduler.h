@@ -125,7 +125,7 @@ class FdTbfqFfMacScheduler : public FfMacScheduler
     friend class MemberSchedSapProvider<FdTbfqFfMacScheduler>;
 
     /**
-     * Transmisson mode config update function
+     * Transmission mode config update function
      * \param rnti the RNTI
      * \param txMode the transmit mode
      */

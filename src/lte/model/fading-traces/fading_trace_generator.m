@@ -31,7 +31,7 @@ fd = v_m_s / lambda; % doppler shift
 % when working with an FFT, the normalized frequency w is
 % w = 2 * pi * (f/fs) * t
 % hence the max normalized frequency w=2*pi corresponds to f = fs,
-% hence fs is also the max frequecy of our PowerSpectralDensity
+% hence fs is also the max frequency of our PowerSpectralDensity
 fs = 20e6;
 
 % sampling period must be determined corresponding to the sampling

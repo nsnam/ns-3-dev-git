@@ -192,7 +192,7 @@ class FdBetFfMacScheduler : public FfMacScheduler
 
     /**
      * Sched UL SR info request function
-     * \param params the Schedul UL SR info request parameters
+     * \param params the Schedule UL SR info request parameters
      */
     void DoSchedUlSrInfoReq(const FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params);
 
