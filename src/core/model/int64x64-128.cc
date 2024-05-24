@@ -52,8 +52,8 @@ output_sign(const int128_t sa, const int128_t sb, uint128_t& ua, uint128_t& ub)
 {
     bool negA = sa < 0;
     bool negB = sb < 0;
-    ua = negA ? -sa : sa;
-    ub = negB ? -sb : sb;
+    ua = negA ? -static_cast<uint128_t>(sa) : sa;
+    ub = negB ? -static_cast<uint128_t>(sb) : sb;
     return negA != negB;
 }
 
@@ -64,50 +64,64 @@ int64x64_t::Mul(const int64x64_t& o)
     uint128_t b;
     bool negative = output_sign(_v, o._v, a, b);
     uint128_t result = Umul(a, b);
-    _v = negative ? -result : result;
+    if (negative)
+    {
+        NS_ASSERT_MSG(result <= HP128_MASK_HI_BIT, "overflow detected");
+        _v = -result;
+    }
+    else
+    {
+        NS_ASSERT_MSG(result < HP128_MASK_HI_BIT, "overflow detected");
+        _v = result;
+    }
 }
 
 uint128_t
 int64x64_t::Umul(const uint128_t a, const uint128_t b)
 {
-    uint128_t aL = a & HP_MASK_LO;
-    uint128_t bL = b & HP_MASK_LO;
-    uint128_t aH = (a >> 64) & HP_MASK_LO;
-    uint128_t bH = (b >> 64) & HP_MASK_LO;
+    uint128_t al = a & HP_MASK_LO;
+    uint128_t bl = b & HP_MASK_LO;
+    uint128_t ah = a >> 64;
+    uint128_t bh = b >> 64;
 
-    uint128_t result;
-    uint128_t hiPart;
-    uint128_t loPart;
-    uint128_t midPart;
-    uint128_t res1;
-    uint128_t res2;
+    // Let Q(x) be the unsigned Q64.64 fixed point value represented by the uint128_t x:
+    //     Q(x) * 2^64 = x = xh * 2^64 + xl.
+    // (Defining x this way avoids ambiguity about the meaning of the division operators in
+    //     Q(x) = x / 2^64 = xh + xl / 2^64.)
+    // Then
+    //     Q(a) = ah + al / 2^64
+    // and
+    //     Q(b) = bh + bl / 2^64.
+    // We need to find uint128_t c such that
+    //     Q(c) = Q(a) * Q(b).
+    // Then
+    //     c = Q(c) * 2^64
+    //       = (ah + al / 2^64) * (bh + bl / 2^64) * 2^64
+    //       = (ah * 2^64 + al) * (bh * 2^64 + bl) / 2^64
+    //       = ah * bh * 2^64 + (ah * bl + al * bh) + al * bl / 2^64.
+    // We compute the last part of c by (al * bl) >> 64 which truncates (instead of rounds)
+    // the LSB. If c exceeds 2^127, we might assert. This is because our caller
+    // (Mul function) will not be able to represent the result.
 
-    // Multiplying (a.h 2^64 + a.l) x (b.h 2^64 + b.l) =
-    //             2^128 a.h b.h + 2^64*(a.h b.l+b.h a.l) + a.l b.l
-    // get the low part a.l b.l
-    // multiply the fractional part
-    loPart = aL * bL;
-    // compute the middle part 2^64*(a.h b.l+b.h a.l)
-    midPart = aL * bH + aH * bL;
-    // compute the high part 2^128 a.h b.h
-    hiPart = aH * bH;
-    // if the high part is not zero, put a warning
-    NS_ABORT_MSG_IF((hiPart & HP_MASK_HI) != 0,
-                    "High precision 128 bits multiplication error: multiplication overflow.");
+    uint128_t res = (al * bl) >> 64;
+    {
+        // ah, bh <= 2^63 and al, bl <= 2^64 - 1, so mid < 2^128 - 2^64 and there is no
+        // integer overflow.
+        uint128_t mid = ah * bl + al * bh;
+        // res < 2^64, so there is no integer overflow.
+        res += mid;
+    }
+    {
+        uint128_t high = ah * bh;
+        // If high > 2^63, then the result will overflow.
+        NS_ASSERT_MSG(high <= (static_cast<uint128_t>(1) << 63), "overflow detected");
+        high <<= 64;
+        NS_ASSERT_MSG(res + high >= res, "overflow detected");
+        // No overflow since res, high <= 2^127 and one of res, high is < 2^127.
+        res += high;
+    }
 
-    // Adding 64-bit terms to get 128-bit results, with carries
-    res1 = loPart >> 64;
-    res2 = midPart & HP_MASK_LO;
-    result = res1 + res2;
-
-    res1 = midPart >> 64;
-    res2 = hiPart & HP_MASK_LO;
-    res1 += res2;
-    res1 <<= 64;
-
-    result += res1;
-
-    return result;
+    return res;
 }
 
 void
@@ -189,7 +203,7 @@ void
 int64x64_t::MulByInvert(const int64x64_t& o)
 {
     bool negResult = _v < 0;
-    uint128_t a = negResult ? -_v : _v;
+    uint128_t a = negResult ? -static_cast<uint128_t>(_v) : _v;
     uint128_t result = UmulByInvert(a, o._v);
 
     _v = negResult ? -result : result;
@@ -198,21 +212,25 @@ int64x64_t::MulByInvert(const int64x64_t& o)
 uint128_t
 int64x64_t::UmulByInvert(const uint128_t a, const uint128_t b)
 {
-    uint128_t result;
-    uint128_t ah;
-    uint128_t bh;
-    uint128_t al;
-    uint128_t bl;
-    uint128_t hi;
-    uint128_t mid;
-    ah = a >> 64;
-    bh = b >> 64;
-    al = a & HP_MASK_LO;
-    bl = b & HP_MASK_LO;
-    hi = ah * bh;
-    mid = ah * bl + al * bh;
+    // Since b is assumed to be the output of Invert(), b <= 2^127.
+    NS_ASSERT(b <= HP128_MASK_HI_BIT);
+
+    uint128_t al = a & HP_MASK_LO;
+    uint128_t bl = b & HP_MASK_LO;
+    uint128_t ah = a >> 64;
+    uint128_t bh = b >> 64;
+
+    // Since ah, bh <= 2^63, high <= 2^126 and there is no overflow.
+    uint128_t high = ah * bh;
+
+    // Since ah, bh <= 2^63 and al, bl < 2^64, mid < 2^128 and there is
+    // no overflow.
+    uint128_t mid = ah * bl + al * bh;
     mid >>= 64;
-    result = hi + mid;
+
+    // Since high <= 2^126 and mid < 2^64, result < 2^127 and there is no overflow.
+    uint128_t result = high + mid;
+
     return result;
 }
 

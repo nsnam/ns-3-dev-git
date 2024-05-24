@@ -23,6 +23,7 @@
 
 #include <iomanip> // showpos
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <stdint.h>
 
@@ -69,9 +70,19 @@ std::ostream&
 operator<<(std::ostream& os, const int64x64_t& value)
 {
     const bool negative = (value < 0);
-    const int64x64_t absVal = (negative ? -value : value);
 
-    int64_t hi = absVal.GetHigh();
+    uint64_t hi;
+    int64x64_t low;
+    if (value != int64x64_t(std::numeric_limits<int64_t>::min(), 0))
+    {
+        const int64x64_t absVal = (negative ? -value : value);
+        hi = absVal.GetHigh();
+        low = int64x64_t(0, absVal.GetLow());
+    }
+    else
+    {
+        hi = static_cast<uint64_t>(1) << 63;
+    }
 
     // Save stream format flags
     auto precision = static_cast<std::size_t>(os.precision());
@@ -84,7 +95,6 @@ operator<<(std::ostream& os, const int64x64_t& value)
     std::ostringstream oss;
     oss << hi << "."; // collect the digits here so we can round properly
 
-    int64x64_t low(0, absVal.GetLow());
     std::size_t places = 0; // Number of decimal places printed so far
     bool more = true;       // Should we print more digits?
 

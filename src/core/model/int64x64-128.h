@@ -58,8 +58,6 @@ class int64x64_t
     static const uint128_t HP128_MASK_HI_BIT = (((int128_t)1) << 127);
     /// Mask for fraction part.
     static const uint64_t HP_MASK_LO = 0xffffffffffffffffULL;
-    /// Mask for sign + integer part.
-    static const uint64_t HP_MASK_HI = ~HP_MASK_LO;
     /**
      * Floating point value of HP_MASK_LO + 1.
      * We really want:
@@ -412,6 +410,7 @@ class int64x64_t
 
     /**
      * Implement `*=`.
+     * We assert if the product cannot be encoded in int64x64_t.
      *
      * \param [in] o The other factor.
      */
@@ -427,7 +426,7 @@ class int64x64_t
      *
      * Mathematically this should produce a Q128.128 value;
      * we keep the central 128 bits, representing the Q64.64 result.
-     * We assert on integer overflow beyond the 64-bit integer portion.
+     * We might assert if the result, in uint128_t format, exceeds 2^127.
      *
      * \param [in] a First factor.
      * \param [in] b Second factor.

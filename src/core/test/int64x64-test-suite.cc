@@ -575,6 +575,35 @@ Int64x64ArithmeticTestCase::DoRun()
 
     // Check special values
     Check(51, int64x64_t(0, 0x159fa87f8aeaad21ULL) * 10, int64x64_t(0, 0xd83c94fb6d2ac34aULL));
+    {
+        auto x = int64x64_t(std::numeric_limits<int64_t>::min(), 0);
+        Check(52, x * 1, x);
+        Check(53, 1 * x, x);
+    }
+    {
+        int64x64_t x(1 << 30, (static_cast<uint64_t>(1) << 63) + 1);
+        auto ret = x * x;
+        int64x64_t expected(1152921505680588800, 4611686020574871553);
+        // The real difference between ret and expected is 2^-128.
+        int64x64_t tolerance = 0;
+        if (int64x64_t::implementation == int64x64_t::ld_impl)
+        {
+            tolerance = tol1;
+        }
+        Check(54, ret, expected, tolerance);
+    }
+
+    // The following triggers an assert in int64x64-128.cc:Umul():117
+    /*
+    {
+        auto x = int64x64_t(1LL << 31);   // 2^31
+        auto y = 2 * x;                   // 2^32
+        Check(55, x, x);
+        Check(56, y, y);
+        auto z [[maybe_unused]] = x * y;  // 2^63 < 0, triggers assert
+        Check(57, z, z);
+    }
+    */
 }
 
 /**
