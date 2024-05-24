@@ -130,7 +130,7 @@ daily-test-optimized:
     MODE: optimized
 
 ### Sanitizer tests
-weekly-build-test-debug-sanitizers:
+weekly-build-test-optimized-sanitizers:
   extends: .base-test
   rules:
     - if: $RELEASE == "weekly"
@@ -141,7 +141,7 @@ weekly-build-test-debug-sanitizers:
   dependencies: []
   variables:
     MODE: optimized
-    EXTRA_OPTIONS: --enable-sanitizers
+    EXTRA_OPTIONS: --enable-sanitizers --disable-mpi
     FORCE_TESTS: Force
   tags:
     - nsnam
