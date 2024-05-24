@@ -402,6 +402,8 @@ class TcpBbr : public TcpCongestionOps
     Time m_ackEpochTime{Seconds(0)}; //!< Starting of ACK sampling epoch time
     uint32_t m_ackEpochAcked{0};     //!< Bytes ACked in sampling epoch
     bool m_hasSeenRtt{false};        //!< Have we seen RTT sample yet?
+    double m_pacingMargin{0.01}; //!< BBR intentionally reduces the pacing rate by 1% to drain any
+                                 //!< standing queues. See `bbr_rate_bytes_per_sec` in Linux.
 };
 
 } // namespace ns3

@@ -220,6 +220,7 @@ TcpBbr::SetPacingRate(Ptr<TcpSocketState> tcb, double gain)
 {
     NS_LOG_FUNCTION(this << tcb << gain);
     DataRate rate(gain * m_maxBwFilter.GetBest().GetBitRate());
+    rate *= (1.f - m_pacingMargin);
     rate = std::min(rate, tcb->m_maxPacingRate);
 
     if (!m_hasSeenRtt && tcb->m_minRtt != Time::Max())
