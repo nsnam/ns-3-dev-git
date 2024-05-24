@@ -192,9 +192,7 @@ AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         return;
     }
 
-    // Invoke the receive handler of our parent class to deal with any
-    // other frames. Specifically, this will handle Block Ack-related
-    // Management Action frames.
+    // Invoke the receive handler of our parent class to deal with any other frames
     WifiMac::Receive(mpdu, linkId);
 }
 

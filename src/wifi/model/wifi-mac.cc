@@ -1706,11 +1706,10 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << linkId);
 
-    const WifiMacHeader* hdr = &mpdu->GetOriginal()->GetHeader();
-    Mac48Address to = hdr->GetAddr1();
-    Mac48Address from = hdr->GetAddr2();
-    auto myAddr = hdr->IsData() ? Mac48Address::ConvertFrom(GetDevice()->GetAddress())
-                                : GetFrameExchangeManager(linkId)->GetAddress();
+    const auto& hdr = mpdu->GetOriginal()->GetHeader();
+    const auto to = hdr.GetAddr1();
+    const auto myAddr = hdr.IsData() ? Mac48Address::ConvertFrom(GetDevice()->GetAddress())
+                                     : GetFrameExchangeManager(linkId)->GetAddress();
 
     // We don't know how to deal with any frame that is not addressed to
     // us (and odds are there is nothing sensible we could do anyway),
@@ -1723,105 +1722,13 @@ WifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         return;
     }
 
-    // Nothing to do with (QoS) Null Data frames
-    if (hdr->IsData() && !hdr->HasData())
+    // Nothing to do with (QoS) Null Data frames or management frames
+    if ((hdr.IsData() && !hdr.HasData()) || hdr.IsMgt())
     {
         return;
     }
 
-    if (hdr->IsMgt() && hdr->IsAction())
-    {
-        // There is currently only any reason for Management Action
-        // frames to be flying about if we are a QoS STA.
-        NS_ASSERT(GetQosSupported());
-
-        auto& link = GetLink(linkId);
-        WifiActionHeader actionHdr;
-        Ptr<Packet> packet = mpdu->GetPacket()->Copy();
-        packet->RemoveHeader(actionHdr);
-
-        switch (actionHdr.GetCategory())
-        {
-        case WifiActionHeader::BLOCK_ACK:
-
-            switch (actionHdr.GetAction().blockAck)
-            {
-            case WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST: {
-                MgtAddBaRequestHeader reqHdr;
-                packet->RemoveHeader(reqHdr);
-
-                // We've received an ADDBA Request. Our policy here is
-                // to automatically accept it, so we get the ADDBA
-                // Response on it's way immediately.
-                NS_ASSERT(link.feManager);
-                auto htFem = DynamicCast<HtFrameExchangeManager>(link.feManager);
-                if (htFem)
-                {
-                    htFem->SendAddBaResponse(&reqHdr, from);
-                }
-                // This frame is now completely dealt with, so we're done.
-                return;
-            }
-            case WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE: {
-                MgtAddBaResponseHeader respHdr;
-                packet->RemoveHeader(respHdr);
-
-                // We've received an ADDBA Response. We assume that it
-                // indicates success after an ADDBA Request we have
-                // sent (we could, in principle, check this, but it
-                // seems a waste given the level of the current model)
-                // and act by locally establishing the agreement on
-                // the appropriate queue.
-                auto recipientMld = link.stationManager->GetMldAddress(from);
-                auto recipient = (recipientMld ? *recipientMld : from);
-                GetQosTxop(respHdr.GetTid())->GotAddBaResponse(respHdr, recipient);
-                auto htFem = DynamicCast<HtFrameExchangeManager>(link.feManager);
-                if (htFem)
-                {
-                    GetQosTxop(respHdr.GetTid())
-                        ->GetBaManager()
-                        ->SetBlockAckInactivityCallback(
-                            MakeCallback(&HtFrameExchangeManager::SendDelbaFrame, htFem));
-                }
-                // This frame is now completely dealt with, so we're done.
-                return;
-            }
-            case WifiActionHeader::BLOCK_ACK_DELBA: {
-                MgtDelBaHeader delBaHdr;
-                packet->RemoveHeader(delBaHdr);
-                auto recipientMld = link.stationManager->GetMldAddress(from);
-                auto recipient = (recipientMld ? *recipientMld : from);
-
-                if (delBaHdr.IsByOriginator())
-                {
-                    // This DELBA frame was sent by the originator, so
-                    // this means that an ingoing established
-                    // agreement exists in BlockAckManager and we need to
-                    // destroy it.
-                    GetQosTxop(delBaHdr.GetTid())
-                        ->GetBaManager()
-                        ->DestroyRecipientAgreement(recipient, delBaHdr.GetTid());
-                }
-                else
-                {
-                    // We must have been the originator. We need to
-                    // tell the correct queue that the agreement has
-                    // been torn down
-                    GetQosTxop(delBaHdr.GetTid())->GotDelBaFrame(&delBaHdr, recipient);
-                }
-                // This frame is now completely dealt with, so we're done.
-                return;
-            }
-            default:
-                NS_FATAL_ERROR("Unsupported Action field in Block Ack Action frame");
-                return;
-            }
-        default:
-            NS_FATAL_ERROR("Unsupported Action frame received");
-            return;
-        }
-    }
-    NS_FATAL_ERROR("Don't know how to handle frame (type=" << hdr->GetType());
+    NS_FATAL_ERROR("Don't know how to handle frame (type=" << hdr.GetType());
 }
 
 void

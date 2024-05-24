@@ -138,10 +138,10 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * This method can be called to accept a received ADDBA Request. An
      * ADDBA Response will be constructed and queued for transmission.
      *
-     * \param reqHdr a pointer to the received ADDBA Request header.
+     * \param reqHdr the received ADDBA Request header.
      * \param originator the MAC address of the originator.
      */
-    void SendAddBaResponse(const MgtAddBaRequestHeader* reqHdr, Mac48Address originator);
+    void SendAddBaResponse(const MgtAddBaRequestHeader& reqHdr, Mac48Address originator);
 
     /**
      * Sends DELBA frame to cancel a block ack agreement with STA
@@ -188,6 +188,14 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     void CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVector) override;
     void TransmissionSucceeded() override;
     void ProtectionCompleted() override;
+
+    /**
+     * Process a received management action frame that relates to Block Ack agreement.
+     *
+     * \param mpdu the MPDU carrying the received management action frame
+     * \param txVector the TXVECTOR used to transmit the management action frame
+     */
+    void ReceiveMgtAction(Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector);
 
     /**
      * Get a PSDU containing the given MPDU
