@@ -165,7 +165,7 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-eht-network --simulationTime=0.23s --udp=0 --downlink=1 --useRts=0 --nStations=4 --dlAckType=ACK-SU-FORMAT --enableUlOfdma=1 --enableBsrp=0 --mcs=5 --frequency2=6  --minExpectedThroughput=35 --maxExpectedThroughput=404",
+        "wifi-eht-network --simulationTime=0.23s --udp=0 --downlink=1 --useRts=0 --nStations=4 --dlAckType=ACK-SU-FORMAT --enableUlOfdma=1 --enableBsrp=0 --mcs=6 --frequency2=6  --minExpectedThroughput=60 --maxExpectedThroughput=430",
         "True",
         "True",
     ),

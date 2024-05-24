@@ -1688,6 +1688,12 @@ HtFrameExchangeManager::ReceiveMgtAction(Ptr<const WifiMpdu> mpdu, const WifiTxV
     auto packet = mpdu->GetPacket()->Copy();
     packet->RemoveHeader(actionHdr);
 
+    // compute the time to transmit the Ack
+    const auto ackTxVector =
+        GetWifiRemoteStationManager()->GetAckTxVector(mpdu->GetHeader().GetAddr2(), txVector);
+    const auto ackTxTime =
+        WifiPhy::CalculateTxDuration(GetAckSize(), ackTxVector, m_phy->GetPhyBand());
+
     switch (actionHdr.GetCategory())
     {
     case WifiActionHeader::BLOCK_ACK:
@@ -1699,8 +1705,13 @@ HtFrameExchangeManager::ReceiveMgtAction(Ptr<const WifiMpdu> mpdu, const WifiTxV
             packet->RemoveHeader(reqHdr);
 
             // We've received an ADDBA Request. Our policy here is to automatically accept it,
-            // so we get the ADDBA Response on its way immediately.
-            Simulator::ScheduleNow(&HtFrameExchangeManager::SendAddBaResponse, this, reqHdr, from);
+            // so we get the ADDBA Response on its way as soon as we finish transmitting the Ack,
+            // to avoid to concurrently send Ack and ADDBA Response in case of multi-link devices
+            Simulator::Schedule(m_phy->GetSifs() + ackTxTime,
+                                &HtFrameExchangeManager::SendAddBaResponse,
+                                this,
+                                reqHdr,
+                                from);
             // This frame is now completely dealt with, so we're done.
             return;
         }
@@ -1708,17 +1719,17 @@ HtFrameExchangeManager::ReceiveMgtAction(Ptr<const WifiMpdu> mpdu, const WifiTxV
             MgtAddBaResponseHeader respHdr;
             packet->RemoveHeader(respHdr);
 
-            // We've received an ADDBA Response. We assume that it
-            // indicates success after an ADDBA Request we have
-            // sent (we could, in principle, check this, but it
-            // seems a waste given the level of the current model)
-            // and act by locally establishing the agreement on
-            // the appropriate queue.
-            auto recipient = GetWifiRemoteStationManager()->GetMldAddress(from).value_or(from);
-            m_mac->GetQosTxop(respHdr.GetTid())->GotAddBaResponse(respHdr, recipient);
-            GetBaManager(respHdr.GetTid())
-                ->SetBlockAckInactivityCallback(
-                    MakeCallback(&HtFrameExchangeManager::SendDelbaFrame, this));
+            // We've received an ADDBA Response. Wait until we finish transmitting the Ack before
+            // unblocking transmissions to the recipient, otherwise for multi-link devices the Ack
+            // may be sent concurrently with a data frame containing an A-MPDU
+            Simulator::Schedule(m_phy->GetSifs() + ackTxTime, [=, this]() {
+                const auto recipient =
+                    GetWifiRemoteStationManager()->GetMldAddress(from).value_or(from);
+                m_mac->GetQosTxop(respHdr.GetTid())->GotAddBaResponse(respHdr, recipient);
+                GetBaManager(respHdr.GetTid())
+                    ->SetBlockAckInactivityCallback(
+                        MakeCallback(&HtFrameExchangeManager::SendDelbaFrame, this));
+            });
             // This frame is now completely dealt with, so we're done.
             return;
         }
