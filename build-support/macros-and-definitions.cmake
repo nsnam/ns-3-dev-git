@@ -1297,7 +1297,11 @@ macro(process_options)
       stdlib_pch${build_profile_suffix} PUBLIC
       "${precompiled_header_libraries}"
     )
-    add_library(stdlib_pch ALIAS stdlib_pch${build_profile_suffix})
+
+    # Alias may collide with actual pch in builds without suffix (e.g. release)
+    if(NOT TARGET stdlib_pch)
+      add_library(stdlib_pch ALIAS stdlib_pch${build_profile_suffix})
+    endif()
 
     add_executable(
       stdlib_pch_exec ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc
