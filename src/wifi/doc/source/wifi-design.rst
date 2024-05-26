@@ -686,7 +686,11 @@ Two main changes were needed to adapt the Spectrum framework to Wi-Fi.
 First, the physical layer must send signals compatible with the
 Spectrum channel framework, and in particular, the
 ``MultiModelSpectrumChannel`` that allows signals from different
-technologies to coexist.  Second, the InterferenceHelper must be
+technologies to coexist (``SingleModelSpectrumChannel`` may also work
+for pure Wi-Fi simulations in 5 GHz and 6 GHz bands (but not 2.4 GHz);
+if you get an error using ``SingleModelSpectrumChannel``, switch to
+``MultiModelSpectrumChannel``).
+Second, the InterferenceHelper must be
 extended to support the insertion of non-Wi-Fi signals and to
 add their received power to the noise, in the same way that
 unintended Wi-Fi signals (perhaps from a different SSID or arriving
