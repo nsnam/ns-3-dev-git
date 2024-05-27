@@ -565,10 +565,9 @@ class ApWifiMac : public WifiMac
     void DoInitialize() override;
 
     /**
-     * \param linkIds the IDs of the links for which the next Association ID is requested
-     * \return the next Association ID to be allocated by the AP on the given links
+     * \return the next Association ID to be allocated by the AP
      */
-    uint16_t GetNextAssociationId(std::list<uint8_t> linkIds);
+    uint16_t GetNextAssociationId() const;
 
     Ptr<Txop> m_beaconTxop;        //!< Dedicated Txop for beacons
     bool m_enableBeaconGeneration; //!< Flag whether beacons are being generated

@@ -313,6 +313,182 @@ MldSwapLinksTest::DoRun()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * Test that the AIDs that an AP MLD assigns to SLDs and MLDs are all unique.
+ */
+class AidAssignmentTest : public TestCase
+{
+  public:
+    /**
+     * Constructor.
+     *
+     * \param linkIds A vector specifying the set of link IDs each STA will setup
+     */
+    AidAssignmentTest(const std::vector<std::set<uint8_t>>& linkIds);
+
+  private:
+    void DoSetup() override;
+    void DoRun() override;
+
+    /**
+     * Set the SSID on the next station that needs to start the association procedure.
+     * This method is triggered every time a STA completes its association.
+     *
+     * \param staMac the MAC of the STA that completed association
+     */
+    void SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */);
+
+    const std::vector<std::string> m_linkChannels;  //!< channels for all AP links
+    const std::vector<std::set<uint8_t>> m_linkIds; //!< link IDs for all non-AP STAs/MLDs
+    NetDeviceContainer m_staDevices;                //!< non-AP STAs/MLDs devices
+    uint16_t m_expectedAid;                         //!< expected AID for current non-AP STA/MLD
+};
+
+AidAssignmentTest::AidAssignmentTest(const std::vector<std::set<uint8_t>>& linkIds)
+    : TestCase("Test the assignment of AIDs"),
+      m_linkChannels({"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}"}),
+      m_linkIds(linkIds),
+      m_expectedAid(1) // AID for first station
+{
+}
+
+void
+AidAssignmentTest::DoSetup()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+    int64_t streamNumber{1};
+
+    NodeContainer wifiApNode;
+    wifiApNode.Create(1);
+    NodeContainer wifiStaNodes;
+
+    WifiHelper wifi;
+    wifi.SetStandard(WIFI_STANDARD_80211be);
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
+                                 "DataMode",
+                                 StringValue("EhtMcs0"),
+                                 "ControlMode",
+                                 StringValue("HtMcs0"));
+
+    auto channel = CreateObject<MultiModelSpectrumChannel>();
+
+    // AP MLD
+    SpectrumWifiPhyHelper phyHelper(3);
+    phyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+    uint8_t linkId = 0;
+    for (const auto& str : m_linkChannels)
+    {
+        phyHelper.Set(linkId++, "ChannelSettings", StringValue(str));
+    }
+    phyHelper.SetChannel(channel);
+
+    WifiMacHelper mac;
+    mac.SetType("ns3::ApWifiMac",
+                "Ssid",
+                SsidValue(Ssid("ns-3-ssid")),
+                "BeaconGeneration",
+                BooleanValue(true));
+
+    auto apDevice = wifi.Install(phyHelper, mac, wifiApNode);
+
+    // non-AP STAs/MLDs
+    for (const auto& links : m_linkIds)
+    {
+        phyHelper = SpectrumWifiPhyHelper(links.size());
+        phyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+        linkId = 0;
+        for (const auto& id : links)
+        {
+            phyHelper.Set(linkId++, "ChannelSettings", StringValue(m_linkChannels.at(id)));
+        }
+        phyHelper.SetChannel(channel);
+        phyHelper.Set("FixedPhyBand", BooleanValue(true));
+
+        WifiMacHelper mac;
+        mac.SetType("ns3::StaWifiMac",
+                    "Ssid", // first non-AP STA/MLD only starts associating
+                    SsidValue(Ssid(m_staDevices.GetN() == 0 ? "ns-3-ssid" : "default")),
+                    "ActiveProbing",
+                    BooleanValue(false));
+
+        auto staNode = CreateObject<Node>();
+        auto staDevice = wifi.Install(phyHelper, mac, staNode);
+        wifiStaNodes.Add(staNode);
+        m_staDevices.Add(staDevice);
+    }
+
+    // Assign fixed streams to random variables in use
+    streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
+    streamNumber += WifiHelper::AssignStreams(m_staDevices, streamNumber);
+
+    auto positionAlloc = CreateObject<ListPositionAllocator>();
+    positionAlloc->Add(Vector(0.0, 0.0, 0.0));
+    MobilityHelper mobility;
+    mobility.SetPositionAllocator(positionAlloc);
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(wifiApNode);
+    mobility.Install(wifiStaNodes);
+
+    for (uint32_t i = 0; i < m_staDevices.GetN(); ++i)
+    {
+        auto mac = StaticCast<WifiNetDevice>(m_staDevices.Get(i))->GetMac();
+        mac->TraceConnectWithoutContext(
+            "Assoc",
+            MakeCallback(&AidAssignmentTest::SetSsid, this).Bind(DynamicCast<StaWifiMac>(mac)));
+    }
+}
+
+void
+AidAssignmentTest::SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */)
+{
+    const auto aid = staMac->GetAssociationId();
+
+    std::stringstream linksStr;
+    const auto setupLinks = staMac->GetSetupLinkIds();
+    std::copy(setupLinks.cbegin(), setupLinks.cend(), std::ostream_iterator<int>(linksStr, " "));
+
+    NS_LOG_INFO("STA " << staMac->GetAddress() << " associated with AID " << aid << " links "
+                       << linksStr.str());
+
+    NS_TEST_EXPECT_MSG_EQ(aid, m_expectedAid, "Unexpected AID for STA " << staMac->GetAddress());
+    // For non-AP MLDs, check that the requested links have been setup (for non-AP STAs, link ID
+    // as seen by the non-AP STAs is always zero and could not match link ID as seen by the AP MLD)
+    if (m_linkIds.at(aid - 1).size() > 1)
+    {
+        NS_TEST_EXPECT_MSG_EQ((staMac->GetSetupLinkIds() == m_linkIds.at(aid - 1)),
+                              true,
+                              "Unexpected set of setup links " << linksStr.str());
+    }
+
+    if (m_expectedAid < m_staDevices.GetN())
+    {
+        // let the next STA associate with the AP
+        StaticCast<WifiNetDevice>(m_staDevices.Get(m_expectedAid))
+            ->GetMac()
+            ->SetSsid(Ssid("ns-3-ssid"));
+        ++m_expectedAid;
+    }
+    else
+    {
+        Simulator::Stop(MilliSeconds(5)); // allow sending Ack response to Association Response
+    }
+}
+
+void
+AidAssignmentTest::DoRun()
+{
+    Simulator::Stop(Seconds(5)); // simulation will stop earlier if all STAs complete association
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(m_expectedAid, m_staDevices.GetN(), "Not all STAs completed association");
+
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief Base class for Multi-Link Operations tests
  *
  * Three spectrum channels are created, one for each band (2.4 GHz, 5 GHz and 6 GHz).
@@ -3242,6 +3418,10 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
 
     AddTestCase(new GetRnrLinkInfoTest(), TestCase::Duration::QUICK);
     AddTestCase(new MldSwapLinksTest(), TestCase::Duration::QUICK);
+    AddTestCase(
+        new AidAssignmentTest(
+            std::vector<std::set<uint8_t>>{{0, 1, 2}, {1, 2}, {0, 1}, {0, 2}, {0}, {1}, {2}}),
+        TestCase::Duration::QUICK);
 
     for (const auto& [baseParams,
                       setupLinks,

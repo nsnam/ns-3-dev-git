@@ -1249,105 +1249,58 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdS
         return;
     }
 
-    // check if AIDs are already allocated to the STAs that are associating
+    const auto& [linkId, staAddr] = *linkIdStaAddrMap.cbegin();
+    const auto addr = GetWifiRemoteStationManager(linkId)->GetMldAddress(staAddr).value_or(staAddr);
+
+    // check if an AID is already allocated to the device that is associating
     std::set<uint16_t> aids;
-    std::map<uint8_t /* link ID */, uint16_t /* AID */> linkIdAidMap;
 
-    for (const auto& [id, staAddr] : linkIdStaAddrMap)
+    for (const auto& [id, link] : GetLinks())
     {
-        for (const auto& [aid, addr] : GetLink(id).staList)
+        if (const auto aid = link->stationManager->GetAssociationId(addr); aid != SU_STA_ID)
         {
-            if (addr == staAddr)
-            {
-                aids.insert(aid);
-                linkIdAidMap[id] = aid;
-                break;
-            }
+            aids.insert(aid);
         }
     }
 
-    // check if an AID already assigned to an STA can be assigned to all other STAs
-    // affiliated with the non-AP MLD we are associating with
-    while (!aids.empty())
-    {
-        const uint16_t aid = *aids.begin();
-        bool good = true;
+    NS_ABORT_MSG_IF(aids.size() > 1, addr << " cannot have more than one AID assigned");
 
-        for (const auto& [id, staAddr] : linkIdStaAddrMap)
-        {
-            if (auto it = GetLink(id).staList.find(aid);
-                it != GetLink(id).staList.end() && it->second != staAddr)
-            {
-                // the AID is already assigned to an STA other than the one affiliated
-                // with the non-AP MLD we are associating with
-                aids.erase(aids.begin());
-                good = false;
-                break;
-            }
-        }
-
-        if (good)
-        {
-            break;
-        }
-    }
-
-    uint16_t aid = 0;
-
-    if (!aids.empty())
-    {
-        // one of the AIDs already assigned to an STA can be assigned to all the other
-        // STAs affiliated with the non-AP MLD we are associating with
-        aid = *aids.begin();
-    }
-    else
-    {
-        std::list<uint8_t> linkIds;
-        std::transform(linkIdStaAddrMap.cbegin(),
-                       linkIdStaAddrMap.cend(),
-                       std::back_inserter(linkIds),
-                       [](auto&& linkIdStaAddrPair) { return linkIdStaAddrPair.first; });
-        aid = GetNextAssociationId(linkIds);
-    }
+    const auto aid = aids.empty() ? GetNextAssociationId() : *aids.cbegin();
 
     // store the MLD or link address in the AID-to-address map
-    const auto& [linkId, staAddr] = *linkIdStaAddrMap.cbegin();
-    m_aidToMldOrLinkAddress[aid] =
-        GetWifiRemoteStationManager(linkId)->GetMldAddress(staAddr).value_or(staAddr);
+    const auto [it, inserted] = m_aidToMldOrLinkAddress.emplace(aid, addr);
+
+    NS_ABORT_MSG_IF(!inserted, "AID " << aid << " already present, cannot be assigned to " << addr);
 
     for (const auto& [id, staAddr] : linkIdStaAddrMap)
     {
-        auto remoteStationManager = GetWifiRemoteStationManager(id);
         auto& link = GetLink(id);
 
-        if (auto it = linkIdAidMap.find(id); it == linkIdAidMap.end() || it->second != aid)
+        if (const auto [it, inserted] = link.staList.emplace(aid, staAddr); inserted)
         {
-            // the STA on this link has no AID assigned or has a different AID assigned
-            link.staList.insert(std::make_pair(aid, staAddr));
+            // the STA on this link had no AID assigned
             m_assocLogger(aid, staAddr);
-            remoteStationManager->SetAssociationId(staAddr, aid);
+            link.stationManager->SetAssociationId(staAddr, aid);
 
-            if (it == linkIdAidMap.end())
+            if (link.stationManager->GetDsssSupported(staAddr) &&
+                !link.stationManager->GetErpOfdmSupported(staAddr))
             {
-                // the STA on this link had no AID assigned
-                if (remoteStationManager->GetDsssSupported(staAddr) &&
-                    !remoteStationManager->GetErpOfdmSupported(staAddr))
-                {
-                    link.numNonErpStations++;
-                }
-                if (!remoteStationManager->GetHtSupported(staAddr) &&
-                    !remoteStationManager->GetStationHe6GhzCapabilities(staAddr))
-                {
-                    link.numNonHtStations++;
-                }
-                UpdateShortSlotTimeEnabled(id);
-                UpdateShortPreambleEnabled(id);
+                link.numNonErpStations++;
             }
-            else
+            if (!link.stationManager->GetHtSupported(staAddr) &&
+                !link.stationManager->GetStationHe6GhzCapabilities(staAddr))
             {
-                // the STA on this link had a different AID assigned
-                link.staList.erase(it->second); // free the previous AID
+                link.numNonHtStations++;
             }
+            UpdateShortSlotTimeEnabled(id);
+            UpdateShortPreambleEnabled(id);
+        }
+        else
+        {
+            // the STA on this link had an AID assigned
+            NS_ABORT_MSG_IF(it->first != aid,
+                            "AID " << it->first << " already assigned to " << staAddr
+                                   << ", could not assign " << aid);
         }
     }
 
@@ -2527,14 +2480,15 @@ ApWifiMac::GetUseNonErpProtection(uint8_t linkId) const
 }
 
 uint16_t
-ApWifiMac::GetNextAssociationId(std::list<uint8_t> linkIds)
+ApWifiMac::GetNextAssociationId() const
 {
-    // Return the first AID value between 1 and 2007 that is free for all the given links
-    for (uint16_t nextAid = 1; nextAid <= 2007; nextAid++)
+    const auto& links = GetLinks();
+
+    // Return the first AID value between 1 and 2007 that is free for all the links
+    for (uint16_t nextAid = 1; nextAid <= 2007; ++nextAid)
     {
-        if (std::all_of(linkIds.begin(), linkIds.end(), [&](auto&& linkId) {
-                auto& staList = GetLink(linkId).staList;
-                return !staList.contains(nextAid);
+        if (std::none_of(links.cbegin(), links.cend(), [&](auto&& idLinkPair) {
+                return GetStaList(idLinkPair.first).contains(nextAid);
             }))
         {
             return nextAid;
