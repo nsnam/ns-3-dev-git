@@ -23,6 +23,8 @@
 
 #include "wifi-spectrum-value-helper.h"
 
+#include "wifi-utils.h"
+
 #include "ns3/assert.h"
 #include "ns3/fatal-error.h"
 #include "ns3/log.h"
@@ -689,37 +691,6 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
     return c;
 }
 
-Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity(uint16_t centerFrequency,
-                                                         ChannelWidthMhz channelWidth,
-                                                         uint32_t carrierSpacing,
-                                                         double noiseFigure,
-                                                         ChannelWidthMhz guardBandwidth)
-{
-    Ptr<SpectrumModel> model =
-        GetSpectrumModel({centerFrequency}, channelWidth, carrierSpacing, guardBandwidth);
-    return CreateNoisePowerSpectralDensity(noiseFigure, model);
-}
-
-Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity(double noiseFigureDb,
-                                                         Ptr<SpectrumModel> spectrumModel)
-{
-    NS_LOG_FUNCTION(noiseFigureDb << spectrumModel);
-
-    // see "LTE - From theory to practice"
-    // Section 22.4.4.2 Thermal Noise and Receiver Noise Figure
-    const double kT_dBm_Hz = -174.0; // dBm/Hz
-    double kT_W_Hz = DbmToW(kT_dBm_Hz);
-    double noiseFigureLinear = std::pow(10.0, noiseFigureDb / 10.0);
-    double noisePowerSpectralDensity = kT_W_Hz * noiseFigureLinear;
-
-    Ptr<SpectrumValue> noisePsd = Create<SpectrumValue>(spectrumModel);
-    (*noisePsd) = noisePowerSpectralDensity;
-    NS_LOG_INFO("NoisePowerSpectralDensity has integrated power of " << Integral(*noisePsd));
-    return noisePsd;
-}
-
 void
 WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
     Ptr<SpectrumValue> c,
@@ -1130,12 +1101,6 @@ WifiSpectrumValueHelper::NormalizeSpectrumMask(Ptr<SpectrumValue> c, double txPo
     {
         *vit = (*vit) / normalizationRatio;
     }
-}
-
-double
-WifiSpectrumValueHelper::DbmToW(double dBm)
-{
-    return std::pow(10.0, 0.1 * (dBm - 30.0));
 }
 
 double

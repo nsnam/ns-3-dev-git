@@ -239,34 +239,6 @@ class WifiSpectrumValueHelper
         const std::vector<WifiSpectrumBandIndices>& ru);
 
     /**
-     * Create a power spectral density corresponding to the noise
-     *
-     * \param centerFrequency center frequency (MHz)
-     * \param channelWidth channel width (MHz)
-     * \param carrierSpacing carrier spacing (Hz)
-     * \param noiseFigure the noise figure in dB w.r.t. a reference temperature of 290K
-     * \param guardBandwidth width of the guard band (MHz)
-     * \return a pointer to a newly allocated SpectrumValue representing the noise Power Spectral
-     * Density in W/Hz for each Band
-     */
-    static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity(uint16_t centerFrequency,
-                                                              ChannelWidthMhz channelWidth,
-                                                              uint32_t carrierSpacing,
-                                                              double noiseFigure,
-                                                              ChannelWidthMhz guardBandwidth);
-
-    /**
-     * Create a thermal noise power spectral density
-     *
-     * \param noiseFigure the noise figure
-     * \param spectrumModel the spectrum model
-     * \return a pointer to a newly allocated SpectrumValue representing the noise Power Spectral
-     * Density in W/Hz corresponding to thermal noise, for each Band
-     */
-    static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity(double noiseFigure,
-                                                              Ptr<SpectrumModel> spectrumModel);
-
-    /**
      * Create a transmit power spectral density corresponding to OFDM
      * transmit spectrum mask requirements for 11a/11g/11n/11ac/11ax
      * Channel width may vary between 5, 10, 20, 40, 80, and 160 MHz.
@@ -332,17 +304,6 @@ class WifiSpectrumValueHelper
      * \param txPowerW total transmit power (W) to allocate
      */
     static void NormalizeSpectrumMask(Ptr<SpectrumValue> c, double txPowerW);
-
-    /**
-     * Convert from dBm to Watts.
-     * Taken from wifi-utils since the original method couldn't be called from here
-     * due to resulting circular dependencies of spectrum and wifi modules.
-     *
-     * \param dbm the power in dBm
-     *
-     * \return the equivalent Watts for the given dBm
-     */
-    static double DbmToW(double dbm);
 
     /**
      * Calculate the power of the specified band composed of uniformly-sized sub-bands.
