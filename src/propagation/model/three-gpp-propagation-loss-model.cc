@@ -263,7 +263,7 @@ ComputeClutterLoss(double freq,
     return loss;
 };
 
-static const double M_C = 3.0e8; //!< propagation velocity in free space
+constexpr double M_C = 3.0e8; //!< propagation velocity in free space
 
 } // namespace
 
