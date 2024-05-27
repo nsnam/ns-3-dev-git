@@ -820,8 +820,8 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     {
         return OfdmPhy::GetCcaIndication(ppdu);
     }
-    double ccaThresholdDbm = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
-    Time delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, GetPrimaryBand(20));
+    auto ccaThreshold = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
+    auto delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetPrimaryBand(20));
     if (delayUntilCcaEnd.IsStrictlyPositive())
     {
         return std::make_pair(
@@ -856,8 +856,8 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
         (secondaryWidth / 2);
     if (!ppdu || ppdu->DoesOverlapChannel(s20MinFreq, s20MaxFreq))
     {
-        ccaThresholdDbm = GetCcaThreshold(ppdu, WIFI_CHANLIST_SECONDARY);
-        delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, GetSecondaryBand(20));
+        ccaThreshold = GetCcaThreshold(ppdu, WIFI_CHANLIST_SECONDARY);
+        delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetSecondaryBand(20));
         if (delayUntilCcaEnd.IsStrictlyPositive())
         {
             return std::make_pair(delayUntilCcaEnd, WIFI_CHANLIST_SECONDARY);

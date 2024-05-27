@@ -693,7 +693,7 @@ class TestMultipleCtsResponsesFromMuRts : public TestCase
     std::size_t m_countStaRxCtsFailure; ///< count the number of unsuccessfully received CTS frames
                                         ///< by the non-participating STA
 
-    double m_stasTxPowerDbm; ///< TX power in dBm configured for the STAs
+    dBm_u m_stasTxPower; ///< TX power configured for the STAs
 };
 
 TestMultipleCtsResponsesFromMuRts::TestMultipleCtsResponsesFromMuRts(
@@ -704,7 +704,7 @@ TestMultipleCtsResponsesFromMuRts::TestMultipleCtsResponsesFromMuRts(
       m_countApRxCtsFailure{0},
       m_countStaRxCtsSuccess{0},
       m_countStaRxCtsFailure{0},
-      m_stasTxPowerDbm(10.0)
+      m_stasTxPower(10.0)
 {
 }
 
@@ -788,7 +788,7 @@ TestMultipleCtsResponsesFromMuRts::RxCtsSuccess(std::size_t phyIndex,
     if (isAp)
     {
         NS_TEST_EXPECT_MSG_EQ_TOL(rxSignalInfo.rssi,
-                                  WToDbm(DbmToW(m_stasTxPowerDbm) * successfulCtsInfos.size()),
+                                  WToDbm(DbmToW(m_stasTxPower) * successfulCtsInfos.size()),
                                   0.1,
                                   "RX power is not correct!");
     }
@@ -918,8 +918,8 @@ TestMultipleCtsResponsesFromMuRts::DoSetup()
         phySta->AddChannel(spectrumChannel);
         phySta->ConfigureStandard(WIFI_STANDARD_80211ax);
         phySta->AssignStreams(streamNumber);
-        phySta->SetTxPowerStart(m_stasTxPowerDbm);
-        phySta->SetTxPowerEnd(m_stasTxPowerDbm);
+        phySta->SetTxPowerStart(m_stasTxPower);
+        phySta->SetTxPowerEnd(m_stasTxPower);
 
         auto channelNum = WifiPhyOperatingChannel::FindFirst(0,
                                                              0,

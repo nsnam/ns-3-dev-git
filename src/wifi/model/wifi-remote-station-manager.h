@@ -59,9 +59,9 @@ struct WifiRemoteStation
 {
     virtual ~WifiRemoteStation(){};
     WifiRemoteStationState* m_state; //!< Remote station state
-    std::pair<double, Time>
-        m_rssiAndUpdateTimePair; //!< RSSI (in dBm) of the most recent packet received from the
-                                 //!< remote station along with update time
+    std::pair<dBm_u, Time>
+        m_rssiAndUpdateTimePair; //!< RSSI of the most recent packet received from
+                                 //!< the remote station along with update time
 };
 
 /**
@@ -1032,14 +1032,14 @@ class WifiRemoteStationManager : public Object
     /**
      * \param address of the remote station
      *
-     * \return the RSSI (in dBm) of the most recent packet received from the remote station
-     * (irrespective of TID)
+     * \return the RSSI of the most recent packet received from the remote station (irrespective of
+     * TID)
      *
      * This method is typically used when the device needs
      * to estimate the target UL RSSI info to put in the
      * Trigger frame to send to the remote station.
      */
-    std::optional<double> GetMostRecentRssi(Mac48Address address) const;
+    std::optional<dBm_u> GetMostRecentRssi(Mac48Address address) const;
     /**
      * Set the default transmission power level
      *

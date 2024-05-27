@@ -171,12 +171,12 @@ class WifiPhyStateHelper : public Object
      *
      * \param txDuration the duration of the PPDU to transmit
      * \param psdus the PSDUs in the transmitted PPDU (only one unless it is a MU PPDU)
-     * \param txPowerDbm the nominal TX power in dBm
+     * \param txPower the nominal TX power
      * \param txVector the TX vector for the transmission
      */
     void SwitchToTx(Time txDuration,
                     const WifiConstPsduMap& psdus,
-                    double txPowerDbm,
+                    dBm_u txPower,
                     const WifiTxVector& txVector);
     /**
      * Switch state to RX for the given duration.

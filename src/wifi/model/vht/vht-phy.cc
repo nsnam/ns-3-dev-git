@@ -68,9 +68,9 @@ const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
 // clang-format on
 
 /**
- * \brief map a given channel list type to the corresponding scaling factor in dBm
+ * \brief map a given channel list type to the corresponding scaling factor
  */
-const std::map<WifiChannelListType, double> channelTypeToScalingFactorDbm{
+const std::map<WifiChannelListType, dBm_u> channelTypeToScalingFactor{
     {WIFI_CHANLIST_PRIMARY, 0.0},
     {WIFI_CHANLIST_SECONDARY, 0.0},
     {WIFI_CHANLIST_SECONDARY40, 3.0},
@@ -533,7 +533,7 @@ VhtPhy::GetMaxPsduSize() const
     return 4692480;
 }
 
-double
+dBm_u
 VhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
 {
     if (ppdu)
@@ -567,8 +567,8 @@ VhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType chan
     }
     else
     {
-        const auto it = channelTypeToScalingFactorDbm.find(channelType);
-        NS_ASSERT_MSG(it != std::end(channelTypeToScalingFactorDbm), "Invalid channel list type");
+        const auto it = channelTypeToScalingFactor.find(channelType);
+        NS_ASSERT_MSG(it != std::end(channelTypeToScalingFactor), "Invalid channel list type");
         return m_wifiPhy->GetCcaEdThreshold() + it->second;
     }
 }
@@ -581,8 +581,8 @@ VhtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
         return HtPhy::GetCcaIndication(ppdu);
     }
 
-    double ccaThresholdDbm = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
-    Time delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, GetPrimaryBand(20));
+    auto ccaThreshold = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
+    auto delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetPrimaryBand(20));
     if (delayUntilCcaEnd.IsStrictlyPositive())
     {
         return std::make_pair(
@@ -643,8 +643,8 @@ VhtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     for (auto secondaryWidth : secondaryWidthsToCheck)
     {
         auto channelType = secondaryChannels.at(secondaryWidth);
-        ccaThresholdDbm = GetCcaThreshold(ppdu, channelType);
-        delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThresholdDbm, GetSecondaryBand(secondaryWidth));
+        ccaThreshold = GetCcaThreshold(ppdu, channelType);
+        delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetSecondaryBand(secondaryWidth));
         if (delayUntilCcaEnd.IsStrictlyPositive())
         {
             return std::make_pair(delayUntilCcaEnd, channelType);

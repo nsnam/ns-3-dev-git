@@ -490,10 +490,10 @@ class EmlsrManager : public Object
 
     std::map<uint8_t, MediumSyncDelayStatus>
         m_mediumSyncDelayStatus; //!< the status of MediumSyncDelay timers (link ID-indexed)
-    std::map<Ptr<WifiPhy>, double> m_prevCcaEdThreshold; //!< the CCA sensitivity threshold (dBm)
-                                                         //!< to restore once the MediumSyncDelay
-                                                         //!< timer expires or the PHY moves to a
-                                                         //!< link on which the timer is not running
+    std::map<Ptr<WifiPhy>, dBm_u> m_prevCcaEdThreshold; //!< the CCA sensitivity threshold
+                                                        //!< to restore once the MediumSyncDelay
+                                                        //!< timer expires or the PHY moves to a
+                                                        //!< link on which the timer is not running
 
     std::set<uint8_t> m_emlsrLinks; //!< ID of the EMLSR links (empty if EMLSR mode is disabled)
     std::optional<std::set<uint8_t>> m_nextEmlsrLinks; /**< ID of the links that will become the

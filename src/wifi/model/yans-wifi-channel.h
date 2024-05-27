@@ -9,6 +9,8 @@
 #ifndef YANS_WIFI_CHANNEL_H
 #define YANS_WIFI_CHANNEL_H
 
+#include "wifi-units.h"
+
 #include "ns3/channel.h"
 
 namespace ns3
@@ -65,14 +67,14 @@ class YansWifiChannel : public Channel
     /**
      * \param sender the PHY object from which the packet is originating.
      * \param ppdu the PPDU to send
-     * \param txPowerDbm the TX power associated to the packet, in dBm
+     * \param txPower the TX power associated to the packet
      *
      * This method should not be invoked by normal users. It is
      * currently invoked only from YansWifiPhy::StartTx.  The channel
      * attempts to deliver the PPDU to all other YansWifiPhy objects
      * on the channel (except for the sender).
      */
-    void Send(Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, double txPowerDbm) const;
+    void Send(Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, dBm_u txPower) const;
 
     /**
      * Assign a fixed random variable stream number to the random variables
@@ -98,9 +100,9 @@ class YansWifiChannel : public Channel
      *
      * \param receiver the device to which the packet is destined
      * \param ppdu the PPDU being sent
-     * \param txPowerDbm the TX power associated to the packet being sent (dBm)
+     * \param txPower the TX power associated to the packet being sent
      */
-    static void Receive(Ptr<YansWifiPhy> receiver, Ptr<const WifiPpdu> ppdu, double txPowerDbm);
+    static void Receive(Ptr<YansWifiPhy> receiver, Ptr<const WifiPpdu> ppdu, dBm_u txPower);
 
     PhyList m_phyList;                  //!< List of YansWifiPhys connected to this YansWifiChannel
     Ptr<PropagationLossModel> m_loss;   //!< Propagation loss model

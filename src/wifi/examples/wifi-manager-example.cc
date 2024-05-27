@@ -94,7 +94,7 @@ RateChange(uint64_t oldVal, uint64_t newVal)
 /// Step structure
 struct Step
 {
-    double stepSize; ///< step size in dBm
+    dBm_u stepSize;  ///< step size
     double stepTime; ///< step size in seconds
 };
 
@@ -156,16 +156,16 @@ struct StandardInfo
  *
  * \param rssModel The new RSS model.
  * \param step The step to use.
- * \param rss The RSS in dBm.
- * \param noise The noise in dBm.
+ * \param rss The RSS.
+ * \param noise The noise.
  * \param rateDataset The rate dataset.
  * \param actualDataset The actual dataset.
  */
 void
 ChangeSignalAndReportRate(Ptr<FixedRssLossModel> rssModel,
                           Step step,
-                          double rss,
-                          double noise,
+                          dBm_u rss,
+                          dBm_u noise,
                           Gnuplot2dDataset& rateDataset,
                           Gnuplot2dDataset& actualDataset)
 {
@@ -198,7 +198,7 @@ main(int argc, char* argv[])
     uint32_t steps;
     uint32_t rtsThreshold = 999999; // disabled even for large A-MPDU
     uint32_t maxAmpduSize = 65535;
-    double stepSize = 1;        // dBm
+    dBm_u stepSize = 1;
     double stepTime = 1;        // seconds
     uint32_t packetSize = 1024; // bytes
     bool broadcast = false;
@@ -731,12 +731,12 @@ main(int argc, char* argv[])
     // Configure signal and noise, and schedule first iteration
     const auto BOLTZMANN = 1.3803e-23;
     const auto noiseDensity = WToDbm(BOLTZMANN * 290); // 290K @ 20 MHz
-    const auto noise = noiseDensity + (10 * log10(clientSelectedStandard.m_width * 1000000));
+    const dBm_u noise = noiseDensity + (10 * log10(clientSelectedStandard.m_width * 1000000));
 
     NS_LOG_DEBUG("Channel width " << wifiPhyPtrClient->GetChannelWidth() << " noise " << noise);
     NS_LOG_DEBUG("NSS " << wifiPhyPtrClient->GetMaxSupportedTxSpatialStreams());
 
-    const auto rssCurrent = (clientSelectedStandard.m_snrHigh + noise);
+    const dBm_u rssCurrent = (clientSelectedStandard.m_snrHigh + noise);
     rssLossModel->SetRss(rssCurrent);
     NS_LOG_INFO("Setting initial Rss to " << rssCurrent);
     // Move the STA by stepsSize meters every stepTime seconds

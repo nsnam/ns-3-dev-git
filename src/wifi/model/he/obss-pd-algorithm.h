@@ -13,6 +13,7 @@
 
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
+#include "ns3/wifi-units.h"
 
 namespace ns3
 {
@@ -77,13 +78,13 @@ class ObssPdAlgorithm : public Object
                                         double txPowerMaxDbmMimo);
 
     /**
-     * \param level the current OBSS PD level in dBm
+     * \param level the current OBSS PD level
      */
-    void SetObssPdLevel(double level);
+    void SetObssPdLevel(dBm_u level);
     /**
-     * \return the current OBSS PD level in dBm.
+     * \return the current OBSS PD level
      */
-    double GetObssPdLevel() const;
+    dBm_u GetObssPdLevel() const;
 
   protected:
     void DoDispose() override;
@@ -91,11 +92,11 @@ class ObssPdAlgorithm : public Object
     Ptr<WifiNetDevice> m_device; ///< Pointer to the WifiNetDevice
 
   private:
-    double m_obssPdLevel;    ///< Current OBSS PD level (dBm)
-    double m_obssPdLevelMin; ///< Minimum OBSS PD level (dBm)
-    double m_obssPdLevelMax; ///< Maximum OBSS PD level (dBm)
-    double m_txPowerRefSiso; ///< SISO reference TX power level (dBm)
-    double m_txPowerRefMimo; ///< MIMO reference TX power level (dBm)
+    dBm_u m_obssPdLevel;    ///< Current OBSS PD level
+    dBm_u m_obssPdLevelMin; ///< Minimum OBSS PD level
+    dBm_u m_obssPdLevelMax; ///< Maximum OBSS PD level
+    dBm_u m_txPowerRefSiso; ///< SISO reference TX power level
+    dBm_u m_txPowerRefMimo; ///< MIMO reference TX power level
 
     /**
      * TracedCallback signature for PHY reset events.

@@ -664,14 +664,14 @@ OfdmPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
     return GetRxChannelWidth(ppdu->GetTxVector());
 }
 
-double
+dBm_u
 OfdmPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
 {
     if (ppdu && ppdu->GetTxVector().GetChannelWidth() < 20)
     {
         // scale CCA sensitivity threshold for BW of 5 and 10 MHz
         const auto bw = GetRxChannelWidth(ppdu->GetTxVector());
-        double thresholdW = DbmToW(m_wifiPhy->GetCcaSensitivityThreshold()) * (bw / 20.0);
+        const auto thresholdW = DbmToW(m_wifiPhy->GetCcaSensitivityThreshold()) * (bw / 20.0);
         return WToDbm(thresholdW);
     }
     return PhyEntity::GetCcaThreshold(ppdu, channelType);

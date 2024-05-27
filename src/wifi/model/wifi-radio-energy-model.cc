@@ -254,11 +254,11 @@ WifiRadioEnergyModel::SetTxCurrentModel(const Ptr<WifiTxCurrentModel> model)
 }
 
 void
-WifiRadioEnergyModel::SetTxCurrentFromModel(double txPowerDbm)
+WifiRadioEnergyModel::SetTxCurrentFromModel(dBm_u txPower)
 {
     if (m_txCurrentModel)
     {
-        m_txCurrentA = m_txCurrentModel->CalcTxCurrent(txPowerDbm);
+        m_txCurrentA = m_txCurrentModel->CalcTxCurrent(txPower);
     }
 }
 
@@ -525,14 +525,14 @@ WifiRadioEnergyModelPhyListener::NotifyRxEndError()
 }
 
 void
-WifiRadioEnergyModelPhyListener::NotifyTxStart(Time duration, double txPowerDbm)
+WifiRadioEnergyModelPhyListener::NotifyTxStart(Time duration, dBm_u txPower)
 {
-    NS_LOG_FUNCTION(this << duration << txPowerDbm);
+    NS_LOG_FUNCTION(this << duration << txPower);
     if (m_updateTxCurrentCallback.IsNull())
     {
         NS_FATAL_ERROR("WifiRadioEnergyModelPhyListener:Update tx current callback not set!");
     }
-    m_updateTxCurrentCallback(txPowerDbm);
+    m_updateTxCurrentCallback(txPower);
     if (m_changeStateCallback.IsNull())
     {
         NS_FATAL_ERROR("WifiRadioEnergyModelPhyListener:Change state callback not set!");

@@ -35,7 +35,7 @@ class WifiRadioEnergyModelPhyListener : public WifiPhyListener
     /**
      * Callback type for updating the transmit current based on the nominal TX power.
      */
-    typedef Callback<void, double> UpdateTxCurrentCallback;
+    typedef Callback<void, dBm_u> UpdateTxCurrentCallback;
 
     WifiRadioEnergyModelPhyListener();
     ~WifiRadioEnergyModelPhyListener() override;
@@ -57,7 +57,7 @@ class WifiRadioEnergyModelPhyListener : public WifiPhyListener
     void NotifyRxStart(Time duration) override;
     void NotifyRxEndOk() override;
     void NotifyRxEndError() override;
-    void NotifyTxStart(Time duration, double txPowerDbm) override;
+    void NotifyTxStart(Time duration, dBm_u txPower) override;
     void NotifyCcaBusyStart(Time duration,
                             WifiChannelListType channelType,
                             const std::vector<Time>& per20MhzDurations) override;
@@ -276,9 +276,9 @@ class WifiRadioEnergyModel : public energy::DeviceEnergyModel
      * \brief Calls the CalcTxCurrent method of the TX current model to
      *        compute the TX current based on such model
      *
-     * \param txPowerDbm the nominal TX power in dBm
+     * \param txPower the nominal TX power
      */
-    void SetTxCurrentFromModel(double txPowerDbm);
+    void SetTxCurrentFromModel(dBm_u txPower);
 
     /**
      * \brief Changes state of the WifiRadioEnergyMode.

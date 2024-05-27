@@ -2826,9 +2826,9 @@ class OfdmaTestPhyListener : public ns3::WifiPhyListener
         m_lastRxSuccess = false;
     }
 
-    void NotifyTxStart(Time duration, double txPowerDbm) override
+    void NotifyTxStart(Time duration, dBm_u txPower) override
     {
-        NS_LOG_FUNCTION(this << duration << txPowerDbm);
+        NS_LOG_FUNCTION(this << duration << txPower);
     }
 
     void NotifyCcaBusyStart(Time duration,
@@ -5391,16 +5391,16 @@ class TestUlOfdmaPowerControl : public TestCase
 
     Ptr<SpectrumWifiPhy> m_phyAp; ///< PHY of AP
 
-    double m_txPowerAp;      ///< transmit power (in dBm) of AP
-    double m_txPowerStart;   ///< minimum transmission power (in dBm) for STAs
-    double m_txPowerEnd;     ///< maximum transmission power (in dBm) for STAs
+    dBm_u m_txPowerAp;       ///< transmit power of AP
+    dBm_u m_txPowerStart;    ///< minimum transmission power for STAs
+    dBm_u m_txPowerEnd;      ///< maximum transmission power for STAs
     uint8_t m_txPowerLevels; ///< number of transmission power levels for STAs
 
-    double m_requestedRssiSta1; ///< requested RSSI (in dBm) from STA 1 at AP for HE TB PPDUs
-    double m_requestedRssiSta2; ///< requested RSSI (in dBm) from STA 2 at AP for HE TB PPDUs
+    dBm_u m_requestedRssiSta1; ///< requested RSSI from STA 1 at AP for HE TB PPDUs
+    dBm_u m_requestedRssiSta2; ///< requested RSSI from STA 2 at AP for HE TB PPDUs
 
-    double m_rssiSta1; ///< expected RSSI (in dBm) from STA 1 at AP for HE TB PPDUs
-    double m_rssiSta2; ///< expected RSSI (in dBm) from STA 2 at AP for HE TB PPDUs
+    dBm_u m_rssiSta1; ///< expected RSSI from STA 1 at AP for HE TB PPDUs
+    dBm_u m_rssiSta2; ///< expected RSSI from STA 2 at AP for HE TB PPDUs
 
     double m_tol; ///< tolerance (in dB) between received and expected RSSIs
 };

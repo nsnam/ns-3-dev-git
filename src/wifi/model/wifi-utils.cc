@@ -28,12 +28,12 @@ DbToRatio(double dB)
 }
 
 double
-DbmToW(double dBm)
+DbmToW(dBm_u val)
 {
-    return std::pow(10.0, 0.1 * (dBm - 30.0));
+    return std::pow(10.0, 0.1 * (val - 30.0));
 }
 
-double
+dBm_u
 WToDbm(double w)
 {
     NS_ASSERT(w > 0.);

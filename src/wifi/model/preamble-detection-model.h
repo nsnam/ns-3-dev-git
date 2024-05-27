@@ -34,14 +34,14 @@ class PreambleDetectionModel : public Object
      * A pure virtual method that must be implemented in the subclass.
      * This method returns whether the preamble detection was successful.
      *
-     * \param rssi the RSSI of the received signal (in dBm).
+     * \param rssi the RSSI of the received signal.
      * \param snr the SNR of the received signal in linear scale.
      * \param channelWidth the channel width of the received signal.
      *
      * \return true if the preamble has been detected,
      *         false otherwise
      */
-    virtual bool IsPreambleDetected(double rssi, double snr, MHz_u channelWidth) const = 0;
+    virtual bool IsPreambleDetected(dBm_u rssi, double snr, MHz_u channelWidth) const = 0;
 };
 
 } // namespace ns3

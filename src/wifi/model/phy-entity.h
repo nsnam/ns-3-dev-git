@@ -461,13 +461,13 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      *
      * \param txDuration the duration of the transmission
      * \param ppdu the PPDU to send
-     * \param txPowerDbm the total TX power in dBm
+     * \param txPower the total TX power
      * \param txPowerSpectrum the TX PSD
      * \param type the type of transmission (for logging)
      */
     void Transmit(Time txDuration,
                   Ptr<const WifiPpdu> ppdu,
-                  double txPowerDbm,
+                  dBm_u txPower,
                   Ptr<SpectrumValue> txPowerSpectrum,
                   const std::string& type);
 
@@ -482,15 +482,15 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
                                      const WifiTxVector& txVector,
                                      WifiPhyBand band) const;
     /**
-     * Return the CCA threshold in dBm for a given channel type.
+     * Return the CCA threshold for a given channel type.
      * If the channel type is not provided, the default CCA threshold is returned.
      *
      * \param ppdu the PPDU that is being received
      * \param channelType the channel type
-     * \return the CCA threshold in dBm
+     * \return the CCA threshold
      */
-    virtual double GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
-                                   WifiChannelListType channelType) const;
+    virtual dBm_u GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
+                                  WifiChannelListType channelType) const;
 
     /**
      * The WifiPpdu from the TX PHY is received by each RX PHY attached to the same channel.
@@ -894,14 +894,13 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     virtual MHz_u GetRxChannelWidth(const WifiTxVector& txVector) const;
 
     /**
-     * Return the delay until CCA busy is ended for a given sensitivity threshold (in dBm) and a
-     * given band.
+     * Return the delay until CCA busy is ended for a given sensitivity threshold and a given band.
      *
-     * \param thresholdDbm the CCA sensitivity threshold in dBm
+     * \param threshold the CCA sensitivity threshold
      * \param band identify the requested band
      * \return the delay until CCA busy is ended
      */
-    Time GetDelayUntilCcaEnd(double thresholdDbm, const WifiSpectrumBandInfo& band);
+    Time GetDelayUntilCcaEnd(dBm_u threshold, const WifiSpectrumBandInfo& band);
 
     /**
      * \param currentChannelWidth channel width of the current transmission

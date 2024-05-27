@@ -1262,7 +1262,7 @@ PhyEntity::GetRxChannelWidth(const WifiTxVector& txVector) const
     return std::min(m_wifiPhy->GetChannelWidth(), txVector.GetChannelWidth());
 }
 
-double
+dBm_u
 PhyEntity::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                            WifiChannelListType /*channelType*/) const
 {
@@ -1270,9 +1270,9 @@ PhyEntity::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
 }
 
 Time
-PhyEntity::GetDelayUntilCcaEnd(double thresholdDbm, const WifiSpectrumBandInfo& band)
+PhyEntity::GetDelayUntilCcaEnd(dBm_u threshold, const WifiSpectrumBandInfo& band)
 {
-    return m_wifiPhy->m_interference->GetEnergyDuration(DbmToW(thresholdDbm), band);
+    return m_wifiPhy->m_interference->GetEnergyDuration(DbmToW(threshold), band);
 }
 
 void
@@ -1303,9 +1303,8 @@ PhyEntity::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
 {
     const auto channelWidth = GetMeasurementChannelWidth(ppdu);
     NS_LOG_FUNCTION(this << channelWidth);
-    const double ccaThresholdDbm = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
-    const Time delayUntilCcaEnd =
-        GetDelayUntilCcaEnd(ccaThresholdDbm, GetPrimaryBand(channelWidth));
+    const auto ccaThreshold = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
+    const Time delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetPrimaryBand(channelWidth));
     if (delayUntilCcaEnd.IsStrictlyPositive())
     {
         return std::make_pair(delayUntilCcaEnd, WIFI_CHANLIST_PRIMARY);
@@ -1355,17 +1354,17 @@ PhyEntity::StartTx(Ptr<const WifiPpdu> ppdu)
 void
 PhyEntity::Transmit(Time txDuration,
                     Ptr<const WifiPpdu> ppdu,
-                    double txPowerDbm,
+                    dBm_u txPower,
                     Ptr<SpectrumValue> txPowerSpectrum,
                     const std::string& type)
 {
-    NS_LOG_FUNCTION(this << txDuration << ppdu << txPowerDbm << type);
-    NS_LOG_DEBUG("Start " << type << ": signal power before antenna gain=" << txPowerDbm << "dBm");
+    NS_LOG_FUNCTION(this << txDuration << ppdu << txPower << type);
+    NS_LOG_DEBUG("Start " << type << ": signal power before antenna gain=" << txPower << "dBm");
     auto txParams = Create<WifiSpectrumSignalParameters>();
     txParams->duration = txDuration;
     txParams->psd = txPowerSpectrum;
     txParams->ppdu = ppdu;
-    NS_LOG_DEBUG("Starting " << type << " with power " << txPowerDbm << " dBm on channel "
+    NS_LOG_DEBUG("Starting " << type << " with power " << txPower << " dBm on channel "
                              << +m_wifiPhy->GetChannelNumber() << " for "
                              << txParams->duration.As(Time::MS));
     NS_LOG_DEBUG("Starting " << type << " with integrated spectrum power "

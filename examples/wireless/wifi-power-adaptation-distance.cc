@@ -199,7 +199,7 @@ class NodeStatistics
      */
     Time GetCalcTxTime(DataRate rate);
 
-    std::map<Mac48Address, double> m_currentPower;  //!< Current Tx power for each sender.
+    std::map<Mac48Address, dBm_u> m_currentPower;   //!< Current Tx power for each sender.
     std::map<Mac48Address, DataRate> m_currentRate; //!< Current Tx rate for each sender.
     uint32_t m_bytesTotal;                          //!< Number of received bytes on a given state.
     double m_totalEnergy;                           //!< Energy used on a given state.
@@ -216,7 +216,7 @@ NodeStatistics::NodeStatistics(NetDeviceContainer aps, NetDeviceContainer stas)
     Ptr<WifiPhy> phy = wifiDevice->GetPhy();
     SetupPhy(phy);
     DataRate dataRate = DataRate(phy->GetDefaultMode().GetDataRate(phy->GetChannelWidth()));
-    double power = phy->GetTxPowerEnd();
+    const auto power = phy->GetTxPowerEnd();
     for (uint32_t j = 0; j < stas.GetN(); j++)
     {
         Ptr<NetDevice> staDevice = stas.Get(j);
@@ -381,8 +381,8 @@ RateCallback(std::string path, DataRate oldRate, DataRate newRate, Mac48Address 
 int
 main(int argc, char* argv[])
 {
-    double maxPower{17};
-    double minPower{0};
+    dBm_u maxPower{17};
+    dBm_u minPower{0};
     uint32_t powerLevels{18};
 
     uint32_t rtsThreshold{2346};

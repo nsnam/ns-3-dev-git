@@ -53,15 +53,14 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void SendEmlOmn(const Mac48Address& dest, const MgtEmlOmn& frame);
 
     /**
-     * Get the RSSI (in dBm) of the most recent packet received from the station having
-     * the given address. If there is no such information for the given station and the
-     * station is affiliated with an MLD, return the RSSI (in dBm) of the most recent
-     * packet received from another station of the same MLD.
+     * Get the RSSI of the most recent packet received from the station having the given address. If
+     * there is no such information for the given station and the station is affiliated with an MLD,
+     * return the RSSI of the most recent packet received from another station of the same MLD.
      *
      * \param address of the remote station
-     * \return the RSSI (in dBm) of the most recent packet received from the remote station
+     * \return the RSSI of the most recent packet received from the remote station
      */
-    std::optional<double> GetMostRecentRssi(const Mac48Address& address) const override;
+    std::optional<dBm_u> GetMostRecentRssi(const Mac48Address& address) const override;
 
     /**
      * \param psdu the given PSDU

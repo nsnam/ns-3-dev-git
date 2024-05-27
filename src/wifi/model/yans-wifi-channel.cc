@@ -76,9 +76,9 @@ YansWifiChannel::SetPropagationDelayModel(const Ptr<PropagationDelayModel> delay
 }
 
 void
-YansWifiChannel::Send(Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, double txPowerDbm) const
+YansWifiChannel::Send(Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, dBm_u txPower) const
 {
-    NS_LOG_FUNCTION(this << sender << ppdu << txPowerDbm);
+    NS_LOG_FUNCTION(this << sender << ppdu << txPower);
     Ptr<MobilityModel> senderMobility = sender->GetMobility();
     NS_ASSERT(senderMobility);
     for (auto i = m_phyList.begin(); i != m_phyList.end(); i++)
@@ -91,14 +91,14 @@ YansWifiChannel::Send(Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, double 
                 continue;
             }
 
-            Ptr<MobilityModel> receiverMobility = (*i)->GetMobility()->GetObject<MobilityModel>();
-            Time delay = m_delay->GetDelay(senderMobility, receiverMobility);
-            double rxPowerDbm = m_loss->CalcRxPower(txPowerDbm, senderMobility, receiverMobility);
+            auto receiverMobility = (*i)->GetMobility()->GetObject<MobilityModel>();
+            const auto delay = m_delay->GetDelay(senderMobility, receiverMobility);
+            const auto rxPower = m_loss->CalcRxPower(txPower, senderMobility, receiverMobility);
             NS_LOG_DEBUG("propagation: txPower="
-                         << txPowerDbm << "dbm, rxPower=" << rxPowerDbm << "dbm, "
+                         << txPower << "dBm, rxPower=" << rxPower << "dBm, "
                          << "distance=" << senderMobility->GetDistanceFrom(receiverMobility)
                          << "m, delay=" << delay);
-            Ptr<NetDevice> dstNetDevice = (*i)->GetDevice();
+            auto dstNetDevice = (*i)->GetDevice();
             uint32_t dstNode;
             if (!dstNetDevice)
             {
@@ -114,28 +114,28 @@ YansWifiChannel::Send(Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, double 
                                            &YansWifiChannel::Receive,
                                            (*i),
                                            ppdu,
-                                           rxPowerDbm);
+                                           rxPower);
         }
     }
 }
 
 void
-YansWifiChannel::Receive(Ptr<YansWifiPhy> phy, Ptr<const WifiPpdu> ppdu, double rxPowerDbm)
+YansWifiChannel::Receive(Ptr<YansWifiPhy> phy, Ptr<const WifiPpdu> ppdu, dBm_u rxPower)
 {
-    NS_LOG_FUNCTION(phy << ppdu << rxPowerDbm);
-    const auto totalRxPowerDbm = rxPowerDbm + phy->GetRxGain();
-    phy->TraceSignalArrival(ppdu, totalRxPowerDbm, ppdu->GetTxDuration());
+    NS_LOG_FUNCTION(phy << ppdu << rxPower);
+    const auto totalRxPower = rxPower + phy->GetRxGain();
+    phy->TraceSignalArrival(ppdu, totalRxPower, ppdu->GetTxDuration());
     // Do no further processing if signal is too weak
     // Current implementation assumes constant RX power over the PPDU duration
     // Compare received TX power per MHz to normalized RX sensitivity
     const auto txWidth = ppdu->GetTxChannelWidth();
-    if (totalRxPowerDbm < phy->GetRxSensitivity() + RatioToDb(txWidth / 20.0))
+    if (totalRxPower < phy->GetRxSensitivity() + RatioToDb(txWidth / 20.0))
     {
-        NS_LOG_INFO("Received signal too weak to process: " << rxPowerDbm << " dBm");
+        NS_LOG_INFO("Received signal too weak to process: " << rxPower << " dBm");
         return;
     }
     RxPowerWattPerChannelBand rxPowerW;
-    rxPowerW.insert({{{{0, 0}}, {{0, 0}}}, (DbmToW(totalRxPowerDbm))}); // dummy band for YANS
+    rxPowerW.insert({{{{0, 0}}, {{0, 0}}}, (DbmToW(totalRxPower))}); // dummy band for YANS
     phy->StartReceivePreamble(ppdu, rxPowerW, ppdu->GetTxDuration());
 }
 

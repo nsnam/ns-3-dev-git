@@ -58,7 +58,7 @@ class WifiPhyListener
     virtual void NotifyRxEndError() = 0;
     /**
      * \param duration the expected transmission duration.
-     * \param txPowerDbm the nominal TX power in dBm
+     * \param txPower the nominal TX power
      *
      * We are about to send the first bit of the packet.
      * We do not send any event to notify the end of
@@ -66,7 +66,7 @@ class WifiPhyListener
      * channel implicitly reverts to the idle state
      * unless they have received a CCA busy report.
      */
-    virtual void NotifyTxStart(Time duration, double txPowerDbm) = 0;
+    virtual void NotifyTxStart(Time duration, dBm_u txPower) = 0;
     /**
      * \param duration the expected busy duration.
      * \param channelType the channel type for which the CCA busy state is reported.
