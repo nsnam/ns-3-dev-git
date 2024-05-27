@@ -442,8 +442,8 @@ main(int argc, char* argv[])
                 apDevice = wifi.Install(phy, mac, wifiApNode);
 
                 int64_t streamNumber = 100;
-                streamNumber += wifi.AssignStreams(apDevice, streamNumber);
-                streamNumber += wifi.AssignStreams(staDevices, streamNumber);
+                streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
+                streamNumber += WifiHelper::AssignStreams(staDevices, streamNumber);
 
                 // Set guard interval and MPDU buffer size
                 Config::Set(

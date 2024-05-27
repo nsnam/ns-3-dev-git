@@ -232,8 +232,8 @@ WifiUseAvailBwTest::DoRun()
     Ptr<WifiNetDevice> dev;
 
     // Assign fixed streams to random variables in use
-    streamNumber += wifi.AssignStreams(m_apDevices, streamNumber);
-    streamNumber += wifi.AssignStreams(m_staDevices, streamNumber);
+    streamNumber += WifiHelper::AssignStreams(m_apDevices, streamNumber);
+    streamNumber += WifiHelper::AssignStreams(m_staDevices, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();

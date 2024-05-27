@@ -1449,7 +1449,7 @@ Bug2222TestCase::DoRun()
     wifiDevices = wifi.Install(phy, mac, wifiNodes);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(wifiDevices, streamNumber);
+    WifiHelper::AssignStreams(wifiDevices, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
@@ -2065,9 +2065,9 @@ StaWifiMacScanningTestCase::Setup(bool nearestApBeaconGeneration, bool staActive
     staDevice = wifi.Install(phy, mac, staNode);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(apDevice, streamNumber);
-    wifi.AssignStreams(apDeviceNearest, streamNumber + 1);
-    wifi.AssignStreams(staDevice, streamNumber + 2);
+    WifiHelper::AssignStreams(apDevice, streamNumber);
+    WifiHelper::AssignStreams(apDeviceNearest, streamNumber + 1);
+    WifiHelper::AssignStreams(staDevice, streamNumber + 2);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
@@ -2402,8 +2402,8 @@ Bug2470TestCase::RunSubtest(TypeOfStation rcvErrorType)
     staDevice = wifi.Install(phy, mac, wifiStaNode);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(apDevice, streamNumber);
-    wifi.AssignStreams(staDevice, streamNumber);
+    WifiHelper::AssignStreams(apDevice, streamNumber);
+    WifiHelper::AssignStreams(staDevice, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
@@ -2683,8 +2683,8 @@ Issue40TestCase::RunOne(bool useAmpdu)
     staDevice = wifi.Install(phy, mac, wifiStaNode);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(apDevice, streamNumber);
-    wifi.AssignStreams(staDevice, streamNumber);
+    WifiHelper::AssignStreams(apDevice, streamNumber);
+    WifiHelper::AssignStreams(staDevice, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
@@ -2908,8 +2908,8 @@ Issue169TestCase::DoRun()
     staDevice = wifi.Install(phy, mac, wifiStaNode);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(apDevice, streamNumber);
-    wifi.AssignStreams(staDevice, streamNumber);
+    WifiHelper::AssignStreams(apDevice, streamNumber);
+    WifiHelper::AssignStreams(staDevice, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
@@ -3079,8 +3079,8 @@ IdealRateManagerChannelWidthTest::DoRun()
     staDevice = wifi.Install(phy, mac, wifiStaNode);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(apDevice, streamNumber);
-    wifi.AssignStreams(staDevice, streamNumber);
+    WifiHelper::AssignStreams(apDevice, streamNumber);
+    WifiHelper::AssignStreams(staDevice, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
@@ -3310,8 +3310,8 @@ IdealRateManagerMimoTest::DoRun()
     staDevice = wifi.Install(phy, mac, wifiStaNode);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(apDevice, streamNumber);
-    wifi.AssignStreams(staDevice, streamNumber);
+    WifiHelper::AssignStreams(apDevice, streamNumber);
+    WifiHelper::AssignStreams(staDevice, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();

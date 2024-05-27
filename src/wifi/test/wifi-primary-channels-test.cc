@@ -427,10 +427,10 @@ WifiPrimaryChannelsTest::DoSetup()
     }
 
     // Assign fixed streams to random variables in use
-    streamNumber = wifi.AssignStreams(m_apDevices, streamNumber);
+    streamNumber = WifiHelper::AssignStreams(m_apDevices, streamNumber);
     for (uint8_t bss = 0; bss < m_nBss; bss++)
     {
-        streamNumber = wifi.AssignStreams(m_staDevices[bss], streamNumber);
+        streamNumber = WifiHelper::AssignStreams(m_staDevices[bss], streamNumber);
     }
 
     // set BSS color

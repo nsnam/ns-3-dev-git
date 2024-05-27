@@ -153,7 +153,7 @@ Issue211Test::DoRun()
     NetDeviceContainer apDevices = wifi.Install(phy, mac, wifiApNode);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(apDevices, streamNumber);
+    WifiHelper::AssignStreams(apDevices, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();

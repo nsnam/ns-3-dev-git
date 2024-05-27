@@ -761,8 +761,8 @@ MultiLinkOperationsTestBase::DoSetup()
     // staPhyHelper.EnablePcap("wifi-mlo_STA", staDevices);
 
     // Assign fixed streams to random variables in use
-    streamNumber += wifi.AssignStreams(apDevices, streamNumber);
-    streamNumber += wifi.AssignStreams(staDevices, streamNumber);
+    streamNumber += WifiHelper::AssignStreams(apDevices, streamNumber);
+    streamNumber += WifiHelper::AssignStreams(staDevices, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();

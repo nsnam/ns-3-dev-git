@@ -2509,7 +2509,7 @@ Experiment::Run(const WifiHelper& helper,
         devices = wifi.Install(phy, mac, wifiNodes);
     }
 
-    wifi.AssignStreams(devices, trialNumber);
+    WifiHelper::AssignStreams(devices, trialNumber);
 
     Config::Set(
         "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported",

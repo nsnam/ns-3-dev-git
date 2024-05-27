@@ -197,8 +197,8 @@ main(int argc, char* argv[])
                 apDevice = wifi.Install(phy, mac, wifiApNode);
 
                 int64_t streamNumber = 150;
-                streamNumber += wifi.AssignStreams(apDevice, streamNumber);
-                streamNumber += wifi.AssignStreams(staDevice, streamNumber);
+                streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
+                streamNumber += WifiHelper::AssignStreams(staDevice, streamNumber);
 
                 // mobility.
                 MobilityHelper mobility;

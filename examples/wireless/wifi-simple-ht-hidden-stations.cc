@@ -139,8 +139,8 @@ main(int argc, char* argv[])
                 UintegerValue(maxAmpduSize));
 
     int64_t streamNumber = 20;
-    streamNumber += wifi.AssignStreams(apDevice, streamNumber);
-    streamNumber += wifi.AssignStreams(staDevices, streamNumber);
+    streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
+    streamNumber += WifiHelper::AssignStreams(staDevices, streamNumber);
 
     // Setting mobility model
     MobilityHelper mobility;

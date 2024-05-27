@@ -220,7 +220,7 @@ WifiFilsFrameTest::SetupDevice(Ptr<YansWifiChannel>& channel, bool isAp)
                     BooleanValue(false));
     }
     auto testDevs = wifi.Install(phy, mac, node);
-    wifi.AssignStreams(testDevs, DEFAULT_STREAM_INDEX);
+    WifiHelper::AssignStreams(testDevs, DEFAULT_STREAM_INDEX);
     auto dev = DynamicCast<WifiNetDevice>(testDevs.Get(0));
     mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
     mobility.Install(node);

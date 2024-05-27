@@ -5631,7 +5631,7 @@ TestUlOfdmaPowerControl::DoSetup()
     WifiMacHelper mac;
     mac.SetType("ns3::StaWifiMac");
     NetDeviceContainer staDevs = wifi.Install(spectrumPhy, mac, staNodes);
-    wifi.AssignStreams(staDevs, 0);
+    WifiHelper::AssignStreams(staDevs, 0);
     m_sta1Dev = DynamicCast<WifiNetDevice>(staDevs.Get(0));
     NS_ASSERT(m_sta1Dev);
     m_sta2Dev = DynamicCast<WifiNetDevice>(staDevs.Get(1));

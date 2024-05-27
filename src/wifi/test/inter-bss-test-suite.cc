@@ -875,13 +875,13 @@ TestInterBssConstantObssPdAlgo::RunOne()
     m_staDevices = wifi.Install(phy, mac, wifiStaNodes);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(m_staDevices, streamNumber);
+    WifiHelper::AssignStreams(m_staDevices, streamNumber);
 
     mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid));
     m_apDevices = wifi.Install(phy, mac, wifiApNodes);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(m_apDevices, streamNumber);
+    WifiHelper::AssignStreams(m_apDevices, streamNumber);
 
     for (uint32_t i = 0; i < m_apDevices.GetN(); i++)
     {

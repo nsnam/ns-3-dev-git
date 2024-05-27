@@ -262,8 +262,8 @@ EmlsrOperationsTestBase::DoSetup()
     // phyHelper.EnablePcap("wifi-emlsr_STA", staDevices);
 
     // Assign fixed streams to random variables in use
-    streamNumber += wifi.AssignStreams(apDevice, streamNumber);
-    streamNumber += wifi.AssignStreams(staDevices, streamNumber);
+    streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
+    streamNumber += WifiHelper::AssignStreams(staDevices, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();

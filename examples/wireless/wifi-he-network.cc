@@ -323,8 +323,8 @@ main(int argc, char* argv[])
                 }
 
                 int64_t streamNumber = 150;
-                streamNumber += wifi.AssignStreams(apDevice, streamNumber);
-                streamNumber += wifi.AssignStreams(staDevices, streamNumber);
+                streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
+                streamNumber += WifiHelper::AssignStreams(staDevices, streamNumber);
 
                 // mobility.
                 MobilityHelper mobility;

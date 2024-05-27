@@ -4129,7 +4129,7 @@ TestUnsupportedModulationReception::DoRun()
     }
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(m_apDevices, streamNumber);
+    WifiHelper::AssignStreams(m_apDevices, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();

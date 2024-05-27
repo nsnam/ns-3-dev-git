@@ -677,8 +677,8 @@ main(int argc, char* argv[])
         clientDevice = wifi.Install(wifiPhy, wifiMac, clientNode);
     }
 
-    wifi.AssignStreams(serverDevice, 100);
-    wifi.AssignStreams(clientDevice, 200);
+    WifiHelper::AssignStreams(serverDevice, 100);
+    WifiHelper::AssignStreams(clientDevice, 200);
 
     Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize",
                 UintegerValue(maxAmpduSize));

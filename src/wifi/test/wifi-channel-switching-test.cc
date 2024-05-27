@@ -257,7 +257,7 @@ WifiChannelSwitchingTest::DoRun()
     m_apDevice = wifi.Install(phy, mac, m_apNode);
 
     // Assign fixed streams to random variables in use
-    wifi.AssignStreams(m_apDevice, streamNumber);
+    WifiHelper::AssignStreams(m_apDevice, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();

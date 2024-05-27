@@ -515,7 +515,7 @@ class WifiHelper
      * \param stream first stream index to use
      * \return the number of stream indices assigned by this helper
      */
-    int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
+    static int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
 
   protected:
     mutable std::vector<ObjectFactory> m_stationManager; ///< station manager

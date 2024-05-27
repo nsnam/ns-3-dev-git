@@ -2145,8 +2145,8 @@ OfdmaAckSequenceTest::DoRun()
     m_apDevice = DynamicCast<WifiNetDevice>(wifi.Install(phy, mac, wifiApNode).Get(0));
 
     // Assign fixed streams to random variables in use
-    streamNumber += wifi.AssignStreams(NetDeviceContainer(m_apDevice), streamNumber);
-    streamNumber += wifi.AssignStreams(m_staDevices, streamNumber);
+    streamNumber += WifiHelper::AssignStreams(NetDeviceContainer(m_apDevice), streamNumber);
+    streamNumber += WifiHelper::AssignStreams(m_staDevices, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
