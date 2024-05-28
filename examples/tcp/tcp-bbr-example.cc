@@ -41,7 +41,7 @@
 //     * bbr-3-0.pcap for the first interface on R2
 //     * bbr-3-1.pcap for the second interface on R2
 // (2) cwnd.dat file contains congestion window trace for the sender node
-// (3) throughput.dat file contains sender side throughput trace
+// (3) throughput.dat file contains sender side throughput trace (throughput is in Mbit/s)
 // (4) queueSize.dat file contains queue length trace from the bottleneck link
 //
 // BBR algorithm enters PROBE_RTT phase in every 10 seconds. The congestion
@@ -81,9 +81,12 @@ TraceThroughput(Ptr<FlowMonitor> monitor)
     {
         auto itr = stats.begin();
         Time curTime = Now();
-        throughput << curTime << " "
+
+        // Convert (curTime - prevTime) to microseconds so that throughput is in bits per
+        // microsecond (which is equivalent to Mbps)
+        throughput << curTime.GetSeconds() << "s "
                    << 8 * (itr->second.txBytes - prev) / ((curTime - prevTime).ToDouble(Time::US))
-                   << std::endl;
+                   << " Mbps" << std::endl;
         prevTime = curTime;
         prev = itr->second.txBytes;
     }
