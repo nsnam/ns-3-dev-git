@@ -13,47 +13,61 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
-Release 3-dev
--------------
+Release 3.42
+------------
 
-In this release, we have introduced pedantic warnings to enhance C++ standard conformance and improve portability.
+In this release, we have introduced pedantic compiler warnings to enhance C++ standard conformance and improve portability.  Also, model library code in the lr-wpan and energy modules has been moved into a nested C++ namespace.
+
+### Availability
+
+This release is available from:
+<https://www.nsnam.org/release/ns-allinone-3.42.tar.bz2>
 
 ### Supported platforms
 
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-9 or later, or LLVM/clang++-10 or later
+- Python 3.6 or later
+- CMake 3.13 or later
+- (macOS only) Xcode 11 or later
+- (Windows only) Msys2/MinGW64 toolchain or WSL2
+
 Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
-been tested on Linux. The latest known version to work with ns-3 is cppyy==3.1.2.
+been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.1.2.
 
 ### New user-visible features
-- (wifi) 1901! - Added WifiPhyRxTraceHelper for Wi-Fi Phy tracing
-- (network) !1828 - Added a common helper to create and install applications
+
+- (antenna) !1517 - Added `CircularApertureAntennaModel`, which mimics the reflector antenna with circular aperture described in 3GPP TR 38.811 v15.4.0, Section 6.4.1
+- (core) !1517 - Added `TestVector` iterators and dot product operator for `Vector2D` and `Vector3D` types
+- (energy) !1948 - Adds C++ namespace 'energy'
 - (lr-wpan) !1915 - Use MAC and PHY standard attribute ids
 - (lr-wpan) !1924 - Adds MAC attribute identifiers
 - (lr-wpan) !1927 - Adds standard version comments to MLME-GET.request function
-- (lr-wpan) !1926 - Adds namespace lrwpan and prefix shortening
+- (lr-wpan) !1926 - Adds C++ namespace 'lrwpan' and prefix shortening
+- (mobility) !1986 - Adds simple constant-mobility-example
+- (mobility) !1517 - Added the `GeocentricConstantPositionMobilityModel` mobility model and coordinate conversion methods between geocentric and topocentric coordinate systems
+- (propagation, spectrum) !1517 - Added 3GPP 38.811 Non-Terrestrial Networks channel model
+- (network) !1828 - Added a common helper to create and install applications
 - (wifi) - The `WifiMacHelper` provides a `SetDcf` and a `SetEdca` methods to configure attributes of `Txop` and `QosTxop` objects, respectively
 - (wifi) - The `ApWifiMac` provides new attributes (`CwMinsForSta`, `CwMaxsForSta`, `AifsnsForSta` and `TxopLimitsForSta`) to define the EDCA access parameters to include in the EDCA Parameter Set advertised to associated stations
 - (wifi) - The `WifiMacHelper` provides a `SetChannelAccessManager` and a `SetFrameExchangeManager` methods to configure attributes of `ChannelAccessManager` and `FrameExchangeManager` objects, respectively
 - (wifi) - Simulation duration and data rate parameters of existing wifi examples changed to use Time and DataRate types
-- (mobility) !1986 - Adds simple constant-mobility-example
-- (energy) !1948 - Adds namespace energy
-- (mobility) !1517 - Added the `GeocentricConstantPositionMobilityModel` mobility model and coordinate conversion methods between geocentric and
-topocentric coordinate systems
-- (antenna) !1517 - Added `CircularApertureAntennaModel`, which mimics the reflector antenna with circular aperture described in
-3GPP TR 38.811 v15.4.0, Section 6.4.1
-- (core) !1517 - Added `TestVector` iterators and dot product operator for `Vector2D` and `Vector3D` types
-- (propagation, spectrum) !1517 - Added 3GPP 38.811 Non-Terrestrial Networks channel model
+- (wifi) 1901! - Added WifiPhyRxTraceHelper for Wi-Fi Phy tracing
 
 ### Bugs fixed
 
-- (build) #1048 - Resolved an issue with static and monolithic builds incorrectly linking to non-ns-3 libraries.
-- (build) #1058 - Corrected the behavior of the ./ns3 clean command in symlinked directories.
-- (build) #1065 - Rolled back the -Os optimization setting as the default on MacOS to address lld compatibility issues.
 - (bindings) - Preventing module namespace collision by checking if namespace exists before injecting it.
-- (core) #1060 - Addressed a stack overflow problem in MakeEvent.
 - (bindings, core) #1059 - Resolved potential initialization issues in TimerImpl and ensured compatibility with Cppyy3.
 - (bindings, core) - Introduced a helper class to manage static initialization of Time as a workaround for Cppyy3 static initialization problems.
 - (bindings, lte, wifi) - Relocated statically initialized variables from header files to source files for Cppyy3 compatibility.
+- (build) #1048 - Resolved an issue with static and monolithic builds incorrectly linking to non-ns-3 libraries.
+- (build) #1058 - Corrected the behavior of the ./ns3 clean command in symlinked directories.
+- (build) #1065 - Rolled back the -Os optimization setting as the default on MacOS to address lld compatibility issues.
+- (core) #1060 - Addressed a stack overflow problem in MakeEvent.
 - (tests) - Enhanced error handling in test.py to avoid attempts to open non-existent XML files following early test termination by sanitizers.
+- (tcp) #735 - BBR fails to discard invalid samples
 - (tcp) #966 - Tcp Cubic (and LinuxReno) cwnd should not grow during application-limited phase
 - (tcp) #1085 - Do not reset Cubic W_max upon timeout
 - (wifi) #1072 - Support configuration of custom EDCA parameters via Txop attributes before device installation
