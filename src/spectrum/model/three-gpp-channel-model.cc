@@ -673,7 +673,7 @@ enum Table3gppParams
  * the quantized elevation angle.
  * The inner vector collects the table3gpp values.
  */
-static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNDenseUrbanLOS{
+static const std::map<std::string, std::map<int, std::vector<float>>> NTNDenseUrbanLOS{
     {"S",
      {
          {10, {-7.12, 0.8, -3.06, 0.48, 0.94, 0.7,  0.82, 0.03, -2.52, 0.5, 4.4,
@@ -724,7 +724,7 @@ static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNDense
  * the quantized elevation angle.
  * The inner vector collects the table3gpp values.
  */
-static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNDenseUrbanNLOS{
+static const std::map<std::string, std::map<int, std::vector<float>>> NTNDenseUrbanNLOS{
     {"S",
      {
          {10, {-6.84, 0.82, -2.08, 0.87, 1.0,  1.6, 1.0, 0.63, -2.08, 0.58,
@@ -775,7 +775,7 @@ static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNDense
  * the quantized elevation angle.
  * The inner vector collects the table3gpp values.
  */
-static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNUrbanLOS{
+static const std::map<std::string, std::map<int, std::vector<float>>> NTNUrbanLOS{
     {"S",
      {
          {10, {-7.97, 1.0, -2.6, 0.79, 0.18, 0.74, -0.63, 2.6,  -2.54, 2.62, 31.83,
@@ -826,7 +826,7 @@ static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNUrban
  * the quantized elevation angle.
  * The inner vector collects the table3gpp values.
  */
-static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNUrbanNLOS{
+static const std::map<std::string, std::map<int, std::vector<float>>> NTNUrbanNLOS{
     {"S",
      {
          {10, {-7.24, 1.26, -1.58, 0.89, 0.13, 2.99, -1.13, 2.66, -2.87, 2.76, 0.0,
@@ -877,7 +877,7 @@ static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNUrban
  * the quantized elevation angle.
  * The inner vector collects the table3gpp values.
  */
-static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNSuburbanLOS{
+static const std::map<std::string, std::map<int, std::vector<float>>> NTNSuburbanLOS{
     {"S",
      {
          {10, {-8.16, 0.99, -3.57, 1.62, 0.05, 1.84, -1.78, 0.62, -1.06, 0.96, 11.4,
@@ -928,7 +928,7 @@ static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNSubur
  * the quantized elevation angle.
  * The inner vector collects the table3gpp values.
  */
-static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNSuburbanNLOS{
+static const std::map<std::string, std::map<int, std::vector<float>>> NTNSuburbanNLOS{
     {"S",
      {
          {10, {-7.43, 0.5, -2.89, 0.41, 1.49, 0.4,  0.81, 0.36, -3.09, 0.32, 0.0,
@@ -979,7 +979,7 @@ static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNSubur
  * the quantized elevation angle.
  * The inner vector collects the table3gpp values.
  */
-static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNRuralLOS{
+static const std::map<std::string, std::map<int, std::vector<float>>> NTNRuralLOS{
     {"S",
      {
          {10, {-9.55, 0.66, -3.42, 0.89, -9.45, 7.83, -4.2, 6.3,  -6.03, 5.19, 24.72,
@@ -1030,7 +1030,7 @@ static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNRural
  * the quantized elevation angle.
  * The inner vector collects the table3gpp values.
  */
-static const std::map<std::string, std::map<int, std::vector<float>>> m_NTNRuralNLOS{
+static const std::map<std::string, std::map<int, std::vector<float>>> NTNRuralNLOS{
     {"S",
      {
          {10, {-9.01, 1.59, -2.9, 1.34, -3.33, 6.22, -0.88, 3.26, -4.92, 3.96, 0.0,
@@ -1940,56 +1940,56 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             if (channelCondition->IsLos())
             {
                 table3gpp->m_uLgDS =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
-                table3gpp->m_sigLgDS = m_NTNDenseUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgDS];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
+                table3gpp->m_sigLgDS =
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
 
                 // table3gpp->m_uLgASD=-1.79769e+308;  //FOR SATELLITES
                 table3gpp->m_uLgASD =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
                 // table3gpp->m_sigLgASD=0; //FOR SATELLITES
-                table3gpp->m_sigLgASD = m_NTNDenseUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgASD];
+                table3gpp->m_sigLgASD =
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
 
                 table3gpp->m_uLgASA =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
-                table3gpp->m_sigLgASA = m_NTNDenseUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgASA];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                table3gpp->m_sigLgASA =
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
                 table3gpp->m_uLgZSA =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
-                table3gpp->m_sigLgZSA = m_NTNDenseUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgZSA];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                table3gpp->m_sigLgZSA =
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
 
                 // table3gpp->m_uLgZSD=-1.79769e+308;  //FOR SATELLITES
                 table3gpp->m_uLgZSD =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
                 // table3gpp->m_sigLgZSD= 0; //FOR SATELLITES
-                table3gpp->m_sigLgZSD = m_NTNDenseUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgZSD];
+                table3gpp->m_sigLgZSD =
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
 
                 table3gpp->m_uK =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
                 table3gpp->m_sigK =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
                 table3gpp->m_rTau =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
                 table3gpp->m_uXpr =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
                 table3gpp->m_sigXpr =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = m_NTNDenseUrbanLOS.at(freqBand).at(
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_numOfCluster = NTNDenseUrbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = m_NTNDenseUrbanLOS.at(freqBand).at(
+                table3gpp->m_raysPerCluster = NTNDenseUrbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
                 table3gpp->m_cASD =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
                 table3gpp->m_cZSA =
-                    m_NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = m_NTNDenseUrbanLOS.at(freqBand).at(
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
+                table3gpp->m_perClusterShadowingStd = NTNDenseUrbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 7; row++)
@@ -2004,44 +2004,44 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             {
                 NS_LOG_UNCOND("Dense Urban NLOS");
                 table3gpp->m_uLgDS =
-                    m_NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
-                table3gpp->m_sigLgDS = m_NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgDS];
-                table3gpp->m_uLgASD = m_NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::uLgASD];
-                table3gpp->m_sigLgASD = m_NTNDenseUrbanNLOS.at(freqBand).at(
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
+                table3gpp->m_sigLgDS =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
+                table3gpp->m_uLgASD =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                table3gpp->m_sigLgASD = NTNDenseUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::sigLgASD];
-                table3gpp->m_uLgASA = m_NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::uLgASA];
-                table3gpp->m_sigLgASA = m_NTNDenseUrbanNLOS.at(freqBand).at(
+                table3gpp->m_uLgASA =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                table3gpp->m_sigLgASA = NTNDenseUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::sigLgASA];
-                table3gpp->m_uLgZSA = m_NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::uLgZSA];
-                table3gpp->m_sigLgZSA = m_NTNDenseUrbanNLOS.at(freqBand).at(
+                table3gpp->m_uLgZSA =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                table3gpp->m_sigLgZSA = NTNDenseUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::sigLgZSA];
-                table3gpp->m_uLgZSD = m_NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::uLgZSD];
-                table3gpp->m_sigLgZSD = m_NTNDenseUrbanNLOS.at(freqBand).at(
+                table3gpp->m_uLgZSD =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                table3gpp->m_sigLgZSD = NTNDenseUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::sigLgZSD];
                 table3gpp->m_rTau =
-                    m_NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
                 table3gpp->m_uXpr =
-                    m_NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
-                table3gpp->m_sigXpr = m_NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = m_NTNDenseUrbanNLOS.at(freqBand).at(
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
+                table3gpp->m_sigXpr =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_numOfCluster = NTNDenseUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = m_NTNDenseUrbanNLOS.at(freqBand).at(
+                table3gpp->m_raysPerCluster = NTNDenseUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    m_NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
                 table3gpp->m_cASD =
-                    m_NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
-                    m_NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
                 table3gpp->m_cZSA =
-                    m_NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = m_NTNDenseUrbanNLOS.at(freqBand).at(
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
+                table3gpp->m_perClusterShadowingStd = NTNDenseUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 6; row++)
@@ -2058,48 +2058,48 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             if (channelCondition->IsLos())
             {
                 table3gpp->m_uLgDS =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
                 table3gpp->m_sigLgDS =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
                 table3gpp->m_uLgASD =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
                 table3gpp->m_sigLgASD =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
                 table3gpp->m_uLgASA =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
                 table3gpp->m_sigLgASA =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
                 table3gpp->m_uLgZSA =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
                 table3gpp->m_sigLgZSA =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
                 table3gpp->m_uLgZSD =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
                 table3gpp->m_sigLgZSD =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
                 table3gpp->m_uK =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
                 table3gpp->m_sigK =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
                 table3gpp->m_rTau =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
                 table3gpp->m_uXpr =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
                 table3gpp->m_sigXpr =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = m_NTNUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = m_NTNUrbanLOS.at(freqBand).at(
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_numOfCluster =
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::numOfCluster];
+                table3gpp->m_raysPerCluster = NTNUrbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
                 table3gpp->m_cASD =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
                 table3gpp->m_cZSA =
-                    m_NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = m_NTNUrbanLOS.at(freqBand).at(
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
+                table3gpp->m_perClusterShadowingStd = NTNUrbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 7; row++)
@@ -2113,48 +2113,48 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             else if (channelCondition->IsNlos())
             {
                 table3gpp->m_uLgDS =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
                 table3gpp->m_sigLgDS =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
                 table3gpp->m_uLgASD =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
                 table3gpp->m_sigLgASD =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
                 table3gpp->m_uLgASA =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
                 table3gpp->m_sigLgASA =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
                 table3gpp->m_uLgZSA =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
                 table3gpp->m_sigLgZSA =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
                 table3gpp->m_uLgZSD =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
                 table3gpp->m_sigLgZSD =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
                 table3gpp->m_uK =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
                 table3gpp->m_sigK =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
                 table3gpp->m_rTau =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
                 table3gpp->m_uXpr =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
                 table3gpp->m_sigXpr =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = m_NTNUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = m_NTNUrbanNLOS.at(freqBand).at(
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_numOfCluster =
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::numOfCluster];
+                table3gpp->m_raysPerCluster = NTNUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
                 table3gpp->m_cASD =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
                 table3gpp->m_cZSA =
-                    m_NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = m_NTNUrbanNLOS.at(freqBand).at(
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
+                table3gpp->m_perClusterShadowingStd = NTNUrbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 6; row++)
@@ -2172,48 +2172,48 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             if (channelCondition->IsLos())
             {
                 table3gpp->m_uLgDS =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
                 table3gpp->m_sigLgDS =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
                 table3gpp->m_uLgASD =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
                 table3gpp->m_sigLgASD =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
                 table3gpp->m_uLgASA =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
                 table3gpp->m_sigLgASA =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
                 table3gpp->m_uLgZSA =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
                 table3gpp->m_sigLgZSA =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
                 table3gpp->m_uLgZSD =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
                 table3gpp->m_sigLgZSD =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
                 table3gpp->m_uK =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
                 table3gpp->m_sigK =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
                 table3gpp->m_rTau =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
                 table3gpp->m_uXpr =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
                 table3gpp->m_sigXpr =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = m_NTNSuburbanLOS.at(freqBand).at(
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_numOfCluster = NTNSuburbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = m_NTNSuburbanLOS.at(freqBand).at(
+                table3gpp->m_raysPerCluster = NTNSuburbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
                 table3gpp->m_cASD =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
                 table3gpp->m_cZSA =
-                    m_NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = m_NTNSuburbanLOS.at(freqBand).at(
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
+                table3gpp->m_perClusterShadowingStd = NTNSuburbanLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 7; row++)
@@ -2227,48 +2227,48 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             else if (channelCondition->IsNlos())
             {
                 table3gpp->m_uLgDS =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
                 table3gpp->m_sigLgDS =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
                 table3gpp->m_uLgASD =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
-                table3gpp->m_sigLgASD = m_NTNSuburbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgASD];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                table3gpp->m_sigLgASD =
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
                 table3gpp->m_uLgASA =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
-                table3gpp->m_sigLgASA = m_NTNSuburbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgASA];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                table3gpp->m_sigLgASA =
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
                 table3gpp->m_uLgZSA =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
-                table3gpp->m_sigLgZSA = m_NTNSuburbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgZSA];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                table3gpp->m_sigLgZSA =
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
                 table3gpp->m_uLgZSD =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
-                table3gpp->m_sigLgZSD = m_NTNSuburbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgZSD];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                table3gpp->m_sigLgZSD =
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
                 table3gpp->m_uK =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
                 table3gpp->m_sigK =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
                 table3gpp->m_rTau =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
                 table3gpp->m_uXpr =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
                 table3gpp->m_sigXpr =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = m_NTNSuburbanNLOS.at(freqBand).at(
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_numOfCluster = NTNSuburbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = m_NTNSuburbanNLOS.at(freqBand).at(
+                table3gpp->m_raysPerCluster = NTNSuburbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
                 table3gpp->m_cASD =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
                 table3gpp->m_cZSA =
-                    m_NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = m_NTNSuburbanNLOS.at(freqBand).at(
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
+                table3gpp->m_perClusterShadowingStd = NTNSuburbanNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 6; row++)
@@ -2285,48 +2285,48 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             if (channelCondition->IsLos())
             {
                 table3gpp->m_uLgDS =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
                 table3gpp->m_sigLgDS =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
                 table3gpp->m_uLgASD =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
                 table3gpp->m_sigLgASD =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
                 table3gpp->m_uLgASA =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
                 table3gpp->m_sigLgASA =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
                 table3gpp->m_uLgZSA =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
                 table3gpp->m_sigLgZSA =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
                 table3gpp->m_uLgZSD =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
                 table3gpp->m_sigLgZSD =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
                 table3gpp->m_uK =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
                 table3gpp->m_sigK =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
                 table3gpp->m_rTau =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
                 table3gpp->m_uXpr =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
                 table3gpp->m_sigXpr =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = m_NTNRuralLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = m_NTNRuralLOS.at(freqBand).at(
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_numOfCluster =
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::numOfCluster];
+                table3gpp->m_raysPerCluster = NTNRuralLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
                 table3gpp->m_cASD =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
                 table3gpp->m_cZSA =
-                    m_NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = m_NTNRuralLOS.at(freqBand).at(
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
+                table3gpp->m_perClusterShadowingStd = NTNRuralLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 7; row++)
@@ -2340,48 +2340,48 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             else if (channelCondition->IsNlos())
             {
                 table3gpp->m_uLgDS =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
                 table3gpp->m_sigLgDS =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
                 table3gpp->m_uLgASD =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
                 table3gpp->m_sigLgASD =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
                 table3gpp->m_uLgASA =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
                 table3gpp->m_sigLgASA =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
                 table3gpp->m_uLgZSA =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
                 table3gpp->m_sigLgZSA =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
                 table3gpp->m_uLgZSD =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
                 table3gpp->m_sigLgZSD =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
                 table3gpp->m_uK =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
                 table3gpp->m_sigK =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
                 table3gpp->m_rTau =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
                 table3gpp->m_uXpr =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
                 table3gpp->m_sigXpr =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = m_NTNRuralNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = m_NTNRuralNLOS.at(freqBand).at(
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_numOfCluster =
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::numOfCluster];
+                table3gpp->m_raysPerCluster = NTNRuralNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::raysPerCluster];
                 table3gpp->m_cDS =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS];
                 table3gpp->m_cASD =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
                 table3gpp->m_cASA =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
                 table3gpp->m_cZSA =
-                    m_NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = m_NTNRuralNLOS.at(freqBand).at(
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
+                table3gpp->m_perClusterShadowingStd = NTNRuralNLOS.at(freqBand).at(
                     elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
 
                 if (freqBand == "S")
