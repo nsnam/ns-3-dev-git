@@ -394,6 +394,8 @@ class ThreeGppHttpClient : public Application
     Address m_peer;
     /// The `RemoteServerPort` attribute.
     std::optional<uint16_t> m_peerPort;
+    /// The `Local` attribute.
+    Address m_local;
     /// The `Tos` attribute.
     uint8_t m_tos;
 

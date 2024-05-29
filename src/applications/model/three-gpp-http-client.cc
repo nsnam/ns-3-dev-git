@@ -78,6 +78,12 @@ ThreeGppHttpClient::GetTypeId()
                           AddressValue(),
                           MakeAddressAccessor(&ThreeGppHttpClient::SetRemote),
                           MakeAddressChecker())
+            .AddAttribute("Local",
+                          "The Address on which to bind the socket. If not set, it is generated "
+                          "automatically.",
+                          AddressValue(),
+                          MakeAddressAccessor(&ThreeGppHttpClient::m_local),
+                          MakeAddressChecker())
             .AddAttribute("Tos",
                           "The Type of Service used to send packets. "
                           "All 8 bits of the TOS byte are set (including ECN bits).",
@@ -394,9 +400,18 @@ ThreeGppHttpClient::OpenConnection()
     {
         m_socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
         NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
+        if (!m_local.IsInvalid())
+        {
+            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
+                             InetSocketAddress::IsMatchingType(m_local)) ||
+                                (InetSocketAddress::IsMatchingType(m_peer) &&
+                                 Inet6SocketAddress::IsMatchingType(m_local)),
+                            "Incompatible peer and local address IP version");
+        }
         if (InetSocketAddress::IsMatchingType(m_peer))
         {
-            const auto ret [[maybe_unused]] = m_socket->Bind();
+            const auto ret [[maybe_unused]] =
+                m_local.IsInvalid() ? m_socket->Bind() : m_socket->Bind(m_local);
             NS_LOG_DEBUG(this << " Bind() return value= " << ret
                               << " GetErrNo= " << m_socket->GetErrno() << ".");
 
@@ -408,7 +423,8 @@ ThreeGppHttpClient::OpenConnection()
         }
         else if (Inet6SocketAddress::IsMatchingType(m_peer))
         {
-            const auto ret [[maybe_unused]] = m_socket->Bind6();
+            const auto ret [[maybe_unused]] =
+                m_local.IsInvalid() ? m_socket->Bind6() : m_socket->Bind(m_local);
             NS_LOG_DEBUG(this << " Bind6() return value= " << ret
                               << " GetErrNo= " << m_socket->GetErrno() << ".");
 

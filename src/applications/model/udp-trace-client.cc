@@ -88,6 +88,12 @@ UdpTraceClient::GetTypeId()
                                                    // the function overload to use
                     &UdpTraceClient::GetRemote),
                 MakeAddressChecker())
+            .AddAttribute("Local",
+                          "The Address on which to bind the socket. If not set, it is generated "
+                          "automatically.",
+                          AddressValue(),
+                          MakeAddressAccessor(&UdpTraceClient::m_local),
+                          MakeAddressChecker())
             .AddAttribute("Tos",
                           "The Type of Service used to send IPv4 packets. "
                           "All 8 bits of the TOS byte are set (including ECN bits).",
@@ -298,23 +304,38 @@ UdpTraceClient::StartApplication()
         auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
         m_socket = Socket::CreateSocket(GetNode(), tid);
         NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
-        if (InetSocketAddress::IsMatchingType(m_peer))
+        if (!m_local.IsInvalid())
         {
-            if (m_socket->Bind() == -1)
-            {
-                NS_FATAL_ERROR("Failed to bind socket");
-            }
-        }
-        else if (Inet6SocketAddress::IsMatchingType(m_peer))
-        {
-            if (m_socket->Bind6() == -1)
+            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
+                             InetSocketAddress::IsMatchingType(m_local)) ||
+                                (InetSocketAddress::IsMatchingType(m_peer) &&
+                                 Inet6SocketAddress::IsMatchingType(m_local)),
+                            "Incompatible peer and local address IP version");
+            if (m_socket->Bind(m_local) == -1)
             {
                 NS_FATAL_ERROR("Failed to bind socket");
             }
         }
         else
         {
-            NS_ASSERT_MSG(false, "Incompatible address type: " << m_peer);
+            if (InetSocketAddress::IsMatchingType(m_peer))
+            {
+                if (m_socket->Bind() == -1)
+                {
+                    NS_FATAL_ERROR("Failed to bind socket");
+                }
+            }
+            else if (Inet6SocketAddress::IsMatchingType(m_peer))
+            {
+                if (m_socket->Bind6() == -1)
+                {
+                    NS_FATAL_ERROR("Failed to bind socket");
+                }
+            }
+            else
+            {
+                NS_ASSERT_MSG(false, "Incompatible address type: " << m_peer);
+            }
         }
         m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
         m_socket->Connect(m_peer);

@@ -108,6 +108,7 @@ class UdpClient : public Application
     Ptr<Socket> m_socket;               //!< Socket
     Address m_peer;                     //!< Peer address
     std::optional<uint16_t> m_peerPort; //!< Remote peer port (deprecated) // NS_DEPRECATED_3_44
+    Address m_local;                    //!< Local address to bind to
     uint8_t m_tos;                      //!< The packets Type of Service
     EventId m_sendEvent;                //!< Event to send the next packet
 
