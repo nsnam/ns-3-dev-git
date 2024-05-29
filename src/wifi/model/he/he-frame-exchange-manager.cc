@@ -519,11 +519,13 @@ HeFrameExchangeManager::TransmissionSucceeded()
         m_txTimer.IsRunning() && m_txTimer.GetReason() == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF)
     {
         NS_LOG_DEBUG("Schedule another transmission in a SIFS after successful BSRP TF");
-        bool (HeFrameExchangeManager::*fp)(Ptr<QosTxop>, Time) =
-            &HeFrameExchangeManager::StartTransmission;
-
-        // TXOP limit is null, hence the txopDuration parameter is unused
-        Simulator::Schedule(m_phy->GetSifs(), fp, this, m_edca, Seconds(0));
+        Simulator::Schedule(m_phy->GetSifs(), [=, this]() {
+            // TXOP limit is null, hence the txopDuration parameter is unused
+            if (!StartTransmission(m_edca, Seconds(0)))
+            {
+                SendCfEndIfNeeded();
+            }
+        });
         if (m_protectedIfResponded)
         {
             m_protectedStas.merge(m_sentFrameTo);
@@ -1324,6 +1326,15 @@ HeFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicit
     {
         // no station replied, the transmission failed
         m_edca->UpdateFailedCw(m_linkId);
+
+        CtrlTriggerHeader trigger;
+        psduMap->cbegin()->second->GetPayload(0)->PeekHeader(trigger);
+
+        if (m_continueTxopAfterBsrpTf && m_edca->GetTxopLimit(m_linkId).IsZero() &&
+            trigger.IsBsrp())
+        {
+            SendCfEndIfNeeded();
+        }
 
         TransmissionFailed();
     }
