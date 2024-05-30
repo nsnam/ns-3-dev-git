@@ -96,6 +96,13 @@
 
 /**
  * \ingroup deprecation
+ * \def NS_DEPRECATED_3_43
+ * Tag for things deprecated in version ns-3.43.
+ */
+#define NS_DEPRECATED_3_43(msg) NS_DEPRECATED("Deprecated in ns-3.43: " msg)
+
+/**
+ * \ingroup deprecation
  * \def NS_DEPRECATED_3_42
  * Tag for things deprecated in version ns-3.42.
  */
