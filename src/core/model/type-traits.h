@@ -19,6 +19,7 @@
 #ifndef TYPE_TRAITS_H
 #define TYPE_TRAITS_H
 
+#include "deprecated.h"
 #include "ptr.h"
 
 /**
@@ -36,7 +37,7 @@ namespace ns3
  *  \tparam T \deduced The type to inspect.
  */
 template <typename T>
-struct TypeTraits
+struct NS_DEPRECATED_3_43("Use functions provided by #include <type_traits>") TypeTraits
 {
   private:
     /** Null value type traits. */

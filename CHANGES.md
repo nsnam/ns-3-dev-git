@@ -24,6 +24,7 @@ Changes from ns-3.42 to ns-3-dev
 
 ### Changes to existing API
 
+* (core) Deprecated struct `TypeTraits`. Functionality provided by the standard library header `<type_traits>` should be used instead.
 * (lr-wpan) Attribute `macBeaconPayload` in `MacPibAttributes` is now a std::vector<uint8_t> instead of a packet pointer.
 * (lr-wpan) Removes the word `address` from the MAC address prefix when `LOG_PREFIX_FUNC` is used.
 * (lr-wpan) Removes the word `address` from the CSMA-CA logs prefix when `LOG_PREFIX_FUNC` is used.
