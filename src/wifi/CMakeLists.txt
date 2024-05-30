@@ -8,6 +8,7 @@ endif()
 set(source_files
     helper/athstats-helper.cc
     helper/spectrum-wifi-helper.cc
+    helper/wifi-co-trace-helper.cc
     helper/wifi-helper.cc
     helper/wifi-mac-helper.cc
     helper/wifi-radio-energy-model-helper.cc
@@ -178,6 +179,7 @@ set(source_files
 set(header_files
     helper/athstats-helper.h
     helper/spectrum-wifi-helper.h
+    helper/wifi-co-trace-helper.h
     helper/wifi-helper.h
     helper/wifi-mac-helper.h
     helper/wifi-radio-energy-model-helper.h
@@ -370,6 +372,7 @@ build_lib(
     test/spectrum-wifi-phy-test.cc
     test/tx-duration-test.cc
     test/wifi-aggregation-test.cc
+    test/wifi-co-trace-helper-test.cc
     test/wifi-dynamic-bw-op-test.cc
     test/wifi-eht-info-elems-test.cc
     test/wifi-emlsr-test.cc

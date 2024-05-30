@@ -1254,6 +1254,62 @@ will end up in one of the two data structures.
 The example program ``src/wifi/examples/wifi-bianchi.cc`` provides an example use of this
 helper, by setting the program option ``--useTxHelper`` to true.
 
+WifiCoTraceHelper
+=================
+
+The ``WifiCoTraceHelper`` (channel occupancy trace helper) can be used to collect statistics of Wi-Fi channel occupancy, as observed from the perspective of the WifiPhy state of devices or links (in the case of multi-link devices).  The ``WifiPhyStateHelper`` tracks the state of the WifiPhy corresponding to whether it is in idle, transmitting, receiving, or some other state.  This helper object can be added to ns-3 Wi-Fi simulations to track the duration and percentage of time spent in each state.
+
+Wi-Fi channel access relies also on additional busy states that conceptually reside in the MAC layer, corresponding to the Network Allocation Vector (NAV).  The idle states reported herein correspond to the PHY (physical) carrier sense state and not the MAC (virtual) carrier sense state.
+
+In case of an EMLSR device, PHY objects keep switching among links. This helper aggregates a PHY duration to the link it is operating on at that instant. Be aware that switching PHY objects for an EMLSR device might result in unexpected statistics. For example, if auxiliary PHY is configured to not switch in EMLSR configurations then a link could have no PHY object operating on it intermittently. As a result, the total recorded duration on all links would not be same which does not occur for non-EMLSR devices.
+
+This helper can be added to a simulation program with statements such as the following:
+
+.. sourcecode:: cpp
+
+    WifiCoTraceHelper coHelper{Seconds(1.0), Seconds(11.0)};
+
+The above statement, if placed just prior to the call to ``Simulator::Run(),``
+will declare a helper object and configure it to collect statistics between
+one and eleven seconds.  However, WifiNetDevices must still be added, such
+as the following sample code:
+
+.. sourcecode:: cpp
+
+    coHelper.Enable(nodeOrDeviceContainer);
+
+Then finally, print the results after ``Simulator::Run()`` returns:
+
+.. sourcecode:: cpp
+
+    coHelper.PrintStatistics(std::cout);
+
+This will print output such as:
+
+.. sourcecode:: text
+
+    ---- COT for AP:0 ----
+    Showing duration by states:
+    IDLE:       +5.69s  (56.93%)
+    CCA_BUSY:   +1.18s  (11.80%)
+    TX:       +301.90ms  (3.02%)
+    RX:         +2.83s  (28.25%)
+
+    ---- COT for STA0:0 ----
+    Showing duration by states:
+    IDLE:       +5.71s  (57.06%)
+    CCA_BUSY: +377.52ms  (3.78%)
+    TX:         +1.63s  (16.31%)
+    RX:         +2.29s  (22.85%)
+
+You can export statistics from this helper for use cases such as printing in your own formatted statements:
+
+.. sourcecode:: cpp
+
+    auto records = coHelper.GetDeviceRecords();
+
+You can refer an example program in ``src/wifi/examples/wifi-co-trace-example.cc`` on how to use these APIs.
+
 HT configuration
 ================
 

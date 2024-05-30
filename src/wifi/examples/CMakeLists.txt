@@ -66,3 +66,13 @@ build_lib_example(
     ${libinternet}
     ${libmobility}
 )
+
+build_lib_example(
+  NAME wifi-co-trace-example
+  SOURCE_FILES wifi-co-trace-example.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libinternet}
+    ${libmobility}
+    ${libapplications}
+)

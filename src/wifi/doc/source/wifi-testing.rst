@@ -300,3 +300,8 @@ The implementation of the OFDMA support has been validated against a theoretical
 A preliminary evaluation of the usage of OFDMA in 802.11ax, in terms of latency in non-saturated
 conditions, throughput in saturated conditions and transmission range with UL OFDMA, is provided
 in [avallone2021wcm]_ .
+
+Channel Occupancy Helper Testing
+********************************
+
+The Channel Occupancy helper (WifiCoTraceHelper class) has been tested by comparing the occupancy results for single packet transmissions of various sizes (one, two, or three symbols) with the results predicted by offline calculation of the expected values.  Additionally, the helper has been validated in saturated traffic conditions as described in the research publication "Use of Channel Occupancy for Multi Link WiFi 7 Scheduler Design in ns-3" to be presented at COMSNETS 25 [kumar2025comsnets]_ .

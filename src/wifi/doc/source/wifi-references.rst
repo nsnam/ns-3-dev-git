@@ -68,3 +68,5 @@ References
 .. [corbet2012] \ J. Corbet, "TCP Small Queues", `LWN.net, July 17, 2012 <https://lwn.net/Articles/507065/>`__
 
 .. [grazia2022] \ C. Grazia, N. Patriciello, T. Hoiland-Jorgensen, M. Klapez and M. Casoni, "Aggregating Without Bloating: Hard Times for TCP on Wi-Fi", IEEE/ACM Transactions on Networking, Vol. 30, No.5, October 2022.
+
+.. [kumar2025comsnets] \ P. Kumar, J. Kulshrestha, M. Maity and S. Roy, "Use of Channel Occupancy for Multi Link WiFi 7 Scheduler Design in ns-3" 2025 17th International Conference on COMmunication Systems & NETworkS (COMSNETS), Bengaluru, India, 2025, to appear.
