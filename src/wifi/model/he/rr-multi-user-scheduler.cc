@@ -9,9 +9,9 @@
 #include "rr-multi-user-scheduler.h"
 
 #include "he-configuration.h"
-#include "he-frame-exchange-manager.h"
 #include "he-phy.h"
 
+#include "ns3/eht-frame-exchange-manager.h"
 #include "ns3/log.h"
 #include "ns3/wifi-acknowledgment.h"
 #include "ns3/wifi-mac-queue.h"
@@ -362,6 +362,21 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     m_txParams.m_txVector =
         m_apMac->GetWifiRemoteStationManager(m_linkId)->GetRtsTxVector(m_triggerMacHdr.GetAddr1(),
                                                                        m_allowedWidth);
+
+    // If this BSRP TF is an ICF, we need to add padding and adjust the TXVECTOR
+    if (auto ehtFem =
+            DynamicCast<EhtFrameExchangeManager>(m_apMac->GetFrameExchangeManager(m_linkId)))
+    {
+        auto prevPaddingSize = m_trigger.GetPaddingSize();
+        ehtFem->SetIcfPaddingAndTxVector(m_trigger, m_txParams.m_txVector);
+        // serialize again if padding has been added
+        if (m_trigger.GetPaddingSize() != prevPaddingSize)
+        {
+            auto packet = Create<Packet>();
+            packet->AddHeader(m_trigger);
+            item = Create<WifiMpdu>(packet, item->GetHeader());
+        }
+    }
 
     if (!GetHeFem(m_linkId)->TryAddMpdu(item, m_txParams, m_availableTime))
     {

@@ -412,6 +412,40 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
 
     if (m_apMac)
     {
+        // check if this is a BSRP TF used as ICF for some EMLSR client
+        if (IsTrigger(psduMap))
+        {
+            CtrlTriggerHeader trigger;
+            psduMap.cbegin()->second->GetPayload(0)->PeekHeader(trigger);
+
+            if (trigger.IsBsrp())
+            {
+                auto recipients = GetTfRecipients(trigger);
+                for (const auto& client : recipients)
+                {
+                    if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(client))
+                    {
+                        continue;
+                    }
+                    auto clientMld = GetWifiRemoteStationManager()->GetMldAddress(client);
+                    NS_ASSERT(clientMld);
+
+                    // block transmissions on the other EMLSR links of the EMLSR clients
+                    for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); ++linkId)
+                    {
+                        if (linkId != m_linkId &&
+                            m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*clientMld))
+                        {
+                            m_mac->BlockUnicastTxOnLinks(
+                                WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                *clientMld,
+                                {linkId});
+                        }
+                    }
+                }
+            }
+        }
+
         // check if the EMLSR clients shall switch back to listening operation at the end of this
         // PPDU
         for (auto clientIt = m_protectedStas.begin(); clientIt != m_protectedStas.end();)
