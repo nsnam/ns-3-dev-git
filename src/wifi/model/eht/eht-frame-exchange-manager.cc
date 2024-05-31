@@ -1262,7 +1262,8 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             return; // not addressed to us
         }
 
-        if (trigger.IsMuRts() && m_staMac->IsEmlsrLink(m_linkId))
+        if ((trigger.IsMuRts() || trigger.IsBsrp()) && !m_ongoingTxopEnd.IsPending() &&
+            m_staMac->IsEmlsrLink(m_linkId))
         {
             // this is an initial Control frame
             if (DropReceivedIcf())
