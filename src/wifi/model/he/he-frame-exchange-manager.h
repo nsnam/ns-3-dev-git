@@ -129,6 +129,14 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      */
     bool UlMuCsMediumIdle(const CtrlTriggerHeader& trigger) const;
 
+    /**
+     * Get the (link) address of the non-AP stations solicited by the given Trigger Frame.
+     *
+     * \param trigger the given Trigger Frame
+     * \return the (link) address of the non-AP stations solicited by the given Trigger Frame
+     */
+    std::set<Mac48Address> GetTfRecipients(const CtrlTriggerHeader& trigger) const;
+
   protected:
     void DoDispose() override;
     void Reset() override;
@@ -179,13 +187,6 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
                                     const WifiTxVector& muRtsTxVector,
                                     Time txDuration,
                                     Time response) const;
-
-    /**
-     * Record the stations being solicited by an MU-RTS TF.
-     *
-     * \param txParams the TX parameters for the data frame protected by the MU-RTS TF.
-     */
-    void RecordSentMuRtsTo(const WifiTxParameters& txParams);
 
     /**
      * Send an MU-RTS to begin an MU-RTS/CTS frame exchange protecting an MU PPDU.

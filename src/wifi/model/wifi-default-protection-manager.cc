@@ -9,12 +9,12 @@
 #include "wifi-default-protection-manager.h"
 
 #include "ap-wifi-mac.h"
-#include "frame-exchange-manager.h"
 #include "sta-wifi-mac.h"
 #include "wifi-mpdu.h"
 #include "wifi-tx-parameters.h"
 
 #include "ns3/boolean.h"
+#include "ns3/eht-frame-exchange-manager.h"
 #include "ns3/emlsr-manager.h"
 #include "ns3/erp-ofdm-phy.h"
 #include "ns3/log.h"
@@ -310,12 +310,12 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
             }
         }
 
-        // The initial Control frame of frame exchanges shall be sent in the non-HT PPDU or
-        // non-HT duplicate PPDU format using a rate of 6 Mb/s, 12 Mb/s, or 24 Mb/s.
-        // (Sec. 35.3.17 of 802.11be D3.0)
         if (isEmlsrDestination && !isProtected)
         {
-            GetWifiRemoteStationManager()->AdjustTxVectorForIcf(protection->muRtsTxVector);
+            // This MU-RTS is an ICF for some EMLSR client
+            auto ehtFem =
+                StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(m_linkId));
+            ehtFem->SetIcfPaddingAndTxVector(protection->muRts, protection->muRtsTxVector);
         }
 
         return std::unique_ptr<WifiMuRtsCtsProtection>(protection);
@@ -395,12 +395,11 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     {
         protection->muRtsTxVector.SetMode(ErpOfdmPhy::GetErpOfdmRate6Mbps());
     }
-    // The initial Control frame of frame exchanges shall be sent in the non-HT PPDU or
-    // non-HT duplicate PPDU format using a rate of 6 Mb/s, 12 Mb/s, or 24 Mb/s.
-    // (Sec. 35.3.17 of 802.11be D3.0)
     if (isUnprotectedEmlsrDst)
     {
-        GetWifiRemoteStationManager()->AdjustTxVectorForIcf(protection->muRtsTxVector);
+        // This MU-RTS is an ICF for some EMLSR client
+        auto ehtFem = StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(m_linkId));
+        ehtFem->SetIcfPaddingAndTxVector(protection->muRts, protection->muRtsTxVector);
     }
 
     return protection;

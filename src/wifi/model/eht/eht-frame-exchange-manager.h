@@ -161,6 +161,15 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      */
     EventId& GetOngoingTxopEndEvent();
 
+    /**
+     * Set the padding and the TXVECTOR of the given Trigger Frame, in case it is an Initial
+     * Control Frame for some EMLSR client(s).
+     *
+     * \param trigger the given Trigger Frame
+     * \param txVector the TXVECTOR used to transmit the Trigger Frame
+     */
+    void SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger, WifiTxVector& txVector) const;
+
     /// ICF drop reason traced callback (WifiMac exposes this trace source)
     TracedCallback<WifiIcfDrop, uint8_t> m_icfDropCallback;
 
@@ -169,7 +178,6 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void RxStartIndication(WifiTxVector txVector, Time psduDuration) override;
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
-    void SendMuRts(const WifiTxParameters& txParams) override;
     void CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector) override;
     void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
                            const CtrlTriggerHeader& trigger,

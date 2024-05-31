@@ -331,6 +331,31 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
 
     auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
 
+    if (m_apMac && psdu->GetHeader(0).IsTrigger())
+    {
+        for (const auto& client : m_sentRtsTo)
+        {
+            if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(client))
+            {
+                continue;
+            }
+            auto clientMld = GetWifiRemoteStationManager()->GetMldAddress(client);
+            NS_ASSERT(clientMld);
+
+            // block transmissions on the other EMLSR links of the EMLSR clients
+            for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); ++linkId)
+            {
+                if (linkId != m_linkId &&
+                    m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*clientMld))
+                {
+                    m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                                 *clientMld,
+                                                 {linkId});
+                }
+            }
+        }
+    }
+
     HeFrameExchangeManager::ForwardPsduDown(psdu, txVector);
     UpdateTxopEndOnTxStart(txDuration, psdu->GetDuration());
 
@@ -676,54 +701,51 @@ EhtFrameExchangeManager::GetMostRecentRssi(const Mac48Address& address) const
 }
 
 void
-EhtFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
+EhtFrameExchangeManager::SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger,
+                                                  WifiTxVector& txVector) const
 {
-    NS_LOG_FUNCTION(this << &txParams);
+    NS_LOG_FUNCTION(this << trigger << txVector);
 
-    uint8_t maxPaddingDelay = 0;
-
-    // block transmissions on the other EMLSR links of the EMLSR clients
-    for (const auto& address : m_sentRtsTo)
+    if (!trigger.IsMuRts() && !trigger.IsBsrp())
     {
-        if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(address))
+        NS_LOG_INFO("Not an ICF");
+        return;
+    }
+
+    const auto recipients = GetTfRecipients(trigger);
+    uint8_t maxPaddingDelay = 0;
+    bool isUnprotectedEmlsrDst = false;
+
+    for (const auto& address : recipients)
+    {
+        if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(address) ||
+            m_protectedStas.contains(address))
         {
-            continue;
+            continue; // not an EMLSR client or EMLSR client already protected
         }
 
+        isUnprotectedEmlsrDst = true;
         auto emlCapabilities = GetWifiRemoteStationManager()->GetStationEmlCapabilities(address);
         NS_ASSERT(emlCapabilities);
         maxPaddingDelay = std::max(maxPaddingDelay, emlCapabilities->get().emlsrPaddingDelay);
+    }
 
-        auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
-        NS_ASSERT(mldAddress);
-
-        for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
-        {
-            if (linkId != m_linkId &&
-                m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
-            {
-                m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-                                             *mldAddress,
-                                             {linkId});
-            }
-        }
+    if (isUnprotectedEmlsrDst)
+    {
+        // The initial Control frame of frame exchanges shall be sent in the non-HT PPDU or
+        // non-HT duplicate PPDU format using a rate of 6 Mb/s, 12 Mb/s, or 24 Mb/s.
+        // (Sec. 35.3.17 of 802.11be D3.0)
+        GetWifiRemoteStationManager()->AdjustTxVectorForIcf(txVector);
     }
 
     // add padding (if needed)
     if (maxPaddingDelay > 0)
     {
-        NS_ASSERT(txParams.m_protection &&
-                  txParams.m_protection->method == WifiProtection::MU_RTS_CTS);
-        auto protection = static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
-        NS_ASSERT(protection->muRts.IsMuRts());
-
         // see formula (35-1) in Sec. 35.5.2.2.3 of 802.11be D3.0
-        auto rate = protection->muRtsTxVector.GetMode().GetDataRate(protection->muRtsTxVector);
+        auto rate = txVector.GetMode().GetDataRate(txVector);
         std::size_t nDbps = rate / 1e6 * 4; // see Table 17-4 of 802.11-2020
-        protection->muRts.SetPaddingSize((1 << (maxPaddingDelay + 2)) * nDbps / 8);
+        trigger.SetPaddingSize((1 << (maxPaddingDelay + 2)) * nDbps / 8);
     }
-
-    HeFrameExchangeManager::SendMuRts(txParams);
 }
 
 void

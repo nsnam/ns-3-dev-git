@@ -265,7 +265,12 @@ HeFrameExchangeManager::StartProtection(const WifiTxParameters& txParams)
                     "Cannot use RTS/CTS with MU PPDUs");
     if (txParams.m_protection->method == WifiProtection::MU_RTS_CTS)
     {
-        RecordSentMuRtsTo(txParams);
+        auto protection = static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
+
+        NS_ASSERT(protection->muRts.IsMuRts());
+        NS_ASSERT(m_sentRtsTo.empty());
+        m_sentRtsTo = GetTfRecipients(protection->muRts);
+
         SendMuRts(txParams);
     }
     else
@@ -274,25 +279,21 @@ HeFrameExchangeManager::StartProtection(const WifiTxParameters& txParams)
     }
 }
 
-void
-HeFrameExchangeManager::RecordSentMuRtsTo(const WifiTxParameters& txParams)
+std::set<Mac48Address>
+HeFrameExchangeManager::GetTfRecipients(const CtrlTriggerHeader& trigger) const
 {
-    NS_LOG_FUNCTION(this << &txParams);
-
-    NS_ASSERT(txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS);
-    auto protection = static_cast<WifiMuRtsCtsProtection*>(txParams.m_protection.get());
-
-    NS_ASSERT(protection->muRts.IsMuRts());
-    NS_ASSERT_MSG(m_apMac, "APs only can send MU-RTS TF");
+    std::set<Mac48Address> recipients;
+    NS_ASSERT_MSG(m_apMac, "APs only can send Trigger Frames");
     const auto& aidAddrMap = m_apMac->GetStaList(m_linkId);
-    NS_ASSERT(m_sentRtsTo.empty());
 
-    for (const auto& userInfo : protection->muRts)
+    for (const auto& userInfo : trigger)
     {
         const auto addressIt = aidAddrMap.find(userInfo.GetAid12());
         NS_ASSERT_MSG(addressIt != aidAddrMap.end(), "AID not found");
-        m_sentRtsTo.insert(addressIt->second);
+        recipients.insert(addressIt->second);
     }
+
+    return recipients;
 }
 
 void
