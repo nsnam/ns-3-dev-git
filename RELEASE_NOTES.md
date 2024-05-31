@@ -22,6 +22,8 @@ Release 3-dev
 
 ### Bugs fixed
 
+- (lr-wpan) !2001 - Beacon improvements and fixes
+
 Release 3.42
 ------------
 

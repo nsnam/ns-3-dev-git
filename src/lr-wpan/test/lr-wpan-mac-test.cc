@@ -454,10 +454,13 @@ TestActiveScanPanDescriptors::DoRun()
                                    params);
 
     // PAN coordinator N2 (PAN 7) is set to channel 14 in non-beacon mode but answer to beacon
-    // requests. The second coordinator includes a beacon payload of 25 bytes using the
+    // requests. The second coordinator includes a beacon payload of 2 bytes using the
     // MLME-SET.request primitive.
     Ptr<MacPibAttributes> pibAttribute = Create<MacPibAttributes>();
-    pibAttribute->macBeaconPayload = Create<Packet>(25);
+    std::vector<uint8_t> payload;
+    payload.emplace_back(1);
+    payload.emplace_back(2);
+    pibAttribute->macBeaconPayload = payload;
     coord2NetDevice->GetMac()->MlmeSetRequest(MacPibAttributeIdentifier::macBeaconPayload,
                                               pibAttribute);
 
@@ -519,8 +522,8 @@ TestActiveScanPanDescriptors::DoRun()
                               " be less than Coordinator 1 (PAN 5).");
 
         NS_TEST_EXPECT_MSG_EQ(g_beaconPayloadSize,
-                              25,
-                              "Error, Beacon Payload not received or incorrect size (25 bytes)");
+                              2,
+                              "Error, Beacon Payload not received or incorrect size (2 bytes)");
     }
 
     Simulator::Destroy();

@@ -19,6 +19,8 @@ Changes from ns-3.42 to ns-3-dev
 ### New API
 
 ### Changes to existing API
+* (lr-wpan) Attribute `macBeaconPayload` in `MacPibAttributes` is now a std::vector<uint8_t> instead of a packet pointer.
+* (lr-wpan) Removes the word `address` from the MAC address prefix when `LOG_PREFIX_FUNC` is used.
 
 ### Changes to build system
 

@@ -520,11 +520,11 @@ class LrWpanMac : public LrWpanMacBase
     SequenceNumber8 m_macBsn;
 
     /**
-     * The contents of the beacon payload.
+     * The set with the contents of the beacon payload.
      * This value is set directly by the MLME-SET primitive.
      * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
      */
-    Ptr<Packet> m_macBeaconPayload;
+    std::vector<uint8_t> m_macBeaconPayload;
 
     /**
      * The length, in octets, of the beacon payload.
@@ -855,6 +855,14 @@ class LrWpanMac : public LrWpanMacBase
      * Called if the device is unable to locate a beacon in the time set by MLME-SYNC.request.
      */
     void BeaconSearchTimeout();
+
+    /**
+     * Used to process the reception of a beacon packet.
+     *
+     * \param lqi The value of the link quality indicator (LQI) of the received packet
+     * \param p The packet containing the MAC header and the beacon payload information
+     */
+    void ReceiveBeacon(uint8_t lqi, Ptr<Packet> p);
 
     /**
      * Send an acknowledgment packet for the given sequence number.
@@ -1323,6 +1331,11 @@ class LrWpanMac : public LrWpanMacBase
      * Scheduler event for the end of a ED channel scan.
      */
     EventId m_scanEnergyEvent;
+
+    /**
+     * The uniform random variable used in this mac layer
+     */
+    Ptr<UniformRandomVariable> uniformVar;
 };
 } // namespace lrwpan
 } // namespace ns3
