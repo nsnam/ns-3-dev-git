@@ -199,6 +199,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void IntraBssNavResetTimeout() override;
     void SendCtsAfterRts(const WifiMacHeader& rtsHdr, WifiMode rtsTxMode, double rtsSnr) override;
     void PsduRxError(Ptr<const WifiPsdu> psdu) override;
+    void ReceivedQosNullAfterBsrpTf(Mac48Address sender) override;
 
   private:
     /**

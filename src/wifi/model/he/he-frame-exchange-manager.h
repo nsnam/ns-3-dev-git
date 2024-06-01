@@ -348,7 +348,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      *
      * \param sender the MAC address of the given sender
      */
-    void ReceivedQosNullAfterBsrpTf(Mac48Address sender);
+    virtual void ReceivedQosNullAfterBsrpTf(Mac48Address sender);
 
     Ptr<ApWifiMac> m_apMac;          //!< MAC pointer (null if not an AP)
     Ptr<StaWifiMac> m_staMac;        //!< MAC pointer (null if not a STA)

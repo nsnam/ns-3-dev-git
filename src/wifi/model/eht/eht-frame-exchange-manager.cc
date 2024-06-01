@@ -783,6 +783,20 @@ EhtFrameExchangeManager::SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger,
 }
 
 void
+EhtFrameExchangeManager::ReceivedQosNullAfterBsrpTf(Mac48Address sender)
+{
+    NS_LOG_FUNCTION(this << sender);
+
+    // an EMLSR client responding to a BSRP TF must be considered protected
+    if (GetWifiRemoteStationManager()->GetEmlsrEnabled(sender))
+    {
+        m_protectedStas.insert(sender);
+    }
+
+    HeFrameExchangeManager::ReceivedQosNullAfterBsrpTf(sender);
+}
+
+void
 EhtFrameExchangeManager::SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
                                            const CtrlTriggerHeader& trigger,
                                            double muRtsSnr)
