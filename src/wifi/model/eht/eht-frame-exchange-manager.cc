@@ -182,11 +182,11 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
 
             // EMLSR clients involved in a DL or UL TXOP on another link
             std::set<Mac48Address> emlsrClients;
+            auto ehtFem =
+                StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
 
             // check if an EMLSR client is the holder of an UL TXOP on the other link
-            if (auto ehtFem =
-                    StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
-                ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
+            if (ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
                 m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(
                     ehtFem->m_txopHolder.value()))
             {
@@ -194,7 +194,7 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
             }
 
             // check if EMLSR clients are involved in a DL TXOP on another link
-            for (const auto& address : m_protectedStas)
+            for (const auto& address : ehtFem->m_protectedStas)
             {
                 if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(address))
                 {
