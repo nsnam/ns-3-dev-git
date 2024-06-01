@@ -305,3 +305,92 @@ Channel Occupancy Helper Testing
 ********************************
 
 The Channel Occupancy helper (WifiCoTraceHelper class) has been tested by comparing the occupancy results for single packet transmissions of various sizes (one, two, or three symbols) with the results predicted by offline calculation of the expected values.  Additionally, the helper has been validated in saturated traffic conditions as described in the research publication "Use of Channel Occupancy for Multi Link WiFi 7 Scheduler Design in ns-3" to be presented at COMSNETS 25 [kumar2025comsnets]_ .
+
+Peer-to-Peer (P2P) performance
+******************************
+
+The program ``examples/wireless/wifi-p2p.cc`` allows user to compare performance with and without
+the use of P2P links between non-AP STAs.
+
+The scenario is made of a single AP, two non-AP STAs and four traffic flows: bidirectional flows between
+the AP and the first non-AP STA together with bidirectional flows between the two non-AP STAs.
+
+When the first STA is operating in P2P mode, the other STA is an ADHOC STA and is not associated to any AP.
+Otherwise, both non-AP STAs are regular infrastructure STAs and are associated to the same AP.
+
+Besides the P2P mode, the example also allows to configure various parameters:
+- Type for AP/STAs (HT, VHT, HE, EHT)
+- MAC settings: RTS threshold, A-MPDU size
+- Traffic type (CBR, Video, RT gaming) and corresponding parameter per flow
+- L4 protocol and ACI/TOS
+
+The collected statistics are the throughput, the end-to-end latency and the packet loss rate per flow.
+It also provides aggregated and average statistics for the two modes of operation.
+
+By default, it runs with CBR traffic with all flows active and P2P enabled:
+- AP to first STA is 100 Mbit/s CBR UDP traffic, same for the opposite direction
+- each STA also sends 50 Mbit/s CBR UDP traffic to each others
+
+::
+
+  ./ns3 run "wifi-p2p --simulationTime=60s"
+
+  Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
+  AP -> STA       99.9988                 7.40474                 749999          749991          0.00106667
+  STA -> AP       99.9873                 7.24137                 749999          749905          0.0125334
+  STA -> ADHOC    49.99                   6.05699                 749999          749850          0.0198667
+  ADHOC -> STA    49.9886                 4.80941                 749999          749829          0.0226667
+  STA <-> AP      199.986                 7.32306                 1499998         1499896         0.00680001
+  STA <-> STA     99.9786                 5.4332                  1499998         1499679         0.0212667
+  Total           299.965                 6.3782                  2999996         2999575         0.0140334
+  Average backoff: 9.45284
+
+When P2P is disabled, saturation point is already reached because traffic has to be forwarded first to the AP and hence
+it experiences much more collisions which results in a larger amount of lost packets and hence a lower throughput:
+
+::
+
+  ./ns3 run "wifi-p2p --simulationTime=60s --p2p=0"
+
+  Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
+  AP -> STA1      99.9877                 31.1631                 749999          749908          0.0121333
+  STA1 -> AP      99.9816                 13.5755                 749999          749862          0.0182667
+  STA1 -> STA2    13.6356                 31.3205                 749999          204534          72.7288
+  STA2 -> STA1    12.1472                 36.89                   749999          182208          75.7056
+  STA <-> AP      199.969                 22.3695                 1499998         1499770         0.0152
+  STA <-> STA     25.7828                 33.9445                 1499998         386742          74.2172
+  Total           225.752                 24.7425                 2999996         1886512         37.1162
+  Average backoff: 9.47679
+
+We can also verify P2P is improving the end-to-end latency, which is critical for real-time and video applications.
+One can run the example with bidirectional UDP video traffic (BV6 model) between both non-AP STAs when P2P is enabled:
+
+::
+
+  ./ns3 run "wifi-p2p --simulationTime=60s --staToAdhocTrafficType=Video --adhocToStaTrafficType=Video --staToAdhocVideoTrafficModelClassIdentifier=BV6 --adhocToStaVideoTrafficModelClassIdentifier=BV6"
+
+  Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
+  AP -> STA       99.9991                 1.17635                 749999          749993          0.000800001
+  STA -> AP       99.9861                 1.23251                 749999          749896          0.0137334
+  STA -> ADHOC    14.8984                 2.94144                 2959            2894            2.19669
+  ADHOC -> STA    15.8785                 3.08952                 3051            3046            0.163881
+  STA <-> AP      199.985                 1.20443                 1499998         1499889         0.00726668
+  STA <-> STA     30.7769                 3.01738                 6010            5940            1.16473
+  Total           230.762                 1.21158                 1506008         1505829         0.0118857
+  Average backoff: 8.59277
+
+Running the same scenario with P2P disabled results in a larger end-to-end latency:
+
+::
+
+  ./ns3 run "wifi-p2p --simulationTime=60s --staToAdhocTrafficType=Video --adhocToStaTrafficType=Video --staToAdhocVideoTrafficModelClassIdentifier=BV6 --adhocToStaVideoTrafficModelClassIdentifier=BV6 --p2p=0"
+
+  Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
+  AP -> STA1      99.9899                 2.44645                 749999          749924          0.01
+  STA1 -> AP      99.9913                 1.62603                 749999          749935          0.00853334
+  STA1 -> STA2    16.1906                 7.96808                 3085            3013            2.33387
+  STA2 -> STA1    15.5389                 8.00243                 2977            2953            0.806181
+  STA <-> AP      199.981                 2.03624                 1499998         1499859         0.00926668
+  STA <-> STA     31.7295                 7.98508                 6062            5966            1.58364
+  Total           231.711                 2.05981                 1506060         1505825         0.0156036
+  Average backoff: 8.60743

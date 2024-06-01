@@ -1836,6 +1836,24 @@ subframe, regardless of current A-MSDU size settings. The Address 1 field of the
 is set to the concealment address, which can be configured through the
 ``GcrManager::GcrConcealmentAddress`` attribute.
 
+Peer-to-Peer (P2P)
+##################
+
+Besides the use of adhoc mode (IBSS), it is also possible to have a non-AP STA operating in infrastructure mode
+able to communicate directly with another non-AP STA (operating in adhoc mode) without the need to have the
+communication going through an AP. This can be enabled through the ``StaWifiMac::EnableP2pLinks`` attribute.
+
+When operating in P2P mode, a non-AP STA queues packets whose destination is a known adhoc peer (e.g. if the peer
+is sending regular beacons). Otherwise, the regular infrastructure mode is used and the non-AP STA queues packets
+to the AP STA it is associated to.
+
+Broadcast and groupcast packets are never queued for P2P transmissions. That implies that address
+resolution protocol (ARP) cannot be used by a non-AP STA operating in P2P mode in order to identify
+the IP address of a peer, and hence its ARP cache needs to be pre-populated.
+
+Upon detection of a new peer by a non-AP STA operating in P2P mode, a probe request is sent by the non-AP STA
+to that peer in order to advertise about its capabilities.
+
 Modifying Wifi model
 ####################
 
