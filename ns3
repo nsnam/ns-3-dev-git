@@ -13,7 +13,9 @@ import sys
 ns3_path = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 append_to_ns3_path = functools.partial(os.path.join, ns3_path)
 out_dir = os.sep.join([ns3_path, "build"])
-lock_file = os.sep.join([ns3_path, ".lock-ns3_%s_build" % sys.platform])
+platform = sys.platform
+platform = "bsd" if "bsd" in platform else platform
+lock_file = os.sep.join([ns3_path, ".lock-ns3_%s_build" % platform])
 
 max_cpu_threads = max(1, os.cpu_count() - 1)
 print_buffer = ""

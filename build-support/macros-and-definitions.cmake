@@ -1159,7 +1159,11 @@ macro(process_options)
   set(PLATFORM_UNSUPPORTED_POST "features. Continuing without them.")
   # Remove from libs_to_build all incompatible libraries or the ones that
   # dependencies couldn't be installed
-  if(APPLE OR WSLv1 OR WIN32)
+  if(APPLE
+     OR WSLv1
+     OR WIN32
+     OR BSD
+  )
     set(ENABLE_TAP OFF)
     set(ENABLE_EMU OFF)
     set(ENABLE_FDNETDEV FALSE)

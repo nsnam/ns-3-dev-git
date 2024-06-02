@@ -30,7 +30,11 @@ endif()
 
 # Set Linux flag if on Linux
 if(UNIX AND NOT APPLE)
-  set(LINUX TRUE)
+  if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+    set(LINUX TRUE)
+  else()
+    set(BSD TRUE)
+  endif()
   add_definitions(-D__LINUX__)
 endif()
 

@@ -664,9 +664,12 @@ def sigint_hook(signal, frame):
 # little less hacky, we should add a command to ns3 to return this info
 # and use that result.
 #
-def read_ns3_config():
-    lock_filename = ".lock-ns3_%s_build" % sys.platform
+platform = sys.platform
+platform = "bsd" if "bsd" in platform else platform
+lock_filename = ".lock-ns3_%s_build" % platform
 
+
+def read_ns3_config():
     try:
         # sys.platform reports linux2 for python2 and linux for python3
         with open(lock_filename, "rt", encoding="utf-8") as f:
@@ -1260,7 +1263,6 @@ def run_tests():
     #
     # Get the information from the build status file.
     #
-    lock_filename = ".lock-ns3_%s_build" % sys.platform
     if os.path.exists(lock_filename):
         ns3_runnable_programs = get_list_from_file(lock_filename, "ns3_runnable_programs")
         ns3_runnable_scripts = get_list_from_file(lock_filename, "ns3_runnable_scripts")
