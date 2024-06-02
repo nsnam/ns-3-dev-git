@@ -7,15 +7,20 @@
  */
 
 #include "ns3/adhoc-wifi-mac.h"
+#include "ns3/ap-wifi-mac.h"
 #include "ns3/boolean.h"
 #include "ns3/config.h"
+#include "ns3/frame-exchange-manager.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/mobility-helper.h"
+#include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet-socket-server.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/spectrum-wifi-helper.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/wifi-helper.h"
 #include "ns3/wifi-mac-helper.h"
@@ -23,6 +28,7 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/yans-wifi-helper.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -543,6 +549,11 @@ class P2pTest : public TestCase
      */
     struct P2pTestParams
     {
+        std::vector<std::string>
+            apChannels; //!< the strings specifying the operating channels for the AP
+        std::vector<std::string>
+            staChannels; //!< the strings specifying the operating channels for the non-AP STAs
+        std::string p2pChannel; //!< the string specifying the operating channel for P2P
         std::vector<ActivatedPeriod> p2pActivatedPeriods{}; //!< periods the P2P link is enabled
         std::vector<ActivatedPeriod>
             infrastructureActivatedPeriods{}; //!< periods the STA is associated with the AP
@@ -559,6 +570,22 @@ class P2pTest : public TestCase
   private:
     void DoSetup() override;
     void DoRun() override;
+
+    /// PHY band-indexed map of spectrum channels
+    using ChannelMap = std::map<FrequencyRange, Ptr<MultiModelSpectrumChannel>>;
+
+    /**
+     * Reset the given PHY helper, use the given strings to set the ChannelSettings
+     * attribute of the PHY objects to create, and attach them to the given spectrum
+     * channels appropriately.
+     *
+     * \param helper the given PHY helper
+     * \param channels the strings specifying the operating channels to configure
+     * \param channelMap the created spectrum channels
+     */
+    void SetChannels(SpectrumWifiPhyHelper& helper,
+                     const std::vector<std::string>& channels,
+                     const ChannelMap& channelMap);
 
     /**
      * Set the SSID of the AP the STA should attempt to associate with.
@@ -580,12 +607,14 @@ class P2pTest : public TestCase
      *
      * \param txNode the TX node
      * \param rxNode the RX node
+     * \param destinationAddress the destination address to use
      * \param protocol the protocol to identify the flow
      * \param payloadSize the size for the payload in bytes
      * \param start the starting time
      */
     void CreateTraffic(Ptr<Node> txNode,
                        Ptr<Node> rxNode,
+                       const Address& destinationAddress,
                        uint16_t protocol,
                        uint32_t payloadSize,
                        Time start);
@@ -617,6 +646,20 @@ class P2pTest : public TestCase
      */
     void CheckResults();
 
+    /**
+     * Get the MAC address to use for the packet socket client transmitting to the STA.
+     * If the STA is a non-MLD, it returns its MAC address.
+     * Otherwise, it returns either its MLD address if multi-link can be used
+     * between the STA and the AP (ADHOC does not support multi-link), otherwise it returns the link
+     * address corresponding to the link that will be established between the STA and the AP or the
+     * ADHOC STA.
+     *
+     * \param srcMac the MAC of the source
+     * \param dstMac the MAC of the destination
+     * \return the address to use for the packet socket
+     */
+    Address GetPeerAddress(Ptr<WifiMac> srcMac, Ptr<WifiMac> dstMac) const;
+
     P2pTestParams m_params; ///< the configuration parameters
 
     Time m_testDuration{};    ///< duration of the test
@@ -638,7 +681,7 @@ class P2pTest : public TestCase
 };
 
 P2pTest::P2pTest(const std::string& name, const P2pTestParams& params)
-    : TestCase{name},
+    : TestCase{"Check P2P operation for configuration: " + name},
       m_params{params},
       m_countP2pStaToAdhocPackets{0},
       m_countAdhocToP2pStaPackets{0},
@@ -847,15 +890,52 @@ P2pTest::CheckResults()
 }
 
 void
+P2pTest::SetChannels(SpectrumWifiPhyHelper& helper,
+                     const std::vector<std::string>& channels,
+                     const ChannelMap& channelMap)
+{
+    helper = SpectrumWifiPhyHelper(channels.size());
+    helper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+
+    uint8_t linkId = 0;
+    for (const auto& str : channels)
+    {
+        helper.Set(linkId++, "ChannelSettings", StringValue(str));
+    }
+
+    for (const auto& [band, channel] : channelMap)
+    {
+        helper.AddChannel(channel, band);
+    }
+}
+
+Address
+P2pTest::GetPeerAddress(Ptr<WifiMac> srcMac, Ptr<WifiMac> dstMac) const
+{
+    if (const auto nLinks = dstMac->GetNLinks(); (srcMac->GetNLinks() == 1) && (nLinks > 1))
+    {
+        for (std::size_t id = 0; id < nLinks; ++id)
+        {
+            if (dstMac->GetWifiPhy(id)->GetPhyBand() == srcMac->GetWifiPhy()->GetPhyBand())
+            {
+                return dstMac->GetFrameExchangeManager(id)->GetAddress();
+            }
+        }
+    }
+    return dstMac->GetAddress();
+}
+
+void
 P2pTest::CreateTraffic(Ptr<Node> txNode,
                        Ptr<Node> rxNode,
+                       const Address& destinationAddress,
                        uint16_t protocol,
                        uint32_t payloadSize,
                        Time start)
 {
     PacketSocketAddress socketAddr;
     socketAddr.SetSingleDevice(txNode->GetDevice(0)->GetIfIndex());
-    socketAddr.SetPhysicalAddress(rxNode->GetDevice(0)->GetAddress());
+    socketAddr.SetPhysicalAddress(destinationAddress);
     socketAddr.SetProtocol(protocol);
 
     auto client = CreateObject<PacketSocketClient>();
@@ -886,17 +966,26 @@ P2pTest::DoSetup()
     RngSeedManager::SetRun(1);
     int64_t streamNumber = 100;
 
+    Config::SetDefault("ns3::WifiPhy::FixedPhyBand", BooleanValue(true));
+
+    ChannelMap channelMap{{WIFI_SPECTRUM_2_4_GHZ, CreateObject<MultiModelSpectrumChannel>()},
+                          {WIFI_SPECTRUM_5_GHZ, CreateObject<MultiModelSpectrumChannel>()},
+                          {WIFI_SPECTRUM_6_GHZ, CreateObject<MultiModelSpectrumChannel>()}};
+
+    SpectrumWifiPhyHelper apPhyHelper;
+    SpectrumWifiPhyHelper staPhyHelper;
+    SpectrumWifiPhyHelper p2pAdhocPhyHelper;
+
+    SetChannels(apPhyHelper, m_params.apChannels, channelMap);
+    SetChannels(staPhyHelper, m_params.staChannels, channelMap);
+    SetChannels(p2pAdhocPhyHelper, {m_params.p2pChannel}, channelMap);
+
     NodeContainer wifiApNode(1);
     NodeContainer wifiStaNodes(2);
     NodeContainer wifiAdhocNode(1);
 
-    auto channel = YansWifiChannelHelper::Default();
-    YansWifiPhyHelper phy;
-    phy.SetChannel(channel.Create());
-    phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
-
     WifiHelper wifi;
-    wifi.SetStandard(WIFI_STANDARD_80211ax);
+    wifi.SetStandard(WIFI_STANDARD_80211be);
 
     WifiMacHelper mac;
 
@@ -907,14 +996,16 @@ P2pTest::DoSetup()
                 BooleanValue(true),
                 "EnableBeaconJitter",
                 BooleanValue(true));
-    auto apDevice = wifi.Install(phy, mac, wifiApNode.Get(0));
+    auto apDevice = wifi.Install(apPhyHelper, mac, wifiApNode.Get(0));
     streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
+    auto apMac = DynamicCast<ApWifiMac>(DynamicCast<WifiNetDevice>(apDevice.Get(0))->GetMac());
 
     mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(Ssid("bss-ssid")));
-    auto staDevices = wifi.Install(phy, mac, wifiStaNodes.Get(0));
+    auto staDevices = wifi.Install(staPhyHelper, mac, wifiStaNodes.Get(0));
+    auto staMac = DynamicCast<StaWifiMac>(DynamicCast<WifiNetDevice>(staDevices.Get(0))->GetMac());
 
     mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(Ssid("wrong-ssid")));
-    staDevices.Add(wifi.Install(phy, mac, wifiStaNodes.Get(1)));
+    staDevices.Add(wifi.Install(staPhyHelper, mac, wifiStaNodes.Get(1)));
 
     streamNumber += WifiHelper::AssignStreams(staDevices, streamNumber);
     m_p2pSta = DynamicCast<StaWifiMac>(DynamicCast<WifiNetDevice>(staDevices.Get(1))->GetMac());
@@ -925,14 +1016,16 @@ P2pTest::DoSetup()
                 "BeaconGeneration",
                 BooleanValue(true));
 
-    auto adhocDevice = wifi.Install(phy, mac, wifiAdhocNode.Get(0));
+    auto adhocDevice = wifi.Install(p2pAdhocPhyHelper, mac, wifiAdhocNode.Get(0));
     streamNumber += WifiHelper::AssignStreams(adhocDevice, streamNumber);
+    auto adhocMac =
+        DynamicCast<AdhocWifiMac>(DynamicCast<WifiNetDevice>(adhocDevice.Get(0))->GetMac());
 
     // Uncomment the lines below to write PCAP files
-    // phy.EnablePcap("wifi-p2p_AP", apDevice);
-    // phy.EnablePcap("wifi-p2p_STA", staDevices.Get(0));
-    // phy.EnablePcap("wifi-p2p_P2P_STA", staDevices.Get(1));
-    // phy.EnablePcap("wifi-p2p_ADHOC", adhocDevice);
+    // apPhyHelper.EnablePcap("wifi-p2p_AP", apDevice);
+    // staPhyHelper.EnablePcap("wifi-p2p_STA", staDevices.Get(0));
+    // staPhyHelper.EnablePcap("wifi-p2p_P2P_STA", staDevices.Get(1));
+    // p2pAdhocPhyHelper.EnablePcap("wifi-p2p_ADHOC", adhocDevice);
 
     MobilityHelper mobility;
     auto positionAlloc = CreateObject<ListPositionAllocator>();
@@ -962,6 +1055,7 @@ P2pTest::DoSetup()
     // traffic from P2P STA to ADHOC
     CreateTraffic(wifiStaNodes.Get(1),
                   wifiAdhocNode.Get(0),
+                  adhocDevice.Get(0)->GetAddress(),
                   P2P_STA_TO_ADHOC_PROTOCOL,
                   P2P_STA_TO_ADHOC_PAYLOAD_SIZE,
                   Seconds(0.2));
@@ -969,6 +1063,7 @@ P2pTest::DoSetup()
     // traffic from ADHOC to P2P STA
     CreateTraffic(wifiAdhocNode.Get(0),
                   wifiStaNodes.Get(1),
+                  GetPeerAddress(adhocMac, m_p2pSta),
                   ADHOC_TO_P2P_STA_PROTOCOL,
                   ADHOC_TO_P2P_STA_PAYLOAD_SIZE,
                   Seconds(0.3));
@@ -976,6 +1071,7 @@ P2pTest::DoSetup()
     // traffic from P2P STA to STA
     CreateTraffic(wifiStaNodes.Get(1),
                   wifiStaNodes.Get(0),
+                  GetPeerAddress(apMac, staMac),
                   P2P_STA_TO_STA_PROTOCOL,
                   P2P_STA_TO_STA_PAYLOAD_SIZE,
                   Seconds(0.4));
@@ -983,6 +1079,7 @@ P2pTest::DoSetup()
     // traffic from STA to P2P STA
     CreateTraffic(wifiStaNodes.Get(0),
                   wifiStaNodes.Get(1),
+                  GetPeerAddress(apMac, m_p2pSta),
                   STA_TO_P2P_STA_PROTOCOL,
                   STA_TO_P2P_STA_PAYLOAD_SIZE,
                   Seconds(0.5));
@@ -990,6 +1087,7 @@ P2pTest::DoSetup()
     // traffic from AP to P2P STA
     CreateTraffic(wifiApNode.Get(0),
                   wifiStaNodes.Get(1),
+                  GetPeerAddress(apMac, m_p2pSta),
                   AP_TO_P2P_STA_PROTOCOL,
                   AP_TO_P2P_STA_PAYLOAD_SIZE,
                   Seconds(0.7));
@@ -997,6 +1095,7 @@ P2pTest::DoSetup()
     // traffic from P2P STA to AP
     CreateTraffic(wifiStaNodes.Get(1),
                   wifiApNode.Get(0),
+                  apDevice.Get(0)->GetAddress(),
                   P2P_STA_TO_AP_PROTOCOL,
                   P2P_STA_TO_AP_PAYLOAD_SIZE,
                   Seconds(0.8));
@@ -1056,12 +1155,13 @@ WifiP2pTestSuite::WifiP2pTestSuite()
     : TestSuite("wifi-p2p", Type::UNIT)
 {
     AddTestCase(new IbssBeaconingTest(), TestCase::Duration::QUICK);
-    for (auto& [txStandard, rxStandard] : std::vector<std::pair<WifiStandard, WifiStandard>>{
+
+    for (const auto& [txStandard, rxStandard] : std::vector<std::pair<WifiStandard, WifiStandard>>{
              {WIFI_STANDARD_80211ax, WIFI_STANDARD_80211ax},
              {WIFI_STANDARD_80211ax, WIFI_STANDARD_80211ac},
              {WIFI_STANDARD_80211ac, WIFI_STANDARD_80211ax}})
     {
-        for (auto beaconing : {true, false})
+        for (const auto beaconing : {true, false})
         {
             AddTestCase(new IbssCapabilitiesTest(txStandard, rxStandard, beaconing),
                         TestCase::Duration::QUICK);
@@ -1069,10 +1169,96 @@ WifiP2pTestSuite::WifiP2pTestSuite()
     }
 
     for (const auto& [name, params] : std::vector<std::pair<std::string, P2pTest::P2pTestParams>>{
-             {"Check P2P operation when STA is associated with AP",
-              {{{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}}, {{Seconds(0), Seconds(5)}}}},
-             {"Check P2P operation when STA is not associated with AP",
-              {{{Seconds(0), Seconds(5)}}, {}}}})
+             {"single link on 5 GHz",
+              {{"{36, 0, BAND_5GHZ, 0}"},
+               {"{36, 0, BAND_5GHZ, 0}"},
+               "{36, 0, BAND_5GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"single link on 2.4 GHz",
+              {{"{2, 0, BAND_2_4GHZ, 0}"},
+               {"{2, 0, BAND_2_4GHZ, 0}"},
+               "{2, 0, BAND_2_4GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"single link on 6 GHz",
+              {{"{1, 0, BAND_6GHZ, 0}"},
+               {"{1, 0, BAND_6GHZ, 0}"},
+               "{1, 0, BAND_6GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"P2P only on 5 GHz",
+              {{"{36, 0, BAND_5GHZ, 0}"},
+               {"{36, 0, BAND_5GHZ, 0}"},
+               "{36, 0, BAND_5GHZ, 0}",
+               {{Seconds(0), Seconds(5)}},
+               {}}},
+             {"P2P only on 2.4 GHz",
+              {{"{2, 0, BAND_2_4GHZ, 0}"},
+               {"{2, 0, BAND_2_4GHZ, 0}"},
+               "{2, 0, BAND_2_4GHZ, 0}",
+               {{Seconds(0), Seconds(5)}},
+               {}}},
+             {"P2P only on 6 GHz",
+              {{"{1, 0, BAND_6GHZ, 0}"},
+               {"{1, 0, BAND_6GHZ, 0}"},
+               "{1, 0, BAND_6GHZ, 0}",
+               {{Seconds(0), Seconds(5)}},
+               {}}},
+             {"AP MLD with 2 links, non-APs MLD with 2 links, P2P on first link",
+              {{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+               {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+               "{2, 0, BAND_2_4GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"AP MLD with 2 links, non-APs MLD with 2 links, P2P on second link",
+              {{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+               {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+               "{36, 0, BAND_5GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"AP MLD with 2 links, non-APs SLD, P2P on single link",
+              {{"{1, 0, BAND_6GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+               {"{36, 0, BAND_5GHZ, 0}"},
+               "{36, 0, BAND_5GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"AP SLD, non-APs MLD with 2 links, AP and P2P on first link",
+              {{"{36, 0, BAND_5GHZ, 0}"},
+               {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+               "{36, 0, BAND_5GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"AP SLD, non-APs MLD with 2 links, AP and P2P on second link",
+              {{"{1, 0, BAND_6GHZ, 0}"},
+               {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+               "{1, 0, BAND_6GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"AP SLD, non-APs MLD with 2 links, AP on first link, P2P on second link",
+              {{"{36, 0, BAND_5GHZ, 0}"},
+               {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+               "{1, 0, BAND_6GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"AP SLD, non-APs MLD with 2 links, AP on second link, P2P on first link",
+              {{"{1, 0, BAND_6GHZ, 0}"},
+               {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+               "{36, 0, BAND_5GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"AP MLD with 2 links, non-APs MLD with 3 links, P2P on dedicated link (last link)",
+              {{"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+               {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+               "{1, 0, BAND_6GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}},
+             {"AP MLD with 2 links, non-APs MLD with 3 links, P2P on dedicated link (first link)",
+              {{"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+               {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+               "{2, 0, BAND_2_4GHZ, 0}",
+               {{Seconds(0), Seconds(1)}, {Seconds(4), Seconds(5)}},
+               {{Seconds(0), Seconds(5)}}}}})
     {
         AddTestCase(new P2pTest(name, params), TestCase::Duration::QUICK);
     }
