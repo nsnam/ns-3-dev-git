@@ -796,6 +796,30 @@ EhtFrameExchangeManager::ReceivedQosNullAfterBsrpTf(Mac48Address sender)
     HeFrameExchangeManager::ReceivedQosNullAfterBsrpTf(sender);
 }
 
+bool
+EhtFrameExchangeManager::EmlsrClientCannotRespondToIcf() const
+{
+    NS_ASSERT(m_staMac);
+    if (m_staMac->IsEmlsrLink(m_linkId))
+    {
+        auto mainPhy = m_staMac->GetDevice()->GetPhy(m_staMac->GetEmlsrManager()->GetMainPhyId());
+
+        // while an ICF is being received on this link, an aux PHY that is not TX capable may get
+        // a TXOP on another link, release the channel and request the main PHY to switch channel.
+        // It may be decided to have the main PHY start a TXOP on the other link a PIFS after the
+        // channel switch (e.g., MAC header information is not used and AllowUlTxopInRx is true).
+        // Thus, when the ICF is received on this link, it is not dropped but, when the CTS must
+        // be transmitted, the main PHY has already started transmitting on the other link. In
+        // such a case, do not respond to the ICF.
+        if (mainPhy->IsStateSwitching() || m_mac->GetLinkForPhy(mainPhy) != m_linkId)
+        {
+            NS_LOG_DEBUG("Main PHY is switching or operating on another link, abort ICF response");
+            return true;
+        }
+    }
+    return false;
+}
+
 void
 EhtFrameExchangeManager::SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
                                            const CtrlTriggerHeader& trigger,
@@ -803,22 +827,24 @@ EhtFrameExchangeManager::SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
 {
     NS_LOG_FUNCTION(this << muRtsHdr << trigger << muRtsSnr);
 
-    NS_ASSERT(m_staMac);
-    if (auto emlsrManager = m_staMac->GetEmlsrManager())
+    if (EmlsrClientCannotRespondToIcf())
     {
-        auto mainPhy = m_staMac->GetDevice()->GetPhy(emlsrManager->GetMainPhyId());
-
-        // an aux PHY that is not TX capable may get a TXOP, release the channel and request
-        // the main PHY to switch channel. Shortly afterwards, the AP MLD may send an ICF, thus
-        // when the main PHY is scheduled to send the CTS, the main PHY may be switching channel
-        // or may be operating on another link
-        if (mainPhy->IsStateSwitching() || m_mac->GetLinkForPhy(mainPhy) != m_linkId)
-        {
-            NS_LOG_DEBUG("Main PHY is switching or operating on another link, abort sending CTS");
-            return;
-        }
+        return;
     }
     HeFrameExchangeManager::SendCtsAfterMuRts(muRtsHdr, trigger, muRtsSnr);
+}
+
+void
+EhtFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigger,
+                                                   const WifiMacHeader& hdr)
+{
+    NS_LOG_FUNCTION(this << trigger << hdr);
+
+    if (trigger.IsBsrp() && EmlsrClientCannotRespondToIcf())
+    {
+        return;
+    }
+    HeFrameExchangeManager::SendQosNullFramesInTbPpdu(trigger, hdr);
 }
 
 void

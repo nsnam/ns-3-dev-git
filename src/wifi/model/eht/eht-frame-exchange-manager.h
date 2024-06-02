@@ -200,6 +200,13 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void SendCtsAfterRts(const WifiMacHeader& rtsHdr, WifiMode rtsTxMode, double rtsSnr) override;
     void PsduRxError(Ptr<const WifiPsdu> psdu) override;
     void ReceivedQosNullAfterBsrpTf(Mac48Address sender) override;
+    void SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigger,
+                                   const WifiMacHeader& hdr) override;
+
+    /**
+     * \return whether this is an EMLSR client that cannot respond to an ICF received a SIFS before
+     */
+    bool EmlsrClientCannotRespondToIcf() const;
 
   private:
     /**

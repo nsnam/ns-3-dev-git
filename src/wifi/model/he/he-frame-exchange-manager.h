@@ -340,7 +340,8 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
      * \param trigger the Basic or BSRP Trigger Frame content
      * \param hdr the MAC header of the Basic or BSRP Trigger Frame
      */
-    void SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigger, const WifiMacHeader& hdr);
+    virtual void SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigger,
+                                           const WifiMacHeader& hdr);
 
     /**
      * Perform the actions required when receiving QoS Null frame(s) from the given sender after
