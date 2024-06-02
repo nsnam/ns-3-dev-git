@@ -139,14 +139,21 @@ PacketSink::StartApplication() // Called at time specified by Start
         if (local.IsInvalid())
         {
             local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
+            NS_LOG_INFO(this << " Binding on port " << m_port << " / " << local << ".");
         }
         else if (InetSocketAddress::IsMatchingType(local))
         {
             m_port = InetSocketAddress::ConvertFrom(local).GetPort();
+            const auto ipv4 = InetSocketAddress::ConvertFrom(local).GetIpv4();
+            NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << local
+                             << ".");
         }
         else if (Inet6SocketAddress::IsMatchingType(local))
         {
             m_port = Inet6SocketAddress::ConvertFrom(local).GetPort();
+            const auto ipv6 = Inet6SocketAddress::ConvertFrom(local).GetIpv6();
+            NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << local
+                             << ".");
         }
         if (m_socket->Bind(local) == -1)
         {

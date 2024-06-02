@@ -375,15 +375,19 @@ UdpTraceClient::SendPacket(uint32_t size)
     seqTs.SetSeq(m_sent);
     p->AddHeader(seqTs);
 
-    std::stringstream addressString;
+    std::stringstream addressString{};
+#ifdef NS3_LOG_ENABLE
     if (InetSocketAddress::IsMatchingType(m_peer))
     {
-        addressString << InetSocketAddress::ConvertFrom(m_peer).GetIpv4();
+        addressString << InetSocketAddress::ConvertFrom(m_peer).GetIpv4() << ":"
+                      << InetSocketAddress::ConvertFrom(m_peer).GetPort();
     }
     else if (Inet6SocketAddress::IsMatchingType(m_peer))
     {
-        addressString << Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6();
+        addressString << Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6() << ":"
+                      << Inet6SocketAddress::ConvertFrom(m_peer).GetPort();
     }
+#endif
 
     if ((m_socket->Send(p)) >= 0)
     {

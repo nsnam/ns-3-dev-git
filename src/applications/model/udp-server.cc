@@ -128,6 +128,22 @@ UdpServer::StartApplication()
         if (local.IsInvalid())
         {
             local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
+            NS_LOG_INFO(this << " Binding on port " << m_port << " / " << local << ".");
+        }
+        else
+        {
+            if (InetSocketAddress::IsMatchingType(m_local))
+            {
+                const auto ipv4 = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
+                NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
+                                 << ".");
+            }
+            else if (Ipv6Address::IsMatchingType(m_local))
+            {
+                const auto ipv6 = Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
+                NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
+                                 << ".");
+            }
         }
         if (m_socket->Bind(local) == -1)
         {

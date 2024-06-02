@@ -236,11 +236,14 @@ UdpClient::StartApplication()
     std::stringstream peerAddressStringStream;
     if (InetSocketAddress::IsMatchingType(m_peer))
     {
-        peerAddressStringStream << InetSocketAddress::ConvertFrom(m_peer).GetIpv4();
+        peerAddressStringStream << InetSocketAddress::ConvertFrom(m_peer).GetIpv4() << ":"
+                                << InetSocketAddress::ConvertFrom(m_peer).GetPort();
+        ;
     }
     else if (Inet6SocketAddress::IsMatchingType(m_peer))
     {
-        peerAddressStringStream << Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6();
+        peerAddressStringStream << Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6() << ":"
+                                << Inet6SocketAddress::ConvertFrom(m_peer).GetPort();
     }
     m_peerString = peerAddressStringStream.str();
 #endif // NS3_LOG_ENABLE
