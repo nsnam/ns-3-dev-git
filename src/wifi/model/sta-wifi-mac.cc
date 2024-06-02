@@ -1150,10 +1150,14 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     NS_LOG_FUNCTION(this << *mpdu << +linkId);
     // consider the MAC header of the original MPDU (makes a difference for data frames only)
     const auto& hdr = mpdu->GetOriginal()->GetHeader();
-    Ptr<const Packet> packet = mpdu->GetPacket();
+    const auto from = mpdu->GetHeader().GetAddr2();
+    auto packet = mpdu->GetPacket();
     NS_ASSERT(!hdr.IsCtl());
-    Mac48Address myAddr = hdr.IsData() ? Mac48Address::ConvertFrom(GetDevice()->GetAddress())
-                                       : GetFrameExchangeManager(linkId)->GetAddress();
+    const auto p2pLinkId = GetLinkIdForPeer(from);
+    Mac48Address myAddr = hdr.IsData()
+                              ? (p2pLinkId ? GetFrameExchangeManager(*p2pLinkId)->GetAddress()
+                                           : Mac48Address::ConvertFrom(GetDevice()->GetAddress()))
+                              : GetFrameExchangeManager(linkId)->GetAddress();
     if (hdr.GetAddr3() == myAddr)
     {
         NS_LOG_LOGIC("packet sent by us.");
@@ -1193,7 +1197,7 @@ StaWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             {
                 apAddresses.insert(GetBssid(id));
             }
-            if (!apAddresses.contains(mpdu->GetHeader().GetAddr2()))
+            if (!apAddresses.contains(from))
             {
                 NS_LOG_LOGIC("Received data frame not from the BSS we are associated with: ignore");
                 NotifyRxDrop(packet);
