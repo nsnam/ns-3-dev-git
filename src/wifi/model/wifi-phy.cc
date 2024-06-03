@@ -1603,7 +1603,7 @@ WifiPhy::GetMaxPsduSize(WifiModulationClass modulation)
 }
 
 void
-WifiPhy::NotifyTxBegin(WifiConstPsduMap psdus, double txPowerW)
+WifiPhy::NotifyTxBegin(WifiConstPsduMap psdus, Watt_u txPower)
 {
     if (!m_phyTxBeginTrace.IsEmpty())
     {
@@ -1611,7 +1611,7 @@ WifiPhy::NotifyTxBegin(WifiConstPsduMap psdus, double txPowerW)
         {
             for (auto& mpdu : *PeekPointer(psdu.second))
             {
-                m_phyTxBeginTrace(mpdu->GetProtocolDataUnit(), txPowerW);
+                m_phyTxBeginTrace(mpdu->GetProtocolDataUnit(), txPower);
             }
         }
     }
@@ -1845,9 +1845,9 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
         return;
     }
 
-    Time txDuration = CalculateTxDuration(psdus, txVector, GetPhyBand());
+    const auto txDuration = CalculateTxDuration(psdus, txVector, GetPhyBand());
 
-    bool noEndPreambleDetectionEvent = true;
+    auto noEndPreambleDetectionEvent = true;
     for (const auto& [mc, entity] : m_phyEntities)
     {
         noEndPreambleDetectionEvent =
@@ -1880,15 +1880,14 @@ WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
         return;
     }
 
-    Ptr<WifiPpdu> ppdu =
-        GetPhyEntity(txVector.GetModulationClass())->BuildPpdu(psdus, txVector, txDuration);
+    auto ppdu = GetPhyEntity(txVector.GetModulationClass())->BuildPpdu(psdus, txVector, txDuration);
     m_previouslyRxPpduUid = UINT64_MAX; // reset (after creation of PPDU) to use it only once
 
-    double txPowerW = DbmToW(GetTxPowerForTransmission(ppdu) + GetTxGain());
-    NotifyTxBegin(psdus, txPowerW);
+    const auto txPower = DbmToW(GetTxPowerForTransmission(ppdu) + GetTxGain());
+    NotifyTxBegin(psdus, txPower);
     if (!m_phyTxPsduBeginTrace.IsEmpty())
     {
-        m_phyTxPsduBeginTrace(psdus, txVector, txPowerW);
+        m_phyTxPsduBeginTrace(psdus, txVector, txPower);
     }
     for (const auto& psdu : psdus)
     {

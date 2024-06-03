@@ -176,7 +176,7 @@ main(int argc, char* argv[])
     std::string errorModelType{"ns3::NistErrorRateModel"};
     bool enablePcap{false};
     const uint32_t tcpPacketSize{1448};
-    double waveformPower{0};
+    Watt_u waveformPower{0};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("simulationTime", "Simulation time", simulationTime);

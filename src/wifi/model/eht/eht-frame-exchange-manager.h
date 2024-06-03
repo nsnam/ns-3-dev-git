@@ -151,9 +151,9 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      *
      * \param linkId the ID of the link on which in-device interference is generated
      * \param duration the duration of the in-device interference
-     * \param txPower the TX power in Watts
+     * \param txPower the TX power
      */
-    void GenerateInDeviceInterference(uint8_t linkId, Time duration, double txPower);
+    void GenerateInDeviceInterference(uint8_t linkId, Time duration, Watt_u txPower);
 
     /**
      * Update the TXOP end timer when starting a frame transmission.

@@ -558,8 +558,8 @@ TestNonHtDuplicatePhyReception::DoRun()
                 bands.push_back(bandInfo);
                 auto spectrumInterference = Create<SpectrumModel>(bands);
                 auto interferencePsd = Create<SpectrumValue>(spectrumInterference);
-                auto interferencePower = 0.005; // in watts (designed to make PHY headers reception
-                                                // successful but payload reception fail)
+                Watt_u interferencePower = 0.005; // designed to make PHY headers reception
+                                                  // successful but payload reception fail
                 *interferencePsd = interferencePower / 10e6;
                 Simulator::Schedule(Seconds(index),
                                     &TestNonHtDuplicatePhyReception::GenerateInterference,

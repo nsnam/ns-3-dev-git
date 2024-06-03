@@ -47,32 +47,28 @@ class WifiPhyThresholdsTest : public TestCase
      * \param test_name the test name
      */
     WifiPhyThresholdsTest(std::string test_name);
-    /**
-     * Destructor
-     */
-    ~WifiPhyThresholdsTest() override;
 
   protected:
     /**
      * Make wifi signal function
-     * \param txPowerWatts the transmit power in watts
+     * \param txPower the transmit power
      * \param channel the operating channel of the PHY used for the transmission
      * \returns Ptr<SpectrumSignalParameters>
      */
-    virtual Ptr<SpectrumSignalParameters> MakeWifiSignal(double txPowerWatts,
+    virtual Ptr<SpectrumSignalParameters> MakeWifiSignal(Watt_u txPower,
                                                          const WifiPhyOperatingChannel& channel);
     /**
      * Make foreign signal function
-     * \param txPowerWatts the transmit power in watts
+     * \param txPower the transmit power
      * \returns Ptr<SpectrumSignalParameters>
      */
-    virtual Ptr<SpectrumSignalParameters> MakeForeignSignal(double txPowerWatts);
+    virtual Ptr<SpectrumSignalParameters> MakeForeignSignal(Watt_u txPower);
     /**
      * Send signal function
-     * \param txPowerWatts the transmit power in watts
+     * \param txPower the transmit power
      * \param wifiSignal whether the signal is a wifi signal or not
      */
-    virtual void SendSignal(double txPowerWatts, bool wifiSignal);
+    virtual void SendSignal(Watt_u txPower, bool wifiSignal);
     /**
      * PHY receive success callback function
      * \param psdu the PSDU
@@ -129,41 +125,37 @@ WifiPhyThresholdsTest::WifiPhyThresholdsTest(std::string test_name)
 {
 }
 
-WifiPhyThresholdsTest::~WifiPhyThresholdsTest()
-{
-}
-
 Ptr<SpectrumSignalParameters>
-WifiPhyThresholdsTest::MakeWifiSignal(double txPowerWatts, const WifiPhyOperatingChannel& channel)
+WifiPhyThresholdsTest::MakeWifiSignal(Watt_u txPower, const WifiPhyOperatingChannel& channel)
 {
-    WifiTxVector txVector = WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
-                                         0,
-                                         WIFI_PREAMBLE_LONG,
-                                         NanoSeconds(800),
-                                         1,
-                                         1,
-                                         0,
-                                         CHANNEL_WIDTH,
-                                         false);
+    WifiTxVector txVector{OfdmPhy::GetOfdmRate6Mbps(),
+                          0,
+                          WIFI_PREAMBLE_LONG,
+                          NanoSeconds(800),
+                          1,
+                          1,
+                          0,
+                          CHANNEL_WIDTH,
+                          false};
 
-    Ptr<Packet> pkt = Create<Packet>(1000);
+    auto pkt = Create<Packet>(1000);
     WifiMacHeader hdr;
 
     hdr.SetType(WIFI_MAC_QOSDATA);
     hdr.SetQosTid(0);
 
-    Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
-    Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
+    auto psdu = Create<WifiPsdu>(pkt, hdr);
+    const auto txDuration =
+        m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
 
-    Ptr<WifiPpdu> ppdu = Create<OfdmPpdu>(psdu, txVector, channel, 0);
+    auto ppdu = Create<OfdmPpdu>(psdu, txVector, channel, 0);
 
-    Ptr<SpectrumValue> txPowerSpectrum =
-        WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
-            channel.GetPrimaryChannelCenterFrequency(CHANNEL_WIDTH),
-            CHANNEL_WIDTH,
-            txPowerWatts,
-            CHANNEL_WIDTH);
-    Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters>();
+    auto txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
+        channel.GetPrimaryChannelCenterFrequency(CHANNEL_WIDTH),
+        CHANNEL_WIDTH,
+        txPower,
+        CHANNEL_WIDTH);
+    auto txParams = Create<WifiSpectrumSignalParameters>();
     txParams->psd = txPowerSpectrum;
     txParams->txPhy = nullptr;
     txParams->duration = txDuration;
@@ -172,14 +164,14 @@ WifiPhyThresholdsTest::MakeWifiSignal(double txPowerWatts, const WifiPhyOperatin
 }
 
 Ptr<SpectrumSignalParameters>
-WifiPhyThresholdsTest::MakeForeignSignal(double txPowerWatts)
+WifiPhyThresholdsTest::MakeForeignSignal(Watt_u txPower)
 {
-    Ptr<SpectrumValue> txPowerSpectrum =
+    auto txPowerSpectrum =
         WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(FREQUENCY,
                                                                     CHANNEL_WIDTH,
-                                                                    txPowerWatts,
+                                                                    txPower,
                                                                     CHANNEL_WIDTH);
-    Ptr<SpectrumSignalParameters> txParams = Create<SpectrumSignalParameters>();
+    auto txParams = Create<SpectrumSignalParameters>();
     txParams->psd = txPowerSpectrum;
     txParams->txPhy = nullptr;
     txParams->duration = Seconds(0.5);
@@ -187,15 +179,15 @@ WifiPhyThresholdsTest::MakeForeignSignal(double txPowerWatts)
 }
 
 void
-WifiPhyThresholdsTest::SendSignal(double txPowerWatts, bool wifiSignal)
+WifiPhyThresholdsTest::SendSignal(Watt_u txPower, bool wifiSignal)
 {
     if (wifiSignal)
     {
-        m_phy->StartRx(MakeWifiSignal(txPowerWatts, m_phy->GetOperatingChannel()), nullptr);
+        m_phy->StartRx(MakeWifiSignal(txPower, m_phy->GetOperatingChannel()), nullptr);
     }
     else
     {
-        m_phy->StartRx(MakeForeignSignal(txPowerWatts), nullptr);
+        m_phy->StartRx(MakeForeignSignal(txPower), nullptr);
     }
 }
 
@@ -245,13 +237,13 @@ WifiPhyThresholdsTest::PhyStateChanged(Time start, Time duration, WifiPhyState n
 void
 WifiPhyThresholdsTest::DoSetup()
 {
-    Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
-    Ptr<Node> node = CreateObject<Node>();
-    Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice>();
+    auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+    auto node = CreateObject<Node>();
+    auto dev = CreateObject<WifiNetDevice>();
     m_phy = CreateObject<SpectrumWifiPhy>();
-    Ptr<InterferenceHelper> interferenceHelper = CreateObject<InterferenceHelper>();
+    auto interferenceHelper = CreateObject<InterferenceHelper>();
     m_phy->SetInterferenceHelper(interferenceHelper);
-    Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel>();
+    auto error = CreateObject<NistErrorRateModel>();
     m_phy->SetErrorRateModel(error);
     m_phy->SetDevice(dev);
     m_phy->AddChannel(spectrumChannel);
@@ -288,7 +280,6 @@ class WifiPhyThresholdsWeakWifiSignalTest : public WifiPhyThresholdsTest
 {
   public:
     WifiPhyThresholdsWeakWifiSignalTest();
-    ~WifiPhyThresholdsWeakWifiSignalTest() override;
     void DoRun() override;
 };
 
@@ -297,19 +288,15 @@ WifiPhyThresholdsWeakWifiSignalTest::WifiPhyThresholdsWeakWifiSignalTest()
 {
 }
 
-WifiPhyThresholdsWeakWifiSignalTest::~WifiPhyThresholdsWeakWifiSignalTest()
-{
-}
-
 void
 WifiPhyThresholdsWeakWifiSignalTest::DoRun()
 {
-    double txPowerWatts = DbmToW(-110);
+    const auto txPower = DbmToW(-110);
 
     Simulator::Schedule(Seconds(1),
                         &WifiPhyThresholdsWeakWifiSignalTest::SendSignal,
                         this,
-                        txPowerWatts,
+                        txPower,
                         true);
 
     Simulator::Run();
@@ -354,12 +341,12 @@ WifiPhyThresholdsWeakForeignSignalTest::~WifiPhyThresholdsWeakForeignSignalTest(
 void
 WifiPhyThresholdsWeakForeignSignalTest::DoRun()
 {
-    double txPowerWatts = DbmToW(-90);
+    const auto txPower = DbmToW(-90);
 
     Simulator::Schedule(Seconds(1),
                         &WifiPhyThresholdsWeakForeignSignalTest::SendSignal,
                         this,
-                        txPowerWatts,
+                        txPower,
                         false);
 
     Simulator::Run();
@@ -403,12 +390,12 @@ WifiPhyThresholdsStrongWifiSignalTest::~WifiPhyThresholdsStrongWifiSignalTest()
 void
 WifiPhyThresholdsStrongWifiSignalTest::DoRun()
 {
-    double txPowerWatts = DbmToW(-60);
+    const auto txPower = DbmToW(-60);
 
     Simulator::Schedule(Seconds(1),
                         &WifiPhyThresholdsStrongWifiSignalTest::SendSignal,
                         this,
-                        txPowerWatts,
+                        txPower,
                         true);
 
     Simulator::Run();
@@ -456,12 +443,12 @@ WifiPhyThresholdsStrongForeignSignalTest::~WifiPhyThresholdsStrongForeignSignalT
 void
 WifiPhyThresholdsStrongForeignSignalTest::DoRun()
 {
-    double txPowerWatts = DbmToW(-60);
+    const auto txPower = DbmToW(-60);
 
     Simulator::Schedule(Seconds(1),
                         &WifiPhyThresholdsStrongForeignSignalTest::SendSignal,
                         this,
-                        txPowerWatts,
+                        txPower,
                         false);
 
     Simulator::Run();

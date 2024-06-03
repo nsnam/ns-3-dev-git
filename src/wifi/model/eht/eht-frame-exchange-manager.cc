@@ -511,7 +511,7 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
 }
 
 void
-EhtFrameExchangeManager::GenerateInDeviceInterference(uint8_t linkId, Time duration, double txPower)
+EhtFrameExchangeManager::GenerateInDeviceInterference(uint8_t linkId, Time duration, Watt_u txPower)
 {
     NS_LOG_FUNCTION(this << linkId << duration.As(Time::US) << txPower);
 

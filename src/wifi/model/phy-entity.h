@@ -40,9 +40,9 @@ namespace ns3
 {
 
 /**
- * A map of the received power (Watts) for each band
+ * A map of the received power for each band
  */
-using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, double>;
+using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, Watt_u>;
 
 class WifiPsdu;
 class WifiPhy;
@@ -767,13 +767,13 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      */
     SnrPer GetPhyHeaderSnrPer(WifiPpduField field, Ptr<Event> event) const;
     /**
-     * Obtain the received power (W) for a given band.
+     * Obtain the received power for a given band.
      * Wrapper used by child classes.
      *
      * \param event the event holding incoming PPDU's information
-     * \return the received power (W) for the event over a given band
+     * \return the received power for the event over a given band
      */
-    double GetRxPowerWForPpdu(Ptr<Event> event) const;
+    Watt_u GetRxPowerWForPpdu(Ptr<Event> event) const;
     /**
      * Get the pointer to the current event (stored in WifiPhy).
      * Wrapper used by child classes.
@@ -836,14 +836,14 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     void NotifyInterferenceRxEndAndClear(bool reset);
 
     /**
-     * \param txPowerW power in W to spread across the bands
+     * \param txPower power to spread across the bands
      * \param ppdu the PPDU that will be transmitted
      * \return Pointer to SpectrumValue
      *
      * This is a helper function to create the right TX PSD corresponding
      * to the amendment of this PHY.
      */
-    virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity(double txPowerW,
+    virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_u txPower,
                                                          Ptr<const WifiPpdu> ppdu) const = 0;
 
     /**

@@ -595,7 +595,7 @@ TestInterBssConstantObssPdAlgo::SetupSimulation()
     {
         // In this case, we check the TX power is restricted (and set the expected value slightly
         // before transmission should occur)
-        double expectedTxPower = std::min(m_txPower, 21 - (m_obssPdLevel + 82));
+        const auto expectedTxPower = std::min(m_txPower, 21 - (m_obssPdLevel + 82));
         Simulator::Schedule(Seconds(2.5) + MicroSeconds(338),
                             &TestInterBssConstantObssPdAlgo::SetExpectedTxPower,
                             this,

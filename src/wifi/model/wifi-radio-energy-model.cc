@@ -109,24 +109,24 @@ WifiRadioEnergyModel::SetEnergySource(const Ptr<energy::EnergySource> source)
     NS_ASSERT(source);
     m_source = source;
     m_switchToOffEvent.Cancel();
-    Time durationToOff = GetMaximumTimeInState(m_currentState);
+    const auto durationToOff = GetMaximumTimeInState(m_currentState);
     m_switchToOffEvent = Simulator::Schedule(durationToOff,
                                              &WifiRadioEnergyModel::ChangeState,
                                              this,
                                              static_cast<int>(WifiPhyState::OFF));
 }
 
-double
+Watt_u
 WifiRadioEnergyModel::GetTotalEnergyConsumption() const
 {
     NS_LOG_FUNCTION(this);
 
-    Time duration = Simulator::Now() - m_lastUpdateTime;
+    const auto duration = Simulator::Now() - m_lastUpdateTime;
     NS_ASSERT(duration.IsPositive()); // check if duration is valid
 
     // energy to decrease = current * voltage * time
-    double supplyVoltage = m_source->GetSupplyVoltage();
-    double energyToDecrease = duration.GetSeconds() * GetStateA(m_currentState) * supplyVoltage;
+    const auto supplyVoltage = m_source->GetSupplyVoltage();
+    const auto energyToDecrease = duration.GetSeconds() * GetStateA(m_currentState) * supplyVoltage;
 
     // notify energy source
     m_source->UpdateEnergySource();

@@ -313,7 +313,7 @@ class OfdmPhy : public PhyEntity
 
   protected:
     PhyFieldRxStatus DoEndReceiveField(WifiPpduField field, Ptr<Event> event) override;
-    Ptr<SpectrumValue> GetTxPowerSpectralDensity(double txPowerW,
+    Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_u txPower,
                                                  Ptr<const WifiPpdu> ppdu) const override;
     uint32_t GetMaxPsduSize() const override;
     MHz_u GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const override;

@@ -168,11 +168,11 @@ class WifiRadioEnergyModel : public energy::DeviceEnergyModel
     void SetEnergySource(const Ptr<energy::EnergySource> source) override;
 
     /**
-     * \returns Total energy consumption of the wifi device in watts.
+     * \returns Total energy consumption of the wifi device.
      *
      * Implements DeviceEnergyModel::GetTotalEnergyConsumption.
      */
-    double GetTotalEnergyConsumption() const override;
+    Watt_u GetTotalEnergyConsumption() const override;
 
     // Setter & getters for state power consumption.
     /**

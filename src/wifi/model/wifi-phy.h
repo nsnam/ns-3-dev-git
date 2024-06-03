@@ -562,9 +562,9 @@ class WifiPhy : public Object
      * Implemented for encapsulation purposes.
      *
      * \param psdus the PSDUs being transmitted (only one unless DL MU transmission)
-     * \param txPowerW the transmit power in Watts
+     * \param txPower the transmit power
      */
-    void NotifyTxBegin(WifiConstPsduMap psdus, double txPowerW);
+    void NotifyTxBegin(WifiConstPsduMap psdus, Watt_u txPower);
     /**
      * Public method used to fire a PhyTxEnd trace.
      * Implemented for encapsulation purposes.

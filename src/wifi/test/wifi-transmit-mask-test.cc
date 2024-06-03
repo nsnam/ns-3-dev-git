@@ -144,7 +144,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
         break;
     }
 
-    double refTxPowerW = 1; // have to work in dBr when comparing though
+    Watt_u refTxPower{1}; // have to work in dBr when comparing though
     switch (m_standard)
     {
     case WIFI_STANDARD_80211p:
@@ -153,7 +153,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
         m_actualSpectrum =
             WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(m_centerFreqs.front(),
                                                                       m_channelWidth,
-                                                                      refTxPowerW,
+                                                                      refTxPower,
                                                                       m_channelWidth,
                                                                       -20.0,
                                                                       -28.0,
@@ -166,7 +166,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
         m_actualSpectrum =
             WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(m_centerFreqs.front(),
                                                                       m_channelWidth,
-                                                                      refTxPowerW,
+                                                                      refTxPower,
                                                                       m_channelWidth,
                                                                       -20.0,
                                                                       -28.0,
@@ -179,7 +179,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
         m_actualSpectrum =
             WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(m_centerFreqs.front(),
                                                                       m_channelWidth,
-                                                                      refTxPowerW,
+                                                                      refTxPower,
                                                                       m_channelWidth,
                                                                       -20.0,
                                                                       -28.0,
@@ -191,7 +191,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
         m_actualSpectrum =
             WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(m_centerFreqs,
                                                                         m_channelWidth,
-                                                                        refTxPowerW,
+                                                                        refTxPower,
                                                                         m_channelWidth,
                                                                         -20.0,
                                                                         -28.0,
@@ -205,7 +205,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
         m_actualSpectrum =
             WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(m_centerFreqs,
                                                                         m_channelWidth,
-                                                                        refTxPowerW,
+                                                                        refTxPower,
                                                                         m_channelWidth,
                                                                         -20.0,
                                                                         -28.0,
@@ -220,7 +220,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
         m_actualSpectrum =
             WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(m_centerFreqs,
                                                                         m_channelWidth,
-                                                                        refTxPowerW,
+                                                                        refTxPower,
                                                                         m_channelWidth,
                                                                         -20.0,
                                                                         -28.0,
@@ -277,18 +277,18 @@ WifiOfdmMaskSlopesTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     double currentPowerDbr = 0.0; // have to work in dBr so as to compare with expected slopes
-    double maxPowerW = (*m_actualSpectrum)[0];
+    Watt_u maxPower = (*m_actualSpectrum)[0];
     for (auto&& vit = m_actualSpectrum->ConstValuesBegin();
          vit != m_actualSpectrum->ConstValuesEnd();
          ++vit)
     {
-        maxPowerW = std::max(maxPowerW, *vit);
+        maxPower = std::max(maxPower, *vit);
     }
 
     NS_LOG_INFO("Compare expected PSD");
     for (const auto& [subcarrier, expectedValue] : m_expectedPsd)
     {
-        currentPowerDbr = 10.0 * std::log10((*m_actualSpectrum)[subcarrier] / maxPowerW);
+        currentPowerDbr = 10.0 * std::log10((*m_actualSpectrum)[subcarrier] / maxPower);
         NS_LOG_LOGIC("For " << subcarrier << ", expected: " << expectedValue
                             << " vs obtained: " << currentPowerDbr);
         NS_TEST_EXPECT_MSG_EQ_TOL(currentPowerDbr,

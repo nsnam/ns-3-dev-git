@@ -450,18 +450,18 @@ HtPhy::IsConfigSupported(Ptr<const WifiPpdu> ppdu) const
 }
 
 Ptr<SpectrumValue>
-HtPhy::GetTxPowerSpectralDensity(double txPowerW, Ptr<const WifiPpdu> ppdu) const
+HtPhy::GetTxPowerSpectralDensity(Watt_u txPower, Ptr<const WifiPpdu> ppdu) const
 {
     const auto& centerFrequencies = ppdu->GetTxCenterFreqs();
     NS_ASSERT(centerFrequencies.size() == 1);
     const auto& txVector = ppdu->GetTxVector();
     const auto channelWidth = txVector.GetChannelWidth();
-    NS_LOG_FUNCTION(this << centerFrequencies.front() << channelWidth << txPowerW);
+    NS_LOG_FUNCTION(this << centerFrequencies.front() << channelWidth << txPower);
     const auto& txMaskRejectionParams = GetTxMaskRejectionParams();
-    Ptr<SpectrumValue> v = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
+    auto v = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
         centerFrequencies,
         channelWidth,
-        txPowerW,
+        txPower,
         GetGuardBandwidth(channelWidth),
         std::get<0>(txMaskRejectionParams),
         std::get<1>(txMaskRejectionParams),
