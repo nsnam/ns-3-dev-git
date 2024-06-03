@@ -1288,6 +1288,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("WifiDefaultProtectionManager", logLevel);
     LogComponentEnable("WifiMac", logLevel);
     LogComponentEnable("WifiMacQueue", logLevel);
+    LogComponentEnable("WifiMacQueueScheduler", logLevel);
     LogComponentEnable("WifiMpdu", logLevel);
     LogComponentEnable("WifiNetDevice", logLevel);
     LogComponentEnable("WifiPhyStateHelper", logLevel);
