@@ -111,6 +111,10 @@ ThreeGppHttpServer::GetTypeId()
                             "A packet has been received.",
                             MakeTraceSourceAccessor(&ThreeGppHttpServer::m_rxTrace),
                             "ns3::Packet::AddressTracedCallback")
+            .AddTraceSource("RxWithAddresses",
+                            "A packet has been received.",
+                            MakeTraceSourceAccessor(&ThreeGppHttpServer::m_rxTraceWithAddresses),
+                            "ns3::Packet::TwoAddressTracedCallback")
             .AddTraceSource("RxDelay",
                             "A packet has been received with delay information.",
                             MakeTraceSourceAccessor(&ThreeGppHttpServer::m_rxDelayTrace),
@@ -437,6 +441,7 @@ ThreeGppHttpServer::ReceivedDataCallback(Ptr<Socket> socket)
 
         // Fire trace sources.
         m_rxTrace(packet, from);
+        m_rxTraceWithAddresses(packet, from, m_local);
         m_rxDelayTrace(Simulator::Now() - httpHeader.GetClientTs(), from);
 
         switch (httpHeader.GetContentType())
