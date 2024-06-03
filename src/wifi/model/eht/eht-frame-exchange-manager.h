@@ -153,7 +153,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      * \param address the link MAC address of the given EMLSR client
      * \param delay the given delay
      */
-    void EmlsrSwitchToListening(const Mac48Address& address, const Time& delay);
+    void EmlsrSwitchToListening(Mac48Address address, const Time& delay);
 
     /**
      * \return a reference to the event indicating the possible end of the current TXOP (of
@@ -202,11 +202,32 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void ReceivedQosNullAfterBsrpTf(Mac48Address sender) override;
     void SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigger,
                                    const WifiMacHeader& hdr) override;
+    void TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations) override;
+    void BlockAcksInTbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations) override;
 
     /**
      * \return whether this is an EMLSR client that cannot respond to an ICF received a SIFS before
      */
     bool EmlsrClientCannotRespondToIcf() const;
+
+    /**
+     * Check whether all the stations that did not respond (to a certain frame) are EMLSR clients
+     * trying to start an UL TXOP on another link.
+     *
+     * \param staMissedResponseFrom stations that did not respond
+     * \return whether all the stations that did not respond are EMLSR clients trying to start an
+     *         UL TXOP on another link
+     */
+    bool IsCrossLinkCollision(const std::set<Mac48Address>& staMissedResponseFrom);
+
+    /**
+     * Unblock transmissions on all the links of the given EMLSR client, provided that the latter
+     * is not involved in any DL or UL TXOP on another link.
+     *
+     * \param address the link MAC address of the given EMLSR client
+     * \return whether transmissions could be unblocked
+     */
+    bool UnblockEmlsrLinksIfAllowed(Mac48Address address);
 
   private:
     /**
@@ -214,6 +235,15 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      *         (e.g., another EMLSR link is being used or there is no time for main PHY switch)
      */
     bool DropReceivedIcf();
+
+    /**
+     * For each EMLSR client in the given set of clients that did not respond to a frame requesting
+     * a response from multiple clients, have the client switch to listening or simply unblock
+     * links depending on whether the EMLSR client was protected or not.
+     *
+     * \param clients the given set of clients
+     */
+    void SwitchToListeningOrUnblockLinks(const std::set<Mac48Address>& clients);
 
     /**
      * Generate an in-device interference of the given power on the given link for the given

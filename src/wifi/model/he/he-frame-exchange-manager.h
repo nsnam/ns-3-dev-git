@@ -279,6 +279,17 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     virtual void TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations);
 
     /**
+     * Take the necessary actions after that some TB PPDUs are missing in
+     * response to Trigger Frame. This method must not be called if all the
+     * expected TB PPDUs were received.
+     *
+     * \param psduMap a pointer to PSDU map transmitted in a DL MU PPDU
+     * \param nSolicitedStations the number of stations solicited to send a TB PPDU
+     * \param updateFailedCw whether to update CW in case the transmission failed
+     */
+    void DoTbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations, bool updateFailedCw);
+
+    /**
      * Take the necessary actions after that a Block Ack is missing after a
      * TB PPDU solicited through a Trigger Frame.
      *

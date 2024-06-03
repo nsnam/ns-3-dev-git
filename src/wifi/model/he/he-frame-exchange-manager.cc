@@ -1313,8 +1313,18 @@ HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
 void
 HeFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations)
 {
+    NS_LOG_FUNCTION(this << psduMap << nSolicitedStations);
+    DoTbPpduTimeout(psduMap, nSolicitedStations, true);
+}
+
+void
+HeFrameExchangeManager::DoTbPpduTimeout(WifiPsduMap* psduMap,
+                                        std::size_t nSolicitedStations,
+                                        bool updateFailedCw)
+{
     const auto& staMissedTbPpduFrom = m_txTimer.GetStasExpectedToRespond();
-    NS_LOG_FUNCTION(this << psduMap << staMissedTbPpduFrom.size() << nSolicitedStations);
+    NS_LOG_FUNCTION(this << psduMap << staMissedTbPpduFrom.size() << nSolicitedStations
+                         << updateFailedCw);
 
     NS_ASSERT(psduMap);
     NS_ASSERT(IsTrigger(*psduMap));
@@ -1326,7 +1336,10 @@ HeFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicit
     if (staMissedTbPpduFrom.size() == nSolicitedStations)
     {
         // no station replied, the transmission failed
-        m_edca->UpdateFailedCw(m_linkId);
+        if (updateFailedCw)
+        {
+            m_edca->UpdateFailedCw(m_linkId);
+        }
 
         CtrlTriggerHeader trigger;
         psduMap->cbegin()->second->GetPayload(0)->PeekHeader(trigger);
