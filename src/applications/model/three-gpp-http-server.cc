@@ -120,7 +120,7 @@ ThreeGppHttpServer::GetTypeId()
             .AddTraceSource("Rx",
                             "A packet has been received.",
                             MakeTraceSourceAccessor(&ThreeGppHttpServer::m_rxTrace),
-                            "ns3::Packet::PacketAddressTracedCallback")
+                            "ns3::Packet::AddressTracedCallback")
             .AddTraceSource("RxDelay",
                             "A packet has been received with delay information.",
                             MakeTraceSourceAccessor(&ThreeGppHttpServer::m_rxDelayTrace),
