@@ -37,7 +37,7 @@ namespace ns3
  *
  * Type name strings for AttributeValue types.
  * Custom classes should add a template specialization of this function
- * using the macro \c TYPE_NAME_GET_DEFINE(T).
+ * using the macro \c TYPENAMEGET_DEFINE(T).
  *
  * \tparam T \explicit The type.
  * \returns The type name as a string.
