@@ -1096,7 +1096,8 @@ HtFrameExchangeManager::FinalizeMacHeader(Ptr<const WifiPsdu> psdu)
                 // set the Queue Size subfield of the QoS Control field
                 if (!queueSizeForTid[tid].has_value())
                 {
-                    queueSizeForTid[tid] = edca->GetQosQueueSize(tid, hdr.GetAddr1());
+                    queueSizeForTid[tid] =
+                        edca->GetQosQueueSize(tid, mpdu->GetOriginal()->GetHeader().GetAddr1());
                 }
 
                 hdr.SetQosEosp();

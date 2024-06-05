@@ -555,7 +555,9 @@ QosFrameExchangeManager::ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVec
     {
         uint8_t tid = hdr.GetQosTid();
         hdr.SetQosEosp();
-        hdr.SetQosQueueSize(m_mac->GetQosTxop(tid)->GetQosQueueSize(tid, hdr.GetAddr1()));
+        hdr.SetQosQueueSize(
+            m_mac->GetQosTxop(tid)->GetQosQueueSize(tid,
+                                                    mpdu->GetOriginal()->GetHeader().GetAddr1()));
     }
     FrameExchangeManager::ForwardMpduDown(mpdu, txVector);
 }
