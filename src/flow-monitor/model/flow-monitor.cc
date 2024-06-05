@@ -443,15 +443,13 @@ FlowMonitor::SerializeToXmlStream(std::ostream& os,
     for (auto flowI = m_flowStats.begin(); flowI != m_flowStats.end(); flowI++)
     {
         os << std::string(indent, ' ');
-#define ATTRIB(name) << " " #name "=\"" << flowI->second.name << "\""
-#define ATTRIB_TIME(name) << " " #name "=\"" << flowI->second.name.As(Time::NS) << "\""
-        os << "<Flow flowId=\"" << flowI->first
-           << "\"" ATTRIB_TIME(timeFirstTxPacket) ATTRIB_TIME(timeFirstRxPacket)
-                  ATTRIB_TIME(timeLastTxPacket) ATTRIB_TIME(timeLastRxPacket) ATTRIB_TIME(delaySum)
-                      ATTRIB_TIME(jitterSum) ATTRIB_TIME(lastDelay) ATTRIB(txBytes) ATTRIB(rxBytes)
-                          ATTRIB(txPackets) ATTRIB(rxPackets) ATTRIB(lostPackets)
-                              ATTRIB(timesForwarded)
-           << ">\n";
+#define ATTRIB(name) " " #name "=\"" << flowI->second.name << "\""
+#define ATTRIB_TIME(name) " " #name "=\"" << flowI->second.name.As(Time::NS) << "\""
+        os << "<Flow flowId=\"" << flowI->first << "\"" << ATTRIB_TIME(timeFirstTxPacket)
+           << ATTRIB_TIME(timeFirstRxPacket) << ATTRIB_TIME(timeLastTxPacket)
+           << ATTRIB_TIME(timeLastRxPacket) << ATTRIB_TIME(delaySum) << ATTRIB_TIME(jitterSum)
+           << ATTRIB_TIME(lastDelay) << ATTRIB(txBytes) << ATTRIB(rxBytes) << ATTRIB(txPackets)
+           << ATTRIB(rxPackets) << ATTRIB(lostPackets) << ATTRIB(timesForwarded) << ">\n";
 #undef ATTRIB_TIME
 #undef ATTRIB
 
