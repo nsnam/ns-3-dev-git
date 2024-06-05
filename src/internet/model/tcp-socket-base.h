@@ -370,6 +370,11 @@ class TcpSocketBase : public TcpSocket
     /**
      * \brief Callback pointer for RTT trace chaining
      */
+    TracedCallback<Time, Time> m_srttTrace;
+
+    /**
+     * \brief Callback pointer for Last RTT trace chaining
+     */
     TracedCallback<Time, Time> m_lastRttTrace;
 
     /**
@@ -443,6 +448,13 @@ class TcpSocketBase : public TcpSocket
      * \param newValue new rtt value
      */
     void UpdateRtt(Time oldValue, Time newValue) const;
+
+    /**
+     * \brief Callback function to hook to TcpSocketState lastRtt
+     * \param oldValue old lastRtt value
+     * \param newValue new lastRtt value
+     */
+    void UpdateLastRtt(Time oldValue, Time newValue) const;
 
     /**
      * \brief Install a congestion control algorithm on this socket
@@ -1048,6 +1060,20 @@ class TcpSocketBase : public TcpSocket
      * \param tcpHeader the packet's TCP header
      */
     virtual void ReceivedData(Ptr<Packet> packet, const TcpHeader& tcpHeader);
+
+    /**
+     * \brief Calculate RTT sample for the ACKed packet
+     *
+     * Per RFC 6298 (Section 3),
+     * If `m_timestampsEnabled` is true, calculate RTT using timestamps option.
+     * Otherwise, return RTT as the elapsed time since the packet was transmitted.
+     * If ACKed packed was a retrasmitted packet, return zero time.
+     *
+     * \param tcpHeader the packet's TCP header
+     * \param rttHistory the ACKed packet's RTT History
+     * \returns the RTT sample
+     */
+    virtual Time CalculateRttSample(const TcpHeader& tcpHeader, const RttHistory& rttHistory);
 
     /**
      * \brief Take into account the packet for RTT estimation

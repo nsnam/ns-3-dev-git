@@ -18,6 +18,8 @@ Changes from ns-3.42 to ns-3-dev
 
 ### New API
 
+* (tcp) A new trace source `TcpSocketBase::LastRtt` has been added for tracing the last RTT sample observed. The existing trace source `TcpSocketBase::Rtt` is still providing the smoothed RTT, although it had been incorrectly documented as providing the last RTT.
+
 ### Changes to existing API
 
 * (lr-wpan) Attribute `macBeaconPayload` in `MacPibAttributes` is now a std::vector<uint8_t> instead of a packet pointer.

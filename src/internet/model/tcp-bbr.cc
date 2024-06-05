@@ -728,7 +728,7 @@ TcpBbr::CongestionStateSet(Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCon
     if (newState == TcpSocketState::CA_OPEN && !m_isInitialized)
     {
         NS_LOG_DEBUG("CongestionStateSet triggered to CA_OPEN :: " << newState);
-        m_minRtt = tcb->m_lastRtt.Get() != Time::Max() ? tcb->m_lastRtt.Get() : Time::Max();
+        m_minRtt = tcb->m_srtt.Get() != Time::Max() ? tcb->m_srtt.Get() : Time::Max();
         m_minRttStamp = Simulator::Now();
         m_priorCwnd = tcb->m_cWnd;
         tcb->m_ssThresh = tcb->m_initialSsThresh;

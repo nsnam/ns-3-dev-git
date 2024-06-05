@@ -206,9 +206,10 @@ class TcpSocketState : public Object
 
     Time m_minRtt{Time::Max()}; //!< Minimum RTT observed throughout the connection
 
-    TracedValue<uint32_t> m_bytesInFlight{0};  //!< Bytes in flight
-    bool m_isCwndLimited{false};               //!< Whether throughput is limited by cwnd
-    TracedValue<Time> m_lastRtt{Seconds(0.0)}; //!< Last RTT sample collected
+    TracedValue<uint32_t> m_bytesInFlight{0}; //!< Bytes in flight
+    bool m_isCwndLimited{false};              //!< Whether throughput is limited by cwnd
+    TracedValue<Time> m_srtt;                 //!< Smoothed RTT
+    TracedValue<Time> m_lastRtt;              //!< RTT of the last (S)ACKed packet
 
     Ptr<TcpRxBuffer> m_rxBuffer; //!< Rx buffer (reordering buffer)
 

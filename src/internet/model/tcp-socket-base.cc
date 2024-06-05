@@ -176,7 +176,11 @@ TcpSocketBase::GetTypeId()
                             MakeTraceSourceAccessor(&TcpSocketBase::m_rto),
                             "ns3::TracedValueCallback::Time")
             .AddTraceSource("RTT",
-                            "Last RTT sample",
+                            "Smoothed RTT",
+                            MakeTraceSourceAccessor(&TcpSocketBase::m_srttTrace),
+                            "ns3::TracedValueCallback::Time")
+            .AddTraceSource("LastRTT",
+                            "RTT of the last (S)ACKed packet",
                             MakeTraceSourceAccessor(&TcpSocketBase::m_lastRttTrace),
                             "ns3::TracedValueCallback::Time")
             .AddTraceSource("NextTxSequence",
@@ -322,6 +326,10 @@ TcpSocketBase::TcpSocketBase()
 
     ok = m_tcb->TraceConnectWithoutContext("RTT", MakeCallback(&TcpSocketBase::UpdateRtt, this));
     NS_ASSERT(ok == true);
+
+    ok = m_tcb->TraceConnectWithoutContext("LastRTT",
+                                           MakeCallback(&TcpSocketBase::UpdateLastRtt, this));
+    NS_ASSERT(ok == true);
 }
 
 TcpSocketBase::TcpSocketBase(const TcpSocketBase& sock)
@@ -457,6 +465,10 @@ TcpSocketBase::TcpSocketBase(const TcpSocketBase& sock)
     NS_ASSERT(ok == true);
 
     ok = m_tcb->TraceConnectWithoutContext("RTT", MakeCallback(&TcpSocketBase::UpdateRtt, this));
+    NS_ASSERT(ok == true);
+
+    ok = m_tcb->TraceConnectWithoutContext("LastRTT",
+                                           MakeCallback(&TcpSocketBase::UpdateLastRtt, this));
     NS_ASSERT(ok == true);
 }
 
@@ -1989,7 +2001,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
     else if (ackNumber == oldHeadSequence)
     {
         // DupAck. Artificially call PktsAcked: after all, one segment has been ACKed.
-        m_congestionControl->PktsAcked(m_tcb, 1, m_tcb->m_lastRtt);
+        m_congestionControl->PktsAcked(m_tcb, 1, m_tcb->m_srtt);
     }
     else if (ackNumber > oldHeadSequence)
     {
@@ -2057,7 +2069,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
             // This partial ACK acknowledge the fact that one segment has been
             // previously lost and now successfully received. All others have
             // been processed when they come under the form of dupACKs
-            m_congestionControl->PktsAcked(m_tcb, 1, m_tcb->m_lastRtt);
+            m_congestionControl->PktsAcked(m_tcb, 1, m_tcb->m_srtt);
             NewAck(ackNumber, m_isFirstPartialAck);
 
             if (m_isFirstPartialAck)
@@ -2085,7 +2097,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
         // of RecoveryPoint.
         else if (ackNumber < m_recover && m_tcb->m_congState == TcpSocketState::CA_LOSS)
         {
-            m_congestionControl->PktsAcked(m_tcb, segsAcked, m_tcb->m_lastRtt);
+            m_congestionControl->PktsAcked(m_tcb, segsAcked, m_tcb->m_srtt);
             m_congestionControl->IncreaseWindow(m_tcb, segsAcked);
 
             NS_LOG_DEBUG(" Cong Control Called, cWnd=" << m_tcb->m_cWnd
@@ -2100,7 +2112,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
         }
         else if (m_tcb->m_congState == TcpSocketState::CA_CWR)
         {
-            m_congestionControl->PktsAcked(m_tcb, segsAcked, m_tcb->m_lastRtt);
+            m_congestionControl->PktsAcked(m_tcb, segsAcked, m_tcb->m_srtt);
             // TODO: need to check behavior if marking is compounded by loss
             // and/or packet reordering
             if (!m_congestionControl->HasCongControl() && segsAcked >= 1)
@@ -2113,7 +2125,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
         {
             if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
             {
-                m_congestionControl->PktsAcked(m_tcb, segsAcked, m_tcb->m_lastRtt);
+                m_congestionControl->PktsAcked(m_tcb, segsAcked, m_tcb->m_srtt);
             }
             else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
             {
@@ -2121,7 +2133,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
                 {
                     m_congestionControl->PktsAcked(m_tcb,
                                                    segsAcked - oldDupAckCount,
-                                                   m_tcb->m_lastRtt);
+                                                   m_tcb->m_srtt);
                 }
 
                 if (!isDupack)
@@ -2158,7 +2170,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
                 // TODO:  check consistency for dynamic segment size
                 segsAcked =
                     static_cast<uint32_t>(ackNumber - oldHeadSequence) / m_tcb->m_segmentSize;
-                m_congestionControl->PktsAcked(m_tcb, segsAcked, m_tcb->m_lastRtt);
+                m_congestionControl->PktsAcked(m_tcb, segsAcked, m_tcb->m_srtt);
                 m_congestionControl->CwndEvent(m_tcb, TcpSocketState::CA_EVENT_COMPLETE_CWR);
                 m_congestionControl->CongestionStateSet(m_tcb, TcpSocketState::CA_OPEN);
                 m_tcb->m_congState = TcpSocketState::CA_OPEN;
@@ -2177,7 +2189,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
                 // can increase cWnd)
                 segsAcked = (ackNumber - m_recover) / m_tcb->m_segmentSize;
 
-                m_congestionControl->PktsAcked(m_tcb, segsAcked, m_tcb->m_lastRtt);
+                m_congestionControl->PktsAcked(m_tcb, segsAcked, m_tcb->m_srtt);
 
                 m_congestionControl->CongestionStateSet(m_tcb, TcpSocketState::CA_OPEN);
                 m_tcb->m_congState = TcpSocketState::CA_OPEN;
@@ -3622,59 +3634,88 @@ TcpSocketBase::ReceivedData(Ptr<Packet> p, const TcpHeader& tcpHeader)
     }
 }
 
+Time
+TcpSocketBase::CalculateRttSample(const TcpHeader& tcpHeader, const RttHistory& rttHistory)
+{
+    NS_LOG_FUNCTION(this);
+    SequenceNumber32 ackSeq = tcpHeader.GetAckNumber();
+    Time rtt;
+
+    if (!rttHistory.retx && ackSeq >= (rttHistory.seq + SequenceNumber32(rttHistory.count)))
+    { // Ok to use this sample
+        if (m_timestampEnabled && tcpHeader.HasOption(TcpOption::TS))
+        {
+            Ptr<const TcpOptionTS> ts;
+            ts = DynamicCast<const TcpOptionTS>(tcpHeader.GetOption(TcpOption::TS));
+            rtt = TcpOptionTS::ElapsedTimeFromTsValue(ts->GetEcho());
+            if (rtt.IsZero())
+            {
+                NS_LOG_LOGIC("TcpSocketBase::EstimateRtt - RTT calculated from TcpOption::TS "
+                             "is zero, approximating to 1us.");
+                NS_LOG_DEBUG("RTT calculated from TcpOption::TS is zero, updating rtt to 1us.");
+                rtt = MicroSeconds(1);
+            }
+        }
+        else
+        {
+            // Elapsed time since the packet was transmitted
+            rtt = Simulator::Now() - rttHistory.time;
+        }
+    }
+    return rtt;
+}
+
 void
 TcpSocketBase::EstimateRtt(const TcpHeader& tcpHeader)
 {
+    NS_LOG_FUNCTION(this);
     SequenceNumber32 ackSeq = tcpHeader.GetAckNumber();
-    Time m = Time(0.0);
+    Time rtt;
 
     // An ack has been received, calculate rtt and log this measurement
     // Note we use a linear search (O(n)) for this since for the common
     // case the ack'ed packet will be at the head of the list
     if (!m_history.empty())
     {
-        RttHistory& h = m_history.front();
-        if (!h.retx && ackSeq >= (h.seq + SequenceNumber32(h.count)))
-        { // Ok to use this sample
-            if (m_timestampEnabled && tcpHeader.HasOption(TcpOption::TS))
-            {
-                Ptr<const TcpOptionTS> ts;
-                ts = DynamicCast<const TcpOptionTS>(tcpHeader.GetOption(TcpOption::TS));
-                m = TcpOptionTS::ElapsedTimeFromTsValue(ts->GetEcho());
-                if (m.IsZero())
-                {
-                    NS_LOG_LOGIC("TcpSocketBase::EstimateRtt - RTT calculated from TcpOption::TS "
-                                 "is zero, approximating to 1us.");
-                    m = MicroSeconds(1);
-                }
-            }
-            else
-            {
-                m = Simulator::Now() - h.time; // Elapsed time
-            }
-        }
-    }
+        RttHistory& earliestTransmittedPktHistory = m_history.front();
+        rtt = CalculateRttSample(tcpHeader, earliestTransmittedPktHistory);
 
-    // Now delete all ack history with seq <= ack
-    while (!m_history.empty())
-    {
-        RttHistory& h = m_history.front();
-        if ((h.seq + SequenceNumber32(h.count)) > ackSeq)
+        // Store ACKed packet that has the latest transmission time to update `lastRtt`
+        RttHistory latestTransmittedPktHistory = earliestTransmittedPktHistory;
+
+        // Delete all ACK history with seq <= ack
+        while (!m_history.empty())
         {
-            break; // Done removing
+            RttHistory& rttHistory = m_history.front();
+            if ((rttHistory.seq + SequenceNumber32(rttHistory.count)) > ackSeq)
+            {
+                break; // Done removing
+            }
+
+            latestTransmittedPktHistory = rttHistory;
+            m_history.pop_front(); // Remove
         }
-        m_history.pop_front(); // Remove
+
+        // In case of multiple packets being ACKed in a single acknowledgement, `m_lastRtt` is
+        // RTT of the last (S)ACKed packet calculated using the data packet with the latest
+        // transmission time
+        Time lastRtt = CalculateRttSample(tcpHeader, latestTransmittedPktHistory);
+        if (!lastRtt.IsZero())
+        {
+            NS_LOG_DEBUG("Last RTT sample updated to: " << lastRtt);
+            m_tcb->m_lastRtt = lastRtt;
+        }
     }
 
-    if (!m.IsZero())
+    if (!rtt.IsZero())
     {
-        m_rtt->Measurement(m); // Log the measurement
+        m_rtt->Measurement(rtt); // Log the measurement
         // RFC 6298, clause 2.4
         m_rto = Max(m_rtt->GetEstimate() + Max(m_clockGranularity, m_rtt->GetVariation() * 4),
                     m_minRto);
-        m_tcb->m_lastRtt = m_rtt->GetEstimate();
-        m_tcb->m_minRtt = std::min(m_tcb->m_lastRtt.Get(), m_tcb->m_minRtt);
-        NS_LOG_INFO(this << m_tcb->m_lastRtt << m_tcb->m_minRtt);
+        m_tcb->m_srtt = m_rtt->GetEstimate();
+        m_tcb->m_minRtt = std::min(m_tcb->m_srtt.Get(), m_tcb->m_minRtt);
+        NS_LOG_INFO(this << m_tcb->m_srtt << m_tcb->m_minRtt);
     }
 }
 
@@ -4526,6 +4567,12 @@ TcpSocketBase::UpdateBytesInFlight(uint32_t oldValue, uint32_t newValue) const
 void
 TcpSocketBase::UpdateRtt(Time oldValue, Time newValue) const
 {
+    m_srttTrace(oldValue, newValue);
+}
+
+void
+TcpSocketBase::UpdateLastRtt(Time oldValue, Time newValue) const
+{
     m_lastRttTrace(oldValue, newValue);
 }
 
@@ -4626,12 +4673,12 @@ TcpSocketBase::UpdatePacingRate()
                                                                          << m_tcb->m_ssThresh);
         factor = static_cast<double>(m_tcb->m_pacingCaRatio) / 100;
     }
-    Time lastRtt = m_tcb->m_lastRtt.Get(); // Get underlying Time value
-    NS_LOG_DEBUG("Last RTT is " << lastRtt.GetSeconds());
+    Time srtt = m_tcb->m_srtt.Get(); // Get underlying Time value
+    NS_LOG_DEBUG("Smoothed RTT is " << srtt.GetSeconds());
 
     // Multiply by 8 to convert from bytes per second to bits per second
     DataRate pacingRate((std::max(m_tcb->m_cWnd, m_tcb->m_bytesInFlight) * 8 * factor) /
-                        lastRtt.GetSeconds());
+                        srtt.GetSeconds());
     if (pacingRate < m_tcb->m_maxPacingRate)
     {
         NS_LOG_DEBUG("Pacing rate updated to: " << pacingRate);
