@@ -21,16 +21,6 @@ check-style-clang-format-17:
   variables:
     CLANG_FORMAT_VERSION: 17
 
-check-style-clang-format-16:
-  extends: .check-style-clang-format
-  variables:
-    CLANG_FORMAT_VERSION: 16
-
-check-style-clang-format-15:
-  extends: .check-style-clang-format
-  variables:
-    CLANG_FORMAT_VERSION: 15
-
 check-style-clang-format-14:
   extends: .check-style-clang-format
   variables:
