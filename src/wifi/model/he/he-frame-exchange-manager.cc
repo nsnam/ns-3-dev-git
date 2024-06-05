@@ -1830,9 +1830,11 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
         return;
     }
 
+    const auto addr1 =
+        GetWifiRemoteStationManager()->GetMldAddress(hdr.GetAddr2()).value_or(hdr.GetAddr2());
     WifiMacHeader header(WIFI_MAC_QOSDATA_NULL);
-    header.SetAddr1(hdr.GetAddr2());
-    header.SetAddr2(m_self);
+    header.SetAddr1(addr1);
+    header.SetAddr2(m_mac->GetAddress());
     header.SetAddr3(hdr.GetAddr2());
     header.SetDsTo();
     header.SetDsNotFrom();
@@ -1869,6 +1871,7 @@ HeFrameExchangeManager::SendQosNullFramesInTbPpdu(const CtrlTriggerHeader& trigg
         // TX parameters below.
         header.SetQosTid(tid);
         auto mpdu = Create<WifiMpdu>(Create<Packet>(), header);
+        mpdu = CreateAliasIfNeeded(mpdu);
         txParams.AddMpdu(mpdu);
         UpdateTxDuration(header.GetAddr1(), txParams);
 

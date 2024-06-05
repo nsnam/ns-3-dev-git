@@ -64,8 +64,6 @@ WifiMpdu::CreateAlias(uint8_t linkId) const
     NS_LOG_FUNCTION(this << +linkId);
     NS_ABORT_MSG_IF(!std::holds_alternative<OriginalInfo>(m_instanceInfo),
                     "This method can only be called on the original version of the MPDU");
-    NS_ABORT_MSG_IF(!IsQueued(),
-                    "This method can only be called if the MPDU is stored in a MAC queue");
 
     auto alias = Ptr<WifiMpdu>(new WifiMpdu, false);
 
