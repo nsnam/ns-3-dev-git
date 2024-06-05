@@ -13,8 +13,8 @@
 #include "ns3/config.h"
 #include "ns3/ctrl-headers.h"
 #include "ns3/eht-configuration.h"
+#include "ns3/eht-frame-exchange-manager.h"
 #include "ns3/emlsr-manager.h"
-#include "ns3/he-frame-exchange-manager.h"
 #include "ns3/log.h"
 #include "ns3/mgt-action-headers.h"
 #include "ns3/mobility-helper.h"
@@ -3493,6 +3493,321 @@ EmlsrUlTxopTest::CheckResults()
     }
 }
 
+EmlsrUlOfdmaTest::EmlsrUlOfdmaTest(bool enableBsrp)
+    : EmlsrOperationsTestBase("Check UL OFDMA operations with an EMLSR client"),
+      m_enableBsrp(enableBsrp),
+      m_txPsdusPos(0),
+      m_startAccessReq(0)
+{
+    m_linksToEnableEmlsrOn = {0, 1, 2};
+    m_nEmlsrStations = 1;
+    m_nNonEmlsrStations = 1;
+    m_establishBaDl = false;
+    m_establishBaUl = true;
+    m_mainPhyId = 1;
+    m_duration = Seconds(1.0);
+}
+
+void
+EmlsrUlOfdmaTest::DoSetup()
+{
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(m_transitionDelay.at(0)));
+
+    EmlsrOperationsTestBase::DoSetup();
+
+    m_apMac->GetQosTxop(AC_BE)->SetTxopLimits(
+        {MicroSeconds(3200), MicroSeconds(3200), MicroSeconds(3200)});
+
+    auto muScheduler = CreateObjectWithAttributes<RrMultiUserScheduler>("EnableUlOfdma",
+                                                                        BooleanValue(true),
+                                                                        "EnableBsrp",
+                                                                        BooleanValue(m_enableBsrp));
+    m_apMac->AggregateObject(muScheduler);
+}
+
+void
+EmlsrUlOfdmaTest::Transmit(Ptr<WifiMac> mac,
+                           uint8_t phyId,
+                           WifiConstPsduMap psduMap,
+                           WifiTxVector txVector,
+                           double txPowerW)
+{
+    EmlsrOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+    auto linkId = m_txPsdus.back().linkId;
+
+    auto psdu = psduMap.begin()->second;
+
+    switch (psdu->GetHeader(0).GetType())
+    {
+    case WIFI_MAC_CTL_TRIGGER:
+        if (m_txPsdusPos == 0 && !m_startAccessReq.IsZero() && Simulator::Now() >= m_startAccessReq)
+        {
+            // this is the first Trigger Frame sent after the AP requested channel access
+            // through the Multi-user scheduler and it is an ICF for the EMLSR client
+            m_txPsdusPos = m_txPsdus.size() - 1;
+            auto txDuration = WifiPhy::CalculateTxDuration(psduMap,
+                                                           txVector,
+                                                           mac->GetWifiPhy(linkId)->GetPhyBand());
+            NS_LOG_INFO("This is the first Trigger Frame\n");
+            // once the Trigger Frame is received by the EMLSR client, make the client application
+            // on the EMLSR client generate two packets. These packets will be sent via UL OFDMA
+            // because the EMLSR client has blocked transmissions on other links when receiving
+            // this Trigger Frame, hence it will not try to get access on other links via EDCA
+            Simulator::Schedule(
+                txDuration + MicroSeconds(1), // to account for propagation delay
+                [=, this]() {
+                    for (const auto id : m_staMacs[0]->GetLinkIds())
+                    {
+                        auto ehtFem = StaticCast<EhtFrameExchangeManager>(
+                            m_staMacs[0]->GetFrameExchangeManager(id));
+                        NS_TEST_EXPECT_MSG_EQ(
+                            ehtFem->UsingOtherEmlsrLink(),
+                            (id != linkId),
+                            "Link " << +id << " was" << (id == linkId ? " not" : "")
+                                    << " expected to be blocked on EMLSR client at time "
+                                    << Simulator::Now().As(Time::NS));
+                    }
+                    NS_LOG_INFO("Generate two packets\n");
+                    m_staMacs[0]->GetDevice()->GetNode()->AddApplication(
+                        GetApplication(UPLINK, 0, 2, 100));
+                });
+        }
+        break;
+
+    case WIFI_MAC_CTL_BACKRESP:
+        if (!m_startAccessReq.IsZero() && Simulator::Now() >= m_startAccessReq)
+        {
+            CtrlBAckResponseHeader blockAck;
+            psdu->GetPayload(0)->PeekHeader(blockAck);
+            if (blockAck.IsMultiSta())
+            {
+                auto txDuration =
+                    WifiPhy::CalculateTxDuration(psduMap,
+                                                 txVector,
+                                                 mac->GetWifiPhy(linkId)->GetPhyBand());
+                Simulator::Stop(txDuration + MicroSeconds(1));
+            }
+        }
+        break;
+
+    default:;
+    }
+
+    if (psdu->GetHeader(0).IsCfEnd())
+    {
+        // we do not check CF-End frames
+        m_txPsdus.pop_back();
+    }
+}
+
+void
+EmlsrUlOfdmaTest::DoRun()
+{
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    CheckResults();
+
+    Simulator::Destroy();
+}
+
+void
+EmlsrUlOfdmaTest::StartTraffic()
+{
+    auto muScheduler = m_apMac->GetObject<MultiUserScheduler>();
+    NS_TEST_ASSERT_MSG_NE(muScheduler, nullptr, "No MU scheduler installed on AP MLD");
+
+    NS_LOG_INFO("Setting Access Request interval");
+
+    const auto interval = MilliSeconds(50);
+    muScheduler->SetAccessReqInterval(interval);
+    m_startAccessReq = Simulator::Now() + interval;
+}
+
+void
+EmlsrUlOfdmaTest::CheckResults()
+{
+    /**
+     * Sending BSRP TF disabled.
+     *
+     * The figure assumes that link 0 is used to send the first Trigger Frame after that the
+     * AP MLD requests channel access through the Multi-user scheduler. The first Trigger Frame
+     * is MU-RTS because EMLSR client needs an ICF; the other Trigger Frames are Basic TFs and
+     * do not solicit the EMLSR client.
+     *             ┌─────┐     ┌─────┐           ┌──────┐
+     *             │ MU  │     │Basic│           │Multi-│
+     *  [link 0]   │ RTS │     │  TF │           │STA BA│
+     *  ───────────┴─────┴┬───┬┴─────┴┬────────┬─┴──────┴───────────────
+     *                    │CTS│       │QoS Null│
+     *                    ├───┤       ├────────┤
+     *                    │CTS│       │QoS Data│
+     *                    └───┘       └────────┘
+     *
+     *               ┌─────┐
+     *               │Basic│
+     *  [link 1]     │  TF │
+     *  ─────────────┴─────┴┬────┬──────────────────────────────────────
+     *                      │QoS │
+     *                      │Null│
+     *                      └────┘
+     *
+     *               ┌─────┐
+     *               │Basic│
+     *  [link 2]     │  TF │
+     *  ─────────────┴─────┴┬────┬──────────────────────────────────────
+     *                      │QoS │
+     *                      │Null│
+     *                      └────┘
+     *
+     * Sending BSRP TF enabled.
+     *
+     * The figure assumes that link 0 is used to send the first Trigger Frame after that the
+     * AP MLD requests channel access through the Multi-user scheduler. The first Trigger Frames
+     * are all BSRP Trigger Frames, but only the first one solicits the EMLSR client, too.
+     *             ┌─────┐          ┌─────┐           ┌──────┐
+     *             │BSRP │          │Basic│           │Multi-│
+     *  [link 0]   │  TF │          │  TF │           │STA BA│
+     *  ───────────┴─────┴┬────────┬┴─────┴┬────────┬─┴──────┴──────────
+     *                    │QoS Null│       │QoS Data│
+     *                    ├────────┤       └────────┘
+     *                    │QoS Null│
+     *                    └────────┘
+     *
+     *               ┌─────┐
+     *               │BSRP │
+     *  [link 1]     │  TF │
+     *  ─────────────┴─────┴┬────┬──────────────────────────────────────
+     *                      │QoS │
+     *                      │Null│
+     *                      └────┘
+     *
+     *               ┌─────┐
+     *               │BSRP │
+     *  [link 2]     │  TF │
+     *  ─────────────┴─────┴┬────┬──────────────────────────────────────
+     *                      │QoS │
+     *                      │Null│
+     *                      └────┘
+     */
+
+    NS_TEST_ASSERT_MSG_GT(m_txPsdusPos, 0, "First Trigger Frame not detected");
+
+    // Check the Trigger Frames (one per link) after requesting channel access
+    auto index = m_txPsdusPos;
+    const auto firstLinkId = m_txPsdus[m_txPsdusPos].linkId;
+    for (; index < m_txPsdusPos + 3; ++index)
+    {
+        NS_TEST_ASSERT_MSG_EQ(m_txPsdus[index].psduMap.cbegin()->second->GetHeader(0).IsTrigger(),
+                              true,
+                              "Expected a Trigger Frame");
+        CtrlTriggerHeader trigger;
+        m_txPsdus[index].psduMap.cbegin()->second->GetPayload(0)->PeekHeader(trigger);
+
+        TriggerFrameType triggerType =
+            m_enableBsrp ? TriggerFrameType::BSRP_TRIGGER
+                         : (index == m_txPsdusPos ? TriggerFrameType::MU_RTS_TRIGGER
+                                                  : TriggerFrameType::BASIC_TRIGGER);
+        NS_TEST_EXPECT_MSG_EQ(+static_cast<uint8_t>(trigger.GetType()),
+                              +static_cast<uint8_t>(triggerType),
+                              "Unexpected Trigger Frame type on link " << +m_txPsdus[index].linkId);
+
+        // only the first TF solicits the EMLSR client and the non-AP MLD
+        NS_TEST_EXPECT_MSG_EQ(
+            trigger.GetNUserInfoFields(),
+            (index == m_txPsdusPos ? 2 : 1),
+            "Unexpected number of User Info fields for Trigger Frame, index=" << index);
+    }
+
+    auto startIndex = index;
+    std::size_t ctsCount = 0;
+    std::size_t qosNullCount = 0;
+    // Check responses to Trigger Frames
+    for (; index < startIndex + 4; ++index)
+    {
+        const auto& hdr = m_txPsdus[index].psduMap.cbegin()->second->GetHeader(0);
+
+        if (hdr.IsCts())
+        {
+            ++ctsCount;
+            continue;
+        }
+
+        if (hdr.IsQosData() && !hdr.HasData())
+        {
+            ++qosNullCount;
+            // if BSRP is enabled, the QoS Null frame sent by the EMLSR client in response to the
+            // first BSRP TF reports a non-null buffer status
+            if (m_enableBsrp &&
+                hdr.GetAddr2() == m_staMacs[0]->GetFrameExchangeManager(firstLinkId)->GetAddress())
+            {
+                NS_TEST_EXPECT_MSG_GT(+hdr.GetQosQueueSize(), 0, "Unexpected buffer size");
+            }
+            else
+            {
+                NS_TEST_EXPECT_MSG_EQ(+hdr.GetQosQueueSize(), 0, "Unexpected buffer size");
+            }
+            continue;
+        }
+    }
+    NS_TEST_EXPECT_MSG_EQ(ctsCount, (m_enableBsrp ? 0 : 2), "Unexpected number of CTS frames");
+    NS_TEST_EXPECT_MSG_EQ(qosNullCount,
+                          (m_enableBsrp ? 4 : 2),
+                          "Unexpected number of QoS Null frames");
+
+    // we expect only one Basic Trigger Frame (sent on the same link as the first Trigger Frame),
+    // because the buffer status reported on the other links by the non-EMLSR client is zero
+    NS_TEST_ASSERT_MSG_EQ(m_txPsdus[index].psduMap.cbegin()->second->GetHeader(0).IsTrigger(),
+                          true,
+                          "Expected a Trigger Frame");
+    NS_TEST_EXPECT_MSG_EQ(+m_txPsdus[index].linkId,
+                          +firstLinkId,
+                          "Unexpected link ID for Basic TF");
+    CtrlTriggerHeader trigger;
+    m_txPsdus[index].psduMap.cbegin()->second->GetPayload(0)->PeekHeader(trigger);
+
+    NS_TEST_EXPECT_MSG_EQ(+static_cast<uint8_t>(trigger.GetType()),
+                          +static_cast<uint8_t>(TriggerFrameType::BASIC_TRIGGER),
+                          "Unexpected Trigger Frame type");
+
+    // when BSRP TF is enabled, the non-EMLSR client has already communicated a buffer status of
+    // zero, so it is not solicited by the AP through the Basic Trigger Frame. Otherwise, it is
+    // solicited because buffer status was not known when the BSRP TF was prepared (before sending
+    // MU-RTS)
+    NS_TEST_EXPECT_MSG_EQ(trigger.GetNUserInfoFields(),
+                          (m_enableBsrp ? 1 : 2),
+                          "Unexpected number of User Info fields for Basic Trigger Frame");
+
+    // Response(s) to the Basic Trigger Frame
+    startIndex = ++index;
+    for (; index < startIndex + (m_enableBsrp ? 1 : 2); ++index)
+    {
+        const auto& hdr = m_txPsdus[index].psduMap.cbegin()->second->GetHeader(0);
+
+        NS_TEST_EXPECT_MSG_EQ(hdr.IsQosData(), true, "Expected a QoS frame");
+
+        // EMLSR client sends a QoS Data frame, non-EMLSR client sends a QoS Null frame
+        NS_TEST_EXPECT_MSG_EQ(
+            hdr.HasData(),
+            (hdr.GetAddr2() == m_staMacs[0]->GetFrameExchangeManager(firstLinkId)->GetAddress()),
+            "Unexpected type of QoS data frame");
+
+        if (hdr.HasData())
+        {
+            NS_TEST_EXPECT_MSG_EQ(m_txPsdus[index].txVector.IsUlMu(),
+                                  true,
+                                  "QoS Data frame should be sent in a TB PPDU");
+        }
+    }
+
+    // Finally, the AP MLD sends a Multi-STA BlockAck
+    NS_TEST_EXPECT_MSG_EQ(m_txPsdus[index].psduMap.cbegin()->second->GetHeader(0).IsBlockAck(),
+                          true,
+                          "Expected a BlockAck frame");
+    CtrlBAckResponseHeader blockAck;
+    m_txPsdus[index].psduMap.cbegin()->second->GetPayload(0)->PeekHeader(blockAck);
+    NS_TEST_EXPECT_MSG_EQ(blockAck.IsMultiSta(), true, "Expected a Multi-STA BlockAck");
+}
+
 EmlsrLinkSwitchTest::EmlsrLinkSwitchTest(const Params& params)
     : EmlsrOperationsTestBase(
           std::string("Check EMLSR link switching (switchAuxPhy=") +
@@ -4347,6 +4662,9 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
             }
         }
     }
+
+    AddTestCase(new EmlsrUlOfdmaTest(false), TestCase::Duration::QUICK);
+    AddTestCase(new EmlsrUlOfdmaTest(true), TestCase::Duration::QUICK);
 
     AddTestCase(new EmlsrCcaBusyTest(20), TestCase::Duration::QUICK);
     AddTestCase(new EmlsrCcaBusyTest(80), TestCase::Duration::QUICK);

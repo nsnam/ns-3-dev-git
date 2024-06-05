@@ -670,6 +670,59 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Check UL OFDMA operations with EMLSR clients.
+ *
+ * This test considers an AP MLD and an EMLSR client and a non-AP MLD that setup three links with
+ * the AP MLD. Once block ack agreements (for TID 0) are established for the UL direction, the
+ * AP MLD starts requesting channel access (on all the links) through the Multi-User scheduler.
+ * Given that links are idle, AP MLD accesses the channel on all the links and concurrently sends
+ * Trigger Frames. When the transmission of the first Trigger Frame is over, a client application
+ * on the EMLSR client generates two packets addressed to the AP MLD.
+ *
+ * It is checked that:
+ * - when sending BSRP TF is disabled, the first Trigger Frame sent is an MU-RTS; otherwise, it is
+ *   a BSRP Trigger Frame. In both cases, such Trigger Frame acts as an ICF for the EMLSR client
+ * - the other Trigger Frames sent concurrently with the ICF only solicit the non-EMLSR client
+ *   (AP MLD has blocked transmissions to the EMLSR client upon preparing the first Trigger Frame)
+ * - the buffer status reported in QoS Null frames is as expected
+ * - the EMLSR client sends a QoS Data frame in a TB PPDU
+ */
+class EmlsrUlOfdmaTest : public EmlsrOperationsTestBase
+{
+  public:
+    /**
+     * Constructor
+     *
+     * \param enableBsrp whether MU scheduler sends BSRP TFs
+     */
+    EmlsrUlOfdmaTest(bool enableBsrp);
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+
+    /**
+     * Check that the simulation produced the expected results.
+     */
+    void CheckResults();
+
+  private:
+    void StartTraffic() override;
+
+    bool m_enableBsrp;        //!< whether MU scheduler sends BSRP TFs
+    std::size_t m_txPsdusPos; //!< position in the vector of TX PSDUs of the first ICF
+    Time m_startAccessReq;    //!< start time of the first AP MLD access request via MU scheduler
+};
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief Test the switching of PHYs on EMLSR clients.
  *
  * An AP MLD and an EMLSR client setup 3 links, on which EMLSR mode is enabled. The AP MLD
