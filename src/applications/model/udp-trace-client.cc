@@ -150,12 +150,12 @@ UdpTraceClient::SetRemote(const Address& addr)
     NS_LOG_FUNCTION(this << addr);
     if (!addr.IsInvalid())
     {
-        m_entries.clear();
         m_peer = addr;
         if (m_peerPort)
         {
             SetPort(*m_peerPort);
         }
+        LoadTrace();
     }
 }
 
@@ -203,14 +203,8 @@ void
 UdpTraceClient::SetTraceFile(const std::string& traceFile)
 {
     NS_LOG_FUNCTION(this << traceFile);
-    if (traceFile.empty())
-    {
-        LoadDefaultTrace();
-    }
-    else
-    {
-        LoadTrace(traceFile);
-    }
+    m_traceFile = traceFile;
+    LoadTrace();
 }
 
 void
@@ -228,30 +222,42 @@ UdpTraceClient::GetMaxPacketSize()
 }
 
 void
-UdpTraceClient::LoadTrace(const std::string& filename)
+UdpTraceClient::LoadTrace()
 {
-    NS_LOG_FUNCTION(this << filename);
-    uint32_t time = 0;
-    uint32_t index = 0;
-    uint32_t oldIndex = 0;
-    uint32_t size = 0;
-    uint32_t prevTime = 0;
-    char frameType;
-    TraceEntry entry;
-    std::ifstream ifTraceFile;
-    ifTraceFile.open(filename, std::ifstream::in);
+    NS_LOG_FUNCTION(this);
     m_entries.clear();
+    m_currentEntry = 0;
+
+    if (m_traceFile.empty())
+    {
+        LoadDefaultTrace();
+        return;
+    }
+
+    std::ifstream ifTraceFile;
+    ifTraceFile.open(m_traceFile, std::ifstream::in);
     if (!ifTraceFile.good())
     {
         LoadDefaultTrace();
+        return;
     }
+
+    uint32_t oldIndex = 0;
+    uint32_t prevTime = 0;
     while (ifTraceFile.good())
     {
+        uint32_t index = 0;
+        char frameType;
+        uint32_t time = 0;
+        uint32_t size = 0;
         ifTraceFile >> index >> frameType >> time >> size;
+
         if (index == oldIndex)
         {
             continue;
         }
+
+        TraceEntry entry{};
         if (frameType == 'B')
         {
             entry.timeToSend = 0;
@@ -266,9 +272,9 @@ UdpTraceClient::LoadTrace(const std::string& filename)
         m_entries.push_back(entry);
         oldIndex = index;
     }
+
     ifTraceFile.close();
     NS_ASSERT_MSG(prevTime != 0, "A trace file can not contain B frames only.");
-    m_currentEntry = 0;
 }
 
 void
@@ -291,7 +297,6 @@ UdpTraceClient::LoadDefaultTrace()
         }
         m_entries.push_back(entry);
     }
-    m_currentEntry = 0;
 }
 
 void

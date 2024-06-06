@@ -128,10 +128,9 @@ class UdpTraceClient : public Application
     Address GetRemote() const;
 
     /**
-     * \brief Load a trace file
-     * \param filename the trace file path
+     * \brief Load current trace file
      */
-    void LoadTrace(const std::string& filename);
+    void LoadTrace();
 
     /**
      * \brief Load the default trace
@@ -174,6 +173,7 @@ class UdpTraceClient : public Application
     static TraceEntry g_defaultEntries[]; //!< Default trace to send
     uint16_t m_maxPacketSize; //!< Maximum packet size to send (including the SeqTsHeader)
     bool m_traceLoop;         //!< Loop through the trace file
+    std::string m_traceFile;  //!< The location of the trace file
 };
 
 } // namespace ns3
