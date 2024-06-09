@@ -1029,9 +1029,11 @@ StaWifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr) const
 {
     for (const auto& [id, link] : GetLinks())
     {
-        if (GetStaLink(link).bssid == remoteAddr)
+        if ((m_enableP2pLinks && GetWifiRemoteStationManager(id)->IsAdhocPeer(remoteAddr)) ||
+            GetStaLink(link).bssid == remoteAddr)
         {
             // the remote address is the address of the (single link) AP we are associated with;
+            // or the link to communicate with the peer for P2P
             return link->feManager->GetAddress();
         }
     }
