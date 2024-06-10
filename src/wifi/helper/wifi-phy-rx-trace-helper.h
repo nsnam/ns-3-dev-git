@@ -671,7 +671,7 @@ class WifiPhyRxTraceSink : public Object
      * boolean flag can be toggled to control the granularity and scope of data collection, enabling
      * customization of the analysis to focus on specific times of interest.
      */
-    bool m_statisticsCollectionPeriodStarted;
+    bool m_statisticsCollectionPeriodStarted{false};
 
     /**
      * Update the passed-in statistics object with statistics from the passed-in record.
