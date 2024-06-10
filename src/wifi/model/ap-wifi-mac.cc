@@ -376,7 +376,6 @@ ApWifiMac::SetBeaconGeneration(bool enable)
 Time
 ApWifiMac::GetBeaconInterval() const
 {
-    NS_LOG_FUNCTION(this);
     return m_beaconInterval;
 }
 
@@ -525,14 +524,12 @@ ApWifiMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from)
 bool
 ApWifiMac::SupportsSendFrom() const
 {
-    NS_LOG_FUNCTION(this);
     return true;
 }
 
 AllSupportedRates
 ApWifiMac::GetSupportedRates(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     AllSupportedRates rates;
     // Send the set of supported rates and make sure that we indicate
     // the Basic Rate set in this set of supported rates.
@@ -577,7 +574,6 @@ ApWifiMac::GetSupportedRates(uint8_t linkId) const
 DsssParameterSet
 ApWifiMac::GetDsssParameterSet(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetDsssSupported(linkId));
     DsssParameterSet dsssParameters;
     dsssParameters.SetCurrentChannel(GetWifiPhy(linkId)->GetChannelNumber());
@@ -587,7 +583,6 @@ ApWifiMac::GetDsssParameterSet(uint8_t linkId) const
 CapabilityInformation
 ApWifiMac::GetCapabilities(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     CapabilityInformation capabilities;
     capabilities.SetShortPreamble(GetLink(linkId).shortPreambleEnabled);
     capabilities.SetShortSlotTime(GetLink(linkId).shortSlotTimeEnabled);
@@ -598,7 +593,6 @@ ApWifiMac::GetCapabilities(uint8_t linkId) const
 ErpInformation
 ApWifiMac::GetErpInformation(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetErpSupported(linkId));
     ErpInformation information;
 
@@ -619,7 +613,6 @@ ApWifiMac::GetErpInformation(uint8_t linkId) const
 EdcaParameterSet
 ApWifiMac::GetEdcaParameterSet(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetQosSupported());
     EdcaParameterSet edcaParameters;
 
@@ -682,7 +675,6 @@ ApWifiMac::GetEdcaParameterSet(uint8_t linkId) const
 std::optional<MuEdcaParameterSet>
 ApWifiMac::GetMuEdcaParameterSet() const
 {
-    NS_LOG_FUNCTION(this);
     NS_ASSERT(GetHeSupported());
 
     Ptr<HeConfiguration> heConfiguration = GetHeConfiguration();
@@ -731,8 +723,6 @@ ApWifiMac::GetMuEdcaParameterSet() const
 std::optional<ReducedNeighborReport>
 ApWifiMac::GetReducedNeighborReport(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
-
     if (GetNLinks() <= 1)
     {
         return std::nullopt;
@@ -765,7 +755,6 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId,
                                const Mac48Address& to,
                                const std::optional<MultiLinkElement>& mlProbeReqMle)
 {
-    NS_LOG_FUNCTION(this << +linkId << frameType << to);
     NS_ABORT_IF(GetNLinks() == 1);
     NS_ABORT_MSG_IF(mlProbeReqMle.has_value() && frameType != WIFI_MAC_MGT_PROBE_RESPONSE,
                     "ML Probe Request Multi-Link Element cannot be provided for frame type "
@@ -931,7 +920,6 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId,
 HtOperation
 ApWifiMac::GetHtOperation(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetHtSupported(linkId));
     HtOperation operation;
     auto phy = GetWifiPhy(linkId);
@@ -1032,7 +1020,6 @@ ApWifiMac::GetHtOperation(uint8_t linkId) const
 VhtOperation
 ApWifiMac::GetVhtOperation(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetVhtSupported(linkId));
     VhtOperation operation;
     auto phy = GetWifiPhy(linkId);
@@ -1089,7 +1076,6 @@ ApWifiMac::GetVhtOperation(uint8_t linkId) const
 HeOperation
 ApWifiMac::GetHeOperation(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetHeSupported());
     HeOperation operation;
     auto remoteStationManager = GetWifiRemoteStationManager(linkId);
@@ -1135,7 +1121,6 @@ ApWifiMac::GetHeOperation(uint8_t linkId) const
 EhtOperation
 ApWifiMac::GetEhtOperation(uint8_t linkId) const
 {
-    NS_LOG_FUNCTION(this << +linkId);
     NS_ASSERT(GetEhtSupported());
     EhtOperation operation;
     auto remoteStationManager = GetWifiRemoteStationManager(linkId);
