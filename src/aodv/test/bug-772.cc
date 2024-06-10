@@ -78,7 +78,7 @@ void
 Bug772ChainTest::DoRun()
 {
     RngSeedManager::SetSeed(1);
-    RngSeedManager::SetRun(2);
+    RngSeedManager::SetRun(1);
 
     // Default of 3 will cause packet loss
     Config::SetDefault("ns3::ArpCache::PendingQueueSize", UintegerValue(10));
@@ -154,8 +154,7 @@ Bug772ChainTest::CreateDevices()
     streamsUsed = WifiHelper::AssignStreams(devices, streamNumber);
     totalStreamsUsed += streamsUsed;
     streamNumber += streamIncrement;
-    constexpr int expectedWifiStreamsPerDevice = 2;
-    // Assign 6 streams per device
+    constexpr int expectedWifiStreamsPerDevice = 4;
     NS_TEST_ASSERT_MSG_EQ(streamsUsed,
                           (devices.GetN() * expectedWifiStreamsPerDevice),
                           "Stream assignment mismatch");

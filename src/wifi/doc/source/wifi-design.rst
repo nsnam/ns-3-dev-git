@@ -82,9 +82,11 @@ non-AP Station (STA) (``ns3::StaWifiMac``), and STA in an Independent
 Basic Service Set (IBSS) - also commonly referred to as an ad hoc
 network (``ns3::AdhocWifiMac``).
 
-The simplest of these is ``ns3::AdhocWifiMac``, which implements a
-Wi-Fi MAC that does not perform any kind of beacon generation,
-probing, or association. The ``ns3::StaWifiMac`` class implements
+The ``ns3::AdhocWifiMac`` class implements a Wi-Fi MAC for IBSS (ad hoc)
+operation. Optional beacon generation follows the distributed IBSS
+procedure of IEEE 802.11: at each TBTT a random delay is applied, and a
+pending Beacon is cancelled if a Beacon from the same IBSS is received
+before that delay expires. The ``ns3::StaWifiMac`` class implements
 an active probing and association state machine that handles automatic
 re-association whenever too many beacons are missed. Finally,
 ``ns3::ApWifiMac`` implements an AP that generates periodic

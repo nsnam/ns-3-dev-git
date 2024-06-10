@@ -2174,22 +2174,22 @@ cpp_examples = [
         "False",
     ),
     (
-        "wifi-bianchi --validate --phyMode=OfdmRate54Mbps --nMinStas=5 --nMaxStas=10 --duration=5 --RngSeed=10 --RngRun=10",
+        "wifi-bianchi --validate --phyMode=OfdmRate54Mbps --nMinStas=5 --nMaxStas=10 --duration=5 --RngSeed=10 --RngRun=15",
         "False",
         "False",
     ),  # TODO: run from N=5 to N=50 for 100s (TAKES_FOREVER) when issue #170 is fixed
     (
-        "wifi-bianchi --validate --phyMode=OfdmRate6Mbps --nMinStas=5 --nMaxStas=10 --duration=15 --RngSeed=10 --RngRun=10",
+        "wifi-bianchi --validate --phyMode=OfdmRate6Mbps --nMinStas=5 --nMaxStas=10 --duration=15 --RngSeed=10 --RngRun=15",
         "True",
         "False",
     ),  # TODO: run from N=5 to N=50 for 400s (TAKES_FOREVER) when issue #170 is fixed
     (
-        "wifi-bianchi --validate --phyMode=OfdmRate54Mbps --nMinStas=5 --nMaxStas=10 --duration=5 --infra --RngSeed=10 --RngRun=10",
+        "wifi-bianchi --validate --phyMode=OfdmRate54Mbps --nMinStas=5 --nMaxStas=10 --duration=5 --infra --RngSeed=10 --RngRun=14",
         "False",
         "False",
     ),  # TODO: run from N=5 to N=50 for 100s (TAKES_FOREVER) when issue #170 is fixed
     (
-        "wifi-bianchi --validate --phyMode=OfdmRate6Mbps --nMinStas=5 --nMaxStas=10 --duration=20 --infra --RngSeed=10 --RngRun=10",
+        "wifi-bianchi --validate --phyMode=OfdmRate6Mbps --nMinStas=5 --nMaxStas=10 --duration=20 --infra --RngSeed=10 --RngRun=14",
         "False",
         "False",
     ),  # TODO: run from N=5 to N=50 for 600s (TAKES_FOREVER) when issue #170 is fixed

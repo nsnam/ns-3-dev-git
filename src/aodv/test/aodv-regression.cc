@@ -185,11 +185,10 @@ ChainRegressionTest::CreateDevices()
     NetDeviceContainer devices = wifi.Install(wifiPhy, wifiMac, *m_nodes);
 
     // Assign fixed stream numbers to wifi and channel random variables
-    constexpr int expectedWifiStreamsPerDevice = 2;
+    constexpr int expectedWifiStreamsPerDevice = 4;
     streamsUsed = WifiHelper::AssignStreams(devices, streamNumber);
     totalStreamsUsed += streamsUsed;
     streamNumber += streamIncrement;
-    // Assign 2 streams per device
     NS_TEST_ASSERT_MSG_EQ(streamsUsed,
                           (devices.GetN() * expectedWifiStreamsPerDevice),
                           "Stream assignment mismatch");

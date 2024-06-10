@@ -19,6 +19,7 @@ namespace ns3
 struct AllSupportedRates;
 class DsssParameterSet;
 class CapabilityInformation;
+class RandomVariableStream;
 class ErpInformation;
 class EdcaParameterSet;
 class HtOperation;
@@ -30,6 +31,13 @@ class EhtOperation;
  * @ingroup wifi
  *
  * @brief Wifi MAC high model for an ad-hoc Wifi MAC
+ *
+ * As per IEEE 802.11-2024, sec. 11.1.3.5 (Beacon generation in an IBSS), if beacon generation is
+ * enabled, TBTTs occur every BeaconInterval. At each TBTT a random delay in [0, 2 * aCWmin *
+ * aSlotTime] is applied before transmitting a Beacon. If a Beacon from the same IBSS is received
+ * before that delay expires, the remaining delay and any pending Beacon are cancelled.
+ *
+ * Note that The first TBTT may be further delayed by BeaconJitter.
  */
 class AdhocWifiMac : public WifiMac
 {
@@ -45,11 +53,57 @@ class AdhocWifiMac : public WifiMac
 
     void SetLinkUpCallback(Callback<void> linkUp) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
+    Ptr<Txop> GetTxopFor(AcIndex ac) const override;
+    int64_t AssignStreams(int64_t stream) override;
 
   private:
+    void DoInitialize() override;
+    void DoDispose() override;
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     void DoCompleteConfig() override;
     void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) override;
+
+    /**
+     * Enable or disable beacon generation.
+     *
+     * @param enable enable or disable beacon generation
+     */
+    void SetBeaconGeneration(bool enable);
+
+    /**
+     * @param interval the interval between two beacon transmissions.
+     */
+    void SetBeaconInterval(Time interval);
+
+    /**
+     * @return the interval between two beacon transmissions.
+     */
+    Time GetBeaconInterval() const;
+
+    /**
+     * Called at each target beacon transmission time (TBTT).
+     * Schedules the next TBTT and a Beacon transmission after the IBSS random delay.
+     */
+    void TbttTimeout();
+
+    /**
+     * Cancel the remaining IBSS random delay and flush any Beacon waiting
+     * in the beacon queue.
+     */
+    void CancelPendingBeacon();
+
+    /**
+     * Forward a beacon packet for transmission.
+     */
+    void SendOneBeacon();
+
+    /**
+     * Process the Beacon frame received on the given link.
+     *
+     * @param mpdu the MPDU containing the Beacon frame
+     * @param linkId the ID of the given link
+     */
+    void ReceiveBeacon(Ptr<const WifiMpdu> mpdu, linkId_t linkId);
 
     /**
      * Return an instance of SupportedRates that contains all rates that we support
@@ -114,6 +168,18 @@ class AdhocWifiMac : public WifiMac
      * @return the EHT operation that we support
      */
     EhtOperation GetEhtOperation() const;
+
+    Ptr<Txop> m_beaconTxop;        //!< Dedicated Txop for beacons
+    bool m_enableBeaconGeneration; //!< Flag whether beacons are being generated
+    Time m_beaconInterval;         //!< the beacon interval
+    AcIndex m_beaconAc;            //!< the access category to use for beacons
+    Ptr<RandomVariableStream>
+        m_beaconJitter; //!< Uniform [0, 1] RV for the initial TBTT offset and the per-TBTT delay
+    bool m_enableBeaconJitter; //!< Flag whether the first TBTT is delayed by a random fraction of
+                               //!< BeaconInterval
+
+    EventId m_tbttEvent;   //!< Event for the next TBTT
+    EventId m_beaconEvent; //!< Event to generate one beacon after the IBSS random delay
 };
 
 } // namespace ns3

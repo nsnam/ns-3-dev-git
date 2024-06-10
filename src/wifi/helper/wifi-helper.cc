@@ -10,6 +10,7 @@
 
 #include "wifi-helper.h"
 
+#include "ns3/adhoc-wifi-mac.h"
 #include "ns3/ampdu-subframe-header.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/config.h"
@@ -1368,6 +1369,11 @@ WifiHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
             if (auto apMac = DynamicCast<ApWifiMac>(mac); apMac)
             {
                 currentStream += apMac->AssignStreams(currentStream);
+            }
+            // if an IBSS STA, handle any beacon jitter
+            if (auto adhocMac = DynamicCast<AdhocWifiMac>(mac); adhocMac)
+            {
+                currentStream += adhocMac->AssignStreams(currentStream);
             }
             // if a STA, handle any probe request jitter
             if (auto staMac = DynamicCast<StaWifiMac>(mac); staMac)

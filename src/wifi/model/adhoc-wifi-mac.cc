@@ -11,9 +11,13 @@
 #include "adhoc-wifi-mac.h"
 
 #include "capability-information.h"
+#include "channel-access-manager.h"
 #include "edca-parameter-set.h"
+#include "mac-tx-middle.h"
+#include "mgt-headers.h"
 #include "qos-txop.h"
 #include "supported-rates.h"
+#include "wifi-mac-queue.h"
 #include "wifi-phy.h"
 
 #include "ns3/dsss-parameter-set.h"
@@ -28,6 +32,9 @@
 #include "ns3/ht-operation.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "ns3/pointer.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/string.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
 
@@ -41,16 +48,58 @@ NS_OBJECT_ENSURE_REGISTERED(AdhocWifiMac);
 TypeId
 AdhocWifiMac::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::AdhocWifiMac")
-                            .SetParent<WifiMac>()
-                            .SetGroupName("Wifi")
-                            .AddConstructor<AdhocWifiMac>();
+    static TypeId tid =
+        TypeId("ns3::AdhocWifiMac")
+            .SetParent<WifiMac>()
+            .SetGroupName("Wifi")
+            .AddConstructor<AdhocWifiMac>()
+            .AddAttribute("BeaconInterval",
+                          "Delay between two beacons",
+                          TimeValue(DEFAULT_BEACON_INTERVAL()),
+                          MakeTimeAccessor(&AdhocWifiMac::GetBeaconInterval,
+                                           &AdhocWifiMac::SetBeaconInterval),
+                          MakeTimeChecker())
+            .AddAttribute("BeaconGeneration",
+                          "Whether or not beacons are generated. Must be set uniformly across the "
+                          "IBSS.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&AdhocWifiMac::SetBeaconGeneration),
+                          MakeBooleanChecker())
+            .AddAttribute("BeaconJitter",
+                          "A random variable to cause the initial beacon starting time (after "
+                          "simulation time 0) to be distributed between 0 and the BeaconInterval. "
+                          "Generated values must be between 0 and 1.",
+                          StringValue("ns3::UniformRandomVariable"),
+                          MakePointerAccessor(&AdhocWifiMac::m_beaconJitter),
+                          MakePointerChecker<RandomVariableStream>())
+            .AddAttribute("EnableBeaconJitter",
+                          "If beacons are enabled, whether to jitter the initial send event.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&AdhocWifiMac::m_enableBeaconJitter),
+                          MakeBooleanChecker())
+            .AddAttribute("BeaconAc",
+                          "The Access Category whose EDCA parameters are used for the Beacon Txop "
+                          "if QoS is supported.",
+                          EnumValue(AcIndex::AC_VI),
+                          MakeEnumAccessor<AcIndex>(&AdhocWifiMac::m_beaconAc),
+                          MakeEnumChecker(AcIndex::AC_BE,
+                                          "AC_BE",
+                                          AcIndex::AC_VI,
+                                          "AC_VI",
+                                          AcIndex::AC_VO,
+                                          "AC_VO",
+                                          AcIndex::AC_BK,
+                                          "AC_BK"));
     return tid;
 }
 
 AdhocWifiMac::AdhocWifiMac()
+    : m_enableBeaconGeneration(false)
 {
     NS_LOG_FUNCTION(this);
+    m_beaconTxop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BEACON"));
+    m_beaconTxop->SetTxMiddle(m_txMiddle);
+
     // Let the lower layers know that we are acting in an IBSS
     SetTypeOfStation(ADHOC_STA);
 }
@@ -61,9 +110,115 @@ AdhocWifiMac::~AdhocWifiMac()
 }
 
 void
+AdhocWifiMac::DoInitialize()
+{
+    NS_LOG_FUNCTION(this);
+    m_beaconTxop->Initialize();
+
+    if (m_enableBeaconGeneration)
+    {
+        m_tbttEvent.Cancel();
+        m_beaconEvent.Cancel();
+        uint64_t jitterUs{0};
+        if (m_enableBeaconJitter)
+        {
+            const auto value = m_beaconJitter->GetValue();
+            NS_ABORT_MSG_IF(value < 0 || value > 1,
+                            "Jitter (" << value << ") must be between 0 and 1");
+            jitterUs = static_cast<uint64_t>(value * (GetBeaconInterval().GetMicroSeconds()));
+        }
+        NS_LOG_DEBUG("Scheduling initial TBTT for IBSS STA " << GetAddress() << " at time "
+                                                             << jitterUs << "us");
+        m_tbttEvent = Simulator::Schedule(MicroSeconds(jitterUs), &AdhocWifiMac::TbttTimeout, this);
+    }
+    WifiMac::DoInitialize();
+}
+
+void
+AdhocWifiMac::DoDispose()
+{
+    NS_LOG_FUNCTION(this);
+    m_beaconTxop->Dispose();
+    m_beaconTxop = nullptr;
+    m_enableBeaconGeneration = false;
+    m_tbttEvent.Cancel();
+    m_beaconEvent.Cancel();
+    WifiMac::DoDispose();
+}
+
+void
+AdhocWifiMac::SetBeaconGeneration(bool enable)
+{
+    NS_LOG_FUNCTION(this << enable);
+    if (!enable)
+    {
+        m_tbttEvent.Cancel();
+        CancelPendingBeacon();
+    }
+    else if (!m_enableBeaconGeneration)
+    {
+        m_tbttEvent = Simulator::ScheduleNow(&AdhocWifiMac::TbttTimeout, this);
+    }
+    m_enableBeaconGeneration = enable;
+}
+
+void
+AdhocWifiMac::SetBeaconInterval(Time interval)
+{
+    NS_LOG_FUNCTION(this << interval);
+    if ((interval.GetMicroSeconds() % 1024) != 0)
+    {
+        NS_FATAL_ERROR("beacon interval should be multiple of 1024us (802.11 time unit), see IEEE "
+                       "Std. 802.11-2012");
+    }
+    if (interval.GetMicroSeconds() > (1024 * 65535))
+    {
+        NS_FATAL_ERROR(
+            "beacon interval should be smaller then or equal to 65535 * 1024us (802.11 time unit)");
+    }
+    m_beaconInterval = interval;
+}
+
+Time
+AdhocWifiMac::GetBeaconInterval() const
+{
+    return m_beaconInterval;
+}
+
+int64_t
+AdhocWifiMac::AssignStreams(int64_t stream)
+{
+    NS_LOG_FUNCTION(this << stream);
+    m_beaconJitter->SetStream(stream);
+    auto currentStream = stream + 1;
+    currentStream += m_beaconTxop->AssignStreams(currentStream);
+    currentStream += WifiMac::AssignStreams(currentStream);
+    return (currentStream - stream);
+}
+
+void
 AdhocWifiMac::DoCompleteConfig()
 {
     NS_LOG_FUNCTION(this);
+    m_beaconTxop->SetWifiMac(this);
+    auto txop = GetQosSupported() ? StaticCast<Txop>(GetQosTxop(m_beaconAc)) : GetTxop();
+    m_beaconTxop->SetAifsns(txop->GetAifsns());
+    m_beaconTxop->SetMinCws(txop->GetMinCws());
+    m_beaconTxop->SetMaxCws(txop->GetMaxCws());
+    for (uint8_t linkId = 0; linkId < GetNLinks(); ++linkId)
+    {
+        GetLink(linkId).channelAccessManager->Add(m_beaconTxop);
+    }
+}
+
+Ptr<Txop>
+AdhocWifiMac::GetTxopFor(AcIndex ac) const
+{
+    if (ac == AC_BEACON)
+    {
+        return m_beaconTxop;
+    }
+    return WifiMac::GetTxopFor(ac);
 }
 
 bool
@@ -141,6 +296,103 @@ AdhocWifiMac::SetLinkUpCallback(Callback<void> linkUp)
 }
 
 void
+AdhocWifiMac::TbttTimeout()
+{
+    NS_LOG_FUNCTION(this);
+    m_tbttEvent = Simulator::Schedule(GetBeaconInterval(), &AdhocWifiMac::TbttTimeout, this);
+    // Random delay uniformly distributed in [0, 2 * aCWmin * aSlotTime]
+    // (IEEE 802.11-2024, sec. 11.1.3.5 "Beacon generation in an IBSS")
+    const auto txop = GetQosSupported() ? StaticCast<Txop>(GetQosTxop(m_beaconAc)) : GetTxop();
+    const auto cwMin = txop->GetMinCw(SINGLE_LINK_OP_ID);
+    const auto value = m_beaconJitter->GetValue();
+    NS_ABORT_MSG_IF(value < 0 || value > 1, "Jitter (" << value << ") must be between 0 and 1");
+    const auto delay = GetWifiPhy()->GetSlot() * (2 * cwMin * value);
+    NS_LOG_DEBUG("Scheduling Beacon after IBSS random delay of " << delay.As(Time::US) << "us");
+    m_beaconEvent = Simulator::Schedule(delay, &AdhocWifiMac::SendOneBeacon, this);
+}
+
+void
+AdhocWifiMac::CancelPendingBeacon()
+{
+    NS_LOG_FUNCTION(this);
+    if (m_beaconEvent.IsPending())
+    {
+        NS_LOG_DEBUG("Cancel remaining IBSS beacon random delay");
+        m_beaconEvent.Cancel();
+    }
+    if (m_beaconTxop && m_beaconTxop->GetWifiMacQueue()->GetNPackets() > 0)
+    {
+        NS_LOG_DEBUG("Flush pending IBSS Beacon frame");
+        m_beaconTxop->GetWifiMacQueue()->Flush();
+    }
+}
+
+void
+AdhocWifiMac::SendOneBeacon()
+{
+    NS_LOG_FUNCTION(this);
+
+    WifiMacHeader hdr;
+    hdr.SetType(WIFI_MAC_MGT_BEACON);
+    hdr.SetAddr1(Mac48Address::GetBroadcast());
+    hdr.SetAddr2(GetAddress());
+    hdr.SetAddr3(GetAddress());
+    hdr.SetDsNotFrom();
+    hdr.SetDsNotTo();
+
+    MgtBeaconHeader beacon;
+    beacon.Get<Ssid>() = GetSsid();
+    auto supportedRates = GetSupportedRates();
+    beacon.Get<SupportedRates>() = supportedRates.rates;
+    beacon.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
+    beacon.m_beaconInterval = GetBeaconInterval().GetMicroSeconds();
+    beacon.m_capability = GetCapabilities();
+    if (GetDsssSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<DsssParameterSet>() = GetDsssParameterSet();
+    }
+    if (GetErpSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<ErpInformation>() = GetErpInformation();
+    }
+    if (GetQosSupported())
+    {
+        beacon.Get<EdcaParameterSet>() = GetEdcaParameterSet();
+    }
+    if (GetHtSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
+        beacon.Get<HtCapabilities>() = GetHtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<HtOperation>() = GetHtOperation();
+    }
+    if (GetVhtSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<VhtCapabilities>() = GetVhtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<VhtOperation>() = GetVhtOperation();
+    }
+    if (GetHeSupported())
+    {
+        beacon.Get<HeCapabilities>() = GetHeCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<HeOperation>() = GetHeOperation();
+        if (Is6GhzBand(SINGLE_LINK_OP_ID))
+        {
+            beacon.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(SINGLE_LINK_OP_ID);
+        }
+    }
+    if (GetEhtSupported())
+    {
+        beacon.Get<EhtCapabilities>() = GetEhtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<EhtOperation>() = GetEhtOperation();
+    }
+
+    auto packet = Create<Packet>();
+    packet->AddHeader(beacon);
+
+    NS_LOG_DEBUG("Generating beacon from " << GetAddress());
+    m_beaconTxop->Queue(Create<WifiMpdu>(packet, hdr));
+}
+
+void
 AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << +linkId);
@@ -200,8 +452,52 @@ AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         return;
     }
 
-    // Invoke the receive handler of our parent class to deal with any other frames
-    WifiMac::Receive(mpdu, linkId);
+    switch (hdr.GetType())
+    {
+    case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
+    case WIFI_MAC_MGT_REASSOCIATION_REQUEST:
+    case WIFI_MAC_MGT_ASSOCIATION_RESPONSE:
+    case WIFI_MAC_MGT_REASSOCIATION_RESPONSE:
+        // This is a frame not aimed for IBSS, so we can safely ignore it.
+        NotifyRxDrop(packet);
+        break;
+
+    case WIFI_MAC_MGT_BEACON:
+        ReceiveBeacon(mpdu, linkId);
+        break;
+
+    default:
+        // Invoke the receive handler of our parent class to deal with any
+        // other frames. Specifically, this will handle Block Ack-related
+        // Management Action frames.
+        WifiMac::Receive(mpdu, linkId);
+    }
+}
+
+void
+AdhocWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, linkId_t linkId)
+{
+    NS_LOG_FUNCTION(this << *mpdu << linkId);
+    const WifiMacHeader& hdr = mpdu->GetHeader();
+    NS_ASSERT(hdr.IsBeacon());
+
+    const auto from = hdr.GetAddr2();
+    NS_LOG_DEBUG("Beacon received from " << from);
+
+    MgtBeaconHeader beacon;
+    mpdu->GetPacket()->PeekHeader(beacon);
+
+    if (!beacon.m_capability.IsIbss())
+    {
+        NS_LOG_LOGIC("Received beacon not part of an ad-hoc network: ignore");
+        return;
+    }
+
+    if (const auto& ssid = beacon.Get<Ssid>();
+        m_enableBeaconGeneration && ssid && ssid->IsEqual(GetSsid()))
+    {
+        CancelPendingBeacon();
+    }
 }
 
 AllSupportedRates
