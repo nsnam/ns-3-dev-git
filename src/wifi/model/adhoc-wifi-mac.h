@@ -47,9 +47,40 @@ class AdhocWifiMac : public WifiMac
     bool CanForwardPacketsTo(Mac48Address to) const override;
 
   private:
+    void DoInitialize() override;
+    void DoDispose() override;
     void Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     void DoCompleteConfig() override;
     void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) override;
+
+    /**
+     * Enable or disable beacon generation.
+     *
+     * \param enable enable or disable beacon generation
+     */
+    void SetBeaconGeneration(bool enable);
+
+    /**
+     * \param interval the interval between two beacon transmissions.
+     */
+    void SetBeaconInterval(Time interval);
+
+    /**
+     * \return the interval between two beacon transmissions.
+     */
+    Time GetBeaconInterval() const;
+
+    /**
+     * Accessor for the Txop object for beacons
+     *
+     * \return a smart pointer to Txop
+     */
+    Ptr<Txop> GetBeaconTxop() const;
+
+    /**
+     * Forward a beacon packet for transmission.
+     */
+    void SendOneBeacon();
 
     /**
      * Return an instance of SupportedRates that contains all rates that we support
@@ -114,6 +145,12 @@ class AdhocWifiMac : public WifiMac
      * \return the EHT operation that we support
      */
     EhtOperation GetEhtOperation() const;
+
+    bool m_enableBeaconGeneration; //!< Flag whether beacons are being generated
+    Time m_beaconInterval;         //!< the beacon interval
+    AcIndex m_beaconAc;            //!< the access category to use for beacons
+
+    EventId m_beaconEvent; //!< Event to generate one beacon
 };
 
 } // namespace ns3

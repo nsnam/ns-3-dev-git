@@ -12,6 +12,7 @@
 
 #include "capability-information.h"
 #include "edca-parameter-set.h"
+#include "mgt-headers.h"
 #include "qos-txop.h"
 #include "supported-rates.h"
 #include "wifi-phy.h"
@@ -44,11 +45,35 @@ AdhocWifiMac::GetTypeId()
     static TypeId tid = TypeId("ns3::AdhocWifiMac")
                             .SetParent<WifiMac>()
                             .SetGroupName("Wifi")
-                            .AddConstructor<AdhocWifiMac>();
+                            .AddConstructor<AdhocWifiMac>()
+                            .AddAttribute("BeaconInterval",
+                                          "Delay between two beacons",
+                                          TimeValue(MicroSeconds(102400)),
+                                          MakeTimeAccessor(&AdhocWifiMac::GetBeaconInterval,
+                                                           &AdhocWifiMac::SetBeaconInterval),
+                                          MakeTimeChecker())
+                            .AddAttribute("BeaconGeneration",
+                                          "Whether or not beacons are generated.",
+                                          BooleanValue(false),
+                                          MakeBooleanAccessor(&AdhocWifiMac::SetBeaconGeneration),
+                                          MakeBooleanChecker())
+                            .AddAttribute("BeaconAc",
+                                          "The Access Category to use for beacons.",
+                                          EnumValue(AcIndex::AC_VI),
+                                          MakeEnumAccessor<AcIndex>(&AdhocWifiMac::m_beaconAc),
+                                          MakeEnumChecker(AcIndex::AC_BE,
+                                                          "AC_BE",
+                                                          AcIndex::AC_VI,
+                                                          "AC_VI",
+                                                          AcIndex::AC_VO,
+                                                          "AC_VO",
+                                                          AcIndex::AC_BK,
+                                                          "AC_BK"));
     return tid;
 }
 
 AdhocWifiMac::AdhocWifiMac()
+    : m_enableBeaconGeneration(false)
 {
     NS_LOG_FUNCTION(this);
     // Let the lower layers know that we are acting in an IBSS
@@ -58,6 +83,72 @@ AdhocWifiMac::AdhocWifiMac()
 AdhocWifiMac::~AdhocWifiMac()
 {
     NS_LOG_FUNCTION(this);
+}
+
+void
+AdhocWifiMac::DoInitialize()
+{
+    NS_LOG_FUNCTION(this);
+    if (m_enableBeaconGeneration)
+    {
+        m_beaconEvent.Cancel();
+        NS_LOG_DEBUG("Start beaconing");
+        m_beaconEvent = Simulator::ScheduleNow(&AdhocWifiMac::SendOneBeacon, this);
+    }
+    WifiMac::DoInitialize();
+}
+
+void
+AdhocWifiMac::DoDispose()
+{
+    NS_LOG_FUNCTION(this);
+    m_enableBeaconGeneration = false;
+    m_beaconEvent.Cancel();
+    WifiMac::DoDispose();
+}
+
+void
+AdhocWifiMac::SetBeaconGeneration(bool enable)
+{
+    NS_LOG_FUNCTION(this << enable);
+    if (!enable)
+    {
+        m_beaconEvent.Cancel();
+    }
+    else if (!m_enableBeaconGeneration)
+    {
+        m_beaconEvent = Simulator::ScheduleNow(&AdhocWifiMac::SendOneBeacon, this);
+    }
+    m_enableBeaconGeneration = enable;
+}
+
+void
+AdhocWifiMac::SetBeaconInterval(Time interval)
+{
+    NS_LOG_FUNCTION(this << interval);
+    if ((interval.GetMicroSeconds() % 1024) != 0)
+    {
+        NS_FATAL_ERROR("beacon interval should be multiple of 1024us (802.11 time unit), see IEEE "
+                       "Std. 802.11-2012");
+    }
+    if (interval.GetMicroSeconds() > (1024 * 65535))
+    {
+        NS_FATAL_ERROR(
+            "beacon interval should be smaller then or equal to 65535 * 1024us (802.11 time unit)");
+    }
+    m_beaconInterval = interval;
+}
+
+Time
+AdhocWifiMac::GetBeaconInterval() const
+{
+    return m_beaconInterval;
+}
+
+Ptr<Txop>
+AdhocWifiMac::GetBeaconTxop() const
+{
+    return GetQosSupported() ? StaticCast<Txop>(GetQosTxop(m_beaconAc)) : GetTxop();
 }
 
 void
@@ -138,6 +229,71 @@ AdhocWifiMac::SetLinkUpCallback(Callback<void> linkUp)
     // in IBSS mode, the link is always up, so we immediately invoke the
     // callback if one is set
     linkUp();
+}
+
+void
+AdhocWifiMac::SendOneBeacon()
+{
+    NS_LOG_FUNCTION(this);
+
+    WifiMacHeader hdr;
+    hdr.SetType(WIFI_MAC_MGT_BEACON);
+    hdr.SetAddr1(Mac48Address::GetBroadcast());
+    hdr.SetAddr2(GetAddress());
+    hdr.SetAddr3(GetAddress());
+    hdr.SetDsNotFrom();
+    hdr.SetDsNotTo();
+
+    MgtBeaconHeader beacon;
+    beacon.Get<Ssid>() = GetSsid();
+    auto supportedRates = GetSupportedRates();
+    beacon.Get<SupportedRates>() = supportedRates.rates;
+    beacon.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
+    beacon.SetBeaconIntervalUs(GetBeaconInterval().GetMicroSeconds());
+    beacon.Capabilities() = GetCapabilities();
+    if (GetDsssSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<DsssParameterSet>() = GetDsssParameterSet();
+    }
+    if (GetErpSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<ErpInformation>() = GetErpInformation();
+    }
+    if (GetQosSupported())
+    {
+        beacon.Get<EdcaParameterSet>() = GetEdcaParameterSet();
+    }
+    if (GetHtSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
+        beacon.Get<HtCapabilities>() = GetHtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<HtOperation>() = GetHtOperation();
+    }
+    if (GetVhtSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<VhtCapabilities>() = GetVhtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<VhtOperation>() = GetVhtOperation();
+    }
+    if (GetHeSupported())
+    {
+        beacon.Get<HeCapabilities>() = GetHeCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<HeOperation>() = GetHeOperation();
+        if (Is6GhzBand(SINGLE_LINK_OP_ID))
+        {
+            beacon.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(SINGLE_LINK_OP_ID);
+        }
+    }
+    if (GetEhtSupported())
+    {
+        beacon.Get<EhtCapabilities>() = GetEhtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<EhtOperation>() = GetEhtOperation();
+    }
+
+    auto packet = Create<Packet>();
+    packet->AddHeader(beacon);
+    GetBeaconTxop()->Queue(Create<WifiMpdu>(packet, hdr));
+
+    m_beaconEvent = Simulator::Schedule(GetBeaconInterval(), &AdhocWifiMac::SendOneBeacon, this);
 }
 
 void
