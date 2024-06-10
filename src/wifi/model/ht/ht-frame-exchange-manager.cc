@@ -1565,6 +1565,7 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         {
             Mac48Address sender = hdr.GetAddr2();
             NS_LOG_DEBUG("Received BlockAck from=" << sender);
+            m_txTimer.GotResponseFrom(sender);
 
             SnrTag tag;
             mpdu->GetPacket()->PeekPacketTag(tag);

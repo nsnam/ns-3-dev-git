@@ -1429,6 +1429,7 @@ FrameExchangeManager::ReceivedNormalAck(Ptr<WifiMpdu> mpdu,
 {
     Mac48Address sender = mpdu->GetHeader().GetAddr1();
     NS_LOG_DEBUG("Received ACK from=" << sender);
+    m_txTimer.GotResponseFrom(sender);
 
     NotifyReceivedNormalAck(mpdu);
 

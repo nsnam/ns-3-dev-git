@@ -2462,6 +2462,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             NS_ABORT_MSG_IF(!blockAck.IsMultiSta(),
                             "A Multi-STA BlockAck is expected after a TB PPDU");
             NS_LOG_DEBUG("Received a Multi-STA BlockAck from=" << hdr.GetAddr2());
+            m_txTimer.GotResponseFrom(hdr.GetAddr2());
 
             NS_ASSERT(m_staMac && m_staMac->IsAssociated());
             if (hdr.GetAddr2() != m_bssid)
