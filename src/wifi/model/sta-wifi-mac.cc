@@ -1533,11 +1533,15 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
                 setupLinks.remove(staLinkid);
             }
         }
-        // remaining links in setupLinks are not setup and hence must be disabled
+        // remaining links in setupLinks are not setup and hence must be disabled,
+        // unless P2P link support is enabled
         for (const auto& id : setupLinks)
         {
             GetLink(id).bssid = std::nullopt;
-            GetLink(id).phy->SetOffMode();
+            if (!m_enableP2pLinks)
+            {
+                GetLink(id).phy->SetOffMode();
+            }
         }
         if (apMldAddress)
         {
