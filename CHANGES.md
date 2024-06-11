@@ -17,6 +17,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 ### New API
 
 * (network) Added a function to detect IPv4 APIPA addresses (169.254.0.0/16).
+* (wifi) Added new attributes to `AdhocWifiMac` to control beacon transmissions: **BeaconGeneration** and **BeaconInterval** with the same meaning as for `ApWifiMac`. It is also possible to control the access category to use for beacons via the **BeaconAc** attribute.
 
 ### Changes to existing API
 
