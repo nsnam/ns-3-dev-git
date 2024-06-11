@@ -1,6 +1,6 @@
 build_lib_example(
-  NAME aodv
-  SOURCE_FILES aodv.cc
+  NAME aodv-example
+  SOURCE_FILES aodv-example.cc
   LIBRARIES_TO_LINK
     ${libwifi}
     ${libinternet}

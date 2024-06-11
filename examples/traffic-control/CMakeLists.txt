@@ -1,6 +1,6 @@
 build_example(
-  NAME traffic-control
-  SOURCE_FILES traffic-control.cc
+  NAME traffic-control-example
+  SOURCE_FILES traffic-control-example.cc
   LIBRARIES_TO_LINK
     ${libinternet}
     ${libpoint-to-point}

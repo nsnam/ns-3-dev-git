@@ -1,6 +1,6 @@
 build_lib_example(
-  NAME dsr
-  SOURCE_FILES dsr.cc
+  NAME dsr-example
+  SOURCE_FILES dsr-example.cc
   LIBRARIES_TO_LINK
     ${libcore}
     ${libnetwork}
