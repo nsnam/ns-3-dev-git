@@ -1316,6 +1316,19 @@ EhtFrameExchangeManager::CheckEmlsrClientStartingTxop(const WifiMacHeader& hdr,
             m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
                                          *mldAddress,
                                          {linkId});
+
+            // the AP MLD may have sent an ICF to the EMLSR client on this link while the EMLSR
+            // client was starting a TXOP on another link. To be safe, besides blocking
+            // transmissions, remove the EMLSR client from the protected stations on this link
+            auto linkAddr =
+                m_mac->GetWifiRemoteStationManager(linkId)->GetAffiliatedStaAddress(*mldAddress);
+            NS_ASSERT(linkAddr.has_value());
+            auto ehtFem =
+                StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
+            NS_LOG_DEBUG("Remove " << *linkAddr << " from protected STAs");
+            ehtFem->m_protectedStas.erase(*linkAddr);
+            ehtFem->m_sentRtsTo.erase(*linkAddr);
+            ehtFem->m_sentFrameTo.erase(*linkAddr);
         }
     }
 
