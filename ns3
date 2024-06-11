@@ -657,7 +657,7 @@ def remove_file(file_to_remove, dry_run):
 def clean_cmake_artifacts(dry_run=False):
     remove_dir(out_dir, dry_run, "output")
 
-    cmake_cache_files = glob.glob("%s/**/CMakeCache.txt" % ns3_path, recursive=True)
+    cmake_cache_files = glob.glob("%s/**/CMakeCache.txt" % ns3_path)
     for cmake_cache_file in cmake_cache_files:
         dirname = os.path.dirname(cmake_cache_file)
         remove_dir(dirname, dry_run, "CMake cache")
@@ -707,7 +707,7 @@ def clean_vcpkg_artifacts(dry_run=False):
 
 def search_cmake_cache(build_profile):
     # Search for the CMake cache
-    cmake_cache_files = glob.glob("%s/**/CMakeCache.txt" % ns3_path, recursive=True)
+    cmake_cache_files = glob.glob("%s/**/CMakeCache.txt" % ns3_path)
     current_cmake_cache_folder = None
     current_cmake_generator = None
 

@@ -320,10 +320,17 @@ macro(process_options)
   if("${CMAKE_FORMAT_PROGRAM}" STREQUAL "CMAKE_FORMAT_PROGRAM-NOTFOUND")
     message(${HIGHLIGHTED_STATUS} "Proceeding without cmake-format")
   else()
-    file(GLOB_RECURSE MODULES_CMAKE_FILES src/**/CMakeLists.txt
-         contrib/**/CMakeLists.txt examples/**/CMakeLists.txt
-         scratch/**/CMakeLists.txt
+    file(
+      GLOB
+      MODULES_CMAKE_FILES
+      src/**/CMakeLists.txt
+      contrib/**/CMakeLists.txt
+      src/**/examples/CMakeLists.txt
+      contrib/**/examples/CMakeLists.txt
+      examples/**/CMakeLists.txt
+      scratch/**/CMakeLists.txt
     )
+    file(GLOB_RECURSE SCRATCH_CMAKE_FILES scratch/**/CMakeLists.txt)
     file(
       GLOB
       INTERNAL_CMAKE_FILES
@@ -342,7 +349,7 @@ macro(process_options)
       COMMAND
         ${CMAKE_FORMAT_PROGRAM} -c
         ${PROJECT_SOURCE_DIR}/build-support/cmake-format-modules.yaml -i
-        ${MODULES_CMAKE_FILES}
+        ${MODULES_CMAKE_FILES} ${SCRATCH_CMAKE_FILES}
     )
     add_custom_target(
       cmake-format-check

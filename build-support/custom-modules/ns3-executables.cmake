@@ -168,8 +168,20 @@ function(scan_python_examples path)
     return()
   endif()
 
-  # Search for python examples
-  file(GLOB_RECURSE python_examples ${path}/*.py)
+  # Search for example scripts in the directory and its immediate children
+  # directories
+  set(python_examples)
+  file(GLOB examples_subdirs LIST_DIRECTORIES TRUE ${path}/*)
+  foreach(subdir ${path} ${examples_subdirs})
+    if(NOT (IS_DIRECTORY ${subdir}))
+      continue()
+    endif()
+    file(GLOB python_examples_subdir ${subdir}/*.py)
+    list(APPEND python_examples ${python_examples_subdir})
+  endforeach()
+
+  # Add example scripts to the list
+  list(REMOVE_DUPLICATES python_examples)
   foreach(python_example ${python_examples})
     if(NOT (${python_example} MATCHES "examples-to-run"))
       set(ns3-execs-py "${python_example};${ns3-execs-py}"
