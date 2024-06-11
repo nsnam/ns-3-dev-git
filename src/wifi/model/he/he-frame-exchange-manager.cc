@@ -1357,6 +1357,22 @@ HeFrameExchangeManager::DoTbPpduTimeout(WifiPsduMap* psduMap,
         m_edca->ResetCw(m_linkId);
         TransmissionSucceeded();
     }
+    else
+    {
+        // Stations that did not respond must be removed from the set of stations for which
+        // protection is not needed in the current TXOP.
+        for (const auto& address : staMissedTbPpduFrom)
+        {
+            NS_LOG_DEBUG(address << " did not respond, hence it is no longer protected");
+            m_protectedStas.erase(address);
+            m_sentFrameTo.erase(address);
+        }
+        if (m_protectedIfResponded)
+        {
+            m_protectedStas.merge(m_sentFrameTo);
+        }
+        m_sentFrameTo.clear();
+    }
 
     m_psduMap.clear();
 }
