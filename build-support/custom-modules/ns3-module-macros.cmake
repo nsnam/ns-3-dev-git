@@ -129,11 +129,11 @@ function(build_lib)
 
   # Add library to a global list of libraries
   if("${FOLDER}" MATCHES "src")
-    set(ns3-libs "${lib${BLIB_LIBNAME}};${ns3-libs}"
+    set(ns3-libs "${BLIB_LIBNAME};${ns3-libs}"
         CACHE INTERNAL "list of processed upstream modules"
     )
   else()
-    set(ns3-contrib-libs "${lib${BLIB_LIBNAME}};${ns3-contrib-libs}"
+    set(ns3-contrib-libs "${BLIB_LIBNAME};${ns3-contrib-libs}"
         CACHE INTERNAL "list of processed contrib modules"
     )
   endif()
@@ -142,30 +142,27 @@ function(build_lib)
     # Create object library with sources and headers, that will be used in
     # lib-ns3-static and the shared library
     add_library(
-      ${lib${BLIB_LIBNAME}-obj} OBJECT "${BLIB_SOURCE_FILES}"
-                                       "${BLIB_HEADER_FILES}"
+      ${BLIB_LIBNAME}-obj OBJECT "${BLIB_SOURCE_FILES}" "${BLIB_HEADER_FILES}"
     )
 
     if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_IGNORE_PCH}))
-      target_precompile_headers(${lib${BLIB_LIBNAME}-obj} REUSE_FROM stdlib_pch)
+      target_precompile_headers(${BLIB_LIBNAME}-obj REUSE_FROM stdlib_pch)
     endif()
 
     # Create shared library with previously created object library (saving
     # compilation time for static libraries)
-    add_library(
-      ${lib${BLIB_LIBNAME}} SHARED $<TARGET_OBJECTS:${lib${BLIB_LIBNAME}-obj}>
-    )
+    add_library(${BLIB_LIBNAME} SHARED $<TARGET_OBJECTS:${BLIB_LIBNAME}-obj>)
   else()
     # Xcode and CMake don't play well when using object libraries, so we have a
     # specific path for that
-    add_library(${lib${BLIB_LIBNAME}} SHARED "${BLIB_SOURCE_FILES}")
+    add_library(${BLIB_LIBNAME} SHARED "${BLIB_SOURCE_FILES}")
 
     if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${BLIB_IGNORE_PCH}))
-      target_precompile_headers(${lib${BLIB_LIBNAME}} REUSE_FROM stdlib_pch)
+      target_precompile_headers(${BLIB_LIBNAME} REUSE_FROM stdlib_pch)
     endif()
   endif()
 
-  add_library(ns3::${lib${BLIB_LIBNAME}} ALIAS ${lib${BLIB_LIBNAME}})
+  add_library(ns3::${BLIB_LIBNAME} ALIAS ${BLIB_LIBNAME})
 
   # Associate public headers with library for installation purposes
   set(config_headers)
@@ -183,17 +180,15 @@ function(build_lib)
     if(${ENABLE_EXAMPLES} AND ${ENABLE_TESTS})
       if(NOT ${XCODE})
         target_compile_definitions(
-          ${lib${BLIB_LIBNAME}}-obj PRIVATE NS3_ENABLE_EXAMPLES
+          ${BLIB_LIBNAME}-obj PRIVATE NS3_ENABLE_EXAMPLES
         )
       else()
-        target_compile_definitions(
-          ${lib${BLIB_LIBNAME}} PRIVATE NS3_ENABLE_EXAMPLES
-        )
+        target_compile_definitions(${BLIB_LIBNAME} PRIVATE NS3_ENABLE_EXAMPLES)
       endif()
     endif()
   endif()
   set_target_properties(
-    ${lib${BLIB_LIBNAME}}
+    ${BLIB_LIBNAME}
     PROPERTIES
       PUBLIC_HEADER
       "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${config_headers};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
@@ -204,7 +199,7 @@ function(build_lib)
   )
 
   if(${NS3_CLANG_TIMETRACE})
-    add_dependencies(timeTraceReport ${lib${BLIB_LIBNAME}})
+    add_dependencies(timeTraceReport ${BLIB_LIBNAME})
   endif()
 
   # Split ns and non-ns libraries to manage their propagation properly
@@ -215,12 +210,15 @@ function(build_lib)
   foreach(library ${BLIB_LIBRARIES_TO_LINK})
     remove_lib_prefix("${library}" module_name)
 
-    # Ignore the case where the library dependency name match the ns-3 module
-    # since it is most likely is due to brite, click and openflow collisions.
-    # All the ns-3 module targets should be prefixed with 'lib' to be
-    # differentiable.
+    # In case the dependency library matches the ns-3 module, we are most likely
+    # dealing with brite, click and openflow collisions. All the ns-3 module
+    # targets used to be prefixed with 'lib' to be differentiable, but now we
+    # are dropping it. To disambiguate them two, we assume these external
+    # libraries are shared libraries by adding suffixes.
     if("${library}" STREQUAL "${BLIB_LIBNAME}")
-      list(APPEND non_ns_libraries_to_link ${library})
+      list(APPEND non_ns_libraries_to_link
+           ${library}${CMAKE_SHARED_LIBRARY_SUFFIX}
+      )
       continue()
     endif()
 
@@ -259,7 +257,7 @@ function(build_lib)
     # with NS3_REEXPORT_THIRD_PARTY_LIBRARIES, we export all 3rd-party library
     # include directories, allowing consumers of this module to include and link
     # the 3rd-party code with no additional setup
-    get_target_includes(${lib${BLIB_LIBNAME}} exported_include_directories)
+    get_target_includes(${BLIB_LIBNAME} exported_include_directories)
 
     string(REPLACE "-I" "" exported_include_directories
                    "${exported_include_directories}"
@@ -290,18 +288,16 @@ function(build_lib)
   endif()
 
   target_link_libraries(
-    ${lib${BLIB_LIBNAME}} ${exported_libraries} ${private_libraries}
+    ${BLIB_LIBNAME} ${exported_libraries} ${private_libraries}
   )
 
   if(NOT ${XCODE})
-    target_link_libraries(
-      ${lib${BLIB_LIBNAME}}-obj PRIVATE ${ns_libraries_to_link}
-    )
+    target_link_libraries(${BLIB_LIBNAME}-obj PRIVATE ${ns_libraries_to_link})
   endif()
 
   # set output name of library
   set_target_properties(
-    ${lib${BLIB_LIBNAME}}
+    ${BLIB_LIBNAME}
     PROPERTIES OUTPUT_NAME ns${NS3_VER}-${BLIB_LIBNAME}${build_profile_suffix}
   )
 
@@ -310,17 +306,14 @@ function(build_lib)
   # add the build/include path to them, so that they can ns-3 headers with
   # <ns3/something.h>
   target_include_directories(
-    ${lib${BLIB_LIBNAME}}
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_OUTPUT_DIRECTORY}/include>
-           $<INSTALL_INTERFACE:include>
+    ${BLIB_LIBNAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_OUTPUT_DIRECTORY}/include>
+                           $<INSTALL_INTERFACE:include>
     INTERFACE ${exported_include_directories}
   )
 
   # Export definitions as interface definitions, propagating local definitions
   # to other modules and scratches
-  get_target_property(
-    target_definitions ${lib${BLIB_LIBNAME}} COMPILE_DEFINITIONS
-  )
+  get_target_property(target_definitions ${BLIB_LIBNAME} COMPILE_DEFINITIONS)
   if(${target_definitions} STREQUAL "target_definitions-NOTFOUND")
     set(target_definitions)
   endif()
@@ -329,8 +322,8 @@ function(build_lib)
   list(REMOVE_DUPLICATES exported_definitions)
   list(REMOVE_ITEM exported_definitions "")
   set_target_properties(
-    ${lib${BLIB_LIBNAME}} PROPERTIES INTERFACE_COMPILE_DEFINITIONS
-                                     "${exported_definitions}"
+    ${BLIB_LIBNAME} PROPERTIES INTERFACE_COMPILE_DEFINITIONS
+                               "${exported_definitions}"
   )
 
   set(ns3-external-libs "${non_ns_libraries_to_link};${ns3-external-libs}"
@@ -339,7 +332,7 @@ function(build_lib)
   )
   if(${NS3_STATIC} OR ${NS3_MONOLIB})
     set(lib-ns3-static-objs
-        "$<TARGET_OBJECTS:${lib${BLIB_LIBNAME}-obj}>;${lib-ns3-static-objs}"
+        "$<TARGET_OBJECTS:${BLIB_LIBNAME}-obj>;${lib-ns3-static-objs}"
         CACHE
           INTERNAL
           "list of object files from module used by NS3_STATIC and NS3_MONOLIB"
@@ -351,7 +344,7 @@ function(build_lib)
 
   # Check if headers actually exist to prevent copying errors during
   # installation
-  get_target_property(headers_to_check ${lib${BLIB_LIBNAME}} PUBLIC_HEADER)
+  get_target_property(headers_to_check ${BLIB_LIBNAME} PUBLIC_HEADER)
   set(missing_headers)
   foreach(header ${headers_to_check})
     if(NOT ((EXISTS ${header}) OR (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${header})
@@ -419,7 +412,7 @@ function(build_lib)
     list(LENGTH BLIB_TEST_SOURCES test_source_len)
     if(${test_source_len} GREATER 0)
       # Create BLIB_LIBNAME of output library test of module
-      set(test${BLIB_LIBNAME} lib${BLIB_LIBNAME}-test CACHE INTERNAL "")
+      set(test${BLIB_LIBNAME} ${BLIB_LIBNAME}-test CACHE INTERNAL "")
 
       # Create shared library containing tests of the module on UNIX and just
       # the object file that will be part of test-runner on Windows
@@ -443,7 +436,7 @@ function(build_lib)
           )
         else()
           target_link_libraries(
-            ${test${BLIB_LIBNAME}} ${LIB_AS_NEEDED_PRE} ${lib${BLIB_LIBNAME}}
+            ${test${BLIB_LIBNAME}} ${LIB_AS_NEEDED_PRE} ${BLIB_LIBNAME}
             "${BLIB_LIBRARIES_TO_LINK}" ${LIB_AS_NEEDED_POST}
           )
         endif()
@@ -479,7 +472,7 @@ function(build_lib)
 
   # Handle package export
   install(
-    TARGETS ${lib${BLIB_LIBNAME}}
+    TARGETS ${BLIB_LIBNAME}
     EXPORT ns3ExportTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/
@@ -540,7 +533,7 @@ function(build_lib_example)
       SOURCE_FILES ${BLIB_EXAMPLE_SOURCE_FILES}
       HEADER_FILES ${BLIB_EXAMPLE_HEADER_FILES}
       LIBRARIES_TO_LINK
-        ${lib${BLIB_LIBNAME}} ${BLIB_EXAMPLE_LIBRARIES_TO_LINK}
+        ${BLIB_LIBNAME} ${BLIB_EXAMPLE_LIBRARIES_TO_LINK}
         ${ns3-optional-visualizer-lib}
       EXECUTABLE_DIRECTORY_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FOLDER}/
       ${IGNORE_PCH}

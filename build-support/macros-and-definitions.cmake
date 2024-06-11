@@ -92,7 +92,7 @@ macro(SUBDIRLIST result curdir)
 endmacro()
 
 macro(library_target_name libname targetname)
-  set(${targetname} lib${libname})
+  set(${targetname} ${libname})
 endmacro()
 
 macro(clear_global_cached_variables)
@@ -199,7 +199,8 @@ macro(process_options)
   set(ENABLE_TESTS OFF)
   if(${NS3_TESTS} OR ${ns3rc_tests_enabled})
     set(ENABLE_TESTS ON)
-    enable_testing()
+    # CTest creates a TEST target that conflicts with ns-3 test library
+    # enable_testing()
   else()
     list(REMOVE_ITEM libs_to_build test)
   endif()

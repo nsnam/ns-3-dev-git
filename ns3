@@ -1303,7 +1303,7 @@ def build_step(
         # Build targets in the list
         for target in args.build:
             if target in ns3_modules:
-                target = "lib" + target
+                pass
             elif target not in non_executable_targets:
                 target = get_target_to_build(target, ns3_version, build_profile)
             else:
