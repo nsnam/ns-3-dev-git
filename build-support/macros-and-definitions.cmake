@@ -221,6 +221,13 @@ macro(process_options)
     unset(CMAKE_VERBOSE_MAKEFILE CACHE)
   endif()
 
+  if(${NS3_FORCE_LOCAL_DEPENDENCIES})
+    set(CMAKE_FIND_FRAMEWORK NEVER)
+    set(CMAKE_FIND_APPBUNDLE NEVER)
+    set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH FALSE)
+    set(CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH FALSE)
+  endif()
+
   # Set warning level and warning as errors
   if(${NS3_WARNINGS})
     if(DEFINED MSVC)

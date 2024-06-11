@@ -60,6 +60,11 @@ option(NS3_FAST_LINKERS "Use Mold or LLD to speed up linking if available" ON)
 option(NS3_FETCH_OPTIONAL_COMPONENTS
        "Fetch Brite, Click and Openflow dependencies" OFF
 )
+option(
+  NS3_FORCE_LOCAL_DEPENDENCIES
+  "Only search applications, headers, libraries on explicitly set directories"
+  OFF
+)
 option(NS3_GSL "Build with GSL support" ON)
 option(NS3_GTK3 "Build with GTK3 support" ON)
 option(NS3_LINK_TIME_OPTIMIZATION "Build with link-time optimization" OFF)

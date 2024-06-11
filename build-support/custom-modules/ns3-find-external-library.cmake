@@ -111,6 +111,9 @@ function(find_external_library)
       # directories
       $ENV{PATH} # Search for libraries in PATH directories
   )
+  if(library_search_paths)
+    list(REMOVE_DUPLICATES library_search_paths)
+  endif()
   enable_cmake_warnings()
   # cmake-format: off
     #
@@ -223,6 +226,9 @@ function(find_external_library)
       # ns-3-dev/build
       ${CMAKE_INSTALL_PREFIX} # Search for headers in the install
   )
+  if(header_search_paths)
+    list(REMOVE_DUPLICATES header_search_paths)
+  endif()
 
   set(not_found_headers)
   set(include_dirs)
