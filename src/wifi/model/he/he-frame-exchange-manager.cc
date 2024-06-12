@@ -304,6 +304,24 @@ HeFrameExchangeManager::ProtectionCompleted()
     {
         m_protectedStas.merge(m_sentRtsTo);
         m_sentRtsTo.clear();
+        if (m_muScheduler)
+        {
+            m_muScheduler->NotifyProtectionCompleted(m_linkId, m_psduMap, m_txParams);
+
+            if (m_psduMap.empty())
+            {
+                NS_LOG_INFO("Multi-user scheduler aborted the transmission");
+                NS_ASSERT(m_edca);
+                if (m_edca->GetTxopLimit(m_linkId).IsStrictlyPositive())
+                {
+                    SendCfEndIfNeeded();
+                    return;
+                }
+                NotifyChannelReleased(m_edca);
+                m_edca = nullptr;
+                return;
+            }
+        }
         SendPsduMap();
         return;
     }

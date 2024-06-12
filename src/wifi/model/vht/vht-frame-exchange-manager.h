@@ -31,8 +31,9 @@ class VhtFrameExchangeManager : public HtFrameExchangeManager
     VhtFrameExchangeManager();
     ~VhtFrameExchangeManager() override;
 
-  protected:
     Ptr<WifiPsdu> GetWifiPsdu(Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector) const override;
+
+  protected:
     uint32_t GetPsduSize(Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector) const override;
 };
 

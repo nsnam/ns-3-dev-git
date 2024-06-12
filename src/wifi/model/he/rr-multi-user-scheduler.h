@@ -48,6 +48,13 @@ class RrMultiUserScheduler : public MultiUserScheduler
     void DoDispose() override;
     void DoInitialize() override;
 
+    void UpdateTriggerFrameAfterProtection(uint8_t linkId,
+                                           CtrlTriggerHeader& trigger,
+                                           WifiTxParameters& txParams) const override;
+    void UpdateDlMuAfterProtection(uint8_t linkId,
+                                   WifiPsduMap& psduMap,
+                                   WifiTxParameters& txParams) const override;
+
     /**
      * Information used to sort stations
      */

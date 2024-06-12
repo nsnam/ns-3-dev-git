@@ -601,6 +601,35 @@ RrMultiUserScheduler::TrySendingBasicTf()
     return UL_MU_TX;
 }
 
+void
+RrMultiUserScheduler::UpdateTriggerFrameAfterProtection(uint8_t linkId,
+                                                        CtrlTriggerHeader& trigger,
+                                                        WifiTxParameters& txParams) const
+{
+    NS_LOG_FUNCTION(this << linkId << &txParams);
+
+    // remove unprotected EMLSR clients, unless this is a BSRP TF (which acts as ICF)
+    if (trigger.IsBsrp())
+    {
+        NS_LOG_INFO("BSRP TF is an ICF for unprotected EMLSR clients");
+        return;
+    }
+
+    NS_LOG_INFO("Checking unprotected EMLSR clients");
+    RemoveRecipientsFromTf(linkId, trigger, txParams, m_isUnprotectedEmlsrClient);
+}
+
+void
+RrMultiUserScheduler::UpdateDlMuAfterProtection(uint8_t linkId,
+                                                WifiPsduMap& psduMap,
+                                                WifiTxParameters& txParams) const
+{
+    NS_LOG_FUNCTION(this << linkId << &txParams);
+
+    NS_LOG_INFO("Checking unprotected EMLSR clients");
+    RemoveRecipientsFromDlMu(linkId, psduMap, txParams, m_isUnprotectedEmlsrClient);
+}
+
 Time
 RrMultiUserScheduler::GetExtraTimeForBsrpTfDurationId(uint8_t linkId) const
 {

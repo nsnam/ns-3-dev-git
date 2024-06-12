@@ -157,6 +157,15 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
                          std::optional<uint8_t> optTid = std::nullopt,
                          std::optional<Mac48Address> optAddress = std::nullopt);
 
+    /**
+     * Get a PSDU containing the given MPDU
+     *
+     * \param mpdu the given MPDU
+     * \param txVector the TXVECTOR to use to send the MPDU
+     * \return a PSDU containing the given MPDU
+     */
+    virtual Ptr<WifiPsdu> GetWifiPsdu(Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector) const;
+
   protected:
     void DoDispose() override;
 
@@ -185,15 +194,6 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * \param txVector the TXVECTOR used to transmit the management action frame
      */
     void ReceiveMgtAction(Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector);
-
-    /**
-     * Get a PSDU containing the given MPDU
-     *
-     * \param mpdu the given MPDU
-     * \param txVector the TXVECTOR to use to send the MPDU
-     * \return a PSDU containing the given MPDU
-     */
-    virtual Ptr<WifiPsdu> GetWifiPsdu(Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector) const;
 
     /**
      * Get the Block Ack Manager handling the given TID.

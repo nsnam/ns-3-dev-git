@@ -17,6 +17,7 @@
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-tx-parameters.h"
 
+#include <functional>
 #include <unordered_map>
 #include <vector>
 
@@ -112,6 +113,19 @@ class MultiUserScheduler : public Object
     UlMuInfo& GetUlMuInfo(uint8_t linkId);
 
     /**
+     * This method is called when a protection mechanism for an MU transmission is completed and
+     * gives the MU scheduler the opportunity to modify the MU PPDU or the TX parameters before
+     * the actual MU transmission.
+     *
+     * \param linkId ID of the link on which protection was completed
+     * \param psduMap the PSDU map to be transmitted
+     * \param txParams the TX parameters for the MU transmission
+     */
+    void NotifyProtectionCompleted(uint8_t linkId,
+                                   WifiPsduMap& psduMap,
+                                   WifiTxParameters& txParams);
+
+    /**
      * When the TXOP limit is zero and the TXOP continues a SIFS after receiving a response to a
      * BSRP TF, the Duration/ID field of the BSRP TF should be extended to reserve the medium
      * for the frame exchange following the BSRP TF. This method is intended to return the estimated
@@ -169,13 +183,63 @@ class MultiUserScheduler : public Object
     Ptr<WifiMpdu> GetTriggerFrame(const CtrlTriggerHeader& trigger, uint8_t linkId) const;
 
     /**
+     * Update the given Trigger Frame after protection is completed on the given link.
+     *
+     * \param linkId the ID of the given link
+     * \param trigger the given Trigger Frame
+     * \param txParams the TX parameters for the UL MU transmission
+     */
+    virtual void UpdateTriggerFrameAfterProtection(uint8_t linkId,
+                                                   CtrlTriggerHeader& trigger,
+                                                   WifiTxParameters& txParams) const {};
+
+    /**
+     * Update the given PSDU map after protection is completed on the given link.
+     *
+     * \param linkId the ID of the given link
+     * \param psduMap the given PSDU map
+     * \param txParams the TX parameters for the DL MU transmission
+     */
+    virtual void UpdateDlMuAfterProtection(uint8_t linkId,
+                                           WifiPsduMap& psduMap,
+                                           WifiTxParameters& txParams) const {};
+
+    /**
+     * Remove the User Info fields for which the given predicate is true from the given Trigger
+     * Frame.
+     *
+     * \param linkId the ID of the link on which the Trigger Frame has to be sent
+     * \param trigger the given Trigger Frame
+     * \param txParams the TX parameters for the UL MU transmission
+     * \param predicate the given predicate (input parameters are link ID and device link address)
+     */
+    void RemoveRecipientsFromTf(uint8_t linkId,
+                                CtrlTriggerHeader& trigger,
+                                WifiTxParameters& txParams,
+                                std::function<bool(uint8_t, Mac48Address)> predicate) const;
+
+    /**
+     * Remove PSDUs for which the given predicate is true from the given PSDU map. Entries in the
+     * TXVECTOR corresponding to such PSDUs are also removed.
+     *
+     * \param linkId the ID of the link on which the PSDU map has to be sent
+     * \param psduMap the given PSDU map
+     * \param txParams the TX parameters for the DL MU transmission
+     * \param predicate the given predicate (input parameters are link ID and device link address)
+     */
+    void RemoveRecipientsFromDlMu(uint8_t linkId,
+                                  WifiPsduMap& psduMap,
+                                  WifiTxParameters& txParams,
+                                  std::function<bool(uint8_t, Mac48Address)> predicate) const;
+
+    /**
      * Get the format of the last transmission on the given link, as determined by
      * the last call to NotifyAccessGranted that did not return NO_TX.
      *
      * \param linkId the ID of the given link
      * \return the format of the last transmission on the given link
      */
-    TxFormat GetLastTxFormat(uint8_t linkId);
+    TxFormat GetLastTxFormat(uint8_t linkId) const;
 
     /**
      * Get the maximum size in bytes among the A-MPDUs containing QoS Null frames
@@ -201,6 +265,11 @@ class MultiUserScheduler : public Object
     MHz_u m_allowedWidth;         //!< the allowed width for the current transmission
     uint8_t m_linkId;             //!< the ID of the link over which channel access has been granted
     Time m_defaultTbPpduDuration; //!< the default duration of TB PPDUs solicited by Basic TFs
+
+    const std::function<bool(uint8_t, Mac48Address)>
+        m_isUnprotectedEmlsrClient; //!< predicate returning true if the device with the given
+                                    //!< (link) address is an EMLSR client that is not protected on
+                                    //!< the given link
 
   private:
     /**

@@ -81,6 +81,10 @@ MultiUserScheduler::GetTypeId()
 }
 
 MultiUserScheduler::MultiUserScheduler()
+    : m_isUnprotectedEmlsrClient([this](uint8_t linkId, Mac48Address address) {
+          return m_apMac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(address) &&
+                 !m_apMac->GetFrameExchangeManager(linkId)->GetProtectedStas().contains(address);
+      })
 {
 }
 
@@ -277,9 +281,10 @@ MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
 }
 
 MultiUserScheduler::TxFormat
-MultiUserScheduler::GetLastTxFormat(uint8_t linkId)
+MultiUserScheduler::GetLastTxFormat(uint8_t linkId) const
 {
-    return m_lastTxInfo[linkId].lastTxFormat;
+    const auto it = m_lastTxInfo.find(linkId);
+    return it != m_lastTxInfo.cend() ? it->second.lastTxFormat : NO_TX;
 }
 
 MultiUserScheduler::DlMuInfo&
@@ -349,6 +354,141 @@ MultiUserScheduler::CheckTriggerFrame()
         m_lastTxInfo[m_linkId].ulInfo.trigger.GetUlLength() > 76);
 
     GetHeFem(m_linkId)->SetTargetRssi(m_lastTxInfo[m_linkId].ulInfo.trigger);
+}
+
+void
+MultiUserScheduler::RemoveRecipientsFromTf(
+    uint8_t linkId,
+    CtrlTriggerHeader& trigger,
+    WifiTxParameters& txParams,
+    std::function<bool(uint8_t, Mac48Address)> predicate) const
+{
+    NS_LOG_FUNCTION(this << linkId << &txParams);
+
+    const auto& aidAddrMap = m_apMac->GetStaList(linkId);
+
+    for (auto userInfoIt = trigger.begin(); userInfoIt != trigger.end();)
+    {
+        const auto addressIt = aidAddrMap.find(userInfoIt->GetAid12());
+        NS_ASSERT_MSG(addressIt != aidAddrMap.cend(),
+                      "AID " << userInfoIt->GetAid12() << " not found");
+        const auto address = addressIt->second;
+
+        if (predicate(linkId, address))
+        {
+            NS_LOG_INFO("Removing User Info field addressed to " << address);
+
+            userInfoIt = trigger.RemoveUserInfoField(userInfoIt);
+
+            if (txParams.m_acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA)
+            {
+                auto acknowledgment =
+                    static_cast<WifiUlMuMultiStaBa*>(txParams.m_acknowledgment.get());
+                for (auto it = acknowledgment->stationsReceivingMultiStaBa.begin();
+                     it != acknowledgment->stationsReceivingMultiStaBa.end();)
+                {
+                    if (it->first.first == address)
+                    {
+                        it = acknowledgment->stationsReceivingMultiStaBa.erase(it);
+                    }
+                    else
+                    {
+                        ++it;
+                    }
+                }
+            }
+        }
+        else
+        {
+            ++userInfoIt;
+        }
+    }
+}
+
+void
+MultiUserScheduler::RemoveRecipientsFromDlMu(
+    uint8_t linkId,
+    WifiPsduMap& psduMap,
+    WifiTxParameters& txParams,
+    std::function<bool(uint8_t, Mac48Address)> predicate) const
+{
+    NS_LOG_FUNCTION(this << linkId << &txParams);
+
+    const auto& aidAddrMap = m_apMac->GetStaList(linkId);
+
+    for (auto psduMapIt = psduMap.begin(); psduMapIt != psduMap.end();)
+    {
+        const auto addressIt = aidAddrMap.find(psduMapIt->first);
+        NS_ASSERT_MSG(addressIt != aidAddrMap.cend(), "AID " << psduMapIt->first << " not found");
+        const auto address = addressIt->second;
+
+        if (predicate(linkId, address))
+        {
+            NS_LOG_INFO("Removing PSDU addressed to " << address);
+
+            txParams.m_txVector.GetHeMuUserInfoMap().erase(psduMapIt->first);
+            psduMapIt = psduMap.erase(psduMapIt);
+
+            if (txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE)
+            {
+                auto acknowledgment =
+                    static_cast<WifiDlMuBarBaSequence*>(txParams.m_acknowledgment.get());
+                acknowledgment->stationsReplyingWithNormalAck.erase(address);
+                acknowledgment->stationsReplyingWithBlockAck.erase(address);
+                acknowledgment->stationsSendBlockAckReqTo.erase(address);
+            }
+            else if (txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_TF_MU_BAR)
+            {
+                auto acknowledgment =
+                    static_cast<WifiDlMuTfMuBar*>(txParams.m_acknowledgment.get());
+                acknowledgment->stationsReplyingWithBlockAck.erase(address);
+            }
+            else if (txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_AGGREGATE_TF)
+            {
+                auto acknowledgment =
+                    static_cast<WifiDlMuAggregateTf*>(txParams.m_acknowledgment.get());
+                acknowledgment->stationsReplyingWithBlockAck.erase(address);
+            }
+        }
+        else
+        {
+            ++psduMapIt;
+        }
+    }
+}
+
+void
+MultiUserScheduler::NotifyProtectionCompleted(uint8_t linkId,
+                                              WifiPsduMap& psduMap,
+                                              WifiTxParameters& txParams)
+{
+    NS_LOG_FUNCTION(this << linkId << &txParams);
+
+    if (txParams.m_txVector.IsDlMu())
+    {
+        NS_ASSERT(GetLastTxFormat(linkId) == DL_MU_TX);
+
+        UpdateDlMuAfterProtection(linkId, psduMap, txParams);
+    }
+    else if (IsTrigger(psduMap))
+    {
+        NS_ASSERT(GetLastTxFormat(linkId) == UL_MU_TX);
+
+        UpdateTriggerFrameAfterProtection(linkId, GetUlMuInfo(linkId).trigger, txParams);
+
+        if (GetUlMuInfo(linkId).trigger.GetNUserInfoFields() == 0)
+        {
+            NS_LOG_INFO("No User Info field left");
+            psduMap.clear();
+        }
+        else
+        {
+            auto mpdu = GetTriggerFrame(GetUlMuInfo(linkId).trigger, linkId);
+            GetUlMuInfo(linkId).macHdr = mpdu->GetHeader();
+            psduMap =
+                WifiPsduMap{{SU_STA_ID, GetHeFem(linkId)->GetWifiPsdu(mpdu, txParams.m_txVector)}};
+        }
+    }
 }
 
 uint32_t
