@@ -134,9 +134,10 @@ int64_t
 OnOffApplication::AssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this << stream);
-    m_onTime->SetStream(stream);
-    m_offTime->SetStream(stream + 1);
-    return 2;
+    auto currentStream = stream;
+    m_onTime->SetStream(currentStream++);
+    m_offTime->SetStream(currentStream++);
+    return (currentStream - stream);
 }
 
 void

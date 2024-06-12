@@ -298,18 +298,17 @@ int64_t
 ThreeGppHttpVariables::AssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this << stream);
-
-    m_mtuSizeRng->SetStream(stream);
-    m_requestSizeRng->SetStream(stream + 1);
-    m_mainObjectGenerationDelayRng->SetStream(stream + 2);
-    m_mainObjectSizeRng->SetStream(stream + 3);
-    m_embeddedObjectGenerationDelayRng->SetStream(stream + 4);
-    m_embeddedObjectSizeRng->SetStream(stream + 5);
-    m_numOfEmbeddedObjectsRng->SetStream(stream + 6);
-    m_readingTimeRng->SetStream(stream + 7);
-    m_parsingTimeRng->SetStream(stream + 8);
-
-    return 9;
+    auto currentStream = stream;
+    m_mtuSizeRng->SetStream(currentStream++);
+    m_requestSizeRng->SetStream(currentStream++);
+    m_mainObjectGenerationDelayRng->SetStream(currentStream++);
+    m_mainObjectSizeRng->SetStream(currentStream++);
+    m_embeddedObjectGenerationDelayRng->SetStream(currentStream++);
+    m_embeddedObjectSizeRng->SetStream(currentStream++);
+    m_numOfEmbeddedObjectsRng->SetStream(currentStream++);
+    m_readingTimeRng->SetStream(currentStream++);
+    m_parsingTimeRng->SetStream(currentStream++);
+    return (currentStream - stream);
 }
 
 void
