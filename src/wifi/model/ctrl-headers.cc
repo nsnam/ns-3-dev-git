@@ -2182,6 +2182,12 @@ CtrlTriggerHeader::AddUserInfoField(const CtrlTriggerUserInfoField& userInfo)
     return m_userInfoFields.back();
 }
 
+CtrlTriggerHeader::Iterator
+CtrlTriggerHeader::RemoveUserInfoField(ConstIterator userInfoIt)
+{
+    return m_userInfoFields.erase(userInfoIt);
+}
+
 CtrlTriggerHeader::ConstIterator
 CtrlTriggerHeader::begin() const
 {

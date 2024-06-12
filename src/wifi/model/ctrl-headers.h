@@ -1216,6 +1216,14 @@ class CtrlTriggerHeader : public Header
     typedef std::list<CtrlTriggerUserInfoField>::iterator Iterator;
 
     /**
+     * Remove a User Info field from the Trigger Frame.
+     *
+     * \param userInfoIt an iterator pointing to the User Info field to remove
+     * \return an iterator following the removed User Info field
+     */
+    Iterator RemoveUserInfoField(ConstIterator userInfoIt);
+
+    /**
      * \brief Get a const iterator pointing to the first User Info field in the list.
      *
      * \return a const iterator pointing to the first User Info field in the list
