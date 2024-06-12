@@ -46,7 +46,7 @@ EnergyHarvesterHelper::Install(energy::EnergySourceContainer sourceContainer) co
         if (!EnergyHarvesterContainerOnNode)
         {
             ObjectFactory fac;
-            fac.SetTypeId("ns3::EnergyHarvesterContainer");
+            fac.SetTypeId("ns3::energy::EnergyHarvesterContainer");
             EnergyHarvesterContainerOnNode = fac.Create<energy::EnergyHarvesterContainer>();
             EnergyHarvesterContainerOnNode->Add(harvester);
             node->AggregateObject(EnergyHarvesterContainerOnNode);

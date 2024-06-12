@@ -15,7 +15,7 @@ namespace ns3
 
 RvBatteryModelHelper::RvBatteryModelHelper()
 {
-    m_rvBatteryModel.SetTypeId("ns3::RvBatteryModel");
+    m_rvBatteryModel.SetTypeId("ns3::energy::RvBatteryModel");
 }
 
 RvBatteryModelHelper::~RvBatteryModelHelper()

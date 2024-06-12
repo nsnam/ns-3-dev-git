@@ -13,7 +13,7 @@ namespace ns3
 
 GenericBatteryModelHelper::GenericBatteryModelHelper()
 {
-    m_batteryModel.SetTypeId("ns3::GenericBatteryModel");
+    m_batteryModel.SetTypeId("ns3::energy::GenericBatteryModel");
 }
 
 GenericBatteryModelHelper::~GenericBatteryModelHelper()

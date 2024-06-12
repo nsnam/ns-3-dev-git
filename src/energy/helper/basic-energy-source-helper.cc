@@ -15,7 +15,7 @@ namespace ns3
 
 BasicEnergySourceHelper::BasicEnergySourceHelper()
 {
-    m_basicEnergySource.SetTypeId("ns3::BasicEnergySource");
+    m_basicEnergySource.SetTypeId("ns3::energy::BasicEnergySource");
 }
 
 BasicEnergySourceHelper::~BasicEnergySourceHelper()

@@ -28,7 +28,7 @@ TypeId
 BasicEnergyHarvester::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::BasicEnergyHarvester")
+        TypeId("ns3::energy::BasicEnergyHarvester")
             .SetParent<EnergyHarvester>()
             .SetGroupName("Energy")
             .AddConstructor<BasicEnergyHarvester>()

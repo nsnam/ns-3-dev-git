@@ -16,7 +16,7 @@ namespace ns3
 
 BasicEnergyHarvesterHelper::BasicEnergyHarvesterHelper()
 {
-    m_basicEnergyHarvester.SetTypeId("ns3::BasicEnergyHarvester");
+    m_basicEnergyHarvester.SetTypeId("ns3::energy::BasicEnergyHarvester");
 }
 
 BasicEnergyHarvesterHelper::~BasicEnergyHarvesterHelper()

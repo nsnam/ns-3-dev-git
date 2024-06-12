@@ -17,7 +17,7 @@ namespace ns3
 
 LiIonEnergySourceHelper::LiIonEnergySourceHelper()
 {
-    m_liIonEnergySource.SetTypeId("ns3::LiIonEnergySource");
+    m_liIonEnergySource.SetTypeId("ns3::energy::LiIonEnergySource");
 }
 
 LiIonEnergySourceHelper::~LiIonEnergySourceHelper()

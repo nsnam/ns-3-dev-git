@@ -57,7 +57,7 @@ void
 BasicEnergyHarvesterTestCase::DoRun()
 {
     // set types
-    m_energySource.SetTypeId("ns3::BasicEnergySource");
+    m_energySource.SetTypeId("ns3::energy::BasicEnergySource");
     m_energyHarvester.SetTypeId("ns3::BasicEnergyHarvester");
     // create node
     Ptr<Node> node = CreateObject<Node>();

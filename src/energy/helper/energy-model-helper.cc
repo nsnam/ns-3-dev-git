@@ -44,7 +44,7 @@ EnergySourceHelper::Install(NodeContainer c) const
         if (!EnergySourceContainerOnNode)
         {
             ObjectFactory fac;
-            fac.SetTypeId("ns3::EnergySourceContainer");
+            fac.SetTypeId("ns3::energy::EnergySourceContainer");
             EnergySourceContainerOnNode = fac.Create<energy::EnergySourceContainer>();
             EnergySourceContainerOnNode->Add(src);
             (*i)->AggregateObject(EnergySourceContainerOnNode);

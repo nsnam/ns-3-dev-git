@@ -28,7 +28,7 @@ TypeId
 RvBatteryModel::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::RvBatteryModel")
+        TypeId("ns3::energy::RvBatteryModel")
             .SetParent<EnergySource>()
             .SetGroupName("Energy")
             .AddConstructor<RvBatteryModel>()
