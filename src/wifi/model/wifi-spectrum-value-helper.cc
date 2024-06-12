@@ -788,7 +788,7 @@ WifiSpectrumValueHelper::GetBandPowerW(Ptr<SpectrumValue> psd, const WifiSpectru
     const auto bandWidth = (bandIt->fh - bandIt->fl);
     NS_ASSERT_MSG(bandWidth >= 0.0,
                   "Invalid width for subband [" << bandIt->fl << ";" << bandIt->fh << "]");
-    uint32_t index{0};
+    uint32_t index [[maybe_unused]] = 0;
     auto powerWattPerHertz{0.0};
     while (valueIt <= end)
     {
