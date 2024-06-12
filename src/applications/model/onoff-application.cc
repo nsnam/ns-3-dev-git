@@ -137,6 +137,7 @@ OnOffApplication::AssignStreams(int64_t stream)
     auto currentStream = stream;
     m_onTime->SetStream(currentStream++);
     m_offTime->SetStream(currentStream++);
+    currentStream += Application::AssignStreams(currentStream);
     return (currentStream - stream);
 }
 

@@ -147,6 +147,7 @@ DhcpClient::AssignStreams(int64_t stream)
     NS_LOG_FUNCTION(this << stream);
     auto currentStream = stream;
     m_ran->SetStream(currentStream++);
+    currentStream += Application::AssignStreams(currentStream);
     return (currentStream - stream);
 }
 
