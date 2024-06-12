@@ -65,11 +65,11 @@ TableBasedErrorRateModel::~TableBasedErrorRateModel()
     m_fallbackErrorModel = nullptr;
 }
 
-double
-TableBasedErrorRateModel::RoundSnr(double snr, double precision) const
+dB_u
+TableBasedErrorRateModel::RoundSnr(dB_u snr, double precision) const
 {
     NS_LOG_FUNCTION(this << snr);
-    double multiplier = std::round(std::pow(10.0, precision));
+    const auto multiplier = std::round(std::pow(10.0, precision));
     return std::floor(snr * multiplier + 0.5) / multiplier;
 }
 
@@ -145,8 +145,8 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate(WifiMode mode,
                                                 uint16_t staId) const
 {
     NS_LOG_FUNCTION(this << mode << txVector << snr << nbits << +numRxAntennas << field << staId);
-    uint64_t size = std::max<uint64_t>(1, (nbits / 8));
-    double roundedSnr = RoundSnr(RatioToDb(snr), SNR_PRECISION);
+    const auto size = std::max<uint64_t>(1, (nbits / 8)); // in bytes
+    const auto roundedSnr = RoundSnr(RatioToDb(snr), SNR_PRECISION);
     uint8_t mcs;
     if (auto ret = GetMcsForMode(mode); ret.has_value())
     {
@@ -178,13 +178,12 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate(WifiMode mode,
     auto errorTable = (ldpc ? AwgnErrorTableLdpc1458
                             : (size < m_threshold ? AwgnErrorTableBcc32 : AwgnErrorTableBcc1458));
     const auto& itVector = errorTable[mcs];
-    auto itTable = std::find_if(itVector.cbegin(),
-                                itVector.cend(),
-                                [&roundedSnr](const std::pair<double, double>& element) {
-                                    return element.first == roundedSnr;
-                                });
-    double minSnr = itVector.cbegin()->first;
-    double maxSnr = (--itVector.cend())->first;
+    auto itTable =
+        std::find_if(itVector.cbegin(), itVector.cend(), [&roundedSnr](const auto& element) {
+            return element.first == roundedSnr;
+        });
+    const auto minSnr = itVector.cbegin()->first;
+    const auto maxSnr = (--itVector.cend())->first;
     double per;
     if (itTable == itVector.cend())
     {
@@ -200,8 +199,8 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate(WifiMode mode,
         {
             double a = 0.0;
             double b = 0.0;
-            double previousSnr = 0.0;
-            double nextSnr = 0.0;
+            dB_u previousSnr{0.0};
+            dB_u nextSnr{0.0};
             for (auto i = itVector.cbegin(); i != itVector.cend(); ++i)
             {
                 if (i->first < roundedSnr)

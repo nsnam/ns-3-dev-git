@@ -814,11 +814,11 @@ class WifiPhy : public Object
      */
     dBm_u GetCcaSensitivityThreshold() const;
     /**
-     * Sets the RX loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
+     * Sets the RX loss in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
      *
-     * \param noiseFigureDb noise figure in dB
+     * \param noiseFigure noise figure
      */
-    void SetRxNoiseFigure(double noiseFigureDb);
+    void SetRxNoiseFigure(dB_u noiseFigure);
     /**
      * Sets the minimum available transmission power level.
      *
@@ -858,29 +858,29 @@ class WifiPhy : public Object
      */
     uint8_t GetNTxPower() const;
     /**
-     * Sets the transmission gain (dB).
+     * Sets the transmission gain.
      *
-     * \param gain the transmission gain in dB
+     * \param gain the transmission gain
      */
-    void SetTxGain(double gain);
+    void SetTxGain(dB_u gain);
     /**
-     * Return the transmission gain (dB).
+     * Return the transmission gain.
      *
-     * \return the transmission gain in dB
+     * \return the transmission gain
      */
-    double GetTxGain() const;
+    dB_u GetTxGain() const;
     /**
-     * Sets the reception gain (dB).
+     * Sets the reception gain.
      *
-     * \param gain the reception gain in dB
+     * \param gain the reception gain
      */
-    void SetRxGain(double gain);
+    void SetRxGain(dB_u gain);
     /**
-     * Return the reception gain (dB).
+     * Return the reception gain.
      *
-     * \return the reception gain in dB
+     * \return the reception gain
      */
-    double GetRxGain() const;
+    dB_u GetRxGain() const;
 
     /**
      * Sets the device this PHY is associated with.
@@ -1598,8 +1598,8 @@ class WifiPhy : public Object
     dBm_u m_ccaSensitivityThreshold; //!< Clear channel assessment (CCA) modulation and coding rate
                                      //!< sensitivity threshold
 
-    double m_txGainDb;          //!< Transmission gain (dB)
-    double m_rxGainDb;          //!< Reception gain (dB)
+    dB_u m_txGain;              //!< Transmission gain
+    dB_u m_rxGain;              //!< Reception gain
     dBm_u m_txPowerBase;        //!< Minimum transmission power
     dBm_u m_txPowerEnd;         //!< Maximum transmission power
     uint8_t m_nTxPower;         //!< Number of available transmission power levels
@@ -1616,7 +1616,7 @@ class WifiPhy : public Object
     uint8_t m_txSpatialStreams; //!< Number of supported TX spatial streams
     uint8_t m_rxSpatialStreams; //!< Number of supported RX spatial streams
 
-    double m_noiseFigureDb; //!< The noise figure in dB
+    dB_u m_noiseFigure; //!< The noise figure
 
     Time m_channelSwitchDelay; //!< Time required to switch between channel
 

@@ -14,7 +14,8 @@
 #ifndef ERROR_RATE_TABLES_H
 #define ERROR_RATE_TABLES_H
 
-#include <cstdint>
+#include "ns3/wifi-units.h"
+
 #include <utility>
 #include <vector>
 
@@ -29,8 +30,8 @@ const uint16_t ERROR_TABLE_LDPC_FRAME_SIZE = 1458; //!< reference size (bytes) f
 const uint8_t ERROR_TABLE_BCC_MAX_NUM_MCS = 10;    //!< maximum number of MCSs for BCC
 const uint8_t ERROR_TABLE_LDPC_MAX_NUM_MCS = 12;   //!< maximum number of MCSs for LDPC
 
-/// Table of SNR (dB) and PER pairs
-typedef std::vector<std::pair<double /* SNR (dB) */, double /* PER */>> SnrPerTable;
+/// Table of SNR and PER pairs
+typedef std::vector<std::pair<dB_u /* SNR */, double /* PER */>> SnrPerTable;
 
 /// AWGN error table for BCC with reference size of 32 bytes
 extern const SnrPerTable AwgnErrorTableBcc32[ERROR_TABLE_BCC_MAX_NUM_MCS];

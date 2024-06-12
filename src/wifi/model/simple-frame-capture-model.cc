@@ -37,7 +37,7 @@ SimpleFrameCaptureModel::GetTypeId()
                 DoubleValue(5),
                 MakeDoubleAccessor(&SimpleFrameCaptureModel::GetMargin,
                                    &SimpleFrameCaptureModel::SetMargin),
-                MakeDoubleChecker<double>());
+                MakeDoubleChecker<dB_u>());
     return tid;
 }
 
@@ -52,13 +52,13 @@ SimpleFrameCaptureModel::~SimpleFrameCaptureModel()
 }
 
 void
-SimpleFrameCaptureModel::SetMargin(double margin)
+SimpleFrameCaptureModel::SetMargin(dB_u margin)
 {
     NS_LOG_FUNCTION(this << margin);
     m_margin = margin;
 }
 
-double
+dB_u
 SimpleFrameCaptureModel::GetMargin() const
 {
     return m_margin;

@@ -169,12 +169,12 @@ WifiPhy::GetTypeId()
                           "Transmission gain (dB).",
                           DoubleValue(0.0),
                           MakeDoubleAccessor(&WifiPhy::SetTxGain, &WifiPhy::GetTxGain),
-                          MakeDoubleChecker<double>())
+                          MakeDoubleChecker<dB_u>())
             .AddAttribute("RxGain",
                           "Reception gain (dB).",
                           DoubleValue(0.0),
                           MakeDoubleAccessor(&WifiPhy::SetRxGain, &WifiPhy::GetRxGain),
-                          MakeDoubleChecker<double>())
+                          MakeDoubleChecker<dB_u>())
             .AddAttribute("TxPowerLevels",
                           "Number of transmission power levels available between "
                           "TxPowerStart and TxPowerEnd included.",
@@ -201,7 +201,7 @@ WifiPhy::GetTypeId()
                 " are connected to sources at the standard noise temperature T0 (usually 290 K)\".",
                 DoubleValue(7),
                 MakeDoubleAccessor(&WifiPhy::SetRxNoiseFigure),
-                MakeDoubleChecker<double>())
+                MakeDoubleChecker<dB_u>())
             .AddAttribute("State",
                           "The state of the PHY layer.",
                           PointerValue(),
@@ -538,14 +538,14 @@ WifiPhy::GetCcaSensitivityThreshold() const
 }
 
 void
-WifiPhy::SetRxNoiseFigure(double noiseFigureDb)
+WifiPhy::SetRxNoiseFigure(dB_u noiseFigure)
 {
-    NS_LOG_FUNCTION(this << noiseFigureDb);
+    NS_LOG_FUNCTION(this << noiseFigure);
     if (m_interference)
     {
-        m_interference->SetNoiseFigure(DbToRatio(noiseFigureDb));
+        m_interference->SetNoiseFigure(DbToRatio(noiseFigure));
     }
-    m_noiseFigureDb = noiseFigureDb;
+    m_noiseFigure = noiseFigure;
 }
 
 void
@@ -588,29 +588,29 @@ WifiPhy::GetNTxPower() const
 }
 
 void
-WifiPhy::SetTxGain(double gain)
+WifiPhy::SetTxGain(dB_u gain)
 {
     NS_LOG_FUNCTION(this << gain);
-    m_txGainDb = gain;
+    m_txGain = gain;
 }
 
-double
+dB_u
 WifiPhy::GetTxGain() const
 {
-    return m_txGainDb;
+    return m_txGain;
 }
 
 void
-WifiPhy::SetRxGain(double gain)
+WifiPhy::SetRxGain(dB_u gain)
 {
     NS_LOG_FUNCTION(this << gain);
-    m_rxGainDb = gain;
+    m_rxGain = gain;
 }
 
-double
+dB_u
 WifiPhy::GetRxGain() const
 {
-    return m_rxGainDb;
+    return m_rxGain;
 }
 
 void
@@ -668,7 +668,7 @@ WifiPhy::SetInterferenceHelper(const Ptr<InterferenceHelper> helper)
 {
     NS_LOG_FUNCTION(this << helper);
     m_interference = helper;
-    m_interference->SetNoiseFigure(DbToRatio(m_noiseFigureDb));
+    m_interference->SetNoiseFigure(DbToRatio(m_noiseFigure));
     m_interference->SetNumberOfReceiveAntennas(m_numberOfAntennas);
 }
 

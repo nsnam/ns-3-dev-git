@@ -51,7 +51,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
      * \param centerFrequencies the center frequency per contiguous segment
      * \param maskRefs vector of expected power values and corresponding indexes of generated PSD
      *                     (only start and stop indexes/values given)
-     * \param tolerance tolerance (in dB)
+     * \param tolerance tolerance
      * \param precision precision (in decimals)
      * \param puncturedSubchannels bitmap indicating whether a 20 MHz subchannel is punctured or not
      * (only for 802.11ax and later)
@@ -62,7 +62,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
                                MHz_u channelWidth,
                                const std::vector<MHz_u>& centerFrequencies,
                                const IndexPowerVect& maskRefs,
-                               double tolerance,
+                               dB_u tolerance,
                                std::size_t precision,
                                const std::vector<bool>& puncturedSubchannels = std::vector<bool>{});
     ~WifiOfdmMaskSlopesTestCase() override = default;
@@ -93,7 +93,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
                                 ///< not (only used for 802.11ax and later)
     Ptr<SpectrumValue> m_actualSpectrum; ///< actual spectrum value
     IndexPowerVect m_expectedPsd;        ///< expected power values
-    double m_tolerance;                  ///< tolerance (in dB)
+    dB_u m_tolerance;                    ///< tolerance
     std::size_t m_precision;             ///< precision for double calculations (in decimals)
 };
 
@@ -104,7 +104,7 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase(
     MHz_u channelWidth,
     const std::vector<MHz_u>& centerFrequencies,
     const IndexPowerVect& maskRefs,
-    double tolerance,
+    dB_u tolerance,
     std::size_t precision,
     const std::vector<bool>& puncturedSubchannels)
     : TestCase(std::string("SpectrumValue ") + name),
@@ -322,8 +322,8 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
     NS_LOG_INFO("Creating WifiTransmitMaskTestSuite");
 
     WifiOfdmMaskSlopesTestCase::IndexPowerVect maskSlopes;
-    double tol = 10e-2; // in dB
-    double prec = 10;   // in decimals
+    dB_u tol = 10e-2;
+    double prec = 10; // in decimals
 
     // ============================================================================================
     // 11p 5MHz

@@ -56,13 +56,13 @@ class TableBasedErrorRateModel : public ErrorRateModel
                                  uint16_t staId) const override;
 
     /**
-     * Round SNR (in dB) to the specified precision
+     * Round SNR to the specified precision
      *
-     * \param snr the SNR to round  (in dB)
+     * \param snr the SNR to round
      * \param precision the precision to use
-     * \return the rounded SNR (in dB) to the specified precision
+     * \return the rounded SNR to the specified precision
      */
-    double RoundSnr(double snr, double precision) const;
+    dB_u RoundSnr(dB_u snr, double precision) const;
 
     /**
      * Fetch the frame success rate for a given Wi-Fi mode, TXVECTOR, SNR and frame size.
