@@ -564,6 +564,15 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         m_signalCb(rxParams, senderNodeId, WToDbm(totalRxPowerW), rxDuration);
     }
 
+    if (m_trackSignalsInactiveInterfaces && interface &&
+        (interface != m_currentSpectrumPhyInterface))
+    {
+        NS_LOG_INFO("Received Wi-Fi signal from a non-active PHY interface "
+                    << interface->GetFrequencyRange());
+        m_interference->AddForeignSignal(rxDuration, rxPowerW, interface->GetFrequencyRange());
+        return;
+    }
+
     if (!wifiRxParams)
     {
         NS_LOG_INFO("Received non Wi-Fi signal");
@@ -579,16 +588,6 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     {
         NS_LOG_INFO("Received Wi-Fi signal but blocked from syncing");
         NS_ASSERT(interface);
-        m_interference->AddForeignSignal(rxDuration, rxPowerW, interface->GetFrequencyRange());
-        SwitchMaybeToCcaBusy(nullptr);
-        return;
-    }
-
-    if (m_trackSignalsInactiveInterfaces && interface &&
-        (interface != m_currentSpectrumPhyInterface))
-    {
-        NS_LOG_INFO("Received Wi-Fi signal from a non-active PHY interface "
-                    << interface->GetFrequencyRange());
         m_interference->AddForeignSignal(rxDuration, rxPowerW, interface->GetFrequencyRange());
         SwitchMaybeToCcaBusy(nullptr);
         return;
