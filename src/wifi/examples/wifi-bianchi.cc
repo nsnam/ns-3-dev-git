@@ -2399,7 +2399,7 @@ class Experiment
      * \param pcap flag to enable/disable PCAP files generation
      * \param infra flag to enable infrastructure model, ring adhoc network if not set
      * \param guardIntervalNs the guard interval in ns
-     * \param distanceM the distance in meters
+     * \param distance the distance
      * \param apTxPower the AP transmit power
      * \param staTxPower the STA transmit power
      * \param pktInterval the packet interval
@@ -2415,7 +2415,7 @@ class Experiment
             bool pcap,
             bool infra,
             uint16_t guardIntervalNs,
-            double distanceM,
+            meter_u distance,
             dBm_u apTxPower,
             dBm_u staTxPower,
             Time pktInterval);
@@ -2436,7 +2436,7 @@ Experiment::Run(const WifiHelper& helper,
                 bool pcap,
                 bool infra,
                 uint16_t guardIntervalNs,
-                double distance,
+                meter_u distance,
                 dBm_u apTxPower,
                 dBm_u staTxPower,
                 Time pktInterval)
@@ -2705,9 +2705,9 @@ main(int argc, char* argv[])
     uint16_t pktInterval =
         1000; ///< The socket packet interval in microseconds (a higher value is needed to reach
               ///< saturation conditions as the channel bandwidth or the MCS increases)
-    double distance = 0.001; ///< The distance in meters between the AP and the STAs
-    dBm_u apTxPower = 16;    ///< The transmit power of the AP (if infrastructure only)
-    dBm_u staTxPower = 16;   ///< The transmit power of each STA (or all STAs if adhoc)
+    meter_u distance = 0.001; ///< The distance in meters between the AP and the STAs
+    dBm_u apTxPower = 16;     ///< The transmit power of the AP (if infrastructure only)
+    dBm_u staTxPower = 16;    ///< The transmit power of each STA (or all STAs if adhoc)
 
     // Disable fragmentation and RTS/CTS
     Config::SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold",

@@ -161,7 +161,7 @@ main(int argc, char* argv[])
     uint32_t numPackets{1};
     Time interPacketInterval{"1s"};
     Time startTime{"10s"};
-    double distanceToRx{100.0}; // meters
+    meter_u distanceToRx{100.0};
 
     double offset{91}; // This is a magic number used to set the
                        // transmit power, based on other configuration

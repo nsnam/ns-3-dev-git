@@ -100,7 +100,7 @@ main(int argc, char* argv[])
     uint32_t payloadSize{1472}; // bytes
     Time simulationTime{"10s"};
     double txopLimit{3520}; // microseconds
-    double distance{5};     // meters
+    meter_u distance{5};
     bool enableRts{false};
     bool enablePcap{false};
     bool verifyResults{false}; // used for regression

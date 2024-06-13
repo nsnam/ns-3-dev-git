@@ -57,9 +57,9 @@ main(int argc, char* argv[])
     bool udp{true};
     bool useRts{false};
     Time simulationTime{"10s"};
-    double distance{1.0}; // meters
-    double frequency{5};  // whether 2.4 or 5 GHz
-    int mcs{-1};          // -1 indicates an unset value
+    meter_u distance{1.0};
+    double frequency{5}; // whether 2.4 or 5 GHz
+    int mcs{-1};         // -1 indicates an unset value
     double minExpectedThroughput{0.0};
     double maxExpectedThroughput{0.0};
 

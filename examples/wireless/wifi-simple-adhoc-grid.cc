@@ -139,7 +139,7 @@ int
 main(int argc, char* argv[])
 {
     std::string phyMode{"DsssRate1Mbps"};
-    double distance{100};      // m
+    meter_u distance{100};
     uint32_t packetSize{1000}; // bytes
     uint32_t numPackets{1};
     uint32_t numNodes{25}; // by default, 5x5

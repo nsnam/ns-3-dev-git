@@ -81,7 +81,7 @@ main(int argc, char* argv[])
 
     backboneDevices = csma.Install(backboneNodes);
 
-    double wifiX = 0.0;
+    meter_u wifiX = 0.0;
 
     YansWifiPhyHelper wifiPhy;
     wifiPhy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);

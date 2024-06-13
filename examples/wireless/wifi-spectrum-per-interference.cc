@@ -169,7 +169,7 @@ int
 main(int argc, char* argv[])
 {
     bool udp{true};
-    double distance{50};
+    meter_u distance{50};
     Time simulationTime{"10s"};
     uint16_t index{256};
     std::string wifiType{"ns3::SpectrumWifiPhy"};

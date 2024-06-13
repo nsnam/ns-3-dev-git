@@ -89,7 +89,7 @@ NS_LOG_COMPONENT_DEFINE("WifiSpectrumSaturationExample");
 int
 main(int argc, char* argv[])
 {
-    double distance{1};
+    meter_u distance{1};
     Time simulationTime{"10s"};
     uint16_t index{256};
     uint32_t channelWidth{0};

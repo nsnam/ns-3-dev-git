@@ -146,9 +146,9 @@ int
 main(int argc, char* argv[])
 {
     Time duration{"10s"};
-    double d1{30.0};  // meters
-    double d2{30.0};  // meters
-    double d3{150.0}; // meters
+    meter_u d1{30.0};
+    meter_u d2{30.0};
+    meter_u d3{150.0};
     dBm_u powSta1{10.0};
     dBm_u powSta2{10.0};
     dBm_u powAp1{21.0};

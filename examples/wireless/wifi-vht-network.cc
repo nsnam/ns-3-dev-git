@@ -57,8 +57,8 @@ main(int argc, char* argv[])
     bool useRts{false};
     bool use80Plus80{false};
     Time simulationTime{"10s"};
-    double distance{1.0}; // meters
-    int mcs{-1};          // -1 indicates an unset value
+    meter_u distance{1.0};
+    int mcs{-1}; // -1 indicates an unset value
     std::string phyModel{"Yans"};
     double minExpectedThroughput{0.0};
     double maxExpectedThroughput{0.0};
