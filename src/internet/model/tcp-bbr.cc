@@ -75,7 +75,20 @@ TcpBbr::GetTypeId()
                 "Max allowed val for m_ackEpochAcked, after which sampling epoch is reset",
                 UintegerValue(1 << 12),
                 MakeUintegerAccessor(&TcpBbr::m_ackEpochAckedResetThresh),
-                MakeUintegerChecker<uint32_t>());
+                MakeUintegerChecker<uint32_t>())
+            .AddTraceSource("MinRtt",
+                            "Estimated two-way round-trip propagation delay of the path, estimated "
+                            "from the windowed minimum recent round-trip delay sample",
+                            MakeTraceSourceAccessor(&TcpBbr::m_minRtt),
+                            "ns3::TracedValueCallback::Time")
+            .AddTraceSource("PacingGain",
+                            "The dynamic pacing gain factor",
+                            MakeTraceSourceAccessor(&TcpBbr::m_pacingGain),
+                            "ns3::TracedValueCallback::Double")
+            .AddTraceSource("CwndGain",
+                            "The dynamic congestion window gain factor",
+                            MakeTraceSourceAccessor(&TcpBbr::m_cWndGain),
+                            "ns3::TracedValueCallback::Double");
     return tid;
 }
 
