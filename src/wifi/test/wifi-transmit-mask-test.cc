@@ -32,12 +32,12 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
 {
   public:
     /**
-     * typedef for a pair of sub-band index and relative power value (dBr)
+     * typedef for a pair of sub-band index and relative power value
      */
-    typedef std::pair<uint32_t, double> IndexPowerPair;
+    typedef std::pair<uint32_t, dBr_u> IndexPowerPair;
 
     /**
-     * typedef for a vector of pairs of sub-band index and relative power value (dBr)
+     * typedef for a vector of pairs of sub-band index and relative power value
      */
     typedef std::vector<IndexPowerPair> IndexPowerVect;
 
@@ -77,8 +77,8 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
      *
      * \param vect vector of sub-band index and relative power value pairs to which interpolated
      values should be appended
-     * \param start pair of sub-band index and relative power value (dBr) for interval start
-     * \param stop pair of sub-band index and relative power value (dBr) for interval stop
+     * \param start pair of sub-band index and relative power value for interval start
+     * \param stop pair of sub-band index and relative power value for interval stop
     */
     void InterpolateAndAppendValues(IndexPowerVect& vect,
                                     IndexPowerPair start,
@@ -129,18 +129,18 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
     NS_ASSERT(!m_centerFreqs.empty());
     NS_ASSERT(m_expectedPsd.size() % 2 == 0); // start/stop pairs expected
 
-    double outerBandMaximumRejection = 0.0;
+    dBr_u outerBandMaximumRejection = 0.0;
     switch (m_band)
     {
     default:
     case WIFI_PHY_BAND_5GHZ:
-        outerBandMaximumRejection = -40; // in dBr
+        outerBandMaximumRejection = -40;
         break;
     case WIFI_PHY_BAND_2_4GHZ:
-        outerBandMaximumRejection = (m_standard >= WIFI_STANDARD_80211n) ? -45 : -40; // in dBr
+        outerBandMaximumRejection = (m_standard >= WIFI_STANDARD_80211n) ? -45 : -40;
         break;
     case WIFI_PHY_BAND_6GHZ:
-        outerBandMaximumRejection = -40; // in dBr
+        outerBandMaximumRejection = -40;
         break;
     }
 
@@ -276,7 +276,7 @@ void
 WifiOfdmMaskSlopesTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
-    double currentPowerDbr = 0.0; // have to work in dBr so as to compare with expected slopes
+    dBr_u currentPower = 0.0; // have to work in dBr so as to compare with expected slopes
     Watt_u maxPower = (*m_actualSpectrum)[0];
     for (auto&& vit = m_actualSpectrum->ConstValuesBegin();
          vit != m_actualSpectrum->ConstValuesEnd();
@@ -288,10 +288,10 @@ WifiOfdmMaskSlopesTestCase::DoRun()
     NS_LOG_INFO("Compare expected PSD");
     for (const auto& [subcarrier, expectedValue] : m_expectedPsd)
     {
-        currentPowerDbr = 10.0 * std::log10((*m_actualSpectrum)[subcarrier] / maxPower);
+        currentPower = 10.0 * std::log10((*m_actualSpectrum)[subcarrier] / maxPower);
         NS_LOG_LOGIC("For " << subcarrier << ", expected: " << expectedValue
-                            << " vs obtained: " << currentPowerDbr);
-        NS_TEST_EXPECT_MSG_EQ_TOL(currentPowerDbr,
+                            << " vs obtained: " << currentPower);
+        NS_TEST_EXPECT_MSG_EQ_TOL(currentPower,
                                   expectedValue,
                                   m_tolerance,
                                   "Spectrum value mismatch for subcarrier " << subcarrier);

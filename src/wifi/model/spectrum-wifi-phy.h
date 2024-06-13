@@ -67,7 +67,7 @@ class SpectrumWifiPhy : public WifiPhy
     void StartTx(Ptr<const WifiPpdu> ppdu) override;
     Ptr<Channel> GetChannel() const override;
     MHz_u GetGuardBandwidth(MHz_u currentChannelWidth) const override;
-    std::tuple<double, double, double> GetTxMaskRejectionParams() const override;
+    std::tuple<dBr_u, dBr_u, dBr_u> GetTxMaskRejectionParams() const override;
     WifiSpectrumBandInfo GetBand(MHz_u bandWidth, uint8_t bandIndex = 0) override;
     FrequencyRange GetCurrentFrequencyRange() const override;
     WifiSpectrumBandFrequencies ConvertIndicesToFrequencies(
@@ -297,12 +297,12 @@ class SpectrumWifiPhy : public WifiPhy
     TracedCallback<Ptr<const SpectrumSignalParameters>, uint32_t, double, Time>
         m_signalCb; //!< Signal callback
 
-    double m_txMaskInnerBandMinimumRejection; //!< The minimum rejection (in dBr) for the inner band
-                                              //!< of the transmit spectrum mask
-    double m_txMaskOuterBandMinimumRejection; //!< The minimum rejection (in dBr) for the outer band
-                                              //!< of the transmit spectrum mask
-    double m_txMaskOuterBandMaximumRejection; //!< The maximum rejection (in dBr) for the outer band
-                                              //!< of the transmit spectrum mask
+    dBr_u m_txMaskInnerBandMinimumRejection; //!< The minimum rejection for the inner band of the
+                                             //!< transmit spectrum mask
+    dBr_u m_txMaskOuterBandMinimumRejection; //!< The minimum rejection for the outer band of the
+                                             //!< transmit spectrum mask
+    dBr_u m_txMaskOuterBandMaximumRejection; //!< The maximum rejection for the outer band of the
+                                             //!< transmit spectrum mask
 
     Callback<void> m_channelSwitchedCallback; //!< Callback when channel switched
 };

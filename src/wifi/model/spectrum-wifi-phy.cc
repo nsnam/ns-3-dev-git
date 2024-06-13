@@ -65,19 +65,19 @@ SpectrumWifiPhy::GetTypeId()
                 "Minimum rejection (dBr) for the inner band of the transmit spectrum mask",
                 DoubleValue(-20.0),
                 MakeDoubleAccessor(&SpectrumWifiPhy::m_txMaskInnerBandMinimumRejection),
-                MakeDoubleChecker<double>())
+                MakeDoubleChecker<dBr_u>())
             .AddAttribute(
                 "TxMaskOuterBandMinimumRejection",
                 "Minimum rejection (dBr) for the outer band of the transmit spectrum mask",
                 DoubleValue(-28.0),
                 MakeDoubleAccessor(&SpectrumWifiPhy::m_txMaskOuterBandMinimumRejection),
-                MakeDoubleChecker<double>())
+                MakeDoubleChecker<dBr_u>())
             .AddAttribute(
                 "TxMaskOuterBandMaximumRejection",
                 "Maximum rejection (dBr) for the outer band of the transmit spectrum mask",
                 DoubleValue(-40.0),
                 MakeDoubleAccessor(&SpectrumWifiPhy::m_txMaskOuterBandMaximumRejection),
-                MakeDoubleChecker<double>())
+                MakeDoubleChecker<dBr_u>())
             .AddTraceSource(
                 "SignalArrival",
                 "Trace start of all signal arrivals, including weak and foreign signals",
@@ -791,7 +791,7 @@ SpectrumWifiPhy::ConvertIndicesToFrequenciesForInterface(
     return {startChannel->fc, endChannel->fc};
 }
 
-std::tuple<double, double, double>
+std::tuple<dBr_u, dBr_u, dBr_u>
 SpectrumWifiPhy::GetTxMaskRejectionParams() const
 {
     return std::make_tuple(m_txMaskInnerBandMinimumRejection,

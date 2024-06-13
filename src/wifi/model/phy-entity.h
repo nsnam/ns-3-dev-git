@@ -911,14 +911,14 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      */
     MHz_u GetGuardBandwidth(MHz_u currentChannelWidth) const;
     /**
-     * \return a tuple containing the minimum rejection (in dBr) for the inner band,
-     *                            the minimum rejection (in dBr) for the outer band, and
-     *                            the maximum rejection (in dBr) for the outer band
+     * \return a tuple containing the minimum rejection for the inner band,
+     *                            the minimum rejection for the outer band, and
+     *                            the maximum rejection for the outer band
      *                            for the transmit spectrum mask.
      *
      * Wrapper method used by child classes for PSD generation.
      */
-    std::tuple<double, double, double> GetTxMaskRejectionParams() const;
+    std::tuple<dBr_u, dBr_u, dBr_u> GetTxMaskRejectionParams() const;
 
     using CcaIndication =
         std::optional<std::pair<Time, WifiChannelListType>>; //!< CCA end time and its corresponding
