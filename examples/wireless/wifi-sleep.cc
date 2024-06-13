@@ -108,8 +108,8 @@ main(int argc, char* argv[])
     dBm_u txPowerEnd{15.0};
     uint32_t nTxPowerLevels{16};
     uint32_t txPowerLevel{0};
-    double idleCurrent{0.273}; // Ampere
-    double txCurrent{0.380};   // Ampere
+    ampere_u idleCurrent{0.273};
+    ampere_u txCurrent{0.380};
     bool verbose{false};
 
     CommandLine cmd(__FILE__);

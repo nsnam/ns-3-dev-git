@@ -36,9 +36,9 @@ class WifiTxCurrentModel : public Object
 
     /**
      * \param txPower the nominal TX power
-     * \returns the transmit current (in Ampere)
+     * \returns the transmit current
      */
-    virtual double CalcTxCurrent(dBm_u txPower) const = 0;
+    virtual ampere_u CalcTxCurrent(dBm_u txPower) const = 0;
 };
 
 /**
@@ -84,12 +84,12 @@ class LinearWifiTxCurrentModel : public WifiTxCurrentModel
     LinearWifiTxCurrentModel();
     ~LinearWifiTxCurrentModel() override;
 
-    double CalcTxCurrent(dBm_u txPower) const override;
+    ampere_u CalcTxCurrent(dBm_u txPower) const override;
 
   private:
-    double m_eta;         ///< ETA
-    double m_voltage;     ///< voltage in Volts
-    double m_idleCurrent; ///< idle current in Amperes
+    double m_eta;           ///< ETA
+    double m_voltage;       ///< voltage in Volts
+    ampere_u m_idleCurrent; ///< idle current
 };
 
 } // namespace ns3

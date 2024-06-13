@@ -35,37 +35,37 @@ WifiRadioEnergyModel::GetTypeId()
                           DoubleValue(0.273), // idle mode = 273mA
                           MakeDoubleAccessor(&WifiRadioEnergyModel::SetIdleCurrentA,
                                              &WifiRadioEnergyModel::GetIdleCurrentA),
-                          MakeDoubleChecker<double>())
+                          MakeDoubleChecker<ampere_u>())
             .AddAttribute("CcaBusyCurrentA",
                           "The default radio CCA Busy State current in Ampere.",
                           DoubleValue(0.273), // default to be the same as idle mode
                           MakeDoubleAccessor(&WifiRadioEnergyModel::SetCcaBusyCurrentA,
                                              &WifiRadioEnergyModel::GetCcaBusyCurrentA),
-                          MakeDoubleChecker<double>())
+                          MakeDoubleChecker<ampere_u>())
             .AddAttribute("TxCurrentA",
                           "The radio TX current in Ampere.",
                           DoubleValue(0.380), // transmit at 0dBm = 380mA
                           MakeDoubleAccessor(&WifiRadioEnergyModel::SetTxCurrentA,
                                              &WifiRadioEnergyModel::GetTxCurrentA),
-                          MakeDoubleChecker<double>())
+                          MakeDoubleChecker<ampere_u>())
             .AddAttribute("RxCurrentA",
                           "The radio RX current in Ampere.",
                           DoubleValue(0.313), // receive mode = 313mA
                           MakeDoubleAccessor(&WifiRadioEnergyModel::SetRxCurrentA,
                                              &WifiRadioEnergyModel::GetRxCurrentA),
-                          MakeDoubleChecker<double>())
+                          MakeDoubleChecker<ampere_u>())
             .AddAttribute("SwitchingCurrentA",
                           "The default radio Channel Switch current in Ampere.",
                           DoubleValue(0.273), // default to be the same as idle mode
                           MakeDoubleAccessor(&WifiRadioEnergyModel::SetSwitchingCurrentA,
                                              &WifiRadioEnergyModel::GetSwitchingCurrentA),
-                          MakeDoubleChecker<double>())
+                          MakeDoubleChecker<ampere_u>())
             .AddAttribute("SleepCurrentA",
                           "The radio Sleep current in Ampere.",
                           DoubleValue(0.033), // sleep mode = 33mA
                           MakeDoubleAccessor(&WifiRadioEnergyModel::SetSleepCurrentA,
                                              &WifiRadioEnergyModel::GetSleepCurrentA),
-                          MakeDoubleChecker<double>())
+                          MakeDoubleChecker<ampere_u>())
             .AddAttribute("TxCurrentModel",
                           "A pointer to the attached TX current model.",
                           PointerValue(),
@@ -134,88 +134,88 @@ WifiRadioEnergyModel::GetTotalEnergyConsumption() const
     return m_totalEnergyConsumption + energyToDecrease;
 }
 
-double
+ampere_u
 WifiRadioEnergyModel::GetIdleCurrentA() const
 {
     NS_LOG_FUNCTION(this);
-    return m_idleCurrentA;
+    return m_idleCurrent;
 }
 
 void
-WifiRadioEnergyModel::SetIdleCurrentA(double idleCurrentA)
+WifiRadioEnergyModel::SetIdleCurrentA(ampere_u idleCurrent)
 {
-    NS_LOG_FUNCTION(this << idleCurrentA);
-    m_idleCurrentA = idleCurrentA;
+    NS_LOG_FUNCTION(this << idleCurrent);
+    m_idleCurrent = idleCurrent;
 }
 
-double
+ampere_u
 WifiRadioEnergyModel::GetCcaBusyCurrentA() const
 {
     NS_LOG_FUNCTION(this);
-    return m_ccaBusyCurrentA;
+    return m_ccaBusyCurrent;
 }
 
 void
-WifiRadioEnergyModel::SetCcaBusyCurrentA(double CcaBusyCurrentA)
+WifiRadioEnergyModel::SetCcaBusyCurrentA(ampere_u ccaBusyCurrent)
 {
-    NS_LOG_FUNCTION(this << CcaBusyCurrentA);
-    m_ccaBusyCurrentA = CcaBusyCurrentA;
+    NS_LOG_FUNCTION(this << ccaBusyCurrent);
+    m_ccaBusyCurrent = ccaBusyCurrent;
 }
 
-double
+ampere_u
 WifiRadioEnergyModel::GetTxCurrentA() const
 {
     NS_LOG_FUNCTION(this);
-    return m_txCurrentA;
+    return m_txCurrent;
 }
 
 void
-WifiRadioEnergyModel::SetTxCurrentA(double txCurrentA)
+WifiRadioEnergyModel::SetTxCurrentA(ampere_u txCurrent)
 {
-    NS_LOG_FUNCTION(this << txCurrentA);
-    m_txCurrentA = txCurrentA;
+    NS_LOG_FUNCTION(this << txCurrent);
+    m_txCurrent = txCurrent;
 }
 
-double
+ampere_u
 WifiRadioEnergyModel::GetRxCurrentA() const
 {
     NS_LOG_FUNCTION(this);
-    return m_rxCurrentA;
+    return m_rxCurrent;
 }
 
 void
-WifiRadioEnergyModel::SetRxCurrentA(double rxCurrentA)
+WifiRadioEnergyModel::SetRxCurrentA(ampere_u rxCurrent)
 {
-    NS_LOG_FUNCTION(this << rxCurrentA);
-    m_rxCurrentA = rxCurrentA;
+    NS_LOG_FUNCTION(this << rxCurrent);
+    m_rxCurrent = rxCurrent;
 }
 
-double
+ampere_u
 WifiRadioEnergyModel::GetSwitchingCurrentA() const
 {
     NS_LOG_FUNCTION(this);
-    return m_switchingCurrentA;
+    return m_switchingCurrent;
 }
 
 void
-WifiRadioEnergyModel::SetSwitchingCurrentA(double switchingCurrentA)
+WifiRadioEnergyModel::SetSwitchingCurrentA(ampere_u switchingCurrent)
 {
-    NS_LOG_FUNCTION(this << switchingCurrentA);
-    m_switchingCurrentA = switchingCurrentA;
+    NS_LOG_FUNCTION(this << switchingCurrent);
+    m_switchingCurrent = switchingCurrent;
 }
 
-double
+ampere_u
 WifiRadioEnergyModel::GetSleepCurrentA() const
 {
     NS_LOG_FUNCTION(this);
-    return m_sleepCurrentA;
+    return m_sleepCurrent;
 }
 
 void
-WifiRadioEnergyModel::SetSleepCurrentA(double sleepCurrentA)
+WifiRadioEnergyModel::SetSleepCurrentA(ampere_u sleepCurrent)
 {
-    NS_LOG_FUNCTION(this << sleepCurrentA);
-    m_sleepCurrentA = sleepCurrentA;
+    NS_LOG_FUNCTION(this << sleepCurrent);
+    m_sleepCurrent = sleepCurrent;
 }
 
 WifiPhyState
@@ -258,7 +258,7 @@ WifiRadioEnergyModel::SetTxCurrentFromModel(dBm_u txPower)
 {
     if (m_txCurrentModel)
     {
-        m_txCurrentA = m_txCurrentModel->CalcTxCurrent(txPower);
+        m_txCurrent = m_txCurrentModel->CalcTxCurrent(txPower);
     }
 }
 
@@ -269,9 +269,9 @@ WifiRadioEnergyModel::GetMaximumTimeInState(WifiPhyState state) const
     {
         NS_FATAL_ERROR("Requested maximum remaining time for OFF state");
     }
-    double remainingEnergy = m_source->GetRemainingEnergy();
-    double supplyVoltage = m_source->GetSupplyVoltage();
-    double current = GetStateA(state);
+    const auto remainingEnergy = m_source->GetRemainingEnergy();
+    const auto supplyVoltage = m_source->GetSupplyVoltage();
+    const auto current = GetStateA(state);
     return Seconds(remainingEnergy / (current * supplyVoltage));
 }
 
@@ -293,19 +293,19 @@ WifiRadioEnergyModel::ChangeState(int newState)
     if (newPhyState != WifiPhyState::OFF)
     {
         m_switchToOffEvent.Cancel();
-        Time durationToOff = GetMaximumTimeInState(newPhyState);
+        const auto durationToOff = GetMaximumTimeInState(newPhyState);
         m_switchToOffEvent = Simulator::Schedule(durationToOff,
                                                  &WifiRadioEnergyModel::ChangeState,
                                                  this,
                                                  static_cast<int>(WifiPhyState::OFF));
     }
 
-    Time duration = Simulator::Now() - m_lastUpdateTime;
+    const auto duration = Simulator::Now() - m_lastUpdateTime;
     NS_ASSERT(duration.IsPositive()); // check if duration is valid
 
     // energy to decrease = current * voltage * time
-    double supplyVoltage = m_source->GetSupplyVoltage();
-    double energyToDecrease = duration.GetSeconds() * GetStateA(m_currentState) * supplyVoltage;
+    const auto supplyVoltage = m_source->GetSupplyVoltage();
+    const auto energyToDecrease = duration.GetSeconds() * GetStateA(m_currentState) * supplyVoltage;
 
     // update total energy consumption
     m_totalEnergyConsumption += energyToDecrease;
@@ -369,7 +369,7 @@ WifiRadioEnergyModel::HandleEnergyChanged()
     if (m_currentState != WifiPhyState::OFF)
     {
         m_switchToOffEvent.Cancel();
-        Time durationToOff = GetMaximumTimeInState(m_currentState);
+        const auto durationToOff = GetMaximumTimeInState(m_currentState);
         m_switchToOffEvent = Simulator::Schedule(durationToOff,
                                                  &WifiRadioEnergyModel::ChangeState,
                                                  this,
@@ -396,30 +396,30 @@ WifiRadioEnergyModel::DoDispose()
     m_energyDepletionCallback.Nullify();
 }
 
-double
+ampere_u
 WifiRadioEnergyModel::GetStateA(WifiPhyState state) const
 {
     switch (state)
     {
     case WifiPhyState::IDLE:
-        return m_idleCurrentA;
+        return m_idleCurrent;
     case WifiPhyState::CCA_BUSY:
-        return m_ccaBusyCurrentA;
+        return m_ccaBusyCurrent;
     case WifiPhyState::TX:
-        return m_txCurrentA;
+        return m_txCurrent;
     case WifiPhyState::RX:
-        return m_rxCurrentA;
+        return m_rxCurrent;
     case WifiPhyState::SWITCHING:
-        return m_switchingCurrentA;
+        return m_switchingCurrent;
     case WifiPhyState::SLEEP:
-        return m_sleepCurrentA;
+        return m_sleepCurrent;
     case WifiPhyState::OFF:
         return 0.0;
     }
     NS_FATAL_ERROR("WifiRadioEnergyModel: undefined radio state " << state);
 }
 
-double
+ampere_u
 WifiRadioEnergyModel::DoGetCurrentA() const
 {
     return GetStateA(m_currentState);

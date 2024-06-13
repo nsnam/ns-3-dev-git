@@ -59,7 +59,7 @@ LinearWifiTxCurrentModel::GetTypeId()
                           "The current in the IDLE state (in Ampere).",
                           DoubleValue(0.273333),
                           MakeDoubleAccessor(&LinearWifiTxCurrentModel::m_idleCurrent),
-                          MakeDoubleChecker<double>());
+                          MakeDoubleChecker<ampere_u>());
     return tid;
 }
 
@@ -73,7 +73,7 @@ LinearWifiTxCurrentModel::~LinearWifiTxCurrentModel()
     NS_LOG_FUNCTION(this);
 }
 
-double
+ampere_u
 LinearWifiTxCurrentModel::CalcTxCurrent(dBm_u txPower) const
 {
     NS_LOG_FUNCTION(this << txPower);
