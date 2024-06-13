@@ -54,7 +54,7 @@ LinearWifiTxCurrentModel::GetTypeId()
                           "The supply voltage (in Volts).",
                           DoubleValue(3.0),
                           MakeDoubleAccessor(&LinearWifiTxCurrentModel::m_voltage),
-                          MakeDoubleChecker<double>())
+                          MakeDoubleChecker<volt_u>())
             .AddAttribute("IdleCurrent",
                           "The current in the IDLE state (in Ampere).",
                           DoubleValue(0.273333),

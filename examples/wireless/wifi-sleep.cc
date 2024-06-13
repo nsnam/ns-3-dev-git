@@ -103,7 +103,7 @@ main(int argc, char* argv[])
     uint32_t packetSize{1000}; // bytes
     Time duration{"10s"};
     double initialEnergy{7.5}; // joule
-    double voltage{3.0};       // volts
+    volt_u voltage{3.0};
     dBm_u txPowerStart{0.0};
     dBm_u txPowerEnd{15.0};
     uint32_t nTxPowerLevels{16};

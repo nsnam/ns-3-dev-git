@@ -88,7 +88,7 @@ class LinearWifiTxCurrentModel : public WifiTxCurrentModel
 
   private:
     double m_eta;           ///< ETA
-    double m_voltage;       ///< voltage in Volts
+    volt_u m_voltage;       ///< voltage
     ampere_u m_idleCurrent; ///< idle current
 };
 
