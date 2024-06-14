@@ -535,7 +535,9 @@ HeFrameExchangeManager::TransmissionSucceeded()
     }
 
     if (m_continueTxopAfterBsrpTf && m_edca && m_edca->GetTxopLimit(m_linkId).IsZero() &&
-        m_txTimer.IsRunning() && m_txTimer.GetReason() == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF)
+        m_txTimer.IsRunning() &&
+        m_txTimer.GetReason() == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF &&
+        (m_txNav > Simulator::Now() + m_phy->GetSifs()))
     {
         NS_LOG_DEBUG("Schedule another transmission in a SIFS after successful BSRP TF");
         Simulator::Schedule(m_phy->GetSifs(), [=, this]() {

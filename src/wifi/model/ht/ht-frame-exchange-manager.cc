@@ -744,7 +744,8 @@ HtFrameExchangeManager::TransmissionSucceeded()
 {
     NS_LOG_DEBUG(this);
 
-    if (m_edca && m_edca->GetTxopLimit(m_linkId).IsZero() && GetBar(m_edca->GetAccessCategory()))
+    if (m_edca && m_edca->GetTxopLimit(m_linkId).IsZero() && GetBar(m_edca->GetAccessCategory()) &&
+        (m_txNav > Simulator::Now() + m_phy->GetSifs()))
     {
         // A TXOP limit of 0 indicates that the TXOP holder may transmit or cause to
         // be transmitted (as responses) the following within the current TXOP:
