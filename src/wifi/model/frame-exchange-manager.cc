@@ -52,7 +52,8 @@ FrameExchangeManager::GetTypeId()
 }
 
 FrameExchangeManager::FrameExchangeManager()
-    : m_navEnd(Seconds(0)),
+    : m_navEnd(0),
+      m_txNav(0),
       m_linkId(0),
       m_allowedWidth(0),
       m_promisc(false),
@@ -573,6 +574,14 @@ FrameExchangeManager::ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector
     auto psdu = Create<WifiPsdu>(mpdu, false);
     FinalizeMacHeader(psdu);
     m_allowedWidth = std::min(m_allowedWidth, txVector.GetChannelWidth());
+    auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
+    // The TXNAV timer is a single timer, shared by the EDCAFs within a STA, that is initialized
+    // with the duration from the Duration/ID field in the frame most recently successfully
+    // transmitted by the TXOP holder, except for PS-Poll frames. (Sec.10.23.2.2 IEEE 802.11-2020)
+    if (!mpdu->GetHeader().IsPsPoll())
+    {
+        m_txNav = Max(m_txNav, Simulator::Now() + txDuration + mpdu->GetHeader().GetDuration());
+    }
     m_phy->Send(psdu, txVector);
 }
 
@@ -968,6 +977,8 @@ FrameExchangeManager::TransmissionFailed()
     // A non-QoS station always releases the channel upon a transmission failure
     NotifyChannelReleased(m_dcf);
     m_dcf = nullptr;
+    // reset TXNAV because transmission failed
+    m_txNav = Simulator::Now();
 }
 
 void

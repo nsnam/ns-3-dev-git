@@ -657,6 +657,8 @@ QosFrameExchangeManager::TransmissionFailed()
     }
     m_initialFrame = false;
     m_sentFrameTo.clear();
+    // reset TXNAV because transmission failed
+    m_txNav = Simulator::Now();
 }
 
 void
