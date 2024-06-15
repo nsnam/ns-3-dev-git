@@ -366,7 +366,9 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
 
         // this assert checks that association (ML setup) has been established
         // between sender and receiver (unless the receiver is the broadcast address)
-        NS_ASSERT_MSG(GetMac()->CanForwardPacketsTo(rxAddr), "Cannot forward frame to " << rxAddr);
+        NS_ASSERT_MSG(GetMac()->CanForwardPacketsTo(rxAddr),
+                      "Cannot forward frame to " << rxAddr
+                                                 << "; check that the receiver is associated");
         // we have to include all the links in case of broadcast frame (we are an AP)
         // and the links that have been setup with the receiver in case of unicast frame
         for (const auto linkId : GetMac()->GetLinkIds())
