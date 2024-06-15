@@ -32,7 +32,11 @@
 #include <numeric>
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT WIFI_PHY_NS_LOG_APPEND_CONTEXT(Ptr(this, false))
+#define NS_LOG_APPEND_CONTEXT                                                                      \
+    WIFI_PHY_NS_LOG_APPEND_CONTEXT(                                                                \
+        (GetDevice() && (GetDevice()->GetNPhys() > m_phyId) && GetDevice()->GetPhy(m_phyId)        \
+             ? GetDevice()->GetPhy(m_phyId)                                                        \
+             : nullptr))
 
 namespace ns3
 {
