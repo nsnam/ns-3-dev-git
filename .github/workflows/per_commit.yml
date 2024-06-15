@@ -7,7 +7,7 @@ jobs:
     outputs:
       cache_misses: ${{ env.cache_misses }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install required packages
         run: |
           sudo apt-get update
@@ -21,7 +21,7 @@ jobs:
         run: python3 -c "from datetime import datetime; print('time='+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))" >> $GITHUB_ENV
       - name: Restore ccache
         id: ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .ccache
           key: ubuntu-ci-${{env.time}}
@@ -52,7 +52,7 @@ jobs:
     needs: Ubuntu
     if: needs.Ubuntu.outputs.cache_misses != '0'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install required packages
         run: |
           sudo apt-get update
@@ -67,7 +67,7 @@ jobs:
         run: python3 -c "from datetime import datetime; print('time='+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))" >> $GITHUB_ENV
       - name: Restore ccache
         id: ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .ccache
           key: ubuntu-coverage-${{env.time}}
@@ -103,7 +103,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: msys2/setup-msys2@v2
       - name: Install required msys2/mingw64 packages
         run: |
@@ -127,7 +127,7 @@ jobs:
         run: python3 -c "from datetime import datetime; print('time='+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))" >> $GITHUB_ENV
       - name: Restore ccache
         id: ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .ccache
           key: msys2-${{env.time}}
@@ -159,7 +159,7 @@ jobs:
       matrix:
         os: [ macos-latest, macos-12 ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install required packages
         run: |
           brew install ninja cmake ccache libxml2 gsl open-mpi #qt5
@@ -168,7 +168,7 @@ jobs:
         run: python3 -c "from datetime import datetime; print('time='+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))" >> $GITHUB_ENV
       - name: Restore ccache
         id: ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .ccache
           key: osx_brew-ci-${{env.time}}
