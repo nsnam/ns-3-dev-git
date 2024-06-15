@@ -1045,21 +1045,35 @@ void
 StaWifiMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from)
 {
     NS_LOG_FUNCTION(this << *mpdu << to << from);
-
     auto& hdr = mpdu->GetHeader();
 
-    // the Receiver Address (RA) and the Transmitter Address (TA) are the MLD addresses only for
-    // non-broadcast data frames exchanged between two MLDs
-    auto linkIds = GetSetupLinkIds();
-    NS_ASSERT(!linkIds.empty());
-    uint8_t linkId = *linkIds.begin();
-    const auto apMldAddr = GetWifiRemoteStationManager(linkId)->GetMldAddress(GetBssid(linkId));
+    if (auto p2pLinkId = GetLinkIdForPeer(to))
+    {
+        NS_LOG_DEBUG("Enqueue for P2P");
 
-    hdr.SetAddr1(apMldAddr.value_or(GetBssid(linkId)));
-    hdr.SetAddr2(apMldAddr ? GetAddress() : GetFrameExchangeManager(linkId)->GetAddress());
-    hdr.SetAddr3(to);
-    hdr.SetDsNotFrom();
-    hdr.SetDsTo();
+        hdr.SetAddr1(to);
+        hdr.SetAddr2(GetFrameExchangeManager(*p2pLinkId)->GetAddress());
+        hdr.SetAddr3(to);
+        hdr.SetDsNotFrom();
+        hdr.SetDsNotTo();
+    }
+    else
+    {
+        NS_LOG_DEBUG("Enqueue for AP");
+        auto linkIds = GetSetupLinkIds();
+        NS_ASSERT(!linkIds.empty());
+        const auto linkId = *linkIds.begin();
+
+        // the Receiver Address (RA) and the Transmitter Address (TA) are the MLD addresses only for
+        // non-broadcast data frames exchanged between two MLDs
+        const auto apMldAddr = GetWifiRemoteStationManager(linkId)->GetMldAddress(GetBssid(linkId));
+
+        hdr.SetAddr1(apMldAddr.value_or(GetBssid(linkId)));
+        hdr.SetAddr2(apMldAddr ? GetAddress() : GetFrameExchangeManager(linkId)->GetAddress());
+        hdr.SetAddr3(to);
+        hdr.SetDsNotFrom();
+        hdr.SetDsTo();
+    }
 
     auto txop = hdr.IsQosData() ? StaticCast<Txop>(GetQosTxop(hdr.GetQosTid())) : GetTxop();
     NS_ASSERT(txop);
@@ -2116,6 +2130,23 @@ StaWifiMac::NotifyChannelSwitching(uint8_t linkId)
 
     // notify association manager
     m_assocManager->NotifyChannelSwitched(linkId);
+}
+
+std::optional<uint8_t>
+StaWifiMac::GetLinkIdForPeer(const Mac48Address& peer) const
+{
+    if (!m_enableP2pLinks)
+    {
+        return std::nullopt;
+    }
+    for (const auto& [id, link] : GetLinks())
+    {
+        if (GetWifiRemoteStationManager(id)->IsAdhocPeer(peer))
+        {
+            return id;
+        }
+    }
+    return std::nullopt;
 }
 
 std::ostream&

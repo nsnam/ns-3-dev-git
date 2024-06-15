@@ -626,6 +626,14 @@ class StaWifiMac : public WifiMac
     void DoInitialize() override;
     void DoDispose() override;
 
+    /**
+     * Get the link ID to use for a given P2P peer.
+     *
+     * \param peer the MAC address of the P2P peer
+     * \return the link ID to use for the given peer if it is a known peer
+     */
+    std::optional<uint8_t> GetLinkIdForPeer(const Mac48Address& peer) const;
+
     MacState m_state;                             ///< MAC state
     uint16_t m_aid;                               ///< Association AID
     Ptr<WifiAssocManager> m_assocManager;         ///< Association Manager
