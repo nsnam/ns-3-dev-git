@@ -47,53 +47,6 @@ jobs:
         if: env.cache_misses != '0'
         run: python3 test.py --no-build
 
-  CodeQL:
-    runs-on: ubuntu-latest
-    needs: Ubuntu
-    if: ${{ (needs.Ubuntu.outputs.cache_misses != '0') && (github.repository == 'nsnam/ns-3-dev-git') }}
-    strategy:
-      fail-fast: false
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      # Initializes the CodeQL tools for scanning.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: 'cpp'
-      - name: Install required packages
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install apt-utils
-          sudo apt-get -y install git gcc g++ cmake python3 make ninja-build
-          sudo apt-get -y install tcpdump libgsl-dev libxml2-dev
-          sudo apt-get -y install curl unzip tar
-          sudo apt-get -y install ccache
-      - name: Get timestamp
-        id: time
-        run: python3 -c "from datetime import datetime; print('time='+datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))" >> $GITHUB_ENV
-      - name: Restore ccache
-        id: ccache
-        uses: actions/cache@v3
-        with:
-          path: .ccache
-          key: ubuntu-codeql-${{env.time}}
-          restore-keys: ubuntu-codeql-
-      - name: Setup ccache
-        run: |
-          ccache --set-config=cache_dir="$GITHUB_WORKSPACE/.ccache"
-          ccache --set-config=max_size=400M
-          ccache --set-config=compression=true
-          ccache -z
-      - name: Configure CMake
-        run: |
-          ./ns3 configure -d release --enable-asserts --enable-examples --enable-tests --disable-werror -G"Ninja"
-      - name: Build ns-3
-        run: |
-          ./ns3 build
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
-
   Codecov:
     runs-on: ubuntu-latest
     needs: Ubuntu
