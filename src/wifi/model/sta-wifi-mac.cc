@@ -277,6 +277,18 @@ StaWifiMac::GetAssociationId() const
 }
 
 void
+StaWifiMac::SetSsid(Ssid ssid)
+{
+    NS_LOG_FUNCTION(this << ssid);
+    WifiMac::SetSsid(ssid);
+    if (m_state == SCANNING)
+    {
+        NS_LOG_DEBUG("STA is still scanning, reset scanning process");
+        StartScanning();
+    }
+}
+
+void
 StaWifiMac::SetActiveProbing(bool enable)
 {
     NS_LOG_FUNCTION(this << enable);

@@ -172,6 +172,7 @@ class StaWifiMac : public WifiMac
     StaWifiMac();
     ~StaWifiMac() override;
 
+    void SetSsid(Ssid ssid) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
     int64_t AssignStreams(int64_t stream) override;
 

@@ -299,7 +299,7 @@ class WifiMac : public Object
     /**
      * @param ssid the current SSID of this MAC layer.
      */
-    void SetSsid(Ssid ssid);
+    virtual void SetSsid(Ssid ssid);
     /**
      * @brief Sets the interface in promiscuous mode.
      *
