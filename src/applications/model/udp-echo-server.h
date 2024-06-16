@@ -54,11 +54,12 @@ class UdpEchoServer : public Application
      */
     void HandleRead(Ptr<Socket> socket);
 
-    uint16_t m_port;       //!< Port on which we listen for incoming packets.
+    uint16_t
+        m_port; //!< Port on which we listen for incoming packets if local address is not specified
     uint8_t m_tos;         //!< The packets Type of Service
-    Ptr<Socket> m_socket;  //!< IPv4 Socket
-    Ptr<Socket> m_socket6; //!< IPv6 Socket
-    Address m_local;       //!< local multicast address
+    Ptr<Socket> m_socket;  //!< Socket
+    Ptr<Socket> m_socket6; //!< IPv6 Socket (used if only port is specified)
+    Address m_local;       //!< Local address to bind to (address and port)
 
     /// Callbacks for tracing the packet Rx events
     TracedCallback<Ptr<const Packet>> m_rxTrace;

@@ -310,7 +310,7 @@ UdpEchoClientSetFillTestCase::DoRun()
     Ipv4InterfaceContainer interfaces = ipv4.Assign(d);
 
     uint16_t port = 5000;
-    UdpEchoServerHelper echoServer(port);
+    UdpEchoServerHelper echoServer(InetSocketAddress(Ipv4Address::GetAny(), port));
     ApplicationContainer serverApps = echoServer.Install(nodes.Get(1));
     serverApps.Start(Seconds(1.0));
     serverApps.Stop(Seconds(10.0));

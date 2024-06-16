@@ -22,6 +22,12 @@ UdpEchoServerHelper::UdpEchoServerHelper(uint16_t port)
     SetAttribute("Port", UintegerValue(port));
 }
 
+UdpEchoServerHelper::UdpEchoServerHelper(const Address& address)
+    : ApplicationHelper(UdpEchoServer::GetTypeId())
+{
+    SetAttribute("Local", AddressValue(address));
+}
+
 UdpEchoClientHelper::UdpEchoClientHelper(const Address& address, uint16_t port)
     : UdpEchoClientHelper(addressUtils::ConvertToSocketAddress(address, port))
 {
