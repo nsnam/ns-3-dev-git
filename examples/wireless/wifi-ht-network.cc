@@ -31,6 +31,9 @@
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
 
+#include <algorithm>
+#include <vector>
+
 // This is a simple example in order to show how to configure an IEEE 802.11n Wi-Fi network.
 //
 // It outputs the UDP or TCP goodput for every HT MCS value, which depends on the MCS value (0 to
@@ -59,7 +62,8 @@ main(int argc, char* argv[])
     Time simulationTime{"10s"};
     meter_u distance{1.0};
     double frequency{5}; // whether 2.4 or 5 GHz
-    int mcs{-1};         // -1 indicates an unset value
+    std::string mcsStr;
+    std::vector<uint64_t> mcsValues;
     double minExpectedThroughput{0.0};
     double maxExpectedThroughput{0.0};
 
@@ -73,7 +77,10 @@ main(int argc, char* argv[])
     cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("udp", "UDP if set to 1, TCP otherwise", udp);
     cmd.AddValue("useRts", "Enable/disable RTS/CTS", useRts);
-    cmd.AddValue("mcs", "if set, limit testing to a specific MCS (0-7)", mcs);
+    cmd.AddValue(
+        "mcs",
+        "list of comma separated MCS values to test; if unset, all MCS values (0-7) are tested",
+        mcsStr);
     cmd.AddValue("minExpectedThroughput",
                  "if set, simulation fails if the lowest throughput is below this value",
                  minExpectedThroughput);
@@ -96,14 +103,27 @@ main(int argc, char* argv[])
               << "short GI"
               << "\t\t"
               << "Throughput" << '\n';
-    int minMcs = 0;
-    int maxMcs = 7;
-    if (mcs >= 0 && mcs <= 7)
+    uint8_t minMcs = 0;
+    uint8_t maxMcs = 7;
+
+    if (mcsStr.empty())
     {
-        minMcs = mcs;
-        maxMcs = mcs;
+        for (uint8_t mcs = minMcs; mcs <= maxMcs; ++mcs)
+        {
+            mcsValues.push_back(mcs);
+        }
     }
-    for (int mcs = minMcs; mcs <= maxMcs; mcs++)
+    else
+    {
+        AttributeContainerValue<UintegerValue, ',', std::vector> attr;
+        auto checker = DynamicCast<AttributeContainerChecker>(MakeAttributeContainerChecker(attr));
+        checker->SetItemChecker(MakeUintegerChecker<uint8_t>());
+        attr.DeserializeFromString(mcsStr, checker);
+        mcsValues = attr.Get();
+        std::sort(mcsValues.begin(), mcsValues.end());
+    }
+
+    for (const auto mcs : mcsValues)
     {
         uint8_t index = 0;
         double previous = 0;

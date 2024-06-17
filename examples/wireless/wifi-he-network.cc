@@ -6,6 +6,7 @@
  * Author: Sebastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/command-line.h"
 #include "ns3/config.h"
@@ -31,6 +32,7 @@
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
 
+#include <algorithm>
 #include <functional>
 
 // This is a simple example in order to show how to configure an IEEE 802.11ax Wi-Fi network.
@@ -70,7 +72,8 @@ main(int argc, char* argv[])
     std::string dlAckSeqType{"NO-OFDMA"};
     bool enableUlOfdma{false};
     bool enableBsrp{false};
-    int mcs{-1}; // -1 indicates an unset value
+    std::string mcsStr;
+    std::vector<uint64_t> mcsValues;
     uint32_t payloadSize =
         700; // must fit in the max TX duration when transmitting at MCS 0 over an RU of 26 tones
     std::string phyModel{"Yans"};
@@ -107,7 +110,10 @@ main(int argc, char* argv[])
         "muSchedAccessReqInterval",
         "Duration of the interval between two requests for channel access made by the MU scheduler",
         accessReqInterval);
-    cmd.AddValue("mcs", "if set, limit testing to a specific MCS (0-11)", mcs);
+    cmd.AddValue(
+        "mcs",
+        "list of comma separated MCS values to test; if unset, all MCS values (0-11) are tested",
+        mcsStr);
     cmd.AddValue("payloadSize", "The application payload size in bytes", payloadSize);
     cmd.AddValue("phyModel",
                  "PHY model to use when OFDMA is disabled (Yans or Spectrum). If 80+80 MHz or "
@@ -168,14 +174,27 @@ main(int argc, char* argv[])
               << "GI"
               << "\t\t\t"
               << "Throughput" << '\n';
-    int minMcs = 0;
-    int maxMcs = 11;
-    if (mcs >= 0 && mcs <= 11)
+    uint8_t minMcs = 0;
+    uint8_t maxMcs = 11;
+
+    if (mcsStr.empty())
     {
-        minMcs = mcs;
-        maxMcs = mcs;
+        for (uint8_t mcs = minMcs; mcs <= maxMcs; ++mcs)
+        {
+            mcsValues.push_back(mcs);
+        }
     }
-    for (int mcs = minMcs; mcs <= maxMcs; mcs++)
+    else
+    {
+        AttributeContainerValue<UintegerValue, ',', std::vector> attr;
+        auto checker = DynamicCast<AttributeContainerChecker>(MakeAttributeContainerChecker(attr));
+        checker->SetItemChecker(MakeUintegerChecker<uint8_t>());
+        attr.DeserializeFromString(mcsStr, checker);
+        mcsValues = attr.Get();
+        std::sort(mcsValues.begin(), mcsValues.end());
+    }
+
+    for (const auto mcs : mcsValues)
     {
         uint8_t index = 0;
         double previous = 0;

@@ -6,6 +6,7 @@
  * Author: Sebastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/command-line.h"
 #include "ns3/config.h"
@@ -28,6 +29,9 @@
 #include "ns3/vht-phy.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
+
+#include <algorithm>
+#include <vector>
 
 // This is a simple example in order to show how to configure an IEEE 802.11ac Wi-Fi network.
 //
@@ -58,7 +62,8 @@ main(int argc, char* argv[])
     bool use80Plus80{false};
     Time simulationTime{"10s"};
     meter_u distance{1.0};
-    int mcs{-1}; // -1 indicates an unset value
+    std::string mcsStr;
+    std::vector<uint64_t> mcsValues;
     std::string phyModel{"Yans"};
     double minExpectedThroughput{0.0};
     double maxExpectedThroughput{0.0};
@@ -71,7 +76,10 @@ main(int argc, char* argv[])
     cmd.AddValue("udp", "UDP if set to 1, TCP otherwise", udp);
     cmd.AddValue("useRts", "Enable/disable RTS/CTS", useRts);
     cmd.AddValue("use80Plus80", "Enable/disable use of 80+80 MHz", use80Plus80);
-    cmd.AddValue("mcs", "if set, limit testing to a specific MCS (0-9)", mcs);
+    cmd.AddValue(
+        "mcs",
+        "list of comma separated MCS values to test; if unset, all MCS values (0-9) are tested",
+        mcsStr);
     cmd.AddValue("phyModel",
                  "PHY model to use (Yans or Spectrum). If 80+80 MHz is enabled, then Spectrum is "
                  "automatically selected",
@@ -108,14 +116,27 @@ main(int argc, char* argv[])
               << "short GI"
               << "\t\t"
               << "Throughput" << '\n';
-    int minMcs = 0;
-    int maxMcs = 9;
-    if (mcs >= 0 && mcs <= 9)
+    uint8_t minMcs = 0;
+    uint8_t maxMcs = 9;
+
+    if (mcsStr.empty())
     {
-        minMcs = mcs;
-        maxMcs = mcs;
+        for (uint8_t mcs = minMcs; mcs <= maxMcs; ++mcs)
+        {
+            mcsValues.push_back(mcs);
+        }
     }
-    for (int mcs = minMcs; mcs <= maxMcs; mcs++)
+    else
+    {
+        AttributeContainerValue<UintegerValue, ',', std::vector> attr;
+        auto checker = DynamicCast<AttributeContainerChecker>(MakeAttributeContainerChecker(attr));
+        checker->SetItemChecker(MakeUintegerChecker<uint8_t>());
+        attr.DeserializeFromString(mcsStr, checker);
+        mcsValues = attr.Get();
+        std::sort(mcsValues.begin(), mcsValues.end());
+    }
+
+    for (const auto mcs : mcsValues)
     {
         uint8_t index = 0;
         double previous = 0;
