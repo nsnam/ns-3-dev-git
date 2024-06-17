@@ -2528,7 +2528,7 @@ Experiment::Run(const WifiHelper& helper,
     positionAlloc->Add(Vector(1.0, 1.0, 0.0));
 
     // Set position for STAs
-    double angle = (static_cast<double>(360) / (nNodes - 1));
+    const auto angle = (static_cast<degree_u>(360) / (nNodes - 1));
     for (uint32_t i = 0; i < (nNodes - 1); ++i)
     {
         positionAlloc->Add(Vector(1.0 + (distance * cos((i * angle * PI) / 180)),
