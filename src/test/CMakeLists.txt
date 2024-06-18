@@ -37,6 +37,7 @@ if(applications
     set(wifi_sources
         ns3wifi/wifi-issue-211-test-suite.cc
         ns3wifi/wifi-ac-mapping-test-suite.cc
+        ns3wifi/wifi-mlo-udp-test-suite.cc
         ns3wifi/wifi-msdu-aggregator-test-suite.cc
     )
   endif()
