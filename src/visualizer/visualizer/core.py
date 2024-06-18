@@ -25,11 +25,7 @@ else:
 import math
 import os
 import sys
-
-try:
-    import threading
-except ImportError:
-    import dummy_threading as threading
+import threading
 
 try:
     import pygraphviz
