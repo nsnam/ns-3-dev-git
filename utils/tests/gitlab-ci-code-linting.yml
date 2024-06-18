@@ -152,6 +152,6 @@ python-format-latest:
   extends: .python-format
   image: python:latest
 
-python-format-3.6:
+python-format-3.8:
   extends: .python-format
-  image: python:3.6
+  image: python:3.8

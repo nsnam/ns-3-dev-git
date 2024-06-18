@@ -33,7 +33,7 @@ does not cover those aspects.
 Prerequisites
 *************
 |ns3| has various optional extensions, but the main features just require
-a C++ compiler (g++ or clang++), Python (version 3.6 or above), CMake and
+a C++ compiler (g++ or clang++), Python (version 3.8 or above), CMake and
 a build-system (e.g. make, ninja, Xcode).
 We focus in this chapter only on getting |ns3| up and running on a system
 supported by a recent C++ compiler and Python runtime support.

@@ -68,7 +68,7 @@ are needed to get started with |ns3|:
 Prerequisite  Package/version
 ============  ===========================================================
 C++ compiler  ``clang++`` or ``g++`` (g++ version 9 or greater)
-Python        ``python3`` version >=3.6
+Python        ``python3`` version >=3.8
 CMake         ``cmake`` version >=3.13
 Build system  ``make``, ``ninja``, ``xcodebuild`` (XCode)
 Git           any recent version (to access |ns3| from `GitLab.com <https://gitlab.com/nsnam/ns-3-dev/>`_)
