@@ -89,6 +89,10 @@ class FlowMonitor : public Object
         /// Contains the last measured delay of a packet
         /// It is stored to measure the packet's Jitter
         Time lastDelay;
+        /// Contains the largest measured delay of a received packet
+        Time maxDelay;
+        /// Contains the smallest measured delay of a received packet
+        Time minDelay;
 
         /// Total number of transmitted bytes for the flow
         uint64_t txBytes;

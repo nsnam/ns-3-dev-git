@@ -24,6 +24,7 @@
 #include "ns3/simulator.h"
 
 #include <fstream>
+#include <limits>
 #include <sstream>
 
 #define PERIODIC_CHECK_INTERVAL (Seconds(1))
@@ -125,6 +126,8 @@ FlowMonitor::GetStatsForFlow(FlowId flowId)
         ref.delaySum = Seconds(0);
         ref.jitterSum = Seconds(0);
         ref.lastDelay = Seconds(0);
+        ref.maxDelay = Seconds(0);
+        ref.minDelay = Seconds(std::numeric_limits<double>::max());
         ref.txBytes = 0;
         ref.rxBytes = 0;
         ref.txPackets = 0;
@@ -245,6 +248,14 @@ FlowMonitor::ReportLastRx(Ptr<FlowProbe> probe,
         }
     }
     stats.lastDelay = delay;
+    if (delay > stats.maxDelay)
+    {
+        stats.maxDelay = delay;
+    }
+    if (delay < stats.minDelay)
+    {
+        stats.minDelay = delay;
+    }
 
     stats.rxBytes += packetSize;
     stats.packetSizeHistogram.AddValue((double)packetSize);
@@ -448,8 +459,9 @@ FlowMonitor::SerializeToXmlStream(std::ostream& os,
         os << "<Flow flowId=\"" << flowI->first << "\"" << ATTRIB_TIME(timeFirstTxPacket)
            << ATTRIB_TIME(timeFirstRxPacket) << ATTRIB_TIME(timeLastTxPacket)
            << ATTRIB_TIME(timeLastRxPacket) << ATTRIB_TIME(delaySum) << ATTRIB_TIME(jitterSum)
-           << ATTRIB_TIME(lastDelay) << ATTRIB(txBytes) << ATTRIB(rxBytes) << ATTRIB(txPackets)
-           << ATTRIB(rxPackets) << ATTRIB(lostPackets) << ATTRIB(timesForwarded) << ">\n";
+           << ATTRIB_TIME(lastDelay) << ATTRIB_TIME(maxDelay) << ATTRIB_TIME(minDelay)
+           << ATTRIB(txBytes) << ATTRIB(rxBytes) << ATTRIB(txPackets) << ATTRIB(rxPackets)
+           << ATTRIB(lostPackets) << ATTRIB(timesForwarded) << ">\n";
 #undef ATTRIB_TIME
 #undef ATTRIB
 
@@ -537,6 +549,8 @@ FlowMonitor::ResetAllStats()
         flowStat.delaySum = Seconds(0);
         flowStat.jitterSum = Seconds(0);
         flowStat.lastDelay = Seconds(0);
+        flowStat.maxDelay = Seconds(0);
+        flowStat.minDelay = Seconds(std::numeric_limits<double>::max());
         flowStat.txBytes = 0;
         flowStat.rxBytes = 0;
         flowStat.txPackets = 0;
