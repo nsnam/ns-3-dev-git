@@ -123,6 +123,15 @@ class NetDevice : public Object
     virtual Address GetAddress() const = 0;
 
     /**
+     * Get the current address used to communicate with a remote
+     * This method is useful for devices that have multiple addresses.
+     *
+     * @param remoteAddr the address of the remote.
+     * @return the current Address of this interface.
+     */
+    virtual Address GetAddressFor(const Address& remoteAddr) const;
+
+    /**
      * @param mtu MTU value, in bytes, to set for the device
      * @return whether the MTU value was within legal bounds
      *

@@ -29,4 +29,10 @@ NetDevice::~NetDevice()
     NS_LOG_FUNCTION(this);
 }
 
+Address
+NetDevice::GetAddressFor(const Address& /*remoteAddr*/) const
+{
+    return GetAddress();
+}
+
 } // namespace ns3
