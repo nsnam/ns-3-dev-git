@@ -177,6 +177,7 @@ class WifiNetDevice : public NetDevice
     Ptr<Channel> GetChannel() const override;
     void SetAddress(Address address) override;
     Address GetAddress() const override;
+    Address GetAddressFor(const Address& remoteAddr) const override;
     bool SetMtu(const uint16_t mtu) override;
     uint16_t GetMtu() const override;
     bool IsLinkUp() const override;
