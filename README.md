@@ -6,6 +6,11 @@
 
 [![Latest Release](https://gitlab.com/nsnam/ns-3-dev/-/badges/release.svg)](https://gitlab.com/nsnam/ns-3-dev/-/releases)
 
+## License
+
+This software is licensed under the terms of the GNU General Public License v2.0 only (GPL-2.0-only).
+See the LICENSE file for more details.
+
 ## Table of Contents
 
 * [Overview](#overview-an-open-source-project)
