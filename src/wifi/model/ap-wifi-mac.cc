@@ -1940,9 +1940,10 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             ProcessPowerManagementFlag(mpdu, *apLinkId);
 
             Mac48Address to = hdr->GetAddr3();
-            // Address3 can be our MLD address (e.g., this is an MPDU containing a single MSDU
-            // addressed to us) or a BSSID (e.g., this is an MPDU containing an A-MSDU)
-            if (to == GetAddress() ||
+            // Address3 can be our MLD/link address (e.g., this is an MPDU containing a single MSDU
+            // addressed to us and the sender is an MLD/SLD) or a BSSID (e.g., this is an MPDU
+            // containing an A-MSDU)
+            if (to == GetAddress() || to == GetLocalAddress(from) ||
                 (hdr->IsQosData() && hdr->IsQosAmsdu() && to == mpdu->GetHeader().GetAddr1()))
             {
                 NS_LOG_DEBUG("frame for me from=" << from);
