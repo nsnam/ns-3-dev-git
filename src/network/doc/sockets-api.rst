@@ -231,12 +231,12 @@ Clearly, setting the type of service only applies to sockets using the IPv4 prot
 However, users typically do not set the type of service associated with a socket
 through :cpp:func:`ns3::Socket::SetIpTos` because sockets are normally created
 by application helpers and users cannot get a pointer to the sockets.
-Instead, users can create an address of type :cpp:class:`ns3::InetSocketAddress`
-with the desired type of service value and pass it to the application helpers::
+
+Applications have a ``Tos`` attribute to simplify the ToS setup::
 
     InetSocketAddress destAddress(ipv4Address, udpPort);
-    destAddress.SetTos(tos);
     OnOffHelper onoff("ns3::UdpSocketFactory", destAddress);
+    onoff.SetAttribute("Tos", UintegerValue(tos));
 
 For this to work, the application must eventually call the
 :cpp:func:`ns3::Socket::Connect()` method to connect to the provided

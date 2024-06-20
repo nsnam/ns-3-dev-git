@@ -651,8 +651,8 @@ with the desired type of service value and pass it to the application helpers:
 .. sourcecode:: cpp
 
     InetSocketAddress destAddress(ipv4Address, udpPort);
-    destAddress.SetTos(tos);
     OnOffHelper onoff("ns3::UdpSocketFactory", destAddress);
+    onoff.SetAttribute("Tos", UintegerValue(tos));
 
 Mapping the values of the DS field onto user priorities is performed similarly to the
 Linux mac80211 subsystem. Basically, the :cpp:func:`ns3::WifiNetDevice::SelectQueue()`
@@ -673,11 +673,11 @@ UP   Access Category
  1     AC_BK
 ===  ===============
 
-TOS and DSCP values map onto user priorities and access categories according
+ToS and DSCP values map onto user priorities and access categories according
 to the following table.
 
 ============  ============  ==  ===============
-DiffServ PHB  TOS (binary)  UP  Access Category
+DiffServ PHB  ToS (binary)  UP  Access Category
 ============  ============  ==  ===============
 EF            101110xx      5   AC_VI
 AF11          001010xx      1   AC_BK
@@ -702,12 +702,7 @@ CS6           110000xx      6   AC_VO
 CS7           111000xx      7   AC_VO
 ============  ============  ==  ===============
 
-So, for example,
-
-.. sourcecode:: cpp
-
-    destAddress.SetTos(0xc0);
-
+So, for example, a ToS equal to 0xc0 (binary 11000000)
 will map to CS6, User Priority 6, and Access Category AC_VO.
 Also, the ns3-wifi-ac-mapping test suite (defined in
 src/test/ns3wifi/wifi-ac-mapping-test-suite.cc) can provide additional
