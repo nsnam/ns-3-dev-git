@@ -49,7 +49,7 @@ workflow:
       git remote remove upstream ;
       fi
     - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream https://gitlab.com/nsnam/ns-3-dev.git
-    - git diff --name-only upstream/$CI_DEFAULT_BRANCH > $FILES_CHANGED
+    - git diff --name-only upstream/$CI_DEFAULT_BRANCH | tee $FILES_CHANGED
 
     # Run this job in the following cases: 1) default branch, 2) changes to source code, 3) changes to configurations.
     # Skip this job in the opposite cases.
@@ -104,7 +104,6 @@ workflow:
     paths:
       - build/
       - .lock-*
-      - $FILES_CHANGED
 
 # Weekly jobs for other distribution and compilers
 include:
