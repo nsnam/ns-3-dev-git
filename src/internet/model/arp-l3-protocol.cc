@@ -414,11 +414,11 @@ ArpL3Protocol::SendArpReply(Ptr<const ArpCache> cache,
 {
     NS_LOG_FUNCTION(this << cache << myIp << toIp << toMac);
     ArpHeader arp;
-    NS_LOG_LOGIC("ARP: sending reply from node "
-                 << m_node->GetId() << "|| src: " << cache->GetDevice()->GetAddress() << " / "
-                 << myIp << " || dst: " << toMac << " / " << toIp);
-    arp.SetReply(cache->GetDevice()->GetAddress(), myIp, toMac, toIp);
-    Ptr<Packet> packet = Create<Packet>();
+    const auto myMac = cache->GetDevice()->GetAddressFor(toMac);
+    NS_LOG_LOGIC("ARP: sending reply from node " << m_node->GetId() << "|| src: " << myMac << " / "
+                                                 << myIp << " || dst: " << toMac << " / " << toIp);
+    arp.SetReply(myMac, myIp, toMac, toIp);
+    auto packet = Create<Packet>();
     NS_ASSERT(m_tc);
     m_tc->Send(cache->GetDevice(), Create<ArpQueueDiscItem>(packet, toMac, PROT_NUMBER, arp));
 }
