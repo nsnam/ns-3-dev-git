@@ -26,6 +26,8 @@
 #include <cmath>
 #include <iostream>
 
+#if defined(INT64X64_USE_CAIRO) && !defined(PYTHON_SCAN)
+
 // Include directly to allow optimizations within this compilation unit.
 extern "C"
 {
@@ -235,3 +237,5 @@ int64x64_t::Invert(const uint64_t v)
 }
 
 } // namespace ns3
+
+#endif /* INT64X64_CAIRO_H */

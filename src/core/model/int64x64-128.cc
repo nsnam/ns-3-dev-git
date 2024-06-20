@@ -22,6 +22,8 @@
 #include "assert.h"
 #include "log.h"
 
+#if defined(INT64X64_USE_128) && !defined(PYTHON_SCAN)
+
 /**
  * \file
  * \ingroup highprec
@@ -253,3 +255,5 @@ int64x64_t::Invert(const uint64_t v)
 }
 
 } // namespace ns3
+
+#endif /* INT64X64_128_H */
