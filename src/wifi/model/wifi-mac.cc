@@ -1780,7 +1780,7 @@ WifiMac::GetLocalAddress(const Mac48Address& remoteAddr) const
         // this is a single link device
         return m_address;
     }
-    // this is an MLD (hence the remote device is single link)
+    // this is an MLD (hence the remote device is single link or unknown)
     return DoGetLocalAddress(remoteAddr);
 }
 

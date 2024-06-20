@@ -960,10 +960,17 @@ StaWifiMac::GetSetupLinkIds() const
 Mac48Address
 StaWifiMac::DoGetLocalAddress(const Mac48Address& remoteAddr) const
 {
-    auto linkIds = GetSetupLinkIds();
-    NS_ASSERT_MSG(!linkIds.empty(), "Not associated");
-    uint8_t linkId = *linkIds.begin();
-    return GetFrameExchangeManager(linkId)->GetAddress();
+    for (const auto& [id, link] : GetLinks())
+    {
+        if (GetStaLink(link).bssid == remoteAddr)
+        {
+            // the remote address is the address of the (single link) AP we are associated with;
+            return link->feManager->GetAddress();
+        }
+    }
+
+    // the remote address is unknown
+    return GetAddress();
 }
 
 bool
