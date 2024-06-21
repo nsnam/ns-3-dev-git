@@ -218,7 +218,10 @@ GetModulationClassForStandard(WifiStandard standard)
         modulationClass = WIFI_MOD_CLASS_OFDM;
         break;
     case WIFI_STANDARD_80211b:
-        modulationClass = WIFI_MOD_CLASS_DSSS;
+        // Although two modulation classes are supported in 802.11b, return the
+        // numerically greater one defined in the WifiModulationClass enum.
+        // See issue #1095 for more explanation.
+        modulationClass = WIFI_MOD_CLASS_HR_DSSS;
         break;
     case WIFI_STANDARD_80211g:
         modulationClass = WIFI_MOD_CLASS_ERP_OFDM;

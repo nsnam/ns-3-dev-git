@@ -666,6 +666,10 @@ bool IsUlMu(WifiPreamble preamble);
 /**
  * Return the modulation class corresponding to a given standard.
  *
+ * In the case of WIFI_STANDARD_80211b, two modulation classes are supported
+ * (WIFI_MOD_CLASS_DSSS and WIFI_MOD_CLASS_HR_DSSS); this method will return
+ * the latter.
+ *
  * \param standard the standard
  * \return the modulation class corresponding to the standard
  */
