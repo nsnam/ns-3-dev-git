@@ -388,6 +388,9 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
     else if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
              m_staMac->GetEmlsrManager()->GetInDeviceInterference())
     {
+        NS_ASSERT(m_staMac->GetEmlsrManager());
+        m_staMac->GetEmlsrManager()->NotifyInDeviceInterferenceStart(m_linkId, txDuration);
+
         for (const auto linkId : m_staMac->GetLinkIds())
         {
             if (auto phy = m_mac->GetWifiPhy(linkId);
@@ -474,6 +477,9 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
     else if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
              m_staMac->GetEmlsrManager()->GetInDeviceInterference())
     {
+        NS_ASSERT(m_staMac->GetEmlsrManager());
+        m_staMac->GetEmlsrManager()->NotifyInDeviceInterferenceStart(m_linkId, txDuration);
+
         for (const auto linkId : m_staMac->GetLinkIds())
         {
             if (auto phy = m_mac->GetWifiPhy(linkId);

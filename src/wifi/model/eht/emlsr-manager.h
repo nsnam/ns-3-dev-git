@@ -41,6 +41,9 @@ class EmlsrManager : public Object
     friend class ::EmlsrCcaBusyTest;
 
   public:
+    /// The aMediumSyncThreshold defined by Sec. 35.3.16.18.1 of 802.11be D4.0
+    static constexpr uint16_t MEDIUM_SYNC_THRESHOLD_USEC = 72;
+
     /**
      * \brief Get the type ID.
      * \return the object TypeId
@@ -213,6 +216,15 @@ class EmlsrManager : public Object
      *                      a notification of the end of an UL TXOP)
      */
     void NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted = false, bool ongoingDlTxop = false);
+
+    /**
+     * Notify that an STA affiliated with the EMLSR client is causing in-device interference
+     * for the given amount of time.
+     *
+     * \param linkId the ID of the link on which the STA is operating
+     * \param duration the duration of the in-device interference
+     */
+    virtual void NotifyInDeviceInterferenceStart(uint8_t linkId, Time duration);
 
     /**
      * Check whether the MediumSyncDelay timer is running for the STA operating on the given link.
@@ -423,11 +435,9 @@ class EmlsrManager : public Object
     void SendEmlOmn();
 
     /**
-     * Start the MediumSyncDelay timer and take the appropriate actions, if the timer is not
-     * already running.
+     * Start the MediumSyncDelay timer and take the appropriate actions.
      *
-     * \param linkId the ID of the link on which a TXOP was carried out that caused the STAs
-     *               operating on other links to lose medium synchronization
+     * \param linkId the ID of the link on which medium synchronization was lost
      */
     void StartMediumSyncDelayTimer(uint8_t linkId);
 

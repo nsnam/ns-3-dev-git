@@ -518,9 +518,30 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted, bool ongoingD
             }
         }
         m_staMac->UnblockTxOnLink(linkIds, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
-
-        StartMediumSyncDelayTimer(linkId);
     });
+}
+
+void
+EmlsrManager::NotifyInDeviceInterferenceStart(uint8_t linkId, Time duration)
+{
+    NS_LOG_FUNCTION(this << linkId << duration.As(Time::US));
+    NS_ASSERT(m_inDeviceInterference);
+
+    // The STA may choose not to (re)start the MediumSyncDelay timer if the transmission duration
+    // is less than or equal to aMediumSyncThreshold. (Sec. 35.3.16.8.1 802.11be D5.1)
+    if (duration <= MicroSeconds(MEDIUM_SYNC_THRESHOLD_USEC))
+    {
+        return;
+    }
+
+    // iterate over all the other EMLSR links
+    for (auto id : m_staMac->GetLinkIds())
+    {
+        if (id != linkId && m_staMac->IsEmlsrLink(id))
+        {
+            Simulator::Schedule(duration, &EmlsrManager::StartMediumSyncDelayTimer, this, id);
+        }
+    }
 }
 
 void
@@ -686,36 +707,37 @@ EmlsrManager::StartMediumSyncDelayTimer(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
 
-    // iterate over all the other EMLSR links
-    for (auto id : m_staMac->GetLinkIds())
+    if (m_mediumSyncDuration.IsZero())
     {
-        if (id != linkId && m_staMac->IsEmlsrLink(id))
-        {
-            const auto [it, inserted] = m_mediumSyncDelayStatus.try_emplace(id);
-
-            // reset the max number of TXOP attempts
-            it->second.msdNTxopsLeft = m_msdMaxNTxops;
-
-            // there are cases in which no PHY is operating on a link; e.g., the main PHY starts
-            // switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
-            // is not received and the UL TXOP ends before the main PHY channel switch is
-            // completed. The MSD timer is started on the link left "uncovered" by the main PHY
-            if (auto phy = m_staMac->GetWifiPhy(id); phy && !it->second.timer.IsPending())
-            {
-                NS_LOG_DEBUG("Setting CCA ED threshold on link "
-                             << +id << " to " << +m_msdOfdmEdThreshold << " PHY " << phy);
-                m_prevCcaEdThreshold[phy] = phy->GetCcaEdThreshold();
-                phy->SetCcaEdThreshold(m_msdOfdmEdThreshold);
-            }
-
-            // (re)start the timer
-            it->second.timer.Cancel();
-            it->second.timer = Simulator::Schedule(m_mediumSyncDuration,
-                                                   &EmlsrManager::MediumSyncDelayTimerExpired,
-                                                   this,
-                                                   id);
-        }
+        NS_LOG_DEBUG("MediumSyncDuration is zero");
+        return;
     }
+
+    const auto [it, inserted] = m_mediumSyncDelayStatus.try_emplace(linkId);
+
+    // reset the max number of TXOP attempts
+    it->second.msdNTxopsLeft = m_msdMaxNTxops;
+
+    // there are cases in which no PHY is operating on a link; e.g., the main PHY starts
+    // switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
+    // is not received and the UL TXOP ends before the main PHY channel switch is
+    // completed. The MSD timer is started on the link left "uncovered" by the main PHY
+    if (auto phy = m_staMac->GetWifiPhy(linkId); phy && !it->second.timer.IsPending())
+    {
+        NS_LOG_DEBUG("Setting CCA ED threshold on link "
+                     << +linkId << " to " << +m_msdOfdmEdThreshold << " PHY " << phy);
+        m_prevCcaEdThreshold[phy] = phy->GetCcaEdThreshold();
+        phy->SetCcaEdThreshold(m_msdOfdmEdThreshold);
+    }
+
+    // (re)start the timer
+    it->second.timer.Cancel();
+    NS_LOG_DEBUG("Starting MediumSyncDelay timer for " << m_mediumSyncDuration.As(Time::US)
+                                                       << " on link " << +linkId);
+    it->second.timer = Simulator::Schedule(m_mediumSyncDuration,
+                                           &EmlsrManager::MediumSyncDelayTimerExpired,
+                                           this,
+                                           linkId);
 }
 
 void
