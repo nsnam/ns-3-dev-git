@@ -243,6 +243,7 @@ TcpBbr::SetPacingRate(Ptr<TcpSocketState> tcb, double gain)
     if (m_isPipeFilled || rate > tcb->m_pacingRate)
     {
         tcb->m_pacingRate = rate;
+        NS_LOG_DEBUG("Pacing rate updated. New value: " << tcb->m_pacingRate);
     }
 }
 
@@ -488,6 +489,7 @@ TcpBbr::UpdateTargetCwnd(Ptr<TcpSocketState> tcb)
 uint32_t
 TcpBbr::AckAggregationCwnd()
 {
+    NS_LOG_FUNCTION(this);
     uint32_t maxAggrBytes; // MaxBW * 0.1 secs
     uint32_t aggrCwndBytes = 0;
 
@@ -503,6 +505,7 @@ TcpBbr::AckAggregationCwnd()
 void
 TcpBbr::UpdateAckAggregation(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs)
 {
+    NS_LOG_FUNCTION(this << tcb << rs);
     uint32_t expectedAcked;
     uint32_t extraAck;
     uint32_t epochProp;
@@ -601,6 +604,7 @@ TcpBbr::SetCwnd(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample& rs)
         tcb->m_cWnd = tcb->m_cWnd.Get() + rs.m_ackedSacked;
     }
     tcb->m_cWnd = std::max(tcb->m_cWnd.Get(), m_minPipeCwnd);
+    NS_LOG_DEBUG("Congestion window updated. New value:" << tcb->m_cWnd);
 
 done:
     ModulateCwndForProbeRTT(tcb);
