@@ -1155,15 +1155,15 @@ WifiMacHeader::Print(std::ostream& os) const
         os << " Duration/ID=" << m_duration << "us";
         if (!m_ctrlToDs && !m_ctrlFromDs)
         {
-            os << ", DA=" << m_addr1 << ", SA=" << m_addr2 << ", BSSID=" << m_addr3;
+            os << ", DA(RA)=" << m_addr1 << ", SA(TA)=" << m_addr2 << ", BSSID=" << m_addr3;
         }
         else if (!m_ctrlToDs && m_ctrlFromDs)
         {
-            os << ", DA=" << m_addr1 << ", SA=" << m_addr3 << ", BSSID=" << m_addr2;
+            os << ", DA(RA)=" << m_addr1 << ", SA=" << m_addr3 << ", BSSID(TA)=" << m_addr2;
         }
         else if (m_ctrlToDs && !m_ctrlFromDs)
         {
-            os << ", DA=" << m_addr3 << ", SA=" << m_addr2 << ", BSSID=" << m_addr1;
+            os << ", DA=" << m_addr3 << ", SA(TA)=" << m_addr2 << ", BSSID(RA)=" << m_addr1;
         }
         else if (m_ctrlToDs && m_ctrlFromDs)
         {
@@ -1176,6 +1176,26 @@ WifiMacHeader::Print(std::ostream& os) const
         }
         os << ", FragNumber=" << std::hex << (int)m_seqFrag << std::dec
            << ", SeqNumber=" << m_seqSeq;
+        if (IsQosData())
+        {
+            os << ", tid=" << +m_qosTid;
+            if (IsQosAmsdu())
+            {
+                os << ", A-MSDU";
+            }
+            if (IsQosNoAck())
+            {
+                os << ", ack=NoAck";
+            }
+            else if (IsQosAck())
+            {
+                os << ", ack=NormalAck";
+            }
+            else if (IsQosBlockAck())
+            {
+                os << ", ack=BlockAck";
+            }
+        }
         break;
     case WIFI_MAC_CTL_BACKREQ:
     case WIFI_MAC_CTL_BACKRESP:

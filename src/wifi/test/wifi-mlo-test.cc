@@ -752,20 +752,10 @@ MultiLinkOperationsTestBase::Transmit(Ptr<WifiMac> mac,
     {
         std::stringstream ss;
         ss << std::setprecision(10) << "PSDU #" << m_txPsdus.size() << " Link ID "
-           << +linkId.value() << " Phy ID " << +phyId << " " << psdu->GetHeader(0).GetTypeString()
-           << " #MPDUs " << psdu->GetNMpdus() << " duration/ID " << psdu->GetHeader(0).GetDuration()
-           << " RA = " << psdu->GetAddr1() << " TA = " << psdu->GetAddr2()
-           << " ADDR3 = " << psdu->GetHeader(0).GetAddr3()
-           << " ToDS = " << psdu->GetHeader(0).IsToDs()
-           << " FromDS = " << psdu->GetHeader(0).IsFromDs();
-        if (psdu->GetHeader(0).IsQosData())
+           << +linkId.value() << " Phy ID " << +phyId << " #MPDUs " << psdu->GetNMpdus();
+        for (auto it = psdu->begin(); it != psdu->end(); ++it)
         {
-            ss << " seqNo = {";
-            for (auto& mpdu : *PeekPointer(psdu))
-            {
-                ss << mpdu->GetHeader().GetSequenceNumber() << ",";
-            }
-            ss << "} TID = " << +psdu->GetHeader(0).GetQosTid();
+            ss << "\n" << **it;
         }
         NS_LOG_INFO(ss.str());
 

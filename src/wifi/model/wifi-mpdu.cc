@@ -383,26 +383,7 @@ WifiMpdu::end() const
 void
 WifiMpdu::Print(std::ostream& os) const
 {
-    os << m_header.GetTypeString() << ", payloadSize=" << GetPacketSize()
-       << ", to=" << m_header.GetAddr1() << ", seqN=" << m_header.GetSequenceNumber()
-       << ", duration/ID=" << m_header.GetDuration();
-    if (m_header.IsQosData())
-    {
-        os << ", tid=" << +m_header.GetQosTid();
-        if (m_header.IsQosNoAck())
-        {
-            os << ", ack=NoAck";
-        }
-        else if (m_header.IsQosAck())
-        {
-            os << ", ack=NormalAck";
-        }
-        else if (m_header.IsQosBlockAck())
-        {
-            os << ", ack=BlockAck";
-        }
-    }
-    os << ", queued=" << IsQueued();
+    os << m_header << ", payloadSize=" << GetPacketSize() << ", queued=" << IsQueued();
     if (IsQueued())
     {
         os << ", residualLifetime=" << (GetExpiryTime() - Simulator::Now()).As(Time::US)
