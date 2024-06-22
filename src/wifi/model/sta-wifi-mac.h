@@ -608,15 +608,19 @@ class StaWifiMac : public WifiMac
     /// store the UL TID-to-Link Mapping included in the Association Request frame
     WifiTidLinkMapping m_ulTidLinkMappingInAssocReq;
 
-    TracedCallback<Mac48Address> m_assocLogger;             ///< association logger
-    TracedCallback<uint8_t, Mac48Address> m_setupCompleted; ///< link setup completed logger
-    TracedCallback<Mac48Address> m_deAssocLogger;           ///< disassociation logger
-    TracedCallback<uint8_t, Mac48Address> m_setupCanceled;  ///< link setup canceled logger
-    TracedCallback<Time> m_beaconArrival;                   ///< beacon arrival logger
-    TracedCallback<ApInfo> m_beaconInfo;                    ///< beacon info logger
+    TracedCallback<Mac48Address> m_assocLogger;                    ///< association logger
+    TracedCallback<uint8_t, Mac48Address> m_setupCompleted;        ///< link setup completed logger
+    TracedCallback<Mac48Address> m_deAssocLogger;                  ///< disassociation logger
+    TracedCallback<uint8_t, Mac48Address> m_setupCanceled;         ///< link setup canceled logger
+    TracedCallback<Time> m_beaconArrival;                          ///< beacon arrival logger
+    TracedCallback<ApInfo> m_beaconInfo;                           ///< beacon info logger
+    TracedCallback<uint8_t, Ptr<WifiPhy>> m_emlsrLinkSwitchLogger; ///< EMLSR link switch logger
 
     /// TracedCallback signature for link setup completed/canceled events
     using LinkSetupCallback = void (*)(uint8_t /* link ID */, Mac48Address /* AP address */);
+
+    /// TracedCallback signature for EMLSR link switch events
+    using EmlsrLinkSwitchCallback = void (*)(uint8_t /* link ID */, Ptr<WifiPhy> /* PHY */);
 };
 
 /**

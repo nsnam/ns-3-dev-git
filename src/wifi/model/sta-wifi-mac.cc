@@ -137,7 +137,15 @@ StaWifiMac::GetTypeId()
             .AddTraceSource("ReceivedBeaconInfo",
                             "Information about every received Beacon frame",
                             MakeTraceSourceAccessor(&StaWifiMac::m_beaconInfo),
-                            "ns3::ApInfo::TracedCallback");
+                            "ns3::ApInfo::TracedCallback")
+            .AddTraceSource("EmlsrLinkSwitch",
+                            "Trace start/end of EMLSR link switch events: when a PHY operating on "
+                            "a link starts switching, provides the ID of the link and a null "
+                            "pointer (indicating no PHY is operating on that link); when a PHY "
+                            "completes switching to a link, provides the ID of the link and a "
+                            "pointer to the PHY (that is now operating on that link)",
+                            MakeTraceSourceAccessor(&StaWifiMac::m_emlsrLinkSwitchLogger),
+                            "ns3::StaWifiMac::EmlsrLinkSwitchCallback");
     return tid;
 }
 
@@ -2024,6 +2032,7 @@ StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time dela
         if (link->phy == phy && id != linkId)
         {
             link->phy = nullptr;
+            m_emlsrLinkSwitchLogger(id, nullptr);
         }
     }
 
@@ -2045,6 +2054,8 @@ StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time dela
         newLink.feManager->SetWifiPhy(phy);
         // Connect the station manager on the new link to the given PHY
         newLink.stationManager->SetupPhy(phy);
+        // log link switch
+        m_emlsrLinkSwitchLogger(linkId, phy);
     };
 
     // cancel any pending event for the given PHY to switch link
