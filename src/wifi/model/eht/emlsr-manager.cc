@@ -713,16 +713,21 @@ EmlsrManager::StartMediumSyncDelayTimer(uint8_t linkId)
         return;
     }
 
+    auto phy = m_staMac->GetWifiPhy(linkId);
+
+    if (!phy)
+    {
+        NS_LOG_DEBUG("No PHY operating on link " << +linkId);
+        // MSD timer will be started when a PHY will be operating on this link
+        return;
+    }
+
     const auto [it, inserted] = m_mediumSyncDelayStatus.try_emplace(linkId);
 
     // reset the max number of TXOP attempts
     it->second.msdNTxopsLeft = m_msdMaxNTxops;
 
-    // there are cases in which no PHY is operating on a link; e.g., the main PHY starts
-    // switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the CTS
-    // is not received and the UL TXOP ends before the main PHY channel switch is
-    // completed. The MSD timer is started on the link left "uncovered" by the main PHY
-    if (auto phy = m_staMac->GetWifiPhy(linkId); phy && !it->second.timer.IsPending())
+    if (!it->second.timer.IsPending())
     {
         NS_LOG_DEBUG("Setting CCA ED threshold on link "
                      << +linkId << " to " << +m_msdOfdmEdThreshold << " PHY " << phy);
