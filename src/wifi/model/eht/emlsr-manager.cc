@@ -166,6 +166,9 @@ EmlsrManager::SetWifiMac(Ptr<StaWifiMac> mac)
     m_staMac->TraceConnectWithoutContext("AckedMpdu", MakeCallback(&EmlsrManager::TxOk, this));
     m_staMac->TraceConnectWithoutContext("DroppedMpdu",
                                          MakeCallback(&EmlsrManager::TxDropped, this));
+    m_staMac->TraceConnectWithoutContext(
+        "EmlsrLinkSwitch",
+        MakeCallback(&EmlsrManager::EmlsrLinkSwitchCallback, this));
     DoSetWifiMac(mac);
 }
 
@@ -173,6 +176,42 @@ void
 EmlsrManager::DoSetWifiMac(Ptr<StaWifiMac> mac)
 {
     NS_LOG_FUNCTION(this << mac);
+}
+
+void
+EmlsrManager::EmlsrLinkSwitchCallback(uint8_t linkId, Ptr<WifiPhy> phy)
+{
+    NS_LOG_FUNCTION(this << linkId << phy);
+
+    if (!phy)
+    {
+        NS_ASSERT(!m_noPhySince.contains(linkId));
+        NS_LOG_DEBUG("Record that no PHY is operating on link " << +linkId);
+        m_noPhySince[linkId] = Simulator::Now();
+        return;
+    }
+
+    // phy switched to operate on the link with ID equal to linkId
+    auto it = m_noPhySince.find(linkId);
+
+    if (it == m_noPhySince.end())
+    {
+        // phy switched to a link on which another PHY was operating, do nothing
+        return;
+    }
+
+    auto duration = Simulator::Now() - it->second;
+    NS_ASSERT_MSG(duration.IsPositive(), "Interval duration should not be negative");
+
+    NS_LOG_DEBUG("PHY " << +phy->GetPhyId() << " switched to link " << +linkId << " after "
+                        << duration.As(Time::US)
+                        << " since last time a PHY was operating on this link");
+    if (duration > MicroSeconds(MEDIUM_SYNC_THRESHOLD_USEC))
+    {
+        StartMediumSyncDelayTimer(linkId);
+    }
+
+    m_noPhySince.erase(it);
 }
 
 void

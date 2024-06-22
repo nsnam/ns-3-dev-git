@@ -352,6 +352,14 @@ class EmlsrManager : public Object
     void SwitchAuxPhy(Ptr<WifiPhy> auxPhy, uint8_t currLinkId, uint8_t nextLinkId);
 
     /**
+     * Callback connected to the EmlsrLinkSwitch trace source of StaWifiMac.
+     *
+     * \param linkId the ID of the link involved in the EMLSR link switch event
+     * \param phy a pointer to the PHY involved in the EMLSR link switch event
+     */
+    virtual void EmlsrLinkSwitchCallback(uint8_t linkId, Ptr<WifiPhy> phy);
+
+    /**
      * Set the CCA ED threshold (if needed) on the given PHY that is switching channel to
      * operate on the given link.
      *
@@ -560,6 +568,8 @@ class EmlsrManager : public Object
         m_mainPhyChannels; //!< link ID-indexed map of operating channels for the main PHY
     std::map<uint8_t, WifiPhyOperatingChannel>
         m_auxPhyChannels; //!< link ID-indexed map of operating channels for the aux PHYs
+    std::map<uint8_t, Time>
+        m_noPhySince; //!< link ID-indexed map of the time since no PHY is operating on the link
 };
 
 } // namespace ns3
