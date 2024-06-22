@@ -24,6 +24,7 @@
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/config.h"
 #include "ns3/constant-position-mobility-model.h"
+#include "ns3/constant-rate-wifi-manager.h"
 #include "ns3/error-model.h"
 #include "ns3/fcfs-wifi-queue-scheduler.h"
 #include "ns3/he-frame-exchange-manager.h"
@@ -44,6 +45,7 @@
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
+#include "ns3/uinteger.h"
 #include "ns3/waypoint-mobility-model.h"
 #include "ns3/wifi-default-ack-manager.h"
 #include "ns3/wifi-default-assoc-manager.h"
@@ -3820,6 +3822,151 @@ WifiMgtHeaderTest::DoRun()
     TestHeaderSerialization(frame);
 }
 
+//-----------------------------------------------------------------------------
+
+/**
+ * Make sure that all DSSS modulation types work (see issue #1095).
+ *
+ * This test sends four packets from a STA to an AP, each with a different
+ * DSSS rate (1, 2, 5.5, and 11Mbps), and checks that all four are received.
+ */
+class DsssModulationTest : public TestCase
+{
+  public:
+    DsssModulationTest();
+
+    void DoRun() override;
+
+  private:
+    uint32_t m_received; ///< number of received packets
+
+    /**
+     * Trace sink to receive from the PacketSocket; the address parameter is unused
+     * \param context the context
+     * \param p the received packet
+     */
+    void Receive(std::string context, Ptr<const Packet> p, const Address&);
+};
+
+DsssModulationTest::DsssModulationTest()
+    : TestCase("Test case for Bug 730"),
+      m_received(0)
+{
+}
+
+void
+DsssModulationTest::Receive(std::string context, Ptr<const Packet> p, const Address&)
+{
+    m_received++;
+}
+
+void
+DsssModulationTest::DoRun()
+{
+    m_received = 0;
+
+    NodeContainer wifiStaNode;
+    wifiStaNode.Create(1);
+
+    NodeContainer wifiApNode;
+    wifiApNode.Create(1);
+
+    auto channel = YansWifiChannelHelper::Default();
+    YansWifiPhyHelper phy;
+    phy.SetChannel(channel.Create());
+
+    WifiHelper wifi;
+    wifi.SetStandard(WIFI_STANDARD_80211b);
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
+                                 "DataMode",
+                                 StringValue("DsssRate1Mbps"),
+                                 "ControlMode",
+                                 StringValue("DsssRate1Mbps"));
+
+    WifiMacHelper mac;
+    auto ssid = Ssid("ns-3-ssid");
+    mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid), "ActiveProbing", BooleanValue(false));
+
+    NetDeviceContainer staDevices;
+    staDevices = wifi.Install(phy, mac, wifiStaNode);
+
+    mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid), "BeaconGeneration", BooleanValue(true));
+
+    NetDeviceContainer apDevices;
+    apDevices = wifi.Install(phy, mac, wifiApNode);
+    auto apRemoteStationManager = apDevices.Get(0)
+                                      ->GetObject<WifiNetDevice>()
+                                      ->GetRemoteStationManager()
+                                      ->GetObject<ConstantRateWifiManager>();
+    apRemoteStationManager->SetAttribute("DataMode", StringValue("DsssRate1Mbps"));
+
+    MobilityHelper mobility;
+    auto positionAlloc = CreateObject<ListPositionAllocator>();
+
+    positionAlloc->Add(Vector(0.0, 0.0, 0.0));
+    positionAlloc->Add(Vector(1.0, 0.0, 0.0));
+    mobility.SetPositionAllocator(positionAlloc);
+
+    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobility.Install(wifiApNode);
+    mobility.Install(wifiStaNode);
+
+    auto apDevice = DynamicCast<WifiNetDevice>(apDevices.Get(0));
+    auto staDevice = DynamicCast<WifiNetDevice>(staDevices.Get(0));
+
+    PacketSocketAddress socket;
+    socket.SetSingleDevice(staDevice->GetIfIndex());
+    socket.SetPhysicalAddress(apDevice->GetAddress());
+    socket.SetProtocol(1);
+
+    // give packet socket powers to nodes.
+    PacketSocketHelper packetSocket;
+    packetSocket.Install(wifiStaNode);
+    packetSocket.Install(wifiApNode);
+
+    auto client = CreateObject<PacketSocketClient>();
+    client->SetAttribute("PacketSize", UintegerValue(1460));
+    client->SetAttribute("MaxPackets", UintegerValue(4));
+    client->SetRemote(socket);
+    wifiStaNode.Get(0)->AddApplication(client);
+    client->SetStartTime(Seconds(1));
+    client->SetStopTime(Seconds(4.5));
+
+    auto server = CreateObject<PacketSocketServer>();
+    server->SetLocal(socket);
+    wifiApNode.Get(0)->AddApplication(server);
+    server->SetStartTime(Seconds(0));
+    server->SetStopTime(Seconds(4.5));
+
+    Config::Connect("/NodeList/1/ApplicationList/0/$ns3::PacketSocketServer/Rx",
+                    MakeCallback(&DsssModulationTest::Receive, this));
+
+    // The PacketSocketClient starts at time 1s, and packets are sent at times 1s, 2s, 3s, 4s.
+    // Change the MCS in between these send times (e.g., at 1.5s, 2.5s, 3.5s)
+    Simulator::Schedule(
+        Seconds(1.5),
+        Config::Set,
+        "/NodeList/0/DeviceList/0/RemoteStationManager/$ns3::ConstantRateWifiManager/DataMode",
+        StringValue("DsssRate2Mbps"));
+    Simulator::Schedule(
+        Seconds(2.5),
+        Config::Set,
+        "/NodeList/0/DeviceList/0/RemoteStationManager/$ns3::ConstantRateWifiManager/DataMode",
+        StringValue("DsssRate5_5Mbps"));
+    Simulator::Schedule(
+        Seconds(3.5),
+        Config::Set,
+        "/NodeList/0/DeviceList/0/RemoteStationManager/$ns3::ConstantRateWifiManager/DataMode",
+        StringValue("DsssRate11Mbps"));
+
+    Simulator::Stop(Seconds(4.5));
+    Simulator::Run();
+
+    Simulator::Destroy();
+
+    NS_TEST_ASSERT_MSG_EQ(m_received, 4, "Did not receive four DSSS packets");
+}
+
 /**
  * \ingroup wifi-test
  * \ingroup tests
@@ -3853,6 +4000,7 @@ WifiTestSuite::WifiTestSuite()
     AddTestCase(new IdealRateManagerMimoTest, TestCase::Duration::QUICK);
     AddTestCase(new HeRuMcsDataRateTestCase, TestCase::Duration::QUICK);
     AddTestCase(new WifiMgtHeaderTest, TestCase::Duration::QUICK);
+    AddTestCase(new DsssModulationTest, TestCase::Duration::QUICK);
 }
 
 static WifiTestSuite g_wifiTestSuite; ///< the test suite
