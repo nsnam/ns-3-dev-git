@@ -186,7 +186,7 @@ class WifiPhyStateHelper : public Object
      * \param txVector the TX vector for the transmission
      */
     void SwitchToTx(Time txDuration,
-                    WifiConstPsduMap psdus,
+                    const WifiConstPsduMap& psdus,
                     double txPowerDbm,
                     const WifiTxVector& txVector);
     /**

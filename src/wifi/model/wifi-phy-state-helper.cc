@@ -320,7 +320,7 @@ WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates()
 
 void
 WifiPhyStateHelper::SwitchToTx(Time txDuration,
-                               WifiConstPsduMap psdus,
+                               const WifiConstPsduMap& psdus,
                                double txPowerDbm,
                                const WifiTxVector& txVector)
 {
