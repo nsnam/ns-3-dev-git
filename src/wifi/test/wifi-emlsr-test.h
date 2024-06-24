@@ -125,6 +125,19 @@ class EmlsrOperationsTestBase : public TestCase
                           std::string description,
                           bool testUnblockedForOtherReasons = true);
 
+    /**
+     * Check whether the MediumSyncDelay timer is running on the given link of the given device.
+     *
+     * \param staMac the MAC of the given device
+     * \param linkId the ID of the given link
+     * \param isRunning whether the MediumSyncDelay timer is running
+     * \param msg message to print in case the check failed
+     */
+    void CheckMsdTimerRunning(Ptr<StaWifiMac> staMac,
+                              uint8_t linkId,
+                              bool isRunning,
+                              const std::string& msg);
+
     void DoSetup() override;
 
     /// Information about transmitted frames
