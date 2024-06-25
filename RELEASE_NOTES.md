@@ -23,6 +23,7 @@ Release 3-dev
 ### Bugs fixed
 
 - (lr-wpan) !2001 - Beacon improvements and fixes
+- (lr-wpan) !2042 - Beacon improvements and jitter addition
 
 Release 3.42
 ------------

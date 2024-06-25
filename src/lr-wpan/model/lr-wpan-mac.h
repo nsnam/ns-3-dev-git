@@ -713,6 +713,15 @@ class LrWpanMac : public LrWpanMacBase
     void PrintTxQueue(std::ostream& os) const;
 
     /**
+     * Assign a fixed random variable stream number to the random variables
+     * used by this model.  Return the number of streams that have been assigned.
+     *
+     * \param stream first stream index to use
+     * \return the number of stream indices assigned by this model
+     */
+    int64_t AssignStreams(int64_t stream);
+
+    /**
      * TracedCallback signature for sent packets.
      *
      * \param [in] packet The packet.
@@ -1335,7 +1344,7 @@ class LrWpanMac : public LrWpanMacBase
     /**
      * The uniform random variable used in this mac layer
      */
-    Ptr<UniformRandomVariable> uniformVar;
+    Ptr<UniformRandomVariable> m_uniformVar;
 };
 } // namespace lrwpan
 } // namespace ns3

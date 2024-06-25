@@ -32,8 +32,7 @@
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT                                                                      \
-    std::clog << "[address " << m_mac->GetShortAddress() << " | " << m_mac->GetExtendedAddress()   \
-              << "] ";
+    std::clog << "[" << m_mac->GetShortAddress() << " | " << m_mac->GetExtendedAddress() << "] ";
 
 namespace ns3
 {
@@ -101,28 +100,24 @@ LrWpanCsmaCa::GetMac() const
 void
 LrWpanCsmaCa::SetSlottedCsmaCa()
 {
-    NS_LOG_FUNCTION(this);
     m_isSlotted = true;
 }
 
 void
 LrWpanCsmaCa::SetUnSlottedCsmaCa()
 {
-    NS_LOG_FUNCTION(this);
     m_isSlotted = false;
 }
 
 bool
 LrWpanCsmaCa::IsSlottedCsmaCa() const
 {
-    NS_LOG_FUNCTION(this);
     return m_isSlotted;
 }
 
 bool
 LrWpanCsmaCa::IsUnSlottedCsmaCa() const
 {
-    NS_LOG_FUNCTION(this);
     return !m_isSlotted;
 }
 
@@ -234,6 +229,8 @@ LrWpanCsmaCa::Start()
     m_NB = 0;
     if (IsSlottedCsmaCa())
     {
+        NS_LOG_DEBUG("Using Slotted CSMA-CA");
+
         // TODO: Check if the current PHY is using the Japanese band 950 Mhz:
         //       (IEEE_802_15_4_950MHZ_BPSK and IEEE_802_15_4_950MHZ_2GFSK)
         //       if in use, m_CW = 1.
@@ -264,6 +261,7 @@ LrWpanCsmaCa::Start()
     }
     else
     {
+        NS_LOG_DEBUG("Using Unslotted CSMA-CA");
         m_BE = m_macMinBE;
         m_randomBackoffEvent = Simulator::ScheduleNow(&LrWpanCsmaCa::RandomBackoffDelay, this);
     }

@@ -252,9 +252,9 @@ LrWpanMac::LrWpanMac()
     m_maxTxQueueSize = m_txQueue.max_size();
     m_maxIndTxQueueSize = m_indTxQueue.max_size();
 
-    uniformVar = CreateObject<UniformRandomVariable>();
-    m_macDsn = SequenceNumber8(uniformVar->GetInteger(0, 255));
-    m_macBsn = SequenceNumber8(uniformVar->GetInteger(0, 255));
+    m_uniformVar = CreateObject<UniformRandomVariable>();
+    m_macDsn = SequenceNumber8(m_uniformVar->GetInteger(0, 255));
+    m_macBsn = SequenceNumber8(m_uniformVar->GetInteger(0, 255));
     m_macBeaconPayload = {};
     m_macBeaconPayloadLength = 0;
     m_shortAddress = Mac16Address("FF:FF"); // FF:FF = The address is not assigned.
@@ -1049,18 +1049,28 @@ LrWpanMac::SendOneBeacon()
 
     beaconPacket->AddTrailer(macTrailer);
 
-    // Set the Beacon packet to be transmitted
-    m_txPkt = beaconPacket;
-
     if (m_csmaCa->IsSlottedCsmaCa())
     {
+        // Beacon in beacon-enabled mode
+        // Transmit beacon immediately (i.e. Without CSMA/CA)
+        m_txPkt = beaconPacket;
         m_outSuperframeStatus = BEACON;
         NS_LOG_DEBUG("Outgoing superframe Active Portion (Beacon + CAP + CFP): "
                      << m_superframeDuration << " symbols");
-    }
 
-    ChangeMacState(MAC_SENDING);
-    m_phy->PlmeSetTRXStateRequest(IEEE_802_15_4_PHY_TX_ON);
+        ChangeMacState(MAC_SENDING);
+        m_phy->PlmeSetTRXStateRequest(IEEE_802_15_4_PHY_TX_ON);
+    }
+    else
+    {
+        // Beacon as a result of a beacon request
+        // The beacon shall be transmitted using CSMA/CA
+        // IEEE 802.15.4-2011 (Section 5.1.2.1.2)
+        Ptr<TxQueueElement> txQElement = Create<TxQueueElement>();
+        txQElement->txQPkt = beaconPacket;
+        EnqueueTxQElement(txQElement);
+        CheckQueue();
+    }
 }
 
 void
@@ -1710,7 +1720,7 @@ LrWpanMac::BeaconSearchTimeout()
 void
 LrWpanMac::ReceiveBeacon(uint8_t lqi, Ptr<Packet> p)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << lqi << p);
     // The received beacon size in symbols
     // Beacon = Sync Header (SHR)[5 bytes] +
     //          PHY header (PHR) [1 byte]  +
@@ -2322,7 +2332,17 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                     case CommandPayloadHeader::BEACON_REQ:
                         if (m_csmaCa->IsUnSlottedCsmaCa() && m_coor)
                         {
-                            SendOneBeacon();
+                            // Jitter = Between 0 and 2 aUnitBackoffPeriods
+                            // (0, 320us or 640us in 2.4Ghz O-QPSK)
+                            // While this jitter is not described by the standard,
+                            // it reduces the probability of collisions in beacons
+                            // transmitted as a result of a beacon request
+                            Time jitter =
+                                Seconds(static_cast<double>(m_uniformVar->GetInteger(0, 3) *
+                                                            aUnitBackoffPeriod) /
+                                        symbolRate);
+
+                            Simulator::Schedule((jitter), &LrWpanMac::SendOneBeacon, this);
                         }
                         else
                         {
@@ -2981,6 +3001,15 @@ LrWpanMac::PrintTxQueue(std::ostream& os) const
     os << "\n";
 }
 
+int64_t
+LrWpanMac::AssignStreams(int64_t stream)
+{
+    NS_LOG_FUNCTION(this);
+    m_uniformVar->SetStream(stream);
+    m_csmaCa->AssignStreams(stream);
+    return 1;
+}
+
 void
 LrWpanMac::RemovePendTxQElement(Ptr<Packet> p)
 {
@@ -3063,7 +3092,18 @@ LrWpanMac::PdDataConfirm(PhyEnumeration status)
                 }
 
                 ifsWaitTime = Seconds(static_cast<double>(GetIfsSize()) / symbolRate);
-                m_txPkt = nullptr;
+
+                if (m_csmaCa->IsSlottedCsmaCa())
+                {
+                    // The beacon was sent immediately in beacon-enabled mode
+                    m_txPkt = nullptr;
+                }
+                else
+                {
+                    // The beacon was sent using CSMA/CA as a result of a beacon request
+                    // therefore, remove it from TX Queue
+                    RemoveFirstTxQElement();
+                }
             }
             else if (macHdr.IsAckReq()) // We have sent a regular data packet, check if we have to
                                         // wait  for an ACK.
