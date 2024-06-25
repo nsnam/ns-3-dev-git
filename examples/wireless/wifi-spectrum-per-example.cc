@@ -181,7 +181,7 @@ main(int argc, char* argv[])
         NodeContainer wifiApNode;
         wifiApNode.Create(1);
 
-        YansWifiPhyHelper phy;
+        YansWifiPhyHelper yansPhy;
         SpectrumWifiPhyHelper spectrumPhy;
         if (wifiType == "ns3::YansWifiPhy")
         {
@@ -190,9 +190,9 @@ main(int argc, char* argv[])
                                        "Frequency",
                                        DoubleValue(5.180e9));
             channel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
-            phy.SetChannel(channel.Create());
-            phy.Set("TxPowerStart", DoubleValue(1)); // dBm (1.26 mW)
-            phy.Set("TxPowerEnd", DoubleValue(1));
+            yansPhy.SetChannel(channel.Create());
+            yansPhy.Set("TxPowerStart", DoubleValue(1)); // dBm (1.26 mW)
+            yansPhy.Set("TxPowerEnd", DoubleValue(1));
         }
         else if (wifiType == "ns3::SpectrumWifiPhy")
         {
@@ -397,17 +397,19 @@ main(int argc, char* argv[])
         if (wifiType == "ns3::YansWifiPhy")
         {
             mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
-            phy.Set("ChannelSettings",
-                    StringValue(std::string("{0, ") + (i <= 15 ? "20" : "40") + ", BAND_5GHZ, 0}"));
-            staDevice = wifi.Install(phy, mac, wifiStaNode);
+            yansPhy.Set(
+                "ChannelSettings",
+                StringValue(std::string("{0, ") + (i <= 15 ? "20" : "40") + ", BAND_5GHZ, 0}"));
+            staDevice = wifi.Install(yansPhy, mac, wifiStaNode);
             mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid));
-            apDevice = wifi.Install(phy, mac, wifiApNode);
+            apDevice = wifi.Install(yansPhy, mac, wifiApNode);
         }
         else if (wifiType == "ns3::SpectrumWifiPhy")
         {
             mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
-            phy.Set("ChannelSettings",
-                    StringValue(std::string("{0, ") + (i <= 15 ? "20" : "40") + ", BAND_5GHZ, 0}"));
+            spectrumPhy.Set(
+                "ChannelSettings",
+                StringValue(std::string("{0, ") + (i <= 15 ? "20" : "40") + ", BAND_5GHZ, 0}"));
             staDevice = wifi.Install(spectrumPhy, mac, wifiStaNode);
             mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid));
             apDevice = wifi.Install(spectrumPhy, mac, wifiApNode);
@@ -491,11 +493,15 @@ main(int argc, char* argv[])
 
         if (enablePcap)
         {
+            auto& phy = wifiType == "ns3::YansWifiPhy" ? dynamic_cast<WifiPhyHelper&>(yansPhy)
+                                                       : dynamic_cast<WifiPhyHelper&>(spectrumPhy);
+
             phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
             std::stringstream ss;
             ss << "wifi-spectrum-per-example-" << i;
             phy.EnablePcap(ss.str(), apDevice);
         }
+
         g_signalDbmAvg = 0;
         g_noiseDbmAvg = 0;
         g_samples = 0;
