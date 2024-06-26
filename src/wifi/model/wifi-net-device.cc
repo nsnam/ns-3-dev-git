@@ -520,7 +520,7 @@ WifiNetDevice::ForwardUp(Ptr<const Packet> packet, Mac48Address from, Mac48Addre
     {
         type = NetDevice::PACKET_MULTICAST;
     }
-    else if (to == GetAddress())
+    else if (to == GetAddress() || to == m_mac->GetLocalAddress(from))
     {
         type = NetDevice::PACKET_HOST;
     }
