@@ -103,6 +103,11 @@ GaussMarkovMobilityModel::GaussMarkovMobilityModel()
     m_helper.Unpause();
 }
 
+GaussMarkovMobilityModel::~GaussMarkovMobilityModel()
+{
+    m_event.Cancel();
+}
+
 void
 GaussMarkovMobilityModel::Start()
 {

@@ -80,6 +80,11 @@ RandomWalk2dMobilityModel::GetTypeId()
     return tid;
 }
 
+RandomWalk2dMobilityModel::~RandomWalk2dMobilityModel()
+{
+    m_event.Cancel();
+}
+
 void
 RandomWalk2dMobilityModel::DoInitialize()
 {

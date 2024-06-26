@@ -59,6 +59,11 @@ RandomWaypointMobilityModel::GetTypeId()
     return tid;
 }
 
+RandomWaypointMobilityModel::~RandomWaypointMobilityModel()
+{
+    m_event.Cancel();
+}
+
 void
 RandomWaypointMobilityModel::BeginWalk()
 {

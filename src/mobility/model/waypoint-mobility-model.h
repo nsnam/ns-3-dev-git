@@ -192,6 +192,10 @@ class WaypointMobilityModel : public MobilityModel
      * \brief The current velocity vector
      */
     mutable Vector m_velocity;
+    /**
+     * \brief Update event
+     */
+    EventId m_event;
 };
 
 } // namespace ns3

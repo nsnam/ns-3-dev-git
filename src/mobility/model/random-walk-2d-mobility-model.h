@@ -57,6 +57,8 @@ class RandomWalk2dMobilityModel : public MobilityModel
      */
     static TypeId GetTypeId();
 
+    ~RandomWalk2dMobilityModel() override;
+
     /** An enum representing the different working modes of this module. */
     enum Mode
     {

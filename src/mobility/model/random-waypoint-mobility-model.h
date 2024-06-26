@@ -59,6 +59,8 @@ class RandomWaypointMobilityModel : public MobilityModel
      */
     static TypeId GetTypeId();
 
+    ~RandomWaypointMobilityModel() override;
+
   protected:
     void DoInitialize() override;
 

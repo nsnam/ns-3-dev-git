@@ -101,6 +101,11 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateRandomWaypointMobilityModel()
     m_position = CreateObject<RandomBoxPositionAllocator>();
 }
 
+SteadyStateRandomWaypointMobilityModel::~SteadyStateRandomWaypointMobilityModel()
+{
+    m_event.Cancel();
+}
+
 void
 SteadyStateRandomWaypointMobilityModel::DoInitialize()
 {

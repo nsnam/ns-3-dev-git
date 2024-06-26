@@ -87,6 +87,7 @@ class GaussMarkovMobilityModel : public MobilityModel
      */
     static TypeId GetTypeId();
     GaussMarkovMobilityModel();
+    ~GaussMarkovMobilityModel() override;
 
   private:
     /**

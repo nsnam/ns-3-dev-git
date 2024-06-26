@@ -51,6 +51,7 @@ class RandomDirection2dMobilityModel : public MobilityModel
      */
     static TypeId GetTypeId();
     RandomDirection2dMobilityModel();
+    ~RandomDirection2dMobilityModel() override;
 
   private:
     /**

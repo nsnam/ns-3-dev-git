@@ -64,6 +64,11 @@ RandomDirection2dMobilityModel::RandomDirection2dMobilityModel()
     m_direction = CreateObject<UniformRandomVariable>();
 }
 
+RandomDirection2dMobilityModel::~RandomDirection2dMobilityModel()
+{
+    m_event.Cancel();
+}
+
 void
 RandomDirection2dMobilityModel::DoDispose()
 {

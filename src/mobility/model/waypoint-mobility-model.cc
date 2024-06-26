@@ -77,6 +77,7 @@ WaypointMobilityModel::WaypointMobilityModel()
 
 WaypointMobilityModel::~WaypointMobilityModel()
 {
+    m_event.Cancel();
 }
 
 void
@@ -102,7 +103,9 @@ WaypointMobilityModel::AddWaypoint(const Waypoint& waypoint)
 
     if (!m_lazyNotify)
     {
-        Simulator::Schedule(waypoint.time - Simulator::Now(), &WaypointMobilityModel::Update, this);
+        m_event = Simulator::Schedule(waypoint.time - Simulator::Now(),
+                                      &WaypointMobilityModel::Update,
+                                      this);
     }
 }
 
