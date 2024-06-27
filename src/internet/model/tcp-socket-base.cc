@@ -150,6 +150,11 @@ TcpSocketBase::GetTypeId()
                           PointerValue(),
                           MakePointerAccessor(&TcpSocketBase::m_congestionControl),
                           MakePointerChecker<TcpCongestionOps>())
+            .AddAttribute("RecoveryOps",
+                          "Pointer to TcpRecoveryOps object",
+                          PointerValue(),
+                          MakePointerAccessor(&TcpSocketBase::m_recoveryOps),
+                          MakePointerChecker<TcpRecoveryOps>())
             .AddAttribute(
                 "ReTxThreshold",
                 "Threshold for fast retransmit",
