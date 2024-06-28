@@ -3006,8 +3006,8 @@ LrWpanMac::AssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this);
     m_uniformVar->SetStream(stream);
-    m_csmaCa->AssignStreams(stream);
-    return 1;
+    m_csmaCa->AssignStreams(stream + 1);
+    return 2;
 }
 
 void

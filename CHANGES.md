@@ -19,14 +19,17 @@ Changes from ns-3.42 to ns-3-dev
 ### New API
 
 ### Changes to existing API
+
 * (lr-wpan) Attribute `macBeaconPayload` in `MacPibAttributes` is now a std::vector<uint8_t> instead of a packet pointer.
 * (lr-wpan) Removes the word `address` from the MAC address prefix when `LOG_PREFIX_FUNC` is used.
 * (lr-wpan) Removes the word `address` from the CSMA-CA logs prefix when `LOG_PREFIX_FUNC` is used.
-* (wifi) The `WifiHelper::AssignStreams()` method has been made static
+* (wifi) The `WifiHelper::AssignStreams()` method has been made static.
+* (lr-wpan) Added `AssignStreams` function to the MAC.
 
 ### Changes to build system
 
 ### Changed behavior
+
 * (lr-wpan) Beacons are now transmitted using CSMA-CA when requested from a beacon request command.
 * (lr-wpan) Upon a beacon request command, beacons are transmitted after a jitter to reduce the probability of collisions.
 
