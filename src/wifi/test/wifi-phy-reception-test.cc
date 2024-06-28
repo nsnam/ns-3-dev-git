@@ -4703,7 +4703,7 @@ class TestSpectrumChannelWithBandwidthFilter : public TestCase
      * \param channel channel to be used by transmitter
      * \param expectedValue expected number of received packets
      */
-    TestSpectrumChannelWithBandwidthFilter(uint16_t channel, uint16_t expectedValue);
+    TestSpectrumChannelWithBandwidthFilter(uint8_t channel, uint16_t expectedValue);
 
   protected:
     void DoSetup() override;
@@ -4740,12 +4740,12 @@ class TestSpectrumChannelWithBandwidthFilter : public TestCase
     Ptr<SpectrumWifiPhy> m_tx{nullptr}; ///< transmit function
     Ptr<SpectrumWifiPhy> m_rx{nullptr}; ///< receive function
     uint32_t m_countRxBegin{0};         ///< count of receive events
-    uint16_t m_channel{36};             ///< channel for packet transmission
+    uint8_t m_channel{36};              ///< channel for packet transmission
     uint16_t m_expectedValue{0};        ///< expected count of receive events
 };
 
 TestSpectrumChannelWithBandwidthFilter::TestSpectrumChannelWithBandwidthFilter(
-    uint16_t channel,
+    uint8_t channel,
     uint16_t expectedValue)
     : TestCase("Test for early discard of signal in single-model-spectrum-channel::StartTx()"),
       m_channel(channel),
