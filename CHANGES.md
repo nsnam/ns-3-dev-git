@@ -22,6 +22,7 @@ Changes from ns-3.42 to ns-3-dev
 * (lr-wpan) Attribute `macBeaconPayload` in `MacPibAttributes` is now a std::vector<uint8_t> instead of a packet pointer.
 * (lr-wpan) Removes the word `address` from the MAC address prefix when `LOG_PREFIX_FUNC` is used.
 * (lr-wpan) Removes the word `address` from the CSMA-CA logs prefix when `LOG_PREFIX_FUNC` is used.
+* (wifi) The `WifiHelper::AssignStreams()` method has been made static
 
 ### Changes to build system
 

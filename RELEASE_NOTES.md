@@ -24,6 +24,9 @@ Release 3-dev
 
 - (lr-wpan) !2001 - Beacon improvements and fixes
 - (lr-wpan) !2042 - Beacon improvements and jitter addition
+- (wifi) Avoid firing WifiMac::DroppedMpdu trace twice in some cases
+- (wifi) Fix assignment of AIDs to non-AP STAs/MLDs to ensure they are unique
+- (wifi) Fix starting Sequence Number when ADDBA Response arrives after timeout
 
 Release 3.42
 ------------
