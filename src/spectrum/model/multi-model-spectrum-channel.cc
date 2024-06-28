@@ -307,8 +307,15 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
                     }
                     if (m_propagationLoss)
                     {
-                        propagationGainDb =
-                            m_propagationLoss->CalcRxPower(0, txMobility, receiverMobility);
+                        if (txMobility->GetPosition() == receiverMobility->GetPosition())
+                        {
+                            propagationGainDb = 0; // Assume no propagation loss when co-located
+                        }
+                        else
+                        {
+                            propagationGainDb =
+                                m_propagationLoss->CalcRxPower(0, txMobility, receiverMobility);
+                        }
                         NS_LOG_LOGIC("propagationGainDb = " << propagationGainDb << " dB");
                         pathLossDb -= propagationGainDb;
                     }
