@@ -551,6 +551,7 @@ WifiNetDevice::ForwardUp(Ptr<const Packet> packet, Mac48Address from, Mac48Addre
 void
 WifiNetDevice::LinkUp()
 {
+    NS_LOG_FUNCTION(this);
     m_linkUp = true;
     m_linkChanges();
 }
@@ -558,6 +559,7 @@ WifiNetDevice::LinkUp()
 void
 WifiNetDevice::LinkDown()
 {
+    NS_LOG_FUNCTION(this);
     m_linkUp = false;
     m_linkChanges();
 }
