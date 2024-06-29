@@ -1004,14 +1004,14 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
     // calculate PER on the measurement channel for PHY headers
     const auto measurementChannelWidth = GetMeasurementChannelWidth(event->GetPpdu());
     auto measurementBand = GetPrimaryBand(measurementChannelWidth);
-    double maxRxPowerW = -1; // in case current event may not be sent on measurement channel
-                             // (rxPowerW would be equal to 0)
+    std::optional<double>
+        maxRxPowerW; // in case current event may not be sent on measurement channel
     Ptr<Event> maxEvent;
     NS_ASSERT(!m_wifiPhy->m_currentPreambleEvents.empty());
     for (auto preambleEvent : m_wifiPhy->m_currentPreambleEvents)
     {
-        double rxPowerW = preambleEvent.second->GetRxPowerW(measurementBand);
-        if (rxPowerW > maxRxPowerW)
+        const auto rxPowerW = preambleEvent.second->GetRxPowerW(measurementBand);
+        if (!maxRxPowerW || (rxPowerW > *maxRxPowerW))
         {
             maxRxPowerW = rxPowerW;
             maxEvent = preambleEvent.second;
@@ -1047,7 +1047,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
                                                          measurementBand);
     NS_LOG_DEBUG("SNR(dB)=" << RatioToDb(snr) << " at end of preamble detection period");
 
-    if ((!m_wifiPhy->m_preambleDetectionModel && maxRxPowerW > 0.0) ||
+    if ((!m_wifiPhy->m_preambleDetectionModel && maxRxPowerW && (*maxRxPowerW > 0.0)) ||
         (m_wifiPhy->m_preambleDetectionModel &&
          m_wifiPhy->m_preambleDetectionModel->IsPreambleDetected(
              m_wifiPhy->m_currentEvent->GetRxPowerW(measurementBand),
