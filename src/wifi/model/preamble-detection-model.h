@@ -45,7 +45,7 @@ class PreambleDetectionModel : public Object
      * A pure virtual method that must be implemented in the subclass.
      * This method returns whether the preamble detection was successful.
      *
-     * \param rssi the RSSI of the received signal (in Watts).
+     * \param rssi the RSSI of the received signal (in dBm).
      * \param snr the SNR of the received signal in linear scale.
      * \param channelWidth the channel width of the received signal.
      *

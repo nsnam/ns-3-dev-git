@@ -1047,12 +1047,12 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
                                                          measurementBand);
     NS_LOG_DEBUG("SNR(dB)=" << RatioToDb(snr) << " at end of preamble detection period");
 
-    if ((!m_wifiPhy->m_preambleDetectionModel && maxRxPowerW && (*maxRxPowerW > 0.0)) ||
-        (m_wifiPhy->m_preambleDetectionModel &&
-         m_wifiPhy->m_preambleDetectionModel->IsPreambleDetected(
-             m_wifiPhy->m_currentEvent->GetRxPowerW(measurementBand),
-             snr,
-             measurementChannelWidth)))
+    if (const auto powerW = m_wifiPhy->m_currentEvent->GetRxPowerW(measurementBand);
+        (!m_wifiPhy->m_preambleDetectionModel && maxRxPowerW && (*maxRxPowerW > 0.0)) ||
+        (m_wifiPhy->m_preambleDetectionModel && powerW > 0.0 &&
+         m_wifiPhy->m_preambleDetectionModel->IsPreambleDetected(WToDbm(powerW),
+                                                                 snr,
+                                                                 measurementChannelWidth)))
     {
         // A bit convoluted but it enables to sync all PHYs
         for (auto& it : m_wifiPhy->m_phyEntities)
