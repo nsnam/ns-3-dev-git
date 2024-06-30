@@ -44,7 +44,7 @@ namespace ns3
  */
 using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, Watt_u>;
 
-class WifiPsdu;
+class WifiMpdu;
 class WifiPhy;
 class InterferenceHelper;
 class Event;
@@ -663,7 +663,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     /**
      * Get the reception status for the provided MPDU and notify.
      *
-     * \param psdu the arriving MPDU formatted as a PSDU
+     * \param mpdu the arriving MPDU
      * \param event the event holding incoming PPDU's information
      * \param staId the station ID of the PSDU (only used for MU)
      * \param relativeMpduStart the relative start time of the MPDU within the A-MPDU.
@@ -672,7 +672,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      *
      * \return information on MPDU reception: status, signal power (dBm), and noise power (in dBm)
      */
-    std::pair<bool, SignalNoiseDbm> GetReceptionStatus(Ptr<const WifiPsdu> psdu,
+    std::pair<bool, SignalNoiseDbm> GetReceptionStatus(Ptr<WifiMpdu> mpdu,
                                                        Ptr<Event> event,
                                                        uint16_t staId,
                                                        Time relativeMpduStart,
@@ -681,13 +681,13 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * The last symbol of an MPDU in an A-MPDU has arrived.
      *
      * \param event the event holding incoming PPDU's information
-     * \param psdu the arriving MPDU formatted as a PSDU containing a normal MPDU
+     * \param mpdu the arriving MPDU
      * \param mpduIndex the index of the MPDU within the A-MPDU
      * \param relativeStart the relative start time of the MPDU within the A-MPDU.
      * \param mpduDuration the duration of the MPDU
      */
     void EndOfMpdu(Ptr<Event> event,
-                   Ptr<const WifiPsdu> psdu,
+                   Ptr<WifiMpdu> mpdu,
                    size_t mpduIndex,
                    Time relativeStart,
                    Time mpduDuration);

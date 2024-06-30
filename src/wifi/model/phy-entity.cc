@@ -658,7 +658,7 @@ PhyEntity::ScheduleEndOfMpdus(Ptr<Event> event)
                                                         &PhyEntity::EndOfMpdu,
                                                         this,
                                                         event,
-                                                        Create<WifiPsdu>(*mpdu, false),
+                                                        *mpdu,
                                                         i,
                                                         relativeStart,
                                                         mpduDuration));
@@ -672,7 +672,7 @@ PhyEntity::ScheduleEndOfMpdus(Ptr<Event> event)
 
 void
 PhyEntity::EndOfMpdu(Ptr<Event> event,
-                     Ptr<const WifiPsdu> psdu,
+                     Ptr<WifiMpdu> mpdu,
                      size_t mpduIndex,
                      Time relativeStart,
                      Time mpduDuration)
@@ -683,7 +683,7 @@ PhyEntity::EndOfMpdu(Ptr<Event> event,
     uint16_t staId = GetStaId(ppdu);
 
     std::pair<bool, SignalNoiseDbm> rxInfo =
-        GetReceptionStatus(psdu, event, staId, relativeStart, mpduDuration);
+        GetReceptionStatus(mpdu, event, staId, relativeStart, mpduDuration);
     NS_LOG_DEBUG("Extracted MPDU #" << mpduIndex << ": duration: " << mpduDuration.As(Time::NS)
                                     << ", correct reception: " << rxInfo.first << ", Signal/Noise: "
                                     << rxInfo.second.signal << "/" << rxInfo.second.noise << "dBm");
@@ -703,7 +703,7 @@ PhyEntity::EndOfMpdu(Ptr<Event> event,
     if (rxInfo.first && GetAddressedPsduInPpdu(ppdu)->GetNMpdus() > 1)
     {
         // only done for correct MPDU that is part of an A-MPDU
-        m_state->NotifyRxMpdu(psdu, rxSignalInfo, txVector);
+        m_state->NotifyRxMpdu(Create<const WifiPsdu>(mpdu, false), rxSignalInfo, txVector);
     }
 }
 
@@ -801,13 +801,13 @@ PhyEntity::DoEndReceivePayload(Ptr<const WifiPpdu> ppdu)
 }
 
 std::pair<bool, SignalNoiseDbm>
-PhyEntity::GetReceptionStatus(Ptr<const WifiPsdu> psdu,
+PhyEntity::GetReceptionStatus(Ptr<WifiMpdu> mpdu,
                               Ptr<Event> event,
                               uint16_t staId,
                               Time relativeMpduStart,
                               Time mpduDuration)
 {
-    NS_LOG_FUNCTION(this << *psdu << *event << staId << relativeMpduStart << mpduDuration);
+    NS_LOG_FUNCTION(this << *mpdu << *event << staId << relativeMpduStart << mpduDuration);
     const auto channelWidthAndBand = GetChannelWidthAndBand(event->GetPpdu()->GetTxVector(), staId);
     SnrPer snrPer = m_wifiPhy->m_interference->CalculatePayloadSnrPer(
         event,
@@ -819,7 +819,7 @@ PhyEntity::GetReceptionStatus(Ptr<const WifiPsdu> psdu,
     WifiMode mode = event->GetPpdu()->GetTxVector().GetMode(staId);
     NS_LOG_DEBUG("rate=" << (mode.GetDataRate(event->GetPpdu()->GetTxVector(), staId))
                          << ", SNR(dB)=" << RatioToDb(snrPer.snr) << ", PER=" << snrPer.per
-                         << ", size=" << psdu->GetSize()
+                         << ", size=" << mpdu->GetSize()
                          << ", relativeStart = " << relativeMpduStart.As(Time::NS)
                          << ", duration = " << mpduDuration.As(Time::NS));
 
@@ -832,14 +832,14 @@ PhyEntity::GetReceptionStatus(Ptr<const WifiPsdu> psdu,
     signalNoise.noise = WToDbm(event->GetRxPowerW(channelWidthAndBand.second) / snrPer.snr);
     if (GetRandomValue() > snrPer.per &&
         !(m_wifiPhy->m_postReceptionErrorModel &&
-          m_wifiPhy->m_postReceptionErrorModel->IsCorrupt(psdu->GetPacket()->Copy())))
+          m_wifiPhy->m_postReceptionErrorModel->IsCorrupt(mpdu->GetPacket()->Copy())))
     {
-        NS_LOG_DEBUG("Reception succeeded: " << psdu);
+        NS_LOG_DEBUG("Reception succeeded: " << *mpdu);
         return {true, signalNoise};
     }
     else
     {
-        NS_LOG_DEBUG("Reception failed: " << psdu);
+        NS_LOG_DEBUG("Reception failed: " << *mpdu);
         return {false, signalNoise};
     }
 }
