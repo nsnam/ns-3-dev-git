@@ -95,27 +95,27 @@ WifiDefaultAckManager::GetMaxDistFromStartingSeq(Ptr<const WifiMpdu> mpdu,
                     "An established Block Ack agreement is required");
 
     uint16_t startingSeq = edca->GetBaStartingSequence(origReceiver, tid);
-    uint16_t maxDistFromStartingSeq =
-        (mpdu->GetHeader().GetSequenceNumber() - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
-    NS_ABORT_MSG_IF(maxDistFromStartingSeq >= SEQNO_SPACE_HALF_SIZE,
-                    "The given QoS data frame is too old");
+    uint16_t maxDistFromStartingSeq = 0;
 
     const auto* psduInfo = txParams.GetPsduInfo(receiver);
-
     NS_ASSERT_MSG(psduInfo && psduInfo->seqNumbers.contains(tid),
                   "There must be at least an MPDU with tid " << +tid);
 
-    for (const auto& seqNumber : psduInfo->seqNumbers.at(tid))
-    {
-        if (!QosUtilsIsOldPacket(startingSeq, seqNumber))
-        {
-            uint16_t currDistToStartingSeq =
-                (seqNumber - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
+    const auto& seqNumbers = psduInfo->seqNumbers.at(tid);
+    NS_ASSERT_MSG(seqNumbers.contains(mpdu->GetHeader().GetSequenceNumber()),
+                  "The sequence number of the given MPDU is not included in the TX parameters");
 
-            if (currDistToStartingSeq > maxDistFromStartingSeq)
-            {
-                maxDistFromStartingSeq = currDistToStartingSeq;
-            }
+    for (const auto& seqNumber : seqNumbers)
+    {
+        NS_ASSERT_MSG(!QosUtilsIsOldPacket(startingSeq, seqNumber),
+                      "QoS data frame SeqN=" << seqNumber << " is too old");
+
+        uint16_t currDistToStartingSeq =
+            (seqNumber - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
+
+        if (currDistToStartingSeq > maxDistFromStartingSeq)
+        {
+            maxDistFromStartingSeq = currDistToStartingSeq;
         }
     }
 
