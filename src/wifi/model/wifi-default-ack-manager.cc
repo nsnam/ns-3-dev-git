@@ -130,7 +130,8 @@ WifiDefaultAckManager::IsResponseNeeded(Ptr<const WifiMpdu> mpdu,
     NS_LOG_FUNCTION(this << *mpdu << &txParams);
 
     uint8_t tid = mpdu->GetHeader().GetQosTid();
-    Mac48Address receiver = mpdu->GetOriginal()->GetHeader().GetAddr1();
+    auto receiver = mpdu->GetHeader().GetAddr1();
+    auto origReceiver = mpdu->GetOriginal()->GetHeader().GetAddr1();
     Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
 
     // An immediate response (Ack or Block Ack) is needed if any of the following holds:
@@ -144,9 +145,11 @@ WifiDefaultAckManager::IsResponseNeeded(Ptr<const WifiMpdu> mpdu,
     return !(
         m_baThreshold > 0 &&
         GetMaxDistFromStartingSeq(mpdu, txParams) <
-            m_baThreshold * edca->GetBaBufferSize(receiver, tid) &&
-        (edca->GetWifiMacQueue()->GetNPackets({WIFI_QOSDATA_QUEUE, WIFI_UNICAST, receiver, tid}) -
-             edca->GetBaManager()->GetNBufferedPackets(receiver, tid) >
+            m_baThreshold * edca->GetBaBufferSize(origReceiver, tid) &&
+        (edca->GetWifiMacQueue()->GetNPackets(
+             {WIFI_QOSDATA_QUEUE, WIFI_UNICAST, origReceiver, tid}) -
+             edca->GetBaManager()->GetNBufferedPackets(origReceiver, tid) -
+             txParams.GetPsduInfo(receiver)->seqNumbers.at(tid).size() >=
          1) &&
         !(edca->GetTxopLimit(m_linkId).IsStrictlyPositive() &&
           edca->GetRemainingTxop(m_linkId) == edca->GetTxopLimit(m_linkId) &&
