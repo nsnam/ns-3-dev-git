@@ -510,7 +510,7 @@ main(int argc, char* argv[])
         Simulator::Run();
 
         auto throughput = 0.0;
-        auto totalPacketsThrough = 0.0;
+        uint64_t totalPacketsThrough = 0;
         if (udp)
         {
             // UDP
@@ -522,7 +522,7 @@ main(int argc, char* argv[])
         {
             // TCP
             auto totalBytesRx = DynamicCast<PacketSink>(serverApp.Get(0))->GetTotalRx();
-            totalPacketsThrough = totalBytesRx / tcpPacketSize;
+            totalPacketsThrough = static_cast<uint64_t>(totalBytesRx / tcpPacketSize);
             throughput = totalBytesRx * 8 / simulationTime.GetMicroSeconds(); // Mbit/s
         }
         std::cout << std::setw(5) << i << std::setw(6) << (i % 8) << std::setprecision(2)
