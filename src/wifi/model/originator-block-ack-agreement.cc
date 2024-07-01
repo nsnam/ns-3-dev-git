@@ -88,6 +88,30 @@ OriginatorBlockAckAgreement::InitTxWindow()
     m_txWindow.Init(m_startingSeq, m_bufferSize);
 }
 
+bool
+OriginatorBlockAckAgreement::AllAckedMpdusInTxWindow(const std::set<uint16_t>& seqNumbers) const
+{
+    std::set<std::size_t> distances;
+    for (const auto seqN : seqNumbers)
+    {
+        distances.insert(GetDistance(seqN));
+    }
+
+    for (std::size_t i = 0; i < m_txWindow.GetWinSize(); ++i)
+    {
+        if (distances.contains(i))
+        {
+            continue; // this is one of the positions to ignore
+        }
+        if (!m_txWindow.At(i))
+        {
+            return false; // this position is available or contains an unacknowledged MPDU
+        }
+    }
+    NS_LOG_INFO("TX window is blocked");
+    return true;
+}
+
 void
 OriginatorBlockAckAgreement::AdvanceTxWindow()
 {

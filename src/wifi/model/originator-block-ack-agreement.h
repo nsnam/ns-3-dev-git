@@ -12,6 +12,8 @@
 #include "block-ack-agreement.h"
 #include "block-ack-window.h"
 
+#include <set>
+
 class OriginatorBlockAckWindowTest;
 
 namespace ns3
@@ -189,6 +191,16 @@ class OriginatorBlockAckAgreement : public BlockAckAgreement
      * \param mpdu the discarded MPDU
      */
     void NotifyDiscardedMpdu(Ptr<const WifiMpdu> mpdu);
+
+    /**
+     * Check whether all the MPDUs in the TX window other than the given ones have been already
+     * acknowledged.
+     *
+     * \param seqNumbers the sequence numbers of the given MPDUs
+     * \return whether all the MPDUs in the TX window other than the given ones have been already
+     *         acknowledged
+     */
+    bool AllAckedMpdusInTxWindow(const std::set<uint16_t>& seqNumbers) const;
 
   private:
     /**

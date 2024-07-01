@@ -133,27 +133,50 @@ WifiDefaultAckManager::IsResponseNeeded(Ptr<const WifiMpdu> mpdu,
     auto receiver = mpdu->GetHeader().GetAddr1();
     auto origReceiver = mpdu->GetOriginal()->GetHeader().GetAddr1();
     Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
+    const auto& seqNumbers = txParams.GetPsduInfo(receiver)->seqNumbers.at(tid);
 
     // An immediate response (Ack or Block Ack) is needed if any of the following holds:
+    // * the BA threshold is set to zero
+    if (m_baThreshold == 0.0)
+    {
+        return true;
+    }
     // * the maximum distance between the sequence number of an MPDU to transmit
     //   and the starting sequence number of the transmit window is greater than
     //   or equal to the window size multiplied by the BaThreshold
+    if (GetMaxDistFromStartingSeq(mpdu, txParams) >=
+        m_baThreshold * edca->GetBaBufferSize(origReceiver, tid))
+    {
+        return true;
+    }
     // * no other frame belonging to this BA agreement is queued (because, in such
     //   a case, a Block Ack is not going to be requested anytime soon)
+    if (auto queueId = WifiContainerQueueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, origReceiver, tid);
+        edca->GetWifiMacQueue()->GetNPackets(queueId) -
+            edca->GetBaManager()->GetNBufferedPackets(origReceiver, tid) - seqNumbers.size() <
+        1)
+    {
+        return true;
+    }
+    // * the block ack TX window cannot advance because all the MPDUs in the TX window other than
+    //   those being transmitted have been already acknowledged
+    if (m_mac->GetBaAgreementEstablishedAsOriginator(origReceiver, tid)
+            ->get()
+            .AllAckedMpdusInTxWindow(seqNumbers))
+    {
+        return true;
+    }
+
     // * this is the initial frame of a transmission opportunity and it is not
     //   protected by RTS/CTS (see Annex G.3 of IEEE 802.11-2016)
-    return !(
-        m_baThreshold > 0 &&
-        GetMaxDistFromStartingSeq(mpdu, txParams) <
-            m_baThreshold * edca->GetBaBufferSize(origReceiver, tid) &&
-        (edca->GetWifiMacQueue()->GetNPackets(
-             {WIFI_QOSDATA_QUEUE, WIFI_UNICAST, origReceiver, tid}) -
-             edca->GetBaManager()->GetNBufferedPackets(origReceiver, tid) -
-             txParams.GetPsduInfo(receiver)->seqNumbers.at(tid).size() >=
-         1) &&
-        !(edca->GetTxopLimit(m_linkId).IsStrictlyPositive() &&
-          edca->GetRemainingTxop(m_linkId) == edca->GetTxopLimit(m_linkId) &&
-          !(txParams.m_protection && txParams.m_protection->method == WifiProtection::RTS_CTS)));
+    if (edca->GetTxopLimit(m_linkId).IsStrictlyPositive() &&
+        edca->GetRemainingTxop(m_linkId) == edca->GetTxopLimit(m_linkId) &&
+        !(txParams.m_protection && txParams.m_protection->method == WifiProtection::RTS_CTS))
+    {
+        return true;
+    }
+
+    return false;
 }
 
 bool
