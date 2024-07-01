@@ -775,7 +775,14 @@ if __name__ == "__main__":
 
     if not all_checks_successful:
         if args.verbose:
-            print("")
-            print('NOTE: To fix the files automatically, run this script with the flag "--fix"')
+            print(
+                "",
+                "Notes to fix the above formatting issues:",
+                '  - To fix the formatting of specific files, run this script with the flag "--fix":',
+                "      $ ./utils/check-style-clang-format.py --fix path [path ...]",
+                "  - To fix the formatting of all files modified by this branch, run this script in the following way:",
+                "      $ git diff --name-only master | xargs ./utils/check-style-clang-format.py --fix",
+                sep="\n",
+            )
 
         sys.exit(1)
