@@ -21,6 +21,11 @@ The |ns3| project uses `clang-format <https://clang.llvm.org/docs/ClangFormat.ht
 to define and enforce the C++ coding style. Clang-format can be easily integrated
 with modern IDEs or run manually on the command-line.
 
+Besides clang-format, |ns3| adopts other coding-style guidelines that are not covered
+by clang-format, which are explained in this document.
+Read the ``check-style-clang-format.py`` section below for information on how to
+use this Python script to check and fix all formatting guidelines followed by |ns3|.
+
 Clang-format installation
 =========================
 
@@ -86,9 +91,33 @@ formatted.
 Clang-format Git integration
 ============================
 
-Clang-format can be integrated with Git to reformat existing Git patches, such as
+Clang-format integrates with Git to format Git commits or changes not yet committed, such as
 pending merge requests on the GitLab repository. The full documentation is available on
 `clang-format Git integration <https://clang.llvm.org/docs/ClangFormat.html#git-integration>`_
+
+To fix the formatting of files with Git, run the following commands in the |ns3| main directory.
+These commands do not change past commits. Instead, the reformatted files are left in the
+workspace. These changes should be squashed to the corresponding commits, in order to fix them.
+
+  .. sourcecode:: console
+
+    # Fix all commits of the current branch, relative to the master branch
+    git clang-format master
+
+    # Fix all staged changes (i.e., changes that have been `git add`ed):
+    git clang-format
+
+    # Fix all changes staged and unstaged:
+    git clang-format -f
+
+    # Fix specific files:
+    git clang-format path_to_file
+
+    # Check what formatting changes are needed (if no files provided, check all staged files):
+    git clang-format --diff
+
+Note that this only fixes formatting issues related to clang-format.
+For other |ns3| coding style guidelines, read the ``check-style-clang-format.py`` section below.
 
 In addition to Git patches,
 `clang-format-diff <https://clang.llvm.org/docs/ClangFormat.html#script-for-patch-reformatting>`_
@@ -161,8 +190,8 @@ For quick-reference, the most used commands are listed below:
   # Specific directory or file
   /path/to/utils/check-style-clang-format.py --fix absolute_or_relative/path/to/directory_or_file
 
-  # Modified files
-  git diff --name-only | xargs ./utils/check-style-clang-format.py --fix
+  # Files modified by the current branch, relative to the master branch
+  git diff --name-only master | xargs ./utils/check-style-clang-format.py --fix
 
 Clang-tidy
 **********
