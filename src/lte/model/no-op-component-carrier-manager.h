@@ -180,6 +180,6 @@ class RrComponentCarrierManager : public NoOpComponentCarrierManager
     // end of class RrComponentCarrierManager
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* NO_OP_COMPONENT_CARRIER_MANAGER_H */

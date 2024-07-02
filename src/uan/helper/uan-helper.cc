@@ -195,4 +195,4 @@ UanHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
     return (currentStream - stream);
 }
 
-} // end namespace ns3
+} // namespace ns3

@@ -97,6 +97,6 @@ class LteUeComponentCarrierManager : public Object
                               //!< flows of this UE.
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_UE_COMPONENT_CARRIER_MANAGER_H */

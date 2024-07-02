@@ -212,6 +212,6 @@ class LteEnbComponentCarrierManager : public Object
                              //!< calls from the eNodeB RRC instance.
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_ENB_COMPONENT_CARRIER_MANAGER_H */

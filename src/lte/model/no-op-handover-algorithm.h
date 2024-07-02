@@ -62,6 +62,6 @@ class NoOpHandoverAlgorithm : public LteHandoverAlgorithm
     LteHandoverManagementSapProvider* m_handoverManagementSapProvider;
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* NO_OP_HANDOVER_ALGORITHM_H */

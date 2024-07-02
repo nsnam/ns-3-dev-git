@@ -144,6 +144,6 @@ class LteFrSoftAlgorithm : public LteFfrAlgorithm
     uint8_t m_measId;
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_FR_SOFT_ALGORITHM_H */

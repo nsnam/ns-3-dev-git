@@ -75,4 +75,4 @@ NoOpHandoverAlgorithm::DoReportUeMeas(uint16_t rnti, LteRrcSap::MeasResults meas
     NS_LOG_FUNCTION(this << rnti << (uint16_t)measResults.measId);
 }
 
-} // end of namespace ns3
+} // namespace ns3

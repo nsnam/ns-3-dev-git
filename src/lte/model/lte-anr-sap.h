@@ -216,6 +216,6 @@ MemberLteAnrSapUser<C>::AddUeMeasReportConfigForAnr(LteRrcSap::ReportConfigEutra
     return m_owner->DoAddUeMeasReportConfigForAnr(reportConfig);
 }
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_ANR_SAP_H */

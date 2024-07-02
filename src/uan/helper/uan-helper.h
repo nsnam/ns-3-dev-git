@@ -202,6 +202,6 @@ UanHelper::SetTransducer(std::string type, Ts&&... args)
     m_transducer = ObjectFactory(type, std::forward<Ts>(args)...);
 }
 
-} // end namespace ns3
+} // namespace ns3
 
 #endif /* UAN_HELPER_H */

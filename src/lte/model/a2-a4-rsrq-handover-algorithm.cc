@@ -253,4 +253,4 @@ A2A4RsrqHandoverAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti, uint16_t c
     }
 }
 
-} // end of namespace ns3
+} // namespace ns3

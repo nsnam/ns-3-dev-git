@@ -167,4 +167,4 @@ LteFfrAlgorithm::DoSetBandwidth(uint16_t ulBandwidth, uint16_t dlBandwidth)
     SetUlBandwidth(ulBandwidth);
 }
 
-} // end of namespace ns3
+} // namespace ns3

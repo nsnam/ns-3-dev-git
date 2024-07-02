@@ -184,6 +184,6 @@ MemberLteHandoverManagementSapUser<C>::TriggerHandover(uint16_t rnti, uint16_t t
     return m_owner->DoTriggerHandover(rnti, targetCellId);
 }
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_HANDOVER_MANAGEMENT_SAP_H */

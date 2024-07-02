@@ -233,4 +233,4 @@ LteAnr::Find(uint16_t cellId) const
     return &(it->second);
 }
 
-} // end of namespace ns3
+} // namespace ns3

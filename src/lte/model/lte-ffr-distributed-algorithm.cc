@@ -703,4 +703,4 @@ LteFfrDistributedAlgorithm::UpdateNeighbourMeasurements(uint16_t rnti,
     }
 }
 
-} // end of namespace ns3
+} // namespace ns3

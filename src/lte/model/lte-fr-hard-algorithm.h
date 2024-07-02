@@ -115,6 +115,6 @@ class LteFrHardAlgorithm : public LteFfrAlgorithm
     std::vector<bool> m_ulRbgMap; ///< UL RBG Map
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_FR_HARD_ALGORITHM_H */

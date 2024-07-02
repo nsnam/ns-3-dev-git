@@ -228,4 +228,4 @@ ProbabilisticV2vHighwayChannelConditionModel::ComputePnlos(Ptr<const MobilityMod
     return pNlos;
 }
 
-} // end namespace ns3
+} // namespace ns3

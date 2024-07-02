@@ -454,6 +454,6 @@ class LteEnbMac : public Object
     uint8_t m_componentCarrierId;
 };
 
-} // end namespace ns3
+} // namespace ns3
 
 #endif /* LTE_ENB_MAC_ENTITY_H */

@@ -223,6 +223,6 @@ class LteAnr : public Object
     uint16_t m_servingCellId;
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_ANR_H */

@@ -180,6 +180,6 @@ class LteFfrDistributedAlgorithm : public LteFfrAlgorithm
     std::map<uint16_t, std::vector<bool>> m_rntp; ///< RNTP
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_FR_DISTRIBUTED_ALGORITHM_H */

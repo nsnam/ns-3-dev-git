@@ -566,4 +566,4 @@ LteFrSoftAlgorithm::DoRecvLoadInformation(EpcX2Sap::LoadInformationParams params
     NS_LOG_WARN("Method should not be called, because it is empty");
 }
 
-} // end of namespace ns3
+} // namespace ns3

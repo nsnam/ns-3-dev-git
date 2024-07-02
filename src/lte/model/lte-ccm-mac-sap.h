@@ -204,6 +204,6 @@ MemberLteCcmMacSapUser<C>::NotifyHarqDeliveryFailure()
     m_owner->DoNotifyHarqDeliveryFailure();
 }
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_CCM_MAC_SAP_H */

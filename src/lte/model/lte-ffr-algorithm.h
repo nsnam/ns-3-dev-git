@@ -245,6 +245,6 @@ class LteFfrAlgorithm : public Object
     bool m_needReconfiguration; /**< If true FR algorithm will be reconfigured*/
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_FFR_ALGORITHM_H */

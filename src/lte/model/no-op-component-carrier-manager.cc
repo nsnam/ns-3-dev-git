@@ -478,4 +478,4 @@ RrComponentCarrierManager::DoUlReceiveSr(uint16_t rnti, uint8_t /* componentCarr
     }
 }
 
-} // end of namespace ns3
+} // namespace ns3

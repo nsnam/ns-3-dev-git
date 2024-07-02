@@ -500,6 +500,6 @@ MemberCschedSapProvider<C>::CschedUeReleaseReq(const CschedUeReleaseReqParameter
     m_scheduler->DoCschedUeReleaseReq(params);
 }
 
-} // end namespace ns3
+} // namespace ns3
 
 #endif /* FF_MAC_CSCHED_SAP_H */

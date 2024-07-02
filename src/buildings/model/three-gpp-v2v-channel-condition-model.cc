@@ -202,4 +202,4 @@ ThreeGppV2vHighwayChannelConditionModel::GetChCondWithNoBuildings(Ptr<const Mobi
     return cond;
 }
 
-} // end namespace ns3
+} // namespace ns3

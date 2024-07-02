@@ -172,4 +172,4 @@ A3RsrpHandoverAlgorithm::IsValidNeighbour(uint16_t cellId)
     return true;
 }
 
-} // end of namespace ns3
+} // namespace ns3

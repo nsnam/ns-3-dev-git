@@ -183,6 +183,6 @@ class LteFfrEnhancedAlgorithm : public LteFfrAlgorithm
     uint8_t m_measId;
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_FFR_ENHANCED_ALGORITHM_H */

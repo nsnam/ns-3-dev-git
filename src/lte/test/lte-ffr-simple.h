@@ -147,6 +147,6 @@ class LteFfrSimple : public LteFfrAlgorithm
     bool m_accumulatedMode; ///< whether to use the TPC accumulated mode
 };
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_FFR_SIMPLE_H */

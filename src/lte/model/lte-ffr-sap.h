@@ -270,6 +270,6 @@ MemberLteFfrSapUser<C>::MemberLteFfrSapUser(C* owner)
 {
 }
 
-} // end of namespace ns3
+} // namespace ns3
 
 #endif /* LTE_FFR_SAP_H */

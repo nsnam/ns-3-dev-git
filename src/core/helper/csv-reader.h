@@ -408,6 +408,6 @@ CsvReader::GetValue(std::size_t columnIndex, T& value) const
     return GetValueAs(std::move(cell), value);
 }
 
-} //  namespace ns3
+} // namespace ns3
 
 #endif //  NS3_CSV_READER_H_
