@@ -1279,6 +1279,13 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
             UpdateTxopEndOnRxEnd(psdu->GetDuration());
         }
     }
+
+    if (m_staMac && m_icfReceived)
+    {
+        // notify the EMLSR manager
+        m_staMac->GetEmlsrManager()->NotifyIcfReceived(m_linkId);
+        m_icfReceived = false;
+    }
 }
 
 bool
@@ -1391,8 +1398,6 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         CheckEmlsrClientStartingTxop(hdr, txVector);
     }
 
-    bool icfReceived = false;
-
     if (hdr.IsTrigger())
     {
         if (!m_staMac)
@@ -1423,7 +1428,7 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             auto emlsrManager = m_staMac->GetEmlsrManager();
             NS_ASSERT(emlsrManager);
 
-            icfReceived = true;
+            m_icfReceived = true;
 
             // we just got involved in a DL TXOP. Check if we are still involved in the TXOP in a
             // SIFS (we are expected to reply by sending a CTS frame)
@@ -1436,17 +1441,12 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         }
     }
 
-    if (!icfReceived && ShallDropReceivedMpdu(mpdu))
+    if (!m_icfReceived && ShallDropReceivedMpdu(mpdu))
     {
         return;
     }
 
     HeFrameExchangeManager::ReceiveMpdu(mpdu, rxSignalInfo, txVector, inAmpdu);
-
-    if (icfReceived)
-    {
-        m_staMac->GetEmlsrManager()->NotifyIcfReceived(m_linkId);
-    }
 }
 
 void

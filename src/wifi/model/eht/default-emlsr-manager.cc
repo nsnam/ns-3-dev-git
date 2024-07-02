@@ -130,10 +130,18 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
                                  << " will switch to link " << +currLinkId.value() << " in "
                                  << duration.As(Time::US));
 
-        m_auxPhySwitchEvent =
-            Simulator::Schedule(duration, [=, this, prevLinkId = m_mainPhySwitchInfo.from]() {
-                SwitchAuxPhy(auxPhy, nextLinkId, prevLinkId);
-            });
+        if (duration.IsStrictlyPositive())
+        {
+            m_auxPhySwitchEvent =
+                Simulator::Schedule(duration, [=, this, prevLinkId = m_mainPhySwitchInfo.from]() {
+                    SwitchAuxPhy(auxPhy, nextLinkId, prevLinkId);
+                });
+        }
+        else
+        {
+            SwitchAuxPhy(auxPhy, nextLinkId, m_mainPhySwitchInfo.from);
+        }
+
         return;
     }
 

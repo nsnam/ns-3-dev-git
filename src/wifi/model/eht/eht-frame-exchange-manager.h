@@ -299,8 +299,10 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      */
     void TxopEnd(const std::optional<Mac48Address>& txopHolder);
 
-    EventId m_ongoingTxopEnd; //!< event indicating the possible end of the current TXOP (of which
-                              //!< we are not the holder)
+    bool m_icfReceived{false}; //!< whether an ICF has been received and needs to be notified to
+                               //!< the EMLSR manager after post-processing the frame
+    EventId m_ongoingTxopEnd;  //!< event indicating the possible end of the current TXOP (of which
+                               //!< we are not the holder)
     std::unordered_map<Mac48Address, EventId, WifiAddressHash>
         m_transDelayTimer; //!< MLD address-indexed map of transition delay timers
 };
