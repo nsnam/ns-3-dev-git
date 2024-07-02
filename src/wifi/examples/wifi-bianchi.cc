@@ -2471,7 +2471,7 @@ Experiment::Run(const WifiHelper& helper,
     phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
 
     WifiMacHelper mac = wifiMac;
-    WifiHelper wifi = helper;
+    const auto& wifi = helper;
     NetDeviceContainer devices;
     uint32_t nNodes = wifiNodes.GetN();
     if (infra)
