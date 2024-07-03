@@ -211,6 +211,21 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     bool EmlsrClientCannotRespondToIcf() const;
 
     /**
+     * Check if the MPDU that has been received on this link shall be dropped. In our model,
+     * an aux PHY, or the main PHY that is not involved in any TXOP, can receive:
+     * - management frames
+     * - CTS
+     * - CF-End
+     * - broadcast data frames
+     * Note that this method does not attempt to detect if the given MPDU is an ICF (this is done
+     * by ReceiveMpdu).
+     *
+     * \param mpdu the MPDU that has been received
+     * \return whether the given MPDU shall be dropped
+     */
+    bool ShallDropReceivedMpdu(Ptr<const WifiMpdu> mpdu) const;
+
+    /**
      * Check whether all the stations that did not respond (to a certain frame) are EMLSR clients
      * trying to start an UL TXOP on another link.
      *

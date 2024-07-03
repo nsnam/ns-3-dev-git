@@ -1436,19 +1436,8 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         }
     }
 
-    // We impose that an aux PHY is only able to receive an ICF, a CTS or a management frame
-    // (we are interested in receiving mainly Beacon frames). Note that other frames are still
-    // post-processed, e.g., used to set the NAV and the TXOP holder.
-    // The motivation is that, e.g., an AP MLD may send an ICF to EMLSR clients A and B;
-    // A responds while B does not; the AP MLD sends a DL MU PPDU to both clients followed
-    // by an MU-BAR to solicit a BlockAck from both clients. If an aux PHY of client B is
-    // operating on this link, the MU-BAR will be received and a TB PPDU response sent
-    // through the aux PHY.
-    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
-        m_mac->GetLinkForPhy(m_staMac->GetEmlsrManager()->GetMainPhyId()) != m_linkId &&
-        !icfReceived && !mpdu->GetHeader().IsCts() && !mpdu->GetHeader().IsMgt())
+    if (!icfReceived && ShallDropReceivedMpdu(mpdu))
     {
-        NS_LOG_DEBUG("Dropping " << *mpdu << " received by an aux PHY on link " << +m_linkId);
         return;
     }
 
@@ -1470,15 +1459,60 @@ EhtFrameExchangeManager::EndReceiveAmpdu(Ptr<const WifiPsdu> psdu,
         this << *psdu << rxSignalInfo << txVector << perMpduStatus.size()
              << std::all_of(perMpduStatus.begin(), perMpduStatus.end(), [](bool v) { return v; }));
 
-    // In our model, we make the assumption that an aux PHY is not able to receive an A-MPDU
-    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
-        m_mac->GetLinkForPhy(m_staMac->GetEmlsrManager()->GetMainPhyId()) != m_linkId)
+    if (ShallDropReceivedMpdu(*psdu->begin()))
     {
-        NS_LOG_DEBUG("Dropping " << *psdu << " received by an aux PHY on link " << +m_linkId);
         return;
     }
 
     HeFrameExchangeManager::EndReceiveAmpdu(psdu, rxSignalInfo, txVector, perMpduStatus);
+}
+
+bool
+EhtFrameExchangeManager::ShallDropReceivedMpdu(Ptr<const WifiMpdu> mpdu) const
+{
+    NS_LOG_FUNCTION(this << *mpdu);
+
+    // this function only checks frames that shall be dropped by an EMLSR client
+    if (!m_staMac || !m_staMac->IsEmlsrLink(m_linkId))
+    {
+        return false;
+    }
+
+    const auto& hdr = mpdu->GetHeader();
+
+    // We impose that an aux PHY is only able to receive an ICF, a CF-End, a CTS or a management
+    // frame (we are interested in receiving mainly Beacon frames). Note that other frames are
+    // still post-processed, e.g., used to set the NAV and the TXOP holder.
+    // The motivation is that, e.g., an AP MLD may send an ICF to EMLSR clients A and B;
+    // A responds while B does not; the AP MLD sends a DL MU PPDU to both clients followed
+    // by an MU-BAR to solicit a BlockAck from both clients. If an aux PHY of client B is
+    // operating on this link, the MU-BAR will be received and a TB PPDU response sent
+    // through the aux PHY.
+    if (hdr.IsMgt() || hdr.IsCts() || hdr.IsCfEnd() || (hdr.IsData() && hdr.GetAddr1().IsGroup()))
+    {
+        return false;
+    }
+
+    // other frames cannot be received by an aux PHY
+    if (m_mac->GetLinkForPhy(m_staMac->GetEmlsrManager()->GetMainPhyId()) != m_linkId)
+    {
+        NS_LOG_DEBUG("Dropping " << *mpdu << " received by an aux PHY on link " << +m_linkId);
+        return true;
+    }
+
+    // other frames cannot be received by the main PHY when not involved in any TXOP
+    if (!m_ongoingTxopEnd.IsPending() &&
+        std::none_of(wifiAcList.cbegin(), wifiAcList.cend(), [=, this](const auto& aciAcPair) {
+            return m_mac->GetQosTxop(aciAcPair.first)->GetTxopStartTime(m_linkId).has_value();
+        }))
+    {
+        NS_LOG_DEBUG("Dropping " << *mpdu << " received by main PHY on link " << +m_linkId
+                                 << " while no TXOP is ongoing");
+        return true;
+    }
+
+    // other frames can be received by the main PHY when involved in a TXOP
+    return false;
 }
 
 bool
