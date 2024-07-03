@@ -165,8 +165,10 @@ class WifiPhy : public Object
 
     /**
      * Put in sleep mode.
+     *
+     * \param forceSleepWhileInRx force setting sleep mode if state is RX
      */
-    void SetSleepMode();
+    void SetSleepMode(bool forceSleepWhileInRx = false);
     /**
      * Resume from sleep mode.
      */

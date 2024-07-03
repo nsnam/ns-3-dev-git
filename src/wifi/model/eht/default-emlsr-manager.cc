@@ -175,7 +175,7 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
         {
             // aux PHY can be put into sleep mode when the main PHY completes the channel switch
             m_auxPhyToSleepEvent =
-                Simulator::Schedule(duration, &WifiPhy::SetSleepMode, m_auxPhyToReconnect);
+                Simulator::Schedule(duration, &WifiPhy::SetSleepMode, m_auxPhyToReconnect, false);
         }
     }
 }

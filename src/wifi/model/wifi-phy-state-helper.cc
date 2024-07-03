@@ -540,8 +540,11 @@ WifiPhyStateHelper::SwitchToSleep()
     case WifiPhyState::CCA_BUSY:
         LogPreviousIdleAndCcaBusyStates();
         break;
+    case WifiPhyState::RX:
+        DoSwitchFromRx();
+        break;
     default:
-        NS_FATAL_ERROR("Invalid WifiPhy state.");
+        NS_FATAL_ERROR("Invalid WifiPhy state: " << GetState());
         break;
     }
     m_previousStateChangeTime = now;

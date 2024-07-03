@@ -1414,7 +1414,7 @@ WifiPhy::GetBssMembershipSelectorList() const
 }
 
 void
-WifiPhy::SetSleepMode()
+WifiPhy::SetSleepMode(bool forceSleepInRx)
 {
     NS_LOG_FUNCTION(this);
     m_powerRestricted = false;
@@ -1423,15 +1423,24 @@ WifiPhy::SetSleepMode()
     {
     case WifiPhyState::TX:
         NS_LOG_DEBUG("setting sleep mode postponed until end of current transmission");
-        Simulator::Schedule(GetDelayUntilIdle(), &WifiPhy::SetSleepMode, this);
+        Simulator::Schedule(GetDelayUntilIdle(), &WifiPhy::SetSleepMode, this, forceSleepInRx);
         break;
     case WifiPhyState::RX:
-        NS_LOG_DEBUG("setting sleep mode postponed until end of current reception");
-        Simulator::Schedule(GetDelayUntilIdle(), &WifiPhy::SetSleepMode, this);
+        NS_LOG_DEBUG("setting sleep mode"
+                     << (forceSleepInRx ? "" : "postponed until end of current reception"));
+        if (forceSleepInRx)
+        {
+            AbortCurrentReception(WifiPhyRxfailureReason::SLEEPING);
+            m_state->SwitchToSleep();
+        }
+        else
+        {
+            Simulator::Schedule(GetDelayUntilIdle(), &WifiPhy::SetSleepMode, this, forceSleepInRx);
+        }
         break;
     case WifiPhyState::SWITCHING:
         NS_LOG_DEBUG("setting sleep mode postponed until end of channel switching");
-        Simulator::Schedule(GetDelayUntilIdle(), &WifiPhy::SetSleepMode, this);
+        Simulator::Schedule(GetDelayUntilIdle(), &WifiPhy::SetSleepMode, this, forceSleepInRx);
         break;
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::IDLE:
