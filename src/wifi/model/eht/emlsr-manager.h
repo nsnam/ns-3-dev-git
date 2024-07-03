@@ -440,6 +440,7 @@ class EmlsrManager : public Object
                           //!< is carrying out a (DL or UL) TXOP
     std::map<uint8_t, EventId> m_auxPhyToSleepEvents; //!< PHY ID-indexed map of events scheduled to
                                                       //!< put an Aux PHY to sleep
+    std::map<uint8_t, Time> m_startSleep; //!< PHY ID-indexed map of last time sleep mode started
     std::map<uint8_t, EventId> m_ulMainPhySwitch; //!< link ID-indexed map of timers started when
                                                   //!< an aux PHY gains an UL TXOP and schedules
                                                   //!< a channel switch for the main PHY

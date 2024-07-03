@@ -1212,36 +1212,67 @@ EmlsrManager::SetSleepStateForAllAuxPhys(bool sleep)
             continue; // do not set sleep mode/resume from sleep the main PHY
         }
 
-        if (auto linkId = m_staMac->GetLinkForPhy(phy);
-            linkId.has_value() && !m_staMac->IsEmlsrLink(*linkId))
+        auto linkId = m_staMac->GetLinkForPhy(phy);
+
+        if (linkId.has_value() && !m_staMac->IsEmlsrLink(*linkId))
         {
             continue; // this PHY is not operating on an EMLSR link
         }
 
         if (!sleep)
         {
+            if (!phy->IsStateSleep())
+            {
+                continue; // nothing to do
+            }
+
             NS_LOG_DEBUG("PHY " << +phy->GetPhyId() << ": Resuming from sleep");
             phy->ResumeFromSleep();
-            continue;
+
+            // if this aux PHY is operating on a link, check if it lost medium sync
+            if (linkId.has_value())
+            {
+                auto it = m_startSleep.find(phy->GetPhyId());
+                NS_ASSERT_MSG(it != m_startSleep.cend(),
+                              "No start sleep info for PHY ID " << phy->GetPhyId());
+                const auto sleepDuration = Simulator::Now() - it->second;
+                m_startSleep.erase(it);
+
+                if (sleepDuration > MicroSeconds(MEDIUM_SYNC_THRESHOLD_USEC))
+                {
+                    StartMediumSyncDelayTimer(*linkId);
+                }
+            }
+
+            continue; // resuming the PHY from sleep has been handled
+        }
+
+        if (phy->IsStateSleep())
+        {
+            continue; // nothing to do
         }
 
         // we force WifiPhy::SetSleepMode() to abort RX and switch immediately to sleep mode in
         // case the state is RX. If the state is TX or SWITCHING, WifiPhy::SetSleepMode() postpones
         // setting sleep mode to end of TX or SWITCHING. This is fine, but we schedule events here
-        // to be able to cancel them later if needed
+        // to correctly record the time an aux PHY was put to sleep and to be able to cancel them
+        // later if needed
         std::stringstream ss;
         auto s = std::string("PHY ") + std::to_string(phy->GetPhyId()) + ": Setting sleep mode";
         if (phy->IsStateTx() || phy->IsStateSwitching())
         {
             const auto delay = phy->GetDelayUntilIdle();
             NS_LOG_DEBUG(s << " in " << delay.As(Time::US));
-            m_auxPhyToSleepEvents[phy->GetPhyId()] =
-                Simulator::Schedule(delay, &WifiPhy::SetSleepMode, phy, true);
+            m_auxPhyToSleepEvents[phy->GetPhyId()] = Simulator::Schedule(delay, [=, this]() {
+                phy->SetSleepMode(true);
+                m_startSleep[phy->GetPhyId()] = Simulator::Now();
+            });
         }
         else
         {
             NS_LOG_DEBUG(s);
             phy->SetSleepMode(true);
+            m_startSleep[phy->GetPhyId()] = Simulator::Now();
         }
     }
 }
