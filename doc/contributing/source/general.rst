@@ -98,9 +98,7 @@ An example placement of a copyright statement can be found in the file
   /*
    * Copyright (c) 2005,2006 INRIA
    *
-   * This program is free software; you can redistribute it and/or modify
-   * it under the terms of the GNU General Public License version 2 as
-   * published by the Free Software Foundation;
+   * SPDX-License-Identifier: GPL-2.0-only
 
 Copyright on existing files
 ===========================
@@ -115,9 +113,7 @@ of code that is covered by the new copyright.  An example is the program
    * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
    * Copyright (c) 2018 Fraunhofer ESK : RLF extensions
    *
-   * This program is free software; you can redistribute it and/or modify
-   * it under the terms of the GNU General Public License version 2 as
-   * published by the Free Software Foundation;
+   * SPDX-License-Identifier: GPL-2.0-only
 
 Here, Fraunhofer ESK added extensions to support radio link failure (RLF),
 and the copyright statement clarifies the extension (separated from the
