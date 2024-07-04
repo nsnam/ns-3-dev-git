@@ -336,14 +336,14 @@ By default, it runs with CBR traffic with all flows active and P2P enabled:
   ./ns3 run "wifi-p2p --simulationTime=60s"
 
   Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
-  AP -> STA       99.9988                 7.40474                 749999          749991          0.00106667
-  STA -> AP       99.9873                 7.24137                 749999          749905          0.0125334
-  STA -> ADHOC    49.99                   6.05699                 749999          749850          0.0198667
-  ADHOC -> STA    49.9886                 4.80941                 749999          749829          0.0226667
-  STA <-> AP      199.986                 7.32306                 1499998         1499896         0.00680001
-  STA <-> STA     99.9786                 5.4332                  1499998         1499679         0.0212667
-  Total           299.965                 6.3782                  2999996         2999575         0.0140334
-  Average backoff: 9.45284
+  AP -> STA       98.3315                 5.73014                 749999          737486          1.6684
+  STA -> AP       99.9765                 9.96459                 749999          749824          0.0233334
+  STA -> ADHOC    49.9999                 7.84486                 749999          749999          0
+  ADHOC -> STA    49.9904                 4.18082                 749999          749856          0.0190667
+  STA <-> AP      198.308                 7.86493                 1499998         1487310         0.845868
+  STA <-> STA     99.9903                 6.01302                 1499998         1499855         0.00953335
+  Total           298.298                 6.93508                 2999996         2987165         0.427701
+  Average backoff: 9.59999
 
 When P2P is disabled, saturation point is already reached because traffic has to be forwarded first to the AP and hence
 it experiences much more collisions which results in a larger amount of lost packets and hence a lower throughput:
@@ -353,14 +353,14 @@ it experiences much more collisions which results in a larger amount of lost pac
   ./ns3 run "wifi-p2p --simulationTime=60s --p2p=0"
 
   Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
-  AP -> STA1      99.9877                 31.1631                 749999          749908          0.0121333
-  STA1 -> AP      99.9816                 13.5755                 749999          749862          0.0182667
-  STA1 -> STA2    13.6356                 31.3205                 749999          204534          72.7288
-  STA2 -> STA1    12.1472                 36.89                   749999          182208          75.7056
-  STA <-> AP      199.969                 22.3695                 1499998         1499770         0.0152
-  STA <-> STA     25.7828                 33.9445                 1499998         386742          74.2172
-  Total           225.752                 24.7425                 2999996         1886512         37.1162
-  Average backoff: 9.47679
+  AP -> STA1      99.9907                 23.2452                 749999          749930          0.00920001
+  STA1 -> AP      99.5927                 71.8015                 749999          746945          0.407201
+  STA1 -> STA2    21.1353                 39.7197                 749999          317030          57.7293
+  STA2 -> STA1    22.3199                 25.7392                 749999          334799          55.3601
+  STA <-> AP      199.583                 47.4749                 1499998         1496875         0.2082
+  STA <-> STA     43.4553                 32.5389                 1499998         651829          56.5447
+  Total           243.039                 42.9439                 2999996         2148704         28.3764
+  Average backoff: 9.66778
 
 We can also verify P2P is improving the end-to-end latency, which is critical for real-time and video applications.
 One can run the example with bidirectional UDP video traffic (BV6 model) between both non-AP STAs when P2P is enabled:
@@ -370,14 +370,14 @@ One can run the example with bidirectional UDP video traffic (BV6 model) between
   ./ns3 run "wifi-p2p --simulationTime=60s --staToAdhocTrafficType=Video --adhocToStaTrafficType=Video --staToAdhocVideoTrafficModelClassIdentifier=BV6 --adhocToStaVideoTrafficModelClassIdentifier=BV6"
 
   Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
-  AP -> STA       99.9991                 1.17635                 749999          749993          0.000800001
-  STA -> AP       99.9861                 1.23251                 749999          749896          0.0137334
-  STA -> ADHOC    14.8984                 2.94144                 2959            2894            2.19669
-  ADHOC -> STA    15.8785                 3.08952                 3051            3046            0.163881
-  STA <-> AP      199.985                 1.20443                 1499998         1499889         0.00726668
-  STA <-> STA     30.7769                 3.01738                 6010            5940            1.16473
-  Total           230.762                 1.21158                 1506008         1505829         0.0118857
-  Average backoff: 8.59277
+  AP -> STA       99.9924                 1.08171                 749999          749943          0.00746668
+  STA -> AP       99.9847                 1.24282                 749999          749885          0.0152
+  STA -> ADHOC    15.106                  3.04908                 2979            2909            2.34978
+  ADHOC -> STA    15.7247                 2.71837                 2990            2986            0.133779
+  STA <-> AP      199.977                 1.16226                 1499998         1499828         0.0113333
+  STA <-> STA     30.8307                 2.88157                 5969            5895            1.23974
+  Total           230.808                 1.169                   1505967         1505723         0.0162022
+  Average backoff: 8.62726
 
 Running the same scenario with P2P disabled results in a larger end-to-end latency:
 
@@ -386,11 +386,64 @@ Running the same scenario with P2P disabled results in a larger end-to-end laten
   ./ns3 run "wifi-p2p --simulationTime=60s --staToAdhocTrafficType=Video --adhocToStaTrafficType=Video --staToAdhocVideoTrafficModelClassIdentifier=BV6 --adhocToStaVideoTrafficModelClassIdentifier=BV6 --p2p=0"
 
   Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
-  AP -> STA1      99.9899                 2.44645                 749999          749924          0.01
-  STA1 -> AP      99.9913                 1.62603                 749999          749935          0.00853334
-  STA1 -> STA2    16.1906                 7.96808                 3085            3013            2.33387
-  STA2 -> STA1    15.5389                 8.00243                 2977            2953            0.806181
-  STA <-> AP      199.981                 2.03624                 1499998         1499859         0.00926668
-  STA <-> STA     31.7295                 7.98508                 6062            5966            1.58364
-  Total           231.711                 2.05981                 1506060         1505825         0.0156036
-  Average backoff: 8.60743
+  AP -> STA1      99.9924                 1.84597                 749999          749943          0.00746668
+  STA1 -> AP      99.9863                 1.42636                 749999          749897          0.0136
+  STA1 -> STA2    14.9665                 6.65692                 2996            2880            3.87183
+  STA2 -> STA1    15.9874                 6.38151                 3044            3033            0.361367
+  STA <-> AP      199.979                 1.63617                 1499998         1499840         0.0105333
+  STA <-> STA     30.9539                 6.51565                 6040            5913            2.10265
+  Total           230.933                 1.65533                 1506038         1505753         0.0189238
+  Average backoff: 8.6573
+
+The example can also be run considering multi-link devices (only the peer device has to be an SLD).
+Below, non-AP MLD has two links setup with AP MLD, and also uses one of these links for P2P:
+
+::
+
+  ./ns3 run "wifi-p2p --simulationTime=60s --p2p=1 --numLinksAp=2 --numLinksSta=2 --numLinksP2p=1"
+
+  Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
+  AP -> STA       99.8485                 2.61151                 749999          748864          0.151334
+  STA -> AP       99.7887                 2.56302                 749999          748415          0.2112
+  STA -> ADHOC    49.9999                 3.2351                  749999          749999          0
+  ADHOC -> STA    49.9916                 2.32146                 749999          749874          0.0166667
+  STA <-> AP      199.637                 2.58727                 1499998         1497279         0.181267
+  STA <-> STA     99.9915                 2.77832                 1499998         1499873         0.00833334
+  Total           299.629                 2.68288                 2999996         2997152         0.0948001
+  Average backoff: 9.26737
+
+Below we can compare the results when P2P is disabled and both STAs are non-AP MLD with both
+two links setup with the AP MLD. Even though both links are used, we still achieve larger
+end-to-end latency and a higher packet loss rate than with P2P enabled:
+
+::
+
+  ./ns3 run "wifi-p2p --simulationTime=60s --p2p=0 --numLinksAp=2 --numLinksSta=2"
+
+  Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
+  AP -> STA1      99.9451                 9.17126                 749999          749588          0.0548001
+  STA1 -> AP      99.9324                 7.16858                 749999          749493          0.0674668
+  STA1 -> STA2    43.9577                 16.6999                 749999          659365          12.0845
+  STA2 -> STA1    42.3493                 16.3365                 749999          635240          15.3012
+  STA <-> AP      199.877                 8.16998                 1499998         1499081         0.0611334
+  STA <-> STA     86.307                  16.5216                 1499998         1294605         13.6929
+  Total           286.184                 12.0401                 2999996         2793686         6.87701
+  Average backoff: 9.58594
+
+It is also possible to use a dedicated link for P2P to reach better performance if the non-AP STA
+has more links than the amount of links setup with the AP MLD. Below is an example considering the
+non-AP MLD STA with two of its three links setup with the AP MLD and its third link dedicated to P2P:
+
+::
+
+  ./ns3 run "wifi-p2p --simulationTime=60s --p2p=1 --numLinksAp=2 --numLinksSta=3 --numLinksP2p=1 --linksOverlap=0"
+
+  Direction       Throughput [Mbit/s]     E2E latency [ms]        TX [packets]    RX [packets]    Packet loss rate [%]
+  AP -> STA       99.9497                 0.80848                 749999          749623          0.0501334
+  STA -> AP       99.9495                 0.826879                749999          749621          0.0504001
+  STA -> ADHOC    49.9999                 0.627259                749999          749999          0
+  ADHOC -> STA    49.9965                 0.603084                749999          749948          0.00680001
+  STA <-> AP      199.899                 0.817679                1499998         1499244         0.0502667
+  STA <-> STA     99.9965                 0.615172                1499998         1499947         0.0034
+  Total           299.896                 0.716402                2999996         2999191         0.0268334
+  Average backoff: 8.53559

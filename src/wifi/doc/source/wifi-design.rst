@@ -1854,6 +1854,13 @@ the IP address of a peer, and hence its ARP cache needs to be pre-populated.
 Upon detection of a new peer by a non-AP STA operating in P2P mode, a probe request is sent by the non-AP STA
 to that peer in order to advertise about its capabilities.
 
+Non-AP MLD STAs are able to use one of their link to communicate with P2P peers. It may be a different link used
+to communicate with each peer, and it does not have to be the same link(s) as the one(s) used to communicate with
+an AP. However, non-AP MLD STAs may switch their radios to maximize the amount of links to setup with an AP MLD,
+hence a non-AP MLD STA operating in P2P mode might no longer be able to communicate with peer devices using a radio
+channel that is not overlapping with the radio channels its links are operating on.
+Only SLD peer devices are supported by the current design.
+
 Modifying Wifi model
 ####################
 
