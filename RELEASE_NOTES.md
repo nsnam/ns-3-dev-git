@@ -18,6 +18,20 @@ Release 3-dev
 
 ### Supported platforms
 
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-10.1 or later, or LLVM/clang++-10 or later
+- Python 3.8 or later
+- CMake 3.13 or later
+- (macOS only) Xcode 13.1.6 or later
+- (Windows only) Msys2/MinGW64 toolchain or WSL2
+
+This release has discontinued support for g++-9 compilers and for Python 3.6 and 3.7.
+
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
+been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.1.2.
+
 ### New user-visible features
 
 ### Bugs fixed
