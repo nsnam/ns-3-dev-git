@@ -290,6 +290,7 @@ set(test_sources
     test/ipv6-ripng-test.cc
     test/ipv6-test.cc
     test/neighbor-cache-test.cc
+    test/p2p-cache-test.cc
     test/rtt-test.cc
     test/tcp-advertised-window-test.cc
     test/tcp-bbr-test.cc

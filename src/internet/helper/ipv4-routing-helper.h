@@ -99,6 +99,24 @@ class Ipv4RoutingHelper
                                     Time::Unit unit = Time::S);
 
     /**
+     * @brief prints the ARP cache of a node.
+     * @param node The node ptr for which we need the neighbor cache to be printed
+     * @param stream The output stream object to use
+     * @param unit The time unit to be used in the report
+     *
+     * This method calls the PrintArpCache() method of the
+     * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
+     * specified time. The output format is similar to:
+     * @verbatim
+       10.1.1.2 dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
+       @endverbatim
+     * Note that the MAC address is printed as "type"-"size"-"actual address"
+     */
+    static void PrintArpCache(Ptr<Node> node,
+                              Ptr<OutputStreamWrapper> stream,
+                              Time::Unit unit = Time::S);
+
+    /**
      * @brief prints the routing tables of a node at regular intervals specified by user.
      * @param printInterval the time interval for which the routing table is supposed to be printed.
      * @param node The node ptr for which we need the routing table to be printed
@@ -232,24 +250,6 @@ class Ipv4RoutingHelper
                            Ptr<Node> node,
                            Ptr<OutputStreamWrapper> stream,
                            Time::Unit unit = Time::S);
-
-    /**
-     * @brief prints the neighbor cache of a node.
-     * @param node The node ptr for which we need the neighbor cache to be printed
-     * @param stream The output stream object to use
-     * @param unit The time unit to be used in the report
-     *
-     * This method calls the PrintArpCache() method of the
-     * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
-     * specified time. The output format is similar to:
-     * @verbatim
-       10.1.1.2 dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
-       \endverbatim
-     * Note that the MAC address is printed as "type"-"size"-"actual address"
-     */
-    static void PrintArpCache(Ptr<Node> node,
-                              Ptr<OutputStreamWrapper> stream,
-                              Time::Unit unit = Time::S);
 
     /**
      * @brief prints the neighbor cache of a node at regular intervals specified by user.
