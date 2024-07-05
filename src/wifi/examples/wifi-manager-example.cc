@@ -730,7 +730,7 @@ main(int argc, char* argv[])
 
     // Configure signal and noise, and schedule first iteration
     const auto BOLTZMANN = 1.3803e-23;
-    const auto noiseDensity = WToDbm(BOLTZMANN * 290); // 290K @ 20 MHz
+    const dBm_per_Hz_u noiseDensity = WToDbm(BOLTZMANN * 290); // 290K @ 20 MHz
     const dBm_u noise = noiseDensity + (10 * log10(clientSelectedStandard.m_width * 1000000));
 
     NS_LOG_DEBUG("Channel width " << wifiPhyPtrClient->GetChannelWidth() << " noise " << noise);
