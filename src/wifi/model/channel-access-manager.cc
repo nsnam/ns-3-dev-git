@@ -277,6 +277,11 @@ ChannelAccessManager::SetupPhyListener(Ptr<WifiPhy> phy)
     {
         phyListener = std::make_shared<PhyListener>(this);
         m_phyListeners.emplace(phy, phyListener);
+        if (!m_phy)
+        {
+            // no PHY operating on this link and no previous PHY listener to reactivate
+            m_lastSwitchingEnd = Simulator::Now();
+        }
     }
     if (m_phy)
     {
@@ -285,12 +290,6 @@ ChannelAccessManager::SetupPhyListener(Ptr<WifiPhy> phy)
     m_phy = phy; // this is the new active PHY
     ResizeLastBusyStructs();
     phy->RegisterListener(phyListener);
-    if (phy->IsStateSwitching())
-    {
-        auto duration = phy->GetDelayUntilIdle();
-        NS_LOG_DEBUG("switching start for " << duration);
-        m_lastSwitchingEnd = Simulator::Now() + duration;
-    }
 }
 
 void

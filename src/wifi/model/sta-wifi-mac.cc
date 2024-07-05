@@ -2054,17 +2054,9 @@ StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time dela
         m_emlsrLinkSwitch.erase(eventIt);
     }
 
-    // if there is no PHY operating on the new link, connect the PHY to the new link now.
-    // Otherwise, wait until the channel switch is completed, so that the PHY operating on the new
-    // link can possibly continue receiving frames in the meantime.
-    if (!GetLink(linkId).phy)
-    {
-        connectPhy();
-    }
-    else
-    {
-        m_emlsrLinkSwitch.emplace(phy->GetPhyId(), Simulator::Schedule(delay, connectPhy));
-    }
+    // connect the PHY to the new link when the channel switch is completed, so that the PHY
+    // operating on the new link can possibly continue receiving frames in the meantime.
+    m_emlsrLinkSwitch.emplace(phy->GetPhyId(), Simulator::Schedule(delay, connectPhy));
 }
 
 void

@@ -2950,21 +2950,31 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
         Simulator::Schedule(txDuration + NanoSeconds(1), [=, this]() {
             // check that the main PHY switches to its preferred link
             auto mainPhy = m_staMacs[0]->GetDevice()->GetPhy(m_mainPhyId);
-            auto mainPhyLinkid = m_staMacs[0]->GetLinkForPhy(mainPhy);
 
             NS_TEST_EXPECT_MSG_EQ(mainPhy->IsStateSwitching(),
                                   true,
                                   "Main PHY is not switching at time "
                                       << Simulator::Now().As(Time::NS));
-            NS_TEST_ASSERT_MSG_EQ(mainPhyLinkid.has_value(),
-                                  true,
-                                  "Main PHY should be operating on a link");
-            NS_TEST_EXPECT_MSG_EQ(+mainPhyLinkid.value(),
-                                  +m_mainPhyId,
-                                  "Main PHY expected to operate on the preferred link");
 
             // events to be scheduled when the first main PHY channel switch is completed
             Simulator::Schedule(mainPhy->GetChannelSwitchDelay(), [=, this]() {
+                // either the main PHY is operating on the preferred link or it is switching again
+                auto mainPhyLinkid = m_staMacs[0]->GetLinkForPhy(mainPhy);
+                if (mainPhyLinkid)
+                {
+                    NS_TEST_EXPECT_MSG_EQ(+mainPhyLinkid.value(),
+                                          +m_mainPhyId,
+                                          "Main PHY expected to operate on the preferred link");
+                }
+                else
+                {
+                    NS_TEST_EXPECT_MSG_EQ(
+                        mainPhy->IsStateSwitching(),
+                        true,
+                        "Main PHY is not operating on a link and it is not switching at time "
+                            << Simulator::Now().As(Time::NS));
+                }
+
                 auto acBe = m_staMacs[0]->GetQosTxop(AC_BE);
 
                 // find the min remaining backoff time on auxiliary links for AC BE
