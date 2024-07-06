@@ -18,6 +18,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 * (network) Added a function to detect IPv4 APIPA addresses (169.254.0.0/16).
 * (wifi) Added new attributes to `AdhocWifiMac` to control beacon transmissions: **BeaconGeneration** and **BeaconInterval** with the same meaning as for `ApWifiMac`. It is also possible to control the access category to use for beacons via the **BeaconAc** attribute.
+* (internet) Added a new helper (P2pCacheHelper) to set up auto-generated ARP cache for P2P devices.
 
 ### Changes to existing API
 
