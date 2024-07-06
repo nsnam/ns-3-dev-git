@@ -49,7 +49,7 @@ weekly-build-ubuntu-20.04-debug:
   variables:
     MODE: debug
     LIBGSL: libgsl23
-    COMPILER: g++
+    COMPILER: g++-10
 
 weekly-build-ubuntu-20.04-default:
   extends: .weekly-base-ubuntu
@@ -59,7 +59,7 @@ weekly-build-ubuntu-20.04-default:
   variables:
     MODE: default
     LIBGSL: libgsl23
-    COMPILER: g++
+    COMPILER: g++-10
 
 weekly-build-ubuntu-20.04-optimized:
   extends: .weekly-base-ubuntu
@@ -69,7 +69,7 @@ weekly-build-ubuntu-20.04-optimized:
   variables:
     MODE: optimized
     LIBGSL: libgsl23
-    COMPILER: g++
+    COMPILER: g++-10
 
 weekly-test-ubuntu-20.04-default:
   extends: .weekly-base-ubuntu
@@ -81,7 +81,7 @@ weekly-test-ubuntu-20.04-default:
   variables:
     MODE: default
     LIBGSL: libgsl23
-    COMPILER: g++
+    COMPILER: g++-10
 
 weekly-test-ubuntu-20.04-optimized:
   extends: .weekly-base-ubuntu
@@ -93,7 +93,7 @@ weekly-test-ubuntu-20.04-optimized:
   variables:
     MODE: optimized
     LIBGSL: libgsl23
-    COMPILER: g++
+    COMPILER: g++-10
 
 # Ubuntu 22.04 (Until January 2032)
 weekly-build-ubuntu-22.04-debug:

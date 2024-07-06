@@ -4,7 +4,7 @@
 # "RELEASE", that has a value "weekly". Also, a variable "GCC" should be set
 # to True.
 
-# We support from 9 to the latest version. Check if everything builds fine
+# We support from 10 to the latest version. Check if everything builds fine
 # under debug, default, and optimized, on Linux.
 # The distro used is Ubuntu - the logic is:
 # - Test minimum and maximum GCC version
@@ -14,6 +14,8 @@
 # - jammy (22.04LTS) 11
 # - kinetic (22.10) 12
 # - lunar (23.04) 12
+# - lunar (23.10) 13
+# - noble (24.04LTS) 13
 
 .weekly-gcc-base:
   extends: .base-build
@@ -48,60 +50,7 @@ weekly-gcc:
   script:
     - echo "Starting GCC jobs"
 
-# GCC 9 (not tested as it's the default for Ubuntu 20.04)
-# weekly-build-gcc-9-debug:
-#   extends: .weekly-gcc-base
-#   needs: ["weekly-gcc"]
-#   image: ubuntu:20.04
-#   stage: build
-#   variables:
-#     MODE: debug
-#     COMPILER: g++-9
-#     LIBGSL: libgsl23
-
-# weekly-build-gcc-9-default:
-#   extends: .weekly-gcc-base
-#   needs: ["weekly-gcc"]
-#   image: ubuntu:20.04
-#   stage: build
-#   variables:
-#     MODE: default
-#     COMPILER: g++-9
-#     LIBGSL: libgsl23
-
-# weekly-build-gcc-9-optimized:
-#   extends: .weekly-gcc-base
-#   needs: ["weekly-gcc"]
-#   image: ubuntu:20.04
-#   stage: build
-#   variables:
-#     MODE: optimized
-#     COMPILER: g++-9
-#     LIBGSL: libgsl23
-
-# weekly-test-gcc-9-default:
-#   extends: .weekly-gcc-base
-#   image: ubuntu:20.04
-#   stage: test
-#   needs: ["weekly-build-gcc-9-default"]
-#   dependencies:
-#     - weekly-build-gcc-9-default
-#   variables:
-#     MODE: default
-#     COMPILER: g++-9
-#     LIBGSL: libgsl23
-
-# weekly-test-gcc-9-optimized:
-#   extends: .weekly-gcc-base
-#   image: ubuntu:20.04
-#   stage: test
-#   needs: ["weekly-build-gcc-9-optimized"]
-#   dependencies:
-#     - weekly-build-gcc-9-optimized
-#   variables:
-#     MODE: optimized
-#     COMPILER: g++-9
-#     LIBGSL: libgsl23
+# GCC 10 (not tested here since it is configured for Ubuntu 20.04)
 
 # GCC 13
 weekly-build-gcc-13-debug:
