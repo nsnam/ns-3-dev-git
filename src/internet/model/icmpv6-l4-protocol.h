@@ -28,6 +28,7 @@
 
 #include "ns3/ipv6-address.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/traced-callback.h"
 
 #include <list>
 
@@ -697,6 +698,12 @@ class Icmpv6L4Protocol : public IpL4Protocol
     EventId m_handleRsTimeoutEvent;
 
     IpL4Protocol::DownTargetCallback6 m_downTarget; //!< callback to Ipv6::Send
+
+    /**
+     * The trace fired when a DAD fails, changing the address state to INVALID.
+     * Includes the address whose state has been changed.
+     */
+    ns3::TracedCallback<const Ipv6Address&> m_failedDadAddressTrace;
 };
 
 } /* namespace ns3 */
