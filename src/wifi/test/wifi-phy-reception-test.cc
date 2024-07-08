@@ -286,7 +286,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::DoSetup()
 
     Ptr<ThresholdPreambleDetectionModel> preambleDetectionModel =
         CreateObject<ThresholdPreambleDetectionModel>();
-    preambleDetectionModel->SetAttribute("Threshold", DoubleValue(4));
+    preambleDetectionModel->SetAttribute("Threshold", dBValue(4_dB));
     preambleDetectionModel->SetAttribute("MinimumRssi", DoubleValue(-82));
     m_phy->SetPreambleDetectionModel(preambleDetectionModel);
 }
@@ -901,12 +901,12 @@ TestThresholdPreambleDetectionWithFrameCapture::DoSetup()
 
     Ptr<ThresholdPreambleDetectionModel> preambleDetectionModel =
         CreateObject<ThresholdPreambleDetectionModel>();
-    preambleDetectionModel->SetAttribute("Threshold", DoubleValue(4));
+    preambleDetectionModel->SetAttribute("Threshold", dBValue(4_dB));
     preambleDetectionModel->SetAttribute("MinimumRssi", DoubleValue(-82));
     m_phy->SetPreambleDetectionModel(preambleDetectionModel);
 
     Ptr<SimpleFrameCaptureModel> frameCaptureModel = CreateObject<SimpleFrameCaptureModel>();
-    frameCaptureModel->SetAttribute("Margin", DoubleValue(5));
+    frameCaptureModel->SetAttribute("Margin", dBValue(5_dB));
     frameCaptureModel->SetAttribute("CaptureWindow", TimeValue(MicroSeconds(16)));
     m_phy->SetFrameCaptureModel(frameCaptureModel);
 }
@@ -1970,11 +1970,11 @@ TestSimpleFrameCaptureModel::DoSetup()
 
     Ptr<ThresholdPreambleDetectionModel> preambleDetectionModel =
         CreateObject<ThresholdPreambleDetectionModel>();
-    preambleDetectionModel->SetAttribute("Threshold", DoubleValue(2));
+    preambleDetectionModel->SetAttribute("Threshold", dBValue(2_dB));
     m_phy->SetPreambleDetectionModel(preambleDetectionModel);
 
     Ptr<SimpleFrameCaptureModel> frameCaptureModel = CreateObject<SimpleFrameCaptureModel>();
-    frameCaptureModel->SetAttribute("Margin", DoubleValue(5));
+    frameCaptureModel->SetAttribute("Margin", dBValue(5_dB));
     frameCaptureModel->SetAttribute("CaptureWindow", TimeValue(MicroSeconds(16)));
     m_phy->SetFrameCaptureModel(frameCaptureModel);
 }
@@ -2784,11 +2784,11 @@ TestAmpduReception::DoSetup()
 
     Ptr<ThresholdPreambleDetectionModel> preambleDetectionModel =
         CreateObject<ThresholdPreambleDetectionModel>();
-    preambleDetectionModel->SetAttribute("Threshold", DoubleValue(2));
+    preambleDetectionModel->SetAttribute("Threshold", dBValue(2_dB));
     m_phy->SetPreambleDetectionModel(preambleDetectionModel);
 
     Ptr<SimpleFrameCaptureModel> frameCaptureModel = CreateObject<SimpleFrameCaptureModel>();
-    frameCaptureModel->SetAttribute("Margin", DoubleValue(5));
+    frameCaptureModel->SetAttribute("Margin", dBValue(5_dB));
     frameCaptureModel->SetAttribute("CaptureWindow", TimeValue(MicroSeconds(16)));
     m_phy->SetFrameCaptureModel(frameCaptureModel);
 }

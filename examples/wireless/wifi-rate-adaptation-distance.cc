@@ -251,7 +251,7 @@ main(int argc, char* argv[])
     // disables it (e.g. -110 dBm), and 3) disable the Wi-Fi preamble
     // detection model.
     wifiPhy.Set("CcaSensitivity", DoubleValue(-110));
-    wifiPhy.Set("RxNoiseFigure", DoubleValue(0));
+    wifiPhy.Set("RxNoiseFigure", dBValue(0_dB));
     wifiPhy.DisablePreambleDetectionModel();
 
     NetDeviceContainer wifiApDevices;

@@ -29,11 +29,10 @@ ThresholdPreambleDetectionModel::GetTypeId()
             .SetGroupName("Wifi")
             .AddConstructor<ThresholdPreambleDetectionModel>()
             .AddAttribute("Threshold",
-                          "Preamble is successfully detected if the SNR is at or above this value "
-                          "(expressed in dB).",
-                          DoubleValue(4),
-                          MakeDoubleAccessor(&ThresholdPreambleDetectionModel::m_threshold),
-                          MakeDoubleChecker<dB_u>())
+                          "Preamble is successfully detected if the SNR is at or above this value.",
+                          dBValue(4_dB),
+                          MakedBAccessor(&ThresholdPreambleDetectionModel::m_threshold),
+                          MakedBChecker())
             .AddAttribute("MinimumRssi",
                           "Preamble is dropped if the RSSI is below this value (expressed in dBm).",
                           DoubleValue(-82),

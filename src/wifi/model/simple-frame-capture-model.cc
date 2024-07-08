@@ -34,10 +34,10 @@ SimpleFrameCaptureModel::GetTypeId()
                 "Margin",
                 "Reception is switched if the newly arrived frame has a power higher than "
                 "this value above the frame currently being received (expressed in dB).",
-                DoubleValue(5),
-                MakeDoubleAccessor(&SimpleFrameCaptureModel::GetMargin,
-                                   &SimpleFrameCaptureModel::SetMargin),
-                MakeDoubleChecker<dB_u>());
+                dBValue(5_dB),
+                MakedBAccessor(&SimpleFrameCaptureModel::GetMargin,
+                               &SimpleFrameCaptureModel::SetMargin),
+                MakedBChecker());
     return tid;
 }
 
@@ -52,13 +52,13 @@ SimpleFrameCaptureModel::~SimpleFrameCaptureModel()
 }
 
 void
-SimpleFrameCaptureModel::SetMargin(dB_u margin)
+SimpleFrameCaptureModel::SetMargin(dB_t margin)
 {
     NS_LOG_FUNCTION(this << margin);
     m_margin = margin;
 }
 
-dB_u
+dB_t
 SimpleFrameCaptureModel::GetMargin() const
 {
     return m_margin;
@@ -68,7 +68,8 @@ bool
 SimpleFrameCaptureModel::CaptureNewFrame(Ptr<Event> currentEvent, Ptr<Event> newEvent) const
 {
     NS_LOG_FUNCTION(this);
-    return WToDbm(currentEvent->GetRxPower()) + GetMargin() < WToDbm(newEvent->GetRxPower()) &&
+    return WToDbm(currentEvent->GetRxPower()) + GetMargin().in_dB() <
+               WToDbm(newEvent->GetRxPower()) &&
            IsInCaptureWindow(currentEvent->GetStartTime());
 }
 

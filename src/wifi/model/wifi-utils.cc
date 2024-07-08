@@ -22,9 +22,9 @@ namespace ns3
 {
 
 double
-DbToRatio(dB_u val)
+DbToRatio(dB_t val)
 {
-    return std::pow(10.0, 0.1 * val);
+    return val.to_linear();
 }
 
 Watt_u
@@ -40,10 +40,10 @@ WToDbm(Watt_u val)
     return 10.0 * std::log10(val) + 30.0;
 }
 
-dB_u
+dB_t
 RatioToDb(double ratio)
 {
-    return 10.0 * std::log10(ratio);
+    return dB_t::from_linear(ratio);
 }
 
 uint32_t

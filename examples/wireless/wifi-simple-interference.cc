@@ -211,9 +211,9 @@ main(int argc, char* argv[])
     NetDeviceContainer devices = wifi.Install(wifiPhy, wifiMac, c.Get(0));
     // This will disable these sending devices from detecting a signal
     // so that they do not backoff
-    wifiPhy.Set("TxGain", DoubleValue(offset + prss));
+    wifiPhy.Set("TxGain", dBValue(dB_t{offset + prss}));
     devices.Add(wifi.Install(wifiPhy, wifiMac, c.Get(1)));
-    wifiPhy.Set("TxGain", DoubleValue(offset + irss));
+    wifiPhy.Set("TxGain", dBValue(dB_t{offset + irss}));
     devices.Add(wifi.Install(wifiPhy, wifiMac, c.Get(2)));
 
     // Note that with FixedRssLossModel, the positions below are not

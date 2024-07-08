@@ -177,7 +177,7 @@ main(int argc, char* argv[])
 
     YansWifiPhyHelper wifiPhy;
     // set it to zero; otherwise, gain will be added
-    wifiPhy.Set("RxGain", DoubleValue(-10));
+    wifiPhy.Set("RxGain", dBValue(-10_dB));
     // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
     wifiPhy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
 

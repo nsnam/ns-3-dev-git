@@ -82,7 +82,7 @@ Watt_u DbmToW(dBm_u val);
  *
  * @return ratio in linear scale
  */
-double DbToRatio(dB_u val);
+double DbToRatio(dB_t val);
 /**
  * Convert from Watts to dBm.
  *
@@ -98,7 +98,7 @@ dBm_u WToDbm(Watt_u val);
  *
  * @return the value in dB
  */
-dB_u RatioToDb(double ratio);
+dB_t RatioToDb(double ratio);
 
 /**
  * Convert from MHz to Hz.

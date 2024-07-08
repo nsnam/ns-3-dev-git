@@ -577,7 +577,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
     {
         // Only a part of the transmitted power is received
         expectedTotalRxPower =
-            16 - static_cast<int>(RatioToDb(m_txChannelWidth / m_rxChannelWidth));
+            16 - static_cast<int>(RatioToDb(m_txChannelWidth / m_rxChannelWidth).in_dB());
     }
     NS_TEST_ASSERT_MSG_EQ(totalRxPower,
                           expectedTotalRxPower,
@@ -591,7 +591,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
                                                          << " dBm)");
         const auto rxPowerPrimaryChannel20 = static_cast<int>(WToDbm(it->second) + 0.5);
         const auto expectedRxPowerPrimaryChannel20 =
-            16 - static_cast<int>(RatioToDb(Count20MHzSubchannels(channelWidth)));
+            16 - static_cast<int>(RatioToDb(Count20MHzSubchannels(channelWidth)).in_dB());
         NS_TEST_ASSERT_MSG_EQ(rxPowerPrimaryChannel20,
                               expectedRxPowerPrimaryChannel20,
                               "Received power in the primary 20 MHz band is not correct");

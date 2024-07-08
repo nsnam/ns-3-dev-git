@@ -169,14 +169,14 @@ WifiPhy::GetTypeId()
                           MakeDoubleChecker<dBm_u>())
             .AddAttribute("TxGain",
                           "Transmission gain (dB).",
-                          DoubleValue(0.0),
-                          MakeDoubleAccessor(&WifiPhy::SetTxGain, &WifiPhy::GetTxGain),
-                          MakeDoubleChecker<dB_u>())
+                          dBValue(0_dB),
+                          MakedBAccessor(&WifiPhy::SetTxGain, &WifiPhy::GetTxGain),
+                          MakedBChecker())
             .AddAttribute("RxGain",
                           "Reception gain (dB).",
-                          DoubleValue(0.0),
-                          MakeDoubleAccessor(&WifiPhy::SetRxGain, &WifiPhy::GetRxGain),
-                          MakeDoubleChecker<dB_u>())
+                          dBValue(0_dB),
+                          MakedBAccessor(&WifiPhy::SetRxGain, &WifiPhy::GetRxGain),
+                          MakedBChecker())
             .AddAttribute("TxPowerLevels",
                           "Number of transmission power levels available between "
                           "TxPowerStart and TxPowerEnd included.",
@@ -201,9 +201,9 @@ WifiPhy::GetTypeId()
                 " the noise output of the actual receiver to the noise output of an "
                 " ideal receiver with the same overall gain and bandwidth when the receivers "
                 " are connected to sources at the standard noise temperature T0 (usually 290 K)\".",
-                DoubleValue(7),
-                MakeDoubleAccessor(&WifiPhy::SetRxNoiseFigure),
-                MakeDoubleChecker<dB_u>())
+                dBValue(7_dB),
+                MakedBAccessor(&WifiPhy::SetRxNoiseFigure),
+                MakedBChecker())
             .AddAttribute("State",
                           "The state of the PHY layer.",
                           PointerValue(),
@@ -551,7 +551,7 @@ WifiPhy::GetCcaSensitivityThreshold() const
 }
 
 void
-WifiPhy::SetRxNoiseFigure(dB_u noiseFigure)
+WifiPhy::SetRxNoiseFigure(dB_t noiseFigure)
 {
     NS_LOG_FUNCTION(this << noiseFigure);
     if (m_interference)
@@ -601,26 +601,26 @@ WifiPhy::GetNTxPower() const
 }
 
 void
-WifiPhy::SetTxGain(dB_u gain)
+WifiPhy::SetTxGain(dB_t gain)
 {
     NS_LOG_FUNCTION(this << gain);
     m_txGain = gain;
 }
 
-dB_u
+dB_t
 WifiPhy::GetTxGain() const
 {
     return m_txGain;
 }
 
 void
-WifiPhy::SetRxGain(dB_u gain)
+WifiPhy::SetRxGain(dB_t gain)
 {
     NS_LOG_FUNCTION(this << gain);
     m_rxGain = gain;
 }
 
-dB_u
+dB_t
 WifiPhy::GetRxGain() const
 {
     return m_rxGain;
@@ -1923,7 +1923,7 @@ WifiPhy::Send(const WifiConstPsduMap& psdus, const WifiTxVector& txVector)
     auto ppdu = GetPhyEntity(txVector.GetModulationClass())->BuildPpdu(psdus, txVector, txDuration);
     m_previouslyRxPpduUid = UINT64_MAX; // reset (after creation of PPDU) to use it only once
 
-    const auto txPower = DbmToW(GetTxPowerForTransmission(ppdu) + GetTxGain());
+    const auto txPower = DbmToW(GetTxPowerForTransmission(ppdu) + GetTxGain().in_dB());
     NotifyTxBegin(psdus, txPower);
     if (!m_phyTxPsduBeginTrace.IsEmpty())
     {
@@ -2353,11 +2353,12 @@ WifiPhy::GetTxPowerForTransmission(Ptr<const WifiPpdu> ppdu) const
     // Apply power density constraint on EIRP
     const auto channelWidth = ppdu->GetTxChannelWidth();
     dBm_per_MHz_u txPowerDbmPerMhz =
-        (txPower + GetTxGain()) - RatioToDb(channelWidth); // account for antenna gain since EIRP
+        (txPower + GetTxGain().in_dB()) -
+        RatioToDb(channelWidth).in_dB(); // account for antenna gain since EIRP
     NS_LOG_INFO("txPower=" << txPower << "dBm with txPowerDbmPerMhz=" << txPowerDbmPerMhz
                            << " over " << channelWidth << " MHz");
-    txPower = std::min(txPowerDbmPerMhz, m_powerDensityLimit) + RatioToDb(channelWidth);
-    txPower -= GetTxGain(); // remove antenna gain since will be added right afterwards
+    txPower = std::min(txPowerDbmPerMhz, m_powerDensityLimit) + RatioToDb(channelWidth).in_dB();
+    txPower -= GetTxGain().in_dB(); // remove antenna gain since will be added right afterwards
     NS_LOG_INFO("txPower=" << txPower
                            << "dBm after applying m_powerDensityLimit=" << m_powerDensityLimit);
     return txPower;
@@ -2383,8 +2384,7 @@ WifiPhy::AssignStreams(int64_t stream)
 std::ostream&
 operator<<(std::ostream& os, RxSignalInfo rxSignalInfo)
 {
-    os << "SNR:" << RatioToDb(rxSignalInfo.snr) << " dB"
-       << ", RSSI:" << rxSignalInfo.rssi << " dBm";
+    os << "SNR:" << RatioToDb(rxSignalInfo.snr) << ", RSSI:" << rxSignalInfo.rssi << " dBm";
     return os;
 }
 

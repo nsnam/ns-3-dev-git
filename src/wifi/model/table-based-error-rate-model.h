@@ -62,7 +62,7 @@ class TableBasedErrorRateModel : public ErrorRateModel
      * @param precision the precision to use
      * @return the rounded SNR to the specified precision
      */
-    dB_u RoundSnr(dB_u snr, double precision) const;
+    dB_t RoundSnr(dB_t snr, double precision) const;
 
     /**
      * Fetch the frame success rate for a given Wi-Fi mode, TXVECTOR, SNR and frame size.

@@ -830,7 +830,7 @@ class WifiPhy : public Object
      *
      * @param noiseFigure noise figure
      */
-    void SetRxNoiseFigure(dB_u noiseFigure);
+    void SetRxNoiseFigure(dB_t noiseFigure);
     /**
      * Sets the minimum available transmission power level.
      *
@@ -874,25 +874,25 @@ class WifiPhy : public Object
      *
      * @param gain the transmission gain
      */
-    void SetTxGain(dB_u gain);
+    void SetTxGain(dB_t gain);
     /**
      * Return the transmission gain.
      *
      * @return the transmission gain
      */
-    dB_u GetTxGain() const;
+    dB_t GetTxGain() const;
     /**
      * Sets the reception gain.
      *
      * @param gain the reception gain
      */
-    void SetRxGain(dB_u gain);
+    void SetRxGain(dB_t gain);
     /**
      * Return the reception gain.
      *
      * @return the reception gain
      */
-    dB_u GetRxGain() const;
+    dB_t GetRxGain() const;
 
     /**
      * Get the remaining time to the end of the MAC header reception of the next MPDU being
@@ -1622,8 +1622,8 @@ class WifiPhy : public Object
     dBm_u m_ccaSensitivityThreshold; //!< Clear channel assessment (CCA) modulation and coding rate
                                      //!< sensitivity threshold
 
-    dB_u m_txGain;                     //!< Transmission gain
-    dB_u m_rxGain;                     //!< Reception gain
+    dB_t m_txGain;                     //!< Transmission gain
+    dB_t m_rxGain;                     //!< Reception gain
     dBm_u m_txPowerBase;               //!< Minimum transmission power
     dBm_u m_txPowerEnd;                //!< Maximum transmission power
     uint8_t m_nTxPower;                //!< Number of available transmission power levels
@@ -1640,7 +1640,7 @@ class WifiPhy : public Object
     uint8_t m_txSpatialStreams; //!< Number of supported TX spatial streams
     uint8_t m_rxSpatialStreams; //!< Number of supported RX spatial streams
 
-    dB_u m_noiseFigure; //!< The noise figure
+    dB_t m_noiseFigure; //!< The noise figure
 
     Time m_channelSwitchDelay; //!< Time required to switch between channel
 

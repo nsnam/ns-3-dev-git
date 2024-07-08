@@ -311,7 +311,7 @@ OfdmPhy::EndReceiveHeader(Ptr<Event> event)
 {
     NS_LOG_FUNCTION(this << *event);
     SnrPer snrPer = GetPhyHeaderSnrPer(WIFI_PPDU_FIELD_NON_HT_HEADER, event);
-    NS_LOG_DEBUG("L-SIG: SNR(dB)=" << RatioToDb(snrPer.snr) << ", PER=" << snrPer.per);
+    NS_LOG_DEBUG("L-SIG: SNR=" << RatioToDb(snrPer.snr) << ", PER=" << snrPer.per);
     PhyFieldRxStatus status(GetRandomValue() > snrPer.per);
     if (status.isSuccess)
     {

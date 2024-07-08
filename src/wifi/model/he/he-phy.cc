@@ -1256,9 +1256,10 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
                      * the receiver's antenna(s) is present. The PHY shall indicate that the 20 MHz
                      * subchannel is busy with > 90% probability within a period aCCAMidTime.
                      */
-                    ccaThreshold = obssPdLevel.has_value()
-                                       ? std::max(dBm_u{-72.0}, obssPdLevel.value() + dB_u{3})
-                                       : dBm_u{-72.0};
+                    ccaThreshold =
+                        obssPdLevel.has_value()
+                            ? std::max(dBm_u{-72.0}, obssPdLevel.value() + dB_t{3}.in_dB())
+                            : dBm_u{-72.0};
                     band = m_wifiPhy->GetBand(MHz_u{40}, std::floor(index / 2));
                     break;
                 case 80:
@@ -1479,14 +1480,15 @@ HePhy::StartTx(Ptr<const WifiPpdu> ppdu)
     if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU || ppdu->GetType() == WIFI_PPDU_TYPE_DL_MU)
     {
         const auto nonHeTxPower =
-            m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
+            m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain().in_dB();
 
         // temporarily set WifiPpdu flag to PSD_HE_PORTION for correct calculation of TX power for
         // the HE portion
         auto hePpdu = DynamicCast<const HePpdu>(ppdu);
         NS_ASSERT(hePpdu);
         hePpdu->SetTxPsdFlag(HePpdu::PSD_HE_PORTION);
-        const auto heTxPower = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
+        const auto heTxPower =
+            m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain().in_dB();
         hePpdu->SetTxPsdFlag(HePpdu::PSD_NON_HE_PORTION);
 
         // non-HE portion

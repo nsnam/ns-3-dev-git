@@ -42,13 +42,13 @@ class SimpleFrameCaptureModel : public FrameCaptureModel
      *
      * @param margin the frame capture margin
      */
-    void SetMargin(dB_u margin);
+    void SetMargin(dB_t margin);
     /**
      * Return the frame capture margin.
      *
      * @return the frame capture margin
      */
-    dB_u GetMargin() const;
+    dB_t GetMargin() const;
 
     /**
      * This method returns whether the reception should be switched to a
@@ -63,7 +63,7 @@ class SimpleFrameCaptureModel : public FrameCaptureModel
     bool CaptureNewFrame(Ptr<Event> currentEvent, Ptr<Event> newEvent) const override;
 
   private:
-    dB_u m_margin; ///< margin for determining if a new frame
+    dB_t m_margin; ///< margin for determining if a new frame
 };
 
 } // namespace ns3

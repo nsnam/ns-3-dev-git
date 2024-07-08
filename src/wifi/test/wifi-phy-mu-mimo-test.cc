@@ -1417,7 +1417,7 @@ TestUlMuMimoPhyTransmission::RxSuccess(Ptr<const WifiPsdu> psdu,
                                        const std::vector<bool>& /*statusPerMpdu*/)
 {
     NS_LOG_FUNCTION(this << *psdu << psdu->GetAddr2() << RatioToDb(rxSignalInfo.snr) << txVector);
-    NS_TEST_ASSERT_MSG_EQ((RatioToDb(rxSignalInfo.snr) > dB_u{0.0}), true, "Incorrect SNR value");
+    NS_TEST_ASSERT_MSG_EQ((RatioToDb(rxSignalInfo.snr) > dB_t{0.0}), true, "Incorrect SNR value");
     for (std::size_t index = 0; index < m_countRxSuccessFromStas.size(); ++index)
     {
         std::ostringstream addr;

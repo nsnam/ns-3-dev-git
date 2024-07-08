@@ -2525,7 +2525,7 @@ TestMultipleHeTbPreambles::DoSetup()
     m_phy->SetDevice(dev);
     Ptr<ThresholdPreambleDetectionModel> preambleDetectionModel =
         CreateObject<ThresholdPreambleDetectionModel>();
-    preambleDetectionModel->SetAttribute("Threshold", DoubleValue(4));
+    preambleDetectionModel->SetAttribute("Threshold", dBValue(4_dB));
     preambleDetectionModel->SetAttribute("MinimumRssi", DoubleValue(-82));
     m_phy->SetPreambleDetectionModel(preambleDetectionModel);
     Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration>();
@@ -3721,7 +3721,7 @@ TestUlOfdmaPhyTransmission::DoSetup()
         "MinimumRssi",
         DoubleValue(
             -8)); // to ensure that transmission in neighboring channel is ignored (16 dBm baseline)
-    preambleDetectionModel->SetAttribute("Threshold", DoubleValue(-100)); // no limit on SNR
+    preambleDetectionModel->SetAttribute("Threshold", dBValue(-100_dB)); // no limit on SNR
 
     Ptr<Node> apNode = CreateObject<Node>();
     Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice>();
@@ -5418,7 +5418,7 @@ class TestUlOfdmaPowerControl : public TestCase
     dBm_u m_rssiSta1; ///< expected RSSI from STA 1 at AP for HE TB PPDUs
     dBm_u m_rssiSta2; ///< expected RSSI from STA 2 at AP for HE TB PPDUs
 
-    dB_u m_tol; ///< tolerance between received and expected RSSIs
+    dB_t m_tol; ///< tolerance between received and expected RSSIs
 };
 
 TestUlOfdmaPowerControl::TestUlOfdmaPowerControl()
@@ -5432,7 +5432,7 @@ TestUlOfdmaPowerControl::TestUlOfdmaPowerControl()
       m_requestedRssiSta2(dBm_u{0}),
       m_rssiSta1(dBm_u{0}),
       m_rssiSta2(dBm_u{0}),
-      m_tol(dB_u{0.1})
+      m_tol(dB_t{0.1})
 {
 }
 
@@ -5580,7 +5580,7 @@ TestUlOfdmaPowerControl::ReceiveOkCallbackAtAp(Ptr<const WifiPsdu> psdu,
         NS_TEST_ASSERT_MSG_EQ_TOL(
             rssi,
             m_rssiSta1,
-            m_tol,
+            m_tol.in_dB(),
             "The obtained RSSI from STA 1 at AP is different from the expected one ("
                 << rssi << " vs " << m_rssiSta1 << ", with tolerance of " << m_tol << ")");
     }
@@ -5589,7 +5589,7 @@ TestUlOfdmaPowerControl::ReceiveOkCallbackAtAp(Ptr<const WifiPsdu> psdu,
         NS_TEST_ASSERT_MSG_EQ_TOL(
             rssi,
             m_rssiSta2,
-            m_tol,
+            m_tol.in_dB(),
             "The obtained RSSI from STA 2 at AP is different from the expected one ("
                 << rssi << " vs " << m_rssiSta2 << ", with tolerance of " << m_tol << ")");
     }

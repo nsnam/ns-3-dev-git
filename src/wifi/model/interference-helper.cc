@@ -418,7 +418,7 @@ InterferenceHelper::CalculateSnr(Watt_u signal,
     auto snr = signal / noise; // linear scale
     NS_LOG_DEBUG("bandwidth=" << channelWidth << "MHz, signal=" << signal << "W, noise="
                               << noiseFloor << "W, interference=" << noiseInterference
-                              << "W, snr=" << RatioToDb(snr) << "dB");
+                              << "W, snr=" << RatioToDb(snr));
     if (m_errorRateModel->IsAwgn())
     {
         double gain = 1;

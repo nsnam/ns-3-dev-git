@@ -62,7 +62,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
                                MHz_u channelWidth,
                                const std::vector<MHz_u>& centerFrequencies,
                                const IndexPowerVect& maskRefs,
-                               dB_u tolerance,
+                               dB_t tolerance,
                                std::size_t precision,
                                const std::vector<bool>& puncturedSubchannels = std::vector<bool>{});
     ~WifiOfdmMaskSlopesTestCase() override = default;
@@ -93,7 +93,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
                                 ///< not (only used for 802.11ax and later)
     Ptr<SpectrumValue> m_actualSpectrum; ///< actual spectrum value
     IndexPowerVect m_expectedPsd;        ///< expected power values
-    dB_u m_tolerance;                    ///< tolerance
+    dB_t m_tolerance;                    ///< tolerance
     std::size_t m_precision;             ///< precision for double calculations (in decimals)
 };
 
@@ -104,7 +104,7 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase(
     MHz_u channelWidth,
     const std::vector<MHz_u>& centerFrequencies,
     const IndexPowerVect& maskRefs,
-    dB_u tolerance,
+    dB_t tolerance,
     std::size_t precision,
     const std::vector<bool>& puncturedSubchannels)
     : TestCase(std::string("SpectrumValue ") + name),
@@ -264,7 +264,7 @@ WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues(IndexPowerVect& vect,
     for (uint32_t i = start.first; i <= stop.first; i++)
     {
         const auto delta{i - start.first};
-        dB_u val{start.second + slope * delta};
+        auto val{start.second + slope * delta};
         const auto multiplier = std::round(std::pow(10.0, static_cast<double>(m_precision)));
         val = dB_u{std::floor(val * multiplier + 0.5) / multiplier};
         vect.emplace_back(i, val);
@@ -272,7 +272,7 @@ WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues(IndexPowerVect& vect,
     }
 
     NS_ASSERT(vect.back().first == stop.first &&
-              TestDoubleIsEqual(vect.back().second, stop.second, m_tolerance));
+              TestDoubleIsEqual(vect.back().second, stop.second, m_tolerance.in_dB()));
 }
 
 void
@@ -296,7 +296,7 @@ WifiOfdmMaskSlopesTestCase::DoRun()
                             << " vs obtained: " << currentPower);
         NS_TEST_EXPECT_MSG_EQ_TOL(currentPower,
                                   expectedValue,
-                                  m_tolerance,
+                                  m_tolerance.in_dB(),
                                   "Spectrum value mismatch for subcarrier " << subcarrier);
     }
 }
@@ -325,7 +325,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
     NS_LOG_INFO("Creating WifiTransmitMaskTestSuite");
 
     WifiOfdmMaskSlopesTestCase::IndexPowerVect maskSlopes;
-    dB_u tol{10e-2};
+    dB_t tol{10e-2};
     double prec = 10; // in decimals
 
     // ============================================================================================

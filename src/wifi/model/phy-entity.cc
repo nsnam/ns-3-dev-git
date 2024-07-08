@@ -693,7 +693,7 @@ PhyEntity::EndOfMpdu(Ptr<Event> event,
     signalNoiseIt->second = rxInfo.second;
 
     RxSignalInfo rxSignalInfo;
-    rxSignalInfo.snr = DbToRatio(dB_u{rxInfo.second.signal - rxInfo.second.noise});
+    rxSignalInfo.snr = DbToRatio(dB_t{rxInfo.second.signal - rxInfo.second.noise});
     rxSignalInfo.rssi = rxInfo.second.signal;
 
     auto statusPerMpduIt = m_statusPerMpduMap.find({ppdu->GetUid(), staId});
@@ -818,7 +818,7 @@ PhyEntity::GetReceptionStatus(Ptr<WifiMpdu> mpdu,
 
     WifiMode mode = event->GetPpdu()->GetTxVector().GetMode(staId);
     NS_LOG_DEBUG("rate=" << (mode.GetDataRate(event->GetPpdu()->GetTxVector(), staId))
-                         << ", SNR(dB)=" << RatioToDb(snrPer.snr) << ", PER=" << snrPer.per
+                         << ", SNR=" << RatioToDb(snrPer.snr) << ", PER=" << snrPer.per
                          << ", size=" << mpdu->GetSize()
                          << ", relativeStart = " << relativeMpduStart.As(Time::NS)
                          << ", duration = " << mpduDuration.As(Time::NS));
@@ -1057,7 +1057,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
                                                              measurementChannelWidth,
                                                              1,
                                                              measurementBand);
-    NS_LOG_DEBUG("SNR(dB)=" << RatioToDb(snr) << " at end of preamble detection period");
+    NS_LOG_DEBUG("SNR=" << RatioToDb(snr) << " at end of preamble detection period");
 
     if (const auto power = m_wifiPhy->m_currentEvent->GetRxPower(measurementBand);
         (!m_wifiPhy->m_preambleDetectionModel && maxRxPower && (*maxRxPower > Watt_u{0.0})) ||
@@ -1375,7 +1375,7 @@ void
 PhyEntity::StartTx(Ptr<const WifiPpdu> ppdu)
 {
     NS_LOG_FUNCTION(this << ppdu);
-    auto txPower = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
+    auto txPower = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain().in_dB();
     auto txVector = ppdu->GetTxVector();
     auto txPowerSpectrum = GetTxPowerSpectralDensity(DbmToW(txPower), ppdu);
     Transmit(ppdu->GetTxDuration(), ppdu, txPower, txPowerSpectrum, "transmission");

@@ -259,8 +259,8 @@ main(int argc, char* argv[])
             experiment = Experiment(modes[i]);
             wifiPhy.Set("TxPowerStart", DoubleValue(15.0));
             wifiPhy.Set("TxPowerEnd", DoubleValue(15.0));
-            wifiPhy.Set("RxGain", DoubleValue(0));
-            wifiPhy.Set("RxNoiseFigure", DoubleValue(7));
+            wifiPhy.Set("RxGain", dBValue(0_dB));
+            wifiPhy.Set("RxNoiseFigure", dBValue(7_dB));
             uint32_t pktsRecvd = experiment.Run(wifi, wifiPhy, wifiMac, wifiChannel);
             dataset.Add(rss, pktsRecvd);
         }

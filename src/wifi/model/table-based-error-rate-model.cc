@@ -65,12 +65,12 @@ TableBasedErrorRateModel::~TableBasedErrorRateModel()
     m_fallbackErrorModel = nullptr;
 }
 
-dB_u
-TableBasedErrorRateModel::RoundSnr(dB_u snr, double precision) const
+dB_t
+TableBasedErrorRateModel::RoundSnr(dB_t snr, double precision) const
 {
     NS_LOG_FUNCTION(this << snr);
     const auto multiplier = std::round(std::pow(10.0, precision));
-    return dB_u{std::floor(snr * multiplier + 0.5) / multiplier};
+    return dB_t{std::floor(snr.in_dB() * multiplier + 0.5) / multiplier};
 }
 
 std::optional<uint8_t>
@@ -199,8 +199,8 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate(WifiMode mode,
         {
             double a = 0.0;
             double b = 0.0;
-            dB_u previousSnr{0.0};
-            dB_u nextSnr{0.0};
+            dB_t previousSnr{0.0};
+            dB_t nextSnr{0.0};
             for (auto i = itVector.cbegin(); i != itVector.cend(); ++i)
             {
                 if (i->first < roundedSnr)
@@ -215,7 +215,8 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate(WifiMode mode,
                     break;
                 }
             }
-            per = a + (roundedSnr - previousSnr) * (b - a) / (nextSnr - previousSnr);
+            per =
+                a + (roundedSnr - previousSnr).in_dB() * (b - a) / (nextSnr - previousSnr).in_dB();
         }
     }
     else

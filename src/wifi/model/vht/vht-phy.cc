@@ -257,7 +257,7 @@ VhtPhy::EndReceiveSig(Ptr<Event> event, WifiPpduField field)
 {
     NS_LOG_FUNCTION(this << *event << field);
     SnrPer snrPer = GetPhyHeaderSnrPer(field, event);
-    NS_LOG_DEBUG(field << ": SNR(dB)=" << RatioToDb(snrPer.snr) << ", PER=" << snrPer.per);
+    NS_LOG_DEBUG(field << ": SNR=" << RatioToDb(snrPer.snr) << ", PER=" << snrPer.per);
     PhyFieldRxStatus status(GetRandomValue() > snrPer.per);
     if (status.isSuccess)
     {
