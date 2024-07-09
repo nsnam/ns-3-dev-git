@@ -69,6 +69,8 @@ FrameExchangeManager::Reset()
     m_navEnd = Simulator::Now();
     m_mpdu = nullptr;
     m_txParams.Clear();
+    m_ongoingRxInfo.macHdr.reset();
+    m_ongoingRxInfo.endOfPsduRx = Time{};
     m_dcf = nullptr;
 }
 
