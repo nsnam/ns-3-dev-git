@@ -1135,6 +1135,13 @@ HePhy::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu /* = nullptr */)
         SwitchMaybeToCcaBusy();
         return;
     }
+
+    // avoid spurious notification if the channel width changed
+    if (m_lastPer20MHzDurations.size() != per20MHzDurations.size())
+    {
+        m_lastPer20MHzDurations.resize(per20MHzDurations.size());
+    }
+
     if (per20MHzDurations != m_lastPer20MHzDurations)
     {
         /*
