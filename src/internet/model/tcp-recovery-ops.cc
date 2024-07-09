@@ -94,9 +94,11 @@ TcpClassicRecovery::EnterRecovery(Ptr<TcpSocketState> tcb,
 }
 
 void
-TcpClassicRecovery::DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes [[maybe_unused]])
+TcpClassicRecovery::DoRecovery(Ptr<TcpSocketState> tcb,
+                               uint32_t deliveredBytes [[maybe_unused]],
+                               bool isDupAck)
 {
-    NS_LOG_FUNCTION(this << tcb << deliveredBytes);
+    NS_LOG_FUNCTION(this << tcb << deliveredBytes << isDupAck);
     tcb->m_cWndInfl += tcb->m_segmentSize;
 }
 

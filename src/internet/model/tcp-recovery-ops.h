@@ -99,11 +99,13 @@ class TcpRecoveryOps : public Object
      * The function is called on arrival of every ack when TcpSocketState
      * is set to CA_RECOVERY. It performs the necessary cwnd changes
      * as per the recovery algorithm.
+     * The param `isDupAck` has been added to align PRR implementation with RFC 6937 bis-08.
      *
      * \param tcb internal congestion state
      * \param deliveredBytes bytes (S)ACKed in the last (S)ACK
+     * \param isDupAck Indicates if the last acknowledgement was duplicate.
      */
-    virtual void DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes) = 0;
+    virtual void DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, bool isDupAck) = 0;
 
     /**
      * \brief Performs cwnd adjustments at the end of recovery
@@ -178,7 +180,7 @@ class TcpClassicRecovery : public TcpRecoveryOps
                        uint32_t unAckDataCount,
                        uint32_t deliveredBytes) override;
 
-    void DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes) override;
+    void DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, bool isDupAck) override;
 
     void ExitRecovery(Ptr<TcpSocketState> tcb) override;
 

@@ -1662,6 +1662,42 @@ After limit calculation, the cWnd is updated as given below:
 .. math::  sndcnt = MIN (ssThresh - pipe, limit)
 .. math::  cWnd = pipe + sndcnt
 
+Thanks to Neal Cardwell for providing the following documentation of |ns3| PRR model:
+The |ns3| implementation of PRR has something like this (note that m_isRetransDataAcked is true exactly when retransmitted data is cumulatively ACKed, and there is no RACK-TLP or similar mechanism to detect lost retransmits as of now):
+
+::
+
+    // PRR-CRB by default
+    int limit = std::max(m_prrDelivered - m_prrOut, deliveredBytes);
+    // safeACK should be true iff ACK advances SND.UNA with no further loss indicated.
+    // We approximate that here (given the current lack of RACK-TLP in ns-3):
+    bool safeACK = tcb->m_isRetransDataAcked;  // retransmit cumulatively ACKed?
+    if (safeACK) // PRR-SSRB when recovery makes good progress
+        limit += tcb->m_segmentSize;
+    // Attempt to catch up, as permitted
+    sendCount = std::min(limit, static_cast<int>(tcb->m_ssThresh - tcb->m_bytesInFlight));
+ }
+ // Force a fast retransmit upon entering fast recovery:
+ if (m_prrOut == 0 && sendCount == 0)
+     sendCount = tcb->m_segmentSize;
+
+which is close to the Linux implementation (which matches the RFC):
+
+::
+
+  int delta = tp->snd_ssthresh - tcp_packets_in_flight(tp);
+       ...
+      sndcnt = max_t(int, tp->prr_delivered - tp->prr_out,
+                     newly_acked_sacked);
+      if (flag & FLAG_SND_UNA_ADVANCED && !newly_lost)
+              sndcnt++;
+      sndcnt = min(delta, sndcnt);
+  }
+  /* Force a fast retransmit upon entering fast recovery */
+  sndcnt = max(sndcnt, (tp->prr_out ? 0 : 1));
+
+For reference, the Linux TCP PRR implementation is entirely contained in tcp_init_cwnd_reduction(), tcp_cwnd_reduction(), tcp_end_cwnd_reduction() and the updates elsewhere to prr_out.
+
 More information (paper): https://dl.acm.org/citation.cfm?id=2068832
 
 More information (RFC): https://tools.ietf.org/html/rfc6937
