@@ -506,6 +506,13 @@ WifiRemoteStationManager::RecordDisassociated(Mac48Address address)
     LookupState(address)->m_state = WifiRemoteStationState::DISASSOC;
 }
 
+void
+WifiRemoteStationManager::RecordAdhocPeer(Mac48Address address)
+{
+    NS_ASSERT(!address.IsGroup());
+    LookupState(address)->m_state = WifiRemoteStationState::ADHOC_PEER;
+}
+
 bool
 WifiRemoteStationManager::IsAssocRefused(Mac48Address address) const
 {
@@ -514,6 +521,16 @@ WifiRemoteStationManager::IsAssocRefused(Mac48Address address) const
         return false;
     }
     return LookupState(address)->m_state == WifiRemoteStationState::ASSOC_REFUSED;
+}
+
+bool
+WifiRemoteStationManager::IsAdhocPeer(Mac48Address address) const
+{
+    if (address.IsGroup())
+    {
+        return false;
+    }
+    return LookupState(address)->m_state == WifiRemoteStationState::ADHOC_PEER;
 }
 
 void

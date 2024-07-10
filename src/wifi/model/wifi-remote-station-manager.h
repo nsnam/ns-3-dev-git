@@ -84,7 +84,8 @@ struct WifiRemoteStationState
         DISASSOC,
         WAIT_ASSOC_TX_OK,
         GOT_ASSOC_TX_OK,
-        ASSOC_REFUSED
+        ASSOC_REFUSED,
+        ADHOC_PEER
     } m_state;
 
     /**
@@ -763,6 +764,13 @@ class WifiRemoteStationManager : public Object
      */
     bool IsBrandNew(Mac48Address address) const;
     /**
+     * Return whether the station state is a known adhoc peer.
+     *
+     * \param address the address of the station
+     * \return true if the address is a known adhoc peer, false otherwise
+     */
+    bool IsAdhocPeer(Mac48Address address) const;
+    /**
      * Return whether the station associated.
      *
      * @param address the address of the station
@@ -808,6 +816,12 @@ class WifiRemoteStationManager : public Object
      * @param address the address of the station
      */
     void RecordDisassociated(Mac48Address address);
+    /**
+     * Records that the STA is an adhoc peer.
+     *
+     * \param address the address of the station
+     */
+    void RecordAdhocPeer(Mac48Address address);
     /**
      * Return whether we refused an association request from the given station
      *
