@@ -3646,8 +3646,16 @@ TcpSocketBase::CalculateRttSample(const TcpHeader& tcpHeader, const RttHistory& 
     SequenceNumber32 ackSeq = tcpHeader.GetAckNumber();
     Time rtt;
 
-    if (!rttHistory.retx && ackSeq >= (rttHistory.seq + SequenceNumber32(rttHistory.count)))
-    { // Ok to use this sample
+    if (ackSeq >= (rttHistory.seq + SequenceNumber32(rttHistory.count)))
+    {
+        // As per RFC 6298 (Section 3)
+        // RTT samples MUST NOT be made using segments that were
+        // retransmitted (and thus for which it is ambiguous whether the reply
+        // was for the first instance of the packet or a later instance).  The
+        // only case when TCP can safely take RTT samples from retransmitted
+        // segments is when the TCP timestamp option is employed, since
+        // the timestamp option removes the ambiguity regarding which instance
+        // of the data segment triggered the acknowledgment.
         if (m_timestampEnabled && tcpHeader.HasOption(TcpOption::TS))
         {
             Ptr<const TcpOptionTS> ts;
@@ -3661,7 +3669,7 @@ TcpSocketBase::CalculateRttSample(const TcpHeader& tcpHeader, const RttHistory& 
                 rtt = MicroSeconds(1);
             }
         }
-        else
+        else if (!rttHistory.retx)
         {
             // Elapsed time since the packet was transmitted
             rtt = Simulator::Now() - rttHistory.time;
