@@ -263,7 +263,7 @@ AdhocWifiMac::SetAllCapabilities(Mac48Address address)
             GetEhtCapabilities(SINGLE_LINK_OP_ID));
     }
     GetWifiRemoteStationManager()->AddAllSupportedModes(address);
-    GetWifiRemoteStationManager()->RecordDisassociated(address);
+    GetWifiRemoteStationManager()->RecordAdhocPeer(address);
 }
 
 void
@@ -497,7 +497,7 @@ AdhocWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, linkId_t linkId)
     RecordCapabilities(beacon, from, linkId);
 
     NS_LOG_INFO("Peer " << from << " changed from undiscovered to discovered");
-    GetWifiRemoteStationManager()->RecordDisassociated(from);
+    GetWifiRemoteStationManager()->RecordAdhocPeer(from);
 }
 
 AllSupportedRates
