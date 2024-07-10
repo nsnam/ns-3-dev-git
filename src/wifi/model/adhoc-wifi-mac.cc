@@ -199,7 +199,7 @@ AdhocWifiMac::SetAllCapabilities(const Mac48Address& address)
             GetEhtCapabilities(SINGLE_LINK_OP_ID));
     }
     GetWifiRemoteStationManager()->AddAllSupportedModes(address);
-    GetWifiRemoteStationManager()->RecordDisassociated(address);
+    GetWifiRemoteStationManager()->RecordAdhocPeer(address);
 }
 
 void
@@ -387,8 +387,7 @@ AdhocWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     mpdu->GetPacket()->PeekHeader(beacon);
     RecordCapabilities(beacon, from, linkId);
 
-    // change state of the STA to ensure it is no longer considered as unknown
-    GetWifiRemoteStationManager()->RecordDisassociated(from);
+    GetWifiRemoteStationManager()->RecordAdhocPeer(from);
 }
 
 AllSupportedRates
