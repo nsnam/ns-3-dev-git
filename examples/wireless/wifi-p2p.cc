@@ -20,6 +20,7 @@
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
+#include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/names.h"
 #include "ns3/node.h"
 #include "ns3/on-off-helper.h"
@@ -28,6 +29,7 @@
 #include "ns3/packet-sink.h"
 #include "ns3/simulator.h"
 #include "ns3/socket.h"
+#include "ns3/spectrum-wifi-helper.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
@@ -38,10 +40,9 @@
 #include "ns3/uinteger.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/yans-wifi-channel.h"
-#include "ns3/yans-wifi-helper.h"
 
 #include <algorithm>
+#include <array>
 #include <iomanip>
 #include <limits>
 #include <sstream>
@@ -247,12 +248,19 @@ class WifiP2pExample
      */
     Ipv4Address GetDestinationIp(Direction dir);
 
-    bool m_pcap{false};            //!< flag whether PCAP files should be generated
-    bool m_p2p{true};              //!< flag whether P2P is enabled
-    Time m_simulationTime{"10s"};  //!< simulation time
-    std::string m_apType{"He"};    //!< type of the AP
-    std::string m_staType{"He"};   //!< type of the non-AP STAs
-    std::string m_adhocType{"He"}; //!< type of the adhoc STA
+    bool m_pcap{false};             //!< flag whether PCAP files should be generated
+    bool m_p2p{true};               //!< flag whether P2P is enabled
+    bool m_linksOverlap{true};      //!< flag whether to consider links overlapping for P2P
+    uint16_t m_numLinksAp{1};       //!< amount of links for the AP
+    uint16_t m_numLinksSta{1};      //!< amount of links for the non-AP STA
+    uint16_t m_numLinksP2p{1};      //!< amount of links to use for P2P
+    Time m_simulationTime{"10s"};   //!< simulation time
+    std::string m_apType{"Eht"};    //!< type of the AP
+    std::string m_staType{"Eht"};   //!< type of the non-AP STAs
+    std::string m_adhocType{"Eht"}; //!< type of the adhoc STA
+    std::array<double, 3> m_frequencies{5,
+                                        2.4,
+                                        6}; //!< the order of the frequencies to use for the links
     uint32_t m_rtsThreshold{std::numeric_limits<uint16_t>::max()}; //!< the RTS threshold
     uint16_t m_maxAmpduLength{65535};                              //!< the maximum A-MPDU length
     std::map<Direction, PerDirectionInfo> m_infos{
@@ -376,6 +384,25 @@ WifiP2pExample::Config(int argc, char* argv[])
     cmd.AddValue("apType", "AP type: Ht, Vht, He or Eht", m_apType);
     cmd.AddValue("staType", "STA type: Ht, Vht, He or Eht", m_staType);
     cmd.AddValue("adhocType", "ADHOC type: Ht, Vht, He or Eht", m_adhocType);
+    cmd.AddValue("numLinksAp", "The number of links to setup for the AP", m_numLinksAp);
+    cmd.AddValue("numLinksSta", "The number of links to setup for the STA", m_numLinksSta);
+    cmd.AddValue("numLinksP2p", "The number of links to use for P2P", m_numLinksP2p);
+    cmd.AddValue("frequency1",
+                 "Specify whether the first link operates in the 5, 2.4 or 6 GHz band (other "
+                 "values gets rejected)",
+                 m_frequencies.at(0));
+    cmd.AddValue("frequency2",
+                 "Specify whether the second link operates in the 5, 2.4 or 6 GHz band (other "
+                 "values gets rejected)",
+                 m_frequencies.at(1));
+    cmd.AddValue("frequency3",
+                 "Specify whether the third link operates in the 5, 2.4 or 6 GHz band (other "
+                 "values gets rejected)",
+                 m_frequencies.at(2));
+    cmd.AddValue("linksOverlap",
+                 "Flag whether P2P links overlap with links used for the infrastructure mode."
+                 "If set to false, it picks the first unused band for the link to operate on.",
+                 m_linksOverlap);
     cmd.AddValue("rtsThreshold", "RTS threshold", m_rtsThreshold);
     cmd.AddValue("maxAmpduLength", "maximum length in bytes of an A-MPDU", m_maxAmpduLength);
     for (auto& [direction, dirInfo] : m_infos)
@@ -464,7 +491,7 @@ WifiP2pExample::Setup()
 {
     NS_LOG_FUNCTION(this);
 
-    int64_t streamNumber = 150;
+    int64_t streamNumber = 500;
     Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold",
                        UintegerValue(m_rtsThreshold));
 
@@ -472,13 +499,117 @@ WifiP2pExample::Setup()
     m_wifiApNode.Create(1);
     m_wifiStaNodes.Create(2); // one may be adhoc STA
 
-    // configure PHY and MAC
-    YansWifiPhyHelper wifiPhy;
-    wifiPhy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+    if (m_p2p && (m_numLinksP2p > 1))
+    {
+        NS_FATAL_ERROR("MLD for P2P is not supported yet!");
+    }
 
-    auto wifiChannel = YansWifiChannelHelper::Default();
-    wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
-    wifiPhy.SetChannel(wifiChannel.Create());
+    if (m_frequencies.at(1) == m_frequencies.at(0) || m_frequencies.at(2) == m_frequencies.at(0) ||
+        (m_frequencies.at(2) != 0 && m_frequencies.at(2) == m_frequencies.at(1)))
+    {
+        NS_FATAL_ERROR("Frequency values must be unique!");
+    }
+
+    if (!m_linksOverlap && (m_numLinksSta <= m_numLinksAp))
+    {
+        NS_FATAL_ERROR("Non-overlap cannot be used if the amount of links of the non-AP MLD is not "
+                       "larger than the amount of links of the AP MLD");
+    }
+
+    std::vector<std::pair<std::string, FrequencyRange>> allChannelStrs{};
+    std::vector<std::pair<std::string, FrequencyRange>> apChannelStrs{};
+    std::vector<std::pair<std::string, FrequencyRange>> staChannelStrs{};
+    std::pair<std::string, FrequencyRange> p2pChannelStr{};
+
+    for (auto freq : m_frequencies)
+    {
+        if (freq == 0)
+        {
+            break;
+        }
+        if (freq == 6)
+        {
+            allChannelStrs.emplace_back("{0, 0, BAND_6GHZ, 0}", WIFI_SPECTRUM_6_GHZ);
+        }
+        else if (freq == 5)
+        {
+            allChannelStrs.emplace_back("{0, 0, BAND_5GHZ, 0}", WIFI_SPECTRUM_5_GHZ);
+        }
+        else if (freq == 2.4)
+        {
+            allChannelStrs.emplace_back("{0, 0, BAND_2_4GHZ, 0}", WIFI_SPECTRUM_2_4_GHZ);
+        }
+        else
+        {
+            NS_FATAL_ERROR("Wrong frequency value!");
+        }
+    }
+    std::copy(allChannelStrs.cbegin(),
+              allChannelStrs.cbegin() + m_numLinksAp,
+              std::back_inserter(apChannelStrs));
+    std::cout << "AP link" << (apChannelStrs.size() > 1 ? "s" : "") << ": ";
+    for (const auto& apChannelStr : apChannelStrs)
+    {
+        std::cout << "" << apChannelStr.first << " ";
+    }
+    std::cout << std::endl;
+    std::copy(allChannelStrs.cbegin(),
+              allChannelStrs.cbegin() + m_numLinksSta,
+              std::back_inserter(staChannelStrs));
+    std::cout << "STA link" << (staChannelStrs.size() > 1 ? "s" : "") << ": ";
+    for (const auto& staChannelStr : staChannelStrs)
+    {
+        std::cout << "" << staChannelStr.first << " ";
+    }
+    std::cout << std::endl;
+    if (m_p2p)
+    {
+        if (m_linksOverlap)
+        {
+            p2pChannelStr = allChannelStrs.front();
+        }
+        else
+        {
+            p2pChannelStr = allChannelStrs.at(m_numLinksAp);
+        }
+        std::cout << "P2P link: " << p2pChannelStr.first << std::endl;
+    }
+
+    // configure PHY and MAC
+    SpectrumWifiPhyHelper apPhyHelper(m_numLinksAp);
+    SpectrumWifiPhyHelper staPhyHelper(m_numLinksSta);
+    SpectrumWifiPhyHelper adhocPhyHelper(m_numLinksP2p);
+    apPhyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+    staPhyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+    adhocPhyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+
+    std::size_t apLinkId{0};
+    std::size_t staLinkId{0};
+    for (const auto& channelInfo : allChannelStrs)
+    {
+        auto [channelStr, freqRange] = channelInfo;
+        auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
+        auto lossModel = CreateObject<LogDistancePropagationLossModel>();
+        spectrumChannel->AddPropagationLossModel(lossModel);
+        if ((std::find(staChannelStrs.cbegin(), staChannelStrs.cend(), channelInfo) !=
+             staChannelStrs.cend()) ||
+            (p2pChannelStr == channelInfo))
+        {
+            staPhyHelper.Set(staLinkId++, "ChannelSettings", StringValue(channelStr));
+            staPhyHelper.AddChannel(spectrumChannel, freqRange);
+        }
+        if (std::find(apChannelStrs.cbegin(), apChannelStrs.cend(), channelInfo) !=
+            apChannelStrs.cend())
+        {
+            apPhyHelper.Set(apLinkId++, "ChannelSettings", StringValue(channelStr));
+            apPhyHelper.AddChannel(spectrumChannel, freqRange);
+        }
+        if (p2pChannelStr == channelInfo)
+        {
+            adhocPhyHelper.Set("ChannelSettings", StringValue(channelStr));
+            adhocPhyHelper.AddChannel(spectrumChannel, freqRange);
+        }
+    }
 
     WifiMacHelper wifiMac;
     WifiHelper wifi;
@@ -492,7 +623,7 @@ WifiP2pExample::Setup()
                     SsidValue(ssid),
                     "BE_MaxAmpduSize",
                     UintegerValue(m_maxAmpduLength));
-    auto apDevice = wifi.Install(wifiPhy, wifiMac, m_wifiApNode);
+    auto apDevice = wifi.Install(apPhyHelper, wifiMac, m_wifiApNode);
     streamNumber += WifiHelper::AssignStreams(apDevice, streamNumber);
 
     // setup STAs (including adhoc station)
@@ -508,7 +639,7 @@ WifiP2pExample::Setup()
                         BooleanValue(true),
                         "BE_MaxAmpduSize",
                         UintegerValue(m_maxAmpduLength));
-        staDevices.Add(wifi.Install(wifiPhy, wifiMac, m_wifiStaNodes.Get(0)));
+        staDevices.Add(wifi.Install(staPhyHelper, wifiMac, m_wifiStaNodes.Get(0)));
 
         // adhoc STA
         wifi.SetStandard(GetStandardForType(m_adhocType));
@@ -518,7 +649,7 @@ WifiP2pExample::Setup()
                         "BE_MaxAmpduSize",
                         UintegerValue(m_maxAmpduLength));
 
-        staDevices.Add(wifi.Install(wifiPhy, wifiMac, m_wifiStaNodes.Get(1)));
+        staDevices.Add(wifi.Install(adhocPhyHelper, wifiMac, m_wifiStaNodes.Get(1)));
     }
     else
     {
@@ -531,10 +662,10 @@ WifiP2pExample::Setup()
                         UintegerValue(m_maxAmpduLength));
 
         wifi.SetStandard(GetStandardForType(m_staType));
-        staDevices.Add(wifi.Install(wifiPhy, wifiMac, m_wifiStaNodes.Get(0)));
+        staDevices.Add(wifi.Install(staPhyHelper, wifiMac, m_wifiStaNodes.Get(0)));
 
         wifi.SetStandard(GetStandardForType(m_adhocType));
-        staDevices.Add(wifi.Install(wifiPhy, wifiMac, m_wifiStaNodes.Get(1)));
+        staDevices.Add(wifi.Install(staPhyHelper, wifiMac, m_wifiStaNodes.Get(1)));
     }
     streamNumber += WifiHelper::AssignStreams(staDevices, streamNumber);
 
@@ -707,16 +838,16 @@ WifiP2pExample::Setup()
     // pcap
     if (m_pcap)
     {
-        wifiPhy.EnablePcap("wifi-p2p-AP", apDevice.Get(0));
+        apPhyHelper.EnablePcap("wifi-p2p-AP", apDevice.Get(0));
         if (m_p2p)
         {
-            wifiPhy.EnablePcap("wifi-p2p-STA", staDevices.Get(0));
-            wifiPhy.EnablePcap("wifi-p2p-ADHOC", staDevices.Get(1));
+            staPhyHelper.EnablePcap("wifi-p2p-STA", staDevices.Get(0));
+            adhocPhyHelper.EnablePcap("wifi-p2p-ADHOC", staDevices.Get(1));
         }
         else
         {
-            wifiPhy.EnablePcap("wifi-p2p-STA1", staDevices.Get(0));
-            wifiPhy.EnablePcap("wifi-p2p-STA2", staDevices.Get(1));
+            staPhyHelper.EnablePcap("wifi-p2p-STA1", staDevices.Get(0));
+            staPhyHelper.EnablePcap("wifi-p2p-STA2", staDevices.Get(1));
         }
     }
 }
