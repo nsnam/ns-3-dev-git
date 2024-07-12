@@ -1234,20 +1234,25 @@ StaWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << +linkId);
     const WifiMacHeader& hdr = mpdu->GetHeader();
+    const auto from = hdr.GetAddr2();
+    const auto bssid = hdr.GetAddr3();
     NS_ASSERT(hdr.IsBeacon());
 
     NS_LOG_DEBUG("Beacon received");
     MgtBeaconHeader beacon;
     mpdu->GetPacket()->PeekHeader(beacon);
     const auto& capabilities = beacon.Capabilities();
-    NS_ASSERT(capabilities.IsEss());
     bool goodBeacon;
-    if (IsWaitAssocResp() || IsAssociated())
+    if (!capabilities.IsEss())
+    {
+        goodBeacon = false;
+    }
+    else if (IsWaitAssocResp() || IsAssociated())
     {
         // we have to process this Beacon only if sent by the AP we are associated
         // with or from which we are waiting an Association Response frame
-        auto bssid = GetLink(linkId).bssid;
-        goodBeacon = bssid.has_value() && (hdr.GetAddr3() == *bssid);
+        auto linkBssid = GetLink(linkId).bssid;
+        goodBeacon = linkBssid.has_value() && (bssid == *linkBssid);
     }
     else
     {
@@ -1259,8 +1264,8 @@ StaWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     SnrTag snrTag;
     bool found = mpdu->GetPacket()->PeekPacketTag(snrTag);
     NS_ASSERT(found);
-    ApInfo apInfo = {.m_bssid = hdr.GetAddr3(),
-                     .m_apAddr = hdr.GetAddr2(),
+    ApInfo apInfo = {.m_bssid = bssid,
+                     .m_apAddr = from,
                      .m_snr = snrTag.Get(),
                      .m_frame = std::move(beacon),
                      .m_channel = {GetCurrentChannel(linkId)},
@@ -1271,22 +1276,31 @@ StaWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         m_beaconInfo(apInfo);
     }
 
+    if (capabilities.IsIbss() && m_enableP2pLinks)
+    {
+        NS_LOG_LOGIC("Beacon is from IBSS");
+        UpdateApInfo(apInfo.m_frame, from, bssid, linkId);
+        GetWifiRemoteStationManager(linkId)->RecordAdhocPeer(from);
+        return;
+    }
+
     if (!goodBeacon)
     {
         NS_LOG_LOGIC("Beacon is not for us");
         return;
     }
+
     if (m_state == ASSOCIATED)
     {
         m_beaconArrival(Simulator::Now());
         Time delay = MicroSeconds(std::get<MgtBeaconHeader>(apInfo.m_frame).GetBeaconIntervalUs() *
                                   m_maxMissedBeacons);
         RestartBeaconWatchdog(delay);
-        UpdateApInfo(apInfo.m_frame, hdr.GetAddr2(), hdr.GetAddr3(), linkId);
+        UpdateApInfo(apInfo.m_frame, from, bssid, linkId);
     }
     else
     {
-        NS_LOG_DEBUG("Beacon received from " << hdr.GetAddr2());
+        NS_LOG_DEBUG("Beacon received from " << from);
         m_assocManager->NotifyApInfo(std::move(apInfo));
     }
 }
