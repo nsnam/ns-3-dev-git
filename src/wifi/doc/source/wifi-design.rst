@@ -52,11 +52,11 @@ The implementation is modular and provides roughly three sublayers of models:
 
 * the **PHY layer models**: they model amendment-specific and common
   PHY layer operations and functions.
-* the so-called **MAC low models**: they model functions such as medium
+* **lower MAC models**: they model functions such as medium
   access (DCF and EDCA), frame protection (RTS/CTS) and acknowledgment (ACK/BlockAck).
   In |ns3|, the lower-level MAC is comprised of a **Frame Exchange Manager** hierarchy,
-  a **Channel Access Manager** and a **MAC middle** entity.
-* the so-called **MAC high models**: they implement non-time-critical processes
+  a **Channel Access Manager,** **Txop** objects, **BlockAckManager** objects, and a **MAC middle** entity.
+* **upper MAC models**: they implement non-time-critical processes
   in Wifi such as the MAC-level beacon generation, probing, and association
   state machines, and a set of **Rate control algorithms**.  In the literature,
   this sublayer is sometimes called the **upper MAC** and consists of more
@@ -76,10 +76,8 @@ as the number of links.
 MAC high models
 ===============
 
-There are presently three **MAC high models** that provide for the three
-(non-mesh; the mesh equivalent, which is a sibling of these with common
-parent ``ns3::WifiMac``, is not discussed here) Wi-Fi topological
-elements - Access Point (AP) (``ns3::ApWifiMac``),
+There are presently three variants of parent class ``ns3::WifiMac``:
+Access Point (AP) (``ns3::ApWifiMac``),
 non-AP Station (STA) (``ns3::StaWifiMac``), and STA in an Independent
 Basic Service Set (IBSS) - also commonly referred to as an ad hoc
 network (``ns3::AdhocWifiMac``).
@@ -98,13 +96,14 @@ configuration, an attribute ``QosSupported`` that allows
 configuration of 802.11e/WMM-style QoS support.
 
 There are also several **rate control algorithms** that can be used by the
-MAC low layer.  A complete list of available rate control algorithms is
+MAC low layer.  These are all implemented as subclasses of
+``ns3::WifiRemoteStationManager.`` A complete list of available rate control algorithms is
 provided in a separate section.
 
 MAC low layer
 ==============
 
-The **MAC low layer** is split into three main components:
+The lower MAC is split into three main components:
 
 #. ``ns3::FrameExchangeManager`` a class hierarchy which implement the frame exchange
    sequences introduced by the supported IEEE 802.11 amendments. It also handles
