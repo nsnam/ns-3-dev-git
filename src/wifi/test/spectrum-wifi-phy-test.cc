@@ -2299,6 +2299,12 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                     txPpduPhy->GetPhyBand());
                 for (auto bw = txPpduPhy->GetChannelWidth(); bw >= MHz_u{20}; bw /= 2)
                 {
+                    if ((j == i) && (bw == m_rxPhys.at(j)->GetChannelWidth()))
+                    {
+                        // this test is not interested in RX PHY staying on the same channel as TX
+                        // PHY
+                        break;
+                    }
                     const auto& channelInfo =
                         (*WifiPhyOperatingChannel::FindFirst(0,
                                                              MHz_u{0},
