@@ -146,7 +146,12 @@ Icmpv6L4Protocol::GetTypeId()
             .AddTraceSource("FailedDad",
                             "Duplicate Address detected during DAD, the address is now INVALID",
                             MakeTraceSourceAccessor(&Icmpv6L4Protocol::m_failedDadAddressTrace),
-                            "ns3::Ipv6Address::TracedCallback");
+                            "ns3::Ipv6Address::TracedCallback")
+            .AddTraceSource(
+                "DadSuccess",
+                "Duplicate Address not detected during DAD, the address is now PREFERRED",
+                MakeTraceSourceAccessor(&Icmpv6L4Protocol::m_dadSuccessAddressTrace),
+                "ns3::Ipv6Address::TracedCallback");
     return tid;
 }
 
@@ -1858,6 +1863,7 @@ Icmpv6L4Protocol::FunctionDadTimeout(Ipv6Interface* interface, Ipv6Address addr)
      */
     if (found && ifaddr.GetState() != Ipv6InterfaceAddress::INVALID)
     {
+        m_dadSuccessAddressTrace(ifaddr.GetAddress());
         interface->SetState(ifaddr.GetAddress(), Ipv6InterfaceAddress::PREFERRED);
         NS_LOG_LOGIC("DAD OK, interface in state PREFERRED");
 

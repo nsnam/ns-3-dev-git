@@ -704,6 +704,13 @@ class Icmpv6L4Protocol : public IpL4Protocol
      * Includes the address whose state has been changed.
      */
     ns3::TracedCallback<const Ipv6Address&> m_failedDadAddressTrace;
+
+    /**
+     * The trace fired when a DAD completes and no duplicate address has
+     * been detected. The address state changes to PREFERRED.
+     * Includes the address whose state has been changed.
+     */
+    ns3::TracedCallback<const Ipv6Address&> m_dadSuccessAddressTrace;
 };
 
 } /* namespace ns3 */
