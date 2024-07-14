@@ -703,7 +703,7 @@ class Icmpv6L4Protocol : public IpL4Protocol
      * The trace fired when a DAD fails, changing the address state to INVALID.
      * Includes the address whose state has been changed.
      */
-    ns3::TracedCallback<const Ipv6Address&> m_failedDadAddressTrace;
+    ns3::TracedCallback<const Ipv6Address&> m_dadFailureAddressTrace;
 
     /**
      * The trace fired when a DAD completes and no duplicate address has

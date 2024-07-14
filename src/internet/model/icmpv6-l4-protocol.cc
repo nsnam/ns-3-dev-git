@@ -143,9 +143,9 @@ Icmpv6L4Protocol::GetTypeId()
                           TimeValue(Seconds(0)),
                           MakeTimeAccessor(&Icmpv6L4Protocol::m_rsMaxRetransmissionDuration),
                           MakeTimeChecker())
-            .AddTraceSource("FailedDad",
+            .AddTraceSource("DadFailure",
                             "Duplicate Address detected during DAD, the address is now INVALID",
-                            MakeTraceSourceAccessor(&Icmpv6L4Protocol::m_failedDadAddressTrace),
+                            MakeTraceSourceAccessor(&Icmpv6L4Protocol::m_dadFailureAddressTrace),
                             "ns3::Ipv6Address::TracedCallback")
             .AddTraceSource(
                 "DadSuccess",
@@ -882,7 +882,7 @@ Icmpv6L4Protocol::HandleNA(Ptr<Packet> packet,
             if (ifaddr.GetState() == Ipv6InterfaceAddress::TENTATIVE ||
                 ifaddr.GetState() == Ipv6InterfaceAddress::TENTATIVE_OPTIMISTIC)
             {
-                m_failedDadAddressTrace(ifaddr.GetAddress());
+                m_dadFailureAddressTrace(ifaddr.GetAddress());
                 interface->SetState(ifaddr.GetAddress(), Ipv6InterfaceAddress::INVALID);
             }
         }
