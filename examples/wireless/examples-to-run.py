@@ -349,6 +349,16 @@ cpp_examples = [
         "True",
         "True",
     ),
+    (
+        "wifi-p2p --simulationTime=1s --numLinksAp=2 --numLinksSta=2 --numLinksP2p=1 --adhocToStaMinExpectedThroughput=49 --staToAdhocMinExpectedThroughput=49 --staToAdhocMaxExpectedLoss=1.0 --adhocToStaMaxExpectedLoss=1.0",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-p2p --simulationTime=1s --numLinksAp=2 --numLinksSta=3 --numLinksP2p=1 --linksOverlap=0 --adhocToStaMinExpectedThroughput=49 --staToAdhocMinExpectedThroughput=49 --staToAdhocMaxExpectedLoss=1.0 --adhocToStaMaxExpectedLoss=1.0",
+        "True",
+        "True",
+    ),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
