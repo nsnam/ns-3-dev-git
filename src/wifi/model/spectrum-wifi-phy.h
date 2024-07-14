@@ -188,10 +188,6 @@ class SpectrumWifiPhy : public WifiPhy
     void DoDispose() override;
     void DoInitialize() override;
 
-    // The following method calls the base WifiPhy class method
-    // but also generates a new SpectrumModel if called during runtime
-    void DoChannelSwitch() override;
-
     std::map<FrequencyRange, Ptr<WifiSpectrumPhyInterface>>
         m_spectrumPhyInterfaces; //!< Spectrum PHY interfaces
 
@@ -290,8 +286,6 @@ class SpectrumWifiPhy : public WifiPhy
     bool m_disableWifiReception;           //!< forces this PHY to fail to sync on any signal
     bool m_trackSignalsInactiveInterfaces; //!< flag whether signals coming from inactive spectrum
                                            //!< PHY interfaces are tracked
-    std::vector<MHz_t> m_frequenciesBeforeSwitch; //!< center frequency before channel switch
-    std::vector<MHz_t> m_widthsBeforeSwitch;      //!< channel width before channel switch
 
     TracedCallback<Ptr<const SpectrumSignalParameters>, uint32_t, double, Time>
         m_signalCb; //!< Signal callback

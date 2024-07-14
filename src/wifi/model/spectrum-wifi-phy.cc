@@ -89,9 +89,7 @@ SpectrumWifiPhy::GetTypeId()
 
 SpectrumWifiPhy::SpectrumWifiPhy()
     : m_spectrumPhyInterfaces{},
-      m_currentSpectrumPhyInterface{nullptr},
-      m_frequenciesBeforeSwitch{},
-      m_widthsBeforeSwitch{}
+      m_currentSpectrumPhyInterface{nullptr}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -325,32 +323,11 @@ SpectrumWifiPhy::ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInt
 }
 
 void
-SpectrumWifiPhy::DoChannelSwitch()
-{
-    NS_LOG_FUNCTION(this);
-    m_frequenciesBeforeSwitch = GetOperatingChannel().IsSet()
-                                    ? GetOperatingChannel().GetFrequencies()
-                                    : std::vector<MHz_t>{};
-    m_widthsBeforeSwitch =
-        GetOperatingChannel().IsSet() ? GetOperatingChannel().GetWidths() : std::vector<MHz_t>{};
-    WifiPhy::DoChannelSwitch();
-}
-
-void
 SpectrumWifiPhy::FinalizeChannelSwitch()
 {
     NS_LOG_FUNCTION(this);
     const auto frequenciesAfter = GetOperatingChannel().GetFrequencies();
     const auto widthsAfter = GetOperatingChannel().GetWidths();
-    if ((m_frequenciesBeforeSwitch == frequenciesAfter) && (m_widthsBeforeSwitch == widthsAfter))
-    {
-        NS_LOG_DEBUG("Same RF channel as before, do nothing");
-        if (IsInitialized())
-        {
-            SwitchMaybeToCcaBusy(nullptr);
-        }
-        return;
-    }
 
     Ptr<WifiSpectrumPhyInterface> newSpectrumPhyInterface;
     const auto numSegments = GetOperatingChannel().GetNSegments();

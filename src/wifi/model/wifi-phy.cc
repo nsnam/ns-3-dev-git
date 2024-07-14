@@ -1171,11 +1171,16 @@ WifiPhy::SetOperatingChannel(const ChannelSegmentsWithUnits& channelSegments)
                          << static_cast<WifiPhyBand>(std::get<2>(channelSegments.front()))
                          << +std::get<3>(channelSegments.front()));
 
-    m_channelSettings = channelSegments;
+    if (m_operatingChannel.IsSet() && (m_channelSettings == channelSegments))
+    {
+        NS_LOG_DEBUG("Already operating on requested channel");
+        return;
+    }
 
     if (m_standard == WIFI_STANDARD_UNSPECIFIED)
     {
         NS_LOG_DEBUG("Channel information will be applied when a standard is configured");
+        m_channelSettings = channelSegments;
         return;
     }
 
@@ -1195,6 +1200,8 @@ WifiPhy::SetOperatingChannel(const ChannelSegmentsWithUnits& channelSegments)
             return;
         }
     }
+
+    m_channelSettings = channelSegments;
 
     // channel can be switched now.
     DoChannelSwitch();
