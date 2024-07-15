@@ -142,7 +142,7 @@ EmlsrOperationsTestBase::Transmit(Ptr<WifiMac> mac,
             staMac && staMac->IsEmlsrLink(*linkId) &&
             staMac->GetEmlsrManager()->GetMediumSyncDuration().IsStrictlyPositive())
         {
-            const auto mustBeStarted =
+            const auto mustStartMsd =
                 staMac->GetEmlsrManager()->GetInDeviceInterference() &&
                 txDuration > MicroSeconds(EmlsrManager::MEDIUM_SYNC_THRESHOLD_USEC);
 
@@ -161,10 +161,20 @@ EmlsrOperationsTestBase::Transmit(Ptr<WifiMac> mac,
                         bool msdWasRunning = staMac->GetEmlsrManager()
                                                  ->GetElapsedMediumSyncDelayTimer(id)
                                                  .has_value();
+                        if (auto phy = staMac->GetWifiPhy(id);
+                            !msdWasRunning && !mustStartMsd && phy && phy->IsStateSleep())
+                        {
+                            // if the MSD timer was not running before the end of the TX, it is not
+                            // expected to be started and the PHY operating on this link is
+                            // sleeping, do not check that the MSD timer is not started after the
+                            // end of the TX, because it may be started because of the sleep period
+                            // of the aux PHY
+                            return;
+                        }
                         Simulator::Schedule(TimeStep(2), [=, this]() {
                             CheckMsdTimerRunning(staMac,
                                                  id,
-                                                 (msdWasRunning || mustBeStarted),
+                                                 (msdWasRunning || mustStartMsd),
                                                  std::string("after transmitting ") + hdrType +
                                                      " on link " + std::to_string(*linkId));
                         });
@@ -200,6 +210,52 @@ EmlsrOperationsTestBase::CheckMsdTimerRunning(Ptr<StaWifiMac> staMac,
 }
 
 void
+EmlsrOperationsTestBase::CheckAuxPhysSleepMode(Ptr<StaWifiMac> staMac, bool sleep)
+{
+    if (!m_putAuxPhyToSleep)
+    {
+        // if m_putAuxPhyToSleep is false, aux PHYs must not be put to sleep
+        sleep = false;
+    }
+
+    for (const auto& phy : staMac->GetDevice()->GetPhys())
+    {
+        if (phy->GetPhyId() == m_mainPhyId)
+        {
+            continue; // do not check the main PHY
+        }
+
+        auto linkId = staMac->GetLinkForPhy(phy);
+
+        if (linkId.has_value() && !staMac->IsEmlsrLink(*linkId))
+        {
+            continue; // this PHY is not operating on an EMLSR link
+        }
+
+        if (!sleep)
+        {
+            NS_TEST_EXPECT_MSG_EQ(phy->IsStateSleep(),
+                                  false,
+                                  Simulator::Now().GetTimeStep()
+                                      << " PHY " << +phy->GetPhyId() << " is in unexpected state "
+                                      << phy->GetState()->GetState());
+            continue;
+        }
+
+        // if the PHY is in state TX or switching, sleep is postponed until their end
+        const auto delay =
+            (phy->IsStateTx() || phy->IsStateSwitching()) ? phy->GetDelayUntilIdle() : Time{0};
+
+        Simulator::Schedule(delay, [=, this]() {
+            NS_TEST_EXPECT_MSG_EQ(phy->IsStateSleep(),
+                                  true,
+                                  "PHY " << +phy->GetPhyId() << " is in unexpected state "
+                                         << phy->GetState()->GetState());
+        });
+    }
+}
+
+void
 EmlsrOperationsTestBase::DoSetup()
 {
     RngSeedManager::SetSeed(1);
@@ -208,6 +264,7 @@ EmlsrOperationsTestBase::DoSetup()
 
     Config::SetDefault("ns3::WifiMac::MpduBufferSize", UintegerValue(64));
     Config::SetDefault("ns3::EmlsrManager::InDeviceInterference", BooleanValue(true));
+    Config::SetDefault("ns3::EmlsrManager::PutAuxPhyToSleep", BooleanValue(m_putAuxPhyToSleep));
 
     NodeContainer wifiApNode(1);
     NodeContainer wifiStaNodes(m_nEmlsrStations);
@@ -774,6 +831,7 @@ EmlsrDlTxopTest::EmlsrDlTxopTest(const Params& params)
     m_transitionDelay = params.transitionDelay;
     m_transitionTimeout = params.transitionTimeout;
     m_establishBaDl = true;
+    m_putAuxPhyToSleep = params.putAuxPhyToSleep;
     m_duration = Seconds(1.5);
 
     NS_ABORT_MSG_IF(params.linksToEnableEmlsrOn.size() < 2,
@@ -841,6 +899,31 @@ EmlsrDlTxopTest::Transmit(Ptr<WifiMac> mac,
 
     case WIFI_MAC_CTL_BACKRESP:
         CheckBlockAck(psduMap, txVector, phyId);
+        break;
+
+    case WIFI_MAC_CTL_END:
+        if (auto apMac = DynamicCast<ApWifiMac>(mac))
+        {
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psduMap,
+                                             txVector,
+                                             apMac->GetDevice()->GetPhy(phyId)->GetPhyBand());
+            for (std::size_t i = 0; i < m_nEmlsrStations; ++i)
+            {
+                if (m_staMacs[i]->IsEmlsrLink(linkId) &&
+                    m_staMacs[i]->GetWifiPhy(linkId) ==
+                        m_staMacs[i]->GetDevice()->GetPhy(m_mainPhyId))
+                {
+                    // AP is terminating a TXOP on an EMLSR link on which the main PHY is operating,
+                    // aux PHYs should resume from sleep
+                    Simulator::Schedule(txDuration + TimeStep(1),
+                                        &EmlsrDlTxopTest::CheckAuxPhysSleepMode,
+                                        this,
+                                        m_staMacs[i],
+                                        false);
+                }
+            }
+        }
         break;
 
     default:;
@@ -1983,8 +2066,8 @@ EmlsrDlTxopTest::CheckInitialControlFrame(Ptr<const WifiMpdu> mpdu,
                                   << maxPaddingDelay.As(Time::US));
     }
 
-    // check that the EMLSR clients have blocked transmissions on other links after
-    // receiving this ICF
+    // check that the EMLSR clients have blocked transmissions on other links and have put aux PHYs
+    // to sleep after receiving this ICF
     for (const auto& userInfo : trigger)
     {
         for (std::size_t i = 0; i < m_nEmlsrStations; i++)
@@ -2006,6 +2089,8 @@ EmlsrDlTxopTest::CheckInitialControlFrame(Ptr<const WifiMpdu> mpdu,
                                      "Checking EMLSR links on EMLSR client " + std::to_string(i) +
                                          " after receiving ICF");
                 }
+
+                CheckAuxPhysSleepMode(m_staMacs[i], true);
             });
 
             break;
@@ -2468,6 +2553,7 @@ EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
     m_transitionDelay = {MicroSeconds(256)};
     m_establishBaDl = true;
     m_establishBaUl = true;
+    m_putAuxPhyToSleep = params.putAuxPhyToSleep;
     m_duration = Seconds(1);
 
     NS_ABORT_MSG_IF(params.linksToEnableEmlsrOn.size() < 2,
@@ -2610,10 +2696,6 @@ EmlsrUlTxopTest::Transmit(Ptr<WifiMac> mac,
     case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
         NS_ASSERT_MSG(nodeId > 0, "APs do not send AssocReq frames");
         NS_TEST_EXPECT_MSG_EQ(+linkId, +m_mainPhyId, "AssocReq not sent by the main PHY");
-        break;
-
-    case WIFI_MAC_CTL_TRIGGER:
-        CheckInitialControlFrame(*psdu->begin(), txVector, linkId);
         break;
 
     case WIFI_MAC_CTL_RTS:
@@ -2849,21 +2931,20 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
     auto txDuration =
         WifiPhy::CalculateTxDuration(psduMap, txVector, m_apMac->GetWifiPhy(linkId)->GetPhyBand());
 
-    // in this test, BlockAck frames terminates TXOP. If a BlockAck frame is sent on an EMLSR link
-    // other than the main PHY link, it means that the aux PHY associated with that link is in
-    // sleep mode and it is resumed after the end of the BlockAck frame
-    if (linkId != m_mainPhyId && linkId != m_nonEmlsrLink)
+    // in this test, BlockAck frames terminates TXOP, thus aux PHYs shall be in sleep mode before
+    // the end of BlockAck reception and awake right afterwards
+    if (linkId != m_nonEmlsrLink)
     {
-        Simulator::Schedule(txDuration - NanoSeconds(1), [=, this]() {
-            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetDevice()->GetPhy(linkId)->IsStateSleep(),
-                                  true,
-                                  "Aux PHY on link " << +linkId << " not in sleep mode");
-        });
-        Simulator::Schedule(txDuration + NanoSeconds(1), [=, this]() {
-            NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetDevice()->GetPhy(linkId)->IsStateSleep(),
-                                  false,
-                                  "Aux PHY on link " << +linkId << " in sleep mode");
-        });
+        Simulator::Schedule(txDuration - TimeStep(1),
+                            &EmlsrUlTxopTest::CheckAuxPhysSleepMode,
+                            this,
+                            m_staMacs[0],
+                            true);
+        Simulator::Schedule(txDuration + TimeStep(1),
+                            &EmlsrUlTxopTest::CheckAuxPhysSleepMode,
+                            this,
+                            m_staMacs[0],
+                            false);
     }
 
     switch (m_countBlockAck)
@@ -3096,33 +3177,6 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
 }
 
 void
-EmlsrUlTxopTest::CheckInitialControlFrame(Ptr<const WifiMpdu> mpdu,
-                                          const WifiTxVector& txVector,
-                                          uint8_t linkId)
-{
-    CtrlTriggerHeader trigger;
-    mpdu->GetPacket()->PeekHeader(trigger);
-    if (!trigger.IsMuRts())
-    {
-        return;
-    }
-
-    if (linkId != m_mainPhyId && linkId != m_nonEmlsrLink)
-    {
-        // this is an ICF sent on an aux PHY link to start a DL TXOP. Given that aux PHYs do not
-        // switch channel, they are put in sleep mode while the main PHY is operating on their link
-        auto auxPhy = m_staMacs[0]->GetWifiPhy(linkId);
-        auto txDuration =
-            WifiPhy::CalculateTxDuration(mpdu->GetSize(), txVector, auxPhy->GetPhyBand());
-        Simulator::Schedule(txDuration + NanoSeconds(1), [=, this]() {
-            NS_TEST_EXPECT_MSG_EQ(auxPhy->IsStateSleep(),
-                                  true,
-                                  "Aux PHY on link " << +linkId << " not in sleep mode");
-        });
-    }
-}
-
-void
 EmlsrUlTxopTest::CheckRtsFrames(Ptr<const WifiMpdu> mpdu,
                                 const WifiTxVector& txVector,
                                 uint8_t linkId)
@@ -3188,18 +3242,13 @@ EmlsrUlTxopTest::CheckCtsFrames(Ptr<const WifiMpdu> mpdu,
                                   "Aux PHY on link " << +linkId << " already in sleep mode");
         });
         // if the CTS is corrupted, the TXOP ends and the aux PHY is not put to sleep
-        auto isStateSleep = !(m_corruptCts.has_value() && *m_corruptCts) &&
-                            m_staMacs[0]->GetEmlsrManager()->GetAuxPhyTxCapable();
+        auto isStateSleep = !(m_corruptCts.has_value() && *m_corruptCts);
 
-        Simulator::Schedule(
-            txDuration + MicroSeconds(2 * MAX_PROPAGATION_DELAY_USEC) + NanoSeconds(1),
-            [=, this]() {
-                NS_TEST_EXPECT_MSG_EQ(auxPhy->IsStateSleep(),
-                                      isStateSleep,
-                                      "Aux PHY on link " << +linkId
-                                                         << (isStateSleep ? " not yet" : " already")
-                                                         << " in sleep mode");
-            });
+        Simulator::Schedule(txDuration + MicroSeconds(2 * MAX_PROPAGATION_DELAY_USEC) + TimeStep(1),
+                            &EmlsrUlTxopTest::CheckAuxPhysSleepMode,
+                            this,
+                            m_staMacs[0],
+                            isStateSleep);
     }
 
     if (m_corruptCts.has_value() && *m_corruptCts)
@@ -4745,20 +4794,29 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     for (const auto& emlsrLinks :
          {std::set<uint8_t>{0, 1, 2}, std::set<uint8_t>{1, 2}, std::set<uint8_t>{0, 1}})
     {
-        AddTestCase(
-            new EmlsrDlTxopTest(
-                {1, 0, emlsrLinks, {MicroSeconds(32)}, {MicroSeconds(32)}, MicroSeconds(512)}),
-            TestCase::Duration::QUICK);
-        AddTestCase(
-            new EmlsrDlTxopTest(
-                {1, 1, emlsrLinks, {MicroSeconds(64)}, {MicroSeconds(64)}, MicroSeconds(512)}),
-            TestCase::Duration::QUICK);
+        AddTestCase(new EmlsrDlTxopTest({1,
+                                         0,
+                                         emlsrLinks,
+                                         {MicroSeconds(32)},
+                                         {MicroSeconds(32)},
+                                         MicroSeconds(512),
+                                         true /* putAuxPhyToSleep */}),
+                    TestCase::Duration::QUICK);
+        AddTestCase(new EmlsrDlTxopTest({1,
+                                         1,
+                                         emlsrLinks,
+                                         {MicroSeconds(64)},
+                                         {MicroSeconds(64)},
+                                         MicroSeconds(512),
+                                         false /* putAuxPhyToSleep */}),
+                    TestCase::Duration::QUICK);
         AddTestCase(new EmlsrDlTxopTest({2,
                                          2,
                                          emlsrLinks,
                                          {MicroSeconds(128), MicroSeconds(256)},
                                          {MicroSeconds(128), MicroSeconds(256)},
-                                         MicroSeconds(512)}),
+                                         MicroSeconds(512),
+                                         true /* putAuxPhyToSleep */}),
                     TestCase::Duration::QUICK);
     }
 
@@ -4772,12 +4830,18 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
                                              MicroSeconds(5504),
                                              3,
                                              genBackoffAndUseAuxPhyCca,
-                                             nSlotsLeft}),
+                                             nSlotsLeft,
+                                             true /* putAuxPhyToSleep */}),
                         TestCase::Duration::QUICK);
-            AddTestCase(
-                new EmlsrUlTxopTest(
-                    {{0, 1}, 40, 20, MicroSeconds(5504), 1, genBackoffAndUseAuxPhyCca, nSlotsLeft}),
-                TestCase::Duration::QUICK);
+            AddTestCase(new EmlsrUlTxopTest({{0, 1},
+                                             40,
+                                             20,
+                                             MicroSeconds(5504),
+                                             1,
+                                             genBackoffAndUseAuxPhyCca,
+                                             nSlotsLeft,
+                                             false /* putAuxPhyToSleep */}),
+                        TestCase::Duration::QUICK);
         }
     }
 

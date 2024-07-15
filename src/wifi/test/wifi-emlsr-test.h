@@ -138,6 +138,14 @@ class EmlsrOperationsTestBase : public TestCase
                               bool isRunning,
                               const std::string& msg);
 
+    /**
+     * Check whether aux PHYs of the given device are in sleep mode/awake.
+     *
+     * \param staMac the MAC of the given device
+     * \param sleep whether aux PHYs should be in sleep mode
+     */
+    void CheckAuxPhysSleepMode(Ptr<StaWifiMac> staMac, bool sleep);
+
     void DoSetup() override;
 
     /// Information about transmitted frames
@@ -160,14 +168,15 @@ class EmlsrOperationsTestBase : public TestCase
     std::vector<Time> m_paddingDelay{
         {MicroSeconds(32)}}; ///< Padding Delay advertised by the non-AP MLD
     std::vector<Time> m_transitionDelay{
-        {MicroSeconds(16)}};                ///< Transition Delay advertised by the non-AP MLD
-    bool m_establishBaDl{false};            /**< whether BA needs to be established (for TID 0)
-                                                 with the AP as originator */
-    bool m_establishBaUl{false};            /**< whether BA needs to be established (for TID 0)
-                                                 with the AP as recipient */
-    std::vector<FrameInfo> m_txPsdus;       ///< transmitted PSDUs
-    Ptr<ApWifiMac> m_apMac;                 ///< AP wifi MAC
-    std::vector<Ptr<StaWifiMac>> m_staMacs; ///< MACs of the non-AP MLDs
+        {MicroSeconds(16)}};          ///< Transition Delay advertised by the non-AP MLD
+    bool m_establishBaDl{false};      /**< whether BA needs to be established (for TID 0)
+                                           with the AP as originator */
+    bool m_establishBaUl{false};      /**< whether BA needs to be established (for TID 0)
+                                           with the AP as recipient */
+    bool m_putAuxPhyToSleep{false};   //!< whether aux PHYs are put to sleep during DL/UL TXOPs
+    std::vector<FrameInfo> m_txPsdus; ///< transmitted PSDUs
+    Ptr<ApWifiMac> m_apMac;           ///< AP wifi MAC
+    std::vector<Ptr<StaWifiMac>> m_staMacs;       ///< MACs of the non-AP MLDs
     std::vector<PacketSocketAddress> m_dlSockets; ///< packet socket address for DL traffic
     std::vector<PacketSocketAddress> m_ulSockets; ///< packet socket address for UL traffic
     uint16_t m_lastAid{0};                        ///< AID of last associated station
@@ -347,6 +356,9 @@ class EmlOmnExchangeTest : public EmlsrOperationsTestBase
  *   the link used to exchange EML Notification frames, the two A-MPDUs are transmitted one
  *   after another on the link used to exchange EML Notification frames. Otherwise, the two
  *   A-MPDUs are sent concurrently on two distinct links
+ *
+ * Also, if the PutAuxPhyToSleep attribute is set to true, it is checked that aux PHYs are in
+ * sleep mode after receiving an ICF and are resumed from sleep after receiving the CF-End frame.
  */
 class EmlsrDlTxopTest : public EmlsrOperationsTestBase
 {
@@ -366,6 +378,7 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
             transitionDelay;    //!< vector (whose size equals <i>nEmlsrStations</i>) of
                                 //!< transition the delay values advertised by non-AP MLDs
         Time transitionTimeout; //!< the Transition Timeout advertised by the AP MLD
+        bool putAuxPhyToSleep;  //!< whether aux PHYs are put to sleep during DL/UL TXOPs
     };
 
     /**
@@ -532,6 +545,10 @@ class EmlsrDlTxopTest : public EmlsrOperationsTestBase
  *   PIFS period; otherwise, the main PHY starts an UL TXOP when the backoff timer counts down to
  *   zero. The QoS data frame sent by the main PHY is not protected by RTS and the bandwidth it
  *   occupies is not affected by possible limitations on the aux PHY TX bandwidth capabilities.
+ *
+ * Also, if the PutAuxPhyToSleep attribute is set to true, it is checked that aux PHYs are in
+ * sleep mode a SIFS after receiving the ICF and are still in sleep mode right before receiving
+ * a Block Ack frame, and they are resumed from sleep after receiving the Block Ack frame.
  */
 class EmlsrUlTxopTest : public EmlsrOperationsTestBase
 {
@@ -558,6 +575,7 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
                                         //!< aux PHY is not TX capable
         uint8_t nSlotsLeftAlert;        //!< value to set the ChannelAccessManager NSlotsLeft
                                         //!< attribute to
+        bool putAuxPhyToSleep;          //!< whether aux PHYs are put to sleep during DL/UL TXOPs
     };
 
     /**
@@ -591,18 +609,6 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
      * \param linkId the ID of the given link
      */
     void CheckRtsFrames(Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector, uint8_t linkId);
-
-    /**
-     * Check that appropriate actions are taken by the AP MLD transmitting an initial
-     * Control frame to an EMLSR client on the given link.
-     *
-     * \param mpdu the MPDU carrying the MU-RTS TF
-     * \param txVector the TXVECTOR used to send the PPDU
-     * \param linkId the ID of the given link
-     */
-    void CheckInitialControlFrame(Ptr<const WifiMpdu> mpdu,
-                                  const WifiTxVector& txVector,
-                                  uint8_t linkId);
 
     /**
      * Check that appropriate actions are taken by the EMLSR client when receiving a CTS
