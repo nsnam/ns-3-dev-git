@@ -207,6 +207,17 @@ class EmlsrManager : public Object
     void NotifyUlTxopStart(uint8_t linkId);
 
     /**
+     * Notify that RTS transmission is starting on the given link.
+     *
+     * \param linkId the ID of the given link
+     * \param rts the RTS being transmitted
+     * \param txVector the TXVECTOR used to transmit the RTS
+     */
+    virtual void NotifyRtsSent(uint8_t linkId,
+                               Ptr<const WifiPsdu> rts,
+                               const WifiTxVector& txVector);
+
+    /**
      * Notify that protection (if required) is completed and data frame exchange can start
      * on the given link.
      *

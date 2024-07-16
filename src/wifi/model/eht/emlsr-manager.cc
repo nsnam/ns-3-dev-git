@@ -519,6 +519,12 @@ EmlsrManager::NotifyUlTxopStart(uint8_t linkId)
 }
 
 void
+EmlsrManager::NotifyRtsSent(uint8_t linkId, Ptr<const WifiPsdu> rts, const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << *rts << txVector);
+}
+
+void
 EmlsrManager::NotifyProtectionCompleted(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);

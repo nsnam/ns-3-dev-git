@@ -33,6 +33,10 @@ class DefaultEmlsrManager : public EmlsrManager
     DefaultEmlsrManager();
     ~DefaultEmlsrManager() override;
 
+    void NotifyRtsSent(uint8_t linkId,
+                       Ptr<const WifiPsdu> rts,
+                       const WifiTxVector& txVector) override;
+
   protected:
     uint8_t GetLinkToSendEmlOmn() override;
     std::optional<uint8_t> ResendNotification(Ptr<const WifiMpdu> mpdu) override;
@@ -49,6 +53,16 @@ class DefaultEmlsrManager : public EmlsrManager
      * \return the time remaining to the end of the CTS reception
      */
     Time GetTimeToCtsEnd(uint8_t linkId) const;
+
+    /**
+     * This function is intended to be called when an aux PHY is about to transmit an RTS on
+     * the given link to calculate the time remaining to the end of the CTS reception.
+     *
+     * \param linkId the ID of the given link
+     * \param rtsTxVector the TXVECTOR used to transmit the RTS
+     * \return the time remaining to the end of the CTS reception
+     */
+    Time GetTimeToCtsEnd(uint8_t linkId, const WifiTxVector& rtsTxVector) const;
 
     /**
      * This method can only be called when aux PHYs do not switch link. Switch the main PHY back
@@ -73,7 +87,10 @@ class DefaultEmlsrManager : public EmlsrManager
                                       //!< the main PHY is operating has to connect a listener to
                                       //!< when the main PHY is back operating on its previous link
     EventId m_auxPhySwitchEvent;      //!< event scheduled for an aux PHY to switch link
-    MainPhySwitchInfo m_mainPhySwitchInfo; //!< main PHY switch info
+    MainPhySwitchInfo m_mainPhySwitchInfo;          //!< main PHY switch info
+    std::map<uint8_t, Time> m_switchMainPhyOnRtsTx; //!< link ID-indexed map of the time when an RTS
+                                                    //!< that requires the main PHY to switch link
+                                                    //!< is expected to be transmitted on the link
 
   private:
     void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;

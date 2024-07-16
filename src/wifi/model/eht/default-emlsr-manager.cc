@@ -243,17 +243,26 @@ DefaultEmlsrManager::GetTimeToCtsEnd(uint8_t linkId) const
 {
     NS_LOG_FUNCTION(this << linkId);
 
-    auto phy = GetStaMac()->GetWifiPhy(linkId);
-    NS_ASSERT_MSG(phy, "No PHY operating on link " << +linkId);
-
-    // we have to check whether the main PHY can switch to take over the UL TXOP
     const auto stationManager = GetStaMac()->GetWifiRemoteStationManager(linkId);
     const auto bssid = GetEhtFem(linkId)->GetBssid();
     const auto allowedWidth = GetEhtFem(linkId)->GetAllowedWidth();
 
-    const auto rtsTxVector = stationManager->GetRtsTxVector(bssid, allowedWidth);
-    const auto rtsTxTime = phy->CalculateTxDuration(GetRtsSize(), rtsTxVector, phy->GetPhyBand());
+    return GetTimeToCtsEnd(linkId, stationManager->GetRtsTxVector(bssid, allowedWidth));
+}
+
+Time
+DefaultEmlsrManager::GetTimeToCtsEnd(uint8_t linkId, const WifiTxVector& rtsTxVector) const
+{
+    NS_LOG_FUNCTION(this << linkId << rtsTxVector);
+
+    auto phy = GetStaMac()->GetWifiPhy(linkId);
+    NS_ASSERT_MSG(phy, "No PHY operating on link " << +linkId);
+
+    const auto stationManager = GetStaMac()->GetWifiRemoteStationManager(linkId);
+    const auto bssid = GetEhtFem(linkId)->GetBssid();
     const auto ctsTxVector = stationManager->GetCtsTxVector(bssid, rtsTxVector.GetMode());
+
+    const auto rtsTxTime = phy->CalculateTxDuration(GetRtsSize(), rtsTxVector, phy->GetPhyBand());
     const auto ctsTxTime = phy->CalculateTxDuration(GetCtsSize(), ctsTxVector, phy->GetPhyBand());
 
     // the main PHY shall terminate the channel switch at the end of CTS reception;
@@ -267,7 +276,7 @@ DefaultEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
     NS_LOG_FUNCTION(this << linkId);
 
     auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
-    auto timeToCtsEnd = GetTimeToCtsEnd(linkId);
+    const auto timeToCtsEnd = GetTimeToCtsEnd(linkId);
     auto switchingTime = mainPhy->GetChannelSwitchDelay();
 
     switch (mainPhy->GetState()->GetState())
@@ -293,11 +302,34 @@ DefaultEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
         NS_ABORT_MSG("Main PHY cannot be in state " << mainPhy->GetState()->GetState());
     }
 
-    // TXOP can be started, schedule main PHY switch. Main PHY shall terminate the channel switch
-    // at the end of CTS reception
-    const auto delay = timeToCtsEnd - mainPhy->GetChannelSwitchDelay();
+    // TXOP can be started, main PHY will be scheduled to switch by NotifyRtsSent as soon as the
+    // transmission of the RTS is notified
+    m_switchMainPhyOnRtsTx[linkId] = Simulator::Now();
 
-    NS_ASSERT(delay.IsPositive());
+    return {true, Time{0}};
+}
+
+void
+DefaultEmlsrManager::NotifyRtsSent(uint8_t linkId,
+                                   Ptr<const WifiPsdu> rts,
+                                   const WifiTxVector& txVector)
+{
+    NS_LOG_FUNCTION(this << *rts << txVector);
+
+    const auto it = m_switchMainPhyOnRtsTx.find(linkId);
+
+    if (it == m_switchMainPhyOnRtsTx.cend() || it->second != Simulator::Now())
+    {
+        // No request for main PHY to switch or obsolete request
+        return;
+    }
+
+    // Main PHY shall terminate the channel switch at the end of CTS reception
+    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+    const auto delay = GetTimeToCtsEnd(linkId, txVector) - mainPhy->GetChannelSwitchDelay();
+    NS_ASSERT_MSG(delay.IsPositive(),
+                  "RTS is being sent, but not enough time for main PHY to switch");
+
     NS_LOG_DEBUG("Schedule main Phy switch in " << delay.As(Time::US));
     m_ulMainPhySwitch[linkId] = Simulator::Schedule(delay,
                                                     &DefaultEmlsrManager::SwitchMainPhy,
@@ -307,7 +339,7 @@ DefaultEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
                                                     RESET_BACKOFF,
                                                     DONT_REQUEST_ACCESS);
 
-    return {true, Time{0}};
+    m_switchMainPhyOnRtsTx.erase(it);
 }
 
 } // namespace ns3

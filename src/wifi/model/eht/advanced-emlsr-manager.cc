@@ -350,19 +350,9 @@ AdvancedEmlsrManager::GetDelayUnlessMainPhyTakesOverUlTxop(uint8_t linkId)
         return {false, timeToCtsEnd};
     }
 
-    // TXOP can be started, schedule main PHY switch. Main PHY shall terminate the channel switch
-    // at the end of CTS reception
-    const auto delay = timeToCtsEnd - switchingTime;
-
-    NS_ASSERT(delay.IsPositive());
-    NS_LOG_DEBUG("Schedule main Phy switch in " << delay.As(Time::US));
-    m_ulMainPhySwitch[linkId] = Simulator::Schedule(delay,
-                                                    &AdvancedEmlsrManager::SwitchMainPhy,
-                                                    this,
-                                                    linkId,
-                                                    false,
-                                                    RESET_BACKOFF,
-                                                    DONT_REQUEST_ACCESS);
+    // TXOP can be started, main PHY will be scheduled to switch by NotifyRtsSent as soon as the
+    // transmission of the RTS is notified
+    m_switchMainPhyOnRtsTx[linkId] = Simulator::Now();
 
     return {true, Time{0}};
 }
