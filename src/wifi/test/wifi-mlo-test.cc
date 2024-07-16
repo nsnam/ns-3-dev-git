@@ -483,6 +483,14 @@ AidAssignmentTest::DoRun()
 
     NS_TEST_EXPECT_MSG_EQ(m_expectedAid, m_staDevices.GetN(), "Not all STAs completed association");
 
+    for (uint32_t i = 0; i < m_staDevices.GetN(); ++i)
+    {
+        auto mac = StaticCast<WifiNetDevice>(m_staDevices.Get(i))->GetMac();
+        mac->TraceDisconnectWithoutContext(
+            "Assoc",
+            MakeCallback(&AidAssignmentTest::SetSsid, this).Bind(DynamicCast<StaWifiMac>(mac)));
+    }
+
     Simulator::Destroy();
 }
 
