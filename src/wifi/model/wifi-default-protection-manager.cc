@@ -48,6 +48,12 @@ WifiDefaultProtectionManager::GetTypeId()
                           "Initial Control Frame to an EMLSR client).",
                           BooleanValue(false),
                           MakeBooleanAccessor(&WifiDefaultProtectionManager::m_singleRtsPerTxop),
+                          MakeBooleanChecker())
+            .AddAttribute("SkipMuRtsBeforeBsrp",
+                          "If enabled, MU-RTS is not used to protect the transmission of a BSRP "
+                          "Trigger Frame.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&WifiDefaultProtectionManager::m_skipMuRtsBeforeBsrp),
                           MakeBooleanChecker());
     return tid;
 }
@@ -375,6 +381,10 @@ WifiDefaultProtectionManager::TryUlMuTransmission(Ptr<const WifiMpdu> mpdu,
     bool needMuRts =
         (m_sendMuRts && !allProtected && (!m_singleRtsPerTxop || protectedStas.empty())) ||
         isUnprotectedEmlsrDst;
+
+    // if we are sending a BSRP TF and SkipMuRtsBeforeBsrpTf is true, do not use MU-RTS (even in
+    // case of unprotected EMLSR, because the BSRP TF is an ICF)
+    needMuRts = needMuRts && (!m_skipMuRtsBeforeBsrp || !trigger.IsBsrp());
 
     if (!needMuRts)
     {

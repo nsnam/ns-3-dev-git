@@ -2158,7 +2158,9 @@ OfdmaAckSequenceTest::DoRun()
         TimeValue(m_defaultTbPpduDuration));
     mac.SetProtectionManager("ns3::WifiDefaultProtectionManager",
                              "EnableMuRts",
-                             BooleanValue(true));
+                             BooleanValue(true),
+                             "SkipMuRtsBeforeBsrp",
+                             BooleanValue(false));
     mac.SetAckManager("ns3::WifiDefaultAckManager",
                       "DlMuAckSequenceType",
                       EnumValue(m_dlMuAckType));

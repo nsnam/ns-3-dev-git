@@ -36,6 +36,7 @@ The required Doxygen version for documentation generation is version 1.11.
 - (applications) - The `ThreeGppHttpServer::LocalAddress` and `ThreeGppHttpServer::LocalPort` attributes have been renamed to `ThreeGppHttpServer::Remote` and `ThreeGppHttpServer::Port`, respectively.
 - (applications) - It is now possible to specify the address on which to bind the listening socket for UdpServer via the `Local` attribute.
 - (applications) - It is now possible to specify a port only for PacketSink to listen to any address (both IPv4 and IPv6).
+- (wifi) - Added a `WifiDefaultProtectionManager::SkipMuRtsBeforeBsrp` attribute to avoid using MU-RTS to protect the transmission of a BSRP Trigger Frame. If this attribute is set to true (which is the default value), BSRP Trigger Frames can be used as Initial Control Frames for EMLSR clients
 
 ### Bugs fixed
 
