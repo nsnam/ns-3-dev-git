@@ -11,6 +11,7 @@
 #include "yans-wifi-phy.h"
 
 #include "interference-helper.h"
+#include "wifi-utils.h"
 #include "yans-wifi-channel.h"
 
 #include "ns3/log.h"
@@ -89,6 +90,28 @@ YansWifiPhy::StartTx(Ptr<const WifiPpdu> ppdu)
                  << GetPower(ppdu->GetTxVector().GetTxPowerLevel()));
     m_signalTransmissionCb(ppdu, ppdu->GetTxVector());
     m_channel->Send(this, ppdu, GetTxPowerForTransmission(ppdu) + GetTxGain());
+}
+
+void
+YansWifiPhy::StartRx(Ptr<const WifiPpdu> ppdu, dBm_t rxPower)
+{
+    NS_LOG_FUNCTION(this << ppdu << rxPower);
+
+    const auto totalRxPower = rxPower + GetRxGain();
+    TraceSignalArrival(ppdu, totalRxPower.in_dBm(), ppdu->GetTxDuration());
+    // Do no further processing if signal is too weak
+    // Current implementation assumes constant RX power over the PPDU duration
+    // Compare received TX power per MHz to normalized RX sensitivity
+    const auto txWidth = ppdu->GetTxChannelWidth();
+    if (totalRxPower < GetRxSensitivity() + RatioToDb(txWidth / MHz_t{20}))
+    {
+        NS_LOG_INFO("Received signal too weak to process: " << rxPower << " dBm");
+        return;
+    }
+    RxPowerWattPerChannelBand rxPowerW;
+    rxPowerW.insert(
+        {{{{0, 0}}, {{Hz_t{0}, Hz_t{0}}}}, (DbmToW(totalRxPower))}); // dummy band for YANS
+    StartReceivePreamble(ppdu, rxPowerW, ppdu->GetTxDuration());
 }
 
 void

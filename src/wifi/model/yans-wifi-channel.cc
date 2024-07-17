@@ -11,7 +11,6 @@
 #include "wifi-net-device.h"
 #include "wifi-ppdu.h"
 #include "wifi-psdu.h"
-#include "wifi-utils.h"
 #include "yans-wifi-phy.h"
 
 #include "ns3/log.h"
@@ -124,21 +123,7 @@ void
 YansWifiChannel::Receive(Ptr<YansWifiPhy> phy, Ptr<const WifiPpdu> ppdu, dBm_t rxPower)
 {
     NS_LOG_FUNCTION(phy << ppdu << rxPower);
-    const auto totalRxPower = rxPower + phy->GetRxGain();
-    phy->TraceSignalArrival(ppdu, totalRxPower.in_dBm(), ppdu->GetTxDuration());
-    // Do no further processing if signal is too weak
-    // Current implementation assumes constant RX power over the PPDU duration
-    // Compare received TX power per MHz to normalized RX sensitivity
-    const auto txWidth = ppdu->GetTxChannelWidth();
-    if (totalRxPower < phy->GetRxSensitivity() + RatioToDb(txWidth / MHz_t{20}))
-    {
-        NS_LOG_INFO("Received signal too weak to process: " << rxPower);
-        return;
-    }
-    RxPowerWattPerChannelBand rxPowerW;
-    rxPowerW.insert(
-        {{{{0, 0}}, {{Hz_t{0}, Hz_t{0}}}}, (DbmToW(totalRxPower))}); // dummy band for YANS
-    phy->StartReceivePreamble(ppdu, rxPowerW, ppdu->GetTxDuration());
+    phy->StartRx(ppdu, rxPower);
 }
 
 std::size_t

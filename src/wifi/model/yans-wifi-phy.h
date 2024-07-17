@@ -63,6 +63,14 @@ class YansWifiPhy : public WifiPhy
     void SetChannel(const Ptr<YansWifiChannel> channel);
 
     /**
+     * This method is called when the first bit of a PPDU has arrived.
+     *
+     * @param ppdu the PPDU being received
+     * @param rxPower the received power
+     */
+    void StartRx(Ptr<const WifiPpdu> ppdu, dBm_t rxPower);
+
+    /**
      * Logs the arrival of a PPDU, including its power and duration.
      * This will also trace PPDUs below WifiPhy::RxSensitivity
      *
