@@ -103,15 +103,18 @@ YansWifiPhy::StartRx(Ptr<const WifiPpdu> ppdu, dBm_t rxPower)
     // Current implementation assumes constant RX power over the PPDU duration
     // Compare received TX power per MHz to normalized RX sensitivity
     const auto txWidth = ppdu->GetTxChannelWidth();
-    if (totalRxPower < GetRxSensitivity() + RatioToDb(txWidth / MHz_t{20}))
-    {
-        NS_LOG_INFO("Received signal too weak to process: " << rxPower << " dBm");
-        return;
-    }
+    const auto rxDuration = ppdu->GetTxDuration();
     RxPowerWattPerChannelBand rxPowerW;
     rxPowerW.insert(
         {{{{0, 0}}, {{Hz_t{0}, Hz_t{0}}}}, (DbmToW(totalRxPower))}); // dummy band for YANS
-    StartReceivePreamble(ppdu, rxPowerW, ppdu->GetTxDuration());
+    if (totalRxPower < GetRxSensitivity() + RatioToDb(txWidth / MHz_t{20}))
+    {
+        NS_LOG_INFO("Received signal too weak to process: " << rxPower << " dBm");
+        m_interference->Add(ppdu, rxDuration, rxPowerW, GetCurrentFrequencyRange());
+        SwitchMaybeToCcaBusy();
+        return;
+    }
+    StartReceivePreamble(ppdu, rxPowerW, rxDuration);
 }
 
 void
