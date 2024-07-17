@@ -294,14 +294,12 @@ class WifiSpectrumValueHelper
      *
      * \param c spectrumValue to allocate according to transmit power spectral density mask (in W/Hz
      * for each band)
-     * \param allocatedSubBands vector of start and stop subcarrier indexes of the allocated sub
-     * bands
-     * \param maskBand start and stop subcarrier indexes of transmit mask (in case signal doesn't
-     * cover whole SpectrumModel)
-     * \param txPowerPerBandW power allocated to each subcarrier in the allocated sub bands
-     * \param nGuardBands size (in number of subcarriers) of the guard band (left and right)
-     * \param innerSlopeWidth size (in number of subcarriers) of the inner band (i.e. slope going
-     * from 0 dBr to -20 dBr in the figure above)
+     * \param allocatedSubBandsPerSegment vector of start and stop subcarrier indexes of the
+     * allocated sub bands, for each segment \param maskBand start and stop subcarrier indexes of
+     * transmit mask (in case signal doesn't cover whole SpectrumModel) \param txPowerPerBandW power
+     * allocated to each subcarrier in the allocated sub bands \param nGuardBands size (in number of
+     * subcarriers) of the guard band (left and right) \param innerSlopeWidth size (in number of
+     * subcarriers) of the inner band (i.e. slope going from 0 dBr to -20 dBr in the figure above)
      * \param minInnerBandDbr the minimum relative power in the inner band (i.e., -20 dBr in the
      * figure above)
      * \param minOuterbandDbr the minimum relative power in the outer band (i.e., -28 dBr in the
@@ -309,12 +307,12 @@ class WifiSpectrumValueHelper
      * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band
      * (in dBr)
      * \param puncturedSubBands vector of start and stop subcarrier indexes of the punctured sub
-     * bands
+     * bands, for each segment
      * \param puncturedSlopeWidth size (in number of subcarriers) of the punctured band slope
      */
     static void CreateSpectrumMaskForOfdm(
         Ptr<SpectrumValue> c,
-        const std::vector<WifiSpectrumBandIndices>& allocatedSubBands,
+        const std::vector<std::vector<WifiSpectrumBandIndices>>& allocatedSubBandsPerSegment,
         const WifiSpectrumBandIndices& maskBand,
         double txPowerPerBandW,
         uint32_t nGuardBands,
@@ -322,7 +320,7 @@ class WifiSpectrumValueHelper
         double minInnerBandDbr,
         double minOuterbandDbr,
         double lowestPointDbr,
-        const std::vector<WifiSpectrumBandIndices>& puncturedSubBands = {},
+        const std::vector<std::vector<WifiSpectrumBandIndices>>& puncturedSubBands = {},
         uint32_t puncturedSlopeWidth = 0);
 
     /**
