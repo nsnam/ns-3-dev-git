@@ -344,7 +344,8 @@ class FrameExchangeManager : public Object
     virtual void StartProtection(const WifiTxParameters& txParams);
 
     /**
-     * Transmit prepared frame upon successful protection mechanism.
+     * Transmit prepared frame immediately, if no protection was used, or in a SIFS, if protection
+     * was completed successfully.
      */
     virtual void ProtectionCompleted();
 

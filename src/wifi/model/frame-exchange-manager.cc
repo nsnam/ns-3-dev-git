@@ -490,7 +490,14 @@ FrameExchangeManager::ProtectionCompleted()
     m_protectedStas.merge(m_sentRtsTo);
     m_sentRtsTo.clear();
     NS_ASSERT(m_mpdu);
-    SendMpdu();
+    if (m_txParams.m_protection->method == WifiProtection::NONE)
+    {
+        SendMpdu();
+    }
+    else
+    {
+        Simulator::Schedule(m_phy->GetSifs(), &FrameExchangeManager::SendMpdu, this);
+    }
 }
 
 const std::set<Mac48Address>&
@@ -877,9 +884,7 @@ FrameExchangeManager::SendCtsToSelf(const WifiTxParameters& txParams)
     Time ctsDuration = m_phy->CalculateTxDuration(GetCtsSize(),
                                                   ctsToSelfProtection->ctsTxVector,
                                                   m_phy->GetPhyBand());
-    Simulator::Schedule(ctsDuration + m_phy->GetSifs(),
-                        &FrameExchangeManager::ProtectionCompleted,
-                        this);
+    Simulator::Schedule(ctsDuration, &FrameExchangeManager::ProtectionCompleted, this);
 }
 
 void
@@ -1373,7 +1378,7 @@ FrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyCtsTimeoutResetNow();
-            Simulator::Schedule(m_phy->GetSifs(), &FrameExchangeManager::ProtectionCompleted, this);
+            ProtectionCompleted();
         }
         else if (hdr.IsAck() && m_mpdu && m_txTimer.IsRunning() &&
                  m_txTimer.GetReason() == WifiTxTimer::WAIT_NORMAL_ACK)

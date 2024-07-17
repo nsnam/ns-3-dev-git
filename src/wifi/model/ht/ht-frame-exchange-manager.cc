@@ -958,7 +958,14 @@ HtFrameExchangeManager::ProtectionCompleted()
     {
         m_protectedStas.merge(m_sentRtsTo);
         m_sentRtsTo.clear();
-        SendPsdu();
+        if (m_txParams.m_protection->method == WifiProtection::NONE)
+        {
+            SendPsdu();
+        }
+        else
+        {
+            Simulator::Schedule(m_phy->GetSifs(), &HtFrameExchangeManager::SendPsdu, this);
+        }
         return;
     }
     QosFrameExchangeManager::ProtectionCompleted();
@@ -1566,9 +1573,7 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyCtsTimeoutResetNow();
-            Simulator::Schedule(m_phy->GetSifs(),
-                                &HtFrameExchangeManager::ProtectionCompleted,
-                                this);
+            ProtectionCompleted();
         }
         else if (hdr.IsBlockAck() && m_txTimer.IsRunning() &&
                  m_txTimer.GetReason() == WifiTxTimer::WAIT_BLOCK_ACK && hdr.GetAddr1() == m_self)

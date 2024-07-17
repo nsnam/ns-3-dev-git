@@ -322,7 +322,14 @@ HeFrameExchangeManager::ProtectionCompleted()
                 return;
             }
         }
-        SendPsduMap();
+        if (m_txParams.m_protection->method == WifiProtection::NONE)
+        {
+            SendPsduMap();
+        }
+        else
+        {
+            Simulator::Schedule(m_phy->GetSifs(), &HeFrameExchangeManager::SendPsduMap, this);
+        }
         return;
     }
     VhtFrameExchangeManager::ProtectionCompleted();
@@ -2438,9 +2445,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyCtsTimeoutResetNow();
-            Simulator::Schedule(m_phy->GetSifs(),
-                                &HeFrameExchangeManager::ProtectionCompleted,
-                                this);
+            ProtectionCompleted();
         }
         else if (hdr.IsCts() && m_txTimer.IsRunning() &&
                  m_txTimer.GetReason() == WifiTxTimer::WAIT_CTS_AFTER_MU_RTS)
@@ -2452,9 +2457,7 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
 
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyCtsTimeoutResetNow();
-            Simulator::Schedule(m_phy->GetSifs(),
-                                &HeFrameExchangeManager::ProtectionCompleted,
-                                this);
+            ProtectionCompleted();
         }
         else if (hdr.IsAck() && m_txTimer.IsRunning() &&
                  m_txTimer.GetReason() == WifiTxTimer::WAIT_NORMAL_ACK_AFTER_DL_MU_PPDU)
