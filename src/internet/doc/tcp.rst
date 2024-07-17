@@ -821,9 +821,9 @@ consecutive congestion events is considered for beta calculation.
 The transport ``TcpHtcp`` can be selected in the program
 ``examples/tcp/tcp-variants-comparison.cc`` to perform an experiment with H-TCP,
 although it is useful to increase the bandwidth in this example (e.g.
-to 20 Mb/s) to create a higher BDP link, such as
+to 20 Mb/s) to create a higher BDP link, such as:
 
-::
+.. code-block:: bash
 
   ./ns3 run "tcp-variants-comparison --transport_prot=TcpHtcp --bandwidth=20Mbps --duration=10"
 
@@ -899,14 +899,14 @@ On receipt of an ACK:
 
 .. math::
 
-    \text{One way delay} &= \text{Receiver timestamp} - \text{Receiver timestamp echo reply} \\
-    \text{Smoothed one way delay} &= \frac{7}{8} \times \text{Old Smoothed one way delay} + \frac{1}{8} \times \text{one way delay} \\
-    \text{If smoothed one way delay} &> \text{owdMin} + \frac{15 \times (\text{owdMax} - \text{owdMin})}{100} \\
-        &\text{if LP\_WITHIN\_INF} \\
-            &\quad \text{cwnd} = 1 \\
-        &\text{else} \\
-            &\quad \text{cwnd} = \frac{\text{cwnd}}{2} \\
-        &\text{Inference timer is set}
+  \text{One way delay} &= \text{Receiver timestamp} - \text{Receiver timestamp echo reply} \\
+  \text{Smoothed one way delay} &= \frac{7}{8} \times \text{Old Smoothed one way delay} + \frac{1}{8} \times \text{one way delay} \\
+  \text{If smoothed one way delay} &> \text{owdMin} + \frac{15 \times (\text{owdMax} - \text{owdMin})}{100} \\
+      &\text{if LP\_WITHIN\_INF} \\
+          &\quad \text{cwnd} = 1 \\
+      &\text{else} \\
+          &\quad \text{cwnd} = \frac{\text{cwnd}}{2} \\
+      &\text{Inference timer is set}
 
 where owdMin and owdMax are the minimum and maximum one way delays experienced
 throughout the connection, LP_WITHIN_INF indicates if TCP-LP is in inference
@@ -948,7 +948,7 @@ latency, and high throughput with shallow-buffered switches.
 
 .. math::
 
-               \alpha = (1 - g) * \alpha + g * F
+  \alpha = (1 - g) * \alpha + g * F
 
 In the above EWMA:
 
@@ -961,7 +961,7 @@ window as follows, once for every window of data:
 
 .. math::
 
-               cwnd = cwnd * (1 - \alpha / 2)
+  cwnd = cwnd * (1 - \alpha / 2)
 
 Following the recommendation of RFC 8257, the default values of the parameters are:
 
@@ -1139,25 +1139,25 @@ The following ECN states are declared in ``src/internet/model/tcp-socket-state.h
 
 ::
 
-  typedef enum
-    {
+  enum EcnStates_t
+  {
       ECN_DISABLED = 0, //!< ECN disabled traffic
       ECN_IDLE,         //!< ECN is enabled but currently there is no action pertaining to ECE or CWR to be taken
       ECN_CE_RCVD,      //!< Last packet received had CE bit set in IP header
       ECN_SENDING_ECE,  //!< Receiver sends an ACK with ECE bit set in TCP header
       ECN_ECE_RCVD,     //!< Last ACK received had ECE bit set in TCP header
       ECN_CWR_SENT      //!< Sender has reduced the congestion window, and sent a packet with CWR bit set in TCP header. This is used for tracing.
-    } EcnStates_t;
+  };
 
 Current implementation of ECN is based on RFC 3168 and is referred as Classic ECN.
 
 The following enum represents the mode of ECN::
 
-  typedef enum
-    {
+  enum EcnMode_t
+  {
       ClassicEcn,  //!< ECN functionality as described in RFC 3168.
       DctcpEcn,    //!< ECN functionality as described in RFC 8257. Note: this mode is specific to DCTCP.
-    } EcnMode_t;
+  };
 
 The following are some important ECN parameters::
 
@@ -1175,12 +1175,12 @@ Linux: https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
 
 ::
 
-  typedef enum
-    {
+  enum UseEcn_t
+  {
       Off        = 0,   //!< Disable
       On         = 1,   //!< Enable
       AcceptOnly = 2,   //!< Enable only when the peer endpoint is ECN capable
-    } UseEcn_t;
+  };
 
 For example::
 
@@ -1901,18 +1901,18 @@ to be aware of the various possibilities that it offers.
       void
       TcpGeneralTest::SetRcvBufSize(SocketWho who, uint32_t size)
       {
-        if (who == SENDER)
-        {
-            m_senderSocket->SetRcvBufSize(size);
-        }
-        else if (who == RECEIVER)
-        {
-            m_receiverSocket->SetRcvBufSize(size);
-        }
-        else
-        {
-            NS_FATAL_ERROR("Not defined");
-        }
+          if (who == SENDER)
+          {
+              m_senderSocket->SetRcvBufSize(size);
+          }
+          else if (who == RECEIVER)
+          {
+              m_receiverSocket->SetRcvBufSize(size);
+          }
+          else
+          {
+              NS_FATAL_ERROR("Not defined");
+          }
       }
 
 Next, we can start to follow the TCP connection:
@@ -1944,11 +1944,12 @@ the first SYN-ACK has 0 as advertised window size:
 
           if (h.GetFlags() & TcpHeader::SYN)
           {
-              NS_TEST_ASSERT_MSG_EQ(h.GetWindowSize(), 0,
-                                 "RECEIVER window size is not 0 in the SYN-ACK");
+              NS_TEST_ASSERT_MSG_EQ(h.GetWindowSize(),
+                                    0,
+                                    "RECEIVER window size is not 0 in the SYN-ACK");
           }
       }
-      ....
+      ...
   }
 
 Practically, we are checking that every SYN packet sent by the RECEIVER has the
@@ -1984,15 +1985,17 @@ processing of the SYN-ACK:
 
   void
   TcpZeroWindowTest::ProcessedAck(const Ptr<const TcpSocketState> tcb,
-                                 const TcpHeader& h, SocketWho who)
+                                  const TcpHeader& h,
+                                  SocketWho who)
   {
       if (who == SENDER)
       {
           if (h.GetFlags() & TcpHeader::SYN)
           {
               EventId persistentEvent = GetPersistentEvent(SENDER);
-              NS_TEST_ASSERT_MSG_EQ(persistentEvent.IsPending(), true,
-                                   "Persistent event not started");
+              NS_TEST_ASSERT_MSG_EQ(persistentEvent.IsPending(),
+                                    true,
+                                    "Persistent event not started");
           }
       }
   }
@@ -2003,28 +2006,31 @@ the SENDER should send a window probe, and the receiver should reply reporting
 again a zero window situation. At first, we investigates on what the sender sends:
 
 .. code-block:: c++
-      :linenos:
-      :emphasize-lines: 1,6,7,11
+  :linenos:
+  :emphasize-lines: 1,6,7,11
 
-      if (Simulator::Now().GetSeconds() <= 6.0)
-        {
-            NS_TEST_ASSERT_MSG_EQ(p->GetSize() - h.GetSerializedSize(), 0,
-                                "Data packet sent anyway");
-        }
-      else if (Simulator::Now().GetSeconds() > 6.0 &&
-               Simulator::Now().GetSeconds() <= 7.0)
-        {
-            NS_TEST_ASSERT_MSG_EQ(m_zeroWindowProbe, false, "Sent another probe");
+  if (Simulator::Now().GetSeconds() <= 6.0)
+  {
+      NS_TEST_ASSERT_MSG_EQ(p->GetSize() - h.GetSerializedSize(),
+                            0,
+                            "Data packet sent anyway");
+  }
+  else if (Simulator::Now().GetSeconds() > 6.0 &&
+           Simulator::Now().GetSeconds() <= 7.0)
+  {
+      NS_TEST_ASSERT_MSG_EQ(m_zeroWindowProbe, false, "Sent another probe");
 
-            if (! m_zeroWindowProbe)
-            {
-                NS_TEST_ASSERT_MSG_EQ(p->GetSize() - h.GetSerializedSize(), 1,
-                                      "Data packet sent instead of window probe");
-                NS_TEST_ASSERT_MSG_EQ(h.GetSequenceNumber(), SequenceNumber32(1),
-                                      "Data packet sent instead of window probe");
-                m_zeroWindowProbe = true;
-            }
-        }
+      if (!m_zeroWindowProbe)
+      {
+          NS_TEST_ASSERT_MSG_EQ(p->GetSize() - h.GetSerializedSize(),
+                                1,
+                                "Data packet sent instead of window probe");
+          NS_TEST_ASSERT_MSG_EQ(h.GetSequenceNumber(),
+                                SequenceNumber32(1),
+                                "Data packet sent instead of window probe");
+          m_zeroWindowProbe = true;
+      }
+  }
 
 We divide the events by simulated time. At line 1, we check everything that
 happens before the 6.0 seconds mark; for instance, that no data packets are sent,
@@ -2036,17 +2042,19 @@ to check (line 6) between 6.0 and 7.0 simulated seconds that the probe is sent.
 Only one probe is allowed, and this is the reason for the check at line 11.
 
 .. code-block:: c++
-   :linenos:
-   :emphasize-lines: 6,7
+  :linenos:
+  :emphasize-lines: 6,7
 
-    if (Simulator::Now().GetSeconds() > 6.0 &&
-       Simulator::Now().GetSeconds() <= 7.0)
-      {
-         NS_TEST_ASSERT_MSG_EQ(h.GetSequenceNumber(), SequenceNumber32(1),
-                             "Data packet sent instead of window probe");
-         NS_TEST_ASSERT_MSG_EQ(h.GetWindowSize(), 0,
-                             "No zero window advertised by RECEIVER");
-      }
+  if (Simulator::Now().GetSeconds() > 6.0 &&
+      Simulator::Now().GetSeconds() <= 7.0)
+  {
+      NS_TEST_ASSERT_MSG_EQ(h.GetSequenceNumber(),
+                            SequenceNumber32(1),
+                            "Data packet sent instead of window probe");
+      NS_TEST_ASSERT_MSG_EQ(h.GetWindowSize(),
+                            0,
+                            "No zero window advertised by RECEIVER");
+  }
 
 For the RECEIVER, the interval between 6 and 7 seconds is when the zero-window
 segment is sent.
@@ -2057,7 +2065,7 @@ exchange between the 7 and 10 seconds mark.
 ::
 
   else if (Simulator::Now().GetSeconds() > 7.0 &&
-          Simulator::Now().GetSeconds() < 10.0)
+           Simulator::Now().GetSeconds() < 10.0)
   {
       NS_FATAL_ERROR("No packets should be sent before the window update");
   }
@@ -2067,10 +2075,12 @@ in every condition:
 
 ::
 
-  NS_TEST_ASSERT_MSG_EQ(GetCongStateFrom(GetTcb(SENDER)), TcpSocketState::CA_OPEN,
-                       "Sender State is not OPEN");
-  NS_TEST_ASSERT_MSG_EQ(GetCongStateFrom(GetTcb(RECEIVER)), TcpSocketState::CA_OPEN,
-                       "Receiver State is not OPEN");
+  NS_TEST_ASSERT_MSG_EQ(GetCongStateFrom(GetTcb(SENDER)),
+                        TcpSocketState::CA_OPEN,
+                        "Sender State is not OPEN");
+  NS_TEST_ASSERT_MSG_EQ(GetCongStateFrom(GetTcb(RECEIVER)),
+                        TcpSocketState::CA_OPEN,
+                        "Receiver State is not OPEN");
 
 Now, the interesting part in the Tx method is to check that after the 10.0
 seconds mark (when the RECEIVER sends the active window update) the value of
@@ -2080,8 +2090,9 @@ the window should be greater than zero (and precisely, set to 2500):
 
   else if (Simulator::Now().GetSeconds() >= 10.0)
   {
-      NS_TEST_ASSERT_MSG_EQ(h.GetWindowSize(), 2500,
-                           "Receiver window not updated");
+      NS_TEST_ASSERT_MSG_EQ(h.GetWindowSize(),
+                            2500,
+                            "Receiver window not updated");
   }
 
 To be sure that the sender receives the window update, we can use the Rx
@@ -2092,11 +2103,12 @@ method:
    :emphasize-lines: 5
 
    if (Simulator::Now().GetSeconds() >= 10.0)
-     {
-       NS_TEST_ASSERT_MSG_EQ(h.GetWindowSize(), 2500,
+   {
+       NS_TEST_ASSERT_MSG_EQ(h.GetWindowSize(),
+                             2500,
                              "Receiver window not updated");
        m_windowUpdated = true;
-     }
+   }
 
 We check every packet after the 10 seconds mark to see if it has the
 window updated. At line 5, we also set to true a boolean variable, to check
@@ -2129,30 +2141,34 @@ indicates that we have perfectly closed the connection).
   void
   TcpZeroWindowTest::FinalChecks()
   {
-      NS_TEST_ASSERT_MSG_EQ(m_zeroWindowProbe, true,
-                           "Zero window probe not sent");
-      NS_TEST_ASSERT_MSG_EQ(m_windowUpdated, true,
-                           "Window has not updated during the connection");
-      NS_TEST_ASSERT_MSG_EQ(m_senderFinished, true,
-                           "Connection not closed successfully(SENDER)");
-      NS_TEST_ASSERT_MSG_EQ(m_receiverFinished, true,
-                           "Connection not closed successfully(RECEIVER)");
+      NS_TEST_ASSERT_MSG_EQ(m_zeroWindowProbe,
+                            true,
+                            "Zero window probe not sent");
+      NS_TEST_ASSERT_MSG_EQ(m_windowUpdated,
+                            true,
+                            "Window has not updated during the connection");
+      NS_TEST_ASSERT_MSG_EQ(m_senderFinished,
+                            true,
+                            "Connection not closed successfully(SENDER)");
+      NS_TEST_ASSERT_MSG_EQ(m_receiverFinished,
+                            true,
+                            "Connection not closed successfully(RECEIVER)");
   }
 
 To run the test, the usual way is
 
 .. code-block:: bash
 
-   ./test.py -s tcp-zero-window-test
+  ./test.py -s tcp-zero-window-test
 
-   PASS: TestSuite tcp-zero-window-test
-   1 of 1 tests passed (1 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
+  PASS: TestSuite tcp-zero-window-test
+  1 of 1 tests passed (1 passed, 0 skipped, 0 failed, 0 crashed, 0 valgrind errors)
 
 To see INFO messages, use a combination of ./ns3 shell and gdb (really useful):
 
 .. code-block:: bash
 
-    ./ns3 shell && gdb --args ./build/utils/ns3-dev-test-runner-debug --test-name=tcp-zero-window-test --stop-on-failure --fullness=QUICK --assert-on-failure --verbose
+  ./ns3 shell && gdb --args ./build/utils/ns3-dev-test-runner-debug --test-name=tcp-zero-window-test --stop-on-failure --fullness=QUICK --assert-on-failure --verbose
 
 and then, hit "Run".
 
