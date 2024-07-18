@@ -678,6 +678,8 @@ WifiPhyChannel80Plus80Test::DoRun()
                               5500,
                               "Center frequency for 20 MHz shall be 5500 MHz");
     }
+
+    Simulator::Destroy();
 }
 
 /**
