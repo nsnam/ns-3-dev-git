@@ -305,6 +305,25 @@ class Txop : public Object
     void UpdateFailedCw(uint8_t linkId);
 
     /**
+     * Get the current value of the CW variable for the given link. The initial
+     * value is minCw.
+     *
+     * @param linkId the ID of the given link
+     * @return the current value of the CW variable for the given link
+     */
+    uint32_t GetCw(uint8_t linkId) const;
+
+    /**
+     * Get the Station Short Retry Count (SSRC) maintained by non-QoS stations or the QoS STA
+     * Retry Count (QSRC) maintained by QoS STAs for each AC on the given link.
+     *
+     * @param linkId the ID of the given link
+     * @return the Station Short Retry Count (SSRC) maintained by non-QoS stations or the QoS STA
+     *         Retry Count (QSRC) maintained by QoS STAs for each AC on the given link
+     */
+    std::size_t GetStaRetryCount(uint8_t linkId) const;
+
+    /**
      * Notify that the given link switched to sleep mode.
      *
      * @param linkId the ID of the given link
@@ -476,14 +495,6 @@ class Txop : public Object
     void RequestAccess(uint8_t linkId);
 
     /**
-     * Get the current value of the CW variable for the given link. The initial
-     * value is minCw.
-     *
-     * @param linkId the ID of the given link
-     * @return the current value of the CW variable for the given link
-     */
-    uint32_t GetCw(uint8_t linkId) const;
-    /**
      * Return the current number of backoff slots on the given link.
      *
      * @param linkId the ID of the given link
@@ -516,16 +527,19 @@ class Txop : public Object
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         virtual ~LinkEntity() = default;
 
-        uint32_t backoffSlots{0};                  //!< the number of backoff slots
-        Time backoffStart{0};                      /**< the backoffStart variable is used to keep
-                                                        track of the time at which a backoff was
-                                                        started or the time at which the backoff
-                                                        counter was last updated */
-        uint32_t cw{0};                            //!< the current contention window
-        uint32_t cwMin{0};                         //!< the minimum contention window
-        uint32_t cwMax{0};                         //!< the maximum contention window
-        uint8_t aifsn{0};                          //!< the AIFSN
-        Time txopLimit{0};                         //!< the TXOP limit time
+        uint32_t backoffSlots{0};     //!< the number of backoff slots
+        Time backoffStart{0};         /**< the backoffStart variable is used to keep
+                                           track of the time at which a backoff was
+                                           started or the time at which the backoff
+                                           counter was last updated */
+        uint32_t cw{0};               //!< the current contention window
+        uint32_t cwMin{0};            //!< the minimum contention window
+        uint32_t cwMax{0};            //!< the maximum contention window
+        uint8_t aifsn{0};             //!< the AIFSN
+        Time txopLimit{0};            //!< the TXOP limit time
+        std::size_t staRetryCount{0}; //!< the Station Short Retry Count (SSRC) maintained by
+                                      //!< non-QoS stations or the QoS STA Retry Count (QSRC)
+                                      //!< maintained by QoS STAs for each AC
         ChannelAccessStatus access{NOT_REQUESTED}; //!< channel access status
 
         mutable class
