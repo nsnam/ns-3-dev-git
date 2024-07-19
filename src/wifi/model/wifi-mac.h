@@ -752,6 +752,18 @@ class WifiMac : public Object
     uint16_t GetMpduBufferSize() const;
 
     /**
+     * Set the frame retry limit.
+     *
+     * @param limit the frame retry limit
+     */
+    void SetFrameRetryLimit(uint32_t limit);
+
+    /**
+     * @return the frame retry limit
+     */
+    uint32_t GetFrameRetryLimit() const;
+
+    /**
      * Get the TID-to-Link Mapping negotiated with the given MLD (if any) for the given direction.
      * An empty mapping indicates the default mapping.
      *
@@ -1200,7 +1212,8 @@ class WifiMac : public Object
     uint32_t m_beMaxAmpduSize; ///< maximum A-MPDU size for AC_BE (in bytes)
     uint32_t m_bkMaxAmpduSize; ///< maximum A-MPDU size for AC_BK (in bytes)
 
-    uint16_t m_mpduBufferSize; //!< BlockAck buffer size (in number of MPDUs)
+    uint16_t m_mpduBufferSize;  //!< BlockAck buffer size (in number of MPDUs)
+    uint32_t m_frameRetryLimit; //!< the frame retry limit
 
     UniformRandomBitGenerator m_shuffleLinkIdsGen; //!< random number generator to shuffle link IDs
 

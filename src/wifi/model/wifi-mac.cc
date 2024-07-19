@@ -146,6 +146,14 @@ WifiMac::GetTypeId()
                 UintegerValue(1024),
                 MakeUintegerAccessor(&WifiMac::GetMpduBufferSize, &WifiMac::SetMpduBufferSize),
                 MakeUintegerChecker<uint16_t>(1, 1024))
+            .AddAttribute(
+                "FrameRetryLimit",
+                "The maximum number of transmission attempts of a frame that are made before a "
+                "failure condition is indicated. This corresponds to the dot11ShortRetryLimit "
+                "parameter in the standard.",
+                UintegerValue(7),
+                MakeUintegerAccessor(&WifiMac::GetFrameRetryLimit, &WifiMac::SetFrameRetryLimit),
+                MakeUintegerChecker<uint32_t>(1, 65535))
             .AddAttribute("VO_MaxAmsduSize",
                           "Maximum length in bytes of an A-MSDU for AC_VO access class "
                           "(capped to 7935 for HT PPDUs and 11398 for VHT/HE/EHT PPDUs). "
@@ -2035,6 +2043,19 @@ uint16_t
 WifiMac::GetMpduBufferSize() const
 {
     return m_mpduBufferSize;
+}
+
+void
+WifiMac::SetFrameRetryLimit(uint32_t limit)
+{
+    NS_LOG_FUNCTION(this << limit);
+    m_frameRetryLimit = limit;
+}
+
+uint32_t
+WifiMac::GetFrameRetryLimit() const
+{
+    return m_frameRetryLimit;
 }
 
 void
