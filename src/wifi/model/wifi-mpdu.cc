@@ -29,6 +29,7 @@ WifiMpdu::WifiMpdu(Ptr<const Packet> p, const WifiMacHeader& header, Time stamp)
     auto& original = std::get<OriginalInfo>(m_instanceInfo);
     original.m_packet = p;
     original.m_timestamp = stamp;
+    original.m_retryCount = 0;
 
     if (header.IsQosData() && header.IsQosAmsdu())
     {
@@ -113,6 +114,41 @@ WifiMpdu::GetTimestamp() const
     return std::get<OriginalInfo>(origInstanceInfo).m_timestamp;
 }
 
+uint32_t
+WifiMpdu::GetRetryCount() const
+{
+    if (auto original = std::get_if<ORIGINAL>(&m_instanceInfo))
+    {
+        return original->m_retryCount;
+    }
+    const auto& origInstanceInfo = std::get<Ptr<WifiMpdu>>(m_instanceInfo)->m_instanceInfo;
+    return std::get<OriginalInfo>(origInstanceInfo).m_retryCount;
+}
+
+void
+WifiMpdu::IncrementRetryCount()
+{
+    NS_LOG_FUNCTION(this);
+
+    if (m_header.IsBlockAckReq() || m_header.IsTrigger())
+    {
+        // this function may be called for these frames, but a retry count must not be maintained
+        // for them
+        return;
+    }
+
+    NS_ABORT_MSG_UNLESS(m_header.IsData() || m_header.IsMgt(),
+                        "Frame retry count is not maintained for frames of type "
+                            << m_header.GetTypeString());
+    if (auto original = std::get_if<ORIGINAL>(&m_instanceInfo))
+    {
+        ++original->m_retryCount;
+        return;
+    }
+    auto& origInstanceInfo = std::get<Ptr<WifiMpdu>>(m_instanceInfo)->m_instanceInfo;
+    ++std::get<OriginalInfo>(origInstanceInfo).m_retryCount;
+}
+
 const WifiMacHeader&
 WifiMpdu::GetHeader() const
 {
@@ -181,6 +217,7 @@ WifiMpdu::Aggregate(Ptr<const WifiMpdu> msdu)
         // An MSDU is going to be aggregated to this MPDU, hence this has to be an A-MSDU now
         Ptr<const WifiMpdu> firstMsdu = Create<const WifiMpdu>(*this);
         original.m_packet = Create<Packet>();
+        original.m_retryCount = 0;
         DoAggregate(firstMsdu);
 
         m_header.SetQosAmsdu();
@@ -370,7 +407,8 @@ WifiMpdu::end() const
 void
 WifiMpdu::Print(std::ostream& os) const
 {
-    os << m_header << ", payloadSize=" << GetPacketSize() << ", queued=" << IsQueued();
+    os << m_header << ", payloadSize=" << GetPacketSize() << ", retryCount=" << GetRetryCount()
+       << ", queued=" << IsQueued();
     if (IsQueued())
     {
         os << ", residualLifetime=" << (GetExpiryTime() - Simulator::Now()).As(Time::US)

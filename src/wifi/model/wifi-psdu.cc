@@ -163,6 +163,16 @@ WifiPsdu::SetDuration(Time duration)
     }
 }
 
+void
+WifiPsdu::IncrementRetryCount()
+{
+    NS_LOG_FUNCTION(this);
+    for (auto& mpdu : m_mpduList)
+    {
+        mpdu->IncrementRetryCount();
+    }
+}
+
 std::set<uint8_t>
 WifiPsdu::GetTids() const
 {

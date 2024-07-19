@@ -185,6 +185,16 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
     Time GetExpiryTime() const;
 
     /**
+     * @return the frame retry count
+     */
+    uint32_t GetRetryCount() const;
+
+    /**
+     * Increment the frame retry count.
+     */
+    void IncrementRetryCount();
+
+    /**
      * @brief Get the MAC protocol data unit (MPDU) corresponding to this item
      *        (i.e. a copy of the packet stored in this item wrapped with MAC
      *        header and trailer)
@@ -279,6 +289,7 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
         DeaggregatedMsdus m_msduList;      //!< list of aggregated MSDUs included in this MPDU
         std::optional<Iterator> m_queueIt; //!< Queue iterator pointing to this MPDU, if queued
         bool m_seqNoAssigned;              //!< whether a sequence number has been assigned
+        uint32_t m_retryCount; //!< the frame retry count maintained for each MSDU, A-MSDU or MMPDU
     };
 
     /**

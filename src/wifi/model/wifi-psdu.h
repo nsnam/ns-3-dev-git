@@ -151,6 +151,11 @@ class WifiPsdu : public SimpleRefCount<WifiPsdu>
     void SetDuration(Time duration);
 
     /**
+     * Increment the frame retry count for all the MPDUs.
+     */
+    void IncrementRetryCount();
+
+    /**
      * Get the set of TIDs of the QoS Data frames included in the PSDU. Note that
      * only single-TID A-MPDUs are currently supported, hence the returned set
      * contains at most one TID value.
