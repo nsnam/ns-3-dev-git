@@ -1008,9 +1008,17 @@ LrWpanMac::SendOneBeacon()
 
     m_macBsn++;
 
-    // Extract the octets from m_macBeaconPayload and place them in a packet
-    uint8_t* octets = &m_macBeaconPayload[0];
-    Ptr<Packet> beaconPacket = Create<Packet>(octets, m_macBeaconPayload.size());
+    Ptr<Packet> beaconPacket;
+    if (m_macBeaconPayload.empty())
+    {
+        beaconPacket = Create<Packet>();
+    }
+    else
+    {
+        // Extract the octets from m_macBeaconPayload and place them in a packet
+        uint8_t* octets = &m_macBeaconPayload[0];
+        beaconPacket = Create<Packet>(octets, m_macBeaconPayload.size());
+    }
 
     LrWpanMacHeader macHdr(LrWpanMacHeader::LRWPAN_MAC_BEACON, m_macBsn.GetValue());
     macHdr.SetDstAddrMode(LrWpanMacHeader::SHORTADDR);
