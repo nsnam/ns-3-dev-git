@@ -1660,6 +1660,17 @@ ApWifiMac::TxFailed(WifiMacDropReason timeoutReason, Ptr<const WifiMpdu> mpdu)
                 }
             }
         }
+
+        // free the assigned AID
+        MgtAssocResponseHeader assocResp;
+        mpdu->GetPacket()->PeekHeader(assocResp);
+        auto aid = assocResp.GetAssociationId();
+        m_aidToMldOrLinkAddress.erase(aid);
+        for (const auto& [id, lnk] : GetLinks())
+        {
+            auto& link = GetLink(id);
+            link.staList.erase(aid);
+        }
     }
 }
 
