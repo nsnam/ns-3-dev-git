@@ -451,45 +451,33 @@ HeFrameExchangeManager::DoCtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts,
         }
     }
 
-    // NOTE Implementation of QSRC[AC] and QLRC[AC] should be improved...
-    const auto& hdr = m_psduMap.cbegin()->second->GetHeader(0);
-    if (!hdr.GetAddr1().IsGroup())
+    if (const auto& hdr = m_psduMap.cbegin()->second->GetHeader(0); !hdr.GetAddr1().IsGroup())
     {
         GetWifiRemoteStationManager()->ReportRtsFailed(hdr);
     }
 
-    if (!hdr.GetAddr1().IsGroup() &&
-        !GetWifiRemoteStationManager()->NeedRetransmission(*m_psduMap.cbegin()->second->begin()))
-    {
-        NS_LOG_DEBUG("Missed CTS, discard MPDUs");
-        GetWifiRemoteStationManager()->ReportFinalRtsFailed(hdr);
-        for (const auto& psdu : m_psduMap)
-        {
-            // Dequeue the MPDUs if they are stored in a queue
-            DequeuePsdu(psdu.second);
-            for (const auto& mpdu : *PeekPointer(psdu.second))
-            {
-                NotifyPacketDiscarded(mpdu);
-            }
-        }
-        m_edca->ResetCw(m_linkId);
-    }
-    else
-    {
-        NS_LOG_DEBUG("Missed CTS, retransmit MPDUs");
-        if (updateFailedCw)
-        {
-            m_edca->UpdateFailedCw(m_linkId);
-        }
-    }
-    // Make the sequence numbers of the MPDUs available again if the MPDUs have never
-    // been transmitted, both in case the MPDUs have been discarded and in case the
-    // MPDUs have to be transmitted (because a new sequence number is assigned to
-    // MPDUs that have never been transmitted and are selected for transmission)
     for (const auto& [staId, psdu] : m_psduMap)
     {
+        if (psdu->GetAddr1().IsGroup())
+        {
+            continue;
+        }
+        if (auto droppedMpdu = DropMpduIfRetryLimitReached(psdu))
+        {
+            GetWifiRemoteStationManager()->ReportFinalRtsFailed(droppedMpdu->GetHeader());
+        }
+        // Make the sequence numbers of the MPDUs available again if the MPDUs have never
+        // been transmitted, both in case the MPDUs have been discarded and in case the
+        // MPDUs have to be transmitted (because a new sequence number is assigned to
+        // MPDUs that have never been transmitted and are selected for transmission)
         ReleaseSequenceNumbers(psdu);
     }
+
+    if (updateFailedCw)
+    {
+        m_edca->UpdateFailedCw(m_linkId);
+    }
+
     m_psduMap.clear();
     TransmissionFailed();
 }

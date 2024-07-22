@@ -1071,24 +1071,13 @@ FrameExchangeManager::DoCtsTimeout(Ptr<WifiPsdu> psdu)
     }
 
     GetWifiRemoteStationManager()->ReportRtsFailed(psdu->GetHeader(0));
+    if (auto droppedMpdu = DropMpduIfRetryLimitReached(psdu))
+    {
+        GetWifiRemoteStationManager()->ReportFinalRtsFailed(droppedMpdu->GetHeader());
+    }
 
-    if (!GetWifiRemoteStationManager()->NeedRetransmission(*psdu->begin()))
-    {
-        NS_LOG_DEBUG("Missed CTS, discard MPDU(s)");
-        GetWifiRemoteStationManager()->ReportFinalRtsFailed(psdu->GetHeader(0));
-        for (const auto& mpdu : *PeekPointer(psdu))
-        {
-            // Dequeue the MPDU if it is stored in a queue
-            DequeueMpdu(mpdu);
-            NotifyPacketDiscarded(mpdu);
-        }
-        m_dcf->ResetCw(m_linkId);
-    }
-    else
-    {
-        NS_LOG_DEBUG("Missed CTS, retransmit MPDU(s)");
-        m_dcf->UpdateFailedCw(m_linkId);
-    }
+    m_dcf->UpdateFailedCw(m_linkId);
+
     // Make the sequence numbers of the MPDUs available again if the MPDUs have never
     // been transmitted, both in case the MPDUs have been discarded and in case the
     // MPDUs have to be transmitted (because a new sequence number is assigned to
