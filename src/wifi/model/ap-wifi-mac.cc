@@ -1267,7 +1267,6 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdS
         if (const auto [it, inserted] = link.staList.emplace(aid, staAddr); inserted)
         {
             // the STA on this link had no AID assigned
-            m_assocLogger(aid, staAddr);
             link.stationManager->SetAssociationId(staAddr, aid);
 
             if (link.stationManager->GetDsssSupported(staAddr) &&
@@ -1561,6 +1560,10 @@ ApWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
 
     if (hdr.IsAssocResp() || hdr.IsReassocResp())
     {
+        MgtAssocResponseHeader assocResp;
+        mpdu->GetPacket()->PeekHeader(assocResp);
+        auto aid = assocResp.GetAssociationId();
+
         auto linkId = GetLinkIdByAddress(hdr.GetAddr2());
         NS_ABORT_MSG_IF(!linkId.has_value(), "No link ID matching the TA");
 
@@ -1568,6 +1571,7 @@ ApWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
         {
             NS_LOG_DEBUG("AP=" << hdr.GetAddr2() << " associated with STA=" << hdr.GetAddr1());
             GetWifiRemoteStationManager(*linkId)->RecordGotAssocTxOk(hdr.GetAddr1());
+            m_assocLogger(aid, hdr.GetAddr1());
         }
 
         if (auto staMldAddress =
@@ -1595,6 +1599,7 @@ ApWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
                     NS_LOG_DEBUG("AP=" << GetFrameExchangeManager(i)->GetAddress()
                                        << " associated with STA=" << *staAddress);
                     stationManager->RecordGotAssocTxOk(*staAddress);
+                    m_assocLogger(aid, *staAddress);
                     StaSwitchingToPsMode(*staAddress, i);
                 }
             }
