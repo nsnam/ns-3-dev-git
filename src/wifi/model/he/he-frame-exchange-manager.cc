@@ -1413,19 +1413,10 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout(WifiPsduMap* psduMap,
     const auto& staMissedBlockAckFrom = m_txTimer.GetStasExpectedToRespond();
     NS_ASSERT(!staMissedBlockAckFrom.empty());
 
-    bool resetCw;
-
     if (staMissedBlockAckFrom.size() == nSolicitedStations)
     {
         // no station replied, the transmission failed
-        // call ReportDataFailed to increase SRC/LRC
         GetWifiRemoteStationManager()->ReportDataFailed(*psduMap->begin()->second->begin());
-        resetCw = false;
-    }
-    else
-    {
-        // the transmission succeeded
-        resetCw = true;
     }
 
     if (m_triggerFrame)
@@ -1436,35 +1427,22 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout(WifiPsduMap* psduMap,
 
     for (const auto& sta : staMissedBlockAckFrom)
     {
-        Ptr<WifiPsdu> psdu = GetPsduTo(sta, *psduMap);
+        auto psdu = GetPsduTo(sta, *psduMap);
         NS_ASSERT(psdu);
-        // If the QSRC[AC] or the QLRC[AC] has reached dot11ShortRetryLimit or dot11LongRetryLimit
-        // respectively, CW[AC] shall be reset to CWmin[AC] (sec. 10.22.2.2 of 802.11-2016).
-        // We should get that psduResetCw is the same for all PSDUs, but the handling of QSRC/QLRC
-        // needs to be aligned to the specifications.
-        bool psduResetCw;
-        MissedBlockAck(psdu, m_txParams.m_txVector, psduResetCw);
-        resetCw = resetCw || psduResetCw;
+        MissedBlockAck(psdu, m_txParams.m_txVector);
     }
 
     NS_ASSERT(m_edca);
 
-    if (resetCw)
-    {
-        m_edca->ResetCw(m_linkId);
-    }
-    else
-    {
-        m_edca->UpdateFailedCw(m_linkId);
-    }
-
     if (staMissedBlockAckFrom.size() == nSolicitedStations)
     {
         // no station replied, the transmission failed
+        m_edca->UpdateFailedCw(m_linkId);
         TransmissionFailed();
     }
     else
     {
+        m_edca->ResetCw(m_linkId);
         TransmissionSucceeded();
     }
     m_psduMap.clear();
@@ -1475,12 +1453,9 @@ HeFrameExchangeManager::BlockAckAfterTbPpduTimeout(Ptr<WifiPsdu> psdu, const Wif
 {
     NS_LOG_FUNCTION(this << *psdu << txVector);
 
-    bool resetCw;
-
-    // call ReportDataFailed to increase SRC/LRC
     GetWifiRemoteStationManager()->ReportDataFailed(*psdu->begin());
 
-    MissedBlockAck(psdu, m_txParams.m_txVector, resetCw);
+    MissedBlockAck(psdu, m_txParams.m_txVector);
 
     // This is a PSDU sent in a TB PPDU. An HE STA resumes the EDCA backoff procedure
     // without modifying CW or the backoff counter for the associated EDCAF, after

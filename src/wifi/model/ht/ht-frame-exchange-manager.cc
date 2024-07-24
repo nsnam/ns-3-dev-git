@@ -1369,30 +1369,19 @@ HtFrameExchangeManager::BlockAckTimeout(Ptr<WifiPsdu> psdu, const WifiTxVector& 
 
     GetWifiRemoteStationManager()->ReportDataFailed(*psdu->begin());
 
-    bool resetCw;
-    MissedBlockAck(psdu, txVector, resetCw);
+    MissedBlockAck(psdu, txVector);
 
     NS_ASSERT(m_edca);
-
-    if (resetCw)
-    {
-        m_edca->ResetCw(m_linkId);
-    }
-    else
-    {
-        m_edca->UpdateFailedCw(m_linkId);
-    }
+    m_edca->UpdateFailedCw(m_linkId);
 
     m_psdu = nullptr;
     TransmissionFailed();
 }
 
 void
-HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
-                                       const WifiTxVector& txVector,
-                                       bool& resetCw)
+HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu, const WifiTxVector& txVector)
 {
-    NS_LOG_FUNCTION(this << psdu << txVector << resetCw);
+    NS_LOG_FUNCTION(this << psdu << txVector);
 
     auto recipient = psdu->GetAddr1();
     auto recipientMld = GetWifiRemoteStationManager()->GetMldAddress(recipient).value_or(recipient);
@@ -1413,6 +1402,15 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
         NS_ABORT_MSG_IF(tids.size() > 1, "Multi-TID A-MPDUs not handled here");
         NS_ASSERT(!tids.empty());
         tid = *tids.begin();
+
+        GetWifiRemoteStationManager()
+            ->ReportAmpduTxStatus(recipient, 0, psdu->GetNMpdus(), 0, 0, txVector);
+
+        if (auto droppedMpdu = DropMpduIfRetryLimitReached(psdu))
+        {
+            // notify remote station manager if at least an MPDU was dropped
+            GetWifiRemoteStationManager()->ReportFinalDataFailed(droppedMpdu);
+        }
     }
 
     Ptr<QosTxop> edca = m_mac->GetQosTxop(tid);
@@ -1443,14 +1441,12 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
                 auto [reqHdr, hdr] = edca->PrepareBlockAckRequest(recipient, tid);
                 GetBaManager(tid)->ScheduleBar(reqHdr, hdr);
             }
-            resetCw = false;
         }
         else
         {
             NS_LOG_DEBUG("Missed Block Ack, do not transmit a BlockAckReq");
             // if a BA agreement exists, we can get here if there is no outstanding
             // MPDU whose lifetime has not expired yet.
-            GetWifiRemoteStationManager()->ReportFinalDataFailed(*psdu->begin());
             if (isBar)
             {
                 DequeuePsdu(psdu);
@@ -1461,31 +1457,12 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu,
                 // for this recipient
                 GetBaManager(tid)->AddToSendBarIfDataQueuedList(recipientMld, tid);
             }
-            resetCw = true;
         }
     }
     else
     {
         // we have to retransmit the data frames, if needed
-        GetWifiRemoteStationManager()
-            ->ReportAmpduTxStatus(recipient, 0, psdu->GetNMpdus(), 0, 0, txVector);
-        if (!GetWifiRemoteStationManager()->NeedRetransmission(*psdu->begin()))
-        {
-            NS_LOG_DEBUG("Missed Block Ack, do not retransmit the data frames");
-            GetWifiRemoteStationManager()->ReportFinalDataFailed(*psdu->begin());
-            for (const auto& mpdu : *PeekPointer(psdu))
-            {
-                NotifyPacketDiscarded(mpdu);
-                DequeueMpdu(mpdu);
-            }
-            resetCw = true;
-        }
-        else
-        {
-            NS_LOG_DEBUG("Missed Block Ack, retransmit data frames");
-            GetBaManager(tid)->NotifyMissedBlockAck(m_linkId, recipientMld, tid);
-            resetCw = false;
-        }
+        GetBaManager(tid)->NotifyMissedBlockAck(m_linkId, recipientMld, tid);
     }
 }
 

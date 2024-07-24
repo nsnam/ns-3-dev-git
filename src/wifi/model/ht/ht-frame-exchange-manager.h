@@ -339,9 +339,8 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      *
      * @param psdu the PSDU (BlockAckReq or A-MPDU) that solicited a BlockAck response
      * @param txVector the TXVECTOR used to send the PSDU that solicited a BlockAck response
-     * \param[out] resetCw true if we shall stop retransmitting the PSDU
      */
-    virtual void MissedBlockAck(Ptr<WifiPsdu> psdu, const WifiTxVector& txVector, bool& resetCw);
+    virtual void MissedBlockAck(Ptr<WifiPsdu> psdu, const WifiTxVector& txVector);
 
     /// agreement key typedef (MAC address and TID)
     typedef std::pair<Mac48Address, uint8_t> AgreementKey;
