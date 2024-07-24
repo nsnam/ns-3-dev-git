@@ -994,6 +994,25 @@ FrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
     m_protectedStas.clear();
 }
 
+Ptr<WifiMpdu>
+FrameExchangeManager::DropMpduIfRetryLimitReached(Ptr<WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << *psdu);
+
+    const auto mpdusToDrop = GetWifiRemoteStationManager()->GetMpdusToDropOnTxFailure(psdu);
+    Ptr<WifiMpdu> droppedMpdu{nullptr};
+
+    for (const auto& mpdu : mpdusToDrop)
+    {
+        // this MPDU needs to be dropped
+        droppedMpdu = mpdu;
+        NotifyPacketDiscarded(mpdu);
+        DequeueMpdu(mpdu);
+    }
+
+    return droppedMpdu;
+}
+
 void
 FrameExchangeManager::NormalAckTimeout(Ptr<WifiMpdu> mpdu, const WifiTxVector& txVector)
 {

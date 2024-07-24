@@ -653,6 +653,17 @@ class FrameExchangeManager : public Object
     virtual void TransmissionFailed();
 
     /**
+     * Wrapper for the GetMpdusToDropOnTxFailure function of the remote station manager that
+     * additionally drops the MPDUs in the given PSDU that the remote station manager requested
+     * to drop.
+     *
+     * @param psdu the given PSDU
+     * @return an MPDU that has been dropped, if any, to be notified to the remote station manager
+     *         through the appropriate function
+     */
+    Ptr<WifiMpdu> DropMpduIfRetryLimitReached(Ptr<WifiPsdu> psdu);
+
+    /**
      * Called when the Ack timeout expires.
      *
      * @param mpdu the MPDU that solicited a Normal Ack response

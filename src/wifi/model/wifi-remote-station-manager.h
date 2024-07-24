@@ -26,6 +26,7 @@
 #include "ns3/vht-capabilities.h"
 
 #include <array>
+#include <list>
 #include <memory>
 #include <optional>
 #include <unordered_map>
@@ -38,6 +39,7 @@ class WifiMac;
 class WifiMacHeader;
 class Packet;
 class WifiMpdu;
+class WifiPsdu;
 class WifiTxVector;
 class WifiTxParameters;
 
@@ -976,6 +978,15 @@ class WifiRemoteStationManager : public Object
     void ReportRxOk(Mac48Address address, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector);
 
     /**
+     * Increment the retry count for all the MPDUs (if needed) in the given PSDU and find the
+     * MPDUs to drop based on the frame retry count.
+     *
+     * @param psdu the given PSDU, whose transmission failed
+     * @return the list of MPDUs that have to be dropped
+     */
+    std::list<Ptr<WifiMpdu>> GetMpdusToDropOnTxFailure(Ptr<WifiPsdu> psdu);
+
+    /**
      * @param header MAC header of the data frame to send
      * @param txParams the TX parameters for the data frame to send
      *
@@ -1277,7 +1288,9 @@ class WifiRemoteStationManager : public Object
      */
     uint8_t GetNess(const WifiRemoteStation* station) const;
 
-    uint8_t m_linkId; //!< the ID of the link this object is associated with
+    uint8_t m_linkId;             //!< the ID of the link this object is associated with
+    bool m_incrRetryCountUnderBa; //!< whether  to increment the retry count of frames that are
+                                  //!< part of a Block Ack agreement
 
   private:
     /**
@@ -1290,6 +1303,25 @@ class WifiRemoteStationManager : public Object
      * @return the STA-ID of the station
      */
     uint16_t GetStaId(Mac48Address address, const WifiTxVector& txVector) const;
+
+    /**
+     * Increment the retry count (if needed) for the given PSDU, whose transmission failed.
+     *
+     * @param station the station the PSDU is addressed to
+     * @param psdu the given PSDU
+     */
+    virtual void DoIncrementRetryCountOnTxFailure(WifiRemoteStation* station, Ptr<WifiPsdu> psdu);
+
+    /**
+     * Find the MPDUs to drop (possibly based on their frame retry count) in the given PSDU,
+     * whose transmission failed.
+     *
+     * @param station the station the PSDU is addressed to
+     * @param psdu the given PSDU
+     * @return the MPDUs in the PSDU to drop
+     */
+    virtual std::list<Ptr<WifiMpdu>> DoGetMpdusToDropOnTxFailure(WifiRemoteStation* station,
+                                                                 Ptr<WifiPsdu> psdu);
 
     /**
      * @param station the station that we need to communicate

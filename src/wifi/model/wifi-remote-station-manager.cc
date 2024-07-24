@@ -15,6 +15,7 @@
 #include "wifi-mpdu.h"
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
+#include "wifi-psdu.h"
 #include "wifi-tx-parameters.h"
 
 #include "ns3/boolean.h"
@@ -57,6 +58,17 @@ WifiRemoteStationManager::GetTypeId()
                           UintegerValue(4),
                           MakeUintegerAccessor(&WifiRemoteStationManager::SetMaxSlrc),
                           MakeUintegerChecker<uint32_t>())
+            .AddAttribute(
+                "IncrementRetryCountUnderBa",
+                "The 802.11-2020 standard states that the retry count for frames that are part of "
+                "a Block Ack agreement shall not be incremented when a transmission fails. As a "
+                "consequence, frames that are part of a Block Ack agreement are not dropped based "
+                "on the number of retries. Set this attribute to true to override the standard "
+                "behavior and increment the retry count (and eventually drop) frames that are "
+                "part of a Block Ack agreement.",
+                BooleanValue(false),
+                MakeBooleanAccessor(&WifiRemoteStationManager::m_incrRetryCountUnderBa),
+                MakeBooleanChecker())
             .AddAttribute("RtsCtsThreshold",
                           "If the size of the PSDU is bigger than this value, we use an RTS/CTS "
                           "handshake before sending the data frame."
@@ -1108,6 +1120,63 @@ WifiRemoteStationManager::ReportAmpduTxStatus(Mac48Address address,
                           dataSnr,
                           dataTxVector.GetChannelWidth(),
                           dataTxVector.GetNss(GetStaId(address, dataTxVector)));
+}
+
+std::list<Ptr<WifiMpdu>>
+WifiRemoteStationManager::GetMpdusToDropOnTxFailure(Ptr<WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << *psdu);
+
+    auto* station = Lookup(psdu->GetHeader(0).GetAddr1());
+
+    DoIncrementRetryCountOnTxFailure(station, psdu);
+    return DoGetMpdusToDropOnTxFailure(station, psdu);
+}
+
+void
+WifiRemoteStationManager::DoIncrementRetryCountOnTxFailure(WifiRemoteStation* station,
+                                                           Ptr<WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << *psdu);
+
+    // The frame retry count for an MSDU or A-MSDU that is not part of a block ack agreement or
+    // for an MMPDU shall be incremented every time transmission fails for that MSDU, A-MSDU, or
+    // MMPDU, including of an associated RTS (Sec. 10.23.2.12.1 of 802.11-2020).
+    // Frames for which the retry count needs to be incremented:
+    // - management frames
+    // - non-QoS Data frames
+    // - QoS Data frames that are not part of a Block Ack agreement
+    // - QoS Data frames that are part of a Block Ack agreement if the IncrementRetryCountUnderBa
+    //   attribute is set to true
+    const auto& hdr = psdu->GetHeader(0);
+
+    if (hdr.IsMgt() || (hdr.IsData() && !hdr.IsQosData()) ||
+        (hdr.IsQosData() && (!m_wifiMac->GetBaAgreementEstablishedAsOriginator(
+                                hdr.GetAddr1(),
+                                hdr.GetQosTid() || m_incrRetryCountUnderBa))))
+    {
+        psdu->IncrementRetryCount();
+    }
+}
+
+std::list<Ptr<WifiMpdu>>
+WifiRemoteStationManager::DoGetMpdusToDropOnTxFailure(WifiRemoteStation* station,
+                                                      Ptr<WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << *psdu);
+
+    std::list<Ptr<WifiMpdu>> mpdusToDrop;
+
+    for (const auto& mpdu : *PeekPointer(psdu))
+    {
+        if (mpdu->GetRetryCount() == m_wifiMac->GetFrameRetryLimit())
+        {
+            // this MPDU needs to be dropped
+            mpdusToDrop.push_back(mpdu);
+        }
+    }
+
+    return mpdusToDrop;
 }
 
 bool
