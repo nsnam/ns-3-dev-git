@@ -277,6 +277,7 @@ FrameExchangeManager::GetWifiTxTimer() const
 void
 FrameExchangeManager::NotifyPacketDiscarded(Ptr<const WifiMpdu> mpdu)
 {
+    NS_LOG_FUNCTION(this << *mpdu);
     NS_ASSERT(!m_droppedMpduCallback.IsNull());
     m_droppedMpduCallback(WIFI_MAC_DROP_REACHED_RETRY_LIMIT, mpdu);
 }
@@ -1019,29 +1020,23 @@ FrameExchangeManager::NormalAckTimeout(Ptr<WifiMpdu> mpdu, const WifiTxVector& t
     NS_LOG_FUNCTION(this << *mpdu << txVector);
 
     GetWifiRemoteStationManager()->ReportDataFailed(mpdu);
-
-    if (!GetWifiRemoteStationManager()->NeedRetransmission(mpdu))
+    if (auto droppedMpdu = DropMpduIfRetryLimitReached(Create<WifiPsdu>(mpdu, false)))
     {
-        NS_LOG_DEBUG("Missed Ack, discard MPDU");
-        NotifyPacketDiscarded(mpdu);
-        // Dequeue the MPDU if it is stored in a queue
-        DequeueMpdu(mpdu);
-        GetWifiRemoteStationManager()->ReportFinalDataFailed(mpdu);
-        m_dcf->ResetCw(m_linkId);
+        // notify remote station manager if at least an MPDU was dropped
+        GetWifiRemoteStationManager()->ReportFinalDataFailed(droppedMpdu);
     }
-    else
+
+    // the MPDU may have been dropped due to lifetime expiration or maximum amount of
+    // retransmissions reached
+    if (mpdu->IsQueued())
     {
-        NS_LOG_DEBUG("Missed Ack, retransmit MPDU");
-        if (mpdu->IsQueued()) // the MPDU may have been removed due to lifetime expiration
-        {
-            mpdu = m_mac->GetTxopQueue(mpdu->GetQueueAc())->GetOriginal(mpdu);
-            mpdu->ResetInFlight(m_linkId);
-        }
+        mpdu = m_mac->GetTxopQueue(mpdu->GetQueueAc())->GetOriginal(mpdu);
+        mpdu->ResetInFlight(m_linkId);
         mpdu->GetHeader().SetRetry();
         RetransmitMpduAfterMissedAck(mpdu);
-        m_dcf->UpdateFailedCw(m_linkId);
     }
 
+    m_dcf->UpdateFailedCw(m_linkId);
     m_mpdu = nullptr;
     TransmissionFailed();
 }

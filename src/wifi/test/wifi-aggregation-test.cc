@@ -479,9 +479,7 @@ AmpduAggregationTest::DoRun()
                           true,
                           "no MPDU aggregation should be performed if there is no agreement");
 
-    m_managers.at(SINGLE_LINK_OP_ID)
-        ->SetMaxSsrc(
-            0); // set to 0 in order to fake that the maximum number of retries has been reached
+    m_mac->SetFrameRetryLimit(1); // fake that the maximum number of retries has been reached
     m_mac->TraceConnectWithoutContext("DroppedMpdu",
                                       MakeCallback(&AmpduAggregationTest::MpduDiscarded, this));
     htFem->m_dcf = GetBeQueue();

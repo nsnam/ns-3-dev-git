@@ -2660,7 +2660,8 @@ Issue40TestCase::RunOne(bool useAmpdu)
     phy.SetChannel(channel.Create());
 
     WifiHelper wifi;
-    wifi.SetStandard(WIFI_STANDARD_80211ac);
+    // use HT standard so that BlockAck agreement is not established in the useAmpdu false case
+    wifi.SetStandard(useAmpdu ? WIFI_STANDARD_80211ac : WIFI_STANDARD_80211n);
     wifi.SetRemoteStationManager("ns3::IdealWifiManager");
 
     WifiMacHelper mac;
