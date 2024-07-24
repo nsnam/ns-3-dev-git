@@ -759,6 +759,9 @@ WifiMac::SetupEdcaQueue(AcIndex ac)
         MakeCallback(&MpduTracedCallback::operator(), &m_nackedMpduCallback));
     edcaIt->second->SetDroppedMpduCallback(
         MakeCallback(&DroppedMpduTracedCallback::operator(), &m_droppedMpduCallback));
+    edcaIt->second->GetWifiMacQueue()->TraceConnectWithoutContext(
+        "Expired",
+        MakeCallback(&WifiMac::NotifyRsmOfExpiredMpdu, this));
 }
 
 void
@@ -1680,6 +1683,37 @@ WifiMac::GetTxBlockedOnLink(AcIndex ac,
         return mask->any();
     }
     return mask->test(static_cast<std::size_t>(reason));
+}
+
+void
+WifiMac::NotifyRsmOfExpiredMpdu(Ptr<const WifiMpdu> mpdu)
+{
+    NS_LOG_FUNCTION(this << *mpdu);
+
+    const auto& hdr = mpdu->GetHeader();
+    const auto remoteAddr = hdr.GetAddr1();
+
+    if (remoteAddr.IsGroup() || hdr.IsCtl() || !hdr.IsRetry() || mpdu->IsInFlight())
+    {
+        return; // nothing to do
+    }
+
+    std::optional<Mac48Address> optAddr;
+    for (const auto& [id, link] : m_links)
+    {
+        if (link->stationManager->GetMldAddress(remoteAddr) == remoteAddr)
+        {
+            // this is a link setup with a remote MLD and remoteAddr is the MLD address
+            optAddr = link->feManager->GetAddress(); // use local address of this setup link
+        }
+    }
+
+    const auto localAddr =
+        optAddr.value_or(GetNLinks() == 1 ? m_address : DoGetLocalAddress(remoteAddr));
+    const auto linkId = GetLinkIdByAddress(localAddr);
+    NS_ASSERT_MSG(linkId.has_value(), "No link with address " << localAddr);
+
+    GetLink(*linkId).stationManager->ReportFinalDataFailed(mpdu);
 }
 
 void

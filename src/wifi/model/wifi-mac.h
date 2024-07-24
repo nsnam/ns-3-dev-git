@@ -1167,6 +1167,15 @@ class WifiMac : public Object
     virtual void NotifyDropPacketToEnqueue(Ptr<Packet> packet, Mac48Address to);
 
     /**
+     * Notify the remote station manager if the given expired (hence dropped) MPDU is a management
+     * or data frame (with a unicast receiver address) that has been already transmitted and is not
+     * in flight (otherwise, it is handled when the ack is received or the TX timeout expires).
+     *
+     * @param mpdu the expired MPDU
+     */
+    void NotifyRsmOfExpiredMpdu(Ptr<const WifiMpdu> mpdu);
+
+    /**
      * This Boolean is set \c true iff this WifiMac is to model
      * 802.11e/WMM style Quality of Service. It is exposed through the
      * attribute system.
