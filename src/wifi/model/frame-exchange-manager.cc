@@ -1111,40 +1111,28 @@ FrameExchangeManager::NotifyInternalCollision(Ptr<Txop> txop)
 {
     NS_LOG_FUNCTION(this);
 
-    // For internal collisions occurring with the EDCA access method, the appropriate
-    // retry counters (short retry counter for MSDU, A-MSDU, or MMPDU and QSRC[AC] or
-    // long retry counter for MSDU, A-MSDU, or MMPDU and QLRC[AC]) are incremented
-    // (Sec. 10.22.2.11.1 of 802.11-2016).
+    // For internal collisions, the frame retry counts associated with the MSDUs, A-MSDUs, or MMPDUs
+    // involved in the internal collision shall be incremented. (Sec. 10.23.2.12.1 of 802.11-2020)
     // We do not prepare the PSDU that the AC losing the internal collision would have
     // sent. As an approximation, we consider the frame peeked from the queues of the AC.
     Ptr<QosTxop> qosTxop = (txop->IsQosTxop() ? StaticCast<QosTxop>(txop) : nullptr);
 
-    auto mpdu =
-        (qosTxop ? qosTxop->PeekNextMpdu(m_linkId) : txop->GetWifiMacQueue()->Peek(m_linkId));
-
-    if (mpdu)
+    if (auto mpdu =
+            (qosTxop ? qosTxop->PeekNextMpdu(m_linkId) : txop->GetWifiMacQueue()->Peek(m_linkId));
+        mpdu && !mpdu->GetHeader().GetAddr1().IsGroup())
     {
-        if (mpdu->GetHeader().HasData() && !mpdu->GetHeader().GetAddr1().IsGroup())
+        if (mpdu->GetHeader().HasData())
         {
             GetWifiRemoteStationManager()->ReportDataFailed(mpdu);
         }
 
-        if (!mpdu->GetHeader().GetAddr1().IsGroup() &&
-            !GetWifiRemoteStationManager()->NeedRetransmission(mpdu))
+        if (DropMpduIfRetryLimitReached(Create<WifiPsdu>(mpdu, false)))
         {
-            NS_LOG_DEBUG("reset DCF");
             GetWifiRemoteStationManager()->ReportFinalDataFailed(mpdu);
-            DequeueMpdu(mpdu);
-            NotifyPacketDiscarded(mpdu);
-            txop->ResetCw(m_linkId);
-        }
-        else
-        {
-            NS_LOG_DEBUG("Update CW");
-            txop->UpdateFailedCw(m_linkId);
         }
     }
 
+    txop->UpdateFailedCw(m_linkId);
     txop->Txop::NotifyChannelReleased(m_linkId);
 }
 
