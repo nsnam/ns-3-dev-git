@@ -2713,11 +2713,8 @@ main(int argc, char* argv[])
     Config::SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold",
                        StringValue("22000"));
     Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue("22000"));
-    // Disable short retransmission failure (make retransmissions persistent)
-    Config::SetDefault("ns3::WifiRemoteStationManager::MaxSlrc",
-                       UintegerValue(std::numeric_limits<uint32_t>::max()));
-    Config::SetDefault("ns3::WifiRemoteStationManager::MaxSsrc",
-                       UintegerValue(std::numeric_limits<uint32_t>::max()));
+    // Make CW stay equal to CWmax until a packet is acknowledged
+    Config::SetDefault("ns3::WifiMac::FrameRetryLimit", UintegerValue(65535));
     // Set maximum queue size to the largest value and set maximum queue delay to be larger than the
     // simulation time
     Config::SetDefault(

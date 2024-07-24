@@ -50,14 +50,18 @@ WifiRemoteStationManager::GetTypeId()
                           "This value will not have any effect on some rate control algorithms.",
                           UintegerValue(7),
                           MakeUintegerAccessor(&WifiRemoteStationManager::SetMaxSsrc),
-                          MakeUintegerChecker<uint32_t>())
+                          MakeUintegerChecker<uint32_t>(),
+                          TypeId::OBSOLETE,
+                          "Use WifiMac::FrameRetryLimit instead")
             .AddAttribute("MaxSlrc",
                           "The maximum number of retransmission attempts for any packet with size "
                           "> RtsCtsThreshold. "
                           "This value will not have any effect on some rate control algorithms.",
                           UintegerValue(4),
                           MakeUintegerAccessor(&WifiRemoteStationManager::SetMaxSlrc),
-                          MakeUintegerChecker<uint32_t>())
+                          MakeUintegerChecker<uint32_t>(),
+                          TypeId::OBSOLETE,
+                          "Use WifiMac::FrameRetryLimit instead")
             .AddAttribute(
                 "IncrementRetryCountUnderBa",
                 "The 802.11-2020 standard states that the retry count for frames that are part of "
@@ -1298,32 +1302,6 @@ WifiRemoteStationManager::GetUseNonHtProtection() const
 }
 
 bool
-WifiRemoteStationManager::NeedRetransmission(Ptr<const WifiMpdu> mpdu)
-{
-    NS_LOG_FUNCTION(this << *mpdu);
-    NS_ASSERT(!mpdu->GetHeader().GetAddr1().IsGroup());
-    AcIndex ac =
-        QosUtilsMapTidToAc((mpdu->GetHeader().IsQosData()) ? mpdu->GetHeader().GetQosTid() : 0);
-    bool longMpdu = (mpdu->GetSize() > m_rtsCtsThreshold);
-    uint32_t retryCount;
-    uint32_t maxRetryCount;
-    if (longMpdu)
-    {
-        retryCount = m_slrc[ac];
-        maxRetryCount = m_maxSlrc;
-    }
-    else
-    {
-        retryCount = m_ssrc[ac];
-        maxRetryCount = m_maxSsrc;
-    }
-    bool normally = retryCount < maxRetryCount;
-    NS_LOG_DEBUG("WifiRemoteStationManager::NeedRetransmission count: "
-                 << retryCount << " result: " << std::boolalpha << normally);
-    return DoNeedRetransmission(Lookup(mpdu->GetHeader().GetAddr1()), mpdu->GetPacket(), normally);
-}
-
-bool
 WifiRemoteStationManager::NeedFragmentation(Ptr<const WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << *mpdu);
@@ -1951,14 +1929,6 @@ WifiRemoteStationManager::GetNonUnicastMode() const
 
 bool
 WifiRemoteStationManager::DoNeedRts(WifiRemoteStation* station, uint32_t size, bool normally)
-{
-    return normally;
-}
-
-bool
-WifiRemoteStationManager::DoNeedRetransmission(WifiRemoteStation* station,
-                                               Ptr<const Packet> packet,
-                                               bool normally)
 {
     return normally;
 }

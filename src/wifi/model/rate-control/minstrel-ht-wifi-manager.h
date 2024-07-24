@@ -274,9 +274,19 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
                                uint8_t dataNss) override;
     std::list<Ptr<WifiMpdu>> DoGetMpdusToDropOnTxFailure(WifiRemoteStation* station,
                                                          Ptr<WifiPsdu> psdu) override;
-    bool DoNeedRetransmission(WifiRemoteStation* st,
-                              Ptr<const Packet> packet,
-                              bool normally) override;
+
+    /**
+     * @param st the station that we need to communicate
+     * @param packet the packet to send
+     * @param normally indicates whether the normal 802.11 data retransmission mechanism
+     *        would request that the data is retransmitted or not.
+     * @return true if we want to resend a packet after a failed transmission attempt,
+     *         false otherwise.
+     *
+     * Note: This method is called after any unicast packet transmission (control, management,
+     *       or data) has been attempted and has failed.
+     */
+    bool DoNeedRetransmission(WifiRemoteStation* st, Ptr<const Packet> packet, bool normally);
 
     /**
      * Check the validity of a combination of number of streams, chWidth and mode.

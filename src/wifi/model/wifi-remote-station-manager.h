@@ -936,15 +936,13 @@ class WifiRemoteStationManager : public Object
                       double dataSnr,
                       WifiTxVector dataTxVector);
     /**
-     * Should be invoked after calling ReportRtsFailed if
-     * NeedRetransmission returns false
+     * Should be invoked after calling ReportRtsFailed if frames are dropped
      *
      * @param header MAC header of the DATA packet
      */
     void ReportFinalRtsFailed(const WifiMacHeader& header);
     /**
-     * Should be invoked after calling ReportDataFailed if
-     * NeedRetransmission returns false
+     * Should be invoked after calling ReportDataFailed if frames are dropped
      *
      * @param mpdu the MPDU which was discarded
      */
@@ -1004,13 +1002,6 @@ class WifiRemoteStationManager : public Object
      */
     bool NeedCtsToSelf(WifiTxVector txVector);
 
-    /**
-     * @param mpdu the MPDU to send
-     *
-     * @return true if we want to resend a packet after a failed transmission attempt,
-     *         false otherwise.
-     */
-    bool NeedRetransmission(Ptr<const WifiMpdu> mpdu);
     /**
      * @param mpdu the MPDU to send
      *
@@ -1335,20 +1326,6 @@ class WifiRemoteStationManager : public Object
      * Note: This method is called before a unicast packet is sent on the medium.
      */
     virtual bool DoNeedRts(WifiRemoteStation* station, uint32_t size, bool normally);
-    /**
-     * @param station the station that we need to communicate
-     * @param packet the packet to send
-     * @param normally indicates whether the normal 802.11 data retransmission mechanism
-     *        would request that the data is retransmitted or not.
-     * @return true if we want to resend a packet after a failed transmission attempt,
-     *         false otherwise.
-     *
-     * Note: This method is called after any unicast packet transmission (control, management,
-     *       or data) has been attempted and has failed.
-     */
-    virtual bool DoNeedRetransmission(WifiRemoteStation* station,
-                                      Ptr<const Packet> packet,
-                                      bool normally);
     /**
      * @param station the station that we need to communicate
      * @param packet the packet to send

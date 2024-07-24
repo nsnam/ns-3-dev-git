@@ -146,9 +146,7 @@ Bug772ChainTest::CreateDevices()
                                  "DataMode",
                                  StringValue("OfdmRate6Mbps"),
                                  "RtsCtsThreshold",
-                                 StringValue("2200"),
-                                 "MaxSlrc",
-                                 UintegerValue(7));
+                                 StringValue("2200"));
     NetDeviceContainer devices = wifi.Install(wifiPhy, wifiMac, *m_nodes);
 
     // Assign fixed stream numbers to wifi and channel random variables

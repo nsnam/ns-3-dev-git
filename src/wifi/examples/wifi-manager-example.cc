@@ -217,19 +217,15 @@ main(int argc, char* argv[])
     StandardInfo serverSelectedStandard;
     StandardInfo clientSelectedStandard;
     bool infrastructure = false;
-    uint32_t maxSlrc = 7;
-    uint32_t maxSsrc = 7;
+    uint32_t maxRetryCount = 7;
 
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(2);
 
     CommandLine cmd(__FILE__);
-    cmd.AddValue("maxSsrc",
-                 "The maximum number of retransmission attempts for a RTS packet",
-                 maxSsrc);
-    cmd.AddValue("maxSlrc",
+    cmd.AddValue("maxRetryCount",
                  "The maximum number of retransmission attempts for a Data packet",
-                 maxSlrc);
+                 maxRetryCount);
     cmd.AddValue("rtsThreshold", "RTS threshold", rtsThreshold);
     cmd.AddValue("maxAmpduSize", "Max A-MPDU size", maxAmpduSize);
     cmd.AddValue("stepSize", "Power between steps (dBm)", stepSize);
@@ -588,8 +584,7 @@ main(int argc, char* argv[])
     std::ofstream outfile(dataName);
     Gnuplot gnuplot = Gnuplot(plotName);
 
-    Config::SetDefault("ns3::WifiRemoteStationManager::MaxSlrc", UintegerValue(maxSlrc));
-    Config::SetDefault("ns3::WifiRemoteStationManager::MaxSsrc", UintegerValue(maxSsrc));
+    Config::SetDefault("ns3::WifiMac::FrameRetryLimit", UintegerValue(maxRetryCount));
     Config::SetDefault("ns3::MinstrelWifiManager::PrintStats", BooleanValue(true));
     Config::SetDefault("ns3::MinstrelWifiManager::PrintSamples", BooleanValue(true));
     Config::SetDefault("ns3::MinstrelHtWifiManager::PrintStats", BooleanValue(true));
