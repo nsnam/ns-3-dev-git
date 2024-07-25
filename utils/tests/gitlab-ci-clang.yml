@@ -24,7 +24,7 @@
       libgsl-dev $LIBGSL gsl-bin
       libsqlite3-dev sqlite3
       libxml2 libxml2-dev
-      ssh git
+      ssh git $EXTRA_PACKAGES
   variables:
     COMPILER: clang++-$CLANG
 
@@ -33,6 +33,7 @@
   extends: .weekly-clang-ubuntu
   variables:
     LIBGSL: libgsl23
+    EXTRA_PACKAGES: libstdc++-10-dev
     EXTRA_OPTIONS: --disable-eigen
 
 .weekly-clang-ubuntu24.04:
