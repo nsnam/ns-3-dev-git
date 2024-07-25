@@ -432,6 +432,17 @@ class PbbPacket : public SimpleRefCount<PbbPacket, Header>
      */
     bool HasSequenceNumber() const;
 
+    /**
+     * \brief Forces a packet to write a TLV list even if it's empty, ignoring
+     * the phastlv bit.
+     *
+     * This is mainly used to check the Deserialization of a questionable
+     * but correct packet (see test 3).
+     *
+     * \param forceTlv true will force TLV to be written even if no TLV is set.
+     */
+    void ForceTlv(bool forceTlv);
+
     /* Manipulating Packet TLVs */
 
     /**
@@ -683,6 +694,7 @@ class PbbPacket : public SimpleRefCount<PbbPacket, Header>
 
     bool m_hasseqnum;  //!< Sequence number present
     uint16_t m_seqnum; //!< Sequence number
+    bool m_forceTlv;   //!< Force writing a TLV list (even if it's empty)
 };
 
 /**

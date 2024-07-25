@@ -545,6 +545,7 @@ PbbPacket::PbbPacket()
     NS_LOG_FUNCTION(this);
     m_version = VERSION;
     m_hasseqnum = false;
+    m_forceTlv = false;
 }
 
 PbbPacket::~PbbPacket()
@@ -581,6 +582,13 @@ PbbPacket::HasSequenceNumber() const
 {
     NS_LOG_FUNCTION(this);
     return m_hasseqnum;
+}
+
+void
+PbbPacket::ForceTlv(bool forceTlv)
+{
+    NS_LOG_FUNCTION(this);
+    m_forceTlv = forceTlv;
 }
 
 /* Manipulating Packet TLVs */
@@ -857,7 +865,7 @@ PbbPacket::GetSerializedSize() const
         size += 2;
     }
 
-    if (!TlvEmpty())
+    if (!TlvEmpty() || m_forceTlv)
     {
         size += m_tlvList.GetSerializedSize();
     }
@@ -889,7 +897,7 @@ PbbPacket::Serialize(Buffer::Iterator start) const
         start.WriteHtonU16(GetSequenceNumber());
     }
 
-    if (!TlvEmpty())
+    if (!TlvEmpty() || m_forceTlv)
     {
         flags |= PHAS_TLV;
         m_tlvList.Serialize(start);

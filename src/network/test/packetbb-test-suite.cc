@@ -94,7 +94,7 @@ PbbTestCase::TestSerialize()
 
     int memrv = memcmp(newBuffer.PeekData(), m_refBuffer.PeekData(), newBuffer.GetSize());
 
-    NS_TEST_ASSERT_MSG_EQ(memrv, 0, "serialization faled, buffers differ");
+    NS_TEST_ASSERT_MSG_EQ(memrv, 0, "serialization failed, buffers differ");
 }
 
 void
@@ -166,16 +166,24 @@ PbbTestSuite::PbbTestSuite()
      * | * Packet seq number: 3
      * `------------------
      * This test has the phastlv flag set to 1 with no tlvs.
-     * I'll come back to this one later.
+     *
+     * Note: it is not possible to run this test with the current test class.
+     * The bytecode of the packet should be:
+     * - pkt-header (8 bits): 0x0c (phasseqnum and phastlv)
+     * - pkt-seq-num (16 bits): 0x00, 0x03
+     * - tlvs-length (16 bits): 0x00, 0x00 (i.e., no TLVs)
+     *
+     * RFC 5444 doesn't forbid this, but it doesn't foresee it either.
+     * The packet is questionable, but it is not malformed.
      */
-#if 0
-  {
-    Ptr<PbbPacket> packet = Create<PbbPacket> ();
-    packet->SetSequenceNumber (3);
-    uint8_t buffer[] = { 0x0c, 0x00, 0x03, 0x00, 0x00};
-    AddTestCase (new PbbTestCase ("3", packet, buffer, sizeof(buffer)), TestCase::Duration::QUICK);
-  }
-#endif
+    {
+        Ptr<PbbPacket> packet = Create<PbbPacket>();
+        packet->SetSequenceNumber(3);
+        packet->ForceTlv(true);
+        uint8_t buffer[] = {0x0c, 0x00, 0x03, 0x00, 0x00};
+        AddTestCase(new PbbTestCase("3", packet, buffer, sizeof(buffer)),
+                    TestCase::Duration::QUICK);
+    }
 
     /* Test 4
      * ,------------------
@@ -732,64 +740,9 @@ PbbTestSuite::PbbTestSuite()
     }
 
     /* Test 13
-     * ,------------------
-     * |  PACKET
-     * |------------------
-     * | * Packet version:    0
-     * | * Packet flags:  12
-     * | * Packet seq number: 13
-     * |    | * Packet TLV Block
-     * |    |     - TLV
-     * |    |         Flags = 0
-     * |    |         Type = 1; Value = (warning: parameter is NULL)
-     * |    ,-------------------
-     * |    |  MESSAGE
-     * |    |-------------------
-     * |    | * Message type:       1
-     * |    | * Message flags:  0
-     * |    `-------------------
-     * |
-     * |    ,-------------------
-     * |    |  MESSAGE
-     * |    |-------------------
-     * |    | * Message type:       2
-     * |    | * Message flags:  240
-     * |    | * Originator address: 10.0.0.1
-     * |    | * Hop limit:          255
-     * |    | * Hop count:          1
-     * |    | * Message seq number: 12345
-     * |    `-------------------
-     * |
-     * `------------------
+     * Test 13 has been removed because it was identical to test 12
+     * The following tests have not been renumbered
      */
-    {
-        Ptr<PbbPacket> packet = Create<PbbPacket>();
-        packet->SetSequenceNumber(13);
-
-        Ptr<PbbTlv> tlv1 = Create<PbbTlv>();
-        tlv1->SetType(1);
-        packet->TlvPushBack(tlv1);
-
-        Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4>();
-        msg1->SetType(1);
-        packet->MessagePushBack(msg1);
-
-        Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4>();
-        msg2->SetType(2);
-        msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
-        msg2->SetHopLimit(255);
-        msg2->SetHopCount(1);
-        msg2->SetSequenceNumber(12345);
-        packet->MessagePushBack(msg2);
-
-        uint8_t buffer[] = {
-            0x0c, 0x00, 0x0d, 0x00, 0x02, 0x01, 0x00, 0x01, 0x03, 0x00, 0x06,
-            0x00, 0x00, 0x02, 0xf3, 0x00, /* [14] - 0xf0 */
-            0x0e, 0x0a, 0x00, 0x00, 0x01, 0xff, 0x01, 0x30, 0x39, 0x00, 0x00,
-        };
-        AddTestCase(new PbbTestCase("13", packet, buffer, sizeof(buffer)),
-                    TestCase::Duration::QUICK);
-    }
 
     /* Test 14
      * ,------------------
