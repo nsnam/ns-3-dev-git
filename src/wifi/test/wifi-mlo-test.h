@@ -21,6 +21,7 @@
 #define WIFI_MLO_TEST_H
 
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/frame-exchange-manager.h"
 #include "ns3/mgt-action-headers.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/multi-model-spectrum-channel.h"
@@ -74,6 +75,9 @@ class MldSwapLinksTest : public TestCase
       public:
         ~TestWifiMac() override = default;
 
+        /// \return the object TypeId
+        static TypeId GetTypeId();
+
         using WifiMac::GetLinks;
         using WifiMac::SwapLinks;
 
@@ -89,6 +93,19 @@ class MldSwapLinksTest : public TestCase
 
         void Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from) override
         {
+        }
+    };
+
+    /**
+     * Test FrameExchangeManager subclass to access m_linkId
+     */
+    class TestFrameExchangeManager : public FrameExchangeManager
+    {
+      public:
+        /// \return the link ID stored by this object
+        uint8_t GetLinkId() const
+        {
+            return m_linkId;
         }
     };
 

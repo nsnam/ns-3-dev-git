@@ -150,6 +150,16 @@ GetRnrLinkInfoTest::DoRun()
                           "Unexpected tbtt ID of the second reported AP");
 }
 
+TypeId
+MldSwapLinksTest::TestWifiMac::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::TestWifiMac")
+                            .SetParent<WifiMac>()
+                            .SetGroupName("Wifi")
+                            .AddConstructor<TestWifiMac>();
+    return tid;
+}
+
 MldSwapLinksTest::MldSwapLinksTest()
     : TestCase("Test the WifiMac::SwapLinks() method")
 {
@@ -161,33 +171,62 @@ MldSwapLinksTest::RunOne(std::string text,
                          const std::map<uint8_t, uint8_t>& links,
                          const std::map<uint8_t, uint8_t>& expected)
 {
-    TestWifiMac mac;
+    auto mac = CreateObjectWithAttributes<TestWifiMac>("QosSupported",
+                                                       BooleanValue(false),
+                                                       "Txop",
+                                                       PointerValue(CreateObject<Txop>()));
 
     std::vector<Ptr<WifiPhy>> phys;
-    for (std::size_t i = 0; i < nLinks; i++)
+    std::vector<Ptr<FrameExchangeManager>> feManagers;
+
+    for (std::size_t i = 0; i < nLinks; ++i)
     {
-        phys.emplace_back(CreateObject<SpectrumWifiPhy>());
+        auto phy = CreateObject<SpectrumWifiPhy>();
+        phy->SetPhyId(i);
+        phys.emplace_back(phy);
+        feManagers.emplace_back(CreateObject<TestFrameExchangeManager>());
     }
-    mac.SetWifiPhys(phys); // create links containing the given PHYs
+    mac->SetWifiPhys(phys); // create links containing the given PHYs
+    mac->SetFrameExchangeManagers(feManagers);
+    mac->GetTxop()->SetWifiMac(mac);
 
-    mac.SwapLinks(links);
+    // set CWmin of each Txop LinkEntity to the link ID, so that we can check where it has moved
+    for (std::size_t id = 0; id < nLinks; ++id)
+    {
+        mac->GetTxop()->SetMinCw(id, id);
+    }
 
-    NS_TEST_EXPECT_MSG_EQ(mac.GetNLinks(), nLinks, "Number of links changed after swapping");
+    mac->SwapLinks(links);
+
+    NS_TEST_EXPECT_MSG_EQ(mac->GetNLinks(), nLinks, "Number of links changed after swapping");
 
     for (const auto& [linkId, phyId] : expected)
     {
-        NS_TEST_ASSERT_MSG_EQ(mac.GetLinks().count(linkId),
-                              1,
+        NS_TEST_ASSERT_MSG_EQ(mac->GetLinks().contains(linkId),
+                              true,
                               "Link ID " << +linkId << " does not exist");
 
         NS_TEST_ASSERT_MSG_LT(+phyId, nLinks, "Invalid PHY ID");
 
         // the id of the PHY operating on a link is the original ID of the link
-        NS_TEST_EXPECT_MSG_EQ(mac.GetWifiPhy(linkId),
-                              phys.at(phyId),
+        NS_TEST_EXPECT_MSG_EQ(+mac->GetWifiPhy(linkId)->GetPhyId(),
+                              +phyId,
                               text << ": Link " << +phyId << " has not been moved to link "
                                    << +linkId);
+
+        NS_TEST_EXPECT_MSG_EQ(
+            +DynamicCast<TestFrameExchangeManager>(mac->GetFrameExchangeManager(linkId))
+                 ->GetLinkId(),
+            +linkId,
+            text << ": Link ID stored by FrameExchangeManager has not been updated");
+
+        NS_TEST_EXPECT_MSG_EQ(mac->GetTxop()->GetMinCw(linkId),
+                              +phyId,
+                              text << ": Txop Link entity " << +phyId
+                                   << " has not been moved to link " << +linkId);
     }
+
+    mac->Dispose();
 }
 
 void
@@ -199,6 +238,10 @@ MldSwapLinksTest::DoRun()
     RunOne("Non-circular swapping, autodetect how to close the loop",
            3,
            {{0, 2}, {2, 1}},
+           {{0, 1}, {1, 2}, {2, 0}});
+    RunOne("A different non-circular swapping, same result",
+           3,
+           {{1, 0}, {2, 1}},
            {{0, 1}, {1, 2}, {2, 0}});
     RunOne("One move only, autodetect how to complete the swapping",
            3,
