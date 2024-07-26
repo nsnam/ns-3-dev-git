@@ -1138,7 +1138,12 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
 {
     NS_LOG_FUNCTION(this);
 
-    std::map<uint8_t, uint8_t> actualPairs;
+    // save the initial mapping between link IDs and link Entities
+    std::map<uint8_t, std::reference_wrapper<const LinkEntity>> origLinkRefMap;
+    for (const auto& [id, link] : m_links)
+    {
+        origLinkRefMap.insert_or_assign(id, *link.get());
+    }
 
     while (!links.empty())
     {
@@ -1162,8 +1167,6 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
             auto [it, inserted] =
                 m_links.emplace(to, nullptr); // insert an element with key to if not present
             m_links[to].swap(linkToMove);     // to is the link to move now
-            actualPairs.emplace(from, to);
-            UpdateLinkId(to);
             links.erase(from);
             if (!linkToMove)
             {
@@ -1179,7 +1182,6 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
             {
                 // no new position specified for 'to', use the current empty cell
                 m_links[empty].swap(linkToMove);
-                actualPairs.emplace(to, empty);
                 break;
             }
 
@@ -1193,6 +1195,22 @@ WifiMac::SwapLinks(std::map<uint8_t, uint8_t> links)
     {
         m_linkIds.insert(id);
     }
+
+    std::map<uint8_t, uint8_t> actualPairs;
+    for (const auto& [from, ref] : origLinkRefMap)
+    {
+        // find the pointer in the current link map
+        for (const auto& [to, link] : m_links)
+        {
+            if (link.get() == &ref.get())
+            {
+                actualPairs[from] = to; // link 'from' became link 'to'
+                UpdateLinkId(to);
+                break;
+            }
+        }
+    }
+    NS_ASSERT_MSG(actualPairs.size() == m_links.size(), "Missing some link(s)");
 
     if (m_txop)
     {
