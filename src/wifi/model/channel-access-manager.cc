@@ -1027,6 +1027,7 @@ ChannelAccessManager::NotifySleepNow()
     m_sleeping = true;
     // Reset backoffs
     ResetAllBackoffs();
+    m_feManager->NotifySleepNow();
     for (auto txop : m_txops)
     {
         txop->NotifySleep(m_linkId);
