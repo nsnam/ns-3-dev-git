@@ -28,6 +28,19 @@ if(EXISTS "/proc/version")
   endif()
 endif()
 
+# cmake-format: off
+# Windows injects **BY DEFAULT** its %PATH% into WSL $PATH
+# Detect and warn users how to disable path injection
+# cmake-format: on
+if("$ENV{PATH}" MATCHES "/mnt/c/")
+  message(
+    WARNING
+      "To prevent Windows path injection on WSL, append the following to /etc/wsl.conf, then use `wsl --shutdown` to restart the WSL VM:
+[interop]
+appendWindowsPath = false"
+  )
+endif()
+
 # Set Linux flag if on Linux
 if(UNIX AND NOT APPLE)
   if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
@@ -68,8 +81,8 @@ else()
 endif()
 
 if(${XCODE})
-  # Is that so hard not to break people's CI, AAPL? Why would you output the
-  # targets to a Debug/Release subfolder? Why?
+  # Prevent multi-config generators from placing output files into per
+  # configuration directory
   foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG}
