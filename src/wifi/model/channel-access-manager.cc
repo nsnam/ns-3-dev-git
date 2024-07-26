@@ -1025,13 +1025,8 @@ ChannelAccessManager::NotifySleepNow()
 {
     NS_LOG_FUNCTION(this);
     m_sleeping = true;
-    // Cancel timeout
-    if (m_accessTimeout.IsPending())
-    {
-        m_accessTimeout.Cancel();
-    }
-
     // Reset backoffs
+    ResetAllBackoffs();
     for (auto txop : m_txops)
     {
         txop->NotifySleep(m_linkId);
