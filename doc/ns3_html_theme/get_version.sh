@@ -137,14 +137,19 @@ fi
 outf="doc/ns3_html_theme/static/ns3_version.js"
 
 # Distance from last tag
-# 'git describe HEAD --tags' will return a string such as either
+# 'git describe HEAD --tags --long' will return a string such as either
 # 'ns-3.29-159-xxx' (if we are at a distance from the last release tag) or
 # 'ns-3.29' if we are at the tag.
-distance=`git describe HEAD --tags | cut -d '-' -f 3- | cut -d '-' -f 1`
+distance=`git describe HEAD --tags --long | cut -d '-' -f 3`
 
-if [ $distance -eq 1 ]; then
-    version=`git describe HEAD --tags | cut -d '-' -f 2`
+if [ $distance -eq 1 ] | [ $distance -eq 0 ]; then
+    version=`git describe HEAD --tags --long | cut -d '-' -f 2`
     say "at version $version"
+
+elif [ $tag -eq 0 ]; then
+    distance=0
+    # version previously set
+    vers_href=
 
 elif [ $tag -eq 1 ]; then
     distance=1
@@ -152,7 +157,7 @@ elif [ $tag -eq 1 ]; then
     vers_href=
 
 else
-    version=`git describe HEAD --tags | cut -d '-' -f 3- | cut -d '-' -f 2 | cut -c 2-`
+    version=`git describe HEAD --tags --long | cut -d '-' -f 3- | cut -d '-' -f 2 | cut -c 2-`
     # Check for uncommitted changes
     changes=0
     if [ "$(git status --porcelain)" ]; then
