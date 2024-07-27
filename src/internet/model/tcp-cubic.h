@@ -101,6 +101,7 @@ class TcpCubic : public TcpCongestionOps
                             const TcpSocketState::TcpCongState_t newState) override;
 
     Ptr<TcpCongestionOps> Fork() override;
+    void Init(Ptr<TcpSocketState> tcb) override;
 
   private:
     bool m_fastConvergence; //!< Enable or disable fast convergence algorithm

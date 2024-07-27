@@ -174,6 +174,12 @@ TcpCubic::GetName() const
 }
 
 void
+TcpCubic::Init(Ptr<TcpSocketState> tcb)
+{
+    HystartReset(tcb);
+}
+
+void
 TcpCubic::HystartReset(Ptr<const TcpSocketState> tcb)
 {
     NS_LOG_FUNCTION(this);
