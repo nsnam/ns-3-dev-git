@@ -1694,14 +1694,6 @@ def main():
     if os.getenv("CLICOLOR") is None:
         os.environ["CLICOLOR"] = "1"
 
-    # If pybindgen exists in the parent directory
-    # (e.g. ns3-all-in-one), add it to the PYTHONPATH
-    pybindgen_dir = glob.glob(os.path.abspath(append_to_ns3_path("..", "pybindgen*")))
-    if pybindgen_dir:
-        if "PYTHONPATH" not in os.environ:
-            os.environ["PYTHONPATH"] = ""
-        os.environ["PYTHONPATH"] += path_sep + pybindgen_dir[0]
-
     # Parse arguments
     args = parse_args(sys.argv[1:])
     atexit.register(exit_handler, dry_run=args.dry_run)
