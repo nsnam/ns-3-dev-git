@@ -3259,7 +3259,8 @@ TcpSocketBase::SendDataPacket(SequenceNumber32 seq, uint32_t maxSize, bool withA
     // This is a simple version of Linux tcp_cwnd_validate() but following
     // the principle implemented in Linux that limits the updating of cwnd
     // (in the congestion controls) when flight size is >= cwnd
-    m_tcb->m_isCwndLimited = (BytesInFlight() >= m_tcb->m_cWnd);
+    // send will also be cwnd limited if less then one segment of cwnd is available
+    m_tcb->m_isCwndLimited = (m_tcb->m_cWnd < BytesInFlight() + m_tcb->m_segmentSize);
 
     UpdateRttHistory(seq, sz, isRetransmission);
 
