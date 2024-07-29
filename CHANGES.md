@@ -27,6 +27,11 @@ Changes from ns-3.42 to ns-3-dev
 * (lr-wpan) Removes the word `address` from the CSMA-CA logs prefix when `LOG_PREFIX_FUNC` is used.
 * (wifi) The `WifiHelper::AssignStreams()` method has been made static.
 * (lr-wpan) Added `AssignStreams` function to the MAC.
+* (lr-wpan) Attribute `macRxOnWhenIdle` added to the supported attributes in `MacPibAttributes`.
+* (lr-wpan) Attribute `macPromiscuousMode` added to the supported attributes in `MacPibAttributes`.
+* (lr-wpan) Attribute `macAssociatePermit` added to the supported attributes in `MacPibAttributes`.
+* (lr-wpan) Attribute `pCurrentChannel` added to the supported attributes in `MacPibAttributes`.
+* (lr-wpan) Attribute `pCurrentPage` added to the supported attributes in `MacPibAttributes`.
 
 ### Changes to build system
 

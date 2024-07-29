@@ -918,6 +918,9 @@ LrWpanMac::MlmeSetRequest(MacPibAttributeIdentifier id, Ptr<MacPibAttributes> at
 
     switch (id)
     {
+    case macAssociationPermit:
+        m_macAssociationPermit = attribute->macAssociationPermit;
+        break;
     case macBeaconPayload:
         if (attribute->macBeaconPayload.size() > aMaxBeaconPayloadLength)
         {
@@ -947,6 +950,24 @@ LrWpanMac::MlmeSetRequest(MacPibAttributeIdentifier id, Ptr<MacPibAttributes> at
     case macPanId:
         m_macPanId = macPanId;
         break;
+    case macPromiscuousMode:
+        m_macPromiscuousMode = attribute->macPromiscuousMode;
+        break;
+    case macRxOnWhenIdle:
+        m_macRxOnWhenIdle = attribute->macRxOnWhenIdle;
+        break;
+    case pCurrentChannel: {
+        Ptr<PhyPibAttributes> pibAttr = Create<PhyPibAttributes>();
+        pibAttr->phyCurrentChannel = attribute->pCurrentChannel;
+        m_phy->PlmeSetAttributeRequest(PhyPibAttributeIdentifier::phyCurrentChannel, pibAttr);
+        break;
+    }
+    case pCurrentPage: {
+        Ptr<PhyPibAttributes> pibAttr = Create<PhyPibAttributes>();
+        pibAttr->phyCurrentPage = attribute->pCurrentPage;
+        m_phy->PlmeSetAttributeRequest(PhyPibAttributeIdentifier::phyCurrentPage, pibAttr);
+        break;
+    }
     default:
         // TODO: Add support for setting other attributes
         confirmParams.m_status = MacStatus::UNSUPPORTED_ATTRIBUTE;
@@ -968,11 +989,20 @@ LrWpanMac::MlmeGetRequest(MacPibAttributeIdentifier id)
 
     switch (id)
     {
+    case macAssociationPermit:
+        attributes->macAssociationPermit = m_macAssociationPermit;
+        break;
     case macBeaconPayload:
         attributes->macBeaconPayload = m_macBeaconPayload;
         break;
     case macBeaconPayloadLength:
         attributes->macBeaconPayloadLength = m_macBeaconPayloadLength;
+        break;
+    case macPromiscuousMode:
+        attributes->macPromiscuousMode = m_macPromiscuousMode;
+        break;
+    case macRxOnWhenIdle:
+        attributes->macRxOnWhenIdle = m_macRxOnWhenIdle;
         break;
     case macShortAddress:
         attributes->macShortAddress = m_shortAddress;
@@ -3596,6 +3626,32 @@ LrWpanMac::PlmeSetAttributeConfirm(PhyEnumeration status, PhyPibAttributeIdentif
                 m_mlmeAssociateConfirmCallback(confirmParams);
             }
             NS_LOG_ERROR("Invalid channel parameter in MLME-associate");
+        }
+    }
+    else
+    {
+        if (!m_mlmeSetConfirmCallback.IsNull())
+        {
+            MlmeSetConfirmParams confirmParams;
+            if (status == PhyEnumeration::IEEE_802_15_4_PHY_SUCCESS)
+            {
+                confirmParams.m_status = MacStatus::SUCCESS;
+            }
+            else
+            {
+                confirmParams.m_status = MacStatus::UNSUPPORTED_ATTRIBUTE;
+            }
+
+            if (id == PhyPibAttributeIdentifier::phyCurrentChannel)
+            {
+                confirmParams.id = MacPibAttributeIdentifier::pCurrentChannel;
+            }
+            else if (id == PhyPibAttributeIdentifier::phyCurrentPage)
+            {
+                confirmParams.id = MacPibAttributeIdentifier::pCurrentPage;
+            }
+
+            m_mlmeSetConfirmCallback(confirmParams);
         }
     }
 }

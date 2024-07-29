@@ -316,8 +316,13 @@ struct MacPibAttributes : public SimpleRefCount<MacPibAttributes>
     Mac16Address macShortAddress;          //!< The 16 bit mac short address
     Mac64Address macExtendedAddress;       //!< The EUI-64 bit address
     uint16_t macPanId{0xffff};             //!< The identifier of the PAN
-    uint8_t pCurrentChannel{11};           //!< The current logical channel in used in the PHY
-    uint8_t pCurrentPage{0};               //!< The current logical page in use in the PHY
+    bool macAssociationPermit{true};       //!< Indication of whether the coordinator is allowing
+                                           //!< association.
+    bool macRxOnWhenIdle{true}; //!< Indication of whether the MAC is enabled during idle periods.
+    bool macPromiscuousMode{false}; //!< Indication of whether the mac is in promiscuous mode
+                                    //!<  (Receive all mode).
+    uint8_t pCurrentChannel{11};    //!< The current logical channel in used in the PHY
+    uint8_t pCurrentPage{0};        //!< The current logical page in use in the PHY
     // TODO: complete other MAC pib attributes
 };
 

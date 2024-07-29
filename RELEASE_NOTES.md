@@ -34,6 +34,8 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ### New user-visible features
 
+- (lr-wpan) !2082 - MAC SET GET attributes added
+
 ### Bugs fixed
 
 - (lr-wpan) !2001 - Beacon improvements and fixes
