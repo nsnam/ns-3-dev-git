@@ -44,6 +44,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (wifi) Fix assignment of AIDs to non-AP STAs/MLDs to ensure they are unique
 - (wifi) Fix starting Sequence Number when ADDBA Response arrives after timeout
 - (uan) !2087 - Fix Thorp attenuation formula
+- (uan) !2088 - Fix PER calculation of M-QAM
 
 Release 3.42
 ------------

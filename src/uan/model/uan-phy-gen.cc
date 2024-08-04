@@ -346,7 +346,7 @@ UanPhyPerCommonModes::CalcPer(Ptr<Packet> pkt, double sinrDb, UanTxMode mode)
             for (int j = 0; j < sum_items; ++j)
             {
                 PbK += ::std::pow(-1.0, (double)j * pow2k / sqrtM) *
-                       (pow2k - ::std::floor((double)(j * pow2k / sqrtM) - 0.5)) *
+                       (pow2k - ::std::floor((double)(j * pow2k / sqrtM) + 0.5)) *
                        erfc((2.0 * (double)j + 1.0) *
                             ::std::sqrt(3.0 * (log2M * EbNo) / (2.0 * (M - 1.0))));
 
