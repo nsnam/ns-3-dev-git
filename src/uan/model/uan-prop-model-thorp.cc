@@ -93,7 +93,7 @@ UanPropModelThorp::GetAttenDbKm(double freqKhz)
     }
     else
     {
-        atten = 0.002 + 0.11 * (freqKhz / (1 + freqKhz)) + 0.011 * freqKhz;
+        atten = 0.002 + 0.11 * (fsq / (1 + fsq)) + 0.011 * fsq;
     }
 
     return atten;
