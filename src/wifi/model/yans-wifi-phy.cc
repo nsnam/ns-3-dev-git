@@ -105,11 +105,11 @@ YansWifiPhy::GetGuardBandwidth(MHz_u currentChannelWidth) const
     return MHz_u{0};
 }
 
-std::tuple<dBr_u, dBr_u, dBr_u>
+std::tuple<dBr_t, dBr_t, dBr_t>
 YansWifiPhy::GetTxMaskRejectionParams() const
 {
     NS_ABORT_MSG("Tx mask rejection params not relevant for Yans");
-    return std::make_tuple(dBr_u{0.0}, dBr_u{0.0}, dBr_u{0.0});
+    return std::make_tuple(dBr_t{0.0}, dBr_t{0.0}, dBr_t{0.0});
 }
 
 WifiSpectrumBandInfo

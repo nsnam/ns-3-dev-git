@@ -190,9 +190,9 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(MHz_u centerFrequency,
                                                           MHz_u channelWidth,
                                                           Watt_u txPower,
                                                           MHz_u guardBandwidth,
-                                                          dBr_u minInnerBand,
-                                                          dBr_u minOuterBand,
-                                                          dBr_u lowestPoint)
+                                                          dBr_t minInnerBand,
+                                                          dBr_t minOuterBand,
+                                                          dBr_t lowestPoint)
 {
     NS_LOG_FUNCTION(centerFrequency << channelWidth << txPower << guardBandwidth << minInnerBand
                                     << minOuterBand << lowestPoint);
@@ -264,9 +264,9 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
     MHz_u channelWidth,
     Watt_u txPower,
     MHz_u guardBandwidth,
-    dBr_u minInnerBand,
-    dBr_u minOuterBand,
-    dBr_u lowestPoint,
+    dBr_t minInnerBand,
+    dBr_t minOuterBand,
+    dBr_t lowestPoint,
     const std::vector<bool>& puncturedSubchannels)
 {
     NS_ASSERT_MSG(centerFrequencies.size() == 1 ||
@@ -370,9 +370,9 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
     MHz_u channelWidth,
     Watt_u txPower,
     MHz_u guardBandwidth,
-    dBr_u minInnerBand,
-    dBr_u minOuterBand,
-    dBr_u lowestPoint)
+    dBr_t minInnerBand,
+    dBr_t minOuterBand,
+    dBr_t lowestPoint)
 {
     NS_ASSERT_MSG(centerFrequencies.size() == 1 ||
                       (channelWidth == MHz_u{160} && centerFrequencies.size() <= 2),
@@ -460,9 +460,9 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
     MHz_u channelWidth,
     Watt_u txPower,
     MHz_u guardBandwidth,
-    dBr_u minInnerBand,
-    dBr_u minOuterBand,
-    dBr_u lowestPoint,
+    dBr_t minInnerBand,
+    dBr_t minOuterBand,
+    dBr_t lowestPoint,
     const std::vector<bool>& puncturedSubchannels)
 {
     return CreateHeOfdmTxPowerSpectralDensity(std::vector<MHz_u>{centerFrequency},
@@ -481,9 +481,9 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
     MHz_u channelWidth,
     Watt_u txPower,
     MHz_u guardBandwidth,
-    dBr_u minInnerBand,
-    dBr_u minOuterBand,
-    dBr_u lowestPoint,
+    dBr_t minInnerBand,
+    dBr_t minOuterBand,
+    dBr_t lowestPoint,
     const std::vector<bool>& puncturedSubchannels)
 {
     NS_ASSERT_MSG(
@@ -682,9 +682,9 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
     Watt_u txPowerPerBand,
     uint32_t nGuardBands,
     uint32_t innerSlopeWidth,
-    dBr_u minInnerBand,
-    dBr_u minOuterBand,
-    dBr_u lowestPoint,
+    dBr_t minInnerBand,
+    dBr_t minOuterBand,
+    dBr_t lowestPoint,
     const std::vector<std::vector<WifiSpectrumBandIndices>>& puncturedBandsPerSegment,
     uint32_t puncturedSlopeWidth)
 {
@@ -704,10 +704,10 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
 
     // Different power levels
     dBm_u txPowerRef{10.0 * std::log10(txPowerPerBand * 1000.0)};
-    dBm_u txPowerInnerBandMin{txPowerRef + minInnerBand};
-    dBm_u txPowerMiddleBandMin{txPowerRef + minOuterBand};
-    dBm_u txPowerOuterBandMin{txPowerRef +
-                              lowestPoint}; // TODO also take into account dBm/MHz constraints
+    dBm_u txPowerInnerBandMin{txPowerRef + minInnerBand.in_dB()};
+    dBm_u txPowerMiddleBandMin{txPowerRef + minOuterBand.in_dB()};
+    dBm_u txPowerOuterBandMin{
+        txPowerRef + lowestPoint.in_dB()}; // TODO also take into account dBm/MHz constraints
 
     // Different widths (in number of bands)
     uint32_t outerSlopeWidth =
@@ -862,10 +862,10 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
                + 2 * (innerSlopeWidth + middleSlopeWidth + outerSlopeWidth + flatJunctionWidth)));
 
     // Different slopes
-    double innerSlope = (-1.0 * minInnerBand) / innerSlopeWidth;
-    double middleSlope = (-1.0 * (minOuterBand - minInnerBand)) / middleSlopeWidth;
+    double innerSlope = (-1.0 * minInnerBand.in_dB()) / innerSlopeWidth;
+    double middleSlope = (-1.0 * (minOuterBand - minInnerBand).in_dB()) / middleSlopeWidth;
     double outerSlope = (txPowerMiddleBandMin - txPowerOuterBandMin) / outerSlopeWidth;
-    double puncturedSlope = (-1.0 * minInnerBand) / puncturedSlopeWidth;
+    double puncturedSlope = (-1.0 * minInnerBand.in_dB()) / puncturedSlopeWidth;
 
     // Build spectrum mask
     Watt_u previousTxPower{0.0};

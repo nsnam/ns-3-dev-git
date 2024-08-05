@@ -1250,7 +1250,7 @@ class WifiPhy : public Object
      *
      * This method is only relevant for SpectrumWifiPhy.
      */
-    virtual std::tuple<dBr_u, dBr_u, dBr_u> GetTxMaskRejectionParams() const = 0;
+    virtual std::tuple<dBr_t, dBr_t, dBr_t> GetTxMaskRejectionParams() const = 0;
 
     /**
      * Get channel number of the primary channel
