@@ -979,7 +979,10 @@ void
 PhyEntity::StartPreambleDetectionPeriod(Ptr<Event> event)
 {
     NS_LOG_FUNCTION(this << *event);
-    NS_LOG_DEBUG("Sync to signal (power=" << WToDbm(GetRxPowerWForPpdu(event)) << "dBm)");
+    const auto rxPower = GetRxPowerWForPpdu(event);
+    NS_LOG_DEBUG("Sync to signal (power=" << (rxPower > 0.0
+                                                  ? std::to_string(WToDbm(rxPower)) + "dBm)"
+                                                  : std::to_string(rxPower) + "W)"));
     m_wifiPhy->m_interference->NotifyRxStart(
         m_wifiPhy->GetCurrentFrequencyRange()); // We need to notify it now so that it starts
                                                 // recording events

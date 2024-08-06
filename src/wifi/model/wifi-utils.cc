@@ -47,6 +47,7 @@ DbmToW(double dBm)
 double
 WToDbm(double w)
 {
+    NS_ASSERT(w > 0.);
     return 10.0 * std::log10(w) + 30.0;
 }
 

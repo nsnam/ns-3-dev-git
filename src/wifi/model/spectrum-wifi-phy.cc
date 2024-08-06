@@ -525,8 +525,10 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         rxPowerPerBandW *= rxGainRatio;
         rxPowerW.insert({band, rxPowerPerBandW});
         NS_LOG_DEBUG("Signal power received after antenna gain for "
-                     << bw << " MHz channel band " << index << ": " << rxPowerPerBandW << " W ("
-                     << WToDbm(rxPowerPerBandW) << " dBm)");
+                     << bw << " MHz channel band " << index << ": " << rxPowerPerBandW << " W"
+                     << (rxPowerPerBandW > 0.0
+                             ? " (" + std::to_string(WToDbm(rxPowerPerBandW)) + " dBm)"
+                             : ""));
         if (bw <= 20)
         {
             totalRxPowerW += rxPowerPerBandW;
@@ -548,14 +550,19 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         }
     }
 
-    NS_LOG_DEBUG("Total signal power received after antenna gain: "
-                 << totalRxPowerW << " W (" << WToDbm(totalRxPowerW) << " dBm)");
+    NS_LOG_DEBUG(
+        "Total signal power received after antenna gain: "
+        << totalRxPowerW << " W"
+        << (totalRxPowerW > 0.0 ? " (" + std::to_string(WToDbm(totalRxPowerW)) + " dBm)" : ""));
 
     Ptr<WifiSpectrumSignalParameters> wifiRxParams =
         DynamicCast<WifiSpectrumSignalParameters>(rxParams);
 
     // Log the signal arrival to the trace source
-    m_signalCb(rxParams, senderNodeId, WToDbm(totalRxPowerW), rxDuration);
+    if (totalRxPowerW > 0.0)
+    {
+        m_signalCb(rxParams, senderNodeId, WToDbm(totalRxPowerW), rxDuration);
+    }
 
     if (!wifiRxParams)
     {
@@ -593,7 +600,10 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     const auto ppdu = GetRxPpduFromTxPpdu(wifiRxParams->ppdu);
     if (totalRxPowerW < DbmToW(GetRxSensitivity()) * (ppdu->GetTxChannelWidth() / 20.0))
     {
-        NS_LOG_INFO("Received signal too weak to process: " << WToDbm(totalRxPowerW) << " dBm");
+        NS_LOG_INFO(
+            "Received signal too weak to process: "
+            << totalRxPowerW << " W"
+            << (totalRxPowerW > 0.0 ? " (" + std::to_string(WToDbm(totalRxPowerW)) + " dBm)" : ""));
         m_interference->Add(ppdu, rxDuration, rxPowerW, GetCurrentFrequencyRange());
         SwitchMaybeToCcaBusy(nullptr);
         return;

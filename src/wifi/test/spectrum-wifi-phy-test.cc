@@ -553,10 +553,11 @@ SpectrumWifiPhyFilterTest::~SpectrumWifiPhyFilterTest()
 void
 SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannelBand rxPowersW)
 {
-    for (const auto& pair : rxPowersW)
+    for (const auto& [band, powerW] : rxPowersW)
     {
-        NS_LOG_INFO("band: (" << pair.first << ") -> powerW=" << pair.second << " ("
-                              << WToDbm(pair.second) << " dBm)");
+        NS_LOG_INFO(
+            "band: (" << band << ") -> powerW=" << powerW
+                      << (powerW > 0.0 ? " (" + std::to_string(WToDbm(powerW)) + " dBm)" : ""));
     }
 
     size_t numBands = rxPowersW.size();
