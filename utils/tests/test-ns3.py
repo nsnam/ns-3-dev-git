@@ -294,6 +294,10 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
             if os.sep + "examples" not in example_directory:
                 continue
 
+            # Skip directories without a CMakeLists.txt
+            if not os.path.exists(os.path.join(example_directory, "CMakeLists.txt")):
+                continue
+
             # Open the examples CMakeLists.txt and read it
             with open(
                 os.path.join(example_directory, "CMakeLists.txt"), "r", encoding="utf-8"
