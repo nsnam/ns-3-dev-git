@@ -181,7 +181,7 @@ Ptr<SpectrumSignalParameters>
 SpectrumWifiPhyBasicTest::MakeSignal(Watt_u txPower, const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector{OfdmPhy::GetOfdmRate6Mbps(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_LONG,
                           NanoSeconds(800),
                           1,
@@ -510,7 +510,7 @@ void
 SpectrumWifiPhyFilterTest::SendPpdu()
 {
     WifiTxVector txVector{EhtPhy::GetEhtMcs0(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_EHT_MU,
                           NanoSeconds(800),
                           1,
@@ -1310,7 +1310,7 @@ SpectrumWifiPhy80Plus80Test::Send160MhzPpdu()
     NS_LOG_FUNCTION(this);
 
     WifiTxVector txVector{HePhy::GetHeMcs7(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_HE_SU,
                           NanoSeconds(800),
                           1,
@@ -1780,7 +1780,7 @@ SpectrumWifiPhyMultipleInterfacesTest::SendPpdu(Ptr<SpectrumWifiPhy> phy,
                          << phy->GetChannelWidth() << phy->GetChannelNumber());
 
     WifiTxVector txVector{HePhy::GetHeMcs11(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_HE_SU,
                           NanoSeconds(800),
                           1,

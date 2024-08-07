@@ -456,7 +456,7 @@ main(int argc, char* argv[])
     // Configure the AP node
     wifi.SetRemoteStationManager(manager,
                                  "DefaultTxPowerLevel",
-                                 UintegerValue(powerLevels - 1),
+                                 UintegerValue(WIFI_MIN_TX_PWR_LEVEL + powerLevels - 1),
                                  "RtsCtsThreshold",
                                  UintegerValue(rtsThreshold));
     wifiPhy.Set("TxPowerStart", DoubleValue(minPower));

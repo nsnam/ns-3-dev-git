@@ -106,13 +106,15 @@ WifiRemoteStationManager::GetTypeId()
                           WifiModeValue(),
                           MakeWifiModeAccessor(&WifiRemoteStationManager::m_nonUnicastMode),
                           MakeWifiModeChecker())
-            .AddAttribute("DefaultTxPowerLevel",
-                          "Default power level to be used for transmissions. "
-                          "This is the power level that is used by all those WifiManagers that do "
-                          "not implement TX power control.",
-                          UintegerValue(0),
-                          MakeUintegerAccessor(&WifiRemoteStationManager::m_defaultTxPowerLevel),
-                          MakeUintegerChecker<uint8_t>())
+            .AddAttribute(
+                "DefaultTxPowerLevel",
+                "Default power level to be used for transmissions. "
+                "This is the power level that is used by all those WifiManagers that do "
+                "not implement TX power control.",
+                UintegerValue(WIFI_MIN_TX_PWR_LEVEL), // corresponds to WifiPhy::TxPowerStart
+                MakeUintegerAccessor(&WifiRemoteStationManager::m_defaultTxPowerLevel),
+                MakeUintegerChecker<uint8_t>(WIFI_MIN_TX_PWR_LEVEL,
+                                             std::numeric_limits<uint8_t>::max()))
             .AddAttribute("ErpProtectionMode",
                           "Protection mode used when non-ERP STAs are connected to an ERP AP: "
                           "Rts-Cts or Cts-To-Self",

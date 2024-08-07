@@ -24,7 +24,7 @@ namespace ns3
 {
 
 WifiTxVector::WifiTxVector()
-    : m_txPowerLevel(1),
+    : m_txPowerLevel(WIFI_MIN_TX_PWR_LEVEL),
       m_preamble(WIFI_PREAMBLE_LONG),
       m_channelWidth(MHz_u{20}),
       m_guardInterval(NanoSeconds(800)),
@@ -293,6 +293,7 @@ WifiTxVector::SetMode(WifiMode mode, uint16_t staId)
 void
 WifiTxVector::SetTxPowerLevel(uint8_t powerlevel)
 {
+    NS_ABORT_MSG_IF(powerlevel < WIFI_MIN_TX_PWR_LEVEL, "TX power level set below allowed range");
     m_txPowerLevel = powerlevel;
 }
 

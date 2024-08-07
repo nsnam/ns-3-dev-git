@@ -141,8 +141,8 @@ RrpaaWifiManager::SetupPhy(const Ptr<WifiPhy> phy)
     m_sifs = phy->GetSifs();
     m_difs = m_sifs + 2 * phy->GetSlot();
     m_nPowerLevels = phy->GetNTxPowerLevels();
-    m_maxPowerLevel = m_nPowerLevels - 1;
-    m_minPowerLevel = 0;
+    m_minPowerLevel = WIFI_MIN_TX_PWR_LEVEL;
+    m_maxPowerLevel = WIFI_MIN_TX_PWR_LEVEL + m_nPowerLevels - 1;
     for (const auto& mode : phy->GetModeList())
     {
         WifiTxVector txVector;
@@ -489,25 +489,34 @@ RrpaaWifiManager::RunBasicAlgorithm(RrpaaWifiRemoteStation* station)
         (static_cast<double>(station->m_counter + station->m_nFailed) / thresholds.m_ewnd);
     NS_LOG_DEBUG("Best loss prob= " << bploss);
     NS_LOG_DEBUG("Worst loss prob= " << wploss);
+    NS_ASSERT(station->m_powerLevel >= WIFI_MIN_TX_PWR_LEVEL);
     if (bploss >= thresholds.m_mtl)
     {
         if (station->m_powerLevel < m_maxPowerLevel)
         {
             NS_LOG_DEBUG("bploss >= MTL and power < maxPower => Increase Power");
-            station->m_pdTable[station->m_rateIndex][station->m_powerLevel] /= m_gamma;
+            station
+                ->m_pdTable[station->m_rateIndex][station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL] /=
+                m_gamma;
             NS_LOG_DEBUG("pdTable["
-                         << +station->m_rateIndex << "][" << station->m_powerLevel << "] = "
-                         << station->m_pdTable[station->m_rateIndex][station->m_powerLevel]);
+                         << +station->m_rateIndex << "]["
+                         << station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL << "] = "
+                         << station->m_pdTable[station->m_rateIndex]
+                                              [station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL]);
             station->m_powerLevel++;
             ResetCountersBasic(station);
         }
         else if (station->m_rateIndex != 0)
         {
             NS_LOG_DEBUG("bploss >= MTL and power = maxPower => Decrease Rate");
-            station->m_pdTable[station->m_rateIndex][station->m_powerLevel] /= m_gamma;
+            station
+                ->m_pdTable[station->m_rateIndex][station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL] /=
+                m_gamma;
             NS_LOG_DEBUG("pdTable["
-                         << +station->m_rateIndex << "][" << station->m_powerLevel << "] = "
-                         << station->m_pdTable[station->m_rateIndex][station->m_powerLevel]);
+                         << +station->m_rateIndex << "]["
+                         << +station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL << "] = "
+                         << station->m_pdTable[station->m_rateIndex]
+                                              [station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL]);
             station->m_rateIndex--;
             ResetCountersBasic(station);
         }
@@ -525,16 +534,19 @@ RrpaaWifiManager::RunBasicAlgorithm(RrpaaWifiRemoteStation* station)
             // Recalculate probabilities of lower rates.
             for (uint8_t i = 0; i <= station->m_rateIndex; i++)
             {
-                station->m_pdTable[i][station->m_powerLevel] *= m_delta;
-                if (station->m_pdTable[i][station->m_powerLevel] > 1)
+                station->m_pdTable[i][station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL] *= m_delta;
+                if (station->m_pdTable[i][station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL] > 1)
                 {
-                    station->m_pdTable[i][station->m_powerLevel] = 1;
+                    station->m_pdTable[i][station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL] = 1;
                 }
-                NS_LOG_DEBUG("pdTable[" << i << "][" << (int)station->m_powerLevel
-                                        << "] = " << station->m_pdTable[i][station->m_powerLevel]);
+                NS_LOG_DEBUG(
+                    "pdTable["
+                    << i << "][" << +station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL << "] = "
+                    << station->m_pdTable[i][station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL]);
             }
             double rand = m_uniformRandomVariable->GetValue(0, 1);
-            if (rand < station->m_pdTable[station->m_rateIndex + 1][station->m_powerLevel])
+            if (rand < station->m_pdTable[station->m_rateIndex + 1]
+                                         [station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL])
             {
                 NS_LOG_DEBUG("Increase Rate");
                 station->m_rateIndex++;
@@ -547,16 +559,20 @@ RrpaaWifiManager::RunBasicAlgorithm(RrpaaWifiRemoteStation* station)
             // Recalculate probabilities of higher powers.
             for (uint32_t i = m_maxPowerLevel; i > station->m_powerLevel; i--)
             {
-                station->m_pdTable[station->m_rateIndex][i] *= m_delta;
-                if (station->m_pdTable[station->m_rateIndex][i] > 1)
+                NS_ASSERT(i >= WIFI_MIN_TX_PWR_LEVEL);
+                station->m_pdTable[station->m_rateIndex][i - WIFI_MIN_TX_PWR_LEVEL] *= m_delta;
+                if (station->m_pdTable[station->m_rateIndex][i - WIFI_MIN_TX_PWR_LEVEL] > 1)
                 {
-                    station->m_pdTable[station->m_rateIndex][i] = 1;
+                    station->m_pdTable[station->m_rateIndex][i - WIFI_MIN_TX_PWR_LEVEL] = 1;
                 }
-                NS_LOG_DEBUG("pdTable[" << +station->m_rateIndex << "][" << i
-                                        << "] = " << station->m_pdTable[station->m_rateIndex][i]);
+                NS_LOG_DEBUG(
+                    "pdTable["
+                    << +station->m_rateIndex << "][" << i << "] = "
+                    << station->m_pdTable[station->m_rateIndex][i - WIFI_MIN_TX_PWR_LEVEL]);
             }
             double rand = m_uniformRandomVariable->GetValue(0, 1);
-            if (rand < station->m_pdTable[station->m_rateIndex][station->m_powerLevel - 1])
+            if (rand < station->m_pdTable[station->m_rateIndex]
+                                         [station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL])
             {
                 NS_LOG_DEBUG("Decrease Power");
                 station->m_powerLevel--;
@@ -574,16 +590,20 @@ RrpaaWifiManager::RunBasicAlgorithm(RrpaaWifiRemoteStation* station)
             // Recalculate probabilities of higher powers.
             for (uint32_t i = m_maxPowerLevel; i >= station->m_powerLevel; i--)
             {
-                station->m_pdTable[station->m_rateIndex][i] *= m_delta;
-                if (station->m_pdTable[station->m_rateIndex][i] > 1)
+                NS_ASSERT(i >= WIFI_MIN_TX_PWR_LEVEL);
+                station->m_pdTable[station->m_rateIndex][i - WIFI_MIN_TX_PWR_LEVEL] *= m_delta;
+                if (station->m_pdTable[station->m_rateIndex][i - WIFI_MIN_TX_PWR_LEVEL] > 1)
                 {
-                    station->m_pdTable[station->m_rateIndex][i] = 1;
+                    station->m_pdTable[station->m_rateIndex][i - WIFI_MIN_TX_PWR_LEVEL] = 1;
                 }
-                NS_LOG_DEBUG("pdTable[" << +station->m_rateIndex << "][" << i
-                                        << "] = " << station->m_pdTable[station->m_rateIndex][i]);
+                NS_LOG_DEBUG(
+                    "pdTable["
+                    << +station->m_rateIndex << "][" << i << "] = "
+                    << station->m_pdTable[station->m_rateIndex][i - WIFI_MIN_TX_PWR_LEVEL]);
             }
             double rand = m_uniformRandomVariable->GetValue(0, 1);
-            if (rand < station->m_pdTable[station->m_rateIndex][station->m_powerLevel - 1])
+            if (rand < station->m_pdTable[station->m_rateIndex]
+                                         [station->m_powerLevel - WIFI_MIN_TX_PWR_LEVEL])
             {
                 NS_LOG_DEBUG("Decrease Power");
                 station->m_powerLevel--;

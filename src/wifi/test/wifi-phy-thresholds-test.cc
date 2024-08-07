@@ -129,7 +129,7 @@ Ptr<SpectrumSignalParameters>
 WifiPhyThresholdsTest::MakeWifiSignal(Watt_u txPower, const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector{OfdmPhy::GetOfdmRate6Mbps(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_LONG,
                           NanoSeconds(800),
                           1,

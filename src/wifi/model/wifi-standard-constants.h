@@ -65,6 +65,9 @@ WIFI_EXPORT extern const Time MAX_PROPAGATION_DELAY;
 /// The aMediumSyncThreshold defined by Sec. 35.3.16.18.1 of 802.11be D4.0
 WIFI_EXPORT extern const Time MEDIUM_SYNC_THRESHOLD;
 
+/// minimum TX power level value
+static constexpr uint8_t WIFI_MIN_TX_PWR_LEVEL{1};
+
 /// Subcarrier frequency spacing in Hz (Table 19-6 "Timing-related constants" of 802.11-2020)
 static constexpr uint32_t SUBCARRIER_FREQUENCY_SPACING{312500};
 

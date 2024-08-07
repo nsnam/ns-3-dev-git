@@ -3616,7 +3616,7 @@ HeRuMcsDataRateTestCase::CheckDataRate(RuType ruType,
 {
     uint8_t staId = 1;
     auto txVector = WifiTxVector(HePhy::GetHeMcs(0),
-                                 0,
+                                 WIFI_MIN_TX_PWR_LEVEL,
                                  WIFI_PREAMBLE_HE_MU,
                                  guardInterval,
                                  1,

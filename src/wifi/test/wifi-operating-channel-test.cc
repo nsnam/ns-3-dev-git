@@ -539,7 +539,7 @@ WifiPhyChannel80Plus80Test::CreateDummyHePpdu(MHz_u bandwidth,
                                               const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_HE_SU,
                                          NanoSeconds(800),
                                          1,

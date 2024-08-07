@@ -107,7 +107,7 @@ main(int argc, char* argv[])
     dBm_u txPowerStart{0.0};
     dBm_u txPowerEnd{15.0};
     uint32_t nTxPowerLevels{16};
-    uint32_t txPowerLevel{0};
+    uint32_t txPowerLevel{WIFI_MIN_TX_PWR_LEVEL};
     ampere_u idleCurrent{0.273};
     ampere_u txCurrent{0.380};
     bool verbose{false};

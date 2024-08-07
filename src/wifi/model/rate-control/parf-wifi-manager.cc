@@ -86,7 +86,7 @@ void
 ParfWifiManager::SetupPhy(const Ptr<WifiPhy> phy)
 {
     NS_LOG_FUNCTION(this << phy);
-    m_maxPowerLevel = phy->GetNTxPowerLevels() - 1;
+    m_maxPowerLevel = WIFI_MIN_TX_PWR_LEVEL + phy->GetNTxPowerLevels() - 1;
     WifiRemoteStationManager::SetupPhy(phy);
 }
 
