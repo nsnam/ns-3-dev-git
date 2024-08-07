@@ -189,7 +189,7 @@ Ptr<OfdmPpdu>
 WifiPhyCcaThresholdsTest::CreateDummyNonHtPpdu(const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector = WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_LONG,
                                          NanoSeconds(800),
                                          1,
@@ -205,7 +205,7 @@ Ptr<HtPpdu>
 WifiPhyCcaThresholdsTest::CreateDummyHtPpdu(MHz_t bandwidth, const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector = WifiTxVector(HtPhy::GetHtMcs0(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_HT_MF,
                                          NanoSeconds(800),
                                          1,
@@ -222,7 +222,7 @@ WifiPhyCcaThresholdsTest::CreateDummyVhtPpdu(MHz_t bandwidth,
                                              const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector = WifiTxVector(VhtPhy::GetVhtMcs0(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_VHT_SU,
                                          NanoSeconds(800),
                                          1,
@@ -238,7 +238,7 @@ Ptr<HePpdu>
 WifiPhyCcaThresholdsTest::CreateDummyHePpdu(MHz_t bandwidth, const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_HE_SU,
                                          NanoSeconds(800),
                                          1,
@@ -255,7 +255,7 @@ WifiPhyCcaThresholdsTest::CreateDummyEhtPpdu(MHz_t bandwidth,
                                              const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector{EhtPhy::GetEhtMcs0(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_EHT_MU,
                           NanoSeconds(800),
                           1,
@@ -1098,7 +1098,8 @@ WifiPhyCcaIndicationTest::SendSuPpdu(dBm_t txPower, MHz_t frequency, MHz_t bandw
         (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs0() : EhtPhy::GetEhtMcs0();
     const auto preamble =
         (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_SU : WIFI_PREAMBLE_EHT_MU;
-    WifiTxVector txVector{mcs, 0, preamble, NanoSeconds(800), 1, 1, 0, bandwidth, false};
+    WifiTxVector
+        txVector{mcs, WIFI_MIN_TX_PWR_LEVEL, preamble, NanoSeconds(800), 1, 1, 0, bandwidth, false};
     Ptr<Packet> pkt = Create<Packet>(1000);
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_QOSDATA);

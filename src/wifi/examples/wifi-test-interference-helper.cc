@@ -129,7 +129,7 @@ InterferenceExperiment::SendA() const
     m_uidA = p->GetUid();
     Ptr<WifiPsdu> psdu = Create<WifiPsdu>(p, hdr);
     WifiTxVector txVector;
-    txVector.SetTxPowerLevel(0); // only one TX power level
+    txVector.SetTxPowerLevel(WIFI_MIN_TX_PWR_LEVEL);
     txVector.SetMode(WifiMode(m_input.txModeA));
     txVector.SetChannelWidth(m_input.widthA);
     txVector.SetPreambleType(m_input.preamble);
@@ -146,7 +146,7 @@ InterferenceExperiment::SendB() const
     m_uidB = p->GetUid();
     Ptr<WifiPsdu> psdu = Create<WifiPsdu>(p, hdr);
     WifiTxVector txVector;
-    txVector.SetTxPowerLevel(0); // only one TX power level
+    txVector.SetTxPowerLevel(WIFI_MIN_TX_PWR_LEVEL);
     txVector.SetMode(WifiMode(m_input.txModeB));
     txVector.SetChannelWidth(m_input.widthB);
     txVector.SetPreambleType(m_input.preamble);

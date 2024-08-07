@@ -461,7 +461,7 @@ WifiPrimaryChannelsTest::DoSetup()
     pkt->AddHeader(trigger);
 
     m_triggerTxVector = WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
-                                     0,
+                                     WIFI_MIN_TX_PWR_LEVEL,
                                      WIFI_PREAMBLE_LONG,
                                      NanoSeconds(800),
                                      1,
@@ -773,7 +773,7 @@ WifiPrimaryChannelsTest::SendDlSuPpdu(uint8_t bss, MHz_t txChannelWidth)
     uint8_t bssColor = apDev->GetHeConfiguration()->m_bssColor;
     auto txVector = WifiTxVector(
         (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
-        0,
+        WIFI_MIN_TX_PWR_LEVEL,
         (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_SU : WIFI_PREAMBLE_EHT_MU,
         NanoSeconds(800),
         1,
@@ -810,7 +810,7 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
 
     auto txVector = WifiTxVector(
         (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
-        0,
+        WIFI_MIN_TX_PWR_LEVEL,
         (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_MU : WIFI_PREAMBLE_EHT_MU,
         NanoSeconds(800),
         1,
@@ -921,7 +921,7 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
     uint16_t length = 0;
     WifiTxVector trigVector(
         (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
-        0,
+        WIFI_MIN_TX_PWR_LEVEL,
         (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_TB : WIFI_PREAMBLE_EHT_TB,
         NanoSeconds(3200),
         1,
@@ -974,7 +974,7 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
 
         WifiTxVector txVector(
             (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
-            0,
+            WIFI_MIN_TX_PWR_LEVEL,
             (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_TB : WIFI_PREAMBLE_EHT_TB,
             NanoSeconds(3200),
             1,

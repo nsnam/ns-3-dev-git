@@ -80,12 +80,12 @@ class ParfWifiManager : public WifiRemoteStationManager
      * In contrast to rate, power levels do not depend on the remote station.
      * The levels depend only on the physical layer of the device.
      */
-    uint8_t m_minPowerLevel{0};
+    uint8_t m_minPowerLevel{WIFI_MIN_TX_PWR_LEVEL};
 
     /**
      * Maximal power level.
      */
-    uint8_t m_maxPowerLevel{0};
+    uint8_t m_maxPowerLevel{WIFI_MIN_TX_PWR_LEVEL};
 
     /**
      * The trace source fired when the transmission power changes.

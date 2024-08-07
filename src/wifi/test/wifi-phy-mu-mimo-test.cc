@@ -534,7 +534,7 @@ TestDlMuMimoPhyTransmission::SendMuPpdu(const std::vector<StaInfo>& staInfos)
     NS_ASSERT(staInfos.size() > 1);
 
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_HE_MU,
                                          NanoSeconds(800),
                                          1,
@@ -1286,7 +1286,7 @@ TestUlMuMimoPhyTransmission::SendHeSuPpdu(uint16_t txStaId,
     WifiConstPsduMap psdus;
 
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_HE_SU,
                                          NanoSeconds(800),
                                          1,
@@ -1321,7 +1321,7 @@ TestUlMuMimoPhyTransmission::GetTxVectorForHeTbPpdu(uint16_t txStaId,
                                                     uint8_t bssColor) const
 {
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs7(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_HE_TB,
                                          NanoSeconds(1600),
                                          1,
@@ -1345,7 +1345,7 @@ void
 TestUlMuMimoPhyTransmission::SetTrigVector(const std::vector<uint16_t>& staIds, uint8_t bssColor)
 {
     WifiTxVector txVector(HePhy::GetHeMcs7(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_HE_TB,
                           NanoSeconds(1600),
                           1,

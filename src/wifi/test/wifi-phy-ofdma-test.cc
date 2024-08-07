@@ -550,7 +550,7 @@ TestDlOfdmaPhyTransmission<LatestPhyEntityType>::SendMuPpdu(uint16_t rxStaId1, u
     WifiConstPsduMap psdus;
     WifiTxVector txVector{
         (m_modClass == WIFI_MOD_CLASS_HE) ? HePhy::GetHeMcs7() : EhtPhy::GetEhtMcs7(),
-        0,
+        WIFI_MIN_TX_PWR_LEVEL,
         (m_modClass == WIFI_MOD_CLASS_HE) ? WIFI_PREAMBLE_HE_MU : WIFI_PREAMBLE_EHT_MU,
         NanoSeconds(800),
         1,
@@ -1610,7 +1610,7 @@ TestDlOfdmaPhyPuncturing::SendMuPpdu(uint16_t rxStaId1,
     NS_LOG_FUNCTION(this << rxStaId1 << rxStaId2);
     WifiConstPsduMap psdus;
     WifiTxVector txVector{HePhy::GetHeMcs7(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_HE_MU,
                           NanoSeconds(800),
                           1,
@@ -2310,7 +2310,7 @@ TestUlOfdmaPpduUid::SendMuPpdu()
 {
     WifiConstPsduMap psdus;
     WifiTxVector txVector{HePhy::GetHeMcs7(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_HE_MU,
                           NanoSeconds(800),
                           1,
@@ -2362,7 +2362,7 @@ TestUlOfdmaPpduUid::SendTbPpdu()
     WifiConstPsduMap psdus2;
 
     WifiTxVector txVector1{HePhy::GetHeMcs7(),
-                           0,
+                           WIFI_MIN_TX_PWR_LEVEL,
                            WIFI_PREAMBLE_HE_TB,
                            NanoSeconds(1600),
                            1,
@@ -2441,7 +2441,7 @@ TestUlOfdmaPpduUid::SendSuPpdu(uint16_t txStaId)
 {
     WifiConstPsduMap psdus;
     WifiTxVector txVector{HePhy::GetHeMcs7(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_HE_SU,
                           NanoSeconds(800),
                           1,
@@ -2594,7 +2594,7 @@ TestMultipleHeTbPreambles::TestMultipleHeTbPreambles()
     : TestCase("UL-OFDMA multiple RX events test"),
       m_totalBytesDropped(0),
       m_trigVector(HePhy::GetHeMcs7(),
-                   0,
+                   WIFI_MIN_TX_PWR_LEVEL,
                    WIFI_PREAMBLE_HE_TB,
                    NanoSeconds(1600),
                    1,
@@ -2659,7 +2659,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
 {
     WifiConstPsduMap psdus;
     WifiTxVector txVector{HePhy::GetHeMcs7(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_HE_TB,
                           NanoSeconds(1600),
                           1,
@@ -3494,7 +3494,7 @@ TestUlOfdmaPhyTransmission<LatestPhyEntityType>::SendSuPpdu(uint16_t txStaId,
 
     WifiTxVector txVector{
         (m_modClass == WIFI_MOD_CLASS_HE) ? HePhy::GetHeMcs7() : EhtPhy::GetEhtMcs7(),
-        0,
+        WIFI_MIN_TX_PWR_LEVEL,
         (m_modClass == WIFI_MOD_CLASS_HE) ? WIFI_PREAMBLE_HE_SU : WIFI_PREAMBLE_EHT_MU,
         NanoSeconds(800),
         1,
@@ -3547,7 +3547,7 @@ TestUlOfdmaPhyTransmission<LatestPhyEntityType>::GetTxVectorForTbPpdu(uint16_t t
 {
     WifiTxVector txVector{
         (m_modClass == WIFI_MOD_CLASS_HE) ? HePhy::GetHeMcs7() : EhtPhy::GetEhtMcs7(),
-        0,
+        WIFI_MIN_TX_PWR_LEVEL,
         (m_modClass == WIFI_MOD_CLASS_HE) ? WIFI_PREAMBLE_HE_TB : WIFI_PREAMBLE_EHT_TB,
         NanoSeconds(1600),
         1,
@@ -3631,7 +3631,7 @@ TestUlOfdmaPhyTransmission<LatestPhyEntityType>::SetTrigVector(uint8_t bssColor,
 
     WifiTxVector txVector(
         (m_modClass == WIFI_MOD_CLASS_HE) ? HePhy::GetHeMcs7() : EhtPhy::GetEhtMcs7(),
-        0,
+        WIFI_MIN_TX_PWR_LEVEL,
         (m_modClass == WIFI_MOD_CLASS_HE) ? WIFI_PREAMBLE_HE_TB : WIFI_PREAMBLE_EHT_TB,
         NanoSeconds(1600),
         1,
@@ -5293,7 +5293,7 @@ TestPhyPaddingExclusion::SendTbPpdu(uint16_t txStaId,
     WifiConstPsduMap psdus;
 
     WifiTxVector txVector{HePhy::GetHeMcs7(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_HE_TB,
                           NanoSeconds(1600),
                           1,
@@ -5594,7 +5594,7 @@ void
 TestPhyPaddingExclusion::SetTrigVector(Time ppduDuration)
 {
     WifiTxVector trigVector{HePhy::GetHeMcs7(),
-                            0,
+                            WIFI_MIN_TX_PWR_LEVEL,
                             WIFI_PREAMBLE_HE_TB,
                             NanoSeconds(1600),
                             1,
@@ -5827,7 +5827,7 @@ TestUlOfdmaPowerControl::TestUlOfdmaPowerControl()
       m_txPowerAp(dBm_t{0}),
       m_txPowerStart(dBm_t{0}),
       m_txPowerEnd(dBm_t{0}),
-      m_txPowerLevels(0),
+      m_txPowerLevels(1),
       m_requestedRssiSta1(dBm_t{0}),
       m_requestedRssiSta2(dBm_t{0}),
       m_rssiSta1(dBm_t{0}),
@@ -5910,7 +5910,7 @@ TestUlOfdmaPowerControl::SendMuBar(std::vector<uint16_t> staIds)
 
     WifiConstPsduMap psdus;
     WifiTxVector txVector{HePhy::GetHeMcs7(),
-                          0,
+                          WIFI_MIN_TX_PWR_LEVEL,
                           WIFI_PREAMBLE_HE_SU,
                           NanoSeconds(800),
                           1,

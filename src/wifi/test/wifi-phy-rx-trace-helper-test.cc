@@ -257,7 +257,7 @@ TestWifiPhyRxTraceHelper::SendPpduWithTwoMpdus(dBm_t rxPower,
     tx_phy->SetTxPowerEnd(txPower);
 
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_HE_SU,
                                          NanoSeconds(800),
                                          1,
@@ -297,7 +297,7 @@ TestWifiPhyRxTraceHelper::SendPpduWithOneMpdu(dBm_t rxPower,
     tx_phy->SetTxPowerEnd(txPower);
 
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_HE_SU,
                                          NanoSeconds(800),
                                          1,
@@ -1129,7 +1129,7 @@ TestWifiPhyRxTraceHelperMloStr::SendPpduWithTwoMpdus(dBm_t rxPower,
     tx_phy->SetTxPowerEnd(txPower);
 
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_HE_SU,
                                          NanoSeconds(800),
                                          1,
@@ -1170,7 +1170,7 @@ TestWifiPhyRxTraceHelperMloStr::SendPpduWithOneMpdu(dBm_t rxPower,
 
     WifiTxVector txVector =
         WifiTxVector(HePhy::GetHeMcs0(),
-                     0,
+                     WIFI_MIN_TX_PWR_LEVEL,
                      WIFI_PREAMBLE_HE_SU,
                      NanoSeconds(800),
                      1,
@@ -1890,7 +1890,7 @@ TestWifiPhyRxTraceHelperYans::SendPpduWithTwoMpdus(dBm_t rxPower,
     propLoss->SetRss(rxPower.in_dBm());
 
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),
-                                         0,
+                                         WIFI_MIN_TX_PWR_LEVEL,
                                          WIFI_PREAMBLE_HE_SU,
                                          NanoSeconds(800),
                                          1,
@@ -1936,7 +1936,7 @@ TestWifiPhyRxTraceHelperYans::SendPpduWithOneMpdu(dBm_t rxPower,
     propLoss->SetRss(rxPower.in_dBm());
 
     auto txVector = WifiTxVector(HePhy::GetHeMcs0(),
-                                 0,
+                                 WIFI_MIN_TX_PWR_LEVEL,
                                  WIFI_PREAMBLE_HE_SU,
                                  NanoSeconds(800),
                                  1,
