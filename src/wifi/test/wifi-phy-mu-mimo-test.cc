@@ -1588,8 +1588,8 @@ TestUlMuMimoPhyTransmission::DoSetup()
         phy->AddChannel(spectrumChannel);
         phy->ConfigureStandard(WIFI_STANDARD_80211ax);
         phy->SetAttribute("TxGain", DoubleValue(1.0));
-        phy->SetAttribute("TxPowerStart", DoubleValue(16.0));
-        phy->SetAttribute("TxPowerEnd", DoubleValue(16.0));
+        phy->SetAttribute("TxPowerStart", dBmValue(16_dBm));
+        phy->SetAttribute("TxPowerEnd", dBmValue(16_dBm));
         phy->SetAttribute("PowerDensityLimit", DoubleValue(100.0)); // no impact by default
         phy->SetAttribute("RxGain", DoubleValue(2.0));
         staDev->SetPhy(phy);

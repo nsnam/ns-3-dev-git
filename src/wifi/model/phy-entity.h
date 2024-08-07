@@ -32,7 +32,7 @@
  * @ingroup wifi
  * Declaration of:
  * - ns3::PhyEntity class
- * - ns3::SignalNoiseDbm, ns3::MpduInfo, and ns3::RxSignalInfo structs
+ * - ns3::SignalNoise, ns3::MpduInfo, and ns3::RxSignalInfo structs
  * - ns3::RxPowerWattPerChannelBand typedef
  */
 
@@ -476,7 +476,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      */
     void Transmit(Time txDuration,
                   Ptr<const WifiPpdu> ppdu,
-                  dBm_u txPower,
+                  dBm_t txPower,
                   Ptr<SpectrumValue> txPowerSpectrum,
                   const std::string& type);
 
@@ -498,7 +498,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * @param channelType the channel type
      * @return the CCA threshold
      */
-    virtual dBm_u GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
+    virtual dBm_t GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                                   WifiChannelListType channelType) const;
 
     /**
@@ -681,11 +681,11 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      *
      * @return information on MPDU reception: status, signal power (dBm), and noise power (in dBm)
      */
-    std::pair<bool, SignalNoiseDbm> GetReceptionStatus(Ptr<WifiMpdu> mpdu,
-                                                       Ptr<Event> event,
-                                                       uint16_t staId,
-                                                       Time relativeMpduStart,
-                                                       Time mpduDuration);
+    std::pair<bool, SignalNoise> GetReceptionStatus(Ptr<WifiMpdu> mpdu,
+                                                    Ptr<Event> event,
+                                                    uint16_t staId,
+                                                    Time relativeMpduStart,
+                                                    Time mpduDuration);
     /**
      * The last symbol of an MPDU in an A-MPDU has arrived.
      *
@@ -910,7 +910,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * @param band identify the requested band
      * @return the delay until CCA busy is ended
      */
-    Time GetDelayUntilCcaEnd(dBm_u threshold, const WifiSpectrumBandInfo& band);
+    Time GetDelayUntilCcaEnd(dBm_t threshold, const WifiSpectrumBandInfo& band);
 
     /**
      * @param currentChannelWidth channel width of the current transmission
@@ -967,7 +967,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
     std::map<UidStaIdPair, std::vector<bool>>
         m_statusPerMpduMap; //!< Map of the current reception status per MPDU that is filled in as
                             //!< long as MPDUs are being processed by the PHY in case of an A-MPDU
-    std::map<UidStaIdPair, SignalNoiseDbm>
+    std::map<UidStaIdPair, SignalNoise>
         m_signalNoiseMap; //!< Map of the latest signal power and noise power in dBm (noise power
                           //!< includes the noise figure)
 

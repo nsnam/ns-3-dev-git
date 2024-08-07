@@ -28,16 +28,15 @@ DbToRatio(dB_t val)
 }
 
 Watt_u
-DbmToW(dBm_u val)
+DbmToW(dBm_t pow)
 {
-    return std::pow(10.0, 0.1 * (val - 30.0));
+    return pow.to_Watt().in_Watt();
 }
 
-dBm_u
-WToDbm(Watt_u val)
+dBm_t
+WToDbm(Watt_u power)
 {
-    NS_ASSERT(val > 0.);
-    return 10.0 * std::log10(val) + 30.0;
+    return Watt_t{power}.to_dBm();
 }
 
 dB_t

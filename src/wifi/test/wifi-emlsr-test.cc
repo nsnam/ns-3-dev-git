@@ -199,7 +199,7 @@ EmlsrOperationsTestBase::CheckMsdTimerRunning(Ptr<StaWifiMac> staMac,
     if (auto phy = staMac->GetWifiPhy(linkId))
     {
         auto currThreshold = phy->GetCcaEdThreshold();
-        NS_TEST_EXPECT_MSG_EQ((static_cast<int8_t>(currThreshold) ==
+        NS_TEST_EXPECT_MSG_EQ((static_cast<int8_t>(currThreshold.in_dBm()) ==
                                staMac->GetEmlsrManager()->GetMediumSyncOfdmEdThreshold()),
                               isRunning,
                               Simulator::Now().As(Time::MS)

@@ -54,13 +54,12 @@ VhtConfiguration::GetTypeId()
                           "the threshold (dBm) associated to the PPDU bandwidth to allow the PHY "
                           "layer to declare CCA BUSY state.",
                           StringValue("{-72.0, -72.0, -69.0}"),
-                          MakeTupleAccessor<DoubleValue, DoubleValue, DoubleValue>(
+                          MakeTupleAccessor<dBmValue, dBmValue, dBmValue>(
                               &VhtConfiguration::SetSecondaryCcaSensitivityThresholds,
                               &VhtConfiguration::GetSecondaryCcaSensitivityThresholds),
-                          MakeTupleChecker<DoubleValue, DoubleValue, DoubleValue>(
-                              MakeDoubleChecker<dBm_u>(),
-                              MakeDoubleChecker<dBm_u>(),
-                              MakeDoubleChecker<dBm_u>()));
+                          MakeTupleChecker<dBmValue, dBmValue, dBmValue>(MakedBmChecker(),
+                                                                         MakedBmChecker(),
+                                                                         MakedBmChecker()));
     return tid;
 }
 
@@ -95,7 +94,7 @@ VhtConfiguration::GetSecondaryCcaSensitivityThresholds() const
             m_secondaryCcaSensitivityThresholds.at(MHz_u{80})};
 }
 
-const std::map<MHz_u, dBm_u>&
+const std::map<MHz_u, dBm_t>&
 VhtConfiguration::GetSecondaryCcaSensitivityThresholdsPerBw() const
 {
     return m_secondaryCcaSensitivityThresholds;

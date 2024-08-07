@@ -180,7 +180,7 @@ class WifiPhyStateHelper : public Object
      */
     void SwitchToTx(Time txDuration,
                     const WifiConstPsduMap& psdus,
-                    dBm_u txPower,
+                    dBm_t txPower,
                     const WifiTxVector& txVector);
     /**
      * Switch state to RX for the given duration.

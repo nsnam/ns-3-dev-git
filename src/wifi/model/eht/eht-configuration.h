@@ -112,7 +112,7 @@ class EhtConfiguration : public Object
         m_linkMappingDl; //!< TIDs-indexed Link Mapping for downlink
     std::map<std::list<uint64_t>, std::list<uint64_t>>
         m_linkMappingUl;                  //!< TIDs-indexed Link Mapping for uplink
-    dBm_u m_per20CcaSensitivityThreshold; //!< CCA threshold for Per 20MHz check
+    dBm_t m_per20CcaSensitivityThreshold; //!< CCA threshold for Per 20MHz check
 };
 
 } // namespace ns3

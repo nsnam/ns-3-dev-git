@@ -77,8 +77,8 @@ class InterferenceExperiment
         meter_u xB;            ///< x B
         std::string txModeA;   ///< transmit mode A
         std::string txModeB;   ///< transmit mode B
-        dBm_u txPowerLevelA;   ///< transmit power level A
-        dBm_u txPowerLevelB;   ///< transmit power level B
+        dBm_t txPowerLevelA;   ///< transmit power level A
+        dBm_t txPowerLevelB;   ///< transmit power level B
         uint32_t packetSizeA;  ///< packet size A
         uint32_t packetSizeB;  ///< packet size B
         uint16_t channelA;     ///< channel number A
@@ -185,8 +185,8 @@ InterferenceExperiment::Input::Input()
       xB(5),
       txModeA("OfdmRate54Mbps"),
       txModeB("OfdmRate54Mbps"),
-      txPowerLevelA(dBm_u{16.0206}),
-      txPowerLevelB(dBm_u{16.0206}),
+      txPowerLevelA(dBm_t{16.0206}),
+      txPowerLevelB(dBm_t{16.0206}),
       packetSizeA(1500),
       packetSizeB(1500),
       channelA(36),

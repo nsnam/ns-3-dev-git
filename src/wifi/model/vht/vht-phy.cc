@@ -522,7 +522,7 @@ VhtPhy::GetMaxPsduSize() const
     return 4692480;
 }
 
-dBm_u
+dBm_t
 VhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
 {
     if (ppdu)
@@ -558,7 +558,7 @@ VhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType chan
     {
         const auto it = channelTypeToScalingFactor.find(channelType);
         NS_ASSERT_MSG(it != std::end(channelTypeToScalingFactor), "Invalid channel list type");
-        return m_wifiPhy->GetCcaEdThreshold() + it->second;
+        return dBm_t{m_wifiPhy->GetCcaEdThreshold().in_dBm() + it->second.in_dBm()};
     }
 }
 

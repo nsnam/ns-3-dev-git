@@ -254,7 +254,7 @@ RrpaaWifiManager::CheckInit(RrpaaWifiRemoteStation* station)
         DataRate rate(mode.GetDataRate(channelWidth));
         const auto power = GetPhy()->GetPower(station->m_powerLevel);
         m_rateChange(rate, rate, station->m_state->m_address);
-        m_powerChange(power, power, station->m_state->m_address);
+        m_powerChange(power.in_dBm(), power.in_dBm(), station->m_state->m_address);
 
         station->m_pdTable =
             RrpaaProbabilitiesTable(station->m_nRate, std::vector<double>(m_nPowerLevels));
@@ -408,7 +408,7 @@ RrpaaWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
     }
     if (station->m_prevPowerLevel != station->m_powerLevel)
     {
-        m_powerChange(prevPower, power, station->m_state->m_address);
+        m_powerChange(prevPower.in_dBm(), power.in_dBm(), station->m_state->m_address);
         station->m_prevPowerLevel = station->m_powerLevel;
     }
     return WifiTxVector(

@@ -56,7 +56,14 @@ enum MpduType
     LAST_MPDU_IN_AGGREGATE
 };
 
-/// SignalNoiseDbm structure
+/// SignalNoise structure (internal API)
+struct SignalNoise
+{
+    dBm_t signal; ///< signal strength
+    dBm_t noise;  ///< noise power
+};
+
+/// SignalNoiseDbm structure (external API)
 struct SignalNoiseDbm
 {
     dBm_u signal; ///< signal strength
@@ -74,7 +81,7 @@ struct MpduInfo
 struct RxSignalInfo
 {
     double snr; ///< SNR in linear scale
-    dBm_u rssi; ///< RSSI
+    dBm_t rssi; ///< RSSI
 };
 
 /**

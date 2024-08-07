@@ -334,7 +334,7 @@ class TestPhyListener : public ns3::WifiPhyListener
         ++m_notifyRxEndError;
     }
 
-    void NotifyTxStart(Time duration, dBm_u txPower) override
+    void NotifyTxStart(Time duration, dBm_t txPower) override
     {
         NS_LOG_FUNCTION(this << duration << txPower);
     }
@@ -540,9 +540,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
 {
     for (const auto& [band, powerW] : rxPowersW)
     {
-        NS_LOG_INFO(
-            "band: (" << band << ") -> powerW=" << powerW
-                      << (powerW > 0.0 ? " (" + std::to_string(WToDbm(powerW)) + " dBm)" : ""));
+        NS_LOG_INFO("band: (" << band << ") -> powerW=" << powerW << " (" << WToDbm(powerW) << ")");
     }
 
     size_t numBands = rxPowersW.size();
@@ -564,8 +562,8 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
     MHz_u channelWidth = std::min(m_txChannelWidth, m_rxChannelWidth);
     auto band = m_rxPhy->GetBand(channelWidth, 0);
     auto it = rxPowersW.find(band);
-    NS_LOG_INFO("powerW total band: " << it->second << " (" << WToDbm(it->second) << " dBm)");
-    int totalRxPower = static_cast<int>(WToDbm(it->second) + 0.5);
+    NS_LOG_INFO("powerW total band: " << it->second << " (" << WToDbm(it->second).in_dBm() << ")");
+    int totalRxPower = static_cast<int>(WToDbm(it->second).in_dBm() + 0.5);
     int expectedTotalRxPower;
     if (m_txChannelWidth <= m_rxChannelWidth)
     {
@@ -588,8 +586,8 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
         band = m_rxPhy->GetBand(MHz_u{20}, 0); // primary 20 MHz
         it = rxPowersW.find(band);
         NS_LOG_INFO("powerW in primary 20 MHz channel: " << it->second << " (" << WToDbm(it->second)
-                                                         << " dBm)");
-        const auto rxPowerPrimaryChannel20 = static_cast<int>(WToDbm(it->second) + 0.5);
+                                                         << ")");
+        const auto rxPowerPrimaryChannel20 = static_cast<int>(WToDbm(it->second).in_dBm() + 0.5);
         const auto expectedRxPowerPrimaryChannel20 =
             16 - static_cast<int>(RatioToDb(Count20MHzSubchannels(channelWidth)).in_dB());
         NS_TEST_ASSERT_MSG_EQ(rxPowerPrimaryChannel20,
@@ -1618,7 +1616,7 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
      * @param txPower the power to transmit the signal (this is also the received power since we do
      * not have propagation loss to simplify) \param payloadSize the payload size in bytes
      */
-    void SendPpdu(Ptr<SpectrumWifiPhy> phy, dBm_u txPower, uint32_t payloadSize);
+    void SendPpdu(Ptr<SpectrumWifiPhy> phy, dBm_t txPower, uint32_t payloadSize);
 
     /**
      * Callback triggered when a packet is received by a PHY
@@ -1775,7 +1773,7 @@ SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel(Ptr<SpectrumWifiPhy> phy,
 
 void
 SpectrumWifiPhyMultipleInterfacesTest::SendPpdu(Ptr<SpectrumWifiPhy> phy,
-                                                dBm_u txPower,
+                                                dBm_t txPower,
                                                 uint32_t payloadSize)
 {
     NS_LOG_FUNCTION(this << phy << txPower << payloadSize << phy->GetCurrentFrequencyRange()
@@ -2123,7 +2121,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
 {
     NS_LOG_FUNCTION(this);
 
-    const dBm_u ccaEdThreshold{-62.0}; ///< CCA-ED threshold
+    const dBm_t ccaEdThreshold{-62.0}; ///< CCA-ED threshold
     const auto txAfterChannelSwitchDelay =
         MicroSeconds((m_chanSwitchScenario == ChannelSwitchScenario::BEFORE_TX)
                          ? 250
@@ -2156,7 +2154,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                             &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                             this,
                             txPpduPhy,
-                            dBm_u{0},
+                            dBm_t{0},
                             1000);
         for (std::size_t j = 0; j < 4; ++j)
         {
@@ -2194,7 +2192,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                             &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                             this,
                             txPpduPhy,
-                            dBm_u{0},
+                            dBm_t{0},
                             1000);
         const auto& expectedFreqRange = txPpduPhy->GetCurrentFrequencyRange();
         for (std::size_t j = 0; j < 4; ++j)
@@ -2250,7 +2248,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                             &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                             this,
                             txPpduPhy,
-                            dBm_u{0},
+                            dBm_t{0},
                             1000);
         for (std::size_t j = 0; j < 4; ++j)
         {
@@ -2286,7 +2284,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
     }
 
     // verify CCA indication when switching to a channel with an ongoing transmission
-    for (const auto txPower : {dBm_u{-60} /* above CCA-ED */, dBm_u{-70} /* below CCA-ED */})
+    for (const auto txPower : {dBm_t{-60} /* above CCA-ED */, dBm_t{-70} /* below CCA-ED */})
     {
         for (std::size_t i = 0; i < 4; ++i)
         {
@@ -2367,7 +2365,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                                 this,
                                 txPpduPhy,
-                                dBm_u{20},
+                                dBm_t{20},
                                 500);
 
             // switch channel to other band
@@ -2388,7 +2386,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                                 this,
                                 txPpduPhy,
-                                dBm_u{0},
+                                dBm_t{0},
                                 1000);
 
             // switch back to initial band during PHY header reception
@@ -2409,7 +2407,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                                 this,
                                 txPpduPhy,
-                                dBm_u{0},
+                                dBm_t{0},
                                 1500);
 
             // check results
@@ -2455,7 +2453,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                                 this,
                                 txPpduPhy,
-                                dBm_u{20},
+                                dBm_t{20},
                                 500);
 
             // switch channel back to previous channel before preamble detection is finished:
@@ -2488,7 +2486,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                                 this,
                                 txPpduPhy,
-                                dBm_u{20},
+                                dBm_t{20},
                                 1000);
 
             // second transmission on 5 GHz low band  with high power a bit later:
@@ -2498,7 +2496,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                                 this,
                                 txPpduPhy,
-                                dBm_u{20},
+                                dBm_t{20},
                                 1000);
 
             // restore channel for TX PHY index 2
@@ -2530,7 +2528,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
                                 &SpectrumWifiPhyMultipleInterfacesTest::SendPpdu,
                                 this,
                                 txPpduPhy,
-                                dBm_u{0},
+                                dBm_t{0},
                                 1500);
 
             // check results

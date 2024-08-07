@@ -74,7 +74,7 @@ LinearWifiTxCurrentModel::~LinearWifiTxCurrentModel()
 }
 
 ampere_u
-LinearWifiTxCurrentModel::CalcTxCurrent(dBm_u txPower) const
+LinearWifiTxCurrentModel::CalcTxCurrent(dBm_t txPower) const
 {
     NS_LOG_FUNCTION(this << txPower);
     return DbmToW(txPower) / (m_voltage * m_eta) + m_idleCurrent;

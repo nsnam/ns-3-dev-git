@@ -170,10 +170,10 @@ EhtConfiguration::GetTypeId()
                         MakeAttributeContainerChecker<UintegerValue>(
                             MakeUintegerChecker<uint8_t>()))))
             .AddAttribute("Per20CcaSensitivityThreshold",
-                          "CCA threshold (dBm) for Per 20MHz check.",
-                          DoubleValue(-72.0),
-                          MakeDoubleAccessor(&EhtConfiguration::m_per20CcaSensitivityThreshold),
-                          MakeDoubleChecker<dBm_u>());
+                          "CCA threshold for Per 20MHz check.",
+                          dBmValue(-72_dBm),
+                          MakedBmAccessor(&EhtConfiguration::m_per20CcaSensitivityThreshold),
+                          MakedBmChecker());
     return tid;
 }
 

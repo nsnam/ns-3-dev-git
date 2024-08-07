@@ -92,9 +92,8 @@ ConstantObssPdAlgorithm::ReceiveHeSigA(HeSigAParameters params)
         const auto obssPdLevel = GetObssPdLevel();
         if (params.rssi < obssPdLevel)
         {
-            NS_LOG_DEBUG("Frame is OBSS and RSSI "
-                         << params.rssi << " dBm is below OBSS-PD level of " << obssPdLevel
-                         << " dBm; reset PHY to IDLE");
+            NS_LOG_DEBUG("Frame is OBSS and RSSI " << params.rssi << " is below OBSS-PD level of "
+                                                   << obssPdLevel << "; reset PHY to IDLE");
             ResetPhy(params);
         }
         else

@@ -599,8 +599,7 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
             if (auto phy = m_mac->GetWifiPhy(linkId);
                 phy && linkId != m_linkId && m_staMac->IsEmlsrLink(linkId))
             {
-                const auto txPower =
-                    phy->GetPower(txVector.GetTxPowerLevel()) + phy->GetTxGain().in_dB();
+                const auto txPower = phy->GetPower(txVector.GetTxPowerLevel()) + phy->GetTxGain();
                 // generate in-device interference on the other EMLSR link for the duration of this
                 // transmission
                 GenerateInDeviceInterference(linkId, txDuration, DbmToW(txPower));
@@ -690,7 +689,7 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
                 phy && linkId != m_linkId && m_staMac->IsEmlsrLink(linkId))
             {
                 const auto txPower =
-                    phy->GetPower(txVector.GetTxPowerLevel()) + phy->GetTxGain().in_dB();
+                    phy->GetPower(txVector.GetTxPowerLevel()) + dB_t{phy->GetTxGain()};
                 // generate in-device interference on the other EMLSR link for the duration of this
                 // transmission
                 GenerateInDeviceInterference(linkId, txDuration, DbmToW(txPower));
@@ -955,7 +954,7 @@ EhtFrameExchangeManager::SendEmlOmn(const Mac48Address& dest, const MgtEmlOmn& f
     m_mac->EnqueueMgt(hdr, {frame, actionHdr}, m_linkId);
 }
 
-std::optional<dBm_u>
+std::optional<dBm_t>
 EhtFrameExchangeManager::GetMostRecentRssi(const Mac48Address& address) const
 {
     auto optRssi = HeFrameExchangeManager::GetMostRecentRssi(address);

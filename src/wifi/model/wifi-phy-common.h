@@ -714,12 +714,12 @@ bool IsEht(WifiPreamble preamble);
 /**
  * @brief map a given channel list type to the corresponding scaling factor
  */
-const std::map<WifiChannelListType, dBm_u> channelTypeToScalingFactor{
-    {WIFI_CHANLIST_PRIMARY, 0.0},
-    {WIFI_CHANLIST_SECONDARY, 0.0},
-    {WIFI_CHANLIST_SECONDARY40, 3.0},
-    {WIFI_CHANLIST_SECONDARY80, 6.0},
-    {WIFI_CHANLIST_SECONDARY160, 12.0},
+const std::map<WifiChannelListType, dBm_t> channelTypeToScalingFactor{
+    {WIFI_CHANLIST_PRIMARY, dBm_t{0.0}},
+    {WIFI_CHANLIST_SECONDARY, dBm_t{0.0}},
+    {WIFI_CHANLIST_SECONDARY40, dBm_t{3.0}},
+    {WIFI_CHANLIST_SECONDARY80, dBm_t{6.0}},
+    {WIFI_CHANLIST_SECONDARY160, dBm_t{12.0}},
 };
 
 } // namespace ns3

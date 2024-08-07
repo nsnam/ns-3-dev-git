@@ -67,7 +67,7 @@ class EmlsrPhyListener : public WifiPhyListener
     {
     }
 
-    void NotifyTxStart(Time /* duration */, dBm_u /* txPower */) override
+    void NotifyTxStart(Time /* duration */, dBm_t /* txPower */) override
     {
     }
 

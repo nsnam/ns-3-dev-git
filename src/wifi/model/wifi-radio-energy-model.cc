@@ -254,7 +254,7 @@ WifiRadioEnergyModel::SetTxCurrentModel(const Ptr<WifiTxCurrentModel> model)
 }
 
 void
-WifiRadioEnergyModel::SetTxCurrentFromModel(dBm_u txPower)
+WifiRadioEnergyModel::SetTxCurrentFromModel(dBm_t txPower)
 {
     if (m_txCurrentModel)
     {
@@ -525,7 +525,7 @@ WifiRadioEnergyModelPhyListener::NotifyRxEndError()
 }
 
 void
-WifiRadioEnergyModelPhyListener::NotifyTxStart(Time duration, dBm_u txPower)
+WifiRadioEnergyModelPhyListener::NotifyTxStart(Time duration, dBm_t txPower)
 {
     NS_LOG_FUNCTION(this << duration << txPower);
     if (m_updateTxCurrentCallback.IsNull())

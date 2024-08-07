@@ -664,7 +664,7 @@ OfdmPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
     return GetRxChannelWidth(ppdu->GetTxVector());
 }
 
-dBm_u
+dBm_t
 OfdmPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
 {
     if (ppdu && ppdu->GetTxVector().GetChannelWidth() < MHz_u{20})

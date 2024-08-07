@@ -1631,8 +1631,8 @@ Bug2843TestCase::DoRun()
     spectrumPhy.SetChannel(spectrumChannel);
     spectrumPhy.SetErrorRateModel("ns3::NistErrorRateModel");
     spectrumPhy.Set("ChannelSettings", StringValue("{38, 40, BAND_5GHZ, 0}"));
-    spectrumPhy.Set("TxPowerStart", DoubleValue(10));
-    spectrumPhy.Set("TxPowerEnd", DoubleValue(10));
+    spectrumPhy.Set("TxPowerStart", dBmValue(10_dBm));
+    spectrumPhy.Set("TxPowerEnd", dBmValue(10_dBm));
 
     WifiHelper wifi;
     wifi.SetStandard(WIFI_STANDARD_80211ac);

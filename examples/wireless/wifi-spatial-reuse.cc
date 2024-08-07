@@ -149,21 +149,21 @@ main(int argc, char* argv[])
     meter_u d1{30.0};
     meter_u d2{30.0};
     meter_u d3{150.0};
-    dBm_u powSta1{10.0};
-    dBm_u powSta2{10.0};
-    dBm_u powAp1{21.0};
-    dBm_u powAp2{21.0};
-    dBm_u ccaEdTrSta1{-62};
-    dBm_u ccaEdTrSta2{-62};
-    dBm_u ccaEdTrAp1{-62};
-    dBm_u ccaEdTrAp2{-62};
-    dBm_u minimumRssi{-82};
+    dBm_t powSta1{10.0};
+    dBm_t powSta2{10.0};
+    dBm_t powAp1{21.0};
+    dBm_t powAp2{21.0};
+    dBm_t ccaEdTrSta1{-62};
+    dBm_t ccaEdTrSta2{-62};
+    dBm_t ccaEdTrAp1{-62};
+    dBm_t ccaEdTrAp2{-62};
+    dBm_t minimumRssi{-82};
     int channelWidth{20};       // MHz
     uint32_t payloadSize{1500}; // bytes
     uint32_t mcs{0};            // MCS value
     Time interval{"1ms"};
     bool enableObssPd{true};
-    dBm_u obssPdThreshold{-72.0};
+    dBm_t obssPdThreshold{-72.0};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("duration", "Duration of simulation", duration);
@@ -224,7 +224,7 @@ main(int argc, char* argv[])
     }
     spectrumPhy.SetPreambleDetectionModel("ns3::ThresholdPreambleDetectionModel",
                                           "MinimumRssi",
-                                          DoubleValue(minimumRssi));
+                                          dBmValue(minimumRssi));
 
     WifiHelper wifi;
     wifi.SetStandard(WIFI_STANDARD_80211ax);
@@ -232,7 +232,7 @@ main(int argc, char* argv[])
     {
         wifi.SetObssPdAlgorithm("ns3::ConstantObssPdAlgorithm",
                                 "ObssPdLevel",
-                                DoubleValue(obssPdThreshold));
+                                dBmValue(obssPdThreshold));
     }
 
     WifiMacHelper mac;
@@ -244,19 +244,19 @@ main(int argc, char* argv[])
                                  "ControlMode",
                                  StringValue(oss.str()));
 
-    spectrumPhy.Set("TxPowerStart", DoubleValue(powSta1));
-    spectrumPhy.Set("TxPowerEnd", DoubleValue(powSta1));
-    spectrumPhy.Set("CcaEdThreshold", DoubleValue(ccaEdTrSta1));
-    spectrumPhy.Set("RxSensitivity", DoubleValue(-92.0));
+    spectrumPhy.Set("TxPowerStart", dBmValue(powSta1));
+    spectrumPhy.Set("TxPowerEnd", dBmValue(powSta1));
+    spectrumPhy.Set("CcaEdThreshold", dBmValue(ccaEdTrSta1));
+    spectrumPhy.Set("RxSensitivity", dBmValue(-92_dBm));
 
     Ssid ssidA = Ssid("A");
     mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssidA));
     NetDeviceContainer staDeviceA = wifi.Install(spectrumPhy, mac, wifiStaNodes.Get(0));
 
-    spectrumPhy.Set("TxPowerStart", DoubleValue(powAp1));
-    spectrumPhy.Set("TxPowerEnd", DoubleValue(powAp1));
-    spectrumPhy.Set("CcaEdThreshold", DoubleValue(ccaEdTrAp1));
-    spectrumPhy.Set("RxSensitivity", DoubleValue(-92.0));
+    spectrumPhy.Set("TxPowerStart", dBmValue(powAp1));
+    spectrumPhy.Set("TxPowerEnd", dBmValue(powAp1));
+    spectrumPhy.Set("CcaEdThreshold", dBmValue(ccaEdTrAp1));
+    spectrumPhy.Set("RxSensitivity", dBmValue(-92_dBm));
 
     mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssidA));
     NetDeviceContainer apDeviceA = wifi.Install(spectrumPhy, mac, wifiApNodes.Get(0));
@@ -268,19 +268,19 @@ main(int argc, char* argv[])
         apDevice->GetHeConfiguration()->SetAttribute("BssColor", UintegerValue(1));
     }
 
-    spectrumPhy.Set("TxPowerStart", DoubleValue(powSta2));
-    spectrumPhy.Set("TxPowerEnd", DoubleValue(powSta2));
-    spectrumPhy.Set("CcaEdThreshold", DoubleValue(ccaEdTrSta2));
-    spectrumPhy.Set("RxSensitivity", DoubleValue(-92.0));
+    spectrumPhy.Set("TxPowerStart", dBmValue(powSta2));
+    spectrumPhy.Set("TxPowerEnd", dBmValue(powSta2));
+    spectrumPhy.Set("CcaEdThreshold", dBmValue(ccaEdTrSta2));
+    spectrumPhy.Set("RxSensitivity", dBmValue(-92_dBm));
 
     Ssid ssidB = Ssid("B");
     mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssidB));
     NetDeviceContainer staDeviceB = wifi.Install(spectrumPhy, mac, wifiStaNodes.Get(1));
 
-    spectrumPhy.Set("TxPowerStart", DoubleValue(powAp2));
-    spectrumPhy.Set("TxPowerEnd", DoubleValue(powAp2));
-    spectrumPhy.Set("CcaEdThreshold", DoubleValue(ccaEdTrAp2));
-    spectrumPhy.Set("RxSensitivity", DoubleValue(-92.0));
+    spectrumPhy.Set("TxPowerStart", dBmValue(powAp2));
+    spectrumPhy.Set("TxPowerEnd", dBmValue(powAp2));
+    spectrumPhy.Set("CcaEdThreshold", dBmValue(ccaEdTrAp2));
+    spectrumPhy.Set("RxSensitivity", dBmValue(-92_dBm));
 
     mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssidB));
     NetDeviceContainer apDeviceB = wifi.Install(spectrumPhy, mac, wifiApNodes.Get(1));

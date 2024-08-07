@@ -59,7 +59,7 @@ class VhtPhy : public HtPhy
     Ptr<WifiPpdu> BuildPpdu(const WifiConstPsduMap& psdus,
                             const WifiTxVector& txVector,
                             Time ppduDuration) override;
-    dBm_u GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
+    dBm_t GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                           WifiChannelListType channelType) const override;
 
     /**

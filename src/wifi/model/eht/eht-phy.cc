@@ -427,7 +427,7 @@ EhtPhy::CalculateNonHtReferenceRate(WifiCodeRate codeRate, uint16_t constellatio
     return dataRate;
 }
 
-dBm_u
+dBm_t
 EhtPhy::Per20MHzCcaThreshold(const Ptr<const WifiPpdu> ppdu) const
 {
     if (!ppdu)
@@ -457,7 +457,7 @@ EhtPhy::Per20MHzCcaThreshold(const Ptr<const WifiPpdu> ppdu) const
                : ccaThresholdNonObss;
 }
 
-dBm_u
+dBm_t
 EhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
 {
     if (channelType != WIFI_CHANLIST_PRIMARY)

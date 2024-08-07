@@ -1522,7 +1522,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
     if (userInfoIt->IsUlTargetRssiMaxTxPower())
     {
         NS_LOG_LOGIC("AP requested using the max transmit power (" << m_phy->GetTxPowerEnd()
-                                                                   << " dBm)");
+                                                                   << " )");
         v.SetTxPowerLevel(m_phy->GetNTxPower());
         return v;
     }
@@ -1550,17 +1550,19 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
     int8_t pathLossDb =
         trigger.GetApTxPower() -
         static_cast<int8_t>(
-            *optRssi); // cast RSSI to be on equal footing with AP Tx power information
-    auto reqTxPower = dBm_u{static_cast<double>(userInfoIt->GetUlTargetRssi() + pathLossDb)};
+            optRssi->in_dBm()); // cast RSSI to be on equal footing with AP Tx power information
+    auto reqTxPower = dBm_t{userInfoIt->GetUlTargetRssi() + pathLossDb};
 
     // Convert the transmit power to a power level
     uint8_t numPowerLevels = m_phy->GetNTxPower();
     if (numPowerLevels > 1)
     {
-        dBm_u step = (m_phy->GetTxPowerEnd() - m_phy->GetTxPowerStart()) / (numPowerLevels - 1);
+        const auto step =
+            dBm_t{(m_phy->GetTxPowerEnd().in_dBm() - m_phy->GetTxPowerStart().in_dBm()) /
+                  (numPowerLevels - 1)};
         powerLevel = static_cast<uint8_t>(
-            ceil((reqTxPower - m_phy->GetTxPowerStart()) /
-                 step)); // better be slightly above so as to satisfy target UL RSSI
+            ceil((reqTxPower.in_dBm() - m_phy->GetTxPowerStart().in_dBm()) /
+                 step.in_dBm())); // better be slightly above so as to satisfy target UL RSSI
         if (powerLevel > numPowerLevels)
         {
             powerLevel = numPowerLevels; // capping will trigger warning below
@@ -1568,22 +1570,21 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
     }
     if (reqTxPower > m_phy->GetPower(powerLevel))
     {
-        NS_LOG_WARN("The requested power level (" << reqTxPower << "dBm) cannot be satisfied (max: "
-                                                  << m_phy->GetTxPowerEnd() << "dBm)");
+        NS_LOG_WARN("The requested power level (" << reqTxPower << ") cannot be satisfied (max: "
+                                                  << m_phy->GetTxPowerEnd() << ")");
     }
     v.SetTxPowerLevel(powerLevel);
-    NS_LOG_LOGIC("UL power control: input "
-                 << "{pathLoss=" << pathLossDb << "dB, reqTxPower=" << reqTxPower << "dBm}"
-                 << " output "
-                 << "{powerLevel=" << +powerLevel << " -> " << m_phy->GetPower(powerLevel) << "dBm}"
-                 << " PHY power capa "
-                 << "{min=" << m_phy->GetTxPowerStart() << "dBm, max=" << m_phy->GetTxPowerEnd()
-                 << "dBm, levels:" << +numPowerLevels << "}");
+    NS_LOG_LOGIC("UL power control: "
+                 << "input {pathLoss=" << pathLossDb << "dB, reqTxPower=" << reqTxPower << "}"
+                 << " output {powerLevel=" << +powerLevel << " -> " << m_phy->GetPower(powerLevel)
+                 << "}"
+                 << " PHY power capa {min=" << m_phy->GetTxPowerStart()
+                 << ", max=" << m_phy->GetTxPowerEnd() << ", levels:" << +numPowerLevels << "}");
 
     return v;
 }
 
-std::optional<dBm_u>
+std::optional<dBm_t>
 HeFrameExchangeManager::GetMostRecentRssi(const Mac48Address& address) const
 {
     return GetWifiRemoteStationManager()->GetMostRecentRssi(address);
@@ -1596,7 +1597,7 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
     NS_ASSERT(m_apMac);
 
     trigger.SetApTxPower(static_cast<int8_t>(
-        m_phy->GetPower(GetWifiRemoteStationManager()->GetDefaultTxPowerLevel())));
+        m_phy->GetPower(GetWifiRemoteStationManager()->GetDefaultTxPowerLevel()).in_dBm()));
     for (auto& userInfo : trigger)
     {
         const auto staList = m_apMac->GetStaList(m_linkId);
@@ -1604,7 +1605,7 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
         NS_ASSERT(itAidAddr != staList.end());
         auto optRssi = GetMostRecentRssi(itAidAddr->second);
         NS_ASSERT(optRssi);
-        auto rssi = static_cast<int8_t>(*optRssi);
+        auto rssi = static_cast<int8_t>(optRssi->in_dBm());
         rssi = (rssi >= -20)
                    ? -20
                    : ((rssi <= -110) ? -110 : rssi); // cap so as to keep within [-110; -20] dBm

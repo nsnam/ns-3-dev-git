@@ -860,7 +860,7 @@ using the ``ConstantObssPdAlgorithm`` with a threshold set to -72 dBm:
 
   WifiHelper wifi;
   wifi.SetObssPdAlgorithm("ns3::ConstantObssPdAlgorithm",
-                          "ObssPdLevel", DoubleValue(-72.0));
+                          "ObssPdLevel", dBmValue(-72.0));
 
 There are many other |ns3| attributes that can be set on the above helpers to
 deviate from the default behavior; the example scripts show how to do some of

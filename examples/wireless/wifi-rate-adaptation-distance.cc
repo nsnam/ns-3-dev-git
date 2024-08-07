@@ -250,7 +250,7 @@ main(int argc, char* argv[])
     // is around -101 dBm, 2) lower the CCA sensitivity to a value that
     // disables it (e.g. -110 dBm), and 3) disable the Wi-Fi preamble
     // detection model.
-    wifiPhy.Set("CcaSensitivity", DoubleValue(-110));
+    wifiPhy.Set("CcaSensitivity", dBmValue(-110_dBm));
     wifiPhy.Set("RxNoiseFigure", dBValue(0_dB));
     wifiPhy.DisablePreambleDetectionModel();
 

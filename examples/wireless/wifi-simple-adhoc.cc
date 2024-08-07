@@ -99,7 +99,7 @@ int
 main(int argc, char* argv[])
 {
     std::string phyMode("DsssRate1Mbps");
-    dBm_u rss{-80};
+    dBm_t rss{-80};
     uint32_t packetSize{1000}; // bytes
     uint32_t numPackets{1};
     Time interPacketInterval{"1s"};
@@ -139,7 +139,7 @@ main(int argc, char* argv[])
     wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
     // The below FixedRssLossModel will cause the rss to be fixed regardless
     // of the distance between the two stations, and the transmit power
-    wifiChannel.AddPropagationLoss("ns3::FixedRssLossModel", "Rss", DoubleValue(rss));
+    wifiChannel.AddPropagationLoss("ns3::FixedRssLossModel", "Rss", DoubleValue(rss.in_dBm()));
     wifiPhy.SetChannel(wifiChannel.Create());
 
     // Add a mac and disable rate control

@@ -634,7 +634,7 @@ class WifiPhy : public Object
      * to have the receiver tuned on a given channel and still to be able to receive packets on a
      * nearby channel.
      * @param txVector the TXVECTOR that holds RX parameters
-     * @param signalNoise signal power and noise power in dBm (noise power includes the noise
+     * @param signalNoise signal power and noise power (noise power includes the noise
      * figure)
      * @param statusPerMpdu reception status per MPDU
      * @param staId the STA-ID
@@ -642,7 +642,7 @@ class WifiPhy : public Object
     void NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
                               MHz_u channelFreq,
                               const WifiTxVector& txVector,
-                              SignalNoiseDbm signalNoise,
+                              SignalNoise signalNoise,
                               const std::vector<bool>& statusPerMpdu,
                               uint16_t staId = SU_STA_ID);
 
@@ -792,39 +792,39 @@ class WifiPhy : public Object
      *
      * @param threshold the receive sensitivity threshold
      */
-    void SetRxSensitivity(dBm_u threshold);
+    void SetRxSensitivity(dBm_t threshold);
     /**
      * Return the receive sensitivity threshold.
      *
      * @return the receive sensitivity threshold
      */
-    dBm_u GetRxSensitivity() const;
+    dBm_t GetRxSensitivity() const;
     /**
      * Sets the CCA energy detection threshold. The energy of a all received signals
      * should be higher than this threshold to allow the PHY layer to declare CCA BUSY state.
      *
      * @param threshold the CCA threshold
      */
-    void SetCcaEdThreshold(dBm_u threshold);
+    void SetCcaEdThreshold(dBm_t threshold);
     /**
      * Return the CCA energy detection threshold.
      *
      * @return the CCA energy detection threshold
      */
-    dBm_u GetCcaEdThreshold() const;
+    dBm_t GetCcaEdThreshold() const;
     /**
      * Sets the CCA sensitivity threshold. The energy of a received wifi signal
      * should be higher than this threshold to allow the PHY layer to declare CCA BUSY state.
      *
      * @param threshold the CCA sensitivity threshold
      */
-    void SetCcaSensitivityThreshold(dBm_u threshold);
+    void SetCcaSensitivityThreshold(dBm_t threshold);
     /**
      * Return the CCA sensitivity threshold.
      *
      * @return the CCA sensitivity threshold
      */
-    dBm_u GetCcaSensitivityThreshold() const;
+    dBm_t GetCcaSensitivityThreshold() const;
     /**
      * Sets the RX loss in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
      *
@@ -836,25 +836,25 @@ class WifiPhy : public Object
      *
      * @param start the minimum transmission power level
      */
-    void SetTxPowerStart(dBm_u start);
+    void SetTxPowerStart(dBm_t start);
     /**
      * Return the minimum available transmission power level.
      *
      * @return the minimum available transmission power level
      */
-    dBm_u GetTxPowerStart() const;
+    dBm_t GetTxPowerStart() const;
     /**
      * Sets the maximum available transmission power level.
      *
      * @param end the maximum transmission power level
      */
-    void SetTxPowerEnd(dBm_u end);
+    void SetTxPowerEnd(dBm_t end);
     /**
      * Return the maximum available transmission power level.
      *
      * @return the maximum available transmission power level
      */
-    dBm_u GetTxPowerEnd() const;
+    dBm_t GetTxPowerEnd() const;
     /**
      * Sets the number of transmission power levels available between the
      * minimum level and the maximum level. Transmission power levels are
@@ -1116,7 +1116,7 @@ class WifiPhy : public Object
      *
      * @return the transmission power at the given power level
      */
-    dBm_u GetPower(uint8_t powerLevel) const;
+    dBm_t GetPower(uint8_t powerLevel) const;
 
     /**
      * Reset PHY to IDLE, with some potential TX power restrictions for the next transmission.
@@ -1127,8 +1127,8 @@ class WifiPhy : public Object
      * @param txPowerMaxMimo the MIMO transmit power restriction for the next transmission
      */
     void ResetCca(bool powerRestricted,
-                  dBm_u txPowerMaxSiso = dBm_u{0},
-                  dBm_u txPowerMaxMimo = dBm_u{0});
+                  dBm_t txPowerMaxSiso = dBm_t{0},
+                  dBm_t txPowerMaxMimo = dBm_t{0});
     /**
      * Compute the transmit power for the next transmission.
      * The returned power will satisfy the power density constraints
@@ -1137,7 +1137,7 @@ class WifiPhy : public Object
      * @param ppdu the PPDU to transmit
      * @return the transmit power for the next transmission
      */
-    dBm_u GetTxPowerForTransmission(Ptr<const WifiPpdu> ppdu) const;
+    dBm_t GetTxPowerForTransmission(Ptr<const WifiPpdu> ppdu) const;
     /**
      * Notify the PHY that an access to the channel was requested.
      * This is typically called by the channel access manager to
@@ -1617,21 +1617,21 @@ class WifiPhy : public Object
     Time m_ackTxTime;      //!< estimated Ack TX time
     Time m_blockAckTxTime; //!< estimated BlockAck TX time
 
-    dBm_u m_rxSensitivity;  //!< Receive sensitivity threshold
-    dBm_u m_ccaEdThreshold; //!< Clear channel assessment (CCA) energy detection (ED) threshold
-    dBm_u m_ccaSensitivityThreshold; //!< Clear channel assessment (CCA) modulation and coding rate
+    dBm_t m_rxSensitivity;  //!< Receive sensitivity threshold
+    dBm_t m_ccaEdThreshold; //!< Clear channel assessment (CCA) energy detection (ED) threshold
+    dBm_t m_ccaSensitivityThreshold; //!< Clear channel assessment (CCA) modulation and coding rate
                                      //!< sensitivity threshold
 
     dB_t m_txGain;                     //!< Transmission gain
     dB_t m_rxGain;                     //!< Reception gain
-    dBm_u m_txPowerBase;               //!< Minimum transmission power
-    dBm_u m_txPowerEnd;                //!< Maximum transmission power
+    dBm_t m_txPowerBase;               //!< Minimum transmission power
+    dBm_t m_txPowerEnd;                //!< Maximum transmission power
     uint8_t m_nTxPower;                //!< Number of available transmission power levels
     dBm_per_MHz_u m_powerDensityLimit; //!< the power density limit
 
     bool m_powerRestricted; //!< Flag whether transmit power is restricted by OBSS PD SR
-    dBm_u m_txPowerMaxSiso; //!< SISO maximum transmit power due to OBSS PD SR power restriction
-    dBm_u m_txPowerMaxMimo; //!< MIMO maximum transmit power due to OBSS PD SR power restriction
+    dBm_t m_txPowerMaxSiso; //!< SISO maximum transmit power due to OBSS PD SR power restriction
+    dBm_t m_txPowerMaxMimo; //!< MIMO maximum transmit power due to OBSS PD SR power restriction
     bool m_channelAccessRequested; //!< Flag if channels access has been requested (used for OBSS_PD
                                    //!< SR)
 
