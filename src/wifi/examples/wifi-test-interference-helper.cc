@@ -23,7 +23,7 @@
 // The program can be configured at run-time by passing command-line arguments.
 // It enables to configure the delay between the transmission from station A
 // and the transmission from station B (--delay option). It is also possible to
-// select the tx power level (--txPowerA and --txPowerB options), the packet size
+// select the tx power (--txPowerA and --txPowerB options), the packet size
 // (--packetSizeA and --packetSizeB options) and the modulation (--txModeA and
 // --txModeB options) used for the respective transmissions.
 //
@@ -77,8 +77,8 @@ class InterferenceExperiment
         meter_u xB;            ///< x B
         std::string txModeA;   ///< transmit mode A
         std::string txModeB;   ///< transmit mode B
-        dBm_u txPowerLevelA;   ///< transmit power level A
-        dBm_u txPowerLevelB;   ///< transmit power level B
+        dBm_u txPowerA;        ///< transmit power A
+        dBm_u txPowerB;        ///< transmit power B
         uint32_t packetSizeA;  ///< packet size A
         uint32_t packetSizeB;  ///< packet size B
         uint8_t channelA;      ///< channel number A
@@ -185,8 +185,8 @@ InterferenceExperiment::Input::Input()
       xB(5),
       txModeA("OfdmRate54Mbps"),
       txModeB("OfdmRate54Mbps"),
-      txPowerLevelA(dBm_u{16.0206}),
-      txPowerLevelB(dBm_u{16.0206}),
+      txPowerA(dBm_u{16.0206}),
+      txPowerB(dBm_u{16.0206}),
       packetSizeA(1500),
       packetSizeB(1500),
       channelA(36),
@@ -225,15 +225,15 @@ InterferenceExperiment::Run(InterferenceExperiment::Input input)
     Ptr<WifiNetDevice> devA = CreateObject<WifiNetDevice>();
     m_txA = CreateObject<SpectrumWifiPhy>();
     m_txA->SetDevice(devA);
-    m_txA->SetTxPowerStart(input.txPowerLevelA);
-    m_txA->SetTxPowerEnd(input.txPowerLevelA);
+    m_txA->SetTxPowerStart(input.txPowerA);
+    m_txA->SetTxPowerEnd(input.txPowerA);
 
     Ptr<Node> nodeB = CreateObject<Node>();
     Ptr<WifiNetDevice> devB = CreateObject<WifiNetDevice>();
     m_txB = CreateObject<SpectrumWifiPhy>();
     m_txB->SetDevice(devB);
-    m_txB->SetTxPowerStart(input.txPowerLevelB);
-    m_txB->SetTxPowerEnd(input.txPowerLevelB);
+    m_txB->SetTxPowerStart(input.txPowerB);
+    m_txB->SetTxPowerEnd(input.txPowerB);
 
     Ptr<Node> nodeRx = CreateObject<Node>();
     Ptr<WifiNetDevice> devRx = CreateObject<WifiNetDevice>();
@@ -317,8 +317,8 @@ main(int argc, char* argv[])
     cmd.AddValue("xB", "The position of transmitter B (> 0)", input.xB);
     cmd.AddValue("packetSizeA", "Packet size in bytes of transmitter A", input.packetSizeA);
     cmd.AddValue("packetSizeB", "Packet size in bytes of transmitter B", input.packetSizeB);
-    cmd.AddValue("txPowerA", "TX power level of transmitter A", input.txPowerLevelA);
-    cmd.AddValue("txPowerB", "TX power level of transmitter B", input.txPowerLevelB);
+    cmd.AddValue("txPowerA", "TX power of transmitter A", input.txPowerA);
+    cmd.AddValue("txPowerB", "TX power of transmitter B", input.txPowerB);
     cmd.AddValue("txModeA", "Wifi mode used for payload transmission of sender A", input.txModeA);
     cmd.AddValue("txModeB", "Wifi mode used for payload transmission of sender B", input.txModeB);
     cmd.AddValue("channelA", "The selected channel number of sender A", input.channelA);

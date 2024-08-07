@@ -1516,7 +1516,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
     {
         NS_LOG_LOGIC("AP requested using the max transmit power (" << m_phy->GetTxPowerEnd()
                                                                    << " dBm)");
-        v.SetTxPowerLevel(m_phy->GetNTxPower());
+        v.SetTxPowerLevel(m_phy->GetNTxPowerLevels());
         return v;
     }
 
@@ -1547,7 +1547,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
     auto reqTxPower = dBm_u{static_cast<double>(userInfoIt->GetUlTargetRxPower() + pathLossDb)};
 
     // Convert the transmit power to a power level
-    uint8_t numPowerLevels = m_phy->GetNTxPower();
+    const auto numPowerLevels = m_phy->GetNTxPowerLevels();
     if (numPowerLevels > 1)
     {
         dBm_u step = (m_phy->GetTxPowerEnd() - m_phy->GetTxPowerStart()) / (numPowerLevels - 1);

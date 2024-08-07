@@ -336,14 +336,14 @@ class WIFI_EXPORT WifiPhyStateHelper : public Object
      * TracedCallback signature for transmit event.
      *
      * @param [in] packet The received packet.
-     * @param [in] mode   The transmission mode of the packet.
+     * @param [in] mode The transmission mode of the packet.
      * @param [in] preamble The preamble of the packet.
-     * @param [in] power  The transmit power level.
+     * @param [in] powerLevel The transmit power level.
      */
     typedef void (*TxTracedCallback)(Ptr<const Packet> packet,
                                      WifiMode mode,
                                      WifiPreamble preamble,
-                                     uint8_t power);
+                                     uint8_t powerLevel);
 
     /**
      * Notify all WifiPhyListener objects of the given PHY event.

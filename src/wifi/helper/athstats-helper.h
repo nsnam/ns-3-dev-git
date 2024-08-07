@@ -188,13 +188,13 @@ class AthstatsWifiTraceSink : public Object
      * @param packet the packet
      * @param mode the WifiMode
      * @param preamble the wifi preamble
-     * @param txPower the transmit power level
+     * @param txPowerLevel the transmit power level
      */
     void PhyTxTrace(std::string context,
                     Ptr<const Packet> packet,
                     WifiMode mode,
                     WifiPreamble preamble,
-                    uint8_t txPower);
+                    uint8_t txPowerLevel);
 
     /**
      * Function to be called when the PHY layer of the considered device

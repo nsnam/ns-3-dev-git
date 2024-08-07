@@ -86,8 +86,7 @@ void
 ParfWifiManager::SetupPhy(const Ptr<WifiPhy> phy)
 {
     NS_LOG_FUNCTION(this << phy);
-    m_minPower = 0;
-    m_maxPower = phy->GetNTxPower() - 1;
+    m_maxPowerLevel = phy->GetNTxPowerLevels() - 1;
     WifiRemoteStationManager::SetupPhy(phy);
 }
 
@@ -138,12 +137,12 @@ ParfWifiManager::CheckInit(ParfWifiRemoteStation* station)
         station->m_nSupported = GetNSupported(station);
         station->m_rateIndex = station->m_nSupported - 1;
         station->m_prevRateIndex = station->m_nSupported - 1;
-        station->m_powerLevel = m_maxPower;
-        station->m_prevPowerLevel = m_maxPower;
+        station->m_powerLevel = m_maxPowerLevel;
+        station->m_prevPowerLevel = m_maxPowerLevel;
         WifiMode mode = GetSupported(station, station->m_rateIndex);
         auto channelWidth = GetChannelWidth(station);
         DataRate rate(mode.GetDataRate(channelWidth));
-        const auto power = GetPhy()->GetPower(m_maxPower);
+        const auto power = GetPhy()->GetPower(m_maxPowerLevel);
         m_powerChange(power, power, station->m_state->m_address);
         m_rateChange(rate, rate, station->m_state->m_address);
         station->m_initialized = true;
@@ -200,7 +199,7 @@ ParfWifiManager::DoReportDataFailed(WifiRemoteStation* st)
         if (station->m_nRetry == 1)
         {
             // need recovery fallback
-            if (station->m_powerLevel < m_maxPower)
+            if (station->m_powerLevel < m_maxPowerLevel)
             {
                 NS_LOG_DEBUG("station=" << station << " inc power");
                 station->m_powerLevel++;
@@ -215,7 +214,7 @@ ParfWifiManager::DoReportDataFailed(WifiRemoteStation* st)
         if (((station->m_nRetry - 1) % 2) == 1)
         {
             // need normal fallback
-            if (station->m_powerLevel == m_maxPower)
+            if (station->m_powerLevel == m_maxPowerLevel)
             {
                 if (station->m_rateIndex != 0)
                 {
@@ -283,7 +282,7 @@ ParfWifiManager::DoReportDataOk(WifiRemoteStation* st,
     else if (station->m_nSuccess == m_successThreshold || station->m_nAttempt == m_attemptThreshold)
     {
         // we are at the maximum rate, we decrease power
-        if (station->m_powerLevel != m_minPower)
+        if (station->m_powerLevel != m_minPowerLevel)
         {
             NS_LOG_DEBUG("station=" << station << " dec power");
             station->m_powerLevel--;

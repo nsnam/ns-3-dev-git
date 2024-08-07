@@ -93,7 +93,7 @@ PowerRateAdaptationTest::ConfigureNode()
     /*
      * Configure power control parameters.
      */
-    phy->SetNTxPower(18);
+    phy->SetNTxPowerLevels(18);
     phy->SetTxPowerStart(dBm_u{0});
     phy->SetTxPowerEnd(dBm_u{17});
 
