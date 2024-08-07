@@ -179,7 +179,7 @@ WifiPhy::GetTypeId()
                           "Number of transmission power levels available between "
                           "TxPowerStart and TxPowerEnd included.",
                           UintegerValue(1),
-                          MakeUintegerAccessor(&WifiPhy::m_nTxPower),
+                          MakeUintegerAccessor(&WifiPhy::m_nTxPowerLevels),
                           MakeUintegerChecker<uint8_t>())
             .AddAttribute("TxPowerEnd",
                           "Maximum available transmission level.",
@@ -584,16 +584,16 @@ WifiPhy::GetTxPowerEnd() const
 }
 
 void
-WifiPhy::SetNTxPower(uint8_t n)
+WifiPhy::SetNTxPowerLevels(uint8_t n)
 {
     NS_LOG_FUNCTION(this << +n);
-    m_nTxPower = n;
+    m_nTxPowerLevels = n;
 }
 
 uint8_t
-WifiPhy::GetNTxPower() const
+WifiPhy::GetNTxPowerLevels() const
 {
-    return m_nTxPower;
+    return m_nTxPowerLevels;
 }
 
 void
@@ -718,12 +718,12 @@ dBm_t
 WifiPhy::GetPower(uint8_t powerLevel) const
 {
     NS_ASSERT(m_txPowerBase <= m_txPowerEnd);
-    NS_ASSERT(m_nTxPower > 0);
+    NS_ASSERT(m_nTxPowerLevels > 0);
     dBm_t dbm;
-    if (m_nTxPower > 1)
+    if (m_nTxPowerLevels > 1)
     {
         dbm = m_txPowerBase + dB_t{powerLevel * (m_txPowerEnd.in_dBm() - m_txPowerBase.in_dBm()) /
-                                   (m_nTxPower - 1)};
+                                   (m_nTxPowerLevels - 1)};
     }
     else
     {

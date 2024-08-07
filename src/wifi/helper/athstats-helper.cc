@@ -234,10 +234,10 @@ AthstatsWifiTraceSink::PhyTxTrace(std::string context,
                                   Ptr<const Packet> packet,
                                   WifiMode mode,
                                   WifiPreamble preamble,
-                                  uint8_t txPower)
+                                  uint8_t txPowerLevel)
 {
     NS_LOG_FUNCTION(this << context << packet << "PHYTX mode=" << mode << "Preamble=" << preamble
-                         << "Power=" << txPower);
+                         << "Power level=" << txPowerLevel);
     ++m_phyTxCount;
 }
 

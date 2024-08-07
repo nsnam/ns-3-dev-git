@@ -849,15 +849,15 @@ class WifiPhy : public Object
      * minimum level and the maximum level. Transmission power levels are
      * equally separated (in dBm) with the minimum and the maximum included.
      *
-     * @param n the number of available levels
+     * @param numLevels the number of available levels
      */
-    void SetNTxPower(uint8_t n);
+    void SetNTxPowerLevels(uint8_t numLevels);
     /**
      * Return the number of available transmission power levels.
      *
      * @return the number of available transmission power levels
      */
-    uint8_t GetNTxPower() const;
+    uint8_t GetNTxPowerLevels() const;
     /**
      * Sets the transmission gain.
      *
@@ -1641,7 +1641,7 @@ class WifiPhy : public Object
     dB_t m_rxGain;                     //!< Reception gain
     dBm_t m_txPowerBase;               //!< Minimum transmission power
     dBm_t m_txPowerEnd;                //!< Maximum transmission power
-    uint8_t m_nTxPower;                //!< Number of available transmission power levels
+    uint8_t m_nTxPowerLevels;          //!< Number of available transmission power levels
     dBm_per_MHz_t m_powerDensityLimit; //!< the power density limit
 
     bool m_powerRestricted; //!< Flag whether transmit power is restricted by OBSS PD SR
