@@ -28,6 +28,7 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/yans-wifi-helper.h"
 
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -52,18 +53,15 @@ constexpr uint16_t AP_TO_P2P_STA_PROTOCOL{
 constexpr uint16_t P2P_STA_TO_AP_PROTOCOL{
     6}; ///< protocol to create socket for uplink transmission from P2P STA to AP
 
-constexpr uint32_t ADHOC_TO_P2P_STA_PAYLOAD_SIZE{
-    500}; ///< payload size in bytes to use for transmission from ADHOC to P2P STA
-constexpr uint32_t P2P_STA_TO_ADHOC_PAYLOAD_SIZE{
-    510}; ///< payload size in bytes to use for transmission from P2P STA to ADHOC
-constexpr uint32_t P2P_STA_TO_STA_PAYLOAD_SIZE{
-    750}; ///< payload size in bytes to use for transmission from P2P STA to STA
-constexpr uint32_t STA_TO_P2P_STA_PAYLOAD_SIZE{
-    760}; ///< payload size in bytes to use for transmission from STA to P2P STA
-constexpr uint32_t AP_TO_P2P_STA_PAYLOAD_SIZE{
-    1000}; ///< payload size in bytes to use for transmission from AP to P2P STA
-constexpr uint32_t P2P_STA_TO_AP_PAYLOAD_SIZE{
-    1100}; ///< payload size in bytes to use for transmission from P2P STA to AP
+/// Map protocol ID to payload size (in bytes)
+const std::map<uint16_t, uint32_t> ProtocolToPayloadSizeMap{
+    {P2P_STA_TO_ADHOC_PROTOCOL, 500},
+    {ADHOC_TO_P2P_STA_PROTOCOL, 510},
+    {P2P_STA_TO_STA_PROTOCOL, 750},
+    {STA_TO_P2P_STA_PROTOCOL, 760},
+    {AP_TO_P2P_STA_PROTOCOL, 1000},
+    {P2P_STA_TO_AP_PROTOCOL, 1100},
+};
 
 } // namespace
 
@@ -477,7 +475,8 @@ IbssCapabilitiesTest::DoSetup()
     socketAddr.SetPhysicalAddress(ibssDevices.Get(1)->GetAddress());
 
     auto client = CreateObject<PacketSocketClient>();
-    client->SetAttribute("PacketSize", UintegerValue(AP_TO_P2P_STA_PAYLOAD_SIZE));
+    client->SetAttribute("PacketSize",
+                         UintegerValue(ProtocolToPayloadSizeMap.at(AP_TO_P2P_STA_PROTOCOL)));
     client->SetAttribute("MaxPackets", UintegerValue(m_nPackets));
     client->SetAttribute("Interval", TimeValue(Seconds(0.5)));
     client->SetRemote(socketAddr);
@@ -611,14 +610,12 @@ class P2pTest : public TestCase
      * \param rxNode the RX node
      * \param destinationAddress the destination address to use
      * \param protocol the protocol to identify the flow
-     * \param payloadSize the size for the payload in bytes
      * \param start the starting time
      */
     void CreateTraffic(Ptr<Node> txNode,
                        Ptr<Node> rxNode,
                        const Address& destinationAddress,
                        uint16_t protocol,
-                       uint32_t payloadSize,
                        Time start);
 
     /**
@@ -667,36 +664,17 @@ class P2pTest : public TestCase
     Time m_testDuration{};    ///< duration of the test
     Ptr<StaWifiMac> m_p2pSta; ///< the P2P STA MAC
 
-    std::size_t m_countP2pStaToAdhocPackets; ///< count packets flowing from P2P STA to ADHOC
-    std::size_t m_countAdhocToP2pStaPackets; ///< count packets flowing from ADHOC to P2P STA
-    std::size_t m_countP2pStaToStaPackets;   ///< count packets flowing from P2P STA to STA
-    std::size_t m_countStaToP2pStaPackets;   ///< count packets flowing from STA to P2P STA
-    std::size_t m_countP2pStaToApPackets;    ///< count packets flowing from P2P STA to AP
-    std::size_t m_countApToP2pStaPackets;    ///< count packets flowing from AP to P2P STA
-
-    std::size_t m_countP2pStaToAdhocDroppedPackets; ///< count dropped packets from P2P STA to ADHOC
-    std::size_t m_countAdhocToP2pStaDroppedPackets; ///< count dropped packets from ADHOC to P2P STA
-    std::size_t m_countP2pStaToStaDroppedPackets;   ///< count dropped packets from P2P STA to STA
-    std::size_t m_countStaToP2pStaDroppedPackets;   ///< count dropped packets from STA to P2P STA
-    std::size_t m_countP2pStaToApDroppedPackets;    ///< count dropped packets from P2P STA to AP
-    std::size_t m_countApToP2pStaDroppedPackets;    ///< count dropped packets from AP to P2P STA
+    std::map<uint16_t /*protocol ID*/, uint64_t /*counter*/>
+        m_rxPackets; ///< count received packets
+    std::map<uint32_t /*protocol ID*/, uint64_t /*counter*/>
+        m_droppedPackets; ///< count dropped packets
 };
 
 P2pTest::P2pTest(const std::string& name, const P2pTestParams& params)
     : TestCase{"Check P2P operation for configuration: " + name},
       m_params{params},
-      m_countP2pStaToAdhocPackets{0},
-      m_countAdhocToP2pStaPackets{0},
-      m_countP2pStaToStaPackets{0},
-      m_countStaToP2pStaPackets{0},
-      m_countP2pStaToApPackets{0},
-      m_countApToP2pStaPackets{0},
-      m_countP2pStaToAdhocDroppedPackets{0},
-      m_countAdhocToP2pStaDroppedPackets{0},
-      m_countP2pStaToStaDroppedPackets{0},
-      m_countStaToP2pStaDroppedPackets{0},
-      m_countP2pStaToApDroppedPackets{0},
-      m_countApToP2pStaDroppedPackets{0}
+      m_rxPackets{},
+      m_droppedPackets{}
 {
     NS_ASSERT_MSG(!m_params.p2pActivatedPeriods.empty(),
                   "P2P should be activated at least once in the test");
@@ -706,52 +684,21 @@ void
 P2pTest::Receive(Ptr<const Packet> pkt, const Address& addr)
 {
     const auto sockAddr = PacketSocketAddress::ConvertFrom(addr);
-    NS_LOG_FUNCTION(this << pkt << pkt->GetSize() << addr << sockAddr.GetProtocol());
-    if (sockAddr.GetProtocol() == P2P_STA_TO_ADHOC_PROTOCOL)
+    const auto protocol = sockAddr.GetProtocol();
+    NS_LOG_FUNCTION(this << pkt << pkt->GetSize() << addr << protocol);
+    NS_TEST_EXPECT_MSG_EQ(ProtocolToPayloadSizeMap.contains(protocol),
+                          true,
+                          "Unexpected packet received");
+    NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
+                          ProtocolToPayloadSizeMap.at(protocol),
+                          "Unexpected packet size for flow ID " << protocol);
+    if (m_rxPackets.contains(protocol))
     {
-        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
-                              P2P_STA_TO_ADHOC_PAYLOAD_SIZE,
-                              "Unexpected packet size from P2P STA to ADHOC");
-        ++m_countP2pStaToAdhocPackets;
-    }
-    else if (sockAddr.GetProtocol() == ADHOC_TO_P2P_STA_PROTOCOL)
-    {
-        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
-                              ADHOC_TO_P2P_STA_PAYLOAD_SIZE,
-                              "Unexpected packet size from ADHOC to P2P STA");
-        ++m_countAdhocToP2pStaPackets;
-    }
-    else if (sockAddr.GetProtocol() == P2P_STA_TO_STA_PROTOCOL)
-    {
-        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
-                              P2P_STA_TO_STA_PAYLOAD_SIZE,
-                              "Unexpected packet size from P2P STA to STA");
-        ++m_countP2pStaToStaPackets;
-    }
-    else if (sockAddr.GetProtocol() == STA_TO_P2P_STA_PROTOCOL)
-    {
-        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
-                              STA_TO_P2P_STA_PAYLOAD_SIZE,
-                              "Unexpected packet size from STA to P2P STA");
-        ++m_countStaToP2pStaPackets;
-    }
-    else if (sockAddr.GetProtocol() == P2P_STA_TO_AP_PROTOCOL)
-    {
-        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
-                              P2P_STA_TO_AP_PAYLOAD_SIZE,
-                              "Unexpected packet size from P2P STA to AP");
-        ++m_countP2pStaToApPackets;
-    }
-    else if (sockAddr.GetProtocol() == AP_TO_P2P_STA_PROTOCOL)
-    {
-        NS_TEST_EXPECT_MSG_EQ(pkt->GetSize(),
-                              AP_TO_P2P_STA_PAYLOAD_SIZE,
-                              "Unexpected packet size from AP to P2P STA");
-        ++m_countApToP2pStaPackets;
+        m_rxPackets[protocol]++;
     }
     else
     {
-        NS_ASSERT_MSG(false, "Unexpected packet received");
+        m_rxPackets[protocol] = 1;
     }
 }
 
@@ -760,29 +707,19 @@ P2pTest::MacTxDrop(Ptr<const Packet> packet)
 {
     const auto payloadSize = packet->GetSize() - 8 /* LLC */;
     NS_LOG_FUNCTION(this << packet << payloadSize);
-    if (payloadSize == P2P_STA_TO_ADHOC_PAYLOAD_SIZE)
+    const auto it =
+        std::find_if(ProtocolToPayloadSizeMap.cbegin(),
+                     ProtocolToPayloadSizeMap.cend(),
+                     [payloadSize](const auto& item) { return item.second == payloadSize; });
+    NS_ASSERT_MSG(it != ProtocolToPayloadSizeMap.cend(), "Unexpected packet size " << payloadSize);
+    const auto protocol = it->first;
+    if (m_droppedPackets.contains(protocol))
     {
-        ++m_countP2pStaToAdhocDroppedPackets;
+        m_droppedPackets[protocol]++;
     }
-    else if (payloadSize == ADHOC_TO_P2P_STA_PAYLOAD_SIZE)
+    else
     {
-        ++m_countAdhocToP2pStaDroppedPackets;
-    }
-    else if (payloadSize == P2P_STA_TO_STA_PAYLOAD_SIZE)
-    {
-        ++m_countP2pStaToStaDroppedPackets;
-    }
-    else if (payloadSize == STA_TO_P2P_STA_PAYLOAD_SIZE)
-    {
-        ++m_countStaToP2pStaDroppedPackets;
-    }
-    else if (payloadSize == P2P_STA_TO_AP_PAYLOAD_SIZE)
-    {
-        ++m_countP2pStaToApDroppedPackets;
-    }
-    else if (payloadSize == AP_TO_P2P_STA_PAYLOAD_SIZE)
-    {
-        ++m_countApToP2pStaDroppedPackets;
+        m_droppedPackets[protocol] = 1;
     }
 }
 
@@ -791,29 +728,19 @@ P2pTest::MacRxDrop(Ptr<const Packet> packet)
 {
     const auto payloadSize = packet->GetSize() - 8 /* LLC */;
     NS_LOG_FUNCTION(this << packet << payloadSize);
-    if (payloadSize == P2P_STA_TO_ADHOC_PAYLOAD_SIZE)
+    const auto it =
+        std::find_if(ProtocolToPayloadSizeMap.cbegin(),
+                     ProtocolToPayloadSizeMap.cend(),
+                     [payloadSize](const auto& item) { return item.second == payloadSize; });
+    NS_ASSERT_MSG(it != ProtocolToPayloadSizeMap.cend(), "Unexpected packet size " << payloadSize);
+    const auto protocol = it->first;
+    if (m_droppedPackets.contains(protocol))
     {
-        ++m_countP2pStaToAdhocDroppedPackets;
+        m_droppedPackets[protocol]++;
     }
-    else if (payloadSize == ADHOC_TO_P2P_STA_PAYLOAD_SIZE)
+    else
     {
-        ++m_countAdhocToP2pStaDroppedPackets;
-    }
-    else if (payloadSize == P2P_STA_TO_STA_PAYLOAD_SIZE)
-    {
-        ++m_countP2pStaToStaDroppedPackets;
-    }
-    else if (payloadSize == STA_TO_P2P_STA_PAYLOAD_SIZE)
-    {
-        ++m_countStaToP2pStaDroppedPackets;
-    }
-    else if (payloadSize == P2P_STA_TO_AP_PAYLOAD_SIZE)
-    {
-        ++m_countP2pStaToApDroppedPackets;
-    }
-    else if (payloadSize == AP_TO_P2P_STA_PAYLOAD_SIZE)
-    {
-        ++m_countApToP2pStaDroppedPackets;
+        m_droppedPackets[protocol] = 1;
     }
 }
 
@@ -834,6 +761,8 @@ P2pTest::SetP2pEnabled(bool enable)
 void
 P2pTest::CheckResults()
 {
+    NS_LOG_FUNCTION(this);
+
     const std::size_t packetsPerSeconds = 1;
     const auto maxPacketsPerDirection = packetsPerSeconds * m_testDuration.GetSeconds();
 
@@ -847,16 +776,22 @@ P2pTest::CheckResults()
                   [](auto sum, const auto& period) { return sum + (period.stop - period.start); });
     const auto expectedPacketsInfrastructure =
         packetsPerSeconds * infrastructureDuration.GetSeconds();
-    NS_TEST_EXPECT_MSG_EQ(m_countApToP2pStaPackets,
-                          expectedPacketsInfrastructure,
-                          "Unexpected amount of packets sent from AP to P2P STA");
-    NS_TEST_EXPECT_MSG_EQ(m_countP2pStaToApPackets,
-                          expectedPacketsInfrastructure,
-                          "Unexpected amount of packets sent from P2P STA to AP");
-    NS_TEST_EXPECT_MSG_EQ(m_countStaToP2pStaPackets,
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_rxPackets.contains(AP_TO_P2P_STA_PROTOCOL) ? m_rxPackets.at(AP_TO_P2P_STA_PROTOCOL) : 0),
+        expectedPacketsInfrastructure,
+        "Unexpected amount of packets sent from AP to P2P STA");
+    NS_TEST_EXPECT_MSG_EQ(
+        (m_rxPackets.contains(P2P_STA_TO_AP_PROTOCOL) ? m_rxPackets.at(P2P_STA_TO_AP_PROTOCOL) : 0),
+        expectedPacketsInfrastructure,
+        "Unexpected amount of packets sent from P2P STA to AP");
+    NS_TEST_EXPECT_MSG_EQ((m_rxPackets.contains(STA_TO_P2P_STA_PROTOCOL)
+                               ? m_rxPackets.at(STA_TO_P2P_STA_PROTOCOL)
+                               : 0),
                           expectedPacketsInfrastructure,
                           "Unexpected amount of packets sent from STA to P2P STA");
-    NS_TEST_EXPECT_MSG_EQ(m_countP2pStaToStaPackets,
+    NS_TEST_EXPECT_MSG_EQ((m_rxPackets.contains(P2P_STA_TO_STA_PROTOCOL)
+                               ? m_rxPackets.at(P2P_STA_TO_STA_PROTOCOL)
+                               : 0),
                           expectedPacketsInfrastructure,
                           "Unexpected amount of packets sent from P2P STA to STA");
 
@@ -875,10 +810,14 @@ P2pTest::CheckResults()
 
     const auto expectedDroppedPacketsInfrastructure =
         maxPacketsPerDirection - expectedPacketsInfrastructure;
-    NS_TEST_EXPECT_MSG_EQ(m_countApToP2pStaDroppedPackets,
+    NS_TEST_EXPECT_MSG_EQ((m_droppedPackets.contains(AP_TO_P2P_STA_PROTOCOL)
+                               ? m_droppedPackets.at(AP_TO_P2P_STA_PROTOCOL)
+                               : 0),
                           expectedDroppedPacketsInfrastructure,
                           "Unexpected amount of dropped packet sent from AP to P2P STA");
-    NS_TEST_EXPECT_MSG_EQ(m_countP2pStaToApDroppedPackets,
+    NS_TEST_EXPECT_MSG_EQ((m_droppedPackets.contains(P2P_STA_TO_AP_PROTOCOL)
+                               ? m_droppedPackets.at(P2P_STA_TO_AP_PROTOCOL)
+                               : 0),
                           expectedDroppedPacketsInfrastructure,
                           "Unexpected amount of dropped packet sent from P2P STA to AP");
 
@@ -886,7 +825,9 @@ P2pTest::CheckResults()
     // should be dropped by the STA since its P2P capabilities are turned off
     const auto expectedDroppedPacketsP2p = maxPacketsPerDirection - expectedPacketsP2p;
     NS_TEST_EXPECT_MSG_EQ(
-        m_countAdhocToP2pStaDroppedPackets,
+        (m_droppedPackets.contains(ADHOC_TO_P2P_STA_PROTOCOL)
+             ? m_droppedPackets.at(ADHOC_TO_P2P_STA_PROTOCOL)
+             : 0),
         expectedDroppedPacketsP2p,
         "Unexpected amount of dropped packet sent from ADHOC to P2P STA (dropped by P2P STA)");
 }
@@ -932,7 +873,6 @@ P2pTest::CreateTraffic(Ptr<Node> txNode,
                        Ptr<Node> rxNode,
                        const Address& destinationAddress,
                        uint16_t protocol,
-                       uint32_t payloadSize,
                        Time start)
 {
     PacketSocketAddress socketAddr;
@@ -941,7 +881,7 @@ P2pTest::CreateTraffic(Ptr<Node> txNode,
     socketAddr.SetProtocol(protocol);
 
     auto client = CreateObject<PacketSocketClient>();
-    client->SetAttribute("PacketSize", UintegerValue(payloadSize));
+    client->SetAttribute("PacketSize", UintegerValue(ProtocolToPayloadSizeMap.at(protocol)));
     client->SetAttribute("MaxPackets", UintegerValue(5));
     client->SetAttribute("Interval", TimeValue(Seconds(1.0)));
     client->SetRemote(socketAddr);
@@ -1059,7 +999,6 @@ P2pTest::DoSetup()
                   wifiAdhocNode.Get(0),
                   adhocDevice.Get(0)->GetAddress(),
                   P2P_STA_TO_ADHOC_PROTOCOL,
-                  P2P_STA_TO_ADHOC_PAYLOAD_SIZE,
                   Seconds(0.2));
 
     // traffic from ADHOC to P2P STA
@@ -1067,7 +1006,6 @@ P2pTest::DoSetup()
                   wifiStaNodes.Get(1),
                   GetPeerAddress(adhocMac, m_p2pSta),
                   ADHOC_TO_P2P_STA_PROTOCOL,
-                  ADHOC_TO_P2P_STA_PAYLOAD_SIZE,
                   Seconds(0.3));
 
     // traffic from P2P STA to STA
@@ -1075,7 +1013,6 @@ P2pTest::DoSetup()
                   wifiStaNodes.Get(0),
                   GetPeerAddress(apMac, staMac),
                   P2P_STA_TO_STA_PROTOCOL,
-                  P2P_STA_TO_STA_PAYLOAD_SIZE,
                   Seconds(0.4));
 
     // traffic from STA to P2P STA
@@ -1083,7 +1020,6 @@ P2pTest::DoSetup()
                   wifiStaNodes.Get(1),
                   GetPeerAddress(apMac, m_p2pSta),
                   STA_TO_P2P_STA_PROTOCOL,
-                  STA_TO_P2P_STA_PAYLOAD_SIZE,
                   Seconds(0.5));
 
     // traffic from AP to P2P STA
@@ -1091,7 +1027,6 @@ P2pTest::DoSetup()
                   wifiStaNodes.Get(1),
                   GetPeerAddress(apMac, m_p2pSta),
                   AP_TO_P2P_STA_PROTOCOL,
-                  AP_TO_P2P_STA_PAYLOAD_SIZE,
                   Seconds(0.7));
 
     // traffic from P2P STA to AP
@@ -1099,7 +1034,6 @@ P2pTest::DoSetup()
                   wifiApNode.Get(0),
                   apDevice.Get(0)->GetAddress(),
                   P2P_STA_TO_AP_PROTOCOL,
-                  P2P_STA_TO_AP_PAYLOAD_SIZE,
                   Seconds(0.8));
 
     Config::ConnectWithoutContext("/NodeList/*/ApplicationList/*/$ns3::PacketSocketServer/Rx",
