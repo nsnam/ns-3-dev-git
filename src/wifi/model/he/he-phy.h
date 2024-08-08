@@ -53,7 +53,7 @@ class ObssPdAlgorithm;
  */
 struct HeSigAParameters
 {
-    double rssiW;     ///< RSSI in W
+    double rssiDbm;   ///< RSSI in dBm
     uint8_t bssColor; ///< BSS color
 };
 

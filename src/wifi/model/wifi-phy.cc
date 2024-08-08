@@ -526,26 +526,26 @@ void
 WifiPhy::SetCcaEdThreshold(double threshold)
 {
     NS_LOG_FUNCTION(this << threshold);
-    m_ccaEdThresholdW = DbmToW(threshold);
+    m_ccaEdThresholdDbm = threshold;
 }
 
 double
 WifiPhy::GetCcaEdThreshold() const
 {
-    return WToDbm(m_ccaEdThresholdW);
+    return m_ccaEdThresholdDbm;
 }
 
 void
 WifiPhy::SetCcaSensitivityThreshold(double threshold)
 {
     NS_LOG_FUNCTION(this << threshold);
-    m_ccaSensitivityThresholdW = DbmToW(threshold);
+    m_ccaSensitivityThresholdDbm = threshold;
 }
 
 double
 WifiPhy::GetCcaSensitivityThreshold() const
 {
-    return WToDbm(m_ccaSensitivityThresholdW);
+    return m_ccaSensitivityThresholdDbm;
 }
 
 void

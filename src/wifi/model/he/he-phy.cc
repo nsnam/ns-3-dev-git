@@ -612,9 +612,10 @@ HePhy::ProcessSigA(Ptr<Event> event, PhyFieldRxStatus status)
     NS_LOG_FUNCTION(this << *event << status);
     // Notify end of SIG-A (in all cases)
     const auto& txVector = event->GetPpdu()->GetTxVector();
-    HeSigAParameters params;
-    params.rssiW = GetRxPowerWForPpdu(event);
-    params.bssColor = txVector.GetBssColor();
+    HeSigAParameters params{
+        .rssiDbm = WToDbm(GetRxPowerWForPpdu(event)),
+        .bssColor = txVector.GetBssColor(),
+    };
     NotifyEndOfHeSigA(params); // if OBSS_PD CCA_RESET, set power restriction first and wait till
                                // field is processed before switching to IDLE
 

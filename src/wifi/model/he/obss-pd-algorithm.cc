@@ -116,7 +116,7 @@ ObssPdAlgorithm::ResetPhy(HeSigAParameters params)
         txPowerMaxMimo = m_txPowerRefMimo - (m_obssPdLevel - m_obssPdLevelMin);
         powerRestricted = true;
     }
-    m_resetEvent(bssColor, WToDbm(params.rssiW), powerRestricted, txPowerMaxSiso, txPowerMaxMimo);
+    m_resetEvent(bssColor, params.rssiDbm, powerRestricted, txPowerMaxSiso, txPowerMaxMimo);
     phy->ResetCca(powerRestricted, txPowerMaxSiso, txPowerMaxMimo);
 }
 
