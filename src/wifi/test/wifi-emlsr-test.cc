@@ -4655,10 +4655,12 @@ EmlsrCcaBusyTest::StartTraffic()
     m_nextMainPhyLinkId = (m_currMainPhyLinkId + 1) % 2;
 
     // request the main PHY to switch to another link
-    m_staMacs[0]->GetEmlsrManager()->SwitchMainPhy(m_nextMainPhyLinkId,
-                                                   false,
-                                                   EmlsrManager::DONT_RESET_BACKOFF,
-                                                   EmlsrManager::DONT_REQUEST_ACCESS);
+    m_staMacs[0]->GetEmlsrManager()->SwitchMainPhy(
+        m_nextMainPhyLinkId,
+        false,
+        EmlsrManager::DONT_RESET_BACKOFF,
+        EmlsrManager::DONT_REQUEST_ACCESS,
+        EmlsrDlTxopIcfReceivedByAuxPhyTrace{}); // trace info not used
 
     // the other MLD transmits a packet to the AP
     TransmitPacketToAp(m_nextMainPhyLinkId);

@@ -116,6 +116,28 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
                                       //!< preceding/following the main PHY switch end
 };
 
+/**
+ * Struct to trace that main PHY switched to leave a link on which an aux PHY was expected to gain
+ * a TXOP but the main PHY did not manage to gain a TXOP in the pre-configured amount of time.
+ */
+struct EmlsrSwitchMainPhyBackTrace : public EmlsrMainPhySwitchTraceImpl<EmlsrSwitchMainPhyBackTrace>
+{
+    static constexpr std::string_view m_name = "TxopNotGainedOnAuxPhyLink"; //!< trace name
+
+    bool nothingToTx; //!< if true, the main PHY managed to gain a TXOP but had nothing to transmit
+
+    /**
+     * Constructor provided because this struct is not an aggregate (it has a base struct), hence
+     * we cannot use designated initializers.
+     *
+     * @param nothing the value for the nothingToTx field
+     */
+    EmlsrSwitchMainPhyBackTrace(bool nothing)
+        : nothingToTx(nothing)
+    {
+    }
+};
+
 } // namespace ns3
 
 #endif /* ADVANCED_EMLSR_MANAGER_H */

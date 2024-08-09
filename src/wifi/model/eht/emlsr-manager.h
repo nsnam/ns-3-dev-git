@@ -16,8 +16,10 @@
 #include "ns3/wifi-phy-operating-channel.h"
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 
 class EmlsrCcaBusyTest;
@@ -28,6 +30,45 @@ namespace ns3
 class EhtFrameExchangeManager;
 class MgtEmlOmn;
 class WifiMpdu;
+
+/**
+ * @ingroup wifi
+ * Base struct for EMLSR Main PHY switch traces.
+ */
+struct EmlsrMainPhySwitchTrace
+{
+    virtual ~EmlsrMainPhySwitchTrace() = default;
+
+    /// @return the name of this instance
+    virtual std::string_view GetName() const = 0;
+
+    /// @return a pointer to the clone of this object
+    virtual std::shared_ptr<EmlsrMainPhySwitchTrace> Clone() const = 0;
+
+    std::optional<uint8_t> fromLinkId; //!< ID of the link the main PHY is moving from (if any)
+    uint8_t toLinkId{WIFI_LINKID_UNDEFINED}; //!< ID of the link the main PHY is moving to
+};
+
+/**
+ * Implementation for the EMLSR Main PHY switch trace base struct. Child structs are inherited
+ * from this implementation according to the CRTP idiom and must define a static string_view
+ * member containing the name of the child.
+ */
+template <class T>
+struct EmlsrMainPhySwitchTraceImpl : public EmlsrMainPhySwitchTrace
+{
+    /// @copydoc ns3::EmlsrMainPhySwitchTrace::GetName
+    std::string_view GetName() const override
+    {
+        return T::m_name;
+    }
+
+    /// @copydoc ns3::EmlsrMainPhySwitchTrace::Clone
+    std::shared_ptr<EmlsrMainPhySwitchTrace> Clone() const override
+    {
+        return std::shared_ptr<EmlsrMainPhySwitchTrace>(new T(static_cast<const T&>(*this)));
+    }
+};
 
 /**
  * @ingroup wifi
@@ -351,8 +392,14 @@ class EmlsrManager : public Object
      *                     is operating
      * @param requestAccess whether channel access should be requested on the link on which the
      *                      main PHY is moving onto
+     * @param traceInfo information to pass to the main PHY switch traced callback (the fromLinkId
+     *                  and toLinkId fields are set by this function)
      */
-    void SwitchMainPhy(uint8_t linkId, bool noSwitchDelay, bool resetBackoff, bool requestAccess);
+    void SwitchMainPhy(uint8_t linkId,
+                       bool noSwitchDelay,
+                       bool resetBackoff,
+                       bool requestAccess,
+                       EmlsrMainPhySwitchTrace&& traceInfo);
 
     static constexpr bool RESET_BACKOFF = true;       //!< reset backoff on main PHY switch
     static constexpr bool DONT_RESET_BACKOFF = false; //!< do not reset backoff on main PHY switch
@@ -574,6 +621,18 @@ class EmlsrManager : public Object
                                               //!< MediumSyncDelay timer is running
     };
 
+    /**
+     * TracedCallback signature for main PHY switch events.
+     *
+     * @param info the information associated with the main PHY switch event
+     */
+    typedef void (*MainPhySwitchCallback)(const EmlsrMainPhySwitchTrace& info);
+
+    /// TracedCallback for main PHY switch events typedef
+    using MainPhySwitchTracedCallback = TracedCallback<const EmlsrMainPhySwitchTrace&>;
+
+    MainPhySwitchTracedCallback m_mainPhySwitchTrace; //!< main PHY switch trace source
+
     Ptr<StaWifiMac> m_staMac;                     //!< the MAC of the managed non-AP MLD
     std::optional<Time> m_emlsrTransitionTimeout; /**< Transition timeout advertised by APs with
                                                        EMLSR activated */
@@ -606,6 +665,116 @@ class EmlsrManager : public Object
         m_auxPhyChannels; //!< link ID-indexed map of operating channels for the aux PHYs
     std::map<uint8_t, Time>
         m_noPhySince; //!< link ID-indexed map of the time since no PHY is operating on the link
+};
+
+/**
+ * Struct to trace that main PHY switched to start a DL TXOP after that an aux PHY received an ICF.
+ */
+struct EmlsrDlTxopIcfReceivedByAuxPhyTrace
+    : public EmlsrMainPhySwitchTraceImpl<EmlsrDlTxopIcfReceivedByAuxPhyTrace>
+{
+    static constexpr std::string_view m_name = "DlTxopIcfReceivedByAuxPhy"; //!< trace name
+};
+
+/**
+ * Struct to trace that main PHY switched to start an UL TXOP after that an aux PHY transmitted an
+ * RTS.
+ */
+struct EmlsrUlTxopRtsSentByAuxPhyTrace
+    : public EmlsrMainPhySwitchTraceImpl<EmlsrUlTxopRtsSentByAuxPhyTrace>
+{
+    static constexpr std::string_view m_name = "UlTxopRtsSentByAuxPhy"; //!< trace name
+};
+
+/**
+ * Struct to trace that main PHY switched when a (DL or UL) TXOP ended.
+ *
+ * This trace is normally called when aux PHYs do not switch link and the main PHY switches back to
+ * the preferred link when a TXOP carried out on another link ends. In such a case, the remTime
+ * field is set to zero.
+ *
+ * Note that the main PHY may be already switching when the TXOP ends; this happens, e.g., when the
+ * main PHY starts switching to a link on which an aux PHY gained a TXOP and sent an RTS, but the
+ * CTS is not received and the UL TXOP ends before the main PHY channel switch is completed. In this
+ * case, the main PHY switch is postponed until the previous switch is completed and the remTime
+ * field is set to the remaining channel switch delay at the time the TXOP ends:
+ *
+ *                                |-- main PHY switch --|
+ *                                |----- to link 1 -----|
+ *                                          ┌───────────┐
+ *                                          │    CTS    │
+ *  ────────────────────────┬───────────┬───┴X──────────┴─────────────────────────────
+ *  [link 1]                │    RTS    │     │-remTime-│
+ *                          └───────────┘     │         |-- main PHY switch --|
+ *                                            │         |- to preferred link -|
+ *                                         CTS timeout
+ *
+ * Note also that the Advanced EMLSR manager may allow a main PHY switch to be interrupted. If this
+ * option is enabled and the main PHY is switching when the TXOP ends, the previous switch is
+ * interrupted and the main PHY starts switching to the preferred link (in this case, the remTime
+ * field indicates the time that was left to complete the previous switch). Also note that, with
+ * the Advanced EMLSR manager, this trace may also be called when aux PHYs switch link. This happens
+ * when the TXOP ends while the main PHY is switching; in this case, the previous switch is
+ * interrupted and the main PHY returns to the link on which it was operating before the previous
+ * switch.
+ *
+ *                                |-- main PHY switch --|
+ *                                |----- to link 1 -----|(interrupted)
+ *                                          ┌───────────┐
+ *                                          │    CTS    │
+ *  ────────────────────────┬───────────┬───┴X──────────┴─────────────────────────────
+ *  [link 1]                │    RTS    │     │-remTime-│
+ *                          └───────────┘     │-- main PHY switch --|
+ *                                            │- to preferred link -|
+ *                                         CTS timeout
+ */
+struct EmlsrTxopEndedTrace : public EmlsrMainPhySwitchTraceImpl<EmlsrTxopEndedTrace>
+{
+    static constexpr std::string_view m_name = "TxopEnded"; //!< trace name
+
+    Time remTime; //!< the remaining time (at TXOP end) until the main PHY completes the
+                  //!< channel switch, in case the main PHY is completing a previous switch
+                  //!< when the TXOP ends
+
+    /**
+     * Constructor provided because this struct is not an aggregate (it has a base struct), hence
+     * we cannot use designated initializers.
+     *
+     * @param t the value for the sinceTxopEnd field
+     */
+    EmlsrTxopEndedTrace(const Time& t)
+        : remTime(t)
+    {
+    }
+};
+
+/**
+ * Struct to trace that main PHY switched to operate on a link on which an aux PHY that is not
+ * TX capable has gained or is expected to shortly gain a TXOP.
+ */
+struct EmlsrUlTxopAuxPhyNotTxCapableTrace
+    : public EmlsrMainPhySwitchTraceImpl<EmlsrUlTxopAuxPhyNotTxCapableTrace>
+{
+    static constexpr std::string_view m_name = "UlTxopAuxPhyNotTxCapable"; //!< trace name
+
+    AcIndex acIndex; //!< Access category of TXOP on aux PHY
+    Time remTime;    //!< Remaining time to complete backoff countdown on the aux PHY link
+    Time remNav;     //!< the remaining NAV on main PHY link when main PHY is requested to switch
+
+    /**
+     * Constructor provided because this struct is not an aggregate (it has a base struct), hence
+     * we cannot use designated initializers.
+     *
+     * @param aci the value for the acIndex field
+     * @param delay the value for the remTime field
+     * @param navLeft the value for the remNav field
+     */
+    EmlsrUlTxopAuxPhyNotTxCapableTrace(AcIndex aci, const Time& delay, const Time& navLeft)
+        : acIndex(aci),
+          remTime(delay),
+          remNav(navLeft)
+    {
+    }
 };
 
 } // namespace ns3

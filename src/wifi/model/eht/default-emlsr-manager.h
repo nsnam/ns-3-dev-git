@@ -70,8 +70,10 @@ class DefaultEmlsrManager : public EmlsrManager
      * main PHY.
      *
      * @param linkId the ID of the link that the main PHY is leaving
+     * @param traceInfo information to pass to the main PHY switch traced callback (the fromLinkId
+     *                  and toLinkId fields are set by SwitchMainPhy)
      */
-    void SwitchMainPhyBackToPreferredLink(uint8_t linkId);
+    void SwitchMainPhyBackToPreferredLink(uint8_t linkId, EmlsrMainPhySwitchTrace&& traceInfo);
 
     /// Store information about a main PHY switch.
     struct MainPhySwitchInfo

@@ -189,14 +189,17 @@ DefaultEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
     // switch main PHY to the previous link, if needed
     if (!m_switchAuxPhy)
     {
-        SwitchMainPhyBackToPreferredLink(linkId);
+        const auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
+        const auto delay = mainPhy->IsStateSwitching() ? mainPhy->GetDelayUntilIdle() : Time{0};
+        SwitchMainPhyBackToPreferredLink(linkId, EmlsrTxopEndedTrace(delay));
     }
 }
 
 void
-DefaultEmlsrManager::SwitchMainPhyBackToPreferredLink(uint8_t linkId)
+DefaultEmlsrManager::SwitchMainPhyBackToPreferredLink(uint8_t linkId,
+                                                      EmlsrMainPhySwitchTrace&& traceInfo)
 {
-    NS_LOG_FUNCTION(this << linkId);
+    NS_LOG_FUNCTION(this << linkId << traceInfo.GetName());
 
     NS_ABORT_MSG_IF(m_switchAuxPhy, "This method can only be called when SwitchAuxPhy is false");
 
@@ -216,16 +219,25 @@ DefaultEmlsrManager::SwitchMainPhyBackToPreferredLink(uint8_t linkId)
     // a new backoff value must be generated.
     if (!mainPhy->IsStateSwitching())
     {
-        SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
+        SwitchMainPhy(GetMainPhyId(),
+                      false,
+                      DONT_RESET_BACKOFF,
+                      REQUEST_ACCESS,
+                      std::forward<EmlsrMainPhySwitchTrace>(traceInfo));
     }
     else
     {
-        Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
-            // request the main PHY to switch back to the preferred link only if in the meantime
-            // no TXOP started on another link (which will require the main PHY to switch link)
+        Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, info = traceInfo.Clone(), this]() {
+            // request the main PHY to switch back to the preferred link only if
+            // in the meantime no TXOP started on another link (which will
+            // require the main PHY to switch link)
             if (!GetEhtFem(linkId)->UsingOtherEmlsrLink())
             {
-                SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
+                SwitchMainPhy(GetMainPhyId(),
+                              false,
+                              DONT_RESET_BACKOFF,
+                              REQUEST_ACCESS,
+                              std::move(*info));
             }
         });
     }
@@ -331,13 +343,13 @@ DefaultEmlsrManager::NotifyRtsSent(uint8_t linkId,
                   "RTS is being sent, but not enough time for main PHY to switch");
 
     NS_LOG_DEBUG("Schedule main Phy switch in " << delay.As(Time::US));
-    m_ulMainPhySwitch[linkId] = Simulator::Schedule(delay,
-                                                    &DefaultEmlsrManager::SwitchMainPhy,
-                                                    this,
-                                                    linkId,
-                                                    false,
-                                                    RESET_BACKOFF,
-                                                    DONT_REQUEST_ACCESS);
+    m_ulMainPhySwitch[linkId] = Simulator::Schedule(delay, [=, this]() {
+        SwitchMainPhy(linkId,
+                      false,
+                      RESET_BACKOFF,
+                      DONT_REQUEST_ACCESS,
+                      EmlsrUlTxopRtsSentByAuxPhyTrace{});
+    });
 
     m_switchMainPhyOnRtsTx.erase(it);
 }

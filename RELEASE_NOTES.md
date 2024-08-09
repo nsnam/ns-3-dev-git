@@ -43,6 +43,7 @@ The required Doxygen version for documentation generation is version 1.11.
 - (wifi) Added a new `BaEstablished` trace source to `QosTxop` to notify that a block ack agreement has been established with a given recipient for a given TID.
 - (zigbee) Added Zigbee module support.
 - (energy) Added new information and reformatted energy module documentation.
+- (wifi) Added a new `MainPhySwitch` trace source to EmlsrManager, which is fired when the main PHY switches channel to operate on another link and provides information about the reason for starting the switch.
 
 ### Bugs fixed
 

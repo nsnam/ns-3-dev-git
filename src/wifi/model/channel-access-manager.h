@@ -171,6 +171,11 @@ class ChannelAccessManager : public Object
     Time GetBackoffEndFor(Ptr<Txop> txop) const;
 
     /**
+     * @return the time until the NAV has been set
+     */
+    Time GetNavEnd() const;
+
+    /**
      * @param qosTxop a QosTxop that needs to be disabled
      * @param duration the amount of time during which the QosTxop is disabled
      *

@@ -305,17 +305,27 @@ AdvancedEmlsrManager::DoNotifyTxopEnd(uint8_t linkId)
             !m_switchAuxPhy || m_mainPhySwitchInfo.end >= Simulator::Now(),
             "Aux PHY next link ID should have a value when interrupting a main PHY switch");
         uint8_t nextLinkId = m_switchAuxPhy ? m_mainPhySwitchInfo.from : GetMainPhyId();
-        SwitchMainPhy(nextLinkId, false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
+        const auto delay = mainPhy->IsStateSwitching() ? mainPhy->GetDelayUntilIdle() : Time{0};
+        SwitchMainPhy(nextLinkId,
+                      false,
+                      DONT_RESET_BACKOFF,
+                      REQUEST_ACCESS,
+                      EmlsrTxopEndedTrace(delay));
     }
     else
     {
         // delay link switch until current channel switching is completed
-        Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
+        const auto delay = mainPhy->GetDelayUntilIdle();
+        Simulator::Schedule(delay, [=, this]() {
             // request the main PHY to switch back to the preferred link only if in the meantime
             // no TXOP started on another link (which will require the main PHY to switch link)
             if (!GetEhtFem(linkId)->UsingOtherEmlsrLink())
             {
-                SwitchMainPhy(GetMainPhyId(), false, DONT_RESET_BACKOFF, REQUEST_ACCESS);
+                SwitchMainPhy(GetMainPhyId(),
+                              false,
+                              DONT_RESET_BACKOFF,
+                              REQUEST_ACCESS,
+                              EmlsrTxopEndedTrace(delay));
             }
         });
     }
@@ -385,7 +395,7 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
             else if (!m_switchAuxPhy)
             {
                 // switch main PHY back to preferred link if SwitchAuxPhy is false
-                SwitchMainPhyBackToPreferredLink(linkId);
+                SwitchMainPhyBackToPreferredLink(linkId, EmlsrSwitchMainPhyBackTrace(true));
             }
         });
     }
@@ -405,7 +415,7 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
         m_switchMainPhyBackEvent = Simulator::Schedule(m_switchMainPhyBackDelay, [this, linkId]() {
             if (!m_switchAuxPhy)
             {
-                SwitchMainPhyBackToPreferredLink(linkId);
+                SwitchMainPhyBackToPreferredLink(linkId, EmlsrSwitchMainPhyBackTrace(false));
             }
         });
     }
@@ -578,7 +588,18 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopGainedByAuxPhy(uint8_t linkId, AcIndex 
         }
 
         // switch main PHY
-        SwitchMainPhy(linkId, false, RESET_BACKOFF, DONT_REQUEST_ACCESS);
+        Time remNav{0};
+        if (const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy))
+        {
+            auto mainPhyNavEnd = GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetNavEnd();
+            remNav = Max(remNav, mainPhyNavEnd - Simulator::Now());
+        }
+
+        SwitchMainPhy(linkId,
+                      false,
+                      RESET_BACKOFF,
+                      DONT_REQUEST_ACCESS,
+                      EmlsrUlTxopAuxPhyNotTxCapableTrace(aci, Time{0}, remNav));
         return;
     }
 
@@ -678,7 +699,18 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
     }
 
     // switch main PHY
-    SwitchMainPhy(linkId, false, RESET_BACKOFF, DONT_REQUEST_ACCESS);
+    Time remNav{0};
+    if (const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy))
+    {
+        auto mainPhyNavEnd = GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetNavEnd();
+        remNav = Max(remNav, mainPhyNavEnd - Simulator::Now());
+    }
+
+    SwitchMainPhy(linkId,
+                  false,
+                  RESET_BACKOFF,
+                  DONT_REQUEST_ACCESS,
+                  EmlsrUlTxopAuxPhyNotTxCapableTrace(aci, delay, remNav));
 
     // if the remaining backoff time is shorter than PIFS when the main PHY completes the switch,
     // we need to schedule a CCA check a PIFS after the end of the main PHY switch
@@ -710,7 +742,7 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
         Simulator::Schedule(minDelay + m_switchMainPhyBackDelay, [this, linkId]() {
             if (!m_switchAuxPhy)
             {
-                SwitchMainPhyBackToPreferredLink(linkId);
+                SwitchMainPhyBackToPreferredLink(linkId, EmlsrSwitchMainPhyBackTrace(false));
             }
         });
 }

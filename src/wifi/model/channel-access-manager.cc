@@ -722,6 +722,12 @@ ChannelAccessManager::GetBackoffEndFor(Ptr<Txop> txop, Time accessGrantStart) co
     return backoffEnd;
 }
 
+Time
+ChannelAccessManager::GetNavEnd() const
+{
+    return m_lastNavEnd;
+}
+
 void
 ChannelAccessManager::UpdateBackoff()
 {
