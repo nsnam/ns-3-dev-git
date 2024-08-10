@@ -709,7 +709,8 @@ SpectrumWifiPhy::GetBandForInterface(Ptr<WifiSpectrumPhyInterface> spectrumPhyIn
 {
     const auto channelWidth = spectrumPhyInterface->GetChannelWidth();
     NS_ASSERT_MSG(bandWidth <= channelWidth,
-                  "Bandwidth cannot exceed total operating channel width");
+                  "Bandwidth (" << bandWidth << ") cannot exceed total operating channel width ("
+                                << channelWidth << ")");
     const auto subcarrierSpacing = GetSubcarrierSpacing();
     WifiSpectrumBandInfo bandInfo;
     std::size_t numSegments = 1;
