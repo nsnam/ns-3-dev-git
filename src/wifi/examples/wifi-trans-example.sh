@@ -56,7 +56,7 @@ else
 fi
 
 #List of available standards with corresponding bandwidth
-std_leg=("11a" "11_10MHZ" "11_5MHZ")
+std_leg=("11a" "11p_10MHZ" "11p_5MHZ")
 std_n=("11n_2_4GHZ" "11n_5GHZ")
 std_ac_ax=("11ac" "11ax_2_4GHZ" "11ax_5GHZ")
 bw_leg=(20 10 5)
