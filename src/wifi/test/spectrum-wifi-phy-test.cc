@@ -2820,7 +2820,7 @@ class SpectrumWifiPhyTestSuite : public TestSuite
 };
 
 SpectrumWifiPhyTestSuite::SpectrumWifiPhyTestSuite()
-    : TestSuite("wifi-spectrum-wifi-phy", Type::UNIT)
+    : TestSuite("wifi-spectrum-phy", Type::UNIT)
 {
     AddTestCase(new SpectrumWifiPhyBasicTest, TestCase::Duration::QUICK);
     AddTestCase(new SpectrumWifiPhyListenerTest, TestCase::Duration::QUICK);
