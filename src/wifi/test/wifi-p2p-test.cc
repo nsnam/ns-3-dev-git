@@ -10,6 +10,7 @@
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/boolean.h"
 #include "ns3/config.h"
+#include "ns3/eht-configuration.h"
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/mobility-helper.h"
@@ -555,6 +556,9 @@ class P2pTest : public TestCase
         std::vector<std::string>
             staChannels; //!< the strings specifying the operating channels for the non-AP STAs
         std::string p2pChannel; //!< the string specifying the operating channel for P2P
+        std::set<uint8_t> infraLinkSetP2pSta{}; //!< if not empty, allow to specify a subset of the
+                                                //!< links for P2P STA to use for infrastructure by
+                                                //!< configuring TID-to-link mapping
         std::vector<ActivatedPeriod> p2pActivatedPeriods{
             {Seconds(0), Seconds(1)},
             {Seconds(4), Seconds(5)}}; //!< periods the P2P link is enabled
@@ -960,8 +964,11 @@ P2pTest::CheckResults()
             infraApLinks.insert(apLinkId);
         }
         const auto infraStaLinks = m_staMac->GetSetupLinkIds();
+        const auto infraP2pStaLinks =
+            m_params.infraLinkSetP2pSta.empty() ? infraStaLinks : m_params.infraLinkSetP2pSta;
         NS_ASSERT(!infraApLinks.empty());
         NS_ASSERT(!infraStaLinks.empty());
+        NS_ASSERT(!infraP2pStaLinks.empty());
 
         NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(AP_TO_P2P_STA_PROTOCOL) &&
                                   std::all_of(m_txLinks.at(AP_TO_P2P_STA_PROTOCOL).cbegin(),
@@ -974,16 +981,18 @@ P2pTest::CheckResults()
         NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(P2P_STA_TO_AP_PROTOCOL) &&
                                   std::all_of(m_txLinks.at(P2P_STA_TO_AP_PROTOCOL).cbegin(),
                                               m_txLinks.at(P2P_STA_TO_AP_PROTOCOL).cend(),
-                                              [&infraStaLinks](const auto& txLinkInfo) {
-                                                  return infraStaLinks.contains(txLinkInfo.second);
+                                              [&infraP2pStaLinks](const auto& txLinkInfo) {
+                                                  return infraP2pStaLinks.contains(
+                                                      txLinkInfo.second);
                                               }),
                               true,
                               "Unexpected link ID used for P2P STA to AP");
         NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(P2P_STA_TO_STA_PROTOCOL) &&
                                   std::all_of(m_txLinks.at(P2P_STA_TO_STA_PROTOCOL).cbegin(),
                                               m_txLinks.at(P2P_STA_TO_STA_PROTOCOL).cend(),
-                                              [&infraStaLinks](const auto& txLinkInfo) {
-                                                  return infraStaLinks.contains(txLinkInfo.second);
+                                              [&infraP2pStaLinks](const auto& txLinkInfo) {
+                                                  return infraP2pStaLinks.contains(
+                                                      txLinkInfo.second);
                                               }),
                               true,
                               "Unexpected link ID used for P2P STA to STA");
@@ -1010,8 +1019,9 @@ P2pTest::CheckResults()
         NS_TEST_EXPECT_MSG_EQ(!nonP2pStaTxLinks.empty() &&
                                   std::all_of(nonP2pStaTxLinks.cbegin(),
                                               nonP2pStaTxLinks.cend(),
-                                              [&infraStaLinks](const auto& txLinkInfo) {
-                                                  return infraStaLinks.contains(txLinkInfo.second);
+                                              [&infraP2pStaLinks](const auto& txLinkInfo) {
+                                                  return infraP2pStaLinks.contains(
+                                                      txLinkInfo.second);
                                               }),
                               true,
                               "Unexpected link ID used by P2P STA during non-P2P period");
@@ -1137,7 +1147,19 @@ P2pTest::DoSetup()
 
     streamNumber += WifiHelper::AssignStreams(staDevices, streamNumber);
     m_p2pSta = DynamicCast<StaWifiMac>(DynamicCast<WifiNetDevice>(staDevices.Get(1))->GetMac());
-
+    if (!m_params.infraLinkSetP2pSta.empty())
+    {
+        std::stringstream ss;
+        ss << "0 ";
+        std::copy(m_params.infraLinkSetP2pSta.cbegin(),
+                  m_params.infraLinkSetP2pSta.cend(),
+                  std::ostream_iterator<uint16_t>(ss, ","));
+        auto staEhtConfig = m_p2pSta->GetEhtConfiguration();
+        staEhtConfig->SetAttribute("TidToLinkMappingNegSupport",
+                                   EnumValue(WifiTidToLinkMappingNegSupport::ANY_LINK_SET));
+        staEhtConfig->SetAttribute("TidToLinkMappingDl", StringValue(ss.str()));
+        staEhtConfig->SetAttribute("TidToLinkMappingUl", StringValue(ss.str()));
+    }
     mac.SetType("ns3::AdhocWifiMac",
                 "Ssid",
                 SsidValue(Ssid("ibss-ssid")),
@@ -1419,6 +1441,18 @@ WifiP2pTestSuite::WifiP2pTestSuite()
                                  "{36, 0, BAND_5GHZ, 0}",
                                  "{1, 0, BAND_6GHZ, 0}"},
                  .p2pChannel = "{2, 0, BAND_2_4GHZ, 0}",
+              }},
+             {"AP MLD with 3 links, non-APs MLD with 3 links, TID-to-link mapping to use the first "
+              "2 links, P2P on last link",
+              {
+                  .apChannels = {"{2, 0, BAND_2_4GHZ, 0}",
+                                 "{36, 0, BAND_5GHZ, 0}",
+                                 "{1, 0, BAND_6GHZ, 0}"},
+                 .staChannels = {"{2, 0, BAND_2_4GHZ, 0}",
+                                 "{36, 0, BAND_5GHZ, 0}",
+                                 "{1, 0, BAND_6GHZ, 0}"},
+                 .p2pChannel = "{1, 0, BAND_6GHZ, 0}",
+                 .infraLinkSetP2pSta = {0, 1},
               }},
          })
     {
