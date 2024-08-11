@@ -673,7 +673,7 @@ OfdmPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
 {
     if (!ppdu)
     {
-        return 20;
+        return std::min<ChannelWidthMhz>(m_wifiPhy->GetChannelWidth(), 20);
     }
     return GetRxChannelWidth(ppdu->GetTxVector());
 }
