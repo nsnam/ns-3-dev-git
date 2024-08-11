@@ -28,7 +28,9 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/yans-wifi-helper.h"
 
+#include <algorithm>
 #include <map>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -619,6 +621,21 @@ class P2pTest : public TestCase
                        Time start);
 
     /**
+     * Callback invoked when a FEM passes PSDUs to the PHY.
+     *
+     * \param mac the MAC transmitting the PSDUs
+     * \param phyId the ID of the PHY transmitting the PSDUs
+     * \param psduMap the PSDU map
+     * \param txVector the TX vector
+     * \param txPowerW the tx power in Watts
+     */
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW);
+
+    /**
      * Callback invoked when a packet is received by the packet socket server.
      *
      * \param pkt the packet
@@ -661,13 +678,15 @@ class P2pTest : public TestCase
 
     P2pTestParams m_params; ///< the configuration parameters
 
-    Time m_testDuration{};    ///< duration of the test
-    Ptr<StaWifiMac> m_p2pSta; ///< the P2P STA MAC
+    Time m_testDuration{};        ///< duration of the test
+    Ptr<StaWifiMac> m_p2pSta;     ///< the P2P STA MAC
+    Ptr<StaWifiMac> m_staMac;     ///< the non-P2P STA MAC
+    Ptr<AdhocWifiMac> m_adhocMac; ///< the adhoc STA MAC
 
-    std::map<uint16_t /*protocol ID*/, uint64_t /*counter*/>
-        m_rxPackets; ///< count received packets
-    std::map<uint32_t /*protocol ID*/, uint64_t /*counter*/>
-        m_droppedPackets; ///< count dropped packets
+    std::map<uint16_t /*protocol ID*/, uint64_t> m_rxPackets;      ///< count received packets
+    std::map<uint32_t /*protocol ID*/, uint64_t> m_droppedPackets; ///< count dropped packets
+    std::map<uint16_t /*protocol ID*/, std::vector<std::pair<Time, uint8_t>>>
+        m_txLinks; ///< list of links used to transmit packets for a given traffic flow
 };
 
 P2pTest::P2pTest(const std::string& name, const P2pTestParams& params)
@@ -678,6 +697,44 @@ P2pTest::P2pTest(const std::string& name, const P2pTestParams& params)
 {
     NS_ASSERT_MSG(!m_params.p2pActivatedPeriods.empty(),
                   "P2P should be activated at least once in the test");
+}
+
+void
+P2pTest::Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW)
+{
+    auto linkId = mac->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(), true, "No link found for PHY ID " << +phyId);
+    const auto& mpdu = *psduMap.begin()->second->begin();
+    const auto& hdr = mpdu->GetHeader();
+    if (!hdr.IsQosData())
+    {
+        return;
+    }
+    const auto payloadSize = mpdu->GetPacketSize() - 8 /* LLC */;
+    NS_LOG_FUNCTION(this << phyId << txVector << payloadSize);
+    const auto it =
+        std::find_if(ProtocolToPayloadSizeMap.cbegin(),
+                     ProtocolToPayloadSizeMap.cend(),
+                     [payloadSize](const auto& item) { return item.second == payloadSize; });
+    NS_ASSERT_MSG(it != ProtocolToPayloadSizeMap.cend(), "Unexpected packet size " << payloadSize);
+    const auto protocol = it->first;
+    if ((mac->GetTypeOfStation() == AP) && (protocol != AP_TO_P2P_STA_PROTOCOL))
+    {
+        return;
+    }
+    const auto now = Simulator::Now();
+    if (m_txLinks.contains(protocol))
+    {
+        m_txLinks[protocol].emplace_back(now, *linkId);
+    }
+    else
+    {
+        m_txLinks[protocol] = {{now, *linkId}};
+    }
 }
 
 void
@@ -830,6 +887,135 @@ P2pTest::CheckResults()
              : 0),
         expectedDroppedPacketsP2p,
         "Unexpected amount of dropped packet sent from ADHOC to P2P STA (dropped by P2P STA)");
+
+    // check link used for P2P communication from STA to adhoc
+    std::vector<std::pair<Time, uint8_t>> p2pStaTxLinks{};
+    std::copy_if(m_txLinks.at(P2P_STA_TO_ADHOC_PROTOCOL).cbegin(),
+                 m_txLinks.at(P2P_STA_TO_ADHOC_PROTOCOL).cend(),
+                 std::back_inserter(p2pStaTxLinks),
+                 [&p2pPeriods = m_params.p2pActivatedPeriods](const auto& txLinkInfo) {
+                     return std::any_of(p2pPeriods.cbegin(),
+                                        p2pPeriods.cend(),
+                                        [tstamp = txLinkInfo.first](const auto& period) {
+                                            return (tstamp >= period.start &&
+                                                    tstamp <= period.stop);
+                                        });
+                 });
+    uint8_t expectedP2pLinkId{0};
+    for (uint8_t phyId = 0; phyId < m_p2pSta->GetDevice()->GetNPhys(); ++phyId)
+    {
+        if (m_adhocMac->GetDevice()->GetPhy(SINGLE_LINK_OP_ID)->GetPhyBand() ==
+            m_p2pSta->GetDevice()->GetPhy(phyId)->GetPhyBand())
+        {
+            auto linkId = m_p2pSta->GetLinkForPhy(phyId);
+            NS_TEST_ASSERT_MSG_EQ(linkId.has_value(), true, "No link found for PHY ID " << +phyId);
+            expectedP2pLinkId = *linkId;
+            break;
+        }
+    }
+    NS_TEST_EXPECT_MSG_EQ(!p2pStaTxLinks.empty() &&
+                              std::all_of(p2pStaTxLinks.cbegin(),
+                                          p2pStaTxLinks.cend(),
+                                          [expectedP2pLinkId](const auto& txLinkInfo) {
+                                              return txLinkInfo.second == expectedP2pLinkId;
+                                          }),
+                          true,
+                          "Unexpected link ID used by P2P STA during P2P period");
+
+    // check link used for P2P communication from adhoc to STA
+    NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(ADHOC_TO_P2P_STA_PROTOCOL) &&
+                              std::all_of(m_txLinks.at(ADHOC_TO_P2P_STA_PROTOCOL).cbegin(),
+                                          m_txLinks.at(ADHOC_TO_P2P_STA_PROTOCOL).cend(),
+                                          [](const auto& txLinkInfo) {
+                                              return txLinkInfo.second == SINGLE_LINK_OP_ID;
+                                          }),
+                          true,
+                          "Unexpected link ID used by adhoc STA");
+
+    // check links used for infrastructure mode
+    if (expectedPacketsInfrastructure > 0)
+    {
+        std::set<uint8_t> infraApLinks{};
+        std::vector<std::string> infraChannels{};
+        for (const auto& apChannel : m_params.apChannels)
+        {
+            if (std::find_if(m_params.staChannels.cbegin(),
+                             m_params.staChannels.cend(),
+                             [&apChannel](const auto& staChannel) {
+                                 return apChannel == staChannel;
+                             }) != m_params.staChannels.cend())
+            {
+                infraChannels.push_back(apChannel);
+            }
+        }
+        NS_ASSERT_MSG(!infraChannels.empty(),
+                      "There should be at least one common channel between AP and STAs");
+        for (const auto& channel : infraChannels)
+        {
+            const auto apIt =
+                std::find_if(m_params.apChannels.cbegin(),
+                             m_params.apChannels.cend(),
+                             [&channel](const auto& apChannel) { return channel == apChannel; });
+            const auto apLinkId = std::distance(m_params.apChannels.cbegin(), apIt);
+            infraApLinks.insert(apLinkId);
+        }
+        const auto infraStaLinks = m_staMac->GetSetupLinkIds();
+        NS_ASSERT(!infraApLinks.empty());
+        NS_ASSERT(!infraStaLinks.empty());
+
+        NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(AP_TO_P2P_STA_PROTOCOL) &&
+                                  std::all_of(m_txLinks.at(AP_TO_P2P_STA_PROTOCOL).cbegin(),
+                                              m_txLinks.at(AP_TO_P2P_STA_PROTOCOL).cend(),
+                                              [&infraApLinks](const auto& txLinkInfo) {
+                                                  return infraApLinks.contains(txLinkInfo.second);
+                                              }),
+                              true,
+                              "Unexpected link ID used for AP to P2P STA");
+        NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(P2P_STA_TO_AP_PROTOCOL) &&
+                                  std::all_of(m_txLinks.at(P2P_STA_TO_AP_PROTOCOL).cbegin(),
+                                              m_txLinks.at(P2P_STA_TO_AP_PROTOCOL).cend(),
+                                              [&infraStaLinks](const auto& txLinkInfo) {
+                                                  return infraStaLinks.contains(txLinkInfo.second);
+                                              }),
+                              true,
+                              "Unexpected link ID used for P2P STA to AP");
+        NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(P2P_STA_TO_STA_PROTOCOL) &&
+                                  std::all_of(m_txLinks.at(P2P_STA_TO_STA_PROTOCOL).cbegin(),
+                                              m_txLinks.at(P2P_STA_TO_STA_PROTOCOL).cend(),
+                                              [&infraStaLinks](const auto& txLinkInfo) {
+                                                  return infraStaLinks.contains(txLinkInfo.second);
+                                              }),
+                              true,
+                              "Unexpected link ID used for P2P STA to STA");
+        NS_TEST_EXPECT_MSG_EQ(m_txLinks.contains(STA_TO_P2P_STA_PROTOCOL) &&
+                                  std::all_of(m_txLinks.at(STA_TO_P2P_STA_PROTOCOL).cbegin(),
+                                              m_txLinks.at(STA_TO_P2P_STA_PROTOCOL).cend(),
+                                              [&infraStaLinks](const auto& txLinkInfo) {
+                                                  return infraStaLinks.contains(txLinkInfo.second);
+                                              }),
+                              true,
+                              "Unexpected link ID used for STA to P2P STA");
+        std::vector<std::pair<Time, uint8_t>> nonP2pStaTxLinks{};
+        std::copy_if(m_txLinks.at(P2P_STA_TO_ADHOC_PROTOCOL).cbegin(),
+                     m_txLinks.at(P2P_STA_TO_ADHOC_PROTOCOL).cend(),
+                     std::back_inserter(nonP2pStaTxLinks),
+                     [&p2pPeriods = m_params.p2pActivatedPeriods](const auto& txLinkInfo) {
+                         return std::none_of(p2pPeriods.cbegin(),
+                                             p2pPeriods.cend(),
+                                             [tstamp = txLinkInfo.first](const auto& period) {
+                                                 return (tstamp >= period.start &&
+                                                         tstamp <= period.stop);
+                                             });
+                     });
+        NS_TEST_EXPECT_MSG_EQ(!nonP2pStaTxLinks.empty() &&
+                                  std::all_of(nonP2pStaTxLinks.cbegin(),
+                                              nonP2pStaTxLinks.cend(),
+                                              [&infraStaLinks](const auto& txLinkInfo) {
+                                                  return infraStaLinks.contains(txLinkInfo.second);
+                                              }),
+                              true,
+                              "Unexpected link ID used by P2P STA during non-P2P period");
+    }
 }
 
 void
@@ -944,7 +1130,7 @@ P2pTest::DoSetup()
 
     mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(Ssid("bss-ssid")));
     auto staDevices = wifi.Install(staPhyHelper, mac, wifiStaNodes.Get(0));
-    auto staMac = DynamicCast<StaWifiMac>(DynamicCast<WifiNetDevice>(staDevices.Get(0))->GetMac());
+    m_staMac = DynamicCast<StaWifiMac>(DynamicCast<WifiNetDevice>(staDevices.Get(0))->GetMac());
 
     mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(Ssid("wrong-ssid")));
     staDevices.Add(wifi.Install(staPhyHelper, mac, wifiStaNodes.Get(1)));
@@ -960,8 +1146,37 @@ P2pTest::DoSetup()
 
     auto adhocDevice = wifi.Install(p2pAdhocPhyHelper, mac, wifiAdhocNode.Get(0));
     streamNumber += WifiHelper::AssignStreams(adhocDevice, streamNumber);
-    auto adhocMac =
+    m_adhocMac =
         DynamicCast<AdhocWifiMac>(DynamicCast<WifiNetDevice>(adhocDevice.Get(0))->GetMac());
+
+    for (uint8_t phyId = 0; phyId < apMac->GetDevice()->GetNPhys(); ++phyId)
+    {
+        Config::ConnectWithoutContext("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Phys/" +
+                                          std::to_string(phyId) + "/PhyTxPsduBegin",
+                                      MakeCallback(&P2pTest::Transmit, this).Bind(apMac, phyId));
+    }
+
+    for (uint8_t phyId = 0; phyId < m_staMac->GetDevice()->GetNPhys(); ++phyId)
+    {
+        Config::ConnectWithoutContext("/NodeList/1/DeviceList/*/$ns3::WifiNetDevice/Phys/" +
+                                          std::to_string(phyId) + "/PhyTxPsduBegin",
+                                      MakeCallback(&P2pTest::Transmit, this).Bind(m_staMac, phyId));
+    }
+
+    for (uint8_t phyId = 0; phyId < m_p2pSta->GetDevice()->GetNPhys(); ++phyId)
+    {
+        Config::ConnectWithoutContext("/NodeList/2/DeviceList/*/$ns3::WifiNetDevice/Phys/" +
+                                          std::to_string(phyId) + "/PhyTxPsduBegin",
+                                      MakeCallback(&P2pTest::Transmit, this).Bind(m_p2pSta, phyId));
+    }
+
+    for (uint8_t phyId = 0; phyId < m_adhocMac->GetDevice()->GetNPhys(); ++phyId)
+    {
+        Config::ConnectWithoutContext(
+            "/NodeList/3/DeviceList/*/$ns3::WifiNetDevice/Phys/" + std::to_string(phyId) +
+                "/PhyTxPsduBegin",
+            MakeCallback(&P2pTest::Transmit, this).Bind(m_adhocMac, phyId));
+    }
 
     // Uncomment the lines below to write PCAP files
     // apPhyHelper.EnablePcap("wifi-p2p_AP", apDevice);
@@ -1004,14 +1219,14 @@ P2pTest::DoSetup()
     // traffic from ADHOC to P2P STA
     CreateTraffic(wifiAdhocNode.Get(0),
                   wifiStaNodes.Get(1),
-                  GetPeerAddress(adhocMac, m_p2pSta),
+                  GetPeerAddress(m_adhocMac, m_p2pSta),
                   ADHOC_TO_P2P_STA_PROTOCOL,
                   Seconds(0.3));
 
     // traffic from P2P STA to STA
     CreateTraffic(wifiStaNodes.Get(1),
                   wifiStaNodes.Get(0),
-                  GetPeerAddress(apMac, staMac),
+                  GetPeerAddress(apMac, m_staMac),
                   P2P_STA_TO_STA_PROTOCOL,
                   Seconds(0.4));
 
