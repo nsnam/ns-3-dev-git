@@ -1145,6 +1145,195 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
         const std::string& input);
 };
 
+/// Power spectral density
+struct dBm_per_MHz_t // NOLINT(readability-identifier-naming)
+{
+    double val{}; ///< Value in dBm/MHz
+
+    dBm_per_MHz_t() = default; ///< Default constructor
+
+    /// Constructor
+    /// @param val Value in dBm/MHz
+    constexpr explicit dBm_per_MHz_t(double val)
+        : val(val)
+    {
+    }
+
+    /// Get value in dBm
+    /// @returns a double value in dBm
+    double in_dBm() const; // NOLINT(readability-identifier-naming). Return quantity only
+
+    /// Convert to dBm
+    /// @returns a dBm_t power unit struct with value equals to val
+    dBm_t to_dBm() const // NOLINT(readability-identifier-naming)
+    {
+        return dBm_t{val};
+    }
+
+    /// Converts from a vector of double values represented in dBm/MHz to a vector of dBm_per_MHz_t
+    /// @param input vector of double values represented in dBm/MHz
+    /// @returns a vector of dBm_per_MHz_t values
+    static std::vector<dBm_per_MHz_t> from_doubles(
+        std::vector<double>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<dBm_per_MHz_t> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](double f) {
+            return dBm_per_MHz_t{f};
+        });
+        return output;
+    }
+
+    /// Converts from a vector of dBm_per_MHz_t values to a vector of double values represented in
+    /// dBm/MHz
+    /// @param input vector of dBm_per_MHz_t values
+    /// @returns a vector of double values represented in dBm/MHz
+    static std::vector<double> to_doubles(
+        std::vector<dBm_per_MHz_t>& input) // NOLINT(readability-identifier-naming)
+    {
+        std::vector<double> output(input.size());
+        std::transform(input.cbegin(), input.cend(), output.begin(), [](dBm_per_MHz_t f) {
+            return static_cast<double>(f.val);
+        });
+        return output;
+    }
+
+    /// Represents a value in dBm/MHz as a string
+    /// @returns a string representation of the value
+    std::string str() const // NOLINT(readability-identifier-naming)
+    {
+        return sformat("%.1Lf dBm/Hz", val);
+    }
+
+    /// Calculate average PSD
+    /// @param power power in dBm
+    /// @param bandwidth bandwidth in MHz
+    /// @returns average PSD in dBm/MHz
+    static dBm_per_MHz_t AveragePsd(dBm_t power, MHz_t bandwidth)
+    {
+        return dBm_per_MHz_t{power.val - ToLogScale(static_cast<double>(bandwidth.val))};
+    }
+
+    /// Calculate average PSD
+    /// @param power power in dBm
+    /// @param bandwidth bandwidth in Hz
+    /// @returns average PSD in dBm/MHz
+    static dBm_per_MHz_t AveragePsd(dBm_t power, Hz_t bandwidth)
+    {
+        return AveragePsd(power, bandwidth.to_MHz());
+    }
+
+    /// Calculate power over bandwidth
+    /// @param rhs bandwidth in MHz
+    /// @returns power over bandwidth in dBm
+    inline dBm_t OverBandwidth(const MHz_t& rhs) const
+    {
+        return dBm_t{val + ToLogScale(static_cast<double>(rhs.val))};
+    }
+
+    /// Calculate power over bandwidth
+    /// @param rhs bandwidth in Hz
+    /// @returns power over bandwidth in dBm
+    inline dBm_t OverBandwidth(const Hz_t& rhs) const
+    {
+        return OverBandwidth(rhs.to_MHz());
+    }
+
+    /// Equality operator
+    /// @param rhs value to compare
+    /// @returns true if equal
+    inline bool operator==(const dBm_per_MHz_t& rhs) const
+    {
+        return val == rhs.val;
+    }
+
+    /// Inequality operator
+    /// @param rhs value to compare
+    /// @returns true if not equal
+    inline bool operator!=(const dBm_per_MHz_t& rhs) const
+    {
+        return !(operator==(rhs));
+    }
+
+    /// Less than operator
+    /// @param rhs value to compare
+    /// @returns true if less than
+    inline bool operator<(const dBm_per_MHz_t& rhs) const
+    {
+        return val < rhs.val;
+    }
+
+    /// Greater than operator
+    /// @param rhs value to compare
+    /// @returns true if greater than
+    inline bool operator>(const dBm_per_MHz_t& rhs) const
+    {
+        return val > rhs.val;
+    }
+
+    /// Less than or equal to operator
+    /// @param rhs value to compare
+    /// @returns true if less than or equal to
+    inline bool operator<=(const dBm_per_MHz_t& rhs) const
+    {
+        return val <= rhs.val;
+    }
+
+    /// Greater than or equal to operator
+    /// @param rhs value to compare
+    /// @returns true if greater than or equal to
+    inline bool operator>=(const dBm_per_MHz_t& rhs) const
+    {
+        return val >= rhs.val;
+    }
+
+    /// Negation operator
+    /// @returns negated value
+    inline dBm_per_MHz_t operator-() const
+    {
+        return dBm_per_MHz_t{-val};
+    }
+
+    /// Addition operator
+    /// @param rhs value to add
+    /// @returns sum
+    inline dBm_per_MHz_t operator+(const dB_t& rhs) const
+    {
+        return dBm_per_MHz_t{val + rhs.val};
+    }
+
+    /// Addition assignment operator
+    /// @param rhs value to add
+    /// @returns sum
+    inline dBm_per_MHz_t& operator+=(const dB_t& rhs)
+    {
+        val += rhs.val;
+        return *this;
+    }
+
+    /// Subtraction operator
+    /// @param rhs value to subtract
+    /// @returns difference
+    inline dBm_per_MHz_t operator-(const dB_t& rhs) const
+    {
+        return dBm_per_MHz_t{val - rhs.val};
+    }
+
+    /// Subtraction assignment operator
+    /// @param rhs value to subtract
+    /// @returns difference
+    inline dBm_per_MHz_t& operator-=(const dB_t& rhs)
+    {
+        val -= rhs.val;
+        return *this;
+    }
+
+    /// Converts from string
+    /// @param input string to convert
+    /// @returns converted value or empty optional if conversion failed
+    static std::optional<dBm_per_MHz_t> from_str( // NOLINT(readability-identifier-naming)
+        const std::string& input);
+};
+
 dB_t operator""_dB(long double val);
 dB_t operator""_dB(unsigned long long val);
 dBr_t operator""_dBr(long double val);
@@ -1158,18 +1347,21 @@ mWatt_t operator""_pWatt(unsigned long long val);
 Watt_t operator""_Watt(long double val);
 Watt_t operator""_Watt(unsigned long long val);
 dBm_per_Hz_t operator""_dBm_per_Hz(long double val);
+dBm_per_MHz_t operator""_dBm_per_MHz(long double val);
 
 std::ostream& operator<<(std::ostream& os, const dB_t& rhs);
 std::ostream& operator<<(std::ostream& os, const dBm_t& rhs);
 std::ostream& operator<<(std::ostream& os, const mWatt_t& rhs);
 std::ostream& operator<<(std::ostream& os, const Watt_t& rhs);
 std::ostream& operator<<(std::ostream& os, const dBm_per_Hz_t& rhs);
+std::ostream& operator<<(std::ostream& os, const dBm_per_MHz_t& rhs);
 
 std::istream& operator>>(std::istream& is, dB_t& q);
 std::istream& operator>>(std::istream& is, dBm_t& q);
 std::istream& operator>>(std::istream& is, mWatt_t& q);
 std::istream& operator>>(std::istream& is, Watt_t& q);
 std::istream& operator>>(std::istream& is, dBm_per_Hz_t& q);
+std::istream& operator>>(std::istream& is, dBm_per_MHz_t& q);
 
 // Related physical constants
 const auto THERMAL_NOISE_AT_290K = -173.9763_dBm_per_Hz; ///< Thermal noise reference
@@ -1178,7 +1370,6 @@ const auto THERMAL_NOISE_AT_290K = -173.9763_dBm_per_Hz; ///< Thermal noise refe
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dB_t, dB); // See si-units-test-suite.cc for usages
 ATTRIBUTE_ACCESSOR_DEFINE(dB);
 ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dB_t, dB, Double);
-/// @endcond
 
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dBr_t, dBr); // See si-units-test-suite.cc for usages
 ATTRIBUTE_ACCESSOR_DEFINE(dBr);
@@ -1199,6 +1390,11 @@ ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(Watt_t, Watt, Double);
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dBm_per_Hz_t, dBm_per_Hz); // See si-units-test-suite.cc for usages
 ATTRIBUTE_ACCESSOR_DEFINE(dBm_per_Hz);
 ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dBm_per_Hz_t, dBm_per_Hz, Double);
+
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dBm_per_MHz_t, dBm_per_MHz); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(dBm_per_MHz);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dBm_per_MHz_t, dBm_per_MHz, Double);
+/// @endcond
 } // namespace ns3
 
 // clang-format on

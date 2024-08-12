@@ -583,6 +583,24 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dBm_per_Hz_t{123.45}.in_dBm(), 123.45, ""); // NOLINT
     }
 
+    /// Test dBm_per_MHz_t
+    void Unit_dBm_per_MHz() // NOLINT
+    {
+        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{-43.21}, -43.21_dBm_per_MHz, ""); // NOLINT
+
+        // Utilities
+        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{123}.val, 123.0, "");                // NOLINT
+        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{123}.str(), "123.0 dBm/MHz", "");    // NOLINT
+        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{123.45}.val, 123.45, "");            // NOLINT
+        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{123.45}.str(), "123.5 dBm/MHz", ""); // NOLINT
+
+        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t::AveragePsd(-20_dBm, 1_MHz),
+                              dBm_per_MHz_t{-20},
+                              "");                                                      // NOLINT
+        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{-80.0}.OverBandwidth(100_kHz), -8_dBm, ""); // NOLINT
+        NS_TEST_ASSERT_MSG_EQ(dBm_per_MHz_t{123.45}.in_dBm(), 123.45, "");              // NOLINT
+    }
+
     /// Test vector conversions
     void Vectors()
     {
@@ -657,6 +675,18 @@ class TestCaseSiUnits : public TestCase
             for (size_t idx = 0; idx < tvs.size(); ++idx)
             {
                 NS_TEST_EXPECT_MSG_EQ(got1[idx].val, tvs[idx], "");
+            }
+        }
+
+        { // dBm_per_MHz_t
+            auto got1 = dBm_per_MHz_t::from_doubles(tvs);
+            auto got2 = dBm_per_MHz_t::to_doubles(got1);
+            auto got3 = dBm_per_MHz_t::from_doubles(got2);
+            NS_TEST_ASSERT_MSG_EQ((tvs == got2), true, "vector of double's do not match");
+            NS_TEST_ASSERT_MSG_EQ((got1 == got3), true, "vector of dBm_per_MHz_t's do not match");
+            for (size_t idx = 0; idx < tvs.size(); ++idx)
+            {
+                NS_TEST_ASSERT_MSG_EQ(got1[idx].val, tvs[idx], "");
             }
         }
 
@@ -833,6 +863,11 @@ class AttributeMock : public Object
                               dBm_per_HzValue(0.0004_dBm_per_Hz),
                               MakedBm_per_HzAccessor(&AttributeMock::m_dBm_per_Hz),
                               MakedBm_per_HzChecker())
+                .AddAttribute("dBm_per_MHz",
+                              "help message for dBm_per_MHz",
+                              dBm_per_MHzValue(0.001_dBm_per_MHz),
+                              MakedBm_per_MHzAccessor(&AttributeMock::m_dBm_per_MHz),
+                              MakedBm_per_MHzChecker())
                 .AddAttribute("Hz",
                               "help message for Hz",
                               HzValue(415000_Hz),
@@ -862,17 +897,18 @@ class AttributeMock : public Object
         return tid;
     }
 
-    dB_t m_dB{};                 ///< value of dB
-    dBr_t m_dBr{};               ///< value of dBr
-    dBm_t m_dBm{};               ///< value of dBm
-    mWatt_t m_mWatt{};           ///< value of mWatt
-    Watt_t m_Watt{};             ///< value of Watt
-    dBm_per_Hz_t m_dBm_per_Hz{}; ///< value of dBm_per_Hz
-    Hz_t m_Hz{};                 ///< value of Hz
-    nSEC_t m_nSEC{};             ///< value of nSEC
-    degree_t m_degree{};         ///< value of degree
-    radian_t m_radian{};         ///< value of radian
-    percent_t m_percent{};       ///< value of percent
+    dB_t m_dB{};                   ///< value of dB
+    dBr_t m_dBr{};                 ///< value of dBr
+    dBm_t m_dBm{};                 ///< value of dBm
+    mWatt_t m_mWatt{};             ///< value of mWatt
+    Watt_t m_Watt{};               ///< value of Watt
+    dBm_per_Hz_t m_dBm_per_Hz{};   ///< value of dBm_per_Hz
+    dBm_per_MHz_t m_dBm_per_MHz{}; ///< value of dBm_per_MHz
+    Hz_t m_Hz{};                   ///< value of Hz
+    nSEC_t m_nSEC{};               ///< value of nSEC
+    degree_t m_degree{};           ///< value of degree
+    radian_t m_radian{};           ///< value of radian
+    percent_t m_percent{};         ///< value of percent
 };
 
 /// Test case for SiUnitsAttributes
@@ -918,6 +954,11 @@ class TestCaseSiUnitsAttributes : public TestCase
             auto want = 0.0001_dBm_per_Hz;
             mock->SetAttribute("dBm_per_Hz", dBm_per_HzValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_dBm_per_Hz, want, "");
+        }
+        {
+            auto want = 0.001_dBm_per_MHz;
+            mock->SetAttribute("dBm_per_MHz", dBm_per_MHzValue(want));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_dBm_per_MHz, want, "");
         }
         {
             auto want = 365_Hz;

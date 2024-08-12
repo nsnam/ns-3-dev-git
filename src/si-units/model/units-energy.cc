@@ -283,6 +283,12 @@ dBm_per_Hz_t::in_dBm() const
     return val;
 }
 
+double
+dBm_per_MHz_t::in_dBm() const
+{
+    return val;
+}
+
 /// User defined literals for dB
 /// @param val Value in dB
 /// @return dB_t
@@ -407,6 +413,14 @@ operator""_dBm_per_Hz(unsigned long long val)
     return dBm_per_Hz_t{static_cast<double>(val)};
 }
 
+/// User defined literals for dBm_per_MHz
+/// @param val Value in dBm_per_MHz
+/// @return dBm_per_MHz_t
+dBm_per_MHz_t operator""_dBm_per_MHz(long double val)
+{
+    return dBm_per_MHz_t{static_cast<double>(val)};
+}
+
 // Output-input operators overloading
 
 /// Output stream for dB
@@ -455,6 +469,16 @@ operator<<(std::ostream& os, const Watt_t& rhs)
 /// @return Output stream
 std::ostream&
 operator<<(std::ostream& os, const dBm_per_Hz_t& rhs)
+{
+    return os << rhs.str();
+}
+
+/// Output stream for dBm_per_MHz
+/// @param os Output stream
+/// @param rhs dBm_per_MHz value
+/// @return Output stream
+std::ostream&
+operator<<(std::ostream& os, const dBm_per_MHz_t& rhs)
 {
     return os << rhs.str();
 }
@@ -514,6 +538,17 @@ operator>>(std::istream& is, dBm_per_Hz_t& rhs)
     return is;
 }
 
+/// Input stream for dBm_per_MHz
+/// @param is Input stream
+/// @param rhs dBm_per_MHz value
+/// @return Input stream
+std::istream&
+operator>>(std::istream& is, dBm_per_MHz_t& rhs)
+{
+    is >> rhs.val;
+    return is;
+}
+
 /// @cond Doxygen bug: multiple @param
 /// Convert string to dB
 /// @param input String to convert
@@ -566,6 +601,16 @@ dBm_per_Hz_t::from_str(const std::string& input)
     auto res = StringToDouble(input, "dBm_per_Hz");
     return res.has_value() ? std::optional(dBm_per_Hz_t{res.value()}) : std::nullopt;
 }
+
+/// Convert string to dBm_per_MHz
+/// @param input String to convert
+/// @return Optional dBm_per_MHz value
+std::optional<dBm_per_MHz_t>
+dBm_per_MHz_t::from_str(const std::string& input)
+{
+    auto res = StringToDouble(input, "dBm_per_MHz");
+    return res.has_value() ? std::optional(dBm_per_MHz_t{res.value()}) : std::nullopt;
+}
 /// @endcond
 
 /// @cond Doxygen warning about macro internals
@@ -586,8 +631,10 @@ ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(Watt_t, Watt);
 
 ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(dBm_per_Hz_t, dBm_per_Hz);
 ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(dBm_per_Hz_t, dBm_per_Hz);
-/// @endcond
 
+ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(dBm_per_MHz_t, dBm_per_MHz);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(dBm_per_MHz_t, dBm_per_MHz);
+/// @endcond
 } // namespace ns3
 
 // clang-format on
