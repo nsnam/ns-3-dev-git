@@ -11,6 +11,7 @@
 #include "ns3/config.h"
 #include "ns3/data-rate.h"
 #include "ns3/double.h"
+#include "ns3/eht-configuration.h"
 #include "ns3/enum.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/internet-stack-helper.h"
@@ -31,6 +32,7 @@
 #include "ns3/socket.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/ssid.h"
+#include "ns3/sta-wifi-mac.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/trace-helper.h"
@@ -38,7 +40,6 @@
 #include "ns3/udp-socket-factory.h"
 #include "ns3/udp-socket.h"
 #include "ns3/uinteger.h"
-#include "ns3/wifi-mac.h"
 #include "ns3/wifi-net-device.h"
 
 #include <algorithm>
@@ -254,6 +255,7 @@ class WifiP2pExample
     uint16_t m_numLinksAp{1};       //!< amount of links for the AP
     uint16_t m_numLinksSta{1};      //!< amount of links for the non-AP STA
     uint16_t m_numLinksP2p{1};      //!< amount of links to use for P2P
+    uint16_t m_p2pLinkId{0};        //!< dedicated link for P2P operation
     Time m_simulationTime{"10s"};   //!< simulation time
     std::string m_apType{"Eht"};    //!< type of the AP
     std::string m_staType{"Eht"};   //!< type of the non-AP STAs
@@ -403,6 +405,11 @@ WifiP2pExample::Config(int argc, char* argv[])
                  "Flag whether P2P links overlap with links used for the infrastructure mode."
                  "If set to false, it picks the first unused band for the link to operate on.",
                  m_linksOverlap);
+    cmd.AddValue("p2pLinkId",
+                 "Select link (starting from 0) for P2P operation by configuring TID-to-link "
+                 "mapping on P2P STA. This is used if links overlapping is disabled and non-AP MLD "
+                 "does not have more links than AP MLD.",
+                 m_p2pLinkId);
     cmd.AddValue("rtsThreshold", "RTS threshold", m_rtsThreshold);
     cmd.AddValue("maxAmpduLength", "maximum length in bytes of an A-MPDU", m_maxAmpduLength);
     for (auto& [direction, dirInfo] : m_infos)
@@ -510,12 +517,6 @@ WifiP2pExample::Setup()
         NS_FATAL_ERROR("Frequency values must be unique!");
     }
 
-    if (!m_linksOverlap && (m_numLinksSta <= m_numLinksAp))
-    {
-        NS_FATAL_ERROR("Non-overlap cannot be used if the amount of links of the non-AP MLD is not "
-                       "larger than the amount of links of the AP MLD");
-    }
-
     std::vector<std::pair<std::string, FrequencyRange>> allChannelStrs{};
     std::vector<std::pair<std::string, FrequencyRange>> apChannelStrs{};
     std::vector<std::pair<std::string, FrequencyRange>> staChannelStrs{};
@@ -570,7 +571,14 @@ WifiP2pExample::Setup()
         }
         else
         {
-            p2pChannelStr = allChannelStrs.at(m_numLinksAp);
+            if (m_numLinksSta > m_numLinksAp)
+            {
+                p2pChannelStr = allChannelStrs.at(m_numLinksAp);
+            }
+            else
+            {
+                p2pChannelStr = allChannelStrs.at(m_p2pLinkId);
+            }
         }
         std::cout << "P2P link: " << p2pChannelStr.first << std::endl;
     }
@@ -640,6 +648,27 @@ WifiP2pExample::Setup()
                         "BE_MaxAmpduSize",
                         UintegerValue(m_maxAmpduLength));
         staDevices.Add(wifi.Install(staPhyHelper, wifiMac, m_wifiStaNodes.Get(0)));
+
+        if (!m_linksOverlap && (m_numLinksSta <= m_numLinksAp))
+        {
+            auto p2pSta =
+                DynamicCast<StaWifiMac>(DynamicCast<WifiNetDevice>(staDevices.Get(0))->GetMac());
+            std::stringstream ss;
+            ss << "0 ";
+            for (std::size_t id = 0; id < allChannelStrs.size(); ++id)
+            {
+                if (allChannelStrs.at(id) == p2pChannelStr)
+                {
+                    continue;
+                }
+                ss << +id << ",";
+            }
+            auto staEhtConfig = p2pSta->GetEhtConfiguration();
+            staEhtConfig->SetAttribute("TidToLinkMappingNegSupport",
+                                       EnumValue(WifiTidToLinkMappingNegSupport::ANY_LINK_SET));
+            staEhtConfig->SetAttribute("TidToLinkMappingDl", StringValue(ss.str()));
+            staEhtConfig->SetAttribute("TidToLinkMappingUl", StringValue(ss.str()));
+        }
 
         // adhoc STA
         wifi.SetStandard(GetStandardForType(m_adhocType));
