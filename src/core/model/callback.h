@@ -23,6 +23,7 @@
 
 #include "attribute-helper.h"
 #include "attribute.h"
+#include "demangle.h"
 #include "fatal-error.h"
 #include "ptr.h"
 #include "simple-ref-count.h"
@@ -99,12 +100,6 @@ class CallbackImplBase : public SimpleRefCount<CallbackImplBase>
     virtual std::string GetTypeid() const = 0;
 
   protected:
-    /**
-     * \param [in] mangled The mangled string
-     * \return The demangled form of mangled
-     */
-    static std::string Demangle(const std::string& mangled);
-
     /**
      * Helper to get the C++ typeid as a string.
      *

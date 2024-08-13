@@ -183,6 +183,7 @@ set(source_files
     model/realtime-simulator-impl.cc
     model/wall-clock-synchronizer.cc
     model/matrix-array.cc
+    model/demangle.cc
 )
 
 # Define core lib headers
@@ -211,6 +212,7 @@ set(header_files
     model/config.h
     model/default-deleter.h
     model/default-simulator-impl.h
+    model/demangle.h
     model/deprecated.h
     model/des-metrics.h
     model/double.h
