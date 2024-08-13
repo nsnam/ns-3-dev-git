@@ -79,9 +79,9 @@ class RandomWalk2dMobilityModel : public MobilityModel
      */
     void DoWalk(Time timeLeft);
     /**
-     * Perform initialization of the object before MobilityModel::DoInitialize ()
+     * Draw a new random velocity and distance to travel, and call DoWalk()
      */
-    void DoInitializePrivate();
+    void DrawRandomVelocityAndDistance();
     void DoDispose() override;
     void DoInitialize() override;
     Vector DoGetPosition() const override;
