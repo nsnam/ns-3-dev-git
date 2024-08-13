@@ -287,12 +287,12 @@ WifiPhy::GetTypeId()
                           TimeValue(MicroSeconds(0)),
                           MakeTimeAccessor(&WifiPhy::m_pifs),
                           MakeTimeChecker())
-            .AddAttribute("PowerDensityLimit",
-                          "The mean equivalent isotropically radiated power density"
-                          "limit (in dBm/MHz) set by regulators.",
-                          DoubleValue(100.0), // set to a high value so as to have no effect
-                          MakeDoubleAccessor(&WifiPhy::m_powerDensityLimit),
-                          MakeDoubleChecker<dBm_per_MHz_u>())
+            .AddAttribute(
+                "PowerDensityLimit",
+                "The mean equivalent isotropically radiated power density limit set by regulators.",
+                dBm_per_MHzValue(100.0_dBm_per_MHz), // set to a high value so as to have no effect
+                MakedBm_per_MHzAccessor(&WifiPhy::m_powerDensityLimit),
+                MakedBm_per_MHzChecker())
             .AddAttribute("NotifyMacHdrRxEnd",
                           "Whether the PHY is capable of notifying the MAC about the end of "
                           "the reception of the MAC header of every MPDU.",
@@ -2357,13 +2357,12 @@ WifiPhy::GetTxPowerForTransmission(Ptr<const WifiPpdu> ppdu) const
 
     // Apply power density constraint on EIRP
     const auto channelWidth = ppdu->GetTxChannelWidth();
-    dBm_per_MHz_u txPowerDbmPerMhz =
-        (txPower + GetTxGain()).in_dBm() -
-        RatioToDb(channelWidth).in_dB(); // account for antenna gain since EIRP
-    NS_LOG_INFO("txPower=" << txPower << "dBm with txPowerDbmPerMhz=" << txPowerDbmPerMhz
-                           << " over " << channelWidth << " MHz");
-    txPower =
-        dBm_t{std::min(txPowerDbmPerMhz, m_powerDensityLimit) + RatioToDb(channelWidth).in_dB()};
+    const auto txPowerDbmPerMhz =
+        dBm_per_MHz_t::AveragePsd(txPower + GetTxGain(),
+                                  MHz_t{channelWidth}); // account for antenna gain since EIRP
+    NS_LOG_INFO("txPower=" << txPower << " with txPowerDbmPerMhz=" << txPowerDbmPerMhz << " over "
+                           << channelWidth << " MHz");
+    txPower = std::min(txPowerDbmPerMhz, m_powerDensityLimit).OverBandwidth(MHz_t{channelWidth});
     txPower -= GetTxGain(); // remove antenna gain since will be added right afterwards
     NS_LOG_INFO("txPower=" << txPower
                            << " after applying m_powerDensityLimit=" << m_powerDensityLimit);

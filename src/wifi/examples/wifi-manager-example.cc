@@ -854,9 +854,11 @@ main(int argc, char* argv[])
     }
 
     // Configure signal and noise, and schedule first iteration
-    const auto BOLTZMANN = 1.3803e-23;
-    const dBm_per_Hz_u noiseDensity = WToDbm(BOLTZMANN * 290).in_dBm(); // 290K @ 20 MHz
-    const dBm_t noise{noiseDensity + (10 * log10(clientSelectedStandard.m_width * 1000000))};
+    const auto BOLTZMANN{1.3803e-23};
+    const auto noiseDensity =
+        dBm_per_Hz_t::AveragePsd(WToDbm(BOLTZMANN * 290), Hz_t{1}); // 290K @ 20 MHz
+    const Hz_t rxWidth{clientSelectedStandard.m_width * 1e6};
+    const auto noise = noiseDensity.OverBandwidth(rxWidth);
 
     NS_LOG_DEBUG("Channel width " << wifiPhyPtrClient->GetChannelWidth() << " noise " << noise);
     NS_LOG_DEBUG("NSS " << wifiPhyPtrClient->GetMaxSupportedTxSpatialStreams());

@@ -2057,7 +2057,9 @@ BackoffGenerationTest::GenerateInterference()
     NS_LOG_FUNCTION(this);
     auto phy = DynamicCast<SpectrumWifiPhy>(m_apMac->GetWifiPhy(SINGLE_LINK_OP_ID));
     auto psd = Create<SpectrumValue>(phy->GetCurrentInterface()->GetRxSpectrumModel());
-    *psd = DbmToW(dBm_t{20}) / 80e6; // PSD spread across 80 MHz to generate some noise
+    *psd = dBm_per_Hz_t::AveragePsd(dBm_t{20}, MHz_t{80})
+               .to_dBm()
+               .in_Watt(); // PSD spread across 80 MHz to generate some noise
 
     auto spectrumSignalParams = Create<SpectrumSignalParameters>();
     spectrumSignalParams->duration = m_interferenceDuration;

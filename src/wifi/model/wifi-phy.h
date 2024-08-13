@@ -1627,7 +1627,7 @@ class WifiPhy : public Object
     dBm_t m_txPowerBase;               //!< Minimum transmission power
     dBm_t m_txPowerEnd;                //!< Maximum transmission power
     uint8_t m_nTxPower;                //!< Number of available transmission power levels
-    dBm_per_MHz_u m_powerDensityLimit; //!< the power density limit
+    dBm_per_MHz_t m_powerDensityLimit; //!< the power density limit
 
     bool m_powerRestricted; //!< Flag whether transmit power is restricted by OBSS PD SR
     dBm_t m_txPowerMaxSiso; //!< SISO maximum transmit power due to OBSS PD SR power restriction
