@@ -1373,9 +1373,9 @@ ZipfRandomVariable::GetValue(uint32_t n, double alpha)
 
     double sum_prob = 0;
     double zipf_value = 0;
-    for (uint32_t i = 1; i <= m_n; i++)
+    for (uint32_t i = 1; i <= n; i++)
     {
-        sum_prob += m_c / std::pow((double)i, m_alpha);
+        sum_prob += m_c / std::pow((double)i, alpha);
         if (sum_prob > u)
         {
             zipf_value = i;
@@ -1460,8 +1460,8 @@ ZetaRandomVariable::GetValue(double alpha)
             v = (1 - v);
         }
 
-        X = std::floor(std::pow(u, -1.0 / (m_alpha - 1.0)));
-        T = std::pow(1.0 + 1.0 / X, m_alpha - 1.0);
+        X = std::floor(std::pow(u, -1.0 / (alpha - 1.0)));
+        T = std::pow(1.0 + 1.0 / X, alpha - 1.0);
         test = v * X * (T - 1.0) / (m_b - 1.0);
     } while (test > (T / m_b));
     NS_LOG_DEBUG("value: " << X << " stream: " << GetStream() << " alpha: " << alpha);
