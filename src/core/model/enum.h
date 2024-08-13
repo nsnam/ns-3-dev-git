@@ -21,6 +21,7 @@
 
 #include "attribute-accessor-helper.h"
 #include "attribute.h"
+#include "demangle.h"
 
 #include <algorithm> // find_if
 #include <list>
@@ -341,7 +342,7 @@ template <typename T>
 std::string
 EnumChecker<T>::GetValueTypeName() const
 {
-    return "ns3::EnumValue<" + std::string(typeid(T).name()) + ">";
+    return "ns3::EnumValue<" + Demangle(typeid(T).name()) + ">";
 }
 
 template <typename T>
