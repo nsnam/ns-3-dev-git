@@ -2592,7 +2592,8 @@ EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
       m_countRtsframes(0),
       m_genBackoffIfTxopWithoutTx(params.genBackoffAndUseAuxPhyCca),
       m_useAuxPhyCca(params.genBackoffAndUseAuxPhyCca),
-      m_nSlotsLeftAlert(params.nSlotsLeftAlert)
+      m_nSlotsLeftAlert(params.nSlotsLeftAlert),
+      m_switchMainPhyBackDelayTimeout(params.switchMainPhyBackDelayTimeout)
 {
     m_nEmlsrStations = 1;
     m_nNonEmlsrStations = 0;
@@ -3217,6 +3218,34 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                           false,
                                           false);
 
+                    if (m_switchMainPhyBackDelayTimeout)
+                    {
+                        TimeValue switchMainPhyBackDelay;
+                        m_staMacs[0]->GetEmlsrManager()->GetAttribute("SwitchMainPhyBackDelay",
+                                                                      switchMainPhyBackDelay);
+
+                        // set the NAV on all the links for enough time to make the
+                        // SwitchMainPhyBackDelay timer expire
+                        for (uint8_t id = 0; id < m_staMacs[0]->GetNLinks(); ++id)
+                        {
+                            if (!m_staMacs[0]->GetWifiPhy(id))
+                            {
+                                continue; // no PHY on this link
+                            }
+                            m_staMacs[0]->GetChannelAccessManager(id)->NotifyNavStartNow(
+                                2 * switchMainPhyBackDelay.Get());
+                        }
+                        // check that the SwitchMainPhyBackDelay timer expires
+                        Simulator::Schedule(2 * switchMainPhyBackDelay.Get() - mainPhy->GetPifs(),
+                                            [=, this]() {
+                                                CheckMainPhyTraceInfo(0,
+                                                                      "TxopNotGainedOnAuxPhyLink",
+                                                                      std::nullopt,
+                                                                      m_mainPhyId,
+                                                                      false);
+                                            });
+                    }
+
                     // events to be scheduled when main PHY finishes switching to auxiliary link
                     Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
                         auto nonPrimLinkId = m_staMacs[0]->GetLinkForPhy(mainPhy);
@@ -3685,7 +3714,7 @@ EmlsrUlTxopTest::CheckResults()
     // transmission is done (if the backoff expires while the main PHY is switching, a new
     // backoff is generated and, before this backoff expires, the main PHY may be requested
     // to switch to another auxiliary link; this may happen multiple times...)
-    if (!m_genBackoffIfTxopWithoutTx)
+    if (!m_genBackoffIfTxopWithoutTx && !m_switchMainPhyBackDelayTimeout)
     {
         NS_TEST_EXPECT_MSG_LT_OR_EQ(psduIt->startTx,
                                     m_5thQosFrameTxTime,
@@ -4931,7 +4960,8 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
                                              3,
                                              genBackoffAndUseAuxPhyCca,
                                              nSlotsLeft,
-                                             true /* putAuxPhyToSleep */}),
+                                             true, /* putAuxPhyToSleep */
+                                             false /* switchMainPhyBackDelayTimeout */}),
                         TestCase::Duration::QUICK);
             AddTestCase(new EmlsrUlTxopTest({{0, 1},
                                              40,
@@ -4940,7 +4970,8 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
                                              1,
                                              genBackoffAndUseAuxPhyCca,
                                              nSlotsLeft,
-                                             false /* putAuxPhyToSleep */}),
+                                             false, /* putAuxPhyToSleep */
+                                             true /* switchMainPhyBackDelayTimeout */}),
                         TestCase::Duration::QUICK);
         }
     }

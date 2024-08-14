@@ -609,6 +609,8 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
         uint8_t nSlotsLeftAlert;        //!< value to set the ChannelAccessManager NSlotsLeft
                                         //!< attribute to
         bool putAuxPhyToSleep;          //!< whether aux PHYs are put to sleep during DL/UL TXOPs
+        bool switchMainPhyBackDelayTimeout; //!< whether a SwitchMainPhyBackDelay timer expires
+                                            //!< after that the main PHY moved to an aux PHY link
     };
 
     /**
@@ -714,6 +716,8 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
     bool m_useAuxPhyCca;                  //!< whether CCA info from aux PHY is used when
                                           //!< aux PHY is not TX capable
     uint8_t m_nSlotsLeftAlert;            //!< value for ChannelAccessManager NSlotsLeft attribute
+    bool m_switchMainPhyBackDelayTimeout; //!< whether a SwitchMainPhyBackDelay timer expires
+                                          //!< after that the main PHY moved to an aux PHY link
     std::optional<bool> m_corruptCts;     //!< whether the transmitted CTS must be corrupted
     Time m_5thQosFrameTxTime;             //!< start transmission time of the 5th QoS data frame
 };
