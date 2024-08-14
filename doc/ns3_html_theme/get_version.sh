@@ -146,11 +146,6 @@ if [ $distance -eq 1 ] | [ $distance -eq 0 ]; then
     version=`git describe HEAD --tags --long | cut -d '-' -f 2`
     say "at version $version"
 
-elif [ $tag -eq 0 ]; then
-    distance=0
-    # version previously set
-    vers_href=
-
 elif [ $tag -eq 1 ]; then
     distance=1
     # version previously set
