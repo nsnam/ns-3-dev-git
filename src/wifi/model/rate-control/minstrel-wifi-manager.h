@@ -252,7 +252,8 @@ class MinstrelWifiManager : public WifiRemoteStationManager
     void DoReportFinalDataFailed(WifiRemoteStation* station) override;
     WifiTxVector DoGetDataTxVector(WifiRemoteStation* station, MHz_u allowedWidth) override;
     WifiTxVector DoGetRtsTxVector(WifiRemoteStation* station) override;
-
+    std::list<Ptr<WifiMpdu>> DoGetMpdusToDropOnTxFailure(WifiRemoteStation* station,
+                                                         Ptr<WifiPsdu> psdu) override;
     bool DoNeedRetransmission(WifiRemoteStation* st,
                               Ptr<const Packet> packet,
                               bool normally) override;

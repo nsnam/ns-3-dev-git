@@ -32,6 +32,7 @@
 #include "ns3/wifi-mac.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
+#include "ns3/wifi-psdu.h"
 
 #include <iomanip>
 
@@ -1171,6 +1172,27 @@ MinstrelHtWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
             GetPhy()->GetTxBandwidth(rtsRate, GetChannelWidth(station)),
             GetAggregation(station));
     }
+}
+
+std::list<Ptr<WifiMpdu>>
+MinstrelHtWifiManager::DoGetMpdusToDropOnTxFailure(WifiRemoteStation* station, Ptr<WifiPsdu> psdu)
+{
+    NS_LOG_FUNCTION(this << *psdu);
+
+    std::list<Ptr<WifiMpdu>> mpdusToDrop;
+
+    for (const auto& mpdu : *PeekPointer(psdu))
+    {
+        if (!DoNeedRetransmission(station,
+                                  mpdu->GetPacket(),
+                                  (mpdu->GetRetryCount() < GetMac()->GetFrameRetryLimit())))
+        {
+            // this MPDU needs to be dropped
+            mpdusToDrop.push_back(mpdu);
+        }
+    }
+
+    return mpdusToDrop;
 }
 
 bool

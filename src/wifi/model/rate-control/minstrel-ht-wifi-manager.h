@@ -272,6 +272,8 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
                                double dataSnr,
                                MHz_u dataChannelWidth,
                                uint8_t dataNss) override;
+    std::list<Ptr<WifiMpdu>> DoGetMpdusToDropOnTxFailure(WifiRemoteStation* station,
+                                                         Ptr<WifiPsdu> psdu) override;
     bool DoNeedRetransmission(WifiRemoteStation* st,
                               Ptr<const Packet> packet,
                               bool normally) override;
