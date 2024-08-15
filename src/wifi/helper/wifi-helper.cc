@@ -29,7 +29,8 @@
 #include "ns3/vht-configuration.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-mac-trailer.h"
-#include "ns3/wifi-net-device.h"
+
+#include <memory>
 
 namespace ns3
 {
@@ -133,7 +134,8 @@ AsciiPhyReceiveSinkWithoutContext(Ptr<OutputStreamWrapper> stream,
 }
 
 WifiPhyHelper::WifiPhyHelper(uint8_t nLinks)
-    : m_pcapDlt(PcapHelper::DLT_IEEE802_11)
+    : m_pcapDlt{PcapHelper::DLT_IEEE802_11},
+      m_pcapType{PcapCaptureType::PCAP_PER_PHY}
 {
     NS_ABORT_IF(nLinks == 0);
     m_phys.resize(nLinks);
@@ -170,16 +172,70 @@ WifiPhyHelper::DisablePreambleDetectionModel()
     m_preambleDetectionModel.resize(m_phys.size());
 }
 
+Ptr<PcapFileWrapper>
+WifiPhyHelper::GetOrCreatePcapFile(const std::shared_ptr<PcapFilesInfo>& info, uint8_t phyId)
+{
+    uint8_t fileIdx;
+    switch (info->pcapType)
+    {
+    case WifiPhyHelper::PcapCaptureType::PCAP_PER_DEVICE:
+        fileIdx = 0;
+        break;
+    case WifiPhyHelper::PcapCaptureType::PCAP_PER_PHY:
+        fileIdx = phyId;
+        break;
+    case WifiPhyHelper::PcapCaptureType::PCAP_PER_LINK:
+        if (const auto linkId = info->device->GetMac()->GetLinkForPhy(phyId))
+        {
+            fileIdx = *linkId;
+            break;
+        }
+        return nullptr;
+    default:
+        NS_ABORT_MSG("Unexpected PCAP capture type");
+        return nullptr;
+    }
+
+    if (!info->files.contains(fileIdx))
+    {
+        // file does not exist yet, create it
+        auto tmp = info->commonFilename;
+
+        // find the last point in the filename
+        auto pos = info->commonFilename.find_last_of('.');
+        // if not found, set pos to filename size
+        pos = (pos == std::string::npos) ? info->commonFilename.size() : pos;
+
+        // insert PHY/link ID only for multi-link devices, unless a single PCAP is generated for the
+        // device
+        if ((info->device->GetNPhys() > 1) && (info->pcapType != PcapCaptureType::PCAP_PER_DEVICE))
+        {
+            tmp.insert(pos, "-" + std::to_string(fileIdx));
+        }
+
+        PcapHelper pcapHelper;
+        auto file = pcapHelper.CreateFile(tmp, std::ios::out, info->pcapDlt);
+        info->files.emplace(fileIdx, file);
+    }
+
+    return info->files.at(fileIdx);
+}
+
 void
-WifiPhyHelper::PcapSniffTxEvent(Ptr<PcapFileWrapper> file,
+WifiPhyHelper::PcapSniffTxEvent(const std::shared_ptr<PcapFilesInfo>& info,
+                                uint8_t phyId,
                                 Ptr<const Packet> packet,
                                 uint16_t channelFreqMhz,
                                 WifiTxVector txVector,
                                 MpduInfo aMpdu,
                                 uint16_t staId)
 {
-    uint32_t dlt = file->GetDataLinkType();
-    switch (dlt)
+    auto file = GetOrCreatePcapFile(info, phyId);
+    if (!file)
+    {
+        return;
+    }
+    switch (info->pcapDlt)
     {
     case PcapHelper::DLT_IEEE802_11:
         file->Write(Simulator::Now(), packet);
@@ -197,12 +253,13 @@ WifiPhyHelper::PcapSniffTxEvent(Ptr<PcapFileWrapper> file,
         return;
     }
     default:
-        NS_ABORT_MSG("PcapSniffTxEvent(): Unexpected data link type " << dlt);
+        NS_ABORT_MSG("PcapSniffTxEvent(): Unexpected data link type " << info->pcapDlt);
     }
 }
 
 void
-WifiPhyHelper::PcapSniffRxEvent(Ptr<PcapFileWrapper> file,
+WifiPhyHelper::PcapSniffRxEvent(const std::shared_ptr<PcapFilesInfo>& info,
+                                uint8_t phyId,
                                 Ptr<const Packet> packet,
                                 uint16_t channelFreqMhz,
                                 WifiTxVector txVector,
@@ -210,8 +267,12 @@ WifiPhyHelper::PcapSniffRxEvent(Ptr<PcapFileWrapper> file,
                                 SignalNoiseDbm signalNoise,
                                 uint16_t staId)
 {
-    uint32_t dlt = file->GetDataLinkType();
-    switch (dlt)
+    auto file = GetOrCreatePcapFile(info, phyId);
+    if (!file)
+    {
+        return;
+    }
+    switch (info->pcapDlt)
     {
     case PcapHelper::DLT_IEEE802_11:
         file->Write(Simulator::Now(), packet);
@@ -229,7 +290,7 @@ WifiPhyHelper::PcapSniffRxEvent(Ptr<PcapFileWrapper> file,
         return;
     }
     default:
-        NS_ABORT_MSG("PcapSniffRxEvent(): Unexpected data link type " << dlt);
+        NS_ABORT_MSG("PcapSniffRxEvent(): Unexpected data link type " << info->pcapDlt);
     }
 }
 
@@ -552,6 +613,18 @@ WifiPhyHelper::GetPcapDataLinkType() const
 }
 
 void
+WifiPhyHelper::SetPcapCaptureType(PcapCaptureType type)
+{
+    m_pcapType = type;
+}
+
+WifiPhyHelper::PcapCaptureType
+WifiPhyHelper::GetPcapCaptureType() const
+{
+    return m_pcapType;
+}
+
+void
 WifiPhyHelper::EnablePcapInternal(std::string prefix,
                                   Ptr<NetDevice> nd,
                                   bool promiscuous,
@@ -574,7 +647,6 @@ WifiPhyHelper::EnablePcapInternal(std::string prefix,
                     "WifiPhyHelper::EnablePcapInternal(): Phy layer in WifiNetDevice must be set");
 
     PcapHelper pcapHelper;
-
     std::string filename;
     if (explicitFilename)
     {
@@ -585,25 +657,15 @@ WifiPhyHelper::EnablePcapInternal(std::string prefix,
         filename = pcapHelper.GetFilenameFromDevice(prefix, device);
     }
 
-    uint8_t linkId = 0;
-    // find the last point in the filename
-    auto pos = filename.find_last_of('.');
-    // if not found, set pos to filename size
-    pos = (pos == std::string::npos) ? filename.size() : pos;
-
+    auto info = std::make_shared<PcapFilesInfo>(filename, m_pcapDlt, m_pcapType, device);
     for (auto& phy : device->GetPhys())
     {
-        std::string tmp = filename;
-        if (device->GetNPhys() > 1)
-        {
-            // insert LinkId only for multi-link devices
-            tmp.insert(pos, "-" + std::to_string(linkId++));
-        }
-        auto file = pcapHelper.CreateFile(tmp, std::ios::out, m_pcapDlt);
-        phy->TraceConnectWithoutContext("MonitorSnifferTx",
-                                        MakeBoundCallback(&WifiPhyHelper::PcapSniffTxEvent, file));
-        phy->TraceConnectWithoutContext("MonitorSnifferRx",
-                                        MakeBoundCallback(&WifiPhyHelper::PcapSniffRxEvent, file));
+        phy->TraceConnectWithoutContext(
+            "MonitorSnifferTx",
+            MakeBoundCallback(&WifiPhyHelper::PcapSniffTxEvent, info, phy->GetPhyId()));
+        phy->TraceConnectWithoutContext(
+            "MonitorSnifferRx",
+            MakeBoundCallback(&WifiPhyHelper::PcapSniffRxEvent, info, phy->GetPhyId()));
     }
 }
 

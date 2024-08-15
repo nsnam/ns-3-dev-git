@@ -23,6 +23,7 @@ Changes from ns-3.42 to ns-3-dev
 * (wifi) Added a new trace source to `WifiPhy`: **PhyRxMacHeaderEnd**, which is fired when the reception of the MAC header of an MPDU is completed and provides the MAC header and the remaining PSDU duration. The trace source is actually fired when the new **NotifyMacHdrRxEnd** attribute of `WifiPhy` is set to true (it is set to false by default).
 * (lr-wpan) Added a new test to `lr-wpan-cca-test.cc` suite. The added test demonstrates a known CCA vulnerability window.
 * (wifi) WifiHelper::SetStandard() method now accepts selected string values in addition to enum argument.
+* (wifi) Added a new method **SetPcapCaptureType** to `WifiPhyHelper` to control how PCAPs are generated for MLD devices.
 
 ### Changes to existing API
 

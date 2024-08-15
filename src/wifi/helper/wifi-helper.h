@@ -15,15 +15,16 @@
 
 #include "ns3/qos-utils.h"
 #include "ns3/trace-helper.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
 
 #include <functional>
+#include <map>
 #include <vector>
 
 namespace ns3
 {
 
-class WifiNetDevice;
 class Node;
 class RadiotapHeader;
 class QueueItem;
@@ -169,6 +170,49 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     };
 
     /**
+     * An enumeration of the PCAP capture types.
+     * The PCAP capture type only matters for multi-link devices.
+     */
+    enum class PcapCaptureType
+    {
+        PCAP_PER_DEVICE, /**< Single capture file per device */
+        PCAP_PER_PHY,    /**< Single capture file per PHY */
+        PCAP_PER_LINK,   /**< Single capture file per link */
+    };
+
+    /**
+     * structure holding the information about PCAP files generated for a given device
+     */
+    struct PcapFilesInfo
+    {
+        /**
+         * Constructor
+         *
+         * \param filename the common file name of the PCAP files
+         * \param dlt the selected data link type of the pcap file
+         * \param type the selected PCAP capture type
+         * \param dev the WifiNetDevice for which the PCAP files are generated
+         */
+        PcapFilesInfo(const std::string& filename,
+                      PcapHelper::DataLinkType dlt,
+                      WifiPhyHelper::PcapCaptureType type,
+                      Ptr<WifiNetDevice> dev)
+            : commonFilename{filename},
+              pcapDlt{dlt},
+              pcapType{type},
+              device{dev},
+              files{}
+        {
+        }
+
+        std::string commonFilename;              ///< common file name of the PCAP files
+        PcapHelper::DataLinkType pcapDlt;        ///< the selected data link type of the pcap file
+        WifiPhyHelper::PcapCaptureType pcapType; ///< the selected PCAP capture type
+        Ptr<WifiNetDevice> device; ///< the WifiNetDevice for which the PCAP files are generated
+        std::map<uint8_t, Ptr<PcapFileWrapper>> files; ///< PCAP files indexed by PHY ID
+    };
+
+    /**
      * Set the data link type of PCAP traces to be used. This function has to be
      * called before EnablePcap(), so that the header of the pcap file can be
      * written correctly.
@@ -188,9 +232,28 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
      */
     PcapHelper::DataLinkType GetPcapDataLinkType() const;
 
+    /**
+     * Set the PCAP capture type to be used. This function has to be called before EnablePcap().
+     *
+     * \see PcapCaptureType
+     *
+     * \param type The PCAP capture type
+     */
+    void SetPcapCaptureType(PcapCaptureType type);
+
+    /**
+     * Get the PCAP capture type to be used.
+     *
+     * \see PcapCaptureType
+     *
+     * \return The PCAP capture type to be used
+     */
+    PcapCaptureType GetPcapCaptureType() const;
+
   protected:
     /**
-     * \param file the pcap file wrapper
+     * \param info the information needed to write to the correct PCAP file
+     * \param phyId the ID of the PHY that raised the event
      * \param packet the packet
      * \param channelFreqMhz the channel frequency
      * \param txVector the TXVECTOR
@@ -199,14 +262,16 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
      *
      * Handle TX pcap.
      */
-    static void PcapSniffTxEvent(Ptr<PcapFileWrapper> file,
+    static void PcapSniffTxEvent(const std::shared_ptr<PcapFilesInfo>& info,
+                                 uint8_t phyId,
                                  Ptr<const Packet> packet,
                                  uint16_t channelFreqMhz,
                                  WifiTxVector txVector,
                                  MpduInfo aMpdu,
                                  uint16_t staId = SU_STA_ID);
     /**
-     * \param file the pcap file wrapper
+     * \param info the information needed to write to the correct PCAP file
+     * \param phyId the ID of the PHY that raised the event
      * \param packet the packet
      * \param channelFreqMhz the channel frequency
      * \param txVector the TXVECTOR
@@ -216,7 +281,8 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
      *
      * Handle RX pcap.
      */
-    static void PcapSniffRxEvent(Ptr<PcapFileWrapper> file,
+    static void PcapSniffRxEvent(const std::shared_ptr<PcapFilesInfo>& info,
+                                 uint8_t phyId,
                                  Ptr<const Packet> packet,
                                  uint16_t channelFreqMhz,
                                  WifiTxVector txVector,
@@ -231,6 +297,18 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     std::vector<ObjectFactory> m_preambleDetectionModel; ///< preamble detection model
 
   private:
+    /**
+     * Get the PCAP file to write to from a list of PCAP files indexed by PHY ID.
+     * If PCAP files are generated per link, it might create a new file if a link
+     * has swapped to a new ID.
+     *
+     * \param info the information needed to write to the correct PCAP file
+     * \param phyId the ID of the PHY that raised the event
+     * \return the PCAP file to write to
+     */
+    static Ptr<PcapFileWrapper> GetOrCreatePcapFile(const std::shared_ptr<PcapFilesInfo>& info,
+                                                    uint8_t phyId);
+
     /**
      * Get the Radiotap header for a transmitted packet.
      *
@@ -300,6 +378,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
                              bool explicitFilename) override;
 
     PcapHelper::DataLinkType m_pcapDlt; ///< PCAP data link type
+    PcapCaptureType m_pcapType;         ///< PCAP capture type
 };
 
 /**
