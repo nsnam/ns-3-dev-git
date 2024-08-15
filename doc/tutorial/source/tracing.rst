@@ -625,7 +625,7 @@ for "CourseChange" in your favorite editor.  You should find
   .AddTraceSource("CourseChange",
                   "The value of the position and/or velocity vector changed",
                   MakeTraceSourceAccessor(&MobilityModel::m_courseChangeTrace),
-                  "ns3::MobilityModel::CourseChangeCallback")
+                  "ns3::MobilityModel::TracedCallback");
 
 which should look very familiar at this point.
 
@@ -634,14 +634,14 @@ variable in ``mobility-model.h`` you will find
 
 ::
 
-  TracedCallback<Ptr<const MobilityModel>> m_courseChangeTrace;
+  ns3::TracedCallback<Ptr<const MobilityModel>> m_courseChangeTrace;
 
 The type declaration ``TracedCallback`` identifies
 ``m_courseChangeTrace`` as a special list of Callbacks that can be
 hooked using the Config functions described above.  The ``typedef``
 for the callback function signature is also defined in the header file::
 
-  typedef void (* CourseChangeCallback)(Ptr<const MobilityModel> * model);
+  typedef void (*TracedCallback)(Ptr<const MobilityModel> model);
 
 The ``MobilityModel`` class is designed to be a base class providing a
 common interface for all of the specific subclasses.  If you search
@@ -651,7 +651,7 @@ down to the end of the file, you will see a method defined called
   void
   MobilityModel::NotifyCourseChange() const
   {
-    m_courseChangeTrace(this);
+      m_courseChangeTrace(this);
   }
 
 Derived classes will call into this method whenever they do a course
