@@ -113,8 +113,8 @@ To submit code proposed for |ns3| as one or more commits, use a merge
 request.  The following steps are recommended to smooth the process.
 
 If you are new to public Git repositories, you may want to read
-`this overview of merge requests <https://docs.gitlab.com/ee/user/project/merge_requests/getting_started.html>`_.  If you are familiar with GitHub
-pull requests, the GitLab.com merge requests are very similar.
+`this overview of merge requests <https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html>`_.
+If you are familiar with GitHub pull requests, the GitLab.com merge requests are very similar.
 
 In brief, you will want to fork ns-3-dev into your own namespace (i.e.,
 fork the repository into your personal GitLab.com account, via the user

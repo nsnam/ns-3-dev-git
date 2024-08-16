@@ -68,7 +68,7 @@ namespace ns3
  * and the current cWnd size).
  *
  * The reference paper for BIC can be found in:
- * http://an.kaist.ac.kr/courses/2006/cs540/reading/bic-tcp.pdf
+ * https://web.archive.org/web/20220930220436/https://an.kaist.ac.kr/courses/2006/cs540/reading/bic-tcp.pdf
  *
  * This model has a number of configurable parameters that are exposed as
  * attributes of the TcpBic TypeId.  This model also exports trace sources,

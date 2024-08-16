@@ -396,9 +396,9 @@ Windows 10 Vagrant
 ******************
 
 .. _VirtualBox: https://www.virtualbox.org/
-.. _Vagrant: https://www.vagrantup.com/
+.. _Vagrant: https://developer.hashicorp.com/vagrant/docs
 .. _virtual machine: https://www.redhat.com/en/topics/virtualization/what-is-a-virtual-machine
-.. _boxes available: https://app.vagrantup.com/boxes/search
+.. _boxes available: https://vagrantcloud.com/boxes/search
 
 As an alternative to manually setting up all dependencies required by ns-3,
 one can use a pre-packaged `virtual machine`_. There are many ways to do that,

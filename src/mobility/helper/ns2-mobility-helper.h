@@ -66,7 +66,7 @@ class ConstantVelocityMobilityModel;
  * The following tools are known to support this format:
  *  - BonnMotion http://net.cs.uni-bonn.de/wg/cs/applications/bonnmotion/
  *  - SUMO http://sourceforge.net/apps/mediawiki/sumo/index.php?title=Main_Page
- *  - TraNS http://trans.epfl.ch/
+ *  - TraNS https://web.archive.org/web/20190512111856/http://lca.epfl.ch/projects/trans/
  *
  *  See usage example in examples/mobility/ns2-mobility-trace.cc
  *

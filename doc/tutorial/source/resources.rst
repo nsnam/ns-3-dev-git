@@ -36,7 +36,7 @@ as its source code management system, but in December 2018, switch to
 using Git.  Although you do not need to know much about Git in order to
 complete this tutorial, we recommend becoming familiar with Git and using it
 to access the source code.  GitLab.com provides resources to get started
-at: https://docs.gitlab.com/ee/gitlab-basics/.
+at: https://docs.gitlab.com/ee/tutorials/.
 
 CMake
 *****
