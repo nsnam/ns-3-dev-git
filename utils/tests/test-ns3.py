@@ -101,7 +101,7 @@ def run_program(program, args, python=False, cwd=ns3_path, env=None):
         arguments = [program]
 
     if args != "":
-        arguments.extend(re.findall('(?:".*?"|\S)+', args))  # noqa
+        arguments.extend(re.findall(r'(?:".*?"|\S)+', args))  # noqa
 
     for i in range(len(arguments)):
         arguments[i] = arguments[i].replace('"', "")
@@ -458,7 +458,7 @@ class NS3DependenciesTestCase(unittest.TestCase):
 
             # Extract libraries linked to the module
             modules[module_name_nodir]["libraries"].update(
-                re.findall("\${lib(.*?)}", "".join(cmake_contents))
+                re.findall(r"\${lib(.*?)}", "".join(cmake_contents))
             )
             modules[module_name_nodir]["libraries"] = list(
                 filter(
