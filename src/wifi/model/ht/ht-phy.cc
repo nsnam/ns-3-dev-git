@@ -724,8 +724,8 @@ HtPhy::GetSymbolDuration(Time guardInterval)
 uint64_t
 HtPhy::GetNonHtReferenceRate(uint8_t mcsValue)
 {
-    WifiCodeRate codeRate = GetHtCodeRate(mcsValue);
-    uint16_t constellationSize = GetHtConstellationSize(mcsValue);
+    const auto codeRate = GetHtCodeRate(mcsValue);
+    const auto constellationSize = GetHtConstellationSize(mcsValue);
     return CalculateNonHtReferenceRate(codeRate, constellationSize);
 }
 
@@ -831,10 +831,10 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     if (ppdu)
     {
         const MHz_u primaryWidth = 20;
-        double p20MinFreq =
+        const MHz_u p20MinFreq =
             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth) -
             (primaryWidth / 2);
-        double p20MaxFreq =
+        const MHz_u p20MaxFreq =
             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth) +
             (primaryWidth / 2);
         if (ppdu->DoesOverlapChannel(p20MinFreq, p20MaxFreq))
@@ -848,10 +848,10 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     }
 
     const MHz_u secondaryWidth = 20;
-    double s20MinFreq =
+    const MHz_u s20MinFreq =
         m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(secondaryWidth) -
         (secondaryWidth / 2);
-    double s20MaxFreq =
+    const MHz_u s20MaxFreq =
         m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(secondaryWidth) +
         (secondaryWidth / 2);
     if (!ppdu || ppdu->DoesOverlapChannel(s20MinFreq, s20MaxFreq))

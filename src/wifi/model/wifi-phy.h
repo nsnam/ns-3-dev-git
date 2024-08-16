@@ -625,21 +625,17 @@ class WifiPhy : public Object
      * for each A-MPDU but the same for each subframe within one A-MPDU.
      *
      * \param psdu the PSDU being received
-     * \param channelFreqMhz the frequency in MHz at which the packet is
-     *        received. Note that in real devices this is normally the
-     *        frequency to which  the receiver is tuned, and this can be
-     *        different than the frequency at which the packet was originally
-     *        transmitted. This is because it is possible to have the receiver
-     *        tuned on a given channel and still to be able to receive packets
-     *        on a nearby channel.
+     * \param channelFreq the frequency at which the packet is received. Note that in real devices
+     * this is normally the frequency to which the receiver is tuned, and this can be different than
+     * the frequency at which the packet was originally transmitted. This is because it is possible
+     * to have the receiver tuned on a given channel and still to be able to receive packets on a
+     * nearby channel.
      * \param txVector the TXVECTOR that holds RX parameters
      * \param signalNoise signal power and noise power in dBm (noise power includes the noise
-     * figure)
-     * \param statusPerMpdu reception status per MPDU
-     * \param staId the STA-ID
+     * figure) \param statusPerMpdu reception status per MPDU \param staId the STA-ID
      */
     void NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
-                              double channelFreqMhz,
+                              MHz_u channelFreq,
                               WifiTxVector txVector,
                               SignalNoiseDbm signalNoise,
                               std::vector<bool> statusPerMpdu,
@@ -650,13 +646,11 @@ class WifiPhy : public Object
      *
      *
      * \param packet the packet being received
-     * \param channelFreqMhz the frequency in MHz at which the packet is
-     *        received. Note that in real devices this is normally the
-     *        frequency to which  the receiver is tuned, and this can be
-     *        different than the frequency at which the packet was originally
-     *        transmitted. This is because it is possible to have the receiver
-     *        tuned on a given channel and still to be able to receive packets
-     *        on a nearby channel.
+     * \param channelFreq the frequency at which the packet is received. Note that in real devices
+     * this is normally the frequency to which  the receiver is tuned, and this can be different
+     * than the frequency at which the packet was originally transmitted. This is because it is
+     * possible to have the receiver tuned on a given channel and still to be able to receive
+     * packets on a nearby channel.
      * \param txVector the TXVECTOR that holds RX parameters
      * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU
      * and 2 is the last MPDU in an A-MPDU) and the A-MPDU reference number (must be a different
@@ -681,13 +675,13 @@ class WifiPhy : public Object
      * for each A-MPDU but the same for each subframe within one A-MPDU.
      *
      * \param psdu the PSDU being received
-     * \param channelFreqMhz the frequency in MHz at which the packet is
+     * \param channelFreq the frequency at which the packet is
      *        transmitted.
      * \param txVector the TXVECTOR that holds TX parameters
      * \param staId the STA-ID
      */
     void NotifyMonitorSniffTx(Ptr<const WifiPsdu> psdu,
-                              double channelFreqMhz,
+                              MHz_u channelFreq,
                               WifiTxVector txVector,
                               uint16_t staId = SU_STA_ID);
 
@@ -972,9 +966,9 @@ class WifiPhy : public Object
      */
     bool HasFixedPhyBand() const;
     /**
-     * \return the operating center frequency (MHz)
+     * \return the operating center frequency
      */
-    double GetFrequency() const;
+    MHz_u GetFrequency() const;
     /**
      * \return the index of the primary 20 MHz channel
      */
@@ -1258,9 +1252,9 @@ class WifiPhy : public Object
     virtual FrequencyRange GetCurrentFrequencyRange() const = 0;
 
     /**
-     * \return the subcarrier spacing corresponding to the configure standard (Hz)
+     * \return the subcarrier spacing corresponding to the configure standard
      */
-    double GetSubcarrierSpacing() const;
+    Hz_u GetSubcarrierSpacing() const;
 
     /**
      * Callback invoked when the PHY model starts to transmit a signal

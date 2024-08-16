@@ -157,7 +157,7 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
                         << "band " << channel.GetPhyBand());
 
     // find the primary channel number
-    double startingFreq = 0;
+    MHz_u startingFreq = 0;
 
     switch (channel.GetPhyBand())
     {
@@ -245,7 +245,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
 
     NS_ABORT_IF(band == WIFI_PHY_BAND_UNSPECIFIED || width == 0);
 
-    double startingFreq = 0;
+    MHz_u startingFreq = 0;
 
     switch (band)
     {
@@ -265,10 +265,10 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
     }
 
     uint8_t primaryChannelNumber = m_nbrApInfoFields.at(nbrApInfoId).channelNumber;
-    double primaryChannelCenterFrequency = startingFreq + primaryChannelNumber * 5;
+    MHz_u primaryChannelCenterFrequency = startingFreq + primaryChannelNumber * 5;
 
     uint8_t channelNumber = 0;
-    double frequency = 0;
+    MHz_u frequency = 0;
 
     for (const auto& channel : WifiPhyOperatingChannel::m_frequencyChannels)
     {
@@ -324,8 +324,8 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
     WifiPhyOperatingChannel channel;
     channel.Set({{channelNumber, frequency, width, band}}, WIFI_STANDARD_UNSPECIFIED);
 
-    double channelLowestFreq = frequency - width / 2;
-    double primaryChannelLowestFreq = primaryChannelCenterFrequency - 10;
+    MHz_u channelLowestFreq = frequency - width / 2;
+    MHz_u primaryChannelLowestFreq = primaryChannelCenterFrequency - 10;
     channel.SetPrimary20Index((primaryChannelLowestFreq - channelLowestFreq) / 20);
 
     return channel;

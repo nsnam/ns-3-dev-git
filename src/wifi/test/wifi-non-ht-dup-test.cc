@@ -41,7 +41,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiNonHtDuplicateTest");
 
-constexpr double DEFAULT_FREQUENCY = 5180; // MHz
+constexpr MHz_u DEFAULT_FREQUENCY = 5180;
 
 /**
  * HE PHY used for testing MU-RTS/CTS.
@@ -194,12 +194,12 @@ class TestNonHtDuplicatePhyReception : public TestCase
 {
   public:
     /// A vector containing parameters per STA: the standard, the center frequency and the P20 index
-    using StasParams = std::vector<std::tuple<WifiStandard, double, uint8_t>>;
+    using StasParams = std::vector<std::tuple<WifiStandard, MHz_u, uint8_t>>;
 
     /**
      * Constructor
      * \param apStandard the standard to use for the AP
-     * \param apFrequency the center frequency of the AP (in MHz)
+     * \param apFrequency the center frequency of the AP
      * \param apP20Index the index of the primary 20 MHz channel of the AP
      * \param stasParams the parameters of the STAs (\see StasParams)
      * \param per20MhzInterference flags per 20 MHz subchannel whether an interference should be
@@ -207,7 +207,7 @@ class TestNonHtDuplicatePhyReception : public TestCase
      * interference.
      */
     TestNonHtDuplicatePhyReception(WifiStandard apStandard,
-                                   double apFrequency,
+                                   MHz_u apFrequency,
                                    uint8_t apP20Index,
                                    StasParams stasParams,
                                    std::vector<bool> per20MhzInterference = {});
@@ -273,7 +273,7 @@ class TestNonHtDuplicatePhyReception : public TestCase
     void StopInterference(Ptr<WaveformGenerator> interferer);
 
     WifiStandard m_apStandard; ///< the standard to use for the AP
-    double m_apFrequency;      ///< the center frequency of the AP (in MHz)
+    MHz_u m_apFrequency;       ///< the center frequency of the AP
     uint8_t m_apP20Index;      ///< the index of the primary 20 MHz channel of the AP
     StasParams m_stasParams;   ///< the parameters of the STAs
     std::vector<bool>
@@ -292,7 +292,7 @@ class TestNonHtDuplicatePhyReception : public TestCase
 
 TestNonHtDuplicatePhyReception::TestNonHtDuplicatePhyReception(
     WifiStandard apStandard,
-    double apFrequency,
+    MHz_u apFrequency,
     uint8_t apP20Index,
     StasParams stasParams,
     std::vector<bool> per20MhzInterference)

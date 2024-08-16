@@ -85,7 +85,7 @@ class ExtInterferenceHelper : public InterferenceHelper
     /**
      * Indicate whether a given band is tracked by the interference helper
      *
-     * \param startStopFreqs the start and stop frequencies per segment of the band (in Hz)
+     * \param startStopFreqs the start and stop frequencies per segment of the band
      *
      * \return true if the specified band is tracked by the interference helper, false otherwise
      */
@@ -659,7 +659,7 @@ SpectrumWifiPhyFilterTest::DoTeardown()
 void
 SpectrumWifiPhyFilterTest::RunOne()
 {
-    double txFrequency;
+    MHz_u txFrequency;
     switch (static_cast<uint16_t>(m_txChannelWidth))
     {
     case 20:
@@ -685,7 +685,7 @@ SpectrumWifiPhyFilterTest::RunOne()
     m_txPhy->SetOperatingChannel(
         WifiPhy::ChannelTuple{txChannelNum, m_txChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
-    double rxFrequency;
+    MHz_u rxFrequency;
     switch (static_cast<uint16_t>(m_rxChannelWidth))
     {
     case 20:
@@ -812,7 +812,7 @@ class SpectrumWifiPhyGetBandTest : public TestCase
      * \param bandIndex the index of the band to test
      * \param expectedIndices the expected start and stop indices returned by
      * SpectrumWifiPhy::GetBand \param expectedFrequencies the expected start and stop frequencies
-     * in Hz returned by SpectrumWifiPhy::GetBand
+     * returned by SpectrumWifiPhy::GetBand
      */
     void RunOne(const std::vector<uint8_t>& channelNumberPerSegment,
                 MHz_u bandWidth,
@@ -928,8 +928,8 @@ SpectrumWifiPhyGetBandTest::DoRun()
                 expectedStartIndice + (indicesPer20MhzBand * (bandWidth / 20)) - 1;
             std::vector<WifiSpectrumBandIndices> expectedIndices{
                 {expectedStartIndice, expectedStopIndice}};
-            const double expectedStartFrequency = 5170 * 1e6;
-            const double expectedStopFrequency = (5170 + bandWidth) * 1e6;
+            const Hz_u expectedStartFrequency = 5170 * 1e6;
+            const Hz_u expectedStopFrequency = (5170 + bandWidth) * 1e6;
             std::vector<WifiSpectrumBandFrequencies> expectedFrequencies{
                 {expectedStartFrequency, expectedStopFrequency}};
             const std::size_t numBands = (channelWidth / bandWidth);
@@ -1243,13 +1243,13 @@ class SpectrumWifiPhy80Plus80Test : public TestCase
     /**
      * Run one function
      * \param channelNumbers the channel number for each segment of the operating channel
-     * \param interferenceCenterFrequency the center frequency (in MHz) of the interference signal
-     * to generate
+     * \param interferenceCenterFrequency the center frequency of the interference signal to
+     * generate
      * \param interferenceBandWidth the band width of the interference signal to generate
      * \param expectSuccess flag to indicate whether reception is expected to be successful
      */
     void RunOne(const std::vector<uint8_t>& channelNumbers,
-                double interferenceCenterFrequency,
+                MHz_u interferenceCenterFrequency,
                 MHz_u interferenceBandWidth,
                 bool expectSuccess);
 
@@ -1472,7 +1472,7 @@ SpectrumWifiPhy80Plus80Test::DoTeardown()
 
 void
 SpectrumWifiPhy80Plus80Test::RunOne(const std::vector<uint8_t>& channelNumbers,
-                                    double interferenceCenterFrequency,
+                                    MHz_u interferenceCenterFrequency,
                                     MHz_u interferenceBandWidth,
                                     bool expectSuccess)
 {
@@ -1713,8 +1713,8 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
      * \param expectedRxBytes the expected amount of received bytes
      * \param expectedFrequencyRangeActiveRfInterface the expected frequency range (in MHz) of the
      * active RF interface
-     * \param expectedConnectedPhysPerChannel the expected
-     * number of PHYs attached for each spectrum channel
+     * \param expectedConnectedPhysPerChannel the expected number of PHYs attached for each spectrum
+     * channel
      */
     void CheckResults(std::size_t index,
                       uint32_t expectedNumRx,

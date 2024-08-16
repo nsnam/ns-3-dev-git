@@ -38,8 +38,8 @@ struct FrequencyChannelInfo
      */
     auto operator<=>(const FrequencyChannelInfo& info) const = default;
     uint8_t number{0};                                        ///< the channel number
-    double frequency{0};                                      ///< the center frequency
-    MHz_u width{0};                                           ///< the channel width in MHz
+    MHz_u frequency{0};                                       ///< the center frequency
+    MHz_u width{0};                                           ///< the channel width
     WifiPhyBand band{WifiPhyBand::WIFI_PHY_BAND_UNSPECIFIED}; ///< the PHY band
     FrequencyChannelType type{FrequencyChannelType::OFDM};    ///< the frequency channel type
 };
@@ -185,15 +185,15 @@ class WifiPhyOperatingChannel
      */
     uint8_t GetNumber(std::size_t segment = 0) const;
     /**
-     * Return the center frequency for a given frequency segment (in MHz).
+     * Return the center frequency for a given frequency segment.
      * Segments are ordered by increasing frequencies, hence by default
      * it returns the center frequency of the segment occuping the lowest
      * frequencies when a non-contiguous operating channel is used.
      *
      * \param segment the index of the frequency segment (if operating channel is non-contiguous)
-     * \return the center frequency for a given frequency segment (in MHz)
+     * \return the center frequency for a given frequency segment
      */
-    double GetFrequency(std::size_t segment = 0) const;
+    MHz_u GetFrequency(std::size_t segment = 0) const;
     /**
      * Return the channel width for a given frequency segment.
      * Segments are ordered by increasing frequencies, hence by default
@@ -218,12 +218,12 @@ class WifiPhyOperatingChannel
      */
     std::vector<uint8_t> GetNumbers() const;
     /**
-     * Return the center frequency per segment (in MHz).
+     * Return the center frequency per segment.
      * Segments are ordered by increasing frequencies.
      *
-     * \return the center frequency per segment (in MHz)
+     * \return the center frequency per segment
      */
-    std::vector<double> GetFrequencies() const;
+    std::vector<MHz_u> GetFrequencies() const;
     /**
      * Return the channel width per segment.
      * Segments are ordered by increasing frequencies.
@@ -296,7 +296,7 @@ class WifiPhyOperatingChannel
      * \param primaryChannelWidth the width of the primary channel
      * \return the center frequency of the primary channel of the given width
      */
-    double GetPrimaryChannelCenterFrequency(MHz_u primaryChannelWidth) const;
+    MHz_u GetPrimaryChannelCenterFrequency(MHz_u primaryChannelWidth) const;
 
     /**
      * Get the center frequency of the secondary channel of the given width.
@@ -304,7 +304,7 @@ class WifiPhyOperatingChannel
      * \param secondaryChannelWidth the width of the secondary channel
      * \return the center frequency of the secondary channel of the given width
      */
-    double GetSecondaryChannelCenterFrequency(MHz_u secondaryChannelWidth) const;
+    MHz_u GetSecondaryChannelCenterFrequency(MHz_u secondaryChannelWidth) const;
 
     /**
      * Get the channel indices of all the 20 MHz channels included in the primary
@@ -356,7 +356,7 @@ class WifiPhyOperatingChannel
      *         of the set of available channels
      */
     static ConstIterator FindFirst(uint8_t number,
-                                   double frequency,
+                                   MHz_u frequency,
                                    MHz_u width,
                                    WifiStandard standard,
                                    WifiPhyBand band,

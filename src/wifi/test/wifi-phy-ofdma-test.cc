@@ -50,7 +50,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPhyOfdmaTest");
 
 static const uint8_t DEFAULT_CHANNEL_NUMBER = 36;
-static const double DEFAULT_FREQUENCY = 5180; // MHz
+static const MHz_u DEFAULT_FREQUENCY = 5180;
 static const WifiPhyBand DEFAULT_WIFI_BAND = WIFI_PHY_BAND_5GHZ;
 static const MHz_u DEFAULT_CHANNEL_WIDTH = 20;
 static const MHz_u DEFAULT_GUARD_WIDTH =
@@ -431,7 +431,7 @@ class TestDlOfdmaPhyTransmission : public TestCase
     Ptr<OfdmaSpectrumWifiPhy> m_phySta3;    ///< PHY of STA 3
     Ptr<WaveformGenerator> m_phyInterferer; ///< PHY of interferer
 
-    uint16_t m_frequency;        ///< frequency in MHz
+    MHz_u m_frequency;           ///< frequency
     MHz_u m_channelWidth;        ///< channel width
     Time m_expectedPpduDuration; ///< expected duration to send MU PPDU
 };
@@ -1303,7 +1303,7 @@ class TestDlOfdmaPhyPuncturing : public TestCase
     Ptr<OfdmaSpectrumWifiPhy> m_phySta2;    ///< PHY of STA 2
     Ptr<WaveformGenerator> m_phyInterferer; ///< PHY of interferer
 
-    uint16_t m_frequency; ///< frequency in MHz
+    MHz_u m_frequency;    ///< frequency
     MHz_u m_channelWidth; ///< channel width
 
     uint8_t m_indexSubchannel; ///< Index of the subchannel (starting from 0) that should contain an
@@ -2425,7 +2425,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
 
     // Send non-OFDMA part
     Time nonOfdmaDuration = m_phy->GetHePhy()->CalculateNonHeDurationForHeTb(txVector);
-    uint32_t centerFrequency =
+    const auto centerFrequency =
         m_phy->GetHePhy()->GetCenterFrequenciesForNonHePart(ppdu, staId).front();
     MHz_u ruWidth = HeRu::GetBandwidth(txVector.GetRu(staId).GetRuType());
     MHz_u channelWidth = ruWidth < 20 ? 20 : ruWidth;
@@ -3189,8 +3189,8 @@ class TestUlOfdmaPhyTransmission : public TestCase
     uint32_t m_countRxBytesFromSta1;   ///< count RX bytes from STA 1
     uint32_t m_countRxBytesFromSta2;   ///< count RX bytes from STA 2
 
-    double m_frequency;          ///< frequency in MHz
-    MHz_u m_channelWidth;        ///< channel width in MHz
+    MHz_u m_frequency;           ///< frequency
+    MHz_u m_channelWidth;        ///< channel width
     Time m_expectedPpduDuration; ///< expected duration to send MU PPDU
 };
 

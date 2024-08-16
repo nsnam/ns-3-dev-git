@@ -48,7 +48,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
      * \param standard selected standard
      * \param band selected PHY band
      * \param channelWidth total channel width
-     * \param centerFrequencies the center frequency (in MHz) per contiguous segment
+     * \param centerFrequencies the center frequency per contiguous segment
      * \param maskRefs vector of expected power values and corresponding indexes of generated PSD
      *                     (only start and stop indexes/values given)
      * \param tolerance tolerance (in dB)
@@ -60,7 +60,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
                                WifiStandard standard,
                                WifiPhyBand band,
                                MHz_u channelWidth,
-                               const std::vector<double>& centerFrequencies,
+                               const std::vector<MHz_u>& centerFrequencies,
                                const IndexPowerVect& maskRefs,
                                double tolerance,
                                std::size_t precision,
@@ -84,11 +84,10 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
                                     IndexPowerPair start,
                                     IndexPowerPair stop) const;
 
-    WifiStandard m_standard; ///< the wifi standard to test
-    WifiPhyBand m_band;      ///< the wifi PHY band to test
-    MHz_u m_channelWidth;    ///< the total channel width (MHz) to test
-    std::vector<double>
-        m_centerFreqs; ///< the center frequency (MHz) per contiguous segment to test
+    WifiStandard m_standard;          ///< the wifi standard to test
+    WifiPhyBand m_band;               ///< the wifi PHY band to test
+    MHz_u m_channelWidth;             ///< the total channel width to test
+    std::vector<MHz_u> m_centerFreqs; ///< the center frequency per contiguous segment to test
     std::vector<bool>
         m_puncturedSubchannels; ///< bitmap indicating whether a 20 MHz subchannel is punctured or
                                 ///< not (only used for 802.11ax and later)
@@ -103,7 +102,7 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase(
     WifiStandard standard,
     WifiPhyBand band,
     MHz_u channelWidth,
-    const std::vector<double>& centerFrequencies,
+    const std::vector<MHz_u>& centerFrequencies,
     const IndexPowerVect& maskRefs,
     double tolerance,
     std::size_t precision,

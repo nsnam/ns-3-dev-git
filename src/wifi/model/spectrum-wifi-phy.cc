@@ -264,7 +264,7 @@ SpectrumWifiPhy::AddChannel(const Ptr<SpectrumChannel> channel, const FrequencyR
 
 void
 SpectrumWifiPhy::ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
-                                    const std::vector<double>& centerFrequencies,
+                                    const std::vector<MHz_u>& centerFrequencies,
                                     MHz_u channelWidth)
 {
     std::stringstream ss;
@@ -299,7 +299,7 @@ SpectrumWifiPhy::DoChannelSwitch()
     NS_LOG_FUNCTION(this);
     m_frequenciesBeforeSwitch = GetOperatingChannel().IsSet()
                                     ? GetOperatingChannel().GetFrequencies()
-                                    : std::vector<double>{};
+                                    : std::vector<MHz_u>{};
     m_widthsBeforeSwitch =
         GetOperatingChannel().IsSet() ? GetOperatingChannel().GetWidths() : std::vector<MHz_u>{};
     WifiPhy::DoChannelSwitch();
@@ -403,7 +403,7 @@ SpectrumWifiPhy::NotifyChannelSwitched()
 }
 
 void
-SpectrumWifiPhy::ConfigureInterface(const std::vector<double>& frequencies, MHz_u width)
+SpectrumWifiPhy::ConfigureInterface(const std::vector<MHz_u>& frequencies, MHz_u width)
 {
     std::stringstream ss;
     for (const auto& centerFrequency : frequencies)
@@ -681,7 +681,7 @@ SpectrumWifiPhy::GetGuardBandwidth(MHz_u currentChannelWidth) const
 }
 
 uint32_t
-SpectrumWifiPhy::GetNumBandsBetweenSegments(const std::vector<double>& centerFrequencies,
+SpectrumWifiPhy::GetNumBandsBetweenSegments(const std::vector<MHz_u>& centerFrequencies,
                                             MHz_u totalWidth,
                                             uint32_t subcarrierSpacing)
 {
@@ -813,7 +813,7 @@ SpectrumWifiPhy::GetSpectrumPhyInterfaces() const
 }
 
 Ptr<WifiSpectrumPhyInterface>
-SpectrumWifiPhy::GetInterfaceCoveringChannelBand(double frequency, MHz_u width) const
+SpectrumWifiPhy::GetInterfaceCoveringChannelBand(MHz_u frequency, MHz_u width) const
 {
     const auto lowFreq = frequency - (width / 2);
     const auto highFreq = frequency + (width / 2);

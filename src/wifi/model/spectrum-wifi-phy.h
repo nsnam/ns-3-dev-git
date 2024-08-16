@@ -130,10 +130,10 @@ class SpectrumWifiPhy : public WifiPhy
      * portion specified by the caller. It takes care to configure the RX spectrum model of the PHY
      * interface and to update the bands tracked in interference helper.
      *
-     * \param frequencies the center frequency of each segment in MHz the PHY interface should use
+     * \param frequencies the center frequency of each segment the PHY interface should use
      * \param width the total channel width the PHY interface should use
      */
-    void ConfigureInterface(const std::vector<double>& frequencies, MHz_u width);
+    void ConfigureInterface(const std::vector<MHz_u>& frequencies, MHz_u width);
 
     /**
      * This function is sending the signal to the Spectrum channel
@@ -169,13 +169,13 @@ class SpectrumWifiPhy : public WifiPhy
      * Determine the number of bands between the two segments if the operating channel is made of
      * non-contiguous segments, otherwise the function returns zero.
      *
-     * \param centerFrequencies the center frequency of each segment in MHz
+     * \param centerFrequencies the center frequency of each segment
      * \param totalWidth the width of the operating channel
      * \param subcarrierSpacing the subcarrier spacing
      * \return the number of bands between the two segments if the operating channel is made of
      * non-contiguous segments, zero otherwise
      */
-    static uint32_t GetNumBandsBetweenSegments(const std::vector<double>& centerFrequencies,
+    static uint32_t GetNumBandsBetweenSegments(const std::vector<MHz_u>& centerFrequencies,
                                                MHz_u totalWidth,
                                                uint32_t subcarrierSpacing);
 
@@ -206,12 +206,11 @@ class SpectrumWifiPhy : public WifiPhy
      * Perform run-time spectrum model change
      * \param spectrumPhyInterface the spectrum PHY interface for which the spectrum model should be
      * changed
-     * \param centerFrequencies the center frequency of each segment in MHz the PHY interface should
-     * use
+     * \param centerFrequencies the center frequency of each segment the PHY interface should use
      * \param channelWidth the total channel width the PHY interface should use
      */
     void ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
-                            const std::vector<double>& centerFrequencies,
+                            const std::vector<MHz_u>& centerFrequencies,
                             MHz_u channelWidth);
 
     /**
@@ -275,11 +274,11 @@ class SpectrumWifiPhy : public WifiPhy
     /**
      * Get the spectrum PHY interface that covers a band portion of the RF channel
      *
-     * \param frequency the center frequency in MHz of the RF channel band
+     * \param frequency the center frequency of the RF channel band
      * \param width the width of the RF channel band
      * \return the spectrum PHY interface that covers the indicated band of the RF channel
      */
-    Ptr<WifiSpectrumPhyInterface> GetInterfaceCoveringChannelBand(double frequency,
+    Ptr<WifiSpectrumPhyInterface> GetInterfaceCoveringChannelBand(MHz_u frequency,
                                                                   MHz_u width) const;
 
     /**
@@ -292,8 +291,8 @@ class SpectrumWifiPhy : public WifiPhy
     bool m_disableWifiReception;           //!< forces this PHY to fail to sync on any signal
     bool m_trackSignalsInactiveInterfaces; //!< flag whether signals coming from inactive spectrum
                                            //!< PHY interfaces are tracked
-    std::vector<double> m_frequenciesBeforeSwitch; //!< center frequency before channel switch
-    std::vector<MHz_u> m_widthsBeforeSwitch;       //!< channel width before channel switch
+    std::vector<MHz_u> m_frequenciesBeforeSwitch; //!< center frequency before channel switch
+    std::vector<MHz_u> m_widthsBeforeSwitch;      //!< channel width before channel switch
 
     TracedCallback<Ptr<const SpectrumSignalParameters>, uint32_t, double, Time>
         m_signalCb; //!< Signal callback
