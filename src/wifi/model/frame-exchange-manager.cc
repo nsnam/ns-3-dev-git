@@ -976,9 +976,13 @@ FrameExchangeManager::TransmissionSucceeded()
 }
 
 void
-FrameExchangeManager::TransmissionFailed()
+FrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << forceCurrentCw);
+    if (!forceCurrentCw)
+    {
+        m_dcf->UpdateFailedCw(m_linkId);
+    }
     m_sentFrameTo.clear();
     // A non-QoS station always releases the channel upon a transmission failure
     NotifyChannelReleased(m_dcf);
@@ -1036,7 +1040,6 @@ FrameExchangeManager::NormalAckTimeout(Ptr<WifiMpdu> mpdu, const WifiTxVector& t
         RetransmitMpduAfterMissedAck(mpdu);
     }
 
-    m_dcf->UpdateFailedCw(m_linkId);
     m_mpdu = nullptr;
     TransmissionFailed();
 }
@@ -1075,8 +1078,6 @@ FrameExchangeManager::DoCtsTimeout(Ptr<WifiPsdu> psdu)
     {
         GetWifiRemoteStationManager()->ReportFinalRtsFailed(droppedMpdu->GetHeader());
     }
-
-    m_dcf->UpdateFailedCw(m_linkId);
 
     // Make the sequence numbers of the MPDUs available again if the MPDUs have never
     // been transmitted, both in case the MPDUs have been discarded and in case the

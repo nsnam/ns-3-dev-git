@@ -115,7 +115,7 @@ class QosFrameExchangeManager : public FrameExchangeManager
                                 Time txDuration,
                                 Time response) const override;
     void TransmissionSucceeded() override;
-    void TransmissionFailed() override;
+    void TransmissionFailed(bool forceCurrentCw = false) override;
     void ForwardMpduDown(Ptr<WifiMpdu> mpdu, WifiTxVector& txVector) override;
 
     /**
@@ -148,8 +148,11 @@ class QosFrameExchangeManager : public FrameExchangeManager
      * Perform a PIFS recovery as a response to transmission failure within a TXOP.
      * If the carrier sense indicates that the medium is idle, continue the TXOP.
      * Otherwise, release the channel.
+     *
+     * @param forceCurrentCw whether to force the contention window to stay equal to the current
+     *                       value if PIFs recovery fails (normally, contention window is updated)
      */
-    void PifsRecovery();
+    void PifsRecovery(bool forceCurrentCw);
 
     /**
      * Send a CF-End frame to indicate the completion of the TXOP, provided that

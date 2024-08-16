@@ -473,13 +473,8 @@ HeFrameExchangeManager::DoCtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts,
         ReleaseSequenceNumbers(psdu);
     }
 
-    if (updateFailedCw)
-    {
-        m_edca->UpdateFailedCw(m_linkId);
-    }
-
     m_psduMap.clear();
-    TransmissionFailed();
+    TransmissionFailed(!updateFailedCw);
 }
 
 Ptr<WifiPsdu>
@@ -1357,11 +1352,6 @@ HeFrameExchangeManager::DoTbPpduTimeout(WifiPsduMap* psduMap,
     if (staMissedTbPpduFrom.size() == nSolicitedStations)
     {
         // no station replied, the transmission failed
-        if (updateFailedCw)
-        {
-            m_edca->UpdateFailedCw(m_linkId);
-        }
-
         CtrlTriggerHeader trigger;
         psduMap->cbegin()->second->GetPayload(0)->PeekHeader(trigger);
 
@@ -1371,7 +1361,7 @@ HeFrameExchangeManager::DoTbPpduTimeout(WifiPsduMap* psduMap,
             SendCfEndIfNeeded();
         }
 
-        TransmissionFailed();
+        TransmissionFailed(!updateFailedCw);
     }
     else if (!m_multiStaBaEvent.IsPending())
     {
@@ -1437,7 +1427,6 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout(WifiPsduMap* psduMap,
     if (staMissedBlockAckFrom.size() == nSolicitedStations)
     {
         // no station replied, the transmission failed
-        m_edca->UpdateFailedCw(m_linkId);
         TransmissionFailed();
     }
     else

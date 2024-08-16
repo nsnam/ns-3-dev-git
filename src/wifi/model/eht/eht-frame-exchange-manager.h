@@ -183,7 +183,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
                            const CtrlTriggerHeader& trigger,
                            double muRtsSnr) override;
     void TransmissionSucceeded() override;
-    void TransmissionFailed() override;
+    void TransmissionFailed(bool forceCurrentCw = false) override;
     void NotifyChannelReleased(Ptr<Txop> txop) override;
     void PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;

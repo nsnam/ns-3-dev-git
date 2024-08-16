@@ -1163,9 +1163,9 @@ EhtFrameExchangeManager::TransmissionSucceeded()
 }
 
 void
-EhtFrameExchangeManager::TransmissionFailed()
+EhtFrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << forceCurrentCw);
 
     if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
         m_staMac->GetEmlsrManager()->GetElapsedMediumSyncDelayTimer(m_linkId))
@@ -1175,7 +1175,7 @@ EhtFrameExchangeManager::TransmissionFailed()
         m_staMac->GetEmlsrManager()->DecrementMediumSyncDelayNTxops(m_linkId);
     }
 
-    HeFrameExchangeManager::TransmissionFailed();
+    HeFrameExchangeManager::TransmissionFailed(forceCurrentCw);
 }
 
 void

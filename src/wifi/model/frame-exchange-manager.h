@@ -649,8 +649,11 @@ class FrameExchangeManager : public Object
     /**
      * Take necessary actions upon a transmission failure. A non-QoS station
      * releases the channel when this method is called.
+     *
+     * @param forceCurrentCw whether to force the contention window to stay equal to the current
+     *                       value (normally, contention window is updated upon TX failure)
      */
-    virtual void TransmissionFailed();
+    virtual void TransmissionFailed(bool forceCurrentCw = false);
 
     /**
      * Wrapper for the GetMpdusToDropOnTxFailure function of the remote station manager that

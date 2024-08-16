@@ -110,9 +110,9 @@ QosFrameExchangeManager::SendCfEndIfNeeded()
 }
 
 void
-QosFrameExchangeManager::PifsRecovery()
+QosFrameExchangeManager::PifsRecovery(bool forceCurrentCw)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << forceCurrentCw);
     NS_ASSERT(m_edca);
     NS_ASSERT(m_edca->GetTxopStartTime(m_linkId).has_value());
 
@@ -123,7 +123,12 @@ QosFrameExchangeManager::PifsRecovery()
 
     if (m_allowedWidth == 0)
     {
+        // PIFS recovery failed, TXOP is terminated
         NotifyChannelReleased(m_edca);
+        if (!forceCurrentCw)
+        {
+            m_edca->UpdateFailedCw(m_linkId);
+        }
         m_edca = nullptr;
     }
     else
@@ -601,14 +606,14 @@ QosFrameExchangeManager::TransmissionSucceeded()
 }
 
 void
-QosFrameExchangeManager::TransmissionFailed()
+QosFrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << forceCurrentCw);
 
     // TODO This will be removed once no Txop is installed on a QoS station
     if (!m_edca)
     {
-        FrameExchangeManager::TransmissionFailed();
+        FrameExchangeManager::TransmissionFailed(forceCurrentCw);
         return;
     }
 
@@ -617,6 +622,10 @@ QosFrameExchangeManager::TransmissionFailed()
         // The backoff procedure shall be invoked by an EDCAF when the transmission
         // of an MPDU in the initial PPDU of a TXOP fails (Sec. 10.22.2.2 of 802.11-2016)
         NS_LOG_DEBUG("TX of the initial frame of a TXOP failed: terminate TXOP");
+        if (!forceCurrentCw)
+        {
+            m_edca->UpdateFailedCw(m_linkId);
+        }
         NotifyChannelReleased(m_edca);
         m_edca = nullptr;
     }
@@ -641,8 +650,10 @@ QosFrameExchangeManager::TransmissionFailed()
             // the medium is idle in a PIFS
             NS_LOG_DEBUG("TX of a non-initial frame of a TXOP failed: perform PIFS recovery");
             NS_ASSERT(!m_pifsRecoveryEvent.IsPending());
-            m_pifsRecoveryEvent =
-                Simulator::Schedule(m_phy->GetPifs(), &QosFrameExchangeManager::PifsRecovery, this);
+            m_pifsRecoveryEvent = Simulator::Schedule(m_phy->GetPifs(),
+                                                      &QosFrameExchangeManager::PifsRecovery,
+                                                      this,
+                                                      forceCurrentCw);
         }
         else
         {
@@ -651,6 +662,11 @@ QosFrameExchangeManager::TransmissionFailed()
             // requests channel access if needed,
             NS_LOG_DEBUG("TX of a non-initial frame of a TXOP failed: invoke backoff");
             m_edca->Txop::NotifyChannelReleased(m_linkId);
+            // CW and QSRC shall be updated in this case (see Section 10.23.2.2 of 802.11-2020)
+            if (!forceCurrentCw)
+            {
+                m_edca->UpdateFailedCw(m_linkId);
+            }
             m_edcaBackingOff = m_edca;
             m_edca = nullptr;
         }

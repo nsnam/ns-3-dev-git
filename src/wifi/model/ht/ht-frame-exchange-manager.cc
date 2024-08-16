@@ -1371,9 +1371,6 @@ HtFrameExchangeManager::BlockAckTimeout(Ptr<WifiPsdu> psdu, const WifiTxVector& 
 
     MissedBlockAck(psdu, txVector);
 
-    NS_ASSERT(m_edca);
-    m_edca->UpdateFailedCw(m_linkId);
-
     m_psdu = nullptr;
     TransmissionFailed();
 }
