@@ -218,10 +218,11 @@ class DockerContainerManager:
         # Import rootless docker settings from .bashrc
         with open(os.path.expanduser("~/.bashrc"), "r", encoding="utf-8") as f:
             docker_settings = re.findall("(DOCKER_.*=.*)", f.read())
-            for setting in docker_settings:
-                key, value = setting.split("=")
-                os.environ[key] = value
-            del docker_settings, setting, key, value
+            if docker_settings:
+                for setting in docker_settings:
+                    key, value = setting.split("=")
+                    os.environ[key] = value
+                    del setting, key, value
 
         # Create Docker client instance and start it
         ## The Python-on-whales container instance
