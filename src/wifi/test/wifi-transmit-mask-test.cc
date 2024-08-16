@@ -71,7 +71,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
                                WifiStandard standard,
                                WifiPhyBand band,
                                ChannelWidthMhz channelWidth,
-                               const std::vector<uint16_t>& centerFrequencies,
+                               const std::vector<double>& centerFrequencies,
                                const IndexPowerVect& maskRefs,
                                double tolerance,
                                std::size_t precision,
@@ -98,7 +98,7 @@ class WifiOfdmMaskSlopesTestCase : public TestCase
     WifiStandard m_standard;        ///< the wifi standard to test
     WifiPhyBand m_band;             ///< the wifi PHY band to test
     ChannelWidthMhz m_channelWidth; ///< the total channel width (MHz) to test
-    std::vector<uint16_t>
+    std::vector<double>
         m_centerFreqs; ///< the center frequency (MHz) per contiguous segment to test
     std::vector<bool>
         m_puncturedSubchannels; ///< bitmap indicating whether a 20 MHz subchannel is punctured or
@@ -114,7 +114,7 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase(
     WifiStandard standard,
     WifiPhyBand band,
     ChannelWidthMhz channelWidth,
-    const std::vector<uint16_t>& centerFrequencies,
+    const std::vector<double>& centerFrequencies,
     const IndexPowerVect& maskRefs,
     double tolerance,
     std::size_t precision,

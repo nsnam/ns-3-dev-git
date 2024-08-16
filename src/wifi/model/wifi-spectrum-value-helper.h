@@ -64,9 +64,9 @@ class WifiSpectrumValueHelper
      * \return the static SpectrumModel instance corresponding to the
      * given carrier frequency and channel width configuration.
      */
-    static Ptr<SpectrumModel> GetSpectrumModel(const std::vector<uint16_t>& centerFrequencies,
+    static Ptr<SpectrumModel> GetSpectrumModel(const std::vector<double>& centerFrequencies,
                                                ChannelWidthMhz channelWidth,
-                                               uint32_t carrierSpacing,
+                                               double carrierSpacing,
                                                ChannelWidthMhz guardBandwidth);
 
     /**
@@ -83,7 +83,7 @@ class WifiSpectrumValueHelper
      * \returns a pointer to a newly allocated SpectrumValue representing the DSSS Transmit Power
      * Spectral Density in W/Hz
      */
-    static Ptr<SpectrumValue> CreateDsssTxPowerSpectralDensity(uint16_t centerFrequency,
+    static Ptr<SpectrumValue> CreateDsssTxPowerSpectralDensity(double centerFrequency,
                                                                double txPowerW,
                                                                ChannelWidthMhz guardBandwidth);
 
@@ -103,7 +103,7 @@ class WifiSpectrumValueHelper
      * \return a pointer to a newly allocated SpectrumValue representing the OFDM Transmit Power
      * Spectral Density in W/Hz for each Band
      */
-    static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity(uint16_t centerFrequency,
+    static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity(double centerFrequency,
                                                                ChannelWidthMhz channelWidth,
                                                                double txPowerW,
                                                                ChannelWidthMhz guardBandwidth,
@@ -128,7 +128,7 @@ class WifiSpectrumValueHelper
      * Transmit Power Spectral Density in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateDuplicated20MhzTxPowerSpectralDensity(
-        const std::vector<uint16_t>& centerFrequencies,
+        const std::vector<double>& centerFrequencies,
         ChannelWidthMhz channelWidth,
         double txPowerW,
         ChannelWidthMhz guardBandwidth,
@@ -154,7 +154,7 @@ class WifiSpectrumValueHelper
      * Spectral Density in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateHtOfdmTxPowerSpectralDensity(
-        const std::vector<uint16_t>& centerFrequencies,
+        const std::vector<double>& centerFrequencies,
         ChannelWidthMhz channelWidth,
         double txPowerW,
         ChannelWidthMhz guardBandwidth,
@@ -180,7 +180,7 @@ class WifiSpectrumValueHelper
      * Spectral Density in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity(
-        uint16_t centerFrequency,
+        double centerFrequency,
         ChannelWidthMhz channelWidth,
         double txPowerW,
         ChannelWidthMhz guardBandwidth,
@@ -207,7 +207,7 @@ class WifiSpectrumValueHelper
      * Spectral Density in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity(
-        const std::vector<uint16_t>& centerFrequencies,
+        const std::vector<double>& centerFrequencies,
         ChannelWidthMhz channelWidth,
         double txPowerW,
         ChannelWidthMhz guardBandwidth,
@@ -230,7 +230,7 @@ class WifiSpectrumValueHelper
      * Spectral Density on the RU used by the STA in W/Hz for each Band
      */
     static Ptr<SpectrumValue> CreateHeMuOfdmTxPowerSpectralDensity(
-        const std::vector<uint16_t>& centerFrequencies,
+        const std::vector<double>& centerFrequencies,
         ChannelWidthMhz channelWidth,
         double txPowerW,
         ChannelWidthMhz guardBandwidth,
@@ -322,8 +322,8 @@ class WifiSpectrumValueHelper
  */
 struct FrequencyRange
 {
-    uint16_t minFrequency{0}; ///< the minimum frequency in MHz
-    uint16_t maxFrequency{0}; ///< the maximum frequency in MHz
+    double minFrequency{0}; ///< the minimum frequency in MHz
+    double maxFrequency{0}; ///< the maximum frequency in MHz
 };
 
 /**

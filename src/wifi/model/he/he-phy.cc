@@ -1230,9 +1230,9 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
 
         if (ppdu)
         {
-            const uint16_t subchannelMinFreq =
+            const double subchannelMinFreq =
                 m_wifiPhy->GetFrequency() - (m_wifiPhy->GetChannelWidth() / 2) + (index * 20);
-            const uint16_t subchannelMaxFreq = subchannelMinFreq + 20;
+            const double subchannelMaxFreq = subchannelMinFreq + 20;
             const auto ppduBw = ppdu->GetTxVector().GetChannelWidth();
 
             if (ppduBw <= m_wifiPhy->GetChannelWidth() &&
@@ -1351,7 +1351,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
     const auto& txVector = ppdu->GetTxVector();
     const auto& centerFrequencies = ppdu->GetTxCenterFreqs();
     auto channelWidth = txVector.GetChannelWidth();
-    auto printFrequencies = [](const std::vector<uint16_t>& v) {
+    auto printFrequencies = [](const std::vector<double>& v) {
         std::stringstream ss;
         for (const auto& centerFrequency : v)
         {
@@ -1443,7 +1443,7 @@ HePhy::GetTxPowerSpectralDensity(double txPowerW,
     }
 }
 
-std::vector<uint16_t>
+std::vector<double>
 HePhy::GetCenterFrequenciesForNonHePart(Ptr<const WifiPpdu> ppdu, uint16_t staId) const
 {
     NS_LOG_FUNCTION(this << ppdu << staId);
@@ -1460,7 +1460,7 @@ HePhy::GetCenterFrequenciesForNonHePart(Ptr<const WifiPpdu> ppdu, uint16_t staId
         HeRu::RuSpec nonOfdmaRu =
             HeRu::FindOverlappingRu(currentWidth, ru, HeRu::GetRuType(nonOfdmaWidth));
 
-        uint16_t startingFrequency = centerFrequencies.front() - (currentWidth / 2);
+        double startingFrequency = centerFrequencies.front() - (currentWidth / 2);
         centerFrequencies.front() =
             startingFrequency +
             nonOfdmaWidth * (nonOfdmaRu.GetPhyIndex(
@@ -1859,9 +1859,9 @@ HePhy::GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu)
 std::vector<WifiSpectrumBandIndices>
 HePhy::ConvertHeRuSubcarriers(ChannelWidthMhz bandWidth,
                               ChannelWidthMhz guardBandwidth,
-                              const std::vector<uint16_t>& centerFrequencies,
+                              const std::vector<double>& centerFrequencies,
                               ChannelWidthMhz totalWidth,
-                              uint32_t subcarrierSpacing,
+                              double subcarrierSpacing,
                               HeRu::SubcarrierRange subcarrierRange,
                               uint8_t bandIndex)
 {

@@ -672,7 +672,7 @@ SpectrumWifiPhyFilterTest::DoTeardown()
 void
 SpectrumWifiPhyFilterTest::RunOne()
 {
-    uint16_t txFrequency;
+    double txFrequency;
     switch (static_cast<uint16_t>(m_txChannelWidth))
     {
     case 20:
@@ -698,7 +698,7 @@ SpectrumWifiPhyFilterTest::RunOne()
     m_txPhy->SetOperatingChannel(
         WifiPhy::ChannelTuple{txChannelNum, m_txChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
 
-    uint16_t rxFrequency;
+    double rxFrequency;
     switch (static_cast<uint16_t>(m_rxChannelWidth))
     {
     case 20:
@@ -941,8 +941,8 @@ SpectrumWifiPhyGetBandTest::DoRun()
                 expectedStartIndice + (indicesPer20MhzBand * (bandWidth / 20)) - 1;
             std::vector<WifiSpectrumBandIndices> expectedIndices{
                 {expectedStartIndice, expectedStopIndice}};
-            const uint64_t expectedStartFrequency = 5170 * 1e6;
-            const uint64_t expectedStopFrequency = (5170 + bandWidth) * 1e6;
+            const double expectedStartFrequency = 5170 * 1e6;
+            const double expectedStopFrequency = (5170 + bandWidth) * 1e6;
             std::vector<WifiSpectrumBandFrequencies> expectedFrequencies{
                 {expectedStartFrequency, expectedStopFrequency}};
             const std::size_t numBands = (channelWidth / bandWidth);
@@ -1262,7 +1262,7 @@ class SpectrumWifiPhy80Plus80Test : public TestCase
      * \param expectSuccess flag to indicate whether reception is expected to be successful
      */
     void RunOne(const std::vector<uint8_t>& channelNumbers,
-                uint16_t interferenceCenterFrequency,
+                double interferenceCenterFrequency,
                 ChannelWidthMhz interferenceBandWidth,
                 bool expectSuccess);
 
@@ -1485,7 +1485,7 @@ SpectrumWifiPhy80Plus80Test::DoTeardown()
 
 void
 SpectrumWifiPhy80Plus80Test::RunOne(const std::vector<uint8_t>& channelNumbers,
-                                    uint16_t interferenceCenterFrequency,
+                                    double interferenceCenterFrequency,
                                     ChannelWidthMhz interferenceBandWidth,
                                     bool expectSuccess)
 {

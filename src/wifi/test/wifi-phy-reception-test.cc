@@ -59,7 +59,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPhyReceptionTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
-static const uint32_t FREQUENCY = 5180; // MHz
+static const double FREQUENCY = 5180; // MHz
 static const ChannelWidthMhz CHANNEL_WIDTH = 20;
 static const ChannelWidthMhz GUARD_WIDTH =
     CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
@@ -4228,7 +4228,7 @@ class TestUnsupportedBandwidthReception : public TestCase
      * \param centerFreqMhz the center frequency used for the transmission of the PPDU (in MHz)
      * \param bandwidthMhz the bandwidth used for the transmission of the PPDU (in MHz)
      */
-    void SendPpdu(uint16_t centerFreqMhz, ChannelWidthMhz bandwidthMhz);
+    void SendPpdu(double centerFreqMhz, ChannelWidthMhz bandwidthMhz);
 
     /**
      * Function called upon a PSDU received successfully
@@ -4298,7 +4298,7 @@ TestUnsupportedBandwidthReception::TestUnsupportedBandwidthReception()
 }
 
 void
-TestUnsupportedBandwidthReception::SendPpdu(uint16_t centerFreqMhz, ChannelWidthMhz bandwidthMhz)
+TestUnsupportedBandwidthReception::SendPpdu(double centerFreqMhz, ChannelWidthMhz bandwidthMhz)
 {
     auto txVector =
         WifiTxVector(HePhy::GetHeMcs0(), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, bandwidthMhz, false);
@@ -4509,7 +4509,7 @@ class TestPrimary20CoveredByPpdu : public TestCase
      * \param ppduCenterFreqMhz the center frequency used for the transmission of the PPDU (in MHz)
      * \return the created PPDU
      */
-    Ptr<HePpdu> CreatePpdu(uint16_t ppduCenterFreqMhz);
+    Ptr<HePpdu> CreatePpdu(double ppduCenterFreqMhz);
 
     /**
      * Run one function
@@ -4524,9 +4524,9 @@ class TestPrimary20CoveredByPpdu : public TestCase
      * primary 20 MHz channel is expected to overlap with the bandwidth of the incoming PPDU
      */
     void RunOne(WifiPhyBand band,
-                uint16_t phyCenterFreqMhz,
+                double phyCenterFreqMhz,
                 uint8_t p20Index,
-                uint16_t ppduCenterFreqMhz,
+                double ppduCenterFreqMhz,
                 bool expectedP20Overlap,
                 bool expectedP20Covered);
 
@@ -4541,7 +4541,7 @@ TestPrimary20CoveredByPpdu::TestPrimary20CoveredByPpdu()
 }
 
 Ptr<HePpdu>
-TestPrimary20CoveredByPpdu::CreatePpdu(uint16_t ppduCenterFreqMhz)
+TestPrimary20CoveredByPpdu::CreatePpdu(double ppduCenterFreqMhz)
 {
     const auto& channelInfo = (*WifiPhyOperatingChannel::FindFirst(0,
                                                                    ppduCenterFreqMhz,
@@ -4600,9 +4600,9 @@ TestPrimary20CoveredByPpdu::DoTeardown()
 
 void
 TestPrimary20CoveredByPpdu::RunOne(WifiPhyBand band,
-                                   uint16_t phyCenterFreqMhz,
+                                   double phyCenterFreqMhz,
                                    uint8_t p20Index,
-                                   uint16_t ppduCenterFreqMhz,
+                                   double ppduCenterFreqMhz,
                                    bool expectedP20Overlap,
                                    bool expectedP20Covered)
 {

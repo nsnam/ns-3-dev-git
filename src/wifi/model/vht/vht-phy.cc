@@ -609,10 +609,10 @@ VhtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     if (ppdu)
     {
         const ChannelWidthMhz primaryWidth = 20;
-        uint16_t p20MinFreq =
+        double p20MinFreq =
             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth) -
             (primaryWidth / 2);
-        uint16_t p20MaxFreq =
+        double p20MaxFreq =
             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth) +
             (primaryWidth / 2);
         if (ppdu->DoesOverlapChannel(p20MinFreq, p20MaxFreq))
@@ -631,11 +631,11 @@ VhtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
         for (const auto& secondaryChannel : secondaryChannels)
         {
             const auto secondaryWidth = secondaryChannel.first;
-            uint16_t secondaryMinFreq =
+            const auto secondaryMinFreq =
                 m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(
                     secondaryWidth) -
                 (secondaryWidth / 2);
-            uint16_t secondaryMaxFreq =
+            const auto secondaryMaxFreq =
                 m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(
                     secondaryWidth) +
                 (secondaryWidth / 2);

@@ -61,7 +61,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPhyOfdmaTest");
 
 static const uint8_t DEFAULT_CHANNEL_NUMBER = 36;
-static const uint32_t DEFAULT_FREQUENCY = 5180; // MHz
+static const double DEFAULT_FREQUENCY = 5180; // MHz
 static const WifiPhyBand DEFAULT_WIFI_BAND = WIFI_PHY_BAND_5GHZ;
 static const ChannelWidthMhz DEFAULT_CHANNEL_WIDTH = 20;
 static const ChannelWidthMhz DEFAULT_GUARD_WIDTH =
@@ -3200,7 +3200,7 @@ class TestUlOfdmaPhyTransmission : public TestCase
     uint32_t m_countRxBytesFromSta1;   ///< count RX bytes from STA 1
     uint32_t m_countRxBytesFromSta2;   ///< count RX bytes from STA 2
 
-    uint16_t m_frequency;           ///< frequency in MHz
+    double m_frequency;             ///< frequency in MHz
     ChannelWidthMhz m_channelWidth; ///< channel width in MHz
     Time m_expectedPpduDuration;    ///< expected duration to send MU PPDU
 };

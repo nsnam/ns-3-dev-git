@@ -56,7 +56,7 @@ static constexpr uint8_t MAX_PROPAGATION_DELAY_USEC = 1;
 /**
  * typedef for a pair of start and stop frequencies in Hz to represent a band
  */
-using WifiSpectrumBandFrequencies = std::pair<uint64_t, uint64_t>;
+using WifiSpectrumBandFrequencies = std::pair<double, double>;
 
 /// WifiSpectrumBandInfo structure containing info about a spectrum band
 struct WifiSpectrumBandInfo

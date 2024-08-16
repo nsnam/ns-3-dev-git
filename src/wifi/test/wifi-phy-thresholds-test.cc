@@ -40,7 +40,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPhyThresholdsTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
-static const uint32_t FREQUENCY = 5180; // MHz
+static const double FREQUENCY = 5180; // MHz
 static const ChannelWidthMhz CHANNEL_WIDTH = 20;
 
 /**

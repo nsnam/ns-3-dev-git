@@ -144,7 +144,7 @@ class SpectrumWifiPhy : public WifiPhy
      * \param frequencies the center frequency of each segment in MHz the PHY interface should use
      * \param width the total channel width in MHz the PHY interface should use
      */
-    void ConfigureInterface(const std::vector<uint16_t>& frequencies, ChannelWidthMhz width);
+    void ConfigureInterface(const std::vector<double>& frequencies, ChannelWidthMhz width);
 
     /**
      * This function is sending the signal to the Spectrum channel
@@ -186,7 +186,7 @@ class SpectrumWifiPhy : public WifiPhy
      * \return the number of bands between the two segments if the operating channel is made of
      * non-contiguous segments, zero otherwise
      */
-    static uint32_t GetNumBandsBetweenSegments(const std::vector<uint16_t>& centerFrequencies,
+    static uint32_t GetNumBandsBetweenSegments(const std::vector<double>& centerFrequencies,
                                                ChannelWidthMhz totalWidth,
                                                uint32_t subcarrierSpacing);
 
@@ -222,7 +222,7 @@ class SpectrumWifiPhy : public WifiPhy
      * \param channelWidth the total channel width in MHz the PHY interface should use
      */
     void ResetSpectrumModel(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
-                            const std::vector<uint16_t>& centerFrequencies,
+                            const std::vector<double>& centerFrequencies,
                             ChannelWidthMhz channelWidth);
 
     /**
@@ -290,7 +290,7 @@ class SpectrumWifiPhy : public WifiPhy
      * \param width the width in MHz of the RF channel band
      * \return the spectrum PHY interface that covers the indicated band of the RF channel
      */
-    Ptr<WifiSpectrumPhyInterface> GetInterfaceCoveringChannelBand(uint16_t frequency,
+    Ptr<WifiSpectrumPhyInterface> GetInterfaceCoveringChannelBand(double frequency,
                                                                   ChannelWidthMhz width) const;
 
     /**
@@ -303,7 +303,7 @@ class SpectrumWifiPhy : public WifiPhy
     bool m_disableWifiReception;           //!< forces this PHY to fail to sync on any signal
     bool m_trackSignalsInactiveInterfaces; //!< flag whether signals coming from inactive spectrum
                                            //!< PHY interfaces are tracked
-    std::vector<uint16_t> m_frequenciesBeforeSwitch;   //!< center frequency before channel switch
+    std::vector<double> m_frequenciesBeforeSwitch;     //!< center frequency before channel switch
     std::vector<ChannelWidthMhz> m_widthsBeforeSwitch; //!< channel width before channel switch
 
     TracedCallback<Ptr<const SpectrumSignalParameters>, uint32_t, double, Time>

@@ -223,8 +223,8 @@ class HePhy : public VhtPhy
      * \param staId the STA-ID of the station taking part of the UL MU
      * \return the center frequency in MHz corresponding to the non-HE portion of the HE TB PPDU
      */
-    std::vector<uint16_t> GetCenterFrequenciesForNonHePart(const Ptr<const WifiPpdu> ppdu,
-                                                           uint16_t staId) const;
+    std::vector<double> GetCenterFrequenciesForNonHePart(const Ptr<const WifiPpdu> ppdu,
+                                                         uint16_t staId) const;
 
     /**
      * Sets the OBSS-PD algorithm.
@@ -459,9 +459,9 @@ class HePhy : public VhtPhy
     static std::vector<WifiSpectrumBandIndices> ConvertHeRuSubcarriers(
         ChannelWidthMhz bandWidth,
         ChannelWidthMhz guardBandwidth,
-        const std::vector<uint16_t>& centerFrequencies,
+        const std::vector<double>& centerFrequencies,
         ChannelWidthMhz totalWidth,
-        uint32_t subcarrierSpacing,
+        double subcarrierSpacing,
         HeRu::SubcarrierRange subcarrierRange,
         uint8_t bandIndex = 0);
 

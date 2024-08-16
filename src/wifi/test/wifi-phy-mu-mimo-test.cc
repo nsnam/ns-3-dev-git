@@ -49,7 +49,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiPhyMuMimoTest");
 
-constexpr uint32_t DEFAULT_FREQUENCY = 5180; // MHz
+constexpr double DEFAULT_FREQUENCY = 5180; // MHz
 constexpr ChannelWidthMhz DEFAULT_CHANNEL_WIDTH = 20;
 
 /**
@@ -495,7 +495,7 @@ class TestDlMuMimoPhyTransmission : public TestCase
     Ptr<MuMimoSpectrumWifiPhy> m_phySta3; ///< PHY of STA 3
 
     uint8_t m_nss;                  ///< number of spatial streams per STA
-    uint16_t m_frequency;           ///< frequency in MHz
+    double m_frequency;             ///< frequency in MHz
     ChannelWidthMhz m_channelWidth; ///< channel width
     Time m_expectedPpduDuration;    ///< expected duration to send MU PPDU
 };
@@ -1266,7 +1266,7 @@ class TestUlMuMimoPhyTransmission : public TestCase
     std::vector<uint32_t> m_countRxBytesFromStas;   ///< count RX bytes from STAs
 
     Time m_delayStart;              ///< delay between the start of each HE TB PPDUs
-    uint16_t m_frequency;           ///< frequency in MHz
+    double m_frequency;             ///< frequency in MHz
     ChannelWidthMhz m_channelWidth; ///< channel width
     Time m_expectedPpduDuration;    ///< expected duration to send MU PPDU
 };
