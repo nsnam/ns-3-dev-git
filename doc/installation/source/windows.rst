@@ -161,119 +161,22 @@ Getting Doxygen from Msys2 is straightforward.
 
 .. sourcecode:: console
 
-  /c/ns-3-dev/ MINGW64$ pacman -S mingw-w64-x86_64-imagemagick mingw-w64-x86_64-doxygen mingw-w64-x86_64-graphviz
-
-For unknown reasons, the texlive packages in Msys2 are broken,
-so we recommend manually installing the official Texlive.
-
-.. _Texlive for Windows: https://tug.org/texlive/windows.html
-
-Start by installing `Texlive for Windows`_. It can be installed either via the network installer or
-directly from the ISO with all optional packages.
-
-To install it with the network installer, start by creating a texlive folder and downloading the
-texlive configuration profile below. You can change the installation directory (starting with
-``C:/texlive/2022``).
-
-.. sourcecode:: text
-
-    selected_scheme scheme-custom
-    TEXDIR C:/texlive/2022
-    TEXMFCONFIG ~/.texlive2022/texmf-config
-    TEXMFHOME ~/texmf
-    TEXMFLOCAL C:/texlive/texmf-local
-    TEXMFSYSCONFIG C:/texlive/2022/texmf-config
-    TEXMFSYSVAR C:/texlive/2022/texmf-var
-    TEXMFVAR ~/.texlive2022/texmf-var
-    binary_win32 1
-    collection-basic 1
-    collection-bibtexextra 1
-    collection-binextra 1
-    collection-context 1
-    collection-fontsrecommended 1
-    collection-fontutils 1
-    collection-games 1
-    collection-humanities 1
-    collection-langenglish 1
-    collection-latex 1
-    collection-latexextra 1
-    collection-latexrecommended 1
-    collection-luatex 1
-    collection-mathscience 1
-    collection-metapost 1
-    collection-music 1
-    collection-pictures 1
-    collection-plaingeneric 1
-    collection-pstricks 1
-    collection-publishers 1
-    collection-texworks 1
-    collection-wintools 1
-    collection-xetex 1
-    instopt_adjustpath 1
-    instopt_adjustrepo 1
-    instopt_letter 0
-    instopt_portable 0
-    instopt_write18_restricted 1
-    tlpdbopt_autobackup 1
-    tlpdbopt_backupdir tlpkg/backups
-    tlpdbopt_create_formats 1
-    tlpdbopt_desktop_integration 1
-    tlpdbopt_file_assocs 1
-    tlpdbopt_generate_updmap 0
-    tlpdbopt_install_docfiles 0
-    tlpdbopt_install_srcfiles 0
-    tlpdbopt_post_code 1
-    tlpdbopt_sys_bin /usr/local/bin
-    tlpdbopt_sys_info /usr/local/share/info
-    tlpdbopt_sys_man /usr/local/share/man
-    tlpdbopt_w32_multi_user 0
-
-
-Then, download Texlive's web installer and unpack it to the texlive directory,
-and run the installer.
-
-.. sourcecode:: console
-
-    ~$ wget https://linorg.usp.br/CTAN/systems/texlive/tlnet/install-tl.zip
-    ~$ python3 -c "import shutil; shutil.unpack_archive('install-tl.zip', './')"
-    ~$ cd install-tl-*
-    ~/install-tl-20220923$ .\install-tl-windows.bat --no-gui --lang en -profile ..\texlive.profile
-
-After the installation finishes, add the installation directory to the PATH environment variable.
-
-.. sourcecode:: console
-
-    setx PATH "%PATH%;C:\texlive\2022\bin\win32" /m
-    C:\ns-3-dev\> set MSYSTEM MINGW64
-    C:\ns-3-dev\> bash
-    /c/ns-3-dev/ MINGW64$ echo "export PATH=$PATH:/c/texlive/2022/bin/win32" >> ~/.bashrc
+  /c/ns-3-dev/ MINGW64$ pacman -S mingw-w64-x86_64-imagemagick mingw-w64-x86_64-doxygen mingw-w64-x86_64-graphviz mingw-w64-x86_64-texlive-full
 
 The ns-3 manual, models and tutorial
 ++++++++++++++++++++++++++++++++++++
 
 These documents are written in reStructuredText for Sphinx (doc/tutorial, doc/manual, doc/models).
-The figures are typically written in dia.
+The figures are typically written in Dia.
 
 The documents can be generated into multiple formats, one of them being pdf,
 which requires the same Latex setup for doxygen.
 
-Sphinx can be installed via Msys2's package manager:
+Sphinx and Dia can be installed via Msys2's package manager:
 
 .. sourcecode:: console
 
-  /c/ns-3-dev/ MINGW64$ pacman -S mingw-w64-x86_64-python-sphinx
-
-.. _Dia: https://sourceforge.net/projects/dia-installer/
-
-`Dia`_ on the other hand needs to be downloaded and installed manually.
-After installing it, or unzipping the package (example below), add Dia/bin to the PATH.
-
-.. sourcecode:: console
-
-    C:\ns-3-dev\> setx PATH "%PATH%;C:\dia_0.97.2_win32\bin" /m
-    C:\ns-3-dev\> set MSYSTEM MINGW64
-    C:\ns-3-dev\> bash
-    /c/ns-3-dev/ MINGW64$ echo "export PATH=$PATH:/c/dia_0.97.2_win32/bin" >> ~/.bashrc
+  /c/ns-3-dev/ MINGW64$ pacman -S mingw-w64-x86_64-python-sphinx mingw-w64-x86_64-dia mingw-w64-x86_64-texlive-full
 
 GNU Scientific Library (GSL)
 ++++++++++++++++++++++++++++
@@ -307,6 +210,15 @@ Requires some boost libraries that can be installed with the following.
 .. sourcecode:: console
 
   /c/ns-3-dev/ MINGW64$ pacman -S mingw-w64-x86_64-boost
+
+Support for click module
++++++++++++++++++++++++++++
+
+Requires autotools, which can be installed with the following.
+
+.. sourcecode:: console
+
+  /c/ns-3-dev/ MINGW64$ pacman -S mingw-w64-x86_64-autotools
 
 Windows 10 Docker container
 ***************************
