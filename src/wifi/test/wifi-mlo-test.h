@@ -10,6 +10,7 @@
 #define WIFI_MLO_TEST_H
 
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/constant-rate-wifi-manager.h"
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/mgt-action-headers.h"
 #include "ns3/mgt-headers.h"
@@ -89,6 +90,19 @@ class MldSwapLinksTest : public TestCase
      * Test FrameExchangeManager subclass to access m_linkId
      */
     class TestFrameExchangeManager : public FrameExchangeManager
+    {
+      public:
+        /// @return the link ID stored by this object
+        uint8_t GetLinkId() const
+        {
+            return m_linkId;
+        }
+    };
+
+    /**
+     * Test RemoteStationManager subclass to access m_linkId
+     */
+    class TestRemoteStationManager : public ConstantRateWifiManager
     {
       public:
         /// @return the link ID stored by this object

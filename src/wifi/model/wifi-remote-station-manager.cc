@@ -135,7 +135,8 @@ WifiRemoteStationManager::GetTypeId()
 }
 
 WifiRemoteStationManager::WifiRemoteStationManager()
-    : m_useNonErpProtection(false),
+    : m_linkId(0),
+      m_useNonErpProtection(false),
       m_useNonHtProtection(false),
       m_shortPreambleEnabled(false),
       m_shortSlotTimeEnabled(false)
@@ -176,6 +177,13 @@ WifiRemoteStationManager::SetupMac(const Ptr<WifiMac> mac)
     // We need to track our MAC because it is the object that knows the
     // full set of interframe spaces.
     m_wifiMac = mac;
+}
+
+void
+WifiRemoteStationManager::SetLinkId(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << +linkId);
+    m_linkId = linkId;
 }
 
 int64_t

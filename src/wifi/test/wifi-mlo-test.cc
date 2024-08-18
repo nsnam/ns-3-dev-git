@@ -178,6 +178,7 @@ MldSwapLinksTest::RunOne(std::string text,
 
     std::vector<Ptr<WifiPhy>> phys;
     std::vector<Ptr<FrameExchangeManager>> feManagers;
+    std::vector<Ptr<WifiRemoteStationManager>> rsManagers;
 
     for (std::size_t i = 0; i < nLinks; ++i)
     {
@@ -185,9 +186,11 @@ MldSwapLinksTest::RunOne(std::string text,
         phy->SetPhyId(i);
         phys.emplace_back(phy);
         feManagers.emplace_back(CreateObject<TestFrameExchangeManager>());
+        rsManagers.emplace_back(CreateObject<TestRemoteStationManager>());
     }
     mac->SetWifiPhys(phys); // create links containing the given PHYs
     mac->SetFrameExchangeManagers(feManagers);
+    mac->SetWifiRemoteStationManagers(rsManagers);
     mac->GetTxop()->SetWifiMac(mac);
 
     // set CWmin of each Txop LinkEntity to the link ID, so that we can check where it has moved
@@ -219,6 +222,12 @@ MldSwapLinksTest::RunOne(std::string text,
                  ->GetLinkId(),
             +linkId,
             text << ": Link ID stored by FrameExchangeManager has not been updated");
+
+        NS_TEST_EXPECT_MSG_EQ(
+            +DynamicCast<TestRemoteStationManager>(mac->GetWifiRemoteStationManager(linkId))
+                 ->GetLinkId(),
+            +linkId,
+            text << ": Link ID stored by RemoteStationManager has not been updated");
 
         NS_TEST_EXPECT_MSG_EQ(mac->GetTxop()->GetMinCw(linkId),
                               +phyId,

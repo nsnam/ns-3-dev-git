@@ -173,6 +173,13 @@ class WifiRemoteStationManager : public Object
     virtual void SetupMac(const Ptr<WifiMac> mac);
 
     /**
+     * Set the ID of the link this Remote Station Manager is associated with.
+     *
+     * @param linkId the ID of the link this Remote Station Manager is associated with
+     */
+    void SetLinkId(uint8_t linkId);
+
+    /**
      * Assign a fixed random variable stream number to the random variables
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
@@ -1269,6 +1276,8 @@ class WifiRemoteStationManager : public Object
      * @return the number of Ness the station has
      */
     uint8_t GetNess(const WifiRemoteStation* station) const;
+
+    uint8_t m_linkId; //!< the ID of the link this object is associated with
 
   private:
     /**

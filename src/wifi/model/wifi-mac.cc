@@ -1051,6 +1051,7 @@ WifiMac::SetWifiRemoteStationManagers(
     for (auto managerIt = stationManagers.cbegin(); auto& [id, link] : m_links)
     {
         link->stationManager = *managerIt++;
+        link->stationManager->SetLinkId(id);
     }
 
     CompleteConfig();
@@ -1108,6 +1109,10 @@ WifiMac::UpdateLinkId(uint8_t id)
     if (link.channelAccessManager)
     {
         link.channelAccessManager->SetLinkId(id);
+    }
+    if (link.stationManager)
+    {
+        link.stationManager->SetLinkId(id);
     }
 }
 
