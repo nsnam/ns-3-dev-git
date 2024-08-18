@@ -161,7 +161,7 @@ Note that we haven't actually created any WifiPhy objects yet; we've just
 prepared the YansWifiPhyHelper by telling it which channel it is connected to.
 The Phy objects are created in the next step.
 
-In order to enable 802.11n/ac/ax MIMO, the number of antennas as well as the number of supported spatial streams need to be configured.
+In order to enable 802.11n/ac/ax/be MIMO, the number of antennas as well as the number of supported spatial streams need to be configured.
 For example, this code enables MIMO with 2 antennas and 2 spatial streams:
 
 .. sourcecode:: cpp
@@ -550,8 +550,8 @@ that will be created upon a call to ``ns3::WifiHelper::Install``:
 
 .. sourcecode:: cpp
 
-  SpectrumWifiPhyHelper::SetPcapDataLinkType(const Ptr<SpectrumChannel> channel,
-                                             const FrequencyRange& freqRange)
+  SpectrumWifiPhyHelper::AddChannel(const Ptr<SpectrumChannel> channel,
+                                    const FrequencyRange& freqRange)
 
 where FrequencyRange is a structure that contains the start and stop frequencies
 expressed in MHz which corresponds to the spectrum portion that is covered by the channel.
