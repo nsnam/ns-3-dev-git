@@ -153,9 +153,46 @@ command to enable pcap tracing:
 
 .. sourcecode:: cpp
 
-  YansWifiPhyHelper::SetPcapDataLinkType(enum SupportedPcapDataLinkTypes dlt)
+  WifiPhyHelper::SetPcapDataLinkType(enum SupportedPcapDataLinkTypes dlt)
 
 |ns3| supports RadioTap and Prism tracing extensions for 802.11.
+
+For MLD devices, it is also possible to select one of these PCAP capture type:
+
+.. sourcecode:: cpp
+
+  WifiPhyHelper::SetPcapCaptureType(PcapCaptureType type)
+
+|ns3| supports three PCAP capture types for MLD devices:
+* a single PCAP file for the device, regardless of PHYs and links
+
+.. sourcecode:: cpp
+
+  phyHelper.SetPcapCaptureType(WifiPhyHelper::PcapCaptureType::PCAP_PER_DEVICE);
+
+* a PCAP file generated per PHY (default behavior)
+
+.. sourcecode:: cpp
+
+  phyHelper.SetPcapCaptureType(WifiPhyHelper::PcapCaptureType::PCAP_PER_PHY);
+
+* a PCAP file generated per link
+
+.. sourcecode:: cpp
+
+  phyHelper.SetPcapCaptureType(WifiPhyHelper::PcapCaptureType::PCAP_PER_LINK);
+
+The PCAP files will always be generated with the suffix of nodeId-deviceId.pcap, unless the user has enabled
+object names on either the Node or the NetDevice, in which case the string name will be used. When PCAP files
+are generated per PHY, that suffix is nodeId-deviceId-linkId.pcap. When PCAP files are generated per link, the
+suffix is nodeId-deviceId-phyId.pcap.
+
+When PCAP files are generated per link, if there is no generated PCAP for a given link, it means
+no packet has been transmitted nor received on that link. Since PHYs of non-AP MLDs may swap their
+links during setup, the link ID appended to the PCAP file might be higher than the highest PHY ID.
+
+In case of SLD devices, the configuration of the capture type has no impact since a single PCAP file
+will always be generated per device.
 
 Note that we haven't actually created any WifiPhy objects yet; we've just
 prepared the YansWifiPhyHelper by telling it which channel it is connected to.
@@ -1295,6 +1332,7 @@ Multiple RF interfaces configuration
   // SpectrumWifiPhyHelper (3 links)
   SpectrumWifiPhyHelper phy(3);
   phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+  phy.SetPcapCaptureType(WifiPhyHelper::PcapCaptureType::PCAP_PER_LINK);
   phy.AddChannel(spectrumChannel2_4Ghz, WIFI_SPECTRUM_2_4_GHZ);
   phy.AddChannel(spectrumChannel5Ghz, WIFI_SPECTRUM_5_GHZ);
   phy.AddChannel(spectrumChannel6Ghz, WIFI_SPECTRUM_6_GHZ);
@@ -1406,6 +1444,7 @@ Note that the channel switch delay should be less than the transition delay:
   // SpectrumWifiPhyHelper (3 links)
   SpectrumWifiPhyHelper phy(3);
   phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+  phy.SetPcapCaptureType(WifiPhyHelper::PcapCaptureType::PCAP_PER_LINK);
   phy.AddChannel(spectrumChannel2_4Ghz, WIFI_SPECTRUM_2_4_GHZ);
   phy.AddChannel(spectrumChannel5Ghz, WIFI_SPECTRUM_5_GHZ);
   phy.AddChannel(spectrumChannel6Ghz, WIFI_SPECTRUM_6_GHZ);
