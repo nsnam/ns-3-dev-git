@@ -372,6 +372,7 @@ build_lib(
     test/wifi-phy-rx-trace-helper-test.cc
     test/wifi-phy-thresholds-test.cc
     test/wifi-primary-channels-test.cc
+    test/wifi-retransmit-test.cc
     test/wifi-ru-allocation-test.cc
     test/wifi-channel-switching-test.cc
     test/wifi-test.cc
