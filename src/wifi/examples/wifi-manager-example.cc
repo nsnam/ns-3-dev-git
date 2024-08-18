@@ -74,10 +74,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiManagerExample");
 
-// 290K @ 20 MHz
-const double NOISE_DBM_Hz = -174.0; //!< Default value for noise.
-double noiseDbm = NOISE_DBM_Hz;     //!< Value for noise.
-
 double g_intervalBytes = 0;  //!< Bytes received in an interval.
 uint64_t g_intervalRate = 0; //!< Rate in an interval.
 
@@ -170,8 +166,9 @@ struct StandardInfo
  * Change the signal model and report the rate.
  *
  * \param rssModel The new RSS model.
- * \param step The step tp use.
- * \param rss The RSS.
+ * \param step The step to use.
+ * \param rss The RSS in dBm.
+ * \param noise The noise in dBm.
  * \param rateDataset The rate dataset.
  * \param actualDataset The actual dataset.
  */
@@ -179,11 +176,12 @@ void
 ChangeSignalAndReportRate(Ptr<FixedRssLossModel> rssModel,
                           Step step,
                           double rss,
+                          double noise,
                           Gnuplot2dDataset& rateDataset,
                           Gnuplot2dDataset& actualDataset)
 {
     NS_LOG_FUNCTION(rssModel << step.stepSize << step.stepTime << rss);
-    double snr = rss - noiseDbm;
+    double snr = rss - noise;
     rateDataset.Add(snr, g_intervalRate / 1e6);
     // Calculate received rate since last interval
     double currentRate = ((g_intervalBytes * 8) / step.stepTime) / 1e6; // Mb/s
@@ -198,6 +196,7 @@ ChangeSignalAndReportRate(Ptr<FixedRssLossModel> rssModel,
                         rssModel,
                         step,
                         (rss - step.stepSize),
+                        noise,
                         rateDataset,
                         actualDataset);
 }
@@ -739,13 +738,16 @@ main(int argc, char* argv[])
         wndServer->GetHeConfiguration()->SetGuardInterval(NanoSeconds(serverShortGuardInterval));
         wndClient->GetHeConfiguration()->SetGuardInterval(NanoSeconds(clientShortGuardInterval));
     }
-    NS_LOG_DEBUG("Channel width " << wifiPhyPtrClient->GetChannelWidth() << " noiseDbm "
-                                  << noiseDbm);
-    NS_LOG_DEBUG("NSS " << wifiPhyPtrClient->GetMaxSupportedTxSpatialStreams());
 
     // Configure signal and noise, and schedule first iteration
-    noiseDbm += 10 * log10(clientSelectedStandard.m_width * 1000000);
-    double rssCurrent = (clientSelectedStandard.m_snrHigh + noiseDbm);
+    const auto BOLTZMANN = 1.3803e-23;
+    const auto noiseDensity = WToDbm(BOLTZMANN * 290); // 290K @ 20 MHz
+    const auto noise = noiseDensity + (10 * log10(clientSelectedStandard.m_width * 1000000));
+
+    NS_LOG_DEBUG("Channel width " << wifiPhyPtrClient->GetChannelWidth() << " noise " << noise);
+    NS_LOG_DEBUG("NSS " << wifiPhyPtrClient->GetMaxSupportedTxSpatialStreams());
+
+    const auto rssCurrent = (clientSelectedStandard.m_snrHigh + noise);
     rssLossModel->SetRss(rssCurrent);
     NS_LOG_INFO("Setting initial Rss to " << rssCurrent);
     // Move the STA by stepsSize meters every stepTime seconds
@@ -754,6 +756,7 @@ main(int argc, char* argv[])
                         rssLossModel,
                         step,
                         rssCurrent,
+                        noise,
                         rateDataset,
                         actualDataset);
 
