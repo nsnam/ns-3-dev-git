@@ -287,6 +287,7 @@ AidAssignmentTest::DoSetup()
     // AP MLD
     SpectrumWifiPhyHelper phyHelper(3);
     phyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+    phyHelper.SetPcapCaptureType(WifiPhyHelper::PcapCaptureType::PCAP_PER_LINK);
     uint8_t linkId = 0;
     for (const auto& str : m_linkChannels)
     {
@@ -308,6 +309,7 @@ AidAssignmentTest::DoSetup()
     {
         phyHelper = SpectrumWifiPhyHelper(links.size());
         phyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+        phyHelper.SetPcapCaptureType(WifiPhyHelper::PcapCaptureType::PCAP_PER_LINK);
         linkId = 0;
         for (const auto& id : links)
         {
@@ -612,6 +614,7 @@ MultiLinkOperationsTestBase::SetChannels(SpectrumWifiPhyHelper& helper,
 {
     helper = SpectrumWifiPhyHelper(channels.size());
     helper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+    helper.SetPcapCaptureType(WifiPhyHelper::PcapCaptureType::PCAP_PER_LINK);
 
     uint8_t linkId = 0;
     for (const auto& str : channels)
