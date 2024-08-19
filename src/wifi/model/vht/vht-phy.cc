@@ -76,10 +76,12 @@ const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
     { std::make_tuple (160, 7, 9), 12 }, // instead of 10
 };
 
+// clang-format on
+
 /**
  * \brief map a given channel list type to the corresponding scaling factor in dBm
  */
-const std::map<WifiChannelListType, double> channelTypeToScalingFactorDbm {
+const std::map<WifiChannelListType, double> channelTypeToScalingFactorDbm{
     {WIFI_CHANLIST_PRIMARY, 0.0},
     {WIFI_CHANLIST_SECONDARY, 0.0},
     {WIFI_CHANLIST_SECONDARY40, 3.0},
@@ -89,13 +91,11 @@ const std::map<WifiChannelListType, double> channelTypeToScalingFactorDbm {
 /**
  * \brief map a given secondary channel width to its channel list type
  */
-const std::map<ChannelWidthMhz, WifiChannelListType> secondaryChannels {
+const std::map<ChannelWidthMhz, WifiChannelListType> secondaryChannels{
     {20, WIFI_CHANLIST_SECONDARY},
     {40, WIFI_CHANLIST_SECONDARY40},
     {80, WIFI_CHANLIST_SECONDARY80},
 };
-
-// clang-format on
 
 VhtPhy::VhtPhy(bool buildModeList /* = true */)
     : HtPhy(1, false) // don't add HT modes to list
