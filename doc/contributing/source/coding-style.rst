@@ -695,7 +695,7 @@ is described in the `Doxygen website <https://www.doxygen.nl/index.html>`_.
        * A detailed description of the purpose of the method.
        *
        * \param firstParam a short description of the purpose of this parameter
-       * \returns a short description of what is returned from this function.
+       * \return a short description of what is returned from this function.
        */
       int DoSomething(int firstParam);
 
