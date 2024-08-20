@@ -163,7 +163,7 @@ class CandidateQueue
     /**
      * \brief return true if v1 < v2
      *
-     * SPFVertexes are added into the queue according to the ordering
+     * SPFVertex items are added into the queue according to the ordering
      * defined by this method. If v1 should be popped before v2, this
      * method return true; false otherwise
      *

@@ -129,15 +129,6 @@ static ns3::GlobalValue g_rate("VRCrate",
 ./src/traffic-control/model/codel-queue-disc.h:17:
  * Codel, the COntrolled DELay Queueing discipline
 
-./src/internet/model/global-route-manager-impl.h:555:
-     * \param vs a list of SPFVertexes
-
-./src/internet/model/candidate-queue.h:166:
-     * SPFVertexes are added into the queue according to the ordering
-
-./src/internet/model/global-route-manager-impl.h:555
-    typedef std::list<SPFVertex*> ListOfSPFVertex_t; //!< container of SPFVertexes
-
 ./CHANGES.md:
   * (dsr) Class `DsrOptionRerrUnsupportHeader` from `dsr-option-header.h` was renamed `DsrOptionRerrUnsupportedHeader`.
   * (internet) Enumerated value `IPV6_EXT_AUTHENTIFICATION` from `ipv6-header.h` was renamed `IPV6_EXT_AUTHENTICATION`.

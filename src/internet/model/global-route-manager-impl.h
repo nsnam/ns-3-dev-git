@@ -542,7 +542,7 @@ class SPFVertex
     Ipv4Address m_nextHop;                          //!< next hop
     typedef std::list<NodeExit_t> ListOfNodeExit_t; //!< container of Exit nodes
     ListOfNodeExit_t m_ecmpRootExits; //!< store the multiple root's exits for supporting ECMP
-    typedef std::list<SPFVertex*> ListOfSPFVertex_t; //!< container of SPFVertexes
+    typedef std::list<SPFVertex*> ListOfSPFVertex_t; //!< container of SPFVertex items
     ListOfSPFVertex_t m_parents;                     //!< parent list
     ListOfSPFVertex_t m_children;                    //!< Children list
     bool m_vertexProcessed; //!< Flag to note whether vertex has been processed in stage two of SPF
@@ -552,7 +552,7 @@ class SPFVertex
      * \brief Stream insertion operator.
      *
      * \param os the reference to the output stream
-     * \param vs a list of SPFVertexes
+     * \param vs a list of SPFVertex items
      * \returns the reference to the output stream
      */
     friend std::ostream& operator<<(std::ostream& os, const SPFVertex::ListOfSPFVertex_t& vs);
