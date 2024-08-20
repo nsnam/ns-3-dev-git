@@ -16,14 +16,16 @@
  *
  */
 
+#ifndef INT64X64_128_H
+#define INT64X64_128_H
+
 #include "ns3/core-config.h"
 
-#if !defined(INT64X64_128_H) && defined(INT64X64_USE_128) && !defined(PYTHON_SCAN)
 /**
  * \ingroup highprec
  * Use uint128_t for int64x64_t implementation
  */
-#define INT64X64_128_H
+#if defined(INT64X64_USE_128) && !defined(PYTHON_SCAN)
 
 #include <cmath> // pow
 #include <stdint.h>
@@ -460,4 +462,5 @@ class int64x64_t
 
 } // namespace ns3
 
+#endif /* defined(INT64X64_USE_128) && !defined(PYTHON_SCAN) */
 #endif /* INT64X64_128_H */

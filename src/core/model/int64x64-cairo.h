@@ -16,10 +16,13 @@
  *
  */
 
-#include "ns3/core-config.h"
-#if !defined(INT64X64_CAIRO_H) && defined(INT64X64_USE_CAIRO) && !defined(PYTHON_SCAN)
-/** Using the ns3::int64x64_t based on Cairo 128-bit integers. */
+#ifndef INT64X64_CAIRO_H
 #define INT64X64_CAIRO_H
+
+#include "ns3/core-config.h"
+
+#if defined(INT64X64_USE_CAIRO) && !defined(PYTHON_SCAN)
+/** Using the ns3::int64x64_t based on Cairo 128-bit integers. */
 
 #include "cairo-wideint-private.h"
 
@@ -443,4 +446,5 @@ class int64x64_t
 
 } // namespace ns3
 
+#endif /* defined(INT64X64_USE_CAIRO) && !defined(PYTHON_SCAN) */
 #endif /* INT64X64_CAIRO_H */

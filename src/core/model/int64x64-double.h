@@ -16,10 +16,13 @@
  *
  */
 
-#include "ns3/core-config.h"
-#if !defined(INT64X64_DOUBLE_H) && (defined(INT64X64_USE_DOUBLE) || defined(PYTHON_SCAN))
-/** Using the ns3::int64x64_t based on double values. */
+#ifndef INT64X64_DOUBLE_H
 #define INT64X64_DOUBLE_H
+
+#include "ns3/core-config.h"
+
+#if defined(INT64X64_USE_DOUBLE) || defined(PYTHON_SCAN)
+/** Using the ns3::int64x64_t based on double values. */
 
 #include <cmath> // pow
 #include <stdint.h>
@@ -386,4 +389,5 @@ class int64x64_t
 
 } // namespace ns3
 
+#endif /* defined(INT64X64_USE_DOUBLE) || defined(PYTHON_SCAN) */
 #endif /* INT64X64_DOUBLE_H */
