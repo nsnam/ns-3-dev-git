@@ -70,6 +70,9 @@ clang-tidy-18:
       2> /dev/null ;
       fi
 
+    # Trim empty lines from output file
+    - sed -i '/^$/d' $CLANG_TIDY_OUTPUT
+
     # Check job results
     - (! egrep -v "file not found \[clang-diagnostic-error\]" $CLANG_TIDY_OUTPUT | egrep -A3 "error:|warning:|note:")
     - echo "No clang-tidy errors found"
