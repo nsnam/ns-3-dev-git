@@ -62,4 +62,5 @@ build_lib(
     test/bulk-send-application-test-suite.cc
     test/udp-client-server-test.cc
     test/video-traffic-test-suite.cc
+    test/voip-traffic-test-suite.cc
 )
