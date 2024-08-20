@@ -15,12 +15,6 @@ FileConfig::~FileConfig()
 {
 }
 
-void
-FileConfig::SetSaveDeprecated(bool saveDeprecated)
-{
-    m_saveDeprecated = saveDeprecated;
-}
-
 NoneFileConfig::NoneFileConfig()
 {
 }

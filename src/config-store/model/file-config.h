@@ -29,11 +29,6 @@ class FileConfig
      */
     virtual void SetFilename(std::string filename) = 0;
     /**
-     * Set if to save deprecated attributes
-     * \param saveDeprecated the deprecated attributes save policy
-     */
-    void SetSaveDeprecated(bool saveDeprecated);
-    /**
      * Load or save the default values
      */
     virtual void Default() = 0;
@@ -45,9 +40,6 @@ class FileConfig
      * Load or save the attributes values
      */
     virtual void Attributes() = 0;
-
-  protected:
-    bool m_saveDeprecated; ///< save deprecated attributes
 };
 
 /**

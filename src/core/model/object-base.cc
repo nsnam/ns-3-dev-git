@@ -237,12 +237,12 @@ ObjectBase::SetAttributeFailSafe(std::string name, const AttributeValue& value)
 }
 
 void
-ObjectBase::GetAttribute(std::string name, AttributeValue& value) const
+ObjectBase::GetAttribute(std::string name, AttributeValue& value, bool permissive) const
 {
     NS_LOG_FUNCTION(this << name << &value);
     TypeId::AttributeInformation info;
     TypeId tid = GetInstanceTypeId();
-    if (!tid.LookupAttributeByName(name, &info))
+    if (!tid.LookupAttributeByName(name, &info, permissive))
     {
         NS_FATAL_ERROR(
             "Attribute name=" << name << " does not exist for this object: tid=" << tid.GetName());

@@ -220,8 +220,13 @@ AttributeIterator::DoIterate(Ptr<Object> object)
             if (ptrChecker != nullptr)
             {
                 NS_LOG_DEBUG("pointer attribute " << info.name);
+                if (info.supportLevel == TypeId::DEPRECATED ||
+                    info.supportLevel == TypeId::OBSOLETE)
+                {
+                    continue;
+                }
                 PointerValue ptr;
-                object->GetAttribute(info.name, ptr);
+                object->GetAttribute(info.name, ptr, true);
                 Ptr<Object> tmp = ptr.Get<Object>();
                 if (tmp)
                 {
@@ -240,7 +245,7 @@ AttributeIterator::DoIterate(Ptr<Object> object)
             {
                 NS_LOG_DEBUG("ObjectPtrContainer attribute " << info.name);
                 ObjectPtrContainerValue vector;
-                object->GetAttribute(info.name, vector);
+                object->GetAttribute(info.name, vector, true);
                 StartVisitArrayAttribute(object, info.name, vector);
                 ObjectPtrContainerValue::Iterator it;
                 for (it = vector.Begin(); it != vector.End(); ++it)

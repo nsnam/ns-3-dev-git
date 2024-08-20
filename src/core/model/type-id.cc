@@ -936,41 +936,64 @@ TypeId::GetRegistered(uint16_t i)
     return TypeId(IidManager::Get()->GetRegistered(i));
 }
 
-bool
-TypeId::LookupAttributeByName(std::string name, TypeId::AttributeInformation* info) const
+std::tuple<bool, TypeId, TypeId::AttributeInformation>
+TypeId::FindAttribute(const TypeId& tid, const std::string& name)
 {
-    NS_LOG_FUNCTION(this << name << info);
-    TypeId tid;
-    TypeId nextTid = *this;
-    do
+    TypeId currentTid = tid;
+    TypeId parentTid;
+    while (true)
     {
-        tid = nextTid;
-        for (std::size_t i = 0; i < tid.GetAttributeN(); i++)
+        for (std::size_t i = 0; i < currentTid.GetAttributeN(); ++i)
         {
-            TypeId::AttributeInformation tmp = tid.GetAttribute(i);
-            if (tmp.name == name)
+            const AttributeInformation& attributeInfo = currentTid.GetAttribute(i);
+            if (attributeInfo.name == name)
             {
-                if (tmp.supportLevel == TypeId::SUPPORTED)
-                {
-                    *info = tmp;
-                    return true;
-                }
-                else if (tmp.supportLevel == TypeId::DEPRECATED)
-                {
-                    std::cerr << "Attribute '" << name << "' is deprecated: " << tmp.supportMsg
-                              << std::endl;
-                    *info = tmp;
-                    return true;
-                }
-                else if (tmp.supportLevel == TypeId::OBSOLETE)
-                {
-                    NS_FATAL_ERROR("Attribute '" << name << "' is obsolete, with no fallback: "
-                                                 << tmp.supportMsg);
-                }
+                return {true, currentTid, attributeInfo};
             }
         }
-        nextTid = tid.GetParent();
-    } while (nextTid != tid);
+
+        parentTid = currentTid.GetParent();
+
+        if (parentTid == currentTid)
+        {
+            break;
+        }
+
+        currentTid = parentTid;
+    }
+    return {false, TypeId(), AttributeInformation()};
+}
+
+bool
+TypeId::LookupAttributeByName(std::string name,
+                              TypeId::AttributeInformation* info,
+                              bool permissive) const
+{
+    NS_LOG_FUNCTION(this << name << info);
+    auto [found, tid, attribute] = FindAttribute(*this, name);
+    if (found)
+    {
+        if (attribute.supportLevel == TypeId::SUPPORTED)
+        {
+            *info = attribute;
+            return true;
+        }
+        else if (attribute.supportLevel == TypeId::DEPRECATED)
+        {
+            if (!permissive)
+            {
+                std::cerr << "Attribute '" << name << "' is deprecated: " << attribute.supportMsg
+                          << std::endl;
+            }
+            *info = attribute;
+            return true;
+        }
+        else if (attribute.supportLevel == TypeId::OBSOLETE)
+        {
+            NS_FATAL_ERROR("Attribute '"
+                           << name << "' is obsolete, with no fallback: " << attribute.supportMsg);
+        }
+    }
     return false;
 }
 

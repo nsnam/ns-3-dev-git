@@ -104,11 +104,6 @@ XmlConfigSave::Default()
             m_writer = writer;
         }
 
-        void SetSaveDeprecated(bool saveDeprecated)
-        {
-            m_saveDeprecated = saveDeprecated;
-        }
-
       private:
         void StartVisitTypeId(std::string name) override
         {
@@ -119,14 +114,24 @@ XmlConfigSave::Default()
         {
             TypeId tid = TypeId::LookupByName(m_typeid);
             ns3::TypeId::SupportLevel supportLevel = TypeId::SupportLevel::SUPPORTED;
+            std::string originalInitialValue;
+            std::string valueTypeName;
             for (std::size_t i = 0; i < tid.GetAttributeN(); i++)
             {
                 TypeId::AttributeInformation tmp = tid.GetAttribute(i);
                 if (tmp.name == name)
                 {
                     supportLevel = tmp.supportLevel;
+                    originalInitialValue = tmp.originalInitialValue->SerializeToString(tmp.checker);
+                    valueTypeName = tmp.checker->GetValueTypeName();
                     break;
                 }
+            }
+            if (valueTypeName == "ns3::CallbackValue")
+            {
+                NS_LOG_WARN("Global attribute " << m_typeid << "::" << name
+                                                << " was not saved because it is a CallbackValue");
+                return;
             }
             if (supportLevel == TypeId::SupportLevel::OBSOLETE)
             {
@@ -134,10 +139,13 @@ XmlConfigSave::Default()
                                                 << " was not saved because it is OBSOLETE");
                 return;
             }
-            else if (supportLevel == TypeId::SupportLevel::DEPRECATED && !m_saveDeprecated)
+            if (supportLevel == TypeId::SupportLevel::DEPRECATED &&
+                defaultValue == originalInitialValue)
             {
-                NS_LOG_WARN("Global attribute " << m_typeid << "::" << name
-                                                << " was not saved because it is DEPRECATED");
+                NS_LOG_WARN("Global attribute "
+                            << m_typeid << "::" << name
+                            << " was not saved because it is DEPRECATED and its value has not "
+                               "changed from the original initial value");
                 return;
             }
 
@@ -169,11 +177,9 @@ XmlConfigSave::Default()
 
         xmlTextWriterPtr m_writer;
         std::string m_typeid;
-        bool m_saveDeprecated;
     };
 
     XmlDefaultIterator iterator = XmlDefaultIterator(m_writer);
-    iterator.SetSaveDeprecated(m_saveDeprecated);
     iterator.Iterate();
 }
 
@@ -188,39 +194,45 @@ XmlConfigSave::Attributes()
         {
         }
 
-        void SetSaveDeprecated(bool saveDeprecated)
-        {
-            m_saveDeprecated = saveDeprecated;
-        }
-
       private:
         void DoVisitAttribute(Ptr<Object> object, std::string name) override
         {
+            StringValue str;
             TypeId tid = object->GetInstanceTypeId();
-            ns3::TypeId::SupportLevel supportLevel = TypeId::SupportLevel::SUPPORTED;
-            for (std::size_t i = 0; i < tid.GetAttributeN(); i++)
+
+            auto [found, inTid, attr] = TypeId::FindAttribute(tid, name);
+
+            if (found)
             {
-                TypeId::AttributeInformation tmp = tid.GetAttribute(i);
-                if (tmp.name == name)
+                if (attr.checker && attr.checker->GetValueTypeName() == "ns3::CallbackValue")
                 {
-                    supportLevel = tmp.supportLevel;
-                    break;
+                    NS_LOG_WARN("Attribute " << GetCurrentPath()
+                                             << " was not saved because it is a CallbackValue");
+                    return;
+                }
+                auto supportLevel = attr.supportLevel;
+                if (supportLevel == TypeId::SupportLevel::OBSOLETE)
+                {
+                    NS_LOG_WARN("Attribute " << GetCurrentPath()
+                                             << " was not saved because it is OBSOLETE");
+                    return;
+                }
+
+                std::string originalInitialValue =
+                    attr.originalInitialValue->SerializeToString(attr.checker);
+                object->GetAttribute(name, str, true);
+
+                if (supportLevel == TypeId::SupportLevel::DEPRECATED &&
+                    str.Get() == originalInitialValue)
+                {
+                    NS_LOG_WARN("Attribute "
+                                << GetCurrentPath()
+                                << " was not saved because it is DEPRECATED and its value has not "
+                                   "changed from the original initial value");
+                    return;
                 }
             }
-            if (supportLevel == TypeId::SupportLevel::OBSOLETE)
-            {
-                NS_LOG_WARN("Attribute " << GetCurrentPath()
-                                         << " was not saved because it is OBSOLETE");
-                return;
-            }
-            else if (supportLevel == TypeId::SupportLevel::DEPRECATED && !m_saveDeprecated)
-            {
-                NS_LOG_WARN("Attribute " << GetCurrentPath()
-                                         << " was not saved because it is DEPRECATED");
-                return;
-            }
-            StringValue str;
-            object->GetAttribute(name, str);
+
             int rc;
             rc = xmlTextWriterStartElement(m_writer, BAD_CAST "value");
             if (rc < 0)
@@ -248,11 +260,9 @@ XmlConfigSave::Attributes()
         }
 
         xmlTextWriterPtr m_writer;
-        bool m_saveDeprecated;
     };
 
     XmlTextAttributeIterator iter = XmlTextAttributeIterator(m_writer);
-    iter.SetSaveDeprecated(m_saveDeprecated);
     iter.Iterate();
 }
 

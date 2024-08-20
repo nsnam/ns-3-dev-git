@@ -63,11 +63,15 @@ ConfigStore::GetTypeId()
                 EnumValue(ConfigStore::RAW_TEXT),
                 MakeEnumAccessor<FileFormat>(&ConfigStore::SetFileFormat),
                 MakeEnumChecker(ConfigStore::RAW_TEXT, "RawText", ConfigStore::XML, "Xml"))
-            .AddAttribute("SaveDeprecated",
-                          "Save DEPRECATED attributes",
-                          BooleanValue(true),
-                          MakeBooleanAccessor(&ConfigStore::SetSaveDeprecated),
-                          MakeBooleanChecker());
+            .AddAttribute(
+                "SaveDeprecated",
+                "Save DEPRECATED attributes",
+                BooleanValue(true),
+                MakeBooleanAccessor(&ConfigStore::SetSaveDeprecated),
+                MakeBooleanChecker(),
+                TypeId::OBSOLETE,
+                "OBSOLETE since ns-3.43 as it is no longer needed; deprecated attributes are saved "
+                "only if their value differs from their respective original initial value");
     return tid;
 }
 
@@ -129,8 +133,6 @@ ConfigStore::ConfigStore()
         }
     }
     m_file->SetFilename(m_filename);
-    m_file->SetSaveDeprecated(m_saveDeprecated);
-
     NS_LOG_FUNCTION(this << ": format: " << m_fileFormat << ", mode: " << m_mode
                          << ", file name: " << m_filename);
 }
