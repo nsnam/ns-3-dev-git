@@ -195,7 +195,7 @@ void LogComponentDisableAll(LogLevel level);
  *   using ns3::g_log;
  *
  *   // Further definitions outside of the ns3 namespace
- *\endcode
+ * \endcode
  *
  * \param [in] name The log component name.
  */

@@ -1045,7 +1045,7 @@ class LteEnbRrc : public Object
     void SendHandoverRequest(uint16_t rnti, uint16_t cellId);
 
     /**
-     *  \brief This function acts as an interface to trigger Release indication messages towards eNB
+     * \brief This function acts as an interface to trigger Release indication messages towards eNB
      * and EPC
      * \param imsi the IMSI
      * \param rnti the RNTI

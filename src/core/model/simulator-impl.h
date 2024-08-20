@@ -54,7 +54,7 @@ class SimulatorImpl : public Object
      */
     static TypeId GetTypeId();
 
-    /**  \copydoc Simulator::Destroy   */
+    /** \copydoc Simulator::Destroy */
     virtual void Destroy() = 0;
     /** \copydoc Simulator::IsFinished */
     virtual bool IsFinished() const = 0;

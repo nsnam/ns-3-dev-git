@@ -759,7 +759,7 @@ class TcpGeneralTest : public TestCase
     }
 
     /**
-     *  \brief Slow start threshold changes
+     * \brief Slow start threshold changes
      *
      * This applies only for sender socket.
      *

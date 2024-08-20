@@ -42,9 +42,9 @@ namespace Hash
 {
 
 /**
- *  \ingroup hash
+ * \ingroup hash
  *
- *  \brief Hash function implementation base class.
+ * \brief Hash function implementation base class.
  */
 class Implementation : public SimpleRefCount<Implementation>
 {

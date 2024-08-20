@@ -555,7 +555,7 @@ usage for |ns3|.
      *  \ingroup foo
      *
      *  FooBar packet type.
-    */
+     */
     class FooBar
 
 * Did you know ``typedefs`` can have formal arguments?  This enables

@@ -198,7 +198,7 @@ SackPermittedTestCase::Tx(const Ptr<const Packet> p, const TcpHeader& h, SocketW
 
 /**
  * \ingroup internet-test
- *  \ingroup tests
+ * \ingroup tests
  *
  * The test case for testing the TCP SACK PERMITTED option.
  */

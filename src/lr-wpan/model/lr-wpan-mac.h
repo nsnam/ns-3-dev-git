@@ -668,14 +668,14 @@ class LrWpanMac : public LrWpanMacBase
     /**
      * Check if the packet destination is its coordinator
      *
-     *\param mac The coordinator short MAC Address
+     * \param mac The coordinator short MAC Address
      */
     void SetAssociatedCoor(Mac16Address mac);
 
     /**
      * Check if the packet destination is its coordinator
      *
-     *\param mac The coordinator extended MAC Address
+     * \param mac The coordinator extended MAC Address
      */
     void SetAssociatedCoor(Mac64Address mac);
 
@@ -689,15 +689,15 @@ class LrWpanMac : public LrWpanMacBase
     /**
      * Obtain the number of symbols in the packet which is currently being sent by the MAC layer.
      *
-     *\return packet number of symbols
-     * */
+     * \return packet number of symbols
+     */
     uint64_t GetTxPacketSymbols();
 
     /**
      * Check if the packet to transmit requires acknowledgment
      *
-     *\return True if the Tx packet requires acknowledgment
-     * */
+     * \return True if the Tx packet requires acknowledgment
+     */
     bool IsTxAckReq();
 
     /**

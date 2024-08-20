@@ -84,7 +84,7 @@ class RoutingTableEntry
 
     ~RoutingTableEntry();
 
-    ///\name Precursors management
+    /// \name Precursors management
     //\{
     /**
      * Insert precursor in precursor list if it doesn't yet exist in the list
@@ -429,7 +429,7 @@ class RoutingTable
      */
     RoutingTable(Time t);
 
-    ///\name Handle lifetime of invalid route
+    /// \name Handle lifetime of invalid route
     //\{
     /**
      * Get the lifetime of a bad link

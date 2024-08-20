@@ -263,9 +263,9 @@ class PeerManagementProtocol : public Object
     typedef std::map<uint32_t, PeerLinksOnInterface> PeerLinksMap;
     /// This map keeps relationship between peer address and its beacon information
     typedef std::map<Mac48Address, BeaconInfo> BeaconsOnInterface;
-    ///\brief This map keeps beacon information on all interfaces
+    /// \brief This map keeps beacon information on all interfaces
     typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
-    ///\brief this vector keeps pointers to MAC-plugins
+    /// \brief this vector keeps pointers to MAC-plugins
     typedef std::map<uint32_t, Ptr<PeerManagementProtocolMac>> PeerManagementProtocolMacMap;
 
     /**

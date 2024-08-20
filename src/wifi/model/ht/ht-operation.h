@@ -318,7 +318,7 @@ class HtOperation : public WifiInformationElement
      * Return MCS is supported.
      *
      * \param mcs MCS
-     *\
+     *
      * \return the MCS is supported
      */
     bool IsSupportedMcs(uint8_t mcs) const;

@@ -165,7 +165,7 @@ class HwmpProtocol : public MeshL2RoutingProtocol
      *  \param os the output stream
      */
     void Report(std::ostream& os) const;
-    ///\brief Reset Statistics:
+    /// \brief Reset Statistics:
     void ResetStats();
     ///@}
 
@@ -412,7 +412,7 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     void SendProactivePreq();
     ///@}
 
-    ///\return address of MeshPointDevice
+    /// \return address of MeshPointDevice
     Mac48Address GetAddress();
     /// \name Methods needed by HwmpMacLugin to access protocol parameters:
     ///@{

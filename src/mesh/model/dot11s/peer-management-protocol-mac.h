@@ -129,7 +129,7 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
     /// allow PeerLink class access friend access
     friend class PeerLink;
 
-    ///\name Create peer link management frames
+    /// \name Create peer link management frames
     // \{
     /**
      * \brief This structure keeps all fields in peer link management frame,
@@ -234,7 +234,7 @@ class PeerManagementProtocolMac : public MeshWifiInterfaceMacPlugin
 
   private:
     Statistics m_stats; ///< statistics
-    ///\name Information about MAC and protocol:
+    /// \name Information about MAC and protocol:
     Ptr<MeshWifiInterfaceMac> m_parent;     ///< parent
     uint32_t m_ifIndex;                     ///< IF index
     Ptr<PeerManagementProtocol> m_protocol; ///< protocol

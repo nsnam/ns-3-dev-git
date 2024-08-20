@@ -41,7 +41,7 @@ namespace ns3
  * \ingroup core
  * \defgroup hash Hash Functions
  *
- *  \brief Generic Hash function interface.
+ * \brief Generic Hash function interface.
  *
  * See \ref Hasher for main entry point.
  * See \ref hash-example.cc for example usage.

@@ -33,9 +33,9 @@
 #include <math.h>
 
 /**
- *  \file
- *  \ingroup antenna
- *  Class CircularApertureAntennaModel implementation.
+ * \file
+ * \ingroup antenna
+ * Class CircularApertureAntennaModel implementation.
  */
 
 namespace

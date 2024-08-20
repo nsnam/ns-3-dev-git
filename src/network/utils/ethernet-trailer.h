@@ -86,7 +86,7 @@ class EthernetTrailer : public Trailer
     bool CheckFcs(Ptr<const Packet> p) const;
 
     /**
-     *\return Returns the size of the trailer
+     * \return Returns the size of the trailer
      */
     uint32_t GetTrailerSize() const;
 

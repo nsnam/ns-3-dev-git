@@ -53,7 +53,7 @@ class PeerLinkOpenStart : public Header
     PeerLinkOpenStart(const PeerLinkOpenStart&) = delete;
     PeerLinkOpenStart& operator=(const PeerLinkOpenStart&) = delete;
 
-    ///\brief fields:
+    /// \brief fields:
     struct PlinkOpenStartFields
     {
         IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
@@ -123,7 +123,7 @@ class PeerLinkCloseStart : public Header
     PeerLinkCloseStart(const PeerLinkCloseStart&) = delete;
     PeerLinkCloseStart& operator=(const PeerLinkCloseStart&) = delete;
 
-    ///\brief fields:
+    /// \brief fields:
     struct PlinkCloseStartFields
     {
         IePeeringProtocol protocol; ///< Peering protocol version - 3 octets
@@ -187,7 +187,7 @@ class PeerLinkConfirmStart : public Header
     PeerLinkConfirmStart(const PeerLinkConfirmStart&) = delete;
     PeerLinkConfirmStart& operator=(const PeerLinkConfirmStart&) = delete;
 
-    ///\brief fields:
+    /// \brief fields:
     struct PlinkConfirmStartFields
     {
         IePeeringProtocol protocol; ///< Peering protocol version - 3 octets

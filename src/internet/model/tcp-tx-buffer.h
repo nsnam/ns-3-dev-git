@@ -499,7 +499,7 @@ class TcpTxBuffer : public Object
      * The cases we need to manage are two, and they are depicted in the following
      * image:
      *
-     *\verbatim
+     * \verbatim
                          |------|     |----|     |----|
                   list = |      | --> |    | --> |    |
                          |------|     |----|     |----|
@@ -525,7 +525,7 @@ class TcpTxBuffer : public Object
      * and we reduce case (2) to case (1) through sequentially applying fragment
      * or merge. For instance:
      *
-     *\verbatim
+     * \verbatim
         |------|
         |      |
         |------|

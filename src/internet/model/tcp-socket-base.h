@@ -1145,7 +1145,8 @@ class TcpSocketBase : public TcpSocket
      */
     void DoRetransmit();
 
-    /** \brief Add options to TcpHeader
+    /**
+     * \brief Add options to TcpHeader
      *
      * Test each option, and if it is enabled on our side, add it
      * to the header
@@ -1232,7 +1233,8 @@ class TcpSocketBase : public TcpSocket
      */
     void AddOptionSack(TcpHeader& header);
 
-    /** \brief Process the timestamp option from other side
+    /**
+     * \brief Process the timestamp option from other side
      *
      * Get the timestamp and the echo, then save timestamp (which will
      * be the echo value in our out-packets) and save the echoed timestamp,

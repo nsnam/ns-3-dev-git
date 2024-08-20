@@ -303,7 +303,8 @@ class TcpAdvertisedWindowTest : public TcpGeneralTest
     Ptr<ErrorModel> CreateReceiverErrorModel() override;
 
   private:
-    /** \brief Callback called for the update of the awnd
+    /**
+     * \brief Callback called for the update of the awnd
      * \param oldAwnd Old advertised window
      * \param newAwnd new value
      */
@@ -389,7 +390,8 @@ class TcpAdvWindowOnLossTest : public TcpGeneralTest
     Ptr<ErrorModel> CreateReceiverErrorModel() override;
 
   private:
-    /** \brief Callback called for the update of the awnd
+    /**
+     * \brief Callback called for the update of the awnd
      * \param oldAwnd Old advertised window
      * \param newAwnd new value
      */

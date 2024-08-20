@@ -200,7 +200,7 @@ class MatrixArray : public ValArray<T>
      */
     MatrixArray FrobeniusNorm() const;
     /**
-     *\brief Multiply each matrix in the array by the left and the right matrix.
+     * \brief Multiply each matrix in the array by the left and the right matrix.
      * For each page of this MatrixArray the operation performed is
      * lMatrix * matrix(pageIndex) * rMatrix, and the resulting MatrixArray<T>
      * contains the array of the results per page. If "this" has dimensions

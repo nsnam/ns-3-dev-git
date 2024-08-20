@@ -492,8 +492,9 @@ void
 LogSetTimePrinter(TimePrinter printer)
 {
     g_logTimePrinter = printer;
-    /** \internal
-     *  This is the only place where we are more or less sure that all log variables
+    /**
+     * \internal
+     * This is the only place where we are more or less sure that all log variables
      * are registered. See \bugid{1082} for details.
      */
     CheckEnvironmentVariables();

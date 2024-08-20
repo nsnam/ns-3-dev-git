@@ -111,13 +111,13 @@ class ServiceFlowManager : public Object
     uint32_t GetNrServiceFlows() const;
 
     /**
-     *\param SrcAddress the source ip address
-     *\param DstAddress the destination ip address
-     *\param SrcPort the source port
-     *\param DstPort the destination port
-     *\param Proto the protocol
-     *\param dir the direction of the service flow
-     *\return the service flow to which this ip flow is associated
+     * \param SrcAddress the source ip address
+     * \param DstAddress the destination ip address
+     * \param SrcPort the source port
+     * \param DstPort the destination port
+     * \param Proto the protocol
+     * \param dir the direction of the service flow
+     * \return the service flow to which this ip flow is associated
      */
     ServiceFlow* DoClassify(Ipv4Address SrcAddress,
                             Ipv4Address DstAddress,

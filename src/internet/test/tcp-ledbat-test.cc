@@ -60,7 +60,8 @@ class TcpLedbatToNewReno : public TestCase
 
   private:
     void DoRun() override;
-    /** \brief Execute the test
+    /**
+     * \brief Execute the test
      */
     void ExecuteTest();
 
@@ -160,7 +161,8 @@ class TcpLedbatIncrementTest : public TestCase
 
   private:
     void DoRun() override;
-    /** \brief Execute the test
+    /**
+     * \brief Execute the test
      */
     void ExecuteTest();
 
@@ -261,7 +263,8 @@ class TcpLedbatDecrementTest : public TestCase
 
   private:
     void DoRun() override;
-    /** \brief Execute the test
+    /**
+     * \brief Execute the test
      */
     void ExecuteTest();
 

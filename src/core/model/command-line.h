@@ -466,7 +466,7 @@ class CommandLine
 
     /**
      * \ingroup commandline
-     *\brief An argument Item assigning to POD
+     * \brief An argument Item assigning to POD
      */
     template <typename T>
     class UserItem : public Item
@@ -672,8 +672,9 @@ class CommandLine
 
 }; // class CommandLine
 
-/** \ingroup commandline
- *  \defgroup commandlinehelper Helpers to specialize UserItem
+/**
+ * \ingroup commandline
+ * \defgroup commandlinehelper Helpers to specialize UserItem
  */
 /**
  * \ingroup commandlinehelper

@@ -126,7 +126,7 @@ class TcpLedbat : public TcpNewReno
 
   private:
     /**
-     *\brief Buffer structure to store delays
+     * \brief Buffer structure to store delays
      */
     struct OwdCircBuf
     {

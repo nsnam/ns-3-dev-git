@@ -46,8 +46,8 @@ class SixLowPanDispatch
 {
   public:
     /**
-     *  \brief Dispatch values, as defined in \RFC{4944} and \RFC{6282}
-    \verbatim
+     * \brief Dispatch values, as defined in \RFC{4944} and \RFC{6282}
+     \verbatim
        Pattern    Header Type
      +------------+------------------------------------------------+
      | 00  xxxxxx | NALP        - Not a LoWPAN frame               |

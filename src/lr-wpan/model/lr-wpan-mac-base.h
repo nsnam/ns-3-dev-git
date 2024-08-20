@@ -880,7 +880,7 @@ class LrWpanMacBase : public Object
      * The callback implements MLME-GET.confirm SAP of IEEE 802.15.4-2011,
      * section 6.2.5.2
      *
-     *\param c the callback
+     * \param c the callback
      */
     void SetMlmeGetConfirmCallback(MlmeGetConfirmCallback c);
 
