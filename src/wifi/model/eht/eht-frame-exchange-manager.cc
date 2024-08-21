@@ -1179,7 +1179,7 @@ EhtFrameExchangeManager::TxopEnd(const std::optional<Mac48Address>& txopHolder)
 {
     NS_LOG_FUNCTION(this << txopHolder.has_value());
 
-    if (m_phy->IsReceivingPhyHeader())
+    if (m_phy && m_phy->IsReceivingPhyHeader())
     {
         // we may get here because the PHY has not issued the PHY-RXSTART.indication before
         // the expiration of the timer started to detect new received frames, but the PHY is
