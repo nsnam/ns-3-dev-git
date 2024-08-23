@@ -37,8 +37,13 @@ The required Doxygen version for documentation generation is version 1.11.
 - (applications) - It is now possible to specify the address on which to bind the listening socket for UdpServer via the `Local` attribute.
 - (applications) - It is now possible to specify a port only for PacketSink to listen to any address (both IPv4 and IPv6).
 - (wifi) - Added a `WifiDefaultProtectionManager::SkipMuRtsBeforeBsrp` attribute to avoid using MU-RTS to protect the transmission of a BSRP Trigger Frame. If this attribute is set to true (which is the default value), BSRP Trigger Frames can be used as Initial Control Frames for EMLSR clients
+- (wifi) Each MSDU, A-MSDU or management MPDU now has its individual frame retry count and each Txop/QosTxop has its own SRC (Station Retry Count) to match the standard specifications.
+- (wifi) The `MaxSsrc` and `MaxSlrc` attributes of the `WifiRemoteStationManager` have been obsoleted and replaced by the `FrameRetryLimit` attribute of the `WifiMac`.
+- (wifi) Added the `IncrementRetryCountUnderBa` attribute to the  `WifiRemoteStationManager` to choose whether or not to increase the retry count of frames that are part of a block ack agreement; this attribute defaults to false to match the standard specifications.
 
 ### Bugs fixed
+
+- (wifi) Retransmit procedures have been aligned with the standard specifications.
 
 ## Release 3.43
 
