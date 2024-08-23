@@ -221,7 +221,6 @@ int
 PacketSocket::Connect(const Address& ad)
 {
     NS_LOG_FUNCTION(this << ad);
-    PacketSocketAddress address;
     if (m_state == STATE_CLOSED)
     {
         m_errno = ERROR_BADF;
