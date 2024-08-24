@@ -183,10 +183,6 @@ function(build_lib)
     target_precompile_headers(${BLIB_LIBNAME} REUSE_FROM stdlib_pch)
   endif()
 
-  if(${ENABLE_EXAMPLES} AND ${ENABLE_TESTS})
-    target_compile_definitions(${BLIB_LIBNAME} PRIVATE NS3_ENABLE_EXAMPLES)
-  endif()
-
   # Associate public headers with library for installation purposes
   set_target_properties(
     ${BLIB_LIBNAME}

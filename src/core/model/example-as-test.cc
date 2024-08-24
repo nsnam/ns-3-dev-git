@@ -42,7 +42,6 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("ExampleAsTestCase");
 
 // Running tests as examples currently requires Python.
-#if defined(NS3_ENABLE_EXAMPLES)
 
 ExampleAsTestCase::ExampleAsTestCase(const std::string name,
                                      const std::string program,
@@ -160,7 +159,5 @@ ExampleAsTestSuite::ExampleAsTestSuite(const std::string name,
     NS_LOG_FUNCTION(this << name << program << dataDir << args << duration << shouldNotErr);
     AddTestCase(new ExampleAsTestCase(name, program, dataDir, args, shouldNotErr), duration);
 }
-
-#endif // NS3_ENABLE_EXAMPLES
 
 } // namespace ns3
