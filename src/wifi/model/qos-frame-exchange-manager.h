@@ -191,6 +191,9 @@ class QosFrameExchangeManager : public FrameExchangeManager
     std::optional<Mac48Address> m_txopHolder; //!< MAC address of the TXOP holder
     bool m_setQosQueueSize;                   /**< whether to set the Queue Size subfield of the
                                                    QoS Control field of QoS data frames */
+    bool m_protectSingleExchange; /**< true if the Duration/ID field in frames establishing
+                                     protection only covers the immediate frame exchange instead of
+                                     rest of the TXOP limit when the latter is non-zero */
 
   private:
     /**

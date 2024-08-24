@@ -334,20 +334,31 @@ HeFrameExchangeManager::GetMuRtsDurationId(uint32_t muRtsSize,
 {
     NS_LOG_FUNCTION(this << muRtsSize << muRtsTxVector << txDuration << response);
 
+    WifiTxVector txVector;
+    txVector.SetMode(GetCtsModeAfterMuRts());
+    const auto singleDurationId =
+        VhtFrameExchangeManager::GetRtsDurationId(txVector, txDuration, response);
+
     if (m_edca->GetTxopLimit(m_linkId).IsZero())
     {
-        WifiTxVector txVector;
-        txVector.SetMode(GetCtsModeAfterMuRts());
-        return VhtFrameExchangeManager::GetRtsDurationId(txVector, txDuration, response);
+        return singleDurationId;
     }
 
     // under multiple protection settings, if the TXOP limit is not null, Duration/ID
     // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
     // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
     // of 802.11-2016)
-    return std::max(m_edca->GetRemainingTxop(m_linkId) -
-                        WifiPhy::CalculateTxDuration(muRtsSize, muRtsTxVector, m_phy->GetPhyBand()),
-                    Seconds(0));
+    auto duration =
+        std::max(m_edca->GetRemainingTxop(m_linkId) -
+                     WifiPhy::CalculateTxDuration(muRtsSize, muRtsTxVector, m_phy->GetPhyBand()),
+                 Seconds(0));
+
+    if (m_protectSingleExchange)
+    {
+        duration = std::min(duration, singleDurationId);
+    }
+
+    return duration;
 }
 
 void
@@ -1724,15 +1735,19 @@ HeFrameExchangeManager::SendMultiStaBlockAck(const WifiTxParameters& txParams, T
      * settings defined in 9.2.5.2. (Sec. 9.2.5.7 of 802.11ax-2021)
      */
     NS_ASSERT(m_edca);
-    if (m_edca->GetTxopLimit(m_linkId).IsZero())
+    const auto singleDurationId = Max(durationId - m_phy->GetSifs() - txDuration, Seconds(0));
+    if (m_edca->GetTxopLimit(m_linkId).IsZero()) // single protection settings
     {
-        // single protection settings
-        psdu->SetDuration(Max(durationId - m_phy->GetSifs() - txDuration, Seconds(0)));
+        psdu->SetDuration(singleDurationId);
     }
-    else
+    else // multiple protection settings
     {
-        // multiple protection settings
-        psdu->SetDuration(Max(m_edca->GetRemainingTxop(m_linkId) - txDuration, Seconds(0)));
+        auto duration = Max(m_edca->GetRemainingTxop(m_linkId) - txDuration, Seconds(0));
+        if (m_protectSingleExchange)
+        {
+            duration = std::min(duration, singleDurationId);
+        }
+        psdu->SetDuration(duration);
     }
 
     psdu->GetPayload(0)->AddPacketTag(m_muSnrTag);

@@ -1034,19 +1034,28 @@ HtFrameExchangeManager::GetPsduDurationId(Time txDuration, const WifiTxParameter
     NS_LOG_FUNCTION(this << txDuration << &txParams);
 
     NS_ASSERT(m_edca);
+    NS_ASSERT(txParams.m_acknowledgment &&
+              txParams.m_acknowledgment->acknowledgmentTime.has_value());
+
+    const auto singleDurationId = *txParams.m_acknowledgment->acknowledgmentTime;
 
     if (m_edca->GetTxopLimit(m_linkId).IsZero())
     {
-        NS_ASSERT(txParams.m_acknowledgment &&
-                  txParams.m_acknowledgment->acknowledgmentTime.has_value());
-        return *txParams.m_acknowledgment->acknowledgmentTime;
+        return singleDurationId;
     }
 
     // under multiple protection settings, if the TXOP limit is not null, Duration/ID
     // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
     // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
     // of 802.11-2016)
-    return std::max(m_edca->GetRemainingTxop(m_linkId) - txDuration, Seconds(0));
+    auto duration = std::max(m_edca->GetRemainingTxop(m_linkId) - txDuration, Seconds(0));
+
+    if (m_protectSingleExchange)
+    {
+        duration = std::min(duration, singleDurationId);
+    }
+
+    return duration;
 }
 
 void
