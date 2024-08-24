@@ -25,7 +25,7 @@ requirements (Note: not all ns-3 features are available on all systems):
 - Python 3.8 or later
 - CMake 3.13 or later
 - (macOS only) Xcode 13.1.6 or later
-- (Windows only) Msys2/MinGW64 toolchain or WSL2
+- (Windows only) Msys2/MinGW64 and Msys2/UCRT64 toolchains or WSL2
 
 This release has discontinued support for g++-9 and clang-10 compilers and for Python 3.6 and 3.7.
 
