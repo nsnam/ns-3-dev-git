@@ -18,6 +18,10 @@ if(NOT
   return()
 endif()
 
+add_definitions(
+  -DTAP_CREATOR="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/src/tap-bridge/ns${NS3_VER}-tap-creator${build_profile_suffix}"
+)
+
 build_lib(
   LIBNAME tap-bridge
   SOURCE_FILES
@@ -31,9 +35,6 @@ build_lib(
   LIBRARIES_TO_LINK ${libinternet}
 )
 
-add_definitions(
-  -DTAP_CREATOR="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/src/tap-bridge/ns${NS3_VER}-tap-creator${build_profile_suffix}"
-)
 build_exec(
   EXECNAME tap-creator
   SOURCE_FILES model/tap-creator.cc
