@@ -1937,12 +1937,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         run_ns3("clean")
         with DockerContainerManager(self, "ubuntu:20.04") as container:
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake clang-10")
+            container.execute("apt-get remove -y g++")
+            container.execute("apt-get install -y python3 cmake g++-10 clang-11")
 
             # Enable Ninja tracing without using the Ninja generator
             try:
                 container.execute(
-                    "./ns3 configure --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10"
+                    "./ns3 configure --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-11"
                 )
             except DockerException as e:
                 self.assertIn("Ninjatracing requires the Ninja generator", e.stderr)
@@ -1954,7 +1955,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Enable Ninjatracing support without git (should fail)
             try:
                 container.execute(
-                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10"
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-11"
                 )
             except DockerException as e:
                 self.assertIn("could not find git for clone of NinjaTracing", e.stderr)
@@ -1963,7 +1964,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Enable Ninjatracing support with git (it should succeed)
             try:
                 container.execute(
-                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10"
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-11"
                 )
             except DockerException as e:
                 self.assertTrue(False, "Failed to configure with Ninjatracing")
@@ -1992,7 +1993,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             # Enable Clang TimeTrace feature for more detailed traces
             try:
                 container.execute(
-                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-10 -DNS3_CLANG_TIMETRACE=ON"
+                    "./ns3 configure -G Ninja --enable-modules=core --enable-ninja-tracing -- -DCMAKE_CXX_COMPILER=/usr/bin/clang++-11 -DNS3_CLANG_TIMETRACE=ON"
                 )
             except DockerException as e:
                 self.assertTrue(False, "Failed to configure Ninjatracing with Clang's TimeTrace")
