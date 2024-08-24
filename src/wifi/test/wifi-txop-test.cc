@@ -164,8 +164,13 @@ class WifiTxopTest : public TestCase
     std::vector<PacketSocketAddress> m_ulSockets; ///< packet socket address for UL traffic
 };
 
-WifiTxopTest::WifiTxopTest(const Params& params)
-    : TestCase("Check correct operation within TXOPs"),
+WifiTxopTest::WifiTxopTest(const WifiTxopTest::Params& params)
+    : TestCase("Check correct operation within TXOPs with parameters: nonHt=" +
+               std::to_string(params.nonHt) +
+               " pifsRecovery=" + std::to_string(params.pifsRecovery) +
+               " singleRtsPerTxop=" + std::to_string(params.singleRtsPerTxop) +
+               " lengthBasedRtsCtsThresh=" + std::to_string(params.lengthBasedRtsCtsThresh) +
+               " protectedIfResponded=" + std::to_string(params.protectedIfResponded)),
       m_nStations(3),
       m_apTxopLimit(MicroSeconds(4768)),
       m_staAifsn(4),
@@ -1323,24 +1328,25 @@ WifiTxopTestSuite::WifiTxopTestSuite()
 {
     for (const auto nonHt : {true, false})
     {
-        AddTestCase(new WifiTxopTest({.nonHt = nonHt,
-                                      .pifsRecovery = true,
-                                      .singleRtsPerTxop = false,
-                                      .lengthBasedRtsCtsThresh = false,
-                                      .protectedIfResponded = true}),
-                    TestCase::Duration::QUICK);
-        AddTestCase(new WifiTxopTest({.nonHt = nonHt,
-                                      .pifsRecovery = false,
-                                      .singleRtsPerTxop = true,
-                                      .lengthBasedRtsCtsThresh = false,
-                                      .protectedIfResponded = false}),
-                    TestCase::Duration::QUICK);
-        AddTestCase(new WifiTxopTest({.nonHt = nonHt,
-                                      .pifsRecovery = true,
-                                      .singleRtsPerTxop = true,
-                                      .lengthBasedRtsCtsThresh = true,
-                                      .protectedIfResponded = true}),
-                    TestCase::Duration::QUICK);
+        for (const auto pifsRecovery : {true, false})
+        {
+            for (const auto singleRtsPerTxop : {true, false})
+            {
+                for (const auto lengthBasedRtsCtsThresh : {true, false})
+                {
+                    for (const auto protectedIfResponded : {true, false})
+                    {
+                        AddTestCase(
+                            new WifiTxopTest({.nonHt = nonHt,
+                                              .pifsRecovery = pifsRecovery,
+                                              .singleRtsPerTxop = singleRtsPerTxop,
+                                              .lengthBasedRtsCtsThresh = lengthBasedRtsCtsThresh,
+                                              .protectedIfResponded = protectedIfResponded}),
+                            TestCase::Duration::QUICK);
+                    }
+                }
+            }
+        }
     }
 }
 
