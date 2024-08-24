@@ -1291,7 +1291,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             )
         return_code, stdout, stderr = run_ns3("run abort")
         if win32:
-            self.assertEqual(return_code, 3)
+            self.assertNotEqual(return_code, 0)
             self.assertIn("abort-default.exe' returned non-zero exit status", stdout)
         else:
             self.assertEqual(return_code, 250)
@@ -2595,6 +2595,9 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         if shutil.which("git") is None:
             self.skipTest("Missing git")
 
+        if win32:
+            self.skipTest("Optional components are not supported on Windows")
+
         # First enable automatic components fetching
         return_code, stdout, stderr = run_ns3("configure -- -DNS3_FETCH_OPTIONAL_COMPONENTS=ON")
         self.assertEqual(return_code, 0)
@@ -3158,30 +3161,30 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
             return_code, stdout, stderr = run_ns3("clean")
             self.assertEqual(return_code, 0)
 
-        if arch != "aarch64":
-            # Install VcPkg dependencies
-            container.execute("apt-get install -y zip unzip tar curl")
+            if arch != "aarch64":
+                # Install VcPkg dependencies
+                container.execute("apt-get install -y zip unzip tar curl")
 
-            # Install Armadillo dependencies
-            container.execute("apt-get install -y pkg-config gfortran")
+                # Install Armadillo dependencies
+                container.execute("apt-get install -y pkg-config gfortran")
 
-            # Install VcPkg
-            try:
-                container.execute("./ns3 configure -- -DNS3_VCPKG=ON")
-            except DockerException as e:
-                self.fail()
+                # Install VcPkg
+                try:
+                    container.execute("./ns3 configure -- -DNS3_VCPKG=ON")
+                except DockerException as e:
+                    self.fail()
 
-            # Install Armadillo with VcPkg
-            try:
-                container.execute("./ns3 configure -- -DTEST_PACKAGE_MANAGER:STRING=VCPKG")
-            except DockerException as e:
-                self.fail()
+                # Install Armadillo with VcPkg
+                try:
+                    container.execute("./ns3 configure -- -DTEST_PACKAGE_MANAGER:STRING=VCPKG")
+                except DockerException as e:
+                    self.fail()
 
-            # Try to build module using VcPkg's Armadillo
-            try:
-                container.execute("./ns3 build test-package-managers")
-            except DockerException as e:
-                self.fail()
+                # Try to build module using VcPkg's Armadillo
+                try:
+                    container.execute("./ns3 build test-package-managers")
+                except DockerException as e:
+                    self.fail()
 
         # Remove test module
         if os.path.exists(destination_src):

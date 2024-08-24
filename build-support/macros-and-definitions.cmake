@@ -99,12 +99,6 @@ macro(clear_global_cached_variables)
   # clear cache variables
   unset(build_profile CACHE)
   unset(build_profile_suffix CACHE)
-  set(lib-ns3-static-objs
-      ""
-      CACHE
-        INTERNAL
-        "list of object files from module used by NS3_STATIC and NS3_MONOLIB"
-  )
   set(ns3-contrib-libs "" CACHE INTERNAL "list of processed contrib modules")
   set(ns3-example-folders "" CACHE INTERNAL "list of example folders")
   set(ns3-execs "" CACHE INTERNAL "list of c++ executables")
@@ -121,7 +115,6 @@ macro(clear_global_cached_variables)
   mark_as_advanced(
     build_profile
     build_profile_suffix
-    lib-ns3-static-objs
     ns3-contrib-libs
     ns3-example-folders
     ns3-execs
@@ -1199,7 +1192,6 @@ macro(process_options)
   set(ns3-all-enabled-modules)
   set(ns3-libs-tests)
   set(ns3-contrib-libs)
-  set(lib-ns3-static-objs)
   set(ns3-external-libs)
 
   foreach(libname ${scanned_modules})

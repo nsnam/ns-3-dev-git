@@ -56,6 +56,14 @@ additional_commands:
             CMAKE_PACKAGES : '*'
             EXECUTABLES : '*'
             PYTHON_PACKAGES : '*'
+    copy_headers:
+        kwargs:
+            PUBLIC_HEADER_OUTPUT_DIR: '1'
+            DEPRECATED_HEADER_OUTPUT_DIR: '1'
+            PRIVATE_HEADER_OUTPUT_DIR: '1'
+            PUBLIC_HEADER_FILES: '*'
+            DEPRECATED_HEADER_FILES: '*'
+            PRIVATE_HEADER_FILES: '*'
 
 format:
   tab_size: 2

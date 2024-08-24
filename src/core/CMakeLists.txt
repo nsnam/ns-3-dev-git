@@ -1,6 +1,18 @@
 # Set lib core link dependencies
 set(libraries_to_link)
 
+set(config_headers
+    ${CMAKE_HEADER_OUTPUT_DIRECTORY}/config-store-config.h
+    ${CMAKE_HEADER_OUTPUT_DIRECTORY}/core-config.h
+)
+if(${ENABLE_BUILD_VERSION})
+  list(
+    APPEND
+    config_headers
+    ${CMAKE_HEADER_OUTPUT_DIRECTORY}/version-defines.h
+  )
+endif()
+
 set(gsl_test_sources)
 if(${GSL_FOUND})
   set(libraries_to_link
@@ -188,6 +200,7 @@ set(source_files
 
 # Define core lib headers
 set(header_files
+    ${config_headers}
     ${int64x64_headers}
     ${example_as_test_headers}
     ${embedded_version_headers}
