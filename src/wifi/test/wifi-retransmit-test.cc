@@ -9,6 +9,7 @@
 #include "ns3/attribute-container.h"
 #include "ns3/boolean.h"
 #include "ns3/config.h"
+#include "ns3/frame-exchange-manager.h"
 #include "ns3/he-phy.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
@@ -62,6 +63,9 @@ NS_LOG_COMPONENT_DEFINE("WifiRetransmitTest");
  * Note that the above attempts are all performed in the second TXOP because failures occur on
  * non-initial PPDUs, hence PIFS recovery or backoff procedure is invoked. This test verifies that
  * QSRC is unchanged in the former case and incremented in the latter case.
+ *
+ * In case of multi-link devices, the first TXOP is carried out on link 0 and the second TXOP on
+ * link 1. It is checked that QSRC and CW are updated on the link on which the TXOP is carried out.
  */
 class WifiRetransmitTest : public TestCase
 {
@@ -69,6 +73,7 @@ class WifiRetransmitTest : public TestCase
     /// Parameters for this test
     struct Params
     {
+        bool isMld;                 //!< whether devices are MLDs
         bool useRts;                //!< whether RTS is used to protect frame transmissions
         bool incrRetryCountUnderBa; //!< whether retry count is incremented under block ack
         bool useBarAfterBaTimeout;  //!< whether to send a BAR after a missed BlockAck
@@ -83,11 +88,13 @@ class WifiRetransmitTest : public TestCase
 
     /**
      * Callback invoked when PHY receives a PSDU to transmit
+     *
+     * @param phyId the ID of the PHY transmitting the PSDUs
      * @param psduMap the PSDU map
      * @param txVector the TX vector
      * @param txPowerW the tx power in Watts
      */
-    void Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
+    void Transmit(uint8_t phyId, WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
 
   private:
     void DoSetup() override;
@@ -102,14 +109,19 @@ class WifiRetransmitTest : public TestCase
     Ptr<PacketSocketClient> GetApplication(std::size_t count, std::size_t pktSize) const;
 
     /**
-     * Check the retry count of the MPDUs stored in the STA MAC queue, the CW and the QSRC upon
-     * transmitting a PSDU.
+     * Check the retry count of the MPDUs stored in the STA MAC queue, the CW and the QSRC of the
+     * given link upon transmitting a PSDU.
      *
      * @param seqNoRetryCountMap (sequence number, retry count) pair for the MPDUs that are expected
      *                           to be in the STA MAC queue
      * @param qsrc the expected QSRC for the BE AC
+     * @param linkId the ID of the given link
+     * @param qsrcOther the expected QSRC for the BE AC on the other link, in case of MLDs
      */
-    void CheckValues(const std::map<uint16_t, uint32_t>& seqNoRetryCountMap, std::size_t qsrc);
+    void CheckValues(const std::map<uint16_t, uint32_t>& seqNoRetryCountMap,
+                     std::size_t qsrc,
+                     uint8_t linkId,
+                     std::optional<std::size_t> qsrcOther);
 
     /// Actions and checks to perform upon the transmission of each frame
     struct Events
@@ -135,6 +147,7 @@ class WifiRetransmitTest : public TestCase
     /// Set the list of events to expect in this test run.
     void SetEvents();
 
+    std::size_t m_nLinks;         //!< number of links for the devices
     bool m_useRts;                //!< whether RTS is used to protect frame transmissions
     bool m_incrRetryCountUnderBa; //!< whether retry count is incremented under block ack
     bool m_useBarAfterBaTimeout;  //!< whether to send a BAR after a missed BlockAck
@@ -156,6 +169,7 @@ WifiRetransmitTest::WifiRetransmitTest(const Params& params)
                ", incrRetryCountUnderBa=" + std::to_string(params.incrRetryCountUnderBa) +
                ", useBarAfterBaTimeout=" + std::to_string(params.useBarAfterBaTimeout) +
                ", pifsRecovery=" + std::to_string(params.pifsRecovery) + ")"),
+      m_nLinks(params.isMld ? 2 : 1),
       m_useRts(params.useRts),
       m_incrRetryCountUnderBa(params.incrRetryCountUnderBa),
       m_useBarAfterBaTimeout(params.useBarAfterBaTimeout),
@@ -174,10 +188,15 @@ WifiRetransmitTest::DoSetup()
     NodeContainer wifiApNode(1);
     NodeContainer wifiStaNode(1);
 
-    SpectrumWifiPhyHelper phy;
+    SpectrumWifiPhyHelper phy(m_nLinks);
     phy.SetChannel(CreateObject<MultiModelSpectrumChannel>());
     // use default 20 MHz channel in 5 GHz band
-    phy.Set("ChannelSettings", StringValue("{0, 20, BAND_5GHZ, 0}"));
+    phy.Set(0, "ChannelSettings", StringValue("{0, 20, BAND_5GHZ, 0}"));
+    if (m_nLinks > 1)
+    {
+        // use default 20 MHz channel in 6 GHz band
+        phy.Set(1, "ChannelSettings", StringValue("{0, 20, BAND_6GHZ, 0}"));
+    }
 
     Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold",
                        UintegerValue(m_useRts ? (m_pktSize / 2) : 999999));
@@ -189,7 +208,7 @@ WifiRetransmitTest::DoSetup()
     Config::SetDefault("ns3::QosFrameExchangeManager::PifsRecovery", BooleanValue(m_pifsRecovery));
 
     WifiHelper wifi;
-    wifi.SetStandard(WIFI_STANDARD_80211ax);
+    wifi.SetStandard(m_nLinks == 1 ? WIFI_STANDARD_80211ax : WIFI_STANDARD_80211be);
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                  "DataMode",
                                  WifiModeValue(HePhy::GetHeMcs8()),
@@ -203,7 +222,9 @@ WifiRetransmitTest::DoSetup()
     m_staMac = StaticCast<StaWifiMac>(StaticCast<WifiNetDevice>(staDevice.Get(0))->GetMac());
 
     mac.SetType("ns3::ApWifiMac");
-    mac.SetEdca(AC_BE, "TxopLimits", AttributeContainerValue<TimeValue>(std::list{m_txopLimit}));
+    mac.SetEdca(AC_BE,
+                "TxopLimits",
+                AttributeContainerValue<TimeValue>(std::vector(m_nLinks, m_txopLimit)));
 
     m_apDevice = wifi.Install(phy, mac, wifiApNode);
 
@@ -243,30 +264,48 @@ WifiRetransmitTest::DoSetup()
 
     // install the error model on the AP
     auto dev = DynamicCast<WifiNetDevice>(m_apDevice.Get(0));
-    dev->GetMac()->GetWifiPhy()->SetPostReceptionErrorModel(m_apErrorModel);
+    for (std::size_t linkId = 0; linkId < m_nLinks; ++linkId)
+    {
+        dev->GetMac()->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_apErrorModel);
+    }
 
-    Callback<void, Mac48Address, uint8_t, std::optional<Mac48Address>> baEstablished =
-        [this](Mac48Address, uint8_t, std::optional<Mac48Address>) { m_baEstablished = true; };
+    Callback<void, Mac48Address, uint8_t> baEstablished = [this](Mac48Address, uint8_t) {
+        m_baEstablished = true;
+        // force the first TXOP to be started on link 0 in case of MLDs
+        if (m_nLinks > 1)
+        {
+            m_staMac->BlockTxOnLink(1, WifiQueueBlockedReason::TID_NOT_MAPPED);
+        }
+    };
 
     m_staMac->GetQosTxop(AC_BE)->TraceConnectWithoutContext("BaEstablished", baEstablished);
 
     // Trace PSDUs passed to the PHY on all devices
-    Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxPsduBegin",
-                                  MakeCallback(&WifiRetransmitTest::Transmit, this));
+    for (std::size_t phyId = 0; phyId < m_nLinks; phyId++)
+    {
+        Config::ConnectWithoutContext(
+            "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phys/" + std::to_string(phyId) +
+                "/PhyTxPsduBegin",
+            MakeCallback(&WifiRetransmitTest::Transmit, this).Bind(phyId));
+    }
 
     SetEvents();
 }
 
 void
 WifiRetransmitTest::CheckValues(const std::map<uint16_t, uint32_t>& seqNoRetryCountMap,
-                                std::size_t qsrc)
+                                std::size_t qsrc,
+                                uint8_t linkId,
+                                std::optional<std::size_t> qsrcOther)
 {
+    const auto psduNumber = std::distance(m_events.cbegin(), m_eventIt);
     const auto apAddr = Mac48Address::ConvertFrom(m_apDevice.Get(0)->GetAddress());
     WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WIFI_UNICAST, apAddr, 0};
     const auto staQueue = m_staMac->GetTxopQueue(AC_BE);
     NS_TEST_EXPECT_MSG_EQ(seqNoRetryCountMap.size(),
                           staQueue->GetNPackets(queueId),
-                          "Unexpected number of queued MPDUs");
+                          "Unexpected number of queued MPDUs when transmitting frame #"
+                              << psduNumber);
 
     Ptr<WifiMpdu> mpdu;
     while ((mpdu = staQueue->PeekByQueueId(queueId, mpdu)))
@@ -275,30 +314,56 @@ WifiRetransmitTest::CheckValues(const std::map<uint16_t, uint32_t>& seqNoRetryCo
         const auto it = seqNoRetryCountMap.find(seqNo);
         NS_TEST_ASSERT_MSG_EQ((it != seqNoRetryCountMap.cend()),
                               true,
-                              "SeqNo " << seqNo << " not found in PSDU");
+                              "SeqNo " << seqNo << " not found in PSDU #" << psduNumber);
         NS_TEST_EXPECT_MSG_EQ(mpdu->GetRetryCount(),
                               it->second,
-                              "Unexpected retry count for MPDU with SeqNo=" << seqNo);
+                              "Unexpected retry count for MPDU with SeqNo=" << seqNo << " in PSDU #"
+                                                                            << psduNumber);
+    }
+
+    NS_TEST_EXPECT_MSG_EQ(qsrcOther.has_value(),
+                          (m_nLinks > 1),
+                          "QSRC for other link can be provided iff devices are multi-link");
+
+    std::map<uint8_t, std::size_t> qsrcLinkIdMap{{linkId, qsrc}};
+    // check the QSRC on the other link in case of MLDs
+    if (m_nLinks > 1)
+    {
+        qsrcLinkIdMap.emplace((linkId == 0 ? 1 : 0), qsrcOther.value());
     }
 
     const auto txop = m_staMac->GetQosTxop(AC_BE);
-    NS_TEST_EXPECT_MSG_EQ(txop->GetStaRetryCount(SINGLE_LINK_OP_ID), qsrc, "Unexpected QSRC value");
 
-    const auto cwMin = txop->GetMinCw(SINGLE_LINK_OP_ID);
-    const auto cwMax = txop->GetMaxCw(SINGLE_LINK_OP_ID);
-    const auto expectedCw = std::min(cwMax, (1 << qsrc) * (cwMin + 1) - 1);
+    for (const auto& [id, expectedQsrc] : qsrcLinkIdMap)
+    {
+        NS_TEST_EXPECT_MSG_EQ(txop->GetStaRetryCount(id),
+                              expectedQsrc,
+                              "Unexpected QSRC value on link " << +id << " when transmitting PSDU #"
+                                                               << psduNumber);
 
-    NS_TEST_EXPECT_MSG_EQ(txop->GetCw(SINGLE_LINK_OP_ID), expectedCw, "Unexpected CW value");
+        const auto cwMin = txop->GetMinCw(id);
+        const auto cwMax = txop->GetMaxCw(id);
+        const auto expectedCw = std::min(cwMax, (1 << expectedQsrc) * (cwMin + 1) - 1);
+
+        NS_TEST_EXPECT_MSG_EQ(txop->GetCw(id),
+                              expectedCw,
+                              "Unexpected CW value on link " << +id << " when transmitting PSDU #"
+                                                             << psduNumber);
+    }
 }
 
 void
-WifiRetransmitTest::Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW)
+WifiRetransmitTest::Transmit(uint8_t phyId,
+                             WifiConstPsduMap psduMap,
+                             WifiTxVector txVector,
+                             double txPowerW)
 {
     const auto psdu = psduMap.cbegin()->second;
     const auto& hdr = psdu->GetHeader(0);
     const auto printAndQuit = (!m_baEstablished || hdr.IsBeacon() || hdr.IsCfEnd());
 
     std::stringstream ss;
+    ss << " Phy ID " << +phyId;
     if (!printAndQuit && m_eventIt != m_events.cend())
     {
         ss << " PSDU #" << std::distance(m_events.cbegin(), m_eventIt);
@@ -347,22 +412,64 @@ WifiRetransmitTest::SetEvents()
         m_apErrorModel->SetList(uids);
     };
 
+    // lambda to block transmissions on link 0 and unblock transmissions on link 1 after the
+    // given amount of time past the end of the transmission of the current frame
+    auto alternateLinks =
+        [this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time delay) {
+            m_staMac->BlockTxOnLink(0, WifiQueueBlockedReason::TID_NOT_MAPPED);
+
+            const auto txDuration =
+                WifiPhy::CalculateTxDuration(psdu, txVector, m_staMac->GetWifiPhy(0)->GetPhyBand());
+
+            Simulator::Schedule(txDuration + delay, [this]() {
+                m_staMac->UnblockTxOnLink({1}, WifiQueueBlockedReason::TID_NOT_MAPPED);
+            });
+        };
+
     std::size_t qsrc = 0;
+    uint8_t linkId = 0; // first TXOP takes place on the link 0
+    std::optional<std::size_t> qsrcOther;
+    if (m_nLinks > 1)
+    {
+        qsrcOther = 0; // QSRC on link 1
+    }
 
     // 1st TXOP: the first transmission (RTS or data frames) fails (no response)
-    m_events.emplace_back((m_useRts ? WIFI_MAC_CTL_RTS : WIFI_MAC_QOSDATA),
-                          [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
-                              // initially, QoS data 0 and QoS data 1 have retry count equal to zero
-                              CheckValues({{0, 0}, {1, 0}}, 0);
-                              // drop the entire PSDU
-                              dropPsdu(psdu, txVector);
-                              // generate two more QoS data frames
-                              m_staMac->GetDevice()->GetNode()->AddApplication(
-                                  GetApplication(2, m_pktSize));
-                          });
+    m_events.emplace_back(
+        (m_useRts ? WIFI_MAC_CTL_RTS : WIFI_MAC_QOSDATA),
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+            // initially, QoS data 0 and QoS data 1 have retry count equal to zero
+            CheckValues({{0, 0}, {1, 0}}, 0, linkId, qsrcOther);
+            // drop the entire PSDU
+            dropPsdu(psdu, txVector);
+            // generate two more QoS data frames
+            m_staMac->GetDevice()->GetNode()->AddApplication(GetApplication(2, m_pktSize));
+            // in case of MLDs, force the second TXOP to be started on link 1 by blocking TX on
+            // link 0 and unblocking TX on link 1; this is done at block ack timeout unless a BAR
+            // is going to be sent after this transmission failure
+            if (m_nLinks > 1 && (m_useRts || !m_useBarAfterBaTimeout))
+            {
+                alternateLinks(
+                    psdu,
+                    txVector,
+                    m_staMac->GetFrameExchangeManager(0)->GetWifiTxTimer().GetDelayLeft());
+            }
+        });
 
-    // QSRC is increased after the previous TX failure
-    ++qsrc;
+    if (m_nLinks > 1)
+    {
+        // 2nd TXOP occurs on link 1
+        linkId = 1;
+        qsrc = 0;
+        // last transmission on link 0 failed, unless RTS is not used and a BAR is sent after a
+        // missed BlockAck (in which case, the last transmission is a successful BAR-BA exchange)
+        qsrcOther = ((m_useRts || !m_useBarAfterBaTimeout) ? 1 : 0);
+    }
+    else
+    {
+        // QSRC is increased after the previous TX failure
+        ++qsrc;
+    }
 
     // 2nd TXOP
     if (m_useRts)
@@ -375,7 +482,15 @@ WifiRetransmitTest::SetEvents()
     {
         // BAR and BA are sent before the data frames
         m_events.emplace_back(WIFI_MAC_CTL_BACKREQ);
-        m_events.emplace_back(WIFI_MAC_CTL_BACKRESP);
+        m_events.emplace_back(WIFI_MAC_CTL_BACKRESP,
+                              [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+                                  // in case of MLDs, we can block TX on link 0 and unblock TX on
+                                  // link 1 as soon as the block ack response is received
+                                  if (m_nLinks > 1)
+                                  {
+                                      alternateLinks(psdu, txVector, Time{0});
+                                  }
+                              });
         // QSRC is reset because the BAR/BA exchange succeeded
         qsrc = 0;
     }
@@ -383,22 +498,22 @@ WifiRetransmitTest::SetEvents()
     // for the second transmission, two MPDUs in the A-MPDU out of four are received correctly
 
     // 4 QoS data frames are now sent in an A-MPDU
-    m_events.emplace_back(WIFI_MAC_QOSDATA,
-                          [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
-                              // after previous failure, QoS data 0 and QoS data 1 have retry count
-                              // equal to 1, unless incrRetryCountUnderBa is false
-                              if (m_incrRetryCountUnderBa)
-                              {
-                                  CheckValues({{0, 1}, {1, 1}, {2, 0}, {3, 0}}, qsrc);
-                              }
-                              else
-                              {
-                                  CheckValues({{0, 0}, {1, 0}, {2, 0}, {3, 0}}, qsrc);
-                              }
-                              // drop QoS data 1 and 2
-                              m_apErrorModel->SetList(
-                                  {psdu->GetPayload(1)->GetUid(), psdu->GetPayload(2)->GetUid()});
-                          });
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+            // after previous failure, QoS data 0 and QoS data 1 have retry count
+            // equal to 1, unless incrRetryCountUnderBa is false
+            if (m_incrRetryCountUnderBa)
+            {
+                CheckValues({{0, 1}, {1, 1}, {2, 0}, {3, 0}}, qsrc, linkId, qsrcOther);
+            }
+            else
+            {
+                CheckValues({{0, 0}, {1, 0}, {2, 0}, {3, 0}}, qsrc, linkId, qsrcOther);
+            }
+            // drop QoS data 1 and 2
+            m_apErrorModel->SetList({psdu->GetPayload(1)->GetUid(), psdu->GetPayload(2)->GetUid()});
+        });
 
     // Block Ack response after A-MPDU
     m_events.emplace_back(WIFI_MAC_CTL_BACKRESP);
@@ -414,11 +529,11 @@ WifiRetransmitTest::SetEvents()
                               // MPDUs
                               if (m_incrRetryCountUnderBa)
                               {
-                                  CheckValues({{1, 1}, {2, 0}}, qsrc);
+                                  CheckValues({{1, 1}, {2, 0}}, qsrc, linkId, qsrcOther);
                               }
                               else
                               {
-                                  CheckValues({{1, 0}, {2, 0}}, qsrc);
+                                  CheckValues({{1, 0}, {2, 0}}, qsrc, linkId, qsrcOther);
                               }
                               // the error model already has the UIDs of the two remaining MPDUs
                           });
@@ -443,11 +558,14 @@ WifiRetransmitTest::SetEvents()
                     // TX
                     if (m_incrRetryCountUnderBa)
                     {
-                        CheckValues({{1, retryCount}, {2, retryCount - 1}}, qsrc);
+                        CheckValues({{1, retryCount}, {2, retryCount - 1}},
+                                    qsrc,
+                                    linkId,
+                                    qsrcOther);
                     }
                     else
                     {
-                        CheckValues({{1, 0}, {2, 0}}, qsrc);
+                        CheckValues({{1, 0}, {2, 0}}, qsrc, linkId, qsrcOther);
                     }
                 });
             m_events.emplace_back(WIFI_MAC_CTL_BACKRESP);
@@ -464,11 +582,11 @@ WifiRetransmitTest::SetEvents()
                 // the retry count of the MPDUs has increased after the previous failed TX
                 if (m_incrRetryCountUnderBa)
                 {
-                    CheckValues({{1, retryCount}, {2, retryCount - 1}}, qsrc);
+                    CheckValues({{1, retryCount}, {2, retryCount - 1}}, qsrc, linkId, qsrcOther);
                 }
                 else
                 {
-                    CheckValues({{1, 0}, {2, 0}}, qsrc);
+                    CheckValues({{1, 0}, {2, 0}}, qsrc, linkId, qsrcOther);
                 }
                 // drop the entire PSDU
                 dropPsdu(psdu, txVector);
@@ -499,7 +617,7 @@ WifiRetransmitTest::SetEvents()
             m_events.emplace_back(
                 WIFI_MAC_CTL_BACKREQ,
                 [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
-                    CheckValues({{2, m_frameRetryLimit - 1}}, qsrc);
+                    CheckValues({{2, m_frameRetryLimit - 1}}, qsrc, linkId, qsrcOther);
                     // drop the BlockAckReq
                     dropPsdu(psdu, txVector);
                 });
@@ -517,7 +635,7 @@ WifiRetransmitTest::SetEvents()
                                    ? WIFI_MAC_CTL_BACKREQ
                                    : (m_useRts ? WIFI_MAC_CTL_RTS : WIFI_MAC_QOSDATA)),
                               [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
-                                  CheckValues({{1, 0}, {2, 0}}, qsrc);
+                                  CheckValues({{1, 0}, {2, 0}}, qsrc, linkId, qsrcOther);
                                   // QoS data frames transmission succeeds
                                   m_apErrorModel->SetList({});
                               });
@@ -572,20 +690,24 @@ class WifiRetransmitTestSuite : public TestSuite
 WifiRetransmitTestSuite::WifiRetransmitTestSuite()
     : TestSuite("wifi-retransmit", Type::UNIT)
 {
-    for (auto useRts : {true, false})
+    for (auto isMld : {true, false})
     {
-        for (auto incrRetryCountUnderBa : {true, false})
+        for (auto useRts : {true, false})
         {
-            for (auto useBarAfterBaTimeout : {true, false})
+            for (auto incrRetryCountUnderBa : {true, false})
             {
-                for (auto pifsRecovery : {true, false})
+                for (auto useBarAfterBaTimeout : {true, false})
                 {
-                    AddTestCase(
-                        new WifiRetransmitTest({.useRts = useRts,
-                                                .incrRetryCountUnderBa = incrRetryCountUnderBa,
-                                                .useBarAfterBaTimeout = useBarAfterBaTimeout,
-                                                .pifsRecovery = pifsRecovery}),
-                        TestCase::Duration::QUICK);
+                    for (auto pifsRecovery : {true, false})
+                    {
+                        AddTestCase(
+                            new WifiRetransmitTest({.isMld = isMld,
+                                                    .useRts = useRts,
+                                                    .incrRetryCountUnderBa = incrRetryCountUnderBa,
+                                                    .useBarAfterBaTimeout = useBarAfterBaTimeout,
+                                                    .pifsRecovery = pifsRecovery}),
+                            TestCase::Duration::QUICK);
+                    }
                 }
             }
         }
