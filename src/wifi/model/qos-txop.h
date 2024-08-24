@@ -458,6 +458,20 @@ class QosTxop : public Txop
         TxopTracedCallback;
 
     TxopTracedCallback m_txopTrace; //!< TXOP trace callback
+
+    /**
+     * TracedCallback signature for block ack agreement established events.
+     *
+     * @param recipient the MAC address of the recipient
+     * @param tid the TID for which block ack agreement is established
+     */
+    typedef void (*BaEstablishedCallback)(Mac48Address recipient, uint8_t tid);
+
+    /// TracedCallback for block ack agreement established events typedef
+    using BaEstablishedTracedCallback = TracedCallback<Mac48Address, uint8_t>;
+
+    BaEstablishedTracedCallback
+        m_baEstablishedCallback; //!< traced callback for block ack agreement established events
 };
 
 } // namespace ns3

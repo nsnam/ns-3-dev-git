@@ -85,7 +85,12 @@ QosTxop::GetTypeId()
             .AddTraceSource("TxopTrace",
                             "Trace source for TXOP start and duration times",
                             MakeTraceSourceAccessor(&QosTxop::m_txopTrace),
-                            "ns3::QosTxop::TxopTracedCallback");
+                            "ns3::QosTxop::TxopTracedCallback")
+            .AddTraceSource("BaEstablished",
+                            "A block ack agreement is established with the given recipient for "
+                            "the given TID.",
+                            MakeTraceSourceAccessor(&QosTxop::m_baEstablishedCallback),
+                            "ns3::QosTxop::BaEstablishedCallback");
     return tid;
 }
 
@@ -653,6 +658,7 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address re
     if (respHdr.GetStatusCode().IsSuccess())
     {
         NS_LOG_DEBUG("block ack agreement established with " << recipient << " tid " << +tid);
+        m_baEstablishedCallback(recipient, tid);
         // A (destination, TID) pair is "blocked" (i.e., no more packets are sent) when an
         // Add BA Request is sent to the destination. However, when the Add BA Request timer
         // expires, the (destination, TID) pair is "unblocked" and packets to the destination are
