@@ -55,6 +55,14 @@ struct WifiAcknowledgment;
  *
  * FrameExchangeManager is a base class handling the basic frame exchange
  * sequences for non-QoS stations.
+ *
+ * The fragmentation policy implemented uses a simple fragmentation
+ * threshold: any packet bigger than this threshold is fragmented
+ * in fragments whose size is smaller than the threshold.
+ *
+ * The retransmission policy is also very simple: every packet is
+ * retransmitted until it is either successfully transmitted or
+ * it has been retransmitted up until the SSRC or SLRC thresholds.
  */
 class FrameExchangeManager : public Object
 {

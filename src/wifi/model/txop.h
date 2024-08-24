@@ -55,29 +55,14 @@ enum AcIndex : uint8_t;           // opaque enum declaration
 enum WifiMacDropReason : uint8_t; // opaque enum declaration
 
 /**
- * \brief Handle packet fragmentation and retransmissions
- * for data and management frames.
+ * \brief Handles the packet queue and stores DCF/EDCA access parameters
+ * (one Txop per AC).
  * \ingroup wifi
  *
- * This class implements the packet fragmentation and
- * retransmission policy for data and management frames.
- * It uses the ns3::ChannelAccessManager helper
- * class to decide when to send a packet.
- * Packets are stored in a ns3::WifiMacQueue
- * until they can be sent.
- *
- * The policy currently implemented uses a simple fragmentation
- * threshold: any packet bigger than this threshold is fragmented
- * in fragments whose size is smaller than the threshold.
- *
- * The retransmission policy is also very simple: every packet is
- * retransmitted until it is either successfully transmitted or
- * it has been retransmitted up until the SSRC or SLRC thresholds.
- *
- * The RTS/CTS policy is similar to the fragmentation policy: when
- * a packet is bigger than a threshold, the RTS/CTS protocol is used.
+ * This class handles the packet queue and stores DCF/EDCA access
+ * parameters (one Txop per AC). It generates backoff values and stores the channel access status
+ * (not requested, requested, granted) for the corresponding DCF/EDCA and for each link.
  */
-
 class Txop : public Object
 {
   public:

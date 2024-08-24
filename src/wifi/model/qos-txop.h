@@ -41,13 +41,13 @@ class QosFrameExchangeManager;
 class WifiTxParameters;
 
 /**
- * \brief Handle packet fragmentation and retransmissions for QoS data frames as well
- * as MSDU aggregation (A-MSDU) and block ack sessions, for a given access class.
+ * \brief Handles the packet queue and stores DCF/EDCA access parameters
+ * (one Txop per AC).
  * \ingroup wifi
  *
- * This class implements the packet fragmentation and retransmission policy for
- * QoS data frames. It uses the ns3::ChannelAccessManager helper class to decide
- * when to send a packet. Packets are stored in a ns3::WifiMacQueue until they can be sent.
+ * This class handles the packet queue and stores DCF/EDCA access
+ * parameters (one Txop per AC). It generates backoff values and stores the channel access status
+ * (not requested, requested, granted) for the corresponding DCF/EDCA and for each link.
  *
  * This queue contains packets for a particular access class.
  * Possibles access classes are:
@@ -57,17 +57,6 @@ class WifiTxParameters;
  *   - AC_BK : background, TID = 1,2
  *
  * This class also implements block ack sessions and MSDU aggregation (A-MSDU).
- *
- * The fragmentation policy currently implemented uses a simple
- * threshold: any packet bigger than this threshold is fragmented
- * in fragments whose size is smaller than the threshold.
- *
- * The retransmission policy is also very simple: every packet is
- * retransmitted until it is either successfully transmitted or
- * it has been retransmitted up until the SSRC or SLRC thresholds.
- *
- * The RTS/CTS policy is similar to the fragmentation policy: when
- * a packet is bigger than a threshold, the RTS/CTS protocol is used.
  */
 
 class QosTxop : public Txop
