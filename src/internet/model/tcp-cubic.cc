@@ -37,7 +37,7 @@ TcpCubic::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::TcpCubic")
-            .SetParent<TcpSocketBase>()
+            .SetParent<TcpCongestionOps>()
             .AddConstructor<TcpCubic>()
             .SetGroupName("Internet")
             .AddAttribute("FastConvergence",
