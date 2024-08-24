@@ -31,6 +31,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 ### New user-visible features
 
 - (wifi) Added support for beaconing in IBSS
+- (wifi) Added the `ProtectSingleExchange` attribute to the `QosFrameExchangeManager` to choose whether the NAV protection should cover the entire TXOP or only the current frame exchange when the TXOP limit is non-zero. In that case, the Duration/ID field in frames establishing the protection is set to the time remaining until the end of the current frame exchange.
 
 ### Bugs fixed
 
