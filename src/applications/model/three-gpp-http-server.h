@@ -21,6 +21,7 @@
 #include <ns3/traced-callback.h>
 
 #include <map>
+#include <optional>
 #include <ostream>
 
 namespace ns3
@@ -143,6 +144,18 @@ class ThreeGppHttpServer : public Application
     void StartApplication() override;
     void StopApplication() override;
 
+    /**
+     * \brief set the local address (temporary function until deprecated attributes are removed)
+     * \param addr local address
+     */
+    void SetLocal(const Address& addr);
+
+    /**
+     * \brief set the server port (temporary function until deprecated attributes are removed)
+     * \param port server port
+     */
+    void SetPort(uint16_t port);
+
     // SOCKET CALLBACK METHODS
 
     /**
@@ -256,9 +269,9 @@ class ThreeGppHttpServer : public Application
     /// The `Variables` attribute.
     Ptr<ThreeGppHttpVariables> m_httpVariables;
     /// The `LocalAddress` attribute.
-    Address m_localAddress;
+    Address m_local;
     /// The `LocalPort` attribute.
-    uint16_t m_localPort;
+    std::optional<uint16_t> m_port;
     /// The `Tos` attribute.
     uint8_t m_tos;
     /// The `Mtu` attribute.

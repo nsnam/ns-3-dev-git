@@ -329,17 +329,18 @@ ThreeGppHttpObjectTestCase::CreateSimpleInternetNode(Ptr<SimpleChannel> channel,
     m_internetStackHelper.Install(node);
 
     // Assign IP address according to the selected Ip version.
+    const auto httpPort = 80;
     if (m_useIpv6)
     {
         Ipv6InterfaceContainer ipv6Ifs = m_ipv6AddressHelper.Assign(NetDeviceContainer(dev));
         NS_ASSERT(ipv6Ifs.GetN() == 1);
-        assignedAddress = ipv6Ifs.GetAddress(0, 0);
+        assignedAddress = Inet6SocketAddress(ipv6Ifs.GetAddress(0, 0), httpPort);
     }
     else
     {
         Ipv4InterfaceContainer ipv4Ifs = m_ipv4AddressHelper.Assign(NetDeviceContainer(dev));
         NS_ASSERT(ipv4Ifs.GetN() == 1);
-        assignedAddress = ipv4Ifs.GetAddress(0, 0);
+        assignedAddress = InetSocketAddress(ipv4Ifs.GetAddress(0, 0), httpPort);
     }
 
     NS_LOG_DEBUG(this << " node is assigned to " << assignedAddress << ".");

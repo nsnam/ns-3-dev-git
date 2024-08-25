@@ -30,7 +30,7 @@ ThreeGppHttpClientHelper::ThreeGppHttpClientHelper(const Address& address)
 ThreeGppHttpServerHelper::ThreeGppHttpServerHelper(const Address& address)
     : ApplicationHelper("ns3::ThreeGppHttpServer")
 {
-    m_factory.Set("LocalAddress", AddressValue(address));
+    m_factory.Set("Local", AddressValue(address));
 }
 
 } // namespace ns3
