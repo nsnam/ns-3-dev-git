@@ -1009,9 +1009,8 @@ NixVectorRouting<T>::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Un
 
     *os << std::resetiosflags(std::ios::adjustfield) << std::setiosflags(std::ios::left);
 
-    *os << "Node: " << m_ip->template GetObject<Node>()->GetId() << ", Time: " << Now().As(unit)
-        << ", Local time: " << m_ip->template GetObject<Node>()->GetLocalTime().As(unit)
-        << ", Nix Routing" << std::endl;
+    *os << "Node: " << m_node->GetId() << ", Time: " << Now().As(unit)
+        << ", Local time: " << m_node->GetLocalTime().As(unit) << ", Nix Routing" << std::endl;
 
     *os << "NixCache:" << std::endl;
     if (m_nixCache.size() > 0)
