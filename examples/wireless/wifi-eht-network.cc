@@ -141,7 +141,7 @@ main(int argc, char* argv[])
     std::string emlsrLinks;
     uint16_t paddingDelayUsec{32};
     uint16_t transitionDelayUsec{128};
-    uint16_t channelSwitchDelayUsec{100};
+    Time channelSwitchDelay{"100us"};
     bool switchAuxPhy{true};
     uint16_t auxPhyChWidth{20};
     bool auxPhyTxCapable{true};
@@ -201,9 +201,7 @@ main(int argc, char* argv[])
     cmd.AddValue("emlsrAuxTxCapable",
                  "Whether Aux PHYs are capable of transmitting.",
                  auxPhyTxCapable);
-    cmd.AddValue("channelSwitchDelay",
-                 "The PHY channel switch delay in microseconds",
-                 channelSwitchDelayUsec);
+    cmd.AddValue("channelSwitchDelay", "The PHY channel switch delay", channelSwitchDelay);
     cmd.AddValue("distance",
                  "Distance in meters between the station and the access point",
                  distance);
@@ -432,7 +430,7 @@ main(int argc, char* argv[])
 
                 SpectrumWifiPhyHelper phy(nLinks);
                 phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
-                phy.Set("ChannelSwitchDelay", TimeValue(MicroSeconds(channelSwitchDelayUsec)));
+                phy.Set("ChannelSwitchDelay", TimeValue(channelSwitchDelay));
 
                 mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
                 mac.SetEmlsrManager("ns3::DefaultEmlsrManager",
