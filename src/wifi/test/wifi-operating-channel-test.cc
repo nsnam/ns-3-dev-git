@@ -269,7 +269,6 @@ PhyChannelSettingsToOperatingChannelTest::PhyChannelSettingsToOperatingChannelTe
 void
 PhyChannelSettingsToOperatingChannelTest::DoSetup()
 {
-    LogComponentEnable("WifiPhyOperatingChannel", LOG_LEVEL_ALL);
     auto spectrumChannel = CreateObject<MultiModelSpectrumChannel>();
     auto node = CreateObject<Node>();
     auto dev = CreateObject<WifiNetDevice>();
