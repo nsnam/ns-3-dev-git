@@ -138,6 +138,7 @@ main(int argc, char* argv[])
     bool useRts{false};
     bool use80Plus80{false};
     uint16_t mpduBufferSize{512};
+    std::string emlsrMgrTypeId{"ns3::DefaultEmlsrManager"};
     std::string emlsrLinks;
     uint16_t paddingDelayUsec{32};
     uint16_t transitionDelayUsec{128};
@@ -182,6 +183,7 @@ main(int argc, char* argv[])
         "Whether the third link operates in the 2.4, 5 or 6 GHz band (0 means the device has up to "
         "two links, otherwise the band must be different than first link and second link)",
         frequency3);
+    cmd.AddValue("emlsrMgrTypeId", "The ns-3 TypeId of the EMLSR manager to use", emlsrMgrTypeId);
     cmd.AddValue("emlsrLinks",
                  "The comma separated list of IDs of EMLSR links (for MLDs only)",
                  emlsrLinks);
@@ -433,7 +435,7 @@ main(int argc, char* argv[])
                 phy.Set("ChannelSwitchDelay", TimeValue(channelSwitchDelay));
 
                 mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
-                mac.SetEmlsrManager("ns3::DefaultEmlsrManager",
+                mac.SetEmlsrManager(emlsrMgrTypeId,
                                     "EmlsrLinkSet",
                                     StringValue(emlsrLinks),
                                     "EmlsrPaddingDelay",
