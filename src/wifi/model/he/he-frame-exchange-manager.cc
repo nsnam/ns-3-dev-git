@@ -927,9 +927,12 @@ HeFrameExchangeManager::SendPsduMap()
         auto hePhy = StaticCast<HePhy>(m_phy->GetPhyEntity(responseTxVector->GetModulationClass()));
         hePhy->SetTrigVector(m_trigVector, m_txTimer.GetDelayLeft());
     }
-    else if (timerType == WifiTxTimer::NOT_RUNNING && m_txParams.m_txVector.IsUlMu())
+    else if (timerType == WifiTxTimer::NOT_RUNNING &&
+             (m_txParams.m_txVector.IsUlMu() ||
+              m_txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE))
     {
-        // clear m_psduMap after sending QoS Null frames following a BSRP Trigger Frame
+        // clear m_psduMap after sending QoS Null frames following a BSRP Trigger Frame or after
+        // sending a DL MU PPDU with BAR-BA ack sequence and no immediate response is expected
         Simulator::Schedule(txDuration, &WifiPsduMap::clear, &m_psduMap);
     }
 

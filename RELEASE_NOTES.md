@@ -48,6 +48,7 @@ The required Doxygen version for documentation generation is version 1.11.
 ### Bugs fixed
 
 - (wifi) Retransmit procedures have been aligned with the standard specifications.
+- (wifi) Clear PSDU map if no immediate response expected with BAR-BA ack sequence
 
 ## Release 3.43
 
