@@ -37,6 +37,8 @@ Changes from ns-3.42 to ns-3-dev
 
 ### Changes to build system
 
+* Module libraries targets names have their "lib" prefixes removed. This affects target selection within IDEs and ns-3 importing via CMake.
+
 ### Changed behavior
 
 * (lr-wpan) Beacons are now transmitted using CSMA-CA when requested from a beacon request command.
