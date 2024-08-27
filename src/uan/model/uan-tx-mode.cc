@@ -281,17 +281,29 @@ operator>>(std::istream& is, UanModesList& ml)
     if (c != '|')
     {
         is.setstate(std::ios_base::failbit);
+        return is;
     }
     ml.m_modes.clear();
     ml.m_modes.resize(numModes);
 
-    for (int i = 0; i < numModes && !is.eof(); i++)
+    if (numModes == 0 && is.peek() == std::istream::traits_type::eof())
+    {
+        return is;
+    }
+
+    int i;
+    for (i = 0; is.peek() != std::istream::traits_type::eof() && i < numModes; i++)
     {
         is >> ml.m_modes[i] >> c;
         if (c != '|')
         {
             is.setstate(std::ios_base::failbit);
+            return is;
         }
+    }
+    if (i < numModes)
+    {
+        is.setstate(std::ios_base::failbit);
     }
 
     return is;
