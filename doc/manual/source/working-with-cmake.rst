@@ -399,10 +399,12 @@ To build specific targets, run:
 
   ~/ns-3-dev/cmake-cache$ cmake --build . --target target_name
 
-Where target_name is a valid target name. Module libraries are prefixed with ``lib`` (e.g. libcore),
-executables from the scratch folder are prefixed with ``scratch_`` (e.g. scratch_scratch-simulator).
-Executables targets have their source file name without the ".cc" prefix
-(e.g. sample-simulator.cc => sample-simulator).
+Where target_name is a valid target name.
+Since ns-3.43, module libraries CMake targets are named the same as the module name (e.g. core, wifi, lte).
+From ns-3.36 to 3.42, module library targets were prefixed with ``lib`` (e.g. libcore, libwifi, liblte).
+Executables from the scratch folder are prefixed with ``scratch_`` (e.g. scratch_scratch-simulator).
+Executables targets are named the same as their source file containing the `main` function,
+without the ".cc" prefix (e.g. sample-simulator.cc => sample-simulator).
 
 
 Adding a new module
@@ -615,7 +617,6 @@ produces the following:
 
 In the CMake build command line, notice the scratch-simulator has a ``scratch_`` prefix.
 That is true for all the CMake scratch targets. This is done to guarantee globally unique names.
-Similarly, library-related targets have ``lib`` as a prefix (e.g. ``libcore``, ``libnetwork``).
 
 .. _RPATH: https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_RPATH.html
 
@@ -2361,26 +2362,16 @@ and modules in the contrib folder to a different list.
 
     # Add library to a global list of libraries
     if("${FOLDER}" MATCHES "src")
-      set(ns3-libs "${lib${BLIB_LIBNAME}};${ns3-libs}"
+      set(ns3-libs "${BLIB_LIBNAME};${ns3-libs}"
           CACHE INTERNAL "list of processed upstream modules"
       )
     else()
-      set(ns3-contrib-libs "${lib${BLIB_LIBNAME}};${ns3-contrib-libs}"
+      set(ns3-contrib-libs "${BLIB_LIBNAME};${ns3-contrib-libs}"
           CACHE INTERNAL "list of processed contrib modules"
       )
     endif()
 
-In the following block, we check if we are working with Xcode, which does
-not handle correctly CMake object libraries (.o files).
-
-In other platforms,
-we build an object file ``add_library(${lib${BLIB_LIBNAME}-obj} OBJECT "${BLIB_SOURCE_FILES}...)``
-and a shared library ``add_library(${lib${BLIB_LIBNAME}} SHARED ...)``.
-
-The object library contains the actual source files (``${BLIB_SOURCE_FILES}``),
-but is not linked, which mean we can reuse the object to build the static version of the libraries.
-Notice the shared library uses the object file as its source files
-``$<TARGET_OBJECTS:${lib${BLIB_LIBNAME}-obj}``.
+We build a shared library using CMake's ``add_library(${BLIB_LIBNAME} SHARED ...)``.
 
 Notice that we can also reuse precompiled headers created previously to speed up the
 parsing phase of the compilation.
@@ -2390,40 +2381,16 @@ parsing phase of the compilation.
 
   function(build_lib)
     # ...
-    if(NOT ${XCODE})
-      # Create object library with sources and headers, that will be used in
-      # lib-ns3-static and the shared library
-      add_library(
-        ${lib${BLIB_LIBNAME}-obj} OBJECT "${BLIB_SOURCE_FILES}"
-                                        "${BLIB_HEADER_FILES}"
-      )
+    add_library(${BLIB_LIBNAME} SHARED "${BLIB_SOURCE_FILES}")
 
-      if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${IGNORE_PCH}))
-        target_precompile_headers(${lib${BLIB_LIBNAME}-obj} REUSE_FROM stdlib_pch)
-      endif()
-
-      # Create shared library with previously created object library (saving
-      # compilation time for static libraries)
-      add_library(
-        ${lib${BLIB_LIBNAME}} SHARED $<TARGET_OBJECTS:${lib${BLIB_LIBNAME}-obj}>
-      )
-    else()
-      # Xcode and CMake don't play well when using object libraries, so we have a
-      # specific path for that
-      add_library(${lib${BLIB_LIBNAME}} SHARED "${BLIB_SOURCE_FILES}")
-
-      if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${IGNORE_PCH}))
-        target_precompile_headers(${lib${BLIB_LIBNAME}} REUSE_FROM stdlib_pch)
-      endif()
+    if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${IGNORE_PCH}))
+      target_precompile_headers(${BLIB_LIBNAME} REUSE_FROM stdlib_pch)
     endif()
     # ...
   endfunction()
 
-In the next code block, we create an alias to ``libmodule``, ``ns3::libmodule``,
+In the next code block, we create an alias to ``module``, ``ns3::module``,
 which can later be used when importing |ns3| with CMake's ``find_package(ns3)``.
-
-Then, we associate configured headers (``config-store-config``, ``core-config.h`` and
-``version-defines.h``) to the core module.
 
 And finally associate all of the public headers of the module to that library,
 to make sure CMake will be refreshed in case one of them changes.
@@ -2432,24 +2399,14 @@ to make sure CMake will be refreshed in case one of them changes.
 
   function(build_lib)
     # ...
-    add_library(ns3::${lib${BLIB_LIBNAME}} ALIAS ${lib${BLIB_LIBNAME}})
+    add_library(ns3::${BLIB_LIBNAME} ALIAS ${BLIB_LIBNAME})
 
     # Associate public headers with library for installation purposes
-    if("${BLIB_LIBNAME}" STREQUAL "core")
-      set(config_headers ${CMAKE_HEADER_OUTPUT_DIRECTORY}/config-store-config.h
-                        ${CMAKE_HEADER_OUTPUT_DIRECTORY}/core-config.h
-      )
-      if(${NS3_ENABLE_BUILD_VERSION})
-        list(APPEND config_headers
-            ${CMAKE_HEADER_OUTPUT_DIRECTORY}/version-defines.h
-        )
-      endif()
-    endif()
     set_target_properties(
-      ${lib${BLIB_LIBNAME}}
+      ${BLIB_LIBNAME}
       PROPERTIES
         PUBLIC_HEADER
-        "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${config_headers};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
+        "${BLIB_HEADER_FILES};${BLIB_DEPRECATED_HEADER_FILES};${CMAKE_HEADER_OUTPUT_DIRECTORY}/${BLIB_LIBNAME}-module.h"
     )
     # ...
   endfunction()
@@ -2457,42 +2414,50 @@ to make sure CMake will be refreshed in case one of them changes.
 In the next code block, we make the library a dependency to the ClangAnalyzer's time trace report,
 which measures which step of compilation took most time and which files were responsible for that.
 
-Then, the |ns3| libraries are separated from non-|ns3| libraries, that can be propagated or not
-for libraries/executables linked to the current |ns3| module being processed.
+.. sourcecode:: cmake
+
+  function(build_lib)
+    # ...
+
+    build_lib_reexport_third_party_libraries(
+      "${BLIB_LIBNAME}" "${BLIB_LIBRARIES_TO_LINK}"
+    )
+
+    # ...
+  endfunction(build_lib)
+
+The ``build_lib_reexport_third_party_libraries`` macro then separates |ns3| libraries from non-|ns3| libraries.
+The non-|ns3| can be automatically propagated, or not, to libraries/executables linked to the current |ns3| module being processed.
+
+.. sourcecode:: cmake
+
+    function(build_lib_reexport_third_party_libraries libname libraries_to_link)
+      # Separate ns-3 and non-ns-3 libraries to manage their propagation properly
+      separate_ns3_from_non_ns3_libs(
+        "${libname}" "${libraries_to_link}" ns_libraries_to_link
+        non_ns_libraries_to_link
+      )
+
+      set(ns3-external-libs "${non_ns_libraries_to_link};${ns3-external-libs}"
+          CACHE INTERNAL
+                "list of non-ns libraries to link to NS3_STATIC and NS3_MONOLIB"
+      )
+      # ...
+    endfunction()
 
 The default is propagating these third-party libraries and their include directories, but this
 can be turned off by setting ``NS3_REEXPORT_THIRD_PARTY_LIBRARIES=OFF``
 
 .. sourcecode:: cmake
 
-  function(build_lib)
+  function(build_lib_reexport_third_party_libraries libname libraries_to_link)
     # ...
-    if(${NS3_CLANG_TIMETRACE})
-      add_dependencies(timeTraceReport ${lib${BLIB_LIBNAME}})
-    endif()
-
-    # Split ns and non-ns libraries to manage their propagation properly
-    set(non_ns_libraries_to_link)
-    set(ns_libraries_to_link)
-
-    foreach(library ${BLIB_LIBRARIES_TO_LINK})
-      remove_lib_prefix("${library}" module_name)
-
-      # Check if the module exists in the ns-3 modules list
-      # or if it is a 3rd-party library
-      if(${module_name} IN_LIST ns3-all-enabled-modules)
-        list(APPEND ns_libraries_to_link ${library})
-      else()
-        list(APPEND non_ns_libraries_to_link ${library})
-      endif()
-      unset(module_name)
-    endforeach()
 
     if(NOT ${NS3_REEXPORT_THIRD_PARTY_LIBRARIES})
       # ns-3 libraries are linked publicly, to make sure other modules can find
       # each other without being directly linked
       set(exported_libraries PUBLIC ${LIB_AS_NEEDED_PRE} ${ns_libraries_to_link}
-                            ${LIB_AS_NEEDED_POST}
+                             ${LIB_AS_NEEDED_POST}
       )
 
       # non-ns-3 libraries are linked privately, not propagating unnecessary
@@ -2506,20 +2471,40 @@ can be turned off by setting ``NS3_REEXPORT_THIRD_PARTY_LIBRARIES=OFF``
     else()
       # we export everything by default when NS3_REEXPORT_THIRD_PARTY_LIBRARIES=ON
       set(exported_libraries PUBLIC ${LIB_AS_NEEDED_PRE} ${ns_libraries_to_link}
-                            ${non_ns_libraries_to_link} ${LIB_AS_NEEDED_POST}
+                             ${non_ns_libraries_to_link} ${LIB_AS_NEEDED_POST}
       )
       set(private_libraries)
 
       # with NS3_REEXPORT_THIRD_PARTY_LIBRARIES, we export all 3rd-party library
       # include directories, allowing consumers of this module to include and link
       # the 3rd-party code with no additional setup
-      get_target_includes(${lib${BLIB_LIBNAME}} exported_include_directories)
+      get_target_includes(${libname} exported_include_directories)
+
       string(REPLACE "-I" "" exported_include_directories
-                    "${exported_include_directories}"
+                     "${exported_include_directories}"
       )
-      string(REPLACE "${CMAKE_OUTPUT_DIRECTORY}/include" ""
-                    exported_include_directories
-                    "${exported_include_directories}"
+
+      # include directories prefixed in the source or binary directory need to be
+      # treated differently
+      set(new_exported_include_directories)
+      foreach(directory ${exported_include_directories})
+        string(FIND "${directory}" "${PROJECT_SOURCE_DIR}" is_prefixed_in_subdir)
+        if(${is_prefixed_in_subdir} GREATER_EQUAL 0)
+          string(SUBSTRING "${directory}" ${is_prefixed_in_subdir} -1
+                           directory_path
+          )
+          list(APPEND new_exported_include_directories
+               $<BUILD_INTERFACE:${directory_path}>
+          )
+        else()
+          list(APPEND new_exported_include_directories ${directory})
+        endif()
+      endforeach()
+      set(exported_include_directories ${new_exported_include_directories})
+
+      string(REPLACE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/include" ""
+                     exported_include_directories
+                     "${exported_include_directories}"
       )
     endif()
     # ...
@@ -2528,21 +2513,14 @@ can be turned off by setting ``NS3_REEXPORT_THIRD_PARTY_LIBRARIES=OFF``
 After the lists of libraries to link that should be exported (``PUBLIC``) and
 not exported (``PRIVATE``) are built, we can link them with ``target_link_libraries``.
 
-Next, we set the output name of the module library to ``n3version-modulename`` (+ optional build suffix).
-
 .. sourcecode:: cmake
 
-  function(build_lib)
+  function(build_lib_reexport_third_party_libraries libname libraries_to_link)
     # ...
-    target_link_libraries(
-      ${lib${BLIB_LIBNAME}} ${exported_libraries} ${private_libraries}
-    )
 
-    # set output name of library
-    set_target_properties(
-      ${lib${BLIB_LIBNAME}}
-      PROPERTIES OUTPUT_NAME ns${NS3_VER}-${BLIB_LIBNAME}${build_profile_suffix}
-    )
+    # Set public and private headers linked to the module library
+    target_link_libraries(${libname} ${exported_libraries} ${private_libraries})
+
     # ...
   endfunction()
 
@@ -2551,40 +2529,17 @@ use them just by linking to one of the |ns3| modules.
 
 .. sourcecode:: cmake
 
-  function(build_lib)
+  function(build_lib_reexport_third_party_libraries libname libraries_to_link)
     # ...
     # export include directories used by this library so that it can be used by
     # 3rd-party consumers of ns-3 using find_package(ns3) this will automatically
     # add the build/include path to them, so that they can ns-3 headers with
     # <ns3/something.h>
     target_include_directories(
-      ${lib${BLIB_LIBNAME}}
-      PUBLIC $<BUILD_INTERFACE:${CMAKE_OUTPUT_DIRECTORY}/include>
-            $<INSTALL_INTERFACE:include>
+      ${libname} PUBLIC $<BUILD_INTERFACE:${CMAKE_OUTPUT_DIRECTORY}/include>
+                        $<INSTALL_INTERFACE:include>
       INTERFACE ${exported_include_directories}
     )
-    # ...
-  endfunction()
-
-We append the list of third-party/external libraries for each processed module,
-and append a list of object libraries that can be later used for the static |ns3| build.
-
-.. sourcecode:: cmake
-
-  function(build_lib)
-    # ...
-    set(ns3-external-libs "${non_ns_libraries_to_link};${ns3-external-libs}"
-        CACHE INTERNAL
-              "list of non-ns libraries to link to NS3_STATIC and NS3_MONOLIB"
-    )
-    if(${NS3_STATIC} OR ${NS3_MONOLIB})
-      set(lib-ns3-static-objs
-          "$<TARGET_OBJECTS:${lib${BLIB_LIBNAME}-obj}>;${lib-ns3-static-objs}"
-          CACHE
-            INTERNAL
-            "list of object files from module used by NS3_STATIC and NS3_MONOLIB"
-      )
-    endif()
     # ...
   endfunction()
 
@@ -2598,76 +2553,98 @@ and copies header files from ``src/module`` and ``contrib/module`` to the ``incl
     # Write a module header that includes all headers from that module
     write_module_header("${BLIB_LIBNAME}" "${BLIB_HEADER_FILES}")
 
+    # ...
+
     # Copy all header files to outputfolder/include before each build
-    copy_headers_before_building_lib(
-      ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY} "${BLIB_HEADER_FILES}"
-      public
+    copy_headers(
+      PUBLIC_HEADER_OUTPUT_DIR ${CMAKE_HEADER_OUTPUT_DIRECTORY}
+      PUBLIC_HEADER_FILES ${BLIB_HEADER_FILES}
+      DEPRECATED_HEADER_OUTPUT_DIR ${CMAKE_HEADER_OUTPUT_DIRECTORY}
+      DEPRECATED_HEADER_FILES ${BLIB_DEPRECATED_HEADER_FILES}
+      PRIVATE_HEADER_OUTPUT_DIR ${CMAKE_HEADER_OUTPUT_DIRECTORY}
+      PRIVATE_HEADER_FILES ${BLIB_PRIVATE_HEADER_FILES}
     )
-    if(BLIB_DEPRECATED_HEADER_FILES)
-      copy_headers_before_building_lib(
-        ${BLIB_LIBNAME} ${CMAKE_HEADER_OUTPUT_DIRECTORY}
-        "${BLIB_DEPRECATED_HEADER_FILES}" deprecated
-      )
-    endif()
     # ...
   endfunction()
 
 The following block creates the test library for the module currently being processed.
+Note that it handles Windows vs non-Windows differently, since Windows requires all
+used linked symbols to be used, which results in our test-runner being unable to
+be dynamically linked to ns-3 modules. To solve that, we create the test libraries
+for the different modules as object libraries instead, and statically link to the
+test-runner executable.
 
 .. sourcecode:: cmake
 
   function(build_lib)
     # ...
-    # Check if the module tests should be built
-    set(filtered_in ON)
-    if(NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
-      set(filtered_in OFF)
-      if(${BLIB_LIBNAME} IN_LIST NS3_FILTER_MODULE_EXAMPLES_AND_TESTS)
-        set(filtered_in ON)
-      endif()
-    endif()
-
-    # Build tests if requested
-    if(${ENABLE_TESTS} AND ${filtered_in})
-      list(LENGTH BLIB_TEST_SOURCES test_source_len)
-      if(${test_source_len} GREATER 0)
-        # Create BLIB_LIBNAME of output library test of module
-        set(test${BLIB_LIBNAME} lib${BLIB_LIBNAME}-test CACHE INTERNAL "")
-        set(ns3-libs-tests "${test${BLIB_LIBNAME}};${ns3-libs-tests}"
-            CACHE INTERNAL "list of test libraries"
-        )
-
-        # Create shared library containing tests of the module
-        add_library(${test${BLIB_LIBNAME}} SHARED "${BLIB_TEST_SOURCES}")
-
-        # Link test library to the module library
-        if(${NS3_MONOLIB})
-          target_link_libraries(
-            ${test${BLIB_LIBNAME}} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
-            ${LIB_AS_NEEDED_POST}
-          )
-        else()
-          target_link_libraries(
-            ${test${BLIB_LIBNAME}} ${LIB_AS_NEEDED_PRE} ${lib${BLIB_LIBNAME}}
-            "${BLIB_LIBRARIES_TO_LINK}" ${LIB_AS_NEEDED_POST}
-          )
-        endif()
-        set_target_properties(
-          ${test${BLIB_LIBNAME}}
-          PROPERTIES OUTPUT_NAME
-                    ns${NS3_VER}-${BLIB_LIBNAME}-test${build_profile_suffix}
-        )
-
-        target_compile_definitions(
-          ${test${BLIB_LIBNAME}} PRIVATE NS_TEST_SOURCEDIR="${FOLDER}/test"
-        )
-        if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${IGNORE_PCH}))
-          target_precompile_headers(${test${BLIB_LIBNAME}} REUSE_FROM stdlib_pch)
-        endif()
-      endif()
-    endif()
+    build_lib_tests(
+        "${BLIB_LIBNAME}" "${BLIB_IGNORE_PCH}" "${FOLDER}" "${BLIB_TEST_SOURCES}"
+      )
     # ...
   endfunction()
+
+  # This macro builds the test library for the module library
+  #
+  # Arguments: libname (e.g. core), ignore_pch (TRUE/FALSE), folder (src/contrib),
+  # sources (list of .cc's)
+  function(build_lib_tests libname ignore_pch folder test_sources)
+    if(${ENABLE_TESTS})
+      # Check if the module tests should be built
+      build_lib_check_examples_and_tests_filtered_in(${libname} filtered_in)
+      if(NOT ${filtered_in})
+        return()
+      endif()
+      list(LENGTH test_sources test_source_len)
+      if(${test_source_len} GREATER 0)
+        # Create libname of output library test of module
+        set(test${libname} ${libname}-test CACHE INTERNAL "")
+
+        # Create shared library containing tests of the module on UNIX and just
+        # the object file that will be part of test-runner on Windows
+        if(WIN32)
+          set(ns3-libs-tests
+              "$<TARGET_OBJECTS:${test${libname}}>;${ns3-libs-tests}"
+              CACHE INTERNAL "list of test libraries"
+          )
+          add_library(${test${libname}} OBJECT "${test_sources}")
+        else()
+          set(ns3-libs-tests "${test${libname}};${ns3-libs-tests}"
+              CACHE INTERNAL "list of test libraries"
+          )
+          add_library(${test${libname}} SHARED "${test_sources}")
+
+          # Link test library to the module library
+          if(${NS3_MONOLIB})
+            target_link_libraries(
+              ${test${libname}} ${LIB_AS_NEEDED_PRE} ${lib-ns3-monolib}
+              ${LIB_AS_NEEDED_POST}
+            )
+          else()
+            target_link_libraries(
+              ${test${libname}} ${LIB_AS_NEEDED_PRE} ${libname}
+              "${BLIB_LIBRARIES_TO_LINK}" ${LIB_AS_NEEDED_POST}
+            )
+          endif()
+          set_target_properties(
+            ${test${libname}}
+            PROPERTIES OUTPUT_NAME
+                       ns${NS3_VER}-${libname}-test${build_profile_suffix}
+          )
+        endif()
+        target_compile_definitions(
+          ${test${libname}} PRIVATE NS_TEST_SOURCEDIR="${folder}/test"
+        )
+        if(${PRECOMPILE_HEADERS_ENABLED} AND (NOT ${ignore_pch}))
+          target_precompile_headers(${test${libname}} REUSE_FROM stdlib_pch)
+        endif()
+
+        # Add dependency between tests and examples used as tests
+        examples_as_tests_dependencies("${module_examples}" "${test_sources}")
+      endif()
+    endif()
+  endfunction()
+
 
 The following block checks for examples subdirectories and add them to parse their
 CMakeLists.txt file, creating the examples. It also scans for python examples.
@@ -2676,18 +2653,36 @@ CMakeLists.txt file, creating the examples. It also scans for python examples.
 
   function(build_lib)
     # ...
+
+    # Scan for C++ and Python examples and return a list of C++ examples (which
+    # can be set as dependencies of examples-as-test test suites)
+    build_lib_scan_examples(module_examples)
+
+    # ...
+  endfunction()
+
+  # This macro scans for C++ and Python examples for a given module and return a
+  # list of C++ examples
+  #
+  # Arguments: module_cpp_examples = return list of C++ examples
+  function(build_lib_scan_examples module_cpp_examples)
     # Build lib examples if requested
-    if(${ENABLE_EXAMPLES})
-      foreach(example_folder example;examples)
-        if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
+    set(examples_before ${ns3-execs-clean})
+    foreach(example_folder example;examples)
+      if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
+        if(${ENABLE_EXAMPLES})
           if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${example_folder}/CMakeLists.txt)
             add_subdirectory(${example_folder})
           endif()
-          scan_python_examples(${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
         endif()
-      endforeach()
-    endif()
-    # ...
+        scan_python_examples(${CMAKE_CURRENT_SOURCE_DIR}/${example_folder})
+      endif()
+    endforeach()
+    set(module_examples ${ns3-execs-clean})
+
+    # Return a list of module c++ examples (current examples - previous examples)
+    list(REMOVE_ITEM module_examples ${examples_before})
+    set(${module_cpp_examples} ${module_examples} PARENT_SCOPE)
   endfunction()
 
 In the next code block we add the library to the ``ns3ExportTargets``, later used for installation.
@@ -2699,7 +2694,7 @@ We also print an additional message the folder just finished being processed if 
     # ...
     # Handle package export
     install(
-      TARGETS ${lib${BLIB_LIBNAME}}
+      TARGETS ${BLIB_LIBNAME}
       EXPORT ns3ExportTargets
       ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/
       LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/
