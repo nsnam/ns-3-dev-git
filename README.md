@@ -112,10 +112,14 @@ The program source can be found in the `examples/routing` directory.
 ## Running ns-3 from Python
 
 If you do not plan to modify ns-3 upstream modules, you can get
-a pre-built version of the ns-3 python bindings.
+a pre-built version of the ns-3 python bindings. It is recommended
+to create a python virtual environment to isolate different application
+packages from system-wide packages (installable via the OS package managers).
 
 ```shell
-pip install --user ns3
+python3 -m venv ns3env
+source ./ns3env/bin/activate
+pip install ns3
 ```
 
 If you do not have `pip`, check their documents
