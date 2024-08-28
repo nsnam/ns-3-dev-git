@@ -264,7 +264,6 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
     {
         // we get here if this is the first MPDU for this receiver.
         NS_ABORT_MSG_IF(m_mac->GetTypeOfStation() != AP, "HE APs only can send DL MU PPDUs");
-        auto apMac = StaticCast<ApWifiMac>(m_mac);
         auto modClass = txParams.m_txVector.GetModulationClass();
         auto txWidth = modClass == WIFI_MOD_CLASS_DSSS || modClass == WIFI_MOD_CLASS_HR_DSSS
                            ? 20
