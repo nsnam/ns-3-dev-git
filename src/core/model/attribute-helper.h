@@ -317,6 +317,11 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
     bool name##Value::DeserializeFromString(std::string value,                                     \
                                             Ptr<const AttributeChecker> checker)                   \
     {                                                                                              \
+        if (value.empty())                                                                         \
+        {                                                                                          \
+            m_value = type();                                                                      \
+            return true;                                                                           \
+        }                                                                                          \
         std::istringstream iss;                                                                    \
         iss.str(value);                                                                            \
         iss >> m_value;                                                                            \
