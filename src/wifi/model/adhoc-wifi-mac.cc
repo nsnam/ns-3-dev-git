@@ -42,33 +42,45 @@ NS_OBJECT_ENSURE_REGISTERED(AdhocWifiMac);
 TypeId
 AdhocWifiMac::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::AdhocWifiMac")
-                            .SetParent<WifiMac>()
-                            .SetGroupName("Wifi")
-                            .AddConstructor<AdhocWifiMac>()
-                            .AddAttribute("BeaconInterval",
-                                          "Delay between two beacons",
-                                          TimeValue(MicroSeconds(102400)),
-                                          MakeTimeAccessor(&AdhocWifiMac::GetBeaconInterval,
-                                                           &AdhocWifiMac::SetBeaconInterval),
-                                          MakeTimeChecker())
-                            .AddAttribute("BeaconGeneration",
-                                          "Whether or not beacons are generated.",
-                                          BooleanValue(false),
-                                          MakeBooleanAccessor(&AdhocWifiMac::SetBeaconGeneration),
-                                          MakeBooleanChecker())
-                            .AddAttribute("BeaconAc",
-                                          "The Access Category to use for beacons.",
-                                          EnumValue(AcIndex::AC_VI),
-                                          MakeEnumAccessor<AcIndex>(&AdhocWifiMac::m_beaconAc),
-                                          MakeEnumChecker(AcIndex::AC_BE,
-                                                          "AC_BE",
-                                                          AcIndex::AC_VI,
-                                                          "AC_VI",
-                                                          AcIndex::AC_VO,
-                                                          "AC_VO",
-                                                          AcIndex::AC_BK,
-                                                          "AC_BK"));
+    static TypeId tid =
+        TypeId("ns3::AdhocWifiMac")
+            .SetParent<WifiMac>()
+            .SetGroupName("Wifi")
+            .AddConstructor<AdhocWifiMac>()
+            .AddAttribute("BeaconInterval",
+                          "Delay between two beacons",
+                          TimeValue(MicroSeconds(102400)),
+                          MakeTimeAccessor(&AdhocWifiMac::GetBeaconInterval,
+                                           &AdhocWifiMac::SetBeaconInterval),
+                          MakeTimeChecker())
+            .AddAttribute("BeaconGeneration",
+                          "Whether or not beacons are generated.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&AdhocWifiMac::SetBeaconGeneration),
+                          MakeBooleanChecker())
+            .AddAttribute("BeaconAc",
+                          "The Access Category to use for beacons.",
+                          EnumValue(AcIndex::AC_VI),
+                          MakeEnumAccessor<AcIndex>(&AdhocWifiMac::m_beaconAc),
+                          MakeEnumChecker(AcIndex::AC_BE,
+                                          "AC_BE",
+                                          AcIndex::AC_VI,
+                                          "AC_VI",
+                                          AcIndex::AC_VO,
+                                          "AC_VO",
+                                          AcIndex::AC_BK,
+                                          "AC_BK"))
+            .AddAttribute("EmlsrPeer",
+                          "Whether the peer STA operates in EMLSR mode.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&AdhocWifiMac::m_emlsrPeer),
+                          MakeBooleanChecker())
+            .AddAttribute("EmlsrPeerPaddingDelay",
+                          "The EMLSR Paddind Delay used by peer STA operating in EMLSR mode. "
+                          "Possible values are 0 us, 32 us, 64 us, 128 us or 256 us.",
+                          TimeValue(MicroSeconds(0)),
+                          MakeTimeAccessor(&AdhocWifiMac::m_emlsrPeerPaddingDelay),
+                          MakeTimeChecker(MicroSeconds(0), MicroSeconds(256)));
     return tid;
 }
 
@@ -200,6 +212,7 @@ AdhocWifiMac::SetAllCapabilities(const Mac48Address& address)
     }
     GetWifiRemoteStationManager()->AddAllSupportedModes(address);
     GetWifiRemoteStationManager()->RecordAdhocPeer(address);
+    GetWifiRemoteStationManager()->SetEmlsrEnabled(address, m_emlsrPeer);
 }
 
 void
@@ -414,6 +427,7 @@ AdhocWifiMac::ReceiveProbeRequest(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
     MgtProbeRequestHeader probeReq;
     mpdu->GetPacket()->PeekHeader(probeReq);
     RecordCapabilities(probeReq, from, linkId);
+    GetWifiRemoteStationManager(linkId)->SetEmlsrEnabled(from, m_emlsrPeer);
 
     // change state of the STA to ensure it is no longer considered as unknown
     GetWifiRemoteStationManager()->RecordAdhocPeer(from);

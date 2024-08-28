@@ -76,9 +76,18 @@ WifiProtectionManager::AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
 
     CtrlTriggerUserInfoField& ui = muRts.AddUserInfoField();
 
-    NS_ABORT_MSG_IF(m_mac->GetTypeOfStation() != AP, "HE APs only can send MU-RTS");
-    auto apMac = StaticCast<ApWifiMac>(m_mac);
-    ui.SetAid12(apMac->GetAssociationId(receiver, m_linkId));
+    if (auto apMac = DynamicCast<ApWifiMac>(m_mac))
+    {
+        ui.SetAid12(apMac->GetAssociationId(receiver, m_linkId));
+    }
+    else if (m_mac->GetTypeOfStation() == ADHOC_STA)
+    {
+        ui.SetAid12(WIFI_AID_ADHOC_PEER);
+    }
+    else
+    {
+        NS_ABORT_MSG("HE APs and adhoc P2P STAs only can send MU-RTS");
+    }
 
     const auto ctsTxWidth =
         std::min(txWidth, GetWifiRemoteStationManager()->GetChannelWidthSupported(receiver));

@@ -260,7 +260,16 @@ HeFrameExchangeManager::StartProtection(const WifiTxParameters& txParams)
 
         NS_ASSERT(protection->muRts.IsMuRts());
         NS_ASSERT(m_sentRtsTo.empty());
-        m_sentRtsTo = GetTfRecipients(protection->muRts);
+
+        if (m_mac->GetTypeOfStation() == ADHOC_STA)
+        {
+            NS_ASSERT_MSG(txParams.GetPsduInfoMap().size() == 1, "Adhoc STA cannot send MU PPDUs");
+            m_sentRtsTo = {txParams.GetPsduInfoMap().cbegin()->first};
+        }
+        else
+        {
+            m_sentRtsTo = GetTfRecipients(protection->muRts);
+        }
 
         SendMuRts(txParams);
     }
@@ -365,9 +374,17 @@ void
 HeFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
 {
     NS_LOG_FUNCTION(this << &txParams);
-    WifiMacHeader hdr;
-    hdr.SetType(WIFI_MAC_CTL_TRIGGER);
-    hdr.SetAddr1(Mac48Address::GetBroadcast());
+
+    auto addr1 = Mac48Address::GetBroadcast();
+    // use the peer STA address in case of adhoc STA sending an MU-RTS
+    if (m_mac->GetTypeOfStation() == ADHOC_STA)
+    {
+        NS_ASSERT_MSG(txParams.GetPsduInfoMap().size() == 1, "Adhoc STA cannot send MU PPDUs");
+        addr1 = txParams.GetPsduInfoMap().cbegin()->first;
+    }
+
+    WifiMacHeader hdr(WIFI_MAC_CTL_TRIGGER);
+    hdr.SetAddr1(addr1);
     hdr.SetAddr2(m_self);
     hdr.SetDsNotTo();
     hdr.SetDsNotFrom();

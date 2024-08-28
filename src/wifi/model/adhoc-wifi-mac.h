@@ -46,6 +46,8 @@ class AdhocWifiMac : public WifiMac
     void SetLinkUpCallback(Callback<void> linkUp) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
 
+    Time m_emlsrPeerPaddingDelay; //!< Padding delay used by peer STA operating in EMLSR mode
+
   private:
     void DoInitialize() override;
     void DoDispose() override;
@@ -172,6 +174,7 @@ class AdhocWifiMac : public WifiMac
     bool m_enableBeaconGeneration; //!< Flag whether beacons are being generated
     Time m_beaconInterval;         //!< the beacon interval
     AcIndex m_beaconAc;            //!< the access category to use for beacons
+    bool m_emlsrPeer;              //!< whether the peer STA operates in EMSLR mode
 
     EventId m_beaconEvent; //!< Event to generate one beacon
 };

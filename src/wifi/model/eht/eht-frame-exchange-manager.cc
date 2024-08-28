@@ -13,6 +13,7 @@
 #include "emlsr-manager.h"
 
 #include "ns3/abort.h"
+#include "ns3/adhoc-wifi-mac.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/log.h"
 #include "ns3/mgt-action-headers.h"
@@ -755,6 +756,14 @@ EhtFrameExchangeManager::UnblockEmlsrLinksIfAllowed(Mac48Address address)
 {
     NS_LOG_FUNCTION(this << address);
 
+    if (m_mac->GetTypeOfStation() == ADHOC_STA)
+    {
+        m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                       address,
+                                       {SINGLE_LINK_OP_ID});
+        return true;
+    }
+
     auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
     NS_ASSERT_MSG(mldAddress, "MLD address not found for " << address);
     NS_ASSERT_MSG(m_apMac, "This function shall only be called by AP MLDs");
@@ -981,22 +990,32 @@ EhtFrameExchangeManager::SetIcfPaddingAndTxVector(CtrlTriggerHeader& trigger,
         return;
     }
 
-    const auto recipients = GetTfRecipients(trigger);
     uint8_t maxPaddingDelay = 0;
     bool isUnprotectedEmlsrDst = false;
 
-    for (const auto& address : recipients)
+    if (auto adhocMac = DynamicCast<AdhocWifiMac>(m_mac))
     {
-        if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(address) ||
-            m_protectedStas.contains(address))
-        {
-            continue; // not an EMLSR client or EMLSR client already protected
-        }
-
         isUnprotectedEmlsrDst = true;
-        auto emlCapabilities = GetWifiRemoteStationManager()->GetStationEmlCapabilities(address);
-        NS_ASSERT(emlCapabilities);
-        maxPaddingDelay = std::max(maxPaddingDelay, emlCapabilities->get().emlsrPaddingDelay);
+        maxPaddingDelay =
+            CommonInfoBasicMle::EncodeEmlsrPaddingDelay(adhocMac->m_emlsrPeerPaddingDelay);
+    }
+    else
+    {
+        const auto recipients = GetTfRecipients(trigger);
+        for (const auto& address : recipients)
+        {
+            if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(address) ||
+                m_protectedStas.contains(address))
+            {
+                continue; // not an EMLSR client or EMLSR client already protected
+            }
+
+            isUnprotectedEmlsrDst = true;
+            auto emlCapabilities =
+                GetWifiRemoteStationManager()->GetStationEmlCapabilities(address);
+            NS_ASSERT(emlCapabilities);
+            maxPaddingDelay = std::max(maxPaddingDelay, emlCapabilities->get().emlsrPaddingDelay);
+        }
     }
 
     if (isUnprotectedEmlsrDst)
@@ -1202,13 +1221,13 @@ EhtFrameExchangeManager::IsCrossLinkCollision(
             continue;
         }
 
-        auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
-        NS_ASSERT(mldAddress);
+        auto clientAddress =
+            GetWifiRemoteStationManager()->GetMldAddress(address).value_or(address);
 
         std::set<uint8_t> linkIds; // all EMLSR links of EMLSR client
-        for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+        for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
         {
-            if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress) &&
+            if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(clientAddress) &&
                 linkId != m_linkId)
             {
                 linkIds.insert(linkId);
@@ -1222,7 +1241,8 @@ EhtFrameExchangeManager::IsCrossLinkCollision(
                             auto ehtFem = StaticCast<EhtFrameExchangeManager>(
                                 m_mac->GetFrameExchangeManager(id));
                             return ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
-                                   m_mac->GetMldAddress(ehtFem->m_txopHolder.value()) == mldAddress;
+                                   m_mac->GetMldAddress(ehtFem->m_txopHolder.value()) ==
+                                       clientAddress;
                         }))
         {
             // an UL TXOP is ongoing on one EMLSR link, do not unblock links
@@ -1239,7 +1259,7 @@ EhtFrameExchangeManager::IsCrossLinkCollision(
                          [=, this](uint8_t id) {
                              auto macHdr = m_mac->GetFrameExchangeManager(id)->GetReceivedMacHdr();
                              return macHdr.has_value() &&
-                                    m_mac->GetMldAddress(macHdr->get().GetAddr2()) == mldAddress;
+                                    m_mac->GetMldAddress(macHdr->get().GetAddr2()) == clientAddress;
                          }))
         {
             crossLinkCollision = false;

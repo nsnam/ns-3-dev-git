@@ -263,7 +263,8 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
     if (txParams.LastAddedIsFirstMpdu(receiver))
     {
         // we get here if this is the first MPDU for this receiver.
-        NS_ABORT_MSG_IF(m_mac->GetTypeOfStation() != AP, "HE APs only can send DL MU PPDUs");
+        NS_ABORT_MSG_IF(m_mac->GetTypeOfStation() != AP && m_mac->GetTypeOfStation() != ADHOC_STA,
+                        "HE APs and adhoc P2P STAs only can send DL MU PPDUs");
         auto modClass = txParams.m_txVector.GetModulationClass();
         auto txWidth = modClass == WIFI_MOD_CLASS_DSSS || modClass == WIFI_MOD_CLASS_HR_DSSS
                            ? MHz_u{20}
