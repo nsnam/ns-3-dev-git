@@ -1240,6 +1240,10 @@ HeFrameExchangeManager::GetCtsTxVectorAfterMuRts(const CtrlTriggerHeader& trigge
     NS_LOG_FUNCTION(this << trigger << staId);
 
     auto userInfoIt = trigger.FindUserInfoWithAid(staId);
+    if (userInfoIt == trigger.end())
+    {
+        userInfoIt = trigger.FindUserInfoWithAid(WIFI_AID_ADHOC_PEER);
+    }
     NS_ASSERT_MSG(userInfoIt != trigger.end(), "User Info field for AID=" << staId << " not found");
     MHz_u bw{0};
 
@@ -1632,9 +1636,11 @@ HeFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxV
             rts.SetDsNotTo();
             rts.SetDuration(muRts.GetDuration());
             rts.SetAddr2(muRts.GetAddr2());
-            if (m_staMac != nullptr && m_staMac->IsAssociated() &&
-                muRts.GetAddr2() == m_bssid // sent by the AP this STA is associated with
-                && trigger.FindUserInfoWithAid(m_staMac->GetAssociationId()) != trigger.end())
+            if (m_staMac != nullptr &&
+                (muRts.GetAddr1() == m_self /* sent by adhoc peer */ ||
+                 (m_staMac->IsAssociated() &&
+                  muRts.GetAddr2() == m_bssid // sent by the AP this STA is associated with
+                  && trigger.FindUserInfoWithAid(m_staMac->GetAssociationId()) != trigger.end())))
             {
                 // the MU-RTS is addressed to this station
                 rts.SetAddr1(m_self);
@@ -2211,7 +2217,11 @@ HeFrameExchangeManager::UlMuCsMediumIdle(const CtrlTriggerHeader& trigger) const
     }
 
     NS_ASSERT_MSG(m_staMac, "UL MU CS is only performed by non-AP STAs");
-    const auto userInfoIt = trigger.FindUserInfoWithAid(m_staMac->GetAssociationId());
+    auto userInfoIt = trigger.FindUserInfoWithAid(m_staMac->GetAssociationId());
+    if (userInfoIt == trigger.end())
+    {
+        userInfoIt = trigger.FindUserInfoWithAid(WIFI_AID_ADHOC_PEER);
+    }
     NS_ASSERT_MSG(userInfoIt != trigger.end(),
                   "No User Info field for STA (" << m_self
                                                  << ") AID=" << m_staMac->GetAssociationId());

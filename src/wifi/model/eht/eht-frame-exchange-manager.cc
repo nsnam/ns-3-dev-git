@@ -1333,13 +1333,19 @@ EhtFrameExchangeManager::GetEmlsrSwitchToListening(Ptr<const WifiPsdu> psdu,
 
     // - a Trigger frame that has one of the User Info fields addressed to the non-AP STA
     // affiliated with the non-AP MLD
+    // (or a Trigger frame sent by an adhoc peer)
     for (const auto& mpdu : *PeekPointer(psdu))
     {
         if (mpdu->GetHeader().IsTrigger())
         {
             CtrlTriggerHeader trigger;
             mpdu->GetPacket()->PeekHeader(trigger);
-            if (trigger.FindUserInfoWithAid(aid) != trigger.end())
+
+            const auto aidAdhocPeerFound =
+                trigger.FindUserInfoWithAid(WIFI_AID_ADHOC_PEER) != trigger.end() &&
+                GetWifiRemoteStationManager()->IsAdhocPeer(psdu->GetAddr2());
+
+            if (trigger.FindUserInfoWithAid(aid) != trigger.end() || aidAdhocPeerFound)
             {
                 return false;
             }
@@ -1674,10 +1680,14 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         if ((trigger.IsMuRts() || trigger.IsBsrp()) && !m_ongoingTxopEnd.IsPending() &&
             m_staMac->IsEmlsrLink(m_linkId))
         {
-            NS_ASSERT_MSG(g_genieInfo.count(
-                              {GetWifiRemoteStationManager()->GetMldAddress(hdr.GetAddr2()).value(),
-                               m_mac->GetAddress()}) == 1,
-                          "ICF received, must be noted in Genie information");
+            const auto aidAdhocPeerFound [[maybe_unused]] =
+                trigger.FindUserInfoWithAid(WIFI_AID_ADHOC_PEER) != trigger.end() &&
+                GetWifiRemoteStationManager()->IsAdhocPeer(sender);
+            NS_ASSERT_MSG(
+                aidAdhocPeerFound ||
+                    g_genieInfo.count({GetWifiRemoteStationManager()->GetMldAddress(sender).value(),
+                                       m_mac->GetAddress()}) == 1,
+                "ICF received, must be noted in Genie information");
 
             // this is an initial Control frame
             if (DropReceivedIcf())
