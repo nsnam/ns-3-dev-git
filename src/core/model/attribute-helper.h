@@ -204,7 +204,7 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
     class name##Value : public AttributeValue                                                      \
     {                                                                                              \
       public:                                                                                      \
-        name##Value();                                                                             \
+        name##Value() = default;                                                                   \
         name##Value(const type& value);                                                            \
         void Set(const type& value);                                                               \
         type Get() const;                                                                          \
@@ -292,10 +292,6 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
  * Typically invoked in the source file
  */
 #define ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(type, name)                                            \
-    name##Value::name##Value()                                                                     \
-        : m_value()                                                                                \
-    {                                                                                              \
-    }                                                                                              \
     name##Value::name##Value(const type& value)                                                    \
         : m_value(value)                                                                           \
     {                                                                                              \
