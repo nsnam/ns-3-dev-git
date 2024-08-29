@@ -53,6 +53,7 @@ cmake_build_target_command = partial(
     cmake_cache=os.path.abspath(os.path.join(ns3_path, "cmake-cache")),
 )
 win32 = sys.platform == "win32"
+macos = sys.platform == "darwin"
 platform_makefiles = "MinGW Makefiles" if win32 else "Unix Makefiles"
 ext = ".exe" if win32 else ""
 arch = platform.machine()
@@ -1083,7 +1084,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             self.assertIn("ns3-lte", enabled_modules)
             self.assertTrue(get_test_enabled())
             self.assertLessEqual(
-                len(get_programs_list()), len(self.ns3_executables) + (1 if win32 else 0)
+                len(get_programs_list()), len(self.ns3_executables) + (win32 or macos)
             )
 
             # Replace the ns3rc file with the wifi module, enabling examples and disabling tests
@@ -1548,6 +1549,10 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                     )
                 elif "mold" in stdout + stderr:
                     self.assertIn("library not found: %s" % invalid_or_nonexistent_library, stderr)
+                elif macos:
+                    self.assertIn(
+                        "library not found for -l%s" % invalid_or_nonexistent_library, stderr
+                    )
                 else:
                     self.assertIn("cannot find -l%s" % invalid_or_nonexistent_library, stderr)
             else:
