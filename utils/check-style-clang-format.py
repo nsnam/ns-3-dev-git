@@ -261,16 +261,20 @@ def find_clang_format_path() -> str:
             check=True,
         )
 
-        version = process.stdout.strip().split(" ")[-1]
-        major_version = int(version.split(".")[0])
+        clang_format_version = process.stdout.strip()
+        version_regex = re.findall(r"\b(\d+)(\.\d+){0,2}\b", clang_format_version)
 
-        if major_version in CLANG_FORMAT_VERSIONS:
-            return clang_format_path
+        if version_regex:
+            major_version = int(version_regex[0][0])
+
+            if major_version in CLANG_FORMAT_VERSIONS:
+                return clang_format_path
 
     # No supported version of clang-format found
     raise RuntimeError(
         f"Could not find any supported version of clang-format installed on this system. "
-        f"List of supported versions: {CLANG_FORMAT_VERSIONS}."
+        f"List of supported versions: {CLANG_FORMAT_VERSIONS}. "
+        + (f"Found clang-format {major_version}." if version_regex else "")
     )
 
 
