@@ -249,17 +249,20 @@ class WifiP2pExample
      */
     Ipv4Address GetDestinationIp(Direction dir);
 
-    bool m_pcap{false};             //!< flag whether PCAP files should be generated
-    bool m_p2p{true};               //!< flag whether P2P is enabled
-    bool m_linksOverlap{true};      //!< flag whether to consider links overlapping for P2P
-    uint16_t m_numLinksAp{1};       //!< amount of links for the AP
-    uint16_t m_numLinksSta{1};      //!< amount of links for the non-AP STA
-    uint16_t m_numLinksP2p{1};      //!< amount of links to use for P2P
-    uint16_t m_p2pLinkId{0};        //!< dedicated link for P2P operation
-    Time m_simulationTime{"10s"};   //!< simulation time
-    std::string m_apType{"Eht"};    //!< type of the AP
-    std::string m_staType{"Eht"};   //!< type of the non-AP STAs
-    std::string m_adhocType{"Eht"}; //!< type of the adhoc STA
+    bool m_pcap{false};               //!< flag whether PCAP files should be generated
+    bool m_p2p{true};                 //!< flag whether P2P is enabled
+    bool m_linksOverlap{true};        //!< flag whether to consider links overlapping for P2P
+    bool m_emlsr{false};              //!< flag whether the non-AP STA is an EMLSR client
+    uint16_t paddingDelayUsec{32};    //!< padding delay advertised by EMLSR client
+    uint16_t transitionDelayUsec{32}; //!< transition delay advertised by EMLSR client
+    uint16_t m_numLinksAp{1};         //!< amount of links for the AP
+    uint16_t m_numLinksSta{1};        //!< amount of links for the non-AP STA
+    uint16_t m_numLinksP2p{1};        //!< amount of links to use for P2P
+    uint16_t m_p2pLinkId{0};          //!< dedicated link for P2P operation
+    Time m_simulationTime{"10s"};     //!< simulation time
+    std::string m_apType{"Eht"};      //!< type of the AP
+    std::string m_staType{"Eht"};     //!< type of the non-AP STAs
+    std::string m_adhocType{"Eht"};   //!< type of the adhoc STA
     std::array<double, 3> m_frequencies{5,
                                         2.4,
                                         6}; //!< the order of the frequencies to use for the links
@@ -410,6 +413,16 @@ WifiP2pExample::Config(int argc, char* argv[])
                  "mapping on P2P STA. This is used if links overlapping is disabled and non-AP MLD "
                  "does not have more links than AP MLD.",
                  m_p2pLinkId);
+    cmd.AddValue("emlsr",
+                 "Specify whether the non-AP MLD is an EMLSR client (in which case, EMLSR mode "
+                 "is enabled on all the links)",
+                 m_emlsr);
+    cmd.AddValue("emlsrPaddingDelay",
+                 "The EMLSR padding delay in microseconds (0, 32, 64, 128 or 256)",
+                 paddingDelayUsec);
+    cmd.AddValue("emlsrTransitionDelay",
+                 "The EMLSR transition delay in microseconds (0, 16, 32, 64, 128 or 256)",
+                 transitionDelayUsec);
     cmd.AddValue("rtsThreshold", "RTS threshold", m_rtsThreshold);
     cmd.AddValue("maxAmpduLength", "maximum length in bytes of an A-MPDU", m_maxAmpduLength);
     for (auto& [direction, dirInfo] : m_infos)
@@ -593,6 +606,7 @@ WifiP2pExample::Setup()
 
     std::size_t apLinkId{0};
     std::size_t staLinkId{0};
+    std::string staLinkIdsStr;
     for (const auto& channelInfo : allChannelStrs)
     {
         auto [channelStr, freqRange] = channelInfo;
@@ -603,6 +617,11 @@ WifiP2pExample::Setup()
              staChannelStrs.cend()) ||
             (p2pChannelStr == channelInfo))
         {
+            if (!staLinkIdsStr.empty())
+            {
+                staLinkIdsStr += ",";
+            }
+            staLinkIdsStr += std::to_string(staLinkId);
             staPhyHelper.Set(staLinkId++, "ChannelSettings", StringValue(channelStr));
             staPhyHelper.AddChannel(spectrumChannel, freqRange);
         }
@@ -623,6 +642,12 @@ WifiP2pExample::Setup()
     WifiHelper wifi;
     wifi.SetRemoteStationManager("ns3::IdealWifiManager");
     Ssid ssid = Ssid("wifi-p2p");
+
+    if (m_numLinksSta > 1 && m_emlsr)
+    {
+        wifi.ConfigEhtOptions("EmlsrActivated", BooleanValue(true));
+        staPhyHelper.Set("ChannelSwitchDelay", TimeValue(MicroSeconds(paddingDelayUsec)));
+    }
 
     // setup AP
     wifi.SetStandard(GetStandardForType(m_apType));
@@ -647,9 +672,20 @@ WifiP2pExample::Setup()
                         BooleanValue(true),
                         "BE_MaxAmpduSize",
                         UintegerValue(m_maxAmpduLength));
+        if (m_numLinksSta > 1 && m_emlsr)
+        {
+            std::cout << "EMLSR links " << staLinkIdsStr << "\n";
+            wifiMac.SetEmlsrManager("ns3::AdvancedEmlsrManager",
+                                    "EmlsrLinkSet",
+                                    StringValue(staLinkIdsStr),
+                                    "EmlsrPaddingDelay",
+                                    TimeValue(MicroSeconds(paddingDelayUsec)),
+                                    "EmlsrTransitionDelay",
+                                    TimeValue(MicroSeconds(transitionDelayUsec)));
+        }
         staDevices.Add(wifi.Install(staPhyHelper, wifiMac, m_wifiStaNodes.Get(0)));
 
-        if (!m_linksOverlap && (m_numLinksSta <= m_numLinksAp))
+        if ((!m_linksOverlap && (m_numLinksSta <= m_numLinksAp)) || m_emlsr)
         {
             auto p2pSta =
                 DynamicCast<StaWifiMac>(DynamicCast<WifiNetDevice>(staDevices.Get(0))->GetMac());
@@ -676,8 +712,13 @@ WifiP2pExample::Setup()
                         "BeaconGeneration",
                         BooleanValue(true),
                         "BE_MaxAmpduSize",
-                        UintegerValue(m_maxAmpduLength));
-
+                        UintegerValue(m_maxAmpduLength),
+                        "EmlsrPeer",
+                        BooleanValue(m_emlsr),
+                        "EmlsrPeerPaddingDelay",
+                        TimeValue(MicroSeconds(paddingDelayUsec)),
+                        "EmlsrPeerTransitionDelay",
+                        TimeValue(MicroSeconds(transitionDelayUsec)));
         staDevices.Add(wifi.Install(adhocPhyHelper, wifiMac, m_wifiStaNodes.Get(1)));
     }
     else
