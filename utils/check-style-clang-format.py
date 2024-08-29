@@ -205,7 +205,7 @@ def find_files_to_check_style(
                 files_to_check.extend([os.path.join(dirpath, f) for f in filenames])
 
         else:
-            raise ValueError(f"Error: {path} is not a file nor a directory")
+            raise ValueError(f"{path} is not a valid file nor a directory")
 
     files_to_check.sort()
 
@@ -774,7 +774,7 @@ if __name__ == "__main__":
         )
 
     except Exception as e:
-        print(e)
+        print("ERROR:", e)
         sys.exit(1)
 
     if not all_checks_successful:
