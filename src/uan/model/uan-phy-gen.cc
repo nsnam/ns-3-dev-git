@@ -310,7 +310,7 @@ UanPhyPerCommonModes::CalcPer(Ptr<Packet> pkt, double sinrDb, UanTxMode mode)
     // Amplitude Modulation", EE 242 Digital Communications and Codings, 2009
     case UanTxMode::QAM: {
         // generic EbNo
-        EbNo *= mode.GetDataRateBps() / mode.GetBandwidthHz();
+        EbNo *= mode.GetBandwidthHz() / mode.GetDataRateBps();
 
         auto M = (double)mode.GetConstellationSize();
 
