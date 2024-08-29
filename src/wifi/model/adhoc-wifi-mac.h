@@ -46,7 +46,8 @@ class AdhocWifiMac : public WifiMac
     void SetLinkUpCallback(Callback<void> linkUp) override;
     bool CanForwardPacketsTo(Mac48Address to) const override;
 
-    Time m_emlsrPeerPaddingDelay; //!< Padding delay used by peer STA operating in EMLSR mode
+    Time m_emlsrPeerPaddingDelay;    //!< Padding delay used by peer STA operating in EMLSR mode
+    Time m_emlsrPeerTransitionDelay; //!< Transition delay used by peer STA operating in EMLSR mode
 
   private:
     void DoInitialize() override;

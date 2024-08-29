@@ -80,6 +80,12 @@ AdhocWifiMac::GetTypeId()
                           "Possible values are 0 us, 32 us, 64 us, 128 us or 256 us.",
                           TimeValue(MicroSeconds(0)),
                           MakeTimeAccessor(&AdhocWifiMac::m_emlsrPeerPaddingDelay),
+                          MakeTimeChecker(MicroSeconds(0), MicroSeconds(256)))
+            .AddAttribute("EmlsrPeerTransitionDelay",
+                          "The EMLSR Transition Delay used by peer STA operating in EMLSR mode. "
+                          "Possible values are 0 us, 16 us, 32 us, 64 us, 128 us or 256 us.",
+                          TimeValue(MicroSeconds(0)),
+                          MakeTimeAccessor(&AdhocWifiMac::m_emlsrPeerTransitionDelay),
                           MakeTimeChecker(MicroSeconds(0), MicroSeconds(256)));
     return tid;
 }

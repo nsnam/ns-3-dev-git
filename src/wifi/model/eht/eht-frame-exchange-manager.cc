@@ -846,9 +846,12 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(Mac48Address address, const Time
 {
     NS_LOG_FUNCTION(this << address << delay.As(Time::US));
 
-    auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
-    NS_ASSERT_MSG(mldAddress, "MLD address not found for " << address);
-    NS_ASSERT_MSG(m_apMac, "This function shall only be called by AP MLDs");
+    if (m_apMac)
+    {
+        auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(address);
+        NS_ASSERT_MSG(mldAddress, "MLD address not found for " << address);
+        address = *mldAddress;
+    }
 
     auto blockLinks = [=, this]() {
         if (!UnblockEmlsrLinksIfAllowed(address))
@@ -861,7 +864,7 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(Mac48Address address, const Time
         std::set<uint8_t> linkIds;
         for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
         {
-            if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
+            if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(address))
             {
                 linkIds.insert(linkId);
             }
@@ -869,24 +872,36 @@ EhtFrameExchangeManager::EmlsrSwitchToListening(Mac48Address address, const Time
 
         // block DL transmissions on this link until transition delay elapses
         m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
-                                     *mldAddress,
+                                     address,
                                      linkIds);
 
         auto unblockLinks = [=, this]() {
             m_mac->UnblockUnicastTxOnLinks(WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
-                                           *mldAddress,
+                                           address,
                                            linkIds);
         };
 
         // unblock all EMLSR links when the transition delay elapses
-        auto emlCapabilities = GetWifiRemoteStationManager()->GetStationEmlCapabilities(address);
-        NS_ASSERT(emlCapabilities);
-        auto endDelay = CommonInfoBasicMle::DecodeEmlsrTransitionDelay(
-            emlCapabilities->get().emlsrTransitionDelay);
+        Time emlsrTransitionDelay{0};
+        if (m_apMac)
+        {
+            auto emlCapabilities =
+                GetWifiRemoteStationManager()->GetStationEmlCapabilities(address);
+            NS_ASSERT(emlCapabilities);
+            emlsrTransitionDelay = CommonInfoBasicMle::DecodeEmlsrTransitionDelay(
+                emlCapabilities->get().emlsrTransitionDelay);
+        }
+        else
+        {
+            auto adhocMac = DynamicCast<AdhocWifiMac>(m_mac);
+            NS_ASSERT(adhocMac);
+            emlsrTransitionDelay = adhocMac->m_emlsrPeerTransitionDelay;
+        }
 
-        endDelay.IsZero() ? unblockLinks()
-                          : static_cast<void>(m_transDelayTimer[*mldAddress] =
-                                                  Simulator::Schedule(endDelay, unblockLinks));
+        emlsrTransitionDelay.IsZero()
+            ? unblockLinks()
+            : static_cast<void>(m_transDelayTimer[address] =
+                                    Simulator::Schedule(emlsrTransitionDelay, unblockLinks));
     };
 
     delay.IsZero() ? blockLinks() : static_cast<void>(Simulator::Schedule(delay, blockLinks));
@@ -1422,7 +1437,7 @@ EhtFrameExchangeManager::NotifyChannelReleased(Ptr<Txop> txop)
 {
     NS_LOG_FUNCTION(this << txop);
 
-    if (m_apMac)
+    if (m_apMac || m_mac->GetTypeOfStation() == ADHOC_STA)
     {
         // the channel has been released; all EMLSR clients are switching back to
         // listening operation
@@ -1511,7 +1526,7 @@ EhtFrameExchangeManager::PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTx
         m_apMac->GetApEmlsrManager()->NotifyPsduRxOk(m_linkId, psdu);
     }
 
-    if (m_apMac && m_txopHolder == psdu->GetAddr2() &&
+    if ((m_apMac || m_mac->GetTypeOfStation() == ADHOC_STA) && m_txopHolder == psdu->GetAddr2() &&
         GetWifiRemoteStationManager()->GetEmlsrEnabled(*m_txopHolder))
     {
         if (!m_ongoingTxopEnd.IsPending())
@@ -1926,7 +1941,8 @@ EhtFrameExchangeManager::TxopEnd(const std::optional<Mac48Address>& txopHolder)
     {
         m_staMac->GetEmlsrManager()->NotifyTxopEnd(m_linkId);
     }
-    else if (m_apMac && txopHolder && GetWifiRemoteStationManager()->GetEmlsrEnabled(*txopHolder))
+    else if ((m_apMac || m_mac->GetTypeOfStation() == ADHOC_STA) && txopHolder &&
+             GetWifiRemoteStationManager()->GetEmlsrEnabled(*txopHolder))
     {
         // EMLSR client terminated its TXOP and is back to listening operation
         EmlsrSwitchToListening(*txopHolder, Seconds(0));
