@@ -37,6 +37,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (lr-wpan) !2082 - MAC SET GET attributes added
 - (core) !1904 - Added support for Laplacian and Largest Extreme Value random variables (`LaplacianRandomVariable`, `LargestExtremeValueRandomVariable`)
 - (wifi) - Added support for 80+80 MHz
+- (lr-wpan) !2123 - CCA vulnerability window test and doc
 
 ### Bugs fixed
 

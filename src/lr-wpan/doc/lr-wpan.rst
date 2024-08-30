@@ -14,10 +14,7 @@ IEEE standard 802.15.4 (2003,2006,2011).
 Model Description
 *****************
 
-
-Design
-======
-
+The model is implemented into the ``src/lrwpan/`` folder.
 The model design closely follows the standard from an architectural standpoint.
 
 .. _fig-lr-wpan-arch:
@@ -35,7 +32,7 @@ The implementation also borrows some ideas from the ns-2 models developed by
 Zheng and Lee.
 
 APIs
-####
+====
 
 The APIs closely follow the standard, adapted for |ns3| naming conventions
 and idioms.  The APIs are organized around the concept of service primitives
@@ -48,7 +45,7 @@ IEEE Std. 802.15.4-2006.
 
     Service primitives
 
-The APIs are organized around four conceptual services and service access
+The APIs primitives are organized around four conceptual services and service access
 points (SAP):
 
 * MAC data service (MCPS)
@@ -74,7 +71,7 @@ of IEEE 802.15.4-2006):::
                     KeyIndex
                    )
 
-This maps to |ns3| classes and methods such as:::
+In |ns3| this maps to classes, structs and methods such as:::
 
   struct McpsDataRequestParameters
   {
@@ -89,103 +86,34 @@ This maps to |ns3| classes and methods such as:::
   ...
   }
 
-The primitives currently supported by the |ns3| model are:
+The MAC primitives currently supported by the |ns3| model are:
 
-MAC Primitives
-++++++++++++++
-
-* MCPS-DATA.Request
-* MCPS-DATA.Confirm
-* MCPS-DATA.Indication
-* MLME-START.Request
-* MLME-START.Confirm
-* MLME-SCAN.Request
-* MLME-SCAN.Confirm
-* MLME-BEACON-NOFIFY.Indication
-* MLME-ASSOCIATE.Request
-* MLME-ASSOCIATE.Confirm
-* MLME-ASSOCIATE.Response
-* MLME-ASSOCIATE.Indication
-* MLME-POLL.Confirm
-* MLME-COMM-STATUS.Indication
-* MLME-SYNC.Request
-* MLME-SYNC-LOSS.Indication
+* MCPS-DATA (Request, Confirm, Indication)
+* MLME-START (Request, Confirm)
+* MLME-SCAN (Request, Confirm)
+* MLME-BEACON-NOFIFY (Indication)
+* MLME-ASSOCIATE.Request (Request, Confirm, Response, Indication)
+* MLME-POLL (Confirm)
+* MLME-COMM-STATUS (Indication)
+* MLME-SYNC (Request)
+* MLME-SYNC-LOSS (Indication)
+* MLME-SET (Request, Confirm)
+* MLME-GET (Request, Confirm)
 
 
-
-PHY Primitives
-++++++++++++++
-
-* PLME-CCA.Request
-* PLME-CCA.Confirm
-* PD-DATA.Request
-* PD-DATA.Confirm
-* PD-DATA.Indication
-* PLME-SET-TRX-STATE.Request
-* PLME-SET-TRX-STATE.Confirm
+The PHY primitives currently supported by the |ns3| model are:
+* PLME-CCA (Request, Confirm)
+* PD-DATA (Request, Confirm, Indication)
+* PLME-SET-TRX-STATE (Request, Confirm)
+* PLME-SET (Request, Confirm)
+* PLME-GET (Request, Confirm)
 
 For more information on primitives, See IEEE 802.15.4-2011, Table 8.
 
-MAC
-###
+The PHY layer
+=============
 
-The MAC at present implements both, the unslotted CSMA/CA (non-beacon mode) and
-the slotted CSMA/CA (beacon-enabled mode). The beacon-enabled mode supports only
-direct transmissions. Indirect transmissions and Guaranteed Time Slots (GTS) are
-currently not supported.
-
-The present implementation supports a single PAN coordinator, support for additional
-coordinators is under consideration for future releases.
-
-The implemented MAC is similar to Contiki's NullMAC, i.e., a MAC without sleep
-features. The radio is assumed to be always active (receiving or transmitting),
-of completely shut down. Frame reception is not disabled while performing the
-CCA.
-
-The main API supported is the data transfer API
-(McpsDataRequest/Indication/Confirm).  CSMA/CA according to Stc 802.15.4-2006,
-section 7.5.1.4 is supported. Frame reception and rejection according to
-Std 802.15.4-2006, section 7.5.6.2 is supported, including acknowledgements.
-Only short addressing completely implemented. Various trace sources are
-supported, and trace sources can be hooked to sinks.
-
-The implemented ns-3 MAC supports scanning. Typically, a scanning request is preceded
-by an association request but these can be used independently.
-IEEE 802.15.4 supports 4 types of scanning:
-
-* *Energy Detection (ED) Scan:* In an energy scan, a device or a coordinator scan a set number of channels looking for traces of energy. The maximum energy registered during a given amount of time is stored. Energy scan is typically used to measure the quality of a channel at any given time. For this reason, coordinators often use this scan before initiating a PAN on a channel.
-
-* *Active Scan:* A device sends ``beacon request commands`` on a set number of channels looking for a PAN coordinator. The receiving coordinator must be configured on non-beacon mode. Coordinators on beacon-mode ignore these requests. The coordinators who accept the request, respond with a beacon. After an active scan take place, during the association process devices extract the information in the PAN descriptors from the collected beacons and based on this information (e.g. channel, LQI level), choose a coordinator to associate with.
-
-* *Passive Scan:* In a passive scan, no ``beacon requests commands`` are sent. Devices scan a set number of channels looking for beacons currently being transmitted (coordinators in beacon-mode). Like in the active scan, the information from beacons is stored in PAN descriptors and used by the device to choose a coordinator to associate with.
-
-* *Orphan Scan:* Orphan scan is used typically by device as a result of repeated communication failure attempts with a coordinator. In other words, an orphan scan represents the intent of a device to relocate its coordinator. In some situations, it can be used by devices higher layers to not only rejoin a network but also join a network for the first time. In an orphan scan, a device send a ``orphan notification command`` to a given list of channels. If a coordinator receives this notification, it responds to the device with a ``coordinator realignment command``.
-
-In active and passive scans, the link quality indicator (LQI) is the main parameter used to
-determine the optimal coordinator. LQI values range from 0 to 255. Where 255 is the highest quality link value and 0 the lowest. Typically, a link lower than 127 is considered a link with poor quality.
-
-In LR-WPAN, association is used to join or leave PANs. All devices in LR-WPAN must belong to a PAN to communicate. |ns3| uses a classic association procedure described in the standard. The standard also covers a more effective association procedure known as fast association (See IEEE 802.15.4-2015, fastA) but this association is currently not supported by |ns3|. Alternatively, |ns3| can do a "quick and dirty" association using either ```LrWpanHelper::AssociateToPan``` or ```LrWpanHelper::AssociateToBeaconPan```. These functions are used when a preset association can be done. For example, when the relationships between existing nodes and coordinators are known and can be set before the beginning of the simulation. In other situations, like in many networks in real deployments or in large networks, it is desirable that devices "associate themselves" with the best possible available coordinator candidates. This is a process known as bootstrap, and simulating this process makes it possible to demonstrate the kind of situations a node would face in which large networks to associate in real environment.
-
-Bootstrap (a.k.a. network initialization) is possible with a combination of scan and association MAC primitives. Details on the general process for this network initialization is described in the standard. Bootstrap is a complex process that not only requires the scanning networks, but also the exchange of command frames and the use of a pending transaction list (indirect transmissions) in the coordinator to store command frames. The following summarizes the whole process:
-
-.. _fig-lr-wpan-assocSequence:
-
-.. figure:: figures/lr-wpan-assocSequence.*
-
-Bootstrap as whole depends on procedures that also take place on higher layers of devices and coordinators. These procedures are briefly described in the standard but out of its scope (See IEE 802.15.4-2011 Section 5.1.3.1.). However, these procedures are necessary for a "complete bootstrap" process. In the examples in |ns3|, these high layer procedures are only briefly implemented to demonstrate a complete example that shows the use of scan and association. A full high layer (e.g. such as those found in Zigbee and Thread protocol stacks) should complete these procedures more robustly.
-
-MAC queues
-++++++++++
-
-By default, ``Tx queue`` and ``Ind Tx queue`` (the pending transaction list) are not limited but they can configure to drop packets after they
-reach a limit of elements (transaction overflow). Additionally, the ``Ind Tx queue`` drop packets when the packet has been longer than
-``macTransactionPersistenceTime`` (transaction expiration). Expiration of packets in the Tx queue is not supported.
-Finally, packets in the ``Tx queue`` may be dropped due to excessive transmission retries or channel access failure.
-
-PHY
-###
-
-The physical layer components consist of a Phy model, an error rate model,
+The physical layer components consist of a PHY model, an error rate model,
 and a loss model. The PHY state transitions are roughly model after
 ATMEL's AT86RF233.
 
@@ -232,7 +160,7 @@ The receiver sensitivity can be changed to different values using ``SetRxSensiti
                               | <--------------------------------------->|
                                     Acceptable sensitivity range
 
-The example ``lr-wpan-per-plot.cc` shows that at given Rx sensitivity, packets are dropped regardless of their theoretical error probability.
+The example ``lr-wpan-per-plot.cc`` shows that at given Rx sensitivity, packets are dropped regardless of their theoretical error probability.
 This program outputs a file named ``802.15.4-per-vs-rxSignal.plt``.
 Loading this file into gnuplot yields a file ``802.15.4-per-vs-rsSignal.eps``, which can
 be converted to pdf or other formats. Packet payload size, Tx power and Rx sensitivity can be configured.
@@ -244,17 +172,67 @@ The point where the blue line crosses with the PER indicates the Rx sensitivity.
 
     Default output of the program ``lr-wpan-per-plot.cc``
 
+The MAC layer
+=============
 
-NetDevice
-#########
+The MAC at present implements both, the unslotted CSMA/CA (non-beacon mode) and
+the slotted CSMA/CA (beacon-enabled mode). The beacon-enabled mode supports only
+direct transmissions. Indirect transmissions and Guaranteed Time Slots (GTS) are
+currently not supported.
 
-Although it is expected that other technology profiles (such as
-6LoWPAN and ZigBee) will write their own NetDevice classes, a basic
-LrWpanNetDevice is provided, which encapsulates the common operations
-of creating a generic LrWpan device and hooking things together.
+The present implementation supports a single PAN coordinator, support for additional
+coordinators is under consideration for future releases.
+
+The implemented MAC is similar to Contiki's NullMAC, i.e., a MAC without sleep
+features. The radio is assumed to be always active (receiving or transmitting),
+of completely shut down. Frame reception is not disabled while performing the
+CCA.
+
+The main API supported is the data transfer API
+(McpsDataRequest/Indication/Confirm).  CSMA/CA according to Stc 802.15.4-2006,
+section 7.5.1.4 is supported. Frame reception and rejection according to
+Std 802.15.4-2006, section 7.5.6.2 is supported, including acknowledgements.
+Both short and extended addressing are supported. Various trace sources are
+supported, and trace sources can be hooked to sinks.
+
+Scan and Association
+####################
+
+The implemented |ns3| MAC layer supports scanning. Typically, a scanning request is preceded
+by an association request but these can be used independently.
+|ns3| IEEE 802.15.4 MAC layer supports 4 types of scanning:
+
+* *Energy Detection (ED) Scan:* In an energy scan, a device or a coordinator scan a set number of channels looking for traces of energy. The maximum energy registered during a given amount of time is stored. Energy scan is typically used to measure the quality of a channel at any given time. For this reason, coordinators often use this scan before initiating a PAN on a channel.
+
+* *Active Scan:* A device sends ``beacon request commands`` on a set number of channels looking for a PAN coordinator. The receiving coordinator must be configured on non-beacon mode. Coordinators on beacon-mode ignore these requests. The coordinators who accept the request, respond with a beacon. After an active scan take place, during the association process devices extract the information in the PAN descriptors from the collected beacons and based on this information (e.g. channel, LQI level), choose a coordinator to associate with.
+
+* *Passive Scan:* In a passive scan, no ``beacon requests commands`` are sent. Devices scan a set number of channels looking for beacons currently being transmitted (coordinators in beacon-mode). Like in the active scan, the information from beacons is stored in PAN descriptors and used by the device to choose a coordinator to associate with.
+
+* *Orphan Scan:* Orphan scan is used typically by device as a result of repeated communication failure attempts with a coordinator. In other words, an orphan scan represents the intent of a device to relocate its coordinator. In some situations, it can be used by devices higher layers to not only rejoin a network but also join a network for the first time. In an orphan scan, a device send a ``orphan notification command`` to a given list of channels. If a coordinator receives this notification, it responds to the device with a ``coordinator realignment command``.
+
+In active and passive scans, the link quality indicator (LQI) is the main parameter used to
+determine the optimal coordinator. LQI values range from 0 to 255. Where 255 is the highest quality link value and 0 the lowest. Typically, a link lower than 127 is considered a link with poor quality.
+
+In LR-WPAN, association is used to join  PANs. All devices in LR-WPAN must belong to a PAN to communicate. |ns3| uses a classic association procedure described in the standard. The standard also covers a more effective association procedure known as fast association (See IEEE 802.15.4-2015, fastA) but this association is currently not supported by |ns3|. Alternatively, |ns3| can do a "quick and dirty" association using either ```LrWpanHelper::AssociateToPan``` or ```LrWpanHelper::AssociateToBeaconPan```. These functions are used when a preset association can be done. For example, when the relationships between existing nodes and coordinators are known and can be set before the beginning of the simulation. In other situations, like in many networks in real deployments or in large networks, it is desirable that devices "associate themselves" with the best possible available coordinator candidates. This is a process known as bootstrap, and simulating this process makes it possible to demonstrate the kind of situations a node would face in which large networks to associate in real environment.
+
+Bootstrap (a.k.a. network initialization) is possible with a combination of scan and association MAC primitives. Details on the general process for this network initialization is described in the standard. Bootstrap is a complex process that not only requires the scanning networks, but also the exchange of command frames and the use of a pending transaction list (indirect transmissions) in the coordinator to store command frames. The following summarizes the whole process:
+
+.. _fig-lr-wpan-assocSequence:
+
+.. figure:: figures/lr-wpan-assocSequence.*
+
+Bootstrap as whole depends on procedures that also take place on higher layers of devices and coordinators. These procedures are briefly described in the standard but out of its scope (See IEE 802.15.4-2011 Section 5.1.3.1.). However, these procedures are necessary for a "complete bootstrap" process. In the examples in |ns3|, these high layer procedures are only briefly implemented to demonstrate a complete example that shows the use of scan and association. A full high layer (e.g. such as those found in Zigbee and Thread protocol stacks) should complete these procedures more robustly.
+
+MAC transmission Queues
+#######################
+
+By default, ``Tx queue`` and ``Ind Tx queue`` (the pending transaction list) are not limited but they can configure to drop packets after they
+reach a limit of elements (transaction overflow). Additionally, the ``Ind Tx queue`` drop packets when the packet has been longer than
+``macTransactionPersistenceTime`` (transaction expiration). Expiration of packets in the Tx queue is not supported.
+Finally, packets in the ``Tx queue`` may be dropped due to excessive transmission retries or channel access failure.
 
 MAC addresses
-+++++++++++++
+#############
 
 Contrary to other technologies, a IEEE 802.15.4 has 2 different kind of addresses:
 
@@ -306,31 +284,14 @@ pseudo-address format or compression types in the same network. This point is fu
 in the ``sixlowpan`` module documentation.
 
 
-Scope and Limitations
-=====================
+NetDevice
+=========
 
-Future versions of this document will contain a PICS proforma similar to
-Appendix D of IEEE 802.15.4-2006. The current emphasis is on direct transmissions
-running on both, slotted and unslotted mode (CSMA/CA) of 802.15.4 operation for use in Zigbee.
+Although it is expected that other technology profiles (such as
+6LoWPAN and ZigBee) will write their own NetDevice classes, a basic
+LrWpanNetDevice is provided, which encapsulates the common operations
+of creating a generic LrWpan device and hooking things together.
 
-- Indirect data transmissions are not supported but planned for a future update.
-- Devices are capable of associating with a single PAN coordinator. Interference is modeled as AWGN but this is currently not thoroughly tested.
-- The standard describes the support of multiple PHY band-modulations but currently, only 250kbps O-QPSK (channel page 0) is supported.
-- Active and passive MAC scans are able to obtain a LQI value from a beacon frame, however, the scan primitives assumes LQI is correctly implemented and does not check the validity of its value.
-- Configuration of the ED thresholds are currently not supported.
-- Coordinator realignment command is only supported in orphan scans.
-- Disassociation primitives are not supported.
-- Security is not supported.
-- Beacon enabled mode GTS are not supported.
-
-References
-==========
-
-* Wireless Medium Access Control (MAC) and Physical Layer (PHY) Specifications for Low-Rate Wireless Personal Area Networks (WPANs), IEEE Computer Society, IEEE Std 802.15.4-2006, 8 September 2006.
-* IEEE Standard for Local and metropolitan area networks--Part 15.4: Low-Rate Wireless Personal Area Networks (LR-WPANs)," in IEEE Std 802.15.4-2011 (Revision of IEEE Std 802.15.4-2006) , vol., no., pp.1-314, 5 Sept. 2011, doi: 10.1109/IEEESTD.2011.6012487.
-* J. Zheng and Myung J. Lee, "A comprehensive performance study of IEEE 802.15.4," Sensor Network Operations, IEEE Press, Wiley Interscience, Chapter 4, pp. 218-237, 2006.
-* Alberto Gallegos Ramonet and Taku Noguchi. 2020. LR-WPAN: Beacon Enabled Direct Transmissions on Ns-3. In 2020 the 6th International Conference on Communication and Information Processing (ICCIP 2020). Association for Computing Machinery, New York, NY, USA, 115–122. https://doi.org/10.1145/3442555.3442574.
-* Gallegos Ramonet, A.; Noguchi, T. Performance Analysis of IEEE 802.15.4 Bootstrap Process. Electronics 2022, 11, 4090. https://doi.org/10.3390/electronics11244090.
 
 Usage
 *****
@@ -340,8 +301,8 @@ Enabling lr-wpan
 
 Add ``lr-wpan`` to the list of modules built with |ns3|.
 
-Helper
-======
+Helpers
+=======
 
 The helper is patterned after other device helpers.  In particular,
 tracing (ascii and pcap) is enabled similarly, and enabling of all
@@ -408,13 +369,21 @@ Tests
 The following tests have been written, which can be found in ``src/lr-wpan/tests/``:
 
 * ``lr-wpan-ack-test.cc``:  Check that acknowledgments are being used and issued in the correct order.
+* ``lr-wpan-cca-test.cc``: Test the behavior of CCA under specific circumstances (Hidden terminal and CCA vulnerable windows)
 * ``lr-wpan-collision-test.cc``:  Test correct reception of packets with interference and collisions.
+* ``lr-wpan-ed-test.cc``: Test the energy detection (ED) capabilities of the Lr-Wpan implementation.
 * ``lr-wpan-error-model-test.cc``:  Check that the error model gives predictable values.
-* ``lr-wpan-packet-test.cc``:  Test the 802.15.4 MAC header/trailer classes
-* ``lr-wpan-pd-plme-sap-test.cc``:  Test the PLME and PD SAP per IEEE 802.15.4
-* ``lr-wpan-spectrum-value-helper-test.cc``:  Test that the conversion between power (expressed as a scalar quantity) and spectral power, and back again, falls within a 25% tolerance across the range of possible channels and input powers.
 * ``lr-wpan-ifs-test.cc``:  Check that the Intraframe Spaces (IFS) are being used and issued in the correct order.
+* ``lr-wpan-mac-test.cc``: Test various MAC capabilities such different types of scanning and RX_ON_WHEN_IDLE.
+* ``lr-wpan-packet-test.cc``:  Test the 802.15.4 MAC header/trailer classes
+* ``lr-wpan-pd-plme-sap-test.cc``:  Test the PLME and PD primitives from Lr-wpan's PHY.
+* ``lr-wpan-spectrum-value-helper-test.cc``:  Test that the conversion between power (expressed as a scalar quantity) and spectral power, and back again, falls within a 25% tolerance across the range of possible channels and input powers.
 * ``lr-wpan-slotted-csmaca-test.cc``:  Test the transmission and deferring of data packets in the Contention Access Period (CAP) for the slotted CSMA/CA (beacon-enabled mode).
+
+The test suite ``lr-wpan-cca-test.cc`` demenostrate some known CCA behaviors.
+The test suite includes a test that demonstrates the well known hidden terminal problem. The second test
+included in the test suite shows a known vulnerability window (192us) in CCA that can cause a false positive identification
+of channel as IDLE caused by the turnAround delay between the CCA and the actual transmission of the frame.
 
 Validation
 **********
@@ -431,3 +400,38 @@ of the error model validation and can be reproduced by running
 .. figure:: figures/802-15-4-ber.*
 
     Default output of the program ``lr-wpan-error-model-plot.cc``
+
+
+Scope and Limitations
+*********************
+
+Future versions of this document will contain a PICS proforma similar to
+Appendix D of IEEE 802.15.4-2006. The current emphasis is on direct transmissions
+running on both, slotted and unslotted mode (CSMA/CA) of 802.15.4 operation for use in Zigbee.
+
+- Indirect data transmissions are not supported but planned for a future update.
+- Devices are capable of associating with a single PAN coordinator. Interference is modeled as AWGN but this is currently not thoroughly tested.
+- The standard describes the support of multiple PHY band-modulations but currently, only 250kbps O-QPSK (channel page 0) is supported.
+- Active and passive MAC scans are able to obtain a LQI value from a beacon frame, however, the scan primitives assumes LQI is correctly implemented and does not check the validity of its value.
+- Configuration of the ED thresholds are currently not supported.
+- Coordinator realignment command is only supported in orphan scans.
+- Disassociation primitives are not supported.
+- Security is not supported.
+- Guaranteed Time Slots (GTS) are not supported.
+- Not all attributes are supported by the MLME-SET and MLME-GET primitives.
+- Indirect transmissions are only supported during the association process.
+- RSSI is not supported as this is part of the 2015 revision and the current implementation only supports until the 2011 revision.
+
+References
+**********
+
+[`1 <https://ieeexplore.ieee.org/document/1700009>`_] Wireless Medium Access Control (MAC) and Physical Layer (PHY) Specifications for Low-Rate Wireless Personal Area Networks (WPANs), IEEE Computer Society, IEEE Std 802.15.4-2006, 8 September 2006.
+
+[`2 <https://ieeexplore.ieee.org/document/6012487>`_] IEEE Standard for Local and metropolitan area networks--Part 15.4: Low-Rate Wireless Personal Area Networks (LR-WPANs)," in IEEE Std 802.15.4-2011 (Revision of IEEE Std 802.15.4-2006) , vol., no., pp.1-314, 5 Sept. 2011, doi: 10.1109/IEEESTD.2011.6012487.
+
+[`3 <https://www.mdpi.com/2079-9292/11/24/4090>`_] J. Zheng and Myung J. Lee, "A comprehensive performance study of IEEE 802.15.4," Sensor Network Operations, IEEE Press, Wiley Interscience, Chapter 4, pp. 218-237, 2006.
+
+[`4 <https://dl.acm.org/doi/10.1145/3442555.3442574>`_] Alberto Gallegos Ramonet and Taku Noguchi. 2020. LR-WPAN: Beacon Enabled Direct Transmissions on Ns-3. In 2020 the 6th International Conference on Communication and Information Processing (ICCIP 2020). Association for Computing Machinery, New York, NY, USA, 115–122. https://doi.org/10.1145/3442555.3442574.
+
+[`5 <https://www.mdpi.com/2079-9292/11/24/4090>`_] Gallegos Ramonet, A.; Noguchi, T. Performance Analysis of IEEE 802.15.4 Bootstrap Process. Electronics 2022, 11, 4090. https://doi.org/10.3390/electronics11244090.
+

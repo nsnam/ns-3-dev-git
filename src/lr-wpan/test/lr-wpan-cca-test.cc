@@ -5,6 +5,7 @@
  *
  * Author:
  *  Sascha Alexander Jopen <jopen@cs.uni-bonn.de>
+ *  Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
  */
 
 #include "ns3/rng-seed-manager.h"
@@ -24,13 +25,13 @@
 using namespace ns3;
 using namespace ns3::lrwpan;
 
-NS_LOG_COMPONENT_DEFINE("lr-wpan-clear-channel-assessment-test");
+NS_LOG_COMPONENT_DEFINE("lr-wpan-cca-test");
 
 /**
  * \ingroup lr-wpan-test
  * \ingroup tests
  *
- * \brief LrWpan CCA Test
+ * LrWpan CCA Test
  */
 class LrWpanCcaTestCase : public TestCase
 {
@@ -39,57 +40,63 @@ class LrWpanCcaTestCase : public TestCase
 
   private:
     /**
-     * \brief Function called when PlmeCcaConfirm is hit.
-     * \param testcase The TestCase.
-     * \param device The LrWpanNetDevice.
-     * \param status The device status.
+     * Function called when PlmeCcaConfirm is hit.
+     *
+     * @param testcase The TestCase.
+     * @param device The LrWpanNetDevice.
+     * @param status The device status.
      */
     static void PlmeCcaConfirm(LrWpanCcaTestCase* testcase,
                                Ptr<LrWpanNetDevice> device,
                                PhyEnumeration status);
     /**
-     * \brief Function called when PhyTxBegin is hit.
-     * \param testcase The TestCase.
-     * \param device The LrWpanNetDevice.
-     * \param packet The packet.
+     * Function called when PhyTxBegin is hit.
+     *
+     * @param testcase The TestCase.
+     * @param device The LrWpanNetDevice.
+     * @param packet The packet.
      */
     static void PhyTxBegin(LrWpanCcaTestCase* testcase,
                            Ptr<LrWpanNetDevice> device,
                            Ptr<const Packet> packet);
     /**
-     * \brief Function called when PhyTxEnd is hit.
-     * \param testcase The TestCase.
-     * \param device The LrWpanNetDevice.
-     * \param packet The packet.
+     * Function called when PhyTxEnd is hit.
+     *
+     * @param testcase The TestCase.
+     * @param device The LrWpanNetDevice.
+     * @param packet The packet.
      */
     static void PhyTxEnd(LrWpanCcaTestCase* testcase,
                          Ptr<LrWpanNetDevice> device,
                          Ptr<const Packet> packet);
     /**
-     * \brief Function called when PhyRxBegin is hit.
-     * \param testcase The TestCase.
-     * \param device The LrWpanNetDevice.
-     * \param packet The packet.
+     * Function called when PhyRxBegin is hit.
+     *
+     * @param testcase The TestCase.
+     * @param device The LrWpanNetDevice.
+     * @param packet The packet.
      */
     static void PhyRxBegin(LrWpanCcaTestCase* testcase,
                            Ptr<LrWpanNetDevice> device,
                            Ptr<const Packet> packet);
     /**
-     * \brief Function called when PhyRxEnd is hit.
-     * \param testcase The TestCase.
-     * \param device The LrWpanNetDevice.
-     * \param packet The packet.
-     * \param sinr The received SINR.
+     * Function called when PhyRxEnd is hit.
+     *
+     * @param testcase The TestCase.
+     * @param device The LrWpanNetDevice.
+     * @param packet The packet.
+     * @param sinr The received SINR.
      */
     static void PhyRxEnd(LrWpanCcaTestCase* testcase,
                          Ptr<LrWpanNetDevice> device,
                          Ptr<const Packet> packet,
                          double sinr);
     /**
-     * \brief Function called when PhyRxDrop is hit.
-     * \param testcase The TestCase.
-     * \param device The LrWpanNetDevice.
-     * \param packet The packet.
+     * Function called when PhyRxDrop is hit.
+     *
+     * @param testcase The TestCase.
+     * @param device The LrWpanNetDevice.
+     * @param packet The packet.
      */
     static void PhyRxDrop(LrWpanCcaTestCase* testcase,
                           Ptr<LrWpanNetDevice> device,
@@ -345,7 +352,245 @@ LrWpanCcaTestCase::DoRun()
  * \ingroup lr-wpan-test
  * \ingroup tests
  *
- * \brief LrWpan ACK TestSuite
+ * \brief Test the sensitivity of the CSMA/CA clear channel assestment (CCA)
+ */
+class CCAVulnerableWindowTest : public TestCase
+{
+  public:
+    CCAVulnerableWindowTest();
+    ~CCAVulnerableWindowTest() override;
+
+  private:
+    /**
+     * Function called when a Data indication is invoked
+     *
+     * @param params MCPS data indication parameters
+     * @param p packet
+     */
+    void DataIndication(McpsDataIndicationParams params, Ptr<Packet> p);
+
+    void DoRun() override;
+
+    uint8_t countPackets; //!< Count the number of packets received in the test
+};
+
+CCAVulnerableWindowTest::CCAVulnerableWindowTest()
+    : TestCase("Test CCA false positives vulnerable window caused by turnAround")
+{
+}
+
+CCAVulnerableWindowTest::~CCAVulnerableWindowTest()
+{
+}
+
+void
+CCAVulnerableWindowTest::DataIndication(McpsDataIndicationParams params, Ptr<Packet> p)
+{
+    countPackets++;
+}
+
+void
+CCAVulnerableWindowTest::DoRun()
+{
+    /*
+     *  CCA Vulnerable Window:
+     *
+     *  Topology
+     *         Node 0             Node 1
+     *         (dev 0) <--------  (dev1)
+     *               ^
+     *               |
+     *               |------Node2
+     *                    (dev2)
+     *
+     *  Transmission of packets over time:
+     *
+     *             Node1 CCA |  Node 1 TurnAround Rx->Tx | Node1 Packet Tx
+     *                128us  |       192us               |
+     *                                                                             = Collision
+     *                   Node2 CCA |  Node 2 TurnAround Rx->Tx | Node2 Packet Tx
+     *                      128us  |       192us               |
+     * Time ---------------------------------------------------------------->
+     *
+     *
+     *  If 2 packets are transmitted within 192 us from each other, CSMA/CA will give a false
+     * positive and cause a collision even with CCA active. This is because there is a vulnerable
+     * window due to the turn around (RX_ON->TX_ON) between the CCA and the actual transmission of
+     * the packet. During this time, the 2nd node's CCA will assume the channel IDLE because there
+     * is no transmission (the first node is in its turnaround before transmission).
+     *
+     *  To demonstrate this, In this test, Node 1 transmits a packet to Node 0 at second 1.
+     *  Node 0 Attempts transmitting a packet to Node 2 at second and 1.000128 which falls under the
+     * vulnerable window (1 and 1.000192 seconds). A collision occurs and both packets failed to be
+     * received. All 3 nodes are within each other communication range and csma/ca backoff periods
+     * are turn off to make this test reprodusable.
+     *
+     *  The test is repeated but outside the vulnerable window, in this case CSMA/CA works as
+     * intended: The CCA of node 2 detects the first packet in the medium and defers the
+     * transmission. Avoiding effectively the collision.
+     */
+
+    LogComponentEnableAll(LogLevel(LOG_PREFIX_TIME | LOG_PREFIX_FUNC | LOG_PREFIX_NODE));
+    LogComponentEnable("LrWpanMac", LOG_LEVEL_DEBUG);
+
+    // Create 3 nodes, and a NetDevice for each one
+    Ptr<Node> n0 = CreateObject<Node>();
+    Ptr<Node> n1 = CreateObject<Node>();
+    Ptr<Node> n2 = CreateObject<Node>();
+
+    Ptr<LrWpanNetDevice> dev0 = CreateObject<LrWpanNetDevice>();
+    Ptr<LrWpanNetDevice> dev1 = CreateObject<LrWpanNetDevice>();
+    Ptr<LrWpanNetDevice> dev2 = CreateObject<LrWpanNetDevice>();
+
+    // Make random variable stream assignment deterministic
+    dev0->AssignStreams(0);
+    dev1->AssignStreams(10);
+    dev2->AssignStreams(20);
+
+    dev0->GetMac()->SetExtendedAddress("00:00:00:00:00:00:CA:FE");
+    dev1->GetMac()->SetExtendedAddress("00:00:00:00:00:00:00:01");
+    dev2->GetMac()->SetExtendedAddress("00:00:00:00:00:00:00:02");
+
+    dev0->SetAddress(Mac16Address("00:00"));
+    dev1->SetAddress(Mac16Address("00:01"));
+    dev2->SetAddress(Mac16Address("00:02"));
+
+    // Note: By default all devices are in the PANID: 0
+
+    // Each device must be attached to the same channel
+    Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel>();
+    Ptr<LogDistancePropagationLossModel> propModel =
+        CreateObject<LogDistancePropagationLossModel>();
+    Ptr<ConstantSpeedPropagationDelayModel> delayModel =
+        CreateObject<ConstantSpeedPropagationDelayModel>();
+    channel->AddPropagationLossModel(propModel);
+    channel->SetPropagationDelayModel(delayModel);
+
+    dev0->SetChannel(channel);
+    dev1->SetChannel(channel);
+    dev2->SetChannel(channel);
+
+    // To complete configuration, a LrWpanNetDevice must be added to a node
+    n0->AddDevice(dev0);
+    n1->AddDevice(dev1);
+    n2->AddDevice(dev2);
+
+    // Set mobility
+    Ptr<ConstantPositionMobilityModel> dev0Mobility = CreateObject<ConstantPositionMobilityModel>();
+    dev0Mobility->SetPosition(Vector(0, 0, 0));
+    dev0->GetPhy()->SetMobility(dev0Mobility);
+
+    Ptr<ConstantPositionMobilityModel> dev1Mobility = CreateObject<ConstantPositionMobilityModel>();
+    dev1Mobility->SetPosition(Vector(10, 0, 0));
+    dev1->GetPhy()->SetMobility(dev1Mobility);
+
+    Ptr<ConstantPositionMobilityModel> dev2Mobility = CreateObject<ConstantPositionMobilityModel>();
+    dev2Mobility->SetPosition(Vector(5, 5, 0));
+    dev2->GetPhy()->SetMobility(dev2Mobility);
+
+    // Do a CCA without a previous RandomBackoffDelay
+    // This is set to make the test reprodusable.
+    dev0->GetCsmaCa()->SetMacMinBE(0);
+    dev1->GetCsmaCa()->SetMacMinBE(0);
+    dev2->GetCsmaCa()->SetMacMinBE(0);
+
+    // Callback hooks to MAC layer
+    dev0->GetMac()->SetMcpsDataIndicationCallback(
+        MakeCallback(&CCAVulnerableWindowTest::DataIndication, this));
+
+    dev1->GetMac()->SetMcpsDataIndicationCallback(
+        MakeCallback(&CCAVulnerableWindowTest::DataIndication, this));
+
+    dev2->GetMac()->SetMcpsDataIndicationCallback(
+        MakeCallback(&CCAVulnerableWindowTest::DataIndication, this));
+
+    // --------------------------------------------------------------------------
+    /// Outside the vulnerable window, 2 packets are meant to be received
+    countPackets = 0;
+
+    // Device 1 send data to Device 0
+    Ptr<Packet> p0 = Create<Packet>(50);
+    McpsDataRequestParams params;
+    params.m_dstPanId = 0;
+    params.m_srcAddrMode = SHORT_ADDR;
+    params.m_dstAddrMode = SHORT_ADDR;
+    params.m_dstAddr = Mac16Address("00:00");
+    params.m_msduHandle = 0;
+    Simulator::ScheduleWithContext(1,
+                                   Seconds(1),
+                                   &LrWpanMac::McpsDataRequest,
+                                   dev1->GetMac(),
+                                   params,
+                                   p0);
+
+    // Device 0 send data to Device 2
+    Ptr<Packet> p1 = Create<Packet>(50);
+    McpsDataRequestParams params1;
+    params1.m_dstPanId = 0;
+    params1.m_srcAddrMode = SHORT_ADDR;
+    params1.m_dstAddrMode = SHORT_ADDR;
+    params1.m_dstAddr = Mac16Address("00:02");
+    params1.m_msduHandle = 1;
+    Simulator::ScheduleWithContext(1,
+                                   Seconds(1.000193),
+                                   &LrWpanMac::McpsDataRequest,
+                                   dev0->GetMac(),
+                                   params1,
+                                   p1);
+
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(countPackets, 2, "2 Packets are meant to be received");
+    // --------------------------------------------------------------------------
+    // Within the vulnerable window, a collion occurs and no
+    // packets are meant to be received
+    countPackets = 0;
+
+    // Device 1 send data to Device 0
+    Ptr<Packet> p3 = Create<Packet>(50);
+    McpsDataRequestParams params3;
+    params3.m_dstPanId = 0;
+    params3.m_srcAddrMode = SHORT_ADDR;
+    params3.m_dstAddrMode = SHORT_ADDR;
+    params3.m_dstAddr = Mac16Address("00:00");
+    params3.m_msduHandle = 0;
+    Simulator::ScheduleWithContext(1,
+                                   Seconds(1),
+                                   &LrWpanMac::McpsDataRequest,
+                                   dev1->GetMac(),
+                                   params3,
+                                   p3);
+
+    // Device 0 send data to Device 2
+    // This devices sends a second packet in less that 192us (turnaround time)
+    // apart from the first packet transmission sent by Device 1
+    Ptr<Packet> p4 = Create<Packet>(50);
+    McpsDataRequestParams params4;
+    params4.m_dstPanId = 0;
+    params4.m_srcAddrMode = SHORT_ADDR;
+    params4.m_dstAddrMode = SHORT_ADDR;
+    params4.m_dstAddr = Mac16Address("00:02");
+    params4.m_msduHandle = 1;
+    Simulator::ScheduleWithContext(1,
+                                   Seconds(1.000121),
+                                   &LrWpanMac::McpsDataRequest,
+                                   dev0->GetMac(),
+                                   params4,
+                                   p4);
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(countPackets,
+                          0,
+                          "Collision is meant to happen and no packets should be received");
+
+    Simulator::Destroy();
+}
+
+/**
+ * \ingroup lr-wpan-test
+ * \ingroup tests
+ *
+ * LrWpan ACK TestSuite
  */
 class LrWpanCcaTestSuite : public TestSuite
 {
@@ -354,9 +599,10 @@ class LrWpanCcaTestSuite : public TestSuite
 };
 
 LrWpanCcaTestSuite::LrWpanCcaTestSuite()
-    : TestSuite("lr-wpan-clear-channel-assessment", Type::UNIT)
+    : TestSuite("lr-wpan-cca-test", Type::UNIT)
 {
     AddTestCase(new LrWpanCcaTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new CCAVulnerableWindowTest, TestCase::Duration::QUICK);
 }
 
 static LrWpanCcaTestSuite g_lrWpanCcaTestSuite; //!< Static variable for test initialization
