@@ -89,7 +89,7 @@ if(traffic-control
 endif()
 
 add_library(
-  ${libtest}
+  test
   OBJECT
   ${PROJECT_SOURCE_DIR}/build-support/empty.cc # empty source file if only
   # libcore is enabled
