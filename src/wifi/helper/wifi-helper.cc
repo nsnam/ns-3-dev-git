@@ -723,10 +723,57 @@ WifiHelper::WifiHelper()
     m_ehtConfig.SetTypeId("ns3::EhtConfiguration");
 }
 
+namespace
+{
+/// Map strings to WifiStandard enum values
+const std::unordered_map<std::string, WifiStandard> WIFI_STANDARDS_NAME_MAP{
+    // clang-format off
+    {"802.11a",  WIFI_STANDARD_80211a},
+    {"11a",      WIFI_STANDARD_80211a},
+
+    {"802.11b",  WIFI_STANDARD_80211b},
+    {"11b",      WIFI_STANDARD_80211b},
+
+    {"802.11g",  WIFI_STANDARD_80211g},
+    {"11g",      WIFI_STANDARD_80211g},
+
+    {"802.11p",  WIFI_STANDARD_80211p},
+    {"11p",      WIFI_STANDARD_80211p},
+
+    {"802.11n",  WIFI_STANDARD_80211n},
+    {"11n",      WIFI_STANDARD_80211n},
+    {"HT",       WIFI_STANDARD_80211n},
+
+    {"802.11ac", WIFI_STANDARD_80211ac},
+    {"11ac",     WIFI_STANDARD_80211ac},
+    {"VHT",      WIFI_STANDARD_80211ac},
+
+    {"802.11ad", WIFI_STANDARD_80211ad},
+    {"11ad",     WIFI_STANDARD_80211ad},
+
+    {"802.11ax", WIFI_STANDARD_80211ax},
+    {"11ax",     WIFI_STANDARD_80211ax},
+    {"HE",       WIFI_STANDARD_80211ax},
+
+    {"802.11be", WIFI_STANDARD_80211be},
+    {"11be",     WIFI_STANDARD_80211be},
+    {"EHT",      WIFI_STANDARD_80211be},
+    // clang-format on
+};
+} // namespace
+
 void
 WifiHelper::SetStandard(WifiStandard standard)
 {
     m_standard = standard;
+}
+
+void
+WifiHelper::SetStandard(const std::string& standard)
+{
+    NS_ABORT_MSG_IF(!WIFI_STANDARDS_NAME_MAP.contains(standard),
+                    "Specified Wi-Fi standard " << standard << " is currently not supported");
+    SetStandard(WIFI_STANDARDS_NAME_MAP.at(standard));
 }
 
 void

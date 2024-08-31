@@ -445,6 +445,17 @@ class WifiHelper
     virtual void SetStandard(WifiStandard standard);
 
     /**
+     * \param standard String representation of the Wi-Fi standard
+     *
+     * This method overloads WifiHelper::SetStandard(WifiStandard standard) by allowing
+     * selected string names. For example, the strings "802.11ax", "11ax", and "HE"
+     * are equivalent and map to WIFI_STANDARD_80211ax. See the documentation of the specified
+     * function to see how it interacts with attribute configuration.
+     * \sa WifiHelper::SetStandard(WifiStandard standard)
+     */
+    void SetStandard(const std::string& standard);
+
+    /**
      * Helper function used to configure the HT options listed as attributes of
      * the HtConfiguration class.
      *
