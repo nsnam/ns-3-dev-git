@@ -389,7 +389,7 @@ class ChannelAccessManager : public Object
      * \param txop the Txop
      * \param accessGrantStart the value returned by GetAccessGrantStart()
      *
-     * \return the time when the backoff procedure ended (or will ended)
+     * \return the time when the backoff procedure ended (or will end)
      */
     Time GetBackoffEndFor(Ptr<Txop> txop, Time accessGrantStart) const;
 
@@ -404,11 +404,11 @@ class ChannelAccessManager : public Object
     Time GetBackoffStartFor(Ptr<Txop> txop);
     /**
      * Return the time when the backoff procedure
-     * ended (or will ended) for the given Txop.
+     * ended (or will end) for the given Txop.
      *
      * \param txop the Txop
      *
-     * \return the time when the backoff procedure ended (or will ended)
+     * \return the time when the backoff procedure ended (or will end)
      */
     Time GetBackoffEndFor(Ptr<Txop> txop);
     /**
