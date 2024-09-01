@@ -321,8 +321,8 @@ Time
 HePhy::GetSymbolDuration(const WifiTxVector& txVector) const
 {
     const auto guardInterval = txVector.GetGuardInterval();
-    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
-    NS_ASSERT(gi == 800 || gi == 1600 || gi == 3200);
+    NS_ASSERT_MSG(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211ax),
+                  "Invalid HE guard interval " << guardInterval.As(Time::NS));
     return GetSymbolDuration(guardInterval);
 }
 
@@ -1700,8 +1700,8 @@ HePhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* =
 uint64_t
 HePhy::GetDataRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
 {
-    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
-    NS_ASSERT((gi == 800) || (gi == 1600) || (gi == 3200));
+    NS_ASSERT_MSG(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211ax),
+                  "Invalid HE guard interval " << guardInterval.As(Time::NS));
     NS_ASSERT(nss <= 8);
     return HtPhy::CalculateDataRate(GetSymbolDuration(guardInterval),
                                     GetUsableSubcarriers(channelWidth),
