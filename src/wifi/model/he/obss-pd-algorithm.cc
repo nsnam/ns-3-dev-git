@@ -88,6 +88,8 @@ ObssPdAlgorithm::ConnectWifiNetDevice(const Ptr<WifiNetDevice> device)
 void
 ObssPdAlgorithm::ResetPhy(HeSigAParameters params)
 {
+    // PHY ignores txPowerMaxSiso (or txPowerMaxMimo) if powerRestricted is false, hence the default
+    // values for txPowerMaxSiso and txPowerMaxMimo do not matter
     dBm_u txPowerMaxSiso{0};
     dBm_u txPowerMaxMimo{0};
     bool powerRestricted = false;
