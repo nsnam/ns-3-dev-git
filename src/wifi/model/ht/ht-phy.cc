@@ -363,8 +363,7 @@ Time
 HtPhy::GetSymbolDuration(const WifiTxVector& txVector) const
 {
     const auto guardInterval = txVector.GetGuardInterval();
-    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
-    NS_ASSERT(gi == 400 || gi == 800);
+    NS_ASSERT(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211n));
     return GetSymbolDuration(guardInterval);
 }
 
@@ -686,8 +685,7 @@ HtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t /* staId *
 uint64_t
 HtPhy::GetDataRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
 {
-    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
-    NS_ASSERT((gi == 800) || (gi == 400));
+    NS_ASSERT(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211n));
     NS_ASSERT(nss <= 4);
     return CalculateDataRate(GetSymbolDuration(guardInterval),
                              GetUsableSubcarriers(channelWidth),

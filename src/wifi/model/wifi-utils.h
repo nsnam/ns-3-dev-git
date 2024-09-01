@@ -10,6 +10,7 @@
 #define WIFI_UTILS_H
 
 #include "block-ack-type.h"
+#include "wifi-standards.h"
 #include "wifi-types.h"
 
 #include "ns3/fatal-error.h"
@@ -220,6 +221,15 @@ void AddWifiMacTrailer(Ptr<Packet> packet);
  * @return the total packet size
  */
 uint32_t GetSize(Ptr<const Packet> packet, const WifiMacHeader* hdr, bool isAmpdu);
+
+/**
+ * Check whether a guard interval duration is valid for a given standard.
+ *
+ * \param gi the guard interval duration
+ * \param standard the standard
+ * \return true if the guard interval duration is valid for the given standard, false otherwise
+ */
+bool IsValidGuardInterval(Time gi, WifiStandard standard);
 
 /**
  * Check if the given TID-to-Link Mappings are valid for a negotiation type of 1. Specifically,

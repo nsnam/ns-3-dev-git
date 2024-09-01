@@ -139,6 +139,26 @@ GetSize(Ptr<const Packet> packet, const WifiMacHeader* hdr, bool isAmpdu)
 }
 
 bool
+IsValidGuardInterval(Time gi, WifiStandard standard)
+{
+    const auto guardInterval = gi.GetNanoSeconds();
+    switch (standard)
+    {
+    case WIFI_STANDARD_80211n:
+    case WIFI_STANDARD_80211ac:
+        return (gi.GetNanoSeconds() == 400) || (gi.GetNanoSeconds() == 800);
+    case WIFI_STANDARD_80211ad:
+        return (gi.GetPicoSeconds() == 48485) || (gi.GetPicoSeconds() == 96970);
+    case WIFI_STANDARD_80211ax:
+    case WIFI_STANDARD_80211be:
+        return (gi.GetNanoSeconds() == 800) || (gi.GetNanoSeconds() == 1600) ||
+               (gi.GetNanoSeconds() == 3200);
+    default:
+        return guardInterval == 800;
+    }
+}
+
+bool
 TidToLinkMappingValidForNegType1(const WifiTidLinkMapping& dlLinkMapping,
                                  const WifiTidLinkMapping& ulLinkMapping)
 {
