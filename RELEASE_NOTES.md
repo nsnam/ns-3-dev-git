@@ -47,6 +47,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (wifi) Fix starting Sequence Number when ADDBA Response arrives after timeout
 - (uan) !2087 - Fix Thorp attenuation formula
 - (uan) !2088 - Fix PER calculation of M-QAM
+- (uan) !2127 - Fix bug in energy update in UanPhyGen::RxEndEvent()
 
 Release 3.42
 ------------

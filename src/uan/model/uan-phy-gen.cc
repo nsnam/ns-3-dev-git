@@ -857,8 +857,9 @@ UanPhyGen::RxEndEvent(Ptr<Packet> pkt, double /* rxPowerDb */, UanTxMode txMode)
     else
     {
         m_state = IDLE;
-        UpdatePowerConsumption(IDLE);
     }
+
+    UpdatePowerConsumption(IDLE);
 
     if (m_pg->GetValue(0, 1) > m_per->CalcPer(m_pktRx, m_minRxSinrDb, txMode))
     {
