@@ -11,6 +11,8 @@
 
 #include "wifi-units.h"
 
+#include <ostream>
+
 namespace ns3
 {
 
@@ -84,6 +86,51 @@ enum class FrequencyChannelType : uint8_t
     OFDM,
     CH_80211P
 };
+
+/**
+ * Struct defining a frequency range between minFrequency (MHz) and maxFrequency (MHz).
+ */
+struct FrequencyRange
+{
+    double minFrequency{0.0}; ///< the minimum frequency in MHz
+    double maxFrequency{0.0}; ///< the maximum frequency in MHz
+
+    /**
+     * @brief spaceship operator.
+     *
+     * @param range the frequency range
+     * @returns -1 if the provided range is located at a lower minimum frequency, 0 if the provided
+     * range is identical or 1 if the provided range is located at a higher minimum frequency
+     */
+    auto operator<=>(const FrequencyRange& range) const = default;
+};
+
+/**
+ * Serialize FrequencyRange values to ostream (human-readable).
+ *
+ * @param os the output stream
+ * @param freqRange the FrequencyRange
+ *
+ * @return std::ostream
+ */
+inline std::ostream&
+operator<<(std::ostream& os, const FrequencyRange& freqRange)
+{
+    os << "[" << freqRange.minFrequency << " MHz - " << freqRange.maxFrequency << " MHz]";
+    return os;
+}
+
+/// Identifier for the frequency range covering the whole wifi spectrum
+constexpr FrequencyRange WHOLE_WIFI_SPECTRUM = {2401, 7125};
+
+/// Identifier for the frequency range covering the wifi spectrum in the 2.4 GHz band
+constexpr FrequencyRange WIFI_SPECTRUM_2_4_GHZ = {2401, 2483};
+
+/// Identifier for the frequency range covering the wifi spectrum in the 5 GHz band
+constexpr FrequencyRange WIFI_SPECTRUM_5_GHZ = {5170, 5915};
+
+/// Identifier for the frequency range covering the wifi spectrum in the 6 GHz band
+constexpr FrequencyRange WIFI_SPECTRUM_6_GHZ = {5945, 7125};
 
 } // namespace ns3
 
