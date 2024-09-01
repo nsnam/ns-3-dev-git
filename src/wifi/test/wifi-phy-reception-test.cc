@@ -49,9 +49,8 @@ NS_LOG_COMPONENT_DEFINE("WifiPhyReceptionTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
 static const double FREQUENCY = 5180; // MHz
-static const ChannelWidthMhz CHANNEL_WIDTH = 20;
-static const ChannelWidthMhz GUARD_WIDTH =
-    CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
+static const MHz_u CHANNEL_WIDTH = 20;
+static const MHz_u GUARD_WIDTH = CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
 
 /**
  * \ingroup wifi-test
@@ -4229,9 +4228,9 @@ class TestUnsupportedBandwidthReception : public TestCase
      * Function to create a PPDU
      *
      * \param centerFreqMhz the center frequency used for the transmission of the PPDU (in MHz)
-     * \param bandwidthMhz the bandwidth used for the transmission of the PPDU (in MHz)
+     * \param bandwidth the bandwidth used for the transmission of the PPDU
      */
-    void SendPpdu(double centerFreqMhz, ChannelWidthMhz bandwidthMhz);
+    void SendPpdu(double centerFreqMhz, MHz_u bandwidth);
 
     /**
      * Function called upon a PSDU received successfully
@@ -4301,7 +4300,7 @@ TestUnsupportedBandwidthReception::TestUnsupportedBandwidthReception()
 }
 
 void
-TestUnsupportedBandwidthReception::SendPpdu(double centerFreqMhz, ChannelWidthMhz bandwidthMhz)
+TestUnsupportedBandwidthReception::SendPpdu(double centerFreqMhz, MHz_u bandwidth)
 {
     auto txVector = WifiTxVector(HePhy::GetHeMcs0(),
                                  0,
@@ -4310,7 +4309,7 @@ TestUnsupportedBandwidthReception::SendPpdu(double centerFreqMhz, ChannelWidthMh
                                  1,
                                  1,
                                  0,
-                                 bandwidthMhz,
+                                 bandwidth,
                                  false);
 
     auto pkt = Create<Packet>(1000);
@@ -4327,9 +4326,9 @@ TestUnsupportedBandwidthReception::SendPpdu(double centerFreqMhz, ChannelWidthMh
 
     auto txPowerSpectrum =
         WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(centerFreqMhz,
-                                                                    bandwidthMhz,
+                                                                    bandwidth,
                                                                     DbmToW(-50),
-                                                                    bandwidthMhz);
+                                                                    bandwidth);
 
     auto txParams = Create<WifiSpectrumSignalParameters>();
     txParams->psd = txPowerSpectrum;

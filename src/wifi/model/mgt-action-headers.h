@@ -743,10 +743,10 @@ class FilsDiscHeader : public Header
          * \brief Set the BSS Operating Channel Width field based on the operating channel width
          * \param width the operating channel width
          */
-        void SetOpChannelWidth(ChannelWidthMhz width);
+        void SetOpChannelWidth(MHz_u width);
 
         /// \return the operating channel width encoded in the BSS Operating Channel Width field
-        ChannelWidthMhz GetOpChannelWidth() const;
+        MHz_u GetOpChannelWidth() const;
 
         /**
          * \brief Set the Maximum Number of Spatial Streams field

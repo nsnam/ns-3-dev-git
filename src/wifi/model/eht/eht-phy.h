@@ -181,14 +181,14 @@ class EhtPhy : public HePhy
      * and is mainly used as a callback for WifiMode operation.
      *
      * \param mcsValue the EHT MCS index
-     * \param channelWidth the considered channel width in MHz
+     * \param channelWidth the considered channel width
      * \param guardInterval the considered guard interval duration
      * \param nss the considered number of stream
      *
      * \return the physical bit rate of this signal in bps.
      */
     static uint64_t GetPhyRate(uint8_t mcsValue,
-                               ChannelWidthMhz channelWidth,
+                               MHz_u channelWidth,
                                Time guardInterval,
                                uint8_t nss);
 
@@ -221,13 +221,13 @@ class EhtPhy : public HePhy
      * streams.
      *
      * \param mcsValue the EHT MCS index
-     * \param channelWidth the channel width in MHz
+     * \param channelWidth the channel width
      * \param guardInterval the guard interval duration
      * \param nss the number of spatial streams
      * \return the data bit rate in bps.
      */
     static uint64_t GetDataRate(uint8_t mcsValue,
-                                ChannelWidthMhz channelWidth,
+                                MHz_u channelWidth,
                                 Time guardInterval,
                                 uint8_t nss);
 

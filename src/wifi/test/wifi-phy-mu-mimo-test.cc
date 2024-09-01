@@ -39,7 +39,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPhyMuMimoTest");
 
 constexpr double DEFAULT_FREQUENCY = 5180; // MHz
-constexpr ChannelWidthMhz DEFAULT_CHANNEL_WIDTH = 20;
+constexpr MHz_u DEFAULT_CHANNEL_WIDTH = 20;
 
 /**
  * \ingroup wifi-test
@@ -63,7 +63,7 @@ class TestDlMuTxVector : public TestCase
      *
      * \return the configured MU TXVECTOR
      */
-    static WifiTxVector BuildTxVector(ChannelWidthMhz bw, const std::list<HeMuUserInfo>& userInfos);
+    static WifiTxVector BuildTxVector(MHz_u bw, const std::list<HeMuUserInfo>& userInfos);
 };
 
 TestDlMuTxVector::TestDlMuTxVector()
@@ -72,7 +72,7 @@ TestDlMuTxVector::TestDlMuTxVector()
 }
 
 WifiTxVector
-TestDlMuTxVector::BuildTxVector(ChannelWidthMhz bw, const std::list<HeMuUserInfo>& userInfos)
+TestDlMuTxVector::BuildTxVector(MHz_u bw, const std::list<HeMuUserInfo>& userInfos)
 {
     WifiTxVector txVector;
     txVector.SetPreambleType(WIFI_PREAMBLE_HE_MU);
@@ -483,10 +483,10 @@ class TestDlMuMimoPhyTransmission : public TestCase
     Ptr<MuMimoSpectrumWifiPhy> m_phySta2; ///< PHY of STA 2
     Ptr<MuMimoSpectrumWifiPhy> m_phySta3; ///< PHY of STA 3
 
-    uint8_t m_nss;                  ///< number of spatial streams per STA
-    double m_frequency;             ///< frequency in MHz
-    ChannelWidthMhz m_channelWidth; ///< channel width
-    Time m_expectedPpduDuration;    ///< expected duration to send MU PPDU
+    uint8_t m_nss;               ///< number of spatial streams per STA
+    double m_frequency;          ///< frequency in MHz
+    MHz_u m_channelWidth;        ///< channel width
+    Time m_expectedPpduDuration; ///< expected duration to send MU PPDU
 };
 
 TestDlMuMimoPhyTransmission::TestDlMuMimoPhyTransmission()
@@ -1254,10 +1254,10 @@ class TestUlMuMimoPhyTransmission : public TestCase
     std::vector<uint32_t> m_countRxFailureFromStas; ///< count RX failure from STAs
     std::vector<uint32_t> m_countRxBytesFromStas;   ///< count RX bytes from STAs
 
-    Time m_delayStart;              ///< delay between the start of each HE TB PPDUs
-    double m_frequency;             ///< frequency in MHz
-    ChannelWidthMhz m_channelWidth; ///< channel width
-    Time m_expectedPpduDuration;    ///< expected duration to send MU PPDU
+    Time m_delayStart;           ///< delay between the start of each HE TB PPDUs
+    double m_frequency;          ///< frequency in MHz
+    MHz_u m_channelWidth;        ///< channel width
+    Time m_expectedPpduDuration; ///< expected duration to send MU PPDU
 };
 
 TestUlMuMimoPhyTransmission::TestUlMuMimoPhyTransmission()

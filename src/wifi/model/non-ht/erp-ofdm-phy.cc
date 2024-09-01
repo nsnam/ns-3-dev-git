@@ -197,7 +197,7 @@ ErpOfdmPhy::GetConstellationSize(const std::string& name)
 }
 
 uint64_t
-ErpOfdmPhy::GetPhyRate(const std::string& name, ChannelWidthMhz channelWidth)
+ErpOfdmPhy::GetPhyRate(const std::string& name, MHz_u channelWidth)
 {
     WifiCodeRate codeRate = GetCodeRate(name);
     uint16_t constellationSize = GetConstellationSize(name);
@@ -218,7 +218,7 @@ ErpOfdmPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t /* st
 }
 
 uint64_t
-ErpOfdmPhy::GetDataRate(const std::string& name, ChannelWidthMhz channelWidth)
+ErpOfdmPhy::GetDataRate(const std::string& name, MHz_u channelWidth)
 {
     WifiCodeRate codeRate = GetCodeRate(name);
     uint16_t constellationSize = GetConstellationSize(name);

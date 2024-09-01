@@ -322,7 +322,7 @@ FrameExchangeManager::GetReceivedMacHdr() const
 }
 
 bool
-FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, ChannelWidthMhz allowedWidth)
+FrameExchangeManager::StartTransmission(Ptr<Txop> dcf, MHz_u allowedWidth)
 {
     NS_LOG_FUNCTION(this << dcf << allowedWidth);
 

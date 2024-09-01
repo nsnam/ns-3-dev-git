@@ -75,7 +75,7 @@ static const uint8_t WIFI_6GHZ_FD_PHY_IDX = 4;
 /// @brief  Wi-Fi FILS frame test parameters
 struct WifiFilsFrameTestParams
 {
-    uint16_t bw{DEFAULT_BANDWIDTH};                     ///< Operation bandwidth
+    MHz_u bw{DEFAULT_BANDWIDTH};                        ///< Operation bandwidth
     std::string ssid{DEFAULT_SSID};                     ///< SSID name
     uint8_t nss{0};                                     ///< Number of spatial streams
     Time bcnIntrvl{DEFAULT_BCN_INTRVL};                 ///< Time between Beacons

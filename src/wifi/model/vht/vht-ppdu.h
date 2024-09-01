@@ -51,17 +51,17 @@ class VhtPpdu : public OfdmPpdu
         void SetMuFlag(bool mu);
 
         /**
-         * Fill the channel width field of VHT-SIG-A1 (in MHz).
+         * Fill the channel width field of VHT-SIG-A1.
          *
-         * \param channelWidth the channel width (in MHz)
+         * \param channelWidth the channel width
          */
-        void SetChannelWidth(ChannelWidthMhz channelWidth);
+        void SetChannelWidth(MHz_u channelWidth);
         /**
-         * Return the channel width (in MHz).
+         * Return the channel width.
          *
-         * \return the channel width (in MHz)
+         * \return the channel width
          */
-        ChannelWidthMhz GetChannelWidth() const;
+        MHz_u GetChannelWidth() const;
         /**
          * Fill the number of streams field of VHT-SIG-A1.
          *

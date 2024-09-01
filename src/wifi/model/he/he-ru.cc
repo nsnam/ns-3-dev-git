@@ -360,7 +360,7 @@ const HeRu::RuAllocationMap HeRu::m_heRuAllocations = {
     // clang-format on
 };
 
-HeRu::RuSpecCompare::RuSpecCompare(ChannelWidthMhz channelWidth, uint8_t p20Index)
+HeRu::RuSpecCompare::RuSpecCompare(MHz_u channelWidth, uint8_t p20Index)
     : m_channelWidth(channelWidth),
       m_p20Index(p20Index)
 {
@@ -465,7 +465,7 @@ HeRu::RuSpec::GetPrimary80MHz() const
 }
 
 std::size_t
-HeRu::RuSpec::GetPhyIndex(ChannelWidthMhz bw, uint8_t p20Index) const
+HeRu::RuSpec::GetPhyIndex(MHz_u bw, uint8_t p20Index) const
 {
     bool primary80IsLower80 = (p20Index < bw / 40);
 
@@ -481,7 +481,7 @@ HeRu::RuSpec::GetPhyIndex(ChannelWidthMhz bw, uint8_t p20Index) const
 }
 
 std::size_t
-HeRu::GetNRus(ChannelWidthMhz bw, RuType ruType)
+HeRu::GetNRus(MHz_u bw, RuType ruType)
 {
     if (bw == 160 && ruType == RU_2x996_TONE)
     {
@@ -501,7 +501,7 @@ HeRu::GetNRus(ChannelWidthMhz bw, RuType ruType)
 }
 
 std::vector<HeRu::RuSpec>
-HeRu::GetRusOfType(ChannelWidthMhz bw, HeRu::RuType ruType)
+HeRu::GetRusOfType(MHz_u bw, HeRu::RuType ruType)
 {
     if (ruType == HeRu::RU_2x996_TONE)
     {
@@ -531,7 +531,7 @@ HeRu::GetRusOfType(ChannelWidthMhz bw, HeRu::RuType ruType)
 }
 
 std::vector<HeRu::RuSpec>
-HeRu::GetCentral26TonesRus(ChannelWidthMhz bw, HeRu::RuType ruType)
+HeRu::GetCentral26TonesRus(MHz_u bw, HeRu::RuType ruType)
 {
     std::vector<std::size_t> indices;
 
@@ -577,7 +577,7 @@ HeRu::GetCentral26TonesRus(ChannelWidthMhz bw, HeRu::RuType ruType)
 }
 
 HeRu::SubcarrierGroup
-HeRu::GetSubcarrierGroup(ChannelWidthMhz bw, RuType ruType, std::size_t phyIndex)
+HeRu::GetSubcarrierGroup(MHz_u bw, RuType ruType, std::size_t phyIndex)
 {
     if (ruType == HeRu::RU_2x996_TONE) // handle special case of RU covering 160 MHz channel
     {
@@ -616,7 +616,7 @@ HeRu::GetSubcarrierGroup(ChannelWidthMhz bw, RuType ruType, std::size_t phyIndex
 }
 
 bool
-HeRu::DoesOverlap(ChannelWidthMhz bw, RuSpec ru, const std::vector<RuSpec>& v)
+HeRu::DoesOverlap(MHz_u bw, RuSpec ru, const std::vector<RuSpec>& v)
 {
     // A 2x996-tone RU spans 160 MHz, hence it overlaps with any other RU
     if (bw == 160 && ru.GetRuType() == RU_2x996_TONE && !v.empty())
@@ -652,10 +652,7 @@ HeRu::DoesOverlap(ChannelWidthMhz bw, RuSpec ru, const std::vector<RuSpec>& v)
 }
 
 bool
-HeRu::DoesOverlap(ChannelWidthMhz bw,
-                  RuSpec ru,
-                  const SubcarrierGroup& toneRanges,
-                  uint8_t p20Index)
+HeRu::DoesOverlap(MHz_u bw, RuSpec ru, const SubcarrierGroup& toneRanges, uint8_t p20Index)
 {
     for (const auto& range : toneRanges)
     {
@@ -678,7 +675,7 @@ HeRu::DoesOverlap(ChannelWidthMhz bw,
 }
 
 HeRu::RuSpec
-HeRu::FindOverlappingRu(ChannelWidthMhz bw, RuSpec referenceRu, RuType searchedRuType)
+HeRu::FindOverlappingRu(MHz_u bw, RuSpec referenceRu, RuType searchedRuType)
 {
     std::size_t numRus = HeRu::GetNRus(bw, searchedRuType);
 
@@ -755,7 +752,7 @@ operator<<(std::ostream& os, const HeRu::RuSpec& ru)
     return os;
 }
 
-ChannelWidthMhz
+MHz_u
 HeRu::GetBandwidth(RuType ruType)
 {
     switch (ruType)
@@ -781,7 +778,7 @@ HeRu::GetBandwidth(RuType ruType)
 }
 
 HeRu::RuType
-HeRu::GetRuType(ChannelWidthMhz bandwidth)
+HeRu::GetRuType(MHz_u bandwidth)
 {
     switch (static_cast<uint16_t>(bandwidth))
     {
@@ -806,7 +803,7 @@ HeRu::GetRuType(ChannelWidthMhz bandwidth)
 }
 
 HeRu::RuType
-HeRu::GetEqualSizedRusForStations(ChannelWidthMhz bandwidth,
+HeRu::GetEqualSizedRusForStations(MHz_u bandwidth,
                                   std::size_t& nStations,
                                   std::size_t& nCentral26TonesRus)
 {

@@ -233,7 +233,7 @@ DsssPhy::EndReceiveHeader(Ptr<Event> event)
     return status;
 }
 
-ChannelWidthMhz
+MHz_u
 DsssPhy::GetRxChannelWidth(const WifiTxVector& txVector) const
 {
     if (m_wifiPhy->GetChannelWidth() > 20)
@@ -249,7 +249,7 @@ DsssPhy::GetRxChannelWidth(const WifiTxVector& txVector) const
     return PhyEntity::GetRxChannelWidth(txVector);
 }
 
-ChannelWidthMhz
+MHz_u
 DsssPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
 {
     return ppdu ? GetRxChannelWidth(ppdu->GetTxVector()) : 22;

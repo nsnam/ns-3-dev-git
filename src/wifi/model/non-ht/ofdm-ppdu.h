@@ -48,16 +48,16 @@ class OfdmPpdu : public WifiPpdu
          * Fill the RATE field of L-SIG (in bit/s).
          *
          * \param rate the RATE field of L-SIG expressed in bit/s
-         * \param channelWidth the channel width (in MHz)
+         * \param channelWidth the channel width
          */
-        void SetRate(uint64_t rate, ChannelWidthMhz channelWidth = 20);
+        void SetRate(uint64_t rate, MHz_u channelWidth = 20);
         /**
          * Return the RATE field of L-SIG (in bit/s).
          *
-         * \param channelWidth the channel width (in MHz)
+         * \param channelWidth the channel width
          * \return the RATE field of L-SIG expressed in bit/s
          */
-        uint64_t GetRate(ChannelWidthMhz channelWidth = 20) const;
+        uint64_t GetRate(MHz_u channelWidth = 20) const;
         /**
          * Fill the LENGTH field of L-SIG (in bytes).
          *
@@ -126,9 +126,9 @@ class OfdmPpdu : public WifiPpdu
      */
     virtual void SetTxVectorFromLSigHeader(WifiTxVector& txVector, const LSigHeader& lSig) const;
 
-    ChannelWidthMhz m_channelWidth; //!< the channel width used to transmit that PPDU in MHz
-                                    //!< (needed to distinguish 5 MHz, 10 MHz or 20 MHz PPDUs)
-};                                  // class OfdmPpdu
+    MHz_u m_channelWidth; //!< the channel width used to transmit that PPDU
+                          //!< (needed to distinguish 5 MHz, 10 MHz or 20 MHz PPDUs)
+};                        // class OfdmPpdu
 
 } // namespace ns3
 

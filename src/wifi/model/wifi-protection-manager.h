@@ -95,11 +95,11 @@ class WifiProtectionManager : public Object
      * by the solicited station.
      *
      * \param muRts the MU-RTS Trigger Frame
-     * \param txWidth the TX width of the protected data frame (MHz)
+     * \param txWidth the TX width of the protected data frame
      * \param receiver the MAC address of the solicited station
      */
     void AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
-                            ChannelWidthMhz txWidth,
+                            MHz_u txWidth,
                             const Mac48Address& receiver) const;
 
     Ptr<WifiMac> m_mac; //!< MAC which is using this Protection Manager

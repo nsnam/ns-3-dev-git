@@ -188,7 +188,7 @@ MultiUserScheduler::TxFormat
 MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
                                         Time availableTime,
                                         bool initialFrame,
-                                        ChannelWidthMhz allowedWidth,
+                                        MHz_u allowedWidth,
                                         uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << edca << availableTime << initialFrame << allowedWidth << linkId);

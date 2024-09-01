@@ -268,7 +268,7 @@ AarfcdWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                   double ackSnr,
                                   WifiMode ackMode,
                                   double dataSnr,
-                                  ChannelWidthMhz dataChannelWidth,
+                                  MHz_u dataChannelWidth,
                                   uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -314,7 +314,7 @@ AarfcdWifiManager::DoReportFinalDataFailed(WifiRemoteStation* station)
 }
 
 WifiTxVector
-AarfcdWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz allowedWidth)
+AarfcdWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<AarfcdWifiRemoteStation*>(st);

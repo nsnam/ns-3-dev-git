@@ -232,7 +232,7 @@ GetModulationClassForStandard(WifiStandard standard)
     return modulationClass;
 }
 
-ChannelWidthMhz
+MHz_u
 GetMaximumChannelWidth(WifiModulationClass modulation)
 {
     switch (modulation)
@@ -258,7 +258,7 @@ GetMaximumChannelWidth(WifiModulationClass modulation)
     }
 }
 
-ChannelWidthMhz
+MHz_u
 GetChannelWidthInMhz(WifiChannelWidthType width)
 {
     switch (width)

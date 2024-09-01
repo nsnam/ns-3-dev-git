@@ -2183,7 +2183,7 @@ WifiMac::GetVhtCapabilities(uint8_t linkId) const
         capabilities.SetTxMcsMap(maxMcs, nss);
     }
     uint64_t maxSupportedRateLGI = 0; // in bit/s
-    uint16_t maxWidth = vhtConfiguration->Get160MHzOperationSupported() ? 160 : 80;
+    MHz_u maxWidth = vhtConfiguration->Get160MHzOperationSupported() ? 160 : 80;
     for (const auto& mcs : phy->GetMcsList(WIFI_MOD_CLASS_VHT))
     {
         if (!mcs.IsAllowed(maxWidth, 1))

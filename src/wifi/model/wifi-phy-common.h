@@ -681,20 +681,20 @@ bool IsUlMu(WifiPreamble preamble);
 WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
 
 /**
- * Get the maximum channel width in MHz allowed for the given modulation class.
+ * Get the maximum channel width allowed for the given modulation class.
  *
  * \param modulation the modulation class
- * \return the maximum channel width in MHz allowed for the given modulation class
+ * \return the maximum channel width allowed for the given modulation class
  */
-ChannelWidthMhz GetMaximumChannelWidth(WifiModulationClass modulation);
+MHz_u GetMaximumChannelWidth(WifiModulationClass modulation);
 
 /**
- * Get the total channel width in MHz for the channel width type.
+ * Get the total channel width for the channel width type.
  *
  * \param width the channel width type
- * \return the total channel width in MHz for the channel width type
+ * \return the total channel width for the channel width type
  */
-ChannelWidthMhz GetChannelWidthInMhz(WifiChannelWidthType width);
+MHz_u GetChannelWidthInMhz(WifiChannelWidthType width);
 
 /**
  * Return true if a preamble corresponds to an EHT transmission.

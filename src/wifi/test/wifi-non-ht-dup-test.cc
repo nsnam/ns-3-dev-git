@@ -253,9 +253,9 @@ class TestNonHtDuplicatePhyReception : public TestCase
 
     /**
      * Send non-HT duplicate PPDU function
-     * \param channelWidth the channel width to use to transmit the non-HT PPDU (in MHz)
+     * \param channelWidth the channel width to use to transmit the non-HT PPDU
      */
-    void SendNonHtDuplicatePpdu(ChannelWidthMhz channelWidth);
+    void SendNonHtDuplicatePpdu(MHz_u channelWidth);
 
     /**
      * Generate interference function
@@ -322,7 +322,7 @@ TestNonHtDuplicatePhyReception::ResetResults()
 }
 
 void
-TestNonHtDuplicatePhyReception::SendNonHtDuplicatePpdu(ChannelWidthMhz channelWidth)
+TestNonHtDuplicatePhyReception::SendNonHtDuplicatePpdu(MHz_u channelWidth)
 {
     NS_LOG_FUNCTION(this << channelWidth);
     WifiTxVector txVector = WifiTxVector(OfdmPhy::GetOfdmRate24Mbps(),
@@ -626,8 +626,8 @@ class TestMultipleCtsResponsesFromMuRts : public TestCase
     /// Information about CTS responses to expect in the test
     struct CtsTxInfos
     {
-        ChannelWidthMhz bw{20}; ///< the width in MHz of the CTS response
-        bool discard{false};    ///< flag whether the CTS response shall be discarded
+        MHz_u bw{20};        ///< the width of the CTS response
+        bool discard{false}; ///< flag whether the CTS response shall be discarded
     };
 
     /**

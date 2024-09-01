@@ -10,7 +10,7 @@
 #define VHT_CONFIGURATION_H
 
 #include "ns3/object.h"
-#include "ns3/wifi-types.h"
+#include "ns3/wifi-units.h"
 
 #include <map>
 #include <tuple>
@@ -70,16 +70,16 @@ class VhtConfiguration : public Object
 
     /**
      * \return the CCA sensitivity thresholds for PPDUs that do not occupy the primary channel,
-     * indexed by signal bandwidth (MHz)
+     * indexed by signal bandwidth
      */
-    const std::map<ChannelWidthMhz, double>& GetSecondaryCcaSensitivityThresholdsPerBw() const;
+    const std::map<MHz_u, double>& GetSecondaryCcaSensitivityThresholdsPerBw() const;
 
   private:
     bool m_160MHzSupported; ///< whether 160 MHz operation is supported
-    std::map<ChannelWidthMhz, double>
+    std::map<MHz_u, double>
         m_secondaryCcaSensitivityThresholds; ///< CCA sensitivity thresholds for signals that do not
                                              ///< occupy the primary channel, indexed by signal
-                                             ///< bandwidth (MHz)
+                                             ///< bandwidth
 };
 
 } // namespace ns3

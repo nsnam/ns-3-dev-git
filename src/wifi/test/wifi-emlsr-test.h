@@ -529,16 +529,16 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
     struct Params
     {
         std::set<uint8_t>
-            linksToEnableEmlsrOn;           //!< IDs of links on which EMLSR mode should be enabled
-        ChannelWidthMhz channelWidth;       //!< width of the channels used by MLDs
-        ChannelWidthMhz auxPhyChannelWidth; //!< max width supported by aux PHYs
-        Time mediumSyncDuration;            //!< duration of the MediumSyncDelay timer
-        uint8_t msdMaxNTxops;               //!< Max number of TXOPs that an EMLSR client is allowed
-                                            //!< to attempt to initiate while the MediumSyncDelay
-                                            //!< timer is running (zero indicates no limit)
-        bool genBackoffIfTxopWithoutTx;     //!< whether the backoff should be invoked when the AC
-                                            //!< gains the right to start a TXOP but it does not
-                                            //!< transmit any frame
+            linksToEnableEmlsrOn;       //!< IDs of links on which EMLSR mode should be enabled
+        MHz_u channelWidth;             //!< width of the channels used by MLDs
+        MHz_u auxPhyChannelWidth;       //!< max width supported by aux PHYs
+        Time mediumSyncDuration;        //!< duration of the MediumSyncDelay timer
+        uint8_t msdMaxNTxops;           //!< Max number of TXOPs that an EMLSR client is allowed
+                                        //!< to attempt to initiate while the MediumSyncDelay
+                                        //!< timer is running (zero indicates no limit)
+        bool genBackoffIfTxopWithoutTx; //!< whether the backoff should be invoked when the AC
+                                        //!< gains the right to start a TXOP but it does not
+                                        //!< transmit any frame
     };
 
     /**
@@ -631,12 +631,12 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
     void BackoffGenerated(uint32_t backoff, uint8_t linkId);
 
     std::set<uint8_t> m_emlsrLinks; /**< IDs of the links on which EMLSR mode has to be enabled */
-    ChannelWidthMhz m_channelWidth; //!< width of the channels used by MLDs
-    ChannelWidthMhz m_auxPhyChannelWidth;  //!< max width supported by aux PHYs
-    Time m_mediumSyncDuration;             //!< duration of the MediumSyncDelay timer
-    uint8_t m_msdMaxNTxops;                //!< Max number of TXOPs that an EMLSR client is allowed
-                                           //!< to attempt to initiate while the MediumSyncDelay
-                                           //!< timer is running (zero indicates no limit)
+    MHz_u m_channelWidth;           //!< width of the channels used by MLDs
+    MHz_u m_auxPhyChannelWidth;     //!< max width supported by aux PHYs
+    Time m_mediumSyncDuration;      //!< duration of the MediumSyncDelay timer
+    uint8_t m_msdMaxNTxops;         //!< Max number of TXOPs that an EMLSR client is allowed
+                                    //!< to attempt to initiate while the MediumSyncDelay
+                                    //!< timer is running (zero indicates no limit)
     std::optional<uint8_t> m_nonEmlsrLink; //!< ID of the non-EMLSR link (if any)
     Time m_emlsrEnabledTime;              //!< when EMLSR mode has been enabled on all EMLSR clients
     Time m_firstUlPktsGenTime;            //!< generation time of the first two UL packets
@@ -686,7 +686,7 @@ class EmlsrLinkSwitchTest : public EmlsrOperationsTestBase
                           //!<  the Main PHY was operating before moving to the link of the Aux PHY
         bool resetCamState; //!< whether to reset the state of the ChannelAccessManager associated
                             //!< with the link on which the main PHY has just switched to
-        ChannelWidthMhz auxPhyMaxChWidth; //!< max channel width supported by aux PHYs
+        MHz_u auxPhyMaxChWidth; //!< max channel width supported by aux PHYs
     };
 
     /**
@@ -741,9 +741,9 @@ class EmlsrLinkSwitchTest : public EmlsrOperationsTestBase
                                the Main PHY was operating before moving to the link of Aux PHY */
     bool m_resetCamState; /**< whether to reset the state of the ChannelAccessManager associated
                                with the link on which the main PHY has just switched to */
-    ChannelWidthMhz m_auxPhyMaxChWidth; //!< max channel width supported by aux PHYs
-    std::size_t m_countQoSframes;       //!< counter for QoS data frames
-    std::size_t m_txPsdusPos;           //!< a position in the vector of TX PSDUs
+    MHz_u m_auxPhyMaxChWidth;     //!< max channel width supported by aux PHYs
+    std::size_t m_countQoSframes; //!< counter for QoS data frames
+    std::size_t m_txPsdusPos;     //!< a position in the vector of TX PSDUs
 };
 
 /**

@@ -11,6 +11,7 @@
 
 #include "wifi-phy-band.h"
 #include "wifi-types.h"
+#include "wifi-units.h"
 
 #include "ns3/abort.h"
 
@@ -104,9 +105,9 @@ GetFrequencyChannelType(WifiStandard standard)
  *
  * \param standard the given standard
  * \param band the given PHY band
- * \return the default channel width (MHz) for the given standard
+ * \return the default channel width for the given standard
  */
-inline ChannelWidthMhz
+inline MHz_u
 GetDefaultChannelWidth(WifiStandard standard, WifiPhyBand band)
 {
     switch (standard)

@@ -157,7 +157,7 @@ OnoeWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                 double ackSnr,
                                 WifiMode ackMode,
                                 double dataSnr,
-                                ChannelWidthMhz dataChannelWidth,
+                                MHz_u dataChannelWidth,
                                 uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -279,7 +279,7 @@ OnoeWifiManager::UpdateMode(OnoeWifiRemoteStation* station)
 }
 
 WifiTxVector
-OnoeWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz allowedWidth)
+OnoeWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<OnoeWifiRemoteStation*>(st);

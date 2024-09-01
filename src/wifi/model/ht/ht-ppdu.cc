@@ -133,12 +133,12 @@ HtPpdu::HtSigHeader::GetMcs() const
 }
 
 void
-HtPpdu::HtSigHeader::SetChannelWidth(ChannelWidthMhz channelWidth)
+HtPpdu::HtSigHeader::SetChannelWidth(MHz_u channelWidth)
 {
     m_cbw20_40 = (channelWidth > 20) ? 1 : 0;
 }
 
-ChannelWidthMhz
+MHz_u
 HtPpdu::HtSigHeader::GetChannelWidth() const
 {
     return m_cbw20_40 ? 40 : 20;

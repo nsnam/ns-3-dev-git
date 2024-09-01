@@ -72,24 +72,24 @@ class InterferenceExperiment
     struct Input
     {
         Input();
-        Time interval;          ///< interval
-        double xA;              ///< x A
-        double xB;              ///< x B
-        std::string txModeA;    ///< transmit mode A
-        std::string txModeB;    ///< transmit mode B
-        double txPowerLevelA;   ///< transmit power level A
-        double txPowerLevelB;   ///< transmit power level B
-        uint32_t packetSizeA;   ///< packet size A
-        uint32_t packetSizeB;   ///< packet size B
-        uint16_t channelA;      ///< channel number A
-        uint16_t channelB;      ///< channel number B
-        ChannelWidthMhz widthA; ///< channel width A
-        ChannelWidthMhz widthB; ///< channel width B
-        WifiStandard standard;  ///< standard
-        WifiPhyBand band;       ///< band
-        WifiPreamble preamble;  ///< preamble
-        bool captureEnabled;    ///< whether physical layer capture is enabled
-        double captureMargin;   ///< margin used for physical layer capture
+        Time interval;         ///< interval
+        double xA;             ///< x A
+        double xB;             ///< x B
+        std::string txModeA;   ///< transmit mode A
+        std::string txModeB;   ///< transmit mode B
+        double txPowerLevelA;  ///< transmit power level A
+        double txPowerLevelB;  ///< transmit power level B
+        uint32_t packetSizeA;  ///< packet size A
+        uint32_t packetSizeB;  ///< packet size B
+        uint16_t channelA;     ///< channel number A
+        uint16_t channelB;     ///< channel number B
+        MHz_u widthA;          ///< channel width A
+        MHz_u widthB;          ///< channel width B
+        WifiStandard standard; ///< standard
+        WifiPhyBand band;      ///< band
+        WifiPreamble preamble; ///< preamble
+        bool captureEnabled;   ///< whether physical layer capture is enabled
+        double captureMargin;  ///< margin used for physical layer capture
     };
 
     InterferenceExperiment();

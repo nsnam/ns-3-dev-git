@@ -27,15 +27,14 @@ namespace ns3
 struct IdealWifiRemoteStation : public WifiRemoteStation
 {
     double m_lastSnrObserved; //!< SNR of most recently reported packet sent to the remote station
-    ChannelWidthMhz m_lastChannelWidthObserved; //!< Channel width (in MHz) of most recently
-                                                //!< reported packet sent to the remote station
+    MHz_u m_lastChannelWidthObserved; //!< Channel width of most recently
+                                      //!< reported packet sent to the remote station
     uint16_t m_lastNssObserved; //!<  Number of spatial streams of most recently reported packet
                                 //!<  sent to the remote station
     double m_lastSnrCached;     //!< SNR most recently used to select a rate
     uint8_t m_lastNss;   //!< Number of spatial streams most recently used to the remote station
     WifiMode m_lastMode; //!< Mode most recently used to the remote station
-    ChannelWidthMhz
-        m_lastChannelWidth; //!< Channel width (in MHz) most recently used to the remote station
+    MHz_u m_lastChannelWidth; //!< Channel width most recently used to the remote station
 };
 
 /// To avoid using the cache before a valid value has been cached
@@ -83,7 +82,7 @@ IdealWifiManager::SetupPhy(const Ptr<WifiPhy> phy)
     WifiRemoteStationManager::SetupPhy(phy);
 }
 
-ChannelWidthMhz
+MHz_u
 IdealWifiManager::GetChannelWidthForNonHtMode(WifiMode mode) const
 {
     NS_ASSERT(mode.GetModulationClass() < WIFI_MOD_CLASS_HT);
@@ -125,7 +124,7 @@ IdealWifiManager::BuildSnrThresholds()
     {
         for (const auto& mode : GetPhy()->GetMcsList())
         {
-            for (ChannelWidthMhz j = 20; j <= GetPhy()->GetChannelWidth(); j *= 2)
+            for (MHz_u j = 20; j <= GetPhy()->GetChannelWidth(); j *= 2)
             {
                 txVector.SetChannelWidth(j);
                 if (mode.GetModulationClass() == WIFI_MOD_CLASS_HT)
@@ -270,7 +269,7 @@ IdealWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                  double ackSnr,
                                  WifiMode ackMode,
                                  double dataSnr,
-                                 ChannelWidthMhz dataChannelWidth,
+                                 MHz_u dataChannelWidth,
                                  uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode.GetUniqueName() << dataSnr << dataChannelWidth
@@ -292,7 +291,7 @@ IdealWifiManager::DoReportAmpduTxStatus(WifiRemoteStation* st,
                                         uint16_t nFailedMpdus,
                                         double rxSnr,
                                         double dataSnr,
-                                        ChannelWidthMhz dataChannelWidth,
+                                        MHz_u dataChannelWidth,
                                         uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << nSuccessfulMpdus << nFailedMpdus << rxSnr << dataSnr
@@ -323,7 +322,7 @@ IdealWifiManager::DoReportFinalDataFailed(WifiRemoteStation* station)
 }
 
 WifiTxVector
-IdealWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz allowedWidth)
+IdealWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<IdealWifiRemoteStation*>(st);
@@ -557,7 +556,7 @@ IdealWifiManager::DoGetRtsTxVector(WifiRemoteStation* st)
 
 double
 IdealWifiManager::GetLastObservedSnr(IdealWifiRemoteStation* station,
-                                     ChannelWidthMhz channelWidth,
+                                     MHz_u channelWidth,
                                      uint8_t nss) const
 {
     double snr = station->m_lastSnrObserved;

@@ -807,7 +807,7 @@ MinstrelWifiManager::DoReportDataOk(WifiRemoteStation* st,
                                     double ackSnr,
                                     WifiMode ackMode,
                                     double dataSnr,
-                                    ChannelWidthMhz dataChannelWidth,
+                                    MHz_u dataChannelWidth,
                                     uint8_t dataNss)
 {
     NS_LOG_FUNCTION(this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
@@ -921,7 +921,7 @@ MinstrelWifiManager::UpdateRetry(MinstrelWifiRemoteStation* station)
 }
 
 WifiTxVector
-MinstrelWifiManager::DoGetDataTxVector(WifiRemoteStation* st, ChannelWidthMhz allowedWidth)
+MinstrelWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
 {
     NS_LOG_FUNCTION(this << st << allowedWidth);
     auto station = static_cast<MinstrelWifiRemoteStation*>(st);

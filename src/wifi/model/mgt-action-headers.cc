@@ -1652,7 +1652,7 @@ FilsDiscHeader::FdCapability::Deserialize(Buffer::Iterator start)
 }
 
 void
-FilsDiscHeader::FdCapability::SetOpChannelWidth(ChannelWidthMhz width)
+FilsDiscHeader::FdCapability::SetOpChannelWidth(MHz_u width)
 {
     m_chWidth = (width == 20 || width == 22) ? 0
                 : (width == 40)              ? 1
@@ -1661,7 +1661,7 @@ FilsDiscHeader::FdCapability::SetOpChannelWidth(ChannelWidthMhz width)
                                              : 4;
 }
 
-ChannelWidthMhz
+MHz_u
 FilsDiscHeader::FdCapability::GetOpChannelWidth() const
 {
     switch (m_chWidth)

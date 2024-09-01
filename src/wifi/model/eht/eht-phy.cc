@@ -326,7 +326,7 @@ EhtPhy::GetConstellationSize(uint8_t mcsValue)
 }
 
 uint64_t
-EhtPhy::GetPhyRate(uint8_t mcsValue, ChannelWidthMhz channelWidth, Time guardInterval, uint8_t nss)
+EhtPhy::GetPhyRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
 {
     const auto codeRate = GetCodeRate(mcsValue);
     const auto dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
@@ -362,7 +362,7 @@ EhtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* 
 }
 
 uint64_t
-EhtPhy::GetDataRate(uint8_t mcsValue, ChannelWidthMhz channelWidth, Time guardInterval, uint8_t nss)
+EhtPhy::GetDataRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
 {
     [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
     NS_ASSERT((gi == 800) || (gi == 1600) || (gi == 3200));

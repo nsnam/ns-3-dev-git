@@ -55,7 +55,7 @@ class TxDurationTest : public TestCase
      */
     bool CheckPayloadDuration(uint32_t size,
                               WifiMode payloadMode,
-                              ChannelWidthMhz channelWidth,
+                              MHz_u channelWidth,
                               Time guardInterval,
                               WifiPreamble preamble,
                               Time knownDuration);
@@ -75,7 +75,7 @@ class TxDurationTest : public TestCase
      */
     bool CheckTxDuration(uint32_t size,
                          WifiMode payloadMode,
-                         ChannelWidthMhz channelWidth,
+                         MHz_u channelWidth,
                          Time guardInterval,
                          WifiPreamble preamble,
                          Time knownDuration);
@@ -95,7 +95,7 @@ class TxDurationTest : public TestCase
      */
     static bool CheckMuTxDuration(std::list<uint32_t> sizes,
                                   std::list<HeMuUserInfo> userInfos,
-                                  ChannelWidthMhz channelWidth,
+                                  MHz_u channelWidth,
                                   Time guardInterval,
                                   WifiPreamble preamble,
                                   Time knownDuration);
@@ -132,7 +132,7 @@ TxDurationTest::~TxDurationTest()
 bool
 TxDurationTest::CheckPayloadDuration(uint32_t size,
                                      WifiMode payloadMode,
-                                     ChannelWidthMhz channelWidth,
+                                     MHz_u channelWidth,
                                      Time guardInterval,
                                      WifiPreamble preamble,
                                      Time knownDuration)
@@ -184,7 +184,7 @@ TxDurationTest::CheckPayloadDuration(uint32_t size,
 bool
 TxDurationTest::CheckTxDuration(uint32_t size,
                                 WifiMode payloadMode,
-                                ChannelWidthMhz channelWidth,
+                                MHz_u channelWidth,
                                 Time guardInterval,
                                 WifiPreamble preamble,
                                 Time knownDuration)
@@ -243,7 +243,7 @@ TxDurationTest::CheckTxDuration(uint32_t size,
 bool
 TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
                                   std::list<HeMuUserInfo> userInfos,
-                                  ChannelWidthMhz channelWidth,
+                                  MHz_u channelWidth,
                                   Time guardInterval,
                                   WifiPreamble preamble,
                                   Time knownDuration)
@@ -254,7 +254,7 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
                            std::begin(userInfos),
                            std::end(userInfos),
                            0,
-                           [](const ChannelWidthMhz prevBw, const HeMuUserInfo& info) {
+                           [](const MHz_u prevBw, const HeMuUserInfo& info) {
                                return prevBw + HeRu::GetBandwidth(info.ru.GetRuType());
                            }),
         "Cannot accommodate all the RUs in the provided band"); // MU-MIMO (for which allocations
@@ -1456,7 +1456,7 @@ class HeSigBDurationTest : public TestCase
      *
      * \param userInfos the HE MU specific per-user information to use for the test
      * \param sigBMode the mode to transmit HE-SIG-B for the test
-     * \param channelWidth the channel width in MHz to select for the test
+     * \param channelWidth the channel width to select for the test
      * \param expectedMuType the expected MU type (OFDMA or MU-MIMO)
      * \param expectedRuAllocation the expected RU_ALLOCATION
      * \param expectedNumUsersPerCc the expected number of users per content channel
@@ -1464,7 +1464,7 @@ class HeSigBDurationTest : public TestCase
      */
     HeSigBDurationTest(const std::list<HeMuUserInfo>& userInfos,
                        const WifiMode& sigBMode,
-                       ChannelWidthMhz channelWidth,
+                       MHz_u channelWidth,
                        MuType expectedMuType,
                        const RuAllocation& expectedRuAllocation,
                        const std::pair<std::size_t, std::size_t>& expectedNumUsersPerCc,
@@ -1482,7 +1482,7 @@ class HeSigBDurationTest : public TestCase
 
     std::list<HeMuUserInfo> m_userInfos; ///< HE MU specific per-user information
     WifiMode m_sigBMode;                 ///< Mode used to transmit HE-SIG-B
-    ChannelWidthMhz m_channelWidth;      ///< Channel width in MHz
+    MHz_u m_channelWidth;                ///< Channel width
     MuType m_expectedMuType;             ///< Expected MU type (OFDMA or MU-MIMO)
     RuAllocation m_expectedRuAllocation; ///< Expected RU_ALLOCATION
     std::pair<std::size_t, std::size_t>
@@ -1493,7 +1493,7 @@ class HeSigBDurationTest : public TestCase
 HeSigBDurationTest::HeSigBDurationTest(
     const std::list<HeMuUserInfo>& userInfos,
     const WifiMode& sigBMode,
-    ChannelWidthMhz channelWidth,
+    MHz_u channelWidth,
     MuType expectedMuType,
     const RuAllocation& expectedRuAllocation,
     const std::pair<std::size_t, std::size_t>& expectedNumUsersPerCc,
@@ -1704,7 +1704,7 @@ PhyHeaderSectionsTest::DoRun()
     {
         phyEntity = Create<OfdmPhy>(variant.first);
         std::size_t ratio = variant.second;
-        ChannelWidthMhz bw = 20 / ratio; // MHz
+        MHz_u bw = 20 / ratio;
         txVector.SetChannelWidth(bw);
         txVector.SetMode(OfdmPhy::GetOfdmRate(12000000 / ratio, bw));
         nonHtMode = OfdmPhy::GetOfdmRate(6000000 / ratio, bw);

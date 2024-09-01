@@ -475,12 +475,11 @@ class WifiPhyChannel80Plus80Test : public TestCase
 
     /**
      * Create a HE PPDU
-     * \param bandwidth the bandwidth used for the transmission the PPDU in MHz
+     * \param bandwidth the bandwidth used for the transmission the PPDU
      * \param channel the operating channel of the PHY used for the transmission
      * \return a HE PPDU
      */
-    Ptr<HePpdu> CreateDummyHePpdu(ChannelWidthMhz bandwidth,
-                                  const WifiPhyOperatingChannel& channel);
+    Ptr<HePpdu> CreateDummyHePpdu(MHz_u bandwidth, const WifiPhyOperatingChannel& channel);
 
     WifiPhyOperatingChannel m_channel; //!< operating channel
 };
@@ -501,7 +500,7 @@ WifiPhyChannel80Plus80Test::CreateDummyPsdu()
 }
 
 Ptr<HePpdu>
-WifiPhyChannel80Plus80Test::CreateDummyHePpdu(ChannelWidthMhz bandwidth,
+WifiPhyChannel80Plus80Test::CreateDummyHePpdu(MHz_u bandwidth,
                                               const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs0(),

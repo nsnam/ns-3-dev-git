@@ -200,11 +200,10 @@ class ChannelAccessManager : public Object
      *
      * \param interval the given time interval
      * \param end the given end time
-     * \return the width in MHz of the largest primary channel that has been idle for
-     *         the given time interval before the given time, if any primary channel
-     *         has been idle, or zero, otherwise
+     * \return the width of the largest primary channel that has been idle for the given time
+     * interval before the given time, if any primary channel has been idle, or zero, otherwise
      */
-    ChannelWidthMhz GetLargestIdlePrimaryChannel(Time interval, Time end);
+    MHz_u GetLargestIdlePrimaryChannel(Time interval, Time end);
 
     /**
      * \param indices a set of indices (starting at 0) specifying the 20 MHz channels to test

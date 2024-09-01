@@ -921,7 +921,7 @@ class WifiPhy : public Object
     Ptr<MobilityModel> GetMobility() const;
 
     using ChannelTuple = std::tuple<uint8_t /* channel number */,
-                                    ChannelWidthMhz /* channel width */,
+                                    MHz_u /* channel width */,
                                     WifiPhyBand /* WifiPhyBand */,
                                     uint8_t /* primary20 index*/>; //!< Tuple identifying a segment
                                                                    //!< of an operating channel
@@ -988,9 +988,8 @@ class WifiPhy : public Object
      * \param maxAllowedBandWidth the maximum allowed TX bandwidth
      * \return the bandwidth for the transmission
      */
-    ChannelWidthMhz GetTxBandwidth(
-        WifiMode mode,
-        ChannelWidthMhz maxAllowedBandWidth = std::numeric_limits<ChannelWidthMhz>::max()) const;
+    MHz_u GetTxBandwidth(WifiMode mode,
+                         MHz_u maxAllowedBandWidth = std::numeric_limits<MHz_u>::max()) const;
     /**
      * \param antennas the number of antennas on this node.
      */
@@ -1087,9 +1086,9 @@ class WifiPhy : public Object
     void SetWifiRadioEnergyModel(const Ptr<WifiRadioEnergyModel> wifiRadioEnergyModel);
 
     /**
-     * \return the channel width in MHz
+     * \return the channel width
      */
-    ChannelWidthMhz GetChannelWidth() const;
+    MHz_u GetChannelWidth() const;
 
     /**
      * Get the power of the given power level in dBm.
@@ -1210,8 +1209,8 @@ class WifiPhy : public Object
     void SetPreviouslyRxPpduUid(uint64_t uid);
 
     /**
-     * \param currentChannelWidth channel width of the current transmission (MHz)
-     * \return the width of the guard band (MHz)
+     * \param currentChannelWidth channel width of the current transmission
+     * \return the width of the guard band
      *
      * Note: in order to properly model out of band transmissions for OFDM, the guard
      * band has been configured so as to expand the modeled spectrum up to the
@@ -1222,7 +1221,7 @@ class WifiPhy : public Object
      *
      * This method is only relevant for SpectrumWifiPhy.
      */
-    virtual ChannelWidthMhz GetGuardBandwidth(ChannelWidthMhz currentChannelWidth) const = 0;
+    virtual MHz_u GetGuardBandwidth(MHz_u currentChannelWidth) const = 0;
     /**
      * \return a tuple containing the minimum rejection (in dBr) for the inner band,
      *                            the minimum rejection (in dBr) for the outer band, and
@@ -1235,21 +1234,21 @@ class WifiPhy : public Object
 
     /**
      * Get channel number of the primary channel
-     * \param primaryChannelWidth the width of the primary channel (MHz)
+     * \param primaryChannelWidth the width of the primary channel
      *
      * \return channel number of the primary channel
      */
-    uint8_t GetPrimaryChannelNumber(ChannelWidthMhz primaryChannelWidth) const;
+    uint8_t GetPrimaryChannelNumber(MHz_u primaryChannelWidth) const;
 
     /**
      * Get the info of a given band
      *
-     * \param bandWidth the width of the band to be returned (MHz)
+     * \param bandWidth the width of the band to be returned
      * \param bandIndex the index of the band to be returned
      *
      * \return the info that defines the band
      */
-    virtual WifiSpectrumBandInfo GetBand(ChannelWidthMhz bandWidth, uint8_t bandIndex = 0) = 0;
+    virtual WifiSpectrumBandInfo GetBand(MHz_u bandWidth, uint8_t bandIndex = 0) = 0;
 
     /**
      * Get the frequency range of the current RF interface.

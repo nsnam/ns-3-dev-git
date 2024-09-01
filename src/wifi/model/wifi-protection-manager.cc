@@ -69,7 +69,7 @@ WifiProtectionManager::SetLinkId(uint8_t linkId)
 
 void
 WifiProtectionManager::AddUserInfoToMuRts(CtrlTriggerHeader& muRts,
-                                          ChannelWidthMhz txWidth,
+                                          MHz_u txWidth,
                                           const Mac48Address& receiver) const
 {
     NS_LOG_FUNCTION(this << muRts << txWidth << receiver);

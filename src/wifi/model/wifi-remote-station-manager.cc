@@ -577,7 +577,7 @@ WifiRemoteStationManager::GetAffiliatedStaAddress(const Mac48Address& mldAddress
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, ChannelWidthMhz allowedWidth)
+WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, MHz_u allowedWidth)
 {
     NS_LOG_FUNCTION(this << header << allowedWidth);
     Mac48Address address = header.GetAddr1();
@@ -687,7 +687,7 @@ WifiRemoteStationManager::GetCtsToSelfTxVector()
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetRtsTxVector(Mac48Address address, uint16_t allowedWidth)
+WifiRemoteStationManager::GetRtsTxVector(Mac48Address address, MHz_u allowedWidth)
 {
     NS_LOG_FUNCTION(this << address << allowedWidth);
     WifiTxVector v;
@@ -1900,7 +1900,7 @@ WifiRemoteStationManager::DoReportAmpduTxStatus(WifiRemoteStation* station,
                                                 uint16_t nFailedMpdus,
                                                 double rxSnr,
                                                 double dataSnr,
-                                                ChannelWidthMhz dataChannelWidth,
+                                                MHz_u dataChannelWidth,
                                                 uint8_t dataNss)
 {
     NS_LOG_DEBUG("DoReportAmpduTxStatus received but the manager does not handle A-MPDUs!");
@@ -1956,7 +1956,7 @@ WifiRemoteStationManager::GetAddress(const WifiRemoteStation* station) const
     return station->m_state->m_address;
 }
 
-ChannelWidthMhz
+MHz_u
 WifiRemoteStationManager::GetChannelWidth(const WifiRemoteStation* station) const
 {
     return station->m_state->m_channelWidth;
@@ -2093,7 +2093,7 @@ WifiRemoteStationManager::GetNNonErpSupported(const WifiRemoteStation* station) 
     return size;
 }
 
-ChannelWidthMhz
+MHz_u
 WifiRemoteStationManager::GetChannelWidthSupported(Mac48Address address) const
 {
     return LookupState(address)->m_channelWidth;

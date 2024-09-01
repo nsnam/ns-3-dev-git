@@ -2438,10 +2438,10 @@ EmlsrUlTxopTest::DoSetup()
     // configure channels of the given width
     for (auto band : {WIFI_PHY_BAND_2_4GHZ, WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_6GHZ})
     {
-        uint16_t bw = 20;
+        MHz_u bw = 20;
         uint8_t number = band == WIFI_PHY_BAND_5GHZ ? 36 : 1;
 
-        auto width = std::min<uint16_t>(m_channelWidth, band == WIFI_PHY_BAND_2_4GHZ ? 40 : 160);
+        auto width = std::min<MHz_u>(m_channelWidth, band == WIFI_PHY_BAND_2_4GHZ ? 40 : 160);
         while (bw < width)
         {
             bw *= 2;
@@ -3892,7 +3892,7 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     {
         for (bool resetCamState : {true, false})
         {
-            for (ChannelWidthMhz auxPhyMaxChWidth : {20, 40, 80, 160})
+            for (MHz_u auxPhyMaxChWidth : {20, 40, 80, 160})
             {
                 AddTestCase(
                     new EmlsrLinkSwitchTest({switchAuxPhy, resetCamState, auxPhyMaxChWidth}),

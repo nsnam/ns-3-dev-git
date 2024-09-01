@@ -82,14 +82,14 @@ class MultiUserScheduler : public Object
      * \param initialFrame true if the frame being transmitted is the initial frame
      *                     of the TXOP. This is used to determine whether the TXOP
      *                     limit can be exceeded
-     * \param allowedWidth the allowed width in MHz for the next transmission
+     * \param allowedWidth the allowed width for the next transmission
      * \param linkId the ID of the link over which channel access was gained
      * \return the format of the next transmission
      */
     TxFormat NotifyAccessGranted(Ptr<QosTxop> edca,
                                  Time availableTime,
                                  bool initialFrame,
-                                 ChannelWidthMhz allowedWidth,
+                                 MHz_u allowedWidth,
                                  uint8_t linkId);
 
     /**
@@ -171,12 +171,12 @@ class MultiUserScheduler : public Object
     void NotifyNewAggregate() override;
     void DoInitialize() override;
 
-    Ptr<ApWifiMac> m_apMac;         //!< the AP wifi MAC
-    Ptr<QosTxop> m_edca;            //!< the AC that gained channel access
-    Time m_availableTime;           //!< the time available for frame exchange
-    bool m_initialFrame;            //!< true if a TXOP is being started
-    ChannelWidthMhz m_allowedWidth; //!< the allowed width in MHz for the current transmission
-    uint8_t m_linkId; //!< the ID of the link over which channel access has been granted
+    Ptr<ApWifiMac> m_apMac; //!< the AP wifi MAC
+    Ptr<QosTxop> m_edca;    //!< the AC that gained channel access
+    Time m_availableTime;   //!< the time available for frame exchange
+    bool m_initialFrame;    //!< true if a TXOP is being started
+    MHz_u m_allowedWidth;   //!< the allowed width for the current transmission
+    uint8_t m_linkId;       //!< the ID of the link over which channel access has been granted
 
   private:
     /**

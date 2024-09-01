@@ -134,11 +134,11 @@ class ErpOfdmPhy : public OfdmPhy
      * and is mainly used as a callback for WifiMode operation.
      *
      * \param name the unique name of the ERP-OFDM mode
-     * \param channelWidth the considered channel width in MHz
+     * \param channelWidth the considered channel width
      *
      * \return the physical bit rate of this signal in bps.
      */
-    static uint64_t GetPhyRate(const std::string& name, ChannelWidthMhz channelWidth);
+    static uint64_t GetPhyRate(const std::string& name, MHz_u channelWidth);
     /**
      * Return the PHY rate corresponding to
      * the supplied TXVECTOR.
@@ -167,11 +167,11 @@ class ErpOfdmPhy : public OfdmPhy
      * and is mainly used as a callback for WifiMode operation.
      *
      * \param name the unique name of the ERP-OFDM mode
-     * \param channelWidth the considered channel width in MHz
+     * \param channelWidth the considered channel width
      *
      * \return the data bit rate of this signal in bps.
      */
-    static uint64_t GetDataRate(const std::string& name, ChannelWidthMhz channelWidth);
+    static uint64_t GetDataRate(const std::string& name, MHz_u channelWidth);
     /**
      * Check whether the combination in TXVECTOR is allowed.
      * This function is used as a callback for WifiMode operation.

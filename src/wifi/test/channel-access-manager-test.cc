@@ -197,10 +197,10 @@ class FrameExchangeManagerStub : public FrameExchangeManager
      *
      * \param dcf the channel access function that gained channel access. It is
      *            the DCF on non-QoS stations and an EDCA on QoS stations.
-     * \param allowedWidth the maximum allowed TX width in MHz
+     * \param allowedWidth the maximum allowed TX width
      * \return true if a frame exchange sequence was started, false otherwise
      */
-    bool StartTransmission(Ptr<Txop> dcf, ChannelWidthMhz allowedWidth) override
+    bool StartTransmission(Ptr<Txop> dcf, MHz_u allowedWidth) override
     {
         dcf->NotifyChannelAccessed(0);
         return true;
@@ -262,13 +262,13 @@ class ChannelAccessManagerTest : public TestCase
      * \param sifs the SIFS
      * \param eifsNoDifsNoSifs the EIFS no DIFS no SIFS
      * \param ackTimeoutValue the Ack timeout value
-     * \param chWidth the channel width in MHz
+     * \param chWidth the channel width
      */
     void StartTest(uint64_t slotTime,
                    uint64_t sifs,
                    uint64_t eifsNoDifsNoSifs,
                    uint32_t ackTimeoutValue = 20,
-                   ChannelWidthMhz chWidth = 20);
+                   MHz_u chWidth = 20);
     /**
      * Add Txop function
      * \param aifsn the AIFSN
@@ -615,7 +615,7 @@ ChannelAccessManagerTest<TxopType>::StartTest(uint64_t slotTime,
                                               uint64_t sifs,
                                               uint64_t eifsNoDifsNoSifs,
                                               uint32_t ackTimeoutValue,
-                                              ChannelWidthMhz chWidth)
+                                              MHz_u chWidth)
 {
     m_ChannelAccessManager = CreateObject<ChannelAccessManagerStub>();
     m_feManager = CreateObject<FrameExchangeManagerStub<TxopType>>(this);
@@ -1354,7 +1354,7 @@ class LargestIdlePrimaryChannelTest : public TestCase
      * \param chWidth the operating channel width
      * \param busyChannel the busy channel type
      */
-    void RunOne(ChannelWidthMhz chWidth, WifiChannelListType busyChannel);
+    void RunOne(MHz_u chWidth, WifiChannelListType busyChannel);
 
     Ptr<ChannelAccessManager> m_cam; //!< channel access manager
     Ptr<SpectrumWifiPhy> m_phy;      //!< PHY object
@@ -1366,7 +1366,7 @@ LargestIdlePrimaryChannelTest::LargestIdlePrimaryChannelTest()
 }
 
 void
-LargestIdlePrimaryChannelTest::RunOne(ChannelWidthMhz chWidth, WifiChannelListType busyChannel)
+LargestIdlePrimaryChannelTest::RunOne(MHz_u chWidth, WifiChannelListType busyChannel)
 {
     /**
      *                 <  Interval1  >< Interval2 >
@@ -1401,9 +1401,9 @@ LargestIdlePrimaryChannelTest::RunOne(ChannelWidthMhz chWidth, WifiChannelListTy
     // During any interval ending within CCA_BUSY period, the idle channel is the
     // primary channel contiguous to the busy secondary channel, if the busy channel
     // is a secondary channel, or there is no idle channel, otherwise.
-    ChannelWidthMhz idleWidth = (busyChannel == WifiChannelListType::WIFI_CHANLIST_PRIMARY)
-                                    ? 0
-                                    : ((1 << (busyChannel - 1)) * 20);
+    MHz_u idleWidth = (busyChannel == WifiChannelListType::WIFI_CHANLIST_PRIMARY)
+                          ? 0
+                          : ((1 << (busyChannel - 1)) * 20);
 
     Time checkTime1 = start + ccaBusyStartDelay + ccaBusyDuration / 2;
     Simulator::Schedule(checkTime1 - start, [=, this]() {
@@ -1495,7 +1495,7 @@ LargestIdlePrimaryChannelTest::DoRun()
     uint8_t channel = 0;
     std::list<WifiChannelListType> busyChannels;
 
-    for (ChannelWidthMhz chWidth : {20, 40, 80, 160})
+    for (MHz_u chWidth : {20, 40, 80, 160})
     {
         busyChannels.push_back(static_cast<WifiChannelListType>(channel));
 

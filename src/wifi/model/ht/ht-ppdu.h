@@ -55,17 +55,17 @@ class HtPpdu : public OfdmPpdu
          */
         uint8_t GetMcs() const;
         /**
-         * Fill the channel width field of HT-SIG (in MHz).
+         * Fill the channel width field of HT-SIG.
          *
-         * \param channelWidth the channel width (in MHz)
+         * \param channelWidth the channel width
          */
-        void SetChannelWidth(ChannelWidthMhz channelWidth);
+        void SetChannelWidth(MHz_u channelWidth);
         /**
-         * Return the channel width (in MHz).
+         * Return the channel width.
          *
-         * \return the channel width (in MHz)
+         * \return the channel width
          */
-        ChannelWidthMhz GetChannelWidth() const;
+        MHz_u GetChannelWidth() const;
         /**
          * Fill the aggregation field of HT-SIG.
          *

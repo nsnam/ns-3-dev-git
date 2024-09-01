@@ -1190,7 +1190,7 @@ HeFrameExchangeManager::GetCtsTxVectorAfterMuRts(const CtrlTriggerHeader& trigge
 
     auto userInfoIt = trigger.FindUserInfoWithAid(staId);
     NS_ASSERT_MSG(userInfoIt != trigger.end(), "User Info field for AID=" << staId << " not found");
-    ChannelWidthMhz bw = 0;
+    MHz_u bw = 0;
 
     if (uint8_t ru = userInfoIt->GetMuRtsRuAllocation(); ru < 65)
     {

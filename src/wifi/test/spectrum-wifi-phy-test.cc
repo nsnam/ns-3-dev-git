@@ -39,9 +39,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("SpectrumWifiPhyTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
-static const ChannelWidthMhz CHANNEL_WIDTH = 20;
-static const ChannelWidthMhz GUARD_WIDTH =
-    CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
+static const MHz_u CHANNEL_WIDTH = 20;
+static const MHz_u GUARD_WIDTH = CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
 
 /**
  * Extended SpectrumWifiPhy class for the purpose of the tests.
@@ -494,8 +493,8 @@ class SpectrumWifiPhyFilterTest : public TestCase
     Ptr<ExtSpectrumWifiPhy> m_txPhy; ///< TX PHY
     Ptr<ExtSpectrumWifiPhy> m_rxPhy; ///< RX PHY
 
-    ChannelWidthMhz m_txChannelWidth; ///< TX channel width
-    ChannelWidthMhz m_rxChannelWidth; ///< RX channel width
+    MHz_u m_txChannelWidth; ///< TX channel width
+    MHz_u m_rxChannelWidth; ///< RX channel width
 };
 
 SpectrumWifiPhyFilterTest::SpectrumWifiPhyFilterTest()
@@ -564,7 +563,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
                           expectedNumBands,
                           "Total number of bands handled by the receiver is incorrect");
 
-    ChannelWidthMhz channelWidth = std::min(m_txChannelWidth, m_rxChannelWidth);
+    MHz_u channelWidth = std::min(m_txChannelWidth, m_rxChannelWidth);
     auto band = m_rxPhy->GetBand(channelWidth, 0);
     auto it = rxPowersW.find(band);
     NS_LOG_INFO("powerW total band: " << it->second << " (" << WToDbm(it->second) << " dBm)");
@@ -809,14 +808,14 @@ class SpectrumWifiPhyGetBandTest : public TestCase
     /**
      * Run one function
      * \param channelNumberPerSegment the channel number for each segment of the operating channel
-     * \param bandWidth the width of the band to test in MHz
-     * \param bandIndex the index of the band to test in MHz
+     * \param bandWidth the width of the band to test
+     * \param bandIndex the index of the band to test
      * \param expectedIndices the expected start and stop indices returned by
      * SpectrumWifiPhy::GetBand \param expectedFrequencies the expected start and stop frequencies
      * in Hz returned by SpectrumWifiPhy::GetBand
      */
     void RunOne(const std::vector<uint8_t>& channelNumberPerSegment,
-                ChannelWidthMhz bandWidth,
+                MHz_u bandWidth,
                 uint8_t bandIndex,
                 const std::vector<WifiSpectrumBandIndices>& expectedIndices,
                 const std::vector<WifiSpectrumBandFrequencies>& expectedFrequencies);
@@ -866,7 +865,7 @@ SpectrumWifiPhyGetBandTest::DoTeardown()
 void
 SpectrumWifiPhyGetBandTest::RunOne(
     const std::vector<uint8_t>& channelNumberPerSegment,
-    ChannelWidthMhz bandWidth,
+    MHz_u bandWidth,
     uint8_t bandIndex,
     const std::vector<WifiSpectrumBandIndices>& expectedIndices,
     const std::vector<WifiSpectrumBandFrequencies>& expectedFrequencies)
@@ -909,16 +908,16 @@ void
 SpectrumWifiPhyGetBandTest::DoRun()
 {
     const uint32_t indicesPer20MhzBand = 256; // based on 802.11ax carrier spacing
-    const ChannelWidthMhz channelWidth = 160; // we consider the largest channel width
+    const MHz_u channelWidth = 160;           // we consider the largest channel width
     const uint8_t channelNumberContiguous160Mhz =
         50; // channel number of the first 160 MHz band in 5 GHz band
     const std::vector<uint8_t> channelNumberPerSegment = {42,
                                                           106}; // channel numbers used for 80+80MHz
     // separation between segment at channel number 42 and segment at channel number 106
-    const ChannelWidthMhz separationWidth = 240;
+    const MHz_u separationWidth = 240;
     for (bool contiguous160Mhz : {true /* 160 MHz */, false /* 80+80MHz */})
     {
-        ChannelWidthMhz guardWidth = contiguous160Mhz ? channelWidth : (channelWidth / 2);
+        MHz_u guardWidth = contiguous160Mhz ? channelWidth : (channelWidth / 2);
         uint32_t guardStopIndice = (indicesPer20MhzBand * (guardWidth / 20)) - 1;
         std::vector<WifiSpectrumBandIndices> previousExpectedIndices{};
         std::vector<WifiSpectrumBandFrequencies> previousExpectedFrequencies{};
@@ -1251,7 +1250,7 @@ class SpectrumWifiPhy80Plus80Test : public TestCase
      */
     void RunOne(const std::vector<uint8_t>& channelNumbers,
                 double interferenceCenterFrequency,
-                ChannelWidthMhz interferenceBandWidth,
+                MHz_u interferenceBandWidth,
                 bool expectSuccess);
 
     /**
@@ -1474,7 +1473,7 @@ SpectrumWifiPhy80Plus80Test::DoTeardown()
 void
 SpectrumWifiPhy80Plus80Test::RunOne(const std::vector<uint8_t>& channelNumbers,
                                     double interferenceCenterFrequency,
-                                    ChannelWidthMhz interferenceBandWidth,
+                                    MHz_u interferenceBandWidth,
                                     bool expectSuccess)
 {
     // reset counters
@@ -1639,7 +1638,7 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     void SwitchChannel(Ptr<SpectrumWifiPhy> phy,
                        WifiPhyBand band,
                        uint8_t channelNumber,
-                       ChannelWidthMhz channelWidth,
+                       MHz_u channelWidth,
                        std::optional<std::size_t> listenerIndex);
 
     /**
@@ -1786,7 +1785,7 @@ void
 SpectrumWifiPhyMultipleInterfacesTest::SwitchChannel(Ptr<SpectrumWifiPhy> phy,
                                                      WifiPhyBand band,
                                                      uint8_t channelNumber,
-                                                     ChannelWidthMhz channelWidth,
+                                                     MHz_u channelWidth,
                                                      std::optional<std::size_t> listenerIndex)
 {
     NS_LOG_FUNCTION(this << phy << band << +channelNumber << channelWidth);

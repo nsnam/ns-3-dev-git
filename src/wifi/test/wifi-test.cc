@@ -1524,7 +1524,7 @@ class Bug2843TestCase : public TestCase
      * A tuple of {starting frequency, channelWidth, Number of subbands in SpectrumModel, modulation
      * type}
      */
-    typedef std::tuple<double, ChannelWidthMhz, uint32_t, WifiModulationClass>
+    typedef std::tuple<double, MHz_u, uint32_t, WifiModulationClass>
         FreqWidthSubbandModulationTuple;
     std::vector<FreqWidthSubbandModulationTuple>
         m_distinctTuples; ///< vector of distinct {starting frequency, channelWidth, Number of
@@ -1547,7 +1547,7 @@ class Bug2843TestCase : public TestCase
                          Ptr<NetDevice> sourceDevice,
                          Address& destination) const;
 
-    ChannelWidthMhz m_channelWidth; ///< channel width (in MHz)
+    MHz_u m_channelWidth; ///< channel width
 };
 
 Bug2843TestCase::Bug2843TestCase()
@@ -1609,7 +1609,7 @@ Bug2843TestCase::SendPacketBurst(uint8_t numPackets,
 void
 Bug2843TestCase::DoRun()
 {
-    ChannelWidthMhz channelWidth = 40; // at least 40 MHz expected here
+    MHz_u channelWidth = 40; // at least 40 MHz expected here
 
     NodeContainer wifiStaNode;
     wifiStaNode.Create(1);
@@ -2964,9 +2964,9 @@ class IdealRateManagerChannelWidthTest : public TestCase
   private:
     /**
      * Change the configured channel width for all nodes
-     * \param channelWidth the channel width (in MHz)
+     * \param channelWidth the channel width
      */
-    void ChangeChannelWidth(ChannelWidthMhz channelWidth);
+    void ChangeChannelWidth(MHz_u channelWidth);
 
     /**
      * Triggers the transmission of a 1000 Byte-long data packet from the source device
@@ -3006,7 +3006,7 @@ IdealRateManagerChannelWidthTest::~IdealRateManagerChannelWidthTest()
 }
 
 void
-IdealRateManagerChannelWidthTest::ChangeChannelWidth(ChannelWidthMhz channelWidth)
+IdealRateManagerChannelWidthTest::ChangeChannelWidth(MHz_u channelWidth)
 {
     Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelSettings",
                 StringValue("{0, " + std::to_string(static_cast<uint16_t>(channelWidth)) +

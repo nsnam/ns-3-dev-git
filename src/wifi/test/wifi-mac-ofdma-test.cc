@@ -405,7 +405,7 @@ class OfdmaAckSequenceTest : public TestCase
      * \param muEdcaParameterSet the MU EDCA Parameter Set
      * \param scenario the OFDMA scenario to test
      */
-    OfdmaAckSequenceTest(ChannelWidthMhz width,
+    OfdmaAckSequenceTest(MHz_u width,
                          WifiAcknowledgment::Method dlType,
                          uint32_t maxAmpduSize,
                          uint16_t txopLimit,
@@ -464,7 +464,7 @@ class OfdmaAckSequenceTest : public TestCase
     NetDeviceContainer m_staDevices;            ///< stations' devices
     Ptr<WifiNetDevice> m_apDevice;              ///< AP's device
     std::vector<PacketSocketAddress> m_sockets; ///< packet socket addresses for STAs
-    ChannelWidthMhz m_channelWidth;             ///< PHY channel bandwidth in MHz
+    MHz_u m_channelWidth;                       ///< PHY channel bandwidth
     uint8_t m_muRtsRuAllocation;                ///< B7-B1 of RU Allocation subfield of MU-RTS
     std::vector<FrameInfo> m_txPsdus;           ///< transmitted PSDUs
     WifiAcknowledgment::Method m_dlMuAckType;   ///< DL MU ack sequence type
@@ -482,7 +482,7 @@ class OfdmaAckSequenceTest : public TestCase
     std::vector<uint32_t> m_cwValues; ///< CW used by stations after MU exchange
 };
 
-OfdmaAckSequenceTest::OfdmaAckSequenceTest(ChannelWidthMhz width,
+OfdmaAckSequenceTest::OfdmaAckSequenceTest(MHz_u width,
                                            WifiAcknowledgment::Method dlType,
                                            uint32_t maxAmpduSize,
                                            uint16_t txopLimit,

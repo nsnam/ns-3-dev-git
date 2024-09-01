@@ -90,10 +90,10 @@ class OfdmPhy : public PhyEntity
      * the channel bandwidth (20, 10, or 5 MHz).
      *
      * \param rate the rate in bps
-     * \param bw the bandwidth in MHz
+     * \param bw the bandwidth
      * \return a WifiMode for OFDM
      */
-    static WifiMode GetOfdmRate(uint64_t rate, ChannelWidthMhz bw = 20);
+    static WifiMode GetOfdmRate(uint64_t rate, MHz_u bw = 20);
     /**
      * Return a WifiMode for OFDM at 6 Mbps.
      *
@@ -263,11 +263,11 @@ class OfdmPhy : public PhyEntity
      * and is mainly used as a callback for WifiMode operation.
      *
      * \param name the unique name of the OFDM mode
-     * \param channelWidth the considered channel width in MHz
+     * \param channelWidth the considered channel width
      *
      * \return the physical bit rate of this signal in bps.
      */
-    static uint64_t GetPhyRate(const std::string& name, ChannelWidthMhz channelWidth);
+    static uint64_t GetPhyRate(const std::string& name, MHz_u channelWidth);
 
     /**
      * Return the PHY rate corresponding to
@@ -297,11 +297,11 @@ class OfdmPhy : public PhyEntity
      * is mainly used as a callback for WifiMode operation.
      *
      * \param name the unique name of the OFDM mode
-     * \param channelWidth the considered channel width in MHz
+     * \param channelWidth the considered channel width
      *
      * \return the data bit rate of this signal in bps.
      */
-    static uint64_t GetDataRate(const std::string& name, ChannelWidthMhz channelWidth);
+    static uint64_t GetDataRate(const std::string& name, MHz_u channelWidth);
     /**
      * Check whether the combination in TXVECTOR is allowed.
      * This function is used as a callback for WifiMode operation.
@@ -316,7 +316,7 @@ class OfdmPhy : public PhyEntity
     Ptr<SpectrumValue> GetTxPowerSpectralDensity(double txPowerW,
                                                  Ptr<const WifiPpdu> ppdu) const override;
     uint32_t GetMaxPsduSize() const override;
-    ChannelWidthMhz GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const override;
+    MHz_u GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const override;
 
     /**
      * \param txVector the transmission parameters
@@ -393,13 +393,13 @@ class OfdmPhy : public PhyEntity
      *
      * \param codeRate the code rate of the mode
      * \param constellationSize the size of modulation constellation
-     * \param channelWidth the considered channel width in MHz
+     * \param channelWidth the considered channel width
      *
      * \return the data bit rate of this signal in bps.
      */
     static uint64_t CalculateDataRate(WifiCodeRate codeRate,
                                       uint16_t constellationSize,
-                                      ChannelWidthMhz channelWidth);
+                                      MHz_u channelWidth);
     /**
      * Calculates data rate from the supplied parameters.
      *
@@ -421,10 +421,10 @@ class OfdmPhy : public PhyEntity
     static uint16_t GetUsableSubcarriers();
 
     /**
-     * \param channelWidth the channel width in MHz
+     * \param channelWidth the channel width
      * \return the symbol duration
      */
-    static Time GetSymbolDuration(ChannelWidthMhz channelWidth);
+    static Time GetSymbolDuration(MHz_u channelWidth);
 
   private:
     /**

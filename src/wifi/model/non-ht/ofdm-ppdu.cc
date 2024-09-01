@@ -91,7 +91,7 @@ OfdmPpdu::LSigHeader::LSigHeader()
 }
 
 void
-OfdmPpdu::LSigHeader::SetRate(uint64_t rate, ChannelWidthMhz channelWidth)
+OfdmPpdu::LSigHeader::SetRate(uint64_t rate, MHz_u channelWidth)
 {
     if (channelWidth == 5)
     {
@@ -144,7 +144,7 @@ OfdmPpdu::LSigHeader::SetRate(uint64_t rate, ChannelWidthMhz channelWidth)
 }
 
 uint64_t
-OfdmPpdu::LSigHeader::GetRate(ChannelWidthMhz channelWidth) const
+OfdmPpdu::LSigHeader::GetRate(MHz_u channelWidth) const
 {
     uint64_t rate = 0;
     switch (m_rate)
