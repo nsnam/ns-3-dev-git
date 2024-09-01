@@ -150,11 +150,11 @@ int
 main(int argc, char* argv[])
 {
     std::string phyMode{"DsssRate1Mbps"};
-    dBm_u Prss{-80};
-    dBm_u Irss{-95};
+    double prss{-80}; // -dBm
+    double irss{-95}; // -dBm
     Time delta{"0ns"};
-    uint32_t PpacketSize{1000}; // bytes
-    uint32_t IpacketSize{1000}; // bytes
+    uint32_t pPacketSize{1000}; // bytes
+    uint32_t iPacketSize{1000}; // bytes
     bool verbose{false};
 
     // these are not command line arguments for this version
@@ -167,11 +167,11 @@ main(int argc, char* argv[])
                        // transmit power, based on other configuration
     CommandLine cmd(__FILE__);
     cmd.AddValue("phyMode", "Wifi Phy mode", phyMode);
-    cmd.AddValue("Prss", "Intended primary received signal strength (dBm)", Prss);
-    cmd.AddValue("Irss", "Intended interfering received signal strength (dBm)", Irss);
+    cmd.AddValue("Prss", "Intended primary received signal strength (dBm)", prss);
+    cmd.AddValue("Irss", "Intended interfering received signal strength (dBm)", irss);
     cmd.AddValue("delta", "time offset for interfering signal", delta);
-    cmd.AddValue("PpacketSize", "size of application packet sent", PpacketSize);
-    cmd.AddValue("IpacketSize", "size of interfering packet sent", IpacketSize);
+    cmd.AddValue("PpacketSize", "size of application packet sent", pPacketSize);
+    cmd.AddValue("IpacketSize", "size of interfering packet sent", iPacketSize);
     cmd.AddValue("verbose", "turn on all WifiNetDevice log components", verbose);
     cmd.Parse(argc, argv);
 
@@ -211,9 +211,9 @@ main(int argc, char* argv[])
     NetDeviceContainer devices = wifi.Install(wifiPhy, wifiMac, c.Get(0));
     // This will disable these sending devices from detecting a signal
     // so that they do not backoff
-    wifiPhy.Set("TxGain", DoubleValue(offset + Prss));
+    wifiPhy.Set("TxGain", DoubleValue(offset + prss));
     devices.Add(wifi.Install(wifiPhy, wifiMac, c.Get(1)));
-    wifiPhy.Set("TxGain", DoubleValue(offset + Irss));
+    wifiPhy.Set("TxGain", DoubleValue(offset + irss));
     devices.Add(wifi.Install(wifiPhy, wifiMac, c.Get(2)));
 
     // Note that with FixedRssLossModel, the positions below are not
@@ -252,14 +252,14 @@ main(int argc, char* argv[])
     wifiPhy.EnablePcap("wifi-simple-interference", devices.Get(0));
 
     // Output what we are doing
-    NS_LOG_UNCOND("Primary packet RSS=" << Prss << " dBm and interferer RSS=" << Irss
+    NS_LOG_UNCOND("Primary packet RSS=" << prss << " dBm and interferer RSS=" << irss
                                         << " dBm at time offset=" << delta.As(Time::US));
 
     Simulator::ScheduleWithContext(source->GetNode()->GetId(),
                                    startTime,
                                    &GenerateTraffic,
                                    source,
-                                   PpacketSize,
+                                   pPacketSize,
                                    numPackets,
                                    interPacketInterval);
 
@@ -267,7 +267,7 @@ main(int argc, char* argv[])
                                    startTime + delta,
                                    &GenerateTraffic,
                                    interferer,
-                                   IpacketSize,
+                                   iPacketSize,
                                    numPackets,
                                    interPacketInterval);
 
