@@ -184,11 +184,12 @@ WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity(double centerFrequency
     NS_ASSERT(c->GetSpectrumModel()->GetNumBands() == (nAllocatedBands + nGuardBands + 1));
     // Evenly spread power across 22 MHz
     double txPowerPerBand = txPowerW / nAllocatedBands;
+    const auto psd = txPowerPerBand / (bit->fh - bit->fl);
     for (size_t i = 0; i < c->GetSpectrumModel()->GetNumBands(); i++, vit++, bit++)
     {
         if ((i >= (nGuardBands / 2)) && (i <= ((nGuardBands / 2) + nAllocatedBands - 1)))
         {
-            *vit = txPowerPerBand / (bit->fh - bit->fl);
+            *vit = psd;
         }
     }
     return c;
@@ -680,12 +681,13 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
         });
     double txPowerPerBandW = (txPowerW / numSubcarriers); // FIXME: null subcarriers
     uint32_t numBands = c->GetSpectrumModel()->GetNumBands();
+    const auto psd = txPowerPerBandW / (bit->fh - bit->fl);
     for (size_t i = 0; i < numBands; i++, vit++, bit++)
     {
         const auto allocated = std::any_of(ru.cbegin(), ru.cend(), [i](const auto& p) {
             return (i >= p.first && i <= p.second);
         });
-        *vit = allocated ? (txPowerPerBandW / (bit->fh - bit->fl)) : 0.0;
+        *vit = allocated ? psd : 0.0;
     }
 
     return c;
@@ -1073,9 +1075,10 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
     // fill in spectrum mask
     auto vit = c->ValuesBegin();
     auto bit = c->ConstBandsBegin();
+    const auto invBandwidth = 1 / (bit->fh - bit->fl);
     for (auto txPowerValue : txPowerValues)
     {
-        *vit = txPowerValue / (bit->fh - bit->fl);
+        *vit = txPowerValue * invBandwidth;
         vit++;
         bit++;
     }
@@ -1093,13 +1096,14 @@ WifiSpectrumValueHelper::NormalizeSpectrumMask(Ptr<SpectrumValue> c, double txPo
     NS_LOG_FUNCTION(c << txPowerW);
     // Normalize power so that total signal power equals transmit power
     double currentTxPowerW = Integral(*c);
-    double normalizationRatio = currentTxPowerW / txPowerW;
+    double normalizationRatio [[maybe_unused]] = currentTxPowerW / txPowerW;
+    double invNormalizationRatio = txPowerW / currentTxPowerW;
     NS_LOG_LOGIC("Current power: " << currentTxPowerW << "W vs expected power: " << txPowerW << "W"
                                    << " -> ratio (C/E) = " << normalizationRatio);
     auto vit = c->ValuesBegin();
     for (size_t i = 0; i < c->GetSpectrumModel()->GetNumBands(); i++, vit++)
     {
-        *vit = (*vit) / normalizationRatio;
+        *vit = (*vit) * invNormalizationRatio;
     }
 }
 
