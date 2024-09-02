@@ -1516,7 +1516,7 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             m_staMac->IsEmlsrLink(m_linkId))
         {
             // this is an initial Control frame
-            if (DropReceivedIcf())
+            if (DropReceivedIcf(mpdu))
             {
                 return;
             }
@@ -1650,9 +1650,9 @@ EhtFrameExchangeManager::ShallDropReceivedMpdu(Ptr<const WifiMpdu> mpdu) const
 }
 
 bool
-EhtFrameExchangeManager::DropReceivedIcf()
+EhtFrameExchangeManager::DropReceivedIcf(Ptr<const WifiMpdu> icf)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << *icf);
 
     auto emlsrManager = m_staMac->GetEmlsrManager();
     NS_ASSERT(emlsrManager);
@@ -1661,8 +1661,10 @@ EhtFrameExchangeManager::DropReceivedIcf()
     {
         // we received an ICF on a link that is blocked because another EMLSR link is
         // being used. Check if there is an ongoing DL TXOP on the other EMLSR link
-        auto apMldAddress = GetWifiRemoteStationManager()->GetMldAddress(m_bssid);
-        NS_ASSERT_MSG(apMldAddress, "MLD address not found for " << m_bssid);
+        auto addr2 = icf->GetHeader().GetAddr2();
+        const auto sender = GetWifiRemoteStationManager()->GetMldAddress(addr2).value_or(addr2);
+        NS_ASSERT_MSG(addr2 != m_bssid || sender != m_bssid,
+                      "If the ICF is not sent by an adhoc peer, it must be sent by an (AP) MLD");
 
         if (auto it = std::find_if(
                 m_staMac->GetLinkIds().cbegin(),
@@ -1673,27 +1675,29 @@ EhtFrameExchangeManager::DropReceivedIcf()
                         StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
                     return linkId != m_linkId && m_staMac->IsEmlsrLink(linkId) &&
                            ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
-                           m_mac->GetWifiRemoteStationManager(linkId)->GetMldAddress(
-                               *ehtFem->m_txopHolder) == apMldAddress;
+                           m_mac->GetWifiRemoteStationManager(linkId)
+                                   ->GetMldAddress(*ehtFem->m_txopHolder)
+                                   .value_or(*ehtFem->m_txopHolder) == sender;
                 });
             it != m_staMac->GetLinkIds().cend())
         {
-            // AP is not expected to send ICFs on two links. If an ICF
-            // has been received on this link, it means that the DL TXOP
-            // on the other link terminated (e.g., the AP did not
-            // receive our response)
+            // A device is not expected to send ICFs on two links. If an ICF has been received on
+            // this link, it means that the DL TXOP on the other link terminated (e.g., the device
+            // did not receive our response)
             StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(*it))
                 ->m_ongoingTxopEnd.Cancel();
-            // we are going to start a TXOP on this link; unblock
-            // transmissions on this link, the other links will be
-            // blocked subsequently
+            // we are going to start a TXOP on this link; unblock transmissions on this link, the
+            // other links will be blocked subsequently
             m_staMac->UnblockTxOnLink({m_linkId}, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
         }
         else
         {
-            // We get here likely because transmission on the other EMLSR link
-            // started before the reception of the ICF ended. We drop this ICF and let the
-            // UL TXOP continue.
+            // We get here if either there is an ongoing DL TXOP on another EMLSR link but the
+            // TXOP holder is not the sender of the ICF (this may happen when the EMLSR client
+            // receives ICFs from the AP and a peer adhoc STA) or there is an ongoing UL TXOP on
+            // the other EMLSR link (which likely happens when a transmission on the other EMLSR
+            // link started before the reception of the ICF ended). In both cases, we drop this ICF
+            // and let the TXOP on the other EMLSR link continue.
             NS_LOG_DEBUG("Drop ICF because another EMLSR link is being used");
             m_icfDropCallback({WifiIcfDrop::USING_OTHER_LINK, m_linkId, m_bssid});
             return true;

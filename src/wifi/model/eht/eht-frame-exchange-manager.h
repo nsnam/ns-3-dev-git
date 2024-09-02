@@ -252,10 +252,11 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
   private:
     /**
+     * @param icf the received ICF
      * @return whether the received ICF must be dropped because we are unable to process it
      *         (e.g., another EMLSR link is being used or there is no time for main PHY switch)
      */
-    bool DropReceivedIcf();
+    bool DropReceivedIcf(Ptr<const WifiMpdu> icf);
 
     /**
      * For each EMLSR client in the given set of clients that did not respond to a frame requesting
