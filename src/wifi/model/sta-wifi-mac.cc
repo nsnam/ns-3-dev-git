@@ -356,6 +356,12 @@ StaWifiMac::GetProbeRequest(uint8_t linkId) const
     auto supportedRates = GetSupportedRates(linkId);
     probe.Get<SupportedRates>() = supportedRates.rates;
     probe.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
+    if (GetWifiPhy(linkId)->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ)
+    {
+        DsssParameterSet params;
+        params.SetCurrentChannel(GetWifiPhy(linkId)->GetChannelNumber());
+        probe.Get<DsssParameterSet>() = params;
+    }
     if (GetHtSupported(linkId))
     {
         probe.Get<ExtendedCapabilities>() = GetExtendedCapabilities();

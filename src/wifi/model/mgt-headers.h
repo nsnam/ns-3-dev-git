@@ -82,6 +82,7 @@ struct CanBeInPerStaProfile<Ssid> : std::false_type
 using ProbeRequestElems = std::tuple<Ssid,
                                      SupportedRates,
                                      std::optional<ExtendedSupportedRatesIE>,
+                                     std::optional<DsssParameterSet>,
                                      std::optional<HtCapabilities>,
                                      std::optional<ExtendedCapabilities>,
                                      std::optional<VhtCapabilities>,
