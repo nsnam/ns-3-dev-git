@@ -15,7 +15,6 @@
 #include "mac-rx-middle.h"
 #include "mac-tx-middle.h"
 #include "mgt-action-headers.h"
-#include "mgt-headers.h"
 #include "msdu-aggregator.h"
 #include "qos-txop.h"
 #include "reduced-neighbor-report.h"
@@ -30,7 +29,6 @@
 #include "ns3/he-configuration.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/log.h"
-#include "ns3/multi-link-element.h"
 #include "ns3/packet.h"
 #include "ns3/pointer.h"
 #include "ns3/random-variable-stream.h"
@@ -696,10 +694,16 @@ ApWifiMac::GetReducedNeighborReport(uint8_t linkId) const
 }
 
 MultiLinkElement
-ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac48Address& to)
+ApWifiMac::GetMultiLinkElement(uint8_t linkId,
+                               WifiMacType frameType,
+                               const Mac48Address& to,
+                               const std::optional<MultiLinkElement>& mlProbeReqMle)
 {
     NS_LOG_FUNCTION(this << +linkId << frameType << to);
     NS_ABORT_IF(GetNLinks() == 1);
+    NS_ABORT_MSG_IF(mlProbeReqMle.has_value() && frameType != WIFI_MAC_MGT_PROBE_RESPONSE,
+                    "ML Probe Request Multi-Link Element cannot be provided for frame type "
+                        << frameType);
 
     MultiLinkElement mle(MultiLinkElement::BASIC_VARIANT);
     mle.SetMldMacAddress(GetAddress());
@@ -786,6 +790,75 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac4
         }
     }
 
+    if (!mlProbeReqMle.has_value())
+    {
+        return mle; // not a multi-link probe request
+    }
+
+    auto reqVar = mlProbeReqMle->GetVariant();
+    NS_ASSERT_MSG(reqVar == MultiLinkElement::PROBE_REQUEST_VARIANT,
+                  "Invalid MLE variant " << reqVar);
+
+    // IEEE 802.11be D6.0 35.3.4.2 Use of multi-link probe request and response
+    // If either the Address 1 field or the Address 3 field of the multi-link probe request is set
+    // to the MAC address of the responding AP that operates on the same link where the multi-link
+    // probe request is sent, then the AP MLD ID subfield shall be present in the Probe Request
+    // Multi-Link element of the multi-link probe request value and targeted AP MLD is identified by
+    // AP MLD ID subfield, which is set to the same AP MLD ID as the one used by the AP that is
+    // addressed by the multi-link probe request to identify the AP MLD
+    //  in the Beacon and Probe Response frames that it transmits.
+    auto apMldId = mlProbeReqMle->GetApMldId();
+    NS_ASSERT_MSG(apMldId.has_value(), "AP MLD ID subfield missing");
+
+    // IEEE 802.11be D6.0 9.4.2.169.2 Neighbor AP Information field
+    // If the reported AP is affiliated with the same MLD as the reporting AP sending the frame
+    // carrying this element, the AP MLD ID subfield is set to 0. AP MLD ID value advertised in
+    // Beacons and Probe Responses is 0. Multi-BSSID feature not supported.
+    NS_ASSERT_MSG(*apMldId == 0, "AP MLD ID expected value is 0. value = " << +apMldId.value());
+
+    // Using set to handle case of multiple Per-STA Profiles including same link ID
+    std::set<uint8_t> respLinkIds{}; // Set of Link IDs to include in Probe Response
+    if (const auto nProfiles = mlProbeReqMle->GetNPerStaProfileSubelements(); nProfiles == 0)
+    {
+        // IEEE 802.11be D6.0 35.3.4.2 Use of multi-link probe request and response
+        // If the Probe Request Multi-link element in the multi-link probe request does not include
+        // any per-STA profile, then all APs affiliated with the same AP MLD as the AP identified in
+        // the Address 1 or Address 3 field or AP MLD ID shall be requested APs.
+        for (std::size_t i = 0; i < GetNLinks(); ++i)
+        {
+            if (i != linkId)
+            {
+                respLinkIds.insert(i);
+            }
+        }
+    }
+
+    for (std::size_t i = 0; i < mlProbeReqMle->GetNPerStaProfileSubelements(); ++i)
+    {
+        // IEEE 802.11be D6.0 35.3.4.2 Use of multi-link probe request and response
+        // If the Probe Request Multi-Link element in the multi-link probe request includes one or
+        // more per-STA profiles, then only APs affiliated with the same AP MLD whose link ID is
+        // equal to the value in the Link ID Field in a per-STA profile in the Probe Request
+        // Multi-link element shall be requested APs.
+        const auto& perStaProfile = mlProbeReqMle->GetPerStaProfile(i);
+        auto currLinkId = perStaProfile.GetLinkId();
+        if ((currLinkId < GetNLinks()) && (currLinkId != linkId))
+        {
+            respLinkIds.insert(currLinkId); // Only consider valid link IDs
+        }
+    }
+
+    auto setPerStaProfile = [&](uint8_t id) -> void {
+        mle.AddPerStaProfileSubelement();
+        auto& perStaProfile = mle.GetPerStaProfile(mle.GetNPerStaProfileSubelements() - 1);
+        perStaProfile.SetLinkId(id);
+        // Current support limited to Complete Profile request per link ID
+        // TODO: Add support for Partial Per-STA Profile request
+        perStaProfile.SetProbeResponse(GetProbeRespProfile(id));
+        perStaProfile.SetCompleteProfile();
+    };
+
+    std::for_each(respLinkIds.begin(), respLinkIds.end(), setPerStaProfile);
     return mle;
 }
 
@@ -1018,17 +1091,44 @@ ApWifiMac::GetEhtOperation(uint8_t linkId) const
 }
 
 void
-ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
+ApWifiMac::EnqueueProbeResp(const MgtProbeResponseHeader& probeResp,
+                            Mac48Address to,
+                            uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << to << +linkId);
-    WifiMacHeader hdr;
-    hdr.SetType(WIFI_MAC_MGT_PROBE_RESPONSE);
+    WifiMacHeader hdr(WIFI_MAC_MGT_PROBE_RESPONSE);
     hdr.SetAddr1(to);
     hdr.SetAddr2(GetLink(linkId).feManager->GetAddress());
     hdr.SetAddr3(GetLink(linkId).feManager->GetAddress());
     hdr.SetDsNotFrom();
     hdr.SetDsNotTo();
     Ptr<Packet> packet = Create<Packet>();
+    packet->AddHeader(probeResp);
+
+    if (!GetQosSupported())
+    {
+        GetTxop()->Queue(Create<WifiMpdu>(packet, hdr));
+    }
+    // "A QoS STA that transmits a Management frame determines access category used
+    // for medium access in transmission of the Management frame as follows
+    // (If dot11QMFActivated is false or not present)
+    // — If the Management frame is individually addressed to a non-QoS STA, category
+    //   AC_BE should be selected.
+    // — If category AC_BE was not selected by the previous step, category AC_VO
+    //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
+    else if (!GetWifiRemoteStationManager(linkId)->GetQosSupported(to))
+    {
+        GetBEQueue()->Queue(Create<WifiMpdu>(packet, hdr));
+    }
+    else
+    {
+        GetVOQueue()->Queue(Create<WifiMpdu>(packet, hdr));
+    }
+}
+
+MgtProbeResponseHeader
+ApWifiMac::GetProbeRespProfile(uint8_t linkId) const
+{
     MgtProbeResponseHeader probe;
     probe.Get<Ssid>() = GetSsid();
     auto supportedRates = GetSupportedRates(linkId);
@@ -1080,53 +1180,46 @@ ApWifiMac::SendProbeResp(Mac48Address to, uint8_t linkId)
     {
         probe.Get<EhtCapabilities>() = GetEhtCapabilities(linkId);
         probe.Get<EhtOperation>() = GetEhtOperation(linkId);
+    }
 
-        if (GetNLinks() > 1)
+    return probe;
+}
+
+MgtProbeResponseHeader
+ApWifiMac::GetProbeResp(uint8_t linkId, const std::optional<MultiLinkElement>& reqMle)
+{
+    NS_LOG_FUNCTION(this << linkId << reqMle.has_value());
+    NS_ASSERT_MSG(linkId < GetNLinks(), "Invalid link ID = " << +linkId);
+
+    auto probeResp = GetProbeRespProfile(linkId);
+
+    if (GetNLinks() > 1)
+    {
+        /*
+         * If an AP is affiliated with an AP MLD and does not correspond to a nontransmitted
+         * BSSID, then the Beacon and Probe Response frames transmitted by the AP shall
+         * include a TBTT Information field in a Reduced Neighbor Report element with the
+         * TBTT Information Length field set to 16 or higher, for each of the other APs
+         * (if any) affiliated with the same AP MLD. (Sec. 35.3.4.1 of 802.11be D2.1.1)
+         */
+        if (auto rnr = GetReducedNeighborReport(linkId); rnr.has_value())
         {
-            /*
-             * If an AP is affiliated with an AP MLD and does not correspond to a nontransmitted
-             * BSSID, then the Beacon and Probe Response frames transmitted by the AP shall
-             * include a TBTT Information field in a Reduced Neighbor Report element with the
-             * TBTT Information Length field set to 16 or higher, for each of the other APs
-             * (if any) affiliated with the same AP MLD. (Sec. 35.3.4.1 of 802.11be D2.1.1)
-             */
-            if (auto rnr = GetReducedNeighborReport(linkId); rnr.has_value())
-            {
-                probe.Get<ReducedNeighborReport>() = std::move(*rnr);
-            }
-            /*
-             * If an AP affiliated with an AP MLD is not in a multiple BSSID set [..], the AP
-             * shall include, in a Beacon frame or a Probe Response frame, which is not a
-             * Multi-Link probe response, only the Common Info field of the Basic Multi-Link
-             * element for the AP MLD unless conditions in 35.3.11 (Multi-link procedures for
-             * channel switching, extended channel switching, and channel quieting) are
-             * satisfied. (Sec. 35.3.4.4 of 802.11be D2.1.1)
-             */
-            probe.Get<MultiLinkElement>() =
-                GetMultiLinkElement(linkId, WIFI_MAC_MGT_PROBE_RESPONSE);
+            probeResp.Get<ReducedNeighborReport>() = std::move(*rnr);
         }
+        /*
+         * If an AP affiliated with an AP MLD is not in a multiple BSSID set [..], the AP
+         * shall include, in a Beacon frame or a Probe Response frame, which is not a
+         * Multi-Link probe response, only the Common Info field of the Basic Multi-Link
+         * element for the AP MLD unless conditions in 35.3.11 (Multi-link procedures for
+         * channel switching, extended channel switching, and channel quieting) are
+         * satisfied. (Sec. 35.3.4.4 of 802.11be D2.1.1)
+         */
+        probeResp.Get<MultiLinkElement>() = GetMultiLinkElement(linkId,
+                                                                WIFI_MAC_MGT_PROBE_RESPONSE,
+                                                                Mac48Address::GetBroadcast(),
+                                                                reqMle);
     }
-    packet->AddHeader(probe);
-
-    if (!GetQosSupported())
-    {
-        GetTxop()->Queue(Create<WifiMpdu>(packet, hdr));
-    }
-    // "A QoS STA that transmits a Management frame determines access category used
-    // for medium access in transmission of the Management frame as follows
-    // (If dot11QMFActivated is false or not present)
-    // — If the Management frame is individually addressed to a non-QoS STA, category
-    //   AC_BE should be selected.
-    // — If category AC_BE was not selected by the previous step, category AC_VO
-    //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
-    else if (!GetWifiRemoteStationManager(linkId)->GetQosSupported(to))
-    {
-        GetBEQueue()->Queue(Create<WifiMpdu>(packet, hdr));
-    }
-    else
-    {
-        GetVOQueue()->Queue(Create<WifiMpdu>(packet, hdr));
-    }
+    return probeResp;
 }
 
 MgtAssocResponseHeader
@@ -1542,8 +1635,9 @@ ApWifiMac::ScheduleFilsDiscOrUnsolProbeRespFrames(uint8_t linkId)
         if (m_sendUnsolProbeResp)
         {
             Simulator::Schedule(fdBeaconInterval * count,
-                                &ApWifiMac::SendProbeResp,
+                                &ApWifiMac::EnqueueProbeResp,
                                 this,
+                                GetProbeResp(linkId, std::nullopt),
                                 Mac48Address::GetBroadcast(),
                                 linkId);
         }
@@ -1877,7 +1971,12 @@ ApWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
             if (ssid == GetSsid() || ssid->IsBroadcast())
             {
                 NS_LOG_DEBUG("Probe request received from " << from << ": send probe response");
-                SendProbeResp(from, linkId);
+                const auto isReqBcast = hdr->GetAddr1().IsGroup() && hdr->GetAddr3().IsBroadcast();
+                // not an ML Probe Request if ADDR1 and ADDR3 are broadcast
+                const auto probeResp = GetProbeResp(
+                    linkId,
+                    isReqBcast ? std::nullopt : probeRequestHeader.Get<MultiLinkElement>());
+                EnqueueProbeResp(probeResp, from, linkId);
             }
             return;
         }

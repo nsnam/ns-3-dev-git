@@ -31,16 +31,12 @@ class ErpInformation;
 class EdcaParameterSet;
 class MuEdcaParameterSet;
 class ReducedNeighborReport;
-class MultiLinkElement;
 class HtOperation;
 class VhtOperation;
 class HeOperation;
 class EhtOperation;
 class CfParameterSet;
 class UniformRandomVariable;
-class MgtAssocRequestHeader;
-class MgtReassocRequestHeader;
-class MgtAssocResponseHeader;
 class MgtEmlOmn;
 class ApEmlsrManager;
 
@@ -335,14 +331,35 @@ class ApWifiMac : public WifiMac
      * @param mpdu the MPDU containing the A-MSDU.
      */
     void DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu) override;
+
     /**
-     * Send a Probe Response in response to a Probe Request received from the STA with the
-     * given address on the given link.
+     * Get Probe Response Per-STA Profile for the given link.
      *
+     * @param linkId the ID of the given link
+     * @return the Probe Response header
+     */
+    MgtProbeResponseHeader GetProbeRespProfile(uint8_t linkId) const;
+
+    /**
+     * Get Probe Response based on the given Probe Request Multi-link Element (if any)
+     *
+     * @param linkId the ID of link the Probe Response is to be sent
+     * @param reqMle Probe Request Multi-link Element
+     * @return Probe Response header
+     */
+    MgtProbeResponseHeader GetProbeResp(uint8_t linkId,
+                                        const std::optional<MultiLinkElement>& reqMle);
+
+    /**
+     * Send a packet prepared using the given Probe Response to the given receiver on the given
+     * link.
+     *
+     * @param probeResp the Probe Response header
      * @param to the address of the STA we are sending a probe response to
      * @param linkId the ID of the given link
      */
-    void SendProbeResp(Mac48Address to, uint8_t linkId);
+    void EnqueueProbeResp(const MgtProbeResponseHeader& probeResp, Mac48Address to, uint8_t linkId);
+
     /**
      * Get the Association Response frame to send on a given link. The returned frame
      * never includes a Multi-Link Element.
@@ -471,6 +488,7 @@ class ApWifiMac : public WifiMac
      * @return the Reduced Neighbor Report element
      */
     std::optional<ReducedNeighborReport> GetReducedNeighborReport(uint8_t linkId) const;
+
     /**
      * Return the Multi-Link Element that the current AP includes in the management
      * frames of the given type it transmits on the given link.
@@ -478,11 +496,17 @@ class ApWifiMac : public WifiMac
      * @param linkId the ID of the link to send the Multi-Link Element onto
      * @param frameType the type of the frame containing the Multi-Link Element
      * @param to the Receiver Address of the frame containing the Multi-Link Element
+     * @param mlProbeReqMle the Multi-Link Element included in the multi-link probe request, in
+     *                      case the Multi-Link Element is requested for the response to such a
+     *                      frame
      * @return the Multi-Link Element
      */
-    MultiLinkElement GetMultiLinkElement(uint8_t linkId,
-                                         WifiMacType frameType,
-                                         const Mac48Address& to = Mac48Address::GetBroadcast());
+    MultiLinkElement GetMultiLinkElement(
+        uint8_t linkId,
+        WifiMacType frameType,
+        const Mac48Address& to = Mac48Address::GetBroadcast(),
+        const std::optional<MultiLinkElement>& mlProbeReqMle = std::nullopt);
+
     /**
      * Return the HT operation of the current AP for the given link.
      *

@@ -9,6 +9,7 @@
 #ifndef WIFI_MAC_H
 #define WIFI_MAC_H
 
+#include "mgt-headers.h"
 #include "qos-utils.h"
 #include "ssid.h"
 #include "wifi-mac-queue-scheduler.h"

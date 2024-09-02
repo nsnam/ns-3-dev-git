@@ -11,7 +11,6 @@
 #ifndef STA_WIFI_MAC_H
 #define STA_WIFI_MAC_H
 
-#include "mgt-headers.h"
 #include "wifi-mac.h"
 
 #include "ns3/eht-configuration.h"
