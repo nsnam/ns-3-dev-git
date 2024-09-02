@@ -1549,6 +1549,41 @@ EMLSR clients:
     also occur when the aux PHYs switch link, as the main PHY returns to the link it was operating
     on before starting the previous channel switch.
 
+.. _EmlsrP2p:
+
+EMLSR clients using P2P links
+-----------------------------
+
+.. _fig-emlsr-p2p:
+
+.. figure:: figures/emlsr-p2p.*
+   :align: center
+
+   Illustration of data exchanges between an EMLSR client and an adhoc peer
+
+An EMLSR client can also use one EMLSR link as a P2P link dedicated to exchanging data with an adhoc
+peer. For this purpose, the EMLSR client setups all of its links with the AP MLD, as shown in Fig.
+:ref:`fig-emlsr-p2p`. In order to reserve one EMLSR link for P2P traffic, it is needed to configure a
+TID-to-Link mapping to be negotiated between the EMLSR client and the AP MLD and such that no TID is
+mapped onto the P2P link, both for uplink and for downlink. The adhoc peer needs to know
+that the device it is going to communicate with is an EMLSR client; this is done by setting the
+``AdhocWifiMac::EmlsrPeer`` attribute to true. Additionally, the ``AdhocWifiMac::EmlsrPeerPaddingDelay``
+and ``AdhocWifiMac::EmlsrPeerTransitionDelay`` attributes must be set to the padding delay and transition
+delay values, respectively, that the EMLSR client advertises to the AP MLD. This way, the adhoc peer
+uses the same rules as an AP MLD to exchange data with the EMLSR client (e.g., it sends an MU-RTS
+acting as an ICF before data frames). Similarly, the EMLSR client uses with the adhoc peer the same
+rules used to communicate with the AP MLD. Fig. :ref:`fig-emlsr-p2p` shows two TXOPs, one held by the
+AP MLD (on link 0) and one held by the adhoc peer (on link 1), when the aux PHY switches link. In case
+the EMLSR client concurrently receives an ICF from the AP MLD and from the adhoc peer, the ICF received
+first is processed, while the latter is dropped.
+
+The ``AdhocWifiMac`` class provides two additional attributes, ``EmlsrUpdateCwAfterFailedIcf`` and
+``EmlsrReportFailedIcf`` to control, respectively, whether to update the contention window and report
+the failure to the remote station manager in case of ICF failure. These attributes are similar to those
+in the ``AdvancedApEmlsrManager`` class, with the difference that the former are applied for every ICF
+failure, while the latter are only applied in case the ICF failure is due to a cross link collision
+(adhoc peers are single link devices, hence the concept of cross link collision is not applicable).
+
 Ack manager
 ###########
 
@@ -1916,6 +1951,7 @@ an AP. However, non-AP MLD STAs may switch their radios to maximize the amount o
 hence a non-AP MLD STA operating in P2P mode might no longer be able to communicate with peer devices using a radio
 channel that is not overlapping with the radio channels its links are operating on.
 Only SLD peer devices are supported by the current design.
+For P2P links established between an EMLSR client and an adhoc peer, see Section :ref:`EmlsrP2p`.
 
 Modifying Wifi model
 ####################
