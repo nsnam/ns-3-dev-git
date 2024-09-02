@@ -20,6 +20,7 @@
 
 class AmpduAggregationTest;
 class MultiLinkOperationsTestBase;
+class ProbeExchTest;
 
 namespace ns3
 {
@@ -133,8 +134,8 @@ class StaWifiMac : public WifiMac
   public:
     /// Allow test cases to access private members
     friend class ::AmpduAggregationTest;
-    /// Allow test cases to access private members
     friend class ::MultiLinkOperationsTestBase;
+    friend class ::ProbeExchTest;
 
     /// type of the management frames used to get info about APs
     using MgtFrameType =
