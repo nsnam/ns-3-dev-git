@@ -67,7 +67,7 @@ clang-tidy-18:
       clang-tidy-diff-18.py -path cmake-cache/ -p1 -quiet -use-color
       -iregex "(contrib|examples|src|scratch|utils)\/.+\.(cpp|cc|cxx|h|hpp)"
       1> $CLANG_TIDY_OUTPUT
-      2> /dev/null ;
+      2> /dev/null || true ;
       fi
 
     # Trim empty lines from output file
