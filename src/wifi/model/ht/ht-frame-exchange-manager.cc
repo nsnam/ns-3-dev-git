@@ -520,7 +520,14 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
         auto baManager = m_mac->GetQosTxop(ac)->GetBaManager();
         for (const auto& [recipient, tid] : baManager->GetSendBarIfDataQueuedList())
         {
-            if (queue->PeekByTidAndAddress(tid, recipient))
+            WifiContainerQueueId queueId(
+                WIFI_QOSDATA_QUEUE,
+                WIFI_UNICAST,
+                GetWifiRemoteStationManager()->GetMldAddress(recipient).value_or(recipient),
+                tid);
+            // check if data is queued and can be transmitted on this link
+            if (queue->PeekByTidAndAddress(tid, recipient) &&
+                !m_mac->GetTxBlockedOnLink(QosUtilsMapTidToAc(tid), queueId, m_linkId))
             {
                 auto [reqHdr, hdr] = m_mac->GetQosTxop(ac)->PrepareBlockAckRequest(recipient, tid);
                 auto pkt = Create<Packet>();
