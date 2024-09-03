@@ -325,6 +325,7 @@ WifiTxopTest::DoRun()
                 SsidValue(Ssid("non-existent-ssid")));
 
     m_staDevices = wifi.Install(phy, mac, wifiStaNodes);
+    streamNumber += WifiHelper::AssignStreams(m_staDevices, streamNumber);
 
     mac.SetType(
         "ns3::ApWifiMac",
@@ -349,6 +350,7 @@ WifiTxopTest::DoRun()
     mac.SetEdca(AC_BE, "TxopLimits", AttributeContainerValue<TimeValue>(std::list{m_apTxopLimit}));
 
     m_apDevices = wifi.Install(phy, mac, wifiApNode);
+    streamNumber += WifiHelper::AssignStreams(m_apDevices, streamNumber);
 
     // schedule association requests at different times. One station's SSID is
     // set to the correct value before initialization, so that such a station
@@ -364,9 +366,6 @@ WifiTxopTest::DoRun()
                             dev->GetMac(),
                             Ssid("wifi-txop-ssid"));
     }
-
-    // Assign fixed streams to random variables in use
-    WifiHelper::AssignStreams(m_apDevices, streamNumber);
 
     MobilityHelper mobility;
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
