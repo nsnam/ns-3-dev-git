@@ -51,7 +51,14 @@ QosFrameExchangeManager::GetTypeId()
                           "when the latter is non-zero",
                           BooleanValue(false),
                           MakeBooleanAccessor(&QosFrameExchangeManager::m_protectSingleExchange),
-                          MakeBooleanChecker());
+                          MakeBooleanChecker())
+            .AddAttribute(
+                "SingleExchangeProtectionSurplus",
+                "Additional time to protect beyond end of the immediate frame exchange in case of "
+                "non-zero TXOP limit when a single frame exchange is protected",
+                TimeValue(Time(0)),
+                MakeTimeAccessor(&QosFrameExchangeManager::m_singleExchangeProtectionSurplus),
+                MakeTimeChecker());
     return tid;
 }
 
@@ -506,7 +513,7 @@ QosFrameExchangeManager::GetFrameDurationId(const WifiMacHeader& header,
 
     if (m_protectSingleExchange)
     {
-        duration = std::min(duration, singleDurationId);
+        duration = std::min(duration, singleDurationId + m_singleExchangeProtectionSurplus);
     }
 
     return duration;
@@ -544,7 +551,7 @@ QosFrameExchangeManager::GetRtsDurationId(const WifiTxVector& rtsTxVector,
 
     if (m_protectSingleExchange)
     {
-        duration = std::min(duration, singleDurationId);
+        duration = std::min(duration, singleDurationId + m_singleExchangeProtectionSurplus);
     }
 
     return duration;
@@ -582,7 +589,7 @@ QosFrameExchangeManager::GetCtsToSelfDurationId(const WifiTxVector& ctsTxVector,
 
     if (m_protectSingleExchange)
     {
-        duration = std::min(duration, singleDurationId);
+        duration = std::min(duration, singleDurationId + m_singleExchangeProtectionSurplus);
     }
 
     return duration;

@@ -355,7 +355,7 @@ HeFrameExchangeManager::GetMuRtsDurationId(uint32_t muRtsSize,
 
     if (m_protectSingleExchange)
     {
-        duration = std::min(duration, singleDurationId);
+        duration = std::min(duration, singleDurationId + m_singleExchangeProtectionSurplus);
     }
 
     return duration;
@@ -1745,7 +1745,7 @@ HeFrameExchangeManager::SendMultiStaBlockAck(const WifiTxParameters& txParams, T
         auto duration = Max(m_edca->GetRemainingTxop(m_linkId) - txDuration, Seconds(0));
         if (m_protectSingleExchange)
         {
-            duration = std::min(duration, singleDurationId);
+            duration = std::min(duration, singleDurationId + m_singleExchangeProtectionSurplus);
         }
         psdu->SetDuration(duration);
     }
