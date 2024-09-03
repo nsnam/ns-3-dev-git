@@ -54,6 +54,15 @@ CapabilityInformation::SetCfPollable()
     Set(2);
 }
 
+void
+CapabilityInformation::SetCriticalUpdate(bool flag)
+{
+    if (flag)
+    {
+        Set(6);
+    }
+}
+
 bool
 CapabilityInformation::IsEss() const
 {
@@ -82,6 +91,12 @@ bool
 CapabilityInformation::IsCfPollable() const
 {
     return Is(2);
+}
+
+bool
+CapabilityInformation::IsCriticalUpdate() const
+{
+    return Is(6);
 }
 
 void

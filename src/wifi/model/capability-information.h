@@ -57,6 +57,12 @@ class CapabilityInformation
     void SetCfPollable();
 
     /**
+     * Set Critical Update flag (see IEEE 802.11be D5.0 9.4.1.4)
+     * @param flag critical update bit
+     */
+    void SetCriticalUpdate(bool flag);
+
+    /**
      * Check if the Extended Service Set (ESS) bit
      * in the capability information field is set to 1.
      *
@@ -96,6 +102,13 @@ class CapabilityInformation
      *         field is set to 1
      */
     bool IsCfPollable() const;
+
+    /**
+     * Check if Critical Update bit is set to 1
+     *
+     * @return true if set to 1, false otherwise
+     */
+    bool IsCriticalUpdate() const;
 
     /**
      * Return the serialized size of capability
