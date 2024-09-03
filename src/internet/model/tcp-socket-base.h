@@ -641,7 +641,7 @@ class TcpSocketBase : public TcpSocket
     void BindToNetDevice(Ptr<NetDevice> netdevice) override; // NetDevice with my m_endPoint
 
     /**
-     * TracedCallback signature for tcp packet transmission or reception events.
+     * TracedCallback signature for TCP packet transmission or reception events.
      *
      * \param [in] packet The packet.
      * \param [in] header The TcpHeader
@@ -650,6 +650,21 @@ class TcpSocketBase : public TcpSocket
     typedef void (*TcpTxRxTracedCallback)(const Ptr<const Packet> packet,
                                           const TcpHeader& header,
                                           const Ptr<const TcpSocketBase> socket);
+
+    /**
+     * TracedCallback signature for TCP packet retransmission events.
+     *
+     * \param [in] packet The packet.
+     * \param [in] header The TcpHeader
+     * \param [in] localAddr The local address
+     * \param [in] peerAddr The peer/remote address
+     * \param [in] socket This socket
+     */
+    typedef void (*RetransmissionCallback)(const Ptr<const Packet> packet,
+                                           const TcpHeader& header,
+                                           const Address& localAddr,
+                                           const Address& peerAddr,
+                                           const Ptr<const TcpSocketBase> socket);
 
   protected:
     // Implementing ns3::TcpSocket -- Attribute get/set
@@ -1421,11 +1436,18 @@ class TcpSocketBase : public TcpSocket
     // Guesses over the other connection end
     bool m_isFirstPartialAck{true}; //!< First partial ACK during RECOVERY
 
-    // The following two traces pass a packet with a TCP header
+    // The following three traces pass a packet with a TCP header
     TracedCallback<Ptr<const Packet>,
                    const TcpHeader&,
                    Ptr<const TcpSocketBase>>
         m_txTrace; //!< Trace of transmitted packets
+
+    TracedCallback<Ptr<const Packet>,
+                   const TcpHeader&,
+                   const Address&,
+                   const Address&,
+                   Ptr<const TcpSocketBase>>
+        m_retransmissionTrace; //!< Trace of retransmitted packets
 
     TracedCallback<Ptr<const Packet>,
                    const TcpHeader&,

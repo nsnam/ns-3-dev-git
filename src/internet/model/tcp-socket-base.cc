@@ -266,6 +266,10 @@ TcpSocketBase::GetTypeId()
                             "Send tcp packet to IP protocol",
                             MakeTraceSourceAccessor(&TcpSocketBase::m_txTrace),
                             "ns3::TcpSocketBase::TcpTxRxTracedCallback")
+            .AddTraceSource("Retransmission",
+                            "Notification of a TCP retransmission",
+                            MakeTraceSourceAccessor(&TcpSocketBase::m_retransmissionTrace),
+                            "ns3::TcpSocketBase::RetransmissionCallback")
             .AddTraceSource("Rx",
                             "Receive tcp packet from IP protocol",
                             MakeTraceSourceAccessor(&TcpSocketBase::m_rxTrace),
@@ -3275,6 +3279,25 @@ TcpSocketBase::SendDataPacket(SequenceNumber32 seq, uint32_t maxSize, bool withA
     }
 
     m_txTrace(p, header, this);
+    if (isRetransmission)
+    {
+        if (m_endPoint)
+        {
+            m_retransmissionTrace(p,
+                                  header,
+                                  m_endPoint->GetLocalAddress(),
+                                  m_endPoint->GetPeerAddress(),
+                                  this);
+        }
+        else
+        {
+            m_retransmissionTrace(p,
+                                  header,
+                                  m_endPoint6->GetLocalAddress(),
+                                  m_endPoint6->GetPeerAddress(),
+                                  this);
+        }
+    }
 
     if (m_endPoint)
     {
