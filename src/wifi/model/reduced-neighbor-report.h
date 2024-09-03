@@ -34,9 +34,11 @@ class ReducedNeighborReport : public WifiInformationElement
      */
     struct MldParameters
     {
-        uint8_t mldId;                //!< MLD ID
-        uint8_t linkId;               //!< Link ID
+        uint8_t apMldId;              //!< AP MLD ID
+        uint8_t linkId : 4;           //!< Link ID
         uint8_t bssParamsChangeCount; //!< BSS Parameters Change Count
+        uint8_t allUpdates : 1;       ///< All Updates Included
+        uint8_t disabledLink : 1;     ///< Disabled Link Indication
     };
 
     /**
@@ -44,12 +46,12 @@ class ReducedNeighborReport : public WifiInformationElement
      */
     struct TbttInformation
     {
-        uint8_t neighborApTbttOffset{0};      //!< Neighbor AP TBTT Offset
-        Mac48Address bssid;                   //!< BSSID (optional)
-        uint32_t shortSsid{0};                //!< Short SSID (optional)
-        uint8_t bssParameters{0};             //!< BSS parameters (optional)
-        uint8_t psd20MHz{0};                  //!< 20 MHz PSD (optional)
-        MldParameters mldParameters{0, 0, 0}; //!< MLD Parameters (optional)
+        uint8_t neighborApTbttOffset{0}; //!< Neighbor AP TBTT Offset
+        Mac48Address bssid;              //!< BSSID (optional)
+        uint32_t shortSsid{0};           //!< Short SSID (optional)
+        uint8_t bssParameters{0};        //!< BSS parameters (optional)
+        uint8_t psd20MHz{0};             //!< 20 MHz PSD (optional)
+        MldParameters mldParameters{};   //!< MLD Parameters (optional)
     };
 
     /**
@@ -249,15 +251,11 @@ class ReducedNeighborReport : public WifiInformationElement
      *
      * @param nbrApInfoId identifier of the given Neighbor AP Information field
      * @param index the index of the given TBTT Information field
-     * @param mldId the MLD ID value
-     * @param linkId the Link ID value
-     * @param changeSequence the Change Sequence value
+     * @param mldParams the MLD parameters
      */
     void SetMldParameters(std::size_t nbrApInfoId,
                           std::size_t index,
-                          uint8_t mldId,
-                          uint8_t linkId,
-                          uint8_t changeSequence);
+                          const MldParameters& mldParams);
     /**
      * Return true if the MLD Parameters subfield is present in all the TBTT Information fields
      * of the given Neighbor AP Information field.
@@ -267,23 +265,14 @@ class ReducedNeighborReport : public WifiInformationElement
      */
     bool HasMldParameters(std::size_t nbrApInfoId) const;
     /**
-     * Get the MLD ID value in the MLD Parameters subfield (must be present) in the
-     * <i>i</i>-th TBTT Information field of the given Neighbor AP Information field.
+     * Get the MLD Parameters subfield (must be present) in the <i>i</i>-th TBTT Information field
+     * of the given Neighbor AP Information field.
      *
      * @param nbrApInfoId identifier of the given Neighbor AP Information field
      * @param index the index of the given TBTT Information field
-     * @return the MLD ID value
+     * @return the MLD parameters
      */
-    uint8_t GetMldId(std::size_t nbrApInfoId, std::size_t index) const;
-    /**
-     * Get the Link ID value in the MLD Parameters subfield (must be present) in the
-     * <i>i</i>-th TBTT Information field of the given Neighbor AP Information field.
-     *
-     * @param nbrApInfoId identifier of the given Neighbor AP Information field
-     * @param index the index of the given TBTT Information field
-     * @return the Link ID value
-     */
-    uint8_t GetLinkId(std::size_t nbrApInfoId, std::size_t index) const;
+    const MldParameters& GetMldParameters(std::size_t nbrApInfoId, std::size_t index) const;
 
   private:
     /**

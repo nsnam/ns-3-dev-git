@@ -196,7 +196,7 @@ WifiDefaultAssocManager::EndScanning()
             Mac48Address bssid = rnr->get().GetBssid(apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId);
             setupLinks.emplace_back(StaWifiMac::ApInfo::SetupLinksInfo{
                 linkId,
-                rnr->get().GetLinkId(apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId),
+                rnr->get().GetMldParameters(apIt->m_nbrApInfoId, apIt->m_tbttInfoFieldId).linkId,
                 bssid});
 
             if (needChannelSwitch)

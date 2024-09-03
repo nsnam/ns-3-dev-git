@@ -328,7 +328,7 @@ WifiAssocManager::GetNextAffiliatedAp(const ReducedNeighborReport& rnr, std::siz
 
         std::size_t tbttInfoFieldIndex = 0;
         while (tbttInfoFieldIndex < rnr.GetNTbttInformationFields(nbrApInfoId) &&
-               rnr.GetMldId(nbrApInfoId, tbttInfoFieldIndex) != 0)
+               rnr.GetMldParameters(nbrApInfoId, tbttInfoFieldIndex).apMldId != 0)
         {
             tbttInfoFieldIndex++;
         }

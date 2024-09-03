@@ -649,7 +649,7 @@ ReducedNeighborReportTest::GetReducedNeighborReport(PhyOpChannelIt channel2_4It,
         rnr.SetShortSsid(nbrId, 0, 0);
         rnr.SetBssParameters(nbrId, 0, 10);
         rnr.SetPsd20MHz(nbrId, 0, 50);
-        rnr.SetMldParameters(nbrId, 0, 0, 2, 3);
+        rnr.SetMldParameters(nbrId, 0, {0, 2, 3, 1, 1});
     }
 
     if (channel5It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
@@ -666,14 +666,14 @@ ReducedNeighborReportTest::GetReducedNeighborReport(PhyOpChannelIt channel2_4It,
         rnr.SetShortSsid(nbrId, 0, 0);
         rnr.SetBssParameters(nbrId, 0, 20);
         rnr.SetPsd20MHz(nbrId, 0, 60);
-        rnr.SetMldParameters(nbrId, 0, 0, 3, 4);
+        rnr.SetMldParameters(nbrId, 0, {0, 3, 4, 0, 1});
         // Add another TBTT Information Field
         rnr.AddTbttInformationField(nbrId);
         rnr.SetBssid(nbrId, 1, Mac48Address("00:00:00:00:01:05"));
         rnr.SetShortSsid(nbrId, 1, 0);
         rnr.SetBssParameters(nbrId, 1, 30);
         rnr.SetPsd20MHz(nbrId, 1, 70);
-        rnr.SetMldParameters(nbrId, 1, 0, 4, 5);
+        rnr.SetMldParameters(nbrId, 1, {0, 4, 5, 1, 0});
     }
 
     if (channel6It != WifiPhyOperatingChannel::m_frequencyChannels.cend())
@@ -690,7 +690,7 @@ ReducedNeighborReportTest::GetReducedNeighborReport(PhyOpChannelIt channel2_4It,
         rnr.SetShortSsid(nbrId, 0, 0);
         rnr.SetBssParameters(nbrId, 0, 40);
         rnr.SetPsd20MHz(nbrId, 0, 80);
-        rnr.SetMldParameters(nbrId, 0, 0, 5, 6);
+        rnr.SetMldParameters(nbrId, 0, {0, 5, 6, 0, 0});
     }
 
     NS_LOG_DEBUG(info.str());

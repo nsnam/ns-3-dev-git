@@ -71,11 +71,11 @@ GetRnrLinkInfoTest::DoRun()
 
     rnr.AddTbttInformationField(nbrId);
     tbttId = rnr.GetNTbttInformationFields(nbrId) - 1;
-    rnr.SetMldParameters(nbrId, tbttId, 0, 0, 0);
+    rnr.SetMldParameters(nbrId, tbttId, {0, 0, 0, 1, 1});
 
     rnr.AddTbttInformationField(nbrId);
     tbttId = rnr.GetNTbttInformationFields(nbrId) - 1;
-    rnr.SetMldParameters(nbrId, tbttId, 5, 0, 0);
+    rnr.SetMldParameters(nbrId, tbttId, {5, 0, 0, 1, 0});
 
     // Add a third Neighbor AP Information field with MLD Parameters; none of the
     // TBTT Information fields is related to an AP affiliated to the same AP MLD
@@ -85,11 +85,11 @@ GetRnrLinkInfoTest::DoRun()
 
     rnr.AddTbttInformationField(nbrId);
     tbttId = rnr.GetNTbttInformationFields(nbrId) - 1;
-    rnr.SetMldParameters(nbrId, tbttId, 3, 0, 0);
+    rnr.SetMldParameters(nbrId, tbttId, {3, 0, 0, 0, 1});
 
     rnr.AddTbttInformationField(nbrId);
     tbttId = rnr.GetNTbttInformationFields(nbrId) - 1;
-    rnr.SetMldParameters(nbrId, tbttId, 4, 0, 0);
+    rnr.SetMldParameters(nbrId, tbttId, {4, 0, 0, 0, 0});
 
     // Add a fourth Neighbor AP Information field with MLD Parameters; the first
     // TBTT Information field is not related to an AP affiliated to the same AP MLD
@@ -99,11 +99,11 @@ GetRnrLinkInfoTest::DoRun()
 
     rnr.AddTbttInformationField(nbrId);
     tbttId = rnr.GetNTbttInformationFields(nbrId) - 1;
-    rnr.SetMldParameters(nbrId, tbttId, 6, 0, 0);
+    rnr.SetMldParameters(nbrId, tbttId, {6, 0, 0, 1, 1});
 
     rnr.AddTbttInformationField(nbrId);
     tbttId = rnr.GetNTbttInformationFields(nbrId) - 1;
-    rnr.SetMldParameters(nbrId, tbttId, 0, 0, 0);
+    rnr.SetMldParameters(nbrId, tbttId, {0, 0, 0, 0, 0});
 
     // check implementation of WifiAssocManager::GetNextAffiliatedAp()
     auto ret = WifiAssocManager::GetNextAffiliatedAp(rnr, 0);
@@ -1117,7 +1117,7 @@ MultiLinkSetupTest::CheckBeacon(Ptr<WifiMpdu> mpdu, uint8_t linkId)
         NS_TEST_EXPECT_MSG_EQ(rnr->GetNTbttInformationFields(nbrApInfoId),
                               1,
                               "Expected only one TBTT Info subfield per Neighbor AP Info");
-        uint8_t nbrLinkId = rnr->GetLinkId(nbrApInfoId, 0);
+        uint8_t nbrLinkId = rnr->GetMldParameters(nbrApInfoId, 0).linkId;
         NS_TEST_EXPECT_MSG_EQ(rnr->GetBssid(nbrApInfoId, 0),
                               m_apMac->GetFrameExchangeManager(nbrLinkId)->GetAddress(),
                               "BSSID advertised in Neighbor AP Info field "
@@ -1176,7 +1176,7 @@ MultiLinkSetupTest::CheckProbeResponse(Ptr<WifiMpdu> mpdu, uint8_t linkId)
         NS_TEST_EXPECT_MSG_EQ(rnr->GetNTbttInformationFields(nbrApInfoId),
                               1,
                               "Expected only one TBTT Info subfield per Neighbor AP Info");
-        uint8_t nbrLinkId = rnr->GetLinkId(nbrApInfoId, 0);
+        uint8_t nbrLinkId = rnr->GetMldParameters(nbrApInfoId, 0).linkId;
         NS_TEST_EXPECT_MSG_EQ(rnr->GetBssid(nbrApInfoId, 0),
                               m_apMac->GetFrameExchangeManager(nbrLinkId)->GetAddress(),
                               "BSSID advertised in Neighbor AP Info field "

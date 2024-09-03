@@ -520,17 +520,13 @@ ReducedNeighborReport::GetPsd20MHz(std::size_t nbrApInfoId, std::size_t index) c
 void
 ReducedNeighborReport::SetMldParameters(std::size_t nbrApInfoId,
                                         std::size_t index,
-                                        uint8_t mldId,
-                                        uint8_t linkId,
-                                        uint8_t changeCount)
+                                        const MldParameters& mldParams)
 {
     NS_ASSERT(nbrApInfoId < m_nbrApInfoFields.size());
     NS_ASSERT(index < m_nbrApInfoFields.at(nbrApInfoId).tbttInformationSet.size());
 
     auto it = std::next(m_nbrApInfoFields.at(nbrApInfoId).tbttInformationSet.begin(), index);
-    it->mldParameters.mldId = mldId;
-    it->mldParameters.linkId = (linkId & 0x0f);
-    it->mldParameters.bssParamsChangeCount = changeCount;
+    it->mldParameters = mldParams;
 
     m_nbrApInfoFields.at(nbrApInfoId).hasMldParams = true;
 }
@@ -543,23 +539,13 @@ ReducedNeighborReport::HasMldParameters(std::size_t nbrApInfoId) const
     return m_nbrApInfoFields.at(nbrApInfoId).hasMldParams;
 }
 
-uint8_t
-ReducedNeighborReport::GetMldId(std::size_t nbrApInfoId, std::size_t index) const
+const ReducedNeighborReport::MldParameters&
+ReducedNeighborReport::GetMldParameters(std::size_t nbrApInfoId, std::size_t index) const
 {
     NS_ASSERT(HasMldParameters(nbrApInfoId));
     NS_ASSERT(index < m_nbrApInfoFields.at(nbrApInfoId).tbttInformationSet.size());
 
-    return m_nbrApInfoFields.at(nbrApInfoId).tbttInformationSet.at(index).mldParameters.mldId;
-}
-
-uint8_t
-ReducedNeighborReport::GetLinkId(std::size_t nbrApInfoId, std::size_t index) const
-{
-    NS_ASSERT(HasMldParameters(nbrApInfoId));
-    NS_ASSERT(index < m_nbrApInfoFields.at(nbrApInfoId).tbttInformationSet.size());
-
-    return m_nbrApInfoFields.at(nbrApInfoId).tbttInformationSet.at(index).mldParameters.linkId &
-           0x0f;
+    return m_nbrApInfoFields.at(nbrApInfoId).tbttInformationSet.at(index).mldParameters;
 }
 
 void
@@ -661,10 +647,12 @@ ReducedNeighborReport::SerializeInformationField(Buffer::Iterator start) const
             }
             if (neighborApInfo.hasMldParams)
             {
-                start.WriteU8(tbttInformation.mldParameters.mldId);
+                start.WriteU8(tbttInformation.mldParameters.apMldId);
                 uint16_t other = 0;
                 other |= (tbttInformation.mldParameters.linkId & 0x0f);
                 other |= (tbttInformation.mldParameters.bssParamsChangeCount << 4);
+                other |= (tbttInformation.mldParameters.allUpdates << 12);
+                other |= (tbttInformation.mldParameters.disabledLink << 13);
                 start.WriteHtolsbU16(other);
             }
         }
@@ -723,14 +711,14 @@ ReducedNeighborReport::DeserializeInformationField(Buffer::Iterator start, uint1
             }
             if (m_nbrApInfoFields.back().hasMldParams)
             {
-                m_nbrApInfoFields.back().tbttInformationSet.back().mldParameters.mldId = i.ReadU8();
+                auto& mldParams = m_nbrApInfoFields.back().tbttInformationSet.back().mldParameters;
+                mldParams.apMldId = i.ReadU8();
                 uint16_t other = i.ReadLsbtohU16();
                 count += 3;
-                m_nbrApInfoFields.back().tbttInformationSet.back().mldParameters.linkId =
-                    other & 0x000f;
-                m_nbrApInfoFields.back()
-                    .tbttInformationSet.back()
-                    .mldParameters.bssParamsChangeCount = (other >> 4) & 0x00ff;
+                mldParams.linkId = other & 0x000f;
+                mldParams.bssParamsChangeCount = (other >> 4) & 0x00ff;
+                mldParams.allUpdates = (other >> 12) & 0x01;
+                mldParams.disabledLink = (other >> 13) & 0x01;
             }
         }
     }

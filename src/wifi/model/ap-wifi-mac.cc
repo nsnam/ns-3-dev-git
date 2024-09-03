@@ -687,7 +687,7 @@ ApWifiMac::GetReducedNeighborReport(uint8_t linkId) const
             rnr.SetShortSsid(nbrId, 0, 0);
             rnr.SetBssParameters(nbrId, 0, 0);
             rnr.SetPsd20MHz(nbrId, 0, 0);
-            rnr.SetMldParameters(nbrId, 0, 0, index, 0);
+            rnr.SetMldParameters(nbrId, 0, {0, index, 0, 0, 0});
         }
     }
     return rnr;
