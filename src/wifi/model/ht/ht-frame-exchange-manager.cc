@@ -1049,7 +1049,7 @@ HtFrameExchangeManager::GetPsduDurationId(Time txDuration, const WifiTxParameter
 
     if (m_protectSingleExchange)
     {
-        duration = std::min(duration, singleDurationId);
+        duration = std::min(duration, singleDurationId + m_singleExchangeProtectionSurplus);
     }
 
     return duration;
