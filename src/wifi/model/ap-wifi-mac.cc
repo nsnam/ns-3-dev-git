@@ -39,6 +39,10 @@
 namespace ns3
 {
 
+/// BSS Parameters Change Count max value for APs part of AP MLD
+/// IEEE 802.11be D5.0 35.3.10
+static constexpr uint8_t WIFI_DEFAULT_BSS_PARAMS_CHANGE_MAX{254};
+
 NS_LOG_COMPONENT_DEFINE("ApWifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED(ApWifiMac);
@@ -183,7 +187,12 @@ ApWifiMac::GetTypeId()
             .AddTraceSource("DeAssociatedSta",
                             "A station lost association with this access point.",
                             MakeTraceSourceAccessor(&ApWifiMac::m_deAssocLogger),
-                            "ns3::ApWifiMac::AssociationCallback");
+                            "ns3::ApWifiMac::AssociationCallback")
+            .AddTraceSource("BssParamsChgCount",
+                            "Traces BSS Params Change Count events by providing the count value "
+                            "and the link ID.",
+                            MakeTraceSourceAccessor(&ApWifiMac::m_bssParamsChgTrace),
+                            "ns3::ApWifiMac::BssParamsChgCountCallback");
     return tid;
 }
 
@@ -587,6 +596,7 @@ ApWifiMac::GetCapabilities(uint8_t linkId) const
     capabilities.SetShortPreamble(GetLink(linkId).shortPreambleEnabled);
     capabilities.SetShortSlotTime(GetLink(linkId).shortSlotTimeEnabled);
     capabilities.SetEss();
+    capabilities.SetCriticalUpdate(GetLink(linkId).criticalUpdate);
     return capabilities;
 }
 
@@ -743,7 +753,7 @@ ApWifiMac::GetReducedNeighborReport(uint8_t linkId) const
             rnr.SetShortSsid(nbrId, 0, 0);
             rnr.SetBssParameters(nbrId, 0, 0);
             rnr.SetPsd20MHz(nbrId, 0, 0);
-            rnr.SetMldParameters(nbrId, 0, {0, index, 0, 0, 0});
+            rnr.SetMldParameters(nbrId, 0, {0, index, GetLink(index).paramsChgCount, 0, 0});
         }
     }
     return rnr;
@@ -763,7 +773,7 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId,
     MultiLinkElement mle(MultiLinkElement::BASIC_VARIANT);
     mle.SetMldMacAddress(GetAddress());
     mle.SetLinkIdInfo(linkId);
-    mle.SetBssParamsChangeCount(0);
+    mle.SetBssParamsChangeCount(GetLink(linkId).paramsChgCount);
 
     auto ehtConfiguration = GetEhtConfiguration();
     NS_ASSERT(ehtConfiguration);
@@ -841,6 +851,7 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId,
                 // the Complete Profile subfield of the STA Control field shall be set to 1
                 perStaProfile.SetStaMacAddress(GetFrameExchangeManager(i)->GetAddress());
                 perStaProfile.SetAssocResponse(GetAssocResp(*staAddress, i));
+                perStaProfile.SetBssParamsChgCnt(GetLink(i).paramsChgCount);
             }
         }
     }
@@ -1139,6 +1150,43 @@ ApWifiMac::GetEhtOperation(uint8_t linkId) const
     operation.SetMaxRxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
     operation.SetMaxTxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
     return operation;
+}
+
+void
+ApWifiMac::IncrBssParamsChgCount(uint8_t linkId)
+{
+    auto& link = GetLink(linkId);
+    // IEEE 802.11be D5.0 35.3.10
+    // The BSS Parameters Change Count subfield value for each AP is initialized to 0,
+    // and shall be incremented (modulo 256 excluding the value 255) by 1
+    // when a critical update occurs to the BSS parameters of that AP.
+    /// The BSS Parameters Change Count subfield is set to 255 if
+    /// the reported AP is not part of an AP MLD, or if the reporting
+    /// AP does not have that information.
+    if (link.paramsChgCount == WIFI_DEFAULT_BSS_PARAMS_CHANGE_MAX)
+    {
+        link.paramsChgCount = 0;
+    }
+    else
+    {
+        link.paramsChgCount++;
+    }
+    NS_LOG_DEBUG("BSS Params Change Count updated to" << link.paramsChgCount << " on link"
+                                                      << +linkId);
+    m_bssParamsChgTrace(link.paramsChgCount, linkId);
+
+    // 9.4.1.4 Capability Information And Status Indication field
+    // An AP affiliated with an AP MLD sets the Critical Update Flag subfield to 1
+    // if any of the following conditions are met:
+    // There is a change to a value carried in the BSS Parameters Change Count subfield
+    // of the MLD Parameters field in the Reduced Neighbor Report element for any
+    // reported AP affiliated with the same AP MLD as the AP.
+    // There is a change to a value carried in the BSS Parameters Change Count subfield
+    // in the Common Info field of the Basic Multi-Link element corresponding to the AP. etc.
+    for (std::size_t apLinkId = 0; apLinkId < GetNLinks(); ++apLinkId)
+    {
+        GetLink(apLinkId).criticalUpdate = true;
+    }
 }
 
 void
@@ -1543,6 +1591,13 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
     if (GetErpSupported(linkId))
     {
         beacon.Get<ErpInformation>() = GetErpInformation(linkId);
+    }
+    if (link.criticalUpdate && (link.beaconDtimCount == 0))
+    {
+        // DTIM Beacon, flag unset
+        // If BSS Parameters Change Count for any link increments before Beacon transmission,
+        // Critical Flag will be set in next Beacon
+        link.criticalUpdate = false;
     }
     if (GetQosSupported())
     {

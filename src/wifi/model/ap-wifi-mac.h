@@ -276,6 +276,9 @@ class ApWifiMac : public WifiMac
         bool shortSlotTimeEnabled{
             false}; //!< Flag whether short slot time is enabled within the BSS
         bool shortPreambleEnabled{false}; //!< Flag whether short preamble is enabled in the BSS
+        uint8_t beaconDtimCount{0};       ///< Number of beacons to DTIM
+        uint8_t paramsChgCount{0};        ///< BSS Parameters Change count
+        bool criticalUpdate{false};       ///< Critical Update flag
     };
 
     /**
@@ -620,6 +623,16 @@ class ApWifiMac : public WifiMac
      */
     bool GetUseNonErpProtection(uint8_t linkId) const;
 
+    /**
+     * Increment BSS Parameters change count on input link and set Critical Update bit on other
+     * links of AP MLD.
+     *
+     * TODO this function is only used internally for the moment.
+     *
+     * \param linkId the link ID
+     */
+    void IncrBssParamsChgCount(uint8_t linkId);
+
     void DoDispose() override;
     void DoInitialize() override;
 
@@ -673,6 +686,17 @@ class ApWifiMac : public WifiMac
 
     TracedCallback<uint16_t /* AID */, Mac48Address> m_assocLogger;   ///< association logger
     TracedCallback<uint16_t /* AID */, Mac48Address> m_deAssocLogger; ///< deassociation logger
+
+    /**
+     * TracedCallback signature for BSS Parameters Change Count events.
+     *
+     * \param count the count value
+     * \param linkId the link ID
+     */
+    typedef void (*BssParamsChgCountCallback)(uint8_t count, uint8_t linkId);
+
+    TracedCallback<uint8_t /* count*/, uint8_t /* link ID */>
+        m_bssParamsChgTrace; ///< BSS Params Change Count trace
 };
 
 } // namespace ns3
