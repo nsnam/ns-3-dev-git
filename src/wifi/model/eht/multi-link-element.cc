@@ -274,7 +274,8 @@ MultiLinkElement::PerStaProfileSubelement::PerStaProfileSubelement(
     const PerStaProfileSubelement& perStaProfile)
     : m_variant(perStaProfile.m_variant),
       m_staControl(perStaProfile.m_staControl),
-      m_staMacAddress(perStaProfile.m_staMacAddress)
+      m_staMacAddress(perStaProfile.m_staMacAddress),
+      m_bssParamsChgCnt(perStaProfile.m_bssParamsChgCnt)
 {
     // deep copy of the STA Profile field
     auto staProfileCopy = [&](auto&& frame) {
@@ -304,6 +305,7 @@ MultiLinkElement::PerStaProfileSubelement::operator=(const PerStaProfileSubeleme
     m_variant = perStaProfile.m_variant;
     m_staControl = perStaProfile.m_staControl;
     m_staMacAddress = perStaProfile.m_staMacAddress;
+    m_bssParamsChgCnt = perStaProfile.m_bssParamsChgCnt;
 
     // deep copy of the STA Profile field
     auto staProfileCopy = [&](auto&& frame) {
@@ -367,6 +369,29 @@ MultiLinkElement::PerStaProfileSubelement::GetStaMacAddress() const
 {
     NS_ABORT_IF(!HasStaMacAddress());
     return m_staMacAddress;
+}
+
+void
+MultiLinkElement::PerStaProfileSubelement::SetBssParamsChgCnt(uint8_t count)
+{
+    NS_ABORT_MSG_IF(m_variant != BASIC_VARIANT,
+                    "Expected Basic Variant, variant:" << +static_cast<uint8_t>(m_variant));
+    m_bssParamsChgCnt = count;
+    m_staControl |= 0x0800;
+}
+
+bool
+MultiLinkElement::PerStaProfileSubelement::HasBssParamsChgCnt() const
+{
+    return (m_staControl & 0x0800) != 0;
+}
+
+uint8_t
+MultiLinkElement::PerStaProfileSubelement::GetBssParamsChgCnt() const
+{
+    NS_ASSERT_MSG(m_bssParamsChgCnt.has_value(), "No value set for m_bssParamsChgCnt");
+    NS_ASSERT_MSG(HasBssParamsChgCnt(), "BSS Parameters Change count bit not set");
+    return m_bssParamsChgCnt.value();
 }
 
 void
@@ -479,6 +504,10 @@ MultiLinkElement::PerStaProfileSubelement::GetStaInfoLength() const
     {
         ret += 6;
     }
+    if (HasBssParamsChgCnt())
+    {
+        ret += 1;
+    }
     // TODO add other subfields of the STA Info field
     return ret;
 }
@@ -536,6 +565,10 @@ MultiLinkElement::PerStaProfileSubelement::SerializeInformationField(Buffer::Ite
     {
         WriteTo(start, m_staMacAddress);
     }
+    if (HasBssParamsChgCnt())
+    {
+        start.WriteU8(GetBssParamsChgCnt());
+    }
     // TODO add other subfields of the STA Info field
     auto staProfileSerialize = [&](auto&& frame) {
         using T = std::decay_t<decltype(frame)>;
@@ -575,6 +608,10 @@ MultiLinkElement::PerStaProfileSubelement::DeserializeInformationField(Buffer::I
     if (HasStaMacAddress())
     {
         ReadFrom(i, m_staMacAddress);
+    }
+    if (HasBssParamsChgCnt())
+    {
+        m_bssParamsChgCnt = i.ReadU8();
     }
 
     // TODO add other subfields of the STA Info field

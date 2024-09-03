@@ -349,6 +349,23 @@ class MultiLinkElement : public WifiInformationElement
         Mac48Address GetStaMacAddress() const;
 
         /**
+         * Set the BSS Parameters Change Count subfield in the STA Info field.
+         *
+         * @param count BSS Parameters Change Count
+         */
+        void SetBssParamsChgCnt(uint8_t count);
+
+        /// @return whether the BSS Parameters Change Count subfield in STA Info field is present
+        bool HasBssParamsChgCnt() const;
+
+        /**
+         * Get BSS Parameters Change Count subfield in the STA Info field.
+         *
+         * @return count value
+         */
+        uint8_t GetBssParamsChgCnt() const;
+
+        /**
          * Include the given (Re)Association Request frame body in the STA Profile field
          * of this Per-STA Profile subelement
          *
@@ -457,9 +474,10 @@ class MultiLinkElement : public WifiInformationElement
          */
         uint16_t DeserProbeReqMlePerSta(ns3::Buffer::Iterator start, uint16_t length);
 
-        Variant m_variant;            //!< Multi-Link element variant
-        uint16_t m_staControl;        //!< STA Control field
-        Mac48Address m_staMacAddress; //!< STA MAC address
+        Variant m_variant;                        //!< Multi-Link element variant
+        uint16_t m_staControl;                    //!< STA Control field
+        Mac48Address m_staMacAddress;             //!< STA MAC address
+        std::optional<uint8_t> m_bssParamsChgCnt; //!< BSS Params Change Count (Basic MLE)
         std::variant<std::monostate,
                      std::unique_ptr<MgtAssocRequestHeader>,
                      std::unique_ptr<MgtReassocRequestHeader>,
