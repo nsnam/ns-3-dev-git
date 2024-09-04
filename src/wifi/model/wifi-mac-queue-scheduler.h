@@ -175,6 +175,36 @@ class WifiMacQueueScheduler : public Object
                                const std::set<uint8_t>& tids = {},
                                const std::set<uint8_t>& linkIds = {}) = 0;
 
+    /**
+     * Block the given set of links for all the container queues for the given reason.
+     *
+     * @param reason the reason for blocking the queues
+     * @param linkIds set of links to block (empty to block all setup links)
+     */
+    virtual void BlockAllQueues(WifiQueueBlockedReason reason,
+                                const std::set<uint8_t>& linkIds = {}) = 0;
+
+    /**
+     * Unblock the given set of links for all the container queues for the given reason.
+     *
+     * @param reason the reason for unblocking the queues
+     * @param linkIds set of links to unblock (empty to unblock all setup links)
+     */
+    virtual void UnblockAllQueues(WifiQueueBlockedReason reason,
+                                  const std::set<uint8_t>& linkIds = {}) = 0;
+
+    /**
+     * Return whether all the container queues are blocked for the given link for the given
+     * reason, if different than REASONS_COUNT, or for any reason, otherwise.
+     *
+     * @param linkId the ID of the given link
+     * @param reason the reason to check (if different than REASONS_COUNT)
+     * @return whether all the container queues are blocked for the given link
+     */
+    virtual bool GetAllQueuesBlockedOnLink(
+        uint8_t linkId,
+        WifiQueueBlockedReason reason = WifiQueueBlockedReason::REASONS_COUNT) = 0;
+
     /// Bitset identifying the reasons to block individual links for a container queue
     using Mask = std::bitset<static_cast<std::size_t>(WifiQueueBlockedReason::REASONS_COUNT)>;
 
