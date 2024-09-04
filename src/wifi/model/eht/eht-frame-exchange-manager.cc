@@ -155,13 +155,9 @@ EhtFrameExchangeManager::UsingOtherEmlsrLink() const
     {
         return false;
     }
-    auto apAddress = GetWifiRemoteStationManager()->GetMldAddress(m_bssid);
-    NS_ASSERT_MSG(apAddress, "MLD address not found for BSSID " << m_bssid);
-    // when EMLSR links are blocked, all TIDs are blocked (we test TID 0 here)
-    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WIFI_UNICAST, *apAddress, 0);
-    auto mask = m_staMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
-    NS_ASSERT_MSG(mask, "No mask for AP " << *apAddress << " on link " << m_linkId);
-    return mask->test(static_cast<std::size_t>(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK));
+    return m_staMac->GetMacQueueScheduler()->GetAllQueuesBlockedOnLink(
+        m_linkId,
+        WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
 }
 
 bool

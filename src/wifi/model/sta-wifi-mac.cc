@@ -30,6 +30,7 @@
 #include "ns3/pair.h"
 #include "ns3/pointer.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/shuffle.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 
@@ -1066,46 +1067,46 @@ StaWifiMac::BlockTxOnLink(uint8_t linkId, WifiQueueBlockedReason reason)
 {
     NS_LOG_FUNCTION(this << linkId << reason);
 
-    auto bssid = GetBssid(linkId);
-    auto apAddress = GetWifiRemoteStationManager(linkId)->GetMldAddress(bssid).value_or(bssid);
-
-    BlockUnicastTxOnLinks(reason, apAddress, {linkId});
-    // the only type of broadcast frames that a non-AP STA can send are management frames
-    for (const auto& [acIndex, ac] : wifiAcList)
-    {
-        GetMacQueueScheduler()->BlockQueues(reason,
-                                            acIndex,
-                                            {WIFI_MGT_QUEUE},
-                                            Mac48Address::GetBroadcast(),
-                                            GetFrameExchangeManager(linkId)->GetAddress(),
-                                            {},
-                                            {linkId});
-    }
+    GetMacQueueScheduler()->BlockAllQueues(reason, {linkId});
 }
 
 void
 StaWifiMac::UnblockTxOnLink(std::set<uint8_t> linkIds, WifiQueueBlockedReason reason)
 {
+    // shuffle link IDs not to unblock links always in the same order
+    std::vector<uint8_t> shuffledLinkIds(linkIds.cbegin(), linkIds.cend());
+    Shuffle(shuffledLinkIds.begin(), shuffledLinkIds.end(), m_shuffleLinkIdsGen.GetRv());
+
     std::stringstream ss;
-    std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
-    NS_LOG_FUNCTION(this << ss.str() << reason);
-
-    const auto linkId = *linkIds.cbegin();
-    const auto bssid = GetBssid(linkId);
-    const auto apAddress =
-        GetWifiRemoteStationManager(linkId)->GetMldAddress(bssid).value_or(bssid);
-
-    UnblockUnicastTxOnLinks(reason, apAddress, linkIds);
-    // the only type of broadcast frames that a non-AP STA can send are management frames
-    for (const auto& [acIndex, ac] : wifiAcList)
+    if (g_log.IsEnabled(ns3::LOG_FUNCTION))
     {
-        GetMacQueueScheduler()->UnblockQueues(reason,
-                                              acIndex,
-                                              {WIFI_MGT_QUEUE},
-                                              Mac48Address::GetBroadcast(),
-                                              GetFrameExchangeManager(linkId)->GetAddress(),
-                                              {},
-                                              linkIds);
+        std::copy(shuffledLinkIds.cbegin(),
+                  shuffledLinkIds.cend(),
+                  std::ostream_iterator<uint16_t>(ss, " "));
+    }
+    NS_LOG_FUNCTION(this << reason << ss.str());
+
+    for (const auto linkId : shuffledLinkIds)
+    {
+        std::map<AcIndex, bool> hasFramesToTransmit;
+        for (const auto& [acIndex, ac] : wifiAcList)
+        {
+            // save the status of the AC queues before unblocking the queues
+            hasFramesToTransmit[acIndex] = GetQosTxop(acIndex)->HasFramesToTransmit(linkId);
+        }
+
+        GetMacQueueScheduler()->UnblockAllQueues(reason, {linkId});
+
+        for (const auto& [acIndex, ac] : wifiAcList)
+        {
+            // request channel access if needed (schedule now because multiple invocations
+            // of this method may be done in a loop at the caller)
+            Simulator::ScheduleNow(&Txop::StartAccessAfterEvent,
+                                   GetQosTxop(acIndex),
+                                   linkId,
+                                   hasFramesToTransmit[acIndex],
+                                   Txop::CHECK_MEDIUM_BUSY); // generate backoff if medium busy
+        }
     }
 }
 

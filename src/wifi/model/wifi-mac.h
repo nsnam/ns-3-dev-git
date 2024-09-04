@@ -965,6 +965,8 @@ class WifiMac : public Object
                                 WifiDirection dir,
                                 const WifiTidLinkMapping& mapping);
 
+    UniformRandomBitGenerator m_shuffleLinkIdsGen; //!< random number generator to shuffle link IDs
+
     Ptr<MacRxMiddle> m_rxMiddle; //!< RX middle (defragmentation etc.)
     Ptr<MacTxMiddle> m_txMiddle; //!< TX middle (aggregation etc.)
     Ptr<Txop> m_txop;            //!< TXOP used for transmission of frames to non-QoS peers.
@@ -1243,8 +1245,6 @@ class WifiMac : public Object
 
     uint16_t m_mpduBufferSize;  //!< BlockAck buffer size (in number of MPDUs)
     uint32_t m_frameRetryLimit; //!< the frame retry limit
-
-    UniformRandomBitGenerator m_shuffleLinkIdsGen; //!< random number generator to shuffle link IDs
 
     bool m_robustAVStreamingSupported; ///< flag whether robust AV streaming is supported
 
