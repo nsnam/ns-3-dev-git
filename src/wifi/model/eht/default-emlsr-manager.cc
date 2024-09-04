@@ -282,20 +282,21 @@ DefaultEmlsrManager::GetTimeToCtsEnd(uint8_t linkId) const
     const auto bssid = GetEhtFem(linkId)->GetBssid();
     const auto allowedWidth = GetEhtFem(linkId)->GetAllowedWidth();
 
-    return GetTimeToCtsEnd(linkId, stationManager->GetRtsTxVector(bssid, allowedWidth));
+    return GetTimeToCtsEnd(linkId, bssid, stationManager->GetRtsTxVector(bssid, allowedWidth));
 }
 
 Time
-DefaultEmlsrManager::GetTimeToCtsEnd(uint8_t linkId, const WifiTxVector& rtsTxVector) const
+DefaultEmlsrManager::GetTimeToCtsEnd(uint8_t linkId,
+                                     Mac48Address receiver,
+                                     const WifiTxVector& rtsTxVector) const
 {
-    NS_LOG_FUNCTION(this << linkId << rtsTxVector);
+    NS_LOG_FUNCTION(this << linkId << receiver << rtsTxVector);
 
     auto phy = GetStaMac()->GetWifiPhy(linkId);
     NS_ASSERT_MSG(phy, "No PHY operating on link " << +linkId);
 
     const auto stationManager = GetStaMac()->GetWifiRemoteStationManager(linkId);
-    const auto bssid = GetEhtFem(linkId)->GetBssid();
-    const auto ctsTxVector = stationManager->GetCtsTxVector(bssid, rtsTxVector.GetMode());
+    const auto ctsTxVector = stationManager->GetCtsTxVector(receiver, rtsTxVector.GetMode());
 
     const auto rtsTxTime =
         WifiPhy::CalculateTxDuration(GetRtsSize(), rtsTxVector, phy->GetPhyBand());
@@ -363,7 +364,8 @@ DefaultEmlsrManager::NotifyRtsSent(uint8_t linkId,
 
     // Main PHY shall terminate the channel switch at the end of CTS reception
     auto mainPhy = GetStaMac()->GetDevice()->GetPhy(m_mainPhyId);
-    const auto delay = GetTimeToCtsEnd(linkId, txVector) - mainPhy->GetChannelSwitchDelay();
+    const auto delay =
+        GetTimeToCtsEnd(linkId, rts->GetAddr1(), txVector) - mainPhy->GetChannelSwitchDelay();
     NS_ASSERT_MSG(delay.IsPositive(),
                   "RTS is being sent, but not enough time for main PHY to switch");
 

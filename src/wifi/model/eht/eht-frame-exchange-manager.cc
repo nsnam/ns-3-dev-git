@@ -556,7 +556,9 @@ EhtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector&
         }
     }
 
-    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId) && psdu->GetAddr1() == m_bssid &&
+    if (const auto addr1 = psdu->GetAddr1();
+        m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
+        (addr1 == m_bssid || GetWifiRemoteStationManager()->IsAdhocPeer(addr1)) &&
         psdu->GetHeader(0).IsRts())
     {
         NS_ASSERT(m_staMac->GetEmlsrManager());

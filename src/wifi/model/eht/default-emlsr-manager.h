@@ -59,10 +59,13 @@ class DefaultEmlsrManager : public EmlsrManager
      * the given link to calculate the time remaining to the end of the CTS reception.
      *
      * @param linkId the ID of the given link
+     * @param receiver the Address1 field of the RTS
      * @param rtsTxVector the TXVECTOR used to transmit the RTS
      * @return the time remaining to the end of the CTS reception
      */
-    Time GetTimeToCtsEnd(uint8_t linkId, const WifiTxVector& rtsTxVector) const;
+    Time GetTimeToCtsEnd(uint8_t linkId,
+                         Mac48Address receiver,
+                         const WifiTxVector& rtsTxVector) const;
 
     /**
      * This method can only be called when aux PHYs do not switch link. Switch the main PHY back
