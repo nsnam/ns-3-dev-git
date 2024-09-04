@@ -54,6 +54,35 @@
 #include <algorithm>
 #include <math.h>
 
+namespace
+{
+
+/**
+ * \brief map TcpPacketType and EcnMode to boolean value to check whether ECN-marking is allowed or
+ * not
+ */
+const std::map<std::pair<ns3::TcpSocketBase::TcpPacketType_t, ns3::TcpSocketState::EcnMode_t>, bool>
+    ECN_RESTRICTION_MAP{
+        {{ns3::TcpSocketBase::SYN, ns3::TcpSocketState::ClassicEcn}, false},
+        {{ns3::TcpSocketBase::SYN_ACK, ns3::TcpSocketState::ClassicEcn}, false},
+        {{ns3::TcpSocketBase::PURE_ACK, ns3::TcpSocketState::ClassicEcn}, false},
+        {{ns3::TcpSocketBase::WINDOW_PROBE, ns3::TcpSocketState::ClassicEcn}, false},
+        {{ns3::TcpSocketBase::FIN, ns3::TcpSocketState::ClassicEcn}, false},
+        {{ns3::TcpSocketBase::RST, ns3::TcpSocketState::ClassicEcn}, false},
+        {{ns3::TcpSocketBase::RE_XMT, ns3::TcpSocketState::ClassicEcn}, false},
+        {{ns3::TcpSocketBase::DATA, ns3::TcpSocketState::ClassicEcn}, true},
+
+        {{ns3::TcpSocketBase::SYN, ns3::TcpSocketState::DctcpEcn}, true},
+        {{ns3::TcpSocketBase::SYN_ACK, ns3::TcpSocketState::DctcpEcn}, true},
+        {{ns3::TcpSocketBase::PURE_ACK, ns3::TcpSocketState::DctcpEcn}, true},
+        {{ns3::TcpSocketBase::WINDOW_PROBE, ns3::TcpSocketState::DctcpEcn}, true},
+        {{ns3::TcpSocketBase::FIN, ns3::TcpSocketState::DctcpEcn}, true},
+        {{ns3::TcpSocketBase::RST, ns3::TcpSocketState::DctcpEcn}, true},
+        {{ns3::TcpSocketBase::RE_XMT, ns3::TcpSocketState::DctcpEcn}, true},
+        {{ns3::TcpSocketBase::DATA, ns3::TcpSocketState::DctcpEcn}, true},
+    };
+} // namespace
+
 namespace ns3
 {
 
@@ -2747,9 +2776,11 @@ TcpSocketBase::SendEmptyPacket(uint8_t flags)
     Ptr<Packet> p = Create<Packet>();
     TcpHeader header;
     SequenceNumber32 s = m_tcb->m_nextTxSequence;
+    TcpPacketType_t packetType;
 
     if (flags & TcpHeader::FIN)
     {
+        packetType = TcpPacketType_t::FIN;
         flags |= TcpHeader::ACK;
     }
     else if (m_state == FIN_WAIT_1 || m_state == LAST_ACK || m_state == CLOSING)
@@ -2757,7 +2788,27 @@ TcpSocketBase::SendEmptyPacket(uint8_t flags)
         ++s;
     }
 
-    AddSocketTags(p);
+    if (flags == TcpHeader::ACK)
+    {
+        packetType = TcpPacketType_t::PURE_ACK;
+    }
+    else if (flags == TcpHeader::RST)
+    {
+        packetType = TcpPacketType_t::RST;
+    }
+    else if (flags & TcpHeader::SYN)
+    {
+        if (flags & TcpHeader::ACK)
+        {
+            packetType = TcpPacketType_t::SYN_ACK;
+        }
+        else
+        {
+            packetType = TcpPacketType_t::SYN;
+        }
+    }
+
+    AddSocketTags(p, IsEct(packetType));
 
     header.SetFlags(flags);
     header.SetSequenceNumber(s);
@@ -3036,7 +3087,7 @@ TcpSocketBase::ConnectionSucceeded()
 }
 
 void
-TcpSocketBase::AddSocketTags(const Ptr<Packet>& p) const
+TcpSocketBase::AddSocketTags(const Ptr<Packet>& p, bool isEct) const
 {
     /*
      * Add tags for each socket option.
@@ -3047,7 +3098,7 @@ TcpSocketBase::AddSocketTags(const Ptr<Packet>& p) const
     if (GetIpTos())
     {
         SocketIpTosTag ipTosTag;
-        if (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && !CheckNoEcn(GetIpTos()))
+        if (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && !CheckNoEcn(GetIpTos()) && isEct)
         {
             ipTosTag.SetTos(MarkEcnCodePoint(GetIpTos(), m_tcb->m_ectCodePoint));
         }
@@ -3060,7 +3111,7 @@ TcpSocketBase::AddSocketTags(const Ptr<Packet>& p) const
     }
     else
     {
-        if ((m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && p->GetSize() > 0) ||
+        if ((m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && p->GetSize() > 0 && isEct) ||
             m_tcb->m_ecnMode == TcpSocketState::DctcpEcn)
         {
             SocketIpTosTag ipTosTag;
@@ -3072,7 +3123,8 @@ TcpSocketBase::AddSocketTags(const Ptr<Packet>& p) const
     if (IsManualIpv6Tclass())
     {
         SocketIpv6TclassTag ipTclassTag;
-        if (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && !CheckNoEcn(GetIpv6Tclass()))
+        if (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && !CheckNoEcn(GetIpv6Tclass()) &&
+            isEct)
         {
             ipTclassTag.SetTclass(MarkEcnCodePoint(GetIpv6Tclass(), m_tcb->m_ectCodePoint));
         }
@@ -3085,7 +3137,7 @@ TcpSocketBase::AddSocketTags(const Ptr<Packet>& p) const
     }
     else
     {
-        if ((m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && p->GetSize() > 0) ||
+        if ((m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && p->GetSize() > 0 && isEct) ||
             m_tcb->m_ecnMode == TcpSocketState::DctcpEcn)
         {
             SocketIpv6TclassTag ipTclassTag;
@@ -3176,7 +3228,8 @@ TcpSocketBase::SendDataPacket(SequenceNumber32 seq, uint32_t maxSize, bool withA
         NS_LOG_INFO("CWR flags set");
     }
 
-    AddSocketTags(p);
+    bool isEct = IsEct(isRetransmission ? TcpPacketType_t::RE_XMT : TcpPacketType_t::DATA);
+    AddSocketTags(p, isEct);
 
     if (m_closeOnEmpty && (remainingData == 0))
     {
@@ -3971,13 +4024,7 @@ TcpSocketBase::PersistTimeout()
     // Send a packet tag for setting ECT bits in IP header
     if (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED)
     {
-        SocketIpTosTag ipTosTag;
-        ipTosTag.SetTos(MarkEcnCodePoint(0, m_tcb->m_ectCodePoint));
-        p->AddPacketTag(ipTosTag);
-
-        SocketIpv6TclassTag ipTclassTag;
-        ipTclassTag.SetTclass(MarkEcnCodePoint(0, m_tcb->m_ectCodePoint));
-        p->AddPacketTag(ipTclassTag);
+        AddSocketTags(p, IsEct(TcpPacketType_t::WINDOW_PROBE));
     }
     m_txTrace(p, tcpHeader, this);
 
@@ -4706,6 +4753,22 @@ TcpSocketBase::SetPaceInitialWindow(bool paceWindow)
 {
     NS_LOG_FUNCTION(this << paceWindow);
     m_tcb->m_paceInitialWindow = paceWindow;
+}
+
+bool
+TcpSocketBase::IsEct(TcpPacketType_t packetType) const
+{
+    NS_LOG_FUNCTION(this << packetType);
+
+    if (m_tcb->m_ecnState == TcpSocketState::ECN_DISABLED)
+    {
+        return false;
+    }
+
+    NS_ABORT_MSG_IF(!ECN_RESTRICTION_MAP.contains(std::make_pair(packetType, m_tcb->m_ecnMode)),
+                    "Invalid packetType and ecnMode");
+
+    return ECN_RESTRICTION_MAP.at(std::make_pair(packetType, m_tcb->m_ecnMode));
 }
 
 void

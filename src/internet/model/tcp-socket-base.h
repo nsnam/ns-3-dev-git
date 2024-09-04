@@ -240,6 +240,24 @@ class TcpSocketBase : public TcpSocket
     TcpSocketBase(const TcpSocketBase& sock);
     ~TcpSocketBase() override;
 
+    /**
+     * \brief Tcp Packet Types
+     *
+     * Taxonomy referred from Table 1 of
+     * https://www.ietf.org/archive/id/draft-ietf-tcpm-generalized-ecn-15.txt
+     */
+    enum TcpPacketType_t
+    {
+        SYN,
+        SYN_ACK,
+        PURE_ACK,
+        WINDOW_PROBE,
+        FIN,
+        RST,
+        RE_XMT,
+        DATA
+    };
+
     // Set associated Node, TcpL4Protocol, RttEstimator to this socket
 
     /**
@@ -578,6 +596,20 @@ class TcpSocketBase : public TcpSocket
      * \param paceWindow Boolean to enable or disable pacing of the initial window
      */
     void SetPaceInitialWindow(bool paceWindow);
+
+    /**
+     * \brief Checks if a TCP packet should be ECN-capable (ECT) according to the TcpPacketType and
+     * ECN mode.
+     *
+     * Currently, only Classic ECN and DCTCP ECN modes are supported, with
+     * potential extensions for future modes (Ecnpp).
+     *
+     * \param packetType The type of the TCP packet, represented by an enum TcpPacketType.
+     * \return true if the packet is ECN-capable (ECT), false otherwise.
+     *
+     * Reference: https://www.ietf.org/archive/id/draft-ietf-tcpm-generalized-ecn-15.txt (Table 1)
+     */
+    bool IsEct(TcpPacketType_t packetType) const;
 
     // Necessary implementations of null functions from ns3::Socket
     SocketErrno GetErrno() const override;     // returns m_errno
@@ -1274,8 +1306,9 @@ class TcpSocketBase : public TcpSocket
     /**
      * \brief Add Tags for the Socket
      * \param p Packet
+     * \param isEct Whether the packet is allowed to be ECT capable
      */
-    void AddSocketTags(const Ptr<Packet>& p) const;
+    void AddSocketTags(const Ptr<Packet>& p, bool isEct) const;
 
     /**
      * Get the current value of the receiver's offered window (RCV.WND)
