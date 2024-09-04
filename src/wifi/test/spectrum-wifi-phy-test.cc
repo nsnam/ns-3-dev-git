@@ -561,8 +561,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
     }
 
     size_t numBands = rxPowersW.size();
-    const std::size_t num20MhzSubchannels = m_rxChannelWidth / 20;
-    size_t expectedNumBands = std::max(1UL, num20MhzSubchannels);
+    auto expectedNumBands = std::max<std::size_t>(1, m_rxChannelWidth / 20);
     expectedNumBands += (m_rxChannelWidth / 40);
     expectedNumBands += (m_rxChannelWidth / 80);
     expectedNumBands += (m_rxChannelWidth / 160);
