@@ -273,7 +273,7 @@ operator<<(std::ostream& os, const UanModesList& ml)
 std::istream&
 operator>>(std::istream& is, UanModesList& ml)
 {
-    char c;
+    char c = '\0';
 
     int numModes;
 
