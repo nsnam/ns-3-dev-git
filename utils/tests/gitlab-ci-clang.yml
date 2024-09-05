@@ -4,8 +4,8 @@
 # "RELEASE", that has a value "weekly". Also, a variable "CLANG" should be set
 # to True.
 
-# We support CLANG versions 10 through 18
-# We test only CLANG 10 on Ubuntu 20.04 and CLANG 18 on Ubuntu 24.04
+# We support CLANG versions 11 through 18
+# We test only CLANG 11 on Ubuntu 20.04 and CLANG 18 on Ubuntu 24.04
 
 .weekly-clang-ubuntu:
   extends: .base-build
@@ -52,49 +52,49 @@ weekly-clang:
   script:
     - echo "Starting clang jobs"
 
-# CLANG 10
-weekly-build-clang-10-debug:
+# CLANG 11
+weekly-build-clang-11-debug:
   extends: .weekly-clang-ubuntu20.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 10
+    CLANG: 11
     MODE: debug
 
-weekly-build-clang-10-default:
+weekly-build-clang-11-default:
   extends: .weekly-clang-ubuntu20.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 10
+    CLANG: 11
     MODE: default
 
-weekly-build-clang-10-optimized:
+weekly-build-clang-11-optimized:
   extends: .weekly-clang-ubuntu20.04
   needs: ["weekly-clang"]
   stage: build
   variables:
-    CLANG: 10
+    CLANG: 11
     MODE: optimized
 
-weekly-test-clang-10-default:
+weekly-test-clang-11-default:
   extends: .weekly-clang-ubuntu20.04
   stage: test
-  needs: ["weekly-build-clang-10-default"]
+  needs: ["weekly-build-clang-11-default"]
   dependencies:
-    - weekly-build-clang-10-default
+    - weekly-build-clang-11-default
   variables:
-    CLANG: 10
+    CLANG: 11
     MODE: default
 
-weekly-test-clang-10-optimized:
+weekly-test-clang-11-optimized:
   extends: .weekly-clang-ubuntu20.04
   stage: test
-  needs: ["weekly-build-clang-10-optimized"]
+  needs: ["weekly-build-clang-11-optimized"]
   dependencies:
-    - weekly-build-clang-10-optimized
+    - weekly-build-clang-11-optimized
   variables:
-    CLANG: 10
+    CLANG: 11
     MODE: optimized
 
 # CLANG 18
