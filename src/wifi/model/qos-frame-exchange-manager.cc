@@ -92,8 +92,8 @@ QosFrameExchangeManager::SendCfEndIfNeeded()
     auto txDuration =
         WifiPhy::CalculateTxDuration(mpdu->GetSize(), cfEndTxVector, m_phy->GetPhyBand());
 
-    // Send the CF-End frame if the remaining duration is long enough to transmit this frame
-    if (m_edca->GetTxopLimit(m_linkId).IsZero() || m_edca->GetRemainingTxop(m_linkId) > txDuration)
+    // Send the CF-End frame if the remaining TXNAV is long enough to transmit this frame
+    if (m_txNav > Simulator::Now() + txDuration)
     {
         NS_LOG_DEBUG("Send CF-End frame");
         ForwardMpduDown(mpdu, cfEndTxVector);
