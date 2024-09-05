@@ -17,6 +17,7 @@
 
 #include "ns3/test.h"
 #include "ns3/type-traits.h"
+#include "ns3/warnings.h"
 
 /**
  * \file
@@ -59,6 +60,12 @@ TypeTraitsTestCase::TypeTraitsTestCase()
 void
 TypeTraitsTestCase::DoRun()
 {
+    // NS_DEPRECATED_3_43
+    // The TypeTraits struct has been deprecated in ns-3.43.
+    // While the struct isn't removed, the deprecation warnings must be silenced.
+    // Once the struct is removed, this test suite should be deleted.
+    NS_WARNING_PUSH_DEPRECATED;
+
     NS_TEST_ASSERT_MSG_EQ(TypeTraits<void (TypeTraitsTestCase::*)()>::IsPointerToMember,
                           1,
                           "Check pointer to member function ()");
@@ -79,6 +86,8 @@ TypeTraitsTestCase::DoRun()
         TypeTraits<void (TypeTraitsTestCase::*)(int) const>::PointerToMemberTraits::nArgs,
         1,
         "Check number of arguments for pointer to member function (int) const");
+
+    NS_WARNING_POP;
 }
 
 /**
