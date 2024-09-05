@@ -469,7 +469,7 @@ function(build_lib_scan_examples module_cpp_examples)
   set(module_examples ${ns3-execs-clean})
 
   # Return a list of module c++ examples (current examples - previous examples)
-  list(REMOVE_ITEM module_examples ${examples_before})
+  list(REMOVE_ITEM module_examples "${examples_before}")
   set(${module_cpp_examples} ${module_examples} PARENT_SCOPE)
 endfunction()
 
