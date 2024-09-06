@@ -320,7 +320,7 @@ class WifiHelper
      *
      * The default state is defined as being an Adhoc MAC layer with an ARF rate control algorithm
      * and both objects using their default attribute values.
-     * By default, configure MAC and PHY for 802.11a.
+     * By default, configure MAC and PHY for 802.11ax.
      */
     WifiHelper();
 
@@ -427,7 +427,7 @@ class WifiHelper
      * WifiMac::ConfigureStandard(standard) being called on each
      * installed MAC object.
      *
-     * The default standard of 802.11a will be applied if SetStandard()
+     * The default standard of 802.11ax will be applied if SetStandard()
      * is not called.
      *
      * Note that WifiMac::ConfigureStandard () will overwrite certain
