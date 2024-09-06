@@ -51,6 +51,14 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (uan) !2127 - Fix bug in energy update in UanPhyGen::RxEndEvent()
 - (uan) !2121 - Wrong Eb/N0 calculation in UanPhyPerCommonModes::CalcPer()
 - (wifi) !2068 - Introduce use of weak type aliases for SI units
+- (wifi) Fix default association manager not properly handling non-AP MLDs not supporting 160 MHz operations
+- (wifi) Fix round robin multi-user scheduler sending Basic/BSRP TFs to EMLSR clients using another link
+- (wifi) Fix round robin multi-user scheduler sending Basic/BSRP TFs when no TID is mapped in the UL direction
+- (wifi) MU scheduler maintains a separate access request timer for each link
+- (wifi) Prevent cases where the TX window is stalled in case the ``BaThreshold`` attribute of the default ack manager is non-zero
+- (wifi) Fix retrieval of buffer status info from QoS Null frames sent in TB PPDUs in the multi-link case
+- (wifi) Avoid repeatedly sending BSRP TF in a TXOP when access is requested by MU scheduler
+- (wifi) Fix Txop Link entity swapping in some specific cases
 
 Release 3.42
 ------------
