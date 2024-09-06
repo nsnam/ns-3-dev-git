@@ -2392,8 +2392,8 @@ class LaplacianRandomVariable : public RandomVariableStream
  * is defined as:
  *
  *   \f[
- *      P(x; \mu, \beta) dx = \frac{1}{\beta} e^{\frac{- \frac{x - \mu}}{\beta}} e^{-e^{\frac{-
- * \frac{x - \mu}}{\beta}}} dx \f]
+ *      P(x; \mu, \beta) dx = \frac{1}{\beta} e^{-(z+ e^{-z})} dx, \quad z = \frac{x - \mu}{\beta}
+ *   \f]
  *
  * where \f$\mu\f$ is the \c Location configurable attribute and \f$\beta\f$
  * is the \c Scale configurable attribute.
