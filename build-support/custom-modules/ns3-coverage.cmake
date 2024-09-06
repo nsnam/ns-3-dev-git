@@ -54,8 +54,10 @@ if(${NS3_COVERAGE})
   else()
     add_custom_target(
       coverage_cobertura
-      COMMAND lcov_cobertura ns3.info --output cobertura.xml --demangle
-      WORKING_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/coverage
+      COMMAND
+        lcov_cobertura ${CMAKE_OUTPUT_DIRECTORY}/coverage/ns3.info --output
+        ${CMAKE_OUTPUT_DIRECTORY}/coverage/cobertura.xml --demangle
+      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
       DEPENDS coverage_gcc
     )
   endif()

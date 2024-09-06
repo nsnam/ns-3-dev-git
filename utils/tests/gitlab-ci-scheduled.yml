@@ -13,10 +13,11 @@
     - pacman-key --init
     - pacman -Syu --noconfirm
       base-devel cmake ninja ccache valgrind
-      python
+      python python-pip python-distutils-extra binutils lcov
       boost gsl gtk3 openmpi
       glibc-debug
       openssh git
+    - pip install lcov_cobertura --break-system-packages
   script:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
@@ -25,7 +26,7 @@
     # missing the flag --disable-python
     - ./ns3 configure -d $MODE -GNinja --enable-examples --enable-tests --enable-mpi --disable-gtk $EXTRA_OPTIONS
     - if [[ "$CI_JOB_STAGE" == "build" ]];
-      then ./ns3 build;
+      then ./ns3 build $TARGET;
       fi
     - if [[ "$CI_JOB_STAGE" == "test" ]] || [[ "$FORCE_TESTS" == "Force" ]];
       then ./test.py -n $VALGRIND_FLAG $FULLNESS;
@@ -234,6 +235,31 @@ weekly-build-test-takes-forever-optimized:
     MODE: optimized
     FULLNESS: "-f TAKES_FOREVER"
     FORCE_TESTS: Force
+  tags:
+    - nsnam
+    - linux
+
+# Code coverage scanning
+weekly-build-coverage:
+  extends: .base-test
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  stage: build
+  needs: ["weekly-slow-jobs"]
+  dependencies: []
+  variables:
+    MODE: debug
+    EXTRA_OPTIONS: "--enable-gcov --disable-asserts --disable-logs"
+    TARGET: coverage_cobertura
+  artifacts:
+    paths:
+     - build/coverage/cobertura.xml
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: build/coverage/cobertura.xml
   tags:
     - nsnam
     - linux
