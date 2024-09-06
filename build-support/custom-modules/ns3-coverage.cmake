@@ -18,6 +18,7 @@ if(${NS3_COVERAGE})
     message(FATAL_ERROR "LCOV is required but it is not installed.")
   endif()
 
+  set(zero_counters)
   if(${NS3_COVERAGE_ZERO_COUNTERS})
     set(zero_counters "--lcov-zerocounters")
   endif()
@@ -32,8 +33,30 @@ if(${NS3_COVERAGE})
   add_custom_target(
     coverage_gcc
     COMMAND lcov -o ns3.info -c --directory ${CMAKE_BINARY_DIR} ${zero_counters}
-    COMMAND genhtml ns3.info
     WORKING_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/coverage
     DEPENDS run_test_py
   )
+
+  add_custom_target(
+    coverage_html
+    COMMAND genhtml ns3.info
+    WORKING_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/coverage
+    DEPENDS coverage_gcc
+  )
+
+  # Convert lcov results to cobertura (compatible with gitlab)
+  check_deps(cobertura_deps EXECUTABLES c++filt PYTHON_PACKAGES lcov_cobertura)
+  if(cobertura_deps)
+    message(
+      WARNING
+        "Code coverage conversion from LCOV to Cobertura requires missing dependencies: ${cobertura_deps}"
+    )
+  else()
+    add_custom_target(
+      coverage_cobertura
+      COMMAND lcov_cobertura ns3.info --output cobertura.xml --demangle
+      WORKING_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/coverage
+      DEPENDS coverage_gcc
+    )
+  endif()
 endif()
