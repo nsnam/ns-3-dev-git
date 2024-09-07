@@ -450,9 +450,21 @@ misplacedWarns=$(                             \
     sed 's/^[ \t]*//;s/[ \t]*$//'             \
     )
 
+# This is to catch LaTeX formula errors.
+# In this case the output is of the form:
+# "error: Problems running latex." followed by
+# "Check your installation or look for typos in _formulas.tex and check _formulas.log!"
+# and
+# "Check your installation or look for typos in _formulas_dark.tex and check _formulas_dark.log!"
+# Hence, the count can be two.
+latexWarns=$(                                 \
+    grep "Problems running latex" "$LOG"    | \
+    wc -l                                   | \
+    sed 's/^[ \t]*//;s/[ \t]*$//'             \
+    )
 
 # Total number of warnings
-warncount=$((modwarncount + addlparam + misplacedWarns))
+warncount=$((modwarncount + addlparam + misplacedWarns + latexWarns))
 
 # List of files appearing in the log
 if [ ! -z "$filter_log_results" ]
@@ -505,7 +517,7 @@ echo
 echo "Report of Doxygen warnings"
 echo "----------------------------------------"
 echo
-echo "(All counts are lower bounds.)"
+echo "(All counts are approximate.)"
 echo
 echo "Warnings by module/directory:"
 echo
@@ -537,6 +549,27 @@ echo "----------------------------------------"
 printf "%6d files with warnings\n" $filecount
 echo
 echo
+if [ $latexWarns -ne 0 ] ; then
+    html_output=`dirname $LOG`
+    if [ $skip_doxy -eq 1 ]; then
+        html_output+="/html"
+    else
+        html_output+="/html-warn"
+    fi
+    echo "----------------------------------------"
+    echo "There are LaTeX warnings, probably math"
+    echo "  Inspect the generated LaTeX input files"
+    echo "  '$html_output/_formulas.tex'"
+    echo "  (and '$html_output/_formulas_dark.tex')."
+    echo "  as well as the LaTeX run log"
+    echo "  '$html_output/_formulas.log'"
+    echo
+    echo "The LaTeX log is:"
+    echo "$(<$html_output/_formulas.log )"
+    echo "----------------------------------------"
+    echo
+    echo
+fi
 echo "Doxygen Warnings Summary"
 echo "----------------------------------------"
 printf "%6d directories\n" $modcount
