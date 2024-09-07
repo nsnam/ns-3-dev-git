@@ -368,6 +368,8 @@ class ConsoleView(Gtk.TextView):
     #  _showReturned function
     ## @var prompt
     #  prompt function
+    ## @var no_input_splitter
+    # no input splitter
 
     """
     Specialized text view for console-like workflow.
