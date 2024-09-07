@@ -98,6 +98,7 @@ class DefaultEmlsrManager : public EmlsrManager
     void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     void NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
                              uint8_t nextLinkId,
+                             Ptr<WifiPhy> auxPhy,
                              Time duration) override;
     void DoNotifyIcfReceived(uint8_t linkId) override;
     void DoNotifyUlTxopStart(uint8_t linkId) override;

@@ -714,6 +714,9 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     NS_ASSERT_MSG(!mainPhy->GetState()->IsStateTx(),
                   "We should not ask the main PHY to switch channel while transmitting");
 
+    // record the aux PHY operating on the link the main PHY is switching to
+    auto auxPhy = GetStaMac()->GetWifiPhy(linkId);
+
     // request the main PHY to switch channel
     const auto delay = mainPhy->GetChannelSwitchDelay();
     const auto pifs = mainPhy->GetSifs() + mainPhy->GetSlot();
@@ -769,7 +772,7 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     }
 
     SetCcaEdThresholdOnLinkSwitch(mainPhy, linkId);
-    NotifyMainPhySwitch(currMainPhyLinkId, linkId, timeToSwitchEnd);
+    NotifyMainPhySwitch(currMainPhyLinkId, linkId, auxPhy, timeToSwitchEnd);
 }
 
 void

@@ -89,9 +89,10 @@ DefaultEmlsrManager::NotifyEmlsrModeChanged()
 void
 DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
                                          uint8_t nextLinkId,
+                                         Ptr<WifiPhy> auxPhy,
                                          Time duration)
 {
-    NS_LOG_FUNCTION(this << (currLinkId ? std::to_string(*currLinkId) : "") << nextLinkId
+    NS_LOG_FUNCTION(this << (currLinkId ? std::to_string(*currLinkId) : "") << nextLinkId << auxPhy
                          << duration.As(Time::US));
 
     // if currLinkId has no value (i.e., the main PHY is not operating on any link), it means that
@@ -117,8 +118,6 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
 
         // schedule Aux PHY switch so that it operates on the link on which the main PHY was
         // operating
-        auto auxPhy = GetStaMac()->GetWifiPhy(nextLinkId);
-
         NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") operating on link " << +nextLinkId
                                  << " will switch to link " << +currLinkId.value() << " in "
                                  << duration.As(Time::US));
@@ -158,7 +157,7 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
     if (nextLinkId != GetMainPhyId())
     {
         // the main PHY is moving to an auxiliary link and the aux PHY does not switch link
-        m_auxPhyToReconnect = GetStaMac()->GetWifiPhy(nextLinkId);
+        m_auxPhyToReconnect = auxPhy;
     }
 }
 

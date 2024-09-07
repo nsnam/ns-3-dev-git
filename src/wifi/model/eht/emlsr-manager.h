@@ -605,10 +605,12 @@ class EmlsrManager : public Object
      *
      * @param currLinkId the ID of the link on which the main PHY is operating (if any)
      * @param nextLinkId the ID of the link on which the main PHY will be operating
+     * @param auxPhy the aux PHY operating on the link on which the main PHY will be operating
      * @param duration the channel switch duration
      */
     virtual void NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
                                      uint8_t nextLinkId,
+                                     Ptr<WifiPhy> auxPhy,
                                      Time duration) = 0;
 
     /**

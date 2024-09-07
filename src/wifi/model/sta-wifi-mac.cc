@@ -2055,7 +2055,14 @@ StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time dela
 
     // connect the PHY to the new link when the channel switch is completed, so that the PHY
     // operating on the new link can possibly continue receiving frames in the meantime.
-    m_emlsrLinkSwitch.emplace(phy->GetPhyId(), Simulator::Schedule(delay, connectPhy));
+    if (delay.IsStrictlyPositive())
+    {
+        m_emlsrLinkSwitch.emplace(phy->GetPhyId(), Simulator::Schedule(delay, connectPhy));
+    }
+    else
+    {
+        connectPhy();
+    }
 }
 
 void
