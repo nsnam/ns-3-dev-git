@@ -166,6 +166,7 @@ packets.  Interference from other wireless technologies is only modeled
 when the SpectrumWifiPhy is used.
 The following details pertain to the physical layer and channel models:
 
+* IBSS/adhoc support is limited
 * 802.11n/ac/ax/be beamforming is not supported
 * 802.11n RIFS is not supported
 * 802.11 PCF/HCF/HCCA are not implemented
@@ -797,6 +798,42 @@ MU-MIMO transmissions, is still supported by the model.
 
 The MAC model
 =============
+
+Adhoc MAC
+#########
+
+Adhoc high-level MAC models an adhoc STA and is the simplest MAC high model since it does
+not require to maintain any association state machine. It corresponds to the IBSS (Independent
+Basic Service Set) mode where STAs communicate directly with each others without the need to
+transmit via an access point.
+
+The default behavior of the ``AdhocWifiMac`` class is not standard compliant but is useful to
+evaluate performance or run tests in absence of management frames being exchanged between peers.
+Unlike what is described in the specifications, the default implementation of ``AdhocWifiMac``
+has the following limitations:
+
+*  it does not generate periodic beacons
+*  it assumes all peers have the same capabilities (and are the same as its capabilities)
+
+However, it is possible to activate periodic beacons generation for adhoc STAs via the
+``BeaconGeneration`` attribute of the ``AdhocWifiMac`` class. If enabled, beacons are generated periodically
+at the interval controlled by the  ``BeaconInterval`` attribute of the same class.
+
+When beacon generation is enabled, the adhoc STA does no longer assume that all peers have
+the same capabilities. The capabilities contained in beacons received from other peers are stored
+and hence can be used prior to a transmission to a given peer. When a packet is enqueued for
+another peer, the remote station manager of the adhoc STA is able to lookup for stored capabilities
+in order to determine the TXVECTOR to use. If the peer to which the packet is enqueued is unknown
+(typically if no beacon from that peer has been received yet), the packet is dropped.
+
+There are known limitations/issues when beaconing is activated for adhoc STAs:
+
+*  all adhoc devices have to enable beaconing
+*  the activation of beacon generation may also cause issues if a peer transmits to another
+   known peer, whereas the transmitting peer is still unknown to that other peer. If both peers
+   are HT capable, the transmitting peer first attempts to establish a Block Ack agreement, whereas
+   the receiving peer requires to know the capabilities of the originator in order to determine
+   the buffer size to use. When that situation occurs, an assert will be hit during the simulation.
 
 Infrastructure association
 ##########################
