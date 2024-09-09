@@ -267,6 +267,41 @@ MakeSimpleAttributeChecker(std::string name, std::string underlying)
 /**
  * @ingroup attributehelper
  *
+ * This is an alternative to ATTRIBUTE_CHECKER_DEFINE(type)
+ * Declare the AttributeChecker class \pname{typeChecker}
+ * and the \c MaketypeChecker function for class \pname{type},
+ * with the addition of a Value class converter.
+ *
+ * @param [in] baseType The underlying type that is being wrapped
+ * @param [in] type The name of the class
+ * @param [in] converterType The name of the converter (value) class
+ *
+ * This macro declares the \pname{typeChecker} class and the associated
+ * \c MaketypeChecker function.
+ *
+ * (Note that the \pname{typeChecker} class needs no implementation
+ * since it just inherits all its implementation from AttributeChecker.)
+ *
+ * Typically invoked in the class header file.
+ */
+#define ATTRIBUTE_CHECKER_WITH_CONVERTER_DEFINE(baseType, type, converterType)                     \
+    class type##Checker : public AttributeChecker                                                  \
+    {                                                                                              \
+        Ptr<AttributeValue> CreateValidValue(const AttributeValue& value) const override           \
+        {                                                                                          \
+            const auto ptr = dynamic_cast<const converterType##Value*>(&value);                    \
+            if (ptr)                                                                               \
+            {                                                                                      \
+                return AttributeChecker::CreateValidValue(type##Value(baseType{ptr->Get()}));      \
+            }                                                                                      \
+            return AttributeChecker::CreateValidValue(value);                                      \
+        }                                                                                          \
+    };                                                                                             \
+    Ptr<const AttributeChecker> Make##type##Checker()
+
+/**
+ * @ingroup attributehelper
+ *
  * Define the class methods belonging to
  * the attribute value class \pname{nameValue}
  * of the underlying class \pname{type}.

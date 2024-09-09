@@ -166,7 +166,7 @@ class AttributeChecker : public SimpleRefCount<AttributeChecker>
      * @param [in] value The AttributeValue to check
      * @return Ptr to a valid value
      */
-    Ptr<AttributeValue> CreateValidValue(const AttributeValue& value) const;
+    virtual Ptr<AttributeValue> CreateValidValue(const AttributeValue& value) const;
     /**
      * @param [in] value A pointer to the value to check
      * @returns true if the input value is both of the right type
