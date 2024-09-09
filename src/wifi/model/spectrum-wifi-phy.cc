@@ -539,6 +539,7 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
         }
     }
 
+    NS_ASSERT_MSG(totalRxPower >= 0.0, "Negative RX power");
     NS_LOG_DEBUG(
         "Total signal power received after antenna gain: "
         << totalRxPower << " W"
