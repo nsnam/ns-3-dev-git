@@ -487,6 +487,12 @@ class Time
      */
     inline static Time FromInteger(uint64_t value, Unit unit)
     {
+        // Optimization: if value is 0, don't process the unit
+        if (value == 0)
+        {
+            return Time();
+        }
+
         Information* info = PeekInformation(unit);
 
         NS_ASSERT_MSG(info->isValid, "Attempted a conversion from an unavailable unit.");
@@ -504,11 +510,23 @@ class Time
 
     inline static Time FromDouble(double value, Unit unit)
     {
+        // Optimization: if value is 0, don't process the unit nor cast to int64x64_t
+        if (value == 0)
+        {
+            return Time();
+        }
+
         return From(int64x64_t(value), unit);
     }
 
     inline static Time From(const int64x64_t& value, Unit unit)
     {
+        // Optimization: if value is 0, don't process the unit
+        if (value == 0)
+        {
+            return Time();
+        }
+
         Information* info = PeekInformation(unit);
 
         NS_ASSERT_MSG(info->isValid, "Attempted a conversion from an unavailable unit.");
@@ -543,6 +561,12 @@ class Time
      */
     inline int64_t ToInteger(Unit unit) const
     {
+        // Optimization: if value is 0, don't process the unit
+        if (m_data == 0)
+        {
+            return 0;
+        }
+
         Information* info = PeekInformation(unit);
 
         NS_ASSERT_MSG(info->isValid, "Attempted a conversion to an unavailable unit.");
@@ -561,11 +585,23 @@ class Time
 
     inline double ToDouble(Unit unit) const
     {
+        // Optimization: if value is 0, don't process the unit nor cast from int64x64_t
+        if (m_data == 0)
+        {
+            return 0;
+        }
+
         return To(unit).GetDouble();
     }
 
     inline int64x64_t To(Unit unit) const
     {
+        // Optimization: if value is 0, don't process the unit
+        if (m_data == 0)
+        {
+            return 0;
+        }
+
         Information* info = PeekInformation(unit);
 
         NS_ASSERT_MSG(info->isValid, "Attempted a conversion to an unavailable unit.");
