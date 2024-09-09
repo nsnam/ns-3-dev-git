@@ -3533,7 +3533,7 @@ TestUlOfdmaPhyTransmission::CheckNonOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
 {
     auto event = phy->GetCurrentEvent();
     NS_ASSERT(event);
-    auto rxPower = event->GetRxPowerW(band);
+    auto rxPower = event->GetRxPower(band);
     NS_LOG_FUNCTION(this << band << expectedRxPower << rxPower);
     // Since there is out of band emission due to spectrum mask, the tolerance cannot be very low
     NS_TEST_ASSERT_MSG_EQ_TOL(rxPower,

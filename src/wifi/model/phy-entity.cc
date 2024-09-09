@@ -828,8 +828,8 @@ PhyEntity::GetReceptionStatus(Ptr<WifiMpdu> mpdu,
     // Receive error model is optional, if we have an error model and
     // it indicates that the packet is corrupt, drop the packet.
     SignalNoiseDbm signalNoise;
-    signalNoise.signal = WToDbm(event->GetRxPowerW(channelWidthAndBand.second));
-    signalNoise.noise = WToDbm(event->GetRxPowerW(channelWidthAndBand.second) / snrPer.snr);
+    signalNoise.signal = WToDbm(event->GetRxPower(channelWidthAndBand.second));
+    signalNoise.noise = WToDbm(event->GetRxPower(channelWidthAndBand.second) / snrPer.snr);
     if (GetRandomValue() > snrPer.per &&
         !(m_wifiPhy->m_postReceptionErrorModel &&
           m_wifiPhy->m_postReceptionErrorModel->IsCorrupt(mpdu->GetPacket()->Copy())))
@@ -967,7 +967,7 @@ void
 PhyEntity::StartPreambleDetectionPeriod(Ptr<Event> event)
 {
     NS_LOG_FUNCTION(this << *event);
-    const auto rxPower = GetRxPowerWForPpdu(event);
+    const auto rxPower = GetRxPowerForPpdu(event);
     NS_LOG_DEBUG("Sync to signal (power=" << (rxPower > 0.0
                                                   ? std::to_string(WToDbm(rxPower)) + "dBm)"
                                                   : std::to_string(rxPower) + "W)"));
@@ -998,7 +998,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
     NS_ASSERT(!m_wifiPhy->m_currentPreambleEvents.empty());
     for (auto preambleEvent : m_wifiPhy->m_currentPreambleEvents)
     {
-        const auto rxPower = preambleEvent.second->GetRxPowerW(measurementBand);
+        const auto rxPower = preambleEvent.second->GetRxPower(measurementBand);
         if (!maxRxPower || (rxPower > *maxRxPower))
         {
             maxRxPower = rxPower;
@@ -1035,7 +1035,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
                                                              measurementBand);
     NS_LOG_DEBUG("SNR(dB)=" << RatioToDb(snr) << " at end of preamble detection period");
 
-    if (const auto power = m_wifiPhy->m_currentEvent->GetRxPowerW(measurementBand);
+    if (const auto power = m_wifiPhy->m_currentEvent->GetRxPower(measurementBand);
         (!m_wifiPhy->m_preambleDetectionModel && maxRxPower && (*maxRxPower > 0.0)) ||
         (m_wifiPhy->m_preambleDetectionModel && power > 0.0 &&
          m_wifiPhy->m_preambleDetectionModel->IsPreambleDetected(WToDbm(power),
@@ -1084,7 +1084,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
         m_wifiPhy->m_interference->NotifyRxStart(m_wifiPhy->GetCurrentFrequencyRange());
 
         m_wifiPhy->NotifyRxBegin(GetAddressedPsduInPpdu(m_wifiPhy->m_currentEvent->GetPpdu()),
-                                 m_wifiPhy->m_currentEvent->GetRxPowerWPerBand());
+                                 m_wifiPhy->m_currentEvent->GetRxPowerPerBand());
         m_wifiPhy->m_timeLastPreambleDetected = Simulator::Now();
 
         // Continue receiving preamble
@@ -1226,9 +1226,9 @@ PhyEntity::GetRandomValue() const
 }
 
 Watt_u
-PhyEntity::GetRxPowerWForPpdu(Ptr<Event> event) const
+PhyEntity::GetRxPowerForPpdu(Ptr<Event> event) const
 {
-    return event->GetRxPowerW(GetPrimaryBand(GetMeasurementChannelWidth(event->GetPpdu())));
+    return event->GetRxPower(GetPrimaryBand(GetMeasurementChannelWidth(event->GetPpdu())));
 }
 
 Ptr<const Event>

@@ -67,20 +67,20 @@ class Event : public SimpleRefCount<Event>
      *
      * \return the total received power
      */
-    Watt_u GetRxPowerW() const;
+    Watt_u GetRxPower() const;
     /**
      * Return the received power for a given band.
      *
      * \param band the band for which the power should be returned
      * \return the received power for a given band
      */
-    Watt_u GetRxPowerW(const WifiSpectrumBandInfo& band) const;
+    Watt_u GetRxPower(const WifiSpectrumBandInfo& band) const;
     /**
      * Return the received power (W) for all bands.
      *
      * \return the received power (W) for all bands.
      */
-    const RxPowerWattPerChannelBand& GetRxPowerWPerBand() const;
+    const RxPowerWattPerChannelBand& GetRxPowerPerBand() const;
     /**
      * Update the received power (W) for all bands, i.e. add up the received power
      * to the current received power, for each band.

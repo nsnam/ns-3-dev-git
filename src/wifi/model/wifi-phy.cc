@@ -711,7 +711,7 @@ WifiPhy::SetWifiRadioEnergyModel(const Ptr<WifiRadioEnergyModel> wifiRadioEnergy
 }
 
 dBm_u
-WifiPhy::GetPowerDbm(uint8_t powerLevel) const
+WifiPhy::GetPower(uint8_t powerLevel) const
 {
     NS_ASSERT(m_txPowerBase <= m_txPowerEnd);
     NS_ASSERT(m_nTxPower > 0);
@@ -1894,7 +1894,7 @@ WifiPhy::Send(const WifiConstPsduMap& psdus, const WifiTxVector& txVector)
     {
         NotifyMonitorSniffTx(psdu.second, GetFrequency(), txVector, psdu.first);
     }
-    m_state->SwitchToTx(txDuration, psdus, GetPowerDbm(txVector.GetTxPowerLevel()), txVector);
+    m_state->SwitchToTx(txDuration, psdus, GetPower(txVector.GetTxPowerLevel()), txVector);
 
     if (m_wifiRadioEnergyModel &&
         m_wifiRadioEnergyModel->GetMaximumTimeInState(WifiPhyState::TX) < txDuration)
@@ -2292,17 +2292,17 @@ WifiPhy::GetTxPowerForTransmission(Ptr<const WifiPpdu> ppdu) const
     dBm_u txPower;
     if (!m_powerRestricted)
     {
-        txPower = GetPowerDbm(txVector.GetTxPowerLevel());
+        txPower = GetPower(txVector.GetTxPowerLevel());
     }
     else
     {
         if (txVector.GetNssMax() > 1 || txVector.GetNssTotal() > 1)
         {
-            txPower = std::min(m_txPowerMaxMimo, GetPowerDbm(txVector.GetTxPowerLevel()));
+            txPower = std::min(m_txPowerMaxMimo, GetPower(txVector.GetTxPowerLevel()));
         }
         else
         {
-            txPower = std::min(m_txPowerMaxSiso, GetPowerDbm(txVector.GetTxPowerLevel()));
+            txPower = std::min(m_txPowerMaxSiso, GetPower(txVector.GetTxPowerLevel()));
         }
     }
 

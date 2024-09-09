@@ -1504,7 +1504,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
             powerLevel = numPowerLevels; // capping will trigger warning below
         }
     }
-    if (reqTxPower > m_phy->GetPowerDbm(powerLevel))
+    if (reqTxPower > m_phy->GetPower(powerLevel))
     {
         NS_LOG_WARN("The requested power level (" << reqTxPower << "dBm) cannot be satisfied (max: "
                                                   << m_phy->GetTxPowerEnd() << "dBm)");
@@ -1512,8 +1512,8 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
     v.SetTxPowerLevel(powerLevel);
     NS_LOG_LOGIC("UL power control: "
                  << "input {pathLoss=" << pathLossDb << "dB, reqTxPower=" << reqTxPower << "dBm}"
-                 << " output {powerLevel=" << +powerLevel << " -> "
-                 << m_phy->GetPowerDbm(powerLevel) << "dBm}"
+                 << " output {powerLevel=" << +powerLevel << " -> " << m_phy->GetPower(powerLevel)
+                 << "dBm}"
                  << " PHY power capa {min=" << m_phy->GetTxPowerStart() << "dBm, max="
                  << m_phy->GetTxPowerEnd() << "dBm, levels:" << +numPowerLevels << "}");
 
@@ -1533,7 +1533,7 @@ HeFrameExchangeManager::SetTargetRssi(CtrlTriggerHeader& trigger) const
     NS_ASSERT(m_apMac);
 
     trigger.SetApTxPower(static_cast<int8_t>(
-        m_phy->GetPowerDbm(GetWifiRemoteStationManager()->GetDefaultTxPowerLevel())));
+        m_phy->GetPower(GetWifiRemoteStationManager()->GetDefaultTxPowerLevel())));
     for (auto& userInfo : trigger)
     {
         const auto staList = m_apMac->GetStaList(m_linkId);

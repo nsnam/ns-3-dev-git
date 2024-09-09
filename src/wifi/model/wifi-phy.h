@@ -1094,7 +1094,7 @@ class WifiPhy : public Object
      *
      * \return the transmission power at the given power level
      */
-    dBm_u GetPowerDbm(uint8_t powerLevel) const;
+    dBm_u GetPower(uint8_t powerLevel) const;
 
     /**
      * Reset PHY to IDLE, with some potential TX power restrictions for the next transmission.

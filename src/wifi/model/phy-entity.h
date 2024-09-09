@@ -773,7 +773,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * \param event the event holding incoming PPDU's information
      * \return the received power for the event over a given band
      */
-    Watt_u GetRxPowerWForPpdu(Ptr<Event> event) const;
+    Watt_u GetRxPowerForPpdu(Ptr<Event> event) const;
     /**
      * Get the pointer to the current event (stored in WifiPhy).
      * Wrapper used by child classes.

@@ -68,7 +68,7 @@ bool
 SimpleFrameCaptureModel::CaptureNewFrame(Ptr<Event> currentEvent, Ptr<Event> newEvent) const
 {
     NS_LOG_FUNCTION(this);
-    return WToDbm(currentEvent->GetRxPowerW()) + GetMargin() < WToDbm(newEvent->GetRxPowerW()) &&
+    return WToDbm(currentEvent->GetRxPower()) + GetMargin() < WToDbm(newEvent->GetRxPower()) &&
            IsInCaptureWindow(currentEvent->GetStartTime());
 }
 

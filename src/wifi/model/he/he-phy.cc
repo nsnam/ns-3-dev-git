@@ -603,7 +603,7 @@ HePhy::ProcessSigA(Ptr<Event> event, PhyFieldRxStatus status)
     // Notify end of SIG-A (in all cases)
     const auto& txVector = event->GetPpdu()->GetTxVector();
     HeSigAParameters params{
-        .rssi = WToDbm(GetRxPowerWForPpdu(event)),
+        .rssi = WToDbm(GetRxPowerForPpdu(event)),
         .bssColor = txVector.GetBssColor(),
     };
     NotifyEndOfHeSigA(params); // if OBSS_PD CCA_RESET, set power restriction first and wait till
@@ -925,7 +925,7 @@ HePhy::StartReceiveMuPayload(Ptr<Event> event)
 {
     NS_LOG_FUNCTION(this << event);
     Ptr<const WifiPpdu> ppdu = event->GetPpdu();
-    const RxPowerWattPerChannelBand& rxPowersW = event->GetRxPowerWPerBand();
+    const RxPowerWattPerChannelBand& rxPowersW = event->GetRxPowerPerBand();
     // The total RX power corresponds to the maximum over all the bands.
     // Only perform this computation if the result needs to be logged.
     auto it = rxPowersW.end();
