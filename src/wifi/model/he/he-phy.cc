@@ -1473,14 +1473,14 @@ HePhy::StartTx(Ptr<const WifiPpdu> ppdu)
     }
     if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU || ppdu->GetType() == WIFI_PPDU_TYPE_DL_MU)
     {
-        auto nonHeTxPowerDbm = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
+        dBm_u nonHeTxPower = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
 
         // temporarily set WifiPpdu flag to PSD_HE_PORTION for correct calculation of TX power for
         // the HE portion
         auto hePpdu = DynamicCast<const HePpdu>(ppdu);
         NS_ASSERT(hePpdu);
         hePpdu->SetTxPsdFlag(HePpdu::PSD_HE_PORTION);
-        auto heTxPowerDbm = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
+        dBm_u heTxPower = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
         hePpdu->SetTxPsdFlag(HePpdu::PSD_NON_HE_PORTION);
 
         // non-HE portion
@@ -1488,22 +1488,22 @@ HePhy::StartTx(Ptr<const WifiPpdu> ppdu)
                                         ? CalculateNonHeDurationForHeTb(txVector)
                                         : CalculateNonHeDurationForHeMu(txVector);
         auto nonHeTxPowerSpectrum =
-            GetTxPowerSpectralDensity(DbmToW(nonHeTxPowerDbm), ppdu, HePpdu::PSD_NON_HE_PORTION);
+            GetTxPowerSpectralDensity(DbmToW(nonHeTxPower), ppdu, HePpdu::PSD_NON_HE_PORTION);
         Transmit(nonHePortionDuration,
                  ppdu,
-                 nonHeTxPowerDbm,
+                 nonHeTxPower,
                  nonHeTxPowerSpectrum,
                  "non-HE portion transmission");
 
         // HE portion
         auto hePortionDuration = ppdu->GetTxDuration() - nonHePortionDuration;
         auto heTxPowerSpectrum =
-            GetTxPowerSpectralDensity(DbmToW(heTxPowerDbm), ppdu, HePpdu::PSD_HE_PORTION);
+            GetTxPowerSpectralDensity(DbmToW(heTxPower), ppdu, HePpdu::PSD_HE_PORTION);
         Simulator::Schedule(nonHePortionDuration,
                             &HePhy::StartTxHePortion,
                             this,
                             ppdu,
-                            heTxPowerDbm,
+                            heTxPower,
                             heTxPowerSpectrum,
                             hePortionDuration);
     }
