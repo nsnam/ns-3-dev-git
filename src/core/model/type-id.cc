@@ -74,6 +74,13 @@ class IidManager : public Singleton<IidManager>
      */
     uint16_t AllocateUid(std::string name);
     /**
+     * Add a deprecated name for the type id.  Use of this name raises
+     * a runtime warning, and only one deprecated name is supported.
+     * \param [in] uid The id.
+     * \param [in] name The deprecated name.
+     */
+    void AddDeprecatedName(uint16_t uid, const std::string& name);
+    /**
      * Set the parent of a type id.
      * \param [in] uid The id.
      * \param [in] parent The id of the parent.
@@ -120,6 +127,12 @@ class IidManager : public Singleton<IidManager>
      * \returns The name of the type id.
      */
     std::string GetName(uint16_t uid) const;
+    /**
+     * Get the deprecated name of a type id.
+     * \param [in] uid The id.
+     * \returns The name of the type id.
+     */
+    std::string GetDeprecatedName(uint16_t uid) const;
     /**
      * Get the hash of a type id.
      * \param [in] uid The id.
@@ -286,6 +299,8 @@ class IidManager : public Singleton<IidManager>
     {
         /** The type id name. */
         std::string name;
+        /** A deprecated type id name. */
+        std::string deprecatedName;
         /** The type id hash value. */
         TypeId::hash_t hash;
         /** The parent type id. */
@@ -416,7 +431,7 @@ IidManager::AllocateUid(std::string name)
             uint16_t oldUid = GetUid(hinfo->hash);
             m_hashmap.erase(m_hashmap.find(hinfo->hash));
             hinfo->hash = hash | HashChainFlag;
-            m_hashmap.insert(std::make_pair(hinfo->hash, oldUid));
+            m_hashmap.insert({hinfo->hash, oldUid});
             // leave new hash unchained
         }
     }
@@ -436,8 +451,8 @@ IidManager::AllocateUid(std::string name)
     auto uid = static_cast<uint16_t>(tuid);
 
     // Add to both maps:
-    m_namemap.insert(std::make_pair(name, uid));
-    m_hashmap.insert(std::make_pair(hash, uid));
+    m_namemap.insert({name, uid});
+    m_hashmap.insert({hash, uid});
     NS_LOG_LOGIC(IIDL << uid);
     return uid;
 }
@@ -450,6 +465,19 @@ IidManager::LookupInformation(uint16_t uid) const
                   "The uid " << uid << " for this TypeId is invalid");
     NS_LOG_LOGIC(IIDL << m_information[uid - 1].name);
     return const_cast<IidInformation*>(&m_information[uid - 1]);
+}
+
+void
+IidManager::AddDeprecatedName(uint16_t uid, const std::string& name)
+{
+    NS_LOG_FUNCTION(IID << uid << name);
+    IidInformation* info = LookupInformation(uid);
+    NS_ASSERT_MSG(info->deprecatedName.empty(),
+                  "Deprecated name already added: " << info->deprecatedName);
+    const auto [it, success] = m_namemap.insert({name, uid});
+    NS_ASSERT_MSG(success,
+                  "Deprecated name " << name << " insertion failed (possibly a duplicate?)");
+    info->deprecatedName = name;
 }
 
 void
@@ -533,6 +561,15 @@ IidManager::GetName(uint16_t uid) const
     IidInformation* information = LookupInformation(uid);
     NS_LOG_LOGIC(IIDL << information->name);
     return information->name;
+}
+
+std::string
+IidManager::GetDeprecatedName(uint16_t uid) const
+{
+    NS_LOG_FUNCTION(IID << uid);
+    IidInformation* information = LookupInformation(uid);
+    NS_LOG_LOGIC(IIDL << information->deprecatedName);
+    return information->deprecatedName;
 }
 
 TypeId::hash_t
@@ -822,11 +859,26 @@ TypeId::TypeId(uint16_t tid)
 }
 
 TypeId
+TypeId::AddDeprecatedName(const std::string& name)
+{
+    NS_LOG_FUNCTION(this << name);
+    IidManager::Get()->AddDeprecatedName(m_tid, name);
+    NS_LOG_INFO("Set deprecated name " << name << " for TypeId "
+                                       << IidManager::Get()->GetName(m_tid));
+    return *this;
+}
+
+TypeId
 TypeId::LookupByName(std::string name)
 {
     NS_LOG_FUNCTION(name);
     uint16_t uid = IidManager::Get()->GetUid(name);
-    NS_ASSERT_MSG(uid != 0, "Assert in TypeId::LookupByName: " << name << " not found");
+    NS_ASSERT_MSG(uid, "Assert in TypeId::LookupByName: " << name << " not found");
+    if (IidManager::Get()->GetDeprecatedName(uid) == name)
+    {
+        std::cerr << "Deprecation warning for name " << name << "; use "
+                  << IidManager::Get()->GetName(uid) << " instead" << std::endl;
+    }
     return TypeId(uid);
 }
 
@@ -840,6 +892,11 @@ TypeId::LookupByNameFailSafe(std::string name, TypeId* tid)
         return false;
     }
     *tid = TypeId(uid);
+    if (IidManager::Get()->GetDeprecatedName(uid) == name)
+    {
+        std::cerr << "Deprecation warning for name " << name << "; use "
+                  << IidManager::Get()->GetName(uid) << " instead" << std::endl;
+    }
     return true;
 }
 

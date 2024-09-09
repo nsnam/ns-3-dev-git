@@ -172,6 +172,20 @@ class TypeId
     explicit TypeId(const std::string& name);
 
     /**
+     * Add an deprecated name for a TypeId.
+     *
+     * \param [in] name The deprecated name.
+     * \return This TypeId instance.
+     *
+     * To allow for deprecations (such as moving a TypeId into a namespace
+     * but wishing to preserve the original string from namespace ns3),
+     * one additional deprecated name can be registered for a TypeId.  This
+     * deprecated name is not retrievable by GetName().  A runtime warning is
+     * generated if the name is used, and only one deprecated name is supported.
+     */
+    TypeId AddDeprecatedName(const std::string& name);
+
+    /**
      * Get the parent of this TypeId.
      *
      * \returns The parent of this TypeId

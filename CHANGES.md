@@ -39,6 +39,8 @@ Changes from ns-3.42 to ns-3-dev
 * (lr-wpan) Attribute `pCurrentPage` added to the supported attributes in `MacPibAttributes`.
 * (wifi) Attribute `ChannelSettings` has been changed to allow configuration of non-contiguous operating channels by specifying each 80 MHz segment. It has changed from TupleValue to AttributeContainerValue, but the configuration of contiguous channels using a StringValue still works as before.
 * (lr-wpan) Documentation was extended and reformatted.
+* (core) Add `AddDeprecatedName` to TypeId. This allows for TypeIds to transition to name TypeIds that use namespaces while still supporting the old name.
+* (energy) Energy module TypeId now uses the name that includes the namespace `ns3::energy`, the old name is now deprecated.
 
 ### Changes to build system
 

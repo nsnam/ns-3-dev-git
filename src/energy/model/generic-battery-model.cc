@@ -32,6 +32,7 @@ GenericBatteryModel::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::energy::GenericBatteryModel")
+            .AddDeprecatedName("ns3::GenericBatteryModel")
             .SetParent<EnergySource>()
             .SetGroupName("Energy")
             .AddConstructor<GenericBatteryModel>()

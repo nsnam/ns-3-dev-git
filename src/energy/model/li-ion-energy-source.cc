@@ -29,6 +29,7 @@ LiIonEnergySource::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::energy::LiIonEnergySource")
+            .AddDeprecatedName("ns3::LiIonEnergySource")
             .SetParent<EnergySource>()
             .SetGroupName("Energy")
             .AddConstructor<LiIonEnergySource>()

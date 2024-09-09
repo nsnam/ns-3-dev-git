@@ -21,8 +21,10 @@ NS_OBJECT_ENSURE_REGISTERED(DeviceEnergyModel);
 TypeId
 DeviceEnergyModel::GetTypeId()
 {
-    static TypeId tid =
-        TypeId("ns3::energy::DeviceEnergyModel").SetParent<Object>().SetGroupName("Energy");
+    static TypeId tid = TypeId("ns3::energy::DeviceEnergyModel")
+                            .AddDeprecatedName("ns3::DeviceEnergyModel")
+                            .SetParent<Object>()
+                            .SetGroupName("Energy");
     return tid;
 }
 

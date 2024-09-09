@@ -38,6 +38,8 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (core) !1904 - Added support for Laplacian and Largest Extreme Value random variables (`LaplacianRandomVariable`, `LargestExtremeValueRandomVariable`)
 - (wifi) - Added support for 80+80 MHz
 - (lr-wpan) !2123 - CCA vulnerability window test and doc
+- (core) !2018 - `AddDeprecatedName` is now supported in TypeId.
+- (energy) !2018 - Energy module now uses the `ns3::energy` namespace in its TypeId.
 
 ### Bugs fixed
 
