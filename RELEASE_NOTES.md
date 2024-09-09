@@ -50,6 +50,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (uan) !2088 - Fix PER calculation of M-QAM
 - (uan) !2127 - Fix bug in energy update in UanPhyGen::RxEndEvent()
 - (uan) !2121 - Wrong Eb/N0 calculation in UanPhyPerCommonModes::CalcPer()
+- (wifi) !2068 - Introduce use of weak type aliases for SI units
 
 Release 3.42
 ------------
