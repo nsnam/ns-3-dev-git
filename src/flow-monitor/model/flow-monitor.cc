@@ -434,12 +434,12 @@ FlowMonitor::SerializeToXmlStream(std::ostream& os,
     indent += 2;
     os << std::string(indent, ' ') << "<FlowStats>\n";
     indent += 2;
-    for (auto flowI = m_flowStats.begin(); flowI != m_flowStats.end(); flowI++)
+    for (const auto& [flowId, flowStats] : m_flowStats)
     {
         os << std::string(indent, ' ');
-#define ATTRIB(name) " " #name "=\"" << flowI->second.name << "\""
-#define ATTRIB_TIME(name) " " #name "=\"" << flowI->second.name.As(Time::NS) << "\""
-        os << "<Flow flowId=\"" << flowI->first << "\"" << ATTRIB_TIME(timeFirstTxPacket)
+#define ATTRIB(name) " " #name "=\"" << flowStats.name << "\""
+#define ATTRIB_TIME(name) " " #name "=\"" << flowStats.name.As(Time::NS) << "\""
+        os << "<Flow flowId=\"" << flowId << "\"" << ATTRIB_TIME(timeFirstTxPacket)
            << ATTRIB_TIME(timeFirstRxPacket) << ATTRIB_TIME(timeLastTxPacket)
            << ATTRIB_TIME(timeLastRxPacket) << ATTRIB_TIME(delaySum) << ATTRIB_TIME(jitterSum)
            << ATTRIB_TIME(lastDelay) << ATTRIB_TIME(maxDelay) << ATTRIB_TIME(minDelay)
@@ -449,30 +449,26 @@ FlowMonitor::SerializeToXmlStream(std::ostream& os,
 #undef ATTRIB
 
         indent += 2;
-        for (uint32_t reasonCode = 0; reasonCode < flowI->second.packetsDropped.size();
-             reasonCode++)
+        for (uint32_t reasonCode = 0; reasonCode < flowStats.packetsDropped.size(); reasonCode++)
         {
             os << std::string(indent, ' ');
             os << "<packetsDropped reasonCode=\"" << reasonCode << "\""
-               << " number=\"" << flowI->second.packetsDropped[reasonCode] << "\" />\n";
+               << " number=\"" << flowStats.packetsDropped[reasonCode] << "\" />\n";
         }
-        for (uint32_t reasonCode = 0; reasonCode < flowI->second.bytesDropped.size(); reasonCode++)
+        for (uint32_t reasonCode = 0; reasonCode < flowStats.bytesDropped.size(); reasonCode++)
         {
             os << std::string(indent, ' ');
             os << "<bytesDropped reasonCode=\"" << reasonCode << "\""
-               << " bytes=\"" << flowI->second.bytesDropped[reasonCode] << "\" />\n";
+               << " bytes=\"" << flowStats.bytesDropped[reasonCode] << "\" />\n";
         }
         if (enableHistograms)
         {
-            flowI->second.delayHistogram.SerializeToXmlStream(os, indent, "delayHistogram");
-            flowI->second.jitterHistogram.SerializeToXmlStream(os, indent, "jitterHistogram");
-            flowI->second.packetSizeHistogram.SerializeToXmlStream(os,
-                                                                   indent,
-                                                                   "packetSizeHistogram");
-            flowI->second.flowInterruptionsHistogram.SerializeToXmlStream(
-                os,
-                indent,
-                "flowInterruptionsHistogram");
+            flowStats.delayHistogram.SerializeToXmlStream(os, indent, "delayHistogram");
+            flowStats.jitterHistogram.SerializeToXmlStream(os, indent, "jitterHistogram");
+            flowStats.packetSizeHistogram.SerializeToXmlStream(os, indent, "packetSizeHistogram");
+            flowStats.flowInterruptionsHistogram.SerializeToXmlStream(os,
+                                                                      indent,
+                                                                      "flowInterruptionsHistogram");
         }
         indent -= 2;
 
