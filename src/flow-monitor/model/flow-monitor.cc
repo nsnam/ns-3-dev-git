@@ -439,12 +439,24 @@ FlowMonitor::SerializeToXmlStream(std::ostream& os,
         os << std::string(indent, ' ');
 #define ATTRIB(name) " " #name "=\"" << flowStats.name << "\""
 #define ATTRIB_TIME(name) " " #name "=\"" << flowStats.name.As(Time::NS) << "\""
-        os << "<Flow flowId=\"" << flowId << "\"" << ATTRIB_TIME(timeFirstTxPacket)
-           << ATTRIB_TIME(timeFirstRxPacket) << ATTRIB_TIME(timeLastTxPacket)
-           << ATTRIB_TIME(timeLastRxPacket) << ATTRIB_TIME(delaySum) << ATTRIB_TIME(jitterSum)
-           << ATTRIB_TIME(lastDelay) << ATTRIB_TIME(maxDelay) << ATTRIB_TIME(minDelay)
-           << ATTRIB(txBytes) << ATTRIB(rxBytes) << ATTRIB(txPackets) << ATTRIB(rxPackets)
-           << ATTRIB(lostPackets) << ATTRIB(timesForwarded) << ">\n";
+        os << "<Flow";
+        os << " flowId=\"" << flowId << "\"";
+        os << ATTRIB_TIME(timeFirstTxPacket);
+        os << ATTRIB_TIME(timeFirstRxPacket);
+        os << ATTRIB_TIME(timeLastTxPacket);
+        os << ATTRIB_TIME(timeLastRxPacket);
+        os << ATTRIB_TIME(delaySum);
+        os << ATTRIB_TIME(jitterSum);
+        os << ATTRIB_TIME(lastDelay);
+        os << ATTRIB_TIME(maxDelay);
+        os << ATTRIB_TIME(minDelay);
+        os << ATTRIB(txBytes);
+        os << ATTRIB(rxBytes);
+        os << ATTRIB(txPackets);
+        os << ATTRIB(rxPackets);
+        os << ATTRIB(lostPackets);
+        os << ATTRIB(timesForwarded);
+        os << ">\n";
 #undef ATTRIB_TIME
 #undef ATTRIB
 
