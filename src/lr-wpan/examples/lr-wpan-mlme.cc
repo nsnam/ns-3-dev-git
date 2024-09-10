@@ -87,28 +87,19 @@ main(int argc, char* argv[])
     LrWpanHelper lrWpanHelper;
 
     // Create 2 nodes, and a NetDevice for each one
-    Ptr<Node> n0 = CreateObject<Node>();
-    Ptr<Node> n1 = CreateObject<Node>();
 
-    Ptr<LrWpanNetDevice> dev0 = CreateObject<LrWpanNetDevice>();
-    Ptr<LrWpanNetDevice> dev1 = CreateObject<LrWpanNetDevice>();
+    NodeContainer nodes;
+    nodes.Create(2);
+
+    // Use LrWpanHelper to create devices and assign them to nodes
+    lrWpanHelper.SetPropagationDelayModel("ns3::ConstantSpeedPropagationDelayModel");
+    lrWpanHelper.AddPropagationLossModel("ns3::LogDistancePropagationLossModel");
+    NetDeviceContainer devices = lrWpanHelper.Install(nodes);
+    Ptr<LrWpanNetDevice> dev0 = devices.Get(0)->GetObject<LrWpanNetDevice>();
+    Ptr<LrWpanNetDevice> dev1 = devices.Get(1)->GetObject<LrWpanNetDevice>();
 
     dev0->SetAddress(Mac16Address("00:01"));
     dev1->SetAddress(Mac16Address("00:02"));
-
-    Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel>();
-    Ptr<LogDistancePropagationLossModel> propModel =
-        CreateObject<LogDistancePropagationLossModel>();
-    Ptr<ConstantSpeedPropagationDelayModel> delayModel =
-        CreateObject<ConstantSpeedPropagationDelayModel>();
-    channel->AddPropagationLossModel(propModel);
-    channel->SetPropagationDelayModel(delayModel);
-
-    dev0->SetChannel(channel);
-    dev1->SetChannel(channel);
-
-    n0->AddDevice(dev0);
-    n1->AddDevice(dev1);
 
     ///////////////// Mobility   ///////////////////////
     Ptr<ConstantPositionMobilityModel> sender0Mobility =

@@ -67,6 +67,8 @@ main(int argc, char** argv)
     mobility.Install(wsnNodes);
 
     LrWpanHelper lrWpanHelper;
+    lrWpanHelper.SetPropagationDelayModel("ns3::ConstantSpeedPropagationDelayModel");
+    lrWpanHelper.AddPropagationLossModel("ns3::LogDistancePropagationLossModel");
     // Add and install the LrWpanNetDevice for each node
     NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(wsnNodes);
 

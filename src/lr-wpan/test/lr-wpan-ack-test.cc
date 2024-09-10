@@ -181,11 +181,13 @@ LrWpanAckTestCase::DoRun()
     std::string asciiPrefix;
 
     // Create 2 nodes, and a NetDevice for each one
-    Ptr<Node> n0 = CreateObject<Node>();
-    Ptr<Node> n1 = CreateObject<Node>();
-
-    m_dev0 = CreateObject<LrWpanNetDevice>();
-    m_dev1 = CreateObject<LrWpanNetDevice>();
+    NodeContainer nodes;
+    nodes.Create(2);
+    helper.SetPropagationDelayModel("ns3::ConstantSpeedPropagationDelayModel");
+    helper.AddPropagationLossModel("ns3::LogDistancePropagationLossModel");
+    NetDeviceContainer devices = helper.Install(nodes);
+    m_dev0 = devices.Get(0)->GetObject<LrWpanNetDevice>();
+    m_dev1 = devices.Get(1)->GetObject<LrWpanNetDevice>();
 
     // Make random variable stream assignment deterministic
     m_dev0->AssignStreams(0);
@@ -197,22 +199,6 @@ LrWpanAckTestCase::DoRun()
     // Add extended addresses.
     m_dev0->GetMac()->SetExtendedAddress(Mac64Address("00:00:00:00:00:00:00:01"));
     m_dev1->GetMac()->SetExtendedAddress(Mac64Address("00:00:00:00:00:00:00:02"));
-
-    // Each device must be attached to the same channel
-    Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel>();
-    Ptr<LogDistancePropagationLossModel> propModel =
-        CreateObject<LogDistancePropagationLossModel>();
-    Ptr<ConstantSpeedPropagationDelayModel> delayModel =
-        CreateObject<ConstantSpeedPropagationDelayModel>();
-    channel->AddPropagationLossModel(propModel);
-    channel->SetPropagationDelayModel(delayModel);
-
-    m_dev0->SetChannel(channel);
-    m_dev1->SetChannel(channel);
-
-    // To complete configuration, a LrWpanNetDevice must be added to a node
-    n0->AddDevice(m_dev0);
-    n1->AddDevice(m_dev1);
 
     Ptr<ConstantPositionMobilityModel> sender0Mobility =
         CreateObject<ConstantPositionMobilityModel>();

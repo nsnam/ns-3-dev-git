@@ -39,23 +39,14 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
 {
   public:
     /**
-     * \brief Create a LrWpan helper in an empty state.  By default, a
-     * SingleModelSpectrumChannel is created, with a
-     * LogDistancePropagationLossModel and a ConstantSpeedPropagationDelayModel.
-     *
-     * To change the channel type, loss model, or delay model, the Get/Set
-     * Channel methods may be used.
+     * \brief Create a LrWpan helper in an empty state.
      */
     LrWpanHelper();
 
     /**
-     * \brief Create a LrWpan helper in an empty state with either a
-     * SingleModelSpectrumChannel or a MultiModelSpectrumChannel.
+     * \brief Create a LrWpan helper in an empty state.
      * \param useMultiModelSpectrumChannel use a MultiModelSpectrumChannel if true, a
      * SingleModelSpectrumChannel otherwise
-     *
-     * A LogDistancePropagationLossModel and a
-     * ConstantSpeedPropagationDelayModel are added to the channel.
      */
     LrWpanHelper(bool useMultiModelSpectrumChannel);
 
@@ -84,6 +75,26 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
     void SetChannel(std::string channelName);
 
     /**
+     * \tparam Ts \deduced Argument types
+     * \param name the name of the model to set
+     * \param [in] args Name and AttributeValue pairs to set.
+     *
+     * Add a propagation loss model to the set of currently-configured loss models.
+     */
+    template <typename... Ts>
+    void AddPropagationLossModel(std::string name, Ts&&... args);
+
+    /**
+     * \tparam Ts \deduced Argument types
+     * \param name the name of the model to set
+     * \param [in] args Name and AttributeValue pairs to set.
+     *
+     * Configure a propagation delay for this channel.
+     */
+    template <typename... Ts>
+    void SetPropagationDelayModel(std::string name, Ts&&... args);
+
+    /**
      * \brief Add mobility model to a physical device
      * \param phy the physical device
      * \param m the mobility model
@@ -92,6 +103,16 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
 
     /**
      * \brief Install a LrWpanNetDevice and the associated structures (e.g., channel) in the nodes.
+     *
+     * If the channel is not already initialized, it will be created as either a
+     * SingleModelSpectrumChannel or a MultiModelSpectrumChannel, depending on the
+     * useMultiModelSpectrumChannel flag. Additionally, a ConstantSpeedPropagationDelayModel will be
+     * set as the default delay model if no delay model is specified, and a
+     * LogDistancePropagationLossModel will be added to the channel if no propagation loss models
+     * are defined.
+     *
+     * If the channel is already initialized but lacks either a PropagationDelayModel or a
+     * PropagationLossModel, an error will be raised.
      * \param c a set of nodes
      * \returns A container holding the added net devices.
      */
@@ -182,8 +203,29 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
                              bool explicitFilename) override;
 
   private:
-    Ptr<SpectrumChannel> m_channel; //!< channel to be used for the devices
+    Ptr<SpectrumChannel> m_channel;      //!< channel to be used for the devices
+    bool m_useMultiModelSpectrumChannel; //!< indicates whether a MultiModelSpectrumChannel is used
+    std::vector<ObjectFactory> m_propagationLoss; ///< vector of propagation loss models
+    ObjectFactory m_propagationDelay;             ///< propagation delay model
 };
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+template <typename... Ts>
+void
+LrWpanHelper::AddPropagationLossModel(std::string name, Ts&&... args)
+{
+    m_propagationLoss.push_back(ObjectFactory(name, std::forward<Ts>(args)...));
+}
+
+template <typename... Ts>
+void
+LrWpanHelper::SetPropagationDelayModel(std::string name, Ts&&... args)
+{
+    m_propagationDelay = ObjectFactory(name, std::forward<Ts>(args)...);
+}
 
 } // namespace ns3
 

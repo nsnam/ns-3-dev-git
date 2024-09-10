@@ -358,17 +358,9 @@ main(int argc, char* argv[])
     mobility.SetPositionAllocator(listPositionAlloc);
     mobility.Install(coordinators);
 
-    Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel>();
-    Ptr<LogDistancePropagationLossModel> propModel =
-        CreateObject<LogDistancePropagationLossModel>();
-    Ptr<ConstantSpeedPropagationDelayModel> delayModel =
-        CreateObject<ConstantSpeedPropagationDelayModel>();
-
-    channel->AddPropagationLossModel(propModel);
-    channel->SetPropagationDelayModel(delayModel);
-
     LrWpanHelper lrWpanHelper;
-    lrWpanHelper.SetChannel(channel);
+    lrWpanHelper.SetPropagationDelayModel("ns3::ConstantSpeedPropagationDelayModel");
+    lrWpanHelper.AddPropagationLossModel("ns3::LogDistancePropagationLossModel");
 
     NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
     lrwpanDevices.Add(lrWpanHelper.Install(coordinators));
