@@ -166,10 +166,8 @@ WifiPhyHelper::Set(uint8_t linkId, std::string name, const AttributeValue& v)
 void
 WifiPhyHelper::DisablePreambleDetectionModel()
 {
-    for (auto& preambleDetectionModel : m_preambleDetectionModel)
-    {
-        preambleDetectionModel.SetTypeId(TypeId());
-    }
+    m_preambleDetectionModel.clear();
+    m_preambleDetectionModel.resize(m_phys.size());
 }
 
 void
