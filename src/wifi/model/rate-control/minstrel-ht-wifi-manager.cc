@@ -644,14 +644,14 @@ MinstrelHtWifiManager::DoReportDataOk(WifiRemoteStation* st,
         return;
     }
 
-    NS_LOG_DEBUG("DoReportDataOk m_txrate = "
-                 << station->m_txrate
-                 << ", attempt = " << station->m_minstrelTable[station->m_txrate].numRateAttempt
-                 << ", success = " << station->m_minstrelTable[station->m_txrate].numRateSuccess
-                 << " (before update).");
-
     if (!station->m_isHt)
     {
+        NS_LOG_DEBUG("DoReportDataOk m_txrate = "
+                     << station->m_txrate
+                     << ", attempt = " << station->m_minstrelTable[station->m_txrate].numRateAttempt
+                     << ", success = " << station->m_minstrelTable[station->m_txrate].numRateSuccess
+                     << " (before update).");
+
         station->m_minstrelTable[station->m_txrate].numRateSuccess++;
         station->m_minstrelTable[station->m_txrate].numRateAttempt++;
 
@@ -675,16 +675,25 @@ MinstrelHtWifiManager::DoReportDataOk(WifiRemoteStation* st,
     {
         uint8_t rateId = GetRateId(station->m_txrate);
         uint8_t groupId = GetGroupId(station->m_txrate);
+
+        NS_LOG_DEBUG(
+            "DoReportDataOk m_txrate = "
+            << station->m_txrate
+            << ", attempt = " << station->m_groupsTable[groupId].m_ratesTable[rateId].numRateAttempt
+            << ", success = " << station->m_groupsTable[groupId].m_ratesTable[rateId].numRateSuccess
+            << " (before update).");
+
         station->m_groupsTable[groupId].m_ratesTable[rateId].numRateSuccess++;
         station->m_groupsTable[groupId].m_ratesTable[rateId].numRateAttempt++;
 
         UpdatePacketCounters(station, 1, 0);
 
-        NS_LOG_DEBUG("DoReportDataOk m_txrate = "
-                     << station->m_txrate
-                     << ", attempt = " << station->m_minstrelTable[station->m_txrate].numRateAttempt
-                     << ", success = " << station->m_minstrelTable[station->m_txrate].numRateSuccess
-                     << " (after update).");
+        NS_LOG_DEBUG(
+            "DoReportDataOk m_txrate = "
+            << station->m_txrate
+            << ", attempt = " << station->m_groupsTable[groupId].m_ratesTable[rateId].numRateAttempt
+            << ", success = " << station->m_groupsTable[groupId].m_ratesTable[rateId].numRateSuccess
+            << " (after update).");
 
         station->m_isSampling = false;
         station->m_sampleDeferred = false;
