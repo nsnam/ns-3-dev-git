@@ -217,7 +217,8 @@ class int64x64_t
     inline double GetDouble() const
     {
         const bool negative = _v < 0;
-        const uint128_t value = negative ? -_v : _v;
+        const int128_t vTemp = _v + (_v == std::numeric_limits<int128_t>::min());
+        const uint128_t value = negative ? -vTemp : vTemp;
         const long double fhi = value >> 64;
         const long double flo = (value & HP_MASK_LO) / HP_MAX_64;
         long double retval = fhi;
