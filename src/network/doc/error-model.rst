@@ -15,6 +15,7 @@ NetDevice models, that are maintained as part of the ``network`` module:
 * ListErrorModel
 * ReceiveListErrorModel
 * BurstErrorModel
+* BinaryErrorModel
 
 Error models are used to indicate that a packet should be considered to
 be errored, according to the underlying (possibly stochastic or
@@ -23,15 +24,11 @@ empirical) error model.
 Model Description
 *****************
 
-The source code for error models live in the directory ``src/packet/utils``.
+The source code for error models live in the directory ``src/network/utils``.
 
 Two types of error models are generally provided.  The first are stochastic
 models.  In this case, packets are errored according to underlying
 random variable distributions.  An example of this is the ``RateErrorModel``.
-The other type of model is a deterministic or empirical model, in which
-packets are errored according to a particular prescribed pattern.
-An example is the ``ListErrorModel`` that allows users to specify
-the list of packets to be errored, by listing the specific packet UIDs.
 
 The ``ns3::RateErrorModel`` errors packets according to an underlying
 random variable distribution, which is by default a UniformRandomVariable
@@ -40,6 +37,17 @@ byte, or packet) are set by the user.  For instance, by setting ErrorRate
 to 0.1 and ErrorUnit to "Packet", in the long run, around 10% of the
 packets will be lost.
 
+Another stochastic error model is the ``BurstErrorModel`` which allows
+configuration of (random) burst error drop patterns.
+
+The other type of model is a deterministic model, in which
+packets are errored according to a particular prescribed pattern.
+An example is the ``ListErrorModel`` that allows users to specify
+the list of packets to be errored, by listing the specific packet UIDs.
+A variant of the ``ListErrorModel``, the ``ReceiveListErrorModel``, allows
+users to list packets to be errored by the order of their arrivals (without
+regard to their UIDs).
+The ``BinaryErrorModel`` alternates between errored and error-free packets.
 
 Design
 ======
@@ -59,8 +67,9 @@ the packet contents (e.g. apply bit or byte errors to the byte buffers).
 This type of operation will likely be performance-expensive, and existing
 Packet APIs may not easily support it.
 
-The |ns3| spectrum model and devices that derive from it (e.g. LTE) have
-their own error model base class, found in
+Most |ns3| wireless models have their own technology-specific error models
+and do not typically use these packet error models, although some (e.g.,
+Wi-Fi) support the addition of ``ErrorModel`` as an optional model.
 
 References
 ==========
@@ -81,8 +90,7 @@ The base class API is as follows:
   always return false.
 * ``bool ErrorModel::IsEnabled () const``:  Return the enabled state
 
-
-Many |ns3| NetDevices contain attributes holding pointers to error
+Several |ns3| NetDevices contain attributes holding pointers to error
 models.  The error model is applied in the notional physical layer
 processing chain of the device, and drops should show up on the ``PhyRxDrop``
 trace source of the device.  The following are known to include an attribute
@@ -100,18 +108,6 @@ Helpers
 
 This model is typically not used with helpers.
 
-Attributes
-==========
-
-The ``RateErrorModel`` contains the following attributes:
-
-
-Output
-======
-
-What kind of data does the model generate?  What are the key trace
-sources?   What kind of logging output can be enabled?
-
 Examples
 ========
 
@@ -119,8 +115,6 @@ Error models are used in the tutorial ``fifth`` and ``sixth`` programs.
 
 The directory ``examples/error-model/`` contains an example
 ``simple-error-model.cc`` that exercises the Rate and List error models.
-
-The TCP example ``examples/tcp/tcp-nsc-lfn.cc`` uses the Rate error model.
 
 Troubleshooting
 ===============
