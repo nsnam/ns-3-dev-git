@@ -3422,6 +3422,23 @@ class NS3QualityControlTestCase(unittest.TestCase):
                 % (brightness, brightness_threshold, image),
             )
 
+    def test_04_CheckForBrokenLogs(self):
+        """!
+        Check if one of the log statements of examples/tests contains/exposes a bug.
+        @return None
+        """
+        # First enable examples and tests with sanitizers
+        return_code, stdout, stderr = run_ns3(
+            'configure -G "{generator}" -d release --enable-examples --enable-tests --enable-sanitizers'
+        )
+        self.assertEqual(return_code, 0)
+
+        # Then build and run tests setting the environment variable
+        return_code, stdout, stderr = run_program(
+            "test.py", "", python=True, env={"TEST_LOGS": "1"}
+        )
+        self.assertEqual(return_code, 0)
+
 
 def main():
     """!
