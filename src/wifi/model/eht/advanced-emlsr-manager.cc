@@ -460,45 +460,11 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
         return false;
     }
 
-    switch (mainPhy->GetState()->GetState())
+    // DoGetDelayUntilAccessRequest has already checked if the main PHY is receiving an ICF
+    if (const auto state = mainPhy->GetState()->GetState();
+        state != WifiPhyState::IDLE && state != WifiPhyState::CCA_BUSY && state != WifiPhyState::RX)
     {
-    case WifiPhyState::IDLE:
-        // proceed to try requesting main PHY to switch
-        break;
-    case WifiPhyState::CCA_BUSY:
-        // if the main PHY is receiving the PHY header of a PPDU, we decide to proceed or give up
-        // based on the AllowUlTxopInRx attribute
-        if (mainPhy->IsReceivingPhyHeader() && !m_allowUlTxopInRx)
-        {
-            NS_LOG_DEBUG("Main PHY receiving PHY header and AllowUlTxopInRx is false");
-            return false;
-        }
-        break;
-    case WifiPhyState::RX:
-        if (auto macHdr = GetEhtFem(*mainPhyLinkId)->GetReceivedMacHdr())
-        {
-            // information on the MAC header of the PSDU being received is available; if we cannot
-            // use it or the main PHY is receiving an ICF, give up requesting main PHY to switch
-            if (const auto& hdr = macHdr->get();
-                !m_useNotifiedMacHdr ||
-                (hdr.IsTrigger() && (hdr.GetAddr1().IsBroadcast() ||
-                                     hdr.GetAddr1() == GetEhtFem(*mainPhyLinkId)->GetAddress())))
-            {
-                NS_LOG_DEBUG("Receiving an ICF or cannot use MAC header information");
-                return false;
-            }
-        }
-        // information on the MAC header of the PSDU being received is not available, we decide to
-        // proceed or give up based on the AllowUlTxopInRx attribute
-        else if (!m_allowUlTxopInRx)
-        {
-            NS_LOG_DEBUG("Receiving PSDU, no MAC header information, AllowUlTxopInRx is false");
-            return false;
-        }
-        break;
-    default:
-        NS_LOG_DEBUG("Cannot request main PHY to switch when in state "
-                     << mainPhy->GetState()->GetState());
+        NS_LOG_DEBUG("Cannot request main PHY to switch when in state " << state);
         return false;
     }
 
@@ -669,6 +635,18 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
     if (!delay.IsStrictlyPositive())
     {
         NS_LOG_DEBUG("Do nothing if delay is not strictly positive");
+        return;
+    }
+
+    if (GetEhtFem(linkId)->UsingOtherEmlsrLink())
+    {
+        NS_LOG_DEBUG("Do nothing because another EMLSR link is being used");
+        return;
+    }
+
+    if (!DoGetDelayUntilAccessRequest(linkId).first)
+    {
+        NS_LOG_DEBUG("Do nothing because a frame is being received on another EMLSR link");
         return;
     }
 
