@@ -1063,8 +1063,9 @@ TableBasedErrorRateTestCase::DoRun()
     txVector.SetMode(m_mode);
 
     // Spot test some values returned from TableBasedErrorRateModel
-    for (dB_u snr = -4; snr <= dB_u{30}; snr += dB_u{0.25})
+    for (int snrMultipliedByFour = -16; snrMultipliedByFour <= 120; ++snrMultipliedByFour)
     {
+        dB_u snr{snrMultipliedByFour / 4.0};
         double expectedValue = 0;
         if (m_mode.GetMcsValue() > ERROR_TABLE_BCC_MAX_NUM_MCS)
         {
