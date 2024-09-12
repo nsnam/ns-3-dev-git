@@ -158,7 +158,7 @@ SetMarkup()
         headingStop = "";
         // Linking:  The link text displayed (see TheTarget)
         hrefStart = "";
-        hrefMid = "(see ";
+        hrefMid = " (see ";
         hrefStop = ")";
         indentHtmlOnly = "";
         listLineStart = "    * ";
@@ -640,6 +640,46 @@ GetNameMap()
     return nameMap;
 } // GetNameMap()
 
+/// List of TypeIds for a group
+using GroupList_t = std::set<TypeId>;
+/// Collection of group names with associated TypeIds
+using GroupsList_t = std::map<std::string, GroupList_t>;
+
+/**
+ * Get a sorted list of TypeId groups
+ * \returns a map of group name and associated TypeIds
+ */
+GroupsList_t
+GetGroupsList()
+{
+    static GroupsList_t groups;
+    static bool mapped = false;
+    if (mapped)
+    {
+        return groups;
+    }
+
+    NameMap nameMap = GetNameMap();
+    for (const auto& item : nameMap)
+    {
+        // Handle only real TypeIds
+        if (item.second < 0)
+        {
+            continue;
+        }
+        // Get the class's index out of the map;
+        TypeId tid = TypeId::GetRegistered(item.second);
+        auto group = tid.GetGroupName();
+
+        if (!group.empty())
+        {
+            groups[group].insert(tid);
+        }
+    }
+    return groups;
+
+} // GetGroupsList()
+
 /***************************************************************
  *        Docs for a single TypeId
  ***************************************************************/
@@ -932,6 +972,12 @@ PrintTypeIdBlock(std::ostream& os, const TypeId tid)
     PrintConfigPaths(os, tid);
     PrintAttributes(os, tid);
     PrintTraceSources(os, tid);
+
+    if (!tid.GetGroupName().empty())
+    {
+        os << boldStart << "Group:" << boldStop << " " << tid.GetGroupName() << "\n" << std::endl;
+    }
+
     PrintSize(os, tid);
 
     os << commentStop << std::endl;
@@ -1088,6 +1134,38 @@ PrintAllGlobals(std::ostream& os)
     os << commentStop << std::endl;
 
 } // PrintAllGlobals()
+
+/**
+ * Print the list of all groups
+ *
+ * \param [in,out] os The output stream.
+ */
+void
+PrintAllGroups(std::ostream& os)
+{
+    NS_LOG_FUNCTION_NOARGS();
+    os << commentStart << page << "GroupsList All Object Groups\n" << std::endl;
+    os << "This is a list of all Object Groups.\n"
+       << "Objects are added to groups by " << hrefStart << "ns3::TypeId::SetGroupName()" << hrefMid
+       << "ns3::TypeId::SetGroupName" << hrefStop << "\n"
+       << std::endl;
+
+    auto groups = GetGroupsList();
+
+    for (const auto& g : groups)
+    {
+        os << boldStart << g.first << boldStop << breakHtmlOnly << std::endl;
+
+        os << listStart << std::endl;
+        for (const auto& tid : g.second)
+        {
+            os << indentHtmlOnly << listLineStart << hrefStart << tid.GetName() << hrefMid
+               << tid.GetName() << hrefStop << listLineStop << std::endl;
+        }
+        os << listStop << std::endl;
+    }
+    os << commentStop << std::endl;
+}
 
 /**
  * Print the list of all LogComponents.
@@ -1536,6 +1614,7 @@ main(int argc, char* argv[])
     PrintAllTypeIds(std::cout);
     PrintAllAttributes(std::cout);
     PrintAllGlobals(std::cout);
+    PrintAllGroups(std::cout);
     PrintAllLogComponents(std::cout);
     PrintAllTraceSources(std::cout);
     PrintAttributeImplementations(std::cout);
