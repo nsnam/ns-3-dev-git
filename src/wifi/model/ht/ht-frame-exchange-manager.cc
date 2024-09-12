@@ -632,7 +632,7 @@ HtFrameExchangeManager::SendDataFrame(Ptr<WifiMpdu> peekedItem,
     {
         // a QoS data frame using the Block Ack policy can be followed by a BlockAckReq
         // frame and a BlockAck frame. Such a sequence is handled by the HT FEM
-        SendPsduWithProtection(Create<WifiPsdu>(mpdu, false), txParams);
+        SendPsduWithProtection(GetWifiPsdu(mpdu, txParams.m_txVector), txParams);
     }
     else
     {
