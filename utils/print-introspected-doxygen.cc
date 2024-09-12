@@ -685,6 +685,39 @@ GetGroupsList()
  ***************************************************************/
 
 /**
+ * Print the support level for an Attribute or TraceSource
+ * \param os the output stream
+ * \param supportLevel the SupportLevel
+ * \param supportMsg optional support message
+ */
+void
+PrintSupportLevel(std::ostream& os, TypeId::SupportLevel supportLevel, std::string supportMsg)
+{
+    os << "    " << listLineStart << "Support level: ";
+    os << flagSpanStart;
+    switch (supportLevel)
+    {
+    case TypeId::SUPPORTED:
+        os << "SUPPORTED";
+        break;
+    case TypeId::DEPRECATED:
+        os << "DEPRECATED";
+        break;
+    case TypeId::OBSOLETE:
+        os << "OBSOLETE";
+        break;
+    default:
+        os << "UNKNOWN";
+    }
+    os << flagSpanStop;
+    if (!supportMsg.empty())
+    {
+        os << ": " << supportMsg;
+    }
+    os << listLineStop << std::endl;
+} // PrintSupportLevel
+
+/**
  * Print config paths
  * \param os the output stream
  * \param tid the type ID
@@ -804,22 +837,22 @@ PrintAttributesTid(std::ostream& os, const TypeId tid)
         }
         bool moreFlags{false};
         os << "    " << listLineStart << "Flags: ";
-        if (info.flags & TypeId::ATTR_CONSTRUCT && info.accessor->HasSetter())
-        {
-            os << flagSpanStart << "construct" << flagSpanStop;
-            moreFlags = true;
-        }
-        if (info.flags & TypeId::ATTR_SET && info.accessor->HasSetter())
-        {
-            os << (outputText && moreFlags ? ", " : "") << flagSpanStart << "write" << flagSpanStop;
-            moreFlags = true;
-        }
-        if (info.flags & TypeId::ATTR_GET && info.accessor->HasGetter())
-        {
-            os << (outputText && moreFlags ? ", " : "") << flagSpanStart << "read" << flagSpanStop;
-            moreFlags = true;
-        }
+        auto flagWrite = [&os, &moreFlags, info](TypeId::AttributeFlag flag,
+                                                 bool hasFunc,
+                                                 std::string msg) -> void {
+            if (info.flags & flag && hasFunc)
+            {
+                os << (outputText && moreFlags ? ", " : "") << flagSpanStart << msg << flagSpanStop;
+                moreFlags = true;
+            }
+        };
+        flagWrite(TypeId::ATTR_CONSTRUCT, info.accessor->HasSetter(), "construct");
+        flagWrite(TypeId::ATTR_SET, info.accessor->HasSetter(), "write");
+        flagWrite(TypeId::ATTR_GET, info.accessor->HasGetter(), "read");
         os << listLineStop << std::endl;
+
+        PrintSupportLevel(os, info.supportLevel, info.supportMsg);
+
         os << indentHtmlOnly << listStop << std::endl;
     }
     os << listStop << std::endl;
@@ -883,13 +916,18 @@ PrintTraceSourcesTid(std::ostream& os, const TypeId tid)
     for (const auto& [name, info] : index)
     {
         os << listLineStart << boldStart << name << boldStop << ": " << info.help << breakBoth;
+        os << indentHtmlOnly << listStart << std::endl;
+        os << "    " << listLineStart;
         if (!outputText)
         {
-            //    '%' prevents doxygen from linking to the Callback class...
-            os << "%";
+            // '%' prevents doxygen from linking to the Callback class...
+            os << " %";
         }
         os << "Callback signature: " << info.callback << std::endl;
         os << listLineStop << std::endl;
+
+        PrintSupportLevel(os, info.supportLevel, info.supportMsg);
+        os << listStop << std::endl;
     }
     os << listStop << std::endl;
 } // PrintTraceSourcesTid()
