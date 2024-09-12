@@ -34,11 +34,10 @@ FromRss(dBW_u rss)
 {
     // SINR is based on receiver noise figure of 7 dB and thermal noise
     // of -100.5522786 dBm in this 22 MHz bandwidth at 290K
-    dBW_u noisePower = -100.5522786 + 7;
-
-    dB_u sinr = rss - noisePower;
+    dBW_u noisePower{-100.5522786 + 7};
+    dB_u sinr{rss - noisePower};
     // return SINR expressed as ratio
-    return pow(10.0, sinr / 10.0);
+    return DbToRatio(sinr);
 }
 
 /**
@@ -187,200 +186,200 @@ WifiErrorRateModelsTestCaseNist::DoRun()
     dB_u snr{2.5};
     auto ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate6Mbps"),
                                         txVector,
-                                        std::pow(10.0, snr / 10.0),
+                                        DbToRatio(snr),
                                         frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 2.04e-10, 1e-10, "Not equal within tolerance");
     snr = dB_u{3.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate6Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.020, 0.001, "Not equal within tolerance");
     snr = dB_u{4.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate6Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.885, 0.001, "Not equal within tolerance");
     snr = dB_u{5.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate6Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.997, 0.001, "Not equal within tolerance");
 
     snr = dB_u{6.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate9Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.097, 0.001, "Not equal within tolerance");
     snr = dB_u{7.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate9Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.918, 0.001, "Not equal within tolerance");
     snr = dB_u{8.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate9Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.998, 0.001, "Not equal within tolerance");
     snr = dB_u{9.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate9Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
     snr = dB_u{6.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate12Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.0174, 0.001, "Not equal within tolerance");
     snr = dB_u{7.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate12Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.881, 0.001, "Not equal within tolerance");
     snr = dB_u{8.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate12Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.997, 0.001, "Not equal within tolerance");
     snr = dB_u{9.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate12Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
     snr = dB_u{8.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate18Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 2.85e-6, 1e-6, "Not equal within tolerance");
     snr = dB_u{9.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate18Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.623, 0.001, "Not equal within tolerance");
     snr = dB_u{10.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate18Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.985, 0.001, "Not equal within tolerance");
     snr = dB_u{11.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate18Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
     snr = dB_u{12.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate24Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 2.22e-7, 1e-7, "Not equal within tolerance");
     snr = dB_u{13.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate24Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.495, 0.001, "Not equal within tolerance");
     snr = dB_u{14.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate24Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.974, 0.001, "Not equal within tolerance");
     snr = dB_u{15.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate24Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
     snr = dB_u{15.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate36Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.012, 0.001, "Not equal within tolerance");
     snr = dB_u{16.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate36Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.818, 0.001, "Not equal within tolerance");
     snr = dB_u{17.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate36Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.993, 0.001, "Not equal within tolerance");
     snr = dB_u{18.5};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate36Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
     snr = dB_u{20.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate48Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 1.3e-4, 1e-4, "Not equal within tolerance");
     snr = dB_u{21.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate48Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.649, 0.001, "Not equal within tolerance");
     snr = dB_u{22.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate48Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.983, 0.001, "Not equal within tolerance");
     snr = dB_u{23.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate48Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 
     snr = dB_u{21.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate54Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 5.44e-8, 1e-8, "Not equal within tolerance");
     snr = dB_u{22.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate54Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.410, 0.001, "Not equal within tolerance");
     snr = dB_u{23.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate54Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.958, 0.001, "Not equal within tolerance");
     snr = dB_u{24.0};
     ps = nist->GetChunkSuccessRate(WifiMode("OfdmRate54Mbps"),
                                    txVector,
-                                   std::pow(10.0, snr / 10.0),
+                                   DbToRatio(snr),
                                    frameSize * 8);
     NS_TEST_ASSERT_MSG_EQ_TOL(ps, 0.999, 0.001, "Not equal within tolerance");
 }
@@ -1071,7 +1070,7 @@ TableBasedErrorRateTestCase::DoRun()
         {
             Ptr<YansErrorRateModel> yans = CreateObject<YansErrorRateModel>();
             expectedValue =
-                1 - yans->GetChunkSuccessRate(m_mode, txVector, std::pow(10, snr / 10), m_size * 8);
+                1 - yans->GetChunkSuccessRate(m_mode, txVector, DbToRatio(snr), m_size * 8);
         }
         else
         {
@@ -1095,7 +1094,7 @@ TableBasedErrorRateTestCase::DoRun()
             }
         }
         const auto per =
-            1 - table->GetChunkSuccessRate(m_mode, txVector, std::pow(10, snr / 10), m_size * 8);
+            1 - table->GetChunkSuccessRate(m_mode, txVector, DbToRatio(snr), m_size * 8);
         NS_LOG_INFO(m_testName << ": snr=" << snr << "dB per=" << per
                                << " expectedPER=" << expectedValue);
         NS_TEST_ASSERT_MSG_EQ_TOL(per, expectedValue, 1e-5, "Not equal within tolerance");
