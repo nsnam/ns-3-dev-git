@@ -1084,11 +1084,13 @@ class TcpSocketBase : public TcpSocket
      * \param oldHeadSequence value of HeadSequence before ack
      * updated with SACK information
      * \param currentDelivered The number of bytes (S)ACKed
+     * \param receivedData if true indicates that data is piggybacked with ACK
      */
     virtual void ProcessAck(const SequenceNumber32& ackNumber,
                             bool scoreboardUpdated,
                             uint32_t currentDelivered,
-                            const SequenceNumber32& oldHeadSequence);
+                            const SequenceNumber32& oldHeadSequence,
+                            bool receivedData);
 
     /**
      * \brief Recv of a data, put into buffer, call L7 to get it if necessary
