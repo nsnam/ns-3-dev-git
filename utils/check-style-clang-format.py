@@ -11,8 +11,8 @@ Check and apply the ns-3 coding style recursively to all files in the PATH argum
 
 The coding style is defined with the clang-format tool, whose definitions are in
 the ".clang-format" file. This script performs the following checks / fixes:
-- Check / fix local #include headers with "ns3/" prefix. Respects clang-format guards.
 - Check / apply clang-format. Respects clang-format guards.
+- Check / fix local #include headers with "ns3/" prefix. Respects clang-format guards.
 - Check / trim trailing whitespace. Always checked.
 - Check / replace tabs with spaces. Respects clang-format guards.
 
@@ -171,9 +171,9 @@ def find_files_to_check_style(
 
     @param paths List of paths to the files to check.
     @return Tuple [List of files to check include prefixes,
-                   List of files to check formatting,
                    List of files to check trailing whitespace,
-                   List of files to check tabs].
+                   List of files to check tabs,
+                   List of files to check formatting].
     """
 
     files_to_check: List[str] = []
@@ -199,16 +199,13 @@ def find_files_to_check_style(
     files_to_check.sort()
 
     files_to_check_include_prefixes: List[str] = []
-    files_to_check_formatting: List[str] = []
     files_to_check_whitespace: List[str] = []
     files_to_check_tabs: List[str] = []
+    files_to_check_formatting: List[str] = []
 
     for f in files_to_check:
         if should_analyze_file(f, [], FILE_EXTENSIONS_TO_CHECK_INCLUDE_PREFIXES):
             files_to_check_include_prefixes.append(f)
-
-        if should_analyze_file(f, [], FILE_EXTENSIONS_TO_CHECK_FORMATTING):
-            files_to_check_formatting.append(f)
 
         if should_analyze_file(f, FILES_TO_CHECK_WHITESPACE, FILE_EXTENSIONS_TO_CHECK_WHITESPACE):
             files_to_check_whitespace.append(f)
@@ -216,11 +213,14 @@ def find_files_to_check_style(
         if should_analyze_file(f, FILES_TO_CHECK_TABS, FILE_EXTENSIONS_TO_CHECK_TABS):
             files_to_check_tabs.append(f)
 
+        if should_analyze_file(f, [], FILE_EXTENSIONS_TO_CHECK_FORMATTING):
+            files_to_check_formatting.append(f)
+
     return (
         files_to_check_include_prefixes,
-        files_to_check_formatting,
         files_to_check_whitespace,
         files_to_check_tabs,
+        files_to_check_formatting,
     )
 
 
@@ -273,9 +273,9 @@ def find_clang_format_path() -> str:
 def check_style_clang_format(
     paths: List[str],
     enable_check_include_prefixes: bool,
-    enable_check_formatting: bool,
     enable_check_whitespace: bool,
     enable_check_tabs: bool,
+    enable_check_formatting: bool,
     fix: bool,
     verbose: bool,
     n_jobs: int = 1,
@@ -285,9 +285,9 @@ def check_style_clang_format(
 
     @param paths List of paths to the files to check.
     @param enable_check_include_prefixes Whether to enable checking #include headers from the same module with the "ns3/" prefix.
-    @param enable_check_formatting Whether to enable checking code formatting.
     @param enable_check_whitespace Whether to enable checking trailing whitespace.
     @param enable_check_tabs Whether to enable checking tabs.
+    @param enable_check_formatting Whether to enable checking code formatting.
     @param fix Whether to fix (True) or just check (False) the file.
     @param verbose Show the lines that are not compliant with the style.
     @param n_jobs Number of parallel jobs.
@@ -296,15 +296,15 @@ def check_style_clang_format(
 
     (
         files_to_check_include_prefixes,
-        files_to_check_formatting,
         files_to_check_whitespace,
         files_to_check_tabs,
+        files_to_check_formatting,
     ) = find_files_to_check_style(paths)
 
     check_include_prefixes_successful = True
-    check_formatting_successful = True
     check_whitespace_successful = True
     check_tabs_successful = True
+    check_formatting_successful = True
 
     if enable_check_include_prefixes:
         check_include_prefixes_successful = check_style_files(
@@ -316,19 +316,6 @@ def check_style_clang_format(
             n_jobs,
             respect_clang_format_guards=True,
             check_style_line_function=check_include_prefixes_line,
-        )
-
-        print("")
-
-    if enable_check_formatting:
-        check_formatting_successful = check_style_files(
-            "bad code formatting",
-            check_formatting_file,
-            files_to_check_formatting,
-            fix,
-            verbose,
-            n_jobs,
-            clang_format_path=find_clang_format_path(),
         )
 
         print("")
@@ -359,12 +346,25 @@ def check_style_clang_format(
             check_style_line_function=check_tabs_line,
         )
 
+        print("")
+
+    if enable_check_formatting:
+        check_formatting_successful = check_style_files(
+            "bad code formatting",
+            check_formatting_file,
+            files_to_check_formatting,
+            fix,
+            verbose,
+            n_jobs,
+            clang_format_path=find_clang_format_path(),
+        )
+
     return all(
         [
             check_include_prefixes_successful,
-            check_formatting_successful,
             check_whitespace_successful,
             check_tabs_successful,
+            check_formatting_successful,
         ]
     )
 
@@ -710,12 +710,6 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--no-formatting",
-        action="store_true",
-        help="Do not check / fix code formatting",
-    )
-
-    parser.add_argument(
         "--no-whitespace",
         action="store_true",
         help="Do not check / fix trailing whitespace",
@@ -725,6 +719,12 @@ if __name__ == "__main__":
         "--no-tabs",
         action="store_true",
         help="Do not check / fix tabs",
+    )
+
+    parser.add_argument(
+        "--no-formatting",
+        action="store_true",
+        help="Do not check / fix code formatting",
     )
 
     parser.add_argument(
@@ -754,9 +754,9 @@ if __name__ == "__main__":
         all_checks_successful = check_style_clang_format(
             paths=args.paths,
             enable_check_include_prefixes=(not args.no_include_prefixes),
-            enable_check_formatting=(not args.no_formatting),
             enable_check_whitespace=(not args.no_whitespace),
             enable_check_tabs=(not args.no_tabs),
+            enable_check_formatting=(not args.no_formatting),
             fix=args.fix,
             verbose=args.verbose,
             n_jobs=args.jobs,
