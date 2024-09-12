@@ -2,7 +2,11 @@
 
 *This file is heavily inspired by Atom's [CONTRIBUTING.md file](https://raw.githubusercontent.com/atom/atom/master/CONTRIBUTING.md).*
 
+ns-3 is a free, open source software project that welcomes contributions from users worldwide.
+
 The following is a set of guidelines for contributing to ns-3, which are hosted in the [nsnam organization](https://gitlab.com/nsnam) on GitLab.com. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a merge request.
+
+The full documentation about how to contribute to ns-3 is available in the [ns-3 Contributing Code](http://www.nsnam.org/developers/contributing-code) website.
 
 ## Table Of Contents
 
