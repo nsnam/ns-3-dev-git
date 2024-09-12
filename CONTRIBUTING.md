@@ -160,10 +160,11 @@ While the prerequisites above must be satisfied prior to having your merge reque
 
 ### Git Commit Messages
 
-* Use the present tense ("Add feature" not "Added feature")
-* Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
+* Use the present tense (e.g., "Add feature" not "Added feature")
+* Use the imperative mood (e.g., "Move cursor to..." not "Moves cursor to...")
 * Limit the first line to 72 characters or less
-* Reference issues in the first line, by prepending `[#issue]`
+* Reference the modules edited in the commit, except if the change applies to many modules (e.g., "core, network: ...")
+* If a commit fixes an issue, add "(fixes #issue)" to the commit message (e.g., "core: (fixes #issue) ...")
 
 ### C++ Styleguide
 
