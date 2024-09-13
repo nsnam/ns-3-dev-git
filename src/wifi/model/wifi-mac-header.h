@@ -233,6 +233,12 @@ class WifiMacHeader : public Header
      */
     void SetNoPowerManagement();
     /**
+     * Set the More Data bit in the Frame Control field.
+     *
+     * @param flag true to set the bit to 1, false to set the bit to 0
+     */
+    void SetMoreData(bool flag);
+    /**
      * Set the TID for the QoS header.
      *
      * @param tid the TID for the QoS header

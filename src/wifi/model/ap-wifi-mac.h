@@ -218,6 +218,18 @@ class ApWifiMac : public WifiMac
     uint8_t GetMaxBufferStatus(Mac48Address address) const;
 
     /**
+     * Return whether at least one additional buffered unit is present for the same STA after
+     * transmitting the given MPDU.
+     *
+     * @param mpdu an individually addressed Data or Management frame transmitted to a STA in
+     *             PS mode
+     * @param linkId the ID of the link on which the MPDU is transmitted
+     * @return whether at least one additional buffered unit is present for the same STA after
+     *         transmitting the given MPDU
+     */
+    bool HasMoreDataAfter(Ptr<const WifiMpdu> mpdu, uint8_t linkId) const;
+
+    /**
      * Return whether GCR is used to transmit a packet.
      *
      * @param hdr the header of the packet to transmit

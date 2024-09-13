@@ -12,6 +12,7 @@
 #include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
 
+#include <list>
 #include <map>
 
 namespace ns3
@@ -196,6 +197,9 @@ bool operator<=(AcIndex left, AcIndex right);
  * Table 10-1 "UP-to-AC Mappings" of 802.11-2016)
  */
 extern const std::map<AcIndex, WifiAc> wifiAcList;
+
+/// List of the Access Categories corresponding to the four EDCA functions.
+extern const std::list<AcIndex> edcaAcIndices;
 
 /**
  * @ingroup wifi

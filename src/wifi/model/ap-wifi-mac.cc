@@ -669,8 +669,7 @@ ApWifiMac::GetBufferedMmpduFor(Mac48Address address, uint8_t linkId) const
     // the intended receiver is operating, the MMPDU shall carry the MLO Link Info element.
     // Until this mechanism is supported, an MMPDU is buffered if the intended receiver is
     // in powersave mode
-    const auto acList = GetQosSupported() ? std::list<AcIndex>{AC_VI, AC_VO, AC_BE, AC_BK}
-                                          : std::list<AcIndex>{AC_BE_NQOS};
+    const auto acList = GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
     const auto linkIds = (linkId == WIFI_LINKID_UNDEFINED ? GetLinkIds() : std::set{linkId});
 
     for (const auto& id : linkIds)
@@ -702,8 +701,7 @@ ApWifiMac::GetBufferedMmpduFor(Mac48Address address, uint8_t linkId) const
 bool
 ApWifiMac::HasBufferedGroupcast(uint8_t linkId) const
 {
-    auto acList = GetQosSupported() ? std::list<AcIndex>{AC_VI, AC_VO, AC_BE, AC_BK}
-                                    : std::list<AcIndex>{AC_BE_NQOS};
+    auto acList = GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
 
     return std::any_of(acList.cbegin(), acList.cend(), [=, this](const auto aci) {
         auto queueId = m_scheduler->GetNext(aci, std::nullopt);
@@ -776,6 +774,77 @@ ApWifiMac::GetTim(uint8_t linkId) const
     }
 
     return tim;
+}
+
+bool
+ApWifiMac::HasMoreDataAfter(Ptr<const WifiMpdu> mpdu, uint8_t linkId) const
+{
+    NS_LOG_FUNCTION(this << *mpdu << linkId);
+
+    const auto& hdr = mpdu->GetHeader();
+    const auto addr1 = hdr.GetAddr1();
+    NS_ASSERT_MSG(!addr1.IsGroup(), "Cannot get a group addressed MPDU");
+
+    // Sec. 9.2.4.1.8 802.11be D6.0:
+    // A non-DMG and non-S1G STA uses the More Data subfield to indicate to a STA that is not
+    // affiliated with a non-AP MLD and in PS mode that more BUs are buffered for that STA at
+    // the AP.
+    // For a non-AP MLD, an AP affiliated with an AP MLD uses the More Data subfield to indicate to
+    // a non-AP STA in PS mode affiliated with the non-AP MLD that more BUs, corresponding to Data
+    // frames with TIDs that are mapped to this link [...] or bufferable Management frames are
+    // buffered for the non-AP MLD at the AP MLD
+
+    const auto receiver = GetLink(linkId).stationManager->GetMldAddress(addr1).value_or(addr1);
+    const auto isSingleLink = (addr1 == receiver);
+
+    // look for buffered data frames
+    if (!GetQosSupported())
+    {
+        const WifiContainerQueueId queueId(WIFI_DATA_QUEUE, WIFI_UNICAST, receiver, std::nullopt);
+        auto start = hdr.IsData() ? mpdu : nullptr;
+        if (auto bu = GetTxopQueue(AC_BE_NQOS)->PeekByQueueId(queueId, start))
+        {
+            NS_LOG_DEBUG("Found a buffered unit: " << *bu);
+            return true;
+        }
+    }
+    else
+    {
+        for (uint8_t tid = 0; tid < 8; ++tid)
+        {
+            if (!isSingleLink && !TidMappedOnLink(receiver, WifiDirection::DOWNLINK, tid, linkId))
+            {
+                continue; // this TID is not mapped on this link
+            }
+
+            auto start =
+                (hdr.IsQosData() && hdr.GetQosTid() == tid) ? mpdu->GetOriginal() : nullptr;
+
+            if (auto bu = GetTxopQueue(QosUtilsMapTidToAc(tid))
+                              ->PeekByTidAndAddress(tid, receiver, start))
+            {
+                NS_LOG_DEBUG("Found a buffered unit: " << *bu);
+                return true;
+            }
+        }
+    }
+
+    // look for buffered management frames
+    auto acList = GetQosSupported() ? edcaAcIndices : std::list<AcIndex>{AC_BE_NQOS};
+
+    for (const auto aci : acList)
+    {
+        const WifiContainerQueueId queueId(WIFI_MGT_QUEUE, WIFI_UNICAST, addr1, std::nullopt);
+        auto start = (hdr.IsMgt() && mpdu->GetQueueAc() == aci) ? mpdu : nullptr;
+
+        if (auto bu = GetTxopQueue(aci)->PeekByQueueId(queueId, start))
+        {
+            NS_LOG_DEBUG("Found a buffered unit: " << *bu);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 ErpInformation

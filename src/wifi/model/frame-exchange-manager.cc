@@ -623,6 +623,22 @@ FrameExchangeManager::FinalizeMacHeader(Ptr<const WifiPsdu> psdu)
 {
     NS_LOG_FUNCTION(this << psdu);
 
+    // The More Data subfield is valid in individually addressed Data or Management frames
+    // transmitted by an AP to a STA in PS mode (Sec. 9.2.4.1.8 of 802.11-2020)
+    if (const auto& hdr = psdu->GetHeader(0);
+        !hdr.GetAddr1().IsGroup() && (hdr.IsData() || hdr.IsMgt() || hdr.IsBlockAckReq()) &&
+        m_apMac && GetWifiRemoteStationManager()->IsInPsMode(hdr.GetAddr1()))
+    {
+        // All MPDUs but the last one certainly have the More Data flag set.
+        for (const auto& mpdu : *PeekPointer(psdu))
+        {
+            mpdu->GetHeader().SetMoreData(true);
+        }
+        // set the More Data flag of the last MPDU if there are other queued frames
+        auto mpdu = *std::prev(psdu->end());
+        mpdu->GetHeader().SetMoreData(m_apMac->HasMoreDataAfter(mpdu, m_linkId));
+    }
+
     if (m_mac->GetTypeOfStation() != STA)
     {
         return;

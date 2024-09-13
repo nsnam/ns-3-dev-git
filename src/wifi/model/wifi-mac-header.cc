@@ -356,6 +356,12 @@ WifiMacHeader::SetNoPowerManagement()
 }
 
 void
+WifiMacHeader::SetMoreData(bool flag)
+{
+    m_ctrlMoreData = flag ? 1 : 0;
+}
+
+void
 WifiMacHeader::SetQosEosp()
 {
     m_qosEosp = 1;

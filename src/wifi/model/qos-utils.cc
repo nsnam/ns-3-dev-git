@@ -119,6 +119,8 @@ const std::map<AcIndex, WifiAc> wifiAcList = {
     {AC_VO, {6, 7}},
 };
 
+const std::list<AcIndex> edcaAcIndices = {AC_VI, AC_VO, AC_BE, AC_BK};
+
 AcIndex
 QosUtilsMapTidToAc(uint8_t tid)
 {
