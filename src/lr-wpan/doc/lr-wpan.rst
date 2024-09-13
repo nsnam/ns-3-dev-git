@@ -5,16 +5,15 @@
 PageBreak
 
 Low-Rate Wireless Personal Area Network (LR-WPAN)
--------------------------------------------------
+=================================================
 
 This chapter describes the implementation of |ns3| models for the
 low-rate, wireless personal area network (LR-WPAN) as specified by
-IEEE standard 802.15.4 (2003,2006,2011).
-
-Model Description
-*****************
+IEEE standard 802.15.4 (2003,2006,2011). Both beacon and non-beacon modes are
+supported. Bootstrap (scan and association) is also supported.
 
 The model is implemented into the ``src/lrwpan/`` folder.
+
 The model design closely follows the standard from an architectural standpoint.
 
 .. _fig-lr-wpan-arch:
@@ -30,9 +29,6 @@ The Spectrum NetDevice from Nicola Baldo is the basis for the implementation.
 
 The implementation also borrows some ideas from the ns-2 models developed by
 Zheng and Lee.
-
-APIs
-====
 
 The APIs closely follow the standard, adapted for |ns3| naming conventions
 and idioms.  The APIs are organized around the concept of service primitives
@@ -102,6 +98,7 @@ The MAC primitives currently supported by the |ns3| model are:
 
 
 The PHY primitives currently supported by the |ns3| model are:
+
 * PLME-CCA (Request, Confirm)
 * PD-DATA (Request, Confirm, Indication)
 * PLME-SET-TRX-STATE (Request, Confirm)
@@ -110,8 +107,13 @@ The PHY primitives currently supported by the |ns3| model are:
 
 For more information on primitives, See IEEE 802.15.4-2011, Table 8.
 
+Although it is expected that other technology profiles (such as
+6LoWPAN and ZigBee) will write their own NetDevice classes, a basic
+LrWpanNetDevice is provided, which encapsulates the common operations
+of creating a generic LrWpan device and hooking things together.
+
 The PHY layer
-=============
+-------------
 
 The physical layer components consist of a PHY model, an error rate model,
 and a loss model. The PHY state transitions are roughly model after
@@ -173,7 +175,7 @@ The point where the blue line crosses with the PER indicates the Rx sensitivity.
     Default output of the program ``lr-wpan-per-plot.cc``
 
 The MAC layer
-=============
+-------------
 
 The MAC at present implements both, the unslotted CSMA/CA (non-beacon mode) and
 the slotted CSMA/CA (beacon-enabled mode). The beacon-enabled mode supports only
@@ -196,7 +198,7 @@ Both short and extended addressing are supported. Various trace sources are
 supported, and trace sources can be hooked to sinks.
 
 Scan and Association
-####################
+~~~~~~~~~~~~~~~~~~~~
 
 The implemented |ns3| MAC layer supports scanning. Typically, a scanning request is preceded
 by an association request but these can be used independently.
@@ -222,9 +224,22 @@ Bootstrap (a.k.a. network initialization) is possible with a combination of scan
 .. figure:: figures/lr-wpan-assocSequence.*
 
 Bootstrap as whole depends on procedures that also take place on higher layers of devices and coordinators. These procedures are briefly described in the standard but out of its scope (See IEE 802.15.4-2011 Section 5.1.3.1.). However, these procedures are necessary for a "complete bootstrap" process. In the examples in |ns3|, these high layer procedures are only briefly implemented to demonstrate a complete example that shows the use of scan and association. A full high layer (e.g. such as those found in Zigbee and Thread protocol stacks) should complete these procedures more robustly.
+Examples such as  ``lr-wpan-bootstrap.cc`` demonstrate the whole bootstrap process (including scanning and association) while doing some place holder of procedures that take place in higher layers which are not part of standard focus.
+
+A key element to remember is that bootstrap have 2 key objectives:
+
+1- Enable devices to join a new formed network (associate).
+2- Assign short addresses and PAN ID.
+
+Devices that have the short address ``FF:FF`` are not associated an cannot participate in any unicast communication in the network.
+Devices that have the short address ``FF:FE`` and have a valid PAN ID can communicate with other devices in the network using the
+extended address mode. In this mode, devices will use its 64 bit address (A.K.A. extended address) to communicate in the network.
+
+A fixed association is possible in |ns3| without the use of the bootstrap process. For this purpose, the ``LrWpanHelper::CreateAssociatedPan``
+is used.
 
 MAC transmission Queues
-#######################
+~~~~~~~~~~~~~~~~~~~~~~~
 
 By default, ``Tx queue`` and ``Ind Tx queue`` (the pending transaction list) are not limited but they can configure to drop packets after they
 reach a limit of elements (transaction overflow). Additionally, the ``Ind Tx queue`` drop packets when the packet has been longer than
@@ -232,7 +247,7 @@ reach a limit of elements (transaction overflow). Additionally, the ``Ind Tx que
 Finally, packets in the ``Tx queue`` may be dropped due to excessive transmission retries or channel access failure.
 
 MAC addresses
-#############
+~~~~~~~~~~~~~
 
 Contrary to other technologies, a IEEE 802.15.4 has 2 different kind of addresses:
 
@@ -284,37 +299,53 @@ pseudo-address format or compression types in the same network. This point is fu
 in the ``sixlowpan`` module documentation.
 
 
-NetDevice
-=========
-
-Although it is expected that other technology profiles (such as
-6LoWPAN and ZigBee) will write their own NetDevice classes, a basic
-LrWpanNetDevice is provided, which encapsulates the common operations
-of creating a generic LrWpan device and hooking things together.
-
-
 Usage
-*****
+-----
 
-Enabling lr-wpan
-================
-
-Add ``lr-wpan`` to the list of modules built with |ns3|.
 
 Helpers
-=======
+~~~~~~~
 
 The helper is patterned after other device helpers.  In particular,
 tracing (ascii and pcap) is enabled similarly, and enabling of all
 lr-wpan log components is performed similarly.  Use of the helper
-is exemplified in ``examples/lr-wpan-data.cc``.  For ascii tracing,
-the transmit and receive traces are hooked at the Mac layer.
+is exemplified in many of the examples found in ``src\lrwpan\examples``.
 
-The default propagation loss model added to the channel, when this helper
-is used, is the LogDistancePropagationLossModel with default parameters.
+When the helper is used, the default propagation loss model added to the channel is the ``LogDistancePropagationLossModel`` with default parameters.
+The default delay model used is ``ConstantSpeedPropagationDelayMode``. Alternatively, users can specify the models used by the helper with the
+``SetPropagationDelayModel`` and the ``AddPropagationLossModel`` functions. The helper can also be used to form a fully associated PANs:
+
+::
+
+    NodeContainer nodes;
+    nodes.Create(4);
+    LrWpanHelper lrWpanHelper;
+    // The propagation and Delay Model are optional, a default is used if not provided.
+    lrWpanHelper.SetPropagationDelayModel("ns3::ConstantSpeedPropagationDelayModel");
+    lrWpanHelper.AddPropagationLossModel("ns3::LogDistancePropagationLossModel");
+    // Create and associate a PAN with addresses, The first node is used as coordinator
+    lrWpanHelper.CreateAssociatedPan(lrwpanDevices, 0xCAFE);
+    NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
+
+In the example shown above, the function ``CreateAssociatedPan`` forms a star topology PAN with devices sharing the same PAN ID (0xCAFE).
+Devices are assigned both 64 bit addresses (extended addresses) and 16 bit addresses (short addresses). The first node is assigned the
+role of PAN coordinator. Number of nodes are limited by the number of possible assignable short addresses ([00:01]-[FF:FD]).
+
+For more complex topologies or a more robust address assignation scheme, the bootstrap process is recommended.
+
+The helper can be used to generate pcap or ascii traces.
+These pcap files can be later on visualized in Wireshark.
+
+::
+
+    // Tracing
+    lrWpanHelper.EnablePcapAll(std::string("lr-wpan-data"), true);
+    AsciiTraceHelper ascii;
+    Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream("lr-wpan-data.tr");
+    lrWpanHelper.EnableAsciiAll(stream);
 
 Examples
-========
+~~~~~~~~
 
 The following examples have been written, which can be found in ``src/lr-wpan/examples/``:
 
@@ -364,7 +395,7 @@ surrounding devices.
     Default output of the program ``lr-wpan-error-distance-plot.cc``
 
 Tests
-=====
+~~~~~
 
 The following tests have been written, which can be found in ``src/lr-wpan/tests/``:
 
@@ -386,7 +417,7 @@ included in the test suite shows a known vulnerability window (192us) in CCA tha
 of channel as IDLE caused by the turnAround delay between the CCA and the actual transmission of the frame.
 
 Validation
-**********
+----------
 
 The model has not been validated against real hardware.  The error model
 has been validated against the data in IEEE Std 802.15.4-2006,
@@ -403,14 +434,15 @@ of the error model validation and can be reproduced by running
 
 
 Scope and Limitations
-*********************
+---------------------
 
 Future versions of this document will contain a PICS proforma similar to
 Appendix D of IEEE 802.15.4-2006. The current emphasis is on direct transmissions
 running on both, slotted and unslotted mode (CSMA/CA) of 802.15.4 operation for use in Zigbee.
 
 - Indirect data transmissions are not supported but planned for a future update.
-- Devices are capable of associating with a single PAN coordinator. Interference is modeled as AWGN but this is currently not thoroughly tested.
+- Devices are capable of associating with a single PAN coordinator.
+- Interference is modeled as AWGN but this is currently not thoroughly tested.
 - The standard describes the support of multiple PHY band-modulations but currently, only 250kbps O-QPSK (channel page 0) is supported.
 - Active and passive MAC scans are able to obtain a LQI value from a beacon frame, however, the scan primitives assumes LQI is correctly implemented and does not check the validity of its value.
 - Configuration of the ED thresholds are currently not supported.
@@ -423,7 +455,7 @@ running on both, slotted and unslotted mode (CSMA/CA) of 802.15.4 operation for 
 - RSSI is not supported as this is part of the 2015 revision and the current implementation only supports until the 2011 revision.
 
 References
-**********
+----------
 
 [`1 <https://ieeexplore.ieee.org/document/1700009>`_] Wireless Medium Access Control (MAC) and Physical Layer (PHY) Specifications for Low-Rate Wireless Personal Area Networks (WPANs), IEEE Computer Society, IEEE Std 802.15.4-2006, 8 September 2006.
 
