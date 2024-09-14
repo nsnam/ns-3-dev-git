@@ -59,6 +59,10 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     start.WriteU8(0);          // pad field
     start.WriteU16(m_length);  // entire length of radiotap data + header
     start.WriteU32(m_present); // bits describing which fields follow header
+    if (m_presentExt)
+    {
+        start.WriteU32(*m_presentExt); // extended bitmasks
+    }
 
     //
     // Time Synchronization Function Timer (when the first bit of the MPDU
@@ -271,6 +275,13 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     m_present = start.ReadU32(); // bits describing which fields follow header
 
     uint32_t bytesRead = 8;
+
+    if (m_present & RADIOTAP_EXT)
+    {
+        // If bit 31 of the it_present field is set, an extended it_present bitmask is present.
+        m_presentExt = start.ReadU32();
+        bytesRead += 4;
+    }
 
     //
     // Time Synchronization Function Timer (when the first bit of the MPDU arrived at the MAC)

@@ -13,6 +13,7 @@
 #include <ns3/header.h>
 
 #include <array>
+#include <optional>
 
 namespace ns3
 {
@@ -496,6 +497,15 @@ class RadiotapHeader : public Header
      */
     void SetHeMuOtherUserFields(const HeMuOtherUserFields& heMuOtherUserFields);
 
+    /**
+     * structure that contains the subfields of the TLV fields.
+     */
+    struct TlvFields
+    {
+        uint16_t type{0};   //!< type field.
+        uint16_t length{0}; //!< length field.
+    };
+
   private:
     /**
      * Serialize the Channel radiotap header.
@@ -693,11 +703,23 @@ class RadiotapHeader : public Header
         RADIOTAP_HE_MU_OTHER_USER = 0x02000000,
         RADIOTAP_ZERO_LEN_PSDU = 0x04000000,
         RADIOTAP_LSIG = 0x08000000,
+        RADIOTAP_TLV = 0x10000000,
         RADIOTAP_EXT = 0x80000000
     };
 
-    uint16_t m_length{8};  //!< entire length of radiotap data + header
-    uint32_t m_present{0}; //!< bits describing which fields follow header
+    /**
+     * @brief Radiotap extended flags.
+     */
+    enum RadiotapExtFlags : uint32_t
+    {
+        RADIOTAP_S1G = 0x00000001,
+        RADIOTAP_USIG = 0x00000002,
+        RADIOTAP_EHT_SIG = 0x00000004
+    };
+
+    uint16_t m_length{8};                   //!< entire length of radiotap data + header
+    uint32_t m_present{0};                  //!< bits describing which fields follow header
+    std::optional<uint32_t> m_presentExt{}; //!< optional extended present bitmask
 
     uint64_t m_tsft{0}; //!< Time Synchronization Function Timer (when the first bit of the MPDU
                         //!< arrived at the MAC)
