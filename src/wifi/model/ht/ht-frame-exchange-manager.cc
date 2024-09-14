@@ -1180,7 +1180,10 @@ HtFrameExchangeManager::SendPsdu()
             DequeuePsdu(m_psdu);
         }
 
-        Simulator::Schedule(txDuration, &HtFrameExchangeManager::TransmissionSucceeded, this);
+        Simulator::Schedule(txDuration, [=, this]() {
+            TransmissionSucceeded();
+            m_psdu = nullptr;
+        });
     }
     else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::BLOCK_ACK)
     {
@@ -1242,7 +1245,10 @@ HtFrameExchangeManager::SendPsdu()
             });
         }
 
-        Simulator::Schedule(txDuration, &HtFrameExchangeManager::TransmissionSucceeded, this);
+        Simulator::Schedule(txDuration, [=, this]() {
+            TransmissionSucceeded();
+            m_psdu = nullptr;
+        });
     }
     else
     {
