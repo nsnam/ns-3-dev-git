@@ -13,6 +13,7 @@ set(source_files
     helper/wifi-radio-energy-model-helper.cc
     helper/yans-wifi-helper.cc
     helper/wifi-phy-rx-trace-helper.cc
+    helper/wifi-tx-stats-helper.cc
     model/addba-extension.cc
     model/adhoc-wifi-mac.cc
     model/ampdu-subframe-header.cc
@@ -182,6 +183,7 @@ set(header_files
     helper/wifi-radio-energy-model-helper.h
     helper/yans-wifi-helper.h
     helper/wifi-phy-rx-trace-helper.h
+    helper/wifi-tx-stats-helper.h
     model/addba-extension.h
     model/adhoc-wifi-mac.h
     model/ampdu-subframe-header.h
@@ -395,4 +397,5 @@ build_lib(
     test/wifi-non-ht-dup-test.cc
     test/wifi-phy-mu-mimo-test.cc
     test/wifi-operating-channel-test.cc
+    test/wifi-tx-stats-helper-test.cc
 )
