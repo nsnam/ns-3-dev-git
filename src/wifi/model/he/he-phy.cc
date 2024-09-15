@@ -1527,7 +1527,7 @@ HePhy::StartTxHePortion(Ptr<const WifiPpdu> ppdu,
 }
 
 Time
-HePhy::CalculateTxDuration(WifiConstPsduMap psduMap,
+HePhy::CalculateTxDuration(const WifiConstPsduMap& psduMap,
                            const WifiTxVector& txVector,
                            WifiPhyBand band) const
 {

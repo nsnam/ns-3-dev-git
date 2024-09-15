@@ -156,7 +156,7 @@ class WifiPhy : public Object
      * real transmission power is calculated as txPowerMin + txPowerLevel * (txPowerMax -
      * txPowerMin) / nTxLevels
      */
-    void Send(WifiConstPsduMap psdus, const WifiTxVector& txVector);
+    void Send(const WifiConstPsduMap& psdus, const WifiTxVector& txVector);
 
     /**
      * \param ppdu the PPDU to send
@@ -266,7 +266,7 @@ class WifiPhy : public Object
      *
      * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
      */
-    static Time CalculateTxDuration(WifiConstPsduMap psduMap,
+    static Time CalculateTxDuration(const WifiConstPsduMap& psduMap,
                                     const WifiTxVector& txVector,
                                     WifiPhyBand band);
 
@@ -564,14 +564,14 @@ class WifiPhy : public Object
      * \param psdus the PSDUs being transmitted (only one unless DL MU transmission)
      * \param txPower the transmit power
      */
-    void NotifyTxBegin(WifiConstPsduMap psdus, Watt_u txPower);
+    void NotifyTxBegin(const WifiConstPsduMap& psdus, Watt_u txPower);
     /**
      * Public method used to fire a PhyTxEnd trace.
      * Implemented for encapsulation purposes.
      *
      * \param psdus the PSDUs being transmitted (only one unless DL MU transmission)
      */
-    void NotifyTxEnd(WifiConstPsduMap psdus);
+    void NotifyTxEnd(const WifiConstPsduMap& psdus);
     /**
      * Public method used to fire a PhyTxDrop trace.
      * Implemented for encapsulation purposes.

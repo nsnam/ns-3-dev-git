@@ -97,7 +97,7 @@ class HePhy : public VhtPhy
     uint16_t GetStaId(const Ptr<const WifiPpdu> ppdu) const override;
     MHz_u GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const override;
     void StartTx(Ptr<const WifiPpdu> ppdu) override;
-    Time CalculateTxDuration(WifiConstPsduMap psduMap,
+    Time CalculateTxDuration(const WifiConstPsduMap& psduMap,
                              const WifiTxVector& txVector,
                              WifiPhyBand band) const override;
     void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu) override;

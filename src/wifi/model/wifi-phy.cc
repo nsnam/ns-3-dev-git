@@ -1582,7 +1582,7 @@ WifiPhy::CalculateTxDuration(Ptr<const WifiPsdu> psdu,
 }
 
 Time
-WifiPhy::CalculateTxDuration(WifiConstPsduMap psduMap,
+WifiPhy::CalculateTxDuration(const WifiConstPsduMap& psduMap,
                              const WifiTxVector& txVector,
                              WifiPhyBand band)
 {
@@ -1597,7 +1597,7 @@ WifiPhy::GetMaxPsduSize(WifiModulationClass modulation)
 }
 
 void
-WifiPhy::NotifyTxBegin(WifiConstPsduMap psdus, Watt_u txPower)
+WifiPhy::NotifyTxBegin(const WifiConstPsduMap& psdus, Watt_u txPower)
 {
     if (!m_phyTxBeginTrace.IsEmpty())
     {
@@ -1612,7 +1612,7 @@ WifiPhy::NotifyTxBegin(WifiConstPsduMap psdus, Watt_u txPower)
 }
 
 void
-WifiPhy::NotifyTxEnd(WifiConstPsduMap psdus)
+WifiPhy::NotifyTxEnd(const WifiConstPsduMap& psdus)
 {
     if (!m_phyTxEndTrace.IsEmpty())
     {
@@ -1789,7 +1789,7 @@ WifiPhy::Send(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
 }
 
 void
-WifiPhy::Send(WifiConstPsduMap psdus, const WifiTxVector& txVector)
+WifiPhy::Send(const WifiConstPsduMap& psdus, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << psdus << txVector);
     /* Transmission can happen if:

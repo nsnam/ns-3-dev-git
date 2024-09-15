@@ -1388,7 +1388,7 @@ PhyEntity::GetTxMaskRejectionParams() const
 }
 
 Time
-PhyEntity::CalculateTxDuration(WifiConstPsduMap psduMap,
+PhyEntity::CalculateTxDuration(const WifiConstPsduMap& psduMap,
                                const WifiTxVector& txVector,
                                WifiPhyBand band) const
 {

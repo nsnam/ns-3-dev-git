@@ -478,7 +478,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      *
      * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
      */
-    virtual Time CalculateTxDuration(WifiConstPsduMap psduMap,
+    virtual Time CalculateTxDuration(const WifiConstPsduMap& psduMap,
                                      const WifiTxVector& txVector,
                                      WifiPhyBand band) const;
     /**
