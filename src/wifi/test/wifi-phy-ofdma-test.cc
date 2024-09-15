@@ -1377,7 +1377,7 @@ TestDlOfdmaPhyPuncturing::SendMuPpdu(uint16_t rxStaId1,
     txVector.SetMode(HePhy::GetHeMcs9(), rxStaId2);
     txVector.SetNss(1, rxStaId2);
 
-    std::vector<uint8_t> ruAlloc;
+    RuAllocation ruAlloc;
     if (puncturedSubchannels.empty())
     {
         std::fill_n(std::back_inserter(ruAlloc), 4, 200);

@@ -51,8 +51,8 @@ struct HeMuUserInfo
     bool operator!=(const HeMuUserInfo& other) const;
 };
 
-/// 8 bit RU_ALLOCATION per 20 MHz
-using RuAllocation = std::vector<uint8_t>;
+/// 9 bits RU_ALLOCATION per 20 MHz
+using RuAllocation = std::vector<uint16_t>;
 
 /**
  * \ingroup wifi

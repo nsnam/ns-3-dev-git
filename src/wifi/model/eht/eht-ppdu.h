@@ -106,7 +106,7 @@ class EhtPpdu : public HePpdu
     static std::pair<std::size_t, std::size_t> GetNumRusPerEhtSigBContentChannel(
         MHz_u channelWidth,
         uint8_t ehtPpduType,
-        const std::vector<uint8_t>& ruAllocation,
+        const RuAllocation& ruAllocation,
         bool compression,
         std::size_t numMuMimoUsers);
 
@@ -131,7 +131,7 @@ class EhtPpdu : public HePpdu
      * \return field size in bytes
      */
     static uint32_t GetEhtSigFieldSize(MHz_u channelWidth,
-                                       const std::vector<uint8_t>& ruAllocation,
+                                       const RuAllocation& ruAllocation,
                                        uint8_t ehtPpduType,
                                        bool compression,
                                        std::size_t numMuMimoUsers);
