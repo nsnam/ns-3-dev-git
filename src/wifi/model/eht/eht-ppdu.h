@@ -37,12 +37,11 @@ class EhtPpdu : public HePpdu
     struct EhtTbPhyHeader
     {
         // U-SIG fields
-        uint8_t m_phyVersionId{0}; ///< PHY Version Identifier field
-        uint8_t m_bandwidth{0};    ///< Bandwidth field
-        uint8_t m_bssColor{0};     ///< BSS color field
-        uint8_t m_ppduType{0};     ///< PPDU Type And Compressed Mode field
-
-    }; // struct EhtTbPhyHeader
+        uint8_t m_phyVersionId : 3 {0}; ///< PHY Version Identifier field
+        uint8_t m_bandwidth : 3 {0};    ///< Bandwidth field
+        uint8_t m_bssColor : 6 {0};     ///< BSS color field
+        uint8_t m_ppduType : 2 {0};     ///< PPDU Type And Compressed Mode field
+    };                                  // struct EhtTbPhyHeader
 
     /**
      * PHY header for EHT MU PPDUs
@@ -50,11 +49,12 @@ class EhtPpdu : public HePpdu
     struct EhtMuPhyHeader
     {
         // U-SIG fields
-        uint8_t m_phyVersionId{0}; ///< PHY Version Identifier field
-        uint8_t m_bandwidth{0};    ///< Bandwidth field
-        uint8_t m_bssColor{0};     ///< BSS color field
-        uint8_t m_ppduType{0};     ///< PPDU Type And Compressed Mode field
-        uint8_t m_ehtSigMcs{0};    ///< EHT-SIG-B MCS
+        uint8_t m_phyVersionId : 3 {0};         ///< PHY Version Identifier field
+        uint8_t m_bandwidth : 3 {0};            ///< Bandwidth field
+        uint8_t m_bssColor : 6 {0};             ///< BSS color field
+        uint8_t m_ppduType : 2 {0};             ///< PPDU Type And Compressed Mode field
+        uint8_t m_puncturedChannelInfo : 5 {0}; ///< Punctured Channel Information field
+        uint8_t m_ehtSigMcs : 2 {0};            ///< EHT-SIG-B MCS
 
         // EHT-SIG fields
         uint8_t m_giLtfSize{0}; ///< GI+LTF Size field
@@ -135,6 +135,20 @@ class EhtPpdu : public HePpdu
                                        uint8_t ehtPpduType,
                                        bool compression,
                                        std::size_t numMuMimoUsers);
+
+    /**
+     * Get the Punctured Channel Information field in the U-SIG
+     * \param inactiveSubchannels the bitmap indexed by the 20 MHz subchannels in ascending order,
+     * where each bit indicates whether the corresponding 20 MHz subchannel is punctured or not
+     * within the transmission bandwidth
+     * \param ehtPpduType the EHT_PPDU_TYPE used by the PPDU
+     * \param isLow80MHz flag whether the 80 MHz frequency subblock where U-SIG processing is
+     * performed is the lowest in frequency (if OFDMA and if channel width is larger than 80 MHz)
+     * \return the value of the Punctured Channel Information field
+     */
+    static uint8_t GetPuncturedInfo(const std::vector<bool>& inactiveSubchannels,
+                                    uint8_t ehtPpduType,
+                                    std::optional<bool> isLow80MHz);
 
   private:
     bool IsDlMu() const override;
