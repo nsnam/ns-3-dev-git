@@ -508,6 +508,7 @@ class FrameExchangeManager : public Object
     Ptr<Txop> m_dcf;                                  //!< the DCF/EDCAF that gained channel access
     WifiTxTimer m_txTimer;                            //!< the timer set upon frame transmission
     EventId m_navResetEvent;                          //!< the event to reset the NAV after an RTS
+    EventId m_sendCtsEvent;                           //!< the event to send a CTS after an (MU-)RTS
     Ptr<WifiMac> m_mac;                               //!< the MAC layer on this station
     Ptr<ApWifiMac> m_apMac;                           //!< AP MAC layer pointer (null if not an AP)
     Ptr<StaWifiMac> m_staMac;                         //!< STA MAC layer pointer (null if not a STA)

@@ -2640,12 +2640,12 @@ HeFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 // - The UL MU CS condition indicates that the medium is idle
                 // (Sec. 26.2.6.3 of 802.11ax-2021)
                 NS_LOG_DEBUG("Schedule CTS");
-                Simulator::Schedule(m_phy->GetSifs(),
-                                    &HeFrameExchangeManager::SendCtsAfterMuRts,
-                                    this,
-                                    hdr,
-                                    trigger,
-                                    rxSignalInfo.snr);
+                m_sendCtsEvent = Simulator::Schedule(m_phy->GetSifs(),
+                                                     &HeFrameExchangeManager::SendCtsAfterMuRts,
+                                                     this,
+                                                     hdr,
+                                                     trigger,
+                                                     rxSignalInfo.snr);
             }
             else if (trigger.IsMuBar())
             {

@@ -73,10 +73,8 @@ FrameExchangeManager::Reset()
 {
     NS_LOG_FUNCTION(this);
     m_txTimer.Cancel();
-    if (m_navResetEvent.IsPending())
-    {
-        m_navResetEvent.Cancel();
-    }
+    m_navResetEvent.Cancel();
+    m_sendCtsEvent.Cancel();
     m_navEnd = Simulator::Now();
     m_mpdu = nullptr;
     m_txParams.Clear();
@@ -1344,12 +1342,12 @@ FrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             if (VirtualCsMediumIdle())
             {
                 NS_LOG_DEBUG("Received RTS from=" << hdr.GetAddr2() << ", schedule CTS");
-                Simulator::Schedule(m_phy->GetSifs(),
-                                    &FrameExchangeManager::SendCtsAfterRts,
-                                    this,
-                                    hdr,
-                                    txVector.GetMode(),
-                                    rxSnr);
+                m_sendCtsEvent = Simulator::Schedule(m_phy->GetSifs(),
+                                                     &FrameExchangeManager::SendCtsAfterRts,
+                                                     this,
+                                                     hdr,
+                                                     txVector.GetMode(),
+                                                     rxSnr);
             }
             else
             {

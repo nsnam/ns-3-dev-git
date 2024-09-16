@@ -806,12 +806,12 @@ QosFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
         if (hdr.GetAddr2() == m_txopHolder || VirtualCsMediumIdle())
         {
             NS_LOG_DEBUG("Received RTS from=" << hdr.GetAddr2() << ", schedule CTS");
-            Simulator::Schedule(m_phy->GetSifs(),
-                                &QosFrameExchangeManager::SendCtsAfterRts,
-                                this,
-                                hdr,
-                                txVector.GetMode(),
-                                rxSnr);
+            m_sendCtsEvent = Simulator::Schedule(m_phy->GetSifs(),
+                                                 &QosFrameExchangeManager::SendCtsAfterRts,
+                                                 this,
+                                                 hdr,
+                                                 txVector.GetMode(),
+                                                 rxSnr);
         }
         else
         {
