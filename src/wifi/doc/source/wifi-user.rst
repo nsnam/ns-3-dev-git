@@ -1100,6 +1100,160 @@ The management and control frames (which also include beacons) are filtered out 
 the ``GetStatistics()`` methods, but when the raw PPDU records are retrieved, all PPDUs
 received are available and the user is responsible for further filtering as they see fit.
 
+WifiTxStatsHelper
+=================
+
+The ``WifiTxStatsHelper`` is complementary to the ``WifiPhyRxTraceHelper``.  Where the latter
+is used to collect statistics of Wi-Fi reception events at the physical layer, the former
+is used for collecting statistics on the transmit side at the MAC layer, including the
+number of transmissions and retransmissions of an MPDU, and the total number of successful,
+retransmitted, and failed MPDUs.  In addition, the helper tracks
+the duration of time that MPDUs are enqueued, including the durations that they reside
+within the MAC queue. For failed MPDUs, their timestamps of drop and reasons for being dropped
+are collected.
+
+The trace helper works by hooking MAC- and PHY-level traces on the applicable nodes, devices,
+and links (in multi-link operation), and maintaining per-MPDU records of every transmission.
+We explain the operation by way of first reviewing how a simulation is configured to
+use the helper, and then reviewing the public API.
+
+A sample usage of this trace helper is as follows, as can be explored by extending an
+existing Wi-fi example program.  First, declare an instance of the helper, as one might do
+with other Wi-Fi helpers, prior to calling ``Simulation::Run()``:
+
+.. sourcecode:: cpp
+
+  WifiTxStatsHelper txStatsHelper;
+
+You may need to include the trace helper's header if it is not otherwise included by the
+wifi module header:
+
+.. sourcecode:: cpp
+
+  #include "ns3/wifi-tx-stats-helper.h"
+
+Next, enable the trace helper on some subset of the Wi-Fi nodes in the simulation.  This step
+will hook traces on all of the nodes or devices enabled.  Two methods are provided, depending
+on whether a NodeContainer or NetDeviceContainer is enabled:
+
+.. sourcecode:: cpp
+
+  NodeContainer n;
+  txStatsHelper.Enable(n);
+
+or
+
+.. sourcecode:: cpp
+
+  NetDeviceContainer d;
+  txStatsHelper.Enable(d);
+
+By default, statistics will be collected for MPDUs enqueued between the start and stop times, which default to
+collecting statistics for the whole simulation.  To limit the duration, the following methods
+can be used, as an example:
+
+.. sourcecode:: cpp
+
+  txStatsHelper.Start(Seconds(1));
+  txStatsHelper.Stop(Seconds(10));
+
+Alternatively, the constructor is overloaded to allow these arguments to be passed there instead:
+
+.. sourcecode:: cpp
+
+  WifiTxStatsHelper txStatsHelper(Seconds(1), Seconds(10));
+
+Finally, a ``Reset()`` method is provided, to clear the success and failure records.  If
+this method is called, any in-progress MPDUs (i.e., those that have been queued but have
+neither been positively acked nor reached the maximum number of retries) are kept, but
+any completed records are deleted.
+
+The following main methods provide the output:
+
+.. sourcecode:: cpp
+
+   CountPerNodeDevice_t GetSuccessesByNodeDevice() const;
+   CountPerNodeDevice_t GetFailuresByNodeDevice() const;
+   CountPerNodeDevice_t GetRetransmissionsByNodeDevice() const;
+   uint64_t GetSuccesses() const;
+   uint64_t GetFailures() const;
+   uint64_t GetRetransmissions() const;
+   Time GetDuration() const;
+   const SuccessRecords& GetSuccessRecords(
+       WifiTxStatsHelper::MultiLinkSuccessType type = FIRST_LINK_IN_SET) const;
+   const FailureRecords& GetFailureRecords() const;
+
+For Multi-Link Operation (MLO) configurations, the records of successful MPDU transmissions
+are also available on a more granular, per-link basis:
+
+.. sourcecode:: cpp
+
+   const SuccessRecords& GetSuccessRecords(
+       WifiTxStatsHelper::MultiLinkSuccessType type = FIRST_LINK_IN_SET) const;
+
+MPDU transmission failures can also be filtered on the drop reason type with the following methods:
+
+.. sourcecode:: cpp
+
+   CountPerNodeDevice_t GetFailuresByNodeDevice(WifiMacDropReason reason) const;
+   uint64_t GetFailures(WifiMacDropReason reason) const;
+
+The first three methods return unordered maps with counts of successful MPDU transmissions,
+failed MPDU transmissions, and retransmitted MPDUs (for eventually successful MPDUs).
+
+1. ``GetSuccessesByNodeDevice()``: The returned data structure counts the number of
+   successful MPDU transmissions that were observed, indexed by a {node ID, device ID}
+   tuple.  If Multi-Link Operation is in use on the device, an acknowledged MPDU will be
+   counted as one success regardless of how many links it was transmitted on.
+
+   a. ``GetSuccessesByNodeDeviceLink()``: The returned data structure counts the number of
+      successful MPDU transmissions that were observed, indexed by {node ID, device ID, link ID}
+      tuple.  The link ID corresponds to the link for which the MPDU was successfully
+      acknowledged. If `type` is set to `FIRST_LINK_IN_SET` (default), then the success
+      is counted on the first link in the MPDU's in-flight link ID set. Otherwise, the success
+      is counted for all links in the MPDU's in-flight link ID set.
+
+2. ``GetFailuresByNodeDevice()``:  This returned data structure counts the number of failures
+   (maximum retries reached) that were observed, indexed by {node ID, device ID} tuple.
+   Per-link statistics are not available for failures (which may have experienced transmissions
+   on different links).
+
+   a. ``GetFailuresByNodeDevice(WifiMacDropReason reason)``: This overloaded method filters for
+      failure counts that match the provided drop reason.
+
+3. ``GetRetransmissionsByNodeDevice()``:  This returned data structure counts the number of
+   retransmissions that were observed, indexed by {node ID, device ID} tuple.  Per-link
+   statistics are not available for retransmissions.  Additionally, retransmissions of MPDUs
+   that were not ultimately successful are not counted.
+
+The second three methods provide aggregated counts across all nodes and devices enabled for
+the helper.  These counts should be the same as if the hashed maps of the first three methods
+were iterated, and the counts for each entry summed. The `GetFailures()` method has an
+overloaded version (`uint64_t GetFailures(WifiMacDropReason reason) const;`) to get the
+count of failed MPDU transmissions due to a given reason. If `type` is set to
+`FIRST_LINK_IN_SET` (default) for the `GetSuccessRecords` method, then the successful
+MPDU's record is saved in the `std::list<MpduRecord>` of the first link in the
+MPDU's in-flight link ID set. Otherwise, the record is saved in the lists of all links
+in the MPDU's in-flight link ID set.
+
+The ``GetDuration()`` method will return the duration since the helper was started or last reset.
+
+More detailed statistics can be obtained by the methods ``GetSuccessRecords()`` and
+``GetFailureRecords()``.  These methods export unordered maps of success and failure records,
+in the form of ``struct MpduRecord``, and organized by node, and device, and also by
+link-id in the case of success records (link-id is not available for failure records).
+Each ``MpduRecord`` tracks the time of enqueue, the time of first transmission, the ack time,
+and the dequeue time (a dequeue occurs when the MPDU is either positively acked or is discarded
+due to too many retransmissions).  The node ID, device ID, MPDU sequence number, and TID are
+recorded, and the number of retransmissions (if any) are counted.  Finally, for successful
+MPDUs, the ``m_successLinkId`` field tracks the link ID on which the MPDU was ultimately
+acknowledged.  To obtain a complete accounting of all MPDUs tracked by the helper, both
+``GetSuccessRecords()`` and ``GetFailureRecords()`` must be queried; all MPDU results
+will end up in one of the two data structures.
+
+The example program ``src/wifi/examples/wifi-bianchi.cc`` provides an example use of this
+helper, by setting the program option ``--useTxHelper`` to true.
+
 HT configuration
 ================
 

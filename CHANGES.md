@@ -50,6 +50,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (wifi) Added a new trace source to `WifiPhy`: **PhyRxMacHeaderEnd**, which is fired when the reception of the MAC header of an MPDU is completed and provides the MAC header and the remaining PSDU duration. The trace source is actually fired when the new **NotifyMacHdrRxEnd** attribute of `WifiPhy` is set to true (it is set to false by default).
 * (wifi) WifiHelper::SetStandard() method now accepts selected string values in addition to enum argument.
 * (wifi) Added a new method **SetPcapCaptureType** to `WifiPhyHelper` to control how PCAPs are generated for MLD devices.
+* (wifi) New trace helper `WifiTxStatsHelper` for providing Wi-Fi MAC-level transmission statistics.
 
 ### Changes to existing API
 
