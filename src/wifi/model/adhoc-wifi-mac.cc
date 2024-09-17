@@ -295,8 +295,8 @@ AdhocWifiMac::SendOneBeacon()
     auto supportedRates = GetSupportedRates();
     beacon.Get<SupportedRates>() = supportedRates.rates;
     beacon.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
-    beacon.SetBeaconIntervalUs(GetBeaconInterval().GetMicroSeconds());
-    beacon.Capabilities() = GetCapabilities();
+    beacon.m_beaconInterval = GetBeaconInterval().GetMicroSeconds();
+    beacon.m_capability = GetCapabilities();
     if (GetDsssSupported(SINGLE_LINK_OP_ID))
     {
         beacon.Get<DsssParameterSet>() = GetDsssParameterSet();

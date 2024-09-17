@@ -1213,8 +1213,8 @@ ApWifiMac::GetProbeRespProfile(uint8_t linkId) const
     auto supportedRates = GetSupportedRates(linkId);
     probe.Get<SupportedRates>() = supportedRates.rates;
     probe.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
-    probe.SetBeaconIntervalUs(GetBeaconInterval().GetMicroSeconds());
-    probe.Capabilities() = GetCapabilities(linkId);
+    probe.m_beaconInterval = GetBeaconInterval().GetMicroSeconds();
+    probe.m_capability = GetCapabilities(linkId);
     GetWifiRemoteStationManager(linkId)->SetShortPreambleEnabled(
         GetLink(linkId).shortPreambleEnabled);
     GetWifiRemoteStationManager(linkId)->SetShortSlotTimeEnabled(
@@ -1321,8 +1321,8 @@ ApWifiMac::GetAssocResp(Mac48Address to, uint8_t linkId)
     auto supportedRates = GetSupportedRates(linkId);
     assoc.Get<SupportedRates>() = supportedRates.rates;
     assoc.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
-    assoc.SetStatusCode(code);
-    assoc.Capabilities() = GetCapabilities(linkId);
+    assoc.m_statusCode = code;
+    assoc.m_capability = GetCapabilities(linkId);
     if (GetQosSupported())
     {
         assoc.Get<EdcaParameterSet>() = GetEdcaParameterSet(linkId);
@@ -1371,7 +1371,7 @@ ApWifiMac::GetLinkIdStaAddrMap(MgtAssocResponseHeader& assoc,
     // find all the links to setup (i.e., those for which status code is success)
     std::map<uint8_t /* link ID */, Mac48Address> linkIdStaAddrMap;
 
-    if (assoc.GetStatusCode().IsSuccess())
+    if (assoc.m_statusCode.IsSuccess())
     {
         linkIdStaAddrMap[linkId] = to;
     }
@@ -1385,7 +1385,7 @@ ApWifiMac::GetLinkIdStaAddrMap(MgtAssocResponseHeader& assoc,
         {
             auto& perStaProfile = mle->GetPerStaProfile(idx);
             if (perStaProfile.HasAssocResponse() &&
-                perStaProfile.GetAssocResponse().GetStatusCode().IsSuccess())
+                perStaProfile.GetAssocResponse().m_statusCode.IsSuccess())
             {
                 uint8_t otherLinkId = perStaProfile.GetLinkId();
                 auto staAddress = GetWifiRemoteStationManager(otherLinkId)
@@ -1471,9 +1471,9 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdS
     // Element must not contain the AID field. We set the AID field in such
     // Association Responses anyway, in order to ease future implementation of
     // the inheritance mechanism.
-    if (assoc.GetStatusCode().IsSuccess())
+    if (assoc.m_statusCode.IsSuccess())
     {
-        assoc.SetAssociationId(aid);
+        assoc.m_aid = aid;
     }
     if (const auto& mle = assoc.Get<MultiLinkElement>())
     {
@@ -1481,9 +1481,9 @@ ApWifiMac::SetAid(MgtAssocResponseHeader& assoc, const LinkIdStaAddrMap& linkIdS
         {
             if (const auto& perStaProfile = mle->GetPerStaProfile(idx);
                 perStaProfile.HasAssocResponse() &&
-                perStaProfile.GetAssocResponse().GetStatusCode().IsSuccess())
+                perStaProfile.GetAssocResponse().m_statusCode.IsSuccess())
             {
-                perStaProfile.GetAssocResponse().SetAssociationId(aid);
+                perStaProfile.GetAssocResponse().m_aid = aid;
             }
         }
     }
@@ -1539,8 +1539,8 @@ ApWifiMac::SendOneBeacon(uint8_t linkId)
     auto supportedRates = GetSupportedRates(linkId);
     beacon.Get<SupportedRates>() = supportedRates.rates;
     beacon.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
-    beacon.SetBeaconIntervalUs(GetBeaconInterval().GetMicroSeconds());
-    beacon.Capabilities() = GetCapabilities(linkId);
+    beacon.m_beaconInterval = GetBeaconInterval().GetMicroSeconds();
+    beacon.m_capability = GetCapabilities(linkId);
     GetWifiRemoteStationManager(linkId)->SetShortPreambleEnabled(link.shortPreambleEnabled);
     GetWifiRemoteStationManager(linkId)->SetShortSlotTimeEnabled(link.shortSlotTimeEnabled);
     if (GetDsssSupported(linkId))
@@ -1724,7 +1724,7 @@ ApWifiMac::TxOk(Ptr<const WifiMpdu> mpdu)
     {
         MgtAssocResponseHeader assocResp;
         mpdu->GetPacket()->PeekHeader(assocResp);
-        auto aid = assocResp.GetAssociationId();
+        auto aid = assocResp.m_aid;
 
         auto linkId = GetLinkIdByAddress(hdr.GetAddr2());
         NS_ABORT_MSG_IF(!linkId.has_value(), "No link ID matching the TA");
@@ -1841,7 +1841,7 @@ ApWifiMac::TxFailed(WifiMacDropReason timeoutReason, Ptr<const WifiMpdu> mpdu)
         // free the assigned AID
         MgtAssocResponseHeader assocResp;
         mpdu->GetPacket()->PeekHeader(assocResp);
-        auto aid = assocResp.GetAssociationId();
+        auto aid = assocResp.m_aid;
         m_aidToMldOrLinkAddress.erase(aid);
         for (const auto& [id, lnk] : GetLinks())
         {
@@ -2335,7 +2335,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
         const auto& frame = frameRefWrapper.get();
         RecordCapabilities(frame, from, linkId);
 
-        const CapabilityInformation& capabilities = frame.Capabilities();
+        const CapabilityInformation& capabilities = frame.m_capability;
         remoteStationManager->AddSupportedPhyPreamble(from, capabilities.IsShortPreamble());
 
         if (GetErpSupported(linkId) && remoteStationManager->GetErpOfdmSupported(from) &&

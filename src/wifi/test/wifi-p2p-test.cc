@@ -144,7 +144,7 @@ IbssBeaconingTest::CheckResults()
         {
             beaconsPerSta[addr2] = 1;
         }
-        const auto& capabilities = txBeacon.beacon.Capabilities();
+        const auto& capabilities = txBeacon.beacon.m_capability;
         NS_TEST_EXPECT_MSG_EQ(capabilities.IsEss(), false, "ESS bit should not be set for IBSS");
     }
     NS_TEST_EXPECT_MSG_EQ(beaconsPerSta.size(), 2, "Expected transmitted beacons from two STAs");

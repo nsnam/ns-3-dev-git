@@ -158,8 +158,8 @@ BasicMultiLinkElementTest::DoRun()
     capabilities.SetShortSlotTime(true);
     capabilities.SetEss();
 
-    m_outerAssoc.SetListenInterval(0);
-    m_outerAssoc.Capabilities() = capabilities;
+    m_outerAssoc.m_listenInterval = 0;
+    m_outerAssoc.m_capability = capabilities;
     m_outerAssoc.Get<Ssid>() = Ssid("MySsid");
 
     AllSupportedRates rates;
@@ -203,7 +203,7 @@ BasicMultiLinkElementTest::DoRun()
 
     /* Association Request included in the second Per-STA Profile subelement */
     MgtAssocRequestHeader assoc;
-    assoc.Capabilities() = capabilities;
+    assoc.m_capability = capabilities;
     // we simulate a "mistake" by adding an Ssid IE, which cannot be included in the
     // Per-STA Profile subelement. We will check that this Ssid is not serialized
     assoc.Get<Ssid>() = Ssid("OtherSsid");

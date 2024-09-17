@@ -61,30 +61,6 @@ MgtProbeResponseHeader::GetInstanceTypeId() const
 }
 
 uint64_t
-MgtProbeResponseHeader::GetBeaconIntervalUs() const
-{
-    return m_beaconInterval;
-}
-
-void
-MgtProbeResponseHeader::SetBeaconIntervalUs(uint64_t us)
-{
-    m_beaconInterval = us;
-}
-
-const CapabilityInformation&
-MgtProbeResponseHeader::Capabilities() const
-{
-    return m_capability;
-}
-
-CapabilityInformation&
-MgtProbeResponseHeader::Capabilities()
-{
-    return m_capability;
-}
-
-uint64_t
 MgtProbeResponseHeader::GetTimestamp() const
 {
     return m_timestamp;
@@ -175,30 +151,6 @@ TypeId
 MgtAssocRequestHeader::GetInstanceTypeId() const
 {
     return GetTypeId();
-}
-
-uint16_t
-MgtAssocRequestHeader::GetListenInterval() const
-{
-    return m_listenInterval;
-}
-
-void
-MgtAssocRequestHeader::SetListenInterval(uint16_t interval)
-{
-    m_listenInterval = interval;
-}
-
-const CapabilityInformation&
-MgtAssocRequestHeader::Capabilities() const
-{
-    return m_capability;
-}
-
-CapabilityInformation&
-MgtAssocRequestHeader::Capabilities()
-{
-    return m_capability;
 }
 
 uint32_t
@@ -316,7 +268,7 @@ MgtProbeResponseHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
 {
     auto i = start;
     m_timestamp = frame.GetTimestamp();
-    m_beaconInterval = frame.GetBeaconIntervalUs();
+    m_beaconInterval = frame.m_beaconInterval;
     i = m_capability.Deserialize(i);
     auto distance = i.GetDistanceFrom(start);
     NS_ASSERT_MSG(distance <= length,
@@ -345,36 +297,6 @@ TypeId
 MgtReassocRequestHeader::GetInstanceTypeId() const
 {
     return GetTypeId();
-}
-
-uint16_t
-MgtReassocRequestHeader::GetListenInterval() const
-{
-    return m_listenInterval;
-}
-
-void
-MgtReassocRequestHeader::SetListenInterval(uint16_t interval)
-{
-    m_listenInterval = interval;
-}
-
-const CapabilityInformation&
-MgtReassocRequestHeader::Capabilities() const
-{
-    return m_capability;
-}
-
-CapabilityInformation&
-MgtReassocRequestHeader::Capabilities()
-{
-    return m_capability;
-}
-
-void
-MgtReassocRequestHeader::SetCurrentApAddress(Mac48Address currentApAddr)
-{
-    m_currentApAddr = currentApAddr;
 }
 
 uint32_t
@@ -496,42 +418,6 @@ MgtAssocResponseHeader::GetInstanceTypeId() const
     return GetTypeId();
 }
 
-StatusCode
-MgtAssocResponseHeader::GetStatusCode()
-{
-    return m_code;
-}
-
-void
-MgtAssocResponseHeader::SetStatusCode(StatusCode code)
-{
-    m_code = code;
-}
-
-const CapabilityInformation&
-MgtAssocResponseHeader::Capabilities() const
-{
-    return m_capability;
-}
-
-CapabilityInformation&
-MgtAssocResponseHeader::Capabilities()
-{
-    return m_capability;
-}
-
-void
-MgtAssocResponseHeader::SetAssociationId(uint16_t aid)
-{
-    m_aid = aid;
-}
-
-uint16_t
-MgtAssocResponseHeader::GetAssociationId() const
-{
-    return m_aid;
-}
-
 uint32_t
 MgtAssocResponseHeader::GetSerializedSizeImpl() const
 {
@@ -539,7 +425,7 @@ MgtAssocResponseHeader::GetSerializedSizeImpl() const
 
     uint32_t size = 0;
     size += m_capability.GetSerializedSize();
-    size += m_code.GetSerializedSize();
+    size += m_statusCode.GetSerializedSize();
     size += 2; // aid
     size += WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::GetSerializedSizeImpl();
     return size;
@@ -551,7 +437,7 @@ MgtAssocResponseHeader::GetSerializedSizeInPerStaProfileImpl(
 {
     uint32_t size = 0;
     size += m_capability.GetSerializedSize();
-    size += m_code.GetSerializedSize();
+    size += m_statusCode.GetSerializedSize();
     size +=
         MgtHeaderInPerStaProfile<MgtAssocResponseHeader,
                                  AssocResponseElems>::GetSerializedSizeInPerStaProfileImpl(frame);
@@ -561,7 +447,7 @@ MgtAssocResponseHeader::GetSerializedSizeInPerStaProfileImpl(
 void
 MgtAssocResponseHeader::PrintImpl(std::ostream& os) const
 {
-    os << "status code=" << m_code << ", "
+    os << "status code=" << m_statusCode << ", "
        << "aid=" << m_aid << ", ";
     WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::PrintImpl(os);
 }
@@ -573,7 +459,7 @@ MgtAssocResponseHeader::SerializeImpl(Buffer::Iterator start) const
 
     Buffer::Iterator i = start;
     i = m_capability.Serialize(i);
-    i = m_code.Serialize(i);
+    i = m_statusCode.Serialize(i);
     i.WriteHtolsbU16(m_aid);
     WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::SerializeImpl(i);
 }
@@ -584,7 +470,7 @@ MgtAssocResponseHeader::SerializeInPerStaProfileImpl(Buffer::Iterator start,
 {
     Buffer::Iterator i = start;
     i = m_capability.Serialize(i);
-    i = m_code.Serialize(i);
+    i = m_statusCode.Serialize(i);
     MgtHeaderInPerStaProfile<MgtAssocResponseHeader,
                              AssocResponseElems>::SerializeInPerStaProfileImpl(i, frame);
 }
@@ -594,7 +480,7 @@ MgtAssocResponseHeader::DeserializeImpl(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
     i = m_capability.Deserialize(i);
-    i = m_code.Deserialize(i);
+    i = m_statusCode.Deserialize(i);
     m_aid = i.ReadLsbtohU16();
     auto distance = i.GetDistanceFrom(start) +
                     WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>::DeserializeImpl(i);
@@ -620,7 +506,7 @@ MgtAssocResponseHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
 {
     Buffer::Iterator i = start;
     i = m_capability.Deserialize(i);
-    i = m_code.Deserialize(i);
+    i = m_statusCode.Deserialize(i);
     m_aid = frame.m_aid;
     auto distance = i.GetDistanceFrom(start);
     NS_ASSERT_MSG(distance <= length,

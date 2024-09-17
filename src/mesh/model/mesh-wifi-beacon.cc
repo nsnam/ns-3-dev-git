@@ -19,7 +19,7 @@ MeshWifiBeacon::MeshWifiBeacon(Ssid ssid, AllSupportedRates rates, uint64_t us)
     m_header.Get<Ssid>() = ssid;
     m_header.Get<SupportedRates>() = rates.rates;
     m_header.Get<ExtendedSupportedRatesIE>() = rates.extendedRates;
-    m_header.SetBeaconIntervalUs(us);
+    m_header.m_beaconInterval = us;
 }
 
 void
@@ -31,7 +31,7 @@ MeshWifiBeacon::AddInformationElement(Ptr<WifiInformationElement> ie)
 Time
 MeshWifiBeacon::GetBeaconInterval() const
 {
-    return MicroSeconds(m_header.GetBeaconIntervalUs());
+    return MicroSeconds(m_header.m_beaconInterval);
 }
 
 Ptr<Packet>
