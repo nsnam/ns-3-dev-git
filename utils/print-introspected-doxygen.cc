@@ -837,10 +837,12 @@ PrintAttributesTid(std::ostream& os, const TypeId tid)
         }
         bool moreFlags{false};
         os << "    " << listLineStart << "Flags: ";
-        auto flagWrite = [&os, &moreFlags, info](TypeId::AttributeFlag flag,
-                                                 bool hasFunc,
-                                                 std::string msg) -> void {
-            if (info.flags & flag && hasFunc)
+
+        auto myInfo = info; // See GitLab #1142
+        auto flagWrite = [&os, &moreFlags, myInfo](TypeId::AttributeFlag flag,
+                                                   bool hasFunc,
+                                                   std::string msg) -> void {
+            if (myInfo.flags & flag && hasFunc)
             {
                 os << (outputText && moreFlags ? ", " : "") << flagSpanStart << msg << flagSpanStop;
                 moreFlags = true;
