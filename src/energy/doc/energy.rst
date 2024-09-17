@@ -3,7 +3,7 @@
 .. highlight:: bash
 
 Energy Framework
-----------------
+================
 
 Energy is a key issue for wireless devices, and network researchers
 often need to investigate the energy consumption at a node or in the
@@ -16,9 +16,6 @@ simulations requires support for modeling diverse energy models in
 ns-3. The |ns3| energy framework provides the basis for energy storing
 consumption and harvesting.
 
-
-Model Description
-*****************
 The framework is implemented into the ``src/energy/`` folder.
 
 The |ns3| energy framework is composed of 3 essential parts:
@@ -37,7 +34,7 @@ The |ns3| energy framework is composed of 3 essential parts:
 
 
 Energy Source Models
-====================
+--------------------
 
 An energy source represents a power supply. In |ns3|, nodes can
 have one or more energy sources. Likewise, energy sources can be
@@ -68,7 +65,7 @@ Harvester update triggers an update to the connected Energy Source.
 The ``EnergySource`` base class keeps a list of devices (``DeviceEnergyModel`` objects) and energy harvesters (``EnergyHarvester`` objects) that are using the particular Energy Source as power supply. When energy is completely drained, the Energy Source will notify all devices on this list. Each device can then handle this event independently, based on the desired behavior that should be followed in case of power outage.
 
 Generic Battery Model
-#####################
+~~~~~~~~~~~~~~~~~~~~~
 
 The Generic battery model is able to represent 4 basic types of batteries
 chemistries: Lithium-Ion (LiIon) or Lithium Polymer (LiPo), Nickel Cadmium (NiCd),
@@ -134,7 +131,7 @@ batteries using helpers. Details on helpers usage are detailed in the following 
 
 
 RV Battery Model
-################
+~~~~~~~~~~~~~~~~
 
 Attributes:
 
@@ -147,7 +144,7 @@ Attributes:
 * ``RvBatteryModelNumOfTerms``: The number of terms of the infinite sum for estimating battery level.
 
 Basic Energy Source
-###################
+~~~~~~~~~~~~~~~~~~~
 
 Attributes:
 
@@ -158,7 +155,7 @@ Attributes:
 
 
 Energy Consumption Models
-=========================
+-------------------------
 
 A ``DeviceEnergyModel`` is the energy consumption model of a device installed on the node.
 It is designed to be a state based model where each device is assumed to have a number of states, and each state is associated with a power consumption value.
@@ -169,7 +166,7 @@ Since the vehicle's speed can take continuous values within a certain range, it 
 However, by converting the speed value into current draw directly, the same set of ``DeviceEnergyModel`` APIs can still be used.
 
 WiFi Radio Energy Model
-#######################
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The WiFi Radio Energy Model is the energy consumption model of a Wifi
 net device. It provides a state for each of the available states of
@@ -219,7 +216,7 @@ Attributes
 * ``TxCurrentModel``: A pointer to the attached tx current model.
 
 Energy Harvesting Models
-========================
+------------------------
 
 The energy harvester represents the elements that supply energy from
 the environment and recharge an energy source to which it is
@@ -233,7 +230,7 @@ power consumption of the device needs to be jointly modeled.
 
 
 Usage
-*****
+-----
 
 The main way that ns-3 users will typically interact with the Energy
 Framework is through the helper API and through the publicly visible
@@ -260,7 +257,7 @@ regarding the current harvestable power and the total energy harvested
 by the harvester.
 
 Helpers
-=======
+~~~~~~~
 
 **Energy Source Helper:**
 
@@ -344,7 +341,7 @@ The following table is a list of the available presents in |ns3|:
 
 
 Tracing
-=======
+~~~~~~~
 
 Traced values differ between Energy Sources, Devices Energy Models and
 Energy Harvesters implementations, please look at the specific child
@@ -369,7 +366,7 @@ class for details.
 * ``TotalEnergyHarvested``: Total energy harvested by the BasicEnergyHarvester.
 
 Examples
-========
+~~~~~~~~
 
 The following examples have been written.
 
@@ -388,12 +385,15 @@ Examples in ``examples/energy``:
 
 
 Tests
-=====
+~~~~~
 The following tests have been written, which can be found in ``src/energy/tests/``:
+
+* ``basic-energy-harvester-test.cc``: Test energy harvester procedure
+* ``li-ion-energy-source-test.cc``: Test the procedure of the li-ion energy source (Deprecated). Use generic-battery-model instead.
 
 
 Validation
-**********
+----------
 
 The RV battery model is validated by comparing results with what was presented in the original RV battery model paper. The generic battery model is validated by superimposing the obtained discharge curves with manufacturer's datasheets plots. The following shows the results of the ``generic-battery-discharge-example.cc`` superimposed to manufacturer's datasheets charts:
 
@@ -425,7 +425,7 @@ The RV battery model is validated by comparing results with what was presented i
 
 
 Scope and Limitations
-=====================
+---------------------
 
 * In the ``GenericBatteryModel`` charging behavior (voltage as a function of SoC) is included but is not been thoroughly tested. Testing requires the implementation of a harvesting device (A charger) capable of providing a CCCV charging method typically used in batteries.
 * In the ``GenericBatteryModel`` impedance (battery resistance) is constant, battery aging or temperature effects are not considered.
@@ -433,7 +433,7 @@ Scope and Limitations
 * The harvesting mode can only be used with basic energy sources because it does not consider the current capacity or voltage of the battery.
 
 Future Work
-===========
+-----------
 
 * Support of device energy models for PHY layers (lr-wpan, WiMax, etc) and other pieces of hardware (UAV, sensors, CPU).
 * Support for realistic charging batteries in the ``GenericBatteryModule``.
@@ -441,7 +441,7 @@ Future Work
 * Implement an energy harvester that recharges the energy sources according to the power levels defined in a user customizable dataset of real measurements.
 
 References
-==========
+----------
 
 Energy source models and energy consumption models:
 
