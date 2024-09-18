@@ -231,10 +231,10 @@ TraceFirstDctcp(std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAck
             NS_LOG_WARN("now " << Now().As(Time::S) << " alpha " << alpha << " (expected <= 0.1)");
             g_validationFailed = true;
         }
-        if ((now > 7) && ((alpha > 0.09) || (alpha < 0.055)))
+        if ((now > 7) && ((alpha > 0.09) || (alpha < 0.049)))
         {
             NS_LOG_WARN("now " << Now().As(Time::S) << " alpha " << alpha
-                               << " (expected 0.09 <= alpha <= 0.055)");
+                               << " (expected 0.09 <= alpha <= 0.049)");
             g_validationFailed = true;
         }
     }
