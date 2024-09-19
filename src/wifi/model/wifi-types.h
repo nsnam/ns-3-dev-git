@@ -31,6 +31,7 @@ enum class WifiChannelWidthType : uint8_t
     CW_80MHZ,
     CW_160MHZ,
     CW_80_PLUS_80MHZ,
+    CW_320MHZ,
     CW_2160MHZ,
     MAX,
 };

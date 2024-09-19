@@ -600,6 +600,8 @@ WifiPhyOperatingChannel::GetWidthType() const
     case 160:
         return (m_channelIts.size() == 2) ? WifiChannelWidthType::CW_80_PLUS_80MHZ
                                           : WifiChannelWidthType::CW_160MHZ;
+    case 320:
+        return WifiChannelWidthType::CW_320MHZ;
     case 2160:
         return WifiChannelWidthType::CW_2160MHZ;
     case 0:
