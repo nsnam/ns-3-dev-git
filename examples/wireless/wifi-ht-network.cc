@@ -135,6 +135,11 @@ main(int argc, char* argv[])
 
     int minChannelWidth = 20;
     int maxChannelWidth = 40;
+    if ((channelWidth != -1) &&
+        ((channelWidth < minChannelWidth) || (channelWidth > maxChannelWidth)))
+    {
+        NS_FATAL_ERROR("Invalid channel width: " << channelWidth << " MHz");
+    }
     if (channelWidth >= minChannelWidth && channelWidth <= maxChannelWidth)
     {
         minChannelWidth = channelWidth;
