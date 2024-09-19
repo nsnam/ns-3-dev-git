@@ -258,6 +258,14 @@ const std::set<FrequencyChannelInfo> WifiPhyOperatingChannel::m_frequencyChannel
     {143, MHz_u{6665}, MHz_u{160}, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM},
     {175, MHz_u{6825}, MHz_u{160}, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM},
     {207, MHz_u{6985}, MHz_u{160}, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM},
+    // 320 MHz-1 channels
+    {31, MHz_u{6105}, MHz_u{320}, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM},
+    {95, MHz_u{6425}, MHz_u{320}, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM},
+    {159, MHz_u{6745}, MHz_u{320}, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM},
+    // 320 MHz-2 channels
+    {63, MHz_u{6265}, MHz_u{320}, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM},
+    {127, MHz_u{6585}, MHz_u{320}, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM},
+    {191, MHz_u{6905}, MHz_u{320}, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM},
 }};
 
 std::ostream&
