@@ -99,7 +99,7 @@ WifiPhy::GetTypeId()
                                           EnumValue<WifiPhyBand>,
                                           UintegerValue>(
                     MakeUintegerChecker<uint8_t>(0, 233),
-                    MakeUintegerChecker<MHz_u>(0, 160),
+                    MakeUintegerChecker<MHz_u>(0, 320),
                     MakeEnumChecker(WifiPhyBand::WIFI_PHY_BAND_2_4GHZ,
                                     "BAND_2_4GHZ",
                                     WifiPhyBand::WIFI_PHY_BAND_5GHZ,
@@ -108,7 +108,7 @@ WifiPhy::GetTypeId()
                                     "BAND_6GHZ",
                                     WifiPhyBand::WIFI_PHY_BAND_UNSPECIFIED,
                                     "BAND_UNSPECIFIED"),
-                    MakeUintegerChecker<uint8_t>(0, 7))))
+                    MakeUintegerChecker<uint8_t>(0, 15))))
             .AddAttribute("Frequency",
                           "The center frequency (MHz) of the current operating channel.",
                           TypeId::ATTR_GET,
@@ -123,12 +123,13 @@ WifiPhy::GetTypeId()
                           MakeUintegerChecker<uint8_t>(0, 233))
             .AddAttribute(
                 "ChannelWidth",
-                "The width in MHz of the current operating channel (5, 10, 20, 22, 40, 80 or 160). "
-                "If 80+80MHz is used, this corresponds to the total channel width, hence 160 MHz.",
+                "The width in MHz of the current operating channel (5, 10, 20, 22, 40, 80, 160 or "
+                "320). If 80+80MHz is used, this corresponds to the total channel width, hence 160 "
+                "MHz.",
                 TypeId::ATTR_GET,
                 UintegerValue(0),
                 MakeUintegerAccessor(&WifiPhy::GetChannelWidth),
-                MakeUintegerChecker<MHz_u>(5, 160))
+                MakeUintegerChecker<MHz_u>(5, 320))
             .AddAttribute(
                 "Primary20MHzIndex",
                 "The index of the primary 20 MHz channel within the current operating channel "

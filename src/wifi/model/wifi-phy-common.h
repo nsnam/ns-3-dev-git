@@ -570,6 +570,8 @@ operator<<(std::ostream& os, WifiChannelWidthType width)
         return (os << "160MHz");
     case WifiChannelWidthType::CW_80_PLUS_80MHZ:
         return (os << "80+80MHz");
+    case WifiChannelWidthType::CW_320MHZ:
+        return (os << "320MHz");
     case WifiChannelWidthType::CW_2160MHZ:
         return (os << "2160MHz");
     default:
