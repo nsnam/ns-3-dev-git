@@ -1699,7 +1699,6 @@ HePhy::GetUsableSubcarriers(MHz_u channelWidth)
     case 8: // 106-tone RU
         return 102;
     case 20:
-    default:
         return 234;
     case 40:
         return 468;
@@ -1707,6 +1706,9 @@ HePhy::GetUsableSubcarriers(MHz_u channelWidth)
         return 980;
     case 160:
         return 1960;
+    default:
+        NS_ASSERT_MSG(false, "Invalid channel width: " << channelWidth);
+        return 234;
     }
 }
 

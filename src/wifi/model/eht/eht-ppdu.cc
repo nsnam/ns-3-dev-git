@@ -51,7 +51,8 @@ EhtPpdu::SetEhtPhyHeader(const WifiTxVector& txVector)
     {
         const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(MHz_u{20});
         m_ehtPhyHeader.emplace<EhtMuPhyHeader>(EhtMuPhyHeader{
-            .m_bandwidth = GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth()),
+            .m_bandwidth =
+                GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth(), m_operatingChannel),
             .m_bssColor = bssColor,
             .m_ppduType = txVector.GetEhtPpduType(),
             // TODO: EHT PPDU should store U-SIG per 20 MHz band, assume it is the lowest 20 MHz
@@ -79,11 +80,46 @@ EhtPpdu::SetEhtPhyHeader(const WifiTxVector& txVector)
     }
     else if (ns3::IsUlMu(m_preamble))
     {
-        m_ehtPhyHeader.emplace<EhtTbPhyHeader>(EhtTbPhyHeader{
-            .m_bandwidth = GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth()),
-            .m_bssColor = bssColor,
-            .m_ppduType = txVector.GetEhtPpduType()});
+        m_ehtPhyHeader.emplace<EhtTbPhyHeader>(
+            EhtTbPhyHeader{.m_bandwidth = GetChannelWidthEncodingFromMhz(txVector.GetChannelWidth(),
+                                                                         m_operatingChannel),
+                           .m_bssColor = bssColor,
+                           .m_ppduType = txVector.GetEhtPpduType()});
     }
+}
+
+uint8_t
+EhtPpdu::GetChannelWidthEncodingFromMhz(MHz_u channelWidth, const WifiPhyOperatingChannel& channel)
+{
+    NS_ASSERT(channel.GetTotalWidth() >= channelWidth);
+    if (channelWidth == 320)
+    {
+        switch (channel.GetNumber())
+        {
+        case 31:
+        case 95:
+        case 159:
+            return 4;
+        case 63:
+        case 127:
+        case 191:
+            return 5;
+        default:
+            NS_ASSERT_MSG(false, "Invalid 320 MHz channel number " << +channel.GetNumber());
+            return 4;
+        }
+    }
+    return HePpdu::GetChannelWidthEncodingFromMhz(channelWidth);
+}
+
+MHz_u
+EhtPpdu::GetChannelWidthMhzFromEncoding(uint8_t bandwidth)
+{
+    if ((bandwidth == 4) || (bandwidth == 5))
+    {
+        return 320;
+    }
+    return HePpdu::GetChannelWidthMhzFromEncoding(bandwidth);
 }
 
 WifiPpduType
