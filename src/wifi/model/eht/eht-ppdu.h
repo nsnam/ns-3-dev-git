@@ -171,6 +171,24 @@ class EhtPpdu : public HePpdu
      */
     void SetEhtPhyHeader(const WifiTxVector& txVector);
 
+    /**
+     * Convert channel width expressed in MHz to bandwidth field encoding in U-SIG.
+     *
+     * @param channelWidth the channel width in MHz to use for the transmission
+     * @param channel the operating channel of the PHY
+     * @return the value used to encode the bandwidth field in U-SIG
+     */
+    static uint8_t GetChannelWidthEncodingFromMhz(MHz_u channelWidth,
+                                                  const WifiPhyOperatingChannel& channel);
+
+    /**
+     * Convert channel width expressed in MHz from bandwidth field encoding in U-SIG.
+     *
+     * @param bandwidth the value of the bandwidth field in U-SIG
+     * @return the channel width in MHz
+     */
+    static MHz_u GetChannelWidthMhzFromEncoding(uint8_t bandwidth);
+
     EhtPhyHeader m_ehtPhyHeader; //!< the EHT PHY header
 };
 

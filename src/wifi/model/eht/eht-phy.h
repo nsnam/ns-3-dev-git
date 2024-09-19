@@ -284,6 +284,12 @@ class EhtPhy : public HePhy
     static uint64_t CalculateNonHtReferenceRate(WifiCodeRate codeRate, uint16_t constellationSize);
 
     /**
+     * @param channelWidth the channel width
+     * @return he number of usable subcarriers for data
+     */
+    static uint16_t GetUsableSubcarriers(MHz_u channelWidth);
+
+    /**
      * Compute the CCA threshold for Per 20MHz check.
      * This threshold is used for CCA check when signal is not occupying P20 or for Per 20MHz CCA
      * check.

@@ -88,6 +88,16 @@ EhtPhy::BuildModeList()
     }
 }
 
+uint16_t
+EhtPhy::GetUsableSubcarriers(MHz_u channelWidth)
+{
+    if (channelWidth == 320)
+    {
+        return 3920;
+    }
+    return HePhy::GetUsableSubcarriers(channelWidth);
+}
+
 WifiMode
 EhtPhy::GetSigMode(WifiPpduField field, const WifiTxVector& txVector) const
 {
