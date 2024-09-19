@@ -42,9 +42,10 @@
 // This is a simple example in order to show how to configure an IEEE 802.11be Wi-Fi network.
 //
 // It outputs the UDP or TCP goodput for every EHT MCS value, which depends on the MCS value (0 to
-// 13), the channel width (20, 40, 80 or 160 MHz) and the guard interval (800ns, 1600ns or 3200ns).
-// The PHY bitrate is constant over all the simulation run. The user can also specify the distance
-// between the access point and the station: the larger the distance the smaller the goodput.
+// 13), the channel width (20, 40, 80, 160 or 320 MHz) and the guard interval (800ns, 1600ns or
+// 3200ns). The PHY bitrate is constant over all the simulation run. The user can also specify the
+// distance between the access point and the station: the larger the distance the smaller the
+// goodput.
 //
 // The simulation assumes a configurable number of stations in an infrastructure network:
 //
@@ -264,8 +265,8 @@ main(int argc, char* argv[])
         "list of comma separated MCS values to test; if unset, all MCS values (0-13) are tested",
         mcsStr);
     cmd.AddValue("channelWidth",
-                 "if set, limit testing to a specific channel width expressed in MHz (20, 40, 80 "
-                 "or 160 MHz)",
+                 "if set, limit testing to a specific channel width expressed in MHz (20, 40, 80, "
+                 "160 or 320 MHz)",
                  channelWidth);
     cmd.AddValue("guardInterval",
                  "if set, limit testing to a specific guard interval duration expressed in "
@@ -370,7 +371,10 @@ main(int argc, char* argv[])
     }
 
     int minChannelWidth = 20;
-    int maxChannelWidth = (frequency != 2.4 && frequency2 != 2.4 && frequency3 != 2.4) ? 160 : 40;
+    int maxChannelWidth =
+        ((frequency != 2.4) && (frequency2 != 2.4) && (frequency3 != 2.4))
+            ? (((frequency == 6) && (frequency2 == 0) && (frequency3 == 0)) ? 320 : 160)
+            : 40;
     if ((channelWidth != -1) &&
         ((channelWidth < minChannelWidth) || (channelWidth > maxChannelWidth)))
     {
@@ -438,6 +442,9 @@ main(int argc, char* argv[])
                 {
                     Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue(payloadSize));
                 }
+
+                Config::SetDefault("ns3::EhtConfiguration::Support320MHzOperation",
+                                   BooleanValue(channelWidth > 160));
 
                 NodeContainer wifiStaNodes;
                 wifiStaNodes.Create(nStations);
