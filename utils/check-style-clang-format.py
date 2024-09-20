@@ -16,6 +16,7 @@ the ".clang-format" file. This script performs the following checks / fixes:
 - Check / trim trailing whitespace. Always checked.
 - Check / replace tabs with spaces. Respects clang-format guards.
 - Check / fix SPDX licenses rather than GPL text. Respects clang-format guards.
+- Check file encoding. Always checked.
 
 This script can be applied to all text files in a given path or to individual files.
 
@@ -80,6 +81,7 @@ CHECKS = [
     "tabs",
     "license",
     "formatting",
+    "encoding",
 ]
 
 # Files to check
@@ -109,6 +111,7 @@ FILE_EXTENSIONS_TO_CHECK["formatting"] = [
 ]
 
 FILE_EXTENSIONS_TO_CHECK["include_prefixes"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
+FILE_EXTENSIONS_TO_CHECK["encoding"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 
 FILE_EXTENSIONS_TO_CHECK["tabs"] = [
     ".c",
@@ -155,6 +158,7 @@ FILE_EXTENSIONS_TO_CHECK["license"] = [
 
 # Other check parameters
 TAB_SIZE = 4
+FILE_ENCODING = "UTF-8"
 
 
 ###########################################################
@@ -318,6 +322,7 @@ def check_style_clang_format(
         "tabs": "tabs",
         "license": "GPL license text instead of SPDX license",
         "formatting": "bad code formatting",
+        "encoding": f"bad file encoding ({FILE_ENCODING})",
     }
 
     check_style_file_functions_kwargs = {
@@ -352,6 +357,10 @@ def check_style_clang_format(
         "formatting": {
             "function": check_formatting_file,
             "kwargs": {},  # The formatting keywords are added below
+        },
+        "encoding": {
+            "function": check_encoding_file,
+            "kwargs": {},
         },
     }
 
@@ -509,6 +518,67 @@ def check_formatting_file(
     return (filename, is_file_compliant, verbose_infos)
 
 
+def check_encoding_file(
+    filename: str,
+    fix: bool,
+    verbose: bool,
+) -> Tuple[str, bool, List[str]]:
+    """
+    Check / fix the encoding of a file.
+
+    @param filename Name of the file to be checked.
+    @param fix Whether to fix (True) or just check (False) the encoding of the file.
+    @param verbose Show the lines that are not compliant with the style.
+    @return Tuple [Filename,
+                   Whether the file is compliant with the style (before the check),
+                   Verbose information].
+    """
+
+    verbose_infos: List[str] = []
+    is_file_compliant = True
+
+    with open(filename, "rb") as f:
+        file_data = f.read()
+        file_lines = file_data.decode(FILE_ENCODING, errors="replace").splitlines(keepends=True)
+
+        # Check if file has correct encoding
+        try:
+            file_data.decode(FILE_ENCODING)
+
+        except UnicodeDecodeError as e:
+            is_file_compliant = False
+
+            if verbose:
+                # Find line and column with bad encoding
+                bad_char_start_index = e.start
+                n_chars_file_read = 0
+
+                for line_number, line in enumerate(file_lines):
+                    n_chars_line = len(line)
+
+                    if bad_char_start_index < n_chars_file_read + n_chars_line:
+                        bad_char_column = bad_char_start_index - n_chars_file_read
+
+                        verbose_infos.extend(
+                            [
+                                f"{filename}:{line_number + 1}:{bad_char_column + 1}: error: bad {FILE_ENCODING} encoding",
+                                f"    {line.rstrip()}",
+                                f"    {'':{bad_char_column}}^",
+                            ]
+                        )
+
+                        break
+
+                    n_chars_file_read += n_chars_line
+
+    # Fix file encoding
+    if fix and not is_file_compliant:
+        with open(filename, "w", encoding=FILE_ENCODING) as f:
+            f.writelines(file_lines)
+
+    return (filename, is_file_compliant, verbose_infos)
+
+
 def check_manually_file(
     filename: str,
     fix: bool,
@@ -533,7 +603,7 @@ def check_manually_file(
     verbose_infos: List[str] = []
     clang_format_enabled = True
 
-    with open(filename, "r", encoding="utf-8") as f:
+    with open(filename, "r", encoding=FILE_ENCODING) as f:
         file_lines = f.readlines()
 
     for i, line in enumerate(file_lines):
@@ -567,7 +637,7 @@ def check_manually_file(
 
     # Update file with the fixed lines
     if fix and not is_file_compliant:
-        with open(filename, "w", encoding="utf-8") as f:
+        with open(filename, "w", encoding=FILE_ENCODING) as f:
             f.writelines(file_lines)
 
     return (filename, is_file_compliant, verbose_infos)
@@ -764,7 +834,8 @@ if __name__ == "__main__":
         description="Check and apply the ns-3 coding style recursively to all files in the given PATHs. "
         "The script checks the formatting of the files using clang-format and"
         " other coding style rules manually (see script arguments). "
-        "All checks respect clang-format guards, except trailing whitespace, which is always checked. "
+        "All checks respect clang-format guards, except trailing whitespace and file encoding,"
+        " which are always checked. "
         'When used in "check mode" (default), the script runs all checks in all files. '
         "If it detects non-formatted files, they will be printed and this process exits with a non-zero code. "
         'When used in "fix mode", this script automatically fixes the files and exits with 0 code.'
@@ -809,6 +880,12 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--no-encoding",
+        action="store_true",
+        help=f"Do not check / fix file encoding ({FILE_ENCODING})",
+    )
+
+    parser.add_argument(
         "--fix",
         action="store_true",
         help="Fix coding style issues detected in the files",
@@ -840,14 +917,15 @@ if __name__ == "__main__":
                 "tabs": not args.no_tabs,
                 "license": not args.no_licenses,
                 "formatting": not args.no_formatting,
+                "encoding": not args.no_encoding,
             },
             fix=args.fix,
             verbose=args.verbose,
             n_jobs=args.jobs,
         )
 
-    except Exception as e:
-        print("ERROR:", e)
+    except Exception as ex:
+        print("ERROR:", ex)
         sys.exit(1)
 
     if not all_checks_successful:

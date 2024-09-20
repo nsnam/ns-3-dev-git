@@ -157,6 +157,7 @@ The script performs multiple style checks. By default, the script runs the follo
 * Check if there are no trailing whitespace. Always checked.
 * Check if there are no tabs. Respects clang-format guards.
 * Check if source code files use SPDX licenses rather than GPL license text. Respects clang-format guards.
+* Check if files have the correct encoding (UTF-8). Always checked.
 
 The process returns a zero exit code if all files adhere to these rules.
 If there are files that do not comply with the rules, the process returns a non-zero
@@ -170,6 +171,7 @@ flags:
 * ``--no-whitespace``
 * ``--no-tabs``
 * ``--no-licenses``
+* ``--no-encoding``
 
 Additional information about the formatting issues detected by the script can be enabled
 by adding the ``-v, --verbose`` flag.
