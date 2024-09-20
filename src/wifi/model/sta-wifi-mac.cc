@@ -380,29 +380,51 @@ StaWifiMac::GetCurrentChannel(uint8_t linkId) const
 }
 
 void
-StaWifiMac::NotifyEmlsrModeChanged(const std::set<uint8_t>& linkIds)
+StaWifiMac::NotifyEmlsrModeChanged(uint8_t txLinkId, const std::set<uint8_t>& linkIds)
 {
     std::stringstream ss;
     if (g_log.IsEnabled(ns3::LOG_FUNCTION))
     {
         std::copy(linkIds.cbegin(), linkIds.cend(), std::ostream_iterator<uint16_t>(ss, " "));
     }
-    NS_LOG_FUNCTION(this << ss.str());
+    NS_LOG_FUNCTION(this << txLinkId << ss.str());
 
     for (const auto& [linkId, lnk] : GetLinks())
     {
         auto& link = GetStaLink(lnk);
 
-        if (linkIds.contains(linkId))
+        if (!linkIds.empty())
         {
-            // EMLSR mode enabled
-            link.emlsrEnabled = true;
-            link.pmMode = WIFI_PM_ACTIVE;
+            // enabling EMLSR mode on EMLSR links
+            /**
+             * 802.11be D7.0 Sec. 35.3.17
+             * When a non-AP MLD [...] intends to enable the EMLSR mode on the EMLSR link(s), then:
+             * - The non-AP MLD shall operate in the EMLSR mode on the EMLSR link(s) and the other
+             *   non-AP STA(s) affiliated with the non-AP MLD operating on the corresponding EMLSR
+             *   link(s), which did not transmit the EML Operating Mode Notification frame, shall
+             *   transition to active mode without being required to transmit a frame with the Power
+             *   Management subfield set to 0
+             */
+            const auto enabled = linkIds.contains(linkId);
+            if (enabled)
+            {
+                link.pmMode = WIFI_PM_ACTIVE;
+            }
+            link.emlsrEnabled = enabled;
         }
         else
         {
-            // EMLSR mode disabled
-            if (link.emlsrEnabled)
+            // disabling EMLSR mode
+            /**
+             * 802.11be D7.0 Sec. 35.3.17
+             * When a non-AP MLD [...] intends to disable the EMLSR mode, then:
+             * - The non-AP MLD shall disable the EMLSR mode and the other non-AP STA(s) affiliated
+             *   with the non-AP MLD operating on the corresponding EMLSR link(s), which did not
+             *   transmit the EML Operating Mode Notification frame, shall transition to power save
+             *   mode without being required to transmit a frame with the Power Management subfield
+             *   set to 1
+             */
+            if (linkId != txLinkId && link.emlsrEnabled)
             {
                 link.pmMode = WIFI_PM_POWERSAVE;
             }

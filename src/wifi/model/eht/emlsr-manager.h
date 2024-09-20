@@ -621,8 +621,10 @@ class EmlsrManager : public Object
     /**
      * This method is called to make an EMLSR mode change effective after the transition
      * delay has elapsed or a notification response has been received from the AP.
+     *
+     * @param txLinkId the ID of the link on which the EML OMN frame was sent by the EMLSR client
      */
-    void ChangeEmlsrMode();
+    void ChangeEmlsrMode(uint8_t txLinkId);
 
     /**
      * Adjust the operating channel of all the aux PHYs to meet the constraint on the maximum

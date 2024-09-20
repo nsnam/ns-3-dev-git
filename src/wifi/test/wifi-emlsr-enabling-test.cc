@@ -12,6 +12,7 @@
 #include "ns3/boolean.h"
 #include "ns3/config.h"
 #include "ns3/ctrl-headers.h"
+#include "ns3/default-power-save-manager.h"
 #include "ns3/log.h"
 #include "ns3/mgt-action-headers.h"
 #include "ns3/qos-txop.h"
@@ -104,6 +105,21 @@ EmlOmnExchangeTest::DoSetup()
                                              MakeCallback(&EmlOmnExchangeTest::TxOk, this));
     m_staMacs[0]->TraceConnectWithoutContext("DroppedMpdu",
                                              MakeCallback(&EmlOmnExchangeTest::TxDropped, this));
+
+    // Add a Power Save Manager to the EMLSR client and set all the links, but the link used for ML
+    // setup, to powersave mode, so that they will switch to active mode when EMLSR mode is enabled
+    std::string s;
+    for (uint8_t id = 0; id < m_staMacs[0]->GetNLinks(); ++id)
+    {
+        if (id != m_mainPhyId)
+        {
+            s += std::to_string(id) + " true, ";
+        }
+    }
+    s.pop_back();
+    s.pop_back();
+    m_staMacs[0]->SetPowerSaveManager(
+        CreateObjectWithAttributes<DefaultPowerSaveManager>("PowerSaveMode", StringValue(s)));
 }
 
 void
@@ -117,6 +133,10 @@ EmlOmnExchangeTest::Transmit(Ptr<WifiMac> mac,
     auto linkId = m_txPsdus.back().linkId;
 
     auto psdu = psduMap.begin()->second;
+    const auto txDuration =
+        WifiPhy::CalculateTxDuration(psduMap,
+                                     txVector,
+                                     mac->GetDevice()->GetPhy(phyId)->GetPhyBand());
 
     switch (psdu->GetHeader(0).GetType())
     {
@@ -127,6 +147,20 @@ EmlOmnExchangeTest::Transmit(Ptr<WifiMac> mac,
 
     case WIFI_MAC_MGT_ASSOCIATION_RESPONSE:
         CheckEmlCapabilitiesInAssocResp(*psdu->begin(), txVector, linkId);
+
+        // check the PM mode of links after ML setup
+        Simulator::Schedule(txDuration + mac->GetDevice()->GetPhy(phyId)->GetSifs(), [=, this]() {
+            const auto linkIds = m_staMacs[0]->GetSetupLinkIds();
+            for (const auto id : linkIds)
+            {
+                // only the link used for ML setup must be in active mode
+                const auto isActive = (id == linkId);
+                const auto pmMode = m_staMacs[0]->GetPmMode(id);
+                NS_TEST_EXPECT_MSG_EQ((pmMode == WifiPowerManagementMode::WIFI_PM_ACTIVE),
+                                      isActive,
+                                      "Unexpected PM mode (" << +pmMode << ") for link " << +id);
+            }
+        });
         break;
 
     case WIFI_MAC_MGT_ACTION:
@@ -328,6 +362,18 @@ EmlOmnExchangeTest::CheckEmlsrLinks()
     NS_TEST_EXPECT_MSG_EQ((expectedEmlsrLinks == m_staMacs[0]->GetEmlsrManager()->GetEmlsrLinks()),
                           true,
                           "Unexpected set of EMLSR links)");
+
+    // check the PM mode of links after enabling EMLSR mode
+    const auto linkIds = m_staMacs[0]->GetSetupLinkIds();
+    for (const auto id : linkIds)
+    {
+        // the link used for ML setup and the EMLSR links must be in active mode
+        const auto isActive = ((id == m_mainPhyId) || m_linksToEnableEmlsrOn.contains(id));
+        const auto pmMode = m_staMacs[0]->GetPmMode(id);
+        NS_TEST_EXPECT_MSG_EQ((pmMode == WifiPowerManagementMode::WIFI_PM_ACTIVE),
+                              isActive,
+                              "Unexpected PM mode (" << +pmMode << ") for link " << +id);
+    }
 }
 
 void
@@ -351,7 +397,7 @@ WifiEmlsrEnablingTestSuite::WifiEmlsrEnablingTestSuite()
     : TestSuite("wifi-emlsr-enabling", Type::UNIT)
 {
     AddTestCase(new EmlOperatingModeNotificationTest(), TestCase::Duration::QUICK);
-    AddTestCase(new EmlOmnExchangeTest({1, 2}, MicroSeconds(0)), TestCase::Duration::QUICK);
+    AddTestCase(new EmlOmnExchangeTest({0, 2}, MicroSeconds(0)), TestCase::Duration::QUICK);
     AddTestCase(new EmlOmnExchangeTest({1, 2}, MicroSeconds(2048)), TestCase::Duration::QUICK);
     AddTestCase(new EmlOmnExchangeTest({0, 1, 2, 3}, MicroSeconds(0)), TestCase::Duration::QUICK);
     AddTestCase(new EmlOmnExchangeTest({0, 1, 2, 3}, MicroSeconds(2048)),

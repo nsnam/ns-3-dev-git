@@ -338,10 +338,11 @@ class StaWifiMac : public WifiMac
     /**
      * Notify the MAC that EMLSR mode has changed on the given set of links.
      *
+     * @param txLinkId the ID of the link on which the EML OMN frame was sent by the EMLSR client
      * @param linkIds the IDs of the links that are now EMLSR links (EMLSR mode is disabled
      *                on other links)
      */
-    void NotifyEmlsrModeChanged(const std::set<uint8_t>& linkIds);
+    void NotifyEmlsrModeChanged(uint8_t txLinkId, const std::set<uint8_t>& linkIds);
 
     /**
      * @param linkId the ID of the given link
