@@ -215,6 +215,15 @@ WifiDefaultAssocManager::EndScanning()
                     apChannel = apChannel.GetPrimaryChannel(MHz_u{80});
                 }
 
+                // switch this link to using the channel used by a reported AP (or its primary160
+                // in case the reported AP is using a 320 MHz and the non-AP MLD does not support
+                // 320 MHz operations)
+                if (apChannel.GetTotalWidth() > 160 &&
+                    !phy->GetDevice()->GetEhtConfiguration()->m_320MHzSupported)
+                {
+                    apChannel = apChannel.GetPrimaryChannel(160);
+                }
+
                 NS_LOG_DEBUG("Switch link " << +linkId << " to using " << apChannel);
                 phy->SetOperatingChannel(apChannel);
                 // actual channel switching may be delayed, thus setup a channel switch timer

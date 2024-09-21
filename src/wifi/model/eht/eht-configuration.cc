@@ -62,6 +62,11 @@ EhtConfiguration::GetTypeId()
             .SetParent<Object>()
             .SetGroupName("Wifi")
             .AddConstructor<EhtConfiguration>()
+            .AddAttribute("Support320MHzOperation",
+                          "Whether or not 320 MHz operation is to be supported.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&EhtConfiguration::m_320MHzSupported),
+                          MakeBooleanChecker())
             .AddAttribute("EmlsrActivated",
                           "Whether EMLSR option is activated. If activated, EMLSR mode can be "
                           "enabled on the EMLSR links by an installed EMLSR Manager.",

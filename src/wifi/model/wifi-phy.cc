@@ -22,6 +22,7 @@
 #include "ns3/attribute-container.h"
 #include "ns3/channel.h"
 #include "ns3/dsss-phy.h"
+#include "ns3/eht-configuration.h"
 #include "ns3/eht-phy.h" //also includes OFDM, HT, VHT and HE
 #include "ns3/erp-ofdm-phy.h"
 #include "ns3/error-model.h"
@@ -1296,7 +1297,7 @@ WifiPhy::DoChannelSwitch()
         {
             NS_ABORT_MSG("Attempting to set a " << chWidth
                                                 << " MHz channel on"
-                                                   "a station only supporting 20 MHz operation");
+                                                   " a station only supporting 20 MHz operation");
         }
 
         if (auto vhtConfig = m_device->GetVhtConfiguration();
@@ -1304,7 +1305,15 @@ WifiPhy::DoChannelSwitch()
         {
             NS_ABORT_MSG("Attempting to set a " << chWidth
                                                 << " MHz channel on"
-                                                   "a station supporting up to 80 MHz operation");
+                                                   " a station supporting up to 80 MHz operation");
+        }
+
+        if (auto ehtConfig = m_device->GetEhtConfiguration();
+            ehtConfig && !ehtConfig->m_320MHzSupported && chWidth > 160)
+        {
+            NS_ABORT_MSG("Attempting to set a " << chWidth
+                                                << " MHz channel on"
+                                                   " a station supporting up to 160 MHz operation");
         }
     }
 
