@@ -2515,8 +2515,21 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
                 phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
         }
     }
-    // 320 MHz not supported yet
-
+    if (auto ehtConfig = GetEhtConfiguration(); ehtConfig->m_320MHzSupported)
+    {
+        capabilities.m_phyCapabilities.support320MhzIn6Ghz = true;
+        for (auto maxMcs : {9, 11, 13})
+        {
+            capabilities.SetSupportedRxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_320_MHZ,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxRxNss : 0);
+            capabilities.SetSupportedTxEhtMcsAndNss(
+                EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_320_MHZ,
+                maxMcs,
+                phy->IsMcsSupported(WIFI_MOD_CLASS_EHT, maxMcs) ? maxTxNss : 0);
+        }
+    }
     return capabilities;
 }
 
