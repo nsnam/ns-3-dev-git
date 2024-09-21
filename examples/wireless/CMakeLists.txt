@@ -308,6 +308,7 @@ build_example(
     ${libnetwork}
     ${libapplications}
     ${libinternet}
+    ${libflow-monitor}
 )
 
 build_example(

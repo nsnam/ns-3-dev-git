@@ -13,9 +13,12 @@
 #include "ns3/double.h"
 #include "ns3/enum.h"
 #include "ns3/error-model.h"
+#include "ns3/flow-monitor-helper.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/ipv4-flow-classifier.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/ipv4-static-routing-helper.h"
@@ -216,6 +219,7 @@ main(int argc, char* argv[])
     bool logging{false};
     bool verbose{false};
     bool pcap{false};
+    bool flowMon{false};
     std::size_t nStations{1};
     Time simulationTime{"10s"};
     uint32_t payloadSize{1000}; // bytes
@@ -241,6 +245,7 @@ main(int argc, char* argv[])
     cmd.AddValue("logging", "turn on example log components", logging);
     cmd.AddValue("verbose", "turn on all wifi log components", verbose);
     cmd.AddValue("pcap", "turn on pcap file output", pcap);
+    cmd.AddValue("flowMonitoring", "turn on flow monitoring", flowMon);
     cmd.AddValue("nStations", "number of non-AP stations", nStations);
     cmd.AddValue("simulationTime", "Simulation time", simulationTime);
     cmd.AddValue("payloadSize", "The application payload size in bytes", payloadSize);
@@ -468,6 +473,13 @@ main(int argc, char* argv[])
     source.Start(Seconds(1));
     source.Stop(simulationTime + Seconds(1.0));
 
+    const auto mcastAddress = Ipv4Address(targetAddr.c_str());
+    std::map<Address, std::set<uint32_t>> mcastGroups;
+    for (uint32_t i = 1; i <= wifiStaNodes.GetN(); ++i)
+    {
+        mcastGroups[mcastAddress].insert(i);
+    }
+
     // pcap
     if (pcap)
     {
@@ -486,21 +498,67 @@ main(int argc, char* argv[])
     Config::Connect("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
                     MakeCallback(&SocketRxPacket));
 
+    // install FlowMonitor on all nodes
+    FlowMonitorHelper flowmon;
+    Ptr<FlowMonitor> monitor;
+    if (flowMon)
+    {
+        monitor = flowmon.InstallAll(mcastGroups);
+    }
+
     // run simulation
     Simulator::Stop(simulationTime + Seconds(2.0));
     Simulator::Run();
 
+    Ptr<Ipv4FlowClassifier> classifier;
+    FlowMonitor::FlowStatsContainer stats;
+    if (flowMon)
+    {
+        monitor->CheckForLostPackets();
+        classifier = DynamicCast<Ipv4FlowClassifier>(flowmon.GetClassifier());
+        stats = monitor->GetFlowStats();
+        if (stats.empty())
+        {
+            NS_LOG_ERROR("No flow monitor statistics!");
+            exit(1);
+        }
+        monitor->SerializeToXmlFile("wifi-multicast-flow-monitor.xml", true, true);
+    }
+    for (auto i = stats.cbegin(); i != stats.cend(); ++i)
+    {
+        Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow(i->first);
+        std::cout << "Flow " << i->first << " (" << t.sourceAddress << " -> "
+                  << t.destinationAddress << ")\n";
+        std::cout << "  Tx Packets: " << i->second.txPackets << "\n";
+        std::cout << "  Tx Bytes:   " << i->second.txBytes << "\n";
+        std::cout << "  TxOffered:  " << i->second.txBytes * 8.0 / 1e6 << " Mbps\n";
+        NS_ABORT_IF(!i->second.multicast);
+        for (const auto& [nodeId, rxStats] : i->second.multicastRxStats)
+        {
+            std::cout << "  Rx node: " << nodeId << "\n";
+            std::cout << "    Rx Packets: " << rxStats.rxPackets << "\n";
+            std::cout << "    Rx Bytes:   " << rxStats.rxBytes << "\n";
+            std::cout << "    Lost Packets: " << rxStats.lostPackets << "\n";
+            std::cout << "    Throughput: " << rxStats.rxBytes * 8.0 / 1e6 << " Mbps\n";
+        }
+    }
+
     // check results
-    std::cout << "Node\t\t\tTX packets\t\tTX bytes\t\tRX packets\t\tRX bytes\t\tThroughput (Mbit/s)"
-              << std::endl;
+    if (!flowMon)
+    {
+        std::cout << "\nNode\t\tTX packets\tTX bytes\tRX packets\tRX bytes\tThroughput (Mbit/s)\n";
+    }
     const auto txRate =
         (g_lastTx - g_firstTx).IsStrictlyPositive()
             ? static_cast<double>(g_txBytes * 8) / ((g_lastTx - g_firstTx).GetMicroSeconds())
             : 0.0; // Mbit/s
     const auto txPackets = g_txBytes / payloadSize;
-    std::cout << "AP"
-              << "\t\t\t" << txPackets << "\t\t\t" << g_txBytes << "\t\t\t0\t\t\t0\t\t\t" << txRate
-              << "" << std::endl;
+    if (!flowMon)
+    {
+        std::cout << "AP"
+                  << "\t\t" << txPackets << "\t\t" << g_txBytes << "\t\t0\t\t0\t\t" << txRate
+                  << "\n";
+    }
     for (std::size_t i = 0; i < nStations; ++i)
     {
         const auto rxBytes = sinks.Get(0)->GetObject<PacketSink>()->GetTotalRx();
@@ -509,8 +567,11 @@ main(int argc, char* argv[])
             (g_lastRx - g_firstTx).IsStrictlyPositive()
                 ? static_cast<double>(rxBytes * 8) / ((g_lastRx - g_firstTx).GetMicroSeconds())
                 : 0.0; // Mbit/s
-        std::cout << "STA" << i + 1 << "\t\t\t0\t\t\t0\t\t\t" << rxPackets << "\t\t\t" << rxBytes
-                  << "\t\t\t" << throughput << "" << std::endl;
+        if (!flowMon)
+        {
+            std::cout << "STA" << i + 1 << "\t\t0\t\t0\t\t" << rxPackets << "\t\t" << rxBytes
+                      << "\t\t" << throughput << "\n";
+        }
         if (rxPackets < minExpectedPackets)
         {
             NS_LOG_ERROR("Obtained RX packets " << rxPackets << " is not expected!");

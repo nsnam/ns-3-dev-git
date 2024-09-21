@@ -215,6 +215,7 @@ Moreover, the following examples use the flow-monitor module:
 * examples/tcp/tcp-variants-comparison.cc
 * examples/wireless/wifi-multirate.cc
 * examples/wireless/wifi-hidden-terminal.cc
+* examples/wireless/wifi-multicast.cc
 
 
 Troubleshooting
