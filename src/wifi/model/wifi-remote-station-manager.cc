@@ -1768,6 +1768,12 @@ WifiRemoteStationManager::AddStationEhtCapabilities(Mac48Address from,
     // Used by all stations to record EHT capabilities of remote stations
     NS_LOG_FUNCTION(this << from << ehtCapabilities);
     auto state = LookupState(from);
+    if (ehtCapabilities.m_phyCapabilities.support320MhzIn6Ghz &&
+        (m_wifiPhy->GetPhyBand() == WIFI_PHY_BAND_6GHZ))
+    {
+        state->m_channelWidth = 320;
+    }
+    // For other cases, the supported channel width is set by the HT/VHT capabilities
     for (const auto& mcs : m_wifiPhy->GetMcsList(WIFI_MOD_CLASS_EHT))
     {
         for (uint8_t mapType = 0; mapType < EhtMcsAndNssSet::EHT_MCS_MAP_TYPE_MAX; ++mapType)

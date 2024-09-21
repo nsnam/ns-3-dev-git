@@ -177,11 +177,14 @@ struct EhtMcsAndNssSet
      * Deserialize the Supported EHT-MCS And NSS Set subfield
      *
      * @param start iterator pointing to where the Supported EHT-MCS And NSS Set subfield should be
-     * read from \param is2_4Ghz indicating whether PHY is operating in 2.4 GHz based on previously
-     * serialized IEs \param heSupportedChannelWidthSet supported channel width set based on
-     * previously deserialized HE capabilities IE \param support320MhzIn6Ghz flag whether 320 MHz is
-     * supported in 6 GHz band based on EHT PHY capabilities subfield \return the number of bytes
-     * read
+     * read from
+     * @param is2_4Ghz indicating whether PHY is operating in 2.4 GHz based on previously serialized
+     * IEs
+     * @param heSupportedChannelWidthSet supported channel width set based on previously
+     * deserialized HE capabilities IE
+     * @param support320MhzIn6Ghz flag whether 320 MHz is supported in 6 GHz band based on EHT PHY
+     * capabilities subfield
+     * @return the number of bytes read
      */
     uint16_t Deserialize(Buffer::Iterator start,
                          bool is2_4Ghz,
