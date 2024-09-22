@@ -145,6 +145,10 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
         {
             operatingClass = 134;
         }
+        else if (channel.GetWidth() == 320)
+        {
+            operatingClass = 137;
+        }
         break;
     case WIFI_PHY_BAND_UNSPECIFIED:
     default:
@@ -154,7 +158,7 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
 
     NS_ABORT_MSG_IF(operatingClass == 0,
                     "Operating class not found for channel number "
-                        << channelNumber << " width " << channel.GetWidth() << " MHz "
+                        << +channelNumber << " width " << channel.GetWidth() << " MHz "
                         << "band " << channel.GetPhyBand());
 
     // find the primary channel number
@@ -239,6 +243,10 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
     case 134:
         band = WIFI_PHY_BAND_6GHZ;
         width = MHz_u{160};
+        break;
+    case 137:
+        band = WIFI_PHY_BAND_6GHZ;
+        width = 320;
         break;
     default:
         break;
