@@ -513,7 +513,8 @@ enum WifiChannelListType : uint8_t
     WIFI_CHANLIST_PRIMARY = 0,
     WIFI_CHANLIST_SECONDARY,
     WIFI_CHANLIST_SECONDARY40,
-    WIFI_CHANLIST_SECONDARY80
+    WIFI_CHANLIST_SECONDARY80,
+    WIFI_CHANLIST_SECONDARY160
 };
 
 /**
@@ -536,8 +537,10 @@ operator<<(std::ostream& os, WifiChannelListType type)
         return (os << "SECONDARY40");
     case WIFI_CHANLIST_SECONDARY80:
         return (os << "SECONDARY80");
+    case WIFI_CHANLIST_SECONDARY160:
+        return (os << "SECONDARY160");
     default:
-        NS_FATAL_ERROR("Unknown wifi channel type");
+        NS_FATAL_ERROR("Unknown wifi channel type " << +type);
         return (os << "UNKNOWN");
     }
 }
@@ -713,6 +716,17 @@ MHz_u GetChannelWidthInMhz(WifiChannelWidthType width);
  * @return true if the provided preamble corresponds to an EHT transmission
  */
 bool IsEht(WifiPreamble preamble);
+
+/**
+ * @brief map a given channel list type to the corresponding scaling factor
+ */
+const std::map<WifiChannelListType, dBm_u> channelTypeToScalingFactor{
+    {WIFI_CHANLIST_PRIMARY, 0.0},
+    {WIFI_CHANLIST_SECONDARY, 0.0},
+    {WIFI_CHANLIST_SECONDARY40, 3.0},
+    {WIFI_CHANLIST_SECONDARY80, 6.0},
+    {WIFI_CHANLIST_SECONDARY160, 12.0},
+};
 
 } // namespace ns3
 

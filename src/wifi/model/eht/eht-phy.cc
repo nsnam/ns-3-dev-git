@@ -53,6 +53,7 @@ const std::map<MHz_u, WifiChannelListType> ehtSecondaryChannels {
     {20, WIFI_CHANLIST_SECONDARY},
     {40, WIFI_CHANLIST_SECONDARY40},
     {80, WIFI_CHANLIST_SECONDARY80},
+    {160, WIFI_CHANLIST_SECONDARY160},
 };
 
 // clang-format on
