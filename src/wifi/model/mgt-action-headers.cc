@@ -1767,7 +1767,8 @@ FilsDiscHeader::FdCapability::SetOpChannelWidth(MHz_u width)
                 : (width == MHz_u{40})                     ? 1
                 : (width == MHz_u{80})                     ? 2
                 : (width == MHz_u{160})                    ? 3
-                                                           : 4;
+                : (width == MHz_u{320})                    ? 4
+                                                           : 5;
 }
 
 MHz_u
@@ -1783,6 +1784,8 @@ FilsDiscHeader::FdCapability::GetOpChannelWidth() const
         return MHz_u{80};
     case 3:
         return MHz_u{160};
+    case 4:
+        return MHz_u{320};
     default:
         NS_ABORT_MSG("Reserved value: " << +m_chWidth);
     }
