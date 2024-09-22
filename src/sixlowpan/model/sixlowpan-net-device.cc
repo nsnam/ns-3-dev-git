@@ -138,7 +138,7 @@ SixLowPanNetDevice::SetNetDevice(Ptr<NetDevice> device)
     NS_LOG_DEBUG("RegisterProtocolHandler for " << device->GetInstanceTypeId().GetName());
 
     uint16_t protocolType = PROT_NUMBER;
-    if (device->GetInstanceTypeId().GetName() == "ns3::LrWpanNetDevice")
+    if (device->GetInstanceTypeId().GetName().find("LrWpanNetDevice") != std::string::npos)
     {
         // LrWpanNetDevice does not have a protocol number in the frame.
         // Hence, we must register for any protocol, and assume that any

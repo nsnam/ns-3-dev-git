@@ -40,6 +40,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (lr-wpan) !2123 - CCA vulnerability window test and doc
 - (core) !2018 - `AddDeprecatedName` is now supported in TypeId.
 - (energy) !2018 - Energy module now uses the `ns3::energy` namespace in its TypeId.
+- (lr-wpan) !2163 - Lr-wpan module now uses the `ns3::lrwpan` namespace in its TypeId.
 
 ### Bugs fixed
 
