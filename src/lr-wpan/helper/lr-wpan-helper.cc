@@ -346,7 +346,7 @@ LrWpanHelper::EnablePcapInternal(std::string prefix,
     if (!device)
     {
         NS_LOG_INFO("LrWpanHelper::EnablePcapInternal(): Device "
-                    << device << " not of type ns3::LrWpanNetDevice");
+                    << device << " not of type ns3::lrwpan::LrWpanNetDevice");
         return;
     }
 
@@ -468,7 +468,7 @@ LrWpanHelper::EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
 
     oss.str("");
     oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid
-        << "/$ns3::LrWpanNetDevice/Mac/MacRx";
+        << "/$ns3::lrwpan::LrWpanNetDevice/Mac/MacRx";
     device->GetMac()->TraceConnect(
         "MacRx",
         oss.str(),
@@ -476,7 +476,7 @@ LrWpanHelper::EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
 
     oss.str("");
     oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid
-        << "/$ns3::LrWpanNetDevice/Mac/MacTx";
+        << "/$ns3::lrwpan::LrWpanNetDevice/Mac/MacTx";
     device->GetMac()->TraceConnect(
         "MacTx",
         oss.str(),
@@ -484,7 +484,7 @@ LrWpanHelper::EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
 
     oss.str("");
     oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid
-        << "/$ns3::LrWpanNetDevice/Mac/MacTxEnqueue";
+        << "/$ns3::lrwpan::LrWpanNetDevice/Mac/MacTxEnqueue";
     device->GetMac()->TraceConnect(
         "MacTxEnqueue",
         oss.str(),
@@ -492,7 +492,7 @@ LrWpanHelper::EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
 
     oss.str("");
     oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid
-        << "/$ns3::LrWpanNetDevice/Mac/MacTxDequeue";
+        << "/$ns3::lrwpan::LrWpanNetDevice/Mac/MacTxDequeue";
     device->GetMac()->TraceConnect(
         "MacTxDequeue",
         oss.str(),
@@ -500,7 +500,7 @@ LrWpanHelper::EnableAsciiInternal(Ptr<OutputStreamWrapper> stream,
 
     oss.str("");
     oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid
-        << "/$ns3::LrWpanNetDevice/Mac/MacTxDrop";
+        << "/$ns3::lrwpan::LrWpanNetDevice/Mac/MacTxDrop";
     device->GetMac()->TraceConnect(
         "MacTxDrop",
         oss.str(),

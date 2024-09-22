@@ -20,7 +20,8 @@ NS_OBJECT_ENSURE_REGISTERED(LrWpanLqiTag);
 TypeId
 LrWpanLqiTag::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::LrWpanLqiTag")
+    static TypeId tid = TypeId("ns3::lrwpan::LrWpanLqiTag")
+                            .AddDeprecatedName("ns3::LrWpanLqiTag")
                             .SetParent<Tag>()
                             .SetGroupName("LrWpan")
                             .AddConstructor<LrWpanLqiTag>()

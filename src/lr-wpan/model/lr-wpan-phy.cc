@@ -136,7 +136,8 @@ TypeId
 LrWpanPhy::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::LrWpanPhy")
+        TypeId("ns3::lrwpan::LrWpanPhy")
+            .AddDeprecatedName("ns3::LrWpanPhy")
             .SetParent<SpectrumPhy>()
             .SetGroupName("LrWpan")
             .AddConstructor<LrWpanPhy>()
@@ -155,7 +156,7 @@ LrWpanPhy::GetTypeId()
             .AddTraceSource("TrxState",
                             "The state of the transceiver",
                             MakeTraceSourceAccessor(&LrWpanPhy::m_trxStateLogger),
-                            "ns3::LrWpanPhy::StateTracedCallback")
+                            "ns3::lrwpan::LrWpanPhy::StateTracedCallback")
             .AddTraceSource("PhyTxBegin",
                             "Trace source indicating a packet has "
                             "begun transmitting over the channel medium",

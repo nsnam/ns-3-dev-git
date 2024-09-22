@@ -82,7 +82,8 @@ TypeId
 LrWpanMac::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::LrWpanMac")
+        TypeId("ns3::lrwpan::LrWpanMac")
+            .AddDeprecatedName("ns3::LrWpanMac")
             .SetParent<LrWpanMacBase>()
             .SetGroupName("LrWpan")
             .AddConstructor<LrWpanMac>()
@@ -176,12 +177,12 @@ LrWpanMac::GetTypeId()
             .AddTraceSource("MacState",
                             "The state of LrWpan Mac",
                             MakeTraceSourceAccessor(&LrWpanMac::m_macStateLogger),
-                            "ns3::LrWpanMac::StateTracedCallback")
+                            "ns3::lrwpan::LrWpanMac::StateTracedCallback")
             .AddTraceSource("MacSentPkt",
                             "Trace source reporting some information about "
                             "the sent packet",
                             MakeTraceSourceAccessor(&LrWpanMac::m_sentPktTrace),
-                            "ns3::LrWpanMac::SentTracedCallback")
+                            "ns3::lrwpan::LrWpanMac::SentTracedCallback")
             .AddTraceSource("IfsEnd",
                             "Trace source reporting the end of an "
                             "Interframe space (IFS)",

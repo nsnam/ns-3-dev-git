@@ -34,7 +34,8 @@ TypeId
 LrWpanNetDevice::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::LrWpanNetDevice")
+        TypeId("ns3::lrwpan::LrWpanNetDevice")
+            .AddDeprecatedName("ns3::LrWpanNetDevice")
             .SetParent<NetDevice>()
             .SetGroupName("LrWpan")
             .AddConstructor<LrWpanNetDevice>()

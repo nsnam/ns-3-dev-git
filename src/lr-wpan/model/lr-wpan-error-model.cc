@@ -22,7 +22,8 @@ NS_OBJECT_ENSURE_REGISTERED(LrWpanErrorModel);
 TypeId
 LrWpanErrorModel::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::LrWpanErrorModel")
+    static TypeId tid = TypeId("ns3::lrwpan::LrWpanErrorModel")
+                            .AddDeprecatedName("ns3::LrWpanErrorModel")
                             .SetParent<Object>()
                             .SetGroupName("LrWpan")
                             .AddConstructor<LrWpanErrorModel>();

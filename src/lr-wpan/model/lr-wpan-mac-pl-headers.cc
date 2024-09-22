@@ -29,7 +29,8 @@ NS_OBJECT_ENSURE_REGISTERED(BeaconPayloadHeader);
 TypeId
 BeaconPayloadHeader::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::BeaconPayloadHeader")
+    static TypeId tid = TypeId("ns3::lrwpan::BeaconPayloadHeader")
+                            .AddDeprecatedName("ns3::BeaconPayloadHeader")
                             .SetParent<Header>()
                             .SetGroupName("LrWpan")
                             .AddConstructor<BeaconPayloadHeader>();

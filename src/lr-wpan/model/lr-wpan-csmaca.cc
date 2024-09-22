@@ -34,7 +34,8 @@ NS_OBJECT_ENSURE_REGISTERED(LrWpanCsmaCa);
 TypeId
 LrWpanCsmaCa::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::LrWpanCsmaCa")
+    static TypeId tid = TypeId("ns3::lrwpan::LrWpanCsmaCa")
+                            .AddDeprecatedName("ns3::LrWpanCsmaCa")
                             .SetParent<Object>()
                             .SetGroupName("LrWpan")
                             .AddConstructor<LrWpanCsmaCa>();

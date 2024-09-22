@@ -433,7 +433,8 @@ LrWpanMacHeader::SetKeyId(uint64_t keySrc, uint8_t keyIndex)
 TypeId
 LrWpanMacHeader::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::LrWpanMacHeader")
+    static TypeId tid = TypeId("ns3::lrwpan::LrWpanMacHeader")
+                            .AddDeprecatedName("ns3::LrWpanMacHeader")
                             .SetParent<Header>()
                             .SetGroupName("LrWpan")
                             .AddConstructor<LrWpanMacHeader>();

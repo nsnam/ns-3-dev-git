@@ -22,7 +22,10 @@ NS_OBJECT_ENSURE_REGISTERED(LrWpanMacBase);
 TypeId
 LrWpanMacBase::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::LrWpanMacBase").SetParent<Object>().SetGroupName("LrWpan");
+    static TypeId tid = TypeId("ns3::lrwpan::LrWpanMacBase")
+                            .AddDeprecatedName("ns3::LrWpanMacBase")
+                            .SetParent<Object>()
+                            .SetGroupName("LrWpan");
     return tid;
 }
 

@@ -31,7 +31,8 @@ LrWpanMacTrailer::LrWpanMacTrailer()
 TypeId
 LrWpanMacTrailer::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::LrWpanMacTrailer")
+    static TypeId tid = TypeId("ns3::lrwpan::LrWpanMacTrailer")
+                            .AddDeprecatedName("ns3::LrWpanMacTrailer")
                             .SetParent<Trailer>()
                             .SetGroupName("LrWpan")
                             .AddConstructor<LrWpanMacTrailer>();
