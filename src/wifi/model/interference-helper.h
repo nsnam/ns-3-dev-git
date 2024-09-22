@@ -527,7 +527,7 @@ class InterferenceHelper : public Object
      * @param niIt iterator of the band to check
      * @returns an iterator to the list of NiChanges
      */
-    NiChanges::iterator GetNextPosition(Time moment, NiChangesPerBand::iterator niIt);
+    NiChanges::iterator GetNextPosition(Time moment, NiChangesPerBand::iterator niIt) const;
     /**
      * Returns an iterator to the last NiChange that is before than moment
      *
@@ -535,7 +535,7 @@ class InterferenceHelper : public Object
      * @param niIt iterator of the band to check
      * @returns an iterator to the list of NiChanges
      */
-    NiChanges::iterator GetPreviousPosition(Time moment, NiChangesPerBand::iterator niIt);
+    NiChanges::iterator GetPreviousPosition(Time moment, NiChangesPerBand::iterator niIt) const;
 
     /**
      * Add NiChange to the list at the appropriate position and

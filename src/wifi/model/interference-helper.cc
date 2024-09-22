@@ -795,19 +795,16 @@ InterferenceHelper::CalculatePhyHeaderSnrPer(Ptr<Event> event,
 }
 
 InterferenceHelper::NiChanges::iterator
-InterferenceHelper::GetNextPosition(Time moment, NiChangesPerBand::iterator niIt)
+InterferenceHelper::GetNextPosition(Time moment, NiChangesPerBand::iterator niIt) const
 {
     return niIt->second.upper_bound(moment);
 }
 
 InterferenceHelper::NiChanges::iterator
-InterferenceHelper::GetPreviousPosition(Time moment, NiChangesPerBand::iterator niIt)
+InterferenceHelper::GetPreviousPosition(Time moment, NiChangesPerBand::iterator niIt) const
 {
-    auto it = GetNextPosition(moment, niIt);
-    // This is safe since there is always an NiChange at time 0,
-    // before moment.
-    --it;
-    return it;
+    // This is safe since there is always an NiChange at time 0, before moment.
+    return std::prev(GetNextPosition(moment, niIt));
 }
 
 InterferenceHelper::NiChanges::iterator
@@ -836,8 +833,7 @@ InterferenceHelper::NotifyRxEnd(Time endTime, const FrequencyRange& freqRange)
             continue;
         }
         NS_ASSERT(niIt->second.size() > 1);
-        auto it = GetPreviousPosition(endTime, niIt);
-        it--;
+        auto it = std::prev(GetPreviousPosition(endTime, niIt));
         m_firstPowers.find(niIt->first)->second = it->second.GetPower();
     }
 }
