@@ -1964,7 +1964,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
                           uint32_t currentDelivered,
                           const SequenceNumber32& oldHeadSequence)
 {
-    NS_LOG_FUNCTION(this << ackNumber << scoreboardUpdated);
+    NS_LOG_FUNCTION(this << ackNumber << scoreboardUpdated << currentDelivered << oldHeadSequence);
     // RFC 6675, Section 5, 2nd paragraph:
     // If the incoming ACK is a cumulative acknowledgment, the TCP MUST
     // reset DupAcks to zero.
@@ -2030,7 +2030,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
     {
         // Please remember that, with SACK, we can enter here even if we
         // received a dupack.
-        bytesAcked = ackNumber - oldHeadSequence;
+        bytesAcked = currentDelivered;
         uint32_t segsAcked = bytesAcked / m_tcb->m_segmentSize;
         m_bytesAckedNotProcessed += bytesAcked % m_tcb->m_segmentSize;
         bytesAcked -= bytesAcked % m_tcb->m_segmentSize;
@@ -2041,6 +2041,8 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
             bytesAcked += m_tcb->m_segmentSize;
             m_bytesAckedNotProcessed -= m_tcb->m_segmentSize;
         }
+        NS_LOG_DEBUG("Set segsAcked: " << segsAcked
+                                       << " based on currentDelivered: " << currentDelivered);
 
         // Dupack count is reset to eventually fast-retransmit after 3 dupacks.
         // Any SACK-ed segment will be cleaned up by DiscardUpTo.
