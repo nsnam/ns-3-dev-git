@@ -413,6 +413,16 @@ class Icmpv6L4Protocol : public IpL4Protocol
      */
     Time GetDadTimeout() const;
 
+    /**
+     * Set DHCPv6 callback.
+     * Invoked when an RA is received with the M flag set.
+     * \param cb the callback function
+     */
+    void SetDhcpv6Callback(Callback<void, uint32_t> cb)
+    {
+        m_startDhcpv6 = cb;
+    }
+
   protected:
     /**
      * \brief Dispose this object.
@@ -700,6 +710,12 @@ class Icmpv6L4Protocol : public IpL4Protocol
      * Includes the address whose state has been changed.
      */
     ns3::TracedCallback<const Ipv6Address&> m_dadSuccessAddressTrace;
+
+    /**
+     * The DHCPv6 callback when the M flag is set in a Router Advertisement.
+     * Includes the interface on which the RA was received.
+     */
+    Callback<void, uint32_t> m_startDhcpv6;
 };
 
 } /* namespace ns3 */

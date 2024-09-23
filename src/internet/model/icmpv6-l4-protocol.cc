@@ -439,6 +439,15 @@ Icmpv6L4Protocol::HandleRA(Ptr<Packet> packet,
 
     p->RemoveHeader(raHeader);
 
+    // If 'M' flag is set, we need to start DHCPv6.
+    if (raHeader.GetFlagM())
+    {
+        if (!m_startDhcpv6.IsNull())
+        {
+            m_startDhcpv6(ipv6->GetInterfaceForDevice(interface->GetDevice()));
+        }
+    }
+
     if (raHeader.GetLifeTime())
     {
         defaultRouter = src;
