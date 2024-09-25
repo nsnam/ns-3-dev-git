@@ -209,7 +209,8 @@ ApWifiMac::GetTimeAccessParamsChecker()
 }
 
 ApWifiMac::ApWifiMac()
-    : m_enableBeaconGeneration(false)
+    : m_enableBeaconGeneration(false),
+      m_grpAddrBuIndicExp(0)
 {
     NS_LOG_FUNCTION(this);
     m_beaconTxop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BEACON"));
@@ -341,6 +342,14 @@ ApWifiMac::DoCompleteConfig()
     for (uint8_t linkId = 0; linkId < GetNLinks(); linkId++)
     {
         GetLink(linkId).channelAccessManager->Add(m_beaconTxop);
+    }
+
+    // the value 'exp' for the Group Addressed BU Indication Exponent must be such that 2^(exp+1)-1
+    // is at least equal to N-1, where N is the number of links (Sec. 35.3.15.1 of 802.11be D7.0).
+    // The max value for Group Addressed BU Indication Exponent is 3 (encoded in a 2-bit subfield)
+    while ((m_grpAddrBuIndicExp < 3) && ((1 << (m_grpAddrBuIndicExp + 1)) - 1 < GetNLinks() - 1))
+    {
+        ++m_grpAddrBuIndicExp;
     }
 }
 
@@ -1153,6 +1162,7 @@ ApWifiMac::GetEhtOperation(uint8_t linkId) const
     }
     operation.SetMaxRxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
     operation.SetMaxTxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
+    operation.m_params.grpBuExp = m_grpAddrBuIndicExp;
     return operation;
 }
 
@@ -2672,8 +2682,12 @@ ApWifiMac::GetNextAssociationId() const
 {
     const auto& links = GetLinks();
 
+    // if this is an AP MLD, AIDs from 1 to N, where N is 2^(Group_addr_BU_Indic_Exp + 1) - 1
+    // shall not be allocated (see Section 35.3.15.1 of 802.11be D7.0)
+    const uint16_t startAid = links.size() == 1 ? 1 : (1 << (m_grpAddrBuIndicExp + 1));
+
     // Return the first AID value between 1 and 2007 that is free for all the links
-    for (uint16_t nextAid = 1; nextAid <= 2007; ++nextAid)
+    for (uint16_t nextAid = startAid; nextAid <= 2007; ++nextAid)
     {
         if (std::none_of(links.cbegin(), links.cend(), [&](auto&& idLinkPair) {
                 return GetStaList(idLinkPair.first).contains(nextAid);

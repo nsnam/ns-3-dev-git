@@ -270,7 +270,7 @@ AidAssignmentTest::AidAssignmentTest(const std::vector<std::set<uint8_t>>& linkI
       m_linkChannels({"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}"}),
       m_linkIds(linkIds),
       m_assocType(assocType),
-      m_expectedAid(1) // AID for first station
+      m_expectedAid(1) // AID for first station (to be updated in case of AP MLD)
 {
 }
 
@@ -363,12 +363,16 @@ AidAssignmentTest::DoSetup()
             "Assoc",
             MakeCallback(&AidAssignmentTest::SetSsid, this).Bind(DynamicCast<StaWifiMac>(mac)));
     }
+
+    auto apMac = StaticCast<ApWifiMac>(StaticCast<WifiNetDevice>(apDevice.Get(0))->GetMac());
+    m_expectedAid = m_startAid = apMac->GetNextAssociationId();
 }
 
 void
 AidAssignmentTest::SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */)
 {
     const auto aid = staMac->GetAssociationId();
+    std::size_t index = aid - m_startAid;
 
     std::stringstream linksStr;
     const auto setupLinks = staMac->GetSetupLinkIds();
@@ -382,19 +386,17 @@ AidAssignmentTest::SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */)
     // if ML setup is performed, check that the requested links have been setup; otherwise, link 0
     // only is setup
     const auto expectedLinks =
-        (m_assocType == WifiAssocType::ML_SETUP ? m_linkIds.at(aid - 1)
+        (m_assocType == WifiAssocType::ML_SETUP ? m_linkIds.at(index)
                                                 : std::set{SINGLE_LINK_OP_ID});
 
     NS_TEST_EXPECT_MSG_EQ((staMac->GetSetupLinkIds() == expectedLinks),
                           true,
                           "Unexpected set of setup links " << linksStr.str());
 
-    if (m_expectedAid < m_staDevices.GetN())
+    if (++index < m_staDevices.GetN())
     {
         // let the next STA associate with the AP
-        StaticCast<WifiNetDevice>(m_staDevices.Get(m_expectedAid))
-            ->GetMac()
-            ->SetSsid(Ssid("ns-3-ssid"));
+        StaticCast<WifiNetDevice>(m_staDevices.Get(index))->GetMac()->SetSsid(Ssid("ns-3-ssid"));
         ++m_expectedAid;
     }
     else
@@ -409,7 +411,9 @@ AidAssignmentTest::DoRun()
     Simulator::Stop(Seconds(5)); // simulation will stop earlier if all STAs complete association
     Simulator::Run();
 
-    NS_TEST_EXPECT_MSG_EQ(m_expectedAid, m_staDevices.GetN(), "Not all STAs completed association");
+    NS_TEST_EXPECT_MSG_EQ(m_expectedAid,
+                          m_startAid + m_staDevices.GetN() - 1,
+                          "Not all STAs completed association");
 
     for (uint32_t i = 0; i < m_staDevices.GetN(); ++i)
     {
@@ -432,6 +436,7 @@ MultiLinkOperationsTestBase::MultiLinkOperationsTestBase(const std::string& name
       m_assocType(baseParams.assocType),
       m_staMacs(nStations),
       m_nStations(nStations),
+      m_startAid(1),
       m_lastAid(0),
       m_rxPkts(nStations + 1)
 {
@@ -780,6 +785,8 @@ MultiLinkOperationsTestBase::DoSetup()
     m_apMac->TraceConnectWithoutContext("AssociatedSta",
                                         MakeCallback(&MultiLinkOperationsTestBase::SetSsid, this));
     m_staMacs[0]->SetSsid(Ssid("ns-3-ssid"));
+
+    m_startAid = m_apMac->GetNextAssociationId();
 }
 
 Ptr<PacketSocketClient>
@@ -812,9 +819,9 @@ MultiLinkOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
     m_lastAid = aid;
 
     // make the next STA to start ML discovery & setup
-    if (aid < m_nStations)
+    if (const std::size_t count = aid - m_startAid + 1; count < m_nStations)
     {
-        m_staMacs[aid]->SetSsid(Ssid("ns-3-ssid"));
+        m_staMacs[count]->SetSsid(Ssid("ns-3-ssid"));
         return;
     }
     // stop generation of beacon frames in order to avoid interference

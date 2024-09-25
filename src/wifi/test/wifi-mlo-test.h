@@ -169,6 +169,7 @@ class AidAssignmentTest : public TestCase
     const std::vector<std::set<uint8_t>> m_linkIds; //!< link IDs for all non-AP STAs/MLDs
     WifiAssocType m_assocType;                      //!< association type
     NetDeviceContainer m_staDevices;                //!< non-AP STAs/MLDs devices
+    uint16_t m_startAid;                            //!< first AID to allocate to stations
     uint16_t m_expectedAid;                         //!< expected AID for current non-AP STA/MLD
 };
 
@@ -302,6 +303,7 @@ class MultiLinkOperationsTestBase : public TestCase
     Ptr<ApWifiMac> m_apMac;    ///< AP wifi MAC
     std::vector<Ptr<StaWifiMac>> m_staMacs; ///< STA wifi MACs
     uint8_t m_nStations;                    ///< number of stations to create
+    uint16_t m_startAid;                    ///< first AID to allocate to stations
     uint16_t m_lastAid;                     ///< AID of last associated station
     Time m_duration{Seconds(1)};            ///< simulation duration
     std::vector<std::size_t> m_rxPkts;      ///< number of packets received at application layer

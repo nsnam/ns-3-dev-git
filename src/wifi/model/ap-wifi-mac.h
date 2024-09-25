@@ -123,6 +123,9 @@ class ApWifiMac : public WifiMac
      */
     uint16_t GetAssociationId(Mac48Address addr, uint8_t linkId) const;
 
+    /// @return the next Association ID to be allocated by the AP
+    uint16_t GetNextAssociationId() const;
+
     /**
      * Get the ID of a link (if any) that has been setup with the station having the given MAC
      * address. The address can be either a link address or an MLD address. In the former case,
@@ -623,11 +626,6 @@ class ApWifiMac : public WifiMac
     void DoDispose() override;
     void DoInitialize() override;
 
-    /**
-     * @return the next Association ID to be allocated by the AP
-     */
-    uint16_t GetNextAssociationId() const;
-
     Ptr<Txop> m_beaconTxop;        //!< Dedicated Txop for beacons
     bool m_enableBeaconGeneration; //!< Flag whether beacons are being generated
     Time m_beaconInterval;         //!< Beacon interval
@@ -639,6 +637,7 @@ class ApWifiMac : public WifiMac
     Time m_bsrLifetime;            //!< Lifetime of Buffer Status Reports
     /// transition timeout events running for EMLSR clients
     std::map<Mac48Address, EventId> m_transitionTimeoutEvents;
+    uint8_t m_grpAddrBuIndicExp; //!< Group Addressed BU Indication Exponent of EHT Operation IE
     Ptr<ApEmlsrManager> m_apEmlsrManager; ///< AP EMLSR Manager
     Ptr<GcrManager> m_gcrManager;         //!< GCR Manager
 

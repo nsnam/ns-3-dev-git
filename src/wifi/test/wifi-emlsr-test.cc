@@ -485,6 +485,8 @@ EmlsrOperationsTestBase::DoSetup()
         m_ulSockets.back().SetProtocol(1);
     }
 
+    m_startAid = m_apMac->GetNextAssociationId();
+
     // schedule ML setup for one station at a time
     m_apMac->TraceConnectWithoutContext(
         "AssociatedSta",
@@ -538,15 +540,15 @@ EmlsrOperationsTestBase::StaAssociated(uint16_t aid, Mac48Address /* addr */)
         // trigger establishment of BA agreement with AP as originator
         Simulator::Schedule(delay, [=, this]() {
             m_apMac->GetDevice()->GetNode()->AddApplication(
-                GetApplication(DOWNLINK, aid - 1, 4, 1000, m_establishBaDl.front()));
+                GetApplication(DOWNLINK, aid - m_startAid, 4, 1000, m_establishBaDl.front()));
         });
     }
     else if (!m_establishBaUl.empty())
     {
         // trigger establishment of BA agreement with AP as recipient
         Simulator::Schedule(delay, [=, this]() {
-            m_staMacs[aid - 1]->GetDevice()->GetNode()->AddApplication(
-                GetApplication(UPLINK, aid - 1, 4, 1000, m_establishBaUl.front()));
+            m_staMacs[aid - m_startAid]->GetDevice()->GetNode()->AddApplication(
+                GetApplication(UPLINK, aid - m_startAid, 4, 1000, m_establishBaUl.front()));
         });
     }
     else
@@ -573,20 +575,20 @@ EmlsrOperationsTestBase::BaEstablishedDl(Mac48Address recipient,
         // trigger establishment of BA agreement with AP as originator
         Simulator::Schedule(delay, [=, this]() {
             m_apMac->GetDevice()->GetNode()->AddApplication(
-                GetApplication(DOWNLINK, aid - 1, 4, 1000, *std::next(it)));
+                GetApplication(DOWNLINK, aid - m_startAid, 4, 1000, *std::next(it)));
         });
     }
     else if (!m_establishBaUl.empty())
     {
         // trigger establishment of BA agreement with AP as recipient
         Simulator::Schedule(delay, [=, this]() {
-            m_staMacs[aid - 1]->GetDevice()->GetNode()->AddApplication(
-                GetApplication(UPLINK, aid - 1, 4, 1000, m_establishBaUl.front()));
+            m_staMacs[aid - m_startAid]->GetDevice()->GetNode()->AddApplication(
+                GetApplication(UPLINK, aid - m_startAid, 4, 1000, m_establishBaUl.front()));
         });
     }
     else
     {
-        Simulator::Schedule(delay, [=, this]() { SetSsid(aid - 1 + 1); });
+        Simulator::Schedule(delay, [=, this]() { SetSsid(aid - m_startAid + 1); });
     }
 }
 

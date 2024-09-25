@@ -232,6 +232,7 @@ class EmlsrOperationsTestBase : public TestCase
     std::vector<Ptr<StaWifiMac>> m_staMacs;       ///< MACs of the non-AP MLDs
     std::vector<PacketSocketAddress> m_dlSockets; ///< packet socket address for DL traffic
     std::vector<PacketSocketAddress> m_ulSockets; ///< packet socket address for UL traffic
+    uint16_t m_startAid{1};                       ///< first AID to allocate to stations
     uint16_t m_lastAid{0};                        ///< AID of last associated station
     Time m_duration{0};                           ///< simulation duration
     std::map<std::size_t, std::shared_ptr<EmlsrMainPhySwitchTrace>>
