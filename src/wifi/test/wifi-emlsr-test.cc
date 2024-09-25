@@ -485,6 +485,8 @@ EmlsrOperationsTestBase::DoSetup()
         m_ulSockets.back().SetProtocol(1);
     }
 
+    m_startAid = m_apMac->GetNextAssociationId();
+
     // schedule ML setup for one station at a time
     m_apMac->TraceConnectWithoutContext("AssociatedSta",
                                         MakeCallback(&EmlsrOperationsTestBase::SetSsid, this));
@@ -526,7 +528,7 @@ EmlsrOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
         // trigger establishment of BA agreement with AP as originator
         Simulator::Schedule(delay, [=, this]() {
             m_apMac->GetDevice()->GetNode()->AddApplication(
-                GetApplication(DOWNLINK, aid - 1, 4, 1000));
+                GetApplication(DOWNLINK, aid - m_startAid, 4, 1000));
         });
 
         delay += MilliSeconds(5);
@@ -536,18 +538,19 @@ EmlsrOperationsTestBase::SetSsid(uint16_t aid, Mac48Address /* addr */)
     {
         // trigger establishment of BA agreement with AP as recipient
         Simulator::Schedule(delay, [=, this]() {
-            m_staMacs[aid - 1]->GetDevice()->GetNode()->AddApplication(
-                GetApplication(UPLINK, aid - 1, 4, 1000));
+            m_staMacs[aid - m_startAid]->GetDevice()->GetNode()->AddApplication(
+                GetApplication(UPLINK, aid - m_startAid, 4, 1000));
         });
 
         delay += MilliSeconds(5);
     }
 
     Simulator::Schedule(delay, [=, this]() {
-        if (aid < m_nEmlsrStations + m_nNonEmlsrStations)
+        if (const std::size_t count = aid - m_startAid + 1;
+            count < m_nEmlsrStations + m_nNonEmlsrStations)
         {
             // make the next STA start ML discovery & setup
-            m_staMacs[aid]->SetSsid(Ssid("ns-3-ssid"));
+            m_staMacs[count]->SetSsid(Ssid("ns-3-ssid"));
             return;
         }
         // all stations associated; start traffic if needed

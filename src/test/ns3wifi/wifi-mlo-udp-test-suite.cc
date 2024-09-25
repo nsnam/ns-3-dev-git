@@ -295,6 +295,8 @@ WifiMloUdpTest::DoSetup()
         m_sink = nullptr; // other cases are not supported
     }
 
+    m_startAid = m_apMac->GetNextAssociationId();
+
     // schedule association/ML setup for one station at a time
     m_apMac->TraceConnectWithoutContext("AssociatedSta",
                                         MakeCallback(&WifiMloUdpTest::SetSsid, this));
