@@ -93,6 +93,11 @@ class QosFrameExchangeManager : public FrameExchangeManager
      */
     virtual Ptr<WifiMpdu> CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const;
 
+    /**
+     * @return the TXOP holder (if any)
+     */
+    std::optional<Mac48Address> GetTxopHolder() const;
+
   protected:
     void DoDispose() override;
 

@@ -728,6 +728,12 @@ QosFrameExchangeManager::SetTxopHolder(Ptr<const WifiPsdu> psdu, const WifiTxVec
 }
 
 std::optional<Mac48Address>
+QosFrameExchangeManager::GetTxopHolder() const
+{
+    return m_txopHolder;
+}
+
+std::optional<Mac48Address>
 QosFrameExchangeManager::FindTxopHolder(const WifiMacHeader& hdr, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << hdr << txVector);

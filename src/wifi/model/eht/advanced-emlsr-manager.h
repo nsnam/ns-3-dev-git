@@ -90,6 +90,16 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
      */
     void SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId, AcIndex aci, const Time& delay);
 
+    /**
+     * This method is called when the switch main PHY back delay timer (which is started when the
+     * main PHY switches to the link of an aux PHY that does not switch and is not TX capable)
+     * expires and decides whether to delay the request to switch the main PHY back to the preferred
+     * link or to execute it immediately.
+     *
+     * @param linkId the ID of the link that the main PHY is leaving
+     */
+    void SwitchMainPhyBackDelayExpired(uint8_t linkId);
+
   private:
     void DoNotifyTxopEnd(uint8_t linkId) override;
     void DoNotifyIcfReceived(uint8_t linkId) override;

@@ -266,6 +266,20 @@ AdvancedEmlsrManager::ReceivedMacHdr(Ptr<WifiPhy> phy,
         // Hence, schedule the call to NotifyTxopEnd to execute it outside such for loop.
         Simulator::ScheduleNow(&AdvancedEmlsrManager::NotifyTxopEnd, this, *linkId, false, false);
     }
+
+    // if the MAC header has been received on the link on which the main PHY is operating, the
+    // switch main PHY back timer is running and channel access is not expected to be gained by
+    // the main PHY before the switch main PHY back timer expires (plus a channel switch delay),
+    // try to switch the main PHY back to the preferred link
+    if (m_switchMainPhyBackEvent.IsPending() &&
+        phy == GetStaMac()->GetDevice()->GetPhy(GetMainPhyId()) &&
+        !GetExpectedAccessWithinDelay(*linkId,
+                                      Simulator::GetDelayLeft(m_switchMainPhyBackEvent) +
+                                          phy->GetChannelSwitchDelay()))
+    {
+        m_switchMainPhyBackEvent.Cancel();
+        SwitchMainPhyBackDelayExpired(*linkId);
+    }
 }
 
 void
@@ -401,6 +415,19 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
     }
     else
     {
+        // medium busy, check when access may be granted
+        if (!GetExpectedAccessWithinDelay(linkId,
+                                          m_switchMainPhyBackDelay + phy->GetChannelSwitchDelay()))
+        {
+            NS_LOG_DEBUG("No AC is expected to get backoff soon, switch main PHY back");
+            if (auto mainPhy = GetStaMac()->GetDevice()->GetPhy(GetMainPhyId());
+                !mainPhy->IsStateSwitching())
+            {
+                SwitchMainPhyBackDelayExpired(linkId);
+            }
+            return;
+        }
+
         // medium busy, restart channel access
         NS_LOG_DEBUG("Medium busy in the last PIFS interval");
         edca->NotifyChannelReleased(linkId); // to set access to NOT_REQUESTED
@@ -412,13 +439,91 @@ AdvancedEmlsrManager::CheckNavAndCcaLastPifs(Ptr<WifiPhy> phy, uint8_t linkId, P
         // The timer is stopped if a DL or UL TXOP is started. When the timer expires, the main PHY
         // switches back to the preferred link if SwitchAuxPhy is false
         m_switchMainPhyBackEvent.Cancel();
-        m_switchMainPhyBackEvent = Simulator::Schedule(m_switchMainPhyBackDelay, [this, linkId]() {
-            if (!m_switchAuxPhy)
-            {
-                SwitchMainPhyBackToPreferredLink(linkId, EmlsrSwitchMainPhyBackTrace(false));
-            }
-        });
+        m_switchMainPhyBackEvent =
+            Simulator::Schedule(m_switchMainPhyBackDelay,
+                                &AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired,
+                                this,
+                                linkId);
     }
+}
+
+void
+AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(uint8_t linkId)
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    if (m_switchAuxPhy)
+    {
+        return; // nothing to do
+    }
+
+    Time delay{0};
+
+    // check if the timer must be restarted because a frame is being received on any link
+    for (const auto id : GetStaMac()->GetLinkIds())
+    {
+        auto phy = GetStaMac()->GetWifiPhy(id);
+
+        if (!phy || !GetStaMac()->IsEmlsrLink(id))
+        {
+            continue;
+        }
+
+        if (!GetEhtFem(id)->VirtualCsMediumIdle() &&
+            GetEhtFem(id)->GetTxopHolder() != GetEhtFem(id)->GetBssid())
+        {
+            NS_LOG_DEBUG("NAV is set and TXOP holder is not the associated AP MLD on link " << +id);
+            continue;
+        }
+
+        if (auto macHdr = GetEhtFem(id)->GetReceivedMacHdr(); macHdr && m_useNotifiedMacHdr)
+        {
+            // the MAC header has been received; if this is a Trigger Frame, we shall restart the
+            // timer, so that we do not yet switch the main PHY back to the preferred link
+            if (const auto& hdr = macHdr->get();
+                hdr.IsTrigger() &&
+                (hdr.GetAddr1().IsBroadcast() || hdr.GetAddr1() == GetEhtFem(id)->GetAddress()))
+            {
+                delay = Max(delay, phy->GetDelayUntilIdle());
+            }
+        }
+        else if (phy->IsStateRx())
+        {
+            if (auto ongoingRxInfo = GetEhtFem(id)->GetOngoingRxInfo();
+                ongoingRxInfo &&
+                ongoingRxInfo->get().txVector.GetModulationClass() < WIFI_MOD_CLASS_HT)
+            {
+                // the MAC header of a non-HT PPDU, which may be an ICF, has not been received yet
+                // (or we cannot use its info); restart the timer, we will be called back when the
+                // MAC header is received
+                delay = Max(delay, phy->GetDelayUntilIdle());
+            }
+        }
+        else if (id == linkId && phy->IsStateIdle())
+        {
+            // this is the link on which the main PHY is operating. If an AC with traffic is
+            // expected to get channel access soon (within a channel switch delay), restart
+            // the timer to have the main PHY stay a bit longer on this link
+            if (GetExpectedAccessWithinDelay(linkId, phy->GetChannelSwitchDelay()))
+            {
+                delay = Max(delay, phy->GetChannelSwitchDelay());
+            }
+        }
+    }
+
+    if (delay.IsStrictlyPositive())
+    {
+        NS_LOG_DEBUG("Restarting the timer, check again in " << delay.As(Time::US));
+        m_switchMainPhyBackEvent =
+            Simulator::Schedule(delay,
+                                &AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired,
+                                this,
+                                linkId);
+        return;
+    }
+
+    // no need to wait further, switch the main PHY back to the preferred link
+    SwitchMainPhyBackToPreferredLink(linkId, EmlsrSwitchMainPhyBackTrace(false));
 }
 
 void
@@ -717,12 +822,10 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
                  mainPhy->GetChannelSwitchDelay() + GetStaMac()->GetWifiPhy(linkId)->GetPifs());
     m_switchMainPhyBackEvent.Cancel();
     m_switchMainPhyBackEvent =
-        Simulator::Schedule(minDelay + m_switchMainPhyBackDelay, [this, linkId]() {
-            if (!m_switchAuxPhy)
-            {
-                SwitchMainPhyBackToPreferredLink(linkId, EmlsrSwitchMainPhyBackTrace(false));
-            }
-        });
+        Simulator::Schedule(minDelay + m_switchMainPhyBackDelay,
+                            &AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired,
+                            this,
+                            linkId);
 }
 
 } // namespace ns3
