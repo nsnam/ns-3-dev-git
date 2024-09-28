@@ -4,8 +4,10 @@
 #include "format-string.h"
 #include "units-aliases.h"
 
-#include "ns3/attribute-helper.h"
+#include <ns3/attribute-helper.h>
+#include <ns3/attribute.h>
 #include <ns3/nstime.h>
+#include <ns3/uinteger.h>
 
 #include <algorithm>
 #include <cinttypes>
@@ -37,6 +39,13 @@ struct Hz_t
     /// Constructor
     /// @param val Value in Hz
     constexpr explicit Hz_t(int32_t val)
+        : val(static_cast<double>(val))
+    {
+    }
+
+    /// Constructor
+    /// @param val Value in Hz
+    constexpr explicit Hz_t(uint64_t val)
         : val(static_cast<double>(val))
     {
     }
@@ -320,9 +329,10 @@ THz_t(double val)
 }
 
 /// @cond Doxygen warning against macro internals
-ATTRIBUTE_HELPER_HEADER(Hz_t);  // See si-units-test-suite.cc for usages
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(Hz_t, Hz); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(Hz);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(Hz_t, Hz, Uinteger);
 /// @endcond
-
 } // namespace ns3
 
 // clang-format on

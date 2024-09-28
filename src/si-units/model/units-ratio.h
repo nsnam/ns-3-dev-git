@@ -8,7 +8,9 @@
 #include "units-frequency.h"
 #include "units-time.h"
 
-#include "ns3/attribute-helper.h"
+#include <ns3/attribute-helper.h>
+#include <ns3/attribute.h>
+#include <ns3/double.h>
 
 #include <algorithm>
 #include <cinttypes>
@@ -235,9 +237,10 @@ std::ostream& operator<<(std::ostream& os, const percent_t& rhs);
 std::istream& operator>>(std::istream& is, percent_t& q);
 
 /// @cond Doxygen warning against macro internal
-ATTRIBUTE_HELPER_HEADER(percent_t);  // See si-units-test-suite.cc for usages
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(percent_t, percent); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(percent);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(percent_t, percent, Double);
 /// @endcond
-
 } // namespace ns3
 
 // clang-format on

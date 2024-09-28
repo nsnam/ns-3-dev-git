@@ -9,7 +9,9 @@
 
 #include "format-string.h"
 
-#include "ns3/attribute-helper.h"
+#include <ns3/attribute-helper.h>
+#include <ns3/attribute.h>
+#include <ns3/double.h>
 
 #include <algorithm>
 #include <cinttypes>
@@ -386,8 +388,13 @@ const auto ZERO_RADIAN = 0_radian;      ///< Zero angle in radian
 const auto PI_RADIANS = radian_t{M_PI}; ///< Pi angle in radian
 
 /// @cond Doxygen warning about the macro internal
-ATTRIBUTE_HELPER_HEADER(degree_t); ///< Attribute for degree_t
-ATTRIBUTE_HELPER_HEADER(radian_t); ///< Attribute for radian_t
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(degree_t, degree); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(degree);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(degree_t, degree, Double);
+
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(radian_t, radian); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(radian);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(radian_t, radian, Double);
 /// @endcond
 } // namespace ns3
 

@@ -219,8 +219,11 @@ radian_t::from_str(const std::string& input)
     return res.has_value() ? std::optional(radian_t{res.value()}) : std::nullopt;
 }
 
-ATTRIBUTE_HELPER_CPP(degree_t); ///< Attribute for degree_t
-ATTRIBUTE_HELPER_CPP(radian_t); ///< Attribute for radian_t
+ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(degree_t, degree);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(degree_t, degree);
+
+ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(radian_t, radian);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(radian_t, radian);
 /// @endcond
 
 } // namespace ns3

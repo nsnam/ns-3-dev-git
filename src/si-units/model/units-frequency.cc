@@ -171,8 +171,8 @@ Hz_t::from_str(const std::string& input)
     return res.has_value() ? std::optional(Hz_t{res.value()}) : std::nullopt;
 }
 
-/// @cond Doxygen warning against macro internasl
-ATTRIBUTE_HELPER_CPP(Hz_t);
+ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(Hz_t, Hz);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(Hz_t, Hz);
 /// @endcond
 
 } // namespace ns3

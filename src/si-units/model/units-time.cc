@@ -98,7 +98,8 @@ operator>>(std::istream& is, nSEC_t& q)
 }
 
 /// @cond Doxygen warning against macro internalsk
-ATTRIBUTE_HELPER_CPP(nSEC_t);
+ATTRIBUTE_CHECKER_IMPLEMENT_WITH_NAME(nSEC, "nSEC_t");
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(nSEC_t, nSEC);
 /// @endcond
 
 } // namespace ns3

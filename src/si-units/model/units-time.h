@@ -4,8 +4,10 @@
 #include "format-string.h"
 #include "units-aliases.h"
 
-#include "ns3/attribute-helper.h"
-#include "ns3/nstime.h"
+#include <ns3/attribute-helper.h>
+#include <ns3/attribute.h>
+#include <ns3/double.h>
+#include <ns3/nstime.h>
 
 #include <algorithm>
 #include <cinttypes>
@@ -198,7 +200,9 @@ std::ostream& operator<<(std::ostream& os, const nSEC_t& q);
 std::istream& operator>>(std::istream& is, nSEC_t& q);
 
 /// @cond Doxygen warning about the macro internals
-ATTRIBUTE_HELPER_HEADER(nSEC_t);  // See si-units-test-suite.cc for usages
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(nSEC_t, nSEC); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(nSEC);
+ATTRIBUTE_CHECKER_DEFINE(nSEC);
 /// @endcond
 } // namespace ns3
 

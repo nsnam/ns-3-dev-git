@@ -80,7 +80,8 @@ percent_t::from_str(const std::string& input)
 }
 
 /// @cond Doxygen warning against macro internals
-ATTRIBUTE_HELPER_CPP(percent_t);
+ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(percent_t, percent);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(percent_t, percent);
 /// @endcond
 
 } // namespace ns3

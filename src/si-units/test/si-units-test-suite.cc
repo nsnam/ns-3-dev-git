@@ -744,55 +744,54 @@ class AttributeMock : public Object
                 .AddConstructor<AttributeMock>()
                 .AddAttribute("dB",
                               "help message for dB",
-                              dB_tValue(0_dB),
-                              MakedB_tAccessor(&AttributeMock::m_dB),
-                              MakedB_tChecker())
+                              dBValue(0_dB),
+                              MakedBAccessor(&AttributeMock::m_dB),
+                              MakedBChecker())
                 .AddAttribute("dBm",
                               "help message for dBm",
-                              dBm_tValue(20_dBm),
-                              MakedBm_tAccessor(&AttributeMock::m_dBm),
-                              MakedBm_tChecker())
+                              dBmValue(20_dBm),
+                              MakedBmAccessor(&AttributeMock::m_dBm),
+                              MakedBmChecker())
                 .AddAttribute("mWatt",
                               "help message for mWatt",
-                              mWatt_tValue(100_mWatt),
-                              MakemWatt_tAccessor(&AttributeMock::m_mWatt),
-                              MakemWatt_tChecker())
+                              mWattValue(100_mWatt),
+                              MakemWattAccessor(&AttributeMock::m_mWatt),
+                              MakemWattChecker())
                 .AddAttribute("Watt",
                               "help message for Watt",
-                              Watt_tValue(123_Watt),
-                              MakeWatt_tAccessor(&AttributeMock::m_Watt),
-                              MakeWatt_tChecker())
-                .AddAttribute(
-                    "dBm_per_Hz",
-                    "help message for dBm_per_Hz",
-                    dBm_per_Hz_tValue(0.0004_dBm_per_Hz),
-                    MakedBm_per_Hz_tAccessor(&AttributeMock::m_dBm_per_Hz),
-                    MakedBm_per_Hz_tChecker())
+                              WattValue(123_Watt),
+                              MakeWattAccessor(&AttributeMock::m_Watt),
+                              MakeWattChecker())
+                .AddAttribute("dBm_per_Hz",
+                              "help message for dBm_per_Hz",
+                              dBm_per_HzValue(0.0004_dBm_per_Hz),
+                              MakedBm_per_HzAccessor(&AttributeMock::m_dBm_per_Hz),
+                              MakedBm_per_HzChecker())
                 .AddAttribute("Hz",
                               "help message for Hz",
-                              Hz_tValue(415000_Hz),
-                              MakeHz_tAccessor(&AttributeMock::m_Hz),
-                              MakeHz_tChecker())
+                              HzValue(415000_Hz),
+                              MakeHzAccessor(&AttributeMock::m_Hz),
+                              MakeHzChecker())
                 .AddAttribute("nSEC",
                               "help message for nSEC",
-                              nSEC_tValue(-20_nSEC),
-                              MakenSEC_tAccessor(&AttributeMock::m_nSEC),
-                              MakenSEC_tChecker())
+                              nSECValue(-20_nSEC),
+                              MakenSECAccessor(&AttributeMock::m_nSEC),
+                              MakenSECChecker())
                 .AddAttribute("degree",
                               "help message for degree",
-                              degree_tValue(720_degree),
-                              Makedegree_tAccessor(&AttributeMock::m_degree),
-                              Makedegree_tChecker())
+                              degreeValue(720_degree),
+                              MakedegreeAccessor(&AttributeMock::m_degree),
+                              MakedegreeChecker())
                 .AddAttribute("radian",
                               "help message for radian",
-                              radian_tValue(20_radian),
-                              Makeradian_tAccessor(&AttributeMock::m_radian),
-                              Makeradian_tChecker())
+                              radianValue(20_radian),
+                              MakeradianAccessor(&AttributeMock::m_radian),
+                              MakeradianChecker())
                 .AddAttribute("percent",
                               "help message for percent",
-                              percent_tValue(20.5_percent),
-                              Makepercent_tAccessor(&AttributeMock::m_percent),
-                              Makepercent_tChecker());
+                              percentValue(20.5_percent),
+                              MakepercentAccessor(&AttributeMock::m_percent),
+                              MakepercentChecker());
 
         return tid;
     }
@@ -825,52 +824,52 @@ class TestCaseSiUnitsAttributes : public TestCase
 
         {
             auto want = 9_dB;
-            mock->SetAttribute("dB", dB_tValue(want));
+            mock->SetAttribute("dB", dBValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_dB, want, "");
         }
         {
             auto want = 20_dBm;
-            mock->SetAttribute("dBm", dBm_tValue(want));
+            mock->SetAttribute("dBm", dBmValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_dBm, want, "");
         }
         {
             auto want = 100_mWatt;
-            mock->SetAttribute("mWatt", mWatt_tValue(want));
+            mock->SetAttribute("mWatt", mWattValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_mWatt, want, "");
         }
         {
             auto want = 221_Watt;
-            mock->SetAttribute("Watt", Watt_tValue(want));
+            mock->SetAttribute("Watt", WattValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_Watt, want, "");
         }
         {
             auto want = 0.0001_dBm_per_Hz;
-            mock->SetAttribute("dBm_per_Hz", dBm_per_Hz_tValue(want));
+            mock->SetAttribute("dBm_per_Hz", dBm_per_HzValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_dBm_per_Hz, want, "");
         }
         {
             auto want = 365_Hz;
-            mock->SetAttribute("Hz", Hz_tValue(want));
+            mock->SetAttribute("Hz", HzValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_Hz, want, "");
         }
         {
             auto want = 100_nSEC;
-            mock->SetAttribute("nSEC", nSEC_tValue(want));
+            mock->SetAttribute("nSEC", nSECValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_nSEC, want, "");
         }
         {
             auto want = 720_degree;
-            mock->SetAttribute("degree", degree_tValue(want));
+            mock->SetAttribute("degree", degreeValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_degree, want, "");
         }
         {
             auto want = 2.4_radian;
-            mock->SetAttribute("radian", radian_tValue(want));
+            mock->SetAttribute("radian", radianValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_radian, want, "");
         }
         {
             auto want = 2.4_percent;
-            mock->SetAttribute("percent", percent_tValue(want));
+            mock->SetAttribute("percent", percentValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_percent, want, "");
         }
     }

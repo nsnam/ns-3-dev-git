@@ -8,6 +8,8 @@
 
 #include <ns3/abort.h>
 #include <ns3/attribute-helper.h>
+#include <ns3/attribute.h>
+#include <ns3/double.h>
 
 #include <algorithm>
 #include <cinttypes>
@@ -1168,13 +1170,26 @@ std::istream& operator>>(std::istream& is, dBm_per_Hz_t& q);
 const auto THERMAL_NOISE_AT_290K = -173.9763_dBm_per_Hz; ///< Thermal noise reference
 
 /// @cond Doxygen warning against the internal of the macro
-ATTRIBUTE_HELPER_HEADER(dB_t);  // See si-units-test-suite.cc for usages
-ATTRIBUTE_HELPER_HEADER(dBm_t);  // See si-units-test-suite.cc for usages
-ATTRIBUTE_HELPER_HEADER(mWatt_t);  // See si-units-test-suite.cc for usages
-ATTRIBUTE_HELPER_HEADER(Watt_t);  // See si-units-test-suite.cc for usages
-ATTRIBUTE_HELPER_HEADER(dBm_per_Hz_t);  // See si-units-test-suite.cc for usages
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dB_t, dB); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(dB);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dB_t, dB, Double);
 /// @endcond
 
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dBm_t, dBm); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(dBm);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dBm_t, dBm, Double);
+
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(mWatt_t, mWatt); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(mWatt);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(mWatt_t, mWatt, Double);
+
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(Watt_t, Watt); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(Watt);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(Watt_t, Watt, Double);
+
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dBm_per_Hz_t, dBm_per_Hz); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(dBm_per_Hz);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dBm_per_Hz_t, dBm_per_Hz, Double);
 } // namespace ns3
 
 // clang-format on
