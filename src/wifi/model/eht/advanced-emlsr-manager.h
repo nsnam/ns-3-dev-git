@@ -11,8 +11,12 @@
 
 #include "default-emlsr-manager.h"
 
+#include <memory>
+
 namespace ns3
 {
+
+class WifiPhyListener;
 
 /**
  * @ingroup wifi
@@ -30,6 +34,14 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
 
     AdvancedEmlsrManager();
     ~AdvancedEmlsrManager() override;
+
+    /**
+     * This method is called by the PHY listener attached to the main PHY when a switch main PHY
+     * back timer is started to notify of events that may delay the channel access for the main
+     * PHY on the current link. If the expected channel access is beyond the end of the switch
+     * main PHY timer expiration plus a channel switch delay, the timer is stopped immediately.
+     */
+    void InterruptSwitchMainPhyBackTimerIfNeeded();
 
   protected:
     void DoDispose() override;
@@ -124,6 +136,9 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
     EventId m_switchMainPhyBackEvent; //!< event scheduled in case of non-TX capable aux PHY when
                                       //!< medium is sensed busy during the PIFS interval
                                       //!< preceding/following the main PHY switch end
+    std::shared_ptr<WifiPhyListener>
+        m_phyListener; //!< PHY listener connected to the main PHY while operating on the link of
+                       //!< an aux PHY that is not TX capable
 };
 
 /**

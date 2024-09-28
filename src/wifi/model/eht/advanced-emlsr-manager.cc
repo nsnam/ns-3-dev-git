@@ -13,6 +13,7 @@
 #include "ns3/boolean.h"
 #include "ns3/log.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-phy-listener.h"
 #include "ns3/wifi-phy.h"
 
 #include <algorithm>
@@ -23,6 +24,85 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("AdvancedEmlsrManager");
 
 NS_OBJECT_ENSURE_REGISTERED(AdvancedEmlsrManager);
+
+/**
+ * PHY listener connected to the main PHY while operating on the link of an aux PHY that is
+ * not TX capable.
+ *
+ * PHY notifications are forwarded to this EMLSR manager one timestep later because this EMLSR
+ * manager may then decide to switch the main PHY back to the preferred link. Given that notifying
+ * a PHY listener is only one of the actions that are performed when handling events such as RX end
+ * or CCA busy start, it is not a good idea to request a main PHY switch while performing other
+ * actions. Forwarding notifications a timestep later allows to first complete the handling of the
+ * given event and then (possibly) starting a main PHY switch.
+ */
+class EmlsrPhyListener : public WifiPhyListener
+{
+  public:
+    /**
+     * Constructor
+     *
+     * @param emlsrManager the EMLSR manager
+     */
+    EmlsrPhyListener(Ptr<AdvancedEmlsrManager> emlsrManager)
+        : m_emlsrManager(emlsrManager)
+    {
+    }
+
+    void NotifyRxStart(Time /* duration */) override
+    {
+        Simulator::Schedule(TimeStep(1),
+                            &AdvancedEmlsrManager::InterruptSwitchMainPhyBackTimerIfNeeded,
+                            m_emlsrManager);
+    }
+
+    void NotifyRxEndOk() override
+    {
+        Simulator::Schedule(TimeStep(1),
+                            &AdvancedEmlsrManager::InterruptSwitchMainPhyBackTimerIfNeeded,
+                            m_emlsrManager);
+    }
+
+    void NotifyRxEndError() override
+    {
+    }
+
+    void NotifyTxStart(Time /* duration */, dBm_u /* txPower */) override
+    {
+    }
+
+    void NotifyCcaBusyStart(Time /* duration */,
+                            WifiChannelListType /* channelType */,
+                            const std::vector<Time>& /* per20MhzDurations */) override
+    {
+        Simulator::Schedule(TimeStep(1),
+                            &AdvancedEmlsrManager::InterruptSwitchMainPhyBackTimerIfNeeded,
+                            m_emlsrManager);
+    }
+
+    void NotifySwitchingStart(Time /* duration */) override
+    {
+    }
+
+    void NotifySleep() override
+    {
+    }
+
+    void NotifyOff() override
+    {
+    }
+
+    void NotifyWakeup() override
+    {
+    }
+
+    void NotifyOn() override
+    {
+    }
+
+  private:
+    Ptr<AdvancedEmlsrManager> m_emlsrManager; //!< the EMLSR manager
+};
 
 TypeId
 AdvancedEmlsrManager::GetTypeId()
@@ -74,6 +154,7 @@ AdvancedEmlsrManager::GetTypeId()
 AdvancedEmlsrManager::AdvancedEmlsrManager()
 {
     NS_LOG_FUNCTION(this);
+    m_phyListener = std::make_shared<EmlsrPhyListener>(this);
 }
 
 AdvancedEmlsrManager::~AdvancedEmlsrManager()
@@ -91,6 +172,11 @@ AdvancedEmlsrManager::DoDispose()
             "PhyRxMacHeaderEnd",
             MakeCallback(&AdvancedEmlsrManager::ReceivedMacHdr, this).Bind(phy));
     }
+    if (!GetAuxPhyTxCapable())
+    {
+        GetStaMac()->GetDevice()->GetPhy(GetMainPhyId())->UnregisterListener(m_phyListener);
+    }
+    m_phyListener.reset();
     DefaultEmlsrManager::DoDispose();
 }
 
@@ -130,6 +216,10 @@ AdvancedEmlsrManager::DoSetWifiMac(Ptr<StaWifiMac> mac)
         phy->TraceConnectWithoutContext(
             "PhyRxMacHeaderEnd",
             MakeCallback(&AdvancedEmlsrManager::ReceivedMacHdr, this).Bind(phy));
+    }
+    if (!GetAuxPhyTxCapable())
+    {
+        mac->GetDevice()->GetPhy(GetMainPhyId())->RegisterListener(m_phyListener);
     }
 }
 
@@ -524,6 +614,35 @@ AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(uint8_t linkId)
 
     // no need to wait further, switch the main PHY back to the preferred link
     SwitchMainPhyBackToPreferredLink(linkId, EmlsrSwitchMainPhyBackTrace(false));
+}
+
+void
+AdvancedEmlsrManager::InterruptSwitchMainPhyBackTimerIfNeeded()
+{
+    NS_LOG_FUNCTION(this);
+
+    if (!m_switchMainPhyBackEvent.IsPending())
+    {
+        return; // nothing to do
+    }
+
+    // a busy event occurred, check if the main PHY has to switch back to the preferred link
+    auto mainPhy = GetStaMac()->GetDevice()->GetPhy(GetMainPhyId());
+    auto linkId = GetStaMac()->GetLinkForPhy(GetMainPhyId());
+
+    if (!linkId.has_value())
+    {
+        NS_LOG_DEBUG("Main PHY is not operating on any link");
+        return;
+    }
+
+    const auto delay =
+        Simulator::GetDelayLeft(m_switchMainPhyBackEvent) + mainPhy->GetChannelSwitchDelay();
+    if (!GetExpectedAccessWithinDelay(*linkId, delay))
+    {
+        m_switchMainPhyBackEvent.Cancel();
+        SwitchMainPhyBackDelayExpired(*linkId);
+    }
 }
 
 void
