@@ -99,22 +99,22 @@ To fix the formatting of files with Git, run the following commands in the |ns3|
 These commands do not change past commits. Instead, the reformatted files are left in the
 workspace. These changes should be squashed to the corresponding commits, in order to fix them.
 
-  .. sourcecode:: console
+.. sourcecode:: console
 
-    # Fix all commits of the current branch, relative to the master branch
-    git clang-format master
+  # Fix all commits of the current branch, relative to the master branch
+  git clang-format master
 
-    # Fix all staged changes (i.e., changes that have been `git add`ed):
-    git clang-format
+  # Fix all staged changes (i.e., changes that have been `git add`ed):
+  git clang-format
 
-    # Fix all changes staged and unstaged:
-    git clang-format -f
+  # Fix all changes staged and unstaged:
+  git clang-format -f
 
-    # Fix specific files:
-    git clang-format path_to_file
+  # Fix specific files:
+  git clang-format path_to_file
 
-    # Check what formatting changes are needed (if no files provided, check all staged files):
-    git clang-format --diff
+  # Check what formatting changes are needed (if no files provided, check all staged files):
+  git clang-format --diff
 
 Note that this only fixes formatting issues related to clang-format.
 For other |ns3| coding style guidelines, read the ``check-style-clang-format.py`` section below.
