@@ -231,14 +231,12 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
     // prevent or allow an UL TXOP depending on whether another PHY is receiving a PPDU
     for (const auto id : GetStaMac()->GetLinkIds())
     {
-        if (id != linkId && GetStaMac()->IsEmlsrLink(id))
+        if (auto phy = GetStaMac()->GetWifiPhy(id);
+            phy && id != linkId && GetStaMac()->IsEmlsrLink(id))
         {
-            auto phy = GetStaMac()->GetWifiPhy(id);
-
             if (auto macHdr = GetEhtFem(id)->GetReceivedMacHdr(); macHdr && m_useNotifiedMacHdr)
             {
-                NS_ASSERT(phy &&
-                          phy->GetState()->GetLastTime({WifiPhyState::RX}) == Simulator::Now());
+                NS_ASSERT(phy->GetState()->GetLastTime({WifiPhyState::RX}) == Simulator::Now());
                 // we are receiving the MAC payload of a PSDU; if the PSDU being received on
                 // another link is an ICF, give up the TXOP and restart channel access at the
                 // end of PSDU reception. Note that we cannot be sure that the PSDU being received
@@ -252,8 +250,15 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
                 continue;
             }
 
-            if (phy && phy->GetInfoIfRxingPhyHeader())
+            if (auto txVector = phy->GetInfoIfRxingPhyHeader())
             {
+                if (txVector->get().GetModulationClass() >= WIFI_MOD_CLASS_HT)
+                {
+                    // The initial Control frame of frame exchanges shall be sent in the non-HT PPDU
+                    // or non-HT duplicate PPDU format (Sec. 35.3.17 of 802.11be D7.0), so this is
+                    // not an ICF, we can ignore it
+                    continue;
+                }
                 // we don't know yet the type of the frame being received; prevent or allow
                 // the UL TXOP based on user configuration
                 if (!m_allowUlTxopInRx)
@@ -264,7 +269,7 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
                 continue;
             }
 
-            if (phy && phy->IsStateRx())
+            if (phy->IsStateRx())
             {
                 // we don't know yet the type of the frame being received; prevent or allow
                 // the UL TXOP based on user configuration
@@ -299,7 +304,7 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
                         continue;
                     }
                     const auto& txVector = ongoingRxInfo->get().txVector;
-                    if (txVector.IsMu())
+                    if (txVector.GetModulationClass() >= WIFI_MOD_CLASS_HT)
                     {
                         // this is not an ICF, ignore it
                         continue;
@@ -575,6 +580,15 @@ AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(uint8_t linkId)
                 (hdr.GetAddr1().IsBroadcast() || hdr.GetAddr1() == GetEhtFem(id)->GetAddress()))
             {
                 delay = Max(delay, phy->GetDelayUntilIdle());
+            }
+        }
+        else if (auto txVector = phy->GetInfoIfRxingPhyHeader())
+        {
+            if (txVector->get().GetModulationClass() < WIFI_MOD_CLASS_HT)
+            {
+                // the PHY header of a non-HT PPDU, which may be an ICF, is being received; check
+                // again after the TX duration of a non-HT PHY header
+                delay = Max(delay, EMLSR_RX_PHY_START_DELAY);
             }
         }
         else if (phy->IsStateRx())
