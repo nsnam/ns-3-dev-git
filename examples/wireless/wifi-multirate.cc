@@ -674,6 +674,7 @@ Experiment::CommandSetup(int argc, char** argv)
     cmd.AddValue("outputFileName", "output filename", m_outputFileName);
     cmd.AddValue("enableRouting", "enable Routing", m_enableRouting);
     cmd.AddValue("enableMobility", "enable Mobility", m_enableMobility);
+    cmd.AddValue("enableFlowMon", "enable FlowMonitor", m_enableFlowMon);
     cmd.AddValue("scenario", "scenario ", m_scenario);
 
     cmd.Parse(argc, argv);
