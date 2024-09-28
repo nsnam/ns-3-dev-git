@@ -98,6 +98,11 @@ Ipv6L3Protocol::GetTypeId()
                             "and is being forwarded to another node",
                             MakeTraceSourceAccessor(&Ipv6L3Protocol::m_unicastForwardTrace),
                             "ns3::Ipv6L3Protocol::SentTracedCallback")
+            .AddTraceSource("MulticastForward",
+                            "A multicast IPv6 packet was received by this node "
+                            "and is being forwarded to another node",
+                            MakeTraceSourceAccessor(&Ipv6L3Protocol::m_multicastForwardTrace),
+                            "ns3::Ipv6L3Protocol::SentTracedCallback")
             .AddTraceSource("LocalDeliver",
                             "An IPv6 packet was received by/for this node, "
                             "and it is being forward up the stack",
@@ -1423,6 +1428,8 @@ Ipv6L3Protocol::IpMulticastForward(Ptr<const NetDevice> idev,
         rtentry->SetDestination(h.GetDestination());
         rtentry->SetGateway(Ipv6Address::GetAny());
         rtentry->SetOutputDevice(GetNetDevice(interfaceId));
+
+        m_multicastForwardTrace(h, packet, interfaceId);
         SendRealOut(rtentry, packet, h);
     }
 }

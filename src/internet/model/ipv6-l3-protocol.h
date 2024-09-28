@@ -583,6 +583,8 @@ class Ipv6L3Protocol : public Ipv6
     TracedCallback<const Ipv6Header&, Ptr<const Packet>, uint32_t> m_sendOutgoingTrace;
     /// Trace of unicast forwarded packets
     TracedCallback<const Ipv6Header&, Ptr<const Packet>, uint32_t> m_unicastForwardTrace;
+    /// Trace of multicast forwarded packets
+    TracedCallback<const Ipv6Header&, Ptr<const Packet>, uint32_t> m_multicastForwardTrace;
     /// Trace of locally delivered packets
     TracedCallback<const Ipv6Header&, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
 
