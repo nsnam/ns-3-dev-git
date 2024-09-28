@@ -934,6 +934,28 @@ EmlsrManager::MediumSyncDelayNTxopsExceeded(uint8_t linkId)
     return timerIt->second.msdNTxopsLeft == 0;
 }
 
+bool
+EmlsrManager::GetExpectedAccessWithinDelay(uint8_t linkId, const Time& delay) const
+{
+    const auto deadline = Simulator::Now() + delay;
+    for (const auto& [acIndex, ac] : wifiAcList)
+    {
+        if (auto edca = m_staMac->GetQosTxop(acIndex); edca->HasFramesToTransmit(linkId))
+        {
+            const auto backoffEnd =
+                m_staMac->GetChannelAccessManager(linkId)->GetBackoffEndFor(edca);
+
+            if (backoffEnd <= deadline)
+            {
+                NS_LOG_DEBUG("Backoff end for " << acIndex << " on link " << +linkId << ": "
+                                                << backoffEnd.As(Time::US));
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 MgtEmlOmn
 EmlsrManager::GetEmlOmn()
 {

@@ -488,6 +488,17 @@ class EmlsrManager : public Object
      */
     void CancelAllSleepEvents();
 
+    /**
+     * Get whether channel access is expected to be granted on the given link within the given
+     * delay to an Access Category that has traffic to send on the given link.
+     *
+     * @param linkId the ID of the given link
+     * @param delay the given delay
+     * @return whether channel access is expected to be granted on the given link within the given
+     *         delay
+     */
+    bool GetExpectedAccessWithinDelay(uint8_t linkId, const Time& delay) const;
+
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
     uint8_t m_mainPhyId; //!< ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
