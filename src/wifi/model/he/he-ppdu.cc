@@ -46,7 +46,8 @@ HePpdu::HePpdu(const WifiConstPsduMap& psdus,
                const WifiPhyOperatingChannel& channel,
                Time ppduDuration,
                uint64_t uid,
-               TxPsdFlag flag)
+               TxPsdFlag flag,
+               bool instantiateHeaders /* = true */)
     : OfdmPpdu(psdus.begin()->second,
                txVector,
                channel,
@@ -54,20 +55,25 @@ HePpdu::HePpdu(const WifiConstPsduMap& psdus,
                false), // don't instantiate LSigHeader of OfdmPpdu
       m_txPsdFlag(flag)
 {
-    NS_LOG_FUNCTION(this << psdus << txVector << channel << ppduDuration << uid << flag);
+    NS_LOG_FUNCTION(this << psdus << txVector << channel << ppduDuration << uid << flag
+                         << instantiateHeaders);
 
     // overwrite with map (since only first element used by OfdmPpdu)
     m_psdus.begin()->second = nullptr;
     m_psdus.clear();
     m_psdus = psdus;
-    SetPhyHeaders(txVector, ppduDuration);
+    if (instantiateHeaders)
+    {
+        SetPhyHeaders(txVector, ppduDuration);
+    }
 }
 
 HePpdu::HePpdu(Ptr<const WifiPsdu> psdu,
                const WifiTxVector& txVector,
                const WifiPhyOperatingChannel& channel,
                Time ppduDuration,
-               uint64_t uid)
+               uint64_t uid,
+               bool instantiateHeaders /* = true */)
     : OfdmPpdu(psdu,
                txVector,
                channel,
@@ -75,9 +81,13 @@ HePpdu::HePpdu(Ptr<const WifiPsdu> psdu,
                false), // don't instantiate LSigHeader of OfdmPpdu
       m_txPsdFlag(PSD_NON_HE_PORTION)
 {
-    NS_LOG_FUNCTION(this << psdu << txVector << channel << ppduDuration << uid);
+    NS_LOG_FUNCTION(this << psdu << txVector << channel << ppduDuration << uid
+                         << instantiateHeaders);
     NS_ASSERT(!IsMu());
-    SetPhyHeaders(txVector, ppduDuration);
+    if (instantiateHeaders)
+    {
+        SetPhyHeaders(txVector, ppduDuration);
+    }
 }
 
 void

@@ -114,12 +114,15 @@ class HePpdu : public OfdmPpdu
      * @param channel the operating channel of the PHY used to transmit this PPDU
      * @param ppduDuration the transmission duration of this PPDU
      * @param uid the unique ID of this PPDU
+     * @param instantiateHeaders flag used to instantiate HE header, should be disabled by child
+     * classes
      */
     HePpdu(Ptr<const WifiPsdu> psdu,
            const WifiTxVector& txVector,
            const WifiPhyOperatingChannel& channel,
            Time ppduDuration,
-           uint64_t uid);
+           uint64_t uid,
+           bool instantiateHeaders = true);
     /**
      * Create an MU HE PPDU, storing a map of PSDUs.
      *
@@ -131,13 +134,16 @@ class HePpdu : public OfdmPpdu
      * @param ppduDuration the transmission duration of this PPDU
      * @param uid the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
      * @param flag the flag indicating the type of Tx PSD to build
+     * @param instantiateHeaders flag used to instantiate HE header, should be disabled by child
+     * classes
      */
     HePpdu(const WifiConstPsduMap& psdus,
            const WifiTxVector& txVector,
            const WifiPhyOperatingChannel& channel,
            Time ppduDuration,
            uint64_t uid,
-           TxPsdFlag flag);
+           TxPsdFlag flag,
+           bool instantiateHeaders = true);
 
     Time GetTxDuration() const override;
     Ptr<WifiPpdu> Copy() const override;
@@ -152,7 +158,7 @@ class HePpdu : public OfdmPpdu
      * @param staId the STA-ID of the PHY calling this function.
      * @return the PSDU
      */
-    Ptr<const WifiPsdu> GetPsdu(uint8_t bssColor, uint16_t staId = SU_STA_ID) const;
+    virtual Ptr<const WifiPsdu> GetPsdu(uint8_t bssColor, uint16_t staId = SU_STA_ID) const;
 
     /**
      * @return the transmit PSD flag set for this PPDU
@@ -230,6 +236,13 @@ class HePpdu : public OfdmPpdu
      * @param txVector the TXVECTOR to fill in
      */
     virtual void SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const;
+
+    /**
+     * Fill in the L-SIG header.
+     *
+     * @param ppduDuration the transmission duration of this PPDU
+     */
+    void SetLSigHeader(Time ppduDuration);
 
     /**
      * Reconstruct HeMuUserInfoMap from HE-SIG-B header.
@@ -341,14 +354,7 @@ class HePpdu : public OfdmPpdu
      * @param txVector the TXVECTOR that was used for this PPDU
      * @param ppduDuration the transmission duration of this PPDU
      */
-    void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
-
-    /**
-     * Fill in the L-SIG header.
-     *
-     * @param ppduDuration the transmission duration of this PPDU
-     */
-    void SetLSigHeader(Time ppduDuration);
+    virtual void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
 
     /**
      * Fill in the HE-SIG header.

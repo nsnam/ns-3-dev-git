@@ -90,6 +90,7 @@ class EhtPpdu : public HePpdu
             TxPsdFlag flag);
 
     WifiPpduType GetType() const override;
+    Ptr<const WifiPsdu> GetPsdu(uint8_t bssColor, uint16_t staId = SU_STA_ID) const override;
     Ptr<WifiPpdu> Copy() const override;
 
     /**
@@ -161,7 +162,7 @@ class EhtPpdu : public HePpdu
      * @param txVector the TXVECTOR that was used for this PPDU
      * @param ppduDuration the transmission duration of this PPDU
      */
-    void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration);
+    void SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration) override;
 
     /**
      * Fill in the EHT PHY header.

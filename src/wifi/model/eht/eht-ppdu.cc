@@ -28,7 +28,7 @@ EhtPpdu::EhtPpdu(const WifiConstPsduMap& psdus,
                  Time ppduDuration,
                  uint64_t uid,
                  TxPsdFlag flag)
-    : HePpdu(psdus, txVector, channel, ppduDuration, uid, flag)
+    : HePpdu(psdus, txVector, channel, ppduDuration, uid, flag, false)
 {
     NS_LOG_FUNCTION(this << psdus << txVector << channel << ppduDuration << uid << flag);
     SetPhyHeaders(txVector, ppduDuration);
@@ -38,6 +38,7 @@ void
 EhtPpdu::SetPhyHeaders(const WifiTxVector& txVector, Time ppduDuration)
 {
     NS_LOG_FUNCTION(this << txVector << ppduDuration);
+    SetLSigHeader(ppduDuration);
     SetEhtPhyHeader(txVector);
 }
 
@@ -133,7 +134,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
         {
             // TODO: use punctured channel information
         }
-        txVector.SetSigBMode(HePhy::GetVhtMcs(ehtPhyHeader->m_ehtSigMcs));
+        txVector.SetSigBMode(EhtPhy::GetVhtMcs(ehtPhyHeader->m_ehtSigMcs));
         txVector.SetGuardInterval(GetGuardIntervalFromEncoding(ehtPhyHeader->m_giLtfSize));
         const auto ruAllocation = ehtPhyHeader->m_ruAllocationA; // RU Allocation-B not supported
                                                                  // yet
@@ -311,6 +312,44 @@ EhtPpdu::GetPuncturedInfo(const std::vector<bool>& inactiveSubchannels,
     }
     NS_ASSERT_MSG(false, "invalid puncturing pattern");
     return 0;
+}
+
+Ptr<const WifiPsdu>
+EhtPpdu::GetPsdu(uint8_t bssColor, uint16_t staId /* = SU_STA_ID */) const
+{
+    if (m_psdus.contains(SU_STA_ID))
+    {
+        NS_ASSERT(m_psdus.size() == 1);
+        return m_psdus.at(SU_STA_ID);
+    }
+
+    if (IsUlMu())
+    {
+        auto ehtPhyHeader = std::get_if<EhtTbPhyHeader>(&m_ehtPhyHeader);
+        NS_ASSERT(ehtPhyHeader);
+        NS_ASSERT(m_psdus.size() == 1);
+        if ((bssColor == 0) || (ehtPhyHeader->m_bssColor == 0) ||
+            (bssColor == ehtPhyHeader->m_bssColor))
+        {
+            return m_psdus.cbegin()->second;
+        }
+    }
+    else if (IsDlMu())
+    {
+        auto ehtPhyHeader = std::get_if<EhtMuPhyHeader>(&m_ehtPhyHeader);
+        NS_ASSERT(ehtPhyHeader);
+        if ((bssColor == 0) || (ehtPhyHeader->m_bssColor == 0) ||
+            (bssColor == ehtPhyHeader->m_bssColor))
+        {
+            const auto it = m_psdus.find(staId);
+            if (it != m_psdus.cend())
+            {
+                return it->second;
+            }
+        }
+    }
+
+    return nullptr;
 }
 
 Ptr<WifiPpdu>
