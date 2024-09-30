@@ -1,4 +1,4 @@
-ns-3 RELEASE NOTES
+ns-3 Release Notes
 ==================
 
 This file contains ns-3 release notes (most recent releases first).
