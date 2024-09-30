@@ -1682,7 +1682,7 @@ WifiPhyCcaIndicationTest::RunOne()
         // Verify PHY notifies CCA-BUSY for the S40 as long as a signal above the energy detection
         // threshold occupies the first 20 MHz subchannel of the S40: 27.3.20.6.4: Any signal within
         // the secondary 40 MHz channel at or above a threshold of –59 dBm within a period of
-        // aCCATime after the signal arrives at the receiver’s antenna(s).
+        // aCCATime after the signal arrives at the receiver's antenna(s).
         Simulator::Schedule(delay,
                             &WifiPhyCcaIndicationTest::LogScenario,
                             this,
@@ -1740,7 +1740,7 @@ WifiPhyCcaIndicationTest::RunOne()
         // Verify PHY notifies CCA-BUSY for the S40 as long as a signal above the energy detection
         // threshold occupies the second 20 MHz subchannel of the S40: 27.3.20.6.4: Any signal
         // within the secondary 40 MHz channel at or above a threshold of –59 dBm within a period of
-        // aCCATime after the signal arrives at the receiver’s antenna(s).
+        // aCCATime after the signal arrives at the receiver's antenna(s).
         Simulator::Schedule(delay,
                             &WifiPhyCcaIndicationTest::LogScenario,
                             this,
@@ -1797,7 +1797,7 @@ WifiPhyCcaIndicationTest::RunOne()
         // Verify PHY notifies CCA-BUSY for the S40 as long as a signal above the energy detection
         // threshold occupies S40: 27.3.20.6.4: Any signal within the secondary 40 MHz channel at or
         // above a threshold of –59 dBm within a period of aCCATime after the signal arrives at the
-        // receiver’s antenna(s).
+        // receiver's antenna(s).
         Simulator::Schedule(delay,
                             &WifiPhyCcaIndicationTest::LogScenario,
                             this,

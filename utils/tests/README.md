@@ -67,7 +67,7 @@ When you fork ns-3-dev on Gitlab, you get access to some free hours of execution
 
 To customize the path:
 
-1. Go to the project’s **Settings > CI / CD**.
+1. Go to the project's **Settings > CI / CD**.
 2. Expand the **General pipelines** section.
 3. Provide `utils/tests/gitlab-ci.yml` as a value in the **Custom CI configuration path** field.
 4. Click **Save changes**.

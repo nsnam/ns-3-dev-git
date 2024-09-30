@@ -1005,7 +1005,7 @@ The following unit tests have been written to validate the implementation of DCT
 
 * ECT flags should be set for SYN, SYN+ACK, ACK and data packets for DCTCP traffic
 * ECT flags should not be set for SYN, SYN+ACK and pure ACK packets, but should be set on data packets for ECN enabled traditional TCP flows
-* ECE should be set only when CE flags are received at receiver and even if sender doesn’t send CWR, receiver should not send ECE if it doesn’t receive packets with CE flags
+* ECE should be set only when CE flags are received at receiver and even if sender doesn't send CWR, receiver should not send ECE if it doesn't receive packets with CE flags
 
 An example program, ``examples/tcp/tcp-validation.cc``, can be used to
 experiment with DCTCP for long-running flows with different bottleneck

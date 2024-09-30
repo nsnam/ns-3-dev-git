@@ -68,7 +68,7 @@ amount of bytes that have been transferred to the network device.
 
 The read method is called by the reading thread to retrieve new incoming
 packets stored in the netmap receiver ring and pass them to the appropriate
-|ns3| protocol handler for further processing within the simulator’s network
+|ns3| protocol handler for further processing within the simulator's network
 stack. After retrieving packets, the reading thread also synchronizes
 the netmap receiver ring, so that the retrieved packets can be removed
 from the netmap receiver ring.

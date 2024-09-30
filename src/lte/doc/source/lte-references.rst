@@ -136,7 +136,7 @@ References
    Scheduler to enhance the capacity of Voice over LTE systems"
    <https://ieeexplore.ieee.org/document/6808890>`_,
    in Proceedings of 11th International Multi-Conference on Systems,
-   Signals & Devices (SSD’14), Castelldefels, 11-14 February 2014,
+   Signals & Devices (SSD'14), Castelldefels, 11-14 February 2014,
    Castelldefels (Spain).
 
 .. [Baldo2014] N. Baldo, R. Martínez, P. Dini, R. Vilalta, M. Miozzo,

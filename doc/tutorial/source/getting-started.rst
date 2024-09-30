@@ -728,7 +728,7 @@ For instance, ns-3.28 was released prior to Fedora 28, which included
 a new major version of gcc (gcc-8).  Building ns-3.28 or older releases
 on Fedora 28, when GTK+2 is installed, will result in an error such as::
 
-  /usr/include/gtk-2.0/gtk/gtkfilechooserbutton.h:59:8: error: unnecessary parentheses in declaration of ‘__gtk_reserved1’ [-Werror=parentheses]
+  /usr/include/gtk-2.0/gtk/gtkfilechooserbutton.h:59:8: error: unnecessary parentheses in declaration of '__gtk_reserved1' [-Werror=parentheses]
    void (*__gtk_reserved1);
 
 In releases starting with ns-3.28.1, an option is available in CMake to work

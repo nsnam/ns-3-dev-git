@@ -506,7 +506,7 @@ standard, COFDM (Coded Orthogonal Frequency Division Multiplexing) which is
 notably used in the DVB-T and ISDB-T digital television standards adopted by
 various countries around the world, and analog modulation which is a legacy
 technology but is still being used by some countries today. To accomplish
-realistic PSD models for these modulation types, the signals’ PSDs were
+realistic PSD models for these modulation types, the signals' PSDs were
 approximated from real standards and developed into models that are scalable by
 frequency and power. The COFDM PSD is approximated from Figure 12 (8k mode) of
 [KoppCOFDM]_, the 8-VSB PSD is approximated from Figure 3 of [Baron8VSB]_, and the
@@ -560,13 +560,13 @@ channel for each these regions are provided.
    :align: center
 
    Plot from MATLAB implementation of CreateRegionalTvTransmitters method in
-   ``TvSpectrumTransmitterHelper``. Shows 100 random points on Earth’s surface
+   ``TvSpectrumTransmitterHelper``. Shows 100 random points on Earth's surface
    (with altitude 0) corresponding to TV transmitter locations within a 2000 km
    radius of 35° latitude and -100° longitude.
 
 A method (CreateRegionalTvTransmitters) is provided that enables users to
 randomly generate multiple TV transmitters from a specified region with a given
-density within a chosen radius around a point on Earth’s surface. The region,
+density within a chosen radius around a point on Earth's surface. The region,
 which determines the channel frequencies of the generated TV transmitters, can
 be specified to be one of the three provided, while the density determines the
 amount of transmitters generated. The TV transmitters' antenna heights

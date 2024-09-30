@@ -2005,7 +2005,7 @@ HeFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& 
 
     if (psdu->GetAddr1() == m_self)
     {
-        // When the received frame’s RA is equal to the STA’s own MAC address, the STA
+        // When the received frame's RA is equal to the STA's own MAC address, the STA
         // shall not update its NAV (IEEE 802.11-2020, sec. 10.3.2.4)
         return;
     }
@@ -2036,7 +2036,7 @@ HeFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& 
     }
 
     // For all other received frames the STA shall update its NAV when the received
-    // Duration is greater than the STA’s current NAV value (IEEE 802.11-2020 sec. 10.3.2.4)
+    // Duration is greater than the STA's current NAV value (IEEE 802.11-2020 sec. 10.3.2.4)
     auto intraBssNavEnd = Simulator::Now() + duration;
     if (intraBssNavEnd > m_intraBssNavEnd)
     {

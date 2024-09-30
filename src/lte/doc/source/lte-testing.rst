@@ -118,7 +118,7 @@ System Tests
 
 Dedicated Bearer Deactivation Tests
 -----------------------------------
-The test suite ‘lte-test-deactivate-bearer’ creates test case with single EnodeB and Three UE’s.
+The test suite 'lte-test-deactivate-bearer' creates test case with single EnodeB and Three UE's.
 Each UE consists of one Default and one Dedicated EPS bearer with same bearer specification but with different ARP.
 Test Case Flow is as follows:
 Attach UE -> Create Default+Dedicated Bearer -> Deactivate one of the Dedicated bearer
@@ -134,7 +134,7 @@ Once the test case execution ends it will create ``DlRlcStats.txt`` and ``UlRlcS
 
 Test case executes in three epochs:
 
- #. In first Epoch (0.04s-1.04s) All UE’s and corresponding bearers gets attached and packet flow over the dedicated bearers activated.
+ #. In first Epoch (0.04s-1.04s) All UE's and corresponding bearers gets attached and packet flow over the dedicated bearers activated.
  #. In second Epoch (1.04s-2.04s), bearer deactivation is instantiated, hence User can see relatively less number of TxBytes on UE_ID=1 and LCID=4 as compared to other bearers.
  #. In third Epoch (2.04s-3.04s) since bearer deactivation of UE_ID=1 and LCID=4 is completed, user will not see any logging related to LCID=4.
 
