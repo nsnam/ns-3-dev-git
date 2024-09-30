@@ -5,8 +5,8 @@
  *
  * Authors: Rediet <getachew.redieteab@orange.com>
  *          Sébastien Deronne <sebastien.deronne@gmail.com> (for logic ported from wifi-phy and
- * spectrum-wifi-phy) Mathieu Lacage <mathieu.lacage@sophia.inria.fr> (for logic ported from
- * wifi-phy)
+ *                                                           spectrum-wifi-phy)
+ *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr> (for logic ported from wifi-phy)
  */
 
 #include "phy-entity.h"

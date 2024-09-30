@@ -244,7 +244,8 @@ class EhtCapabilities : public WifiInformationElement
      * Constructor
      *
      * \param is2_4Ghz indicating whether PHY is operating in 2.4 GHz based on previously serialized
-     * IEs \param heCapabilities the optional HE capabilities contained in the same management frame
+     * IEs
+     * \param heCapabilities the optional HE capabilities contained in the same management frame
      */
     EhtCapabilities(bool is2_4Ghz, const std::optional<HeCapabilities>& heCapabilities);
     // Implementations of pure virtual methods, or overridden from base class.
