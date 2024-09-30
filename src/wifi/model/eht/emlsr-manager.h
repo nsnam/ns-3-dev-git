@@ -509,6 +509,14 @@ class EmlsrManager : public Object
      */
     bool GetExpectedAccessWithinDelay(uint8_t linkId, const Time& delay) const;
 
+    /// Store information about a main PHY switch.
+    struct MainPhySwitchInfo
+    {
+        Time end;       //!< end of channel switching
+        uint8_t from{}; //!< ID of the link which the main PHY is/has been leaving
+        uint8_t to{};   //!< ID of the link which the main PHY is moving to
+    };
+
     Time m_emlsrPaddingDelay;    //!< EMLSR Padding delay
     Time m_emlsrTransitionDelay; //!< EMLSR Transition delay
     uint8_t m_mainPhyId; //!< ID of main PHY (position in the vector of PHYs held by WifiNetDevice)
@@ -525,6 +533,7 @@ class EmlsrManager : public Object
     std::map<uint8_t, EventId> m_ulMainPhySwitch; //!< link ID-indexed map of timers started when
                                                   //!< an aux PHY gains an UL TXOP and schedules
                                                   //!< a channel switch for the main PHY
+    MainPhySwitchInfo m_mainPhySwitchInfo;        //!< main PHY switch info
 
   private:
     /**

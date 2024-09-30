@@ -75,26 +75,34 @@ class DefaultEmlsrManager : public EmlsrManager
      */
     void SwitchMainPhyBackToPreferredLink(uint8_t linkId, EmlsrMainPhySwitchTrace&& traceInfo);
 
-    /// Store information about a main PHY switch.
-    struct MainPhySwitchInfo
-    {
-        Time end;     //!< end of channel switching
-        uint8_t from; //!< ID of the link which the main PHY is/has been leaving
-        uint8_t to;   //!< ID of the link which the main PHY is moving to
-    };
-
     bool m_switchAuxPhy; /**< whether Aux PHY should switch channel to operate on the link on which
                               the Main PHY was operating before moving to the link of the Aux PHY */
     Ptr<WifiPhy> m_auxPhyToReconnect; //!< Aux PHY the ChannelAccessManager of the link on which
                                       //!< the main PHY is operating has to connect a listener to
                                       //!< when the main PHY is back operating on its previous link
     EventId m_auxPhySwitchEvent;      //!< event scheduled for an aux PHY to switch link
-    MainPhySwitchInfo m_mainPhySwitchInfo;          //!< main PHY switch info
     std::map<uint8_t, Time> m_switchMainPhyOnRtsTx; //!< link ID-indexed map of the time when an RTS
                                                     //!< that requires the main PHY to switch link
                                                     //!< is expected to be transmitted on the link
 
   private:
+    /**
+     * This function shall be called when the main PHY starts switching to a link on which an aux
+     * PHY that is capable of switching link is operating. This function schedules the aux PHY
+     * switch to occur when the main PHY completes the switch and, in case the connection of the
+     * main PHY to the aux PHY link is postponed because the aux PHY is receiving a PPDU, the
+     * aux PHY switch is postponed accordingly.
+     *
+     * @param auxPhy the aux PHY that has to switch link
+     * @param currLinkId the link on which the aux PHY is operating
+     * @param nextLinkId the link to which the aux PHY will switch
+     * @param duration the remaining time until the aux PHY switch starts
+     */
+    void SwitchAuxPhyAfterMainPhy(Ptr<WifiPhy> auxPhy,
+                                  uint8_t currLinkId,
+                                  uint8_t nextLinkId,
+                                  Time duration);
+
     void DoNotifyMgtFrameReceived(Ptr<const WifiMpdu> mpdu, uint8_t linkId) override;
     void NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
                              uint8_t nextLinkId,

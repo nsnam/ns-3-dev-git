@@ -322,6 +322,13 @@ class StaWifiMac : public WifiMac
     void NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time delay);
 
     /**
+     * Cancel any scheduled event for connecting the given PHY to an EMLSR link.
+     *
+     * @param phyId the ID of the given PHY
+     */
+    void CancelEmlsrPhyConnectEvent(uint8_t phyId);
+
+    /**
      * Block transmissions on the given link for the given reason.
      *
      * @param linkId the ID of the given link

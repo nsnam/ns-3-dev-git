@@ -143,9 +143,10 @@ EmlsrManager::GetTypeId()
 }
 
 EmlsrManager::EmlsrManager()
-    // The STA initializes dot11MSDTimerDuration to aPPDUMaxTime defined in Table 36-70
-    // (Sec. 35.3.16.8.1 of 802.11be D3.1)
-    : m_mediumSyncDuration(MicroSeconds(DEFAULT_MSD_DURATION_USEC)),
+    : m_mainPhySwitchInfo{},
+      // The STA initializes dot11MSDTimerDuration to aPPDUMaxTime defined in Table 36-70
+      // (Sec. 35.3.16.8.1 of 802.11be D3.1)
+      m_mediumSyncDuration(MicroSeconds(DEFAULT_MSD_DURATION_USEC)),
       // The default value of dot11MSDOFDMEDthreshold is –72 dBm and the default value of
       // dot11MSDTXOPMax is 1, respectively (Sec. 35.3.16.8.1 of 802.11be D3.1)
       m_msdOfdmEdThreshold(DEFAULT_MSD_OFDM_ED_THRESH),
@@ -449,19 +450,53 @@ EmlsrManager::NotifyIcfReceived(uint8_t linkId)
     }
 
     auto mainPhy = m_staMac->GetDevice()->GetPhy(m_mainPhyId);
-    auto auxPhy = m_staMac->GetWifiPhy(linkId);
+    auto rxPhy = m_staMac->GetWifiPhy(linkId);
 
-    if (m_staMac->GetWifiPhy(linkId) != mainPhy)
+    const auto receivedByAuxPhy = (rxPhy != mainPhy);
+    const auto mainPhyOnALink = (m_staMac->GetLinkForPhy(mainPhy).has_value());
+    const auto mainPhyIsSwitching =
+        (mainPhy->GetState()->GetLastTime({WifiPhyState::SWITCHING}) == Simulator::Now());
+    // if the main PHY is not operating on a link and it is not switching, then we have postponed
+    // the reconnection of the main PHY to a link because a PPDU reception was ongoing on that link
+    const auto mainPhyToConnect = (!mainPhyOnALink && !mainPhyIsSwitching);
+
+    const auto mainPhyToConnectToOtherLink = mainPhyToConnect && (m_mainPhySwitchInfo.to != linkId);
+
+    if (mainPhyToConnect)
     {
-        // an aux PHY received the ICF
+        // If ICF was received on a link other than the one the main PHY is waiting to be connected
+        // to, we need to cancel the pending reconnection and request a new main PHY switch.
+        // If ICF was received on the link the main PHY is waiting to be connected to, we cancel
+        // the pending reconnection and explicitly request the reconnection below
+        GetStaMac()->CancelEmlsrPhyConnectEvent(mainPhy->GetPhyId());
+    }
+
+    // We need to request a main PHY switch if:
+    // - the ICF was received by an aux PHY, AND
+    // - the main PHY is not waiting to be connected to a link OR it is waiting to be connected
+    //   to a link other than the link on which the ICF is received.
+    if (receivedByAuxPhy && (!mainPhyToConnect || mainPhyToConnectToOtherLink))
+    {
         SwitchMainPhy(linkId,
                       true, // channel switch should occur instantaneously
                       RESET_BACKOFF,
                       DONT_REQUEST_ACCESS,
                       EmlsrDlTxopIcfReceivedByAuxPhyTrace{});
+    }
+    else if (mainPhyToConnect && !mainPhyToConnectToOtherLink)
+    {
+        // If the main PHY is waiting to be connected to the link on which the ICF was received, we
+        // have to explicitly perform the connection because the pending event was cancelled above.
+        // We do this way in order to reconnect the main PHY before putting aux PHYs to sleep: if
+        // the aux PHY is put to sleep while still operating on the link on which it received the
+        // ICF, all the MAC events (including scheduled CTS transmission) will be cancelled.
+        m_staMac->NotifySwitchingEmlsrLink(mainPhy, linkId, Time{0});
+    }
 
+    if (receivedByAuxPhy)
+    {
         // aux PHY received the ICF but main PHY will send the response
-        auto uid = auxPhy->GetPreviouslyRxPpduUid();
+        auto uid = rxPhy->GetPreviouslyRxPpduUid();
         mainPhy->SetPreviouslyRxPpduUid(uid);
     }
 
@@ -784,9 +819,6 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
     traceInfo.toLinkId = linkId;
     m_mainPhySwitchTrace(traceInfo);
 
-    NS_ASSERT_MSG(currMainPhyLinkId.has_value() || mainPhy->IsStateSwitching(),
-                  "If the main PHY is not operating on a link, it must be switching");
-
     const auto newMainPhyChannel = GetChannelForMainPhy(linkId);
 
     NS_LOG_DEBUG("Main PHY (" << mainPhy << ") is about to switch to " << newMainPhyChannel
@@ -860,6 +892,10 @@ EmlsrManager::SwitchMainPhy(uint8_t linkId,
             }
         });
     }
+
+    m_mainPhySwitchInfo.from = currMainPhyLinkId.value_or(m_mainPhySwitchInfo.from);
+    m_mainPhySwitchInfo.to = linkId;
+    m_mainPhySwitchInfo.end = Simulator::Now() + timeToSwitchEnd;
 
     SetCcaEdThresholdOnLinkSwitch(mainPhy, linkId);
     NotifyMainPhySwitch(currMainPhyLinkId, linkId, auxPhy, timeToSwitchEnd);

@@ -46,7 +46,6 @@ DefaultEmlsrManager::GetTypeId()
 }
 
 DefaultEmlsrManager::DefaultEmlsrManager()
-    : m_mainPhySwitchInfo{}
 {
     NS_LOG_FUNCTION(this);
 }
@@ -95,15 +94,6 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
     NS_LOG_FUNCTION(this << (currLinkId ? std::to_string(*currLinkId) : "") << nextLinkId << auxPhy
                          << duration.As(Time::US));
 
-    // if currLinkId has no value (i.e., the main PHY is not operating on any link), it means that
-    // the main PHY is switching
-    const auto now = Simulator::Now();
-    NS_ASSERT_MSG(currLinkId || m_mainPhySwitchInfo.end >= now,
-                  "No current link ID provided nor valid main PHY switch information stored");
-    m_mainPhySwitchInfo.from = currLinkId.value_or(m_mainPhySwitchInfo.from);
-    m_mainPhySwitchInfo.to = nextLinkId;
-    m_mainPhySwitchInfo.end = now + duration;
-
     if (m_switchAuxPhy)
     {
         // cancel any previously requested aux PHY switch
@@ -119,21 +109,9 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
         // schedule Aux PHY switch so that it operates on the link on which the main PHY was
         // operating
         NS_LOG_DEBUG("Aux PHY (" << auxPhy << ") operating on link " << +nextLinkId
-                                 << " will switch to link " << +currLinkId.value() << " in "
+                                 << " will switch to link " << +m_mainPhySwitchInfo.from << " in "
                                  << duration.As(Time::US));
-
-        if (duration.IsStrictlyPositive())
-        {
-            m_auxPhySwitchEvent =
-                Simulator::Schedule(duration, [=, this, prevLinkId = m_mainPhySwitchInfo.from]() {
-                    SwitchAuxPhy(auxPhy, nextLinkId, prevLinkId);
-                });
-        }
-        else
-        {
-            SwitchAuxPhy(auxPhy, nextLinkId, m_mainPhySwitchInfo.from);
-        }
-
+        SwitchAuxPhyAfterMainPhy(auxPhy, nextLinkId, m_mainPhySwitchInfo.from, duration);
         return;
     }
 
@@ -158,6 +136,52 @@ DefaultEmlsrManager::NotifyMainPhySwitch(std::optional<uint8_t> currLinkId,
     {
         // the main PHY is moving to an auxiliary link and the aux PHY does not switch link
         m_auxPhyToReconnect = auxPhy;
+    }
+}
+
+void
+DefaultEmlsrManager::SwitchAuxPhyAfterMainPhy(Ptr<WifiPhy> auxPhy,
+                                              uint8_t currLinkId,
+                                              uint8_t nextLinkId,
+                                              Time duration)
+{
+    NS_LOG_FUNCTION(this << auxPhy << currLinkId << nextLinkId << duration.As(Time::US));
+
+    if (duration.IsStrictlyPositive())
+    {
+        auto lambda = [=, this]() {
+            if (GetStaMac()->GetWifiPhy(currLinkId) == auxPhy)
+            {
+                // the aux PHY is still operating on the link, likely because it is receiving a
+                // PPDU and connecting the main PHY to the link has been postponed
+                const auto [maybeIcf, extension] = CheckPossiblyReceivingIcf(currLinkId);
+                if (maybeIcf && extension.IsStrictlyPositive())
+                {
+                    NS_LOG_DEBUG("Switching aux PHY to link " << +nextLinkId << " is postponed by "
+                                                              << extension.As(Time::US));
+                    SwitchAuxPhyAfterMainPhy(auxPhy, currLinkId, nextLinkId, extension);
+                    return;
+                }
+            }
+            const auto isSleeping = auxPhy->IsStateSleep();
+            if (isSleeping)
+            {
+                // if the aux PHY is sleeping, it cannot switch channel
+                auxPhy->ResumeFromSleep();
+            }
+            SwitchAuxPhy(auxPhy, currLinkId, nextLinkId);
+            if (isSleeping)
+            {
+                // sleep mode will be postponed until the end of channel switch
+                auxPhy->SetSleepMode(true);
+            }
+        };
+
+        m_auxPhySwitchEvent = Simulator::Schedule(duration, lambda);
+    }
+    else
+    {
+        SwitchAuxPhy(auxPhy, currLinkId, nextLinkId);
     }
 }
 

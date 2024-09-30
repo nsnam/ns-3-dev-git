@@ -2105,21 +2105,47 @@ StaWifiMac::NotifySwitchingEmlsrLink(Ptr<WifiPhy> phy, uint8_t linkId, Time dela
     };
 
     // cancel any pending event for the given PHY to switch link
-    if (auto eventIt = m_emlsrLinkSwitch.find(phy->GetPhyId()); eventIt != m_emlsrLinkSwitch.end())
-    {
-        eventIt->second.Cancel();
-        m_emlsrLinkSwitch.erase(eventIt);
-    }
+    CancelEmlsrPhyConnectEvent(phy->GetPhyId());
 
-    // connect the PHY to the new link when the channel switch is completed, so that the PHY
-    // operating on the new link can possibly continue receiving frames in the meantime.
+    // connect the PHY to the new link when the channel switch is completed, unless there is a PHY
+    // operating on the new link that is possibly receiving an ICF, in which case the PHY is
+    // connected when the frame reception is completed
     if (delay.IsStrictlyPositive())
     {
-        m_emlsrLinkSwitch.emplace(phy->GetPhyId(), Simulator::Schedule(delay, connectPhy));
+        auto lambda = [=, this]() mutable {
+            const auto [maybeIcf, extension] = m_emlsrManager->CheckPossiblyReceivingIcf(linkId);
+            if (maybeIcf && extension.IsStrictlyPositive())
+            {
+                NS_ASSERT_MSG(phy->GetPhyId() == m_emlsrManager->GetMainPhyId(),
+                              "Only the main PHY is expected to move to a link on which another "
+                              "PHY is operating. PHY ID="
+                                  << +phy->GetPhyId());
+                NS_LOG_DEBUG("Connecting main PHY to link " << +linkId << " is postponed by "
+                                                            << extension.As(Time::US));
+                NotifySwitchingEmlsrLink(phy, linkId, extension);
+            }
+            else
+            {
+                connectPhy();
+            }
+        };
+
+        m_emlsrLinkSwitch.emplace(phy->GetPhyId(), Simulator::Schedule(delay, lambda));
     }
     else
     {
         connectPhy();
+    }
+}
+
+void
+StaWifiMac::CancelEmlsrPhyConnectEvent(uint8_t phyId)
+{
+    NS_LOG_FUNCTION(this << phyId);
+    if (auto eventIt = m_emlsrLinkSwitch.find(phyId); eventIt != m_emlsrLinkSwitch.end())
+    {
+        eventIt->second.Cancel();
+        m_emlsrLinkSwitch.erase(eventIt);
     }
 }
 
