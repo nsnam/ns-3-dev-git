@@ -379,7 +379,6 @@ This release has discontinued support for g++-8 compilers.
 - (network) !1163 - Initializing an Ipv[4,6]Address from an invalid string do not raise an exception anymore. Instead the address is marked as not initialized.
 - (spectrum) !1046 - Added the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the related GSoC 2022 project titled "A simplified channel and beamforming model for ns-3"
 - (spectrum) !1119 - Added a capability to filter signals (with a new SpectrumTransmitFilter) sent on the SpectrumChannel before they are forwarded to receivers on the channel.  This is motivated by scalability (reducing inconsequential simulation events).
-the TwoRaySpectrumPropagationLossModel fast-fading class, as the outcome of the related GSoC 2022 project titled "A simplified channel and beamforming model for ns-3"
 - (wifi) Added support for 802.11be Multi-Link Operations (MLO), STR mode only
 - (wifi) Added more fields to the EHT Capabilities information element
 - (wifi) Added an initial 802.11be-based example program
