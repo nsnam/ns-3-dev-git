@@ -44,7 +44,7 @@ Changes from ns-3.42 to ns-3.43
 * (energy) Energy module TypeId now uses the name that includes the namespace `ns3::energy`, the old name is now deprecated.
 * (energy) Documentation was extended and reformatted.
 * (lr-wpan) Lr-wpan module TypeId now uses the name that includes the namespace `ns3::lrwpan`, the old name is now deprecated.
-* (lr-wpan) Attribute `macBeaconPayload` in `MacPibAttributes` is now a std::vector<uint8_t> instead of a packet pointer.
+* (lr-wpan) Attribute `macBeaconPayload` in `MacPibAttributes` is now a `std::vector<uint8_t>` instead of a packet pointer.
 * (lr-wpan) Removes the word `address` from the MAC address prefix when `LOG_PREFIX_FUNC` is used.
 * (lr-wpan) Removes the word `address` from the CSMA-CA logs prefix when `LOG_PREFIX_FUNC` is used.
 * (lr-wpan) Added `AssignStreams` function to the MAC.
@@ -2450,7 +2450,7 @@ Changes from ns-3.2 to ns-3.3
   * return type of `SetDataSentCallback ()` changed from `bool` to `void`
   * `Socket::Listen()` no longer takes a queueLimit argument
 * As part of the Wifi Phy rework, there have been several API changes at the low level and helper API level.
-* At the helper API level, the `WifiHelper` was split to three classes: a `WifiHelper`, a YansWifiChan`nel helper, and a`YansWifiPhy` helper. Some functions like Ascii and Pcap tracing functions were moved from class `WifiHelper` to class `YansWifiPhyHelper`.
+* At the helper API level, the `WifiHelper` was split to three classes: a `WifiHelper`, a `YansWifiChannel` helper, and a `YansWifiPhy` helper. Some functions like Ascii and Pcap tracing functions were moved from class `WifiHelper` to class `YansWifiPhyHelper`.
 * At the low-level API, there have been a number of changes to make the Phy more modular:
 * `composite-propagation-loss-model.h` is removed
 * `DcfManager::NotifyCcaBusyStartNow()` has changed name
