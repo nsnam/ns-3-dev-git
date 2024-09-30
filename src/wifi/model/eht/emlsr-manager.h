@@ -334,6 +334,16 @@ class EmlsrManager : public Object
      */
     bool MediumSyncDelayNTxopsExceeded(uint8_t linkId);
 
+    /**
+     * Check whether a PPDU that may be an ICF is being received on the given link. If so, return
+     * true along with the time to wait to know more information about the PPDU being received.
+     * Otherwise, return false.
+     *
+     * @param linkId the ID of the given link
+     * @return a pair indicating whether a PPDU that may be an ICF is being received on the link
+     */
+    std::pair<bool, Time> CheckPossiblyReceivingIcf(uint8_t linkId) const;
+
   protected:
     void DoDispose() override;
 
@@ -505,8 +515,10 @@ class EmlsrManager : public Object
     MHz_u m_auxPhyMaxWidth;                  //!< max channel width supported by aux PHYs
     WifiModulationClass m_auxPhyMaxModClass; //!< max modulation class supported by aux PHYs
     bool m_auxPhyTxCapable;                  //!< whether Aux PHYs are capable of transmitting PPDUs
-    bool m_auxPhyToSleep; //!< whether Aux PHYs should be put into sleep mode while the Main PHY
-                          //!< is carrying out a (DL or UL) TXOP
+    bool m_auxPhyToSleep;     //!< whether Aux PHYs should be put into sleep mode while the Main PHY
+                              //!< is carrying out a (DL or UL) TXOP
+    bool m_useNotifiedMacHdr; //!< whether to use the information about the MAC header of
+                              //!< the MPDU being received (if notified by the PHY)
     std::map<uint8_t, EventId> m_auxPhyToSleepEvents; //!< PHY ID-indexed map of events scheduled to
                                                       //!< put an Aux PHY to sleep
     std::map<uint8_t, Time> m_startSleep; //!< PHY ID-indexed map of last time sleep mode started

@@ -111,6 +111,12 @@ EmlsrManager::GetTypeId()
                           BooleanValue(false),
                           MakeBooleanAccessor(&EmlsrManager::m_auxPhyToSleep),
                           MakeBooleanChecker())
+            .AddAttribute("UseNotifiedMacHdr",
+                          "Whether to use the information about the MAC header of the MPDU "
+                          "being received, if notified by the PHY.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&EmlsrManager::m_useNotifiedMacHdr),
+                          MakeBooleanChecker())
             .AddAttribute(
                 "EmlsrLinkSet",
                 "IDs of the links on which EMLSR mode will be enabled. An empty set "
@@ -502,6 +508,90 @@ EmlsrManager::GetDelayUntilAccessRequest(uint8_t linkId, AcIndex aci)
     }
 
     return GetDelayUnlessMainPhyTakesOverUlTxop(linkId);
+}
+
+std::pair<bool, Time>
+EmlsrManager::CheckPossiblyReceivingIcf(uint8_t linkId) const
+{
+    NS_LOG_FUNCTION(this << linkId);
+
+    auto phy = GetStaMac()->GetWifiPhy(linkId);
+
+    if (!phy || !GetStaMac()->IsEmlsrLink(linkId))
+    {
+        NS_LOG_DEBUG("No PHY (" << phy << ") or not an EMLSR link (" << +linkId << ")");
+        return {false, Time{0}};
+    }
+
+    if (auto macHdr = GetEhtFem(linkId)->GetReceivedMacHdr(); macHdr && m_useNotifiedMacHdr)
+    {
+        NS_LOG_DEBUG("Receiving the MAC payload of a PSDU and MAC header info can be used");
+        NS_ASSERT(phy->GetState()->GetLastTime({WifiPhyState::RX}) == Simulator::Now());
+
+        if (const auto& hdr = macHdr->get();
+            hdr.IsTrigger() &&
+            (hdr.GetAddr1().IsBroadcast() || hdr.GetAddr1() == GetEhtFem(linkId)->GetAddress()))
+        {
+            // the PSDU being received _may_ be an ICF. Note that we cannot be sure that the PSDU
+            // being received is an ICF addressed to us until we receive the entire PSDU
+            NS_LOG_DEBUG("Based on MAC header, may be an ICF, postpone by "
+                         << phy->GetDelayUntilIdle().As(Time::US));
+            return {true, phy->GetDelayUntilIdle()};
+        }
+    }
+    else if (auto txVector = phy->GetInfoIfRxingPhyHeader())
+    {
+        NS_LOG_DEBUG("Receiving PHY header");
+        if (txVector->get().GetModulationClass() < WIFI_MOD_CLASS_HT)
+        {
+            // the PHY header of a non-HT PPDU, which may be an ICF, is being received; check
+            // again after the TX duration of a non-HT PHY header
+            NS_LOG_DEBUG("PHY header of a non-HT PPDU, which may be an ICF, is being received");
+            return {true, EMLSR_RX_PHY_START_DELAY};
+        }
+    }
+    else if (phy->IsStateRx())
+    {
+        // we have not yet received the MAC header or we cannot use its info
+
+        auto ongoingRxInfo = GetEhtFem(linkId)->GetOngoingRxInfo();
+        // if a PHY is in RX state, it should have info about received MAC header.
+        // The exception is represented by this situation:
+        // - an aux PHY is disconnected from the MAC stack because the main PHY is
+        //   operating on its link
+        // - the main PHY notifies the MAC header info to the FEM and then leaves the
+        //   link (e.g., because it recognizes that the MPDU is not addressed to the
+        //   EMLSR client). Disconnecting the main PHY from the MAC stack causes the
+        //   MAC header info to be discarded by the FEM
+        // - the aux PHY is re-connected to the MAC stack and is still in RX state
+        //   when the main PHY gets channel access on another link (and we get here)
+        if (!ongoingRxInfo.has_value())
+        {
+            NS_ASSERT_MSG(phy != GetStaMac()->GetDevice()->GetPhy(GetMainPhyId()),
+                          "Main PHY should have MAC header info when in RX state");
+            // we are in the situation described above; if the MPDU being received
+            // by the aux PHY is not addressed to the EMLSR client, we can ignore it
+        }
+        else if (const auto& txVector = ongoingRxInfo->get().txVector;
+                 txVector.GetModulationClass() < WIFI_MOD_CLASS_HT)
+        {
+            if (auto remTime = phy->GetTimeToMacHdrEnd(SU_STA_ID);
+                m_useNotifiedMacHdr && remTime.has_value() && remTime->IsStrictlyPositive())
+            {
+                NS_LOG_DEBUG("Wait until the expected end of the MAC header reception: "
+                             << remTime->As(Time::US));
+                return {true, *remTime};
+            }
+
+            NS_LOG_DEBUG(
+                "MAC header info will not be available. Wait until the end of PSDU reception: "
+                << phy->GetDelayUntilIdle().As(Time::US));
+            return {true, phy->GetDelayUntilIdle()};
+        }
+    }
+
+    NS_LOG_DEBUG("No ICF being received, state: " << phy->GetState()->GetState());
+    return {false, Time{0}};
 }
 
 void

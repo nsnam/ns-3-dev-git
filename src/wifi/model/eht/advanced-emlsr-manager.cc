@@ -112,12 +112,6 @@ AdvancedEmlsrManager::GetTypeId()
             .SetParent<DefaultEmlsrManager>()
             .SetGroupName("Wifi")
             .AddConstructor<AdvancedEmlsrManager>()
-            .AddAttribute("UseNotifiedMacHdr",
-                          "Whether to use the information about the MAC header of the MPDU "
-                          "being received, if notified by the PHY.",
-                          BooleanValue(true),
-                          MakeBooleanAccessor(&AdvancedEmlsrManager::m_useNotifiedMacHdr),
-                          MakeBooleanChecker())
             .AddAttribute("AllowUlTxopInRx",
                           "Whether a (main or aux) PHY is allowed to start an UL TXOP if "
                           "another PHY is receiving a PPDU (possibly starting a DL TXOP). "
@@ -231,92 +225,23 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
     // prevent or allow an UL TXOP depending on whether another PHY is receiving a PPDU
     for (const auto id : GetStaMac()->GetLinkIds())
     {
-        if (auto phy = GetStaMac()->GetWifiPhy(id);
-            phy && id != linkId && GetStaMac()->IsEmlsrLink(id))
+        if (id == linkId)
         {
-            if (auto macHdr = GetEhtFem(id)->GetReceivedMacHdr(); macHdr && m_useNotifiedMacHdr)
-            {
-                NS_ASSERT(phy->GetState()->GetLastTime({WifiPhyState::RX}) == Simulator::Now());
-                // we are receiving the MAC payload of a PSDU; if the PSDU being received on
-                // another link is an ICF, give up the TXOP and restart channel access at the
-                // end of PSDU reception. Note that we cannot be sure that the PSDU being received
-                // is an ICF addressed to us until we receive the entire PSDU
-                if (const auto& hdr = macHdr->get();
-                    hdr.IsTrigger() &&
-                    (hdr.GetAddr1().IsBroadcast() || hdr.GetAddr1() == GetEhtFem(id)->GetAddress()))
-                {
-                    return {false, phy->GetDelayUntilIdle()};
-                }
-                continue;
-            }
+            continue;
+        }
 
-            if (auto txVector = phy->GetInfoIfRxingPhyHeader())
-            {
-                if (txVector->get().GetModulationClass() >= WIFI_MOD_CLASS_HT)
-                {
-                    // The initial Control frame of frame exchanges shall be sent in the non-HT PPDU
-                    // or non-HT duplicate PPDU format (Sec. 35.3.17 of 802.11be D7.0), so this is
-                    // not an ICF, we can ignore it
-                    continue;
-                }
-                // we don't know yet the type of the frame being received; prevent or allow
-                // the UL TXOP based on user configuration
-                if (!m_allowUlTxopInRx)
-                {
-                    // retry channel access after the end of the current PHY header field
-                    return {false, phy->GetDelayUntilIdle()};
-                }
-                continue;
-            }
+        const auto [maybeIcf, delay] = CheckPossiblyReceivingIcf(id);
 
-            if (phy->IsStateRx())
-            {
-                // we don't know yet the type of the frame being received; prevent or allow
-                // the UL TXOP based on user configuration
-                if (!m_allowUlTxopInRx)
-                {
-                    if (!m_useNotifiedMacHdr)
-                    {
-                        // restart channel access at the end of PSDU reception
-                        return {false, phy->GetDelayUntilIdle()};
-                    }
+        if (!maybeIcf)
+        {
+            // not receiving anything or receiving something that is certainly not an ICF
+            continue;
+        }
 
-                    // retry channel access after the expected end of the MAC header reception
-                    auto macHdrSize = WifiMacHeader(WIFI_MAC_QOSDATA).GetSerializedSize() +
-                                      4 /* A-MPDU subframe header length */;
-                    auto ongoingRxInfo = GetEhtFem(id)->GetOngoingRxInfo();
-                    // if a PHY is in RX state, it should have info about received MAC header.
-                    // The exception is represented by this situation:
-                    // - an aux PHY is disconnected from the MAC stack because the main PHY is
-                    //   operating on its link
-                    // - the main PHY notifies the MAC header info to the FEM and then leaves the
-                    //   link (e.g., because it recognizes that the MPDU is not addressed to the
-                    //   EMLSR client). Disconnecting the main PHY from the MAC stack causes the
-                    //   MAC header info to be discarded by the FEM
-                    // - the aux PHY is re-connected to the MAC stack and is still in RX state
-                    //   when the main PHY gets channel access on another link (and we get here)
-                    if (!ongoingRxInfo.has_value())
-                    {
-                        NS_ASSERT_MSG(phy != GetStaMac()->GetDevice()->GetPhy(GetMainPhyId()),
-                                      "Main PHY should have MAC header info when in RX state");
-                        // we are in the situation described above; if the MPDU being received
-                        // by the aux PHY is not addressed to the EMLSR client, we can ignore it
-                        continue;
-                    }
-                    const auto& txVector = ongoingRxInfo->get().txVector;
-                    if (txVector.GetModulationClass() >= WIFI_MOD_CLASS_HT)
-                    {
-                        // this is not an ICF, ignore it
-                        continue;
-                    }
-                    auto macHdrDuration = DataRate(txVector.GetMode().GetDataRate(txVector))
-                                              .CalculateBytesTxTime(macHdrSize);
-                    const auto timeSinceRxStart =
-                        Simulator::Now() - phy->GetState()->GetLastTime({WifiPhyState::CCA_BUSY});
-                    return {false, Max(macHdrDuration - timeSinceRxStart, Time{0})};
-                }
-                continue;
-            }
+        // a PPDU that may be an ICF is being received
+        if (!m_allowUlTxopInRx)
+        {
+            return {false, delay};
         }
     }
 
@@ -552,7 +477,7 @@ AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(uint8_t linkId)
         return; // nothing to do
     }
 
-    Time delay{0};
+    Time extension{0};
 
     // check if the timer must be restarted because a frame is being received on any link
     for (const auto id : GetStaMac()->GetLinkIds())
@@ -571,37 +496,11 @@ AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(uint8_t linkId)
             continue;
         }
 
-        if (auto macHdr = GetEhtFem(id)->GetReceivedMacHdr(); macHdr && m_useNotifiedMacHdr)
+        const auto [maybeIcf, delay] = CheckPossiblyReceivingIcf(id);
+
+        if (maybeIcf)
         {
-            // the MAC header has been received; if this is a Trigger Frame, we shall restart the
-            // timer, so that we do not yet switch the main PHY back to the preferred link
-            if (const auto& hdr = macHdr->get();
-                hdr.IsTrigger() &&
-                (hdr.GetAddr1().IsBroadcast() || hdr.GetAddr1() == GetEhtFem(id)->GetAddress()))
-            {
-                delay = Max(delay, phy->GetDelayUntilIdle());
-            }
-        }
-        else if (auto txVector = phy->GetInfoIfRxingPhyHeader())
-        {
-            if (txVector->get().GetModulationClass() < WIFI_MOD_CLASS_HT)
-            {
-                // the PHY header of a non-HT PPDU, which may be an ICF, is being received; check
-                // again after the TX duration of a non-HT PHY header
-                delay = Max(delay, EMLSR_RX_PHY_START_DELAY);
-            }
-        }
-        else if (phy->IsStateRx())
-        {
-            if (auto ongoingRxInfo = GetEhtFem(id)->GetOngoingRxInfo();
-                ongoingRxInfo &&
-                ongoingRxInfo->get().txVector.GetModulationClass() < WIFI_MOD_CLASS_HT)
-            {
-                // the MAC header of a non-HT PPDU, which may be an ICF, has not been received yet
-                // (or we cannot use its info); restart the timer, we will be called back when the
-                // MAC header is received
-                delay = Max(delay, phy->GetDelayUntilIdle());
-            }
+            extension = Max(extension, delay);
         }
         else if (id == linkId && phy->IsStateIdle())
         {
@@ -610,16 +509,16 @@ AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired(uint8_t linkId)
             // the timer to have the main PHY stay a bit longer on this link
             if (GetExpectedAccessWithinDelay(linkId, phy->GetChannelSwitchDelay()))
             {
-                delay = Max(delay, phy->GetChannelSwitchDelay());
+                extension = Max(extension, phy->GetChannelSwitchDelay());
             }
         }
     }
 
-    if (delay.IsStrictlyPositive())
+    if (extension.IsStrictlyPositive())
     {
-        NS_LOG_DEBUG("Restarting the timer, check again in " << delay.As(Time::US));
+        NS_LOG_DEBUG("Restarting the timer, check again in " << extension.As(Time::US));
         m_switchMainPhyBackEvent =
-            Simulator::Schedule(delay,
+            Simulator::Schedule(extension,
                                 &AdvancedEmlsrManager::SwitchMainPhyBackDelayExpired,
                                 this,
                                 linkId);
