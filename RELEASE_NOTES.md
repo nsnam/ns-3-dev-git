@@ -4210,7 +4210,7 @@ This release is immediately available from:
 We dedicate this initial ns-3 release to our late contributor and friend,
 Federico Maguolo.
 
-### What is ns-3 ?
+### What is ns-3?
 
 ns-3 is a new discrete-event network simulator designed for supporting network
 research and education. ns-3 features a solid, well documented C++ core and
