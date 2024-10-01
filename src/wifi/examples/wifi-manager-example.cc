@@ -248,7 +248,8 @@ main(int argc, char* argv[])
     cmd.AddValue(
         "standard",
         "Set standard (802.11a, 802.11b, 802.11g, 802.11p-10MHz, 802.11p-5MHz, 802.11n-5GHz, "
-        "802.11n-2.4GHz, 802.11ac, 802.11ax-6GHz, 802.11ax-5GHz, 802.11ax-2.4GHz)",
+        "802.11n-2.4GHz, 802.11ac, 802.11ax-6GHz, 802.11ax-5GHz, 802.11ax-2.4GHz, 802.11be-6GHz, "
+        "802.11be-5GHz, 802.11be-2.4GHz)",
         standard);
     cmd.AddValue("wifiManager",
                  "Set wifi rate manager (Aarf, Aarfcd, Amrr, Arf, Cara, Ideal, Minstrel, "
@@ -334,7 +335,8 @@ main(int argc, char* argv[])
             serverChannelWidth = GetDefaultChannelWidth(WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ);
         }
         NS_ABORT_MSG_IF(serverChannelWidth != MHz_u{20} && serverChannelWidth != MHz_u{40} &&
-                            serverChannelWidth != MHz_u{80} && serverChannelWidth != MHz_u{160},
+                            serverChannelWidth != MHz_u{80} && serverChannelWidth != MHz_u{160} &&
+                            serverChannelWidth != MHz_u{320},
                         "Invalid channel width for standard " << standard);
         NS_ABORT_MSG_IF(serverNss == 0 || serverNss > 4,
                         "Invalid nss " << serverNss << " for standard " << standard);
@@ -343,13 +345,15 @@ main(int argc, char* argv[])
             clientChannelWidth = GetDefaultChannelWidth(WIFI_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ);
         }
         NS_ABORT_MSG_IF(clientChannelWidth != MHz_u{20} && clientChannelWidth != MHz_u{40} &&
-                            clientChannelWidth != MHz_u{80} && clientChannelWidth != MHz_u{160},
+                            clientChannelWidth != MHz_u{80} && clientChannelWidth != MHz_u{160} &&
+                            clientChannelWidth != MHz_u{320},
                         "Invalid channel width for standard " << standard);
         NS_ABORT_MSG_IF(clientNss == 0 || clientNss > 4,
                         "Invalid nss " << clientNss << " for standard " << standard);
     }
     else if (standard == "802.11ax-6GHz" || standard == "802.11ax-5GHz" ||
-             standard == "802.11ax-2.4GHz")
+             standard == "802.11ax-2.4GHz" || standard == "802.11be-6GHz" ||
+             standard == "802.11be-5GHz" || standard == "802.11be-2.4GHz")
     {
         WifiPhyBand band = (standard == "802.11ax-2.4GHz" ? WIFI_PHY_BAND_2_4GHZ
                             : standard == "802.11ax-6GHz" ? WIFI_PHY_BAND_6GHZ
@@ -359,7 +363,8 @@ main(int argc, char* argv[])
             serverChannelWidth = GetDefaultChannelWidth(WIFI_STANDARD_80211ax, band);
         }
         NS_ABORT_MSG_IF(serverChannelWidth != MHz_u{20} && serverChannelWidth != MHz_u{40} &&
-                            serverChannelWidth != MHz_u{80} && serverChannelWidth != MHz_u{160},
+                            serverChannelWidth != MHz_u{80} && serverChannelWidth != MHz_u{160} &&
+                            serverChannelWidth != MHz_u{320},
                         "Invalid channel width for standard " << standard);
         NS_ABORT_MSG_IF(serverNss == 0 || serverNss > 4,
                         "Invalid nss " << serverNss << " for standard " << standard);
@@ -368,7 +373,8 @@ main(int argc, char* argv[])
             clientChannelWidth = GetDefaultChannelWidth(WIFI_STANDARD_80211ax, band);
         }
         NS_ABORT_MSG_IF(clientChannelWidth != MHz_u{20} && clientChannelWidth != MHz_u{40} &&
-                            clientChannelWidth != MHz_u{80} && clientChannelWidth != MHz_u{160},
+                            clientChannelWidth != MHz_u{80} && clientChannelWidth != MHz_u{160} &&
+                            clientChannelWidth != MHz_u{320},
                         "Invalid channel width for standard " << standard);
         NS_ABORT_MSG_IF(clientNss == 0 || clientNss > 4,
                         "Invalid nss " << clientNss << " for standard " << standard);
@@ -481,6 +487,33 @@ main(int argc, char* argv[])
                      0,
                      60,
                      120 * channelRateFactor),
+        StandardInfo("802.11be-6GHz",
+                     WIFI_STANDARD_80211be,
+                     WIFI_PHY_BAND_6GHZ,
+                     serverChannelWidth,
+                     5,
+                     55,
+                     0,
+                     60,
+                     120 * channelRateFactor),
+        StandardInfo("802.11be-5GHz",
+                     WIFI_STANDARD_80211be,
+                     WIFI_PHY_BAND_5GHZ,
+                     serverChannelWidth,
+                     5,
+                     55,
+                     0,
+                     60,
+                     120 * channelRateFactor),
+        StandardInfo("802.11be-2.4GHz",
+                     WIFI_STANDARD_80211be,
+                     WIFI_PHY_BAND_2_4GHZ,
+                     serverChannelWidth,
+                     5,
+                     55,
+                     0,
+                     60,
+                     120 * channelRateFactor),
     };
 
     clientStandards = {
@@ -580,6 +613,33 @@ main(int argc, char* argv[])
                      clientChannelWidth,
                      dB_u{5},
                      dB_u{55},
+                     0,
+                     60,
+                     160 * channelRateFactor),
+        StandardInfo("802.11be-6GHz",
+                     WIFI_STANDARD_80211be,
+                     WIFI_PHY_BAND_6GHZ,
+                     clientChannelWidth,
+                     5,
+                     55,
+                     0,
+                     60,
+                     160 * channelRateFactor),
+        StandardInfo("802.11be-5GHz",
+                     WIFI_STANDARD_80211be,
+                     WIFI_PHY_BAND_5GHZ,
+                     clientChannelWidth,
+                     5,
+                     55,
+                     0,
+                     60,
+                     160 * channelRateFactor),
+        StandardInfo("802.11be-2.4GHz",
+                     WIFI_STANDARD_80211ax,
+                     WIFI_PHY_BAND_2_4GHZ,
+                     clientChannelWidth,
+                     5,
+                     55,
                      0,
                      60,
                      160 * channelRateFactor),
@@ -780,7 +840,10 @@ main(int argc, char* argv[])
     }
     else if (serverSelectedStandard.m_name == "802.11ax-6GHz" ||
              serverSelectedStandard.m_name == "802.11ax-5GHz" ||
-             serverSelectedStandard.m_name == "802.11ax-2.4GHz")
+             serverSelectedStandard.m_name == "802.11ax-2.4GHz" ||
+             serverSelectedStandard.m_name == "802.11be-6GHz" ||
+             serverSelectedStandard.m_name == "802.11be-5GHz" ||
+             serverSelectedStandard.m_name == "802.11be-2.4GHz")
     {
         wndServer->GetHeConfiguration()->SetGuardInterval(NanoSeconds(serverShortGuardInterval));
         wndClient->GetHeConfiguration()->SetGuardInterval(NanoSeconds(clientShortGuardInterval));
@@ -884,7 +947,9 @@ main(int argc, char* argv[])
     title.append(wifiManager);
     title.append("\\n");
     if (standard == "802.11n-5GHz" || standard == "802.11n-2.4GHz" || standard == "802.11ac" ||
-        standard == "802.11ax-6GHz" || standard == "802.11ax-5GHz" || standard == "802.11ax-2.4GHz")
+        standard == "802.11ax-6GHz" || standard == "802.11ax-5GHz" ||
+        standard == "802.11ax-2.4GHz" || standard == "802.11be-6GHz" ||
+        standard == "802.11be-5GHz" || standard == "802.11be-2.4GHz")
     {
         std::ostringstream serverGiStrStr;
         std::ostringstream serverWidthStrStr;
