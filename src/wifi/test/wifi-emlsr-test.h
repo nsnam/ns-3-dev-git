@@ -727,6 +727,7 @@ class EmlsrUlTxopTest : public EmlsrOperationsTestBase
                                           //!< after that the main PHY moved to an aux PHY link
     std::optional<bool> m_corruptCts;     //!< whether the transmitted CTS must be corrupted
     Time m_5thQosFrameTxTime;             //!< start transmission time of the 5th QoS data frame
+    MHz_u m_5thQosFrameExpWidth;          //!< expected width of the 5th QoS data frame
 };
 
 /**

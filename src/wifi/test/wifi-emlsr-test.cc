@@ -2592,7 +2592,8 @@ EmlsrUlTxopTest::EmlsrUlTxopTest(const Params& params)
       m_genBackoffIfTxopWithoutTx(params.genBackoffAndUseAuxPhyCca),
       m_useAuxPhyCca(params.genBackoffAndUseAuxPhyCca),
       m_nSlotsLeftAlert(params.nSlotsLeftAlert),
-      m_switchMainPhyBackDelayTimeout(params.switchMainPhyBackDelayTimeout)
+      m_switchMainPhyBackDelayTimeout(params.switchMainPhyBackDelayTimeout),
+      m_5thQosFrameExpWidth(0)
 {
     m_nEmlsrStations = 1;
     m_nNonEmlsrStations = 0;
@@ -2627,6 +2628,8 @@ EmlsrUlTxopTest::DoSetup()
                        UintegerValue(m_auxPhyChannelWidth));
     Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(false));
     Config::SetDefault("ns3::AdvancedEmlsrManager::UseAuxPhyCca", BooleanValue(m_useAuxPhyCca));
+    Config::SetDefault("ns3::AdvancedEmlsrManager::SwitchMainPhyBackDelay",
+                       TimeValue(MilliSeconds(m_switchMainPhyBackDelayTimeout ? 2 : 0)));
     Config::SetDefault("ns3::EhtConfiguration::MediumSyncDuration",
                        TimeValue(m_mediumSyncDuration));
     Config::SetDefault("ns3::EhtConfiguration::MsdMaxNTxops", UintegerValue(m_msdMaxNTxops));
@@ -3218,59 +3221,106 @@ EmlsrUlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                           false,
                                           false);
 
+                    const auto delayUntilIdle = mainPhy->GetDelayUntilIdle();
+                    auto startTimerDelay = delayUntilIdle;
+
                     if (m_switchMainPhyBackDelayTimeout)
                     {
                         TimeValue switchMainPhyBackDelay;
                         m_staMacs[0]->GetEmlsrManager()->GetAttribute("SwitchMainPhyBackDelay",
                                                                       switchMainPhyBackDelay);
 
-                        // set the NAV on all the links for enough time to make the
-                        // SwitchMainPhyBackDelay timer expire
+                        // If nSlotsAlert is 0, the decision whether to start the switch back timer
+                        // is taken at the end of the PIFS period during which we perform CCA and
+                        // NAV check, which coincides with the end of the channel switch or is a
+                        // PIFS afterwards, depending on whether aux PHY CCA is used. Therefore,
+                        // before the end of the CCA and NAV check period we have to make the medium
+                        // busy on the link the main PHY is switching to. Given that we do not know
+                        // which link it is, we set the NAV on all links.
+                        // If nSlotsAlert > 0, the decision whether to start the switch back timer
+                        // is taken at the end of the channel switch and it is needed that the time
+                        // until the backoff end is at least a PIFS to start the switch back timer.
+                        auto endCcaNavCheckDelay = delayUntilIdle;
+
                         for (uint8_t id = 0; id < m_staMacs[0]->GetNLinks(); ++id)
                         {
-                            if (!m_staMacs[0]->GetWifiPhy(id))
+                            if (auto phy = m_staMacs[0]->GetWifiPhy(id))
                             {
-                                continue; // no PHY on this link
+                                if (!m_useAuxPhyCca && m_nSlotsLeftAlert == 0)
+                                {
+                                    endCcaNavCheckDelay =
+                                        Max(endCcaNavCheckDelay, delayUntilIdle + phy->GetPifs());
+                                }
+
+                                m_staMacs[0]->GetChannelAccessManager(id)->NotifyNavStartNow(
+                                    endCcaNavCheckDelay + TimeStep(1));
                             }
-                            m_staMacs[0]->GetChannelAccessManager(id)->NotifyNavStartNow(
-                                2 * switchMainPhyBackDelay.Get());
                         }
-                        // check that the SwitchMainPhyBackDelay timer expires
-                        Simulator::Schedule(2 * switchMainPhyBackDelay.Get() - mainPhy->GetPifs(),
-                                            [=, this]() {
-                                                CheckMainPhyTraceInfo(0,
-                                                                      "TxopNotGainedOnAuxPhyLink",
-                                                                      std::nullopt,
-                                                                      m_mainPhyId,
-                                                                      false);
-                                            });
+                        startTimerDelay = endCcaNavCheckDelay;
+
+                        // when the SwitchMainPhyBackDelay timer starts, extend the NAV on the
+                        // aux PHY link on which the main PHY is operating by the timer duration
+                        // plus a channel switch delay, so that the timer expires and the main PHY
+                        // returns to the preferred link. If nSlotsAlert > 0, the timer duration is
+                        // extended by the expected channel access when the main PHY switch ends.
+                        Simulator::Schedule(startTimerDelay, [=, this]() {
+                            auto auxLinkId = m_staMacs[0]->GetLinkForPhy(mainPhy);
+                            NS_TEST_ASSERT_MSG_EQ(
+                                auxLinkId.has_value(),
+                                true,
+                                "Main PHY should be operating on a link before timer expires");
+                            auto timerDuration = switchMainPhyBackDelay.Get();
+                            if (m_nSlotsLeftAlert > 0)
+                            {
+                                timerDuration += (m_staMacs[0]
+                                                      ->GetChannelAccessManager(*auxLinkId)
+                                                      ->GetBackoffEndFor(acBe) -
+                                                  Simulator::Now());
+                            }
+                            m_staMacs[0]
+                                ->GetChannelAccessManager(*auxLinkId)
+                                ->NotifyNavStartNow(timerDuration +
+                                                    mainPhy->GetChannelSwitchDelay());
+
+                            // check that the SwitchMainPhyBackDelay timer expires and the main PHY
+                            // returns to the preferred link
+                            Simulator::Schedule(timerDuration + TimeStep(1), [=, this]() {
+                                CheckMainPhyTraceInfo(0,
+                                                      "TxopNotGainedOnAuxPhyLink",
+                                                      std::nullopt,
+                                                      m_mainPhyId,
+                                                      false);
+                            });
+                        });
                     }
 
                     // events to be scheduled when main PHY finishes switching to auxiliary link
                     Simulator::Schedule(mainPhy->GetDelayUntilIdle(), [=, this]() {
-                        auto nonPrimLinkId = m_staMacs[0]->GetLinkForPhy(mainPhy);
-
-                        NS_TEST_ASSERT_MSG_EQ(nonPrimLinkId.has_value(),
+                        auto auxLinkId = m_staMacs[0]->GetLinkForPhy(mainPhy);
+                        NS_TEST_ASSERT_MSG_EQ(auxLinkId.has_value(),
                                               true,
                                               "Main PHY should have completed switching");
                         // update backoff on the auxiliary link on which main PHY is operating
-                        m_staMacs[0]
-                            ->GetChannelAccessManager(*nonPrimLinkId)
-                            ->NeedBackoffUponAccess(acBe, true, true);
+                        auto cam = m_staMacs[0]->GetChannelAccessManager(*auxLinkId);
+                        cam->NeedBackoffUponAccess(acBe, true, true);
+                        const auto usedAuxPhyCca =
+                            (m_useAuxPhyCca || m_auxPhyChannelWidth >= m_channelWidth) &&
+                            (m_nSlotsLeftAlert == 0 ||
+                             cam->GetBackoffEndFor(acBe) <= Simulator::Now());
+                        m_5thQosFrameExpWidth =
+                            usedAuxPhyCca ? m_auxPhyChannelWidth : m_channelWidth;
                         // record the time the transmission of the QoS data frames must have
                         // started: (a PIFS after) end of channel switch, if the backoff counter
                         // on the auxiliary link is null and UseAuxPhyCca is true (false); when
                         // the backoff expires, otherwise
-                        if (auto slots = acBe->GetBackoffSlots(*nonPrimLinkId); slots == 0)
+                        if (auto slots = acBe->GetBackoffSlots(*auxLinkId); slots == 0)
                         {
                             m_5thQosFrameTxTime =
                                 Simulator::Now() + (m_useAuxPhyCca ? Time{0} : mainPhy->GetPifs());
                         }
                         else
                         {
-                            m_5thQosFrameTxTime = m_staMacs[0]
-                                                      ->GetChannelAccessManager(*nonPrimLinkId)
-                                                      ->GetBackoffEndFor(acBe);
+                            m_5thQosFrameTxTime = cam->GetBackoffEndFor(acBe);
                         }
                     });
                 });
@@ -3720,10 +3770,6 @@ EmlsrUlTxopTest::CheckResults()
                                     m_5thQosFrameTxTime,
                                     "Fifth data frame transmitted too late");
     }
-    NS_TEST_EXPECT_MSG_EQ(
-        psduIt->txVector.GetChannelWidth(),
-        (m_useAuxPhyCca && m_nSlotsLeftAlert == 0 ? m_auxPhyChannelWidth : m_channelWidth),
-        "Fifth data frame not transmitted on the correct channel width");
 
     // the fifth QoS data frame is transmitted by the main PHY on an auxiliary link because
     // the aux PHY is not TX capable. The QoS data frame is protected by RTS if it is transmitted
@@ -3762,10 +3808,9 @@ EmlsrUlTxopTest::CheckResults()
     NS_TEST_EXPECT_MSG_NE(+psduIt->linkId,
                           +m_mainPhyId,
                           "Fifth QoS data frame should be transmitted on an auxiliary link");
-    NS_TEST_EXPECT_MSG_EQ(
-        psduIt->txVector.GetChannelWidth(),
-        (m_useAuxPhyCca && m_nSlotsLeftAlert == 0 ? m_auxPhyChannelWidth : m_channelWidth),
-        "Fifth data frame not transmitted on the correct channel width");
+    NS_TEST_EXPECT_MSG_EQ(psduIt->txVector.GetChannelWidth(),
+                          m_5thQosFrameExpWidth,
+                          "Fifth data frame not transmitted on the correct channel width");
 }
 
 EmlsrUlOfdmaTest::EmlsrUlOfdmaTest(bool enableBsrp)
