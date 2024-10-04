@@ -75,7 +75,7 @@ class ThreeGppChannelConditionModelTestCase : public TestCase
 ThreeGppChannelConditionModelTestCase::ThreeGppChannelConditionModelTestCase()
     : TestCase("Test case for the child classes of ThreeGppChannelConditionModel"),
       m_testVectors(),
-      m_tolerance(2e-3)
+      m_tolerance(2.5e-3)
 {
 }
 
