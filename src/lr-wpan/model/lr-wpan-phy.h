@@ -556,6 +556,7 @@ class LrWpanPhy : public SpectrumPhy
      * TracedValue \c TrxStateValue.  The \c TrxState TracedCallback will
      * be removed in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     typedef void (*StateTracedCallback)(Time time,
                                         PhyEnumeration oldState,
                                         PhyEnumeration newState);
@@ -738,6 +739,7 @@ class LrWpanPhy : public SpectrumPhy
      * TracedValue \c TrxStateValue.  This TracedCallback will
      * be removed in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     TracedCallback<Time, PhyEnumeration, PhyEnumeration> m_trxStateLogger;
 
     /**

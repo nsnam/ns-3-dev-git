@@ -728,6 +728,7 @@ class LrWpanMac : public LrWpanMacBase
      * TracedValue \c MacStateValue. The \c MacState TracedCallback will
      * be removed in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     typedef void (*StateTracedCallback)(MacState oldState, MacState newState);
 
   protected:
@@ -1127,6 +1128,7 @@ class LrWpanMac : public LrWpanMacBase
      * removed in a future release,  Instead, use the \c MacStateValue
      * TracedValue.
      */
+    // NS_DEPRECATED() - tag for future removal
     TracedCallback<MacState, MacState> m_macStateLogger;
 
     /**

@@ -271,6 +271,7 @@ class UanPhy : public Object
      *
      * \param thresh Threshold SINR for proper reception in dB re 1 uPa.
      */
+    // NS_DEPRECATED() - tag for future removal
     virtual void SetRxThresholdDb(double thresh) = 0;
 
     /**

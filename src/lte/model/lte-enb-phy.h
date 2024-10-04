@@ -303,6 +303,7 @@ class LteEnbPhy : public LtePhy
      * \deprecated The non-const \c Ptr<SpectrumValue> argument is deprecated
      * and will be changed to \c Ptr<const SpectrumValue> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     typedef void (*ReportInterferenceTracedCallback)(uint16_t cellId,
                                                      Ptr<SpectrumValue> spectrumValue);
 
@@ -486,6 +487,7 @@ class LteEnbPhy : public LtePhy
      * \deprecated The non-const \c Ptr<SpectrumValue> argument is deprecated
      * and will be changed to \c Ptr<const SpectrumValue> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     TracedCallback<uint16_t, Ptr<SpectrumValue>> m_reportInterferenceTrace;
     /**
      * The `InterferenceSamplePeriod` attribute. The sampling period for

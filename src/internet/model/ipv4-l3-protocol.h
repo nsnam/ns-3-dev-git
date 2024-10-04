@@ -245,6 +245,7 @@ class Ipv4L3Protocol : public Ipv4
      * \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
      * and will be changed to \c Ptr<const Ipv4> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     typedef void (*TxRxTracedCallback)(Ptr<const Packet> packet,
                                        Ptr<Ipv4> ipv4,
                                        uint32_t interface);
@@ -260,6 +261,7 @@ class Ipv4L3Protocol : public Ipv4
      * \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
      * and will be changed to \c Ptr<const Ipv4> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     typedef void (*DropTracedCallback)(const Ipv4Header& header,
                                        Ptr<const Packet> packet,
                                        DropReason reason,
@@ -479,15 +481,18 @@ class Ipv4L3Protocol : public Ipv4
     /// Trace of transmitted packets
     /// \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
     /// and will be changed to \c Ptr<const Ipv4> in a future release.
+    // NS_DEPRECATED() - tag for future removal
     TracedCallback<Ptr<const Packet>, Ptr<Ipv4>, uint32_t> m_txTrace;
     /// Trace of received packets
     /// \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
     /// and will be changed to \c Ptr<const Ipv4> in a future release.
+    // NS_DEPRECATED() - tag for future removal
     TracedCallback<Ptr<const Packet>, Ptr<Ipv4>, uint32_t> m_rxTrace;
     // <ip-header, payload, reason, ifindex> (ifindex not valid if reason is DROP_NO_ROUTE)
     /// Trace of dropped packets
     /// \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
     /// and will be changed to \c Ptr<const Ipv4> in a future release.
+    // NS_DEPRECATED() - tag for future removal
     TracedCallback<const Ipv4Header&, Ptr<const Packet>, DropReason, Ptr<Ipv4>, uint32_t>
         m_dropTrace;
 

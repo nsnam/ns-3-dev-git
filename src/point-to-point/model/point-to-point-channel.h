@@ -130,6 +130,7 @@ class PointToPointChannel : public Channel
      * \deprecated The non-const \c Ptr<NetDevice> argument is deprecated
      * and will be changed to \c Ptr<const NetDevice> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     typedef void (*TxRxAnimationCallback)(Ptr<const Packet> packet,
                                           Ptr<NetDevice> txDevice,
                                           Ptr<NetDevice> rxDevice,
@@ -154,6 +155,7 @@ class PointToPointChannel : public Channel
      * \deprecated The non-const \c Ptr<NetDevice> argument is deprecated
      * and will be changed to \c Ptr<const NetDevice> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     TracedCallback<Ptr<const Packet>, // Packet being transmitted
                    Ptr<NetDevice>,    // Transmitting NetDevice
                    Ptr<NetDevice>,    // Receiving NetDevice

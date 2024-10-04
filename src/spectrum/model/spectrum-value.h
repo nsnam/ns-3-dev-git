@@ -558,6 +558,7 @@ class SpectrumValue : public SimpleRefCount<SpectrumValue>
      * is deprecated and will be changed to \c Ptr<const SpectrumPhy>
      * in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     typedef void (*TracedCallback)(Ptr<SpectrumValue> value);
 
   private:

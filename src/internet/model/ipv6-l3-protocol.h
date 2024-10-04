@@ -394,6 +394,7 @@ class Ipv6L3Protocol : public Ipv6
      * \deprecated The non-const \c Ptr<Ipv6> argument is deprecated
      * and will be changed to \c Ptr<const Ipv6> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     typedef void (*TxRxTracedCallback)(Ptr<const Packet> packet,
                                        Ptr<Ipv6> ipv6,
                                        uint32_t interface);
@@ -409,6 +410,7 @@ class Ipv6L3Protocol : public Ipv6
      * \deprecated The non-const \c Ptr<Ipv6> argument is deprecated
      * and will be changed to \c Ptr<const Ipv6> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     typedef void (*DropTracedCallback)(const Ipv6Header& header,
                                        Ptr<const Packet> packet,
                                        DropReason reason,
@@ -557,6 +559,7 @@ class Ipv6L3Protocol : public Ipv6
      * \deprecated The non-const \c Ptr<Ipv6> argument is deprecated
      * and will be changed to \c Ptr<const Ipv6> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_txTrace;
 
     /**
@@ -564,6 +567,7 @@ class Ipv6L3Protocol : public Ipv6
      * \deprecated The non-const \c Ptr<Ipv6> argument is deprecated
      * and will be changed to \c Ptr<const Ipv6> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_rxTrace;
 
     /**
@@ -571,6 +575,7 @@ class Ipv6L3Protocol : public Ipv6
      * \deprecated The non-const \c Ptr<Ipv6> argument is deprecated
      * and will be changed to \c Ptr<const Ipv6> in a future release.
      */
+    // NS_DEPRECATED() - tag for future removal
     TracedCallback<const Ipv6Header&, Ptr<const Packet>, DropReason, Ptr<Ipv6>, uint32_t>
         m_dropTrace;
 

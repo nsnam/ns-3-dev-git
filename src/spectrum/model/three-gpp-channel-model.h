@@ -240,8 +240,6 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * \param hUT the height of the UT
      * \param distance2D the 2D distance between tx and rx
      * \return the parameters table
-     * \deprecated Use GetThreeGppTable(const Ptr<const MobilityModel> aMob, const Ptr<const
-     *  MobilityModel> bMob, Ptr<const ChannelCondition> channelCondition) instead
      */
     NS_DEPRECATED_3_41("Use GetThreeGppTable(const Ptr<const MobilityModel>, const Ptr<const "
                        "MobilityModel>, Ptr<const ChannelCondition>) instead")
