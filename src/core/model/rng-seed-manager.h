@@ -93,6 +93,11 @@ class RngSeedManager
      * \returns The next stream index.
      */
     static uint64_t GetNextStreamIndex();
+
+    /**
+     * Resets the global stream index counter.
+     */
+    static void ResetNextStreamIndex();
 };
 
 /** Alias for compatibility. */

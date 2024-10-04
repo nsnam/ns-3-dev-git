@@ -101,4 +101,10 @@ RngSeedManager::GetNextStreamIndex()
     return next;
 }
 
+void
+RngSeedManager::ResetNextStreamIndex()
+{
+    g_nextStreamIndex = 0;
+}
+
 } // namespace ns3
