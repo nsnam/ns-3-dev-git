@@ -597,6 +597,24 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
         return false;
     }
 
+    // delay until the earliest time the main PHY can access medium on the aux PHY link
+    auto minDelay = mainPhy->GetChannelSwitchDelay();
+    if (!m_useAuxPhyCca && (GetChannelForAuxPhy(linkId).GetTotalWidth() <
+                            GetChannelForMainPhy(linkId).GetTotalWidth()))
+    {
+        // cannot use aux PHY CCA
+        minDelay += GetStaMac()->GetWifiPhy(linkId)->GetPifs();
+    }
+    minDelay = std::max(delay, minDelay);
+
+    if (const auto elapsed = GetElapsedMediumSyncDelayTimer(linkId);
+        elapsed && MediumSyncDelayNTxopsExceeded(linkId) &&
+        (GetMediumSyncDuration() - *elapsed > minDelay))
+    {
+        NS_LOG_DEBUG("No more TXOP attempts allowed on aux PHY link and MSD timer still running");
+        return false;
+    }
+
     // DoGetDelayUntilAccessRequest has already checked if the main PHY is receiving an ICF
     if (const auto state = mainPhy->GetState()->GetState();
         state != WifiPhyState::IDLE && state != WifiPhyState::CCA_BUSY && state != WifiPhyState::RX)
@@ -609,7 +627,8 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
     // quickly, i.e., if ALL the ACs with queued frames (that can be transmitted on the link on
     // which the main PHY is currently operating) and with priority higher than or equal to that of
     // the AC for which Aux PHY gained TXOP have their backoff counter greater than the maximum
-    // between the expected delay in gaining channel access and the channel switch delay plus PIFS
+    // between the expected delay in gaining channel access and the channel switch delay (plus PIFS
+    // if we cannot use aux PHY CCA)
 
     auto requestSwitch = false;
     const auto now = Simulator::Now();
@@ -626,10 +645,7 @@ AdvancedEmlsrManager::RequestMainPhyToSwitch(uint8_t linkId, AcIndex aci, const 
             NS_LOG_DEBUG("Backoff end for " << acIndex
                                             << " on preferred link: " << backoffEnd.As(Time::US));
 
-            if (const auto minDelay = std::max(delay,
-                                               mainPhy->GetChannelSwitchDelay() +
-                                                   GetStaMac()->GetWifiPhy(linkId)->GetPifs());
-                backoffEnd <= now + minDelay && edca->HasFramesToTransmit(*mainPhyLinkId))
+            if ((backoffEnd <= now + minDelay) && edca->HasFramesToTransmit(*mainPhyLinkId))
             {
                 requestSwitch = false;
                 break;
@@ -814,11 +830,36 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
     }
 
     // switch main PHY
+
+    // use aux PHY CCA (if allowed) if the backoff has already counted down to zero on the aux PHY
+    // link when the main PHY completes the switch
+    const auto edca = GetStaMac()->GetQosTxop(aci);
+    const auto cam = GetStaMac()->GetChannelAccessManager(linkId);
+    const auto auxPhy = GetStaMac()->GetWifiPhy(linkId);
+    const auto switchDelay = mainPhy->GetChannelSwitchDelay();
+    const auto now = Simulator::Now();
+    const auto auxPhyCcaCanBeUsed =
+        m_useAuxPhyCca || (GetChannelForAuxPhy(linkId).GetTotalWidth() >=
+                           GetChannelForMainPhy(linkId).GetTotalWidth());
+    const auto backoffEndBeforeSwitch = (cam->GetBackoffEndFor(edca) - now) <= switchDelay;
+
+    if (auxPhyCcaCanBeUsed && backoffEndBeforeSwitch)
+    {
+        NS_LOG_DEBUG("Schedule CCA check at the end of main PHY switch");
+        m_ccaLastPifs = Simulator::Schedule(switchDelay, [=, this]() {
+            // check NAV and CCA only if the backoff actually counted down to zero already
+            if (cam->GetBackoffEndFor(edca) <= Simulator::Now())
+            {
+                CheckNavAndCcaLastPifs(auxPhy, linkId, edca);
+            }
+        });
+    }
+
     Time remNav{0};
     if (const auto mainPhyLinkId = GetStaMac()->GetLinkForPhy(mainPhy))
     {
         auto mainPhyNavEnd = GetStaMac()->GetChannelAccessManager(*mainPhyLinkId)->GetNavEnd();
-        remNav = Max(remNav, mainPhyNavEnd - Simulator::Now());
+        remNav = Max(remNav, mainPhyNavEnd - now);
     }
 
     SwitchMainPhy(linkId,
@@ -828,15 +869,20 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
                   EmlsrUlTxopAuxPhyNotTxCapableTrace(aci, delay, remNav));
 
     // check expected channel access delay when switch is completed
-    Simulator::Schedule(mainPhy->GetChannelSwitchDelay(), [=, this]() {
-        const auto edca = GetStaMac()->GetQosTxop(aci);
+    Simulator::Schedule(switchDelay, [=, this]() {
+        const auto accessDelay = cam->GetBackoffEndFor(edca) - Simulator::Now();
+
+        if (auxPhyCcaCanBeUsed && backoffEndBeforeSwitch && accessDelay.IsNegative())
+        {
+            // backoff already counted down to zero and we used aux PHY CCA
+            return;
+        }
+
         const auto pifs = GetStaMac()->GetWifiPhy(linkId)->GetPifs();
+
         // if the remaining backoff time is shorter than PIFS when the main PHY completes the
         // switch, we need to schedule a CCA check a PIFS after the end of the main PHY switch
-        if (const auto accessDelay =
-                GetStaMac()->GetChannelAccessManager(linkId)->GetBackoffEndFor(edca) -
-                Simulator::Now();
-            accessDelay <= pifs)
+        if (accessDelay <= pifs)
         {
             // use main PHY CCA in the last PIFS interval after main PHY switch end
             NS_LOG_DEBUG("Schedule CCA check a PIFS after the end of main PHY switch");
@@ -856,9 +902,10 @@ AdvancedEmlsrManager::SwitchMainPhyIfTxopToBeGainedByAuxPhy(uint8_t linkId,
         }
         else
         {
-            // the main PHY must stay for some time on this link to check if it gets channel access.
-            // The timer is stopped if a DL or UL TXOP is started. When the timer expires, the main
-            // PHY switches back to the preferred link if SwitchAuxPhy is false
+            // the main PHY must stay for some time on this link to check if it gets channel
+            // access. The timer is stopped if a DL or UL TXOP is started. When the timer
+            // expires, the main PHY switches back to the preferred link if SwitchAuxPhy is
+            // false
             m_switchMainPhyBackEvent.Cancel();
             m_switchMainPhyBackEvent =
                 Simulator::Schedule(accessDelay + m_switchMainPhyBackDelay,
