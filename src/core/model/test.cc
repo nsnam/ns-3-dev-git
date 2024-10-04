@@ -11,6 +11,7 @@
 #include "config.h"
 #include "des-metrics.h"
 #include "log.h"
+#include "rng-seed-manager.h"
 #include "singleton.h"
 #include "system-path.h"
 
@@ -346,6 +347,7 @@ TestCase::Run(TestRunnerImpl* runner)
     m_result->clock.Start();
     for (auto i = m_children.begin(); i != m_children.end(); ++i)
     {
+        RngSeedManager::ResetNextStreamIndex();
         TestCase* test = *i;
         test->Run(runner);
         if (IsFailed())
