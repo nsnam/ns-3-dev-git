@@ -18,6 +18,7 @@
 #include <ns3/ipv4-static-routing.h>
 #include <ns3/log.h>
 #include <ns3/lte-helper.h>
+#include <ns3/lte-ue-net-device.h>
 #include <ns3/mobility-helper.h>
 #include <ns3/net-device-container.h>
 #include <ns3/node-container.h>
@@ -255,6 +256,10 @@ LteHandoverFailureTestCase::DoRun()
      */
     auto enbDevs = lteHelper->InstallEnbDevice(enbNodes);
     auto ueDev = lteHelper->InstallUeDevice(ueNode).Get(0);
+    auto castedUeDev = DynamicCast<LteUeNetDevice>(ueDev);
+    // Working value from before we started resetting g_nextStreamIndex. For more details
+    // see https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/2178#note_2143793903
+    castedUeDev->GetPhy()->GetDlSpectrumPhy()->AssignStreams(175);
 
     /*
      * Network layer.
