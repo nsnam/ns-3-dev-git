@@ -255,7 +255,8 @@ class TcpSocketBase : public TcpSocket
         FIN,
         RST,
         RE_XMT,
-        DATA
+        DATA,
+        INVALID
     };
 
     // Set associated Node, TcpL4Protocol, RttEstimator to this socket

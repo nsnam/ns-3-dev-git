@@ -2789,7 +2789,7 @@ TcpSocketBase::SendEmptyPacket(uint8_t flags)
     Ptr<Packet> p = Create<Packet>();
     TcpHeader header;
     SequenceNumber32 s = m_tcb->m_nextTxSequence;
-    TcpPacketType_t packetType;
+    TcpPacketType_t packetType = INVALID;
 
     if (flags & TcpHeader::FIN)
     {
@@ -2801,26 +2801,25 @@ TcpSocketBase::SendEmptyPacket(uint8_t flags)
         ++s;
     }
 
-    if (flags == TcpHeader::ACK)
+    if (flags & TcpHeader::SYN)
     {
-        packetType = TcpPacketType_t::PURE_ACK;
-    }
-    else if (flags == TcpHeader::RST)
-    {
-        packetType = TcpPacketType_t::RST;
-    }
-    else if (flags & TcpHeader::SYN)
-    {
+        packetType = TcpPacketType_t::SYN;
         if (flags & TcpHeader::ACK)
         {
             packetType = TcpPacketType_t::SYN_ACK;
         }
-        else
-        {
-            packetType = TcpPacketType_t::SYN;
-        }
+    }
+    else if (flags & TcpHeader::ACK)
+    {
+        packetType = TcpPacketType_t::PURE_ACK;
     }
 
+    if (flags & TcpHeader::RST)
+    {
+        packetType = TcpPacketType_t::RST;
+    }
+
+    NS_ASSERT_MSG(packetType != TcpPacketType_t::INVALID, "Invalid TCP packet type");
     AddSocketTags(p, IsEct(packetType));
 
     header.SetFlags(flags);
@@ -4791,7 +4790,7 @@ bool
 TcpSocketBase::IsEct(TcpPacketType_t packetType) const
 {
     NS_LOG_FUNCTION(this << packetType);
-
+    NS_ASSERT_MSG(packetType != TcpPacketType_t::INVALID, "Invalid TCP packet type");
     if (m_tcb->m_ecnState == TcpSocketState::ECN_DISABLED)
     {
         return false;
