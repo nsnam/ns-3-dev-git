@@ -267,7 +267,7 @@ class VhtPhy : public HtPhy
     PhyFieldRxStatus DoEndReceiveField(WifiPpduField field, Ptr<Event> event) override;
     bool IsAllConfigSupported(WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
     uint32_t GetMaxPsduSize() const override;
-    CcaIndication GetCcaIndication(const Ptr<const WifiPpdu> ppdu) override;
+    const std::map<MHz_u, WifiChannelListType>& GetCcaSecondaryChannels() const override;
 
     /**
      * End receiving the SIG-A or SIG-B, perform VHT-specific actions, and
