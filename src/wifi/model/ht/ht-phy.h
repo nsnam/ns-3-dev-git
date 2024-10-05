@@ -461,6 +461,32 @@ class HtPhy : public OfdmPhy
     CcaIndication GetCcaIndication(const Ptr<const WifiPpdu> ppdu) override;
 
     /**
+     * Get the secondary channel widths and their corresponding channel list types that are
+     * supported by the PHY entity.
+     *
+     * @return the channel list type per supported secondary channel width
+     */
+    virtual const std::map<MHz_u, WifiChannelListType>& GetCcaSecondaryChannels() const;
+
+    /**
+     * Get the widths of the secondary channels to inspect for CCA indication.
+     *
+     * @param ppdu the incoming PPDU or nullptr for any signal
+     * @return the widths of the secondary channels to inspect for CCA indication
+     */
+    std::vector<MHz_u> GetCcaSecondaryWidths(const Ptr<const WifiPpdu> ppdu) const;
+
+    /**
+     * Get CCA end time and its corresponding channel list type when a new signal not occupying the
+     * primary 20 MHz channel has been received by the PHY.
+     *
+     * @param ppdu the incoming PPDU or nullptr for any signal
+     * @return CCA end time and its corresponding channel list type or std::nullopt if all channel
+     * list types are IDLE
+     */
+    virtual PhyEntity::CcaIndication GetCcaIndicationOnSecondary(const Ptr<const WifiPpdu> ppdu);
+
+    /**
      * Build mode list.
      * Should be redone whenever the maximum MCS index per spatial stream
      * ,or any other important parameter having an impact on the MCS index

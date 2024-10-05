@@ -540,6 +540,18 @@ class HePhy : public VhtPhy
      */
     static uint16_t GetUsableSubcarriers(MHz_u channelWidth);
 
+    /**
+     * Compute the per-20 MHz CCA durations vector that indicates
+     * for how long each 20 MHz subchannel (corresponding to the
+     * index of the element in the vector) is busy and where a zero duration
+     * indicates that the subchannel is idle. The vector is non-empty if the
+     * operational channel width is larger than 20 MHz.
+     *
+     * @param ppdu the incoming PPDU or nullptr for any signal
+     * @return the per-20 MHz CCA durations vector
+     */
+    virtual std::vector<Time> GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu);
+
     uint64_t m_previouslyTxPpduUid; //!< UID of the previously sent PPDU, used by AP to recognize
                                     //!< response HE TB PPDUs
     uint64_t m_currentMuPpduUid;    //!< UID of the HE MU or HE TB PPDU being received
@@ -594,18 +606,6 @@ class HePhy : public VhtPhy
     void NotifyCcaBusy(Time duration,
                        WifiChannelListType channelType,
                        const std::vector<Time>& per20MHzDurations);
-
-    /**
-     * Compute the per-20 MHz CCA durations vector that indicates
-     * for how long each 20 MHz subchannel (corresponding to the
-     * index of the element in the vector) is busy and where a zero duration
-     * indicates that the subchannel is idle. The vector is non-empty if the
-     * operational channel width is larger than 20 MHz.
-     *
-     * @param ppdu the incoming PPDU or nullptr for any signal
-     * @return the per-20 MHz CCA durations vector
-     */
-    std::vector<Time> GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu);
 
     /**
      * Given a PPDU duration value, the TXVECTOR used to transmit the PPDU and

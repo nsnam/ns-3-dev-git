@@ -80,7 +80,7 @@ const std::map<WifiChannelListType, dBm_u> channelTypeToScalingFactor{
 /**
  * @brief map a given secondary channel width to its channel list type
  */
-const std::map<MHz_u, WifiChannelListType> secondaryChannels{
+const std::map<MHz_u, WifiChannelListType> vhtSecondaryChannels{
     {MHz_u{20}, WIFI_CHANLIST_SECONDARY},
     {MHz_u{40}, WIFI_CHANLIST_SECONDARY40},
     {MHz_u{80}, WIFI_CHANLIST_SECONDARY80},
@@ -573,85 +573,10 @@ VhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType chan
     }
 }
 
-PhyEntity::CcaIndication
-VhtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
+const std::map<MHz_u, WifiChannelListType>&
+VhtPhy::GetCcaSecondaryChannels() const
 {
-    if (m_wifiPhy->GetChannelWidth() < 80)
-    {
-        return HtPhy::GetCcaIndication(ppdu);
-    }
-
-    auto ccaThreshold = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
-    auto delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetPrimaryBand(20));
-    if (delayUntilCcaEnd.IsStrictlyPositive())
-    {
-        return std::make_pair(
-            delayUntilCcaEnd,
-            WIFI_CHANLIST_PRIMARY); // if Primary is busy, ignore CCA for Secondary
-    }
-
-    if (ppdu)
-    {
-        const MHz_u primaryWidth{20};
-        const MHz_u p20MinFreq =
-            m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth) -
-            (primaryWidth / 2);
-        const MHz_u p20MaxFreq =
-            m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth) +
-            (primaryWidth / 2);
-        if (ppdu->DoesOverlapChannel(p20MinFreq, p20MaxFreq))
-        {
-            /*
-             * PPDU occupies primary 20 MHz channel, hence we skip CCA sensitivity rules
-             * for signals not occupying the primary 20 MHz channel.
-             */
-            return std::nullopt;
-        }
-    }
-
-    std::vector<MHz_u> secondaryWidthsToCheck;
-    if (ppdu)
-    {
-        for (const auto& secondaryChannel : secondaryChannels)
-        {
-            const auto secondaryWidth = secondaryChannel.first;
-            const MHz_u secondaryMinFreq =
-                m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(
-                    secondaryWidth) -
-                (secondaryWidth / 2);
-            const MHz_u secondaryMaxFreq =
-                m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(
-                    secondaryWidth) +
-                (secondaryWidth / 2);
-            if ((m_wifiPhy->GetChannelWidth() > secondaryWidth) &&
-                ppdu->DoesOverlapChannel(secondaryMinFreq, secondaryMaxFreq))
-            {
-                secondaryWidthsToCheck.push_back(secondaryWidth);
-            }
-        }
-    }
-    else
-    {
-        secondaryWidthsToCheck.push_back(20);
-        secondaryWidthsToCheck.push_back(40);
-        if (m_wifiPhy->GetChannelWidth() > 80)
-        {
-            secondaryWidthsToCheck.push_back(80);
-        }
-    }
-
-    for (auto secondaryWidth : secondaryWidthsToCheck)
-    {
-        auto channelType = secondaryChannels.at(secondaryWidth);
-        ccaThreshold = GetCcaThreshold(ppdu, channelType);
-        delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetSecondaryBand(secondaryWidth));
-        if (delayUntilCcaEnd.IsStrictlyPositive())
-        {
-            return std::make_pair(delayUntilCcaEnd, channelType);
-        }
-    }
-
-    return std::nullopt;
+    return vhtSecondaryChannels;
 }
 
 } // namespace ns3

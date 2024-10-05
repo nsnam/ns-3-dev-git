@@ -40,6 +40,13 @@ const PhyEntity::PpduFormats HtPhy::m_htPpduFormats {
                              WIFI_PPDU_FIELD_DATA } }
 };
 
+/**
+ * \brief map a given secondary channel width to its channel list type
+ */
+const std::map<MHz_u, WifiChannelListType> htSecondaryChannels {
+    {20, WIFI_CHANLIST_SECONDARY},
+};
+
 // clang-format on
 
 HtPhy::HtPhy(uint8_t maxNss /* = 1 */, bool buildModeList /* = true */)
@@ -813,6 +820,71 @@ HtPhy::GetMaxPsduSize() const
     return 65535;
 }
 
+const std::map<MHz_u, WifiChannelListType>&
+HtPhy::GetCcaSecondaryChannels() const
+{
+    return htSecondaryChannels;
+}
+
+std::vector<MHz_u>
+HtPhy::GetCcaSecondaryWidths(const Ptr<const WifiPpdu> ppdu) const
+{
+    std::vector<MHz_u> secondaryWidthsToCheck{};
+    if (ppdu)
+    {
+        for (const auto& secondaryChannel : GetCcaSecondaryChannels())
+        {
+            const auto secondaryWidth = secondaryChannel.first;
+            if (secondaryWidth >= m_wifiPhy->GetChannelWidth())
+            {
+                break;
+            }
+            const MHz_u secondaryMinFreq =
+                m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(
+                    secondaryWidth) -
+                (secondaryWidth / 2);
+            const MHz_u secondaryMaxFreq =
+                m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(
+                    secondaryWidth) +
+                (secondaryWidth / 2);
+            if (ppdu->DoesOverlapChannel(secondaryMinFreq, secondaryMaxFreq))
+            {
+                secondaryWidthsToCheck.push_back(secondaryWidth);
+            }
+        }
+    }
+    else
+    {
+        for (MHz_u secondaryWidth = 20; secondaryWidth < m_wifiPhy->GetChannelWidth();
+             secondaryWidth *= 2)
+        {
+            secondaryWidthsToCheck.push_back(secondaryWidth);
+        }
+    }
+    return secondaryWidthsToCheck;
+}
+
+PhyEntity::CcaIndication
+HtPhy::GetCcaIndicationOnSecondary(const Ptr<const WifiPpdu> ppdu)
+{
+    const auto& secondaryChannels = GetCcaSecondaryChannels();
+    const auto secondaryWidthsToCheck = GetCcaSecondaryWidths(ppdu);
+    for (auto secondaryWidth : secondaryWidthsToCheck)
+    {
+        const auto channelType = secondaryChannels.at(secondaryWidth);
+
+        const auto ccaThreshold = GetCcaThreshold(ppdu, channelType);
+        const auto band = GetSecondaryBand(secondaryWidth);
+        if (const auto delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, band);
+            delayUntilCcaEnd.IsStrictlyPositive())
+        {
+            return std::make_pair(delayUntilCcaEnd, channelType);
+        }
+    }
+
+    return std::nullopt;
+}
+
 PhyEntity::CcaIndication
 HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
 {
@@ -820,6 +892,7 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
     {
         return OfdmPhy::GetCcaIndication(ppdu);
     }
+
     auto ccaThreshold = GetCcaThreshold(ppdu, WIFI_CHANLIST_PRIMARY);
     auto delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetPrimaryBand(MHz_u{20}));
     if (delayUntilCcaEnd.IsStrictlyPositive())
@@ -828,6 +901,7 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
             delayUntilCcaEnd,
             WIFI_CHANLIST_PRIMARY); // if Primary is busy, ignore CCA for Secondary
     }
+
     if (ppdu)
     {
         const MHz_u primaryWidth{20};
@@ -847,24 +921,7 @@ HtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
         }
     }
 
-    const MHz_u secondaryWidth{20};
-    const MHz_u s20MinFreq =
-        m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(secondaryWidth) -
-        (secondaryWidth / 2);
-    const MHz_u s20MaxFreq =
-        m_wifiPhy->GetOperatingChannel().GetSecondaryChannelCenterFrequency(secondaryWidth) +
-        (secondaryWidth / 2);
-    if (!ppdu || ppdu->DoesOverlapChannel(s20MinFreq, s20MaxFreq))
-    {
-        ccaThreshold = GetCcaThreshold(ppdu, WIFI_CHANLIST_SECONDARY);
-        delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, GetSecondaryBand(MHz_u{20}));
-        if (delayUntilCcaEnd.IsStrictlyPositive())
-        {
-            return std::make_pair(delayUntilCcaEnd, WIFI_CHANLIST_SECONDARY);
-        }
-    }
-
-    return std::nullopt;
+    return GetCcaIndicationOnSecondary(ppdu);
 }
 
 } // namespace ns3
