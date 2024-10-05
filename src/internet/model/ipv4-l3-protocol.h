@@ -288,8 +288,10 @@ class Ipv4L3Protocol : public Ipv4
     void SetIpForward(bool forward) override;
     bool GetIpForward() const override;
 
+    /** \copydoc Ipv4::SetWeakEsModel */
     NS_DEPRECATED_3_41("Use SetStrongEndSystemModel instead")
     void SetWeakEsModel(bool model) override;
+    /** \copydoc Ipv4::GetWeakEsModel */
     NS_DEPRECATED_3_41("Use GetStrongEndSystemModel instead")
     bool GetWeakEsModel() const override;
 
