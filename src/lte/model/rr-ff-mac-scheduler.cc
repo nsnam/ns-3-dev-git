@@ -287,7 +287,7 @@ RrFfMacScheduler::DoSchedDlRlcBufferReq(
     // initialize statistics of the flow in case of new flows
     if (newLc)
     {
-        m_p10CqiRxed[params.m_rnti] = 1; // only codeword 0 at this stage (SISO)
+        m_p10CqiRxed.emplace(params.m_rnti, 1); // only codeword 0 at this stage (SISO)
         // initialized to 1 (i.e., the lowest value for transmitting a signal)
         m_p10CqiTimers[params.m_rnti] = m_cqiTimersThreshold;
     }
