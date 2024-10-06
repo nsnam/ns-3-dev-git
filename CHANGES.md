@@ -13,37 +13,38 @@ Note that users who upgrade the simulator across versions, or who work directly 
 
 This file is a best-effort approach to solving this issue; we will do our best but can guarantee that there will be things that fall through the cracks, unfortunately. If you, as a user, can suggest improvements to this file based on your experience, please contribute a patch or drop us a note on ns-developers mailing list.
 
-Changes from ns-3.42 to ns-3-dev
---------------------------------
+Changes from ns-3.42 to ns-3.43
+-------------------------------
 
 ### New API
 
-* (tcp) A new trace source `TcpSocketBase::LastRtt` has been added for tracing the last RTT sample observed. The existing trace source `TcpSocketBase::Rtt` is still providing the smoothed RTT, although it had been incorrectly documented as providing the last RTT.
+* (applications) A new trace source `BulkSendApplication::TcpRetransmission` has been added for tracing TCP retranmissions.
 * (core) Added `LaplacianRandomVariable` class implementing the Laplacian random variable, and `LargestExtremeValueRandomVariable` class implementing the Largest Extreme Value random variable.
-* (wifi) Added a new trace source to `WifiPhy`: **PhyRxMacHeaderEnd**, which is fired when the reception of the MAC header of an MPDU is completed and provides the MAC header and the remaining PSDU duration. The trace source is actually fired when the new **NotifyMacHdrRxEnd** attribute of `WifiPhy` is set to true (it is set to false by default).
 * (lr-wpan) Added a new test to `lr-wpan-cca-test.cc` suite. The added test demonstrates a known CCA vulnerability window.
+* (tcp) A new trace source `TcpSocketBase::LastRtt` has been added for tracing the last RTT sample observed. The existing trace source `TcpSocketBase::Rtt` is still providing the smoothed RTT, although it had been incorrectly documented as providing the last RTT.
+* (wifi) Added a new trace source to `WifiPhy`: **PhyRxMacHeaderEnd**, which is fired when the reception of the MAC header of an MPDU is completed and provides the MAC header and the remaining PSDU duration. The trace source is actually fired when the new **NotifyMacHdrRxEnd** attribute of `WifiPhy` is set to true (it is set to false by default).
 * (wifi) WifiHelper::SetStandard() method now accepts selected string values in addition to enum argument.
 * (wifi) Added a new method **SetPcapCaptureType** to `WifiPhyHelper` to control how PCAPs are generated for MLD devices.
 
 ### Changes to existing API
 
 * (core) Deprecated struct `TypeTraits`. Functionality provided by the standard library header `<type_traits>` should be used instead.
+* (core) Add `AddDeprecatedName` to TypeId. This allows for TypeIds to transition to name TypeIds that use namespaces while still supporting the old name.
+* (energy) Energy module TypeId now uses the name that includes the namespace `ns3::energy`, the old name is now deprecated.
+* (energy) Documentation was extended and reformatted.
+* (lr-wpan) Lr-wpan module TypeId now uses the name that includes the namespace `ns3::lrwpan`, the old name is now deprecated.
 * (lr-wpan) Attribute `macBeaconPayload` in `MacPibAttributes` is now a std::vector<uint8_t> instead of a packet pointer.
 * (lr-wpan) Removes the word `address` from the MAC address prefix when `LOG_PREFIX_FUNC` is used.
 * (lr-wpan) Removes the word `address` from the CSMA-CA logs prefix when `LOG_PREFIX_FUNC` is used.
-* (wifi) The `WifiHelper::AssignStreams()` method has been made static.
 * (lr-wpan) Added `AssignStreams` function to the MAC.
 * (lr-wpan) Attribute `macRxOnWhenIdle` added to the supported attributes in `MacPibAttributes`.
 * (lr-wpan) Attribute `macPromiscuousMode` added to the supported attributes in `MacPibAttributes`.
 * (lr-wpan) Attribute `macAssociatePermit` added to the supported attributes in `MacPibAttributes`.
 * (lr-wpan) Attribute `pCurrentChannel` added to the supported attributes in `MacPibAttributes`.
 * (lr-wpan) Attribute `pCurrentPage` added to the supported attributes in `MacPibAttributes`.
-* (wifi) Attribute `ChannelSettings` has been changed to allow configuration of non-contiguous operating channels by specifying each 80 MHz segment. It has changed from TupleValue to AttributeContainerValue, but the configuration of contiguous channels using a StringValue still works as before.
 * (lr-wpan) Documentation was extended and reformatted.
-* (core) Add `AddDeprecatedName` to TypeId. This allows for TypeIds to transition to name TypeIds that use namespaces while still supporting the old name.
-* (energy) Energy module TypeId now uses the name that includes the namespace `ns3::energy`, the old name is now deprecated.
-* (energy) Documentation was extended and reformatted.
-* (lr-wpan) Lr-wpan module TypeId now uses the name that includes the namespace `ns3::lrwpan`, the old name is now deprecated.
+* (wifi) The `WifiHelper::AssignStreams()` method has been made static.
+* (wifi) Attribute `ChannelSettings` has been changed to allow configuration of non-contiguous operating channels by specifying each 80 MHz segment. It has changed from TupleValue to AttributeContainerValue, but the configuration of contiguous channels using a StringValue still works as before.
 
 ### Changes to build system
 
@@ -53,6 +54,7 @@ Changes from ns-3.42 to ns-3-dev
 
 * (lr-wpan) Beacons are now transmitted using CSMA-CA when requested from a beacon request command.
 * (lr-wpan) Upon a beacon request command, beacons are transmitted after a jitter to reduce the probability of collisions.
+* (tcp) TCP Proportional Rate Reduction (PRR) recovery has been aligned to the updates in draft-ietf-tcpm-prr-rfc6937bis
 
 Changes from ns-3.41 to ns-3.42
 -------------------------------

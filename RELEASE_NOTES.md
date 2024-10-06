@@ -13,8 +13,19 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
-Release 3-dev
--------------
+Release 3.43
+------------
+
+This release is mainly a maintenance release and the API is generally
+consistent with the previous ns-3.42 release.  See the file CHANGES.md
+for changed model behavior and build system aspects.  The GPLv2 license
+identifiers in the headers of each file have been changed to use SPDX
+identifiers.  The minimum GCC version supported is now version 10.1.
+
+### Availability
+
+This release is available from:
+<https://www.nsnam.org/release/ns-allinone-3.43.tar.bz2>
 
 ### Supported platforms
 
@@ -27,38 +38,51 @@ requirements (Note: not all ns-3 features are available on all systems):
 - (macOS only) Xcode 13.1.6 or later
 - (Windows only) Msys2/MinGW64 and Msys2/UCRT64 toolchains or WSL2
 
-This release has discontinued support for g++-9 and clang-10 compilers and for Python 3.6 and 3.7.
-
 Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
 been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.1.2.
 
+The required Doxygen version for documentation generation is version 1.11.
+
 ### New user-visible features
 
-- (lr-wpan) !2082 - MAC SET GET attributes added
+- (applications) !2027 - BulkSendApplication: Added TCP retransmission trace consuming TcpSocketBase's TCP retransmission trace
 - (core) !1904 - Added support for Laplacian and Largest Extreme Value random variables (`LaplacianRandomVariable`, `LargestExtremeValueRandomVariable`)
-- (wifi) - Added support for 80+80 MHz
-- (lr-wpan) !2123 - CCA vulnerability window test and doc
 - (core) !2018 - `AddDeprecatedName` is now supported in TypeId.
 - (energy) !2018 - Energy module now uses the `ns3::energy` namespace in its TypeId.
+- (lr-wpan) !2082 - MAC SET GET attributes added
+- (lr-wpan) !2123 - CCA vulnerability window test and doc
 - (lr-wpan) !2163 - Lr-wpan module now uses the `ns3::lrwpan` namespace in its TypeId.
-- (internet) !2027 - TcpSocketBase: Added TCP retransmission trace
-- (applications) !2027 - BulkSendApplication: Added TCP retransmission trace consuming TcpSocketBase's TCP retransmission trace
+- (tcp) !2027 - TcpSocketBase: Added TCP retransmission trace
 - (tcp) !2059 - Aligns PRR implementation with RFC 6937 bis-08. Added a new param `isDupAck` to `DoRecovery` method, removed `ReductionBound` attribute from `TcpPrrRecovery`.
-- (wifi) It is now possible to control how PCAPs are generated for MLD: either a single PCAP
+- (wifi) !2068 - Introduce use of weak type aliases for quantities representing SI units,
+in preparation for future conversion to strongly typed units and quantities
+- (wifi) - Added support for 80+80 MHz channel configuration
+- (wifi) - It is now possible to control how PCAPs are generated for MLD: either a single PCAP
 per device, or a PCAP file per PHY, or a PCAP file per link. By default, a single PCAP is generated per PHY for MLD. The configuration of this parameter has no impact for SLD.
 
 ### Bugs fixed
 
+- (core) #1118 - Demangle EnumValue typenames for Doxygen
+- (core) #1122 - Handle deserializing empty strings in ATTRIBUTE_VALUE_IMPLEMENT
+- (config-store, core) #1091 - Fix handling of deprecated and obsolete attributes
+- (flow-monitor) #1097 - Add logging of max. and min. packet delay in FlowMonitor
 - (lr-wpan) !2001 - Beacon improvements and fixes
 - (lr-wpan) !2042 - Beacon improvements and jitter addition
+- (mobility) #1101 - Use std::abs() instead of abs()
+- (tcp) #1126 - Fix bytesAcked calculation in ProcessAck
+- (tcp) #805 - Update NextSeg() conditions for SACK as per RFC
+- (tcp) #1011 - Forbid ECN-marking of retransmissions, window probes and pure ACKs
+- (tcp) #1043 - Fix BBR incorrect minRtt updates
+- (tcp) #1113 - Fix integer overflow on first Hystart event
+- (tcp) !2083 - Consider segmentSize send limit while checking cwnd for cwnd rate-limit
+- (uan) !2087 - Fix Thorp attenuation formula
+- (uan) !2088 - Fix PER calculation of M-QAM
+- (uan) !2121 - Wrong Eb/N0 calculation in UanPhyPerCommonModes::CalcPer()
+- (uan) !2127 - Fix bug in energy update in UanPhyGen::RxEndEvent()
+- (wifi) #1095 - Fix reception of WIFI_MOD_CLASS_HR_DSSS
 - (wifi) Avoid firing WifiMac::DroppedMpdu trace twice in some cases
 - (wifi) Fix assignment of AIDs to non-AP STAs/MLDs to ensure they are unique
 - (wifi) Fix starting Sequence Number when ADDBA Response arrives after timeout
-- (uan) !2087 - Fix Thorp attenuation formula
-- (uan) !2088 - Fix PER calculation of M-QAM
-- (uan) !2127 - Fix bug in energy update in UanPhyGen::RxEndEvent()
-- (uan) !2121 - Wrong Eb/N0 calculation in UanPhyPerCommonModes::CalcPer()
-- (wifi) !2068 - Introduce use of weak type aliases for SI units
 - (wifi) Fix default association manager not properly handling non-AP MLDs not supporting 160 MHz operations
 - (wifi) Fix round robin multi-user scheduler sending Basic/BSRP TFs to EMLSR clients using another link
 - (wifi) Fix round robin multi-user scheduler sending Basic/BSRP TFs when no TID is mapped in the UL direction
@@ -67,6 +91,8 @@ per device, or a PCAP file per PHY, or a PCAP file per link. By default, a singl
 - (wifi) Fix retrieval of buffer status info from QoS Null frames sent in TB PPDUs in the multi-link case
 - (wifi) Avoid repeatedly sending BSRP TF in a TXOP when access is requested by MU scheduler
 - (wifi) Fix Txop Link entity swapping in some specific cases
+- (wifi) Fix incorrect configuration of wifi-spectrum-saturation-example.cc
+- (wifi) Fix output formatting for wifi-spectrum-per-example.cc
 
 Release 3.42
 ------------
