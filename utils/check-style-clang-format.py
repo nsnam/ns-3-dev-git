@@ -43,8 +43,17 @@ CLANG_FORMAT_VERSIONS = [
     14,
 ]
 
-CLANG_FORMAT_GUARD_ON = "// clang-format on"
-CLANG_FORMAT_GUARD_OFF = "// clang-format off"
+FORMAT_GUARD_ON = [
+    "// clang-format on",
+    "# cmake-format: on",
+    "# fmt: on",
+]
+
+FORMAT_GUARD_OFF = [
+    "// clang-format off",
+    "# cmake-format: off",
+    "# fmt: off",
+]
 
 DIRECTORIES_TO_SKIP = [
     "__pycache__",
@@ -514,14 +523,13 @@ def check_manually_file(
         if respect_clang_format_guards:
             line_stripped = line.strip()
 
-            if line_stripped == CLANG_FORMAT_GUARD_ON:
+            if line_stripped in FORMAT_GUARD_ON:
                 clang_format_enabled = True
-            elif line_stripped == CLANG_FORMAT_GUARD_OFF:
+            elif line_stripped in FORMAT_GUARD_OFF:
                 clang_format_enabled = False
 
             if not clang_format_enabled and line_stripped not in (
-                CLANG_FORMAT_GUARD_ON,
-                CLANG_FORMAT_GUARD_OFF,
+                FORMAT_GUARD_ON + FORMAT_GUARD_OFF
             ):
                 continue
 
