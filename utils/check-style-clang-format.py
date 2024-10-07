@@ -15,6 +15,7 @@ the ".clang-format" file. This script performs the following checks / fixes:
 - Check / fix local #include headers with "ns3/" prefix. Respects clang-format guards.
 - Check / trim trailing whitespace. Always checked.
 - Check / replace tabs with spaces. Respects clang-format guards.
+- Check / fix SPDX licenses rather than GPL text. Respects clang-format guards.
 
 This script can be applied to all text files in a given path or to individual files.
 
@@ -77,6 +78,7 @@ CHECKS = [
     "include_prefixes",
     "whitespace",
     "tabs",
+    "license",
     "formatting",
 ]
 
@@ -141,6 +143,14 @@ FILE_EXTENSIONS_TO_CHECK["whitespace"] = FILE_EXTENSIONS_TO_CHECK["tabs"] + [
     ".plt",
     ".seqdiag",
     ".txt",
+]
+
+FILE_EXTENSIONS_TO_CHECK["license"] = [
+    ".c",
+    ".cc",
+    ".cmake",
+    ".h",
+    ".py",
 ]
 
 # Other check parameters
@@ -306,6 +316,7 @@ def check_style_clang_format(
         "include_prefixes": '#include headers from the same module with the "ns3/" prefix',
         "whitespace": "trailing whitespace",
         "tabs": "tabs",
+        "license": "GPL license text instead of SPDX license",
         "formatting": "bad code formatting",
     }
 
@@ -329,6 +340,13 @@ def check_style_clang_format(
             "kwargs": {
                 "respect_clang_format_guards": True,
                 "check_style_line_function": check_tabs_line,
+            },
+        },
+        "license": {
+            "function": check_manually_file,
+            "kwargs": {
+                "respect_clang_format_guards": True,
+                "check_style_line_function": check_licenses_line,
             },
         },
         "formatting": {
@@ -674,6 +692,70 @@ def check_tabs_line(
     return (is_line_compliant, line_fixed, verbose_infos)
 
 
+def check_licenses_line(
+    line: str,
+    filename: str,
+    line_number: int,
+) -> Tuple[bool, str, List[str]]:
+    """
+    Check / fix SPDX licenses rather than GPL text in a line.
+
+    @param line The line to check.
+    @param filename Name of the file to be checked.
+    @param line_number The number of the line checked.
+    @return Tuple [Whether the line is compliant with the style (before the check),
+                   Fixed line,
+                   Verbose information].
+    """
+
+    # fmt: off
+    GPL_LICENSE_LINES = [
+        "This program is free software; you can redistribute it and/or modify",
+        "it under the terms of the GNU General Public License version 2 as",
+        "published by the Free Software Foundation;",
+        "This program is distributed in the hope that it will be useful,",
+        "but WITHOUT ANY WARRANTY; without even the implied warranty of",
+        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the",
+        "GNU General Public License for more details.",
+        "You should have received a copy of the GNU General Public License",
+        "along with this program; if not, write to the Free Software",
+        "Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA",
+    ]
+    # fmt: on
+
+    SPDX_LICENSE = "SPDX-License-Identifier: GPL-2.0-only"
+
+    is_line_compliant = True
+    line_fixed = line
+    verbose_infos: List[str] = []
+
+    # Check if the line is a GPL license text
+    line_stripped = line.strip()
+    line_stripped_no_leading_comments = line_stripped.strip("*#/").strip()
+
+    if line_stripped_no_leading_comments in GPL_LICENSE_LINES:
+        is_line_compliant = False
+        col_index = 0
+
+        # Replace GPL text with SPDX license.
+        # Replace the first line of the GPL text with SPDX.
+        # Delete the remaining GPL text lines.
+        if line_stripped_no_leading_comments == GPL_LICENSE_LINES[0]:
+            line_fixed = line.replace(line_stripped_no_leading_comments, SPDX_LICENSE)
+        else:
+            line_fixed = ""
+
+        verbose_infos.extend(
+            [
+                f"{filename}:{line_number + 1}:{col_index}: error: GPL license text detected instead of SPDX license",
+                f"    {line_stripped}",
+                f'    {"":{col_index}}^',
+            ]
+        )
+
+    return (is_line_compliant, line_fixed, verbose_infos)
+
+
 ###########################################################
 # MAIN
 ###########################################################
@@ -715,6 +797,12 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--no-licenses",
+        action="store_true",
+        help="Do not check / fix SPDX licenses rather than GPL text (respects clang-format guards)",
+    )
+
+    parser.add_argument(
         "--no-formatting",
         action="store_true",
         help="Do not check / fix code formatting (respects clang-format guards)",
@@ -750,6 +838,7 @@ if __name__ == "__main__":
                 "include_prefixes": not args.no_include_prefixes,
                 "whitespace": not args.no_whitespace,
                 "tabs": not args.no_tabs,
+                "license": not args.no_licenses,
                 "formatting": not args.no_formatting,
             },
             fix=args.fix,
