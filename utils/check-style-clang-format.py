@@ -447,7 +447,7 @@ def check_formatting_file(
     Check / fix the coding style of a file with clang-format.
 
     @param filename Name of the file to be checked.
-    @param fix Whether to fix (True) or just check (False) the style of the file (True).
+    @param fix Whether to fix (True) or just check (False) the style of the file.
     @param verbose Show the lines that are not compliant with the style.
     @param clang_format_path Path to clang-format.
     @return Tuple [Filename,
@@ -506,7 +506,7 @@ def check_manually_file(
     Check / fix a file manually using a function to check / fix each line.
 
     @param filename Name of the file to be checked.
-    @param fix Whether to fix (True) or just check (False) the style of the file (True).
+    @param fix Whether to fix (True) or just check (False) the style of the file.
     @param verbose Show the lines that are not compliant with the style.
     @param respect_clang_format_guards Whether to respect clang-format guards.
     @param check_style_line_function Function used to check each line.
@@ -685,14 +685,12 @@ def check_tabs_line(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Check and apply the ns-3 coding style recursively to all files in the given PATHs. "
-        "The script checks the formatting of the file with clang-format. "
-        'Additionally, it checks #include headers from the same module with the "ns3/" prefix, '
-        "the presence of trailing whitespace and tabs. "
-        'Formatting, local #include "ns3/" prefixes and tabs checks respect clang-format guards. '
-        'When used in "check mode" (default), the script checks if all files are well '
-        "formatted and do not have trailing whitespace nor tabs. "
-        "If it detects non-formatted files, they will be printed and this process exits with a "
-        'non-zero code. When used in "fix mode", this script automatically fixes the files.'
+        "The script checks the formatting of the files using clang-format and"
+        " other coding style rules manually (see script arguments). "
+        "All checks respect clang-format guards, except trailing whitespace, which is always checked. "
+        'When used in "check mode" (default), the script runs all checks in all files. '
+        "If it detects non-formatted files, they will be printed and this process exits with a non-zero code. "
+        'When used in "fix mode", this script automatically fixes the files and exits with 0 code.'
     )
 
     parser.add_argument(
@@ -706,7 +704,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--no-include-prefixes",
         action="store_true",
-        help='Do not check / fix #include headers from the same module with the "ns3/" prefix',
+        help='Do not check / fix #include headers from the same module with the "ns3/" prefix (respects clang-format guards)',
     )
 
     parser.add_argument(
@@ -718,13 +716,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--no-tabs",
         action="store_true",
-        help="Do not check / fix tabs",
+        help="Do not check / fix tabs (respects clang-format guards)",
     )
 
     parser.add_argument(
         "--no-formatting",
         action="store_true",
-        help="Do not check / fix code formatting",
+        help="Do not check / fix code formatting (respects clang-format guards)",
     )
 
     parser.add_argument(

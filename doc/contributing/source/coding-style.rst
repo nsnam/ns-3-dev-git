@@ -150,15 +150,24 @@ source code files. Additionally, it performs other manual checks and fixes in te
 We recommend running this script over your newly introduced C++ files prior to submission
 as a Merge Request.
 
-The script has multiple modes of operation. By default, the script checks if
-source code files are well formatted, if there are no #include headers from the same
-module with the "ns3/" prefix, and text files do not have trailing whitespace
-nor tabs. The process returns a zero exit code if all files adhere to these rules.
+The script performs multiple style checks. By default, the script runs the following checks:
+
+* Check code formatting using clang-format. Respects clang-format guards.
+* Check if local ``#include`` headers do not use the "ns3/" prefix. Respects clang-format guards.
+* Check if there are no trailing whitespace. Always checked.
+* Check if there are no tabs. Respects clang-format guards.
+
+The process returns a zero exit code if all files adhere to these rules.
 If there are files that do not comply with the rules, the process returns a non-zero
 exit code and lists the respective files. This mode is useful for developers editing
 their code and for the GitLab CI/CD pipeline to check if the codebase is well formatted.
 All checks are enabled by default. Users can disable specific checks using the corresponding
-flags: ``--no-include-prefixes``, ``--no-formatting``, ``--no-whitespace`` and ``--no-tabs``.
+flags:
+
+* ``--no-formatting``
+* ``--no-include-prefixes``
+* ``--no-whitespace``
+* ``--no-tabs``
 
 Additional information about the formatting issues detected by the script can be enabled
 by adding the ``-v, --verbose`` flag.
