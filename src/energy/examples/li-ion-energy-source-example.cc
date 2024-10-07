@@ -34,9 +34,19 @@ using namespace ns3::energy;
  * http://www.panasonic.com/industrial/includes/pdf/Panasonic_LiIon_CGR18650DA.pdf
  */
 
+// NS_DEPRECATED_3_43() - tag for future removal
+// LiIonEnergySource was deprecated in commit
+// https://gitlab.com/nsnam/ns-3-dev/-/commit/086913b0
+//
+// The new battery model is illustrated in
+// `src/energy/examples/generic-battery-discharge-example.cc`
+
+NS_WARNING_PUSH_DEPRECATED;
+
 static void
 PrintCellInfo(Ptr<LiIonEnergySource> es)
 {
+    NS_WARNING_POP;
     std::cout << "At " << Simulator::Now().As(Time::S)
               << " Cell voltage: " << es->GetSupplyVoltage()
               << " V Remaining Capacity: " << es->GetRemainingEnergy() / (3.6 * 3600) << " Ah"
@@ -61,7 +71,9 @@ main(int argc, char** argv)
 
     Ptr<SimpleDeviceEnergyModel> sem = CreateObject<SimpleDeviceEnergyModel>();
     Ptr<EnergySourceContainer> esCont = CreateObject<EnergySourceContainer>();
+    NS_WARNING_PUSH_DEPRECATED;
     Ptr<LiIonEnergySource> es = CreateObject<LiIonEnergySource>();
+    NS_WARNING_POP;
     esCont->Add(es);
     es->SetNode(node);
     sem->SetEnergySource(es);

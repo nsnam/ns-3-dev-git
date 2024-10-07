@@ -16,6 +16,18 @@
 using namespace ns3;
 using namespace ns3::energy;
 
+// NS_DEPRECATED_3_43() - tag for future removal
+// LiIonEnergySource was deprecated in commit
+// https://gitlab.com/nsnam/ns-3-dev/-/commit/086913b0
+//
+// The new battery model is illustrated in
+// `src/energy/examples/generic-battery-discharge-example.cc`
+//
+// A GenericBatteryModelTestCase is being developed in MR 2181
+// https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/2181
+// which will be in
+// `src/energy/test/generic-battery-model-test.cc`
+
 NS_LOG_COMPONENT_DEFINE("LiIonEnergySourceTestSuite");
 
 /**
@@ -50,7 +62,10 @@ LiIonEnergyTestCase::DoRun()
     m_node = CreateObject<Node>();
 
     Ptr<SimpleDeviceEnergyModel> sem = CreateObject<SimpleDeviceEnergyModel>();
+
+    NS_WARNING_PUSH_DEPRECATED;
     Ptr<LiIonEnergySource> es = CreateObject<LiIonEnergySource>();
+    NS_WARNING_POP;
 
     es->SetNode(m_node);
     sem->SetEnergySource(es);

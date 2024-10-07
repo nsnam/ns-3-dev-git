@@ -25,9 +25,6 @@ namespace energy
  * \ingroup energy
  * \brief Model a generic Lithium Ion Battery basing on [1][2].
  *
- * \deprecated The LiIonEnergySource was deprecated in ns-3.40 in favor of GenericBatteryModel, and
- * will be removed in a future release.
- *
  * The model can be fitted to any type of Li-Ion Battery, simply changing the
  * model parameters.
  * The default values are fitted for the Panasonic CGR18650DA Li-Ion Battery [3].
@@ -65,9 +62,15 @@ namespace energy
  * Generic Battery Model for the Dynamic Simulation of Hybrid Electric Vehicles," Ecole de
  * Technologie Superieure, Universite du Quebec, 2007 [3]
  * http://www.panasonic.com/industrial/includes/pdf/Panasonic_LiIon_CGR18650DA.pdf
- *
+
  */
-class LiIonEnergySource : public EnergySource
+// clang-format off
+class
+NS_DEPRECATED_3_40("The LiIonEnergySource was deprecated in ns-3.40 "
+                   "in favor of GenericBatteryModel, and will be removed "
+                   "in a future release.")
+LiIonEnergySource : public EnergySource
+// clang-format on
 {
   public:
     /**
