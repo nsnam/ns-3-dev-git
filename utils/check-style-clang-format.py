@@ -13,6 +13,7 @@ The coding style is defined with the clang-format tool, whose definitions are in
 the ".clang-format" file. This script performs the following checks / fixes:
 - Check / apply clang-format. Respects clang-format guards.
 - Check / fix local #include headers with "ns3/" prefix. Respects clang-format guards.
+- Check / fix ns-3 #include headers using angle brackets <> rather than quotes "". Respects clang-format guards.
 - Check / fix Doxygen tags using @ rather than \\. Respects clang-format guards.
 - Check / trim trailing whitespace. Always checked.
 - Check / replace tabs with spaces. Respects clang-format guards.
@@ -74,6 +75,7 @@ FILES_TO_SKIP = [
 # List of checks
 CHECKS = [
     "include_prefixes",
+    "include_quotes",
     "doxygen_tags",
     "whitespace",
     "tabs",
@@ -109,6 +111,7 @@ FILE_EXTENSIONS_TO_CHECK["formatting"] = [
 ]
 
 FILE_EXTENSIONS_TO_CHECK["include_prefixes"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
+FILE_EXTENSIONS_TO_CHECK["include_quotes"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 FILE_EXTENSIONS_TO_CHECK["doxygen_tags"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 FILE_EXTENSIONS_TO_CHECK["encoding"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 
@@ -318,6 +321,7 @@ def check_style_clang_format(
 
     style_check_strs = {
         "include_prefixes": '#include headers from the same module with the "ns3/" prefix',
+        "include_quotes": 'ns-3 #include headers using angle brackets <> rather than quotes ""',
         "doxygen_tags": "Doxygen tags using \\ rather than @",
         "whitespace": "trailing whitespace",
         "tabs": "tabs",
@@ -332,6 +336,13 @@ def check_style_clang_format(
             "kwargs": {
                 "respect_clang_format_guards": True,
                 "check_style_line_function": check_include_prefixes_line,
+            },
+        },
+        "include_quotes": {
+            "function": check_manually_file,
+            "kwargs": {
+                "respect_clang_format_guards": True,
+                "check_style_line_function": check_include_quotes_line,
             },
         },
         "doxygen_tags": {
@@ -702,6 +713,44 @@ def check_include_prefixes_line(
     return (is_line_compliant, line_fixed, verbose_infos)
 
 
+def check_include_quotes_line(
+    line: str,
+    filename: str,
+    line_number: int,
+) -> Tuple[bool, str, List[str]]:
+    """
+    Check / fix ns-3 #include headers using angle brackets <> rather than quotes "" in a line.
+
+    @param line The line to check.
+    @param filename Name of the file to be checked.
+    @param line_number The number of the line checked.
+    @return Tuple [Whether the line is compliant with the style (before the check),
+                   Fixed line,
+                   Verbose information].
+    """
+
+    is_line_compliant = True
+    line_fixed = line
+    verbose_infos: List[str] = []
+
+    # Check if the line is an #include <ns3/...>
+    header_file = re.findall(r"^#include <ns3/.*\.h>", line)
+
+    if header_file:
+        is_line_compliant = False
+        line_fixed = line.replace("<", '"').replace(">", '"')
+
+        header_index = len("#include ")
+
+        verbose_infos = [
+            f"{filename}:{line_number + 1}:{header_index + 1}: error: ns-3 #include headers with angle brackets detected",
+            f"    {line}",
+            f'    {"":{header_index}}^',
+        ]
+
+    return (is_line_compliant, line_fixed, verbose_infos)
+
+
 def check_doxygen_tags_line(
     line: str,
     filename: str,
@@ -914,6 +963,12 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--no-include-quotes",
+        action="store_true",
+        help='Do not check / fix ns-3 #include headers using angle brackets <> rather than quotes "" (respects clang-format guards)',
+    )
+
+    parser.add_argument(
         "--no-doxygen-tags",
         action="store_true",
         help="Do not check / fix Doxygen tags using @ rather than \\ (respects clang-format guards)",
@@ -977,6 +1032,7 @@ if __name__ == "__main__":
             paths=args.paths,
             checks_enabled={
                 "include_prefixes": not args.no_include_prefixes,
+                "include_quotes": not args.no_include_quotes,
                 "doxygen_tags": not args.no_doxygen_tags,
                 "whitespace": not args.no_whitespace,
                 "tabs": not args.no_tabs,

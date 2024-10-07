@@ -154,6 +154,7 @@ The script performs multiple style checks. By default, the script runs the follo
 
 * Check code formatting using clang-format. Respects clang-format guards.
 * Check if local ``#include`` headers do not use the "ns3/" prefix. Respects clang-format guards.
+* Check if ns-3 ``#include`` headers use quotes (``""``) instead of angle brackets (``<>``). Respects clang-format guards.
 * Check if Doxygen tags use ``@`` rather than ``\\``. Respects clang-format guards.
 * Check if there are no trailing whitespace. Always checked.
 * Check if there are no tabs. Respects clang-format guards.
@@ -169,6 +170,7 @@ flags:
 
 * ``--no-formatting``
 * ``--no-include-prefixes``
+* ``--no-include-quotes``
 * ``--no-doxygen-tags``
 * ``--no-whitespace``
 * ``--no-tabs``
