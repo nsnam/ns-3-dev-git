@@ -13,6 +13,7 @@ The coding style is defined with the clang-format tool, whose definitions are in
 the ".clang-format" file. This script performs the following checks / fixes:
 - Check / apply clang-format. Respects clang-format guards.
 - Check / fix local #include headers with "ns3/" prefix. Respects clang-format guards.
+- Check / fix Doxygen tags using @ rather than \\. Respects clang-format guards.
 - Check / trim trailing whitespace. Always checked.
 - Check / replace tabs with spaces. Respects clang-format guards.
 - Check / fix SPDX licenses rather than GPL text. Respects clang-format guards.
@@ -73,6 +74,7 @@ FILES_TO_SKIP = [
 # List of checks
 CHECKS = [
     "include_prefixes",
+    "doxygen_tags",
     "whitespace",
     "tabs",
     "license",
@@ -107,6 +109,7 @@ FILE_EXTENSIONS_TO_CHECK["formatting"] = [
 ]
 
 FILE_EXTENSIONS_TO_CHECK["include_prefixes"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
+FILE_EXTENSIONS_TO_CHECK["doxygen_tags"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 FILE_EXTENSIONS_TO_CHECK["encoding"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 
 FILE_EXTENSIONS_TO_CHECK["tabs"] = [
@@ -315,6 +318,7 @@ def check_style_clang_format(
 
     style_check_strs = {
         "include_prefixes": '#include headers from the same module with the "ns3/" prefix',
+        "doxygen_tags": "Doxygen tags using \\ rather than @",
         "whitespace": "trailing whitespace",
         "tabs": "tabs",
         "license": "GPL license text instead of SPDX license",
@@ -328,6 +332,13 @@ def check_style_clang_format(
             "kwargs": {
                 "respect_clang_format_guards": True,
                 "check_style_line_function": check_include_prefixes_line,
+            },
+        },
+        "doxygen_tags": {
+            "function": check_manually_file,
+            "kwargs": {
+                "respect_clang_format_guards": True,
+                "check_style_line_function": check_doxygen_tags_line,
             },
         },
         "whitespace": {
@@ -691,6 +702,56 @@ def check_include_prefixes_line(
     return (is_line_compliant, line_fixed, verbose_infos)
 
 
+def check_doxygen_tags_line(
+    line: str,
+    filename: str,
+    line_number: int,
+) -> Tuple[bool, str, List[str]]:
+    """
+    Check / fix Doxygen tags using \\ rather than @ in a line.
+
+    @param line The line to check.
+    @param filename Name of the file to be checked.
+    @param line_number The number of the line checked.
+    @return Tuple [Whether the line is compliant with the style (before the check),
+                   Fixed line,
+                   Verbose information].
+    """
+
+    IGNORED_WORDS = [
+        "\\dots",
+        "\\langle",
+        "\\quad",
+    ]
+
+    is_line_compliant = True
+    line_fixed = line
+    verbose_infos: List[str] = []
+
+    # Match Doxygen tags at the start of the line (e.g., "* \param arg Description")
+    line_stripped = line.rstrip()
+    regex_findings = re.findall(r"^\s*(?:\*|\/\*\*|\/\/\/)\s*(\\\w{3,})(?=(?:\s|$))", line_stripped)
+
+    if regex_findings:
+        doxygen_tag = regex_findings[0]
+
+        if doxygen_tag not in IGNORED_WORDS:
+            is_line_compliant = False
+
+            doxygen_tag_index = line_fixed.find(doxygen_tag)
+            line_fixed = line.replace(doxygen_tag, f"@{doxygen_tag[1:]}")
+
+            verbose_infos.extend(
+                [
+                    f"{filename}:{line_number + 1}:{doxygen_tag_index + 1}: error: detected Doxygen tags using \\ rather than @",
+                    f"    {line_stripped}",
+                    f'    {"":{doxygen_tag_index}}^',
+                ]
+            )
+
+    return (is_line_compliant, line_fixed, verbose_infos)
+
+
 def check_whitespace_line(
     line: str,
     filename: str,
@@ -853,6 +914,12 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--no-doxygen-tags",
+        action="store_true",
+        help="Do not check / fix Doxygen tags using @ rather than \\ (respects clang-format guards)",
+    )
+
+    parser.add_argument(
         "--no-whitespace",
         action="store_true",
         help="Do not check / fix trailing whitespace",
@@ -910,6 +977,7 @@ if __name__ == "__main__":
             paths=args.paths,
             checks_enabled={
                 "include_prefixes": not args.no_include_prefixes,
+                "doxygen_tags": not args.no_doxygen_tags,
                 "whitespace": not args.no_whitespace,
                 "tabs": not args.no_tabs,
                 "license": not args.no_licenses,
