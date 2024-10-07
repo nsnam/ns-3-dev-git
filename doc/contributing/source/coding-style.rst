@@ -169,6 +169,7 @@ flags:
 * ``--no-include-prefixes``
 * ``--no-whitespace``
 * ``--no-tabs``
+* ``--no-licenses``
 
 Additional information about the formatting issues detected by the script can be enabled
 by adding the ``-v, --verbose`` flag.
