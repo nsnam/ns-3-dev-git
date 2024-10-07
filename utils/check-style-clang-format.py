@@ -63,15 +63,43 @@ FILES_TO_SKIP = [
     "valgrind.h",
 ]
 
-FILE_EXTENSIONS_TO_CHECK_FORMATTING = [
+# List of checks
+CHECKS = [
+    "include_prefixes",
+    "whitespace",
+    "tabs",
+    "formatting",
+]
+
+# Files to check
+FILES_TO_CHECK: Dict[str, List[str]] = {c: [] for c in CHECKS}
+
+FILES_TO_CHECK["tabs"] = [
+    ".clang-format",
+    ".clang-tidy",
+    ".codespellrc",
+    "CMakeLists.txt",
+    "codespell-ignored-lines",
+    "codespell-ignored-words",
+    "ns3",
+]
+
+FILES_TO_CHECK["whitespace"] = FILES_TO_CHECK["tabs"] + [
+    "Makefile",
+]
+
+# File extensions to check
+FILE_EXTENSIONS_TO_CHECK: Dict[str, List[str]] = {c: [] for c in CHECKS}
+
+FILE_EXTENSIONS_TO_CHECK["formatting"] = [
     ".c",
     ".cc",
     ".h",
 ]
 
-FILE_EXTENSIONS_TO_CHECK_INCLUDE_PREFIXES = FILE_EXTENSIONS_TO_CHECK_FORMATTING
+FILE_EXTENSIONS_TO_CHECK["include_prefixes"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 
-FILE_EXTENSIONS_TO_CHECK_TABS = [
+FILE_EXTENSIONS_TO_CHECK["tabs"] = [
     ".c",
     ".cc",
     ".cmake",
@@ -90,17 +118,7 @@ FILE_EXTENSIONS_TO_CHECK_TABS = [
     ".yml",
 ]
 
-FILES_TO_CHECK_TABS = [
-    ".clang-format",
-    ".clang-tidy",
-    ".codespellrc",
-    "CMakeLists.txt",
-    "codespell-ignored-lines",
-    "codespell-ignored-words",
-    "ns3",
-]
-
-FILE_EXTENSIONS_TO_CHECK_WHITESPACE = FILE_EXTENSIONS_TO_CHECK_TABS + [
+FILE_EXTENSIONS_TO_CHECK["whitespace"] = FILE_EXTENSIONS_TO_CHECK["tabs"] + [
     ".click",
     ".cfg",
     ".conf",
@@ -116,10 +134,7 @@ FILE_EXTENSIONS_TO_CHECK_WHITESPACE = FILE_EXTENSIONS_TO_CHECK_TABS + [
     ".txt",
 ]
 
-FILES_TO_CHECK_WHITESPACE = FILES_TO_CHECK_TABS + [
-    "Makefile",
-]
-
+# Other check parameters
 TAB_SIZE = 4
 
 
@@ -165,24 +180,26 @@ def should_analyze_file(
 
 def find_files_to_check_style(
     paths: List[str],
-) -> Tuple[List[str], List[str], List[str], List[str]]:
+) -> Dict[str, List[str]]:
     """
     Find all files to be checked in a given list of paths.
 
     @param paths List of paths to the files to check.
-    @return Tuple [List of files to check include prefixes,
-                   List of files to check trailing whitespace,
-                   List of files to check tabs,
-                   List of files to check formatting].
+    @return Dictionary of checks and corresponding list of files to check.
+            Example: {
+                "formatting": list_of_files_to_check_formatting,
+                ...,
+            }
     """
 
-    files_to_check: List[str] = []
+    # Get list of files found in the given path
+    files_found: List[str] = []
 
     for path in paths:
         abs_path = os.path.abspath(os.path.expanduser(path))
 
         if os.path.isfile(abs_path):
-            files_to_check.append(path)
+            files_found.append(path)
 
         elif os.path.isdir(abs_path):
             for dirpath, dirnames, filenames in os.walk(path, topdown=True):
@@ -191,37 +208,22 @@ def find_files_to_check_style(
                     dirnames[:] = []
                     continue
 
-                files_to_check.extend([os.path.join(dirpath, f) for f in filenames])
+                files_found.extend([os.path.join(dirpath, f) for f in filenames])
 
         else:
             raise ValueError(f"{path} is not a valid file nor a directory")
 
-    files_to_check.sort()
+    files_found.sort()
 
-    files_to_check_include_prefixes: List[str] = []
-    files_to_check_whitespace: List[str] = []
-    files_to_check_tabs: List[str] = []
-    files_to_check_formatting: List[str] = []
+    # Check which files should be checked
+    files_to_check: Dict[str, List[str]] = {c: [] for c in CHECKS}
 
-    for f in files_to_check:
-        if should_analyze_file(f, [], FILE_EXTENSIONS_TO_CHECK_INCLUDE_PREFIXES):
-            files_to_check_include_prefixes.append(f)
+    for f in files_found:
+        for check in CHECKS:
+            if should_analyze_file(f, FILES_TO_CHECK[check], FILE_EXTENSIONS_TO_CHECK[check]):
+                files_to_check[check].append(f)
 
-        if should_analyze_file(f, FILES_TO_CHECK_WHITESPACE, FILE_EXTENSIONS_TO_CHECK_WHITESPACE):
-            files_to_check_whitespace.append(f)
-
-        if should_analyze_file(f, FILES_TO_CHECK_TABS, FILE_EXTENSIONS_TO_CHECK_TABS):
-            files_to_check_tabs.append(f)
-
-        if should_analyze_file(f, [], FILE_EXTENSIONS_TO_CHECK_FORMATTING):
-            files_to_check_formatting.append(f)
-
-    return (
-        files_to_check_include_prefixes,
-        files_to_check_whitespace,
-        files_to_check_tabs,
-        files_to_check_formatting,
-    )
+    return files_to_check
 
 
 def find_clang_format_path() -> str:
@@ -272,10 +274,7 @@ def find_clang_format_path() -> str:
 ###########################################################
 def check_style_clang_format(
     paths: List[str],
-    enable_check_include_prefixes: bool,
-    enable_check_whitespace: bool,
-    enable_check_tabs: bool,
-    enable_check_formatting: bool,
+    checks_enabled: Dict[str, bool],
     fix: bool,
     verbose: bool,
     n_jobs: int = 1,
@@ -284,89 +283,77 @@ def check_style_clang_format(
     Check / fix the coding style of a list of files.
 
     @param paths List of paths to the files to check.
-    @param enable_check_include_prefixes Whether to enable checking #include headers from the same module with the "ns3/" prefix.
-    @param enable_check_whitespace Whether to enable checking trailing whitespace.
-    @param enable_check_tabs Whether to enable checking tabs.
-    @param enable_check_formatting Whether to enable checking code formatting.
+    @param checks_enabled Dictionary of checks indicating whether to enable each of them.
     @param fix Whether to fix (True) or just check (False) the file.
     @param verbose Show the lines that are not compliant with the style.
     @param n_jobs Number of parallel jobs.
     @return Whether all files are compliant with all enabled style checks.
     """
 
-    (
-        files_to_check_include_prefixes,
-        files_to_check_whitespace,
-        files_to_check_tabs,
-        files_to_check_formatting,
-    ) = find_files_to_check_style(paths)
+    files_to_check = find_files_to_check_style(paths)
+    checks_successful = {c: True for c in CHECKS}
 
-    check_include_prefixes_successful = True
-    check_whitespace_successful = True
-    check_tabs_successful = True
-    check_formatting_successful = True
+    style_check_strs = {
+        "include_prefixes": '#include headers from the same module with the "ns3/" prefix',
+        "whitespace": "trailing whitespace",
+        "tabs": "tabs",
+        "formatting": "bad code formatting",
+    }
 
-    if enable_check_include_prefixes:
-        check_include_prefixes_successful = check_style_files(
-            '#include headers from the same module with the "ns3/" prefix',
-            check_manually_file,
-            files_to_check_include_prefixes,
-            fix,
-            verbose,
-            n_jobs,
-            respect_clang_format_guards=True,
-            check_style_line_function=check_include_prefixes_line,
-        )
+    check_style_file_functions_kwargs = {
+        "include_prefixes": {
+            "function": check_manually_file,
+            "kwargs": {
+                "respect_clang_format_guards": True,
+                "check_style_line_function": check_include_prefixes_line,
+            },
+        },
+        "whitespace": {
+            "function": check_manually_file,
+            "kwargs": {
+                "respect_clang_format_guards": False,
+                "check_style_line_function": check_whitespace_line,
+            },
+        },
+        "tabs": {
+            "function": check_manually_file,
+            "kwargs": {
+                "respect_clang_format_guards": True,
+                "check_style_line_function": check_tabs_line,
+            },
+        },
+        "formatting": {
+            "function": check_formatting_file,
+            "kwargs": {},  # The formatting keywords are added below
+        },
+    }
 
-        print("")
+    if checks_enabled["formatting"]:
+        check_style_file_functions_kwargs["formatting"]["kwargs"] = {
+            "clang_format_path": find_clang_format_path(),
+        }
 
-    if enable_check_whitespace:
-        check_whitespace_successful = check_style_files(
-            "trailing whitespace",
-            check_manually_file,
-            files_to_check_whitespace,
-            fix,
-            verbose,
-            n_jobs,
-            respect_clang_format_guards=False,
-            check_style_line_function=check_whitespace_line,
-        )
+    n_checks_enabled = sum(checks_enabled.values())
+    n_check = 0
 
-        print("")
+    for check in CHECKS:
+        if checks_enabled[check]:
+            checks_successful[check] = check_style_files(
+                style_check_strs[check],
+                check_style_file_functions_kwargs[check]["function"],
+                files_to_check[check],
+                fix,
+                verbose,
+                n_jobs,
+                **check_style_file_functions_kwargs[check]["kwargs"],
+            )
 
-    if enable_check_tabs:
-        check_tabs_successful = check_style_files(
-            "tabs",
-            check_manually_file,
-            files_to_check_tabs,
-            fix,
-            verbose,
-            n_jobs,
-            respect_clang_format_guards=True,
-            check_style_line_function=check_tabs_line,
-        )
+            n_check += 1
 
-        print("")
+            if n_check < n_checks_enabled:
+                print("")
 
-    if enable_check_formatting:
-        check_formatting_successful = check_style_files(
-            "bad code formatting",
-            check_formatting_file,
-            files_to_check_formatting,
-            fix,
-            verbose,
-            n_jobs,
-            clang_format_path=find_clang_format_path(),
-        )
-
-    return all(
-        [
-            check_include_prefixes_successful,
-            check_whitespace_successful,
-            check_tabs_successful,
-            check_formatting_successful,
-        ]
-    )
+    return all(checks_successful.values())
 
 
 def check_style_files(
@@ -751,10 +738,12 @@ if __name__ == "__main__":
     try:
         all_checks_successful = check_style_clang_format(
             paths=args.paths,
-            enable_check_include_prefixes=(not args.no_include_prefixes),
-            enable_check_whitespace=(not args.no_whitespace),
-            enable_check_tabs=(not args.no_tabs),
-            enable_check_formatting=(not args.no_formatting),
+            checks_enabled={
+                "include_prefixes": not args.no_include_prefixes,
+                "whitespace": not args.no_whitespace,
+                "tabs": not args.no_tabs,
+                "formatting": not args.no_formatting,
+            },
             fix=args.fix,
             verbose=args.verbose,
             n_jobs=args.jobs,
