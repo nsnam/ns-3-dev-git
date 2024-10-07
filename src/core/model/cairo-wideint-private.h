@@ -1,3 +1,6 @@
+// NOLINTBEGIN
+// clang-format off
+
 /* cairo - a vector graphics library with display and print output
  *
  * Copyright © 2004 Keith Packard
@@ -28,9 +31,6 @@
  *    Keith R. Packard <keithp@keithp.com>
  *
  */
-
-// NOLINTBEGIN
-// clang-format off
 
 #ifndef CAIRO_WIDEINT_H
 #define CAIRO_WIDEINT_H

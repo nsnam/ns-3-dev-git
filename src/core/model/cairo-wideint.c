@@ -1,3 +1,6 @@
+// NOLINTBEGIN
+// clang-format off
+
 /* cairo - a vector graphics library with display and print output
  *
  * Copyright © 2004 Keith Packard
@@ -29,9 +32,6 @@
  *
  * Code changes for ns-3 from upstream are marked with `//PDB'
  */
-
-// NOLINTBEGIN
-// clang-format off
 
 #include "cairo-wideint-private.h"
 
