@@ -299,17 +299,17 @@ The preferred style for Doxygen comments is the JavaDoc style::
    *  Explain what the class or method does, using what algorithm.
    *  Explain the units of arguments and return values.
    *
-   *  \note Note any limitations or gotchas.
+   *  @note Note any limitations or gotchas.
    *
    *  (For functions with arguments or return valued:)
-   *  \param [in] foo Brief noun phrase describing this argument. Note
+   *  @param [in] foo Brief noun phrase describing this argument. Note
    *                  that we indicate if the argument is input,
    *                  output, or both.
-   *  \param [in,out] bar Note Sentence case, and terminating period.
-   *  \param [in] baz Indicate boolean values with \c true or \c false.
-   *  \return Brief noun phrase describing the value.
+   *  @param [in,out] bar Note Sentence case, and terminating period.
+   *  @param [in] baz Indicate boolean values with \c true or \c false.
+   *  @return Brief noun phrase describing the value.
    *
-   *  \internal
+   *  @internal
    *
    *  You can also discuss internal implementation details.
    *  Understanding this material shouldn't be necessary to using
@@ -335,7 +335,7 @@ Some items to note:
 
 * Use sentence case, including the initial capital.
 * Use punctuation, especially \`.'s at the end of sentences or phrases.
-* The ``\brief`` tag is not needed; the first sentence will be
+* The ``@brief`` tag is not needed; the first sentence will be
     used as the brief description.
 
 Every class, method, typedef, member variable, function argument
@@ -522,10 +522,10 @@ usage for |ns3|.
 
 * Use Doxygen ``Modules`` to group related items.
 
-  In the main header for a module, create a Doxgyen group::
+  In the main header for a module, create a Doxygen group::
 
     /**
-     *  \defgroup foo Foo protocol.
+     *  @defgroup foo Foo protocol.
      *  Implementation of the Foo protocol.
      */
 
@@ -536,23 +536,23 @@ usage for |ns3|.
 * Document each file, assigning it to the relevant group.  In a header file::
 
     /**
-     *  \file
-     *  \ingroup foo
+     *  @file
+     *  @ingroup foo
      *  Class Foo declaration.
      */
 
   or in the corresponding ``.cc`` file::
 
     /**
-     *  \file
-     *  \ingroup foo
+     *  @file
+     *  @ingroup foo
      *  Class FooBar implementation.
      */
 
 * Mark each associated class as belonging to the group::
 
     /**
-     *  \ingroup foo
+     *  @ingroup foo
      *
      *  FooBar packet type.
      */
@@ -564,27 +564,27 @@ usage for |ns3|.
     /**
      *  Bar callback function signature.
      *
-     *  \param ale The size of a pint of ale, in Imperial ounces.
+     *  @param ale The size of a pint of ale, in Imperial ounces.
      */
     typedef void (* BarCallback)(const int ale);
 
 * Copy the ``Attribute`` help strings from the ``GetTypeId`` method to use
   as the brief descriptions of associated members.
 
-* ``\bugid{298}`` will create a link to bug 298 in our Bugzilla.
+* ``@bugid{298}`` will create a link to bug 298 in our Bugzilla.
 
-* ``\p foo`` in a description will format ``foo``
-  the same as the ``\param foo`` parameter, making it clear that you
+* ``@p foo`` in a description will format ``foo``
+  the same as the ``@param foo`` parameter, making it clear that you
   are referring to an actual argument.
 
-* ``\RFC{301}`` will create a link to RFC 301.
+* ``@RFC{301}`` will create a link to RFC 301.
 
-* Document the direction of function arguments with ``\param [in]``, *etc*.
+* Document the direction of function arguments with ``@param [in]``, *etc*.
   The allowed values of the direction token are ``[in]``, ``[out]``, and
   ``[in,out]`` (note the explicit square brackets), as discussed in the
-  Doxygen docs for ``\param``.
+  Doxygen docs for ``@param``.
 
-* Document template arguments with ``\tparam``, just as you use ``\param``
+* Document template arguments with ``@tparam``, just as you use ``@param``
   for function arguments.
 
 * For template arguments, indicate if they will be deduced or must be given
@@ -598,15 +598,15 @@ usage for |ns3|.
      */
     template <typename T, typename U> T Function(U a);
 
-  * Use ``\tparam U \deduced`` because the type ``U`` can be deduced at
+  * Use ``@tparam U @deduced`` because the type ``U`` can be deduced at
     the site where the template is invoked.  Basically deduction can only
     be done for function arguments.
 
-  * Use ``\tparam T \explicit`` because the type ``T`` can't be deduced;
+  * Use ``@tparam T @explicit`` because the type ``T`` can't be deduced;
     it must be given explicitly at the invocation site, as in
     ``Create<MyObject>(...)``
 
-* ``\internal`` should be used only to set off a discussion of implementation
+* ``@internal`` should be used only to set off a discussion of implementation
   details, not to mark ``private`` functions (they are already marked,
   as ``private``!)
 
@@ -636,6 +636,6 @@ cases is:
 
     /**
      *  Register this type.
-     *  \return The object TypeId.
+     *  @return The object TypeId.
      */
     static TypeId GetTypeId();
