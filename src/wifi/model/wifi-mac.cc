@@ -282,12 +282,12 @@ WifiMac::GetTypeId()
                 UintegerValue(0),
                 MakeUintegerAccessor(&WifiMac::SetBkBlockAckInactivityTimeout),
                 MakeUintegerChecker<uint16_t>())
-            .AddTraceSource("MacTx",
-                            "A packet has been received from higher layers and is being processed "
-                            "in preparation for "
-                            "queueing for transmission.",
-                            MakeTraceSourceAccessor(&WifiMac::m_macTxTrace),
-                            "ns3::Packet::TracedCallback")
+            .AddTraceSource(
+                "MacTx",
+                "A packet has been received by the WifiNetDevice and is about to be enqueued; "
+                "it has a LlcSnapHeader prepended but not yet a WifiMacHeader.",
+                MakeTraceSourceAccessor(&WifiMac::m_macTxTrace),
+                "ns3::Packet::TracedCallback")
             .AddTraceSource(
                 "MacTxDrop",
                 "A packet has been dropped in the MAC layer before being queued for transmission. "

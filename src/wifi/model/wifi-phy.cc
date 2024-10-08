@@ -299,13 +299,15 @@ WifiPhy::GetTypeId()
                           BooleanValue(false),
                           MakeBooleanAccessor(&WifiPhy::m_notifyRxMacHeaderEnd),
                           MakeBooleanChecker())
-            .AddTraceSource("PhyTxBegin",
-                            "Trace source indicating a packet "
-                            "has begun transmitting over the channel medium",
-                            MakeTraceSourceAccessor(&WifiPhy::m_phyTxBeginTrace),
-                            "ns3::WifiPhy::PhyTxBeginTracedCallback")
+            .AddTraceSource(
+                "PhyTxBegin",
+                "Trace source indicating a packet has begun transmitting over the medium; "
+                "the packet is a single MPDU even if the MPDU is transmitted within an A-MPDU.",
+                MakeTraceSourceAccessor(&WifiPhy::m_phyTxBeginTrace),
+                "ns3::WifiPhy::PhyTxBeginTracedCallback")
             .AddTraceSource("PhyTxPsduBegin",
-                            "Trace source indicating a PSDU "
+                            "Trace source indicating a PSDU (in the case of SU PPDU), "
+                            "or a PSDU map (in the case of MU PPDU), "
                             "has begun transmitting over the channel medium",
                             MakeTraceSourceAccessor(&WifiPhy::m_phyTxPsduBeginTrace),
                             "ns3::WifiPhy::PsduTxBeginCallback")
