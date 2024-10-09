@@ -438,18 +438,28 @@ def parse_args(argv):
     parser_show = sub_parser.add_parser(
         "show", help='Try "./ns3 show --help" for more show options'
     )
-    parser_show.add_argument(
-        "show",
-        help=(
-            "Print the current ns-3 build profile type, configuration or version, "
-            "or a list of buildable/runnable targets"
-        ),
-        choices=["profile", "version", "config", "targets", "all"],
-        action="store",
-        type=str,
-        nargs="?",
-        default="all",
-    )
+    parser_show_sub = parser_show.add_subparsers(dest="show")
+
+    # Add subcommands for the "docs" command
+    # Since 'typeid' has a required arg, need to handle these
+    # with subparsers not simple "choices=[...]"
+    show_choices = ["profile", "version", "config", "targets", "typeid", "all"]
+
+    for choice in show_choices:
+        if choice == "typeid":
+            parser_typeid = parser_show_sub.add_parser(
+                "typeid",
+                help="Show the introspected documentation for a TypeId",
+            )
+            parser_typeid.add_argument(
+                "tid",
+                help='Show the introspected documentation for TypeId "tid"',
+                type=str,
+            )
+        else:
+            parser_show_sub.add_parser(choice)
+
+    parser_show.set_defaults(show="all")
 
     add_argument_to_subparsers(
         [
@@ -1782,6 +1792,16 @@ def main():
 
     if args.show == "version":
         show_build_version(build_version_string)
+
+    if args.show == "typeid":
+        sys.argv = [
+            "ns3",
+            "run",
+            "print-introspected-doxygen",
+            "--",
+            f"--TypeId={args.tid}",
+        ]
+        args = parse_args(sys.argv[1:])
 
     # Check if running something or reconfiguring ns-3
     run_only = False
