@@ -42,13 +42,13 @@ source archive download (via a web browser, ``wget``, or ``curl``).
   |                    | or ``tar`` and ``bunzip2``           | No minimum version           |
   |                    | (for Web download)                   |                              |
   +--------------------+--------------------------------------+------------------------------+
-  | **Compiler**       | ``g++``                              | >= 9                         |
+  | **Compiler**       | ``g++``                              | >= 10                        |
   +                    +                                      +                              +
-  |                    | or ``clang++``                       | >= 10                        |
+  |                    | or ``clang++``                       | >= 11                        |
   +--------------------+--------------------------------------+------------------------------+
-  | **Configuration**  | ``python3``                          | >= 3.5                       |
+  | **Configuration**  | ``python3``                          | >= 3.8                       |
   +--------------------+--------------------------------------+------------------------------+
-  | **Build system**   | ``cmake``,                           | >= 3.10                      |
+  | **Build system**   | ``cmake``,                           | >= 3.13                      |
   +                    +                                      +                              +
   |                    | and at least one of:                 | No minimum version           |
   |                    | ``make``, ``ninja``, or ``Xcode``    |                              |
@@ -80,13 +80,13 @@ Download
 
 There are two main options:
 
-1. Download a release tarball.  This will unpack to a directory such as ``ns-allinone-3.42``
+1. Download a release tarball.  This will unpack to a directory such as ``ns-allinone-3.43``
 containing |ns3| and some other programs.  Below is a command-line download using ``wget``,
 but a browser download will also work::
 
-  $ wget https://www.nsnam.org/releases/ns-allinone-3.42.tar.bz2
-  $ tar xfj ns-allinone-3.42.tar.bz2
-  $ cd ns-allinone-3.42/ns-3.42
+  $ wget https://www.nsnam.org/releases/ns-allinone-3.43.tar.bz2
+  $ tar xfj ns-allinone-3.43.tar.bz2
+  $ cd ns-allinone-3.43/ns-3.43
 
 2. Clone |ns3| from the Git repository.  The ``ns-3-allinone`` can be cloned, as well as
 ``ns-3-dev`` by itself.  Below, we illustrate the latter::
@@ -99,7 +99,7 @@ you clone |ns3|, your directory will be named ``ns-3-dev``.  By default, Git wil
 the |ns3| ``master`` branch, which is a development branch.  All |ns3| releases are tagged
 in Git, so if you would then like to check out a past release, you can do so as follows::
 
-  $ git checkout -b ns-3.42-release ns-3.42
+  $ git checkout -b ns-3.43-release ns-3.43
 
 In this quick-start, we are omitting download and build instructions for optional |ns3| modules,
 the ``NetAnim`` animator, Python bindings, and ``NetSimulyzer``.  The
@@ -125,6 +125,30 @@ and support for |ns3| logging) is what is usually done at first::
 Depending on how fast your CPU is, the configuration command can take anywhere from a few
 seconds to a minute.
 
+You should see some output such as below, if successful::
+
+  Modules configured to be built:
+  antenna                   aodv                      applications
+  bridge                    buildings                 config-store
+  core                      csma                      csma-layout
+  dsdv                      dsr                       energy
+  fd-net-device             flow-monitor              internet
+  internet-apps             lr-wpan                   lte
+  mesh                      mobility                  netanim
+  network                   nix-vector-routing        olsr
+  point-to-point            point-to-point-layout     propagation
+  sixlowpan                 spectrum                  stats
+  tap-bridge                test                      topology-read
+  traffic-control           uan                       virtual-net-device
+  wifi                      wimax
+
+  Modules that cannot be built:
+  brite                     click                     mpi
+  openflow                  visualizer
+
+Do not be concerned about the list of modules that cannot be built; these modules are all optional
+and require some extra dependencies, but are not needed for initial exploration of |ns3|.
+
 Then, use the ``ns3`` program to build the |ns3| module libraries and executables::
 
   $ ./ns3 build
@@ -135,31 +159,9 @@ slower).  Additional configuration (not covered here) can be used to limit the s
 build, and the ``ccache``, if installed, can speed things up.  In general, plan on the build
 taking a few minutes on faster workstations.
 
-You should see some output such as below, if successful::
-
-  'build' finished successfully (44.159s)
-
-  Modules built:
-  antenna                   aodv                      applications
-  bridge                    buildings                 config-store
-  core                      csma                      csma-layout
-  dsdv                      dsr                       energy
-  fd-net-device             flow-monitor              internet
-  internet-apps             lr-wpan                   lte
-  mesh                      mobility                  mpi
-  netanim (no Python)       network                   nix-vector-routing
-  olsr                      point-to-point            point-to-point-layout
-  propagation               sixlowpan                 spectrum
-  stats                     tap-bridge                test (no Python)
-  topology-read             traffic-control           uan
-  virtual-net-device        visualizer                wifi
-  wimax
-
-  Modules not built (see ns-3 tutorial for explanation):
-  brite                     click                     openflow
-
-
-Once complete, you can run the unit tests to check your build::
+At the end of the build, if successful, the output will report on the underlying ``cmake``
+build command that was invoked by the ``ns3`` program.  Once the build is complete, you can
+run the unit tests to check your build::
 
   $ ./test.py
 
