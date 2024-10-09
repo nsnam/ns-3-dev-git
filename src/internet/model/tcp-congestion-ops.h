@@ -73,6 +73,15 @@ class TcpCongestionOps : public Object
     }
 
     /**
+     * @brief Set rate operation required by the congestion control algorithm
+     *
+     * @param rateOps a pointer to the rate operation object used to manage rate control
+     */
+    virtual void SetRateOps(Ptr<TcpRateOps> rateOps [[maybe_unused]])
+    {
+    }
+
+    /**
      * @brief Get the slow start threshold after a loss event
      *
      * Is guaranteed that the congestion control state (\p TcpAckState_t) is

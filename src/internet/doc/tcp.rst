@@ -1125,6 +1125,36 @@ please refer to:
 
 * Vivek Jain, Viyom Mittal and Mohit P. Tahiliani. "Design and Implementation of TCP BBR in ns-3." In Proceedings of the 10th Workshop on ns-3, pp. 16-22. 2018. (https://dl.acm.org/doi/abs/10.1145/3199902.3199911)
 
+Integration with TcpRateOps
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the older version of the TCP BBR algorithm, the ``appLimited`` variable was handled directly inside the ``TcpBbr`` class. To make the code more modular and similar to how things are done in Linux TCP, a pointer to the ``TcpRateOps`` class called ``Ptr<TcpRateOps> m_rateOps`` was introduced. This change helps manage the ``appLimited`` state through the rate operations interface instead of directly in ``TcpBbr``.
+
+Now, the ``appLimited`` value can be accessed with:
+
+.. code-block:: cpp
+
+    m_rateOps->GetConnectionRate().m_appLimited;
+
+And it can be updated using:
+
+.. code-block:: cpp
+
+    m_rateOps->SetAppLimited(tcb->m_bytesInFlight.Get());
+
+The ``SetAppLimited`` function, which is part of the ``TcpRateLinux`` class, takes care of updating the ``appLimited`` value based on the current amount of data in flight.
+
+Here's an example of the ``SetRateOps`` method in ``TcpBbr``:
+
+.. code-block:: cpp
+
+    void TcpBbr::SetRateOps(Ptr<TcpRateOps> rateOps)
+    {
+        m_rateOps = rateOps;
+    }
+
+This setup makes the code more organized and reflects how Linux TCP handles the ``appLimited`` state, where it's managed within the TCP socket and updated by rate operations.
+
 Support for Explicit Congestion Notification (ECN)
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 

@@ -113,6 +113,11 @@ class TcpRateOps : public Object
      *
      */
     virtual const TcpRateConnection& GetConnectionRate() = 0;
+    /**
+     * @brief Updates the app-limited state based on in-flight data.
+     * @param in_flight In Flight size (in bytes)
+     */
+    virtual void SetAppLimited(uint32_t in_flight) = 0;
 
     /**
      * @brief Rate Sample structure
@@ -211,6 +216,12 @@ class TcpRateLinux : public TcpRateOps
     {
         return m_rate;
     }
+
+    /**
+     * @brief Updates the app-limited state based on in-flight data.
+     * @param in_flight In Flight size (in bytes)
+     */
+    void SetAppLimited(uint32_t in_flight) override;
 
     /**
      * TracedCallback signature for tcp rate update events.

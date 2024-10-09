@@ -100,6 +100,7 @@ class TcpBbr : public TcpCongestionOps
                             const TcpSocketState::TcpCongState_t newState) override;
     void CwndEvent(Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t event) override;
     uint32_t GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight) override;
+    void SetRateOps(Ptr<TcpRateOps> rateOps) override;
     Ptr<TcpCongestionOps> Fork() override;
 
   public:
@@ -375,9 +376,8 @@ class TcpBbr : public TcpCongestionOps
     Time m_minRttStamp; //!< The wall clock time at which the current BBR.RTProp sample was obtained
     bool m_isInitialized{false}; //!< Set to true after first time initialization variables
     Ptr<UniformRandomVariable> m_uv{nullptr}; //!< Uniform Random Variable
-    uint64_t m_delivered{0}; //!< The total amount of data in bytes delivered so far
-    uint32_t m_appLimited{
-        0}; //!< The index of the last transmitted packet marked as application-limited
+    uint64_t m_delivered{0};              //!< The total amount of data in bytes delivered so far
+    Ptr<TcpRateOps> m_rateOps;            //!< Rate operations
     uint32_t m_extraAckedGain{1};         //!< Gain factor for adding extra ack to cwnd
     uint32_t m_extraAcked[2]{0, 0};       //!< Maximum excess data acked in epoch
     uint32_t m_extraAckedWinRtt{0};       //!< Age of extra acked in rtt
