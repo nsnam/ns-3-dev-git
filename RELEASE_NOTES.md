@@ -13,6 +13,29 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
+Release 3-dev
+-------------
+
+### Supported platforms
+
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-10.1 or later, or LLVM/clang++-11 or later
+- Python 3.8 or later
+- CMake 3.13 or later
+- (macOS only) Xcode 13.1.6 or later
+- (Windows only) Msys2/MinGW64 and Msys2/UCRT64 toolchains or WSL2
+
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
+been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.1.2.
+
+The required Doxygen version for documentation generation is version 1.11.
+
+### New user-visible features
+
+### Bugs fixed
+
 Release 3.43
 ------------
 
