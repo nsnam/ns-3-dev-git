@@ -50,10 +50,13 @@ struct Hz_t
 
         size_t idx{};
         auto valInt = static_cast<int64_t>(val); // No support of sub-Hertz
-        while (((idx + 1) < WHOLE_UNIT_PREFIX.size()) && ((valInt % ONE_KILO) == 0))
+        if (valInt > 0)
         {
-            valInt /= ONE_KILO;
-            ++idx;
+            while (((idx + 1) < WHOLE_UNIT_PREFIX.size()) && ((valInt % ONE_KILO) == 0))
+            {
+                valInt /= ONE_KILO;
+                ++idx;
+            }
         }
 
         return sformat("%lld %sHz", valInt, WHOLE_UNIT_PREFIX[idx].c_str());
