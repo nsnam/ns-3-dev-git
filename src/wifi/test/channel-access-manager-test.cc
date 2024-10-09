@@ -395,12 +395,10 @@ class ChannelAccessManagerTest : public TestCase
      * @param at the event time
      * @param duration the duration
      * @param channelType the channel type
-     * @param per20MhzDurations vector that indicates for how long each 20 MHz subchannel is busy
      */
     void AddCcaBusyEvt(uint64_t at,
                        uint64_t duration,
-                       WifiChannelListType channelType = WIFI_CHANLIST_PRIMARY,
-                       const std::vector<Time>& per20MhzDurations = {});
+                       WifiChannelListType channelType = WIFI_CHANLIST_PRIMARY);
     /**
      * Add switching event function
      * @param at the event time
@@ -650,8 +648,8 @@ ChannelAccessManagerTest<TxopType>::StartTest(uint64_t slotTime,
     m_phy = CreateObject<SpectrumWifiPhy>();
     m_phy->SetInterferenceHelper(CreateObject<InterferenceHelper>());
     m_phy->AddChannel(CreateObject<MultiModelSpectrumChannel>());
-    m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{0, chWidth, WIFI_PHY_BAND_UNSPECIFIED, 0});
-    m_phy->ConfigureStandard(WIFI_STANDARD_80211ac); // required to use 160 MHz channels
+    m_phy->SetOperatingChannel(WifiPhy::ChannelTuple{0, chWidth, WIFI_PHY_BAND_6GHZ, 0});
+    m_phy->ConfigureStandard(WIFI_STANDARD_80211be); // required to use 320 MHz channels
     m_ChannelAccessManager->SetupPhyListener(m_phy);
 }
 
@@ -875,9 +873,10 @@ template <typename TxopType>
 void
 ChannelAccessManagerTest<TxopType>::AddCcaBusyEvt(uint64_t at,
                                                   uint64_t duration,
-                                                  WifiChannelListType channelType,
-                                                  const std::vector<Time>& per20MhzDurations)
+                                                  WifiChannelListType channelType)
 {
+    const auto chWidth = m_phy->GetChannelWidth();
+    std::vector<Time> per20MhzDurations(chWidth == 20 ? 0 : chWidth / 20, Seconds(0));
     Simulator::Schedule(MicroSeconds(at) - Now(),
                         &ChannelAccessManager::NotifyCcaBusyStartNow,
                         m_ChannelAccessManager,
@@ -1398,6 +1397,66 @@ ChannelAccessManagerTest<QosTxop>::DoRun()
     AddAccessRequest(82, 20, 84, 0);
     EndTest();
 
+    // Check alignment at slot boundary after failed reception (backoff = 0).
+    // Also, check that CCA BUSY on a secondary channel does not affect channel access:
+    //  20         50     56           66             76     96
+    //              |             cca_busy             |
+    //   |          | <------eifs------>|              |      |
+    //   |    rx    | sifs | acktxttime | sifs + aifsn |  tx  |
+    //                   |
+    //                  55 request access
+    StartTest(4, 6, 10, 20, 320);
+    AddTxop(1);
+    AddRxErrorEvt(20, 30);
+    AddCcaBusyEvt(50, 26, WIFI_CHANLIST_SECONDARY);
+    AddAccessRequest(55, 20, 76, 0);
+    EndTest();
+
+    // Check alignment at slot boundary after failed reception (backoff = 0).
+    // Also, check that CCA BUSY on a secondary channel does not affect channel access:
+    //  20         50     56           66             76     96
+    //              |             cca_busy             |
+    //   |          | <------eifs------>|              |      |
+    //   |    rx    | sifs | acktxttime | sifs + aifsn |  tx  |
+    //                                        |
+    //                                       70 request access
+    StartTest(4, 6, 10, 20, 320);
+    AddTxop(1);
+    AddRxErrorEvt(20, 30);
+    AddCcaBusyEvt(50, 26, WIFI_CHANLIST_SECONDARY40);
+    AddAccessRequest(70, 20, 76, 0);
+    EndTest();
+
+    // Check alignment at slot boundary after failed reception (backoff = 0).
+    // Also, check that CCA BUSY on a secondary channel does not affect channel access:
+    //  20         50     56           66             76     84
+    //              |             cca_busy                    |
+    //   |          | <------eifs------>|              |      |
+    //   |    rx    | sifs | acktxttime | sifs + aifsn | idle |  tx  |
+    //                                                     |
+    //                                                    82 request access
+    StartTest(4, 6, 10, 20, 320);
+    AddTxop(1);
+    AddRxErrorEvt(20, 30);
+    AddCcaBusyEvt(50, 34, WIFI_CHANLIST_SECONDARY80);
+    AddAccessRequest(82, 20, 84, 0);
+    EndTest();
+
+    // Check alignment at slot boundary after failed reception (backoff = 0).
+    // Also, check that CCA BUSY on a secondary channel does not affect channel access:
+    //  20         50     56           66             76     84
+    //              |             cca_busy                    |
+    //   |          | <------eifs------>|              |      |
+    //   |    rx    | sifs | acktxttime | sifs + aifsn | idle |  tx  |
+    //                                                     |
+    //                                                    82 request access
+    StartTest(4, 6, 10, 20, 320);
+    AddTxop(1);
+    AddRxErrorEvt(20, 30);
+    AddCcaBusyEvt(50, 34, WIFI_CHANLIST_SECONDARY160);
+    AddAccessRequest(82, 20, 84, 0);
+    EndTest();
+
     // Check backoff decrement at slot boundaries. Medium idle during backoff
     //  20           50     56      60         64         68         72         76     96
     //   |     rx     | sifs | aifsn |   idle   |   idle   |   idle   |   idle   |  tx  |
@@ -1639,7 +1698,7 @@ LargestIdlePrimaryChannelTest::DoRun()
     uint8_t channel = 0;
     std::list<WifiChannelListType> busyChannels;
 
-    for (auto chWidth : {MHz_u{20}, MHz_u{40}, MHz_u{80}, MHz_u{160}})
+    for (auto chWidth : {MHz_u{20}, MHz_u{40}, MHz_u{80}, MHz_u{160}, MHz_u{320}})
     {
         busyChannels.push_back(static_cast<WifiChannelListType>(channel));
 
@@ -1657,8 +1716,8 @@ LargestIdlePrimaryChannelTest::DoRun()
                 m_phy->SetInterferenceHelper(CreateObject<InterferenceHelper>());
                 m_phy->AddChannel(CreateObject<MultiModelSpectrumChannel>());
                 m_phy->SetOperatingChannel(
-                    WifiPhy::ChannelTuple{0, chWidth, WIFI_PHY_BAND_5GHZ, 0});
-                m_phy->ConfigureStandard(WIFI_STANDARD_80211ax);
+                    WifiPhy::ChannelTuple{0, chWidth, WIFI_PHY_BAND_6GHZ, 0});
+                m_phy->ConfigureStandard(WIFI_STANDARD_80211be);
                 // call SetupPhyListener to initialize the ChannelAccessManager
                 // last busy structs
                 m_cam->SetupPhyListener(m_phy);
