@@ -251,10 +251,18 @@ def find_ns3_from_lock_file(lock_file: str) -> (str, list, str):
             values["NS3_ENABLED_MODULES"] + values["NS3_ENABLED_CONTRIBUTED_MODULES"],
         )
     )
+
     prefix = values["out_dir"]
-    libraries = {
-        os.path.splitext(os.path.basename(x))[0]: x for x in os.listdir(os.path.join(prefix, "lib"))
-    }
+    path_to_lib = None
+    for variant in ["lib", "lib64"]:
+        path_candidate = os.path.join(prefix, variant)
+        if os.path.isdir(path_candidate):
+            path_to_lib = path_candidate
+            break
+    if path_to_lib is None:
+        raise Exception(f"Directory {prefix} does not contain subdirectory lib/ (nor lib64/).")
+    libraries = {os.path.splitext(os.path.basename(x))[0]: x for x in os.listdir(path_to_lib)}
+
     version = values["VERSION"]
 
     # Filter out test libraries and incorrect versions
