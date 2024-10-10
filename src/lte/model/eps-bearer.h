@@ -335,7 +335,7 @@ class EpsBearer : public ObjectBase
 
     BearerRequirementsMap m_requirements; //!< Map of requirements per bearer
 
-    uint8_t m_release{30}; //!< Release (10 or 15 or 18)
+    uint8_t m_release{30}; //!< Release (8 to 11 or 15 or 18)
 };
 
 } // namespace ns3
