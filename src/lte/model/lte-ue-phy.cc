@@ -111,22 +111,6 @@ UeMemberLteUePhySapProvider::NotifyConnectionSuccessful()
 // LteUePhy methods
 ////////////////////////////////////////
 
-/// Map each of UE PHY states to its string representation.
-static const std::string g_uePhyStateName[LteUePhy::NUM_STATES] = {
-    "CELL_SEARCH",
-    "SYNCHRONIZED",
-};
-
-/**
- * @param s The UE PHY state.
- * @return The string representation of the given state.
- */
-static inline const std::string&
-ToString(LteUePhy::State s)
-{
-    return g_uePhyStateName[s];
-}
-
 NS_OBJECT_ENSURE_REGISTERED(LteUePhy);
 
 LteUePhy::LteUePhy()
@@ -1755,9 +1739,24 @@ LteUePhy::SwitchToState(State newState)
     NS_LOG_FUNCTION(this << newState);
     State oldState = m_state;
     m_state = newState;
-    NS_LOG_INFO(this << " cellId=" << m_cellId << " rnti=" << m_rnti << " UePhy "
-                     << ToString(oldState) << " --> " << ToString(newState));
+    NS_LOG_INFO(this << " cellId=" << m_cellId << " rnti=" << m_rnti << " UePhy " << oldState
+                     << " --> " << newState);
     m_stateTransitionTrace(m_cellId, m_rnti, oldState, newState);
+}
+
+std::ostream&
+operator<<(std::ostream& os, LteUePhy::State state)
+{
+    switch (state)
+    {
+    case LteUePhy::State::CELL_SEARCH:
+        return os << "CELL_SEARCH";
+    case LteUePhy::State::SYNCHRONIZED:
+        return os << "SYNCHRONIZED";
+    case LteUePhy::State::NUM_STATES:
+        return os << "NUM_STATES";
+    };
+    return os << "UNKNOWN(" << static_cast<uint32_t>(state) << ")";
 }
 
 } // namespace ns3

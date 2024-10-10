@@ -173,8 +173,7 @@ LteSecondaryCellSelectionTestCase::StateTransitionCallback(std::string context,
                                                            LteUeRrc::State oldState,
                                                            LteUeRrc::State newState)
 {
-    NS_LOG_FUNCTION(this << imsi << cellId << rnti << LteUeRrc::ToString(oldState)
-                         << LteUeRrc::ToString(newState));
+    NS_LOG_FUNCTION(this << imsi << cellId << rnti << oldState << newState);
     m_lastState[imsi] = newState;
 }
 

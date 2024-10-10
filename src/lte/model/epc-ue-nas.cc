@@ -20,25 +20,6 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("EpcUeNas");
 
-/// Map each of UE NAS states to its string representation.
-static const std::string g_ueNasStateName[EpcUeNas::NUM_STATES] = {
-    "OFF",
-    "ATTACHING",
-    "IDLE_REGISTERED",
-    "CONNECTING_TO_EPC",
-    "ACTIVE",
-};
-
-/**
- * @param s The UE NAS state.
- * @return The string representation of the given state.
- */
-static inline const std::string&
-ToString(EpcUeNas::State s)
-{
-    return g_ueNasStateName[s];
-}
-
 NS_OBJECT_ENSURE_REGISTERED(EpcUeNas);
 
 EpcUeNas::EpcUeNas()
@@ -273,11 +254,10 @@ EpcUeNas::GetState() const
 void
 EpcUeNas::SwitchToState(State newState)
 {
-    NS_LOG_FUNCTION(this << ToString(newState));
+    NS_LOG_FUNCTION(this << newState);
     State oldState = m_state;
     m_state = newState;
-    NS_LOG_INFO("IMSI " << m_imsi << " NAS " << ToString(oldState) << " --> "
-                        << ToString(newState));
+    NS_LOG_INFO("IMSI " << m_imsi << " NAS " << oldState << " --> " << newState);
     m_stateTransitionCallback(oldState, newState);
 
     // actions to be done when entering a new state:
@@ -294,6 +274,27 @@ EpcUeNas::SwitchToState(State newState)
     default:
         break;
     }
+}
+
+std::ostream&
+operator<<(std::ostream& os, EpcUeNas::State state)
+{
+    switch (state)
+    {
+    case EpcUeNas::State::OFF:
+        return os << "OFF";
+    case EpcUeNas::State::ATTACHING:
+        return os << "ATTACHING";
+    case EpcUeNas::State::IDLE_REGISTERED:
+        return os << "IDLE_REGISTERED";
+    case EpcUeNas::State::CONNECTING_TO_EPC:
+        return os << "CONNECTING_TO_EPC";
+    case EpcUeNas::State::ACTIVE:
+        return os << "ACTIVE";
+    case EpcUeNas::State::NUM_STATES:
+        return os << "NUM_STATES";
+    };
+    return os << "UNKNOWN(" << static_cast<uint32_t>(state) << ")";
 }
 
 } // namespace ns3

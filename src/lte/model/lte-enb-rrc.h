@@ -1777,6 +1777,14 @@ class LteEnbRrc : public Object
 
 }; // end of `class LteEnbRrc`
 
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os The reference to the output stream.
+ * @param [in] state The UeManager::State.
+ * @return The reference to the output stream.
+ */
+std::ostream& operator<<(std::ostream& os, UeManager::State state);
+
 } // namespace ns3
 
 #endif // LTE_ENB_RRC_H

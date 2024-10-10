@@ -243,6 +243,14 @@ class EpcUeNas : public Object
     std::list<BearerToBeActivated> m_bearersToBeActivatedListForReconnection;
 };
 
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os The reference to the output stream.
+ * @param [in] state The EpcUeNas::State.
+ * @return The reference to the output stream.
+ */
+std::ostream& operator<<(std::ostream& os, EpcUeNas::State state);
+
 } // namespace ns3
 
 #endif // EPC_UE_NAS_H

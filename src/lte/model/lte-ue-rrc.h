@@ -22,6 +22,7 @@
 #include "lte-ue-cmac-sap.h"
 #include "lte-ue-cphy-sap.h"
 
+#include <ns3/deprecated.h>
 #include <ns3/object.h>
 #include <ns3/packet.h>
 #include <ns3/traced-callback.h>
@@ -313,6 +314,7 @@ class LteUeRrc : public Object
      * @param s The UE RRC state.
      * @return The string representation of the given state.
      */
+    NS_DEPRECATED_3_44("Use operator<< instead")
     static const std::string ToString(LteUeRrc::State s);
 
     /**
@@ -1332,6 +1334,14 @@ class LteUeRrc : public Object
     uint16_t m_numberOfComponentCarriers;
 
 }; // end of class LteUeRrc
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os The reference to the output stream.
+ * @param [in] state The LteUeRrc::State.
+ * @return The reference to the output stream.
+ */
+std::ostream& operator<<(std::ostream& os, LteUeRrc::State state);
 
 } // namespace ns3
 

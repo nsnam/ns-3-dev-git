@@ -844,6 +844,14 @@ class LteUePhy : public LtePhy
 
 }; // end of `class LteUePhy`
 
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os The reference to the output stream.
+ * @param [in] state The LteUePhy::State.
+ * @return The reference to the output stream.
+ */
+std::ostream& operator<<(std::ostream& os, LteUePhy::State state);
+
 } // namespace ns3
 
 #endif /* LTE_UE_PHY_H */
