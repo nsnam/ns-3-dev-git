@@ -23,7 +23,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 * **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac**, **802.11ax** (2.4, 5 and 6 GHz bands) and **802.11be** physical layers
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * 802.11ax **DL OFDMA** and **UL OFDMA** (including support for the MU EDCA Parameter Set)
-* 802.11be **Multi-link** discovery and setup
+* 802.11be **Multi-link** discovery and setup, **Multi-Link Operations (MLO)** in **STR** (Simultaneous Transmit Receive) mode and **EMLSR** (Enhanced Multi-Link Single-Radio) mode
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
   please see the chapter on :ref:`Propagation` for more detail
@@ -1201,6 +1201,13 @@ Manager base class. Such a class also enables to define the TX/RX capabilities o
   modulation class.
 * the ``AuxPhyTxCapable`` attribute indicates whether aux PHYs are capable of transmitting frames
 
+The EMLSR Manager base class also provides the ``PutAuxPhyToSleep`` attribute to control whether
+aux PHYs opportunistically switch to the sleep state. Specifically, when this attribute is set to
+true, the behavior is as follows. For DL TXOPs, aux PHYs are put to sleep after an ICF is received;
+for UL TXOPs, aux PHYs are put to sleep when the CTS frame is received, if RTS/CTS is used, or when
+the transmission of the data frame starts, otherwise. Aux PHYs are resumed from sleep when the TXOP
+ends.
+
 Downlink TXOP
 -------------
 
@@ -1257,35 +1264,234 @@ Uplink TXOP
 
    EMLSR operations: Uplink TXOP
 
-An EMLSR client can start an UL TXOP on any of the EMLSR links. When channel access is obtained
-on a link where an aux PHY is operating, the aux PHY transmits an RTS frame and then the main PHY
-takes over the TXOP. Figure :ref:`fig-emlsr-ul-txop` shows that the EMLSR client obtains a TXOP on
-link 1, which the main PHY is operating on. Therefore, a data frame can be sent without
-protection. Clearly, the EMLSR client blocks transmissions on the other EMLSR links as soon as it
-starts transmitting the data frame, while the AP MLD blocks transmissions to the EMLSR client on
-the other EMLSR links as soon as it receives an MPDU from the EMLSR client. When the UL TXOP
-terminates, the AP MLD starts a transition delay timer, during which it does not attempt to start
-a frame exchange with the EMLSR client on any EMLSR link. The EMLSR client, instead, starts a
-MediumSyncDelay timer on all the EMLSR links other than the one on which the UL TXOP was carried
-out. While the MediumSyncDelay timer is running on a link, the EMLSR client can start an UL TXOP
-on that link, but it can perform at most a predefined number of attempts. The duration of the
-MediumSyncDelay timer, the maximum number of TXOP attempts and the threshold to be used instead
-of the normal CCA sensitivity for the primary 20 MHz channel are all advertised by the AP MLD and
-can be configured through the attributes of the ``EmlsrManager`` class: ``MediumSyncDuration``, ``MsdMaxNTxops`` and ``MsdOfdmEdThreshold``, respectively.
+An EMLSR client can normally start an UL TXOP on any of the EMLSR links, provided that no DL or UL
+TXOP is ongoing on another EMLSR link. When channel access is obtained on a link on which the main
+PHY is operating, the EMLSR client can directly transmit a Data frame, provided that the protection
+manager does not request to use a protection mechanism and no MediumSyncDelay timer is running on
+that link (see below). Figure :ref:`fig-emlsr-ul-txop` shows that the EMLSR client obtains a TXOP
+on link 1, which the main PHY is operating on, and a Data frame is transmitted without protection.
+Clearly, the EMLSR client blocks transmissions on the other EMLSR links as soon as it starts
+transmitting the Data frame, while the AP MLD blocks transmissions to the EMLSR client on the other
+EMLSR links as soon as it receives an MPDU from the EMLSR client. When the UL TXOP terminates, the
+AP MLD starts a transition delay timer, during which it does not attempt to start a frame exchange
+with the EMLSR client on any EMLSR link.
 
-Figure :ref:`fig-emlsr-ul-txop` also shows that, afterwards, the EMLSR client obtains a TXOP on
-link 0, which an aux PHY is operating on. The aux PHY transmits an RTS frame and, in the
-meantime, the main PHY is switched to operate on that link, receives the CTS response and
-transmits the data frame. In the example shown in Fig. :ref:`fig-emlsr-ul-txop`, the
-``SwitchAuxPhy`` attribute of the ``DefaultEmlsrManager`` class is set to false. This means that
-the aux PHY stays on link 0 and, therefore, no PHY is operating on link 1 while the main PHY is
-carrying out the UL TXOP on link 0. Once such UL TXOP terminates, the main PHY is switched back
-to operate on link 1. While the MediumSyncDelay timer is running on link 1, the EMLSR client
-obtains a TXOP on link 1 and, as mandated by the 802.11be specs, sends an RTS frame. If there is
-no response to the RTS frame, the EMLSR client can attempt to obtain the TXOP again and transmit
-another RTS frame. However, the number of attempts performed while the MediumSyncDelay timer is
-running is limited by the value advertised by the AP MLD and configured through the
-``MsdMaxNTxops`` attribute of the ``EmlsrManager`` class.
+When channel access is obtained on a link on which an aux PHY is operating, the behavior depends on
+whether the aux PHY is TX capable or not, as controlled via the the ``AuxPhyTxCapable`` attribute
+of the EMLSR Manager base class.
+
+Let us consider first the case in which the aux PHY is capable of
+transmitting PPDUs. As shown in Fig. :ref:`fig-emlsr-ul-txop`, the EMLSR client obtains a TXOP on
+link 0, which an aux PHY is operating on. The aux PHY has to transmit an RTS frame (independently
+of whether the protection manager requests to use a protection mechanism or not) and receive the
+CTS response from the AP. The RTS frame is actually transmitted by the aux PHY if the main PHY is
+able to switch to that link and be ready to take over the UL TXOP right after the reception of the
+CTS frame. The Default EMLSR Manager allows the transmission of the RTS frame if the channel switch
+delay (plus the remaining switching time if the main PHY is currently switching) does not exceed
+the remaining time until the end of the reception of the CTS frame.
+
+In the example shown in Fig. :ref:`fig-emlsr-ul-txop`, the ``SwitchAuxPhy`` attribute of the
+``DefaultEmlsrManager`` class is set to false. This means that the aux PHY stays on link 0 and,
+therefore, no PHY is operating on link 1 while the main PHY is carrying out the UL TXOP on link 0.
+Once such UL TXOP terminates, the main PHY is switched back to operate on link 1.
+
+If the aux PHY is not TX capable, the behavior is determined by the specific EMLSR Manager subclass.
+The Default EMLSR Manager simply does nothing, i.e., the transmit opportunity gained by the aux
+PHY is just dropped.
+
+MediumSyncDelay timer
+---------------------
+
+An EMLSR client may lose medium sync on a link for several reasons:
+
+* the EMLSR client transmits a PPDU on another link, the TX duration exceeds a predefined threshold
+  of 72 microseconds (as defined in the 802.11be amendment) and the ``InDeviceInterference``
+  attribute of the EMLSR Manager base class is set to true (which implies that, when the PHY of a
+  device transmits, an interference is generated such that the other PHYs of the same device are not
+  able to decode anything and cannot decrease the backoff counter)
+* No PHY operates on the link for at least 72 microseconds
+* The aux PHY operating on the link awakes after sleeping for at least 72 microseconds
+
+When the EMLSR client loses medium sync on a link for a period of time longer than 72 microseconds,
+it has to start a MediumSyncDelay timer for that link. While the MediumSyncDelay timer is running
+for a link, the EMLSR client can still access the medium on that link, but it has to mandatorily use
+RTS/CTS protection for the frame exchange. Additionally, the EMLSR client can perform at most a
+predefined number of attempts to start an UL TXOP on a link for which a MediumSyncDelay timer is
+running. The MediumSyncDelay timer for a link is cancelled if an MPDU is received on that link. The
+duration of the MediumSyncDelay timer, the maximum number of TXOP attempts and the threshold to be
+used instead of the normal CCA sensitivity for the primary 20 MHz channel are all advertised by the
+AP MLD and can be configured through the attributes of the ``EmlsrManager`` class: ``MediumSyncDuration``, ``MsdMaxNTxops`` and ``MsdOfdmEdThreshold``, respectively.
+
+Figure :ref:`fig-emlsr-ul-txop` shows that the transmission of the Data frame on link 1 causes
+a MediumSyncDelay timer to start on link 0; this timer is cancelled when the CTS frame is
+subsequently received. Similarly, a MediumSyncDelay timer is started on link 1 after that no PHY
+operated on that link (for at least 72 microseconds). While the MediumSyncDelay timer is running
+on link 1, the EMLSR client obtains a TXOP on link 1 (on which the main PHY is operating) and, as
+mandated by the 802.11be specs, sends an RTS frame. If there is no response to the RTS frame, the
+EMLSR client can attempt to obtain the TXOP again and transmit another RTS frame. However, the
+number of attempts performed while the MediumSyncDelay timer is running is limited by the value
+advertised by the AP MLD and configured through the ``MsdMaxNTxops`` attribute of the
+``EmlsrManager`` class.
+
+Advanced EMLSR Manager
+----------------------
+The Advanced EMLSR Manager explores a few opportunities to improve the performance of EMLSR
+clients. In case aux PHYs are not TX capable, the Advanced EMLSR Manager implements mechanisms for
+the main PHY to switch to an auxiliary link and start an UL TXOP. More specifically, when the
+backoff counter reaches zero on an auxiliary link, it is checked whether a PPDU that might be an
+ICF is being received on any other EMLSR link. A PPDU being received might be an ICF if any of the
+following conditions holds:
+
+* the PHY header of the PPDU is being received and the modulation class is non-HT
+* the MAC header of an MPDU in the PPDU has been received, the ``UseNotifiedMacHdr`` attribute of
+  the EMLSR Manager base class is true and the MAC header indicates this MPDU is a Trigger Frame
+  addressed to the EMLSR client or to the broadcast address
+* the payload of the PPDU is being received, the MAC header of an MPDU in the PPDU has not been
+  received yet or the ``UseNotifiedMacHdr`` attribute of the EMLSR Manager base class is false,
+  and the modulation class is non-HT
+
+If a PPDU being received on another EMLSR link might be an ICF and the ``AllowUlTxopInRx`` attribute
+of the Advanced EMLSR Manager is set to false, then the UL transmit opportunity is dropped.
+Otherwise, it is checked whether it is possible and convenient for the main PHY to switch to the
+auxiliary link. The following conditions must all hold in order to request the main PHY to switch
+to the auxiliary link:
+
+* the main PHY is not in TX state
+* the main PHY is not switching nor is it trying to get channel access on another auxiliary link
+* no MediumSyncDelay timer is running on the auxiliary link or the maximum number of TXOP attempts
+  has not yet been reached
+* the main PHY is expected to get channel access on the auxiliary link more quickly, i.e., ALL the
+  ACs with queued frames (that can be transmitted on the link on which the main PHY is currently
+  operating) and with priority higher than or equal to that of the AC for which Aux PHY gained TXOP
+  have their backoff counter greater than the maximum between the expected delay in gaining channel
+  access on the auxiliary and the channel switch delay (plus PIFS if we cannot use aux PHY CCA)
+
+If the main PHY switches to the auxiliary link, it cannot transmit as soon as it completes the
+channel switch, but it has to verify that the medium has been virtually and physically idle
+during a PIFS period by means of a NAV and CCA check. If the ``UseAuxPhyCca`` attribute of the
+Advanced EMLSR Manager is set to true or the maximum channel width supported by the aux PHY is at
+least equal to the the maximum channel width supported by the main PHY, then the NAV and CCA check
+is performed by the aux PHY in the PIFS period preceding the main PHY channel switch end. Otherwise,
+the NAV and CCA check is performed by the main PHY in the PIFS period following the main PHY channel
+switch end.
+
+If the NAV and CCA check indicates that the medium has not been idle in the PIFS period, the main
+PHY has to contend for channel access on the auxiliary link. However, in case the aux PHYs do not
+switch link, the main PHY will attempt to get channel access on the auxiliary link for a limited
+amount of time, indicated by the ``SwitchMainPhyBackDelay`` attribute, and then it will switch back
+to the preferred link, in order not to leave the preferred link without a PHY operating on it for a
+too long time. Specifically, at the end of the PIFS period during which the medium has been
+determined to be busy, if channel access is not expected to be gained on the auxiliary link for any
+AC that has traffic to send on that link within a SwitchMainPhyBackDelay plus a channel switch
+delay (due to, e.g., NAV reservation), the main PHY switches back to the preferred link (unless
+there is a reason to postpone the switch, see below). Otherwise, a SwitchMainPhyBack timer is
+started having a duration of SwitchMainPhyBackDelay. The Advanced EMLSR Manager also connects a PHY
+listener to the main PHY, so that it is notified of events such as RX start, RX end, TX start and
+CCA busy start. If the Advanced EMLSR Manager is notified of such events, or is notified of the
+reception of the MAC header of an MPDU by the main PHY, while the SwitchMainPhyBack timer is
+running and channel access is not expected to be gained on the auxiliary link for any AC that has
+traffic to send on that link within the remaining time until the SwitchMainPhyBack timer expires
+plus a channel switch delay, then the main PHY switches back to the preferred link unless there is
+a reason to postpone the switch. The switch back to the preferred link is postponed if:
+
+* a PPDU that might be an ICF is being received on an EMLSR link on which the NAV is not set or
+  the TXOP holder is the associated AP MLD, OR
+* on the link on which the main PHY is currently operating the NAV is not set or the TXOP holder
+  is the associated AP MLD, the medium is idle and channel access is expected to be gained within
+  a channel switch delay
+
+A similar check is applied to possibly postpone the switch back to the preferred link when the
+SwitchMainPhyBack timer expires.
+
+The Advanced EMLSR Manager also connects a callback to the ``NSlotsLeftAlert`` trace source of the
+Channel Access Manager, which sends notifications when at most a configurable number of slots
+remain until the backoff of an AC expires. When the Advanced EMLSR Manager receives such a
+notification, it evaluates the opportunity of switching the main PHY to the auxiliary link on which
+the notification has been received. Specifically, the Advanced EMLSR Manager performs the check
+described above to determine whether the potential UL transmit opportunity shall be dropped (it is
+dropped if a PPDU being received on another EMLSR link might be an ICF and the ``AllowUlTxopInRx``
+attribute is set to false) and then it checks whether it is convenient for the main PHY to switch
+to the auxiliary link as described above (with the exception that the expected delay until backoff
+end is also taken into account). If the main PHY is requested to switch to the auxiliary link and
+the backoff on the auxiliary link counts down to zero while the main PHY is switching, a NAV and
+CCA check is performed as described above (by the aux PHY in the PIFS period preceding the main PHY
+channel switch end or by the main PHY in the PIFS period following the main PHY channel switch end).
+Similarly, a NAV and CCA check is performed (by the main PHY) if the remaining backoff time when
+the main PHY switch is completed is less than a PIFS. Otherwise, SwitchMainPhyBack timer is started
+having a duration of SwitchMainPhyBackDelay plus the remaining time until the backoff of the AC
+involved in the Channel Access Manager notification is expected to expire.
+
+The Advanced EMLSR Manager has the ``InterruptSwitch`` attribute that can be set to true to
+interrupt a main PHY switch when it is determined that the main PHY shall switch to a different
+link while still completing the previous switch; in such cases, the previous switch is interrupted
+and the new channel switch starts. This opportunity is exploited in two situations:
+
+* If the main PHY is switching while a TX capable aux PHY transmits an RTS to start an UL TXOP,
+  the main PHY switch can be interrupted and the main PHY can start switching to the link on
+  which the RTS has been sent, in order to meet the constraint that the main PHY shall be operating
+  on that link right after the reception of the CTS frame.
+* The main PHY is requested to switch to a link on which a TX capable aux PHY has sent an RTS, but
+  a CTS timeout occurs while the main PHY is switching. If the aux PHYs do not switch link, the
+  main PHY switch is interrupted and the main PHY returns to the preferred link; if the aux PHYs
+  switch link, the main PHY switch is interrupted and the main PHY returns to the link it just left.
+
+EMLSR traces
+------------
+
+.. _fig-emlsr-txop-ended-trace:
+
+.. figure:: figures/emlsr-txop-ended-trace.*
+   :align: center
+
+   Illustration of EMLSR TXOP ended trace
+
+The EMLSR implementation provides the following traces to further analyze the performance of
+EMLSR clients:
+
+* The ``WifiMac::IcfDropReason`` trace is fired every time an ICF is dropped by an EMLSR client
+  and provides the reason for dropping the ICF and the link on which the ICF was transmitted. The
+  reasons for dropping an ICF are:
+
+  * WifiIcfDrop::USING_OTHER_LINK: the ICF is received right after starting an UL transmission
+    on another link; the ICF is dropped and the UL TXOP continues.
+  * WifiIcfDrop::NOT_ENOUGH_TIME_TX: the ICF is received while the main PHY is completing a TX
+    and there is not enough time for the main PHY to complete the TX, start switching and be
+    operating on the link the ICF is received on at the end of the ICF reception
+  * WifiIcfDrop::NOT_ENOUGH_TIME_SWITCH: the ICF is received while the main PHY is completing a
+    switch and there is not enough time for the main PHY to complete the channel switch, start
+    switching and be operating on the link the ICF is received on at the end of the ICF reception
+
+* The ``StaWifiMac::EmlsrLinkSwitch`` trace provides information about start/end of EMLSR link
+  switch events: when a PHY operating on a link starts switching to another link, the trace provides
+  the ID of the link the PHY is leaving and a null pointer (indicating that no PHY is operating on
+  that link); when a PHY completes switching to a link, the trace provides the ID of the link and a
+  pointer to the PHY (which is now operating on that link)
+* The ``EmlsrManager::MainPhySwitch`` trace is fired when the main PHY switches channel to operate
+  on another link. Information associated with the main PHY switch is provided through a struct
+  that is inherited from ``struct EmlsrMainPhySwitchTrace``. Different inherited structs are defined
+  for the different reasons for the main PHY to switch link. All the inherited structs provide a
+  ``GetName`` method returning a string identifying the particular inherited struct. The available
+  inherited structs are:
+
+  * ``EmlsrDlTxopIcfReceivedByAuxPhyTrace``: main PHY is starting switching to another link to carry
+    out a DL TXOP after that an aux PHY received an ICF on that link
+  * ``EmlsrUlTxopRtsSentByAuxPhyTrace``: main PHY is starting switching to another link to take over
+    an UL TXOP started by a TX capable aux PHY that transmitted an RTS frame on that link
+  * ``EmlsrTxopEndedTrace``: main PHY is starting switching because a (DL or UL) TXOP ended. This
+    trace has a parameter, remTime, whose value is set as follows. When a TXOP ends after a
+    successful transmission and aux PHYs do not switch link, the main PHY switches back to the
+    preferred link; in such a case, the remTime parameter is set to zero. However, a TXOP may end
+    due to a CTS timeout after that a TX capable aux PHY had sent an RTS to start an UL TXOP and
+    the main PHY may be switching when the CTS timeout occurs. If the main PHY switch cannot be
+    interrupted (see case a) in Fig. :ref:`fig-emlsr-txop-ended-trace`), which is the case with the
+    Default EMLSR Manager or with the Advanced EMLSR Manager when the ``InterruptSwitch`` attribute
+    is false, the remTime parameter is set to the remaining channel switch delay at the time the
+    TXOP ends. If the main PHY switch can be interrupted (see case b) in Fig.
+    :ref:`fig-emlsr-txop-ended-trace`), which is the case with the Advanced EMLSR Manager when the
+    ``InterruptSwitch`` attribute is true, the remTime parameter indicates the time that was left
+    to complete the previous channel switch. Note that, in the latter case, this channel switch can
+    also occur when the aux PHYs switch link, as the main PHY returns to the link it was operating
+    on before starting the previous channel switch.
 
 Ack manager
 ###########

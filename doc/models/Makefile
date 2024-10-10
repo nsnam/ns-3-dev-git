@@ -149,6 +149,7 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/ack-su-format.png \
 	$(SRC)/wifi/doc/source/figures/assoc-manager.eps \
 	$(SRC)/wifi/doc/source/figures/emlsr-dl-txop.eps \
+	$(SRC)/wifi/doc/source/figures/emlsr-txop-ended-trace.eps \
 	$(SRC)/wifi/doc/source/figures/emlsr-ul-txop.eps \
 	$(SRC)/wifi/doc/source/figures/mu-bar.pdf \
 	$(SRC)/wifi/doc/source/figures/mu-bar.png \
@@ -476,6 +477,7 @@ IMAGES_EPS = \
 	$(FIGURES)/clear-channel.eps \
 	$(FIGURES)/assoc-manager.eps \
 	$(FIGURES)/emlsr-dl-txop.eps \
+	$(FIGURES)/emlsr-txop-ended-trace.eps \
 	$(FIGURES)/emlsr-ul-txop.eps \
 	$(FIGURES)/nist-frame-success-rate.eps \
 	$(FIGURES)/nist-frame-success-rate-n.eps \
@@ -560,6 +562,7 @@ $(FIGURES)/nist-frame-success-rate-ac.pdf_width = 12cm
 $(FIGURES)/nist-frame-success-rate-ax.pdf_width = 12cm
 $(FIGURES)/assoc-manager.pdf_width = 12cm
 $(FIGURES)/emlsr-dl-txop.pdf_width = 12cm
+$(FIGURES)/emlsr-txop-ended-trace.pdf_width = 8cm
 $(FIGURES)/emlsr-ul-txop.pdf_width = 12cm
 $(FIGURES)/zigbeeStackArch.pdf_width = 6cm
 $(FIGURES)/manyToOne.pdf_width = 6cm

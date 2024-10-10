@@ -28,6 +28,7 @@ IMAGES_EPS = \
         $(FIGURES)/assoc-manager.eps \
         $(FIGURES)/clear-channel.eps \
         $(FIGURES)/emlsr-dl-txop.eps \
+        $(FIGURES)/emlsr-txop-ended-trace.eps \
         $(FIGURES)/emlsr-ul-txop.eps \
         $(FIGURES)/nist-frame-success-rate.eps \
         $(FIGURES)/nist-frame-success-rate-n.eps \
