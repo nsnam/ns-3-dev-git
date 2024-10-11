@@ -1,5 +1,6 @@
 #include <ns3/log.h>
 #include <ns3/object.h>
+#include <ns3/string.h>
 #include <ns3/test.h>
 #include <ns3/units-aliases.h>
 #include <ns3/units-angle.h>
@@ -873,6 +874,11 @@ class AttributeMock : public Object
                               HzValue(415000_Hz),
                               MakeHzAccessor(&AttributeMock::m_Hz),
                               MakeHzChecker())
+                .AddAttribute("MHz",
+                              "help message for MHz",
+                              MHzValue(300_MHz),
+                              MakeMHzAccessor(&AttributeMock::m_MHz),
+                              MakeMHzChecker())
                 .AddAttribute("nSEC",
                               "help message for nSEC",
                               nSECValue(-20_nSEC),
@@ -905,6 +911,7 @@ class AttributeMock : public Object
     dBm_per_Hz_t m_dBm_per_Hz{};   ///< value of dBm_per_Hz
     dBm_per_MHz_t m_dBm_per_MHz{}; ///< value of dBm_per_MHz
     Hz_t m_Hz{};                   ///< value of Hz
+    MHz_t m_MHz{};                 ///< value of MHz
     nSEC_t m_nSEC{};               ///< value of nSEC
     degree_t m_degree{};           ///< value of degree
     radian_t m_radian{};           ///< value of radian
@@ -931,9 +938,19 @@ class TestCaseSiUnitsAttributes : public TestCase
             NS_TEST_EXPECT_MSG_EQ(mock->m_dB, want, "");
         }
         {
+            auto want = 10_dB;
+            mock->SetAttribute("dB", DoubleValue(10));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_dB, want, "");
+        }
+        {
             auto want = 25_dBr;
             mock->SetAttribute("dBr", dBrValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_dBr, want, "");
+        }
+        {
+            auto want = 5_dBr;
+            mock->SetAttribute("dBr", DoubleValue(5));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_dBr, want, "");
         }
         {
             auto want = 20_dBm;
@@ -941,9 +958,19 @@ class TestCaseSiUnitsAttributes : public TestCase
             NS_TEST_EXPECT_MSG_EQ(mock->m_dBm, want, "");
         }
         {
+            auto want = 10_dBm;
+            mock->SetAttribute("dBm", DoubleValue(10));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_dBm, want, "");
+        }
+        {
             auto want = 100_mWatt;
             mock->SetAttribute("mWatt", mWattValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_mWatt, want, "");
+        }
+        {
+            auto want = 50_mWatt;
+            mock->SetAttribute("mWatt", DoubleValue(50));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_mWatt, want, "");
         }
         {
             auto want = 221_Watt;
@@ -956,14 +983,44 @@ class TestCaseSiUnitsAttributes : public TestCase
             NS_TEST_EXPECT_MSG_EQ(mock->m_dBm_per_Hz, want, "");
         }
         {
+            auto want = 0.001_dBm_per_Hz;
+            mock->SetAttribute("dBm_per_Hz", dBm_per_HzValue(want));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_dBm_per_Hz, want, "");
+        }
+        {
+            auto want = 0.02_dBm_per_Hz;
+            mock->SetAttribute("dBm_per_Hz", DoubleValue(0.02));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_dBm_per_Hz, want, "");
+        }
+        {
             auto want = 0.001_dBm_per_MHz;
             mock->SetAttribute("dBm_per_MHz", dBm_per_MHzValue(want));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_dBm_per_MHz, want, "");
+        }
+        {
+            auto want = 0.02_dBm_per_MHz;
+            mock->SetAttribute("dBm_per_MHz", DoubleValue(0.02));
             NS_TEST_ASSERT_MSG_EQ(mock->m_dBm_per_MHz, want, "");
         }
         {
             auto want = 365_Hz;
             mock->SetAttribute("Hz", HzValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_Hz, want, "");
+        }
+        {
+            auto want = 500_Hz;
+            mock->SetAttribute("Hz", UintegerValue(500));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_Hz, want, "");
+        }
+        {
+            auto want = 10_MHz;
+            mock->SetAttribute("MHz", MHzValue(want));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_MHz, want, "");
+        }
+        {
+            auto want = 100_MHz;
+            mock->SetAttribute("MHz", UintegerValue(100));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_MHz, want, "");
         }
         {
             auto want = 100_nSEC;
@@ -976,14 +1033,29 @@ class TestCaseSiUnitsAttributes : public TestCase
             NS_TEST_EXPECT_MSG_EQ(mock->m_degree, want, "");
         }
         {
+            auto want = 360_degree;
+            mock->SetAttribute("degree", DoubleValue(360));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_degree, want, "");
+        }
+        {
             auto want = 2.4_radian;
             mock->SetAttribute("radian", radianValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_radian, want, "");
         }
         {
+            auto want = 2_radian;
+            mock->SetAttribute("radian", DoubleValue(2));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_radian, want, "");
+        }
+        {
             auto want = 2.4_percent;
             mock->SetAttribute("percent", percentValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_percent, want, "");
+        }
+        {
+            auto want = 5.9_percent;
+            mock->SetAttribute("percent", DoubleValue(5.9));
+            NS_TEST_ASSERT_MSG_EQ(mock->m_percent, want, "");
         }
     }
 };
