@@ -818,7 +818,7 @@ macro(process_options)
 
   # Process config-store-config
   configure_file(
-    build-support/config-store-config-template.h
+    ${PROJECT_SOURCE_DIR}/build-support/config-store-config-template.h
     ${CMAKE_HEADER_OUTPUT_DIRECTORY}/config-store-config.h
   )
 
@@ -1119,7 +1119,7 @@ macro(process_options)
   check_function_exists("getenv" "HAVE_GETENV")
 
   configure_file(
-    build-support/core-config-template.h
+    ${PROJECT_SOURCE_DIR}/build-support/core-config-template.h
     ${CMAKE_HEADER_OUTPUT_DIRECTORY}/core-config.h
   )
 
