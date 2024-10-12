@@ -484,6 +484,17 @@ WifiTxVector::IsValid(WifiPhyBand band) const
             }
         }
     }
+    else if (m_channelWidth > 160)
+    {
+        if ((GetModulationClass() < WIFI_MOD_CLASS_EHT) && !IsNonHtDuplicate())
+        {
+            return false;
+        }
+        if ((band == WIFI_PHY_BAND_2_4GHZ) || (band == WIFI_PHY_BAND_5GHZ))
+        {
+            return false;
+        }
+    }
     for (const auto& userInfo : m_muUserInfos)
     {
         if (GetNumStasInRu(userInfo.second.ru) > 8)
