@@ -337,9 +337,7 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
     header.SetFrameFlags(frameFlags);
 
     uint64_t rate = 0;
-    if (txVector.GetMode(staId).GetModulationClass() != WIFI_MOD_CLASS_HT &&
-        txVector.GetMode(staId).GetModulationClass() != WIFI_MOD_CLASS_VHT &&
-        txVector.GetMode(staId).GetModulationClass() != WIFI_MOD_CLASS_HE)
+    if (txVector.GetModulationClass() < WIFI_MOD_CLASS_HT)
     {
         rate = txVector.GetMode(staId).GetDataRate(txVector.GetChannelWidth(),
                                                    txVector.GetGuardInterval(),
