@@ -70,11 +70,13 @@ static const auto DEFAULT_OUTDIR = ".";
 static const auto DEFAULT_ENABLE_PCAP = false;
 static const auto DEFAULT_AP_LOC = Vector(0.01, 0, 0);
 static const auto DEFAULT_CLIENT_LOC = Vector(0, 0, 0);
-static const uint8_t WIFI_6GHZ_FD_PHY_IDX = 4;
+static const uint8_t WIFI_11AX_FD_PHY_IDX = 4;
+static const uint8_t WIFI_11BE_FD_PHY_IDX = 5;
 
 /// @brief  Wi-Fi FILS frame test parameters
 struct WifiFilsFrameTestParams
 {
+    WifiStandard standard{DEFAULT_STANDARD};            ///< Standard
     MHz_u bw{DEFAULT_BANDWIDTH};                        ///< Operation bandwidth
     std::string ssid{DEFAULT_SSID};                     ///< SSID name
     uint8_t nss{0};                                     ///< Number of spatial streams
@@ -186,7 +188,7 @@ WifiFilsFrameTest::SetupDevice(Ptr<YansWifiChannel>& channel, bool isAp)
     phy.Set("MaxSupportedTxSpatialStreams", UintegerValue(m_params.nss));
     phy.Set("MaxSupportedRxSpatialStreams", UintegerValue(m_params.nss));
 
-    wifi.SetStandard(DEFAULT_STANDARD);
+    wifi.SetStandard(m_params.standard);
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager");
 
     if (isAp)
@@ -341,7 +343,9 @@ WifiFilsFrameTest::ValidateFilsDiscFrame(const FilsDiscHeader& filsDisc)
                           +m_params.expNssFld,
                           "FILS Discovery frame NSS mismatch");
     NS_TEST_ASSERT_MSG_EQ(+filsDisc.m_fdCap->m_phyIdx,
-                          +WIFI_6GHZ_FD_PHY_IDX,
+                          ((m_params.standard == WifiStandard::WIFI_STANDARD_80211be)
+                               ? +WIFI_11BE_FD_PHY_IDX
+                               : +WIFI_11AX_FD_PHY_IDX),
                           "FILS Discovery frame PHY idx mismatch");
 }
 
@@ -373,6 +377,7 @@ enum class WifiFilsFrameTestCase : uint8_t
     BW80MHZ_NSS2_DISC,
     BW160MHZ_NSS2_DISC,
     BW160MHZ_NSS2_PROBE,
+    BW320MHZ_NSS3_DISC,
     COUNT,
 };
 
@@ -429,6 +434,15 @@ WifiFilsFrameTestBuildCase(const WifiFilsFrameTestCase& tc)
         params.expChWidFld = 3;
         params.expNssFld = 1;
         break;
+    case WifiFilsFrameTestCase::BW320MHZ_NSS3_DISC:
+        params.standard = WifiStandard::WIFI_STANDARD_80211be;
+        params.bw = 320;
+        params.ssid = "BW320MHZ_NSS3";
+        params.nss = 3;
+        params.filsIntrvl = 20 * WIFI_TU;
+        params.expChWidFld = 4;
+        params.expNssFld = 2;
+        break;
     default:
         NS_ABORT_MSG("Testcase is unsupported");
         break;
@@ -455,6 +469,7 @@ WifiFilsFrameTestSuite::WifiFilsFrameTestSuite()
         {WifiFilsFrameTestBuildCase(WifiFilsFrameTestCase::BW80MHZ_NSS2_DISC)},
         {WifiFilsFrameTestBuildCase(WifiFilsFrameTestCase::BW160MHZ_NSS2_DISC)},
         {WifiFilsFrameTestBuildCase(WifiFilsFrameTestCase::BW160MHZ_NSS2_PROBE)},
+        {WifiFilsFrameTestBuildCase(WifiFilsFrameTestCase::BW320MHZ_NSS3_DISC)},
     };
     for (const auto& tc : testCases)
     {
