@@ -14,6 +14,7 @@
 
 #include <array>
 #include <optional>
+#include <vector>
 
 namespace ns3
 {
@@ -592,6 +593,185 @@ class RadiotapHeader : public Header
      */
     void SetUsigFields(const UsigFields& usigFields);
 
+    /**
+     * structure that contains the subfields of the EHT field.
+     */
+    struct EhtFields
+    {
+        uint32_t known{0};                //!< known field.
+        std::array<uint32_t, 9> data{};   //!< data fields.
+        std::vector<uint32_t> userInfo{}; //!< user info fields.
+    };
+
+    /**
+     * @brief EHT known subfield.
+     */
+    enum EhtKnown : uint32_t
+    {
+        EHT_KNOWN_SPATIAL_REUSE = 0x00000002,
+        EHT_KNOWN_GI = 0x00000004,
+        EHT_KNOWN_EHT_LTF = 0x00000010,
+        EHT_KNOWN_LDPC_EXTRA_SYM_OM = 0x00000020,
+        EHT_KNOWN_PRE_PADD_FACOR_OM = 0x00000040,
+        EHT_KNOWN_PE_DISAMBIGUITY_OM = 0x00000080,
+        EHT_KNOWN_DISREGARD_O = 0x00000100,
+        EHT_KNOWN_DISREGARD_S = 0x00000200,
+        EHT_KNOWN_CRC1 = 0x00002000,
+        EHT_KNOWN_TAIL1 = 0x00004000,
+        EHT_KNOWN_CRC2_O = 0x00008000,
+        EHT_KNOWN_TAIL2_O = 0x00010000,
+        EHT_KNOWN_NSS_S = 0x00020000,
+        EHT_KNOWN_BEAMFORMED_S = 0x00040000,
+        EHT_KNOWN_NR_NON_OFDMA_USERS_M = 0x00080000,
+        EHT_KNOWN_ENCODING_BLOCK_CRC_M = 0x00100000,
+        EHT_KNOWN_ENCODING_BLOCK_TAIL_M = 0x00200000,
+        EHT_KNOWN_RU_MRU_SIZE_OM = 0x00400000,
+        EHT_KNOWN_RU_MRU_INDEX_OM = 0x00800000,
+        EHT_KNOWN_RU_ALLOC_TB_OM = 0x01000000,
+        EHT_KNOWN_PRIMARY_80 = 0x02000000,
+    };
+
+    /**
+     * @brief EHT data subfield.
+     */
+    enum EhtData : uint32_t
+    {
+        /* Data 0 */
+        EHT_DATA0_SPATIAL_REUSE = 0x00000078,
+        EHT_DATA0_GI = 0x00000180,
+        EHT_DATA0_LTF = 0x00000600,
+        EHT_DATA0_EHT_LTF = 0x00003800,
+        EHT_DATA0_LDPC_EXTRA_SYM_OM = 0x00004000,
+        EHT_DATA0_PRE_PADD_FACOR_OM = 0x00018000,
+        EHT_DATA0_PE_DISAMBIGUITY_OM = 0x00020000,
+        EHT_DATA0_DISREGARD_S = 0x000c0000,
+        EHT_DATA0_DISREGARD_O = 0x003c0000,
+        EHT_DATA0_CRC1_O = 0x03c00000,
+        EHT_DATA0_TAIL1_O = 0xfc000000,
+        /* Data 1 */
+        EHT_DATA1_RU_MRU_SIZE = 0x0000001f,
+        EHT_DATA1_RU_MRU_INDEX = 0x00001fe0,
+        EHT_DATA1_RU_ALLOC_CC_1_1_1 = 0x003fe000,
+        EHT_DATA1_RU_ALLOC_CC_1_1_1_KNOWN = 0x00400000,
+        EHT_DATA1_PRIMARY_80 = 0xc0000000,
+        /* Data 2 */
+        EHT_DATA2_RU_ALLOC_CC_2_1_1 = 0x000001ff,
+        EHT_DATA2_RU_ALLOC_CC_2_1_1_KNOWN = 0x00000200,
+        EHT_DATA2_RU_ALLOC_CC_1_1_2 = 0x0007fc00,
+        EHT_DATA2_RU_ALLOC_CC_1_1_2_KNOWN = 0x00080000,
+        EHT_DATA2_RU_ALLOC_CC_2_1_2 = 0x1ff00000,
+        EHT_DATA2_RU_ALLOC_CC_2_1_2_KNOWN = 0x20000000,
+        /* Data 3 */
+        EHT_DATA3_RU_ALLOC_CC_1_2_1 = 0x000001ff,
+        EHT_DATA3_RU_ALLOC_CC_1_2_1_KNOWN = 0x00000200,
+        EHT_DATA3_RU_ALLOC_CC_2_2_1 = 0x0007fc00,
+        EHT_DATA3_RU_ALLOC_CC_2_2_1_KNOWN = 0x00080000,
+        EHT_DATA3_RU_ALLOC_CC_1_2_2 = 0x1ff00000,
+        EHT_DATA3_RU_ALLOC_CC_1_2_2_KNOWN = 0x20000000,
+        /* Data 4 */
+        EHT_DATA4_RU_ALLOC_CC_2_2_2 = 0x000001ff,
+        EHT_DATA4_RU_ALLOC_CC_2_2_2_KNOWN = 0x00000200,
+        EHT_DATA4_RU_ALLOC_CC_1_2_3 = 0x0007fc00,
+        EHT_DATA4_RU_ALLOC_CC_1_2_3_KNOWN = 0x00080000,
+        EHT_DATA4_RU_ALLOC_CC_2_2_3 = 0x1ff00000,
+        EHT_DATA4_RU_ALLOC_CC_2_2_3_KNOWN = 0x20000000,
+        /* Data 5 */
+        EHT_DATA5_RU_ALLOC_CC_1_2_4 = 0x000001ff,
+        EHT_DATA5_RU_ALLOC_CC_1_2_4_KNOWN = 0x00000200,
+        EHT_DATA5_RU_ALLOC_CC_2_2_4 = 0x0007fc00,
+        EHT_DATA5_RU_ALLOC_CC_2_2_4_KNOWN = 0x00080000,
+        EHT_DATA5_RU_ALLOC_CC_1_2_5 = 0x1ff00000,
+        EHT_DATA5_RU_ALLOC_CC_1_2_5_KNOWN = 0x20000000,
+        /* Data 6 */
+        EHT_DATA6_RU_ALLOC_CC_2_2_5 = 0x000001ff,
+        EHT_DATA6_RU_ALLOC_CC_2_2_5_KNOWN = 0x00000200,
+        EHT_DATA6_RU_ALLOC_CC_1_2_6 = 0x0007fc00,
+        EHT_DATA6_RU_ALLOC_CC_1_2_6_KNOWN = 0x00080000,
+        EHT_DATA6_RU_ALLOC_CC_2_2_6 = 0x1ff00000,
+        EHT_DATA6_RU_ALLOC_CC_2_2_6_KNOWN = 0x20000000,
+        /* Data 7 */
+        EHT_DATA7_CRC2_O = 0x0000000f,
+        EHT_DATA7_TAIL_2_O = 0x000003f0,
+        EHT_DATA7_NSS_S = 0x0000f000,
+        EHT_DATA7_BEAMFORMED_S = 0x00010000,
+        EHT_DATA7_NUM_OF_NON_OFDMA_USERS = 0x000e0000,
+        EHT_DATA7_USER_ENCODING_BLOCK_CRC = 0x00f00000,
+        EHT_DATA7_USER_ENCODING_BLOCK_TAIL = 0x3f000000,
+        /* Data 8 */
+        EHT_DATA8_RU_ALLOC_TB_FMT_PS_160 = 0x00000001,
+        EHT_DATA8_RU_ALLOC_TB_FMT_B0 = 0x00000002,
+        EHT_DATA8_RU_ALLOC_TB_FMT_B7_B1 = 0x000001fc,
+    };
+
+    /**
+     * @brief Possible GI values in EHT data subfield.
+     */
+    enum EhtData0Gi : uint8_t
+    {
+        EHT_DATA0_GI_800_NS = 0,
+        EHT_DATA0_GI_1600_NS = 1,
+        EHT_DATA0_GI_3200_NS = 2,
+    };
+
+    /**
+     * @brief Possible Primary 80 MHz Channel Position values in EHT data subfield.
+     */
+    enum EhtData1Primary80 : uint8_t
+    {
+        EHT_DATA1_PRIMARY_80_LOWEST = 0,
+        EHT_DATA1_PRIMARY_80_HIGHEST = 3,
+    };
+
+    /**
+     * @brief Possible RU/MRU Size values in EHT data subfield.
+     */
+    enum EhtData1RuSize : uint8_t
+    {
+        EHT_DATA1_RU_MRU_SIZE_26 = 0,
+        EHT_DATA1_RU_MRU_SIZE_52 = 1,
+        EHT_DATA1_RU_MRU_SIZE_106 = 2,
+        EHT_DATA1_RU_MRU_SIZE_242 = 3,
+        EHT_DATA1_RU_MRU_SIZE_484 = 4,
+        EHT_DATA1_RU_MRU_SIZE_996 = 5,
+        EHT_DATA1_RU_MRU_SIZE_2x996 = 6,
+        EHT_DATA1_RU_MRU_SIZE_4x996 = 7,
+        EHT_DATA1_RU_MRU_SIZE_52_26 = 8,
+        EHT_DATA1_RU_MRU_SIZE_106_26 = 9,
+        EHT_DATA1_RU_MRU_SIZE_484_242 = 10,
+        EHT_DATA1_RU_MRU_SIZE_996_484 = 11,
+        EHT_DATA1_RU_MRU_SIZE_996_484_242 = 12,
+        EHT_DATA1_RU_MRU_SIZE_2x996_484 = 13,
+        EHT_DATA1_RU_MRU_SIZE_3x996 = 14,
+        EHT_DATA1_RU_MRU_SIZE_3x996_484 = 15,
+    };
+
+    /**
+     * @brief EHT user_info subfield.
+     */
+    enum EhtUserInfo : uint32_t
+    {
+        EHT_USER_INFO_STA_ID_KNOWN = 0x00000001,
+        EHT_USER_INFO_MCS_KNOWN = 0x00000002,
+        EHT_USER_INFO_CODING_KNOWN = 0x00000004,
+        EHT_USER_INFO_NSS_KNOWN_O = 0x00000010,
+        EHT_USER_INFO_BEAMFORMING_KNOWN_O = 0x00000020,
+        EHT_USER_INFO_SPATIAL_CONFIG_KNOWN_M = 0x00000040,
+        EHT_USER_INFO_DATA_FOR_USER = 0x00000080,
+        EHT_USER_INFO_STA_ID = 0x0007ff00,
+        EHT_USER_INFO_CODING = 0x00080000,
+        EHT_USER_INFO_MCS = 0x00f00000,
+        EHT_USER_INFO_NSS_O = 0x0f000000,
+        EHT_USER_INFO_BEAMFORMING_O = 0x20000000,
+        EHT_USER_INFO_SPATIAL_CONFIG_M = 0x3f000000,
+    };
+
+    /**
+     * @brief Set the subfields of the EHT-SIG field
+     *
+     * @param ehtFields The subfields of the EHT-SIG field.
+     */
+    void SetEhtFields(const EhtFields& ehtFields);
+
   private:
     /**
      * Serialize the Channel radiotap header.
@@ -786,6 +966,30 @@ class RadiotapHeader : public Header
     void PrintUsig(std::ostream& os) const;
 
     /**
+     * Serialize the EHT radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeEht(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the EHT radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeEht(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
+     * Add EHT subfield/value pairs to the output stream.
+     *
+     * @param os The output stream
+     */
+    void PrintEht(std::ostream& os) const;
+
+    /**
      * @brief Radiotap flags.
      */
     enum RadiotapFlags : uint32_t
@@ -867,6 +1071,11 @@ class RadiotapHeader : public Header
     TlvFields m_usigTlv{};     //!< U-SIG TLV fields.
     uint8_t m_usigPad{0};      //!< U-SIG padding.
     UsigFields m_usigFields{}; //!< U-SIG fields.
+
+    uint8_t m_ehtTlvPad{0};  //!< EHT TLV padding.
+    TlvFields m_ehtTlv{};    //!< EHT TLV fields.
+    uint8_t m_ehtPad{0};     //!< EHT padding.
+    EhtFields m_ehtFields{}; //!< EHT fields.
 };
 
 } // namespace ns3

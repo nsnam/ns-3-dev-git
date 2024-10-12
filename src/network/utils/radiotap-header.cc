@@ -269,6 +269,15 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     {
         SerializeUsig(start);
     }
+
+    //
+    // EHT field.
+    // Reference: https://www.radiotap.org/fields/EHT.html
+    //
+    if (m_presentExt && (*m_presentExt & RADIOTAP_EHT_SIG)) // bit 34
+    {
+        SerializeEht(start);
+    }
 }
 
 uint32_t
@@ -282,7 +291,6 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
 
     m_length = start.ReadU16();  // entire length of radiotap data + header
     m_present = start.ReadU32(); // bits describing which fields follow header
-
     uint32_t bytesRead = 8;
 
     if (m_present & RADIOTAP_EXT)
@@ -520,6 +528,15 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
         bytesRead += DeserializeUsig(start, bytesRead);
     }
 
+    //
+    // EHT field.
+    // Reference: https://www.radiotap.org/fields/EHT.html
+    //
+    if (m_presentExt && (*m_presentExt & RADIOTAP_EHT_SIG)) // bit 34
+    {
+        bytesRead += DeserializeEht(start, bytesRead);
+    }
+
     NS_ASSERT_MSG(m_length == bytesRead,
                   "RadiotapHeader::Deserialize(): expected and actual lengths inconsistent");
     return bytesRead;
@@ -562,6 +579,10 @@ RadiotapHeader::Print(std::ostream& os) const
     if (m_presentExt && (*m_presentExt & RADIOTAP_USIG))
     {
         PrintUsig(os);
+    }
+    if (m_presentExt && (*m_presentExt & RADIOTAP_EHT_SIG))
+    {
+        PrintEht(os);
     }
 }
 
@@ -1068,6 +1089,102 @@ RadiotapHeader::PrintUsig(std::ostream& os) const
 {
     os << " usig.common=0x" << std::hex << m_usigFields.common << " usig.value=0x"
        << m_usigFields.value << " usig.mask=0x" << m_usigFields.mask << std::dec;
+}
+
+void
+RadiotapHeader::SetEhtFields(const EhtFields& ehtFields)
+{
+    NS_LOG_FUNCTION(this << ehtFields.known);
+    if (!m_presentExt)
+    {
+        m_present |= RADIOTAP_TLV | RADIOTAP_EXT;
+        m_presentExt = 0;
+        m_length += sizeof(RadiotapExtFlags);
+    }
+
+    NS_ASSERT_MSG(!(*m_presentExt & RADIOTAP_EHT_SIG), "EHT radiotap field already present");
+    *m_presentExt |= RADIOTAP_EHT_SIG;
+
+    m_ehtTlvPad = ((8 - m_length % 8) % 8);
+    m_ehtTlv.type = 32 + std::countr_zero<uint16_t>(RADIOTAP_EHT_SIG);
+    m_ehtTlv.length = (40 + ehtFields.userInfo.size() * 4);
+    m_length += sizeof(TlvFields) + m_ehtTlvPad;
+
+    m_ehtPad = ((4 - m_length % 4) % 4);
+    m_ehtFields = ehtFields;
+    m_length += m_ehtTlv.length + m_ehtPad;
+
+    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present
+                      << " m_presentExt=0x" << *m_presentExt << std::dec);
+}
+
+void
+RadiotapHeader::SerializeEht(Buffer::Iterator& start) const
+{
+    start.WriteU8(0, m_ehtTlvPad);
+    start.WriteU16(m_ehtTlv.type);
+    start.WriteU16(m_ehtTlv.length);
+    start.WriteU8(0, m_ehtPad);
+    start.WriteU32(m_ehtFields.known);
+    for (const auto dataField : m_ehtFields.data)
+    {
+        start.WriteU32(dataField);
+    }
+    for (const auto userInfoField : m_ehtFields.userInfo)
+    {
+        start.WriteU32(userInfoField);
+    }
+}
+
+uint32_t
+RadiotapHeader::DeserializeEht(Buffer::Iterator start, uint32_t bytesRead)
+{
+    const auto startBytesRead = bytesRead;
+
+    m_ehtTlvPad = ((8 - bytesRead % 8) % 8);
+    start.Next(m_ehtTlvPad);
+    bytesRead += m_ehtTlvPad;
+    m_ehtTlv.type = start.ReadU16();
+    m_ehtTlv.length = start.ReadU16();
+    bytesRead += sizeof(TlvFields);
+
+    m_ehtPad = ((4 - bytesRead % 4) % 4);
+    start.Next(m_ehtPad);
+    bytesRead += m_ehtPad;
+    m_ehtFields.known = start.ReadU32();
+    bytesRead += 4;
+    for (auto& dataField : m_ehtFields.data)
+    {
+        dataField = start.ReadU32();
+        bytesRead += 4;
+    }
+    const auto userInfosBytes = m_ehtTlv.length - bytesRead - m_ehtTlvPad;
+    NS_ASSERT(userInfosBytes % 4 == 0);
+    const std::size_t numUsers = userInfosBytes / 4;
+    for (std::size_t i = 0; i < numUsers; ++i)
+    {
+        m_ehtFields.userInfo.push_back(start.ReadU32());
+        bytesRead += 4;
+    }
+
+    return bytesRead - startBytesRead;
+}
+
+void
+RadiotapHeader::PrintEht(std::ostream& os) const
+{
+    os << " eht.known=0x" << std::hex << m_ehtFields.known;
+    std::size_t index = 0;
+    for (const auto dataField : m_ehtFields.data)
+    {
+        os << " eht.data" << index++ << "=0x" << dataField;
+    }
+    index = 0;
+    for (const auto userInfoField : m_ehtFields.userInfo)
+    {
+        os << " eht.userInfo" << index++ << "=0x" << userInfoField;
+    }
+    os << std::dec;
 }
 
 } // namespace ns3
