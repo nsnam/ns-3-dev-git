@@ -315,6 +315,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
      * \param header the radiotap header to be filled in
      * \param packet the packet
      * \param channelFreqMhz the channel frequency
+     * \param p20Index the index of the primary20 channel
      * \param txVector the TXVECTOR
      * \param aMpdu the A-MPDU information
      * \param staId the STA-ID
@@ -322,6 +323,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     static void GetRadiotapHeader(RadiotapHeader& header,
                                   Ptr<Packet> packet,
                                   uint16_t channelFreqMhz,
+                                  uint8_t p20Index,
                                   const WifiTxVector& txVector,
                                   MpduInfo aMpdu,
                                   uint16_t staId);
@@ -332,6 +334,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
      * \param header the radiotap header to be filled in
      * \param packet the packet
      * \param channelFreqMhz the channel frequency
+     * \param p20Index the index of the primary20 channel
      * \param txVector the TXVECTOR
      * \param aMpdu the A-MPDU information
      * \param staId the STA-ID
@@ -340,6 +343,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     static void GetRadiotapHeader(RadiotapHeader& header,
                                   Ptr<Packet> packet,
                                   uint16_t channelFreqMhz,
+                                  uint8_t p20Index,
                                   const WifiTxVector& txVector,
                                   MpduInfo aMpdu,
                                   uint16_t staId,

@@ -14,6 +14,7 @@
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/config.h"
 #include "ns3/eht-configuration.h"
+#include "ns3/eht-ppdu.h"
 #include "ns3/he-configuration.h"
 #include "ns3/ht-configuration.h"
 #include "ns3/log.h"
@@ -265,7 +266,13 @@ WifiPhyHelper::PcapSniffTxEvent(const std::shared_ptr<PcapFilesInfo>& info,
     case PcapHelper::DLT_IEEE802_11_RADIO: {
         Ptr<Packet> p = packet->Copy();
         RadiotapHeader header;
-        GetRadiotapHeader(header, p, channelFreqMhz, txVector, aMpdu, staId);
+        GetRadiotapHeader(header,
+                          p,
+                          channelFreqMhz,
+                          info->device->GetPhy(phyId)->GetPrimary20Index(),
+                          txVector,
+                          aMpdu,
+                          staId);
         p->AddHeader(header);
         file->Write(Simulator::Now(), p);
         return;
@@ -302,7 +309,14 @@ WifiPhyHelper::PcapSniffRxEvent(const std::shared_ptr<PcapFilesInfo>& info,
     case PcapHelper::DLT_IEEE802_11_RADIO: {
         Ptr<Packet> p = packet->Copy();
         RadiotapHeader header;
-        GetRadiotapHeader(header, p, channelFreqMhz, txVector, aMpdu, staId, signalNoise);
+        GetRadiotapHeader(header,
+                          p,
+                          channelFreqMhz,
+                          info->device->GetPhy(phyId)->GetPrimary20Index(),
+                          txVector,
+                          aMpdu,
+                          staId,
+                          signalNoise);
         p->AddHeader(header);
         file->Write(Simulator::Now(), p);
         return;
@@ -316,6 +330,7 @@ void
 WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
                                  Ptr<Packet> packet,
                                  uint16_t channelFreqMhz,
+                                 uint8_t p20Index,
                                  const WifiTxVector& txVector,
                                  MpduInfo aMpdu,
                                  uint16_t staId,
@@ -323,13 +338,14 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
 {
     header.SetAntennaSignalPower(signalNoise.signal);
     header.SetAntennaNoisePower(signalNoise.noise);
-    GetRadiotapHeader(header, packet, channelFreqMhz, txVector, aMpdu, staId);
+    GetRadiotapHeader(header, packet, channelFreqMhz, p20Index, txVector, aMpdu, staId);
 }
 
 void
 WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
                                  Ptr<Packet> packet,
                                  uint16_t channelFreqMhz,
+                                 uint8_t p20Index,
                                  const WifiTxVector& txVector,
                                  MpduInfo aMpdu,
                                  uint16_t staId)
@@ -586,6 +602,68 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         RadiotapHeader::HeMuOtherUserFields heMuOtherUserFields{};
         // TODO: fill in fields
         header.SetHeMuOtherUserFields(heMuOtherUserFields);
+    }
+
+    if (IsEht(preamble))
+    {
+        RadiotapHeader::UsigFields usigFields{};
+        usigFields.common = RadiotapHeader::USIG_COMMON_PHY_VER_KNOWN |
+                            RadiotapHeader::USIG_COMMON_BW_KNOWN |
+                            RadiotapHeader::USIG_COMMON_BSS_COLOR_KNOWN;
+        switch (static_cast<uint16_t>(channelWidth))
+        {
+        case 20:
+            usigFields.common |= GetRadiotapField(RadiotapHeader::USIG_COMMON_BW,
+                                                  RadiotapHeader::USIG_COMMON_BW_20MHZ);
+            break;
+        case 40:
+            usigFields.common |= GetRadiotapField(RadiotapHeader::USIG_COMMON_BW,
+                                                  RadiotapHeader::USIG_COMMON_BW_40MHZ);
+            break;
+        case 80:
+            usigFields.common |= GetRadiotapField(RadiotapHeader::USIG_COMMON_BW,
+                                                  RadiotapHeader::USIG_COMMON_BW_80MHZ);
+            break;
+        case 160:
+            usigFields.common |= GetRadiotapField(RadiotapHeader::USIG_COMMON_BW,
+                                                  RadiotapHeader::USIG_COMMON_BW_160MHZ);
+            break;
+        default:
+            NS_ABORT_MSG("Unexpected channel width");
+            break;
+        }
+        usigFields.common |=
+            GetRadiotapField(RadiotapHeader::USIG_COMMON_BSS_COLOR, txVector.GetBssColor());
+        if (preamble == WIFI_PREAMBLE_EHT_MU)
+        {
+            usigFields.mask = RadiotapHeader::USIG2_MU_B0_B1_PPDU_TYPE |
+                              RadiotapHeader::USIG2_MU_B9_B10_SIG_MCS |
+                              RadiotapHeader::USIG2_MU_B3_B7_PUNCTURED_INFO;
+            usigFields.value = GetRadiotapField(RadiotapHeader::USIG2_MU_B0_B1_PPDU_TYPE,
+                                                txVector.GetEhtPpduType()) |
+                               GetRadiotapField(RadiotapHeader::USIG2_MU_B9_B10_SIG_MCS,
+                                                txVector.GetSigBMode().GetMcsValue());
+            std::optional<bool> isLow80MHz;
+            if (txVector.IsDlMu() && channelWidth > 80)
+            {
+                const auto isLowP80 = p20Index < (channelWidth / 40);
+                const auto isP80 = txVector.GetHeMuUserInfo(staId).ru.GetPrimary80MHz();
+                isLow80MHz = (isLowP80 && isP80) || (!isLowP80 && !isP80);
+            }
+            const auto puncturedChannelInfo =
+                EhtPpdu::GetPuncturedInfo(txVector.GetInactiveSubchannels(),
+                                          txVector.GetEhtPpduType(),
+                                          isLow80MHz);
+            usigFields.value |= GetRadiotapField(RadiotapHeader::USIG2_MU_B3_B7_PUNCTURED_INFO,
+                                                 puncturedChannelInfo);
+        }
+        else
+        {
+            usigFields.mask = RadiotapHeader::USIG2_TB_B0_B1_PPDU_TYPE;
+            usigFields.value = GetRadiotapField(RadiotapHeader::USIG2_TB_B0_B1_PPDU_TYPE,
+                                                txVector.GetEhtPpduType());
+        }
+        header.SetUsigFields(usigFields);
     }
 }
 
