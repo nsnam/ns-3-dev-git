@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <functional>
 #include <iomanip>
-#include <optional>
 
 using namespace ns3;
 

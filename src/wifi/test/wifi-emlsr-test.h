@@ -21,6 +21,13 @@
 #include "ns3/wifi-ppdu.h"
 #include "ns3/wifi-psdu.h"
 
+#include <list>
+#include <map>
+#include <memory>
+#include <optional>
+#include <set>
+#include <vector>
+
 using namespace ns3;
 
 // forward declaration
