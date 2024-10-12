@@ -41,8 +41,7 @@ class TxDurationTest : public TestCase
 
   private:
     /**
-     * Check if the payload tx duration returned by InterferenceHelper
-     * corresponds to a known value
+     * Check if the payload tx duration returned by the PHY corresponds to a known value
      *
      * @param size size of payload in octets (includes everything after the PHY header)
      * @param payloadMode the WifiMode used for the transmission
@@ -61,8 +60,7 @@ class TxDurationTest : public TestCase
                               Time knownDuration);
 
     /**
-     * Check if the overall tx duration returned by InterferenceHelper
-     * corresponds to a known value
+     * Check if the overall tx duration returned by the PHY corresponds to a known value
      *
      * @param size size of payload in octets (includes everything after the PHY header)
      * @param payloadMode the WifiMode used for the transmission
@@ -142,12 +140,9 @@ TxDurationTest::CheckPayloadDuration(uint32_t size,
     txVector.SetPreambleType(preamble);
     txVector.SetChannelWidth(channelWidth);
     txVector.SetGuardInterval(guardInterval);
-    txVector.SetNss(1);
-    txVector.SetStbc(false);
-    txVector.SetNess(0);
     std::list<WifiPhyBand> testedBands;
     Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy>();
-    if (payloadMode.GetModulationClass() >= WIFI_MOD_CLASS_OFDM)
+    if ((payloadMode.GetModulationClass() >= WIFI_MOD_CLASS_OFDM) && (channelWidth <= 160))
     {
         testedBands.push_back(WIFI_PHY_BAND_5GHZ);
     }
@@ -190,17 +185,14 @@ TxDurationTest::CheckTxDuration(uint32_t size,
                                 WifiPreamble preamble,
                                 Time knownDuration)
 {
-    WifiTxVector txVector;
+    WifiTxVector txVector{};
     txVector.SetMode(payloadMode);
     txVector.SetPreambleType(preamble);
     txVector.SetChannelWidth(channelWidth);
     txVector.SetGuardInterval(guardInterval);
-    txVector.SetNss(1);
-    txVector.SetStbc(false);
-    txVector.SetNess(0);
     std::list<WifiPhyBand> testedBands;
     Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy>();
-    if (payloadMode.GetModulationClass() >= WIFI_MOD_CLASS_OFDM)
+    if ((payloadMode.GetModulationClass() >= WIFI_MOD_CLASS_OFDM) && (channelWidth <= 160))
     {
         testedBands.push_back(WIFI_PHY_BAND_5GHZ);
     }
@@ -265,8 +257,6 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
     txVector.SetPreambleType(preamble);
     txVector.SetChannelWidth(channelWidth);
     txVector.SetGuardInterval(guardInterval);
-    txVector.SetStbc(false);
-    txVector.SetNess(0);
     if (IsEht(preamble))
     {
         txVector.SetEhtPpduType(0);
@@ -283,11 +273,17 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
     txVector.SetRuAllocation({192, 192}, 0);
 
     Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy>();
-    std::list<WifiPhyBand> testedBands{
-        WIFI_PHY_BAND_5GHZ,
-        WIFI_PHY_BAND_6GHZ,
-        WIFI_PHY_BAND_2_4GHZ}; // Durations vary depending on frequency; test also 2.4 GHz (bug
-                               // 1971)
+    std::list<WifiPhyBand> testedBands;
+    if (channelWidth <= 160)
+    {
+        testedBands.push_back(WIFI_PHY_BAND_5GHZ);
+    }
+    testedBands.push_back(WIFI_PHY_BAND_6GHZ);
+    if (channelWidth < 80)
+    {
+        // Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
+        testedBands.push_back(WIFI_PHY_BAND_2_4GHZ);
+    }
     for (auto& testedBand : testedBands)
     {
         if (testedBand == WIFI_PHY_BAND_2_4GHZ)
@@ -1407,6 +1403,551 @@ TxDurationTest::DoRun()
                     NanoSeconds(1493600));
 
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11ax MU duration failed");
+
+    // 802.11be SU durations
+    retval = retval &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             20,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(1493600)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             20,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(133600)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             20,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(79200)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             40,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(772800)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             40,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(92800)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             40,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(65600)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             80,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(409600)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             80,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(83200)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             80,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(69600)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             160,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(232800)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             160,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(69600)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             160,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(69600)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             320,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(159200)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             320,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(77600)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             320,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(77600)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             20,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(1578400)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             20,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(138400)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             20,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(80800)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             40,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(815200)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             40,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(95200)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             40,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(66400)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             80,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(430400)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             80,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(84800)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             80,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(70400)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             160,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(243200)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             160,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(70400)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             160,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(70400)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             320,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(164800)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             320,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(78400)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             320,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(78400)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             20,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(1748)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             20,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(148)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             20,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(84)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             40,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(900)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             40,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(100)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             40,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(68)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             80,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(472)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             80,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(88)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             80,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(72)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             160,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(264)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             160,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(72)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             160,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(72)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs0(),
+                             320,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(176)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs0(),
+                             320,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(80)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs0(),
+                             320,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(80)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             20,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(129600)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             20,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             20,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             40,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(88800)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             40,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             40,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             80,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(75200)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             80,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             80,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             160,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             160,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             160,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             320,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             320,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             320,
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(61600)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             20,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(134400)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             20,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             20,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             40,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(91200)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             40,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             40,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             80,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(76800)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             80,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             80,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             160,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             160,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             160,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             320,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             320,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             320,
+                             NanoSeconds(1600),
+                             WIFI_PREAMBLE_EHT_MU,
+                             NanoSeconds(62400)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             20,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(144)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             20,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             20,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             40,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(96)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             40,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             40,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             80,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(80)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             80,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             80,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             160,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             160,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             160,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(1536,
+                             EhtPhy::GetEhtMcs13(),
+                             320,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(76,
+                             EhtPhy::GetEhtMcs13(),
+                             320,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64)) &&
+             CheckTxDuration(14,
+                             EhtPhy::GetEhtMcs13(),
+                             320,
+                             NanoSeconds(3200),
+                             WIFI_PREAMBLE_EHT_MU,
+                             MicroSeconds(64));
+
+    NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11be SU duration failed");
 
     // 802.11be MU durations
     retval = retval &&
