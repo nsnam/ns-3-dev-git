@@ -12,6 +12,8 @@
 
 #include <ns3/header.h>
 
+#include <array>
+
 namespace ns3
 {
 
@@ -58,8 +60,7 @@ class RadiotapHeader : public Header
      * byte buffer of a packet.  The data read is expected to match bit-for-bit
      * the representation of this header in real networks.
      *
-     * @param start An iterator which points to where the header should
-     *              written.
+     * @param start An iterator which points to where the header should be read.
      * @returns The number of bytes read.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
@@ -92,7 +93,7 @@ class RadiotapHeader : public Header
     /**
      * @brief Frame flags.
      */
-    enum FrameFlag
+    enum FrameFlag : uint8_t
     {
         FRAME_FLAG_NONE = 0x00,           /**< No flags set */
         FRAME_FLAG_CFP = 0x01,            /**< Frame sent/received during CFP */
@@ -121,7 +122,7 @@ class RadiotapHeader : public Header
     /**
      * @brief Channel flags.
      */
-    enum ChannelFlags
+    enum ChannelFlags : uint16_t
     {
         CHANNEL_FLAG_NONE = 0x0000,          /**< No flags set */
         CHANNEL_FLAG_TURBO = 0x0010,         /**< Turbo Channel */
@@ -135,12 +136,20 @@ class RadiotapHeader : public Header
     };
 
     /**
-     * @brief Set the transmit/receive channel frequency and flags
-     * @param frequency The transmit/receive data rate in units of 500 kbps.
-     * @param flags The flags to set.
-     * @see ChannelFlags
+     * structure that contains the subfields of the Channel field.
      */
-    void SetChannelFrequencyAndFlags(uint16_t frequency, uint16_t flags);
+    struct ChannelFields
+    {
+        uint16_t frequency{0};             //!< Tx/Rx frequency in MHz
+        uint16_t flags{CHANNEL_FLAG_NONE}; //!< flags field (@see ChannelFlags)
+    };
+
+    /**
+     * @brief Set the subfields of the Channel field
+     *
+     * @param channelFields The subfields of the Channel field.
+     */
+    void SetChannelFields(const ChannelFields& channelFields);
 
     /**
      * @brief Set the RF signal power at the antenna as a decibel difference
@@ -163,7 +172,7 @@ class RadiotapHeader : public Header
     /**
      * @brief MCS known bits.
      */
-    enum McsKnown
+    enum McsKnown : uint8_t
     {
         MCS_KNOWN_NONE = 0x00,           /**< No flags set */
         MCS_KNOWN_BANDWIDTH = 0x01,      /**< Bandwidth */
@@ -180,7 +189,7 @@ class RadiotapHeader : public Header
     /**
      * @brief MCS flags.
      */
-    enum McsFlags
+    enum McsFlags : uint8_t
     {
         MCS_FLAGS_NONE =
             0x00, /**< Default: 20 MHz, long guard interval, mixed HT format and BCC FEC type */
@@ -196,18 +205,26 @@ class RadiotapHeader : public Header
     };
 
     /**
-     * @brief Set the MCS fields
-     *
-     * @param known The kwown flags.
-     * @param flags The flags to set.
-     * @param mcs The MCS index value.
+     * structure that contains the subfields of the MCS field.
      */
-    void SetMcsFields(uint8_t known, uint8_t flags, uint8_t mcs);
+    struct McsFields
+    {
+        uint8_t known{MCS_KNOWN_NONE}; //!< known flags
+        uint8_t flags{MCS_FLAGS_NONE}; //!< flags field
+        uint8_t mcs{0};                //!< MCS index value
+    };
+
+    /**
+     * @brief Set the subfields of the MCS field
+     *
+     * @param mcsFields The subfields of the MCS field.
+     */
+    void SetMcsFields(const McsFields& mcsFields);
 
     /**
      * @brief A-MPDU status flags.
      */
-    enum AmpduFlags
+    enum AmpduFlags : uint8_t
     {
         A_MPDU_STATUS_NONE = 0x00,               /**< No flags set */
         A_MPDU_STATUS_REPORT_ZERO_LENGTH = 0x01, /**< Driver reports 0-length subframes */
@@ -222,19 +239,28 @@ class RadiotapHeader : public Header
     };
 
     /**
-     * @brief Set the A-MPDU status fields
-     *
-     * @param referenceNumber The A-MPDU reference number to identify all subframes belonging to the
-     * same A-MPDU.
-     * @param flags The flags to set.
-     * @param crc The CRC value value.
+     * structure that contains the subfields of the A-MPDU status field.
      */
-    void SetAmpduStatus(uint32_t referenceNumber, uint16_t flags, uint8_t crc);
+    struct AmpduStatusFields
+    {
+        uint32_t referenceNumber{
+            0}; //!< A-MPDU reference number to identify all subframes belonging to the same A-MPDU
+        uint16_t flags{A_MPDU_STATUS_NONE}; //!< flags field
+        uint8_t crc{1};                     //!< CRC field
+        uint8_t reserved{0};                //!< Reserved field
+    };
+
+    /**
+     * @brief Set the subfields of the A-MPDU status field
+     *
+     * @param ampduStatusFields The subfields of the A-MPDU status field.
+     */
+    void SetAmpduStatus(const AmpduStatusFields& ampduStatusFields);
 
     /**
      * @brief VHT known bits.
      */
-    enum VhtKnown
+    enum VhtKnown : uint16_t
     {
         VHT_KNOWN_NONE = 0x0000, /**< No flags set */
         VHT_KNOWN_STBC = 0x0001, /**< Space-time block coding (1 if all spatial streams of all users
@@ -253,7 +279,7 @@ class RadiotapHeader : public Header
     /**
      * @brief VHT flags.
      */
-    enum VhtFlags
+    enum VhtFlags : uint8_t
     {
         VHT_FLAGS_NONE = 0x00, /**< No flags set */
         VHT_FLAGS_STBC =
@@ -270,29 +296,32 @@ class RadiotapHeader : public Header
     };
 
     /**
-     * @brief Set the VHT fields
-     *
-     * @param known The kwown flags.
-     * @param flags The flags to set.
-     * @param bandwidth The bandwidth value.
-     * @param mcs_nss The mcs_nss value.
-     * @param coding The coding value.
-     * @param group_id The group_id value.
-     * @param partial_aid The partial_aid value.
+     * structure that contains the subfields of the VHT field.
      */
-    void SetVhtFields(uint16_t known,
-                      uint8_t flags,
-                      uint8_t bandwidth,
-                      uint8_t mcs_nss[4],
-                      uint8_t coding,
-                      uint8_t group_id,
-                      uint16_t partial_aid);
+    struct VhtFields
+    {
+        uint16_t known{VHT_KNOWN_NONE};  //!< known flags field
+        uint8_t flags{VHT_FLAGS_NONE};   //!< flags field
+        uint8_t bandwidth{0};            //!< bandwidth field
+        std::array<uint8_t, 4> mcsNss{}; //!< mcs_nss field
+        uint8_t coding{0};               //!< coding field
+        uint8_t groupId{0};              //!< group_id field
+        uint16_t partialAid{0};          //!< partial_aid field
+    };
 
     /**
-     * @brief HE data1.
+     * @brief Set the subfields of the VHT field
+     *
+     * @param vhtFields The subfields of the VHT field.
      */
-    enum HeData1
+    void SetVhtFields(const VhtFields& vhtFields);
+
+    /**
+     * @brief bits of the HE data fields.
+     */
+    enum HeData : uint16_t
     {
+        /* Data 1 */
         HE_DATA1_FORMAT_EXT_SU = 0x0001,      /**< HE EXT SU PPDU format */
         HE_DATA1_FORMAT_MU = 0x0002,          /**< HE MU PPDU format */
         HE_DATA1_FORMAT_TRIG = 0x0003,        /**< HE TRIG PPDU format */
@@ -312,13 +341,7 @@ class RadiotapHeader : public Header
         HE_DATA1_SPTL_REUSE4_KNOWN = 0x2000, /**< Spatial Reuse 4 known (HE TRIG PPDU format) */
         HE_DATA1_BW_RU_ALLOC_KNOWN = 0x4000, /**< data BW/RU allocation known */
         HE_DATA1_DOPPLER_KNOWN = 0x8000,     /**< Doppler known */
-    };
-
-    /**
-     * @brief HE data2.
-     */
-    enum HeData2
-    {
+        /* Data 2 */
         HE_DATA2_PRISEC_80_KNOWN = 0x0001,    /**< pri/sec 80 MHz known */
         HE_DATA2_GI_KNOWN = 0x0002,           /**< GI known */
         HE_DATA2_NUM_LTF_SYMS_KNOWN = 0x0004, /**< number of LTF symbols known */
@@ -330,13 +353,23 @@ class RadiotapHeader : public Header
         HE_DATA2_RU_OFFSET = 0x3f00,          /**< RU allocation offset */
         HE_DATA2_RU_OFFSET_KNOWN = 0x4000,    /**< RU allocation offset known */
         HE_DATA2_PRISEC_80_SEC = 0x8000,      /**< pri/sec 80 MHz */
-    };
-
-    /**
-     * @brief HE data5.
-     */
-    enum HeData5
-    {
+        /* Data 3 */
+        HE_DATA3_BSS_COLOR = 0x003f,
+        HE_DATA3_BEAM_CHANGE = 0x0040,
+        HE_DATA3_UL_DL = 0x0080,
+        HE_DATA3_DATA_MCS = 0x0f00,
+        HE_DATA3_DATA_DCM = 0x1000,
+        HE_DATA3_CODING = 0x2000,
+        HE_DATA3_LDPC_XSYMSEG = 0x4000,
+        HE_DATA3_STBC = 0x8000,
+        /* Data 4 */
+        HE_DATA4_SU_MU_SPTL_REUSE = 0x000f,
+        HE_DATA4_MU_STA_ID = 0x7ff0,
+        HE_DATA4_TB_SPTL_REUSE1 = 0x000f,
+        HE_DATA4_TB_SPTL_REUSE2 = 0x00f0,
+        HE_DATA4_TB_SPTL_REUSE3 = 0x0f00,
+        HE_DATA4_TB_SPTL_REUSE4 = 0xf000,
+        /* Data 5 */
         HE_DATA5_DATA_BW_RU_ALLOC_40MHZ = 0x0001,  /**< 40 MHz data Bandwidth */
         HE_DATA5_DATA_BW_RU_ALLOC_80MHZ = 0x0002,  /**< 80 MHz data Bandwidth */
         HE_DATA5_DATA_BW_RU_ALLOC_160MHZ = 0x0003, /**< 160 MHz data Bandwidth */
@@ -357,26 +390,29 @@ class RadiotapHeader : public Header
     };
 
     /**
-     * @brief Set the HE fields
-     *
-     * @param data1 The data1 field.
-     * @param data2 The data2 field.
-     * @param data3 The data3 field.
-     * @param data4 The data4 field.
-     * @param data5 The data5 field.
-     * @param data6 The data6 field.
+     * structure that contains the subfields of the HE field.
      */
-    void SetHeFields(uint16_t data1,
-                     uint16_t data2,
-                     uint16_t data3,
-                     uint16_t data4,
-                     uint16_t data5,
-                     uint16_t data6);
+    struct HeFields
+    {
+        uint16_t data1{0}; //!< data1 field
+        uint16_t data2{0}; //!< data2 field
+        uint16_t data3{0}; //!< data3 field
+        uint16_t data4{0}; //!< data4 field
+        uint16_t data5{0}; //!< data5 field
+        uint16_t data6{0}; //!< data6 field
+    };
+
+    /**
+     * @brief Set the subfields of the HE field
+     *
+     * @param heFields The subfields of the HE field.
+     */
+    void SetHeFields(const HeFields& heFields);
 
     /**
      * @brief HE MU flags1.
      */
-    enum HeMuFlags1
+    enum HeMuFlags1 : uint16_t
     {
         HE_MU_FLAGS1_SIGB_MCS = 0x000f,                //!< SIG-B MCS (from SIG-A)
         HE_MU_FLAGS1_SIGB_MCS_KNOWN = 0x0010,          //!< SIG-B MCS known
@@ -394,7 +430,7 @@ class RadiotapHeader : public Header
     /**
      * @brief HE MU flags2.
      */
-    enum HeMuFlags2
+    enum HeMuFlags2 : uint16_t
     {
         HE_MU_FLAGS2_BW_FROM_SIGA = 0x0003, /**< Bandwidth from Bandwidth field in HE-SIG-A */
         HE_MU_FLAGS2_BW_FROM_SIGA_KNOWN =
@@ -410,22 +446,27 @@ class RadiotapHeader : public Header
     };
 
     /**
-     * @brief Set the HE MU fields
-     *
-     * @param flags1 The flags1 field.
-     * @param flags2 The flags2 field.
-     * @param ruChannel1 The RU_channel1 field.
-     * @param ruChannel2 The RU_channel2 field.
+     * structure that contains the subfields of the HE-MU field.
      */
-    void SetHeMuFields(uint16_t flags1,
-                       uint16_t flags2,
-                       const std::array<uint8_t, 4>& ruChannel1,
-                       const std::array<uint8_t, 4>& ruChannel2);
+    struct HeMuFields
+    {
+        uint16_t flags1{0};                  //!< flags1 field
+        uint16_t flags2{0};                  //!< flags2 field
+        std::array<uint8_t, 4> ruChannel1{}; //!< RU_channel1 field
+        std::array<uint8_t, 4> ruChannel2{}; //!< RU_channel2 field
+    };
+
+    /**
+     * @brief Set the subfields of the HE-MU field
+     *
+     * @param heMuFields The subfields of the HE-MU field.
+     */
+    void SetHeMuFields(const HeMuFields& heMuFields);
 
     /**
      * @brief HE MU per_user_known.
      */
-    enum HeMuPerUserKnown
+    enum HeMuPerUserKnown : uint8_t
     {
         HE_MU_PER_USER_POSITION_KNOWN = 0x01,              //!< User field position known
         HE_MU_PER_USER_STA_ID_KNOWN = 0x02,                //!< STA-ID known
@@ -438,23 +479,196 @@ class RadiotapHeader : public Header
     };
 
     /**
-     * @brief Set the HE MU per user fields
-     *
-     * @param perUser1 The per_user_1 field.
-     * @param perUser2 The per_user_2 field.
-     * @param perUserPosition The per_user_position field.
-     * @param perUserKnown The per_user_known field.
+     * structure that contains the subfields of the HE-MU-other-user field.
      */
-    void SetHeMuPerUserFields(uint16_t perUser1,
-                              uint16_t perUser2,
-                              uint8_t perUserPosition,
-                              uint8_t perUserKnown);
+    struct HeMuOtherUserFields
+    {
+        uint16_t perUser1{0};       //!< per_user_1 field
+        uint16_t perUser2{0};       //!< per_user_2 field
+        uint8_t perUserPosition{0}; //!< per_user_position field
+        uint8_t perUserKnown{0};    //!< per_user_known field
+    };
+
+    /**
+     * @brief Set the subfields of the HE-MU-other-user field
+     *
+     * @param heMuOtherUserFields The subfields of the HE-MU-other-user field.
+     */
+    void SetHeMuOtherUserFields(const HeMuOtherUserFields& heMuOtherUserFields);
 
   private:
     /**
+     * Serialize the Channel radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeChannel(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the Channel radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeChannel(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
+     * Add Channel subfield/value pairs to the output stream.
+     *
+     * @param os The output stream
+     */
+    void PrintChannel(std::ostream& os) const;
+
+    /**
+     * Serialize the MCS radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeMcs(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the MCS radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeMcs(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
+     * Add MCS subfield/value pairs to the output stream.
+     *
+     * @param os The output stream
+     */
+    void PrintMcs(std::ostream& os) const;
+
+    /**
+     * Serialize the A-MPDU Status radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeAmpduStatus(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the A-MPDU Status radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeAmpduStatus(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
+     * Add A-MPDU Status subfield/value pairs to the output stream.
+     *
+     * @param os The output stream
+     */
+    void PrintAmpduStatus(std::ostream& os) const;
+
+    /**
+     * Serialize the VHT radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeVht(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the VHT radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeVht(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
+     * Add VHT subfield/value pairs to the output stream.
+     *
+     * @param os The output stream
+     */
+    void PrintVht(std::ostream& os) const;
+
+    /**
+     * Serialize the HE radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeHe(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the HE radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeHe(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
+     * Add HE subfield/value pairs to the output stream.
+     *
+     * @param os The output stream
+     */
+    void PrintHe(std::ostream& os) const;
+
+    /**
+     * Serialize the HE-MU radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeHeMu(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the HE-MU radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeHeMu(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
+     * Add HE-MU subfield/value pairs to the output stream.
+     *
+     * @param os The output stream
+     */
+    void PrintHeMu(std::ostream& os) const;
+
+    /**
+     * Serialize the HE-MU-other-user radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeHeMuOtherUser(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the HE-MU-other-user radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeHeMuOtherUser(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
+     * Add HE-MU-other-user subfield/value pairs to the output stream.
+     *
+     * @param os The output stream
+     */
+    void PrintHeMuOtherUser(std::ostream& os) const;
+
+    /**
      * @brief Radiotap flags.
      */
-    enum RadiotapFlags
+    enum RadiotapFlags : uint32_t
     {
         RADIOTAP_TSFT = 0x00000001,
         RADIOTAP_FLAGS = 0x00000002,
@@ -482,56 +696,40 @@ class RadiotapHeader : public Header
         RADIOTAP_EXT = 0x80000000
     };
 
-    uint16_t m_length;  //!< entire length of radiotap data + header
-    uint32_t m_present; //!< bits describing which fields follow header
+    uint16_t m_length{8};  //!< entire length of radiotap data + header
+    uint32_t m_present{0}; //!< bits describing which fields follow header
 
-    uint64_t m_tsft;        //!< Time Synchronization Function Timer (when the first bit of the MPDU
-                            //!< arrived at the MAC)
-    uint8_t m_flags;        //!< Properties of transmitted and received frames.
-    uint8_t m_rate;         //!< TX/RX data rate in units of 500 kbps
-    uint8_t m_channelPad;   //!< Tx/Rx channel padding.
-    uint16_t m_channelFreq; //!< Tx/Rx frequency in MHz.
-    uint16_t m_channelFlags; //!< Tx/Rx channel flags.
-    int8_t m_antennaSignal;  //!< RF signal power at the antenna, dB difference from an arbitrary,
-                             //!< fixed reference.
-    int8_t m_antennaNoise;   //!< RF noise power at the antenna, dB difference from an arbitrary,
-                             //!< fixed reference.
+    uint64_t m_tsft{0}; //!< Time Synchronization Function Timer (when the first bit of the MPDU
+                        //!< arrived at the MAC)
 
-    uint8_t m_mcsKnown; //!< MCS Flags, known information field.
-    uint8_t m_mcsFlags; //!< MCS Flags, flags field.
-    uint8_t m_mcsRate;  //!< MCS Flags, mcs rate index.
+    uint8_t m_flags{FRAME_FLAG_NONE}; //!< Properties of transmitted and received frames.
 
-    uint8_t m_ampduStatusPad;    //!< A-MPDU Status Flags, padding before A-MPDU Status Field.
-    uint32_t m_ampduStatusRef;   //!< A-MPDU Status Flags, reference number.
-    uint16_t m_ampduStatusFlags; //!< A-MPDU Status Flags, information about the received A-MPDU.
-    uint8_t m_ampduStatusCRC;    //!< A-MPDU Status Flags, delimiter CRC value.
+    uint8_t m_rate{0}; //!< TX/RX data rate in units of 500 kbps
 
-    uint8_t m_vhtPad;         //!< VHT padding.
-    uint16_t m_vhtKnown;      //!< VHT known field.
-    uint8_t m_vhtFlags;       //!< VHT flags field.
-    uint8_t m_vhtBandwidth;   //!< VHT bandwidth field.
-    uint8_t m_vhtMcsNss[4];   //!< VHT mcs_nss field.
-    uint8_t m_vhtCoding;      //!< VHT coding field.
-    uint8_t m_vhtGroupId;     //!< VHT group_id field.
-    uint16_t m_vhtPartialAid; //!< VHT partial_aid field.
+    uint8_t m_channelPad{0};         //!< Channel padding.
+    ChannelFields m_channelFields{}; //!< Channel fields.
 
-    uint8_t m_hePad;    //!< HE padding.
-    uint16_t m_heData1; //!< HE data1 field.
-    uint16_t m_heData2; //!< HE data2 field.
-    uint16_t m_heData3; //!< HE data3 field.
-    uint16_t m_heData4; //!< HE data4 field.
-    uint16_t m_heData5; //!< HE data5 field.
-    uint16_t m_heData6; //!< HE data6 field.
+    int8_t m_antennaSignal{
+        0}; //!< RF signal power at the antenna, dB difference from an arbitrary, fixed reference.
+    int8_t m_antennaNoise{
+        0}; //!< RF noise power at the antenna, dB difference from an arbitrary, fixed reference.
 
-    uint8_t m_heMuPad;     //!< HE MU padding.
-    uint16_t m_heMuFlags1; //!< HE MU flags1 field.
-    uint16_t m_heMuFlags2; //!< HE MU flags2 field.
+    McsFields m_mcsFields{}; //!< MCS fields.
 
-    uint8_t m_heMuOtherUserPad;    //!< HE MU other user padding.
-    uint16_t m_heMuPerUser1;       //!< HE MU per_user_1 field.
-    uint16_t m_heMuPerUser2;       //!< HE MU per_user_2 field.
-    uint8_t m_heMuPerUserPosition; //!< HE MU per_user_position field.
-    uint8_t m_heMuPerUserKnown;    //!< HE MU per_user_known field.
+    uint8_t m_ampduStatusPad{0}; //!< A-MPDU Status Flags, padding before A-MPDU Status Field.
+    AmpduStatusFields m_ampduStatusFields{}; //!< A-MPDU Status fields.
+
+    uint8_t m_vhtPad{0};     //!< VHT padding.
+    VhtFields m_vhtFields{}; //!< VHT fields.
+
+    uint8_t m_hePad{0};    //!< HE padding.
+    HeFields m_heFields{}; //!< HE fields.
+
+    uint8_t m_heMuPad{0};      //!< HE MU padding.
+    HeMuFields m_heMuFields{}; //!< HE MU fields.
+
+    uint8_t m_heMuOtherUserPad{0};               //!< HE MU other user padding.
+    HeMuOtherUserFields m_heMuOtherUserFields{}; //!< HE MU other user fields.
 };
 
 } // namespace ns3

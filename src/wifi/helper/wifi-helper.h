@@ -322,7 +322,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     static void GetRadiotapHeader(RadiotapHeader& header,
                                   Ptr<Packet> packet,
                                   uint16_t channelFreqMhz,
-                                  WifiTxVector txVector,
+                                  const WifiTxVector& txVector,
                                   MpduInfo aMpdu,
                                   uint16_t staId);
 
@@ -340,7 +340,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     static void GetRadiotapHeader(RadiotapHeader& header,
                                   Ptr<Packet> packet,
                                   uint16_t channelFreqMhz,
-                                  WifiTxVector txVector,
+                                  const WifiTxVector& txVector,
                                   MpduInfo aMpdu,
                                   uint16_t staId,
                                   SignalNoiseDbm signalNoise);
