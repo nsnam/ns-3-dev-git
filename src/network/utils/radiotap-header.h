@@ -506,6 +506,92 @@ class RadiotapHeader : public Header
         uint16_t length{0}; //!< length field.
     };
 
+    /**
+     * structure that contains the subfields of the U-SIG field.
+     */
+    struct UsigFields
+    {
+        uint32_t common{0}; //!< common field.
+        uint32_t value{0};  //!< value field.
+        uint32_t mask{0};   //!< mask field.
+    };
+
+    /**
+     * @brief U-SIG common subfield.
+     */
+    enum UsigCommon : uint32_t
+    {
+        USIG_COMMON_PHY_VER_KNOWN = 0x00000001,
+        USIG_COMMON_BW_KNOWN = 0x00000002,
+        USIG_COMMON_UL_DL_KNOWN = 0x00000004,
+        USIG_COMMON_BSS_COLOR_KNOWN = 0x00000008,
+        USIG_COMMON_TXOP_KNOWN = 0x00000010,
+        USIG_COMMON_BAD_USIG_CRC = 0x00000020,
+        USIG_COMMON_VALIDATE_BITS_CHECKED = 0x00000040,
+        USIG_COMMON_VALIDATE_BITS_OK = 0x00000080,
+        USIG_COMMON_PHY_VER = 0x00007000,
+        USIG_COMMON_BW = 0x00038000,
+        USIG_COMMON_UL_DL = 0x00040000,
+        USIG_COMMON_BSS_COLOR = 0x01f80000,
+        USIG_COMMON_TXOP = 0xfe000000,
+    };
+
+    /**
+     * @brief Possible BW values in U-SIG common subfield.
+     */
+    enum UsigCommonBw : uint8_t
+    {
+        USIG_COMMON_BW_20MHZ = 0,
+        USIG_COMMON_BW_40MHZ = 1,
+        USIG_COMMON_BW_80MHZ = 2,
+        USIG_COMMON_BW_160MHZ = 3,
+        USIG_COMMON_BW_320MHZ_1 = 4,
+        USIG_COMMON_BW_320MHZ_2 = 5,
+    };
+
+    /**
+     * @brief EHT MU PPDU U-SIG contents.
+     */
+    enum UsigMu : uint32_t
+    {
+        /* MU-USIG-1 */
+        USIG1_MU_B20_B24_DISREGARD = 0x0000001f,
+        USIG1_MU_B25_VALIDATE = 0x00000020,
+        /* MU-USIG-2 */
+        USIG2_MU_B0_B1_PPDU_TYPE = 0x000000c0,
+        USIG2_MU_B2_VALIDATE = 0x00000100,
+        USIG2_MU_B3_B7_PUNCTURED_INFO = 0x00003e00,
+        USIG2_MU_B8_VALIDATE = 0x00004000,
+        USIG2_MU_B9_B10_SIG_MCS = 0x00018000,
+        USIG2_MU_B11_B15_EHT_SYMBOLS = 0x003e0000,
+        USIG2_MU_B16_B19_CRC = 0x03c00000,
+        USIG2_MU_B20_B25_TAIL = 0xfc000000,
+    };
+
+    /**
+     * @brief EHT TB PPDU U-SIG contents.
+     */
+    enum UsigTb : uint32_t
+    {
+        /* TB-USIG-1 */
+        USIG1_TB_B20_B25_DISREGARD = 0x0000001f,
+        /* TB-USIG-2 */
+        USIG2_TB_B0_B1_PPDU_TYPE = 0x000000c0,
+        USIG2_TB_B2_VALIDATE = 0x00000100,
+        USIG2_TB_B3_B6_SPATIAL_REUSE_1 = 0x00001e00,
+        USIG2_TB_B7_B10_SPATIAL_REUSE_2 = 0x0001e000,
+        USIG2_TB_B11_B15_DISREGARD = 0x003e0000,
+        USIG2_TB_B16_B19_CRC = 0x03c00000,
+        USIG2_TB_B20_B25_TAIL = 0xfc000000,
+    };
+
+    /**
+     * @brief Set the subfields of the U-SIG field
+     *
+     * @param usigFields The subfields of the U-SIG field.
+     */
+    void SetUsigFields(const UsigFields& usigFields);
+
   private:
     /**
      * Serialize the Channel radiotap header.
@@ -676,6 +762,30 @@ class RadiotapHeader : public Header
     void PrintHeMuOtherUser(std::ostream& os) const;
 
     /**
+     * Serialize the U-SIG radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeUsig(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the U-SIG radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeUsig(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
+     * Add U-SIG subfield/value pairs to the output stream.
+     *
+     * @param os The output stream
+     */
+    void PrintUsig(std::ostream& os) const;
+
+    /**
      * @brief Radiotap flags.
      */
     enum RadiotapFlags : uint32_t
@@ -752,6 +862,11 @@ class RadiotapHeader : public Header
 
     uint8_t m_heMuOtherUserPad{0};               //!< HE MU other user padding.
     HeMuOtherUserFields m_heMuOtherUserFields{}; //!< HE MU other user fields.
+
+    uint8_t m_usigTlvPad{0};   //!< U-SIG TLV padding.
+    TlvFields m_usigTlv{};     //!< U-SIG TLV fields.
+    uint8_t m_usigPad{0};      //!< U-SIG padding.
+    UsigFields m_usigFields{}; //!< U-SIG fields.
 };
 
 } // namespace ns3

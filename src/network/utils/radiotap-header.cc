@@ -260,6 +260,15 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     {
         SerializeHeMuOtherUser(start);
     }
+
+    //
+    // U-SIG field.
+    // Reference: https://www.radiotap.org/fields/U-SIG.html
+    //
+    if (m_presentExt && (*m_presentExt & RADIOTAP_USIG)) // bit 33
+    {
+        SerializeUsig(start);
+    }
 }
 
 uint32_t
@@ -502,6 +511,15 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
         bytesRead += DeserializeHeMuOtherUser(start, bytesRead);
     }
 
+    //
+    // U-SIG field.
+    // Reference: https://www.radiotap.org/fields/U-SIG.html
+    //
+    if (m_presentExt && (*m_presentExt & RADIOTAP_USIG)) // bit 33
+    {
+        bytesRead += DeserializeUsig(start, bytesRead);
+    }
+
     NS_ASSERT_MSG(m_length == bytesRead,
                   "RadiotapHeader::Deserialize(): expected and actual lengths inconsistent");
     return bytesRead;
@@ -540,6 +558,10 @@ RadiotapHeader::Print(std::ostream& os) const
     if (m_present & RADIOTAP_HE_MU_OTHER_USER)
     {
         PrintHeMuOtherUser(os);
+    }
+    if (m_presentExt && (*m_presentExt & RADIOTAP_USIG))
+    {
+        PrintUsig(os);
     }
 }
 
@@ -980,6 +1002,72 @@ RadiotapHeader::PrintHeMuOtherUser(std::ostream& os) const
        << " heMuOtherUser.perUserPosition=" << m_heMuOtherUserFields.perUserPosition
        << " heMuOtherUser.perUserKnown=0x" << std::hex << m_heMuOtherUserFields.perUserKnown
        << std::dec;
+}
+
+void
+RadiotapHeader::SetUsigFields(const UsigFields& usigFields)
+{
+    NS_LOG_FUNCTION(this << usigFields.common << usigFields.mask << usigFields.value);
+    if (!m_presentExt)
+    {
+        m_present |= RADIOTAP_TLV | RADIOTAP_EXT;
+        m_presentExt = 0;
+        m_length += sizeof(RadiotapExtFlags);
+    }
+
+    NS_ASSERT_MSG(!(*m_presentExt & RADIOTAP_USIG), "U-SIG radiotap field already present");
+    *m_presentExt |= RADIOTAP_USIG;
+
+    m_usigTlvPad = ((8 - m_length % 8) % 8);
+    m_usigTlv.type = 32 + std::countr_zero<uint16_t>(RADIOTAP_USIG);
+    m_usigTlv.length = sizeof(UsigFields);
+    m_length += sizeof(TlvFields) + m_usigTlvPad;
+
+    m_usigPad = ((4 - m_length % 4) % 4);
+    m_usigFields = usigFields;
+    m_length += m_usigTlv.length + m_usigPad;
+
+    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present
+                      << " m_presentExt=0x" << *m_presentExt << std::dec);
+}
+
+void
+RadiotapHeader::SerializeUsig(Buffer::Iterator& start) const
+{
+    start.WriteU8(0, m_usigTlvPad);
+    start.WriteU16(m_usigTlv.type);
+    start.WriteU16(m_usigTlv.length);
+    start.WriteU8(0, m_usigPad);
+    start.WriteU32(m_usigFields.common);
+    start.WriteU32(m_usigFields.value);
+    start.WriteU32(m_usigFields.mask);
+}
+
+uint32_t
+RadiotapHeader::DeserializeUsig(Buffer::Iterator start, uint32_t bytesRead)
+{
+    const auto startBytesRead = bytesRead;
+    m_usigTlvPad = ((8 - bytesRead % 8) % 8);
+    start.Next(m_usigTlvPad);
+    bytesRead += m_usigTlvPad;
+    m_usigTlv.type = start.ReadU16();
+    m_usigTlv.length = start.ReadU16();
+    bytesRead += sizeof(TlvFields);
+    m_usigPad = ((4 - bytesRead % 4) % 4);
+    start.Next(m_usigPad);
+    bytesRead += m_usigPad;
+    m_usigFields.common = start.ReadU32();
+    m_usigFields.value = start.ReadU32();
+    m_usigFields.mask = start.ReadU32();
+    bytesRead += sizeof(UsigFields);
+    return bytesRead - startBytesRead;
+}
+
+void
+RadiotapHeader::PrintUsig(std::ostream& os) const
+{
+    os << " usig.common=0x" << std::hex << m_usigFields.common << " usig.value=0x"
+       << m_usigFields.value << " usig.mask=0x" << m_usigFields.mask << std::dec;
 }
 
 } // namespace ns3
