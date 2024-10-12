@@ -43,10 +43,14 @@ Due to an `upstream limitation with Cppyy <https://github.com/wlav/cppyy/issues/
 Requirements
 ************
 
-macOS uses the Clang/LLVM compiler toolchain.  It is possible to install gcc/g++ from
-Homebrew and MacPorts, but macOS will not provide it due to licensing issues.  |ns3|
+Installing ns-3 on macOS requires two fundamental things:  1) C++/Python development tools, and 2) CMake build system with at least one underlying build tool.  These can either be installed via binary package installation from the macOS App Store (Xcode development tools) or the web (`CMake binary package <https://cmake.org/download/>`_), or from Homebrew or MacPorts.
+
+macOS Xcode uses the Clang/LLVM compiler toolchain.  It is possible to install the GNU compiler gcc/g++ from
+Homebrew and MacPorts, but macOS will not provide it due to licensing issues.  If you do not install Xcode you will have to install build tools via Homebrew or MacPorts.  |ns3|
 works on recent versions of both ``clang++`` and ``g++``, so for macOS, there is no need
 to install ``g++``.
+
+The following table provides package names for installing CMake and Ninja build system from Homebrew or MacPorts.
 
   +--------------------+-------------------------------+-------------------------------------+
   | **ns-3 Version**   | **Homebrew packages**         | **MacPorts packages**               |
@@ -55,6 +59,18 @@ to install ``g++``.
   +--------------------+-------------------------------+-------------------------------------+
   | 3.35 and earlier   | None                          | None                                |
   +--------------------+-------------------------------+-------------------------------------+
+
+You will know you are done when you can successfully type `clang++ -v` at the command line, and when you type `cmake --help` and it identifies that you have at least one installed generator (in the below example, Unix Makefiles):
+
+::
+
+  Generators
+  The following generators are available on this platform (* marks default):
+  * Unix Makefiles               = Generates standard UNIX makefiles.
+    Ninja                        = Generates build.ninja files.
+    Ninja Multi-Config           = Generates build-<Config>.ninja files.
+    Watcom WMake                 = Generates Watcom WMake makefiles.
+    Xcode                        = Generate Xcode project files.
 
 Recommended
 ***********
