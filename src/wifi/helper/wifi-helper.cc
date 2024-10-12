@@ -665,6 +665,117 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
         }
         header.SetUsigFields(usigFields);
     }
+
+    if (preamble == WIFI_PREAMBLE_EHT_MU)
+    {
+        RadiotapHeader::EhtFields ehtFields{};
+        ehtFields.known = RadiotapHeader::EHT_KNOWN_GI | RadiotapHeader::EHT_KNOWN_RU_MRU_SIZE_OM |
+                          RadiotapHeader::EHT_KNOWN_RU_MRU_INDEX_OM;
+        switch (gi.GetNanoSeconds())
+        {
+        case 800:
+            ehtFields.data.at(0) =
+                GetRadiotapField(RadiotapHeader::EHT_DATA0_GI, RadiotapHeader::EHT_DATA0_GI_800_NS);
+            break;
+        case 1600:
+            ehtFields.data.at(0) = GetRadiotapField(RadiotapHeader::EHT_DATA0_GI,
+                                                    RadiotapHeader::EHT_DATA0_GI_1600_NS);
+            break;
+        case 3200:
+            ehtFields.data.at(0) = GetRadiotapField(RadiotapHeader::EHT_DATA0_GI,
+                                                    RadiotapHeader::EHT_DATA0_GI_3200_NS);
+            break;
+        default:
+            NS_ABORT_MSG("Unexpected guard interval");
+            break;
+        }
+        ehtFields.data.at(1) = RadiotapHeader::EHT_DATA1_RU_ALLOC_CC_1_1_1_KNOWN;
+        const auto ruType = (txVector.GetEhtPpduType() == 1) ? HeRu::GetRuType(channelWidth)
+                                                             : txVector.GetRu(staId).GetRuType();
+        switch (ruType)
+        {
+        case HeRu::RU_26_TONE:
+            ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
+                                                     RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_26);
+            break;
+        case HeRu::RU_52_TONE:
+            ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
+                                                     RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_52);
+            break;
+        case HeRu::RU_106_TONE:
+            ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
+                                                     RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_106);
+            break;
+        case HeRu::RU_242_TONE:
+            ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
+                                                     RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_242);
+            break;
+        case HeRu::RU_484_TONE:
+            ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
+                                                     RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_484);
+            break;
+        case HeRu::RU_996_TONE:
+            ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
+                                                     RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_996);
+            break;
+        case HeRu::RU_2x996_TONE:
+            ehtFields.data.at(1) |= GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_SIZE,
+                                                     RadiotapHeader::EHT_DATA1_RU_MRU_SIZE_2x996);
+            break;
+        default:
+            NS_ABORT_MSG("Unexpected RU type");
+            break;
+        }
+        const auto ruIndex =
+            (txVector.GetEhtPpduType() == 1) ? 1 : txVector.GetRu(staId).GetIndex();
+        const auto& ruAllocation = txVector.GetRuAllocation(p20Index);
+        ehtFields.data.at(1) |=
+            GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_INDEX, ruIndex) |
+            GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_ALLOC_CC_1_1_1, ruAllocation.at(0));
+        if (channelWidth >= 40)
+        {
+            ehtFields.data.at(2) =
+                RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_2_1_1_KNOWN |
+                GetRadiotapField(RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_2_1_1, ruAllocation.at(1));
+        }
+        if (channelWidth >= 80)
+        {
+            ehtFields.data.at(2) |=
+                RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_1_1_2_KNOWN |
+                RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_2_1_2_KNOWN |
+                GetRadiotapField(RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_1_1_2, ruAllocation.at(2)) |
+                GetRadiotapField(RadiotapHeader::EHT_DATA2_RU_ALLOC_CC_2_1_2, ruAllocation.at(3));
+        }
+        if (channelWidth >= 160)
+        {
+            ehtFields.data.at(3) =
+                RadiotapHeader::EHT_DATA3_RU_ALLOC_CC_1_2_1_KNOWN |
+                RadiotapHeader::EHT_DATA3_RU_ALLOC_CC_2_2_1_KNOWN |
+                RadiotapHeader::EHT_DATA3_RU_ALLOC_CC_1_2_2_KNOWN |
+                GetRadiotapField(RadiotapHeader::EHT_DATA3_RU_ALLOC_CC_1_2_1, ruAllocation.at(4)) |
+                GetRadiotapField(RadiotapHeader::EHT_DATA3_RU_ALLOC_CC_2_2_1, ruAllocation.at(5)) |
+                GetRadiotapField(RadiotapHeader::EHT_DATA3_RU_ALLOC_CC_1_2_2, ruAllocation.at(6));
+            ehtFields.data.at(4) =
+                RadiotapHeader::EHT_DATA4_RU_ALLOC_CC_2_2_2_KNOWN |
+                GetRadiotapField(RadiotapHeader::EHT_DATA4_RU_ALLOC_CC_2_2_2, ruAllocation.at(7));
+            ehtFields.known |= RadiotapHeader::EHT_KNOWN_PRIMARY_80;
+            const auto isLowP80 = p20Index < (channelWidth / 40);
+            ehtFields.data.at(1) |=
+                GetRadiotapField(RadiotapHeader::EHT_DATA1_PRIMARY_80,
+                                 (isLowP80 ? RadiotapHeader::EHT_DATA1_PRIMARY_80_LOWEST
+                                           : RadiotapHeader::EHT_DATA1_PRIMARY_80_HIGHEST));
+        }
+        // TODO: handle 320 MHz when supported
+        uint32_t userInfo = RadiotapHeader::EHT_USER_INFO_STA_ID_KNOWN |
+                            RadiotapHeader::EHT_USER_INFO_MCS_KNOWN |
+                            RadiotapHeader::EHT_USER_INFO_NSS_KNOWN_O |
+                            RadiotapHeader::EHT_USER_INFO_DATA_FOR_USER |
+                            GetRadiotapField(RadiotapHeader::EHT_USER_INFO_STA_ID, staId) |
+                            GetRadiotapField(RadiotapHeader::EHT_USER_INFO_MCS, mcs) |
+                            GetRadiotapField(RadiotapHeader::EHT_USER_INFO_NSS_O, nss);
+        ehtFields.userInfo.push_back(userInfo);
+        header.SetEhtFields(ehtFields);
+    }
 }
 
 void
