@@ -81,7 +81,7 @@ class Flow(object):
     ## @var packetSizeMean
     #  packet size mean
     ## @var probe_stats_unsorted
-    #  unsirted probe stats
+    #  unsorted probe stats
     ## @var hopCount
     #  hop count
     ## @var flowInterruptionsHistogram
@@ -110,6 +110,9 @@ class Flow(object):
         @param flow_el The element.
         """
         self.flowId = int(flow_el.get("flowId"))
+        if flow_el.get("rxPackets") is None:
+            print("\nParsing of provided xml is not supported")
+            exit()
         rxPackets = float(flow_el.get("rxPackets"))
         txPackets = float(flow_el.get("txPackets"))
 
