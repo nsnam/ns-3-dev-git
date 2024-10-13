@@ -322,7 +322,7 @@ HeFrameExchangeManager::GetMuRtsDurationId(uint32_t muRtsSize,
     // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
     // of 802.11-2016)
     return std::max(m_edca->GetRemainingTxop(m_linkId) -
-                        m_phy->CalculateTxDuration(muRtsSize, muRtsTxVector, m_phy->GetPhyBand()),
+                        WifiPhy::CalculateTxDuration(muRtsSize, muRtsTxVector, m_phy->GetPhyBand()),
                     Seconds(0));
 }
 
@@ -365,9 +365,9 @@ HeFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
     // After transmitting an MU-RTS frame, the STA shall wait for a CTSTimeout interval of
     // aSIFSTime + aSlotTime + aRxPHYStartDelay (Sec. 27.2.5.2 of 802.11ax D3.0).
     // aRxPHYStartDelay equals the time to transmit the PHY header.
-    Time timeout = m_phy->CalculateTxDuration(mpdu->GetSize(),
-                                              protection->muRtsTxVector,
-                                              m_phy->GetPhyBand()) +
+    Time timeout = WifiPhy::CalculateTxDuration(mpdu->GetSize(),
+                                                protection->muRtsTxVector,
+                                                m_phy->GetPhyBand()) +
                    m_phy->GetSifs() + m_phy->GetSlot() +
                    m_phy->CalculatePhyPreambleAndHeaderDuration(ctsTxVector);
 
@@ -622,9 +622,9 @@ HeFrameExchangeManager::SendPsduMap()
             }
 
             Ptr<WifiPsdu> triggerPsdu = GetWifiPsdu(m_triggerFrame, acknowledgment->muBarTxVector);
-            Time txDuration = m_phy->CalculateTxDuration(triggerPsdu->GetSize(),
-                                                         acknowledgment->muBarTxVector,
-                                                         m_phy->GetPhyBand());
+            Time txDuration = WifiPhy::CalculateTxDuration(triggerPsdu->GetSize(),
+                                                           acknowledgment->muBarTxVector,
+                                                           m_phy->GetPhyBand());
             // update acknowledgmentTime to correctly set the Duration/ID
             *acknowledgment->acknowledgmentTime -= (m_phy->GetSifs() + txDuration);
             m_triggerFrame->GetHeader().SetDuration(GetPsduDurationId(txDuration, m_txParams));
@@ -790,7 +790,7 @@ HeFrameExchangeManager::SendPsduMap()
     else
     {
         txDuration =
-            m_phy->CalculateTxDuration(psduMap, m_txParams.m_txVector, m_phy->GetPhyBand());
+            WifiPhy::CalculateTxDuration(psduMap, m_txParams.m_txVector, m_phy->GetPhyBand());
 
         // Set Duration/ID
         Time durationId = GetPsduDurationId(txDuration, m_txParams);
@@ -1000,10 +1000,10 @@ HeFrameExchangeManager::CalculateProtectionTime(WifiProtection* protection) cons
         uint32_t muRtsSize = WifiMacHeader(WIFI_MAC_CTL_TRIGGER).GetSize() +
                              muRtsCtsProtection->muRts.GetSerializedSize() + WIFI_MAC_FCS_LENGTH;
         muRtsCtsProtection->protectionTime =
-            m_phy->CalculateTxDuration(muRtsSize,
-                                       muRtsCtsProtection->muRtsTxVector,
-                                       m_phy->GetPhyBand()) +
-            m_phy->CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand()) +
+            WifiPhy::CalculateTxDuration(muRtsSize,
+                                         muRtsCtsProtection->muRtsTxVector,
+                                         m_phy->GetPhyBand()) +
+            WifiPhy::CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand()) +
             2 * m_phy->GetSifs();
     }
     else
@@ -1038,29 +1038,30 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
                 dlMuBarBaAcknowledgment->stationsReplyingWithNormalAck.begin()->second;
             duration +=
                 m_phy->GetSifs() +
-                m_phy->CalculateTxDuration(GetAckSize(), info.ackTxVector, m_phy->GetPhyBand());
+                WifiPhy::CalculateTxDuration(GetAckSize(), info.ackTxVector, m_phy->GetPhyBand());
         }
 
         if (!dlMuBarBaAcknowledgment->stationsReplyingWithBlockAck.empty())
         {
             const auto& info =
                 dlMuBarBaAcknowledgment->stationsReplyingWithBlockAck.begin()->second;
-            duration += m_phy->GetSifs() + m_phy->CalculateTxDuration(GetBlockAckSize(info.baType),
-                                                                      info.blockAckTxVector,
-                                                                      m_phy->GetPhyBand());
+            duration +=
+                m_phy->GetSifs() + WifiPhy::CalculateTxDuration(GetBlockAckSize(info.baType),
+                                                                info.blockAckTxVector,
+                                                                m_phy->GetPhyBand());
         }
 
         for (const auto& stations : dlMuBarBaAcknowledgment->stationsSendBlockAckReqTo)
         {
             const auto& info = stations.second;
             duration += m_phy->GetSifs() +
-                        m_phy->CalculateTxDuration(GetBlockAckRequestSize(info.barType),
-                                                   info.blockAckReqTxVector,
-                                                   m_phy->GetPhyBand()) +
+                        WifiPhy::CalculateTxDuration(GetBlockAckRequestSize(info.barType),
+                                                     info.blockAckReqTxVector,
+                                                     m_phy->GetPhyBand()) +
                         m_phy->GetSifs() +
-                        m_phy->CalculateTxDuration(GetBlockAckSize(info.baType),
-                                                   info.blockAckTxVector,
-                                                   m_phy->GetPhyBand());
+                        WifiPhy::CalculateTxDuration(GetBlockAckSize(info.baType),
+                                                     info.blockAckTxVector,
+                                                     m_phy->GetPhyBand());
         }
 
         dlMuBarBaAcknowledgment->acknowledgmentTime = duration;
@@ -1080,10 +1081,10 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
             const auto& info = stations.second;
             NS_ASSERT(info.blockAckTxVector.GetHeMuUserInfoMap().size() == 1);
             uint16_t staId = info.blockAckTxVector.GetHeMuUserInfoMap().begin()->first;
-            Time currBlockAckDuration = m_phy->CalculateTxDuration(GetBlockAckSize(info.baType),
-                                                                   info.blockAckTxVector,
-                                                                   m_phy->GetPhyBand(),
-                                                                   staId);
+            Time currBlockAckDuration = WifiPhy::CalculateTxDuration(GetBlockAckSize(info.baType),
+                                                                     info.blockAckTxVector,
+                                                                     m_phy->GetPhyBand(),
+                                                                     staId);
             // update the max duration among all the Block Ack responses
             if (currBlockAckDuration > duration)
             {
@@ -1106,9 +1107,9 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
         }
         dlMuTfMuBarAcknowledgment->acknowledgmentTime =
             m_phy->GetSifs() +
-            m_phy->CalculateTxDuration(muBarSize,
-                                       dlMuTfMuBarAcknowledgment->muBarTxVector,
-                                       m_phy->GetPhyBand()) +
+            WifiPhy::CalculateTxDuration(muBarSize,
+                                         dlMuTfMuBarAcknowledgment->muBarTxVector,
+                                         m_phy->GetPhyBand()) +
             m_phy->GetSifs() + duration;
     }
     /*
@@ -1126,10 +1127,10 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
             const auto& info = stations.second;
             NS_ASSERT(info.blockAckTxVector.GetHeMuUserInfoMap().size() == 1);
             uint16_t staId = info.blockAckTxVector.GetHeMuUserInfoMap().begin()->first;
-            Time currBlockAckDuration = m_phy->CalculateTxDuration(GetBlockAckSize(info.baType),
-                                                                   info.blockAckTxVector,
-                                                                   m_phy->GetPhyBand(),
-                                                                   staId);
+            Time currBlockAckDuration = WifiPhy::CalculateTxDuration(GetBlockAckSize(info.baType),
+                                                                     info.blockAckTxVector,
+                                                                     m_phy->GetPhyBand(),
+                                                                     staId);
             // update the max duration among all the Block Ack responses
             if (currBlockAckDuration > duration)
             {
@@ -1152,9 +1153,9 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
     {
         auto ulMuMultiStaBa = static_cast<WifiUlMuMultiStaBa*>(acknowledgment);
 
-        Time duration = m_phy->CalculateTxDuration(GetBlockAckSize(ulMuMultiStaBa->baType),
-                                                   ulMuMultiStaBa->multiStaBaTxVector,
-                                                   m_phy->GetPhyBand());
+        Time duration = WifiPhy::CalculateTxDuration(GetBlockAckSize(ulMuMultiStaBa->baType),
+                                                     ulMuMultiStaBa->multiStaBaTxVector,
+                                                     m_phy->GetPhyBand());
         ulMuMultiStaBa->acknowledgmentTime = m_phy->GetSifs() + duration;
     }
     /*
@@ -1246,10 +1247,10 @@ HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
 
     uint16_t staId = (txParams.m_txVector.IsDlMu() ? m_apMac->GetAssociationId(receiver, m_linkId)
                                                    : m_staMac->GetAssociationId());
-    Time psduDuration = m_phy->CalculateTxDuration(ppduPayloadSize,
-                                                   txParams.m_txVector,
-                                                   m_phy->GetPhyBand(),
-                                                   staId);
+    Time psduDuration = WifiPhy::CalculateTxDuration(ppduPayloadSize,
+                                                     txParams.m_txVector,
+                                                     m_phy->GetPhyBand(),
+                                                     staId);
 
     return txParams.m_txDuration ? std::max(psduDuration, *txParams.m_txDuration) : psduDuration;
 }
@@ -1682,9 +1683,9 @@ HeFrameExchangeManager::SendMultiStaBlockAck(const WifiTxParameters& txParams, T
     Ptr<WifiPsdu> psdu =
         GetWifiPsdu(Create<WifiMpdu>(packet, hdr), acknowledgment->multiStaBaTxVector);
 
-    Time txDuration = m_phy->CalculateTxDuration(GetBlockAckSize(acknowledgment->baType),
-                                                 acknowledgment->multiStaBaTxVector,
-                                                 m_phy->GetPhyBand());
+    Time txDuration = WifiPhy::CalculateTxDuration(GetBlockAckSize(acknowledgment->baType),
+                                                   acknowledgment->multiStaBaTxVector,
+                                                   m_phy->GetPhyBand());
     /**
      * In a BlockAck frame transmitted in response to a frame carried in HE TB PPDU under
      * single protection settings, the Duration/ID field is set to the value obtained from

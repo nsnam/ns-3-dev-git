@@ -91,7 +91,7 @@ QosFrameExchangeManager::SendCfEndIfNeeded()
 
     auto mpdu = Create<WifiMpdu>(Create<Packet>(), cfEnd);
     auto txDuration =
-        m_phy->CalculateTxDuration(mpdu->GetSize(), cfEndTxVector, m_phy->GetPhyBand());
+        WifiPhy::CalculateTxDuration(mpdu->GetSize(), cfEndTxVector, m_phy->GetPhyBand());
 
     // Send the CF-End frame if the remaining duration is long enough to transmit this frame
     if (m_edca->GetRemainingTxop(m_linkId) > txDuration)
@@ -484,9 +484,10 @@ QosFrameExchangeManager::GetFrameDurationId(const WifiMacHeader& header,
     // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
     // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
     // of 802.11-2016)
-    return std::max(m_edca->GetRemainingTxop(m_linkId) -
-                        m_phy->CalculateTxDuration(size, txParams.m_txVector, m_phy->GetPhyBand()),
-                    *txParams.m_acknowledgment->acknowledgmentTime);
+    return std::max(
+        m_edca->GetRemainingTxop(m_linkId) -
+            WifiPhy::CalculateTxDuration(size, txParams.m_txVector, m_phy->GetPhyBand()),
+        *txParams.m_acknowledgment->acknowledgmentTime);
 }
 
 Time
@@ -511,9 +512,10 @@ QosFrameExchangeManager::GetRtsDurationId(const WifiTxVector& rtsTxVector,
     // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
     // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
     // of 802.11-2016)
-    return std::max(m_edca->GetRemainingTxop(m_linkId) -
-                        m_phy->CalculateTxDuration(GetRtsSize(), rtsTxVector, m_phy->GetPhyBand()),
-                    Seconds(0));
+    return std::max(
+        m_edca->GetRemainingTxop(m_linkId) -
+            WifiPhy::CalculateTxDuration(GetRtsSize(), rtsTxVector, m_phy->GetPhyBand()),
+        Seconds(0));
 }
 
 Time
@@ -538,9 +540,10 @@ QosFrameExchangeManager::GetCtsToSelfDurationId(const WifiTxVector& ctsTxVector,
     // is set to cover the remaining TXOP time (Sec. 9.2.5.2 of 802.11-2016).
     // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8
     // of 802.11-2016)
-    return std::max(m_edca->GetRemainingTxop(m_linkId) -
-                        m_phy->CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand()),
-                    Seconds(0));
+    return std::max(
+        m_edca->GetRemainingTxop(m_linkId) -
+            WifiPhy::CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand()),
+        Seconds(0));
 }
 
 void

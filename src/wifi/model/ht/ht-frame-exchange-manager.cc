@@ -634,22 +634,23 @@ HtFrameExchangeManager::CalculateAcknowledgmentTime(WifiAcknowledgment* acknowle
     if (acknowledgment->method == WifiAcknowledgment::BLOCK_ACK)
     {
         auto blockAcknowledgment = static_cast<WifiBlockAck*>(acknowledgment);
-        Time baTxDuration = m_phy->CalculateTxDuration(GetBlockAckSize(blockAcknowledgment->baType),
-                                                       blockAcknowledgment->blockAckTxVector,
-                                                       m_phy->GetPhyBand());
+        Time baTxDuration =
+            WifiPhy::CalculateTxDuration(GetBlockAckSize(blockAcknowledgment->baType),
+                                         blockAcknowledgment->blockAckTxVector,
+                                         m_phy->GetPhyBand());
         blockAcknowledgment->acknowledgmentTime = m_phy->GetSifs() + baTxDuration;
     }
     else if (acknowledgment->method == WifiAcknowledgment::BAR_BLOCK_ACK)
     {
         auto barBlockAcknowledgment = static_cast<WifiBarBlockAck*>(acknowledgment);
         Time barTxDuration =
-            m_phy->CalculateTxDuration(GetBlockAckRequestSize(barBlockAcknowledgment->barType),
-                                       barBlockAcknowledgment->blockAckReqTxVector,
-                                       m_phy->GetPhyBand());
+            WifiPhy::CalculateTxDuration(GetBlockAckRequestSize(barBlockAcknowledgment->barType),
+                                         barBlockAcknowledgment->blockAckReqTxVector,
+                                         m_phy->GetPhyBand());
         Time baTxDuration =
-            m_phy->CalculateTxDuration(GetBlockAckSize(barBlockAcknowledgment->baType),
-                                       barBlockAcknowledgment->blockAckTxVector,
-                                       m_phy->GetPhyBand());
+            WifiPhy::CalculateTxDuration(GetBlockAckSize(barBlockAcknowledgment->baType),
+                                         barBlockAcknowledgment->blockAckTxVector,
+                                         m_phy->GetPhyBand());
         barBlockAcknowledgment->acknowledgmentTime =
             2 * m_phy->GetSifs() + barTxDuration + baTxDuration;
     }
@@ -979,7 +980,7 @@ HtFrameExchangeManager::SendPsdu()
     NS_LOG_FUNCTION(this);
 
     Time txDuration =
-        m_phy->CalculateTxDuration(m_psdu->GetSize(), m_txParams.m_txVector, m_phy->GetPhyBand());
+        WifiPhy::CalculateTxDuration(m_psdu->GetSize(), m_txParams.m_txVector, m_phy->GetPhyBand());
 
     NS_ASSERT(m_txParams.m_acknowledgment);
 
@@ -1495,7 +1496,7 @@ HtFrameExchangeManager::SendBlockAck(const RecipientBlockAckAgreement& agreement
     // time, in microseconds between the end of the PPDU carrying the frame that
     // elicited the response and the end of the PPDU carrying the BlockAck frame.
     Time baDurationId = durationId - m_phy->GetSifs() -
-                        m_phy->CalculateTxDuration(psdu, blockAckTxVector, m_phy->GetPhyBand());
+                        WifiPhy::CalculateTxDuration(psdu, blockAckTxVector, m_phy->GetPhyBand());
     // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8 of 802.11-2016)
     if (baDurationId.IsStrictlyNegative())
     {
