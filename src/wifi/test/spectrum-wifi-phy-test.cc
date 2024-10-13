@@ -6,7 +6,8 @@
 
 #include "ns3/boolean.h"
 #include "ns3/constant-position-mobility-model.h"
-#include "ns3/he-phy.h" //includes OFDM PHY
+#include "ns3/eht-configuration.h"
+#include "ns3/eht-phy.h" //includes all previous PHYs
 #include "ns3/interference-helper.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
@@ -508,9 +509,9 @@ SpectrumWifiPhyFilterTest::SpectrumWifiPhyFilterTest(std::string name)
 void
 SpectrumWifiPhyFilterTest::SendPpdu()
 {
-    WifiTxVector txVector{HePhy::GetHeMcs0(),
+    WifiTxVector txVector{EhtPhy::GetEhtMcs0(),
                           0,
-                          WIFI_PREAMBLE_HE_SU,
+                          WIFI_PREAMBLE_EHT_MU,
                           NanoSeconds(800),
                           1,
                           1,
@@ -549,6 +550,7 @@ SpectrumWifiPhyFilterTest::RxCallback(Ptr<const Packet> p, RxPowerWattPerChannel
     expectedNumBands += (m_rxChannelWidth / MHz_u{40});
     expectedNumBands += (m_rxChannelWidth / MHz_u{80});
     expectedNumBands += (m_rxChannelWidth / MHz_u{160});
+    expectedNumBands += (m_rxChannelWidth / MHz_u{320});
     expectedNumBands += m_rxPhy
                             ->GetRuBands(m_rxPhy->GetCurrentInterface(),
                                          m_rxPhy->GetGuardBandwidth(
@@ -618,12 +620,15 @@ SpectrumWifiPhyFilterTest::DoSetup()
     m_txPhy->SetErrorRateModel(txErrorModel);
     m_txPhy->SetDevice(txDev);
     m_txPhy->AddChannel(spectrumChannel);
-    m_txPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
+    m_txPhy->ConfigureStandard(WIFI_STANDARD_80211be);
+    txDev->SetStandard(WIFI_STANDARD_80211be);
     auto apMobility = CreateObject<ConstantPositionMobilityModel>();
     m_txPhy->SetMobility(apMobility);
     txDev->SetPhy(m_txPhy);
     txNode->AggregateObject(apMobility);
     txNode->AddDevice(txDev);
+    auto txEhtConfiguration = CreateObject<EhtConfiguration>();
+    txDev->SetEhtConfiguration(txEhtConfiguration);
 
     auto rxNode = CreateObject<Node>();
     auto rxDev = CreateObject<WifiNetDevice>();
@@ -632,13 +637,17 @@ SpectrumWifiPhyFilterTest::DoSetup()
     m_rxPhy->SetInterferenceHelper(rxInterferenceHelper);
     auto rxErrorModel = CreateObject<NistErrorRateModel>();
     m_rxPhy->SetErrorRateModel(rxErrorModel);
+    m_rxPhy->SetDevice(rxDev);
     m_rxPhy->AddChannel(spectrumChannel);
-    m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211ax);
+    m_rxPhy->ConfigureStandard(WIFI_STANDARD_80211be);
+    rxDev->SetStandard(WIFI_STANDARD_80211be);
     auto sta1Mobility = CreateObject<ConstantPositionMobilityModel>();
     m_rxPhy->SetMobility(sta1Mobility);
     rxDev->SetPhy(m_rxPhy);
     rxNode->AggregateObject(sta1Mobility);
     rxNode->AddDevice(rxDev);
+    auto rxEhtConfiguration = CreateObject<EhtConfiguration>();
+    rxDev->SetEhtConfiguration(rxEhtConfiguration);
     m_rxPhy->TraceConnectWithoutContext("PhyRxBegin",
                                         MakeCallback(&SpectrumWifiPhyFilterTest::RxCallback, this));
 }
@@ -660,52 +669,58 @@ SpectrumWifiPhyFilterTest::RunOne()
     {
     case 20:
     default:
-        txFrequency = MHz_u{5180};
+        txFrequency = MHz_u{5955};
         break;
     case 40:
-        txFrequency = MHz_u{5190};
+        txFrequency = MHz_u{5965};
         break;
     case 80:
-        txFrequency = MHz_u{5210};
+        txFrequency = MHz_u{5985};
         break;
     case 160:
-        txFrequency = MHz_u{5250};
+        txFrequency = MHz_u{6025};
+        break;
+    case 320:
+        txFrequency = MHz_u{6105};
         break;
     }
     auto txChannelNum = WifiPhyOperatingChannel::FindFirst(0,
                                                            txFrequency,
                                                            m_txChannelWidth,
-                                                           WIFI_STANDARD_80211ax,
-                                                           WIFI_PHY_BAND_5GHZ)
+                                                           WIFI_STANDARD_80211be,
+                                                           WIFI_PHY_BAND_6GHZ)
                             ->number;
     m_txPhy->SetOperatingChannel(
-        WifiPhy::ChannelTuple{txChannelNum, m_txChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
+        WifiPhy::ChannelTuple{txChannelNum, m_txChannelWidth, WIFI_PHY_BAND_6GHZ, 0});
 
     MHz_u rxFrequency;
     switch (static_cast<uint16_t>(m_rxChannelWidth))
     {
     case 20:
     default:
-        rxFrequency = MHz_u{5180};
+        rxFrequency = MHz_u{5955};
         break;
     case 40:
-        rxFrequency = MHz_u{5190};
+        rxFrequency = MHz_u{5965};
         break;
     case 80:
-        rxFrequency = MHz_u{5210};
+        rxFrequency = MHz_u{5985};
         break;
     case 160:
-        rxFrequency = MHz_u{5250};
+        rxFrequency = MHz_u{6025};
+        break;
+    case 320:
+        rxFrequency = MHz_u{6105};
         break;
     }
     auto rxChannelNum = WifiPhyOperatingChannel::FindFirst(0,
                                                            rxFrequency,
                                                            m_rxChannelWidth,
-                                                           WIFI_STANDARD_80211ax,
-                                                           WIFI_PHY_BAND_5GHZ)
+                                                           WIFI_STANDARD_80211be,
+                                                           WIFI_PHY_BAND_6GHZ)
                             ->number;
     m_rxPhy->SetOperatingChannel(
-        WifiPhy::ChannelTuple{rxChannelNum, m_rxChannelWidth, WIFI_PHY_BAND_5GHZ, 0});
+        WifiPhy::ChannelTuple{rxChannelNum, m_rxChannelWidth, WIFI_PHY_BAND_6GHZ, 0});
 
     Simulator::Schedule(Seconds(1), &SpectrumWifiPhyFilterTest::SendPpdu, this);
 
@@ -715,69 +730,15 @@ SpectrumWifiPhyFilterTest::RunOne()
 void
 SpectrumWifiPhyFilterTest::DoRun()
 {
-    m_txChannelWidth = MHz_u{20};
-    m_rxChannelWidth = MHz_u{20};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{40};
-    m_rxChannelWidth = MHz_u{40};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{80};
-    m_rxChannelWidth = MHz_u{80};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{160};
-    m_rxChannelWidth = MHz_u{160};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{20};
-    m_rxChannelWidth = MHz_u{40};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{20};
-    m_rxChannelWidth = MHz_u{80};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{40};
-    m_rxChannelWidth = MHz_u{80};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{20};
-    m_rxChannelWidth = MHz_u{160};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{40};
-    m_rxChannelWidth = MHz_u{160};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{80};
-    m_rxChannelWidth = MHz_u{160};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{40};
-    m_rxChannelWidth = MHz_u{20};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{80};
-    m_rxChannelWidth = MHz_u{20};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{80};
-    m_rxChannelWidth = MHz_u{40};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{160};
-    m_rxChannelWidth = MHz_u{20};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{160};
-    m_rxChannelWidth = MHz_u{40};
-    RunOne();
-
-    m_txChannelWidth = MHz_u{160};
-    m_rxChannelWidth = MHz_u{80};
-    RunOne();
+    for (const auto txBw : {MHz_u{20}, MHz_u{40}, MHz_u{80}, MHz_u{160}, MHz_u{320}})
+    {
+        for (const auto rxBw : {MHz_u{20}, MHz_u{40}, MHz_u{80}, MHz_u{160}, MHz_u{320}})
+        {
+            m_txChannelWidth = txBw;
+            m_rxChannelWidth = rxBw;
+            RunOne();
+        }
+    }
 
     Simulator::Destroy();
 }
