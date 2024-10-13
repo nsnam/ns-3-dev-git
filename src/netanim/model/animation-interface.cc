@@ -1634,7 +1634,7 @@ AnimationInterface::ConnectCallbacks()
                             MakeCallback(&AnimationInterface::UanPhyGenTxTrace, this));
     Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/PhyRxBegin",
                             MakeCallback(&AnimationInterface::UanPhyGenRxTrace, this));
-    Config::ConnectFailSafe("/NodeList/*/$ns3::BasicEnergySource/RemainingEnergy",
+    Config::ConnectFailSafe("/NodeList/*/$ns3::energy::BasicEnergySource/RemainingEnergy",
                             MakeCallback(&AnimationInterface::RemainingEnergyTrace, this));
 
     ConnectLte();
@@ -1690,17 +1690,17 @@ AnimationInterface::ConnectCallbacks()
                             MakeCallback(&AnimationInterface::WifiPhyRxDropTrace, this));
 
     // LrWpan
-    Config::ConnectFailSafe("NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Phy/PhyTxBegin",
+    Config::ConnectFailSafe("NodeList/*/DeviceList/*/$ns3::lrwpan::LrWpanNetDevice/Phy/PhyTxBegin",
                             MakeCallback(&AnimationInterface::LrWpanPhyTxBeginTrace, this));
-    Config::ConnectFailSafe("NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Phy/PhyRxBegin",
+    Config::ConnectFailSafe("NodeList/*/DeviceList/*/$ns3::lrwpan::LrWpanNetDevice/Phy/PhyRxBegin",
                             MakeCallback(&AnimationInterface::LrWpanPhyRxBeginTrace, this));
-    Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacTx",
+    Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::lrwpan::LrWpanNetDevice/Mac/MacTx",
                             MakeCallback(&AnimationInterface::LrWpanMacTxTrace, this));
-    Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacTxDrop",
+    Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::lrwpan::LrWpanNetDevice/Mac/MacTxDrop",
                             MakeCallback(&AnimationInterface::LrWpanMacTxDropTrace, this));
-    Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRx",
+    Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::lrwpan::LrWpanNetDevice/Mac/MacRx",
                             MakeCallback(&AnimationInterface::LrWpanMacRxTrace, this));
-    Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRxDrop",
+    Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::lrwpan::LrWpanNetDevice/Mac/MacRxDrop",
                             MakeCallback(&AnimationInterface::LrWpanMacRxDropTrace, this));
 }
 
