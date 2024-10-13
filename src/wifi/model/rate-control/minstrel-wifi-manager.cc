@@ -28,6 +28,7 @@
 #include "ns3/wifi-psdu.h"
 
 #include <iomanip>
+#include <limits>
 
 #define Min(a, b) ((a < b) ? a : b)
 

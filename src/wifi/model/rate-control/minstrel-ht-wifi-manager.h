@@ -33,9 +33,11 @@ typedef std::map<WifiMode, Time> TxTime;
  */
 enum McsGroupType
 {
-    WIFI_MINSTREL_GROUP_HT = 0,
+    WIFI_MINSTREL_GROUP_INVALID = 0,
+    WIFI_MINSTREL_GROUP_HT,
     WIFI_MINSTREL_GROUP_VHT,
-    WIFI_MINSTREL_GROUP_HE
+    WIFI_MINSTREL_GROUP_HE,
+    WIFI_MINSTREL_GROUP_COUNT
 };
 
 /**
@@ -57,6 +59,7 @@ operator<<(std::ostream& os, McsGroupType type)
     case WIFI_MINSTREL_GROUP_HE:
         return (os << "HE");
     default:
+    case WIFI_MINSTREL_GROUP_INVALID:
         return (os << "INVALID");
     }
 }
@@ -153,32 +156,6 @@ struct GroupInfo
 typedef std::vector<GroupInfo> McsGroupData;
 
 /**
- * Constants for maximum values.
- */
-
-static const uint8_t MAX_HT_SUPPORTED_STREAMS =
-    4; //!< Maximal number of streams supported by the HT PHY layer.
-static const uint8_t MAX_VHT_SUPPORTED_STREAMS =
-    8; //!< Maximal number of streams supported by the VHT PHY layer.
-static const uint8_t MAX_HE_SUPPORTED_STREAMS =
-    8; //!< Maximal number of streams supported by the HE PHY layer.
-static const uint8_t MAX_HT_STREAM_GROUPS =
-    4; //!< Maximal number of groups per stream in HT (2 possible channel widths and 2 possible GI
-       //!< configurations).
-static const uint8_t MAX_VHT_STREAM_GROUPS =
-    8; //!< Maximal number of groups per stream in VHT (4 possible channel widths and 2 possible GI
-       //!< configurations).
-static const uint8_t MAX_HE_STREAM_GROUPS =
-    12; //!< Maximal number of groups per stream in HE (4 possible channel widths and 3 possible GI
-        //!< configurations).
-static const uint8_t MAX_HT_GROUP_RATES = 8;   //!< Number of rates (or MCS) per HT group.
-static const uint8_t MAX_VHT_GROUP_RATES = 10; //!< Number of rates (or MCS) per VHT group.
-static const uint8_t MAX_HE_GROUP_RATES = 12;  //!< Number of rates (or MCS) per HE group.
-static const MHz_u MAX_HT_WIDTH = 40;          //!< Maximal channel width.
-static const MHz_u MAX_VHT_WIDTH = 160;        //!< Maximal channel width.
-static const MHz_u MAX_HE_WIDTH = 160;         //!< Maximal channel width.
-
-/**
  * @brief Implementation of Minstrel-HT Rate Control Algorithm
  * @ingroup wifi
  *
@@ -238,6 +215,18 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     int64_t AssignStreams(int64_t stream) override;
 
     /**
+     * A struct to contain information of a standard.
+     */
+    struct StandardInfo
+    {
+        McsGroupType groupType{}; //!< group type associated to the given standard in Minstrel HT
+        uint8_t maxMcs{};         //!< maximum MCS index (for 1 SS if 802.11n)
+        MHz_u maxWidth{};         //!< maximum channel width
+        std::vector<Time> guardIntervals{}; //!< supported GIs
+        uint8_t maxStreams{};               //!< maximum number of spatial streams
+    };
+
+    /**
      * TracedCallback signature for rate change events.
      *
      * @param [in] rate The new rate.
@@ -276,6 +265,13 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
                                                          Ptr<WifiPsdu> psdu) override;
 
     /**
+     * Initialize all groups belonging to a given modulation class.
+     *
+     * @param mc the modulation class
+     */
+    void InitializeGroups(WifiModulationClass mc);
+
+    /**
      * @param st the station that we need to communicate
      * @param packet the packet to send
      * @param normally indicates whether the normal 802.11 data retransmission mechanism
@@ -291,19 +287,26 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     /**
      * Check the validity of a combination of number of streams, chWidth and mode.
      *
-     * @param phy pointer to the wifi PHY
      * @param streams the number of streams
      * @param chWidth the channel width
      * @param mode the wifi mode
      * @returns true if the combination is valid
      */
-    bool IsValidMcs(Ptr<WifiPhy> phy, uint8_t streams, MHz_u chWidth, WifiMode mode);
+    bool IsValidMcs(uint8_t streams, MHz_u chWidth, WifiMode mode);
+
+    /**
+     * Check whether a given MCS mode should be added to a given group.
+     *
+     * @param mode the MCS mode
+     * @param groupId the group ID
+     * @returns true if the MCS mode should be added to the group
+     */
+    bool ShouldAddMcsToGroup(WifiMode mode, std::size_t groupId);
 
     /**
      * Estimates the TxTime of a frame with a given mode and group (stream, guard interval and
      * channel width).
      *
-     * @param phy pointer to the wifi PHY
      * @param streams the number of streams
      * @param gi guard interval duration
      * @param chWidth the channel width
@@ -311,8 +314,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @param mpduType the type of the MPDU
      * @returns the transmit time
      */
-    Time CalculateMpduTxDuration(Ptr<WifiPhy> phy,
-                                 uint8_t streams,
+    Time CalculateMpduTxDuration(uint8_t streams,
                                  Time gi,
                                  MHz_u chWidth,
                                  WifiMode mode,
@@ -325,7 +327,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @param mode the wifi mode
      * @returns the transmit time
      */
-    Time GetMpduTxTime(uint8_t groupId, WifiMode mode) const;
+    Time GetMpduTxTime(std::size_t groupId, WifiMode mode) const;
 
     /**
      * Save a TxTime to the vector of groups.
@@ -334,7 +336,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @param mode the wifi mode
      * @param t the transmit time
      */
-    void AddMpduTxTime(uint8_t groupId, WifiMode mode, Time t);
+    void AddMpduTxTime(std::size_t groupId, WifiMode mode, Time t);
 
     /**
      * Obtain the TxTime saved in the group information.
@@ -343,7 +345,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @param mode the wifi mode
      * @returns the transmit time
      */
-    Time GetFirstMpduTxTime(uint8_t groupId, WifiMode mode) const;
+    Time GetFirstMpduTxTime(std::size_t groupId, WifiMode mode) const;
 
     /**
      * Save a TxTime to the vector of groups.
@@ -352,7 +354,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @param mode the wifi mode
      * @param t the transmit time
      */
-    void AddFirstMpduTxTime(uint8_t groupId, WifiMode mode, Time t);
+    void AddFirstMpduTxTime(std::size_t groupId, WifiMode mode, Time t);
 
     /**
      * Update the number of retries and reset accordingly.
@@ -418,7 +420,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @returns the throughput in bps
      */
     double CalculateThroughput(MinstrelHtWifiRemoteStation* station,
-                               uint8_t groupId,
+                               std::size_t groupId,
                                uint8_t rateId,
                                double ewmaProb);
 
@@ -454,7 +456,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @param rateId the rate ID
      */
     void CalculateRetransmits(MinstrelHtWifiRemoteStation* station,
-                              uint8_t groupId,
+                              std::size_t groupId,
                               uint8_t rateId);
 
     /**
@@ -521,7 +523,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @param groupId the group ID
      * @param of the output file stream
      */
-    void StatsDump(MinstrelHtWifiRemoteStation* station, uint8_t groupId, std::ofstream& of);
+    void StatsDump(MinstrelHtWifiRemoteStation* station, std::size_t groupId, std::ofstream& of);
 
     /**
      * Check for initializations.
@@ -559,7 +561,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @param index the index
      * @returns the group ID
      */
-    uint8_t GetGroupId(uint16_t index);
+    std::size_t GetGroupId(uint16_t index);
 
     /**
      * Returns the global index corresponding to the groupId and rateId.
@@ -572,37 +574,75 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @param rateId the rate ID
      * @returns the index
      */
-    uint16_t GetIndex(uint8_t groupId, uint8_t rateId);
+    uint16_t GetIndex(std::size_t groupId, uint8_t rateId);
 
     /**
-     * Returns the groupId of an HT MCS with the given number of streams, GI and channel width used.
+     * Returns the Id of a MCS of a given modulation class with the given number of streams, GI and
+     * channel width used in the group associated to that modulation class.
      *
-     * @param txstreams the number of streams
+     * @param mc the modulation class
+     * @param streams the number of streams
      * @param guardInterval guard interval duration
      * @param chWidth the channel width
      * @returns the HT group ID
      */
-    uint8_t GetHtGroupId(uint8_t txstreams, Time guardInterval, MHz_u chWidth);
+    std::size_t GetIdInGroup(WifiModulationClass mc,
+                             uint8_t streams,
+                             Time guardInterval,
+                             MHz_u chWidth);
+
+    /**
+     * Returns the number of groups for a given modulation class.
+     *
+     * @param mc the modulation class
+     * @returns the number of groups for the modulation class
+     */
+    std::size_t GetNumGroups(WifiModulationClass mc);
+
+    /**
+     * Returns the groupId of an HT MCS with the given number of streams, GI and channel width used.
+     *
+     * @param streams the number of streams
+     * @param guardInterval guard interval duration
+     * @param chWidth the channel width
+     * @returns the HT group ID
+     */
+    std::size_t GetHtGroupId(uint8_t streams, Time guardInterval, MHz_u chWidth);
 
     /**
      * Returns the groupId of a VHT MCS with the given number of streams, GI and channel width used.
      *
-     * @param txstreams the number of streams
+     * @param streams the number of streams
      * @param guardInterval guard interval duration
      * @param chWidth the channel width
      * @returns the VHT group ID
      */
-    uint8_t GetVhtGroupId(uint8_t txstreams, Time guardInterval, MHz_u chWidth);
+    std::size_t GetVhtGroupId(uint8_t streams, Time guardInterval, MHz_u chWidth);
 
     /**
      * Returns the groupId of an HE MCS with the given number of streams, GI and channel width used.
      *
-     * @param txstreams the number of streams
+     * @param streams the number of streams
      * @param guardInterval guard interval duration
      * @param chWidth the channel width
      * @returns the HE group ID
      */
-    uint8_t GetHeGroupId(uint8_t txstreams, Time guardInterval, MHz_u chWidth);
+    std::size_t GetHeGroupId(uint8_t streams, Time guardInterval, MHz_u chWidth);
+
+    /**
+     * Returns the group ID of an MCS of a given group type with the given number of streams, GI and
+     * channel width used.
+     *
+     * @param type the MCS group type
+     * @param streams the number of streams
+     * @param guardInterval guard interval duration
+     * @param chWidth the channel width
+     * @returns the group ID
+     */
+    std::size_t GetGroupIdForType(McsGroupType type,
+                                  uint8_t streams,
+                                  Time guardInterval,
+                                  MHz_u chWidth);
 
     /**
      * Returns the lowest global index of the rates supported by the station.
@@ -619,25 +659,14 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
      * @param groupId the group ID
      * @returns the lowest global index
      */
-    uint16_t GetLowestIndex(MinstrelHtWifiRemoteStation* station, uint8_t groupId);
+    uint16_t GetLowestIndex(MinstrelHtWifiRemoteStation* station, std::size_t groupId);
 
     /**
-     * Returns a list of only the HE MCS supported by the device.
-     * @returns the list of the HE MCS supported
+     * Returns a list of only the MCS supported by the device for a given modulation class.
+     * @param mc the modulation class
+     * @returns the list of the MCS supported for that modulation class
      */
-    WifiModeList GetHeDeviceMcsList() const;
-
-    /**
-     * Returns a list of only the VHT MCS supported by the device.
-     * @returns the list of the VHT MCS supported
-     */
-    WifiModeList GetVhtDeviceMcsList() const;
-
-    /**
-     * Returns a list of only the HT MCS supported by the device.
-     * @returns the list of the HT MCS supported
-     */
-    WifiModeList GetHtDeviceMcsList() const;
+    WifiModeList GetDeviceMcsList(WifiModulationClass mc) const;
 
     /**
      * Given the index of the current TX rate, check whether the channel width is
@@ -662,7 +691,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     uint8_t m_ewmaLevel;           //!< Exponential weighted moving average level (or coefficient).
     uint8_t m_nSampleCol;          //!< Number of sample columns.
     uint32_t m_frameLength;        //!< Frame length used to calculate modes TxTime in bytes.
-    uint8_t m_numGroups;           //!< Number of groups Minstrel should consider.
+    std::size_t m_numGroups;       //!< Number of groups Minstrel should consider.
     uint8_t m_numRates;            //!< Number of rates per group Minstrel should consider.
     bool m_useLatestAmendmentOnly; //!< Flag if only the latest supported amendment by both peers
                                    //!< should be used.
