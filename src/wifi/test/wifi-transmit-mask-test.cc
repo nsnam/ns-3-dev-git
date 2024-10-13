@@ -213,10 +213,12 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
         break;
 
     case WIFI_STANDARD_80211ax:
+    case WIFI_STANDARD_80211be:
         NS_ASSERT((m_band != WIFI_PHY_BAND_2_4GHZ) ||
                   (m_channelWidth < MHz_u{80})); // not enough space in 2.4 GHz bands
         NS_ASSERT(m_channelWidth == MHz_u{20} || m_channelWidth == MHz_u{40} ||
-                  m_channelWidth == MHz_u{80} || m_channelWidth == MHz_u{160});
+                  m_channelWidth == MHz_u{80} || m_channelWidth == MHz_u{160} ||
+                  m_channelWidth == MHz_u{320});
         m_actualSpectrum =
             WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(m_centerFreqs,
                                                                         m_channelWidth,
@@ -961,7 +963,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
         std::make_pair(2563, dBr_u{0.0}),     // first 80 MHz allocated band right (start)
         std::make_pair(3060, dBr_u{0.0}),     // first 80 MHz allocated band right (stop)
         std::make_pair(3061, dBr_u{-20.0}),   // gap between 80 MHz bands (start)
-        std::make_pair(3083, dBr_u{-20.0}),   // gap between 80 MHz bands (start)
+        std::make_pair(3083, dBr_u{-20.0}),   // gap between 80 MHz bands (stop)
         std::make_pair(3084, dBr_u{0.0}),     // second 80 MHz allocated band left (start)
         std::make_pair(3581, dBr_u{0.0}),     // second 80 MHz allocated band left (stop)
         std::make_pair(3582, dBr_u{-20.0}),   // second 80 MHz DC band (start)
@@ -1325,7 +1327,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
         std::make_pair(2563, dBr_u{0.0}),      // first 80 MHz allocated band right (start)
         std::make_pair(3060, dBr_u{0.0}),      // first 80 MHz allocated band right (stop)
         std::make_pair(3061, dBr_u{-20.0}),    // gap between 80 MHz bands (start)
-        std::make_pair(3083, dBr_u{-20.0}),    // gap between 80 MHz bands (start)
+        std::make_pair(3083, dBr_u{-20.0}),    // gap between 80 MHz bands (stop)
         std::make_pair(3084, dBr_u{0.0}),      // second 80 MHz allocated band left (start)
         std::make_pair(3581, dBr_u{0.0}),      // second 80 MHz allocated band left (stop)
         std::make_pair(3582, dBr_u{-20.0}),    // second 80 MHz DC band (start)
@@ -1376,7 +1378,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
         std::make_pair(2567, dBr_u{-20.0}),   // punctured band (start)
         std::make_pair(3060, dBr_u{-20.0}),   // punctured band (stop)
         std::make_pair(3061, dBr_u{-20.0}),   // gap between 80 MHz bands (start)
-        std::make_pair(3083, dBr_u{-20.0}),   // gap between 80 MHz bands (start)
+        std::make_pair(3083, dBr_u{-20.0}),   // gap between 80 MHz bands (stop)
         std::make_pair(3084, dBr_u{0.0}),     // second 80 MHz allocated band left (start)
         std::make_pair(3581, dBr_u{0.0}),     // second 80 MHz allocated band left (stop)
         std::make_pair(3582, dBr_u{-20.0}),   // second 80 MHz DC band (start)
@@ -1425,7 +1427,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
         std::make_pair(2563, dBr_u{0.0}),     // first 80 MHz allocated band right (start)
         std::make_pair(3060, dBr_u{0.0}),     // first 80 MHz allocated band right (stop)
         std::make_pair(3061, dBr_u{-20.0}),   // gap between 80 MHz bands (start)
-        std::make_pair(3083, dBr_u{-20.0}),   // gap between 80 MHz bands (start)
+        std::make_pair(3083, dBr_u{-20.0}),   // gap between 80 MHz bands (stop)
         std::make_pair(3084, dBr_u{-20.0}),   // punctured band (start)
         std::make_pair(3576, dBr_u{-20.0}),   // punctured band (stop)
         std::make_pair(3577, dBr_u{-20.0}),   // punctured band increasing slope (start)
@@ -1476,7 +1478,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
         std::make_pair(2563, dBr_u{0.0}),     // first 80 MHz allocated band right (start)
         std::make_pair(3060, dBr_u{0.0}),     // first 80 MHz allocated band right (stop)
         std::make_pair(3061, dBr_u{-20.0}),   // gap between 80 MHz bands (start)
-        std::make_pair(3083, dBr_u{-20.0}),   // gap between 80 MHz bands (start)
+        std::make_pair(3083, dBr_u{-20.0}),   // gap between 80 MHz bands (stop)
         std::make_pair(3084, dBr_u{0.0}),     // second 80 MHz allocated band left (start)
         std::make_pair(3581, dBr_u{0.0}),     // second 80 MHz allocated band left (stop)
         std::make_pair(3582, dBr_u{-20.0}),   // second 80 MHz DC band (start)
@@ -1504,4 +1506,487 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
                                        prec,
                                        {false, false, false, false, false, false, true, true}),
         TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11be 20MHz @ 6GHz
+    NS_LOG_FUNCTION("Check slopes for 11be 20MHz @ 6GHz");
+    maskSlopes = {
+        std::make_pair(0, -40.0),     // Outer band left (start)
+        std::make_pair(127, -28.094), // Outer band left (stop)
+        std::make_pair(128, -28.000), // Middle band left (start)
+        std::make_pair(252, -20.064), // Middle band left (stop)
+        std::make_pair(253, -20.0),   // Flat junction band left (start)
+        std::make_pair(255, -20.0),   // Flat junction band left (stop)
+        std::make_pair(256, -20.0),   // Inner band left (start)
+        std::make_pair(261, -3.333),  // Inner band left (stop)
+        std::make_pair(262, 0.0),     // allocated band left (start)
+        std::make_pair(382, 0.0),     // allocated band left (stop)
+        std::make_pair(383, -20.0),   // DC band (start)
+        std::make_pair(385, -20.0),   // DC band (stop)
+        std::make_pair(386, 0.0),     // allocated band right (start)
+        std::make_pair(506, 0.0),     // allocated band right (stop)
+        std::make_pair(507, -3.333),  // Inner band right (start)
+        std::make_pair(512, -20.0),   // Inner band right (stop)
+        std::make_pair(513, -20.0),   // Flat junction band right (start)
+        std::make_pair(515, -20.0),   // Flat junction band right (stop)
+        std::make_pair(516, -20.064), // Middle band right (start)
+        std::make_pair(640, -28.000), // Middle band right (stop)
+        std::make_pair(641, -28.094), // Outer band right (start)
+        std::make_pair(768, -40.0),   // Outer band right (stop)
+    };
+
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11ax_6GHz 20MHz",
+                                               WIFI_STANDARD_80211be,
+                                               WIFI_PHY_BAND_6GHZ,
+                                               20,
+                                               {5955},
+                                               maskSlopes,
+                                               tol,
+                                               prec),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11be 40MHz @ 6GHz
+    NS_LOG_FUNCTION("Check slopes for 11be 40MHz @ 6GHz");
+    maskSlopes = {
+        std::make_pair(0, -40.0),      // Outer band left (start)
+        std::make_pair(255, -28.047),  // Outer band left (stop)
+        std::make_pair(256, -28.000),  // Middle band left (start)
+        std::make_pair(505, -20.032),  // Middle band left (stop)
+        std::make_pair(506, -20.0),    // Flat junction band left (start)
+        std::make_pair(510, -20.0),    // Flat junction band left (stop)
+        std::make_pair(511, -20.0),    // Inner band left (start)
+        std::make_pair(523, -1.538),   // Inner band left (stop)
+        std::make_pair(524, 0.0),      // allocated band left (start)
+        std::make_pair(765, 0.0),      // allocated band left (stop)
+        std::make_pair(766, -20.0),    // DC band (start)
+        std::make_pair(770, -20.0),    // DC band (stop)
+        std::make_pair(771, 0.0),      // allocated band right (start)
+        std::make_pair(1012, 0.0),     // allocated band right (stop)
+        std::make_pair(1013, -1.538),  // Inner band right (start)
+        std::make_pair(1025, -20.0),   // Inner band right (stop)
+        std::make_pair(1026, -20.0),   // Flat junction band right (start)
+        std::make_pair(1030, -20.0),   // Flat junction band right (stop)
+        std::make_pair(1031, -20.032), // Middle band right (start)
+        std::make_pair(1280, -28.000), // Middle band right (stop)
+        std::make_pair(1281, -28.047), // Outer band right (start)
+        std::make_pair(1536, -40.0),   // Outer band right (stop)
+    };
+
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11be_6GHz 40MHz",
+                                               WIFI_STANDARD_80211be,
+                                               WIFI_PHY_BAND_6GHZ,
+                                               40,
+                                               {5965},
+                                               maskSlopes,
+                                               tol,
+                                               prec),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11be 80MHz @ 6GHz
+    NS_LOG_FUNCTION("Check slopes for 11be 80MHz @ 6GHz");
+    maskSlopes = {
+        std::make_pair(0, -40.0),      // Outer band left (start)
+        std::make_pair(511, -28.023),  // Outer band left (stop)
+        std::make_pair(512, -28.000),  // Middle band left (start)
+        std::make_pair(1017, -20.016), // Middle band left (stop)
+        std::make_pair(1018, -20.0),   // Flat junction band left (start)
+        std::make_pair(1022, -20.0),   // Flat junction band left (stop)
+        std::make_pair(1023, -20.0),   // Inner band left (start)
+        std::make_pair(1035, -1.538),  // Inner band left (stop)
+        std::make_pair(1036, 0.0),     // allocated band left (start)
+        std::make_pair(1533, 0.0),     // allocated band left (stop)
+        std::make_pair(1534, -20.0),   // DC band (start)
+        std::make_pair(1538, -20.0),   // DC band (stop)
+        std::make_pair(1539, 0.0),     // allocated band right (start)
+        std::make_pair(2036, 0.0),     // allocated band right (stop)
+        std::make_pair(2037, -1.538),  // Inner band right (start)
+        std::make_pair(2049, -20.0),   // Inner band right (stop)
+        std::make_pair(2050, -20.0),   // Flat junction band right (start)
+        std::make_pair(2054, -20.0),   // Flat junction band right (stop)
+        std::make_pair(2055, -20.016), // Middle band right (start)
+        std::make_pair(2560, -28.000), // Middle band right (stop)
+        std::make_pair(2561, -28.023), // Outer band right (start)
+        std::make_pair(3072, -40.0),   // Outer band right (stop)
+    };
+
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11be_6GHz 80MHz",
+                                               WIFI_STANDARD_80211be,
+                                               WIFI_PHY_BAND_6GHZ,
+                                               80,
+                                               {5985},
+                                               maskSlopes,
+                                               tol,
+                                               prec),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11be 160MHz @ 6GHz
+    NS_LOG_FUNCTION("Check slopes for 11be 160MHz @ 6GHz");
+    maskSlopes = {
+        std::make_pair(0, -40.0),      // Outer band left (start)
+        std::make_pair(1023, -28.012), // Outer band left (stop)
+        std::make_pair(1024, -28.000), // Middle band left (start)
+        std::make_pair(2041, -20.008), // Middle band left (stop)
+        std::make_pair(2042, -20.0),   // Flat junction band left (start)
+        std::make_pair(2046, -20.0),   // Flat junction band left (stop)
+        std::make_pair(2047, -20.0),   // Inner band left (start)
+        std::make_pair(2059, -1.538),  // Inner band left (stop)
+        std::make_pair(2060, 0.0),     // first 80 MHz allocated band left (start)
+        std::make_pair(2557, 0.0),     // first 80 MHz allocated band left (stop)
+        std::make_pair(2558, -20.0),   // first 80 MHz DC band (start)
+        std::make_pair(2562, -20.0),   // first 80 MHz DC band (stop)
+        std::make_pair(2563, 0.0),     // first 80 MHz allocated band right (start)
+        std::make_pair(3060, 0.0),     // first 80 MHz allocated band right (stop)
+        std::make_pair(3061, -20.0),   // gap between 80 MHz bands (start)
+        std::make_pair(3083, -20.0),   // gap between 80 MHz bands (stop)
+        std::make_pair(3084, 0.0),     // second 80 MHz allocated band left (start)
+        std::make_pair(3581, 0.0),     // second 80 MHz allocated band left (stop)
+        std::make_pair(3582, -20.0),   // second 80 MHz DC band (start)
+        std::make_pair(3586, -20.0),   // second 80 MHz DC band (stop)
+        std::make_pair(3587, 0.0),     // second 80 MHz allocated band right (start)
+        std::make_pair(4084, 0.0),     // second 80 MHz allocated band right (stop)
+        std::make_pair(4085, -1.538),  // Inner band right (start)
+        std::make_pair(4097, -20.0),   // Inner band right (stop)
+        std::make_pair(4098, -20.0),   // Flat junction band right (start)
+        std::make_pair(4102, -20.0),   // Flat junction band right (stop)
+        std::make_pair(4103, -20.008), // Middle band right (start)
+        std::make_pair(5120, -28.000), // Middle band right (stop)
+        std::make_pair(5121, -28.012), // Outer band right (start)
+        std::make_pair(6144, -40.0),   // Outer band right (stop)
+    };
+
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11be_6GHz 160MHz",
+                                               WIFI_STANDARD_80211ax,
+                                               WIFI_PHY_BAND_6GHZ,
+                                               160,
+                                               {6025},
+                                               maskSlopes,
+                                               tol,
+                                               prec),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11be 320MHz @ 6GHz
+    NS_LOG_FUNCTION("Check slopes for 11be 320MHz @ 6GHz");
+    maskSlopes = {
+        std::make_pair(0, -40.0),       // Outer band left (start)
+        std::make_pair(2047, -28.012),  // Outer band left (stop)
+        std::make_pair(2048, -28.000),  // Middle band left (start)
+        std::make_pair(4089, -20.008),  // Middle band left (stop)
+        std::make_pair(4090, -20.0),    // Flat junction band left (start)
+        std::make_pair(4094, -20.0),    // Flat junction band left (stop)
+        std::make_pair(4095, -20.0),    // Inner band left (start)
+        std::make_pair(4107, -1.538),   // Inner band left (stop)
+        std::make_pair(4108, 0.0),      // first 80 MHz allocated band left (start)
+        std::make_pair(4605, 0.0),      // first 80 MHz allocated band left (stop)
+        std::make_pair(4606, -20.0),    // first 80 MHz DC band (start)
+        std::make_pair(4610, -20.0),    // first 80 MHz DC band (stop)
+        std::make_pair(4611, 0.0),      // first 80 MHz allocated band right (start)
+        std::make_pair(5108, 0.0),      // first 80 MHz allocated band right (stop)
+        std::make_pair(5109, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(5131, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(5132, 0.0),      // second 80 MHz allocated band left (start)
+        std::make_pair(5629, 0.0),      // second 80 MHz allocated band left (stop)
+        std::make_pair(5630, -20.0),    // second 80 MHz DC band (start)
+        std::make_pair(5634, -20.0),    // second 80 MHz DC band (stop)
+        std::make_pair(5635, 0.0),      // second 80 MHz allocated band right (start)
+        std::make_pair(6132, 0.0),      // second 80 MHz allocated band right (stop)
+        std::make_pair(6133, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(6155, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(6156, 0.0),      // third 80 MHz allocated band left (start)
+        std::make_pair(6653, 0.0),      // third 80 MHz allocated band left (stop)
+        std::make_pair(6654, -20.0),    // third 80 MHz DC band (start)
+        std::make_pair(6658, -20.0),    // third 80 MHz DC band (stop)
+        std::make_pair(6659, 0.0),      // third 80 MHz allocated band right (start)
+        std::make_pair(7156, 0.0),      // third 80 MHz allocated band right (stop)
+        std::make_pair(7157, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(7179, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(7180, 0.0),      // fourth 80 MHz allocated band left (start)
+        std::make_pair(7677, 0.0),      // fourth 80 MHz allocated band left (stop)
+        std::make_pair(7678, -20.0),    // fourth 80 MHz DC band (start)
+        std::make_pair(7682, -20.0),    // fourth 80 MHz DC band (stop)
+        std::make_pair(7683, 0.0),      // fourth 80 MHz allocated band right (start)
+        std::make_pair(8180, 0.0),      // fourth 80 MHz allocated band right (stop)
+        std::make_pair(8181, -1.538),   // Inner band right (start)
+        std::make_pair(8193, -20.0),    // Inner band right (stop)
+        std::make_pair(8194, -20.0),    // Flat junction band right (start)
+        std::make_pair(8198, -20.0),    // Flat junction band right (stop)
+        std::make_pair(8199, -20.008),  // Middle band right (start)
+        std::make_pair(10240, -28.000), // Middle band right (stop)
+        std::make_pair(10241, -28.012), // Outer band right (start)
+        std::make_pair(12288, -40.0),   // Outer band right (stop)
+    };
+
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11be_6GHz 320MHz",
+                                               WIFI_STANDARD_80211ax,
+                                               WIFI_PHY_BAND_5GHZ,
+                                               320,
+                                               {6105},
+                                               maskSlopes,
+                                               tol,
+                                               prec),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11be 320MHz @ 6GHz - first 20 MHz subchannel punctured
+    std::vector<bool> puncturedSubchannels(16, false);
+    NS_LOG_FUNCTION("Check slopes for 11be 320MHz @ 6GHz with first 20 MHz subchannel punctured");
+    maskSlopes = {
+        std::make_pair(0, -40.0),       // Outer band left (start)
+        std::make_pair(2047, -28.012),  // Outer band left (stop)
+        std::make_pair(2048, -28.000),  // Middle band left (start)
+        std::make_pair(4089, -20.008),  // Middle band left (stop)
+        std::make_pair(4090, -20.0),    // Flat junction band left (start)
+        std::make_pair(4094, -20.0),    // Flat junction band left (stop)
+        std::make_pair(4095, -20.0),    // punctured band (start)
+        std::make_pair(4344, -20.0),    // punctured band (stop)
+        std::make_pair(4345, -20.0),    // punctured band increasing slope (start)
+        std::make_pair(4351, 0.0),      // punctured band increasing slope (stop)
+        std::make_pair(4352, 0.0),      // first 80 MHz allocated band left (start)
+        std::make_pair(4605, 0.0),      // first 80 MHz allocated band left (stop)
+        std::make_pair(4606, -20.0),    // first 80 MHz DC band (start)
+        std::make_pair(4610, -20.0),    // first 80 MHz DC band (stop)
+        std::make_pair(4611, 0.0),      // first 80 MHz allocated band right (start)
+        std::make_pair(5108, 0.0),      // first 80 MHz allocated band right (stop)
+        std::make_pair(5109, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(5131, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(5132, 0.0),      // second 80 MHz allocated band left (start)
+        std::make_pair(5629, 0.0),      // second 80 MHz allocated band left (stop)
+        std::make_pair(5630, -20.0),    // second 80 MHz DC band (start)
+        std::make_pair(5634, -20.0),    // second 80 MHz DC band (stop)
+        std::make_pair(5635, 0.0),      // second 80 MHz allocated band right (start)
+        std::make_pair(6132, 0.0),      // second 80 MHz allocated band right (stop)
+        std::make_pair(6133, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(6155, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(6156, 0.0),      // third 80 MHz allocated band left (start)
+        std::make_pair(6653, 0.0),      // third 80 MHz allocated band left (stop)
+        std::make_pair(6654, -20.0),    // third 80 MHz DC band (start)
+        std::make_pair(6658, -20.0),    // third 80 MHz DC band (stop)
+        std::make_pair(6659, 0.0),      // third 80 MHz allocated band right (start)
+        std::make_pair(7156, 0.0),      // third 80 MHz allocated band right (stop)
+        std::make_pair(7157, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(7179, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(7180, 0.0),      // fourth 80 MHz allocated band left (start)
+        std::make_pair(7677, 0.0),      // fourth 80 MHz allocated band left (stop)
+        std::make_pair(7678, -20.0),    // fourth 80 MHz DC band (start)
+        std::make_pair(7682, -20.0),    // fourth 80 MHz DC band (stop)
+        std::make_pair(7683, 0.0),      // fourth 80 MHz allocated band right (start)
+        std::make_pair(8180, 0.0),      // fourth 80 MHz allocated band right (stop)
+        std::make_pair(8181, -1.538),   // Inner band right (start)
+        std::make_pair(8193, -20.0),    // Inner band right (stop)
+        std::make_pair(8194, -20.0),    // Flat junction band right (start)
+        std::make_pair(8198, -20.0),    // Flat junction band right (stop)
+        std::make_pair(8199, -20.008),  // Middle band right (start)
+        std::make_pair(10240, -28.000), // Middle band right (stop)
+        std::make_pair(10241, -28.012), // Outer band right (start)
+        std::make_pair(12288, -40.0),   // Outer band right (stop)
+    };
+
+    puncturedSubchannels.at(0) = true;
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11be_6GHz 320MHz with first 20 MHz punctured",
+                                               WIFI_STANDARD_80211ax,
+                                               WIFI_PHY_BAND_5GHZ,
+                                               320,
+                                               {6105},
+                                               maskSlopes,
+                                               tol,
+                                               prec,
+                                               puncturedSubchannels),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11be 320MHz @ 6GHz - second 40 MHz subchannel punctured
+    puncturedSubchannels = std::vector<bool>(16, false);
+    NS_LOG_FUNCTION("Check slopes for 11be 320MHz @ 6GHz with second 40 MHz subchannel punctured");
+    maskSlopes = {
+        std::make_pair(0, -40.0),       // Outer band left (start)
+        std::make_pair(2047, -28.012),  // Outer band left (stop)
+        std::make_pair(2048, -28.000),  // Middle band left (start)
+        std::make_pair(4089, -20.008),  // Middle band left (stop)
+        std::make_pair(4090, -20.0),    // Flat junction band left (start)
+        std::make_pair(4094, -20.0),    // Flat junction band left (stop)
+        std::make_pair(4095, -20.0),    // Inner band left (start)
+        std::make_pair(4107, -1.538),   // Inner band left (stop)
+        std::make_pair(4108, 0.0),      // first 80 MHz allocated band left (start)
+        std::make_pair(4605, 0.0),      // first 80 MHz allocated band left (stop)
+        std::make_pair(4606, -20.0),    // first 80 MHz DC band (start)
+        std::make_pair(4610, -20.0),    // first 80 MHz DC band (stop)
+        std::make_pair(4611, -10.0),    // punctured band decreasing slope (start)
+        std::make_pair(4614, -20.0),    // punctured band decreasing slope (stop)
+        std::make_pair(4615, -20.0),    // punctured band (start)
+        std::make_pair(5108, -20.0),    // punctured band (stop)
+        std::make_pair(5109, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(5131, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(5132, 0.0),      // second 80 MHz allocated band left (start)
+        std::make_pair(5629, 0.0),      // second 80 MHz allocated band left (stop)
+        std::make_pair(5630, -20.0),    // second 80 MHz DC band (start)
+        std::make_pair(5634, -20.0),    // second 80 MHz DC band (stop)
+        std::make_pair(5635, 0.0),      // second 80 MHz allocated band right (start)
+        std::make_pair(6132, 0.0),      // second 80 MHz allocated band right (stop)
+        std::make_pair(6133, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(6155, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(6156, 0.0),      // third 80 MHz allocated band left (start)
+        std::make_pair(6653, 0.0),      // third 80 MHz allocated band left (stop)
+        std::make_pair(6654, -20.0),    // third 80 MHz DC band (start)
+        std::make_pair(6658, -20.0),    // third 80 MHz DC band (stop)
+        std::make_pair(6659, 0.0),      // third 80 MHz allocated band right (start)
+        std::make_pair(7156, 0.0),      // third 80 MHz allocated band right (stop)
+        std::make_pair(7157, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(7179, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(7180, 0.0),      // fourth 80 MHz allocated band left (start)
+        std::make_pair(7677, 0.0),      // fourth 80 MHz allocated band left (stop)
+        std::make_pair(7678, -20.0),    // fourth 80 MHz DC band (start)
+        std::make_pair(7682, -20.0),    // fourth 80 MHz DC band (stop)
+        std::make_pair(7683, 0.0),      // fourth 80 MHz allocated band right (start)
+        std::make_pair(8180, 0.0),      // fourth 80 MHz allocated band right (stop)
+        std::make_pair(8181, -1.538),   // Inner band right (start)
+        std::make_pair(8193, -20.0),    // Inner band right (stop)
+        std::make_pair(8194, -20.0),    // Flat junction band right (start)
+        std::make_pair(8198, -20.0),    // Flat junction band right (stop)
+        std::make_pair(8199, -20.008),  // Middle band right (start)
+        std::make_pair(10240, -28.000), // Middle band right (stop)
+        std::make_pair(10241, -28.012), // Outer band right (start)
+        std::make_pair(12288, -40.0),   // Outer band right (stop)
+    };
+
+    puncturedSubchannels.at(2) = true;
+    puncturedSubchannels.at(3) = true;
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11be_6GHz 320MHz with second 40 MHz punctured",
+                                               WIFI_STANDARD_80211ax,
+                                               WIFI_PHY_BAND_5GHZ,
+                                               320,
+                                               {6105},
+                                               maskSlopes,
+                                               tol,
+                                               prec,
+                                               puncturedSubchannels),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11be 320MHz @ 6GHz - second 80 MHz subchannel punctured
+    puncturedSubchannels = std::vector<bool>(16, false);
+    NS_LOG_FUNCTION("Check slopes for 11be 320MHz @ 6GHz with second 80 MHz subchannel punctured");
+    maskSlopes = {
+        std::make_pair(0, -40.0),       // Outer band left (start)
+        std::make_pair(2047, -28.012),  // Outer band left (stop)
+        std::make_pair(2048, -28.000),  // Middle band left (start)
+        std::make_pair(4089, -20.008),  // Middle band left (stop)
+        std::make_pair(4090, -20.0),    // Flat junction band left (start)
+        std::make_pair(4094, -20.0),    // Flat junction band left (stop)
+        std::make_pair(4095, -20.0),    // Inner band left (start)
+        std::make_pair(4107, -1.538),   // Inner band left (stop)
+        std::make_pair(4108, 0.0),      // first 80 MHz allocated band left (start)
+        std::make_pair(4605, 0.0),      // first 80 MHz allocated band left (stop)
+        std::make_pair(4606, -20.0),    // first 80 MHz DC band (start)
+        std::make_pair(4610, -20.0),    // first 80 MHz DC band (stop)
+        std::make_pair(4611, 0.0),      // first 80 MHz allocated band right (start)
+        std::make_pair(5108, 0.0),      // first 80 MHz allocated band right (stop)
+        std::make_pair(5109, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(5131, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(5132, -20.0),    // punctured band (start)
+        std::make_pair(6132, -20.0),    // punctured band (stop)
+        std::make_pair(6133, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(6155, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(6156, 0.0),      // third 80 MHz allocated band left (start)
+        std::make_pair(6653, 0.0),      // third 80 MHz allocated band left (stop)
+        std::make_pair(6654, -20.0),    // third 80 MHz DC band (start)
+        std::make_pair(6658, -20.0),    // third 80 MHz DC band (stop)
+        std::make_pair(6659, 0.0),      // third 80 MHz allocated band right (start)
+        std::make_pair(7156, 0.0),      // third 80 MHz allocated band right (stop)
+        std::make_pair(7157, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(7179, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(7180, 0.0),      // fourth 80 MHz allocated band left (start)
+        std::make_pair(7677, 0.0),      // fourth 80 MHz allocated band left (stop)
+        std::make_pair(7678, -20.0),    // fourth 80 MHz DC band (start)
+        std::make_pair(7682, -20.0),    // fourth 80 MHz DC band (stop)
+        std::make_pair(7683, 0.0),      // fourth 80 MHz allocated band right (start)
+        std::make_pair(8180, 0.0),      // fourth 80 MHz allocated band right (stop)
+        std::make_pair(8181, -1.538),   // Inner band right (start)
+        std::make_pair(8193, -20.0),    // Inner band right (stop)
+        std::make_pair(8194, -20.0),    // Flat junction band right (start)
+        std::make_pair(8198, -20.0),    // Flat junction band right (stop)
+        std::make_pair(8199, -20.008),  // Middle band right (start)
+        std::make_pair(10240, -28.000), // Middle band right (stop)
+        std::make_pair(10241, -28.012), // Outer band right (start)
+        std::make_pair(12288, -40.0),   // Outer band right (stop)
+    };
+
+    puncturedSubchannels.at(4) = true;
+    puncturedSubchannels.at(5) = true;
+    puncturedSubchannels.at(6) = true;
+    puncturedSubchannels.at(7) = true;
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11be_6GHz 320MHz with second 80 MHz punctured",
+                                               WIFI_STANDARD_80211ax,
+                                               WIFI_PHY_BAND_5GHZ,
+                                               320,
+                                               {6105},
+                                               maskSlopes,
+                                               tol,
+                                               prec,
+                                               puncturedSubchannels),
+                TestCase::Duration::QUICK);
+
+    // ============================================================================================
+    // 11be 320MHz @ 6GHz - last 120 MHz (40 MHz + 80 MHz) subchannel punctured
+    puncturedSubchannels = std::vector<bool>(16, false);
+    NS_LOG_FUNCTION("Check slopes for 11be 320MHz @ 6GHz with last 120 MHz subchannel punctured");
+    maskSlopes = {
+        std::make_pair(0, -40.0),       // Outer band left (start)
+        std::make_pair(2047, -28.012),  // Outer band left (stop)
+        std::make_pair(2048, -28.000),  // Middle band left (start)
+        std::make_pair(4089, -20.008),  // Middle band left (stop)
+        std::make_pair(4090, -20.0),    // Flat junction band left (start)
+        std::make_pair(4094, -20.0),    // Flat junction band left (stop)
+        std::make_pair(4095, -20.0),    // Inner band left (start)
+        std::make_pair(4107, -1.538),   // Inner band left (stop)
+        std::make_pair(4108, 0.0),      // first 80 MHz allocated band left (start)
+        std::make_pair(4605, 0.0),      // first 80 MHz allocated band left (stop)
+        std::make_pair(4606, -20.0),    // first 80 MHz DC band (start)
+        std::make_pair(4610, -20.0),    // first 80 MHz DC band (stop)
+        std::make_pair(4611, 0.0),      // first 80 MHz allocated band right (start)
+        std::make_pair(5108, 0.0),      // first 80 MHz allocated band right (stop)
+        std::make_pair(5109, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(5131, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(5132, 0.0),      // second 80 MHz allocated band left (start)
+        std::make_pair(5629, 0.0),      // second 80 MHz allocated band left (stop)
+        std::make_pair(5630, -20.0),    // second 80 MHz DC band (start)
+        std::make_pair(5634, -20.0),    // second 80 MHz DC band (stop)
+        std::make_pair(5635, 0.0),      // second 80 MHz allocated band right (start)
+        std::make_pair(6132, 0.0),      // second 80 MHz allocated band right (stop)
+        std::make_pair(6133, -20.0),    // gap between 80 MHz bands (start)
+        std::make_pair(6155, -20.0),    // gap between 80 MHz bands (stop)
+        std::make_pair(6156, 0.0),      // third 80 MHz allocated band left (start)
+        std::make_pair(6653, 0.0),      // third 80 MHz allocated band left (stop)
+        std::make_pair(6654, -20.0),    // third 80 MHz DC band (start)
+        std::make_pair(6658, -20.0),    // third 80 MHz DC band (stop)
+        std::make_pair(6659, -10.0),    // punctured band decreasing slope (start)
+        std::make_pair(6662, -20.0),    // punctured band decreasing slope (stop)
+        std::make_pair(6663, -20.0),    // punctured band (start)
+        std::make_pair(8193, -20.0),    // punctured band (stop)
+        std::make_pair(8194, -20.0),    // Flat junction band right (start)
+        std::make_pair(8198, -20.0),    // Flat junction band right (stop)
+        std::make_pair(8199, -20.008),  // Middle band right (start)
+        std::make_pair(10240, -28.000), // Middle band right (stop)
+        std::make_pair(10241, -28.012), // Outer band right (start)
+        std::make_pair(12288, -40.0),   // Outer band right (stop)
+    };
+
+    puncturedSubchannels.at(10) = true;
+    puncturedSubchannels.at(11) = true;
+    puncturedSubchannels.at(12) = true;
+    puncturedSubchannels.at(13) = true;
+    puncturedSubchannels.at(14) = true;
+    puncturedSubchannels.at(15) = true;
+    AddTestCase(new WifiOfdmMaskSlopesTestCase("11be_6GHz 320MHz with last 120 MHz punctured",
+                                               WIFI_STANDARD_80211ax,
+                                               WIFI_PHY_BAND_5GHZ,
+                                               320,
+                                               {6105},
+                                               maskSlopes,
+                                               tol,
+                                               prec,
+                                               puncturedSubchannels),
+                TestCase::Duration::QUICK);
 }
