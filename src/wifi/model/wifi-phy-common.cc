@@ -56,7 +56,7 @@ GetGuardIntervalForMode(WifiMode mode, bool htShortGuardInterval, Time heGuardIn
 }
 
 WifiPreamble
-GetPreambleForTransmission(WifiModulationClass modulation, bool useShortPreamble)
+GetPreambleForTransmission(WifiModulationClass modulation, bool useShortPreamble /* = false */)
 {
     if (modulation == WIFI_MOD_CLASS_EHT)
     {
