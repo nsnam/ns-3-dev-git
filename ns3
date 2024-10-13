@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 import sys
+import textwrap
 
 ns3_path = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 append_to_ns3_path = functools.partial(os.path.join, ns3_path)
@@ -90,7 +91,7 @@ def add_argument_to_subparsers(
 
 def parse_args(argv):
     parser = argparse.ArgumentParser(
-        description="ns-3 wrapper for the CMake build system", add_help=False
+        description="ns-3 wrapper for the CMake build system", add_help=False, exit_on_error=False
     )
 
     sub_parser = parser.add_subparsers()
@@ -497,7 +498,17 @@ def parse_args(argv):
         runnable_args = []
 
     # Parse known arguments and separate from unknown arguments
-    args, unknown_args = parser.parse_known_args(ns3_args)
+    try:
+        args, unknown_args = parser.parse_known_args(ns3_args)
+    except argparse.ArgumentError as e:
+        error_message = e.message
+        custom_exits = ["invalid choice:"]
+        for custom_exit in custom_exits:
+            if custom_exit in e.message:
+                error_message = f"Exiting due to {e.message[e.message.index(custom_exit):]}"
+        # Format error message to better fit the terminal width
+        print("\n".join(textwrap.wrap(error_message, width=os.get_terminal_size().columns)))
+        exit(1)
 
     # If run doesn't have a target, print the help message of the run parser
     if "run" in args and args.run == "":
