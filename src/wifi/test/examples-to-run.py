@@ -2139,6 +2139,16 @@ cpp_examples = [
         "False",
     ),
     (
+        "wifi-manager-example --wifiManager=MinstrelHt --standard=802.11be-6GHz --serverChannelWidth=320 --clientChannelWidth=320 --serverShortGuardInterval=1600 --clientShortGuardInterval=1600 --serverNss=1 --clientNss=1 --stepTime=0.1",
+        "True",
+        "True",
+    ),
+    (
+        "wifi-manager-example --wifiManager=Ideal --standard=802.11be-6GHz --serverChannelWidth=320 --clientChannelWidth=320 --serverShortGuardInterval=1600 --clientShortGuardInterval=1600 --serverNss=1 --clientNss=1 --stepTime=0.1",
+        "True",
+        "True",
+    ),
+    (
         "wifi-test-interference-helper --enableCapture=0 --txPowerA=5 --txPowerB=15 --delay=10us --txModeA=OfdmRate6Mbps --txModeB=OfdmRate6Mbps --checkResults=1 --expectRxASuccessful=0 --expectRxBSuccessful=0",
         "True",
         "True",
