@@ -75,6 +75,7 @@ WifiTxVector::WifiTxVector(WifiMode mode,
       m_triggerResponding(triggerResponding),
       m_modeInitialized(true),
       m_inactiveSubchannels(),
+      m_sigBMcs(EhtPhy::GetVhtMcs(0)),
       m_ruAllocation(),
       m_center26ToneRuIndication(std::nullopt),
       m_ehtPpduType(1) // SU transmission by default
