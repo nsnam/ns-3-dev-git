@@ -976,7 +976,7 @@ EhtFrameExchangeManager::IsCrossLinkCollision(const std::set<Mac48Address>& staM
     NS_LOG_FUNCTION(this << staMissedResponseFrom.size());
 
     // check if all the clients that did not respond to the ICF are EMLSR clients that have sent
-    // (or are sending) a frame to the AP
+    // (or are sending) a frame to the AP on another link
     auto crossLinkCollision = true;
 
     // we blocked transmissions on the other EMLSR links for the EMLSR clients we sent the ICF to.
@@ -996,7 +996,8 @@ EhtFrameExchangeManager::IsCrossLinkCollision(const std::set<Mac48Address>& staM
         std::set<uint8_t> linkIds; // all EMLSR links of EMLSR client
         for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
         {
-            if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress))
+            if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(*mldAddress) &&
+                linkId != m_linkId)
             {
                 linkIds.insert(linkId);
             }

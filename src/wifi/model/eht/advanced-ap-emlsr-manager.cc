@@ -56,7 +56,8 @@ AdvancedApEmlsrManager::GetTypeId()
             .AddAttribute("UpdateCwAfterFailedIcf",
                           "Whether the AP MLD shall double the CW upon CTS timeout after an "
                           "MU-RTS in case all the clients solicited by the MU-RTS are EMLSR "
-                          "clients that have sent (or are sending) a frame to the AP",
+                          "clients that have sent (or are sending) a frame to the AP on "
+                          "another link.",
                           BooleanValue(true),
                           MakeBooleanAccessor(&AdvancedApEmlsrManager::m_updateCwAfterFailedIcf),
                           MakeBooleanChecker());
