@@ -80,11 +80,11 @@ merging of your code.
 
 In brief, we can summarize the guidelines as follows:
 
-1.  Be licensed appropriately (see :ref:`General`)
-2.  Understand how and why |ns3| conducts code reviews before merging
-3.  Follow the ns-3 coding style (:ref:`Coding style`) and software
-    engineering and consistency feedback that maintainers may provide
-4.  Write associated documentation, tests, and example programs
+1. Be licensed appropriately (see :ref:`General`)
+2. Understand how and why |ns3| conducts code reviews before merging
+3. Follow the ns-3 coding style (:ref:`Coding style`) and software
+   engineering and consistency feedback that maintainers may provide
+4. Write associated documentation, tests, and example programs
 
 If you do not have the time to follow through the process to include your
 code in the main tree, please see the next chapter (:ref:`External`)

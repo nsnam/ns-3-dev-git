@@ -452,7 +452,7 @@ Let's ignore the bit about context for now.
 
 Finally, the line assigning a value to ``m_myInt``::
 
-   myObject->m_myInt = 1234;
+  myObject->m_myInt = 1234;
 
 should be interpreted as an invocation of ``operator=`` on the member
 variable ``m_myInt`` with the integer ``1234`` passed as a parameter.
@@ -712,12 +712,12 @@ you select the "API Documentation" link, you will be taken to the
 
 In the sidebar you should see a hierarchy that begins
 
-*  ns-3
+* ns-3
 
-  *  ns-3 Documentation
-  *  All TraceSources
-  *  All Attributes
-  *  All GlobalValues
+  * ns-3 Documentation
+  * All TraceSources
+  * All Attributes
+  * All GlobalValues
 
 The list of interest to us here is "All TraceSources".  Go ahead and
 select that link.  You will see, perhaps not too surprisingly, a list
@@ -1168,23 +1168,23 @@ itself around, rather than passing the address of the object.  We
 extend that requirement to include the full set of assignment-style
 operators that are pre-defined for plain-old-data (POD) types:
 
-  +---------------------+---------------------+
-  | ``operator=`` (assignment)                |
-  +---------------------+---------------------+
-  | ``operator*=``      | ``operator/=``      |
-  +---------------------+---------------------+
-  | ``operator+=``      | ``operator-=``      |
-  +---------------------+---------------------+
-  | ``operator++`` (both prefix and postfix)  |
-  +---------------------+---------------------+
-  | ``operator--`` (both prefix and postfix)  |
-  +---------------------+---------------------+
-  | ``operator<<=``     | ``operator>>=``     |
-  +---------------------+---------------------+
-  | ``operator&=``      | ``operator|=``      |
-  +---------------------+---------------------+
-  | ``operator%=``      | ``operator^=``      |
-  +---------------------+---------------------+
++---------------------+---------------------+
+| ``operator=`` (assignment)                |
++---------------------+---------------------+
+| ``operator*=``      | ``operator/=``      |
++---------------------+---------------------+
+| ``operator+=``      | ``operator-=``      |
++---------------------+---------------------+
+| ``operator++`` (both prefix and postfix)  |
++---------------------+---------------------+
+| ``operator--`` (both prefix and postfix)  |
++---------------------+---------------------+
+| ``operator<<=``     | ``operator>>=``     |
++---------------------+---------------------+
+| ``operator&=``      | ``operator|=``      |
++---------------------+---------------------+
+| ``operator%=``      | ``operator^=``      |
++---------------------+---------------------+
 
 What this all really means is that you will be able to trace all
 changes made using those operators to a C++ object which has value
@@ -2424,13 +2424,13 @@ behaving identically, but we do strive to make them all work as
 similarly as possible; and whenever possible there are analogs for all
 methods in all classes.
 
-  +-----------------+---------+---------+
-  |                 |  PCAP   |  ASCII  |
-  +=================+=========+=========+
-  | Device Helper   | |check| | |check| |
-  +-----------------+---------+---------+
-  | Protocol Helper | |check| | |check| |
-  +-----------------+---------+---------+
++-----------------+---------+---------+
+|                 |  PCAP   |  ASCII  |
++=================+=========+=========+
+| Device Helper   | |check| | |check| |
++-----------------+---------+---------+
+| Protocol Helper | |check| | |check| |
++-----------------+---------+---------+
 
 We use an approach called a ``mixin`` to add tracing functionality to
 our helper classes.  A ``mixin`` is a class that provides

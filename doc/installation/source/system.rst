@@ -19,7 +19,10 @@ The list of requirements depends on which version of ns-3 you are trying to buil
 extensions you need.
 
 .. note::
-   **"Do I need to install all of these packages?"**  Some users want to install everything so
+
+   **"Do I need to install all of these packages?"**
+
+   Some users want to install everything so
    that their configuration output shows that every feature is enabled.  However, there is
    no real need to install prerequisites related to features you are not yet using; you can always
    come back later and install more prerequisites as needed.  The build system should warn
@@ -29,7 +32,10 @@ In the following, we have classified the prerequisites as either being required,
 for all users, or optional depending on use cases.
 
 .. note::
-   **"Is there a maintained list of all prerequisites?"**  We use GitLab.com's continuous
+
+   **"Is there a maintained list of all prerequisites?"**
+
+   We use GitLab.com's continuous
    integration system for testing; the configuration YAML files for these jobs can be found
    in the directory ``utils/tests/``.  So, for instance, if you want to look at what packages
    the CI is installing for Alpine Linux, look at ``utils/tests/gitlab-ci-alpine.yml``.  The
@@ -75,7 +81,7 @@ Recommended
 
 The following are recommended for most users of |ns3|.
 
-compiler cache optimization (for ns-3.37 and later)
+Compiler cache optimization (for ns-3.37 and later)
 ===================================================
 
 `Ccache <https://ccache.dev>`_ is a compiler cache optimization that will speed up builds across
@@ -93,6 +99,7 @@ Users can invoke these tools directly from the command-line or through the
 Moreover, clang-tidy is integrated with CMake, enabling code scanning during the build phase.
 
 .. note::
+
   clang-format-14 through clang-format-16 version is required.
 
 clang-format is strongly recommended to write code that follows the ns-3 code conventions, but
@@ -118,6 +125,7 @@ Optional
 The remaining prerequisites listed below are only needed for optional ns-3 components.
 
 .. note::
+
   As of ns-3.30 release (August 2019), ns-3 uses Python 3 by default, but earlier
   releases depend on Python 2 packages, and at least a Python 2 interpreter is recommended.
   If installing the below prerequisites for an earlier release, one may in general substitute
@@ -189,6 +197,7 @@ reStructuredText for Sphinx, and figures are typically in dia.  To build PDF ver
 
 Eigen3 support
 ==============
+
 `Eigen3 <https://gitlab.com/libeigen/eigen>`_ is used to support more efficient calculations
 when using the `3GPP propagation loss models <https://www.nsnam.org/docs//models/html/propagation.html#threegpppropagationlossmodel>`_
 in LTE and NR simulations.

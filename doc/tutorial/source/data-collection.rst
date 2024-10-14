@@ -349,37 +349,37 @@ Supported Trace Types
 
 The following traced values are supported with Probes as of this writing:
 
-  +------------------+-------------------+------------------------------------+
-  | TracedValue type |   Probe type      |  File                              |
-  +==================+=========+=========+====================================+
-  | double           | DoubleProbe       | stats/model/double-probe.h         |
-  +------------------+-------------------+------------------------------------+
-  | uint8_t          | Uinteger8Probe    | stats/model/uinteger-8-probe.h     |
-  +------------------+-------------------+------------------------------------+
-  | uint16_t         | Uinteger16Probe   | stats/model/uinteger-16-probe.h    |
-  +------------------+-------------------+------------------------------------+
-  | uint32_t         | Uinteger32Probe   | stats/model/uinteger-32-probe.h    |
-  +------------------+-------------------+------------------------------------+
-  | bool             | BooleanProbe      | stats/model/uinteger-16-probe.h    |
-  +------------------+-------------------+------------------------------------+
-  | ns3::Time        | TimeProbe         | stats/model/time-probe.h           |
-  +------------------+-------------------+------------------------------------+
++------------------+-------------------+------------------------------------+
+| TracedValue type |   Probe type      |  File                              |
++==================+=========+=========+====================================+
+| double           | DoubleProbe       | stats/model/double-probe.h         |
++------------------+-------------------+------------------------------------+
+| uint8_t          | Uinteger8Probe    | stats/model/uinteger-8-probe.h     |
++------------------+-------------------+------------------------------------+
+| uint16_t         | Uinteger16Probe   | stats/model/uinteger-16-probe.h    |
++------------------+-------------------+------------------------------------+
+| uint32_t         | Uinteger32Probe   | stats/model/uinteger-32-probe.h    |
++------------------+-------------------+------------------------------------+
+| bool             | BooleanProbe      | stats/model/uinteger-16-probe.h    |
++------------------+-------------------+------------------------------------+
+| ns3::Time        | TimeProbe         | stats/model/time-probe.h           |
++------------------+-------------------+------------------------------------+
 
 The following TraceSource types are supported by Probes as of this writing:
 
-  +------------------------------------------+------------------------+---------------+----------------------------------------------------+
-  | TracedSource type                        |   Probe type           | Probe outputs |  File                                              |
-  +==========================================+========================+===============+====================================================+
-  | Ptr<const Packet>                        | PacketProbe            | OutputBytes   | network/utils/packet-probe.h                       |
-  +------------------------------------------+------------------------+---------------+----------------------------------------------------+
-  | Ptr<const Packet>, Ptr<Ipv4>, uint32_t   | Ipv4PacketProbe        | OutputBytes   | internet/model/ipv4-packet-probe.h                 |
-  +------------------------------------------+------------------------+---------------+----------------------------------------------------+
-  | Ptr<const Packet>, Ptr<Ipv6>, uint32_t   | Ipv6PacketProbe        | OutputBytes   | internet/model/ipv6-packet-probe.h                 |
-  +------------------------------------------+------------------------+---------------+----------------------------------------------------+
-  | Ptr<const Packet>, Ptr<Ipv6>, uint32_t   | Ipv6PacketProbe        | OutputBytes   | internet/model/ipv6-packet-probe.h                 |
-  +------------------------------------------+------------------------+---------------+----------------------------------------------------+
-  | Ptr<const Packet>, const Address&        | ApplicationPacketProbe | OutputBytes   | applications/model/application-packet-probe.h      |
-  +------------------------------------------+------------------------+---------------+----------------------------------------------------+
++------------------------------------------+------------------------+---------------+----------------------------------------------------+
+| TracedSource type                        |   Probe type           | Probe outputs |  File                                              |
++==========================================+========================+===============+====================================================+
+| Ptr<const Packet>                        | PacketProbe            | OutputBytes   | network/utils/packet-probe.h                       |
++------------------------------------------+------------------------+---------------+----------------------------------------------------+
+| Ptr<const Packet>, Ptr<Ipv4>, uint32_t   | Ipv4PacketProbe        | OutputBytes   | internet/model/ipv4-packet-probe.h                 |
++------------------------------------------+------------------------+---------------+----------------------------------------------------+
+| Ptr<const Packet>, Ptr<Ipv6>, uint32_t   | Ipv6PacketProbe        | OutputBytes   | internet/model/ipv6-packet-probe.h                 |
++------------------------------------------+------------------------+---------------+----------------------------------------------------+
+| Ptr<const Packet>, Ptr<Ipv6>, uint32_t   | Ipv6PacketProbe        | OutputBytes   | internet/model/ipv6-packet-probe.h                 |
++------------------------------------------+------------------------+---------------+----------------------------------------------------+
+| Ptr<const Packet>, const Address&        | ApplicationPacketProbe | OutputBytes   | applications/model/application-packet-probe.h      |
++------------------------------------------+------------------------+---------------+----------------------------------------------------+
 
 As can be seen, only a few trace sources are supported, and they are all
 oriented towards outputting the Packet size (in bytes).  However,
