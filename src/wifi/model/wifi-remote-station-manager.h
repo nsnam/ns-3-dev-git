@@ -376,9 +376,9 @@ class WifiRemoteStationManager : public Object
      */
     bool GetShortGuardIntervalSupported() const;
     /**
-     * Return the supported HE guard interval duration.
+     * Return the shortest supported HE guard interval duration.
      *
-     * @return the supported HE guard interval duration
+     * @return the shortest supported HE guard interval duration
      */
     Time GetGuardInterval() const;
     /**
@@ -1245,11 +1245,11 @@ class WifiRemoteStationManager : public Object
      */
     bool GetShortGuardIntervalSupported(const WifiRemoteStation* station) const;
     /**
-     * Return the HE guard interval duration supported by the station.
+     * Return the shortest HE guard interval duration supported by the station.
      *
      * @param station the station being queried
      *
-     * @return the HE guard interval duration supported by the station
+     * @return the shortest HE guard interval duration supported by the station
      */
     Time GetGuardInterval(const WifiRemoteStation* station) const;
     /**
