@@ -120,24 +120,26 @@ You could simply add one, changing the code.  Here is the original::
     ...
 
     else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
-      { // No action for received SYN+ACK, it is probably a duplicated packet
-      }
+    {
+      // No action for received SYN+ACK, it is probably a duplicated packet
+    }
     ...
 
 To log the SYN+ACK case, you can add a new ``NS_LOG_LOGIC`` in the
 ``if`` statement body::
 
   /* Received a packet upon ESTABLISHED state. This function is mimicking the
-      role of tcp_rcv_established() in tcp_input.c in Linux kernel. */
+     role of tcp_rcv_established() in tcp_input.c in Linux kernel. */
   void
   TcpSocketBase::ProcessEstablished(Ptr<Packet> packet, const TcpHeader& tcpHeader)
   {
     NS_LOG_FUNCTION(this << tcpHeader);
     ...
     else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
-      { // No action for received SYN+ACK, it is probably a duplicated packet
-        NS_LOG_LOGIC("TcpSocketBase " << this << " ignoring SYN+ACK");
-      }
+    {
+      // No action for received SYN+ACK, it is probably a duplicated packet
+      NS_LOG_LOGIC("TcpSocketBase " << this << " ignoring SYN+ACK");
+    }
     ...
 
 This may seem fairly simple and satisfying at first glance, but
@@ -1620,13 +1622,13 @@ look at ``src/network/model/application.cc`` and you will find::
   void
   Application::DoInitialize()
   {
-    NS_LOG_FUNCTION(this);
-    m_startEvent = Simulator::Schedule(m_startTime, &Application::StartApplication, this);
-    if (m_stopTime != TimeStep(0))
+      NS_LOG_FUNCTION(this);
+      m_startEvent = Simulator::Schedule(m_startTime, &Application::StartApplication, this);
+      if (m_stopTime != TimeStep(0))
       {
-        m_stopEvent = Simulator::Schedule(m_stopTime, &Application::StopApplication, this);
+          m_stopEvent = Simulator::Schedule(m_stopTime, &Application::StopApplication, this);
       }
-    Object::DoInitialize();
+      Object::DoInitialize();
   }
 
 Here, we finally come to the end of the trail.  If you have kept it

@@ -105,10 +105,10 @@ entirely comfortable with the following code at this point in the tutorial.
   cmd.Parse(argc, argv);
 
   if (verbose)
-    {
+  {
       LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
       LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
-    }
+  }
 
   nCsma = nCsma == 0 ? 1 : nCsma;
 
@@ -892,10 +892,10 @@ number of devices created.
   cmd.Parse(argc,argv);
 
   if (verbose)
-    {
+  {
       LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
       LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
-    }
+  }
 
 Just as in all of the previous examples, the next step is to create two nodes
 that we will connect via the point-to-point link.
@@ -1359,9 +1359,9 @@ following function:
   void
   CourseChange(std::string context, Ptr<const MobilityModel> model)
   {
-    Vector position = model->GetPosition();
-    NS_LOG_UNCOND(context <<
-                " x = " << position.x << ", y = " << position.y);
+      Vector position = model->GetPosition();
+      NS_LOG_UNCOND(context <<
+                    " x = " << position.x << ", y = " << position.y);
   }
 
 This code just pulls the position information from the mobility model and
