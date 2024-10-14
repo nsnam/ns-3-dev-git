@@ -728,9 +728,7 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac4
     auto ehtConfiguration = GetEhtConfiguration();
     NS_ASSERT(ehtConfiguration);
 
-    if (BooleanValue emlsrActivated;
-        ehtConfiguration->GetAttributeFailSafe("EmlsrActivated", emlsrActivated) &&
-        emlsrActivated.Get())
+    if (ehtConfiguration->m_emlsrActivated)
     {
         mle.SetEmlsrSupported(true);
         // When the EMLSR Padding Delay subfield is included in a frame sent by an AP affiliated
@@ -739,8 +737,7 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac4
         // with an AP MLD, the EMLSR Transition Delay subfield is reserved. (Sec. 9.4.2.312.2.3
         // of 802.11be D2.3)
         TimeValue time;
-        ehtConfiguration->GetAttribute("TransitionTimeout", time);
-        mle.SetTransitionTimeout(time.Get());
+        mle.SetTransitionTimeout(ehtConfiguration->m_transitionTimeout);
 
         // An AP affiliated with an AP MLD may include the Medium Synchronization Delay Information
         // subfield in the Common Info field of the Basic Multi-Link element carried in transmitted
@@ -749,17 +746,9 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac4
         if (frameType == WIFI_MAC_MGT_ASSOCIATION_RESPONSE)
         {
             auto& commonInfo = mle.GetCommonInfoBasic();
-
-            ehtConfiguration->GetAttribute("MediumSyncDuration", time);
-            commonInfo.SetMediumSyncDelayTimer(time.Get());
-
-            IntegerValue ofdmEdThres;
-            ehtConfiguration->GetAttribute("MsdOfdmEdThreshold", ofdmEdThres);
-            commonInfo.SetMediumSyncOfdmEdThreshold(ofdmEdThres.Get());
-
-            UintegerValue maxNTxops;
-            ehtConfiguration->GetAttribute("MsdMaxNTxops", maxNTxops);
-            commonInfo.SetMediumSyncMaxNTxops(maxNTxops.Get());
+            commonInfo.SetMediumSyncDelayTimer(ehtConfiguration->m_mediumSyncDuration);
+            commonInfo.SetMediumSyncOfdmEdThreshold(ehtConfiguration->m_msdOfdmEdThreshold);
+            commonInfo.SetMediumSyncMaxNTxops(ehtConfiguration->m_msdMaxNTxops);
         }
     }
 
@@ -775,9 +764,8 @@ ApWifiMac::GetMultiLinkElement(uint8_t linkId, WifiMacType frameType, const Mac4
         mldCapabilities.emplace();
         mldCapabilities->maxNSimultaneousLinks = GetNLinks() - 1; // assuming STR for now
         mldCapabilities->srsSupport = 0;
-        EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
-        ehtConfiguration->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
-        mldCapabilities->tidToLinkMappingSupport = static_cast<uint8_t>(negSupport.Get());
+        mldCapabilities->tidToLinkMappingSupport =
+            static_cast<uint8_t>(ehtConfiguration->m_tidLinkMappingSupport);
         mldCapabilities->freqSepForStrApMld = 0; // not supported yet
         mldCapabilities->aarSupport = 0;         // not supported yet
     }
@@ -2106,10 +2094,8 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
                     return failure("Incorrect directions in TID-to-Link Mapping IEs");
                 }
 
-                EnumValue<WifiTidToLinkMappingNegSupport> negSupport;
-                ehtConfig->GetAttributeFailSafe("TidToLinkMappingNegSupport", negSupport);
-
-                if (negSupport.Get() == WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
+                if (ehtConfig->m_tidLinkMappingSupport ==
+                    WifiTidToLinkMappingNegSupport::NOT_SUPPORTED)
                 {
                     return failure("TID-to-Link Mapping negotiation not supported");
                 }
@@ -2147,7 +2133,8 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
                     break;
                 }
 
-                if (negSupport.Get() == WifiTidToLinkMappingNegSupport::SAME_LINK_SET &&
+                if (ehtConfig->m_tidLinkMappingSupport ==
+                        WifiTidToLinkMappingNegSupport::SAME_LINK_SET &&
                     !TidToLinkMappingValidForNegType1(dlMapping, ulMapping))
                 {
                     return failure("Mapping TIDs to distinct link sets is incompatible with "
@@ -2307,10 +2294,7 @@ ApWifiMac::ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t l
 
     auto ehtConfiguration = GetEhtConfiguration();
 
-    if (BooleanValue emlsrActivated;
-        !ehtConfiguration ||
-        !ehtConfiguration->GetAttributeFailSafe("EmlsrActivated", emlsrActivated) ||
-        !emlsrActivated.Get())
+    if (!ehtConfiguration || !ehtConfiguration->m_emlsrActivated)
     {
         NS_LOG_DEBUG(
             "Received an EML Operating Mode Notification frame but EMLSR is not activated");
@@ -2348,11 +2332,9 @@ ApWifiMac::ReceiveEmlOmn(MgtEmlOmn& frame, const Mac48Address& sender, uint8_t l
             auto ackDuration =
                 WifiPhy::CalculateTxDuration(psduMap, txVector, GetLink(linkId).phy->GetPhyBand());
 
-            TimeValue transitionTimeout;
-            ehtConfiguration->GetAttribute("TransitionTimeout", transitionTimeout);
-
-            m_transitionTimeoutEvents[sender] =
-                Simulator::Schedule(ackDuration + transitionTimeout.Get(), [=, this]() {
+            m_transitionTimeoutEvents[sender] = Simulator::Schedule(
+                ackDuration + ehtConfiguration->m_transitionTimeout,
+                [=, this]() {
                     for (uint8_t id = 0; id < GetNLinks(); id++)
                     {
                         auto linkAddress =

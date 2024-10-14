@@ -100,7 +100,6 @@ class EhtConfiguration : public Object
     void SetTidLinkMapping(WifiDirection dir,
                            const std::map<std::list<uint8_t>, std::list<uint8_t>>& mapping);
 
-  private:
     bool m_emlsrActivated;       //!< whether EMLSR option is activated
     Time m_transitionTimeout;    //!< Transition timeout
     Time m_mediumSyncDuration;   //!< duration of the MediumSyncDelay timer
