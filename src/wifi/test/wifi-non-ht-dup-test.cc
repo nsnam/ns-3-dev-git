@@ -228,8 +228,8 @@ class TestNonHtDuplicatePhyReception : public TestCase
     void RxSuccess(std::size_t index,
                    Ptr<const WifiPsdu> psdu,
                    RxSignalInfo rxSignalInfo,
-                   WifiTxVector txVector,
-                   std::vector<bool> statusPerMpdu);
+                   const WifiTxVector& txVector,
+                   const std::vector<bool>& statusPerMpdu);
 
     /**
      * Receive failure function
@@ -374,8 +374,8 @@ void
 TestNonHtDuplicatePhyReception::RxSuccess(std::size_t index,
                                           Ptr<const WifiPsdu> psdu,
                                           RxSignalInfo rxSignalInfo,
-                                          WifiTxVector txVector,
-                                          std::vector<bool> /*statusPerMpdu*/)
+                                          const WifiTxVector& txVector,
+                                          const std::vector<bool>& /*statusPerMpdu*/)
 {
     NS_LOG_FUNCTION(this << index << *psdu << rxSignalInfo << txVector);
     const auto expectedWidth =
@@ -664,8 +664,8 @@ class TestMultipleCtsResponsesFromMuRts : public TestCase
     void RxCtsSuccess(std::size_t phyIndex,
                       Ptr<const WifiPsdu> psdu,
                       RxSignalInfo rxSignalInfo,
-                      WifiTxVector txVector,
-                      std::vector<bool> statusPerMpdu);
+                      const WifiTxVector& txVector,
+                      const std::vector<bool>& statusPerMpdu);
 
     /**
      * CTS RX failure function
@@ -775,8 +775,8 @@ void
 TestMultipleCtsResponsesFromMuRts::RxCtsSuccess(std::size_t phyIndex,
                                                 Ptr<const WifiPsdu> psdu,
                                                 RxSignalInfo rxSignalInfo,
-                                                WifiTxVector txVector,
-                                                std::vector<bool> /*statusPerMpdu*/)
+                                                const WifiTxVector& txVector,
+                                                const std::vector<bool>& /*statusPerMpdu*/)
 {
     NS_LOG_FUNCTION(this << phyIndex << *psdu << rxSignalInfo << txVector);
     std::vector<CtsTxInfos> successfulCtsInfos{};

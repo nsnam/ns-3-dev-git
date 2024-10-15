@@ -44,7 +44,11 @@ struct RxSignalInfo;
  * arg3: TXVECTOR of PSDU
  * arg4: vector of per-MPDU status of reception.
  */
-typedef Callback<void, Ptr<const WifiPsdu>, RxSignalInfo, WifiTxVector, std::vector<bool>>
+typedef Callback<void,
+                 Ptr<const WifiPsdu>,
+                 RxSignalInfo,
+                 const WifiTxVector&,
+                 const std::vector<bool>&>
     RxOkCallback;
 /**
  * Callback if PSDU unsuccessfuly received

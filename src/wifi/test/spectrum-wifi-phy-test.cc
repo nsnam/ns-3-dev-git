@@ -148,8 +148,8 @@ class SpectrumWifiPhyBasicTest : public TestCase
      */
     void SpectrumWifiPhyRxSuccess(Ptr<const WifiPsdu> psdu,
                                   RxSignalInfo rxSignalInfo,
-                                  WifiTxVector txVector,
-                                  std::vector<bool> statusPerMpdu);
+                                  const WifiTxVector& txVector,
+                                  const std::vector<bool>& statusPerMpdu);
     /**
      * Spectrum wifi receive failure function
      * \param psdu the PSDU
@@ -225,8 +225,8 @@ SpectrumWifiPhyBasicTest::SendSignal(Watt_u txPower)
 void
 SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess(Ptr<const WifiPsdu> psdu,
                                                    RxSignalInfo rxSignalInfo,
-                                                   WifiTxVector txVector,
-                                                   std::vector<bool> statusPerMpdu)
+                                                   const WifiTxVector& txVector,
+                                                   const std::vector<bool>& statusPerMpdu)
 {
     NS_LOG_FUNCTION(this << *psdu << rxSignalInfo << txVector);
     m_count++;
@@ -1283,8 +1283,8 @@ class SpectrumWifiPhy80Plus80Test : public TestCase
      */
     void RxSuccessSta(Ptr<const WifiPsdu> psdu,
                       RxSignalInfo rxSignalInfo,
-                      WifiTxVector txVector,
-                      std::vector<bool> statusPerMpdu);
+                      const WifiTxVector& txVector,
+                      const std::vector<bool>& statusPerMpdu);
 
     /**
      * Receive failure function for STA
@@ -1375,8 +1375,8 @@ SpectrumWifiPhy80Plus80Test::StopInterference()
 void
 SpectrumWifiPhy80Plus80Test::RxSuccessSta(Ptr<const WifiPsdu> psdu,
                                           RxSignalInfo rxSignalInfo,
-                                          WifiTxVector txVector,
-                                          std::vector<bool> /*statusPerMpdu*/)
+                                          const WifiTxVector& txVector,
+                                          const std::vector<bool>& /*statusPerMpdu*/)
 {
     NS_LOG_FUNCTION(this << *psdu << rxSignalInfo << txVector);
     m_countRxSuccessSta++;
@@ -1667,8 +1667,8 @@ class SpectrumWifiPhyMultipleInterfacesTest : public TestCase
     void RxSuccess(std::size_t index,
                    Ptr<const WifiPsdu> psdu,
                    RxSignalInfo rxSignalInfo,
-                   WifiTxVector txVector,
-                   std::vector<bool> statusPerMpdu);
+                   const WifiTxVector& txVector,
+                   const std::vector<bool>& statusPerMpdu);
 
     /**
      * Receive failure function
@@ -1851,8 +1851,8 @@ void
 SpectrumWifiPhyMultipleInterfacesTest::RxSuccess(std::size_t index,
                                                  Ptr<const WifiPsdu> psdu,
                                                  RxSignalInfo rxSignalInfo,
-                                                 WifiTxVector txVector,
-                                                 std::vector<bool> /*statusPerMpdu*/)
+                                                 const WifiTxVector& txVector,
+                                                 const std::vector<bool>& /*statusPerMpdu*/)
 {
     NS_LOG_FUNCTION(this << index << *psdu << rxSignalInfo << txVector);
     m_countRxSuccess.at(index)++;

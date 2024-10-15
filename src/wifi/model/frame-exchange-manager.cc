@@ -187,8 +187,8 @@ FrameExchangeManager::ResetPhy()
             m_phy->SetReceiveOkCallback(MakeNullCallback<void,
                                                          Ptr<const WifiPsdu>,
                                                          RxSignalInfo,
-                                                         WifiTxVector,
-                                                         std::vector<bool>>());
+                                                         const WifiTxVector&,
+                                                         const std::vector<bool>&>());
             m_phy->SetReceiveErrorCallback(MakeNullCallback<void, Ptr<const WifiPsdu>>());
         }
         m_phy = nullptr;
@@ -1150,8 +1150,8 @@ FrameExchangeManager::PsduRxError(Ptr<const WifiPsdu> psdu)
 void
 FrameExchangeManager::Receive(Ptr<const WifiPsdu> psdu,
                               RxSignalInfo rxSignalInfo,
-                              WifiTxVector txVector,
-                              std::vector<bool> perMpduStatus)
+                              const WifiTxVector& txVector,
+                              const std::vector<bool>& perMpduStatus)
 {
     NS_LOG_FUNCTION(
         this << psdu << rxSignalInfo << txVector << perMpduStatus.size()

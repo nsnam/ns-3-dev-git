@@ -62,8 +62,8 @@ class PsrExperiment
      */
     void Receive(Ptr<const WifiPsdu> psdu,
                  RxSignalInfo rxSignalInfo,
-                 WifiTxVector txVector,
-                 std::vector<bool> statusPerMpdu);
+                 const WifiTxVector& txVector,
+                 const std::vector<bool>& statusPerMpdu);
     Ptr<WifiPhy> m_tx; ///< transmit
     Input m_input;     ///< input
     Output m_output;   ///< output
@@ -84,8 +84,8 @@ PsrExperiment::Send()
 void
 PsrExperiment::Receive(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
-                       WifiTxVector txVector,
-                       std::vector<bool> statusPerMpdu)
+                       const WifiTxVector& txVector,
+                       const std::vector<bool>& statusPerMpdu)
 {
     m_output.received++;
 }
@@ -194,8 +194,8 @@ class CollisionExperiment
      */
     void Receive(Ptr<const WifiPsdu> psdu,
                  RxSignalInfo rxSignalInfo,
-                 WifiTxVector txVector,
-                 std::vector<bool> statusPerMpdu);
+                 const WifiTxVector& txVector,
+                 const std::vector<bool>& statusPerMpdu);
     Ptr<WifiPhy> m_txA; ///< transmit A
     Ptr<WifiPhy> m_txB; ///< transmit B
     uint32_t m_flowIdA; ///< flow ID A
@@ -231,8 +231,8 @@ CollisionExperiment::SendB() const
 void
 CollisionExperiment::Receive(Ptr<const WifiPsdu> psdu,
                              RxSignalInfo rxSignalInfo,
-                             WifiTxVector txVector,
-                             std::vector<bool> statusPerMpdu)
+                             const WifiTxVector& txVector,
+                             const std::vector<bool>& statusPerMpdu)
 {
     FlowIdTag tag;
     if ((*psdu->begin())->GetPacket()->FindFirstMatchingByteTag(tag))

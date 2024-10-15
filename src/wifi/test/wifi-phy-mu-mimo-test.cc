@@ -350,8 +350,8 @@ class TestDlMuMimoPhyTransmission : public TestCase
      */
     void RxSuccessSta1(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
-                       WifiTxVector txVector,
-                       std::vector<bool> statusPerMpdu);
+                       const WifiTxVector& txVector,
+                       const std::vector<bool>& statusPerMpdu);
     /**
      * Receive success function for STA 2
      * \param psdu the PSDU
@@ -361,8 +361,8 @@ class TestDlMuMimoPhyTransmission : public TestCase
      */
     void RxSuccessSta2(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
-                       WifiTxVector txVector,
-                       std::vector<bool> statusPerMpdu);
+                       const WifiTxVector& txVector,
+                       const std::vector<bool>& statusPerMpdu);
     /**
      * Receive success function for STA 3
      * \param psdu the PSDU
@@ -372,8 +372,8 @@ class TestDlMuMimoPhyTransmission : public TestCase
      */
     void RxSuccessSta3(Ptr<const WifiPsdu> psdu,
                        RxSignalInfo rxSignalInfo,
-                       WifiTxVector txVector,
-                       std::vector<bool> statusPerMpdu);
+                       const WifiTxVector& txVector,
+                       const std::vector<bool>& statusPerMpdu);
 
     /**
      * Receive failure function for STA 1
@@ -569,8 +569,8 @@ TestDlMuMimoPhyTransmission::SendMuPpdu(const std::vector<StaInfo>& staInfos)
 void
 TestDlMuMimoPhyTransmission::RxSuccessSta1(Ptr<const WifiPsdu> psdu,
                                            RxSignalInfo rxSignalInfo,
-                                           WifiTxVector txVector,
-                                           std::vector<bool> /*statusPerMpdu*/)
+                                           const WifiTxVector& txVector,
+                                           const std::vector<bool>& /*statusPerMpdu*/)
 {
     NS_LOG_FUNCTION(this << *psdu << rxSignalInfo << txVector);
     m_countRxSuccessSta1++;
@@ -580,8 +580,8 @@ TestDlMuMimoPhyTransmission::RxSuccessSta1(Ptr<const WifiPsdu> psdu,
 void
 TestDlMuMimoPhyTransmission::RxSuccessSta2(Ptr<const WifiPsdu> psdu,
                                            RxSignalInfo rxSignalInfo,
-                                           WifiTxVector txVector,
-                                           std::vector<bool> /*statusPerMpdu*/)
+                                           const WifiTxVector& txVector,
+                                           const std::vector<bool>& /*statusPerMpdu*/)
 {
     NS_LOG_FUNCTION(this << *psdu << rxSignalInfo << txVector);
     m_countRxSuccessSta2++;
@@ -591,8 +591,8 @@ TestDlMuMimoPhyTransmission::RxSuccessSta2(Ptr<const WifiPsdu> psdu,
 void
 TestDlMuMimoPhyTransmission::RxSuccessSta3(Ptr<const WifiPsdu> psdu,
                                            RxSignalInfo rxSignalInfo,
-                                           WifiTxVector txVector,
-                                           std::vector<bool> /*statusPerMpdu*/)
+                                           const WifiTxVector& txVector,
+                                           const std::vector<bool>& /*statusPerMpdu*/)
 {
     NS_LOG_FUNCTION(this << *psdu << rxSignalInfo << txVector);
     m_countRxSuccessSta3++;
@@ -1216,8 +1216,8 @@ class TestUlMuMimoPhyTransmission : public TestCase
      */
     void RxSuccess(Ptr<const WifiPsdu> psdu,
                    RxSignalInfo rxSignalInfo,
-                   WifiTxVector txVector,
-                   std::vector<bool> statusPerMpdu);
+                   const WifiTxVector& txVector,
+                   const std::vector<bool>& statusPerMpdu);
 
     /**
      * Receive failure function
@@ -1407,8 +1407,8 @@ TestUlMuMimoPhyTransmission::SendHeTbPpdu(uint16_t txStaId,
 void
 TestUlMuMimoPhyTransmission::RxSuccess(Ptr<const WifiPsdu> psdu,
                                        RxSignalInfo rxSignalInfo,
-                                       WifiTxVector txVector,
-                                       std::vector<bool> /*statusPerMpdu*/)
+                                       const WifiTxVector& txVector,
+                                       const std::vector<bool>& /*statusPerMpdu*/)
 {
     NS_LOG_FUNCTION(this << *psdu << psdu->GetAddr2() << RatioToDb(rxSignalInfo.snr) << txVector);
     NS_TEST_ASSERT_MSG_EQ((RatioToDb(rxSignalInfo.snr) > dB_u{0.0}), true, "Incorrect SNR value");

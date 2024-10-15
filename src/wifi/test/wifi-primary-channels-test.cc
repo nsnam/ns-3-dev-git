@@ -126,8 +126,8 @@ class WifiPrimaryChannelsTest : public TestCase
                    uint8_t station,
                    Ptr<const WifiPsdu> psdu,
                    RxSignalInfo rxSignalInfo,
-                   WifiTxVector txVector,
-                   std::vector<bool> perMpduStatus);
+                   const WifiTxVector& txVector,
+                   const std::vector<bool>& perMpduStatus);
     /**
      * Callback invoked when an AP receives an UL PPDU.
      *
@@ -140,8 +140,8 @@ class WifiPrimaryChannelsTest : public TestCase
     void ReceiveUl(uint8_t bss,
                    Ptr<const WifiPsdu> psdu,
                    RxSignalInfo rxSignalInfo,
-                   WifiTxVector txVector,
-                   std::vector<bool> perMpduStatus);
+                   const WifiTxVector& txVector,
+                   const std::vector<bool>& perMpduStatus);
     /**
      * Check that all stations associated with an AP.
      */
@@ -244,8 +244,8 @@ WifiPrimaryChannelsTest::ReceiveDl(uint8_t bss,
                                    uint8_t station,
                                    Ptr<const WifiPsdu> psdu,
                                    RxSignalInfo rxSignalInfo,
-                                   WifiTxVector txVector,
-                                   std::vector<bool> perMpduStatus)
+                                   const WifiTxVector& txVector,
+                                   const std::vector<bool>& perMpduStatus)
 {
     if (psdu->GetNMpdus() == 1)
     {
@@ -279,8 +279,8 @@ void
 WifiPrimaryChannelsTest::ReceiveUl(uint8_t bss,
                                    Ptr<const WifiPsdu> psdu,
                                    RxSignalInfo rxSignalInfo,
-                                   WifiTxVector txVector,
-                                   std::vector<bool> perMpduStatus)
+                                   const WifiTxVector& txVector,
+                                   const std::vector<bool>& perMpduStatus)
 {
     // if the BSS color is zero, this AP might receive the frame sent by another AP. Given that
     // stations only send TB PPDUs, we ignore this frame if the TX vector is not UL MU.

@@ -96,8 +96,8 @@ class FrameExchangeManager : public Object
      */
     void Receive(Ptr<const WifiPsdu> psdu,
                  RxSignalInfo rxSignalInfo,
-                 WifiTxVector txVector,
-                 std::vector<bool> perMpduStatus);
+                 const WifiTxVector& txVector,
+                 const std::vector<bool>& perMpduStatus);
 
     /**
      * Information about the MPDU being received. The TXVECTOR is populated upon
