@@ -50,7 +50,13 @@ DefaultApEmlsrManager::GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
 }
 
 bool
-DefaultApEmlsrManager::UpdateCwAfterFailedIcf()
+DefaultApEmlsrManager::UpdateCwAfterFailedIcf() const
+{
+    return true;
+}
+
+bool
+DefaultApEmlsrManager::ReportFailedIcf() const
 {
     return true;
 }

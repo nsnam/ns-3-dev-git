@@ -180,6 +180,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
     void CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector) override;
     bool GetUpdateCwOnCtsTimeout() const override;
+    bool GetReportRtsFailed() const override;
     void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
                            const CtrlTriggerHeader& trigger,
                            double muRtsSnr) override;
