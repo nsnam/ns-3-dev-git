@@ -701,6 +701,11 @@ class FrameExchangeManager : public Object
     virtual bool GetUpdateCwOnCtsTimeout() const;
 
     /**
+     * @return whether an (MU-)RTS failure shall be reported to the remote station manager
+     */
+    virtual bool GetReportRtsFailed() const;
+
+    /**
      * Reset this frame exchange manager.
      */
     virtual void Reset();

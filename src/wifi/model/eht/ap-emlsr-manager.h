@@ -79,7 +79,14 @@ class ApEmlsrManager : public Object
      *         all the clients solicited by the MU-RTS are EMLSR clients that have sent (or
      *         are sending) a frame to the AP
      */
-    virtual bool UpdateCwAfterFailedIcf() = 0;
+    virtual bool UpdateCwAfterFailedIcf() const = 0;
+
+    /**
+     * @return whether the AP MLD shall report an ICF failure to the remote station manager when
+     *         all the clients solicited by the MU-RTS are EMLSR clients that have sent (or are
+     *         sending) a frame to the AP
+     */
+    virtual bool ReportFailedIcf() const = 0;
 
   protected:
     void DoDispose() override;

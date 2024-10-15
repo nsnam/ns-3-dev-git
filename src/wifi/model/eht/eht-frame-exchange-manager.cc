@@ -941,6 +941,23 @@ EhtFrameExchangeManager::GetUpdateCwOnCtsTimeout() const
     return HeFrameExchangeManager::GetUpdateCwOnCtsTimeout();
 }
 
+bool
+EhtFrameExchangeManager::GetReportRtsFailed() const
+{
+    NS_LOG_FUNCTION(this);
+
+    if (m_apMac)
+    {
+        if (const auto apEmlsrManager = m_apMac->GetApEmlsrManager();
+            apEmlsrManager && IsCrossLinkCollision(m_sentRtsTo))
+        {
+            return apEmlsrManager->ReportFailedIcf();
+        }
+    }
+
+    return HeFrameExchangeManager::GetReportRtsFailed();
+}
+
 void
 EhtFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations)
 {

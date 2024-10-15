@@ -60,6 +60,14 @@ AdvancedApEmlsrManager::GetTypeId()
                           "another link.",
                           BooleanValue(true),
                           MakeBooleanAccessor(&AdvancedApEmlsrManager::m_updateCwAfterFailedIcf),
+                          MakeBooleanChecker())
+            .AddAttribute("ReportFailedIcf",
+                          "Whether the AP MLD shall report an ICF failure to the remote station "
+                          "manager when all the clients solicited by the MU-RTS are EMLSR "
+                          "clients that have sent (or are sending) a frame to the AP on "
+                          "another link.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&AdvancedApEmlsrManager::m_reportFailedIcf),
                           MakeBooleanChecker());
     return tid;
 }
@@ -191,9 +199,15 @@ AdvancedApEmlsrManager::GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
 }
 
 bool
-AdvancedApEmlsrManager::UpdateCwAfterFailedIcf()
+AdvancedApEmlsrManager::UpdateCwAfterFailedIcf() const
 {
     return m_updateCwAfterFailedIcf;
+}
+
+bool
+AdvancedApEmlsrManager::ReportFailedIcf() const
+{
+    return m_reportFailedIcf;
 }
 
 } // namespace ns3

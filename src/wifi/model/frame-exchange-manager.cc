@@ -1098,8 +1098,9 @@ FrameExchangeManager::DoCtsTimeout(const WifiPsduMap& psduMap)
 {
     NS_LOG_FUNCTION(this << psduMap);
 
-    // GetUpdateCwOnCtsTimeout() needs to be called before resetting m_sentRtsTo
+    // these functions need to be called before resetting m_sentRtsTo
     const auto updateCw = GetUpdateCwOnCtsTimeout();
+    const auto reportRts = GetReportRtsFailed();
 
     m_sentRtsTo.clear();
     for (const auto& [staId, psdu] : psduMap)
@@ -1115,7 +1116,10 @@ FrameExchangeManager::DoCtsTimeout(const WifiPsduMap& psduMap)
         if (const auto& hdr = psdu->GetHeader(0);
             !GetIndividuallyAddressedRecipient(m_mac, hdr).IsGroup())
         {
-            GetWifiRemoteStationManager()->ReportRtsFailed(psdu->GetHeader(0));
+            if (reportRts)
+            {
+                GetWifiRemoteStationManager()->ReportRtsFailed(hdr);
+            }
 
             if (auto droppedMpdu = DropMpduIfRetryLimitReached(psdu))
             {
@@ -1135,6 +1139,12 @@ FrameExchangeManager::DoCtsTimeout(const WifiPsduMap& psduMap)
 
 bool
 FrameExchangeManager::GetUpdateCwOnCtsTimeout() const
+{
+    return true;
+}
+
+bool
+FrameExchangeManager::GetReportRtsFailed() const
 {
     return true;
 }

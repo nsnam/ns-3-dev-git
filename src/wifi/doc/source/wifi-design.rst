@@ -1435,6 +1435,19 @@ and the new channel switch starts. This opportunity is exploited in two situatio
   main PHY switch is interrupted and the main PHY returns to the preferred link; if the aux PHYs
   switch link, the main PHY switch is interrupted and the main PHY returns to the link it just left.
 
+AP EMLSR Manager
+----------------
+A manager which takes EMLSR specific decisions can also be installed on the AP MLD side. The base
+class is named ``ApEmlsrManager``, which is inherited by the ``DefaultApEmlsrManager`` and the
+``AdvancedApEmlsrManager``. One of the choices that the AP MLD has to take is how to behave in case
+the transmission of an ICF fails due to a cross link collision, i.e., an ICF that is addressed to
+EMLSR client(s) fails because the EMLSR client(s) are sending or have sent an ICF on another EMLSR
+link. By default, an ICF failure is treated just like any other failure: the contention window is
+updated and the failure is notified to the remote station manager. However, the advanced AP EMLSR
+manager provides two attributes, ``UpdateCwAfterFailedIcf`` and ``ReportFailedIcf``, that can be
+used, respectively, to control whether to update the contention window and report the failure to the
+remote station manager in case of ICF failure due to cross link collision.
+
 EMLSR traces
 ------------
 

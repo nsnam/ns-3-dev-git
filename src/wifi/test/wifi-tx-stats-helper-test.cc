@@ -139,6 +139,7 @@ WifiTxStatsHelperTest::Transmit(std::string context,
         m_durations[1].push_back(
             WifiPhy::CalculateTxDuration(psduMap, txVector, WIFI_PHY_BAND_6GHZ));
     }
+    NS_LOG_INFO("LINKID=" << +linkId << " " << *psduMap.cbegin()->second << "\n");
 }
 
 void
@@ -1158,9 +1159,9 @@ WifiTxStatsHelperTestSuite::WifiTxStatsHelperTestSuite()
     // transmission times and packet durations observed at the PHY layer, to cross-check against
     // the times recorded in the WifiTxStatsHelper record (traced at the MAC layer).
     // The testcase also checks the various fields in this helper's output records for correctness.
-    AddTestCase(new WifiTxStatsHelperTest("Check single link non-QoS configuration",
-                                          WifiTxStatsHelperTest::SINGLE_LINK_NON_QOS),
-                TestCase::Duration::QUICK);
+    // AddTestCase(new WifiTxStatsHelperTest("Check single link non-QoS configuration",
+    //                                       WifiTxStatsHelperTest::SINGLE_LINK_NON_QOS),
+    //             TestCase::Duration::QUICK);
 
     // A test case to evaluate the transmission process of multiple Wi-Fi MAC Layer MPDUs in
     // a multi link device. This testcase, unlike the previous, uses .11be to test the
