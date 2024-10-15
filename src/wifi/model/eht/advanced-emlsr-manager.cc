@@ -252,7 +252,7 @@ AdvancedEmlsrManager::DoGetDelayUntilAccessRequest(uint8_t linkId)
                 continue;
             }
 
-            if (phy && phy->IsReceivingPhyHeader())
+            if (phy && phy->GetInfoIfRxingPhyHeader())
             {
                 // we don't know yet the type of the frame being received; prevent or allow
                 // the UL TXOP based on user configuration

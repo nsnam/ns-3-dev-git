@@ -114,9 +114,10 @@ class WifiPhy : public Object
                               Time rxDuration);
 
     /**
-     * @return whether the PHY is busy decoding the PHY header fields of a PPDU
+     * @return if the PHY is busy decoding the PHY header fields of a PPDU, return the TXVECTOR
+     *         used to transmit the PPDU; otherwise, return a null optional value
      */
-    bool IsReceivingPhyHeader() const;
+    std::optional<std::reference_wrapper<const WifiTxVector>> GetInfoIfRxingPhyHeader() const;
 
     /**
      * For HE receptions only, check and possibly modify the transmit power restriction state at

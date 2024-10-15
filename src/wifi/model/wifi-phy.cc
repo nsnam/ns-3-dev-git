@@ -1997,10 +1997,15 @@ WifiPhy::StartReceivePreamble(Ptr<const WifiPpdu> ppdu,
     }
 }
 
-bool
-WifiPhy::IsReceivingPhyHeader() const
+std::optional<std::reference_wrapper<const WifiTxVector>>
+WifiPhy::GetInfoIfRxingPhyHeader() const
 {
-    return m_endPhyRxEvent.IsPending();
+    if (m_endPhyRxEvent.IsPending())
+    {
+        NS_ASSERT_MSG(m_currentEvent, "No current event while receiving PHY header");
+        return std::cref(m_currentEvent->GetPpdu()->GetTxVector());
+    }
+    return std::nullopt;
 }
 
 void

@@ -4832,12 +4832,12 @@ EmlsrCcaBusyTest::CheckPoint1()
     NS_TEST_EXPECT_MSG_NE(mainPhy, auxPhy, "Main PHY is operating on an unexpected link");
 
     // 2. Aux PHY is receiving the PHY header
-    NS_TEST_EXPECT_MSG_EQ(auxPhy->IsReceivingPhyHeader(),
+    NS_TEST_EXPECT_MSG_EQ(auxPhy->GetInfoIfRxingPhyHeader().has_value(),
                           true,
                           "Aux PHY is not receiving a PHY header");
 
     // 3. Main PHY dropped the preamble because it is switching
-    NS_TEST_EXPECT_MSG_EQ(mainPhy->IsReceivingPhyHeader(),
+    NS_TEST_EXPECT_MSG_EQ(mainPhy->GetInfoIfRxingPhyHeader().has_value(),
                           false,
                           "Main PHY is receiving a PHY header");
 
