@@ -421,53 +421,8 @@ HeFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVe
         return;
     }
 
-    DoCtsAfterMuRtsTimeout(m_psduMap);
+    DoCtsTimeout(m_psduMap);
     m_psduMap.clear();
-}
-
-void
-HeFrameExchangeManager::DoCtsAfterMuRtsTimeout(const WifiPsduMap& psduMap)
-{
-    NS_LOG_FUNCTION(this);
-
-    // GetUpdateCwOnCtsTimeout() needs to be called before resetting m_sentRtsTo
-    const auto updateCw = GetUpdateCwOnCtsTimeout();
-
-    m_sentRtsTo.clear();
-    for (const auto& psdu : psduMap)
-    {
-        for (const auto& mpdu : *PeekPointer(psdu.second))
-        {
-            if (mpdu->IsQueued())
-            {
-                mpdu->ResetInFlight(m_linkId);
-            }
-        }
-    }
-
-    if (const auto& hdr = psduMap.cbegin()->second->GetHeader(0); !hdr.GetAddr1().IsGroup())
-    {
-        GetWifiRemoteStationManager()->ReportRtsFailed(hdr);
-    }
-
-    for (const auto& [staId, psdu] : psduMap)
-    {
-        if (psdu->GetAddr1().IsGroup())
-        {
-            continue;
-        }
-        if (auto droppedMpdu = DropMpduIfRetryLimitReached(psdu))
-        {
-            GetWifiRemoteStationManager()->ReportFinalRtsFailed(droppedMpdu->GetHeader());
-        }
-        // Make the sequence numbers of the MPDUs available again if the MPDUs have never
-        // been transmitted, both in case the MPDUs have been discarded and in case the
-        // MPDUs have to be transmitted (because a new sequence number is assigned to
-        // MPDUs that have never been transmitted and are selected for transmission)
-        ReleaseSequenceNumbers(psdu);
-    }
-
-    TransmissionFailed(!updateCw);
 }
 
 Ptr<WifiPsdu>
@@ -498,7 +453,7 @@ HeFrameExchangeManager::CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVect
     }
 
     NS_ABORT_MSG_IF(m_psduMap.size() > 1, "RTS/CTS cannot be used to protect an MU PPDU");
-    DoCtsTimeout(m_psduMap.begin()->second);
+    DoCtsTimeout(m_psduMap);
     m_psduMap.clear();
 }
 

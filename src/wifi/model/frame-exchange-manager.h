@@ -688,12 +688,12 @@ class FrameExchangeManager : public Object
      */
     virtual void CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVector);
     /**
-     * Take required actions when the CTS timer fired after sending an RTS to
-     * protect the given PSDU expires.
+     * Take required actions when the CTS timer fired after sending an (MU-)RTS to
+     * protect the given PSDU map expires.
      *
-     * @param psdu the PSDU protected by the failed RTS
+     * @param psduMap the PSDU map protected by the failed (MU-)RTS
      */
-    void DoCtsTimeout(Ptr<WifiPsdu> psdu);
+    void DoCtsTimeout(const WifiPsduMap& psduMap);
 
     /**
      * @return whether CW shall be updated on CTS timeout
