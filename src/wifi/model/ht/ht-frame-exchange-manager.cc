@@ -1132,7 +1132,7 @@ HtFrameExchangeManager::CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVect
         return;
     }
 
-    DoCtsTimeout(m_psdu);
+    DoCtsTimeout(WifiPsduMap{{SU_STA_ID, m_psdu}});
     m_psdu = nullptr;
 }
 

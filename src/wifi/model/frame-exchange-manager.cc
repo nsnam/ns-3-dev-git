@@ -1089,38 +1089,46 @@ FrameExchangeManager::CtsTimeout(Ptr<WifiMpdu> rts, const WifiTxVector& txVector
 {
     NS_LOG_FUNCTION(this << *rts << txVector);
 
-    DoCtsTimeout(Create<WifiPsdu>(m_mpdu, true));
+    DoCtsTimeout(WifiPsduMap{{SU_STA_ID, Create<WifiPsdu>(m_mpdu, true)}});
     m_mpdu = nullptr;
 }
 
 void
-FrameExchangeManager::DoCtsTimeout(Ptr<WifiPsdu> psdu)
+FrameExchangeManager::DoCtsTimeout(const WifiPsduMap& psduMap)
 {
-    NS_LOG_FUNCTION(this << *psdu);
+    NS_LOG_FUNCTION(this << psduMap);
 
     // GetUpdateCwOnCtsTimeout() needs to be called before resetting m_sentRtsTo
     const auto updateCw = GetUpdateCwOnCtsTimeout();
 
     m_sentRtsTo.clear();
-    for (const auto& mpdu : *PeekPointer(psdu))
+    for (const auto& [staId, psdu] : psduMap)
     {
-        if (mpdu->IsQueued())
+        for (const auto& mpdu : *PeekPointer(psdu))
         {
-            mpdu->ResetInFlight(m_linkId);
+            if (mpdu->IsQueued())
+            {
+                mpdu->ResetInFlight(m_linkId);
+            }
         }
-    }
 
-    GetWifiRemoteStationManager()->ReportRtsFailed(psdu->GetHeader(0));
-    if (auto droppedMpdu = DropMpduIfRetryLimitReached(psdu))
-    {
-        GetWifiRemoteStationManager()->ReportFinalRtsFailed(droppedMpdu->GetHeader());
-    }
+        if (const auto& hdr = psdu->GetHeader(0);
+            !GetIndividuallyAddressedRecipient(m_mac, hdr).IsGroup())
+        {
+            GetWifiRemoteStationManager()->ReportRtsFailed(psdu->GetHeader(0));
 
-    // Make the sequence numbers of the MPDUs available again if the MPDUs have never
-    // been transmitted, both in case the MPDUs have been discarded and in case the
-    // MPDUs have to be transmitted (because a new sequence number is assigned to
-    // MPDUs that have never been transmitted and are selected for transmission)
-    ReleaseSequenceNumbers(psdu);
+            if (auto droppedMpdu = DropMpduIfRetryLimitReached(psdu))
+            {
+                GetWifiRemoteStationManager()->ReportFinalRtsFailed(droppedMpdu->GetHeader());
+            }
+        }
+
+        // Make the sequence numbers of the MPDUs available again if the MPDUs have never
+        // been transmitted, both in case the MPDUs have been discarded and in case the
+        // MPDUs have to be transmitted (because a new sequence number is assigned to
+        // MPDUs that have never been transmitted and are selected for transmission)
+        ReleaseSequenceNumbers(psdu);
+    }
 
     TransmissionFailed(!updateCw);
 }
