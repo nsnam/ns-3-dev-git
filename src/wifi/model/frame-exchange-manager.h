@@ -696,6 +696,11 @@ class FrameExchangeManager : public Object
     void DoCtsTimeout(Ptr<WifiPsdu> psdu);
 
     /**
+     * @return whether CW shall be updated on CTS timeout
+     */
+    virtual bool GetUpdateCwOnCtsTimeout() const;
+
+    /**
      * Reset this frame exchange manager.
      */
     virtual void Reset();

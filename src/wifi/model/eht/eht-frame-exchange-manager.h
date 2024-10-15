@@ -179,6 +179,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& txVector) override;
     void ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVector& txVector) override;
     void CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector) override;
+    bool GetUpdateCwOnCtsTimeout() const override;
     void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
                            const CtrlTriggerHeader& trigger,
                            double muRtsSnr) override;
@@ -234,7 +235,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      * @return whether all the stations that did not respond are EMLSR clients trying to start an
      *         UL TXOP on another link
      */
-    bool IsCrossLinkCollision(const std::set<Mac48Address>& staMissedResponseFrom);
+    bool IsCrossLinkCollision(const std::set<Mac48Address>& staMissedResponseFrom) const;
 
     /**
      * Unblock transmissions on all the links of the given EMLSR client, provided that the latter

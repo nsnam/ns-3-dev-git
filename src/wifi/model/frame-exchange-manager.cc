@@ -1098,6 +1098,9 @@ FrameExchangeManager::DoCtsTimeout(Ptr<WifiPsdu> psdu)
 {
     NS_LOG_FUNCTION(this << *psdu);
 
+    // GetUpdateCwOnCtsTimeout() needs to be called before resetting m_sentRtsTo
+    const auto updateCw = GetUpdateCwOnCtsTimeout();
+
     m_sentRtsTo.clear();
     for (const auto& mpdu : *PeekPointer(psdu))
     {
@@ -1119,7 +1122,13 @@ FrameExchangeManager::DoCtsTimeout(Ptr<WifiPsdu> psdu)
     // MPDUs that have never been transmitted and are selected for transmission)
     ReleaseSequenceNumbers(psdu);
 
-    TransmissionFailed();
+    TransmissionFailed(!updateCw);
+}
+
+bool
+FrameExchangeManager::GetUpdateCwOnCtsTimeout() const
+{
+    return true;
 }
 
 void

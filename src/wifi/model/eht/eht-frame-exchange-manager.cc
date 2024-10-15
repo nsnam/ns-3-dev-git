@@ -920,15 +920,25 @@ void
 EhtFrameExchangeManager::CtsAfterMuRtsTimeout(Ptr<WifiMpdu> muRts, const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << *muRts << txVector);
-
-    const auto crossLinkCollision = IsCrossLinkCollision(m_sentRtsTo);
-
     SwitchToListeningOrUnblockLinks(m_sentRtsTo);
+    HeFrameExchangeManager::CtsAfterMuRtsTimeout(muRts, txVector);
+}
 
-    const auto apEmlsrManager = m_apMac->GetApEmlsrManager();
-    const auto updateFailedCw =
-        crossLinkCollision && apEmlsrManager ? apEmlsrManager->UpdateCwAfterFailedIcf() : true;
-    DoCtsAfterMuRtsTimeout(muRts, txVector, updateFailedCw);
+bool
+EhtFrameExchangeManager::GetUpdateCwOnCtsTimeout() const
+{
+    NS_LOG_FUNCTION(this);
+
+    if (m_apMac)
+    {
+        if (const auto apEmlsrManager = m_apMac->GetApEmlsrManager();
+            apEmlsrManager && IsCrossLinkCollision(m_sentRtsTo))
+        {
+            return apEmlsrManager->UpdateCwAfterFailedIcf();
+        }
+    }
+
+    return HeFrameExchangeManager::GetUpdateCwOnCtsTimeout();
 }
 
 void
@@ -971,7 +981,8 @@ EhtFrameExchangeManager::BlockAcksInTbPpduTimeout(WifiPsduMap* psduMap,
 }
 
 bool
-EhtFrameExchangeManager::IsCrossLinkCollision(const std::set<Mac48Address>& staMissedResponseFrom)
+EhtFrameExchangeManager::IsCrossLinkCollision(
+    const std::set<Mac48Address>& staMissedResponseFrom) const
 {
     NS_LOG_FUNCTION(this << staMissedResponseFrom.size());
 
