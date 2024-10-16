@@ -34,7 +34,7 @@ GetGuardIntervalForMode(WifiMode mode, const Ptr<WifiNetDevice> device)
         Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration();
         NS_ASSERT(htConfiguration); // If HT/VHT modulation is used, we should have a HT
                                     // configuration attached
-        gi = NanoSeconds(htConfiguration->GetShortGuardIntervalSupported() ? 400 : 800);
+        gi = NanoSeconds(htConfiguration->m_sgiSupported ? 400 : 800);
     }
     return gi;
 }

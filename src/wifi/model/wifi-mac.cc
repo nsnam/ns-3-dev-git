@@ -2130,9 +2130,9 @@ WifiMac::GetHtCapabilities(uint8_t linkId) const
 
     auto phy = GetWifiPhy(linkId);
     Ptr<HtConfiguration> htConfiguration = GetHtConfiguration();
-    bool sgiSupported = htConfiguration->GetShortGuardIntervalSupported();
-    capabilities.SetLdpc(htConfiguration->GetLdpcSupported());
-    capabilities.SetSupportedChannelWidth(htConfiguration->Get40MHzOperationSupported() ? 1 : 0);
+    bool sgiSupported = htConfiguration->m_sgiSupported;
+    capabilities.SetLdpc(htConfiguration->m_ldpcSupported);
+    capabilities.SetSupportedChannelWidth(htConfiguration->m_40MHzSupported ? 1 : 0);
     capabilities.SetShortGuardInterval20(sgiSupported);
     capabilities.SetShortGuardInterval40(sgiSupported);
     // Set Maximum A-MSDU Length subfield
@@ -2160,7 +2160,7 @@ WifiMac::GetHtCapabilities(uint8_t linkId) const
         capabilities.SetRxMcsBitmask(mcs.GetMcsValue());
         uint8_t nss = (mcs.GetMcsValue() / 8) + 1;
         NS_ASSERT(nss > 0 && nss < 5);
-        uint64_t dataRate = mcs.GetDataRate(htConfiguration->Get40MHzOperationSupported() ? 40 : 20,
+        uint64_t dataRate = mcs.GetDataRate(htConfiguration->m_40MHzSupported ? 40 : 20,
                                             NanoSeconds(sgiSupported ? 400 : 800),
                                             nss);
         if (dataRate > maxSupportedRate)
@@ -2189,10 +2189,10 @@ WifiMac::GetVhtCapabilities(uint8_t linkId) const
 
     auto phy = GetWifiPhy(linkId);
     Ptr<HtConfiguration> htConfiguration = GetHtConfiguration();
-    NS_ABORT_MSG_IF(!htConfiguration->Get40MHzOperationSupported(),
+    NS_ABORT_MSG_IF(!htConfiguration->m_40MHzSupported,
                     "VHT stations have to support 40 MHz operation");
     Ptr<VhtConfiguration> vhtConfiguration = GetVhtConfiguration();
-    bool sgiSupported = htConfiguration->GetShortGuardIntervalSupported();
+    bool sgiSupported = htConfiguration->m_sgiSupported;
     capabilities.SetSupportedChannelWidthSet(vhtConfiguration->m_160MHzSupported ? 1 : 0);
     // Set Maximum MPDU Length subfield
     uint16_t maxAmsduSize =
@@ -2216,7 +2216,7 @@ WifiMac::GetVhtCapabilities(uint8_t linkId) const
     // The maximum A-MPDU length in VHT capabilities elements ranges from 2^13-1 to 2^20-1
     capabilities.SetMaxAmpduLength(std::min(std::max(maxAmpduLength, 8191U), 1048575U));
 
-    capabilities.SetRxLdpc(htConfiguration->GetLdpcSupported());
+    capabilities.SetRxLdpc(htConfiguration->m_ldpcSupported);
     capabilities.SetShortGuardIntervalFor80Mhz(sgiSupported);
     capabilities.SetShortGuardIntervalFor160Mhz(sgiSupported);
     uint8_t maxMcs = 0;
@@ -2273,8 +2273,7 @@ WifiMac::GetHeCapabilities(uint8_t linkId) const
     Ptr<VhtConfiguration> vhtConfiguration = GetVhtConfiguration();
     Ptr<HeConfiguration> heConfiguration = GetHeConfiguration();
     uint8_t channelWidthSet = 0;
-    if ((htConfiguration->Get40MHzOperationSupported()) &&
-        (phy->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ))
+    if ((htConfiguration->m_40MHzSupported) && (phy->GetPhyBand() == WIFI_PHY_BAND_2_4GHZ))
     {
         channelWidthSet |= 0x01;
     }
@@ -2289,7 +2288,7 @@ WifiMac::GetHeCapabilities(uint8_t linkId) const
         channelWidthSet |= 0x04;
     }
     capabilities.SetChannelWidthSet(channelWidthSet);
-    capabilities.SetLdpcCodingInPayload(htConfiguration->GetLdpcSupported());
+    capabilities.SetLdpcCodingInPayload(htConfiguration->m_ldpcSupported);
     if (heConfiguration->GetGuardInterval().GetNanoSeconds() == 800)
     {
         // todo: We assume for now that if we support 800ns GI then 1600ns GI is supported as well
@@ -2400,7 +2399,7 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
 
     const uint8_t maxTxNss = phy->GetMaxSupportedTxSpatialStreams();
     const uint8_t maxRxNss = phy->GetMaxSupportedRxSpatialStreams();
-    if (auto htConfig = GetHtConfiguration(); !htConfig->Get40MHzOperationSupported())
+    if (auto htConfig = GetHtConfiguration(); !htConfig->m_40MHzSupported)
     {
         for (auto maxMcs : {7, 9, 11, 13})
         {

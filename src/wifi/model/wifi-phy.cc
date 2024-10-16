@@ -1292,7 +1292,7 @@ WifiPhy::DoChannelSwitch()
     if (m_device)
     {
         if (auto htConfig = m_device->GetHtConfiguration();
-            htConfig && !htConfig->Get40MHzOperationSupported() && chWidth > 20)
+            htConfig && !htConfig->m_40MHzSupported && chWidth > 20)
         {
             NS_ABORT_MSG("Attempting to set a " << chWidth
                                                 << " MHz channel on"

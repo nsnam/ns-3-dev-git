@@ -819,10 +819,10 @@ ApWifiMac::GetHtOperation(uint8_t linkId) const
     {
         uint8_t nss = (mcs.GetMcsValue() / 8) + 1;
         NS_ASSERT(nss > 0 && nss < 5);
-        uint64_t dataRate = mcs.GetDataRate(
-            phy->GetChannelWidth(),
-            NanoSeconds(GetHtConfiguration()->GetShortGuardIntervalSupported() ? 400 : 800),
-            nss);
+        uint64_t dataRate =
+            mcs.GetDataRate(phy->GetChannelWidth(),
+                            NanoSeconds(GetHtConfiguration()->m_sgiSupported ? 400 : 800),
+                            nss);
         if (dataRate > maxSupportedRate)
         {
             maxSupportedRate = dataRate;

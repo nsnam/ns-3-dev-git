@@ -271,7 +271,7 @@ WifiRemoteStationManager::GetLdpcSupported() const
 {
     if (auto htConfiguration = m_wifiPhy->GetDevice()->GetHtConfiguration())
     {
-        return htConfiguration->GetLdpcSupported();
+        return htConfiguration->m_ldpcSupported;
     }
     return false;
 }
@@ -281,7 +281,7 @@ WifiRemoteStationManager::GetShortGuardIntervalSupported() const
 {
     if (auto htConfiguration = m_wifiPhy->GetDevice()->GetHtConfiguration())
     {
-        return htConfiguration->GetShortGuardIntervalSupported();
+        return htConfiguration->m_sgiSupported;
     }
     return false;
 }

@@ -40,20 +40,17 @@ HtConfiguration::GetTypeId()
             .AddAttribute("ShortGuardIntervalSupported",
                           "Whether or not short guard interval is supported.",
                           BooleanValue(false),
-                          MakeBooleanAccessor(&HtConfiguration::GetShortGuardIntervalSupported,
-                                              &HtConfiguration::SetShortGuardIntervalSupported),
+                          MakeBooleanAccessor(&HtConfiguration::m_sgiSupported),
                           MakeBooleanChecker())
             .AddAttribute("LdpcSupported",
                           "Whether or not LDPC coding is supported.",
                           BooleanValue(false),
-                          MakeBooleanAccessor(&HtConfiguration::GetLdpcSupported,
-                                              &HtConfiguration::SetLdpcSupported),
+                          MakeBooleanAccessor(&HtConfiguration::m_ldpcSupported),
                           MakeBooleanChecker())
             .AddAttribute("Support40MHzOperation",
                           "Whether or not 40 MHz operation is to be supported.",
                           BooleanValue(true),
-                          MakeBooleanAccessor(&HtConfiguration::Get40MHzOperationSupported,
-                                              &HtConfiguration::Set40MHzOperationSupported),
+                          MakeBooleanAccessor(&HtConfiguration::m_40MHzSupported),
                           MakeBooleanChecker());
     return tid;
 }

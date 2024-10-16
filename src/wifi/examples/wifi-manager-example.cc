@@ -716,9 +716,9 @@ main(int argc, char* argv[])
         serverSelectedStandard.m_name == "802.11ac")
     {
         Ptr<HtConfiguration> clientHtConfiguration = wndClient->GetHtConfiguration();
-        clientHtConfiguration->SetShortGuardIntervalSupported(clientShortGuardInterval == 400);
+        clientHtConfiguration->m_sgiSupported = (clientShortGuardInterval == 400);
         Ptr<HtConfiguration> serverHtConfiguration = wndServer->GetHtConfiguration();
-        serverHtConfiguration->SetShortGuardIntervalSupported(serverShortGuardInterval == 400);
+        serverHtConfiguration->m_sgiSupported = (serverShortGuardInterval == 400);
     }
     else if (serverSelectedStandard.m_name == "802.11ax-6GHz" ||
              serverSelectedStandard.m_name == "802.11ax-5GHz" ||
