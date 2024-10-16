@@ -158,7 +158,7 @@ weekly-build-ubuntu-rolling-debug:
   stage: build
   variables:
     MODE: debug
-    LIBGSL: libgsl27
+    LIBGSL: libgsl28
     COMPILER: g++
 
 weekly-build-ubuntu-rolling-default:
@@ -168,7 +168,7 @@ weekly-build-ubuntu-rolling-default:
   stage: build
   variables:
     MODE: default
-    LIBGSL: libgsl27
+    LIBGSL: libgsl28
     COMPILER: g++
 
 # Aug. 26, 2023: --disable-eigen is needed to prevent a -Werror=unused-variable
@@ -179,7 +179,7 @@ weekly-build-ubuntu-rolling-optimized:
   stage: build
   variables:
     MODE: optimized
-    LIBGSL: libgsl27
+    LIBGSL: libgsl28
     COMPILER: g++
     EXTRA_OPTIONS: --disable-eigen
 
@@ -192,7 +192,7 @@ weekly-test-ubuntu-rolling-default:
     - weekly-build-ubuntu-rolling-default
   variables:
     MODE: default
-    LIBGSL: libgsl27
+    LIBGSL: libgsl28
     COMPILER: g++
 
 # Aug. 26, 2023: --disable-eigen is needed to prevent a -Werror=unused-variable
@@ -205,6 +205,6 @@ weekly-test-ubuntu-rolling-optimized:
     - weekly-build-ubuntu-rolling-optimized
   variables:
     MODE: optimized
-    LIBGSL: libgsl27
+    LIBGSL: libgsl28
     COMPILER: g++
     EXTRA_OPTIONS: --disable-eigen
