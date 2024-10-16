@@ -1697,9 +1697,9 @@ WifiPhy::NotifyRxPpduDrop(Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reaso
 void
 WifiPhy::NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
                               MHz_u channelFreq,
-                              WifiTxVector txVector,
+                              const WifiTxVector& txVector,
                               SignalNoiseDbm signalNoise,
-                              std::vector<bool> statusPerMpdu,
+                              const std::vector<bool>& statusPerMpdu,
                               uint16_t staId)
 {
     MpduInfo aMpdu;
@@ -1751,7 +1751,7 @@ WifiPhy::NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
 void
 WifiPhy::NotifyMonitorSniffTx(Ptr<const WifiPsdu> psdu,
                               MHz_u channelFreq,
-                              WifiTxVector txVector,
+                              const WifiTxVector& txVector,
                               uint16_t staId)
 {
     MpduInfo aMpdu;

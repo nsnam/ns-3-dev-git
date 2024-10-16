@@ -638,9 +638,9 @@ class WifiPhy : public Object
      */
     void NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
                               MHz_u channelFreq,
-                              WifiTxVector txVector,
+                              const WifiTxVector& txVector,
                               SignalNoiseDbm signalNoise,
-                              std::vector<bool> statusPerMpdu,
+                              const std::vector<bool>& statusPerMpdu,
                               uint16_t staId = SU_STA_ID);
 
     /**
@@ -684,7 +684,7 @@ class WifiPhy : public Object
      */
     void NotifyMonitorSniffTx(Ptr<const WifiPsdu> psdu,
                               MHz_u channelFreq,
-                              WifiTxVector txVector,
+                              const WifiTxVector& txVector,
                               uint16_t staId = SU_STA_ID);
 
     /**
@@ -723,7 +723,7 @@ class WifiPhy : public Object
      * \param txPowerW the transmit power in Watts
      */
     typedef void (*PsduTxBeginCallback)(WifiConstPsduMap psduMap,
-                                        WifiTxVector txVector,
+                                        const WifiTxVector& txVector,
                                         double txPowerW);
 
     /**
