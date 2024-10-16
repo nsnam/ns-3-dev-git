@@ -55,13 +55,6 @@ HeConfiguration::GetTypeId()
                           MakeTimeAccessor(&HeConfiguration::GetMaxTbPpduDelay,
                                            &HeConfiguration::SetMaxTbPpduDelay),
                           MakeTimeChecker(Seconds(0)))
-            .AddAttribute("MpduBufferSize",
-                          "This attribute is obsolete. Use the WifiMac::MpduBufferSize attribute "
-                          "instead.",
-                          UintegerValue(64),
-                          MakeUintegerAccessor(&HeConfiguration::m_mpduBufferSize),
-                          MakeUintegerChecker<uint16_t>(64, 256),
-                          TypeId::OBSOLETE)
             .AddAttribute("MuBeAifsn",
                           "AIFSN used by BE EDCA when the MU EDCA Timer is running. "
                           "It must be either zero (EDCA disabled) or a value from 2 to 15.",

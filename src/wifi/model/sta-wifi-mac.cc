@@ -123,13 +123,6 @@ StaWifiMac::GetTypeId()
                             "that disassociated with an AP MLD, the AP MLD address is provided.",
                             MakeTraceSourceAccessor(&StaWifiMac::m_deAssocLogger),
                             "ns3::Mac48Address::TracedCallback")
-            .AddTraceSource("LinkSetupCanceled",
-                            "A link setup in the context of ML setup with an AP MLD was torn down. "
-                            "Provides ID of the setup link and AP MAC address",
-                            MakeTraceSourceAccessor(&StaWifiMac::m_setupCanceled),
-                            "ns3::StaWifiMac::LinkSetupCallback",
-                            TypeId::OBSOLETE,
-                            "Disassociation only occurs at MLD level; use DeAssoc trace.")
             .AddTraceSource("BeaconArrival",
                             "Time of beacons arrival from associated AP",
                             MakeTraceSourceAccessor(&StaWifiMac::m_beaconArrival),

@@ -611,7 +611,6 @@ class StaWifiMac : public WifiMac
     TracedCallback<Mac48Address> m_assocLogger;                    ///< association logger
     TracedCallback<uint8_t, Mac48Address> m_setupCompleted;        ///< link setup completed logger
     TracedCallback<Mac48Address> m_deAssocLogger;                  ///< disassociation logger
-    TracedCallback<uint8_t, Mac48Address> m_setupCanceled;         ///< link setup canceled logger
     TracedCallback<Time> m_beaconArrival;                          ///< beacon arrival logger
     TracedCallback<ApInfo> m_beaconInfo;                           ///< beacon info logger
     TracedCallback<uint8_t, Ptr<WifiPhy>> m_emlsrLinkSwitchLogger; ///< EMLSR link switch logger
