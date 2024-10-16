@@ -94,7 +94,7 @@ ObssPdAlgorithm::ResetPhy(HeSigAParameters params)
     // Fetch my BSS color
     Ptr<HeConfiguration> heConfiguration = m_device->GetHeConfiguration();
     NS_ASSERT(heConfiguration);
-    uint8_t bssColor = heConfiguration->GetBssColor();
+    uint8_t bssColor = heConfiguration->m_bssColor;
     NS_LOG_DEBUG("My BSS color " << (uint16_t)bssColor << " received frame "
                                  << (uint16_t)params.bssColor);
 

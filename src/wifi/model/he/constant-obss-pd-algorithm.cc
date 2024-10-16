@@ -72,7 +72,7 @@ ConstantObssPdAlgorithm::ReceiveHeSigA(HeSigAParameters params)
 
     Ptr<HeConfiguration> heConfiguration = m_device->GetHeConfiguration();
     NS_ASSERT(heConfiguration);
-    uint8_t bssColor = heConfiguration->GetBssColor();
+    uint8_t bssColor = heConfiguration->m_bssColor;
 
     if (bssColor == 0)
     {

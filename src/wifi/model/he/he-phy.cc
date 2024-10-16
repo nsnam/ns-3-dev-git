@@ -555,7 +555,7 @@ HePhy::GetBssColor() const
         Ptr<HeConfiguration> heConfiguration = m_wifiPhy->GetDevice()->GetHeConfiguration();
         if (heConfiguration)
         {
-            bssColor = heConfiguration->GetBssColor();
+            bssColor = heConfiguration->m_bssColor;
         }
     }
     return bssColor;
@@ -1317,9 +1317,9 @@ HePhy::GetMaxDelayPpduSameUid(const WifiTxVector& txVector)
     // training fields that are between the start of the HE portion and the start
     // of the Data field.
     auto maxDelay = GetDuration(WIFI_PPDU_FIELD_TRAINING, txVector);
-    if (heConfiguration->GetMaxTbPpduDelay().IsStrictlyPositive())
+    if (heConfiguration->m_maxTbPpduDelay.IsStrictlyPositive())
     {
-        maxDelay = Min(maxDelay, heConfiguration->GetMaxTbPpduDelay());
+        maxDelay = Min(maxDelay, heConfiguration->m_maxTbPpduDelay);
     }
     return maxDelay;
 }

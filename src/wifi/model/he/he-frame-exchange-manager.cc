@@ -1582,7 +1582,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
 
     Ptr<HeConfiguration> heConfiguration = m_mac->GetHeConfiguration();
     NS_ASSERT_MSG(heConfiguration, "This STA has to be an HE station to send an HE TB PPDU");
-    v.SetBssColor(heConfiguration->GetBssColor());
+    v.SetBssColor(heConfiguration->m_bssColor);
 
     if (userInfoIt->IsUlTargetRssiMaxTxPower())
     {
@@ -2113,7 +2113,7 @@ HeFrameExchangeManager::IsIntraBssPpdu(Ptr<const WifiPsdu> psdu, const WifiTxVec
     // This condition is used if the BSS is not disabled ("If a STA determines that the BSS color
     // is disabled (see 26.17.3.3), then the RXVECTOR parameter BSS_COLOR of a PPDU shall not be
     // used to classify the PPDU")
-    const auto bssColor = m_mac->GetHeConfiguration()->GetBssColor();
+    const auto bssColor = m_mac->GetHeConfiguration()->m_bssColor;
 
     // the other two conditions using the RXVECTOR parameter PARTIAL_AID are not implemented
     return bssColor != 0 && bssColor == txVector.GetBssColor();

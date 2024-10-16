@@ -422,7 +422,7 @@ WifiPrimaryChannelsTest::DoSetup()
         for (uint8_t bss = 0; bss < m_nBss; bss++)
         {
             auto dev = DynamicCast<WifiNetDevice>(m_apDevices.Get(bss));
-            dev->GetHeConfiguration()->SetBssColor(bss + 1);
+            dev->GetHeConfiguration()->m_bssColor = bss + 1;
         }
     }
 
@@ -759,7 +759,7 @@ WifiPrimaryChannelsTest::SendDlSuPpdu(uint8_t bss, MHz_u txChannelWidth)
     auto apDev = DynamicCast<WifiNetDevice>(m_apDevices.Get(bss));
     auto staDev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(0));
 
-    uint8_t bssColor = apDev->GetHeConfiguration()->GetBssColor();
+    uint8_t bssColor = apDev->GetHeConfiguration()->m_bssColor;
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs8(),
                                          0,
                                          WIFI_PREAMBLE_HE_SU,
@@ -794,7 +794,7 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
                            << "addressed to " << nRus << " stations (RU type: " << ruType << ")");
 
     auto apDev = DynamicCast<WifiNetDevice>(m_apDevices.Get(bss));
-    uint8_t bssColor = apDev->GetHeConfiguration()->GetBssColor();
+    uint8_t bssColor = apDev->GetHeConfiguration()->m_bssColor;
 
     WifiTxVector txVector = WifiTxVector(HePhy::GetHeMcs8(),
                                          0,
@@ -871,7 +871,7 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
                                         std::size_t nRus)
 {
     auto apDev = DynamicCast<WifiNetDevice>(m_apDevices.Get(bss));
-    uint8_t bssColor = apDev->GetHeConfiguration()->GetBssColor();
+    uint8_t bssColor = apDev->GetHeConfiguration()->m_bssColor;
 
     WifiMacHeader hdr;
     hdr.SetType(WIFI_MAC_QOSDATA);

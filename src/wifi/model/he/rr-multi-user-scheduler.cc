@@ -192,7 +192,7 @@ RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> 
     txVector.SetPreambleType(WIFI_PREAMBLE_HE_TB);
     txVector.SetChannelWidth(m_allowedWidth);
     txVector.SetGuardInterval(heConfiguration->GetGuardInterval());
-    txVector.SetBssColor(heConfiguration->GetBssColor());
+    txVector.SetBssColor(heConfiguration->m_bssColor);
 
     // iterate over the associated stations until an enough number of stations is identified
     auto staIt = m_staListUl.begin();
@@ -792,7 +792,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
     m_txParams.m_txVector.SetPreambleType(WIFI_PREAMBLE_HE_MU);
     m_txParams.m_txVector.SetChannelWidth(m_allowedWidth);
     m_txParams.m_txVector.SetGuardInterval(heConfiguration->GetGuardInterval());
-    m_txParams.m_txVector.SetBssColor(heConfiguration->GetBssColor());
+    m_txParams.m_txVector.SetBssColor(heConfiguration->m_bssColor);
 
     // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more
     // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU

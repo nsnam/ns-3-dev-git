@@ -2518,7 +2518,7 @@ TestMultipleHeTbPreambles::DoSetup()
     preambleDetectionModel->SetAttribute("MinimumRssi", DoubleValue(-82));
     m_phy->SetPreambleDetectionModel(preambleDetectionModel);
     Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration>();
-    heConfiguration->SetMaxTbPpduDelay(NanoSeconds(400));
+    heConfiguration->m_maxTbPpduDelay = NanoSeconds(400);
     dev->SetHeConfiguration(heConfiguration);
     dev->SetPhy(m_phy);
     node->AddDevice(dev);

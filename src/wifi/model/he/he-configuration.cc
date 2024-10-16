@@ -38,12 +38,11 @@ HeConfiguration::GetTypeId()
                           MakeTimeAccessor(&HeConfiguration::GetGuardInterval,
                                            &HeConfiguration::SetGuardInterval),
                           MakeTimeChecker(NanoSeconds(800), NanoSeconds(3200)))
-            .AddAttribute(
-                "BssColor",
-                "The BSS color",
-                UintegerValue(0),
-                MakeUintegerAccessor(&HeConfiguration::GetBssColor, &HeConfiguration::SetBssColor),
-                MakeUintegerChecker<uint8_t>())
+            .AddAttribute("BssColor",
+                          "The BSS color",
+                          UintegerValue(0),
+                          MakeUintegerAccessor(&HeConfiguration::m_bssColor),
+                          MakeUintegerChecker<uint8_t>())
             .AddAttribute("MaxTbPpduDelay",
                           "If positive, the value of this attribute specifies the maximum "
                           "delay with which a TB PPDU can be received after the reception of "
@@ -52,8 +51,7 @@ HeConfiguration::GetTypeId()
                           "is anyway capped at the duration of the training fields in the PPDU. "
                           "This attribute is only valid for APs.",
                           TimeValue(Seconds(0)),
-                          MakeTimeAccessor(&HeConfiguration::GetMaxTbPpduDelay,
-                                           &HeConfiguration::SetMaxTbPpduDelay),
+                          MakeTimeAccessor(&HeConfiguration::m_maxTbPpduDelay),
                           MakeTimeChecker(Seconds(0)))
             .AddAttribute("MuBeAifsn",
                           "AIFSN used by BE EDCA when the MU EDCA Timer is running. "

@@ -627,44 +627,25 @@ ApWifiMac::GetMuEdcaParameterSet() const
     MuEdcaParameterSet muEdcaParameters;
     muEdcaParameters.SetQosInfo(0);
 
-    UintegerValue uintegerValue;
-    TimeValue timeValue;
+    muEdcaParameters.SetMuAifsn(AC_BE, heConfiguration->m_muBeAifsn);
+    muEdcaParameters.SetMuCwMin(AC_BE, heConfiguration->m_muBeCwMin);
+    muEdcaParameters.SetMuCwMax(AC_BE, heConfiguration->m_muBeCwMax);
+    muEdcaParameters.SetMuEdcaTimer(AC_BE, heConfiguration->m_beMuEdcaTimer);
 
-    heConfiguration->GetAttribute("MuBeAifsn", uintegerValue);
-    muEdcaParameters.SetMuAifsn(AC_BE, uintegerValue.Get());
-    heConfiguration->GetAttribute("MuBeCwMin", uintegerValue);
-    muEdcaParameters.SetMuCwMin(AC_BE, uintegerValue.Get());
-    heConfiguration->GetAttribute("MuBeCwMax", uintegerValue);
-    muEdcaParameters.SetMuCwMax(AC_BE, uintegerValue.Get());
-    heConfiguration->GetAttribute("BeMuEdcaTimer", timeValue);
-    muEdcaParameters.SetMuEdcaTimer(AC_BE, timeValue.Get());
+    muEdcaParameters.SetMuAifsn(AC_BK, heConfiguration->m_muBkAifsn);
+    muEdcaParameters.SetMuCwMin(AC_BK, heConfiguration->m_muBkCwMin);
+    muEdcaParameters.SetMuCwMax(AC_BK, heConfiguration->m_muBkCwMax);
+    muEdcaParameters.SetMuEdcaTimer(AC_BK, heConfiguration->m_bkMuEdcaTimer);
 
-    heConfiguration->GetAttribute("MuBkAifsn", uintegerValue);
-    muEdcaParameters.SetMuAifsn(AC_BK, uintegerValue.Get());
-    heConfiguration->GetAttribute("MuBkCwMin", uintegerValue);
-    muEdcaParameters.SetMuCwMin(AC_BK, uintegerValue.Get());
-    heConfiguration->GetAttribute("MuBkCwMax", uintegerValue);
-    muEdcaParameters.SetMuCwMax(AC_BK, uintegerValue.Get());
-    heConfiguration->GetAttribute("BkMuEdcaTimer", timeValue);
-    muEdcaParameters.SetMuEdcaTimer(AC_BK, timeValue.Get());
+    muEdcaParameters.SetMuAifsn(AC_VI, heConfiguration->m_muViAifsn);
+    muEdcaParameters.SetMuCwMin(AC_VI, heConfiguration->m_muViCwMin);
+    muEdcaParameters.SetMuCwMax(AC_VI, heConfiguration->m_muViCwMax);
+    muEdcaParameters.SetMuEdcaTimer(AC_VI, heConfiguration->m_viMuEdcaTimer);
 
-    heConfiguration->GetAttribute("MuViAifsn", uintegerValue);
-    muEdcaParameters.SetMuAifsn(AC_VI, uintegerValue.Get());
-    heConfiguration->GetAttribute("MuViCwMin", uintegerValue);
-    muEdcaParameters.SetMuCwMin(AC_VI, uintegerValue.Get());
-    heConfiguration->GetAttribute("MuViCwMax", uintegerValue);
-    muEdcaParameters.SetMuCwMax(AC_VI, uintegerValue.Get());
-    heConfiguration->GetAttribute("ViMuEdcaTimer", timeValue);
-    muEdcaParameters.SetMuEdcaTimer(AC_VI, timeValue.Get());
-
-    heConfiguration->GetAttribute("MuVoAifsn", uintegerValue);
-    muEdcaParameters.SetMuAifsn(AC_VO, uintegerValue.Get());
-    heConfiguration->GetAttribute("MuVoCwMin", uintegerValue);
-    muEdcaParameters.SetMuCwMin(AC_VO, uintegerValue.Get());
-    heConfiguration->GetAttribute("MuVoCwMax", uintegerValue);
-    muEdcaParameters.SetMuCwMax(AC_VO, uintegerValue.Get());
-    heConfiguration->GetAttribute("VoMuEdcaTimer", timeValue);
-    muEdcaParameters.SetMuEdcaTimer(AC_VO, timeValue.Get());
+    muEdcaParameters.SetMuAifsn(AC_VO, heConfiguration->m_muVoAifsn);
+    muEdcaParameters.SetMuCwMin(AC_VO, heConfiguration->m_muVoCwMin);
+    muEdcaParameters.SetMuCwMax(AC_VO, heConfiguration->m_muVoCwMax);
+    muEdcaParameters.SetMuEdcaTimer(AC_VO, heConfiguration->m_voMuEdcaTimer);
 
     // The timers of the MU EDCA Parameter Set must be either all zero or all
     // non-zero. The information element is advertised if all timers are non-zero
@@ -989,7 +970,7 @@ ApWifiMac::GetHeOperation(uint8_t linkId) const
             nss,
             11); // TBD: hardcode to 11 for now since we assume all MCS values are supported
     }
-    operation.m_bssColorInfo.m_bssColor = GetHeConfiguration()->GetBssColor();
+    operation.m_bssColorInfo.m_bssColor = GetHeConfiguration()->m_bssColor;
 
     if (auto phy = GetWifiPhy(linkId); phy && phy->GetPhyBand() == WIFI_PHY_BAND_6GHZ)
     {

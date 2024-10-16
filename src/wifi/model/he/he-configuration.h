@@ -8,6 +8,7 @@
 #ifndef HE_CONFIGURATION_H
 #define HE_CONFIGURATION_H
 
+#include "ns3/deprecated.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 
@@ -37,29 +38,36 @@ class HeConfiguration : public Object
      * \param guardInterval the supported HE guard interval
      */
     void SetGuardInterval(Time guardInterval);
+
     /**
      * \return the supported HE guard interval
      */
     Time GetGuardInterval() const;
+
     /**
      * \param bssColor the BSS color
      */
+    NS_DEPRECATED_3_44("Set the m_bssColor member variable instead")
     void SetBssColor(uint8_t bssColor);
+
     /**
      * \return the BSS color
      */
+    NS_DEPRECATED_3_44("Get the m_bssColor member variable instead")
     uint8_t GetBssColor() const;
+
     /**
      * \param maxTbPpduDelay the maximum TB PPDU delay
      */
+    NS_DEPRECATED_3_44("Set the m_maxTbPpduDelay member variable instead")
     void SetMaxTbPpduDelay(Time maxTbPpduDelay);
+
     /**
      * \return the maximum TB PPDU delay
      */
+    NS_DEPRECATED_3_44("Get the m_maxTbPpduDelay member variable instead")
     Time GetMaxTbPpduDelay() const;
 
-  private:
-    Time m_guardInterval;  //!< Supported HE guard interval
     uint8_t m_bssColor;    //!< BSS color
     Time m_maxTbPpduDelay; //!< Max TB PPDU delay
     uint8_t m_muBeAifsn;   //!< AIFSN for BE in MU EDCA Parameter Set
@@ -78,6 +86,9 @@ class HeConfiguration : public Object
     Time m_bkMuEdcaTimer;  //!< Timer for BK in MU EDCA Parameter Set
     Time m_viMuEdcaTimer;  //!< Timer for VI in MU EDCA Parameter Set
     Time m_voMuEdcaTimer;  //!< Timer for VO in MU EDCA Parameter Set
+
+  private:
+    Time m_guardInterval; //!< Supported HE guard interval
 };
 
 } // namespace ns3
