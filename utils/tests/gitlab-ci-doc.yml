@@ -14,7 +14,7 @@
     - pacman --noconfirm -U https://archive.archlinux.org/packages/d/dia/dia-0.97.3-9-x86_64.pkg.tar.zst
     # temporary revert to Doxygen 1.11.0. The package has been recompiled
     # without spdlog and wizard support to fix a library dependency.
-    - wget http://www.nsnam.org/packages/doxygen-1.11.0-4-x86_64.pkg.tar.zst
+    - wget -nv http://www.nsnam.org/packages/doxygen-1.11.0-4-x86_64.pkg.tar.zst
     - pacman --noconfirm -U doxygen-1.11.0-4-x86_64.pkg.tar.zst
     # no policy is a good policy.
     - mv /etc/ImageMagick-7/policy.xml /etc/ImageMagick-7/policy.xml.bak
