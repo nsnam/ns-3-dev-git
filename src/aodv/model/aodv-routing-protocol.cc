@@ -2267,11 +2267,16 @@ void
 RoutingProtocol::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
-    uint32_t startTime;
+
+    NS_ABORT_MSG_IF(m_ttlStart > m_netDiameter,
+                    "AODV: configuration error, TtlStart ("
+                        << m_ttlStart << ") must be less than or equal to NetDiameter ("
+                        << m_netDiameter << ").");
+
     if (m_enableHello)
     {
         m_htimer.SetFunction(&RoutingProtocol::HelloTimerExpire, this);
-        startTime = m_uniformRandomVariable->GetInteger(0, 100);
+        uint32_t startTime = m_uniformRandomVariable->GetInteger(0, 100);
         NS_LOG_DEBUG("Starting at time " << startTime << "ms");
         m_htimer.Schedule(MilliSeconds(startTime));
     }
