@@ -1300,7 +1300,7 @@ WifiPhy::DoChannelSwitch()
         }
 
         if (auto vhtConfig = m_device->GetVhtConfiguration();
-            vhtConfig && !vhtConfig->Get160MHzOperationSupported() && chWidth > 80)
+            vhtConfig && !vhtConfig->m_160MHzSupported && chWidth > 80)
         {
             NS_ABORT_MSG("Attempting to set a " << chWidth
                                                 << " MHz channel on"

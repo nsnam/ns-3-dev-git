@@ -42,8 +42,7 @@ VhtConfiguration::GetTypeId()
             .AddAttribute("Support160MHzOperation",
                           "Whether or not 160 MHz operation is to be supported.",
                           BooleanValue(true),
-                          MakeBooleanAccessor(&VhtConfiguration::Get160MHzOperationSupported,
-                                              &VhtConfiguration::Set160MHzOperationSupported),
+                          MakeBooleanAccessor(&VhtConfiguration::m_160MHzSupported),
                           MakeBooleanChecker())
             .AddAttribute("SecondaryCcaSensitivityThresholds",
                           "Tuple {threshold for 20MHz PPDUs, threshold for 40MHz PPDUs, threshold "

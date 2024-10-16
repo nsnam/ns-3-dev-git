@@ -9,6 +9,7 @@
 #ifndef VHT_CONFIGURATION_H
 #define VHT_CONFIGURATION_H
 
+#include "ns3/deprecated.h"
 #include "ns3/object.h"
 #include "ns3/wifi-units.h"
 
@@ -44,11 +45,14 @@ class VhtConfiguration : public Object
      * \param enable true if 20 MHz, 40 MHz, 80 MHz and 160 MHz operation is to be supported,
      *               false if 20 MHz, 40 MHz and 80 MHz operation is to be supported
      */
+    NS_DEPRECATED_3_44("Set the m_160MHzSupported member variable instead")
     void Set160MHzOperationSupported(bool enable);
+
     /**
      * \return true if 20 MHz, 40 MHz, 80 MHz and 160 MHz operation is supported,
      *         false if 20 MHz, 40 MHz and 80 MHz operation is supported
      */
+    NS_DEPRECATED_3_44("Get the m_160MHzSupported member variable instead")
     bool Get160MHzOperationSupported() const;
 
     using SecondaryCcaSensitivityThresholds =
@@ -74,8 +78,9 @@ class VhtConfiguration : public Object
      */
     const std::map<MHz_u, dBm_u>& GetSecondaryCcaSensitivityThresholdsPerBw() const;
 
-  private:
     bool m_160MHzSupported; ///< whether 160 MHz operation is supported
+
+  private:
     std::map<MHz_u, dBm_u>
         m_secondaryCcaSensitivityThresholds; ///< CCA sensitivity thresholds for signals that do not
                                              ///< occupy the primary channel, indexed by signal

@@ -207,7 +207,7 @@ WifiDefaultAssocManager::EndScanning()
                 // in case the reported AP is using a 160 MHz and the non-AP MLD does not support
                 // 160 MHz operations)
                 if (apChannel.GetTotalWidth() > 80 &&
-                    !phy->GetDevice()->GetVhtConfiguration()->Get160MHzOperationSupported())
+                    !phy->GetDevice()->GetVhtConfiguration()->m_160MHzSupported)
                 {
                     apChannel = apChannel.GetPrimaryChannel(80);
                 }
