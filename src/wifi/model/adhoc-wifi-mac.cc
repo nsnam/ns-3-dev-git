@@ -86,7 +86,19 @@ AdhocWifiMac::GetTypeId()
                           "Possible values are 0 us, 16 us, 32 us, 64 us, 128 us or 256 us.",
                           TimeValue(MicroSeconds(0)),
                           MakeTimeAccessor(&AdhocWifiMac::m_emlsrPeerTransitionDelay),
-                          MakeTimeChecker(MicroSeconds(0), MicroSeconds(256)));
+                          MakeTimeChecker(MicroSeconds(0), MicroSeconds(256)))
+            .AddAttribute("EmlsrUpdateCwAfterFailedIcf",
+                          "Whether CW shall be doubled upon CTS timeout after an MU-RTS sent "
+                          "to an EMLSR client.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&AdhocWifiMac::m_emlsrUpdateCwAfterFailedIcf),
+                          MakeBooleanChecker())
+            .AddAttribute("EmlsrReportFailedIcf",
+                          "Whether the failure of an ICF sent to an EMLSR client should be "
+                          "reported to the remote station manager.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&AdhocWifiMac::m_emlsrReportFailedIcf),
+                          MakeBooleanChecker());
     return tid;
 }
 

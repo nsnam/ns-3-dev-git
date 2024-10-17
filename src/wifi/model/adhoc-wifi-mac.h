@@ -48,6 +48,10 @@ class AdhocWifiMac : public WifiMac
 
     Time m_emlsrPeerPaddingDelay;    //!< Padding delay used by peer STA operating in EMLSR mode
     Time m_emlsrPeerTransitionDelay; //!< Transition delay used by peer STA operating in EMLSR mode
+    bool m_emlsrUpdateCwAfterFailedIcf; //!< Whether CW shall be doubled upon CTS timeout after an
+                                        //!< MU-RTS sent to an EMLSR client
+    bool m_emlsrReportFailedIcf; //!< Whether the failure of an ICF sent to an EMLSR client should
+                                 //!< be reported to the remote station manager
 
   private:
     void DoInitialize() override;

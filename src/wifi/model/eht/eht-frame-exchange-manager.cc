@@ -1153,6 +1153,15 @@ EhtFrameExchangeManager::GetUpdateCwOnCtsTimeout() const
             return apEmlsrManager->UpdateCwAfterFailedIcf();
         }
     }
+    else if (const auto adhocMac = DynamicCast<AdhocWifiMac>(m_mac))
+    {
+        NS_ASSERT_MSG(m_sentRtsTo.size() == 1,
+                      "Expected one recipient of (MU-)RTS sent by adhoc STA");
+        if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*m_sentRtsTo.cbegin()))
+        {
+            return adhocMac->m_emlsrUpdateCwAfterFailedIcf;
+        }
+    }
 
     return HeFrameExchangeManager::GetUpdateCwOnCtsTimeout();
 }
@@ -1168,6 +1177,15 @@ EhtFrameExchangeManager::GetReportRtsFailed() const
             apEmlsrManager && IsCrossLinkCollision(m_sentRtsTo))
         {
             return apEmlsrManager->ReportFailedIcf();
+        }
+    }
+    else if (const auto adhocMac = DynamicCast<AdhocWifiMac>(m_mac))
+    {
+        NS_ASSERT_MSG(m_sentRtsTo.size() == 1,
+                      "Expected one recipient of (MU-)RTS sent by adhoc STA");
+        if (GetWifiRemoteStationManager()->GetEmlsrEnabled(*m_sentRtsTo.cbegin()))
+        {
+            return adhocMac->m_emlsrReportFailedIcf;
         }
     }
 
