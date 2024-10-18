@@ -26,7 +26,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### New API
 
-* (applications) A new trace source `BulkSendApplication::TcpRetransmission` has been added for tracing TCP retranmissions.
+* (applications) A new trace source `BulkSendApplication::TcpRetransmission` has been added for tracing TCP retransmissions.
 * (core) Added `LaplacianRandomVariable` class implementing the Laplacian random variable, and `LargestExtremeValueRandomVariable` class implementing the Largest Extreme Value random variable.
 * (lr-wpan) Added a new test to `lr-wpan-cca-test.cc` suite. The added test demonstrates a known CCA vulnerability window.
 * (tcp) A new trace source `TcpSocketBase::LastRtt` has been added for tracing the last RTT sample observed. The existing trace source `TcpSocketBase::Rtt` is still providing the smoothed RTT, although it had been incorrectly documented as providing the last RTT.
