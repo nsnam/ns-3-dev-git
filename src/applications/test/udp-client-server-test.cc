@@ -168,7 +168,7 @@ UdpTraceClientServerTestCase::DoRun()
     serverApp.Stop(Seconds(10.0));
 
     uint32_t MaxPacketSize = 1400 - 28; // ip/udp header
-    UdpTraceClientHelper clientHelper(i.GetAddress(1), port);
+    UdpTraceClientHelper clientHelper(InetSocketAddress(i.GetAddress(1), port));
     clientHelper.SetAttribute("MaxPacketSize", UintegerValue(MaxPacketSize));
     auto clientApp = clientHelper.Install(n.Get(0));
     clientApp.Start(Seconds(2.0));

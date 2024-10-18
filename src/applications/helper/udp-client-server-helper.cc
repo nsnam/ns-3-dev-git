@@ -50,16 +50,15 @@ UdpTraceClientHelper::UdpTraceClientHelper()
 UdpTraceClientHelper::UdpTraceClientHelper(const Address& address, const std::string& filename)
     : UdpTraceClientHelper()
 {
-    SetAttribute("RemoteAddress", AddressValue(address));
+    SetAttribute("Remote", AddressValue(address));
     SetAttribute("TraceFilename", StringValue(filename));
 }
 
 UdpTraceClientHelper::UdpTraceClientHelper(const Address& address,
                                            uint16_t port,
                                            const std::string& filename)
-    : UdpTraceClientHelper(address, filename)
+    : UdpTraceClientHelper(addressUtils::ConvertToSocketAddress(address, port), filename)
 {
-    SetAttribute("RemotePort", UintegerValue(port));
 }
 
 } // namespace ns3

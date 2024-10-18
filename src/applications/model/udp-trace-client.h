@@ -15,6 +15,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
 
+#include <optional>
 #include <vector>
 
 namespace ns3
@@ -61,17 +62,21 @@ class UdpTraceClient : public Application
     UdpTraceClient();
     ~UdpTraceClient() override;
 
+    static constexpr uint16_t DEFAULT_PORT{100}; //!< default port
+
     /**
      * \brief set the remote address and port
      * \param ip remote IP address
      * \param port remote port
      */
-    void SetRemote(Address ip, uint16_t port);
+    NS_DEPRECATED_3_44("Use SetRemote without port parameter instead")
+    void SetRemote(const Address& ip, uint16_t port);
+
     /**
      * \brief set the remote address
      * \param addr remote address
      */
-    void SetRemote(Address addr);
+    void SetRemote(const Address& addr);
 
     /**
      * \brief Set the trace file to be used by the application
@@ -80,7 +85,7 @@ class UdpTraceClient : public Application
      *  Frame No Frametype   Time[ms]    Length [byte]
      *  ...
      */
-    void SetTraceFile(std::string filename);
+    void SetTraceFile(const std::string& filename);
 
     /**
      * \brief Return the maximum packet size
@@ -105,10 +110,29 @@ class UdpTraceClient : public Application
     void StopApplication() override;
 
     /**
+     * \brief Set the remote port (temporary function until deprecated attributes are removed)
+     * \param port remote port
+     */
+    void SetPort(uint16_t port);
+
+    /**
+     * \brief Get the remote port (temporary function until deprecated attributes are removed)
+     * \return the remote port
+     */
+    uint16_t GetPort() const;
+
+    /**
+     * \brief Get the remote address (temporary function until deprecated attributes are removed)
+     * \return the remote address
+     */
+    Address GetRemote() const;
+
+    /**
      * \brief Load a trace file
      * \param filename the trace file path
      */
-    void LoadTrace(std::string filename);
+    void LoadTrace(const std::string& filename);
+
     /**
      * \brief Load the default trace
      */
@@ -118,6 +142,7 @@ class UdpTraceClient : public Application
      * \brief Send a packet
      */
     void Send();
+
     /**
      * \brief Send a packet of a given size
      * \param size the packet size
@@ -136,12 +161,12 @@ class UdpTraceClient : public Application
         char frameType;      //!< Frame type (I, P or B)
     };
 
-    uint32_t m_sent;       //!< Counter for sent packets
-    Ptr<Socket> m_socket;  //!< Socket
-    Address m_peerAddress; //!< Remote peer address
-    uint16_t m_peerPort;   //!< Remote peer port
-    uint8_t m_tos;         //!< The packets Type of Service
-    EventId m_sendEvent;   //!< Event to send the next packet
+    uint32_t m_sent;                    //!< Counter for sent packets
+    Ptr<Socket> m_socket;               //!< Socket
+    Address m_peer;                     //!< Peer address
+    std::optional<uint16_t> m_peerPort; //!< Remote peer port (deprecated) // NS_DEPRECATED_3_44
+    uint8_t m_tos;                      //!< The packets Type of Service
+    EventId m_sendEvent;                //!< Event to send the next packet
 
     std::vector<TraceEntry> m_entries;    //!< Entries in the trace to send
     uint32_t m_currentEntry;              //!< Current entry index
