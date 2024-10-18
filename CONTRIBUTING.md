@@ -216,7 +216,7 @@ Please open an issue on `infrastructure` if you have suggestions for new labels,
 
 #### Merge Request Labels
 
-| Label name | Description
+| Label name | Description |
 | --- | --- |
 | `work-in-progress` | Merge requests which are still being worked on, more changes will follow. |
 | `needs-review` | Merge requests which need code review, and approval from maintainers or ns-3 core team. |

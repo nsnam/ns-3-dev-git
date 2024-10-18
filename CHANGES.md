@@ -374,7 +374,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
   * Handover joining timeout is now handled.
   * Handover leaving timeout is now handled.
   * Upon RACH failure during HO, the UE will perform cell selection again.
-* (network) Mac(8|16|48|64)Address address allocation pool is now reset between consecutive runs.
+* (network) `Mac(8|16|48|64)Address` address allocation pool is now reset between consecutive runs.
 * (propagation) The O2I Low/High Building Penetration Losses will add losses in the pathloss calculation when buildings are present and a UE results to be in O2I state. In order to not consider these losses, they can be disabled by setting BuildingPenetrationLossesEnabled to false.
 * (wifi) The **Channel** attribute of `WifiNetDevice` is deprecated because it became ambiguous with the introduction of multiple links per device. The **Channel** attribute of `WifiPhy` can be used instead.
 

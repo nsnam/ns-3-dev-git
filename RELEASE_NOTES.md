@@ -2295,7 +2295,7 @@ This release is available from:
 - Bug 1853 - NS_LOG_FUNCTION broken on OSX 10.9
 - Bug 1855 - SixLowPanNetDevice is not correctly indexed
 - Bug 1857 - Detect location of installed boost libraries
-- Bug 1862 - NS_LOG="Time=*|prefix_time" causes stack overflow
+- Bug 1862 - `NS_LOG="Time=*|prefix_time"` causes stack overflow
 - Bug 1868 - Optimized builds are sensitive to -fstrict-overflow
 - Bug 1870 - Remove unnecessary AsInt functions
 - Bug 1872 - Inside RREQ processing, in case of IP duplication, packet dropped instead of being forwarded
