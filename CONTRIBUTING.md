@@ -29,8 +29,7 @@ The full documentation about how to contribute to ns-3 is available in the [ns-3
 
 ## I do not want to read this whole thing, I just have a question
 
-> **Note:** Please don't file an issue to ask a question.
-            You'll get faster results by using the resources below.
+> **Note:** Please don't file an issue to ask a question. You'll get faster results by using the resources below.
 
 We have an official message board where the community chimes in with helpful advice if you have questions.
 
