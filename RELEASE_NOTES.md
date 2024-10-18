@@ -1,5 +1,4 @@
-ns-3 Release Notes
-==================
+# ns-3 Release Notes
 
 This file contains ns-3 release notes (most recent releases first).
 
@@ -13,8 +12,7 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
-Release 3-dev
--------------
+## Release 3-dev
 
 ### Supported platforms
 
@@ -36,8 +34,7 @@ The required Doxygen version for documentation generation is version 1.11.
 
 ### Bugs fixed
 
-Release 3.43
-------------
+## Release 3.43
 
 This release is mainly a maintenance release and the API is generally
 consistent with the previous ns-3.42 release.  See the file CHANGES.md
@@ -117,8 +114,7 @@ per device, or a PCAP file per PHY, or a PCAP file per link. By default, a singl
 - (wifi) Fix incorrect configuration of wifi-spectrum-saturation-example.cc
 - (wifi) Fix output formatting for wifi-spectrum-per-example.cc
 
-Release 3.42
-------------
+## Release 3.42
 
 In this release, we have introduced pedantic compiler warnings to enhance C++ standard conformance and improve portability.  Also, model library code in the lr-wpan and energy modules has been moved into a nested C++ namespace.
 
@@ -178,8 +174,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (wifi) - Fix operation in 6 GHz band (added support for FILS Discovery frames and HE 6GHz Band Capabilities information element, fixed HE Operation information element, fixed NSS selection, fixed HT and VHT not supported on 6GHz links).
 - (wifi, spectrum) - Fix negative power when channel is switched during the propagation delay period (after TX started but before the signal reached RX).
 
-Release 3.41
-------------
+## Release 3.41
 
 ### Availability
 
@@ -232,8 +227,7 @@ Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.
 - (wifi) - ReportAmpduTxStatus called twice when sending explicit BAR upon missed BlockAck
 - (wifi) - Fix regression causing BlockAckReq frames to be sent with data rates instead of control rates
 
-Release 3.40
-------------
+## Release 3.40
 
 ### Availability
 
@@ -281,8 +275,7 @@ Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.
 - (wifi) #942 - Trace expired MPDUs before removing them from the queue to avoid blocking the recipient buffer
 - (wifi) - Fix wrong condition preventing PHY from aborting RX when starting TX
 
-Release 3.39
-------------
+## Release 3.39
 
 ### Availability
 
@@ -341,8 +334,7 @@ release but should also be aware of a number of issues that arose and can be fou
 - (wifi) #917 - Add missing STA-ID in GetMode() call from YansErrorRateModel
 - (wifi) - Fix wifi-rate-adaptation-distance.cc example issues with CCA threshold
 
-Release 3.38
-------------
+## Release 3.38
 
 ### Availability
 
@@ -406,8 +398,7 @@ This release has discontinued support for g++-8 compilers.
 - (wifi) Prevent extraction of in-flight MPDUs due to lifetime expired
 - (wifi) Fixed getting the primary 80 MHz channel number in the 6 GHz band
 
-Release 3.37
-------------
+## Release 3.37
 
 ### Availability
 
@@ -479,8 +470,7 @@ Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.
 - (wifi) Fix acknowledgment in SU format for DL MU PPDUs including PSDUs of different TIDs
 - (wifi) Fix the TID of QoS Null frames in response to BSRP TF
 
-Release 3.36.1
---------------
+## Release 3.36.1
 
 ### Availability
 
@@ -519,8 +509,7 @@ has not been completely tested.
 - (wifi) - Do not change protection when aggregating MSDU to DL MU PPDU
 - (wifi) - IdealWifiManager was not using the appropriate default mode
 
-Release 3.36
-------------
+## Release 3.36
 
 ### Availability
 
@@ -609,8 +598,7 @@ This release has discontinued support for g++-7 compilers.
 - (wifi) #609 - STA checks that a Multi-STA BA is sent by the AP it is associated with
 - (lr-wpan) #742 - Add default values to non-initialized structs with primitive variables in ``LrWpanPhy``
 
-Release 3.35
-------------
+## Release 3.35
 
 ### Availability
 
@@ -681,8 +669,7 @@ to stay compatible with the Python API scanning framework.
 - (traffic-control) !706 - Fix FqPIE qdisc not using attributes
 - (wifi) - Always track interference when not locking on PPDU
 
-Release 3.34
--------------
+## Release 3.34
 
 ### Availability
 
@@ -763,8 +750,7 @@ This release has been tested on the following systems:
 - (wifi) #418 - Fix HE A-MPDU Max Size Upper Bound
 - (wifi) - Compare received power per MHz to normalized RX sensitivity
 
-Release 3.33
-------------
+## Release 3.33
 
 ### Availability
 
@@ -831,8 +817,7 @@ This release has been tested on the following systems:
 - (wifi) Report reception of BAR to WifiRemoteStationManager
 - (wifi) TXOP durations were not always being traced
 
-Release 3.32
-------------
+## Release 3.32
 
 ### Availability
 
@@ -909,8 +894,7 @@ This release has been tested on the following systems:
 - (wifi) - Do not send VHT capabilities when operating in 2.4 GHz band
 - (wifi) #252 - Correctly handle multicast frames
 
-Release 3.31
-------------
+## Release 3.31
 
 ### Availability
 
@@ -1013,8 +997,7 @@ issue number (prefixed by '#'), or GitLab merge request number (prefixed by '!')
 In general, known issues are tracked on the project tracker available
 at <https://gitlab.com/nsnam/ns-3-dev/issues>
 
-Release 3.30.1
---------------
+## Release 3.30.1
 
 Release 3.30.1 is a maintenance release that fixes the following issues from
 the ns-3.30 release:
@@ -1049,8 +1032,7 @@ Features are identical to release 3.30.
 - Example program tap-wifi-virtual-machine.py had a syntax error
 - Issue #80 - Indoor/outdoor status is not updated when the node moves
 
-Release 3.30
-------------
+## Release 3.30
 
 ### Availability
 
@@ -1175,8 +1157,7 @@ Other issues fixed:
 In general, known issues are tracked on the project tracker available
 at <https://gitlab.com/nsnam/ns-3-dev/issues>
 
-Release 3.29
-------------
+## Release 3.29
 
 This release is dedicated to the memory of project co-founder George Riley.
 
@@ -1261,8 +1242,7 @@ This release has been tested on the following platforms:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.28
-------------
+## Release 3.28
 
 ### Availability
 
@@ -1363,8 +1343,7 @@ This release has been tested on the following platforms:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.27
-------------
+## Release 3.27
 
 ### Availability
 
@@ -1544,8 +1523,7 @@ This release has been tested on the following platforms:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.26
-------------
+## Release 3.26
 
 ### Availability
 
@@ -1681,8 +1659,7 @@ This release has been tested on the following platforms:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.25
-------------
+## Release 3.25
 
 ### Availability
 
@@ -1871,8 +1848,7 @@ This release has been tested on the following platforms:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.24.1
---------------
+## Release 3.24.1
 
 Release 3.24.1 is a maintenance release that fixes three issues:
 
@@ -1913,8 +1889,7 @@ Features are identical to release 3.24.
 - Bug 2182 - pybindgen required version is now a string literal
 - Bug 2184 - integer overflow in MacLow
 
-Release 3.24
-------------
+## Release 3.24
 
 ### Availability
 
@@ -1992,8 +1967,7 @@ This release has been tested on the following platforms:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.23
-------------
+## Release 3.23
 
 ### Availability
 
@@ -2059,8 +2033,7 @@ This release has been tested on the following platforms:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.22
-------------
+## Release 3.22
 
 ### Availability
 
@@ -2168,8 +2141,7 @@ This release has been tested on the following platforms:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.21
-------------
+## Release 3.21
 
 ### Availability
 
@@ -2254,8 +2226,7 @@ This release is available from:
 in optimized mode, on a 32-bit Linux machine.  Lowering the optimization
 level to -O1 in this case can be used as a workaround.
 
-Release 3.20
-------------
+## Release 3.20
 
 ### Availability
 
@@ -2362,8 +2333,7 @@ This release is available from:
 in optimized mode, on a 32-bit Linux machine.  Lowering the optimization
 level to -O1 in this case can be used as a workaround.
 
-Release 3.19
-------------
+## Release 3.19
 
 ### Availability
 
@@ -2471,15 +2441,13 @@ These platforms have been tested; others may work also:
 - Bug 1816 - IPv4 fragmentation loses Packet tags
 - Bug 1877 - constructor missing for `<something>PropagationLossModels`
 
-Release 3.18.2
---------------
+## Release 3.18.2
 
 ns-allinone-3.18.2 was released to include a bake configuration file update
 for Direct Code Execution.  The ns-3 code in this release was unchanged
 from that of ns-3.18.1.
 
-Release 3.18.1
---------------
+## Release 3.18.1
 
 This release is mainly to provide updated compiler support (clang/LLVM)
 and fix the Python API scanning facility.  A few additional bug fixes
@@ -2531,8 +2499,7 @@ These platforms have been tested; others may work also:
 - Fix compilation with Clang 3.2 and newer versions, including Apple Xcode 5
 - Miscellaneous NetAnim fixes
 
-Release 3.18
-------------
+## Release 3.18
 
 ### Availability
 
@@ -2625,8 +2592,7 @@ These platforms have been tested; others may work also:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.17
-------------
+## Release 3.17
 
 ### Availability
 
@@ -2726,8 +2692,7 @@ These platforms have been tested; others may work also:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.16
-------------
+## Release 3.16
 
 ### Availability
 
@@ -2798,8 +2763,7 @@ This release is available from:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.15
-------------
+## Release 3.15
 
 ### Availability
 
@@ -2856,8 +2820,7 @@ This release is available from:
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.14.1
---------------
+## Release 3.14.1
 
 ### Availability
 
@@ -2870,8 +2833,7 @@ This hotfix release contains a fix for the PyViz visualizer and makes it
 easier to add PyViz support to examples; otherwise it is the same as the
 ns-3.14 release.
 
-Release 3.14
-------------
+## Release 3.14
 
 ### Availability
 
@@ -2978,8 +2940,7 @@ available on all platforms; check the Installation page on the project wiki.
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.13
-------------
+## Release 3.13
 
 ### Availability
 
@@ -3053,8 +3014,7 @@ available on all platforms; check the Installation page on the project wiki.
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.12.1
---------------
+## Release 3.12.1
 
 ### Availability
 
@@ -3066,8 +3026,7 @@ This release is available from:
 This release fixes PyViz visualizer's python bindings; otherwise, it
 is the same as the ns-3.12 release.
 
-Release 3.12
-------------
+## Release 3.12
 
 ### Availability
 
@@ -3150,8 +3109,7 @@ available on all platforms; check the Installation page on the project wiki.
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.11
-------------
+## Release 3.11
 
 ### Availability
 
@@ -3290,8 +3248,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
 In general, known issues are tracked on the project tracker available
 at <http://www.nsnam.org/bugzilla/>
 
-Release 3.10
-------------
+## Release 3.10
 
 ### Availability
 
@@ -3454,8 +3411,7 @@ at <http://www.nsnam.org/bugzilla/>
 Windows XP 32 bit Cygwin 1.7.7 does not seem to work because of a
 problem (reported elsewhere) in linking large libraries.
 
-Release 3.9
------------
+## Release 3.9
 
 ### Availability
 
@@ -3613,8 +3569,7 @@ since ns-3.8, in many cases referencing the Bugzilla bug number
 
 ### Known issues
 
-Release 3.8
------------
+## Release 3.8
 
 ### Availability
 
@@ -3754,8 +3709,7 @@ ns-3 builds have been known to fail on the following platforms:
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x
 
-Release 3.7
------------
+## Release 3.7
 
 ### Availability
 
@@ -3866,8 +3820,7 @@ ns-3 builds have been known to fail on the following platforms:
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x
 
-Release 3.6
------------
+## Release 3.6
 
 ### Availability
 
@@ -3943,8 +3896,7 @@ ns-3.6 build is known to fail on the following platforms:
 - optimized builds on gcc 3.4.4 and 3.4.5
 - optimized builds on linux x86 gcc 4.0.x
 
-Release 3.5
------------
+## Release 3.5
 
 ### Availability
 
@@ -4003,8 +3955,7 @@ feature the merging of some of our projects currently in development including
 fuller IPv6 support, some smaller features such as a new Global ARP
 package, and possibly a new Testing and Validation suite.
 
-Release 3.4
------------
+## Release 3.4
 
 ### Availability
 
@@ -4064,8 +4015,7 @@ fuller IPv6 support, and IPv4 and routing protocol refactoring, and some smaller
 features such as a new Global ARP package and possibly a new Testing and Validation
 suite,
 
-Release 3.3
------------
+## Release 3.3
 
 ### Availability
 
@@ -4127,8 +4077,7 @@ feature the merging of some of our projects currently in development including
 fuller IPv6 support, and IPv4 and routing protocol refactoring, and some smaller
 features such as an object naming facility and a new Global ARP package.
 
-Release 3.2
------------
+## Release 3.2
 
 ### Availability
 
@@ -4199,8 +4148,7 @@ Our next release, which is expected to happen in 2 to 4 months from now, will
 feature the merging of some of our projects currently in development: IPv6,
 emulation, and synchronous posix sockets.
 
-Release 3.1 (2008/06/30)
-------------------------
+## Release 3.1 (2008/06/30)
 
 ### The first ns-3 stable release
 
@@ -4257,8 +4205,7 @@ feature the merging of some of our projects currently in development: python
 scripting, IPv6, emulation, a statistics framework and synchronous posix
 sockets.
 
-Release 3.0.13 (2008/06/02)
----------------------------
+## Release 3.0.13 (2008/06/02)
 
 - point to point links generate ppp pcap traces
 - point to point links support asymmetrical data rates.
@@ -4278,8 +4225,7 @@ The API of Simulator::StopAt (time) has also changed.  Now it is
 called Simulator::Stop (time), and takes a relative time, instead of
 absolute.
 
-Release 3.0.12 (2008/04/07)
----------------------------
+## Release 3.0.12 (2008/04/07)
 
 - Add Attribute support to the TypeId metadata system and add
   attribute support to all in-tree models
@@ -4292,8 +4238,7 @@ Release 3.0.12 (2008/04/07)
 - regression test framework added
 - TCP delayed acknowledgements and multitasking server
 
-Release 3.0.11 (2008/02/15)
----------------------------
+## Release 3.0.11 (2008/02/15)
 
 - Initial port of GTNetS TCP implementation (initial version
   that does not support multitasking or delayed acknowledgments yet,
@@ -4303,15 +4248,13 @@ Release 3.0.11 (2008/02/15)
 - lots of bug fixes throughout the system
 - tutorial updates
 
-Release 3.0.10 (2008/01/15)
----------------------------
+## Release 3.0.10 (2008/01/15)
 
 - Add tutorial document content;
 - Valgrind option for "waf" tool;
 - Doxygen organization changes.
 
-Release 3.0.9 (2007/12/15)
---------------------------
+## Release 3.0.9 (2007/12/15)
 
 - A 802.11 model ported from Yans. This model supports:
   - a rather extensive PHY model
@@ -4325,30 +4268,26 @@ Release 3.0.9 (2007/12/15)
 - Tracing support for Applications
 - many bugs fixed
 
-Release 3.0.8 (2007/11/15)
---------------------------
+## Release 3.0.8 (2007/11/15)
 
 - A simple error model
 - Source files for ns-3 tutorial
 
-Release 3.0.7 (2007/10/15)
---------------------------
+## Release 3.0.7 (2007/10/15)
 
 - OLSR routing protocol
 - A timer class
 - Additional mobility models (random waypoint, random 2D walk)
 - A mobility visualization tool
 
-Release 3.0.6 (2007/09/15)
---------------------------
+## Release 3.0.6 (2007/09/15)
 
 - Static multicast IPv4 routing
 - Logging overhaul (NS_LOG macros)
 - Refactoring of tracing subsystem
 - Tutorial document started
 
-Release 3.0.5 (2007/08/15)
---------------------------
+## Release 3.0.5 (2007/08/15)
 
 - Refactoring to support win32-based unix environments (Cygwin, mingw)
 - "Packet socket" for allowing applications to access NetDevices directly
@@ -4358,16 +4297,14 @@ Release 3.0.5 (2007/08/15)
 - Add mobility framework and basic mobility models
 - Global unicast centralized routing
 
-Release 3.0.4 (2007/07/15)
---------------------------
+## Release 3.0.4 (2007/07/15)
 
 - Enable waf as the default build system.
 - Per-packet metadata:  a system to track which headers and trailers
   are added to a packet
 - Simplifications to point-to-point devices and channel
 
-Release 3.0.3 (2007/06/15)
---------------------------
+## Release 3.0.3 (2007/06/15)
 
 - Enable Waf for release tarballs: users can now build ns-3
   with the "waf" tool. See doc/build-waf.txt.
@@ -4379,8 +4316,7 @@ Release 3.0.3 (2007/06/15)
   manager
 - Many small API cleanups
 
-Release 3.0.2 (2007/05/18)
---------------------------
+## Release 3.0.2 (2007/05/18)
 
 - Implement a new memory management infrastructure based
   on reference counting and smart pointers (the latter being
@@ -4389,8 +4325,7 @@ Release 3.0.2 (2007/05/18)
   to provide object extensibility
 - Add support for a BSD-style socket API for user applications
 
-Release 3.0.1 (2007/03/31)
---------------------------
+## Release 3.0.1 (2007/03/31)
 
 - First public release; not yet pre-alpha.
 - Simple UDP-based simulation script (examples/simple-p2p.cc)

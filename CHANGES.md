@@ -1,5 +1,4 @@
-ns-3: API and model change history
-==================================
+# ns-3: API and model change history
 
 ns-3 is an evolving system and there will be API or behavioral changes from time to time. Users who try to use scripts or models across versions of ns-3 may encounter problems at compile time, run time, or may see the simulation output change.
 
@@ -13,8 +12,7 @@ Note that users who upgrade the simulator across versions, or who work directly 
 
 This file is a best-effort approach to solving this issue; we will do our best but can guarantee that there will be things that fall through the cracks, unfortunately. If you, as a user, can suggest improvements to this file based on your experience, please contribute a patch or drop us a note on ns-developers mailing list.
 
-Changes from ns-3.43 to ns-3-dev
---------------------------------
+## Changes from ns-3.43 to ns-3-dev
 
 ### New API
 
@@ -24,8 +22,7 @@ Changes from ns-3.43 to ns-3-dev
 
 ### Changed behavior
 
-Changes from ns-3.42 to ns-3.43
--------------------------------
+## Changes from ns-3.42 to ns-3.43
 
 ### New API
 
@@ -67,8 +64,7 @@ Changes from ns-3.42 to ns-3.43
 * (lr-wpan) Upon a beacon request command, beacons are transmitted after a jitter to reduce the probability of collisions.
 * (tcp) TCP Proportional Rate Reduction (PRR) recovery has been aligned to the updates in draft-ietf-tcpm-prr-rfc6937bis
 
-Changes from ns-3.41 to ns-3.42
--------------------------------
+## Changes from ns-3.41 to ns-3.42
 
 ### New API
 * (antenna) Added `CircularApertureAntennaModel` class which characterizes the antenna gain pattern of the reflector antenna with circular aperture described in 3GPP TR 38.811 v15.4.0, Section 6.4.1
@@ -111,8 +107,7 @@ Changes from ns-3.41 to ns-3.42
 * (mobility) Fixed the corner rebound direction in `RandomWalk2d[Outdoor]MobilityModel` and the initial direction in case of node starting from a border or corner.
 * (tcp) TcpCubic and TcpLinuxReno will no longer grow their congestion window when application-limited, now matching Linux behavior
 
-Changes from ns-3.40 to ns-3.41
--------------------------------
+## Changes from ns-3.40 to ns-3.41
 
 ### New API
 
@@ -173,8 +168,7 @@ Changes from ns-3.40 to ns-3.41
 * (tcp) TCP Cubic (the default congestion control in ns-3) now supports TCP-friendliness by default (see RFC 9438 Section 4.3), making the congestion window growth somewhat more aggressive.  This follows the default Linux behavior.
 * (wifi) Increase the duration of the timer started when waiting for an ADDBA_RESPONSE from 1ms to 5ms to better account for the time required by the recipient to access the medium and complete the frame exchange (which may involve protection with (MU-)RTS/CTS).
 
-Changes from ns-3.39 to ns-3.40
--------------------------------
+## Changes from ns-3.39 to ns-3.40
 
 ### New API
 
@@ -203,8 +197,7 @@ Changes from ns-3.39 to ns-3.40
 * (wifi) Upon ML setup, a non-AP MLD updates the IDs of the setup links to match the IDs used by the AP MLD.
 * (wifi) Attribute **TrackSignalsFromInactiveInterfaces** in SpectrumWifiPhy has been defaulted to be enabled.
 
-Changes from ns-3.38 to ns-3.39
--------------------------------
+## Changes from ns-3.38 to ns-3.39
 
 ### New API
 
@@ -273,8 +266,7 @@ Changes from ns-3.38 to ns-3.39
 * (wifi) Protection mechanisms (e.g., RTS/CTS) are not used if destinations have already received (MU-)RTS in the current TXOP
 * (wifi) Protection mechanisms can be used for management frames as well (if needed)
 
-Changes from ns-3.37 to ns-3.38
--------------------------------
+## Changes from ns-3.37 to ns-3.38
 
 ### New API
 
@@ -318,8 +310,7 @@ Changes from ns-3.37 to ns-3.38
 * (wifi) Control frames (specifically, BlockAckRequest and MU-BAR Trigger Frames) are stored in the wifi MAC queue and no longer in a dedicated BlockAckManager queue
 * (wifi) BSSIDs are no longer hashed by the ApInfo comparator because it may lead to different results on different platforms
 
-Changes from ns-3.36 to ns-3.37
--------------------------------
+## Changes from ns-3.36 to ns-3.37
 
 ### New API
 
@@ -386,8 +377,7 @@ Changes from ns-3.36 to ns-3.37
 * (propagation) The O2I Low/High Building Penetration Losses will add losses in the pathloss calculation when buildings are present and a UE results to be in O2I state. In order to not consider these losses, they can be disabled by setting BuildingPenetrationLossesEnabled to false.
 * (wifi) The **Channel** attribute of `WifiNetDevice` is deprecated because it became ambiguous with the introduction of multiple links per device. The **Channel** attribute of `WifiPhy` can be used instead.
 
-Changes from ns-3.36 to ns-3.36.1
----------------------------------
+## Changes from ns-3.36 to ns-3.36.1
 
 ### New API
 
@@ -410,8 +400,7 @@ The build system API has not changed since ns-3.36.  Several bugs were fixed and
 
 Apart from the bugs fixed (listed in the RELEASE_NOTES), the simulation model behavior should not have changed since ns-3.36.
 
-Changes from ns-3.35 to ns-3.36
--------------------------------
+## Changes from ns-3.35 to ns-3.36
 
 ### New API
 
@@ -449,8 +438,7 @@ Changes from ns-3.35 to ns-3.36
 * NixVectorRouting: `NixVectorRouting` can now better cope with topology changes. In-flight packets are not anymore causing crashes, and the path is dynamically rebuilt by intermediate routers (this happens only to packets in-flight during the topology change).
 * Mesh (Wi-Fi) forwarding hops now have a configurable random variable-based forwarding delay model, with a default mean of 350 us.
 
-Changes from ns-3.34 to ns-3.35
--------------------------------
+## Changes from ns-3.34 to ns-3.35
 
 ### New API
 
@@ -481,8 +469,7 @@ Changes from ns-3.34 to ns-3.35
 * Wi-Fi: A-MSDU aggregation now implies that constituent MSDUs are immediately dequeued from the EDCA queue and replaced by an MPDU containing the A-MSDU. Thus, aggregating N MSDUs triggers N dequeue operations and 1 enqueue operation on the EDCA queue.
 * Wi-Fi: MPDUs being passed to the PHY layer for transmission are not dequeued, but are kept in the EDCA queue until they are acknowledged or discarded. Consequently, the BlockAckManager retransmit queue has been removed.
 
-Changes from ns-3.33 to ns-3.34
--------------------------------
+## Changes from ns-3.33 to ns-3.34
 
 ### New features and API
 
@@ -522,8 +509,7 @@ Changes from ns-3.33 to ns-3.34
 * The **LTE RLC Acknowledged Mode (AM) transmit buffer** is now limited by default to a size of (`1024 * 10`) bytes. Configuration of unlimited behavior can still be made by passing the value of zero to the new attribute `MaxTxBufferSize`.
 * A **non-AP MLD loses association** when receiving no beacon an any link link for an interval of duration equal to the maximum number of missed beacons times the interval between two consecutive Beacon frames.
 
-Changes from ns-3.32 to ns-3.33
--------------------------------
+## Changes from ns-3.32 to ns-3.33
 
 ### New API
 
@@ -558,8 +544,7 @@ Changes from ns-3.32 to ns-3.33
 * TCP now implements the Linux-like **congestion window reduced (CWR)** state when explicit congestion notification (ECN) is enabled.
 * `TcpDctcp` now inherits from `TcpLinuxReno`, making its congestion avoidance track more closely to that of Linux.
 
-Changes from ns-3.31 to ns-3.32
--------------------------------
+## Changes from ns-3.31 to ns-3.32
 
 ### New API
 
@@ -598,8 +583,7 @@ Changes from ns-3.31 to ns-3.32
 * WifiPhy forwards up MPDUs from an A-MPDU under reception as long as they arrive at the PHY, instead of forwarding up the whole A-MPDU once its reception is completed.
 * The ns-3 TCP model was changed to set the initial congestion window to 10 segments instead of 1 segment (to align with default Linux configuration).
 
-Changes from ns-3.30 to ns-3.31
--------------------------------
+## Changes from ns-3.30 to ns-3.31
 
 ### New API
 
@@ -653,8 +637,7 @@ Changes from ns-3.30 to ns-3.31
 * The implementation of the **Wi-Fi channel access** functions has been improved to make them more conformant to the IEEE 802.11-2016 standard. Concerning the DCF, the backoff procedure is no longer invoked when a packet is queued for transmission and the medium has not been idle for a DIFS, but it is invoked if the medium is busy or does not remain idle for a DIFS after the packet has been queued. Concerning the EDCAF, transmissions are now correctly aligned at slot boundaries.
 * Various wifi physical layer behavior around channel occupancy calculation, phy state calculation, and handling different channel widths has been updated.
 
-Changes from ns-3.29 to ns-3.30
--------------------------------
+## Changes from ns-3.29 to ns-3.30
 
 ### New API
 
@@ -725,8 +708,7 @@ Changes from ns-3.29 to ns-3.30
   * The RachConfigCommon structure in LteRrcSap API has been extended to include `TxFailParam`. This new field would enable an eNB to indicate how many times T300 timer can expire at the UE. Upon reaching this count, the UE aborts the connection establishment, and performs the cell selection again. See TS 36.331 5.3.3.6.
 * The timer T300 in LteUeRrc class is now bounded by the standard min and max values defined in 3GPP TS 36.331.
 
-Changes from ns-3.28 to ns-3.29
--------------------------------
+## Changes from ns-3.28 to ns-3.29
 
 ### New API
 
@@ -803,8 +785,7 @@ Changes from ns-3.28 to ns-3.29
 * The maximum size UDP packet of the UdpClient application is no longer limited to 1500 bytes.
 * The default values of the `MaxSlrc` and `FragmentationThreshold` attributes in WifiRemoteStationManager were changed from 7 to 4 and from 2346 to 65535, respectively.
 
-Changes from ns-3.27 to ns-3.28
--------------------------------
+## Changes from ns-3.27 to ns-3.28
 
 ### New API
 
@@ -835,8 +816,7 @@ Changes from ns-3.27 to ns-3.28
 * The CsmaNetDevice::PhyTxBeginTrace will trace all attempts to transmit, even those that result in drops. Previously, eventual channel drops were excluded from this trace.
 * The TCP congestion window trace now does not report on window inflation during fast recovery phase because it is no longer internally maintained as an inflated value (a separate trace called CongestionWindowInflated can be used to recover the old trace behavior).
 
-Changes from ns-3.26 to ns-3.27
--------------------------------
+## Changes from ns-3.26 to ns-3.27
 
 ### New API
 
@@ -912,8 +892,7 @@ Changes from ns-3.26 to ns-3.27
 * The default value of the `EnableBeaconJitter` attribute in ApWifiMac was changed from false to true.
 * The NormalClose() callback of a TcpSocket object used to fire upon leaving `TIME_WAIT` state (`2*MSL` after FINs have been exchanged). It now fires upon entering `TIME_WAIT` state. Timing of the callback for the other path to state CLOSED (through `LAST_ACK`) has not been changed.
 
-Changes from ns-3.25 to ns-3.26
--------------------------------
+## Changes from ns-3.25 to ns-3.26
 
 ### New API
 
@@ -948,8 +927,7 @@ This section is for behavioral changes to the models that were not due to a bug 
 * The relationship between Wi-Fi channel number, frequency, channel width, and Wi-Fi standard has been revised (see bug 2412). Previously, ChannelNumber and Frequency were attributes of class YansWifiPhy, and the frequency was defined as the start of the band. Now, Frequency has been redefined to be the center frequency of the channel, and the underlying device relies on the pair of frequency and channel width to control behavior; the channel number and Wi-Fi standard are used as attributes to configure frequency and channel width. The wifi module documentation discusses this change and the new behavior.
 * AODV now honors the TTL in RREQ/RREP and it uses a method compliant with [RFC 3561](http://www.ietf.org/rfc/rfc3561.txt). The node search radius is increased progressively. This could increase slightly the node search time, but it also decreases the network congestion.
 
-Changes from ns-3.24 to ns-3.25
--------------------------------
+## Changes from ns-3.24 to ns-3.25
 
 ### New API
 
@@ -999,8 +977,7 @@ This section is for behavioral changes to the models that were not due to a bug 
 * 802.11n/ac MPDU aggregation is now enabled by default for both `AC_BE` and `AC_VI`.
 * The introduction of the traffic control layer leads to some additional buffering by default in the stack; when a device queue fills up, additional packets become enqueued at the traffic control layer.
 
-Changes from ns-3.23 to ns-3.24
--------------------------------
+## Changes from ns-3.23 to ns-3.24
 
 ### New API
 
@@ -1032,8 +1009,7 @@ Changes from ns-3.23 to ns-3.24
 
 This section is for behavioral changes to the models that were not due to a bug fix.
 
-Changes from ns-3.22 to ns-3.23
--------------------------------
+## Changes from ns-3.22 to ns-3.23
 
 ### New API
 
@@ -1057,8 +1033,7 @@ This section is for behavioral changes to the models that were not due to a bug 
 * In Wi-Fi, HT stations (802.11n) now support two-level aggregation. The InterferenceHelper now distinguishes between the PLCP and regular payload reception, for higher fidelity modeling. ACKs are now sent using legacy rates and preambles. Access points now establish BSSBasicRateSet for control frame transmissions. PLCP header and PLCP payload reception have been decoupled to improve PHY layer modeling accuracy. RTS/CTS with A-MPDU is now fully supported.
 * The mesh module was made more compliant to the IEEE 802.11s-2012 standard and packet traces are now parseable by Wireshark.
 
-Changes from ns-3.21 to ns-3.22
--------------------------------
+## Changes from ns-3.21 to ns-3.22
 
 ### New API
 
@@ -1094,8 +1069,7 @@ This section is for behavioral changes to the models that were not due to a bug 
 * The `LrWpanHelper` object was previously instantiating only a `LogDistancePropagationLossModel` on a `SingleModelSpectrumChannel`, but no `PropagationDelayModel`. The constructor now adds by default a `ConstantSpeedPropagationDelayModel`.
 * The Nix-vector routing implementation now uses a lazy flush mechanism, which dramatically speeds up the creation of large topologies.
 
-Changes from ns-3.20 to ns-3.21
--------------------------------
+## Changes from ns-3.20 to ns-3.21
 
 ### New API
 
@@ -1143,8 +1117,7 @@ Changes from ns-3.20 to ns-3.21
 
 * Behavior will be changed due to the list of bugs fixed (listed in [RELEASE_NOTES.md](RELEASE_NOTES.md)); users are requested to review that list as well.
 
-Changes from ns-3.19 to ns-3.20
--------------------------------
+## Changes from ns-3.19 to ns-3.20
 
 ### New API
 
@@ -1174,8 +1147,7 @@ Changes from ns-3.19 to ns-3.20
 * IPv4 identification field value is now dependent on the protocol field.
 * Point-to-point trace sources now contain PPP headers
 
-Changes from ns-3.18.1 to ns-3.19
----------------------------------
+## Changes from ns-3.18.1 to ns-3.19
 
 ### New API
 
@@ -1214,8 +1186,7 @@ Changes from ns-3.18.1 to ns-3.19
 * IPv6 addresses and routing tables are printed like in Linux `route -A inet6` command.
 * A change in `Ipv[4,6]Interface` enforces the correct behaviour of IP when a device do not support the minimum MTU requirements. This is set to 68 and 1280 octets respectively. IP simulations that may have run over devices with smaller MTUs than 68 or 1280, respectively, will no longer be able to use such devices.
 
-Changes from ns-3.18 to ns-3.18.1
----------------------------------
+## Changes from ns-3.18 to ns-3.18.1
 
 ### New API
 
@@ -1237,8 +1208,7 @@ Changes from ns-3.18 to ns-3.18.1
 
 * Wifi simulations have additional jitter on AP beaconing (see above) and some bug fixes have been applied to wifi module (see [RELEASE_NOTES.md](RELEASE_NOTES.md))
 
-Changes from ns-3.17 to ns-3.18
--------------------------------
+## Changes from ns-3.17 to ns-3.18
 
 ### New API
 
@@ -1296,8 +1266,7 @@ Changes from ns-3.17 to ns-3.18
 * IPv4's ARP Request and IPv6's NS/RS are now transmitted with a random delay. The delay is, by default, a uniform random variable in time between 0 and 10ms. This is aimed at preventing reception errors due to collisions during wifi broadcasts when the sending behavior is synchronized (e.g. due to applications starting at the same time on several different nodes). This behaviour can be modified by using ArpL3Protocol's `RequestJitter` and Icmpv6L4Protocol's `SolicitationJitter` attributes or by using the new `InternetStackHelper` functions.
 * AODV Hellos are disabled by default. The performance with Hellos enabled and disabled are almost identical. With Hellos enabled, AODV will suppress hellos from transmission, if any recent broadcast such as RREQ was transmitted. The attribute n`s3::aodv::RoutingProtocol::EnableHello` can be used to enable/disable Hellos.
 
-Changes from ns-3.16 to ns-3.17
--------------------------------
+## Changes from ns-3.16 to ns-3.17
 
 ### New API
 
@@ -1387,8 +1356,7 @@ Changes from ns-3.16 to ns-3.17
 
 * DSR link layer notification has changed. The model originally used `TxErrHeader` in Ptr to indicate the transmission error of a specific packet in link layer; however, it was not working correctly. The model now uses a different path to implement the link layer notification mechanism; specifically, looking into the trace file to find packet receive events. If the model finds one receive event for the data packet, it is used as the indicator for successful data delivery.
 
-Changes from ns-3.15 to ns-3.16
--------------------------------
+## Changes from ns-3.15 to ns-3.16
 
 ### New API
 
@@ -1415,8 +1383,7 @@ Changes from ns-3.15 to ns-3.16
 * Sending a packet through Ipv4RawSocket now supports checksum in the Ipv4Header. It is still not possible to manually put in arbitrary checksum as the checksum is automatically calculated at Ipv4L3Protocol. The user has to enable checksum globally for this to work. Simply calling Ipv4Header::EnableChecksum() for a single Ipv4Header will not work.
 * Now MultiModelSpectrumChannel allows a SpectrumPhy instance to change SpectrumModel at runtime by issuing a call to MultiModelSpectrumChannel::AddRx (). Previously, MultiModelSpectrumChannel required each SpectrumPhy instance to stick with the same SpectrumModel for the whole simulation.
 
-Changes from ns-3.14 to ns-3.15
--------------------------------
+## Changes from ns-3.14 to ns-3.15
 
 ### New API
 
@@ -1435,8 +1402,7 @@ Changes from ns-3.14 to ns-3.15
 
 * Programs using random variables or models that include random variables may exhibit changed output for a given run number or seed, due to a possible change in the order in which random variables are assigned to underlying pseudo-random sequences. Consult the manual for more information regarding this.
 
-Changes from ns-3.13 to ns-3.14
--------------------------------
+## Changes from ns-3.13 to ns-3.14
 
 ### New API
 
@@ -1503,8 +1469,7 @@ Changes from ns-3.13 to ns-3.14
   [*] Added --useIpv6 flag to switch between IPv4 and IPv6
   ```
 
-Changes from ns-3.12 to ns-3.13
--------------------------------
+## Changes from ns-3.12 to ns-3.13
 
 ### Changes to build system
 
@@ -1561,8 +1526,7 @@ Changes from ns-3.12 to ns-3.13
   * TcpNewReno supports limited transmit (RFC3042) if asserting boolean attribute `ns3::TcpNewReno::LimitedTransmit`
   * Nagle's algorithm supported. Default off, turn on by calling `TcpSocket::SetTcpNoDelay(true)`
 
-Changes from ns-3.11 to ns-3.12
--------------------------------
+## Changes from ns-3.11 to ns-3.12
 
 ### Changes to build system
 
@@ -1583,8 +1547,7 @@ Changes from ns-3.11 to ns-3.12
 
 * IPv4 fragmentation is now supported.
 
-Changes from ns-3.10 to ns-3.11
--------------------------------
+## Changes from ns-3.10 to ns-3.11
 
 ### Changes to build system
 
@@ -1661,8 +1624,7 @@ Changes from ns-3.10 to ns-3.11
 * If the data inside the TCP buffer is less than the available window, TCP tries to ask for more data to the application, in the hope of filling the usable transmission window. In some cases, this change allows sending bigger packets than the previous versions, optimizing the transmission.
 * In TCP, the ACK is now processed before invoking any routine that deals with the segment sending, except in case of retransmissions.
 
-Changes from ns-3.9 to ns-3.10
-------------------------------
+## Changes from ns-3.9 to ns-3.10
 
 ### Changes to build system
 
@@ -1732,8 +1694,7 @@ Changes from ns-3.9 to ns-3.10
 
   As part of the TCP socket refactoring, a new TCP implementation provides slightly different behavior than the previous TcpSocketImpl that provided only fast retransmit. The default behavior now is NewReno which provides fast retransmit and fast recovery with window inflation during recovery.
 
-Changes from ns-3.8 to ns-3.9
------------------------------
+## Changes from ns-3.8 to ns-3.9
 
 ### Changes to build system
 
@@ -1805,8 +1766,7 @@ Changes from ns-3.8 to ns-3.9
 * **Drop trace logged for Ipv4/6 forwarding failure:** Fixed bug 861; this will add ascii traces (drops) in Ipv4 and Ipv6 traces for forwarding failures
 * **Changed default WiFi error rate model for OFDM modulation types:** Adopted more conservative ErrorRateModel for OFDM modulation types (a/g). This will require 4 to 5 more dB of received power to get similar results as before, so users may observe a reduced WiFi range when using the defaults. See tracker issue 944 for more details.
 
-Changes from ns-3.7 to ns-3.8
------------------------------
+## Changes from ns-3.7 to ns-3.8
 
 ### Changes to build system
 
@@ -1912,8 +1872,7 @@ Changes from ns-3.7 to ns-3.8
 
 * None for this release.
 
-Changes from ns-3.6 to ns-3.7
------------------------------
+## Changes from ns-3.6 to ns-3.7
 
 ### Changes to build system
 
@@ -2047,8 +2006,7 @@ Changes from ns-3.6 to ns-3.7
 * Default TTL of IPv4 broadcast datagrams changed from 1 to 64.
 * Changed DcfManager::UpdateBackoff (): using flooring instead of rounding in calculation of remaining slots. [See bug 695.](http://www.nsnam.org/bugzilla/show_bug.cgi?id=695)
 
-Changes from ns-3.5 to ns-3.6
------------------------------
+## Changes from ns-3.5 to ns-3.6
 
 ### Changes to build system
 
@@ -2138,8 +2096,7 @@ Changes from ns-3.5 to ns-3.6
 
   Now each NetDevice subclasses have a `TracedCallback<>` object (list of callbacks) instead of `Callback<void>` ones.
 
-Changes from ns-3.4 to ns-3.5
------------------------------
+## Changes from ns-3.4 to ns-3.5
 
 ### Changes to build system
 
@@ -2397,8 +2354,7 @@ Changes from ns-3.4 to ns-3.5
 
 * None for this release.
 
-Changes from ns-3.3 to ns-3.4
------------------------------
+## Changes from ns-3.3 to ns-3.4
 
 ### Changes to build system
 
@@ -2430,8 +2386,7 @@ Changes from ns-3.3 to ns-3.4
 
 * The tracing system rework has introduced some significant changes in the behavior of some trace sources, specifically in the positioning of trace sources in the device code. For example, there were cases where the packet transmit trace source was hit before the packet was enqueued on the device transmit quueue. This now happens just before the packet is transmitted over the channel medium. The scope of the changes is too large to be included here. If you have concerns regarding trace semantics, please consult the net device documentation for details. As is usual, the ultimate source for documentation is the net device source code.
 
-Changes from ns-3.2 to ns-3.3
------------------------------
+## Changes from ns-3.2 to ns-3.3
 
 ### New API
 
@@ -2471,8 +2426,7 @@ Changes from ns-3.2 to ns-3.3
 * 17-11-2008; changeset [756887a9bbea](http://code.nsnam.org/ns-3-dev/rev/756887a9bbea)
 * Global routing supports bridge devices.
 
-Changes from ns-3.1 to ns-3.2
------------------------------
+## Changes from ns-3.1 to ns-3.2
 
 ### New API
 
