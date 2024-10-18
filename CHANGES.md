@@ -1556,13 +1556,13 @@ This section is for behavioral changes to the models that were not due to a bug 
 
   You can now make examples and tests be built in ns-3 in two ways.
 
-  1. Using `build.py` when ns-3 is built for the first time:
+  * Using `build.py` when ns-3 is built for the first time:
 
     ```shell
     ./build.py --enable-examples --enable-tests
     ```
 
-  2. Using `waf` once ns-3 has been built:
+  * Using `waf` once ns-3 has been built:
 
     ```shell
     ./waf configure --enable-examples --enable-tests
