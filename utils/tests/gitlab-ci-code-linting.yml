@@ -148,3 +148,12 @@ python-format-latest:
 python-format-3.8:
   extends: .python-format
   image: python:3.8
+
+# Markdown lint
+markdown-lint:
+  stage: .pre
+  image: ruby:slim
+  before_script:
+    - gem install mdl
+  script:
+    - mdl -s .mdl_style.rb .
