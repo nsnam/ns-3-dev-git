@@ -74,11 +74,9 @@ The required Doxygen version for documentation generation is version 1.11.
 - (lr-wpan) !2163 - Lr-wpan module now uses the `ns3::lrwpan` namespace in its TypeId.
 - (tcp) !2027 - TcpSocketBase: Added TCP retransmission trace
 - (tcp) !2059 - Aligns PRR implementation with RFC 6937 bis-08. Added a new param `isDupAck` to `DoRecovery` method, removed `ReductionBound` attribute from `TcpPrrRecovery`.
-- (wifi) !2068 - Introduce use of weak type aliases for quantities representing SI units,
-in preparation for future conversion to strongly typed units and quantities
+- (wifi) !2068 - Introduce use of weak type aliases for quantities representing SI units, in preparation for future conversion to strongly typed units and quantities
 - (wifi) - Added support for 80+80 MHz channel configuration
-- (wifi) - It is now possible to control how PCAPs are generated for MLD: either a single PCAP
-per device, or a PCAP file per PHY, or a PCAP file per link. By default, a single PCAP is generated per PHY for MLD. The configuration of this parameter has no impact for SLD.
+- (wifi) - It is now possible to control how PCAPs are generated for MLD: either a single PCAP per device, or a PCAP file per PHY, or a PCAP file per link. By default, a single PCAP is generated per PHY for MLD. The configuration of this parameter has no impact for SLD.
 
 ### Bugs fixed
 
@@ -1257,6 +1255,7 @@ compiler requirements (other compilers supporting C++11 may also work):
 - g++-4.9 or later
 - Apple LLVM version 7.0.2 or later
 - clang-3.3 or later
+
 In addition, a Python 2.7 (Python 2 series) or Python 3.4 (Python 3 series)
 or later is required.
 
@@ -2223,8 +2222,8 @@ This release is available from:
 ### Known issues
 
 - Bug 1770 - The mesh module will crash if used for g++ version >= 4.8.1
-in optimized mode, on a 32-bit Linux machine.  Lowering the optimization
-level to -O1 in this case can be used as a workaround.
+  in optimized mode, on a 32-bit Linux machine.  Lowering the optimization
+  level to -O1 in this case can be used as a workaround.
 
 ## Release 3.20
 
@@ -2330,8 +2329,8 @@ This release is available from:
 ### Known issues
 
 - Bug 1770 - The mesh module will crash if used for g++ version >= 4.8.1
-in optimized mode, on a 32-bit Linux machine.  Lowering the optimization
-level to -O1 in this case can be used as a workaround.
+  in optimized mode, on a 32-bit Linux machine.  Lowering the optimization
+  level to -O1 in this case can be used as a workaround.
 
 ## Release 3.19
 
