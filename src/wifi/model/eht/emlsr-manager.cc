@@ -732,18 +732,16 @@ EmlsrManager::NotifyTxopEnd(uint8_t linkId, bool ulTxopNotStarted, bool ongoingD
 
     DoNotifyTxopEnd(linkId);
 
-    Simulator::ScheduleNow([=, this]() {
-        // unblock transmissions and resume medium access on other EMLSR links
-        std::set<uint8_t> linkIds;
-        for (auto id : m_staMac->GetLinkIds())
+    // unblock transmissions and resume medium access on other EMLSR links
+    std::set<uint8_t> linkIds;
+    for (auto id : m_staMac->GetLinkIds())
+    {
+        if ((id != linkId) && m_staMac->IsEmlsrLink(id))
         {
-            if ((id != linkId) && m_staMac->IsEmlsrLink(id))
-            {
-                linkIds.insert(id);
-            }
+            linkIds.insert(id);
         }
-        m_staMac->UnblockTxOnLink(linkIds, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
-    });
+    }
+    m_staMac->UnblockTxOnLink(linkIds, WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK);
 }
 
 void
@@ -1282,15 +1280,13 @@ EmlsrManager::ApplyMaxChannelWidthAndModClassOnAuxPhys()
         // reset all backoffs (so that access timeout is also cancelled) when the channel switch
         // starts and request channel access (if needed) when the channel switch ends.
         cam->ResetAllBackoffs();
-        Simulator::ScheduleNow([=, this]() {
-            for (const auto& [acIndex, ac] : wifiAcList)
-            {
-                m_staMac->GetQosTxop(acIndex)->StartAccessAfterEvent(
-                    linkId,
-                    Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
-                    Txop::CHECK_MEDIUM_BUSY);
-            }
-        });
+        for (const auto& [acIndex, ac] : wifiAcList)
+        {
+            m_staMac->GetQosTxop(acIndex)->StartAccessAfterEvent(
+                linkId,
+                Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                Txop::CHECK_MEDIUM_BUSY);
+        }
     }
 }
 
