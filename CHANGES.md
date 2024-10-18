@@ -67,6 +67,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 ## Changes from ns-3.41 to ns-3.42
 
 ### New API
+
 * (antenna) Added `CircularApertureAntennaModel` class which characterizes the antenna gain pattern of the reflector antenna with circular aperture described in 3GPP TR 38.811 v15.4.0, Section 6.4.1
 * (core) Objects now can be aggregated to multiple objects though the `Object::UnidirectionalAggregateObject` function. Objects aggregated in such a way can not use `GetObject` to access the objects they are aggregated to.
 * (core) Added `TestVector` iterators and dot product operator for `Vector2D` and `Vector3D` types
