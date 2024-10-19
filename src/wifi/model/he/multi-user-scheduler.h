@@ -26,8 +26,6 @@ namespace ns3
 
 class HeFrameExchangeManager;
 
-typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiPsduMap;
-
 /**
  * @ingroup wifi
  *

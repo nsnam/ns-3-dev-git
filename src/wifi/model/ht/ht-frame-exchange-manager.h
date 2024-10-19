@@ -12,7 +12,6 @@
 #include "ns3/mpdu-aggregator.h"
 #include "ns3/msdu-aggregator.h"
 #include "ns3/qos-frame-exchange-manager.h"
-#include "ns3/wifi-psdu.h"
 
 class AmpduAggregationTest;
 

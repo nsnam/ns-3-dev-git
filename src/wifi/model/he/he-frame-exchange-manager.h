@@ -23,15 +23,6 @@ class MultiUserScheduler;
 class CtrlTriggerHeader;
 
 /**
- * Map of PSDUs indexed by STA-ID
- */
-typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiPsduMap;
-/**
- * Map of const PSDUs indexed by STA-ID
- */
-typedef std::unordered_map<uint16_t /* staId */, Ptr<const WifiPsdu> /* PSDU */> WifiConstPsduMap;
-
-/**
  * @param psduMap a PSDU map
  * @return true if the given PSDU map contains a single PSDU including a single MPDU
  *         that carries a Trigger Frame

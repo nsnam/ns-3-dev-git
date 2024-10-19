@@ -378,4 +378,40 @@ operator<<(std::ostream& os, const WifiPsdu& psdu)
     return os;
 }
 
+std::ostream&
+operator<<(std::ostream& os, const WifiPsduMap& psduMap)
+{
+    for (const auto& [staId, psdu] : psduMap)
+    {
+        if (staId != SU_STA_ID)
+        {
+            os << "[PSDU for STA_ID=" << staId << ", ";
+        }
+        psdu->Print(os);
+        if (staId != SU_STA_ID)
+        {
+            os << "]";
+        }
+    }
+    return os;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const WifiConstPsduMap& psduMap)
+{
+    for (const auto& [staId, psdu] : psduMap)
+    {
+        if (staId != SU_STA_ID)
+        {
+            os << "[PSDU for STA_ID=" << staId << ", ";
+        }
+        psdu->Print(os);
+        if (staId != SU_STA_ID)
+        {
+            os << "]";
+        }
+    }
+    return os;
+}
+
 } // namespace ns3

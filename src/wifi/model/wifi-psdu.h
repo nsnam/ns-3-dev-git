@@ -15,6 +15,7 @@
 #include "ns3/nstime.h"
 
 #include <set>
+#include <unordered_map>
 #include <vector>
 
 namespace ns3
@@ -258,6 +259,30 @@ class WifiPsdu : public SimpleRefCount<WifiPsdu>
  * @returns a reference to the stream
  */
 std::ostream& operator<<(std::ostream& os, const WifiPsdu& psdu);
+
+/// Map of PSDUs indexed by STA-ID
+using WifiPsduMap = std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */>;
+
+/// Map of const PSDUs indexed by STA-ID
+using WifiConstPsduMap = std::unordered_map<uint16_t /* staId */, Ptr<const WifiPsdu> /* PSDU */>;
+
+/**
+ * @brief Stream insertion operator.
+ *
+ * @param os the stream
+ * @param psduMap the PSDU map
+ * @returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, const WifiPsduMap& psduMap);
+
+/**
+ * @brief Stream insertion operator.
+ *
+ * @param os the stream
+ * @param psduMap the PSDU map
+ * @returns a reference to the stream
+ */
+std::ostream& operator<<(std::ostream& os, const WifiConstPsduMap& psduMap);
 
 } // namespace ns3
 

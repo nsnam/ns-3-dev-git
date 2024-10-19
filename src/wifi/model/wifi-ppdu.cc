@@ -283,14 +283,4 @@ operator<<(std::ostream& os, const Ptr<const WifiPpdu>& ppdu)
     return os;
 }
 
-std::ostream&
-operator<<(std::ostream& os, const WifiConstPsduMap& psdus)
-{
-    for (const auto& psdu : psdus)
-    {
-        os << "PSDU for STA_ID=" << psdu.first << " (" << *psdu.second << ") ";
-    }
-    return os;
-}
-
 } // namespace ns3
