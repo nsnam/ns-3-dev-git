@@ -1564,6 +1564,7 @@ WifiPhy::CalculateTxDuration(uint32_t size,
                              WifiPhyBand band,
                              uint16_t staId)
 {
+    NS_ASSERT(txVector.IsValid(band));
     Time duration = CalculatePhyPreambleAndHeaderDuration(txVector) +
                     GetPayloadDuration(size, txVector, band, NORMAL_MPDU, staId);
     NS_ASSERT(duration.IsStrictlyPositive());
@@ -1583,6 +1584,7 @@ WifiPhy::CalculateTxDuration(const WifiConstPsduMap& psduMap,
                              const WifiTxVector& txVector,
                              WifiPhyBand band)
 {
+    NS_ASSERT(txVector.IsValid(band));
     return GetStaticPhyEntity(txVector.GetModulationClass())
         ->CalculateTxDuration(psduMap, txVector, band);
 }
