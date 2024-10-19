@@ -134,11 +134,21 @@ IdealWifiManager::BuildSnrThresholds()
                     txVector.SetGuardInterval(guardInterval);
                     // derive NSS from the MCS index
                     nss = (mode.GetMcsValue() / 8) + 1;
-                    NS_LOG_DEBUG("Adding mode = " << mode.GetUniqueName() << " channel width " << j
-                                                  << " nss " << +nss << " GI " << guardInterval);
                     txVector.SetNss(nss);
                     txVector.SetMode(mode);
-                    AddSnrThreshold(txVector, GetPhy()->CalculateSnr(txVector, m_ber));
+                    if (txVector.IsValid(GetPhy()->GetPhyBand()))
+                    {
+                        NS_LOG_DEBUG("Adding mode = " << mode.GetUniqueName() << " channel width "
+                                                      << j << " nss " << +nss << " GI "
+                                                      << guardInterval);
+                        AddSnrThreshold(txVector, GetPhy()->CalculateSnr(txVector, m_ber));
+                    }
+                    else
+                    {
+                        NS_LOG_DEBUG("Skipping mode = " << mode.GetUniqueName() << " channel width "
+                                                        << j << " nss " << +nss << " GI "
+                                                        << guardInterval);
+                    }
                 }
                 else
                 {
@@ -156,12 +166,21 @@ IdealWifiManager::BuildSnrThresholds()
                     {
                         if (mode.IsAllowed(j, k))
                         {
-                            NS_LOG_DEBUG("Adding mode = " << mode.GetUniqueName()
-                                                          << " channel width " << j << " nss " << +k
-                                                          << " GI " << guardInterval);
                             txVector.SetNss(k);
                             txVector.SetMode(mode);
-                            AddSnrThreshold(txVector, GetPhy()->CalculateSnr(txVector, m_ber));
+                            if (txVector.IsValid(GetPhy()->GetPhyBand()))
+                            {
+                                NS_LOG_DEBUG("Adding mode = " << mode.GetUniqueName()
+                                                              << " channel width " << j << " nss "
+                                                              << +k << " GI " << guardInterval);
+                                AddSnrThreshold(txVector, GetPhy()->CalculateSnr(txVector, m_ber));
+                            }
+                            else
+                            {
+                                NS_LOG_DEBUG("Skipping mode = " << mode.GetUniqueName()
+                                                                << " channel width " << j << " nss "
+                                                                << +k << " GI " << guardInterval);
+                            }
                         }
                         else
                         {
