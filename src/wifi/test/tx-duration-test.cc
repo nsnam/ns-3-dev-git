@@ -155,7 +155,8 @@ TxDurationTest::CheckPayloadDuration(uint32_t size,
     {
         testedBands.push_back(WIFI_PHY_BAND_6GHZ);
     }
-    if (payloadMode.GetModulationClass() != WIFI_MOD_CLASS_VHT)
+    if ((payloadMode.GetModulationClass() != WIFI_MOD_CLASS_OFDM) &&
+        (payloadMode.GetModulationClass() != WIFI_MOD_CLASS_VHT) && (channelWidth < 80))
     {
         testedBands.push_back(WIFI_PHY_BAND_2_4GHZ);
     }
@@ -207,7 +208,8 @@ TxDurationTest::CheckTxDuration(uint32_t size,
     {
         testedBands.push_back(WIFI_PHY_BAND_6GHZ);
     }
-    if (payloadMode.GetModulationClass() != WIFI_MOD_CLASS_VHT)
+    if ((payloadMode.GetModulationClass() != WIFI_MOD_CLASS_OFDM) &&
+        (payloadMode.GetModulationClass() != WIFI_MOD_CLASS_VHT) && (channelWidth < 80))
     {
         testedBands.push_back(WIFI_PHY_BAND_2_4GHZ);
     }
