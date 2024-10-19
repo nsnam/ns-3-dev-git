@@ -266,6 +266,7 @@ def find_clang_format_path() -> str:
 
     # Find default version and check if it is supported
     clang_format_path = shutil.which("clang-format")
+    major_version = None
 
     if clang_format_path:
         process = subprocess.run(
@@ -288,7 +289,7 @@ def find_clang_format_path() -> str:
     raise RuntimeError(
         f"Could not find any supported version of clang-format installed on this system. "
         f"List of supported versions: {CLANG_FORMAT_VERSIONS}. "
-        + (f"Found clang-format {major_version}." if version_regex else "")
+        + (f"Found clang-format {major_version}." if major_version else "")
     )
 
 
