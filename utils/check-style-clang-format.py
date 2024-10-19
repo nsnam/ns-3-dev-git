@@ -564,7 +564,7 @@ def check_encoding_file(
                             [
                                 f"{filename}:{line_number + 1}:{bad_char_column + 1}: error: bad {FILE_ENCODING} encoding",
                                 f"    {line.rstrip()}",
-                                f"    {'':{bad_char_column}}^",
+                                f"    {'':>{bad_char_column}}^",
                             ]
                         )
 
@@ -688,7 +688,7 @@ def check_include_prefixes_line(
                 [
                     f'{filename}:{line_number + 1}:{header_index + 1}: error: #include headers from the same module with the "ns3/" prefix detected',
                     f"    {line_stripped}",
-                    f'    {"":{header_index}}^',
+                    f"    {'':>{header_index}}^",
                 ]
             )
 
@@ -722,7 +722,7 @@ def check_whitespace_line(
         verbose_infos = [
             f"{filename}:{line_number + 1}:{len(line_fixed_stripped_expanded) + 1}: error: Trailing whitespace detected",
             f"    {line_fixed_stripped_expanded}",
-            f'    {"":{len(line_fixed_stripped_expanded)}}^',
+            f"    {'':>{len(line_fixed_stripped_expanded)}}^",
         ]
 
     return (is_line_compliant, line_fixed, verbose_infos)
@@ -757,7 +757,7 @@ def check_tabs_line(
         verbose_infos = [
             f"{filename}:{line_number + 1}:{tab_index + 1}: error: Tab detected",
             f"    {line.rstrip()}",
-            f'    {"":{tab_index}}^',
+            f"    {'':>{tab_index}}^",
         ]
 
     return (is_line_compliant, line_fixed, verbose_infos)
@@ -820,7 +820,7 @@ def check_licenses_line(
             [
                 f"{filename}:{line_number + 1}:{col_index}: error: GPL license text detected instead of SPDX license",
                 f"    {line_stripped}",
-                f'    {"":{col_index}}^',
+                f"    {'':>{col_index}}^",
             ]
         )
 
