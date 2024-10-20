@@ -765,7 +765,28 @@ WifiPhyHelper::GetRadiotapHeader(RadiotapHeader& header,
                                  (isLowP80 ? RadiotapHeader::EHT_DATA1_PRIMARY_80_LOWEST
                                            : RadiotapHeader::EHT_DATA1_PRIMARY_80_HIGHEST));
         }
-        // TODO: handle 320 MHz when supported
+        if (channelWidth >= MHz_t{320})
+        {
+            ehtFields.data.at(4) |=
+                RadiotapHeader::EHT_DATA4_RU_ALLOC_CC_1_2_3_KNOWN |
+                RadiotapHeader::EHT_DATA4_RU_ALLOC_CC_2_2_3_KNOWN |
+                GetRadiotapField(RadiotapHeader::EHT_DATA4_RU_ALLOC_CC_1_2_3, ruAllocation.at(8)) |
+                GetRadiotapField(RadiotapHeader::EHT_DATA4_RU_ALLOC_CC_2_2_3, ruAllocation.at(9));
+            ehtFields.data.at(5) =
+                RadiotapHeader::EHT_DATA5_RU_ALLOC_CC_1_2_4_KNOWN |
+                RadiotapHeader::EHT_DATA5_RU_ALLOC_CC_2_2_4_KNOWN |
+                RadiotapHeader::EHT_DATA5_RU_ALLOC_CC_1_2_5_KNOWN |
+                GetRadiotapField(RadiotapHeader::EHT_DATA5_RU_ALLOC_CC_1_2_4, ruAllocation.at(10)) |
+                GetRadiotapField(RadiotapHeader::EHT_DATA5_RU_ALLOC_CC_2_2_4, ruAllocation.at(11)) |
+                GetRadiotapField(RadiotapHeader::EHT_DATA5_RU_ALLOC_CC_1_2_5, ruAllocation.at(12));
+            ehtFields.data.at(6) =
+                RadiotapHeader::EHT_DATA6_RU_ALLOC_CC_2_2_5_KNOWN |
+                RadiotapHeader::EHT_DATA6_RU_ALLOC_CC_1_2_6_KNOWN |
+                RadiotapHeader::EHT_DATA6_RU_ALLOC_CC_2_2_6_KNOWN |
+                GetRadiotapField(RadiotapHeader::EHT_DATA6_RU_ALLOC_CC_2_2_5, ruAllocation.at(13)) |
+                GetRadiotapField(RadiotapHeader::EHT_DATA6_RU_ALLOC_CC_1_2_6, ruAllocation.at(14)) |
+                GetRadiotapField(RadiotapHeader::EHT_DATA6_RU_ALLOC_CC_2_2_6, ruAllocation.at(15));
+        }
         uint32_t userInfo = RadiotapHeader::EHT_USER_INFO_STA_ID_KNOWN |
                             RadiotapHeader::EHT_USER_INFO_MCS_KNOWN |
                             RadiotapHeader::EHT_USER_INFO_NSS_KNOWN_O |
