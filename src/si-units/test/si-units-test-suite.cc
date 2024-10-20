@@ -194,6 +194,67 @@ class TestCaseSiUnits : public TestCase
         NS_TEST_EXPECT_MSG_EQ(dB_t::from_str("3.14_dB").has_value(), false, "");
     }
 
+    /// Test dBr_t
+    void Unit_dBr() // NOLINT(readability-identifier-naming)
+    {
+        // Notations
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, dBr_t{0.}, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, dBr_t{0.0}, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, dBr_t{-0}, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, 0_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, 0._dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, 0.0_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, -0_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, -0._dB, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, -0.0_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, dBr_t(0.0), "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, dBr_t{0_dBr}, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{0}, dBr_t(0_dBr), "");
+
+        // Equality, inequality
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{10}, 10_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{-10}, -10_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ((dBr_t{10} != 10_dBr), false, "");
+        NS_TEST_EXPECT_MSG_EQ((dBr_t{10} == 20.0_dBr), false, ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ((dBr_t{10} != 20_dBr), true, "");    // NOLINT
+
+        // Comparison
+        NS_TEST_ASSERT_MSG_LT(1_dBr, 2_dBr, "");
+        NS_TEST_ASSERT_MSG_GT(2_dBr, 1_dBr, "");
+        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_dBr, 1_dBr, "");
+        NS_TEST_ASSERT_MSG_LT_OR_EQ(1_dBr, 2_dBr, "");
+        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_dBr, 1_dBr, "");
+        NS_TEST_ASSERT_MSG_GT_OR_EQ(2_dBr, 2_dBr, "");
+        NS_TEST_ASSERT_MSG_LT(-1_dBr, 2_dBr, "");
+        NS_TEST_ASSERT_MSG_GT(2_dBr, -1_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ((10_dBr < 20_dBr), true, "");
+        NS_TEST_EXPECT_MSG_EQ((10_dBr <= 20_dBr), true, "");
+        NS_TEST_EXPECT_MSG_EQ((10_dBr > 20_dBr), false, "");
+        NS_TEST_EXPECT_MSG_EQ((10_dBr >= 20_dBr), false, "");
+
+        // Arithmetic
+        NS_TEST_EXPECT_MSG_EQ((1_dBr + 2_dBr), 3_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ((3_dBr - 1_dBr), 2_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ((3_dBr - 9_dBr), -6_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ((5_dBr += 10_dBr), 15_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ((5_dBr -= 10_dBr), -5_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(-8_dBr, (0_dBr - 8_dBr), "");
+
+        // Utilities
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{123}.str(), "123.0 dBr", "");    // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{123.45}.val, 123.45, "");        // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{123.45}.str(), "123.5 dBr", ""); // NOLINT
+        NS_TEST_EXPECT_MSG_EQ(dBr_t{20}.to_linear(), 100.0, "");
+
+        // Conversion from string
+        NS_TEST_EXPECT_MSG_EQ(dBr_t::from_str("3.14dBr").value(), 3.14_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t::from_str("3.14 dBr").value(), 3.14_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t::from_str("  3.14  dBr  ").value(), 3.14_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t::from_str("-3.14dBr").value(), -3.14_dBr, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t::from_str("3.14 Dbr").has_value(), false, "");
+        NS_TEST_EXPECT_MSG_EQ(dBr_t::from_str("3.14_dBr").has_value(), false, "");
+    }
+
     /// Test mWatt_t
     void Unit_mWatt() // NOLINT
     {
@@ -747,6 +808,11 @@ class AttributeMock : public Object
                               dBValue(0_dB),
                               MakedBAccessor(&AttributeMock::m_dB),
                               MakedBChecker())
+                .AddAttribute("dBr",
+                              "help message for dBr",
+                              dBrValue(0_dBr),
+                              MakedBrAccessor(&AttributeMock::m_dBr),
+                              MakedBrChecker())
                 .AddAttribute("dBm",
                               "help message for dBm",
                               dBmValue(20_dBm),
@@ -797,6 +863,7 @@ class AttributeMock : public Object
     }
 
     dB_t m_dB{};                 ///< value of dB
+    dBr_t m_dBr{};               ///< value of dBr
     dBm_t m_dBm{};               ///< value of dBm
     mWatt_t m_mWatt{};           ///< value of mWatt
     Watt_t m_Watt{};             ///< value of Watt
@@ -826,6 +893,11 @@ class TestCaseSiUnitsAttributes : public TestCase
             auto want = 9_dB;
             mock->SetAttribute("dB", dBValue(want));
             NS_TEST_EXPECT_MSG_EQ(mock->m_dB, want, "");
+        }
+        {
+            auto want = 25_dBr;
+            mock->SetAttribute("dBr", dBrValue(want));
+            NS_TEST_EXPECT_MSG_EQ(mock->m_dBr, want, "");
         }
         {
             auto want = 20_dBm;

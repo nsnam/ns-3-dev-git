@@ -301,6 +301,22 @@ operator""_dB(unsigned long long val)
     return dB_t{static_cast<double>(val)};
 }
 
+/// User defined literals for dBr
+/// @param val Value in dBr
+/// @return dBr_t
+dBr_t operator""_dBr(long double val)
+{
+    return dBr_t{static_cast<double>(val)};
+}
+
+/// User defined literals for dBr
+/// @param val Value in dBr
+/// @return dBr_t
+dBr_t operator""_dBr(unsigned long long val)
+{
+    return dBr_t{static_cast<double>(val)};
+}
+
 /// User defined literals for dBm
 /// @param val Value in dBm
 /// @return dBm_t
@@ -555,6 +571,9 @@ dBm_per_Hz_t::from_str(const std::string& input)
 /// @cond Doxygen warning about macro internals
 ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(dB_t, dB);
 ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(dB_t, dB);
+
+ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(dBr_t, dBr);
+ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(dBr_t, dBr);
 
 ATTRIBUTE_CHECKER_IMPLEMENT_WITH_CONVERTER(dBm_t, dBm);
 ATTRIBUTE_VALUE_IMPLEMENT_WITH_NAME(dBm_t, dBm);

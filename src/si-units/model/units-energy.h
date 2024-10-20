@@ -244,6 +244,9 @@ struct dB_t
         const std::string& input);
 };
 
+/// dBr type
+using dBr_t = dB_t;
+
 /// dBm type
 struct dBm_t
 {
@@ -1144,6 +1147,8 @@ struct dBm_per_Hz_t // NOLINT(readability-identifier-naming)
 
 dB_t operator""_dB(long double val);
 dB_t operator""_dB(unsigned long long val);
+dBr_t operator""_dBr(long double val);
+dBr_t operator""_dBr(unsigned long long val);
 dBm_t operator""_dBm(long double val);
 dBm_t operator""_dBm(unsigned long long val);
 mWatt_t operator""_mWatt(long double val);
@@ -1174,6 +1179,10 @@ ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dB_t, dB); // See si-units-test-suite.cc for us
 ATTRIBUTE_ACCESSOR_DEFINE(dB);
 ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dB_t, dB, Double);
 /// @endcond
+
+ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dBr_t, dBr); // See si-units-test-suite.cc for usages
+ATTRIBUTE_ACCESSOR_DEFINE(dBr);
+ATTRIBUTE_CHECKER_DEFINE_WITH_CONVERTER(dBr_t, dBr, Double);
 
 ATTRIBUTE_VALUE_DEFINE_WITH_NAME(dBm_t, dBm); // See si-units-test-suite.cc for usages
 ATTRIBUTE_ACCESSOR_DEFINE(dBm);
