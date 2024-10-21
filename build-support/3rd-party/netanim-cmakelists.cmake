@@ -168,15 +168,18 @@ set(header_files
 
 set(resource_files resources.qrc qtpropertybrowser/src/qtpropertybrowser.qrc)
 
-add_executable(netanim ${source_files} ${resource_files})
+add_executable(netanim_visualizer ${source_files} ${resource_files})
 
 if(Qt4_FOUND)
-  target_link_libraries(netanim PUBLIC ${libcore} Qt4::QtGui)
+  target_link_libraries(netanim_visualizer PUBLIC ${libcore} Qt4::QtGui)
 else()
   target_link_libraries(
-    netanim PUBLIC ${libcore} Qt5::Widgets Qt5::Core Qt5::PrintSupport Qt5::Gui
+    netanim_visualizer PUBLIC ${libcore} Qt5::Widgets Qt5::Core
+                              Qt5::PrintSupport Qt5::Gui
   )
 endif()
 
-target_include_directories(netanim PUBLIC qtpropertybrowser/src)
-set_runtime_outputdirectory(netanim ${CMAKE_OUTPUT_DIRECTORY}/bin/ "")
+target_include_directories(netanim_visualizer PUBLIC qtpropertybrowser/src)
+set_runtime_outputdirectory(
+  netanim_visualizer ${CMAKE_OUTPUT_DIRECTORY}/bin/ ""
+)
