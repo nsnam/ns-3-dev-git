@@ -24,24 +24,20 @@
 namespace
 {
 
-// clang-format off
-
 /// Function with one int parameter.
-void bari (int) {};
+void bari(int){};
 /// Function with two int parameters.
-void bar2i (int, int) {};
+void bar2i(int, int){};
 /// Function with three int parameters.
-void bar3i (int, int, int) {};
+void bar3i(int, int, int){};
 /// Function with four int parameters.
-void bar4i (int, int, int, int) {};
+void bar4i(int, int, int, int){};
 /// Function with five int parameters.
-void bar5i (int, int, int, int, int) {};
+void bar5i(int, int, int, int, int){};
 /// Function with one const int reference parameter.
-void barcir (const int &) {};
+void barcir(const int&){};
 /// Function with one int reference parameter.
-void barir (int &) {};
-
-// clang-format on
+void barir(int&){};
 
 } // anonymous namespace
 
