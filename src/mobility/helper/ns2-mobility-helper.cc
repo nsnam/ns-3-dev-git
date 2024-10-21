@@ -82,12 +82,15 @@ struct DestinationPoint
     EventId m_stopEvent;    //!< Event scheduling node's stop. May be canceled if needed.
     double m_travelStartTime;   //!< Travel start time is needed to calculate actually traveled time
     double m_targetArrivalTime; //!< When a station arrives to a destination
+
     DestinationPoint()
         : m_startPosition(Vector(0, 0, 0)),
           m_speed(Vector(0, 0, 0)),
           m_finalPosition(Vector(0, 0, 0)),
           m_travelStartTime(0),
-          m_targetArrivalTime(0){};
+          m_targetArrivalTime(0)
+    {
+    }
 };
 
 /**

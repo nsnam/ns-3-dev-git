@@ -50,8 +50,12 @@ class HwmpProtocolMac : public MeshWifiInterfaceMacPlugin
                               WifiMacHeader& header,
                               Mac48Address from,
                               Mac48Address to) override;
+
     // Update beacon is empty, because HWMP does not know anything about beacons
-    void UpdateBeacon(MeshWifiBeacon& beacon) const override{};
+    void UpdateBeacon(MeshWifiBeacon& beacon) const override
+    {
+    }
+
     int64_t AssignStreams(int64_t stream) override;
 
   private:

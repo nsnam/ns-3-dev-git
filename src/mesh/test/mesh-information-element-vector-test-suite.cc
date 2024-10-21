@@ -36,7 +36,10 @@ using namespace ns3;
 struct MeshInformationElementVectorBist : public TestCase
 {
     MeshInformationElementVectorBist()
-        : TestCase("Serialization test for all mesh information elements"){};
+        : TestCase("Serialization test for all mesh information elements")
+    {
+    }
+
     void DoRun() override;
 };
 

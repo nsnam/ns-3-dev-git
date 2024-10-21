@@ -59,11 +59,14 @@ class FlameProtocolMac : public MeshWifiInterfaceMacPlugin
                               WifiMacHeader& header,
                               Mac48Address from,
                               Mac48Address to) override;
+
     /**
      * Update beacon is empty, because FLAME does not know anything about beacons
      * \param beacon the beacon
      */
-    void UpdateBeacon(MeshWifiBeacon& beacon) const override{};
+    void UpdateBeacon(MeshWifiBeacon& beacon) const override
+    {
+    }
 
     /**
      * AssignStreams is empty, because this model doesn't use random variables

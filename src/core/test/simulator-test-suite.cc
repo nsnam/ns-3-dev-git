@@ -211,13 +211,20 @@ class SimulatorTemplateTestCase : public TestCase
 {
   public:
     SimulatorTemplateTestCase();
+
     /**
      * Ref and Unref - only here for testing of Ptr<>
      *
      * @{
      */
-    void Ref() const {};
-    void Unref() const {};
+    void Ref() const
+    {
+    }
+
+    void Unref() const
+    {
+    }
+
     /** @} */
 
   private:

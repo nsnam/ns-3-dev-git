@@ -268,8 +268,13 @@ class TracedCallbackTypedefTestCase::Checker : public Object
     TracedCallback<Ts...> m_cb;
 
   public:
-    Checker(){};
-    ~Checker() override{};
+    Checker()
+    {
+    }
+
+    ~Checker() override
+    {
+    }
 
     /// Arguments of the TracedCallback.
     std::tuple<std::remove_pointer_t<std::remove_cvref_t<Ts>>...> m_items;

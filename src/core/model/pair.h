@@ -63,7 +63,9 @@ class PairValue : public AttributeValue
     typedef typename std::pair<first_type, second_type> result_type;
 
     PairValue()
-        : m_value(std::make_pair(Create<A>(), Create<B>())){};
+        : m_value(std::make_pair(Create<A>(), Create<B>()))
+    {
+    }
 
     /**
      * Construct this PairValue from a std::pair
