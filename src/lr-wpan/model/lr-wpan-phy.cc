@@ -123,14 +123,14 @@ operator<<(std::ostream& os, const PhyEnumeration& state)
         break;
     }
     return os;
-};
+}
 
 std::ostream&
 operator<<(std::ostream& os, const TracedValue<PhyEnumeration>& state)
 {
     PhyEnumeration s = state;
     return os << s;
-};
+}
 
 TypeId
 LrWpanPhy::GetTypeId()

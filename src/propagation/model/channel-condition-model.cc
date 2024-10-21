@@ -593,7 +593,7 @@ ThreeGppChannelConditionModel::GetQuantizedElevationAngle(Ptr<const MobilityMode
                   "Invalid elevation angle!");
 
     return std::make_tuple(elevAngle, elevAngleQuantized);
-};
+}
 
 // ------------------------------------------------------------------------- //
 

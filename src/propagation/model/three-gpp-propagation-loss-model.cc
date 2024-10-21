@@ -140,7 +140,7 @@ GetBsUtDistancesAndHeights(ns3::Ptr<const ns3::MobilityModel> a,
     double hBs = std::max(aPos.z, bPos.z);
     double hUt = std::min(aPos.z, bPos.z);
     return std::make_tuple(distance2D, distance3D, hBs, hUt);
-};
+}
 
 /**
  * @brief Get the base station and user terminal heights for the UmiStreetCanyon scenario
@@ -156,7 +156,7 @@ GetBsUtHeightsUmiStreetCanyon(double heightA, double heightB)
     double hBs = (heightA == 10) ? heightA : heightB;
     double hUt = (heightA == 10) ? heightB : heightA;
     return std::make_tuple(hBs, hUt);
-};
+}
 
 /**
  * @brief Computes the free-space path loss using the formula described in 3GPP TR 38.811,
@@ -171,7 +171,7 @@ double
 ComputeNtnPathloss(double freq, double dist3d)
 {
     return 32.45 + 20 * log10(freq / 1e9) + 20 * log10(dist3d);
-};
+}
 
 /**
  * @brief Computes the atmospheric absorption loss using the formula described in 3GPP TR 38.811,
@@ -193,7 +193,7 @@ ComputeAtmosphericAbsorptionLoss(double freq, double elevAngle)
     }
 
     return loss;
-};
+}
 
 /**
  * @brief Computes the ionospheric plus tropospheric scintillation loss using the formulas
@@ -219,7 +219,7 @@ ComputeIonosphericPlusTroposphericScintillationLoss(double freq, double elevAngl
         loss = troposphericScintillationLoss.at(elevAngleQuantized);
     }
     return loss;
-};
+}
 
 /**
  * @brief Computes the clutter loss using the formula
@@ -250,7 +250,7 @@ ComputeClutterLoss(double freq,
     }
 
     return loss;
-};
+}
 
 constexpr double M_C = 3.0e8; //!< propagation velocity in free space
 

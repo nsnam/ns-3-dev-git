@@ -76,7 +76,7 @@ operator<<(std::ostream& os, const MacState& state)
         break;
     }
     return os;
-};
+}
 
 TypeId
 LrWpanMac::GetTypeId()
