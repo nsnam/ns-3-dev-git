@@ -124,16 +124,6 @@ cppyy-20.04:
       - wheelhouse/*.whl
     when: on_success
 
-manylinux-pip-wheel-py3.6:
-  extends: .manylinux-pip-wheel
-  variables:
-    PYTHON: "python3.6"
-
-manylinux-pip-wheel-py3.7:
-  extends: .manylinux-pip-wheel
-  variables:
-    PYTHON: "python3.7"
-
 manylinux-pip-wheel-py3.8:
   extends: .manylinux-pip-wheel
   variables:
@@ -153,3 +143,13 @@ manylinux-pip-wheel-py3.11:
   extends: .manylinux-pip-wheel
   variables:
     PYTHON: "python3.11"
+
+manylinux-pip-wheel-py3.12:
+  extends: .manylinux-pip-wheel
+  variables:
+    PYTHON: "python3.12"
+
+manylinux-pip-wheel-py3.13:
+  extends: .manylinux-pip-wheel
+  variables:
+    PYTHON: "python3.13"
