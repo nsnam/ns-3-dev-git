@@ -1316,19 +1316,14 @@ macro(process_options)
 
   # Netanim depends on ns-3 core, so we built it later
   if(${NS3_NETANIM})
-    include(FetchContent)
-    FetchContent_Declare(
-      netanim GIT_REPOSITORY https://gitlab.com/nsnam/netanim.git
-      GIT_TAG netanim-3.109
+    include(ExternalProject)
+    ExternalProject_Add(
+      netanim_visualizer
+      GIT_REPOSITORY https://gitlab.com/nsnam/netanim.git
+      GIT_TAG netanim-3.110
+      BUILD_IN_SOURCE TRUE
+      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_OUTPUT_DIRECTORY}
     )
-    FetchContent_Populate(netanim)
-    file(COPY build-support/3rd-party/netanim-cmakelists.cmake
-         DESTINATION ${netanim_SOURCE_DIR}
-    )
-    file(RENAME ${netanim_SOURCE_DIR}/netanim-cmakelists.cmake
-         ${netanim_SOURCE_DIR}/CMakeLists.txt
-    )
-    add_subdirectory(${netanim_SOURCE_DIR} ${netanim_BINARY_DIR})
   endif()
 
   if(${NS3_FETCH_OPTIONAL_COMPONENTS})
