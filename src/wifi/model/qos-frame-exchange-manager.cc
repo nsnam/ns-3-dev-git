@@ -787,7 +787,9 @@ QosFrameExchangeManager::FindTxopHolder(const WifiMacHeader& hdr, const WifiTxVe
     // that initiated a frame exchange sequence, except if this is a CTS frame, in which
     // case the TXOP holder address is the Address 1 field. (Sec. 10.23.2.4 of 802.11-2020)
     if ((hdr.IsQosData() || hdr.IsMgt() || hdr.IsRts() || hdr.IsBlockAckReq()) &&
-        (hdr.GetAddr1() == m_bssid || hdr.GetAddr2() == m_bssid))
+        (hdr.GetAddr1() == m_bssid || hdr.GetAddr2() == m_bssid ||
+         GetWifiRemoteStationManager()->IsAdhocPeer(hdr.GetAddr1()) ||
+         GetWifiRemoteStationManager()->IsAdhocPeer(hdr.GetAddr2())))
     {
         return hdr.GetAddr2();
     }
