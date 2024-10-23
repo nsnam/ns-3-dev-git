@@ -44,3 +44,8 @@ build_exec(
   INSTALL_DIRECTORY_PATH ${CMAKE_INSTALL_LIBEXECDIR}/ns3
   STANDALONE
 )
+
+add_dependencies(
+  tap-bridge
+  tap-creator
+)
