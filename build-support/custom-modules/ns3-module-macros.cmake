@@ -17,7 +17,7 @@ function(copy_headers_before_building_lib libname outputdir headers visibility)
 
     # If output directory does not exist, create it
     if(NOT (EXISTS ${outputdir}))
-      file(MAKE_DIRECTORY ${outputdir})
+      make_directory(${outputdir})
     endif()
 
     # If header already exists, skip symlinking/stub header creation

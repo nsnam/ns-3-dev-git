@@ -6,6 +6,40 @@
 
 # This is where we define where executables, libraries and headers will end up
 
+# Test if python is available
+execute_process(
+  COMMAND ${CMAKE_COMMAND} -E env python3 -c "exit(0)"
+  RESULT_VARIABLE PYTHON_AVAILABLE
+)
+
+function(make_directory directory_path)
+  if("${PYTHON_AVAILABLE}" EQUAL 0)
+    # In case python is available, check if we have write permissions on
+    # directory_path before trying to create it
+    get_filename_component(parent ${directory_path} DIRECTORY)
+    get_filename_component(grandparent ${parent} DIRECTORY)
+    execute_process(
+      COMMAND
+        ${CMAKE_COMMAND} -E env python3 -c
+        "import os; exit(0 if sum(map(lambda x: os.path.exists(x) and os.access(x, os.W_OK), ['${parent}', '${grandparent}'])) else 1)"
+      RESULT_VARIABLE RESULT
+    )
+    if(NOT (${RESULT} EQUAL 0))
+      message(
+        FATAL_ERROR
+          "Failed to create directory: ${directory_path}. Check for write permissions."
+      )
+    endif()
+  else()
+    # In case python is not available, warn users
+    message(
+      WARNING
+        "Python3 executable was not found and write permissions won't be checked. Build may break for file permission issues."
+    )
+  endif()
+  file(MAKE_DIRECTORY ${directory_path})
+endfunction()
+
 if("${NS3_OUTPUT_DIRECTORY}" STREQUAL "")
   message(STATUS "Using default output directory ${PROJECT_SOURCE_DIR}/build")
   set(CMAKE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build) # default output
@@ -25,34 +59,21 @@ else()
                  "${absolute_ns3_output_directory}"
   )
 
-  if(NOT (EXISTS ${absolute_ns3_output_directory}))
-    message(
-      STATUS
-        "User-defined output directory \"${NS3_OUTPUT_DIRECTORY}\" doesn't exist. Trying to create it"
-    )
-    file(MAKE_DIRECTORY ${absolute_ns3_output_directory})
-    if(NOT (EXISTS ${absolute_ns3_output_directory}))
-      message(
-        FATAL_ERROR
-          "User-defined output directory \"${absolute_ns3_output_directory}\" could not be created. "
-          "Try changing the value of NS3_OUTPUT_DIRECTORY"
-      )
-    endif()
-
-    # If this directory is not inside the ns-3-dev folder, alert users tests may
-    # break
-    if(NOT ("${absolute_ns3_output_directory}" MATCHES "${PROJECT_SOURCE_DIR}"))
-      message(
-        WARNING
-          "User-defined output directory \"${absolute_ns3_output_directory}\" is outside "
-          " of the ns-3 directory ${PROJECT_SOURCE_DIR}, which will break some tests"
-      )
-    endif()
-  endif()
   message(
     STATUS
-      "User-defined output directory \"${absolute_ns3_output_directory}\" will be used"
+      "Creating user-defined output directory \"${NS3_OUTPUT_DIRECTORY}\". In case it fails, try changing the value of NS3_OUTPUT_DIRECTORY or check the directory permissions."
   )
+  make_directory(${absolute_ns3_output_directory})
+
+  # If this directory is not inside the ns-3-dev folder, alert users tests may
+  # break
+  if(NOT ("${absolute_ns3_output_directory}" MATCHES "${PROJECT_SOURCE_DIR}"))
+    message(
+      WARNING
+        "User-defined output directory \"${absolute_ns3_output_directory}\" is outside "
+        " of the ns-3 directory ${PROJECT_SOURCE_DIR}, which will break some tests"
+    )
+  endif()
   set(CMAKE_OUTPUT_DIRECTORY ${absolute_ns3_output_directory})
 endif()
 
@@ -68,4 +89,6 @@ set(CMAKE_HEADER_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/include/ns3)
 set(THIRD_PARTY_DIRECTORY ${PROJECT_SOURCE_DIR}/3rd-party)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 link_directories(${CMAKE_OUTPUT_DIRECTORY}/${libdir})
-file(MAKE_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY})
+make_directory(${CMAKE_OUTPUT_DIRECTORY})
+make_directory(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+make_directory(${CMAKE_HEADER_OUTPUT_DIRECTORY})

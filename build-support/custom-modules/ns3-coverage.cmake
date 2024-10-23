@@ -27,7 +27,7 @@ if(${NS3_COVERAGE})
   # cmake-cache or cmake-build-${build_suffix}
 
   # Create output directory for coverage info and html
-  file(MAKE_DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/coverage)
+  make_directory(${CMAKE_OUTPUT_DIRECTORY}/coverage)
 
   # Extract code coverage results and build html report
   add_custom_target(
