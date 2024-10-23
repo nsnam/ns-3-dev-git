@@ -219,6 +219,22 @@ struct dB_t
     /// @return Difference of values.
     dBm_t operator-(const dBm_t& rhs) const;
 
+    /// Multiplier Operator
+    /// @param rhs right-hand side operand in double type
+    /// @returns a dB_t power unit struct with value equals to val * rhs
+    inline dB_t operator*(double rhs) const
+    {
+        return dB_t{val * rhs};
+    }
+
+    /// Divider Operator
+    /// @param rhs right-hand side operand in double type
+    /// @returns a dB_t power unit struct with value equals to val / rhs
+    inline dB_t operator/(double rhs) const
+    {
+        return dB_t{val / rhs};
+    }
+
     /// Convert from string.
     /// @param input string to convert
     /// @return Optional dB value.
@@ -608,7 +624,7 @@ struct mWatt_t
     /// Multiplier Operator
     /// @param rhs right-hand side operand in double type
     /// @returns a mWatt_t power unit struct with value equals to val * rhs
-    inline mWatt_t operator*(const double& rhs) const
+    inline mWatt_t operator*(double rhs) const
     {
         return mWatt_t{val * rhs};
     }
@@ -616,7 +632,7 @@ struct mWatt_t
     /// Divider Operator
     /// @param rhs right-hand side operand in double type
     /// @returns a mWatt_t power unit struct with value equals to val / rhs
-    inline mWatt_t operator/(const double& rhs) const
+    inline mWatt_t operator/(double rhs) const
     {
         return mWatt_t{val / rhs};
     }
@@ -860,6 +876,39 @@ struct Watt_t
     inline Watt_t operator*(const Watt_t& rhs) const
     {
         return Watt_t{val * rhs.val};
+    }
+
+    /// Multiplier Operator
+    /// @param rhs right-hand side operand in double type
+    /// @returns a Watt_t power unit struct with value equals to val * rhs
+    inline Watt_t operator*(double rhs) const
+    {
+        return Watt_t{val * rhs};
+    }
+
+    /// Divider Operator
+    /// @param rhs right-hand side operand in double type
+    /// @returns a Watt_t power unit struct with value equals to val / rhs
+    inline Watt_t operator/(double rhs) const
+    {
+        return Watt_t{val / rhs};
+    }
+
+    /// Divider Operator
+    /// @param rhs right-hand side operand in Watt_t type
+    /// @returns a ratio with value equals to val / rhs.val
+    inline double operator/(const Watt_t& rhs) const
+    {
+        return val / rhs.val;
+    }
+
+    /// Multiplication Assignment Operator
+    /// @param rhs right-hand side operand
+    /// @returns a Watt_t power unit struct with value equals to val * rhs
+    inline Watt_t& operator*=(double rhs)
+    {
+        val *= rhs;
+        return *this;
     }
 
     // Watt_t-mWatt_t Cross-operators
