@@ -898,12 +898,12 @@ struct Watt_t
     /// Addition Operator
     /// @param rhs right-hand side operand
     /// @returns a mWatt_t power unit struct with value equals the sum of the two values
-    mWatt_t operator+(const mWatt_t& rhs) const;
+    Watt_t operator+(const mWatt_t& rhs) const;
 
     /// Subtraction Operator
     /// @param rhs right-hand side operand
     /// @returns a mWatt_t power unit struct with value equals val - rhs.val
-    mWatt_t operator-(const mWatt_t& rhs) const;
+    Watt_t operator-(const mWatt_t& rhs) const;
 
     /// Addition Assignment Operator
     /// @param rhs right-hand side operand

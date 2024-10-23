@@ -125,16 +125,16 @@ Watt_t::operator>=(const mWatt_t& rhs) const
     return val >= (rhs.val / ONE_KILO);
 }
 
-mWatt_t
+Watt_t
 Watt_t::operator+(const mWatt_t& rhs) const
 {
-    return mWatt_t{(val * ONE_KILO) + rhs.val};
+    return Watt_t{((val * ONE_KILO) + rhs.val) / ONE_KILO};
 }
 
-mWatt_t
+Watt_t
 Watt_t::operator-(const mWatt_t& rhs) const
 {
-    return mWatt_t{(val * ONE_KILO) - rhs.val};
+    return Watt_t{((val * ONE_KILO) - rhs.val) / ONE_KILO};
 }
 
 Watt_t&
