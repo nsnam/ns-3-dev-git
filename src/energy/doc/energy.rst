@@ -32,6 +32,14 @@ The |ns3| energy framework is composed of 3 essential parts:
 
     |ns3| energy framework
 
+Scope and Limitations
+---------------------
+
+* In the ``GenericBatteryModel`` charging behavior (voltage as a function of SoC) is included but is not been thoroughly tested. Testing requires the implementation of a harvesting device (A charger) capable of providing a CCCV charging method typically used in batteries.
+* In the ``GenericBatteryModel`` impedance (battery resistance) is constant, battery aging or temperature effects are not considered.
+* The Rv battery model has some reported issues (See: issue `#164 <https://gitlab.com/nsnam/ns-3-dev/-/issues/164>`_)
+* The harvesting mode can only be used with basic energy sources because it does not consider the current capacity or voltage of the battery.
+
 
 Energy Source Models
 --------------------
@@ -340,8 +348,8 @@ The following table is a list of the available presents in |ns3|:
 +---------------------------+-------------------------------------------------+
 
 
-Tracing
-~~~~~~~
+Traces
+~~~~~~
 
 Traced values differ between Energy Sources, Devices Energy Models and
 Energy Harvesters implementations, please look at the specific child
@@ -365,8 +373,8 @@ class for details.
 * ``HarvestedPower``: Current power provided by the BasicEnergyHarvester.
 * ``TotalEnergyHarvested``: Total energy harvested by the BasicEnergyHarvester.
 
-Examples
-~~~~~~~~
+Examples and Tests
+~~~~~~~~~~~~~~~~~~
 
 The following examples have been written.
 
@@ -384,8 +392,6 @@ Examples in ``examples/energy``:
 * ``energy-model-with-harvesting-example.cc``: Shows the harvesting model usage. Only usable with basicEnergySources.
 
 
-Tests
-~~~~~
 The following tests have been written, which can be found in ``src/energy/tests/``:
 
 * ``basic-energy-harvester-test.cc``: Test energy harvester procedure
@@ -422,15 +428,6 @@ The RV battery model is validated by comparing results with what was presented i
 
     NiMH battery discharge curve (Panasonic HHR650D)
 
-
-
-Scope and Limitations
----------------------
-
-* In the ``GenericBatteryModel`` charging behavior (voltage as a function of SoC) is included but is not been thoroughly tested. Testing requires the implementation of a harvesting device (A charger) capable of providing a CCCV charging method typically used in batteries.
-* In the ``GenericBatteryModel`` impedance (battery resistance) is constant, battery aging or temperature effects are not considered.
-* The Rv battery model has some reported issues (See: issue #164)
-* The harvesting mode can only be used with basic energy sources because it does not consider the current capacity or voltage of the battery.
 
 Future Work
 -----------
