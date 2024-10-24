@@ -90,8 +90,11 @@ def add_argument_to_subparsers(
 
 
 def parse_args(argv):
+    py39args = {"exit_on_error": False}
+    if sys.version_info < (3, 9):
+        py39args = {}
     parser = argparse.ArgumentParser(
-        description="ns-3 wrapper for the CMake build system", add_help=False, exit_on_error=False
+        description="ns-3 wrapper for the CMake build system", add_help=False, **py39args
     )
 
     sub_parser = parser.add_subparsers()
