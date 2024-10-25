@@ -1066,7 +1066,7 @@ WifiRemoteStationManager::ReportFinalDataFailed(Ptr<const WifiMpdu> mpdu)
 void
 WifiRemoteStationManager::ReportRxOk(Mac48Address address,
                                      RxSignalInfo rxSignalInfo,
-                                     WifiTxVector txVector)
+                                     const WifiTxVector& txVector)
 {
     NS_LOG_FUNCTION(this << address << rxSignalInfo << txVector);
     if (address.IsGroup())

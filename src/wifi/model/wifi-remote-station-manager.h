@@ -966,7 +966,7 @@ class WifiRemoteStationManager : public Object
      *
      * Should be invoked whenever a packet is successfully received.
      */
-    void ReportRxOk(Mac48Address address, RxSignalInfo rxSignalInfo, WifiTxVector txVector);
+    void ReportRxOk(Mac48Address address, RxSignalInfo rxSignalInfo, const WifiTxVector& txVector);
 
     /**
      * \param header MAC header of the data frame to send
