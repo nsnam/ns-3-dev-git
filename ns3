@@ -615,6 +615,7 @@ def check_lock_data(output_directory):
         "ENABLE_SUDO": False,
         "ENABLE_TESTS": False,
         "BUILD_VERSION_STRING": None,
+        "FETCH_NETANIM_VISUALIZER": False,
     }
     if output_directory and os.path.exists(lock_file):
         exec(open(lock_file).read(), globals(), build_info)
@@ -990,6 +991,9 @@ def get_program_shortcuts(build_profile, ns3_version):
     ns3_program_map = {}
     longest_shortcut_map = {}
 
+    if programs_dict["FETCH_NETANIM_VISUALIZER"]:
+        ns3_program_map["netanim"] = [programs_dict["out_dir"] + "/bin/netanim"]
+
     for program in programs_dict["ns3_runnable_programs"]:
         if "pch_exec" in program:
             continue
@@ -1234,11 +1238,21 @@ def get_target_to_build(program_path, ns3_version, build_profile):
     build_profile_suffix = "" if build_profile in ["release"] else "-" + build_profile
     program_name = ""
 
+    special_run_to_build_targets = {
+        "netanim": "netanim_visualizer",
+    }
+
     try:
         program_name = "".join(
             *re.findall("(.*)ns%s-(.*)%s" % (ns3_version, build_profile_suffix), program_path)
         )
     except TypeError:
+        # This is not your typical ns-3 executable.
+        # Maybe some imported target that had a conflicting name, like netanim
+        program_name = os.path.basename(program_path)
+        if program_name in special_run_to_build_targets:
+            return special_run_to_build_targets[program_name]
+        # Or maybe it is an error indeed
         print("Target to build does not exist: %s" % program_path)
         exit(1)
 
