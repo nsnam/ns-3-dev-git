@@ -196,6 +196,24 @@ struct Hz_t
         return Hz_t{val * rhs};
     }
 
+    /// Multiplication assignment operator
+    /// @param rhs value to multiply by
+    /// @return Reference to this object
+    inline Hz_t& operator*=(double rhs)
+    {
+        val *= rhs;
+        return *this;
+    }
+
+    /// Division assignment operator
+    /// @param rhs value to divide by
+    /// @return Reference to this object
+    inline Hz_t& operator/=(double rhs)
+    {
+        val /= rhs;
+        return *this;
+    }
+
     /// Multiplication operator
     /// @param nstime time
     /// @return Unitless value
