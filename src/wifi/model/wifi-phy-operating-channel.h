@@ -32,9 +32,9 @@ struct FrequencyChannelInfo
      * @brief spaceship operator.
      *
      * @param info the frequency channel info
-     * @returns -1 if the provided channel info is located at a lower channel number, 0 if the
-     * provided channel info is identical or 1 if the provided channel info is located at a higher
-     * channel number
+     * @returns a negative value if the provided channel info is located at a lower channel number,
+     * 0 if the provided channel info is identical or a positive value if the provided channel info
+     * is located at a higher channel number
      */
     auto operator<=>(const FrequencyChannelInfo& info) const = default;
     uint8_t number{0};                                        ///< the channel number
