@@ -123,7 +123,7 @@ Using NetAnim is a two-step process
 
 Step 1:Generate the animation XML trace file during simulation using "ns3::AnimationInterface" in the |ns3| code base.
 
-Step 2:Load the XML trace file generated in Step 1 with the offline Qt4-based animator named NetAnim.
+Step 2:Load the XML trace file generated in Step 1 with the offline Qt-based animator named NetAnim.
 
 Step 1: Generate XML animation trace file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

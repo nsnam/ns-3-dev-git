@@ -160,8 +160,7 @@ setup tools, are typically needed.
 NetAnim animator
 ================
 
-The `Qt <https://www.qt.io>`_ qt5 development tools are needed for NetAnim animator;
-qt4 will also work but we have migrated to qt5. qt6 compatibility is not tested.
+The `Qt5 or Qt6 <https://www.qt.io>`_ development tools are needed for NetAnim animator.
 
 PyViz visualizer
 ================
