@@ -54,21 +54,28 @@ AdvancedApEmlsrManager::GetTypeId()
                 MakeBooleanAccessor(&AdvancedApEmlsrManager::m_waitTransDelayOnPsduRxError),
                 MakeBooleanChecker())
             .AddAttribute("UpdateCwAfterFailedIcf",
-                          "Whether the AP MLD shall double the CW upon CTS timeout after an "
-                          "MU-RTS in case all the clients solicited by the MU-RTS are EMLSR "
-                          "clients that have sent (or are sending) a frame to the AP on "
-                          "another link.",
-                          BooleanValue(true),
-                          MakeBooleanAccessor(&AdvancedApEmlsrManager::m_updateCwAfterFailedIcf),
-                          MakeBooleanChecker())
-            .AddAttribute("ReportFailedIcf",
-                          "Whether the AP MLD shall report an ICF failure to the remote station "
-                          "manager when all the clients solicited by the MU-RTS are EMLSR "
-                          "clients that have sent (or are sending) a frame to the AP on "
-                          "another link.",
-                          BooleanValue(true),
-                          MakeBooleanAccessor(&AdvancedApEmlsrManager::m_reportFailedIcf),
-                          MakeBooleanChecker())
+                          "Whether the AP MLD shall double the CW upon CTS timeout after an ICF.",
+                          EnumValue(WifiUpdateCwAfterIcfFailure::ALWAYS),
+                          MakeEnumAccessor<WifiUpdateCwAfterIcfFailure>(
+                              &AdvancedApEmlsrManager::m_updateCwAfterFailedIcf),
+                          MakeEnumChecker(WifiUpdateCwAfterIcfFailure::ALWAYS,
+                                          "ALWAYS",
+                                          WifiUpdateCwAfterIcfFailure::IF_NOT_CROSS_LINK_COLLISION,
+                                          "IF_NOT_CROSS_LINK_COLLISION",
+                                          WifiUpdateCwAfterIcfFailure::NEVER,
+                                          "NEVER"))
+            .AddAttribute(
+                "ReportFailedIcf",
+                "Whether the AP MLD shall report an ICF failure to the remote station "
+                "manager.",
+                EnumValue(WifiReportIcfFailure::ALWAYS),
+                MakeEnumAccessor<WifiReportIcfFailure>(&AdvancedApEmlsrManager::m_reportFailedIcf),
+                MakeEnumChecker(WifiReportIcfFailure::ALWAYS,
+                                "ALWAYS",
+                                WifiReportIcfFailure::IF_NOT_CROSS_LINK_COLLISION,
+                                "IF_NOT_CROSS_LINK_COLLISION",
+                                WifiReportIcfFailure::NEVER,
+                                "NEVER"))
             .AddAttribute("GenieMode",
                           "Whether to use Genie information.",
                           BooleanValue(false),
@@ -209,15 +216,19 @@ AdvancedApEmlsrManager::GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
 }
 
 bool
-AdvancedApEmlsrManager::UpdateCwAfterFailedIcf() const
+AdvancedApEmlsrManager::UpdateCwAfterFailedIcf(bool isCrossLinkCollision) const
 {
-    return m_updateCwAfterFailedIcf;
+    return m_updateCwAfterFailedIcf == WifiUpdateCwAfterIcfFailure::ALWAYS ||
+           (m_updateCwAfterFailedIcf == WifiUpdateCwAfterIcfFailure::IF_NOT_CROSS_LINK_COLLISION &&
+            !isCrossLinkCollision);
 }
 
 bool
-AdvancedApEmlsrManager::ReportFailedIcf() const
+AdvancedApEmlsrManager::ReportFailedIcf(bool isCrossLinkCollision) const
 {
-    return m_reportFailedIcf;
+    return m_reportFailedIcf == WifiReportIcfFailure::ALWAYS ||
+           (m_reportFailedIcf == WifiReportIcfFailure::IF_NOT_CROSS_LINK_COLLISION &&
+            !isCrossLinkCollision);
 }
 
 } // namespace ns3

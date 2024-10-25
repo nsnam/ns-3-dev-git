@@ -1147,10 +1147,9 @@ EhtFrameExchangeManager::GetUpdateCwOnCtsTimeout() const
 
     if (m_apMac)
     {
-        if (const auto apEmlsrManager = m_apMac->GetApEmlsrManager();
-            apEmlsrManager && IsCrossLinkCollision(m_sentRtsTo))
+        if (const auto apEmlsrManager = m_apMac->GetApEmlsrManager())
         {
-            return apEmlsrManager->UpdateCwAfterFailedIcf();
+            return apEmlsrManager->UpdateCwAfterFailedIcf(IsCrossLinkCollision(m_sentRtsTo));
         }
     }
     else if (const auto adhocMac = DynamicCast<AdhocWifiMac>(m_mac))
@@ -1173,10 +1172,9 @@ EhtFrameExchangeManager::GetReportRtsFailed() const
 
     if (m_apMac)
     {
-        if (const auto apEmlsrManager = m_apMac->GetApEmlsrManager();
-            apEmlsrManager && IsCrossLinkCollision(m_sentRtsTo))
+        if (const auto apEmlsrManager = m_apMac->GetApEmlsrManager())
         {
-            return apEmlsrManager->ReportFailedIcf();
+            return apEmlsrManager->ReportFailedIcf(IsCrossLinkCollision(m_sentRtsTo));
         }
     }
     else if (const auto adhocMac = DynamicCast<AdhocWifiMac>(m_mac))
@@ -1209,7 +1207,7 @@ EhtFrameExchangeManager::TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolici
 
     const auto apEmlsrManager = m_apMac->GetApEmlsrManager();
     const auto updateFailedCw =
-        crossLinkCollision && apEmlsrManager ? apEmlsrManager->UpdateCwAfterFailedIcf() : true;
+        apEmlsrManager ? apEmlsrManager->UpdateCwAfterFailedIcf(crossLinkCollision) : true;
     DoTbPpduTimeout(psduMap, nSolicitedStations, updateFailedCw);
 }
 

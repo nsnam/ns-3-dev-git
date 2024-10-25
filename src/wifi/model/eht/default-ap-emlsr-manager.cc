@@ -50,13 +50,13 @@ DefaultApEmlsrManager::GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
 }
 
 bool
-DefaultApEmlsrManager::UpdateCwAfterFailedIcf() const
+DefaultApEmlsrManager::UpdateCwAfterFailedIcf(bool /* isCrossLinkCollision */) const
 {
     return true;
 }
 
 bool
-DefaultApEmlsrManager::ReportFailedIcf() const
+DefaultApEmlsrManager::ReportFailedIcf(bool /* isCrossLinkCollision */) const
 {
     return true;
 }

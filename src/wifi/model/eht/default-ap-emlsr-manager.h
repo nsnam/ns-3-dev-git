@@ -34,8 +34,8 @@ class DefaultApEmlsrManager : public ApEmlsrManager
     Time GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
                                      const WifiTxVector& txVector,
                                      WifiPhyBand band) override;
-    bool UpdateCwAfterFailedIcf() const override;
-    bool ReportFailedIcf() const override;
+    bool UpdateCwAfterFailedIcf(bool isCrossLinkCollision) const override;
+    bool ReportFailedIcf(bool isCrossLinkCollision) const override;
 };
 
 } // namespace ns3

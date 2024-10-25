@@ -24,6 +24,26 @@ class WifiPsdu;
 class WifiTxVector;
 
 /**
+ * @brief Possible choices concerning whether to update CW after an ICF failure
+ */
+enum class WifiUpdateCwAfterIcfFailure : uint8_t
+{
+    ALWAYS = 0,
+    IF_NOT_CROSS_LINK_COLLISION,
+    NEVER
+};
+
+/**
+ * @brief Possible choices concerning whether to report an ICF failure to the station manager
+ */
+enum class WifiReportIcfFailure : uint8_t
+{
+    ALWAYS = 0,
+    IF_NOT_CROSS_LINK_COLLISION,
+    NEVER
+};
+
+/**
  * @ingroup wifi
  *
  * AdvancedApEmlsrManager is an advanced AP EMLSR manager.
@@ -45,8 +65,8 @@ class AdvancedApEmlsrManager : public DefaultApEmlsrManager
     Time GetDelayOnTxPsduNotForEmlsr(Ptr<const WifiPsdu> psdu,
                                      const WifiTxVector& txVector,
                                      WifiPhyBand band) override;
-    bool UpdateCwAfterFailedIcf() const override;
-    bool ReportFailedIcf() const override;
+    bool UpdateCwAfterFailedIcf(bool isCrossLinkCollision) const override;
+    bool ReportFailedIcf(bool isCrossLinkCollision) const override;
 
   protected:
     void DoDispose() override;
@@ -77,13 +97,15 @@ class AdvancedApEmlsrManager : public DefaultApEmlsrManager
     bool m_waitTransDelayOnPsduRxError; //!< Whether the AP MLD waits for a response timeout after a
                                         //!< PSDU reception error before starting the transition
                                         //!< delay
-    bool m_updateCwAfterFailedIcf;      //!< Whether the AP MLD shall double the CW upon CTS timeout
-                                   //!< after an MU-RTS in case all the clients solicited by the
-                                   //!< MU-RTS are EMLSR clients that have sent a frame to the AP
-    bool m_reportFailedIcf; //!< Whether the AP MLD shall report an ICF failure to the remote
-                            //!< station manager when all the clients solicited by the MU-RTS
-                            //!< are EMLSR clients that have sent a frame to the AP
-    bool m_genieMode;       //!< whether to use Genie information
+    WifiUpdateCwAfterIcfFailure
+        m_updateCwAfterFailedIcf; //!< Whether the AP MLD shall double the CW upon CTS timeout
+                                  //!< after an MU-RTS in case all the clients solicited by the
+                                  //!< MU-RTS are EMLSR clients that have sent a frame to the AP
+    WifiReportIcfFailure
+        m_reportFailedIcf; //!< Whether the AP MLD shall report an ICF failure to the remote
+                           //!< station manager when all the clients solicited by the MU-RTS
+                           //!< are EMLSR clients that have sent a frame to the AP
+    bool m_genieMode;      //!< whether to use Genie information
     bool m_includeSameLinkGenieMode; //!< whether to consider same link information in Genie mode
 };
 

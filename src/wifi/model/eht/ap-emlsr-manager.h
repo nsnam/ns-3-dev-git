@@ -75,18 +75,18 @@ class ApEmlsrManager : public Object
                                              WifiPhyBand band) = 0;
 
     /**
-     * @return whether the AP MLD shall double the CW upon CTS timeout after an MU-RTS in case
-     *         all the clients solicited by the MU-RTS are EMLSR clients that have sent (or
-     *         are sending) a frame to the AP
+     * @param isCrossLinkCollision whether all the clients solicited by the MU-RTS are EMLSR
+     *                             clients that have sent (or are sending) a frame to the AP
+     * @return whether the AP MLD shall double the CW upon CTS timeout after an MU-RTS
      */
-    virtual bool UpdateCwAfterFailedIcf() const = 0;
+    virtual bool UpdateCwAfterFailedIcf(bool isCrossLinkCollision) const = 0;
 
     /**
-     * \return whether the AP MLD shall report an ICF failure to the remote station manager when
-     *         all the clients solicited by the MU-RTS are EMLSR clients that have sent (or are
-     *         sending) a frame to the AP
+     * \param isCrossLinkCollision whether all the clients solicited by the MU-RTS are EMLSR
+     *                             clients that have sent (or are sending) a frame to the AP
+     * \return whether the AP MLD shall report an ICF failure to the remote station manager
      */
-    virtual bool ReportFailedIcf() const = 0;
+    virtual bool ReportFailedIcf(bool isCrossLinkCollision) const = 0;
 
   protected:
     void DoDispose() override;
