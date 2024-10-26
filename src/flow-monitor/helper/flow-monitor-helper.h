@@ -46,20 +46,28 @@ class FlowMonitorHelper
     /**
      * @brief Enable flow monitoring on a set of nodes
      * @param nodes A NodeContainer holding the set of nodes to work with.
+     * @param multicastGroups A map containing the set of members per group address in case of
+     * multicast.
      * @returns a pointer to the FlowMonitor object
      */
-    Ptr<FlowMonitor> Install(NodeContainer nodes);
+    Ptr<FlowMonitor> Install(NodeContainer nodes,
+                             const std::map<Address, std::set<uint32_t>>& multicastGroups = {});
     /**
      * @brief Enable flow monitoring on a single node
      * @param node A Ptr<Node> to the node on which to enable flow monitoring.
+     * @param multicastGroups A map containing the set of members per group address in case of
+     * multicast.
      * @returns a pointer to the FlowMonitor object
      */
-    Ptr<FlowMonitor> Install(Ptr<Node> node);
+    Ptr<FlowMonitor> Install(Ptr<Node> node,
+                             const std::map<Address, std::set<uint32_t>>& multicastGroups = {});
     /**
      * @brief Enable flow monitoring on all nodes
+     * @param multicastGroups A map containing the set of members per group address in case of
+     * multicast.
      * @returns a pointer to the FlowMonitor object
      */
-    Ptr<FlowMonitor> InstallAll();
+    Ptr<FlowMonitor> InstallAll(const std::map<Address, std::set<uint32_t>>& multicastGroups = {});
 
     /**
      * @brief Retrieve the FlowMonitor object created by the Install* methods

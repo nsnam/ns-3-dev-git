@@ -19,6 +19,7 @@
 #include "ns3/ptr.h"
 
 #include <map>
+#include <set>
 #include <vector>
 
 namespace ns3
@@ -40,31 +41,40 @@ namespace ns3
 class FlowMonitor : public Object
 {
   public:
-    /// @brief Structure that represents the measured metrics of an individual packet flow
-    struct FlowStats
+    /// @brief Structure that represents the measured TX metrics of an individual packet flow
+    struct FlowTxStats
     {
         /// Contains the absolute time when the first packet in the flow
         /// was transmitted, i.e. the time when the flow transmission
         /// starts
-        Time timeFirstTxPacket;
-
-        /// Contains the absolute time when the first packet in the flow
-        /// was received by an end node, i.e. the time when the flow
-        /// reception starts
-        Time timeFirstRxPacket;
+        Time timeFirstTxPacket{};
 
         /// Contains the absolute time when the last packet in the flow
         /// was transmitted, i.e. the time when the flow transmission
         /// ends
-        Time timeLastTxPacket;
+        Time timeLastTxPacket{};
+
+        /// Total number of transmitted bytes for the flow
+        uint64_t txBytes{0};
+        /// Total number of transmitted packets for the flow
+        uint32_t txPackets{0};
+    };
+
+    /// \brief Structure that represents the measured RX metrics of an individual packet flow
+    struct FlowRxStats
+    {
+        /// Contains the absolute time when the first packet in the flow
+        /// was received by an end node, i.e. the time when the flow
+        /// reception starts
+        Time timeFirstRxPacket{};
 
         /// Contains the absolute time when the last packet in the flow
         /// was received, i.e. the time when the flow reception ends
-        Time timeLastRxPacket;
+        Time timeLastRxPacket{};
 
         /// Contains the sum of all end-to-end delays for all received
         /// packets of the flow.
-        Time delaySum; // delayCount == rxPackets
+        Time delaySum{}; // delayCount == rxPackets
 
         /// Contains the sum of all end-to-end delay jitter (delay
         /// variation) values for all received packets of the flow.  Here
@@ -73,46 +83,47 @@ class FlowMonitor : public Object
         /// i.e. \f$Jitter\left\{P_N\right\} = \left|Delay\left\{P_N\right\} -
         /// Delay\left\{P_{N-1}\right\}\right|\f$. This definition is in accordance with the
         /// Type-P-One-way-ipdv as defined in IETF \RFC{3393}.
-        Time jitterSum; // jitterCount == rxPackets - 1
+        Time jitterSum{}; // jitterCount == rxPackets - 1
 
         /// Contains the last measured delay of a packet
         /// It is stored to measure the packet's Jitter
-        Time lastDelay;
+        Time lastDelay{};
         /// Contains the largest measured delay of a received packet
-        Time maxDelay;
+        Time maxDelay{};
         /// Contains the smallest measured delay of a received packet
-        Time minDelay;
+        Time minDelay{};
 
-        /// Total number of transmitted bytes for the flow
-        uint64_t txBytes;
         /// Total number of received bytes for the flow
-        uint64_t rxBytes;
-        /// Total number of transmitted packets for the flow
-        uint32_t txPackets;
+        uint64_t rxBytes{0};
         /// Total number of received packets for the flow
-        uint32_t rxPackets;
+        uint32_t rxPackets{0};
+
+        /// Contains the number of times a packet has been reportedly
+        /// forwarded, summed for all received packets in the flow
+        uint32_t timesForwarded{0};
 
         /// Total number of packets that are assumed to be lost,
         /// i.e. those that were transmitted but have not been reportedly
         /// received or forwarded for a long time.  By default, packets
         /// missing for a period of over 10 seconds are assumed to be
         /// lost, although this value can be easily configured in runtime
-        uint32_t lostPackets;
-
-        /// Contains the number of times a packet has been reportedly
-        /// forwarded, summed for all received packets in the flow
-        uint32_t timesForwarded;
+        uint32_t lostPackets{0};
 
         /// Histogram of the packet delays
-        Histogram delayHistogram;
+        Histogram delayHistogram{};
         /// Histogram of the packet jitters
-        Histogram jitterHistogram;
+        Histogram jitterHistogram{};
         /// Histogram of the packet sizes
-        Histogram packetSizeHistogram;
+        Histogram packetSizeHistogram{};
 
-        /// This attribute also tracks the number of lost packets and
-        /// bytes, but discriminates the losses by a _reason code_.  This
-        /// reason code is usually an enumeration defined by the concrete
+        Histogram flowInterruptionsHistogram{}; //!< histogram of durations of flow interruptions
+    };
+
+    /// \brief Structure that represents the measured metrics of an individual packet flow
+    struct FlowStats : public FlowTxStats, public FlowRxStats
+    {
+        /// This attribute tracks the number of drop packets over all nodes by a _reason code_.
+        /// This reason code is usually an enumeration defined by the concrete
         /// FlowProbe class, and for each reason code there may be a
         /// vector entry indexed by that code and whose value is the
         /// number of packets or bytes lost due to this reason.  For
@@ -123,12 +134,17 @@ class FlowMonitor : public Object
         /// DROP_BAD_CHECKSUM (a packet had bad IPv4 header checksum and
         /// had to be dropped).
         std::vector<uint32_t>
-            packetsDropped; // packetsDropped[reasonCode] => number of dropped packets
+            packetsDropped{}; // packetsDropped[reasonCode] => number of dropped packets
 
-        /// This attribute also tracks the number of lost bytes.  See also
-        /// comment in attribute packetsDropped.
-        std::vector<uint64_t> bytesDropped;   // bytesDropped[reasonCode] => number of dropped bytes
-        Histogram flowInterruptionsHistogram; //!< histogram of durations of flow interruptions
+        /// This attribute tracks the number of drop bytes over all nodes by a _reason code_.
+        /// See also comment in attribute packetsDropped.
+        std::vector<uint64_t> bytesDropped{}; // bytesDropped[reasonCode] => number of dropped bytes
+
+        /// Flag whether the flow corresponds to a multicast traffic
+        bool multicast{false};
+
+        /// Statistics for each node in case of multicast
+        std::map<uint32_t, FlowRxStats> multicastRxStats{};
     };
 
     // --- basic methods ---
@@ -172,10 +188,12 @@ class FlowMonitor : public Object
     /// @param flowId flow identification
     /// @param packetId Packet ID
     /// @param packetSize packet size
+    /// @param mcastGroupNodeIds the destination nodes if the destination address is multicast
     void ReportFirstTx(Ptr<FlowProbe> probe,
                        FlowId flowId,
                        FlowPacketId packetId,
-                       uint32_t packetSize);
+                       uint32_t packetSize,
+                       const std::set<uint32_t>& mcastGroupNodeIds);
     /// FlowProbe implementations are supposed to call this method to
     /// report that a known packet is being forwarded.
     /// @param probe the reporting probe
@@ -189,10 +207,12 @@ class FlowMonitor : public Object
     /// FlowProbe implementations are supposed to call this method to
     /// report that a known packet is being received.
     /// @param probe the reporting probe
+    /// @param nodeId ID of the receiving node
     /// @param flowId flow identification
     /// @param packetId Packet ID
     /// @param packetSize packet size
     void ReportLastRx(Ptr<FlowProbe> probe,
+                      uint32_t nodeId,
                       FlowId flowId,
                       FlowPacketId packetId,
                       uint32_t packetSize);
@@ -281,6 +301,9 @@ class FlowMonitor : public Object
         Time firstSeenTime;      //!< absolute time when the packet was first seen by a probe
         Time lastSeenTime;       //!< absolute time when the packet was last seen by a probe
         uint32_t timesForwarded; //!< number of times the packet was reportedly forwarded
+        std::set<uint32_t>
+            remainingMulticastReceivers; //!< IDs of the nodes that are still expected to receive
+                                         //!< the packet in case of multicast
     };
 
     /// FlowId --> FlowStats
@@ -295,14 +318,15 @@ class FlowMonitor : public Object
     // note: this is needed only for serialization
     std::list<Ptr<FlowClassifier>> m_classifiers; //!< the FlowClassifiers
 
-    EventId m_startEvent;               //!< Start event
-    EventId m_stopEvent;                //!< Stop event
-    bool m_enabled;                     //!< FlowMon is enabled
-    double m_delayBinWidth;             //!< Delay bin width (for histograms)
-    double m_jitterBinWidth;            //!< Jitter bin width (for histograms)
-    double m_packetSizeBinWidth;        //!< packet size bin width (for histograms)
-    double m_flowInterruptionsBinWidth; //!< Flow interruptions bin width (for histograms)
-    Time m_flowInterruptionsMinTime;    //!< Flow interruptions minimum time
+    EventId m_startEvent;                  //!< Start event
+    EventId m_stopEvent;                   //!< Stop event
+    bool m_enabled;                        //!< FlowMon is enabled
+    double m_delayBinWidth;                //!< Delay bin width (for histograms)
+    double m_jitterBinWidth;               //!< Jitter bin width (for histograms)
+    double m_packetSizeBinWidth;           //!< packet size bin width (for histograms)
+    double m_flowInterruptionsBinWidth;    //!< Flow interruptions bin width (for histograms)
+    Time m_flowInterruptionsMinTime;       //!< Flow interruptions minimum time
+    Time m_multicastTrackedPacketLifetime; //!< maximum duration to track a multicast packet
 
     /// Get the stats for a given flow
     /// @param flowId the Flow identification

@@ -16,9 +16,13 @@
 #include "ns3/ipv6-l3-protocol.h"
 #include "ns3/queue-item.h"
 
+#include <map>
+#include <set>
+
 namespace ns3
 {
 
+class Ipv6Address;
 class FlowMonitor;
 class Node;
 
@@ -36,7 +40,11 @@ class Ipv6FlowProbe : public FlowProbe
     /// @param monitor the FlowMonitor this probe is associated with
     /// @param classifier the Ipv4FlowClassifier this probe is associated with
     /// @param node the Node this probe is associated with
-    Ipv6FlowProbe(Ptr<FlowMonitor> monitor, Ptr<Ipv6FlowClassifier> classifier, Ptr<Node> node);
+    /// @param multicastGroups the set of members per group address for multicast traffic
+    Ipv6FlowProbe(Ptr<FlowMonitor> monitor,
+                  Ptr<Ipv6FlowClassifier> classifier,
+                  Ptr<Node> node,
+                  const std::map<Ipv6Address, std::set<uint32_t>>& multicastGroups);
     ~Ipv6FlowProbe() override;
 
     /// Register this type.
@@ -118,6 +126,10 @@ class Ipv6FlowProbe : public FlowProbe
     void QueueDiscDropLogger(Ptr<const QueueDiscItem> item);
 
     Ptr<Ipv6FlowClassifier> m_classifier; //!< the Ipv6FlowClassifier this probe is associated with
+    Ptr<Ipv6L3Protocol> m_ipv6;           //!< the Ipv6L3Protocol this probe is bound to
+    std::map<Ipv6Address, std::set<uint32_t>>
+        m_multicastGroups; //!< map of multicast address and the corresponding set of nodes that are
+                           //!< members of the group
 };
 
 } // namespace ns3

@@ -238,9 +238,11 @@ Ipv4FlowProbeTag::IsSrcDstValid(Ipv4Address src, Ipv4Address dst) const
 
 Ipv4FlowProbe::Ipv4FlowProbe(Ptr<FlowMonitor> monitor,
                              Ptr<Ipv4FlowClassifier> classifier,
-                             Ptr<Node> node)
+                             Ptr<Node> node,
+                             const std::map<Ipv4Address, std::set<uint32_t>>& multicastGroups)
     : FlowProbe(monitor),
-      m_classifier(classifier)
+      m_classifier(classifier),
+      m_multicastGroups(multicastGroups)
 {
     NS_LOG_FUNCTION(this << node->GetId());
 
@@ -258,6 +260,13 @@ Ipv4FlowProbe::Ipv4FlowProbe(Ptr<FlowMonitor> monitor,
     {
         NS_FATAL_ERROR("trace fail");
     }
+    if (!m_ipv4->TraceConnectWithoutContext(
+            "MulticastForward",
+            MakeCallback(&Ipv4FlowProbe::ForwardLogger, Ptr<Ipv4FlowProbe>(this))))
+    {
+        NS_FATAL_ERROR("trace fail");
+    }
+
     if (!m_ipv4->TraceConnectWithoutContext(
             "LocalDeliver",
             MakeCallback(&Ipv4FlowProbe::ForwardUpLogger, Ptr<Ipv4FlowProbe>(this))))
@@ -315,10 +324,8 @@ Ipv4FlowProbe::SendOutgoingLogger(const Ipv4Header& ipHeader,
                                   Ptr<const Packet> ipPayload,
                                   uint32_t interface)
 {
-    FlowId flowId;
-    FlowPacketId packetId;
-
-    if (!m_ipv4->IsUnicast(ipHeader.GetDestination()))
+    const auto destination = ipHeader.GetDestination();
+    if (destination.IsBroadcast())
     {
         // we are not prepared to handle broadcast yet
         return;
@@ -331,20 +338,31 @@ Ipv4FlowProbe::SendOutgoingLogger(const Ipv4Header& ipHeader,
         return;
     }
 
+    FlowId flowId;
+    FlowPacketId packetId;
     if (m_classifier->Classify(ipHeader, ipPayload, &flowId, &packetId))
     {
         uint32_t size = (ipPayload->GetSize() + ipHeader.GetSerializedSize());
         NS_LOG_DEBUG("ReportFirstTx (" << this << ", " << flowId << ", " << packetId << ", " << size
                                        << "); " << ipHeader << *ipPayload);
-        m_flowMonitor->ReportFirstTx(this, flowId, packetId, size);
+
+        std::set<uint32_t> mcastGroupNodeIds{};
+        if (destination.IsMulticast())
+        {
+            const auto it = m_multicastGroups.find(destination);
+            if (it == m_multicastGroups.cend())
+            {
+                NS_LOG_WARN("Undefined multicast group: " << destination);
+                return;
+            }
+            mcastGroupNodeIds = it->second;
+        }
+
+        m_flowMonitor->ReportFirstTx(this, flowId, packetId, size, mcastGroupNodeIds);
 
         // tag the packet with the flow id and packet id, so that the packet can be identified even
         // when Ipv4Header is not accessible at some non-IPv4 protocol layer
-        Ipv4FlowProbeTag fTag(flowId,
-                              packetId,
-                              size,
-                              ipHeader.GetSource(),
-                              ipHeader.GetDestination());
+        Ipv4FlowProbeTag fTag(flowId, packetId, size, ipHeader.GetSource(), destination);
         ipPayload->AddByteTag(fTag);
     }
 }
@@ -399,10 +417,12 @@ Ipv4FlowProbe::ForwardUpLogger(const Ipv4Header& ipHeader,
         FlowId flowId = fTag.GetFlowId();
         FlowPacketId packetId = fTag.GetPacketId();
 
-        uint32_t size = (ipPayload->GetSize() + ipHeader.GetSerializedSize());
-        NS_LOG_DEBUG("ReportLastRx (" << this << ", " << flowId << ", " << packetId << ", " << size
-                                      << "); " << ipHeader << *ipPayload);
-        m_flowMonitor->ReportLastRx(this, flowId, packetId, size);
+        const auto size = (ipPayload->GetSize() + ipHeader.GetSerializedSize());
+        const auto nodeId = m_ipv4->GetObject<Node>()->GetId();
+        NS_LOG_DEBUG("ReportLastRx (" << this << ", " << nodeId << ", " << flowId << ", "
+                                      << packetId << ", " << size << "); " << ipHeader
+                                      << *ipPayload);
+        m_flowMonitor->ReportLastRx(this, nodeId, flowId, packetId, size);
     }
 }
 

@@ -63,7 +63,6 @@ A Tag will be added to the packet (``ns3::Ipv[4,6]FlowProbeTag``). The tag will 
 basic packet's data, useful for the packet's classification.
 
 It must be underlined that only L4 (TCP, UDP) packets are, so far, classified.
-Moreover, only unicast packets will be classified.
 These limitations may be removed in the future.
 
 The data collected for each flow are:

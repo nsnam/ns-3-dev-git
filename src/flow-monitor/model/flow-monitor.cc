@@ -139,9 +139,10 @@ void
 FlowMonitor::ReportFirstTx(Ptr<FlowProbe> probe,
                            uint32_t flowId,
                            uint32_t packetId,
-                           uint32_t packetSize)
+                           uint32_t packetSize,
+                           const std::set<uint32_t>& mcastGroupNodeIds)
 {
-    NS_LOG_FUNCTION(this << probe << flowId << packetId << packetSize);
+    NS_LOG_FUNCTION(this << probe << flowId << packetId << packetSize << mcastGroupNodeIds.size());
     if (!m_enabled)
     {
         NS_LOG_DEBUG("FlowMonitor not enabled; returning");
@@ -158,6 +159,7 @@ FlowMonitor::ReportFirstTx(Ptr<FlowProbe> probe,
     probe->AddPacketStats(flowId, packetSize, Seconds(0));
 
     FlowStats& stats = GetStatsForFlow(flowId);
+    stats.multicast = !mcastGroupNodeIds.empty();
     stats.txBytes += packetSize;
     stats.txPackets++;
     if (stats.txPackets == 1)
@@ -165,6 +167,11 @@ FlowMonitor::ReportFirstTx(Ptr<FlowProbe> probe,
         stats.timeFirstTxPacket = now;
     }
     stats.timeLastTxPacket = now;
+    tracked.remainingMulticastReceivers = mcastGroupNodeIds;
+    for (const auto& mcastReceiver : mcastGroupNodeIds)
+    {
+        stats.multicastRxStats.emplace(mcastReceiver, FlowRxStats());
+    }
 }
 
 void
@@ -197,11 +204,12 @@ FlowMonitor::ReportForwarding(Ptr<FlowProbe> probe,
 
 void
 FlowMonitor::ReportLastRx(Ptr<FlowProbe> probe,
+                          uint32_t nodeId,
                           uint32_t flowId,
                           uint32_t packetId,
                           uint32_t packetSize)
 {
-    NS_LOG_FUNCTION(this << probe << flowId << packetId << packetSize);
+    NS_LOG_FUNCTION(this << probe << nodeId << flowId << packetId << packetSize);
     if (!m_enabled)
     {
         NS_LOG_DEBUG("FlowMonitor not enabled; returning");
@@ -222,36 +230,46 @@ FlowMonitor::ReportLastRx(Ptr<FlowProbe> probe,
     FlowStats& stats = GetStatsForFlow(flowId);
     stats.delaySum += delay;
     stats.delayHistogram.AddValue(delay.GetSeconds());
-    if (stats.rxPackets > 0)
+
+    if (stats.multicast && !tracked->second.remainingMulticastReceivers.contains(nodeId))
     {
-        Time jitter = stats.lastDelay - delay;
+        NS_LOG_WARN("Multicast packet delivered to an unexpected receiver (nodeId=" << nodeId
+                                                                                    << ")");
+        return;
+    }
+    tracked->second.remainingMulticastReceivers.erase(nodeId);
+
+    auto& rxStats = stats.multicast ? stats.multicastRxStats.at(nodeId) : stats;
+    if (rxStats.rxPackets > 0)
+    {
+        Time jitter = rxStats.lastDelay - delay;
         if (jitter.IsStrictlyPositive())
         {
-            stats.jitterSum += jitter;
-            stats.jitterHistogram.AddValue(jitter.GetSeconds());
+            rxStats.jitterSum += jitter;
+            rxStats.jitterHistogram.AddValue(jitter.GetSeconds());
         }
         else
         {
-            stats.jitterSum -= jitter;
-            stats.jitterHistogram.AddValue(-jitter.GetSeconds());
+            rxStats.jitterSum -= jitter;
+            rxStats.jitterHistogram.AddValue(-jitter.GetSeconds());
         }
     }
-    stats.lastDelay = delay;
-    if (delay > stats.maxDelay)
+    rxStats.lastDelay = delay;
+    if (delay > rxStats.maxDelay)
     {
-        stats.maxDelay = delay;
+        rxStats.maxDelay = delay;
     }
     if (delay < stats.minDelay)
     {
-        stats.minDelay = delay;
+        rxStats.minDelay = delay;
     }
 
-    stats.rxBytes += packetSize;
-    stats.packetSizeHistogram.AddValue((double)packetSize);
-    stats.rxPackets++;
-    if (stats.rxPackets == 1)
+    rxStats.rxBytes += packetSize;
+    rxStats.packetSizeHistogram.AddValue((double)packetSize);
+    rxStats.rxPackets++;
+    if (rxStats.rxPackets == 1)
     {
-        stats.timeFirstRxPacket = now;
+        rxStats.timeFirstRxPacket = now;
     }
     else
     {
@@ -259,16 +277,19 @@ FlowMonitor::ReportLastRx(Ptr<FlowProbe> probe,
         Time interArrivalTime = now - stats.timeLastRxPacket;
         if (interArrivalTime > m_flowInterruptionsMinTime)
         {
-            stats.flowInterruptionsHistogram.AddValue(interArrivalTime.GetSeconds());
+            rxStats.flowInterruptionsHistogram.AddValue(interArrivalTime.GetSeconds());
         }
     }
-    stats.timeLastRxPacket = now;
+    rxStats.timeLastRxPacket = now;
     stats.timesForwarded += tracked->second.timesForwarded;
 
     NS_LOG_DEBUG("ReportLastTx: removing tracked packet (flowId=" << flowId << ", packetId="
                                                                   << packetId << ").");
 
-    m_trackedPackets.erase(tracked); // we don't need to track this packet anymore
+    if (tracked->second.remainingMulticastReceivers.empty())
+    {
+        m_trackedPackets.erase(tracked); // we don't need to track this packet anymore
+    }
 }
 
 void
@@ -288,7 +309,6 @@ FlowMonitor::ReportDrop(Ptr<FlowProbe> probe,
     probe->AddPacketDropStats(flowId, packetSize, reasonCode);
 
     FlowStats& stats = GetStatsForFlow(flowId);
-    stats.lostPackets++;
     if (stats.packetsDropped.size() < reasonCode + 1)
     {
         stats.packetsDropped.resize(reasonCode + 1, 0);
@@ -296,14 +316,20 @@ FlowMonitor::ReportDrop(Ptr<FlowProbe> probe,
     }
     ++stats.packetsDropped[reasonCode];
     stats.bytesDropped[reasonCode] += packetSize;
-    NS_LOG_DEBUG("++stats.packetsDropped["
-                 << reasonCode << "]; // becomes: " << stats.packetsDropped[reasonCode]);
 
+    if (stats.multicast)
+    {
+        // In case of multicast, packet might still arrive at some receivers
+        // so we can't increment lost packets yet nor remove the tracked packet.
+        // This is handled once CheckForLostPackets is called.
+        return;
+    }
+
+    ++stats.lostPackets;
     auto tracked = m_trackedPackets.find(std::make_pair(flowId, packetId));
     if (tracked != m_trackedPackets.end())
     {
         // we don't need to track this packet anymore
-        // FIXME: this will not necessarily be true with broadcast/multicast
         NS_LOG_DEBUG("ReportDrop: removing tracked packet (flowId=" << flowId << ", packetId="
                                                                     << packetId << ").");
         m_trackedPackets.erase(tracked);
@@ -329,7 +355,21 @@ FlowMonitor::CheckForLostPackets(Time maxDelay)
             // packet is considered lost, add it to the loss statistics
             auto flow = m_flowStats.find(iter->first.first);
             NS_ASSERT(flow != m_flowStats.end());
-            flow->second.lostPackets++;
+
+            if (flow->second.multicast)
+            {
+                for (auto& [receiver, rxStats] : flow->second.multicastRxStats)
+                {
+                    if (iter->second.remainingMulticastReceivers.contains(receiver))
+                    {
+                        rxStats.lostPackets++;
+                    }
+                }
+            }
+            else
+            {
+                flow->second.lostPackets++;
+            }
 
             // we won't track it anymore
             m_trackedPackets.erase(iter++);
@@ -443,44 +483,77 @@ FlowMonitor::SerializeToXmlStream(std::ostream& os,
     for (auto flowI = m_flowStats.begin(); flowI != m_flowStats.end(); flowI++)
     {
         os << std::string(indent, ' ');
-#define ATTRIB(name) " " #name "=\"" << flowI->second.name << "\""
-#define ATTRIB_TIME(name) " " #name "=\"" << flowI->second.name.As(Time::NS) << "\""
-        os << "<Flow flowId=\"" << flowI->first << "\"" << ATTRIB_TIME(timeFirstTxPacket)
-           << ATTRIB_TIME(timeFirstRxPacket) << ATTRIB_TIME(timeLastTxPacket)
-           << ATTRIB_TIME(timeLastRxPacket) << ATTRIB_TIME(delaySum) << ATTRIB_TIME(jitterSum)
-           << ATTRIB_TIME(lastDelay) << ATTRIB_TIME(maxDelay) << ATTRIB_TIME(minDelay)
-           << ATTRIB(txBytes) << ATTRIB(rxBytes) << ATTRIB(txPackets) << ATTRIB(rxPackets)
-           << ATTRIB(lostPackets) << ATTRIB(timesForwarded) << ">\n";
+#define ATTRIB(name, stats) " " #name "=\"" << stats.name << "\""
+#define ATTRIB_TIME(name, stats) " " #name "=\"" << stats.name.As(Time::NS) << "\""
+        os << "<Flow flowId=\"" << flowI->first;
+        const auto allRxStats = flowI->second.multicast
+                                    ? flowI->second.multicastRxStats
+                                    : std::map<uint32_t, FlowRxStats>{{0, flowI->second}};
+        if (flowI->second.multicast)
+        {
+            indent += 2;
+            os << "\">\n" << std::string(indent, ' ') << "<Receivers>\n";
+            indent += 2;
+        }
+        else
+        {
+            os << "\"";
+        }
+        const auto& txStats = flowI->second;
+        for (const auto& [nodeId, rxStats] : allRxStats)
+        {
+            if (flowI->second.multicast)
+            {
+                os << std::string(indent, ' ') << "<Receiver nodeId=\"" << nodeId << "\"";
+            }
+            os << ATTRIB_TIME(timeFirstTxPacket, txStats) << ATTRIB_TIME(timeFirstRxPacket, txStats)
+               << ATTRIB_TIME(timeLastTxPacket, txStats) << ATTRIB_TIME(timeLastRxPacket, txStats)
+               << ATTRIB_TIME(delaySum, rxStats) << ATTRIB_TIME(jitterSum, rxStats)
+               << ATTRIB_TIME(lastDelay, rxStats) << ATTRIB_TIME(maxDelay, rxStats)
+               << ATTRIB_TIME(minDelay, rxStats) << ATTRIB(txBytes, txStats)
+               << ATTRIB(rxBytes, rxStats) << ATTRIB(txPackets, txStats)
+               << ATTRIB(rxPackets, rxStats) << ATTRIB(lostPackets, rxStats)
+               << ATTRIB(timesForwarded, rxStats) << ">\n";
 #undef ATTRIB_TIME
 #undef ATTRIB
 
-        indent += 2;
+            indent += 2;
+            if (enableHistograms)
+            {
+                rxStats.delayHistogram.SerializeToXmlStream(os, indent, "delayHistogram");
+                rxStats.jitterHistogram.SerializeToXmlStream(os, indent, "jitterHistogram");
+                rxStats.packetSizeHistogram.SerializeToXmlStream(os, indent, "packetSizeHistogram");
+                rxStats.flowInterruptionsHistogram.SerializeToXmlStream(
+                    os,
+                    indent,
+                    "flowInterruptionsHistogram");
+            }
+            if (flowI->second.multicast)
+            {
+                indent -= 2;
+                os << std::string(indent, ' ') << "</Receiver>\n";
+            }
+        }
+        if (flowI->second.multicast)
+        {
+            indent -= 2;
+            os << std::string(indent, ' ') << "</Receivers>\n";
+        }
+        indent -= 2;
+
         for (uint32_t reasonCode = 0; reasonCode < flowI->second.packetsDropped.size();
-             reasonCode++)
+             ++reasonCode)
         {
             os << std::string(indent, ' ');
             os << "<packetsDropped reasonCode=\"" << reasonCode << "\""
                << " number=\"" << flowI->second.packetsDropped[reasonCode] << "\" />\n";
         }
-        for (uint32_t reasonCode = 0; reasonCode < flowI->second.bytesDropped.size(); reasonCode++)
+        for (uint32_t reasonCode = 0; reasonCode < flowI->second.bytesDropped.size(); ++reasonCode)
         {
             os << std::string(indent, ' ');
             os << "<bytesDropped reasonCode=\"" << reasonCode << "\""
                << " bytes=\"" << flowI->second.bytesDropped[reasonCode] << "\" />\n";
         }
-        if (enableHistograms)
-        {
-            flowI->second.delayHistogram.SerializeToXmlStream(os, indent, "delayHistogram");
-            flowI->second.jitterHistogram.SerializeToXmlStream(os, indent, "jitterHistogram");
-            flowI->second.packetSizeHistogram.SerializeToXmlStream(os,
-                                                                   indent,
-                                                                   "packetSizeHistogram");
-            flowI->second.flowInterruptionsHistogram.SerializeToXmlStream(
-                os,
-                indent,
-                "flowInterruptionsHistogram");
-        }
-        indent -= 2;
 
         os << std::string(indent, ' ') << "</Flow>\n";
     }
@@ -553,6 +626,8 @@ FlowMonitor::ResetAllStats()
         flowStat.jitterHistogram.Clear();
         flowStat.packetSizeHistogram.Clear();
         flowStat.flowInterruptionsHistogram.Clear();
+
+        flowStat.multicastRxStats.clear();
     }
 }
 

@@ -15,9 +15,13 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/queue-item.h"
 
+#include <map>
+#include <set>
+
 namespace ns3
 {
 
+class Ipv4Address;
 class FlowMonitor;
 class Node;
 
@@ -35,7 +39,11 @@ class Ipv4FlowProbe : public FlowProbe
     /// @param monitor the FlowMonitor this probe is associated with
     /// @param classifier the Ipv4FlowClassifier this probe is associated with
     /// @param node the Node this probe is associated with
-    Ipv4FlowProbe(Ptr<FlowMonitor> monitor, Ptr<Ipv4FlowClassifier> classifier, Ptr<Node> node);
+    /// @param multicastGroups the set of members per group address for multicast traffic
+    Ipv4FlowProbe(Ptr<FlowMonitor> monitor,
+                  Ptr<Ipv4FlowClassifier> classifier,
+                  Ptr<Node> node,
+                  const std::map<Ipv4Address, std::set<uint32_t>>& multicastGroups);
     ~Ipv4FlowProbe() override;
 
     /// Register this type.
@@ -113,6 +121,9 @@ class Ipv4FlowProbe : public FlowProbe
 
     Ptr<Ipv4FlowClassifier> m_classifier; //!< the Ipv4FlowClassifier this probe is associated with
     Ptr<Ipv4L3Protocol> m_ipv4;           //!< the Ipv4L3Protocol this probe is bound to
+    std::map<Ipv4Address, std::set<uint32_t>>
+        m_multicastGroups; //!< map of multicast address and the corresponding set of nodes that are
+                           //!< members of the group
 };
 
 } // namespace ns3

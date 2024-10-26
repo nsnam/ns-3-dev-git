@@ -91,12 +91,6 @@ Ipv6FlowClassifier::Classify(const Ipv6Header& ipHeader,
                              uint32_t* out_flowId,
                              uint32_t* out_packetId)
 {
-    if (ipHeader.GetDestination().IsMulticast())
-    {
-        // we are not prepared to handle multicast yet
-        return false;
-    }
-
     FiveTuple tuple;
     tuple.sourceAddress = ipHeader.GetSource();
     tuple.destinationAddress = ipHeader.GetDestination();

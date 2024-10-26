@@ -196,34 +196,42 @@ Ipv6FlowProbeTag::GetPacketSize() const
 
 Ipv6FlowProbe::Ipv6FlowProbe(Ptr<FlowMonitor> monitor,
                              Ptr<Ipv6FlowClassifier> classifier,
-                             Ptr<Node> node)
+                             Ptr<Node> node,
+                             const std::map<Ipv6Address, std::set<uint32_t>>& multicastGroups)
     : FlowProbe(monitor),
-      m_classifier(classifier)
+      m_classifier(classifier),
+      m_multicastGroups(multicastGroups)
 {
     NS_LOG_FUNCTION(this << node->GetId());
 
-    Ptr<Ipv6L3Protocol> ipv6 = node->GetObject<Ipv6L3Protocol>();
+    m_ipv6 = node->GetObject<Ipv6L3Protocol>();
 
-    if (!ipv6->TraceConnectWithoutContext(
+    if (!m_ipv6->TraceConnectWithoutContext(
             "SendOutgoing",
             MakeCallback(&Ipv6FlowProbe::SendOutgoingLogger, Ptr<Ipv6FlowProbe>(this))))
     {
         NS_FATAL_ERROR("trace fail");
     }
-    if (!ipv6->TraceConnectWithoutContext(
+    if (!m_ipv6->TraceConnectWithoutContext(
             "UnicastForward",
             MakeCallback(&Ipv6FlowProbe::ForwardLogger, Ptr<Ipv6FlowProbe>(this))))
     {
         NS_FATAL_ERROR("trace fail");
     }
-    if (!ipv6->TraceConnectWithoutContext(
+    if (!m_ipv6->TraceConnectWithoutContext(
+            "MulticastForward",
+            MakeCallback(&Ipv6FlowProbe::ForwardLogger, Ptr<Ipv6FlowProbe>(this))))
+    {
+        NS_FATAL_ERROR("trace fail");
+    }
+    if (!m_ipv6->TraceConnectWithoutContext(
             "LocalDeliver",
             MakeCallback(&Ipv6FlowProbe::ForwardUpLogger, Ptr<Ipv6FlowProbe>(this))))
     {
         NS_FATAL_ERROR("trace fail");
     }
 
-    if (!ipv6->TraceConnectWithoutContext(
+    if (!m_ipv6->TraceConnectWithoutContext(
             "Drop",
             MakeCallback(&Ipv6FlowProbe::DropLogger, Ptr<Ipv6FlowProbe>(this))))
     {
@@ -273,13 +281,23 @@ Ipv6FlowProbe::SendOutgoingLogger(const Ipv6Header& ipHeader,
 {
     FlowId flowId;
     FlowPacketId packetId;
-
     if (m_classifier->Classify(ipHeader, ipPayload, &flowId, &packetId))
     {
         uint32_t size = (ipPayload->GetSize() + ipHeader.GetSerializedSize());
         NS_LOG_DEBUG("ReportFirstTx (" << this << ", " << flowId << ", " << packetId << ", " << size
                                        << "); " << ipHeader << *ipPayload);
-        m_flowMonitor->ReportFirstTx(this, flowId, packetId, size);
+        std::set<uint32_t> mcastGroupNodeIds{};
+        if (const auto destination = ipHeader.GetDestination(); destination.IsMulticast())
+        {
+            const auto it = m_multicastGroups.find(destination);
+            if (it == m_multicastGroups.cend())
+            {
+                NS_LOG_WARN("Undefined multicast group: " << destination);
+                return;
+            }
+            mcastGroupNodeIds = it->second;
+        }
+        m_flowMonitor->ReportFirstTx(this, flowId, packetId, size, mcastGroupNodeIds);
 
         // tag the packet with the flow id and packet id, so that the packet can be identified even
         // when Ipv6Header is not accessible at some non-IPv6 protocol layer
@@ -321,10 +339,11 @@ Ipv6FlowProbe::ForwardUpLogger(const Ipv6Header& ipHeader,
         FlowId flowId = fTag.GetFlowId();
         FlowPacketId packetId = fTag.GetPacketId();
 
-        uint32_t size = (ipPayload->GetSize() + ipHeader.GetSerializedSize());
-        NS_LOG_DEBUG("ReportLastRx (" << this << ", " << flowId << ", " << packetId << ", " << size
-                                      << ");");
-        m_flowMonitor->ReportLastRx(this, flowId, packetId, size);
+        const auto size = (ipPayload->GetSize() + ipHeader.GetSerializedSize());
+        const auto nodeId = m_ipv6->GetObject<Node>()->GetId();
+        NS_LOG_DEBUG("ReportLastRx (" << this << ", " << nodeId << ", " << flowId << ", "
+                                      << packetId << ", " << size << ");");
+        m_flowMonitor->ReportLastRx(this, nodeId, flowId, packetId, size);
     }
 }
 

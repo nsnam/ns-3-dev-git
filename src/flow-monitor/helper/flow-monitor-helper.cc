@@ -78,49 +78,69 @@ FlowMonitorHelper::GetClassifier6()
 }
 
 Ptr<FlowMonitor>
-FlowMonitorHelper::Install(Ptr<Node> node)
+FlowMonitorHelper::Install(Ptr<Node> node, const std::map<Address, std::set<uint32_t>>& mcastGroups)
 {
     Ptr<FlowMonitor> monitor = GetMonitor();
     Ptr<FlowClassifier> classifier = GetClassifier();
+    std::map<Ipv4Address, std::set<uint32_t>> ipv4MulticastGroups{};
+    std::map<Ipv6Address, std::set<uint32_t>> ipv6MulticastGroups{};
+    for (const auto& [address, group] : mcastGroups)
+    {
+        if (Ipv4Address::IsMatchingType(address))
+        {
+            ipv4MulticastGroups.emplace(Ipv4Address::ConvertFrom(address), group);
+        }
+        else if (Ipv6Address::IsMatchingType(address))
+        {
+            ipv6MulticastGroups.emplace(Ipv6Address::ConvertFrom(address), group);
+        }
+    }
     Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol>();
     if (ipv4)
     {
         Ptr<Ipv4FlowProbe> probe =
-            Create<Ipv4FlowProbe>(monitor, DynamicCast<Ipv4FlowClassifier>(classifier), node);
+            Create<Ipv4FlowProbe>(monitor,
+                                  DynamicCast<Ipv4FlowClassifier>(classifier),
+                                  node,
+                                  ipv4MulticastGroups);
     }
     Ptr<FlowClassifier> classifier6 = GetClassifier6();
     Ptr<Ipv6L3Protocol> ipv6 = node->GetObject<Ipv6L3Protocol>();
     if (ipv6)
     {
         Ptr<Ipv6FlowProbe> probe6 =
-            Create<Ipv6FlowProbe>(monitor, DynamicCast<Ipv6FlowClassifier>(classifier6), node);
+            Create<Ipv6FlowProbe>(monitor,
+                                  DynamicCast<Ipv6FlowClassifier>(classifier6),
+                                  node,
+                                  ipv6MulticastGroups);
     }
     return m_flowMonitor;
 }
 
 Ptr<FlowMonitor>
-FlowMonitorHelper::Install(NodeContainer nodes)
+FlowMonitorHelper::Install(NodeContainer nodes,
+                           const std::map<Address, std::set<uint32_t>>& mcastGroups)
 {
     for (auto i = nodes.Begin(); i != nodes.End(); ++i)
     {
         Ptr<Node> node = *i;
         if (node->GetObject<Ipv4L3Protocol>() || node->GetObject<Ipv6L3Protocol>())
         {
-            Install(node);
+            Install(node, mcastGroups);
         }
     }
     return m_flowMonitor;
 }
 
 Ptr<FlowMonitor>
-FlowMonitorHelper::InstallAll()
+FlowMonitorHelper::InstallAll(const std::map<Address, std::set<uint32_t>>& mcastGroups)
 {
     for (auto i = NodeList::Begin(); i != NodeList::End(); ++i)
     {
         Ptr<Node> node = *i;
         if (node->GetObject<Ipv4L3Protocol>() || node->GetObject<Ipv6L3Protocol>())
         {
-            Install(node);
+            Install(node, mcastGroups);
         }
     }
     return m_flowMonitor;
