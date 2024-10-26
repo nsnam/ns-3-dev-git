@@ -238,6 +238,7 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
     NS_LOG_LOGIC("converter map first element: "
                  << txInfoIterator->second.m_spectrumConverterMap.begin()->first);
 
+    std::map<SpectrumModelUid_t, Ptr<SpectrumValue>> convertedPsds{};
     for (auto rxInfoIterator = m_rxSpectrumModelInfoMap.begin();
          rxInfoIterator != m_rxSpectrumModelInfoMap.end();
          ++rxInfoIterator)
@@ -263,6 +264,21 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
                 continue;
             }
             convertedTxPowerSpectrum = rxConverterIterator->second.Convert(txParams->psd);
+        }
+        convertedPsds.emplace(rxSpectrumModelUid, convertedTxPowerSpectrum);
+    }
+
+    for (auto rxInfoIterator = m_rxSpectrumModelInfoMap.begin();
+         rxInfoIterator != m_rxSpectrumModelInfoMap.end();
+         ++rxInfoIterator)
+    {
+        const auto rxSpectrumModelUid = rxInfoIterator->second.m_rxSpectrumModel->GetUid();
+
+        if ((txSpectrumModelUid != rxSpectrumModelUid) &&
+            !txInfoIterator->second.m_spectrumConverterMap.contains(rxSpectrumModelUid))
+        {
+            // No converter means TX SpectrumModel is orthogonal to RX SpectrumModel
+            continue;
         }
 
         for (auto rxPhyIterator = rxInfoIterator->second.m_rxPhys.begin();
@@ -297,7 +313,7 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
 
                 NS_LOG_LOGIC("copying signal parameters " << txParams);
                 auto rxParams = txParams->Copy();
-                rxParams->psd = Copy<SpectrumValue>(convertedTxPowerSpectrum);
+                rxParams->psd = Copy<SpectrumValue>(convertedPsds.at(rxSpectrumModelUid));
                 Time delay{0};
 
                 auto receiverMobility = (*rxPhyIterator)->GetMobility();
@@ -371,7 +387,8 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
                                                    this,
                                                    txParams->psd,
                                                    rxParams,
-                                                   *rxPhyIterator);
+                                                   *rxPhyIterator,
+                                                   convertedPsds);
                 }
                 else
                 {
@@ -382,7 +399,8 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
                                         this,
                                         txParams->psd,
                                         rxParams,
-                                        *rxPhyIterator);
+                                        *rxPhyIterator,
+                                        convertedPsds);
                 }
             }
         }
@@ -390,9 +408,11 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
 }
 
 void
-MultiModelSpectrumChannel::StartRx(Ptr<SpectrumValue> txPsd,
-                                   Ptr<SpectrumSignalParameters> params,
-                                   Ptr<SpectrumPhy> receiver)
+MultiModelSpectrumChannel::StartRx(
+    Ptr<SpectrumValue> txPsd,
+    Ptr<SpectrumSignalParameters> params,
+    Ptr<SpectrumPhy> receiver,
+    const std::map<SpectrumModelUid_t, Ptr<SpectrumValue>>& availableConvertedPsds)
 {
     NS_LOG_FUNCTION(this);
 
@@ -404,24 +424,34 @@ MultiModelSpectrumChannel::StartRx(Ptr<SpectrumValue> txPsd,
     if (rxSpectrumModelUid != phySpectrumModelUid)
     {
         NS_LOG_LOGIC("SpectrumModelUid changed since TX started");
-        const auto txInfoIterator = FindAndEventuallyAddTxSpectrumModel(txPsd->GetSpectrumModel());
-        NS_ASSERT(txInfoIterator != m_txSpectrumModelInfoMap.cend());
 
-        const auto txSpectrumModelUid = txPsd->GetSpectrumModelUid();
-        NS_LOG_LOGIC("converting txPowerSpectrum SpectrumModelUids "
-                     << txSpectrumModelUid << " --> " << phySpectrumModelUid);
-        const auto rxConverterIterator =
-            txInfoIterator->second.m_spectrumConverterMap.find(phySpectrumModelUid);
-        if (rxConverterIterator == txInfoIterator->second.m_spectrumConverterMap.cend())
+        const auto itConvertedPsd = availableConvertedPsds.find(phySpectrumModelUid);
+        if (itConvertedPsd != availableConvertedPsds.cend())
         {
-            // No converter means TX SpectrumModel is orthogonal to current PHY SpectrumModel
-            params->psd = txPsd;
+            NS_LOG_LOGIC("converted PSD already exists for " << phySpectrumModelUid);
+            params->psd = itConvertedPsd->second;
         }
         else
         {
-            params->psd = rxConverterIterator->second.Convert(txPsd);
+            const auto txInfoIterator =
+                FindAndEventuallyAddTxSpectrumModel(txPsd->GetSpectrumModel());
+            NS_ASSERT(txInfoIterator != m_txSpectrumModelInfoMap.cend());
+
+            const auto txSpectrumModelUid = txPsd->GetSpectrumModelUid();
+            NS_LOG_LOGIC("converting txPowerSpectrum SpectrumModelUids "
+                         << txSpectrumModelUid << " --> " << phySpectrumModelUid);
+            const auto rxConverterIterator =
+                txInfoIterator->second.m_spectrumConverterMap.find(phySpectrumModelUid);
+            if (rxConverterIterator == txInfoIterator->second.m_spectrumConverterMap.cend())
+            {
+                // No converter means TX SpectrumModel is orthogonal to current PHY SpectrumModel
+                params->psd = txPsd;
+            }
+            else
+            {
+                params->psd = rxConverterIterator->second.Convert(txPsd);
+            }
         }
-        NS_LOG_LOGIC("converted PSD " << params->psd->GetValuesN());
     }
 
     if (m_spectrumPropagationLoss)

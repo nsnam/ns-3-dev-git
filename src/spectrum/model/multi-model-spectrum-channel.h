@@ -132,8 +132,13 @@ class MultiModelSpectrumChannel : public SpectrumChannel
      * @param txPsd The transmitted PSD.
      * @param params The signal parameters.
      * @param receiver A pointer to the receiver SpectrumPhy.
+     * @param availableConvertedPsds available converted PSDs from the TX PSD.
      */
-    virtual void StartRx(Ptr<SpectrumValue> txPsd, Ptr<SpectrumSignalParameters> params, Ptr<SpectrumPhy> receiver);
+    virtual void StartRx(
+        Ptr<SpectrumValue> txPsd,
+        Ptr<SpectrumSignalParameters> params,
+        Ptr<SpectrumPhy> receiver,
+        const std::map<SpectrumModelUid_t, Ptr<SpectrumValue>>& availableConvertedPsds);
 
     /**
      * Data structure holding, for each TX SpectrumModel,  all the
