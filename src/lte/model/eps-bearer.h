@@ -53,8 +53,8 @@ struct AllocationRetentionPriority
  * \brief This class contains the specification of EPS Bearers.
  *
  * See the following references:
- * 3GPP TS 23.203, Section 4.7.2 The EPS bearer
- * 3GPP TS 23.203, Section 4.7.3 Bearer level QoS parameters
+ * 3GPP TS 23.401, Section 4.7.2 The EPS bearer
+ * 3GPP TS 23.401, Section 4.7.3 Bearer level QoS parameters
  * 3GPP TS 36.413 Section 9.2.1.15 E-RAB Level QoS Parameters
  *
  * It supports the selection of different specifications depending on the
