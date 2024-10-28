@@ -530,14 +530,7 @@ macro(process_options)
 
   set(ENABLE_SQLITE False)
   if(${NS3_SQLITE})
-    # find_package(SQLite3 QUIET) # unsupported in CMake 3.10 We emulate the
-    # behavior of find_package below
-    find_external_library(
-      DEPENDENCY_NAME SQLite3
-      HEADER_NAME sqlite3.h
-      LIBRARY_NAME sqlite3
-      OUTPUT_VARIABLE "ENABLE_SQLITE_REASON"
-    )
+    find_package(SQLite3 QUIET)
 
     if(${SQLite3_FOUND})
       set(ENABLE_SQLITE True)
@@ -1230,7 +1223,7 @@ macro(process_options)
         ${HIGHLIGHTED_STATUS}
         "Clang-tidy is incompatible with precompiled headers. Continuing without them."
       )
-    elseif(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16.0")
+    else()
       # If ccache is not enable or was not found, we can continue with
       # precompiled headers
       if((NOT ${NS3_CCACHE}) OR ("${CCACHE}" STREQUAL "CCACHE-NOTFOUND"))
@@ -1260,11 +1253,6 @@ macro(process_options)
           )
         endif()
       endif()
-    else()
-      message(
-        STATUS
-          "CMake ${CMAKE_VERSION} does not support precompiled headers. Continuing without them"
-      )
     endif()
   endif()
 

@@ -162,22 +162,6 @@ function(find_external_library)
         # cmake-format: on
     # Or enable NS3_VERBOSE to print the searched paths
 
-    # Print tested paths to the searched library and if it was found
-    if(${NS3_VERBOSE} AND (${CMAKE_VERSION} VERSION_LESS "3.17.0"))
-      log_find_searched_paths(
-        TARGET_TYPE
-        Library
-        TARGET_NAME
-        ${library}
-        SEARCH_RESULT
-        ${name}_library_internal_${library}
-        SEARCH_PATHS
-        ${library_search_paths}
-        SEARCH_SUFFIXES
-        ${suffixes}
-      )
-    endif()
-
     # After searching the library, the internal variable should have either the
     # absolute path to the library or the name of the variable appended with
     # -NOTFOUND
@@ -259,22 +243,6 @@ function(find_external_library)
               HINTS ${header_search_paths} # directory (e.g. /usr/)
               PATH_SUFFIXES ${suffixes}
     )
-
-    # Print tested paths to the searched header and if it was found
-    if(${NS3_VERBOSE} AND (${CMAKE_VERSION} VERSION_LESS "3.17.0"))
-      log_find_searched_paths(
-        TARGET_TYPE
-        Header
-        TARGET_NAME
-        ${header}
-        SEARCH_RESULT
-        ${name}_header_internal_${header}
-        SEARCH_PATHS
-        ${header_search_paths}
-        SEARCH_SUFFIXES
-        ${suffixes}
-      )
-    endif()
 
     # If the header file was not found, append to the not-found list
     if("${${name}_header_internal_${header}}" STREQUAL
