@@ -214,7 +214,7 @@ void
 MinstrelHtWifiManager::InitializeGroups(WifiModulationClass mc)
 {
     const auto& standardInfos = minstrelHtStandardInfos.at(mc);
-    for (MHz_u chWidth = 20; chWidth <= standardInfos.maxWidth; chWidth *= 2)
+    for (MHz_u chWidth{20}; chWidth <= standardInfos.maxWidth; chWidth *= 2)
     {
         for (const auto& guardInterval : standardInfos.guardIntervals)
         {

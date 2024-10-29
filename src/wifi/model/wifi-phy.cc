@@ -2368,7 +2368,7 @@ WifiPhy::GetPrimaryChannelNumber(MHz_u primaryChannelWidth) const
 Hz_u
 WifiPhy::GetSubcarrierSpacing() const
 {
-    Hz_u subcarrierSpacing = 0;
+    Hz_u subcarrierSpacing{0};
     switch (GetStandard())
     {
     case WIFI_STANDARD_80211a:

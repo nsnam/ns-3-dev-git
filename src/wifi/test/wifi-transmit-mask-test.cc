@@ -129,7 +129,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
     NS_ASSERT(!m_centerFreqs.empty());
     NS_ASSERT(m_expectedPsd.size() % 2 == 0); // start/stop pairs expected
 
-    dBr_u outerBandMaximumRejection = 0.0;
+    dBr_u outerBandMaximumRejection{0.0};
     switch (m_band)
     {
     default:
@@ -277,8 +277,8 @@ void
 WifiOfdmMaskSlopesTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
-    dBr_u currentPower = 0.0; // have to work in dBr so as to compare with expected slopes
-    Watt_u maxPower = (*m_actualSpectrum)[0];
+    dBr_u currentPower{0.0}; // have to work in dBr so as to compare with expected slopes
+    Watt_u maxPower{(*m_actualSpectrum)[0]};
     for (auto&& vit = m_actualSpectrum->ConstValuesBegin();
          vit != m_actualSpectrum->ConstValuesEnd();
          ++vit)
@@ -323,7 +323,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite()
     NS_LOG_INFO("Creating WifiTransmitMaskTestSuite");
 
     WifiOfdmMaskSlopesTestCase::IndexPowerVect maskSlopes;
-    dB_u tol = 10e-2;
+    dB_u tol{10e-2};
     double prec = 10; // in decimals
 
     // ============================================================================================

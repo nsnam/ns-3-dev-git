@@ -354,8 +354,8 @@ InterferenceHelper::AppendEvent(Ptr<Event> event,
     {
         auto niIt = m_niChanges.find(band);
         NS_ABORT_IF(niIt == m_niChanges.end());
-        Watt_u previousPowerStart = 0;
-        Watt_u previousPowerEnd = 0;
+        Watt_u previousPowerStart{0.0};
+        Watt_u previousPowerEnd{0.0};
         auto previousPowerPosition = GetPreviousPosition(event->GetStartTime(), niIt);
         previousPowerStart = previousPowerPosition->second.GetPower();
         previousPowerEnd = GetPreviousPosition(event->GetEndTime(), niIt)->second.GetPower();
@@ -413,7 +413,7 @@ InterferenceHelper::CalculateSnr(Watt_u signal,
     // Nt is the power of thermal noise in W
     const auto Nt = BOLTZMANN * 290 * MHzToHz(channelWidth);
     // receiver noise Floor which accounts for thermal noise and non-idealities of the receiver
-    Watt_u noiseFloor = m_noiseFigure * Nt;
+    Watt_u noiseFloor{m_noiseFigure * Nt};
     Watt_u noise = noiseFloor + noiseInterference;
     auto snr = signal / noise; // linear scale
     NS_LOG_DEBUG("bandwidth=" << channelWidth << "MHz, signal=" << signal << "W, noise="
@@ -577,7 +577,7 @@ InterferenceHelper::CalculatePayloadPer(Ptr<const Event> event,
     const auto& niIt = nis->find(band)->second;
     auto j = niIt.cbegin();
     auto previous = j->first;
-    Watt_u muMimoPower = 0.0;
+    Watt_u muMimoPower{0.0};
     const auto payloadMode = event->GetPpdu()->GetTxVector().GetMode(staId);
     auto phyPayloadStart = j->first;
     if (event->GetPpdu()->GetType() != WIFI_PPDU_TYPE_UL_MU &&

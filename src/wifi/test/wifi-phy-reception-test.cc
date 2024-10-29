@@ -48,8 +48,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPhyReceptionTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
-static const MHz_u FREQUENCY = 5180;
-static const MHz_u CHANNEL_WIDTH = 20;
+static const MHz_u FREQUENCY{5180};
+static const MHz_u CHANNEL_WIDTH{20};
 static const MHz_u GUARD_WIDTH = CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
 
 /**
@@ -299,7 +299,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::DoRun()
     m_phy->AssignStreams(streamNumber);
 
     // RX power > CCA-ED > CCA-PD
-    dBm_u rxPower = -50;
+    dBm_u rxPower{-50};
 
     // CASE 1: send one packet and check PHY state:
     // All reception stages should succeed and PHY state should be RX for the duration of the packet
@@ -919,7 +919,7 @@ TestThresholdPreambleDetectionWithFrameCapture::DoRun()
     m_phy->AssignStreams(streamNumber);
 
     // RX power > CCA-ED > CCA-PD
-    dBm_u rxPower = -50;
+    dBm_u rxPower{-50};
 
     // CASE 1: send one packet and check PHY state:
     // All reception stages should succeed and PHY state should be RX for the duration of the packet
@@ -1984,7 +1984,7 @@ TestSimpleFrameCaptureModel::DoRun()
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(1);
     int64_t streamNumber = 2;
-    dBm_u rxPower = -30;
+    dBm_u rxPower{-30};
     m_phy->AssignStreams(streamNumber);
 
     // CASE 1: send two packets with same power within the capture window:
@@ -2099,7 +2099,7 @@ TestPhyHeadersReception::DoRun()
     m_phy->AssignStreams(streamNumber);
 
     // RX power > CCA-ED
-    dBm_u rxPower = -50;
+    dBm_u rxPower{-50};
 
     // CASE 1: send one packet followed by a second one with same power between the end of the 4us
     // preamble detection window and the start of L-SIG of the first packet: reception should be
@@ -2797,7 +2797,7 @@ TestAmpduReception::DoRun()
     RngSeedManager::SetSeed(1);
     RngSeedManager::SetRun(2);
     int64_t streamNumber = 1;
-    dBm_u rxPower = -30;
+    dBm_u rxPower{-30};
     m_phy->AssignStreams(streamNumber);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

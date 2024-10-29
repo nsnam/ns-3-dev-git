@@ -124,7 +124,7 @@ IdealWifiManager::BuildSnrThresholds()
     {
         for (const auto& mode : GetPhy()->GetMcsList())
         {
-            for (MHz_u j = 20; j <= GetPhy()->GetChannelWidth(); j *= 2)
+            for (MHz_u j{20}; j <= GetPhy()->GetChannelWidth(); j *= 2)
             {
                 txVector.SetChannelWidth(j);
                 if (mode.GetModulationClass() == WIFI_MOD_CLASS_HT)

@@ -41,7 +41,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiNonHtDuplicateTest");
 
-constexpr MHz_u DEFAULT_FREQUENCY = 5180;
+constexpr MHz_u DEFAULT_FREQUENCY{5180};
 
 /**
  * HE PHY used for testing MU-RTS/CTS.
@@ -557,8 +557,8 @@ TestNonHtDuplicatePhyReception::DoRun()
                 bands.push_back(bandInfo);
                 auto spectrumInterference = Create<SpectrumModel>(bands);
                 auto interferencePsd = Create<SpectrumValue>(spectrumInterference);
-                Watt_u interferencePower = 0.005; // designed to make PHY headers reception
-                                                  // successful but payload reception fail
+                Watt_u interferencePower{0.005}; // designed to make PHY headers reception
+                                                 // successful but payload reception fail
                 *interferencePsd = interferencePower / 10e6;
                 Simulator::Schedule(Seconds(index),
                                     &TestNonHtDuplicatePhyReception::GenerateInterference,

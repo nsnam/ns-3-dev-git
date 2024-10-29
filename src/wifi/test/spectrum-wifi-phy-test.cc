@@ -39,7 +39,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("SpectrumWifiPhyTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
-static const MHz_u CHANNEL_WIDTH = 20;
+static const MHz_u CHANNEL_WIDTH{20};
 static const MHz_u GUARD_WIDTH = CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
 
 /**
@@ -904,13 +904,13 @@ void
 SpectrumWifiPhyGetBandTest::DoRun()
 {
     const uint32_t indicesPer20MhzBand = 256; // based on 802.11ax carrier spacing
-    const MHz_u channelWidth = 160;           // we consider the largest channel width
+    const MHz_u channelWidth{160};            // we consider the largest channel width
     const uint8_t channelNumberContiguous160Mhz =
         50; // channel number of the first 160 MHz band in 5 GHz band
     const std::vector<uint8_t> channelNumberPerSegment = {42,
                                                           106}; // channel numbers used for 80+80MHz
     // separation between segment at channel number 42 and segment at channel number 106
-    const MHz_u separationWidth = 240;
+    const MHz_u separationWidth{240};
     for (bool contiguous160Mhz : {true /* 160 MHz */, false /* 80+80MHz */})
     {
         const auto guardWidth = contiguous160Mhz ? channelWidth : (channelWidth / 2);
@@ -2160,7 +2160,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoRun()
 {
     NS_LOG_FUNCTION(this);
 
-    const dBm_u ccaEdThreshold = -62.0; ///< CCA-ED threshold
+    const dBm_u ccaEdThreshold{-62.0}; ///< CCA-ED threshold
     const auto txAfterChannelSwitchDelay =
         MicroSeconds((m_chanSwitchScenario == ChannelSwitchScenario::BEFORE_TX)
                          ? 250

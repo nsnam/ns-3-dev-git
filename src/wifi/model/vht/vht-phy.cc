@@ -592,7 +592,7 @@ VhtPhy::GetCcaIndication(const Ptr<const WifiPpdu> ppdu)
 
     if (ppdu)
     {
-        const MHz_u primaryWidth = 20;
+        const MHz_u primaryWidth{20};
         const MHz_u p20MinFreq =
             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth) -
             (primaryWidth / 2);

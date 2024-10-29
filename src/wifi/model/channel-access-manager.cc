@@ -840,7 +840,7 @@ ChannelAccessManager::GetLargestIdlePrimaryChannel(Time interval, Time end)
     // also be called before starting a TXOP gained through EDCA.
     UpdateLastIdlePeriod();
 
-    MHz_u width = 0;
+    MHz_u width{0};
 
     // we iterate over the different types of channels in the same order as they
     // are listed in WifiChannelListType

@@ -1567,7 +1567,7 @@ Bug2843TestCase::StoreDistinctTuple(std::string context, Ptr<SpectrumSignalParam
     // Extract starting frequency and number of subbands
     Ptr<const SpectrumModel> c = txParams->psd->GetSpectrumModel();
     std::size_t numBands = c->GetNumBands();
-    const Hz_u startingFreq = c->Begin()->fl;
+    const Hz_u startingFreq{c->Begin()->fl};
 
     // Get channel bandwidth and modulation class
     Ptr<const WifiSpectrumSignalParameters> wifiTxParams =
@@ -1610,7 +1610,7 @@ Bug2843TestCase::SendPacketBurst(uint8_t numPackets,
 void
 Bug2843TestCase::DoRun()
 {
-    MHz_u channelWidth = 40; // at least 40 MHz expected here
+    MHz_u channelWidth{40}; // at least 40 MHz expected here
 
     NodeContainer wifiStaNode;
     wifiStaNode.Create(1);

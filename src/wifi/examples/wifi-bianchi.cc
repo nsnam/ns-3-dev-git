@@ -2706,8 +2706,8 @@ main(int argc, char* argv[])
         1000; ///< The socket packet interval in microseconds (a higher value is needed to reach
               ///< saturation conditions as the channel bandwidth or the MCS increases)
     meter_u distance = 0.001; ///< The distance in meters between the AP and the STAs
-    dBm_u apTxPower = 16;     ///< The transmit power of the AP (if infrastructure only)
-    dBm_u staTxPower = 16;    ///< The transmit power of each STA (or all STAs if adhoc)
+    dBm_u apTxPower{16};      ///< The transmit power of the AP (if infrastructure only)
+    dBm_u staTxPower{16};     ///< The transmit power of each STA (or all STAs if adhoc)
 
     // Disable fragmentation and RTS/CTS
     Config::SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold",

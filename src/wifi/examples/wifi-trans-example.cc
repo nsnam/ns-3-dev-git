@@ -44,8 +44,8 @@ int
 main(int argc, char** argv)
 {
     std::string standardStr = "11a";
-    MHz_u bw = 20;
-    dBm_u pow = 23;
+    MHz_u bw{20};
+    dBm_u pow{23};
     bool verbose = false;
     CommandLine cmd(__FILE__);
     cmd.AddValue("standard",
@@ -279,7 +279,7 @@ main(int argc, char** argv)
 
     /* frequency range for spectrum analyzer */
     std::vector<double> freqs;
-    MHz_u margin = 2; // 1MHz margin on each side
+    const MHz_u margin{2}; // 1MHz margin on each side
     const auto band = (bw + margin);
     freqs.reserve(4 * 10 * band);
     const MHz_u scale{0.1};

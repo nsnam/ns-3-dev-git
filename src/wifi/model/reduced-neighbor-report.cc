@@ -158,7 +158,7 @@ ReducedNeighborReport::SetOperatingChannel(std::size_t nbrApInfoId,
                         << "band " << channel.GetPhyBand());
 
     // find the primary channel number
-    MHz_u startingFreq = 0;
+    MHz_u startingFreq{0};
 
     switch (channel.GetPhyBand())
     {
@@ -190,7 +190,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
     NS_ASSERT(nbrApInfoId < m_nbrApInfoFields.size());
 
     WifiPhyBand band = WIFI_PHY_BAND_UNSPECIFIED;
-    MHz_u width = 0;
+    MHz_u width{0};
 
     switch (m_nbrApInfoFields.at(nbrApInfoId).operatingClass)
     {
@@ -246,7 +246,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
 
     NS_ABORT_IF(band == WIFI_PHY_BAND_UNSPECIFIED || width == MHz_u{0});
 
-    MHz_u startingFreq = 0;
+    MHz_u startingFreq{0};
 
     switch (band)
     {
@@ -269,7 +269,7 @@ ReducedNeighborReport::GetOperatingChannel(std::size_t nbrApInfoId) const
     auto primaryChannelCenterFrequency = startingFreq + primaryChannelNumber * MHz_u{5};
 
     uint8_t channelNumber = 0;
-    MHz_u frequency = 0;
+    MHz_u frequency{0};
 
     for (const auto& channel : WifiPhyOperatingChannel::m_frequencyChannels)
     {

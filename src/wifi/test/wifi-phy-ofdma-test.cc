@@ -50,9 +50,9 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiPhyOfdmaTest");
 
 static const uint8_t DEFAULT_CHANNEL_NUMBER = 36;
-static const MHz_u DEFAULT_FREQUENCY = 5180;
+static const MHz_u DEFAULT_FREQUENCY{5180};
 static const WifiPhyBand DEFAULT_WIFI_BAND = WIFI_PHY_BAND_5GHZ;
-static const MHz_u DEFAULT_CHANNEL_WIDTH = 20;
+static const MHz_u DEFAULT_CHANNEL_WIDTH{20};
 static const MHz_u DEFAULT_GUARD_WIDTH =
     DEFAULT_CHANNEL_WIDTH; // expanded to channel width to model spectrum mask
 

@@ -88,8 +88,8 @@ ObssPdAlgorithm::ConnectWifiNetDevice(const Ptr<WifiNetDevice> device)
 void
 ObssPdAlgorithm::ResetPhy(HeSigAParameters params)
 {
-    dBm_u txPowerMaxSiso = 0;
-    dBm_u txPowerMaxMimo = 0;
+    dBm_u txPowerMaxSiso{0};
+    dBm_u txPowerMaxMimo{0};
     bool powerRestricted = false;
     // Fetch my BSS color
     Ptr<HeConfiguration> heConfiguration = m_device->GetHeConfiguration();

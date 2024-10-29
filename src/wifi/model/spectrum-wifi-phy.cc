@@ -489,13 +489,13 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     const auto channelWidth = interface ? interface->GetChannelWidth() : GetChannelWidth();
     const auto& bands =
         interface ? interface->GetBands() : m_currentSpectrumPhyInterface->GetBands();
-    Watt_u totalRxPower = 0.0;
+    Watt_u totalRxPower{0.0};
     RxPowerWattPerChannelBand rxPowers;
 
     const auto rxGainRatio = DbToRatio(GetRxGain());
 
     std::size_t index = 0;
-    MHz_u prevBw = 0;
+    MHz_u prevBw{0};
     for (const auto& band : bands)
     {
         const auto bw =
@@ -664,7 +664,7 @@ SpectrumWifiPhy::Transmit(Ptr<WifiSpectrumSignalParameters> txParams)
 MHz_u
 SpectrumWifiPhy::GetGuardBandwidth(MHz_u currentChannelWidth) const
 {
-    MHz_u guardBandwidth = 0;
+    MHz_u guardBandwidth{0};
     if (currentChannelWidth == MHz_u{22})
     {
         // handle case of DSSS transmission

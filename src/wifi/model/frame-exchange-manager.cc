@@ -56,7 +56,7 @@ FrameExchangeManager::FrameExchangeManager()
     : m_navEnd(0),
       m_txNav(0),
       m_linkId(0),
-      m_allowedWidth(0),
+      m_allowedWidth{0},
       m_promisc(false),
       m_moreFragments(false)
 {

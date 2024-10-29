@@ -162,8 +162,8 @@ WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity(MHz_u centerFrequency,
                                                           MHz_u guardBandwidth)
 {
     NS_LOG_FUNCTION(centerFrequency << txPower << +guardBandwidth);
-    MHz_u channelWidth = 22; // DSSS channels are 22 MHz wide
-    Hz_u carrierSpacing = 312500;
+    MHz_u channelWidth{22}; // DSSS channels are 22 MHz wide
+    Hz_u carrierSpacing{312500};
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel({centerFrequency}, channelWidth, carrierSpacing, guardBandwidth));
     auto vit = c->ValuesBegin();
@@ -196,7 +196,7 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(MHz_u centerFrequency,
 {
     NS_LOG_FUNCTION(centerFrequency << channelWidth << txPower << guardBandwidth << minInnerBand
                                     << minOuterBand << lowestPoint);
-    Hz_u carrierSpacing = 0;
+    Hz_u carrierSpacing{0};
     uint32_t innerSlopeWidth = 0;
     switch (static_cast<uint16_t>(channelWidth))
     {
@@ -276,7 +276,7 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << txPower << guardBandwidth << minInnerBand << minOuterBand
                     << lowestPoint);
-    const Hz_u carrierSpacing = 312500;
+    const Hz_u carrierSpacing{312500};
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
     // assume all frequency segments have the same width, hence split the guard bandwidth
@@ -381,7 +381,7 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << txPower << guardBandwidth << minInnerBand << minOuterBand
                     << lowestPoint);
-    const Hz_u carrierSpacing = 312500;
+    const Hz_u carrierSpacing{312500};
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
     // assume all frequency segments have the same width, hence split the guard bandwidth
@@ -492,7 +492,7 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << txPower << guardBandwidth << minInnerBand << minOuterBand
                     << lowestPoint);
-    const Hz_u carrierSpacing = 78125;
+    const Hz_u carrierSpacing{78125};
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
     // assume all frequency segments have the same width, hence split the guard bandwidth
@@ -510,7 +510,7 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
     NS_ASSERT_MSG(c->GetSpectrumModel()->GetNumBands() ==
                       (nAllocatedBands + nGuardBands + nUnallocatedBands + 1),
                   "Unexpected number of bands " << c->GetSpectrumModel()->GetNumBands());
-    Watt_u txPowerPerBand = 0.0;
+    Watt_u txPowerPerBand{0.0};
     uint32_t start1;
     uint32_t stop1;
     uint32_t start2;
@@ -664,7 +664,7 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
     };
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << txPower << guardBandwidth << printRuIndices(ru));
-    const Hz_u carrierSpacing = 78125;
+    const Hz_u carrierSpacing{78125};
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
 
@@ -718,11 +718,11 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
     NS_LOG_LOGIC("Power per band " << txPowerPerBand << "W");
 
     // Different power levels
-    dBm_u txPowerRef = (10.0 * std::log10(txPowerPerBand * 1000.0));
-    dBm_u txPowerInnerBandMin = txPowerRef + minInnerBand;
-    dBm_u txPowerMiddleBandMin = txPowerRef + minOuterBand;
-    dBm_u txPowerOuterBandMin =
-        txPowerRef + lowestPoint; // TODO also take into account dBm/MHz constraints
+    dBm_u txPowerRef{10.0 * std::log10(txPowerPerBand * 1000.0)};
+    dBm_u txPowerInnerBandMin{txPowerRef + minInnerBand};
+    dBm_u txPowerMiddleBandMin{txPowerRef + minOuterBand};
+    dBm_u txPowerOuterBandMin{txPowerRef +
+                              lowestPoint}; // TODO also take into account dBm/MHz constraints
 
     // Different widths (in number of bands)
     uint32_t outerSlopeWidth =
@@ -883,14 +883,14 @@ WifiSpectrumValueHelper::CreateSpectrumMaskForOfdm(
     double puncturedSlope = (-1.0 * minInnerBand) / puncturedSlopeWidth;
 
     // Build spectrum mask
-    Watt_u previousTxPower = 0.0;
+    Watt_u previousTxPower{0.0};
     std::vector<Watt_u> txPowerValues(numBands);
     NS_ASSERT(txPowerValues.size() == numBands);
     for (size_t i = 0; i < numBands; ++i)
     {
         size_t psdIndex =
             (allocatedSubBandsPerSegment.size() == 1) ? 0 : ((i < (numBands / 2)) ? 0 : 1);
-        Watt_u txPower = 0.0;
+        Watt_u txPower{0.0};
         if (i < maskBand.first || i > maskBand.second) // outside the spectrum mask
         {
             txPower = Watt_u{0.0};
@@ -1089,7 +1089,7 @@ WifiSpectrumValueHelper::NormalizeSpectrumMask(Ptr<SpectrumValue> c, Watt_u txPo
 {
     NS_LOG_FUNCTION(c << txPower);
     // Normalize power so that total signal power equals transmit power
-    Watt_u currentTxPower = Integral(*c);
+    Watt_u currentTxPower{Integral(*c)};
     double normalizationRatio [[maybe_unused]] = currentTxPower / txPower;
     double invNormalizationRatio = txPower / currentTxPower;
     NS_LOG_LOGIC("Current power: " << currentTxPower << "W vs expected power: " << txPower << "W"
@@ -1124,7 +1124,7 @@ WifiSpectrumValueHelper::GetBandPowerW(Ptr<SpectrumValue> psd,
             ++index;
         }
     }
-    const Watt_u power = powerWattPerHertz * bandWidth;
+    const Watt_u power{powerWattPerHertz * bandWidth};
     NS_ASSERT_MSG(power >= 0.0, "Invalid calculated power " << power);
     return power;
 }

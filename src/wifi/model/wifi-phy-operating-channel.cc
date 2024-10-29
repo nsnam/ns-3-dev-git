@@ -621,7 +621,7 @@ WifiPhyOperatingChannel::GetPrimaryChannelIndex(MHz_u primaryChannelWidth) const
 
     // the index of primary40 is half the index of primary20; the index of
     // primary80 is half the index of primary40, ...
-    MHz_u width = 20;
+    MHz_u width{20};
     uint8_t index = m_primary20Index;
 
     while (width < primaryChannelWidth)
@@ -755,7 +755,7 @@ WifiPhyOperatingChannel::GetAll20MHzChannelIndicesInPrimary(MHz_u width) const
         return {};
     }
 
-    MHz_u currWidth = 20;
+    MHz_u currWidth{20};
     std::set<uint8_t> indices;
     indices.insert(m_primary20Index);
 
@@ -784,7 +784,7 @@ WifiPhyOperatingChannel::GetAll20MHzChannelIndicesInSecondary(
     }
 
     uint8_t size = 1;
-    MHz_u primaryWidth = 20;
+    MHz_u primaryWidth{20};
 
     // find the width of the primary channel corresponding to the size of the given set
     while (size != primaryIndices.size())
