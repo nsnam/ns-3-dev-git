@@ -132,13 +132,13 @@ WifiSpectrumValueHelper::GetSpectrumModel(const std::vector<MHz_u>& centerFreque
         // total width, only a quarter of the channel width has to be subtracted. Finally, we
         // remove the guard band width to get the center frequency of the first band and half the
         // carrier spacing to get the effective starting frequency of the first band.
-        const auto startingFrequencyHz = *minCenterFrequency * 1e6 -
-                                         ((channelWidth * 1e6) / (2 * centerFrequencies.size())) -
-                                         (guardBandwidth * 1e6) - (carrierSpacing / 2);
+        const auto startingFrequency = *minCenterFrequency * 1e6 -
+                                       ((channelWidth * 1e6) / (2 * centerFrequencies.size())) -
+                                       (guardBandwidth * 1e6) - (carrierSpacing / 2);
         for (size_t i = 0; i < numBands; i++)
         {
             BandInfo info;
-            auto f = startingFrequencyHz + (i * carrierSpacing);
+            auto f = startingFrequency + (i * carrierSpacing);
             info.fl = f;
             f += carrierSpacing / 2;
             info.fc = f;
