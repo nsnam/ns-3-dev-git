@@ -258,11 +258,12 @@ WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues(IndexPowerVect& vect,
         return;
     }
 
-    double slope = (stop.second - start.second) / (stop.first - start.first);
+    const auto slope = (stop.second - start.second) / (stop.first - start.first);
     for (uint32_t i = start.first; i <= stop.first; i++)
     {
-        dB_u val = start.second + slope * (i - start.first);
-        double multiplier = std::round(std::pow(10.0, static_cast<double>(m_precision)));
+        const auto delta{i - start.first};
+        dB_u val{start.second + slope * delta};
+        const auto multiplier = std::round(std::pow(10.0, static_cast<double>(m_precision)));
         val = dB_u{std::floor(val * multiplier + 0.5) / multiplier};
         vect.emplace_back(i, val);
         NS_LOG_LOGIC("Append (" << i << ", " << val << ")");

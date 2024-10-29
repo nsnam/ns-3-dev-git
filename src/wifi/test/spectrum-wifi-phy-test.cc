@@ -913,7 +913,7 @@ SpectrumWifiPhyGetBandTest::DoRun()
     const MHz_u separationWidth = 240;
     for (bool contiguous160Mhz : {true /* 160 MHz */, false /* 80+80MHz */})
     {
-        MHz_u guardWidth = contiguous160Mhz ? channelWidth : (channelWidth / 2);
+        const auto guardWidth = contiguous160Mhz ? channelWidth : (channelWidth / 2);
         uint32_t guardStopIndice = (indicesPer20MhzBand * Count20MHzSubchannels(guardWidth)) - 1;
         std::vector<WifiSpectrumBandIndices> previousExpectedIndices{};
         std::vector<WifiSpectrumBandFrequencies> previousExpectedFrequencies{};

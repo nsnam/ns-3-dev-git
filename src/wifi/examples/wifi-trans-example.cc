@@ -280,7 +280,7 @@ main(int argc, char** argv)
     /* frequency range for spectrum analyzer */
     std::vector<double> freqs;
     MHz_u margin = 2; // 1MHz margin on each side
-    int band = (bw + margin);
+    const auto band = (bw + margin);
     freqs.reserve(4 * 10 * band);
     const MHz_u scale{0.1};
     for (int i = 0; i < (4 * 10 * band); ++i) // conversion to 100kHz scale

@@ -1222,10 +1222,9 @@ HePhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
 
         if (ppdu)
         {
-            const MHz_u subchannelMinFreq = m_wifiPhy->GetFrequency() -
-                                            (m_wifiPhy->GetChannelWidth() / 2) +
-                                            (index * MHz_u{20});
-            const MHz_u subchannelMaxFreq = subchannelMinFreq + MHz_u{20};
+            const auto subchannelMinFreq = m_wifiPhy->GetFrequency() -
+                                           (m_wifiPhy->GetChannelWidth() / 2) + (index * MHz_u{20});
+            const auto subchannelMaxFreq = subchannelMinFreq + MHz_u{20};
             const auto ppduBw = ppdu->GetTxVector().GetChannelWidth();
 
             if (ppduBw <= m_wifiPhy->GetChannelWidth() &&
@@ -1480,14 +1479,15 @@ HePhy::StartTx(Ptr<const WifiPpdu> ppdu)
     }
     if (ppdu->GetType() == WIFI_PPDU_TYPE_UL_MU || ppdu->GetType() == WIFI_PPDU_TYPE_DL_MU)
     {
-        dBm_u nonHeTxPower = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
+        const auto nonHeTxPower =
+            m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
 
         // temporarily set WifiPpdu flag to PSD_HE_PORTION for correct calculation of TX power for
         // the HE portion
         auto hePpdu = DynamicCast<const HePpdu>(ppdu);
         NS_ASSERT(hePpdu);
         hePpdu->SetTxPsdFlag(HePpdu::PSD_HE_PORTION);
-        dBm_u heTxPower = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
+        const auto heTxPower = m_wifiPhy->GetTxPowerForTransmission(ppdu) + m_wifiPhy->GetTxGain();
         hePpdu->SetTxPsdFlag(HePpdu::PSD_NON_HE_PORTION);
 
         // non-HE portion

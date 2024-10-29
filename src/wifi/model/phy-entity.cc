@@ -1409,13 +1409,13 @@ PhyEntity::CanStartRx(Ptr<const WifiPpdu> ppdu) const
                                                     // then we consider the primary20 channel
     const auto p20CenterFreq =
         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelCenterFrequency(primaryWidth);
-    const uint16_t p20MinFreq = p20CenterFreq - (primaryWidth / 2);
-    const uint16_t p20MaxFreq = p20CenterFreq + (primaryWidth / 2);
+    const auto p20MinFreq = p20CenterFreq - (primaryWidth / 2);
+    const auto p20MaxFreq = p20CenterFreq + (primaryWidth / 2);
     const auto txChannelWidth = (ppdu->GetTxChannelWidth() / ppdu->GetTxCenterFreqs().size());
     for (auto txCenterFreq : ppdu->GetTxCenterFreqs())
     {
-        const uint16_t minTxFreq = txCenterFreq - txChannelWidth / 2;
-        const uint16_t maxTxFreq = txCenterFreq + txChannelWidth / 2;
+        const auto minTxFreq = txCenterFreq - txChannelWidth / 2;
+        const auto maxTxFreq = txCenterFreq + txChannelWidth / 2;
         if ((p20MinFreq >= minTxFreq) && (p20MaxFreq <= maxTxFreq))
         {
             return true;
