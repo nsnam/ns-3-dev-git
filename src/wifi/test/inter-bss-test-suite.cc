@@ -904,16 +904,13 @@ TestInterBssConstantObssPdAlgo::RunOne()
 
     lossModel->SetLoss(wifiStaNodes.Get(0)->GetObject<MobilityModel>(),
                        wifiApNodes.Get(0)->GetObject<MobilityModel>(),
-                       m_txPower +
-                           static_cast<dB_u>(30.0)); // Low attenuation for IBSS transmissions
+                       m_txPower + dB_u{30.0}); // Low attenuation for IBSS transmissions
     lossModel->SetLoss(wifiStaNodes.Get(1)->GetObject<MobilityModel>(),
                        wifiApNodes.Get(1)->GetObject<MobilityModel>(),
-                       m_txPower +
-                           static_cast<dB_u>(30.0)); // Low attenuation for IBSS transmissions
+                       m_txPower + dB_u{30.0}); // Low attenuation for IBSS transmissions
     lossModel->SetLoss(wifiStaNodes.Get(2)->GetObject<MobilityModel>(),
                        wifiApNodes.Get(2)->GetObject<MobilityModel>(),
-                       m_txPower +
-                           static_cast<dB_u>(30.0)); // Low attenuation for IBSS transmissions
+                       m_txPower + dB_u{30.0}); // Low attenuation for IBSS transmissions
 
     Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxBegin",
                     MakeCallback(&TestInterBssConstantObssPdAlgo::NotifyPhyTxBegin, this));

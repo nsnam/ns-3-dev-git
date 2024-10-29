@@ -349,13 +349,13 @@ WifiPhyCcaThresholdsTest::RunOne()
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_VHT),
                        nullptr,
                        WIFI_CHANLIST_SECONDARY40,
-                       m_CcaEdThreshold + static_cast<dB_u>(3.0));
+                       m_CcaEdThreshold + dB_u{3.0});
 
     // VHT PHY: any signal in secondary80 channel (80 MHz) if power above CCA-ED threshold + 6dB
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_VHT),
                        nullptr,
                        WIFI_CHANLIST_SECONDARY80,
-                       m_CcaEdThreshold + static_cast<dB_u>(6.0));
+                       m_CcaEdThreshold + dB_u{6.0});
 
     //-----------------------------------------------------------------------------------------------------------------------------------
 
@@ -449,13 +449,13 @@ WifiPhyCcaThresholdsTest::RunOne()
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
                        nullptr,
                        WIFI_CHANLIST_SECONDARY40,
-                       m_CcaEdThreshold + static_cast<dB_u>(3.0));
+                       m_CcaEdThreshold + dB_u{3.0});
 
     // HE PHY: any signal in secondary80 channel (80 MHz) if power above CCA-ED threshold + 6dB
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
                        nullptr,
                        WIFI_CHANLIST_SECONDARY80,
-                       m_CcaEdThreshold + static_cast<dB_u>(6.0));
+                       m_CcaEdThreshold + dB_u{6.0});
 
     //-----------------------------------------------------------------------------------------------------------------------------------
 
@@ -508,11 +508,11 @@ WifiPhyCcaThresholdsTest::RunOne()
     // HE PHY: 40 MHz HE PPDU in secondary40 channel (40 MHz) if power above the max between the CCA
     // sensitivity threshold corresponding to a 40 MHz PPDU that does not occupy the primary 20 MHz
     // and the OBSS-PD level plus 3 dB
-    VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
-                       CreateDummyHePpdu(40, m_phy->GetOperatingChannel()),
-                       WIFI_CHANLIST_SECONDARY40,
-                       std::max(m_obssPdLevel + static_cast<dB_u>(3.0),
-                                std::get<1>(m_secondaryCcaSensitivityThresholds)));
+    VerifyCcaThreshold(
+        m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
+        CreateDummyHePpdu(40, m_phy->GetOperatingChannel()),
+        WIFI_CHANLIST_SECONDARY40,
+        std::max(m_obssPdLevel + dB_u{3.0}, std::get<1>(m_secondaryCcaSensitivityThresholds)));
 
     // HE PHY: 20 MHz HE PPDU in secondary80 channel (80 MHz) if power above the max between the CCA
     // sensitivity threshold corresponding to a 20 MHz PPDU that does not occupy the primary 20 MHz
@@ -525,20 +525,20 @@ WifiPhyCcaThresholdsTest::RunOne()
     // HE PHY: 40 MHz HE PPDU in secondary80 channel (80 MHz) if power above the max between the CCA
     // sensitivity threshold corresponding to a 40 MHz PPDU that does not occupy the primary 20 MHz
     // and the OBSS-PD level plus 3 dB
-    VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
-                       CreateDummyHePpdu(40, m_phy->GetOperatingChannel()),
-                       WIFI_CHANLIST_SECONDARY80,
-                       std::max(m_obssPdLevel + static_cast<dB_u>(3.0),
-                                std::get<1>(m_secondaryCcaSensitivityThresholds)));
+    VerifyCcaThreshold(
+        m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
+        CreateDummyHePpdu(40, m_phy->GetOperatingChannel()),
+        WIFI_CHANLIST_SECONDARY80,
+        std::max(m_obssPdLevel + dB_u{3.0}, std::get<1>(m_secondaryCcaSensitivityThresholds)));
 
     // HE PHY: 80 MHz HE PPDU in secondary80 channel (80 MHz) if power above the max between the CCA
     // sensitivity threshold corresponding to a 80 MHz PPDU that does not occupy the primary 20 MHz
     // and the OBSS-PD level plus 6 dB
-    VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
-                       CreateDummyHePpdu(80, m_phy->GetOperatingChannel()),
-                       WIFI_CHANLIST_SECONDARY80,
-                       std::max(m_obssPdLevel + static_cast<dB_u>(6.0),
-                                std::get<2>(m_secondaryCcaSensitivityThresholds)));
+    VerifyCcaThreshold(
+        m_phy->GetPhyEntity(WIFI_MOD_CLASS_HE),
+        CreateDummyHePpdu(80, m_phy->GetOperatingChannel()),
+        WIFI_CHANLIST_SECONDARY80,
+        std::max(m_obssPdLevel + dB_u{6.0}, std::get<2>(m_secondaryCcaSensitivityThresholds)));
 }
 
 void

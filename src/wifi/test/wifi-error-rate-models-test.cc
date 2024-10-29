@@ -481,7 +481,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
-                              initialSnr + static_cast<dB_u>(3.0),
+                              initialSnr + dB_u{3.0},
                               tol,
                               "SNR not within tolerance for 1x2:1 MIMO");
     chunkSuccess = interference.CalculatePayloadChunkSuccessRate(snr, duration, txVector);
@@ -499,7 +499,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
-                              initialSnr + static_cast<dB_u>(3.0),
+                              initialSnr + dB_u{3.0},
                               tol,
                               "SNR not equal within tolerance for 2x2:1 MIMO");
     chunkSuccess = interference.CalculatePayloadChunkSuccessRate(snr, duration, txVector);
@@ -535,7 +535,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
-                              initialSnr + static_cast<dB_u>(4.8),
+                              initialSnr + dB_u{4.8},
                               tol,
                               "SNR not within tolerance for 3x3:1 MIMO");
     chunkSuccess = interference.CalculatePayloadChunkSuccessRate(snr, duration, txVector);
@@ -553,7 +553,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
-                              initialSnr + static_cast<dB_u>(1.8),
+                              initialSnr + dB_u{1.8},
                               tol,
                               "SNR not within tolerance for 3x3:2 MIMO");
     chunkSuccess = interference.CalculatePayloadChunkSuccessRate(snr, duration, txVector);
@@ -589,7 +589,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
-                              initialSnr + static_cast<dB_u>(6.0),
+                              initialSnr + dB_u{6.0},
                               tol,
                               "SNR not within tolerance for 4x4:1 MIMO");
     chunkSuccess = interference.CalculatePayloadChunkSuccessRate(snr, duration, txVector);
@@ -607,7 +607,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
-                              initialSnr + static_cast<dB_u>(3.0),
+                              initialSnr + dB_u{3.0},
                               tol,
                               "SNR not within tolerance for 4x4:2 MIMO");
     chunkSuccess = interference.CalculatePayloadChunkSuccessRate(snr, duration, txVector);
@@ -625,7 +625,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
-                              initialSnr + static_cast<dB_u>(1.2),
+                              initialSnr + dB_u{1.2},
                               tol,
                               "SNR not within tolerance for 4x4:3 MIMO");
     chunkSuccess = interference.CalculatePayloadChunkSuccessRate(snr, duration, txVector);

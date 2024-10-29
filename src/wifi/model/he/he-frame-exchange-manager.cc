@@ -1562,7 +1562,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
         trigger.GetApTxPower() -
         static_cast<int8_t>(
             *optRssi); // cast RSSI to be on equal footing with AP Tx power information
-    auto reqTxPower = static_cast<dBm_u>(userInfoIt->GetUlTargetRssi() + pathLossDb);
+    auto reqTxPower = dBm_u{static_cast<double>(userInfoIt->GetUlTargetRssi() + pathLossDb)};
 
     // Convert the transmit power to a power level
     uint8_t numPowerLevels = m_phy->GetNTxPower();
