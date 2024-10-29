@@ -67,7 +67,7 @@ class YansErrorRateModel : public ErrorRateModel
      *
      * @return BER of BPSK at the given SNR
      */
-    double GetBpskBer(double snr, uint32_t signalSpread, uint64_t phyRate) const;
+    double GetBpskBer(double snr, MHz_u signalSpread, uint64_t phyRate) const;
     /**
      * Return BER of QAM-m with the given parameters.
      *
@@ -78,7 +78,7 @@ class YansErrorRateModel : public ErrorRateModel
      *
      * @return BER of BPSK at the given SNR
      */
-    double GetQamBer(double snr, unsigned int m, uint32_t signalSpread, uint64_t phyRate) const;
+    double GetQamBer(double snr, unsigned int m, MHz_u signalSpread, uint64_t phyRate) const;
     /**
      * Return k!
      *
@@ -130,7 +130,7 @@ class YansErrorRateModel : public ErrorRateModel
      */
     double GetFecBpskBer(double snr,
                          uint64_t nbits,
-                         uint32_t signalSpread,
+                         MHz_u signalSpread,
                          uint64_t phyRate,
                          uint32_t dFree,
                          uint32_t adFree) const;
@@ -148,7 +148,7 @@ class YansErrorRateModel : public ErrorRateModel
      */
     double GetFecQamBer(double snr,
                         uint64_t nbits,
-                        uint32_t signalSpread,
+                        MHz_u signalSpread,
                         uint64_t phyRate,
                         uint32_t m,
                         uint32_t dfree,
