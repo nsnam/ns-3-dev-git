@@ -1835,7 +1835,7 @@ CtrlTriggerHeader::GetInstanceTypeId() const
 void
 CtrlTriggerHeader::Print(std::ostream& os) const
 {
-    os << "TriggerType=" << GetTypeString() << ", Bandwidth=" << +GetUlBandwidth()
+    os << "TriggerType=" << GetTypeString() << ", Bandwidth=" << GetUlBandwidth()
        << ", UL Length=" << m_ulLength;
 
     for (auto& ui : m_userInfoFields)

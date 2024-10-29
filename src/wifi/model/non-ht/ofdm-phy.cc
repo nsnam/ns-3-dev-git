@@ -478,7 +478,7 @@ OfdmPhy::GetOfdmRate(uint64_t rate, MHz_u bw)
         }
         break;
     default:
-        NS_ABORT_MSG("Inexistent bandwidth (" << +bw << " MHz) requested for 11a OFDM");
+        NS_ABORT_MSG("Inexistent bandwidth (" << bw << " MHz) requested for 11a OFDM");
         return WifiMode();
     }
 }

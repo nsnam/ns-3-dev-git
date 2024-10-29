@@ -223,7 +223,7 @@ TxDurationTest::CheckTxDuration(uint32_t size,
             calculatedDuration != calculatedDurationUsingList)
         {
             std::cerr << "size=" << size << " band=" << testedBand << " mode=" << payloadMode
-                      << " channelWidth=" << +channelWidth << " guardInterval=" << guardInterval
+                      << " channelWidth=" << channelWidth << " guardInterval=" << guardInterval
                       << " datarate=" << payloadMode.GetDataRate(channelWidth, guardInterval, 1)
                       << " preamble=" << preamble << " known=" << knownDuration
                       << " calculated=" << calculatedDuration
