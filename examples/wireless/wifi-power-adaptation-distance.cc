@@ -272,9 +272,9 @@ NodeStatistics::PhyCallback(std::string path, Ptr<const Packet> packet, double p
 
     if (head.GetType() == WIFI_MAC_DATA)
     {
-        m_totalEnergy += pow(10.0, m_currentPower[dest] / 10.0) *
-                         GetCalcTxTime(m_currentRate[dest]).GetSeconds();
-        m_totalTime += GetCalcTxTime(m_currentRate[dest]).GetSeconds();
+        const auto txTimeSeconds = GetCalcTxTime(m_currentRate[dest]).GetSeconds();
+        m_totalEnergy += DbmToW(m_currentPower[dest]) * txTimeSeconds;
+        m_totalTime += txTimeSeconds;
     }
 }
 
