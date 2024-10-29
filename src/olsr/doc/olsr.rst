@@ -77,8 +77,8 @@ interface and then the next non-loopback interface found, in order of Ipv4
 interface index. The loopback address of 127.0.0.1 is not selected. In addition,
 a number of protocol constants are defined in olsr-routing-protocol.cc.
 
-Olsr is started at time zero of the simulation, based on a call to
-Object::Start() that eventually calls OlsrRoutingProtocol::DoStart(). Note:  a
+Olsr is automatically started at time zero of the simulation, based on the ns-3 Node initialization sequence that eventually leads to
+``olsr::RoutingProtocol::DoInitialize()``. Note:  a
 patch to allow the user to start and stop the protocol at other times would be
 welcome.
 
@@ -88,7 +88,7 @@ Examples
 The examples are in the ``src/olsr/examples/`` directory. However, many other examples exists in the
 general examples directory, e.g., ``examples/routing/manet-routing-compare.cc``.
 
-For specific examples of the HNA feature, see the examples in ``src/olsr/examples/``.
+For a specific example of the HNA feature, see the program ``src/olsr/examples/olsr-hna.cc``.
 
 Helpers
 +++++++
@@ -139,4 +139,4 @@ The code does not present any known issue.
 Validation
 **********
 
-The code validationhas been done through Wireshark message compliance and unit testings.
+The code validation has been done through Wireshark message compliance and unit testings.
