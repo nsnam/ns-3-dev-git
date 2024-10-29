@@ -130,12 +130,14 @@ class MultiModelSpectrumChannel : public SpectrumChannel
      * Used internally to reschedule transmission after the propagation delay.
      *
      * @param txPsd The transmitted PSD.
+     * @param txAntennaGain The antenna gain at the transmitter.
      * @param params The signal parameters.
      * @param receiver A pointer to the receiver SpectrumPhy.
      * @param availableConvertedPsds available converted PSDs from the TX PSD.
      */
     virtual void StartRx(
         Ptr<SpectrumValue> txPsd,
+        double txAntennaGain,
         Ptr<SpectrumSignalParameters> params,
         Ptr<SpectrumPhy> receiver,
         const std::map<SpectrumModelUid_t, Ptr<SpectrumValue>>& availableConvertedPsds);

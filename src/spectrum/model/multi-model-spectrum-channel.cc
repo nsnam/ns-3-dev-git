@@ -289,6 +289,7 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
                           "SpectrumModel change was not notified to MultiModelSpectrumChannel "
                           "(i.e., AddRx should be called again after model is changed)");
 
+            auto txAntennaGain{0.0};
             if ((*rxPhyIterator) != txParams->txPhy)
             {
                 auto rxNetDevice = (*rxPhyIterator)->GetDevice();
@@ -320,57 +321,12 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
 
                 if (txMobility && receiverMobility)
                 {
-                    auto txAntennaGain{0.0};
-                    auto rxAntennaGain{0.0};
-                    auto propagationGainDb{0.0};
-                    auto pathLossDb{0.0};
                     if (rxParams->txAntenna)
                     {
                         Angles txAngles(receiverMobility->GetPosition(), txMobility->GetPosition());
                         txAntennaGain = rxParams->txAntenna->GetGainDb(txAngles);
                         NS_LOG_LOGIC("txAntennaGain = " << txAntennaGain << " dB");
-                        pathLossDb -= txAntennaGain;
                     }
-                    auto rxAntenna = DynamicCast<AntennaModel>((*rxPhyIterator)->GetAntenna());
-                    if (rxAntenna)
-                    {
-                        Angles rxAngles(txMobility->GetPosition(), receiverMobility->GetPosition());
-                        rxAntennaGain = rxAntenna->GetGainDb(rxAngles);
-                        NS_LOG_LOGIC("rxAntennaGain = " << rxAntennaGain << " dB");
-                        pathLossDb -= rxAntennaGain;
-                    }
-                    if (m_propagationLoss)
-                    {
-                        if (txMobility->GetPosition() == receiverMobility->GetPosition())
-                        {
-                            propagationGainDb = 0; // Assume no propagation loss when co-located
-                        }
-                        else
-                        {
-                            propagationGainDb =
-                                m_propagationLoss->CalcRxPower(0, txMobility, receiverMobility);
-                        }
-                        NS_LOG_LOGIC("propagationGainDb = " << propagationGainDb << " dB");
-                        pathLossDb -= propagationGainDb;
-                    }
-                    NS_LOG_LOGIC("total pathLoss = " << pathLossDb << " dB");
-                    // Gain trace
-                    m_gainTrace(txMobility,
-                                receiverMobility,
-                                txAntennaGain,
-                                rxAntennaGain,
-                                propagationGainDb,
-                                pathLossDb);
-                    // Pathloss trace
-                    m_pathLossTrace(txParams->txPhy, *rxPhyIterator, pathLossDb);
-                    if (pathLossDb > m_maxLossDb)
-                    {
-                        // beyond range
-                        continue;
-                    }
-                    auto pathGainLinear = std::pow(10.0, (-pathLossDb) / 10.0);
-                    *(rxParams->psd) *= pathGainLinear;
-
                     if (m_propagationDelay)
                     {
                         delay = m_propagationDelay->GetDelay(txMobility, receiverMobility);
@@ -386,6 +342,7 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
                                                    &MultiModelSpectrumChannel::StartRx,
                                                    this,
                                                    txParams->psd,
+                                                   txAntennaGain,
                                                    rxParams,
                                                    *rxPhyIterator,
                                                    convertedPsds);
@@ -398,6 +355,7 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
                                         &MultiModelSpectrumChannel::StartRx,
                                         this,
                                         txParams->psd,
+                                        txAntennaGain,
                                         rxParams,
                                         *rxPhyIterator,
                                         convertedPsds);
@@ -410,6 +368,7 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
 void
 MultiModelSpectrumChannel::StartRx(
     Ptr<SpectrumValue> txPsd,
+    double txAntennaGain,
     Ptr<SpectrumSignalParameters> params,
     Ptr<SpectrumPhy> receiver,
     const std::map<SpectrumModelUid_t, Ptr<SpectrumValue>>& availableConvertedPsds)
@@ -454,29 +413,75 @@ MultiModelSpectrumChannel::StartRx(
         }
     }
 
-    if (m_spectrumPropagationLoss)
+    auto txMobility = params->txPhy->GetMobility();
+    auto rxMobility = receiver->GetMobility();
+    if (txMobility && rxMobility)
     {
-        params->psd =
-            m_spectrumPropagationLoss->CalcRxPowerSpectralDensity(params,
-                                                                  params->txPhy->GetMobility(),
-                                                                  receiver->GetMobility());
-    }
-    else if (m_phasedArraySpectrumPropagationLoss)
-    {
-        auto txPhasedArrayModel = DynamicCast<PhasedArrayModel>(params->txPhy->GetAntenna());
-        auto rxPhasedArrayModel = DynamicCast<PhasedArrayModel>(receiver->GetAntenna());
+        auto pathLossDb{-txAntennaGain};
+        auto rxAntennaGain{0.0};
+        auto propagationGainDb{0.0};
 
-        NS_ASSERT_MSG(txPhasedArrayModel && rxPhasedArrayModel,
-                      "PhasedArrayModel instances should be installed at both TX and RX "
-                      "SpectrumPhy in order to use PhasedArraySpectrumPropagationLoss.");
+        if (auto rxAntenna = DynamicCast<AntennaModel>(receiver->GetAntenna()))
+        {
+            Angles rxAngles(txMobility->GetPosition(), rxMobility->GetPosition());
+            rxAntennaGain = rxAntenna->GetGainDb(rxAngles);
+            NS_LOG_LOGIC("rxAntennaGain = " << rxAntennaGain << " dB");
+            pathLossDb -= rxAntennaGain;
+        }
 
-        params = m_phasedArraySpectrumPropagationLoss->CalcRxPowerSpectralDensity(
-            params,
-            params->txPhy->GetMobility(),
-            receiver->GetMobility(),
-            txPhasedArrayModel,
-            rxPhasedArrayModel);
+        if (m_propagationLoss && (txMobility->GetPosition() != rxMobility->GetPosition()))
+        {
+            propagationGainDb = m_propagationLoss->CalcRxPower(0, txMobility, rxMobility);
+            NS_LOG_LOGIC("propagationGainDb = " << propagationGainDb << " dB");
+            pathLossDb -= propagationGainDb;
+        }
+
+        NS_LOG_LOGIC("total pathLoss = " << pathLossDb << " dB");
+
+        // Gain trace
+        m_gainTrace(txMobility,
+                    rxMobility,
+                    txAntennaGain,
+                    rxAntennaGain,
+                    propagationGainDb,
+                    pathLossDb);
+
+        // Pathloss trace
+        m_pathLossTrace(params->txPhy, receiver, pathLossDb);
+
+        if (pathLossDb > m_maxLossDb)
+        {
+            // beyond range
+            return;
+        }
+
+        const auto pathLossLinear = std::pow(10.0, (-pathLossDb) / 10.0);
+        *(params->psd) *= pathLossLinear;
+
+        if (m_spectrumPropagationLoss)
+        {
+            params->psd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity(params,
+                                                                                txMobility,
+                                                                                rxMobility);
+        }
+        else if (m_phasedArraySpectrumPropagationLoss)
+        {
+            auto txPhasedArrayModel = DynamicCast<PhasedArrayModel>(params->txPhy->GetAntenna());
+            auto rxPhasedArrayModel = DynamicCast<PhasedArrayModel>(receiver->GetAntenna());
+
+            NS_ASSERT_MSG(txPhasedArrayModel && rxPhasedArrayModel,
+                          "PhasedArrayModel instances should be installed at both TX and RX "
+                          "SpectrumPhy in order to use PhasedArraySpectrumPropagationLoss.");
+
+            params = m_phasedArraySpectrumPropagationLoss->CalcRxPowerSpectralDensity(
+                params,
+                txMobility,
+                rxMobility,
+                txPhasedArrayModel,
+                rxPhasedArrayModel);
+        }
     }
+
     receiver->StartRx(params);
 }
 
