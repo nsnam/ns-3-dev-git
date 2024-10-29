@@ -199,6 +199,8 @@ As a consequence, the DSR headers can not be correctly decoded by Wireshark.
 
 The model full compliance with the RFC is planned for the future.
 
+At the moment, the model does not handle ICMP packets, and assumes that traffic is either TCP or UDP.
+
 References
 **********
 
