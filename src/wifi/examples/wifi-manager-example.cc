@@ -175,16 +175,17 @@ ChangeSignalAndReportRate(Ptr<FixedRssLossModel> rssModel,
     // Calculate received rate since last interval
     double currentRate = ((g_intervalBytes * 8) / step.stepTime) / 1e6; // Mb/s
     actualDataset.Add(snr, currentRate);
-    rssModel->SetRss(rss - step.stepSize);
+    const auto newRss = rss - step.stepSize;
+    rssModel->SetRss(newRss);
     NS_LOG_INFO("At time " << Simulator::Now().As(Time::S) << "; selected rate "
                            << (g_intervalRate / 1e6) << "; observed rate " << currentRate
-                           << "; setting new power to " << rss - step.stepSize);
+                           << "; setting new power to " << newRss);
     g_intervalBytes = 0;
     Simulator::Schedule(Seconds(step.stepTime),
                         &ChangeSignalAndReportRate,
                         rssModel,
                         step,
-                        (rss - step.stepSize),
+                        newRss,
                         noise,
                         rateDataset,
                         actualDataset);
