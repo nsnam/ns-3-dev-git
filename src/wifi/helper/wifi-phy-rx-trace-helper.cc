@@ -957,7 +957,7 @@ WifiPhyRxTraceSink::CountStatistics(uint32_t nodeId, uint32_t deviceId, uint8_t 
         auto mapOfDevices = m_completedRecords.at(nodeId);
         if (mapOfDevices.contains(deviceId))
         {
-            auto mapOfLinks = mapOfDevices.at(deviceId);
+            const auto& mapOfLinks = mapOfDevices.at(deviceId);
             if (mapOfLinks.contains(linkId))
             {
                 auto vectorOfRecords = mapOfLinks.at(linkId);

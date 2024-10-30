@@ -357,7 +357,7 @@ Ipv4Interface::RemoveAddress(uint32_t index)
     {
         if (tmp == index)
         {
-            Ipv4InterfaceAddress addr = *i;
+            const Ipv4InterfaceAddress& addr = *i;
             m_ifaddrs.erase(i);
             if (!m_removeAddressCallback.IsNull())
             {
@@ -388,7 +388,7 @@ Ipv4Interface::RemoveAddress(Ipv4Address address)
     {
         if ((*it).GetLocal() == address)
         {
-            Ipv4InterfaceAddress ifAddr = *it;
+            const Ipv4InterfaceAddress& ifAddr = *it;
             m_ifaddrs.erase(it);
             if (!m_removeAddressCallback.IsNull())
             {

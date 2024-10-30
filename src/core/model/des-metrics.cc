@@ -41,7 +41,7 @@ DesMetrics::Initialize(std::vector<std::string> args, std::string outDir /* = ""
     std::string model_name("desTraceFile");
     if (!args.empty())
     {
-        std::string arg0 = args[0];
+        const std::string& arg0 = args[0];
         model_name = SystemPath::Split(arg0).back();
     }
     std::string jsonFile = model_name + ".json";

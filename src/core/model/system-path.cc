@@ -351,7 +351,7 @@ Exists(const std::string path)
 
     // Check if the file itself exists
     auto tokens = Split(path);
-    std::string file = tokens.back();
+    const std::string& file = tokens.back();
 
     if (file.empty())
     {

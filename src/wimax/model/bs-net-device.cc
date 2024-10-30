@@ -1180,7 +1180,7 @@ BaseStationNetDevice::MarkUplinkAllocations()
     std::list<OfdmUlMapIe> uplinkAllocations = m_uplinkScheduler->GetUplinkAllocations();
     for (auto iter = uplinkAllocations.begin(); iter != uplinkAllocations.end(); ++iter)
     {
-        OfdmUlMapIe uplinkAllocation = *iter;
+        const OfdmUlMapIe& uplinkAllocation = *iter;
 
         if (uplinkAllocation.GetUiuc() == OfdmUlBurstProfile::UIUC_END_OF_MAP)
         {

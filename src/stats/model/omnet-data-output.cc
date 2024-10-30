@@ -104,7 +104,7 @@ OmnetDataOutput::Output(DataCollector& dc)
 
     for (auto i = dc.MetadataBegin(); i != dc.MetadataEnd(); i++)
     {
-        std::pair<std::string, std::string> blob = (*i);
+        const auto& blob = (*i);
         scalarFile << "attr \"" << blob.first << "\" \"" << blob.second << "\"" << std::endl;
     }
 
@@ -115,7 +115,7 @@ OmnetDataOutput::Output(DataCollector& dc)
     }
     for (auto i = dc.MetadataBegin(); i != dc.MetadataEnd(); i++)
     {
-        std::pair<std::string, std::string> blob = (*i);
+        const auto& blob = (*i);
         if (isNumeric(blob.second))
         {
             scalarFile << "scalar . \"" << blob.first << "\" \"" << blob.second << "\""

@@ -1166,7 +1166,7 @@ SubscriberStationNetDevice::ProcessUlMap(const UlMap& ulmap)
 
     for (auto iter = ulMapElements.begin(); iter != ulMapElements.end(); ++iter)
     {
-        OfdmUlMapIe ulMapIe = *iter;
+        const OfdmUlMapIe& ulMapIe = *iter;
 
         if (ulMapIe.GetUiuc() == OfdmUlBurstProfile::UIUC_END_OF_MAP)
         {
@@ -1267,7 +1267,7 @@ SubscriberStationNetDevice::ProcessDcd(const Dcd& dcd)
 
     for (auto iter = dlBurstProfiles.begin(); iter != dlBurstProfiles.end(); ++iter)
     {
-        OfdmDlBurstProfile brstProfile = *iter;
+        const OfdmDlBurstProfile& brstProfile = *iter;
 
         /*NS-2 does this, may be not correct, assumes DIUC/UIUC to
          modulation type mapping in DCD/UCD may change over time*/
@@ -1302,7 +1302,7 @@ SubscriberStationNetDevice::ProcessUcd(const Ucd& ucd)
 
     for (auto iter = ulBurstProfiles.begin(); iter != ulBurstProfiles.end(); ++iter)
     {
-        OfdmUlBurstProfile brstProfile = *iter;
+        const OfdmUlBurstProfile& brstProfile = *iter;
 
         /*NS-2 does this, may be not correct, assumes DIUC/UIUC to
          modulation type mapping in DCD/UCD may change over time*/

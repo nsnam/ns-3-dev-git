@@ -107,7 +107,7 @@ SqliteDataOutput::Output(DataCollector& dc)
 
     for (auto i = dc.MetadataBegin(); i != dc.MetadataEnd(); i++)
     {
-        std::pair<std::string, std::string> blob = (*i);
+        const auto& blob = (*i);
         SQLiteOutput::SpinReset(stmt);
         m_sqliteOut->Bind(stmt, 1, run);
         m_sqliteOut->Bind(stmt, 2, blob.first);

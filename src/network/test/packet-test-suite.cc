@@ -642,7 +642,7 @@ PacketTest::DoRun()
 
     {
         Packet c0 = *copy;
-        Packet c1 = *copy;
+        Packet c1 = *copy; // NOLINT(performance-unnecessary-copy-initialization)
         c0 = c1;
         CHECK(&c0, 1, E(1, 0, 1000));
         CHECK(&c1, 1, E(1, 0, 1000));
