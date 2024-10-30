@@ -11,6 +11,7 @@
 
 #include "ns3/log.h"
 
+#include <bit>
 #include <cmath>
 #include <iomanip>
 
