@@ -92,6 +92,7 @@ WifiMacHelper::Create(Ptr<WifiNetDevice> device, WifiStandard standard) const
 
     // create Channel Access Managers
     std::vector<Ptr<ChannelAccessManager>> caManagers;
+    caManagers.reserve(nLinks);
     for (uint8_t linkId = 0; linkId < nLinks; ++linkId)
     {
         caManagers.emplace_back(m_channelAccessManager.Create<ChannelAccessManager>());

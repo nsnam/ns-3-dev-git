@@ -1307,6 +1307,7 @@ LteUePhy::SendSrs()
     NS_ASSERT(m_cellId > 0);
     // set the current tx power spectral density (full bandwidth)
     std::vector<int> dlRb;
+    dlRb.reserve(m_ulBandwidth);
     for (uint16_t i = 0; i < m_ulBandwidth; i++)
     {
         dlRb.push_back(i);

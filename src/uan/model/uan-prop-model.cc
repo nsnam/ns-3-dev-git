@@ -330,6 +330,7 @@ UanPdp::NormalizeToSumNc() const
 {
     double sumNc = 0.0;
     std::vector<Tap> newTaps;
+    newTaps.reserve(GetNTaps());
 
     for (uint32_t i = 0; i < GetNTaps(); i++)
     {

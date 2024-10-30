@@ -225,6 +225,7 @@ AmpduAggregationTest::DoSetup()
     m_device->SetMac(m_mac);
     m_mac->SetWifiPhys(m_phys);
     std::vector<Ptr<ChannelAccessManager>> caManagers;
+    caManagers.reserve(m_params.nLinks);
     for (uint8_t i = 0; i < m_params.nLinks; i++)
     {
         caManagers.emplace_back(CreateObject<ChannelAccessManager>());
