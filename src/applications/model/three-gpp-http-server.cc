@@ -221,76 +221,70 @@ ThreeGppHttpServer::StartApplication()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_state == NOT_STARTED)
-    {
-        m_httpVariables->Initialize();
-        if (!m_initialSocket)
-        {
-            // Find the current default MTU value of TCP sockets.
-            Ptr<const ns3::AttributeValue> previousSocketMtu;
-            const TypeId tcpSocketTid = TcpSocket::GetTypeId();
-            for (uint32_t i = 0; i < tcpSocketTid.GetAttributeN(); i++)
-            {
-                TypeId::AttributeInformation attrInfo = tcpSocketTid.GetAttribute(i);
-                if (attrInfo.name == "SegmentSize")
-                {
-                    previousSocketMtu = attrInfo.initialValue;
-                }
-            }
-
-            // Creating a TCP socket to connect to the server.
-            m_initialSocket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
-            m_initialSocket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
-
-            NS_ABORT_MSG_IF(m_local.IsInvalid(), "Local address not properly set");
-            if (InetSocketAddress::IsMatchingType(m_local))
-            {
-                const auto ipv4 [[maybe_unused]] =
-                    InetSocketAddress::ConvertFrom(m_local).GetIpv4();
-                m_initialSocket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-                NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
-                                 << ".");
-            }
-            else if (Inet6SocketAddress::IsMatchingType(m_local))
-            {
-                const auto ipv6 [[maybe_unused]] =
-                    Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
-                NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
-                                 << ".");
-            }
-            else
-            {
-                NS_ABORT_MSG("Incompatible local address");
-            }
-
-            auto ret [[maybe_unused]] = m_initialSocket->Bind(m_local);
-            NS_LOG_DEBUG(this << " Bind() return value= " << ret
-                              << " GetErrNo= " << m_initialSocket->GetErrno() << ".");
-
-            ret = m_initialSocket->Listen();
-            NS_LOG_DEBUG(this << " Listen () return value= " << ret
-                              << " GetErrNo= " << m_initialSocket->GetErrno() << ".");
-
-            NS_ASSERT_MSG(m_initialSocket, "Failed creating socket.");
-            m_initialSocket->SetAcceptCallback(
-                MakeCallback(&ThreeGppHttpServer::ConnectionRequestCallback, this),
-                MakeCallback(&ThreeGppHttpServer::NewConnectionCreatedCallback, this));
-            m_initialSocket->SetCloseCallbacks(
-                MakeCallback(&ThreeGppHttpServer::NormalCloseCallback, this),
-                MakeCallback(&ThreeGppHttpServer::ErrorCloseCallback, this));
-            m_initialSocket->SetRecvCallback(
-                MakeCallback(&ThreeGppHttpServer::ReceivedDataCallback, this));
-            m_initialSocket->SetSendCallback(MakeCallback(&ThreeGppHttpServer::SendCallback, this));
-        } // end of `if (m_initialSocket == 0)`
-
-        SwitchToState(STARTED);
-
-    } // end of `if (m_state == NOT_STARTED)`
-    else
+    if (m_state != NOT_STARTED)
     {
         NS_FATAL_ERROR("Invalid state " << GetStateString() << " for StartApplication().");
     }
 
+    m_httpVariables->Initialize();
+    if (!m_initialSocket)
+    {
+        // Find the current default MTU value of TCP sockets.
+        Ptr<const ns3::AttributeValue> previousSocketMtu;
+        const TypeId tcpSocketTid = TcpSocket::GetTypeId();
+        for (uint32_t i = 0; i < tcpSocketTid.GetAttributeN(); i++)
+        {
+            TypeId::AttributeInformation attrInfo = tcpSocketTid.GetAttribute(i);
+            if (attrInfo.name == "SegmentSize")
+            {
+                previousSocketMtu = attrInfo.initialValue;
+            }
+        }
+
+        // Creating a TCP socket to connect to the server.
+        m_initialSocket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
+        m_initialSocket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
+
+        NS_ABORT_MSG_IF(m_local.IsInvalid(), "Local address not properly set");
+        if (InetSocketAddress::IsMatchingType(m_local))
+        {
+            const auto ipv4 [[maybe_unused]] = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
+            m_initialSocket->SetIpTos(m_tos); // Affects only IPv4 sockets.
+            NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
+                             << ".");
+        }
+        else if (Inet6SocketAddress::IsMatchingType(m_local))
+        {
+            const auto ipv6 [[maybe_unused]] = Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
+            NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
+                             << ".");
+        }
+        else
+        {
+            NS_ABORT_MSG("Incompatible local address");
+        }
+
+        auto ret [[maybe_unused]] = m_initialSocket->Bind(m_local);
+        NS_LOG_DEBUG(this << " Bind() return value= " << ret
+                          << " GetErrNo= " << m_initialSocket->GetErrno() << ".");
+
+        ret = m_initialSocket->Listen();
+        NS_LOG_DEBUG(this << " Listen () return value= " << ret
+                          << " GetErrNo= " << m_initialSocket->GetErrno() << ".");
+
+        NS_ASSERT_MSG(m_initialSocket, "Failed creating socket.");
+        m_initialSocket->SetAcceptCallback(
+            MakeCallback(&ThreeGppHttpServer::ConnectionRequestCallback, this),
+            MakeCallback(&ThreeGppHttpServer::NewConnectionCreatedCallback, this));
+        m_initialSocket->SetCloseCallbacks(
+            MakeCallback(&ThreeGppHttpServer::NormalCloseCallback, this),
+            MakeCallback(&ThreeGppHttpServer::ErrorCloseCallback, this));
+        m_initialSocket->SetRecvCallback(
+            MakeCallback(&ThreeGppHttpServer::ReceivedDataCallback, this));
+        m_initialSocket->SetSendCallback(MakeCallback(&ThreeGppHttpServer::SendCallback, this));
+    } // end of `if (m_initialSocket == 0)`
+
+    SwitchToState(STARTED);
 } // end of `void StartApplication ()`
 
 void
@@ -485,48 +479,49 @@ ThreeGppHttpServer::SendCallback(Ptr<Socket> socket, uint32_t availableBufferSiz
 {
     NS_LOG_FUNCTION(this << socket << availableBufferSize);
 
-    if (!m_txBuffer->IsBufferEmpty(socket))
+    if (m_txBuffer->IsBufferEmpty(socket))
     {
-        const auto txBufferSize [[maybe_unused]] = m_txBuffer->GetBufferSize(socket);
-        const auto actualSent [[maybe_unused]] = ServeFromTxBuffer(socket);
+        return;
+    }
+
+    const auto txBufferSize [[maybe_unused]] = m_txBuffer->GetBufferSize(socket);
+    const auto actualSent [[maybe_unused]] = ServeFromTxBuffer(socket);
 
 #ifdef NS3_LOG_ENABLE
-        // Some log messages.
-        if (actualSent < txBufferSize)
+    // Some log messages.
+    if (actualSent < txBufferSize)
+    {
+        switch (m_txBuffer->GetBufferContentType(socket))
         {
-            switch (m_txBuffer->GetBufferContentType(socket))
-            {
-            case ThreeGppHttpHeader::MAIN_OBJECT:
-                NS_LOG_INFO(this << " Transmission of main object is suspended"
-                                 << " after " << actualSent << " bytes.");
-                break;
-            case ThreeGppHttpHeader::EMBEDDED_OBJECT:
-                NS_LOG_INFO(this << " Transmission of embedded object is suspended"
-                                 << " after " << actualSent << " bytes.");
-                break;
-            default:
-                NS_FATAL_ERROR("Invalid Tx buffer content type.");
-                break;
-            }
+        case ThreeGppHttpHeader::MAIN_OBJECT:
+            NS_LOG_INFO(this << " Transmission of main object is suspended"
+                             << " after " << actualSent << " bytes.");
+            break;
+        case ThreeGppHttpHeader::EMBEDDED_OBJECT:
+            NS_LOG_INFO(this << " Transmission of embedded object is suspended"
+                             << " after " << actualSent << " bytes.");
+            break;
+        default:
+            NS_FATAL_ERROR("Invalid Tx buffer content type.");
+            break;
         }
-        else
+    }
+    else
+    {
+        switch (m_txBuffer->GetBufferContentType(socket))
         {
-            switch (m_txBuffer->GetBufferContentType(socket))
-            {
-            case ThreeGppHttpHeader::MAIN_OBJECT:
-                NS_LOG_INFO(this << " Finished sending a whole main object.");
-                break;
-            case ThreeGppHttpHeader::EMBEDDED_OBJECT:
-                NS_LOG_INFO(this << " Finished sending a whole embedded object.");
-                break;
-            default:
-                NS_FATAL_ERROR("Invalid Tx buffer content type.");
-                break;
-            }
+        case ThreeGppHttpHeader::MAIN_OBJECT:
+            NS_LOG_INFO(this << " Finished sending a whole main object.");
+            break;
+        case ThreeGppHttpHeader::EMBEDDED_OBJECT:
+            NS_LOG_INFO(this << " Finished sending a whole embedded object.");
+            break;
+        default:
+            NS_FATAL_ERROR("Invalid Tx buffer content type.");
+            break;
         }
+    }
 #endif /* NS3_LOG_ENABLE */
-
-    } // end of `if (m_txBuffer->IsBufferEmpty (socket))`
 
 } // end of `void SendCallback (Ptr<Socket> socket, uint32_t availableBufferSize)`
 

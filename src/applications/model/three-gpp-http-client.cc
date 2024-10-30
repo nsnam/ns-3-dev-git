@@ -258,19 +258,16 @@ ThreeGppHttpClient::ConnectionSucceededCallback(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
 
-    if (m_state == CONNECTING)
-    {
-        NS_ASSERT_MSG(m_socket == socket, "Invalid socket.");
-        m_connectionEstablishedTrace(this);
-        socket->SetRecvCallback(MakeCallback(&ThreeGppHttpClient::ReceivedDataCallback, this));
-        NS_ASSERT(m_embeddedObjectsToBeRequested == 0);
-        m_eventRequestMainObject =
-            Simulator::ScheduleNow(&ThreeGppHttpClient::RequestMainObject, this);
-    }
-    else
+    if (m_state != CONNECTING)
     {
         NS_FATAL_ERROR("Invalid state " << GetStateString() << " for ConnectionSucceeded().");
     }
+
+    NS_ASSERT_MSG(m_socket == socket, "Invalid socket.");
+    m_connectionEstablishedTrace(this);
+    socket->SetRecvCallback(MakeCallback(&ThreeGppHttpClient::ReceivedDataCallback, this));
+    NS_ASSERT(m_embeddedObjectsToBeRequested == 0);
+    m_eventRequestMainObject = Simulator::ScheduleNow(&ThreeGppHttpClient::RequestMainObject, this);
 }
 
 void
@@ -280,8 +277,7 @@ ThreeGppHttpClient::ConnectionFailedCallback(Ptr<Socket> socket)
 
     if (m_state == CONNECTING)
     {
-        NS_LOG_ERROR("Client failed to connect"
-                     << " to remote address " << m_peer);
+        NS_LOG_ERROR("Client failed to connect to remote address " << m_peer);
     }
     else
     {
@@ -378,72 +374,67 @@ ThreeGppHttpClient::OpenConnection()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_state == NOT_STARTED || m_state == EXPECTING_EMBEDDED_OBJECT ||
-        m_state == PARSING_MAIN_OBJECT || m_state == READING)
-    {
-        m_socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
-        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
-        if (!m_local.IsInvalid())
-        {
-            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
-                             InetSocketAddress::IsMatchingType(m_local)) ||
-                                (InetSocketAddress::IsMatchingType(m_peer) &&
-                                 Inet6SocketAddress::IsMatchingType(m_local)),
-                            "Incompatible peer and local address IP version");
-        }
-        if (InetSocketAddress::IsMatchingType(m_peer))
-        {
-            const auto ret [[maybe_unused]] =
-                m_local.IsInvalid() ? m_socket->Bind() : m_socket->Bind(m_local);
-            NS_LOG_DEBUG(this << " Bind() return value= " << ret
-                              << " GetErrNo= " << m_socket->GetErrno() << ".");
-
-            const auto ipv4 = InetSocketAddress::ConvertFrom(m_peer).GetIpv4();
-            const auto port = InetSocketAddress::ConvertFrom(m_peer).GetPort();
-            NS_LOG_INFO(this << " Connecting to " << ipv4 << " port " << port << " / " << m_peer
-                             << ".");
-            m_socket->SetIpTos(m_tos);
-        }
-        else if (Inet6SocketAddress::IsMatchingType(m_peer))
-        {
-            const auto ret [[maybe_unused]] =
-                m_local.IsInvalid() ? m_socket->Bind6() : m_socket->Bind(m_local);
-            NS_LOG_DEBUG(this << " Bind6() return value= " << ret
-                              << " GetErrNo= " << m_socket->GetErrno() << ".");
-
-            const auto ipv6 = Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6();
-            const auto port = Inet6SocketAddress::ConvertFrom(m_peer).GetPort();
-            NS_LOG_INFO(this << " Connecting to " << ipv6 << " port " << port << " / " << m_peer
-                             << ".");
-        }
-        else
-        {
-            NS_ASSERT_MSG(false, "Incompatible address type: " << m_peer);
-        }
-
-        const auto ret [[maybe_unused]] = m_socket->Connect(m_peer);
-        NS_LOG_DEBUG(this << " Connect() return value= " << ret
-                          << " GetErrNo= " << m_socket->GetErrno() << ".");
-
-        NS_ASSERT_MSG(m_socket, "Failed creating socket.");
-
-        SwitchToState(CONNECTING);
-
-        m_socket->SetConnectCallback(
-            MakeCallback(&ThreeGppHttpClient::ConnectionSucceededCallback, this),
-            MakeCallback(&ThreeGppHttpClient::ConnectionFailedCallback, this));
-        m_socket->SetCloseCallbacks(MakeCallback(&ThreeGppHttpClient::NormalCloseCallback, this),
-                                    MakeCallback(&ThreeGppHttpClient::ErrorCloseCallback, this));
-        m_socket->SetRecvCallback(MakeCallback(&ThreeGppHttpClient::ReceivedDataCallback, this));
-        m_socket->SetAttribute("MaxSegLifetime", DoubleValue(0.02)); // 20 ms.
-
-    } // end of `if (m_state == {NOT_STARTED, EXPECTING_EMBEDDED_OBJECT, PARSING_MAIN_OBJECT,
-      // READING})`
-    else
+    if (m_state != NOT_STARTED && m_state != EXPECTING_EMBEDDED_OBJECT &&
+        m_state != PARSING_MAIN_OBJECT && m_state != READING)
     {
         NS_FATAL_ERROR("Invalid state " << GetStateString() << " for OpenConnection().");
     }
 
+    m_socket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
+    NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
+    if (!m_local.IsInvalid())
+    {
+        NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
+                         InetSocketAddress::IsMatchingType(m_local)) ||
+                            (InetSocketAddress::IsMatchingType(m_peer) &&
+                             Inet6SocketAddress::IsMatchingType(m_local)),
+                        "Incompatible peer and local address IP version");
+    }
+    if (InetSocketAddress::IsMatchingType(m_peer))
+    {
+        const auto ret [[maybe_unused]] =
+            m_local.IsInvalid() ? m_socket->Bind() : m_socket->Bind(m_local);
+        NS_LOG_DEBUG(this << " Bind() return value= " << ret
+                          << " GetErrNo= " << m_socket->GetErrno() << ".");
+
+        const auto ipv4 = InetSocketAddress::ConvertFrom(m_peer).GetIpv4();
+        const auto port = InetSocketAddress::ConvertFrom(m_peer).GetPort();
+        NS_LOG_INFO(this << " Connecting to " << ipv4 << " port " << port << " / " << m_peer
+                         << ".");
+        m_socket->SetIpTos(m_tos);
+    }
+    else if (Inet6SocketAddress::IsMatchingType(m_peer))
+    {
+        const auto ret [[maybe_unused]] =
+            m_local.IsInvalid() ? m_socket->Bind6() : m_socket->Bind(m_local);
+        NS_LOG_DEBUG(this << " Bind6() return value= " << ret
+                          << " GetErrNo= " << m_socket->GetErrno() << ".");
+
+        const auto ipv6 = Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6();
+        const auto port = Inet6SocketAddress::ConvertFrom(m_peer).GetPort();
+        NS_LOG_INFO(this << " Connecting to " << ipv6 << " port " << port << " / " << m_peer
+                         << ".");
+    }
+    else
+    {
+        NS_ASSERT_MSG(false, "Incompatible address type: " << m_peer);
+    }
+
+    const auto ret [[maybe_unused]] = m_socket->Connect(m_peer);
+    NS_LOG_DEBUG(this << " Connect() return value= " << ret << " GetErrNo= " << m_socket->GetErrno()
+                      << ".");
+
+    NS_ASSERT_MSG(m_socket, "Failed creating socket.");
+
+    SwitchToState(CONNECTING);
+
+    m_socket->SetConnectCallback(
+        MakeCallback(&ThreeGppHttpClient::ConnectionSucceededCallback, this),
+        MakeCallback(&ThreeGppHttpClient::ConnectionFailedCallback, this));
+    m_socket->SetCloseCallbacks(MakeCallback(&ThreeGppHttpClient::NormalCloseCallback, this),
+                                MakeCallback(&ThreeGppHttpClient::ErrorCloseCallback, this));
+    m_socket->SetRecvCallback(MakeCallback(&ThreeGppHttpClient::ReceivedDataCallback, this));
+    m_socket->SetAttribute("MaxSegLifetime", DoubleValue(0.02)); // 20 ms.
 } // end of `void OpenConnection ()`
 
 void
@@ -451,37 +442,35 @@ ThreeGppHttpClient::RequestMainObject()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_state == CONNECTING || m_state == READING)
+    if (m_state != CONNECTING && m_state != READING)
     {
-        ThreeGppHttpHeader header;
-        header.SetContentLength(0); // Request does not need any content length.
-        header.SetContentType(ThreeGppHttpHeader::MAIN_OBJECT);
-        header.SetClientTs(Simulator::Now());
+        NS_FATAL_ERROR("Invalid state " << GetStateString() << " for RequestMainObject().");
+    }
 
-        const auto requestSize = m_httpVariables->GetRequestSize();
-        auto packet = Create<Packet>(requestSize);
-        packet->AddHeader(header);
-        const auto packetSize = packet->GetSize();
-        m_txMainObjectRequestTrace(packet);
-        m_txTrace(packet);
-        const auto actualBytes = m_socket->Send(packet);
-        NS_LOG_DEBUG(this << " Send() packet " << packet << " of " << packet->GetSize() << " bytes,"
-                          << " return value= " << actualBytes << ".");
-        if (actualBytes != static_cast<int>(packetSize))
-        {
-            NS_LOG_ERROR(this << " Failed to send request for embedded object,"
-                              << " GetErrNo= " << m_socket->GetErrno() << ","
-                              << " waiting for another Tx opportunity.");
-        }
-        else
-        {
-            SwitchToState(EXPECTING_MAIN_OBJECT);
-            m_pageLoadStartTs = Simulator::Now(); // start counting page loading time
-        }
+    ThreeGppHttpHeader header;
+    header.SetContentLength(0); // Request does not need any content length.
+    header.SetContentType(ThreeGppHttpHeader::MAIN_OBJECT);
+    header.SetClientTs(Simulator::Now());
+
+    const auto requestSize = m_httpVariables->GetRequestSize();
+    auto packet = Create<Packet>(requestSize);
+    packet->AddHeader(header);
+    const auto packetSize = packet->GetSize();
+    m_txMainObjectRequestTrace(packet);
+    m_txTrace(packet);
+    const auto actualBytes = m_socket->Send(packet);
+    NS_LOG_DEBUG(this << " Send() packet " << packet << " of " << packet->GetSize() << " bytes,"
+                      << " return value= " << actualBytes << ".");
+    if (actualBytes != static_cast<int>(packetSize))
+    {
+        NS_LOG_ERROR(this << " Failed to send request for embedded object,"
+                          << " GetErrNo= " << m_socket->GetErrno() << ","
+                          << " waiting for another Tx opportunity.");
     }
     else
     {
-        NS_FATAL_ERROR("Invalid state " << GetStateString() << " for RequestMainObject().");
+        SwitchToState(EXPECTING_MAIN_OBJECT);
+        m_pageLoadStartTs = Simulator::Now(); // start counting page loading time
     }
 
 } // end of `void RequestMainObject ()`
@@ -491,47 +480,43 @@ ThreeGppHttpClient::RequestEmbeddedObject()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_state == CONNECTING || m_state == PARSING_MAIN_OBJECT ||
-        m_state == EXPECTING_EMBEDDED_OBJECT)
+    if (m_state != CONNECTING && m_state != PARSING_MAIN_OBJECT &&
+        m_state != EXPECTING_EMBEDDED_OBJECT)
     {
-        if (m_embeddedObjectsToBeRequested > 0)
-        {
-            ThreeGppHttpHeader header;
-            header.SetContentLength(0); // Request does not need any content length.
-            header.SetContentType(ThreeGppHttpHeader::EMBEDDED_OBJECT);
-            header.SetClientTs(Simulator::Now());
+        NS_FATAL_ERROR("Invalid state " << GetStateString() << " for RequestEmbeddedObject().");
+    }
 
-            const auto requestSize = m_httpVariables->GetRequestSize();
-            auto packet = Create<Packet>(requestSize);
-            packet->AddHeader(header);
-            const auto packetSize = packet->GetSize();
-            m_txEmbeddedObjectRequestTrace(packet);
-            m_txTrace(packet);
-            const auto actualBytes = m_socket->Send(packet);
-            NS_LOG_DEBUG(this << " Send() packet " << packet << " of " << packet->GetSize()
-                              << " bytes,"
-                              << " return value= " << actualBytes << ".");
+    if (m_embeddedObjectsToBeRequested == 0)
+    {
+        NS_LOG_WARN(this << " No embedded object to be requested.");
+        return;
+    }
 
-            if (actualBytes != static_cast<int>(packetSize))
-            {
-                NS_LOG_ERROR(this << " Failed to send request for embedded object,"
-                                  << " GetErrNo= " << m_socket->GetErrno() << ","
-                                  << " waiting for another Tx opportunity.");
-            }
-            else
-            {
-                m_embeddedObjectsToBeRequested--;
-                SwitchToState(EXPECTING_EMBEDDED_OBJECT);
-            }
-        }
-        else
-        {
-            NS_LOG_WARN(this << " No embedded object to be requested.");
-        }
+    ThreeGppHttpHeader header;
+    header.SetContentLength(0); // Request does not need any content length.
+    header.SetContentType(ThreeGppHttpHeader::EMBEDDED_OBJECT);
+    header.SetClientTs(Simulator::Now());
+
+    const auto requestSize = m_httpVariables->GetRequestSize();
+    auto packet = Create<Packet>(requestSize);
+    packet->AddHeader(header);
+    const auto packetSize = packet->GetSize();
+    m_txEmbeddedObjectRequestTrace(packet);
+    m_txTrace(packet);
+    const auto actualBytes = m_socket->Send(packet);
+    NS_LOG_DEBUG(this << " Send() packet " << packet << " of " << packet->GetSize() << " bytes,"
+                      << " return value= " << actualBytes << ".");
+
+    if (actualBytes != static_cast<int>(packetSize))
+    {
+        NS_LOG_ERROR(this << " Failed to send request for embedded object,"
+                          << " GetErrNo= " << m_socket->GetErrno() << ","
+                          << " waiting for another Tx opportunity.");
     }
     else
     {
-        NS_FATAL_ERROR("Invalid state " << GetStateString() << " for RequestEmbeddedObject().");
+        m_embeddedObjectsToBeRequested--;
+        SwitchToState(EXPECTING_EMBEDDED_OBJECT);
     }
 
 } // end of `void RequestEmbeddedObject ()`
@@ -541,59 +526,53 @@ ThreeGppHttpClient::ReceiveMainObject(Ptr<Packet> packet, const Address& from)
 {
     NS_LOG_FUNCTION(this << packet << from);
 
-    if (m_state == EXPECTING_MAIN_OBJECT)
-    {
-        /*
-         * In the following call to Receive(), #m_objectBytesToBeReceived *will*
-         * be updated. #m_objectClientTs and #m_objectServerTs *may* be updated.
-         * ThreeGppHttpHeader will be removed from the packet, if it is the first
-         * packet of the object to be received; the header will be available in
-         * #m_constructedPacketHeader.
-         * #m_constructedPacket will also be updated.
-         */
-        Receive(packet);
-        m_rxMainObjectPacketTrace(packet);
-
-        if (m_objectBytesToBeReceived > 0)
-        {
-            /*
-             * There are more packets of this main object, so just stay still
-             * and wait until they arrive.
-             */
-            NS_LOG_INFO(this << " " << m_objectBytesToBeReceived << " byte(s)"
-                             << " remains from this chunk of main object.");
-        }
-        else
-        {
-            /*
-             * This is the last packet of this main object. Acknowledge the
-             * reception of a whole main object
-             */
-            NS_LOG_INFO(this << " Finished receiving a main object.");
-            m_rxMainObjectTrace(this, m_constructedPacket);
-
-            if (!m_objectServerTs.IsZero())
-            {
-                m_rxDelayTrace(Simulator::Now() - m_objectServerTs, from);
-                m_objectServerTs = MilliSeconds(0); // Reset back to zero.
-            }
-
-            if (!m_objectClientTs.IsZero())
-            {
-                m_rxRttTrace(Simulator::Now() - m_objectClientTs, from);
-                m_objectClientTs = MilliSeconds(0); // Reset back to zero.
-            }
-
-            EnterParsingTime();
-
-        } // end of else of `if (m_objectBytesToBeReceived > 0)`
-
-    } // end of `if (m_state == EXPECTING_MAIN_OBJECT)`
-    else
+    if (m_state != EXPECTING_MAIN_OBJECT)
     {
         NS_FATAL_ERROR("Invalid state " << GetStateString() << " for ReceiveMainObject().");
     }
 
+    /*
+     * In the following call to Receive(), #m_objectBytesToBeReceived *will*
+     * be updated. #m_objectClientTs and #m_objectServerTs *may* be updated.
+     * ThreeGppHttpHeader will be removed from the packet, if it is the first
+     * packet of the object to be received; the header will be available in
+     * #m_constructedPacketHeader.
+     * #m_constructedPacket will also be updated.
+     */
+    Receive(packet);
+    m_rxMainObjectPacketTrace(packet);
+
+    if (m_objectBytesToBeReceived > 0)
+    {
+        /*
+         * There are more packets of this main object, so just stay still
+         * and wait until they arrive.
+         */
+        NS_LOG_INFO(this << " " << m_objectBytesToBeReceived << " byte(s)"
+                         << " remains from this chunk of main object.");
+        return;
+    }
+
+    /*
+     * This is the last packet of this main object. Acknowledge the
+     * reception of a whole main object
+     */
+    NS_LOG_INFO(this << " Finished receiving a main object.");
+    m_rxMainObjectTrace(this, m_constructedPacket);
+
+    if (!m_objectServerTs.IsZero())
+    {
+        m_rxDelayTrace(Simulator::Now() - m_objectServerTs, from);
+        m_objectServerTs = MilliSeconds(0); // Reset back to zero.
+    }
+
+    if (!m_objectClientTs.IsZero())
+    {
+        m_rxRttTrace(Simulator::Now() - m_objectClientTs, from);
+        m_objectClientTs = MilliSeconds(0); // Reset back to zero.
+    }
+
+    EnterParsingTime();
 } // end of `void ReceiveMainObject (Ptr<Packet> packet)`
 
 void
@@ -601,75 +580,69 @@ ThreeGppHttpClient::ReceiveEmbeddedObject(Ptr<Packet> packet, const Address& fro
 {
     NS_LOG_FUNCTION(this << packet << from);
 
-    if (m_state == EXPECTING_EMBEDDED_OBJECT)
-    {
-        /*
-         * In the following call to Receive(), #m_objectBytesToBeReceived *will*
-         * be updated. #m_objectClientTs and #m_objectServerTs *may* be updated.
-         * ThreeGppHttpHeader will be removed from the packet, if it is the first
-         * packet of the object to be received; the header will be available in
-         * #m_constructedPacket, which will also be updated.
-         */
-        Receive(packet);
-        m_rxEmbeddedObjectPacketTrace(packet);
-
-        if (m_objectBytesToBeReceived > 0)
-        {
-            /*
-             * There are more packets of this embedded object, so just stay
-             * still and wait until they arrive.
-             */
-            NS_LOG_INFO(this << " " << m_objectBytesToBeReceived << " byte(s)"
-                             << " remains from this chunk of embedded object");
-        }
-        else
-        {
-            /*
-             * This is the last packet of this embedded object. Acknowledge
-             * the reception of a whole embedded object
-             */
-            NS_LOG_INFO(this << " Finished receiving an embedded object.");
-            m_rxEmbeddedObjectTrace(this, m_constructedPacket);
-
-            if (!m_objectServerTs.IsZero())
-            {
-                m_rxDelayTrace(Simulator::Now() - m_objectServerTs, from);
-                m_objectServerTs = MilliSeconds(0); // Reset back to zero.
-            }
-
-            if (!m_objectClientTs.IsZero())
-            {
-                m_rxRttTrace(Simulator::Now() - m_objectClientTs, from);
-                m_objectClientTs = MilliSeconds(0); // Reset back to zero.
-            }
-
-            if (m_embeddedObjectsToBeRequested > 0)
-            {
-                NS_LOG_INFO(this << " " << m_embeddedObjectsToBeRequested
-                                 << " more embedded object(s) to be requested.");
-                // Immediately request another using the existing connection.
-                m_eventRequestEmbeddedObject =
-                    Simulator::ScheduleNow(&ThreeGppHttpClient::RequestEmbeddedObject, this);
-            }
-            else
-            {
-                /*
-                 * There is no more embedded object, the web page has been
-                 * downloaded completely. Now is the time to read it.
-                 */
-                NS_LOG_INFO(this << " Finished receiving a web page.");
-                FinishReceivingPage(); // trigger callback for page loading time
-                EnterReadingTime();
-            }
-
-        } // end of else of `if (m_objectBytesToBeReceived > 0)`
-
-    } // end of `if (m_state == EXPECTING_EMBEDDED_OBJECT)`
-    else
+    if (m_state != EXPECTING_EMBEDDED_OBJECT)
     {
         NS_FATAL_ERROR("Invalid state " << GetStateString() << " for ReceiveEmbeddedObject().");
     }
 
+    /*
+     * In the following call to Receive(), #m_objectBytesToBeReceived *will*
+     * be updated. #m_objectClientTs and #m_objectServerTs *may* be updated.
+     * ThreeGppHttpHeader will be removed from the packet, if it is the first
+     * packet of the object to be received; the header will be available in
+     * #m_constructedPacket, which will also be updated.
+     */
+    Receive(packet);
+    m_rxEmbeddedObjectPacketTrace(packet);
+
+    if (m_objectBytesToBeReceived > 0)
+    {
+        /*
+         * There are more packets of this embedded object, so just stay
+         * still and wait until they arrive.
+         */
+        NS_LOG_INFO(this << " " << m_objectBytesToBeReceived << " byte(s)"
+                         << " remains from this chunk of embedded object");
+        return;
+    }
+
+    /*
+     * This is the last packet of this embedded object. Acknowledge
+     * the reception of a whole embedded object
+     */
+    NS_LOG_INFO(this << " Finished receiving an embedded object.");
+    m_rxEmbeddedObjectTrace(this, m_constructedPacket);
+
+    if (!m_objectServerTs.IsZero())
+    {
+        m_rxDelayTrace(Simulator::Now() - m_objectServerTs, from);
+        m_objectServerTs = MilliSeconds(0); // Reset back to zero.
+    }
+
+    if (!m_objectClientTs.IsZero())
+    {
+        m_rxRttTrace(Simulator::Now() - m_objectClientTs, from);
+        m_objectClientTs = MilliSeconds(0); // Reset back to zero.
+    }
+
+    if (m_embeddedObjectsToBeRequested > 0)
+    {
+        NS_LOG_INFO(this << " " << m_embeddedObjectsToBeRequested
+                         << " more embedded object(s) to be requested.");
+        // Immediately request another using the existing connection.
+        m_eventRequestEmbeddedObject =
+            Simulator::ScheduleNow(&ThreeGppHttpClient::RequestEmbeddedObject, this);
+    }
+    else
+    {
+        /*
+         * There is no more embedded object, the web page has been
+         * downloaded completely. Now is the time to read it.
+         */
+        NS_LOG_INFO(this << " Finished receiving a web page.");
+        FinishReceivingPage(); // trigger callback for page loading time
+        EnterReadingTime();
+    }
 } // end of `void ReceiveEmbeddedObject (Ptr<Packet> packet)`
 
 void
@@ -733,19 +706,17 @@ ThreeGppHttpClient::EnterParsingTime()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_state == EXPECTING_MAIN_OBJECT)
-    {
-        const auto parsingTime = m_httpVariables->GetParsingTime();
-        NS_LOG_INFO(this << " The parsing of this main object"
-                         << " will complete in " << parsingTime.As(Time::S) << ".");
-        m_eventParseMainObject =
-            Simulator::Schedule(parsingTime, &ThreeGppHttpClient::ParseMainObject, this);
-        SwitchToState(PARSING_MAIN_OBJECT);
-    }
-    else
+    if (m_state != EXPECTING_MAIN_OBJECT)
     {
         NS_FATAL_ERROR("Invalid state " << GetStateString() << " for EnterParsingTime().");
     }
+
+    const auto parsingTime = m_httpVariables->GetParsingTime();
+    NS_LOG_INFO(this << " The parsing of this main object will complete in "
+                     << parsingTime.As(Time::S) << ".");
+    m_eventParseMainObject =
+        Simulator::Schedule(parsingTime, &ThreeGppHttpClient::ParseMainObject, this);
+    SwitchToState(PARSING_MAIN_OBJECT);
 }
 
 void
@@ -753,37 +724,35 @@ ThreeGppHttpClient::ParseMainObject()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_state == PARSING_MAIN_OBJECT)
+    if (m_state != PARSING_MAIN_OBJECT)
     {
-        m_embeddedObjectsToBeRequested = m_httpVariables->GetNumOfEmbeddedObjects();
-        // saving total number of embedded objects
-        m_numberEmbeddedObjectsRequested = m_embeddedObjectsToBeRequested;
-        NS_LOG_INFO(this << " Parsing has determined " << m_embeddedObjectsToBeRequested
-                         << " embedded object(s) in the main object.");
+        NS_FATAL_ERROR("Invalid state " << GetStateString() << " for ParseMainObject().");
+    }
 
-        if (m_embeddedObjectsToBeRequested > 0)
-        {
-            /*
-             * Immediately request the first embedded object using the
-             * existing connection.
-             */
-            m_eventRequestEmbeddedObject =
-                Simulator::ScheduleNow(&ThreeGppHttpClient::RequestEmbeddedObject, this);
-        }
-        else
-        {
-            /*
-             * There is no embedded object in the main object. So sit back and
-             * enjoy the plain web page.
-             */
-            NS_LOG_INFO(this << " Finished receiving a web page.");
-            FinishReceivingPage(); // trigger callback for page loading time
-            EnterReadingTime();
-        }
+    m_embeddedObjectsToBeRequested = m_httpVariables->GetNumOfEmbeddedObjects();
+    // saving total number of embedded objects
+    m_numberEmbeddedObjectsRequested = m_embeddedObjectsToBeRequested;
+    NS_LOG_INFO(this << " Parsing has determined " << m_embeddedObjectsToBeRequested
+                     << " embedded object(s) in the main object.");
+
+    if (m_embeddedObjectsToBeRequested > 0)
+    {
+        /*
+         * Immediately request the first embedded object using the
+         * existing connection.
+         */
+        m_eventRequestEmbeddedObject =
+            Simulator::ScheduleNow(&ThreeGppHttpClient::RequestEmbeddedObject, this);
     }
     else
     {
-        NS_FATAL_ERROR("Invalid state " << GetStateString() << " for ParseMainObject().");
+        /*
+         * There is no embedded object in the main object. So sit back and
+         * enjoy the plain web page.
+         */
+        NS_LOG_INFO(this << " Finished receiving a web page.");
+        FinishReceivingPage(); // trigger callback for page loading time
+        EnterReadingTime();
     }
 
 } // end of `void ParseMainObject ()`
@@ -793,21 +762,19 @@ ThreeGppHttpClient::EnterReadingTime()
 {
     NS_LOG_FUNCTION(this);
 
-    if (m_state == EXPECTING_EMBEDDED_OBJECT || m_state == PARSING_MAIN_OBJECT)
-    {
-        const auto readingTime = m_httpVariables->GetReadingTime();
-        NS_LOG_INFO(this << " Client will finish reading this web page in "
-                         << readingTime.As(Time::S) << ".");
-
-        // Schedule a request of another main object once the reading time expires.
-        m_eventRequestMainObject =
-            Simulator::Schedule(readingTime, &ThreeGppHttpClient::RequestMainObject, this);
-        SwitchToState(READING);
-    }
-    else
+    if (m_state != EXPECTING_EMBEDDED_OBJECT && m_state != PARSING_MAIN_OBJECT)
     {
         NS_FATAL_ERROR("Invalid state " << GetStateString() << " for EnterReadingTime().");
     }
+
+    const auto readingTime = m_httpVariables->GetReadingTime();
+    NS_LOG_INFO(this << " Client will finish reading this web page in " << readingTime.As(Time::S)
+                     << ".");
+
+    // Schedule a request of another main object once the reading time expires.
+    m_eventRequestMainObject =
+        Simulator::Schedule(readingTime, &ThreeGppHttpClient::RequestMainObject, this);
+    SwitchToState(READING);
 }
 
 void

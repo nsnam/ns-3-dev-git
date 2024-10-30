@@ -630,58 +630,59 @@ LteUePhy::GenerateCqiRsrpRsrq(const SpectrumValue& sinr)
         m_rsrpSinrSampleCounter = 0;
     }
 
-    if (m_pssReceived)
+    if (!m_pssReceived)
     {
-        // measure instantaneous RSRQ now
-        NS_ASSERT_MSG(m_rsInterferencePowerUpdated, " RS interference power info obsolete");
+        return;
+    }
 
-        auto itPss = m_pssList.begin();
-        while (itPss != m_pssList.end())
+    // measure instantaneous RSRQ now
+    NS_ASSERT_MSG(m_rsInterferencePowerUpdated, " RS interference power info obsolete");
+
+    auto itPss = m_pssList.begin();
+    while (itPss != m_pssList.end())
+    {
+        uint16_t rbNum = 0;
+        double rssiSum = 0.0;
+
+        auto itIntN = m_rsInterferencePower.ConstValuesBegin();
+        auto itPj = m_rsReceivedPower.ConstValuesBegin();
+        for (itPj = m_rsReceivedPower.ConstValuesBegin();
+             itPj != m_rsReceivedPower.ConstValuesEnd();
+             itIntN++, itPj++)
         {
-            uint16_t rbNum = 0;
-            double rssiSum = 0.0;
+            rbNum++;
+            // convert PSD [W/Hz] to linear power [W] for the single RE
+            double interfPlusNoisePowerTxW = (*itIntN);
+            double signalPowerTxW = (*itPj);
+            rssiSum += (2 * (interfPlusNoisePowerTxW + signalPowerTxW));
+        }
+        rssiSum *= (180000.0 / 12.0);
 
-            auto itIntN = m_rsInterferencePower.ConstValuesBegin();
-            auto itPj = m_rsReceivedPower.ConstValuesBegin();
-            for (itPj = m_rsReceivedPower.ConstValuesBegin();
-                 itPj != m_rsReceivedPower.ConstValuesEnd();
-                 itIntN++, itPj++)
+        NS_ASSERT(rbNum == (*itPss).nRB);
+        double rsrq_dB = 10 * log10((*itPss).pssPsdSum / rssiSum);
+
+        if (rsrq_dB > m_pssReceptionThreshold)
+        {
+            NS_LOG_INFO(this << " PSS RNTI " << m_rnti << " cellId " << m_cellId << " has RSRQ "
+                             << rsrq_dB << " and RBnum " << rbNum);
+            // store measurements
+            auto itMeasMap = m_ueMeasurementsMap.find((*itPss).cellId);
+            if (itMeasMap != m_ueMeasurementsMap.end())
             {
-                rbNum++;
-                // convert PSD [W/Hz] to linear power [W] for the single RE
-                double interfPlusNoisePowerTxW = (*itIntN);
-                double signalPowerTxW = (*itPj);
-                rssiSum += (2 * (interfPlusNoisePowerTxW + signalPowerTxW));
+                (*itMeasMap).second.rsrqSum += rsrq_dB;
+                (*itMeasMap).second.rsrqNum++;
             }
-            rssiSum *= (180000.0 / 12.0);
-
-            NS_ASSERT(rbNum == (*itPss).nRB);
-            double rsrq_dB = 10 * log10((*itPss).pssPsdSum / rssiSum);
-
-            if (rsrq_dB > m_pssReceptionThreshold)
+            else
             {
-                NS_LOG_INFO(this << " PSS RNTI " << m_rnti << " cellId " << m_cellId << " has RSRQ "
-                                 << rsrq_dB << " and RBnum " << rbNum);
-                // store measurements
-                auto itMeasMap = m_ueMeasurementsMap.find((*itPss).cellId);
-                if (itMeasMap != m_ueMeasurementsMap.end())
-                {
-                    (*itMeasMap).second.rsrqSum += rsrq_dB;
-                    (*itMeasMap).second.rsrqNum++;
-                }
-                else
-                {
-                    NS_LOG_WARN("race condition of bug 2091 occurred");
-                }
+                NS_LOG_WARN("race condition of bug 2091 occurred");
             }
+        }
 
-            itPss++;
+        itPss++;
 
-        } // end of while (itPss != m_pssList.end ())
+    } // end of while (itPss != m_pssList.end ())
 
-        m_pssList.clear();
-
-    } // end of if (m_pssReceived)
+    m_pssList.clear();
 
 } // end of void LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 

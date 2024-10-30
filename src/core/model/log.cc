@@ -453,28 +453,30 @@ CheckEnvironmentVariables()
                 << "\" in env variable NS_LOG, see above for a list of valid components");
         }
 
-        // We have a valid component or wildcard, check the flags
-        if (!value.empty())
+        // No valid component or wildcard
+        if (value.empty())
         {
-            // Check the flags present in value
-            StringVector flags = SplitString(value, "|");
-            for (const auto& flag : flags)
+            continue;
+        }
+
+        // We have a valid component or wildcard, check the flags present in value
+        StringVector flags = SplitString(value, "|");
+        for (const auto& flag : flags)
+        {
+            // Handle wild cards
+            if (flag == "*" || flag == "**")
             {
-                // Handle wild cards
-                if (flag == "*" || flag == "**")
-                {
-                    continue;
-                }
-                bool ok = LOG_LABEL_LEVELS.find(flag) != LOG_LABEL_LEVELS.end();
-                if (!ok)
-                {
-                    NS_FATAL_ERROR("Invalid log level \""
-                                   << flag << "\" in env variable NS_LOG for component name "
-                                   << component);
-                }
-            } // for flag
-        }     // !value.empty
-    }         // for component
+                continue;
+            }
+            bool ok = LOG_LABEL_LEVELS.find(flag) != LOG_LABEL_LEVELS.end();
+            if (!ok)
+            {
+                NS_FATAL_ERROR("Invalid log level \""
+                               << flag << "\" in env variable NS_LOG for component name "
+                               << component);
+            }
+        } // for flag
+    }     // for component
 }
 
 void
