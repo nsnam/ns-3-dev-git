@@ -64,7 +64,7 @@ class LollipopCounter
      */
     LollipopCounter()
     {
-        NS_ABORT_MSG_UNLESS(std::is_unsigned<T>::value,
+        NS_ABORT_MSG_UNLESS(std::is_unsigned_v<T>,
                             "Lollipop counters must be defined on unsigned integer types");
 
         uint16_t numberofDigits = std::numeric_limits<T>::digits;
