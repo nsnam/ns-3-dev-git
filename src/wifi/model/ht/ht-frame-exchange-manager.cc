@@ -1193,7 +1193,7 @@ HtFrameExchangeManager::SendPsdu()
 
         Time timeout =
             txDuration + m_phy->GetSifs() + m_phy->GetSlot() +
-            m_phy->CalculatePhyPreambleAndHeaderDuration(blockAcknowledgment->blockAckTxVector);
+            WifiPhy::CalculatePhyPreambleAndHeaderDuration(blockAcknowledgment->blockAckTxVector);
         NS_ASSERT(!m_txTimer.IsRunning());
         m_txTimer.Set(WifiTxTimer::WAIT_BLOCK_ACK,
                       timeout,

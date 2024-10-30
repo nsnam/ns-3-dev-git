@@ -1916,12 +1916,12 @@ TestWifiPhyRxTraceHelperYans::SendPpduWithTwoMpdus(dBm_u rxPower,
     mpduList.emplace_back(Create<WifiMpdu>(p2, hdr2));
 
     auto psdu = Create<WifiPsdu>(mpduList);
-    auto ppdu =
-        Create<HePpdu>(psdu,
-                       txVector,
-                       tx_phy->GetOperatingChannel(),
-                       tx_phy->CalculateTxDuration(psdu->GetSize(), txVector, tx_phy->GetPhyBand()),
-                       m_uid);
+    auto ppdu = Create<HePpdu>(
+        psdu,
+        txVector,
+        tx_phy->GetOperatingChannel(),
+        YansWifiPhy::CalculateTxDuration(psdu->GetSize(), txVector, tx_phy->GetPhyBand()),
+        m_uid);
 
     m_uid++;
 
@@ -1955,12 +1955,12 @@ TestWifiPhyRxTraceHelperYans::SendPpduWithOneMpdu(dBm_u rxPower,
     mpduList.emplace_back(Create<WifiMpdu>(p1, hdr1));
 
     auto psdu = Create<WifiPsdu>(mpduList);
-    auto ppdu =
-        Create<HePpdu>(psdu,
-                       txVector,
-                       tx_phy->GetOperatingChannel(),
-                       tx_phy->CalculateTxDuration(psdu->GetSize(), txVector, tx_phy->GetPhyBand()),
-                       m_uid);
+    auto ppdu = Create<HePpdu>(
+        psdu,
+        txVector,
+        tx_phy->GetOperatingChannel(),
+        YansWifiPhy::CalculateTxDuration(psdu->GetSize(), txVector, tx_phy->GetPhyBand()),
+        m_uid);
 
     m_uid++;
 

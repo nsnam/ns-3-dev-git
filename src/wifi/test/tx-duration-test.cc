@@ -167,7 +167,7 @@ TxDurationTest::CheckPayloadDuration(uint32_t size,
             knownDuration +=
                 MicroSeconds(6); // 2.4 GHz band should be at the end of the bands to test
         }
-        Time calculatedDuration = phy->GetPayloadDuration(size, txVector, testedBand);
+        Time calculatedDuration = YansWifiPhy::GetPayloadDuration(size, txVector, testedBand);
         if (calculatedDuration != knownDuration)
         {
             std::cerr << "size=" << size << " band=" << testedBand << " mode=" << payloadMode
@@ -219,7 +219,7 @@ TxDurationTest::CheckTxDuration(uint32_t size,
             knownDuration +=
                 MicroSeconds(6); // 2.4 GHz band should be at the end of the bands to test
         }
-        Time calculatedDuration = phy->CalculateTxDuration(size, txVector, testedBand);
+        Time calculatedDuration = YansWifiPhy::CalculateTxDuration(size, txVector, testedBand);
         Time calculatedDurationUsingList =
             CalculateTxDurationUsingList(std::list<uint32_t>{size},
                                          std::list<uint16_t>{SU_STA_ID},
@@ -299,7 +299,7 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
         for (auto& size : sizes)
         {
             Time ppduDurationForSta =
-                phy->CalculateTxDuration(size, txVector, testedBand, *iterStaId);
+                YansWifiPhy::CalculateTxDuration(size, txVector, testedBand, *iterStaId);
             if (ppduDurationForSta > calculatedDuration)
             {
                 calculatedDuration = ppduDurationForSta;

@@ -630,14 +630,14 @@ PhyEntity::ScheduleEndOfMpdus(Ptr<Event> event)
         }
 
         uint32_t size = (mpduType == NORMAL_MPDU) ? psdu->GetSize() : psdu->GetAmpduSubframeSize(i);
-        Time mpduDuration = m_wifiPhy->GetPayloadDuration(size,
-                                                          txVector,
-                                                          m_wifiPhy->GetPhyBand(),
-                                                          mpduType,
-                                                          true,
-                                                          totalAmpduSize,
-                                                          totalAmpduNumSymbols,
-                                                          staId);
+        Time mpduDuration = WifiPhy::GetPayloadDuration(size,
+                                                        txVector,
+                                                        m_wifiPhy->GetPhyBand(),
+                                                        mpduType,
+                                                        true,
+                                                        totalAmpduSize,
+                                                        totalAmpduNumSymbols,
+                                                        staId);
 
         remainingAmpduDuration -= mpduDuration;
         if (i == (nMpdus - 1) && !remainingAmpduDuration.IsZero()) // no more MPDUs coming
@@ -975,7 +975,7 @@ PhyEntity::StartPreambleDetectionPeriod(Ptr<Event> event)
         m_wifiPhy->GetCurrentFrequencyRange()); // We need to notify it now so that it starts
                                                 // recording events
     m_endPreambleDetectionEvents.push_back(
-        Simulator::Schedule(m_wifiPhy->GetPreambleDetectionDuration(),
+        Simulator::Schedule(WifiPhy::GetPreambleDetectionDuration(),
                             &PhyEntity::EndPreambleDetectionPeriod,
                             this,
                             event));
@@ -1090,7 +1090,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
         // Continue receiving preamble
         const auto durationTillEnd =
             GetDuration(WIFI_PPDU_FIELD_PREAMBLE, event->GetPpdu()->GetTxVector()) -
-            m_wifiPhy->GetPreambleDetectionDuration();
+            WifiPhy::GetPreambleDetectionDuration();
         m_wifiPhy->NotifyCcaBusy(event->GetPpdu(),
                                  durationTillEnd); // will be prolonged by next field
         m_wifiPhy->m_endPhyRxEvent = Simulator::Schedule(durationTillEnd,

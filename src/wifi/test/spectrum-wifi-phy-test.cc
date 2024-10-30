@@ -197,7 +197,7 @@ SpectrumWifiPhyBasicTest::MakeSignal(Watt_u txPower, const WifiPhyOperatingChann
 
     auto psdu = Create<WifiPsdu>(pkt, hdr);
     const auto txDuration =
-        m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
+        SpectrumWifiPhy::CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
 
     auto ppdu = Create<OfdmPpdu>(psdu, txVector, channel, m_uid++);
 

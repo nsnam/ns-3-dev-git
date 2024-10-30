@@ -397,7 +397,7 @@ PacketSocket::ForwardUp(Ptr<NetDevice> device,
     {
         Ptr<Packet> copy = packet->Copy();
         DeviceNameTag dnt;
-        dnt.SetDeviceName(device->GetTypeId().GetName());
+        dnt.SetDeviceName(NetDevice::GetTypeId().GetName());
         PacketSocketTag pst;
         pst.SetPacketType(packetType);
         pst.SetDestAddress(to);

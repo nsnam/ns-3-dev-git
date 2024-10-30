@@ -1395,8 +1395,10 @@ TestUlMuMimoPhyTransmission::SendHeTbPpdu(uint16_t txStaId,
     psdus.insert(std::make_pair(txStaId, psdu));
 
     Ptr<MuMimoSpectrumWifiPhy> phy = m_phyStas.at(txStaId - 1);
-    Time txDuration =
-        phy->CalculateTxDuration(psdu->GetSize(), txVector, phy->GetPhyBand(), txStaId);
+    Time txDuration = MuMimoSpectrumWifiPhy::CalculateTxDuration(psdu->GetSize(),
+                                                                 txVector,
+                                                                 phy->GetPhyBand(),
+                                                                 txStaId);
     txVector.SetLength(
         HePhy::ConvertHeTbPpduDurationToLSigLength(txDuration, txVector, phy->GetPhyBand()).first);
 

@@ -111,7 +111,7 @@ MinstrelWifiManager::SetupPhy(const Ptr<WifiPhy> phy)
         WifiTxVector txVector;
         txVector.SetMode(mode);
         txVector.SetPreambleType(WIFI_PREAMBLE_LONG);
-        AddCalcTxTime(mode, phy->CalculateTxDuration(m_pktLen, txVector, phy->GetPhyBand()));
+        AddCalcTxTime(mode, WifiPhy::CalculateTxDuration(m_pktLen, txVector, phy->GetPhyBand()));
     }
     WifiRemoteStationManager::SetupPhy(phy);
 }

@@ -378,7 +378,7 @@ CoDelQueueDiscNewtonStepTest::DoRun()
     {
         for (uint32_t count = 1; count < 0xff; count *= 2)
         {
-            result = queue->NewtonStep(recInvSqrt, count);
+            result = CoDelQueueDisc::NewtonStep(recInvSqrt, count);
             // Test that ns-3 value is exactly the same as the Linux value
             NS_TEST_ASSERT_MSG_EQ(_codel_Newton_step(recInvSqrt, count),
                                   result,
@@ -436,7 +436,7 @@ CoDelQueueDiscControlLawTest::DoRun()
         for (uint16_t recInvSqrt = 0xff; recInvSqrt > 0; recInvSqrt /= 2)
         {
             codelTimeVal = queue->Time2CoDel(timeVal);
-            uint32_t ns3Result = queue->ControlLaw(codelTimeVal, interval, recInvSqrt);
+            uint32_t ns3Result = CoDelQueueDisc::ControlLaw(codelTimeVal, interval, recInvSqrt);
             uint32_t linuxResult = _codel_control_law(codelTimeVal, interval, recInvSqrt);
             NS_TEST_ASSERT_MSG_EQ(ns3Result,
                                   linuxResult,

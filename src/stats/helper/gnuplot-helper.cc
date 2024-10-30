@@ -107,7 +107,7 @@ GnuplotHelper::PlotProbe(const std::string& typeId,
     aggregator->SetTitle(m_title + " \\n\\nTrace Source Path: " + path);
 
     // Set the default dataset plotting style for the values.
-    aggregator->Set2dDatasetDefaultStyle(Gnuplot2dDataset::LINES_POINTS);
+    GnuplotAggregator::Set2dDatasetDefaultStyle(Gnuplot2dDataset::LINES_POINTS);
 
     // Set the location of the key in the plot.
     aggregator->SetKeyLocation(keyLocation);

@@ -273,8 +273,10 @@ DefaultEmlsrManager::GetTimeToCtsEnd(uint8_t linkId, const WifiTxVector& rtsTxVe
     const auto bssid = GetEhtFem(linkId)->GetBssid();
     const auto ctsTxVector = stationManager->GetCtsTxVector(bssid, rtsTxVector.GetMode());
 
-    const auto rtsTxTime = phy->CalculateTxDuration(GetRtsSize(), rtsTxVector, phy->GetPhyBand());
-    const auto ctsTxTime = phy->CalculateTxDuration(GetCtsSize(), ctsTxVector, phy->GetPhyBand());
+    const auto rtsTxTime =
+        WifiPhy::CalculateTxDuration(GetRtsSize(), rtsTxVector, phy->GetPhyBand());
+    const auto ctsTxTime =
+        WifiPhy::CalculateTxDuration(GetCtsSize(), ctsTxVector, phy->GetPhyBand());
 
     // the main PHY shall terminate the channel switch at the end of CTS reception;
     // the time remaining to the end of CTS reception includes two propagation delays

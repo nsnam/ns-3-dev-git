@@ -393,7 +393,7 @@ HeFrameExchangeManager::SendMuRts(const WifiTxParameters& txParams)
                                                 protection->muRtsTxVector,
                                                 m_phy->GetPhyBand()) +
                    m_phy->GetSifs() + m_phy->GetSlot() +
-                   m_phy->CalculatePhyPreambleAndHeaderDuration(ctsTxVector);
+                   WifiPhy::CalculatePhyPreambleAndHeaderDuration(ctsTxVector);
 
     NS_ASSERT(!m_txTimer.IsRunning());
     m_txTimer.Set(WifiTxTimer::WAIT_CTS_AFTER_MU_RTS,
@@ -662,7 +662,7 @@ HeFrameExchangeManager::SendPsduMap()
             responseTxVector =
                 &acknowledgment->stationsReplyingWithBlockAck.begin()->second.blockAckTxVector;
             Time timeout = txDuration + m_phy->GetSifs() + m_phy->GetSlot() +
-                           m_phy->CalculatePhyPreambleAndHeaderDuration(*responseTxVector);
+                           WifiPhy::CalculatePhyPreambleAndHeaderDuration(*responseTxVector);
 
             m_txTimer.Set(WifiTxTimer::WAIT_BLOCK_ACKS_IN_TB_PPDU,
                           timeout,
@@ -856,7 +856,7 @@ HeFrameExchangeManager::SendPsduMap()
     else
     {
         Time timeout = txDuration + m_phy->GetSifs() + m_phy->GetSlot() +
-                       m_phy->CalculatePhyPreambleAndHeaderDuration(*responseTxVector);
+                       WifiPhy::CalculatePhyPreambleAndHeaderDuration(*responseTxVector);
         m_channelAccessManager->NotifyAckTimeoutStartNow(timeout);
 
         // start timer
@@ -2131,7 +2131,7 @@ HeFrameExchangeManager::UpdateNav(Ptr<const WifiPsdu> psdu, const WifiTxVector& 
             auto navResetDelay =
                 2 * m_phy->GetSifs() +
                 WifiPhy::CalculateTxDuration(GetCtsSize(), ctsTxVector, m_phy->GetPhyBand()) +
-                m_phy->CalculatePhyPreambleAndHeaderDuration(ctsTxVector) + 2 * m_phy->GetSlot();
+                WifiPhy::CalculatePhyPreambleAndHeaderDuration(ctsTxVector) + 2 * m_phy->GetSlot();
             m_intraBssNavResetEvent =
                 Simulator::Schedule(navResetDelay,
                                     &HeFrameExchangeManager::IntraBssNavResetTimeout,

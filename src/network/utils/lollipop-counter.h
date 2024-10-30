@@ -285,7 +285,7 @@ class LollipopCounter
     {
         val.m_value++;
 
-        if (val.m_value == val.m_circularRegion + 1)
+        if (val.m_value == m_circularRegion + 1)
         {
             val.m_value = 0;
         }

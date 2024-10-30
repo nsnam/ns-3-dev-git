@@ -124,7 +124,8 @@ WifiPhyReceptionTest::SendPacket(dBm_u rxPower, uint32_t packetSize, uint8_t mcs
     hdr.SetQosTid(0);
 
     Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
-    Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
+    Time txDuration =
+        SpectrumWifiPhy::CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
 
     Ptr<WifiPpdu> ppdu =
         Create<HePpdu>(psdu, txVector, m_phy->GetOperatingChannel(), txDuration, m_uid++);
@@ -2750,7 +2751,8 @@ TestAmpduReception::SendAmpduWithThreeMpdus(dBm_u rxPower, uint32_t referencePac
     }
     Ptr<WifiPsdu> psdu = Create<WifiPsdu>(mpduList);
 
-    Time txDuration = m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
+    Time txDuration =
+        SpectrumWifiPhy::CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand());
 
     Ptr<WifiPpdu> ppdu =
         Create<HePpdu>(psdu, txVector, m_phy->GetOperatingChannel(), txDuration, m_uid++);
@@ -4280,7 +4282,7 @@ TestUnsupportedBandwidthReception::SendPpdu(MHz_u centerFreq, MHz_u bandwidth)
 
     Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
     Time txDuration =
-        m_rxPhy->CalculateTxDuration(psdu->GetSize(), txVector, m_rxPhy->GetPhyBand());
+        SpectrumWifiPhy::CalculateTxDuration(psdu->GetSize(), txVector, m_rxPhy->GetPhyBand());
 
     auto ppdu = Create<HePpdu>(psdu, txVector, m_txPhy->GetOperatingChannel(), txDuration, 0);
 
@@ -4537,7 +4539,8 @@ TestPrimary20CoveredByPpdu::CreatePpdu(MHz_u ppduCenterFreq)
     WifiMacHeader hdr(WIFI_MAC_QOSDATA);
 
     auto psdu = Create<WifiPsdu>(pkt, hdr);
-    auto txDuration = m_txPhy->CalculateTxDuration(psdu->GetSize(), txVector, channelInfo.band);
+    auto txDuration =
+        SpectrumWifiPhy::CalculateTxDuration(psdu->GetSize(), txVector, channelInfo.band);
 
     return Create<HePpdu>(psdu, txVector, m_txPhy->GetOperatingChannel(), txDuration, 0);
 }

@@ -2144,14 +2144,14 @@ TestUlOfdmaPpduUid::SendTbPpdu()
     auto psdu2 = Create<WifiPsdu>(pkt2, hdr2);
     psdus2.insert(std::make_pair(rxStaId2, psdu2));
 
-    const auto txDuration1 = m_phySta1->CalculateTxDuration(psdu1->GetSize(),
-                                                            txVector1,
-                                                            m_phySta1->GetPhyBand(),
-                                                            rxStaId1);
-    const auto txDuration2 = m_phySta2->CalculateTxDuration(psdu2->GetSize(),
-                                                            txVector2,
-                                                            m_phySta1->GetPhyBand(),
-                                                            rxStaId2);
+    const auto txDuration1 = OfdmaSpectrumWifiPhy::CalculateTxDuration(psdu1->GetSize(),
+                                                                       txVector1,
+                                                                       m_phySta1->GetPhyBand(),
+                                                                       rxStaId1);
+    const auto txDuration2 = OfdmaSpectrumWifiPhy::CalculateTxDuration(psdu2->GetSize(),
+                                                                       txVector2,
+                                                                       m_phySta1->GetPhyBand(),
+                                                                       rxStaId2);
     const auto txDuration = std::max(txDuration1, txDuration2);
 
     txVector1.SetLength(
@@ -2417,8 +2417,10 @@ TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
     auto psdu = Create<WifiPsdu>(pkt, hdr);
     psdus.insert(std::make_pair(staId, psdu));
 
-    auto ppduDuration =
-        m_phy->CalculateTxDuration(psdu->GetSize(), txVector, m_phy->GetPhyBand(), staId);
+    auto ppduDuration = OfdmaSpectrumWifiPhy::CalculateTxDuration(psdu->GetSize(),
+                                                                  txVector,
+                                                                  m_phy->GetPhyBand(),
+                                                                  staId);
     auto ppdu = Create<HePpdu>(psdus,
                                txVector,
                                m_phy->GetOperatingChannel(),
@@ -3433,8 +3435,10 @@ TestUlOfdmaPhyTransmission::SendHeTbPpdu(uint16_t txStaId,
         phy = m_phySta3;
     }
 
-    Time txDuration =
-        phy->CalculateTxDuration(psdu->GetSize(), txVector, phy->GetPhyBand(), txStaId);
+    Time txDuration = OfdmaSpectrumWifiPhy::CalculateTxDuration(psdu->GetSize(),
+                                                                txVector,
+                                                                phy->GetPhyBand(),
+                                                                txStaId);
     txVector.SetLength(
         HePhy::ConvertHeTbPpduDurationToLSigLength(txDuration, txVector, phy->GetPhyBand()).first);
 
@@ -5544,10 +5548,10 @@ TestUlOfdmaPowerControl::SendMuBar(std::vector<uint16_t> staIds)
 
     auto nav = m_apDev->GetPhy()->GetSifs();
     const auto staId = staIds.front(); // either will do
-    nav += m_phyAp->CalculateTxDuration(GetBlockAckSize(BlockAckType::COMPRESSED),
-                                        tbTxVector,
-                                        DEFAULT_WIFI_BAND,
-                                        staId);
+    nav += SpectrumWifiPhy::CalculateTxDuration(GetBlockAckSize(BlockAckType::COMPRESSED),
+                                                tbTxVector,
+                                                DEFAULT_WIFI_BAND,
+                                                staId);
     psdu->SetDuration(nav);
     psdus.insert(std::make_pair(SU_STA_ID, psdu));
 

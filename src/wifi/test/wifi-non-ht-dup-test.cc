@@ -343,7 +343,7 @@ TestNonHtDuplicatePhyReception::SendNonHtDuplicatePpdu(MHz_u channelWidth)
 
     Ptr<WifiPsdu> psdu = Create<WifiPsdu>(pkt, hdr);
     Time txDuration =
-        m_phyAp->CalculateTxDuration(psdu->GetSize(), txVector, m_phyAp->GetPhyBand());
+        SpectrumWifiPhy::CalculateTxDuration(psdu->GetSize(), txVector, m_phyAp->GetPhyBand());
 
     m_phyAp->Send(WifiConstPsduMap({std::make_pair(SU_STA_ID, psdu)}), txVector);
 }
