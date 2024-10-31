@@ -1572,7 +1572,7 @@ WifiMac::ApplyTidLinkMapping(const Mac48Address& mldAddr, WifiDirection dir)
 
 void
 WifiMac::BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
-                               const Mac48Address& address,
+                               Mac48Address address,
                                const std::set<uint8_t>& linkIds)
 {
     std::stringstream ss;
@@ -1586,9 +1586,9 @@ WifiMac::BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
     for (const auto linkId : linkIds)
     {
         auto& link = GetLink(linkId);
-        auto linkAddr = link.stationManager->GetAffiliatedStaAddress(address).value_or(address);
+        auto linkAddr = link.stationManager->GetAffiliatedStaAddress(address);
 
-        if (link.stationManager->GetMldAddress(address) == address && linkAddr == address)
+        if (link.stationManager->GetMldAddress(address) == address && !linkAddr.has_value())
         {
             NS_LOG_DEBUG("Link " << +linkId << " has not been setup with the MLD, skip");
             continue;
@@ -1608,7 +1608,7 @@ WifiMac::BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
             m_scheduler->BlockQueues(reason,
                                      acIndex,
                                      {WIFI_MGT_QUEUE, WIFI_CTL_QUEUE},
-                                     linkAddr,
+                                     linkAddr.value_or(address),
                                      link.feManager->GetAddress(),
                                      {},
                                      {linkId});
@@ -1618,7 +1618,7 @@ WifiMac::BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
 
 void
 WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
-                                 const Mac48Address& address,
+                                 Mac48Address address,
                                  const std::set<uint8_t>& linkIds)
 {
     NS_ASSERT(m_scheduler);
@@ -1639,9 +1639,9 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
     for (const auto linkId : shuffledLinkIds)
     {
         auto& link = GetLink(linkId);
-        auto linkAddr = link.stationManager->GetAffiliatedStaAddress(address).value_or(address);
+        auto linkAddr = link.stationManager->GetAffiliatedStaAddress(address);
 
-        if (link.stationManager->GetMldAddress(address) == address && linkAddr == address)
+        if (link.stationManager->GetMldAddress(address) == address && !linkAddr.has_value())
         {
             NS_LOG_DEBUG("Link " << +linkId << " has not been setup with the MLD, skip");
             continue;
@@ -1664,7 +1664,7 @@ WifiMac::UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
             m_scheduler->UnblockQueues(reason,
                                        acIndex,
                                        {WIFI_MGT_QUEUE, WIFI_CTL_QUEUE},
-                                       linkAddr,
+                                       linkAddr.value_or(address),
                                        link.feManager->GetAddress(),
                                        {},
                                        {linkId});

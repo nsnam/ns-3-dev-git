@@ -337,7 +337,7 @@ class WifiMac : public Object
      * @param linkIds the IDs of the links to block
      */
     void BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
-                               const Mac48Address& address,
+                               Mac48Address address,
                                const std::set<uint8_t>& linkIds);
 
     /**
@@ -350,7 +350,7 @@ class WifiMac : public Object
      * @param linkIds the IDs of the links to unblock
      */
     void UnblockUnicastTxOnLinks(WifiQueueBlockedReason reason,
-                                 const Mac48Address& address,
+                                 Mac48Address address,
                                  const std::set<uint8_t>& linkIds);
 
     /**
