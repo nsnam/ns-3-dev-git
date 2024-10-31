@@ -38,12 +38,8 @@ from typing import Callable, Dict, List, Tuple
 ###########################################################
 # PARAMETERS
 ###########################################################
-CLANG_FORMAT_VERSIONS = [
-    17,
-    16,
-    15,
-    14,
-]
+CLANG_FORMAT_MAX_VERSION = 17
+CLANG_FORMAT_MIN_VERSION = 14
 
 FORMAT_GUARD_ON = [
     "// clang-format on",
@@ -257,8 +253,8 @@ def find_clang_format_path() -> str:
     @return Path to clang-format.
     """
 
-    # Find exact version
-    for version in CLANG_FORMAT_VERSIONS:
+    # Find exact version, starting from the most recent one
+    for version in range(CLANG_FORMAT_MAX_VERSION, CLANG_FORMAT_MIN_VERSION - 1, -1):
         clang_format_path = shutil.which(f"clang-format-{version}")
 
         if clang_format_path:
@@ -282,13 +278,13 @@ def find_clang_format_path() -> str:
         if version_regex:
             major_version = int(version_regex[0][0])
 
-            if major_version in CLANG_FORMAT_VERSIONS:
+            if CLANG_FORMAT_MIN_VERSION <= major_version <= CLANG_FORMAT_MAX_VERSION:
                 return clang_format_path
 
     # No supported version of clang-format found
     raise RuntimeError(
         f"Could not find any supported version of clang-format installed on this system. "
-        f"List of supported versions: {CLANG_FORMAT_VERSIONS}. "
+        f"List of supported versions: [{CLANG_FORMAT_MAX_VERSION}-{CLANG_FORMAT_MIN_VERSION}]. "
         + (f"Found clang-format {major_version}." if major_version else "")
     )
 
