@@ -20,7 +20,7 @@ the ".clang-format" file. This script performs the following checks / fixes:
 
 This script can be applied to all text files in a given path or to individual files.
 
-NOTE: The formatting check requires clang-format (version >= 14) to be found on the path.
+NOTE: The formatting check requires clang-format to be found on the path (see the supported versions below).
 The remaining checks do not depend on clang-format and can be executed by disabling clang-format
 checking with the "--no-formatting" option.
 """
