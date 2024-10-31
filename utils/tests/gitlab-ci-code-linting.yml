@@ -21,10 +21,10 @@ check-style-clang-format-17:
   variables:
     CLANG_FORMAT_VERSION: 17
 
-check-style-clang-format-14:
+check-style-clang-format-15:
   extends: .check-style-clang-format
   variables:
-    CLANG_FORMAT_VERSION: 14
+    CLANG_FORMAT_VERSION: 15
 
 # Clang-tidy
 clang-tidy-18:
