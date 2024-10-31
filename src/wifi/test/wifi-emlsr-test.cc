@@ -327,13 +327,12 @@ EmlsrOperationsTestBase::DoSetup()
     SpectrumWifiPhyHelper phyHelper(3);
     phyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
     phyHelper.SetPcapCaptureType(WifiPhyHelper::PcapCaptureType::PCAP_PER_LINK);
-    phyHelper.Set(0, "ChannelSettings", StringValue("{2, 0, BAND_2_4GHZ, 0}"));
-    phyHelper.Set(1, "ChannelSettings", StringValue("{36, 0, BAND_5GHZ, 0}"));
-    phyHelper.Set(2, "ChannelSettings", StringValue("{1, 0, BAND_6GHZ, 0}"));
-    // Add three spectrum channels to use multi-RF interface
-    phyHelper.AddChannel(CreateObject<MultiModelSpectrumChannel>(), WIFI_SPECTRUM_2_4_GHZ);
-    phyHelper.AddChannel(CreateObject<MultiModelSpectrumChannel>(), WIFI_SPECTRUM_5_GHZ);
-    phyHelper.AddChannel(CreateObject<MultiModelSpectrumChannel>(), WIFI_SPECTRUM_6_GHZ);
+
+    for (std::size_t id = 0; id < m_channelsStr.size(); ++id)
+    {
+        phyHelper.Set(id, "ChannelSettings", StringValue(m_channelsStr[id]));
+        phyHelper.AddChannel(CreateObject<MultiModelSpectrumChannel>(), m_freqRanges[id]);
+    }
 
     WifiMacHelper mac;
     mac.SetType("ns3::ApWifiMac",
@@ -346,6 +345,7 @@ EmlsrOperationsTestBase::DoSetup()
                           BooleanValue(true));
 
     NetDeviceContainer apDevice = wifi.Install(phyHelper, mac, wifiApNode);
+    m_apMac = DynamicCast<ApWifiMac>(DynamicCast<WifiNetDevice>(apDevice.Get(0))->GetMac());
 
     mac.SetType("ns3::StaWifiMac",
                 "Ssid",
@@ -360,9 +360,25 @@ EmlsrOperationsTestBase::DoSetup()
                         "MainPhyId",
                         UintegerValue(m_mainPhyId));
 
-    NetDeviceContainer staDevices = wifi.Install(phyHelper, mac, wifiStaNodes);
+    if (m_nPhysPerEmlsrDevice < 3)
+    {
+        phyHelper = SpectrumWifiPhyHelper(m_nPhysPerEmlsrDevice);
+        phyHelper.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+        phyHelper.SetPcapCaptureType(WifiPhyHelper::PcapCaptureType::PCAP_PER_LINK);
 
-    m_apMac = DynamicCast<ApWifiMac>(DynamicCast<WifiNetDevice>(apDevice.Get(0))->GetMac());
+        for (std::size_t id = 0; id < m_nPhysPerEmlsrDevice; ++id)
+        {
+            phyHelper.Set(id, "ChannelSettings", StringValue(m_channelsStr[id]));
+            auto channel =
+                DynamicCast<MultiModelSpectrumChannel>(m_apMac->GetWifiPhy(id)->GetChannel());
+            NS_TEST_ASSERT_MSG_NE(channel,
+                                  nullptr,
+                                  "Channel " << +id << " is not a spectrum channel");
+            phyHelper.AddChannel(channel, m_freqRanges[id]);
+        }
+    }
+
+    NetDeviceContainer staDevices = wifi.Install(phyHelper, mac, wifiStaNodes);
 
     for (uint32_t i = 0; i < staDevices.GetN(); i++)
     {
@@ -4956,6 +4972,202 @@ EmlsrCcaBusyTest::CheckPoint3()
                                 "until end of transmission");
 }
 
+SingleLinkEmlsrTest::SingleLinkEmlsrTest(bool switchAuxPhy, bool auxPhyTxCapable)
+    : EmlsrOperationsTestBase(
+          "Check EMLSR single link operation (switchAuxPhy=" + std::to_string(switchAuxPhy) +
+          ", auxPhyTxCapable=" + std::to_string(auxPhyTxCapable) + ")"),
+      m_switchAuxPhy(switchAuxPhy),
+      m_auxPhyTxCapable(auxPhyTxCapable)
+{
+    m_mainPhyId = 0;
+    m_linksToEnableEmlsrOn = {m_mainPhyId};
+    m_nPhysPerEmlsrDevice = 1;
+    m_nEmlsrStations = 1;
+    m_nNonEmlsrStations = 0;
+
+    // channel switch delay will be also set to 64 us
+    m_paddingDelay = {MicroSeconds(64)};
+    m_transitionDelay = {MicroSeconds(64)};
+    m_establishBaDl = true;
+    m_establishBaUl = true;
+    m_duration = Seconds(0.5);
+}
+
+void
+SingleLinkEmlsrTest::DoSetup()
+{
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(64)));
+    Config::SetDefault("ns3::DefaultEmlsrManager::SwitchAuxPhy", BooleanValue(m_switchAuxPhy));
+    Config::SetDefault("ns3::EmlsrManager::AuxPhyTxCapable", BooleanValue(m_auxPhyTxCapable));
+
+    EmlsrOperationsTestBase::DoSetup();
+}
+
+void
+SingleLinkEmlsrTest::Transmit(Ptr<WifiMac> mac,
+                              uint8_t phyId,
+                              WifiConstPsduMap psduMap,
+                              WifiTxVector txVector,
+                              double txPowerW)
+{
+    EmlsrOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+
+    const auto psdu = psduMap.cbegin()->second;
+    const auto& hdr = psdu->GetHeader(0);
+
+    // nothing to do in case of Beacon and CF-End frames
+    if (hdr.IsBeacon() || hdr.IsCfEnd())
+    {
+        return;
+    }
+
+    auto linkId = mac->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(),
+                          true,
+                          "PHY " << +phyId << " is not operating on any link");
+    NS_TEST_EXPECT_MSG_EQ(+linkId.value(), 0, "TX occurred on unexpected link " << +linkId.value());
+
+    if (m_eventIt != m_events.cend())
+    {
+        // check that the expected frame is being transmitted
+        NS_TEST_EXPECT_MSG_EQ(m_eventIt->hdrType,
+                              hdr.GetType(),
+                              "Unexpected MAC header type for frame #"
+                                  << std::distance(m_events.cbegin(), m_eventIt));
+        // perform actions/checks, if any
+        if (m_eventIt->func)
+        {
+            m_eventIt->func(psdu, txVector);
+        }
+
+        ++m_eventIt;
+    }
+}
+
+void
+SingleLinkEmlsrTest::DoRun()
+{
+    // lambda to check that AP MLD started the transition delay timer after the TX/RX of given frame
+    auto checkTransDelay = [this](Ptr<const WifiPsdu> psdu,
+                                  const WifiTxVector& txVector,
+                                  bool testUnblockedForOtherReasons,
+                                  const std::string& frameStr) {
+        const auto txDuration = WifiPhy::CalculateTxDuration(psdu->GetSize(),
+                                                             txVector,
+                                                             m_apMac->GetWifiPhy(0)->GetPhyBand());
+        Simulator::Schedule(txDuration + MicroSeconds(1), /* to account for propagation delay */
+                            &SingleLinkEmlsrTest::CheckBlockedLink,
+                            this,
+                            m_apMac,
+                            m_staMacs[0]->GetAddress(),
+                            0,
+                            WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY,
+                            true,
+                            "Checking that AP MLD blocked transmissions to single link EMLSR "
+                            "client after " +
+                                frameStr,
+                            testUnblockedForOtherReasons);
+    };
+
+    // expected sequence of transmitted frames
+    m_events.emplace_back(WIFI_MAC_MGT_ASSOCIATION_REQUEST);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK);
+    m_events.emplace_back(WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK);
+
+    // EML OMN sent by EMLSR client
+    m_events.emplace_back(WIFI_MAC_MGT_ACTION,
+                          [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+                              // check that the address of the EMLSR client is seen as an MLD
+                              // address
+                              NS_TEST_EXPECT_MSG_EQ(
+                                  m_apMac->GetWifiRemoteStationManager(0)
+                                      ->GetMldAddress(m_staMacs[0]->GetAddress())
+                                      .has_value(),
+                                  true,
+                                  "Expected the EMLSR client address to be seen as an MLD address");
+                          });
+    m_events.emplace_back(WIFI_MAC_CTL_ACK);
+    // EML OMN sent by AP MLD, protected by ICF
+    m_events.emplace_back(WIFI_MAC_CTL_TRIGGER);
+    m_events.emplace_back(WIFI_MAC_CTL_CTS);
+    m_events.emplace_back(WIFI_MAC_MGT_ACTION);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK,
+                          [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+                              // check that EMLSR mode has been enabled on link 0 of EMLSR client
+                              NS_TEST_EXPECT_MSG_EQ(
+                                  m_staMacs[0]->IsEmlsrLink(0),
+                                  true,
+                                  "Expected EMLSR mode to be enabled on link 0 of EMLSR client");
+                          });
+
+    // Establishment of BA agreement for downlink direction
+
+    // ADDBA REQUEST sent by AP MLD (protected by ICF)
+    m_events.emplace_back(WIFI_MAC_CTL_TRIGGER);
+    m_events.emplace_back(WIFI_MAC_CTL_CTS);
+    m_events.emplace_back(WIFI_MAC_MGT_ACTION);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK,
+                          [=](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+                              // check that transition delay is started after reception of Ack
+                              checkTransDelay(psdu, txVector, false, "DL ADDBA REQUEST");
+                          });
+
+    // ADDBA RESPONSE sent by EMLSR client (no RTS because it is sent by main PHY)
+    m_events.emplace_back(WIFI_MAC_MGT_ACTION);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK,
+                          [=](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+                              // check that transition delay is started after reception of Ack
+                              checkTransDelay(psdu, txVector, true, "DL ADDBA RESPONSE");
+                          });
+
+    // Downlink QoS data frame that triggered BA agreement establishment
+    m_events.emplace_back(WIFI_MAC_CTL_TRIGGER);
+    m_events.emplace_back(WIFI_MAC_CTL_CTS);
+    m_events.emplace_back(WIFI_MAC_QOSDATA);
+    m_events.emplace_back(WIFI_MAC_CTL_BACKRESP,
+                          [=](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+                              // check that transition delay is started after reception of BlockAck
+                              checkTransDelay(psdu, txVector, true, "DL QoS Data");
+                          });
+
+    // Establishment of BA agreement for uplink direction
+
+    // ADDBA REQUEST sent by EMLSR client (no RTS because it is sent by main PHY)
+    m_events.emplace_back(WIFI_MAC_MGT_ACTION);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK,
+                          [=](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+                              // check that transition delay is started after reception of Ack
+                              checkTransDelay(psdu, txVector, false, "UL ADDBA REQUEST");
+                          });
+    // ADDBA RESPONSE sent by AP MLD (protected by ICF)
+    m_events.emplace_back(WIFI_MAC_CTL_TRIGGER);
+    m_events.emplace_back(WIFI_MAC_CTL_CTS);
+    m_events.emplace_back(WIFI_MAC_MGT_ACTION);
+    m_events.emplace_back(WIFI_MAC_CTL_ACK,
+                          [=](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+                              // check that transition delay is started after reception of Ack
+                              checkTransDelay(psdu, txVector, true, "UL ADDBA RESPONSE");
+                          });
+
+    // Uplink QoS data frame that triggered BA agreement establishment
+    m_events.emplace_back(WIFI_MAC_QOSDATA);
+    m_events.emplace_back(WIFI_MAC_CTL_BACKRESP,
+                          [=](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) {
+                              // check that transition delay is started after reception of BlockAck
+                              checkTransDelay(psdu, txVector, true, "UL QoS Data");
+                          });
+
+    m_eventIt = m_events.cbegin();
+
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ((m_eventIt == m_events.cend()), true, "Not all events took place");
+
+    Simulator::Destroy();
+}
+
 WifiEmlsrTestSuite::WifiEmlsrTestSuite()
     : TestSuite("wifi-emlsr", Type::UNIT)
 {
@@ -5039,6 +5251,15 @@ WifiEmlsrTestSuite::WifiEmlsrTestSuite()
 
     AddTestCase(new EmlsrCcaBusyTest(MHz_u{20}), TestCase::Duration::QUICK);
     AddTestCase(new EmlsrCcaBusyTest(MHz_u{80}), TestCase::Duration::QUICK);
+
+    for (const auto switchAuxPhy : {true, false})
+    {
+        for (const auto auxPhyTxCapable : {true, false})
+        {
+            AddTestCase(new SingleLinkEmlsrTest(switchAuxPhy, auxPhyTxCapable),
+                        TestCase::Duration::QUICK);
+        }
+    }
 }
 
 static WifiEmlsrTestSuite g_wifiEmlsrTestSuite; ///< the test suite

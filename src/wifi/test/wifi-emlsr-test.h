@@ -21,6 +21,7 @@
 #include "ns3/wifi-ppdu.h"
 #include "ns3/wifi-psdu.h"
 
+#include <array>
 #include <list>
 #include <map>
 #include <memory>
@@ -29,6 +30,7 @@
 #include <vector>
 
 using namespace ns3;
+using namespace std::string_literals;
 
 // forward declaration
 namespace ns3
@@ -196,9 +198,20 @@ class EmlsrOperationsTestBase : public TestCase
         uint8_t phyId;            ///< ID of the transmitting PHY
     };
 
+    /// array of strings defining the channels for the MLD links
+    const std::array<std::string, 3> m_channelsStr{"{2, 0, BAND_2_4GHZ, 0}"s,
+                                                   "{36, 0, BAND_5GHZ, 0}"s,
+                                                   "{1, 0, BAND_6GHZ, 0}"s};
+
+    /// array of frequency ranges for MLD links
+    const std::array<FrequencyRange, 3> m_freqRanges{WIFI_SPECTRUM_2_4_GHZ,
+                                                     WIFI_SPECTRUM_5_GHZ,
+                                                     WIFI_SPECTRUM_6_GHZ};
+
     uint8_t m_mainPhyId{0};                   //!< ID of the main PHY
     std::set<uint8_t> m_linksToEnableEmlsrOn; /**< IDs of the links on which EMLSR mode has to
                                                    be enabled */
+    std::size_t m_nPhysPerEmlsrDevice{3};     //!< number of PHYs per EMLSR client
     std::size_t m_nEmlsrStations{1};          ///< number of stations to create that activate EMLSR
     std::size_t m_nNonEmlsrStations{0};       /**< number of stations to create that do not
                                                 activate EMLSR */
@@ -971,6 +984,72 @@ class EmlsrCcaBusyTest : public EmlsrOperationsTestBase
     Time m_channelSwitchDelay;   //!< the PHY channel switch delay
     uint8_t m_currMainPhyLinkId; //!< the ID of the link the main PHY switches from
     uint8_t m_nextMainPhyLinkId; //!< the ID of the link the main PHY switches to
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test ML setup and data exchange between an AP MLD and a single link EMLSR client.
+ *
+ * A single link EMLSR client performs ML setup with an AP MLD having three links and then enables
+ * EMLSR mode on the unique link. A Block Ack agreement is established (for both the downlink and
+ * uplink directions) and QoS data frames (aggregated in an A-MPDU) are transmitted by both the
+ * AP MLD and the EMLSR client.
+ *
+ * It is checked that:
+ * - the expected sequence of frames is transmitted, including ICFs before downlink transmissions
+ * - EMLSR mode is enabled on the single EMLSR link
+ * - the address of the EMLSR client is seen as an MLD address
+ * - the AP MLD starts the transition delay timer at the end of each TXOP
+ */
+class SingleLinkEmlsrTest : public EmlsrOperationsTestBase
+{
+  public:
+    /**
+     * Constructor.
+     *
+     * @param switchAuxPhy whether aux PHYs switch link
+     * @param auxPhyTxCapable whether aux PHYs are TX capable
+     */
+    SingleLinkEmlsrTest(bool switchAuxPhy, bool auxPhyTxCapable);
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+
+    /// Actions and checks to perform upon the transmission of each frame
+    struct Events
+    {
+        /**
+         * Constructor.
+         *
+         * @param type the frame MAC header type
+         * @param f function to perform actions and checks
+         */
+        Events(WifiMacType type,
+               std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&)>&& f = {})
+            : hdrType(type),
+              func(f)
+        {
+        }
+
+        WifiMacType hdrType; ///< MAC header type of frame being transmitted
+        std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&)>
+            func; ///< function to perform actions and checks
+    };
+
+  private:
+    bool m_switchAuxPhy;                         //!< whether aux PHYs switch link
+    bool m_auxPhyTxCapable;                      //!< whether aux PHYs are TX capable
+    std::list<Events> m_events;                  //!< list of events for a test run
+    std::list<Events>::const_iterator m_eventIt; //!< iterator over the list of events
 };
 
 #endif /* WIFI_EMLSR_TEST_H */
