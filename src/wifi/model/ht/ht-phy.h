@@ -425,7 +425,7 @@ class HtPhy : public OfdmPhy
      *
      * @param mcsValue the HT MCS index
      * @param channelWidth the channel width
-     * @param guardInterval the guard interval duration in nanoseconds
+     * @param guardInterval the guard interval duration
      * @param nss the number of spatial streams
      * @return the data bit rate in bps.
      */

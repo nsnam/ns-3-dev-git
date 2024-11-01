@@ -108,7 +108,7 @@ class WifiTxVector
      * @param mode WifiMode
      * @param powerLevel transmission power level
      * @param preamble preamble type
-     * @param guardInterval the guard interval duration in nanoseconds
+     * @param guardInterval the guard interval duration
      * @param nTx the number of TX antennas
      * @param nss the number of spatial STBC streams (NSS)
      * @param ness the number of extension spatial streams (NESS)
@@ -206,13 +206,13 @@ class WifiTxVector
      */
     void SetChannelWidth(MHz_u channelWidth);
     /**
-     * @returns the guard interval duration (in nanoseconds)
+     * @returns the guard interval duration
      */
     Time GetGuardInterval() const;
     /**
-     * Sets the guard interval duration (in nanoseconds)
+     * Sets the guard interval duration
      *
-     * @param guardInterval the guard interval duration (in nanoseconds)
+     * @param guardInterval the guard interval duration
      */
     void SetGuardInterval(Time guardInterval);
     /**
