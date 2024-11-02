@@ -1070,13 +1070,15 @@ EhtFrameExchangeManager::SendCtsAfterRts(const WifiMacHeader& rtsHdr,
 {
     NS_LOG_FUNCTION(this << rtsHdr << rtsTxMode << rtsSnr);
 
-    if (m_apMac && GetWifiRemoteStationManager()->GetEmlsrEnabled(rtsHdr.GetAddr2()))
+    auto addr2 = rtsHdr.GetAddr2();
+
+    if (m_apMac && GetWifiRemoteStationManager()->GetEmlsrEnabled(addr2))
     {
         // we are going to send a CTS to an EMLSR client, transmissions to such EMLSR client
         // must be blocked on the other EMLSR links
 
-        auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(rtsHdr.GetAddr2());
-        NS_ASSERT_MSG(mldAddress, "MLD address not found for " << rtsHdr.GetAddr2());
+        auto mldAddress = GetWifiRemoteStationManager()->GetMldAddress(addr2);
+        NS_ASSERT_MSG(mldAddress, "MLD address not found for " << addr2);
 
         for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); ++linkId)
         {
@@ -1439,7 +1441,7 @@ EhtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
     NS_ASSERT(mpdu->GetHeader().GetAddr1().IsGroup() || mpdu->GetHeader().GetAddr1() == m_self);
 
     const auto& hdr = mpdu->GetHeader();
-    const auto sender = hdr.GetAddr2();
+    auto sender = hdr.GetAddr2();
 
     if (hdr.IsTrigger())
     {
