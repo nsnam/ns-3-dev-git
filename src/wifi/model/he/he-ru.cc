@@ -379,7 +379,7 @@ HeRu::RuSpecCompare::operator()(const HeRu::RuSpec& lhs, const HeRu::RuSpec& rhs
 }
 
 std::vector<HeRu::RuSpec>
-HeRu::GetRuSpecs(uint8_t ruAllocation)
+HeRu::GetRuSpecs(uint16_t ruAllocation)
 {
     std::optional<std::size_t> idx;
     if (((ruAllocation >= 0) && (ruAllocation <= 15)) || (ruAllocation == 112))
@@ -405,12 +405,12 @@ HeRu::GetRuSpecs(uint8_t ruAllocation)
     }
     else
     {
-        NS_FATAL_ERROR("Reserved RU allocation " << +ruAllocation);
+        NS_FATAL_ERROR("Reserved RU allocation " << ruAllocation);
     }
     return idx.has_value() ? m_heRuAllocations.at(idx.value()) : std::vector<HeRu::RuSpec>{};
 }
 
-uint8_t
+uint16_t
 HeRu::GetEqualizedRuAllocation(RuType ruType, bool isOdd, bool hasUsers)
 {
     switch (ruType)
