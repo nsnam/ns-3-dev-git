@@ -427,29 +427,30 @@ class HePhy : public VhtPhy
      */
     static Time GetSymbolDuration(Time guardInterval);
 
+    /// structure containing the information about the RU subcarriers to be able to converted to the
+    /// indices used by the Spectrum model
+    struct RuSubcarriersInfo
+    {
+        MHz_u bandWidth; ///< width of the band used for the OFDMA transmission. Must be a multiple
+                         ///< of 20 MHz
+        MHz_u guardBandwidth;                        ///< width of the guard band
+        const std::vector<MHz_u>& centerFrequencies; ///< center frequency of each segment
+        MHz_u totalWidth;                            ///< width of the operating channel
+        Hz_u subcarrierSpacing;                      ///< subcarrier spacing
+        WifiModulationClass mc;                      ///< modulation class used for the transmission
+        SubcarrierRange subcarrierRange;             ///< subcarrier range of the RU
+        uint8_t bandIndex{0}; ///< index (starting at 0) of the band within the operating channel
+    };
+
     /**
-     * @param bandWidth the width of the band used for the OFDMA transmission. Must be a multiple of
-     * 20 MHz
-     * @param guardBandwidth width of the guard band
-     * @param centerFrequencies the center frequency of each segment
-     * @param totalWidth the width of the operating channel
-     * @param subcarrierSpacing the subcarrier spacing
-     * @param subcarrierRange the subcarrier range of the RU
-     * @param bandIndex the index (starting at 0) of the band within the operating channel
-     * @return the converted subcarriers
-     *
      * This is a helper function to convert RU subcarriers, which are relative to the center
-     * frequency subcarrier, to the indexes used by the Spectrum model. The size of the returned
+     * frequency subcarrier, to the indices used by the Spectrum model. The size of the returned
      * vector corresponds to the number of segments covered by the RU.
+     *
+     * @param info the information about the RU subcarrier to convert
+     * @return the indices used by the Spectrum model for the provided RU subcarrier
      */
-    static std::vector<WifiSpectrumBandIndices> ConvertRuSubcarriers(
-        MHz_u bandWidth,
-        MHz_u guardBandwidth,
-        const std::vector<MHz_u>& centerFrequencies,
-        MHz_u totalWidth,
-        Hz_u subcarrierSpacing,
-        SubcarrierRange subcarrierRange,
-        uint8_t bandIndex = 0);
+    static std::vector<WifiSpectrumBandIndices> ConvertRuSubcarriers(const RuSubcarriersInfo& info);
 
   protected:
     PhyFieldRxStatus ProcessSig(Ptr<Event> event,

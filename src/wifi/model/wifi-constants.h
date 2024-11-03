@@ -116,6 +116,9 @@ static constexpr uint16_t MAX_AID{2007};
 /// STA_ID for a RU that is intended for no user (Section 26.11.1 802.11ax-2021)
 static constexpr uint16_t NO_USER_STA_ID{2046};
 
+/// Unassigned 242-tone RU identifier for EHT (Table Table 36-34 IEEE 802.11be D7.0)
+static constexpr uint8_t UNASSIGNED_242_TONE_EHT_RU{27};
+
 /// The maximum value for the association ID updated since 802.11be (Sec. 9.4.1.8 of 802.11be D7.0)
 static constexpr uint16_t EHT_MAX_AID{2006};
 

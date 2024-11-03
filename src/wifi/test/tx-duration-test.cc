@@ -270,7 +270,8 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
         staIds.push_back(staId++);
     }
     txVector.SetSigBMode(VhtPhy::GetVhtMcs0());
-    txVector.SetRuAllocation({192, 192}, 0);
+    const uint16_t ruAllocPer20 = IsEht(preamble) ? 64 : 192;
+    txVector.SetRuAllocation({ruAllocPer20, ruAllocPer20}, 0);
 
     Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy>();
     std::list<WifiPhyBand> testedBands;
@@ -1950,31 +1951,32 @@ TxDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11be SU duration failed");
 
     // 802.11be MU durations
-    retval = retval &&
-             CheckMuTxDuration(
-                 std::list<uint32_t>{1536, 1536},
-                 std::list<HeMuUserInfo>{{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 0, 1},
-                                         {HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 0, 1}},
-                 MHz_u{40},
-                 NanoSeconds(800),
-                 WIFI_PREAMBLE_EHT_MU,
-                 NanoSeconds(1493600)) // equivalent to 802.11ax MU
-             && CheckMuTxDuration(
-                    std::list<uint32_t>{1536, 1536},
-                    std::list<HeMuUserInfo>{{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 1, 1},
-                                            {HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 0, 1}},
-                    MHz_u{40},
-                    NanoSeconds(800),
-                    WIFI_PREAMBLE_EHT_MU,
-                    NanoSeconds(1493600)) // shouldn't change if first PSDU is shorter
-             && CheckMuTxDuration(
-                    std::list<uint32_t>{1536, 76},
-                    std::list<HeMuUserInfo>{{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 0, 1},
-                                            {HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 0, 1}},
-                    MHz_u{40},
-                    NanoSeconds(800),
-                    WIFI_PREAMBLE_EHT_MU,
-                    NanoSeconds(1493600));
+    retval =
+        retval &&
+        CheckMuTxDuration(
+            std::list<uint32_t>{1536, 1536},
+            std::list<HeMuUserInfo>{{EhtRu::RuSpec{RuType::RU_242_TONE, 1, true, true}, 0, 1},
+                                    {EhtRu::RuSpec{RuType::RU_242_TONE, 2, true, true}, 0, 1}},
+            MHz_u{40},
+            NanoSeconds(800),
+            WIFI_PREAMBLE_EHT_MU,
+            NanoSeconds(1493600)) // equivalent to 802.11ax MU
+        && CheckMuTxDuration(
+               std::list<uint32_t>{1536, 1536},
+               std::list<HeMuUserInfo>{{EhtRu::RuSpec{RuType::RU_242_TONE, 1, true, true}, 1, 1},
+                                       {EhtRu::RuSpec{RuType::RU_242_TONE, 2, true, true}, 0, 1}},
+               MHz_u{40},
+               NanoSeconds(800),
+               WIFI_PREAMBLE_EHT_MU,
+               NanoSeconds(1493600)) // shouldn't change if first PSDU is shorter
+        && CheckMuTxDuration(
+               std::list<uint32_t>{1536, 76},
+               std::list<HeMuUserInfo>{{EhtRu::RuSpec{RuType::RU_242_TONE, 1, true, true}, 0, 1},
+                                       {EhtRu::RuSpec{RuType::RU_242_TONE, 2, true, true}, 0, 1}},
+               MHz_u{40},
+               NanoSeconds(800),
+               WIFI_PREAMBLE_EHT_MU,
+               NanoSeconds(1493600));
 
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11be MU duration failed");
 
@@ -2116,6 +2118,7 @@ HeSigBDurationTest::DoRun()
     // Verify number of users for content channels 1 and 2
     const auto& numUsersPerCc = HePpdu::GetNumRusPerHeSigBContentChannel(
         txVector.GetChannelWidth(),
+        txVector.GetModulationClass(),
         txVector.GetRuAllocation(m_p20Index),
         txVector.GetCenter26ToneRuIndication(),
         txVector.IsSigBCompression(),
@@ -2485,8 +2488,10 @@ PhyHeaderSectionsTest::DoRun()
     txVector.SetNss(2); // EHT-LTF duration assumed to be always 8 us for the time being (see note
                         // in HePhy::GetTrainingDuration)
     txVector.SetMode(EhtPhy::GetEhtMcs9());
-    userInfoMap = {{1, {HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 4, 2}},
-                   {2, {HeRu::RuSpec{RuType::RU_106_TONE, 1, true}, 9, 1}}};
+    userInfoMap = {{1, {EhtRu::RuSpec{RuType::RU_52_TONE, 1, true, true}, 4, 2}},
+                   {2, {EhtRu::RuSpec{RuType::RU_52_TONE, 2, true, true}, 9, 1}},
+                   {3, {EhtRu::RuSpec{RuType::RU_52_TONE, 3, true, true}, 4, 2}},
+                   {4, {EhtRu::RuSpec{RuType::RU_52_TONE, 4, true, true}, 9, 1}}};
     WifiMode uSigMode = EhtPhy::GetVhtMcs0();
     WifiMode ehtSigMode = EhtPhy::GetVhtMcs4(); // because of first user info map
 
@@ -2505,7 +2510,7 @@ PhyHeaderSectionsTest::DoRun()
     // -> EHT MU format
     txVector.SetPreambleType(WIFI_PREAMBLE_EHT_MU);
     txVector.SetEhtPpduType(0); // EHT MU transmission
-    txVector.SetRuAllocation({96}, 0);
+    txVector.SetRuAllocation({24}, 0);
     sections[WIFI_PPDU_FIELD_U_SIG] = {{ppduStart + MicroSeconds(24), ppduStart + MicroSeconds(32)},
                                        uSigMode};
     sections[WIFI_PPDU_FIELD_EHT_SIG] = {
@@ -2517,7 +2522,7 @@ PhyHeaderSectionsTest::DoRun()
         ehtSigMode};
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
     txVector.SetChannelWidth(MHz_u{160}); // shouldn't have any impact
-    txVector.SetRuAllocation({96, 113, 113, 113, 113, 113, 113, 113}, 0);
+    txVector.SetRuAllocation({24, 27, 27, 27, 27, 27, 27, 27}, 0);
 
     CheckPhyHeaderSections(phyEntity->GetPhyHeaderSections(txVector, ppduStart), sections);
 }

@@ -305,22 +305,38 @@ TestMultiUserScheduler::ComputeWifiTxVector()
     RuType ruType;
     switch (static_cast<uint16_t>(bw))
     {
-    case 20:
+    case 20: {
         ruType = RuType::RU_52_TONE;
-        m_txVector.SetRuAllocation({112}, 0);
+        const uint16_t ruAllocPer20 = IsEht(m_txVector.GetPreambleType()) ? 24 : 112;
+        m_txVector.SetRuAllocation({ruAllocPer20}, 0);
         break;
-    case 40:
+    }
+    case 40: {
         ruType = RuType::RU_106_TONE;
-        m_txVector.SetRuAllocation({96, 96}, 0);
+        const uint16_t ruAllocPer20 = IsEht(m_txVector.GetPreambleType()) ? 48 : 96;
+        m_txVector.SetRuAllocation({ruAllocPer20, ruAllocPer20}, 0);
         break;
-    case 80:
+    }
+    case 80: {
         ruType = RuType::RU_242_TONE;
-        m_txVector.SetRuAllocation({192, 192, 192, 192}, 0);
+        const uint16_t ruAllocPer20 = IsEht(m_txVector.GetPreambleType()) ? 64 : 112;
+        m_txVector.SetRuAllocation({ruAllocPer20, ruAllocPer20, ruAllocPer20, ruAllocPer20}, 0);
         break;
-    case 160:
+    }
+    case 160: {
         ruType = RuType::RU_484_TONE;
-        m_txVector.SetRuAllocation({200, 200, 200, 200, 200, 200, 200, 200}, 0);
+        const uint16_t ruAllocPer20 = IsEht(m_txVector.GetPreambleType()) ? 72 : 200;
+        m_txVector.SetRuAllocation({ruAllocPer20,
+                                    ruAllocPer20,
+                                    ruAllocPer20,
+                                    ruAllocPer20,
+                                    ruAllocPer20,
+                                    ruAllocPer20,
+                                    ruAllocPer20,
+                                    ruAllocPer20},
+                                   0);
         break;
+    }
     default:
         NS_ABORT_MSG("Unsupported channel width");
     }
@@ -330,12 +346,20 @@ TestMultiUserScheduler::ComputeWifiTxVector()
     for (auto& sta : staList)
     {
         auto index{ruIndex};
-        if ((bw == MHz_u{160}) && (ruIndex == 3))
+        if (!IsEht(m_txVector.GetPreambleType()) && (bw == MHz_u{160}) && (ruIndex >= 3))
         {
-            index = HeRu::GetIndexIn80MHzSegment(bw, ruType, ruIndex);
-            primary80 = HeRu::GetPrimary80MHzFlag(bw, ruType, ruIndex, 0);
+            index = ruIndex - 2;
+            primary80 = false;
         }
-        m_txVector.SetHeMuUserInfo(sta.first, {HeRu::RuSpec{ruType, index, primary80}, 11, 1});
+        if (IsEht(m_txVector.GetPreambleType()) && (bw > MHz_u{80}))
+        {
+            index = EhtRu::GetIndexIn80MHzSegment(bw, ruType, ruIndex);
+            primary80 = EhtRu::GetPrimaryFlags(bw, ruType, ruIndex, 0).second;
+        }
+        const auto ru = IsEht(m_txVector.GetPreambleType())
+                            ? WifiRu::RuSpec(EhtRu::RuSpec{ruType, index, true, primary80})
+                            : WifiRu::RuSpec(HeRu::RuSpec{ruType, index, primary80});
+        m_txVector.SetHeMuUserInfo(sta.first, {ru, 11, 1});
         ruIndex++;
     }
     m_txVector.SetSigBMode(VhtPhy::GetVhtMcs5());

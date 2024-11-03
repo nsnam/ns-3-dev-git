@@ -13,8 +13,10 @@
 #include "ns3/log.h"
 #include "ns3/wifi-phy-operating-channel.h"
 #include "ns3/wifi-psdu.h"
+#include "ns3/wifi-utils.h"
 
 #include <algorithm>
+#include <initializer_list>
 #include <numeric>
 
 namespace ns3
@@ -187,6 +189,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
                                       [](uint8_t prev, const auto& cc) { return prev + cc.size(); })
                     : 0;
             SetHeMuUserInfos(txVector,
+                             WIFI_MOD_CLASS_EHT,
                              ruAllocation.value(),
                              std::nullopt,
                              ehtPhyHeader->m_contentChannels,
@@ -203,7 +206,7 @@ EhtPpdu::SetTxVectorFromPhyHeaders(WifiTxVector& txVector) const
         }
         else
         {
-            const auto fullBwRu{HeRu::RuSpec(WifiRu::GetRuType(bw), 1, true)};
+            const auto fullBwRu{EhtRu::RuSpec(WifiRu::GetRuType(bw), 1, true, true)};
             txVector.SetHeMuUserInfo(ehtPhyHeader->m_contentChannels.front().front().staId,
                                      {fullBwRu,
                                       ehtPhyHeader->m_contentChannels.front().front().mcs,
@@ -232,6 +235,7 @@ EhtPpdu::GetNumRusPerEhtSigBContentChannel(MHz_u channelWidth,
         return {1, 0};
     }
     return HePpdu::GetNumRusPerHeSigBContentChannel(channelWidth,
+                                                    WIFI_MOD_CLASS_EHT,
                                                     ruAllocation,
                                                     std::nullopt,
                                                     compression,
@@ -386,6 +390,26 @@ EhtPpdu::GetPsdu(uint8_t bssColor, uint16_t staId /* = SU_STA_ID */) const
     }
 
     return nullptr;
+}
+
+WifiRu::RuSpec
+EhtPpdu::GetRuSpec(std::size_t ruAllocIndex, MHz_u bw, RuType ruType, std::size_t phyIndex) const
+{
+    if (ruType == RuType::RU_26_TONE)
+    {
+        for (const auto undefinedRu : std::initializer_list<std::size_t>{19, 56, 93, 130})
+        {
+            if (phyIndex >= undefinedRu)
+            {
+                ++phyIndex;
+            }
+        }
+    }
+    const auto p20Index = m_operatingChannel.GetPrimaryChannelIndex(MHz_u{20});
+    const auto& [primary160, primary80OrLow80] =
+        EhtRu::GetPrimaryFlags(bw, ruType, phyIndex, p20Index);
+    const auto index = EhtRu::GetIndexIn80MHzSegment(bw, ruType, phyIndex);
+    return EhtRu::RuSpec{ruType, index, primary160, primary80OrLow80};
 }
 
 Ptr<WifiPpdu>

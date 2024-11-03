@@ -151,6 +151,12 @@ class EhtPpdu : public HePpdu
                                     uint8_t ehtPpduType,
                                     std::optional<bool> isLow80MHz);
 
+  protected:
+    WifiRu::RuSpec GetRuSpec(std::size_t ruAllocIndex,
+                             MHz_u bw,
+                             RuType ruType,
+                             std::size_t phyIndex) const override;
+
   private:
     bool IsDlMu() const override;
     bool IsUlMu() const override;

@@ -148,45 +148,75 @@ SpectrumWifiPhy::GetRuBands(Ptr<WifiSpectrumPhyInterface> spectrumPhyInterface,
     RuBands ruBands{};
     const auto channelWidth = spectrumPhyInterface->GetChannelWidth();
     const auto p20Index = GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20});
-    for (auto bw = channelWidth; bw >= MHz_u{20}; bw = bw / 2)
+    std::vector<WifiModulationClass> modClasses{WIFI_MOD_CLASS_HE};
+    if (GetStandard() >= WIFI_STANDARD_80211be)
     {
-        for (uint32_t i = 0; i < (channelWidth / bw); ++i)
+        modClasses.push_back(WIFI_MOD_CLASS_EHT);
+    }
+    for (const auto modClass : modClasses)
+    {
+        for (MHz_u bw = channelWidth; bw >= MHz_u{20}; bw = bw / 2)
         {
-            for (uint32_t type = 0;
-                 type <= static_cast<uint32_t>(WifiRu::GetMaxRuType(WIFI_MOD_CLASS_HE));
-                 ++type)
+            if (bw > GetMaximumChannelWidth(modClass))
             {
-                auto ruType = static_cast<RuType>(type);
-                std::size_t nRus = WifiRu::GetNRus(bw, ruType, WIFI_MOD_CLASS_HE);
-                for (std::size_t phyIndex = 1; phyIndex <= nRus; phyIndex++)
+                continue;
+            }
+            for (uint8_t i = 0; i < (channelWidth / bw); ++i)
+            {
+                for (uint32_t type = 0;
+                     type <= static_cast<uint32_t>(WifiRu::GetMaxRuType(modClass));
+                     ++type)
                 {
-                    const auto group =
-                        WifiRu::GetSubcarrierGroup(bw, ruType, phyIndex, WIFI_MOD_CLASS_HE);
-                    SubcarrierRange subcarrierRange =
-                        std::make_pair(group.front().first, group.back().second);
-                    const auto bandIndices =
-                        HePhy::ConvertRuSubcarriers(bw,
-                                                    guardBandwidth,
-                                                    spectrumPhyInterface->GetCenterFrequencies(),
-                                                    spectrumPhyInterface->GetChannelWidth(),
-                                                    GetSubcarrierSpacing(),
-                                                    subcarrierRange,
-                                                    i);
-
-                    WifiSpectrumBandInfo band{};
-                    for (const auto& indicesPerSegment : bandIndices)
+                    const auto ruType = static_cast<RuType>(type);
+                    const auto nRus = WifiRu::GetNRus(bw, ruType, modClass);
+                    std::size_t undefRus{0};
+                    for (std::size_t phyIndex = 1; phyIndex <= nRus + undefRus; ++phyIndex)
                     {
-                        band.indices.emplace_back(indicesPerSegment);
-                        band.frequencies.emplace_back(
-                            ConvertIndicesToFrequenciesForInterface(spectrumPhyInterface,
-                                                                    indicesPerSegment));
+                        const auto group =
+                            WifiRu::GetSubcarrierGroup(bw, ruType, phyIndex, modClass);
+                        if (group.empty())
+                        {
+                            ++undefRus;
+                            continue;
+                        }
+                        const auto subcarrierRange =
+                            std::make_pair(group.front().first, group.back().second);
+                        const auto bandIndices = HePhy::ConvertRuSubcarriers(
+                            {bw,
+                             guardBandwidth,
+                             spectrumPhyInterface->GetCenterFrequencies(),
+                             spectrumPhyInterface->GetChannelWidth(),
+                             GetSubcarrierSpacing(),
+                             modClass,
+                             subcarrierRange,
+                             i});
+
+                        WifiSpectrumBandInfo band{};
+                        for (const auto& indicesPerSegment : bandIndices)
+                        {
+                            band.indices.emplace_back(indicesPerSegment);
+                            band.frequencies.emplace_back(
+                                ConvertIndicesToFrequenciesForInterface(spectrumPhyInterface,
+                                                                        indicesPerSegment));
+                        }
+                        WifiRu::RuSpec ru;
+                        if (modClass == WIFI_MOD_CLASS_HE)
+                        {
+                            const auto index = HeRu::GetIndexIn80MHzSegment(bw, ruType, phyIndex);
+                            const auto primary80 =
+                                HeRu::GetPrimary80MHzFlag(bw, ruType, phyIndex, p20Index);
+                            ru = HeRu::RuSpec{ruType, index, primary80};
+                        }
+                        else
+                        {
+                            const auto index = EhtRu::GetIndexIn80MHzSegment(bw, ruType, phyIndex);
+                            const auto& [primary160, primary80OrLow80] =
+                                EhtRu::GetPrimaryFlags(bw, ruType, phyIndex, p20Index);
+                            ru = EhtRu::RuSpec{ruType, index, primary160, primary80OrLow80};
+                        }
+                        NS_ABORT_IF(WifiRu::GetPhyIndex(ru, bw, p20Index) != phyIndex);
+                        ruBands.insert({band, ru});
                     }
-                    const auto index = HeRu::GetIndexIn80MHzSegment(bw, ruType, phyIndex);
-                    const auto primary80 =
-                        HeRu::GetPrimary80MHzFlag(bw, ruType, phyIndex, p20Index);
-                    const auto ru = HeRu::RuSpec{ruType, index, primary80};
-                    NS_ABORT_IF(WifiRu::GetPhyIndex(ru, bw, p20Index) != phyIndex);
-                    ruBands.insert({band, ru});
                 }
             }
         }

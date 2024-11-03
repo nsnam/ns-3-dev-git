@@ -148,14 +148,15 @@ OfdmaTestHePhy::GetNonOfdmaBand(const WifiTxVector& txVector, uint16_t staId) co
         WifiRu::GetPhyIndex(nonOfdmaRu,
                             channelWidth,
                             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(MHz_u{20})));
-    const auto indices =
-        ConvertRuSubcarriers(channelWidth,
-                             GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
-                             m_wifiPhy->GetOperatingChannel().GetFrequencies(),
-                             m_wifiPhy->GetChannelWidth(),
-                             m_wifiPhy->GetSubcarrierSpacing(),
-                             {groupPreamble.front().first, groupPreamble.back().second},
-                             m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth));
+    const auto indices = ConvertRuSubcarriers(
+        {channelWidth,
+         GetGuardBandwidth(m_wifiPhy->GetChannelWidth()),
+         m_wifiPhy->GetOperatingChannel().GetFrequencies(),
+         m_wifiPhy->GetChannelWidth(),
+         m_wifiPhy->GetSubcarrierSpacing(),
+         txVector.GetModulationClass(),
+         {groupPreamble.front().first, groupPreamble.back().second},
+         m_wifiPhy->GetOperatingChannel().GetPrimaryChannelIndex(channelWidth)});
     WifiSpectrumBandInfo nonOfdmaBand{};
     for (const auto& indicesPerSegment : indices)
     {
