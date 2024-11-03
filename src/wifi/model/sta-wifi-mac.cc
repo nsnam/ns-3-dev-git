@@ -91,6 +91,20 @@ StaWifiMac::GetTypeId()
                           StringValue("ns3::UniformRandomVariable[Min=50.0|Max=250.0]"),
                           MakePointerAccessor(&StaWifiMac::m_probeDelay),
                           MakePointerChecker<RandomVariableStream>())
+            .AddAttribute("AssocType",
+                          "Type of association performed by this device (provided that it is "
+                          "supported by the standard configured for this device, otherwise legacy "
+                          "association is performed). By using this attribute, it is possible for "
+                          "an EHT single-link device to perform ML setup with an AP MLD and for an "
+                          "EHT multi-link device to perform legacy association with an AP MLD.",
+                          TypeId::ATTR_GET |
+                              TypeId::ATTR_CONSTRUCT, // prevent setting after construction
+                          EnumValue(WifiAssocType::ML_SETUP),
+                          MakeEnumAccessor<WifiAssocType>(&StaWifiMac::m_assocType),
+                          MakeEnumChecker(WifiAssocType::LEGACY,
+                                          "LEGACY",
+                                          WifiAssocType::ML_SETUP,
+                                          "ML_SETUP"))
             .AddAttribute(
                 "PowerSaveMode",
                 "Enable/disable power save mode on the given link. The power management mode is "
@@ -251,6 +265,13 @@ StaWifiMac::SetAssocManager(Ptr<WifiAssocManager> assocManager)
     m_assocManager->SetStaWifiMac(this);
 }
 
+WifiAssocType
+StaWifiMac::GetAssocType() const
+{
+    // non-EHT devices can only perform legacy association
+    return GetEhtConfiguration() ? m_assocType : WifiAssocType::LEGACY;
+}
+
 void
 StaWifiMac::SetEmlsrManager(Ptr<EmlsrManager> emlsrManager)
 {
@@ -395,11 +416,9 @@ StaWifiMac::GetMultiLinkProbeRequest(uint8_t linkId,
     NS_LOG_FUNCTION(this << linkId << apMldId.has_value());
     auto req = GetProbeRequest(linkId);
 
-    if (GetNLinks() == 1)
+    if (GetAssocType() == WifiAssocType::LEGACY)
     {
-        // Single link (non-EHT) device
-        NS_LOG_DEBUG("Single link device does not support Multi-link operation, not including "
-                     "Multi-link Element");
+        NS_LOG_DEBUG("Legacy association, not including Multi-link Element");
         return req;
     }
 
@@ -698,11 +717,10 @@ StaWifiMac::SendAssociationRequest(bool isReassoc)
 
     auto frame = GetAssociationRequest(isReassoc, linkId);
 
-    // include a Multi-Link Element if this device has multiple links (independently
-    // of how many links will be setup) and the AP is a multi-link device;
-    // if the AP MLD  has indicated a support of TID-to-link mapping negotiation, also
+    // include a Multi-Link Element if this device performs ML Setup and the AP is a multi-link
+    // device; if the AP MLD  has indicated a support of TID-to-link mapping negotiation, also
     // include the TID-to-link Mapping element(s)
-    if (GetNLinks() > 1 &&
+    if (GetAssocType() == WifiAssocType::ML_SETUP &&
         GetWifiRemoteStationManager(linkId)->GetMldAddress(*link.bssid).has_value())
     {
         auto addMle = [&](auto&& frame) {
@@ -1339,7 +1357,8 @@ StaWifiMac::ReceiveAssocResp(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
         NS_ASSERT(GetLink(linkId).bssid.has_value() && *GetLink(linkId).bssid == hdr.GetAddr3());
         SetBssid(hdr.GetAddr3(), linkId);
         SetState(ASSOCIATED);
-        if ((GetNLinks() > 1) && assocResp.Get<MultiLinkElement>().has_value())
+        if ((GetAssocType() == WifiAssocType::ML_SETUP) &&
+            assocResp.Get<MultiLinkElement>().has_value())
         {
             // this is an ML setup, trace the setup link
             m_setupCompleted(linkId, hdr.GetAddr3());

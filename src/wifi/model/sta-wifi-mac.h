@@ -34,6 +34,18 @@ class EmlsrManager;
 /**
  * @ingroup wifi
  *
+ * Type of association performed by this device (provided that it is supported by the standard
+ * configured for this device).
+ */
+enum class WifiAssocType : uint8_t
+{
+    LEGACY = 0,
+    ML_SETUP
+};
+
+/**
+ * @ingroup wifi
+ *
  * Scan type (active or passive)
  */
 enum class WifiScanType : uint8_t
@@ -266,6 +278,9 @@ class StaWifiMac : public WifiMac
      * @return the association ID
      */
     uint16_t GetAssociationId() const;
+
+    /// @return the type of association procedure performed by this device
+    WifiAssocType GetAssocType() const;
 
     /**
      * Enable or disable Power Save mode on the given link.
@@ -633,6 +648,7 @@ class StaWifiMac : public WifiMac
     MacState m_state;                             ///< MAC state
     uint16_t m_aid;                               ///< Association AID
     Ptr<WifiAssocManager> m_assocManager;         ///< Association Manager
+    WifiAssocType m_assocType;                    ///< type of association
     Ptr<EmlsrManager> m_emlsrManager;             ///< EMLSR Manager
     Time m_waitBeaconTimeout;                     ///< wait beacon timeout
     Time m_probeRequestTimeout;                   ///< probe request timeout
