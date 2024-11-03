@@ -174,13 +174,32 @@ RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> 
 {
     NS_LOG_FUNCTION(this);
 
+    auto heConfiguration = m_apMac->GetHeConfiguration();
+    NS_ASSERT(heConfiguration);
+
+    WifiTxVector txVector;
+    txVector.SetChannelWidth(m_allowedWidth);
+    txVector.SetGuardInterval(heConfiguration->GetGuardInterval());
+    txVector.SetBssColor(heConfiguration->m_bssColor);
+    txVector.SetPreambleType(WIFI_PREAMBLE_HE_TB);
+
+    const auto firstCandidate =
+        std::find_if(m_staListUl.begin(), m_staListUl.end(), canBeSolicited);
+    if (firstCandidate == m_staListUl.cend())
+    {
+        NS_LOG_DEBUG("No candidate");
+        return txVector;
+    }
+
     // determine RUs to allocate to stations
+    const auto isEht =
+        (m_apMac->GetEhtSupported() && m_apMac->GetEhtSupported(firstCandidate->address));
     auto count = std::min<std::size_t>(m_nStations, m_staListUl.size());
     std::size_t nCentral26TonesRus;
     WifiRu::GetEqualSizedRusForStations(m_allowedWidth,
                                         count,
                                         nCentral26TonesRus,
-                                        WIFI_MOD_CLASS_HE);
+                                        isEht ? WIFI_MOD_CLASS_EHT : WIFI_MOD_CLASS_HE);
     NS_ASSERT(count >= 1);
 
     if (!m_useCentral26TonesRus)
@@ -188,17 +207,15 @@ RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> 
         nCentral26TonesRus = 0;
     }
 
-    Ptr<HeConfiguration> heConfiguration = m_apMac->GetHeConfiguration();
-    NS_ASSERT(heConfiguration);
-
-    WifiTxVector txVector;
-    txVector.SetPreambleType(WIFI_PREAMBLE_HE_TB);
-    txVector.SetChannelWidth(m_allowedWidth);
-    txVector.SetGuardInterval(heConfiguration->GetGuardInterval());
-    txVector.SetBssColor(heConfiguration->m_bssColor);
+    if (isEht)
+    {
+        txVector.SetPreambleType(WIFI_PREAMBLE_EHT_TB);
+        txVector.SetEhtPpduType(0);
+    }
+    // TODO otherwise make sure the TX width does not exceed 160 MHz
 
     // iterate over the associated stations until an enough number of stations is identified
-    auto staIt = m_staListUl.begin();
+    auto staIt = firstCandidate;
     m_candidates.clear();
 
     while (staIt != m_staListUl.end() &&
@@ -207,49 +224,13 @@ RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> 
     {
         NS_LOG_DEBUG("Next candidate STA (MAC=" << staIt->address << ", AID=" << staIt->aid << ")");
 
-        if (!canBeSolicited(*staIt))
-        {
-            NS_LOG_DEBUG("Skipping station based on provided function object");
-            staIt++;
-            continue;
-        }
-
         if (txVector.GetPreambleType() == WIFI_PREAMBLE_EHT_TB &&
             !m_apMac->GetEhtSupported(staIt->address))
         {
             NS_LOG_DEBUG(
                 "Skipping non-EHT STA because this Trigger Frame is only soliciting EHT STAs");
-            staIt++;
+            staIt = std::find_if(++staIt, m_staListUl.end(), canBeSolicited);
             continue;
-        }
-
-        uint8_t tid = 0;
-        while (tid < 8)
-        {
-            // check that a BA agreement is established with the receiver for the
-            // considered TID, since ack sequences for UL MU require block ack
-            if (m_apMac->GetBaAgreementEstablishedAsRecipient(staIt->address, tid))
-            {
-                break;
-            }
-            ++tid;
-        }
-        if (tid == 8)
-        {
-            NS_LOG_DEBUG("No Block Ack agreement established with " << staIt->address);
-            staIt++;
-            continue;
-        }
-
-        // if the first candidate STA is an EHT STA, we switch to soliciting EHT TB PPDUs
-        if (txVector.GetHeMuUserInfoMap().empty())
-        {
-            if (m_apMac->GetEhtSupported() && m_apMac->GetEhtSupported(staIt->address))
-            {
-                txVector.SetPreambleType(WIFI_PREAMBLE_EHT_TB);
-                txVector.SetEhtPpduType(0);
-            }
-            // TODO otherwise, make sure the TX width does not exceed 160 MHz
         }
 
         // prepare the MAC header of a frame that would be sent to the candidate station,
@@ -267,8 +248,8 @@ RrMultiUserScheduler::GetTxVectorForUlMu(std::function<bool(const MasterInfo&)> 
                                   suTxVector.GetNss()});
         m_candidates.emplace_back(staIt, nullptr);
 
-        // move to the next station in the list
-        staIt++;
+        // move to the next candidate station in the list
+        staIt = std::find_if(++staIt, m_staListUl.end(), canBeSolicited);
     }
 
     if (txVector.GetHeMuUserInfoMap().empty())
@@ -287,7 +268,26 @@ RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
     // check if station has setup the current link
     if (!m_apMac->GetStaList(m_linkId).contains(info.aid))
     {
-        NS_LOG_INFO("STA with AID " << info.aid << " has not setup link " << +m_linkId);
+        NS_LOG_INFO("STA with AID " << info.aid << " has not setup link " << +m_linkId
+                                    << ": skipping station");
+        return false;
+    }
+
+    uint8_t tid = 0;
+    while (tid < 8)
+    {
+        // check that a BA agreement is established with the receiver for the
+        // considered TID, since ack sequences for UL MU require block ack
+        if (m_apMac->GetBaAgreementEstablishedAsRecipient(info.address, tid))
+        {
+            break;
+        }
+        ++tid;
+    }
+    if (tid == 8)
+    {
+        NS_LOG_DEBUG("No Block Ack agreement established with " << info.address
+                                                                << ": skipping station");
         return false;
     }
 
@@ -312,7 +312,8 @@ RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
 
     if (!mapped)
     {
-        NS_LOG_DEBUG("MLD " << *mldAddr << " has not mapped any TID on link " << +m_linkId);
+        NS_LOG_DEBUG("MLD " << *mldAddr << " has not mapped any TID on link " << +m_linkId
+                            << ": skipping station");
         return false;
     }
 
@@ -327,7 +328,7 @@ RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
                                      m_linkId,
                                      WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY)))
     {
-        NS_LOG_INFO("EMLSR client " << *mldAddr << " is using another link");
+        NS_LOG_INFO("EMLSR client " << *mldAddr << " is using another link: skipping station");
         return false;
     }
 
@@ -752,17 +753,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
 
     std::size_t count =
         std::min(static_cast<std::size_t>(m_nStations), m_staListDl[primaryAc].size());
-    std::size_t nCentral26TonesRus;
-    const auto ruType = WifiRu::GetEqualSizedRusForStations(m_allowedWidth,
-                                                            count,
-                                                            nCentral26TonesRus,
-                                                            WIFI_MOD_CLASS_HE);
-    NS_ASSERT(count >= 1);
-
-    if (!m_useCentral26TonesRus)
-    {
-        nCentral26TonesRus = 0;
-    }
+    std::size_t nCentral26TonesRus{0};
 
     uint8_t currTid = wifiAcList.at(primaryAc).GetHighTid();
 
@@ -814,6 +805,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
     ruAllocations.resize(numRuAllocs);
     NS_ASSERT((m_candidates.size() % numRuAllocs) == 0);
 
+    RuType ruType{RuType::RU_TYPE_MAX};
     while (staIt != m_staListDl[primaryAc].end() &&
            m_candidates.size() <
                std::min(static_cast<std::size_t>(m_nStations), count + nCentral26TonesRus))
@@ -827,8 +819,6 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
             staIt++;
             continue;
         }
-
-        RuType currRuType = (m_candidates.size() < count ? ruType : RuType::RU_26_TONE);
 
         // check if the AP has at least one frame to be sent to the current station
         for (uint8_t tid : tids)
@@ -857,17 +847,37 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                     WifiTxVector txVectorCopy = m_txParams.m_txVector;
 
                     // the first candidate STA determines the preamble type for the DL MU PPDU
-                    if (m_candidates.empty() &&
-                        suTxVector.GetPreambleType() == WIFI_PREAMBLE_EHT_MU)
+                    if (m_candidates.empty())
                     {
-                        m_txParams.m_txVector.SetPreambleType(WIFI_PREAMBLE_EHT_MU);
-                        m_txParams.m_txVector.SetEhtPpduType(0); // indicates DL OFDMA transmission
+                        WifiModulationClass mc = WIFI_MOD_CLASS_HE;
+                        if (suTxVector.GetPreambleType() == WIFI_PREAMBLE_EHT_MU)
+                        {
+                            m_txParams.m_txVector.SetPreambleType(WIFI_PREAMBLE_EHT_MU);
+                            m_txParams.m_txVector.SetEhtPpduType(
+                                0); // indicates DL OFDMA transmission
+                            mc = WIFI_MOD_CLASS_EHT;
+                        }
+                        ruType = WifiRu::GetEqualSizedRusForStations(m_allowedWidth,
+                                                                     count,
+                                                                     nCentral26TonesRus,
+                                                                     mc);
+                        NS_ASSERT(count >= 1);
+                        if (!m_useCentral26TonesRus)
+                        {
+                            nCentral26TonesRus = 0;
+                        }
                     }
 
-                    m_txParams.m_txVector.SetHeMuUserInfo(staIt->aid,
-                                                          {HeRu::RuSpec{currRuType, 1, true},
-                                                           suTxVector.GetMode().GetMcsValue(),
-                                                           suTxVector.GetNss()});
+                    NS_ASSERT(ruType != RuType::RU_TYPE_MAX);
+                    const auto currRuType =
+                        (m_candidates.size() < count ? ruType : RuType::RU_26_TONE);
+                    const auto ru =
+                        (m_txParams.m_txVector.GetPreambleType() == WIFI_PREAMBLE_EHT_MU)
+                            ? WifiRu::RuSpec(EhtRu::RuSpec{currRuType, 1, true, true})
+                            : WifiRu::RuSpec(HeRu::RuSpec{currRuType, 1, true});
+                    m_txParams.m_txVector.SetHeMuUserInfo(
+                        staIt->aid,
+                        {ru, suTxVector.GetMode().GetMcsValue(), suTxVector.GetNss()});
 
                     if (!GetHeFem(m_linkId)->TryAddMpdu(mpdu, m_txParams, actualAvailableTime))
                     {
@@ -923,7 +933,7 @@ RrMultiUserScheduler::FinalizeTxVector(WifiTxVector& txVector)
     const auto ruType = WifiRu::GetEqualSizedRusForStations(m_allowedWidth,
                                                             nRusAssigned,
                                                             nCentral26TonesRus,
-                                                            WIFI_MOD_CLASS_HE);
+                                                            txVector.GetModulationClass());
 
     NS_LOG_DEBUG(nRusAssigned << " stations are being assigned a " << ruType << " RU");
 
@@ -941,11 +951,11 @@ RrMultiUserScheduler::FinalizeTxVector(WifiTxVector& txVector)
     WifiTxVector::HeMuUserInfoMap heMuUserInfoMap;
     std::swap(heMuUserInfoMap, txVector.GetHeMuUserInfoMap());
 
+    const auto mc = IsEht(txVector.GetPreambleType()) ? WIFI_MOD_CLASS_EHT : WIFI_MOD_CLASS_HE;
     auto candidateIt = m_candidates.begin(); // iterator over the list of candidate receivers
-    auto ruSet = WifiRu::GetRusOfType(m_allowedWidth, ruType, WIFI_MOD_CLASS_HE);
+    auto ruSet = WifiRu::GetRusOfType(m_allowedWidth, ruType, mc);
     auto ruSetIt = ruSet.begin();
-    auto central26TonesRus =
-        WifiRu::GetCentral26TonesRus(m_allowedWidth, ruType, WIFI_MOD_CLASS_HE);
+    auto central26TonesRus = WifiRu::GetCentral26TonesRus(m_allowedWidth, ruType, mc);
     auto central26TonesRusIt = central26TonesRus.begin();
 
     for (std::size_t i = 0; i < nRusAssigned + nCentral26TonesRus; i++)

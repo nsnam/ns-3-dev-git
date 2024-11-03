@@ -127,6 +127,9 @@ static constexpr uint16_t AID_SPECIAL_USER{2007};
 /// IEEE 802.11be D5.0 35.3.10
 static constexpr uint8_t WIFI_DEFAULT_BSS_PARAMS_CHANGE_MAX{254};
 
+/// Unassigned 242-tone RU identifier for EHT (Table Table 36-34 IEEE 802.11be D7.0)
+static constexpr uint8_t UNASSIGNED_242_TONE_EHT_RU{27};
+
 } // namespace ns3
 
 #endif /* WIFI_CONSTANTS_H */
