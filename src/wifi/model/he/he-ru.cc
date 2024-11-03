@@ -582,7 +582,7 @@ HeRu::GetSubcarrierGroup(MHz_u bw, RuType ruType, std::size_t phyIndex)
     if (ruType == HeRu::RU_2x996_TONE) // handle special case of RU covering 160 MHz channel
     {
         NS_ABORT_MSG_IF(bw != MHz_u{160}, "2x996 tone RU can only be used on 160 MHz band");
-        return {{-1012, -3}, {3, 1012}};
+        return {{-1012, -515}, {-509, -12}, {12, 509}, {515, 1012}};
     }
 
     // Determine the shift to apply to tone indices for 160 MHz channel (i.e. -1012 to 1012), since
