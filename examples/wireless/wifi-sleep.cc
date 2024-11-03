@@ -207,7 +207,7 @@ main(int argc, char* argv[])
 
     // compute the efficiency of the power amplifier (eta) assuming that the provided value for tx
     // current corresponds to the minimum tx power level
-    double eta = DbmToW(txPowerStart) / ((txCurrent - idleCurrent) * voltage);
+    double eta = DbmToW(txPowerStart).in_Watt() / ((txCurrent - idleCurrent) * voltage);
 
     radioEnergyHelper.SetTxCurrentModel("ns3::LinearWifiTxCurrentModel",
                                         "Voltage",

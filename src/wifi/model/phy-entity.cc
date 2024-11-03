@@ -995,9 +995,7 @@ PhyEntity::StartPreambleDetectionPeriod(Ptr<Event> event)
     NS_LOG_FUNCTION(this << *event);
     const auto rxPower = GetRxPowerForPpdu(event);
     NS_LOG_DEBUG("Sync to signal (power="
-                 << (rxPower > Watt_u{0.0}
-                         ? std::to_string(WToDbm(rxPower).in_dBm()) + " dBm)" // FIXME
-                         : std::to_string(rxPower) + " W)"));
+                 << (rxPower > Watt_t{0.0} ? WToDbm(rxPower).str() : rxPower.str()) << ")");
     m_wifiPhy->m_interference->NotifyRxStart(
         m_wifiPhy->GetCurrentFrequencyRange()); // We need to notify it now so that it starts
                                                 // recording events
@@ -1019,7 +1017,7 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
     // calculate PER on the measurement channel for PHY headers
     const auto measurementChannelWidth = GetMeasurementChannelWidth(event->GetPpdu());
     auto measurementBand = GetPrimaryBand(measurementChannelWidth);
-    std::optional<Watt_u>
+    std::optional<Watt_t>
         maxRxPower; // in case current event may not be sent on measurement channel
     Ptr<Event> maxEvent;
     NS_ASSERT(!m_wifiPhy->m_currentPreambleEvents.empty());
@@ -1063,8 +1061,8 @@ PhyEntity::EndPreambleDetectionPeriod(Ptr<Event> event)
     NS_LOG_DEBUG("SNR=" << RatioToDb(snr) << " at end of preamble detection period");
 
     if (const auto power = m_wifiPhy->m_currentEvent->GetRxPower(measurementBand);
-        (!m_wifiPhy->m_preambleDetectionModel && maxRxPower && (*maxRxPower > Watt_u{0.0})) ||
-        (m_wifiPhy->m_preambleDetectionModel && power > Watt_u{0.0} &&
+        (!m_wifiPhy->m_preambleDetectionModel && maxRxPower && (*maxRxPower > Watt_t{0.0})) ||
+        (m_wifiPhy->m_preambleDetectionModel && power > Watt_t{0.0} &&
          m_wifiPhy->m_preambleDetectionModel->IsPreambleDetected(WToDbm(power),
                                                                  snr,
                                                                  measurementChannelWidth)))
@@ -1258,7 +1256,7 @@ PhyEntity::GetRandomValue() const
     return m_wifiPhy->m_random->GetValue();
 }
 
-Watt_u
+Watt_t
 PhyEntity::GetRxPowerForPpdu(Ptr<Event> event) const
 {
     return event->GetRxPower(GetPrimaryBand(GetMeasurementChannelWidth(event->GetPpdu())));
@@ -1401,7 +1399,8 @@ PhyEntity::Transmit(Time txDuration,
                              << +m_wifiPhy->GetChannelNumber() << " for "
                              << txParams->duration.As(Time::MS));
     NS_LOG_DEBUG("Starting " << type << " with integrated spectrum power "
-                             << WToDbm(Integral(*txPowerSpectrum)) << "; spectrum model Uid: "
+                             << WToDbm(Watt_t{Integral(*txPowerSpectrum)})
+                             << "; spectrum model Uid: "
                              << txPowerSpectrum->GetSpectrumModel()->GetUid());
     auto spectrumWifiPhy = DynamicCast<SpectrumWifiPhy>(m_wifiPhy);
     NS_ASSERT(spectrumWifiPhy);

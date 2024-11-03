@@ -133,13 +133,13 @@ class SpectrumWifiPhyBasicTest : public TestCase
      * @param channel the operating channel of the PHY used for the transmission
      * @returns Ptr<SpectrumSignalParameters>
      */
-    Ptr<SpectrumSignalParameters> MakeSignal(Watt_u txPower,
+    Ptr<SpectrumSignalParameters> MakeSignal(Watt_t txPower,
                                              const WifiPhyOperatingChannel& channel);
     /**
      * Send signal function
      * @param txPower the transmit power
      */
-    void SendSignal(Watt_u txPower);
+    void SendSignal(Watt_t txPower);
     /**
      * Spectrum wifi receive success function
      * @param psdu the PSDU
@@ -178,7 +178,7 @@ SpectrumWifiPhyBasicTest::SpectrumWifiPhyBasicTest(std::string name)
 
 // Make a Wi-Fi signal to inject directly to the StartRx() method
 Ptr<SpectrumSignalParameters>
-SpectrumWifiPhyBasicTest::MakeSignal(Watt_u txPower, const WifiPhyOperatingChannel& channel)
+SpectrumWifiPhyBasicTest::MakeSignal(Watt_t txPower, const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector{OfdmPhy::GetOfdmRate6Mbps(),
                           0,
@@ -218,7 +218,7 @@ SpectrumWifiPhyBasicTest::MakeSignal(Watt_u txPower, const WifiPhyOperatingChann
 
 // Make a Wi-Fi signal to inject directly to the StartRx() method
 void
-SpectrumWifiPhyBasicTest::SendSignal(Watt_u txPower)
+SpectrumWifiPhyBasicTest::SendSignal(Watt_t txPower)
 {
     m_phy->StartRx(MakeSignal(txPower, m_phy->GetOperatingChannel()), nullptr);
 }
@@ -280,7 +280,7 @@ SpectrumWifiPhyBasicTest::DoTeardown()
 void
 SpectrumWifiPhyBasicTest::DoRun()
 {
-    Watt_u txPower{0.01};
+    Watt_t txPower{0.01};
     // Send packets spaced 1 second apart; all should be received
     Simulator::Schedule(Seconds(1), &SpectrumWifiPhyBasicTest::SendSignal, this, txPower);
     Simulator::Schedule(Seconds(2), &SpectrumWifiPhyBasicTest::SendSignal, this, txPower);
@@ -430,7 +430,7 @@ SpectrumWifiPhyListenerTest::DoSetup()
 void
 SpectrumWifiPhyListenerTest::DoRun()
 {
-    Watt_u txPower{0.01};
+    Watt_t txPower{0.01};
     Simulator::Schedule(Seconds(1), &SpectrumWifiPhyListenerTest::SendSignal, this, txPower);
     Simulator::Run();
 
@@ -1459,8 +1459,8 @@ SpectrumWifiPhy80Plus80Test::RunOne(const std::vector<uint8_t>& channelNumbers,
                       .fh = MHzToHz(interferenceCenterFrequency + (interferenceBandWidth / 2))};
     auto spectrumInterference = Create<SpectrumModel>(Bands{bandInfo});
     auto interferencePsd = Create<SpectrumValue>(spectrumInterference);
-    Watt_u interferencePower{0.1};
-    *interferencePsd = interferencePower / (interferenceBandWidth * 20e6);
+    Watt_t interferencePower{0.1};
+    *interferencePsd = interferencePower.in_Watt() / (interferenceBandWidth * 20e6);
 
     Simulator::Schedule(Seconds(1),
                         &SpectrumWifiPhy80Plus80Test::GenerateInterference,
@@ -1867,7 +1867,7 @@ SpectrumWifiPhyMultipleInterfacesTest::DoCheckInterferences(Ptr<SpectrumWifiPhy>
     phy->GetAttribute("InterferenceHelper", ptr);
     auto interferenceHelper = DynamicCast<InterferenceHelper>(ptr.Get<InterferenceHelper>());
     NS_ASSERT(interferenceHelper);
-    const auto energyDuration = interferenceHelper->GetEnergyDuration(Watt_u{0}, band);
+    const auto energyDuration = interferenceHelper->GetEnergyDuration(Watt_t{0}, band);
     NS_TEST_ASSERT_MSG_EQ(energyDuration.IsStrictlyPositive(),
                           interferencesExpected,
                           "Incorrect interferences detection");

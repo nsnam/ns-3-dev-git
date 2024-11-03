@@ -856,7 +856,7 @@ main(int argc, char* argv[])
     // Configure signal and noise, and schedule first iteration
     const auto BOLTZMANN{1.3803e-23};
     const auto noiseDensity =
-        dBm_per_Hz_t::AveragePsd(WToDbm(BOLTZMANN * 290), Hz_t{1}); // 290K @ 20 MHz
+        dBm_per_Hz_t::AveragePsd(WToDbm(Watt_t{BOLTZMANN * 290}), Hz_t{1}); // 290K @ 20 MHz
     const Hz_t rxWidth{clientSelectedStandard.m_width * 1e6};
     const auto noise = noiseDensity.OverBandwidth(rxWidth);
 

@@ -456,7 +456,7 @@ HtPhy::IsConfigSupported(Ptr<const WifiPpdu> ppdu) const
 }
 
 Ptr<SpectrumValue>
-HtPhy::GetTxPowerSpectralDensity(Watt_u txPower, Ptr<const WifiPpdu> ppdu) const
+HtPhy::GetTxPowerSpectralDensity(Watt_t txPower, Ptr<const WifiPpdu> ppdu) const
 {
     const auto& centerFrequencies = ppdu->GetTxCenterFreqs();
     NS_ASSERT(centerFrequencies.size() == 1);

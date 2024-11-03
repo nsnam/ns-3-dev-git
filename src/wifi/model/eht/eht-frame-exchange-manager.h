@@ -285,7 +285,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
      * @param duration the duration of the in-device interference
      * @param txPower the TX power
      */
-    void GenerateInDeviceInterference(uint8_t linkId, Time duration, Watt_u txPower);
+    void GenerateInDeviceInterference(uint8_t linkId, Time duration, Watt_t txPower);
 
     /**
      * Update the TXOP end timer when starting a frame transmission.

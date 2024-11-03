@@ -67,14 +67,14 @@ class Event : public SimpleRefCount<Event>
      *
      * @return the total received power
      */
-    Watt_u GetRxPower() const;
+    Watt_t GetRxPower() const;
     /**
      * Return the received power for a given band.
      *
      * @param band the band for which the power should be returned
      * @return the received power for a given band
      */
-    Watt_u GetRxPower(const WifiSpectrumBandInfo& band) const;
+    Watt_t GetRxPower(const WifiSpectrumBandInfo& band) const;
     /**
      * Return the received power (W) for all bands.
      *
@@ -196,7 +196,7 @@ class InterferenceHelper : public Object
      *          energy on the medium for a given band will
      *          be higher than the requested threshold.
      */
-    Time GetEnergyDuration(Watt_u energy, const WifiSpectrumBandInfo& band);
+    Time GetEnergyDuration(Watt_t energy, const WifiSpectrumBandInfo& band);
 
     /**
      * Add the PPDU-related signal to interference helper.
@@ -310,8 +310,8 @@ class InterferenceHelper : public Object
      *
      * @return SNR in linear scale
      */
-    double CalculateSnr(Watt_u signal,
-                        Watt_u noiseInterference,
+    double CalculateSnr(Watt_t signal,
+                        Watt_t noiseInterference,
                         MHz_u channelWidth,
                         uint8_t nss) const;
     /**
@@ -364,20 +364,20 @@ class InterferenceHelper : public Object
          * @param power the power
          * @param event causes this NI change
          */
-        NiChange(Watt_u power, Ptr<Event> event);
+        NiChange(Watt_t power, Ptr<Event> event);
         ~NiChange();
         /**
          * Return the power
          *
          * @return the power
          */
-        Watt_u GetPower() const;
+        Watt_t GetPower() const;
         /**
          * Add a given amount of power.
          *
          * @param power the power to be added to the existing value
          */
-        void AddPower(Watt_u power);
+        void AddPower(Watt_t power);
         /**
          * Return the event causes the corresponding NI change
          *
@@ -386,7 +386,7 @@ class InterferenceHelper : public Object
         Ptr<Event> GetEvent() const;
 
       private:
-        Watt_u m_power;     ///< power
+        Watt_t m_power;     ///< power
         Ptr<Event> m_event; ///< event
     };
 
@@ -403,7 +403,7 @@ class InterferenceHelper : public Object
     /**
      * Map of first power per band
      */
-    using FirstPowerPerBand = std::map<WifiSpectrumBandInfo, Watt_u>;
+    using FirstPowerPerBand = std::map<WifiSpectrumBandInfo, Watt_t>;
 
     NiChangesPerBand m_niChanges; //!< NI Changes for each band
 
@@ -445,7 +445,7 @@ class InterferenceHelper : public Object
      *
      * @return noise and interference power
      */
-    Watt_u CalculateNoiseInterferenceW(Ptr<Event> event,
+    Watt_t CalculateNoiseInterferenceW(Ptr<Event> event,
                                        NiChangesPerBand& nis,
                                        const WifiSpectrumBandInfo& band) const;
 
@@ -459,7 +459,7 @@ class InterferenceHelper : public Object
      * @return the power of all other events preceding the event that belong to the same MU-MIMO
      * transmission
      */
-    Watt_u CalculateMuMimoPowerW(Ptr<const Event> event, const WifiSpectrumBandInfo& band) const;
+    Watt_t CalculateMuMimoPowerW(Ptr<const Event> event, const WifiSpectrumBandInfo& band) const;
 
     /**
      * Calculate the error rate of the given PHY payload only in the provided time

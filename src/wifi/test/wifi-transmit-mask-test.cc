@@ -144,7 +144,7 @@ WifiOfdmMaskSlopesTestCase::DoSetup()
         break;
     }
 
-    Watt_u refTxPower{1}; // have to work in dBr when comparing though
+    Watt_t refTxPower{1}; // have to work in dBr when comparing though
     switch (m_standard)
     {
     case WIFI_STANDARD_80211p:
@@ -281,18 +281,19 @@ WifiOfdmMaskSlopesTestCase::DoRun()
 {
     NS_LOG_FUNCTION(this);
     dBr_t currentPower{0.0}; // have to work in dBr so as to compare with expected slopes
-    Watt_u maxPower{(*m_actualSpectrum)[0]};
+    Watt_t maxPower{(*m_actualSpectrum)[0]};
     for (auto&& vit = m_actualSpectrum->ConstValuesBegin();
          vit != m_actualSpectrum->ConstValuesEnd();
          ++vit)
     {
-        maxPower = std::max(maxPower, Watt_u{*vit});
+        maxPower = std::max(maxPower, Watt_t{*vit});
     }
 
     NS_LOG_INFO("Compare expected PSD");
     for (const auto& [subcarrier, expectedValue] : m_expectedPsd)
     {
-        currentPower = dBr_t{10.0 * std::log10((*m_actualSpectrum)[subcarrier] / maxPower)};
+        currentPower =
+            dBr_t{10.0 * std::log10((*m_actualSpectrum)[subcarrier] / maxPower.in_Watt())};
         NS_LOG_LOGIC("For " << subcarrier << ", expected: " << expectedValue
                             << " vs obtained: " << currentPower);
         NS_TEST_EXPECT_MSG_EQ_TOL(currentPower.in_dB(),

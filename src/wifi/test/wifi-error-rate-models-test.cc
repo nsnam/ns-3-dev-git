@@ -437,8 +437,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     // SISO: initial SNR set to 4dB
     dB_t initialSnr{4.0};
     dB_t tol{0.1};
-    auto snr = interference.CalculateSnr(Watt_u{0.001},
-                                         Watt_u{0.001} / DbToRatio(initialSnr),
+    auto snr = interference.CalculateSnr(Watt_t{0.001},
+                                         Watt_t{0.001} / DbToRatio(initialSnr),
                                          txVector.GetChannelWidth(),
                                          txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -456,8 +456,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     // MIMO 2x1:2: expect no SNR gain in AWGN channel
     txVector.SetNss(2);
     txVector.SetNTx(2);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -475,8 +475,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(1);
     txVector.SetNTx(1);
     interference.SetNumberOfReceiveAntennas(2);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -493,8 +493,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(1);
     txVector.SetNTx(2);
     interference.SetNumberOfReceiveAntennas(2);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -510,8 +510,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(2);
     txVector.SetNTx(2);
     interference.SetNumberOfReceiveAntennas(2);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -529,8 +529,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(1);
     txVector.SetNTx(3);
     interference.SetNumberOfReceiveAntennas(3);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -547,8 +547,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(2);
     txVector.SetNTx(3);
     interference.SetNumberOfReceiveAntennas(3);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -564,8 +564,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(3);
     txVector.SetNTx(3);
     interference.SetNumberOfReceiveAntennas(3);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -583,8 +583,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(1);
     txVector.SetNTx(4);
     interference.SetNumberOfReceiveAntennas(4);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -601,8 +601,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(2);
     txVector.SetNTx(4);
     interference.SetNumberOfReceiveAntennas(4);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -619,8 +619,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(3);
     txVector.SetNTx(4);
     interference.SetNumberOfReceiveAntennas(4);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),
@@ -636,8 +636,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
     txVector.SetNss(4);
     txVector.SetNTx(4);
     interference.SetNumberOfReceiveAntennas(4);
-    snr = interference.CalculateSnr(Watt_u{0.001},
-                                    Watt_u{0.001} / DbToRatio(initialSnr),
+    snr = interference.CalculateSnr(Watt_t{0.001},
+                                    Watt_t{0.001} / DbToRatio(initialSnr),
                                     txVector.GetChannelWidth(),
                                     txVector.GetNss());
     NS_TEST_ASSERT_MSG_EQ_TOL(RatioToDb(snr),

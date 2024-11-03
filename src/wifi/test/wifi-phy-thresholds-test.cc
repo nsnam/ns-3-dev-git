@@ -55,20 +55,20 @@ class WifiPhyThresholdsTest : public TestCase
      * @param channel the operating channel of the PHY used for the transmission
      * @returns Ptr<SpectrumSignalParameters>
      */
-    virtual Ptr<SpectrumSignalParameters> MakeWifiSignal(Watt_u txPower,
+    virtual Ptr<SpectrumSignalParameters> MakeWifiSignal(Watt_t txPower,
                                                          const WifiPhyOperatingChannel& channel);
     /**
      * Make foreign signal function
      * @param txPower the transmit power
      * @returns Ptr<SpectrumSignalParameters>
      */
-    virtual Ptr<SpectrumSignalParameters> MakeForeignSignal(Watt_u txPower);
+    virtual Ptr<SpectrumSignalParameters> MakeForeignSignal(Watt_t txPower);
     /**
      * Send signal function
      * @param txPower the transmit power
      * @param wifiSignal whether the signal is a wifi signal or not
      */
-    virtual void SendSignal(Watt_u txPower, bool wifiSignal);
+    virtual void SendSignal(Watt_t txPower, bool wifiSignal);
     /**
      * PHY receive success callback function
      * @param psdu the PSDU
@@ -126,7 +126,7 @@ WifiPhyThresholdsTest::WifiPhyThresholdsTest(std::string test_name)
 }
 
 Ptr<SpectrumSignalParameters>
-WifiPhyThresholdsTest::MakeWifiSignal(Watt_u txPower, const WifiPhyOperatingChannel& channel)
+WifiPhyThresholdsTest::MakeWifiSignal(Watt_t txPower, const WifiPhyOperatingChannel& channel)
 {
     WifiTxVector txVector{OfdmPhy::GetOfdmRate6Mbps(),
                           0,
@@ -164,7 +164,7 @@ WifiPhyThresholdsTest::MakeWifiSignal(Watt_u txPower, const WifiPhyOperatingChan
 }
 
 Ptr<SpectrumSignalParameters>
-WifiPhyThresholdsTest::MakeForeignSignal(Watt_u txPower)
+WifiPhyThresholdsTest::MakeForeignSignal(Watt_t txPower)
 {
     auto txPowerSpectrum =
         WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(FREQUENCY,
@@ -179,7 +179,7 @@ WifiPhyThresholdsTest::MakeForeignSignal(Watt_u txPower)
 }
 
 void
-WifiPhyThresholdsTest::SendSignal(Watt_u txPower, bool wifiSignal)
+WifiPhyThresholdsTest::SendSignal(Watt_t txPower, bool wifiSignal)
 {
     if (wifiSignal)
     {

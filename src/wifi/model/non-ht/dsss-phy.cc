@@ -256,7 +256,7 @@ DsssPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
 }
 
 Ptr<SpectrumValue>
-DsssPhy::GetTxPowerSpectralDensity(Watt_u txPower, Ptr<const WifiPpdu> ppdu) const
+DsssPhy::GetTxPowerSpectralDensity(Watt_t txPower, Ptr<const WifiPpdu> ppdu) const
 {
     const auto& centerFrequencies = ppdu->GetTxCenterFreqs();
     NS_ASSERT(centerFrequencies.size() == 1);

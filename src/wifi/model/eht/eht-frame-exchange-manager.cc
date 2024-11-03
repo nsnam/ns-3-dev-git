@@ -699,7 +699,7 @@ EhtFrameExchangeManager::ForwardPsduMapDown(WifiConstPsduMap psduMap, WifiTxVect
 }
 
 void
-EhtFrameExchangeManager::GenerateInDeviceInterference(uint8_t linkId, Time duration, Watt_u txPower)
+EhtFrameExchangeManager::GenerateInDeviceInterference(uint8_t linkId, Time duration, Watt_t txPower)
 {
     NS_LOG_FUNCTION(this << linkId << duration.As(Time::US) << txPower);
 
@@ -715,7 +715,7 @@ EhtFrameExchangeManager::GenerateInDeviceInterference(uint8_t linkId, Time durat
     NS_ASSERT(txPhy);
 
     auto psd = Create<SpectrumValue>(rxPhy->GetCurrentInterface()->GetRxSpectrumModel());
-    *psd = txPower;
+    *psd = txPower.in_Watt();
 
     auto spectrumSignalParams = Create<SpectrumSignalParameters>();
     spectrumSignalParams->duration = duration;

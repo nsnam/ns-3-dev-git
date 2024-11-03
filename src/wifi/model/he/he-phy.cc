@@ -1329,7 +1329,7 @@ HePhy::GetMaxDelayPpduSameUid(const WifiTxVector& txVector)
 }
 
 Ptr<SpectrumValue>
-HePhy::GetTxPowerSpectralDensity(Watt_u txPower, Ptr<const WifiPpdu> ppdu) const
+HePhy::GetTxPowerSpectralDensity(Watt_t txPower, Ptr<const WifiPpdu> ppdu) const
 {
     auto hePpdu = DynamicCast<const HePpdu>(ppdu);
     NS_ASSERT(hePpdu);
@@ -1338,7 +1338,7 @@ HePhy::GetTxPowerSpectralDensity(Watt_u txPower, Ptr<const WifiPpdu> ppdu) const
 }
 
 Ptr<SpectrumValue>
-HePhy::GetTxPowerSpectralDensity(Watt_u txPower,
+HePhy::GetTxPowerSpectralDensity(Watt_t txPower,
                                  Ptr<const WifiPpdu> ppdu,
                                  HePpdu::TxPsdFlag flag) const
 {

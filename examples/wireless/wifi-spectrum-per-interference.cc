@@ -176,7 +176,7 @@ main(int argc, char* argv[])
     std::string errorModelType{"ns3::NistErrorRateModel"};
     bool enablePcap{false};
     const uint32_t tcpPacketSize{1448};
-    Watt_u waveformPower{0};
+    Watt_t waveformPower{0};
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("simulationTime", "Simulation time", simulationTime);
@@ -535,7 +535,7 @@ main(int argc, char* argv[])
         // Configure waveform generator
         Ptr<SpectrumValue> wgPsd =
             Create<SpectrumValue>(i <= 15 ? SpectrumModelWifi5180MHz : SpectrumModelWifi5190MHz);
-        *wgPsd = waveformPower / 20e6; // PSD spread across 20 MHz
+        *wgPsd = waveformPower.in_Watt() / 20e6; // PSD spread across 20 MHz
         NS_LOG_INFO("wgPsd : " << *wgPsd
                                << " integrated power: " << Integral(*(GetPointer(wgPsd))));
 

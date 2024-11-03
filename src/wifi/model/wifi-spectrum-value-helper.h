@@ -72,7 +72,7 @@ class WifiSpectrumValueHelper
      * Spectral Density in W/Hz
      */
     static Ptr<SpectrumValue> CreateDsssTxPowerSpectralDensity(MHz_u centerFrequency,
-                                                               Watt_u txPower,
+                                                               Watt_t txPower,
                                                                MHz_u guardBandwidth);
 
     /**
@@ -92,7 +92,7 @@ class WifiSpectrumValueHelper
      */
     static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity(MHz_u centerFrequency,
                                                                MHz_u channelWidth,
-                                                               Watt_u txPower,
+                                                               Watt_t txPower,
                                                                MHz_u guardBandwidth,
                                                                dBr_t minInnerBand = dBr_t{-20},
                                                                dBr_t minOuterband = dBr_t{-28},
@@ -116,7 +116,7 @@ class WifiSpectrumValueHelper
     static Ptr<SpectrumValue> CreateDuplicated20MhzTxPowerSpectralDensity(
         const std::vector<MHz_u>& centerFrequencies,
         MHz_u channelWidth,
-        Watt_u txPower,
+        Watt_t txPower,
         MHz_u guardBandwidth,
         dBr_t minInnerBand = dBr_t{-20},
         dBr_t minOuterband = dBr_t{-28},
@@ -140,7 +140,7 @@ class WifiSpectrumValueHelper
     static Ptr<SpectrumValue> CreateHtOfdmTxPowerSpectralDensity(
         const std::vector<MHz_u>& centerFrequencies,
         MHz_u channelWidth,
-        Watt_u txPower,
+        Watt_t txPower,
         MHz_u guardBandwidth,
         dBr_t minInnerBand = dBr_t{-20},
         dBr_t minOuterband = dBr_t{-28},
@@ -165,7 +165,7 @@ class WifiSpectrumValueHelper
     static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity(
         MHz_u centerFrequency,
         MHz_u channelWidth,
-        Watt_u txPower,
+        Watt_t txPower,
         MHz_u guardBandwidth,
         dBr_t minInnerBand = dBr_t{-20},
         dBr_t minOuterband = dBr_t{-28},
@@ -191,7 +191,7 @@ class WifiSpectrumValueHelper
     static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity(
         const std::vector<MHz_u>& centerFrequencies,
         MHz_u channelWidth,
-        Watt_u txPower,
+        Watt_t txPower,
         MHz_u guardBandwidth,
         dBr_t minInnerBand = dBr_t{-20},
         dBr_t minOuterband = dBr_t{-28},
@@ -214,7 +214,7 @@ class WifiSpectrumValueHelper
     static Ptr<SpectrumValue> CreateHeMuOfdmTxPowerSpectralDensity(
         const std::vector<MHz_u>& centerFrequencies,
         MHz_u channelWidth,
-        Watt_u txPower,
+        Watt_t txPower,
         MHz_u guardBandwidth,
         const std::vector<WifiSpectrumBandIndices>& ru);
 
@@ -268,7 +268,7 @@ class WifiSpectrumValueHelper
         Ptr<SpectrumValue> c,
         const std::vector<std::vector<WifiSpectrumBandIndices>>& allocatedSubBandsPerSegment,
         const WifiSpectrumBandIndices& maskBand,
-        Watt_u txPowerPerBand,
+        Watt_t txPowerPerBand,
         uint32_t nGuardBands,
         uint32_t innerSlopeWidth,
         dBr_t minInnerBand,
@@ -284,7 +284,7 @@ class WifiSpectrumValueHelper
      * @param c spectrumValue to normalize (in W/Hz for each band)
      * @param txPower total transmit power to allocate
      */
-    static void NormalizeSpectrumMask(Ptr<SpectrumValue> c, Watt_u txPower);
+    static void NormalizeSpectrumMask(Ptr<SpectrumValue> c, Watt_t txPower);
 
     /**
      * Calculate the power of the specified band composed of uniformly-sized sub-bands.
@@ -295,7 +295,7 @@ class WifiSpectrumValueHelper
      *
      * @return band power
      */
-    static Watt_u GetBandPowerW(Ptr<SpectrumValue> psd,
+    static Watt_t GetBandPowerW(Ptr<SpectrumValue> psd,
                                 const std::vector<WifiSpectrumBandIndices>& segments);
 };
 

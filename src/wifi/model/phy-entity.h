@@ -42,7 +42,7 @@ namespace ns3
 /**
  * A map of the received power for each band
  */
-using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, Watt_u>;
+using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, Watt_t>;
 
 class WifiMpdu;
 class WifiPhy;
@@ -782,7 +782,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * @param event the event holding incoming PPDU's information
      * @return the received power for the event over a given band
      */
-    Watt_u GetRxPowerForPpdu(Ptr<Event> event) const;
+    Watt_t GetRxPowerForPpdu(Ptr<Event> event) const;
     /**
      * Get the pointer to the current event (stored in WifiPhy).
      * Wrapper used by child classes.
@@ -853,7 +853,7 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
      * This is a helper function to create the right TX PSD corresponding
      * to the amendment of this PHY.
      */
-    virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_u txPower,
+    virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_t txPower,
                                                          Ptr<const WifiPpdu> ppdu) const = 0;
 
     /**

@@ -482,7 +482,7 @@ class HePhy : public VhtPhy
     void DoAbortCurrentReception(WifiPhyRxfailureReason reason) override;
     uint64_t ObtainNextUid(const WifiTxVector& txVector) override;
     Time GetMaxDelayPpduSameUid(const WifiTxVector& txVector) override;
-    Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_u txPower,
+    Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_t txPower,
                                                  Ptr<const WifiPpdu> ppdu) const override;
     uint32_t GetMaxPsduSize() const override;
     WifiConstPsduMap GetWifiConstPsduMap(Ptr<const WifiPsdu> psdu,
@@ -588,7 +588,7 @@ class HePhy : public VhtPhy
      * @param flag flag indicating whether the PSD is for non-HE portion or HE portion
      * @return Pointer to SpectrumValue
      */
-    Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_u txPower,
+    Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_t txPower,
                                                  Ptr<const WifiPpdu> ppdu,
                                                  HePpdu::TxPsdFlag flag) const;
 

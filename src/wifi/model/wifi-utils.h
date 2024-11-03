@@ -74,7 +74,7 @@ using WifiTidLinkMapping = std::map<uint8_t, std::set<uint8_t>>;
  *
  * @return the equivalent Watts for the given dBm
  */
-Watt_u DbmToW(dBm_t val);
+Watt_t DbmToW(dBm_t val);
 /**
  * Convert from dB to ratio.
  *
@@ -90,7 +90,7 @@ double DbToRatio(dB_t val);
  *
  * @return the equivalent dBm for the given Watts
  */
-dBm_t WToDbm(Watt_u val);
+dBm_t WToDbm(Watt_t val);
 /**
  * Convert from ratio to dB.
  *

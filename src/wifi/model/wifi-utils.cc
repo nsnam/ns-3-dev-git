@@ -27,14 +27,14 @@ DbToRatio(dB_t val)
     return val.to_linear();
 }
 
-Watt_u
+Watt_t
 DbmToW(dBm_t pow)
 {
-    return pow.to_Watt().in_Watt();
+    return pow.to_Watt();
 }
 
 dBm_t
-WToDbm(Watt_u power)
+WToDbm(Watt_t power)
 {
     return Watt_t{power}.to_dBm();
 }

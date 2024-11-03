@@ -1629,7 +1629,7 @@ WifiPhy::GetMaxPsduSize(WifiModulationClass modulation)
 }
 
 void
-WifiPhy::NotifyTxBegin(const WifiConstPsduMap& psdus, Watt_u txPower)
+WifiPhy::NotifyTxBegin(const WifiConstPsduMap& psdus, Watt_t txPower)
 {
     if (!m_phyTxBeginTrace.IsEmpty())
     {
@@ -1637,7 +1637,7 @@ WifiPhy::NotifyTxBegin(const WifiConstPsduMap& psdus, Watt_u txPower)
         {
             for (auto& mpdu : *PeekPointer(psdu.second))
             {
-                m_phyTxBeginTrace(mpdu->GetProtocolDataUnit(), txPower);
+                m_phyTxBeginTrace(mpdu->GetProtocolDataUnit(), txPower.in_Watt());
             }
         }
     }
@@ -1932,7 +1932,7 @@ WifiPhy::Send(const WifiConstPsduMap& psdus, const WifiTxVector& txVector)
     NotifyTxBegin(psdus, txPower);
     if (!m_phyTxPsduBeginTrace.IsEmpty())
     {
-        m_phyTxPsduBeginTrace(psdus, txVector, txPower);
+        m_phyTxPsduBeginTrace(psdus, txVector, txPower.in_Watt());
     }
     for (const auto& psdu : psdus)
     {

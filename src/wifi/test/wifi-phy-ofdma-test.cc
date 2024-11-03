@@ -184,7 +184,7 @@ class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
      *          energy on the medium for a given band will
      *          be higher than the requested threshold.
      */
-    Time GetEnergyDuration(Watt_u energy, WifiSpectrumBandInfo band);
+    Time GetEnergyDuration(Watt_t energy, WifiSpectrumBandInfo band);
 
     /**
      * @return a const pointer to the HE PHY instance
@@ -274,7 +274,7 @@ OfdmaSpectrumWifiPhy::GetCurrentEvent()
 }
 
 Time
-OfdmaSpectrumWifiPhy::GetEnergyDuration(Watt_u energy, WifiSpectrumBandInfo band)
+OfdmaSpectrumWifiPhy::GetEnergyDuration(Watt_t energy, WifiSpectrumBandInfo band)
 {
     return m_interference->GetEnergyDuration(energy, band);
 }
@@ -957,8 +957,8 @@ TestDlOfdmaPhyTransmission::RunOne()
 
     auto SpectrumInterferenceRu1 = Create<SpectrumModel>(bands);
     auto interferencePsdRu1 = Create<SpectrumValue>(SpectrumInterferenceRu1);
-    Watt_u interferencePower{0.1};
-    *interferencePsdRu1 = interferencePower / (MHzToHz(m_channelWidth / 2) * 20);
+    Watt_t interferencePower{0.1};
+    *interferencePsdRu1 = interferencePower.in_Watt() / (MHzToHz(m_channelWidth / 2) * 20);
 
     Simulator::Schedule(Seconds(3) + MicroSeconds(50),
                         &TestDlOfdmaPhyTransmission::GenerateInterference,
@@ -1027,7 +1027,7 @@ TestDlOfdmaPhyTransmission::RunOne()
 
     Ptr<SpectrumModel> SpectrumInterferenceRu2 = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdRu2 = Create<SpectrumValue>(SpectrumInterferenceRu2);
-    *interferencePsdRu2 = interferencePower / (MHzToHz(m_channelWidth / 2) * 20);
+    *interferencePsdRu2 = interferencePower.in_Watt() / (MHzToHz(m_channelWidth / 2) * 20);
 
     Simulator::Schedule(Seconds(4) + MicroSeconds(50),
                         &TestDlOfdmaPhyTransmission::GenerateInterference,
@@ -1099,7 +1099,7 @@ TestDlOfdmaPhyTransmission::RunOne()
 
     Ptr<SpectrumModel> SpectrumInterferenceAll = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdAll = Create<SpectrumValue>(SpectrumInterferenceAll);
-    *interferencePsdAll = interferencePower / (MHzToHz(m_channelWidth) * 20);
+    *interferencePsdAll = interferencePower.in_Watt() / (MHzToHz(m_channelWidth) * 20);
 
     Simulator::Schedule(Seconds(5) + MicroSeconds(50),
                         &TestDlOfdmaPhyTransmission::GenerateInterference,
@@ -1662,8 +1662,8 @@ TestDlOfdmaPhyPuncturing::RunOne()
 
     auto spectrumInterference = Create<SpectrumModel>(bands);
     auto interferencePsd = Create<SpectrumValue>(spectrumInterference);
-    Watt_u interferencePower{0.1};
-    *interferencePsd = interferencePower / 10e6;
+    Watt_t interferencePower{0.1};
+    *interferencePsd = interferencePower.in_Watt() / 10e6;
 
     Simulator::Schedule(Seconds(0),
                         &TestDlOfdmaPhyPuncturing::GenerateInterference,
@@ -2280,7 +2280,7 @@ class TestMultipleHeTbPreambles : public TestCase
      * @param txPower the TX power
      * @param payloadSize the size of the payload in bytes
      */
-    void RxHeTbPpdu(uint64_t uid, uint16_t staId, Watt_u txPower, size_t payloadSize);
+    void RxHeTbPpdu(uint64_t uid, uint16_t staId, Watt_t txPower, size_t payloadSize);
 
     /**
      * Receive OFDMA part of HE TB PPDU function.
@@ -2392,7 +2392,7 @@ TestMultipleHeTbPreambles::CheckBytesDropped(size_t expectedBytesDropped)
 void
 TestMultipleHeTbPreambles::RxHeTbPpdu(uint64_t uid,
                                       uint16_t staId,
-                                      Watt_u txPower,
+                                      Watt_t txPower,
                                       size_t payloadSize)
 {
     WifiConstPsduMap psdus;
@@ -2550,7 +2550,7 @@ TestMultipleHeTbPreambles::DoRun()
     int64_t streamNumber = 0;
     m_phy->AssignStreams(streamNumber);
 
-    Watt_u txPower{0.01};
+    Watt_t txPower{0.01};
 
     {
         // Verify a single UL MU transmission with two stations belonging to the same BSS
@@ -3062,7 +3062,7 @@ class TestUlOfdmaPhyTransmission : public TestCase
      */
     void CheckNonOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
                               WifiSpectrumBandInfo band,
-                              Watt_u expectedRxPower);
+                              Watt_t expectedRxPower);
     /**
      * Check the received power for the OFDMA part of the HE TB PPDUs over the given band
      * @param phy the PHY
@@ -3071,7 +3071,7 @@ class TestUlOfdmaPhyTransmission : public TestCase
      */
     void CheckOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
                            WifiSpectrumBandInfo band,
-                           Watt_u expectedRxPower);
+                           Watt_t expectedRxPower);
 
     /**
      * Verify all events are cleared at end of TX or RX
@@ -3172,10 +3172,10 @@ class TestUlOfdmaPhyTransmission : public TestCase
      * @param rxPowerOfdmaRu2 the received power on RU2
      */
     void SchedulePowerMeasurementChecks(Time delay,
-                                        Watt_u rxPowerNonOfdmaRu1,
-                                        Watt_u rxPowerNonOfdmaRu2,
-                                        Watt_u rxPowerOfdmaRu1,
-                                        Watt_u rxPowerOfdmaRu2);
+                                        Watt_t rxPowerNonOfdmaRu1,
+                                        Watt_t rxPowerNonOfdmaRu2,
+                                        Watt_t rxPowerOfdmaRu1,
+                                        Watt_t rxPowerOfdmaRu2);
     /**
      * Log scenario description
      *
@@ -3542,7 +3542,7 @@ TestUlOfdmaPhyTransmission::CheckRxFromSta2(uint32_t expectedSuccess,
 void
 TestUlOfdmaPhyTransmission::CheckNonOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
                                                  WifiSpectrumBandInfo band,
-                                                 Watt_u expectedRxPower)
+                                                 Watt_t expectedRxPower)
 {
     auto event = phy->GetCurrentEvent();
     NS_ASSERT(event);
@@ -3551,7 +3551,7 @@ TestUlOfdmaPhyTransmission::CheckNonOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
     // Since there is out of band emission due to spectrum mask, the tolerance cannot be very low
     NS_TEST_ASSERT_MSG_EQ_TOL(rxPower,
                               expectedRxPower,
-                              Watt_u{5e-3},
+                              mWatt_t{5},
                               "RX power " << rxPower << " over (" << band
                                           << ") does not match expected power " << expectedRxPower
                                           << " at " << Simulator::Now());
@@ -3560,7 +3560,7 @@ TestUlOfdmaPhyTransmission::CheckNonOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
 void
 TestUlOfdmaPhyTransmission::CheckOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
                                               WifiSpectrumBandInfo band,
-                                              Watt_u expectedRxPower)
+                                              Watt_t expectedRxPower)
 {
     /**
      * The current event cannot be used since it points to the preamble part of the HE TB PPDU.
@@ -3568,8 +3568,8 @@ TestUlOfdmaPhyTransmission::CheckOfdmaRxPower(Ptr<OfdmaSpectrumWifiPhy> phy,
      * duration when calling GetEnergyDuration.
      */
     NS_LOG_FUNCTION(this << band << expectedRxPower);
-    Watt_u step{5e-3};
-    if (expectedRxPower > Watt_u{0.0})
+    mWatt_t step{5};
+    if (expectedRxPower > Watt_t{0.0})
     {
         NS_TEST_ASSERT_MSG_EQ(
             phy->GetEnergyDuration(expectedRxPower - step, band).IsStrictlyPositive(),
@@ -3983,10 +3983,10 @@ TestUlOfdmaPhyTransmission::ScheduleTest(Time delay,
 
 void
 TestUlOfdmaPhyTransmission::SchedulePowerMeasurementChecks(Time delay,
-                                                           Watt_u rxPowerNonOfdmaRu1,
-                                                           Watt_u rxPowerNonOfdmaRu2,
-                                                           Watt_u rxPowerOfdmaRu1,
-                                                           Watt_u rxPowerOfdmaRu2)
+                                                           Watt_t rxPowerNonOfdmaRu1,
+                                                           Watt_t rxPowerNonOfdmaRu2,
+                                                           Watt_t rxPowerOfdmaRu1,
+                                                           Watt_t rxPowerOfdmaRu2)
 {
     const auto detectionDuration = WifiPhy::GetPreambleDetectionDuration();
     const auto txVectorSta1 = GetTxVectorForHeTbPpdu(1, 1, 0);
@@ -3995,10 +3995,10 @@ TestUlOfdmaPhyTransmission::SchedulePowerMeasurementChecks(Time delay,
     const auto nonOfdmaDuration = hePhy->CalculateNonHeDurationForHeTb(txVectorSta2);
     NS_ASSERT(nonOfdmaDuration == hePhy->CalculateNonHeDurationForHeTb(txVectorSta1));
 
-    std::vector<Watt_u> rxPowerNonOfdma{rxPowerNonOfdmaRu1, rxPowerNonOfdmaRu2};
+    std::vector<Watt_t> rxPowerNonOfdma{rxPowerNonOfdmaRu1, rxPowerNonOfdmaRu2};
     std::vector<WifiSpectrumBandInfo> nonOfdmaBand{hePhy->GetNonOfdmaBand(txVectorSta1, 1),
                                                    hePhy->GetNonOfdmaBand(txVectorSta2, 2)};
-    std::vector<Watt_u> rxPowerOfdma{rxPowerOfdmaRu1, rxPowerOfdmaRu2};
+    std::vector<Watt_t> rxPowerOfdma{rxPowerOfdmaRu1, rxPowerOfdmaRu2};
     std::vector<WifiSpectrumBandInfo> ofdmaBand{hePhy->GetRuBandForRx(txVectorSta1, 1),
                                                 hePhy->GetRuBandForRx(txVectorSta2, 2)};
 
@@ -4075,7 +4075,7 @@ TestUlOfdmaPhyTransmission::SchedulePowerMeasurementChecks(Time delay,
                             rxPowerOfdma[i]);
     }
 
-    if (rxPowerOfdmaRu1 != Watt_u{0.0})
+    if (rxPowerOfdmaRu1 != Watt_t{0.0})
     {
         /**
          * Perform checks for transmitting STA (STA 2) to ensure it has correctly logged
@@ -4297,8 +4297,8 @@ TestUlOfdmaPhyTransmission::RunOne()
 
     Ptr<SpectrumModel> SpectrumInterferenceRu1 = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdRu1 = Create<SpectrumValue>(SpectrumInterferenceRu1);
-    Watt_u interferencePower{0.1};
-    *interferencePsdRu1 = interferencePower / (MHzToHz(m_channelWidth / 2) * 20);
+    Watt_t interferencePower{0.1};
+    *interferencePsdRu1 = interferencePower.in_Watt() / (MHzToHz(m_channelWidth / 2) * 20);
 
     Simulator::Schedule(delay + MicroSeconds(50),
                         &TestUlOfdmaPhyTransmission::GenerateInterference,
@@ -4335,7 +4335,7 @@ TestUlOfdmaPhyTransmission::RunOne()
 
     Ptr<SpectrumModel> SpectrumInterferenceRu2 = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdRu2 = Create<SpectrumValue>(SpectrumInterferenceRu2);
-    *interferencePsdRu2 = interferencePower / (MHzToHz(m_channelWidth / 2) * 20);
+    *interferencePsdRu2 = interferencePower.in_Watt() / (MHzToHz(m_channelWidth / 2) * 20);
 
     Simulator::Schedule(delay + MicroSeconds(50),
                         &TestUlOfdmaPhyTransmission::GenerateInterference,
@@ -4374,7 +4374,7 @@ TestUlOfdmaPhyTransmission::RunOne()
 
     Ptr<SpectrumModel> SpectrumInterferenceAll = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdAll = Create<SpectrumValue>(SpectrumInterferenceAll);
-    *interferencePsdAll = interferencePower / (MHzToHz(m_channelWidth) * 20);
+    *interferencePsdAll = interferencePower.in_Watt() / (MHzToHz(m_channelWidth) * 20);
 
     Simulator::Schedule(delay + MicroSeconds(50),
                         &TestUlOfdmaPhyTransmission::GenerateInterference,
@@ -4566,9 +4566,9 @@ TestUlOfdmaPhyTransmission::RunOne()
     auto rxPower = DbmToW(
         dBm_t{19}); // 16+1 dBm at STAs and +2 at AP (no loss since all devices are colocated)
     SchedulePowerMeasurementChecks(delay,
-                                   (m_channelWidth >= MHz_u{40}) ? Watt_u{0.0} : rxPower,
+                                   (m_channelWidth >= MHz_u{40}) ? Watt_t{0.0} : rxPower,
                                    rxPower, // power detected on RU1 only if same 20 MHz as RU 2
-                                   Watt_u{0.0},
+                                   Watt_t{0.0},
                                    rxPower);
     ScheduleTest(delay,
                  true,
@@ -4613,9 +4613,9 @@ TestUlOfdmaPhyTransmission::RunOne()
                 : DbmToW(dBm_t{18.0103}); // 15.0103+1 dBm at STA 2 and +2 at AP if 242-tone RU
     }
     SchedulePowerMeasurementChecks(delay,
-                                   (m_channelWidth >= MHz_u{40}) ? Watt_u{0.0} : rxPower,
+                                   (m_channelWidth >= MHz_u{40}) ? Watt_t{0.0} : rxPower,
                                    rxPower, // power detected on RU1 only if same 20 MHz as RU 2
-                                   Watt_u{0.0},
+                                   Watt_t{0.0},
                                    rxPowerOfdma);
 
     // Reset PSD limitation once HE TB has been sent
@@ -5303,8 +5303,8 @@ TestPhyPaddingExclusion::DoRun()
 
     Ptr<SpectrumModel> SpectrumInterferenceRu1 = Create<SpectrumModel>(bands);
     Ptr<SpectrumValue> interferencePsdRu1 = Create<SpectrumValue>(SpectrumInterferenceRu1);
-    Watt_u interferencePower{0.1};
-    *interferencePsdRu1 = interferencePower / (MHzToHz(DEFAULT_CHANNEL_WIDTH / 2) * 20);
+    Watt_t interferencePower{0.1};
+    *interferencePsdRu1 = interferencePower.in_Watt() / (MHzToHz(DEFAULT_CHANNEL_WIDTH / 2) * 20);
 
     Simulator::Schedule(Seconds(2) + MicroSeconds(50) + expectedPpduDuration,
                         &TestPhyPaddingExclusion::GenerateInterference,

@@ -665,7 +665,7 @@ TestInterBssConstantObssPdAlgo::NotifyPhyTxBegin(std::string context,
 {
     uint32_t idx = ConvertContextToNodeId(context);
     uint32_t pktSize = p->GetSize() - 38;
-    Watt_u txPower{txPowerW};
+    Watt_t txPower{txPowerW};
     if ((idx == 0) && ((pktSize == m_payloadSize1) || (pktSize == (m_payloadSize1 / 10))))
     {
         m_numSta1PacketsSent++;

@@ -567,7 +567,7 @@ class WifiPhy : public Object
      * @param psdus the PSDUs being transmitted (only one unless DL MU transmission)
      * @param txPower the transmit power
      */
-    void NotifyTxBegin(const WifiConstPsduMap& psdus, Watt_u txPower);
+    void NotifyTxBegin(const WifiConstPsduMap& psdus, Watt_t txPower);
     /**
      * Public method used to fire a PhyTxEnd trace.
      * Implemented for encapsulation purposes.
